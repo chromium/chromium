@@ -497,7 +497,7 @@
 <translation id="4855250849489639581">Llisca cap avall per veure més opcions de disseny</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Queda {0} intent.}other{<ph name="ERROR_MESSAGE" /> Queden {0} intents.}}</translation>
 <translation id="4873827928179867585">Algoritme d'autenticació</translation>
-<translation id="4880328057631981605">Nom del punt d'accés</translation>
+<translation id="4880328057631981605">Nom del punt d'accés Wi-Fi</translation>
 <translation id="488307179443832524">S'està utilitzant la drecera per a "<ph name="CONFLICT_ACCEL_NAME" />". Prem una drecera nova.</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Tria'n una de nova immediatament</translation>
@@ -787,7 +787,7 @@
 <translation id="7103252855940681301">Dispositiu <ph name="INDEX" /> de <ph name="COUNT" />, anomenat <ph name="NAME" />.</translation>
 <translation id="7107255225945990211">Tria obres d'art exclusives de <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">retorn</translation>
-<translation id="7130438335435247835">Nom del punt d'accés (APN)</translation>
+<translation id="7130438335435247835">Nom del punt d'accés Wi-Fi (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Servidor de noms}other{Servidors de noms}}</translation>
 <translation id="7135814714616751706">Cerca dreceres</translation>
 <translation id="7143207342074048698">Connectant</translation>

@@ -100,6 +100,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1195073053842921378">Bydd y cyfeiriad hwn yn cael ei ddileu o'r ddyfais hon</translation>
 <translation id="1195558154361252544">Mae hysbysiadau'n cael eu rhwystro'n awtomatig ar gyfer pob gwefan ac eithrio'r rhai rydych yn eu caniatáu</translation>
 <translation id="1197088940767939838">Oren</translation>
+<translation id="1197761954713363183">Dalen cadarnhau cod pas ar gau</translation>
 <translation id="1201402288615127009">Nesaf</translation>
 <translation id="1201895884277373915">Rhagor o'r wefan hon</translation>
 <translation id="1202892408424955784">Cynhyrchion sy'n cael eu dilyn</translation>
@@ -327,6 +328,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1618571384971354160">Tynnu a chymorth ar ochr y ffordd</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1622571349153632031">Coginio llysieuol</translation>
+<translation id="162285686621567578">Mae'r wefan hon wedi'i rhwystro gan eich rhiant.</translation>
 <translation id="1622966923835127638">Cyllid Busnes</translation>
 <translation id="1623104350909869708">Atal y dudalen hon rhag creu dialogau ychwanegol</translation>
 <translation id="1633137413609266904">{0,plural, =1{Mae agor y ffeil hon wedi'i rwystro gan bolisi gweinyddwr}zero{Mae agor # ffeil wedi'i rwystro gan bolisi gweinyddwr}two{Mae agor # ffeil wedi'i rwystro gan bolisi gweinyddwr}few{Mae agor # ffeil wedi'i rwystro gan bolisi gweinyddwr}many{Mae agor # ffeil wedi'i rwystro gan bolisi gweinyddwr}other{Mae agor # ffeil wedi'i rwystro gan bolisi gweinyddwr}}</translation>
@@ -371,6 +373,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1711528724596764268">Dysgu peirianyddol a deallusrwydd artiffisial</translation>
 <translation id="1712552549805331520">Mae <ph name="URL" /> eisiau storio data ar eich cyfrifiadur lleol yn barhaol</translation>
 <translation id="1713628304598226412">Hambwrdd 2</translation>
+<translation id="1714807406136741351">Y modd pori, gallwch newid i'r modd Forms i ddefnyddio'r saeth chwith/dde i adolygu newidiadau pris ar y graff</translation>
 <translation id="1717218214683051432">Synwyryddion symudiad</translation>
 <translation id="1717494416764505390">Blwch negeseuon 3</translation>
 <translation id="1717688554309417925">Gwasanaethau Debyd a Gwirio</translation>
@@ -382,6 +385,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1725591448053514783">Amlen You 6</translation>
 <translation id="1727613060316725209">Mae'r dystysgrif yn ddilys</translation>
 <translation id="1728677426644403582">Rydych yn edrych ar ffynhonnell tudalen we</translation>
+<translation id="1728803206919861584">Cadw'r cod pas y tu allan i Anhysbys?</translation>
 <translation id="173080396488393970">Ni chefnogir y math hwn o gerdyn</translation>
 <translation id="1732445923934584865">Gofyn yn bersonol yn lle hynny</translation>
 <translation id="1733064249834771892">ffontiau</translation>
@@ -1664,6 +1668,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4415156962929755728">Plastig (Sglein Uchel)</translation>
 <translation id="4415426530740016218">Cyfeiriad Casglu</translation>
 <translation id="4424024547088906515">Ni allai'r gweinydd hwn brofi ei fod yn <ph name="DOMAIN" />; nid yw Chrome yn ymddiried yn ei dystysgrif ddiogelwch. Gall hyn gael ei achosi gan gamffurfweddiad neu ymosodwr yn rhyng-gipio'ch cysylltiad.</translation>
+<translation id="4425173294238317796">Taflen cadarnhau cod pas</translation>
 <translation id="4425750422187370446">Dillad Athletaidd</translation>
 <translation id="4428065317363009941">Personoleiddio hysbysebion</translation>
 <translation id="443121186588148776">Porth cyfresol</translation>
@@ -2019,6 +2024,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5157504274688344097">Masnachwyr Torfol a Siopau Adrannol</translation>
 <translation id="5158275234811857234">Clawr</translation>
 <translation id="5159010409087891077">Agorwch y dudalen mewn ffenestr Anhysbys newydd (⇧⌘N)</translation>
+<translation id="5161262286013276579">Dalen cadarnhau cod pas wedi'i hagor</translation>
 <translation id="5161334686036120870">Pwnc:</translation>
 <translation id="5161506081086828129">Pentyrrwr 9</translation>
 <translation id="5164798890604758545">Nodir y testun</translation>
@@ -2901,6 +2907,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="7004583254764674281">Defnyddio Windows Hello i gadarnhau cardiau'n gyflymach</translation>
 <translation id="7006930604109697472">Anfon beth bynnag</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7013762323294215682">Bydd y cyfrinair hwn yn cael ei gadw i'ch rheolwr cyfrineiriau. Bydd unrhyw un sydd â mynediad ato yn gallu defnyddio'r cyfrinair hwn.</translation>
 <translation id="7014042602717177828">Sain Car</translation>
 <translation id="7014741021609395734">Lefel chwyddo</translation>
 <translation id="7016992613359344582">Gallai'r taliadau hyn fod yn untro neu'n ailadrodd ac mae'n bosib na fydd yn amlwg.</translation>
@@ -3246,6 +3253,7 @@ Manylion ychwanegol:
 <translation id="7667346355482952095">Mae'r tocyn polisi a ddychwelwyd yn wag neu nid yw'n cyfateb i'r tocyn presennol</translation>
 <translation id="7668654391829183341">Dyfais Anhysbys</translation>
 <translation id="7669271284792375604">Mae'n bosib y bydd ymosodwyr yn ceisio eich twyllo i osod rhaglenni sy'n niweidio'ch profiad pori (er enghraifft, drwy newid eich tudalen hafan neu ddangos hysbysebion ychwanegol ar wefannau rydych yn ymweld â nhw).</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> o <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Camau gweithredu a gymerwyd â data sydd wedi'u fflagio'n gyfrinachol (1 cam gweithredu ers mewngofnodi). <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" />}zero{Camau gweithredu a gymerwyd â data sydd wedi'u fflagio'n gyfrinachol (# cam gweithredu ers mewngofnodi). <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" />}two{Camau gweithredu a gymerwyd â data sydd wedi'u fflagio'n gyfrinachol (# gam gweithredu ers mewngofnodi). <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" />}few{Camau gweithredu a gymerwyd â data sydd wedi'u fflagio'n gyfrinachol (# cham gweithredu ers mewngofnodi). <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" />}many{Camau gweithredu a gymerwyd â data sydd wedi'u fflagio'n gyfrinachol (# cham gweithredu ers mewngofnodi). <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" />}other{Camau gweithredu a gymerwyd â data sydd wedi'u fflagio'n gyfrinachol (# cam gweithredu ers mewngofnodi). <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Blwch negeseuon 6</translation>
 <translation id="7675325315208090829">Rheoli Dulliau Talu...</translation>

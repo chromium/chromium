@@ -242,6 +242,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="2359043044084662842">Tradu</translation>
 <translation id="2359808026110333948">Continuă</translation>
 <translation id="2360196772093551345">Solicită site mobil</translation>
+<translation id="2361721159900796207">Ascunde acest element</translation>
 <translation id="2362083820973145409">Conectat(ă) ca <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Deschide setările.</translation>
 <translation id="236977714248711277">Site-urile nu pot folosi cookie-uri pentru a-ți îmbunătăți experiența de navigare, de exemplu, pentru a te menține conectat(ă) sau pentru a reține articolele din coșul de cumpărături.
 
@@ -778,6 +779,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="5317780077021120954">Salvează</translation>
 <translation id="5318298563956633672">Urmărești deja acest produs.</translation>
 <translation id="5339316356165661760">Activează sincronizarea</translation>
+<translation id="5345660046352249607">{COUNT,plural, =1{Urmărești acest pachet?}few{Urmărești {COUNT} pachete?}other{Urmărești {COUNT} de pachete?}}</translation>
 <translation id="536067926684072644">Afișează marcajele</translation>
 <translation id="5360976571138293719">Pentru mai multe setări privind confidențialitatea, securitatea și colectarea datelor, consultă <ph name="BEGIN_LINK" />Serviciile Google<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Vei găsi site-urile urmărite aici</translation>
@@ -1144,6 +1146,7 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="723787869754590019">Folosește Chrome pentru completare automată</translation>
 <translation id="7265758999917665941">Niciodată pentru acest site</translation>
 <translation id="7272437679830969316">Nu ți se poate confirma identitatea. Parola nu a fost copiată.</translation>
+<translation id="7284359491594949826">{COUNT,plural, =1{Un nou pachet urmărit}few{Pachete noi urmărite}other{Pachete noi urmărite}}</translation>
 <translation id="7291368939935408496">Se pregătesc parolele...</translation>
 <translation id="7302503784943202842">Folosește parole pe toate dispozitivele</translation>
 <translation id="730958329302570991">Adaugă cu ușurință parole de pe site-uri în Managerul de parole Google oricând.</translation>
@@ -1177,6 +1180,7 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="7473891865547856676">Nu, mulțumesc</translation>
 <translation id="7491131399623468277">Accesează Setările…</translation>
 <translation id="7492574581995589075">Organizația ta a dezactivat opțiunea de a folosi și salva datele Chrome în Contul Google. Marcajele, parolele și alte date noi vor fi salvate numai pe acest dispozitiv.</translation>
+<translation id="750149195207506638">Marcajele sunt ascunse</translation>
 <translation id="750228856503700085">Nu sunt disponibile actualizări</translation>
 <translation id="750493650310597496">Niciunul selectat</translation>
 <translation id="7508728395076009983">Pentru a bloca filele incognito, configurează Touch ID, Face ID sau un cod de acces.</translation>
@@ -1244,6 +1248,7 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="7856733331829174190">Nu s-a putut descărca</translation>
 <translation id="785938070103630874">Deschide parole, metode de plată sau adresa și multe altele</translation>
 <translation id="7859704718976024901">Istoricul de navigare</translation>
+<translation id="7866501058614003444">S-a anulat urmărirea pachetului.</translation>
 <translation id="7870750252270996949">Imaginea copiată din Lens</translation>
 <translation id="7879275349003161544">Afișează descărcările</translation>
 <translation id="7883882164760409935">Ai parole refolosite.</translation>
@@ -1313,6 +1318,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8206354486702514201">Această setare este impusă de administratorul dvs.</translation>
 <translation id="8214293972734702249">Fixată, <ph name="TAB_TITLE" /></translation>
 <translation id="8225985093977202398">Imaginile și fișierele memorate în cache</translation>
+<translation id="823133356836493038">Lista de lecturi este ascunsă</translation>
 <translation id="8237382152611443140">Deschide Setările pentru completarea automată a parolei.</translation>
 <translation id="8248969482078657578">Filele inactive te ajută să te concentrezi</translation>
 <translation id="8261506727792406068">Șterge</translation>
@@ -1491,6 +1497,7 @@ Datele au fost criptate cu expresia de acces pentru <ph name="TIME" />. Introdu-
 <translation id="9148126808321036104">Conectează-te din nou</translation>
 <translation id="9157836665414082580">Închide casetele de dialog</translation>
 <translation id="9162432979321511934">Activează opțiunea Completează automat parolele</translation>
+<translation id="9162941801309769488">S-a anulat urmărirea pachetului</translation>
 <translation id="9165320910061267720">Pentru a primi notificări privind alertele de scădere de preț, trebuie să activezi notificările din setările iOS.</translation>
 <translation id="9165886811579296457">Verificarea de siguranță nu a găsit probleme de securitate de remediat.</translation>
 <translation id="9172603439892261948">Sincronizează marcajele, istoricul și alte date.</translation>

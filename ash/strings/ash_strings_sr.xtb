@@ -225,6 +225,7 @@
 <translation id="1831565490995294689">Изаберите да бисте отворили апликацију <ph name="APP_TO_OPEN" />.</translation>
 <translation id="1838895407229022812">Ноћно светло је искључено.</translation>
 <translation id="1854180393107901205">Заустави пребацивање</translation>
+<translation id="1862077610023398675">Сакриј контроле</translation>
 <translation id="1862380676329487333">Ажурирај и одјави ме</translation>
 <translation id="1864454756846565995">Уређај са USB прикључком типа C (задњи порт)</translation>
 <translation id="1869497990620230175">Брз приступ фајловима</translation>
@@ -787,6 +788,7 @@
 <translation id="4215497585250573029">Подешавања VPN-а</translation>
 <translation id="4217571870635786043">Диктирање</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, инсталирана апликација, паузирана</translation>
+<translation id="4228078597006700451">Контроле нису подешене</translation>
 <translation id="4231053948789591973">Пребацивање је тренутно паузирано. Можете да наставите са пребацивањем екрана или да га зауставите у сваком тренутку.</translation>
 <translation id="423685346499232137">Тренутно не можете да копирате ни налепите садржај</translation>
 <translation id="4239069858505860023">GPRS</translation>
@@ -835,7 +837,6 @@
 <translation id="4406883609789734330">Титл уживо</translation>
 <translation id="4412944820643904175">Функција <ph name="FEATURE_NAME" /> је искључена.</translation>
 <translation id="4424159417645388645">Радна површина 5</translation>
-<translation id="4427695046139341014">Контролна табла игре</translation>
 <translation id="4430019312045809116">Јачина звука</translation>
 <translation id="4441283832827406317">Апликације су сортиране према називу</translation>
 <translation id="4445159312344259901">Пријавите се да откључате</translation>
@@ -1221,6 +1222,7 @@
 <translation id="5983567367406220847">Hотспот је искључен због неактивности.</translation>
 <translation id="598407983968395253">Користи шаблон</translation>
 <translation id="598882571027504733">Да бисте преузели ажурирање, рестартујте Chromebook са прикљученом тастастуром.</translation>
+<translation id="6000279412553873020">Тастери, дугмад и друго</translation>
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" />. страница од <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Истакните следећу ставку на полици</translation>
 <translation id="6015573907265691211">Означите као завршено</translation>
@@ -1418,6 +1420,7 @@
 <translation id="6802196538183166658">Отворите Брза подешавања избором времена</translation>
 <translation id="6802687695197837794">Ово омогућава приступ апликацијама <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> и свим апликацијама и веб-сајтовима који имају дозволе за камеру и микрофон</translation>
 <translation id="6803622936009808957">Није могуће пресликати екране зато што није пронађена ниједна подржана резолуција. Уместо тога, приказује се проширена радна површина.</translation>
+<translation id="6809556495807506746">Контроле нису доступне</translation>
 <translation id="6812232930908427253">Чување радне површине није успело. Има превише прозора или картица.</translation>
 <translation id="6818242057446442178">Реч уназад</translation>
 <translation id="6819327813400217281">Камера је уклопљена у доњи леви угао</translation>
@@ -1442,6 +1445,7 @@
 <translation id="6919251195245069855">Нисмо успели да препознамо паметну картицу. Пробајте поново.</translation>
 <translation id="6920245099716267363">Укључите/искључите хотспот. Хотспот је укључен, 1 уређај је повезан.</translation>
 <translation id="692135145298539227">избриши</translation>
+<translation id="6929081673585394903">Покажи контроле</translation>
 <translation id="6931576957638141829">Сачувајте у</translation>
 <translation id="6942518653766415536">Мени за формат снимања</translation>
 <translation id="6945221475159498467">Изабери</translation>
@@ -1639,6 +1643,7 @@
 <translation id="7773536009433685931">Укључи WiFi</translation>
 <translation id="7780094051999721182">пречице</translation>
 <translation id="7780159184141939021">Ротирајте екран</translation>
+<translation id="7792590255364786396">Видљиво</translation>
 <translation id="7796735576426975947">Ново обавештење је скривено</translation>
 <translation id="7798302898096527229">Притисните тастер за претрагу или Shift да бисте отказали.</translation>
 <translation id="780301667611848630">Не, хвала</translation>

@@ -175,6 +175,7 @@ Kui kustutate oma sirvimisajaloo – kogu ajaloo või konkreetse saidi ajaloo �
 <translation id="19288952978244135">Avage Chrome uuesti.</translation>
 <translation id="1933845786846280168">Valitud vaheleht</translation>
 <translation id="1943432128510653496">Paroolide salvestamine</translation>
+<translation id="1944535645109964458">Saadaval pole ühtegi pääsuvõtit</translation>
 <translation id="1952172573699511566">Veebisaidid kuvavad teksti võimaluse korral teie eelistatud keeles.</translation>
 <translation id="1959679933317802873">Sisu ootel</translation>
 <translation id="1960290143419248813">Selles Androidi versioonis ei toetata enam Chrome'i värskendusi</translation>
@@ -626,6 +627,7 @@ Privaatse oleku märgid täiustavad veebis privaatsust ja neid ei saa kasutada t
 <translation id="4257230861809842349">Kas soovite Google'i paroolihaldurist paroolid kustutada?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Milliseid andmeid kasutatakse?<ph name="END_BOLD" /> Teie sirvimisajalugu, selles seadmes Chrome'iga külastatud saitide andmed.</translation>
 <translation id="4269820728363426813">Kopeeri lingi aadress</translation>
+<translation id="4277529130885813215">Kasuta teist seadet</translation>
 <translation id="4283102315569707115">Kas taotleda vaikimisi arvutisaite?</translation>
 <translation id="4285846616383034558">Küpsised, vahemälu ja muud saidiandmed</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Androidi seadetes ekraaniluku sisselülitamine<ph name="END_LINK" /></translation>
@@ -1166,6 +1168,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6955535239952325894">See seade on hallatud brauserites keelatud</translation>
 <translation id="6963766334940102469">Kustuta järjehoidjad</translation>
 <translation id="696447261358045621">Lahkumine inkognito režiimist</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6971862865055170158">Ära kiida heaks</translation>
 <translation id="6978717888677691380">Blokeeritud saidid</translation>
 <translation id="6979737339423435258">Algusest</translation>
@@ -1324,6 +1327,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="7757787379047923882">Teksti jagati seadmest <ph name="DEVICE_NAME" /></translation>
 <translation id="7762668264895820836">SD-kaart <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Lisage aadress</translation>
+<translation id="7766587497031415281">Rohkem valikuid sirvimisandmete kustutamiseks</translation>
 <translation id="7772032839648071052">Kinnitage parool</translation>
 <translation id="7772375229873196092">Sule <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ja veel <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ja veel <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>

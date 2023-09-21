@@ -25,6 +25,7 @@ Những yếu tố cần xem xét:
 
   • Nếu bạn đồng bộ hoá nhật ký với Tài khoản Google, các chỉ số cũng có thể bao gồm thông tin về các URL bạn truy cập.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Chrome sở hữu khả năng bảo mật mạnh nhất để bảo vệ bạn trước các trang web có hại</translation>
+<translation id="1615715390546812898">Tìm kiếm bằng giọng nói trong Chrome.</translation>
 <translation id="1657395063736185342">Tìm kiếm hình ảnh trong Chrome</translation>
 <translation id="1675955119303651351">Một số dữ liệu Chrome của bạn chưa được lưu vào Tài khoản Google.
         Hãy đợi một vài phút rồi mới đăng xuất. Nếu bạn đăng xuất ngay, dữ liệu này sẽ bị xoá.</translation>
@@ -104,6 +105,7 @@ Những yếu tố cần xem xét:
         Hãy đợi một vài phút trước khi đăng xuất. Nếu bạn đăng xuất ngay, dữ liệu này sẽ bị xoá.</translation>
 <translation id="484033449593719797">Chưa hỗ trợ trên Chrome phiên bản thử nghiệm</translation>
 <translation id="4840404732697892756">Trình quản lý mật khẩu của Google có thể kiểm tra mật khẩu của bạn khi bạn đăng nhập bằng Tài khoản Google.</translation>
+<translation id="4860330141789125848">{COUNT,plural, =1{Chrome có thể giúp bạn theo dõi gói hàng này trên trang Thẻ mới.}other{Chrome có thể giúp bạn theo dõi các gói hàng này trên trang Thẻ mới.}}</translation>
 <translation id="4903674399067644695">Thẻ này hiển thị cho bạn các nội dung đề xuất về cách khai thác tối đa Chrome.</translation>
 <translation id="49200511069271369">Tổ chức <ph name="DOMAIN" /> của bạn quản lý tài khoản mà bạn hiện đang đăng nhập và cách bạn sử dụng Chrome. Quản trị viên có thể thiết lập hoặc hạn chế một số tính năng.</translation>
 <translation id="5030102366287574140">Chrome có thể bảo vệ bạn trước các sự cố rò rỉ dữ liệu, trang web không an toàn và những vấn đề khác.</translation>
@@ -113,10 +115,12 @@ Những yếu tố cần xem xét:
 <translation id="5156818928311866442">Mở phần cài đặt Chrome để đặt Chrome làm trình duyệt mặc định.</translation>
 <translation id="5162467219239570114">Chrome đã lỗi thời. Nếu không có bản cập nhật nào trong <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, thì có khả năng thiết bị của bạn không hỗ trợ các phiên bản Chrome mới nữa.</translation>
 <translation id="5190139289262548459">Tổ chức <ph name="DOMAIN" /> của bạn sẽ quản lý tài khoản bạn đăng nhập và cách sử dụng Chrome.</translation>
+<translation id="5278862365980079760">Khoá thẻ ẩn danh khi bạn thoát Chrome hoặc chuyển sang một ứng dụng khác.</translation>
 <translation id="5389212809648216794">Google Chrome không thể sử dụng máy ảnh của bạn do một ứng dụng khác đang dùng máy ảnh</translation>
 <translation id="5395376160638294582">Đảm bảo bạn luôn có thể sử dụng dữ liệu Chrome trong Tài khoản Google của mình</translation>
 <translation id="5439191312780166229">Cảnh báo cho bạn về các trang web nguy hiểm, kể cả trang web mà Google chưa từng biết, bằng cách phân tích nhiều dữ liệu trên các trang web hơn so với chế độ bảo vệ tiêu chuẩn. Bạn có thể chọn bỏ qua cảnh báo của Chrome.</translation>
 <translation id="5460571915754665838">4. Chọn Chrome</translation>
+<translation id="546541279759910616">{COUNT,plural, =1{Chrome sẽ giúp theo dõi gói hàng này trên trang Thẻ mới.}other{Chrome sẽ giúp theo dõi các gói hàng này trên trang Thẻ mới.}}</translation>
 <translation id="5492504007368565877">Trình quản lý mật khẩu của Google không thể kiểm tra mật khẩu của bạn.</translation>
 <translation id="5527026824954593399">Nhấn vào "Xem bằng Google Maps trên Chrome".</translation>
 <translation id="5552137475244467770">Chrome kiểm tra định kỳ các mật khẩu của bạn so với những danh sách đã đăng trên Internet. Khi thực hiện việc này, mật khẩu và tên người dùng của bạn được mã hóa nên không ai có thể đọc được, kể cả Google.</translation>

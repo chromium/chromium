@@ -16,6 +16,7 @@
 <translation id="1203500561924088507">Zahvaljujemo što ste izvršili instaliranje. Da biste mogli koristiti <ph name="BUNDLE_NAME" />, morate ponovno pokrenuti preglednik.</translation>
 <translation id="1261119230216066228">Štednja memorije učinila je Chromium bržim</translation>
 <translation id="1262876892872089030">Dok je ova kartica bila neaktivna, memorija je oslobođena kako bi Chromium ostao brz. Možete odabrati da ta web-lokacija uvijek bude neaktivna.</translation>
+<translation id="1265577313130862557">Chromium je blokirao ovo preuzimanje jer je datoteka opasna</translation>
 <translation id="1315551408014407711">Postavite novi profil u Chromiumu</translation>
 <translation id="1414495520565016063">Prijavljeni ste na Chromium!</translation>
 <translation id="1478370723027452770">Zatražite pomoć za Chrome for Testing</translation>
@@ -42,14 +43,17 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="1911763535808217981">Ako isključite tu opciju, možete se prijaviti na Googleove web-lokacije kao što je Gmail bez prijavljivanja u Chromium</translation>
 <translation id="1929939181775079593">Chromium ne reagira. Ponovo pokrenuti sada?</translation>
 <translation id="193439633299369377">Potrebno je ponovo pokrenuti Chromium OS kako bi se ažuriranje primijenilo.</translation>
+<translation id="1951406923938785464">Chromium je blokirao ovo preuzimanje jer se ova vrsta datoteke obično ne preuzima i mogla bi biti opasna</translation>
 <translation id="1953553007165777902">Preuzimanje... Još <ph name="MINUTE" /> min</translation>
 <translation id="1966382378801805537">Chromium ne može utvrditi niti postaviti zadani preglednik</translation>
 <translation id="2008474315282236005">Time će se izbrisati jedna stavka s uređaja. Da biste kasnije dohvatili svoje podatke, prijavite se na Chromium kao <ph name="USER_EMAIL" />.</translation>
 <translation id="2018879682492276940">Instaliranje nije uspjelo. Pokušajte ponovo.</translation>
 <translation id="2020032459870799438">Da biste provjerili jesu li vaše druge zaporke sigurne od povrede podataka i drugih poteškoća sa sigurnošću, <ph name="BEGIN_LINK" />prijavite se na Chromium<ph name="END_LINK" />.</translation>
 <translation id="2049376729098081731">Odaberite želite li uključiti povijest na Chromiumu za prilagođenije doživljaje na Googleovim uslugama</translation>
+<translation id="2086476982681781442">Chromium je blokirao ovo preuzimanje jer je ova datoteka obmanjujuća i može napraviti neočekivane promjene na vašem uređaju</translation>
 <translation id="2088953378266246249">Informacije o tome kako Chromium upravlja svojim korijenskim certifikatima</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Vaša organizacija automatski briše podatke o pregledavanju kada se Chromium ne koristi jednu minutu. To može uključivati povijest, automatsko popunjavanje i preuzimanja. Kartice će ostati otvorene.}one{Vaša organizacija automatski briše podatke o pregledavanju kada se Chromium ne koristi # minutu. To može uključivati povijest, automatsko popunjavanje i preuzimanja. Kartice će ostati otvorene.}few{Vaša organizacija automatski briše podatke o pregledavanju kada se Chromium ne koristi # minute. To može uključivati povijest, automatsko popunjavanje i preuzimanja. Kartice će ostati otvorene.}other{Vaša organizacija automatski briše podatke o pregledavanju kada se Chromium ne koristi # minuta. To može uključivati povijest, automatsko popunjavanje i preuzimanja. Kartice će ostati otvorene.}}</translation>
+<translation id="215352261310130060">Chromium je blokirao ovo preuzimanje jer ova web-lokacija ne upotrebljava sigurnu vezu i datoteka se možda neovlašteno mijenjala</translation>
 <translation id="2174178932569897599">Prilagodi Chromium</translation>
 <translation id="2174917724755363426">Instaliranje nije dovršeno. Jeste li sigurni da ga želite otkazati?</translation>
 <translation id="2185166961232948079">Chromium – Prijava na mrežu – <ph name="PAGE_TITLE" /></translation>
@@ -171,6 +175,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="4544142686420020088">Chromium se nije ažurirao zbog pogreške. <ph name="BEGIN_LINK" />Riješite probleme s ažuriranjem i neuspjela ažuriranja Chromiuma.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Želite li nastaviti na novom profilu u Chromiumu?</translation>
 <translation id="4567424176335768812">Prijavljeni ste kao <ph name="USER_EMAIL_ADDRESS" />. Sada možete pristupiti svojim oznakama, povijesti i drugim postavkama na svim uređajima na kojima se prijavljujete.</translation>
+<translation id="4570813286784708942">Chromium je blokirao ovo preuzimanje jer ste isključili sigurno pregledavanje i datoteka se ne može potvrditi</translation>
 <translation id="4594305310729380060">U Upravitelj zaporki na ovom uređaju</translation>
 <translation id="459535195905078186">Aplikacije sustava Chromium</translation>
 <translation id="4613863813562375431">Verzija Chromium OS-a</translation>
@@ -259,6 +264,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="6327105987658262776">Ažuriranja nisu dostupna.</translation>
 <translation id="6333502561965082103">U tijeku je neka druga operacija na Chromiumu. Pokušajte ponovo kasnije.</translation>
 <translation id="6334986366598267305">Upotreba Chromiuma s vašim Google računom te na dijeljenim računalima sada je još jednostavnija.</translation>
+<translation id="6366160072964553914">Chromium je blokirao ovo preuzimanje jer se ova datoteka obično ne preuzima i mogla bi biti opasna</translation>
 <translation id="6373523479360886564">Jeste li sigurni da želite deinstalirati Chromium?</translation>
 <translation id="6375219077595103062">Dodajte prečac Upravitelju zaporki</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Kako upotrebljavamo te podatke<ph name="END_BOLD" />: Chromium može procijeniti vaše interese. Web-lokacija koju poslije posjetite može od Chromiuma tražiti podatke o vašim interesima kako bi prilagodila oglase koji će vam se prikazivati.</translation>

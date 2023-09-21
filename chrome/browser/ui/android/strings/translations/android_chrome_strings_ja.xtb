@@ -176,6 +176,7 @@
 <translation id="19288952978244135">Chrome を再度開きます。</translation>
 <translation id="1933845786846280168">選択したタブ</translation>
 <translation id="1943432128510653496">パスワードの保存</translation>
+<translation id="1944535645109964458">利用可能なパスキーがありません</translation>
 <translation id="1952172573699511566">可能な場合、設定した言語でウェブサイトのテキストを表示します。</translation>
 <translation id="1959679933317802873">コンテンツの待機中</translation>
 <translation id="1960290143419248813">このバージョンの Android では Chrome の更新はサポートされなくなりました</translation>
@@ -627,6 +628,7 @@
 <translation id="4257230861809842349">Google パスワード マネージャーからパスワードを削除しますか？</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />使用されるデータ:<ph name="END_BOLD" /> ユーザーの閲覧履歴（該当のデバイスで Chrome を使用して訪れたウェブサイトの記録）。</translation>
 <translation id="4269820728363426813">リンクアドレスをコピー</translation>
+<translation id="4277529130885813215">別のデバイスを使用</translation>
 <translation id="4283102315569707115">デフォルトで PC 版サイトをリクエストしますか？</translation>
 <translation id="4285846616383034558">Cookie、キャッシュ、その他のサイトデータ</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android の設定で画面ロックをオンにする<ph name="END_LINK" /></translation>
@@ -1167,6 +1169,7 @@
 <translation id="6955535239952325894">この設定は管理対象のブラウザでは無効です</translation>
 <translation id="6963766334940102469">ブックマークを削除</translation>
 <translation id="696447261358045621">シークレット モードを終了</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6971862865055170158">承認しない</translation>
 <translation id="6978717888677691380">ブロックしたウェブサイト</translation>
 <translation id="6979737339423435258">全期間</translation>

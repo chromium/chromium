@@ -175,6 +175,7 @@
 <translation id="19288952978244135">Chrome আবার খুলুন।</translation>
 <translation id="1933845786846280168">নির্বাচিত ট্যাবগুলি</translation>
 <translation id="1943432128510653496">পাসওয়ার্ডগুলি সেভ করুন</translation>
+<translation id="1944535645109964458">কোনও 'পাসকী' উপলভ্য নেই</translation>
 <translation id="1952172573699511566">যখন সম্ভব হবে ওয়েবসাইট আপনার পছন্দের ভাষায় টেক্সট দেখাবে।</translation>
 <translation id="1959679933317802873">কন্টেন্টের জন্য অপেক্ষা করা হচ্ছে</translation>
 <translation id="1960290143419248813">Android-এর এই ভার্সনে Chrome আপডেট করা আর সম্ভব নয়</translation>
@@ -626,6 +627,7 @@
 <translation id="4257230861809842349">Google Password Manager থেকে পাসওয়ার্ড মুছে ফেলবেন?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />কোন ডেটা ব্যবহার করা হয়:<ph name="END_BOLD" /> আপনার ব্রাউজিং ইতিহাস, এই ডিভাইসে Chrome ব্যবহার করে আপনি যে সাইটগুলি ভিজিট করেছেন তার একটি রেকর্ড।</translation>
 <translation id="4269820728363426813">লিঙ্ক অ্যাড্রেস কপি করুন</translation>
+<translation id="4277529130885813215">অন্য ডিভাইস ব্যবহার করুন</translation>
 <translation id="4283102315569707115">ডিফল্ট হিসেবে ডেস্কটপ সাইট দেখানোর অনুরোধ করবেন?</translation>
 <translation id="4285846616383034558">কুকি, ক্যাশে ও অন্যান্য সাইট ডেটা</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android সেটিংসে স্ক্রিন লক চালু করুন<ph name="END_LINK" /></translation>
@@ -1166,6 +1168,7 @@
 <translation id="6955535239952325894">ম্যানেজ করা ব্রাউজারে এই সেটিং কাজ করে না</translation>
 <translation id="6963766334940102469">বুকমার্কগুলি মুছুন</translation>
 <translation id="696447261358045621">ছদ্মবেশী মোড ছেড়ে বেরিয়ে আসুন</translation>
+<translation id="6965382102122355670">ঠিক আছে</translation>
 <translation id="6971862865055170158">অনুমোদন দেবেন না</translation>
 <translation id="6978717888677691380">আপনার ব্লক করা সাইট</translation>
 <translation id="6979737339423435258">শুরু থেকে</translation>
@@ -1324,6 +1327,7 @@
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> থেকে টেক্সট শেয়ার করা হয়েছে</translation>
 <translation id="7762668264895820836"><ph name="SD_CARD_NUMBER" /> টি এসডি কার্ড</translation>
 <translation id="7764225426217299476">ঠিকানা যোগ করুন</translation>
+<translation id="7766587497031415281">ব্রাউজিং ডেটা মোছার আরও বিকল্প</translation>
 <translation id="7772032839648071052">পাসফ্রেজ নিশ্চিত করুন</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> বন্ধ করুন</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> আরও অনেক}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> আরও অনেক}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> আরও অনেক}}</translation>

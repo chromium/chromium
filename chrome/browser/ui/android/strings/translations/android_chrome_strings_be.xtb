@@ -175,6 +175,7 @@
 <translation id="19288952978244135">Адкрыйце Chrome яшчэ раз.</translation>
 <translation id="1933845786846280168">Выбраная ўкладка</translation>
 <translation id="1943432128510653496">Захоўваць паролі</translation>
+<translation id="1944535645109964458">Няма даступных ключоў доступу</translation>
 <translation id="1952172573699511566">Тэкст на вэб-сайтах будзе паказвацца на мове, выбранай вамі ў якасці прыярытэтнай, калі гэта магчыма.</translation>
 <translation id="1959679933317802873">Чакаецца атрыманне змесціва</translation>
 <translation id="1960290143419248813">Абнаўленні Chrome больш не падтрымліваюцца для гэтай версіі Android.</translation>
@@ -626,6 +627,7 @@
 <translation id="4257230861809842349">Выдаліць паролі з Менеджара пароляў Google?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Якія даныя выкарыстоўваюцца:<ph name="END_BOLD" /> гісторыя прагляду сайтаў – пералік сайтаў, якія вы наведалі праз Chrome на гэтай прыладзе.</translation>
 <translation id="4269820728363426813">Капіраваць спасылку</translation>
+<translation id="4277529130885813215">Скарыстаць іншую прыладу</translation>
 <translation id="4283102315569707115">Запытваць сайты для камп'ютараў стандартна?</translation>
 <translation id="4285846616383034558">Файлы cookie, кэш і іншыя даныя сайтаў</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Уключыць блакіроўку экрана ў наладах Android<ph name="END_LINK" /></translation>
@@ -1166,6 +1168,7 @@
 <translation id="6955535239952325894">Гэта налада выключана ў браўзерах, якія знаходзяцца пад кіраваннем</translation>
 <translation id="6963766334940102469">Выдаліць закладкі</translation>
 <translation id="696447261358045621">Выйсці з рэжыму інкогніта</translation>
+<translation id="6965382102122355670">ОК</translation>
 <translation id="6971862865055170158">Не ўхваляць</translation>
 <translation id="6978717888677691380">Заблакіраваныя вамі сайты</translation>
 <translation id="6979737339423435258">За ўвесь час</translation>

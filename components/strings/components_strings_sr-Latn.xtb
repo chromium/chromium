@@ -100,6 +100,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1195073053842921378">Ova adresa će biti izbrisana sa ovog uređaja</translation>
 <translation id="1195558154361252544">Obaveštenja su automatski blokirana za sve sajtove osim za one koje omogućite</translation>
 <translation id="1197088940767939838">Narandžasta</translation>
+<translation id="1197761954713363183">Tabela za potvrdu pristupnog ključa je zatvorena</translation>
 <translation id="1201402288615127009">Dalje</translation>
 <translation id="1201895884277373915">Više sa ovog sajta</translation>
 <translation id="1202892408424955784">Proizvodi koje pratite</translation>
@@ -327,6 +328,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1618571384971354160">Šlep službe i pomoć na putu</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622571349153632031">Vegetarijanska kuhinja</translation>
+<translation id="162285686621567578">Roditelj blokira ovaj veb-sajt.</translation>
 <translation id="1622966923835127638">Poslovne finansije</translation>
 <translation id="1623104350909869708">Spreči ovu stranicu da pravi dodatne dijaloge</translation>
 <translation id="1633137413609266904">{0,plural, =1{Smernice administratora blokiraju otvaranje ovog fajla}one{Smernice administratora blokiraju otvaranje # fajla}few{Smernice administratora blokiraju otvaranje # fajla}other{Smernice administratora blokiraju otvaranje # fajlova}}</translation>
@@ -371,6 +373,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1711528724596764268">Mašinsko učenje i veštačka inteligencija</translation>
 <translation id="1712552549805331520"><ph name="URL" /> želi trajno da skladišti podatke na lokalnom računaru</translation>
 <translation id="1713628304598226412">2. fioka</translation>
+<translation id="1714807406136741351">U režimu pregledanja možete da pređete na režim Obrasci da biste koristili strelicu nalevo ili nadesno za pregled promena cena na grafikonu</translation>
 <translation id="1717218214683051432">Senzori pokreta</translation>
 <translation id="1717494416764505390">3. poštansko sanduče</translation>
 <translation id="1717688554309417925">Usluge u vezi sa debitnim karticama i čekovima</translation>
@@ -382,6 +385,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1725591448053514783">Koverta You 6</translation>
 <translation id="1727613060316725209">Sertifikat je važeći</translation>
 <translation id="1728677426644403582">Pregledate izvor veb-stranice.</translation>
+<translation id="1728803206919861584">Želite da sačuvate pristupni ključ van režima bez arhiviranja?</translation>
 <translation id="173080396488393970">Ovaj tip kartice nije podržan</translation>
 <translation id="1732445923934584865">Pitajte lično</translation>
 <translation id="1733064249834771892">fontovi</translation>
@@ -1664,6 +1668,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4415156962929755728">Plastika (visoki sjaj)</translation>
 <translation id="4415426530740016218">Adresa preuzimanja</translation>
 <translation id="4424024547088906515">Ovaj server ne može da dokaže da je <ph name="DOMAIN" />; Chrome nema poverenja u njegov bezbednosni sertifikat. Uzrok tome je možda pogrešna konfiguracija ili napadač koji je prekinuo vezu.</translation>
+<translation id="4425173294238317796">Tabela za potvrdu pristupnog ključa</translation>
 <translation id="4425750422187370446">Odeća za sport</translation>
 <translation id="4428065317363009941">Personalizacija oglasa</translation>
 <translation id="443121186588148776">Serijski port</translation>
@@ -2019,6 +2024,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5157504274688344097">Veletrgovine i robne kuće</translation>
 <translation id="5158275234811857234">Korice</translation>
 <translation id="5159010409087891077">Otvorite stranicu u novom prozoru bez arhiviranja (⇧⌘N)</translation>
+<translation id="5161262286013276579">Tabela za potvrdu pristupnog ključa je otvorena</translation>
 <translation id="5161334686036120870">Tema:</translation>
 <translation id="5161506081086828129">9. pregrada za slaganje</translation>
 <translation id="5164798890604758545">Tekst je unet</translation>
@@ -2900,6 +2906,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="7004583254764674281">Koristite Windows Hello za bržu potvrdu kartica</translation>
 <translation id="7006930604109697472">Ipak pošalji</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7013762323294215682">Ovaj pristupni ključ će se sačuvati u menadžeru lozinki. Svako ko ima pristup njemu moći će da koristi ovaj pristupni ključ.</translation>
 <translation id="7014042602717177828">Audio oprema za automobile</translation>
 <translation id="7014741021609395734">Nivo zumiranja</translation>
 <translation id="7016992613359344582">Te naplate mogu da budu jednokratne ili periodične i možda nisu odmah vidljive.</translation>
@@ -3245,6 +3252,7 @@ Dodatni detalji:
 <translation id="7667346355482952095">Vraćeni token smernica je prazan ili se ne podudara sa aktuelnim tokenom</translation>
 <translation id="7668654391829183341">Nepoznat uređaj</translation>
 <translation id="7669271284792375604">Napadači na ovom sajtu mogu da pokušaju da vas prevare da biste instalirali programe koji štete doživljaju pregledanja (na primer, tako što menjaju početnu stranicu ili prikazuju dodatne oglase na sajtovima koje posećujete).</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> od <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Radnje preduzete sa podacima koji su označeni kao poverljivi (1 radnja od kada ste se prijavili). <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" />}one{Radnje preduzete sa podacima koji su označeni kao poverljivi (# radnja od kada ste se prijavili). <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" />}few{Radnje preduzete sa podacima koji su označeni kao poverljivi (# radnje od kada ste se prijavili). <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" />}other{Radnje preduzete sa podacima koji su označeni kao poverljivi (# radnji od kada ste se prijavili). <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">6. poštansko sanduče</translation>
 <translation id="7675325315208090829">Upravljajte načinima plaćanja…</translation>
@@ -3697,6 +3705,7 @@ Dodatni detalji:
 <translation id="858637041960032120">Dodaj tel. broj
 </translation>
 <translation id="8589998999637048520">Najbolji kvalitet</translation>
+<translation id="8590264442799989746"><ph name="HOST_NAME" /> i drugi</translation>
 <translation id="8600271352425265729">Samo ovaj put</translation>
 <translation id="860043288473659153">Ime vlasnika kartice</translation>
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Koji podaci se koriste:<ph name="END_BOLD" /> Aktivnosti na sajtu koji posećujete pomoću Chrome-a na ovom uređaju.</translation>

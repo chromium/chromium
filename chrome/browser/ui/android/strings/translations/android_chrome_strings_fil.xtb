@@ -175,6 +175,7 @@ Kapag na-delete mo ang iyong history ng pag-browse — lahat o para sa isang par
 <translation id="19288952978244135">Muling buksan ang Chrome.</translation>
 <translation id="1933845786846280168">Napiling Tab</translation>
 <translation id="1943432128510653496">I-save ang mga password</translation>
+<translation id="1944535645109964458">Walang available na passkey</translation>
 <translation id="1952172573699511566">Magpapakita ang mga website ng text sa iyong gustong wika, kung posible.</translation>
 <translation id="1959679933317802873">Naghihintay ng content</translation>
 <translation id="1960290143419248813">Hindi na sinusuportahan ang mga update sa Chrome para sa bersyong ito ng Android.</translation>
@@ -626,6 +627,7 @@ Pinapahusay ng mga private state token ang privacy sa web at hindi magagamit ang
 <translation id="4257230861809842349">Mag-delete ng mga password mula sa Google Password Manager?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Anong data ang ginagamit:<ph name="END_BOLD" /> Iyong history ng pag-browse, record ng mga site na binisita mo gamit ang Chrome sa device na ito.</translation>
 <translation id="4269820728363426813">Kopyahin ang address ng link</translation>
+<translation id="4277529130885813215">Gumamit ng ibang device</translation>
 <translation id="4283102315569707115">Humiling ng mga pang-desktop na site bilang default?</translation>
 <translation id="4285846616383034558">Cookies, cache, at iba pang data ng site</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />I-on ang lock ng screen sa mga setting ng Android<ph name="END_LINK" /></translation>
@@ -1166,6 +1168,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6955535239952325894">Naka-disable ang setting na ito sa mga pinapamahalaang browser</translation>
 <translation id="6963766334940102469">Mag-delete ng mga bookmark</translation>
 <translation id="696447261358045621">Umalis sa Incognito mode?</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6971862865055170158">Huwag aprubahan</translation>
 <translation id="6978717888677691380">Ang mga site na na-block mo</translation>
 <translation id="6979737339423435258">Lahat ng oras</translation>

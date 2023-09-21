@@ -14,6 +14,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="1149651794389918149">Log in bij Chrome. Als je eenmalig wilt inloggen op een account, kun je <ph name="GUEST_LINK_BEGIN" />het apparaat gebruiken als gast<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">Over Chrome OS</translation>
 <translation id="1154147086299354128">&amp;Openen in Chrome</translation>
+<translation id="1194807384646768652">Chrome heeft deze download geblokkeerd, omdat het bestandstype niet vaak wordt gedownload en misschien gevaarlijk is</translation>
 <translation id="1203500561924088507">Bedankt voor het installeren. Je moet de browser opnieuw opstarten voordat je <ph name="BUNDLE_NAME" /> kunt gebruiken.</translation>
 <translation id="1278833599417554002">Opnieuw starten om &amp;Chrome te updaten</translation>
 <translation id="1302523850133262269">Wacht terwijl Chrome de nieuwste systeemupdates installeert.</translation>
@@ -132,10 +133,12 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="3080151273017101988">Achtergrondapps blijven uitvoeren wanneer Google Chrome is gesloten</translation>
 <translation id="3089968997497233615">Er is een nieuwere, veiligere versie van Google Chrome beschikbaar.</translation>
 <translation id="3100998948628680988">Je Chrome-profiel een naam geven</translation>
+<translation id="3112458742631356345">Chrome heeft deze download geblokkeerd, omdat het bestand niet vaak wordt gedownload en misschien gevaarlijk is</translation>
 <translation id="3114643501466072395">Als je wilt checken of je andere wachtwoorden zijn beveiligd tegen gegevenslekken en andere beveiligingsproblemen, <ph name="BEGIN_LINK" />log je in bij Chrome<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">Je wijzigingen worden toegepast als je Google Chrome opnieuw start.</translation>
 <translation id="3149510190863420837">Chrome-apps</translation>
 <translation id="3169523567916669830">Tijdens de proeven kun je interessante onderwerpen bekijken en verwijderen die sites hebben gebruikt om je advertenties te laten zien. Chrome schat je interesses op basis van je recente browsegeschiedenis.</translation>
+<translation id="3196187562065225381">Chrome heeft deze download geblokkeerd, omdat het bestand gevaarlijk is</translation>
 <translation id="3226612997184048185">Als je je bookmarks ook opslaat in je Google-account, kun je productprijzen in Chrome bijhouden en een melding krijgen als de prijs daalt</translation>
 <translation id="3245429137663807393">Als je ook Chrome-gebruiksrapporten deelt, bevatten die rapporten de URL's die je bezoekt</translation>
 <translation id="3282568296779691940">Inloggen bij Chrome</translation>
@@ -183,6 +186,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="4148957013307229264">Installeren...</translation>
 <translation id="4149882025268051530">Het installatieprogramma kan het archief niet uitpakken. Download Google Chrome opnieuw.</translation>
 <translation id="4153934450158521343">Chrome wordt zo meteen gesloten en de gegevens worden verwijderd</translation>
+<translation id="4175922240926474352">Chrome heeft deze download geblokkeerd, omdat de site geen beveiligde verbinding gebruikt en er met het bestand kan zijn geknoeid</translation>
 <translation id="4191857738314598978">{0,plural, =1{Start Chrome binnen een dag opnieuw}other{Start Chrome binnen # dagen opnieuw}}</translation>
 <translation id="4205939740494406371">Chrome kan je wachtwoorden niet checken. Probeer het over 24 uur opnieuw of <ph name="BEGIN_LINK" />check de wachtwoorden in je Google-account<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Annuleren…</translation>
@@ -361,6 +365,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="7641148173327520642">Je systeembeheerder heeft Google Chrome geconfigureerd om <ph name="ALTERNATIVE_BROWSER_NAME" /> te openen voor toegang tot <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7649070708921625228">Hulp</translation>
 <translation id="7651907282515937834">Chrome Enterprise-logo</translation>
+<translation id="76531479118467370">Chrome heeft deze download geblokkeerd, omdat je Safe Browsing hebt uitgezet en het bestand niet kan worden geverifieerd</translation>
 <translation id="7655455401911432608">Je browsegeschiedenis, een lijst van de sites die je via Chrome op dit apparaat hebt bezocht.</translation>
 <translation id="7747138024166251722">Het installatieprogramma kan geen tijdelijke directory maken. Controleer of je nog schijfruimte hebt en of je rechten hebt om software te installeren.</translation>
 <translation id="7761834446675418963">Klik op je naam om Chrome te openen en begin met surfen.</translation>
@@ -377,6 +382,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="7890208801193284374">Als je een computer deelt, kunnen vrienden en familie afzonderlijk surfen en Chrome configureren zoals zij dat willen.</translation>
 <translation id="7896673875602241923">Iemand heeft eerder bij Chrome op deze computer ingelogd als <ph name="ACCOUNT_EMAIL_LAST" />. Maak een nieuwe Chrome-gebruiker om je informatie gescheiden te houden.</translation>
 <translation id="7917876797003313048">Je kunt je ingelogde Google-accounts beheren. Je Google-accounts worden gebruikt voor onder andere de Chrome-browser, Play Store, en Gmail. Als je een account wilt toevoegen voor iemand anders, bijvoorbeeld een gezinslid, voeg je een nieuw persoon toe aan je <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
+<translation id="7936702483636872823">Chrome heeft deze download geblokkeerd, omdat het bestand misleidend is en onverwachte wijzigingen kan aanbrengen op je apparaat</translation>
 <translation id="7951272445806340501">Chrome OS Flex moet opnieuw worden opgestart om de update uit te voeren.</translation>
 <translation id="7962368738413920945">Sites werken waarschijnlijk zoals verwacht, maar onthouden je niet nadat je alle Chrome-vensters hebt gesloten</translation>
 <translation id="7962410387636238736">Deze computer ontvangt geen Google Chrome-updates meer, omdat Windows XP en Windows Vista niet meer worden ondersteund</translation>

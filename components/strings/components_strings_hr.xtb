@@ -328,6 +328,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1618571384971354160">Vučna služba i pomoć na cesti</translation>
 <translation id="1620510694547887537">Fotoaparat</translation>
 <translation id="1622571349153632031">Vegetarijanska prehrana</translation>
+<translation id="162285686621567578">Tvoj roditelj blokirao je ovu web-lokaciju.</translation>
 <translation id="1622966923835127638">Poslovne financije</translation>
 <translation id="1623104350909869708">Spriječi da ova stranica stvori dodatne dijaloške okvire</translation>
 <translation id="1633137413609266904">{0,plural, =1{Otvaranje te datoteke blokirano je prema administratorskim pravilima}one{Otvaranje # datoteke blokirano je prema administratorskim pravilima}few{Otvaranje # datoteke blokirano je prema administratorskim pravilima}other{Otvaranje # datoteka blokirano je prema administratorskim pravilima}}</translation>
@@ -372,6 +373,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1711528724596764268">Strojno učenje i umjetna inteligencija</translation>
 <translation id="1712552549805331520"><ph name="URL" /> želi trajno pohraniti podatke na vaše lokalno računalo</translation>
 <translation id="1713628304598226412">Ladica 2</translation>
+<translation id="1714807406136741351">U načinu pregleda možete se prebaciti na način Obrasci da biste pomoću strelice lijevo/desno pregledali promjene cijena na grafikonu</translation>
 <translation id="1717218214683051432">Senzori kretanja</translation>
 <translation id="1717494416764505390">Izlazni spremnik s odjeljcima 3</translation>
 <translation id="1717688554309417925">Debitne i bankovne usluge</translation>
@@ -3250,6 +3252,7 @@ Dodatne pojedinosti:
 <translation id="7667346355482952095">Vraćeni token pravila prazan je ili ne odgovara trenutačnom tokenu</translation>
 <translation id="7668654391829183341">Nepoznati uređaj</translation>
 <translation id="7669271284792375604">Napadači na ovoj web-lokaciji mogu vas pokušati navesti na instaliranje programa koji smanjuju kvalitetu pregledavanja interneta (npr. promjenom početne stranice ili prikazivanjem dodatnih oglasa na web-lokacijama koje posjetite).</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> od <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Radnje poduzete s podacima koji su označeni kao povjerljivi (jedna radnja od prijave). <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" />}one{Radnje poduzete s podacima koji su označeni kao povjerljivi (# radnja od prijave). <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" />}few{Radnje poduzete s podacima koji su označeni kao povjerljivi (# radnje od prijave). <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" />}other{Radnje poduzete s podacima koji su označeni kao povjerljivi (# radnji od prijave). <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Izlazni spremnik s odjeljcima 6</translation>
 <translation id="7675325315208090829">Upravljanje načinima plaćanja...</translation>

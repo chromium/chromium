@@ -328,6 +328,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1618571384971354160">Towing and roadside assistance</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1622571349153632031">Vegetarian cuisine</translation>
+<translation id="162285686621567578">This website is blocked by your parent.</translation>
 <translation id="1622966923835127638">Business Finance</translation>
 <translation id="1623104350909869708">Prevent this page from creating additional dialogues</translation>
 <translation id="1633137413609266904">{0,plural, =1{Opening this file is blocked by administrator policy}other{Opening # files is blocked by administrator policy}}</translation>
@@ -372,6 +373,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1711528724596764268">Machine learning and artificial intelligence</translation>
 <translation id="1712552549805331520"><ph name="URL" /> wants to permanently store data on your local computer</translation>
 <translation id="1713628304598226412">Tray 2</translation>
+<translation id="1714807406136741351">Browse mode: You can change to Forms mode to use the left/right arrow to review price changes on the graph</translation>
 <translation id="1717218214683051432">Motion sensors</translation>
 <translation id="1717494416764505390">Mailbox 3</translation>
 <translation id="1717688554309417925">Debit and Cheque Services</translation>
@@ -3251,6 +3253,7 @@ Additional details:
 <translation id="7667346355482952095">Returned policy token is empty or doesn't match current token</translation>
 <translation id="7668654391829183341">Unknown device</translation>
 <translation id="7669271284792375604">Attackers on this site might try to trick you into installing programs that harm your browsing experience (for example, by changing your homepage or showing extra ads on sites that you visit).</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> of <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Actions taken with data flagged as confidential (1 action since login). <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" />}other{Actions taken with data flagged as confidential (# actions since login). <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Mailbox 6</translation>
 <translation id="7675325315208090829">Manage Payment Methods…</translation>

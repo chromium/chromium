@@ -100,6 +100,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1195073053842921378">Dit adres wordt verwijderd van dit apparaat</translation>
 <translation id="1195558154361252544">Meldingen zijn automatisch geblokkeerd voor alle sites, behalve de meldingen die je toestaat</translation>
 <translation id="1197088940767939838">Oranje</translation>
+<translation id="1197761954713363183">Bevestigingsblad voor toegangssleutel gesloten</translation>
 <translation id="1201402288615127009">Volgende</translation>
 <translation id="1201895884277373915">Meer van deze site</translation>
 <translation id="1202892408424955784">Gevolgde producten</translation>
@@ -327,6 +328,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1618571384971354160">Wegsleepservices en wegenwacht</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1622571349153632031">Vegetarische keuken</translation>
+<translation id="162285686621567578">Deze website is geblokkeerd door je ouder.</translation>
 <translation id="1622966923835127638">Bedrijfsfinanciering</translation>
 <translation id="1623104350909869708">Voorkomen dat deze pagina extra dialoogvensters toont</translation>
 <translation id="1633137413609266904">{0,plural, =1{Dit bestand openen is geblokkeerd door het beheerdersbeleid}other{Deze # bestanden openen is geblokkeerd door het beheerdersbeleid}}</translation>
@@ -371,6 +373,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1711528724596764268">Machine learning en artificial intelligence</translation>
 <translation id="1712552549805331520"><ph name="URL" /> vraagt toestemming om permanent gegevens op je lokale computer op te slaan</translation>
 <translation id="1713628304598226412">Lade 2</translation>
+<translation id="1714807406136741351">Browsemodus, je kunt overschakelen naar de formuliermodus om prijswijzigingen in het diagram te checken met de pijl-links en pijl-rechts</translation>
 <translation id="1717218214683051432">Bewegingssensoren</translation>
 <translation id="1717494416764505390">Mailbox 3</translation>
 <translation id="1717688554309417925">Bank- en girorekeningen</translation>
@@ -382,6 +385,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1725591448053514783">Envelop You 6</translation>
 <translation id="1727613060316725209">Certificaat is geldig</translation>
 <translation id="1728677426644403582">Je bekijkt de bron van een webpagina</translation>
+<translation id="1728803206919861584">Toegangssleutel buiten de incognitomodus opslaan?</translation>
 <translation id="173080396488393970">Dit type pas wordt niet ondersteund</translation>
 <translation id="1732445923934584865">Persoonlijk vragen</translation>
 <translation id="1733064249834771892">lettertypen</translation>
@@ -1659,6 +1663,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4415156962929755728">Plastic (hoogglans)</translation>
 <translation id="4415426530740016218">Ophaaladres</translation>
 <translation id="4424024547088906515">De server kan niet bewijzen dat dit <ph name="DOMAIN" /> is. Het beveiligingscertificaat van de server wordt niet vertrouwd door Chrome. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept.</translation>
+<translation id="4425173294238317796">Bevestigingsblad voor toegangssleutel</translation>
 <translation id="4425750422187370446">Sportkleding</translation>
 <translation id="4428065317363009941">Advertentiepersonalisatie</translation>
 <translation id="443121186588148776">Seriële poort</translation>
@@ -2014,6 +2019,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5157504274688344097">Groothandels en warenhuizen</translation>
 <translation id="5158275234811857234">Omslag</translation>
 <translation id="5159010409087891077">Pagina openen in een nieuw incognitovenster (⇧⌘N)</translation>
+<translation id="5161262286013276579">Bevestigingsblad voor toegangssleutel geopend</translation>
 <translation id="5161334686036120870">Onderwerp:</translation>
 <translation id="5161506081086828129">Stapeleenheid 9</translation>
 <translation id="5164798890604758545">Tekst wordt ingevoerd</translation>
@@ -2895,6 +2901,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="7004583254764674281">Gebruik Windows Hello om kaarten sneller te bevestigen</translation>
 <translation id="7006930604109697472">Toch sturen</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7013762323294215682">Deze toegangssleutel wordt opgeslagen in je wachtwoordmanager. Iedereen met toegang kan deze toegangssleutel gebruiken.</translation>
 <translation id="7014042602717177828">Auto-audio</translation>
 <translation id="7014741021609395734">Zoomniveau</translation>
 <translation id="7016992613359344582">Dit kunnen eenmalige of terugkerende kosten zijn die misschien niet duidelijk worden aangegeven.</translation>
@@ -3240,6 +3247,7 @@ Aanvullende informatie:
 <translation id="7667346355482952095">Geretourneerde beleidstoken is leeg of komt niet overeen met huidige token</translation>
 <translation id="7668654391829183341">Onbekend apparaat</translation>
 <translation id="7669271284792375604">Cybercriminelen op deze site proberen je mogelijk over te halen om programma's te installeren die schadelijk zijn voor de browsefunctionaliteit (door bijvoorbeeld je homepage te wijzigen of extra advertenties te bekijken op sites die je bezoekt).</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> van <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Acties ondernomen met gegevens die zijn gemarkeerd als vertrouwelijk (1 actie sinds het inloggen). <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" />}other{Acties ondernomen met gegevens die zijn gemarkeerd als vertrouwelijk (# acties sinds het inloggen). <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Mailbox 6</translation>
 <translation id="7675325315208090829">Betaalmethoden beheren...</translation>

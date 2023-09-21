@@ -25,6 +25,7 @@
 
   • Ako sinhronizujete istoriju sa Google nalogom, pokazatelji mogu da obuhvataju informacije o URL-ovima koje posećujete.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Imate najjaču Chrome zaštitu od štetnih veb-sajtova</translation>
+<translation id="1615715390546812898">Pretražujte glasom u Chrome-u.</translation>
 <translation id="1657395063736185342">Pretražite vizuelni materijal u Chrome-u</translation>
 <translation id="1675955119303651351">Neki Chrome podaci još nisu sačuvani na Google nalogu.
         Sačekajte nekoliko minuta pre nego što se odjavite. Ako se odjavite odmah, ovi podaci će biti izbrisani.</translation>
@@ -104,6 +105,7 @@
         Sačekajte nekoliko minuta pre nego što se odjavite. Ako se odjavite odmah, ovi podaci će biti izbrisani.</translation>
 <translation id="484033449593719797">Nije podržano u verziji Chrome beta</translation>
 <translation id="4840404732697892756">Google menadžer lozinki može da vam proverava lozinke kada se prijavite pomoću Google naloga.</translation>
+<translation id="4860330141789125848">{COUNT,plural, =1{Chrome može da vam pomogne da pratite ovaj paket na stranici nove kartice.}one{Chrome može da vam pomogne da pratite ove pakete na stranici nove kartice.}few{Chrome može da vam pomogne da pratite ove pakete na stranici nove kartice.}other{Chrome može da vam pomogne da pratite ove pakete na stranici nove kartice.}}</translation>
 <translation id="4903674399067644695">Ova kartica vam prikazuje predloge o tome kako da iskoristite Chrome na najbolji način.</translation>
 <translation id="49200511069271369">Vaša organizacija, <ph name="DOMAIN" />, upravlja nalogom na koji se prijavljujete i načinom na koji Chrome može da se koristi. Administrator može da podesi ili ograniči određene funkcije.</translation>
 <translation id="5030102366287574140">Chrome može da vas štiti od upada u podatke, nebezbednih veb-sajtova i drugih stvari.</translation>
@@ -113,10 +115,12 @@
 <translation id="5156818928311866442">Otvara podešavanje Chrome-a da bi ga podesilo kao podrazumevani pregledač.</translation>
 <translation id="5162467219239570114">Chrome je zastareo. Ako ažuriranje nije dostupno u <ph name="BEGIN_LINK" />App Store-u<ph name="END_LINK" />, uređaj možda ne podržava nove verzije Chrome-a.</translation>
 <translation id="5190139289262548459">Vaša organizacija, <ph name="DOMAIN" />, upravlja nalogom na koji ste prijavljeni i načinom na koji se Chrome koristi.</translation>
+<translation id="5278862365980079760">Zaključajte kartice bez arhiviranja kada napustite Chrome ili pređete na drugu aplikaciju.</translation>
 <translation id="5389212809648216794">Google Chrome ne može da koristi kameru zato što je već koristi druga aplikacija</translation>
 <translation id="5395376160638294582">Uverite se da uvek možete da koristite Chrome podatke na Google nalogu</translation>
 <translation id="5439191312780166229">Upozorava vas na opasne sajtove, čak i na one za koje Google ranije nije znao, analizirajući više podataka sa sajtova nego standardna zaštita. Možete da izaberete da preskočite upozorenja Chrome-a.</translation>
 <translation id="5460571915754665838">4. Izaberite Chrome</translation>
+<translation id="546541279759910616">{COUNT,plural, =1{Chrome će vam pomoći da pratite ovaj paket na stranici nove kartice.}one{Chrome će vam pomoći da pratite ove pakete na stranici nove kartice.}few{Chrome će vam pomoći da pratite ove pakete na stranici nove kartice.}other{Chrome će vam pomoći da pratite ove pakete na stranici nove kartice.}}</translation>
 <translation id="5492504007368565877">Google menadžer lozinki ne može da vam proverava lozinke.</translation>
 <translation id="5527026824954593399">Dodirnite Prikaži pomoću Google mapa u Chrome-u.</translation>
 <translation id="5552137475244467770">Chrome povremeno upoređuje vaše lozinke sa listama koje su objavljene onlajn. Dok to radi, vaše lozinke i korisnička imena su šifrovani, pa niko ne može da ih pročita, uključujući Google.</translation>

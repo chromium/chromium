@@ -242,6 +242,7 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your ac
 <translation id="2359043044084662842">Translate</translation>
 <translation id="2359808026110333948">Continue</translation>
 <translation id="2360196772093551345">Request Mobile Site</translation>
+<translation id="2361721159900796207">Hides this item</translation>
 <translation id="2362083820973145409">Signed in as <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Opens settings.</translation>
 <translation id="236977714248711277">Sites can't use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping basket.
 
@@ -778,6 +779,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="5317780077021120954">Save</translation>
 <translation id="5318298563956633672">You're already tracking this product.</translation>
 <translation id="5339316356165661760">Turn on sync</translation>
+<translation id="5345660046352249607">{COUNT,plural, =1{Track this parcel?}other{Track {COUNT} parcels?}}</translation>
 <translation id="536067926684072644">Show bookmarks</translation>
 <translation id="5360976571138293719">For more settings that relate to privacy, security and data collection, see <ph name="BEGIN_LINK" />Google Services<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">You'll find your followed sites here</translation>
@@ -1144,6 +1146,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="723787869754590019">Use Chrome for auto-fill</translation>
 <translation id="7265758999917665941">Never for this site</translation>
 <translation id="7272437679830969316">Can't verify your identity. Password not copied.</translation>
+<translation id="7284359491594949826">{COUNT,plural, =1{New parcel tracked}other{New parcels tracked}}</translation>
 <translation id="7291368939935408496">Preparing Passwords…</translation>
 <translation id="7302503784943202842">Use passwords on all your devices</translation>
 <translation id="730958329302570991">Easily add site passwords to Google Password Manager at any time.</translation>
@@ -1245,6 +1248,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7856733331829174190">Couldn't download</translation>
 <translation id="785938070103630874">Open passwords, payment methods or address and more</translation>
 <translation id="7859704718976024901">Browsing history</translation>
+<translation id="7866501058614003444">This parcel has been successfully untracked.</translation>
 <translation id="7870750252270996949">Lens copied image</translation>
 <translation id="7879275349003161544">Show downloads</translation>
 <translation id="7883882164760409935">You have reused passwords.</translation>
@@ -1493,6 +1497,7 @@ Your data was encrypted with your passphrase on <ph name="TIME" />. Enter it to 
 <translation id="9148126808321036104">Sign in again</translation>
 <translation id="9157836665414082580">Suppress dialogues</translation>
 <translation id="9162432979321511934">Turn on Auto-fill passwords</translation>
+<translation id="9162941801309769488">Parcel untracked</translation>
 <translation id="9165320910061267720">To get notifications of price drop alerts, you'll need to turn on notifications in your iOS settings.</translation>
 <translation id="9165886811579296457">Safety Check didn't find any security issues for you to fix.</translation>
 <translation id="9172603439892261948">Sync your bookmarks, history and more.</translation>

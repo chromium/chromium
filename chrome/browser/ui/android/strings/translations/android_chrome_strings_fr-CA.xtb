@@ -175,6 +175,7 @@ Lorsque vous supprimez votre historique de navigation (pour un site en particuli
 <translation id="19288952978244135">Rouvrir Chrome.</translation>
 <translation id="1933845786846280168">Onglet sélectionné</translation>
 <translation id="1943432128510653496">Enregistrer les mots de passe</translation>
+<translation id="1944535645109964458">Aucune clé d'accès accessible</translation>
 <translation id="1952172573699511566">Les sites Web affichent du texte dans votre langue préférée lorsque cela est possible.</translation>
 <translation id="1959679933317802873">En attente de contenu…</translation>
 <translation id="1960290143419248813">Les mises à jour Chrome ne sont plus prises en charge pour cette version d'Android</translation>
@@ -316,6 +317,7 @@ Les jetons de confiance valides améliorent la confidentialité sur le Web et ne
 <translation id="2673169232805572412">Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chrome peut envoyer les URL concernées, y compris des extraits du contenu de pages, à Google.</translation>
 <translation id="2702516483241149200">Nouveauté : communiquez un lien qui fait défiler l'écran jusqu'à ce texte</translation>
 <translation id="2708051474374549906">Une protection proactive en temps réel contre les sites, les extensions et les téléchargements dangereux, basée sur les données de navigation envoyées à Google</translation>
+<translation id="2708226184420201102">Ouvrir dans le navigateur <ph name="PRODUCT_NAME" /></translation>
 <translation id="271033894570825754">Nouveau</translation>
 <translation id="2711073837061989559">Essais</translation>
 <translation id="2718352093833049315">Wi-Fi uniquement</translation>
@@ -625,6 +627,7 @@ Les jetons de confiance valides améliorent la confidentialité sur le Web et ne
 <translation id="4257230861809842349">Supprimer les mots de passe du gestionnaire de mots de passe Google?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Quelles données sont utilisées :<ph name="END_BOLD" /> votre historique de navigation et un enregistrement des sites que vous avez visités à l'aide de Chrome sur cet appareil.</translation>
 <translation id="4269820728363426813">Copier l'adresse du lien</translation>
+<translation id="4277529130885813215">Utiliser un autre appareil</translation>
 <translation id="4283102315569707115">Demander des sites pour ordinateurs par défaut?</translation>
 <translation id="4285846616383034558">Témoins, cache et autres données relatives aux sites</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Activez le verrouillage d'écran dans les paramètres Android<ph name="END_LINK" /></translation>
@@ -1165,6 +1168,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6955535239952325894">Ce paramètre est désactivé sur les navigateurs gérés</translation>
 <translation id="6963766334940102469">Supprimer des favoris</translation>
 <translation id="696447261358045621">Désactiver le mode de navigation privée</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6971862865055170158">Ne pas approuver</translation>
 <translation id="6978717888677691380">Les sites que vous avez bloqués</translation>
 <translation id="6979737339423435258">Toutes les périodes</translation>

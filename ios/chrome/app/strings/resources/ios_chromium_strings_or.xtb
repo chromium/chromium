@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="or">
+<translation id="1046370274005147998">Chromiumରେ ଭଏସ ମାଧ୍ୟମରେ ସର୍ଚ୍ଚ କରନ୍ତୁ।</translation>
 <translation id="1047130070405668746">Chromium ଚୟନ କରନ୍ତୁ</translation>
 <translation id="1091252999271033193">ଏହାର ଅର୍ଥ ପ୍ରତ୍ୟେକ ଥର Chromium ଏକ ମୋବାଇଲ ସାଇଟ ଅନୁରୋଧ କରିବ।</translation>
 <translation id="1185134272377778587">Chromium ବିଷୟରେ</translation>
@@ -42,6 +43,7 @@
 <translation id="2574528844022712255">Chromium ବୁକମାର୍କଗୁଡ଼ିକ ଦେଖନ୍ତୁ</translation>
 <translation id="2590893390871230428">ଆପଣଙ୍କ Chromium ଡାଟା ସିଙ୍କ୍ କରନ୍ତୁ</translation>
 <translation id="2618596336309823556">ଆପଣଙ୍କ ଡିଭାଇସର ସେଟିଂସରୁ "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" ଖୋଲି "Chromium"କୁ ଚୟନ କରନ୍ତୁ</translation>
+<translation id="2618757400690011108">{COUNT,plural, =1{Chromium ନୂଆ ଟାବ ପୃଷ୍ଠାରେ ଏହି ପେକେଜକୁ ଟ୍ରାକ କରିବାରେ ସାହାଯ୍ୟ କରିବ।}other{Chromium ନୂଆ ଟାବ ପୃଷ୍ଠାରେ ଏହି ପେକେଜଗୁଡ଼ିକୁ ଟ୍ରାକ କରିବାରେ ସାହାଯ୍ୟ କରିବ।}}</translation>
 <translation id="2650312721222849884">ଆପଣ Chromium ବ୍ୟବହାର କରୁଥିବା ଯେ କୌଣସି ସ୍ଥାନରୁ ଆପଣଙ୍କ ଟାବଗୁଡ଼ିକ ଦେଖିବାକୁ, ସିଙ୍କ୍ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="2684230048001240293">ଆପଣଙ୍କ ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କ ଟାବ୍, ପାସୱାର୍ଡ ଏବଂ ପେମେଣ୍ଟ ସୂଚନାକୁ ସିଙ୍କ୍ କରିବା ପାଇଁ Chromiumକୁ ଡିଫଲ୍ଟ ଭାବେ ସେଟ୍ କରନ୍ତୁ</translation>
 <translation id="2730884209570016437">Chromium ଆପଣଙ୍କ କ୍ୟାମେରା ବ୍ୟବହାର କରିପାରିବ ନାହିଁ କାରଣ ଏହା ଅନ୍ୟ ଆପ୍ଲିକେସନ୍ ଦ୍ଵାରା ବ୍ୟବହୃତ ହେଉଛି</translation>
@@ -51,6 +53,7 @@
 <translation id="2918709798697875261">ଆପଣଙ୍କ ସଂସ୍ଥା ପାଇଁ ଆପଣଙ୍କୁ Chromiumରୁ ସାଇନ୍ ଆଉଟ୍ କରି ରହିବାର ଆବଶ୍ୟକତା ଅଛି।</translation>
 <translation id="2942241131342758843">ଲିଙ୍କଗୁଡ଼ିକୁ ଖୋଲିବା, ୱିଜେଟଗୁଡ଼ିକରୁ ସନ୍ଧାନ କରିବା ଏବଂ ଅନ୍ୟ ଆପଗୁଡ଼ିକରେ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସ୍ୱତଃପୂରଣ କରିବା ପାଇଁ Chromiumକୁ ଡିଫଲ୍ଟ ଭାବେ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="2977470724722393594">Chromium ଅପ୍‍-ଟୁ-ଡେଟ୍‍ ଅଛି</translation>
+<translation id="3078941082359356771">{COUNT,plural, =1{Chromium ଆପଣଙ୍କୁ ନୂଆ ଟାବ ପୃଷ୍ଠାରେ ଏହି ପେକେଜକୁ ଟ୍ରାକ କରିବାରେ ସାହାଯ୍ୟ କରିପାରିବ।}other{Chromium ଆପଣଙ୍କୁ ନୂଆ ଟାବ ପୃଷ୍ଠାରେ ଏହି ପେକେଜଗୁଡ଼ିକୁ ଟ୍ରାକ କରିବାରେ ସାହାଯ୍ୟ କରିପାରିବ।}}</translation>
 <translation id="3102849287235003384">ସମସ୍ତ ୱେବସାଇଟରେ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରୁ ସାଇନ ଆଉଟ କରିବା ପାଇଁ, <ph name="BEGIN_LINK" />Chromiumରୁ ସାଇନ ଆଉଟ କରନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="3219277919172823720">Chromiumରେ ଭଏସ ମାଧ୍ୟମରେ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="3228349498066165585">ଆପଣଙ୍କର କିଛି Chromium ଡାଟା ଏପର୍ଯ୍ୟନ୍ତ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ କରାଯାଇନାହିଁ।
@@ -113,6 +116,7 @@
 <translation id="5521125884468363740">ଆପଣ Chromium ବ୍ୟବହାର କରୁଥିବା ଯେ କୌଣସି ସ୍ଥାନରୁ ଆପଣଙ୍କ ଟାବଗୁଡ଼ିକ ଦେଖିବାକୁ, ସାଇନ୍ ଇନ୍ କରି ସିଙ୍କ୍ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="5522297504975449419">Chromiumର କିଛି ଫିଚର ଆଉ ଉପଲବ୍ଧ ହେବ ନାହିଁ।</translation>
 <translation id="5571094606370987472">Chromiumର ବର୍ତ୍ତମାନର ଟାବଗୁଡ଼ିକୁ ଖୋଲେ।</translation>
+<translation id="5623083843656850677">ଆପଣ Chromiumରୁ ବାହାରି ଗଲେ କିମ୍ବା ଏକ ଭିନ୍ନ ଆପକୁ ସୁଇଚ କଲେ ଆପଣଙ୍କ ଇନକଗ୍ନିଟୋ ଟାବକୁ ଲକ କରନ୍ତୁ।</translation>
 <translation id="5688047395118852662">Chromiumରୁ ସବୁଠୁ ଅଧିକ ସୁବିଧା କିପରି ପାଇବେ ସେ ବିଷୟରେ ଏହି କାର୍ଡ ଆପଣଙ୍କୁ ପରାମର୍ଶ ଦେଖାଏ।</translation>
 <translation id="5700709190537129682">Chromium ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିପାରିବ ନାହିଁ</translation>
 <translation id="5777187867430702742">Chromium ପୃଷ୍ଠା</translation>

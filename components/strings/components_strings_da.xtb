@@ -100,6 +100,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1195073053842921378">Adressen slettes fra denne enhed</translation>
 <translation id="1195558154361252544">Notifikationer blokeres automatisk for alle websites med undtagelse af dem, du har givet tilladelse til</translation>
 <translation id="1197088940767939838">Orange</translation>
+<translation id="1197761954713363183">Feltet til bekræftelse af adgangsnøgle er lukket</translation>
 <translation id="1201402288615127009">Næste</translation>
 <translation id="1201895884277373915">Mere fra dette website</translation>
 <translation id="1202892408424955784">Produkter, du følger</translation>
@@ -382,6 +383,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1725591448053514783">Konvolut Dig 6</translation>
 <translation id="1727613060316725209">Certifikatet er gyldigt</translation>
 <translation id="1728677426644403582">Du ser kilden for en webside</translation>
+<translation id="1728803206919861584">Vil du gemme adgangsnøglen uden for inkognito?</translation>
 <translation id="173080396488393970">Denne korttype understøttes ikke</translation>
 <translation id="1732445923934584865">Spørg ansigt til ansigt i stedet</translation>
 <translation id="1733064249834771892">skrifttyper</translation>
@@ -1664,6 +1666,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4415156962929755728">Plast (helblank)</translation>
 <translation id="4415426530740016218">Afhentningsadresse</translation>
 <translation id="4424024547088906515">Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, da Chrome ikke har tillid til sikkerhedscertifikatet. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse.</translation>
+<translation id="4425173294238317796">Felt til bekræftelse af adgangsnøgle</translation>
 <translation id="4425750422187370446">Sportstøj</translation>
 <translation id="4428065317363009941">Personlig tilpasning af annoncer</translation>
 <translation id="443121186588148776">Serieport</translation>
@@ -2019,6 +2022,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5157504274688344097">Grossister og stormagasiner</translation>
 <translation id="5158275234811857234">Forside</translation>
 <translation id="5159010409087891077">Åbn siden i et nyt inkognitovindue (⇧⌘N)</translation>
+<translation id="5161262286013276579">Feltet til bekræftelse af adgangsnøgle er åbnet</translation>
 <translation id="5161334686036120870">Emne:</translation>
 <translation id="5161506081086828129">Stabler 9</translation>
 <translation id="5164798890604758545">Tekst indtastes</translation>
@@ -2901,6 +2905,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="7004583254764674281">Brug Windows Hello til at bekræfte kort hurtigere</translation>
 <translation id="7006930604109697472">Send alligevel</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7013762323294215682">Denne adgangsnøgle gemmes i Adgangskodeadministrator. Alle med adgang til Adgangskodeadministrator kan bruge denne adgangsnøgle.</translation>
 <translation id="7014042602717177828">Lydsystemer til biler</translation>
 <translation id="7014741021609395734">Zoomniveau</translation>
 <translation id="7016992613359344582">Disse debiteringer kan være enkeltstående eller gentagne og fremgår muligvis ikke tydeligt.</translation>

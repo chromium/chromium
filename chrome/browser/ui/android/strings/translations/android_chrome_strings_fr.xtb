@@ -175,6 +175,7 @@ Lorsque vous supprimez votre historique de navigation (entièrement ou pour un s
 <translation id="19288952978244135">Rouvrez Chrome.</translation>
 <translation id="1933845786846280168">Onglet sélectionné</translation>
 <translation id="1943432128510653496">Enregistrer les mots de passe</translation>
+<translation id="1944535645109964458">Aucune clé d'accès disponible</translation>
 <translation id="1952172573699511566">Les sites Web s'afficheront dans votre langue préférée lorsque ce sera possible.</translation>
 <translation id="1959679933317802873">En attente de contenu</translation>
 <translation id="1960290143419248813">Les mises à jour de Chrome ne sont plus disponibles avec cette version d'Android</translation>
@@ -626,6 +627,7 @@ Les jetons d'état privés améliorent la confidentialité sur le Web et ne peuv
 <translation id="4257230861809842349">Supprimer les mots de passe du Gestionnaire de mots de passe de Google ?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Quelles sont les données utilisées<ph name="END_BOLD" /> : votre historique de navigation, qui liste tous les sites que vous avez consultés dans Chrome sur cet appareil.</translation>
 <translation id="4269820728363426813">Copier l'adresse du lien</translation>
+<translation id="4277529130885813215">Utiliser un autre appareil</translation>
 <translation id="4283102315569707115">Demander les versions pour ordinateur par défaut ?</translation>
 <translation id="4285846616383034558">Cookies, cache et autres données des sites</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Activez le verrouillage de l'écran dans les paramètres Android<ph name="END_LINK" /></translation>
@@ -1166,6 +1168,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6955535239952325894">Ce paramètre est désactivé sur les navigateurs gérés</translation>
 <translation id="6963766334940102469">Supprimer des favoris</translation>
 <translation id="696447261358045621">Quitter le mode navigation privée</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6971862865055170158">Ne pas approuver</translation>
 <translation id="6978717888677691380">Sites que vous avez bloqués</translation>
 <translation id="6979737339423435258">Toutes les données</translation>

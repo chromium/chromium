@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ka">
+<translation id="1046370274005147998">ხმით ძიება Chromium-ში.</translation>
 <translation id="1047130070405668746">აირჩიეთ Chromium</translation>
 <translation id="1091252999271033193">ეს იმას ნიშნავს, რომ Chromium ყოველ ჯერზე მოითხოვს მობილურ საიტს.</translation>
 <translation id="1185134272377778587">Chromium-ის შესახებ</translation>
@@ -42,6 +43,7 @@
 <translation id="2574528844022712255">Chromium-ის სანიშნეების ნახვა</translation>
 <translation id="2590893390871230428">თქვენი Chromium მონაცემების სინქრონიზაცია</translation>
 <translation id="2618596336309823556">თქვენი მოწყობილობის პარამეტრებიდან გახსენით „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“ და აირჩიეთ „Chromium“</translation>
+<translation id="2618757400690011108">{COUNT,plural, =1{Chromium დაგეხმარებათ, თვალი ადევნოთ ამ ამანათს ახალი ჩანართის გვერდზე.}other{Chromium დაგეხმარებათ, თვალი ადევნოთ ამ ამანათებს ახალი ჩანართის გვერდზე.}}</translation>
 <translation id="2650312721222849884">იმისთვის, რომ იხილოთ თქვენი ჩანართები ნებისმიერი მოწყობილობიდან, საიდანაც Chromium-ს იყენებთ, ჩართეთ სინქრონიზაცია</translation>
 <translation id="2684230048001240293">დააყენეთ Chromium ნაგულისხმევ ბრაუზერად, რომ თქვენი ჩანართები, პაროლები და საგადახდო ინფორმაცია სინქრონიზებული გქონდეთ თქვენს ყველა მოწყობილობას შორის</translation>
 <translation id="2730884209570016437">Chromium ვერ ისარგებლებს თქვენი კამერით, რადგან მას სხვა აპლიკაცია იყენებს</translation>
@@ -51,6 +53,7 @@
 <translation id="2918709798697875261">თქვენი ორგანიზაცია მოითხოვს, რომ Chromium-იდან გამოსულ მდგომარეობაში იყოთ.</translation>
 <translation id="2942241131342758843">გამოიყენეთ Chromium ნაგულისხმევ ბრაუზერად, რომ გახსნათ ბმულები, მოიძიოთ ვიჯეტებიდან და ავტომატურად შეავსოთ პაროლები სხვა აპებში</translation>
 <translation id="2977470724722393594">Chromium განახლებულია</translation>
+<translation id="3078941082359356771">{COUNT,plural, =1{Chromium-ს შეუძლია დაგეხმაროთ, თვალი ადევნოთ ამ ამანათს ახალი ჩანართის გვერდზე.}other{Chromium-ს შეუძლია დაგეხმაროთ, თვალი ადევნოთ ამ ამანათებს ახალი ჩანართის გვერდზე.}}</translation>
 <translation id="3102849287235003384">თქვენი Google ანგარიშიდან ყველა ვებსაიტზე რომ გამოხვიდეთ, <ph name="BEGIN_LINK" />გადით Chromium-იდან<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">ხმით ძიება Chromium-ში</translation>
 <translation id="3228349498066165585">Chromium-იდან თქვენი ზოგიერთი მონაცემი თქვენს Google ანგარიშში ჯერ არ შენახულა.
@@ -113,6 +116,7 @@
 <translation id="5521125884468363740">იმისთვის, რომ იხილოთ თქვენი ჩანართები ნებისმიერი მოწყობილობიდან, საიდანაც Chromium-ს იყენებთ, შედით სისტემაში და ჩართეთ სინქრონიზაცია</translation>
 <translation id="5522297504975449419">Chromium-ის ზოგიერთი ფუნქცია აღარ იქნება ხელმისაწვდომი.</translation>
 <translation id="5571094606370987472">გახსნის Chromium-ის ბოლოდროინდელ ჩანართებს.</translation>
+<translation id="5623083843656850677">ჩაკეტეთ ინკოგნიტო ჩანართები Chromium-იდან გასვლის ან სხვა აპზე გადართვის დროს.</translation>
 <translation id="5688047395118852662">ამ ბარათზე მოცემულია რეკომენდაციები Chromium-ის შესაძლებლობების მაქსიმალურად გამოყენებასთან დაკავშირებით.</translation>
 <translation id="5700709190537129682">Chromium ვერ ახერხებს თქვენი პაროლების შემოწმებას</translation>
 <translation id="5777187867430702742">Chromium-ის გვერდი</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="te">
+<translation id="1046370274005147998">Chromiumలో Voiceతో సెర్చ్ చేయండి.</translation>
 <translation id="1047130070405668746">Chromiumను ఎంచుకోండి</translation>
 <translation id="1091252999271033193">అంటే Chromium ప్రతిసారీ మొబైల్ సైట్‌ను రిక్వెస్ట్ చేస్తుందని అర్థం.</translation>
 <translation id="1185134272377778587">Chromium గురించి</translation>
@@ -42,6 +43,7 @@
 <translation id="2574528844022712255">Chromium బుక్‌మార్క్‌లను చూడండి</translation>
 <translation id="2590893390871230428">మీ Chromium డేటాను సింక్ చేయండి</translation>
 <translation id="2618596336309823556">మీ పరికరం సెట్టింగ్‌ల నుండి, "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" ఆప్షన్‌ను తెరిచి, "Chromium" ఆప్షన్‌ను ఎంచుకోండి</translation>
+<translation id="2618757400690011108">{COUNT,plural, =1{కొత్త ట్యాబ్ పేజీలో ఈ ప్యాకేజీని ట్రాక్ చేయడంలో Chromium సహాయం చేస్తుంది.}other{కొత్త ట్యాబ్ పేజీలో ఈ ప్యాకేజీలను ట్రాక్ చేయడంలో Chromium సహాయం చేస్తుంది.}}</translation>
 <translation id="2650312721222849884">మీరు Chromiumను ఎక్కడ ఉపయోగించినా, అక్కడి నుండి మీ ట్యాబ్‌లను చూసేందుకు, సింక్‌ను ఆన్ చేయండి</translation>
 <translation id="2684230048001240293">మీ అన్ని పరికరాలలో ట్యాబ్‌లు, పాస్‌వర్డ్‌లు, పేమెంట్ సమాచారాన్ని సింక్ చేయడానికి Chromiumను డిఫాల్ట్‌గా సెట్ చేయండి</translation>
 <translation id="2730884209570016437">మీ కెమెరాను మరొక అప్లికేషన్‌ ఉపయోగిస్తున్నందున Chromium దాన్ని ఉపయోగించలేదు</translation>
@@ -51,6 +53,7 @@
 <translation id="2918709798697875261">మీరు Chromium నుండి సైన్ అవుట్ అయ్యి ఉండాల్సిందిగా మీ సంస్థ కోరుతోంది.</translation>
 <translation id="2942241131342758843">లింక్‌లను తెరవడానికి, విడ్జెట్‌ల నుండి సెర్చ్ చేయడానికి, ఇతర యాప్‌లలో పాస్‌వర్డ్‌లను ఆటోఫిల్ చేయడానికి Chromiumను డిఫాల్ట్‌గా ఉపయోగించండి</translation>
 <translation id="2977470724722393594">Chromium తాజాగా ఉంది</translation>
+<translation id="3078941082359356771">{COUNT,plural, =1{కొత్త ట్యాబ్ పేజీలో ఈ ప్యాకేజీని ట్రాక్ చేయడంలో Chromium మీకు సహాయం చేయవచ్చు.}other{కొత్త ట్యాబ్ పేజీలో ఈ ప్యాకేజీలను ట్రాక్ చేయడంలో Chromium మీకు సహాయం చేయవచ్చు.}}</translation>
 <translation id="3102849287235003384">అన్ని వెబ్‌సైట్‌లలో మీ Google ఖాతా నుండి సైన్ అవుట్ చేయడానికి, <ph name="BEGIN_LINK" />Chromium నుండి సైన్ అవుట్ చేయండి<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Chromiumలో Voiceతో సెర్చ్ చేయండి</translation>
 <translation id="3228349498066165585">మీ Chromium డేటాలో కొంత భాగం ఇంకా మీ Google ఖాతాలో సేవ్ కాలేదు.
@@ -113,6 +116,7 @@
 <translation id="5521125884468363740">మీరు Chromiumను ఎక్కడ ఉపయోగించినా, మీ ట్యాబ్‌లను చూసేందుకు, సైన్ ఇన్ చేసి సింక్‌ను ఆన్ చేయండి</translation>
 <translation id="5522297504975449419">కొన్ని Chromium ఫీచర్‌లు ఇకపై అందుబాటులో ఉండవు.</translation>
 <translation id="5571094606370987472">Chromium ఇటీవలి ట్యాబ్‌లను తెరుస్తుంది.</translation>
+<translation id="5623083843656850677">మీరు Chromium నుండి నిష్క్రమించినప్పుడు లేదా వేరే యాప్‌నకు స్విచ్ అయినప్పుడు మీ అజ్ఞాత ట్యాబ్‌లను లాక్ చేయండి.</translation>
 <translation id="5688047395118852662">Chromium అందించే ప్రయోజనాలన్నింటినీ ఎలా పొందాలనే దానిపై ఈ కార్డ్ మీకు సూచనలను చూపుతుంది.</translation>
 <translation id="5700709190537129682">Chromium మీ పాస్‌వర్డ్‌లను చెక్ చేయలేకపోయింది</translation>
 <translation id="5777187867430702742">Chromium పేజీ</translation>

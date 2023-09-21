@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
+<translation id="1046370274005147998">Zoeken met je stem in Chromium.</translation>
 <translation id="1047130070405668746">Selecteer Chromium</translation>
 <translation id="1091252999271033193">Dit betekent dat Chromium altijd de mobiele site opvraagt.</translation>
 <translation id="1185134272377778587">Over Chromium</translation>
@@ -42,6 +43,7 @@
 <translation id="2574528844022712255">Chromium-bookmarks bekijken</translation>
 <translation id="2590893390871230428">Je Chromium-gegevens synchroniseren</translation>
 <translation id="2618596336309823556">Open <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /> in de instellingen van je apparaat en selecteer Chromium</translation>
+<translation id="2618757400690011108">{COUNT,plural, =1{Chromium helpt je om dit pakket te volgen op de pagina Nieuw tabblad.}other{Chromium helpt je om deze pakketten te volgen op de pagina Nieuw tabblad.}}</translation>
 <translation id="2650312721222849884">Zet de synchronisatie aan om je tabbladen te bekijken vanaf elk apparaat waarop je Chromium gebruikt</translation>
 <translation id="2684230048001240293">Stel Chromium in als je standaardbrowser om je tabbladen, wachtwoorden en betalingsgegevens op al je apparaten te synchroniseren</translation>
 <translation id="2730884209570016437">Chromium kan je camera niet gebruiken omdat deze wordt gebruikt door een andere app</translation>
@@ -51,6 +53,7 @@
 <translation id="2918709798697875261">Je organisatie vereist dat je uitgelogd blijft bij Chromium.</translation>
 <translation id="2942241131342758843">Gebruik standaard Chromium om links te openen, te zoeken via widgets en om wachtwoorden in andere apps automatisch in te vullen</translation>
 <translation id="2977470724722393594">Chromium is up-to-date</translation>
+<translation id="3078941082359356771">{COUNT,plural, =1{Chromium kan je helpen om dit pakket te volgen op de pagina Nieuw tabblad.}other{Chromium kan je helpen om deze pakketten te volgen op de pagina Nieuw tabblad.}}</translation>
 <translation id="3102849287235003384">Als je op alle websites wilt uitloggen van je Google-account, <ph name="BEGIN_LINK" />log je uit bij Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Zoeken met je stem in Chromium</translation>
 <translation id="3228349498066165585">Sommige van je Chromium-gegevens zijn nog niet opgeslagen in je Google-account.
@@ -113,6 +116,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chromium
 <translation id="5521125884468363740">Log in en zet de synchronisatie aan om je tabbladen te bekijken vanaf elk apparaat waarop je Chromium gebruikt</translation>
 <translation id="5522297504975449419">Sommige Chromium-functies zijn niet meer beschikbaar.</translation>
 <translation id="5571094606370987472">Opent de recente Chromium-tabbladen.</translation>
+<translation id="5623083843656850677">Vergrendel de incognitotabbladen als je Chromium verlaat of overschakelt naar een andere app.</translation>
 <translation id="5688047395118852662">Op deze kaart zie je suggesties voor hoe je het maximale uit Chromium kunt halen.</translation>
 <translation id="5700709190537129682">Chromium kan je wachtwoorden niet checken</translation>
 <translation id="5777187867430702742">Chromium-pagina</translation>

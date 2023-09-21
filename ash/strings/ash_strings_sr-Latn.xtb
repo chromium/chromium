@@ -225,6 +225,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1831565490995294689">Izaberite da biste otvorili aplikaciju <ph name="APP_TO_OPEN" />.</translation>
 <translation id="1838895407229022812">Noćno svetlo je isključeno.</translation>
 <translation id="1854180393107901205">Zaustavi prebacivanje</translation>
+<translation id="1862077610023398675">Sakrij kontrole</translation>
 <translation id="1862380676329487333">Ažuriraj i odjavi me</translation>
 <translation id="1864454756846565995">Uređaj sa USB priključkom tipa C (zadnji port)</translation>
 <translation id="1869497990620230175">Brz pristup fajlovima</translation>
@@ -787,6 +788,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="4215497585250573029">Podešavanja VPN-a</translation>
 <translation id="4217571870635786043">Diktiranje</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, instalirana aplikacija, pauzirana</translation>
+<translation id="4228078597006700451">Kontrole nisu podešene</translation>
 <translation id="4231053948789591973">Prebacivanje je trenutno pauzirano. Možete da nastavite sa prebacivanjem ekrana ili da ga zaustavite u svakom trenutku.</translation>
 <translation id="423685346499232137">Trenutno ne možete da kopirate ni nalepite sadržaj</translation>
 <translation id="4239069858505860023">GPRS</translation>
@@ -835,7 +837,6 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="4406883609789734330">Titl uživo</translation>
 <translation id="4412944820643904175">Funkcija <ph name="FEATURE_NAME" /> je isključena.</translation>
 <translation id="4424159417645388645">Radna površina 5</translation>
-<translation id="4427695046139341014">Kontrolna tabla igre</translation>
 <translation id="4430019312045809116">Jačina zvuka</translation>
 <translation id="4441283832827406317">Aplikacije su sortirane prema nazivu</translation>
 <translation id="4445159312344259901">Prijavite se da otključate</translation>
@@ -1221,6 +1222,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="5983567367406220847">Hotspot je isključen zbog neaktivnosti.</translation>
 <translation id="598407983968395253">Koristi šablon</translation>
 <translation id="598882571027504733">Da biste preuzeli ažuriranje, restartujte Chromebook sa priključenom tastasturom.</translation>
+<translation id="6000279412553873020">Tasteri, dugmad i drugo</translation>
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" />. stranica od <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Istaknite sledeću stavku na polici</translation>
 <translation id="6015573907265691211">Označite kao završeno</translation>
@@ -1418,6 +1420,7 @@ Novo instaliranje</translation>
 <translation id="6802196538183166658">Otvorite Brza podešavanja izborom vremena</translation>
 <translation id="6802687695197837794">Ovo omogućava pristup aplikacijama <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> i svim aplikacijama i veb-sajtovima koji imaju dozvole za kameru i mikrofon</translation>
 <translation id="6803622936009808957">Nije moguće preslikati ekrane zato što nije pronađena nijedna podržana rezolucija. Umesto toga, prikazuje se proširena radna površina.</translation>
+<translation id="6809556495807506746">Kontrole nisu dostupne</translation>
 <translation id="6812232930908427253">Čuvanje radne površine nije uspelo. Ima previše prozora ili kartica.</translation>
 <translation id="6818242057446442178">Reč unazad</translation>
 <translation id="6819327813400217281">Kamera je uklopljena u donji levi ugao</translation>
@@ -1442,6 +1445,7 @@ Novo instaliranje</translation>
 <translation id="6919251195245069855">Nismo uspeli da prepoznamo pametnu karticu. Probajte ponovo.</translation>
 <translation id="6920245099716267363">Uključite/isključite hotspot. Hotspot je uključen, 1 uređaj je povezan.</translation>
 <translation id="692135145298539227">izbriši</translation>
+<translation id="6929081673585394903">Pokaži kontrole</translation>
 <translation id="6931576957638141829">Sačuvajte u</translation>
 <translation id="6942518653766415536">Meni za format snimanja</translation>
 <translation id="6945221475159498467">Izaberi</translation>
@@ -1639,6 +1643,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="7773536009433685931">Uključi WiFi</translation>
 <translation id="7780094051999721182">prečice</translation>
 <translation id="7780159184141939021">Rotirajte ekran</translation>
+<translation id="7792590255364786396">Vidljivo</translation>
 <translation id="7796735576426975947">Novo obaveštenje je skriveno</translation>
 <translation id="7798302898096527229">Pritisnite taster za pretragu ili Shift da biste otkazali.</translation>
 <translation id="780301667611848630">Ne, hvala</translation>

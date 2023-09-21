@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
+<translation id="1046370274005147998">Chromiumis hääle abil otsimine.</translation>
 <translation id="1047130070405668746">Valige Chromium</translation>
 <translation id="1091252999271033193">See tähendab, et Chromium taotleb iga kord mobiilisaiti.</translation>
 <translation id="1185134272377778587">Teave Chromiumi kohta</translation>
@@ -42,6 +43,7 @@
 <translation id="2574528844022712255">Kuva Chromiumi järjehoidjad</translation>
 <translation id="2590893390871230428">Chromiumi andmete sünkroonimine</translation>
 <translation id="2618596336309823556">Tehke seadme seadetes valik „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“, seejärel valik „Chromium“</translation>
+<translation id="2618757400690011108">{COUNT,plural, =1{Chromium aitab seda saadetist uuel vahelehel jälgida.}other{Chromium aitab neid saadetisi uuel vahelehel jälgida.}}</translation>
 <translation id="2650312721222849884">Selleks et näha vahelehti kõikjalt, kus Chromiumi kasutate, lülitage sisse sünkroonimine</translation>
 <translation id="2684230048001240293">Määrake Chromium vaikebrauseriks, et sünkroonida kõikides oma seadetes vahelehti, paroole ja makseteavet</translation>
 <translation id="2730884209570016437">Chromium ei saa kaamerat kasutada, kuna seda kasutab muu rakendus</translation>
@@ -51,6 +53,7 @@
 <translation id="2918709798697875261">Teie organisatsioon nõuab, et jääksite Chromiumist väljalogituks.</translation>
 <translation id="2942241131342758843">Kasutage linkide avamiseks, vidinatest otsimiseks ja muudes rakendustes paroolide automaatselt täitmiseks vaikimisi Chromiumi</translation>
 <translation id="2977470724722393594">Chromium on ajakohane</translation>
+<translation id="3078941082359356771">{COUNT,plural, =1{Chromium aitab teil seda saadetist uuel vahelehel jälgida.}other{Chromium aitab teil neid saadetisi uuel vahelehel jälgida.}}</translation>
 <translation id="3102849287235003384">Selleks et oma Google'i kontolt kõikidel veebisaitidel välja logida, <ph name="BEGIN_LINK" />logige välja Chromiumist<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Chromiumis hääle abil otsimine</translation>
 <translation id="3228349498066165585">Teatud Chromiumi andmeid pole veel teie Google’i kontole salvestatud.
@@ -113,6 +116,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chromiumi an
 <translation id="5521125884468363740">Selleks et näha vahelehti kõikjalt, kus Chromiumi kasutate, logige sisse ja lülitage sisse sünkroonimine</translation>
 <translation id="5522297504975449419">Mõned Chromiumi funktsioonid pole enam saadaval.</translation>
 <translation id="5571094606370987472">Avab Chromiumi hiljutised vahelehed.</translation>
+<translation id="5623083843656850677">Lukustage Chromiumist väljumisel või muu rakenduse aktiveerimisel oma inkognito vahelehed.</translation>
 <translation id="5688047395118852662">Sellel kaardil kuvatakse soovitusi selle kohta, kuidas Chromiumi parimal moel kasutada.</translation>
 <translation id="5700709190537129682">Chromiumil ei õnnestu teie paroole kontrollida</translation>
 <translation id="5777187867430702742">Chromiumi leht</translation>

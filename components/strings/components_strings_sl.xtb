@@ -100,6 +100,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1195073053842921378">Ta naslov bo izbrisan iz te naprave.</translation>
 <translation id="1195558154361252544">Obvestila so samodejno blokirana za vsa spletna mesta, razen za tista z vašim dovoljenjem</translation>
 <translation id="1197088940767939838">Oranžna</translation>
+<translation id="1197761954713363183">List za potrditev ključa za dostop je zaprt</translation>
 <translation id="1201402288615127009">Naprej</translation>
 <translation id="1201895884277373915">Več s tega mesta</translation>
 <translation id="1202892408424955784">Spremljani izdelki</translation>
@@ -327,6 +328,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1618571384971354160">Vleka vozil in pomoč na cesti</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622571349153632031">Vegetarijanska kuhinja</translation>
+<translation id="162285686621567578">To spletno mesto je blokiral starš</translation>
 <translation id="1622966923835127638">Poslovne finance</translation>
 <translation id="1623104350909869708">Tej strani prepreči, da bi ustvarila dodatna pogovorna okna</translation>
 <translation id="1633137413609266904">{0,plural, =1{Odpiranje te datoteke blokira skrbniški pravilnik.}one{Odpiranje # datoteke blokira skrbniški pravilnik.}two{Odpiranje # datotek blokira skrbniški pravilnik.}few{Odpiranje # datotek blokira skrbniški pravilnik.}other{Odpiranje # datotek blokira skrbniški pravilnik.}}</translation>
@@ -371,6 +373,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1711528724596764268">Strojno učenje in umetna inteligenca</translation>
 <translation id="1712552549805331520"><ph name="URL" /> želi trajno shraniti podatke v lokalnem računalniku</translation>
 <translation id="1713628304598226412">Pladenj 2</translation>
+<translation id="1714807406136741351">Način brskanja, preklopite lahko v način za obrazce in uporabite puščico levo/desno za pregled sprememb cen na grafikonu</translation>
 <translation id="1717218214683051432">Tipala gibanja</translation>
 <translation id="1717494416764505390">Nabiralnik 3</translation>
 <translation id="1717688554309417925">Debetne in čekovne storitve</translation>
@@ -382,6 +385,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1725591448053514783">Kuverta 6</translation>
 <translation id="1727613060316725209">Potrdilo je veljavno</translation>
 <translation id="1728677426644403582">Ogledujete si izvorno kodo spletne strani</translation>
+<translation id="1728803206919861584">Želite ključ za dostop shraniti zunaj anonimnega načina?</translation>
 <translation id="173080396488393970">Ta vrsta kartice ni podprta</translation>
 <translation id="1732445923934584865">Vprašaj raje osebno</translation>
 <translation id="1733064249834771892">pisave</translation>
@@ -1664,6 +1668,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4415156962929755728">Plastic (High Gloss)</translation>
 <translation id="4415426530740016218">Naslov za prevzem</translation>
 <translation id="4424024547088906515">Strežniku ni uspelo dokazati, da je <ph name="DOMAIN" />; Chrome ne zaupa njegovemu varnostnemu potrdilu. Razlog za to je lahko napačna konfiguracija ali napadalčevo prestrezanje povezave.</translation>
+<translation id="4425173294238317796">List za potrditev ključa za dostop</translation>
 <translation id="4425750422187370446">Športna oblačila</translation>
 <translation id="4428065317363009941">Osebno prilagajanje oglasov</translation>
 <translation id="443121186588148776">Serijska vrata</translation>
@@ -2019,6 +2024,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5157504274688344097">Veletrgovci &amp; veleblagovnice</translation>
 <translation id="5158275234811857234">Naslovnica</translation>
 <translation id="5159010409087891077">Odpiranje strani v novem anonimnem oknu (⇧⌘N)</translation>
+<translation id="5161262286013276579">List za potrditev ključa za dostop je odprt</translation>
 <translation id="5161334686036120870">Zadeva:</translation>
 <translation id="5161506081086828129">Zlagalnik 9</translation>
 <translation id="5164798890604758545">Besedilo je vneseno</translation>
@@ -2901,6 +2907,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="7004583254764674281">Uporabite Windows Hello za hitrejše potrjevanje kartic</translation>
 <translation id="7006930604109697472">Vseeno pošlji</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7013762323294215682">Ta ključ za dostop bo shranjen v upravitelju gesel. Ta ključ za dostop bodo lahko uporabljali vsi, ki imajo dostop do njega.</translation>
 <translation id="7014042602717177828">Avtoradii</translation>
 <translation id="7014741021609395734">Stopnja povečave</translation>
 <translation id="7016992613359344582">Te bremenitve so lahko enkratne ali ponavljajoče se in morda niso očitne.</translation>
@@ -3246,6 +3253,7 @@ Dodatne podrobnosti:
 <translation id="7667346355482952095">Vrnjen žeton pravilnika je prazen ali se ne ujema s trenutnim žetonom</translation>
 <translation id="7668654391829183341">Neznana naprava</translation>
 <translation id="7669271284792375604">Napadalci na tem spletnem mestu vas bodo morda poskusili zavesti, da bi namestili programe, ki škodljivo vplivajo na brskanje (na primer tako, da spremenijo vašo domačo stran ali na spletnih mestih, ki jih obiščete, prikazujejo dodatne oglase).</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> od <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Izvedena dejanja s podatki, ki so označeni kot zaupni (od prijave je bilo 1 dejanje). <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" />}one{Izvedena dejanja s podatki, ki so označeni kot zaupni (od prijave je bilo # dejanje). <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" />}two{Izvedena dejanja s podatki, ki so označeni kot zaupni (od prijave sta bili # dejanji). <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" />}few{Izvedena dejanja s podatki, ki so označeni kot zaupni (od prijave so bila # dejanja). <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" />}other{Izvedena dejanja s podatki, ki so označeni kot zaupni (od prijave je bilo # dejanj). <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Nabiralnik 6</translation>
 <translation id="7675325315208090829">Upravljanje plačilnih sredstev …</translation>

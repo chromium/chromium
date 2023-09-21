@@ -175,6 +175,7 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="19288952978244135">Öppna Chrome igen.</translation>
 <translation id="1933845786846280168">Vald flik</translation>
 <translation id="1943432128510653496">Spara lösenord</translation>
+<translation id="1944535645109964458">Inga nycklar är tillgängliga</translation>
 <translation id="1952172573699511566">När det är möjligt visas text på webbplatser på önskat språk.</translation>
 <translation id="1959679933317802873">Väntar på innehåll</translation>
 <translation id="1960290143419248813">Uppdateringar av Chrome stöds inte längre för den här versionen av Android</translation>
@@ -627,6 +628,7 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="4257230861809842349">Vill du radera lösenord från Google Lösenordshantering?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Vilken data används:<ph name="END_BOLD" /> Webbhistoriken, där webbplatser som du besökt i Chrome på den här enheten registreras.</translation>
 <translation id="4269820728363426813">Kopiera länkadress</translation>
+<translation id="4277529130885813215">Använd en annan enhet</translation>
 <translation id="4283102315569707115">Vill du begära webbplatser för dator som standard?</translation>
 <translation id="4285846616383034558">Cookies, cacheminne och annan webbplatsdata</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Aktivera skärmlåset i Android-inställningar<ph name="END_LINK" /></translation>
@@ -1167,6 +1169,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6955535239952325894">Inställningen är inaktiverad för hanterade webbläsare</translation>
 <translation id="6963766334940102469">Radera bokmärken</translation>
 <translation id="696447261358045621">Inaktivera inkognitoläge</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6971862865055170158">Godkänn inte</translation>
 <translation id="6978717888677691380">Webbplatser du har blockerat</translation>
 <translation id="6979737339423435258">Sedan kontot skapades</translation>

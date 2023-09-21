@@ -242,6 +242,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="2359043044084662842">Tərcümə edin</translation>
 <translation id="2359808026110333948">Davam edin</translation>
 <translation id="2360196772093551345">Mobil Sayt formatına keçid</translation>
+<translation id="2361721159900796207">Bu elementi gizlədir</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" /> olaraq daxil olunub. <ph name="USER_EMAIL" />. Ayarları açır.</translation>
 <translation id="236977714248711277">Saytlar baxış təcrübənizi yaxşılaşdırmaq üçün, məsələn, sizi daxil olmuş vəziyyətdə saxlamaq və ya alış-veriş səbətindəki elementləri yadda saxlamaq üçün kukilərdən istifadə edə bilmir.
 
@@ -778,6 +779,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="5317780077021120954">Yadda saxlayın</translation>
 <translation id="5318298563956633672">Hazırda bu məhsulu izləyirsiniz.</translation>
 <translation id="5339316356165661760">Sinxronizasiyanı aktiv edin</translation>
+<translation id="5345660046352249607">{COUNT,plural, =1{Bu paket izlənsin?}other{{COUNT} paket izlənsin?}}</translation>
 <translation id="536067926684072644">Əlfəcinləri göstərin</translation>
 <translation id="5360976571138293719">Məxfilik, təhlükəsizlik və datanın toplanması ilə bağlı daha çox ayarlar üçün <ph name="BEGIN_LINK" />Google Xidmətləri<ph name="END_LINK" /> səhifəsinə baxın.</translation>
 <translation id="5386314158584363703">İzlədiyiniz saytları burada tapa bilərsiniz</translation>
@@ -1144,6 +1146,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="723787869754590019">Avto doldurma üçün Chrome istifadə edin</translation>
 <translation id="7265758999917665941">Bu sayt üçün heç vaxt yadda saxlamayın</translation>
 <translation id="7272437679830969316">Kimliyinizi doğrulamaq mümkün deyil. Parol kopyalanmayıb.</translation>
+<translation id="7284359491594949826">{COUNT,plural, =1{Yeni paket izləndi}other{Yeni paketlər izləndi}}</translation>
 <translation id="7291368939935408496">Parollar Hazırlanır...</translation>
 <translation id="7302503784943202842">Parolları bütün cihazlarda istifadə edin</translation>
 <translation id="730958329302570991">İstənilən vaxt Google Parol Menecerinə sayt parollarını asanlıqla əlavə edin.</translation>
@@ -1177,6 +1180,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7473891865547856676">Yox</translation>
 <translation id="7491131399623468277">Ayarlara keçin…</translation>
 <translation id="7492574581995589075">Təşkilat Chrome datasını istifadə etmək və Google Hesabında saxlamaq imkanını deaktiv edib. Yeni əlfəcin, parol və s. yalnız bu cihazda yadda saxlanacaq.</translation>
+<translation id="750149195207506638">Əlfəcinlər gizlədilib</translation>
 <translation id="750228856503700085">Güncəlləmələr əlçatan deyil</translation>
 <translation id="750493650310597496">1 ədəd seçilib</translation>
 <translation id="7508728395076009983">Anonim tablarınızı kilidləmək üçün Touch ID, Face ID və ya Parol ayarlayın.</translation>
@@ -1244,6 +1248,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7856733331829174190">Yüklənmədi</translation>
 <translation id="785938070103630874">Parolları, Ödəniş Metodlarını və ya Ünvanı və daha çoxunu açın</translation>
 <translation id="7859704718976024901">Brauzer Tarixçəsi</translation>
+<translation id="7866501058614003444">Bu paket izlənmədi.</translation>
 <translation id="7870750252270996949">Kopyalanan Linza Şəkli</translation>
 <translation id="7879275349003161544">Endirmələri göstərin</translation>
 <translation id="7883882164760409935">Təkrar işlənən parollar var.</translation>
@@ -1313,6 +1318,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8206354486702514201">Bu ayar administratorunuz tərəfindən icra olunur.</translation>
 <translation id="8214293972734702249">Bərkidilib, <ph name="TAB_TITLE" /></translation>
 <translation id="8225985093977202398">Keşlənmiş Şəkillər və Fayllar</translation>
+<translation id="823133356836493038">Oxu Siyahısı gizlədilib</translation>
 <translation id="8237382152611443140">Parolların Avtomatik Doldurulması Ayarlarını açın</translation>
 <translation id="8248969482078657578">Deaktiv tablar fokuslanmağa kömək edir</translation>
 <translation id="8261506727792406068">Silin</translation>
@@ -1491,6 +1497,7 @@ Data <ph name="TIME" /> tarixində parol ifadəsi ilə şifrələnib. Google Hes
 <translation id="9148126808321036104">Yenidən daxil olun</translation>
 <translation id="9157836665414082580">Dialoqların qarşısını alın</translation>
 <translation id="9162432979321511934">Parol Avto Doldurmasını aktiv edin</translation>
+<translation id="9162941801309769488">Paket izlənmədi</translation>
 <translation id="9165320910061267720">Qiymətin düşməsi xəbərdarlıqları ilə bağlı bildiriş almaq üçün iOS ayarlarında bildirişləri aktiv etməlisiniz.</translation>
 <translation id="9165886811579296457">Təhlükəsizlik yoxlanışı zamanı təhlükəsizlik problemi tapılmadı.</translation>
 <translation id="9172603439892261948">Əlfəcin, tarixçə və s. sinxronlaşdırın.</translation>

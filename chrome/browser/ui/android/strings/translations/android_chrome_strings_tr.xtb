@@ -175,6 +175,7 @@ Belirli bir siteye ait veya tüm tarama geçmişinizi sildiğinizde bununla ili�
 <translation id="19288952978244135">Chrome'u yeniden açın.</translation>
 <translation id="1933845786846280168">Seçili Sekme</translation>
 <translation id="1943432128510653496">Şifreleri kaydet</translation>
+<translation id="1944535645109964458">Şifre anahtarı yok</translation>
 <translation id="1952172573699511566">Web siteleri, mümkün olduğunda metni tercih ettiğiniz dilde gösterir.</translation>
 <translation id="1959679933317802873">İçerik bekleniyor</translation>
 <translation id="1960290143419248813">Chrome güncellemeleri Android'in bu sürümü için artık desteklenmiyor</translation>
@@ -626,6 +627,7 @@ Gizlilik jetonları, web'deki gizliliği artırırken kim olduğunuzu bulmak iç
 <translation id="4257230861809842349">Şifreler, Google Şifre Yöneticisi'nden silinsin mi?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Kullanılan veriler:<ph name="END_BOLD" /> Tarama geçmişiniz ve bu cihazda Chrome'u kullanarak ziyaret ettiğiniz sitelerin kaydı.</translation>
 <translation id="4269820728363426813">Bağlantı adresini kopyala</translation>
+<translation id="4277529130885813215">Başka bir cihaz kullan</translation>
 <translation id="4283102315569707115">Varsayılan olarak masaüstü siteleri istensin mi?</translation>
 <translation id="4285846616383034558">Çerezler, önbellek ve diğer site verileri</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android ayarlarında ekran kilidini açın<ph name="END_LINK" /></translation>
@@ -1166,6 +1168,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="6955535239952325894">Bu ayar yönetilen tarayıcılarda devre dışı bırakıldı</translation>
 <translation id="6963766334940102469">Yer işaretlerini silme</translation>
 <translation id="696447261358045621">Gizli moddan çık</translation>
+<translation id="6965382102122355670">Tamam</translation>
 <translation id="6971862865055170158">Onaylama</translation>
 <translation id="6978717888677691380">Engellediğiniz siteler</translation>
 <translation id="6979737339423435258">Tüm zamanlar</translation>

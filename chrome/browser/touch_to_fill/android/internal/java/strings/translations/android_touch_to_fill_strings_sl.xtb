@@ -16,5 +16,7 @@
 <translation id="5441504010984421144">Seznam poverilnic, ki naj se izpolnijo ob dotiku, odprt pri polni višini.</translation>
 <translation id="5591247451101092906">Ali želite uporabiti shranjen ključ za dostop ali geslo?</translation>
 <translation id="5624120631404540903">Upravljanje gesel</translation>
+<translation id="6560306912274274630">Ključ za dostop za uporabnika <ph name="USERNAME" />, uporabite zaklepanje zaslona</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> od <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="8891372124884726271">Seznam poverilnic je zaprt.</translation>
 </translationbundle>

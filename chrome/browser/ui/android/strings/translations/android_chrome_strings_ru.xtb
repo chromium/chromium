@@ -175,6 +175,7 @@
 <translation id="19288952978244135">Снова запустите браузер Chrome.</translation>
 <translation id="1933845786846280168">Выбранная вкладка</translation>
 <translation id="1943432128510653496">Сохранение паролей</translation>
+<translation id="1944535645109964458">Ключи доступа не найдены</translation>
 <translation id="1952172573699511566">Когда это возможно, текст на сайтах будет отображаться на выбранном вами языке.</translation>
 <translation id="1959679933317802873">Ожидается контент</translation>
 <translation id="1960290143419248813">Невозможно обновить Chrome в текущей версии Android.</translation>
@@ -626,6 +627,7 @@
 <translation id="4257230861809842349">Удалить пароли из Google Менеджера паролей?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Какие данные используются.<ph name="END_BOLD" /> История вашего браузера – список сайтов, которые вы открывали в браузере Chrome на этом устройстве.</translation>
 <translation id="4269820728363426813">Копировать адрес ссылки</translation>
+<translation id="4277529130885813215">Использовать другое устройство</translation>
 <translation id="4283102315569707115">Запрашивать полные версии сайтов по умолчанию?</translation>
 <translation id="4285846616383034558">Файлы cookie, кеш и другие данные сайтов</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Включить блокировку экрана в настройках Android<ph name="END_LINK" /></translation>
@@ -1166,6 +1168,7 @@
 <translation id="6955535239952325894">В управляемых браузерах эта настройка отключена</translation>
 <translation id="6963766334940102469">Удалить закладки</translation>
 <translation id="696447261358045621">Выйти из режима инкогнито</translation>
+<translation id="6965382102122355670">ОК</translation>
 <translation id="6971862865055170158">Не разрешать</translation>
 <translation id="6978717888677691380">Заблокированные сайты</translation>
 <translation id="6979737339423435258">Все время</translation>

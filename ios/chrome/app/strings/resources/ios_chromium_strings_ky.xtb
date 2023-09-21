@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ky">
+<translation id="1046370274005147998">Chromium'да оозеки издеңиз.</translation>
 <translation id="1047130070405668746">Chromium'ду тандаңыз</translation>
 <translation id="1091252999271033193">Chromium'ду ар дайым мобилдик түзмөктө ачуу керек болот.</translation>
 <translation id="1185134272377778587">Chromium жөнүндө</translation>
@@ -42,6 +43,7 @@
 <translation id="2574528844022712255">Chromium'дагы кыстармаларды көрүү</translation>
 <translation id="2590893390871230428">Chromium дайындарын шайкештирүү</translation>
 <translation id="2618596336309823556">Түзмөктүн параметрлеринен "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" бөлүмүнө өтүп, "Chromium'ду" тандаңыз</translation>
+<translation id="2618757400690011108">{COUNT,plural, =1{Chromium бул топтомго жаңы өтмөк бетинен көз салууга жардам берет.}other{Chromium бул топтомдорго жаңы өтмөк бетинен көз салууга жардам берет.}}</translation>
 <translation id="2650312721222849884">Chromium колдонулган түзмөктөрдүн баарындагы өтмөктөрүңүздү көрүү үчүн шайкештирүүнү күйгүзүңүз</translation>
 <translation id="2684230048001240293">Өтмөктөрдү, сырсөздөрдү жана төлөм тууралуу маалыматты демейки жөндөө катары Chromium'да шайкештириңиз</translation>
 <translation id="2730884209570016437">Chromium камераңызды иштете албайт, себеби аны башка колдонмо пайдаланып жатат</translation>
@@ -51,6 +53,7 @@
 <translation id="2918709798697875261">Уюмуңуз Chromium'га кирбей турууңузду талап кылууда.</translation>
 <translation id="2942241131342758843">Шилтемелерди ачуу, виджеттерде издөө жана башка колдонмолордун сырсөздөрүн автоматтык түрдө толтуруу үчүн Chromium'ду демейки серепчи катары колдонуңуз</translation>
 <translation id="2977470724722393594">Chromium жаңырган</translation>
+<translation id="3078941082359356771">{COUNT,plural, =1{Chromium бул топтомго жаңы өтмөк бетинен көз салууга жардам бере алат.}other{Chromium бул топтомдорго жаңы өтмөк бетинен көз салууга жардам бере алат.}}</translation>
 <translation id="3102849287235003384">Бардык вебсайттарда Google аккаунтуңуздан чыгуу үчүн <ph name="BEGIN_LINK" />Chromium'дан чыгыңыз<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Chromium'да оозеки издөө</translation>
 <translation id="3228349498066165585">Chromium'дагы айрым маалымат Google аккаунтуңузга сактала элек.
@@ -113,6 +116,7 @@
 <translation id="5521125884468363740">Chromium колдонулган түзмөктөрдүн баарындагы өтмөктөрүңүздү көрүү үчүн аккаунтуңузга кирип, шайкештирүүнү күйгүзүңүз</translation>
 <translation id="5522297504975449419">Айрым Chromium функциялары мындан ары иштебейт.</translation>
 <translation id="5571094606370987472">Chromium'дагы акыркы өтмөктөр ачылат.</translation>
+<translation id="5623083843656850677">Chromium'дан чыкканда же башка колдонмого өткөндө жашыруун өтмөктөрдү кулпулап коюңуз.</translation>
 <translation id="5688047395118852662">Бул карта Chromium'дун бардык мүмкүнчүлүктөрүн колдонуу боюнча сунуштарды көрсөтөт.</translation>
 <translation id="5700709190537129682">Chromium сырсөздөрүңүздү текшере албай жатат</translation>
 <translation id="5777187867430702742">Chromium барагы</translation>

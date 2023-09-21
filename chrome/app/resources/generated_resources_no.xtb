@@ -2783,7 +2783,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3169930038976362151">Velg temaet som passer til behovene dine. For å endre tema, bakgrunn, skjermsparer med mer, bare trykk og hold på skrivebordet.</translation>
 <translation id="3170072451822350649">Du kan også hoppe over påloggingen og <ph name="LINK_START" />surfe som gjest<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">Ny fane til venstre</translation>
-<translation id="3177689682958561933">Slå på for å navigere frem og tilbake</translation>
 <translation id="3177909033752230686">Språket siden er på:</translation>
 <translation id="3177914167275935955">En Chrome Education-oppgradering følger med enheten din, men brukernavnet ditt er ikke knyttet til noen Google for Education-konto. Opprett en Google for Education-konto ved å gå til g.co/workspace/edusignup på en annen enhet.</translation>
 <translation id="3179982752812949580">Skrifttype</translation>
@@ -6256,7 +6255,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6045114302329202345">Primær TrackPoint-knapp</translation>
 <translation id="6047632800149092791">Synkroniseringen fungerer ikke. Prøv å logge ut og inn igjen.</translation>
 <translation id="6048747414605857443">Velg og tilpass tekst til tale-stemmer for ChromeVox og Tekstopplesing</translation>
-<translation id="6049797270917061226">Denne filen kan la angripere stjele personopplysningene dine.</translation>
 <translation id="6050189528197190982">Gråtoner</translation>
 <translation id="6051354611314852653">Beklager. Systemet kunne ikke godkjenne API-tilgang for denne enheten.</translation>
 <translation id="6051811090255711417">Organisasjonen din har blokkert denne filen fordi den ikke oppfylte en sikkerhetsregel</translation>
@@ -6542,7 +6540,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6270391203985052864">Nettsteder kan be om å få sende deg varsler</translation>
 <translation id="6270486800167535228">Utvidelsen er festet. Velg for å se flere alternativer</translation>
 <translation id="6270770586500173387">Send <ph name="BEGIN_LINK1" />system- og appinformasjon<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />beregninger<ph name="END_LINK2" /></translation>
-<translation id="6270896861225278704">Reisekort</translation>
 <translation id="6271348838875430303">korrigeringen er angret</translation>
 <translation id="6271824294945464304">Deler passordet</translation>
 <translation id="6273677812470008672">Kvalitet</translation>
@@ -7162,6 +7159,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6798578729981748444">Lukk alle Firefox-vinduer for å fullføre importeringen.</translation>
 <translation id="6798780071646309401">capslock er på</translation>
 <translation id="6798954102094737107">Programtillegg: <ph name="PLUGIN_NAME" /></translation>
+<translation id="679905836499387150">Skjulte knapper på verktøylinjen</translation>
 <translation id="6801129617625983991">Generelle innstillinger</translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{Velg om denne utvidelsen kan lese eller endre dette nettstedet}other{Velg om disse utvidelsene skal kunne lese eller endre dette nettstedet}}</translation>
 <translation id="6801435275744557998">Kalibrer berøringsskjermen</translation>
@@ -10118,10 +10116,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="9151906066336345901">end</translation>
 <translation id="9153274276370926498">Lacros-systeminformasjon</translation>
 <translation id="9153367754133725216">Se forslag til nye apper og nytt nettinnhold i Appoversikt og søkeresultater. Sender statistikk for å gjøre forslagene bedre kun hvis du har valgt å sende krasjrapporter, diagnostikkdata og bruksdata til ChromeOS.</translation>
-<translation id="9154082578438716291">Du ser sider du har besøkt, og foreslåtte søk, slik at du enkelt kan komme tilbake til den nyligste aktiviteten din i Chrome-reiser.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        Du kan administrere innstillinger via kortmenyen eller se flere alternativer i Tilpass Chrome.</translation>
 <translation id="9154194610265714752">Oppdatert</translation>
 <translation id="9157096865782046368">0,8 sekunder</translation>
 <translation id="9157697743260533322">Kunne ikke konfigurere automatiske oppdateringer for alle brukerne (feil ved start av forhåndskontroll: <ph name="ERROR_NUMBER" />)</translation>

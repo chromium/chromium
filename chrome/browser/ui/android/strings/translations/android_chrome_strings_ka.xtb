@@ -175,6 +175,7 @@
 <translation id="19288952978244135">Chrome-ის ხელახლა გახსნა.</translation>
 <translation id="1933845786846280168">არჩეული ჩანართი</translation>
 <translation id="1943432128510653496">პაროლების შენახვა</translation>
+<translation id="1944535645109964458">წვდომის გასაღებები მიუწვდომელია</translation>
 <translation id="1952172573699511566">შესაძლებლობის მიხედვით, ვებსაიტებზე ტექსტი ნაჩვენები იქნება თქვენს სასურველ ენაზე.</translation>
 <translation id="1959679933317802873">კონტენტის მოლოდინში</translation>
 <translation id="1960290143419248813">Chrome-ის განახლებები აღარ არის მხარდაჭერილი Android-ის ამ ვერსიისთვის</translation>
@@ -626,6 +627,7 @@
 <translation id="4257230861809842349">გსურთ, წაშალოთ პაროლები Google პაროლების მმართველიდან?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />გამოყენებული მონაცემების ტიპები:<ph name="END_BOLD" /> თქვენ მიერ ვების დათვალიერების ისტორია, ამ მოწყობილობაზე თქვენ მიერ Chrome-ის მეშვეობით მონახულებული საიტების ჩანაწერი.</translation>
 <translation id="4269820728363426813">ბმულის მისამართის კოპირება</translation>
+<translation id="4277529130885813215">სხვა მოწყობილობის გამოყენება</translation>
 <translation id="4283102315569707115">გსურთ დესკტოპის საიტების ნაგულისხმევად მოთხოვნა?</translation>
 <translation id="4285846616383034558">ქუქი-ჩანაწერები, ქეში და საიტების სხვა მონაცემები</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />ჩართეთ ეკრანის დაბლოკვა Android-ის პარამეტრებიდან<ph name="END_LINK" /></translation>
@@ -1166,6 +1168,7 @@
 <translation id="6955535239952325894">ეს პარამეტრი გათიშულია მართულ ბრაუზერებში</translation>
 <translation id="6963766334940102469">სანიშნეების წაშლა</translation>
 <translation id="696447261358045621">ინკოგნიტო რეჟიმიდან გამოსვლა</translation>
+<translation id="6965382102122355670">კარგი</translation>
 <translation id="6971862865055170158">უარყოფა</translation>
 <translation id="6978717888677691380">თქვენ მიერ დაბლოკილი საიტები</translation>
 <translation id="6979737339423435258">ყველა დროის</translation>
@@ -1324,6 +1327,7 @@
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" />-დან გაზიარებული ტექსტი</translation>
 <translation id="7762668264895820836">SD ბარათი <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">მისამართის დამატება</translation>
+<translation id="7766587497031415281">მეტი ვარიანტები დათვალიერების მონაცემების გასასუფთავებლად</translation>
 <translation id="7772032839648071052">დაადასტურეთ პაროლი</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" />-ის დახურვა</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 და <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> სხვა}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 და <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> სხვა}}</translation>

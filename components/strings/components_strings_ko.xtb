@@ -100,6 +100,7 @@
 <translation id="1195073053842921378">이 주소가 기기에서 삭제됩니다.</translation>
 <translation id="1195558154361252544">허용한 사이트를 제외한 모든 사이트의 알림이 자동으로 차단됩니다.</translation>
 <translation id="1197088940767939838">오렌지색</translation>
+<translation id="1197761954713363183">패스키 확인 시트 닫힘</translation>
 <translation id="1201402288615127009">다음</translation>
 <translation id="1201895884277373915">이 사이트에서 더보기</translation>
 <translation id="1202892408424955784">추적 중인 제품</translation>
@@ -382,6 +383,7 @@
 <translation id="1725591448053514783">봉투 You 6</translation>
 <translation id="1727613060316725209">인증서가 유효함</translation>
 <translation id="1728677426644403582">웹페이지 소스를 보는 중</translation>
+<translation id="1728803206919861584">시크릿 모드 외부에서 패스키를 저장하시겠습니까?</translation>
 <translation id="173080396488393970">이 유형의 카드는 지원되지 않습니다.</translation>
 <translation id="1732445923934584865">직접 요청하기</translation>
 <translation id="1733064249834771892">글꼴</translation>
@@ -1664,6 +1666,7 @@
 <translation id="4415156962929755728">플라스틱(고광택)</translation>
 <translation id="4415426530740016218">픽업 주소</translation>
 <translation id="4424024547088906515">이 서버가 <ph name="DOMAIN" />임을 입증할 수 없으며 Chrome에서 신뢰하는 보안 인증서가 아닙니다. 서버를 잘못 설정했거나 불법 사용자가 연결을 가로채고 있기 때문일 수 있습니다.</translation>
+<translation id="4425173294238317796">패스키 확인 시트</translation>
 <translation id="4425750422187370446">운동복</translation>
 <translation id="4428065317363009941">광고 개인 최적화</translation>
 <translation id="443121186588148776">직렬 포트</translation>
@@ -2019,6 +2022,7 @@
 <translation id="5157504274688344097">대형 할인점 및 백화점</translation>
 <translation id="5158275234811857234">표지</translation>
 <translation id="5159010409087891077">새 시크릿 창에서 페이지 열기(⇧⌘N)</translation>
+<translation id="5161262286013276579">패스키 확인 시트 열림</translation>
 <translation id="5161334686036120870">제목:</translation>
 <translation id="5161506081086828129">스태커 9</translation>
 <translation id="5164798890604758545">텍스트 입력됨</translation>
@@ -2901,6 +2905,7 @@
 <translation id="7004583254764674281">Windows Hello를 사용하여 빠르게 카드 확인</translation>
 <translation id="7006930604109697472">무시하고 보내기</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7013762323294215682">이 패스키는 비밀번호 관리자에 저장됩니다. 패스키에 액세스할 수 있는 사용자는 모두 이 패스키를 사용할 수 있습니다.</translation>
 <translation id="7014042602717177828">차량용 오디오</translation>
 <translation id="7014741021609395734">확대/축소 수준</translation>
 <translation id="7016992613359344582">이러한 금액 청구는 일회성이거나 반복적일 수 있으며 불분명한 방식으로 이루어질 수도 있습니다.</translation>

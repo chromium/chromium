@@ -12,6 +12,7 @@
 <translation id="1149651794389918149">Login ke Chrome. Jika Anda hanya ingin login ke akun sekali, Anda dapat <ph name="GUEST_LINK_BEGIN" />menggunakan perangkat sebagai tamu<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">Tentang ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Buka di Chrome</translation>
+<translation id="1194807384646768652">Chrome memblokir download ini karena jenis file tersebut tidak biasa didownload dan mungkin berbahaya</translation>
 <translation id="1203500561924088507">Terima kasih telah menginstal. Anda harus memulai ulang browser sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1278833599417554002">Luncurkan kembali untuk mengupdate &amp;Chrome</translation>
 <translation id="1302523850133262269">Harap tunggu selagi Chrome memasang pembaruan sistem terkini.</translation>
@@ -129,10 +130,12 @@
 <translation id="3080151273017101988">Terus jalankan apl latar belakang saat Google Chrome ditutup</translation>
 <translation id="3089968997497233615">Tersedia versi Google Chrome yang baru dan lebih aman.</translation>
 <translation id="3100998948628680988">Beri nama profil Chrome Anda</translation>
+<translation id="3112458742631356345">Chrome memblokir download ini karena file tersebut tidak biasa didownload dan mungkin berbahaya</translation>
 <translation id="3114643501466072395">Untuk memeriksa apakah sandi Anda yang lain aman dari pelanggaran data dan masalah keamanan lainnya, <ph name="BEGIN_LINK" />login ke Chrome<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">Perubahan Anda akan berlaku pada peluncuran ulang Google Chrome selanjutnya.</translation>
 <translation id="3149510190863420837">Aplikasi Chrome</translation>
 <translation id="3169523567916669830">Selama uji coba, Anda dapat melihat dan menghapus topik terkait minat yang digunakan situs untuk menampilkan iklan kepada Anda. Chrome memperkirakan minat Anda berdasarkan histori penjelajahan terbaru Anda.</translation>
+<translation id="3196187562065225381">Chrome memblokir download ini karena file tersebut berbahaya</translation>
 <translation id="3226612997184048185">Jika Anda juga menyimpan bookmark di Akun Google, Anda dapat memantau harga produk di Chrome dan mendapatkan notifikasi jika ada penurunan harga</translation>
 <translation id="3245429137663807393">Jika Anda juga membagikan laporan penggunaan Chrome, laporan tersebut akan menyertakan URL yang Anda buka</translation>
 <translation id="3282568296779691940">Login ke Chrome</translation>
@@ -180,6 +183,7 @@
 <translation id="4148957013307229264">Memasang...</translation>
 <translation id="4149882025268051530">Instalatur gagal mendekompresi arsip. Download kembali Google Chrome.</translation>
 <translation id="4153934450158521343">Chrome akan segera ditutup serta menghapus data</translation>
+<translation id="4175922240926474352">Chrome memblokir download ini karena situs tidak menggunakan koneksi yang aman dan file mungkin telah dimodifikasi</translation>
 <translation id="4191857738314598978">{0,plural, =1{Luncurkan ulang Chrome dalam satu hari}other{Luncurkan ulang Chrome dalam # hari}}</translation>
 <translation id="4205939740494406371">Chrome tidak dapat memeriksa sandi Anda. Coba lagi setelah 24 jam atau <ph name="BEGIN_LINK" />periksa sandi di Akun Google Anda<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Membatalkan...</translation>
@@ -356,6 +360,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="7641148173327520642">Administrator sistem Anda telah mengonfigurasi Google Chrome untuk membuka <ph name="ALTERNATIVE_BROWSER_NAME" /> guna mengakses <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7649070708921625228">Bantuan</translation>
 <translation id="7651907282515937834">Logo Chrome Enterprise</translation>
+<translation id="76531479118467370">Chrome memblokir download ini karena Anda menonaktifkan Safe Browsing dan file tidak dapat diverifikasi</translation>
 <translation id="7655455401911432608">Histori penjelajahan Anda, catatan situs yang telah Anda buka menggunakan Chrome di perangkat ini.</translation>
 <translation id="7747138024166251722">Pemasang tidak dapat membuat direktori sementara. Periksa kapasitas kosong pada disk dan izin untuk memasang software.</translation>
 <translation id="7761834446675418963">Klik nama Anda untuk membuka Chrome dan mulai menjelajah.</translation>
@@ -372,6 +377,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="7890208801193284374">Jika Anda berbagi komputer, teman dan keluarga bisa menjelajah secara terpisah dan menyiapkan Chrome sesuai keinginannya.</translation>
 <translation id="7896673875602241923">Seseorang telah masuk ke Chrome pada komputer ini sebagai <ph name="ACCOUNT_EMAIL_LAST" />. Harap buat pengguna Chrome baru untuk memisahkan informasi Anda.</translation>
 <translation id="7917876797003313048">Anda dapat mengelola Akun Google yang Anda gunakan untuk login. Akun Google Anda digunakan untuk browser Chrome, Play Store, Gmail, dan lainnya. Jika Anda ingin menambahkan akun untuk orang lain, seperti anggota keluarga, tambahkan pengguna baru ke <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
+<translation id="7936702483636872823">Chrome memblokir download ini karena file tersebut menipu dan dapat menyebabkan perubahan tak terduga di perangkat Anda</translation>
 <translation id="7951272445806340501">ChromeOS Flex perlu dimulai ulang untuk menerapkan update.</translation>
 <translation id="7962368738413920945">Situs mungkin akan berfungsi seperti yang Anda harapkan, tetapi tidak akan mengingat Anda setelah Anda menutup semua jendela Chrome</translation>
 <translation id="7962410387636238736">Komputer ini tidak akan menerima update Google Chrome lagi karena Windows XP dan Windows Vista sudah tidak didukung</translation>

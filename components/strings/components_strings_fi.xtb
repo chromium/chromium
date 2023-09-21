@@ -100,6 +100,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1195073053842921378">Osoite poistetaan tältä laitteelta</translation>
 <translation id="1195558154361252544">Ilmoitukset estetään automaattisesti kaikilla muilla paitsi sallituilla sivustoilla</translation>
 <translation id="1197088940767939838">Oranssi</translation>
+<translation id="1197761954713363183">Avainkoodin vahvistussivu suljettu</translation>
 <translation id="1201402288615127009">Seuraava</translation>
 <translation id="1201895884277373915">Lisää tästä sivustosta</translation>
 <translation id="1202892408424955784">Seuratut tuotteet</translation>
@@ -382,6 +383,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1725591448053514783">Kirjekuori 6</translation>
 <translation id="1727613060316725209">Varmenne on voimassa</translation>
 <translation id="1728677426644403582">Tämä on verkkosivun lähdekoodi.</translation>
+<translation id="1728803206919861584">Tallennetaanko avainkoodi incognito-tilan ulkopuolella?</translation>
 <translation id="173080396488393970">Tätä korttityyppiä ei tueta.</translation>
 <translation id="1732445923934584865">Kysy henkilökohtaisesti</translation>
 <translation id="1733064249834771892">fontit</translation>
@@ -1665,6 +1667,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4415156962929755728">Muovi (erittäin kiiltävä)</translation>
 <translation id="4415426530740016218">Nouto-osoite</translation>
 <translation id="4424024547088906515">Palvelin ei voinut todistaa olevansa <ph name="DOMAIN" />; Chrome ei luota sen suojausvarmenteeseen. Tämä voi johtua määritysvirheestä tai verkkoyhteytesi siepanneesta hyökkääjästä.</translation>
+<translation id="4425173294238317796">Avainkoodin vahvistussivu</translation>
 <translation id="4425750422187370446">Urheiluvaatteet</translation>
 <translation id="4428065317363009941">Mainosten personointi</translation>
 <translation id="443121186588148776">Sarjaportti</translation>
@@ -2020,6 +2023,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5157504274688344097">Suurkauppiaat ja tavaratalot</translation>
 <translation id="5158275234811857234">Kansi</translation>
 <translation id="5159010409087891077">Avaa sivu uudessa incognito-ikkunassa (⇧ + ⌘ + N).</translation>
+<translation id="5161262286013276579">Avainkoodin vahvistussivu avattu</translation>
 <translation id="5161334686036120870">Aihe:</translation>
 <translation id="5161506081086828129">Pinoaja 9</translation>
 <translation id="5164798890604758545">Teksti on lisätty</translation>
@@ -2902,6 +2906,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="7004583254764674281">Vahvista kortteja nopeammin Windows Hellolla</translation>
 <translation id="7006930604109697472">Lähetä silti</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7013762323294215682">Avainkoodi tallennetaan salasanoihin. Avainkoodia voi käyttää kuka tahansa, jolla on pääsy siihen.</translation>
 <translation id="7014042602717177828">Auton äänentoistolaitteet</translation>
 <translation id="7014741021609395734">Zoomauksen taso</translation>
 <translation id="7016992613359344582">Veloitukset voivat olla kertaluontoisia tai toistuvia, eikä niitä välttämättä esitetä selkeästi.</translation>

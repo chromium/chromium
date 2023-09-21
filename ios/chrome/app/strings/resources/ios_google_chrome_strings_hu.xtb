@@ -25,6 +25,7 @@ Megjegyzések:
 
   • Ha szinkronizálja előzményeit Google-fiókjával, akkor a mutatók a felkeresett URL-ekkel kapcsolatos információkat is tartalmazhatnak.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">A Chrome a legerősebb védelmet biztosítja a kártékony webhelyek ellen</translation>
+<translation id="1615715390546812898">Hangalapú keresés a Chrome-ban.</translation>
 <translation id="1657395063736185342">Képi elemek keresése a Chrome-ban</translation>
 <translation id="1675955119303651351">A Chrome egyes adatait még nem mentette a rendszer a Google-fiókjába.
         A kijelentkezés előtt várjon néhány percet. Ha most jelentkezik ki, akkor ezek az adatok törlődnek.</translation>
@@ -104,6 +105,7 @@ Megjegyzések:
         A kijelentkezés előtt várjon néhány percet. Ha most jelentkezik ki, akkor ezek az adatok törlődnek.</translation>
 <translation id="484033449593719797">A Chrome bétaverziója nem támogatja</translation>
 <translation id="4840404732697892756">A Google Jelszókezelő ellenőrizni tudja a mentett jelszavakat, ha Ön bejelentkezik Google-fiókjával.</translation>
+<translation id="4860330141789125848">{COUNT,plural, =1{A Chrome segíthet a csomag nyomon követésében az Új lap oldalon.}other{A Chrome segíthet a csomagok nyomon követésében az Új lap oldalon.}}</translation>
 <translation id="4903674399067644695">Ez a kártya javaslatokat ad arra, hogy miként hozhatja ki a legtöbbet a Chrome-ból.</translation>
 <translation id="49200511069271369">Szervezete (<ph name="DOMAIN" />) kezeli azt a fiókot, amelybe bejelentkezik, valamint azt is, hogy miként használhatja a Chrome-ot. A rendszergazda beállíthat, illetve korlátozhat bizonyos funkciókat.</translation>
 <translation id="5030102366287574140">A Chrome segíthet az adatvédelmi incidensek, a nem biztonságos webhelyek és egyebek elleni védekezésben.</translation>
@@ -113,10 +115,12 @@ Megjegyzések:
 <translation id="5156818928311866442">Megnyitja a Chrome beállításait a Chrome alapértelmezett böngészőként való beállításához.</translation>
 <translation id="5162467219239570114">A Chrome elavult. Ha nem áll rendelkezésre frissítés az <ph name="BEGIN_LINK" />App Store-ban<ph name="END_LINK" />, akkor lehet, hogy az eszköz már nem támogatja a Chrome újabb verzióit.</translation>
 <translation id="5190139289262548459">Szervezete (<ph name="DOMAIN" />) kezeli azt a fiókot, amelybe be van jelentkezve, és a Chrome használatának módját is.</translation>
+<translation id="5278862365980079760">Zárolhatja az inkognitó lapokat, amikor kilép a Chrome-ból, vagy másik alkalmazásra vált.</translation>
 <translation id="5389212809648216794">A Google Chrome nem tudja használni a kamerát, mivel egy másik alkalmazás használja</translation>
 <translation id="5395376160638294582">Biztosítsa, hogy mindig használhassa a Google-fiókjában lévő Chrome-adatokat</translation>
 <translation id="5439191312780166229">Figyelmezteti Önt a veszélyes webhelyekre (még azokra is, amelyekről a Google korábban nem tudott), azáltal hogy több, webhelyekről származó adatot elemez, mint a normál védelem. Beállíthatja a Chrome figyelmeztetéseinek kihagyását.</translation>
 <translation id="5460571915754665838">4. Válassza ki a Chrome böngészőt.</translation>
+<translation id="546541279759910616">{COUNT,plural, =1{A Chrome segít a csomag nyomon követésében az Új lap oldalon.}other{A Chrome segít a csomagok nyomon követésében az Új lap oldalon.}}</translation>
 <translation id="5492504007368565877">A Google Jelszókezelő nem tudja ellenőrizni az Ön jelszavait.</translation>
 <translation id="5527026824954593399">Koppintson a „Megtekintés a Google Térképpel a Chrome-ban” lehetőségre.</translation>
 <translation id="5552137475244467770">A Chrome rendszeres időközönként online közzétett listák alapján ellenőrzi az Ön jelszavait. Az eljárás során jelszavai és felhasználónevei titkosítva vannak, így senki nem láthatja őket, még a Google sem.</translation>

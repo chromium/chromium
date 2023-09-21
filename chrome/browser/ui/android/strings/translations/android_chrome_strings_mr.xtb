@@ -175,6 +175,7 @@
 <translation id="19288952978244135">Chrome पुन्हा उघडा.</translation>
 <translation id="1933845786846280168">निवडलेला टॅब</translation>
 <translation id="1943432128510653496">पासवर्ड सेव्ह करा</translation>
+<translation id="1944535645109964458">कोणत्याही पासकी उपलब्ध नाहीत</translation>
 <translation id="1952172573699511566">वेबसाइट शक्य असताना तुमच्या प्राधान्य असलेल्‍या भाषेमध्ये मजकूर दाखवेल.</translation>
 <translation id="1959679933317802873">आशयाची प्रतीक्षा करत आहे</translation>
 <translation id="1960290143419248813">Android च्या या आवृत्तीसाठी Chrome अपडेटना सपोर्ट नाही</translation>
@@ -626,6 +627,7 @@
 <translation id="4257230861809842349">Google Password Manager मधून पासवर्ड हटवायचे आहेत का?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />कोणता डेटा वापरला जातो:<ph name="END_BOLD" /> तुमचा ब्राउझिंग इतिहास, या डिव्हाइसवर तुम्ही Chrome वापरून भेट दिलेल्या साइटची नोंद.</translation>
 <translation id="4269820728363426813">लिंकचा पत्ता कॉपी करा</translation>
+<translation id="4277529130885813215">दुसरे डिव्‍हाइस वापरा</translation>
 <translation id="4283102315569707115">बाय डीफॉल्ट डेस्कटॉप साइटची विनंती करायची आहे का?</translation>
 <translation id="4285846616383034558">कुकी, कॅशे आणि इतर साइट डेटा</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android सेटिंग्जमध्ये स्क्रीन लॉक सुरू करणे<ph name="END_LINK" /></translation>
@@ -1166,6 +1168,7 @@
 <translation id="6955535239952325894">व्यवस्थापित केलेल्या ब्राउझरवर हे सेटिंग बंद केलेले आहे</translation>
 <translation id="6963766334940102469">बुकमार्क हटवा</translation>
 <translation id="696447261358045621">गुप्त मोडमधून बाहेर पडा</translation>
+<translation id="6965382102122355670">ठीक आहे</translation>
 <translation id="6971862865055170158">मंजुरी देऊ नका</translation>
 <translation id="6978717888677691380">तुम्ही ब्लॉक केलेल्या साइट</translation>
 <translation id="6979737339423435258">पूर्णवेळ</translation>

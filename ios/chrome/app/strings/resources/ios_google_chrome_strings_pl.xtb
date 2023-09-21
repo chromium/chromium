@@ -105,6 +105,7 @@ Pamiętaj, że:
         Odczekaj kilka minut, zanim się wylogujesz. Jeśli się teraz wylogujesz, te dane zostaną usunięte.</translation>
 <translation id="484033449593719797">Nieobsługiwane w Chrome Beta</translation>
 <translation id="4840404732697892756">Menedżer haseł Google może sprawdzać Twoje hasła, gdy zalogujesz się na konto Google.</translation>
+<translation id="4860330141789125848">{COUNT,plural, =1{Chrome może pomóc Ci śledzić tę przesyłkę na stronie nowej karty.}few{Chrome może pomóc Ci śledzić te przesyłki na stronie nowej karty.}many{Chrome może pomóc Ci śledzić te przesyłki na stronie nowej karty.}other{Chrome może pomóc Ci śledzić te przesyłki na stronie nowej karty.}}</translation>
 <translation id="4903674399067644695">Ta karta zawiera sugestie, które pomogą Ci w pełni wykorzystać możliwości Chrome.</translation>
 <translation id="49200511069271369">Twoja organizacja (<ph name="DOMAIN" />) zarządza kontem, na które się logujesz, oraz sposobem korzystania z Chrome. Administrator może konfigurować lub ograniczać pewne funkcje.</translation>
 <translation id="5030102366287574140">Chrome pomaga chronić Cię przed naruszeniami bezpieczeństwa danych, niebezpiecznymi stronami internetowymi i innymi zagrożeniami.</translation>
@@ -114,10 +115,12 @@ Pamiętaj, że:
 <translation id="5156818928311866442">Otwiera opcję Chrome pozwalającą ustawić Chrome jako przeglądarkę domyślną.</translation>
 <translation id="5162467219239570114">Przeglądarka Chrome jest nieaktualna. Jeśli w <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> nie ma dostępnej aktualizacji, Twoje urządzenie może już nie obsługiwać nowych wersji Chrome.</translation>
 <translation id="5190139289262548459">Twoja organizacja (<ph name="DOMAIN" />) zarządza kontem, na które się logujesz, i korzystaniem z Chrome.</translation>
+<translation id="5278862365980079760">Po zamknięciu Chrome lub przełączeniu się na inną aplikację zablokuj karty incognito.</translation>
 <translation id="5389212809648216794">Google Chrome nie może użyć aparatu, bo używa go już inna aplikacja</translation>
 <translation id="5395376160638294582">Upewnij się, że zawsze możesz używać danych Chrome na swoim koncie Google</translation>
 <translation id="5439191312780166229">Ostrzega o niebezpiecznych witrynach, nawet takich, które wcześniej nie były znane Google. Jest to możliwe dzięki analizowaniu większej ilości danych z witryn niż w trybie standardowej ochrony. Możesz wybrać pomijanie ostrzeżeń Chrome.</translation>
 <translation id="5460571915754665838">4. Wybierz Chrome.</translation>
+<translation id="546541279759910616">{COUNT,plural, =1{Chrome pomoże Ci śledzić tę przesyłkę na stronie nowej karty.}few{Chrome pomoże Ci śledzić te przesyłki na stronie nowej karty.}many{Chrome pomoże Ci śledzić te przesyłki na stronie nowej karty.}other{Chrome pomoże Ci śledzić te przesyłki na stronie nowej karty.}}</translation>
 <translation id="5492504007368565877">Menedżer haseł Google nie może sprawdzić Twoich haseł.</translation>
 <translation id="5527026824954593399">Kliknij „Zobacz w Mapach Google w Chrome”.</translation>
 <translation id="5552137475244467770">Co jakiś czas Chrome sprawdza, czy Twoje hasła nie pojawiły się na listach opublikowanych w internecie. Aby nikt (nawet Google) nie mógł odczytać haseł ani nazw użytkowników, podczas sprawdzania są one zaszyfrowane.</translation>

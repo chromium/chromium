@@ -175,7 +175,8 @@ Kur ti fshin historikun tënd të shfletimit — të gjithë ose për një sajt 
 <translation id="19288952978244135">Rihap Chrome.</translation>
 <translation id="1933845786846280168">Skeda e zgjedhur</translation>
 <translation id="1943432128510653496">Ruaj fjalëkalimet</translation>
-<translation id="1952172573699511566">Sajtet e uebit do ta shfaqin tekstin në gjuhën tënde të preferuar, kur është e mundur.</translation>
+<translation id="1944535645109964458">Nuk ofrohet asnjë çelës kalimi</translation>
+<translation id="1952172573699511566">Uebsajtet do ta shfaqin tekstin në gjuhën tënde të preferuar, kur është e mundur.</translation>
 <translation id="1959679933317802873">Në pritje të përmbajtjes</translation>
 <translation id="1960290143419248813">Përditësimet e Chrome nuk mbështeten më për këtë version të Android</translation>
 <translation id="1963976881984600709">Mbrojtja standarde</translation>
@@ -626,6 +627,7 @@ Kodet e gjendjes private përmirësojnë privatësinë në ueb dhe nuk mund të 
 <translation id="4257230861809842349">Të fshihen fjalëkalimet nga "Menaxheri i fjalëkalimeve i Google"?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Çfarë të dhënash përdoren:<ph name="END_BOLD" /> Historiku yt i shfletimit, regjistri i sajteve që ke vizituar duke përdorur Chrome në këtë pajisje.</translation>
 <translation id="4269820728363426813">Kopjo adresën e lidhjes</translation>
+<translation id="4277529130885813215">Përdor një pajisje tjetër</translation>
 <translation id="4283102315569707115">Të kërkohen si parazgjedhje sajtet për desktop?</translation>
 <translation id="4285846616383034558">Kukit, memoria specifike dhe të dhëna të tjera të sajteve</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Aktivizo kyçjen e ekranit te cilësimet e Android<ph name="END_LINK" /></translation>
@@ -977,7 +979,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="605721222689873409">VV</translation>
 <translation id="6059830886158432458">Kontrollo historitë dhe aktivitetin tënd këtu</translation>
 <translation id="6070730414166672373">Po kontakton bankën tënde\u2026</translation>
-<translation id="6085886413119427067">Përcakton mënyrën e lidhjes me sajtet e uebit nëpërmjet një lidhjeje të sigurt</translation>
+<translation id="6085886413119427067">Përcakton mënyrën e lidhjes me uebsajtet nëpërmjet një lidhjeje të sigurt</translation>
 <translation id="6091413777268123602">Me provat e Privacy Sandbox, sajtet mund të ofrojnë të njëjtën përvojë shfletimi duke përdorur më pak nga të dhënat e tua. Kjo nënkupton më shumë privatësi për ty dhe më pak gjurmim nëpër sajte. Do të shtojmë prova të reja sapo ato të jenë gati për testim.</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> orë të mbetura</translation>
 <translation id="6095578583683628124">Nëse Google është gjithashtu motori yt i parazgjedhur i kërkimit, do të shohësh sugjerime më të mira dhe të përshtatshme me kontekstin</translation>
@@ -1068,7 +1070,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Kontrolluar 1 orë më parë}other{Kontrolluar # orë më parë}}</translation>
 <translation id="6545017243486555795">Pastro të gjitha të dhënat</translation>
 <translation id="6546511553472444032">Skedari mund të jetë i dëmshëm</translation>
-<translation id="6550891580932862748">Nuk të mbron nga sajtet e uebit, shkarkimet dhe shtesat e rrezikshme. Cilësimet e tua të "Shfletimit të sigurt" në produktet e tjera të Google nuk do të preken.</translation>
+<translation id="6550891580932862748">Nuk të mbron nga uebsajtet, shkarkimet dhe shtesat e rrezikshme. Cilësimet e tua të "Shfletimit të sigurt" në produktet e tjera të Google nuk do të preken.</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> dhe <ph name="TAB_COUNT_ONE" /> skedë tjetër do të mbyllen}other{<ph name="TAB_TITLE" /> dhe <ph name="TAB_COUNT_MANY" /> skeda të tjera do të mbyllen}}</translation>
 <translation id="6560414384669816528">Kërko me Sogou</translation>
 <translation id="656065428026159829">Shiko më shumë</translation>
@@ -1166,6 +1168,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="6955535239952325894">Ky cilësim është i çaktivizuar në shfletuesit e menaxhuar</translation>
 <translation id="6963766334940102469">Fshi faqeshënuesit</translation>
 <translation id="696447261358045621">Dil nga modaliteti "i fshehtë"</translation>
+<translation id="6965382102122355670">Në rregull</translation>
 <translation id="6971862865055170158">Mos e mirato</translation>
 <translation id="6978717888677691380">Sajtet që ke bllokuar</translation>
 <translation id="6979737339423435258">Gjatë të gjithë kohës</translation>
@@ -1216,7 +1219,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="7242755609445462077">Theksimi i stilizuar (<ph name="CURRENT_DATE" />)</translation>
 <translation id="7248069434667874558">Sigurohu që <ph name="TARGET_DEVICE_NAME" /> të ketë të aktivizuar sinkronizimin në Chrome</translation>
 <translation id="7252076891734325316">Vendose telefonin tënd pranë kompjuterit</translation>
-<translation id="7260367682327802201">Pajisja jote Android mund të përfshijë një cilësim të ngjashëm. Nëse "Matja e reklamave" është aktivizuar në Chrome dhe në pajisjen tënde Android, një kompani mund të matë efektivitetin e një reklame nëpër sajtet e uebit që viziton dhe aplikacionet që përdor ti.</translation>
+<translation id="7260367682327802201">Pajisja jote Android mund të përfshijë një cilësim të ngjashëm. Nëse "Matja e reklamave" është aktivizuar në Chrome dhe në pajisjen tënde Android, një kompani mund të matë efektivitetin e një reklame nëpër uebsajtet që viziton dhe aplikacionet që përdor ti.</translation>
 <translation id="727288900855680735">Të dërgohet <ph name="ONE_TIME_CODE" /> te <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Sajt i bllokuar</translation>
 <translation id="7276100255011548441">Chrome i fshin automatikisht temat që janë më të vjetra se 4 javë. Ndërsa vazhdon të shfletosh, një temë mund të shfaqet përsëri në listë. Ose mund t'i bllokosh temat që nuk dëshiron që Chrome t'i ndajë me sajtet. Mëso më shumë rreth <ph name="BEGIN_LINK" />menaxhimit të privatësisë së reklamave në Chrome<ph name="END_LINK" />.</translation>
@@ -1225,7 +1228,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="7291910923717764901">Përshkrimet e imazheve u shtuan për këtë faqe</translation>
 <translation id="7293429513719260019">Zgjidh gjuhën</translation>
 <translation id="729975465115245577">Pajisja jote nuk ka një aplikacion për të ruajtur skedarin e fjalëkalimeve.</translation>
-<translation id="7304072650267745798">Pajisja jote Android mund të përfshijë një cilësim të ngjashëm. Nëse ky cilësim është aktivizuar në Chrome dhe në pajisjen tënde Android, një kompani mund të matë efektivitetin e një reklame nëpër sajtet e uebit që viziton dhe aplikacionet që përdor ti.</translation>
+<translation id="7304072650267745798">Pajisja jote Android mund të përfshijë një cilësim të ngjashëm. Nëse ky cilësim është aktivizuar në Chrome dhe në pajisjen tënde Android, një kompani mund të matë efektivitetin e një reklame nëpër uebsajtet që viziton dhe aplikacionet që përdor ti.</translation>
 <translation id="7304873321153398381">Jashtë linje. Chrome nuk mund t'i kontrollojë fjalëkalimet e tua.</translation>
 <translation id="7313188324932846546">Trokit për të konfiguruar sinkronizimin</translation>
 <translation id="7324354302972299151">Dërgo një kërkesë "Do Not Track"</translation>
@@ -1258,7 +1261,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="7455988709578031708">Bazuar në historikun tënd të shfletimit. Ky cilësim është aktiv.</translation>
 <translation id="7456774706094330779">Ngarkim paraprak i zgjatur</translation>
 <translation id="7466431077154602932">Pamja kompakte</translation>
-<translation id="7474822150871987353">Mëso për temat në sajtet e uebit pa u larguar nga faqja. Zgjidh një ose më shumë fjalë në faqe për të kërkuar për to.</translation>
+<translation id="7474822150871987353">Mëso për temat në uebsajtet pa u larguar nga faqja. Zgjidh një ose më shumë fjalë në faqe për të kërkuar për to.</translation>
 <translation id="7475192538862203634">Nëse e shikon shpesh këtë, provo këto <ph name="BEGIN_LINK" />sugjerime<ph name="END_LINK" />.</translation>
 <translation id="7475688122056506577">Karta SD nuk u gjet. Mund të mungojnë disa nga skedarët e tu.</translation>
 <translation id="7479104141328977413">Menaxhimi i skedave</translation>
@@ -1270,7 +1273,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="7493994139787901920"><ph name="VERSION" /> (u përditësua <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7497755084107113646">Tema u shtua përsëri te temat e mundshme</translation>
 <translation id="7498271377022651285">Qëndro në pritje...</translation>
-<translation id="7502234197872745058">Për të dalë nga "Llogaria jote e Google" në të gjitha sajtet e uebit, <ph name="BEGIN_LINK1" />dil nga Chrome<ph name="END_LINK1" />.</translation>
+<translation id="7502234197872745058">Për të dalë nga "Llogaria jote e Google" në të gjitha uebsajtet, <ph name="BEGIN_LINK1" />dil nga Chrome<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Përditësimet nuk ofrohen</translation>
 <translation id="7507207699631365376">Shiko <ph name="BEGIN_LINK" />politikën e privatësisë<ph name="END_LINK" /> së këtij ofruesi</translation>
 <translation id="7514365320538308">Shkarko</translation>

@@ -175,6 +175,7 @@ Când ștergi istoricul de navigare (în întregime sau pentru un anumit site), 
 <translation id="19288952978244135">Redeschide Chrome.</translation>
 <translation id="1933845786846280168">Fila selectată</translation>
 <translation id="1943432128510653496">Parole salvate</translation>
+<translation id="1944535645109964458">Nu sunt disponibile chei de acces</translation>
 <translation id="1952172573699511566">Site-urile vor afișa textul în limba ta preferată, dacă este posibil.</translation>
 <translation id="1959679933317802873">Se așteaptă conținutul</translation>
 <translation id="1960290143419248813">Actualizările Chrome nu mai sunt acceptate pentru această versiune de Android</translation>
@@ -626,6 +627,7 @@ Indicativele de stare private îmbunătățesc confidențialitatea pe web și nu
 <translation id="4257230861809842349">Ștergi parolele din Managerul de parole Google?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Ce date sunt folosite:<ph name="END_BOLD" /> istoricul tău de navigare, o evidență a site-urilor pe care le-ai accesat folosind Chrome pe acest dispozitiv.</translation>
 <translation id="4269820728363426813">Copiază adresa linkului</translation>
+<translation id="4277529130885813215">Folosește alt dispozitiv</translation>
 <translation id="4283102315569707115">Soliciți în mod prestabilit versiunea site-urilor pentru computer?</translation>
 <translation id="4285846616383034558">Cookie-urile, memoria cache și alte date privind site-ul</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Activează blocarea ecranului în Setările Android<ph name="END_LINK" /></translation>
@@ -1166,6 +1168,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6955535239952325894">Setarea este dezactivată în browserele gestionate</translation>
 <translation id="6963766334940102469">Șterge marcaje</translation>
 <translation id="696447261358045621">Ieși din modul incognito</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6971862865055170158">Nu aproba</translation>
 <translation id="6978717888677691380">Site-uri pe care le-ai blocat</translation>
 <translation id="6979737339423435258">Dintotdeauna</translation>
@@ -1324,6 +1327,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="7757787379047923882">Text trimis de pe <ph name="DEVICE_NAME" /></translation>
 <translation id="7762668264895820836">Cardul SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Adaugă o adresă</translation>
+<translation id="7766587497031415281">Mai multe opțiuni pentru ștergerea datelor de navigare</translation>
 <translation id="7772032839648071052">Confirmă expresia de acces</translation>
 <translation id="7772375229873196092">Închide <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 și încă <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 și încă <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 și încă <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>

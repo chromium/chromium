@@ -175,6 +175,7 @@ Jika Anda menghapus histori penjelajahan, baik semua histori maupun histori untu
 <translation id="19288952978244135">Buka Chrome lagi.</translation>
 <translation id="1933845786846280168">Tab yang Dipilih</translation>
 <translation id="1943432128510653496">Simpan sandi</translation>
+<translation id="1944535645109964458">Tidak ada kunci sandi yang tersedia</translation>
 <translation id="1952172573699511566">Situs akan menampilkan teks dalam bahasa pilihan Anda, jika memungkinkan.</translation>
 <translation id="1959679933317802873">Menunggu konten</translation>
 <translation id="1960290143419248813">Update Chrome tidak lagi didukung untuk versi Android ini</translation>
@@ -626,6 +627,7 @@ Private state token meningkatkan privasi di web dan tidak dapat digunakan untuk 
 <translation id="4257230861809842349">Hapus sandi dari Pengelola Sandi Google?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Data yang digunakan:<ph name="END_BOLD" /> Histori penjelajahan Anda, catatan situs yang telah Anda buka menggunakan Chrome di perangkat ini.</translation>
 <translation id="4269820728363426813">Salin URL</translation>
+<translation id="4277529130885813215">Gunakan perangkat lain</translation>
 <translation id="4283102315569707115">Minta situs desktop secara default?</translation>
 <translation id="4285846616383034558">Cookie, cache, dan data situs lainnya</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Aktifkan kunci layar di setelan Android<ph name="END_LINK" /></translation>
@@ -1166,6 +1168,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6955535239952325894">Setelan ini dinonaktifkan di browser terkelola</translation>
 <translation id="6963766334940102469">Hapus bookmark</translation>
 <translation id="696447261358045621">Keluar dari mode Samaran</translation>
+<translation id="6965382102122355670">Oke</translation>
 <translation id="6971862865055170158">Jangan setujui</translation>
 <translation id="6978717888677691380">Situs yang Anda blokir</translation>
 <translation id="6979737339423435258">Semua</translation>
@@ -1324,6 +1327,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="7757787379047923882">Teks dibagikan dari <ph name="DEVICE_NAME" /></translation>
 <translation id="7762668264895820836">Kartu SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Tambahkan alamat</translation>
+<translation id="7766587497031415281">Opsi lainnya untuk menghapus data penjelajahan</translation>
 <translation id="7772032839648071052">Konfirmasi frasa sandi</translation>
 <translation id="7772375229873196092">Tutup <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> lainnya}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> lainnya}}</translation>

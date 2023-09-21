@@ -14,6 +14,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="1149651794389918149">Prijavite se na Chrome. Ako se želite prijaviti na račun samo jedanput, možete <ph name="GUEST_LINK_BEGIN" />koristiti uređaj kao gost<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">O ChromeOS-u</translation>
 <translation id="1154147086299354128">&amp;Otvori u Chromeu</translation>
+<translation id="1194807384646768652">Chrome je blokirao ovo preuzimanje jer se ta vrsta fajla ne preuzima često i fajl je možda opasan</translation>
 <translation id="1203500561924088507">Hvala što ste instalirali. Morate ponovo pokrenuti preglednik prije nego što možete koristiti <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1278833599417554002">Ponovo pokrenite da ažurirate Chrome</translation>
 <translation id="1302523850133262269">Sačekajte dok Chrome instalira najnovija sistemska ažuriranja.</translation>
@@ -133,10 +134,12 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="3080151273017101988">Ostavi aplikacije da rade u pozadini kada se Google Chrome zatvori</translation>
 <translation id="3089968997497233615">Dostupna je nova, sigurnija verzija Google Chromea.</translation>
 <translation id="3100998948628680988">Dajte naziv Chrome profilu</translation>
+<translation id="3112458742631356345">Chrome je blokirao ovo preuzimanje jer se fajl ne preuzima često i možda je opasan</translation>
 <translation id="3114643501466072395">Da provjerite jesu li vaše ostale lozinke zaštićene od narušavanja podataka i drugih sigurnosnih problema, <ph name="BEGIN_LINK" />prijavite se u Chrome<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">Promjene će stupiti na snagu kada sljedeći put pokrenete Google Chrome.</translation>
 <translation id="3149510190863420837">Chromeove aplikacije</translation>
 <translation id="3169523567916669830">Tokom probnih perioda možete vidjeti i uklanjati teme koje vas zanimaju, a koje web lokacije koriste da vam prikazuju oglase. Chrome procjenjuje vaša interesovanja na osnovu vaše nedavne historije pregledanja.</translation>
+<translation id="3196187562065225381">Chrome je blokirao ovo preuzimanje jer je fajl opasan</translation>
 <translation id="3226612997184048185">Ako sačuvate oznake i na svoj Google račun možete pratiti cijene proizvoda u Chromeu i primati obavještenja kada cijena padne</translation>
 <translation id="3245429137663807393">Ako dijelite i izvještaje o korištenju Chromea, ti izvještaji uključuju URL-ove koje posjećujete</translation>
 <translation id="3282568296779691940">Prijava na Chrome</translation>
@@ -184,6 +187,7 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="4148957013307229264">Instaliranje…</translation>
 <translation id="4149882025268051530">Aplikacija za instaliranje nije uspjela dekompresirati arhivu. Ponovo preuzmite Google Chrome.</translation>
 <translation id="4153934450158521343">Chrome će se uskoro zatvoriti i izbrisati podatke</translation>
+<translation id="4175922240926474352">Chrome je blokirao ovo preuzimanje jer web lokacija ne koristi sigurnu vezu i fajl je možda neovlašteno izmijenjen</translation>
 <translation id="4191857738314598978">{0,plural, =1{Ponovo pokrenite Chrome u roku od jednog dana}one{Ponovo pokrenite Chrome u roku od # dan}few{Ponovo pokrenite Chrome u roku od # dana}other{Ponovo pokrenite Chrome u roku od # dana}}</translation>
 <translation id="4205939740494406371">Chrome ne može provjeravati vaše lozinke. Pokušajte ponovo za 24 sata ili <ph name="BEGIN_LINK" />provjerite lozinke na Google računu<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Otkazuje se…</translation>
@@ -364,6 +368,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="7641148173327520642">Administrator sistema je konfigurirao da se Google Chrome otvara u pregledniku <ph name="ALTERNATIVE_BROWSER_NAME" /> da bi pristupio linku <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7649070708921625228">Pomoć</translation>
 <translation id="7651907282515937834">Logotip Chrome Enterprise</translation>
+<translation id="76531479118467370">Chrome je blokirao ovo preuzimanje jer ste isključili Sigurno pregledanje i fajl se ne može potvrditi</translation>
 <translation id="7655455401911432608">Vaša historija pregledanja, zapisi o web lokacijama koje ste posjetili koristeći Chrome na ovom uređaju.</translation>
 <translation id="7747138024166251722">Aplikacija za instaliranje nije uspjela kreirati privremeni direktorij. Provjerite imate li slobodnog prostora na disku kao i odobrenje da instalirate softver.</translation>
 <translation id="7761834446675418963">Kliknite svoje ime da otvorite Chrome i počnete pregledati.</translation>
@@ -380,6 +385,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="7890208801193284374">Ako dijelite računar, prijatelji i porodica mogu odvojeno pretraživati i postaviti Chrome na način koji njima odgovara.</translation>
 <translation id="7896673875602241923">Neko se prethodno prijavio u Chrome s ovog računara kao <ph name="ACCOUNT_EMAIL_LAST" />. Kreirajte novog korisnika Chromea da odvojite svoje informacije.</translation>
 <translation id="7917876797003313048">Možete upravljati Google računima na koje ste prijavljeni. Google računi se koriste za preglednik Chrome, Play trgovinu, Gmail i drugo. Ako želite dodati račun za nekog drugog, kao što je član porodice, umjesto računa dodajte novu osobu na svoj uređaj <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
+<translation id="7936702483636872823">Chrome je blokirao ovo preuzimanje jer je fajl obmanjujući i može izvršiti neočekivane izmjene na uređaju</translation>
 <translation id="7951272445806340501">ChromeOS Flex je potrebno ponovo pokrenuti da se primijeni ažuriranje.</translation>
 <translation id="7962368738413920945">Web lokacije će vjerovatno funkcionirati kako očekujete, ali vas se neće zapamtiti nakon što zatvorite sve prozore Chromea</translation>
 <translation id="7962410387636238736">Ovaj računar više neće primati ažuriranja za Google Chrome jer sistemi Windows XP i Windows Vista više nisu podržani</translation>

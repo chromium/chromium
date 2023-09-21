@@ -100,6 +100,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1195073053842921378">Este endereço vai ser apagado deste dispositivo</translation>
 <translation id="1195558154361252544">As notificações são bloqueadas automaticamente para todos os sites, exceto os que autorizar</translation>
 <translation id="1197088940767939838">Laranja</translation>
+<translation id="1197761954713363183">Página de confirmação da chave de acesso fechada</translation>
 <translation id="1201402288615127009">Seguinte</translation>
 <translation id="1201895884277373915">Mais a partir deste Website</translation>
 <translation id="1202892408424955784">Produtos monitorizados</translation>
@@ -327,6 +328,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1618571384971354160">Reboque e assistência em viagem</translation>
 <translation id="1620510694547887537">Câmara</translation>
 <translation id="1622571349153632031">Cozinha vegetariana</translation>
+<translation id="162285686621567578">Este Website foi bloqueado pelos teus pais.</translation>
 <translation id="1622966923835127638">Finanças empresariais</translation>
 <translation id="1623104350909869708">Evitar que esta página crie caixas de diálogo adicionais</translation>
 <translation id="1633137413609266904">{0,plural, =1{A abertura deste ficheiro foi bloqueada pela política do administrador}other{A abertura de # ficheiros foi bloqueada pela política do administrador}}</translation>
@@ -371,6 +373,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1711528724596764268">Aprendizagem automática e inteligência artificial</translation>
 <translation id="1712552549805331520"><ph name="URL" /> quer armazenar permanentemente os dados no seu computador local.</translation>
 <translation id="1713628304598226412">Tabuleiro 2</translation>
+<translation id="1714807406136741351">Modo de navegação, pode mudar para o modo de formulários para usar a seta para a esquerda/direita para rever as alterações de preços no gráfico</translation>
 <translation id="1717218214683051432">Sensores de movimento</translation>
 <translation id="1717494416764505390">Caixa de correio 3</translation>
 <translation id="1717688554309417925">Serviços de débito e conta-corrente</translation>
@@ -382,6 +385,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1725591448053514783">Envelope You 6</translation>
 <translation id="1727613060316725209">O certificado é válido</translation>
 <translation id="1728677426644403582">Está a ver a fonte de uma página Web</translation>
+<translation id="1728803206919861584">Guardar chave de acesso fora da Navegação anónima?</translation>
 <translation id="173080396488393970">Este tipo de cartão não é suportado</translation>
 <translation id="1732445923934584865">Pedir antes pessoalmente</translation>
 <translation id="1733064249834771892">tipos de letra</translation>
@@ -1664,6 +1668,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4415156962929755728">Plástico (alto brilho)</translation>
 <translation id="4415426530740016218">Endereço de recolha</translation>
 <translation id="4424024547088906515">Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" />; o Chrome não confia no respetivo certificado de segurança. Isto pode ser o resultado de uma configuração incorreta ou de um invasor a intercetar a sua ligação.</translation>
+<translation id="4425173294238317796">Página de confirmação da chave de acesso</translation>
 <translation id="4425750422187370446">Vestuário de desporto</translation>
 <translation id="4428065317363009941">Personalização de anúncios</translation>
 <translation id="443121186588148776">Porta de série</translation>
@@ -2019,6 +2024,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5157504274688344097">Grandes comerciantes e armazéns comerciais</translation>
 <translation id="5158275234811857234">Capa</translation>
 <translation id="5159010409087891077">Abrir a página numa nova janela de navegação anónima (⇧⌘N)</translation>
+<translation id="5161262286013276579">Página de confirmação da chave de acesso aberta</translation>
 <translation id="5161334686036120870">Assunto:</translation>
 <translation id="5161506081086828129">Empilhador 9</translation>
 <translation id="5164798890604758545">É introduzido texto</translation>
@@ -2901,6 +2907,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="7004583254764674281">Usar o Windows Hello para confirmar os cartões mais rapidamente</translation>
 <translation id="7006930604109697472">Enviar mesmo assim</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7013762323294215682">Esta chave de acesso vai ser guardada no seu gestor de palavras-passe. Qualquer pessoa com acesso a este gestor vai poder usar esta chave de acesso.</translation>
 <translation id="7014042602717177828">Áudio para carros</translation>
 <translation id="7014741021609395734">Nível de zoom</translation>
 <translation id="7016992613359344582">Estas cobranças podem ser únicas ou recorrentes e podem não ser óbvias.</translation>
@@ -3245,6 +3252,7 @@ Detalhes adicionais:
 <translation id="7667346355482952095">O símbolo da política devolvido está vazio ou não corresponde ao símbolo atual</translation>
 <translation id="7668654391829183341">Dispositivo desconhecido</translation>
 <translation id="7669271284792375604">Os utilizadores mal intencionados neste site podem tentar enganá-lo para instalar programas que são prejudiciais para a sua experiência de navegação (por exemplo, ao alterar a sua página inicial ou ao mostrar anúncios adicionais em sites que visita).</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> de <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Ações tomadas com dados sinalizados como confidenciais (1 ação desde o início de sessão). <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" />}other{Ações tomadas com dados sinalizados como confidenciais (# ações desde o início de sessão). <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Caixa de correio 6</translation>
 <translation id="7675325315208090829">Faça a gestão dos métodos de pagamento…</translation>

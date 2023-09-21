@@ -242,6 +242,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-g
 <translation id="2359043044084662842">Vertalen</translation>
 <translation id="2359808026110333948">Doorgaan</translation>
 <translation id="2360196772093551345">Mobiele site opvragen</translation>
+<translation id="2361721159900796207">Verbergt dit item</translation>
 <translation id="2362083820973145409">Ingelogd als <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Hiermee worden de instellingen geopend.</translation>
 <translation id="236977714248711277">Sites mogen geen cookies gebruiken om de browsefunctionaliteit te verbeteren, bijvoorbeeld door je ingelogd te houden of door artikelen in je winkelwagen te onthouden.
 
@@ -778,6 +779,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="5317780077021120954">Opslaan</translation>
 <translation id="5318298563956633672">Je volgt dit product al.</translation>
 <translation id="5339316356165661760">Synchronisatie aanzetten</translation>
+<translation id="5345660046352249607">{COUNT,plural, =1{Dit pakket volgen?}other{{COUNT} pakketten volgen?}}</translation>
 <translation id="536067926684072644">Bookmarks tonen</translation>
 <translation id="5360976571138293719">Bekijk <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> voor meer instellingen over privacy, beveiliging en gegevensverzameling.</translation>
 <translation id="5386314158584363703">Hier komen je gevolgde sites te staan</translation>
@@ -1144,6 +1146,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="723787869754590019">Chrome gebruiken voor automatisch invullen</translation>
 <translation id="7265758999917665941">Nooit voor deze site</translation>
 <translation id="7272437679830969316">Kan je identiteit niet verifiëren. Wachtwoord niet gekopieerd.</translation>
+<translation id="7284359491594949826">{COUNT,plural, =1{Nieuw pakket gevolgd}other{Nieuwe pakketten gevolgd}}</translation>
 <translation id="7291368939935408496">Wachtwoorden voorbereiden...</translation>
 <translation id="7302503784943202842">Wachtwoorden gebruiken op al je apparaten</translation>
 <translation id="730958329302570991">Voeg makkelijk sitewachtwoorden toe aan Google Wachtwoordmanager.</translation>
@@ -1177,6 +1180,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="7473891865547856676">Nee, bedankt</translation>
 <translation id="7491131399623468277">Naar instellingen…</translation>
 <translation id="7492574581995589075">Je organisatie heeft de mogelijkheid uitgezet om Chrome-gegevens te gebruiken en op te slaan in je Google-account. Items zoals nieuwe bookmarks en wachtwoorden worden alleen opgeslagen op dit apparaat.</translation>
+<translation id="750149195207506638">Bookmarks zijn verborgen</translation>
 <translation id="750228856503700085">Updates niet beschikbaar</translation>
 <translation id="750493650310597496">0 geselecteerd</translation>
 <translation id="7508728395076009983">Als je de incognitotabbladen wilt vergrendelen, stel je Touch ID, Face ID of een toegangscode in.</translation>
@@ -1244,6 +1248,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="7856733331829174190">Kan niet downloaden</translation>
 <translation id="785938070103630874">Open Wachtwoorden, Betaalmethoden of Adres en meer</translation>
 <translation id="7859704718976024901">Browsegeschiedenis</translation>
+<translation id="7866501058614003444">Dit pakket wordt niet meer gevolgd.</translation>
 <translation id="7870750252270996949">Afbeelding gekopieerd door Lens</translation>
 <translation id="7879275349003161544">Downloads tonen</translation>
 <translation id="7883882164760409935">Je hebt hergebruikte wachtwoorden.</translation>
@@ -1313,6 +1318,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8206354486702514201">Deze instelling wordt door je beheerder afgedwongen.</translation>
 <translation id="8214293972734702249">Vastgezet, <ph name="TAB_TITLE" /></translation>
 <translation id="8225985093977202398">Gecachete afbeeldingen en bestanden</translation>
+<translation id="823133356836493038">Leeslijst is verborgen</translation>
 <translation id="8237382152611443140">Open de instellingen voor het automatisch invullen van wachtwoorden</translation>
 <translation id="8248969482078657578">Met Inactieve tabbladen blijf je gefocust</translation>
 <translation id="8261506727792406068">Verwijderen</translation>
@@ -1491,6 +1497,7 @@ Je gegevens zijn op <ph name="TIME" /> versleuteld met je wachtwoordzin. Geef de
 <translation id="9148126808321036104">Opnieuw inloggen</translation>
 <translation id="9157836665414082580">Dialoogvensters onderdrukken</translation>
 <translation id="9162432979321511934">Zet Wachtwoorden automatisch invullen aan</translation>
+<translation id="9162941801309769488">Pakket wordt niet meer gevolgd</translation>
 <translation id="9165320910061267720">Als je meldingen wilt krijgen over prijsdalingen, moet je meldingen aanzetten in de iOS-instellingen.</translation>
 <translation id="9165886811579296457">Veiligheidscheck heeft geen beveiligingsproblemen gevonden die je moet oplossen.</translation>
 <translation id="9172603439892261948">Synchroniseer onder andere je bookmarks en geschiedenis.</translation>

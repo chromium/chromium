@@ -100,6 +100,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1195073053842921378">Ez a cím törlődni fog erről az eszközről.</translation>
 <translation id="1195558154361252544">Az Ön által engedélyezett webhelyek kivételével a böngésző automatikusan letiltja az értesítéseket</translation>
 <translation id="1197088940767939838">Narancssárga</translation>
+<translation id="1197761954713363183">Azonosítókulcs megerősítő lapja bezárva</translation>
 <translation id="1201402288615127009">Tovább</translation>
 <translation id="1201895884277373915">Továbbiak erről a webhelyről</translation>
 <translation id="1202892408424955784">Nyomon követett termékek</translation>
@@ -327,6 +328,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1618571384971354160">Járművontatás és közúti segítségnyújtás</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622571349153632031">Vegetáriánus konyha</translation>
+<translation id="162285686621567578">A webhelyet a szülőd letiltotta.</translation>
 <translation id="1622966923835127638">Üzlet/pénzügy</translation>
 <translation id="1623104350909869708">Akadályozza meg, hogy ez az oldal további párbeszédablakokat hozzon létre.</translation>
 <translation id="1633137413609266904">{0,plural, =1{A fájl megnyitását rendszergazdai házirend tiltja}other{# fájl megnyitását rendszergazdai házirend tiltja}}</translation>
@@ -371,6 +373,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1711528724596764268">Gépi tanulás és mesterséges intelligencia</translation>
 <translation id="1712552549805331520">A(z) <ph name="URL" /> webhely állandó jelleggel adatokat szeretne tárolni a helyi számítógépen</translation>
 <translation id="1713628304598226412">2. tálca</translation>
+<translation id="1714807406136741351">Böngészés módban átválthat az Űrlapok módra, így a balra/jobbra nyíllal áttekintheti az árváltozásokat a diagramon</translation>
 <translation id="1717218214683051432">Mozgásérzékelők</translation>
 <translation id="1717494416764505390">3. postaláda</translation>
 <translation id="1717688554309417925">Betéti és csekkfizetési szolgáltatások</translation>
@@ -382,6 +385,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1725591448053514783">You 6 boríték</translation>
 <translation id="1727613060316725209">A tanúsítvány érvényes</translation>
 <translation id="1728677426644403582">Jelenleg weboldal forrását tekinti meg</translation>
+<translation id="1728803206919861584">Menti az azonosítókulcsot az inkognitó módon kívül?</translation>
 <translation id="173080396488393970">Ez a kártyatípus nem támogatott</translation>
 <translation id="1732445923934584865">Inkább személyesen oldom meg</translation>
 <translation id="1733064249834771892">betűtípusok</translation>
@@ -1662,6 +1666,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4415156962929755728">Műanyag (magas fényű)</translation>
 <translation id="4415426530740016218">Átvételi cím</translation>
 <translation id="4424024547088906515">A szerver nem tudta bizonyítani, hogy valóban a(z) <ph name="DOMAIN" /> domainbe tartozik; biztonsági tanúsítványa a Chrome szerint nem megbízható. Ennek oka lehet konfigurációs hiba, vagy hogy egy támadó eltérítette az Ön kapcsolódását.</translation>
+<translation id="4425173294238317796">Azonosítókulcs megerősítő lapja</translation>
 <translation id="4425750422187370446">Atlétikai ruházat</translation>
 <translation id="4428065317363009941">Hirdetések személyre szabása</translation>
 <translation id="443121186588148776">Soros port</translation>
@@ -2017,6 +2022,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5157504274688344097">Kereskedőláncok és áruházak</translation>
 <translation id="5158275234811857234">Borító</translation>
 <translation id="5159010409087891077">Oldal megnyitása új inkognitó ablakban (⇧⌘N)</translation>
+<translation id="5161262286013276579">Azonosítókulcs megerősítő lapja megnyitva</translation>
 <translation id="5161334686036120870">Tárgy:</translation>
 <translation id="5161506081086828129">9. kötegelő</translation>
 <translation id="5164798890604758545">Szövegbevitel történt</translation>
@@ -2899,6 +2905,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="7004583254764674281">A Windows Hello használata a kártyák gyorsabb ellenőrzése érdekében</translation>
 <translation id="7006930604109697472">Küldés mégis</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7013762323294215682">Ezt az azonosítókulcsot az Ön jelszókezelőjébe menti a rendszer. Bárki, aki hozzáfér a jelszókezelőhöz, használhatja majd ezt az azonosítókulcsot.</translation>
 <translation id="7014042602717177828">Autóaudió</translation>
 <translation id="7014741021609395734">Nagyítás/kicsinyítés szintje</translation>
 <translation id="7016992613359344582">Ezek egyszeri vagy ismétlődő díjak lehetnek, és nem feltétlenül nyilvánvalóak.</translation>
@@ -3244,6 +3251,7 @@ További részletek:
 <translation id="7667346355482952095">A visszaadott irányelvtoken üres vagy nem egyezik az aktuális tokennel</translation>
 <translation id="7668654391829183341">Ismeretlen eszköz</translation>
 <translation id="7669271284792375604">A webhelyen lévő támadók megpróbálhatják csellel rávenni Önt olyan programok telepítésére, amelyek károsak a böngészési élmény szempontjából (például módosítják a kezdőlapot, vagy plusz hirdetéseket jelenítenek meg a felkeresett webhelyeken).</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" />. pozíció, összesen: <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Bizalmasként megjelölt adatokkal végzett műveletek (1 művelet a bejelentkezés óta). <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.}other{Bizalmasként megjelölt adatokkal végzett műveletek (# művelet a bejelentkezés óta). <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.}}</translation>
 <translation id="7673278391011283842">6. postaláda</translation>
 <translation id="7675325315208090829">Fizetési módok kezelése…</translation>

@@ -100,6 +100,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1195073053842921378">Questo indirizzo verrà eliminato da questo dispositivo</translation>
 <translation id="1195558154361252544">Le notifiche vengono bloccate automaticamente per tutti i siti, tranne per quelli che consenti tu</translation>
 <translation id="1197088940767939838">Arancione</translation>
+<translation id="1197761954713363183">Foglio di conferma della passkey chiuso</translation>
 <translation id="1201402288615127009">Avanti</translation>
 <translation id="1201895884277373915">Altri dal sito</translation>
 <translation id="1202892408424955784">Prodotti monitorati</translation>
@@ -382,6 +383,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1725591448053514783">Busta You 6</translation>
 <translation id="1727613060316725209">Il certificato è valido</translation>
 <translation id="1728677426644403582">È visualizzata l'origine di una pagina web</translation>
+<translation id="1728803206919861584">Vuoi salvare la passkey al di fuori della modalità di navigazione in incognito?</translation>
 <translation id="173080396488393970">Questo tipo di carta non è supportato</translation>
 <translation id="1732445923934584865">Chiedi di persona</translation>
 <translation id="1733064249834771892">caratteri</translation>
@@ -1661,6 +1663,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4415156962929755728">Plastica (lucida)</translation>
 <translation id="4415426530740016218">Indirizzo di ritiro</translation>
 <translation id="4424024547088906515">Questo server non è riuscito a dimostrare che si tratta di <ph name="DOMAIN" />; il relativo certificato di sicurezza non è considerato attendibile da Chrome. Il problema potrebbe essere dovuto a un'errata configurazione o a un malintenzionato che intercetta la connessione.</translation>
+<translation id="4425173294238317796">Foglio di conferma della passkey</translation>
 <translation id="4425750422187370446">Abbigliamento da atletica</translation>
 <translation id="4428065317363009941">Personalizzazione degli annunci</translation>
 <translation id="443121186588148776">Porta seriale</translation>
@@ -2016,6 +2019,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5157504274688344097">Ipermercati e grandi magazzini</translation>
 <translation id="5158275234811857234">Copertina</translation>
 <translation id="5159010409087891077">Apri la pagina in un'altra finestra di navigazione in incognito (⇧⌘N)</translation>
+<translation id="5161262286013276579">Foglio di conferma della passkey aperto</translation>
 <translation id="5161334686036120870">Argomento:</translation>
 <translation id="5161506081086828129">Fascicolatore 9</translation>
 <translation id="5164798890604758545">Viene inserito del testo</translation>
@@ -2897,6 +2901,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="7004583254764674281">Usa Windows Hello per verificare più velocemente le carte</translation>
 <translation id="7006930604109697472">Invia comunque</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7013762323294215682">Questa passkey verrà salvata nel tuo gestore delle password. Chiunque abbia accesso al tuo gestore delle password potrà utilizzare questa passkey.</translation>
 <translation id="7014042602717177828">Autoradio</translation>
 <translation id="7014741021609395734">Livello di zoom</translation>
 <translation id="7016992613359344582">L'addebito potrebbe essere singolo oppure ricorrente e potrebbe non essere evidente.</translation>

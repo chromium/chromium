@@ -175,6 +175,7 @@
 <translation id="19288952978244135">Chrome ပြန်ဖွင့်ပါ။</translation>
 <translation id="1933845786846280168">ရွေးထားသည့်တဘ်</translation>
 <translation id="1943432128510653496">စကားဝှက်များကို သိမ်းဆည်းပါ</translation>
+<translation id="1944535645109964458">လျှို့ဝှက်ကီး မရနိုင်ပါ</translation>
 <translation id="1952172573699511566">ပြနိုင်သည့်အခါတွင် ဝဘ်ဆိုက်များက သင်ပိုမိုနှစ်သက်သည့် ဘာသာစကားဖြင့် စာသားများကို ပြသပါမည်။</translation>
 <translation id="1959679933317802873">အကြောင်းအရာကို စောင့်နေသည်</translation>
 <translation id="1960290143419248813">Chrome အပ်ဒိတ်များကို ဤ Android ဗားရှင်းတွင် ပံ့ပိုးထားခြင်း မရှိတော့ပါ</translation>
@@ -626,6 +627,7 @@
 <translation id="4257230861809842349">Google Password Manager မှ စကားဝှက်များကို ဖျက်မလား။</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />အသုံးပြုသည့် ဒေတာ-<ph name="END_BOLD" /> ဤစက်တွင် Chrome အသုံးပြု၍ သင်ဝင်ကြည့်ထားသော ဝဘ်ဆိုက်မှတ်တမ်းတစ်ခုဖြစ်သည့် သင်၏ ကြည့်ရှုခြင်းမှတ်တမ်း။</translation>
 <translation id="4269820728363426813">လင့် လိပ်စာ ကူးယူရန်</translation>
+<translation id="4277529130885813215">စက်နောက်တစ်ခု သုံးရန်</translation>
 <translation id="4283102315569707115">ဒက်စ်တော့ဝဘ်ဆိုက်များကို မူရင်းသတ်မှတ်ချက်အနေဖြင့် တောင်းဆိုမလား။</translation>
 <translation id="4285846616383034558">ကွတ်ကီး၊ ကက်ရှ်နှင့် အခြား ဝဘ်ဆိုက်ဒေတာများ</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android ဆက်တင်များတွင် ဖန်သားပြင်လော့ခ်ဖွင့်ရန်<ph name="END_LINK" /></translation>
@@ -1165,6 +1167,7 @@
 <translation id="6955535239952325894">ကြီးကြပ်ထားသောဘရောင်ဇာများတွင် ဤဆက်တင်ကို ပိတ်ထားသည်</translation>
 <translation id="6963766334940102469">မှတ်သားချက်များ ဖျက်မည်</translation>
 <translation id="696447261358045621">ရုပ်ဖျက်မုဒ်မှ ထွက်ရန်</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6971862865055170158">ခွင့်မပြုပါ</translation>
 <translation id="6978717888677691380">သင်ပိတ်ထားသည့် ဝဘ်ဆိုက်များ</translation>
 <translation id="6979737339423435258">အားလုံး</translation>
@@ -1323,6 +1326,7 @@
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> မှ မျှဝေထားသော စာသား</translation>
 <translation id="7762668264895820836">SD ကတ် <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">လိပ်စာများ ထည့်သွင်းပါ</translation>
+<translation id="7766587497031415281">ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာကိုရှင်းရန် နောက်ထပ်ရွေးစရာများ</translation>
 <translation id="7772032839648071052">စကားစုဝှက်ကို အတည်ပြုရန်</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> ကိုပိတ်ပါ</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ခု}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ခု}}</translation>

@@ -175,6 +175,7 @@ Als je je browsegeschiedenis verwijdert (alles of alleen de geschiedenis voor ee
 <translation id="19288952978244135">Open Chrome opnieuw.</translation>
 <translation id="1933845786846280168">Geselecteerd tabblad</translation>
 <translation id="1943432128510653496">Wachtwoorden opslaan</translation>
+<translation id="1944535645109964458">Geen toegangssleutels beschikbaar</translation>
 <translation id="1952172573699511566">Websites worden indien mogelijk getoond in je voorkeurstaal.</translation>
 <translation id="1959679933317802873">Wachten op content</translation>
 <translation id="1960290143419248813">Updates van Chrome worden niet meer ondersteund voor deze versie van Android</translation>
@@ -626,6 +627,7 @@ Privéstatustokens verbeteren de privacy op het web en kunnen niet worden gebrui
 <translation id="4257230861809842349">Wachtwoorden verwijderen uit Google Wachtwoordmanager?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Welke gegevens worden gebruikt:<ph name="END_BOLD" /> Je browsegeschiedenis, een lijst van de sites die je via Chrome op dit apparaat hebt bezocht.</translation>
 <translation id="4269820728363426813">Linkadres kopiëren</translation>
+<translation id="4277529130885813215">Een ander apparaat gebruiken</translation>
 <translation id="4283102315569707115">Standaard desktopsites aanvragen?</translation>
 <translation id="4285846616383034558">Cookies, cachegeheugen en andere sitegegevens</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Schermvergrendeling aanzetten via Android-instellingen<ph name="END_LINK" /></translation>
@@ -1166,6 +1168,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="6955535239952325894">Deze instelling staat uit in beheerde browsers</translation>
 <translation id="6963766334940102469">Bookmarks verwijderen</translation>
 <translation id="696447261358045621">Incognitomodus verlaten</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6971862865055170158">Niet goedkeuren</translation>
 <translation id="6978717888677691380">Sites die je hebt geblokkeerd</translation>
 <translation id="6979737339423435258">Alles</translation>
@@ -1324,6 +1327,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="7757787379047923882">Tekst gedeeld vanaf <ph name="DEVICE_NAME" /></translation>
 <translation id="7762668264895820836">SD-kaart <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Adres toevoegen</translation>
+<translation id="7766587497031415281">Meer opties om browsegegevens te wissen</translation>
 <translation id="7772032839648071052">Bevestig de wachtwoordzin</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> sluiten</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> andere}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> andere}}</translation>

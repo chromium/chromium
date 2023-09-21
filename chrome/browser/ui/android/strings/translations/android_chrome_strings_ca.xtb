@@ -175,6 +175,7 @@ Quan suprimeixes l'historial de navegació (sigui per complet o un lloc web espe
 <translation id="19288952978244135">Torna a obrir Chrome.</translation>
 <translation id="1933845786846280168">Pestanya seleccionada</translation>
 <translation id="1943432128510653496">Desa les contrasenyes</translation>
+<translation id="1944535645109964458">No hi ha cap clau d'accés disponible</translation>
 <translation id="1952172573699511566">Quan sigui possible, els llocs web mostraran el text en el teu idioma preferit.</translation>
 <translation id="1959679933317802873">S'està esperant el contingut</translation>
 <translation id="1960290143419248813">Aquesta versió d'Android ja no admet les actualitzacions de Chrome</translation>
@@ -626,6 +627,7 @@ Els testimonis d'estat privat milloren la privadesa al web i no poden utilitzar-
 <translation id="4257230861809842349">Vols suprimir les contrasenyes del gestor de contrasenyes de Google?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Quines dades s'utilitzen<ph name="END_BOLD" />: el teu historial de navegació, que és un registre dels llocs web que has visitat amb Chrome en aquest dispositiu.</translation>
 <translation id="4269820728363426813">Copia l'adreça de l'enllaç</translation>
+<translation id="4277529130885813215">Utilitza un altre dispositiu</translation>
 <translation id="4283102315569707115">Vols sol·licitar els llocs web per a ordinadors de manera predeterminada?</translation>
 <translation id="4285846616383034558">Galetes, memòria cau i altres dades dels llocs web</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Activa el bloqueig de pantalla a la configuració d'Android<ph name="END_LINK" /></translation>
@@ -1166,6 +1168,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6955535239952325894">Aquesta opció de configuració està desactivada als navegadors gestionats</translation>
 <translation id="6963766334940102469">Suprimeix les adreces d'interès</translation>
 <translation id="696447261358045621">Surt del mode d'incògnit</translation>
+<translation id="6965382102122355670">D'acord</translation>
 <translation id="6971862865055170158">No aprovis</translation>
 <translation id="6978717888677691380">Llocs web que has bloquejat</translation>
 <translation id="6979737339423435258">Sempre</translation>

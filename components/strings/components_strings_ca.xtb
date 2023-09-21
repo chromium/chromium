@@ -100,6 +100,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1195073053842921378">L'adreça se suprimirà d'aquest dispositiu</translation>
 <translation id="1195558154361252544">Les notificacions de tots els llocs web estan bloquejades automàticament excepte les que permetis</translation>
 <translation id="1197088940767939838">Taronja</translation>
+<translation id="1197761954713363183">S'ha tancat el full de confirmació de la clau d'accés</translation>
 <translation id="1201402288615127009">Següent</translation>
 <translation id="1201895884277373915">Més entrades d'aquest lloc</translation>
 <translation id="1202892408424955784">Productes que segueixes</translation>
@@ -359,7 +360,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="168841957122794586">El certificat de servidor conté una clau criptogràfica dèbil.</translation>
 <translation id="1689333818294560261">Àlies</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Com pots gestionar les teves dades<ph name="END_BOLD" />: Chrome suprimeix automàticament els temes que tenen més de 4 setmanes. A mesura que continuïs navegant, és possible que reaparegui un tema a la llista. També pots bloquejar els temes que no vulguis que Chrome comparteixi amb els llocs web i desactivar els temes d'anuncis en qualsevol moment a la configuració de Chrome.</translation>
-<translation id="1697532407822776718">Ja estàs a punt!</translation>
+<translation id="1697532407822776718">Tot a punt!</translation>
 <translation id="1699651774646344471">Ara pots utilitzar les adreces del teu Compte de Google</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
@@ -382,6 +383,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1725591448053514783">Sobre You 6</translation>
 <translation id="1727613060316725209">El certificat és vàlid</translation>
 <translation id="1728677426644403582">Estàs consultant el codi font d'una pàgina web</translation>
+<translation id="1728803206919861584">Vols desar la clau d'accés fora del mode d'incògnit?</translation>
 <translation id="173080396488393970">Aquest tipus de targeta no s'admet</translation>
 <translation id="1732445923934584865">Pregunta en persona</translation>
 <translation id="1733064249834771892">fonts</translation>
@@ -1664,6 +1666,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4415156962929755728">Plàstic (brillantor alta)</translation>
 <translation id="4415426530740016218">Adreça de recollida</translation>
 <translation id="4424024547088906515">Aquest servidor no ha pogut comprovar que sigui <ph name="DOMAIN" /> perquè Chrome considera que el seu certificat de seguretat no és de confiança. Això pot ser a causa d'una configuració incorrecta o d'un atacant que intercepta la vostra connexió.</translation>
+<translation id="4425173294238317796">Full de confirmació de la clau d'accés</translation>
 <translation id="4425750422187370446">Moda esportiva</translation>
 <translation id="4428065317363009941">Personalització d'anuncis</translation>
 <translation id="443121186588148776">Port en sèrie</translation>
@@ -2019,6 +2022,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5157504274688344097">Grans distribuïdors i centres comercials</translation>
 <translation id="5158275234811857234">Portada</translation>
 <translation id="5159010409087891077">Obre la pàgina en una finestra d'incògnit nova (⇧⌘N)</translation>
+<translation id="5161262286013276579">S'ha obert el full de confirmació de la clau d'accés</translation>
 <translation id="5161334686036120870">Assumpte:</translation>
 <translation id="5161506081086828129">Apiladora 9</translation>
 <translation id="5164798890604758545">S'introdueix text</translation>
@@ -2901,6 +2905,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="7004583254764674281">Fes servir Windows Hello per confirmar les targetes més ràpidament</translation>
 <translation id="7006930604109697472">Envia de totes maneres</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7013762323294215682">Aquesta clau d'accés es desarà al teu gestor de contrasenyes. Qualsevol persona que hi tingui accés podrà utilitzar aquesta clau d'accés.</translation>
 <translation id="7014042602717177828">Sistemes d'àudio per a automòbils</translation>
 <translation id="7014741021609395734">Nivell de zoom</translation>
 <translation id="7016992613359344582">Aquests càrrecs poden ser únics o periòdics i és possible que no s'indiquin d'una manera evident.</translation>

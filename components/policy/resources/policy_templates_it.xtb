@@ -391,25 +391,6 @@ Se il criterio viene disattivato o se non viene configurato, gli elementi da avv
       Tieni presente che questo criterio è temporaneo per consentire agli utenti gestiti di poter ancora utilizzare le scorciatoie precedenti deprecate. Verrà ritirato quando le scorciatoie da tastiera personalizzate saranno disponibili.</translation>
 <translation id="1361661842732478894">Mostra il pulsante Pagina iniziale nella barra degli strumenti</translation>
 <translation id="1363275621236827384">Attiva le query in Quirks Server per i profili hardware</translation>
-<translation id="136422692261301619">Elenco di azioni da eseguire quando viene raggiunto il timeout del criterio <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
-
-      Se il criterio <ph name="IDLE_TIMEOUT_POLICY_NAME" /> non viene configurato, questo criterio non ha alcun effetto.
-
-      Quando viene raggiunto il timeout del criterio <ph name="IDLE_TIMEOUT_POLICY_NAME" />, <ph name="PRODUCT_NAME" /> esegue le azioni configurate in questo criterio.
-
-      Se questo criterio è vuoto o se non viene configurato, il criterio <ph name="IDLE_TIMEOUT_POLICY_NAME" /> non ha alcun effetto.
-
-      Le azioni supportate sono:
-
-      "<ph name="CLOSE_BROWSERS_ACTION" />": vengono chiuse tutte le finestre del browser e le PWA di questo profilo. Azione non supportata su Android.
-
-      "<ph name="SHOW_PROFILE_PICKER_ACTION" />": viene mostrata la finestra Selettore profilo. Azione non supportata su Android.
-
-      "<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />", "<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />", "<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />", "<ph name="CLEAR_AUTOFILL_ACTION" />", "<ph name="CLEAR_SITE_SETTINGS_ACTION" />", "<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />": vengono cancellati i dati di navigazione corrispondenti. Per maggiori informazioni, vedi il criterio <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" />.
-
-      "<ph name="RELOAD_PAGES_ACTION" />": vengono ricaricate tutte le pagine web. Per alcune pagine, all'utente potrebbe essere chiesto di confermare prima.
-
-      La configurazione dei criteri "<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />", "<ph name="CLEAR_AUTOFILL_ACTION" />" e "<ph name="CLEAR_SITE_SETTINGS_ACTION" />" disattiva la sincronizzazione per i rispettivi tipi di dati se né il criterio "<ph name="CHROME_SYNC_NAME" />" viene disattivato impostando Il criterio <ph name="SYNC_DISABLED_POLICY_NAME" /> né <ph name="BROWSER_SIGNIN_POLICY_NAME" /> viene disattivato.</translation>
 <translation id="1369698103169067223">I Glanceables non sono attivati per gli utenti.</translation>
 <translation id="1371626834351873151">La riduzione dello user agent verrà attivata per tutte le origini.</translation>
 <translation id="1371851989348083665">Consenti l'utilizzo di <ph name="ASSISTANT_PRODUCT_NAME" /> sul Web</translation>
@@ -2346,6 +2327,13 @@ Se l'utente non seleziona la casella:
 
 <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />
 Questo è lo stesso comportamento di <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />, ad eccezione del fatto che il profilo appena creato non può avere account secondari.</translation>
+<translation id="3079575168312257780">Se il criterio viene impostato su 0 (valore predefinito), è possibile accedere agli strumenti per sviluppatori e alla console JavaScript, ma non se ci sono estensioni installate in base ai criteri aziendali o, dalla versione 114 e se si tratta di un utente gestito, estensioni integrate nel browser. Se il criterio viene impostato su 1, è possibile accedere agli strumenti per sviluppatori e alla console JavaScript in ogni caso, anche se ci sono estensioni installate in base ai criteri aziendali. Se il criterio viene impostato su 2, non è possibile accedere agli strumenti per sviluppatori, né esaminare gli elementi dei siti web.
+
+      Questa impostazione disattiva anche le scorciatoie da tastiera e le voci dei menu o dei menu contestuali per aprire gli strumenti per sviluppatori o la console JavaScript.
+
+      A partire dalla versione 99 di <ph name="PRODUCT_NAME" />, questa impostazione consente anche di controllare gli entry point per la funzionalità "Visualizza sorgente pagina". Se imposti questo criterio su "DeveloperToolsDisallowed" (valore 2), gli utenti non possono accedere alla visualizzazione del codice sorgente tramite scorciatoia da tastiera o il menu contestuale. Per bloccare completamente la visualizzazione del codice sorgente, devi anche aggiungere "view-source:*" al criterio <ph name="URL_BLOCKLIST_POLICY_NAME" />.
+
+      A partire dalla versione 119 di <ph name="PRODUCT_NAME" />, questa impostazione consente anche di stabilire se è possibile attivare e utilizzare la modalità sviluppatore per le app web isolate.</translation>
 <translation id="3083259245974004342">Protezione della password</translation>
 <translation id="308356121098374167">WebSQL in contesti non sicuri sarà disponibile.</translation>
 <translation id="3086995894968271156">Consente di configurare Cast Receiver in <ph name="PRODUCT_NAME" />.</translation>
@@ -2571,6 +2559,7 @@ Se non viene configurato, verrà utilizzato il nuovo comportamento, esattamente 
 <translation id="3240609035816615922">Norma di accesso alla configurazione delle stampanti.</translation>
 <translation id="324062325008698789">Consente di configurare un elenco di stampanti</translation>
 <translation id="3240655340884151271">Indirizzo MAC NIC integrato del dock</translation>
+<translation id="3242480111684005642">L'utente può utilizzare la funzionalità di sincronizzazione file di <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="3242756958360374888">Contiene un elenco di pattern che possono essere usati per controllare la visibilità degli account in <ph name="PRODUCT_NAME" />.
 
       Ogni Account Google sul dispositivo viene messo a confronto con i pattern memorizzati in questo criterio per stabilirne la visibilità in <ph name="PRODUCT_NAME" />. L'account sarà visibile se il nome soddisfa uno qualsiasi dei pattern nell'elenco. In caso contrario, l'account non sarà visibile.
@@ -2630,6 +2619,7 @@ Queste limitazioni vengono applicate ai download attivati dai contenuti delle pa
 Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="3300784749135986828">Attiva o disattiva la funzionalità <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />.</translation>
 <translation id="3301698868852716692">Attiva estensione Insights</translation>
+<translation id="3302723130703323097">Rendi visibile e disponibile la funzionalità di sincronizzazione file di <ph name="GOOGLE_DRIVE_NAME" /> per attivare/disattivare i dispositivi supportati nell'app File di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3302829897293005699">Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi registrati segnalano informazioni relative alla sessione kiosk attiva quali ID applicazione e versione.
 
       Se il criterio viene impostato su Disattivato, i dispositivi registrati non segnalano informazioni relative alla sessione kiosk.</translation>
@@ -2719,6 +2709,28 @@ Se viene disattivato, la funzionalità di scrittura predittiva sulla tastiera fi
       Se il criterio viene impostato su "hidden", le funzionalità disattivate saranno inutilizzabili e non visibili per gli utenti.
 
       Se il criterio non viene configurato o presenta un valore non valido, la modalità di disattivazione delle funzionalità di sistema sarà "blocked".</translation>
+<translation id="3410963889229735344">La sincronizzazione dei file di <ph name="GOOGLE_DRIVE_NAME" /> rende
+automaticamente disponibili offline i file nella cartella Il mio Drive di un utente (se lo spazio lo consente) sui dispositivi
+supportati. Dopo aver reso inizialmente disponibili tutti i file offline, tutti i nuovi file
+verranno automaticamente resi disponibili offline. Una volta attivata la funzionalità, se
+in un secondo momento lo spazio non sarà sufficiente per mantenere attiva la funzionalità, tutti i nuovi file non saranno
+più resi disponibili offline automaticamente. L'utente potrà comunque
+attivare/disattivare manualmente gli elementi.
+
+Se il criterio viene impostato su <ph name="POLICY_VALUE_VISIBLE" />, la funzionalità
+di sincronizzazione file viene mostrata nell'app File e nella pagina Impostazioni. Gli utenti devono
+comunque attivare/disattivare autonomamente la funzionalità di sincronizzazione file.
+
+Se il criterio viene impostato su <ph name="POLICY_VALUE_DISABLED" />, la funzionalità
+di sincronizzazione file verrà disattivata se in precedenza era stata attivata dall'utente e
+verrà nascosta dalle impostazioni e dall'app File in modo che l'utente non possa
+riattivarla. Se sono presenti file resi disponibili offline
+dall'utente, questi rimarranno disponibili offline e l'utente potrà rendere
+ disponibili offline i singoli file manualmente (non verranno resi automaticamente
+disponibili offline).
+
+Se il criterio non viene configurato, utilizzerà
+<ph name="POLICY_VALUE_VISIBLE" /> come valore predefinito.</translation>
 <translation id="341285788698114069">Questo criterio consente di stabilire la priorità del processo audio su Windows.
       Se il criterio viene attivato, il processo audio verrà eseguito con priorità sopra la norma.
       Se il criterio viene disattivato, il processo audio verrà eseguito con priorità normale.
@@ -2803,6 +2815,7 @@ Le connessioni che non superano il controllo non andranno a buon fine con l'erro
       Tieni presente che se il criterio <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> viene disattivato, ma il criterio <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> viene attivato o non viene configurato, all'indirizzo chrome://history/grouped sarà comunque disponibile una pagina della cronologia di Chrome organizzata in gruppi, che però potrebbe essere meno pertinente per l'utente.
 </translation>
 <translation id="3478024346823118645">Cancella dati utente all'uscita</translation>
+<translation id="3478406829037689272">Attiva le analisi approfondite dei download di Navigazione sicura</translation>
 <translation id="3480961938508521469">Carica completamente la batteria con la modalità standard.</translation>
 <translation id="348110646151632565">Consente di attivare la funzione di accessibilità Seleziona per ascoltare sulla schermata di accesso.
 
@@ -3785,6 +3798,9 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
 <translation id="4380159792986204036">Consenti a un'app web kiosk di aprire più di una finestra del browser in qualsiasi schermata</translation>
 <translation id="4381227367939912539">Viene disattivato il gioco del dinosauro</translation>
 <translation id="4382413175336720282">Controllo degli URL in tempo reale disattivato.</translation>
+<translation id="4384911996235542086">Se questo criterio viene abilitato o non viene configurato, <ph name="PRODUCT_NAME" /> potrà inviare a Google download sospetti da utenti che hanno abilitato la Navigazione sicura per verificare la presenza di malware.
+Se questo criterio viene disattivato, l'analisi non verrà eseguita.
+Questo criterio non influisce sull'analisi dei contenuti dei download configurata da Chrome Enterprise Connectors.</translation>
 <translation id="4387741272680827493">La configurazione del criterio consente di specificare un elenco di nomi host che ignorano gli upgrade HSTS precaricati da http a https.
 
       In questo criterio sono consentiti soltanto i nomi host con etichetta singola e questo criterio si applica soltanto alle voci HSTS precaricate "statiche" (ad esempio <ph name="EXAMPLE_HSTS_PRELOAD_TLDS" />). Questo criterio non impedisce gli upgrade HSTS per i server che hanno richiesto "in modo dinamico" tali upgrade usando un'intestazione della risposta <ph name="HSTS_HEADER_NAME" />.
@@ -4482,6 +4498,7 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 <translation id="5036013147560568855">Versione del protocollo di provisioning del certificato. Il valore predefinito è 1. 1 significa che il protocollo è "statico". 2 significa che il protocollo è "dinamico".</translation>
 <translation id="5039110755072335605">Supporto delle intestazioni delle richieste CORS senza caratteri jolly</translation>
 <translation id="504116558738617678">Mostra gli avvisi relativi allo spazio su disco in esaurimento soltanto se il dispositivo non è gestito o se esiste 1 solo utente</translation>
+<translation id="5046376406561077773">L'utente non può vedere nessuna delle UI relative alla funzionalità di sincronizzazione file di <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="5055474681190962362">Il giorno del mese [1-31] in cui dovrebbe essere eseguito il riavvio, nel fuso orario locale del dispositivo. Questo criterio viene usato soltanto se il valore del criterio "frequency" è "MONTHLY". Se questo numero supera il numero di giorni massimo presente in un mese specifico, verrà scelto l'ultimo giorno del mese.</translation>
 <translation id="5056708224511062314">Ingrandimento dello schermo disattivato</translation>
 <translation id="5058573563327660283">Seleziona la strategia da utilizzare per liberare spazio su disco durante la pulizia automatica (obsoleta)</translation>
@@ -5169,15 +5186,6 @@ Se viene configurato per il kiosk <ph name="PRODUCT_OS_NAME" />, questo criterio
 <translation id="5666457529647159548">Consenti agli utenti di gestire i certificati client installati.</translation>
 <translation id="567377007899266033">Se il criterio viene impostato su True, Google riceverà rapporti sui principali eventi di installazione delle estensioni attivati dal criterio. Se il criterio viene impostato su False, non viene acquisito alcun evento. Se il criterio non viene impostato, il valore predefinito è True.</translation>
 <translation id="5676740747107495269">Mostra le opzioni di accessibilità nel menu della barra delle applicazioni nella schermata di accesso</translation>
-<translation id="567832102568869993">Consente di attivare un'azione quando il computer è inattivo.
-
-      Se questo criterio viene configurato, consente di specificare il periodo di tempo senza input utente (in minuti) prima che <ph name="PRODUCT_NAME" /> esegua azioni configurate tramite il criterio <ph name="IDLE_TIMEOUT_ACTIONS_POLICY_NAME" />.
-
-      Se il criterio non viene configurato, non verrà eseguita alcuna azione.
-
-      La soglia minima è di 1 minuto.
-
-      "L'input utente" è definito dalle API del sistema operativo e include, ad esempio, lo spostamento del mouse o la digitazione tramite tastiera.</translation>
 <translation id="5679540979548648200">Impedisci agli utenti di questo dispositivo di utilizzare il processo sideload ADB e forza la funzione Powerwash del dispositivo se tale processo è stato attivato in precedenza</translation>
 <translation id="5681258683432554972">Impostazione popup predefiniti</translation>
 <translation id="5684501593989438324">Attiva l'hotword per l'Assistente Google</translation>
@@ -5742,6 +5750,7 @@ Dalla versione 114 in poi, questo criterio è facoltativo se viene configurato i
           Generalmente, la modalità a schermo intero viene disattivata dopo la riattivazione dalla schermata di blocco per ridurre il rischio di attacchi di phishing. Questo criterio consente di specificare gli URL considerati origini attendibili che possono rimanere in modalità a schermo intero al momento dello sblocco. Viene configurato tramite la specifica di un elenco di pattern URL nel formato indicato all'indirizzo https://support.google.com/chrome/a?p=url_blocklist_filter_format. Ad esempio, è possibile mantenere sempre attiva la modalità a schermo intero al momento dello sblocco e disattivare tutte le notifiche specificando il carattere jolly <ph name="WILDCARD_VALUE" />, che corrisponde a tutti gli URL.
 
           Se il criterio viene impostato su un elenco vuoto o se non viene configurato, nessun URL può rimanere in modalità a schermo intero senza mostrare una notifica.</translation>
+<translation id="6240222568708113780">Consenti l'analisi approfondita dei download per gli utenti che hanno abilitato la Navigazione sicura</translation>
 <translation id="624080397610861618">Disattiva il layout Hindi Inscript</translation>
 <translation id="6242147107333796512">Segnala informazioni relative ai report sugli arresti anomali, come ID remoto,
       timestamp di acquisizione e causa.
@@ -7273,6 +7282,7 @@ Se il criterio non viene configurato, in pratica equivale a impostarlo su "<ph n
 <translation id="7485481791539008776">Regole di selezione della stampante predefinita</translation>
 <translation id="7486205887492534734">Mostra una richiesta in caso di corrispondenza tra più certificati nella schermata di accesso</translation>
 <translation id="748873163367340515">Usa solo dati e cookie essenziali nella ricerca.</translation>
+<translation id="7489169777107143496">Disattiva le analisi approfondite dei download di Navigazione sicura</translation>
 <translation id="7489661071474025727">Specifica se il servizio di recupero dell'account è attivato per i tuoi utenti su dispositivi <ph name="PRODUCT_OS_NAME" />.
 
       Se il criterio viene attivato, il recupero dei dati utente è attivato. Se il criterio è disattivato o se non viene configurato, il recupero dei dati utente non viene attivato.

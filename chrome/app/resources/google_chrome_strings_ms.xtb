@@ -12,6 +12,7 @@
 <translation id="1149651794389918149">Log masuk ke Chrome. Jika anda mahu log masuk akaun satu kali sahaja, anda boleh <ph name="GUEST_LINK_BEGIN" />menggunakan peranti sebagai tetamu<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">Perihal Chrome OS</translation>
 <translation id="1154147086299354128">&amp;Buka dalam Chrome</translation>
+<translation id="1194807384646768652">Chrome menyekat muat turun ini kerana jenis fail jarang dimuat turun dan mungkin berbahaya</translation>
 <translation id="1203500561924088507">Terima kasih kerana memasang. Anda perlu memulakan semula penyemak imbas anda sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1278833599417554002">Lancarkan semula untuk mengemas kini &amp;Chrome</translation>
 <translation id="1302523850133262269">Sila tunggu sementara Chrome memasang kemas kini sistem terkini.</translation>
@@ -129,10 +130,12 @@
 <translation id="3080151273017101988">Terus menjalankan apl latar belakang apabila Google Chrome ditutup</translation>
 <translation id="3089968997497233615">Terdapat versi Google Chrome baharu yang lebih selamat tersedia.</translation>
 <translation id="3100998948628680988">Namakan profil Chrome anda</translation>
+<translation id="3112458742631356345">Chrome menyekat muat turun ini kerana fail jarang dimuat turun dan mungkin berbahaya</translation>
 <translation id="3114643501466072395">Untuk menyemak sama ada kata laluan anda yang lain selamat daripada pelanggaran data dan isu keselamatan lain, <ph name="BEGIN_LINK" />log masuk ke Chrome<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">Perubahan anda akan berkuat kuasa apabila anda melancarkan semula Google Chrome pada masa hadapan.</translation>
 <translation id="3149510190863420837">Chrome Apps</translation>
 <translation id="3169523567916669830">Semasa percubaan, anda boleh melihat dan mengalih keluar topik minat yang digunakan oleh laman untuk memaparkan iklan kepada anda. Chrome menganggarkan minat anda berdasarkan sejarah penyemakan imbas anda baru-baru ini.</translation>
+<translation id="3196187562065225381">Chrome menyekat muat turun ini kerana fail ini berbahaya</translation>
 <translation id="3226612997184048185">Jika anda juga menyimpan penanda halaman dalam Google Account anda, anda boleh menjejak harga produk dalam Chrome dan mendapatkan pemberitahuan jika harga produk tersebut turun</translation>
 <translation id="3245429137663807393">Jika anda turut berkongsi laporan penggunaan Chrome, laporan tersebut menyertakan URL yang anda lawati</translation>
 <translation id="3282568296779691940">Log masuk ke Chrome</translation>
@@ -180,6 +183,7 @@
 <translation id="4148957013307229264">Memasang...</translation>
 <translation id="4149882025268051530">Pemasang gagal untuk nyahmampat arkib. Sila muat turun Google Chrome semula.</translation>
 <translation id="4153934450158521343">Chrome akan ditutup dan data akan dipadamkan sebentar lagi</translation>
+<translation id="4175922240926474352">Chrome menyekat muat turun ini kerana laman tidak menggunakan sambungan selamat dan fail mungkin telah diubah</translation>
 <translation id="4191857738314598978">{0,plural, =1{Lancarkan semula Chrome dalam masa sehari}other{Lancarkan semula Chrome dalam masa # hari}}</translation>
 <translation id="4205939740494406371">Chrome tidak dapat menyemak kata laluan anda. Cuba lagi selepas 24 jam atau <ph name="BEGIN_LINK" />semak kata laluan dalam Akaun Google anda<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Membatalkan…</translation>
@@ -356,6 +360,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="7641148173327520642">Pentadbir sistem anda telah mengkonfigurasikan Google Chrome agar membuka <ph name="ALTERNATIVE_BROWSER_NAME" /> untuk mengakses <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7649070708921625228">Bantuan</translation>
 <translation id="7651907282515937834">Logo Chrome Enterprise</translation>
+<translation id="76531479118467370">Chrome menyekat muat turun ini kerana anda mematikan Penyemakan Imbas Selamat dan fail tidak dapat disahkan</translation>
 <translation id="7655455401911432608">Sejarah penyemakan imbas anda, rekod laman yang anda lawati menggunakan Chrome pada peranti ini.</translation>
 <translation id="7747138024166251722">Pemasang tidak dapat mencipta direktori sementara. Sila semak ruang cakera kosong dan kebenaran untuk memasang perisian.</translation>
 <translation id="7761834446675418963">Klik nama anda untuk membuka Chrome dan mula menyemak imbas.</translation>
@@ -372,6 +377,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="7890208801193284374">Jika anda berkongsi komputer, rakan dan keluarga boleh menyemak imbas secara berasingan dan menyediakan Chrome sebagaimana yang mereka mahukan.</translation>
 <translation id="7896673875602241923">Sebelum ini, seseorang telah log masuk ke Chrome pada komputer ini sebagai <ph name="ACCOUNT_EMAIL_LAST" />. Sila buat pengguna Chrome baharu untuk mengasingkan maklumat anda.</translation>
 <translation id="7917876797003313048">Anda boleh mengurus Google Account anda yang dilog masuk. Google Account anda digunakan untuk penyemak imbas Chrome, Play Store, Gmail dan pelbagai lagi. Jika anda ingin menambah akaun untuk orang lain, seperti ahli keluarga, tambahkan sahaja orang baharu pada <ph name="DEVICE_TYPE" /> anda. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
+<translation id="7936702483636872823">Chrome menyekat muat turun ini kerana fail mengelirukan dan mungkin membuat perubahan tidak dijangka pada peranti anda</translation>
 <translation id="7951272445806340501">Chrome OS Flex perlu dimulakan semula untuk mengenakan kemaskinian.</translation>
 <translation id="7962368738413920945">Laman mungkin akan berfungsi seperti yang anda jangkakan tetapi tidak akan mengingati anda selepas anda menutup semua tetingkap Chrome</translation>
 <translation id="7962410387636238736">Komputer ini tidak akan menerima kemas kini Google Chrome lagi kerana Windows XP dan Windows Vista sudah tidak disokong</translation>

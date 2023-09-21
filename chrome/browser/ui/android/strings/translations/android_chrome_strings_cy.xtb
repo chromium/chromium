@@ -175,6 +175,7 @@ Pan fyddwch yn dileu eich hanes pori — y cyfan neu ar gyfer gwefan benodol —
 <translation id="19288952978244135">Ailagor Chrome.</translation>
 <translation id="1933845786846280168">Tab a Ddewisir</translation>
 <translation id="1943432128510653496">Cadw cyfrineiriau</translation>
+<translation id="1944535645109964458">Dim codau pas ar gael</translation>
 <translation id="1952172573699511566">Bydd gwefannau yn dangos testun yn eich dewis iaith, pan fydd hynny'n bosib.</translation>
 <translation id="1959679933317802873">Wrthi'n aros am gynnwys</translation>
 <translation id="1960290143419248813">Nid yw diweddariadau Chrome bellach yn cael eu cefnogi ar gyfer y fersiwn hon o Android</translation>
@@ -626,6 +627,7 @@ Mae tocynnau ymddiriedaeth yn gwella eich preifatrwydd ar y we ac ni ellir eu de
 <translation id="4257230861809842349">Dileu cyfrineiriau o Rheolwr Cyfrineiriau Google?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Pa ddata a ddefnyddir:<ph name="END_BOLD" /> Eich hanes pori, cofnod o wefannau rydych wedi ymweld â nhw drwy ddefnyddio Chrome ar y ddyfais hon.</translation>
 <translation id="4269820728363426813">Copïo cyfeiriad y ddolen</translation>
+<translation id="4277529130885813215">Defnyddio dyfais arall</translation>
 <translation id="4283102315569707115">Gofyn am wefannau bwrdd gwaith yn ddiofyn?</translation>
 <translation id="4285846616383034558">Cwcis, storfa, a data gwefan eraill</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Trowch glo sgrîn ymlaen yn y gosodiadau Android<ph name="END_LINK" /></translation>
@@ -1166,6 +1168,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="6955535239952325894">Mae'r gosodiad hwn wedi'i analluogi ar borwyr a reolir</translation>
 <translation id="6963766334940102469">Dileu nodau tudalen</translation>
 <translation id="696447261358045621">Gadael y modd Anhysbys</translation>
+<translation id="6965382102122355670">Iawn</translation>
 <translation id="6971862865055170158">Peidio â chymeradwyo</translation>
 <translation id="6978717888677691380">Gwefannau rydych wedi'u rhwystro</translation>
 <translation id="6979737339423435258">Pob un</translation>
@@ -1324,6 +1327,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="7757787379047923882">Testun wedi'i rannu gan <ph name="DEVICE_NAME" /></translation>
 <translation id="7762668264895820836">Cerdyn SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Ychwanegu cyfeiriad</translation>
+<translation id="7766587497031415281">Rhagor o opsiynau i glirio data pori</translation>
 <translation id="7772032839648071052">Cadarnhau cyfrinymadrodd</translation>
 <translation id="7772375229873196092">Cau <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ac <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> arall}zero{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> arall}two{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> arall}few{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> arall}many{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> arall}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> arall}}</translation>

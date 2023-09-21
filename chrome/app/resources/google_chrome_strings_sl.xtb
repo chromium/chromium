@@ -14,6 +14,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1149651794389918149">Prijavite se v Chrome. Če se želite v račun prijaviti samo enkrat, lahko <ph name="GUEST_LINK_BEGIN" />napravo uporabljate kot gost<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">O sistemu Chrome OS</translation>
 <translation id="1154147086299354128">&amp;Odpri v Chromu</translation>
+<translation id="1194807384646768652">Chrome je blokiral ta prenos, ker se vrsta datoteke ne prenaša pogosto in je morda nevarna</translation>
 <translation id="1203500561924088507">Hvala, ker ste se odločili za namestitev. Preden uporabite <ph name="BUNDLE_NAME" />, morate znova zagnati brskalnik.</translation>
 <translation id="1278833599417554002">Znova zaženite, če želite posodobiti &amp;Chrome</translation>
 <translation id="1302523850133262269">Počakajte, da Chrome namesti najnovejše sistemske posodobitve.</translation>
@@ -133,10 +134,12 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3080151273017101988">Nadaljuj izvajanje programov v ozadju, ko je Google Chrome zaprt</translation>
 <translation id="3089968997497233615">Na voljo je nova, varnejša različica Google Chroma.</translation>
 <translation id="3100998948628680988">Poimenujte profil v Chromu</translation>
+<translation id="3112458742631356345">Chrome je blokiral ta prenos, ker se datoteka ne prenaša pogosto in je morda nevarna</translation>
 <translation id="3114643501466072395">Če želite preveriti, ali so druga gesla varna pred podatkovnimi kršitvami in drugimi varnostnimi težavami, <ph name="BEGIN_LINK" />se prijavite v Chrome<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">Spremembe bodo začele veljati ob naslednjem zagonu Google Chroma.</translation>
 <translation id="3149510190863420837">Aplikacije za Chrome</translation>
 <translation id="3169523567916669830">Med temi preizkusi lahko vidite ali odstranite teme zanimanja, ki jih spletna mesta uporabljajo, da vam prikazujejo oglase. Chrome oceni vaša zanimanja glede na nedavno zgodovino brskanja.</translation>
+<translation id="3196187562065225381">Chrome je blokiral ta prenos, ker je datoteka nevarna</translation>
 <translation id="3226612997184048185">Če v računu Google shranite tudi zaznamke, lahko v Chromu spremljate cene izdelkov in prejmete obvestilo, ko se cena zniža</translation>
 <translation id="3245429137663807393">Če delite tudi poročila o uporabi Chroma, so v teh poročilih vključeni URL-ji, ki jih obiščete.</translation>
 <translation id="3282568296779691940">Prijava v Chrome</translation>
@@ -184,6 +187,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4148957013307229264">Nameščanje ...</translation>
 <translation id="4149882025268051530">Namestitvenemu programu ni uspelo razširiti arhiva. Ponovno prenesite program Google Chrome.</translation>
 <translation id="4153934450158521343">Chrome se bo kmalu zaprl in izbrisal bo podatke</translation>
+<translation id="4175922240926474352">Chrome je blokiral ta prenos, ker spletno mesto ne uporablja varne povezave in so v datoteko morda posegali</translation>
 <translation id="4191857738314598978">{0,plural, =1{Chrome znova zaženite v enem dnevu}one{Chrome znova zaženite v # dnevu}two{Chrome znova zaženite v # dnevih}few{Chrome znova zaženite v # dnevih}other{Chrome znova zaženite v # dnevih}}</translation>
 <translation id="4205939740494406371">Chrome ne more preveriti vaših gesel. Poskusite znova čez 24 ur ali <ph name="BEGIN_LINK" />preverite gesla v računu Google<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Preklic …</translation>
@@ -364,6 +368,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="7641148173327520642">Skrbnik sistema je Google Chrome nastavil tako, da za dostop do <ph name="TARGET_URL_HOSTNAME" /> odpre brskalnik <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
 <translation id="7649070708921625228">Pomoč</translation>
 <translation id="7651907282515937834">Logotip za Chrome Enterprise</translation>
+<translation id="76531479118467370">Chrome je blokiral ta prenos, ker ste izklopili Varno brskanje in datoteke ni mogoče preveriti</translation>
 <translation id="7655455401911432608">Zgodovina brskanja, evidenca spletnih mest, ki ste jih obiskali s Chromom v tej napravi.</translation>
 <translation id="7747138024166251722">Namestitvenemu programu ni uspelo ustvariti začasnega imenika. Preverite, ali je na disku dovolj prostora in ali imate dovoljenje za namestitev programske opreme.</translation>
 <translation id="7761834446675418963">Kliknite ime, da odprete Chrome in začnete brskati.</translation>
@@ -380,6 +385,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="7890208801193284374">Če računalnik souporabljate z drugimi, lahko prijatelji in sorodniki ločeno brskajo ter nastavijo Chrome tako, kot želijo.</translation>
 <translation id="7896673875602241923">Nekdo se je prijavil v Chrome v tem računalniku kot <ph name="ACCOUNT_EMAIL_LAST" />. Ustvarite nov uporabniški profil za Chrome, če želite, da bodo vaši podatki ločeni.</translation>
 <translation id="7917876797003313048">Upravljate lahko račune Google, v katere ste prijavljeni. Računi Google se uporabljajo za brskalnik Chrome, Trgovino Play, Gmail in drugo. Če želite dodati račun za nekoga drugega, na primer družinskega člana, v napravo <ph name="DEVICE_TYPE" /> dodajte novo osebo. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
+<translation id="7936702483636872823">Chrome je blokiral ta prenos, ker je datoteka zavajajoča in v napravi morda izvaja nepričakovane spremembe</translation>
 <translation id="7951272445806340501">Za uveljavitev posodobitve je treba znova zagnati ChromeOS Flex.</translation>
 <translation id="7962368738413920945">Spletna mesta bodo verjetno delovala po pričakovanjih, vendar si vas ne bodo zapomnila, ko zaprete vsa Chromova okna.</translation>
 <translation id="7962410387636238736">Ta računalnik ne bo več prejemal posodobitev za Google Chrome, ker sistema Windows XP in Windows Vista nista več podprta.</translation>

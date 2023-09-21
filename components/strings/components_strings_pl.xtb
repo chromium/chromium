@@ -328,6 +328,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1618571384971354160">Holowanie pojazdów i pomoc drogowa</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622571349153632031">Kuchnia wegetariańska</translation>
+<translation id="162285686621567578">Ta strona została zablokowana przez Twojego rodzica.</translation>
 <translation id="1622966923835127638">Biznes/Finanse</translation>
 <translation id="1623104350909869708">Zapobiegaj wyświetlaniu dodatkowych okien dialogowych na tej stronie</translation>
 <translation id="1633137413609266904">{0,plural, =1{Otwieranie tego pliku jest zablokowane przez zasady administratora}few{Otwieranie # plików jest zablokowane przez zasady administratora}many{Otwieranie # plików jest zablokowane przez zasady administratora}other{Otwieranie # pliku jest zablokowane przez zasady administratora}}</translation>
@@ -372,6 +373,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1711528724596764268">Systemy uczące się i sztuczna inteligencja</translation>
 <translation id="1712552549805331520"><ph name="URL" /> chce na stałe przechowywać dane na Twoim komputerze lokalnym</translation>
 <translation id="1713628304598226412">Taca 2</translation>
+<translation id="1714807406136741351">Tryb przeglądania – możesz przejść na tryb formularzy, aby sprawdzać zmiany cen na wykresie za pomocą strzałek w lewo i w prawo</translation>
 <translation id="1717218214683051432">Czujniki ruchu</translation>
 <translation id="1717494416764505390">Zestaw tac odbiorczych 3</translation>
 <translation id="1717688554309417925">Usługi kont debetowych i bieżących</translation>
@@ -3251,6 +3253,7 @@ Dodatkowe informacje:
 <translation id="7667346355482952095">Zwrócony token zasad jest pusty lub nie pasuje do bieżącego tokena</translation>
 <translation id="7668654391829183341">Nieznane urządzenie</translation>
 <translation id="7669271284792375604">Osoby atakujące tę stronę mogą podstępem próbować nakłonić Cię do zainstalowania programów utrudniających przeglądanie internetu (np. zmieniających stronę główną lub wyświetlających dodatkowe reklamy na stronach, na które wchodzisz).</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> z <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Wykonane działania dotyczące danych oznaczonych jako poufne (od momentu zalogowania zgłoszono 1 działanie). <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" />}few{Wykonane działania dotyczące danych oznaczonych jako poufne (od momentu zalogowania zgłoszono # działania). <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" />}many{Wykonane działania dotyczące danych oznaczonych jako poufne (od momentu zalogowania zgłoszono # działań). <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" />}other{Wykonane działania dotyczące danych oznaczonych jako poufne (od momentu zalogowania zgłoszono # działania). <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Zestaw tac odbiorczych 6</translation>
 <translation id="7675325315208090829">Zarządzaj formami płatności…</translation>

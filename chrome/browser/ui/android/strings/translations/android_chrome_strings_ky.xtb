@@ -175,6 +175,7 @@
 <translation id="19288952978244135">Chrome'ду кайра ачуу.</translation>
 <translation id="1933845786846280168">Тандалган өтмөк</translation>
 <translation id="1943432128510653496">Сырсөздөрдү сактоо</translation>
+<translation id="1944535645109964458">Киргизүүчү ачкычтар жок</translation>
 <translation id="1952172573699511566">Мүмкүн болгон учурда вебсайттар текстти сиз каалаган тилде көрсөтүшөт.</translation>
 <translation id="1959679933317802873">Мазмун күтүлүүдө</translation>
 <translation id="1960290143419248813">Chrome жаңыртуулары Android'дин бул версиясында колдоого алынбай калган</translation>
@@ -618,6 +619,7 @@
 <translation id="4257230861809842349">Сырсөздөрдү башкаргычтан сырсөздөрдү өчүрөсүзбү?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Кайсы маалымат колдонулат:<ph name="END_BOLD" /> Бул түзмөктө Chrome аркылуу баш баккан жана көргөн сайттарыңыз.</translation>
 <translation id="4269820728363426813">Шилтеме дарегин көчүрүү</translation>
+<translation id="4277529130885813215">Башка түзмөктү колдонуу</translation>
 <translation id="4283102315569707115">Демейки компьютердик версияларды суранасызбы?</translation>
 <translation id="4285846616383034558">Cookie файлдары, кештер жана сайттагы маалымат</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android'дин параметрлеринен экранды кулпулоону күйгүзүңүз<ph name="END_LINK" /></translation>
@@ -1158,6 +1160,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6955535239952325894">Бул жөндөө көзөмөлдөнгөн серепчилерде өчүрүлгөн</translation>
 <translation id="6963766334940102469">Кыстармаларды жок кылуу</translation>
 <translation id="696447261358045621">Жашыруун режимден чыгуу</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6971862865055170158">Ырасталбасын</translation>
 <translation id="6978717888677691380">Сиз бөгөттөгөн сайттар</translation>
 <translation id="6979737339423435258">Бардыгы</translation>
@@ -1316,6 +1319,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> түзмөгүнөн көчүрүлгөн текст</translation>
 <translation id="7762668264895820836"><ph name="SD_CARD_NUMBER" />-SD-карта</translation>
 <translation id="7764225426217299476">Дарек кошуу</translation>
+<translation id="7766587497031415281">Серептөө дайындарын тазалоо үчүн көбүрөөк параметрлер</translation>
 <translation id="7772032839648071052">Купуя сөз айкашын ырастаңыз</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> өтмөгүн жабуу</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 жана дагы <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 жана дагы <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>

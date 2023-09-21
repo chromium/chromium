@@ -105,6 +105,7 @@ Things to consider:
         Try waiting a few minutes before signing out. If you sign out now, this data will be deleted.</translation>
 <translation id="484033449593719797">Not supported on Chrome beta</translation>
 <translation id="4840404732697892756">Google Password Manager can check your passwords when you sign in with your Google Account.</translation>
+<translation id="4860330141789125848">{COUNT,plural, =1{Chrome can help you track this parcel on the New tab page.}other{Chrome can help you track these parcels on the New tab page.}}</translation>
 <translation id="4903674399067644695">This card shows you suggestions on how to get the most out of Chrome.</translation>
 <translation id="49200511069271369">Your organisation, <ph name="DOMAIN" />, manages the account you're signing in to and how Chrome can be used. Your administrator can set up or restrict certain features.</translation>
 <translation id="5030102366287574140">Chrome can help keep you safe from data breaches, unsafe websites and more.</translation>
@@ -114,10 +115,12 @@ Things to consider:
 <translation id="5156818928311866442">Opens the Chrome Setting to set Chrome as Default Browser.</translation>
 <translation id="5162467219239570114">Chrome is out of date. If no update is available in the <ph name="BEGIN_LINK" />app store<ph name="END_LINK" />, it's possible that your device doesn't support new versions of Chrome anymore.</translation>
 <translation id="5190139289262548459">Your organisation, <ph name="DOMAIN" />, manages the account you're signed in to and how Chrome is used.</translation>
+<translation id="5278862365980079760">Lock your Incognito tabs when you leave Chrome or switch to a different app.</translation>
 <translation id="5389212809648216794">Google Chrome can't use your camera because it's in use by another application</translation>
 <translation id="5395376160638294582">Make sure that you can always use the Chrome data in your Google Account</translation>
 <translation id="5439191312780166229">Warns you about dangerous sites, even ones that Google didn't know about before, by analysing more data from sites than standard protection. You can choose to skip Chrome warnings.</translation>
 <translation id="5460571915754665838">4. Select Chrome</translation>
+<translation id="546541279759910616">{COUNT,plural, =1{Chrome will help track this parcel on the New tab page.}other{Chrome will help track these parcels on the New tab page.}}</translation>
 <translation id="5492504007368565877">Google Password Manager can’t check your passwords.</translation>
 <translation id="5527026824954593399">Tap 'View with Google Maps on Chrome'</translation>
 <translation id="5552137475244467770">Chrome periodically checks your passwords against lists that have been published online. When doing this, your passwords and usernames are encrypted, so they can’t be read by anyone, including Google.</translation>

@@ -100,6 +100,7 @@
 <translation id="1195073053842921378">הכתובת הזו תימחק מהמכשיר</translation>
 <translation id="1195558154361252544">הצגת ההודעות חסומה באופן אוטומטי בכל האתרים, מלבד האתרים שבהם היא אושרה</translation>
 <translation id="1197088940767939838">כתום</translation>
+<translation id="1197761954713363183">גיליון האישור של מפתח הגישה סגור</translation>
 <translation id="1201402288615127009">הבא</translation>
 <translation id="1201895884277373915">עוד מאתר זה</translation>
 <translation id="1202892408424955784">מוצרים במעקב</translation>
@@ -382,6 +383,7 @@
 <translation id="1725591448053514783">‏מעטפה – You 6</translation>
 <translation id="1727613060316725209">האישור תקין</translation>
 <translation id="1728677426644403582">זהו המקור של דף אינטרנט</translation>
+<translation id="1728803206919861584">לשמור את מפתח הגישה מחוץ למצב הפרטי?</translation>
 <translation id="173080396488393970">אין תמיכה בכרטיס מסוג זה</translation>
 <translation id="1732445923934584865">אני רוצה לבקש באופן אישי במקום זאת</translation>
 <translation id="1733064249834771892">גופנים</translation>
@@ -1664,6 +1666,7 @@
 <translation id="4415156962929755728">Plastic (High Gloss)</translation>
 <translation id="4415426530740016218">כתובת איסוף</translation>
 <translation id="4424024547088906515">‏השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. אישור האבטחה שלו לא נחשב כמהימן על ידי Chrome. ייתכן שהסיבה לכך היא תצורה שגויה או תוקף המיירט את החיבור שלך.</translation>
+<translation id="4425173294238317796">גיליון האישור של מפתח הגישה</translation>
 <translation id="4425750422187370446">ביגוד לספורט</translation>
 <translation id="4428065317363009941">התאמה אישית של מודעות</translation>
 <translation id="443121186588148776">יציאה טורית</translation>
@@ -2023,6 +2026,7 @@ Del</translation>
 <translation id="5157504274688344097">חנויות כלבו</translation>
 <translation id="5158275234811857234">שער</translation>
 <translation id="5159010409087891077">‏פתיחת הדף בחלון אנונימי (‎⇧⌘N)</translation>
+<translation id="5161262286013276579">גיליון האישור של מפתח הגישה פתוח</translation>
 <translation id="5161334686036120870">נושא:</translation>
 <translation id="5161506081086828129">מערים 9</translation>
 <translation id="5164798890604758545">מתבצעת הזנת טקסט</translation>
@@ -2906,6 +2910,7 @@ Del</translation>
 <translation id="7004583254764674281">‏כדי לאשר את הכרטיסים מהר יותר, אפשר להשתמש ב-Windows Hello</translation>
 <translation id="7006930604109697472">לשליחה בכל זאת</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7013762323294215682">מפתח הגישה הזה יישמר במנהל הסיסמאות. כל מי שיש לו גישה למנהל הסיסמאות יוכל להשתמש בו.</translation>
 <translation id="7014042602717177828">אודיו לרכב</translation>
 <translation id="7014741021609395734">המרחק מהתצוגה</translation>
 <translation id="7016992613359344582">התשלום עשוי להיות חד-פעמי או לכלול חיובים חוזרים וייתכן שהדרישה לתשלום לא תוצג בצורה ברורה וחד-משמעית.</translation>

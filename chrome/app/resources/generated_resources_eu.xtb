@@ -2769,7 +2769,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3169930038976362151">Aukeratu zure beharretara egokituta gaia. Gaia, horma-papera, pantaila-babeslea eta beste gauza batzuk aldatzeko, eduki sakatuta mahaigaina.</translation>
 <translation id="3170072451822350649">Nahi baduzu, saioa hasi gabe, <ph name="LINK_START" />gonbidatu gisa araka dezakezu<ph name="LINK_END" /> sarea.</translation>
 <translation id="31774765611822736">Fitxa berria ezkerrean</translation>
-<translation id="3177689682958561933">Atzera eta aurrera nabigatzeko, aktiba ezazu</translation>
 <translation id="3177909033752230686">Orriaren hizkuntza:</translation>
 <translation id="3177914167275935955">Gailuak Chrome Education Upgrade dakar, baina zure erabiltzaile-izena ez dago erlazionatuta Google for Education-eko ezein konturekin. Google for Education-eko kontu bat sortzeko, joan g.co/workspace/edusignup helbidera beste gailu batean.</translation>
 <translation id="3179982752812949580">Testuaren letra</translation>
@@ -6234,7 +6233,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="6045114302329202345">TrackPoint botoi nagusia</translation>
 <translation id="6047632800149092791">Sinkronizazioa ez dabil. Amaitu eta hasi berriro saioa.</translation>
 <translation id="6048747414605857443">Hautatu eta pertsonalizatu testua ahots bihurtzeko eginbidearen ahotsak ChromeVox-en eta "Hautatu ozen irakurtzeko" eginbidean</translation>
-<translation id="6049797270917061226">Baliteke fitxategiak erasotzaileei informazio pertsonala lapurtzen uztea.</translation>
 <translation id="6050189528197190982">Gris-eskala</translation>
 <translation id="6051354611314852653">Sistemak ezin izan dio gailu honi APIa atzitzeko baimenik eman.</translation>
 <translation id="6051811090255711417">Zure erakundeak fitxategia blokeatu du segurtasun-gidalerro bat betetzen ez duelako</translation>
@@ -6520,7 +6518,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="6270391203985052864">Webguneek jakinarazpenak bidaltzea eska dezakete</translation>
 <translation id="6270486800167535228">Luzapena ainguratuta dago. Aukera gehiago ikusteko, hautatu hau</translation>
 <translation id="6270770586500173387">Bidali <ph name="BEGIN_LINK1" />sistemari eta aplikazioei buruzko informazioa<ph name="END_LINK1" /> eta <ph name="BEGIN_LINK2" />estatistikak<ph name="END_LINK2" /></translation>
-<translation id="6270896861225278704">Bilaketa-ibilbidearen txartela</translation>
 <translation id="6271348838875430303">desegin da zuzenketa</translation>
 <translation id="6271824294945464304">Pasahitza partekatzen</translation>
 <translation id="6273677812470008672">Kalitatea</translation>
@@ -7140,6 +7137,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="6798578729981748444">Inportazioa amaitzeko, itxi Firefox-eko leiho guztiak.</translation>
 <translation id="6798780071646309401">maiuskulak aktibatuta daude</translation>
 <translation id="6798954102094737107"><ph name="PLUGIN_NAME" /> plugina</translation>
+<translation id="679905836499387150">Tresna-barraren botoi ezkutuak</translation>
 <translation id="6801129617625983991">Ezarpen orokorrak</translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{Aukeratu luzapenak webgunea irakurri edo aldatu ahal duen}other{Aukeratu luzapenek webgunea irakurri edo aldatu ahal duten}}</translation>
 <translation id="6801435275744557998">Kalibratu ukipen-pantaila</translation>
@@ -10084,10 +10082,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="9151906066336345901">amaiera tekla</translation>
 <translation id="9153274276370926498">Lacros-en sistemaren informazioa</translation>
 <translation id="9153367754133725216">Ikusi aplikazio eta sareko eduki berrien iradokizunak exekutatzeko tresnan eta bilaketa-emaitzetan. Hutsegite-txostenak, eta diagnostiko- eta erabilera-datuak ChromeOS-era bidaltzea aukeratu baduzu soilik bidaliko dira iradokizunak hobetzeko balio duten estatistikak.</translation>
-<translation id="9154082578438716291">Bisitatu dituzun orriak eta iradokitako bilaketak ikusten ari zara, Chrome-ko bilaketa-ibilbideen azken jardueretara itzultzea errazagoa izan dadin.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        Ezarpenak kudeatzeko, joan txartelaren menura edo ikusi aukera gehiago Pertsonalizatu Chrome atalean.</translation>
 <translation id="9154194610265714752">Eguneratuta</translation>
 <translation id="9157096865782046368">0,8 segundo</translation>
 <translation id="9157697743260533322">Ezin izan dira konfiguratu eguneratze automatikoak erabiltzaile guztientzat (hasierako proba-eskaeraren abiarazte-errorea: <ph name="ERROR_NUMBER" />)</translation>

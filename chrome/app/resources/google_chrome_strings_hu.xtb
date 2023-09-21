@@ -12,6 +12,7 @@
 <translation id="1149651794389918149">Jelentkezzen be a Chrome-ba. Ha csak egyszer szeretne bejelentkezni az adott fiókba, akkor <ph name="GUEST_LINK_BEGIN" />vendég módban is használhatja az eszközt<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">A ChromeOS névjegye</translation>
 <translation id="1154147086299354128">&amp;Megnyitás Chrome-ban</translation>
+<translation id="1194807384646768652">A Chrome letiltotta ezt a letöltést, mert ezt a fájltípust nem töltik le gyakran, és veszélyes lehet</translation>
 <translation id="1203500561924088507">Köszönjük, hogy elvégezte a telepítést. A(z) <ph name="BUNDLE_NAME" /> használata előtt újra kell indítania a böngészőt.</translation>
 <translation id="1278833599417554002">Indítsa újra a Chrome frissítéshez</translation>
 <translation id="1302523850133262269">Kérjük, várjon, amíg a Chrome telepíti a legutóbbi rendszerfrissítéseket.</translation>
@@ -129,10 +130,12 @@
 <translation id="3080151273017101988">A háttéralkalmazások továbbfuttatása, ha a Google Chrome-ot bezárják</translation>
 <translation id="3089968997497233615">Elérhető a Google Chrome új, biztonságosabb verziója.</translation>
 <translation id="3100998948628680988">Nevezze el Chrome-profilját</translation>
+<translation id="3112458742631356345">A Chrome letiltotta ezt a letöltést, mert ezt a fájlt nem töltik le gyakran, és veszélyes lehet</translation>
 <translation id="3114643501466072395">Ha ellenőrizni szeretné, hogy a többi jelszava biztonságban van-e az adatvédelmi incidensektől és más biztonsági problémáktól, <ph name="BEGIN_LINK" />jelentkezzen be a Chrome-ba<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">A módosítások a következő alkalommal lépnek életbe, amikor újraindítja a Google Chrome-ot.</translation>
 <translation id="3149510190863420837">Chrome-alkalmazások</translation>
 <translation id="3169523567916669830">A próbaidőszak során megtekintheti és eltávolíthatja azokat a témaköröket, amelyeket a webhelyek hirdetések megjelenítésére használnak. A Chrome az Önt esetlegesen érdeklő témaköröket a legutóbbi böngészési előzményei alapján határozza meg.</translation>
+<translation id="3196187562065225381">A Chrome letiltotta ezt a letöltést, mert a fájl veszélyes</translation>
 <translation id="3226612997184048185">Ha Google-fiókjába is menti könyvjelzőit, a Chrome-ban nyomon követheti a termékek árait, és értesítést kaphat, amikor az árak csökkennek.</translation>
 <translation id="3245429137663807393">Ha a Chrome használati jelentéseit is megosztja, ezek a jelentések tartalmazzák az Ön által felkeresett URL-eket.</translation>
 <translation id="3282568296779691940">Bejelentkezés a Chrome-ba</translation>
@@ -180,6 +183,7 @@
 <translation id="4148957013307229264">Telepítés...</translation>
 <translation id="4149882025268051530">Nem sikerült a telepítőnek kibontani a tömörített állományt. Kérjük, töltse le újra a Google Chrome böngészőt.</translation>
 <translation id="4153934450158521343">A Chrome hamarosan bezáródik, és törli az adatokat</translation>
+<translation id="4175922240926474352">A Chrome letiltotta ezt a letöltést, mert a webhely nem használ biztonságos kapcsolatot, és előfordulhat, hogy a fájlt illetéktelenül módosították</translation>
 <translation id="4191857738314598978">{0,plural, =1{A Chrome-ot 1 napon belül újra kell indítani}other{A Chrome-ot # napon belül újra kell indítani}}</translation>
 <translation id="4205939740494406371">A Chrome nem tudja ellenőrizni a jelszavait. Próbálja újra 24 óra múlva, vagy <ph name="BEGIN_LINK" />ellenőrizze jelszavait a Google-fiókjában<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Visszavonás…</translation>
@@ -356,6 +360,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="7641148173327520642">Rendszergazdája úgy állította be a Google Chrome-ot, hogy a(z) <ph name="ALTERNATIVE_BROWSER_NAME" /> böngészőt nyissa meg a(z) <ph name="TARGET_URL_HOSTNAME" /> eléréséhez.</translation>
 <translation id="7649070708921625228">Súgó</translation>
 <translation id="7651907282515937834">Chrome Enterprise-embléma</translation>
+<translation id="76531479118467370">A Chrome letiltotta ezt a letöltést, mert Ön kikapcsolta a Biztonságos Böngészést, és a fájl nem ellenőrizhető</translation>
 <translation id="7655455401911432608">Böngészési előzményei és az Ön által az ezen az eszközön használt Chrome-ban felkeresett webhelyek jegyzéke.</translation>
 <translation id="7747138024166251722">A telepítőnek nem sikerült létrehoznia az ideiglenes könyvtárat. Kérjük ellenőrizze, hogy van-e elegendő hely a lemezen, és rendelkezik-e engedéllyel a szoftvertelepítésre.</translation>
 <translation id="7761834446675418963">Kattintson a nevére a Chrome megnyitásához és a böngészés megkezdéséhez.</translation>
@@ -372,6 +377,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="7890208801193284374">Ha megoszt egy számítógépet, ismerősei és családtagjai külön fiókokban internetezve a saját kívánságaik szerint állíthatják be a Chrome-ot.</translation>
 <translation id="7896673875602241923">Valaki korábban <ph name="ACCOUNT_EMAIL_LAST" /> néven bejelentkezett a Chrome-ba erről a számítógépről. Az adatai elkülönítéséhez hozzon létre új Chrome-felhasználót.</translation>
 <translation id="7917876797003313048">Kezelheti a bejelentkezett Google-fiókjait. Google-fiókjait használhatja a Chrome böngészőben, a Play Áruházban, a Gmailben és még sok más helyen. Ha más számára szeretne hozzáadni fiókot (például családtagjának), inkább új személyt adjon hozzá <ph name="DEVICE_TYPE" /> eszközéhez. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" /></translation>
+<translation id="7936702483636872823">A Chrome letiltotta ezt a letöltést, mert a fájl megtévesztő, és váratlan módosításokat végezhet az eszközön</translation>
 <translation id="7951272445806340501">A frissítés alkalmazásához a ChromeOS Flex újraindítása szükséges.</translation>
 <translation id="7962368738413920945">A webhelyek valószínűleg a várt módon fognak működni, de nem fognak emlékezni az Ön tevékenységeire, miután bezárta az összes Chrome-ablakot</translation>
 <translation id="7962410387636238736">Ez a számítógép a továbbiakban már nem kapja meg a Google Chrome frissítéseit, mert már nem támogatjuk a Windows XP és Windows Vista rendszereket.</translation>

@@ -100,6 +100,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1195073053842921378">Esta dirección se eliminará de este dispositivo</translation>
 <translation id="1195558154361252544">Las notificaciones se bloquean automáticamente en todos los sitios, excepto en los que las permitas.</translation>
 <translation id="1197088940767939838">Naranja</translation>
+<translation id="1197761954713363183">Hoja de confirmación de llave de acceso cerrada</translation>
 <translation id="1201402288615127009">Siguiente</translation>
 <translation id="1201895884277373915">Más entradas de este sitio</translation>
 <translation id="1202892408424955784">Productos que sigues</translation>
@@ -382,6 +383,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1725591448053514783">Sobre You 6</translation>
 <translation id="1727613060316725209">El certificado es válido</translation>
 <translation id="1728677426644403582">Estás viendo el código fuente de una página web</translation>
+<translation id="1728803206919861584">¿Guardar llave de acceso fuera de Incógnito?</translation>
 <translation id="173080396488393970">No se admite este tipo de tarjeta</translation>
 <translation id="1732445923934584865">Preguntar en persona</translation>
 <translation id="1733064249834771892">fuentes</translation>
@@ -1664,6 +1666,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4415156962929755728">Plástico (brillo intenso)</translation>
 <translation id="4415426530740016218">Dirección de recogida</translation>
 <translation id="4424024547088906515">Este servidor no ha podido probar que su dominio es <ph name="DOMAIN" />, Chrome no confía en su certificado de seguridad. Este problema puede deberse a una configuración incorrecta o a que un atacante haya interceptado la conexión.</translation>
+<translation id="4425173294238317796">Hoja de confirmación de llave de acceso</translation>
 <translation id="4425750422187370446">Ropa para hacer deporte</translation>
 <translation id="4428065317363009941">Personalización de anuncios</translation>
 <translation id="443121186588148776">Puerto serie</translation>
@@ -2019,6 +2022,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5157504274688344097">Grandes comercios y grandes almacenes</translation>
 <translation id="5158275234811857234">Portada</translation>
 <translation id="5159010409087891077">Abre una página en una nueva ventana de Incógnito (⇧ + ⌘ + N)</translation>
+<translation id="5161262286013276579">Hoja de confirmación de llave de acceso abierta</translation>
 <translation id="5161334686036120870">Asunto:</translation>
 <translation id="5161506081086828129">Apilador 9</translation>
 <translation id="5164798890604758545">Se ha introducido texto</translation>
@@ -2901,6 +2905,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="7004583254764674281">Usa Windows Hello para confirmar tarjetas más rápido</translation>
 <translation id="7006930604109697472">Enviar de todos modos</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7013762323294215682">Esta llave de acceso se guardará en tu gestor de contraseñas. Cualquier persona con acceso a él podrá usar esta llave de acceso.</translation>
 <translation id="7014042602717177828">Sistemas de audio para coches</translation>
 <translation id="7014741021609395734">Nivel de zoom</translation>
 <translation id="7016992613359344582">Estos cargos pueden ser únicos o periódicos, y es posible que no se indiquen de una forma evidente.</translation>

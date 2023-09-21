@@ -25,6 +25,7 @@ Cuestións que debes ter en conta:
 
   • Se sincronizas o historial coa túa Conta de Google, pode que as métricas tamén conteñan información sobre os URL que visites.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Contas coa máxima seguranza de Chrome contra sitios web daniños</translation>
+<translation id="1615715390546812898">Fai buscas por voz en Chrome.</translation>
 <translation id="1657395063736185342">Busca elementos visuais en Chrome</translation>
 <translation id="1675955119303651351">Algúns dos teus datos Chrome aínda non se gardaron na túa Conta de Google.
         Espera uns minutiños antes de pechar a sesión. Se a pechas agora, estes datos eliminaranse.</translation>
@@ -104,6 +105,7 @@ Cuestións que debes ter en conta:
         Espera uns minutiños antes de pechar a sesión. Se a pechas agora, estes datos eliminaranse.</translation>
 <translation id="484033449593719797">Non compatible na versión beta de Chrome</translation>
 <translation id="4840404732697892756">O xestor de contrasinais de Google pode comprobar os teus contrasinais cando inicies sesión coa Conta de Google.</translation>
+<translation id="4860330141789125848">{COUNT,plural, =1{Chrome axudarache a facer un seguimento deste paquete na páxina Nova pestana.}other{Chrome axudarache a facer un seguimento destes paquetes na páxina Nova pestana.}}</translation>
 <translation id="4903674399067644695">Esta tarxeta móstrache suxestións sobre como tirar o máximo proveito de Chrome.</translation>
 <translation id="49200511069271369">A túa organización, <ph name="DOMAIN" />, xestiona a conta na que estás iniciando sesión e o xeito no que se usa Chrome. A persoa administradora pode configurar ou restrinxir determinadas funcións.</translation>
 <translation id="5030102366287574140">Chrome pode protexerte contra violacións da seguranza dos datos, sitios web que non son seguros e moito máis.</translation>
@@ -113,10 +115,12 @@ Cuestións que debes ter en conta:
 <translation id="5156818928311866442">Abre a configuración de Chrome para definir este navegador como predeterminado.</translation>
 <translation id="5162467219239570114">A versión de Chrome está desactualizada. Se non hai dispoñible ningunha actualización na <ph name="BEGIN_LINK" />tenda de aplicacións<ph name="END_LINK" />, é posible que o teu dispositivo xa non sexa compatible coas novas versións de Chrome.</translation>
 <translation id="5190139289262548459">A túa organización, <ph name="DOMAIN" />, xestiona a conta na que tes a sesión iniciada e o xeito no que se usa Chrome.</translation>
+<translation id="5278862365980079760">Pecha as pestanas do modo de incógnito ao saír de Chrome ou ao cambiar de aplicación.</translation>
 <translation id="5389212809648216794">Google Chrome non pode usar a cámara porque a está usando outra aplicación</translation>
 <translation id="5395376160638294582">Asegúrate de poder usar sempre os datos de Chrome na túa Conta de Google</translation>
 <translation id="5439191312780166229">Analiza máis datos de sitios que a protección estándar para avisarte sobre os sitios perigosos (mesmo sobre os que Google non coñeza ata ese momento). Se queres, podes omitir as advertencias de Chrome.</translation>
 <translation id="5460571915754665838">4. Selecciona Chrome</translation>
+<translation id="546541279759910616">{COUNT,plural, =1{Chrome axudarache a facer un seguimento deste paquete na páxina Nova pestana.}other{Chrome axudarache a facer un seguimento destes paquetes na páxina Nova pestana.}}</translation>
 <translation id="5492504007368565877">O xestor de contrasinais de Google non puido comprobar os teus contrasinais.</translation>
 <translation id="5527026824954593399">Toca Ver con Google Maps en Chrome.</translation>
 <translation id="5552137475244467770">Chrome comproba periodicamente se os teus contrasinais aparecen nas listas que se publican en liña. Cando o fai, os teus contrasinais e os teus nomes de usuario están encriptados, polo que ninguén pode lelos, nin sequera Google.</translation>

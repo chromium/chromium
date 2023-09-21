@@ -12,6 +12,7 @@
 <translation id="1149651794389918149">Conectează-te la Chrome. Dacă vrei să te conectezi o singură dată la un cont, poți să <ph name="GUEST_LINK_BEGIN" />folosești dispozitivul ca invitat<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">Despre sistemul de operare Chrome</translation>
 <translation id="1154147086299354128">&amp;Deschide în Chrome</translation>
+<translation id="1194807384646768652">Chrome a blocat descărcarea, deoarece tipul de fișier nu este descărcat frecvent și ar putea fi periculos</translation>
 <translation id="1203500561924088507">Mulțumim pentru instalare. Înainte să folosești <ph name="BUNDLE_NAME" /> trebuie să repornești browserul.</translation>
 <translation id="1278833599417554002">Relansează pentru a actualiza &amp;Chrome</translation>
 <translation id="1302523850133262269">Așteaptă până când Chrome instalează cele mai recente actualizări de sistem.</translation>
@@ -128,10 +129,12 @@
 <translation id="3080151273017101988">Rulează în continuare aplicații în fundal când Google Chrome este închis</translation>
 <translation id="3089968997497233615">Google Chrome este disponibil într-o versiune nouă și mai sigură.</translation>
 <translation id="3100998948628680988">Denumește profilul Chrome</translation>
+<translation id="3112458742631356345">Chrome a blocat descărcarea, deoarece fișierul nu este descărcat frecvent și ar putea fi periculos</translation>
 <translation id="3114643501466072395">Ca să verifici dacă celelalte parole sunt protejate împotriva încălcării securității datelor și a altor probleme de securitate, <ph name="BEGIN_LINK" />conectează-te la Chrome<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">Modificările se vor aplica următoarea dată când relansați Google Chrome.</translation>
 <translation id="3149510190863420837">Aplicații Chrome</translation>
 <translation id="3169523567916669830">În perioadele de încercare, poți să vezi și să elimini subiectele de interes folosite de site-uri pentru a-ți afișa anunțuri. Chrome îți estimează interesele pe baza istoricului tău de navigare recent.</translation>
+<translation id="3196187562065225381">Chrome a blocat descărcarea, deoarece fișierul este periculos</translation>
 <translation id="3226612997184048185">Dacă salvezi marcajele și în Contul Google, poți să urmărești prețurile produselor în Chrome și să primești notificări când scad</translation>
 <translation id="3245429137663807393">Dacă trimiți rapoarte privind folosirea Chrome, acestea includ adresele URL pe care le accesezi</translation>
 <translation id="3282568296779691940">Conectează-te la Chrome</translation>
@@ -179,6 +182,7 @@
 <translation id="4148957013307229264">Se instalează...</translation>
 <translation id="4149882025268051530">Programul de instalare nu a putut decomprima arhiva. Descarcă din nou Google Chrome.</translation>
 <translation id="4153934450158521343">În curând, Chrome se va închide și va șterge datele</translation>
+<translation id="4175922240926474352">Chrome a blocat descărcarea, deoarece site-ul nu folosește o conexiune securizată și este posibil ca fișierul să fi fost modificat</translation>
 <translation id="4191857738314598978">{0,plural, =1{Relansează Chrome în cel mult o zi}few{Relansează Chrome în cel mult # zile}other{Relansează Chrome în cel mult # de zile}}</translation>
 <translation id="4205939740494406371">Chrome nu îți poate verifica parolele. Încearcă din nou după 24 de ore sau <ph name="BEGIN_LINK" />verifică parolele din Contul Google<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Se anulează…</translation>
@@ -355,6 +359,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="7641148173327520642">Administratorul sistemului a configurat Google Chrome să deschidă <ph name="ALTERNATIVE_BROWSER_NAME" /> pentru a accesa <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7649070708921625228">Ajutor</translation>
 <translation id="7651907282515937834">Sigla Chrome Enterprise</translation>
+<translation id="76531479118467370">Chrome a blocat descărcarea, deoarece ai dezactivat Navigarea sigură și fișierul nu poate fi confirmat</translation>
 <translation id="7655455401911432608">istoricul tău de navigare, o evidență a site-urilor pe care le-ai accesat folosind Chrome pe acest dispozitiv;</translation>
 <translation id="7747138024166251722">Programul de instalare nu a putut crea un director temporar. Verifică dacă există suficient spațiu liber și dacă ai drepturile necesare pentru a instala software-ul.</translation>
 <translation id="7761834446675418963">Dați clic pe numele dvs. pentru a deschide Chrome și a începe să navigați.</translation>
@@ -371,6 +376,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="7890208801193284374">Dacă permiteți accesul la un computer, familia și prietenii pot să navigheze separat și să configureze Chrome cum doresc.</translation>
 <translation id="7896673875602241923">Un alt utilizator s-a conectat anterior la Chrome pe acest computer ca <ph name="ACCOUNT_EMAIL_LAST" />. Creează un nou utilizator Chrome pentru a-ți păstra separat informațiile.</translation>
 <translation id="7917876797003313048">Îți poți gestiona Conturile Google la care te-ai conectat. Conturile tale Google sunt folosite pentru browserul Chrome, pentru Magazinul Play, pentru Gmail și pentru multe altele. Dacă vrei să adaugi un cont pentru altcineva, de exemplu, pentru un membru al familiei, adaugă noua persoană pe <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
+<translation id="7936702483636872823">Chrome a blocat descărcarea, deoarece fișierul este înșelător și poate face modificări neașteptate pe dispozitiv</translation>
 <translation id="7951272445806340501">Pentru a se aplica actualizarea, sistemul de operare Chrome Flex trebuie să fie repornit.</translation>
 <translation id="7962368738413920945">Probabil că site-urile vor funcționa conform așteptărilor, dar nu te vor reține după ce închizi toate ferestrele Chrome</translation>
 <translation id="7962410387636238736">Acest computer nu va mai primi actualizări pentru Google Chrome, deoarece Windows XP și Windows Vista nu mai sunt acceptate</translation>

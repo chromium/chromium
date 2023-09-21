@@ -242,6 +242,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />obrišite Chrome po
 <translation id="2359043044084662842">Prevedi</translation>
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2360196772093551345">Zahtevaj mobilni sajt</translation>
+<translation id="2361721159900796207">Sakriva ovu stavku</translation>
 <translation id="2362083820973145409">Prijavljeni ste kao <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Otvara podešavanja.</translation>
 <translation id="236977714248711277">Sajtovi ne mogu da koriste kolačiće za poboljšanje doživljaja pregledanja, na primer, da biste ostali prijavljeni ili da bi stavke u vašoj korpi za kupovinu ostale sačuvane.
 
@@ -778,6 +779,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="5317780077021120954">Sačuvaj</translation>
 <translation id="5318298563956633672">Već pratite ovaj proizvod.</translation>
 <translation id="5339316356165661760">Uključi sinhronizaciju</translation>
+<translation id="5345660046352249607">{COUNT,plural, =1{Želite da pratite ovaj paket?}one{Želite da pratite {COUNT} paket?}few{Želite da pratite {COUNT} paketa?}other{Želite da pratite {COUNT} paketa?}}</translation>
 <translation id="536067926684072644">Prikaži obeleživače</translation>
 <translation id="5360976571138293719">Više podešavanja u vezi sa privatnošću, bezbednošću i prikupljanjem podataka potražite u odeljku <ph name="BEGIN_LINK" />Google usluge<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Ovde ćete pronaći sajtove koje pratite</translation>
@@ -1144,6 +1146,7 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="723787869754590019">Koristite Chrome za automatsko popunjavanje</translation>
 <translation id="7265758999917665941">Nikada za ovaj sajt</translation>
 <translation id="7272437679830969316">Verifikacija identiteta nije uspela. Lozinka nije kopirana.</translation>
+<translation id="7284359491594949826">{COUNT,plural, =1{Prati se nov paket}one{Prate se novi paketi}few{Prate se novi paketi}other{Prate se novi paketi}}</translation>
 <translation id="7291368939935408496">Pripremaju se lozinke...</translation>
 <translation id="7302503784943202842">Koristite lozinke na svim uređajima</translation>
 <translation id="730958329302570991">Lako dodajte lozinke za sajtove u Google menadžer lozinki u bilo kom trenutku.</translation>
@@ -1177,6 +1180,7 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="7473891865547856676">Ne, hvala</translation>
 <translation id="7491131399623468277">Idite u Podešavanja…</translation>
 <translation id="7492574581995589075">Organizacija je isključila mogućnost korišćenja i čuvanja Chrome podataka na Google nalogu. Novi obeleživači, lozinke i drugi sadržaj će se čuvati samo na ovom uređaju.</translation>
+<translation id="750149195207506638">Obeleživači su skriveni</translation>
 <translation id="750228856503700085">Ažuriranja nisu dostupna</translation>
 <translation id="750493650310597496">Izabrano je 0 stavki</translation>
 <translation id="7508728395076009983">Da biste zaključali kartice bez arhiviranja, podesite Touch ID, Face ID ili šifru.</translation>
@@ -1244,6 +1248,7 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="7856733331829174190">Preuzimanje nije uspelo</translation>
 <translation id="785938070103630874">Otvorite lozinke, načine plaćanja ili adresu i drugo</translation>
 <translation id="7859704718976024901">Istorija pregledanja</translation>
+<translation id="7866501058614003444">Praćenje ovog paketa je opozvano</translation>
 <translation id="7870750252270996949">Slika koju je kopirao Objektiv</translation>
 <translation id="7879275349003161544">Prikazuje preuzimanja</translation>
 <translation id="7883882164760409935">Imate lozinke koje koristite za više naloga.</translation>
@@ -1313,6 +1318,7 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="8206354486702514201">Ovo podešavanje primenjuje administrator.</translation>
 <translation id="8214293972734702249">Zakačeno, <ph name="TAB_TITLE" /></translation>
 <translation id="8225985093977202398">Keširane slike i fajlovi</translation>
+<translation id="823133356836493038">Lista za čitanje je skrivena</translation>
 <translation id="8237382152611443140">Otvorite podešavanja za automatsko popunjavanje lozinke</translation>
 <translation id="8248969482078657578">Neaktivne kartice vam pomažu da ostanete fokusirani</translation>
 <translation id="8261506727792406068">Izbriši</translation>
@@ -1491,6 +1497,7 @@ Podaci su šifrovani pomoću pristupne fraze <ph name="TIME" />. Unesite je da 
 <translation id="9148126808321036104">Prijavi me ponovo</translation>
 <translation id="9157836665414082580">Spreči dijaloge</translation>
 <translation id="9162432979321511934">Uključite Automatsko popunjavanje lozinki</translation>
+<translation id="9162941801309769488">Praćenje paketa je opozvano</translation>
 <translation id="9165320910061267720">Da biste dobijali obaveštenja o sniženjima, treba da uključite obaveštenja u iOS podešavanjima.</translation>
 <translation id="9165886811579296457">Provera bezbednosti nije pronašla bezbednosne probleme koje treba da rešite.</translation>
 <translation id="9172603439892261948">Sinhronizujte obeleživače, istoriju i drugo.</translation>

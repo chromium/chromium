@@ -25,6 +25,7 @@
 
   • Jei sinchronizuosite istoriją „Google“ paskyroje, į metriką taip pat gali būti įtraukta informacijos apie URL, kuriais lankotės.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Turite patikimiausią „Chrome“ apsaugą nuo žalingų svetainių</translation>
+<translation id="1615715390546812898">Paieška balsu naršyklėje „Chrome“.</translation>
 <translation id="1657395063736185342">Vaizdo medžiagos paieška naršyklėje „Chrome“</translation>
 <translation id="1675955119303651351">Kai kurie „Chrome“ duomenys dar neišsaugoti „Google“ paskyroje.
         Pabandykite palaukti kelias minutes prieš atsijungdami. Jei atsijungsite dabar, šie duomenys bus ištrinti.</translation>
@@ -104,6 +105,7 @@
         Pabandykite palaukti kelias minutes prieš atsijungdami. Jei atsijungsite dabar, šie duomenys bus ištrinti.</translation>
 <translation id="484033449593719797">Nepalaikoma „Chrome“ beta versijoje</translation>
 <translation id="4840404732697892756">„Google“ slaptažodžių tvarkyklė gali patikrinti slaptažodžius, kai prisijungiate naudodami „Google“ paskyrą.</translation>
+<translation id="4860330141789125848">{COUNT,plural, =1{„Chrome“ gali padėti stebėti šį paketą „Naujo skirtuko“ puslapyje.}one{„Chrome“ gali padėti stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}few{„Chrome“ gali padėti stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}many{„Chrome“ gali padėti stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}other{„Chrome“ gali padėti stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}}</translation>
 <translation id="4903674399067644695">Šioje kortelėje pateikiami pasiūlymai, kaip išnaudoti visas „Chrome“ galimybes.</translation>
 <translation id="49200511069271369">Jūsų organizacija (<ph name="DOMAIN" />) tvarko paskyrą, prie kurios jungiatės, ir tai, kaip galima naudoti „Chrome“. Administratorius gali nustatyti arba apriboti tam tikras funkcijas.</translation>
 <translation id="5030102366287574140">„Chrome“ gali padėti apsisaugoti nuo duomenų saugos pažeidimų, nesaugių svetainių ir pan.</translation>
@@ -113,10 +115,12 @@
 <translation id="5156818928311866442">Atidaromas „Chrome“ nustatymas nustatyti „Chrome“ kaip numatytąją naršyklę.</translation>
 <translation id="5162467219239570114">„Chrome“ versija yra pasenusi. Jei <ph name="BEGIN_LINK" />programų parduotuvėje<ph name="END_LINK" /> nėra jokio naujinio, gali būti, kad įrenginys nebepalaiko naujų versijų „Chrome“.</translation>
 <translation id="5190139289262548459">Jūsų organizacija (<ph name="DOMAIN" />) tvarko paskyrą, prie kurios esate prisijungę, ir tai, kaip naudojama „Chrome“.</translation>
+<translation id="5278862365980079760">Užrakinkite inkognito skirtukus, išėję iš „Chrome“ ar perjungę į kitą programą.</translation>
 <translation id="5389212809648216794">„Google Chrome“ negali naudoti fotoaparato, nes jį naudoja kita programa</translation>
 <translation id="5395376160638294582">Užtikrinkite, kad visada galėtumėte naudoti „Chrome“ duomenis „Google“ paskyroje</translation>
 <translation id="5439191312780166229">Įspėjama apie pavojingas svetaines, net ir apie tas, apie kurias anksčiau „Google“ nežinojo, analizuojant daugiau duomenų iš svetainių, nei taikant įprastą apsaugą. Galite pasirinkti praleisti „Chrome“ įspėjimus.</translation>
 <translation id="5460571915754665838">4. Pasirinkite „Chrome“</translation>
+<translation id="546541279759910616">{COUNT,plural, =1{„Chrome“ padės stebėti šį paketą „Naujo skirtuko“ puslapyje.}one{„Chrome“ padės stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}few{„Chrome“ padės stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}many{„Chrome“ padės stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}other{„Chrome“ padės stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}}</translation>
 <translation id="5492504007368565877">„Google“ slaptažodžių tvarkyklė negali patikrinti jūsų slaptažodžių.</translation>
 <translation id="5527026824954593399">Palieskite „Peržiūrėti naudojant „Google“ žemėlapius naršyklėje „Chrome“.</translation>
 <translation id="5552137475244467770">„Chrome“ periodiškai tikrina, ar jūsų slaptažodžiai nebuvo įtraukti į internete paskelbtus sąrašus. Tai atliekant, slaptažodžiai ir naudotojų vardai užšifruojami, kad niekas negalėtų jų perskaityti, įskaitant „Google“.</translation>

@@ -225,6 +225,7 @@
 <translation id="1831565490995294689">ເລືອກເພື່ອເປີດ <ph name="APP_TO_OPEN" />.</translation>
 <translation id="1838895407229022812">ແສງກາງຄືນປິດຢູ່.</translation>
 <translation id="1854180393107901205">ຢຸດ​ການ​ຄາສທ໌</translation>
+<translation id="1862077610023398675">ເຊື່ອງການຄວບຄຸມ</translation>
 <translation id="1862380676329487333">ອັບເດດ ແລະ ອອກຈາກລະບົບ</translation>
 <translation id="1864454756846565995">ອຸ​ປະ​ກອນ USB-C (ຜອດ​ດ້ານຫຼັງ)</translation>
 <translation id="1869497990620230175">ໄຟລ໌ດ່ວນ</translation>
@@ -786,6 +787,7 @@
 <translation id="4215497585250573029">ການຕັ້ງຄ່າ VPN</translation>
 <translation id="4217571870635786043">ການພິມຕາມຄຳບອກ</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ແອັບທີ່ຕິດຕັ້ງແລ້ວ, ຢຸດໄວ້ຊົ່ວຄາວແລ້ວ</translation>
+<translation id="4228078597006700451">ບໍ່ໄດ້ຕັ້ງຄ່າການຄວບຄຸມ</translation>
 <translation id="4231053948789591973">ປັດຈຸບັນການສົ່ງສັນຍານຖືກຢຸດຊົ່ວຄາວ. ທ່ານສາມາດສືບຕໍ່ສົ່ງສັນຍານ ຫຼື ຢຸດສົ່ງສັນຍານໜ້າຈໍຂອງທ່ານຕອນໃດກໍໄດ້.</translation>
 <translation id="423685346499232137">ບໍ່ສາມາດສຳເນົາ ຫຼື ວາງເນື້ອຫາໄດ້ໃນຕອນນີ້</translation>
 <translation id="4239069858505860023">GPRS</translation>
@@ -834,7 +836,6 @@
 <translation id="4406883609789734330">ຄຳບັນຍາຍສົດ</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ປິດຢູ່.</translation>
 <translation id="4424159417645388645">ໂຕະ 5</translation>
-<translation id="4427695046139341014">ແຜງໜ້າປັດເກມ</translation>
 <translation id="4430019312045809116">ລະດັບສຽງ</translation>
 <translation id="4441283832827406317">ແອັບແມ່ນຈັດຮຽງຕາມຊື່</translation>
 <translation id="4445159312344259901">ເຂົ້າສູ່ລະບົບເພື່ອປົດລັອກ</translation>
@@ -1220,6 +1221,7 @@
 <translation id="5983567367406220847">ເນື່ອງຈາກບໍ່ມີການເຄື່ອນໄຫວ, ຮັອດສະປອດຖືກປິດໄວ້ແລ້ວ.</translation>
 <translation id="598407983968395253">ໃຊ້ແມ່ແບບ</translation>
 <translation id="598882571027504733">ເພື່ອຮັບເອົາການອັບເດດ, ກະລຸນາປິດເປີດ Chromebook ຂອງທ່ານຄືນໃໝ່ທີ່ມີແປ້ນພິມເຊື່ອມຕໍ່ແລ້ວ.</translation>
+<translation id="6000279412553873020">ແປ້ນ, ປຸ່ມ ແລະ ອື່ນໆ</translation>
 <translation id="6012623610530968780">ໜ້າທີ <ph name="SELECTED_PAGE" /> ຈາກທັງໝົດ <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">ໄຮໄລ້ລາຍການຕໍ່ໄປຢູ່ຖ້ານ</translation>
 <translation id="6015573907265691211">ໝາຍວ່າສຳເລັດແລ້ວ</translation>
@@ -1417,6 +1419,7 @@
 <translation id="6802196538183166658">ເປີດການຕັ້ງຄ່າດ່ວນໂດຍການເລືອກເວລາ</translation>
 <translation id="6802687695197837794">ນີ້ຈະອະນຸຍາດໃຫ້<ph name="APP1_NAME" />, <ph name="APP2_NAME" />, ແອັບ ແລະ ເວັບໄຊທັງໝົດເຂົ້າເຖິງກ້ອງຖ່າຍຮູບ ແລະ ໄມໂຄຣໂຟນໄດ້</translation>
 <translation id="6803622936009808957">ບໍ່ສາມາດສ່ອງການສະແດງໄດ້ ເນື່ອງຈາກບໍ່ພົບການແກ້ໄຂທີ່ຮອງຮັບ. ປ້ອນເດັສທັອບຂະຫຍາຍເຂົ້າແທນແລ້ວ.</translation>
+<translation id="6809556495807506746">ການຄວບຄຸມບໍ່ມີໃຫ້</translation>
 <translation id="6812232930908427253">ບໍ່ສາມາດບັນທຶກໂຕະໄດ້. ມີໜ້າຈໍ ຫຼື ແຖບຫຼາຍເກີນໄປ.</translation>
 <translation id="6818242057446442178">ຖອຍກັບເທື່ອລະຄຳ</translation>
 <translation id="6819327813400217281">ແນບກ້ອງຖ່າຍຮູບໄປໃສ່ມຸມຊ້າຍລຸ່ມແລ້ວ</translation>
@@ -1441,6 +1444,7 @@
 <translation id="6919251195245069855">ບໍ່ສາມາດຮັບຮູ້ບັດອັດສະລິຍະຂອງທ່ານໄດ້. ລອງໃໝ່.</translation>
 <translation id="6920245099716267363">ເປີດ/ປິດຮັອດສະປອດ. ຮັອດສະປອດເປີດຢູ່, ເຊື່ອມຕໍ່ຢູ່ 1 ອຸປະກອນ.</translation>
 <translation id="692135145298539227">ລຶບ</translation>
+<translation id="6929081673585394903">ສະແດງການຄວບຄຸມ</translation>
 <translation id="6931576957638141829">ບັນ​ທຶກ​ໄປ​ໃສ່</translation>
 <translation id="6942518653766415536">ເມນູຮູບແບບການບັນທຶກ</translation>
 <translation id="6945221475159498467">ເລືອກ</translation>
@@ -1638,6 +1642,7 @@
 <translation id="7773536009433685931">ເປີດ Wi-Fi ແທນ</translation>
 <translation id="7780094051999721182">ທາງລັດ</translation>
 <translation id="7780159184141939021">ໝຸນໜ້າຈໍ</translation>
+<translation id="7792590255364786396">ເບິ່ງເຫັນ</translation>
 <translation id="7796735576426975947">ເຊື່ອງການແຈ້ງເຕືອນໃໝ່ແລ້ວ</translation>
 <translation id="7798302898096527229">ກົດຊອກຫາ ຫຼື Shift ເພື່ອຍົກເລີກ.</translation>
 <translation id="780301667611848630">ບໍ່​, ​ຂອບ​ໃຈ</translation>

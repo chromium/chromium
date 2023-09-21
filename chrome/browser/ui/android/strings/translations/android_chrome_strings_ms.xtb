@@ -175,6 +175,7 @@ Apabila anda memadamkan sejarah penyemakan imbas anda — semua atau untuk laman
 <translation id="19288952978244135">Buka semula Chrome.</translation>
 <translation id="1933845786846280168">Tab yang Dipilih</translation>
 <translation id="1943432128510653496">Simpan kata laluan</translation>
+<translation id="1944535645109964458">Tiada kunci laluan tersedia</translation>
 <translation id="1952172573699511566">Tapak web akan menunjukkan teks dalam bahasa pilihan anda, jika boleh.</translation>
 <translation id="1959679933317802873">Menunggu kandungan</translation>
 <translation id="1960290143419248813">Kemas kini Chrome tidak disokong untuk versi Android ini lagi</translation>
@@ -626,6 +627,7 @@ Token keadaan sulit meningkatkan privasi pada web dan tidak boleh digunakan untu
 <translation id="4257230861809842349">Padamkan kata laluan daripada Google Password Manager?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Jenis data yang digunakan:<ph name="END_BOLD" /> Sejarah penyemakan imbas anda, rekod laman yang anda lawati menggunakan Chrome pada peranti ini.</translation>
 <translation id="4269820728363426813">Salin alamat pautan</translation>
+<translation id="4277529130885813215">Gunakan peranti lain</translation>
 <translation id="4283102315569707115">Minta laman desktop secara lalai?</translation>
 <translation id="4285846616383034558">Kuki, cache dan data laman lain</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Hidupkan kunci skrin dalam tetapan Android<ph name="END_LINK" /></translation>
@@ -1166,6 +1168,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="6955535239952325894">Tetapan ini dilumpuhkan pada penyemak imbas terurus</translation>
 <translation id="6963766334940102469">Padamkan penanda halaman</translation>
 <translation id="696447261358045621">Tinggalkan mod Inkognito</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6971862865055170158">Jangan luluskan</translation>
 <translation id="6978717888677691380">Laman yang anda sekat</translation>
 <translation id="6979737339423435258">Sepanjang masa</translation>
@@ -1324,6 +1327,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="7757787379047923882">Teks dikongsi daripada <ph name="DEVICE_NAME" /></translation>
 <translation id="7762668264895820836">Kad SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Tambahkan alamat</translation>
+<translation id="7766587497031415281">Lebih pilihan untuk mengosongkan data semakan imbas</translation>
 <translation id="7772032839648071052">Sahkan frasa laluan</translation>
 <translation id="7772375229873196092">Tutup <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> lagi}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> lagi}}</translation>

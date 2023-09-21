@@ -10,7 +10,7 @@
 <translation id="1480046233931937785">Crèdits</translation>
 <translation id="1520828917794284345">Ajusta la mida de l'escriptori</translation>
 <translation id="1546934824884762070">S'ha produït un error inesperat. Informeu d'aquest problema als desenvolupadors.</translation>
-<translation id="1697532407822776718">Ja estàs a punt!</translation>
+<translation id="1697532407822776718">Tot a punt!</translation>
 <translation id="1742469581923031760">S'està connectant...</translation>
 <translation id="177040763384871009">Per permetre que els enllaços en què es faci clic al dispositiu remot s'obrin al navegador client, has de canviar el navegador web del sistema per "<ph name="URL_FORWARDER_NAME" />".</translation>
 <translation id="177096447311351977">IP del canal del client: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'.</translation>

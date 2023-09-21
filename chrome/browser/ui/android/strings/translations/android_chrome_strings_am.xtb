@@ -175,6 +175,7 @@
 <translation id="19288952978244135">Chromeን ዳግም ክፈት።</translation>
 <translation id="1933845786846280168">የተመረጠው ትር</translation>
 <translation id="1943432128510653496">የይለፍ ቃላትን አስቀምጥ</translation>
+<translation id="1944535645109964458">ምንም የይለፍ ቁልፎች አይገኙም</translation>
 <translation id="1952172573699511566">ሲቻል፣ ድር ጣቢያዎች በእርስዎ ተመራጭ ቋንቋ ጽሁፍ ይታያሉ።</translation>
 <translation id="1959679933317802873">ይዘትን በመጠባበቅ ላይ</translation>
 <translation id="1960290143419248813">የChrome ዝማኔዎች ከአሁን በኋላ ለዚህ የAndroid ዝማኔዎች አይደገፉም</translation>
@@ -626,6 +627,7 @@
 <translation id="4257230861809842349">የይለፍ ቃላት ከGoogle የይለፍ ቃል አስተዳዳሪ ይሰረዙ?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />ምን ውሂብ ጥቅም ላይ እንደሚውል፦<ph name="END_BOLD" /> የአሰሳ ታሪክዎ፣ በዚህ መሣሪያ ላይ Chromeን ተጠቅመው የጎበኟቸው የጣቢያዎች መዝገብ።</translation>
 <translation id="4269820728363426813">የአገናኝ አድራሻ ቅዳ</translation>
+<translation id="4277529130885813215">ሌላ መሣሪያ ተጠቀም</translation>
 <translation id="4283102315569707115">የዴስክቶፕ ጣቢያዎች በነባሪነት ይጠየቁ?</translation>
 <translation id="4285846616383034558">ኩኪዎች፣ መሸጎጫ እና ሌላ የጣቢያ ውሂብ</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />በAndroid ቅንብሮች ውስጥ ማያ ገፅ መቆለፊያን ያብሩ<ph name="END_LINK" /></translation>
@@ -1166,6 +1168,7 @@
 <translation id="6955535239952325894">ይህ ቅንብር በሚተዳደሩ አሳሾች ላይ ተሰናክሏል</translation>
 <translation id="6963766334940102469">ዕልባቶችን ሰርዝ</translation>
 <translation id="696447261358045621">ከማንነት የማያሳውቅ ሁነታ ይውጡ</translation>
+<translation id="6965382102122355670">እሺ</translation>
 <translation id="6971862865055170158">አታጽድቅ</translation>
 <translation id="6978717888677691380">እርስዎ ያገዷቸው ጣቢያዎች</translation>
 <translation id="6979737339423435258">የምንጊዜም</translation>

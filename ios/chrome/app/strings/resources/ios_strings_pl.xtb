@@ -242,6 +242,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="2359043044084662842">Tłumacz</translation>
 <translation id="2359808026110333948">Dalej</translation>
 <translation id="2360196772093551345">Żądaj strony mobilnej</translation>
+<translation id="2361721159900796207">Ukrywa ten element</translation>
 <translation id="2362083820973145409">Zalogowano jako <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Otwiera ustawienia.</translation>
 <translation id="236977714248711277">Witryny nie mogą używać plików cookie dla Twojej wygody, by na przykład zapamiętać Twoje logowanie lub zawartość koszyka.
 
@@ -778,6 +779,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="5317780077021120954">Zapisz</translation>
 <translation id="5318298563956633672">Śledzisz już ten produkt.</translation>
 <translation id="5339316356165661760">Włącz synchronizację</translation>
+<translation id="5345660046352249607">{COUNT,plural, =1{Śledzić tę przesyłkę?}few{Śledzić {COUNT} przesyłki?}many{Śledzić {COUNT} przesyłek?}other{Śledzić {COUNT} przesyłki?}}</translation>
 <translation id="536067926684072644">Pokaż zakładki</translation>
 <translation id="5360976571138293719">Więcej ustawień związanych z prywatnością, bezpieczeństwem i zbieraniem danych znajdziesz w sekcji <ph name="BEGIN_LINK" />Usługi Google<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Tu znajdziesz swoje ulubione witryny</translation>
@@ -1144,6 +1146,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="723787869754590019">Używaj autouzupełniania w Chrome</translation>
 <translation id="7265758999917665941">Nigdy dla tej witryny</translation>
 <translation id="7272437679830969316">Nie można zweryfikować Twojej tożsamości. Hasło nie zostało skopiowane.</translation>
+<translation id="7284359491594949826">{COUNT,plural, =1{Nowa przesyłka jest śledzona}few{Nowe przesyłki są śledzone}many{Nowe przesyłki są śledzone}other{Nowe przesyłki są śledzone}}</translation>
 <translation id="7291368939935408496">Przygotowuję hasła…</translation>
 <translation id="7302503784943202842">Używaj haseł na wszystkich swoich urządzeniach</translation>
 <translation id="730958329302570991">W usłudze Menedżer haseł Google możesz w każdej chwili łatwo dodawać hasła do witryn.</translation>
@@ -1245,6 +1248,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7856733331829174190">Nie udało się pobrać pliku</translation>
 <translation id="785938070103630874">Otwórz sekcje Hasła, Formy płatności lub Adres i inne</translation>
 <translation id="7859704718976024901">Historia przeglądania</translation>
+<translation id="7866501058614003444">Śledzenie tej przesyłki zostało anulowane.</translation>
 <translation id="7870750252270996949">Wyszukaj skopiowany obraz za pomocą Obiektywu</translation>
 <translation id="7879275349003161544">Wyświetl pobrane pliki</translation>
 <translation id="7883882164760409935">Masz hasła użyte ponownie.</translation>
@@ -1493,6 +1497,7 @@ Dane zostały zaszyfrowane hasłem <ph name="TIME" />. Podaj hasło, aby korzyst
 <translation id="9148126808321036104">Zaloguj się ponownie</translation>
 <translation id="9157836665414082580">Ukryj okna dialogowe</translation>
 <translation id="9162432979321511934">Włącz autouzupełnianie haseł</translation>
+<translation id="9162941801309769488">Śledzenie przesyłki zostało anulowane</translation>
 <translation id="9165320910061267720">Aby otrzymywać alerty o obniżkach cen, musisz włączyć powiadomienia w ustawieniach iOS.</translation>
 <translation id="9165886811579296457">Kontrola zabezpieczeń nie znalazła żadnych problemów z bezpieczeństwem, które należałoby rozwiązać.</translation>
 <translation id="9172603439892261948">Synchronizuj zakładki, historię i inne dane.</translation>

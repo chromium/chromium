@@ -25,6 +25,7 @@
 
   • 如果你將歷史記錄同步至 Google 帳戶，指標可能也會包含先前造訪網址的資訊。<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Chrome 提供了最強大的安全防護機制，可避免你誤入有害網站</translation>
+<translation id="1615715390546812898">在 Chrome 中使用語音搜尋。</translation>
 <translation id="1657395063736185342">在 Chrome 中搜尋影像內容</translation>
 <translation id="1675955119303651351">部分 Chrome 資料尚未儲存至你的 Google 帳戶。
         請稍待幾分鐘後再嘗試登出。如果現在登出，系統將刪除這類資料。</translation>
@@ -104,6 +105,7 @@
         請稍待幾分鐘後再嘗試登出。如果你現在登出，系統將刪除這類資料。</translation>
 <translation id="484033449593719797">Chrome Beta 版不支援這項功能</translation>
 <translation id="4840404732697892756">當你登入 Google 帳戶後，Google 密碼管理工具可以檢查你的密碼。</translation>
+<translation id="4860330141789125848">{COUNT,plural, =1{Chrome 可以在新分頁上追蹤這個包裹。}other{Chrome 可以在新分頁上追蹤這些包裹。}}</translation>
 <translation id="4903674399067644695">這張資訊卡會建議你如何充分運用 Chrome 的各項功能。</translation>
 <translation id="49200511069271369">貴機構 (<ph name="DOMAIN" />) 會管理你登入的帳戶和 Chrome 的使用方式。系統管理員可以設定或限制特定功能。</translation>
 <translation id="5030102366287574140">Chrome 可確保安全性，例如防範資料侵害事件或封鎖不安全的網站等等。</translation>
@@ -113,10 +115,12 @@
 <translation id="5156818928311866442">開啟 Chrome 設定，將 Chrome 設為預設瀏覽器。</translation>
 <translation id="5162467219239570114">Chrome 版本過舊。如果 <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> 中沒有任何可用的更新，則表示你的裝置可能已停止支援新版 Chrome。</translation>
 <translation id="5190139289262548459">貴機構 (<ph name="DOMAIN" />) 會管理你登入的帳戶和使用 Chrome 的方式。</translation>
+<translation id="5278862365980079760">離開 Chrome 或切換到其他應用程式時，鎖定無痕分頁。</translation>
 <translation id="5389212809648216794">另一個應用程式正在使用你的相機，因此 Google Chrome 無法使用</translation>
 <translation id="5395376160638294582">確保你隨時可以使用 Google 帳戶中的 Chrome 資料</translation>
 <translation id="5439191312780166229">這項防護機制分析的網站資料比標準防護來得多，因此即使是 Google 不知道的網站，這項防護機制也能提供危險網站警告。你可以選擇略過 Chrome 的警告。</translation>
 <translation id="5460571915754665838">4. 選取 [Chrome]</translation>
+<translation id="546541279759910616">{COUNT,plural, =1{Chrome 會在新分頁上追蹤這個包裹。}other{Chrome 會在新分頁上追蹤這些包裹。}}</translation>
 <translation id="5492504007368565877">Google 密碼管理工具無法檢查你的密碼。</translation>
 <translation id="5527026824954593399">輕觸「在 Chrome 中使用 Google 地圖查看」。</translation>
 <translation id="5552137475244467770">Chrome 會定期將你的密碼與網路上發布的清單進行比對。在比對過程中，你的密碼和使用者名稱會經過加密，任何人 (包括 Google) 都無法讀取。</translation>

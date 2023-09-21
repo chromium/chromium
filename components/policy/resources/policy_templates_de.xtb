@@ -391,25 +391,6 @@ Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird anhand der Einstell
       Beachte, dass es sich hierbei um eine vorübergehende Richtlinie handelt, die dafür sorgt, dass alte Tastenkürzel weiterhin von verwalteten Nutzern verwendet werden können. Diese Richtlinie wird verworfen, sobald benutzerdefinierte Tastenkürzel verfügbar sind.</translation>
 <translation id="1361661842732478894">„Home“-Schaltfläche in der Symbolleiste anzeigen</translation>
 <translation id="1363275621236827384">Abfragen an Quirks-Server für Hardwareprofile aktivieren</translation>
-<translation id="136422692261301619">Liste der Aktionen, die ausgeführt werden sollen, wenn das Zeitlimit in der Richtlinie <ph name="IDLE_TIMEOUT_POLICY_NAME" /> erreicht ist.
-
-      Wenn die Richtlinie <ph name="IDLE_TIMEOUT_POLICY_NAME" /> nicht konfiguriert ist, hat diese Richtlinie keine Auswirkungen.
-
-      Wird das Zeitlimit in der Richtlinie <ph name="IDLE_TIMEOUT_POLICY_NAME" /> erreicht, führt <ph name="PRODUCT_NAME" /> die in dieser Richtlinie konfigurierten Aktionen aus.
-
-      Wenn diese Richtlinie leer oder nicht konfiguriert ist, hat die Richtlinie <ph name="IDLE_TIMEOUT_POLICY_NAME" /> keine Auswirkungen.
-
-      Unterstützte Aktionen:
-
-      „<ph name="CLOSE_BROWSERS_ACTION" />“: Alle Browserfenster und PWAs für dieses Profil werden geschlossen. Wird auf Android-Geräten nicht unterstützt.
-
-      „<ph name="SHOW_PROFILE_PICKER_ACTION" />“: Das Fenster mit der Profilauswahl wird angezeigt. Wird auf Android-Geräten nicht unterstützt.
-
-      „<ph name="CLEAR_BROWSING_HISTORY_ACTION" />“, „<ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />“, „<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />“, „<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />“, „<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />“, „<ph name="CLEAR_AUTOFILL_ACTION" />“, „<ph name="CLEAR_SITE_SETTINGS_ACTION" />“, „<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />“: Die entsprechenden Browserdaten werden gelöscht. Weitere Informationen findest du in der Richtlinie „<ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" />“.
-
-      „<ph name="RELOAD_PAGES_ACTION" />“: Alle Webseiten werden neu geladen. Bei einigen Seiten wird der Nutzer eventuell zuerst um Bestätigung gebeten.
-
-      Wenn du „<ph name="CLEAR_BROWSING_HISTORY_ACTION" />“, „<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />“, „<ph name="CLEAR_AUTOFILL_ACTION" />“ und „<ph name="CLEAR_SITE_SETTINGS_ACTION" />“ festlegst, wird die Synchronisierung für die entsprechenden Datentypen deaktiviert, wenn weder „<ph name="CHROME_SYNC_NAME" />“ durch Festlegen der „<ph name="SYNC_DISABLED_POLICY_NAME" />“-Richtlinie noch „<ph name="BROWSER_SIGNIN_POLICY_NAME" />“ deaktiviert ist.</translation>
 <translation id="1369698103169067223">Glanceables sind für Nutzer nicht aktiviert.</translation>
 <translation id="1371626834351873151">Die Verringerung des User-Agents ist für alle Ursprünge aktiviert.</translation>
 <translation id="1371851989348083665">Verwendung von <ph name="ASSISTANT_PRODUCT_NAME" /> im Web zulassen</translation>
@@ -5134,15 +5115,6 @@ Wenn diese Richtlinie für <ph name="PRODUCT_OS_NAME" /> Kiosk festgelegt ist, w
 <translation id="5666457529647159548">Nutzern erlauben, installierte Clientzertifikate zu verwalten.</translation>
 <translation id="567377007899266033">Wenn die Richtlinie auf "True" gesetzt ist, werden Berichte über wichtige richtlinienbasierte Erweiterungsinstallationen an Google gesendet. Wenn die Richtlinie auf "False" gesetzt ist, werden keine diesbezüglichen Ereignisse erfasst. Ist die Richtlinie nicht konfiguriert, ist der Standardwert "True".</translation>
 <translation id="5676740747107495269">Optionen für Bedienungshilfen im Taskleistenmenü auf dem Anmeldebildschirm anzeigen</translation>
-<translation id="567832102568869993">Löst eine Aktion aus, wenn der Computer inaktiv ist.
-
-      Wenn diese Richtlinie konfiguriert ist, gibt sie die Dauer ohne Nutzereingabe (in Minuten) vor, nach der <ph name="PRODUCT_NAME" /> Aktionen ausführt, die in der Richtlinie <ph name="IDLE_TIMEOUT_ACTIONS_POLICY_NAME" /> konfiguriert sind.
-
-      Ist die Richtlinie nicht konfiguriert, wird keine Aktion ausgeführt.
-
-      Der minimale Schwellenwert beträgt 1 Minute.
-
-      Die Nutzereingabe wird von den Betriebssystem-APIs definiert. Hierzu zählen beispielsweise das Bewegen der Maus oder die Eingabe über die Tastatur.</translation>
 <translation id="5679540979548648200">Nutzer des Geräts daran hindern, ADB-Sideloading zu verwenden, und ein Powerwash für das Gerät erzwingen, wenn Sideloading zuvor aktiviert war</translation>
 <translation id="5681258683432554972">Standardeinstellung für Pop-ups</translation>
 <translation id="5684501593989438324">Google Assistant-Hotword aktivieren</translation>

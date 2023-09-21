@@ -206,7 +206,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4561051373932531560">Google Chrome të lejon të klikosh një numër telefoni në ueb dhe ta telefonosh me Skype!</translation>
 <translation id="4567424176335768812">Je identifikuar si <ph name="USER_EMAIL_ADDRESS" />. Tani mund të qasesh te faqeshënuesit, historiku dhe cilësime të tjera në të gjitha pajisjet ku je identifikuar.</translation>
 <translation id="4571503333518166079">Shko te "Cilësimet e njoftimeve" të Chrome</translation>
-<translation id="459622048091363950">Pasi Chrome të ketë qasje, sajtet e uebit do të jenë në gjendje të kërkojnë prej teje qasje.</translation>
+<translation id="459622048091363950">Pasi Chrome të ketë qasje, uebsajtet do të jenë në gjendje të kërkojnë prej teje qasje.</translation>
 <translation id="4600710005438004015">Chrome nuk mund të përditësohej me versionin më të fundit, kështu që të mungojnë rregullimet e sigurisë dhe funksionet e reja.</translation>
 <translation id="4627412468266359539">Opsionale: Ndihmo në përmirësimin e veçorive dhe të cilësisë së funksionimit të Chrome OS Flex duke dërguar automatikisht te Google të dhëna përdorimi dhe diagnostikuese.</translation>
 <translation id="4633000520311261472">Për ta bërë më të sigurt Chrome, çaktivizuam disa shtesa që nuk janë të listuara në <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dhe që mund të jenë shtuar pa dijeninë tënde.</translation>
@@ -301,7 +301,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6412673304250309937">Kontrollon URL-të kundrejt një liste sajtesh të pasigurta të ruajtur në Chrome. Nëse një sajt përpiqet të vjedhë fjalëkalimin tënd, ose kur shkarkon një skedar të dëmshëm, Chrome mund t'i dërgojë po ashtu "Shfletimit të sigurt" URL-të, duke përfshirë pjesë të përmbajtjes së faqes.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Organizata jote e mbyll automatikisht Chrome kur ai nuk përdoret për 1 minutë. Të dhënat e shfletimit do të fshihen. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet.}other{Organizata jote e mbyll automatikisht Chrome kur ai nuk përdoret për # minuta. Të dhënat e shfletimit do të fshihen. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet.}}</translation>
 <translation id="6418662306461808273">Të kalohet te profili ekzistues i Chrome?</translation>
-<translation id="648319183876919572">"Shfletimi i sigurt i përmirësuar" bën më shumë për të të mbrojtur nga sajtet e uebit dhe shkarkimet e rrezikshme</translation>
+<translation id="648319183876919572">"Shfletimi i sigurt i përmirësuar" bën më shumë për të të mbrojtur nga uebsajtet dhe shkarkimet e rrezikshme</translation>
 <translation id="6493527311031785448">Google Chrome po përpiqet <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome u mbyll automatikisht</translation>
 <translation id="6506909944137591434">Chrome ka nevojë për lejen e kamerës për të krijuar një hartë 3D të ambientit tënd rrethues</translation>

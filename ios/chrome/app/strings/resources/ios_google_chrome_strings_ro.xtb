@@ -25,6 +25,7 @@ De reținut:
 
   • dacă sincronizezi istoricul cu Contul Google, valorile pot să includă și informații despre adresele URL pe care le accesezi.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Ai cea mai puternică securitate Chrome împotriva site-urilor dăunătoare</translation>
+<translation id="1615715390546812898">Căutarea vocală în Chrome.</translation>
 <translation id="1657395063736185342">Caută imagini în Chrome</translation>
 <translation id="1675955119303651351">Unele date Chrome nu au fost salvate încă în Contul Google.
         Așteaptă câteva minute înainte să te deconectezi. Dacă te deconectezi acum, aceste date vor fi șterse.</translation>
@@ -104,6 +105,7 @@ De reținut:
         Așteaptă câteva minute înainte să te deconectezi. Dacă te deconectezi acum, aceste date vor fi șterse.</translation>
 <translation id="484033449593719797">Nu se acceptă în Chrome Beta</translation>
 <translation id="4840404732697892756">Managerul de parole Google poate verifica parolele atunci când te conectezi cu Contul Google.</translation>
+<translation id="4860330141789125848">{COUNT,plural, =1{Chrome te poate ajuta să urmărești acest pachet în pagina Filă nouă.}few{Chrome te poate ajuta să urmărești aceste pachete în pagina Filă nouă.}other{Chrome te poate ajuta să urmărești aceste pachete în pagina Filă nouă.}}</translation>
 <translation id="4903674399067644695">Acest card afișează sugestii pentru a profita la maximum de Chrome.</translation>
 <translation id="49200511069271369">Organizația ta, <ph name="DOMAIN" />, gestionează contul la care te conectezi și modul în care poate fi folosit Chrome. Administratorul poate să configureze sau să restricționeze anumite funcții.</translation>
 <translation id="5030102366287574140">Chrome te protejează împotriva încălcării securității datelor, a site-urilor nesigure și nu numai.</translation>
@@ -113,10 +115,12 @@ De reținut:
 <translation id="5156818928311866442">Deschide setarea Chrome pentru a seta Chrome ca browser prestabilit.</translation>
 <translation id="5162467219239570114">Chrome nu este actualizat. Dacă nu este disponibilă nicio actualizare în <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, e posibil ca dispozitivul tău să nu mai accepte versiuni noi de Chrome.</translation>
 <translation id="5190139289262548459">Organizația ta, <ph name="DOMAIN" />, gestionează contul la care te-ai conectat și modul în care folosești Chrome.</translation>
+<translation id="5278862365980079760">Blochează filele incognito când ieși din Chrome sau treci la altă aplicație.</translation>
 <translation id="5389212809648216794">Google Chrome nu poate folosi camera foto, deoarece este folosită de o altă aplicație</translation>
 <translation id="5395376160638294582">Asigură-te că poți folosi oricând datele Chrome din Contul Google</translation>
 <translation id="5439191312780166229">Te avertizează cu privire la site-uri periculoase, chiar și cele pe care Google nu le cunoștea înainte, analizând mai multe date din site-uri decât Protecția standard. Poți să omiți avertismentele din Chrome.</translation>
 <translation id="5460571915754665838">4. Selectează Chrome.</translation>
+<translation id="546541279759910616">{COUNT,plural, =1{Chrome te va ajuta să urmărești acest pachet în pagina Filă nouă.}few{Chrome va urmări aceste pachete în pagina Filă nouă.}other{Chrome va urmări aceste pachete în pagina Filă nouă.}}</translation>
 <translation id="5492504007368565877">Managerul de parole Google nu îți poate verifica parolele.</translation>
 <translation id="5527026824954593399">Atinge Vezi pe Google Maps în Chrome.</translation>
 <translation id="5552137475244467770">Chrome compară periodic parolele tale cu cele din listele publicate online. Când face acest lucru, parolele și numele tale de utilizator sunt criptate, astfel încât să nu fie descifrate de nimeni, nici măcar de Google.</translation>

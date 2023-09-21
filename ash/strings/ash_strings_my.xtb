@@ -225,6 +225,7 @@
 <translation id="1831565490995294689"><ph name="APP_TO_OPEN" /> ဖွင့်ရန် ရွေးပါ။</translation>
 <translation id="1838895407229022812">'ညအလင်းရောင်' ပိတ်ထားသည်။</translation>
 <translation id="1854180393107901205">ကက်စ်လုပ်နေခြင်း ရပ်မည်</translation>
+<translation id="1862077610023398675">ထိန်းချုပ်မှုများ ဖျောက်ရန်</translation>
 <translation id="1862380676329487333">အပ်ဒိတ်လုပ်ပြီး ထွက်ရန်</translation>
 <translation id="1864454756846565995">USB-C ကိရိယာ (နောက်ဘက် ပို့တ်)</translation>
 <translation id="1869497990620230175">အမြန်ဖိုင်များ</translation>
@@ -786,6 +787,7 @@
 <translation id="4215497585250573029">VPN ဆက်တင်များ</translation>
 <translation id="4217571870635786043">အသံထွက်၍ ဖတ်ပေးခြင်း</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />၊ ထည့်သွင်းထားသည့် အက်ပ်၊ ခဏရပ်ထားသည်</translation>
+<translation id="4228078597006700451">ထိန်းချုပ်မှုများ စနစ်ထည့်သွင်းမထားပါ</translation>
 <translation id="4231053948789591973">ကာစ်လုပ်ခြင်းကို လောလောဆယ် ခဏရပ်ထားသည်။ ဖန်သားပြင် ကာစ်လုပ်ခြင်းကို အချိန်မရွေး ဆက်လုပ်နိုင်သည် (သို့) ရပ်နိုင်သည်။</translation>
 <translation id="423685346499232137">ယခုအချိန်တွင် အကြောင်းအရာကို မိတ္တူကူး၍ (သို့) ကူးထည့်၍ မရပါ</translation>
 <translation id="4239069858505860023">GPRS</translation>
@@ -834,7 +836,6 @@
 <translation id="4406883609789734330">တိုက်ရိုက်စာတန်း</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ပိတ်ထားသည်။</translation>
 <translation id="4424159417645388645">မျက်နှာပြင်နေရာ ၅</translation>
-<translation id="4427695046139341014">ဂိမ်းဒက်ရှ်ဘုတ်</translation>
 <translation id="4430019312045809116">ပမာဏ</translation>
 <translation id="4441283832827406317">အက်ပ်များကို အမည်ဖြင့်စီထားသည်</translation>
 <translation id="4445159312344259901">ဖွင့်ရန် လက်မှတ်ထိုးဝင်ပါ</translation>
@@ -1220,6 +1221,7 @@
 <translation id="5983567367406220847">အသုံးပြုမှုမရှိသဖြင့် ဟော့စပေါ့ကို ပိတ်လိုက်သည်။</translation>
 <translation id="598407983968395253">နမူနာပုံစံ သုံးရန်</translation>
 <translation id="598882571027504733">အပ်ဒိတ်ရယူနိုင်ရန်အတွက် ကီးဘုတ်ကို ချိတ်ဆက်ထားပြီး Chromebook ကို ပြန်လည်စတင်ပါ။</translation>
+<translation id="6000279412553873020">ကီး၊ ခလုတ် စသည်</translation>
 <translation id="6012623610530968780">စာမျက်နှာ <ph name="TOTAL_PAGE_NUM" /> အနက် <ph name="SELECTED_PAGE" /></translation>
 <translation id="601304062528754300">စင်ပေါ်ရှိ နောက်အက်ပ်တစ်ခုကို မြင်သာအောင်လုပ်ရန်</translation>
 <translation id="6015573907265691211">လုပ်ပြီးဟု မှတ်ရန်</translation>
@@ -1417,6 +1419,7 @@
 <translation id="6802196538183166658">အချိန်ကိုရွေးခြင်းဖြင့် ‘အမြန်ဆက်တင်များ’ ဖွင့်ရန်</translation>
 <translation id="6802687695197837794">၎င်းက ကင်မရာနှင့် မိုက်ခရိုဖုန်း ခွင့်ပြုချက်များပါသည့် <ph name="APP1_NAME" />၊ <ph name="APP2_NAME" />၊ အက်ပ်နှင့် ဝဘ်ဆိုက်အားလုံးကို သုံးခွင့်ပေးသည်</translation>
 <translation id="6803622936009808957">ပံ့ပိုးထားသည့် ပြတ်သားမှုများကို မတွေ့နိုင်ခဲ့၍ ပြကွက်များကို ထင်ဟပ် မပေးနိုင်ခဲ့ပါ။ ၎င်းအစား တိုးချဲ့ ဒက်စ်တော့ကို ထည့်ပေးခဲ့သည်။</translation>
+<translation id="6809556495807506746">ထိန်းချုပ်မှုများ မရနိုင်ပါ</translation>
 <translation id="6812232930908427253">မျက်နှာပြင်ကို မသိမ်းနိုင်ပါ။ ဝင်ဒိုး (သို့) တဘ် များလွန်းနေသည်။</translation>
 <translation id="6818242057446442178">စာလုံးအလိုက် နောက်ပြန်သွားရန်</translation>
 <translation id="6819327813400217281">ကင်မရာကို အောက်ဘယ်ဘက်ထောင့်သို့ ကပ်ထားသည်</translation>
@@ -1441,6 +1444,7 @@
 <translation id="6919251195245069855">သင့်အဆင့်မြင့်ကတ်ကို ဖတ်၍မရပါ။ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="6920245099716267363">ဟော့စပေါ့ ဖွင့်/ပိတ်လုပ်သည်။ ဟော့စပေါ့ ဖွင့်ထားပြီး စက် ၁ ခု ချိတ်ဆက်ထားသည်။</translation>
 <translation id="692135145298539227">ဖျက်ရန်</translation>
+<translation id="6929081673585394903">ထိန်းချုပ်မှုများ ပြပါ</translation>
 <translation id="6931576957638141829">သိမ်းမည့်နေရာ</translation>
 <translation id="6942518653766415536">မှတ်တမ်းတင်သည့် ဖော်မက်မီနူး</translation>
 <translation id="6945221475159498467">ရွေးရန်</translation>
@@ -1638,6 +1642,7 @@
 <translation id="7773536009433685931">၎င်းအစား WiFi ဖွင့်ရန်</translation>
 <translation id="7780094051999721182">ဖြတ်လမ်းလင့်ခ်များ</translation>
 <translation id="7780159184141939021">မျက်နှာပြင် လှည့်ခြင်း</translation>
+<translation id="7792590255364786396">မြင်နိုင်သည်</translation>
 <translation id="7796735576426975947">အကြောင်းကြားချက်အသစ် ဖျောက်ထားသည်</translation>
 <translation id="7798302898096527229">ပယ်ဖျက်ရန် Search သို့မဟုတ် Shift ခလုတ်ကို နှိပ်ပါ။</translation>
 <translation id="780301667611848630">မလိုပါ</translation>

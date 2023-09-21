@@ -175,6 +175,7 @@
 <translation id="19288952978244135">Chrome ਨੂੰ ਮੁੜ-ਖੋਲ੍ਹੋ।</translation>
 <translation id="1933845786846280168">ਚੁਣੀ ਗਈ ਟੈਬ</translation>
 <translation id="1943432128510653496">ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰੋ</translation>
+<translation id="1944535645109964458">ਕੋਈ ਪਾਸਕੀ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="1952172573699511566">ਜਦੋਂ ਸੰਭਵ ਹੋਵੇ, ਵੈੱਬਸਾਈਟਾਂ ਤੁਹਾਡੀ ਤਰਜੀਹੀ ਭਾਸ਼ਾ ਵਿੱਚ ਲਿਖਤ ਦਿਖਾਉਣਗੀਆਂ।</translation>
 <translation id="1959679933317802873">ਸਮੱਗਰੀ ਲਈ ਉਡੀਕ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="1960290143419248813">Chrome ਅੱਪਡੇਟਾਂ ਹੁਣ Android ਦੇ ਇਸ ਵਰਜਨ ਲਈ ਸਮਰਥਿਤ ਨਹੀਂ ਹਨ</translation>
@@ -626,6 +627,7 @@
 <translation id="4257230861809842349">ਕੀ Google Password Manager ਤੋਂ ਪਾਸਵਰਡਾਂ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />ਕਿਹੜਾ ਡਾਟਾ ਵਰਤਿਆ ਜਾਂਦਾ ਹੈ:<ph name="END_BOLD" /> ਤੁਹਾਡਾ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ, ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਉਨ੍ਹਾਂ ਸਾਈਟਾਂ ਦਾ ਰਿਕਾਰਡ ਜਿਨ੍ਹਾਂ 'ਤੇ ਤੁਸੀਂ Chrome ਦੀ ਵਰਤੋਂ ਨਾਲ ਗਏ ਹੋ।</translation>
 <translation id="4269820728363426813">ਲਿੰਕ ਪਤਾ ਕਾਪੀ ਕਰੋ</translation>
+<translation id="4277529130885813215">ਕੋਈ ਹੋਰ ਡੀਵਾਈਸ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="4283102315569707115">ਕੀ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਤੌਰ 'ਤੇ ਡੈਸਕਟਾਪ ਸਾਈਟਾਂ ਦੀ ਬੇਨਤੀ ਕਰਨੀ ਹੈ?</translation>
 <translation id="4285846616383034558">ਕੁਕੀਜ਼, ਕੈਸ਼ੇ ਅਤੇ ਹੋਰ ਸਾਈਟ ਡਾਟਾ</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਸਕ੍ਰੀਨ ਲਾਕ ਚਾਲੂ ਕਰੋ<ph name="END_LINK" /></translation>
@@ -1166,6 +1168,7 @@
 <translation id="6955535239952325894">ਇਹ ਸੈਟਿੰਗ ਪ੍ਰਬੰਧਿਤ ਬ੍ਰਾਊਜ਼ਰਾਂ 'ਤੇ ਬੰਦ ਹੈ</translation>
 <translation id="6963766334940102469">ਬੁੱਕਮਾਰਕ ਮਿਟਾਓ</translation>
 <translation id="696447261358045621">ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਛੱਡੋ</translation>
+<translation id="6965382102122355670">ਠੀਕ</translation>
 <translation id="6971862865055170158">ਮਨਜ਼ੂਰੀ ਨਾ ਦਿਓ</translation>
 <translation id="6978717888677691380">ਤੁਹਾਡੇ ਵੱਲੋਂ ਬਲਾਕ ਕੀਤੀਆਂ ਗਈਆਂ ਸਾਈਟਾਂ</translation>
 <translation id="6979737339423435258">ਸਾਰੇ ਸਮੇਂ</translation>

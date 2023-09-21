@@ -175,6 +175,7 @@ Når du sletter din browserhistorik – det hele eller for et specifikt website 
 <translation id="19288952978244135">Åbn Chrome igen.</translation>
 <translation id="1933845786846280168">Valgt fane</translation>
 <translation id="1943432128510653496">Gem adgangskoder</translation>
+<translation id="1944535645109964458">Ingen tilgængelige adgangsnøgler</translation>
 <translation id="1952172573699511566">Websites viser tekst på dit foretrukne sprog, når det er muligt.</translation>
 <translation id="1959679933317802873">Venter på indhold</translation>
 <translation id="1960290143419248813">Chrome understøtter ikke længere denne version af Android</translation>
@@ -626,6 +627,7 @@ Private state tokens forbedrer privatlivsbeskyttelsen på nettet og kan ikke bru
 <translation id="4257230861809842349">Vil du slette adgangskoderne fra Google Adgangskodeadministrator?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Disse data bruges:<ph name="END_BOLD" /> Din browserhistorik, dvs. en oversigt over, hvilke websites du har besøgt i Chrome på denne enhed.</translation>
 <translation id="4269820728363426813">Kopiér linkadresse</translation>
+<translation id="4277529130885813215">Brug en anden enhed</translation>
 <translation id="4283102315569707115">Vil du anmode om computerwebsites som standard?</translation>
 <translation id="4285846616383034558">Cookies, cache og andre websitedata</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Aktivér skærmlåsen i Android-indstillingerne<ph name="END_LINK" /></translation>
@@ -1166,6 +1168,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6955535239952325894">Denne indstilling er deaktiveret i administrerede browsere</translation>
 <translation id="6963766334940102469">Slet bogmærker</translation>
 <translation id="696447261358045621">Forlad inkognitotilstand</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6971862865055170158">Godkend ikke</translation>
 <translation id="6978717888677691380">Websites, du har blokeret</translation>
 <translation id="6979737339423435258">Altid</translation>

@@ -175,6 +175,7 @@ Dzēšot pārlūkošanas vēsturi (visu vai konkrētas vietnes vēsturi), tiek d
 <translation id="19288952978244135">Atkārtoti atveriet pārlūku Chrome.</translation>
 <translation id="1933845786846280168">Atlasītā cilne</translation>
 <translation id="1943432128510653496">Paroļu saglabāšana</translation>
+<translation id="1944535645109964458">Nav pieejama neviena piekļuves atslēga</translation>
 <translation id="1952172573699511566">Kad vien iespējams, vietnēs tiks rādīts teksts atlasītajā valodā.</translation>
 <translation id="1959679933317802873">Gaida saturu</translation>
 <translation id="1960290143419248813">Chrome atjauninājumi vairs netiek atbalstīti šajā Android versijā</translation>
@@ -626,6 +627,7 @@ Privātā stāvokļa pilnvaras uzlabo konfidencialitāti tīmeklī. Tās nevar i
 <translation id="4257230861809842349">Vai dzēst paroles no Google paroļu pārvaldnieka?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Kādi dati tiek izmantoti:<ph name="END_BOLD" /> jūsu pārlūkošanas vēsture, kurā tiek reģistrētas vietnes, ko šajā ierīcē apmeklējat ar pārlūku Chrome.</translation>
 <translation id="4269820728363426813">Kopēt saites adresi</translation>
+<translation id="4277529130885813215">Izmantot citu ierīci</translation>
 <translation id="4283102315569707115">Vai pēc noklusējuma pieprasīt vietnes datoriem?</translation>
 <translation id="4285846616383034558">Sīkfaili, kešatmiņa un citi vietņu dati.</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Ieslēgt ekrāna bloķēšanu Android iestatījumos<ph name="END_LINK" /></translation>
@@ -1166,6 +1168,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6955535239952325894">Šis iestatījums ir atspējots pārvaldītās pārlūkprogrammās</translation>
 <translation id="6963766334940102469">Dzēst grāmatzīmes</translation>
 <translation id="696447261358045621">Iziet no inkognito režīma</translation>
+<translation id="6965382102122355670">Labi</translation>
 <translation id="6971862865055170158">Neapstiprināt</translation>
 <translation id="6978717888677691380">Jūsu bloķētās vietnes</translation>
 <translation id="6979737339423435258">Visā periodā</translation>

@@ -100,6 +100,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1195073053842921378">Địa chỉ này sẽ bị xoá khỏi thiết bị này</translation>
 <translation id="1195558154361252544">Đã tự động chặn thông báo đối với mọi trang web, ngoại trừ những trang web bạn cho phép</translation>
 <translation id="1197088940767939838">Màu cam</translation>
+<translation id="1197761954713363183">Đã đóng trang xác nhận khoá truy cập</translation>
 <translation id="1201402288615127009">Tiếp theo</translation>
 <translation id="1201895884277373915">Thêm từ trang web này</translation>
 <translation id="1202892408424955784">Các sản phẩm bạn theo dõi</translation>
@@ -327,6 +328,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1618571384971354160">Dịch vụ cứu hộ phương tiện</translation>
 <translation id="1620510694547887537">Máy ảnh</translation>
 <translation id="1622571349153632031">Món chay</translation>
+<translation id="162285686621567578">Cha mẹ bạn đã chặn trang web này.</translation>
 <translation id="1622966923835127638">Tài chính doanh nghiệp</translation>
 <translation id="1623104350909869708">Ngăn trang này tạo hộp thoại bổ sung</translation>
 <translation id="1633137413609266904">{0,plural, =1{Chính sách của quản trị viên không cho phép mở tệp này}other{Chính sách của quản trị viên không cho phép mở # tệp}}</translation>
@@ -371,6 +373,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1711528724596764268">Máy học và trí tuệ nhân tạo</translation>
 <translation id="1712552549805331520"><ph name="URL" /> muốn lưu trữ vĩnh viễn dữ liệu trên máy tính cục bộ của bạn</translation>
 <translation id="1713628304598226412">Khay 2</translation>
+<translation id="1714807406136741351">Chế độ duyệt xem, bạn có thể chuyển sang chế độ Biểu mẫu và sử dụng mũi tên trái/phải để xem xét các thay đổi về giá trên biểu đồ</translation>
 <translation id="1717218214683051432">Cảm biến chuyển động</translation>
 <translation id="1717494416764505390">Hộp thư 3</translation>
 <translation id="1717688554309417925">Dịch vụ ghi nợ và séc</translation>
@@ -382,6 +385,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1725591448053514783">Phong bì You 6</translation>
 <translation id="1727613060316725209">Chứng chỉ hợp lệ</translation>
 <translation id="1728677426644403582">Bạn đang xem nguồn của trang web</translation>
+<translation id="1728803206919861584">Lưu khoá truy cập ngoài chế độ Ẩn danh?</translation>
 <translation id="173080396488393970">Loại thẻ này không được hỗ trợ</translation>
 <translation id="1732445923934584865">Hỏi trực tiếp</translation>
 <translation id="1733064249834771892">phông chữ</translation>
@@ -1664,6 +1668,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4415156962929755728">Nhựa (Độ bóng cao)</translation>
 <translation id="4415426530740016218">Địa chỉ nhận hàng</translation>
 <translation id="4424024547088906515">Máy chủ này không chứng minh được rằng đó là <ph name="DOMAIN" />; chứng chỉ bảo mật của máy chủ này không được Chrome tin cậy. Điều này có thể do định cấu hình sai hoặc có kẻ tấn công chặn kết nối của bạn.</translation>
+<translation id="4425173294238317796">Trang xác nhận khoá truy cập</translation>
 <translation id="4425750422187370446">Trang phục điền kinh</translation>
 <translation id="4428065317363009941">Cá nhân hoá quảng cáo</translation>
 <translation id="443121186588148776">Cổng nối tiếp</translation>
@@ -2019,6 +2024,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5157504274688344097">Cửa hàng bách hoá và nhà bán lẻ đại chúng</translation>
 <translation id="5158275234811857234">Trang bìa</translation>
 <translation id="5159010409087891077">Mở trang trong cửa sổ Ẩn danh mới (⇧⌘N)</translation>
+<translation id="5161262286013276579">Đã mở trang xác nhận khoá truy cập</translation>
 <translation id="5161334686036120870">Tiêu đề:</translation>
 <translation id="5161506081086828129">Khay xếp chồng 9</translation>
 <translation id="5164798890604758545">Nhập văn bản</translation>
@@ -2901,6 +2907,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="7004583254764674281">Dùng Windows Hello để xác nhận các thẻ nhanh hơn</translation>
 <translation id="7006930604109697472">Vẫn gửi</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7013762323294215682">Khoá truy cập này sẽ được lưu vào trình quản lý mật khẩu của bạn. Bất cứ ai có quyền truy cập vào trình quản lý mật khẩu đó đều có thể sử dụng khoá truy cập này.</translation>
 <translation id="7014042602717177828">Âm thanh xe hơi</translation>
 <translation id="7014741021609395734">Mức thu phóng</translation>
 <translation id="7016992613359344582">Các khoản phí này có thể là khoản thu một lần hoặc định kỳ và có thể không rõ ràng.</translation>
@@ -3246,6 +3253,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7667346355482952095">Mã thông báo chính sách trả về trống hoặc không khớp với mã thông báo hiện tại</translation>
 <translation id="7668654391829183341">Thiết bị không xác định</translation>
 <translation id="7669271284792375604">Những kẻ tấn công trên trang web này có thể đánh lừa bạn cài đặt các chương trình ảnh hưởng đến trải nghiệm duyệt web của bạn (ví dụ: bằng cách thay đổi trang chủ của bạn hoặc hiển thị thêm quảng cáo trên các trang web bạn truy cập).</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" />/<ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Các thao tác được thực hiện trên dữ liệu được gắn cờ là bí mật (1 thao tác kể từ khi đăng nhập). <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" />}other{Các thao tác đã thực hiện trên dữ liệu được gắn cờ là bí mật (# thao tác kể từ khi đăng nhập). <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Hộp thư 6</translation>
 <translation id="7675325315208090829">Quản lý phương thức thanh toán...</translation>

@@ -175,6 +175,7 @@
 <translation id="19288952978244135">Chromeను మళ్లీ తెరవండి.</translation>
 <translation id="1933845786846280168">ఎంచుకున్న ట్యాబ్</translation>
 <translation id="1943432128510653496">పాస్‌వర్డ్‌‌లను సేవ్ చేయండి</translation>
+<translation id="1944535645109964458">పాస్-కీలు ఏవీ అందుబాటులో లేవు</translation>
 <translation id="1952172573699511566">వీలైనప్పుడు వెబ్‌సైట్‌లు, మీ ప్రాధాన్య భాషలో వచనాన్ని చూపుతాయి.</translation>
 <translation id="1959679933317802873">కంటెంట్ కోసం వేచి ఉంది</translation>
 <translation id="1960290143419248813">Chrome అప్‌డేట్‌లకు ఈ Android వెర్షన్‌లో మద్దతు లేదు</translation>
@@ -626,6 +627,7 @@
 <translation id="4257230861809842349">Google Password Manager నుండి పాస్‌వర్డ్‌లను తొలగించాలా?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />ఏ డేటాను ఉపయోగిస్తారు:<ph name="END_BOLD" /> మీ బ్రౌజింగ్ హిస్టరీ, ఈ పరికరంలో Chromeను ఉపయోగించి మీరు సందర్శించిన సైట్‌ల రికార్డ్.</translation>
 <translation id="4269820728363426813">లింక్ అడ్రస్‌ను కాపీ చేయండి</translation>
+<translation id="4277529130885813215">మరొక పరికరాన్ని ఉపయోగించండి</translation>
 <translation id="4283102315569707115">ఆటోమేటిక్‌గా డెస్క్‌టాప్ సైట్‌లను రిక్వెస్ట్ చేయాలా?</translation>
 <translation id="4285846616383034558">కుక్కీలు, కాష్, ఇతర సైట్ డేటా</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android సెట్టింగ్‌లలో స్క్రీన్ లాక్‌ను ఆన్ చేయండి<ph name="END_LINK" /></translation>
@@ -1166,6 +1168,7 @@
 <translation id="6955535239952325894">మేనేజ్ అవుతోన్న బ్రౌజర్‌లలో ఈ సెట్టింగ్ డిజేబుల్ చేయబడింది.</translation>
 <translation id="6963766334940102469">బుక్‌మార్క్‌లను తొలగించండి</translation>
 <translation id="696447261358045621">అజ్ఞాత మోడ్ నుండి నిష్క్రమించండి</translation>
+<translation id="6965382102122355670">సరే</translation>
 <translation id="6971862865055170158">ఆమోదించవద్దు</translation>
 <translation id="6978717888677691380">మీరు బ్లాక్ చేసిన సైట్‌లు</translation>
 <translation id="6979737339423435258">మొత్తం సమయం</translation>
@@ -1324,6 +1327,7 @@
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> నుండి షేర్ చేయబడిన వచనం</translation>
 <translation id="7762668264895820836">SD కార్డ్ <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">అడ్రస్‌ను జోడించండి</translation>
+<translation id="7766587497031415281">బ్రౌజింగ్ డేటాను క్లియర్ చేయడానికి మరిన్ని ఆప్షన్‌లు</translation>
 <translation id="7772032839648071052">రహస్య పదబంధాన్ని నిర్ధారించండి</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" />ను మూసివేయి</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>

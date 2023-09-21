@@ -16,6 +16,7 @@
 <translation id="1203500561924088507">Dziękujemy za instalację. Przed rozpoczęciem korzystania z programu <ph name="BUNDLE_NAME" /> musisz ponownie uruchomić przeglądarkę.</translation>
 <translation id="1261119230216066228">Oszczędzanie pamięci przyspieszyło działanie Chromium</translation>
 <translation id="1262876892872089030">Gdy ta karta była nieaktywna, pamięć została zwolniona, aby przeglądarka Chromium działała szybko. Możesz zdecydować, że ta witryna ma być zawsze aktywna.</translation>
+<translation id="1265577313130862557">Pobieranie zostało zablokowane przez Chromium, bo plik jest niebezpieczny</translation>
 <translation id="1315551408014407711">Skonfiguruj nowy profil w Chromium</translation>
 <translation id="1414495520565016063">Jesteś zalogowany w Chromium.</translation>
 <translation id="1478370723027452770">Pomoc dotycząca Chrome for Testing</translation>
@@ -42,14 +43,17 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="1911763535808217981">Jeśli wyłączysz tę opcję, możesz logować się na stronach Google takich jak Gmail bez logowania się w Chromium</translation>
 <translation id="1929939181775079593">Chromium nie odpowiada. Uruchomić go teraz ponownie?</translation>
 <translation id="193439633299369377">Zastosowanie aktualizacji wymaga ponownego uruchomienia systemu operacyjnego Chromium.</translation>
+<translation id="1951406923938785464">Pobieranie zostało zablokowane przez Chromium, ponieważ ten typ pliku nie jest często pobierany i może być niebezpieczny</translation>
 <translation id="1953553007165777902">Pobieram… Pozostało: <ph name="MINUTE" /> min</translation>
 <translation id="1966382378801805537">Chromium nie może określić ani ustawić domyślnej przeglądarki</translation>
 <translation id="2008474315282236005">Spowoduje to usunięcie 1 elementu z tego urządzenia. Aby później odzyskać dane, zaloguj się w Chromium jako <ph name="USER_EMAIL" />.</translation>
 <translation id="2018879682492276940">Nie udało się zainstalować. Spróbuj ponownie.</translation>
 <translation id="2020032459870799438">Aby sprawdzić, czy Twoje pozostałe hasła są chronione przed naruszeniami bezpieczeństwa danych i innymi zagrożeniami tego typu, <ph name="BEGIN_LINK" />zaloguj się w Chromium<ph name="END_LINK" />.</translation>
 <translation id="2049376729098081731">Określ, czy chcesz uwzględniać historię Chromium w celu lepszego dostosowania usług Google</translation>
+<translation id="2086476982681781442">Pobieranie zostało zablokowane przez Chromium, ponieważ ten plik ma na celu oszukanie użytkownika i może wprowadzić nieoczekiwane zmiany na urządzeniu</translation>
 <translation id="2088953378266246249">Informacje o tym, jak Chromium zarządza certyfikatami głównymi</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Twoja organizacja automatycznie usuwa dane przeglądania, gdy nie korzystasz z Chromium przez minutę. Może to obejmować historię, autouzupełnianie i pobrane pliki. Karty pozostają otwarte.}few{Twoja organizacja automatycznie usuwa dane przeglądania, gdy nie korzystasz z Chromium przez # minuty. Może to obejmować historię, autouzupełnianie i pobrane pliki. Karty pozostają otwarte.}many{Twoja organizacja automatycznie usuwa dane przeglądania, gdy nie korzystasz z Chromium przez # minut. Może to obejmować historię, autouzupełnianie i pobrane pliki. Karty pozostają otwarte.}other{Twoja organizacja automatycznie usuwa dane przeglądania, gdy nie korzystasz z Chromium przez # minuty. Może to obejmować historię, autouzupełnianie i pobrane pliki. Karty pozostają otwarte.}}</translation>
+<translation id="215352261310130060">Pobieranie zostało zablokowane przez Chromium, ponieważ strona nie korzysta z bezpiecznego połączenia, a plik mógł zostać zmodyfikowany</translation>
 <translation id="2174178932569897599">Dostosuj Chromium</translation>
 <translation id="2174917724755363426">Instalacja nie została ukończona. Czy na pewno chcesz ją anulować?</translation>
 <translation id="2185166961232948079">Chromium – logowanie do sieci – <ph name="PAGE_TITLE" /></translation>
@@ -169,6 +173,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="4544142686420020088">Coś poszło nie tak i nie udało się zaktualizować Chromium. <ph name="BEGIN_LINK" />Napraw nieudane aktualizacje Chromium i rozwiąż inne problemy z aktualizacjami<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Kontynuować w nowym profilu Chromium?</translation>
 <translation id="4567424176335768812">Jesteś zalogowany jako <ph name="USER_EMAIL_ADDRESS" />. Teraz możesz korzystać ze swoich zakładek, historii i innych ustawień na wszystkich zalogowanych urządzeniach.</translation>
+<translation id="4570813286784708942">Pobieranie zostało zablokowane przez Chromium, ponieważ masz wyłączone Bezpieczne przeglądanie i nie można zweryfikować pliku</translation>
 <translation id="4594305310729380060">W Menedżerze haseł na tym urządzeniu</translation>
 <translation id="459535195905078186">Aplikacje Chromium</translation>
 <translation id="4613863813562375431">Wersja systemu operacyjnego Chromium</translation>
@@ -257,6 +262,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="6327105987658262776">Brak dostępnych aktualizacji.</translation>
 <translation id="6333502561965082103">Chromium wykonuje teraz inną operację. Spróbuj ponownie później.</translation>
 <translation id="6334986366598267305">Korzystanie z Chromium na wspólnych komputerach i przy użyciu konta Google jest teraz jeszcze łatwiejsze.</translation>
+<translation id="6366160072964553914">Pobieranie zostało zablokowane przez Chromium, ponieważ ten plik nie jest często pobierany i może być niebezpieczny</translation>
 <translation id="6373523479360886564">Czy na pewno chcesz odinstalować Chromium?</translation>
 <translation id="6375219077595103062">Dodaj skrót do Menedżera haseł</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Jak używamy tych danych:<ph name="END_BOLD" /> Chromium może oszacować, jakie są Twoje zainteresowania. Witryna, którą później odwiedzisz, może o nie zapytać i na tej podstawie spersonalizować wyświetlane reklamy.</translation>

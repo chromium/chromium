@@ -175,6 +175,7 @@
 <translation id="19288952978244135">Chrome браузерін қайта ашыңыз.</translation>
 <translation id="1933845786846280168">Таңдалған қойынды</translation>
 <translation id="1943432128510653496">Құпия сөздерді сақтау</translation>
+<translation id="1944535645109964458">Кіру кілттері жоқ</translation>
 <translation id="1952172573699511566">Вебсайттар мүмкін болған кезде мәтінді өзіңізге ыңғайлы тілде көрсетеді.</translation>
 <translation id="1959679933317802873">Контенті дайын емес</translation>
 <translation id="1960290143419248813">Chrome браузері Android жүйесінің бұл нұсқасында енді жаңартылмайды</translation>
@@ -626,6 +627,7 @@
 <translation id="4257230861809842349">Google Password Manager қызметінен құпия сөздерді жою керек пе?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Қандай дерек пайдаланылады:<ph name="END_BOLD" /> браузерді қолдану тарихы, осы құрылғыда Chrome көмегімен кірген сайттардың жазбасы.</translation>
 <translation id="4269820728363426813">Сілтеме мекенжайын көшіру</translation>
+<translation id="4277529130885813215">Басқа құрылғыны пайдалану</translation>
 <translation id="4283102315569707115">Әдепкісінше компьютерге арналған сайттар сұралсын ба?</translation>
 <translation id="4285846616383034558">Cookie файлдары, кэш және басқа сайт деректері</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android параметрлерінен экран құлпын қосыңыз.<ph name="END_LINK" /></translation>
@@ -1166,6 +1168,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="6955535239952325894">Бұл параметр басқарылатын браузерлерде өшірілген.</translation>
 <translation id="6963766334940102469">Бетбелгілерді жою</translation>
 <translation id="696447261358045621">Инкогнито режимінен шығу</translation>
+<translation id="6965382102122355670">Жарайды</translation>
 <translation id="6971862865055170158">Мақұлдамау</translation>
 <translation id="6978717888677691380">Сіз блоктаған сайттар</translation>
 <translation id="6979737339423435258">Барлық уақыт</translation>

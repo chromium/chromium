@@ -175,6 +175,7 @@ Si borras el historial de navegación por completo o de un sitio específico, ta
 <translation id="19288952978244135">Vuelve a abrir Chrome.</translation>
 <translation id="1933845786846280168">Pestaña seleccionada</translation>
 <translation id="1943432128510653496">Guardar contraseñas</translation>
+<translation id="1944535645109964458">No hay llaves de acceso disponibles</translation>
 <translation id="1952172573699511566">Los sitios web mostrarán texto en tu idioma preferido, cuando sea posible.</translation>
 <translation id="1959679933317802873">En espera de contenido</translation>
 <translation id="1960290143419248813">Las actualizaciones de Chrome ya no son compatibles con esta versión de Android</translation>
@@ -626,6 +627,7 @@ Los tokens de estado privado mejoran la privacidad en la Web y no pueden usarse 
 <translation id="4257230861809842349">¿Quieres borrar las contraseñas del Administrador de contraseñas de Google?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Qué información se usa:<ph name="END_BOLD" /> Tu historial de navegación, un registro de los sitios que visitaste con Chrome en este dispositivo.</translation>
 <translation id="4269820728363426813">Copiar dirección del vínculo</translation>
+<translation id="4277529130885813215">Usar otro dispositivo</translation>
 <translation id="4283102315569707115">¿Deseas solicitar sitios de escritorio de forma predeterminada?</translation>
 <translation id="4285846616383034558">Cookies, caché y otros datos de sitios</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Activa el bloqueo de pantalla en la configuración de Android<ph name="END_LINK" />.</translation>
@@ -1166,6 +1168,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6955535239952325894">Esta configuración está inhabilitada en navegadores administrados.</translation>
 <translation id="6963766334940102469">Borrar favoritos</translation>
 <translation id="696447261358045621">Salir del modo Incógnito</translation>
+<translation id="6965382102122355670">Aceptar</translation>
 <translation id="6971862865055170158">No aprobar</translation>
 <translation id="6978717888677691380">Sitios que bloqueaste</translation>
 <translation id="6979737339423435258">Todos</translation>
@@ -1324,6 +1327,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="7757787379047923882">Texto compartido de <ph name="DEVICE_NAME" /></translation>
 <translation id="7762668264895820836">Tarjeta SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Agregar dirección</translation>
+<translation id="7766587497031415281">Más opciones para borrar los datos de navegación</translation>
 <translation id="7772032839648071052">Confirmar frase de contraseña</translation>
 <translation id="7772375229873196092">Cerrar <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> más}other{<ph name="PAYMENT_METHOD_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> más}}</translation>

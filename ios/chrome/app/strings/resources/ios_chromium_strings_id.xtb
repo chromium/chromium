@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="id">
+<translation id="1046370274005147998">Menelusuri dengan Suara di Chromium.</translation>
 <translation id="1047130070405668746">Pilih Chromium</translation>
 <translation id="1091252999271033193">Artinya, Chromium akan selalu meminta situs seluler.</translation>
 <translation id="1185134272377778587">Tentang Chromium</translation>
@@ -42,6 +43,7 @@
 <translation id="2574528844022712255">Lihat Bookmark Chromium</translation>
 <translation id="2590893390871230428">Sinkronkan Data Chromium Anda</translation>
 <translation id="2618596336309823556">Dari Setelan perangkat, buka "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />", lalu pilih "Chromium"</translation>
+<translation id="2618757400690011108">{COUNT,plural, =1{Chromium akan membantu melacak paket ini di Halaman Tab Baru.}other{Chromium akan membantu melacak paket tersebut di Halaman Tab Baru.}}</translation>
 <translation id="2650312721222849884">Untuk melihat tab Chromium Anda dari perangkat lain, aktifkan sinkronisasi</translation>
 <translation id="2684230048001240293">Setel Chromium sebagai browser default untuk menyinkronkan tab, sandi, dan info pembayaran di semua perangkat Anda</translation>
 <translation id="2730884209570016437">Chromium tidak dapat menggunakan kamera karena sedang digunakan aplikasi lain</translation>
@@ -51,6 +53,7 @@
 <translation id="2918709798697875261">Organisasi mengharuskan Anda tetap logout dari Chromium.</translation>
 <translation id="2942241131342758843">Gunakan Chromium secara default untuk membuka link, menelusuri dari widget, dan mengisi otomatis sandi di aplikasi lainnya</translation>
 <translation id="2977470724722393594">Chromium sudah diperbarui</translation>
+<translation id="3078941082359356771">{COUNT,plural, =1{Chromium dapat membantu Anda melacak paket ini di Halaman Tab Baru.}other{Chromium dapat membantu Anda melacak paket tersebut di Halaman Tab Baru.}}</translation>
 <translation id="3102849287235003384">Untuk logout dari Akun Google Anda di semua situs, <ph name="BEGIN_LINK" />logout dari Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Telusuri dengan Suara di Chromium</translation>
 <translation id="3228349498066165585">Beberapa data Chromium Anda belum disimpan di Akun Google Anda.
@@ -113,6 +116,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chromium di akun 
 <translation id="5521125884468363740">Untuk melihat tab Chromium Anda dari perangkat lain, login dan aktifkan sinkronisasi</translation>
 <translation id="5522297504975449419">Beberapa fitur Chromium tidak akan tersedia lagi.</translation>
 <translation id="5571094606370987472">Membuka Tab Terbaru Chromium.</translation>
+<translation id="5623083843656850677">Kunci tab Samaran saat Anda menutup Chromium atau beralih ke aplikasi lain.</translation>
 <translation id="5688047395118852662">Kartu ini menampilkan saran tentang cara memaksimalkan penggunaan Chromium.</translation>
 <translation id="5700709190537129682">Chromium tidak dapat memeriksa sandi Anda</translation>
 <translation id="5777187867430702742">Halaman Chromium</translation>

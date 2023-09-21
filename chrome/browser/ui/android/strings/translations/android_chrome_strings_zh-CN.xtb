@@ -175,6 +175,7 @@
 <translation id="19288952978244135">重新打开 Chrome。</translation>
 <translation id="1933845786846280168">所选的标签页</translation>
 <translation id="1943432128510653496">保存密码</translation>
+<translation id="1944535645109964458">没有可用的通行密钥</translation>
 <translation id="1952172573699511566">网站将尽可能以您的首选语言显示文字。</translation>
 <translation id="1959679933317802873">正在等待内容</translation>
 <translation id="1960290143419248813">此版本的 Android 不再支持 Chrome 更新</translation>
@@ -626,6 +627,7 @@
 <translation id="4257230861809842349">从 Google 密码管理工具中删除密码？</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />我们会使用哪些数据<ph name="END_BOLD" />：您的浏览记录，即您在此设备上使用 Chrome 访问过的网站的记录。</translation>
 <translation id="4269820728363426813">复制链接地址</translation>
+<translation id="4277529130885813215">换一部设备</translation>
 <translation id="4283102315569707115">默认请求访问桌面版网站？</translation>
 <translation id="4285846616383034558">Cookie、缓存和其他网站数据</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />在 Android 设置中开启“屏幕锁定”功能<ph name="END_LINK" /></translation>
@@ -1166,6 +1168,7 @@
 <translation id="6955535239952325894">在受管理的浏览器上，此设置已被停用</translation>
 <translation id="6963766334940102469">删除书签</translation>
 <translation id="696447261358045621">退出无痕模式</translation>
+<translation id="6965382102122355670">确定</translation>
 <translation id="6971862865055170158">禁止</translation>
 <translation id="6978717888677691380">您已屏蔽的网站</translation>
 <translation id="6979737339423435258">时间不限</translation>

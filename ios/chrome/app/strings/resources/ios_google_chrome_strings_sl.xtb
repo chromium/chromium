@@ -25,6 +25,7 @@ Kaj je treba upoštevati:
 
   • Če zgodovino sinhronizirate z računom Google, lahko meritve vključujejo tudi podatke o URL-jih, ki jih obiščete.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Uporabljate Chromovo najmočnejšo zaščito pred škodljivimi spletnimi mesti.</translation>
+<translation id="1615715390546812898">Iskanje z govorom v Chromu.</translation>
 <translation id="1657395063736185342">Slikovno iskanje v Chromu</translation>
 <translation id="1675955119303651351">Nekateri podatki v Chromu še niso shranjeni v računu Google.
         Poskusite počakati nekaj minut, preden se odjavite. Če se odjavite zdaj, bodo ti podatki izbrisani.</translation>
@@ -104,6 +105,7 @@ Kaj je treba upoštevati:
         Poskusite počakati nekaj minut, preden se odjavite. Če se odjavite zdaj, bodo ti podatki izbrisani.</translation>
 <translation id="484033449593719797">Ni podprto v Chromu Beta</translation>
 <translation id="4840404732697892756">Googlov upravitelj gesel lahko preveri vaša gesla, ko se prijavite z računom Google.</translation>
+<translation id="4860330141789125848">{COUNT,plural, =1{Chrome vam lahko pomaga slediti temu paketu na novem zavihku s povezavami.}one{Chrome vam lahko pomaga slediti tem paketom na novem zavihku s povezavami.}two{Chrome vam lahko pomaga slediti tem paketom na novem zavihku s povezavami.}few{Chrome vam lahko pomaga slediti tem paketom na novem zavihku s povezavami.}other{Chrome vam lahko pomaga slediti tem paketom na novem zavihku s povezavami.}}</translation>
 <translation id="4903674399067644695">Na tej kartici so prikazani predlogi, kako izkoristiti Chrome na najboljši način.</translation>
 <translation id="49200511069271369">Vaša organizacija <ph name="DOMAIN" /> upravlja račun, v katerega se prijavljate, in način uporabe Chroma. Nekatere funkcije lahko nastavi ali omeji skrbnik.</translation>
 <translation id="5030102366287574140">Chrome vas lahko varuje pred podatkovnimi kršitvami, spletnimi mesti, ki niso varna, in drugim.</translation>
@@ -113,10 +115,12 @@ Kaj je treba upoštevati:
 <translation id="5156818928311866442">Odpre nastavitev za Chrome za nastavitev Chromiuma kot privzetega brskalnika.</translation>
 <translation id="5162467219239570114">Chrome je zastarel. Če v trgovini <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> ni na voljo nobene posodobitve, vaša naprava morda ne podpira več novih različic Chroma.</translation>
 <translation id="5190139289262548459">Vaša organizacija <ph name="DOMAIN" /> upravlja račun, v katerega ste prijavljeni, in način uporabe Chroma.</translation>
+<translation id="5278862365980079760">Zaklepanje anonimnih zavihkov, ko zapustite Chrome ali preklopite na drugo aplikacijo.</translation>
 <translation id="5389212809648216794">Google Chrome ne more uporabljati fotoaparata, ker ga uporablja druga aplikacija</translation>
 <translation id="5395376160638294582">Poskrbite, da boste v računu Google vedno lahko uporabljali podatke v Chromu</translation>
 <translation id="5439191312780166229">Opozori vas o nevarnih spletnih mestih, celo tistih, za katere Google prej ni vedel, in sicer tako, da analizira več podatkov s spletnih mest kot standardna zaščita. Izberete lahko, da preskočite opozorila za Chrome.</translation>
 <translation id="5460571915754665838">4. Izberite Chrome.</translation>
+<translation id="546541279759910616">{COUNT,plural, =1{Chrome bo pomagal slediti temu paketu na novem zavihku s povezavami.}one{Chrome bo pomagal slediti tem paketom na novem zavihku s povezavami.}two{Chrome bo pomagal slediti tem paketom na novem zavihku s povezavami.}few{Chrome bo pomagal slediti tem paketom na novem zavihku s povezavami.}other{Chrome bo pomagal slediti tem paketom na novem zavihku s povezavami.}}</translation>
 <translation id="5492504007368565877">Googlov upravitelj gesel ne more preveriti vaših gesel.</translation>
 <translation id="5527026824954593399">Dotaknite se možnosti »View with Google Maps on Chrome« (Ogled z Google Zemljevidi v Chromu).</translation>
 <translation id="5552137475244467770">Chrome občasno preveri vaša gesla, tako da jih primerja s seznami gesel, objavljenimi v spletu. Pri tem so vaša gesla in uporabniška imena šifrirana, da jih ne more prebrati nihče, vključno z Googlom.</translation>

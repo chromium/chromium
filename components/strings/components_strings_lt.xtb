@@ -100,6 +100,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1195073053842921378">Šis adresas bus ištrintas iš šio įrenginio</translation>
 <translation id="1195558154361252544">Pranešimai automatiškai blokuojami visose svetainėse, išskyrus svetaines, kuriose leidote rodyti</translation>
 <translation id="1197088940767939838">Oranžinė</translation>
+<translation id="1197761954713363183">Prieigos rakto patvirtinimo lapas uždarytas</translation>
 <translation id="1201402288615127009">Kitas</translation>
 <translation id="1201895884277373915">Daugiau iš šios svetainės</translation>
 <translation id="1202892408424955784">Stebimi produktai</translation>
@@ -327,6 +328,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1618571384971354160">Vilkimas ir pagalba keliuose</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622571349153632031">Vegetariška virtuvė</translation>
+<translation id="162285686621567578">Šią svetainę užblokavo vienas iš tėvų.</translation>
 <translation id="1622966923835127638">Verslas / finansai</translation>
 <translation id="1623104350909869708">Neleisti šiam puslapiui kurti papildomų dialogo langų</translation>
 <translation id="1633137413609266904">{0,plural, =1{Pagal administratoriaus politiką neleidžiama atidaryti šio failo}one{Pagal administratoriaus politiką neleidžiama atidaryti # failo}few{Pagal administratoriaus politiką neleidžiama atidaryti # failų}many{Pagal administratoriaus politiką neleidžiama atidaryti # failo}other{Pagal administratoriaus politiką neleidžiama atidaryti # failų}}</translation>
@@ -371,6 +373,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1711528724596764268">Mašininis mokymasis ir dirbtinis intelektas</translation>
 <translation id="1712552549805331520"><ph name="URL" /> prašo leidimo nuolat saugoti duomenis vietiniame kompiuteryje</translation>
 <translation id="1713628304598226412">2 dėklas</translation>
+<translation id="1714807406136741351">Naršymo režimą galite pakeisti į formų režimą, kad naudodami rodyklę kairėn ir (arba) dešinėn peržiūrėtumėte kainų pakeitimus diagramoje</translation>
 <translation id="1717218214683051432">Judesių jutikliai</translation>
 <translation id="1717494416764505390">3 pašto dėžutė</translation>
 <translation id="1717688554309417925">Debeto ir einamųjų sąskaitų paslaugos</translation>
@@ -382,6 +385,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1725591448053514783">„You 6“ vokas</translation>
 <translation id="1727613060316725209">Sertifikatas galioja</translation>
 <translation id="1728677426644403582">Peržiūrite tinklalapio šaltinį</translation>
+<translation id="1728803206919861584">Išsaugoti prieigos raktą ne inkognito režimu?</translation>
 <translation id="173080396488393970">Šio tipo kortelė nepalaikoma</translation>
 <translation id="1732445923934584865">Geriau paklausti asmeniškai</translation>
 <translation id="1733064249834771892">šriftai</translation>
@@ -1665,6 +1669,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4415156962929755728">Plastikas (itin blizgus)</translation>
 <translation id="4415426530740016218">Paėmimo adresas</translation>
 <translation id="4424024547088906515">Šiam serveriui nepavyko patvirtinti, kad tai yra <ph name="DOMAIN" />; jo saugos sertifikatas nėra patikimas „Chrome“. Taip gali nutikti dėl netinkamos konfigūracijos ar dėl ryšį pertraukusio užgrobėjo.</translation>
+<translation id="4425173294238317796">Prieigos rakto patvirtinimo lapas</translation>
 <translation id="4425750422187370446">Sporto apranga</translation>
 <translation id="4428065317363009941">Skelbimų suasmeninimas</translation>
 <translation id="443121186588148776">Nuoseklusis prievadas</translation>
@@ -2020,6 +2025,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5157504274688344097">Masinė prekyba ir prekybos centrai</translation>
 <translation id="5158275234811857234">Viršelis</translation>
 <translation id="5159010409087891077">Atidarykite puslapį naujame inkognito lange (⇧⌘N)</translation>
+<translation id="5161262286013276579">Prieigos rakto patvirtinimo lapas atidarytas</translation>
 <translation id="5161334686036120870">Tema:</translation>
 <translation id="5161506081086828129">9 dėtuvė</translation>
 <translation id="5164798890604758545">Įvestas tekstas</translation>
@@ -2902,6 +2908,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="7004583254764674281">Su „Windows Hello“ korteles patvirtinsite greičiau</translation>
 <translation id="7006930604109697472">Vis tiek siųsti</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7013762323294215682">Šis prieigos raktas bus išsaugotas slaptažodžių tvarkyklėje. Visi jį galintys pasiekti asmenys galės naudoti šį prieigos raktą.</translation>
 <translation id="7014042602717177828">Automobilių garso įranga</translation>
 <translation id="7014741021609395734">Mastelio keitimo lygis</translation>
 <translation id="7016992613359344582">Šie mokesčiai gali būti vienkartiniai arba pasikartojantys ir gali būti neaiškūs.</translation>
@@ -3247,6 +3254,7 @@ Papildoma išsami informacija:
 <translation id="7667346355482952095">Sugrąžintas politikos prieigos raktas yra tuščias arba neatitinka dabartinio prieigos rakto</translation>
 <translation id="7668654391829183341">Nežinomas įrenginys</translation>
 <translation id="7669271284792375604">Šios svetainės užgrobėjai gali bandyti apgaule priversti jus įdiegti naršymo funkcijas trikdančių programų (pvz., pakeitę pagrindinį puslapį ar rodydami papildomų skelbimų svetainėse, kuriose lankotės).</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> iš <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Veiksmai, atlikti su duomenimis, kurie pažymėti kaip konfidencialūs (1 veiksmas nuo tada, kai buvo prisijungta). <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" />}one{Veiksmai, atlikti su duomenimis, kurie pažymėti kaip konfidencialūs (# veiksmas nuo tada, kai buvo prisijungta). <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" />}few{Veiksmai, atlikti su duomenimis, kurie pažymėti kaip konfidencialūs (# veiksmai nuo tada, kai buvo prisijungta). <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" />}many{Veiksmai, atlikti su duomenimis, kurie pažymėti kaip konfidencialūs (# veiksmo nuo tada, kai buvo prisijungta). <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" />}other{Veiksmai, atlikti su duomenimis, kurie pažymėti kaip konfidencialūs (# veiksmų nuo tada, kai buvo prisijungta). <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">6 pašto dėžutė</translation>
 <translation id="7675325315208090829">Tvarkykite mokėjimo metodus...</translation>

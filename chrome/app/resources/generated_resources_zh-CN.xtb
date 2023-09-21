@@ -2757,7 +2757,6 @@
 <translation id="3169930038976362151">选择与您的需求相符的主题。若要更改主题、壁纸、屏保等，轻触并按住桌面即可执行所需操作。</translation>
 <translation id="3170072451822350649">您也可以跳过登录步骤，<ph name="LINK_START" />以访客身份浏览<ph name="LINK_END" />。</translation>
 <translation id="31774765611822736">在左侧新增标签页</translation>
-<translation id="3177689682958561933">开启即可向后/向前导航</translation>
 <translation id="3177909033752230686">网页语言：</translation>
 <translation id="3177914167275935955">您的设备随附了一份 Chrome 教育版升级许可，但您的用户名并未与 Google for Education 账号关联。请先在辅助设备上前往 g.co/workspace/edusignup 创建一个 Google for Education 账号。</translation>
 <translation id="3179982752812949580">文本字体</translation>
@@ -4361,7 +4360,7 @@
 <translation id="4490086832405043258">为此个人资料使用 Chrome 操作系统代理设置。</translation>
 <translation id="449126573531210296">使用您的 Google 账号加密已同步的密码</translation>
 <translation id="449232563137139956">网站通常会显示图片以提供插图（例如网店或新闻报道的图片）</translation>
-<translation id="4492698018379445570">查看您已添加到购物车的商品，并在选定后结帐</translation>
+<translation id="4492698018379445570">查看您已添加到购物车的商品，并在选定后结账</translation>
 <translation id="4493167769966437077">将“<ph name="LANGUAGE_NAME" />”从一律不提供翻译的语言的列表中移除</translation>
 <translation id="4493468155686877504">建议大小 (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495002167047709180">允许此扩展程序在 <ph name="SITE" /> 上运行？</translation>
@@ -6218,7 +6217,6 @@
 <translation id="6045114302329202345">TrackPoint 主按钮</translation>
 <translation id="6047632800149092791">同步功能无法正常运行。请尝试退出账号并重新登录。</translation>
 <translation id="6048747414605857443">为 ChromeVox 和“随选朗读”选择和自定义文字转语音的语音</translation>
-<translation id="6049797270917061226">攻击者可能会利用此文件窃取您的个人信息。</translation>
 <translation id="6050189528197190982">灰度</translation>
 <translation id="6051354611314852653">糟糕！系统无法将 API 访问权限授予此设备。</translation>
 <translation id="6051811090255711417">贵组织屏蔽了此文件，因为它不符合安全政策</translation>
@@ -6502,7 +6500,6 @@
 <translation id="6270391203985052864">网站可以询问能否向您发送通知</translation>
 <translation id="6270486800167535228">扩展程序已固定。选择即可查看更多选项</translation>
 <translation id="6270770586500173387">发送<ph name="BEGIN_LINK1" />系统和应用信息<ph name="END_LINK1" />以及<ph name="BEGIN_LINK2" />指标<ph name="END_LINK2" /></translation>
-<translation id="6270896861225278704">“历程”卡片</translation>
 <translation id="6271348838875430303">已撤消更正</translation>
 <translation id="6271824294945464304">正在分享密码</translation>
 <translation id="6273677812470008672">打印质量</translation>
@@ -7120,6 +7117,7 @@
 <translation id="6798578729981748444">要想顺利完成导入，请关闭所有 Firefox 窗口。</translation>
 <translation id="6798780071646309401">已开启大写锁定模式</translation>
 <translation id="6798954102094737107">插件：<ph name="PLUGIN_NAME" /></translation>
+<translation id="679905836499387150">隐藏的工具栏按钮</translation>
 <translation id="6801129617625983991">常规设置</translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{选择是否允许这款扩展程序读取或更改该网站的数据}other{选择是否允许这些扩展程序读取或更改该网站的数据}}</translation>
 <translation id="6801435275744557998">校准触摸屏</translation>
@@ -10064,10 +10062,6 @@
 <translation id="9151906066336345901">光标移至行尾</translation>
 <translation id="9153274276370926498">Lacros 系统信息</translation>
 <translation id="9153367754133725216">在启动器和搜索结果中查看针对新应用和新 Web 内容的建议。仅当您已选择向 ChromeOS 发送崩溃报告以及诊断信息和使用情况数据时，才会发送统计信息以优化建议。</translation>
-<translation id="9154082578438716291">这里显示的是您访问过的网页和推荐的搜索内容，便于您在 Chrome 历程中轻松回顾近期的活动。
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        您可从卡片菜单中管理设置，或者在“自定义 Chrome”部分中查看更多选项。</translation>
 <translation id="9154194610265714752">已更新</translation>
 <translation id="9157096865782046368">0.8 秒</translation>
 <translation id="9157697743260533322">未能按您的要求为所有用户设置自动更新（启动预定流程时出错：<ph name="ERROR_NUMBER" />）</translation>

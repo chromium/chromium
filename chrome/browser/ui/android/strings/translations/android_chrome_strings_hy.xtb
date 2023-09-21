@@ -175,6 +175,7 @@
 <translation id="19288952978244135">Նորից բացեք Chrome-ը:</translation>
 <translation id="1933845786846280168">Ընտրված ներդիր</translation>
 <translation id="1943432128510653496">Պահել գաղտնաբառերը</translation>
+<translation id="1944535645109964458">Հասանելի անցաբառեր չկան</translation>
 <translation id="1952172573699511566">Կայքերի տեքստը հնարավորության դեպքում կցուցադրվի ձեր ընտրած լեզվով։</translation>
 <translation id="1959679933317802873">Բովանդակության սպասում</translation>
 <translation id="1960290143419248813">Chrome-ն այլևս չի թարմացվում Android-ի այս տարբերակում</translation>
@@ -626,6 +627,7 @@
 <translation id="4257230861809842349">Ջնջե՞լ գաղտնաբառերը Google գաղտնաբառերի կառավարչից</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Ինչ տվյալներ են օգտագործվում.<ph name="END_BOLD" /> ձեր այցելությունների պատմությունը այն կայքերի ցանկն է, որոնք դուք այցելել եք Chrome-ի միջոցով այս սարքում։</translation>
 <translation id="4269820728363426813">Պատճենել հղման հասցեն</translation>
+<translation id="4277529130885813215">Օգտագործել այլ սարք</translation>
 <translation id="4283102315569707115">Օգտագործե՞լ կայքերի համակարգչային տարբերակներն ըստ կանխադրման</translation>
 <translation id="4285846616383034558">Քուքիները, քեշը և կայքերի այլ տվյալներ</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Միացնել էկրանի կողպումը Android-ի կարգավորումներում<ph name="END_LINK" /></translation>
@@ -1166,6 +1168,7 @@
 <translation id="6955535239952325894">Այս կարգավորումը ցուցադրվում է կառավարվող դիտարկիչներում</translation>
 <translation id="6963766334940102469">Ջնջել էջանիշները</translation>
 <translation id="696447261358045621">Դուրս գալ ինկոգնիտո ռեժիմից</translation>
+<translation id="6965382102122355670">Եղավ</translation>
 <translation id="6971862865055170158">Չհաստատել</translation>
 <translation id="6978717888677691380">Ձեր արգելափակած կայքերը</translation>
 <translation id="6979737339423435258">Ամբողջ ժամանակաշրջանի</translation>

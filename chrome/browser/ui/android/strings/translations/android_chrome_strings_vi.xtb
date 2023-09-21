@@ -175,6 +175,7 @@ Khi xoá nhật ký duyệt web (tất cả hoặc một trang cụ thể), bạ
 <translation id="19288952978244135">Mở lại Chrome.</translation>
 <translation id="1933845786846280168">Thẻ được chọn</translation>
 <translation id="1943432128510653496">Lưu mật khẩu</translation>
+<translation id="1944535645109964458">Không có khoá đăng nhập nào</translation>
 <translation id="1952172573699511566">Các trang web sẽ hiển thị văn bản bằng ngôn ngữ ưu tiên của bạn khi có thể.</translation>
 <translation id="1959679933317802873">Đang chờ nội dung</translation>
 <translation id="1960290143419248813">Các bản cập nhật Chrome không còn được hỗ trợ cho phiên bản Android này</translation>
@@ -626,6 +627,7 @@ Mã thông báo trạng thái riêng tư giúp cải thiện quyền riêng tư
 <translation id="4257230861809842349">Xoá mật khẩu khỏi Trình quản lý mật khẩu của Google?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Loại dữ liệu nào được sử dụng:<ph name="END_BOLD" /> Nhật ký duyệt web của bạn, một bản ghi các trang web bạn từng truy cập bằng Chrome trên thiết bị này.</translation>
 <translation id="4269820728363426813">Sao chép địa chỉ liên kết</translation>
+<translation id="4277529130885813215">Sử dụng thiết bị khác</translation>
 <translation id="4283102315569707115">Yêu cầu trang web dành cho máy tính theo mặc định?</translation>
 <translation id="4285846616383034558">Cookie, bộ nhớ đệm và dữ liệu trang web khác</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Bật phương thức khóa màn hình trong phần cài đặt Android<ph name="END_LINK" /></translation>
@@ -1166,6 +1168,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6955535239952325894">Tùy chọn cài đặt này bị tắt trên các trình duyệt được quản lý</translation>
 <translation id="6963766334940102469">Xóa dấu trang</translation>
 <translation id="696447261358045621">Thoát khỏi chế độ Ẩn danh</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6971862865055170158">Không phê duyệt</translation>
 <translation id="6978717888677691380">Các trang web bạn đã chặn</translation>
 <translation id="6979737339423435258">Từ trước đến nay</translation>
@@ -1324,6 +1327,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7757787379047923882">Văn bản được chia sẻ từ <ph name="DEVICE_NAME" /></translation>
 <translation id="7762668264895820836">Thẻ SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Thêm địa chỉ</translation>
+<translation id="7766587497031415281">Xem thêm tuỳ chọn xoá dữ liệu duyệt web</translation>
 <translation id="7772032839648071052">Xác nhận cụm mật khẩu</translation>
 <translation id="7772375229873196092">Đóng <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 và <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> tùy chọn khác}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 và <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> tùy chọn khác}}</translation>

@@ -175,6 +175,7 @@
 <translation id="19288952978244135">เปิด Chrome อีกครั้ง</translation>
 <translation id="1933845786846280168">แท็บที่เลือก</translation>
 <translation id="1943432128510653496">บันทึกรหัสผ่าน</translation>
+<translation id="1944535645109964458">ไม่มีพาสคีย์ที่ใช้งานได้</translation>
 <translation id="1952172573699511566">เมื่อเป็นไปได้ เว็บไซต์จะแสดงในภาษาที่คุณต้องการ</translation>
 <translation id="1959679933317802873">กำลังรอเนื้อหา</translation>
 <translation id="1960290143419248813">Android เวอร์ชันนี้ไม่รองรับการอัปเดต Chrome อีกต่อไปแล้ว</translation>
@@ -626,6 +627,7 @@
 <translation id="4257230861809842349">ลบรหัสผ่านจากเครื่องมือจัดการรหัสผ่านบน Google ไหม</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />ข้อมูลใดบ้างที่มีการนำไปใช้:<ph name="END_BOLD" /> ประวัติการท่องเว็บของคุณ บันทึกรายการเว็บไซต์ที่คุณเข้าชมโดยใช้ Chrome ในอุปกรณ์นี้</translation>
 <translation id="4269820728363426813">คัดลอกที่อยู่ลิงก์</translation>
+<translation id="4277529130885813215">ใช้อุปกรณ์อื่น</translation>
 <translation id="4283102315569707115">ขอใช้เว็บไซต์เวอร์ชันเดสก์ท็อปโดยค่าเริ่มต้นไหม</translation>
 <translation id="4285846616383034558">คุกกี้ แคช และข้อมูลเว็บไซต์อื่นๆ</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />เปิดการล็อกหน้าจอในการตั้งค่า Android<ph name="END_LINK" /></translation>
@@ -1166,6 +1168,7 @@
 <translation id="6955535239952325894">การตั้งค่านี้ปิดใช้อยู่ในเบราว์เซอร์ที่มีการจัดการ</translation>
 <translation id="6963766334940102469">ลบบุ๊กมาร์ก</translation>
 <translation id="696447261358045621">ออกจากโหมดไม่ระบุตัวตน</translation>
+<translation id="6965382102122355670">ตกลง</translation>
 <translation id="6971862865055170158">ไม่อนุมัติ</translation>
 <translation id="6978717888677691380">เว็บไซต์ที่คุณบล็อก</translation>
 <translation id="6979737339423435258">ตั้งแต่ต้น</translation>
@@ -1324,6 +1327,7 @@
 <translation id="7757787379047923882">ข้อความที่แชร์จาก <ph name="DEVICE_NAME" /></translation>
 <translation id="7762668264895820836">การ์ด SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">เพิ่มที่อยู่</translation>
+<translation id="7766587497031415281">ตัวเลือกเพิ่มเติมในการล้างข้อมูลการท่องเว็บ</translation>
 <translation id="7772032839648071052">ยืนยันข้อความรหัสผ่าน</translation>
 <translation id="7772375229873196092">ปิด <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 และอีก <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> วิธี}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 และอีก <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> วิธี}}</translation>

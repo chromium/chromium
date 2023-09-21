@@ -100,6 +100,7 @@
 <translation id="1195073053842921378">此地址將會從此裝置上刪除</translation>
 <translation id="1195558154361252544">系統已自動封鎖所有網站的通知，但您允許的網站除外</translation>
 <translation id="1197088940767939838">橙色</translation>
+<translation id="1197761954713363183">密鑰確認工作表閂咗</translation>
 <translation id="1201402288615127009">下一個</translation>
 <translation id="1201895884277373915">這個網站的更多內容</translation>
 <translation id="1202892408424955784">已追蹤的產品</translation>
@@ -327,6 +328,7 @@
 <translation id="1618571384971354160">拖車和道路救援服務</translation>
 <translation id="1620510694547887537">相機</translation>
 <translation id="1622571349153632031">素食</translation>
+<translation id="162285686621567578">家長已封鎖這個網站。</translation>
 <translation id="1622966923835127638">公司融資</translation>
 <translation id="1623104350909869708">防止這個網頁產生其他對話方塊</translation>
 <translation id="1633137413609266904">{0,plural, =1{管理員政策已禁止開啟此檔案}other{管理員政策已禁止開啟 # 個檔案}}</translation>
@@ -371,6 +373,7 @@
 <translation id="1711528724596764268">機器學習和人工智能</translation>
 <translation id="1712552549805331520"><ph name="URL" /> 要求在您的本機電腦上永久儲存數據</translation>
 <translation id="1713628304598226412">紙匣 2</translation>
+<translation id="1714807406136741351">瀏覽模式，變更為「表單」模式後，使用向左/向右鍵即可在圖表上查看價格異動</translation>
 <translation id="1717218214683051432">動作感應器</translation>
 <translation id="1717494416764505390">出紙槽 3</translation>
 <translation id="1717688554309417925">扣帳及簽帳服務</translation>
@@ -382,6 +385,7 @@
 <translation id="1725591448053514783">You 6 信封</translation>
 <translation id="1727613060316725209">憑證有效</translation>
 <translation id="1728677426644403582">您正在查看網頁的原始碼</translation>
+<translation id="1728803206919861584">要在無痕模式外儲存密鑰嗎？</translation>
 <translation id="173080396488393970">不支援此信用卡類型</translation>
 <translation id="1732445923934584865">改為當面要求</translation>
 <translation id="1733064249834771892">字型</translation>
@@ -1663,6 +1667,7 @@
 <translation id="4415156962929755728">塑膠 (高光面)</translation>
 <translation id="4415426530740016218">取貨地址</translation>
 <translation id="4424024547088906515">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證未取得 Chrome 的信任。這可能是因為設定錯誤，或有攻擊者攔截您的連線。</translation>
+<translation id="4425173294238317796">密鑰確認工作表</translation>
 <translation id="4425750422187370446">運動服裝</translation>
 <translation id="4428065317363009941">廣告個人化</translation>
 <translation id="443121186588148776">序列連接埠</translation>
@@ -2018,6 +2023,7 @@
 <translation id="5157504274688344097">大型零售商和百貨公司</translation>
 <translation id="5158275234811857234">封面</translation>
 <translation id="5159010409087891077">在新無痕式視窗中開啟網頁 (⇧⌘N)</translation>
+<translation id="5161262286013276579">密鑰確認工作表打開咗</translation>
 <translation id="5161334686036120870">標題：</translation>
 <translation id="5161506081086828129">堆疊器 9</translation>
 <translation id="5164798890604758545">已輸入文字</translation>
@@ -2900,6 +2906,7 @@
 <translation id="7004583254764674281">使用 Windows Hello 可加快確認付款卡</translation>
 <translation id="7006930604109697472">仍要傳送</translation>
 <translation id="7012363358306927923">中國銀聯</translation>
+<translation id="7013762323294215682">此密鑰將會儲存至密碼管理工具。任何擁有存取權的使用者都可使用此密鑰。</translation>
 <translation id="7014042602717177828">汽車音響</translation>
 <translation id="7014741021609395734">縮放比例</translation>
 <translation id="7016992613359344582">這些費用可能是一次性或會重複收取，而收費時亦可能難以察覺。</translation>
@@ -3245,6 +3252,7 @@
 <translation id="7667346355482952095">傳回的政策憑證為空白或與目前憑證不符</translation>
 <translation id="7668654391829183341">不明的裝置</translation>
 <translation id="7669271284792375604">攻擊者可能會經由此網站，嘗試誘使您安裝妨礙瀏覽體驗的程式 (例如變更您的首頁，或在您瀏覽的網站上顯示多餘的廣告)。</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />，第 <ph name="ITEM_POSITION" /> 個，共 <ph name="ITEMS_TOTAL" /> 個。</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{在標示為機密的資料所執行的動作 (自登入起已報告 1 個動作)。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" />}other{在標示為機密的資料所執行的動作 (自登入起已報告 # 個動作)。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">出紙槽 6</translation>
 <translation id="7675325315208090829">管理付款方法…</translation>

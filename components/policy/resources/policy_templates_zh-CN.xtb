@@ -389,25 +389,6 @@
       请注意，此政策只是一项临时性政策，旨在让受管用户仍能使用已弃用的旧版快捷键。待自定义键盘快捷键可用后，此政策将被弃用。</translation>
 <translation id="1361661842732478894">在工具栏上显示首页按钮</translation>
 <translation id="1363275621236827384">允许在 Quirks Server 中查询硬件配置文件</translation>
-<translation id="136422692261301619">以列表形式配置在达到 <ph name="IDLE_TIMEOUT_POLICY_NAME" /> 政策所设的超时时限后要运行的一系列操作。
-
-      如果 <ph name="IDLE_TIMEOUT_POLICY_NAME" /> 政策未设置，此政策将不会产生任何效力。
-
-      达到 <ph name="IDLE_TIMEOUT_POLICY_NAME" /> 政策所设的超时时限后，<ph name="PRODUCT_NAME" /> 会运行此政策中配置的操作。
-
-      如果此政策为空或未设置，<ph name="IDLE_TIMEOUT_POLICY_NAME" /> 政策将不会产生任何效力。
-
-      支持的操作如下：
-
-      “<ph name="CLOSE_BROWSERS_ACTION" />”：关闭该个人资料的所有浏览器窗口和 PWA。在 Android 设备上不受支持。
-
-      “<ph name="SHOW_PROFILE_PICKER_ACTION" />”：显示“个人资料选择器”窗口。在 Android 设备上不受支持。
-
-      “<ph name="CLEAR_BROWSING_HISTORY_ACTION" />”“<ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />”“<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />”“<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />”“<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />”“<ph name="CLEAR_AUTOFILL_ACTION" />”“<ph name="CLEAR_SITE_SETTINGS_ACTION" />”“<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />”：清除相应的浏览数据。有关详情，请参阅 <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> 政策。
-
-      “<ph name="RELOAD_PAGES_ACTION" />”：重新加载所有网页。对于某些页面，系统可能会提示用户先进行确认。
-
-      如果既未通过设置 <ph name="SYNC_DISABLED_POLICY_NAME" /> 政策停用“<ph name="CHROME_SYNC_NAME" />”，也未停用 <ph name="BROWSER_SIGNIN_POLICY_NAME" />，设置“<ph name="CLEAR_BROWSING_HISTORY_ACTION" />”“<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />”“<ph name="CLEAR_AUTOFILL_ACTION" />”和“<ph name="CLEAR_SITE_SETTINGS_ACTION" />”将为相应的数据类型停用同步功能。</translation>
 <translation id="1369698103169067223">未为用户启用 Glanceables。</translation>
 <translation id="1371626834351873151">系统将为所有来源启用“用户代理字符串缩短”功能。</translation>
 <translation id="1371851989348083665">允许在网页上使用 <ph name="ASSISTANT_PRODUCT_NAME" /></translation>
@@ -5120,15 +5101,6 @@
 <translation id="5666457529647159548">允许用户管理已安装的客户端证书。</translation>
 <translation id="567377007899266033">如果此政策设为 True，系统便会向 Google 报告由政策触发的主要扩展程序安装事件。将此政策设为 False 意味着系统不会记录任何事件。如果此政策未设置，系统会将默认值设为 True。</translation>
 <translation id="5676740747107495269">在登录屏幕的系统任务栏菜单中显示无障碍选项</translation>
-<translation id="567832102568869993">在计算机处于闲置状态时触发操作。
-
-      设置此政策后，只要设备处于闲置状态（未发生用户输入）的时长达到此处指定的时长（以分钟为单位），<ph name="PRODUCT_NAME" /> 就会运行 <ph name="IDLE_TIMEOUT_ACTIONS_POLICY_NAME" /> 政策中配置的操作。
-
-      如果未设置此政策，系统将不会运行任何操作。
-
-      最低阈值为 1 分钟。
-
-      “用户输入”由操作系统 API 定义，包括移动鼠标或使用键盘输入内容等操作。</translation>
 <translation id="5679540979548648200">禁止此设备的用户使用 ADB 旁加载；如果先前已启用旁加载，就对设备强制执行 Powerwash</translation>
 <translation id="5681258683432554972">默认弹出式窗口设置</translation>
 <translation id="5684501593989438324">启用 Google 助理启动指令</translation>

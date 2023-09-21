@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr-Latn">
+<translation id="1046370274005147998">Pretražujte glasom u Chromium-u.</translation>
 <translation id="1047130070405668746">Izaberite Chromium</translation>
 <translation id="1091252999271033193">To znači da će Chromium svaki put zahtevati mobilni sajt.</translation>
 <translation id="1185134272377778587">O Chromium-u</translation>
@@ -42,6 +43,7 @@
 <translation id="2574528844022712255">Prikaži Chromium obeleživače</translation>
 <translation id="2590893390871230428">Sinhronizujte Chromium podatke</translation>
 <translation id="2618596336309823556">U Podešavanjima uređaja otvorite „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“ i izaberite „Chromium“</translation>
+<translation id="2618757400690011108">{COUNT,plural, =1{Chromium će vam pomoći da pratite ovaj paket na stranici nove kartice.}one{Chromium će vam pomoći da pratite ove pakete na stranici nove kartice.}few{Chromium će vam pomoći da pratite ove pakete na stranici nove kartice.}other{Chromium će vam pomoći da pratite ove pakete na stranici nove kartice.}}</translation>
 <translation id="2650312721222849884">Da biste videli kartice na bilo kojem uređaju na kom koristite Chromium, uključite sinhronizaciju</translation>
 <translation id="2684230048001240293">Podesite Chromium kao podrazumevanu aplikaciju za sinhronizovanje kartica, lozinki i informacija o plaćanju na svim uređajima</translation>
 <translation id="2730884209570016437">Chromium ne može da koristi kameru zato što je već koristi druga aplikacija</translation>
@@ -51,6 +53,7 @@
 <translation id="2918709798697875261">Organizacija zahteva da ostanete odjavljeni sa Chromium-a.</translation>
 <translation id="2942241131342758843">Podrazumevano koristite Chromium da biste otvarali linkove, pretraživali iz vidžeta i automatski popunjavali lozinke u drugim aplikacijama</translation>
 <translation id="2977470724722393594">Chromium je ažuriran</translation>
+<translation id="3078941082359356771">{COUNT,plural, =1{Chromium može da vam pomogne da pratite ovaj paket na stranici nove kartice.}one{Chromium može da vam pomogne da pratite ove pakete na stranici nove kartice.}few{Chromium može da vam pomogne da pratite ove pakete na stranici nove kartice.}other{Chromium može da vam pomogne da pratite ove pakete na stranici nove kartice.}}</translation>
 <translation id="3102849287235003384">Da biste se odjavili sa Google naloga na svim veb-sajtovima, <ph name="BEGIN_LINK" />odjavite se iz Chromium-a<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Pretražujte glasom u Chromium-u</translation>
 <translation id="3228349498066165585">Neki Chromium podaci još nisu sačuvani na Google nalogu.
@@ -113,6 +116,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />obrišite Chromium 
 <translation id="5521125884468363740">Da biste videli kartice na bilo kojem uređaju na kom koristite Chromium, prijavite se i uključite sinhronizaciju</translation>
 <translation id="5522297504975449419">Neke Chromium funkcije više neće biti dostupne.</translation>
 <translation id="5571094606370987472">Otvara Chromium nedavne kartice.</translation>
+<translation id="5623083843656850677">Zaključajte kartice bez arhiviranja kada napustite Chromium ili pređete na drugu aplikaciju.</translation>
 <translation id="5688047395118852662">Ova kartica vam prikazuje predloge o tome kako da iskoristite Chromium-a na najbolji način.</translation>
 <translation id="5700709190537129682">Chromium ne može da vam proverava lozinke</translation>
 <translation id="5777187867430702742">Chromium stranica</translation>

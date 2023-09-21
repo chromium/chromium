@@ -100,6 +100,7 @@
 <translation id="1195073053842921378">Bu ünvan bu cihazdan silinəcək</translation>
 <translation id="1195558154361252544">İcazə verdiklərinizdən başqa bütün saytlarda bildirişlər blok edilib</translation>
 <translation id="1197088940767939838">Narıncı</translation>
+<translation id="1197761954713363183">Giriş açarı təsdiqi üçün vərəq bağlandı</translation>
 <translation id="1201402288615127009">Növbəti</translation>
 <translation id="1201895884277373915">Bu saytdan daha çox</translation>
 <translation id="1202892408424955784">İzlənilən məhsullar</translation>
@@ -327,6 +328,7 @@
 <translation id="1618571384971354160">Təxliyə və yolkənarı yardım</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622571349153632031">Vegetarian mətbəxi</translation>
+<translation id="162285686621567578">Valideyn bu veb-saytı bloklayıb.</translation>
 <translation id="1622966923835127638">Biznes maliyyəsi</translation>
 <translation id="1623104350909869708">Bu səhifədə əlavə dialoqlar yaranmasın</translation>
 <translation id="1633137413609266904">{0,plural, =1{Bu faylın açılması administrator siyasəti əsasında bloklanıb}other{# faylın açılması administrator siyasəti əsasında bloklanıb}}</translation>
@@ -371,6 +373,7 @@
 <translation id="1711528724596764268">Cihaz öyrənimi və süni intellekt</translation>
 <translation id="1712552549805331520"><ph name="URL" /> datanı həmişəlik lokal kompüterinizdə yadda saxlamaq istəyir</translation>
 <translation id="1713628304598226412">Qab 2</translation>
+<translation id="1714807406136741351">Baxış rejimi. Formalar rejiminə dəyişərək qrafikdəki qiymət dəyişikliklərini nəzərdən keçirmək üçün sol/sağ oxdan istifadə edə bilərsiniz</translation>
 <translation id="1717218214683051432">Hərəkət sensorları</translation>
 <translation id="1717494416764505390">Poçt qutusu 3</translation>
 <translation id="1717688554309417925">Debet və çek xidmətləri</translation>
@@ -382,6 +385,7 @@
 <translation id="1725591448053514783">Zərf You 6</translation>
 <translation id="1727613060316725209">Sertifikat etibarlıdır</translation>
 <translation id="1728677426644403582">Veb səhifənin mənbəyinə baxırsınız</translation>
+<translation id="1728803206919861584">Giriş açarı Anonim rejimdən kənarda yadda saxlansın?</translation>
 <translation id="173080396488393970">Bu kart növü dəstəklənmir</translation>
 <translation id="1732445923934584865">Bunun əvəzinə şəxsən soruşun</translation>
 <translation id="1733064249834771892">şriftlər</translation>
@@ -1660,6 +1664,7 @@
 <translation id="4415156962929755728">Plastik (yarıparlaq)</translation>
 <translation id="4415426530740016218">Götürmə Ünvanı</translation>
 <translation id="4424024547088906515">Bu server <ph name="DOMAIN" /> domenini təsdiqləyə bilmədi; onun təhlükəsizlik sertifikatı Chrome tərəfindən doğrulanmayıb. Buna səbəb yanlış konfiqurasiya və ya hücumçü tərəfindən bağlantınızın ələ keçirilməsi ola bilər.</translation>
+<translation id="4425173294238317796">Giriş açarı təsdiqi üçün vərəq</translation>
 <translation id="4425750422187370446">Atletik geyim</translation>
 <translation id="4428065317363009941">Reklam fərdiləşdirməsi</translation>
 <translation id="443121186588148776">Ardıcıl port</translation>
@@ -2015,6 +2020,7 @@
 <translation id="5157504274688344097">Kütləvi satış yeri və univermaqlar</translation>
 <translation id="5158275234811857234">Üzlük</translation>
 <translation id="5159010409087891077">Yeni Gizli pəncərədə səhifə açın (⇧⌘N)</translation>
+<translation id="5161262286013276579">Giriş açarı təsdiqi üçün vərəq açıldı</translation>
 <translation id="5161334686036120870">Mövzu:</translation>
 <translation id="5161506081086828129">Yığıcı 9</translation>
 <translation id="5164798890604758545">Mətn daxil edilib</translation>
@@ -2897,6 +2903,7 @@
 <translation id="7004583254764674281">Kartları daha sürətli təsdiqləmək üçün Windows Hello istifadə edin</translation>
 <translation id="7006930604109697472">İstənilən halda göndərin</translation>
 <translation id="7012363358306927923">Çin UnionPay</translation>
+<translation id="7013762323294215682">Bu giriş açarı parol menecerində yadda saxlanacaq. Giriş imkanı olan hər kəs ondan istifadə edə biləcək.</translation>
 <translation id="7014042602717177828">Avtomobil üçün audio avadanlığı</translation>
 <translation id="7014741021609395734">Miqyas səviyyəsi</translation>
 <translation id="7016992613359344582">Bu ödənişlər birdəfəlik və ya təkrarlanan ola bilər. Onlar, eyni zamanda görünməyə bilər.</translation>
@@ -3242,6 +3249,7 @@
 <translation id="7667346355482952095">Qaytarılmış qaydalar nişanı boşdur və ya cari nişanla üst-üstə düşmür</translation>
 <translation id="7668654391829183341">Naməlum cihaz</translation>
 <translation id="7669271284792375604">Saytdakı hücumçular işinizə zərər gətirəcək proqramları quraşdırmaq üçün Sizi aldatmağa cəhd edə bilər (məsələn, əsas səhifəni dəyişməklə və ya daxil olduğunuz saytlarda əlavə reklamlar göstərməklə).</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" /> – <ph name="ITEM_POSITION" />/<ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Məxfi olaraq işarələnmiş məlumatlarla aparılan əməliyyatlar (girişdən sonra 1 əməliyyat). <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" />}other{Məxfi olaraq işarələnmiş məlumatlarla aparılan əməliyyatlar (girişdən sonra # əməliyyat). <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Poçt qutusu 6</translation>
 <translation id="7675325315208090829">Ödəniş Metodlarını İdarə Edin...</translation>

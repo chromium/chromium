@@ -100,6 +100,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1195073053842921378">Heimilisfanginu verður eytt úr tækinu</translation>
 <translation id="1195558154361252544">Sjálfkrafa er lokað á tilkynningar fyrir öll vefsvæði nema þau sem þú hefur gefið leyfi</translation>
 <translation id="1197088940767939838">Appelsínugulur</translation>
+<translation id="1197761954713363183">Staðfestingarblað aðgangslykils lokað</translation>
 <translation id="1201402288615127009">Áfram</translation>
 <translation id="1201895884277373915">Meira frá þessu vefsvæði</translation>
 <translation id="1202892408424955784">Vaktaðar vörur</translation>
@@ -382,6 +383,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1725591448053514783">Umslag: You 6</translation>
 <translation id="1727613060316725209">Vottorðið er gilt</translation>
 <translation id="1728677426644403582">Þú ert að skoða uppruna vefsíðu</translation>
+<translation id="1728803206919861584">Vista aðgangslykil utan huliðsstillingar?</translation>
 <translation id="173080396488393970">Þessi kortategund er ekki studd</translation>
 <translation id="1732445923934584865">Spyrja frekar í eigin persónu</translation>
 <translation id="1733064249834771892">leturgerðir</translation>
@@ -1664,6 +1666,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4415156962929755728">Plast (háglans)</translation>
 <translation id="4415426530740016218">Heimilisfang afhendingar</translation>
 <translation id="4424024547088906515">Þessi þjónn gat ekki sannað að hann væri <ph name="DOMAIN" />; Chrome treystir ekki öryggisvottorðinu hans. Þetta kann að orsakast af vanstillingu eða tölvuþrjóti sem komist hefur inn í tenginguna.</translation>
+<translation id="4425173294238317796">Staðfestingarblað aðgangslykils</translation>
 <translation id="4425750422187370446">Íþróttafatnaður</translation>
 <translation id="4428065317363009941">Sérsniðnar auglýsingar</translation>
 <translation id="443121186588148776">Raðtengi</translation>
@@ -2019,6 +2022,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5157504274688344097">Stórkaupmenn og stórverslanir</translation>
 <translation id="5158275234811857234">Forsíða</translation>
 <translation id="5159010409087891077">Opna síðu í nýjum huliðsstillingarglugga (⇧⌘N)</translation>
+<translation id="5161262286013276579">Staðfestingarblað aðgangslykils opnað</translation>
 <translation id="5161334686036120870">Efni:</translation>
 <translation id="5161506081086828129">Staflari 9</translation>
 <translation id="5164798890604758545">Texti er sleginn inn</translation>
@@ -2901,6 +2905,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7004583254764674281">Notaðu Windows Hello til að staðfesta kort hraðar</translation>
 <translation id="7006930604109697472">Senda samt</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7013762323294215682">Þessi aðgangslykill verður vistaður í aðgangsorðastjórnun. Þau sem hafa aðgang að henni geta notað þennan aðgangslykil.</translation>
 <translation id="7014042602717177828">Hljóðkerfi fyrir bíla</translation>
 <translation id="7014741021609395734">Aðdráttarstig</translation>
 <translation id="7016992613359344582">Greiðslur gætu verið stakar eða endurteknar og hugsanlega er ekki greinilegt að borga þurfi.</translation>

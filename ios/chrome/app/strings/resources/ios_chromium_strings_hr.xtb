@@ -43,6 +43,7 @@
 <translation id="2574528844022712255">Pogledajte Chromiumove oznake</translation>
 <translation id="2590893390871230428">Sinkroniziraj podatke iz Chromiuma</translation>
 <translation id="2618596336309823556">U postavkama uređaja otvorite <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /> i odaberite Chromium.</translation>
+<translation id="2618757400690011108">{COUNT,plural, =1{Chromium će vam pomoći da pratite taj paket na stranici Nova kartica.}one{Chromium će vam pomoći da pratite te pakete na stranici Nova kartica.}few{Chromium će vam pomoći da pratite te pakete na stranici Nova kartica.}other{Chromium će vam pomoći da pratite te pakete na stranici Nova kartica.}}</translation>
 <translation id="2650312721222849884">Da biste vidjeli svoje kartice bez obzira na to gdje koristite Chromium, uključite sinkronizaciju</translation>
 <translation id="2684230048001240293">Postavite Chromium kao zadani preglednik da biste sinkronizirali kartice, zaporke i podatke o plaćanju na svim svojim uređajima</translation>
 <translation id="2730884209570016437">Chromium ne može upotrebljavati vaš fotoaparat jer ga upotrebljava neka druga aplikacija</translation>
@@ -52,6 +53,7 @@
 <translation id="2918709798697875261">Vaša organizacija zahtijeva da ostanete odjavljeni s Chromiuma.</translation>
 <translation id="2942241131342758843">Koristite Chromium prema zadanim postavkama da biste otvarali veze, pretraživali putem widgeta i automatski popunjavali zaporke u drugim aplikacijama</translation>
 <translation id="2977470724722393594">Chromium je ažuran</translation>
+<translation id="3078941082359356771">{COUNT,plural, =1{Chromium vam može pomoći da pratite taj paket na stranici Nova kartica.}one{Chromium vam može pomoći da pratite taj paket na stranici Nova kartica.}few{Chromium vam može pomoći da pratite ta paketa na stranici Nova kartica.}other{Chromium vam može pomoći da pratite tih paketa na stranici Nova kartica.}}</translation>
 <translation id="3102849287235003384">Da biste se odjavili sa svojeg Google računa na svim web-lokacijama, <ph name="BEGIN_LINK" />odjavite se iz Chromiuma<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Glasovno pretraživanje u Chromiumu</translation>
 <translation id="3228349498066165585">Neki vaši podaci iz Chromiuma još nisu spremljeni na vaš Google račun.
@@ -114,6 +116,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="5521125884468363740">Da biste vidjeli svoje kartice bez obzira na to gdje koristite Chromium, prijavite se i uključite sinkronizaciju</translation>
 <translation id="5522297504975449419">Neke značajke Chromiuma više neće biti dostupne.</translation>
 <translation id="5571094606370987472">Otvara nedavne kartice u Chromiumu.</translation>
+<translation id="5623083843656850677">Zaključajte anonimne kartice kad napustite Chromium ili se prebacite na drugu aplikaciju.</translation>
 <translation id="5688047395118852662">Na ovoj se kartici prikazuju prijedlozi o tome kako iskoristiti sve prednosti Chromiuma.</translation>
 <translation id="5700709190537129682">Chromium ne može provjeriti vaše zaporke</translation>
 <translation id="5777187867430702742">Chromiumova stranica</translation>

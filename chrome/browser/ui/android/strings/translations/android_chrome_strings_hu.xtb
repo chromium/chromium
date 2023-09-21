@@ -175,6 +175,7 @@ Az összes böngészési előzmény vagy csak adott webhely böngészési előzm
 <translation id="19288952978244135">Nyissa meg újra a Chrome-ot.</translation>
 <translation id="1933845786846280168">Kiválasztott lap</translation>
 <translation id="1943432128510653496">Jelszavak mentése</translation>
+<translation id="1944535645109964458">Nincsenek rendelkezésre álló azonosítókulcsok</translation>
 <translation id="1952172573699511566">A webhelyek szövege a preferált nyelven jelenik meg, ha lehetséges.</translation>
 <translation id="1959679933317802873">Várakozás tartalomra…</translation>
 <translation id="1960290143419248813">Az Android jelen verziója a továbbiakban már nem támogatja a Chrome-frissítéseket</translation>
@@ -626,6 +627,7 @@ A privát állapottokenek nagyobb fokú adatvédelmet biztosítanak az internete
 <translation id="4257230861809842349">Törli a jelszavakat a Google Jelszókezelőből?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />A felhasznált adatok:<ph name="END_BOLD" /> Böngészési előzményei, az Ön által az ezen az eszközön használt Chrome-ban felkeresett webhelyek jegyzéke.</translation>
 <translation id="4269820728363426813">Link másolása</translation>
+<translation id="4277529130885813215">Másik eszköz használata</translation>
 <translation id="4283102315569707115">Alapértelmezés szerint asztali webhelyeket kérjen a böngésző?</translation>
 <translation id="4285846616383034558">Cookie-k, gyorsítótár és egyéb webhelyadatok</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Állítsa be a képernyőzárat az Android beállításai között<ph name="END_LINK" /></translation>
@@ -1166,6 +1168,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6955535239952325894">Ez a beállítás a felügyelt böngészőkben le van tiltva.</translation>
 <translation id="6963766334940102469">Könyvjelzők törlése</translation>
 <translation id="696447261358045621">Kilépés az inkognitó módból</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6971862865055170158">Elutasítás</translation>
 <translation id="6978717888677691380">Az Ön által letiltott webhelyek</translation>
 <translation id="6979737339423435258">Mindenkori</translation>
@@ -1324,6 +1327,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7757787379047923882">Szöveg megosztva a következő eszközről: <ph name="DEVICE_NAME" /></translation>
 <translation id="7762668264895820836">SD-kártya (<ph name="SD_CARD_NUMBER" />)</translation>
 <translation id="7764225426217299476">Cím hozzáadása</translation>
+<translation id="7766587497031415281">További lehetőségek a böngészési adatok törlésére</translation>
 <translation id="7772032839648071052">Összetett jelszó megerősítése</translation>
 <translation id="7772375229873196092">A(z) <ph name="APP_NAME" /> bezárása</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 és további <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 és további <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>

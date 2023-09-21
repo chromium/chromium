@@ -175,6 +175,7 @@
 <translation id="19288952978244135">Chrome को फिर से खोलें.</translation>
 <translation id="1933845786846280168">चयनित टैब</translation>
 <translation id="1943432128510653496">पासवर्ड सेव करें</translation>
+<translation id="1944535645109964458">कोई पासकी उपलब्ध नहीं है</translation>
 <translation id="1952172573699511566">जब संभव होगा, वेबसाइटें आपकी पसंदीदा भाषा में टेक्स्ट दिखाएंगी.</translation>
 <translation id="1959679933317802873">कॉन्टेंट का इंतज़ार किया जा रहा है</translation>
 <translation id="1960290143419248813">Chrome अपडेट, अब Android के इस वर्शन पर काम नहीं करते हैं.</translation>
@@ -626,6 +627,7 @@
 <translation id="4257230861809842349">क्या आपको Google Password Manager से पासवर्ड मिटाने हैं?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />किस डेटा का इस्तेमाल किया जाता है:<ph name="END_BOLD" /> आपका ब्राउज़िंग इतिहास, जिसमें इस डिवाइस पर Chrome का इस्तेमाल करके देखी गई साइटों का रिकॉर्ड होता है.</translation>
 <translation id="4269820728363426813">लिंक पते को कॉपी करें</translation>
+<translation id="4277529130885813215">दूसरे डिवाइस का इस्तेमाल करें</translation>
 <translation id="4283102315569707115">डिफ़ॉल्ट रूप से, डेस्कटॉप साइटें लोड करने का विकल्प चुनना है?</translation>
 <translation id="4285846616383034558">कुकी, कैश मेमोरी, और अन्य साइट डेटा</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android सेटिंग में, स्क्रीन लॉक चालू करें<ph name="END_LINK" /></translation>
@@ -1166,6 +1168,7 @@
 <translation id="6955535239952325894">यह सेटिंग, प्रबंधित किए गए ब्राउज़र पर काम नहीं करती है</translation>
 <translation id="6963766334940102469">बुकमार्क मिटाएं</translation>
 <translation id="696447261358045621">गुप्त मोड से बाहर निकलें</translation>
+<translation id="6965382102122355670">ठीक है</translation>
 <translation id="6971862865055170158">अनुमति न दें</translation>
 <translation id="6978717888677691380">ब्लॉक की गई साइटें</translation>
 <translation id="6979737339423435258">हमेशा</translation>

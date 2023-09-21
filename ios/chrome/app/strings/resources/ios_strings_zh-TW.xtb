@@ -240,6 +240,7 @@
 <translation id="2359043044084662842">翻譯</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2360196772093551345">切換為行動版網站</translation>
+<translation id="2361721159900796207">隱藏這個項目</translation>
 <translation id="2362083820973145409">目前登入的帳戶是<ph name="USER_NAME" />。<ph name="USER_EMAIL" />。開啟設定。</translation>
 <translation id="236977714248711277">網站無法使用 Cookie 改善瀏覽體驗，例如讓你保持登入狀態，或記住購物車中的商品。
 
@@ -776,6 +777,7 @@
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5318298563956633672">你已在追蹤這項產品。</translation>
 <translation id="5339316356165661760">開啟同步功能</translation>
+<translation id="5345660046352249607">{COUNT,plural, =1{要追蹤這個包裹嗎？}other{要追蹤這 {COUNT} 個包裹嗎？}}</translation>
 <translation id="536067926684072644">顯示書籤</translation>
 <translation id="5360976571138293719">如需與隱私權、安全性和資料收集相關的其他設定，請參閱 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" /></translation>
 <translation id="5386314158584363703">此處會顯示你已追蹤的網站</translation>
@@ -1142,6 +1144,7 @@
 <translation id="723787869754590019">使用 Chrome 自動填入功能</translation>
 <translation id="7265758999917665941">一律不儲存這個網站的密碼</translation>
 <translation id="7272437679830969316">無法驗證你的身分，因此未複製密碼。</translation>
+<translation id="7284359491594949826">{COUNT,plural, =1{已追蹤新包裹}other{已追蹤新包裹}}</translation>
 <translation id="7291368939935408496">正在準備匯出密碼...</translation>
 <translation id="7302503784943202842">在所有裝置上使用密碼</translation>
 <translation id="730958329302570991">隨時可以在 Google 密碼管理工具中輕鬆新增網站密碼。</translation>
@@ -1175,6 +1178,7 @@
 <translation id="7473891865547856676">不用了，謝謝</translation>
 <translation id="7491131399623468277">前往「設定」…</translation>
 <translation id="7492574581995589075">貴機構已關閉在 Google 帳戶中使用及儲存 Chrome 資料的功能。新的書籤、密碼等資訊只會儲存在這部裝置上。</translation>
+<translation id="750149195207506638">書籤已隱藏</translation>
 <translation id="750228856503700085">無法取得更新</translation>
 <translation id="750493650310597496">已選取 0 個項目</translation>
 <translation id="7508728395076009983">如要鎖定無痕分頁，請設定 Touch ID、Face ID 或密碼。</translation>
@@ -1242,6 +1246,7 @@
 <translation id="7856733331829174190">無法下載</translation>
 <translation id="785938070103630874">開啟密碼、付款方式或地址等等</translation>
 <translation id="7859704718976024901">瀏覽記錄</translation>
+<translation id="7866501058614003444">已取消追蹤這個包裹。</translation>
 <translation id="7870750252270996949">你複製的智慧鏡頭圖片</translation>
 <translation id="7879275349003161544">顯示下載內容</translation>
 <translation id="7883882164760409935">你有多組重複使用的密碼。</translation>
@@ -1311,6 +1316,7 @@
 <translation id="8206354486702514201">這項設定由管理員執行。</translation>
 <translation id="8214293972734702249">「<ph name="TAB_TITLE" />」已固定</translation>
 <translation id="8225985093977202398">快取圖片和檔案</translation>
+<translation id="823133356836493038">閱讀清單已隱藏</translation>
 <translation id="8237382152611443140">開啟 [自動填入密碼] 設定</translation>
 <translation id="8248969482078657578">將分頁設為閒置狀態，助你保持專注</translation>
 <translation id="8261506727792406068">刪除</translation>
@@ -1489,6 +1495,7 @@
 <translation id="9148126808321036104">重新登入</translation>
 <translation id="9157836665414082580">禁止顯示對話方塊</translation>
 <translation id="9162432979321511934">開啟「自動填寫密碼」</translation>
+<translation id="9162941801309769488">已取消追蹤包裹</translation>
 <translation id="9165320910061267720">如要接收降價快訊通知，請在 iOS 設定中開啟通知功能。</translation>
 <translation id="9165886811579296457">安全檢查未找到任何需要修正的安全性問題。</translation>
 <translation id="9172603439892261948">同步處理書籤、歷史記錄等資料。</translation>

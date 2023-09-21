@@ -391,25 +391,6 @@ Si cette règle est désactivée ou n'est pas configurée, les paramètres de re
       Notez qu'il s'agit d'une règle temporaire afin que les utilisateurs gérés puissent quand même utiliser les anciens raccourcis obsolètes. Elle prendra fin une fois que des raccourcis clavier personnalisés seront disponibles.</translation>
 <translation id="1361661842732478894">Afficher le bouton Accueil dans la barre d'outils</translation>
 <translation id="1363275621236827384">Activer l'envoi de requêtes de profils matériels à Quirks Server</translation>
-<translation id="136422692261301619">Liste des actions à exécuter lorsque le délai d'inactivité de la règle <ph name="IDLE_TIMEOUT_POLICY_NAME" /> est atteint.
-
-      Cette règle n'a aucune incidence si la règle <ph name="IDLE_TIMEOUT_POLICY_NAME" /> n'est pas configurée.
-
-      Lorsque le délai d'inactivité de la règle <ph name="IDLE_TIMEOUT_POLICY_NAME" /> est atteint, <ph name="PRODUCT_NAME" /> exécute les actions configurées dans celle-ci.
-
-      La règle <ph name="IDLE_TIMEOUT_POLICY_NAME" /> n'a aucune incidence si elle est vide ou si elle n'est pas configurée.
-
-      Actions acceptées :
-
-      <ph name="CLOSE_BROWSERS_ACTION" /> : ferme toutes les fenêtres de navigateur et les PWA pour ce profil. Non disponible sur Android.
-
-      <ph name="SHOW_PROFILE_PICKER_ACTION" /> : affiche la fenêtre de sélection des profils. Non disponible sur Android.
-
-      <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />, <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />, <ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" />, <ph name="CLEAR_SITE_SETTINGS_ACTION" />, <ph name="CLEAR_HOSTED_APP_DATA_ACTION" /> : efface les données de navigation correspondantes. Pour en savoir plus, consultez la règle <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" />.
-
-      <ph name="RELOAD_PAGES_ACTION" /> : actualise toutes les pages Web. L'utilisateur peut d'abord être invité à confirmer l'opération pour certaines pages.
-
-      Si vous définissez <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" /> et <ph name="CLEAR_SITE_SETTINGS_ACTION" />, la synchronisation sera désactivée pour les types de données respectifs si <ph name="CHROME_SYNC_NAME" /> n'est pas désactivé en définissant la règle <ph name="SYNC_DISABLED_POLICY_NAME" /> et que <ph name="BROWSER_SIGNIN_POLICY_NAME" /> n'est pas désactivé.</translation>
 <translation id="1369698103169067223">Les Glanceables ne sont pas activés pour les utilisateurs.</translation>
 <translation id="1371626834351873151">La réduction user-agent sera activée pour toutes les origines.</translation>
 <translation id="1371851989348083665">Autoriser l'utilisation de l'<ph name="ASSISTANT_PRODUCT_NAME" /> sur le Web</translation>
@@ -2352,6 +2333,13 @@ Si l'utilisateur ne coche pas la case :
 
 <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />
 Ce comportement est identique à celui de <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />, mais le nouveau profil n'est pas autorisé à posséder de comptes secondaires.</translation>
+<translation id="3079575168312257780">Si cette règle est définie sur 0 (valeur par défaut), vous pouvez accéder aux outils pour les développeurs et à la Console JavaScript, sauf dans le cas d'extensions installées dans le cadre des règles de l'entreprise ou, depuis la version 114 et s'il s'agit d'un utilisateur géré, d'extensions intégrées au navigateur. Si elle est définie sur 1, vous pouvez accéder à ces outils et à cette console dans tous les cas, y compris si des extensions ont été installées dans le cadre des règles de l'entreprise. Si elle est définie sur 2, vous ne pouvez pas accéder aux outils pour les développeurs ni examiner des éléments de sites Web.
+
+      En outre, les raccourcis clavier, ainsi que les options de menu ou de menu contextuel permettant d'ouvrir ces outils ou cette console sont désactivés.
+
+      Depuis <ph name="PRODUCT_NAME" /> version 99, ce paramètre contrôle également les points d'entrée de la fonctionnalité "Afficher le code source de la page". Si cette règle est définie sur "DeveloperToolsDisallowed" (valeur 2), les utilisateurs ne peuvent pas accéder à l'affichage du code source via le raccourci clavier ou le menu contextuel. Pour empêcher complètement l'affichage du code source, vous devez également ajouter "view-source:*" à la règle <ph name="URL_BLOCKLIST_POLICY_NAME" />.
+
+      Depuis <ph name="PRODUCT_NAME" /> version 119, ce paramètre contrôle également si le mode développeur peut être activé et utilisé pour les applis Web isolées.</translation>
 <translation id="3083259245974004342">Protection par mot de passe</translation>
 <translation id="308356121098374167">WebSQL sera disponible dans les contextes non sécurisés.</translation>
 <translation id="3086995894968271156">Configurer le récepteur Cast dans <ph name="PRODUCT_NAME" />.</translation>
@@ -2578,6 +2566,7 @@ Si cette règle n'est pas configurée, le nouveau comportement sera utilisé tou
 <translation id="3240609035816615922">Règle d'accès à la configuration des imprimantes.</translation>
 <translation id="324062325008698789">Configurer une liste d'imprimantes</translation>
 <translation id="3240655340884151271">Adresse MAC de la carte d'interface réseau intégrée de la station d'accueil</translation>
+<translation id="3242480111684005642">L'utilisateur peut utiliser la fonctionnalité de synchronisation des fichiers <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="3242756958360374888">Contient une liste de schémas utilisés pour contrôler la visibilité des comptes dans <ph name="PRODUCT_NAME" />.
 
       Chaque compte Google sur l'appareil sera comparé aux schémas enregistrés dans cette règle pour déterminer la visibilité du compte dans <ph name="PRODUCT_NAME" />. Le compte sera visible si son nom correspond à l'un des schémas de la liste. Sinon, il sera masqué.
@@ -2637,6 +2626,7 @@ Ces restrictions s'appliquent aux téléchargements déclenchés à partir du co
 Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, à <ph name="MS_AAD_NAME" /> ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="3300784749135986828">Activer ou désactiver <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />.</translation>
 <translation id="3301698868852716692">Activer l'extension des insights</translation>
+<translation id="3302723130703323097">Rendre la fonctionnalité de synchronisation des fichiers<ph name="GOOGLE_DRIVE_NAME" /> visible et activable sur les appareils compatibles dans l'appli Fichiers de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3302829897293005699">Si cette règle est activée ou qu'elle n'est pas configurée, les appareils enregistrés communiquent des informations sur la session kiosque active telles que l'ID et la version de l'application.
 
       Si cette règle est désactivée, les appareils enregistrés ne communiquent pas ces informations.</translation>
@@ -2722,6 +2712,13 @@ Si elle est désactivée, la fonctionnalité d'écriture prédictive est désact
       Si elle est configurée sur "masqué", les utilisateurs ne peuvent ni les voir, ni les utiliser.
 
       Si cette règle n'est pas configurée, ou si elle est définie sur une valeur non valide, le mode de désactivation des fonctionnalités du système est défini sur "bloqué".</translation>
+<translation id="3410963889229735344">Sur les appareils compatibles, la synchronisation des fichiers <ph name="GOOGLE_DRIVE_NAME" /> rend les fichiers du dossier Mon Drive automatiquement disponibles hors connexion (si l'espace le permet). Une fois que les fichiers existants sont rendus disponibles hors connexion, il en sera de même automatiquement pour les nouveaux fichiers. Une fois cette fonctionnalité activée, si l'espace disponible est insuffisant, tous les nouveaux fichiers cessent d'être automatiquement accessibles hors connexion. Toutefois, l'utilisateur peut toujours activer/désactiver manuellement des éléments.
+
+Si cette règle est définie sur <ph name="POLICY_VALUE_VISIBLE" />, la fonctionnalité de synchronisation des fichiers est affichée dans l'appli Fichiers et sur la page des paramètres. Cependant, les utilisateurs doivent l'activer ou la désactiver manuellement.
+
+Si cette règle est définie sur <ph name="POLICY_VALUE_DISABLED" />, la synchronisation des fichiers est désactivée si l'utilisateur l'avait activée. Elle est également masquée dans l'appli Fichiers et dans les paramètres afin que l'utilisateur ne puisse pas la réactiver. Si des fichiers existants ont été rendus disponibles hors connexion par l'utilisateur, ils restent disponibles hors connexion, et celui-ci peut rendre manuellement des fichiers individuels disponibles hors connexion (ils ne le sont pas automatiquement).
+
+Si cette règle n'est pas configurée, la valeur <ph name="POLICY_VALUE_VISIBLE" /> est utilisée par défaut.</translation>
 <translation id="341285788698114069">Cette règle contrôle la priorité du processus audio sous Windows.
       Si cette règle est activée, le processus audio s'exécutera avec une priorité supérieure à la normale.
       Si cette règle est désactivée, le processus audio s'exécutera avec une priorité normale.
@@ -2807,6 +2804,7 @@ Si le résultat de la vérification n'est pas concluant pour une connexion, l'er
       Notez que si la règle <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> est désactivée, mais que la règle <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> est activée ou n'est pas configurée, une page de l'historique Chrome organisée par groupes sera disponible sur chrome://history/grouped, mais pourra être moins pertinente pour l'utilisateur.
 </translation>
 <translation id="3478024346823118645">Effacer les données utilisateur à la déconnexion</translation>
+<translation id="3478406829037689272">Activer l'analyse approfondie des téléchargements pour la navigation sécurisée</translation>
 <translation id="3480961938508521469">Recharge complète de la batterie en mode standard.</translation>
 <translation id="348110646151632565">Permet d'activer la fonctionnalité d'accessibilité Sélectionner pour prononcer sur l'écran de connexion.
 
@@ -3784,6 +3782,9 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
 <translation id="4380159792986204036">Autoriser un kiosque Web à ouvrir plusieurs fenêtres de navigateur sur n'importe quel écran</translation>
 <translation id="4381227367939912539">Désactiver le jeu Easter Egg du dinosaure</translation>
 <translation id="4382413175336720282">La vérification en temps réel des URL est désactivée.</translation>
+<translation id="4384911996235542086">Si cette règle est activée ou n'est pas configurée, <ph name="PRODUCT_NAME" /> peut envoyer à Google les téléchargements suspects d'utilisateurs pour lesquels la navigation sécurisée est activée, afin de rechercher des logiciels malveillants.
+Si elle est désactivée, cette analyse n'est pas effectuée.
+Cette règle n'a pas d'incidence sur l'analyse du contenu téléchargé configurée par les connecteurs Chrome Enterprise.</translation>
 <translation id="4387741272680827493">Cette règle permet de dresser une liste de noms d'hôte qui ignorent les mises à niveau HSTS préchargées entre http et https.
 
       Seuls les noms d'hôte sans extension sont autorisés dans cette règle. Elle ne s'applique qu'aux entrées préchargées HSTS "statiques" (par exemple, <ph name="EXAMPLE_HSTS_PRELOAD_TLDS" />). Elle n'empêche pas les mises à niveau HSTS pour les serveurs qui ont demandé "dynamiquement" des mises à niveau HSTS à l'aide d'un en-tête de réponse <ph name="HSTS_HEADER_NAME" />.
@@ -4475,6 +4476,7 @@ Si cette règle est définie sur "False", c'est le comportement par défaut qui 
 <translation id="5036013147560568855">Version du protocole de provisionnement de certificat. La valeur par défaut est 1. 1 correspond au protocole "statique". 2 correspond au protocole "dynamique".</translation>
 <translation id="5039110755072335605">Prise en charge des en-têtes de requêtes CORS sans caractères génériques</translation>
 <translation id="504116558738617678">N'afficher des avertissements de type "espace disque insuffisant" que si l'appareil n'est pas géré ou s'il n'a qu'un seul utilisateur</translation>
+<translation id="5046376406561077773">L'utilisateur ne peut voir aucune interface utilisateur concernant la fonctionnalité de synchronisation des fichiers <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="5055474681190962362">Jour du mois [1-31] (interprété dans le fuseau horaire local de l'appareil) où l'appareil doit redémarrer. Utilisé uniquement quand "frequency" est défini sur "MONTHLY". Si le nombre maximal de jours dans un mois donné est dépassé, le dernier jour de ce mois est sélectionné.</translation>
 <translation id="5056708224511062314">Loupe désactivée</translation>
 <translation id="5058573563327660283">Sélectionner la stratégie utilisée pour libérer de l'espace disque au cours du nettoyage automatique (obsolète)</translation>
@@ -5166,15 +5168,6 @@ Lorsqu'elle est définie pour <ph name="PRODUCT_OS_NAME" /> Kiosk, cette règle
 <translation id="5666457529647159548">Autoriser les utilisateurs à gérer les certificats client installés.</translation>
 <translation id="567377007899266033">Si cette règle est définie sur "True", des rapports sur les événements critiques d'installation d'extensions déclenchée par des règles sont transmis à Google. Si elle est définie sur "False", aucun événement n'est enregistré. Si elle n'est pas configurée, la valeur par défaut est définie sur "True".</translation>
 <translation id="5676740747107495269">Permet d'afficher les options d'accessibilité dans le menu de la barre d'état système, sur l'écran de connexion</translation>
-<translation id="567832102568869993">Déclenche une action lorsque l'ordinateur est inactif.
-
-      Si cette règle est définie, elle spécifie le délai (en minutes) sans entrée utilisateur avant que <ph name="PRODUCT_NAME" /> exécute les actions configurées via la règle <ph name="IDLE_TIMEOUT_ACTIONS_POLICY_NAME" />.
-
-      Si elle n'est pas configurée, aucune action n'est exécutée.
-
-      Le délai minimal est d'une minute.
-
-      Une "entrée utilisateur" est définie par les API du système d'exploitation et inclut, par exemple, déplacer la souris ou saisir sur le clavier.</translation>
 <translation id="5679540979548648200">Empêche les utilisateurs de cet appareil de recourir au téléchargement indépendant adb, et soumet l'appareil à la réinitialisation Powerwash si le téléchargement indépendant était activé auparavant</translation>
 <translation id="5681258683432554972">Paramètre de pop-up par défaut</translation>
 <translation id="5684501593989438324">Activer le mot clé de l'Assistant Google</translation>
@@ -5749,6 +5742,7 @@ Le salage doit être une chaîne comprenant entre 8 et 32 caractères.
           Normalement, le mode plein écran est désactivé lors de cette réactivation afin de réduire le risque d'attaques par hameçonnage. Cette règle permet d'indiquer des URL qui seront considérées comme des sources fiables et autorisées à conserver le mode plein écran lors du déverrouillage. Pour la définir, vous devez spécifier une liste d'URL au format indiqué sur https://support.google.com/chrome/a?p=url_blocklist_filter_format. Par exemple, vous pouvez toujours conserver le mode plein écran lors du déverrouillage et désactiver complètement les notifications en spécifiant le caractère générique <ph name="WILDCARD_VALUE" />, qui correspond à toutes les URL.
 
           Si cette règle est associée à une liste vide ou si elle n'est pas définie, aucune URL n'est autorisée à conserver le mode plein écran sans notification.</translation>
+<translation id="6240222568708113780">Autoriser l'analyse approfondie des téléchargements pour les utilisateurs pour lesquels la navigation sécurisée est activée</translation>
 <translation id="624080397610861618">Désactiver la disposition de clavier Hindi InScript</translation>
 <translation id="6242147107333796512">Transmettre les informations liées aux rapports d'erreur, comme l'ID distant, la cause et l'horodatage du problème relevé.
 
@@ -7264,6 +7258,7 @@ Si cette règle n'est pas configurée, cela revient à la définir sur "<ph name
 <translation id="7485481791539008776">Instructions de sélection de l'imprimante par défaut</translation>
 <translation id="7486205887492534734">Demander lorsque plusieurs certificats correspondent sur l'écran de connexion</translation>
 <translation id="748873163367340515">Utiliser uniquement les données et les cookies essentiels dans la recherche.</translation>
+<translation id="7489169777107143496">Désactiver l'analyse approfondie des téléchargements pour la navigation sécurisée</translation>
 <translation id="7489661071474025727">Indique si le service de récupération de compte est activé pour vos utilisateurs sur les appareils <ph name="PRODUCT_OS_NAME" />.
 
       Lorsque cette règle est activée, la récupération des données utilisateur est activée. Si elle est désactivée ou si elle n'est pas configurée, la récupération des données utilisateur n'est pas activée.

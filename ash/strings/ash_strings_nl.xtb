@@ -834,7 +834,6 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4406883609789734330">Live ondertiteling</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> staat uit.</translation>
 <translation id="4424159417645388645">Bureau 5</translation>
-<translation id="4427695046139341014">Game Dashboard</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="4441283832827406317">Apps zijn gesorteerd op naam</translation>
 <translation id="4445159312344259901">Log in om te ontgrendelen</translation>
@@ -1220,6 +1219,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="5983567367406220847">De hotspot is uitgezet vanwege inactiviteit.</translation>
 <translation id="598407983968395253">Template gebruiken</translation>
 <translation id="598882571027504733">Als je de update wilt downloaden, sluit je het toetsenbord aan en start je je Chromebook opnieuw op</translation>
+<translation id="6000279412553873020">Toetsen, knoppen en meer</translation>
 <translation id="6012623610530968780">Pagina <ph name="SELECTED_PAGE" /> van <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Het volgende item op de plank markeren</translation>
 <translation id="6015573907265691211">Markeren als klaar</translation>
@@ -1976,7 +1976,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="953431725143473984">Het apparaat uitzetten?</translation>
 <translation id="954052413789300507">Onvoldoende ruimte voor <ph name="FILENAME" />. Maak ruimte vrij.</translation>
 <translation id="974545358917229949"><ph name="RESULT_COUNT" /> resultaten bekijken voor <ph name="QUERY" /></translation>
-<translation id="981011780479609956">Geen deadline</translation>
+<translation id="981011780479609956">Geen inleverdatum</translation>
 <translation id="98120814841227350">Naar het einde van het document gaan</translation>
 <translation id="987589956647469042">Mobiele data staan aan</translation>
 <translation id="989374776391122812">Camera- en audiobediening</translation>

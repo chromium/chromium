@@ -175,6 +175,7 @@
 <translation id="19288952978244135">‏יש לפתוח מחדש את Chrome.</translation>
 <translation id="1933845786846280168">הכרטיסייה שנבחרה</translation>
 <translation id="1943432128510653496">שמירת סיסמאות</translation>
+<translation id="1944535645109964458">אין מפתחות גישה זמינים</translation>
 <translation id="1952172573699511566">אתרים יציגו טקסט בשפה המועדפת שלך, כשזה אפשרי.</translation>
 <translation id="1959679933317802873">בהמתנה לתוכן</translation>
 <translation id="1960290143419248813">‏עדכוני Chrome לא נתמכים יותר בגרסה הזו של Android</translation>
@@ -626,6 +627,7 @@
 <translation id="4257230861809842349">‏למחוק את הסיסמאות ממנהל הסיסמאות של Google?</translation>
 <translation id="4262915912852657291">‏<ph name="BEGIN_BOLD" />באילו נתונים נעשה שימוש:<ph name="END_BOLD" /> היסטוריית הגלישה – תיעוד האתרים שביקרת בהם באמצעות Chrome במכשיר הזה.</translation>
 <translation id="4269820728363426813">העתקת כתובת של קישור</translation>
+<translation id="4277529130885813215">שימוש במכשיר אחר</translation>
 <translation id="4283102315569707115">לבקש אתרים שמותאמים למחשב כברירת מחדל?</translation>
 <translation id="4285846616383034558">‏קובצי cookie, מטמון ונתונים נוספים מאתרים</translation>
 <translation id="4291407919474070700">‏<ph name="BEGIN_LINK" />להפעלת נעילת המסך בהגדרות Android<ph name="END_LINK" /></translation>
@@ -1166,6 +1168,7 @@
 <translation id="6955535239952325894">ההגדרה הזו מושבתת בדפדפנים מנוהלים</translation>
 <translation id="6963766334940102469">מחיקת סימניות</translation>
 <translation id="696447261358045621">לצאת מהמצב האנונימי?</translation>
+<translation id="6965382102122355670">אישור</translation>
 <translation id="6971862865055170158">לא לאשר</translation>
 <translation id="6978717888677691380">אתרים שחסמת</translation>
 <translation id="6979737339423435258">משחר ההיסטוריה</translation>

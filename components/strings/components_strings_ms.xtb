@@ -100,6 +100,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1195073053842921378">Alamat ini akan dipadamkan daripada peranti ini</translation>
 <translation id="1195558154361252544">Pemberitahuan disekat secara automatik untuk semua tapak kecuali tapak yang anda benarkan</translation>
 <translation id="1197088940767939838">Oren</translation>
+<translation id="1197761954713363183">Helaian pengesahan kunci laluan ditutup</translation>
 <translation id="1201402288615127009">Seterusnya</translation>
 <translation id="1201895884277373915">Lagi dari tapak ini</translation>
 <translation id="1202892408424955784">Produk yang dijejaki</translation>
@@ -327,6 +328,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1618571384971354160">Penundaan &amp; pertolongan jalan raya</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622571349153632031">Masakan vegetarian</translation>
+<translation id="162285686621567578">Laman web ini disekat oleh ibu bapa anda.</translation>
 <translation id="1622966923835127638">Perniagaan Kewangan</translation>
 <translation id="1623104350909869708">Halang halaman ini daripada mencipta dialog tambahan</translation>
 <translation id="1633137413609266904">{0,plural, =1{Pembukaan fail ini disekat oleh dasar pentadbir}other{Pembukaan # fail disekat oleh dasar pentadbir}}</translation>
@@ -371,6 +373,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1711528724596764268">Pembelajaran mesin &amp; kepintaran buatan</translation>
 <translation id="1712552549805331520"><ph name="URL" /> mahu menyimpan data pada komputer setempat anda secara kekal</translation>
 <translation id="1713628304598226412">Dulang 2</translation>
+<translation id="1714807406136741351">Mod semak imbas, anda boleh bertukar kepada mod Forms untuk menggunakan anak panah ke kiri/ke kanan untuk menyemak perubahan harga pada graf</translation>
 <translation id="1717218214683051432">Penderia gerakan</translation>
 <translation id="1717494416764505390">Peti mel 3</translation>
 <translation id="1717688554309417925">Perkhidmatan Debit &amp; Cek</translation>
@@ -382,6 +385,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1725591448053514783">Sampul You 6</translation>
 <translation id="1727613060316725209">Sijil sah</translation>
 <translation id="1728677426644403582">Anda sedang melihat sumber halaman web</translation>
+<translation id="1728803206919861584">Simpan kunci laluan luar Inkognito?</translation>
 <translation id="173080396488393970">Jenis kad ini tidak disokong</translation>
 <translation id="1732445923934584865">Minta kebenaran secara langsung</translation>
 <translation id="1733064249834771892">fon</translation>
@@ -1665,6 +1669,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4415156962929755728">Plastik (Kilat Tinggi)</translation>
 <translation id="4415426530740016218">Alamat Pengambilan</translation>
 <translation id="4424024547088906515">Pelayan ini tidak dapat membuktikan bahawa domainnya ialah <ph name="DOMAIN" />; sijil keselamatannya tidak dipercayai oleh Chrome. Ini mungkin disebabkan oleh kesilapan konfigurasi atau penyerang memintasi sambungan anda.</translation>
+<translation id="4425173294238317796">Helaian pengesahan kunci laluan</translation>
 <translation id="4425750422187370446">Pakaian Olahraga</translation>
 <translation id="4428065317363009941">Pemperibadian iklan</translation>
 <translation id="443121186588148776">Port siri</translation>
@@ -2020,6 +2025,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5157504274688344097">Pedagang Pukal &amp; Gedung Serbaneka</translation>
 <translation id="5158275234811857234">Muka depan</translation>
 <translation id="5159010409087891077">Buka halaman dalam tetingkap Inkognito baharu (⇧⌘N)</translation>
+<translation id="5161262286013276579">Helaian pengesahan kunci laluan dibuka</translation>
 <translation id="5161334686036120870">Subjek:</translation>
 <translation id="5161506081086828129">Petak 9</translation>
 <translation id="5164798890604758545">Teks dimasukkan</translation>
@@ -2902,6 +2908,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="7004583254764674281">Gunakan Windows Hello untuk mengesahkan kad dengan lebih cepat</translation>
 <translation id="7006930604109697472">Hantar sahaja</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7013762323294215682">Kunci laluan akan disimpan pada Password Manager anda. Sesiapa sahaja yang boleh mengakses Password Manager anda akan dapat menggunakan kunci laluan ini.</translation>
 <translation id="7014042602717177828">Audio Kereta</translation>
 <translation id="7014741021609395734">Tahap zum</translation>
 <translation id="7016992613359344582">Caj ini mungkin caj sekali atau caj berulang dan mungkin tidak ketara.</translation>
@@ -3247,6 +3254,7 @@ Butiran tambahan:
 <translation id="7667346355482952095">Token dasar yang dikembalikan kosong atau tidak sepadan dengan token semasa</translation>
 <translation id="7668654391829183341">Peranti tidak diketahui</translation>
 <translation id="7669271284792375604">Penyerang pada tapak ini mungkin cuba menipu dengan meminta anda memasang atur cara yang membahayakan pengalaman penyemakan imbas anda (contohnya, dengan menukar halaman utama anda atau menunjukkan iklan tambahan pada laman yang anda lawati).</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> daripada <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Tindakan yang diambil dengan data yang dibenderakan sebagai sulit (1 tindakan sejak log masuk). <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" />}other{Tindakan yang diambil dengan data yang dibenderakan sebagai sulit (# tindakan sejak log masuk). <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Peti mel 6</translation>
 <translation id="7675325315208090829">Urus Kaedah Pembayaran...</translation>

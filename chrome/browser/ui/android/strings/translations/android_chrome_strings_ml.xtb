@@ -175,6 +175,7 @@
 <translation id="19288952978244135">Chrome വീണ്ടും തുറക്കുക.</translation>
 <translation id="1933845786846280168">തിരഞ്ഞെടുത്ത ടാബ്</translation>
 <translation id="1943432128510653496">സംരക്ഷിച്ച പാസ്‌വേഡുകള്‍</translation>
+<translation id="1944535645109964458">പാസ്‌കീകൾ ലഭ്യമല്ല</translation>
 <translation id="1952172573699511566">വെബ്സൈറ്റുകൾ, സാധ്യമാകുന്നിടത്തെല്ലാം, നിങ്ങൾ തിരഞ്ഞെടുത്ത ഭാഷയിൽ ടെക്‌സ്‌റ്റ് കാണിക്കും.</translation>
 <translation id="1959679933317802873">ഉള്ളടക്കത്തിനായി കാത്തിരിക്കുന്നു</translation>
 <translation id="1960290143419248813">Android-ന്റെ ഈ പതിപ്പിൽ ഇനിയങ്ങോട്ട് Chrome-ന്റെ അപ്‌ഡേറ്റുകൾ പിന്തുണയ്‌ക്കില്ല</translation>
@@ -626,6 +627,7 @@
 <translation id="4257230861809842349">Google Password Manager-ൽ നിന്ന് പാസ്‌വേഡുകൾ ഇല്ലാതാക്കണോ?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />എന്തൊക്കെ ഡാറ്റ ഉപയോഗിക്കുന്നു:<ph name="END_BOLD" /> ഈ ഉപകരണത്തിൽ Chrome ഉപയോഗിച്ച് നിങ്ങൾ സന്ദർശിച്ച സൈറ്റുകളുടെ റെക്കോർഡ് ആയ നിങ്ങളുടെ ബ്രൗസിംഗ് ചരിത്രം.</translation>
 <translation id="4269820728363426813">ലിങ്ക് വിലാസം പകർത്തുക</translation>
+<translation id="4277529130885813215">മറ്റൊരു ഉപകരണം ഉപയോഗിക്കുക</translation>
 <translation id="4283102315569707115">ഡെസ്‌ക്‌ടോപ്പ് സൈറ്റുകൾ ഡിഫോൾട്ടായി അഭ്യർത്ഥിക്കണോ?</translation>
 <translation id="4285846616383034558">കുക്കികൾ, കാഷെ, മറ്റ് സൈറ്റ് ഡാറ്റ എന്നിവ</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android ക്രമീകരണത്തിൽ സ്ക്രീൻ ലോക്ക് ഓണാക്കുക<ph name="END_LINK" /></translation>
@@ -1166,6 +1168,7 @@
 <translation id="6955535239952325894">മാനേജ് ചെയ്യപ്പെടുന്ന ബ്രൗസറുകളിൽ ഈ ക്രമീകരണം പ്രവർത്തനരഹിതമാക്കിയിരിക്കുന്നു</translation>
 <translation id="6963766334940102469">ബുക്ക്‌മാർക്കുകൾ ഇല്ലാതാക്കുക</translation>
 <translation id="696447261358045621">അദൃശ്യ മോഡിൽ നിന്ന് പുറത്തുകടക്കുക</translation>
+<translation id="6965382102122355670">ശരി</translation>
 <translation id="6971862865055170158">അംഗീകരിക്കരുത്</translation>
 <translation id="6978717888677691380">നിങ്ങൾ ബ്ലോക്ക് ചെയ്ത സൈറ്റുകൾ</translation>
 <translation id="6979737339423435258">എല്ലാ സമയത്തും</translation>

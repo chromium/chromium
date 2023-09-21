@@ -175,6 +175,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="19288952978244135">Opnaðu Chrome aftur.</translation>
 <translation id="1933845786846280168">Valinn flipi</translation>
 <translation id="1943432128510653496">Vista aðgangsorð</translation>
+<translation id="1944535645109964458">Engir aðgangslyklar tiltækir</translation>
 <translation id="1952172573699511566">Vefsvæði birta texta á því tungumáli sem þú hefur valið þegar hægt er.</translation>
 <translation id="1959679933317802873">Bíður eftir efni</translation>
 <translation id="1960290143419248813">Chrome uppfærslur eru ekki lengur studdar fyrir þessa útgáfu af Android</translation>
@@ -626,6 +627,7 @@ Traustslyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til a
 <translation id="4257230861809842349">Eyða aðgangsorðum úr Google-aðgangsorðastjórnun?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Hvaða gögn eru notuð:<ph name="END_BOLD" /> Vafraferillinn þinn, skrá yfir vefsvæði sem þú hefur opnað með Chrome í þessu tæki.</translation>
 <translation id="4269820728363426813">Afrita slóð tengils</translation>
+<translation id="4277529130885813215">Nota annað tæki</translation>
 <translation id="4283102315569707115">Biðja sjálfgefið um tölvuvefi?</translation>
 <translation id="4285846616383034558">Fótspor, skyndiminni og önnur vefsvæðagögn</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Kveiktu á skjálás í stillingum Android<ph name="END_LINK" /></translation>
@@ -1166,6 +1168,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6955535239952325894">Slökkt er á þessari stillingu í stýrðum vöfrum</translation>
 <translation id="6963766334940102469">Eyða bókamerkjum</translation>
 <translation id="696447261358045621">Slökkva á huliðsstillingu</translation>
+<translation id="6965382102122355670">Í lagi</translation>
 <translation id="6971862865055170158">Ekki samþykkja</translation>
 <translation id="6978717888677691380">Vefsvæði á bannlista</translation>
 <translation id="6979737339423435258">Frá upphafi</translation>

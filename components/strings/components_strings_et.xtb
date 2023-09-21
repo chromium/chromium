@@ -100,6 +100,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1195073053842921378">See aadress kustutatakse sellest seadmest</translation>
 <translation id="1195558154361252544">Märguanded blokeeritakse automaatselt kõigi saitide, välja arvatud lubatud saitide puhul.</translation>
 <translation id="1197088940767939838">Oranž</translation>
+<translation id="1197761954713363183">Pääsuvõtme kinnitusleht on suletud</translation>
 <translation id="1201402288615127009">Järgmine</translation>
 <translation id="1201895884277373915">Veel sellelt saidilt</translation>
 <translation id="1202892408424955784">Jälgitavad tooted</translation>
@@ -327,6 +328,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1618571384971354160">Pukseerimine ja maanteeabi</translation>
 <translation id="1620510694547887537">Kaamera</translation>
 <translation id="1622571349153632031">Taimetoiduköök</translation>
+<translation id="162285686621567578">Sinu vanem on selle veebisaidi blokeerinud.</translation>
 <translation id="1622966923835127638">Äri/finants</translation>
 <translation id="1623104350909869708">Keela sellel lehel lisadialoogide loomine</translation>
 <translation id="1633137413609266904">{0,plural, =1{Selle faili avamine on administraatori reegliga blokeeritud}other{# faili avamine on administraatori reegliga blokeeritud}}</translation>
@@ -371,6 +373,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1711528724596764268">Masinõpe ja tehisintellekt</translation>
 <translation id="1712552549805331520"><ph name="URL" /> soovib andmed alaliselt teie kohalikku arvutisse salvestada</translation>
 <translation id="1713628304598226412">Salv 2</translation>
+<translation id="1714807406136741351">Sirvimisrežiimis saate lülituda vormide režiimile, et kasutada graafiku hinnamuudatuste vaatamiseks vasak/paremnoolt</translation>
 <translation id="1717218214683051432">Liikumisandurid</translation>
 <translation id="1717494416764505390">Postkast 3</translation>
 <translation id="1717688554309417925">Deebetkaartide ja arvelduskontode teenused</translation>
@@ -382,6 +385,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1725591448053514783">Ümbrik You 6</translation>
 <translation id="1727613060316725209">Sertifikaat on kehtiv</translation>
 <translation id="1728677426644403582">Vaatate veebilehe lähtekoodi</translation>
+<translation id="1728803206919861584">Kas salvestada pääsuvõti väljaspool inkognito režiimi?</translation>
 <translation id="173080396488393970">Seda tüüpi kaarti ei toetata</translation>
 <translation id="1732445923934584865">Küsi selle asemel isiklikult</translation>
 <translation id="1733064249834771892">fondid</translation>
@@ -1664,6 +1668,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4415156962929755728">Plast (kõrgläige)</translation>
 <translation id="4415426530740016218">Kättesaamisaadress</translation>
 <translation id="4424024547088906515">Server ei suutnud tõestada, et see on domeen <ph name="DOMAIN" />, Chrome ei usalda selle turvasertifikaati. Selle põhjuseks võib olla vale seadistus või ründaja, kes on sekkunud teie ühendusse.</translation>
+<translation id="4425173294238317796">Pääsuvõtme kinnitusleht</translation>
 <translation id="4425750422187370446">Spordirõivad</translation>
 <translation id="4428065317363009941">Reklaamide isikupärastamine</translation>
 <translation id="443121186588148776">Jadaport</translation>
@@ -2019,6 +2024,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5157504274688344097">Suured kauplused ja kaubamajad</translation>
 <translation id="5158275234811857234">Kaas</translation>
 <translation id="5159010409087891077">Avage leht uues inkognito aknas (⇧ ⌘ N)</translation>
+<translation id="5161262286013276579">Pääsuvõtme kinnitusleht on avatud</translation>
 <translation id="5161334686036120870">Teema:</translation>
 <translation id="5161506081086828129">Virnastaja 9</translation>
 <translation id="5164798890604758545">Tekst on sisestatud</translation>
@@ -2901,6 +2907,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="7004583254764674281">Kasutage kaartide kiiremaks kinnitamiseks teenust Windows Hello</translation>
 <translation id="7006930604109697472">Saada ikkagi</translation>
 <translation id="7012363358306927923">Hiina UnionPay</translation>
+<translation id="7013762323294215682">See pääsuvõti salvestatakse teie paroolihaldurisse. Igaüks, kellel on sellele juurdepääs, saab seda pääsuvõtit kasutada.</translation>
 <translation id="7014042602717177828">Autode heliseadmed</translation>
 <translation id="7014741021609395734">Suumi tase</translation>
 <translation id="7016992613359344582">Tasud võivad olla ühekordsed või korduvad ja need ei pruugi olla ilmselged.</translation>
@@ -3246,6 +3253,7 @@ Lisateave:
 <translation id="7667346355482952095">Tagastatud reegli luba on tühi või ei kattu praeguse loaga</translation>
 <translation id="7668654391829183341">Tundmatu seade</translation>
 <translation id="7669271284792375604">Sellel saidil asuvad ründajad võivad proovida meelitada teid installima programme, mis kahjustavad sirvimiskogemust (nt muudavad avalehte või kuvavad külastatavatel saitidel lisareklaame).</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" />/<ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Andmetega seotud tegevused märgitakse konfidentsiaalseks (alates sisselogimisest on toimunud 1 toiming). <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" />}other{Andmetega seotud tegevused märgitakse konfidentsiaalseks (alates sisselogimisest on toimunud # toimingut). <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Postkast 6</translation>
 <translation id="7675325315208090829">Makseviiside haldamine …</translation>

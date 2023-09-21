@@ -175,6 +175,7 @@
 <translation id="19288952978244135">Chrome-г дахин нээнэ үү.</translation>
 <translation id="1933845786846280168">Сонгосон таб</translation>
 <translation id="1943432128510653496">Нууц үг хадгалах</translation>
+<translation id="1944535645109964458">Боломжтой passkey байхгүй</translation>
 <translation id="1952172573699511566">Вебсайт текстийг таны сонгосон хэлээр (хэрэв тухайн хэл боломжтой бол) харуулна.</translation>
 <translation id="1959679933317802873">Контентыг хүлээж байна</translation>
 <translation id="1960290143419248813">Chrome-н шинэчлэлтийг Android-н энэ хувилбарт дэмжихээ больсон байна</translation>
@@ -626,6 +627,7 @@
 <translation id="4257230861809842349">Google Password Manager-с нууц үгнүүд устгах уу?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Ямар өгөгдлийг ашигладаг вэ?:<ph name="END_BOLD" /> Таны хөтчийн түүх буюу энэ төхөөрөмж дээр Chrome-г ашиглан зочилсон сайтуудын бүртгэл.</translation>
 <translation id="4269820728363426813">Холбоосын хаягийг хуулах</translation>
+<translation id="4277529130885813215">Өөр төхөөрөмж ашиглах</translation>
 <translation id="4283102315569707115">Өгөгдмөлөөр компьютерын сайтын хүсэлт тавих уу?</translation>
 <translation id="4285846616383034558">Күүки, завсрын санах ой болон сайтын бусад өгөгдөл</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android-н тохиргоонд дэлгэцийн түгжээг асаана уу<ph name="END_LINK" /></translation>
@@ -1165,6 +1167,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6955535239952325894">Удирдсан хөтчүүд дээр энэ тохиргоог идэвхгүй болгосон</translation>
 <translation id="6963766334940102469">Хавчуургыг устгах</translation>
 <translation id="696447261358045621">Нууцлалтай горимоос гарах</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6971862865055170158">Бүү зөвшөөр</translation>
 <translation id="6978717888677691380">Таны блоклосон сайтууд</translation>
 <translation id="6979737339423435258">Бүх цаг</translation>
@@ -1323,6 +1326,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" />-с текстийг хуваалцсан</translation>
 <translation id="7762668264895820836">SD Карт <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Хаяг нэмэх</translation>
+<translation id="7766587497031415281">Интернэтээр үзсэн өгөгдлийг арилгах бусад сонголт</translation>
 <translation id="7772032839648071052">Нэвтрэх үгүүдийг баталгаажуул</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" />-г хаах</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 болон бусад <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 болон бусад <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>

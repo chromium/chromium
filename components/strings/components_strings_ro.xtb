@@ -100,6 +100,7 @@
 <translation id="1195073053842921378">Adresa va fi ștearsă de pe acest dispozitiv</translation>
 <translation id="1195558154361252544">Notificările sunt blocate automat pentru toate site-urile, cu excepția celor pe care le accepți</translation>
 <translation id="1197088940767939838">Portocaliu</translation>
+<translation id="1197761954713363183">S-a închis foaia de confirmare a cheilor de acces</translation>
 <translation id="1201402288615127009">Înainte</translation>
 <translation id="1201895884277373915">Mai multe de la acest site</translation>
 <translation id="1202892408424955784">Produse urmărite</translation>
@@ -327,6 +328,7 @@
 <translation id="1618571384971354160">Remorcare și asistență rutieră</translation>
 <translation id="1620510694547887537">Cameră</translation>
 <translation id="1622571349153632031">Bucătărie pentru vegetarieni</translation>
+<translation id="162285686621567578">Site-ul este blocat de părintele tău.</translation>
 <translation id="1622966923835127638">Finanțe comerciale</translation>
 <translation id="1623104350909869708">Restricționați capacitatea acestei pagini de a crea casete de dialog suplimentare</translation>
 <translation id="1633137413609266904">{0,plural, =1{Deschiderea acestui fișier este blocată de politica implementată de administrator}few{Deschiderea a # fișiere este blocată de politica implementată de administrator}other{Deschiderea a # de fișiere este blocată de politica implementată de administrator}}</translation>
@@ -371,6 +373,7 @@
 <translation id="1711528724596764268">Învățare automată și inteligență artificială</translation>
 <translation id="1712552549805331520"><ph name="URL" /> dorește să stocheze permanent date pe computer</translation>
 <translation id="1713628304598226412">Tava 2</translation>
+<translation id="1714807406136741351">Modul de răsfoire. Poți trece la modul Formulare pentru a folosi săgeata spre stânga / dreapta și a examina schimbările de preț din grafic</translation>
 <translation id="1717218214683051432">Senzori de mișcare</translation>
 <translation id="1717494416764505390">Căsuța de e-mail 3</translation>
 <translation id="1717688554309417925">Servicii de debit și cecuri</translation>
@@ -382,6 +385,7 @@
 <translation id="1725591448053514783">Plic personal 6</translation>
 <translation id="1727613060316725209">Certificatul este valid</translation>
 <translation id="1728677426644403582">Se afișează sursa unei pagini web</translation>
+<translation id="1728803206919861584">Salvezi cheia de acces în afara modului incognito?</translation>
 <translation id="173080396488393970">Acest tip de card nu este acceptat</translation>
 <translation id="1732445923934584865">Întreabă în persoană</translation>
 <translation id="1733064249834771892">Fonturi</translation>
@@ -1664,6 +1668,7 @@
 <translation id="4415156962929755728">Plastic (foarte lucios)</translation>
 <translation id="4415426530740016218">Adresă de preluare</translation>
 <translation id="4424024547088906515">Acest server nu a putut dovedi că este <ph name="DOMAIN" />; Chrome nu consideră că certificatul său de securitate este de încredere. Cauza poate fi o configurare greșită sau interceptarea conexiunii de către un atacator.</translation>
+<translation id="4425173294238317796">Foaia de confirmare a cheilor de acces</translation>
 <translation id="4425750422187370446">Îmbrăcăminte sport</translation>
 <translation id="4428065317363009941">Personalizarea anunțurilor</translation>
 <translation id="443121186588148776">Port serial</translation>
@@ -2019,6 +2024,7 @@
 <translation id="5157504274688344097">Comerț de masă și supermarketuri</translation>
 <translation id="5158275234811857234">Copertă</translation>
 <translation id="5159010409087891077">Deschide pagina într-o fereastră incognito nouă (⇧⌘N)</translation>
+<translation id="5161262286013276579">S-a deschis foaia de confirmare a cheilor de acces</translation>
 <translation id="5161334686036120870">Subiect:</translation>
 <translation id="5161506081086828129">Receptorul de hârtie 9</translation>
 <translation id="5164798890604758545">Textul este introdus</translation>
@@ -2901,6 +2907,7 @@
 <translation id="7004583254764674281">Folosește Windows Hello ca să confirmi mai repede cardurile</translation>
 <translation id="7006930604109697472">Trimite oricum</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7013762323294215682">Cheia de acces se va salva în managerul de parole. Oricine are acces la el va putea să o folosească.</translation>
 <translation id="7014042602717177828">Echipamente audio pentru mașini</translation>
 <translation id="7014741021609395734">Nivel de zoom</translation>
 <translation id="7016992613359344582">Aceste costuri pot fi unice sau recurente și ascunse.</translation>
@@ -3246,6 +3253,7 @@ Detalii suplimentare:
 <translation id="7667346355482952095">Indicativul returnat pentru politică este gol sau nu corespunde cu indicativul actual</translation>
 <translation id="7668654391829183341">Dispozitiv necunoscut</translation>
 <translation id="7669271284792375604">Atacatorii de pe acest site pot încerca să te înșele pentru a instala programe care dăunează experienței de navigare (de exemplu, schimbând pagina de pornire sau afișând anunțuri suplimentare pe site-urile pe care le accesezi).</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> din <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Acțiuni realizate cu datele marcate drept confidențiale (o acțiune de la conectare). <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" />}few{Acțiuni realizate cu datele marcate drept confidențiale (# acțiuni de la conectare). <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" />}other{Acțiuni realizate cu datele marcate drept confidențiale (# de acțiuni de la conectare). <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Căsuța de e-mail 6</translation>
 <translation id="7675325315208090829">Gestionează metodele de plată…</translation>

@@ -1179,6 +1179,7 @@
 <translation id="7473891865547856676">لا، شكرًا</translation>
 <translation id="7491131399623468277">الانتقال إلى الإعدادات…</translation>
 <translation id="7492574581995589075">‏أوقفت مؤسستك إمكانية استخدام وحفظ بيانات Chrome في حسابك على Google. سيتم حفظ كلمات المرور والإشارات المرجعية الجديدة وغيرها على هذا الجهاز فقط.</translation>
+<translation id="750149195207506638">الإشارات المرجعية مخفية.</translation>
 <translation id="750228856503700085">ميزة تلقّي آخر الأخبار غير متاحة.</translation>
 <translation id="750493650310597496">لم يتم اختيار أي إشارات</translation>
 <translation id="7508728395076009983">‏لقفل علامات التبويب في وضع التصفّح المتخفي، ما عليك سوى إعداد رمز مرور أو ميزة Touch ID أو Face ID.</translation>
@@ -1315,6 +1316,7 @@
 <translation id="8206354486702514201">تم فرض هذا الإعداد بواسطة المشرف.</translation>
 <translation id="8214293972734702249">علامة تبويب مثبّتة، "<ph name="TAB_TITLE" />"</translation>
 <translation id="8225985093977202398">الصور والملفات المُخزنة مؤقتًا</translation>
+<translation id="823133356836493038">"قائمة القراءة" مخفية.</translation>
 <translation id="8237382152611443140">‏فتح AutoFill Password Settings (إعدادات الملء التلقائي لكلمات المرور)</translation>
 <translation id="8248969482078657578">الحفاظ على تركيزك من خلال "علامات التبويب غير النشطة"</translation>
 <translation id="8261506727792406068">حذف</translation>

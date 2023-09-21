@@ -100,6 +100,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1195073053842921378">Tato adresa bude smazána z tohoto zařízení</translation>
 <translation id="1195558154361252544">Oznámení jsou automaticky blokována u všech webů s výjimkou těch, u nichž je povolíte</translation>
 <translation id="1197088940767939838">Oranžová</translation>
+<translation id="1197761954713363183">Byla zavřena tabulka k potvrzení přístupového klíče</translation>
 <translation id="1201402288615127009">Další</translation>
 <translation id="1201895884277373915">Více z tohoto webu</translation>
 <translation id="1202892408424955784">Sledované produkty</translation>
@@ -382,6 +383,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1725591448053514783">Obálka You 6</translation>
 <translation id="1727613060316725209">Certifikát je platný</translation>
 <translation id="1728677426644403582">Prohlížíte si zdrojový kód webové stránky</translation>
+<translation id="1728803206919861584">Uložit přístupový klíč mimo anonymní režim?</translation>
 <translation id="173080396488393970">Tento typ karty není podporován</translation>
 <translation id="1732445923934584865">Zeptat se osobně</translation>
 <translation id="1733064249834771892">písma</translation>
@@ -1660,6 +1662,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4415156962929755728">Plast (vysoký lesk)</translation>
 <translation id="4415426530740016218">Adresa vyzvednutí</translation>
 <translation id="4424024547088906515">Server nedokázal prokázat, že patří doméně <ph name="DOMAIN" />. Chrome jeho bezpečnostnímu certifikátu nedůvěřuje. Může to být způsobeno nesprávnou konfigurací nebo tím, že vaše připojení zachytává útočník.</translation>
+<translation id="4425173294238317796">Tabulka k potvrzení přístupového klíče</translation>
 <translation id="4425750422187370446">Sportovní oblečení</translation>
 <translation id="4428065317363009941">Personalizace reklam</translation>
 <translation id="443121186588148776">Sériový port</translation>
@@ -2015,6 +2018,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5157504274688344097">Velkoobchodníci a obchodní domy</translation>
 <translation id="5158275234811857234">Titulní strana</translation>
 <translation id="5159010409087891077">Otevřete stránku v novém anonymním okně (⇧⌘N)</translation>
+<translation id="5161262286013276579">Byla otevřena tabulka k potvrzení přístupového klíče</translation>
 <translation id="5161334686036120870">Předmět:</translation>
 <translation id="5161506081086828129">Stohovač 9</translation>
 <translation id="5164798890604758545">Zadání textu</translation>
@@ -2896,6 +2900,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7004583254764674281">Potvrzovat karty rychleji pomocí technologie Windows Hello</translation>
 <translation id="7006930604109697472">Přesto odeslat</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7013762323294215682">Tento přístupový klíč bude uložen do vašeho správce hesel. Bude ho moci použít kdokoli, kdo k němu bude mít přístup.</translation>
 <translation id="7014042602717177828">Audiosystémy do auta</translation>
 <translation id="7014741021609395734">Úroveň přiblížení</translation>
 <translation id="7016992613359344582">Může se jednat o jednorázové nebo opakované poplatky, které nemusejí být jasně patrné.</translation>

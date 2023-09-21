@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
+<translation id="1046370274005147998">Căutarea vocală în Chromium.</translation>
 <translation id="1047130070405668746">Selectează Chromium.</translation>
 <translation id="1091252999271033193">Aceasta înseamnă că Chromium va solicita de fiecare dată site-ul mobil.</translation>
 <translation id="1185134272377778587">Despre Chromium</translation>
@@ -42,6 +43,7 @@
 <translation id="2574528844022712255">Afișează marcajele Chromium</translation>
 <translation id="2590893390871230428">Sincronizează-ți datele din Chromium</translation>
 <translation id="2618596336309823556">Din Setările dispozitivului, deschide <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /> și selectează Chromium</translation>
+<translation id="2618757400690011108">{COUNT,plural, =1{Chromium te va ajuta să urmărești acest pachet în pagina Filă nouă.}few{Chromium te va ajuta să urmărești aceste pachete în pagina Filă nouă.}other{Chromium te va ajuta să urmărești aceste pachete în pagina Filă nouă.}}</translation>
 <translation id="2650312721222849884">Activează sincronizarea ca să vezi toate filele tale deschise în Chromium</translation>
 <translation id="2684230048001240293">Setează Chromium ca browser prestabilit pentru a sincroniza filele, parolele și informațiile de plată pe toate dispozitivele</translation>
 <translation id="2730884209570016437">Chromium nu poate folosi camera foto, deoarece este folosită de o altă aplicație</translation>
@@ -51,6 +53,7 @@
 <translation id="2918709798697875261">Organizația îți solicită să nu te conectezi la Chromium.</translation>
 <translation id="2942241131342758843">Folosește Chromium în mod prestabilit ca să deschizi linkuri, să cauți din widgeturi și să completezi automat parolele în alte aplicații</translation>
 <translation id="2977470724722393594">Chromium este actualizat</translation>
+<translation id="3078941082359356771">{COUNT,plural, =1{Chromium te poate ajuta să urmărești acest pachet în pagina Filă nouă.}few{Chromium te poate ajuta să urmărești aceste pachete în pagina Filă nouă.}other{Chromium te poate ajuta să urmărești aceste pachete în pagina Filă nouă.}}</translation>
 <translation id="3102849287235003384">Pentru a te deconecta de la Contul Google pe toate site-urile, <ph name="BEGIN_LINK" />deconectează-te de la Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Căutarea vocală în Chromium</translation>
 <translation id="3228349498066165585">Unele date Chromium nu au fost salvate încă în Contul Google.
@@ -113,6 +116,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chromi
 <translation id="5521125884468363740">Pentru a vedea toate filele tale deschise în Chromium, conectează-te și activează sincronizarea</translation>
 <translation id="5522297504975449419">Unele funcții Chromium nu vor mai fi disponibile.</translation>
 <translation id="5571094606370987472">Deschide filele recente din Chromium.</translation>
+<translation id="5623083843656850677">Blochează filele incognito când ieși din Chromium sau treci la altă aplicație.</translation>
 <translation id="5688047395118852662">Acest card afișează sugestii privind modul în care poți profita la maximum de Chromium.</translation>
 <translation id="5700709190537129682">Chromium nu îți poate verifica parolele</translation>
 <translation id="5777187867430702742">Pagină Chromium</translation>

@@ -175,6 +175,7 @@ Quando elimini la cronologia di navigazione (l'intera cronologia o soltanto quel
 <translation id="19288952978244135">Riapri Chrome.</translation>
 <translation id="1933845786846280168">Scheda selezionata</translation>
 <translation id="1943432128510653496">Salva password</translation>
+<translation id="1944535645109964458">Nessuna passkey disponibile</translation>
 <translation id="1952172573699511566">Se possibile, il testo dei siti web verrà mostrato nella tua lingua preferita.</translation>
 <translation id="1959679933317802873">In attesa di contenuti</translation>
 <translation id="1960290143419248813">Gli aggiornamenti di Chrome non sono più supportati per questa versione di Android</translation>
@@ -626,6 +627,7 @@ I token di stato privati migliorano la privacy sul Web e non possono essere usat
 <translation id="4257230861809842349">Vuoi eliminare le password da Gestore delle password di Google?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Quali dati vengono utilizzati:<ph name="END_BOLD" /> la cronologia di navigazione, ossia un record dei siti visitati da Chrome sul dispositivo in uso.</translation>
 <translation id="4269820728363426813">Copia indirizzo link</translation>
+<translation id="4277529130885813215">Usa un altro dispositivo</translation>
 <translation id="4283102315569707115">Richiedere siti desktop per impostazione predefinita?</translation>
 <translation id="4285846616383034558">Cookie, cache e altri dati dei siti</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Attiva il blocco schermo nelle impostazioni di Android<ph name="END_LINK" /></translation>
@@ -1166,6 +1168,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6955535239952325894">Questa impostazione è disattivata sui browser gestiti</translation>
 <translation id="6963766334940102469">Elimina Preferiti</translation>
 <translation id="696447261358045621">Esci dalla modalità di navigazione in incognito</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6971862865055170158">Non approvare</translation>
 <translation id="6978717888677691380">Siti che hai bloccato</translation>
 <translation id="6979737339423435258">Dall'inizio</translation>

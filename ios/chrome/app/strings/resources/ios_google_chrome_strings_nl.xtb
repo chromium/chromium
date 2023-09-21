@@ -25,6 +25,7 @@ Aandachtspunten:
 
   • Als je je geschiedenis synchroniseert met je Google-account, kunnen de statistieken ook informatie bevatten over de URL's die je bezoekt.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Je hebt de krachtigste beveiliging van Chrome tegen schadelijke websites</translation>
+<translation id="1615715390546812898">Zoeken met je stem in Chrome.</translation>
 <translation id="1657395063736185342">Visuele elementen zoeken in Chrome</translation>
 <translation id="1675955119303651351">Sommige van je Chrome-gegevens zijn nog niet opgeslagen in je Google-account.
         Wacht een paar minuten voordat je uitlogt. Als je nu uitlogt, worden deze gegevens verwijderd.</translation>
@@ -104,6 +105,7 @@ Aandachtspunten:
         Wacht een paar minuten voordat je uitlogt. Als je nu uitlogt, worden deze gegevens verwijderd.</translation>
 <translation id="484033449593719797">Niet ondersteund in Chrome (bèta)</translation>
 <translation id="4840404732697892756">Google Wachtwoordmanager kan je wachtwoorden checken als je inlogt met je Google-account.</translation>
+<translation id="4860330141789125848">{COUNT,plural, =1{Chrome kan je helpen om dit pakket te volgen op de pagina Nieuw tabblad.}other{Chrome kan je helpen om deze pakketten te volgen op de pagina Nieuw tabblad.}}</translation>
 <translation id="4903674399067644695">Op deze kaart zie je suggesties voor hoe je het maximale uit Chrome kunt halen.</translation>
 <translation id="49200511069271369">Je organisatie, <ph name="DOMAIN" />, beheert het account waarop je inlogt en hoe Chrome kan worden gebruikt. Je beheerder kan bepaalde functies instellen of beperken.</translation>
 <translation id="5030102366287574140">Chrome kan je beschermen tegen gegevenslekken, onveilige websites en meer.</translation>
@@ -113,10 +115,12 @@ Aandachtspunten:
 <translation id="5156818928311866442">Opent de Chrome-instelling om Chrome in te stellen als standaardbrowser.</translation>
 <translation id="5162467219239570114">Chrome is verouderd. Als er geen update beschikbaar is in de <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, ondersteunt je apparaat nieuwe versies van Chrome mogelijk niet.</translation>
 <translation id="5190139289262548459">Je organisatie, <ph name="DOMAIN" />, beheert het account waarop je bent ingelogd en hoe Chrome wordt gebruikt.</translation>
+<translation id="5278862365980079760">Vergrendel de incognitotabbladen als je Chrome verlaat of overschakelt naar een andere app.</translation>
 <translation id="5389212809648216794">Google Chrome kan je camera niet gebruiken omdat deze wordt gebruikt door een andere app</translation>
 <translation id="5395376160638294582">Zorg dat je de Chrome-gegevens in je Google-account altijd kunt gebruiken</translation>
 <translation id="5439191312780166229">Geeft je waarschuwingen over gevaarlijke sites, zelfs sites die Google niet eerder kende, door meer gegevens van sites te analyseren dan de standaardbeveiliging. Je kunt ervoor kiezen Chrome-waarschuwingen over te slaan.</translation>
 <translation id="5460571915754665838">4. Selecteer Chrome</translation>
+<translation id="546541279759910616">{COUNT,plural, =1{Chrome helpt je om dit pakket te volgen op de pagina Nieuw tabblad.}other{Chrome helpt je om deze pakketten te volgen op de pagina Nieuw tabblad.}}</translation>
 <translation id="5492504007368565877">Google Wachtwoordmanager kan je wachtwoorden niet checken.</translation>
 <translation id="5527026824954593399">Tik op 'Bekijken met Google Maps in Chrome'.</translation>
 <translation id="5552137475244467770">Chrome vergelijkt periodiek je wachtwoorden met lijsten die online zijn gepubliceerd. Als dit wordt gedaan, zijn je wachtwoorden en gebruikersnamen versleuteld, zodat ze door niemand (inclusief Google) kunnen worden gelezen.</translation>

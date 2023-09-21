@@ -25,6 +25,7 @@ Aspectos que debes tener en cuenta:
 
   • Si sincronizas el historial con tu Cuenta de Google, las métricas también pueden incluir información sobre las URLs que visitas.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Tienes la seguridad más sólida de Chrome contra sitios web dañinos</translation>
+<translation id="1615715390546812898">Realiza búsquedas con la voz en Chrome.</translation>
 <translation id="1657395063736185342">Buscar elementos visuales en Chrome</translation>
 <translation id="1675955119303651351">Aún no se guardaron algunos de tus datos de Chrome en tu Cuenta de Google.
         Espera unos minutos antes de salir. Si sales ahora, se borrarán estos datos.</translation>
@@ -104,6 +105,7 @@ Aspectos que debes tener en cuenta:
         Espera unos minutos antes de salir. Si sales ahora, se borrarán estos datos.</translation>
 <translation id="484033449593719797">No es compatible en la versión beta de Chrome</translation>
 <translation id="4840404732697892756">El Administrador de contraseñas de Google puede revisar las contraseñas cuando accedes con tu Cuenta de Google.</translation>
+<translation id="4860330141789125848">{COUNT,plural, =1{Chrome puede ayudarte a realizar el seguimiento de este paquete en la página Nueva pestaña.}other{Chrome puede ayudarte a realizar el seguimiento de estos paquetes en la página Nueva pestaña.}}</translation>
 <translation id="4903674399067644695">En esta tarjeta, se muestran sugerencias para aprovechar Chrome al máximo.</translation>
 <translation id="49200511069271369">Tu organización, <ph name="DOMAIN" />, administra la cuenta a la que estás accediendo y la forma en que se puede usar Chrome. El administrador puede configurar o restringir ciertas funciones.</translation>
 <translation id="5030102366287574140">Chrome puede protegerte ante violaciones de la seguridad de los datos, sitios web inseguros y mucho más.</translation>
@@ -113,10 +115,12 @@ Aspectos que debes tener en cuenta:
 <translation id="5156818928311866442">Abre la configuración de Chrome para establecer Chrome como navegador predeterminado.</translation>
 <translation id="5162467219239570114">Chrome no está actualizado. Si no hay actualizaciones disponibles en <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, es posible que tu dispositivo no sea compatible con nuevas versiones de Chrome.</translation>
 <translation id="5190139289262548459">Tu organización, <ph name="DOMAIN" />, administra la cuenta con la que accediste y la forma en que se usa Chrome.</translation>
+<translation id="5278862365980079760">Bloquea tus pestañas de incógnito cuando abandonas Chrome o cambias de app.</translation>
 <translation id="5389212809648216794">Google Chrome no puede utilizar tu cámara porque la está usando otra aplicación</translation>
 <translation id="5395376160638294582">Asegúrate de que siempre puedas usar los datos de Chrome en tu Cuenta de Google</translation>
 <translation id="5439191312780166229">Analiza más datos de los sitios que la protección estándar para advertirte sobre sitios peligrosos, incluso sobre los que Google no conocía. Puedes omitir las advertencias de Chrome.</translation>
 <translation id="5460571915754665838">4. Selecciona Chrome.</translation>
+<translation id="546541279759910616">{COUNT,plural, =1{Chrome te ayudará a realizar el seguimiento de este paquete en la página Nueva pestaña.}other{Chrome te ayudará a realizar el seguimiento de estos paquetes en la página Nueva pestaña.}}</translation>
 <translation id="5492504007368565877">El Administrador de contraseñas de Google no puede revisar las contraseñas.</translation>
 <translation id="5527026824954593399">Presiona "Ver con Google Maps en Chrome".</translation>
 <translation id="5552137475244467770">Chrome revisa tus contraseñas de forma periódica para comprobar si aparecen en listas que se hayan publicado en línea. Durante esta acción, se encriptan tus contraseñas y nombres de usuario para que nadie, ni siquiera Google, pueda leer esta información.</translation>

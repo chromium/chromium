@@ -175,6 +175,7 @@ Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto
 <translation id="19288952978244135">Abre Chrome de novo.</translation>
 <translation id="1933845786846280168">Pestana seleccionada</translation>
 <translation id="1943432128510653496">Gardar contrasinais</translation>
+<translation id="1944535645109964458">Non hai claves de acceso dispoñibles</translation>
 <translation id="1952172573699511566">Os sitios web mostrarán o texto no teu idioma preferido, sempre que sexa posible.</translation>
 <translation id="1959679933317802873">Á espera de contido</translation>
 <translation id="1960290143419248813">As actualizacións de Chrome xa non son compatibles con esta versión de Android</translation>
@@ -626,6 +627,7 @@ Os tokens de estado privado melloran a privacidade na Web e non se poden usar pa
 <translation id="4257230861809842349">Queres eliminar contrasinais do xestor de contrasinais de Google?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Que datos se usan?<ph name="END_BOLD" /> O teu historial de navegación e un rexistro dos sitios que visitases usando Chrome neste dispositivo.</translation>
 <translation id="4269820728363426813">Copiar enderezo da ligazón</translation>
+<translation id="4277529130885813215">Usar outro dispositivo</translation>
 <translation id="4283102315569707115">Queres solicitar sitios para ordenadores de forma predeterminada?</translation>
 <translation id="4285846616383034558">Cookies, memoria caché e outros datos dos sitios</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Activa o bloqueo de pantalla na configuración de Android<ph name="END_LINK" /></translation>
@@ -1166,6 +1168,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6955535239952325894">Esta opción de configuración está desactivada nos navegadores xestionados</translation>
 <translation id="6963766334940102469">Eliminar marcadores</translation>
 <translation id="696447261358045621">Saír do modo de incógnito</translation>
+<translation id="6965382102122355670">Aceptar</translation>
 <translation id="6971862865055170158">Non aprobar</translation>
 <translation id="6978717888677691380">Sitios bloqueados</translation>
 <translation id="6979737339423435258">Desde sempre</translation>
@@ -1324,6 +1327,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7757787379047923882">O texto compartiuse desde <ph name="DEVICE_NAME" /></translation>
 <translation id="7762668264895820836">Tarxeta SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Engadir enderezo</translation>
+<translation id="7766587497031415281">Máis opcións para borrar os datos de navegación</translation>
 <translation id="7772032839648071052">Confirmar frase de acceso</translation>
 <translation id="7772375229873196092">Pechar <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 e <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> máis}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 e <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> máis}}</translation>

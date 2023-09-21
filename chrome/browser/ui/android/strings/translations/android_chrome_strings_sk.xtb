@@ -175,6 +175,7 @@ Keď odstránite históriu prehliadania (buď celú, alebo pre konkrétny web), 
 <translation id="19288952978244135">Znova otvorte Chrome.</translation>
 <translation id="1933845786846280168">Vybratá karta</translation>
 <translation id="1943432128510653496">Ukladať heslá</translation>
+<translation id="1944535645109964458">Nie sú k dispozícii žiadne prístupové kľúče</translation>
 <translation id="1952172573699511566">Ak to bude možné, weby budú zobrazovať text vo vašom preferovanom jazyku.</translation>
 <translation id="1959679933317802873">Čaká sa na obsah</translation>
 <translation id="1960290143419248813">Pre túto verziu Androidu už nie sú podporované aktualizácie Chromu</translation>
@@ -626,6 +627,7 @@ Tokeny súkromného stavu zlepšujú ochranu súkromia na internete a nedá sa 
 <translation id="4257230861809842349">Chcete odstrániť heslá zo Správcu hesiel Google?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Aké údaje sa používajú:<ph name="END_BOLD" /> vaša história prehliadania, teda záznam webov, ktoré ste navštívili pomocou Chromu v tomto zariadení.</translation>
 <translation id="4269820728363426813">Kopírovať adresu odkazu</translation>
+<translation id="4277529130885813215">Použiť iné zariadenie</translation>
 <translation id="4283102315569707115">Chcete nastaviť weby pre počítače ako predvolené?</translation>
 <translation id="4285846616383034558">Súbory cookie, vyrovnávacia pamäť a ďalšie dáta webov</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Zapnite zámku obrazovky v nastaveniach Androidu<ph name="END_LINK" /></translation>
@@ -1166,6 +1168,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6955535239952325894">Toto nastavenie je v spravovaných prehliadačoch deaktivované.</translation>
 <translation id="6963766334940102469">Odstrániť záložky</translation>
 <translation id="696447261358045621">Ukončiť režim inkognito</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6971862865055170158">Neschváliť</translation>
 <translation id="6978717888677691380">Weby, ktoré ste zablokovali</translation>
 <translation id="6979737339423435258">Celé obdobie</translation>

@@ -1761,6 +1761,7 @@
 <translation id="2359345697448000899">ટૂલ્સ મેનૂમાં એક્સટેંશનને ક્લિક કરીને તમારા એક્સ્ટેંશન્સને મેનેજ કરો.</translation>
 <translation id="2359556993567737338">બ્લૂટૂથ ડિવાઇસ કનેક્ટ કરો</translation>
 <translation id="2359808026110333948">આગળ વધો</translation>
+<translation id="2360792123962658445">પેજનો સારાંશ, સંબંધિત શોધો તેમજ આ પેજ વિશે અન્ય ઉપયોગી માહિતી મેળવવા માટે, ટૂલબારમાંથી Google Search બાજુની પૅનલનું બટન પસંદ કરો</translation>
 <translation id="2361100938102002520">તમે આ બ્રાઉઝર પર કોઈ મેનેજ કરવામાં આવતી પ્રોફાઇલ ઉમેરી રહ્યાં છો. તમારા વ્યવસ્થાપક પ્રોફાઇલ પર નિયંત્રણ ધરાવે છે અને તેમાંનો ડેટા ઍક્સેસ કરી શકે છે.</translation>
 <translation id="236117173274098341">Optimize</translation>
 <translation id="2361340419970998028">પ્રતિસાદ મોકલી રહ્યું છીએ...</translation>
@@ -2770,7 +2771,6 @@
 <translation id="3169930038976362151">તમારી જરૂરિયાત પ્રમાણે થીમ પસંદ કરો. તમારી થીમ, વૉલપેપર અને સ્ક્રીન સેવર જેવું બીજું ઘણું બધું બદલવા માટે, ડેસ્કટૉપ પર માત્ર ટચ કરીને થોડીવાર દબાવી રાખો.</translation>
 <translation id="3170072451822350649">તમે સાઇન ઇન કરવાનું છોડી અને <ph name="LINK_START" />અતિથિ તરીકે બ્રાઉઝ<ph name="LINK_END" /> પણ કરી શકો છો.</translation>
 <translation id="31774765611822736">ડાબી બાજુએ નવી ટૅબ</translation>
-<translation id="3177689682958561933">પાછળ અને આગળ નૅવિગેટ કરવા માટે ચાલુ કરો</translation>
 <translation id="3177909033752230686">પેજની ભાષા:</translation>
 <translation id="3177914167275935955">તમારા ડિવાઇસ માટે Chrome Education Upgrade શામેલ છે, પરંતુ તમારું વપરાશકર્તાનું નામ કોઈ Google for Education એકાઉન્ટ સાથે સંકળાયેલું નથી. કૃપા કરીને કોઈ ગૌણ ડિવાઇસ પર g.co/workspace/edusignupની મુલાકાત લઈને એક Google for Education એકાઉન્ટ બનાવો.</translation>
 <translation id="3179982752812949580">ટેક્સ્ટ ફોન્ટ</translation>
@@ -4715,6 +4715,7 @@
 <translation id="4766598565665644999">તમામ એક્સ્ટેન્શન <ph name="HOST" /> પર વાંચી અને તેમાં ફેરફાર કરી શકે છે</translation>
 <translation id="4767427586072640478">બંધ કરેલા એક્સ્ટેન્શન વિશે વધુ જાણો.</translation>
 <translation id="4768332406694066911">તમારી પાસે આ સંસ્થાઓના પ્રમાણપત્ર છે કે જે તમને ઓળખે છે</translation>
+<translation id="4769632191812288342">તમે માનક સંરક્ષણ મેળવી રહ્યાં છો</translation>
 <translation id="4770119228883592393">પરવાનગીની વિનંતી કરવામાં આવી, જવાબ આપવા માટે ⌘ + Option + નીચેનો ઍરો દબાવો</translation>
 <translation id="4773112038801431077">Linux અપગ્રેડ કરો</translation>
 <translation id="4774456473286455263">તમારા Android ફોન વડે સેટઅપ કરો</translation>
@@ -4956,6 +4957,7 @@
 <translation id="4965808351167763748">શું તમે ખરેખર આ ડિવાઇસને Hangouts Meet ચલાવવા માટે સેટ કરવા માગો છો?</translation>
 <translation id="4966972803217407697">તમે છૂપા મોડમાં છો</translation>
 <translation id="4967227914555989138">કોઈ નોંધ ઉમેરો</translation>
+<translation id="4967360192915400530">જોખમી ફાઇલ ડાઉનલોડ કરો</translation>
 <translation id="496742804571665842">ઇ-સિમ પ્રોફાઇલ બંધ કરો</translation>
 <translation id="4971412780836297815">પૂર્ણ થાય ત્યારે ખોલો</translation>
 <translation id="4971735654804503942">જોખમકારક વેબસાઇટ, ડાઉનલોડ અને એક્સ્ટેંશન સામે વધુ ઝડપી તેમજ સક્રિય સંરક્ષણ. તમને પાસવર્ડ ઉલ્લંઘનો વિશે ચેતવણી આપે છે. Googleને બ્રાઉઝિંગ ડેટા મોકલવાનું જરૂરી છે.</translation>
@@ -5296,6 +5298,7 @@
 <translation id="5265797726250773323">ઇન્સ્ટૉલ કરતી વખતે ભૂલ આવી</translation>
 <translation id="5266113311903163739">પ્રમાણન અધિકારી આયાત ભૂલ</translation>
 <translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" /> માટે વધુ ક્રિયાઓ</translation>
+<translation id="5267572070504076962">જોખમી સાઇટ સામે સંરક્ષણ મેળવવા માટે Safe Browsingની સુવિધા ચાલુ કરો</translation>
 <translation id="5268373933383932086">તમારું પેજ, તમારી રીતે</translation>
 <translation id="5269977353971873915">પ્રિન્ટ કાઢવામાં નિષ્ફળ</translation>
 <translation id="5271578170655641944">Google Drive પરના ઍક્સેસ કાઢી નાખીએ?</translation>
@@ -6245,7 +6248,6 @@ USB ડિવાઇસ</translation>
 <translation id="6045114302329202345">પ્રાથમિક TrackPoint બટન</translation>
 <translation id="6047632800149092791">સિંક કાર્ય કરી રહ્યું નથી. સાઇન આઉટ કરીને ફરી પાછા સાઇન ઇન કરવાનો પ્રયાસ કરો.</translation>
 <translation id="6048747414605857443">ChromeVox અને 'સાંભળવા માટે પસંદ કરો' સુવિધા માટે ટેક્સ્ટ ટૂ સ્પીચ વૉઇસ પસંદ કરો અને કસ્ટમાઇઝ કરો</translation>
-<translation id="6049797270917061226">હુમલાખોરો આ ફાઇલમાંથી તમારી વ્યક્તિગત માહિતી ચોરી શક્યા.</translation>
 <translation id="6050189528197190982">ગ્રેસ્કેલ</translation>
 <translation id="6051354611314852653">અરેરે!  આ ઉપકરણ માટે અધિકૃત API ઍક્સેસ કરવા આ સિસ્ટમ નિષ્ફળ થઈ છે.</translation>
 <translation id="6051811090255711417">આ ફાઇલ સુરક્ષા પૉલિસીનું પાલન કરતી ન હોવાથી તમારી સંસ્થા દ્વારા તેને બ્લૉક કરવામાં આવી છે</translation>
@@ -6531,7 +6533,6 @@ USB ડિવાઇસ</translation>
 <translation id="6270391203985052864">સાઇટ તમને નોટિફિકેશન મોકલવા માટે પૂછી શકે છે</translation>
 <translation id="6270486800167535228">એક્સ્ટેન્શન પિન કરેલું છે. વધુ વિકલ્પો જોવા માટે પસંદ કરો</translation>
 <translation id="6270770586500173387"><ph name="BEGIN_LINK1" />સિસ્ટમ અને ઍપ્લિકેશન માહિતી<ph name="END_LINK1" /> અને <ph name="BEGIN_LINK2" />મેટ્રિક્સ<ph name="END_LINK2" /> મોકલો</translation>
-<translation id="6270896861225278704">પ્રવાસ કાર્ડ</translation>
 <translation id="6271348838875430303">સુધારાનો છેલ્લો ફેરફાર રદ કર્યો</translation>
 <translation id="6271824294945464304">પાસવર્ડ શેર કરી રહ્યાં છીએ</translation>
 <translation id="6273677812470008672">ગુણવત્તા</translation>
@@ -7153,6 +7154,7 @@ USB ડિવાઇસ</translation>
 <translation id="6798578729981748444">આયાત કરવાનું સમાપ્ત કરવા માટે, બધી Firefox વિંડો બંધ કરો.</translation>
 <translation id="6798780071646309401">caps lock ચાલુ છે</translation>
 <translation id="6798954102094737107">પ્લગિન: <ph name="PLUGIN_NAME" /></translation>
+<translation id="679905836499387150">ટૂલબાર પર છુપાવેલા બટન</translation>
 <translation id="6801129617625983991">સામાન્ય સેટિંગ</translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{આ એક્સ્ટેન્શન આ સાઇટને વાંચી શકે કે તેમાં ફેરફાર કરી શકે, તો તેને પસંદ કરો}one{આ એક્સ્ટેન્શન આ સાઇટને વાંચી શકે કે તેમાં ફેરફાર કરી શકે, તો તેને પસંદ કરો}other{આ એક્સ્ટેન્શન આ સાઇટને વાંચી શકે કે તેમાં ફેરફાર કરી શકે, તો તેને પસંદ કરો}}</translation>
 <translation id="6801435275744557998">ટચસ્ક્રીનને કેલિબ્રેટ કરો</translation>
@@ -7538,6 +7540,7 @@ USB ડિવાઇસ</translation>
 <translation id="7099337801055912064">વિશાળ PPD લોડ કરી શકતાં નથી. મહત્તમ કદ 250 kB છે.</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{ચેડાં કરાયેલો કોઈ પાસવર્ડ નથી}=1{ચેડાં કરાયેલો {COUNT} પાસવર્ડ}one{ચેડાં કરાયેલો {COUNT} પાસવર્ડ}other{ચેડાં કરાયેલા {COUNT} પાસવર્ડ}}</translation>
 <translation id="710047887584828070">આ ટૅબનું કન્ટેન્ટ શેર કરવામાં આવી રહ્યું છે</translation>
+<translation id="710224247908684995">કોઈ એક્સ્ટેન્શન દ્વારા Safe Browsingની સુવિધા બંધ કરવામાં આવી</translation>
 <translation id="7102832101143475489">વિનંતીનો સમય સમાપ્ત થઈ ગયો</translation>
 <translation id="710640343305609397">નેટવર્ક સેટિંગ ખોલો</translation>
 <translation id="7107609441453408294">બધા સ્પીકરમાંથી એક જ ઑડિયો વગાડો</translation>
@@ -7744,6 +7747,7 @@ USB ડિવાઇસ</translation>
 <translation id="7287143125007575591">ઍક્સેસ નિષેધ.</translation>
 <translation id="7287411021188441799">ડિફૉલ્ટ બૅકગ્રાઉન્ડ પાછું મેળવો</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
+<translation id="7289049772085228972">તમે Chromeની સૌથી સશક્ત સુરક્ષા ધરાવો છો</translation>
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - પરવાનગીની વિનંતી કરવામાં આવી, જવાબ આપવા માટે F6 દબાવો</translation>
 <translation id="7290242001003353852"><ph name="SAML_DOMAIN" /> દ્વારા હોસ્ટ થયેલ સાઇન-ઇન સેવા, તમારા કૅમેરાને ઍક્સેસ કરી રહી છે.</translation>
 <translation id="7292067737327289208">તમારી સંસ્થા દ્વારા તમારું <ph name="BEGIN_LINK" />બ્રાઉઝર મેનેજ<ph name="END_LINK" /> કરવામાં આવે છે અને <ph name="PROFILE_DOMAIN" />દ્વારા તમારી <ph name="BEGIN_LINK" />પ્રોફાઇલ મેનેજ<ph name="END_LINK" /> કરવામાં આવે છે</translation>
@@ -8368,6 +8372,7 @@ USB ડિવાઇસ</translation>
 <translation id="7772127298218883077"><ph name="PRODUCT_NAME" /> વિશે</translation>
 <translation id="7773726648746946405">સત્ર સ્ટોરેજ</translation>
 <translation id="7774365994322694683">પક્ષી</translation>
+<translation id="7774581652827321413">પેજનો સારાંશ, સંબંધિત શોધો તેમજ આ પેજ વિશે અન્ય ઉપયોગી માહિતી મેળવો</translation>
 <translation id="7774792847912242537">ઘણી બધી વિનંતીઓ.</translation>
 <translation id="7775694664330414886">નામ વિનાના ગ્રૂપ - <ph name="GROUP_CONTENTS" />માં ટૅબને ખસેડવામાં આવી</translation>
 <translation id="7776156998370251340">આ સાઇટ માટે, જ્યાં સુધી તમે બધી ટૅબ બંધ નહીં કરો ત્યાં સુધી <ph name="ORIGIN" />, <ph name="FOLDERNAME" />માંની બધી ફાઇલો જોઈ શકશે</translation>
@@ -8428,6 +8433,7 @@ USB ડિવાઇસ</translation>
 <translation id="7820400255539998692"><ph name="FILENAME" /> ડિલીટ કરો, જેથી આ ડિવાઇસનો ઉપયોગ કરતા અન્ય લોકો તમારા પાસવર્ડ જોઈ શકશે નહીં</translation>
 <translation id="7820561748632634942">શું વધારાની સ્વિચ માટે સોંપણી કરીએ?</translation>
 <translation id="782057141565633384">વીડિયો ઍડ્રેસ કૉ&amp;પિ કરો</translation>
+<translation id="7824665136384946951">તમારી સંસ્થા દ્વારા Safe Browsingની સુવિધા બંધ કરવામાં આવી છે</translation>
 <translation id="7824864914877854148">ભૂલને કારણે બૅકઅપ પૂર્ણ ન કરી શકાયું</translation>
 <translation id="782590969421016895">હાલના પેજનો ઉપયોગ કરો</translation>
 <translation id="7826174860695147464">લેગસી બ્રાઉઝર સહાય (LBS) - ઇન્ટર્નલ</translation>
@@ -10027,6 +10033,7 @@ USB ડિવાઇસ</translation>
 <translation id="9094859731829297286">શું તમે ખરેખર Linux માટે સ્થિર કદની ડિસ્ક આરક્ષિત કરવા માગો છો?</translation>
 <translation id="9095364055741191097">સ્થાનિક ડેટા રિકવર કરવામાં મળેલી નિષ્ફળતા</translation>
 <translation id="909554839118732438">છૂપી વિન્ડો બંધ કરો</translation>
+<translation id="9096053102600371572">નિયંત્રિત સ્ક્રોલિંગ વિશે <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="9096776523567481218">સ્થાનિક સ્તરે ઇન્સ્ટૉલ કરેલું નથી</translation>
 <translation id="9098860402274800697">Google Play અને Android ઍપ કાઢી નાખો</translation>
 <translation id="9099220545925418560">તમારા બ્રાઉઝિંગ ઇતિહાસના આધારે. આ સેટિંગ બંધ છે.</translation>
@@ -10099,10 +10106,6 @@ USB ડિવાઇસ</translation>
 <translation id="9151906066336345901">end</translation>
 <translation id="9153274276370926498">Lacrosની સિસ્ટમ સંબંધિત માહિતી</translation>
 <translation id="9153367754133725216">લૉન્ચર અને શોધ પરિણામોમાં નવી ઍપ અને વેબ કન્ટેન્ટ માટેના સૂચનો જુઓ. જો તમે ક્રૅશ રિપોર્ટ તેમજ ડાયગ્નોસ્ટિક્સ અને વપરાશનો ડેટા ChromeOS Flexને મોકલવાનું પસંદ કર્યું હોય, તો જ તે સૂચનોને બહેતર બનાવવા માટે આંકડા મોકલે છે.</translation>
-<translation id="9154082578438716291">તમે Chrome પ્રવાસમાં તમારી સૌથી તાજેતરની પ્રવૃત્તિ પર સરળતાથી પાછા ફરવામાં તમારી સહાય કરવા માટે તમે મુલાકાત લીધેલ અને સૂચવેલી શોધનાં પેજ જોઈ રહ્યાં છો.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        તમે કાર્ડ મેનૂમાં જઈને સેટિંગ મેનેજ કરી શકો છો અથવા 'Chromeને કસ્ટમાઇઝ કરો'માં વધુ વિકલ્પો જોઈ શકો છો.</translation>
 <translation id="9154194610265714752">અપડેટેડ</translation>
 <translation id="9157096865782046368">0.8 સેકન્ડ</translation>
 <translation id="9157697743260533322">તમામ વપરાશકર્તાઓ માટે સ્વચલિત અપડેટ્સને સેટ કરવામાં નિષ્ફળ થયાં (પ્રીફ્લાઇટ લોંચની ભૂલ: <ph name="ERROR_NUMBER" />)</translation>

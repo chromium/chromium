@@ -18,6 +18,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="1203500561924088507">Hvala što ste instalirali. Morate ponovo pokrenuti preglednik prije nego što možete koristiti <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1261119230216066228">Ušteda memorije ubrzava rad Chromiuma</translation>
 <translation id="1262876892872089030">Dok je ova kartica bila neaktivna, memorija je oslobođena kako bi Chromium ostao brz. Možete odabrati da uvijek izuzmete ovu web lokaciju iz neaktivnosti.</translation>
+<translation id="1265577313130862557">Chromium je blokirao ovo preuzimanje jer je fajl opasan</translation>
 <translation id="1315551408014407711">Postavite novi Chromium profil</translation>
 <translation id="1414495520565016063">Prijavili ste se u Chromium!</translation>
 <translation id="1478370723027452770">Potražite pomoć za Chrome for Testing</translation>
@@ -44,14 +45,17 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="1911763535808217981">Isključivanjem ove postavke, možete se prijaviti na Googleove web lokacije poput Gmaila bez prijave na Chromium</translation>
 <translation id="1929939181775079593">Chromium ne reagira. Ponovo pokrenuti sada?</translation>
 <translation id="193439633299369377">ChromiumOS treba ponovo pokrenuti da se primijeni ažuriranje.</translation>
+<translation id="1951406923938785464">Chromium je blokirao ovo preuzimanje jer se ta vrsta fajla ne preuzima često i fajl je možda opasan</translation>
 <translation id="1953553007165777902">Preuzimanje… Preostalo je <ph name="MINUTE" /> min</translation>
 <translation id="1966382378801805537">Chromium ne može odrediti ili postaviti zadani preglednik</translation>
 <translation id="2008474315282236005">Ovim će se izbrisati jedna stavka s uređaja. Za preuzimanje podataka kasnije, prijavite se u Chromium kao <ph name="USER_EMAIL" />.</translation>
 <translation id="2018879682492276940">Instalacija nije uspjela. Pokušajte ponovo.</translation>
 <translation id="2020032459870799438">Da provjerite jesu li vaše ostale lozinke zaštićene od narušavanja podataka i drugih sigurnosnih problema, <ph name="BEGIN_LINK" />prijavite se u Chromium<ph name="END_LINK" />.</translation>
 <translation id="2049376729098081731">Odaberite želite li uključiti historiju Chromiuma da dodatno personalizirate iskustva na Googleovim uslugama</translation>
+<translation id="2086476982681781442">Chromium je blokirao ovo preuzimanje jer je fajl obmanjujući i može izvršiti neočekivane izmjene na uređaju</translation>
 <translation id="2088953378266246249">Informacije o tome kako Chromium upravlja svojim temeljnim certifikatima</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Organizacija automatski briše podatke o pregledanju kada se Chromium ne koristi 1 minutu. Ovo može uključivati historiju, automatsko popunjavanje i preuzimanja. Kartice će ostati otvorene.}one{Organizacija automatski briše podatke o pregledanju kada se Chromium ne koristi # minutu. Ovo može uključivati historiju, automatsko popunjavanje i preuzimanja. Kartice će ostati otvorene.}few{Organizacija automatski briše podatke o pregledanju kada se Chromium ne koristi # minute. Ovo može uključivati historiju, automatsko popunjavanje i preuzimanja. Kartice će ostati otvorene.}other{Organizacija automatski briše podatke o pregledanju kada se Chromium ne koristi # minuta. Ovo može uključivati historiju, automatsko popunjavanje i preuzimanja. Kartice će ostati otvorene.}}</translation>
+<translation id="215352261310130060">Chromium je blokirao ovo preuzimanje jer web lokacija ne koristi sigurnu vezu i fajl je možda neovlašteno izmijenjen</translation>
 <translation id="2174178932569897599">Prilagodite Chromium</translation>
 <translation id="2174917724755363426">Instalacija nije završena. Jeste li sigurni da želite otkazati?</translation>
 <translation id="2185166961232948079">Chromium – prijava na mrežu – <ph name="PAGE_TITLE" /></translation>
@@ -173,6 +177,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="4544142686420020088">Ažuriranje Chromiuma nije uspjelo. Nešto nije uredu. <ph name="BEGIN_LINK" />Ispravite probleme s ažuriranjem Chromiuma i neuspjela ažuriranja.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Želite li nastaviti na novom Chromium profilu?</translation>
 <translation id="4567424176335768812">Prijavljeni ste kao <ph name="USER_EMAIL_ADDRESS" />. Sada možete pristupiti svojim oznakama, historiji i drugim postavkama na svim uređajima na kojima ste prijavljeni.</translation>
+<translation id="4570813286784708942">Chromium je blokirao ovo preuzimanje jer ste isključili Sigurno pregledanje i fajl se ne može potvrditi</translation>
 <translation id="4594305310729380060">U Upravitelju lozinki na ovom uređaju</translation>
 <translation id="459535195905078186">Chromium aplikacije</translation>
 <translation id="4613863813562375431">Verzija ChromiumOS-a</translation>
@@ -261,6 +266,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="6327105987658262776">Ažuriranje nije dostupno.</translation>
 <translation id="6333502561965082103">U toku je druga radnja u Chromiumu. Pokušajte ponovo kasnije.</translation>
 <translation id="6334986366598267305">Sada je lakše koristiti Chromium s vašim Google računom i na dijeljenim računarima.</translation>
+<translation id="6366160072964553914">Chromium je blokirao ovo preuzimanje jer se fajl ne preuzima često i možda je opasan</translation>
 <translation id="6373523479360886564">Jeste li sigurni da želite deinstalirati Chromium?</translation>
 <translation id="6375219077595103062">Dodajte prečicu za Upravitelj lozinki</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Kako koristimo ove podatke:<ph name="END_BOLD" /> Chromium može procijeniti vaša interesovanja. Kasnije, web lokacija koju ste posjetili može zatražiti od Chromiuma da pogleda vaša interesovanja radi personalizacije oglasa koje vidite.</translation>

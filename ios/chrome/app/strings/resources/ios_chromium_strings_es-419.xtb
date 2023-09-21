@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="es-419">
+<translation id="1046370274005147998">Realiza búsquedas con la voz en Chromium.</translation>
 <translation id="1047130070405668746">Selecciona Chromium.</translation>
 <translation id="1091252999271033193">Esto significa que Chromium solicitará el sitio móvil cada vez.</translation>
 <translation id="1185134272377778587">Acerca de Chromium</translation>
@@ -42,6 +43,7 @@
 <translation id="2574528844022712255">Ver los favoritos de Chromium</translation>
 <translation id="2590893390871230428">Sincronizar tus datos de Chromium</translation>
 <translation id="2618596336309823556">En la configuración de tu dispositivo, abre "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" y selecciona "Chromium"</translation>
+<translation id="2618757400690011108">{COUNT,plural, =1{Chromium te ayudará a realizar el seguimiento de este paquete en la página Nueva pestaña.}other{Chromium te ayudará a realizar el seguimiento de estos paquetes en la página Nueva pestaña.}}</translation>
 <translation id="2650312721222849884">Para ver tus pestañas donde sea que uses Chromium, activa la sincronización</translation>
 <translation id="2684230048001240293">Establece Chromium como navegador predeterminado para sincronizar tus pestañas, información de pago y contraseñas en todos tus dispositivos</translation>
 <translation id="2730884209570016437">Chromium no puede utilizar tu cámara porque la está usando otra aplicación</translation>
@@ -51,6 +53,7 @@
 <translation id="2918709798697875261">Tu organización requiere que no accedas a tu cuenta en Chromium.</translation>
 <translation id="2942241131342758843">Usa Chromium como tu navegador predeterminado para abrir vínculos, realizar búsquedas desde widgets y autocompletar contraseñas en otras apps</translation>
 <translation id="2977470724722393594">Chromium está actualizado.</translation>
+<translation id="3078941082359356771">{COUNT,plural, =1{Chromium puede ayudarte a realizar el seguimiento de este paquete en la página Nueva pestaña.}other{Chromium puede ayudarte a realizar el seguimiento de estos paquetes en la página Nueva pestaña.}}</translation>
 <translation id="3102849287235003384">Para salir de tu Cuenta de Google en todos los sitios web, debes <ph name="BEGIN_LINK" />salir de Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Realizar búsquedas con la voz en Chromium</translation>
 <translation id="3228349498066165585">Aún no se guardaron algunos de tus datos de Chromium en tu Cuenta de Google.
@@ -113,6 +116,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="5521125884468363740">Para ver tus pestañas donde sea que uses Chromium, accede a tu cuenta y activa la sincronización</translation>
 <translation id="5522297504975449419">Algunas funciones de Chromium ya no estarán disponibles.</translation>
 <translation id="5571094606370987472">Abre las pestañas recientes de Chromium.</translation>
+<translation id="5623083843656850677">Bloquea tus pestañas de incógnito cuando abandonas Chromium o cambias de app.</translation>
 <translation id="5688047395118852662">En esta tarjeta, se muestran sugerencias para aprovechar Chromium al máximo.</translation>
 <translation id="5700709190537129682">Chromium no puede revisar las contraseñas</translation>
 <translation id="5777187867430702742">Página de Chromium</translation>

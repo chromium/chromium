@@ -2788,7 +2788,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3169930038976362151">Kies die tema wat by jou behoeftes pas. Raak en hou eenvoudig op die werkskerm om jou tema, muurpapier, sluimerskerm en meer te verander.</translation>
 <translation id="3170072451822350649">Jy kan ook aanmelding oorslaan en <ph name="LINK_START" />as 'n gas blaai<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">Nuwe oortjie aan die linkerkant</translation>
-<translation id="3177689682958561933">Skakel aan om vorentoe of agtertoe te navigeer</translation>
 <translation id="3177909033752230686">Bladsytaal:</translation>
 <translation id="3177914167275935955">Jou toestel sluit ’n Chrome Education-opgradering in, maar jou gebruikernaam word nie met ’n Google for Education-rekening geassosieer nie. Skep asseblief ’n Google for Education-rekening deur g.co/workspace/edusignup op ’n sekondêre toestel te besoek.</translation>
 <translation id="3179982752812949580">Tekslettertipe</translation>
@@ -6266,7 +6265,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6045114302329202345">Primêre TrackPoint-knoppie</translation>
 <translation id="6047632800149092791">Sinkronisering werk nie. Probeer afmeld en weer aanmeld.</translation>
 <translation id="6048747414605857443">Kies en pasmaak teks-na-spraak-stemme vir ChromeVox en Hardoplees</translation>
-<translation id="6049797270917061226">Hierdie lêer kan dit vir aanvallers moontlik maak om jou persoonlike inligting te steel.</translation>
 <translation id="6050189528197190982">Grysskaal</translation>
 <translation id="6051354611314852653">Oeps! Die stelsel kon nie API-toegang vir hierdie toestel magtig nie.</translation>
 <translation id="6051811090255711417">Jou organisasie het hierdie lêer geblokkeer omdat dit nie aan ’n sekuriteitbeleid voldoen nie</translation>
@@ -6552,7 +6550,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6270391203985052864">Werwe kan vra om kennisgewings te stuur</translation>
 <translation id="6270486800167535228">Uitbreiding is vasgespeld. Kies om meer opsies te sien</translation>
 <translation id="6270770586500173387">Stuur <ph name="BEGIN_LINK1" />stelsel- en programinligting<ph name="END_LINK1" /> en <ph name="BEGIN_LINK2" />maatstawwe<ph name="END_LINK2" /></translation>
-<translation id="6270896861225278704">Reisekaart</translation>
 <translation id="6271348838875430303">regstelling is ontdoen</translation>
 <translation id="6271824294945464304">Deel wagwoord</translation>
 <translation id="6273677812470008672">Gehalte</translation>
@@ -7172,6 +7169,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6798578729981748444">Om die invoer te voltooi, maak alle Firefox-vensters toe.</translation>
 <translation id="6798780071646309401">caps lock is aan</translation>
 <translation id="6798954102094737107">Inprop: <ph name="PLUGIN_NAME" /></translation>
+<translation id="679905836499387150">Versteekte nutsbalkknoppies</translation>
 <translation id="6801129617625983991">Algemene instellings</translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{Kies of hierdie uitbreiding hierdie werf kan lees of verander}other{Kies of hierdie uitbreidings hierdie werf kan lees of verander}}</translation>
 <translation id="6801435275744557998">Kalibreer raakskerm</translation>
@@ -10126,10 +10124,6 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="9151906066336345901">end</translation>
 <translation id="9153274276370926498">Lacros-stelselinligting</translation>
 <translation id="9153367754133725216">Sien voorstelle vir nuwe apps en webinhoud in Lanseerder en soekresultate. Stuur net statistieke om voorstelle te verbeter as jy gekies het om omvalverslae en diagnostiek en gebruiksdata na ChromeOS te stuur.</translation>
-<translation id="9154082578438716291">Jy sien tans bladsye wat jy besoek het en voorgestelde soektogte om jou te help om maklik weer by jou mees onlangse aktiwiteit in Chrome Reise uit te kom.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        Jy kan instellings deur die kaartkieslys bestuur, of meer opsies sien in Pasmaak Chrome.</translation>
 <translation id="9154194610265714752">Opgedateer</translation>
 <translation id="9157096865782046368">0,8 sekondes</translation>
 <translation id="9157697743260533322">Kon nie outomatiese opdaterings vir alle gebruikers opstel nie (kontroleringoopmaakfout: <ph name="ERROR_NUMBER" />)</translation>

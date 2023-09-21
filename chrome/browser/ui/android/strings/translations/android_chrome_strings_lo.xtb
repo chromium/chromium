@@ -175,6 +175,7 @@
 <translation id="19288952978244135">ເປີດ Chrome ຄືນໃໝ່.</translation>
 <translation id="1933845786846280168">ແຖບທີ່ເລືອກໄວ້</translation>
 <translation id="1943432128510653496">ບັນທຶກລະ​ຫັດ​ຜ່ານ</translation>
+<translation id="1944535645109964458">ກະແຈຜ່ານໃຊ້ບໍ່ໄດ້</translation>
 <translation id="1952172573699511566">ເວັບໄຊຈະສະແດງຂໍ້ຄວາມໃນພາສາທີ່ທ່ານເລືອກ ເມື່ອເປັນໄປໄດ້.</translation>
 <translation id="1959679933317802873">ກຳລັງລໍຖ້າເນື້ອຫາ</translation>
 <translation id="1960290143419248813">ບໍ່ຮອງຮັບການອັບເດດ Chrome ສຳລັບ Android ເວີຊັນນີ້ອີກຕໍ່ໄປ</translation>
@@ -626,6 +627,7 @@
 <translation id="4257230861809842349">ລຶບລະຫັດຜ່ານອອກຈາກຕົວຈັດການລະຫັດຜ່ານ Google ບໍ?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />ມີການໃຊ້ຂໍ້ມູນໃດ:<ph name="END_BOLD" /> ປະຫວັດການທ່ອງເວັບຂອງທ່ານ, ບັນທຶກຂອງເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງໂດຍໃຊ້ Chrome ຢູ່ອຸປະກອນນີ້.</translation>
 <translation id="4269820728363426813">ກັອບປີ້ທີ່ຢູ່ລິ້ງ</translation>
+<translation id="4277529130885813215">ໃຊ້ອຸປະກອນອື່ນ</translation>
 <translation id="4283102315569707115">ຮ້ອງຂໍເວັບໄຊເດັສທັອບຕາມຄ່າເລີ່ມຕົ້ນບໍ?</translation>
 <translation id="4285846616383034558">ຄຸກກີ້, ແຄສ ແລະ ຂໍ້ມູນເວັບໄຊອື່ນໆ</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />ເປີດໃຊ້ການລັອກໜ້າຈໍໃນການຕັ້ງຄ່າ Android<ph name="END_LINK" /></translation>
@@ -1166,6 +1168,7 @@
 <translation id="6955535239952325894">ການຕັ້ງຄ່ານີ້ຖືກປິດການນຳໃຊ້ໃນໂປຣແກຣມທ່ອງເວັບທີ່ມີການຈັດການ</translation>
 <translation id="6963766334940102469">ລຶບ​ບຸກ​ມາກ​ສ໌</translation>
 <translation id="696447261358045621">ອອກຈາກໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
+<translation id="6965382102122355670">ຕົກລົງ</translation>
 <translation id="6971862865055170158">ບໍ່ອະນຸມັດ</translation>
 <translation id="6978717888677691380">ເວັບໄຊທີ່ທ່ານບລັອກແລ້ວ</translation>
 <translation id="6979737339423435258">ທຸກເວລາ</translation>
@@ -1324,6 +1327,7 @@
 <translation id="7757787379047923882">ຂໍ້ຄວາມທີ່ແບ່ງປັນຈາກ <ph name="DEVICE_NAME" /></translation>
 <translation id="7762668264895820836">SD ກາດ <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">ເພີ່ມ​ທີ່​ຢູ່</translation>
+<translation id="7766587497031415281">ຕົວເລືອກເພີ່ມເຕີມໃນການລຶບລ້າງຂໍ້ມູນການທ່ອງເວັບ</translation>
 <translation id="7772032839648071052">ຢືນ​ຢັນວະລີຜ່ານ</translation>
 <translation id="7772375229873196092">ປິດ <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ແລະ ອີກ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ວິທີການຈ່າຍເງິນ}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ແລະ ອີກ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ວິທີການຈ່າຍເງິນ}}</translation>

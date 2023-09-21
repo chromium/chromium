@@ -12,6 +12,7 @@
 <translation id="1149651794389918149">ลงชื่อเข้าใช้ Chrome หากต้องการลงชื่อเข้าใช้บัญชีเพียงครั้งเดียว คุณสามารถ<ph name="GUEST_LINK_BEGIN" />ใช้อุปกรณ์ในฐานะผู้มาเยือน<ph name="GUEST_LINK_END" />ได้</translation>
 <translation id="1152920704813762236">เกี่ยวกับ Chrome OS</translation>
 <translation id="1154147086299354128">เ&amp;ปิดใน Chrome</translation>
+<translation id="1194807384646768652">Chrome บล็อกการดาวน์โหลดนี้เนื่องจากไฟล์ประเภทนี้ไม่ได้มีการดาวน์โหลดกันโดยทั่วไปและอาจเป็นอันตราย</translation>
 <translation id="1203500561924088507">ขอขอบคุณที่ติดตั้ง คุณต้องรีสตาร์ทเบราว์เซอร์ก่อนใช้ <ph name="BUNDLE_NAME" /></translation>
 <translation id="1278833599417554002">เปิดอีกครั้งเพื่ออัปเดต Chrome</translation>
 <translation id="1302523850133262269">โปรดรอขณะที่ Chrome ติดตั้งการอัปเดตระบบล่าสุด</translation>
@@ -128,10 +129,12 @@
 <translation id="3080151273017101988">เรียกใช้แอปพลิเคชันเบื้องหลังต่อไปเมื่อ Google Chrome ถูกปิดลง</translation>
 <translation id="3089968997497233615">Google Chrome มีรุ่นใหม่ที่ปลอดภัยกว่าให้ใช้งานแล้ว</translation>
 <translation id="3100998948628680988">ตั้งชื่อโปรไฟล์ Chrome ของคุณ</translation>
+<translation id="3112458742631356345">Chrome บล็อกการดาวน์โหลดนี้เนื่องจากไฟล์ไม่ได้มีการดาวน์โหลดกันโดยทั่วไปและอาจเป็นอันตราย</translation>
 <translation id="3114643501466072395"><ph name="BEGIN_LINK" />ลงชื่อเข้าใช้ Chrome<ph name="END_LINK" /> เพื่อตรวจสอบว่ารหัสผ่านรายการอื่นไม่ได้รับผลกระทบจากการละเมิดข้อมูลและปัญหาด้านความปลอดภัยอื่นๆ</translation>
 <translation id="3140883423282498090">การเปลี่ยนแปลงของคุณจะมีผลในครั้งถัดไปที่คุณเปิด Google Chrome</translation>
 <translation id="3149510190863420837">แอป Chrome</translation>
 <translation id="3169523567916669830">ในระหว่างการทดลองใช้ คุณสามารถดูและลบหัวข้อที่สนใจซึ่งเว็บไซต์ใช้เพื่อแสดงโฆษณาแก่คุณได้ Chrome คาดคะเนความสนใจของคุณโดยอิงจากประวัติการท่องเว็บล่าสุด</translation>
+<translation id="3196187562065225381">Chrome บล็อกการดาวน์โหลดนี้เนื่องจากไฟล์เป็นอันตราย</translation>
 <translation id="3226612997184048185">หากบันทึกบุ๊กมาร์กไว้ในบัญชี Google ด้วย คุณจะติดตามราคาผลิตภัณฑ์ใน Chrome และรับการแจ้งเตือนเมื่อราคาต่ำลงได้</translation>
 <translation id="3245429137663807393">หากคุณแชร์รายงานการใช้งาน Chrome ด้วย รายงานดังกล่าวจะรวม URL ที่คุณเข้าชม</translation>
 <translation id="3282568296779691940">ลงชื่อเข้าใช้ Chrome</translation>
@@ -179,6 +182,7 @@
 <translation id="4148957013307229264">กำลังติดตั้ง...</translation>
 <translation id="4149882025268051530">โปรแกรมติดตั้งยกเลิกการบีบอัดการเก็บข้อมูลไม่ได้ โปรดดาวน์โหลด Google Chrome อีกครั้ง</translation>
 <translation id="4153934450158521343">Chrome จะปิดและลบข้อมูลเร็วๆ นี้</translation>
+<translation id="4175922240926474352">Chrome บล็อกการดาวน์โหลดนี้เนื่องจากเว็บไซต์ไม่ได้ใช้การเชื่อมต่อที่ปลอดภัยและไฟล์อาจมีการดัดแปลง</translation>
 <translation id="4191857738314598978">{0,plural, =1{เปิด Chrome ขึ้นมาใหม่ภายใน 1 วัน}other{เปิด Chrome ขึ้นมาใหม่ภายใน # วัน}}</translation>
 <translation id="4205939740494406371">Chrome ตรวจสอบรหัสผ่านของคุณไม่ได้ โปรดรอ 24 ชั่วโมงแล้วลองอีกครั้งหรือ<ph name="BEGIN_LINK" />ตรวจสอบรหัสผ่านในบัญชี Google<ph name="END_LINK" /></translation>
 <translation id="4222932583846282852">กำลังยกเลิก...</translation>
@@ -355,6 +359,7 @@
 <translation id="7641148173327520642">ผู้ดูแลระบบได้กำหนดค่าให้ Google Chrome เปิด <ph name="ALTERNATIVE_BROWSER_NAME" /> เพื่อเข้าถึง <ph name="TARGET_URL_HOSTNAME" /></translation>
 <translation id="7649070708921625228">ความช่วยเหลือ</translation>
 <translation id="7651907282515937834">โลโก้ Chrome Enterprise</translation>
+<translation id="76531479118467370">Chrome บล็อกการดาวน์โหลดนี้เนื่องจากคุณปิด Google Safe Browsing จึงยืนยันไฟล์ไม่ได้</translation>
 <translation id="7655455401911432608">ประวัติการท่องเว็บ ซึ่งเป็นบันทึกรายการเว็บไซต์ที่คุณเข้าชมโดยใช้ Chrome ในอุปกรณ์นี้</translation>
 <translation id="7747138024166251722">โปรแกรมติดตั้งสร้างไดเรกทอรีชั่วคราวไม่ได้ โปรดตรวจสอบพื้นที่ดิสก์ว่างและการอนุญาตให้ติดตั้งซอฟต์แวร์</translation>
 <translation id="7761834446675418963">คลิกชื่อของคุณเพื่อเปิด Chrome และเริ่มท่องเว็บ</translation>
@@ -371,6 +376,7 @@
 <translation id="7890208801193284374">ถ้าคุณให้ผู้อื่นใช้คอมพิวเตอร์ร่วมด้วย เพื่อนๆ และครอบครัวของคุณสามารถท่องเว็บแยกกันได้และตั้งค่า Chrome ได้ตามที่พวกเขาต้องการ</translation>
 <translation id="7896673875602241923">ก่อนหน้านี้มีผู้ลงชื่อเข้าใช้ Chrome ในคอมพิวเตอร์นี้ด้วยชื่อ <ph name="ACCOUNT_EMAIL_LAST" /> โปรดสร้างผู้ใช้ Chrome ใหม่เพื่อเก็บข้อมูลแยก</translation>
 <translation id="7917876797003313048">คุณจัดการบัญชี Google ที่ลงชื่อเข้าใช้ได้ บัญชี Google ใช้สำหรับเบราว์เซอร์ Chrome, Play Store, Gmail และอื่นๆ หากต้องการเพิ่มบัญชีให้คนอื่น เช่น สมาชิกในครอบครัว ให้เพิ่มบุคคลใหม่ลงใน <ph name="DEVICE_TYPE" /> แทน <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
+<translation id="7936702483636872823">Chrome บล็อกการดาวน์โหลดนี้เนื่องจากไฟล์มีการหลอกลวงและอาจทำการเปลี่ยนแปลงที่ไม่คาดคิดกับอุปกรณ์</translation>
 <translation id="7951272445806340501">Chrome OS Flex ต้องรีสตาร์ทเพื่อใช้การอัปเดต</translation>
 <translation id="7962368738413920945">เว็บไซต์อาจทำงานได้ตามที่ต้องการแต่จะไม่จดจำคุณหลังจากที่ปิดหน้าต่าง Chrome ทั้งหมด</translation>
 <translation id="7962410387636238736">คอมพิวเตอร์เครื่องนี้จะไม่ได้รับการอัปเดต Google Chrome อีกต่อไปเพราะระบบไม่รองรับ Windows XP และ Windows Vista แล้ว</translation>

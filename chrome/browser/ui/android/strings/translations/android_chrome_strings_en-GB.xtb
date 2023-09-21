@@ -175,6 +175,7 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="19288952978244135">Reopen Chrome.</translation>
 <translation id="1933845786846280168">Selected Tab</translation>
 <translation id="1943432128510653496">Save passwords</translation>
+<translation id="1944535645109964458">No passkeys available</translation>
 <translation id="1952172573699511566">Websites will show text in your preferred language, when possible.</translation>
 <translation id="1959679933317802873">Waiting for content</translation>
 <translation id="1960290143419248813">Chrome updates are no longer supported for this version of Android</translation>
@@ -626,6 +627,7 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="4257230861809842349">Delete passwords from Google Password Manager?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />What data is used:<ph name="END_BOLD" /> Your browsing history, a record of sites that you’ve visited using Chrome on this device.</translation>
 <translation id="4269820728363426813">Copy link address</translation>
+<translation id="4277529130885813215">Use another device</translation>
 <translation id="4283102315569707115">Request desktop sites by default?</translation>
 <translation id="4285846616383034558">Cookies, cache and other site data</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Turn on screen lock in Android settings<ph name="END_LINK" /></translation>
@@ -1166,6 +1168,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6955535239952325894">This setting is disabled on managed browsers</translation>
 <translation id="6963766334940102469">Delete bookmarks</translation>
 <translation id="696447261358045621">Leave Incognito mode</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6971862865055170158">Don’t approve</translation>
 <translation id="6978717888677691380">Sites that you blocked</translation>
 <translation id="6979737339423435258">All time</translation>
@@ -1324,6 +1327,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7757787379047923882">Text shared from <ph name="DEVICE_NAME" /></translation>
 <translation id="7762668264895820836">SD Card <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Add address</translation>
+<translation id="7766587497031415281">More options to clear browsing data</translation>
 <translation id="7772032839648071052">Confirm passphrase</translation>
 <translation id="7772375229873196092">Close <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> more}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> more}}</translation>

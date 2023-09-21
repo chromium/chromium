@@ -486,6 +486,7 @@
 <translation id="1390548061267426325">פתיחה ככרטיסייה רגילה</translation>
 <translation id="1390907927270446471">ל<ph name="PROFILE_USERNAME" /> אין הרשאה להדפיס ב-<ph name="PRINTER_NAME" />. צריך לפנות למנהל המערכת.</translation>
 <translation id="1392047138650695757">המילונים של המשתמש</translation>
+<translation id="1392500396467822548">‏עכשיו החברים בקבוצה המשפחתית יכולים להשתמש בשם המשתמש ובסיסמה שלך כשהם משתמשים במנהל הסיסמאות של Google. צריך לבקש מהם לעבור אל <ph name="WEBSITE" /> כדי להיכנס. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="139300021892314943">הגבלת המשתמשים שיכולים להיכנס</translation>
 <translation id="1393283411312835250">שמש ועננים</translation>
 <translation id="1395730723686586365">המעדכן הופעל</translation>
@@ -1025,6 +1026,7 @@
 <translation id="1802687198411089702">הדף לא מגיב. אפשר לחכות או לצאת.</translation>
 <translation id="1803531841600994172">שפת היעד של התרגום</translation>
 <translation id="1803545009660609783">יש לומר שוב</translation>
+<translation id="1804195280859010019">‏יוצגו לך הצעות או פרטים מועילים יותר בתכונות כמו החלונית הצדדית של חיפוש Google</translation>
 <translation id="1805545709333681504">הזנת הסיסמה הישנה</translation>
 <translation id="1805738995123446102">כרטיסיית הרקע משתמשת במיקרופון</translation>
 <translation id="1805822111539868586">בדיקת תצוגות</translation>
@@ -2290,6 +2292,7 @@
 <translation id="2765606672116865966">כשמקלידים טקסט בסרגל הכתובות או בתיבת החיפוש או לוחצים עליהם, מופיעות הצעות ממנוע החיפוש שמוגדר כברירת מחדל. האפשרות הזו מושבתת במצב הפרטי.</translation>
 <translation id="2766006623206032690">הדבקה והמשך</translation>
 <translation id="2766161002040448006">בקשת רשות מההורים</translation>
+<translation id="2766787642751986950">שליטה בעכבר ובמקלדת בעזרת תנועות של הפנים</translation>
 <translation id="2767077837043621282">‏לא ניתן לעדכן את ה-Chromebook. יש לנסות שוב מאוחר יותר.</translation>
 <translation id="2767127727915954024">לאתר <ph name="ORIGIN" /> תהיה הרשאה לערוך את <ph name="FILENAME" /> עד שכל הכרטיסיות של האתר הזה ייסגרו</translation>
 <translation id="2769174155451290427">התמונה שהועלתה</translation>
@@ -2784,7 +2787,6 @@
 <translation id="3169930038976362151">כאן אפשר לבחור את העיצוב שמתאים לך. כדי לשנות את העיצוב, הטפט, שומר המסך ופריטים נוספים, פשוט לוחצים לחיצה ארוכה על שולחן העבודה.</translation>
 <translation id="3170072451822350649">ניתן גם לדלג על הכניסה ו<ph name="LINK_START" />לגלוש כאורח<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">כרטיסייה חדשה מצד שמאל</translation>
-<translation id="3177689682958561933">כדי לנווט קדימה ואחורה, צריך להפעיל את ההגדרה הזו.</translation>
 <translation id="3177909033752230686">שפת הדף:</translation>
 <translation id="3177914167275935955">‏המכשיר כולל אפשרות שדרוג ל-Chrome Education, אבל שם המשתמש שלך לא משויך לחשבון Google for Education. יש ליצור חשבון Google for Education בכתובת g.co/workspace/edusignup במכשיר אחר.</translation>
 <translation id="3179982752812949580">גופן הטקסט</translation>
@@ -3018,6 +3020,7 @@
 <translation id="3380365263193509176">שגיאה לא ידועה</translation>
 <translation id="3382073616108123819">אופס! המערכת לא הצליחה לקבוע את המזהים של מכשיר זה.</translation>
 <translation id="3382200254148930874">הפיקוח מופסק...</translation>
+<translation id="3382737653173267704">לקבוצה המשפחתית</translation>
 <translation id="338323348408199233">‏חסימה של תנועת גולשים ללא VPN</translation>
 <translation id="3384362484379805487">קובצי השפה משותפים עם משתמשים כדי לחסוך מקום בכונן.</translation>
 <translation id="3385092118218578224">%<ph name="DISPLAY_ZOOM" /></translation>
@@ -3178,6 +3181,7 @@
 <translation id="3500417806337761827">‏אירעה שגיאה בטעינת השיתוף. כבר נטענו יותר מדי שיתופי SMB.</translation>
 <translation id="3503995387997205657">יש לך אפשרות לשחזר את האפליקציות הקודמות שבהן השתמשת</translation>
 <translation id="3505100368357440862">הצעות לקניות</translation>
+<translation id="3505602163050943406">‏כשמשתמשים בתכונות מסוימות, עשויים להישלח ל-Google חלקים מדפים פתוחים, דפים קשורים מהזמן האחרון וכתובות ה-URL שלהם</translation>
 <translation id="3507132249039706973">מופעלת הגנה רגילה</translation>
 <translation id="3507888235492474624">‏סריקה חוזרת לאיתור מכשירי Bluetooth</translation>
 <translation id="3508492320654304609">לא ניתן למחוק את פרטי הכניסה שלך</translation>
@@ -4508,6 +4512,7 @@
 <translation id="4579453506923101210">הסרת הטלפון המחובר</translation>
 <translation id="4579581181964204535">לא ניתן להעביר את <ph name="HOST_NAME" />.</translation>
 <translation id="4579876313423027742">‏כדי לעבור להתראות של הדפדפן, נכנסים אל <ph name="LINK_BEGIN" />הגדרות הדפדפן Chrome<ph name="LINK_END" /></translation>
+<translation id="4580389561674319558">במצב גלוי לכל אנשי הקשר</translation>
 <translation id="4580587929153007251">‏יש להיכנס שוב למנהל הסיסמאות של Google</translation>
 <translation id="4580596421317071374">הסיסמאות נשמרות ב<ph name="GOOGLE_PASSWORD_MANAGER" /> במכשיר הזה.</translation>
 <translation id="4581774856936278355">‏שגיאה בזמן השחזור של Linux</translation>
@@ -4567,6 +4572,7 @@
 <translation id="4634575639321169635">אפשר להגדיר את המכשיר לעבודה או לשימוש אישי</translation>
 <translation id="4635072447747973225">‏הסרה של Crostini</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> לא זמין למשתמשים במצב אורח.</translation>
+<translation id="4636187126182557415">העדפות המערכת</translation>
 <translation id="4636682061478263818">‏קובצי Drive</translation>
 <translation id="4636930964841734540">מידע</translation>
 <translation id="4637083375689622795">פעולות נוספות, <ph name="EMAIL" /></translation>
@@ -4823,6 +4829,7 @@
 <translation id="484462545196658690">אוטומטי</translation>
 <translation id="4846628405149428620">בחירת המיקום לשמירת שינויים על ידי האתר הזה</translation>
 <translation id="4846680374085650406">הפעילות שלך נעשית בהתאם להמלצה של מנהל המערכת לגבי הגדרה זו.</translation>
+<translation id="4847739924804456327">‏עכשיו <ph name="RECIPIENT_NAME" /> יכול/ה להשתמש בשם המשתמש ובסיסמה שלך במנהל הסיסמאות של Google. יהיה צורך לעבור אל <ph name="WEBSITE" /> כדי להיכנס. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="4848191975108266266">‏קריאה ל-Google Assistant במילים "Hey Google"</translation>
 <translation id="4849286518551984791">‏זמן אוניברסלי מתואם (UTC/‏GMT)</translation>
 <translation id="4849517651082200438">לא להתקין</translation>
@@ -6253,7 +6260,6 @@
 <translation id="6045114302329202345">‏לחצן TrackPoint ראשי</translation>
 <translation id="6047632800149092791">הסנכרון לא פועל. יש לנסות לצאת ולהיכנס שוב.</translation>
 <translation id="6048747414605857443">‏בחירה והתאמה אישית של הקולות בהמרת טקסט לדיבור בתכונות ChromeVox והקראה</translation>
-<translation id="6049797270917061226">הקובץ הזה עלול לאפשר לתוקפים לגנוב את המידע האישי שלך.</translation>
 <translation id="6050189528197190982">גווני אפור</translation>
 <translation id="6051354611314852653">‏אופס!  המערכת לא הצליחה לאמת את הגישה של מכשיר זה לממשק ה-API.</translation>
 <translation id="6051811090255711417">הקובץ הזה לא עמד בתנאים של מדיניות האבטחה ולכן הוא נחסם על ידי הארגון שלך</translation>
@@ -6539,7 +6545,6 @@
 <translation id="6270391203985052864">אתרים יכולים לבקש לשלוח התראות</translation>
 <translation id="6270486800167535228">התוסף מוצמד. כדי לראות אפשרויות נוספות, צריך לבחור כאן.</translation>
 <translation id="6270770586500173387">שליחת <ph name="BEGIN_LINK1" />פרטי מערכת ויישומים<ph name="END_LINK1" />, כמו גם <ph name="BEGIN_LINK2" />מדדים<ph name="END_LINK2" /></translation>
-<translation id="6270896861225278704">כרטיס התהליכים</translation>
 <translation id="6271348838875430303">התיקון בוטל</translation>
 <translation id="6271824294945464304">שיתוף הסיסמה</translation>
 <translation id="6273677812470008672">איכות</translation>
@@ -7163,6 +7168,7 @@
 <translation id="6798578729981748444">‏סגירת כל החלונות של Firefox תשלים את פעולת הייבוא.</translation>
 <translation id="6798780071646309401">‏caps lock מופעל</translation>
 <translation id="6798954102094737107">פלאגין: <ph name="PLUGIN_NAME" /></translation>
+<translation id="679905836499387150">הלחצנים המוסתרים בסרגל הכלים</translation>
 <translation id="6801129617625983991">הגדרות כלליות</translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{ניתן לבחור אם התוסף הזה יוכל לקרוא או לשנות את האתר הזה}one{ניתן לבחור אם התוספים האלה יוכלו לקרוא או לשנות את האתר הזה}two{ניתן לבחור אם התוספים האלה יוכלו לקרוא או לשנות את האתר הזה}other{ניתן לבחור אם התוספים האלה יוכלו לקרוא או לשנות את האתר הזה}}</translation>
 <translation id="6801435275744557998">כיול מסך המגע</translation>
@@ -8103,6 +8109,7 @@
 <translation id="756445078718366910">פתיחת חלון דפדפן</translation>
 <translation id="7564847347806291057">סיום התהליך</translation>
 <translation id="756503097602602175">‏ב<ph name="LINK_BEGIN" />הגדרות<ph name="LINK_END" /> אפשר לנהל את חשבונות Google המחוברים. ייתכן שהרשאות שנתת לאתרים ולאפליקציות יחולו על כל החשבונות. אם אינך רוצה שלאתרים או לאפליקציות תהיה גישה לפרטי החשבון שלך, ניתן להיכנס אל <ph name="DEVICE_TYPE" /> כאורח או לגלוש באינטרנט ב<ph name="LINK_2_BEGIN" />חלון אנונימי<ph name="LINK_2_END" />.</translation>
+<translation id="756583107125124860">לתכונות מסוימות יש אפשרות להיעזר בתוכן של דפים פתוחים ושל דפים קשורים מהזמן האחרון כדי להציג הצעות או פרטים מועילים יותר</translation>
 <translation id="7566118625369982896">‏ניהול קישורים של אפליקציות מ-Play</translation>
 <translation id="756809126120519699">‏נתוני Chrome נוקו</translation>
 <translation id="756876171895853918">התאמה אישית של הדמות</translation>
@@ -8645,6 +8652,7 @@
 <translation id="7978412674231730200">מפתח פרטי</translation>
 <translation id="7978450511781612192">‏הפעולה הזאת תוציא אותך מחשבונות Google שלך. הסימניות, ההיסטוריה, הסיסמאות ופרטים אחרים יפסיקו לעבור סנכרון.</translation>
 <translation id="7980084013673500153">מזהה נכס: <ph name="ASSET_ID" /></translation>
+<translation id="7980257515763116014">שליטה בסמן ובמקלדת באמצעות תנועות פנים</translation>
 <translation id="7981662863948574132">‏הצגת החלון הקופץ של מספר ה-EID וקוד ה-QR של המכשיר</translation>
 <translation id="7981670705071137488">בסיום ההורדה, עדכוני תוכנה יתבצעו ברקע. אפשר לנהל את ההעדפות לגבי עדכונים בהגדרות.</translation>
 <translation id="7982083145464587921">כדאי לאתחל את המכשיר כדי לתקן את השגיאה.</translation>
@@ -9641,6 +9649,7 @@
 <translation id="8781980678064919987">כיבוי כשהמכסה סגור</translation>
 <translation id="8782565991310229362">ההפעלה של יישום קיוסק בוטלה.</translation>
 <translation id="8783834180813871000">‏עליך להקליד את קוד ההתאמה ל-Bluetooth ולאחר מכן ללחוץ על Return או Enter.</translation>
+<translation id="8783955532752528811">תכונות שמספקות עזרה לפי הקשר</translation>
 <translation id="8784626084144195648">ממוצע צבור</translation>
 <translation id="8785622406424941542">סטיילוס</translation>
 <translation id="8786824282808281903">כשהסמל הזה יוצג לילד או לילדה, ניתן יהיה להשתמש בטביעת אצבע לצורך זיהוי או כדי לאשר רכישות.</translation>
@@ -10073,6 +10082,7 @@
 <translation id="9113469270512809735">החלפת מצב של הצגת פריטים שנסגרו לאחרונה</translation>
 <translation id="9114663181201435112">כניסה בקלות</translation>
 <translation id="9115675100829699941">&amp;סימניות</translation>
+<translation id="9115932142612197835">‏ההגדרה הזו לא משנה את הזמינות של Google Translate או של Lens</translation>
 <translation id="9116799625073598554">אפליקציה לרישום הערות</translation>
 <translation id="9117030152748022724">ניהול האפליקציות שלך</translation>
 <translation id="9120693811286642342">‏<ph name="BEGIN_PARAGRAPH1" />כדי ליהנות מהחוויה הכי טובה, צריך להתקין את <ph name="DEVICE_OS" /> בדיסק הפנימי. יש לך גם אפשרות להתקין בשלב מאוחר יותר ממסך ההתחברות.<ph name="END_PARAGRAPH1" />
@@ -10113,10 +10123,6 @@
 <translation id="9151906066336345901">‏מקש End</translation>
 <translation id="9153274276370926498">‏פרטי מערכת של Lacros</translation>
 <translation id="9153367754133725216">‏אפשר לראות הצעות לאפליקציות חדשות ולתוכן מהאינטרנט במרכז האפליקציות ובתוצאות החיפוש. המערכת שולחת נתונים סטטיסטיים כדי לשפר את ההצעות רק אם בחרת לשלוח דוחות קריסה ונתוני אבחון ושימוש במכשיר אל ChromeOS.</translation>
-<translation id="9154082578438716291">‏מוצגים דפים שביקרת בהם והצעות לחיפושים כדי שיהיה קל לחזור לפעילות האחרונה שלך בתהליכים ב-Chrome.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        ניתן לנהל את ההגדרות דרך התפריט בכרטיס או לראות עוד אפשרויות ב'התאמה אישית של Chrome'.</translation>
 <translation id="9154194610265714752">עודכן</translation>
 <translation id="9157096865782046368">0.8 שניות</translation>
 <translation id="9157697743260533322">הגדרת עדכונים אוטומטיים לכל המשתמשים נכשלה (שגיאת קדם-הפעלה: <ph name="ERROR_NUMBER" />)</translation>
@@ -10247,6 +10253,7 @@
 <translation id="969096075394517431">החלפת שפות</translation>
 <translation id="969574218206797926">במסגרת מצב החיסכון בזיכרון מתפנה זיכרון שמוקצה לכרטיסיות לא פעילות לשימוש בכרטיסיות פעילות ובאפליקציות אחרות</translation>
 <translation id="970047733946999531">{NUM_TABS,plural, =1{כרטיסייה אחת}one{# כרטיסיות}two{# כרטיסיות}other{# כרטיסיות}}</translation>
+<translation id="970431600907534323">הגדרות השליטה בעכבר ובמקלדת בעזרת תנועות של הפנים</translation>
 <translation id="971774202801778802">כתובת אתר של סימנייה</translation>
 <translation id="973473557718930265">יציאה</translation>
 <translation id="973558314812359997">גודל סמן העכבר</translation>

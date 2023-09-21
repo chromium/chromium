@@ -1775,6 +1775,7 @@
 <translation id="2359345697448000899">با کلیک کردن روی افزونه‌ها در منوی ابزار، برنامه‌های افزودنی خود را مدیریت کنید.</translation>
 <translation id="2359556993567737338">اتصال دستگاه بلوتوث</translation>
 <translation id="2359808026110333948">ادامه</translation>
+<translation id="2360792123962658445">‏برای دریافت خلاصه صفحه، جستجوهای مربوط، و اطلاعات مفید دیگری درباره این صفحه، دکمه پانل کناری «جستجوی Google» را در نوارابزار انتخاب کنید</translation>
 <translation id="2361100938102002520">درحال اضافه کردن نمایه تحت‌مدیریت به این مرورگر هستید. سرپرستتان این نمایه را کنترل می‌کند و می‌تواند به داده‌های آن دسترسی داشته باشد.</translation>
 <translation id="236117173274098341">بهینه‌سازی</translation>
 <translation id="2361340419970998028">درحال ارسال بازخورد...</translation>
@@ -2784,7 +2785,6 @@
 <translation id="3169930038976362151">زمینه‌ای را انتخاب کنید که مناسب نیازهایتان باشد. برای تغییر زمینه، کاغذدیواری، محافظ صفحه‌نمایش، و موارد دیگر، کافی است میز کار را لمس کنید و نگه دارید.</translation>
 <translation id="3170072451822350649">همچنین می‌توانید از ورود به سیستم صرف‌نظر کرده، <ph name="LINK_START" />به عنوان مهمان مرور کنید<ph name="LINK_END" />.</translation>
 <translation id="31774765611822736">برگه جدید در سمت چپ</translation>
-<translation id="3177689682958561933">برای پیمایش به‌جلو و عقب، این تنظیم را روشن کنید</translation>
 <translation id="3177909033752230686">زبان صفحه:</translation>
 <translation id="3177914167275935955">‏Chrome Education Upgrade در دستگاهتان وجود دارد، اما نام کاربری شما با هیچ حساب Google for Education مرتبط نیست. لطفاً با رفتن به نشانی زیر در دستگاهی دیگر، حساب Google for Education بسازید: g.co/workspace/edusignup.</translation>
 <translation id="3179982752812949580">قلم نوشتار</translation>
@@ -4730,6 +4730,7 @@
 <translation id="4766598565665644999">همه افزونه‌ها می‌توانند <ph name="HOST" /> را بخوانند و تغییر دهند</translation>
 <translation id="4767427586072640478">درباره افزونه‌های غیرفعال بیشتر بدانید.</translation>
 <translation id="4768332406694066911">گواهی‌هایی از این سازمان‌ها دارید که هویت شما را شناسایی می‌کنند</translation>
+<translation id="4769632191812288342">محافظت استاندارد را دریافت می‌کنید</translation>
 <translation id="4770119228883592393">درخواست اجازه ارائه شده است؛ برای پاسخ دادن، کلید «⌘ + گزینه + پیکان روبه‌پایین» را فشار دهید</translation>
 <translation id="4773112038801431077">‏ارتقای Linux</translation>
 <translation id="4774456473286455263">‏راه‌اندازی با تلفن Android</translation>
@@ -4971,6 +4972,7 @@
 <translation id="4965808351167763748">‏مطمئن هستید می‌خواهید این دستگاه را برای اجرای Hangouts Meet راه‌اندازی کنید؟</translation>
 <translation id="4966972803217407697">در «حالت ناشناس» هستید</translation>
 <translation id="4967227914555989138">افزودن یادداشت</translation>
+<translation id="4967360192915400530">بارگیری فایل خطرناک</translation>
 <translation id="496742804571665842">غیرفعال کردن نمایه‌های سیم‌کارت داخلی</translation>
 <translation id="4971412780836297815">بعد از اتمام باز شود</translation>
 <translation id="4971735654804503942">‏محافظت سریع‌تر و پیشگیرانه دربرابر وب‌سایت‌ها، بارگیری‌ها، و افزونه‌های خطرناک. رخنه در گذرواژه را به شما هشدار می‌دهد. عملکرد این ویژگی متکی بر ارسال داده‌های مرور به Google‌ است.</translation>
@@ -5311,6 +5313,7 @@
 <translation id="5265797726250773323">هنگام نصب خطایی روی داد</translation>
 <translation id="5266113311903163739">خطای ورود ارائه دهنده مجوز</translation>
 <translation id="526622169288322445">کنش‌های بیشتر برای <ph name="ADDRESS_SUMMARY" /></translation>
+<translation id="5267572070504076962">برای محافظت دربرابر سایت‌های خطرناک، «مرور ایمن» را روشن کنید</translation>
 <translation id="5268373933383932086">صفحه شما، روش شما</translation>
 <translation id="5269977353971873915">چاپ نشد</translation>
 <translation id="5271578170655641944">‏دسترسی به Google Drive برداشته شود؟</translation>
@@ -6258,7 +6261,6 @@
 <translation id="6045114302329202345">‏دکمه TrackPoint اصلی</translation>
 <translation id="6047632800149092791">همگام‌سازی کار نمی‌کند. تلاش کنید از سیستم خارج و دوباره وارد شوید.</translation>
 <translation id="6048747414605857443">‏انتخاب و سفارشی کردن صداهای نوشتار به گفتار برای ChromeVox و «انتخاب برای شنیدن»</translation>
-<translation id="6049797270917061226">این فایل می‌تواند به مهاجمان اجازه دهد اطلاعات شخصی شما را سرقت کنند.</translation>
 <translation id="6050189528197190982">سیاه‌وسفید</translation>
 <translation id="6051354611314852653">‏متأسفیم! سیستم نتوانست دسترسی API را برای این دستگاه راستی‌آزمایی کند.</translation>
 <translation id="6051811090255711417">سازمان شما این فایل را به‌دلیل عدم رعایت خط‌مشی امنیتی مسدود کرد</translation>
@@ -6544,7 +6546,6 @@
 <translation id="6270391203985052864">سایت‌ها می‌توانند برای ارسال اعلان درخواست دهند</translation>
 <translation id="6270486800167535228">افزونه سنجاق شده است. برای دیدن گزینه‌های بیشتر انتخاب کنید</translation>
 <translation id="6270770586500173387">ارسال <ph name="BEGIN_LINK1" />اطلاعات برنامه و سیستم<ph name="END_LINK1" /> و <ph name="BEGIN_LINK2" />معیارها<ph name="END_LINK2" /></translation>
-<translation id="6270896861225278704">کارت سفرهای جستجو</translation>
 <translation id="6271348838875430303">تصحیح واگرد شد</translation>
 <translation id="6271824294945464304">هم‌رسانی گذرواژه</translation>
 <translation id="6273677812470008672">کیفیت</translation>
@@ -7166,6 +7167,7 @@
 <translation id="6798578729981748444">‏برای به پایان رساندن وارد کردن، همه پنجره‌های Firefox را ببندید.</translation>
 <translation id="6798780071646309401">‏caps lock روشن</translation>
 <translation id="6798954102094737107">افزایه: <ph name="PLUGIN_NAME" /></translation>
+<translation id="679905836499387150">دکمه‌های نوارابزار پنهان‌شده</translation>
 <translation id="6801129617625983991">تنظیمات کلی</translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{انتخاب کنید آیا این افزونه می‌تواند این سایت را بخواند یا تغییر دهد}one{انتخاب کنید آیا این افزونه می‌تواند این سایت را بخواند یا تغییر دهد}other{انتخاب کنید آیا این افزونه‌ها می‌توانند این سایت را بخوانند یا تغییر دهند}}</translation>
 <translation id="6801435275744557998">کالیبراسیون صفحه لمسی</translation>
@@ -7551,6 +7553,7 @@
 <translation id="7099337801055912064">‏فایل PPD بزرگ است و بار نمی‌شود. حداکثر اندازه ۲۵۰ کیلوبایت است.</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{گذرواژه لورفته‌ای وجود ندارد}=1{{COUNT} گذرواژه لورفته}one{{COUNT} گذرواژه لورفته}other{{COUNT} گذرواژه لورفته}}</translation>
 <translation id="710047887584828070">محتوای این برگه درحال هم‌رسانی است</translation>
+<translation id="710224247908684995">یکی از افزونه‌ها «مرور ایمن» را خاموش کرده است</translation>
 <translation id="7102832101143475489">درنگ درخواست تمام شد</translation>
 <translation id="710640343305609397">بازکردن تنظیمات شبکه</translation>
 <translation id="7107609441453408294">پخش یک صدا ازطریق همه بلندگوها</translation>
@@ -7757,6 +7760,7 @@
 <translation id="7287143125007575591">دسترسی رد شد.</translation>
 <translation id="7287411021188441799">بازیابی پس‌زمینه پیش‌فرض</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />×<ph name="VERTICAL_DPI" /> نقطه در اینچ</translation>
+<translation id="7289049772085228972">‏شما قوی‌ترین امنیت Chrome را دارید</translation>
 <translation id="7289386924227731009">‏<ph name="WINDOW_TITLE" /> - درخواست اجازه ارائه شده است؛ برای پاسخ دادن، کلید F6 را فشار دهید</translation>
 <translation id="7290242001003353852">این سرویس ورود به سیستم با میزبانی <ph name="SAML_DOMAIN" /> در حال دسترسی به دوربین شما است.</translation>
 <translation id="7292067737327289208"><ph name="BEGIN_LINK" />مرورگرتان تحت مدیریت<ph name="END_LINK" /> سازمانتان و <ph name="BEGIN_LINK" />نمایه‌تان تحت مدیریت<ph name="END_LINK" /> <ph name="PROFILE_DOMAIN" /> است</translation>
@@ -8381,6 +8385,7 @@
 <translation id="7772127298218883077">درباره <ph name="PRODUCT_NAME" /></translation>
 <translation id="7773726648746946405">ذخیره جلسه</translation>
 <translation id="7774365994322694683">پرنده</translation>
+<translation id="7774581652827321413">خلاصه صفحه، جستجوهای مربوط، و اطلاعات مفید دیگری درباره این صفحه دریافت کنید</translation>
 <translation id="7774792847912242537">تعداد درخواست‌ها بیش از حد است.</translation>
 <translation id="7775694664330414886">برگه به گروه بی‌نام منتقل شد - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340">تا زمانی‌که همه برگه‌های <ph name="ORIGIN" /> را نبندید، این سایت می‌تواند فایل‌های موجود در <ph name="FOLDERNAME" /> را مشاهده کند</translation>
@@ -8441,6 +8446,7 @@
 <translation id="7820400255539998692"><ph name="FILENAME" /> را حذف کنید تا افراد دیگری که از این دستگاه استفاده می‌کنند نتوانند گذرواژه‌های شما را ببینند</translation>
 <translation id="7820561748632634942">کلیدهای بیشتری اختصاص داده شوند؟</translation>
 <translation id="782057141565633384">کپی آدرس ویدیو</translation>
+<translation id="7824665136384946951">سازمانتان «مرور ایمن» را خاموش کرده است</translation>
 <translation id="7824864914877854148">به‌دلیل بروز خطا، پشتیبان‌گیری کامل نشد</translation>
 <translation id="782590969421016895">استفاده از صفحات فعلی</translation>
 <translation id="7826174860695147464">‏«پشتیبانی از مرورگر قدیمی» (LBS) - داخلی</translation>
@@ -10045,6 +10051,7 @@
 <translation id="9094859731829297286">‏مطمئنید می‌خواهید حجم مشخصی از دیسک را به Linux اختصاص دهید؟</translation>
 <translation id="9095364055741191097">داده‌های محلی بازیابی نشد</translation>
 <translation id="909554839118732438">بستن پنجره ناشناس</translation>
+<translation id="9096053102600371572">پیمایش کنترل‌شده <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="9096776523567481218">به‌صورت محلی نصب نشده است</translation>
 <translation id="9098860402274800697">‏حذف Google Play و برنامه‌های Android</translation>
 <translation id="9099220545925418560">براساس سابقه مرور شما. این تنظیم خاموش است.</translation>
@@ -10117,10 +10124,6 @@
 <translation id="9151906066336345901">پایان</translation>
 <translation id="9153274276370926498">‏اطلاعات سیستم Lacros</translation>
 <translation id="9153367754133725216">‏در «راه‌انداز» و نتایج جستجو، برای برنامه‌ها و محتوای وب جدید پیشنهاد می‌بینید. تنها درصورتی‌که ارسال گزارش‌های خرابی و عیب‌یابی و داده‌های استفاده به ChromeOS را انتخاب کرده باشید، آمار را برای بهبود پیشنهادها ارسال می‌کند.</translation>
-<translation id="9154082578438716291">‏صفحه‌هایی را که بازدید کرده‌اید و جستجوهای پیشنهادی را در اینجا می‌بینید تا به شما کمک کند به‌راحتی به فعالیت اخیر خود در «سفرهای جستجوی Chrome» برگردید.
-        <ph name="BREAK" />
-        <ph name="BREAK" />
-        از منوی کارت می‌توانید تنظیمات را مدیریت کنید یا در «سفارشی کردن Chrome» گزینه‌های بیشتری را ببینید.</translation>
 <translation id="9154194610265714752">به‌روزرسانی ‌شد</translation>
 <translation id="9157096865782046368">۰٫۸ ثانیه</translation>
 <translation id="9157697743260533322">راه‌اندازی به‌روزرسانی‌های خودکار برای همه کاربران انجام نشد (خطای راه‌اندازی قبل از تولید: <ph name="ERROR_NUMBER" />)</translation>

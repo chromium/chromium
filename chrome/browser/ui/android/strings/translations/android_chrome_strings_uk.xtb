@@ -175,6 +175,7 @@
 <translation id="19288952978244135">Знову відкрийте Chrome.</translation>
 <translation id="1933845786846280168">Вибрана вкладка</translation>
 <translation id="1943432128510653496">Зберігання паролів</translation>
+<translation id="1944535645109964458">Ключів доступу не знайдено</translation>
 <translation id="1952172573699511566">Якщо можливо, текст на веб-сайтах відображатиметься вибраною мовою.</translation>
 <translation id="1959679933317802873">Очікується контент</translation>
 <translation id="1960290143419248813">Chrome більше не оновлюється в цій версії Android</translation>
@@ -626,6 +627,7 @@
 <translation id="4257230861809842349">Видалити паролі з Google Менеджера паролів?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Які дані використовуються<ph name="END_BOLD" />. Ваша історія веб-перегляду – перелік сайтів, які ви відвідали через Chrome на цьому пристрої.</translation>
 <translation id="4269820728363426813">Копіювати адресу посилання</translation>
+<translation id="4277529130885813215">Скористатись іншим пристроєм</translation>
 <translation id="4283102315569707115">Запитувати версію сайту для комп’ютера за умовчанням?</translation>
 <translation id="4285846616383034558">Файли cookie, кеш і інші дані сайтів</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Увімкніть блокування екрана в налаштуваннях Android<ph name="END_LINK" /></translation>
@@ -1166,6 +1168,7 @@
 <translation id="6955535239952325894">Цей параметр вимкнено в керованих веб-переглядачах</translation>
 <translation id="6963766334940102469">Видалити закладки</translation>
 <translation id="696447261358045621">Вимкнути режим анонімного перегляду</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6971862865055170158">Не схвалювати</translation>
 <translation id="6978717888677691380">Сайти, які ви заблокували</translation>
 <translation id="6979737339423435258">Увесь час</translation>
@@ -1324,6 +1327,7 @@
 <translation id="7757787379047923882">Текст, надісланий із пристрою <ph name="DEVICE_NAME" /></translation>
 <translation id="7762668264895820836">Карта SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Додати адресу</translation>
+<translation id="7766587497031415281">Більше опцій для очищення даних веб-перегляду</translation>
 <translation id="7772032839648071052">Підтвердити парольну фразу</translation>
 <translation id="7772375229873196092">Закрити додаток <ph name="APP_NAME" /></translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}many{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>

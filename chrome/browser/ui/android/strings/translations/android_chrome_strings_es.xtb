@@ -175,6 +175,7 @@ Si eliminas tu historial de navegación (entero o de un sitio en concreto), tamb
 <translation id="19288952978244135">Vuelve a abrir Chrome.</translation>
 <translation id="1933845786846280168">Pestaña seleccionada</translation>
 <translation id="1943432128510653496">Guardar contraseñas</translation>
+<translation id="1944535645109964458">No hay llaves de acceso disponibles</translation>
 <translation id="1952172573699511566">Si es posible, los sitios web muestran texto en tu idioma preferido.</translation>
 <translation id="1959679933317802873">Esperando el contenido</translation>
 <translation id="1960290143419248813">Ya no se admiten actualizaciones de Chrome en esta versión de Android.</translation>
@@ -626,6 +627,7 @@ Los tokens de confianza mejoran la privacidad en la Web y no se pueden usar para
 <translation id="4257230861809842349">¿Eliminar contraseñas del Gestor de contraseñas de Google?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Qué datos se usan:<ph name="END_BOLD" /> tu historial de navegación, un registro de los sitios que has visitado usando Chrome en este dispositivo.</translation>
 <translation id="4269820728363426813">Copiar dirección del enlace</translation>
+<translation id="4277529130885813215">Usar otro dispositivo</translation>
 <translation id="4283102315569707115">¿Solicitar sitio para ordenadores de forma predeterminada?</translation>
 <translation id="4285846616383034558">Cookies, caché y otros datos de sitios</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Activa el bloqueo de pantalla en los ajustes de Android<ph name="END_LINK" /></translation>
@@ -1166,6 +1168,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6955535239952325894">Este ajuste está inhabilitado en los navegadores administrados</translation>
 <translation id="6963766334940102469">Eliminar marcadores</translation>
 <translation id="696447261358045621">Salir del modo Incógnito</translation>
+<translation id="6965382102122355670">Aceptar</translation>
 <translation id="6971862865055170158">No aprobar</translation>
 <translation id="6978717888677691380">Sitios que has bloqueado</translation>
 <translation id="6979737339423435258">Desde siempre</translation>

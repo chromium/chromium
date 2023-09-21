@@ -105,6 +105,7 @@ Važne napomene:
         Pokušajte pričekati nekoliko minuta prije odjave. Ako se sada odjavite, ovi će se podaci izbrisati.</translation>
 <translation id="484033449593719797">Nije podržano u beta verziji Chromea</translation>
 <translation id="4840404732697892756">Google upravitelj zaporki može provjeriti vaše zaporke kad se prijavite Google računom.</translation>
+<translation id="4860330141789125848">{COUNT,plural, =1{Chrome vam može pomoći da pratite taj paket na stranici Nova kartica.}one{Chrome vam može pomoći da pratite te pakete na stranici Nova kartica.}few{Chrome vam može pomoći da pratite te pakete na stranici Nova kartica.}other{Chrome vam može pomoći da pratite te pakete na stranici Nova kartica.}}</translation>
 <translation id="4903674399067644695">Na ovoj se kartici prikazuju prijedlozi o tome kako iskoristiti sve prednosti Chromea.</translation>
 <translation id="49200511069271369">Vaša organizacija, <ph name="DOMAIN" />, upravlja računom na koji se prijavljujete i načinom na koji se Chrome može upotrebljavati. Vaš administrator može postaviti ili ograničiti određene značajke.</translation>
 <translation id="5030102366287574140">Chrome vam može pomoći da se bolje zaštitite od povrede podataka, nesigurnih web-lokacija i još mnogo toga.</translation>
@@ -114,10 +115,12 @@ Važne napomene:
 <translation id="5156818928311866442">Otvara postavku Chromea da bi se Chrome postavio kao zadani preglednik.</translation>
 <translation id="5162467219239570114">Chrome je zastario. Ako u <ph name="BEGIN_LINK" />trgovini aplikacija<ph name="END_LINK" /> nema dostupnih ažuriranja, postoji mogućnost da vaš uređaj više ne podržava nove verzije Chromea.</translation>
 <translation id="5190139289262548459">Vaša organizacija, <ph name="DOMAIN" />, upravlja računom na koji ste prijavljeni i načinom na koji se Chrome upotrebljava.</translation>
+<translation id="5278862365980079760">Zaključajte anonimne kartice kad napustite Chrome ili prijeđete na neku drugu aplikaciju.</translation>
 <translation id="5389212809648216794">Google Chrome ne može upotrebljavati vaš fotoaparat jer ga upotrebljava neka druga aplikacija</translation>
 <translation id="5395376160638294582">Provjerite možete li uvijek upotrebljavati podatke iz Chromea na svom Google računu</translation>
 <translation id="5439191312780166229">Upozorava vas na opasne web-lokacije, čak i one za koje Google još nije znao, analiziranjem više podataka s web-lokacija od standardne zaštite. Možete preskočiti Chromeova upozorenja.</translation>
 <translation id="5460571915754665838">4. Odaberite Chrome</translation>
+<translation id="546541279759910616">{COUNT,plural, =1{Chrome će vam pomoći da pratite taj paket na stranici Nova kartica.}one{Chrome će vam pomoći da pratite te pakete na stranici Nova kartica.}few{Chrome će vam pomoći da pratite te pakete na stranici Nova kartica.}other{Chrome će vam pomoći da pratite te pakete na stranici Nova kartica.}}</translation>
 <translation id="5492504007368565877">Google upravitelj zaporki ne može provjeriti vaše zaporke.</translation>
 <translation id="5527026824954593399">Dodirnite "Prikaži putem Google karata u Chromeu".</translation>
 <translation id="5552137475244467770">Chrome povremeno uspoređuje vaše zaporke s javno objavljenim popisima. Tom su prilikom vaše zaporke i korisnička imena kriptirani, tako da ih nitko ne može pročitati, uključujući Google.</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
+<translation id="1046370274005147998">Paieška balsu naršyklėje „Chromium“.</translation>
 <translation id="1047130070405668746">Pasirinkite „Chromium“</translation>
 <translation id="1091252999271033193">Tai reiškia, kad kiekvieną kartą „Chromium“ teiks svetainės mobiliesiems užklausą.</translation>
 <translation id="1185134272377778587">Apie „Chromium“</translation>
@@ -42,6 +43,7 @@
 <translation id="2574528844022712255">Žr. „Chromium“ žymes</translation>
 <translation id="2590893390871230428">Sinchronizuoti „Chromium“ duomenis</translation>
 <translation id="2618596336309823556">Įrenginio nustatymų skiltyje atidarykite „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“ ir pasirinkite „Chromium“</translation>
+<translation id="2618757400690011108">{COUNT,plural, =1{„Chromium“ padės stebėti šį paketą „Naujo skirtuko“ puslapyje.}one{„Chromium“ padės stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}few{„Chromium“ padės stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}many{„Chromium“ padės stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}other{„Chromium“ padės stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}}</translation>
 <translation id="2650312721222849884">Kad matytumėte skirtukus iš visų įrenginių, kuriuose naudojate „Chromium“, įjunkite sinchronizavimą</translation>
 <translation id="2684230048001240293">Nustatykite „Chromium“ kaip numatytąjį nustatymą, kad būtų sinchronizuojami skirtukai, slaptažodžiai ir mokėjimo informacija visuose įrenginiuose</translation>
 <translation id="2730884209570016437">„Chromium“ negali naudoti fotoaparato, nes jį naudoja kita programa</translation>
@@ -51,6 +53,7 @@
 <translation id="2918709798697875261">Jūsų organizacija reikalauja likti atsijungus nuo „Chromium“.</translation>
 <translation id="2942241131342758843">Naudokite „Chromium“ pagal numatytuosius nustatymus, kad atidarytumėte nuorodas, ieškotumėte iš valdiklių ir automatiškai pildytumėte slaptažodžius kitose programose</translation>
 <translation id="2977470724722393594">„Chromium“ naujausios versijos</translation>
+<translation id="3078941082359356771">{COUNT,plural, =1{„Chromium“ gali padėti stebėti šį paketą „Naujo skirtuko“ puslapyje.}one{„Chromium“ gali padėti stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}few{„Chromium“ gali padėti stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}many{„Chromium“ gali padėti stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}other{„Chromium“ gali padėti stebėti šiuos paketus „Naujo skirtuko“ puslapyje.}}</translation>
 <translation id="3102849287235003384">Jei norite atsijungti nuo „Google“ paskyros visose svetainėse, <ph name="BEGIN_LINK" />atsijunkite nuo „Chromium“<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Paieška balsu naršyklėje „Chromium“</translation>
 <translation id="3228349498066165585">Kai kurie „Chromium“ duomenys dar neišsaugoti „Google“ paskyroje.
@@ -113,6 +116,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chro
 <translation id="5521125884468363740">Kad matytumėte skirtukus iš visų įrenginių, kuriuose naudojate „Chromium“, prisijunkite ir įjunkite sinchronizavimą</translation>
 <translation id="5522297504975449419">Kai kurios „Chromium“ funkcijos nebebus pasiekiamos.</translation>
 <translation id="5571094606370987472">Atidaromi „Chromium“ naujausi skirtukai.</translation>
+<translation id="5623083843656850677">Užrakinkite inkognito skirtukus, išėję iš „Chromium“ ar perjungę į kitą programą.</translation>
 <translation id="5688047395118852662">Šioje kortelėje pateikiami pasiūlymai, kaip išnaudoti visas „Chromium“ galimybes.</translation>
 <translation id="5700709190537129682">„Chromium“ negali patikrinti jūsų slaptažodžių</translation>
 <translation id="5777187867430702742">„Chromium“ puslapis</translation>

@@ -834,7 +834,6 @@
 <translation id="4406883609789734330">即時字幕</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" />功能已關閉。</translation>
 <translation id="4424159417645388645">桌面 5</translation>
-<translation id="4427695046139341014">遊戲資訊主頁</translation>
 <translation id="4430019312045809116">音量</translation>
 <translation id="4441283832827406317">應用程式已按名稱排序</translation>
 <translation id="4445159312344259901">登入即可解鎖</translation>
@@ -1219,6 +1218,7 @@
 <translation id="5983567367406220847">由於閒置過久，因此熱點已關閉。</translation>
 <translation id="598407983968395253">使用範本</translation>
 <translation id="598882571027504733">如要下載更新，請連接鍵盤並重新啟動 Chromebook。</translation>
+<translation id="6000279412553873020">按鍵、按鈕等等</translation>
 <translation id="6012623610530968780">第 <ph name="SELECTED_PAGE" /> 頁 (共 <ph name="TOTAL_PAGE_NUM" /> 頁)</translation>
 <translation id="601304062528754300">突顯捷徑列上的下一個項目</translation>
 <translation id="6015573907265691211">標記為完成</translation>

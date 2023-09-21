@@ -12,6 +12,7 @@
 <translation id="1149651794389918149">Accede a Chrome. Si quieres acceder a una cuenta una sola vez, puedes <ph name="GUEST_LINK_BEGIN" />usar el dispositivo como invitado<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">Acerca de ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Abrir en Chrome</translation>
+<translation id="1194807384646768652">Chrome bloqueó esta descarga porque el tipo de archivo no se descarga con frecuencia y puede ser peligroso</translation>
 <translation id="1203500561924088507">Gracias por instalar <ph name="BUNDLE_NAME" />. Debes reiniciar tu navegador antes de usarlo.</translation>
 <translation id="1278833599417554002">Reiniciar para actualizar &amp;Chrome</translation>
 <translation id="1302523850133262269">Espera mientras Chrome instala las últimas actualizaciones del sistema.</translation>
@@ -129,10 +130,12 @@
 <translation id="3080151273017101988">Seguir ejecutando aplicaciones en segundo plano al cerrar Google Chrome</translation>
 <translation id="3089968997497233615">Hay disponible una versión de Google Chrome más nueva y más segura.</translation>
 <translation id="3100998948628680988">Asígnale un nombre a tu perfil de Chrome</translation>
+<translation id="3112458742631356345">Chrome bloqueó esta descarga porque el archivo no se descarga con frecuencia y puede ser peligroso</translation>
 <translation id="3114643501466072395">Para comprobar si tus otras contraseñas están a salvo de violaciones de la seguridad de los datos y otros problemas de seguridad, <ph name="BEGIN_LINK" />accede a Chrome<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">Los cambios se aplicarán la próxima vez que reinicies Google Chrome.</translation>
 <translation id="3149510190863420837">Aplicaciones de Chrome</translation>
 <translation id="3169523567916669830">Durante las pruebas, puedes ver y quitar los temas de interés que usan los sitios para mostrarte anuncios. Chrome estima tus intereses en función de tu historial de navegación reciente.</translation>
+<translation id="3196187562065225381">Chrome bloqueó esta descarga porque el archivo es peligroso</translation>
 <translation id="3226612997184048185">Si también guardas tus favoritos en tu Cuenta de Google, puedes realizar un seguimiento de precios de productos en Chrome y recibir notificaciones cuando haya reducciones de los precios</translation>
 <translation id="3245429137663807393">Si también compartes los informes de uso de Chrome, estos incluirán las URL que visites.</translation>
 <translation id="3282568296779691940">Acceder a Chrome</translation>
@@ -180,6 +183,7 @@
 <translation id="4148957013307229264">Instalando...</translation>
 <translation id="4149882025268051530">El instalador no pudo descomprimir el archivo. Descargue Google Chrome nuevamente.</translation>
 <translation id="4153934450158521343">Chrome se cerrará y borrará datos pronto</translation>
+<translation id="4175922240926474352">Chrome bloqueó esta descarga porque el sitio no usa una conexión segura y el archivo puede haber sido manipulado</translation>
 <translation id="4191857738314598978">{0,plural, =1{Reinicia Chrome en el transcurso de 1 día}other{Reinicia Chrome en el transcurso de # días}}</translation>
 <translation id="4205939740494406371">Chrome no puede revisar las contraseñas. Vuelve a intentarlo dentro de 24 horas o <ph name="BEGIN_LINK" />revisa las contraseñas en tu Cuenta de Google<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Cancelando…</translation>
@@ -196,7 +200,7 @@
 <translation id="4343195214584226067">Se agregó <ph name="EXTENSION_NAME" /> a Chrome</translation>
 <translation id="4384570495110188418">Chrome no puede revisar las contraseñas porque no accediste a tu cuenta</translation>
 <translation id="4393248995085527349">Para recibir las próximas actualizaciones de Google Chrome, necesitarás macOS 10.15 o versiones posteriores. Esta computadora usa macOS 10.13.</translation>
-<translation id="4427306783828095590">La protección mejorada permite bloquear mejor la práctica de phishing y el software malicioso.</translation>
+<translation id="4427306783828095590">La protección mejorada permite bloquear mejor los ataques de phishing y el software malicioso.</translation>
 <translation id="4450664632294415862">Chrome: Acceso a la red - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Hay otra operación en Google Chrome en curso. Vuelve a intentarlo más tarde.</translation>
 <translation id="4459234553906210702">La medición de anuncios les permite a los sitios que visitas solicitar información a Chrome a fin de medir el rendimiento de los anuncios. La medición de anuncios restringe el seguimiento entre sitios web, ya que se transfiere la menor cantidad de información posible entre sitios.</translation>
@@ -356,6 +360,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="7641148173327520642">El administrador del sistema configuró Google Chrome de manera que se abriera <ph name="ALTERNATIVE_BROWSER_NAME" /> para acceder a <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7649070708921625228">Ayuda</translation>
 <translation id="7651907282515937834">Logotipo de Chrome Enterprise</translation>
+<translation id="76531479118467370">Chrome bloqueó esta descarga porque desactivaste la Navegación segura y no se puede verificar el archivo</translation>
 <translation id="7655455401911432608">Tu historial de navegación, un registro de los sitios que visitaste con Chrome en este dispositivo.</translation>
 <translation id="7747138024166251722">El instalador no pudo crear un directorio temporal. Verifique si hay espacio disponible en el disco y cuenta con permiso para instalar software.</translation>
 <translation id="7761834446675418963">Haz clic en tu nombre para abrir Chrome y empezar a navegar.</translation>
@@ -372,6 +377,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="7890208801193284374">Si compartes una computadora, tus amigos y familiares pueden navegar de forma independiente y configurar Chrome según los gustos individuales.</translation>
 <translation id="7896673875602241923">Alguien accedió anteriormente a Google Chrome en esta computadora como <ph name="ACCOUNT_EMAIL_LAST" />. Crea un usuario de Chrome nuevo para mantener tu información por separado.</translation>
 <translation id="7917876797003313048">Puedes administrar las Cuentas de Google a las que accediste. Tus Cuentas de Google se usan en el navegador Chrome, Play Store, Gmail y otros servicios. Si quieres agregar una cuenta de otra persona, como la de un miembro de la familia, agrega a una persona nueva a tu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
+<translation id="7936702483636872823">Chrome bloqueó esta descarga porque el archivo es engañoso y puede realizar cambios inesperados en tu dispositivo</translation>
 <translation id="7951272445806340501">ChromeOS Flex debe reiniciarse para que se aplique la actualización.</translation>
 <translation id="7962368738413920945">Es probable que los sitios funcionen como esperas, pero no te recordarán cuando cierres todas las ventanas de Chrome.</translation>
 <translation id="7962410387636238736">Esta computadora dejará de recibir actualizaciones de Google Chrome porque Windows XP y Windows Vista ya no son compatibles</translation>

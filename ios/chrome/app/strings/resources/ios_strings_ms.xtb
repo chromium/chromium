@@ -242,6 +242,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />kosongkan data Chrome dalam a
 <translation id="2359043044084662842">Terjemah</translation>
 <translation id="2359808026110333948">Teruskan</translation>
 <translation id="2360196772093551345">Minta Tapak Mudah Alih</translation>
+<translation id="2361721159900796207">Sembunyikan item ini</translation>
 <translation id="2362083820973145409">Log masuk sebagai <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Membuka tetapan.</translation>
 <translation id="236977714248711277">Tapak tidak boleh menggunakan kuki untuk memperbaik pengalaman penyemakan imbas anda, contohnya, untuk mengekalkan log masuk anda atau untuk mengingati item dalam troli beli-belah anda.
 
@@ -778,6 +779,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="5317780077021120954">Simpan</translation>
 <translation id="5318298563956633672">Anda telah menjejaki produk ini.</translation>
 <translation id="5339316356165661760">Hidupkan Penyegerakan</translation>
+<translation id="5345660046352249607">{COUNT,plural, =1{Jejaki Pakej Ini?}other{Jejaki {COUNT} Pakej?}}</translation>
 <translation id="536067926684072644">Tunjukkan Penanda Halaman</translation>
 <translation id="5360976571138293719">Untuk mendapatkan pelbagai lagi tetapan yang berkaitan dengan privasi, keselamatan dan pengumpulan data, lihat <ph name="BEGIN_LINK" />Perkhidmatan Google<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Anda akan menemukan laman yang anda ikuti di sini</translation>
@@ -1144,6 +1146,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="723787869754590019">Gunakan Chrome untuk Autolengkap</translation>
 <translation id="7265758999917665941">Jangan Sekali-kali untuk Tapak Ini</translation>
 <translation id="7272437679830969316">Tidak dapat mengesahkan identiti anda. Kata laluan tidak disalin.</translation>
+<translation id="7284359491594949826">{COUNT,plural, =1{Pakej Baharu Dijejaki}other{Pakej Baharu Dijejaki}}</translation>
 <translation id="7291368939935408496">Menyediakan Kata Laluan…</translation>
 <translation id="7302503784943202842">Gunakan Kata Laluan pada Semua Peranti Anda</translation>
 <translation id="730958329302570991">Tambah kata laluan pada Google Password Manager dengan mudah pada bila-bila masa.</translation>
@@ -1177,6 +1180,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7473891865547856676">Tidak, Terima Kasih</translation>
 <translation id="7491131399623468277">Pergi ke Tetapan…</translation>
 <translation id="7492574581995589075">Organisasi anda mematikan keupayaan untuk menggunakan dan menyimpan data Chrome dalam Google Account anda. Penanda halaman, kata laluan baharu dan banyak lagi akan disimpan pada peranti ini sahaja.</translation>
+<translation id="750149195207506638">Penanda halaman tersembunyi</translation>
 <translation id="750228856503700085">Kemaskinian Tidak Tersedia</translation>
 <translation id="750493650310597496">0 dipilih</translation>
 <translation id="7508728395076009983">Untuk mengunci tab Inkognito anda, sediakan Touch ID, Face ID atau Kod Laluan.</translation>
@@ -1244,6 +1248,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7856733331829174190">Tidak Dapat Memuat Turun</translation>
 <translation id="785938070103630874">Buka Kata Laluan, Kaedah Pembayaran atau Alamat dan Pelbagai Lagi</translation>
 <translation id="7859704718976024901">Sejarah Penyemakan Imbas</translation>
+<translation id="7866501058614003444">Pakej ini telah berjaya dinyahjejak.</translation>
 <translation id="7870750252270996949">Imej Disalin Lensa</translation>
 <translation id="7879275349003161544">Tunjukkan Muat Turun</translation>
 <translation id="7883882164760409935">Anda mempunyai kata laluan yang digunakan semula.</translation>
@@ -1313,6 +1318,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8206354486702514201">Tetapan ini dikuatkuasakan oleh pentadbir anda.</translation>
 <translation id="8214293972734702249">Disemat, <ph name="TAB_TITLE" /></translation>
 <translation id="8225985093977202398">Imej dan Fail Dicache</translation>
+<translation id="823133356836493038">Senarai Bacaan tersembunyi</translation>
 <translation id="8237382152611443140">Buka Tetapan Kata Laluan Autolengkap</translation>
 <translation id="8248969482078657578">Tab Tidak Aktif Membantu Anda Sentiasa Fokus</translation>
 <translation id="8261506727792406068">Padam</translation>
@@ -1491,6 +1497,7 @@ Data anda telah disulitkan dengan ungkapan laluan pada <ph name="TIME" />. Masuk
 <translation id="9148126808321036104">Log masuk semula</translation>
 <translation id="9157836665414082580">Sekat Dialog</translation>
 <translation id="9162432979321511934">Hidupkan Autolengkap Kata Laluan</translation>
+<translation id="9162941801309769488">Pakej Dinyahjejak</translation>
 <translation id="9165320910061267720">Untuk mendapatkan pemberitahuan tentang makluman penurunan harga, anda perlu menghidupkan pemberitahuan dalam tetapan iOS anda.</translation>
 <translation id="9165886811579296457">Semakan Keselamatan tidak menemukan sebarang masalah keselamatan untuk dibetulkan.</translation>
 <translation id="9172603439892261948">Segerakkan penanda halaman dan sejarah anda serta pelbagai lagi.</translation>

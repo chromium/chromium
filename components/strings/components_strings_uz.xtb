@@ -100,6 +100,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1195073053842921378">Bu qurilmadan mazkur manzil oʻchirib tashlanadi</translation>
 <translation id="1195558154361252544">Bildirishnoamalar siz ruxsat bergan saytlardan tashqari barcha saytlar uchun taqiqlanadi</translation>
 <translation id="1197088940767939838">Apelsinrang</translation>
+<translation id="1197761954713363183">Parolni tasdiqlash varaqasi yopildi</translation>
 <translation id="1201402288615127009">Keyingisi</translation>
 <translation id="1201895884277373915">Bu sayt bo‘yicha boshqa yozuvlar</translation>
 <translation id="1202892408424955784">Kuzatiladigan mahsulotlar</translation>
@@ -381,6 +382,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1725591448053514783">Envelope You 6</translation>
 <translation id="1727613060316725209">Sertifikat yaroqli</translation>
 <translation id="1728677426644403582">Siz veb-sahifa kodini ko‘rmoqdasiz.</translation>
+<translation id="1728803206919861584">Kalit Inkognito rejimidan tashqarida saqlansinmi?</translation>
 <translation id="173080396488393970">Bunday karta hozirda ishlamaydi</translation>
 <translation id="1732445923934584865">Buning oʻrniga shaxsan soʻrang</translation>
 <translation id="1733064249834771892">shriftlar</translation>
@@ -1659,6 +1661,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4415156962929755728">Plastik (yaltiroq)</translation>
 <translation id="4415426530740016218">Olib ketish manzili</translation>
 <translation id="4424024547088906515">Bu <ph name="DOMAIN" /> serveri ekanligini tasdiqlab bo‘lmadi. Uning havfsizlik sertifikati Chrome‘ga ishonchli tuyulmayapti. Balki, server noto‘g‘ri sozlangan yoki kimdir ma’lumotlaringizni o‘g‘rilashga urinayotgan bo‘lishi mumkin.</translation>
+<translation id="4425173294238317796">Parolni tasdiqlash varaqasi</translation>
 <translation id="4425750422187370446">Sport kiyimlari</translation>
 <translation id="4428065317363009941">Reklamalarni moslashtirish</translation>
 <translation id="443121186588148776">Ketma-ket port</translation>
@@ -2014,6 +2017,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5157504274688344097">Koʻp tarmoqli sotuvchilar va filial doʻkonlar</translation>
 <translation id="5158275234811857234">Muqova</translation>
 <translation id="5159010409087891077">Sahifani inkognito rejimda ochish (⇧⌘N)</translation>
+<translation id="5161262286013276579">Parolni tasdiqlash varaqasi ochildi</translation>
 <translation id="5161334686036120870">Mavzu:</translation>
 <translation id="5161506081086828129">Taxlovchi 9</translation>
 <translation id="5164798890604758545">Matn kiritilishi</translation>
@@ -2895,6 +2899,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="7004583254764674281">Kartalarni tezroq tasdiqlash uchun Windows Hello ishlating</translation>
 <translation id="7006930604109697472">Baribir yuborilsin</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7013762323294215682">Bu kalit parollar menejeriga saqlanadi. Unga kirish huquqiga ega boʻlganlar bu kalitdan foydalanishi mumkin.</translation>
 <translation id="7014042602717177828">Avtomobil audio jihozlari</translation>
 <translation id="7014741021609395734">Masshtab</translation>
 <translation id="7016992613359344582">To‘lov bir martalik, qayta bo‘lishi yoki umuman bo‘lmasligi ham mumkin.</translation>

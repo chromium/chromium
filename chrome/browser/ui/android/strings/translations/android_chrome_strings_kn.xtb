@@ -175,6 +175,7 @@
 <translation id="19288952978244135">Chrome ಮರುತೆರೆಯಿರಿ.</translation>
 <translation id="1933845786846280168">ಟ್ಯಾಬ್ ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1943432128510653496">ಉಳಿಸಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
+<translation id="1944535645109964458">ಯಾವುದೇ ಪಾಸ್‌ಕೀಗಳು ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="1952172573699511566">ಸಾಧ್ಯವಾದಾಗ, ನೀವು ಆದ್ಯತೆ ನೀಡುವ ಭಾಷೆಯಲ್ಲಿ ವೆಬ್‌ಸೈಟ್‌ಗಳು ಪಠ್ಯವನ್ನು ತೋರಿಸುತ್ತವೆ.</translation>
 <translation id="1959679933317802873">ವಿಷಯಕ್ಕಾಗಿ ಕಾಯಲಾಗುತ್ತಿದೆ</translation>
 <translation id="1960290143419248813">Android ನ ಈ ಆವೃತ್ತಿಯಲ್ಲಿ ಇನ್ನು ಮುಂದೆ Chrome ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಬೆಂಬಲಿಸಲಾಗುವುದಿಲ್ಲ</translation>
@@ -626,6 +627,7 @@
 <translation id="4257230861809842349">Google Password Manager ನಿಂದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಅಳಿಸಬೇಕೆ?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />ಯಾವ ಡೇಟಾವನ್ನು ಬಳಸಲಾಗುತ್ತದೆ:<ph name="END_BOLD" /> ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸ, ಎಂದರೆ, ಈ ಸಾಧನದಲ್ಲಿ Chrome ಬಳಸುವಾಗ ನೀವು ಭೇಟಿ ನೀಡಿದ ಸೈಟ್‌ಗಳ ದಾಖಲೆ.</translation>
 <translation id="4269820728363426813">ಲಿಂಕ್ ವಿಳಾಸವನ್ನು ನಕಲಿಸಿ</translation>
+<translation id="4277529130885813215">ಬೇರೊಂದು ಸಾಧನವನ್ನು ಬಳಸಿ</translation>
 <translation id="4283102315569707115">ಡೆಸ್ಕ್‌ಟಾಪ್ ಸೈಟ್‌ಗಳನ್ನು ಡೀಫಾಲ್ಟ್ ಆಗಿ ವಿನಂತಿಸಬೇಕೆ?</translation>
 <translation id="4285846616383034558">ಕುಕೀಸ್, ಕ್ಯಾಷ್, ಮತ್ತು ಇತರ ಸೈಟ್ ಡೇಟಾ</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಸ್ಕ್ರೀನ್ ಲಾಕ್ ಆನ್ ಮಾಡಿ<ph name="END_LINK" /></translation>
@@ -1165,6 +1167,7 @@
 <translation id="6955535239952325894">ನಿರ್ವಹಿಸಲಾದ ಬ್ರೌಸರ್‌ಗಳಲ್ಲಿ ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="6963766334940102469">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಅಳಿಸಿ</translation>
 <translation id="696447261358045621">ಅಜ್ಞಾತ ಮೋಡ್‌‌ ಅನ್ನು ತೊರೆಯಿರಿ</translation>
+<translation id="6965382102122355670">ಸರಿ</translation>
 <translation id="6971862865055170158">ಅನುಮೋದಿಸಬೇಡಿ</translation>
 <translation id="6978717888677691380">ನೀವು ನಿರ್ಬಂಧಿಸಿದ ಸೈಟ್‌ಗಳು</translation>
 <translation id="6979737339423435258">ಎಲ್ಲ ಸಮಯ</translation>
@@ -1323,6 +1326,7 @@
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> ಮೂಲಕ ಪಠ್ಯವನ್ನು ಹಂಚಲಾಗಿದೆ</translation>
 <translation id="7762668264895820836">ಎಸ್‌ಡಿ ಕಾರ್ಡ್ <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">ವಿಳಾಸ ಸೇರಿಸಿ</translation>
+<translation id="7766587497031415281">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಲು ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳು</translation>
 <translation id="7772032839648071052">ಪಾಸ್‌ಫ್ರೇಸ್ ಅನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> ಅನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>

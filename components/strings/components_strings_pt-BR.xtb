@@ -100,6 +100,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1195073053842921378">O endereço vai ser excluído deste dispositivo</translation>
 <translation id="1195558154361252544">As notificações são bloqueadas automaticamente para todos os sites, exceto para aqueles que têm permissão</translation>
 <translation id="1197088940767939838">Laranja</translation>
+<translation id="1197761954713363183">Página de confirmação da chave de acesso fechada</translation>
 <translation id="1201402288615127009">Próxima</translation>
 <translation id="1201895884277373915">Mais deste site</translation>
 <translation id="1202892408424955784">Produtos monitorados</translation>
@@ -382,6 +383,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1725591448053514783">Envelope You 6</translation>
 <translation id="1727613060316725209">O certificado é válido</translation>
 <translation id="1728677426644403582">Você está vendo o código-fonte de uma página da Web.</translation>
+<translation id="1728803206919861584">Salvar chave de acesso fora da navegação anônima?</translation>
 <translation id="173080396488393970">Esse tipo de cartão não é aceito</translation>
 <translation id="1732445923934584865">Perguntar pessoalmente</translation>
 <translation id="1733064249834771892">fontes</translation>
@@ -1664,6 +1666,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4415156962929755728">Plástico (alto brilho)</translation>
 <translation id="4415426530740016218">Endereço de Retirada</translation>
 <translation id="4424024547088906515">Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança não é confiável para o Chrome. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.</translation>
+<translation id="4425173294238317796">Página de confirmação da chave de acesso</translation>
 <translation id="4425750422187370446">Roupas para esporte</translation>
 <translation id="4428065317363009941">Personalização de anúncios</translation>
 <translation id="443121186588148776">Porta serial</translation>
@@ -2019,6 +2022,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5157504274688344097">Atacadistas e lojas de departamentos</translation>
 <translation id="5158275234811857234">Capa</translation>
 <translation id="5159010409087891077">Abrir página em uma nova janela anônima (⇧⌘N)</translation>
+<translation id="5161262286013276579">Página de confirmação da chave de acesso aberta</translation>
 <translation id="5161334686036120870">Assunto:</translation>
 <translation id="5161506081086828129">Empilhador 9</translation>
 <translation id="5164798890604758545">Um texto é inserido</translation>
@@ -2901,6 +2905,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="7004583254764674281">Use o Windows Hello para confirmar o uso de cartões mais rapidamente</translation>
 <translation id="7006930604109697472">Enviar mesmo assim</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7013762323294215682">Esta chave de acesso será salva no seu gerenciador de senhas. Qualquer pessoa com acesso a ela poderá usá-la.</translation>
 <translation id="7014042602717177828">Áudio para carros</translation>
 <translation id="7014741021609395734">Nível de zoom</translation>
 <translation id="7016992613359344582">Essas cobranças podem ser únicas ou recorrentes e talvez não sejam óbvias.</translation>

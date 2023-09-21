@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ne">
+<translation id="1046370274005147998">Chromium मा आवाज प्रयोग गरी खोज्नुहोस्।</translation>
 <translation id="1047130070405668746">Chromium चयन गर्नुहोस्</translation>
 <translation id="1091252999271033193">यसको अर्थ Chromium ले हरेक पटक साइटको मोबाइल संस्करण प्रयोग गर्न अनुरोध गर्ने छ।</translation>
 <translation id="1185134272377778587">Chromium का बारेमा</translation>
@@ -41,6 +42,7 @@
 <translation id="2574528844022712255">Chromium मा सेभ गरिएका बुकमार्कहरू हेर्नुहोस्</translation>
 <translation id="2590893390871230428">Chromium को आफ्नो डेटा सिंक गर्नुहोस्</translation>
 <translation id="2618596336309823556">आफ्नो डिभाइसका सेटिङमा गई "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" खोल्नुहोस् र "Chromium" चयन गर्नुहोस्</translation>
+<translation id="2618757400690011108">{COUNT,plural, =1{Chromium ले नयाँ ट्याब पेजमार्फत यो प्याकेज ट्र्याक गर्न मद्दत गर्ने छ।}other{Chromium ले नयाँ ट्याब पेजमार्फत यी प्याकेजहरू ट्र्याक गर्न मद्दत गर्ने छ।}}</translation>
 <translation id="2650312721222849884">आफूले Chromium प्रयोग गर्ने सबै डिभाइसमा खोलिएका ट्याबहरू हेर्न सिंक गर्ने सुविधा अन गर्नुहोस्</translation>
 <translation id="2684230048001240293">आफ्ना सबै यन्त्रबाट आफ्ना ट्याब, पासवर्ड तथा भुक्तानीसम्बन्धी जानकारी सिंक गर्न Chromium लाई डिफल्ट ब्राउजर बनाउनुहोस्</translation>
 <translation id="2730884209570016437">अर्को अनुप्रयोगले तपाईँको क्यामेराको प्रयोग गरिरहेको हुनाले Chromium ले उक्त क्यामेराको प्रयोग गर्न सक्दैन</translation>
@@ -50,6 +52,7 @@
 <translation id="2918709798697875261">तपाईंको सङ्गठनका अनुसार तपाईं Chromium बाट साइन आउट रहिरहनु पर्ने हुन्छ।</translation>
 <translation id="2942241131342758843">लिंक खोल्न, विजेटबाट खोजी गर्न तथा अन्य एपहरूमा पासवर्ड स्वतः भर्न डिफल्ट रूपमा Chromium प्रयोग गर्नुहोस्</translation>
 <translation id="2977470724722393594">Chromium अद्यावधिक छ</translation>
+<translation id="3078941082359356771">{COUNT,plural, =1{तपाईं Chromium प्रयोग गरेर नयाँ ट्याब पेजमा गई यो प्याकेज ट्र्याक गर्न सक्नुहुन्छ।}other{तपाईं Chromium प्रयोग गरेर नयाँ ट्याब पेजमा गई यी प्याकेजहरू ट्र्याक गर्न सक्नुहुन्छ।}}</translation>
 <translation id="3102849287235003384">सबै वेबसाइटहरूमा आफ्नो Google खाताबाट साइन आउट गर्न <ph name="BEGIN_LINK" />Chromium बाट साइन आउट गर्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="3219277919172823720">Chromium मा आवाज प्रयोग गरी खोज्नुहोस्</translation>
 <translation id="3228349498066165585">तपाईंको Chromium का केही डेटा अहिलेसम्म तपाईंको Google खातामा सेभ गरिएका छैनन्।
@@ -112,6 +115,7 @@
 <translation id="5521125884468363740">आफूले Chromium प्रयोग गर्ने सबै डिभाइसमा खोलिएका ट्याबहरू हेर्न साइन इन गर्नुहोस् र सिंक गर्ने सुविधा अन गर्नुहोस्</translation>
 <translation id="5522297504975449419">Chromium का केही सुविधाहरू अबदेखि उपलब्ध हुने छैनन्।</translation>
 <translation id="5571094606370987472">यसले Chromium मा हालसालै बन्द गरिएका ट्याबहरू खोल्छ।</translation>
+<translation id="5623083843656850677">तपाईं Chromium बाट बाहिरिएपछि वा तपाईंले अर्कै एप प्रयोग गर्न थालेपछि तपाईंका इन्कोग्निटो ट्याबहरू लक गर्नुहोस्।</translation>
 <translation id="5688047395118852662">यो कार्डमा तपाईंलाई Chromium बाट बढीभन्दा बढी फाइदा लिने तरिकाका बारेमा सुझाव दिइएको छ।</translation>
 <translation id="5700709190537129682">Chromium ले तपाईंका पासवर्डहरू जाँच्न सकेन</translation>
 <translation id="5777187867430702742">Chromium को पृष्ठ</translation>

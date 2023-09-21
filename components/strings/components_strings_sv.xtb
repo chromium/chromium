@@ -100,6 +100,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1195073053842921378">Adressen raderas från enheten</translation>
 <translation id="1195558154361252544">Aviseringar blockeras automatiskt på alla webbplatser utom sådana du tillåter</translation>
 <translation id="1197088940767939838">Orange</translation>
+<translation id="1197761954713363183">Bekräftelseark för nyckel har stängts</translation>
 <translation id="1201402288615127009">Nästa</translation>
 <translation id="1201895884277373915">Mer från den här webbplatsen</translation>
 <translation id="1202892408424955784">Bevakade produkter</translation>
@@ -382,6 +383,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1725591448053514783">You 6-kuvert</translation>
 <translation id="1727613060316725209">Certifikatet är giltigt</translation>
 <translation id="1728677426644403582">Du visar källkoden till en webbsida</translation>
+<translation id="1728803206919861584">Vill du spara nyckeln utanför inkognitoläget?</translation>
 <translation id="173080396488393970">Denna korttyp stöds inte</translation>
 <translation id="1732445923934584865">Fråga själv</translation>
 <translation id="1733064249834771892">teckensnitt</translation>
@@ -1664,6 +1666,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4415156962929755728">Plast (högblank)</translation>
 <translation id="4415426530740016218">Hämtningsadress</translation>
 <translation id="4424024547088906515">Servern kunde inte bevisa att den är <ph name="DOMAIN" /> eftersom Chrome inte litar på dess säkerhetscertifikat. Detta kan orsakas av en felaktig konfigurering eller att någon spärrar anslutningen.</translation>
+<translation id="4425173294238317796">Bekräftelseark för nyckel</translation>
 <translation id="4425750422187370446">Sportkläder</translation>
 <translation id="4428065317363009941">Personliga annonspreferenser</translation>
 <translation id="443121186588148776">Serieport</translation>
@@ -2019,6 +2022,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5157504274688344097">Grossister och varuhus</translation>
 <translation id="5158275234811857234">Omslag</translation>
 <translation id="5159010409087891077">Öppna sidan i ett nytt inkognitofönster (⇧⌘N)</translation>
+<translation id="5161262286013276579">Bekräftelseark för nyckel har öppnats</translation>
 <translation id="5161334686036120870">Ämne:</translation>
 <translation id="5161506081086828129">Utmatningsfack 9</translation>
 <translation id="5164798890604758545">Text skrivs</translation>
@@ -2901,6 +2905,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="7004583254764674281">Verifiera kreditkort snabbare med Windows Hello</translation>
 <translation id="7006930604109697472">Skicka ändå</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7013762323294215682">Den här nyckeln sparas i lösenordshanteraren. Alla som har åtkomst till den kan använda den här nyckeln.</translation>
 <translation id="7014042602717177828">Billjudutrustning</translation>
 <translation id="7014741021609395734">Zoomnivå</translation>
 <translation id="7016992613359344582">Debiteringen kan göras en gång eller återkommande och det behöver inte framgå tydligt att detta händer.</translation>

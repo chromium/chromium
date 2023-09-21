@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
+<translation id="1046370274005147998">Търсене с глас в Chromium.</translation>
 <translation id="1047130070405668746">Изберете Chromium.</translation>
 <translation id="1091252999271033193">Това означава, че всеки път Chromium ще заявява мобилната версия на сайта.</translation>
 <translation id="1185134272377778587">Всичко за Chromium</translation>
@@ -42,6 +43,7 @@
 <translation id="2574528844022712255">Преглед на отметките в Chromium</translation>
 <translation id="2590893390871230428">Синхронизиране на данните ви в Chromium</translation>
 <translation id="2618596336309823556">От настройките на устройството си отворете „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“ и изберете Chromium</translation>
+<translation id="2618757400690011108">{COUNT,plural, =1{Chromium ще помогне за проследяването на тази пратка в нов раздел.}other{Chromium ще помогне за проследяването на тези пратки в нов раздел.}}</translation>
 <translation id="2650312721222849884">Включете синхронизирането, за да виждате разделите си навсякъде, където използвате Chromium</translation>
 <translation id="2684230048001240293">Задайте Chromium като браузър по подразбиране, така че разделите, паролите и данните ви за плащане да се синхронизират на всичките ви устройства</translation>
 <translation id="2730884209570016437">Chromium не може да използва камерата ви, защото е заета от друго приложение</translation>
@@ -51,6 +53,7 @@
 <translation id="2918709798697875261">Организацията ви изисква да не влизате в профила си в Chromium.</translation>
 <translation id="2942241131342758843">Използвайте Chromium по подразбиране за отваряне на връзки, търсене от приспособления и автоматично попълване на пароли в други приложения</translation>
 <translation id="2977470724722393594">Chromium е актуален</translation>
+<translation id="3078941082359356771">{COUNT,plural, =1{Chromium може да ви помогне да проследявате тази пратка в нов раздел.}other{Chromium може да ви помогне да проследявате тези пратки в нов раздел.}}</translation>
 <translation id="3102849287235003384">За да излезете от профила си в Google на всички уебсайтове, <ph name="BEGIN_LINK" />излезте от профила си в Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Търсене с глас в Chromium</translation>
 <translation id="3228349498066165585">Някои от данните ви в Chromium още не са запазени в профила ви в Google.
@@ -113,6 +116,7 @@
 <translation id="5521125884468363740">Влезте в профила си и включете синхронизирането, за да виждате разделите си навсякъде, където използвате Chromium</translation>
 <translation id="5522297504975449419">Някои функции на Chromium вече няма да са налице.</translation>
 <translation id="5571094606370987472">Отваря скорошните раздели в Chromium.</translation>
+<translation id="5623083843656850677">Заключване на разделите в режим „инкогнито“, когато излезете от Chromium или превключите към друго приложение.</translation>
 <translation id="5688047395118852662">Тази карта ви показва предложения как да се възползвате максимално от Chromium.</translation>
 <translation id="5700709190537129682">Chromium не може да провери паролите ви</translation>
 <translation id="5777187867430702742">Страница на Chromium</translation>

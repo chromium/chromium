@@ -242,6 +242,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="2359043044084662842">Tõlgi</translation>
 <translation id="2359808026110333948">Jätka</translation>
 <translation id="2360196772093551345">Taotle mobiilisaiti</translation>
+<translation id="2361721159900796207">Peidab selle üksuse</translation>
 <translation id="2362083820973145409">Sisse logitud kasutajana <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Avab seaded.</translation>
 <translation id="236977714248711277">Saidid ei saa kasutada küpsisefaile teie sirvimiskogemuse täiustamiseks, näiteks selleks, et hoida teid sisselogituna või jätta meelde teie ostukorvis olevad esemed.
 
@@ -778,6 +779,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="5317780077021120954">Salvesta</translation>
 <translation id="5318298563956633672">Jälgite juba seda toodet.</translation>
 <translation id="5339316356165661760">Lülita sünkroonimine sisse</translation>
+<translation id="5345660046352249607">{COUNT,plural, =1{Kas jälgida seda saadetist?}other{Kas jälgida {COUNT} saadetist?}}</translation>
 <translation id="536067926684072644">Järjehoidjate kuvamine</translation>
 <translation id="5360976571138293719">Privaatsuse, turvalisuse ning andmete kogumisega seotud lisaseadete nägemiseks vaadake jaotist <ph name="BEGIN_LINK" />Google'i teenused<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Leiate oma jälgitavad saidid siit</translation>
@@ -1144,6 +1146,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="723787869754590019">Chrome'i automaattäitefunktsiooni kasutamine</translation>
 <translation id="7265758999917665941">Selle saidi puhul mitte kunagi</translation>
 <translation id="7272437679830969316">Teie isikut ei õnnestu tuvastada. Parooli ei kopeeritud.</translation>
+<translation id="7284359491594949826">{COUNT,plural, =1{Uut saadetist jälgitakse}other{Uusi saadetisi jälgitakse}}</translation>
 <translation id="7291368939935408496">Paroolide ettevalmistamine …</translation>
 <translation id="7302503784943202842">Paroolide kasutamine kõigis oma seadmetes</translation>
 <translation id="730958329302570991">Saate saitide paroole igal ajal hõlpsasti Google'i paroolihaldurisse lisada.</translation>
@@ -1177,6 +1180,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="7473891865547856676">Tänan, ei</translation>
 <translation id="7491131399623468277">Avage menüü Seaded …</translation>
 <translation id="7492574581995589075">Teie organisatsioon on Chrome’i andmete kasutamise ja Google’i kontole salvestamise välja lülitanud. Uued järjehoidjad, paroolid ja muu sisu salvestatakse ainult sellesse seadmesse.</translation>
+<translation id="750149195207506638">Järjehoidjad on peidetud</translation>
 <translation id="750228856503700085">Värskendusi pole saadaval</translation>
 <translation id="750493650310597496">0 valitud</translation>
 <translation id="7508728395076009983">Inkognito vahelehtede lukustamiseks seadistage Touch ID, Face ID või pääsukood.</translation>
@@ -1244,6 +1248,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="7856733331829174190">Ei saanud alla laadida</translation>
 <translation id="785938070103630874">Avage paroole, makseviise, aadresse ja muud</translation>
 <translation id="7859704718976024901">Sirvimisajalugu</translation>
+<translation id="7866501058614003444">Selle saadetise jälgimine on edukalt tühistatud.</translation>
 <translation id="7870750252270996949">Otsi kopeeritud pilti Lensiga</translation>
 <translation id="7879275349003161544">Kausta Allalaadimised kuvamine</translation>
 <translation id="7883882164760409935">Teil on korduvalt kasutatud paroolid.</translation>
@@ -1313,6 +1318,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8206354486702514201">Selle seade jõustas teie administraator.</translation>
 <translation id="8214293972734702249">Kinnitatud, <ph name="TAB_TITLE" /></translation>
 <translation id="8225985093977202398">Vahem. salv. kujut. ja failid</translation>
+<translation id="823133356836493038">Lugemisloend on peidetud</translation>
 <translation id="8237382152611443140">Avage funktsiooni AutoFill Password menüü Settings</translation>
 <translation id="8248969482078657578">Inaktiivsed vahelehed aitavad teil keskenduda</translation>
 <translation id="8261506727792406068">Kustuta</translation>
@@ -1491,6 +1497,7 @@ Teie andmed krüpteeriti teie parooliga kuupäeval <ph name="TIME" />. Chrome’
 <translation id="9148126808321036104">Logige uuesti sisse</translation>
 <translation id="9157836665414082580">Blokeeri dialoogid</translation>
 <translation id="9162432979321511934">Lülitage sisse valik Paroolide automaatne täitmine</translation>
+<translation id="9162941801309769488">Saadetist ei jälgita</translation>
 <translation id="9165320910061267720">Hinnaalanduse märguannete saamiseks peate märguanded iOS-i seadetes sisse lülitama.</translation>
 <translation id="9165886811579296457">Ohutuskontroll ei leidnud ühtegi turvaprobleemi, mida peaksite parandama.</translation>
 <translation id="9172603439892261948">Sünkroonige oma järjehoidjad, ajalugu ja muu sisu.</translation>

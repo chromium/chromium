@@ -25,6 +25,7 @@ Pethau i'w hystyried:
 
   • Os ydych yn cysoni'ch hanes â'ch Cyfrif Google, gall metrigau hefyd gynnwys gwybodaeth am URL rydych yn ymweld â nhw.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Mae gennych ddiogelwch cryfaf Chrome yn erbyn gwefannau niweidiol</translation>
+<translation id="1615715390546812898">Chwilio â Llais yn Chrome.</translation>
 <translation id="1657395063736185342">Chwilio Delweddau yn Chrome</translation>
 <translation id="1675955119303651351">Nid yw peth o'ch data Chrome wedi'u cadw yn eich Cyfrif Google eto.
         Rhowch gynnig ar aros ychydig funudau cyn allgofnodi. Os byddwch yn allgofnodi nawr, bydd y data hyn yn cael eu dileu.</translation>
@@ -104,6 +105,7 @@ Pethau i'w hystyried:
         Rhowch gynnig ar aros ychydig funudau cyn allgofnodi. Os byddwch yn allgofnodi nawr, bydd y data hyn yn cael eu dileu.</translation>
 <translation id="484033449593719797">Ni chefnogir ar Chrome Beta</translation>
 <translation id="4840404732697892756">Gall Rheolwr Cyfrineiriau Google wirio'ch cyfrineiriau pan fyddwch yn mewngofnodi gyda'ch Cyfrif Google.</translation>
+<translation id="4860330141789125848">{COUNT,plural, =1{Gall Chrome eich helpu i dracio'r pecyn hwn ar y Dudalen Tab Newydd.}zero{Gall Chrome eich helpu i dracio'r pecynnau hyn ar y Dudalen Tab Newydd.}two{Gall Chrome eich helpu i dracio'r pecynnau hyn ar y Dudalen Tab Newydd.}few{Gall Chrome eich helpu i dracio'r pecynnau hyn ar y Dudalen Tab Newydd.}many{Gall Chrome eich helpu i dracio'r pecynnau hyn ar y Dudalen Tab Newydd.}other{Gall Chrome eich helpu i dracio'r pecynnau hyn ar y Dudalen Tab Newydd.}}</translation>
 <translation id="4903674399067644695">Mae'r cerdyn hwn yn dangos awgrymiadau i chi ar sut i fanteisio i'r eithaf ar Chrome.</translation>
 <translation id="49200511069271369">Eich sefydliad, <ph name="DOMAIN" />, sy'n rheoli'r cyfrif rydych yn mewngofnodi iddo a sut y gellir defnyddio Chrome. Gall eich gweinyddwr osod neu gyfyngu ar rai nodweddion.</translation>
 <translation id="5030102366287574140">Gall Chrome helpu i'ch cadw'n ddiogel rhag toriadau data, gwefannau anniogel a rhagor.</translation>
@@ -113,10 +115,12 @@ Pethau i'w hystyried:
 <translation id="5156818928311866442">Yn agor y Gosodiad Chromium i osod Chromium fel y Porwr Diofyn.</translation>
 <translation id="5162467219239570114">Mae Chrome yn hen. Os nad oes diweddariad ar gael yn <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, mae'n bosib nad yw'ch dyfais yn cefnogi fersiynau newydd o Chrome mwyach.</translation>
 <translation id="5190139289262548459">Mae eich sefydliad, <ph name="DOMAIN" />, yn rheoli'r cyfrif rydych wedi mewngofnodi iddo a sut mae Chrome yn cael ei ddefnyddio.</translation>
+<translation id="5278862365980079760">Clowch eich tabiau anhysbys pan fyddwch yn gadael Chrome neu'n newid i ap gwahanol.</translation>
 <translation id="5389212809648216794">Ni all Google Chrome ddefnyddio'ch camera oherwydd ei fod yn cael ei ddefnyddio gan ap arall</translation>
 <translation id="5395376160638294582">Gwnewch yn siŵr y gallwch bob amser ddefnyddio'r data Chrome yn eich Cyfrif Google</translation>
 <translation id="5439191312780166229">Yn eich rhybuddio am wefannau peryglus, hyd yn oed rhai nad oedd Google yn gwybod amdanynt o'r blaen, trwy ddadansoddi mwy o ddata o wefannau na diogelwch safonol. Gallwch ddewis hepgor rhybuddion Chrome.</translation>
 <translation id="5460571915754665838">4. Dewiswch Chrome</translation>
+<translation id="546541279759910616">{COUNT,plural, =1{Bydd Chrome yn helpu i dracio'r pecyn hwn ar y Dudalen Tab Newydd.}zero{Bydd Chrome yn helpu i dracio'r pecynnau hyn ar y Dudalen Tab Newydd.}two{Bydd Chrome yn helpu i dracio'r pecynnau hyn ar y Dudalen Tab Newydd.}few{Bydd Chrome yn helpu i dracio'r pecynnau hyn ar y Dudalen Tab Newydd.}many{Bydd Chrome yn helpu i dracio'r pecynnau hyn ar y Dudalen Tab Newydd.}other{Bydd Chrome yn helpu i dracio'r pecynnau hyn ar y Dudalen Tab Newydd.}}</translation>
 <translation id="5492504007368565877">Ni all Rheolwr Cyfrineiriau Google wirio'ch cyfrineiriau.</translation>
 <translation id="5527026824954593399">Tapio "Gweld gyda Google Maps ar Chrome."</translation>
 <translation id="5552137475244467770">Mae Chrome o bryd i'w gilydd yn gwirio'ch cyfrineiriau yn erbyn rhestrau sydd wedi'u cyhoeddi ar-lein. Wrth wneud hyn, mae eich cyfrineiriau a'ch enwau defnyddwyr wedi'u hamgryptio, felly ni all unrhyw un, gan gynnwys Google, eu darllen.</translation>

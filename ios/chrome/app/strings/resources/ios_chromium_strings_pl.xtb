@@ -43,6 +43,7 @@
 <translation id="2574528844022712255">Zobacz Zakładki Chromium</translation>
 <translation id="2590893390871230428">Synchronizuj dane Chromium</translation>
 <translation id="2618596336309823556">W ustawieniach urządzenia otwórz „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />” i wybierz „Chromium”</translation>
+<translation id="2618757400690011108">{COUNT,plural, =1{Chromium pomoże Ci śledzić tę przesyłkę na stronie nowej karty.}few{Chromium pomoże Ci śledzić te przesyłki na stronie nowej karty.}many{Chromium pomoże Ci śledzić te przesyłki na stronie nowej karty.}other{Chromium pomoże Ci śledzić te przesyłki na stronie nowej karty.}}</translation>
 <translation id="2650312721222849884">Aby widzieć swoje karty zawsze, kiedy korzystasz z Chromium, włącz synchronizację</translation>
 <translation id="2684230048001240293">Ustaw Chromium jako przeglądarkę domyślną, aby synchronizować karty, hasła i dane kart płatniczych na wszystkich urządzeniach</translation>
 <translation id="2730884209570016437">Chromium nie może użyć aparatu, bo używa go już inna aplikacja</translation>
@@ -52,6 +53,7 @@
 <translation id="2918709798697875261">Twoja organizacja nie pozwala Ci zalogować się w Chromium.</translation>
 <translation id="2942241131342758843">Używaj domyślnie Chromium, aby otwierać linki, wyszukiwać z widżetów i korzystać z autouzupełniania haseł w innych aplikacjach</translation>
 <translation id="2977470724722393594">Masz aktualną wersję Chromium</translation>
+<translation id="3078941082359356771">{COUNT,plural, =1{Chromium może pomóc Ci śledzić tę przesyłkę na stronie nowej karty.}few{Chromium może pomóc Ci śledzić te przesyłki na stronie nowej karty.}many{Chromium może pomóc Ci śledzić te przesyłki na stronie nowej karty.}other{Chromium może pomóc Ci śledzić te przesyłki na stronie nowej karty.}}</translation>
 <translation id="3102849287235003384">Aby wylogować się z konta Google na wszystkich stronach, <ph name="BEGIN_LINK" />wyloguj się z Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Wyszukaj głosowo w Chromium</translation>
 <translation id="3228349498066165585">Niektóre dane z Chromium nie zostały jeszcze zapisane na Twoim koncie Google.
@@ -114,6 +116,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chromium na s
 <translation id="5521125884468363740">Aby widzieć swoje karty zawsze, kiedy korzystasz z Chromium, zaloguj się i włącz synchronizację</translation>
 <translation id="5522297504975449419">Niektóre funkcje Chromium nie będą już dostępne.</translation>
 <translation id="5571094606370987472">Otwiera ostatnie karty w Chromium.</translation>
+<translation id="5623083843656850677">Po zamknięciu Chromium lub przełączeniu się na inną aplikację zablokuj karty incognito.</translation>
 <translation id="5688047395118852662">Ta karta zawiera sugestie, które pomogą Ci w pełni wykorzystać możliwości Chromium.</translation>
 <translation id="5700709190537129682">Chromium nie może sprawdzić Twoich haseł</translation>
 <translation id="5777187867430702742">Strona Chromium</translation>

@@ -175,6 +175,7 @@
 <translation id="19288952978244135">Chrome পুনৰ খোলক।</translation>
 <translation id="1933845786846280168">বাছনি কৰা টেব</translation>
 <translation id="1943432128510653496">পাছৱৰ্ড ছেভ কৰক</translation>
+<translation id="1944535645109964458">কোনো পাছকী উপলব্ধ নহয়</translation>
 <translation id="1952172573699511566">ৱেবছাইটবোৰে যেতিয়া সম্ভৱ হয় তেতিয়া আপুনি অগ্ৰাধিকাৰ দিয়া ভাষাত পাঠবোৰ দেখুৱাব।</translation>
 <translation id="1959679933317802873">সমলৰ বাবে অপেক্ষা কৰি থকা হৈছে</translation>
 <translation id="1960290143419248813">Androidৰ এই সংস্কৰণটোত Chrome আপডে’টসমূহ আৰু নচলে</translation>
@@ -626,6 +627,7 @@
 <translation id="4257230861809842349">Google Password Managerৰ পৰা পাছৱৰ্ডসমূহ মচিবনে?</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />কি ডেটা ব্যৱহাৰ কৰা হয়:<ph name="END_BOLD" /> আপোনাৰ ব্ৰাউজিঙৰ ইতিহাস, আপুনি এই ডিভাইচটোত Chrome ব্যৱহাৰ কৰি চোৱা ছাইটৰ ৰেকৰ্ড।</translation>
 <translation id="4269820728363426813">লিংকৰ ঠিকনাটো প্ৰতিলিপি কৰক</translation>
+<translation id="4277529130885813215">আন এটা ডিভাইচ ব্যৱহাৰ কৰক</translation>
 <translation id="4283102315569707115">ডিফ’ল্ট হিচাপে ডেস্কটপৰ ছাইটৰ বাবে অনুৰোধ কৰিবনে?</translation>
 <translation id="4285846616383034558">কুকি, কেশ্ব আৰু ছাইটৰ অন্য ডেটা</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android ছেটিঙত স্ক্ৰীন লক অন কৰক<ph name="END_LINK" /></translation>
@@ -1166,6 +1168,7 @@
 <translation id="6955535239952325894">পৰিচালিত ব্ৰাউজাৰসমূহত এই ছেটিংটো অক্ষম কৰা হৈছে</translation>
 <translation id="6963766334940102469">বুকমার্ক মচক</translation>
 <translation id="696447261358045621">ইনক’গনিট’ ম’ডৰ পৰা বাহিৰ হওক</translation>
+<translation id="6965382102122355670">ঠিক আছে</translation>
 <translation id="6971862865055170158">অনুমোদন নজনাব</translation>
 <translation id="6978717888677691380">আপুনি অৱৰোধ কৰা ছাইট</translation>
 <translation id="6979737339423435258">সকলো সময়তে</translation>

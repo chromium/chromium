@@ -25,6 +25,7 @@ Nəzərə alın ki:
 
   • Tarixçə Google Hesabına sinxronlaşdırılsa, göstəricilərdə daxil olduğunuz keçidlər haqqında məlumat ola bilər.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Zərərli vebsaytlara qarşı Chrome'un ən güclü təhlükəsizliyinə sahibsiniz</translation>
+<translation id="1615715390546812898">Chrome-da səs ilə axtarın.</translation>
 <translation id="1657395063736185342">Chrome-da vizualları axtarın</translation>
 <translation id="1675955119303651351">Müəyyən Chrome datası Google Hesabında yadda saxlanmayıb.
         Çıxmazdan əvvəl bir neçə dəqiqə gözləyin. İndi çıxsanız, bu data silinəcək.</translation>
@@ -104,6 +105,7 @@ Nəzərə alın ki:
         Çıxmazdan əvvəl bir neçə dəqiqə gözləyin. İndi çıxsanız, bu data silinəcək.</translation>
 <translation id="484033449593719797">Chrome Beta'da dəstəklənmir</translation>
 <translation id="4840404732697892756">Google Hesabınız ilə daxil olduqda Google Parol Meneceri parollarınızı yoxlaya bilər.</translation>
+<translation id="4860330141789125848">{COUNT,plural, =1{Chrome yeni tab səhifəsində bu paketi izləməyə kömək edə bilər.}other{Chrome yeni tab səhifəsində bu paketləri izləməyə kömək edə bilər.}}</translation>
 <translation id="4903674399067644695">Bu kartda Chrome-dan maksimum yararlanma təklifləri göstərilir.</translation>
 <translation id="49200511069271369">Təşkilatınız (<ph name="DOMAIN" />) daxil olduğunuz hesabı və Chrome-dan istifadə qaydasını idarə edir. Administrator müəyyən funksiyaları ayarlaya və ya məhdudlaşdıra bilər.</translation>
 <translation id="5030102366287574140">Chrome sizi data pozuntuları, güvənli olmayan vebsaytlar və digər güvənlik məsələlərindən qoruya bilər.</translation>
@@ -113,10 +115,12 @@ Nəzərə alın ki:
 <translation id="5156818928311866442">Chrome-u defolt brauzer təyin etmək üçün Chrome ayarı açılır.</translation>
 <translation id="5162467219239570114">Chrome köhnəlib. <ph name="BEGIN_LINK" />App Store'da<ph name="END_LINK" /> əlçatan güncəlləmə yoxdursa, ola bilər ki, cihazınız artıq Chrome'un yeni versiyalarını dəstəkləmir.</translation>
 <translation id="5190139289262548459">Təşkilat (<ph name="DOMAIN" />) daxil olduğunuz hesabı və Chrome-un istifadə qaydasını idarə edir.</translation>
+<translation id="5278862365980079760">Chrome-dan çıxdıqda və ya başqa tətbiqə keçdikdə anonim tabları kilidləyin.</translation>
 <translation id="5389212809648216794">Digər tətbiq tərəfindən istifadə olunduğu üçün Google Chrome kameranı istifadə edə bilməz</translation>
 <translation id="5395376160638294582">Google Hesabında hər zaman Chrome datasından istifadə edə biləcəyinizdən əmin olun</translation>
 <translation id="5439191312780166229">Standart qoruma ilə müqayisədə saytlardan daha çox data təhlil edərək təhlükəli, hətta Google-un bilmədiyi saytlar haqqında xəbərdar edir. Chrome xəbərdarlıqlarını ötürə bilərsiniz.</translation>
 <translation id="5460571915754665838">4. Chrome seçin</translation>
+<translation id="546541279759910616">{COUNT,plural, =1{Chrome yeni tab səhifəsində bu paketi izləməyə kömək edəcək.}other{Chrome yeni tab səhifəsində bu paketləri izləməyə kömək edəcək.}}</translation>
 <translation id="5492504007368565877">Google Parol Meneceri parolları yoxlaya bilmir.</translation>
 <translation id="5527026824954593399">"Chrome-da Google Xəritə ilə baxın" üzərinə toxunun.</translation>
 <translation id="5552137475244467770">Chrome müntəzəm olaraq onlayn yayımlanan siyahılar əsasında parollarınızı yoxlayır. Bunu edərkən, parollar və istifadəçi adları şifrələnir ki, Google daxil olmaqla, heç kim onları oxuya bilməsin.</translation>

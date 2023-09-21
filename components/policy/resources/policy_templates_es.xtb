@@ -394,25 +394,6 @@ Si se inhabilita la política o se deja sin definir, la configuración de restau
       Ten en cuenta que esta política es temporal y su objetivo es permitir que los usuarios gestionados puedan usar combinaciones de teclas antiguas y obsoletas. Esta política quedará obsoleta cuando estén disponibles las combinaciones de teclas personalizadas.</translation>
 <translation id="1361661842732478894">Mostrar el botón de inicio en la barra de herramientas</translation>
 <translation id="1363275621236827384">Habilitar consultas a Quirks Server para los perfiles de hardware</translation>
-<translation id="136422692261301619">Lista de acciones que se ejecutarán cuando se agote el tiempo de espera de la política <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
-
-      Esta política no tendrá efecto si no se define la política <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
-
-      Cuando se agote el tiempo de espera de la política <ph name="IDLE_TIMEOUT_POLICY_NAME" />, <ph name="PRODUCT_NAME" /> ejecutará las acciones configuradas en esta política.
-
-      Si esta política se deja vacía o no se define, la política <ph name="IDLE_TIMEOUT_POLICY_NAME" /> no tendrá efecto.
-
-      Estas son las acciones que se pueden realizar:
-
-      <ph name="CLOSE_BROWSERS_ACTION" />: cierra todas las ventanas del navegador y PWAs de este perfil. No se admite en Android.
-
-      <ph name="SHOW_PROFILE_PICKER_ACTION" />: muestra la ventana del selector de perfil. No se admite en Android.
-
-      <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />, <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />, <ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" />, <ph name="CLEAR_SITE_SETTINGS_ACTION" /> y <ph name="CLEAR_HOSTED_APP_DATA_ACTION" />: borran los datos de navegación correspondientes. Consulta la política <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> para obtener más información.
-
-      <ph name="RELOAD_PAGES_ACTION" />: vuelve a cargar todas las páginas web. En algunas páginas, es posible que primero se solicite la confirmación del usuario.
-
-      Si se definen <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" /> y <ph name="CLEAR_SITE_SETTINGS_ACTION" />, se inhabilitará la sincronización de los respectivos tipos de datos si no se define la política <ph name="SYNC_DISABLED_POLICY_NAME" /> para inhabilitar <ph name="CHROME_SYNC_NAME" /> ni tampoco se inhabilita <ph name="BROWSER_SIGNIN_POLICY_NAME" />.</translation>
 <translation id="1369698103169067223">Los widgets Glanceables no están habilitados para los usuarios.</translation>
 <translation id="1371626834351873151">La reducción de user-agent se habilitará para todos los orígenes.</translation>
 <translation id="1371851989348083665">Permitir el uso de <ph name="ASSISTANT_PRODUCT_NAME" /> en la Web</translation>
@@ -2355,6 +2336,13 @@ Si el usuario no marca la casilla:
 
 <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />
 Este comportamiento es el mismo que el de <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />, pero el perfil recién creado no puede tener cuentas secundarias.</translation>
+<translation id="3079575168312257780">Si se asigna el valor "0" (predeterminado) a esta política, podrás acceder a las herramientas para desarrolladores y a la consola de JavaScript, pero no en extensiones instaladas por políticas de empresa o, desde la versión 114 y si se trata de un usuario gestionado, no podrás acceder a las herramientas para desarrolladores ni a la consola de JavaScript en extensiones integradas en el navegador. Si se le asigna el valor "1", podrás acceder a las herramientas para desarrolladores y a la consola de JavaScript sin excepciones, incluso en extensiones instaladas por políticas de empresa. Si se le asigna el valor "2", no podrás acceder a las herramientas para desarrolladores ni tampoco podrás inspeccionar elementos de sitios web.
+
+      Este ajuste también desactiva las combinaciones de teclas y las entradas de menús o menús contextuales que permiten abrir las herramientas para desarrolladores o la consola de JavaScript.
+
+      A partir de la versión 99 de <ph name="PRODUCT_NAME" />, este ajuste también controla los puntos de entrada de la función Ver el código fuente de la página. Si se asigna el valor "DeveloperToolsDisallowed" (valor 2) a esta política, los usuarios no podrán ver el código fuente a través de una combinación de teclas ni mediante el menú contextual. Para bloquear completamente la visualización del código fuente, también debes añadir "view-source:*" a la política <ph name="URL_BLOCKLIST_POLICY_NAME" />.
+
+      A partir de la versión 119 de <ph name="PRODUCT_NAME" />, este ajuste también controla si se puede activar y usar el modo Desarrollador para aplicaciones web aisladas.</translation>
 <translation id="3083259245974004342">Protección de contraseñas</translation>
 <translation id="308356121098374167">WebSQL en contextos no seguros estará disponible</translation>
 <translation id="3086995894968271156">Configura Cast Receiver en <ph name="PRODUCT_NAME" />.</translation>
@@ -2581,6 +2569,7 @@ Si la política no se establece, se usará el nuevo comportamiento, tal como suc
 <translation id="3240609035816615922">Política de acceso a la configuración de impresoras.</translation>
 <translation id="324062325008698789">Configura una lista de impresoras.</translation>
 <translation id="3240655340884151271">Dirección NIC MAC integrada en la base</translation>
+<translation id="3242480111684005642">El usuario puede utilizar la función de sincronización de archivos de <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="3242756958360374888">Contiene una lista de patrones que se utilizan para controlar la visibilidad de las cuentas en <ph name="PRODUCT_NAME" />.
 
       Cada cuenta de Google del dispositivo se comparará con los patrones almacenados en esta política para determinar la visibilidad de la cuenta en <ph name="PRODUCT_NAME" />. La cuenta será visible si su nombre coincide con algún patrón de la lista. Si no, se ocultará.
@@ -2640,6 +2629,7 @@ Estas restricciones se aplican a las descargas activadas desde el contenido de l
 En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" /> o a <ph name="MS_AAD_NAME" />, o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="3300784749135986828">Habilita o inhabilita <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />.</translation>
 <translation id="3301698868852716692">Habilitar extensión de estadísticas</translation>
+<translation id="3302723130703323097">Hacer que la función de sincronización de archivos de <ph name="GOOGLE_DRIVE_NAME" /> sea visible y se pueda activar en dispositivos compatibles desde la aplicación Archivos de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3302829897293005699">Si se habilita la política o no se establece, los dispositivos registrados enviarán información sobre las sesiones activas del kiosko, como el ID de la aplicación o la versión.
 
       Si se inhabilita la política, los dispositivos registrados no enviarán información sobre las sesiones activas del kiosko.</translation>
@@ -2729,6 +2719,13 @@ Si se inhabilita esta política, no se permitirá la función de escritura predi
       Si se le asigna el valor "hidden", los usuarios no podrán utilizar ni ver las funciones inhabilitadas.
 
       Si no se le asigna ningún valor o se le asigna un valor no válido, el modo de inhabilitación de funciones del sistema tendrá el valor "blocked".</translation>
+<translation id="3410963889229735344">La sincronización de archivos de <ph name="GOOGLE_DRIVE_NAME" /> permite que los archivos del usuario que se encuentren en Mi unidad estén disponibles automáticamente sin conexión (si hay espacio) en dispositivos compatibles. Después de activar el acceso sin conexión a todos los archivos, los archivos nuevos también estarán disponibles sin conexión de forma automática. Una vez activada la función, si más adelante no hay espacio suficiente para que la función siga activada, los archivos nuevos dejarán de estar disponibles sin conexión de forma automática. No obstante, los usuarios podrán seguir activando elementos manualmente.
+
+Si se le asigna el valor <ph name="POLICY_VALUE_VISIBLE" /> a esta política, se mostrará la función de sincronización de archivos en la aplicación Archivos y en la página Configuración. Los usuarios tendrán que seguir activando la función de sincronización de archivos.
+
+Si se le asigna el valor <ph name="POLICY_VALUE_DISABLED" /> a esta política, se desactivará la función de sincronización de archivos si el usuario la había activado previamente, y también se ocultará la función en la aplicación Archivos y en Configuración para que el usuario no pueda volver a habilitarla. Si el usuario ha habilitado el acceso sin conexión a algún archivo, seguirá estando disponible sin conexión y el usuario podrá elegir manualmente los archivos que quiera que estén disponibles sin conexión (no estarán disponibles sin conexión de forma automática).
+
+Si no se define esta política, se usará <ph name="POLICY_VALUE_VISIBLE" /> como valor predeterminado.</translation>
 <translation id="341285788698114069">Esta política controla la prioridad del proceso de audio en Windows.
       Si se habilita la política, el proceso de audio se ejecutará con una prioridad superior a la normal.
       Si se inhabilita esta política, el proceso de audio se ejecutará con una prioridad normal.
@@ -2814,6 +2811,7 @@ Si una conexión no supera esta comprobación, se producirá el error ERR_SSL_KE
       Ten en cuenta que, si la política <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> se inhabilita y <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> se habilita o no se establece, la página del historial de Chrome organizada en grupos seguirá estando disponible en chrome://history/grouped, pero puede que sea menos relevante para el usuario.
 </translation>
 <translation id="3478024346823118645">Borrar los datos del usuario al cerrar sesión</translation>
+<translation id="3478406829037689272">Habilitar los análisis profundos de las descargas con Navegación segura</translation>
 <translation id="3480961938508521469">Carga totalmente la batería a velocidad estándar.</translation>
 <translation id="348110646151632565">Habilita la función de accesibilidad Enunciar selección en la pantalla de inicio de sesión.
 
@@ -3795,6 +3793,9 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
 <translation id="4380159792986204036">Permitir que una aplicación web de kiosco abra más de una ventana del navegador en cualquier pantalla</translation>
 <translation id="4381227367939912539">Inhabilitar el juego del huevo de pascua del dinosaurio</translation>
 <translation id="4382413175336720282">La comprobación de URL en tiempo real está inhabilitada.</translation>
+<translation id="4384911996235542086">Si esta política se habilita o no se define, <ph name="PRODUCT_NAME" /> podrá enviar a Google las descargas sospechosas de usuarios con la Navegación segura habilitada para analizarlas en busca de malware.
+Si se inhabilita esta política, no se realizará este análisis.
+Esta política no afecta al análisis del contenido de las descargas configurado por Chrome Enterprise Connectors.</translation>
 <translation id="4387741272680827493">Si se establece la política, se especifica una lista de nombres de host que evita las actualizaciones de HSTS precargadas (de http a https).
 
       En esta política, solo se permiten nombres de host de una sola etiqueta. Esta política solo se aplica a entradas estáticas precargadas por HSTS (por ejemplo, <ph name="EXAMPLE_HSTS_PRELOAD_TLDS" />). Esta política no evita las actualizaciones de HSTS en el caso de los servidores que hayan solicitado dinámicamente actualizaciones de HSTS usando un encabezado de respuesta <ph name="HSTS_HEADER_NAME" />.
@@ -4490,6 +4491,7 @@ Si se asigna el valor False a esta política, se usará el comportamiento predet
 <translation id="5036013147560568855">Versión del protocolo de aprovisionamiento de certificados. El valor predeterminado es 1. 1 es el protocolo estático. 2 es el protocolo dinámico.</translation>
 <translation id="5039110755072335605">Compatibilidad con encabezados de solicitud CORS sin comodín</translation>
 <translation id="504116558738617678">Solor mostrar advertencias de poco espacio en disco si el dispositivo no está gestionado o si únicamente hay 1 usuario</translation>
+<translation id="5046376406561077773">El usuario no puede ver la interfaz de usuario relacionada con la función de sincronización de archivos de <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="5055474681190962362">Día del mes [1-31] en el que se debe reiniciar, interpretado en la zona horaria local del dispositivo. Solo se utiliza si el valor de "frequency" (frecuencia) es "MONTHLY" (mensual). Si este valor es superior al número máximo de días de un mes concreto, se seleccionará el último día del mes.</translation>
 <translation id="5056708224511062314">Lupa inhabilitada</translation>
 <translation id="5058573563327660283">Seleccionar la estrategia utilizada para liberar espacio en disco durante la limpieza automática (obsoleta)</translation>
@@ -5181,15 +5183,6 @@ Cuando se define para <ph name="PRODUCT_OS_NAME" /> Kiosk, esta política habili
 <translation id="5666457529647159548">Permite que los usuarios gestionen los certificados de cliente instalados.</translation>
 <translation id="567377007899266033">Si se le asigna el valor "True" a esta política, se enviarán a Google informes de los principales eventos de instalación de extensiones activados por la política. Si se le asigna el valor "False", no se enviará información de ninguno de estos eventos. Si no se le asigna ningún valor a esta política, el valor predeterminado será "True".</translation>
 <translation id="5676740747107495269">Mostrar las opciones de accesibilidad en el menú de la bandeja del sistema de la pantalla de inicio de sesión</translation>
-<translation id="567832102568869993">Activa una acción cuando el ordenador está inactivo.
-
-      Si se define esta política, especifica el tiempo (en minutos) que debe transcurrir sin ninguna entrada del usuario antes de que <ph name="PRODUCT_NAME" /> ejecute las acciones configuradas a través de la política <ph name="IDLE_TIMEOUT_ACTIONS_POLICY_NAME" />.
-
-      Si no se define esta política, no se ejecutará ninguna acción.
-
-      El umbral mínimo es 1 minuto.
-
-      Las APIs del sistema operativo definen qué es una entrada del usuario (por ejemplo, mover el ratón o escribir con el teclado).</translation>
 <translation id="5679540979548648200">Impide que los usuarios de este dispositivo utilicen la instalación de fuente desconocida adb y ejecuta la función Powerwash de manera forzada en el dispositivo si ya se había habilitado previamente la instalación de fuente desconocida</translation>
 <translation id="5681258683432554972">Configuración de ventanas emergentes predeterminada</translation>
 <translation id="5684501593989438324">Habilitar la palabra de activación del Asistente de Google</translation>
@@ -5765,6 +5758,7 @@ En la versión 114 y posteriores, esta política es opcional si se establece la 
           Normalmente, el modo de pantalla completa está desactivado cuando el dispositivo sale de la pantalla de bloqueo. Así, se reduce el riesgo de ataques phishing. Esta política permite definir las URLs que se considerarán fuentes de confianza y que podrán continuar en modo de pantalla completa al desbloquear el dispositivo. Se establece definiendo una lista de patrones de URL con este formato: https://support.google.com/chrome/a?p=url_blocklist_filter_format. Por ejemplo, es posible mantener siempre el modo de pantalla completa al desbloquear el dispositivo e inhabilitar por completo las notificaciones especificando el carácter comodín <ph name="WILDCARD_VALUE" /> para todas las URLs.
 
           Si esta política se configura con una lista vacía o no se establece, ninguna URL podrá continuar en modo de pantalla completa sin que se muestre una notificación.</translation>
+<translation id="6240222568708113780">Permitir el análisis profundo de las descargas a los usuarios con la Navegación segura habilitada</translation>
 <translation id="624080397610861618">Inhabilitar diseño InScript para hindi</translation>
 <translation id="6242147107333796512">Proporciona información relacionada con los informes sobre fallos, como el ID remoto,
       la marca de tiempo de captura y la causa.
@@ -7292,6 +7286,7 @@ Si la política no se establece, será lo mismo que asignarle el valor <ph name=
 <translation id="7485481791539008776">Reglas para la selección de la impresora predeterminada</translation>
 <translation id="7486205887492534734">Preguntar cuando coincidan varios certificados en la pantalla de inicio de sesión</translation>
 <translation id="748873163367340515">Usa solo cookies y datos esenciales en la búsqueda.</translation>
+<translation id="7489169777107143496">Inhabilitar los análisis profundos de las descargas con Navegación segura</translation>
 <translation id="7489661071474025727">Especifica si los usuarios de los dispositivos <ph name="PRODUCT_OS_NAME" /> tienen activado el servicio de recuperación de cuenta.
 
       Si la política está habilitada, se activará la recuperación de datos de usuario. Si se inhabilita esta política o no se establece, no se activará la recuperación de datos de usuario.

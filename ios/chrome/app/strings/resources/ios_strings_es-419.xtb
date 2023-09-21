@@ -242,6 +242,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />borra los datos de Chr
 <translation id="2359043044084662842">Traducir</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2360196772093551345">Solicitar sitio móvil</translation>
+<translation id="2361721159900796207">Oculta este elemento</translation>
 <translation id="2362083820973145409">Accediste como <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Abre la configuración.</translation>
 <translation id="236977714248711277">Los sitios no pueden usar cookies para mejorar la experiencia de navegación, por ejemplo, para mantener el acceso a la cuenta correspondiente o recordar elementos en el carrito de compras.
 
@@ -778,6 +779,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5318298563956633672">Ya estás realizando un seguimiento de este producto.</translation>
 <translation id="5339316356165661760">Activar la sincronización</translation>
+<translation id="5345660046352249607">{COUNT,plural, =1{¿Quieres realizar el seguimiento de este paquete?}other{¿Quieres realizar el seguimiento de {COUNT} paquetes?}}</translation>
 <translation id="536067926684072644">Ver Favoritos</translation>
 <translation id="5360976571138293719">Para ver más opciones de configuración relacionadas con la privacidad, seguridad y recopilación de datos, visita <ph name="BEGIN_LINK" />Servicios de Google<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Puedes encontrar los sitios que sigues aquí</translation>
@@ -1144,6 +1146,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="723787869754590019">Usa Chrome para autocompletar</translation>
 <translation id="7265758999917665941">Nunca para este sitio</translation>
 <translation id="7272437679830969316">No se puede verificar tu identidad. La contraseña no se copió.</translation>
+<translation id="7284359491594949826">{COUNT,plural, =1{Nuevo seguimiento de paquete}other{Nuevos seguimientos de paquete}}</translation>
 <translation id="7291368939935408496">Preparando las contraseñas…</translation>
 <translation id="7302503784943202842">Usa contraseñas en todos tus dispositivos</translation>
 <translation id="730958329302570991">Agrega contraseñas de sitios al Administrador de contraseñas de Google fácilmente en cualquier momento.</translation>
@@ -1177,6 +1180,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7473891865547856676">No, gracias</translation>
 <translation id="7491131399623468277">Ir a Configuración…</translation>
 <translation id="7492574581995589075">Tu organización desactivó la función para usar y guardar datos de Chrome en tu Cuenta de Google. Los favoritos, las contraseñas y otros elementos nuevos se guardarán solo en este dispositivo.</translation>
+<translation id="750149195207506638">Los favoritos están ocultos</translation>
 <translation id="750228856503700085">No hay actualizaciones disponibles</translation>
 <translation id="750493650310597496">0 seleccionados</translation>
 <translation id="7508728395076009983">Para bloquear tus pestañas de incógnito, configura Touch ID, Face ID o una contraseña.</translation>
@@ -1244,6 +1248,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7856733331829174190">No se pudo descargar</translation>
 <translation id="785938070103630874">Abre contraseñas, formas de pago, direcciones y mucho más.</translation>
 <translation id="7859704718976024901">Historial de navegación</translation>
+<translation id="7866501058614003444">Se anuló correctamente el seguimiento de este paquete.</translation>
 <translation id="7870750252270996949">Imagen copiada de Lens</translation>
 <translation id="7879275349003161544">Mostrar descargas</translation>
 <translation id="7883882164760409935">Tienes contraseñas reutilizadas.</translation>
@@ -1313,6 +1318,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8206354486702514201">El administrador controla esta configuración.</translation>
 <translation id="8214293972734702249">Se fijó <ph name="TAB_TITLE" /></translation>
 <translation id="8225985093977202398">Imágenes y archivos almacenados en caché</translation>
+<translation id="823133356836493038">La Lista de lectura está oculta</translation>
 <translation id="8237382152611443140">Ve a Autorrelleno de contraseñas en Configuración.</translation>
 <translation id="8248969482078657578">Las pestañas inactivas te ayudan a concentrarte</translation>
 <translation id="8261506727792406068">Borrar</translation>
@@ -1491,6 +1497,7 @@ Tus datos se encriptaron con tu frase de contraseña el <ph name="TIME" />. Ingr
 <translation id="9148126808321036104">Accede nuevamente</translation>
 <translation id="9157836665414082580">Suprimir diálogos</translation>
 <translation id="9162432979321511934">Activa la función Autocompletar contraseñas.</translation>
+<translation id="9162941801309769488">No se realiza el seguimiento del paquete</translation>
 <translation id="9165320910061267720">Para recibir notificaciones sobre alertas de descuentos, debes activarlas en la configuración de iOS.</translation>
 <translation id="9165886811579296457">La Verificación de seguridad no encontró ningún problema de seguridad que debas solucionar.</translation>
 <translation id="9172603439892261948">Sincroniza tus favoritos, historial y más.</translation>

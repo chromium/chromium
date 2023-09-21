@@ -14,6 +14,7 @@
 <translation id="1149651794389918149">登入 Chrome。如果您想只登入帳戶一次，可以<ph name="GUEST_LINK_BEGIN" />透過訪客身份使用裝置<ph name="GUEST_LINK_END" />。</translation>
 <translation id="1152920704813762236">關於 Chrome OS</translation>
 <translation id="1154147086299354128">在 Chrome 中開啟(&amp;O)</translation>
+<translation id="1194807384646768652">這不是常有人下載的檔案類型，可能有危險，因此 Chrome 已禁止下載</translation>
 <translation id="1203500561924088507">多謝安裝。您必須先重新啟動瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="1278833599417554002">重新啟動以更新 &amp;Chrome</translation>
 <translation id="1302523850133262269">請稍候，Chrome 正在安裝最新的系統更新。</translation>
@@ -132,10 +133,12 @@
 <translation id="3080151273017101988">Google Chrome 關閉時繼續執行背景應用程式</translation>
 <translation id="3089968997497233615">Google Chrome 推出全新版本，安全性更勝從前。</translation>
 <translation id="3100998948628680988">為 Chrome 設定檔命名</translation>
+<translation id="3112458742631356345">這不是常有人下載的檔案，可能有危險，因此 Chrome 已禁止下載</translation>
 <translation id="3114643501466072395">如要檢查其他密碼是否安全，且未受資料外洩或其他安全性問題影響，請<ph name="BEGIN_LINK" />登入 Chrome<ph name="END_LINK" />。</translation>
 <translation id="3140883423282498090">您的變更將於下次重新啟動 Google Chrome 時生效。</translation>
 <translation id="3149510190863420837">Chrome 應用程式</translation>
 <translation id="3169523567916669830">在試用期間，您可以查看及移除網站用來向您顯示廣告的感興趣主題。Chrome 會根據您最近的瀏覽記錄，推測您感興趣的主題。</translation>
+<translation id="3196187562065225381">這個檔案有危險，因此 Chrome 已禁止下載</translation>
 <translation id="3226612997184048185">如果一併將書籤儲存在 Google 帳戶中，便可以在 Chrome 中追蹤產品價格，並在降價時收到通知</translation>
 <translation id="3245429137663807393">如果您同時分享 Chrome 使用情況報告，這些報告將會包含您瀏覽的網址</translation>
 <translation id="3282568296779691940">登入 Chrome</translation>
@@ -183,6 +186,7 @@
 <translation id="4148957013307229264">安裝中…</translation>
 <translation id="4149882025268051530">安裝程式無法解壓縮封存檔案，請再次下載 Google Chrome。</translation>
 <translation id="4153934450158521343">Chrome 即將關閉並刪除資料</translation>
+<translation id="4175922240926474352">這個網站沒有使用安全連線，檔案可能已經遭人竄改，因此 Chrome 已禁止下載</translation>
 <translation id="4191857738314598978">{0,plural, =1{請在 1 天內重新啟動 Chrome}other{請在 # 天內重新啟動 Chrome}}</translation>
 <translation id="4205939740494406371">Chrome 無法檢查密碼，請於 24 小時後再試一次，或<ph name="BEGIN_LINK" />檢查 Google 帳戶中的密碼<ph name="END_LINK" />。</translation>
 <translation id="4222932583846282852">正在取消…</translation>
@@ -363,6 +367,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="7641148173327520642">系統管理員已設定由 Google Chrome 開啟 <ph name="ALTERNATIVE_BROWSER_NAME" /> 以存取 <ph name="TARGET_URL_HOSTNAME" />。</translation>
 <translation id="7649070708921625228">說明</translation>
 <translation id="7651907282515937834">Chrome 企業標誌</translation>
+<translation id="76531479118467370">安全瀏覽功能已關閉，系統無法驗證這個檔案，因此 Chrome 已禁止下載</translation>
 <translation id="7655455401911432608">您的瀏覽記錄，亦即您在此裝置上使用 Chrome 瀏覽過的網站記錄。</translation>
 <translation id="7747138024166251722">安裝程式無法建立暫時目錄，請檢查可用磁碟空間與權限，以順利安裝軟件。</translation>
 <translation id="7761834446675418963">按一下您的名稱即可開啟 Chrome 並開始瀏覽。</translation>
@@ -379,6 +384,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="7890208801193284374">如果您與親朋好友共用電腦，每個人均可享有獨立的瀏覽空間，按照自己的偏好設定 Chrome。</translation>
 <translation id="7896673875602241923">先前已有其他人在這部電腦上以 <ph name="ACCOUNT_EMAIL_LAST" /> 的身分登入 Chrome。請建立新的 Chrome 使用者以個別保存您的資料。</translation>
 <translation id="7917876797003313048">您可管理已登入的 Google 帳戶。Google 帳戶可用於 Chrome 瀏覽器、Play 商店和 Gmail 等服務。如要新增其他人 (例如家庭成員) 的帳戶，請改為將使用者新增至您的 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="7936702483636872823">這是詐騙檔案，可能會對裝置造成非預期的變更，因此 Chrome 已禁止下載</translation>
 <translation id="7951272445806340501">ChromeOS Flex 必須重新啟動，才能套用更新。</translation>
 <translation id="7962368738413920945">網站可能會正常運作，但不會在所有 Chrome 視窗關閉後記住與您有關的資料</translation>
 <translation id="7962410387636238736">由於 Google Chrome 將停止支援 Windows XP 和 Windows Vista，因此這部電腦不會再收到 Google Chrome 更新。</translation>
