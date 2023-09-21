@@ -4,6 +4,9 @@
 
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 
+#include <AvailabilityMacros.h>
+#include <AvailabilityVersions.h>
+
 #include <tuple>
 #include <utility>
 
@@ -53,6 +56,16 @@
 
 using remote_cocoa::mojom::NativeWidgetNSWindowInitParams;
 using remote_cocoa::mojom::WindowVisibilityState;
+
+#if !defined(MAC_OS_VERSION_14_0) || \
+    MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_VERSION_14_0
+
+@interface NSApplication ()
+- (void)yieldActivationToApplicationWithBundleIdentifier:
+    (NSString*)bundleIdentifier API_AVAILABLE(macos(14.0));
+@end
+
+#endif
 
 namespace views {
 
@@ -490,7 +503,7 @@ void NativeWidgetMacNSWindowHost::InitWindow(
 
   // Widgets for UI controls (usually layered above web contents) start visible.
   if (widget_type_ == Widget::InitParams::TYPE_CONTROL)
-    GetNSWindowMojo()->SetVisibilityState(WindowVisibilityState::kShowInactive);
+    SetVisibilityState(WindowVisibilityState::kShowInactive);
 }
 
 void NativeWidgetMacNSWindowHost::CloseWindowNow() {
@@ -793,6 +806,22 @@ void NativeWidgetMacNSWindowHost::ReorderChildViews() {
     attached_subview_ids.push_back(ns_view_id);
   }
   GetNSWindowMojo()->SortSubviews(attached_subview_ids);
+}
+
+void NativeWidgetMacNSWindowHost::SetVisibilityState(
+    remote_cocoa::mojom::WindowVisibilityState new_state) {
+  // On macOS 14 an application can't generally activate themselves. If we're
+  // trying to activate a window in a remote application host, this yield
+  // should make sure this works as long as chrome is the currently active
+  // application.
+  if (@available(macOS 14, *)) {
+    if (application_host_ &&
+        new_state == WindowVisibilityState::kShowAndActivateWindow) {
+      [NSApp yieldActivationToApplicationWithBundleIdentifier:
+                 base::SysUTF8ToNSString(application_host_->bundle_id())];
+    }
+  }
+  GetNSWindowMojo()->SetVisibilityState(new_state);
 }
 
 void NativeWidgetMacNSWindowHost::GetAttachedNativeViewHostViewsRecursive(

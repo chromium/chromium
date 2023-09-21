@@ -231,6 +231,8 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   bool IsMouseCaptureActive() const { return is_mouse_capture_active_; }
   bool IsZoomed() const { return is_zoomed_; }
 
+  void SetVisibilityState(remote_cocoa::mojom::WindowVisibilityState new_state);
+
   // Add a NSEvent local event monitor, which will send events to `client`
   // before they are dispatched to their ordinary target. Clients may specify
   // that they have handled an event, which will prevent further dispatch. All
