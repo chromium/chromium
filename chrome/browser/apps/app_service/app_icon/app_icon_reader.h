@@ -20,8 +20,8 @@ namespace apps {
 
 class AppIconDecoder;
 
-// AppIconReader reads app icons from the icon image files in the local
-// disk and provides an ImageSkia for UI code to use.
+// AppIconReader reads app icons and shortcut icons from the icon image files in
+// the local disk and provides an ImageSkia for UI code to use.
 class AppIconReader {
  public:
   explicit AppIconReader(Profile* profile);
@@ -29,9 +29,10 @@ class AppIconReader {
   AppIconReader& operator=(const AppIconReader&) = delete;
   ~AppIconReader();
 
-  // Reads specified app icons from the local disk for an app identified by
-  // `app_id`.
-  void ReadIcons(const std::string& app_id,
+  // Reads specified app icons from the local disk for a app service item
+  // identified by `id`. The id can be app_id for apps, and shortcut_id for
+  // shortcuts.
+  void ReadIcons(const std::string& id,
                  int32_t size_in_dip,
                  const IconKey& icon_key,
                  IconType icon_type,
@@ -41,7 +42,7 @@ class AppIconReader {
   void OnUncompressedIconRead(int32_t size_in_dip,
                               IconEffects icon_effects,
                               IconType icon_type,
-                              const std::string& app_id,
+                              const std::string& id,
                               LoadIconCallback callback,
                               AppIconDecoder* decoder,
                               IconValuePtr iv);

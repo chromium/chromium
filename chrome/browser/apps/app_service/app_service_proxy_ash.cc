@@ -605,18 +605,8 @@ AppServiceProxyAsh::ShortcutInnerIconLoader::LoadIconFromIconKey(
         std::move(callback));
   }
 
-  // Temporarily use the existing web app icons for shortcuts using the app icon
-  // loader. This still work for now because the web app entries for shortcuts
-  // have not been filtered out in web app publisher yet. This will need to be
-  // updated before we filter out the shortcuts from web app publisher.
-  // TODO(crbug.com/1412708): Use icon reader to get the icon from shortcut
-  // publisher instead of the web app publisher.
-  std::string equivalent_web_app_id =
-      host_->ShortcutRegistryCache()->GetShortcutLocalId(ShortcutId(id));
-  host_->LoadIconFromIconKey(AppType::kWeb, equivalent_web_app_id, icon_key,
-                             icon_type, size_hint_in_dip,
-                             allow_placeholder_icon, std::move(callback));
-
+  host_->ReadShortcutIcon(ShortcutId(id), size_hint_in_dip, icon_key.Clone(),
+                          icon_type, std::move(callback));
   return nullptr;
 }
 
@@ -1142,6 +1132,71 @@ void AppServiceProxyAsh::RemoveShortcutImpl(const ShortcutId& shortcut_id,
   if (shortcut_publisher) {
     shortcut_publisher->RemoveShortcut(host_app_id, local_id, uninstall_source);
   }
+}
+
+void AppServiceProxyAsh::ReadShortcutIcon(const ShortcutId& shortcut_id,
+                                          int32_t size_in_dip,
+                                          std::unique_ptr<IconKey> icon_key,
+                                          IconType icon_type,
+                                          LoadIconCallback callback) {
+  // TODO(crbug.com/1412708): Add pending request handing for icon folder is
+  // being deleted.
+  icon_reader_.ReadIcons(
+      shortcut_id.value(), size_in_dip, *icon_key, icon_type,
+      base::BindOnce(&AppServiceProxyAsh::OnShortcutIconRead,
+                     weak_ptr_factory_.GetWeakPtr(), shortcut_id, size_in_dip,
+                     static_cast<IconEffects>(icon_key->icon_effects),
+                     icon_type, std::move(callback)));
+}
+
+void AppServiceProxyAsh::OnShortcutIconRead(const ShortcutId& shortcut_id,
+                                            int32_t size_in_dip,
+                                            IconEffects icon_effects,
+                                            IconType icon_type,
+                                            LoadIconCallback callback,
+                                            IconValuePtr iv) {
+  if (!iv || (iv->uncompressed.isNull() && iv->compressed.empty())) {
+    std::string host_app_id =
+        ShortcutRegistryCache()->GetShortcutHostAppId(shortcut_id);
+    AppType app_type = AppRegistryCache().GetAppType(host_app_id);
+    auto* publisher = GetShortcutPublisher(app_type);
+    if (!publisher) {
+      LOG(WARNING) << "No publisher for requested icon";
+      LoadIconFromResource(
+          profile_, absl::nullopt, icon_type, size_in_dip, IDR_APP_DEFAULT_ICON,
+          /*is_placeholder_icon=*/false, icon_effects, std::move(callback));
+      return;
+    }
+    icon_writer_.InstallIcon(
+        publisher, shortcut_id.value(), size_in_dip,
+        base::BindOnce(&AppServiceProxyAsh::OnShortcutIconInstalled,
+                       weak_ptr_factory_.GetWeakPtr(), shortcut_id, size_in_dip,
+                       icon_effects, icon_type, IDR_APP_DEFAULT_ICON,
+                       std::move(callback)));
+    return;
+  }
+
+  std::move(callback).Run(std::move(iv));
+}
+
+void AppServiceProxyAsh::OnShortcutIconInstalled(const ShortcutId& shortcut_id,
+                                                 int32_t size_in_dip,
+                                                 IconEffects icon_effects,
+                                                 IconType icon_type,
+                                                 int default_icon_resource_id,
+                                                 LoadIconCallback callback,
+                                                 bool install_success) {
+  if (!install_success) {
+    LoadIconFromResource(profile_, absl::nullopt, icon_type, size_in_dip,
+                         default_icon_resource_id,
+                         /*is_placeholder_icon=*/false, icon_effects,
+                         std::move(callback));
+    return;
+  }
+  IconKey icon_key;
+  icon_key.icon_effects = icon_effects;
+  icon_reader_.ReadIcons(shortcut_id.value(), size_in_dip, icon_key, icon_type,
+                         std::move(callback));
 }
 
 }  // namespace apps

@@ -438,6 +438,32 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   void RemoveShortcutImpl(const ShortcutId& shortcut_id,
                           UninstallSource uninstall_source);
 
+  // Reads shortcut icon image files from the local app_service icon directory
+  // on disk.
+  void ReadShortcutIcon(const ShortcutId& shortcut_id,
+                        int32_t size_in_dip,
+                        std::unique_ptr<IconKey> icon_key,
+                        IconType icon_type,
+                        LoadIconCallback callback);
+
+  // Invoked after reading icon image files from the local disk. If failed
+  // reading the icon data, calls 'icon_writer' to fetch the icon data.
+  void OnShortcutIconRead(const ShortcutId& shortcut_id,
+                          int32_t size_in_dip,
+                          IconEffects icon_effects,
+                          IconType icon_type,
+                          LoadIconCallback callback,
+                          IconValuePtr iv);
+
+  // Invoked after writing icon image files to the local disk.
+  void OnShortcutIconInstalled(const ShortcutId& shortcut_id,
+                               int32_t size_in_dip,
+                               IconEffects icon_effects,
+                               IconType icon_type,
+                               int default_icon_resource_id,
+                               LoadIconCallback callback,
+                               bool install_success);
+
   // The LoadIconFromIconKey implementation sends a chained series of requests
   // through each icon loader, starting from the outer and working back to the
   // inner. Fields are listed from inner to outer, the opposite of call order,
