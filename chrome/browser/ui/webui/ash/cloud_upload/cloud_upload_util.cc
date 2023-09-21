@@ -34,6 +34,10 @@ using file_system_provider::Service;
 
 }  // namespace
 
+ODFSEntryMetadata::ODFSEntryMetadata() = default;
+ODFSEntryMetadata::ODFSEntryMetadata(const ODFSEntryMetadata&) = default;
+ODFSEntryMetadata::~ODFSEntryMetadata() = default;
+
 std::string GetGenericErrorMessage() {
   return l10n_util::GetStringUTF8(IDS_OFFICE_UPLOAD_ERROR_GENERIC);
 }
@@ -212,11 +216,39 @@ void OnODFSMetadataActions(GetODFSMetadataCallback callback,
   std::move(callback).Run(metadata);
 }
 
+// Convert ODFS-specific entry metadata returned in `actions` to
+// `ODFSEntryMetadata`.
+void OnGetODFSEntryActions(GetODFSEntryMetadataCallback callback,
+                           const Actions& actions,
+                           base::File::Error result) {
+  if (result != base::File::Error::FILE_OK) {
+    std::move(callback).Run(base::unexpected(result));
+    return;
+  }
+  ODFSEntryMetadata metadata;
+  for (const Action& action : actions) {
+    if (action.id == kOneDriveUrlActionId) {
+      // Custom actions are used to pass a OneDrive document URLs as the "title"
+      // attribute.
+      metadata.url = action.title;
+    }
+  }
+  std::move(callback).Run(std::move(metadata));
+}
+
 void GetODFSMetadata(ProvidedFileSystemInterface* file_system,
                      GetODFSMetadataCallback callback) {
   file_system->GetActions(
       {base::FilePath(cloud_upload::kODFSMetadataQueryPath)},
       base::BindOnce(&OnODFSMetadataActions, std::move(callback)));
+}
+
+void GetODFSEntryMetadata(
+    file_system_provider::ProvidedFileSystemInterface* file_system,
+    const base::FilePath& path,
+    GetODFSEntryMetadataCallback callback) {
+  file_system->GetActions(
+      {path}, base::BindOnce(&OnGetODFSEntryActions, std::move(callback)));
 }
 
 absl::optional<base::File::Error> GetFirstTaskError(

@@ -26,9 +26,20 @@ struct ODFSMetadata {
   std::string user_email;
 };
 
+struct ODFSEntryMetadata {
+  ODFSEntryMetadata();
+  ODFSEntryMetadata(const ODFSEntryMetadata&);
+  ~ODFSEntryMetadata();
+  absl::optional<std::string> url;
+};
+
 typedef base::OnceCallback<void(
     base::expected<ODFSMetadata, base::File::Error> metadata_or_error)>
     GetODFSMetadataCallback;
+
+typedef base::OnceCallback<void(
+    base::expected<ODFSEntryMetadata, base::File::Error> metadata)>
+    GetODFSEntryMetadataCallback;
 
 // Type of the source location from which a given file is being uploaded.
 enum class SourceType {
@@ -169,6 +180,13 @@ bool IsOfficeWebAppInstalled(Profile* profile);
 void GetODFSMetadata(
     file_system_provider::ProvidedFileSystemInterface* file_system,
     GetODFSMetadataCallback callback);
+
+// Get ODFS-specific file metadata as actions by doing a GetActions request for
+// this path and post-processing the list of actions into a struct.
+void GetODFSEntryMetadata(
+    file_system_provider::ProvidedFileSystemInterface* file_system,
+    const base::FilePath& path,
+    GetODFSEntryMetadataCallback callback);
 
 // Get the first task error that is not `base::File::Error::FILE_OK`.
 absl::optional<base::File::Error> GetFirstTaskError(

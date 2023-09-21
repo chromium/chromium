@@ -266,28 +266,20 @@ void ShowUnableToOpenNotification(Profile* profile,
 // show the generic access error notification.
 void OnGetReauthenticationRequired(
     Profile* profile,
-    base::expected<ODFSMetadata, base::File::Error> metadata_or_error) {
-  if (!metadata_or_error.has_value()) {
+    base::OnceCallback<void(fm_tasks::OfficeOneDriveOpenErrors)> callback,
+    base::expected<ODFSMetadata, base::File::Error> metadata) {
+  bool reauthentication_required = false;
+  if (metadata.has_value()) {
+    reauthentication_required = metadata->reauthentication_required;
+  } else {
     LOG(ERROR) << "Failed to get reauthentication required state: "
-               << metadata_or_error.error();
-    return;
+               << metadata.error();
   }
-  ShowUnableToOpenNotification(profile,
-                               metadata_or_error->reauthentication_required);
-}
-
-// Show the correct error notification for base::File::FILE_ERROR_ACCESS_DENIED.
-// Request ODFS metadata and show the correct notification in the
-// |OnGetReauthenticationRequired| callback.
-void ShowAccessDeniedNotification(Profile* profile) {
-  file_system_provider::ProvidedFileSystemInterface* file_system =
-      GetODFS(profile);
-  if (!file_system) {
-    ShowUnableToOpenNotification(profile, /*reauthentication_required=*/false);
-    return;
-  }
-  GetODFSMetadata(file_system,
-                  base::BindOnce(&OnGetReauthenticationRequired, profile));
+  ShowUnableToOpenNotification(profile, reauthentication_required);
+  std::move(callback).Run(
+      reauthentication_required
+          ? fm_tasks::OfficeOneDriveOpenErrors::kGetActionsReauthRequired
+          : fm_tasks::OfficeOneDriveOpenErrors::kGetActionsAccessDenied);
 }
 
 // Open file with |file_path| from ODFS |file_system|. Open in the OneDrive PWA
@@ -297,56 +289,53 @@ void OpenFileFromODFS(
     file_system_provider::ProvidedFileSystemInterface* file_system,
     const base::FilePath& file_path,
     base::OnceCallback<void(fm_tasks::OfficeOneDriveOpenErrors)> callback) {
-  file_system->GetActions(
-      {file_path},
+  GetODFSEntryMetadata(
+      file_system, file_path,
       base::BindOnce(
-          [](base::WeakPtr<Profile> profile_weak_ptr,
+          [](Profile* profile,
+             file_system_provider::ProvidedFileSystemInterface* file_system,
              base::OnceCallback<void(fm_tasks::OfficeOneDriveOpenErrors)>
                  callback,
-             const file_system_provider::Actions& actions,
-             base::File::Error result) {
-            Profile* profile = profile_weak_ptr.get();
-            if (!profile) {
-              std::move(callback).Run(
-                  fm_tasks::OfficeOneDriveOpenErrors::kNoProfile);
+             base::expected<ODFSEntryMetadata, base::File::Error> metadata) {
+            if (!metadata.has_value()) {
+              switch (metadata.error()) {
+                case base::File::Error::FILE_ERROR_ACCESS_DENIED:
+                  // Query authentication state to determine which error message
+                  // to show.
+                  GetODFSMetadata(file_system,
+                                  base::BindOnce(&OnGetReauthenticationRequired,
+                                                 profile, std::move(callback)));
+                  break;
+                default:
+                  ShowUnableToOpenNotification(profile);
+                  std::move(callback).Run(fm_tasks::OfficeOneDriveOpenErrors::
+                                              kGetActionsGenericError);
+                  break;
+              }
               return;
             }
-            if (result == base::File::Error::FILE_ERROR_ACCESS_DENIED) {
-              ShowAccessDeniedNotification(profile);
-              std::move(callback).Run(fm_tasks::OfficeOneDriveOpenErrors::
-                                          kGetActionsReauthRequired);
-              return;
-            }
-            if (result != base::File::Error::FILE_OK) {
+            if (!metadata->url) {
               ShowUnableToOpenNotification(profile);
               std::move(callback).Run(
-                  fm_tasks::OfficeOneDriveOpenErrors::kGetActionsGenericError);
+                  fm_tasks::OfficeOneDriveOpenErrors::kGetActionsNoUrl);
               return;
             }
-            for (const file_system_provider::Action& action : actions) {
-              if (action.id == kOneDriveUrlActionId) {
-                // Custom actions are used to pass a OneDrive URL as the "title"
-                // attribute to be opened using an installed web app.
-                GURL url(action.title);
-                if (!url.is_valid()) {
-                  std::move(callback).Run(fm_tasks::OfficeOneDriveOpenErrors::
-                                              kGetActionsInvalidUrl);
-                  return;
-                }
-
-                auto* proxy =
-                    apps::AppServiceProxyFactory::GetForProfile(profile);
-                proxy->LaunchAppWithUrl(web_app::kMicrosoft365AppId,
-                                        /*event_flags=*/ui::EF_NONE, url,
-                                        apps::LaunchSource::kFromFileManager,
-                                        /*window_info=*/nullptr);
-                std::move(callback).Run(
-                    fm_tasks::OfficeOneDriveOpenErrors::kSuccess);
-                return;
-              }
+            GURL url(*metadata->url);
+            if (!url.is_valid()) {
+              ShowUnableToOpenNotification(profile);
+              std::move(callback).Run(
+                  fm_tasks::OfficeOneDriveOpenErrors::kGetActionsInvalidUrl);
+              return;
             }
+            auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
+            proxy->LaunchAppWithUrl(web_app::kMicrosoft365AppId,
+                                    /*event_flags=*/ui::EF_NONE, url,
+                                    apps::LaunchSource::kFromFileManager,
+                                    /*window_info=*/nullptr);
+            std::move(callback).Run(
+                fm_tasks::OfficeOneDriveOpenErrors::kSuccess);
           },
-          profile->GetWeakPtr(), std::move(callback)));
+          profile, file_system, std::move(callback)));
 }
 
 // Open office file using the ODFS |url|.

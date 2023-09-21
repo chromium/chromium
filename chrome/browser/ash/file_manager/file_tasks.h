@@ -196,7 +196,9 @@ enum class OfficeOneDriveOpenErrors {
   kGetActionsGenericError = 5,
   kGetActionsReauthRequired = 6,
   kGetActionsInvalidUrl = 7,
-  kMaxValue = kGetActionsInvalidUrl,
+  kGetActionsNoUrl = 8,
+  kGetActionsAccessDenied = 9,
+  kMaxValue = kGetActionsAccessDenied,
 };
 
 // UMA metric name that tracks the result of using a MS Office file outside

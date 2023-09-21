@@ -78675,6 +78675,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="getActions: generic error"/>
   <int value="6" label="getActions: re-authentication required"/>
   <int value="7" label="getActions: invalid URL"/>
+  <int value="8" label="getActions: no URL"/>
+  <int value="9" label="getActions: access denied"/>
 </enum>
 
 <enum name="OfficeOpenExtensions">
