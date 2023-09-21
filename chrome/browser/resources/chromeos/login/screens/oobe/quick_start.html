@@ -40,8 +40,10 @@ found in the LICENSE file.
   }
 </style>
 <!-- WAITING FOR INITIAL CONNECTION | ADVERTISING -->
-<oobe-loading-dialog id="loadingDialog" for-step="loading" title-key="quickStartStartAfterResumeTitle"
-  subtitle-key="quickStartStartAfterResumeSubtitle" can-cancel on-cancel-loading="onCancelClicked_">
+<oobe-loading-dialog id="loadingDialog" for-step="loading"
+    title-key="quickStartStartAfterResumeTitle"
+    subtitle-key="quickStartStartAfterResumeSubtitle"
+    on-cancel-loading="onCancelClicked_" can-cancel>
   <iron-icon slot="icon" icon="oobe-20:quick-start-android-device"></iron-icon>
 </oobe-loading-dialog>
 <!-- QR & PIN VERIFICATION | UNAUTHENTICATED CONNECTION -->
@@ -67,24 +69,13 @@ found in the LICENSE file.
   </div>
 </oobe-adaptive-dialog>
 <!-- CONNECTING TO WIFI -->
-<oobe-adaptive-dialog for-step="connecting_to_wifi">
+<oobe-loading-dialog for-step="connecting_to_wifi"
+    title-key="quickStartWifiTransferTitle"
+    subtitle-key="quickStartWifiTransferSubtitle"
+    on-cancel-loading="onCancelClicked_" can-cancel>
   <iron-icon slot="icon" icon="oobe-20:quick-start-wifi">
   </iron-icon>
-  <h1 slot="title">
-    [[i18nDynamic(locale, 'quickStartWifiTransferTitle')]]
-  </h1>
-  <div slot="subtitle">
-    [[i18nDynamic(locale, 'quickStartWifiTransferSubtitle')]]
-  </div>
-  <div slot="content" class="flex layout vertical center center-justified">
-    <oobe-cr-lottie id="spinnerWifi" animation-url="/animations/spinner.json">
-    </oobe-cr-lottie>
-  </div>
-  <div slot="bottom-buttons">
-    <oobe-text-button id="cancelButton" on-click="onCancelClicked_" text-key="cancelButton">
-    </oobe-text-button>
-  </div>
-</oobe-adaptive-dialog>
+</oobe-loading-dialog>
 <!-- DEBUG ONLY - CONNECTED TO WIFI -->
 <oobe-adaptive-dialog for-step="connected_to_wifi">
   <iron-icon slot="icon" icon="oobe-20:quick-start-wifi">
@@ -102,51 +93,41 @@ found in the LICENSE file.
     <div>
         Click on the Next button to continue the flow.
     </div>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-next-button id="wifiConnected" on-click="onWifiConnectedNextClicked_">
+    </oobe-next-button>
+  </div>
+</oobe-adaptive-dialog>
+<!-- TRANSFERRING GAIA CREDENTIALS -->
+<oobe-loading-dialog for-step="gaia_credentials"
+    title-key="quickStartAccountTransferTitle"
+    subtitle-key="quickStartAccountTransferSubtitle"
+    on-cancel-loading="onCancelClicked_" can-cancel>
+  <iron-icon slot="icon" icon="oobe-32:googleg">
+  </iron-icon>
+</oobe-loading-dialog>
+<!-- DEBUG ONLY - GAIA CREDENTIALS -->
+<oobe-adaptive-dialog for-step="fido_assertion_received">
+  <iron-icon slot="icon" icon="oobe-32:googleg">
+  </iron-icon>
+  <h1 slot="title">
+    [DEBUG] [[i18nDynamic(locale, 'quickStartAccountTransferTitle')]]
+  </h1>
+  <div slot="subtitle">
+    [[i18nDynamic(locale, 'quickStartAccountTransferSubtitle')]]
+  </div>
+  <div slot="content" class="flex layout vertical center center-justified">
+    <div>
+      Received FIDO assertion!
     </div>
-    <div slot="bottom-buttons">
-      <oobe-next-button id="wifiConnected" on-click="onWifiConnectedNextClicked_">
-      </oobe-next-button>
+    <div>
+      Email: [[fidoAssertionEmail_]]
     </div>
-    </oobe-adaptive-dialog>
-    <!-- TRANSFERRING GAIA CREDENTIALS -->
-    <oobe-adaptive-dialog for-step="gaia_credentials">
-      <iron-icon slot="icon" icon="oobe-32:googleg">
-      </iron-icon>
-      <h1 slot="title">
-        [[i18nDynamic(locale, 'quickStartAccountTransferTitle')]]
-      </h1>
-      <div slot="subtitle">
-        [[i18nDynamic(locale, 'quickStartAccountTransferSubtitle')]]
-      </div>
-      <div slot="content" class="flex layout vertical center center-justified">
-        <oobe-cr-lottie id="spinnerGaia" animation-url="/animations/spinner.json">
-        </oobe-cr-lottie>
-      </div>
-      <div slot="bottom-buttons">
-        <oobe-text-button id="cancelButton" on-click="onCancelClicked_" text-key="cancelButton">
-        </oobe-text-button>
-      </div>
-    </oobe-adaptive-dialog>
-    <!-- DEBUG ONLY - GAIA CREDENTIALS -->
-    <oobe-adaptive-dialog for-step="fido_assertion_received">
-      <iron-icon slot="icon" icon="oobe-32:googleg">
-      </iron-icon>
-      <h1 slot="title">
-        [DEBUG] [[i18nDynamic(locale, 'quickStartAccountTransferTitle')]]
-      </h1>
-      <div slot="subtitle">
-        [[i18nDynamic(locale, 'quickStartAccountTransferSubtitle')]]
-      </div>
-      <div slot="content" class="flex layout vertical center center-justified">
-        <div>
-          Received FIDO assertion!
-        </div>
-        <div>
-          Email: [[fidoAssertionEmail_]]
-        </div>
-      </div>
-      <div slot="bottom-buttons">
-        <oobe-text-button id="cancelButton" on-click="onCancelClicked_" text-key="cancelButton">
-        </oobe-text-button>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button id="cancelButton" on-click="onCancelClicked_"
+        text-key="cancelButton">
+    </oobe-text-button>
   </div>
 </oobe-adaptive-dialog>
