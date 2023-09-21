@@ -2433,8 +2433,9 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputSearch) {
   RunHtmlTest(FILE_PATH_LITERAL("input-search.html"));
 }
 
-// TODO(crbug.com/1480429): failing on linux
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/1480429): failing on Linux, Lacros ASAN
+#if BUILDFLAG(IS_LINUX) || \
+    (BUILDFLAG(IS_CHROMEOS_LACROS) && defined(ADDRESS_SANITIZER))
 #define MAYBE_AccessibilityInsertBefore DISABLED_AccessibilityInsertBefore
 #else
 #define MAYBE_AccessibilityInsertBefore AccessibilityInsertBefore
