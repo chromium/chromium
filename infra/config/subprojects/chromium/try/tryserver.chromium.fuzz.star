@@ -11,6 +11,7 @@ try_.defaults.set(
     executable = try_.DEFAULT_EXECUTABLE,
     builder_group = "tryserver.chromium.fuzz",
     pool = try_.DEFAULT_POOL,
+    builderless = True,
     cores = 8,
     os = os.LINUX_DEFAULT,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
@@ -94,7 +95,6 @@ try_.builder(
 try_.builder(
     name = "mac-asan-rel",
     mirrors = ["ci/Mac ASAN Release"],
-    builderless = True,
     cores = None,
     os = os.MAC_DEFAULT,
 )
@@ -102,7 +102,6 @@ try_.builder(
 try_.builder(
     name = "mac-asan-media-rel",
     mirrors = ["ci/Mac ASAN Release Media"],
-    builderless = True,
     cores = None,
     os = os.MAC_DEFAULT,
 )
