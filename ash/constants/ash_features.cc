@@ -1292,6 +1292,11 @@ BASE_FEATURE(kGlanceablesV2ErrorMessage,
              "GlanceablesV2ErrorMessage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables ability to add or edit tasks in tasks glanceable bubble.
+BASE_FEATURE(kGlanceablesV2TasksAddEdit,
+             "GlanceablesV2TasksAddEdit",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the Gaia reauth endpoint for all online reauth flows on login screen.
 // Note that the reauth endpoint is used when the user is a child user or in
 // potential recovery flows, regardless of the flag value.

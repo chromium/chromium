@@ -247,10 +247,8 @@ void TasksBubbleView::UpdateTasksList(const std::string& task_list_id,
     }
 
     if (num_tasks_shown_ < kMaximumTasks) {
-      auto* view = task_items_container_view_->AddChildView(
+      task_items_container_view_->AddChildView(
           std::make_unique<GlanceablesTaskView>(task_list_id, task.get()));
-      view->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
-      view->SetOrientation(views::LayoutOrientation::kHorizontal);
       ++num_tasks_shown_;
     }
     ++num_tasks_;

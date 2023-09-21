@@ -8,17 +8,18 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "ash/glanceables/tasks/glanceables_tasks_types.h"
 #include "base/memory/raw_ptr.h"
-#include "base/time/time.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/controls/button/image_button.h"
-#include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout_view.h"
-#include "ui/views/layout/box_layout_view.h"
-#include "ui/views/metadata/view_factory.h"
+
+namespace views {
+class BoxLayoutView;
+class ImageButton;
+}  // namespace views
 
 namespace ash {
+
+struct GlanceablesTask;
 
 // GlanceablesTaskView uses `views::FlexLayout` to show tasks metadata within
 // the TasksBubbleView.
@@ -52,18 +53,18 @@ class ASH_EXPORT GlanceablesTaskView : public views::FlexLayoutView {
 
  private:
   class CheckButton;
-
-  void SetupTasksLabel(bool completed);
+  class TaskTitleButton;
 
   // Owned by views hierarchy.
   raw_ptr<CheckButton> button_ = nullptr;
   raw_ptr<views::FlexLayoutView, ExperimentalAsh> contents_view_ = nullptr;
   raw_ptr<views::BoxLayoutView, ExperimentalAsh> tasks_title_view_ = nullptr;
+  raw_ptr<TaskTitleButton, ExperimentalAsh> task_title_button_ = nullptr;
   raw_ptr<views::FlexLayoutView, ExperimentalAsh> tasks_details_view_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> tasks_label_ = nullptr;
 
   // ID for the task list that owns this task.
   const std::string task_list_id_;
+
   // ID for the task represented by this view.
   const std::string task_id_;
 };
