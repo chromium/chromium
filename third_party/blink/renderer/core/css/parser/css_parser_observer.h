@@ -43,8 +43,10 @@ class CSSParserObserver {
                                bool is_important,
                                bool is_parsed) = 0;
   virtual void ObserveComment(unsigned start_offset, unsigned end_offset) = 0;
-  virtual void ObserveErroneousAtRule(unsigned start_offset,
-                                      CSSAtRuleID id) = 0;
+  virtual void ObserveErroneousAtRule(
+      unsigned start_offset,
+      CSSAtRuleID id,
+      const Vector<CSSPropertyID, 2>& invalid_properties = {}) = 0;
 };
 
 }  // namespace blink

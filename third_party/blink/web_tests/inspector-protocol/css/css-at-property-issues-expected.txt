@@ -1,0 +1,161 @@
+Test reported issues for incorrect property rules
+[
+    [0] : {
+        method : Audits.issueAdded
+        params : {
+            issue : {
+                code : PropertyRuleIssue
+                details : {
+                    propertyRuleIssueDetails : {
+                        propertyRuleIssueReason : InvalidInitialValue
+                        propertyValue : red
+                        sourceCodeLocation : {
+                            columnNumber : 5
+                            lineNumber : 4
+                            url : inspector-protocol-page.html
+                        }
+                    }
+                }
+            }
+        }
+        sessionId : <string>
+    }
+    [1] : {
+        method : Audits.issueAdded
+        params : {
+            issue : {
+                code : PropertyRuleIssue
+                details : {
+                    propertyRuleIssueDetails : {
+                        propertyRuleIssueReason : InvalidInitialValue
+                        sourceCodeLocation : {
+                            columnNumber : 13
+                            lineNumber : 6
+                            url : inspector-protocol-page.html
+                        }
+                    }
+                }
+            }
+        }
+        sessionId : <string>
+    }
+    [2] : {
+        method : Audits.issueAdded
+        params : {
+            issue : {
+                code : PropertyRuleIssue
+                details : {
+                    propertyRuleIssueDetails : {
+                        propertyRuleIssueReason : InvalidSyntax
+                        propertyValue : "<lengthy>"
+                        sourceCodeLocation : {
+                            columnNumber : 5
+                            lineNumber : 11
+                            url : inspector-protocol-page.html
+                        }
+                    }
+                }
+            }
+        }
+        sessionId : <string>
+    }
+    [3] : {
+        method : Audits.issueAdded
+        params : {
+            issue : {
+                code : PropertyRuleIssue
+                details : {
+                    propertyRuleIssueDetails : {
+                        propertyRuleIssueReason : InvalidInherits
+                        sourceCodeLocation : {
+                            columnNumber : 13
+                            lineNumber : 15
+                            url : inspector-protocol-page.html
+                        }
+                    }
+                }
+            }
+        }
+        sessionId : <string>
+    }
+    [4] : {
+        method : Audits.issueAdded
+        params : {
+            issue : {
+                code : PropertyRuleIssue
+                details : {
+                    propertyRuleIssueDetails : {
+                        propertyRuleIssueReason : InvalidInherits
+                        propertyValue : red
+                        sourceCodeLocation : {
+                            columnNumber : 5
+                            lineNumber : 22
+                            url : inspector-protocol-page.html
+                        }
+                    }
+                }
+            }
+        }
+        sessionId : <string>
+    }
+    [5] : {
+        method : Audits.issueAdded
+        params : {
+            issue : {
+                code : PropertyRuleIssue
+                details : {
+                    propertyRuleIssueDetails : {
+                        propertyRuleIssueReason : InvalidSyntax
+                        sourceCodeLocation : {
+                            columnNumber : 13
+                            lineNumber : 24
+                            url : inspector-protocol-page.html
+                        }
+                    }
+                }
+            }
+        }
+        sessionId : <string>
+    }
+    [6] : {
+        method : Audits.issueAdded
+        params : {
+            issue : {
+                code : PropertyRuleIssue
+                details : {
+                    propertyRuleIssueDetails : {
+                        propertyRuleIssueReason : InvalidInherits
+                        sourceCodeLocation : {
+                            columnNumber : 13
+                            lineNumber : 24
+                            url : inspector-protocol-page.html
+                        }
+                    }
+                }
+            }
+        }
+        sessionId : <string>
+    }
+    [7] : {
+        method : Audits.issueAdded
+        params : {
+            issue : {
+                code : PropertyRuleIssue
+                details : {
+                    propertyRuleIssueDetails : {
+                        propertyRuleIssueReason : InvalidName
+                        sourceCodeLocation : {
+                            columnNumber : 13
+                            lineNumber : 26
+                            url : inspector-protocol-page.html
+                        }
+                    }
+                }
+            }
+        }
+        sessionId : <string>
+    }
+]
+[
+]
+

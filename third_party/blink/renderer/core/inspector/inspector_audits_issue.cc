@@ -641,6 +641,43 @@ void AuditsIssue::ReportGenericIssue(
   frame->DomWindow()->AddInspectorIssue(AuditsIssue(std::move(issue)));
 }
 
+void AuditsIssue::ReportPropertyRuleIssue(
+    Document* document,
+    const KURL& url,
+    WTF::OrdinalNumber line,
+    WTF::OrdinalNumber column,
+    protocol::Audits::PropertyRuleIssueReason reason,
+    const String& propertyValue) {
+  if (!document || !document->GetExecutionContext()) {
+    return;
+  }
+  auto sourceCodeLocation = protocol::Audits::SourceCodeLocation::create()
+                                .setUrl(url)
+                                .setLineNumber(line.ZeroBasedInt())
+                                .setColumnNumber(column.OneBasedInt())
+                                .build();
+
+  auto details = protocol::Audits::PropertyRuleIssueDetails::create()
+                     .setSourceCodeLocation(std::move(sourceCodeLocation))
+                     .setPropertyRuleIssueReason(reason)
+                     .build();
+
+  if (!propertyValue.IsNull()) {
+    details->setPropertyValue(propertyValue);
+  }
+
+  auto issue =
+      protocol::Audits::InspectorIssue::create()
+          .setCode(protocol::Audits::InspectorIssueCodeEnum::PropertyRuleIssue)
+          .setDetails(protocol::Audits::InspectorIssueDetails::create()
+                          .setPropertyRuleIssueDetails(std::move(details))
+                          .build())
+          .build();
+
+  document->GetExecutionContext()->AddInspectorIssue(
+      AuditsIssue(std::move(issue)));
+}
+
 void AuditsIssue::ReportStylesheetLoadingLateImportIssue(
     Document* document,
     const KURL& url,
@@ -652,7 +689,7 @@ void AuditsIssue::ReportStylesheetLoadingLateImportIssue(
   auto sourceCodeLocation = protocol::Audits::SourceCodeLocation::create()
                                 .setUrl(url)
                                 .setLineNumber(line.ZeroBasedInt())
-                                .setColumnNumber(column.ZeroBasedInt())
+                                .setColumnNumber(column.OneBasedInt())
                                 .build();
   auto details = protocol::Audits::StylesheetLoadingIssueDetails::create()
                      .setSourceCodeLocation(std::move(sourceCodeLocation))
@@ -685,12 +722,11 @@ void AuditsIssue::ReportStylesheetLoadingRequestFailedIssue(
   if (!document || !document->GetExecutionContext()) {
     return;
   }
-  auto sourceCodeLocation =
-      protocol::Audits::SourceCodeLocation::create()
-          .setUrl(initiator_url)
-          .setLineNumber(initiator_line.ZeroBasedInt())
-          .setColumnNumber(initiator_column.ZeroBasedInt())
-          .build();
+  auto sourceCodeLocation = protocol::Audits::SourceCodeLocation::create()
+                                .setUrl(initiator_url)
+                                .setLineNumber(initiator_line.ZeroBasedInt())
+                                .setColumnNumber(initiator_column.OneBasedInt())
+                                .build();
   auto requestDetails = protocol::Audits::FailedRequestInfo::create()
                             .setUrl(url)
                             .setFailureMessage(failureMessage)

@@ -42,7 +42,10 @@ class TestCSSParserObserver : public CSSParserObserver {
     property_start_ = start_offset;
   }
   void ObserveComment(unsigned start_offset, unsigned end_offset) override {}
-  void ObserveErroneousAtRule(unsigned start_offset, CSSAtRuleID id) override {}
+  void ObserveErroneousAtRule(
+      unsigned start_offset,
+      CSSAtRuleID id,
+      const Vector<CSSPropertyID, 2>& invalid_properties) override {}
 
   StyleRule::RuleType rule_type_ = StyleRule::RuleType::kStyle;
   unsigned property_start_ = 0;

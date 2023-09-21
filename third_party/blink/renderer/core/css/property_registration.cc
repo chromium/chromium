@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_syntax_definition.h"
 #include "third_party/blink/renderer/core/css/css_syntax_string_parser.h"
+#include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
 #include "third_party/blink/renderer/core/css/css_variable_reference_value.h"
@@ -105,79 +106,88 @@ static bool ComputationallyIndependent(const CSSValue& value) {
   return true;
 }
 
-static absl::optional<CSSSyntaxDefinition> ConvertSyntax(
-    const CSSValue& value) {
-  return CSSSyntaxStringParser(To<CSSStringValue>(value).Value()).Parse();
+absl::optional<CSSSyntaxDefinition> PropertyRegistration::ConvertSyntax(
+    const CSSValue* syntax_value) {
+  // https://drafts.css-houdini.org/css-properties-values-api-1/#the-syntax-descriptor
+  if (!syntax_value) {
+    return {};
+  }
+  return CSSSyntaxStringParser(To<CSSStringValue>(*syntax_value).Value())
+      .Parse();
 }
 
-static bool ConvertInherits(const CSSValue& value) {
-  CSSValueID inherits_id = To<CSSIdentifierValue>(value).GetValueID();
+absl::optional<bool> PropertyRegistration::ConvertInherits(
+    const CSSValue* inherits_value) {
+  // https://drafts.css-houdini.org/css-properties-values-api-1/#inherits-descriptor
+  if (!inherits_value) {
+    return {};
+  }
+
+  CSSValueID inherits_id = To<CSSIdentifierValue>(*inherits_value).GetValueID();
   DCHECK(inherits_id == CSSValueID::kTrue || inherits_id == CSSValueID::kFalse);
   return inherits_id == CSSValueID::kTrue;
 }
 
-static scoped_refptr<CSSVariableData> ConvertInitialVariableData(
-    const CSSValue* value) {
-  if (!value) {
-    return nullptr;
+absl::optional<const CSSValue*> PropertyRegistration::ConvertInitial(
+    const CSSValue* initial_value,
+    const CSSSyntaxDefinition& syntax,
+    const CSSParserContext& parser_context) {
+  // https://drafts.css-houdini.org/css-properties-values-api-1/#initial-value-descriptor
+  if (!initial_value) {
+    return syntax.IsUniversal() ? absl::make_optional(nullptr) : absl::nullopt;
   }
-  return &To<CSSCustomPropertyDeclaration>(*value).Value();
+  scoped_refptr<CSSVariableData> initial_variable_data =
+      &To<CSSCustomPropertyDeclaration>(*initial_value).Value();
+
+  // Parse initial value, if we have it.
+  const CSSValue* initial = nullptr;
+  if (initial_variable_data) {
+    const bool is_animation_tainted = false;
+    CSSTokenizer tokenizer(initial_variable_data->OriginalText());
+    Vector<CSSParserToken, 32> tokens = tokenizer.TokenizeToEOF();
+    CSSParserTokenRange range(tokens);
+    initial = syntax.Parse(
+        CSSTokenizedValue{range, initial_variable_data->OriginalText()},
+        parser_context, is_animation_tainted);
+    if (!initial) {
+      return {};
+    }
+    if (!ComputationallyIndependent(*initial)) {
+      return {};
+    }
+  }
+  // For non-universal @property rules, the initial value is required for the
+  // the rule to be valid.
+  if (!initial && !syntax.IsUniversal()) {
+    return {};
+  }
+
+  return initial;
 }
 
 PropertyRegistration* PropertyRegistration::MaybeCreateForDeclaredProperty(
     Document& document,
     const AtomicString& name,
     StyleRuleProperty& rule) {
-  // https://drafts.css-houdini.org/css-properties-values-api-1/#the-syntax-descriptor
-  const CSSValue* syntax_value = rule.GetSyntax();
-  if (!syntax_value) {
+  absl::optional<CSSSyntaxDefinition> syntax = ConvertSyntax(rule.GetSyntax());
+  if (!syntax.has_value()) {
     return nullptr;
   }
-  absl::optional<CSSSyntaxDefinition> syntax = ConvertSyntax(*syntax_value);
-  if (!syntax) {
+  absl::optional<bool> inherits = ConvertInherits(rule.Inherits());
+  if (!inherits.has_value()) {
     return nullptr;
   }
+  const CSSParserContext* parser_context =
+      document.ElementSheet().Contents()->ParserContext();
 
-  // https://drafts.css-houdini.org/css-properties-values-api-1/#inherits-descriptor
-  const CSSValue* inherits_value = rule.Inherits();
-  if (!inherits_value) {
-    return nullptr;
-  }
-  bool inherits = ConvertInherits(*inherits_value);
-
-  // https://drafts.css-houdini.org/css-properties-values-api-1/#initial-value-descriptor
-  const CSSValue* initial_value = rule.GetInitialValue();
-  scoped_refptr<CSSVariableData> initial_variable_data =
-      ConvertInitialVariableData(initial_value);
-
-  // Parse initial value, if we have it.
-  const CSSValue* initial = nullptr;
-  if (initial_variable_data) {
-    const CSSParserContext* parser_context =
-        document.ElementSheet().Contents()->ParserContext();
-    const bool is_animation_tainted = false;
-    CSSTokenizer tokenizer(initial_variable_data->OriginalText());
-    Vector<CSSParserToken, 32> tokens = tokenizer.TokenizeToEOF();
-    CSSParserTokenRange range(tokens);
-    initial = syntax->Parse(
-        CSSTokenizedValue{range, initial_variable_data->OriginalText()},
-        *parser_context, is_animation_tainted);
-    if (!initial) {
-      return nullptr;
-    }
-    if (!ComputationallyIndependent(*initial)) {
-      return nullptr;
-    }
-  }
-
-  // For non-universal @property rules, the initial value is required for the
-  // the rule to be valid.
-  if (!initial && !syntax->IsUniversal()) {
+  absl::optional<const CSSValue*> initial =
+      ConvertInitial(rule.GetInitialValue(), *syntax, *parser_context);
+  if (!initial.has_value()) {
     return nullptr;
   }
 
-  return MakeGarbageCollected<PropertyRegistration>(name, *syntax, inherits,
-                                                    initial, &rule);
+  return MakeGarbageCollected<PropertyRegistration>(name, *syntax, *inherits,
+                                                    *initial, &rule);
 }
 
 void PropertyRegistration::registerProperty(

@@ -183,6 +183,14 @@ class CORE_EXPORT AuditsIssue {
                                                      WTF::OrdinalNumber line,
                                                      WTF::OrdinalNumber column);
 
+  static void ReportPropertyRuleIssue(
+      Document* document,
+      const KURL& url,
+      WTF::OrdinalNumber line,
+      WTF::OrdinalNumber column,
+      protocol::Audits::PropertyRuleIssueReason reason,
+      const String& propertyValue);
+
   static void ReportStylesheetLoadingRequestFailedIssue(
       Document* document,
       const KURL& url,
