@@ -300,6 +300,8 @@
       [self.contentSuggestionsMediator disableTabResumption];
       break;
     case ContentSuggestionsModuleType::kSafetyCheck:
+    case ContentSuggestionsModuleType::kSafetyCheckMultiRow:
+    case ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow:
       [self.contentSuggestionsMediator disableSafetyCheck];
       break;
     case ContentSuggestionsModuleType::kSetUpListSync:

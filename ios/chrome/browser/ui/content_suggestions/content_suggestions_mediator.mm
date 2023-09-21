@@ -1132,6 +1132,8 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
         }
         break;
       case ContentSuggestionsModuleType::kSafetyCheck:
+      case ContentSuggestionsModuleType::kSafetyCheckMultiRow:
+      case ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow:
         if (!IsSafetyCheckMagicStackEnabled() ||
             safety_check_prefs::IsSafetyCheckInMagicStackDisabled(
                 _localState)) {
