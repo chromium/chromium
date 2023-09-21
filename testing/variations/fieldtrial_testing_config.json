@@ -788,14 +788,14 @@
             ]
         }
     ],
-    "ArcVmMemoryTrimOnGuest": [
+    "ArcVmMemoryTrimOnGuestV2": [
         {
             "platforms": [
                 "chromeos"
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithGuestReclaim_20230915",
+                    "name": "EnabledVmMemSize-1900_20230915",
                     "params": {
                         "guest_reclaim_enabled": "true",
                         "guest_reclaim_only_anonymous": "false",
