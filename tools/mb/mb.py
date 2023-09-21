@@ -340,6 +340,11 @@ class MetaBuildWrapper:
                       help=('Run under the internal swarming server '
                             '(chrome-swarming) instead of the public server '
                             '(chromium-swarm).'))
+    subp.add_argument('--no-bot-mode',
+                      dest='bot_mode',
+                      action='store_false',
+                      default=True,
+                      help='Do not run the test with bot mode.')
     subp.add_argument('--realm',
                       default=None,
                       help=('Optional realm used when triggering swarming '
@@ -1610,6 +1615,11 @@ class MetaBuildWrapper:
     else:
       cmdline = []
 
+    if getattr(self.args, 'bot_mode', True):
+      bot_mode = ('--test-launcher-bot-mode', )
+    else:
+      bot_mode = ()
+
     if test_type == 'generated_script' or is_ios or is_lacros:
       assert 'script' not in isolate_map[target], (
           'generated_scripts can no longer customize the script path')
@@ -1665,7 +1675,7 @@ class MetaBuildWrapper:
           vpython_exe,
           '../../testing/test_env.py',
           os.path.join('bin', 'run_%s' % target),
-          '--test-launcher-bot-mode',
+          *bot_mode,
           '--logs-dir=${ISOLATED_OUTDIR}',
       ]
     elif is_cros_device and test_type != 'script':
@@ -1679,7 +1689,7 @@ class MetaBuildWrapper:
           vpython_exe,
           '../../testing/xvfb.py',
           './' + str(executable) + executable_suffix,
-          '--test-launcher-bot-mode',
+          *bot_mode,
           '--asan=%d' % asan,
           '--lsan=%d' % asan,  # Enable lsan when asan is enabled.
           '--msan=%d' % msan,
@@ -1697,7 +1707,7 @@ class MetaBuildWrapper:
           vpython_exe,
           '../../testing/test_env.py',
           './' + str(executable) + executable_suffix,
-          '--test-launcher-bot-mode',
+          *bot_mode,
           '--asan=%d' % asan,
           # Enable lsan when asan is enabled except on Windows where LSAN isn't
           # supported.
