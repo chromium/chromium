@@ -195,6 +195,9 @@ source_set("ntp_internal") {
     ":logo",
     ":ntp",
     "resources:fake_omnibox_background_color",
+    "resources:fake_omnibox_bottom_gradient_color",
+    "resources:fake_omnibox_solid_background_color",
+    "resources:fake_omnibox_top_gradient_color",
     "resources:ntp_background_color",
     "//base",
     "//components/signin/public/base",
@@ -251,7 +254,6 @@ source_set("ntp_internal") {
     "//ios/web/public",
     "//ios/web/public/navigation",
     "//ui/base",
-    "//ui/gfx",
     "//ui/gfx/ios:uikit_util",
     "//url",
   ]

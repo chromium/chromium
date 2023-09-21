@@ -262,6 +262,7 @@ source_set("content_suggestions_ui_util") {
     "//base:i18n",
     "//components/strings",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ntp:features",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",

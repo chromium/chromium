@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+@class GradientView;
+
 // Header view for the NTP. The header view contains all views that are
 // displayed above the list of most visited sites, which includes the
 // primary toolbar, doodle, and fake omnibox.
@@ -33,7 +35,7 @@
     NSLayoutConstraint* fakeLocationBarLeadingConstraint;
 @property(nonatomic, strong)
     NSLayoutConstraint* fakeLocationBarTrailingConstraint;
-@property(nonatomic, strong) UIView* fakeLocationBar;
+@property(nonatomic, strong) GradientView* fakeLocationBar;
 @property(nonatomic, strong) UILabel* searchHintLabel;
 
 // `YES` if Google is the default search engine.

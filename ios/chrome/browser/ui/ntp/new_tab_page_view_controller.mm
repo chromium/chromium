@@ -904,7 +904,8 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   // Takes the height of the entire header and subtracts the margin to stick the
   // fake omnibox. Adjusts this for the device by further subtracting the
   // toolbar height.
-  return content_suggestions::FakeOmniboxHeight();
+  return ToolbarExpandedHeight(
+      [UIApplication sharedApplication].preferredContentSizeCategory);
 }
 
 // Sets the feed collection contentOffset from the saved state to `offset` to
