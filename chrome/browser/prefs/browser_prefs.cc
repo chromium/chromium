@@ -921,6 +921,12 @@ constexpr char kGestureEducationNotificationShown[] =
     "ash.gesture_education.notification_shown";
 #endif
 
+// Deprecated 09/2023.
+// Synced boolean that indicates if a user has manually toggled the settings
+// associated with the PrivacySandboxSettings feature.
+inline constexpr char kPrivacySandboxManuallyControlled[] =
+    "privacy_sandbox.manually_controlled";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1297,6 +1303,7 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterDictionaryPref(kChromeCleaner);
 #endif
   registry->RegisterBooleanPref(kDownloadBubbleEnabled, true);
+  registry->RegisterBooleanPref(kPrivacySandboxManuallyControlled, false);
 }
 
 }  // namespace
@@ -2451,6 +2458,7 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kChromeCleaner);
 #endif
   profile_prefs->ClearPref(kDownloadBubbleEnabled);
+  profile_prefs->ClearPref(kPrivacySandboxManuallyControlled);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

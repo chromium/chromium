@@ -63,13 +63,6 @@ inline constexpr char kPrivacySandboxApisEnabled[] =
 inline constexpr char kPrivacySandboxApisEnabledV2[] =
     "privacy_sandbox.apis_enabled_v2";
 
-// Synced boolean that indicates if a user has manually toggled the settings
-// associated with the PrivacySandboxSettings feature.
-// TODO(crbug.com/1292898): Deprecate this preference once all users have been
-// migrated to the V2 pref.
-inline constexpr char kPrivacySandboxManuallyControlled[] =
-    "privacy_sandbox.manually_controlled";
-
 // Un-synced boolean pref. This is a replacement for the synced preference
 // above. It it set to true when the user manually toggles the setting on the
 // updated settings page.

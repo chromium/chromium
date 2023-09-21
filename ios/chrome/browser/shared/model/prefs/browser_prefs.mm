@@ -147,6 +147,11 @@ const char kObsoleteIosSettingsPromoAlreadySeen[] =
     "ios.settings.promo_already_seen";
 const char kObsoleteIosSettingsSigninPromoDisplayedCount[] =
     "ios.settings.signin_promo_displayed_count";
+// Deprecated 09/2023.
+// Synced boolean that indicates if a user has manually toggled the settings
+// associated with the PrivacySandboxSettings feature.
+inline constexpr char kPrivacySandboxManuallyControlled[] =
+    "privacy_sandbox.manually_controlled";
 
 }  // namespace
 
@@ -521,6 +526,8 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(kObsoleteIosSettingsPromoAlreadySeen, false);
   registry->RegisterIntegerPref(kObsoleteIosSettingsSigninPromoDisplayedCount,
                                 0);
+
+  registry->RegisterBooleanPref(kPrivacySandboxManuallyControlled, false);
   // Register prefs used to skip too frequent History Sync Opt-In prompt.
   history_sync::RegisterBrowserStatePrefs(registry);
 }
@@ -615,6 +622,7 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
   // Added 09/2023.
   prefs->ClearPref(kObsoleteIosSettingsPromoAlreadySeen);
   prefs->ClearPref(kObsoleteIosSettingsSigninPromoDisplayedCount);
+  prefs->ClearPref(kPrivacySandboxManuallyControlled);
 }
 
 void MigrateObsoleteUserDefault(void) {

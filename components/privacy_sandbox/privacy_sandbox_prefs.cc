@@ -30,9 +30,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                 false);
   registry->RegisterBooleanPref(prefs::kPrivacySandboxM1Restricted, false);
 
-  registry->RegisterBooleanPref(
-      prefs::kPrivacySandboxManuallyControlled, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(prefs::kPrivacySandboxManuallyControlledV2,
                                 false);
   registry->RegisterBooleanPref(prefs::kPrivacySandboxPageViewed, false);

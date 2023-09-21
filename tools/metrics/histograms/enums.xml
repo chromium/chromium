@@ -103671,7 +103671,7 @@ would be helpful to identify which type is being sent.
   <int value="100164" label="PluginsAlwaysOpenPdfExternally"/>
   <int value="100165" label="PrivacySandboxApisEnabled"/>
   <int value="100166" label="PrivacySandboxRelatedWebsiteSetsEnabled"/>
-  <int value="100167" label="PrivacySandboxManuallyControlled"/>
+  <int value="100167" label="(obsolete) PrivacySandboxManuallyControlled"/>
   <int value="100168" label="PromptForDownload"/>
   <int value="100169" label="ProtectedContentDefault"/>
   <int value="100170" label="RestoreOnStartup"/>

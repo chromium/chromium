@@ -218,7 +218,7 @@ enum {
   kPluginsAlwaysOpenPdfExternally = 100164,
   kPrivacySandboxApisEnabled = 100165,
   kPrivacySandboxRelatedWebsiteSetsEnabled = 100166,
-  kPrivacySandboxManuallyControlled = 100167,
+  // kPrivacySandboxManuallyControlled = 100167, (deprecated)
   kPromptForDownload = 100168,
   kProtectedContentDefault = 100169,
   kRestoreOnStartup = 100170,
@@ -982,9 +982,6 @@ const auto& SyncablePreferences() {
           false, sync_preferences::MergeBehavior::kNone}},
         {prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
          {syncable_prefs_ids::kPrivacySandboxRelatedWebsiteSetsEnabled,
-          syncer::PREFERENCES, false, sync_preferences::MergeBehavior::kNone}},
-        {prefs::kPrivacySandboxManuallyControlled,
-         {syncable_prefs_ids::kPrivacySandboxManuallyControlled,
           syncer::PREFERENCES, false, sync_preferences::MergeBehavior::kNone}},
         {prefs::kPromptForDownload,
          {syncable_prefs_ids::kPromptForDownload, syncer::PREFERENCES, false,
