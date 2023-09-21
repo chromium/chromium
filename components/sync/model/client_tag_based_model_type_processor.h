@@ -262,6 +262,10 @@ class ClientTagBasedModelTypeProcessor : public ModelTypeProcessor,
   // Function to capture and upload a stack trace when an error occurs.
   const base::RepeatingClosure dump_stack_;
 
+  // Whether there is an ongoing processing of incoming updates, used to detect
+  // local updates based on remote changes.
+  bool processing_incremental_updates_ = false;
+
   /////////////////
   // Model state //
   /////////////////

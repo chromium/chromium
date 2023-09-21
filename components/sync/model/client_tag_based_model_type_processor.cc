@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -417,6 +418,17 @@ void ClientTagBasedModelTypeProcessor::Put(
     // Ignore changes before the initial sync is done.
     return;
   }
+
+  // Local changes based on remote update is discouraged because it may lead to
+  // ping-pong issues between clients and result in uncontrolled traffic to the
+  // server.
+  // TODO(crbug.com/1473599): this could be a CHECK instead, add a metric to
+  // find out first which data types have such behavior.
+  if (processing_incremental_updates_) {
+    base::UmaHistogramEnumeration("Sync.LocalChangeDuringRemoteUpdate",
+                                  ModelTypeHistogramValue(type_));
+  }
+
   // |data->specifics| is about to be committed, and therefore represents the
   // imminent server-side state in most cases.
   sync_pb::EntitySpecifics trimmed_specifics =
@@ -1030,6 +1042,8 @@ ClientTagBasedModelTypeProcessor::OnIncrementalUpdateReceived(
 
   ClientTagBasedRemoteUpdateHandler updates_handler(type_, bridge_,
                                                     entity_tracker_.get());
+  base::AutoReset<bool> auto_reset_processing_updates(
+      &processing_incremental_updates_, true);
   return updates_handler.ProcessIncrementalUpdate(model_type_state,
                                                   std::move(updates));
 }
