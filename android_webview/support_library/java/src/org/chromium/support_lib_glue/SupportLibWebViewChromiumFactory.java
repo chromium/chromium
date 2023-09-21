@@ -192,6 +192,8 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
             ApiCall.GET_PROFILE_WEB_STORAGE,
             ApiCall.GET_PROFILE_GET_LOCATION_PERMISSIONS,
             ApiCall.GET_PROFILE_SERVICE_WORKER_CONTROLLER,
+            ApiCall.SET_WEBVIEW_PROFILE,
+            ApiCall.GET_WEBVIEW_PROFILE,
             // Add new constants above. The final constant should have a trailing comma for cleaner
             // diffs.
             ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
@@ -296,8 +298,10 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
         int GET_PROFILE_GET_LOCATION_PERMISSIONS = 91;
         int GET_PROFILE_SERVICE_WORKER_CONTROLLER = 92;
 
+        int SET_WEBVIEW_PROFILE = 93;
+        int GET_WEBVIEW_PROFILE = 94;
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 93;
+        int COUNT = 95;
     }
     // clang-format on
 

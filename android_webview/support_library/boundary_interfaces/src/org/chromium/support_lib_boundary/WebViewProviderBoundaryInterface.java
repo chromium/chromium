@@ -28,4 +28,6 @@ public interface WebViewProviderBoundaryInterface {
     /* WebViewRendererClient */ InvocationHandler getWebViewRendererClient();
     void setWebViewRendererClient(
             /* WebViewRendererClient */ InvocationHandler webViewRendererClient);
+    void setProfile(String profileName);
+    /* Profile */ InvocationHandler getProfile();
 }

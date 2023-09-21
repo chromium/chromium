@@ -174,4 +174,21 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
                             : null);
         }
     }
+
+    @Override
+    public void setProfile(String profileName) {
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.SET_WEBVIEW_PROFILE")) {
+            recordApiCall(ApiCall.SET_WEBVIEW_PROFILE);
+            mSharedWebViewChromium.setProfile(profileName);
+        }
+    }
+
+    @Override
+    public /* Profile */ InvocationHandler getProfile() {
+        try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.GET_WEBVIEW_PROFILE")) {
+            recordApiCall(ApiCall.GET_WEBVIEW_PROFILE);
+            return BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                    new SupportLibProfile(mSharedWebViewChromium.getProfile()));
+        }
+    }
 }

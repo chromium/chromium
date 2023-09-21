@@ -7,6 +7,7 @@ package com.android.webview.chromium;
 import android.webkit.WebChromeClient;
 import android.webkit.WebViewClient;
 
+import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwRenderProcess;
 import org.chromium.android_webview.ScriptHandler;
@@ -173,6 +174,22 @@ public class SharedWebViewChromium {
                     });
         }
         return mContentsClientAdapter.getWebViewRendererClientAdapter();
+    }
+
+    public void setProfile(String profileName) {
+        if (checkNeedsPost()) {
+            mRunQueue.addTask(() -> setProfile(profileName));
+            return;
+        }
+        mAwContents.setBrowserContext(AwBrowserContext.getNamedContext(profileName, true));
+    }
+
+    public Profile getProfile() {
+        if (checkNeedsPost()) {
+            return mRunQueue.runOnUiThreadBlocking(this::getProfile);
+        }
+        String profileName = mAwContents.getBrowserContext().getName();
+        return ProfileStore.getInstance().getProfile(profileName);
     }
 
     protected boolean checkNeedsPost() {
