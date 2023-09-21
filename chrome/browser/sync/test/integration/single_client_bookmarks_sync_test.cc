@@ -203,7 +203,10 @@ class SingleClientBookmarksSyncTestWithEnabledReuploadPreexistingBookmarks
 
 class SingleClientBookmarksThrottlingSyncTest : public SyncTest {
  public:
-  SingleClientBookmarksThrottlingSyncTest() : SyncTest(SINGLE_CLIENT) {}
+  SingleClientBookmarksThrottlingSyncTest() : SyncTest(SINGLE_CLIENT) {
+    features_override_.InitAndDisableFeature(
+        syncer::kSyncPollImmediatelyOnEveryStartup);
+  }
 
   void SetUpInProcessBrowserTestFixture() override {
     SyncTest::SetUpInProcessBrowserTestFixture();
@@ -241,6 +244,7 @@ class SingleClientBookmarksThrottlingSyncTest : public SyncTest {
   }
 
  private:
+  base::test::ScopedFeatureList features_override_;
   base::CallbackListSubscription create_services_subscription_;
 };
 
@@ -1960,9 +1964,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksThrottlingSyncTest,
   histogram_tester.ExpectTotalCount("Sync.ModelTypeCommitWithDepletedQuota", 0);
 }
 
-// TODO(crbug.com/1447535): Disabled due to flakiness.
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksThrottlingSyncTest,
-                       DISABLED_DepleteQuotaAndRecover) {
+                       DepleteQuotaAndRecover) {
   ASSERT_TRUE(SetupClients());
 
   // Setup custom quota params: to effectively never refill, and custom nudge
