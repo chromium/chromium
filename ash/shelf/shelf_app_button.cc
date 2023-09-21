@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/shelf/scrollable_shelf_view.h"
@@ -17,6 +18,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/dot_indicator.h"
 #include "ash/style/style_util.h"
+#include "ash/system/progress_indicator/progress_indicator.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/functional/bind.h"
@@ -37,6 +39,7 @@
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/throb_animation.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -78,6 +81,9 @@ constexpr int kInkDropRippleActivationTimeMs = 650;
 
 // The drag and drop app icon should get scaled by this factor.
 constexpr float kAppIconScale = 1.2f;
+
+// The icon for promise apps should be scaled down by this factor.
+constexpr float kPromiseIconScale = 0.77f;
 
 // The drag and drop app icon scaling up or down animation transition duration.
 constexpr int kDragDropAppIconScaleTransitionMs = 200;
@@ -611,6 +617,16 @@ void ShelfAppButton::ReflectItemStatus(const ShelfItem& item) {
 
   app_status_ = item.app_status;
 
+  is_promise_app_ = app_status_ == AppStatus::kPending ||
+                    app_status_ == AppStatus::kInstalling;
+
+  // Progress is incremental always by server side implementation. Do not use
+  // equal for comparing progress as float point errors may surface.
+  if (progress_ < item.progress) {
+    progress_ = item.progress;
+    UpdateProgressRingBounds();
+  }
+
   const ShelfID active_id = shelf_view_->model()->active_shelf_id();
   if (!active_id.IsNull() && item.id == active_id) {
     // The active status trumps all other statuses.
@@ -776,7 +792,13 @@ gfx::Rect ShelfAppButton::GetIconViewBounds(const gfx::Rect& button_bounds,
     x_offset = button_bounds.width() - (icon_size + icon_padding);
 
   // Expand bounds to include shadows.
-  gfx::Insets insets_shadows = gfx::ShadowValue::GetMargin(icon_shadows_);
+  // TODO(b/297866814): Promise icon calculation looks off because of the shadow
+  // insets. To get a centered icon within the ring, we removed insets for
+  // shadows. Consider improving the calculation on UpdateProgressRingBounds()
+  // to account for the shadows as well.
+  gfx::Insets insets_shadows = is_promise_app_
+                                   ? gfx::Insets()
+                                   : gfx::ShadowValue::GetMargin(icon_shadows_);
   // Center icon with respect to the secondary axis.
   if (is_horizontal_shelf)
     x_offset = std::max(0.0f, button_bounds.width() - icon_width + 1) / 2;
@@ -809,8 +831,8 @@ gfx::Rect ShelfAppButton::GetNotificationIndicatorBounds(float icon_scale) {
 
 void ShelfAppButton::Layout() {
   Shelf* shelf = shelf_view_->shelf();
-  gfx::Rect icon_view_bounds =
-      GetIconViewBounds(GetContentsBounds(), icon_scale_);
+  gfx::Rect icon_view_bounds = GetIconViewBounds(
+      GetContentsBounds(), GetAdjustedIconScaleForProgressRing());
   const gfx::Rect button_bounds(GetContentsBounds());
   const int status_indicator_offet_from_shelf_edge =
       ShelfConfig::Get()->status_indicator_offset_from_shelf_edge();
@@ -818,7 +840,7 @@ void ShelfAppButton::Layout() {
   icon_view_->SetBoundsRect(icon_view_bounds);
 
   notification_indicator_->SetIndicatorBounds(
-      GetNotificationIndicatorBounds(icon_scale_));
+      GetNotificationIndicatorBounds(GetAdjustedIconScaleForProgressRing()));
 
   // The indicators should be aligned with the icon, not the icon + shadow.
   // Use 1.0 as icon scale for |indicator_midpoint|, otherwise integer rounding
@@ -849,6 +871,7 @@ void ShelfAppButton::Layout() {
 
   UpdateState();
   views::FocusRing::Get(this)->Layout();
+  UpdateProgressRingBounds();
 }
 
 void ShelfAppButton::ChildPreferredSizeChanged(views::View* child) {
@@ -1007,7 +1030,8 @@ gfx::Transform ShelfAppButton::GetScaleTransform(float icon_scale) {
 }
 
 gfx::Size ShelfAppButton::GetPreferredIconSize() const {
-  const int icon_size = shelf_view_->GetButtonIconSize() * icon_scale_;
+  const int icon_size =
+      shelf_view_->GetButtonIconSize() * GetAdjustedIconScaleForProgressRing();
 
   // Resize the image maintaining our aspect ratio.
   float aspect_ratio = static_cast<float>(icon_image_.width()) /
@@ -1098,6 +1122,59 @@ void ShelfAppButton::MaybeHideInkDropWhenGestureEnds() {
 
   views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(
       views::InkDropState::HIDDEN);
+}
+
+void ShelfAppButton::UpdateProgressRingBounds() {
+  // TODO(b/297866814): Wire logic to handle updates on app status
+  // AppStatus::kPending -> AppStatus::kInstalling
+  if (!is_promise_app_ || !features::ArePromiseIconsEnabled()) {
+    return;
+  }
+
+  if (!progress_indicator_) {
+    progress_indicator_ =
+        ProgressIndicator::CreateDefaultInstance(base::BindRepeating(
+            [](ShelfAppButton* view) -> absl::optional<float> {
+              // If download is in-progress, return the progress as a decimal.
+              // Otherwise, the progress indicator shouldn't be painted.
+              float progress = view->progress();
+              return (progress >= 0.f && progress < 1.f)
+                         ? progress
+                         : ProgressIndicator::kProgressComplete;
+            },
+            base::Unretained(this)));
+    progress_indicator_->SetInnerIconVisible(false);
+    SetPaintToLayer();
+    layer()->Add(progress_indicator_->CreateLayer(base::BindRepeating(
+        [](ShelfAppButton* view, ui::ColorId color_id) {
+          return view->GetColorProvider()->GetColor(color_id);
+        },
+        base::Unretained(this))));
+    progress_indicator_->SetColorId(cros_tokens::kCrosSysOnPrimaryContainer);
+  }
+
+  const gfx::Rect button_bounds(GetContentsBounds());
+
+  gfx::Rect progress_indicator_bounds =
+      GetIconViewBounds(button_bounds, icon_scale_);
+
+  progress_indicator_->layer()->SetBounds(progress_indicator_bounds);
+  layer()->StackAtBottom(progress_indicator_->layer());
+  progress_indicator_->InvalidateLayer();
+}
+
+float ShelfAppButton::GetAdjustedIconScaleForProgressRing() const {
+  // Account for the promise icon scale (if needed).
+  if (is_promise_app_ && features::ArePromiseIconsEnabled()) {
+    return icon_scale_ * kPromiseIconScale;
+  }
+
+  return icon_scale_;
+}
+
+ProgressIndicator* ShelfAppButton::GetProgressIndicatorForTest() const {
+  DCHECK(is_promise_app_);
+  return progress_indicator_.get();
 }
 
 }  // namespace ash

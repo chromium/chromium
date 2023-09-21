@@ -44,6 +44,7 @@
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/progress_indicator/progress_indicator.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
@@ -195,6 +196,35 @@ class AsyncContextMenuShelfItemDelegate : public ShelfItemDelegate {
   void Close() override {}
 
   GetContextMenuCallback pending_context_menu_callback_;
+};
+
+// ProgressIndicatorWaiter -----------------------------------------------------
+
+// A class which supports waiting for a progress indicator to reach a desired
+// state of progress.
+class ProgressIndicatorWaiter {
+ public:
+  ProgressIndicatorWaiter() = default;
+  ProgressIndicatorWaiter(const ProgressIndicatorWaiter&) = delete;
+  ProgressIndicatorWaiter& operator=(const ProgressIndicatorWaiter&) = delete;
+  ~ProgressIndicatorWaiter() = default;
+
+  // Waits for `progress_indicator` to reach the specified `progress`. If the
+  // `progress_indicator` is already at `progress`, this method no-ops.
+  void WaitForProgress(ProgressIndicator* progress_indicator,
+                       const absl::optional<float>& progress) {
+    if (progress_indicator->progress() == progress) {
+      return;
+    }
+    base::RunLoop run_loop;
+    auto subscription = progress_indicator->AddProgressChangedCallback(
+        base::BindLambdaForTesting([&]() {
+          if (progress_indicator->progress() == progress) {
+            run_loop.Quit();
+          }
+        }));
+    run_loop.Run();
+  }
 };
 
 }  // namespace
@@ -3954,6 +3984,62 @@ TEST_F(ShelfViewDeskButtonTest, VisibilityMetrics) {
       static_cast<int>(ShelfContextMenuModel::CommandId::MENU_HIDE_DESK_NAME),
       /*event_flags=*/0);
   histogram_tester.ExpectTotalCount(kDeskButtonHiddenHistogramName, 1);
+}
+
+class ShelfViewPromiseAppTest : public ShelfViewTest {
+ public:
+  ShelfViewPromiseAppTest() = default;
+  ShelfViewPromiseAppTest(const ShelfViewPromiseAppTest&) = delete;
+  ShelfViewPromiseAppTest& operator=(const ShelfViewPromiseAppTest&) = delete;
+  ~ShelfViewPromiseAppTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      ash::features::kPromiseIcons};
+};
+
+TEST_F(ShelfViewPromiseAppTest, UpdateProgressOnPromiseIcon) {
+  // Add platform app button.
+  ShelfID last_added = AddAppShortcut();
+  ShelfItem item = GetItemByID(last_added);
+  int index = model_->ItemIndexByID(last_added);
+  ShelfAppButton* button = GetButtonByID(last_added);
+
+  item.app_status = AppStatus::kPending;
+  item.progress = 0.0f;
+  model_->Set(index, item);
+
+  // Start install progress bar.
+  item.app_status = AppStatus::kInstalling;
+  item.progress = 0.0f;
+  model_->Set(index, item);
+  ProgressIndicator* progress_indicator = button->GetProgressIndicatorForTest();
+  ASSERT_TRUE(progress_indicator);
+
+  EXPECT_EQ(item.progress, 0.f);
+  EXPECT_EQ(button->progress(), 0.f);
+  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, 0.0f);
+
+  item.app_status = AppStatus::kInstalling;
+  item.progress = 0.3f;
+  model_->Set(index, item);
+  EXPECT_EQ(item.progress, 0.3f);
+  EXPECT_EQ(button->progress(), 0.3f);
+  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, 0.3f);
+
+  item.app_status = AppStatus::kInstalling;
+  item.progress = 0.7f;
+  model_->Set(index, item);
+  EXPECT_EQ(item.progress, 0.7f);
+  EXPECT_EQ(button->progress(), 0.7f);
+  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, 0.7f);
+
+  item.app_status = AppStatus::kInstalling;
+  item.progress = 1.5f;
+  model_->Set(index, item);
+  EXPECT_EQ(item.progress, 1.5f);
+  EXPECT_EQ(button->progress(), 1.5f);
+  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, 1.0f);
 }
 
 }  // namespace ash
