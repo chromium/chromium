@@ -752,23 +752,6 @@ public abstract class UrlBar extends AutocompleteEditText {
         scrollTo((int) scrollPos, getScrollY());
     }
 
-    // TODO(crbug.com/1465967): remove after getting enough data to diagnose
-    // failed assert
-    private String getWrongIndexErrorMessage(int incorrectIndex) {
-        Editable url = getText();
-        int measuredWidth = getVisibleMeasuredViewportWidth();
-        int urlTextLength = url.length();
-        int finalVisibleCharIndexSlow = getLayout().getOffsetForHorizontal(0, measuredWidth);
-        String errorMessage = "scrollToTLD bad index. old final visible index: "
-                + String.valueOf(finalVisibleCharIndexSlow) + " incorrect index: "
-                + String.valueOf(incorrectIndex) + " viewport: " + String.valueOf(measuredWidth)
-                + " prefix: " + url.subSequence(0, Math.max(mOriginEndIndex - 4, 0))
-                + " suffix: " + url.subSequence(mOriginEndIndex, urlTextLength)
-                + " url length: " + String.valueOf(urlTextLength) + " incorrect index horizontal: "
-                + getLayout().getPrimaryHorizontal(Math.min(incorrectIndex + 1, urlTextLength));
-        return errorMessage;
-    }
-
     /**
      * The visible hint contains the visible portion of the text in the url bar. It is used to
      * reduce toolbar captures. For example, in the case of same document navigations, some prefix
@@ -815,7 +798,9 @@ public abstract class UrlBar extends AutocompleteEditText {
 
                     assert MathUtils.areFloatsEqual(horizontal, width)
                             || horizontal > width
-                        : getWrongIndexErrorMessage(finalVisibleCharIndex);
+                        : "finalVisibleCharIndex is too small: "
+                          + String.valueOf(finalVisibleCharIndexExclusive)
+                          + ". If discovered locally please update crbug.com/1465967 with the url.";
                 }
 
                 // To avoid issues where a small portion of the character following
@@ -988,8 +973,8 @@ public abstract class UrlBar extends AutocompleteEditText {
                 RecordHistogram.recordBooleanHistogram(
                         "Omnibox.setText.TruncatedTooMuch", truncatedTooMuch);
                 assert !truncatedTooMuch
-                    : "If discovered locally, please update crbug.com/1476013: "
-                      + getWrongIndexErrorMessage(textLength - 1);
+                    : "Url was truncated too much. If discovered locally, please update "
+                      + "crbug.com/1476013 with steps to reproduce.";
             }
 
             mIsTextTruncated = mDidJustTruncate;
