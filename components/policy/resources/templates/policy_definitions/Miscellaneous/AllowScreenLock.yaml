@@ -1,8 +1,9 @@
 caption: Permit locking the screen
+default: true
 desc: |-
   Setting the policy to Enabled or leaving it unset lets users who authenticate with a password lock the screen.
 
-        Setting the policy to Disabled means users can't lock the screen. (They can only sign out from the user session.)
+  Setting the policy to Disabled means users can't lock the screen. (They can only sign out from the user session.)
 example_value: false
 features:
   dynamic_refresh: true
