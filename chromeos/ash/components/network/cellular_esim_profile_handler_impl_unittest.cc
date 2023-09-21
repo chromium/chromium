@@ -43,6 +43,10 @@ const char kDisableProfileResultHistogram[] =
 
 constexpr base::TimeDelta kInteractiveDelay = base::Seconds(30);
 
+std::string CreateTestProfilePath(int profile_num) {
+  return base::StringPrintf("%s%02d", kTestProfileBasePath, profile_num);
+}
+
 std::string CreateTestEuiccPath(int euicc_num) {
   return base::StringPrintf("%s%d", kTestEuiccBasePath, euicc_num);
 }
@@ -140,8 +144,7 @@ class CellularESimProfileHandlerImplTest : public testing::Test {
                               hermes::profile::ProfileClass profile_class =
                                   hermes::profile::ProfileClass::kOperational,
                               bool blank_iccid = false) {
-    dbus::ObjectPath path(base::StringPrintf("%s%02d", kTestProfileBasePath,
-                                             num_profiles_created_));
+    dbus::ObjectPath path(CreateTestProfilePath(num_profiles_created_));
 
     std::string iccid;
     if (!blank_iccid) {
@@ -1116,6 +1119,99 @@ TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
                         smds_activation_codes.end(), profile.activation_code()),
               smds_activation_codes.end());
   }
+
+  histogram_tester.ExpectTotalCount(
+      CellularNetworkMetricsLogger::kSmdsScanProfileCount,
+      /*expected_count=*/1);
+  EXPECT_EQ(static_cast<int64_t>(smds_activation_codes.size()),
+            histogram_tester.GetTotalSum(
+                CellularNetworkMetricsLogger::kSmdsScanProfileCount));
+}
+
+TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
+       RequestAvailableProfiles_WaitForProfileProperties) {
+  AddCellularDevice();
+  AddEuicc(/*euicc_num=*/1);
+  Init();
+  SetDevicePrefs();
+
+  base::HistogramTester histogram_tester;
+
+  HermesEuiccClient::Get()->GetTestInterface()->SetInteractiveDelay(
+      kInteractiveDelay);
+
+  const dbus::ObjectPath euicc_path(CreateTestEuiccPath(1));
+  const std::vector<std::string> smds_activation_codes =
+      cellular_utils::GetSmdsActivationCodes();
+
+  // Create profiles with activation codes that match all of the activation
+  // codes that will be used to perform SM-DS scans. These profiles will have an
+  // activation code, but are missing a name and have an incorrect state. These
+  // properties should be set before RequestAvailableProfiles() returns.
+  std::vector<dbus::ObjectPath> profile_paths;
+  for (const auto& smds_activation_code : smds_activation_codes) {
+    const dbus::ObjectPath profile_path(
+        CreateTestProfilePath(profile_paths.size()));
+    HermesEuiccClient::Get()->GetTestInterface()->AddCarrierProfile(
+        profile_path, euicc_path,
+        /*iccid=*/"",
+        /*name=*/"",
+        /*nickname=*/"",
+        /*service_provider=*/"",
+        /*activation_code=*/smds_activation_code,
+        /*network_service_path=*/"",
+        /*state=*/hermes::profile::State::kPending,
+        /*profile_class=*/hermes::profile::ProfileClass::kOperational,
+        /*add_carrier_profile_behavior=*/
+        HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
+            kAddProfileWithService);
+    base::RunLoop().RunUntilIdle();
+
+    profile_paths.push_back(profile_path);
+  }
+
+  absl::optional<ESimOperationResult> result;
+  absl::optional<std::vector<CellularESimProfile>> profile_list;
+
+  base::RunLoop run_loop;
+  RequestAvailableProfiles(
+      /*euicc_num=*/1,
+      base::BindLambdaForTesting(
+          [&](ESimOperationResult returned_result,
+              std::vector<CellularESimProfile> returned_profile_list) {
+            result = returned_result;
+            profile_list = returned_profile_list;
+            run_loop.Quit();
+          }));
+
+  // Skip forward the amount of time needed to complete all of the SM-DS scans.
+  for (size_t i = 0; i < smds_activation_codes.size(); ++i) {
+    task_environment()->FastForwardBy(kInteractiveDelay);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  EXPECT_FALSE(profile_list.has_value());
+
+  for (const auto& profile_path : profile_paths) {
+    HermesProfileClient::Properties* profile_properties =
+        HermesProfileClient::Get()->GetProperties(profile_path);
+    ASSERT_TRUE(profile_properties);
+    profile_properties->state().ReplaceValue(
+        /*value=*/hermes::profile::State::kPending);
+  }
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(profile_list.has_value());
+
+  for (const auto& profile_path : profile_paths) {
+    HermesProfileClient::Properties* profile_properties =
+        HermesProfileClient::Get()->GetProperties(profile_path);
+    ASSERT_TRUE(profile_properties);
+    profile_properties->name().ReplaceValue(
+        /*value=*/"name");
+  }
+  run_loop.Run();
+  ASSERT_TRUE(profile_list.has_value());
+  EXPECT_EQ(smds_activation_codes.size(), profile_list->size());
 
   histogram_tester.ExpectTotalCount(
       CellularNetworkMetricsLogger::kSmdsScanProfileCount,

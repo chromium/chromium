@@ -119,30 +119,32 @@ void Euicc::InstallProfileFromActivationCode(
     const std::string& confirmation_code,
     mojom::ProfileInstallMethod install_method,
     InstallProfileFromActivationCodeCallback callback) {
-  ESimProfile* profile_info = nullptr;
-  mojom::ProfileInstallResult status =
-      GetPendingProfileInfoFromActivationCode(activation_code, &profile_info);
+  if (!ash::features::IsSmdsSupportEnabled()) {
+    ESimProfile* profile_info = nullptr;
+    mojom::ProfileInstallResult status =
+        GetPendingProfileInfoFromActivationCode(activation_code, &profile_info);
 
-  // Return early if profile was found but not in the correct state.
-  if (profile_info && status != mojom::ProfileInstallResult::kSuccess) {
-    NET_LOG(ERROR) << "EUICC could not install profile: " << status;
-    std::move(callback).Run(status, mojo::NullRemote());
-    return;
-  }
+    // Return early if profile was found but not in the correct state.
+    if (profile_info && status != mojom::ProfileInstallResult::kSuccess) {
+      NET_LOG(ERROR) << "EUICC could not install profile: " << status;
+      std::move(callback).Run(status, mojo::NullRemote());
+      return;
+    }
 
-  if (!ash::features::IsSmdsSupportEnabled() && profile_info) {
-    NET_LOG(USER) << "Installing profile with path "
-                  << profile_info->path().value();
-    profile_info->InstallProfile(
-        confirmation_code,
-        base::BindOnce(
-            [](InstallProfileFromActivationCodeCallback callback,
-               ESimProfile* esim_profile,
-               mojom::ProfileInstallResult status) -> void {
-              std::move(callback).Run(status, esim_profile->CreateRemote());
-            },
-            std::move(callback), profile_info));
-    return;
+    if (profile_info) {
+      NET_LOG(USER) << "Installing profile with path "
+                    << profile_info->path().value();
+      profile_info->InstallProfile(
+          confirmation_code,
+          base::BindOnce(
+              [](InstallProfileFromActivationCodeCallback callback,
+                 ESimProfile* esim_profile,
+                 mojom::ProfileInstallResult status) -> void {
+                std::move(callback).Run(status, esim_profile->CreateRemote());
+              },
+              std::move(callback), profile_info));
+      return;
+    }
   }
 
   if (ash::features::IsSmdsSupportEnabled()) {

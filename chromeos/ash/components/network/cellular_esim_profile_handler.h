@@ -137,9 +137,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandler
     // available profiles.
     std::vector<std::string> smds_activation_codes;
 
-    // The list of available profiles found from scanning with activation codes
+    // The list of paths to profiles found when scanning with activation codes
     // from |smds_activation_codes|.
-    std::vector<CellularESimProfile> profile_list;
+    std::vector<dbus::ObjectPath> profile_paths;
 
     RequestAvailableProfilesCallback callback;
   };
@@ -187,6 +187,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandler
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
       HermesResponseStatus status,
       const std::vector<dbus::ObjectPath>& profile_paths);
+  void CompleteRequestAvailableProfiles(
+      const dbus::ObjectPath& euicc_path,
+      std::unique_ptr<RequestAvailableProfilesInfo> info);
 
   raw_ptr<CellularInhibitor, ExperimentalAsh> cellular_inhibitor_ = nullptr;
 

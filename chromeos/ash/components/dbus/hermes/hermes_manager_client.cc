@@ -95,6 +95,9 @@ HermesManagerClient::HermesManagerClient() {
 
 HermesManagerClient::~HermesManagerClient() {
   DCHECK_EQ(g_instance, this);
+  for (auto& observer : observers()) {
+    observer.OnShutdown();
+  }
   g_instance = nullptr;
 }
 
