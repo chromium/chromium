@@ -41,6 +41,8 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
   if (categoryItemMap !== null) {
     return categoryItemMap;
   }
+  const is3pcdRedesignEnabled =
+      loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled');
   // The following list is ordered alphabetically by |id|. The order in which
   // these appear in the UI is determined elsewhere in this file.
   const categoryList = [
@@ -137,10 +139,13 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
     {
       route: routes.COOKIES,
       id: Id.COOKIES,
-      label: loadTimeData.getBoolean('isPrivacySandboxSettings4') ?
-          'thirdPartyCookiesLinkRowLabel' :
-          'siteSettingsCookies',
-      icon: 'settings:cookie',
+      label: is3pcdRedesignEnabled ?
+          'trackingProtectionLinkRowLabel' :
+          (loadTimeData.getBoolean('isPrivacySandboxSettings4') ?
+               'thirdPartyCookiesLinkRowLabel' :
+               'siteSettingsCookies'),
+      icon: is3pcdRedesignEnabled ? 'settings:visibility-off' :
+                                    'settings:cookie',
       enabledLabel: 'siteSettingsCookiesAllowed',
       disabledLabel: 'siteSettingsBlocked',
       otherLabel: 'cookiePageClearOnExit',

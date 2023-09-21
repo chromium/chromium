@@ -3239,7 +3239,7 @@
     Tracking protection
   </message>
   <message name="IDS_SETTINGS_TRACKING_PROTECTION_LINK_ROW_SUB_LABEL" desc="Sub-label for the 'Tracking protection' page entry point." translateable="false">
-    Protection from third-party cookie tracking
+    Manage third-party cookies and other tracking protections
   </message>
   <message name="IDS_SETTINGS_TRACKING_PROTECTION_PAGE_TITLE" translateable="false" desc="The title of a new settings page that allows users to manage settings related to tracking, for example third-party cookies. This settings page will replace the existing cookie settings page at chrome://settings/cookies.">
     Tracking protection

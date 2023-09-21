@@ -164,6 +164,13 @@ class SettingsSiteSettingsListElement extends
     }
 
     if (category === ContentSettingsTypes.COOKIES) {
+      if (loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')) {
+        const index = this.categoryList.map(e => e.id).indexOf(
+            ContentSettingsTypes.COOKIES);
+        this.set(
+            `categoryList.${index}.subLabel`,
+            this.i18n('trackingProtectionLinkRowSubLabel'));
+      }
       // Updates to the cookies label are handled by the
       // cookieSettingDescriptionChanged event listener.
       return Promise.resolve();
@@ -303,7 +310,8 @@ class SettingsSiteSettingsListElement extends
    * Update the third-party cookies link row label when the pref changes.
    */
   private updateThirdPartyCookiesLabel_() {
-    if (!loadTimeData.getBoolean('isPrivacySandboxSettings4')) {
+    if (!loadTimeData.getBoolean('isPrivacySandboxSettings4') ||
+        loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')) {
       return;
     }
 

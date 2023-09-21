@@ -129,6 +129,35 @@ suite('SiteSettingsPage', function() {
         cookiesLinkRow.subLabel);
   });
 
+  test('TrackingProtectionLinkRowSubLabel', async function() {
+    loadTimeData.overrideValues({
+      is3pcdCookieSettingsRedesignEnabled: true,
+    });
+    setupPage();
+    const cookiesLinkRow =
+        page.shadowRoot!.querySelector('#basicContentList')!.shadowRoot!
+            .querySelector<CrLinkRowElement>('#cookies')!;
+    assertEquals(
+        loadTimeData.getString('trackingProtectionLinkRowSubLabel'),
+        cookiesLinkRow.subLabel);
+
+    // Even if cookie controls mode changes, sub-label stays the same.
+    page.set(
+        'prefs.profile.cookie_controls_mode.value',
+        CookieControlsMode.BLOCK_THIRD_PARTY);
+    await flushTasks();
+    assertEquals(
+        loadTimeData.getString('trackingProtectionLinkRowSubLabel'),
+        cookiesLinkRow.subLabel);
+
+    page.set(
+        'prefs.profile.cookie_controls_mode.value', CookieControlsMode.OFF);
+    await flushTasks();
+    assertEquals(
+        loadTimeData.getString('trackingProtectionLinkRowSubLabel'),
+        cookiesLinkRow.subLabel);
+  });
+
   test('NotificationsLinkRowSublabel', async function() {
     const notificationsLinkRow =
         page.shadowRoot!.querySelector('#basicPermissionsList')!.shadowRoot!
