@@ -124,7 +124,7 @@ function isCollection(value) {
   const Symbol = window.cdc_adoQpoasnfa76pfcZLmcfl_Symbol || window.Symbol;
   return (typeof value[Symbol.iterator] === 'function') &&
       ('length' in value) &&
-      (typeof value['length'] === 'number');
+      (typeof value.length === 'number');
 }
 
 /**
