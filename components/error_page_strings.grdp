@@ -318,8 +318,8 @@
   <message name="IDS_ERRORPAGES_SUGGESTION_LEARNMORE_SUMMARY_STANDALONE" desc="When a webpage fails to load, we provide a link to the help center to learn more about the failure.">
     <ph name="BEGIN_LINK">&lt;a jsvalues="href:learnMoreUrl"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph> about this problem.
   </message>
-  <message name="IDS_ERRORPAGES_SUGGESTION_CLEAR_COOKIES_SUMMARY" desc="The message displayed following a network error suggesting the user could try clearing their cookies. We also provide a link to the help center to learn more about the failure.">
-    <ph name="BEGIN_LINK">&lt;a jsvalues="href:learnMoreUrl"&gt;</ph>Try clearing your cookies<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex>.</ph>
+  <message name="IDS_ERRORPAGES_SUGGESTION_DELETE_COOKIES_SUMMARY" desc="The message displayed following a network error suggesting the user could try deleting their cookies. We also provide a link to the help center to learn more about the failure.">
+    <ph name="BEGIN_LINK">&lt;a jsvalues="href:learnMoreUrl"&gt;</ph>Try deleting your cookies<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex>.</ph>
   </message>
   <if expr="is_ios or is_android">
     <message name="IDS_ERRORPAGES_SUGGESTION_TURN_OFF_AIRPLANE_SUMMARY" desc="When a page fails to load and the device is offline, we provide a suggestion that the user try turning off airplane mode. The suggestions list is prefixed with 'Try:'.">

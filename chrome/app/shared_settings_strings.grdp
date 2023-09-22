@@ -286,7 +286,7 @@
 
   <!-- Signout Subpage (strings used by the <settings-signout-dialog> element) -->
   <message name="IDS_SETTINGS_SYNC_DISCONNECT_CONFIRM" desc="The text to display on the button to confirm the user wishes to stop syncing.">
-    Clear and Sign Out
+    Delete and Sign Out
   </message>
   <message name="IDS_SETTINGS_PEOPLE_SIGN_OUT" desc="The label of the button that lets user sign-out of Chrome.">
     Sign out

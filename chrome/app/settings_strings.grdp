@@ -458,8 +458,8 @@
   <message name="IDS_SETTINGS_ADDRESS_REMOVED_MESSAGE" desc="Hidden text that is read to screen readers to confirm that an address was removed.">
     Address deleted
   </message>
-  <message name="IDS_SETTINGS_CREDIT_CARD_CLEAR" desc="Label for a context menu item clears the locally cached credit card that is also saved on Google Payments. Clicking this will NOT remove the credit card from Google Payments.">
-    Clear copy
+  <message name="IDS_SETTINGS_CREDIT_CARD_REMOVE" desc="Label for a context menu item removes the locally cached credit card that is also saved on Google Payments. Clicking this will NOT remove the credit card from Google Payments.">
+    Remove copy
   </message>
   <message name="IDS_SETTINGS_EDIT_CREDIT_CARD_TITLE" desc="The title for the dialog that's shown when editing a card. This can be either credit, debit, or prepaid card..">
     Edit card
@@ -3788,10 +3788,10 @@
     Turn off sync and personalization?
   </message>
   <message name="IDS_SETTINGS_TURN_OFF_SYNC_DIALOG_MANAGED_CONFIRM" desc="The text to display on the confirm button of the dialog to turn off sync, when the profile is managed by admin.">
-    Clear and continue
+    Delete and continue
   </message>
-  <message name="IDS_SETTINGS_TURN_OFF_SYNC_DIALOG_CHECKBOX" desc="The text to display next to the checkbox of the dialog to turn off sync, asking users if they want to clear these data from the device.">
-    Clear bookmarks, history, passwords, and more from this device
+  <message name="IDS_SETTINGS_TURN_OFF_SYNC_DIALOG_CHECKBOX" desc="The text to display next to the checkbox of the dialog to turn off sync, asking users if they want to delete these data from the device.">
+    Remove bookmarks, history, passwords, and more from this device
   </message>
   <message name="IDS_SETTINGS_SYNC_SETTINGS_SAVED_TOAST_LABEL" desc="The notification shown to user after they saved sync settings, and sync is now started.">
     Settings saved. Sync started.

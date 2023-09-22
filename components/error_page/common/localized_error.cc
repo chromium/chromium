@@ -556,7 +556,7 @@ void AddLinkedSuggestionToList(const int error_code,
     case net::ERR_TOO_MANY_REDIRECTS:
       learn_more_url = GURL(kRedirectLoopLearnMoreUrl);
       suggestion_string = l10n_util::GetStringUTF16(
-          IDS_ERRORPAGES_SUGGESTION_CLEAR_COOKIES_SUMMARY);
+          IDS_ERRORPAGES_SUGGESTION_DELETE_COOKIES_SUMMARY);
       break;
     default:
       NOTREACHED();

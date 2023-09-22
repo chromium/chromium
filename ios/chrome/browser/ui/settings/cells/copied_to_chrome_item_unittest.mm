@@ -27,7 +27,7 @@ TEST_F(CopiedToChromeItemTest, InitializeCell) {
               copiedToChromeCell.textLabel.text);
 
   NSString* buttonText =
-      l10n_util::GetNSString(IDS_AUTOFILL_CLEAR_LOCAL_COPY_BUTTON);
+      l10n_util::GetNSString(IDS_AUTOFILL_REMOVE_LOCAL_COPY_BUTTON);
   EXPECT_NSEQ(buttonText,
               [copiedToChromeCell.button titleForState:UIControlStateNormal]);
 }

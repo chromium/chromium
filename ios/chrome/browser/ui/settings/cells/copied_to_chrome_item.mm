@@ -53,7 +53,7 @@
 
     _button.translatesAutoresizingMaskIntoConstraints = NO;
     [_button
-        setTitle:l10n_util::GetNSString(IDS_AUTOFILL_CLEAR_LOCAL_COPY_BUTTON)
+        setTitle:l10n_util::GetNSString(IDS_AUTOFILL_REMOVE_LOCAL_COPY_BUTTON)
         forState:UIControlStateNormal];
     [contentView addSubview:_button];
 
