@@ -28,6 +28,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 
 namespace {
+
 std::string GetChoiceListJSON(Profile& profile) {
   base::Value::List choice_value_list;
   SearchEngineChoiceService* search_engine_choice_service =
