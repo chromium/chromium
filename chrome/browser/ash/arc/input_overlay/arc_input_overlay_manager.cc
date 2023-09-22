@@ -40,6 +40,11 @@
 namespace arc::input_overlay {
 namespace {
 
+// TODO(b/301518561): Add a function in GD to check whether the window is GD
+// window.
+constexpr char kGameDashboardButton[] = "GameDashboardButton";
+constexpr char kGameDashboardMainMenu[] = "GameDashboardMainMenuView";
+
 // Singleton factory for ArcInputOverlayManager.
 class ArcInputOverlayManagerFactory
     : public internal::ArcBrowserContextKeyedServiceFactoryBase<
@@ -574,13 +579,21 @@ void ArcInputOverlayManager::UnRegisterWindow(aura::Window* window) {
 }
 
 void ArcInputOverlayManager::RegisterFocusedWindow() {
+  auto* focused_window = ash::window_util::GetFocusedWindow();
   // Don't register window if it is in tablet mode.
   if (ash::Shell::Get()->tablet_mode_controller()->InTabletMode() ||
-      !ash::window_util::GetFocusedWindow()) {
+      !focused_window) {
     return;
   }
 
-  RegisterWindow(ash::window_util::GetFocusedWindow()->GetToplevelWindow());
+  auto* top_level_window = focused_window->GetToplevelWindow();
+  if (input_overlay_enabled_windows_.find(top_level_window) ==
+          input_overlay_enabled_windows_.end() &&
+      IsBeta()) {
+    RegisterWindow(GetGameWindow(top_level_window));
+  } else {
+    RegisterWindow(top_level_window);
+  }
 }
 
 void ArcInputOverlayManager::AddDisplayOverlayController(
@@ -664,15 +677,23 @@ void ArcInputOverlayManager::MayKeepTouchInjectorAfterError(
 }
 
 aura::Window* ArcInputOverlayManager::GetGameWindow(aura::Window* window) {
-  if (!window || window->GetName() != "GameDashboardMainMenuView") {
+  // TODO(b/301518561): Add a function in GD to check whether the window is GD
+  // window.
+  if (!window || (window->GetName() != kGameDashboardMainMenu &&
+                  window->GetName() != kGameDashboardButton)) {
     return nullptr;
   }
 
   auto* widget = views::Widget::GetWidgetForNativeWindow(window);
   DCHECK(widget);
-  DCHECK(widget->parent());
-  DCHECK(widget->parent()->GetNativeWindow());
-  return wm::GetTransientParent(widget->parent()->GetNativeWindow());
+  if (window->GetName() == kGameDashboardMainMenu) {
+    DCHECK(widget->parent());
+    DCHECK(widget->parent()->GetNativeWindow());
+    return wm::GetTransientParent(widget->parent()->GetNativeWindow());
+  }
+
+  DCHECK_EQ(window->GetName(), kGameDashboardButton);
+  return wm::GetTransientParent(widget->GetNativeWindow());
 }
 
 }  // namespace arc::input_overlay

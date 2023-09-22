@@ -137,8 +137,9 @@ class ArcInputOverlayManager : public KeyedService,
   void MayKeepTouchInjectorAfterError(
       std::unique_ptr<TouchInjector> touch_injector);
 
-  // Returns the game window if `window` is game dashboard main menu window.
-  // Otherwise, returns nullptr.
+  // Returns the game window if `window` is game dashboard window which is the
+  // window of `GameDashboardButton` or `GameDashboardMainMenu`. Otherwise,
+  // returns nullptr.
   aura::Window* GetGameWindow(aura::Window* window);
 
   base::ScopedObservation<aura::Env, aura::EnvObserver> env_observation_{this};
