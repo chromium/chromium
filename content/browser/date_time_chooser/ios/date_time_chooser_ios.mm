@@ -4,11 +4,6 @@
 
 #import "content/browser/date_time_chooser/ios/date_time_chooser_ios.h"
 
-#import <UIKit/UIKit.h>
-
-#import "content/browser/date_time_chooser/ios/date_time_chooser_coordinator.h"
-#import "ui/gfx/native_widget_types.h"
-
 namespace content {
 
 // DateTimeChooserIOS implementation
@@ -17,26 +12,15 @@ DateTimeChooserIOS::DateTimeChooserIOS(WebContents* web_contents)
 
 DateTimeChooserIOS::~DateTimeChooserIOS() = default;
 
-void DateTimeChooserIOS::OnDialogClosed(bool success, double value) {
-  if (open_date_time_response_callback_) {
-    std::move(open_date_time_response_callback_).Run(success, value);
-  }
-  ClosePlatformDialog();
-}
-
 void DateTimeChooserIOS::OpenPlatformDialog(
     blink::mojom::DateTimeDialogValuePtr value,
     OpenDateTimeDialogCallback callback) {
-  open_date_time_response_callback_ = std::move(callback);
-  gfx::NativeWindow gfx_window = GetWebContents().GetTopLevelNativeWindow();
-  coordinator_ = [[DateTimeChooserCoordinator alloc]
-      initWithDateTimeChooser:this
-                      configs:std::move(value)
-           baseViewController:gfx_window.Get().rootViewController];
+  // TODO(crbug.com/1461947): Create a coordninator to handle UI components.
+  std::move(callback).Run(false, 0);
 }
 
 void DateTimeChooserIOS::ClosePlatformDialog() {
-  coordinator_ = nil;
+  // TODO(crbug.com/1461947): Close a dialog and clean it up.
 }
 
 // static
