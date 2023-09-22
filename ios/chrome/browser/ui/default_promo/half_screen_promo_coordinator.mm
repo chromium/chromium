@@ -17,7 +17,6 @@ using base::UserMetricsAction;
 
 @interface HalfScreenPromoCoordinator () <
     UIAdaptivePresentationControllerDelegate,
-    UINavigationControllerDelegate,
     ConfirmationAlertActionHandler>
 
 // The view controller.
@@ -27,19 +26,6 @@ using base::UserMetricsAction;
 
 @implementation HalfScreenPromoCoordinator
 
-@synthesize baseNavigationController = _baseNavigationController;
-
-- (instancetype)initWithBaseNavigationController:
-                    (UINavigationController*)navigationController
-                                         browser:(Browser*)browser {
-  self = [super initWithBaseViewController:navigationController
-                                   browser:browser];
-  if (self) {
-    _baseNavigationController = navigationController;
-  }
-  return self;
-}
-
 #pragma mark - ChromeCoordinator
 
 - (void)start {
@@ -47,16 +33,16 @@ using base::UserMetricsAction;
       UserMetricsAction("IOS.DefaultBrowserVideoPromo.Halfscreen.Impression"));
   self.viewController = [[HalfScreenPromoViewController alloc] init];
   self.viewController.actionHandler = self;
-  [self.baseNavigationController pushViewController:self.viewController
-                                           animated:YES];
+  [self.baseViewController presentViewController:self.viewController
+                                        animated:YES
+                                      completion:nil];
+
   [super start];
 }
 
 - (void)stop {
-  if (self.baseNavigationController.topViewController == self.viewController) {
-    [self.baseNavigationController popViewControllerAnimated:NO];
-    self.viewController = nil;
-  }
+  [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
+  self.viewController = nil;
 
   [super stop];
 }

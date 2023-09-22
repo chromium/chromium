@@ -21,14 +21,11 @@ using base::UserMetricsAction;
 
 @interface VideoDefaultBrowserPromoCoordinator () <
     UIAdaptivePresentationControllerDelegate,
-    UINavigationControllerDelegate,
     ConfirmationAlertActionHandler,
     HalfScreenPromoCoordinatorDelegate>
 
 // The mediator for the video default browser promo.
 @property(nonatomic, strong) VideoDefaultBrowserPromoMediator* mediator;
-// The navigation controller.
-@property(nonatomic, strong) UINavigationController* navigationController;
 // The view controller.
 @property(nonatomic, strong)
     VideoDefaultBrowserPromoViewController* viewController;
@@ -48,17 +45,11 @@ using base::UserMetricsAction;
 - (void)start {
   RecordAction(UserMetricsAction("IOS.DefaultBrowserVideoPromo.Appear"));
   self.mediator = [[VideoDefaultBrowserPromoMediator alloc] init];
-  self.navigationController = [[UINavigationController alloc] init];
-  self.navigationController.presentationController.delegate = self;
-  [self.navigationController setNavigationBarHidden:YES animated:NO];
-  [self.baseViewController presentViewController:self.navigationController
-                                        animated:YES
-                                      completion:nil];
 
   if (self.isHalfScreen) {
     self.halfScreenPromoCoordinator = [[HalfScreenPromoCoordinator alloc]
-        initWithBaseNavigationController:self.navigationController
-                                 browser:self.browser];
+        initWithBaseViewController:self.baseViewController
+                           browser:self.browser];
     self.halfScreenPromoCoordinator.delegate = self;
     [self.halfScreenPromoCoordinator start];
   } else {
@@ -69,9 +60,7 @@ using base::UserMetricsAction;
 }
 
 - (void)stop {
-  [self.navigationController.presentingViewController
-      dismissViewControllerAnimated:YES
-                         completion:nil];
+  [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
   if (self.halfScreenPromoCoordinator) {
     [self.halfScreenPromoCoordinator stop];
     self.halfScreenPromoCoordinator.delegate = nil;
@@ -79,7 +68,6 @@ using base::UserMetricsAction;
   }
   self.viewController = nil;
   self.mediator = nil;
-  self.navigationController = nil;
 
   [super stop];
 }
@@ -125,10 +113,6 @@ using base::UserMetricsAction;
   self.halfScreenPromoCoordinator.delegate = nil;
   self.halfScreenPromoCoordinator = nil;
 
-  // Present sheet at full height.
-  self.navigationController.sheetPresentationController.detents =
-      @[ UISheetPresentationControllerDetent.largeDetent ];
-
   [self showFullscreenVideoPromo];
 }
 
@@ -157,8 +141,9 @@ using base::UserMetricsAction;
       UserMetricsAction("IOS.DefaultBrowserVideoPromo.Fullscreen.Impression"));
   self.viewController = [[VideoDefaultBrowserPromoViewController alloc] init];
   self.viewController.actionHandler = self;
-  [self.navigationController pushViewController:self.viewController
-                                       animated:YES];
+  [self.baseViewController presentViewController:self.viewController
+                                        animated:YES
+                                      completion:nil];
 }
 
 @end

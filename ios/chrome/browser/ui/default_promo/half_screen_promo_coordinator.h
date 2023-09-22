@@ -12,14 +12,6 @@
 // Coordinator to present the half screen promo
 @interface HalfScreenPromoCoordinator : ChromeCoordinator
 
-- (instancetype)initWithBaseNavigationController:
-                    (UINavigationController*)navigationController
-                                         browser:(Browser*)browser
-    NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser NS_UNAVAILABLE;
-
 @property(nonatomic, weak) id<HalfScreenPromoCoordinatorDelegate> delegate;
 
 @end
