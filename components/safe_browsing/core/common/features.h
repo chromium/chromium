@@ -124,10 +124,6 @@ extern const base::FeatureParam<int>
 extern const base::FeatureParam<int>
     kExtensionTelemetryFileDataStartupDelaySeconds;
 
-// Enables data collected by the kExtensionTelemetry to be written and read to
-// disk. This data will be uploaded for analysis.
-BASE_DECLARE_FEATURE(kExtensionTelemetryPersistence);
-
 // Specifies the upload interval for extension telemetry reports.
 extern const base::FeatureParam<int> kExtensionTelemetryUploadIntervalSeconds;
 

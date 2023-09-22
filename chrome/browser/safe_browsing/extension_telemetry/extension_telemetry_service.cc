@@ -364,23 +364,14 @@ void ExtensionTelemetryService::SetEnabled(bool enable) {
           std::min(writes_per_interval + 3, max_files_supported);
       // Instantiate persister which is used to read/write telemetry reports to
       // disk and start timer for sending periodic telemetry reports.
-      if (base::FeatureList::IsEnabled(kExtensionTelemetryPersistence)) {
-        persister_ = base::SequenceBound<ExtensionTelemetryPersister>(
-            base::ThreadPool::CreateSequencedTaskRunner(
-                {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-                 base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}),
-            max_reports_to_persist, profile_->GetPath());
-        persister_.AsyncCall(&ExtensionTelemetryPersister::PersisterInit);
-        timer_.Start(FROM_HERE,
-                     current_reporting_interval_ / writes_per_interval, this,
-                     &ExtensionTelemetryService::PersistOrUploadData);
-      } else {
-        // Start timer for sending periodic telemetry reports if the reporting
-        // interval is not 0. An interval of 0 effectively turns off creation
-        // and uploading of telemetry reports.
-        timer_.Start(FROM_HERE, current_reporting_interval_, this,
-                     &ExtensionTelemetryService::CreateAndUploadReport);
-      }
+      persister_ = base::SequenceBound<ExtensionTelemetryPersister>(
+          base::ThreadPool::CreateSequencedTaskRunner(
+              {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+               base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}),
+          max_reports_to_persist, profile_->GetPath());
+      persister_.AsyncCall(&ExtensionTelemetryPersister::PersisterInit);
+      timer_.Start(FROM_HERE, current_reporting_interval_ / writes_per_interval,
+                   this, &ExtensionTelemetryService::PersistOrUploadData);
     }
     // Post this task with a delay to avoid running right at Chrome startup
     // when a lot of other startup tasks are running.
@@ -399,8 +390,7 @@ void ExtensionTelemetryService::SetEnabled(bool enable) {
     // Destruct signal processors.
     signal_processors_.clear();
     // Delete persisted files.
-    if (base::FeatureList::IsEnabled(kExtensionTelemetryPersistence) &&
-        !persister_.is_null()) {
+    if (!persister_.is_null()) {
       persister_.AsyncCall(&ExtensionTelemetryPersister::ClearPersistedFiles);
     }
     if (!file_processor_.is_null()) {
@@ -410,9 +400,7 @@ void ExtensionTelemetryService::SetEnabled(bool enable) {
 }
 
 void ExtensionTelemetryService::Shutdown() {
-  if (enabled_ &&
-      base::FeatureList::IsEnabled(kExtensionTelemetryPersistence) &&
-      SignalDataPresent() && !persister_.is_null()) {
+  if (enabled_ && SignalDataPresent() && !persister_.is_null()) {
     // Saving data to disk.
     active_report_ = CreateReport();
     std::string write_string;
@@ -503,8 +491,7 @@ void ExtensionTelemetryService::OnUploadComplete(
       ProcessOffstoreExtensionVerdicts(response);
     }
   }
-  if (base::FeatureList::IsEnabled(kExtensionTelemetryPersistence) &&
-      enabled_ && !persister_.is_null()) {
+  if (enabled_ && !persister_.is_null()) {
     // Upload saved report(s) if there are any.
     if (success) {
       // Bind the callback to our current thread.
@@ -570,9 +557,6 @@ void ExtensionTelemetryService::StartUploadCheck() {
 }
 
 void ExtensionTelemetryService::PersistOrUploadData() {
-  // Check the `kExtensionTelemetryLastUploadTime` preference,
-  // if enough time has passed, upload a report.
-  DCHECK(base::FeatureList::IsEnabled(kExtensionTelemetryPersistence));
   if (GetLastUploadTimeForExtensionTelemetry(*pref_service_) +
           current_reporting_interval_ <=
       base::Time::Now()) {

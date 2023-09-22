@@ -110,10 +110,6 @@ BASE_FEATURE(kExtensionTelemetryConfiguration,
              "SafeBrowsingExtensionTelemetryConfiguration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kExtensionTelemetryPersistence,
-             "SafeBrowsingExtensionTelemetryPersistence",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kExtensionTelemetryFileData,
              "SafeBrowsingExtensionTelemetryFileData",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -368,7 +364,6 @@ constexpr struct {
     {&kExtensionTelemetryDisableOffstoreExtensions, true},
     {&kExtensionTelemetryFileData, true},
     {&kExtensionTelemetryInterceptRemoteHostsContactedInRenderer, true},
-    {&kExtensionTelemetryPersistence, true},
     {&kExtensionTelemetryPotentialPasswordTheft, true},
     {&kExtensionTelemetryReportContactedHosts, true},
     {&kExtensionTelemetryReportHostsContactedViaWebSocket, true},
