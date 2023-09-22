@@ -2628,6 +2628,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.PasswordSharingDesktop.UserAction"
+    enum="PasswordManager.PasswordSharingDesktopActions"
+    expires_after="2024-03-01">
+  <owner>natiahlyi@google.com</owner>
+  <owner>mamir@chromium.org</owner>
+  <owner>rgod@google.com</owner>
+  <summary>
+    Records user interactions with the elements of password sharing flow in the
+    desktop settings.
+  </summary>
+</histogram>
+
 <histogram
     name="PasswordManager.PasswordSharingRecipients.FetchAccessTokenResult"
     enum="GoogleServiceAuthError" expires_after="2024-09-15">

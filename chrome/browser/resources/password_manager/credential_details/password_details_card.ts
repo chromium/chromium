@@ -12,6 +12,8 @@ import '../shared_style.css.js';
 import './credential_details_card.css.js';
 import '../dialogs/edit_password_dialog.js';
 import '../dialogs/multi_store_delete_password_dialog.js';
+import '../sharing/share_password_flow.js';
+import '../sharing/metrics_utils.js';
 
 import {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
@@ -22,6 +24,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PasswordManagerImpl, PasswordViewPageInteractions} from '../password_manager_proxy.js';
+import {PasswordSharingActions, recordPasswordSharingInteraction} from '../sharing/metrics_utils.js';
 import {ShowPasswordMixin} from '../show_password_mixin.js';
 import {UserUtilMixin} from '../user_utils_mixin.js';
 
@@ -190,6 +193,8 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
   }
 
   private onShareButtonClick_() {
+    recordPasswordSharingInteraction(
+        PasswordSharingActions.PASSWORD_DETAILS_SHARE_BUTTON_CLICKED);
     this.showShareFlow_ = true;
   }
 

@@ -83118,6 +83118,27 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="(DEPRECATED IN M110) Manual reset link flow"/>
 </enum>
 
+<enum name="PasswordManager.PasswordSharingDesktopActions">
+  <int value="0" label="Password details: 'Share' button clicked"/>
+  <int value="1" label="Not family member: 'Got it' button clicked"/>
+  <int value="2" label="Not family member: 'Create a family group' clicked"/>
+  <int value="3" label="No other family members: 'Got it' button clicked"/>
+  <int value="4"
+      label="No other family members: 'Invite family members' clicked"/>
+  <int value="5" label="Error dialog: 'Try again' clicked"/>
+  <int value="6" label="Error dialog: canceled"/>
+  <int value="7"
+      label="Family picker: 'Share' button clicked (1 member selected)"/>
+  <int value="8"
+      label="Family picker: 'Share' button clicked (&gt;1 member selected)"/>
+  <int value="9" label="Family picker: dialog canceled"/>
+  <int value="10" label="Family picker: 'View family' clicked"/>
+  <int value="11" label="Confirmation dialog: sharing canceled/interrupted"/>
+  <int value="12" label="Confirmation dialog: 'Learn more' clicked"/>
+  <int value="13" label="Confirmation dialog: 'Change password' clicked"/>
+  <int value="14" label="Dialog header: 'Help icon button' clicked"/>
+</enum>
+
 <enum name="PasswordManager.ReauthResult">
   <int value="0" label="Success"/>
   <int value="1" label="Failure"/>

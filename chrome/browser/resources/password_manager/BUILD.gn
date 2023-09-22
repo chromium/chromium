@@ -93,6 +93,7 @@ build_webui("build") {
     "sync_browser_proxy.ts",
     "user_utils_mixin.ts",
     "promo_cards/promo_cards_browser_proxy.ts",
+    "sharing/metrics_utils.ts",
   ]
 
   # Files that are passed as input to css_to_wrapper().

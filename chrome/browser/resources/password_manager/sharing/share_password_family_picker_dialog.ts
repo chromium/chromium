@@ -4,6 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import './metrics_utils.js';
 import './share_password_dialog_header.js';
 import './share_password_recipient.js';
 import '../shared_style.css.js';
@@ -13,6 +14,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {UserUtilMixin} from '../user_utils_mixin.js';
 
+import {PasswordSharingActions, recordPasswordSharingInteraction} from './metrics_utils.js';
 import {getTemplate} from './share_password_family_picker_dialog.html.js';
 
 export interface SharePasswordFamilyPickerDialogElement {
@@ -67,11 +69,6 @@ export class SharePasswordFamilyPickerDialogElement extends UserUtilMixin
   private eligibleRecipients_: chrome.passwordsPrivate.RecipientInfo[];
   private ineligibleRecipients_: chrome.passwordsPrivate.RecipientInfo[];
 
-  private onClickCancel_() {
-    this.dispatchEvent(
-        new CustomEvent('close', {bubbles: true, composed: true}));
-  }
-
   private computeEligible_(): chrome.passwordsPrivate.RecipientInfo[] {
     const eligibleMembers = this.members.filter(member => member.isEligible);
     eligibleMembers.sort((a, b) => (a.displayName > b.displayName ? 1 : -1));
@@ -92,7 +89,26 @@ export class SharePasswordFamilyPickerDialogElement extends UserUtilMixin
             .map(item => item.recipient);
   }
 
+  private onViewFamilyClick_() {
+    recordPasswordSharingInteraction(
+        PasswordSharingActions.FAMILY_PICKER_VIEW_FAMILY_CLICKED);
+  }
+
+  private onClickCancel_() {
+    recordPasswordSharingInteraction(
+        PasswordSharingActions.FAMILY_PICKER_CANCELED);
+    this.dispatchEvent(
+        new CustomEvent('close', {bubbles: true, composed: true}));
+  }
+
   private onClickShare_() {
+    if (this.selectedRecipients.length === 1) {
+      recordPasswordSharingInteraction(
+          PasswordSharingActions.FAMILY_PICKER_SHARE_WITH_ONE_MEMBER);
+    } else {
+      recordPasswordSharingInteraction(
+          PasswordSharingActions.FAMILY_PICKER_SHARE_WITH_MULTIPLE_MEMBERS);
+    }
     this.dispatchEvent(
         new CustomEvent('start-share', {bubbles: true, composed: true}));
   }
