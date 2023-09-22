@@ -81,6 +81,9 @@ enum class KeepAliveOrigin {
 
   // c/b/sessions
   SESSION_DATA_DELETER,
+
+  // components/metrics
+  UMA_LOG,
 };
 
 // Restart: Allow Chrome to restart when all the registered KeepAlives allow

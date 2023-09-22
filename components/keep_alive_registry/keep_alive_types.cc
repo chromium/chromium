@@ -88,6 +88,8 @@ std::ostream& operator<<(std::ostream& out, const KeepAliveOrigin& origin) {
       return out << "ISOLATED_WEB_APP_UPDATE";
     case KeepAliveOrigin::SESSION_DATA_DELETER:
       return out << "SESSION_DATA_DELETER";
+    case KeepAliveOrigin::UMA_LOG:
+      return out << "UMA_LOG";
   }
 
   NOTREACHED();

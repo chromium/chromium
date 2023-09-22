@@ -246,6 +246,8 @@ if (!is_cronet_build || is_ios) {
         "drive_metrics_provider_android.cc",
       ]
       deps += [ ":jni_headers" ]
+    } else {
+      deps += [ "//components/keep_alive_registry" ]
     }
 
     if (is_ios) {

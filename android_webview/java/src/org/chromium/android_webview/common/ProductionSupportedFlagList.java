@@ -418,6 +418,10 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(MetricsFeatures.FLUSH_PERSISTENT_SYSTEM_PROFILE_ON_WRITE,
                     "Controls whether to schedule a flush of persistent histogram memory "
                             + "immediately after writing a system profile to it."),
+            Flag.baseFeature(MetricsFeatures.METRICS_SERVICE_DELTA_SNAPSHOT_IN_BG,
+                    "Controls whether to perform histogram delta snapshots in a background "
+                            + "thread (in contrast to snapshotting unlogged samples in the "
+                            + "background, then marking them as logged on the main thread)."),
             Flag.baseFeature(ContentFeatures.MAIN_THREAD_COMPOSITING_PRIORITY,
                     "When enabled runs the main thread at compositing priority."),
             Flag.baseFeature(ContentFeatures.REDUCE_SUBRESOURCE_RESPONSE_STARTED_IPC,

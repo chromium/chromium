@@ -345,12 +345,14 @@ class MetricsServiceTest : public testing::Test {
 
 class MetricsServiceTestWithFeatures
     : public MetricsServiceTest,
-      public ::testing::WithParamInterface<bool> {
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   MetricsServiceTestWithFeatures() = default;
   ~MetricsServiceTestWithFeatures() override = default;
 
-  bool ShouldClearLogsOnClonedInstall() { return GetParam(); }
+  bool ShouldClearLogsOnClonedInstall() { return std::get<0>(GetParam()); }
+
+  bool ShouldSnapshotInBg() { return std::get<1>(GetParam()); }
 
   void SetUp() override {
     MetricsServiceTest::SetUp();
@@ -358,12 +360,19 @@ class MetricsServiceTestWithFeatures
     std::vector<base::test::FeatureRef> disabled_features;
 
     if (ShouldClearLogsOnClonedInstall()) {
-      enabled_features.emplace_back(
-          features::kMetricsClearLogsOnClonedInstall,
-          /*params=*/std::map<std::string, std::string>());
+      enabled_features.emplace_back(features::kMetricsClearLogsOnClonedInstall,
+                                    base::FieldTrialParams());
     } else {
       disabled_features.emplace_back(
           features::kMetricsClearLogsOnClonedInstall);
+    }
+
+    if (ShouldSnapshotInBg()) {
+      enabled_features.emplace_back(features::kMetricsServiceDeltaSnapshotInBg,
+                                    base::FieldTrialParams());
+    } else {
+      disabled_features.emplace_back(
+          features::kMetricsServiceDeltaSnapshotInBg);
     }
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
@@ -382,12 +391,14 @@ struct StartupVisibilityTestParams {
 class MetricsServiceTestWithStartupVisibility
     : public MetricsServiceTest,
       public ::testing::WithParamInterface<
-          std::tuple<StartupVisibilityTestParams, bool>> {
+          std::tuple<StartupVisibilityTestParams, bool, bool>> {
  public:
   MetricsServiceTestWithStartupVisibility() = default;
   ~MetricsServiceTestWithStartupVisibility() override = default;
 
   bool ShouldClearLogsOnClonedInstall() { return std::get<1>(GetParam()); }
+
+  bool ShouldSnapshotInBg() { return std::get<2>(GetParam()); }
 
   void SetUp() override {
     MetricsServiceTest::SetUp();
@@ -395,12 +406,19 @@ class MetricsServiceTestWithStartupVisibility
     std::vector<base::test::FeatureRef> disabled_features;
 
     if (ShouldClearLogsOnClonedInstall()) {
-      enabled_features.emplace_back(
-          features::kMetricsClearLogsOnClonedInstall,
-          /*params=*/std::map<std::string, std::string>());
+      enabled_features.emplace_back(features::kMetricsClearLogsOnClonedInstall,
+                                    base::FieldTrialParams());
     } else {
       disabled_features.emplace_back(
           features::kMetricsClearLogsOnClonedInstall);
+    }
+
+    if (ShouldSnapshotInBg()) {
+      enabled_features.emplace_back(features::kMetricsServiceDeltaSnapshotInBg,
+                                    base::FieldTrialParams());
+    } else {
+      disabled_features.emplace_back(
+          features::kMetricsServiceDeltaSnapshotInBg);
     }
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
@@ -450,7 +468,10 @@ base::HistogramBase::Count GetHistogramDeltaTotalCount(base::StringPiece name) {
 
 }  // namespace
 
-INSTANTIATE_TEST_SUITE_P(All, MetricsServiceTestWithFeatures, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         MetricsServiceTestWithFeatures,
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool()));
 
 TEST_P(MetricsServiceTestWithFeatures, RecordId) {
   EnableMetricsReporting();
@@ -771,6 +792,7 @@ INSTANTIATE_TEST_SUITE_P(
             StartupVisibilityTestParams{
                 .startup_visibility = StartupVisibility::kForeground,
                 .expected_beacon_value = false}),
+        ::testing::Bool(),
         ::testing::Bool()));
 
 TEST_P(MetricsServiceTestWithStartupVisibility, InitialStabilityLogAfterCrash) {

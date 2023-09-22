@@ -49,4 +49,8 @@ BASE_FEATURE(kFlushPersistentSystemProfileOnWrite,
              "FlushPersistentSystemProfileOnWrite",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kMetricsServiceDeltaSnapshotInBg,
+             "MetricsServiceDeltaSnapshotInBg",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace metrics::features

@@ -62,6 +62,11 @@ BASE_DECLARE_FEATURE(kMetricsServiceAsyncIndependentLogs);
 // immediately after writing a system profile to it.
 BASE_DECLARE_FEATURE(kFlushPersistentSystemProfileOnWrite);
 
+// Determines whether to perform histogram delta snapshots in a background
+// thread (in contrast to snapshotting unlogged samples in the background, then
+// marking them as logged on the main thread).
+BASE_DECLARE_FEATURE(kMetricsServiceDeltaSnapshotInBg);
+
 }  // namespace metrics::features
 
 #endif  // COMPONENTS_METRICS_METRICS_FEATURES_H_
