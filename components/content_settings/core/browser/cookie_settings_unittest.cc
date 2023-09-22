@@ -353,8 +353,7 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
 
 #if !BUILDFLAG(IS_IOS)
 TEST(CookieSettings, TestDefaultStorageAccessSetting) {
-  EXPECT_FALSE(
-      base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI));
+  EXPECT_TRUE(base::FeatureList::IsEnabled(blink::features::kStorageAccessAPI));
 }
 #endif
 

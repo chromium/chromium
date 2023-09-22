@@ -52,6 +52,7 @@ private-state-token-redemption
 publickey-credentials-get
 screen-wake-lock
 serial
+storage-access
 sync-xhr
 unload
 usb

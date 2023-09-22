@@ -3597,12 +3597,12 @@
       // permissions::features::kPermissionStorageAccessAPI is enabled.
       name: "StorageAccessAPI",
       public: true,
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "StorageAccessAPIForOriginExtension",
       public: true,
-      status: "test",
+      status: "stable",
       depends_on: ["StorageAccessAPI"],
     },
     {

@@ -1640,6 +1640,7 @@ interface Document : Node
     method hasFocus
     method hasPrivateToken
     method hasRedemptionRecord
+    method hasStorageAccess
     method importNode
     method open
     method prepend
@@ -1652,6 +1653,8 @@ interface Document : Node
     method querySelectorAll
     method releaseEvents
     method replaceChildren
+    method requestStorageAccess
+    method requestStorageAccessFor
     method startViewTransition
     method webkitCancelFullScreen
     method webkitExitFullscreen

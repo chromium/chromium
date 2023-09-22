@@ -161,7 +161,7 @@ TEST_F(TopLevelStorageAccessPermissionContextTestAPIEnabledTest,
   base::test::TestFuture<ContentSetting> future;
   permission_context.DecidePermissionForTesting(
       permissions::PermissionRequestData(&permission_context, fake_id,
-                                         /*user_gesture=*/true,
+                                         /*user_gesture=*/false,
                                          GetRequesterURL(), GetTopLevelURL()),
       future.GetCallback());
 

@@ -16,6 +16,8 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "net/base/features.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace {
 
@@ -31,9 +33,15 @@ class FirstPartySetsNavigationThrottleTest
   FirstPartySetsNavigationThrottleTest()
       : ChromeRenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    features_.InitAndEnableFeatureWithParameters(
-        features::kFirstPartySets,
-        {{features::kFirstPartySetsClearSiteDataOnChangedSets.name, "true"}});
+    features_.InitWithFeaturesAndParameters(
+        {
+            {features::kFirstPartySets,
+             {{features::kFirstPartySetsNavigationThrottleTimeout.name, "2s"},
+              {features::kFirstPartySetsClearSiteDataOnChangedSets.name,
+               "true"}}},
+            {net::features::kWaitForFirstPartySetsInit, {}},
+        },
+        {{blink::features::kStorageAccessAPI}});
   }
 
   void SetUp() override {
@@ -243,7 +251,7 @@ class FirstPartySetsNavigationThrottleNoDelayTest
         features::kFirstPartySets,
         {
             {features::kFirstPartySetsClearSiteDataOnChangedSets.name, "true"},
-            {features::kFirstPartySetsNavigationThrottleTimeout.name, "0"},
+            {features::kFirstPartySetsNavigationThrottleTimeout.name, "0s"},
         });
   }
 
