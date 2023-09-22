@@ -80,18 +80,12 @@ MATCHER_P(SyncingPaths, matcher, "") {
 
 // Helper to observe the DriveIntegrationService for when mirroring is enabled.
 class DriveMirrorSyncStatusObserver
-    : public drive::DriveIntegrationServiceObserver {
+    : public drive::DriveIntegrationService::Observer {
  public:
   explicit DriveMirrorSyncStatusObserver(bool expected_status)
       : expected_status_(expected_status) {
     quit_closure_ = run_loop_.QuitClosure();
   }
-
-  DriveMirrorSyncStatusObserver(const DriveMirrorSyncStatusObserver&) = delete;
-  DriveMirrorSyncStatusObserver& operator=(
-      const DriveMirrorSyncStatusObserver&) = delete;
-
-  ~DriveMirrorSyncStatusObserver() override = default;
 
   void WaitForStatusChange() { run_loop_.Run(); }
 
@@ -191,14 +185,14 @@ class ManageMirrorSyncDialogTest : public InProcessBrowserTest {
         my_files_dir_);
 
     // Toggle the MirrorSync preference to enable / disable the feature.
-    auto observer = std::make_unique<DriveMirrorSyncStatusObserver>(enabled);
+    DriveMirrorSyncStatusObserver observer(enabled);
     auto* drive_service = drive::DriveIntegrationServiceFactory::FindForProfile(
         browser()->profile());
-    drive_service->AddObserver(observer.get());
+    drive_service->AddObserver(&observer);
     browser()->profile()->GetPrefs()->SetBoolean(
         drive::prefs::kDriveFsEnableMirrorSync, enabled);
-    observer->WaitForStatusChange();
-    drive_service->RemoveObserver(observer.get());
+    observer.WaitForStatusChange();
+    drive_service->RemoveObserver(&observer);
 
     ShowDialog();
 
