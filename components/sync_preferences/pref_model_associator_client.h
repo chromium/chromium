@@ -26,11 +26,13 @@ class PrefModelAssociatorClient
 
   // Returns true if the preference named |pref_name| is a list preference
   // whose server value is merged with local value during synchronisation.
+  // TODO(crbug.com/1485960): Remove this method.
   virtual bool IsMergeableListPreference(
       const std::string& pref_name) const = 0;
 
   // Returns true if the preference named |pref_name| is a dictionary preference
   // whose server value is merged with local value during synchronisation.
+  // TODO(crbug.com/1485960): Remove this method.
   virtual bool IsMergeableDictionaryPreference(
       const std::string& pref_name) const = 0;
 

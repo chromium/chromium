@@ -4,10 +4,25 @@
 
 #include "components/sync_preferences/preferences_merge_helper.h"
 
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
+#include "base/notreached.h"
 #include "components/sync_preferences/pref_model_associator_client.h"
+#include "components/sync_preferences/syncable_prefs_database.h"
 
 namespace sync_preferences::helper {
+
+namespace {
+
+MergeBehavior GetMergeBehavior(const PrefModelAssociatorClient& client,
+                               const std::string& pref_name) {
+  absl::optional<SyncablePrefMetadata> metadata =
+      client.GetSyncablePrefsDatabase().GetSyncablePrefMetadata(pref_name);
+  CHECK(metadata.has_value());
+  return metadata->merge_behavior();
+}
+
+}  // namespace
 
 base::Value::List MergeListValues(const base::Value::List& local_value,
                                   const base::Value::List& server_value) {
@@ -48,40 +63,53 @@ base::Value MergePreference(const PrefModelAssociatorClient* client,
                             const std::string& pref_name,
                             const base::Value& local_value,
                             const base::Value& server_value) {
-  if (client) {
-    if (client->IsMergeableListPreference(pref_name)) {
+  if (!client) {
+    CHECK_IS_TEST();
+    // No client was registered. Directly let server value win.
+    return server_value.Clone();
+  }
+
+  switch (GetMergeBehavior(*client, pref_name)) {
+    case MergeBehavior::kMergeableDict:
+      if (!server_value.is_dict()) {
+        // Server value is corrupt or missing, keep pref value unchanged.
+        // TODO(crbug.com/1430854): Investigate in which scenarios can the value
+        // be corrupt.
+        return local_value.Clone();
+      }
+      // TODO(crbug.com/1485973): Investigate if this is valid or if this should
+      // be a CHECK instead.
+      if (local_value.is_none()) {
+        return server_value.Clone();
+      }
+      return base::Value(
+          MergeDictionaryValues(local_value.GetDict(), server_value.GetDict()));
+    case MergeBehavior::kMergeableListWithRewriteOnUpdate:
       if (!server_value.is_list()) {
         // Server value is corrupt or missing, keep pref value unchanged.
         // TODO(crbug.com/1430854): Investigate in which scenarios can the value
         // be corrupt.
         return local_value.Clone();
       }
+      // TODO(crbug.com/1485973): Investigate if this is valid or if this should
+      // be a CHECK instead.
       if (local_value.is_none()) {
         return server_value.Clone();
       }
       return base::Value(
           MergeListValues(local_value.GetList(), server_value.GetList()));
-    }
-    if (client->IsMergeableDictionaryPreference(pref_name)) {
-      if (!server_value.is_dict()) {
-        // Server value is corrupt or missing, keep pref value unchanged.
-        return local_value.Clone();
+    case MergeBehavior::kCustom:
+      if (base::Value merged_value = client->MaybeMergePreferenceValues(
+              pref_name, local_value, server_value);
+          !merged_value.is_none()) {
+        return merged_value;
       }
-      if (local_value.is_none()) {
-        return server_value.Clone();
-      }
-      return base::Value(
-          MergeDictionaryValues(local_value.GetDict(), server_value.GetDict()));
-    }
-    base::Value merged_value = client->MaybeMergePreferenceValues(
-        pref_name, local_value, server_value);
-    if (!merged_value.is_none()) {
-      return merged_value;
-    }
+      [[fallthrough]];
+    case MergeBehavior::kNone:
+      // If this is not a specially handled preference, server wins.
+      return server_value.Clone();
   }
-
-  // If this is not a specially handled preference, server wins.
-  return server_value.Clone();
+  NOTREACHED_NORETURN();
 }
 
 std::pair<base::Value::Dict, base::Value::Dict> UnmergeDictionaryValues(

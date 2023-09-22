@@ -30,6 +30,8 @@ base::Value::Dict MergeDictionaryValues(const base::Value::Dict& local_value,
 // the result. If there is a conflict, the server value takes precedence. Note
 // that only certain preferences will actually be merged, all others will
 // return a copy of the server value.
+// Note: `client` can NULL in some tests, in which case `server_value` is
+// returned.
 base::Value MergePreference(const PrefModelAssociatorClient* client,
                             const std::string& pref_name,
                             const base::Value& local_value,
