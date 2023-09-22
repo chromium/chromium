@@ -181,8 +181,6 @@ public class CriticalPersistedTabDataTest {
         semaphore.acquire();
         Assert.assertNotNull(mCriticalPersistedTabData);
         assertEquals(mCriticalPersistedTabData.getOpenerAppId(), OPENER_APP_ID);
-        assertEquals(
-                mCriticalPersistedTabData.getTabLaunchTypeAtCreation(), LAUNCH_TYPE_AT_CREATION);
         Semaphore deleteSemaphore = new Semaphore(0);
         ThreadUtils.runOnUiThreadBlocking(() -> {
             mStorage.setSemaphore(deleteSemaphore);
@@ -263,7 +261,6 @@ public class CriticalPersistedTabDataTest {
                 new CriticalPersistedTabData(tab, serialized, config.getStorage(), config.getId());
         Assert.assertNotNull(deserialized);
         assertEquals(OPENER_APP_ID, deserialized.getOpenerAppId());
-        assertEquals(LAUNCH_TYPE_AT_CREATION, deserialized.getTabLaunchTypeAtCreation());
     }
 
     @UiThreadTest
@@ -282,39 +279,6 @@ public class CriticalPersistedTabDataTest {
         CriticalPersistedTabData deserialized =
                 new CriticalPersistedTabData(tab, serialized, config.getStorage(), config.getId());
         assertEquals(null, deserialized.getOpenerAppId());
-    }
-
-    @UiThreadTest
-    @SmallTest
-    @Test
-    public void testLaunchTypeSavedWhenNecessary() {
-        try (StrictModeContext ignored = StrictModeContext.allowAllThreadPolicies()) {
-            CriticalPersistedTabData spyCriticalPersistedTabData =
-                    spy(CriticalPersistedTabData.from(mockTab(TAB_ID, false)));
-            spyCriticalPersistedTabData.setLaunchTypeAtCreation(TAB_LAUNCH_TYPE_A);
-            assertEquals(
-                    TAB_LAUNCH_TYPE_A, spyCriticalPersistedTabData.getTabLaunchTypeAtCreation());
-            verify(spyCriticalPersistedTabData, times(1)).save();
-
-            spyCriticalPersistedTabData.setLaunchTypeAtCreation(TAB_LAUNCH_TYPE_A);
-            assertEquals(
-                    TAB_LAUNCH_TYPE_A, spyCriticalPersistedTabData.getTabLaunchTypeAtCreation());
-            verify(spyCriticalPersistedTabData, times(1)).save();
-
-            spyCriticalPersistedTabData.setLaunchTypeAtCreation(TAB_LAUNCH_TYPE_B);
-            assertEquals(
-                    TAB_LAUNCH_TYPE_B, spyCriticalPersistedTabData.getTabLaunchTypeAtCreation());
-            verify(spyCriticalPersistedTabData, times(2)).save();
-
-            spyCriticalPersistedTabData.setLaunchTypeAtCreation(TAB_LAUNCH_TYPE_A);
-            assertEquals(
-                    TAB_LAUNCH_TYPE_A, spyCriticalPersistedTabData.getTabLaunchTypeAtCreation());
-            verify(spyCriticalPersistedTabData, times(3)).save();
-
-            spyCriticalPersistedTabData.setLaunchTypeAtCreation(null);
-            Assert.assertNull(spyCriticalPersistedTabData.getTabLaunchTypeAtCreation());
-            verify(spyCriticalPersistedTabData, times(4)).save();
-        }
     }
 
     @SmallTest
@@ -449,8 +413,6 @@ public class CriticalPersistedTabDataTest {
         CriticalPersistedTabData deserialized = CriticalPersistedTabData.from(tab);
         assertEquals(CONTENT_STATE_VERSION, deserialized.getContentStateVersion());
         assertEquals(OPENER_APP_ID, deserialized.getOpenerAppId());
-        assertEquals(LaunchTypeAtCreationTest.FROM_LINK,
-                (int) deserialized.getTabLaunchTypeAtCreation());
     }
 
     private static final ByteBuffer getFlatBufferWithNoWebContentsState() {

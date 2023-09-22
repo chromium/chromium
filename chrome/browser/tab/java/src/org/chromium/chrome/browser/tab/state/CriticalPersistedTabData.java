@@ -88,13 +88,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
     private int mContentStateVersion;
     private String mOpenerAppId;
 
-    /**
-     * Saves how this tab was initially launched so that we can record metrics on how the
-     * tab was created. This is different than {@link Tab#getLaunchType()}, since {@link
-     * Tab#getLaunchType()} will be overridden to "FROM_RESTORE" during tab restoration.
-     */
-    private @Nullable @TabLaunchType Integer mTabLaunchTypeAtCreation;
-
     private boolean mShouldSaveForTesting;
     /** Tab level Request Desktop Site setting. */
     private boolean mShouldSave;
@@ -121,7 +114,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
             long lastNavigationCommittedTimestampMillis) {
         this(tab);
         mOpenerAppId = openerAppId;
-        mTabLaunchTypeAtCreation = launchTypeAtCreation;
     }
 
     /**
@@ -244,7 +236,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
             mOpenerAppId = NULL_OPENER_APP_ID.equals(deserialized.openerAppId())
                     ? null
                     : deserialized.openerAppId();
-            mTabLaunchTypeAtCreation = getLaunchType(deserialized.launchTypeAtCreation());
             return true;
         }
     }
@@ -495,7 +486,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
                 if (mPreSerialized) return;
                 try (TraceEvent e = TraceEvent.scoped("CriticalPersistedTabData.PreSerialize")) {
                     mOpenerAppIdSnapshot = mOpenerAppId;
-                    mLaunchTypeSnapshot = getLaunchType(mTabLaunchTypeAtCreation);
                 }
                 mPreSerialized = true;
             }
@@ -558,23 +548,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
      */
     public String getOpenerAppId() {
         return mOpenerAppId;
-    }
-
-    /**
-     * @return launch type at creation
-     */
-    public @Nullable @TabLaunchType Integer getTabLaunchTypeAtCreation() {
-        return mTabLaunchTypeAtCreation;
-    }
-
-    public void setLaunchTypeAtCreation(@Nullable @TabLaunchType Integer launchTypeAtCreation) {
-        if ((launchTypeAtCreation == null && mTabLaunchTypeAtCreation == null)
-                || (launchTypeAtCreation != null
-                        && launchTypeAtCreation.equals(mTabLaunchTypeAtCreation))) {
-            return;
-        }
-        mTabLaunchTypeAtCreation = launchTypeAtCreation;
-        save();
     }
 
     public void setShouldSaveForTesting(boolean shouldSaveForTesting) {

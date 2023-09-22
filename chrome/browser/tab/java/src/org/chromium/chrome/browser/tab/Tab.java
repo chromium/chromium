@@ -330,4 +330,11 @@ public interface Tab extends TabLifecycle {
      * @return timestamp in milliseconds when the tab was last interacted.
      */
     long getLastNavigationCommittedTimestampMillis();
+
+    /**
+     * @return launch type at creation
+     */
+    @Nullable
+    @TabLaunchType
+    Integer getTabLaunchTypeAtCreation();
 }

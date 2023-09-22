@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tab;
 
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.Referrer;
 
@@ -33,8 +32,7 @@ public class TabStateExtractor {
         tabState.openerAppId = TabAssociatedApp.getAppId(tab);
         tabState.parentId = tab.getParentId();
         tabState.timestampMillis = tab.getTimestampMillis();
-        tabState.tabLaunchTypeAtCreation =
-                CriticalPersistedTabData.from(tab).getTabLaunchTypeAtCreation();
+        tabState.tabLaunchTypeAtCreation = tab.getTabLaunchTypeAtCreation();
         // Don't save the actual default theme color because it could change on night mode state
         // changed.
         tabState.themeColor = tab.isThemingAllowed() && !tab.isNativePage()

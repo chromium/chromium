@@ -235,6 +235,13 @@ public class TabImpl implements Tab {
     private long mLastNavigationCommittedTimestampMillis = INVALID_TIMESTAMP;
 
     /**
+     * Saves how this tab was initially launched so that we can record metrics on how the
+     * tab was created. This is different than {@link Tab#getLaunchType()}, since {@link
+     * Tab#getLaunchType()} will be overridden to "FROM_RESTORE" during tab restoration.
+     */
+    private @Nullable @TabLaunchType Integer mTabLaunchTypeAtCreation;
+
+    /**
      * Creates an instance of a {@link TabImpl}.
      *
      * This constructor can be called before the native library has been loaded, so any additions
@@ -915,7 +922,7 @@ public class TabImpl implements Tab {
                 mSourceTabId = parent.isIncognito() == mIncognito ? parent.getId() : INVALID_TAB_ID;
             }
 
-            CriticalPersistedTabData.from(this).setLaunchTypeAtCreation(mLaunchType);
+            mTabLaunchTypeAtCreation = mLaunchType;
             mCreationState = creationState;
             mPendingLoadParams = loadUrlParams;
             if (loadUrlParams != null) {
@@ -1012,7 +1019,7 @@ public class TabImpl implements Tab {
         setTimestampMillis(state.timestampMillis);
         mUrl = new GURL(state.contentsState.getVirtualUrlFromState());
         setTitle(state.contentsState.getDisplayTitleFromState());
-        CriticalPersistedTabData.from(this).setLaunchTypeAtCreation(state.tabLaunchTypeAtCreation);
+        mTabLaunchTypeAtCreation = state.tabLaunchTypeAtCreation;
         setRootId(state.rootId == Tab.INVALID_TAB_ID ? mId : state.rootId);
         setUserAgent(state.userAgent);
     }
@@ -1721,6 +1728,11 @@ public class TabImpl implements Tab {
     public void setLastNavigationCommittedTimestampMillis(
             long lastNavigationCommittedTimestampMillis) {
         mLastNavigationCommittedTimestampMillis = lastNavigationCommittedTimestampMillis;
+    }
+
+    @Override
+    public @Nullable @TabLaunchType Integer getTabLaunchTypeAtCreation() {
+        return mTabLaunchTypeAtCreation;
     }
 
     /**
