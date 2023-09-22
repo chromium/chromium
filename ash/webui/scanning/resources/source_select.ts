@@ -6,12 +6,12 @@ import './scan_settings_section.js';
 import './strings.m.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
-import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ScanSource, SourceType} from './scanning.mojom-webui.js';
 import {alphabeticalCompare, getSourceTypeString} from './scanning_app_util.js';
-import {SelectBehavior, SelectBehaviorInterface} from './select_behavior.js';
+import {AbstractConstructor, SelectMixin, SelectMixinInterface} from './select_mixin.js';
 import {getTemplate} from './source_select.html.js';
 
 const DEFAULT_SOURCE_TYPE: SourceType = SourceType.kFlatbed;
@@ -21,11 +21,9 @@ const DEFAULT_SOURCE_TYPE: SourceType = SourceType.kFlatbed;
  * 'source-select' displays the available scanner sources in a dropdown.
  */
 
-// TODO(b/300484132): Replace mixinBehavior with mixin implementation once a
-// Mixin version of SelectBehavior is available.
-const SourceSelectElementBase =
-    mixinBehaviors([I18nBehavior, SelectBehavior], PolymerElement) as
-    {new (): PolymerElement & I18nBehavior & SelectBehaviorInterface};
+const SourceSelectElementBase = SelectMixin(I18nMixin(PolymerElement)) as
+        AbstractConstructor<SelectMixinInterface<ScanSource>>&
+    {new (): PolymerElement & I18nMixinInterface};
 
 class SourceSelectElement extends SourceSelectElementBase {
   static get is() {
@@ -36,7 +34,7 @@ class SourceSelectElement extends SourceSelectElementBase {
     return getTemplate();
   }
 
-  getOptionAtIndex(index: number): string {
+  override getOptionAtIndex(index: number): string {
     assert(index < this.options.length);
 
     return this.options[index].name;
@@ -46,14 +44,14 @@ class SourceSelectElement extends SourceSelectElementBase {
     return getSourceTypeString(mojoSourceType);
   }
 
-  sortOptions(): void {
+  override sortOptions(): void {
     this.options.sort((a: ScanSource, b: ScanSource) => {
       return alphabeticalCompare(
           getSourceTypeString(a.type), getSourceTypeString(b.type));
     });
   }
 
-  isDefaultOption(option: ScanSource): boolean {
+  override isDefaultOption(option: ScanSource): boolean {
     return option.type === DEFAULT_SOURCE_TYPE;
   }
 }

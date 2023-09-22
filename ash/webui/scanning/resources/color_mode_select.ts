@@ -6,13 +6,13 @@ import './scan_settings_section.js';
 import './strings.m.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
-import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './color_mode_select.html.js';
 import {ColorMode} from './scanning.mojom-webui.js';
 import {alphabeticalCompare, getColorModeString} from './scanning_app_util.js';
-import {SelectBehavior, SelectBehaviorInterface} from './select_behavior.js';
+import {AbstractConstructor, SelectMixin, SelectMixinInterface} from './select_mixin.js';
 
 /** @type {ColorMode} */
 const DEFAULT_COLOR_MODE = ColorMode.kColor;
@@ -22,11 +22,9 @@ const DEFAULT_COLOR_MODE = ColorMode.kColor;
  * 'color-mode-select' displays the available scanner color modes in a dropdown.
  */
 
-// TODO(b/300484132): Replace mixinBehavior with mixin implementation once a
-// Mixin version of SelectBehavior is available.
-const ColorModeSelectElementBase =
-    mixinBehaviors([I18nBehavior, SelectBehavior], PolymerElement) as
-    {new (): PolymerElement & I18nBehavior & SelectBehaviorInterface};
+const ColorModeSelectElementBase = SelectMixin(I18nMixin(PolymerElement)) as
+        AbstractConstructor<SelectMixinInterface<ColorMode>>&
+    {new (): PolymerElement & I18nMixinInterface};
 
 class ColorModeSelectElement extends ColorModeSelectElementBase {
   static get is() {
@@ -37,7 +35,7 @@ class ColorModeSelectElement extends ColorModeSelectElementBase {
     return getTemplate();
   }
 
-  getOptionAtIndex(index: number): string {
+  override getOptionAtIndex(index: number): string {
     assert(index < this.options.length);
 
     return this.options[index].toString();
@@ -47,13 +45,13 @@ class ColorModeSelectElement extends ColorModeSelectElementBase {
     return getColorModeString(mojoColorMode);
   }
 
-  sortOptions() {
+  override sortOptions(): void {
     this.options.sort((a, b) => {
       return alphabeticalCompare(getColorModeString(a), getColorModeString(b));
     });
   }
 
-  isDefaultOption(option: ColorMode): boolean {
+  override isDefaultOption(option: ColorMode): boolean {
     return option === DEFAULT_COLOR_MODE;
   }
 }

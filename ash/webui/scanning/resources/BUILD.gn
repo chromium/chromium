@@ -55,7 +55,7 @@ build_webui("build") {
     "scanning_app_types.js",
     "scanning_app_util.ts",
     "scanning_browser_proxy.js",
-    "select_behavior.js",
+    "select_mixin.ts",
   ]
 
   mojo_files = [

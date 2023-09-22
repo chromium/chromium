@@ -6,13 +6,13 @@ import './scan_settings_section.js';
 import './strings.m.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
-import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './page_size_select.html.js';
 import {PageSize} from './scanning.mojom-webui.js';
 import {alphabeticalCompare, getPageSizeString} from './scanning_app_util.js';
-import {SelectBehavior, SelectBehaviorInterface} from './select_behavior.js';
+import {AbstractConstructor, SelectMixin, SelectMixinInterface} from './select_mixin.js';
 
 /** @type {PageSize} */
 const DEFAULT_PAGE_SIZE = PageSize.kNaLetter;
@@ -22,11 +22,9 @@ const DEFAULT_PAGE_SIZE = PageSize.kNaLetter;
  * 'page-size-select' displays the available page sizes in a dropdown.
  */
 
-// TODO(b/300484132): Replace mixinBehavior with mixin implementation once a
-// Mixin version of SelectBehavior is available.
-const PageSizeSelectElementBase =
-    mixinBehaviors([I18nBehavior, SelectBehavior], PolymerElement) as
-    {new (): PolymerElement & I18nBehavior & SelectBehaviorInterface};
+const PageSizeSelectElementBase = SelectMixin(I18nMixin(PolymerElement)) as
+        AbstractConstructor<SelectMixinInterface<PageSize>>&
+    {new (): PolymerElement & I18nMixinInterface};
 
 class PageSizeSelectElement extends PageSizeSelectElementBase {
   static get is() {
@@ -37,7 +35,7 @@ class PageSizeSelectElement extends PageSizeSelectElementBase {
     return getTemplate();
   }
 
-  getOptionAtIndex(index: number): string {
+  override getOptionAtIndex(index: number): string {
     assert(index < this.options.length);
 
     return this.options[index].toString();
@@ -47,7 +45,7 @@ class PageSizeSelectElement extends PageSizeSelectElementBase {
     return getPageSizeString(pageSize);
   }
 
-  sortOptions(): void {
+  override sortOptions(): void {
     this.options.sort((a: PageSize, b: PageSize) => {
       return alphabeticalCompare(getPageSizeString(a), getPageSizeString(b));
     });
@@ -65,7 +63,7 @@ class PageSizeSelectElement extends PageSizeSelectElementBase {
     }
   }
 
-  isDefaultOption(option: PageSize): boolean {
+  override isDefaultOption(option: PageSize): boolean {
     return option === DEFAULT_PAGE_SIZE;
   }
 }

@@ -6,11 +6,11 @@ import './scan_settings_section.js';
 import './strings.m.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
-import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './resolution_select.html.js';
-import {SelectBehavior, SelectBehaviorInterface} from './select_behavior.js';
+import {AbstractConstructor, SelectMixin, SelectMixinInterface} from './select_mixin.js';
 
 const DEFAULT_RESOLUTION: number = 300;
 
@@ -19,11 +19,9 @@ const DEFAULT_RESOLUTION: number = 300;
  * 'resolution-select' displays the available scan resolutions in a dropdown.
  */
 
-// TODO(b/300484132): Replace mixinBehavior with mixin implementation once a
-// Mixin version of SelectBehavior is available.
-const ResolutionSelectElementBase =
-    mixinBehaviors([I18nBehavior, SelectBehavior], PolymerElement) as
-    {new (): PolymerElement & I18nBehavior & SelectBehaviorInterface};
+const ResolutionSelectElementBase = SelectMixin(I18nMixin(PolymerElement)) as
+        AbstractConstructor<SelectMixinInterface<number>>&
+    {new (): PolymerElement & I18nMixinInterface};
 
 class ResolutionSelectElement extends ResolutionSelectElementBase {
   static get is() {
@@ -34,7 +32,7 @@ class ResolutionSelectElement extends ResolutionSelectElementBase {
     return getTemplate();
   }
 
-  getOptionAtIndex(index: number): string {
+  override getOptionAtIndex(index: number): string {
     assert(index < this.options.length);
 
     return this.options[index].toString();
@@ -44,14 +42,14 @@ class ResolutionSelectElement extends ResolutionSelectElementBase {
     return this.i18n('resolutionOptionText', resolution);
   }
 
-  sortOptions(): void {
+  override sortOptions(): void {
     // Sort the resolutions in descending order.
     this.options.sort(function(a: number, b: number): number {
       return b - a;
     });
   }
 
-  isDefaultOption(option: number): boolean {
+  override isDefaultOption(option: number): boolean {
     return option === DEFAULT_RESOLUTION;
   }
 }
