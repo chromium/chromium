@@ -7,13 +7,17 @@ package org.chromium.chrome.browser.download.service;
 import android.os.PersistableBundle;
 import android.text.format.DateUtils;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskInfo;
+import org.chromium.components.background_task_scheduler.TaskInfo.OneOffInfo;
 import org.chromium.components.download.DownloadTaskType;
 
 /**
@@ -27,8 +31,9 @@ public class DownloadTaskScheduler {
             "extra_optimal_battery_percentage";
     public static final String EXTRA_TASK_TYPE = "extra_task_type";
 
+    @VisibleForTesting
     @CalledByNative
-    private static void scheduleTask(@DownloadTaskType int taskType,
+    public static void scheduleTask(@DownloadTaskType int taskType,
             boolean requiresUnmeteredNetwork, boolean requiresCharging,
             int optimalBatteryPercentage, long windowStartTimeSeconds, long windowEndTimeSeconds) {
         PersistableBundle bundle = new PersistableBundle();
@@ -36,22 +41,30 @@ public class DownloadTaskScheduler {
         bundle.putInt(EXTRA_OPTIMAL_BATTERY_PERCENTAGE, optimalBatteryPercentage);
         bundle.putBoolean(EXTRA_BATTERY_REQUIRES_CHARGING, requiresCharging);
 
+        int taskId = getTaskId(taskType);
+        boolean isUserInitiatedJob = DownloadUtils.isUserInitiatedJob(taskId);
+
         BackgroundTaskScheduler scheduler = BackgroundTaskSchedulerFactory.getScheduler();
-        TaskInfo taskInfo = TaskInfo.createOneOffTask(getTaskId(taskType),
-                                            DateUtils.SECOND_IN_MILLIS * windowStartTimeSeconds,
-                                            DateUtils.SECOND_IN_MILLIS * windowEndTimeSeconds)
-                                    .setRequiredNetworkType(getRequiredNetworkType(
-                                            taskType, requiresUnmeteredNetwork))
-                                    .setRequiresCharging(requiresCharging)
-                                    .setUpdateCurrent(true)
-                                    .setIsPersisted(true)
-                                    .setExtras(bundle)
-                                    .build();
-        scheduler.schedule(ContextUtils.getApplicationContext(), taskInfo);
+        OneOffInfo.Builder oneOffInfoBuilder = new OneOffInfo.Builder();
+        if (!isUserInitiatedJob) {
+            oneOffInfoBuilder.setWindowStartTimeMs(
+                    DateUtils.SECOND_IN_MILLIS * windowStartTimeSeconds);
+            oneOffInfoBuilder.setWindowEndTimeMs(DateUtils.SECOND_IN_MILLIS * windowEndTimeSeconds);
+        }
+
+        TaskInfo.Builder builder = TaskInfo.createTask(taskId, oneOffInfoBuilder.build());
+        builder.setRequiredNetworkType(getRequiredNetworkType(taskType, requiresUnmeteredNetwork))
+                .setRequiresCharging(requiresCharging)
+                .setUserInitiated(isUserInitiatedJob)
+                .setUpdateCurrent(true)
+                .setIsPersisted(true)
+                .setExtras(bundle);
+
+        scheduler.schedule(ContextUtils.getApplicationContext(), builder.build());
     }
 
     @CalledByNative
-    private static void cancelTask(@DownloadTaskType int taskType) {
+    public static void cancelTask(@DownloadTaskType int taskType) {
         BackgroundTaskScheduler scheduler = BackgroundTaskSchedulerFactory.getScheduler();
         scheduler.cancel(ContextUtils.getApplicationContext(), getTaskId(taskType));
     }

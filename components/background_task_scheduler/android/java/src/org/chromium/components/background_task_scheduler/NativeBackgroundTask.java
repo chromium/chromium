@@ -77,7 +77,8 @@ public abstract class NativeBackgroundTask implements BackgroundTask {
 
             @Override
             public void setNotification(int notificationId, Notification notification) {
-                assert false : "setNotification() isn't supported for native background tasks yet";
+                PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
+                        () -> callback.setNotification(notificationId, notification));
             }
         };
 

@@ -17,7 +17,6 @@ import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorNotificationBridgeUiFactory;
 import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.components.background_task_scheduler.NativeBackgroundTask;
-import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskParameters;
 import org.chromium.components.download.DownloadTaskType;
 import org.chromium.components.download.internal.BatteryStatusListenerAndroid;
@@ -55,7 +54,7 @@ public class DownloadBackgroundTask extends NativeBackgroundTask {
         // validate that this code still works. This would require decoupling this immediate class
         // from native as well.
         DownloadManagerService.getDownloadManagerService().initForBackgroundTask();
-        if (isUserInitiatedJob()) {
+        if (DownloadUtils.isUserInitiatedJob(mTaskId)) {
             // In case of user-initiated jobs, we need to ensure that notifications are attached to
             // the job life cycle.
             ensureNotificationBridgeInitialized();
@@ -79,7 +78,7 @@ public class DownloadBackgroundTask extends NativeBackgroundTask {
 
     @Override
     protected boolean onStopTaskWithNative(Context context, TaskParameters taskParameters) {
-        if (isUserInitiatedJob()) {
+        if (DownloadUtils.isUserInitiatedJob(mTaskId)) {
             DownloadNotificationService.getInstance().setBackgroundTaskNotificationCallback(
                     taskParameters.getTaskId(), null);
         }
@@ -92,22 +91,11 @@ public class DownloadBackgroundTask extends NativeBackgroundTask {
     @VisibleForTesting
     protected void finishTask(
             TaskParameters taskParameters, TaskFinishedCallback callback, boolean needsReschedule) {
-        if (isUserInitiatedJob()) {
+        if (DownloadUtils.isUserInitiatedJob(mTaskId)) {
             DownloadNotificationService.getInstance().setBackgroundTaskNotificationCallback(
                     taskParameters.getTaskId(), null);
         }
         callback.taskFinished(needsReschedule);
-    }
-
-    @VisibleForTesting
-    protected boolean isUserInitiatedJob() {
-        switch (mTaskId) {
-            case TaskIds.DOWNLOAD_AUTO_RESUMPTION_UNMETERED_JOB_ID:
-            case TaskIds.DOWNLOAD_AUTO_RESUMPTION_ANY_NETWORK_JOB_ID:
-                return DownloadUtils.shouldUseUserInitiatedJobs();
-            default:
-                return false;
-        }
     }
 
     @VisibleForTesting()

@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.download.DownloadState;
 import org.chromium.components.download.ResumeMode;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -249,6 +250,20 @@ public class DownloadUtils {
                 : sMinSdkVersionForUserInitiatedJobsForTesting;
         return ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOADS_MIGRATE_TO_JOBS_API)
                 && Build.VERSION.SDK_INT >= minSupportedVersion;
+    }
+
+    /**
+     * Called to determine whether a given job is a user-initiated job or a regular job.
+     * @return Whether the job is an user initiated job.
+     */
+    public static boolean isUserInitiatedJob(int taskId) {
+        switch (taskId) {
+            case TaskIds.DOWNLOAD_AUTO_RESUMPTION_UNMETERED_JOB_ID:
+            case TaskIds.DOWNLOAD_AUTO_RESUMPTION_ANY_NETWORK_JOB_ID:
+                return DownloadUtils.shouldUseUserInitiatedJobs();
+            default:
+                return false;
+        }
     }
 
     /**

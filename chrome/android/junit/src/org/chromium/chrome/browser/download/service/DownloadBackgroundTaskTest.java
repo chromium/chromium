@@ -16,6 +16,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -35,8 +37,14 @@ import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.components.background_task_scheduler.BackgroundTask.TaskFinishedCallback;
+import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler;
+import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.background_task_scheduler.TaskIds;
+import org.chromium.components.background_task_scheduler.TaskInfo;
+import org.chromium.components.background_task_scheduler.TaskInfo.NetworkType;
+import org.chromium.components.background_task_scheduler.TaskInfo.OneOffInfo;
 import org.chromium.components.background_task_scheduler.TaskParameters;
+import org.chromium.components.download.DownloadTaskType;
 
 /** Unit tests for {@link org.chromium.chrome.browser.download.service.DownloadBackgroundTask}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -68,6 +76,11 @@ public class DownloadBackgroundTaskTest {
     private TaskFinishedCallback mTaskFinishedCallback;
     private TestDownloadBackgroundTask mTask;
 
+    @Mock
+    private BackgroundTaskScheduler mTaskScheduler;
+    @Captor
+    private ArgumentCaptor<TaskInfo> mTaskInfoCapture;
+
     private class TestDownloadBackgroundTask extends DownloadBackgroundTask {
         public TestDownloadBackgroundTask() {
             super();
@@ -94,6 +107,7 @@ public class DownloadBackgroundTaskTest {
         DownloadManagerService.setDownloadManagerService(mDownloadManagerService);
         DownloadNotificationService.setInstanceForTests(mDownloadNotificationService);
         mTask = new TestDownloadBackgroundTask();
+        BackgroundTaskSchedulerFactory.setSchedulerForTesting(mTaskScheduler);
     }
 
     @Test
@@ -145,41 +159,78 @@ public class DownloadBackgroundTaskTest {
     @Feature({"Download"})
     public void testIsUserInitiatedJob() {
         DownloadUtils.setMinSdkVersionForUserInitiatedJobsForTesting(33);
-        mTask = new TestDownloadBackgroundTask();
-        TaskParameters taskParameters =
-                getTaskParameters(TaskIds.DOWNLOAD_AUTO_RESUMPTION_UNMETERED_JOB_ID);
-        mTask.onStartTask(mContext, taskParameters, mTaskFinishedCallback);
-        Assert.assertTrue(mTask.isUserInitiatedJob());
-
-        mTask = new TestDownloadBackgroundTask();
-        taskParameters = getTaskParameters(TaskIds.DOWNLOAD_AUTO_RESUMPTION_JOB_ID);
-        mTask.onStartTask(mContext, taskParameters, mTaskFinishedCallback);
-        Assert.assertFalse(mTask.isUserInitiatedJob());
-
-        mTask = new TestDownloadBackgroundTask();
-        taskParameters = getTaskParameters(TaskIds.DOWNLOAD_SERVICE_JOB_ID);
-        mTask.onStartTask(mContext, taskParameters, mTaskFinishedCallback);
-        Assert.assertFalse(mTask.isUserInitiatedJob());
+        Assert.assertTrue(DownloadUtils.isUserInitiatedJob(
+                TaskIds.DOWNLOAD_AUTO_RESUMPTION_UNMETERED_JOB_ID));
+        Assert.assertTrue(DownloadUtils.isUserInitiatedJob(
+                TaskIds.DOWNLOAD_AUTO_RESUMPTION_ANY_NETWORK_JOB_ID));
+        Assert.assertFalse(
+                DownloadUtils.isUserInitiatedJob(TaskIds.DOWNLOAD_AUTO_RESUMPTION_JOB_ID));
+        Assert.assertFalse(DownloadUtils.isUserInitiatedJob(TaskIds.DOWNLOAD_SERVICE_JOB_ID));
+        Assert.assertFalse(DownloadUtils.isUserInitiatedJob(TaskIds.DOWNLOAD_CLEANUP_JOB_ID));
+        Assert.assertFalse(DownloadUtils.isUserInitiatedJob(TaskIds.DOWNLOAD_LATER_JOB_ID));
     }
 
     @Test
     @Feature({"Download"})
     @Config(sdk = 30)
     public void testIsUserInitiatedJobForLowerAndroidVersions() {
-        mTask = new TestDownloadBackgroundTask();
-        TaskParameters taskParameters =
-                getTaskParameters(TaskIds.DOWNLOAD_AUTO_RESUMPTION_UNMETERED_JOB_ID);
-        mTask.onStartTask(mContext, taskParameters, mTaskFinishedCallback);
-        Assert.assertFalse(mTask.isUserInitiatedJob());
+        Assert.assertFalse(DownloadUtils.isUserInitiatedJob(
+                TaskIds.DOWNLOAD_AUTO_RESUMPTION_UNMETERED_JOB_ID));
+        Assert.assertFalse(DownloadUtils.isUserInitiatedJob(
+                TaskIds.DOWNLOAD_AUTO_RESUMPTION_ANY_NETWORK_JOB_ID));
+        Assert.assertFalse(
+                DownloadUtils.isUserInitiatedJob(TaskIds.DOWNLOAD_AUTO_RESUMPTION_JOB_ID));
+        Assert.assertFalse(DownloadUtils.isUserInitiatedJob(TaskIds.DOWNLOAD_SERVICE_JOB_ID));
+        Assert.assertFalse(DownloadUtils.isUserInitiatedJob(TaskIds.DOWNLOAD_CLEANUP_JOB_ID));
+        Assert.assertFalse(DownloadUtils.isUserInitiatedJob(TaskIds.DOWNLOAD_LATER_JOB_ID));
+    }
 
-        mTask = new TestDownloadBackgroundTask();
-        taskParameters = getTaskParameters(TaskIds.DOWNLOAD_AUTO_RESUMPTION_JOB_ID);
-        mTask.onStartTask(mContext, taskParameters, mTaskFinishedCallback);
-        Assert.assertFalse(mTask.isUserInitiatedJob());
+    @Test
+    @Feature({"Download"})
+    public void testScheduleTaskForUITask() {
+        DownloadUtils.setMinSdkVersionForUserInitiatedJobsForTesting(33);
+        int taskType = DownloadTaskType.DOWNLOAD_AUTO_RESUMPTION_UNMETERED_TASK;
+        DownloadTaskScheduler.scheduleTask(taskType, true, false, 0, 60, 120);
+        Mockito.verify(mTaskScheduler, times(1)).schedule(any(), mTaskInfoCapture.capture());
+        TaskInfo taskInfo = mTaskInfoCapture.getValue();
 
-        mTask = new TestDownloadBackgroundTask();
-        taskParameters = getTaskParameters(TaskIds.DOWNLOAD_SERVICE_JOB_ID);
-        mTask.onStartTask(mContext, taskParameters, mTaskFinishedCallback);
-        Assert.assertFalse(mTask.isUserInitiatedJob());
+        Assert.assertTrue(taskInfo.isUserInitiated());
+        Assert.assertEquals(
+                TaskIds.DOWNLOAD_AUTO_RESUMPTION_UNMETERED_JOB_ID, taskInfo.getTaskId());
+        Assert.assertEquals(NetworkType.UNMETERED, taskInfo.getRequiredNetworkType());
+        Assert.assertFalse(taskInfo.requiresCharging());
+        Assert.assertTrue(taskInfo.getTimingInfo() instanceof OneOffInfo);
+        OneOffInfo oneOffInfo = (OneOffInfo) taskInfo.getTimingInfo();
+        Assert.assertFalse(oneOffInfo.hasWindowStartTimeConstraint());
+        Assert.assertFalse(oneOffInfo.hasWindowEndTimeConstraint());
+    }
+
+    @Test
+    @Feature({"Download"})
+    public void testScheduleTaskForNonUITask() {
+        DownloadUtils.setMinSdkVersionForUserInitiatedJobsForTesting(33);
+        int taskType = DownloadTaskType.DOWNLOAD_AUTO_RESUMPTION_TASK;
+        DownloadTaskScheduler.scheduleTask(taskType, true, false, 0, 60, 120);
+        Mockito.verify(mTaskScheduler, times(1)).schedule(any(), mTaskInfoCapture.capture());
+        TaskInfo taskInfo = mTaskInfoCapture.getValue();
+
+        Assert.assertFalse(taskInfo.isUserInitiated());
+        Assert.assertEquals(TaskIds.DOWNLOAD_AUTO_RESUMPTION_JOB_ID, taskInfo.getTaskId());
+        Assert.assertEquals(NetworkType.UNMETERED, taskInfo.getRequiredNetworkType());
+        Assert.assertFalse(taskInfo.requiresCharging());
+        Assert.assertTrue(taskInfo.getTimingInfo() instanceof OneOffInfo);
+        OneOffInfo oneOffInfo = (OneOffInfo) taskInfo.getTimingInfo();
+        Assert.assertTrue(oneOffInfo.hasWindowStartTimeConstraint());
+        Assert.assertTrue(oneOffInfo.hasWindowEndTimeConstraint());
+        Assert.assertEquals(60000, oneOffInfo.getWindowStartTimeMs());
+        Assert.assertEquals(120000, oneOffInfo.getWindowEndTimeMs());
+    }
+    @Test
+    @Feature({"Download"})
+    public void testCancelTask() {
+        int taskType = DownloadTaskType.DOWNLOAD_AUTO_RESUMPTION_TASK;
+        DownloadTaskScheduler.cancelTask(taskType);
+        Mockito.verify(mTaskScheduler, times(1))
+                .cancel(any(), eq(TaskIds.DOWNLOAD_AUTO_RESUMPTION_JOB_ID));
     }
 }
