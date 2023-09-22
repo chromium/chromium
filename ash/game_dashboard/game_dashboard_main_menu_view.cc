@@ -306,6 +306,15 @@ void GameDashboardMainMenuView::OnGameControlsTilePressed() {
 }
 
 void GameDashboardMainMenuView::OnGameControlsDetailsPressed() {
+  const auto flags =
+      game_dashboard_utils::GetGameControlsFlag(context_->game_window());
+  DCHECK(flags);
+
+  // Do nothing if Game Controls is disabled.
+  if (!game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kEnabled)) {
+    return;
+  }
+
   EnableGameControlsEditMode();
   context_->CloseMainMenu();
 }

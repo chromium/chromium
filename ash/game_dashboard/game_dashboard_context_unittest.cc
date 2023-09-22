@@ -523,6 +523,13 @@ TEST_F(GameDashboardContextTest, GameControlsMenuFunctions) {
       game_window_->GetProperty(kArcGameControlsFlagsKey),
       ArcGameControlsFlag::kHint));
 
+  // Since Game Controls is disabled, press on `detail_row` should not turn on
+  // `kEdit` flag.
+  LeftClickOn(detail_row);
+  EXPECT_FALSE(game_dashboard_utils::IsFlagSet(
+      game_window_->GetProperty(kArcGameControlsFlagsKey),
+      ArcGameControlsFlag::kEdit));
+
   test_api_->CloseTheToolbar();
   test_api_->CloseTheMainMenu();
   EXPECT_FALSE(game_dashboard_utils::IsFlagSet(
