@@ -84,17 +84,18 @@ bool IsHandwritingDlc(std::string_view dlc_id) {
   return DlcToHandwritingLocale(dlc_id).has_value();
 }
 
-base::flat_set<std::string> FilterHandwritingDlcsWithContent(
+base::flat_set<std::string> ConvertDlcsWithContentToHandwritingLocales(
     const dlcservice::DlcsWithContent& dlcs_with_content) {
-  std::vector<std::string> dlc_ids;
+  std::vector<std::string> dlc_locales;
 
   for (const auto& dlc_info : dlcs_with_content.dlc_infos()) {
-    if (IsHandwritingDlc(dlc_info.id())) {
-      dlc_ids.push_back(dlc_info.id());
+    const auto& locale = DlcToHandwritingLocale(dlc_info.id());
+    if (locale.has_value()) {
+      dlc_locales.push_back(*locale);
     }
   }
 
-  return dlc_ids;
+  return dlc_locales;
 }
 
 base::flat_set<std::string> GetHandwritingLocalesFromEnabledInputMethods(

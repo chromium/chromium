@@ -55,10 +55,10 @@ absl::optional<std::string> DlcToHandwritingLocale(std::string_view dlc_id);
 bool IsHandwritingDlc(std::string_view dlc_id);
 
 // Given a DlcsWithContent proto message, filters out all DLCs that are not
-// Handwriting and returns a list with the dlc IDs.
+// Handwriting and returns a list with the corresponding locales.
 // DlcsWithContent is returned by DLC Service in the callback to get all the
 // existing DLCs on device.
-base::flat_set<std::string> FilterHandwritingDlcsWithContent(
+base::flat_set<std::string> ConvertDlcsWithContentToHandwritingLocales(
     const dlcservice::DlcsWithContent& dlcs_with_content);
 
 // Returns the list of handwriting locales that correspond to the input methods

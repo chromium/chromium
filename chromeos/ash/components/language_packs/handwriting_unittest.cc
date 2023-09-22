@@ -390,16 +390,18 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 TEST_F(HandwritingTest, FilterHandwritingDlcsDefault) {
-  EXPECT_THAT(FilterHandwritingDlcsWithContent(dlcservice::DlcsWithContent()),
-              IsEmpty());
+  EXPECT_THAT(
+      ConvertDlcsWithContentToHandwritingLocales(dlcservice::DlcsWithContent()),
+      IsEmpty());
 }
 
 TEST_F(HandwritingTest, FilterHandwritingDlcsNotHandwriting) {
   const dlcservice::DlcsWithContent dlcs_without_handwriting =
       CreateDlcsWithContent({"tts-en-us", "grammar-it"});
 
-  EXPECT_THAT(FilterHandwritingDlcsWithContent(dlcs_without_handwriting),
-              IsEmpty());
+  EXPECT_THAT(
+      ConvertDlcsWithContentToHandwritingLocales(dlcs_without_handwriting),
+      IsEmpty());
 }
 
 TEST_F(HandwritingTest, FilterHandwritingDlcsVariousEntries) {
@@ -409,8 +411,9 @@ TEST_F(HandwritingTest, FilterHandwritingDlcsVariousEntries) {
       CreateDlcsWithContent({"handwriting-fr", "tts-en-us", "handwriting-it",
                              "grammar-it", "handwriting-cy"});
 
-  EXPECT_THAT(FilterHandwritingDlcsWithContent(dlcs_with_some_handwriting),
-              UnorderedElementsAre("handwriting-fr", "handwriting-it"));
+  EXPECT_THAT(
+      ConvertDlcsWithContentToHandwritingLocales(dlcs_with_some_handwriting),
+      UnorderedElementsAre("fr", "it"));
 }
 
 TEST_F(HandwritingTest, GetTargetLocalesEmpty) {
