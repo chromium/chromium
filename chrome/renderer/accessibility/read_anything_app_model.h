@@ -77,6 +77,10 @@ class ReadAnythingAppModel {
     return display_node_ids_.empty() && selection_node_ids_.empty();
   }
 
+  bool page_finished_loading_for_data_collection() const {
+    return page_finished_loading_for_data_collection_;
+  }
+
   const ukm::SourceId& active_ukm_source_id() const {
     return active_ukm_source_id_;
   }
@@ -258,6 +262,11 @@ class ReadAnythingAppModel {
   // active_ukm_source_id_. Only recorded during the select-to-distill flow
   // (when the empty state page is shown).
   int32_t num_selections_ = 0;
+
+  // For screen2x data collection, Chrome is launched from the CLI to open one
+  // webpage. We record the result of the distill() call for this entire
+  // webpage, so we only make the call once the webpage finished loading.
+  bool page_finished_loading_for_data_collection_ = false;
 };
 
 #endif  // CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_APP_MODEL_H_

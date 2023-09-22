@@ -453,6 +453,15 @@ void ReadAnythingAppController::Distill() {
     return;
   }
 
+  // For screen2x data generation mode, chrome is open from the CLI to a
+  // specific URL. The caller monitors for a dump of the distilled proto written
+  // to a local file. Distill should only be called once the page is finished
+  // loading, so we have the proto representing the entire webpage.
+  if (features::IsDataCollectionModeForScreen2xEnabled() &&
+      !model_.page_finished_loading_for_data_collection()) {
+    return;
+  }
+
   model_.set_requires_distillation(false);
 
   ui::AXSerializableTree* tree =
