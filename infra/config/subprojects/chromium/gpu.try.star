@@ -494,3 +494,13 @@ gpu_win_builder(
     ],
     pool = "luci.chromium.gpu.win10.nvidia.try",
 )
+
+gpu_win_builder(
+    name = "gpu-try-win-nvidia-dbg",
+    mirrors = [
+        "ci/GPU Win x64 Builder (dbg)",
+        "ci/Win10 x64 Debug (NVIDIA)",
+    ],
+    pool = "luci.chromium.gpu.win10.nvidia.try",
+    contact_team_email = "chrome-gpu-infra@google.com",
+)

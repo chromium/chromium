@@ -1505,6 +1505,7 @@
       'gpu-fyi-try-win10-nvidia-exp-64': 'gpu_fyi_tests_release_trybot_reclient',
       'gpu-fyi-try-win10-nvidia-rel-32': 'gpu_fyi_tests_release_trybot_x86_reclient',
       'gpu-fyi-try-win10-nvidia-rel-64': 'gpu_fyi_tests_release_trybot_reclient',
+      'gpu-try-win-nvidia-dbg': 'gpu_tests_debug_bot_reclient',
       'win-annotator-rel': 'release_trybot_reclient',
       'win-asan': 'asan_clang_fuzzer_static_v8_heap_minimal_symbols_release_reclient',
       'win-celab-try-rel': 'release_bot_minimal_symbols_reclient',

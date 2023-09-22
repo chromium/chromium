@@ -201,6 +201,7 @@ ci.thin_tester(
     contact_team_email = "chrome-gpu-infra@google.com",
 )
 
+# TODO(crbug.com/1485734): Add a trybot for this builder when there's capacity.
 ci.thin_tester(
     name = "Android FYI Release (Samsung A13)",
     triggered_by = ["GPU FYI Android arm Builder"],
@@ -227,6 +228,7 @@ ci.thin_tester(
     contact_team_email = "chrome-gpu-infra@google.com",
 )
 
+# TODO(crbug.com/1485734): Add a trybot for this builder when there's capacity.
 ci.thin_tester(
     name = "Android FYI Release (Samsung A23)",
     triggered_by = ["GPU FYI Android arm Builder"],

@@ -62,6 +62,12 @@
           "builder": "Win10 x64 Debug (NVIDIA)",
           "project": "chromium"
         }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "gpu-try-win-nvidia-dbg",
+          "group": "tryserver.chromium.win"
+        }
       ]
     }
   },
