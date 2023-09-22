@@ -68,7 +68,7 @@ class SettingsPersonalizationPageElement extends
         this.i18n('personalizationHubSubtitle');
   }
 
-  private openPersonalizationHub_() {
+  private openPersonalizationHub_(): void {
     this.personalizationHubBrowserProxy_.openPersonalizationHub();
   }
 }

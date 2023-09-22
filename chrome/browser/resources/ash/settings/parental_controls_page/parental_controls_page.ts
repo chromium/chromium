@@ -62,7 +62,7 @@ export class SettingsParentalControlsPageElement extends
     this.browserProxy_ = ParentalControlsBrowserProxyImpl.getInstance();
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     // Set up online/offline listeners.
@@ -81,14 +81,14 @@ export class SettingsParentalControlsPageElement extends
   /**
    * Updates the UI when the device goes offline.
    */
-  private onOffline_() {
+  private onOffline_(): void {
     this.online_ = false;
   }
 
   /**
    * Updates the UI when the device comes online.
    */
-  private onOnline_() {
+  private onOnline_(): void {
     this.online_ = true;
   }
 
@@ -104,12 +104,12 @@ export class SettingsParentalControlsPageElement extends
     }
   }
 
-  private handleSetupButtonClick_(event: Event) {
+  private handleSetupButtonClick_(event: Event): void {
     event.stopPropagation();
     this.browserProxy_.showAddSupervisionDialog();
   }
 
-  private handleFamilyLinkButtonClick_(event: Event) {
+  private handleFamilyLinkButtonClick_(event: Event): void {
     event.stopPropagation();
     this.browserProxy_.launchFamilyLinkSettings();
   }
