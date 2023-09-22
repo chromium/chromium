@@ -105,6 +105,8 @@ PlusAddressClient::PlusAddressClient(
       scopes_({kEnterprisePlusAddressOAuthScope.Get()}) {}
 
 PlusAddressClient::~PlusAddressClient() = default;
+PlusAddressClient::PlusAddressClient(PlusAddressClient&&) = default;
+PlusAddressClient& PlusAddressClient::operator=(PlusAddressClient&&) = default;
 
 void PlusAddressClient::CreatePlusAddress(const std::string& site,
                                           PlusAddressCallback callback) {

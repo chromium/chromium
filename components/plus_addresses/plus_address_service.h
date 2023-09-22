@@ -7,6 +7,7 @@
 
 #include <unordered_set>
 
+#include "base/functional/callback_helpers.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/plus_addresses/plus_address_client.h"
 #include "components/plus_addresses/plus_address_types.h"
@@ -20,27 +21,25 @@ class IdentityManager;
 class PersistentRepeatingTimer;
 }  // namespace signin
 
-namespace network {
-class SharedURLLoaderFactory;
-}
-
 namespace plus_addresses {
 
 // An experimental class for filling plus addresses (asdf+123@some-domain.com).
 // Not intended for widespread use.
 class PlusAddressService : public KeyedService {
  public:
-  // Used to simplify testing in cases where calls depending on the
-  // identity manager can be mocked out.
+  // Used to simplify testing in cases where calls depending on external classes
+  // can be mocked out.
   PlusAddressService();
+  // Used to simplify testing in cases where calls depend on just the
+  // `IdentityManager`.
+  explicit PlusAddressService(signin::IdentityManager* identity_manager);
   ~PlusAddressService() override;
 
   // Initialize the PlusAddressService with a `IdentityManager`, `PrefService`,
   // and a `SharedURLLoaderFactory`.
-  PlusAddressService(
-      signin::IdentityManager* identity_manager,
-      PrefService* pref_service,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  PlusAddressService(signin::IdentityManager* identity_manager,
+                     PrefService* pref_service,
+                     PlusAddressClient plus_address_client);
 
   // Returns `true` when plus addresses are supported. Currently requires only
   // that the `kPlusAddressesEnabled` base::Feature is enabled.
@@ -74,8 +73,12 @@ class PlusAddressService : public KeyedService {
   // virtual to allow mocking in tests that don't want to do identity setup.
   virtual absl::optional<std::string> GetPrimaryEmail();
 
-  // Helper to prevent using the service integration to keep tests simpler..
-  void set_use_url_based_plus_addresses_for_testing(bool enabled);
+  // Gets the up-to-date mapping from the remote server from the
+  // PlusAddressClient and returns it via `callback`.
+  // This is only intended to be called by the `repeating_timer_`.
+  //
+  // TODO (crbug.com/1467623): Make this private when testing improves.
+  void SyncPlusAddressMapping();
 
  private:
   bool is_enabled() const;
@@ -84,11 +87,6 @@ class PlusAddressService : public KeyedService {
   // with a remote plus address server.
   std::unique_ptr<signin::PersistentRepeatingTimer> CreateTimer(
       PrefService* pref_service);
-
-  // Gets the up-to-date mapping from the remote server via the
-  // PlusAddressClient and calling UpdatePlusAddressMap.
-  // This is only intended to be called by the `repeating_timer_`.
-  void SyncPlusAddressMapping();
 
   // Updates `plus_address_by_site_` and `plus_addresses_` using `map`.
   void UpdatePlusAddressMap(const PlusAddressMap& map);
@@ -108,10 +106,6 @@ class PlusAddressService : public KeyedService {
   // A timer to periodically retrieve all plus addresses from a remote server
   // to keep this service in sync.
   std::unique_ptr<signin::PersistentRepeatingTimer> repeating_timer_;
-
-  // Controls whether this service uses the url-based approach or  the remote
-  // service integration to create a plus-address.
-  bool use_url_based_plus_address_ = false;
 
   // Handles requests to a remote server that this service uses.
   PlusAddressClient plus_address_client_;

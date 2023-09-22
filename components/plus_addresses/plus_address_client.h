@@ -37,13 +37,15 @@ namespace plus_addresses {
 // This endpoint is used for most plus-address operations.
 constexpr char kServerPlusProfileEndpoint[] = "v1/profiles";
 
-// Utility class for communicating with a remote plus-address server.
+// A move-only class for communicating with a remote plus-address server.
 class PlusAddressClient {
  public:
   PlusAddressClient(
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   ~PlusAddressClient();
+  PlusAddressClient(PlusAddressClient&&);
+  PlusAddressClient& operator=(PlusAddressClient&&);
 
   // Initiates a request to get a plus address for use on `site` and only
   // runs `callback` with a plus address if the request to the server
@@ -84,7 +86,7 @@ class PlusAddressClient {
   std::unique_ptr<network::SimpleURLLoader> loader_for_creation_;
   std::unique_ptr<network::SimpleURLLoader> loader_for_retrieval_;
 
-  const absl::optional<GURL> server_url_;
+  absl::optional<GURL> server_url_;
   signin::AccessTokenInfo access_token_info_;
   GoogleServiceAuthError access_token_request_error_;
   signin::ScopeSet scopes_;

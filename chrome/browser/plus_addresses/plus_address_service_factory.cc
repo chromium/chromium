@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/plus_addresses/features.h"
+#include "components/plus_addresses/plus_address_client.h"
 #include "components/plus_addresses/plus_address_service.h"
-
-#include "base/no_destructor.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 /* static */
 plus_addresses::PlusAddressService*
@@ -58,9 +59,12 @@ PlusAddressServiceFactory::BuildServiceInstanceForBrowserContext(
   if (profile->IsGuestSession()) {
     return nullptr;
   }
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
   return std::make_unique<plus_addresses::PlusAddressService>(
-      IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs(),
-      profile->GetURLLoaderFactory());
+      identity_manager, profile->GetPrefs(),
+      plus_addresses::PlusAddressClient(identity_manager,
+                                        profile->GetURLLoaderFactory()));
 }
 
 // Create this service when the profile is created to support populating the
