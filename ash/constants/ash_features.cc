@@ -2234,7 +2234,7 @@ BASE_FEATURE(kPromiseIcons, "PromiseIcons", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether to show promise icons during web app installations.
 BASE_FEATURE(kPromiseIconsForWebApps,
-             "kPromiseIconsForWebApps",
+             "PromiseIconsForWebApps",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether the quick dim prototype is enabled.
