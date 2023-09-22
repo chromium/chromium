@@ -77,7 +77,7 @@ constexpr char kDriveFsTempWallpaperFileName[] = "wallpaper-tmp.jpg";
 // `nullptr`.
 // If the pointer to `DriveIntegrationService` is held for a long duration, the
 // owner must implement
-// `DriveIntegrationServiceObserver` and listen for
+// `DriveIntegrationService::Observer` and listen for
 // `OnDriveIntegrationServiceDestroyed` to avoid use-after-free.
 drive::DriveIntegrationService* GetDriveIntegrationService(
     const AccountId& account_id) {
