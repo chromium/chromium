@@ -452,13 +452,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kDigestAuthEnableSecureAlgorithms);
 
 NET_EXPORT BASE_DECLARE_FEATURE(kThirdPartyPartitionedStorageAllowedByDefault);
 
-// Gate access to cookie deprecation API which allows developers to opt in
-// server side testing without cookies. This doesn't actually do anything in
-// terms of deprecating cookies.
-// (See
-// https://developer.chrome.com/en/docs/privacy-sandbox/chrome-testing/#mode-a)
-NET_EXPORT BASE_DECLARE_FEATURE(kCookieDeprecationFacilitatedTestingLabels);
-
 // Enables the HTTP extensible priorities "priority" header.
 // RFC 9218
 NET_EXPORT BASE_DECLARE_FEATURE(kPriorityHeader);
