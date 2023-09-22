@@ -45021,6 +45021,76 @@ Called by update_permissions_policy_enum.py.-->
   <int value="8" label="Font file descriptor was cached"/>
 </enum>
 
+<enum name="FetchLaterBrowserMetricType">
+  <int value="0"
+      label="kAbortedByInitiator: FetchLater request is aborted by its
+             initiator">
+    Recorded once every time a scheduled FetchLater request is aborted in the
+    browser process. It happens when JavaScript code explicitly aborts a
+    FetchLater request, and gets propagated to the browser process.
+
+    This number should be compared with `kAbortedByUser` in
+    `FetchLater.Renderer.Metrics`.
+  </int>
+  <int value="1"
+      label="kStartedAfterInitiatorDisconnected: FetchLater request is started
+             after its initiator is disconnected">
+    Recorded once every time a scheduled FetchLater request is started after its
+    initiator renderer is disconnected from browser.
+
+    This number should be compared with `kContextDestroyed` in
+    `FetchLater.Renderer.Metrics`.
+  </int>
+  <int value="2"
+      label="kStartedByInitiator: FetchLater request is explicitly started by
+             its initiator">
+    Recorded once every time a scheduled FetchLater request is explicitly asked
+    to started by its initiator renderer in the browser.
+
+    This number should be compared with `kActivatedByTimeout` in
+    `FetchLater.Renderer.Metrics`, and it should &lt;=
+    `FetchLater.Browser.Total.Started`.
+  </int>
+  <int value="3"
+      label="kCancelledAfterTimeLimit: FetchLater request is cancelled after
+             internal time limit">
+    Recorded once every time a scheduled or a started FetchLater request is
+    cancelled by the browser after some internal time limit.
+  </int>
+</enum>
+
+<enum name="FetchLaterRendererMetricType">
+  <int value="0" label="kAbortedByUser: FetchLater request is aborted by user">
+    Recorded once every time a scheduled FetchLater request is aborted in a
+    renderer process. It happens when JavaScript code explicitly aborts a
+    FetchLater request.
+
+    This number should be compared with
+    `FetchLater.Browser.Metrics.AbortedByInitiator`.
+  </int>
+  <int value="1"
+      label="kContextDestroyed: FetchLater's context is destroyed (implying
+             activated by browser)">
+    Recorded once every time a scheduled FetchLater request is aborted in a
+    renderer process. It happens when JavaScript code explicitly aborts a
+    FetchLater request.
+
+    This number should be compared with
+    `FetchLater.Browser.Metrics.AbortedByInitiator`.
+  </int>
+  <int value="2"
+      label="kActivatedByTimeout: FetchLater request is activated by user
+             specified timeout">
+    Recorded once every time a scheduled FetchLater request is terminated (and
+    then gets sent) due to context (renderer) destroyed. It is not equivalent to
+    the total number of internal &quot;TERMINATED&quot; states of a FetchLater
+    request, which can be terminated for other reasons like aborted by users.
+
+    This number should be compared with
+    `FetchLater.Browser.Metrics.StartedAfterInitiatorDisconnected`.
+  </int>
+</enum>
+
 <enum name="FetchManagerLoaderCheckPoint">
   <int value="0" label="FetchManager::Loader Constructor"/>
   <int value="1" label="FetchManager::Loader::Failed"/>

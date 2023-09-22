@@ -6420,6 +6420,72 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FetchLater.Browser.Metrics" enum="FetchLaterBrowserMetricType"
+    expires_after="2024-03-31">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-bfcache@google.com</owner>
+  <summary>
+    Records once every time a scheduled FetchLater request is either aborted or
+    started in browser. See the enum definition in
+    tools/metrics/histograms/enums.xml for details.
+  </summary>
+</histogram>
+
+<histogram name="FetchLater.Browser.Total" enum="Boolean"
+    expires_after="2024-03-31">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-bfcache@google.com</owner>
+  <summary>
+    Records true every time a new FetchLater request is scheduled by a browser.
+    It does NOT equal to the total number of JavaScript FetchLater API call, as
+    the latter can be immediately rejected with various JavaScript exceptions.
+
+    This number should be compared with `FetchLater.Renderer.Total`, and it may
+    be &gt;= the sum of `FetchLater.Browser.Metrics`, as a request may be
+    dropped for other undocumented reasons like browser killed or crashes.
+  </summary>
+</histogram>
+
+<histogram name="FetchLater.Browser.Total.Started" enum="Boolean"
+    expires_after="2024-03-31">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-bfcache@google.com</owner>
+  <summary>
+    Records once every time a scheduled FetchLater request is started in
+    browser.
+
+    This number should be the sum of enum values &quot;kStarted*&quot; in
+    `FetchLater.Browser.Metrics`.
+  </summary>
+</histogram>
+
+<histogram name="FetchLater.Renderer.Metrics"
+    enum="FetchLaterRendererMetricType" expires_after="2024-03-31">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-bfcache@google.com</owner>
+  <summary>
+    Records once every time a scheduled FetchLater request is either aborted or
+    activated in renderer. See the enum definition in
+    tools/metrics/histograms/enums.xml for details.
+  </summary>
+</histogram>
+
+<histogram name="FetchLater.Renderer.Total" enum="Boolean"
+    expires_after="2024-03-31">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-bfcache@google.com</owner>
+  <summary>
+    Records true every time a new FetchLater request is scheduled by a renderer.
+    It does NOT equal to the total number of JavaScript FetchLater API call, as
+    the latter can be immediately rejected with various JavaScript exceptions.
+
+    This metric is recorded to compare whether different behavior happens
+    between renderer and browser. This number should be compared with
+    `FetchLater.Browser.Total`, and it should be equal to the sum of
+    `FetchLater.Renderer.Metrics`.
+  </summary>
+</histogram>
+
 <histogram name="FirstPartySets.Database.InitStatus"
     enum="FirstPartySetsDatabaseInitStatus" expires_after="M124">
   <owner>shuuran@google.com</owner>

@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
 #include "content/browser/renderer_host/policy_container_host.h"
@@ -45,6 +46,23 @@ base::TimeDelta GetDisconnectedKeepAliveURLLoaderTimeout() {
       "disconnected_loader_timeout_seconds",
       base::checked_cast<int32_t>(
           kDefaultDisconnectedKeepAliveURLLoaderTimeout.InSeconds())));
+}
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// Must remain in sync with FetchLaterBrowserMetricType in
+// tools/metrics/histograms/enums.xml.
+enum class FetchLaterBrowserMetricType {
+  kAbortedByInitiator = 0,
+  kStartedAfterInitiatorDisconnected = 1,
+  kStartedByInitiator = 2,
+  kCancelledAfterTimeLimit = 3,
+  kMaxValue = kCancelledAfterTimeLimit,
+};
+
+void LogFetchLaterMetric(const FetchLaterBrowserMetricType& type) {
+  base::UmaHistogramEnumeration("FetchLater.Browser.Metrics", type);
 }
 
 // A convenient holder to aggregate modified header fields for redirect.
@@ -321,6 +339,7 @@ KeepAliveURLLoader::KeepAliveURLLoader(
               request_id_, "url", last_url_);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("loading", "KeepAliveURLLoader",
                                     request_id_, "url", last_url_);
+  base::UmaHistogramBoolean("FetchLater.Browser.Total", true);
 
   // TODO(crbug.com/1356128): Replace custom throttle logic here with blink's.
   for (auto& content_throttle : throttles) {
@@ -334,6 +353,10 @@ void KeepAliveURLLoader::Start() {
   TRACE_EVENT("loading", "KeepAliveURLLoader::Start", "request_id",
               request_id_);
   is_started_ = true;
+
+  if (IsFetchLater()) {
+    base::UmaHistogramBoolean("FetchLater.Browser.Total.Started", true);
+  }
 
   // Asks the network service to create a URL loader with passed in params.
   network_loader_factory_->CreateLoaderAndStart(
@@ -858,6 +881,8 @@ void KeepAliveURLLoader::OnURLLoaderDisconnected() {
 
   if (!IsStarted()) {
     // May be the last chance to start a deferred loader.
+    LogFetchLaterMetric(
+        FetchLaterBrowserMetricType::kStartedAfterInitiatorDisconnected);
     Start();
   }
   // For other types of keepalive requests, this loader does not care about
@@ -872,8 +897,13 @@ void KeepAliveURLLoader::OnURLLoaderDisconnected() {
 }
 
 void KeepAliveURLLoader::OnDisconnectedLoaderTimerFired() {
-  // TODO(crbug.com/1465781): Add UMA histogram logging.
+  LogFetchLaterMetric(FetchLaterBrowserMetricType::kCancelledAfterTimeLimit);
   DeleteSelf();
+}
+
+bool KeepAliveURLLoader::IsFetchLater() const {
+  return base::FeatureList::IsEnabled(blink::features::kFetchLaterAPI) &&
+         resource_request_.is_fetch_later_api;
 }
 
 void KeepAliveURLLoader::DeleteSelf() {

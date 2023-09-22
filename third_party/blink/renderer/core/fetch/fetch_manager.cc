@@ -99,6 +99,22 @@ namespace {
 // 64 kilobytes.
 constexpr uint64_t kMaxScheduledDeferredBytesPerOrigin = 64 * 1024;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// Must remain in sync with FetchLaterRendererMetricType in
+// tools/metrics/histograms/enums.xml.
+enum class FetchLaterRendererMetricType {
+  kAbortedByUser = 0,
+  kContextDestroyed = 1,
+  kActivatedByTimeout = 2,
+  kMaxValue = kActivatedByTimeout,
+};
+
+void LogFetchLaterMetric(const FetchLaterRendererMetricType& type) {
+  base::UmaHistogramEnumeration("FetchLater.Renderer.Metrics", type);
+}
+
 bool HasNonEmptyLocationHeader(const FetchHeaderList* headers) {
   String value;
   if (!headers->Get(http_names::kLocation, value))
@@ -1038,7 +1054,9 @@ class FetchManager::DeferredLoader : public FetchManager::Loader {
                              fetch_request_data,
                              script_state,
                              signal),
-        fetch_later_result_(MakeGarbageCollected<FetchLaterResult>()) {}
+        fetch_later_result_(MakeGarbageCollected<FetchLaterResult>()) {
+    base::UmaHistogramBoolean("FetchLater.Renderer.Total", true);
+  }
   ~DeferredLoader() override = default;
 
   FetchLaterResult* fetch_later_result() { return fetch_later_result_; }
@@ -1066,6 +1084,7 @@ class FetchManager::DeferredLoader : public FetchManager::Loader {
     // 12. Add the following abort steps to requestObject’s signal:
     //     1. Set deferredRecord’s invoke state to "aborted".
     SetInvokeState(InvokeState::ABORTED);
+    LogFetchLaterMetric(FetchLaterRendererMetricType::kAbortedByUser);
     //     2. Remove deferredRecord from request’s client’s fetch group’s
     //     deferred fetch records.
     FetchManager::Loader::Abort();
@@ -1267,6 +1286,7 @@ void FetchManager::ContextDestroyed() {
 
   // 2. For each deferred fetch record of fetchGroup's ...
   for (auto& deferred_loader : deferred_loaders_) {
+    LogFetchLaterMetric(FetchLaterRendererMetricType::kContextDestroyed);
     deferred_loader->Dispose();
   }
 }

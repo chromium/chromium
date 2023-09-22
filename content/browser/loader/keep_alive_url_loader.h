@@ -217,6 +217,9 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // URLLoaderClient in renderer.
   bool IsRendererConnected() const;
 
+  // Tells if this loader is constructed for a FetchLater request.
+  bool IsFetchLater() const;
+
   // Returns net::OK to allow following the redirect. Otherwise, returns
   // corresponding error code.
   net::Error WillFollowRedirect(const net::RedirectInfo& redirect_info) const;
