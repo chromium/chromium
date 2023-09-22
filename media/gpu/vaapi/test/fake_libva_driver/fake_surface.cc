@@ -27,6 +27,11 @@ FakeSurface::FakeSurface(FakeSurface::IdType id,
       width_(width),
       height_(height),
       attrib_list_(std::move(attrib_list)) {
+  // There are no specified attributes to this surface
+  if (attrib_list_.empty()) {
+    NOTIMPLEMENTED();
+    return;
+  }
 #if defined(MINIGBM)
   // Verify attributes and extract surface descriptor.
   std::unordered_set<VASurfaceAttribType> attribs;
