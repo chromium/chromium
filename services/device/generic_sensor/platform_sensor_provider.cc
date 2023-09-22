@@ -12,6 +12,10 @@
 #include "services/device/public/cpp/generic_sensor/sensor_reading_shared_buffer.h"
 #include "services/device/public/mojom/sensor_provider.mojom.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/components/sensors/buildflags.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_MAC)
 #include "services/device/generic_sensor/platform_sensor_provider_mac.h"
 #elif BUILDFLAG(IS_ANDROID)

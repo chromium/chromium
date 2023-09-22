@@ -8,6 +8,7 @@ import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//chromeos/ash/components/assistant/ambient.gni")
 import("//chromeos/ash/components/scalable_iph/scalable_iph.gni")
+import("//chromeos/components/sensors/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/test.gni")
 import("//tools/grit/repack.gni")
@@ -2872,6 +2873,7 @@ component("ash") {
     "//chromeos/ash/services/recording",
     "//chromeos/ash/services/recording/public/mojom",
     "//chromeos/components/quick_answers/public/cpp:prefs",
+    "//chromeos/components/sensors:buildflags",
     "//chromeos/components/sensors:sensors",
     "//chromeos/components/sensors/mojom",
     "//chromeos/components/webauthn",
