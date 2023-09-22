@@ -12,7 +12,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "google_apis/google_api_keys.h"
 
 HatsUIConfig::HatsUIConfig()
     : WebUIConfig(content::kChromeUIUntrustedScheme,
@@ -38,7 +37,6 @@ HatsUI::HatsUI(content::WebUI* web_ui) : ui::UntrustedWebUIController(web_ui) {
       source, base::make_span(kHatsResources, kHatsResourcesSize),
       IDR_HATS_HATS_HTML);
 
-  source->AddString("hatsApiKey", google_apis::GetHatsAPIKey());
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src "
@@ -78,6 +76,21 @@ HatsUI::HatsUI(content::WebUI* web_ui) : ui::UntrustedWebUIController(web_ui) {
 
   // TODO(crbug.com/1481674): Enable TrustedType.
   source->DisableTrustedTypesCSP();
+}
+
+HatsUI::~HatsUI() = default;
+
+void HatsUI::BindInterface(
+    mojo::PendingReceiver<hats::mojom::PageHandlerFactory> receiver) {
+  page_factory_receiver_.reset();
+  page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void HatsUI::CreatePageHandler(
+    mojo::PendingRemote<hats::mojom::Page> page,
+    mojo::PendingReceiver<hats::mojom::PageHandler> receiver) {
+  page_handler_ =
+      std::make_unique<HatsPageHandler>(std::move(receiver), std::move(page));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(HatsUI)
