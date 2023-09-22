@@ -91,6 +91,12 @@ chromium-metrics-reviews@google.com.
   <variant name="Wifi" summary="Wifi"/>
 </variants>
 
+<variants name="SmdsType">
+  <variant name="Android"/>
+  <variant name="Gsma"/>
+  <variant name="Other"/>
+</variants>
+
 <variants name="VPNType">
   <variant name="ARC" summary="Android VPN"/>
   <variant name="Ikev2" summary="IKEv2"/>
@@ -349,6 +355,28 @@ chromium-metrics-reviews@google.com.
     SM-DS servers are scanned for an installation attempt the count emitted will
     be the total number of profiles discovered across all scanned servers.
   </summary>
+</histogram>
+
+<histogram
+    name="Network.Ash.Cellular.ESim.SmdsScanDuration.{SmdsType}.{DurationType}"
+    units="ms" expires_after="2024-09-30">
+  <owner>chadduffin@google.com</owner>
+  <owner>tjohnsonkanu@google.com</owner>
+  <owner>cros-connecitivity@google.com</owner>
+  <summary>
+    Tracks the time taken to perform a single SM-DS scan of a single SM-DS
+    server. The {SmdsType} token indicates the type of SM-DS server that was
+    scanned, and the {DurationType} token indicates whether this duration was
+    for a scan that ompleted with an Hermes result that indicates a non-fatal
+    error occurred. An error does not necessarily indicate that the scan failed,
+    but does indicate that there was an issue when performing the scan, e.g.,
+    there was an issue with one of the profiles discovered.
+  </summary>
+  <token key="SmdsType" variants="SmdsType"/>
+  <token key="DurationType">
+    <variant name="OnFailure"/>
+    <variant name="OnSuccess"/>
+  </token>
 </histogram>
 
 <histogram name="Network.Ash.Cellular.ESim.UserInstall.Method"

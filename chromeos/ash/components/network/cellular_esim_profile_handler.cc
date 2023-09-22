@@ -8,6 +8,7 @@
 #include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/network/cellular_esim_profile_waiter.h"
 #include "chromeos/ash/components/network/cellular_utils.h"
 #include "chromeos/ash/components/network/hermes_metrics_util.h"
@@ -243,7 +244,8 @@ void CellularESimProfileHandler::PerformRequestAvailableProfiles(
         /*restore_slot=*/true,
         base::BindOnce(&CellularESimProfileHandler::OnRequestAvailableProfiles,
                        weak_ptr_factory_.GetWeakPtr(), euicc_path,
-                       std::move(info), std::move(inhibit_lock)));
+                       std::move(info), std::move(inhibit_lock),
+                       smds_activation_code, base::TimeTicks::Now()));
     return;
   }
 
@@ -292,11 +294,17 @@ void CellularESimProfileHandler::OnRequestAvailableProfiles(
     const dbus::ObjectPath& euicc_path,
     std::unique_ptr<RequestAvailableProfilesInfo> info,
     std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
+    const std::string& smds_activation_code,
+    const base::TimeTicks start_time,
     HermesResponseStatus status,
     const std::vector<dbus::ObjectPath>& profile_paths) {
   DCHECK(info);
   DCHECK(info->callback);
   DCHECK(inhibit_lock);
+
+  CellularNetworkMetricsLogger::LogSmdsScanDuration(
+      base::TimeTicks::Now() - start_time,
+      status == HermesResponseStatus::kSuccess, smds_activation_code);
 
   for (const auto& profile_path : profile_paths) {
     info->profile_paths.emplace_back(profile_path.value());

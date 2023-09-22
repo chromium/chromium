@@ -185,6 +185,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandler
       const dbus::ObjectPath& euicc_path,
       std::unique_ptr<RequestAvailableProfilesInfo> info,
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
+      const std::string& smds_activation_code,
+      const base::TimeTicks start_time,
       HermesResponseStatus status,
       const std::vector<dbus::ObjectPath>& profile_paths);
   void CompleteRequestAvailableProfiles(

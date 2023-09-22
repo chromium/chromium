@@ -244,6 +244,27 @@ void CellularNetworkMetricsLogger::LogSmdsScanProfileCount(size_t count) {
 }
 
 // static
+void CellularNetworkMetricsLogger::LogSmdsScanDuration(
+    const base::TimeDelta& duration,
+    bool success,
+    const std::string& smds_activation_code) {
+  std::string histogram;
+  if (smds_activation_code == cellular_utils::kSmdsAndroidProduction ||
+      smds_activation_code == cellular_utils::kSmdsAndroidStaging) {
+    histogram = success ? kSmdsScanAndroidDurationSuccess
+                        : kSmdsScanAndroidDurationFailure;
+  } else if (smds_activation_code == cellular_utils::kSmdsGsma) {
+    histogram =
+        success ? kSmdsScanGsmaDurationSuccess : kSmdsScanGsmaDurationFailure;
+  } else {
+    histogram =
+        success ? kSmdsScanOtherDurationSuccess : kSmdsScanOtherDurationFailure;
+  }
+
+  base::UmaHistogramTimes(histogram, duration);
+}
+
+// static
 void CellularNetworkMetricsLogger::LogESimUserInstallMethod(
     ESimUserInstallMethod method) {
   base::UmaHistogramEnumeration(kESimUserInstallMethod, method);

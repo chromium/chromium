@@ -626,7 +626,7 @@ void FakeHermesEuiccClient::DoRefreshSmdxProfiles(
   std::vector<dbus::ObjectPath> profile_paths;
 
   if (status != HermesResponseStatus::kSuccess) {
-    std::move(callback).Run(error_status_queue_.front(), profile_paths);
+    std::move(callback).Run(status, profile_paths);
     return;
   }
 

@@ -138,6 +138,18 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
 
   static constexpr char kSmdsScanProfileCount[] =
       "Network.Ash.Cellular.ESim.SmdsScan.ProfileCount";
+  static constexpr char kSmdsScanOtherDurationSuccess[] =
+      "Network.Ash.Cellular.ESim.SmdsScanDuration.Other.OnSuccess";
+  static constexpr char kSmdsScanOtherDurationFailure[] =
+      "Network.Ash.Cellular.ESim.SmdsScanDuration.Other.OnFailure";
+  static constexpr char kSmdsScanAndroidDurationSuccess[] =
+      "Network.Ash.Cellular.ESim.SmdsScanDuration.Android.OnSuccess";
+  static constexpr char kSmdsScanAndroidDurationFailure[] =
+      "Network.Ash.Cellular.ESim.SmdsScanDuration.Android.OnFailure";
+  static constexpr char kSmdsScanGsmaDurationSuccess[] =
+      "Network.Ash.Cellular.ESim.SmdsScanDuration.Gsma.OnSuccess";
+  static constexpr char kSmdsScanGsmaDurationFailure[] =
+      "Network.Ash.Cellular.ESim.SmdsScanDuration.Gsma.OnFailure";
   static constexpr char kESimUserInstallMethod[] =
       "Network.Ash.Cellular.ESim.UserInstall.Method";
   static constexpr char kESimPolicyInstallMethod[] =
@@ -241,6 +253,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularNetworkMetricsLogger
 
   // Logs results from attempting operations related to eSIM.
   static void LogSmdsScanProfileCount(size_t count);
+  static void LogSmdsScanDuration(const base::TimeDelta& duration,
+                                  bool success,
+                                  const std::string& smds_activation_code);
+
   static void LogESimUserInstallMethod(ESimUserInstallMethod method);
   static void LogESimPolicyInstallMethod(ESimPolicyInstallMethod method);
   // The |is_user_error| parameter is used to indicate that |result| was caused

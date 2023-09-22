@@ -22,19 +22,17 @@
 
 namespace ash {
 
+namespace cellular_utils {
+
+const char kSmdsGsma[] = "1$lpa.ds.gsma.com$";
+const char kSmdsStork[] = "1$prod.smds.rsp.goog$";
+const char kSmdsAndroidProduction[] = "1$lpa.live.esimdiscovery.com$";
+const char kSmdsAndroidStaging[] = "1$lpa.live.esimdiscovery.dev$";
+
+}  // namespace cellular_utils
+
 namespace {
-
-// The activation code for the GSM Association SM-DS server.
-constexpr char kSmdsGsma[] = "1$lpa.ds.gsma.com$";
-// The activation code for the Stork SM-DS server.
-constexpr char kSmdsStork[] = "1$prod.smds.rsp.goog$";
-// The activation code for the Android production SM-DS server.
-constexpr char kSmdsAndroidProduction[] = "1$lpa.live.esimdiscovery.com$";
-// The activation code for the Android staging SM-DS server.
-constexpr char kSmdsAndroidStaging[] = "1$lpa.live.esimdiscovery.dev$";
-
 const char kNonShillCellularNetworkPathPrefix[] = "/non-shill-cellular/";
-
 }  // namespace
 
 base::flat_set<dbus::ObjectPath> GetProfilePathsFromEuicc(

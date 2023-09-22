@@ -259,10 +259,40 @@ class CellularESimProfileHandlerImplTest : public testing::Test {
     task_environment_.FastForwardBy(kProfileRefreshCallbackDelay);
   }
 
+  void ExpectScanDurationMetricsCount(size_t other_count,
+                                      size_t android_count,
+                                      size_t gsma_count,
+                                      bool success) {
+    if (success) {
+      histogram_tester().ExpectTotalCount(
+          CellularNetworkMetricsLogger::kSmdsScanOtherDurationSuccess,
+          other_count);
+      histogram_tester().ExpectTotalCount(
+          CellularNetworkMetricsLogger::kSmdsScanAndroidDurationSuccess,
+          android_count);
+      histogram_tester().ExpectTotalCount(
+          CellularNetworkMetricsLogger::kSmdsScanGsmaDurationSuccess,
+          gsma_count);
+      return;
+    }
+
+    histogram_tester().ExpectTotalCount(
+        CellularNetworkMetricsLogger::kSmdsScanOtherDurationFailure,
+        other_count);
+    histogram_tester().ExpectTotalCount(
+        CellularNetworkMetricsLogger::kSmdsScanAndroidDurationFailure,
+        android_count);
+    histogram_tester().ExpectTotalCount(
+        CellularNetworkMetricsLogger::kSmdsScanGsmaDurationFailure, gsma_count);
+  }
+
+  const base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
   base::test::TaskEnvironment* task_environment() { return &task_environment_; }
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  base::HistogramTester histogram_tester_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   NetworkStateTestHelper helper_;
@@ -660,7 +690,7 @@ TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportDisabled,
   AddEuicc(/*euicc_num=*/1);
   Init();
   SetDevicePrefs();
-  base::HistogramTester histogram_tester;
+
   // Add one active profile and another inactive profiles.
   AddProfile(
       /*euicc_num=*/1, hermes::profile::State::kActive,
@@ -690,9 +720,9 @@ TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportDisabled,
   EXPECT_EQ(2u, profiles.size());
   EXPECT_EQ(CellularESimProfile::State::kInactive, profiles[0].state());
   EXPECT_EQ(CellularESimProfile::State::kInactive, profiles[1].state());
-  histogram_tester.ExpectBucketCount(kDisableProfileResultHistogram,
-                                     HermesResponseStatus::kSuccess,
-                                     /*expected_count=*/1);
+  histogram_tester().ExpectBucketCount(kDisableProfileResultHistogram,
+                                       HermesResponseStatus::kSuccess,
+                                       /*expected_count=*/1);
 }
 
 TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled, NoEuicc) {
@@ -1030,7 +1060,6 @@ TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
   AddEuicc(/*euicc_num=*/1);
   Init();
   SetDevicePrefs();
-  base::HistogramTester histogram_tester;
   // Add one active profile and another inactive profiles.
   AddProfile(
       /*euicc_num=*/1, hermes::profile::State::kActive,
@@ -1060,9 +1089,9 @@ TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
   EXPECT_EQ(2u, profiles.size());
   EXPECT_EQ(CellularESimProfile::State::kInactive, profiles[0].state());
   EXPECT_EQ(CellularESimProfile::State::kInactive, profiles[1].state());
-  histogram_tester.ExpectBucketCount(kDisableProfileResultHistogram,
-                                     HermesResponseStatus::kSuccess,
-                                     /*expected_count=*/1);
+  histogram_tester().ExpectBucketCount(kDisableProfileResultHistogram,
+                                       HermesResponseStatus::kSuccess,
+                                       /*expected_count=*/1);
 }
 
 TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
@@ -1072,13 +1101,14 @@ TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
   Init();
   SetDevicePrefs();
 
-  base::HistogramTester histogram_tester;
-
   HermesEuiccClient::Get()->GetTestInterface()->SetInteractiveDelay(
       kInteractiveDelay);
 
   absl::optional<ESimOperationResult> result;
   absl::optional<std::vector<CellularESimProfile>> profile_list;
+
+  ExpectScanDurationMetricsCount(/*other_count=*/0, /*android_count*/ 0,
+                                 /*gsma_counts=*/0, /*success=*/true);
 
   base::RunLoop run_loop;
   RequestAvailableProfiles(
@@ -1108,6 +1138,9 @@ TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(*result, cellular_setup::mojom::ESimOperationResult::kSuccess);
 
+  ExpectScanDurationMetricsCount(/*other_count=*/0, /*android_count*/ 1,
+                                 /*gsma_counts=*/1, /*success=*/true);
+
   const std::vector<std::string> smds_activation_codes =
       cellular_utils::GetSmdsActivationCodes();
 
@@ -1120,12 +1153,64 @@ TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
               smds_activation_codes.end());
   }
 
-  histogram_tester.ExpectTotalCount(
+  histogram_tester().ExpectTotalCount(
       CellularNetworkMetricsLogger::kSmdsScanProfileCount,
       /*expected_count=*/1);
   EXPECT_EQ(static_cast<int64_t>(smds_activation_codes.size()),
-            histogram_tester.GetTotalSum(
+            histogram_tester().GetTotalSum(
                 CellularNetworkMetricsLogger::kSmdsScanProfileCount));
+}
+
+TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
+       RequestAvailableProfiles_SuccessfulDespiteHermesErrors) {
+  AddCellularDevice();
+  AddEuicc(/*euicc_num=*/1);
+  Init();
+  SetDevicePrefs();
+
+  HermesEuiccClient::Get()->GetTestInterface()->SetInteractiveDelay(
+      kInteractiveDelay);
+
+  absl::optional<ESimOperationResult> result;
+  absl::optional<std::vector<CellularESimProfile>> profile_list;
+
+  ExpectScanDurationMetricsCount(/*other_count=*/0, /*android_count*/ 0,
+                                 /*gsma_counts=*/0, /*success=*/false);
+
+  // Queue errors for each of the expected SM-DS scans.
+  const std::vector<std::string> smds_activation_codes =
+      cellular_utils::GetSmdsActivationCodes();
+  for (size_t i = 0; i < smds_activation_codes.size(); ++i) {
+    HermesEuiccClient::Get()->GetTestInterface()->QueueHermesErrorStatus(
+        HermesResponseStatus::kErrorUnknown);
+  }
+
+  base::RunLoop run_loop;
+  RequestAvailableProfiles(
+      /*euicc_num=*/1,
+      base::BindLambdaForTesting(
+          [&](ESimOperationResult returned_result,
+              std::vector<CellularESimProfile> returned_profile_list) {
+            result = returned_result;
+            profile_list = returned_profile_list;
+            run_loop.Quit();
+          }));
+
+  // Skip forward until all SM-DS scans are completed.
+  for (size_t i = 0; i < smds_activation_codes.size(); ++i) {
+    task_environment()->FastForwardBy(kInteractiveDelay);
+    base::RunLoop().RunUntilIdle();
+  }
+  run_loop.Run();
+
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(*result, cellular_setup::mojom::ESimOperationResult::kSuccess);
+
+  ExpectScanDurationMetricsCount(/*other_count=*/0, /*android_count*/ 1,
+                                 /*gsma_counts=*/1, /*success=*/false);
+
+  ASSERT_TRUE(profile_list.has_value());
+  EXPECT_EQ(0u, profile_list->size());
 }
 
 TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
@@ -1183,7 +1268,6 @@ TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
             profile_list = returned_profile_list;
             run_loop.Quit();
           }));
-
   // Skip forward the amount of time needed to complete all of the SM-DS scans.
   for (size_t i = 0; i < smds_activation_codes.size(); ++i) {
     task_environment()->FastForwardBy(kInteractiveDelay);
@@ -1228,14 +1312,15 @@ TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
   Init();
   SetDevicePrefs();
 
-  base::HistogramTester histogram_tester;
-
   // The cellular device is inhibited by setting a device property. Simulate a
   // failure to inhibit by making the next attempt to set a property fail.
   SetErrorForNextSetPropertyAttempt("error_name");
 
   absl::optional<ESimOperationResult> result;
   absl::optional<std::vector<CellularESimProfile>> profile_list;
+
+  ExpectScanDurationMetricsCount(/*other_count=*/0, /*android_count*/ 0,
+                                 /*gsma_counts=*/0, /*success=*/true);
 
   {
     base::RunLoop run_loop;
@@ -1257,11 +1342,14 @@ TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
   ASSERT_TRUE(profile_list.has_value());
   EXPECT_TRUE(profile_list->empty());
 
-  histogram_tester.ExpectTotalCount(
+  histogram_tester().ExpectTotalCount(
       CellularNetworkMetricsLogger::kSmdsScanProfileCount,
       /*expected_count=*/0);
-  EXPECT_EQ(0, histogram_tester.GetTotalSum(
+  EXPECT_EQ(0, histogram_tester().GetTotalSum(
                    CellularNetworkMetricsLogger::kSmdsScanProfileCount));
+
+  ExpectScanDurationMetricsCount(/*other_count=*/0, /*android_count*/ 0,
+                                 /*gsma_counts=*/0, /*success=*/true);
 
   {
     base::RunLoop run_loop;
@@ -1280,12 +1368,15 @@ TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportEnabled,
   EXPECT_EQ(result, cellular_setup::mojom::ESimOperationResult::kSuccess);
   EXPECT_FALSE(profile_list->empty());
 
-  histogram_tester.ExpectTotalCount(
+  ExpectScanDurationMetricsCount(/*other_count=*/0, /*android_count*/ 1,
+                                 /*gsma_counts=*/1, /*success=*/true);
+
+  histogram_tester().ExpectTotalCount(
       CellularNetworkMetricsLogger::kSmdsScanProfileCount,
       /*expected_count=*/1);
   EXPECT_EQ(
       static_cast<int64_t>(cellular_utils::GetSmdsActivationCodes().size()),
-      histogram_tester.GetTotalSum(
+      histogram_tester().GetTotalSum(
           CellularNetworkMetricsLogger::kSmdsScanProfileCount));
 }
 
@@ -1296,10 +1387,11 @@ TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportAndStorkEnabled,
   Init();
   SetDevicePrefs();
 
-  base::HistogramTester histogram_tester;
-
   absl::optional<ESimOperationResult> result;
   absl::optional<std::vector<CellularESimProfile>> profile_list;
+
+  ExpectScanDurationMetricsCount(/*other_count=*/0, /*android_count*/ 0,
+                                 /*gsma_counts=*/0, /*success=*/true);
 
   base::RunLoop run_loop;
   RequestAvailableProfiles(
@@ -1325,12 +1417,64 @@ TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportAndStorkEnabled,
   EXPECT_EQ(smds_activation_codes.front(),
             profile_list->front().activation_code());
 
-  histogram_tester.ExpectTotalCount(
+  ExpectScanDurationMetricsCount(/*other_count=*/1, /*android_count*/ 0,
+                                 /*gsma_counts=*/0, /*success=*/true);
+
+  histogram_tester().ExpectTotalCount(
       CellularNetworkMetricsLogger::kSmdsScanProfileCount,
       /*expected_count=*/1);
   EXPECT_EQ(static_cast<int64_t>(smds_activation_codes.size()),
-            histogram_tester.GetTotalSum(
+            histogram_tester().GetTotalSum(
                 CellularNetworkMetricsLogger::kSmdsScanProfileCount));
+}
+
+TEST_F(CellularESimProfileHandlerImplTest_SmdsSupportAndStorkEnabled,
+       RequestAvailableProfiles_SuccessfulDespiteHermesErrors) {
+  AddCellularDevice();
+  AddEuicc(/*euicc_num=*/1);
+  Init();
+  SetDevicePrefs();
+
+  absl::optional<ESimOperationResult> result;
+  absl::optional<std::vector<CellularESimProfile>> profile_list;
+
+  ExpectScanDurationMetricsCount(/*other_count=*/0, /*android_count*/ 0,
+                                 /*gsma_counts=*/0, /*success=*/false);
+
+  // Queue errors for each of the expected SM-DS scans.
+  const std::vector<std::string> smds_activation_codes =
+      cellular_utils::GetSmdsActivationCodes();
+  for (size_t i = 0; i < smds_activation_codes.size(); ++i) {
+    HermesEuiccClient::Get()->GetTestInterface()->QueueHermesErrorStatus(
+        HermesResponseStatus::kErrorUnknown);
+  }
+
+  base::RunLoop run_loop;
+  RequestAvailableProfiles(
+      /*euicc_num=*/1,
+      base::BindLambdaForTesting(
+          [&](ESimOperationResult returned_result,
+              std::vector<CellularESimProfile> returned_profile_list) {
+            result = returned_result;
+            profile_list = returned_profile_list;
+            run_loop.Quit();
+          }));
+
+  // Skip forward until all SM-DS scans are completed.
+  for (size_t i = 0; i < smds_activation_codes.size(); ++i) {
+    task_environment()->FastForwardBy(kInteractiveDelay);
+    base::RunLoop().RunUntilIdle();
+  }
+  run_loop.Run();
+
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(*result, cellular_setup::mojom::ESimOperationResult::kSuccess);
+
+  ExpectScanDurationMetricsCount(/*other_count=*/1, /*android_count*/ 0,
+                                 /*gsma_counts=*/0, /*success=*/false);
+
+  ASSERT_TRUE(profile_list.has_value());
+  EXPECT_EQ(0u, profile_list->size());
 }
 
 }  // namespace ash
