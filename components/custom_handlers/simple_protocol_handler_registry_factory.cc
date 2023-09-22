@@ -50,13 +50,13 @@ bool SimpleProtocolHandlerRegistryFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }
 
-KeyedService* SimpleProtocolHandlerRegistryFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+SimpleProtocolHandlerRegistryFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   // We can't ensure the UserPref has been set, so we pass a nullptr
   // PrefService.
   return custom_handlers::ProtocolHandlerRegistry::Create(
-             nullptr, std::make_unique<TestProtocolHandlerRegistryDelegate>())
-      .release();
+      nullptr, std::make_unique<TestProtocolHandlerRegistryDelegate>());
 }
 
 }  // namespace custom_handlers
