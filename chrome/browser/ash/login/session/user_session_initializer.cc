@@ -43,7 +43,6 @@
 #include "chrome/browser/scalable_iph/scalable_iph_factory.h"
 #include "chrome/browser/screen_ai/screen_ai_dlc_installer.h"
 #include "chrome/browser/ui/ash/calendar/calendar_keyed_service_factory.h"
-#include "chrome/browser/ui/ash/clipboard_history_url_title_fetcher_impl.h"
 #include "chrome/browser/ui/ash/glanceables/glanceables_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/media_client_impl.h"
@@ -246,9 +245,6 @@ void UserSessionInitializer::InitializePrimaryProfileServices(
       crostini::CrostiniManager::GetForProfile(profile);
   if (crostini_manager)
     crostini_manager->MaybeUpdateCrostini();
-
-  clipboard_history_url_title_fetcher_impl_ =
-      std::make_unique<ClipboardHistoryUrlTitleFetcherImpl>();
 
   if (captions::IsLiveCaptionFeatureSupported() &&
       features::IsSystemLiveCaptionEnabled()) {

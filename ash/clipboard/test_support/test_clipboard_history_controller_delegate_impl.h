@@ -25,6 +25,8 @@ class ASH_EXPORT TestClipboardHistoryControllerDelegateImpl
 
  private:
   // ClipboardHistoryControllerDelegate:
+  std::unique_ptr<ClipboardHistoryUrlTitleFetcher> CreateUrlTitleFetcher()
+      const override;
   std::unique_ptr<ClipboardImageModelFactory> CreateImageModelFactory()
       const override;
   bool Paste() const override;

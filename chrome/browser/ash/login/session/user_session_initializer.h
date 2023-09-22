@@ -13,7 +13,6 @@
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user.h"
 
-class ClipboardHistoryUrlTitleFetcherImpl;
 class Profile;
 
 namespace user_manager {
@@ -86,11 +85,6 @@ class UserSessionInitializer : public session_manager::SessionManagerObserver {
 
   bool inited_for_testing_ = false;
   base::OnceClosure init_rlz_impl_closure_for_testing_;
-
-  // TODO(http://b/301264185): Move ownership to clipboard history controller.
-  // Clipboard history URL title fetcher for the primary user.
-  std::unique_ptr<ClipboardHistoryUrlTitleFetcherImpl>
-      clipboard_history_url_title_fetcher_impl_;
 
   base::WeakPtrFactory<UserSessionInitializer> weak_factory_{this};
 };

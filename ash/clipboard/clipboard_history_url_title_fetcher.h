@@ -20,6 +20,8 @@ namespace ash {
 // URLs that the profile has already visited.
 class ASH_EXPORT ClipboardHistoryUrlTitleFetcher {
  public:
+  virtual ~ClipboardHistoryUrlTitleFetcher();
+
   // Returns the singleton fetcher instance.
   static ClipboardHistoryUrlTitleFetcher* Get();
 
@@ -33,7 +35,6 @@ class ASH_EXPORT ClipboardHistoryUrlTitleFetcher {
 
  protected:
   ClipboardHistoryUrlTitleFetcher();
-  virtual ~ClipboardHistoryUrlTitleFetcher();
 };
 
 }  // namespace ash
