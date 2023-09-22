@@ -281942,16 +281942,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "3145957fd7e6f6e3b67fe0d860c44cc8205561a2",
-     []
-    ],
-    "mtime.json": [
-     "456216cd8ed21411844e1717e5418c3607681f02",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -338080,10 +338070,6 @@
       "a2926b0e7942399fc62465e2446617eb99f796c9",
       []
      ],
-     "transform-2d-getComputedStyle-001-expected.txt": [
-      "0ccf5a9f79b8b6a43b2cb1b22e12f96baf643a11",
-      []
-     ],
      "transform-2d-getComputedStyle-001.html.ini": [
       "b75ec49732d20aec385032fb40645b7d13e1285f",
       []
@@ -349889,7 +349875,7 @@
     ],
     "admin": {
      "index.md": [
-      "f42d3075b6b7011ec3966ecb2b9cfd8ef54e5609",
+      "e0ec8b2b26caf0bde2ec2b1d5a0420170885fbc2",
       []
      ],
      "pywebsocket3.rst": [
@@ -359418,7 +359404,7 @@
        []
       ],
       "trusted-bidding-signals.py": [
-       "9602bd22f9667057c46d3900909ec9bcda832341",
+       "86e4db8ad448ade94b4c5885ea6b99b9f80e2871",
        []
       ],
       "trusted-scoring-signals.py": [
@@ -360182,15 +360168,15 @@
      ]
     },
     "CanvasTest-ascent256.ttf": [
-     "d5924fc2194a3ae0d9a4eca3c293b14909b2a44e",
+     "84ce51dee712d34c83e364ad09bd48c28f303a76",
      []
     ],
     "CanvasTest-descent0.ttf": [
-     "5887c0de8ddc89e4dcfa9027fa44a2d8a631c465",
+     "b0291dcf429bfe2ee99ebd733ded33abff4af2dd",
      []
     ],
     "CanvasTest.ttf": [
-     "9cdd0faf10818614202d397bb70b97a51a311fd4",
+     "6cdeccd10fe715d03d06a533a9d1397d111b72d8",
      []
     ],
     "CanvasTest.ttf.headers": [
@@ -368917,7 +368903,7 @@
         []
        ],
        "dir-auto-dynamic-changes.window-expected.txt": [
-        "e4cb75545cd2092405a74984260bbda06cf8d501",
+        "7d67e3ba0ff2d31bc357ee0ffe7f4458455acc8e",
         []
        ],
        "dir-auto-dynamic-changes.window.js.ini": [
@@ -391246,10 +391232,6 @@
      []
     ],
     "fcp-only": {
-     "fcp-document-opacity-image.html.ini": [
-      "8c9c8b10f8e83d05d896415f9cab802a7cb24a55",
-      []
-     ],
      "fcp-invisible-3d-rotate-descendant.html.ini": [
       "02b791f74d4a477bdd166f3943dd110f17ed8932",
       []
@@ -397064,6 +397046,10 @@
      ],
      "self-text-directive-iframe.html": [
       "43573692ea8e186278f51dc7a4f8204f549c997e",
+      []
+     ],
+     "util.js": [
+      "00e12929880c349ce3d8d52cb52e21b471465639",
       []
      ]
     },
@@ -481860,7 +481846,7 @@
       ]
      ],
      "transform-2d-getComputedStyle-001.html": [
-      "804b626126c9d404bda90965bd803e74d0266e11",
+      "c70cfa9cdc52d133fd57d13d64a0455d9d5ae8bf",
       [
        null,
        {}
@@ -488311,6 +488297,13 @@
      ],
      "getComputedStyle-getter-v-properties.tentative.html": [
       "e61241e57098de35a62554b6154f53e0a198bbe1",
+      [
+       null,
+       {}
+      ]
+     ],
+     "getComputedStyle-insets-absolute-roundtrip.html": [
+      "d89a22d86650371d31d90b3b6be728f3502c8db5",
       [
        null,
        {}
@@ -628101,6 +628094,15 @@
       }
      ]
     ],
+    "percent-encoding.html": [
+     "696734b663d2cbd49adbb6a2a400d0747be5ebc6",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "redirects.html": [
      "5ad910affe55f6dd5ff63cdd3e019cf969fc6653",
      [
@@ -628111,7 +628113,7 @@
      ]
     ],
     "same-document-tests.html": [
-     "be9bed9fd8b6f58626866bff132634e8dc60d51c",
+     "85db2de0a227c694d2168e49dfb7f9cffb5d9eff",
      [
       null,
       {}
