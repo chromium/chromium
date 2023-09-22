@@ -8,6 +8,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
@@ -46,6 +47,17 @@ namespace {
 constexpr int kMinRequiredVisits = 3;
 
 constexpr int kMinRequiredRelatedSearches = 2;
+
+constexpr char kDismissReasonMetricName[] =
+    "NewTabPage.HistoryClusters.DismissReason";
+
+// This enum must match NTPHistoryClustersDismissReason in enums.xml. Do not
+// reorder or remove items, and update kMaxValue when new items are added.
+enum NTPHistoryClustersDismissReason {
+  kNotInterested = 0,
+  kDone = 1,
+  kMaxValue = kDone,
+};
 
 }  // namespace
 
@@ -218,4 +230,20 @@ void HistoryClustersPageHandlerV2::UpdateClusterVisitsInteractionState(
   history_service->UpdateVisitsInteractionState(
       visit_ids, static_cast<history::ClusterVisit::InteractionState>(state),
       base::BindOnce([]() {}), &update_visits_task_tracker_);
+
+  switch (state) {
+    case history_clusters::mojom::InteractionState::kHidden:
+      base::UmaHistogramEnumeration(
+          kDismissReasonMetricName,
+          NTPHistoryClustersDismissReason::kNotInterested);
+      break;
+    case history_clusters::mojom::InteractionState::kDone:
+      base::UmaHistogramEnumeration(kDismissReasonMetricName,
+                                    NTPHistoryClustersDismissReason::kDone);
+      break;
+    case history_clusters::mojom::InteractionState::kDefault:
+      // Do nothing. Can happen when performing an 'Undo' action on the client,
+      // which restores a cluster to the Default state.
+      break;
+  }
 }

@@ -431,6 +431,8 @@ TEST_F(HistoryClustersPageHandlerV2Test, RecordLayoutTypeShown) {
 }
 
 TEST_F(HistoryClustersPageHandlerV2Test, UpdateClusterVisitsInteractionState) {
+  base::HistogramTester histogram_tester;
+
   std::vector<history::VisitID> visit_ids;
   history::ClusterVisit::InteractionState state;
   EXPECT_CALL(mock_history_service(), UpdateVisitsInteractionState)
@@ -462,6 +464,9 @@ TEST_F(HistoryClustersPageHandlerV2Test, UpdateClusterVisitsInteractionState) {
   for (size_t i = 0; i < visit_ids.size(); i++) {
     ASSERT_EQ(static_cast<history::VisitID>(i), visit_ids[i]);
   }
+
+  histogram_tester.ExpectUniqueSample(
+      "NewTabPage.HistoryClusters.DismissReason", 1, 1);
 }
 
 TEST_F(HistoryClustersPageHandlerV2Test, NotLoadCartWithoutFeature) {

@@ -78084,6 +78084,11 @@ Called by update_net_trust_anchors.py.-->
   <int value="13" label="Other action"/>
 </enum>
 
+<enum name="NTPHistoryClustersDismissReason">
+  <int value="0" label="Not interested"/>
+  <int value="1" label="Done"/>
+</enum>
+
 <enum name="NTPHistoryClustersElementType">
   <int value="0" label="Visit"/>
   <int value="1" label="Suggest"/>

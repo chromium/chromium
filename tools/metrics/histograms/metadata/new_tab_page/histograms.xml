@@ -652,6 +652,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.HistoryClusters.DismissReason"
+    enum="NTPHistoryClustersDismissReason" expires_after="2024-03-01">
+  <owner>romanarora@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Records the dismissal reason for a NTP History Clusters module instance.
+    Logged when the user interacts with a module instance dismissal action
+    button. Only logged on the 1P NTP when the history clusters module is
+    enabled.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.HistoryClusters.DisplayLayout"
     enum="NTPHistoryClustersModuleDisplayLayout" expires_after="2024-02-11">
   <owner>romanarora@chromium.org</owner>
