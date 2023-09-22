@@ -13,11 +13,11 @@
 #include <utility>
 
 #include "base/files/file_path.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "base/win/scoped_bstr.h"
@@ -622,12 +622,11 @@ void AXTreeFormatterWin::AddIA2HypertextProperties(
         DCHECK(SUCCEEDED(hr));
       }
 
-      std::wstring child_index_str(L"<obj");
-      if (child_index >= 0) {
-        base::StringAppendF(&child_index_str, L"%d>", child_index);
-      } else {
-        base::StringAppendF(&child_index_str, L">");
-      }
+      std::wstring child_index_str =
+          (child_index >= 0)
+              ? base::StrCat(
+                    {L"<obj", base::NumberToWString(child_index), L">"})
+              : std::wstring(L"<obj>");
       base::ReplaceFirstSubstringAfterOffset(
           &ia2_hypertext, hypertext_index, embedded_character, child_index_str);
       ++character_index;
@@ -917,10 +916,9 @@ std::string AXTreeFormatterWin::ProcessTreeForOutput(
         break;
       }
       default:
-        WriteAttribute(false,
-                       base::StringPrintf("%s=%s", attribute_name,
-                                          AXFormatValue(*value).c_str()),
-                       &line);
+        WriteAttribute(
+            false, base::StrCat({attribute_name, "=", AXFormatValue(*value)}),
+            &line);
         break;
     }
   }
