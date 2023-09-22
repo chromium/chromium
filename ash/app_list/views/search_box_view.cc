@@ -197,6 +197,40 @@ std::u16string GetCategoryName(SearchResult* search_result) {
   }
 }
 
+std::u16string GetCategoryMenuItemTooltip(
+    AppListSearchControlCategory category) {
+  int tooltip_id = -1;
+  switch (category) {
+    case AppListSearchControlCategory::kApps:
+      tooltip_id = IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_APPS_TOOLTIP;
+      break;
+    case AppListSearchControlCategory::kAppShortcuts:
+      tooltip_id = IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_APP_SHORTCUTS_TOOLTIP;
+      break;
+    case AppListSearchControlCategory::kFiles:
+      tooltip_id = IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_FILES_TOOLTIP;
+      break;
+    case AppListSearchControlCategory::kGames:
+      tooltip_id = IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_GAMES_TOOLTIP;
+      break;
+    case AppListSearchControlCategory::kHelp:
+      tooltip_id = IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_HELP_TOOLTIP;
+      break;
+    case AppListSearchControlCategory::kImages:
+      tooltip_id = IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_IMAGES_TOOLTIP;
+      break;
+    case AppListSearchControlCategory::kPlayStore:
+      tooltip_id = IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_PLAYSTORE_TOOLTIP;
+      break;
+    case AppListSearchControlCategory::kWeb:
+      tooltip_id = IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_WEBSITES_TOOLTIP;
+      break;
+    case AppListSearchControlCategory::kCannotToggle:
+      NOTREACHED_NORETURN();
+  }
+  return l10n_util::GetStringUTF16(tooltip_id);
+}
+
 // Returns the check box icon that is shown on the category filter menu item.
 ui::ImageModel GetCheckboxImage(bool checked) {
   return ui::ImageModel::FromVectorIcon(
@@ -247,6 +281,14 @@ class FilterMenuAdapter : public views::MenuModelAdapter {
                                               const ui::Event& e) override {
     // Keep the menu open if the user toggles the checkboxes in the menu.
     return true;
+  }
+  std::u16string GetTooltipText(int id,
+                                const gfx::Point& screen_loc) const override {
+    if (id == ui::MenuModel::kTitleId) {
+      return std::u16string();
+    }
+    return GetCategoryMenuItemTooltip(
+        static_cast<AppListSearchControlCategory>(id));
   }
   void ExecuteCommand(int id) override { ExecuteCommand(id, 0); }
   void ExecuteCommand(int id, int mouse_event_flags) override {
@@ -399,8 +441,8 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
     views::ImageButton* filter_button = CreateFilterButton(base::BindRepeating(
         &SearchBoxView::ShowFilterMenu, weak_ptr_factory_.GetWeakPtr()));
     filter_button->SetFlipCanvasOnPaintForRTLUI(false);
-    // TODO(crbug.com/1352636): Replace this with the l10n string.
-    std::u16string filter_button_label(u"Toggle search result categories");
+    std::u16string filter_button_label(
+        l10n_util::GetStringUTF16(IDS_ASH_SEARCH_BOX_FILTER_BUTTON_TOOLTIP));
     filter_button->SetAccessibleName(filter_button_label);
     filter_button->SetTooltipText(filter_button_label);
   }
@@ -1587,8 +1629,8 @@ void SearchBoxView::ResetHighlightRange() {
 
 ui::SimpleMenuModel* SearchBoxView::BuildFilterMenuModel() {
   filter_menu_model_ = std::make_unique<ui::SimpleMenuModel>(nullptr);
-  // TODO(crbug.com/1352636): Use l10n string when the text is finalized.
-  filter_menu_model_->AddTitle(u"Search categories");
+  filter_menu_model_->AddTitle(
+      l10n_util::GetStringUTF16(IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_TITLE));
   std::vector<AppListSearchControlCategory> available_categories =
       GetToggleableCategories();
 

@@ -730,6 +730,59 @@ TEST_P(SearchResultImageViewTest, SearchCategoryMenuItemToggleTest) {
   app_list_client->set_search_callback(TestAppListClient::SearchCallback());
 }
 
+// Verifies that the filter button and all menu items in the search category
+// filter have tooltips.
+TEST_P(SearchResultImageViewTest, SearchCategoryMenuItemTooltips) {
+  GetAppListTestHelper()->ShowAppList();
+  auto* app_list_client = GetAppListTestHelper()->app_list_client();
+
+  app_list_client->set_available_categories_for_test(
+      {AppListSearchControlCategory::kApps,
+       AppListSearchControlCategory::kAppShortcuts,
+       AppListSearchControlCategory::kFiles,
+       AppListSearchControlCategory::kGames,
+       AppListSearchControlCategory::kHelp,
+       AppListSearchControlCategory::kImages,
+       AppListSearchControlCategory::kPlayStore,
+       AppListSearchControlCategory::kWeb});
+
+  // Press a character key to open the search.
+  PressAndReleaseKey(ui::VKEY_A);
+  GetSearchBoxView()->GetWidget()->LayoutRootViewIfNecessary();
+  views::ImageButton* filter_button = GetSearchBoxView()->filter_button();
+  EXPECT_TRUE(filter_button->GetVisible());
+  EXPECT_EQ(filter_button->GetTooltipText({}),
+            u"Toggle search result categories");
+  LeftClickOn(filter_button);
+  EXPECT_TRUE(GetSearchBoxView()->IsFilterMenuOpen());
+
+  auto check_tooltip = [&](AppListSearchControlCategory category,
+                           std::u16string tooltip) {
+    EXPECT_EQ(GetSearchBoxView()
+                  ->GetFilterMenuItemByCategory(category)
+                  ->GetTooltipText({}),
+              tooltip);
+  };
+
+  // Check that all menu items have their corresponding tooltip.
+  check_tooltip(AppListSearchControlCategory::kApps, u"Your installed apps");
+  check_tooltip(
+      AppListSearchControlCategory::kAppShortcuts,
+      u"Quick access to specific pages or actions within installed apps");
+  check_tooltip(AppListSearchControlCategory::kFiles,
+                u"Your files on this device and Google Drive");
+  check_tooltip(AppListSearchControlCategory::kGames,
+                u"Games on the Play Store and other gaming platforms");
+  check_tooltip(AppListSearchControlCategory::kHelp,
+                u"Key shortcuts, tips for using device, and more");
+  check_tooltip(AppListSearchControlCategory::kImages,
+                u"Image search by content and image previews");
+  check_tooltip(AppListSearchControlCategory::kPlayStore,
+                u"Available apps from the Play Store");
+  check_tooltip(AppListSearchControlCategory::kWeb,
+                u"Websites including pages you've visited and open pages");
+}
+
 // Tests that key traversal correctly cycles between the list of results and
 // search box buttons.
 TEST_P(SearchResultImageViewTest, ResultSelectionCycle) {

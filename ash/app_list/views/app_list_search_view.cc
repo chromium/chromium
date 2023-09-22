@@ -116,12 +116,10 @@ AppListSearchView::AppListSearchView(
       view_delegate->SetCategoryEnabled(AppListSearchControlCategory::kImages,
                                         false);
 
-      // TODO(crbug.com/1352636): Update the strings with the l10n translated
-      // ones.
-      AppListToastView::Builder toast_view_builder(
-          u"You can now find your images by keyword");
+      AppListToastView::Builder toast_view_builder(l10n_util::GetStringUTF16(
+          IDS_ASH_SEARCH_IMAGE_SEARCH_PRIVACY_NOTICE_TITLE));
       toast_view_builder.SetButton(
-          u"Get started",
+          l10n_util::GetStringUTF16(IDS_ASH_CONTINUE_BUTTON),
           base::BindRepeating(&AppListSearchView::OnSearchNotifierButtonPressed,
                               weak_ptr_factory_.GetWeakPtr()));
       search_notifier_ = scroll_contents->AddChildView(
@@ -129,8 +127,9 @@ AppListSearchView::AppListSearchView(
               .SetIcon(ui::ImageModel::FromVectorIcon(
                   vector_icons::kImageSearchIcon, ui::kColorMenuIcon,
                   kSearchNotifierIconSize))
-              .SetSubtitle(
-                  u"Try \'cat\', \'dog\', \'building\', \'receipts\', etc")
+              .SetSubtitle(l10n_util::GetStringUTF16(
+                  IDS_ASH_SEARCH_IMAGE_SEARCH_PRIVACY_NOTICE_CONTENT))
+              .SetSubtitleMultiline(true)
               .Build());
       search_notifier_->SetProperty(views::kMarginsKey,
                                     gfx::Insets::TLBR(16, 16, 0, 16));
