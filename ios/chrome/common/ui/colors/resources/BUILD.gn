@@ -19,8 +19,10 @@ group("resources") {
     ":disabled_tint_color",
     ":favicon_background_color",
     ":green_100_color",
+    ":green_400_color",
     ":green_500_color",
     ":green_50_color",
+    ":green_600_color",
     ":green_700_color",
     ":green_800_color",
     ":green_color",
@@ -47,6 +49,8 @@ group("resources") {
     ":primary_background_color",
     ":purple_500_color",
     ":purple_600_color",
+    ":red_100_color",
+    ":red_400_color",
     ":red_500_color",
     ":red_600_color",
     ":scrim_background_color",
@@ -134,8 +138,16 @@ colorset("green_100_color") {
   sources = [ "green_100_color.colorset/Contents.json" ]
 }
 
+colorset("green_400_color") {
+  sources = [ "green_400_color.colorset/Contents.json" ]
+}
+
 colorset("green_500_color") {
   sources = [ "green_500_color.colorset/Contents.json" ]
+}
+
+colorset("green_600_color") {
+  sources = [ "green_600_color.colorset/Contents.json" ]
 }
 
 colorset("green_700_color") {
@@ -188,6 +200,14 @@ colorset("grey_900_color") {
 
 colorset("static_grey_300_color") {
   sources = [ "static_grey_300_color.colorset/Contents.json" ]
+}
+
+colorset("red_100_color") {
+  sources = [ "red_100_color.colorset/Contents.json" ]
+}
+
+colorset("red_400_color") {
+  sources = [ "red_400_color.colorset/Contents.json" ]
 }
 
 colorset("red_500_color") {

@@ -1,0 +1,291 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/ui/content_suggestions/cells/parcel_tracking_view.h"
+
+#import "base/i18n/time_formatting.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/parcel_tracking_item.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/branded_images/branded_images_api.h"
+#import "ui/base/l10n/l10n_util_mac.h"
+
+namespace {
+
+// Spacing between Icon container and the text StackView.
+const CGFloat kIconContainerTextSpacing = 20.0f;
+
+// Corner radius of the Icon container.
+const CGFloat kIconContainerCornerRadius = 12.0f;
+
+// Icon container size.
+const CGFloat kIconContainerWidth = 72.0f;
+
+// Margin between icon and its container.
+const CGFloat kIconContainerMargin = 8.0f;
+
+#if !BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+// Size of the icon.
+const CGFloat kIconSize = 53.0f;
+#endif
+
+// Spacing between text StackView subviews.
+const CGFloat kTextStackViewSpacing = 5.0f;
+
+// Spacing between status bar StackView and its above view.
+const CGFloat kStatusBarsTopSpacing = 20.0f;
+
+// Spacing between status bars.
+const CGFloat kStatusBarViewSpacing = 6.0f;
+
+// Status bar configurations.
+const CGFloat kStatusBarWidth = 61.0f;
+const CGFloat kStatusBarHeight = 6.0f;
+const CGFloat kStatusBarCornerRadius = 3.0f;
+
+}  // namespace
+
+// Represents a status bar in the ParcelStatusBarView.
+@interface ParcelStatusBarView : UIView
+
+// Configures the view to reflect `hasError` and if it should have `lighterTone`
+// coloring.
+- (void)configureAsError:(BOOL)hasError lighterTone:(BOOL)lighterTone;
+
+@end
+
+@implementation ParcelStatusBarView
+
+- (instancetype)initWithFrame:(CGRect)frame {
+  self = [super initWithFrame:frame];
+  if (self) {
+    self.layer.cornerRadius = kStatusBarCornerRadius;
+    self.layer.masksToBounds = YES;
+
+    [NSLayoutConstraint activateConstraints:@[
+      [self.widthAnchor constraintEqualToConstant:kStatusBarWidth],
+      [self.heightAnchor constraintEqualToConstant:kStatusBarHeight],
+    ]];
+
+    [self setContentHuggingPriority:UILayoutPriorityRequired
+                            forAxis:UILayoutConstraintAxisVertical];
+    [self
+        setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                        forAxis:UILayoutConstraintAxisVertical];
+  }
+  return self;
+}
+
+- (void)configureAsError:(BOOL)hasError lighterTone:(BOOL)lighterTone {
+  NSString* colorName;
+  if (hasError) {
+    colorName = lighterTone ? kRed100Color : kRed400Color;
+  } else {
+    colorName = lighterTone ? kGreen100Color : kGreen400Color;
+  }
+  self.backgroundColor = [UIColor colorNamed:colorName];
+}
+
+@end
+
+@implementation ParcelTrackingModuleView {
+  UIView* _imageContainer;
+  ParcelStatusBarView* _firstStatusBar;
+  ParcelStatusBarView* _secondStatusBar;
+  ParcelStatusBarView* _thirdStatusBar;
+}
+
+- (instancetype)initWithConfiguration:(ParcelTrackingItem*)config {
+  self = [super initWithFrame:CGRectZero];
+  if (self) {
+    [self constructView];
+
+    NSString* carrierName;
+    switch (config.parcelType) {
+      case ParcelType::kUSPS:
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+        self.iconImageView.image = [UIImage imageNamed:kUSPSCarrier];
+#else
+        self.iconImageView.image =
+            DefaultSymbolWithPointSize(kBoxTruckFill, kIconSize);
+#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+        carrierName =
+            l10n_util::GetNSString(IDS_IOS_PARCEL_TRACKING_CARRIER_USPS);
+        break;
+      case ParcelType::kUPS:
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+        self.iconImageView.image = [UIImage imageNamed:kUPSCarrier];
+#else
+        self.iconImageView.image =
+            DefaultSymbolWithPointSize(kBoxTruckFill, kIconSize);
+#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+        carrierName =
+            l10n_util::GetNSString(IDS_IOS_PARCEL_TRACKING_CARRIER_UPS);
+        break;
+      case ParcelType::kFedex:
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+        self.iconImageView.image = [UIImage imageNamed:kFedexCarrier];
+#else
+        self.iconImageView.image =
+            DefaultSymbolWithPointSize(kBoxTruckFill, kIconSize);
+#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+        carrierName =
+            l10n_util::GetNSString(IDS_IOS_PARCEL_TRACKING_CARRIER_FEDEX);
+        break;
+      default:
+        break;
+    }
+    self.subtitleLabel.text = l10n_util::GetNSStringF(
+        IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_INFORMATION,
+        base::SysNSStringToUTF16(carrierName),
+        base::SysNSStringToUTF16(config.parcelID));
+
+    NSString* dateString =
+        base::SysUTF16ToNSString(base::LocalizedTimeFormatWithPattern(
+            config.estimatedDeliveryTime, "EEEE MMMM d"));
+    self.titleLabel.text = l10n_util::GetNSStringF(
+        IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_ARRIVING_STATUS,
+        base::SysNSStringToUTF16(dateString));
+
+    // Configure the status bars (and title text color if needed) depending on
+    // status.
+    switch (config.status) {
+      case ParcelState::kNew:
+      case ParcelState::kLabelCreated:
+        [_firstStatusBar configureAsError:NO lighterTone:NO];
+        [_secondStatusBar configureAsError:NO lighterTone:YES];
+        [_thirdStatusBar configureAsError:NO lighterTone:YES];
+        break;
+      case ParcelState::kFinished:
+      case ParcelState::kAtPickupLocation:
+        [_firstStatusBar configureAsError:NO lighterTone:NO];
+        [_secondStatusBar configureAsError:NO lighterTone:NO];
+        [_thirdStatusBar configureAsError:NO lighterTone:NO];
+        break;
+      case ParcelState::kPickedUp:
+      case ParcelState::kHandedOff:
+      case ParcelState::kWithCarrier:
+      case ParcelState::kOutForDelivery:
+        [_firstStatusBar configureAsError:NO lighterTone:NO];
+        [_secondStatusBar configureAsError:NO lighterTone:NO];
+        [_thirdStatusBar configureAsError:NO lighterTone:YES];
+        break;
+      case ParcelState::kDeliveryFailed:
+      case ParcelState::kError:
+      case ParcelState::kCancelled:
+        self.titleLabel.textColor = [UIColor colorNamed:kRed600Color];
+        [_firstStatusBar configureAsError:YES lighterTone:NO];
+        [_secondStatusBar configureAsError:YES lighterTone:NO];
+        [_thirdStatusBar configureAsError:YES lighterTone:YES];
+        break;
+      case ParcelState::kUndeliverable:
+      case ParcelState::kReturnToSender:
+      case ParcelState::kReturnCompleted:
+      case ParcelState::kOrderTooOld:
+        // No status bars.
+        [_firstStatusBar removeFromSuperview];
+        [_secondStatusBar removeFromSuperview];
+        [_thirdStatusBar removeFromSuperview];
+        break;
+      default:
+        break;
+    }
+    self.accessibilityLabel =
+        [NSString stringWithFormat:@"%@, %@", self.titleLabel.text,
+                                   self.subtitleLabel.text];
+    self.isAccessibilityElement = YES;
+  }
+  return self;
+}
+
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (previousTraitCollection.userInterfaceStyle !=
+      self.traitCollection.userInterfaceStyle) {
+    _imageContainer.layer.borderColor =
+        [UIColor colorNamed:kGrey200Color].CGColor;
+  }
+}
+
+- (void)constructView {
+  _titleLabel = [[UILabel alloc] init];
+  _titleLabel.isAccessibilityElement = NO;
+  _titleLabel.font =
+      CreateDynamicFont(UIFontTextStyleBody, UIFontWeightSemibold);
+  _titleLabel.adjustsFontForContentSizeCategory = YES;
+  _titleLabel.numberOfLines = 2;
+  _titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
+  _titleLabel.textColor = [UIColor colorNamed:kGreen600Color];
+
+  _subtitleLabel = [[UILabel alloc] init];
+  _subtitleLabel.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+  _subtitleLabel.adjustsFontForContentSizeCategory = YES;
+  _subtitleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+
+  _firstStatusBar = [[ParcelStatusBarView alloc] init];
+  _secondStatusBar = [[ParcelStatusBarView alloc] init];
+  _thirdStatusBar = [[ParcelStatusBarView alloc] init];
+  UIStackView* statusBarStackView =
+      [[UIStackView alloc] initWithArrangedSubviews:@[
+        _firstStatusBar, _secondStatusBar, _thirdStatusBar
+      ]];
+  statusBarStackView.axis = UILayoutConstraintAxisHorizontal;
+  statusBarStackView.alignment = UIStackViewAlignmentCenter;
+  statusBarStackView.spacing = kStatusBarViewSpacing;
+
+  UIStackView* rightVerticalStackView =
+      [[UIStackView alloc] initWithArrangedSubviews:@[
+        _titleLabel, _subtitleLabel, statusBarStackView
+      ]];
+  rightVerticalStackView.axis = UILayoutConstraintAxisVertical;
+  rightVerticalStackView.alignment = UIStackViewAlignmentLeading;
+  rightVerticalStackView.spacing = kTextStackViewSpacing;
+  [rightVerticalStackView setCustomSpacing:kStatusBarsTopSpacing
+                                 afterView:_subtitleLabel];
+
+  _iconImageView = [[UIImageView alloc] init];
+  _iconImageView.contentMode = UIViewContentModeScaleAspectFit;
+  _iconImageView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  // Container allows for margins between icon a border.
+  _imageContainer = [[UIView alloc] init];
+  _imageContainer.layer.cornerRadius = kIconContainerCornerRadius;
+  _imageContainer.layer.masksToBounds = YES;
+  _imageContainer.layer.borderWidth = 1;
+  _imageContainer.layer.borderColor =
+      [UIColor colorNamed:kGrey200Color].CGColor;
+  [_imageContainer addSubview:_iconImageView];
+  AddSameConstraintsWithInsets(
+      _iconImageView, _imageContainer,
+      NSDirectionalEdgeInsetsMake(kIconContainerMargin, kIconContainerMargin,
+                                  kIconContainerMargin, kIconContainerMargin));
+
+  UIStackView* horizontalStackView = [[UIStackView alloc]
+      initWithArrangedSubviews:@[ _imageContainer, rightVerticalStackView ]];
+  horizontalStackView.translatesAutoresizingMaskIntoConstraints = NO;
+  horizontalStackView.axis = UILayoutConstraintAxisHorizontal;
+  horizontalStackView.alignment = UIStackViewAlignmentLeading;
+  horizontalStackView.spacing = kIconContainerTextSpacing;
+  [self addSubview:horizontalStackView];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_imageContainer.widthAnchor constraintEqualToConstant:kIconContainerWidth],
+    [_imageContainer.heightAnchor
+        constraintEqualToAnchor:_imageContainer.widthAnchor],
+    [horizontalStackView.topAnchor constraintEqualToAnchor:self.topAnchor],
+    [horizontalStackView.bottomAnchor
+        constraintEqualToAnchor:self.bottomAnchor],
+    [horizontalStackView.leadingAnchor
+        constraintEqualToAnchor:self.leadingAnchor],
+    [horizontalStackView.trailingAnchor
+        constraintEqualToAnchor:self.trailingAnchor],
+  ]];
+}
+@end

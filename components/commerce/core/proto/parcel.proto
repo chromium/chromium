@@ -80,6 +80,7 @@ message ParcelStatus {
   ParcelIdentifier parcel_identifier = 1;
 
   // The current state of the parcel, as reported by the carrier.
+  // LINT.IfChange
   enum ParcelState {
     UNKNOWN = 0;
     NEW = 18;
@@ -99,6 +100,7 @@ message ParcelStatus {
     UNDELIVERABLE = 17;
     reserved 5, 7 to 10;
   }
+  // LINT.ThenChange(tools/metrics/histograms/enums.xml)
   ParcelState parcel_state = 2;
 
   // The tracking URL, if available.

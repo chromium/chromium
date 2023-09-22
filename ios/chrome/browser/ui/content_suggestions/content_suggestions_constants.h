@@ -26,9 +26,10 @@ enum class ContentSuggestionsModuleType {
   kSafetyCheckMultiRow = 8,
   kSafetyCheckMultiRowOverflow = 9,
   kTabResumption = 10,
-  kMaxValue = kTabResumption,
+  kParcelTracking = 11,
+  kMaxValue = kParcelTracking,
 };
-// LINT.ThenChange(tools/metrics/histograms/enums.xml)
+// LINT.ThenChange(/tools/metrics/histograms/enums.xml)
 
 // Represents the content suggestions collection view.
 extern NSString* const kContentSuggestionsCollectionIdentifier;

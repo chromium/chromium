@@ -859,6 +859,15 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_TITLE" desc="The Most Visited module title on the new tab page [Length: 10em]">
         Most Visited Sites
       </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_TITLE" desc="The Parcel Tracking module title on the Home surface [Length: 10em]">
+        Package Tracking
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_INFORMATION" desc="The Parcel Tracking module package information on the Home surface [Length: 10em]">
+        <ph name="Carrier_Name"><ex>USPS</ex>$1</ph> • #<ph name="Parcel_Identifier"><ex>1237834578495</ex>$2</ph>
+      </message>
+      <message name="IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_ARRIVING_STATUS" desc="The Parcel Tracking module package status description on the Home surface [Length: 10em]">
+        Arriving <ph name="Date"><ex>Monday, September 13</ex>$1</ph>
+      </message>
       <message name="IDS_IOS_CONTENT_SUGGESTIONS_READING_LIST" desc="The Reading List title on the new tab page [Length: 10em]">
         Reading List
       </message>
@@ -4558,7 +4567,24 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_IOS_TAB_RESUMPTION_TAB_TITLE_PLACEHOLDER" desc="Label displayed when the last opened tab title is empty. This module presents the last open tab, on the new tab page.">
         Your Last Open Tab
       </message>
-
+      <message name="IDS_IOS_PARCEL_TRACKING_CONTEXT_MENU_DESCRIPTION" desc="Descripiton for the long-press context menu of the parcel tracking module.">
+        Hide "<ph name="Module_Name"><ex>Package Tracking</ex>$1</ph>"
+      </message>
+      <message name="IDS_IOS_PARCEL_TRACKING_CONTEXT_MENU_TITLE" desc="Title for the long-press context menu of the parcel tracking module.">
+          This card helps you keep track of your packages and give you important delivery updates.
+      </message>
+      <message name="IDS_IOS_PARCEL_TRACKING_MODULE_HIDE_ALERT_TITLE" desc="Title for the alert dialog warning the user they are about to hide the parcel tracking module.">
+          Hiding this Card will Turn Off Auto-Tracking for Future Packages
+      </message>
+      <message name="IDS_IOS_PARCEL_TRACKING_CARRIER_FEDEX" desc="Name of FEDEX Carrier">
+          FEDEX
+      </message>
+      <message name="IDS_IOS_PARCEL_TRACKING_CARRIER_UPS" desc="Name of UPS Carrier">
+          UPS
+      </message>
+      <message name="IDS_IOS_PARCEL_TRACKING_CARRIER_USPS" desc="Name of USPS Carrier">
+          USPS
+      </message>
       <message name="IDS_IOS_TAB_RESUMPTION_TITLE" desc="Title for the module that presents the last opened tab, on the new tab page.">
         Continue Browsing
       </message>

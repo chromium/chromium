@@ -5,4 +5,5 @@ include_rules = [
   "+ios/chrome/browser/shared/ui/util/uikit_ui_util.h",
   "+ios/chrome/browser/web",
   "+ios/chrome/browser/voice",
+  "+ios/chrome/browser/shared/ui/symbols/symbols.h",
 ]

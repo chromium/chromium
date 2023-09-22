@@ -29,6 +29,10 @@ source_set("cells") {
     "magic_stack_module_container_delegate.h",
     "multi_row_container_view.h",
     "multi_row_container_view.mm",
+    "parcel_tracking_item.h",
+    "parcel_tracking_item.mm",
+    "parcel_tracking_view.h",
+    "parcel_tracking_view.mm",
     "query_suggestion_view.h",
     "query_suggestion_view.mm",
     "suggested_content.h",
@@ -58,6 +62,7 @@ source_set("cells") {
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util",
     "//ios/chrome/common/ui/util:dynamic_type_util",
+    "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
     "//ui/base",
     "//url",
   ]

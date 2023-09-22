@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/magic_stack_module_container.h"
 
 #import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/magic_stack_module_container_delegate.h"
@@ -288,6 +289,9 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
     case ContentSuggestionsModuleType::kSafetyCheckMultiRow:
     case ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow:
       return l10n_util::GetNSString(IDS_IOS_SAFETY_CHECK_TITLE);
+    case ContentSuggestionsModuleType::kParcelTracking:
+      return l10n_util::GetNSString(
+          IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_TITLE);
     default:
       NOTREACHED();
       return @"";
@@ -408,6 +412,7 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
     case ContentSuggestionsModuleType::kCompactedSetUpList:
+    case ContentSuggestionsModuleType::kParcelTracking:
       return YES;
     default:
       return NO;
@@ -470,6 +475,11 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
     case ContentSuggestionsModuleType::kCompactedSetUpList:
       return l10n_util::GetNSString(
           IDS_IOS_SET_UP_LIST_HIDE_MODULE_CONTEXT_MENU_TITLE);
+    case ContentSuggestionsModuleType::kParcelTracking:
+      return l10n_util::GetNSStringF(
+          IDS_IOS_PARCEL_TRACKING_CONTEXT_MENU_TITLE,
+          base::SysNSStringToUTF16(l10n_util::GetNSString(
+              IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_TITLE)));
     default:
       NOTREACHED_NORETURN();
   }
@@ -492,6 +502,11 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
     case ContentSuggestionsModuleType::kCompactedSetUpList:
       return l10n_util::GetNSString(
           IDS_IOS_SET_UP_LIST_HIDE_MODULE_CONTEXT_MENU_DESCRIPTION);
+    case ContentSuggestionsModuleType::kParcelTracking:
+      return l10n_util::GetNSStringF(
+          IDS_IOS_PARCEL_TRACKING_CONTEXT_MENU_DESCRIPTION,
+          base::SysNSStringToUTF16(l10n_util::GetNSString(
+              IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_TITLE)));
     default:
       NOTREACHED_NORETURN();
   }

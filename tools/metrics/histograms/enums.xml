@@ -55917,6 +55917,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="8" label="Safety Check Multi Row"/>
   <int value="9" label="Safety Check Multi Row Overflow"/>
   <int value="10" label="Tab Resumption"/>
+  <int value="11" label="Parcel Tracking"/>
 </enum>
 
 <enum name="IOSMainThreadFreezeDetectionNotRunningAfterReportBlock">
