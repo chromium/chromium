@@ -152,7 +152,7 @@ class EnumSet {
       return i;
     }
 
-    const raw_ptr<const EnumBitSet, DanglingUntriaged> enums_;
+    const raw_ptr<const EnumBitSet> enums_;
     size_t i_;
   };
 
