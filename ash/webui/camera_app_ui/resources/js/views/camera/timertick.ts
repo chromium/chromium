@@ -57,8 +57,7 @@ export function start(): Promise<void> {
           void play(dom.get(sound, HTMLAudioElement));
         }
         tickMsg.textContent = tickCounter + '';
-        // Not waiting for animation to finish playing.
-        void animate.play(tickMsg);
+        animate.play(tickMsg);
         tickTimeout = setTimeout(onTimerTick, 1000);
         tickCounter--;
       }

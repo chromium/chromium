@@ -20,10 +20,7 @@ function doShow(message: string): void {
     element.textContent = '';  // Force reiterate the same message for a11y.
     element.textContent = message;
   }
-  // TODO(pihsun): Should this be awaited? Maybe should change animate.play to
-  // two parts, one wait until animation is played and another wait until it's
-  // settled.
-  void animate.play(element, changeElement);
+  animate.play(element, changeElement);
 }
 
 /**

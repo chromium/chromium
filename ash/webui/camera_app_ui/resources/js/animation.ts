@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assertExists, assertInstanceof} from './assert.js';
-import {AsyncJobQueue} from './async_job_queue.js';
+import {AsyncJobInfo, AsyncJobQueue} from './async_job_queue.js';
 
 const jobQueueMap = new Map<HTMLElement, AsyncJobQueue>();
 
@@ -44,13 +44,12 @@ export function cancel(el: HTMLElement): void {
  *
  * @param el Target element to apply "animate" class.
  * @param changeElement Function to change the target element before animation.
- * @return Promise resolved when the animation is settled.
  */
-export async function play(
-    el: HTMLElement, changeElement?: () => void): Promise<void> {
+export function play(
+    el: HTMLElement, changeElement?: () => void): AsyncJobInfo {
   cancel(el);
   const queue = getQueueFor(el);
-  async function job() {
+  return queue.push(async () => {
     void el.offsetWidth;  // Force repaint before applying the animation.
     if (changeElement !== undefined) {
       changeElement();
@@ -58,6 +57,5 @@ export async function play(
     el.classList.add('animate');
     await Promise.allSettled(getAnimations(el).map((a) => a.finished));
     el.classList.remove('animate');
-  }
-  await queue.push(job).result;
+  });
 }

@@ -65,7 +65,7 @@ class RippleEffect {
     this.parent.appendChild(template);
     // We don't care about waiting for the single ripple animation to end
     // before returning.
-    void animation.play(ripple).then(() => {
+    void animation.play(ripple).result.then(() => {
       ripple.remove();
     });
   }

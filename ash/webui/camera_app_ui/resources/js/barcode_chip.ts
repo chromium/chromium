@@ -97,7 +97,7 @@ function createCopyButton(
       dom.getFrom(container, '.barcode-copy-button', HTMLButtonElement);
   copyButton.onclick = async () => {
     await navigator.clipboard.writeText(content);
-    await snackbar.show(snackbarLabel);
+    snackbar.show(snackbarLabel);
   };
   return copyButton;
 }

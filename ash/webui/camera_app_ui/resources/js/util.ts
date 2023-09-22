@@ -248,7 +248,7 @@ export function setInkdropEffect(el: HTMLElement): void {
   const ripple =
       assertInstanceof(tpl.querySelector('.inkdrop-ripple'), HTMLElement);
   el.appendChild(tpl);
-  el.addEventListener('click', async (e) => {
+  el.addEventListener('click', (e) => {
     const tRect =
         assertInstanceof(e.target, HTMLElement).getBoundingClientRect();
     const elRect = el.getBoundingClientRect();
@@ -260,7 +260,7 @@ export function setInkdropEffect(el: HTMLElement): void {
     el.style.setProperty('--drop-x', `${dropX}px`);
     el.style.setProperty('--drop-y', `${dropY}px`);
     el.style.setProperty('--drop-radius', `${radius}px`);
-    await animate.play(ripple);
+    animate.play(ripple);
   });
 }
 

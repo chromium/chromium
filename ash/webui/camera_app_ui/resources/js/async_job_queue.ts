@@ -30,12 +30,17 @@ interface PendingJob {
 /**
  * Returned by `AsyncJobQueue.push` containing `result` of the queued job.
  */
-interface AsyncJobInfo {
+export interface AsyncJobInfo {
   /**
    * The result of the job. Resolved when the job is finished, cleared or
    * dropped, and rejected if the job is run but throws an error.
    * TODO(pihsun): returns different state for cleared or dropped case if
    * there's use for it.
+   * TODO(pihsun): really returns the return value of the job from this if
+   * there's use case for it. For now all places that use AsyncJobQueue and
+   * need result use AsyncJobWithResultQueue, which doesn't support clearing and
+   * mode other than 'enqueue', but has a simpler typing because the return
+   * value always exist.
    */
   result: Promise<void>;
 }

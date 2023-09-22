@@ -727,7 +727,7 @@ export class Camera extends View implements CameraViewUI {
 
   playShutterEffect(): void {
     void sound.play(dom.get('#sound-shutter', HTMLAudioElement));
-    void animate.play(this.cameraManager.getPreviewVideo().video);
+    animate.play(this.cameraManager.getPreviewVideo().video);
   }
 
   private getLowStorageDialogKeys(dialogType: LowStorageDialogType) {
