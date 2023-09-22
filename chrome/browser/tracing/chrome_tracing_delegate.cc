@@ -51,7 +51,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/crosapi_pref_observer.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #endif
 
 namespace {
@@ -69,39 +69,6 @@ bool IsBackgroundTracingCommandLine() {
   return false;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// Helper for reading the value of device policy from ash-chrome.
-class DevicePolicyObserver {
- public:
-  DevicePolicyObserver()
-      : pref_observer_(
-            crosapi::mojom::PrefPath::kDeviceSystemWideTracingEnabled,
-            base::BindRepeating(&DevicePolicyObserver::OnPrefChanged,
-                                base::Unretained(this))) {}
-
-  bool system_wide_tracing_enabled() const {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    return system_wide_tracing_enabled_;
-  }
-
-  static const DevicePolicyObserver& GetInstance() {
-    static base::NoDestructor<DevicePolicyObserver> instance;
-    return *instance;
-  }
-
- private:
-  void OnPrefChanged(base::Value value) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    system_wide_tracing_enabled_ = value.GetBool();
-  }
-
-  ~DevicePolicyObserver() = default;
-
-  CrosapiPrefObserver pref_observer_;
-  bool system_wide_tracing_enabled_ = false;
-};
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 }  // namespace
 
 ChromeTracingDelegate::ChromeTracingDelegate() {
@@ -114,11 +81,6 @@ ChromeTracingDelegate::ChromeTracingDelegate() {
   BrowserList::AddObserver(this);
 #else
   TabModelList::AddObserver(this);
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // This sets up the pref observer.
-  DevicePolicyObserver::GetInstance();
 #endif
 }
 
@@ -261,12 +223,10 @@ bool ChromeTracingDelegate::IsSystemWideTracingEnabled() {
   DCHECK(local_state);
   return local_state->GetBoolean(ash::prefs::kDeviceSystemWideTracingEnabled);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // This is a temporary solution that observes the ash pref
-  // ash::prefs::kDeviceSystemWideTracingEnabled via mojo IPC provided by
-  // CrosapiPrefObserver.
-  // crbug.com/1201582 is a long term solution for this which assumes that
-  // device flags will be available to Lacros.
-  return DevicePolicyObserver::GetInstance().system_wide_tracing_enabled();
+  return g_browser_process->browser_policy_connector()
+             ->GetDeviceSettings()
+             ->device_system_wide_tracing_enabled ==
+         crosapi::mojom::DeviceSettings::OptionalBool::kTrue;
 #else
   return false;
 #endif
