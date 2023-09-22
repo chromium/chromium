@@ -41,7 +41,7 @@ build_webui("build") {
     "resolution_select.ts",
     "scan_done_section.ts",
     "scanner_select.js",
-    "scanning_app.js",
+    "scanning_app.ts",
     "scanning_fonts_css.js",
     "scanning_shared_css.js",
     "scan_preview.js",

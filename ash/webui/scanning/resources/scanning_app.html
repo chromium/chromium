@@ -181,93 +181,93 @@
   }
 </style>
 <div id="scanningContainer">
-  <loading-page hidden="[[scannersLoaded_]]" app-state="[[appState_]]"
-      on-retry-click="onRetryClick_" on-learn-more-click="onLearnMoreClick_">
+  <loading-page hidden="[[scannersLoaded]]" app-state="[[appState]]"
+      on-retry-click="onRetryClick" on-learn-more-click="onLearnMoreClick">
   </loading-page>
-  <div id="panelContainer" hidden="[[!scannersLoaded_]]">
+  <div id="panelContainer" hidden="[[!scannersLoaded]]">
     <div id="leftPanel">
-      <scan-preview id="scanPreview" app-state="[[appState_]]"
-          object-urls="[[objectUrls_]]" page-number="[[pageNumber_]]"
-          progress-percent="[[progressPercent_]]"
-          is-multi-page-scan="[[isMultiPageScan_]]"
-          on-remove-page="onRemovePage_"
-          on-rescan-page="onRescanPage_"></scan-preview>
+      <scan-preview id="scanPreview" app-state="[[appState]]"
+          object-urls="[[objectUrls]]" page-number="[[pageNumber]]"
+          progress-percent="[[progressPercent]]"
+          is-multi-page-scan="[[isMultiPageScan]]"
+          on-remove-page="onRemovePage"
+          on-rescan-page="onRescanPage"></scan-preview>
     </div>
     <div id="rightPanel">
       <h1 id="appTitle">[[i18n('appTitle')]]</h1>
-      <div id="settingsSection" hidden="[[!showScanSettings_]]">
+      <div id="settingsSection" hidden="[[!showScanSettings]]">
         <div id="container" show-bottom-shadow>
-          <scanner-select id="scannerSelect" scanners="[[scanners_]]"
-              disabled="[[settingsDisabled_]]"
+          <scanner-select id="scannerSelect" scanners="[[scanners]]"
+              disabled="[[settingsDisabled]]"
               selected-scanner-id="{{selectedScannerId}}"
-              last-used-scanner-id="[[lastUsedScannerId_]]"
-              scanner-info-map="[[scannerInfoMap_]]"></scanner-select>
-          <source-select id="sourceSelect" options="[[capabilities_.sources]]"
-              disabled="[[settingsDisabled_]]"
+              last-used-scanner-id="[[lastUsedScannerId]]"
+              scanner-info-map="[[scannerInfoMap]]"></scanner-select>
+          <source-select id="sourceSelect" options="[[capabilities.sources]]"
+              disabled="[[settingsDisabled]]"
               selected-option="{{selectedSource}}"></source-select>
           <scan-to-select id="scanToSelect"
-              disabled="[[settingsDisabled_]]"
+              disabled="[[settingsDisabled]]"
               selected-file-path="{{selectedFilePath}}"
               selected-folder="{{selectedFolder}}">
           </scan-to-select>
           <file-type-select id="fileTypeSelect"
-              disabled="[[settingsDisabled_]]"
+              disabled="[[settingsDisabled]]"
               selected-file-type="{{selectedFileType}}"></file-type-select>
           <multi-page-checkbox id="multiPageCheckbox"
-              hidden="[[!showMultiPageCheckbox_]]"
+              hidden="[[!showMultiPageCheckbox]]"
               multi-page-scan-checked="{{multiPageScanChecked}}"
-              disabled="[[settingsDisabled_]]">
+              disabled="[[settingsDisabled]]">
           </multi-page-checkbox>
           <div id="more-settings-line-separator"></div>
-          <cr-button id="moreSettingsButton" on-click="toggleClicked_"
-              aria-expanded="[[opened_]]">
+          <cr-button id="moreSettingsButton" on-click="toggleClicked"
+              aria-expanded="[[opened]]">
             <span>[[i18n('moreSettings')]]</span>
-            <iron-icon icon="[[arrowIconDirection_]]"></iron-icon>
+            <iron-icon icon="[[arrowIconDirection]]"></iron-icon>
           </cr-button>
-          <iron-collapse id="collapse" opened="{{opened_}}">
+          <iron-collapse id="collapse" opened="{{opened}}">
             <color-mode-select id="colorModeSelect"
-                options="[[selectedSourceColorModes_]]"
-                disabled="[[settingsDisabled_]]"
+                options="[[selectedSourceColorModes]]"
+                disabled="[[settingsDisabled]]"
                 selected-option="{{selectedColorMode}}">
             </color-mode-select>
             <page-size-select id="pageSizeSelect"
-                options="[[selectedSourcePageSizes_]]"
-                disabled="[[settingsDisabled_]]"
+                options="[[selectedSourcePageSizes]]"
+                disabled="[[settingsDisabled]]"
                 selected-option="{{selectedPageSize}}">
             </page-size-select>
             <resolution-select id="resolutionSelect"
-                options="[[selectedSourceResolutions_]]"
-                disabled="[[settingsDisabled_]]"
+                options="[[selectedSourceResolutions]]"
+                disabled="[[settingsDisabled]]"
                 selected-option="{{selectedResolution}}">
             </resolution-select>
           </iron-collapse>
         </div>
         <div class="scan-button-container">
-          <cr-button id="scanButton" class="action-button" on-click="onScanClick_"
-              disabled$="[[settingsDisabled_]]"
-              hidden$="[[showCancelButton_]]">
-            [[scanButtonText_]]
+          <cr-button id="scanButton" class="action-button" on-click="onScanClick"
+              disabled$="[[settingsDisabled]]"
+              hidden$="[[showCancelButton]]">
+            [[scanButtonText]]
           </cr-button>
-          <cr-button id="cancelButton" on-click="onCancelClick_"
-              hidden$="[[!showCancelButton_]]"
-              disabled$="[[cancelButtonDisabled_]]">
+          <cr-button id="cancelButton" on-click="onCancelClick"
+              hidden$="[[!showCancelButton]]"
+              disabled$="[[cancelButtonDisabled]]">
             [[i18n('cancelButtonText')]]
           </cr-button>
         </div>
       </div>
-      <template is="dom-if" if="[[showDoneSection_]]">
-        <scan-done-section num-files-saved="[[getNumFilesSaved_(pageNumber_)]]"
-            on-done-click="onDoneClick_" on-file-not-found="onFileNotFound_"
-            scanned-file-paths="[[scannedFilePaths_]]"
+      <template is="dom-if" if="[[showDoneSection]]">
+        <scan-done-section num-files-saved="[[getNumFilesSaved(pageNumber)]]"
+            on-done-click="onDoneClick" on-file-not-found="onFileNotFound"
+            scanned-file-paths="[[scannedFilePaths]]"
             selected-folder="[[selectedFolder]]"
             selected-file-type="[[selectedFileType]]">
         </scan-done-section>
       </template>
-      <template is="dom-if" if="[[showMultiPageScan_]]">
-        <multi-page-scan page-number="[[pageNumber_]]" app-state="[[appState_]]"
-            on-scan-next-page="onScanNextPage_"
-            on-complete-multi-page-scan="onCompleteMultiPageScan_"
-            on-cancel-click="onCancelClick_">
+      <template is="dom-if" if="[[showMultiPageScan]]">
+        <multi-page-scan page-number="[[pageNumber]]" app-state="[[appState]]"
+            on-scan-next-page="onScanNextPage"
+            on-complete-multi-page-scan="onCompleteMultiPageScan"
+            on-cancel-click="onCancelClick">
         </multi-page-scan>
       </template>
     </div>
@@ -275,32 +275,32 @@
   <cr-toast id="toast" duration="5000">
     <div id="toastDiv">
       <iron-icon id="toastInfoIcon" icon="cr:info-outline"
-          hidden="[[!showToastInfoIcon_]]"></iron-icon>
-      <span id="toastText">[[i18n(toastMessageKey_)]]</span>
+          hidden="[[!showToastInfoIcon]]"></iron-icon>
+      <span id="toastText">[[i18n(toastMessageKey)]]</span>
       <div id="getHelpDiv">
         <a id="getHelpLink" target="_blank"
             href="http://support.google.com/chromebook?p=chrome_scanning"
-            hidden="[[!showToastHelpLink_]]">
+            hidden="[[!showToastHelpLink]]">
           [[i18n('getHelpLinkText')]]</a>
       </div>
     </div>
   </cr-toast>
-  <cr-dialog id="scanFailedDialog" on-cancel="onScanFailedDialogOkClick_">
+  <cr-dialog id="scanFailedDialog" on-cancel="onScanFailedDialogOkClick">
     <div slot="title">
       <iron-icon id="dialogInfoIcon" icon="cr:info-outline" aria-hidden="true">
       </iron-icon>
       [[i18n('scanFailedDialogTitleText')]]
     </div>
     <div id="scanFailedDialogText" slot="body">
-      [[i18n(scanFailedDialogTextKey_)]]
+      [[i18n(scanFailedDialogTextKey)]]
     </div>
     <div slot="button-container">
       <cr-button class="cancel-button"
-          on-click="onScanFailedDialogGetHelpClick_">
+          on-click="onScanFailedDialogGetHelpClick">
         [[i18n('getHelpLinkText')]]
       </cr-button>
       <cr-button id="okButton" class="action-button"
-          on-click="onScanFailedDialogOkClick_">
+          on-click="onScanFailedDialogOkClick">
         [[i18n('okButtonLabel')]]
       </cr-button>
     </div>

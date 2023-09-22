@@ -11,7 +11,7 @@
 import {sendWithPromise} from 'chrome://resources/ash/common/cr.m.js';
 
 import {ColorMode, FileType, PageSize, SourceType} from './scanning.mojom-webui.js';
-import {ScanCompleteAction} from './scanning_app_types.js';
+import {ScanCompleteAction, ScanJobSettingsForMetrics} from './scanning_app_types.js';
 
 /**
  * @typedef {{
@@ -20,17 +20,6 @@ import {ScanCompleteAction} from './scanning_app_types.js';
  * }}
  */
 export let SelectedPath;
-
-/**
- * @typedef {{
- *   sourceType: SourceType,
- *   fileType: FileType,
- *   colorMode: ColorMode,
- *   pageSize: PageSize,
- *   resolution: number,
- * }}
- */
-let ScanJobSettingsForMetrics;
 
 /** @interface */
 export class ScanningBrowserProxy {

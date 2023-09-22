@@ -90,3 +90,28 @@ export let ScanSettings;
                      ?MultiPageScanControllerRemote}}
  */
 export let StartMultiPageScanResponse;
+
+/**
+ * @typedef {{
+ *   sourceType: SourceType,
+ *   fileType: FileType,
+ *   colorMode: ColorMode,
+ *   pageSize: PageSize,
+ *   resolution: number,
+ * }}
+ */
+export let ScanJobSettingsForMetrics;
+
+/**
+ * @typedef {{
+ *    scanners: Scanner[];
+ * }}
+ */
+export let ScannersReceivedResponse;
+
+/**
+ * @typedef {{
+ *    success: boolean
+ * }}
+ */
+export let SuccessResponse;
