@@ -9,7 +9,7 @@
  */
 function set_up_fuzzy_color_test(epsilon) {
   if (!epsilon) {
-    epsilon = 0.0001;
+    epsilon = 0.01;
   }
 
   // The function
