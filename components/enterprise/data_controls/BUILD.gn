@@ -15,6 +15,8 @@ source_set("features") {
 source_set("data_controls") {
   sources = [
     "action_context.h",
+    "and_condition.cc",
+    "and_condition.h",
     "attributes_condition.cc",
     "attributes_condition.h",
     "condition.h",
@@ -42,7 +44,10 @@ source_set("data_controls") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "attributes_condition_unittest.cc" ]
+  sources = [
+    "and_condition_unittest.cc",
+    "attributes_condition_unittest.cc",
+  ]
 
   deps = [
     ":data_controls",

@@ -13,6 +13,8 @@ namespace data_controls {
 class Condition {
  public:
   virtual bool IsTriggered(const ActionContext& action_context) const = 0;
+
+  virtual ~Condition() = default;
 };
 
 }  // namespace data_controls

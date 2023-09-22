@@ -31,7 +31,7 @@ namespace data_controls {
 class AttributesCondition : public Condition {
  public:
   AttributesCondition();
-  virtual ~AttributesCondition();
+  ~AttributesCondition() override;
 
   // Returns nullptr if the passed JSON doesn't match the expected schema.
   static std::unique_ptr<AttributesCondition> Create(const base::Value& value);
