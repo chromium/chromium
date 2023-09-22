@@ -39,7 +39,7 @@ build_webui("build") {
     "multi_page_scan.ts",
     "page_size_select.ts",
     "resolution_select.ts",
-    "scan_done_section.js",
+    "scan_done_section.ts",
     "scanner_select.js",
     "scanning_app.js",
     "scanning_fonts_css.js",

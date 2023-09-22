@@ -59,10 +59,10 @@
 </style>
 <div class="container">
   <span id="fileSavedText" class="label"
-      inner-h-t-m-l="[[fileSavedTextContent_]]">
+      inner-h-t-m-l="[[fileSavedTextContent]]">
   </span>
 </div>
-<div class="container" on-click="showFileInLocation_" >
+<div class="container" on-click="onShowFileInLocationClick" >
   <span id="showInFolderButtonLabel" class="label" aria-hidden="true">
     [[i18n('showInFolderButtonLabel')]]
   </span>
@@ -70,10 +70,10 @@
       iron-icon="cr:open-in-new" aria-labelledby="showInFolderButtonLabel">
   </cr-icon-button>
 </div>
-<div class="container" hidden="[[!showEditButton_]]"
-    on-click="openMediaApp_" >
+<div class="container" hidden="[[!showEditButton]]"
+    on-click="onOpenMediaAppClick" >
   <span id="editButtonLabel" class="label" aria-hidden="true">
-    [[editButtonLabel_]]
+    [[editButtonLabel]]
   </span>
   <cr-icon-button id="editButton" class="button"
       iron-icon="cr:open-in-new" aria-labelledby="editButtonLabel">
@@ -81,7 +81,7 @@
 </div>
 <div id="doneButtonContainer">
   <cr-button id="doneButton" class="action-button"
-      on-click="onDoneClick_">
+      on-click="onDoneClick">
     [[i18n('doneButtonText')]]
   </cr-button>
 </div>
