@@ -1672,4 +1672,9 @@
     ctx.font = "32px serif";
     ctx.fillText("Hello World", 20, 100);
 
+- name: 2d.text.setFont.mathFont
+  desc: crbug.com/1212190, make sure offscreencanvas doesn't crash with Math Font
+  code: |
+    ctx.font = "math serif";
+
 # TODO: shadows, alpha, composite, clip
