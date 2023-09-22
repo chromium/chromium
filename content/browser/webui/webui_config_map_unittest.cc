@@ -4,13 +4,12 @@
 
 #include "content/public/browser/webui_config_map.h"
 
+#include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
-
-class WebUIController;
 
 namespace {
 
