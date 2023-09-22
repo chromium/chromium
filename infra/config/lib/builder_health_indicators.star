@@ -787,6 +787,7 @@ _exempted_from_contact_builders = {
         "linux-wayland-rel-compilator",
         "linux-wayland-siso-rel",
         "linux-wayland-siso-rel-compilator",
+        "linux-webkit-asan-rel",
         "linux-webkit-msan-rel",
         "linux-wpt-content-shell-fyi-rel",
         "linux-wpt-content-shell-leak-detection",

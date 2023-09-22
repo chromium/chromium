@@ -366,6 +366,14 @@ try_.builder(
 )
 
 try_.builder(
+    name = "linux-webkit-asan-rel",
+    mirrors = [
+        "ci/WebKit Linux ASAN",
+    ],
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
     name = "linux-webkit-msan-rel",
     mirrors = [
         "ci/WebKit Linux MSAN",
