@@ -169,12 +169,10 @@ export class ProfilePickerMainViewElement extends
   }
 
   /**
-   * Handler for when the profiles list are updated.
+   * Initializes the drag delegate, making sure to clear a previously existing
+   * one.
    */
-  private handleProfilesListChanged_(profilesList: ProfileState[]) {
-    this.profilesListLoaded_ = true;
-    this.profilesList_ = profilesList;
-
+  private initializeDragDelegate_() {
     if (loadTimeData.getBoolean('profilesReorderingEnabled')) {
       if (this.dragDelegate_) {
         this.dragDelegate_.clearListeners();
@@ -190,6 +188,16 @@ export class ProfilePickerMainViewElement extends
         });
       });
     }
+  }
+
+  /**
+   * Handler for when the profiles list are updated.
+   */
+  private handleProfilesListChanged_(profilesList: ProfileState[]) {
+    this.profilesListLoaded_ = true;
+    this.profilesList_ = profilesList;
+
+    this.initializeDragDelegate_();
   }
 
   /**
@@ -226,6 +234,8 @@ export class ProfilePickerMainViewElement extends
         break;
       }
     }
+
+    this.initializeDragDelegate_();
   }
 
   private computeHideAskOnStartup_(): boolean {
@@ -243,7 +253,7 @@ export class ProfilePickerMainViewElement extends
   }
 
   // @override
-  onDradEnd(initialIndex: number, finalIndex: number): void {
+  onDragEnd(initialIndex: number, finalIndex: number): void {
     this.manageProfilesBrowserProxy_.updateProfileOrder(
         initialIndex, finalIndex);
   }

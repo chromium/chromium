@@ -42,7 +42,7 @@ export interface DraggableTileListInterface {
   // initialIndex: is the index of the tile that was dragged.
   // finalIndex: is the index of the tile that was targeted, the location at
   // which the dragging tile was dropped.
-  onDradEnd(initialIndex: number, finalIndex: number): void;
+  onDragEnd(initialIndex: number, finalIndex: number): void;
 }
 
 // This delegate class allows any Polymer list container of tiles to add the
@@ -306,7 +306,7 @@ export class DragDropReorderTileListDelegate {
       this.applyChanges_();
 
       // Notfiy the list of the changes.
-      this.tileListInterface_.onDradEnd(
+      this.tileListInterface_.onDragEnd(
           this.dragStartIndex_, this.dropTargetIndex_);
     }
 

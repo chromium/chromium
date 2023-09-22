@@ -66,6 +66,7 @@ suite('ProfilePickerMainViewTest', function() {
       isGuestModeEnabled: true,
       isProfileCreationAllowed: true,
       isAskOnStartupAllowed: true,
+      profilesReorderingEnabled: true,
     });
   }
 
@@ -96,6 +97,20 @@ suite('ProfilePickerMainViewTest', function() {
                isPrimaryLacrosProfile: false,
                // </if>
              }));
+  }
+
+  async function simulateProfilesListChanged(profiles: ProfileState[]) {
+    webUIListenerCallback('profiles-list-changed', [...profiles]);
+
+    // Await for the profiles to be rendered before proceeding.
+    await waitAfterNextRender(mainViewElement.$.profiles);
+  }
+
+  async function simulateProfileRemoved(profilePath: string) {
+    webUIListenerCallback('profile-removed', profilePath);
+
+    // Await for the profiles to be rendered before proceeding.
+    await waitAfterNextRender(mainViewElement.$.profiles);
   }
 
   async function verifyProfileCard(
@@ -139,8 +154,7 @@ suite('ProfilePickerMainViewTest', function() {
     assertTrue(mainViewElement.$.profilesContainer.hidden);
     assertTrue(mainViewElement.$.askOnStartup.hidden);
     const profiles = generateProfilesList(6);
-    webUIListenerCallback('profiles-list-changed', [...profiles]);
-    flushTasks();
+    await simulateProfilesListChanged(profiles);
     // Profiles list defined.
     assertTrue(!mainViewElement.$.profilesContainer.hidden);
     assertTrue(!mainViewElement.$.askOnStartup.hidden);
@@ -158,14 +172,12 @@ suite('ProfilePickerMainViewTest', function() {
     assertTrue(!mainViewElement.$.askOnStartup.checked);
     // Update profile data.
     profiles[1] = profiles[4]!;
-    webUIListenerCallback('profiles-list-changed', [...profiles]);
-    flushTasks();
+    await simulateProfilesListChanged(profiles);
     await verifyProfileCard(
         profiles, mainViewElement.shadowRoot!.querySelectorAll('profile-card'));
     // Profiles update on remove.
-    webUIListenerCallback('profile-removed', profiles[3]!.profilePath);
+    await simulateProfileRemoved(profiles[3]!.profilePath);
     profiles.splice(3, 1);
-    flushTasks();
     await verifyProfileCard(
         profiles, mainViewElement.shadowRoot!.querySelectorAll('profile-card'));
   });
@@ -173,8 +185,7 @@ suite('ProfilePickerMainViewTest', function() {
   test('EditLocalProfileName', async function() {
     await browserProxy.whenCalled('initializeMainView');
     const profiles = generateProfilesList(1);
-    webUIListenerCallback('profiles-list-changed', [...profiles]);
-    flushTasks();
+    await simulateProfilesListChanged(profiles);
     const localProfileName =
         mainViewElement.shadowRoot!.querySelector('profile-card')!.$.nameInput;
     assertEquals(localProfileName.value, profiles[0]!.localProfileName);
@@ -200,8 +211,7 @@ suite('ProfilePickerMainViewTest', function() {
     resetTest();
     assertEquals(mainViewElement.$.browseAsGuestButton.style.display, 'none');
     await browserProxy.whenCalled('initializeMainView');
-    webUIListenerCallback('profiles-list-changed', generateProfilesList(2));
-    flushTasks();
+    await simulateProfilesListChanged(generateProfilesList(2));
     assertEquals(mainViewElement.$.browseAsGuestButton.style.display, 'none');
   });
 
@@ -214,8 +224,7 @@ suite('ProfilePickerMainViewTest', function() {
         mainViewElement.shadowRoot!.querySelector<HTMLElement>('#addProfile')!;
     assertEquals(addProfile.style.display, 'none');
     await browserProxy.whenCalled('initializeMainView');
-    webUIListenerCallback('profiles-list-changed', generateProfilesList(2));
-    flushTasks();
+    await simulateProfilesListChanged(generateProfilesList(2));
     navigationElement.reset();
     assertEquals(addProfile.style.display, 'none');
     addProfile.click();
@@ -229,8 +238,7 @@ suite('ProfilePickerMainViewTest', function() {
     assertTrue(mainViewElement.$.profilesContainer.hidden);
     assertTrue(mainViewElement.$.askOnStartup.hidden);
     let profiles = generateProfilesList(1);
-    webUIListenerCallback('profiles-list-changed', [...profiles]);
-    flushTasks();
+    await simulateProfilesListChanged(profiles);
     await verifyProfileCard(
         profiles, mainViewElement.shadowRoot!.querySelectorAll('profile-card'));
     // The checkbox 'Ask when chrome opens' should only be visible to
@@ -238,8 +246,7 @@ suite('ProfilePickerMainViewTest', function() {
     assertTrue(mainViewElement.$.askOnStartup.hidden);
     // Add a second profile.
     profiles = generateProfilesList(2);
-    webUIListenerCallback('profiles-list-changed', [...profiles]);
-    flushTasks();
+    await simulateProfilesListChanged(profiles);
     await verifyProfileCard(
         profiles, mainViewElement.shadowRoot!.querySelectorAll('profile-card'));
     assertTrue(!mainViewElement.$.askOnStartup.hidden);
@@ -255,14 +262,13 @@ suite('ProfilePickerMainViewTest', function() {
     assertTrue(mainViewElement.$.profilesContainer.hidden);
     assertTrue(mainViewElement.$.askOnStartup.hidden);
     const profiles = generateProfilesList(2);
-    webUIListenerCallback('profiles-list-changed', [...profiles]);
+    await simulateProfilesListChanged(profiles);
     flushTasks();
     await verifyProfileCard(
         profiles, mainViewElement.shadowRoot!.querySelectorAll('profile-card'));
     assertTrue(!mainViewElement.$.askOnStartup.hidden);
     // Remove profile.
-    webUIListenerCallback('profile-removed', profiles[0]!.profilePath);
-    flushTasks();
+    await simulateProfileRemoved(profiles[0]!.profilePath);
     await verifyProfileCard(
         [profiles[1]!],
         mainViewElement.shadowRoot!.querySelectorAll('profile-card'));
@@ -279,8 +285,7 @@ suite('ProfilePickerMainViewTest', function() {
     assertTrue(mainViewElement.$.profilesContainer.hidden);
     assertTrue(mainViewElement.$.askOnStartup.hidden);
     const profiles = generateProfilesList(2);
-    webUIListenerCallback('profiles-list-changed', [...profiles]);
-    flushTasks();
+    await simulateProfilesListChanged(profiles);
     await verifyProfileCard(
         profiles, mainViewElement.shadowRoot!.querySelectorAll('profile-card'));
 
@@ -295,8 +300,7 @@ suite('ProfilePickerMainViewTest', function() {
     await browserProxy.whenCalled('initializeMainView');
     const profiles = generateProfilesList(2);
     profiles[0]!.needsSignin = true;
-    webUIListenerCallback('profiles-list-changed', [...profiles]);
-    flushTasks();
+    await simulateProfilesListChanged(profiles);
     await verifyProfileCard(
         profiles, mainViewElement.shadowRoot!.querySelectorAll('profile-card'));
   });
@@ -395,13 +399,7 @@ suite('ProfilePickerMainViewTest', function() {
     mainViewElement.setDraggingTransitionDurationForTesting(0);
 
     // Create the profiles and push them to the main profile picker view.
-    const profiles = generateProfilesList(numberOfProfiles);
-    webUIListenerCallback('profiles-list-changed', [...profiles]);
-    flushTasks();
-
-    // Make sure to wait for the initialization of the DragDelegate which
-    // happens once the profile cards are rendered.
-    await waitAfterNextRender(mainViewElement.$.profiles);
+    await simulateProfilesListChanged(generateProfilesList(numberOfProfiles));
   }
 
   // This test function simulates drag event cycles.
@@ -612,7 +610,7 @@ suite('ProfilePickerMainViewTest', function() {
   // a `dragenter` event for a profile-card the reordering is not triggered and
   // the profile order is not affected.
   test('ProfileReorder_DragEnterOutOfDragCycleHasNoEffect', async function() {
-    setupProfileReorderingTest(3);
+    await setupProfileReorderingTest(3);
 
     const cards = Array.from(
         mainViewElement.shadowRoot!.querySelectorAll<ProfileCardElement>(
