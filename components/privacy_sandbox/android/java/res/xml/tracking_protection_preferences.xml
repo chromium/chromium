@@ -13,4 +13,33 @@ found in the LICENSE file.
         android:summary="@string/privacy_sandbox_tracking_protection_description"
         app:allowDividerBelow="false" />
 
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:title="@string/privacy_sandbox_tracking_protection_bullet_one_title"
+        android:summary="@string/privacy_sandbox_tracking_protection_bullet_one_description"
+        android:icon="@drawable/ic_eye_crossed"
+        app:allowDividerBelow="false" />
+
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:title="@string/privacy_sandbox_tracking_protection_bullet_two_title"
+        android:summary="@string/privacy_sandbox_tracking_protection_bullet_two_description"
+        android:icon="@drawable/ic_domain_verification_24dp"
+        app:allowDividerBelow="false" />
+
+    <PreferenceCategory
+        android:title="@string/privacy_sandbox_tracking_protection_advanced_category">
+
+        <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+            android:key="block_all_3pcd_toggle"
+            android:title="@string/tracking_protection_block_cookies_toggle_title"
+            android:summary="@string/tracking_protection_block_cookies_toggle_summary"
+            app:allowDividerBelow="false" />
+
+        <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+            android:key="dnt_toggle"
+            android:title="@string/tracking_protection_dnt_toggle_title"
+            android:summary="@string/tracking_protection_dnt_toggle_summary"
+            app:allowDividerBelow="false" />
+
+    </PreferenceCategory>
+
 </PreferenceScreen>
