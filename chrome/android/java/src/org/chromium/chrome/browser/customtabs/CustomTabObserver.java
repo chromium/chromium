@@ -282,21 +282,21 @@ public class CustomTabObserver extends EmptyTabObserver {
         // mUsedHiddenTabSpeculation being null, or mIntentReceivedTimestamp being 0.
         if (mUsedHiddenTabSpeculation != null && mUsedHiddenTabSpeculation) {
             duration = firstCommitRealtimeMillis - mLaunchedForSpeculationRealtimeMillis;
-            histogram = "CustomTabs.Startup.TimeToFirstCommitNavigation.Speculated";
+            histogram = "CustomTabs.Startup.TimeToFirstCommitNavigation2.Speculated";
         } else if (mIntentReceivedRealtimeMillis > 0) {
             // When the process is already warm the earliest measurable point in startup is when the
             // intent is received so we measure from there. In the cold start case we measure from
             // when the process was started as the best comparison against the warm case.
             if (wasWarmedUp()) {
                 duration = firstCommitRealtimeMillis - mIntentReceivedRealtimeMillis;
-                histogram = "CustomTabs.Startup.TimeToFirstCommitNavigation.WarmedUp";
+                histogram = "CustomTabs.Startup.TimeToFirstCommitNavigation2.WarmedUp";
             } else if (processCreationReason == ProcessCreationReason.ACTIVITY
                     && SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()) {
                 duration = firstCommitRealtimeMillis - Process.getStartElapsedRealtime();
-                histogram = "CustomTabs.Startup.TimeToFirstCommitNavigation.Cold";
+                histogram = "CustomTabs.Startup.TimeToFirstCommitNavigation2.Cold";
             } else {
                 duration = firstCommitRealtimeMillis - mIntentReceivedRealtimeMillis;
-                histogram = "CustomTabs.Startup.TimeToFirstCommitNavigation.Warm";
+                histogram = "CustomTabs.Startup.TimeToFirstCommitNavigation2.Warm";
             }
         }
         if (histogram != null) {
@@ -318,21 +318,21 @@ public class CustomTabObserver extends EmptyTabObserver {
         // mUsedHiddenTabSpeculation being null, or mIntentReceivedTimestamp being 0.
         if (mUsedHiddenTabSpeculation != null && mUsedHiddenTabSpeculation) {
             duration = lcpUptimeMillis - mLaunchedForSpeculationUptimeMillis;
-            histogram = "CustomTabs.Startup.TimeToLargestContentfulPaint.Speculated";
+            histogram = "CustomTabs.Startup.TimeToLargestContentfulPaint2.Speculated";
         } else if (mIntentReceivedRealtimeMillis > 0) {
             // When the process is already warm the earliest measurable point in startup is when the
             // intent is received so we measure from there. In the cold start case we measure from
             // when the process was started as the best comparison against the warm case.
             if (wasWarmedUp()) {
                 duration = lcpUptimeMillis - mIntentReceivedUptimeMillis;
-                histogram = "CustomTabs.Startup.TimeToLargestContentfulPaint.WarmedUp";
+                histogram = "CustomTabs.Startup.TimeToLargestContentfulPaint2.WarmedUp";
             } else if (processCreationReason == ProcessCreationReason.ACTIVITY
                     && SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()) {
                 duration = lcpUptimeMillis - Process.getStartUptimeMillis();
-                histogram = "CustomTabs.Startup.TimeToLargestContentfulPaint.Cold";
+                histogram = "CustomTabs.Startup.TimeToLargestContentfulPaint2.Cold";
             } else {
                 duration = lcpUptimeMillis - mIntentReceivedUptimeMillis;
-                histogram = "CustomTabs.Startup.TimeToLargestContentfulPaint.Warm";
+                histogram = "CustomTabs.Startup.TimeToLargestContentfulPaint2.Warm";
             }
         }
         if (histogram != null) {
