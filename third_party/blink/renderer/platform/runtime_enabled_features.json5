@@ -687,6 +687,10 @@
       }
     },
     {
+      name: "CompositionUpdateBeforeBeforeInput",
+      status: "stable",
+    },
+    {
       name: "CompressionDictionaryTransport",
       base_feature: "none",
       origin_trial_feature_name: "CompressionDictionaryTransport",

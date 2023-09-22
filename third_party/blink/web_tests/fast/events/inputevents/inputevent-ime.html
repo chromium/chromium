@@ -107,9 +107,9 @@
     textInputController.setComposition('hello');
     assert_array_equals(eventLog, [
       'compositionstart',
+      'compositionupdate: data="hello"',
       'beforeinput: isComposing=true, data="hello", '
           + 'inputType=insertCompositionText',
-      'compositionupdate: data="hello"',
       'input: isComposing=true, data="hello", inputType=insertCompositionText',
     ]);
   }, 'setComposition with no composition open, non-empty text, no selection');
@@ -126,8 +126,8 @@
 
     textInputController.setComposition('');
     assert_array_equals(eventLog, [
-      'beforeinput: isComposing=true, data="", inputType=insertCompositionText',
       'compositionupdate: data=""',
+      'beforeinput: isComposing=true, data="", inputType=insertCompositionText',
       'textInput: data=""',
       'input: isComposing=true, data="null", inputType=insertCompositionText',
       'compositionend: data=""',
@@ -146,9 +146,9 @@
 
     textInputController.setComposition('hello world');
     assert_array_equals(eventLog, [
+      'compositionupdate: data="hello world"',
       'beforeinput: isComposing=true, data="hello world", '
           + 'inputType=insertCompositionText',
-      'compositionupdate: data="hello world"',
       'input: isComposing=true, data="hello world", '
           + 'inputType=insertCompositionText',
     ]);
@@ -166,9 +166,9 @@
 
     textInputController.insertText('hello world');
     assert_array_equals(eventLog, [
+      'compositionupdate: data="hello world"',
       'beforeinput: isComposing=true, data="hello world", '
           + 'inputType=insertCompositionText',
-      'compositionupdate: data="hello world"',
       'textInput: data="hello world"',
       'input: isComposing=true, data="hello world", '
           + 'inputType=insertCompositionText',
@@ -188,8 +188,8 @@
 
     textInputController.insertText('');
     assert_array_equals(eventLog, [
-      'beforeinput: isComposing=true, data="", inputType=insertCompositionText',
       'compositionupdate: data=""',
+      'beforeinput: isComposing=true, data="", inputType=insertCompositionText',
       'textInput: data=""',
       'input: isComposing=true, data="null", inputType=insertCompositionText',
       'compositionend: data=""',
@@ -255,9 +255,9 @@
 
     textInputController.unmarkText();
     assert_array_equals(eventLog, [
+      'compositionupdate: data="hello"',
       'beforeinput: isComposing=true, data="hello", '
           + 'inputType=insertCompositionText',
-      'compositionupdate: data="hello"',
       'textInput: data="h"',
       'input: isComposing=true, data="h", inputType=insertCompositionText',
       'compositionend: data="hello"',
@@ -293,9 +293,9 @@
 
     textInputController.unmarkAndUnselectText();
     assert_array_equals(eventLog, [
+      'compositionupdate: data="hello"',
       'beforeinput: isComposing=true, data="hello", '
           + 'inputType=insertCompositionText',
-      'compositionupdate: data="hello"',
       'textInput: data="h"',
       'input: isComposing=true, data="h", inputType=insertCompositionText',
       'compositionend: data="hello"',

@@ -67,6 +67,7 @@
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -449,6 +450,14 @@ void InputMethodController::InsertTextDuringCompositionWithEvents(
   if (!target)
     return;
 
+  if (RuntimeEnabledFeatures::CompositionUpdateBeforeBeforeInputEnabled()) {
+    DispatchCompositionUpdateEvent(frame, text);
+    // 'compositionupdate' event handler may destroy document.
+    if (!IsAvailable()) {
+      return;
+    }
+  }
+
   DispatchBeforeInputFromComposition(
       target, InputEvent::InputType::kInsertCompositionText, text);
 
@@ -456,10 +465,13 @@ void InputMethodController::InsertTextDuringCompositionWithEvents(
   if (!IsAvailable())
     return;
 
-  DispatchCompositionUpdateEvent(frame, text);
-  // 'compositionupdate' event handler may destroy document.
-  if (!IsAvailable())
-    return;
+  if (!RuntimeEnabledFeatures::CompositionUpdateBeforeBeforeInputEnabled()) {
+    DispatchCompositionUpdateEvent(frame, text);
+    // 'compositionupdate' event handler may destroy document.
+    if (!IsAvailable()) {
+      return;
+    }
+  }
 
   // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited. see http://crbug.com/590369 for more details.

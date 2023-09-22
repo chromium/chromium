@@ -953,17 +953,17 @@ IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
 
   EXPECT_THAT(event_listener.WaitForMessage(), IsCompositionStartEvent());
   EXPECT_THAT(event_listener.WaitForMessage(),
+              IsCompositionUpdateEvent("hello"));
+  EXPECT_THAT(event_listener.WaitForMessage(),
               IsBeforeInputEvent("insertCompositionText", "hello",
                                  CompositionState::kComposing));
   EXPECT_THAT(event_listener.WaitForMessage(),
-              IsCompositionUpdateEvent("hello"));
-  EXPECT_THAT(event_listener.WaitForMessage(),
               IsInputEvent("insertCompositionText", "hello",
                            CompositionState::kComposing));
+  EXPECT_THAT(event_listener.WaitForMessage(), IsCompositionUpdateEvent(""));
   EXPECT_THAT(event_listener.WaitForMessage(),
               IsBeforeInputEvent("insertCompositionText", "",
                                  CompositionState::kComposing));
-  EXPECT_THAT(event_listener.WaitForMessage(), IsCompositionUpdateEvent(""));
   EXPECT_THAT(event_listener.WaitForMessage(),
               IsInputEvent("insertCompositionText", absl::nullopt,
                            CompositionState::kComposing));
@@ -1259,10 +1259,10 @@ IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
   EXPECT_THAT(event_listener.WaitForMessage(),
               IsKeyDownEvent("Process", "KeyG", 229));
   EXPECT_THAT(event_listener.WaitForMessage(), IsCompositionStartEvent());
+  EXPECT_THAT(event_listener.WaitForMessage(), IsCompositionUpdateEvent("ㅎ"));
   EXPECT_THAT(event_listener.WaitForMessage(),
               IsBeforeInputEvent("insertCompositionText", "ㅎ",
                                  CompositionState::kComposing));
-  EXPECT_THAT(event_listener.WaitForMessage(), IsCompositionUpdateEvent("ㅎ"));
   EXPECT_THAT(event_listener.WaitForMessage(),
               IsInputEvent("insertCompositionText", "ㅎ",
                            CompositionState::kComposing));

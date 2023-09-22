@@ -49,12 +49,12 @@ value: すしおに
 selectionStart: 0
 selectionEnd: 1
 
-event: beforeinput
+event: compositionupdate
 value: すしおに
 selectionStart: 0
 selectionEnd: 1
 
-event: compositionupdate
+event: beforeinput
 value: すしおに
 selectionStart: 0
 selectionEnd: 1
@@ -64,12 +64,12 @@ value: オニしおに
 selectionStart: 2
 selectionEnd: 2
 
-event: beforeinput
+event: compositionupdate
 value: オニしおに
 selectionStart: 0
 selectionEnd: 2
 
-event: compositionupdate
+event: beforeinput
 value: オニしおに
 selectionStart: 0
 selectionEnd: 2
