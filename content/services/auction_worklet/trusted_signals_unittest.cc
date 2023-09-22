@@ -699,7 +699,26 @@ TEST_F(TrustedSignalsTest, BiddingSignalsOneKey) {
                   "Completion Status: net::OK"));
 }
 
-TEST_F(TrustedSignalsTest, BiddingSignalsOneKeyNewHeaderName) {
+TEST_F(TrustedSignalsTest, BiddingSignalsOneKeyOldHeaderName) {
+  AddResponse(
+      &url_loader_factory_,
+      GURL("https://url.test/"
+           "?hostname=publisher&keys=key1&interestGroupNames=name1"),
+      kJsonMimeType, absl::nullopt, kBaseBiddingJson,
+      base::StringPrintf("%s\nX-Fledge-Bidding-Signals-Format-Version: 2",
+                         kAllowFledgeHeader));
+  scoped_refptr<TrustedSignals::Result> signals =
+      FetchBiddingSignals({"name1"}, {"key1"}, kHostname,
+                          /*experiment_group_id=*/absl::nullopt);
+  ASSERT_TRUE(signals);
+  EXPECT_EQ(R"({"key1":1})", ExtractBiddingSignals(signals.get(), {"key1"}));
+  const auto* priority_vector = signals->GetPriorityVector("name1");
+  ASSERT_TRUE(priority_vector);
+  EXPECT_EQ((TrustedSignals::Result::PriorityVector{{"foo", 1}}),
+            *priority_vector);
+}
+
+TEST_F(TrustedSignalsTest, BiddingSignalsOneKeyHeaderName) {
   AddResponse(
       &url_loader_factory_,
       GURL("https://url.test/"

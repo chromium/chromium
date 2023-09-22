@@ -106,7 +106,7 @@ void AddBidderJsonResponse(
   }
   if (format_version_string) {
     headers.append(
-        base::StringPrintf("\nX-Fledge-Bidding-Signals-Format-Version:  %s",
+        base::StringPrintf("\nAd-Auction-Bidding-Signals-Format-Version:  %s",
                            format_version_string->c_str()));
   }
   AddResponse(url_loader_factory, url, kJsonMimeType, absl::nullopt, content,
