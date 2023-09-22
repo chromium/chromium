@@ -161,7 +161,7 @@ const std::string TrashBaseTest::CreateTrashInfoContentsFromPath(
   return base::StrCat(
       {"[Trash Info]\nPath=", prefix.AsEndingWithSeparator().value(),
        relative_restore_path,
-       "\nDeletionDate=", base::TimeFormatAsIso8601(base::Time())});
+       "\nDeletionDate=", base::TimeFormatAsIso8601(base::Time::UnixEpoch())});
 }
 
 const std::string TrashBaseTest::CreateTrashInfoContentsFromPath(

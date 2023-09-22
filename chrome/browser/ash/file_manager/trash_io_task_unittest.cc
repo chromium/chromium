@@ -269,10 +269,11 @@ TEST_F(TrashIOTaskTest, OrphanedFilesAreOverwritten) {
       .WillOnce(RunClosure(run_loop.QuitClosure()));
 
   {
-    // Override the `base::Time::Now()` function to return 0 (i.e. base::Time())
-    // This ensures the DeletionDate is static in tests to verify file contents.
+    // Override the `base::Time::Now()` function to return
+    // base::Time::UnixEpoch(). This ensures the DeletionDate is static in tests
+    // to verify file contents.
     base::subtle::ScopedTimeClockOverrides mock_time_now(
-        []() { return base::Time(); }, nullptr, nullptr);
+        []() { return base::Time::UnixEpoch(); }, nullptr, nullptr);
     TrashIOTask task(source_urls, profile_.get(), file_system_context_,
                      temp_dir_.GetPath());
     task.Execute(progress_callback.Get(), complete_callback.Get());
@@ -355,7 +356,7 @@ TEST_F(TrashIOTaskTest, MultipleFilesInvokeProgress) {
 
   {
     base::subtle::ScopedTimeClockOverrides mock_time_now(
-        []() { return base::Time(); }, nullptr, nullptr);
+        []() { return base::Time::UnixEpoch(); }, nullptr, nullptr);
     TrashIOTask task(source_urls, profile_.get(), file_system_context_,
                      temp_dir_.GetPath());
     task.Execute(progress_callback.Get(), complete_callback.Get());

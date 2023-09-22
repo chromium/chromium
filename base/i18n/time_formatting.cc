@@ -14,6 +14,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
@@ -30,10 +31,14 @@
 namespace base {
 namespace {
 
+UDate ToUDate(const Time& time) {
+  return time.ToJsTime();
+}
+
 std::u16string TimeFormat(const icu::DateFormat& formatter, const Time& time) {
   icu::UnicodeString date_string;
 
-  formatter.format(static_cast<UDate>(time.ToDoubleT() * 1000), date_string);
+  formatter.format(ToUDate(time), date_string);
   return i18n::UnicodeStringToString16(date_string);
 }
 
@@ -43,8 +48,7 @@ std::u16string TimeFormatWithoutAmPm(const icu::DateFormat* formatter,
   icu::UnicodeString time_string;
 
   icu::FieldPosition ampm_field(icu::DateFormat::kAmPmField);
-  formatter->format(
-      static_cast<UDate>(time.ToDoubleT() * 1000), time_string, ampm_field);
+  formatter->format(ToUDate(time), time_string, ampm_field);
   int ampm_length = ampm_field.getEndIndex() - ampm_field.getBeginIndex();
   if (ampm_length) {
     int begin = ampm_field.getBeginIndex();
@@ -261,8 +265,22 @@ std::string UnlocalizedTimeFormatWithPattern(const Time& time,
 }
 
 std::string TimeFormatAsIso8601(const Time& time) {
-  return UnlocalizedTimeFormatWithPattern(time, "yyyy-MM-dd'T'HH:mm:ss.SSSX",
-                                          icu::TimeZone::getGMT());
+  const std::string formatted = UnlocalizedTimeFormatWithPattern(
+      time, "yyyy-MM-dd'T'HH:mm:ss.SSSX", icu::TimeZone::getGMT());
+  // TODO(crbug.com/1484832): Remove this block when the bug is addressed.
+  if constexpr (DCHECK_IS_ON()) {
+    DCHECK(!time.is_null()) << "Formatting a null time is likely a caller bug.";
+    Time::Exploded exploded;
+    time.UTCExplode(&exploded);
+    const std::string printf_formatted =
+        StringPrintf("%04d-%02d-%02dT%02d:%02d:%02d.%03dZ", exploded.year,
+                     exploded.month, exploded.day_of_month, exploded.hour,
+                     exploded.minute, exploded.second, exploded.millisecond);
+    DCHECK_EQ(formatted, printf_formatted)
+        << ". Formatted Time internal value: "
+        << time.ToDeltaSinceWindowsEpoch().InMicroseconds();
+  }
+  return formatted;
 }
 
 std::string TimeFormatHTTP(const Time& time) {
@@ -346,8 +364,8 @@ std::u16string DateIntervalFormat(const Time& begin_time,
                                               status));
 
   icu::FieldPosition pos = 0;
-  UDate start_date = static_cast<UDate>(begin_time.ToDoubleT() * 1000);
-  UDate end_date = static_cast<UDate>(end_time.ToDoubleT() * 1000);
+  UDate start_date = ToUDate(begin_time);
+  UDate end_date = ToUDate(end_time);
   icu::DateInterval interval(start_date, end_date);
   icu::UnicodeString formatted;
   formatter->format(&interval, formatted, pos, status);

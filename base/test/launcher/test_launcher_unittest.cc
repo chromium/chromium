@@ -984,12 +984,15 @@ TEST_F(ResultWatcherTest, PollCompletesQuickly) {
 // Verify that a result watcher repeatedly checks the file for a batch of slow
 // tests. Each test completes in 40s, which is just under the timeout of 45s.
 TEST_F(ResultWatcherTest, PollCompletesSlowly) {
+  SCOPED_TRACE(::testing::Message() << "Start ticks: " << TimeTicks::Now());
+
   ASSERT_TRUE(dir.CreateUniqueTempDir());
   FilePath result_file = CreateResultFile();
+  const Time start = Time::Now();
   ASSERT_TRUE(AppendToFile(
       result_file,
       StrCat({"    <x-teststart name=\"B\" classname=\"A\" timestamp=\"",
-              TimeFormatAsIso8601(Time::Now()).c_str(), "\" />\n"})));
+              TimeFormatAsIso8601(start).c_str(), "\" />\n"})));
 
   MockResultWatcher result_watcher(result_file, 10);
   size_t checks = 0;
@@ -1029,7 +1032,6 @@ TEST_F(ResultWatcherTest, PollCompletesSlowly) {
                 }),
                 ReturnPointee(&done)));
 
-  Time start = Time::Now();
   ASSERT_TRUE(result_watcher.PollUntilDone(Seconds(45)));
   // The first check occurs 45s after the batch starts, so the sequence of
   // events looks like:
