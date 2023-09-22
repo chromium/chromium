@@ -4,7 +4,6 @@
 
 #include "ui/base/cocoa/text_services_context_menu.h"
 
-#import <AVFAudio/AVFAudio.h>
 #import <AppKit/AppKit.h>
 
 #include <utility>
@@ -14,12 +13,6 @@
 #include "ui/strings/grit/ui_strings.h"
 
 namespace {
-
-AVSpeechSynthesizer* SpeechSynthesizer() {
-  static AVSpeechSynthesizer* speech_synthesizer =
-      [[AVSpeechSynthesizer alloc] init];
-  return speech_synthesizer;
-}
 
 // Returns the TextDirection associated associated with the given BiDi
 // |command_id|.
@@ -65,36 +58,36 @@ TextServicesContextMenu::TextServicesContextMenu(Delegate* delegate)
 // All standard AppKit implementations of `-(IBAction)startSpeaking:(id)sender`
 // and `-(IBAction)stopSpeaking:(id)sender` funnel into messages to
 // `NSApplication`:
+
+}  // namespace ui
+
+@interface NSApplication (Speech)
+- (void)speakString:(NSString*)string;
+- (IBAction)stopSpeaking:(id)sender;
+- (BOOL)isSpeaking;
+@end
+
+namespace ui {
+
+// We do this as well, for two reasons:
 //
-// @interface NSApplication ()
-// - (void)speakString:(NSString*)string;
-// - (IBAction)stopSpeaking:(id)sender;
-// - (BOOL)isSpeaking;
-// @end
+// 1. Interoperability with the other parts of the system that use this same
+//    speech synthesizer.
 //
-// However, it is an explicit decision to not use these messages, and to keep an
-// independent `AVSpeechSynthesizer`, as Chromium tries to avoid the use of SPI
-// when it's reasonably straightforward to do so. This does mean that speech
-// initiated within Chromium doesn't interoperate with speech initiated with
-// any native controls (if there are any left) via this submenu.
+// 2. Working around a bug in `AVSpeechSynthesizer` which does not provide the
+//    correct voice when a specific voice is chosen in the system accessibility
+//    settings (see https://crbug.com/1484940#c9, FB13197951).
 
 void TextServicesContextMenu::SpeakText(const std::u16string& text) {
-  if (IsSpeaking()) {
-    StopSpeaking();
-  }
-
-  AVSpeechUtterance* utterance = [AVSpeechUtterance
-      speechUtteranceWithString:base::SysUTF16ToNSString(text)];
-
-  [SpeechSynthesizer() speakUtterance:utterance];
+  [NSApp speakString:base::SysUTF16ToNSString(text)];
 }
 
 void TextServicesContextMenu::StopSpeaking() {
-  [SpeechSynthesizer() stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
+  [NSApp stopSpeaking:nil];
 }
 
 bool TextServicesContextMenu::IsSpeaking() {
-  return SpeechSynthesizer().speaking;
+  return [NSApp isSpeaking];
 }
 
 void TextServicesContextMenu::AppendToContextMenu(SimpleMenuModel* model) {
