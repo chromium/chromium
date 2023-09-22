@@ -163,6 +163,7 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
   mixer[kColorThemeColorPickerHueSliderDialogIcon] = {kColorSysOnSurfaceSubtle};
   mixer[kColorThemeColorPickerHueSliderHandle] = {kColorSysWhite};
   mixer[kColorThemeColorPickerOptionBackground] = {kColorSysNeutralContainer};
+  mixer[kColorThrobber] = {kColorSysPrimary};
   mixer[kColorToastBackground] = {kColorSysInverseSurface};
   mixer[kColorToastButton] = {kColorSysInversePrimary};
   mixer[kColorToastForeground] = {kColorSysInverseOnSurface};
