@@ -47,15 +47,27 @@ std::u16string ChromeMediaSessionClient::GetAlbumPlaceholder() const {
 }
 
 SkBitmap ChromeMediaSessionClient::GetThumbnailPlaceholder() const {
+  // Dip size of one side of the thumbnail placeholder including padding.
+  const int kThumbnailDipSize = 100;
+
   const gfx::ImageSkia incognito_icon =
-      gfx::CreateVectorIcon(kIncognitoRefreshMenuIcon, /*dip_size=*/40,
-                            /*color=*/SK_ColorBLACK);
+      gfx::CreateVectorIcon(kIncognitoRefreshMenuIcon,
+                            /*dip_size=*/kThumbnailDipSize / 2, SK_ColorBLACK);
   const gfx::ImageSkia incognito_icon_with_circle =
       gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
-          /*radius=*/24, SK_ColorWHITE, incognito_icon);
+          /*radius=*/kThumbnailDipSize / 3, SK_ColorWHITE, incognito_icon);
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(kThumbnailDipSize, kThumbnailDipSize);
+  bitmap.eraseColor(SK_ColorTRANSPARENT);
+  const gfx::ImageSkia background = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+
+  const gfx::ImageSkia thumbnail_with_padding =
+      gfx::ImageSkiaOperations::CreateSuperimposedImage(
+          background, incognito_icon_with_circle);
 
   const float dsf =
       display::Screen::GetScreen()->GetPrimaryDisplay().device_scale_factor();
 
-  return incognito_icon_with_circle.GetRepresentation(dsf).GetBitmap();
+  return thumbnail_with_padding.GetRepresentation(dsf).GetBitmap();
 }

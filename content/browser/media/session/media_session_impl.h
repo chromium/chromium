@@ -457,7 +457,9 @@ class MediaSessionImpl : public MediaSession,
   void RebuildAndNotifyMetadataChanged();
 
 #if BUILDFLAG(IS_CHROMEOS)
-  void BuildPlaceholderMetadata(media_session::MediaMetadata&);
+  void BuildPlaceholderMetadata(
+      media_session::MediaMetadata& metadata,
+      std::vector<media_session::MediaImage>& artwork);
 #endif
 
   void BuildMetadata(media_session::MediaMetadata& metadata,
