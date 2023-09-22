@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './scanning_shared_css.js';
+import './scanning_shared.css.js';
 import './strings.m.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 

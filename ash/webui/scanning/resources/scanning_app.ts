@@ -24,8 +24,8 @@ import './scan_done_section.js';
 import './scan_preview.js';
 import './scan_to_select.js';
 import './scanner_select.js';
-import './scanning_fonts_css.js';
-import './scanning_shared_css.js';
+import './scanning_fonts.css.js';
+import './scanning_shared.css.js';
 import './source_select.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';

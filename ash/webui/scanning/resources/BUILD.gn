@@ -30,6 +30,11 @@ build_webui("build") {
     "svg/scanners_loading.svg",
   ]
 
+  css_files = [
+    "scanning_fonts.css",
+    "scanning_shared.css",
+  ]
+
   web_component_files = [
     "action_toolbar.ts",
     "color_mode_select.ts",
@@ -42,8 +47,6 @@ build_webui("build") {
     "scan_done_section.ts",
     "scanner_select.js",
     "scanning_app.ts",
-    "scanning_fonts_css.js",
-    "scanning_shared_css.js",
     "scan_preview.ts",
     "scan_settings_section.ts",
     "scan_to_select.ts",

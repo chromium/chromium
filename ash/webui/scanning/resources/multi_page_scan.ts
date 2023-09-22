@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_elements/chromeos/cros_color_overrides.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import './scanning_fonts_css.js';
+import './scanning_fonts.css.js';
 import './strings.m.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
