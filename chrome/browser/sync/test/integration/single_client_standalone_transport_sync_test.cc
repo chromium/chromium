@@ -26,11 +26,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
-#include "components/browser_sync/browser_sync_switches.h"
 #endif
-
-// TODO(crbug.com/1455032): Enable all of these tests on Android once
-// SignInPrimaryAccount() doesn't enable Sync anymore.
 
 namespace {
 
@@ -141,6 +137,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// TODO(crbug.com/1117345): On Android it's currently not possible to "upgrade"
+// a kSignin account to kSync.
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
                        SwitchesBetweenTransportAndFeature) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
@@ -175,6 +174,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
       syncer::UserSelectableType::kBookmarks));
   EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::BOOKMARKS));
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Tests the behavior of receiving a "Reset Sync" operation from the dashboard
 // while Sync-the-feature is active: On non-ChromeOS, this signs the user out,
@@ -222,6 +222,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
+// TODO(crbug.com/1117345): Android currently doesn't support PRE_ tests.
+#if !BUILDFLAG(IS_ANDROID)
 // Regression test for crbug.com/955989 that verifies the cache GUID is not
 // reset upon restart of the browser, in standalone transport mode.
 IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
@@ -286,6 +288,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
 
   EXPECT_EQ(old_cache_guid, transport_data_prefs.GetCacheGuid());
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 class SingleClientStandaloneTransportWithReplaceSyncWithSigninSyncTest
     : public SingleClientStandaloneTransportSyncTest {
@@ -356,6 +359,8 @@ IN_PROC_BROWSER_TEST_F(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
 }
 
+// TODO(crbug.com/1117345): Android currently doesn't support PRE_ tests.
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(
     SingleClientStandaloneTransportWithReplaceSyncWithSigninSyncTest,
     PRE_DataTypesEnabledInTransportModeWithCustomPassphrase) {
@@ -454,6 +459,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
       syncer::AUTOFILL_WALLET_DATA));
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 class SingleClientStandaloneTransportWithoutReplaceSyncWithSigninSyncTest
     : public SingleClientStandaloneTransportSyncTest {
@@ -549,6 +555,8 @@ class SingleClientStandaloneTransportReplaceSyncWithSigninMigrationSyncTest
   base::test::ScopedFeatureList sync_to_signin_feature_;
 };
 
+// TODO(crbug.com/1117345): Android currently doesn't support PRE_ tests.
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(
     SingleClientStandaloneTransportReplaceSyncWithSigninMigrationSyncTest,
     PRE_MigratesSignedInUser) {
@@ -663,5 +671,6 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kAutofill));
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace

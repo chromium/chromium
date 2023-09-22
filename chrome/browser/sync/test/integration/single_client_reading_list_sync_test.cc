@@ -199,12 +199,6 @@ class SingleClientReadingListSyncTest : public SyncTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/1455032): The following ifdef should be removed.
-// Currently Android explicitly enables Sync-the-feature upon
-// `SignInPrimaryAccount()` while the following tests are expecting the sync
-// feature to be disabled.
-#if !BUILDFLAG(IS_ANDROID)
-
 IN_PROC_BROWSER_TEST_F(SingleClientReadingListSyncTest,
                        ShouldDownloadAccountDataUponSignin) {
   const GURL kUrl("http://url.com/");
@@ -565,7 +559,5 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
