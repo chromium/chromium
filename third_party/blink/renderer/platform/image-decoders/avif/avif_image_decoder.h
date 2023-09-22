@@ -146,7 +146,7 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
   avifPixelFormat avif_yuv_format_ = AVIF_PIXEL_FORMAT_NONE;
   wtf_size_t decoded_frame_count_ = 0;
   SkYUVColorSpace yuv_color_space_ = SkYUVColorSpace::kIdentity_SkYUVColorSpace;
-  // Used to call UpdateAvifBppHistogram() at most once to record the
+  // Used to call UpdateBppHistogram<"Avif">() at most once to record the
   // bits-per-pixel value of the image when the image is successfully decoded.
   base::OnceCallback<void(gfx::Size, size_t)> update_bpp_histogram_callback_;
   absl::optional<AVIFCleanApertureType> clap_type_;

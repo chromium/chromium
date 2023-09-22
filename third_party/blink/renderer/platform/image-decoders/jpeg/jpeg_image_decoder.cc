@@ -165,11 +165,6 @@ blink::BitmapImageMetrics::JpegColorSpace ExtractUMAJpegColorSpace(
   }
 }
 
-void UpdateJpegBppHistogram(gfx::Size size, size_t image_size_bytes) {
-  static constexpr char kType[] = "Jpeg";
-  blink::ImageDecoder::UpdateBppHistogram<kType>(size, image_size_bytes);
-}
-
 constexpr base::HistogramBase::Sample kImageAreaHistogramMin = 1;
 constexpr base::HistogramBase::Sample kImageAreaHistogramMax = 8192 * 8192;
 constexpr int32_t kImageAreaHistogramBucketCount = 100;
@@ -748,7 +743,9 @@ class JPEGImageReader final {
         CountJpegColorSpace(ExtractUMAJpegColorSpace(info_));
         if (info_.jpeg_color_space != JCS_GRAYSCALE &&
             decoder_->IsAllDataReceived()) {
-          UpdateJpegBppHistogram(decoder_->Size(), data_->size());
+          static constexpr char kType[] = "Jpeg";
+          ImageDecoder::UpdateBppHistogram<kType>(decoder_->Size(),
+                                                  data_->size());
         }
         return jpeg_finish_decompress(&info_);
     }

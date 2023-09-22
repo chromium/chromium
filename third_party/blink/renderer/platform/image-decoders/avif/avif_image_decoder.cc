@@ -218,11 +218,6 @@ void AvifInfoSegmentReaderSkip(void* void_stream, size_t num_bytes) {
   stream->num_read_bytes += num_bytes;
 }
 
-void UpdateAvifBppHistogram(gfx::Size size, size_t image_size_bytes) {
-  static constexpr char kType[] = "Avif";
-  ImageDecoder::UpdateBppHistogram<kType>(size, image_size_bytes);
-}
-
 }  // namespace
 
 AVIFImageDecoder::AVIFImageDecoder(AlphaOption alpha_option,
@@ -977,7 +972,8 @@ bool AVIFImageDecoder::UpdateDemuxer() {
   // alpha.
   if (container->depth == 8 && avif_yuv_format_ != AVIF_PIXEL_FORMAT_YUV400 &&
       !decoder_->alphaPresent && decoded_frame_count_ == 1) {
-    update_bpp_histogram_callback_ = base::BindOnce(&UpdateAvifBppHistogram);
+    static constexpr char kType[] = "Avif";
+    update_bpp_histogram_callback_ = base::BindOnce(&UpdateBppHistogram<kType>);
   }
 
   unsigned width = container->width;
