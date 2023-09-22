@@ -18,6 +18,7 @@
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "chromeos/components/kcer/kcer.h"
+#include "chromeos/components/kcer/kcer_impl.h"
 #include "chromeos/components/kcer/kcer_nss/test_utils.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -617,8 +618,10 @@ void KcerFuzzer::InitializeKcer() {
     device_token_ptr = CreateToken(Token::kDevice);
   }
 
-  kcer_ = internal::CreateKcer(content::GetIOThreadTaskRunner({}),
-                               user_token_ptr, device_token_ptr);
+  auto kcer = std::make_unique<kcer::internal::KcerImpl>();
+  kcer->Initialize(content::GetIOThreadTaskRunner({}), user_token_ptr,
+                   device_token_ptr);
+  kcer_ = std::move(kcer);
 }
 
 base::WeakPtr<internal::KcerToken> KcerFuzzer::CreateToken(Token token) {
@@ -1224,7 +1227,9 @@ void KcerFuzzer::RunSignRsaPkcs1DigestAndVerifySignature() {
 }
 
 void KcerFuzzer::RunGetAvailableTokens() {
-  base::flat_set<Token> available_tokens = kcer_->GetAvailableTokens();
+  base::test::TestFuture<base::flat_set<Token>> get_tokens_waiter;
+  kcer_->GetAvailableTokens(get_tokens_waiter.GetCallback());
+  const base::flat_set<Token>& available_tokens = get_tokens_waiter.Get();
 
   for (const auto& [expected_token, v] : available_tokens_) {
     EXPECT_TRUE(base::Contains(available_tokens, expected_token));

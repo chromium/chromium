@@ -16,6 +16,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/test/test_future.h"
 #include "chromeos/components/kcer/kcer.h"
+#include "chromeos/components/kcer/kcer_impl.h"
 #include "chromeos/components/kcer/kcer_nss/kcer_token_impl_nss.h"
 #include "chromeos/components/kcer/kcer_nss/test_utils.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -114,6 +115,16 @@ std::string ToString(const absl::optional<chaps::KeyPermissions>& val) {
   // Should be updated if `KeyPermissions` struct is changed.
   return base::StringPrintf("[arc:%d corp:%d]", val->key_usages().arc(),
                             val->key_usages().corporate());
+}
+
+std::unique_ptr<kcer::Kcer> CreateKcer(
+    scoped_refptr<base::TaskRunner> token_task_runner,
+    base::WeakPtr<kcer::internal::KcerToken> user_token,
+    base::WeakPtr<kcer::internal::KcerToken> device_token) {
+  auto kcer = std::make_unique<kcer::internal::KcerImpl>();
+  kcer->Initialize(std::move(token_task_runner), std::move(user_token),
+                   std::move(device_token));
+  return kcer;
 }
 
 bool KeyInfoEquals(const KeyInfo& expected, const KeyInfo& actual) {
@@ -272,8 +283,7 @@ class KcerNssTest : public testing::Test {
       }
     }
 
-    kcer_ =
-        internal::CreateKcer(IOTaskRunner(), user_token_ptr, device_token_ptr);
+    kcer_ = CreateKcer(IOTaskRunner(), user_token_ptr, device_token_ptr);
     observers_subscription_ = kcer_->AddObserver(observer_.GetCallback());
   }
 
@@ -303,9 +313,9 @@ TEST_F(KcerNssTest, UseUnavailableTokenThenGetError) {
   EXPECT_TRUE(observer_.WaitUntil(/*notifications=*/0));
 }
 
-// Test that all methods can be queued while a token is initializing and that
-// the entire task queue can be processed when initialization completes (in
-// this case - completes with a failure).
+// Test that all methods can be queued while a Kcer instance and its token are
+// initializing and that the entire task queue can be processed when
+// initialization completes (in this case - completes with a failure).
 TEST_F(KcerNssTest, QueueTasksThenFailInitializationThenGetErrors) {
   // Do not initialize yet to simulate slow initialization.
   TokenHolder user_token(Token::kUser, /*initialize=*/false);
@@ -319,8 +329,9 @@ TEST_F(KcerNssTest, QueueTasksThenFailInitializationThenGetErrors) {
       Token::kUser, Pkcs11Id(), /*nickname=*/std::string(),
       /*x509_cert=*/nullptr);
 
-  std::unique_ptr<Kcer> kcer = internal::CreateKcer(
-      IOTaskRunner(), user_token.GetWeakPtr(), /*device_token=*/nullptr);
+  // Create a Kcer instance without any tokens. It will queue all the incoming
+  // requests itself.
+  auto kcer = std::make_unique<kcer::internal::KcerImpl>();
   auto subscription = kcer->AddObserver(observer_.GetCallback());
 
   base::test::TestFuture<base::expected<PublicKey, Error>> generate_rsa_waiter;
@@ -391,6 +402,23 @@ TEST_F(KcerNssTest, QueueTasksThenFailInitializationThenGetErrors) {
                        generate_rsa_waiter_2.GetCallback());
   // TODO(244408716): Add more methods when they are implemented.
 
+  // Check some waiters that the requests are queued.
+  EXPECT_FALSE(generate_rsa_waiter.IsReady());
+  EXPECT_FALSE(list_keys_waiter.IsReady());
+  EXPECT_FALSE(set_permissions_waiter.IsReady());
+
+  // Initialize Kcer with a token. This will empty the queue in `kcer` and move
+  // all the requests into the token.
+  kcer->Initialize(IOTaskRunner(), user_token.GetWeakPtr(),
+                   /*device_token=*/nullptr);
+  task_environment_.RunUntilIdle();
+
+  // Check some waiters that the requests are still queued.
+  EXPECT_FALSE(generate_rsa_waiter.IsReady());
+  EXPECT_FALSE(list_keys_waiter.IsReady());
+  EXPECT_FALSE(set_permissions_waiter.IsReady());
+
+  // This should process and fail all the requests.
   user_token.FailInitialization();
 
   ASSERT_FALSE(generate_rsa_waiter.Get().has_value());
@@ -454,8 +482,8 @@ TEST_F(KcerNssTest, ObserveExternalNotification) {
   TokenHolder user_token(Token::kUser, /*initialize=*/true);
 
   std::unique_ptr<Kcer> kcer =
-      internal::CreateKcer(IOTaskRunner(), user_token.GetWeakPtr(),
-                           /*device_token=*/nullptr);
+      CreateKcer(IOTaskRunner(), user_token.GetWeakPtr(),
+                 /*device_token=*/nullptr);
 
   NotificationsObserver observer_1(task_environment_);
   NotificationsObserver observer_2(task_environment_);
@@ -1298,7 +1326,9 @@ TEST_P(KcerNssAllKeyTypesTest, KeyLifecycle) {
   InitializeKcer({Token::kUser, Token::kDevice});
 
   // Check that the initialized tokens are returned as available.
-  EXPECT_EQ(kcer_->GetAvailableTokens(),
+  base::test::TestFuture<base::flat_set<Token>> get_tokens_waiter;
+  kcer_->GetAvailableTokens(get_tokens_waiter.GetCallback());
+  EXPECT_EQ(get_tokens_waiter.Get(),
             base::flat_set<Token>({Token::kUser, Token::kDevice}));
 
   // Check that the information about both initialized tokens is available.

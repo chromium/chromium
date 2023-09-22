@@ -259,6 +259,8 @@ class COMPONENT_EXPORT(KCER) Kcer {
       base::OnceCallback<void(base::expected<bool, Error>)>;
   using SignCallback =
       base::OnceCallback<void(base::expected<Signature, Error>)>;
+  using GetAvailableTokensCallback =
+      base::OnceCallback<void(base::flat_set<Token>)>;
   using GetTokenInfoCallback =
       base::OnceCallback<void(base::expected<TokenInfo, Error>)>;
   using GetKeyInfoCallback =
@@ -389,7 +391,7 @@ class COMPONENT_EXPORT(KCER) Kcer {
                                SignCallback callback) = 0;
 
   // Returns tokens that are available to the current instance of Kcer.
-  virtual base::flat_set<Token> GetAvailableTokens() = 0;
+  virtual void GetAvailableTokens(GetAvailableTokensCallback callback) = 0;
 
   // Retrieves additional info for the loaded `token`. Returns a `TokenInfo`
   // struct on success, kTokenNotAvailable if the `token` will never be loaded,
@@ -421,20 +423,6 @@ class COMPONENT_EXPORT(KCER) Kcer {
                                             std::string profile_id,
                                             StatusCallback callback) = 0;
 };
-
-namespace internal {
-class KcerToken;
-// Creates an instance of Kcer interface, should only be used by a dedicated
-// factory. Tokens are expected to be owned by the factory and live on a non-UI
-// thread. All the requests for the tokens should be posted on the
-// `token_task_runner`. Kcer doesn't take ownership of the tokens and accesses
-// them via weak pointers.
-COMPONENT_EXPORT(KCER)
-std::unique_ptr<Kcer> CreateKcer(
-    scoped_refptr<base::TaskRunner> token_task_runner,
-    base::WeakPtr<internal::KcerToken> user_token,
-    base::WeakPtr<internal::KcerToken> device_token);
-}  // namespace internal
 
 }  // namespace kcer
 
