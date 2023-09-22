@@ -138,7 +138,7 @@
 <translation id="1107482171728500359">Надати доступ до мікрофона</translation>
 <translation id="1108600514891325577">&amp;Зупинити</translation>
 <translation id="1108938384783527433">Синхронізація історії</translation>
-<translation id="1110155001042129815">Зачекайте</translation>
+<translation id="1110155001042129815">Зачекати</translation>
 <translation id="1110965959145884739">Виберіть, які мови встановити на цьому пристрої. Мовні пакети спільні для користувачів задля економії місця на диску. <ph name="BEGIN_LINK_LEARN_MORE" />Докладніше<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1112420131909513020">Фонова вкладка використовує Bluetooth</translation>
 <translation id="1112998165730922436">Трансляцію призупинено</translation>
@@ -699,7 +699,7 @@
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (гість)</translation>
 <translation id="1572266655485775982">Увімкнути Wi-Fi</translation>
 <translation id="1572876035008611720">Електронна адреса</translation>
-<translation id="1575741822946219011">Мови та методи введення</translation>
+<translation id="1575741822946219011">Мови й методи введення</translation>
 <translation id="1576594961618857597">Стандартний білий аватар</translation>
 <translation id="1576729678809834061">Поскаржитися на цей результат пошуку</translation>
 <translation id="1578558981922970608">Примусово закрити</translation>
@@ -7497,7 +7497,7 @@
 <translation id="7382085868019811559">Функція підтримки застарілих веб-переглядачів дає змогу відкривати певні типи URL-адрес в альтернативному веб-переглядачі, який використовує застарілі функції, потрібні для належної роботи таких сайтів.</translation>
 <translation id="7382980704744807223">Підозріло</translation>
 <translation id="738322632977123193">Не вдалося завантажити зображення. Воно має бути в одному з таких форматів: .jpg, .gif, .png, .bmp, .tif або .webp.</translation>
-<translation id="73843634555824551">Методи введення та клавіатури</translation>
+<translation id="73843634555824551">Методи введення й клавіатури</translation>
 <translation id="7384687527486377545">Автоматичний повтор натиснутої клавіші</translation>
 <translation id="7384804382450832142">Підключитися до Microsoft OneDrive</translation>
 <translation id="7385490373498027129">Усі файли та локальні дані всіх користувачів на цьому пристрої <ph name="DEVICE_TYPE" /> буде видалено назавжди.</translation>
