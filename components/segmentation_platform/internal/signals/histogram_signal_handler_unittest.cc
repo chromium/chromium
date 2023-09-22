@@ -23,6 +23,10 @@ namespace {
 
 constexpr char kExpectedHistogram[] = "some_histogram";
 const uint64_t kExpectedHash = base::HashMetricName(kExpectedHistogram);
+constexpr char kExpectedHistogram2[] = "other_histogram";
+const uint64_t kExpectedHash2 = base::HashMetricName(kExpectedHistogram2);
+constexpr char kExpectedHistogram3[] = "another_histogram";
+const uint64_t kExpectedHash3 = base::HashMetricName(kExpectedHistogram3);
 
 class MockObserver : public HistogramSignalHandler::Observer {
  public:
@@ -49,6 +53,8 @@ class HistogramSignalHandlerTest : public testing::Test {
     std::set<std::pair<std::string, proto::SignalType>> histograms;
     histograms.insert(
         std::make_pair(kExpectedHistogram, proto::SignalType::HISTOGRAM_ENUM));
+    histograms.insert(std::make_pair(kExpectedHistogram2,
+                                     proto::SignalType::HISTOGRAM_VALUE));
     histogram_signal_handler_->SetRelevantHistograms(histograms);
   }
 
@@ -76,6 +82,21 @@ TEST_F(HistogramSignalHandlerTest, HistogramsAreRecorded) {
               WriteSample(_, base::HashMetricName(kUnrelatedHistogram), _, _))
       .Times(0);
   UMA_HISTOGRAM_BOOLEAN(kUnrelatedHistogram, true);
+  task_environment_.RunUntilIdle();
+
+  std::set<std::pair<std::string, proto::SignalType>> histograms;
+  histograms.insert(
+      std::make_pair(kExpectedHistogram2, proto::SignalType::HISTOGRAM_ENUM));
+  histograms.insert(
+      std::make_pair(kExpectedHistogram3, proto::SignalType::HISTOGRAM_ENUM));
+  histogram_signal_handler_->SetRelevantHistograms(histograms);
+
+  EXPECT_CALL(*signal_database_, WriteSample(_, kExpectedHash, _, _)).Times(0);
+  EXPECT_CALL(*signal_database_, WriteSample(_, kExpectedHash2, _, _));
+  EXPECT_CALL(*signal_database_, WriteSample(_, kExpectedHash3, _, _));
+  UMA_HISTOGRAM_BOOLEAN(kExpectedHistogram, true);
+  UMA_HISTOGRAM_BOOLEAN(kExpectedHistogram2, true);
+  UMA_HISTOGRAM_BOOLEAN(kExpectedHistogram3, true);
   task_environment_.RunUntilIdle();
 }
 
