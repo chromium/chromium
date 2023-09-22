@@ -111,10 +111,16 @@ class SafetyHubService : public KeyedService,
   // KeyedService implementation.
   void Shutdown() override;
 
+  // Checks if the repeating timer is running.
+  bool IsTimerRunningForTesting();
+
  protected:
   // Triggers the repeated update task that updates the state of the Safety Hub
   // service.
   void StartRepeatedUpdates();
+
+  // Stops the repeating timer to stop recurring tasks.
+  void StopTimer();
 
   // SafetyHubService overrides.
 

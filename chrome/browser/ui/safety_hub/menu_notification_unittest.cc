@@ -58,7 +58,8 @@ class SafetyHubMenuNotificationTest : public testing::Test {
     registry->ResetForTest();
     HostContentSettingsMap* hcsm =
         HostContentSettingsMapFactory::GetForProfile(profile());
-    service_ = std::make_unique<UnusedSitePermissionsService>(hcsm);
+    service_ = std::make_unique<UnusedSitePermissionsService>(
+        hcsm, profile()->GetPrefs());
   }
 
  protected:

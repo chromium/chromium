@@ -38,6 +38,10 @@ void SafetyHubService::Shutdown() {
   update_timer_.Stop();
 }
 
+void SafetyHubService::StopTimer() {
+  update_timer_.Stop();
+}
+
 void SafetyHubService::StartRepeatedUpdates() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   UpdateAsync();
@@ -100,4 +104,8 @@ SafetyHubService::GetCachedResult() {
 
 void SafetyHubService::InitializeLatestResult() {
   latest_result_ = InitializeLatestResultImpl();
+}
+
+bool SafetyHubService::IsTimerRunningForTesting() {
+  return update_timer_.IsRunning();
 }
