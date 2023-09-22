@@ -714,12 +714,21 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
 WEB_UI_CONTROLLER_TYPE_IMPL(NewTabPageUI)
 
 NewTabPageUI::~NewTabPageUI() {
-  // Deregister customize chrome entry on unified side panel
-  if (customize_chrome::IsSidePanelEnabled()) {
-    auto* customize_chrome_tab_helper =
-        CustomizeChromeTabHelper::FromWebContents(web_contents());
-    customize_chrome_tab_helper->DeregisterEntry();
+  if (!customize_chrome::IsSidePanelEnabled()) {
+    return;
   }
+
+  // Deregister customize chrome entry on unified side panel, unless the
+  // WebContents is showing another NewTabPageUI (e.g. in case of reloads).
+  if (auto* web_ui = web_contents()->GetWebUI()) {
+    if (web_ui->GetController() && web_ui->GetController()->GetType() &&
+        web_ui->GetController()->GetAs<NewTabPageUI>()) {
+      return;
+    }
+  }
+  auto* customize_chrome_tab_helper =
+      CustomizeChromeTabHelper::FromWebContents(web_contents());
+  customize_chrome_tab_helper->DeregisterEntry();
 }
 
 // static
