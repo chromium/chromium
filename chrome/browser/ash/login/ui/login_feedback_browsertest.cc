@@ -4,17 +4,41 @@
 
 #include "chrome/browser/ash/login/ui/login_feedback.h"
 
+#include "ash/constants/ash_features.h"
+#include "ash/webui/os_feedback_ui/url_constants.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/ash/os_feedback_dialog.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "content/public/test/browser_test.h"
 
 namespace ash {
+
+namespace {
+
+bool HasInstanceOfOsFeedbackDialog() {
+  return ash::SystemWebDialogDelegate::HasInstance(
+      GURL(ash::kChromeUIOSFeedbackUrl));
+}
+
+void TestOpenOsFeedbackDialog() {
+  Profile* const profile = ash::ProfileHelper::GetSigninProfile();
+  std::unique_ptr<ash::LoginFeedback> login_feedback(
+      new ash::LoginFeedback(profile));
+  // There should be none instance.
+  EXPECT_FALSE(HasInstanceOfOsFeedbackDialog());
+  // Open the feedback dialog.
+  login_feedback->Request("Test feedback");
+  // Verify an instance exists now.
+  EXPECT_TRUE(HasInstanceOfOsFeedbackDialog());
+}
 
 class LoginFeedbackTest : public LoginManagerTest {
  public:
@@ -29,6 +53,26 @@ class LoginFeedbackTest : public LoginManagerTest {
 
  private:
   LoginManagerMixin login_mixin_{&mixin_host_};
+};
+
+class LoginOsFeedbackDialogTest : public LoginFeedbackTest {
+ public:
+  LoginOsFeedbackDialogTest() : LoginFeedbackTest() {
+    feature_list_.InitAndEnableFeature(features::kOsFeedbackDialog);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class OobeOsFeedbackDialogTest : public OobeBaseTest {
+ public:
+  OobeOsFeedbackDialogTest() : OobeBaseTest() {
+    feature_list_.InitAndEnableFeature(features::kOsFeedbackDialog);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 void EnsureFeedbackAppUIShown(FeedbackDialog* feedback_dialog,
@@ -74,6 +118,8 @@ void TestFeedback() {
   feedback_dialog->GetWidget()->Close();
 }
 
+}  // namespace
+
 // Test feedback UI shows up and is active on the Login Screen
 IN_PROC_BROWSER_TEST_F(LoginFeedbackTest, Basic) {
   TestFeedback();
@@ -82,6 +128,18 @@ IN_PROC_BROWSER_TEST_F(LoginFeedbackTest, Basic) {
 // Test feedback UI shows up and is active in OOBE
 IN_PROC_BROWSER_TEST_F(OobeBaseTest, FeedbackBasic) {
   TestFeedback();
+}
+
+// Test feedback UI shows up and is active on the Login Screen when the feature
+// flag OsFeedbackDialog is enabled.
+IN_PROC_BROWSER_TEST_F(LoginOsFeedbackDialogTest, Basic) {
+  TestOpenOsFeedbackDialog();
+}
+
+// Test feedback UI shows up and is active in OOBE when the feature flag
+// OsFeedbackDialog is enabled.
+IN_PROC_BROWSER_TEST_F(OobeOsFeedbackDialogTest, Basic) {
+  TestOpenOsFeedbackDialog();
 }
 
 }  // namespace ash

@@ -1,0 +1,38 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_OS_FEEDBACK_DIALOG_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_OS_FEEDBACK_DIALOG_H_
+
+#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "extensions/common/api/feedback_private.h"
+
+namespace ash {
+
+class OsFeedbackDialog : public SystemWebDialogDelegate {
+ public:
+  // Shows a Feedback dialog using the specified BrowserContext (or Profile).
+  // If |parent| is not null, the dialog will be parented to |parent|.
+  // Otherwise it will be attached to either the AlwaysOnTop container or the
+  // LockSystemModal container, depending on the session state at creation.
+  static void ShowDialog(
+      content::BrowserContext* context,
+      const extensions::api::feedback_private::FeedbackInfo& info,
+      gfx::NativeWindow parent = nullptr);
+
+ protected:
+  explicit OsFeedbackDialog(
+      const extensions::api::feedback_private::FeedbackInfo& info);
+  OsFeedbackDialog(const OsFeedbackDialog&) = delete;
+  OsFeedbackDialog& operator=(const OsFeedbackDialog&) = delete;
+  ~OsFeedbackDialog() override;
+
+ private:
+  // SystemWebDialogDelegate:
+  void GetDialogSize(gfx::Size* size) const override;
+};
+
+}  // namespace ash
+
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_OS_FEEDBACK_DIALOG_H_

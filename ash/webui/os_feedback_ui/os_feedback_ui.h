@@ -13,6 +13,7 @@
 #include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom.h"
 #include "ash/webui/os_feedback_ui/url_constants.h"
 #include "content/public/common/url_constants.h"
+#include "ui/web_dialogs/web_dialog_ui.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 
@@ -38,7 +39,7 @@ class OSFeedbackUIConfig : public ChromeOSWebUIConfig<OSFeedbackUI> {
                             create_controller_func) {}
 };
 
-class OSFeedbackUI : public ui::MojoWebUIController {
+class OSFeedbackUI : public ui::MojoWebDialogUI {
  public:
   OSFeedbackUI(content::WebUI* web_ui,
                std::unique_ptr<OsFeedbackDelegate> feedback_delegate);

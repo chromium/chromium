@@ -23,6 +23,7 @@
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/resources/grit/webui_resources.h"
+#include "ui/web_dialogs/web_dialog_ui.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/webui_allowlist.h"
@@ -138,7 +139,7 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
 OSFeedbackUI::OSFeedbackUI(
     content::WebUI* web_ui,
     std::unique_ptr<OsFeedbackDelegate> feedback_delegate)
-    : MojoWebUIController(web_ui) {
+    : ui::MojoWebDialogUI(web_ui) {
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       browser_context, kChromeUIOSFeedbackHost);

@@ -28,6 +28,7 @@ static_library("os_feedback_ui") {
     "//chromeos/strings/",
     "//content/public/browser",
     "//ui/resources",
+    "//ui/web_dialogs",
     "//ui/webui",
   ]
 }

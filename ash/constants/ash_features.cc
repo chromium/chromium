@@ -3764,7 +3764,7 @@ bool IsOobeDisplaySizeEnabled() {
          base::FeatureList::IsEnabled(kOobeDisplaySize);
 }
 
-bool isOsFeedbackDialogEnabled() {
+bool IsOsFeedbackDialogEnabled() {
   return base::FeatureList::IsEnabled(kOsFeedbackDialog);
 }
 
