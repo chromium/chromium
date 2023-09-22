@@ -20,6 +20,8 @@ namespace {
 // schema.
 static const int kVersionNumber = 1;
 
+const char kUmaPrefix[] = "Media.EME.CdmStorageDatabaseSQLiteError.";
+
 }  // namespace
 
 CdmStorageDatabase::CdmStorageDatabase(const base::FilePath& path)
@@ -31,7 +33,13 @@ CdmStorageDatabase::CdmStorageDatabase(const base::FilePath& path)
       // many keys, to keep the index B-tree flat.
       db_(sql::DatabaseOptions{.exclusive_locking = true,
                                .page_size = 32768,
-                               .cache_size = 8}) {}
+                               .cache_size = 8}) {
+  // base::Unretained is safe because `db_` is owned by `this`
+  db_.set_error_callback(base::BindRepeating(
+      &CdmStorageDatabase::OnDatabaseError, base::Unretained(this)));
+}
+
+CdmStorageDatabase::~CdmStorageDatabase() = default;
 
 CdmStorageOpenError CdmStorageDatabase::EnsureOpen() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -58,6 +66,8 @@ absl::optional<std::vector<uint8_t>> CdmStorageDatabase::ReadFile(
             "AND file_name=? ";
   // clang-format on
   DCHECK(db_.IsSQLValid(kSelectSql));
+
+  last_operation_ = "ReadFile";
 
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSelectSql));
   statement.BindString(0, storage_key.Serialize());
@@ -98,6 +108,8 @@ bool CdmStorageDatabase::WriteFile(const blink::StorageKey& storage_key,
   // clang-format on
   DCHECK(db_.IsSQLValid(kInsertSql));
 
+  last_operation_ = "WriteFile";
+
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kInsertSql));
   statement.BindString(0, storage_key.Serialize());
   statement.BindBlob(1, cdm_type.AsBytes());
@@ -128,6 +140,8 @@ bool CdmStorageDatabase::DeleteFile(const blink::StorageKey& storage_key,
   // clang-format on
   DCHECK(db_.IsSQLValid(kDeleteSql));
 
+  last_operation_ = "DeleteFile";
+
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kDeleteSql));
   statement.BindString(0, storage_key.Serialize());
   statement.BindBlob(1, cdm_type.AsBytes());
@@ -151,6 +165,8 @@ bool CdmStorageDatabase::DeleteDataForStorageKey(
   static constexpr char kDeleteSql[] =
       "DELETE FROM cdm_storage WHERE storage_key=?";
   DCHECK(db_.IsSQLValid(kDeleteSql));
+
+  last_operation_ = "DeleteForStorageKey";
 
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kDeleteSql));
   statement.BindString(0, storage_key.Serialize());
@@ -183,13 +199,7 @@ CdmStorageOpenError CdmStorageDatabase::OpenDatabase(bool is_retry) {
 
   bool success = false;
 
-  // If this is not the first call to `OpenDatabase()` because we are re-trying
-  // initialization, then the error callback will have previously been set.
-  db_.reset_error_callback();
-
-  // base::Unretained is safe because `db_` is owned by `this`
-  db_.set_error_callback(base::BindRepeating(
-      &CdmStorageDatabase::OnDatabaseError, base::Unretained(this)));
+  last_operation_ = "OpenDatabase";
 
   if (path_.empty()) {
     success = db_.OpenInMemory();
@@ -251,6 +261,11 @@ void CdmStorageDatabase::OnDatabaseError(int error, sql::Statement* stmt) {
 
   sql::UmaHistogramSqliteResult("Media.EME.CdmStorageDatabaseSQLiteError",
                                 error);
+
+  if (last_operation_) {
+    sql::UmaHistogramSqliteResult(kUmaPrefix + *last_operation_, error);
+    last_operation_.reset();
+  }
 }
 
 }  // namespace content

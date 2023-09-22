@@ -2439,8 +2439,62 @@ chromium-metrics-reviews@google.com.
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
-    SQLite specific errors reported while opening and using the Cdm Storage
-    Database. Recorded on any error from a database operation.
+    SQLite specific errors reported while using the Cdm Storage Database.
+    Recorded on any error from a database operation.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.CdmStorageDatabaseSQLiteError.DeleteFile"
+    enum="SqliteLoggedResultCode" expires_after="2023-12-19">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records SQLite specific errors that occur when deleting a singular
+    file in the Cdm Storage Database. This UMA is recorded on every error for
+    this operation.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.CdmStorageDatabaseSQLiteError.DeleteForStorageKey"
+    enum="SqliteLoggedResultCode" expires_after="2023-12-19">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records SQLite specific errors that occur when deleting multiple
+    files for a single storage key in the Cdm Storage Database. This UMA is
+    recorded on every error for this operation.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.CdmStorageDatabaseSQLiteError.OpenDatabase"
+    enum="SqliteLoggedResultCode" expires_after="2023-12-19">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records SQLite specific errors that occur when opening the Cdm
+    Storage Database. This UMA is recorded on every error for this operation.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.CdmStorageDatabaseSQLiteError.ReadFile"
+    enum="SqliteLoggedResultCode" expires_after="2023-12-19">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records SQLite specific errors that occur when reading a file from
+    the Cdm Storage Database. This UMA is recorded on every error for this
+    operation.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.CdmStorageDatabaseSQLiteError.WriteFile"
+    enum="SqliteLoggedResultCode" expires_after="2023-12-19">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records SQLite specific errors that occur when writing a file to
+    the Cdm Storage Database. This UMA is recorded on every error for this
+    operation.
   </summary>
 </histogram>
 

@@ -26,6 +26,7 @@ class CONTENT_EXPORT CdmStorageDatabase {
  public:
   // The database will be in-memory if `path` is empty.
   explicit CdmStorageDatabase(const base::FilePath& path);
+  ~CdmStorageDatabase();
 
   CdmStorageOpenError EnsureOpen();
 
@@ -58,6 +59,9 @@ class CONTENT_EXPORT CdmStorageDatabase {
 
   // Empty if the database is in-memory.
   const base::FilePath path_;
+
+  // A descriptor of the last SQL statement that was executed, used for metrics.
+  absl::optional<std::string> last_operation_;
 
   sql::Database db_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
