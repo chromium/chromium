@@ -263,10 +263,11 @@ void Action::OverwriteDefaultActionFromProto(const ActionProto& proto) {
 bool Action::InitByAddingNewAction() {
   DCHECK(touch_injector_);
   id_ = touch_injector_->GetNextNewActionID();
+  is_new_ = true;
 
   InitPositions(original_positions_);
   InitPositions(current_positions_);
-  is_new_ = true;
+  UpdateTouchDownPositions();
 
   return true;
 }

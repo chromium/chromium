@@ -174,6 +174,10 @@ TEST_F(EditingListTest, TestAddNewAction) {
   EXPECT_EQ(4u, GetActionViewSize());
   EXPECT_EQ(4u, GetTouchInjectorActionSize());
   EXPECT_TRUE(ButtonOptionsMenuExists());
+
+  // Make sure `Action::touch_down_positions_` is not empty for the new action.
+  auto* new_action = touch_injector_->actions()[3].get();
+  EXPECT_FALSE(new_action->touch_down_positions().empty());
 }
 
 TEST_F(EditingListTest, TestPressAtActionViewListItem) {
