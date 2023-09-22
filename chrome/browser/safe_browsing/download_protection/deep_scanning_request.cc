@@ -41,6 +41,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/download/public/common/download_item.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -324,6 +325,23 @@ void LogDeepScanResult(DownloadCheckResult download_result,
             GetTriggerName(trigger),
         download_result);
   }
+}
+
+bool HasDecryptionSuccessRule(
+    enterprise_connectors::ContentAnalysisResponse response) {
+  for (const auto& result : response.results()) {
+    if (result.tag() != "malware") {
+      continue;
+    }
+
+    for (const auto& rule : result.triggered_rules()) {
+      if (rule.rule_name() == "decryption_success") {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 }  // namespace
@@ -620,7 +638,14 @@ void DeepScanningRequest::OnConsumerScanComplete(
     enterprise_connectors::ContentAnalysisResponse response) {
   CHECK_EQ(trigger_, DeepScanTrigger::TRIGGER_CONSUMER_PROMPT);
   DownloadCheckResult download_result = DownloadCheckResult::UNKNOWN;
-  if (result == BinaryUploadService::Result::SUCCESS) {
+  bool is_invalid_password =
+      result == BinaryUploadService::Result::FILE_ENCRYPTED ||
+      (result == BinaryUploadService::Result::SUCCESS &&
+       DownloadItemWarningData::IsEncryptedArchive(item_) &&
+       !HasDecryptionSuccessRule(response));
+  bool is_success =
+      result == BinaryUploadService::Result::SUCCESS && !is_invalid_password;
+  if (is_success) {
     request_tokens_.push_back(response.request_token());
     ResponseToDownloadCheckResult(response, &download_result);
     LogDeepScanEvent(item_, DeepScanEvent::kScanCompleted);
@@ -643,10 +668,10 @@ void DeepScanningRequest::OnConsumerScanComplete(
     LogDeepScanEvent(item_, DeepScanEvent::kScanFailed);
 
     if (base::FeatureList::IsEnabled(kDeepScanningEncryptedArchives) &&
-        result == BinaryUploadService::Result::FILE_ENCRYPTED) {
-      // Since we now prompt the user for a password, FILE_ENCRYPTED indicates
-      // the password was not correct. Instead of failing, ask the user to
-      // correct the issue.
+        is_invalid_password) {
+      // Since we now prompt the user for a password, is_invalid_password
+      // indicates the password was not correct. Instead of failing, ask the
+      // user to correct the issue.
       DownloadItemWarningData::SetHasIncorrectPassword(item_, true);
       PromptForPassword(item_);
       download_result = DownloadCheckResult::PROMPT_FOR_SCANNING;
