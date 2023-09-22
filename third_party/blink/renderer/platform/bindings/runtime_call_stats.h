@@ -404,7 +404,7 @@ class PLATFORM_EXPORT RuntimeCallStatsScopedTracer {
   RuntimeCallStats* stats_ = nullptr;
 };
 
-PLATFORM_EXPORT void LogRuntimeCallStats();
+PLATFORM_EXPORT void LogRuntimeCallStats(v8::Isolate* isolate);
 
 }  // namespace blink
 

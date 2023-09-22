@@ -18,11 +18,8 @@
 
 namespace blink {
 
-void LogRuntimeCallStats() {
-  LOG(INFO) << "\n"
-            << RuntimeCallStats::From(V8PerIsolateData::MainThreadIsolate())
-                   ->ToString()
-                   .Utf8();
+void LogRuntimeCallStats(v8::Isolate* isolate) {
+  LOG(INFO) << "\n" << RuntimeCallStats::From(isolate)->ToString().Utf8();
 }
 
 namespace {
