@@ -149,6 +149,9 @@ class ClipboardHtmlReader final : public ClipboardReader {
               unsigned fragment_start,
               unsigned fragment_end) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DCHECK_GE(fragment_start, 0u);
+    DCHECK_LE(fragment_end, html_string.length());
+    DCHECK_LE(fragment_start, fragment_end);
 
     LocalFrame* frame = promise_->GetLocalFrame();
     if (!frame || html_string.empty()) {
@@ -156,32 +159,23 @@ class ClipboardHtmlReader final : public ClipboardReader {
       return;
     }
 
-    String serialized_html;
-    if (sanitize_html_) {
-      // Sanitize the HTML string.
-      // This must be called on the main thread because HTML DOM nodes can only
-      // be used on the main thread.
-      serialized_html = CreateSanitizedMarkupWithContext(
-          *frame->GetDocument(), html_string, fragment_start, fragment_end, url,
-          kIncludeNode, kResolveAllURLs);
-    } else {
-      // Similarly to reading sanitized HTML from the clipboard, we need to
-      // extract the fragment using the `fragment_start` and `fragment_end`
-      // calculated by the browser process. The browser process already removes
-      // the CF_HTML headers, but we have to go through this removal step in
-      // Blink because the markup isn't going through a sanitization process.
-      serialized_html =
-          html_string.Substring(fragment_start, fragment_end - fragment_start);
-    }
-    if (serialized_html.empty()) {
+    // Sanitize the HTML string if needed.
+    // `CreateSanitizedMarkupWithContext` must be called on the main thread
+    // because HTML DOM nodes can only be used on the main thread.
+    String final_html =
+        sanitize_html_ ? CreateSanitizedMarkupWithContext(
+                             *frame->GetDocument(), html_string, fragment_start,
+                             fragment_end, url, kIncludeNode, kResolveAllURLs)
+                       : html_string;
+    if (final_html.empty()) {
       NextRead(Vector<uint8_t>());
       return;
     }
     worker_pool::PostTask(
-        FROM_HERE, CrossThreadBindOnce(
-                       &ClipboardHtmlReader::EncodeOnBackgroundThread,
-                       std::move(serialized_html), MakeCrossThreadHandle(this),
-                       std::move(clipboard_task_runner_)));
+        FROM_HERE,
+        CrossThreadBindOnce(&ClipboardHtmlReader::EncodeOnBackgroundThread,
+                            std::move(final_html), MakeCrossThreadHandle(this),
+                            std::move(clipboard_task_runner_)));
   }
 
   static void EncodeOnBackgroundThread(
