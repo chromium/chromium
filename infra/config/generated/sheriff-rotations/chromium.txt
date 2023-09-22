@@ -27,7 +27,6 @@ ci/Libfuzzer Upload Windows ASan
 ci/Libfuzzer Upload iOS Catalyst Debug
 ci/Linux ASan LSan Builder
 ci/Linux ASan LSan Tests (1)
-ci/Linux ASan Tests (sandboxed)
 ci/Linux Builder
 ci/Linux Builder (Wayland)
 ci/Linux Builder (dbg)

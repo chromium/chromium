@@ -1052,11 +1052,6 @@
           'shards': 40,
         },
       },
-      'Linux ASan Tests (sandboxed)': {
-        'swarming': {
-          'shards': 30, # https://crbug.com/1103330
-        },
-      },
       'Linux CFI': {
         'swarming': {
           'shards': 20,  # https://crbug.com/1361973
@@ -1877,11 +1872,6 @@
       'Linux ASan LSan Tests (1)': {
         'swarming': {
           'shards': 24,
-        },
-      },
-      'Linux ASan Tests (sandboxed)': {
-        'swarming': {
-          'shards': 10, # https://crbug.com/1103330
         },
       },
       'Linux Chromium OS ASan LSan Tests (1)': {

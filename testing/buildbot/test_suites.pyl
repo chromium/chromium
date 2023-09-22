@@ -833,21 +833,6 @@
       },
     },
 
-    'chromium_browser_tests': {
-      'browser_tests': {
-        'swarming': {
-          'shards': 10,
-        },
-      },
-      'components_browsertests': {},
-      'content_browsertests': {},
-      'interactive_ui_tests': {
-        'swarming': {
-          'shards': 10,
-        },
-      },
-    },
-
     'chromium_dev_android_gtests': {
       'chrome_public_smoke_test': {},
     },
@@ -7031,10 +7016,6 @@
     # Rust tests run on non-cross builds.
     'rust_host_gtests': [
       'rust_common_gtests',
-    ],
-
-    'sandboxed_chromium_memory_linux_gtests': [
-      'chromium_browser_tests',
     ],
 
     'webrtc_chromium_tests_with_baremetal_tests': [
