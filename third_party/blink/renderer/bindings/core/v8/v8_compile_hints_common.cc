@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_common.h"
+
+#include "base/containers/span.h"
 #include "base/hash/hash.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
@@ -22,25 +24,22 @@ uint32_t ScriptNameHash(v8::Local<v8::Value> name_value,
 
   std::string name_std_string(name_length + 1, '\0');
   name_string->WriteUtf8(isolate, &name_std_string[0]);
+  name_std_string.resize(name_length);
 
   // We need the hash function to be stable across computers, thus using
   // PersistentHash.
-  return base::PersistentHash(name_std_string.c_str(), name_length);
+  return base::PersistentHash(name_std_string);
 }
 
 uint32_t ScriptNameHash(const KURL& url) {
-  const std::string& name_std_string = url.GetString().Utf8();
   // We need the hash function to be stable across computers, thus using
   // PersistentHash.
-  return base::PersistentHash(name_std_string.c_str(),
-                              name_std_string.length());
+  return base::PersistentHash(url.GetString().Utf8());
 }
 
 uint32_t CombineHash(uint32_t script_name_hash, int position) {
-  uint32_t function_position_data[2];
-  function_position_data[0] = script_name_hash;
-  function_position_data[1] = position;
-  return base::PersistentHash(function_position_data, 2 * sizeof(int32_t));
+  const uint32_t data[2] = {script_name_hash, static_cast<uint32_t>(position)};
+  return base::PersistentHash(base::as_bytes(base::make_span(data)));
 }
 
 }  // namespace blink::v8_compile_hints
