@@ -17,6 +17,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "ui/message_center/message_center.h"
 #include "ui/views/controls/label.h"
@@ -27,7 +28,9 @@ namespace ash {
 
 class FocusModeDetailedViewTest : public AshTestBase {
  public:
-  FocusModeDetailedViewTest() : scoped_feature_(features::kFocusMode) {}
+  FocusModeDetailedViewTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        scoped_feature_(features::kFocusMode) {}
   ~FocusModeDetailedViewTest() override = default;
 
   // AshTestBase:
@@ -162,6 +165,9 @@ TEST_F(FocusModeDetailedViewTest, ToggleRow) {
   validate_labels(/*active=*/false);
 
   LeftClickOn(toggle_button);
+  // Wait a second to avoid the time remaining being either 1500 seconds or
+  // 1499.99 seconds.
+  task_environment()->FastForwardBy(base::Seconds(1));
   validate_labels(/*active=*/true);
 
   LeftClickOn(toggle_button);

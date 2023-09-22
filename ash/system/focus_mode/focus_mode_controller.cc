@@ -22,6 +22,10 @@ FocusModeController* g_instance = nullptr;
 // The default Focus Mode session duration.
 constexpr base::TimeDelta kDefaultSessionDuration = base::Minutes(25);
 
+// The amount of time to extend the focus session by when the focus session
+// duration is extended during a currently active focus session.
+constexpr base::TimeDelta kExtendDuration = base::Minutes(10);
+
 }  // namespace
 
 FocusModeController::FocusModeController()
@@ -73,6 +77,13 @@ void FocusModeController::ToggleFocusMode() {
     timer_.Stop();
 
     SetFocusTrayVisibility(false);
+
+    // Reset the `session_duration_` as it may have been changed during the
+    // focus session.
+    session_duration_ = Shell::Get()
+                            ->session_controller()
+                            ->GetActivePrefService()
+                            ->GetTimeDelta(prefs::kFocusModeSessionDuration);
   } else {
     SaveSettingsToUserPrefs();
 
@@ -110,6 +121,17 @@ void FocusModeController::OnActiveUserSessionChanged(
   }
 
   UpdateFromUserPrefs();
+}
+
+void FocusModeController::ExtendActiveSessionDuration() {
+  CHECK(in_focus_session_);
+  end_time_ += kExtendDuration;
+  session_duration_ += kExtendDuration;
+
+  // Update all observers that may be using `end_time_` or `session_duration_`,
+  // the countdown view UI timers for example, so they don't have to wait for
+  // the next timer tick to update the UI.
+  OnTimerTick();
 }
 
 void FocusModeController::OnTimerTick() {

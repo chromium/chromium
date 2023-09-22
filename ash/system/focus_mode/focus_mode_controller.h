@@ -63,6 +63,10 @@ class ASH_EXPORT FocusModeController : public SessionObserver {
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
 
+  // Extends the focus time by ten minutes by increasing the `end_time_` and
+  // `session_duration_`. This is only used during a focus session.
+  void ExtendActiveSessionDuration();
+
  private:
   void OnTimerTick();
 

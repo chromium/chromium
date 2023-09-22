@@ -5,27 +5,28 @@
 #ifndef ASH_SYSTEM_FOCUS_MODE_FOCUS_MODE_TRAY_H_
 #define ASH_SYSTEM_FOCUS_MODE_FOCUS_MODE_TRAY_H_
 
+#include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "base/memory/raw_ptr.h"
 
 namespace ash {
 
-class Shelf;
-class TrayBubbleView;
 class TrayBubbleWrapper;
 
 // Status area tray which is visible when focus mode is enabled. A circular
 // progress bar is displayed around the tray displaying how much time is left in
 // the focus session. The tray also controls a bubble that is shown when the
 // button is clicked.
-class FocusModeTray : public TrayBackgroundView {
+class FocusModeTray : public TrayBackgroundView,
+                      public FocusModeController::Observer {
  public:
   explicit FocusModeTray(Shelf* shelf);
   FocusModeTray(const FocusModeTray&) = delete;
   FocusModeTray& operator=(const FocusModeTray&) = delete;
   ~FocusModeTray() override;
 
- private:
+  TrayBubbleWrapper* tray_bubble_wrapper_for_testing() { return bubble_.get(); }
+
   // TrayBackgroundView:
   void ClickedOutsideBubble() override;
   std::u16string GetAccessibleNameForTray() override;
@@ -36,6 +37,10 @@ class FocusModeTray : public TrayBackgroundView {
   void UpdateTrayItemColor(bool is_active) override;
   void OnThemeChanged() override;
 
+  // FocusModeController::Observer:
+  void OnFocusModeChanged(bool in_focus_session) override;
+
+ private:
   // Updates the image and color of the icon.
   void UpdateTrayIcon();
 

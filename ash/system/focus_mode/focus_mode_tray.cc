@@ -9,6 +9,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
+#include "ash/system/focus_mode/focus_mode_countdown_view.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/tray/tray_utils.h"
@@ -17,6 +18,8 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 
 namespace ash {
+
+constexpr int kBubbleInset = 16;
 
 FocusModeTray::FocusModeTray(Shelf* shelf)
     : TrayBackgroundView(shelf,
@@ -32,13 +35,16 @@ FocusModeTray::FocusModeTray(Shelf* shelf)
   image_view_->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
   image_view_->SetPreferredSize(gfx::Size(kTrayItemSize, kTrayItemSize));
 
-  SetVisiblePreferred(FocusModeController::Get()->in_focus_session());
+  auto* controller = FocusModeController::Get();
+  SetVisiblePreferred(controller->in_focus_session());
+  controller->AddObserver(this);
 }
 
 FocusModeTray::~FocusModeTray() {
   if (bubble_) {
     bubble_->bubble_view()->ResetDelegate();
   }
+  FocusModeController::Get()->RemoveObserver(this);
 }
 
 void FocusModeTray::ClickedOutsideBubble() {
@@ -78,7 +84,10 @@ void FocusModeTray::ShowBubble() {
       std::make_unique<TrayBubbleView>(CreateInitParamsForTrayBubble(
           /*tray=*/this, /*anchor_to_shelf_corner=*/false));
 
-  // TODO(b/286932322): Implement Focus Pod.
+  auto* countdown_view =
+      bubble_view->AddChildView(std::make_unique<FocusModeCountdownView>());
+  countdown_view->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets(kBubbleInset)));
 
   bubble_ = std::make_unique<TrayBubbleWrapper>(this);
   bubble_->ShowBubble(std::move(bubble_view));
@@ -94,6 +103,12 @@ void FocusModeTray::UpdateTrayItemColor(bool is_active) {
 void FocusModeTray::OnThemeChanged() {
   TrayBackgroundView::OnThemeChanged();
   UpdateTrayIcon();
+}
+
+void FocusModeTray::OnFocusModeChanged(bool in_focus_session) {
+  if (!in_focus_session) {
+    CloseBubble();
+  }
 }
 
 void FocusModeTray::UpdateTrayIcon() {
