@@ -95,11 +95,13 @@ inline constexpr char kEventNameHelpAppActionTypeOpenYouTube[] =
 inline constexpr char kEventNameHelpAppActionTypeOpenFileManager[] =
     "ScalableIphHelpAppActionOpenFileManager";
 
-// Constants for app list item activation in the launcher.
+// Constants for app list / shelf item activation.
 inline constexpr char kEventNameAppListItemActivationYouTube[] =
     "ScalableIphAppListItemActivationYouTube";
 inline constexpr char kEventNameAppListItemActivationGoogleDocs[] =
     "ScalableIphAppListItemActivationGoogleDocs";
+inline constexpr char kEventNameAppListItemActivationGooglePhotosWeb[] =
+    "ScalableIphAppListItemActivationGooglePhotosWeb";
 inline constexpr char kEventNameShelfItemActivationYouTube[] =
     "ScalableIphShelfItemActivationYouTube";
 inline constexpr char kEventNameShelfItemActivationGoogleDocs[] =

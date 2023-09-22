@@ -58,6 +58,8 @@ const base::flat_map<ScalableIph::Event, std::string>& GetEventNamesMap() {
            kEventNameAppListItemActivationYouTube},
           {ScalableIph::Event::kAppListItemActivationGoogleDocs,
            kEventNameAppListItemActivationGoogleDocs},
+          {ScalableIph::Event::kAppListItemActivationGooglePhotosWeb,
+           kEventNameAppListItemActivationGooglePhotosWeb},
           {ScalableIph::Event::kOpenPersonalizationApp,
            kEventNameOpenPersonalizationApp},
           {ScalableIph::Event::kShelfItemActivationYouTube,
@@ -186,6 +188,8 @@ constexpr auto kAppListItemActivationEventsMap =
          ScalableIph::Event::kAppListItemActivationGoogleDocs},
         {kWebAppYouTubeAppId,
          ScalableIph::Event::kAppListItemActivationYouTube},
+        {kWebAppGooglePhotosAppId,
+         ScalableIph::Event::kAppListItemActivationGooglePhotosWeb},
     });
 
 constexpr auto kShelfItemActivationEventsMap =
@@ -989,6 +993,8 @@ std::ostream& operator<<(std::ostream& out, ScalableIph::Event event) {
       return out << "AppListItemActivationYouTube";
     case ScalableIph::Event::kAppListItemActivationGoogleDocs:
       return out << "AppListItemActivationGoogleDocs";
+    case ScalableIph::Event::kAppListItemActivationGooglePhotosWeb:
+      return out << "AppListItemActivationGooglePhotosWeb";
     case ScalableIph::Event::kOpenPersonalizationApp:
       return out << "OpenPersonalizationApp";
     case ScalableIph::Event::kShelfItemActivationGoogleDocs:
