@@ -28,7 +28,7 @@
 #include "base/files/file_path.h"
 #include "base/process/launch.h"
 #include "base/scoped_native_library.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/strcat_win.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_process_information.h"
@@ -475,9 +475,8 @@ HRESULT OSProcessManager::CreateRunningProcess(
   // code.  However this function is called to execute rundll32 which parses
   // command lines in a special way and fails when the first arg is double
   // quoted.  Therefore the command line is built manually here.
-  std::wstring unquoted_cmdline;
-  base::StringAppendF(&unquoted_cmdline, L"\"%ls\"",
-                      command_line.GetProgram().value().c_str());
+  std::wstring unquoted_cmdline =
+      base::StrCat({L"\"", command_line.GetProgram().value(), L"\""});
   for (const auto& arg : command_line.GetArgs()) {
     unquoted_cmdline.append(FILE_PATH_LITERAL(" "));
     unquoted_cmdline.append(arg);

@@ -35,6 +35,7 @@
 #include "base/json/json_writer.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
+#include "base/strings/strcat_win.h"
 #include "base/strings/string_number_conversions_win.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -731,8 +732,7 @@ HRESULT GetEntryPointArgumentForRunDll(HINSTANCE dll_handle,
     return hr;
   }
 
-  *entrypoint_arg =
-      std::wstring(base::StringPrintf(L"\"%ls\",%ls", short_path, entrypoint));
+  *entrypoint_arg = base::StrCat({L"\"", short_path, L"\",", entrypoint});
 
   // In tests, the current module is the unittest exe, not the real dll.
   // The unittest exe does not expose entrypoints, so return S_FALSE as a hint

@@ -22,7 +22,6 @@
 #include "base/files/file_util.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
@@ -379,14 +378,11 @@ HRESULT OSUserManager::ChangeUserPassword(const wchar_t* domain,
     flags_changed = true;
   }
 
-  std::wstring password_domain = base::StringPrintf(L"%ls", domain);
-
-  NET_API_STATUS changepassword_nsts = ::NetUserChangePassword(
-      password_domain.c_str(), username, old_password, new_password);
+  NET_API_STATUS changepassword_nsts =
+      ::NetUserChangePassword(domain, username, old_password, new_password);
   if (changepassword_nsts != NERR_Success) {
     LOGFN(ERROR) << "Unable to change password for '" << username
-                 << "' domain '" << password_domain
-                 << "' nsts=" << changepassword_nsts;
+                 << "' domain '" << domain << "' nsts=" << changepassword_nsts;
   }
 
   if (flags_changed) {

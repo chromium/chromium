@@ -4,10 +4,10 @@
 
 #include <windows.h>
 
-#include "base/strings/string_number_conversions.h"
+#include "base/strings/strcat_win.h"
+#include "base/strings/string_number_conversions_win.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/credential_provider/gaiacp/device_policies_manager.h"
 #include "chrome/credential_provider/gaiacp/gcpw_strings.h"
@@ -49,9 +49,10 @@ TEST_F(GcpDevicePoliciesBaseTest, NewUserAssociationWithNoUserPoliciesPresent) {
   const size_t num_users_needed = 3;
   for (size_t i = 0; i < num_users_needed; ++i) {
     CComBSTR sid_str;
-    std::wstring username = L"new-user-" + base::NumberToWString(i);
-    std::wstring gaia_id = L"gaia-id-" + base::NumberToWString(i);
-    std::wstring email = base::StringPrintf(L"user_%d@company.com", i);
+    const std::wstring i_str = base::NumberToWString(i);
+    std::wstring username = L"new-user-" + i_str;
+    std::wstring gaia_id = L"gaia-id-" + i_str;
+    std::wstring email = base::StrCat({L"user_", i_str, L"@company.com"});
     ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
                         username, L"password", L"Full Name", L"comment",
                         gaia_id, email, &sid_str));
@@ -60,8 +61,8 @@ TEST_F(GcpDevicePoliciesBaseTest, NewUserAssociationWithNoUserPoliciesPresent) {
 
   // Create an existing user association in registry but with an invalid sid.
   base::win::RegKey key;
-  std::wstring key_name = base::StringPrintf(L"%ls\\%ls", kGcpUsersRootKeyName,
-                                             L"non-existent-user-sid");
+  std::wstring key_name =
+      std::wstring(kGcpUsersRootKeyName) + L"\\non-existent-user-sid";
   ASSERT_EQ(ERROR_SUCCESS,
             key.Create(HKEY_LOCAL_MACHINE, key_name.c_str(), KEY_WRITE));
   ASSERT_EQ(ERROR_SUCCESS,

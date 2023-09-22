@@ -21,6 +21,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/strings/strcat_win.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -106,8 +107,9 @@ base::FilePath GetUserSizedAccountPictureFilePath(
     const base::FilePath& account_picture_path,
     int size,
     const std::wstring& picture_extension) {
-  return account_picture_path.Append(base::StringPrintf(
-      L"GoogleAccountPicture_%i%ls", size, picture_extension.c_str()));
+  return account_picture_path.Append(
+      base::StrCat({L"GoogleAccountPicture_", base::NumberToWString(size),
+                    picture_extension}));
 }
 
 using ImageProcessor =
