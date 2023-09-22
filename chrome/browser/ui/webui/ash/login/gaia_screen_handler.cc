@@ -72,7 +72,7 @@
 #include "chrome/browser/ui/webui/ash/login/enrollment_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
-#include "chrome/browser/ui/webui/ash/login/online_login_helper.h"
+#include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
 #include "chrome/browser/ui/webui/ash/login/reset_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/saml_confirm_password_handler.h"
 #include "chrome/browser/ui/webui/ash/login/signin_fatal_error_screen_handler.h"
@@ -782,27 +782,6 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
   const std::string sanitized_email = gaia::SanitizeEmail(email);
   LoginDisplayHost::default_host()->SetDisplayEmail(sanitized_email);
 
-  OnlineLoginHelper::CompleteLoginCallback complete_login_callback =
-      base::BindOnce([](std::unique_ptr<UserContext> user_context) {
-        LoginDisplayHost::default_host()->CompleteLogin(*user_context);
-      });
-
-  if (password.empty() && !IsSamlUserPasswordless()) {
-    CHECK_NE(scraped_saml_passwords.size(), 1u);
-    complete_login_callback = base::BindOnce(
-        &GaiaScreenHandler::SAMLConfirmPassword, weak_factory_.GetWeakPtr(),
-        std::move(scraped_saml_passwords));
-  }
-
-  login::SigninPartitionManager* signin_partition_manager =
-      login::SigninPartitionManager::Factory::GetForBrowserContext(
-          Profile::FromWebUI(web_ui()));
-  online_login_helper_ = std::make_unique<OnlineLoginHelper>(
-      signin_partition_name_, signin_partition_manager,
-      base::BindOnce(&GaiaScreenHandler::OnCookieWaitTimeout,
-                     weak_factory_.GetWeakPtr()),
-      std::move(complete_login_callback));
-
   auto user_context = std::make_unique<UserContext>();
   SigninError error;
   if (!login::BuildUserContextForGaiaSignIn(
@@ -817,8 +796,26 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
     return;
   }
 
-  online_login_helper_->SetUserContext(std::move(user_context));
-  online_login_helper_->RequestCookiesAndCompleteAuthentication();
+  // Create GaiaCookiesRetriever
+  login::SigninPartitionManager* signin_partition_manager =
+      login::SigninPartitionManager::Factory::GetForBrowserContext(
+          Profile::FromWebUI(web_ui()));
+  gaia_cookie_retriever_ = std::make_unique<GaiaCookieRetriever>(
+      signin_partition_name_, signin_partition_manager,
+      base::BindOnce(&GaiaScreenHandler::OnCookieWaitTimeout,
+                     weak_factory_.GetWeakPtr()));
+
+  // Create the callback that will be invoked once cookies are received.
+  const bool needs_saml_confirm_password =
+      password.empty() && !IsSamlUserPasswordless();
+  GaiaCookieRetriever::OnCookieRetrievedCallback finish_auth_callback =
+      base::BindOnce(&GaiaScreenHandler::CompleteAuthenticationWithCookies,
+                     weak_factory_.GetWeakPtr(), needs_saml_confirm_password,
+                     std::move(scraped_saml_passwords),
+                     std::move(user_context));
+
+  // Request cookies and proceed with authentication.
+  gaia_cookie_retriever_->RetrieveCookies(std::move(finish_auth_callback));
 
   populated_account_id_.clear();
 
@@ -829,6 +826,24 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
     test_expects_complete_login_ = false;
     test_user_.clear();
     test_pass_.clear();
+  }
+}
+
+void GaiaScreenHandler::CompleteAuthenticationWithCookies(
+    bool needs_saml_confirm_password,
+    ::login::StringList scraped_saml_passwords,
+    std::unique_ptr<UserContext> user_context,
+    login::GaiaCookiesData gaia_cookies) {
+  // Transfer the received cookies into the UserContext
+  gaia_cookies.TransferCookiesToUserContext(*user_context);
+
+  // Finish the authentication
+  if (needs_saml_confirm_password) {
+    CHECK_NE(scraped_saml_passwords.size(), 1u);
+    SAMLConfirmPassword(std::move(scraped_saml_passwords),
+                        std::move(user_context));
+  } else {
+    LoginDisplayHost::default_host()->CompleteLogin(*user_context);
   }
 }
 

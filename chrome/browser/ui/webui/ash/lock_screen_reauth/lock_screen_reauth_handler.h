@@ -11,7 +11,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/ash/login/check_passwords_against_cryptohome_helper.h"
-#include "chrome/browser/ui/webui/ash/login/online_login_helper.h"
+#include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "components/login/base_screen_handler_utils.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "net/cookies/cookie_access_result.h"
 
@@ -79,6 +81,12 @@ class LockScreenReauthHandler : public content::WebUIMessageHandler {
   // is the user password among the list of scraped passwords.
   void OnPasswordConfirmed(const std::string& password);
 
+  // Finish the authentication
+  void FinishAuthentication(bool needs_saml_confirm_password,
+                            ::login::StringList scraped_saml_password,
+                            std::unique_ptr<UserContext> user_context,
+                            login::GaiaCookiesData gaia_cookies);
+
   void LoadAuthenticatorParam();
 
   void LoadGaia(const login::GaiaContext& context);
@@ -126,7 +134,7 @@ class LockScreenReauthHandler : public content::WebUIMessageHandler {
   std::unique_ptr<LoginClientCertUsageObserver>
       extension_provided_client_cert_usage_observer_;
 
-  std::unique_ptr<OnlineLoginHelper> online_login_helper_;
+  std::unique_ptr<GaiaCookieRetriever> gaia_cookie_retriever_;
 
   // A test may be waiting for the authenticator to load.
   base::OnceClosure waiting_caller_;

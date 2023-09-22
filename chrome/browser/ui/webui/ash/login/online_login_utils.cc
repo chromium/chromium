@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/ash/login/online_login_helper.h"
+#include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
 
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/ui/login_display_host_webui.h"
@@ -33,6 +33,22 @@ constexpr base::TimeDelta kCookieDelay = base::Seconds(20);
 
 GaiaContext::GaiaContext() {}
 GaiaContext::GaiaContext(GaiaContext const&) = default;
+
+GaiaCookiesData::GaiaCookiesData() = default;
+GaiaCookiesData::~GaiaCookiesData() = default;
+GaiaCookiesData::GaiaCookiesData(GaiaCookiesData const&) = default;
+
+void GaiaCookiesData::TransferCookiesToUserContext(UserContext& user_context) {
+  CHECK(!this->auth_code.empty());
+  user_context.SetAuthCode(this->auth_code);
+
+  if (this->gaps_cookie.has_value() && !this->gaps_cookie->empty()) {
+    user_context.SetGAPSCookie(this->gaps_cookie.value());
+  }
+  if (this->rapt.has_value() && !this->rapt->empty()) {
+    user_context.SetReauthProofToken(this->rapt.value());
+  }
+}
 
 bool ExtractSamlPasswordAttributesEnabled() {
   return base::FeatureList::IsEnabled(::features::kInSessionPasswordChange);
@@ -182,24 +198,20 @@ AccountId GetAccountId(const std::string& authenticated_email,
 
 }  // namespace login
 
-OnlineLoginHelper::OnlineLoginHelper(
+GaiaCookieRetriever::GaiaCookieRetriever(
     std::string signin_partition_name,
     login::SigninPartitionManager* signin_partition_manager,
-    OnCookieTimeoutCallback on_cookie_timeout_callback,
-    CompleteLoginCallback complete_login_callback)
+    OnCookieTimeoutCallback on_cookie_timeout_callback)
     : signin_partition_name_(signin_partition_name),
       signin_partition_manager_(signin_partition_manager),
-      on_cookie_timeout_callback_(std::move(on_cookie_timeout_callback)),
-      complete_login_callback_(std::move(complete_login_callback)) {}
+      on_cookie_timeout_callback_(std::move(on_cookie_timeout_callback)) {}
 
-OnlineLoginHelper::~OnlineLoginHelper() = default;
+GaiaCookieRetriever::~GaiaCookieRetriever() = default;
 
-void OnlineLoginHelper::SetUserContext(
-    std::unique_ptr<UserContext> pending_user_context) {
-  pending_user_context_ = std::move(pending_user_context);
-}
+void GaiaCookieRetriever::RetrieveCookies(
+    OnCookieRetrievedCallback on_cookie_retrieved_callback) {
+  on_cookie_retrieved_callback_ = std::move(on_cookie_retrieved_callback);
 
-void OnlineLoginHelper::RequestCookiesAndCompleteAuthentication() {
   content::StoragePartition* partition =
       signin_partition_manager_->GetCurrentStoragePartition();
   if (!partition)
@@ -219,7 +231,7 @@ void OnlineLoginHelper::RequestCookiesAndCompleteAuthentication() {
     cookie_waiting_timer_ = std::make_unique<base::OneShotTimer>();
     cookie_waiting_timer_->Start(
         FROM_HERE, login::kCookieDelay,
-        base::BindOnce(&OnlineLoginHelper::OnCookieWaitTimeout,
+        base::BindOnce(&GaiaCookieRetriever::OnCookieWaitTimeout,
                        weak_factory_.GetWeakPtr()));
   }
 
@@ -228,54 +240,45 @@ void OnlineLoginHelper::RequestCookiesAndCompleteAuthentication() {
   cookie_manager->GetCookieList(
       GaiaUrls::GetInstance()->gaia_url(), cookie_options,
       net::CookiePartitionKeyCollection::Todo(),
-      base::BindOnce(&OnlineLoginHelper::OnGetCookiesForCompleteAuthentication,
+      base::BindOnce(&GaiaCookieRetriever::OnGetCookieListResponse,
                      weak_factory_.GetWeakPtr()));
 }
 
-void OnlineLoginHelper::OnCookieChange(const net::CookieChangeInfo& change) {
-  RequestCookiesAndCompleteAuthentication();
+void GaiaCookieRetriever::OnCookieChange(const net::CookieChangeInfo& change) {
+  if (on_cookie_retrieved_callback_.has_value() &&
+      on_cookie_retrieved_callback_.value()) {
+    RetrieveCookies(std::move(on_cookie_retrieved_callback_.value()));
+  }
 }
 
-void OnlineLoginHelper::OnCookieWaitTimeout() {
-  DCHECK(pending_user_context_);
-  pending_user_context_.reset();
+void GaiaCookieRetriever::OnCookieWaitTimeout() {
   oauth_code_listener_.reset();
   cookie_waiting_timer_.reset();
   std::move(on_cookie_timeout_callback_).Run();
 }
 
-void OnlineLoginHelper::OnGetCookiesForCompleteAuthentication(
+void GaiaCookieRetriever::OnGetCookieListResponse(
     const net::CookieAccessResultList& cookies,
     const net::CookieAccessResultList& excluded_cookies) {
-  std::string auth_code, gaps_cookie, rapt;
+  login::GaiaCookiesData cookie_data;
   for (const auto& cookie_with_access_result : cookies) {
     const auto& cookie = cookie_with_access_result.cookie;
     if (cookie.Name() == login::kOAUTHCodeCookie)
-      auth_code = cookie.Value();
+      cookie_data.auth_code = cookie.Value();
     else if (cookie.Name() == login::kGAPSCookie)
-      gaps_cookie = cookie.Value();
+      cookie_data.gaps_cookie = cookie.Value();
     else if (cookie.Name() == login::kRAPTCookie)
-      rapt = cookie.Value();
+      cookie_data.rapt = cookie.Value();
   }
 
-  if (auth_code.empty()) {
+  if (cookie_data.auth_code.empty()) {
     // Will try again from onCookieChange.
     return;
   }
 
-  DCHECK(pending_user_context_);
-  auto user_context = std::move(pending_user_context_);
-  pending_user_context_.reset();
   oauth_code_listener_.reset();
   cookie_waiting_timer_.reset();
-
-  user_context->SetAuthCode(auth_code);
-  if (!gaps_cookie.empty())
-    user_context->SetGAPSCookie(gaps_cookie);
-  if (!rapt.empty())
-    user_context->SetReauthProofToken(rapt);
-
-  std::move(complete_login_callback_).Run(std::move(user_context));
+  std::move(on_cookie_retrieved_callback_.value()).Run(cookie_data);
 }
 
 }  // namespace ash

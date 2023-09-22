@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_ONLINE_LOGIN_HELPER_H_
-#define CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_ONLINE_LOGIN_HELPER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_ONLINE_LOGIN_UTILS_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_ONLINE_LOGIN_UTILS_H_
 
 #include <memory>
 #include <string>
@@ -45,6 +45,24 @@ struct GaiaContext {
 
   // GAPS cookie.
   std::string gaps_cookie;
+};
+
+// Structure for holding the data from Gaia cookies that ChromeOS wants to
+// store in the user context after a successful authentication.
+struct GaiaCookiesData {
+  GaiaCookiesData();
+  GaiaCookiesData(GaiaCookiesData const&);
+  ~GaiaCookiesData();
+
+  void TransferCookiesToUserContext(UserContext& user_context);
+
+  // login::kOAUTHCodeCookie - Not optional.
+  std::string auth_code;
+
+  // login::kGAPSCookie
+  absl::optional<std::string> gaps_cookie = absl::nullopt;
+  // Re-Auth Proof Token -- login::kRAPTCookie
+  absl::optional<std::string> rapt = absl::nullopt;
 };
 
 using LoadGaiaWithPartition = base::OnceCallback<void(const std::string&)>;
@@ -92,28 +110,27 @@ AccountId GetAccountId(const std::string& authenticated_email,
 
 }  // namespace login
 
-// This class will be used in authenticating Gaia and SAML users in loginscreen
-// and SAML users in lockscreen.
-class OnlineLoginHelper : public network::mojom::CookieChangeListener {
+// GaiaCookieRetriever is used for retrieving the cookies that are set by Gaia
+// by directly interacting with a |SigninPartitionManager| and delivering the
+// results via the |OnCookieRetrievedCallback|. If a timeout occurs, the given
+// |OnCookieTimeoutCallback| is invoked.
+class GaiaCookieRetriever : public network::mojom::CookieChangeListener {
  public:
   using OnCookieTimeoutCallback = base::OnceCallback<void(void)>;
-  using CompleteLoginCallback =
-      base::OnceCallback<void(std::unique_ptr<UserContext>)>;
+  using OnCookieRetrievedCallback =
+      base::OnceCallback<void(login::GaiaCookiesData)>;
 
-  explicit OnlineLoginHelper(
+  explicit GaiaCookieRetriever(
       std::string signin_partition_name,
       login::SigninPartitionManager* signin_partition_manager,
-      OnCookieTimeoutCallback on_cookie_timeout_callback,
-      CompleteLoginCallback complete_login_callback);
+      OnCookieTimeoutCallback on_cookie_timeout_callback);
 
-  OnlineLoginHelper(const OnlineLoginHelper&) = delete;
-  OnlineLoginHelper& operator=(const OnlineLoginHelper&) = delete;
+  GaiaCookieRetriever(const GaiaCookieRetriever&) = delete;
+  GaiaCookieRetriever& operator=(const GaiaCookieRetriever&) = delete;
 
-  ~OnlineLoginHelper() override;
+  ~GaiaCookieRetriever() override;
 
-  void SetUserContext(std::unique_ptr<UserContext> pending_user_context);
-
-  void RequestCookiesAndCompleteAuthentication();
+  void RetrieveCookies(OnCookieRetrievedCallback on_cookie_retrieved_callback);
 
  private:
   // network::mojom::CookieChangeListener:
@@ -121,7 +138,7 @@ class OnlineLoginHelper : public network::mojom::CookieChangeListener {
 
   void OnCookieWaitTimeout();
 
-  void OnGetCookiesForCompleteAuthentication(
+  void OnGetCookieListResponse(
       const net::CookieAccessResultList& cookies,
       const net::CookieAccessResultList& excluded_cookies);
 
@@ -140,11 +157,11 @@ class OnlineLoginHelper : public network::mojom::CookieChangeListener {
 
   OnCookieTimeoutCallback on_cookie_timeout_callback_;
 
-  CompleteLoginCallback complete_login_callback_;
+  absl::optional<OnCookieRetrievedCallback> on_cookie_retrieved_callback_;
 
-  base::WeakPtrFactory<OnlineLoginHelper> weak_factory_{this};
+  base::WeakPtrFactory<GaiaCookieRetriever> weak_factory_{this};
 };
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_ONLINE_LOGIN_HELPER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_ONLINE_LOGIN_UTILS_H_

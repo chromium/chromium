@@ -19,7 +19,7 @@
 #include "chrome/browser/certificate_provider/security_token_pin_dialog_host.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
-#include "chrome/browser/ui/webui/ash/login/online_login_helper.h"
+#include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
 #include "chrome/browser/ui/webui/ash/login/saml_challenge_key_handler.h"
 #include "chromeos/components/security_token_pin/constants.h"
 #include "components/user_manager/user_type.h"
@@ -253,6 +253,13 @@ class GaiaScreenHandler
       bool services_provided,
       const base::Value::Dict& password_attributes,
       const base::Value::Dict& sync_trusted_vault_keys);
+
+  void CompleteAuthenticationWithCookies(
+      bool needs_saml_confirm_password,
+      ::login::StringList scraped_saml_passwords,
+      std::unique_ptr<UserContext> user_context,
+      login::GaiaCookiesData gaia_cookies);
+
   void HandleCompleteLogin(const std::string& gaia_id,
                            const std::string& typed_email,
                            const std::string& password,
@@ -453,7 +460,7 @@ class GaiaScreenHandler
   std::unique_ptr<SamlChallengeKeyHandler> saml_challenge_key_handler_;
   std::unique_ptr<SamlChallengeKeyHandler> saml_challenge_key_handler_for_test_;
 
-  std::unique_ptr<OnlineLoginHelper> online_login_helper_;
+  std::unique_ptr<GaiaCookieRetriever> gaia_cookie_retriever_;
 
   // Network state informer used to keep signin screen up.
   scoped_refptr<NetworkStateInformer> network_state_informer_;
