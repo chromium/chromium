@@ -451,9 +451,6 @@ void PerUserStateManagerChromeOS::InitializeProfileMetricsState(
 
   auto* user_prefs = GetCurrentUserPrefs();
 
-  // Inherit owner consent if needed. This is to migrate existing users logging
-  // in for the first time since the feature was enabled.
-  //
   // New users will inherit the device owner consent initially but will be asked
   // on OOBE to set the consent.
   bool should_inherit_owner_consent =

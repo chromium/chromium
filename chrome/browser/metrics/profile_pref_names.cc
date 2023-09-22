@@ -4,8 +4,7 @@
 
 #include "chrome/browser/metrics/profile_pref_names.h"
 
-namespace metrics {
-namespace prefs {
+namespace metrics::prefs {
 
 // Bool pref containing whether the user had consented to metrics
 // collection. If true, then a new client ID will be generated if the user goes
@@ -21,13 +20,8 @@ const char kMetricsUserConsent[] = "metrics.user_consent";
 const char kMetricsUserId[] = "metrics.user_id";
 
 // Bool pref whether per-user consent should inherit consent from the device
-// owner consent, which defaults to true. This pref is used to migrate existing
-// users to the per-user consent model. Any existing user logging in for the
-// first time since this feature is enabled will inherit the device owner
-// consent.
-//
-// TODO(crbug/1295789): Delete this pref after some time after this feature
-// rolls out to Stable channel.
+// owner consent, which defaults to true. This case should only occur if a new
+// user is being registered.
 const char kMetricsUserInheritOwnerConsent[] =
     "metrics.user_inherit_owner_consent";
 
@@ -41,5 +35,4 @@ const char kMetricsUserMetricLogs[] = "metrics.user_metrics_logs";
 const char kMetricsUserMetricLogsMetadata[] =
     "metrics.user_metrics_logs_metadata";
 
-}  // namespace prefs
-}  // namespace metrics
+}  // namespace metrics::prefs

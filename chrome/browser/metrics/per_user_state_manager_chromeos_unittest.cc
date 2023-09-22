@@ -405,14 +405,13 @@ TEST_F(PerUserStateManagerChromeOSTest, OwnerCannotUsePerUser) {
   EXPECT_TRUE(GetPerUserStateManager()->is_log_store_set());
 }
 
-TEST_F(PerUserStateManagerChromeOSTest,
-       NewOrMigratingUserInheritsOwnerConsent) {
+TEST_F(PerUserStateManagerChromeOSTest, NewUserInheritsOwnerConsent) {
   auto* test_user =
       RegisterUser(AccountId::FromUserEmailGaiaId("test@example.com", "1"));
   InitializeProfileState(/*user_id=*/"", /*metrics_consent=*/false,
                          /*has_consented_to_metrics=*/false);
 
-  // User should inherit owner consent if migrating or new user.
+  // User should inherit owner consent if new user.
   SetShouldInheritOwnerConsent(true);
 
   GetPerUserStateManager()->SetIsManaged(false);
