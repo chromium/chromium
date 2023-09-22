@@ -472,6 +472,10 @@ bool MaybeLaunchAppShortcutWindow(const base::CommandLine& command_line,
                                   const base::FilePath& cur_dir,
                                   chrome::startup::IsFirstRun is_first_run,
                                   Profile* profile) {
+  if (!profile) {
+    return false;
+  }
+
   if (!command_line.HasSwitch(switches::kApp))
     return false;
 
