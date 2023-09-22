@@ -238,4 +238,8 @@ BASE_DECLARE_FEATURE(kTabGridRefactoringFix);
 // Whether the Safety Check module should be shown in the Magic Stack.
 bool IsSafetyCheckMagicStackEnabled();
 
+// Kill switch to control the `settingsWillBeDismissed` bug fix (see
+// crbug.com/1482284).
+BASE_DECLARE_FEATURE(kSettingsWillBeDismissedBugFixKillSwitch);
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

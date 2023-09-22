@@ -278,3 +278,7 @@ BASE_FEATURE(kTabGridRefactoringFix,
 bool IsSafetyCheckMagicStackEnabled() {
   return base::FeatureList::IsEnabled(kSafetyCheckMagicStack);
 }
+
+BASE_FEATURE(kSettingsWillBeDismissedBugFixKillSwitch,
+             "SettingsWillBeDismissedBugFixKillSwitch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
