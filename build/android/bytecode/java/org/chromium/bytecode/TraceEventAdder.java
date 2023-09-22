@@ -47,20 +47,21 @@ public class TraceEventAdder extends ByteCodeRewriter {
         args = ByteCodeRewriter.expandArgs(args);
 
         if (args.length < 2) {
-            System.err.println("Expected arguments: <':' separated list with N input jar paths> "
-                    + "<':' separated list with N output jar paths>");
+            System.err.println("Expected arguments: <':' separated list of input jar paths> "
+                    + "<':' separated list of output jar paths>");
             System.exit(1);
         }
 
         String[] inputJars = args[0].split(":");
         String[] outputJars = args[1].split(":");
 
-        assert inputJars.length
-                == outputJars.length : "Input and output lists are not the same length. Inputs: "
+        assert inputJars.length >= outputJars.length
+            : "Input list must be a superset of the output list, where the "
+                        + "first N entries match, and N is the length of the output list."
                         + inputJars.length + " Outputs: " + outputJars.length;
 
         // outputJars[n] must be the same as inputJars[n] but with a suffix, validate this.
-        for (int i = 0; i < inputJars.length; i++) {
+        for (int i = 0; i < outputJars.length; i++) {
             File inputJarPath = new File(inputJars[i]);
             String inputJarFilename = inputJarPath.getName();
             File outputJarPath = new File(outputJars[i]);
@@ -68,6 +69,7 @@ public class TraceEventAdder extends ByteCodeRewriter {
             String inputFilenameNoExtension =
                     inputJarFilename.substring(0, inputJarFilename.lastIndexOf(".jar"));
 
+            // Ensuring that for every output, we have the matching input.
             assert outputJarPath.getName().startsWith(inputFilenameNoExtension);
         }
 
@@ -76,7 +78,7 @@ public class TraceEventAdder extends ByteCodeRewriter {
         ClassLoader classPathJarsClassLoader = loadJars(classPathJarsPaths);
 
         TraceEventAdder adder = new TraceEventAdder(classPathJarsClassLoader);
-        for (int i = 0; i < inputJars.length; i++) {
+        for (int i = 0; i < outputJars.length; i++) {
             adder.rewrite(new File(inputJars[i]), new File(outputJars[i]));
         }
     }

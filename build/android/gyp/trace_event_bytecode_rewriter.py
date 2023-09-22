@@ -40,18 +40,16 @@ def main(argv):
     if not os.path.exists(jar_dir):
       os.makedirs(jar_dir)
 
-  all_input_jars = set(args.classpath + args.input_jars)
-  cmd = [
-      args.script, '--classpath', ':'.join(sorted(all_input_jars)),
-      ':'.join(args.input_jars), ':'.join(args.output_jars)
-  ]
+  extra_inputs = set(args.classpath) - set(args.input_jars)
+  all_input_jars = args.input_jars + list(extra_inputs)
+  cmd = [args.script, ':'.join(all_input_jars), ':'.join(args.output_jars)]
   if sum(len(x) for x in cmd) > _MAX_CMDLINE:
     # Cannot put --classpath in the args file because that is consumed by the
     # wrapper script.
     args_file = tempfile.NamedTemporaryFile(mode='w')
-    args_file.write('\n'.join(cmd[3:]))
+    args_file.write('\n'.join(cmd[1:]))
     args_file.flush()
-    cmd[3:] = ['@' + args_file.name]
+    cmd[1:] = ['@' + args_file.name]
 
   build_utils.CheckOutput(cmd, print_stdout=True)
 
