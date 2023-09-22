@@ -1705,6 +1705,10 @@ void DriveIntegrationService::RegisterProfilePrefs(
   // devices.
   registry->RegisterBooleanPref(prefs::kDriveFsBulkPinningVisible, true);
   registry->RegisterBooleanPref(prefs::kDriveFsBulkPinningEnabled, false);
+  // Do not sync `kDriveFsDSSAvailabilityLastEmitted` as it directly relates to
+  // device specific caching of Docs/Sheets/Slides.
+  registry->RegisterTimePref(prefs::kDriveFsDSSAvailabilityLastEmitted,
+                             base::Time::Now());
 }
 
 void DriveIntegrationService::OnDrivePrefChanged() {

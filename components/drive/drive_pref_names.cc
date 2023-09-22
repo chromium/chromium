@@ -45,4 +45,8 @@ const char kDriveFsBulkPinningVisible[] = "drivefs.bulk_pinning.visible";
 // or disabled by the user.
 const char kDriveFsBulkPinningEnabled[] = "drivefs.bulk_pinning_enabled";
 
+// A time pref indicating the last time the DSS availability metric was emitted.
+const char kDriveFsDSSAvailabilityLastEmitted[] =
+    "drivefs.dss_availability_last_emitted_time";
+
 }  // namespace drive::prefs

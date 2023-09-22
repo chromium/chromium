@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/file_manager_string_util.h"
@@ -15,7 +16,9 @@
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/drive/drive_pref_names.h"
 #include "components/drive/file_errors.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"
 
 ChromeFileManagerUIDelegate::ChromeFileManagerUIDelegate(content::WebUI* web_ui)
@@ -110,16 +113,43 @@ void ChromeFileManagerUIDelegate::RecordDocsOfflineStats(
     drive::FileError error,
     drivefs::mojom::DocsOfflineStatsPtr stats) {
   if (error != drive::FileError::FILE_ERROR_OK || !stats ||
-      stats->total == -1 || stats->available_offline == -1 ||
-      (total_available_offline_hosted_files_ == stats->available_offline &&
-       total_hosted_files_ == stats->total)) {
+      stats->total == -1 || stats->available_offline == -1) {
     VLOG(1) << "Not recording the Docs offline UMA stat";
     return;
   }
 
-  base::UmaHistogramPercentage(
-      "FileBrowser.GoogleDrive.DSSAvailabilityPercentage",
-      stats->total == 0 ? 0 : (stats->available_offline * 100 / stats->total));
+  const int32_t availability_percent =
+      stats->total == 0 ? 0 : (stats->available_offline * 100 / stats->total);
+
+  // Only emitted if a change in percentage is detected.
+  if (total_available_offline_hosted_files_ != stats->available_offline ||
+      total_hosted_files_ != stats->total) {
+    base::UmaHistogramPercentage(
+        "FileBrowser.GoogleDrive.DSSAvailabilityPercentage",
+        availability_percent);
+  }
+
+  // Emitted after 1 day has elapsed since it was last emitted.
+  if (Profile* const profile = Profile::FromWebUI(web_ui_)) {
+    PrefService* const prefs = profile->GetPrefs();
+    DCHECK(prefs);
+
+    const base::TimeDelta time_since_last_update =
+        base::Time::Now() -
+        prefs->GetTime(drive::prefs::kDriveFsDSSAvailabilityLastEmitted);
+    if (time_since_last_update > base::Days(1)) {
+      base::UmaHistogramPercentage(
+          "FileBrowser.GoogleDrive.DailyDSSAvailabilityPercentage",
+          availability_percent);
+    }
+
+    if (time_since_last_update > base::Days(1) ||
+        time_since_last_update.is_negative()) {
+      prefs->SetTime(drive::prefs::kDriveFsDSSAvailabilityLastEmitted,
+                     base::Time::Now());
+    }
+  }
+
   total_available_offline_hosted_files_ = stats->available_offline;
   total_hosted_files_ = stats->total;
 }
