@@ -1,66 +1,54 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-
 import {assert} from 'chrome://resources/ash/common/assert.js';
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertNotReached} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {waitUntil} from '../../common/js/test_error_reporting.js';
+import {waitUntil} from '../common/js/test_error_reporting.js';
 
-import {FilesPasswordDialog} from './files_password_dialog.js';
+import {USER_CANCELLED, XfPasswordDialog} from './xf_password_dialog.js';
 
-/** @type {!FilesPasswordDialog} */
-let passwordDialog;
-/** @type {!CrDialogElement} */
-let dialog;
-/** @type {!HTMLElement} */
-let name;
-/** @type {!CrInputElement} */
-let input;
-/** @type {!CrButtonElement} */
-let cancel;
-/** @type {!CrButtonElement} */
-let unlock;
+let passwordDialog: XfPasswordDialog;
+let dialog: CrDialogElement;
+let name: HTMLElement;
+let input: CrInputElement;
+let cancel: CrButtonElement;
+let unlock: CrButtonElement;
 
 /**
- * Adds a FilesPasswordDialog element to the page.
+ * Adds a XfPasswordDialog element to the page.
  */
 export function setUp() {
   document.body.innerHTML = getTrustedHTML
-  `<files-password-dialog id="test-files-password-dialog" hidden>
-    </files-password-dialog>`;
+  `<xf-password-dialog hidden>
+    </xf-password-dialog>`;
 
-  // Get the <files-password-dialog> element.
-  passwordDialog = assert(/** @type {!FilesPasswordDialog} */ (
-      document.querySelector('#test-files-password-dialog')));
+  // Get the <xf-password-dialog> element.
+  passwordDialog = document.querySelector('xf-password-dialog')!;
 
   // Get its sub-elements.
-  dialog = assert(/** @type {!CrDialogElement} */ (
-      passwordDialog.shadowRoot.querySelector('#password-dialog')));
-  name = assert(/** @type {!HTMLElement} */ (
-      passwordDialog.shadowRoot.querySelector('#name')));
-  input = assert(/** @type {!CrInputElement} */ (
-      passwordDialog.shadowRoot.querySelector('#input')));
-  cancel = assert(/** @type {!CrButtonElement} */ (
-      passwordDialog.shadowRoot.querySelector('#cancel')));
-  unlock = assert(/** @type {!CrButtonElement} */ (
-      passwordDialog.shadowRoot.querySelector('#unlock')));
+  dialog = passwordDialog.shadowRoot!.querySelector('#password-dialog') as
+      CrDialogElement;
+  name = passwordDialog.shadowRoot!.querySelector('#name')!;
+  input = passwordDialog.shadowRoot!.querySelector('#input')!;
+  cancel = passwordDialog.shadowRoot!.querySelector('#cancel')!;
+  unlock = passwordDialog.shadowRoot!.querySelector('#unlock')!;
 }
 
 /**
  * Tests that the password dialog is modal.
  */
-export async function testPasswordDialogIsModal(done) {
+export async function testPasswordDialogIsModal(done: () => void) {
   // Check that the dialog is closed.
   assertFalse(dialog.open);
 
   // Open the password dialog.
-  const passwordPromise = passwordDialog.askForPassword('encrypted.zip');
+  passwordDialog.askForPassword('encrypted.zip');
 
   // Wait until the dialog is open.
   await waitUntil(() => dialog.open);
@@ -71,19 +59,19 @@ export async function testPasswordDialogIsModal(done) {
   // Enter password.
   input.value = 'password';
 
-  // Keyboard events should not propagate out to the <files-password-dialog>
+  // Keyboard events should not propagate out to the <xf-password-dialog>
   // element. The internal <cr-dialog> element should handle keyboard events
-  // and should prevent them from bubbling up to the <files-password-dialog>
+  // and should prevent them from bubbling up to the <xf-password-dialog>
   // element (modal operation).
   let isModal = true;
   passwordDialog.addEventListener('keydown', event => {
-    console.error('<files-password-dialog> keydown event', event);
+    console.error('<xf-password-dialog> keydown event', event);
     isModal = false;
   });
 
   // Add a <cr-dialog> listener to confirm it saw the test keyboard event.
   let keydownSeen = false;
-  dialog.addEventListener('keydown', event => {
+  dialog.addEventListener('keydown', () => {
     keydownSeen = true;
   });
 
@@ -98,13 +86,14 @@ export async function testPasswordDialogIsModal(done) {
   });
 
   // Dispatch the keyboard event to the <cr-input> inner <input> element.
-  const inputElement = input.shadowRoot.querySelector('input');
+  const inputElement =
+      input.shadowRoot!.querySelector('input') as HTMLInputElement;
   assertEquals(inputElement.value, 'password');
   assert(inputElement.dispatchEvent(keyEvent));
 
-  // Check: the <files-password-dialog> should be modal.
+  // Check: the <xf-password-dialog> should be modal.
   await waitUntil(() => keydownSeen);
-  assert(isModal, 'FAILED: <files-password-dialog> should be modal');
+  assert(isModal, 'FAILED: <xf-password-dialog> should be modal');
 
   done();
 }
@@ -112,9 +101,9 @@ export async function testPasswordDialogIsModal(done) {
 /**
  * Tests cancel functionality of password dialog for single encrypted archive.
  * The askForPassword method should return a promise that is rejected with
- * FilesPasswordDialog.USER_CANCELLED.
+ * USER_CANCELLED.
  */
-export async function testSingleArchiveCancelPasswordPrompt(done) {
+export async function testSingleArchiveCancelPasswordPrompt(done: () => void) {
   // Check that the dialog is closed.
   assertFalse(dialog.open);
 
@@ -137,12 +126,12 @@ export async function testSingleArchiveCancelPasswordPrompt(done) {
   await waitUntil(() => !dialog.open);
 
   // The passwordPromise should be rejected with
-  // FilesPasswordDialog.USER_CANCELLED.
+  // USER_CANCELLED.
   try {
     await passwordPromise;
     assertNotReached();
   } catch (e) {
-    assertEquals(FilesPasswordDialog.USER_CANCELLED, e);
+    assertEquals(USER_CANCELLED, e);
   }
 
   // The password input field should be cleared.
@@ -159,7 +148,7 @@ export async function testSingleArchiveCancelPasswordPrompt(done) {
  * method should return a promise that resolves with the expected input
  * password.
  */
-export async function testUnlockSingleArchive(done) {
+export async function testUnlockSingleArchive(done: () => void) {
   // Check that the dialog is closed.
   assertFalse(dialog.open);
 
@@ -195,13 +184,12 @@ export async function testUnlockSingleArchive(done) {
  * Tests opening the password dialog with an 'Invalid password' message. This
  * message is displayed when a wrong password was previously entered.
  */
-export async function testDialogWithWrongPassword(done) {
+export async function testDialogWithWrongPassword(done: () => void) {
   // Check that the dialog is closed.
   assertFalse(dialog.open);
 
   // Open password prompt.
-  const passwordPromise =
-      passwordDialog.askForPassword('encrypted.zip', 'wrongpassword');
+  passwordDialog.askForPassword('encrypted.zip', 'wrongpassword');
 
   // Wait until the dialog is open.
   await waitUntil(() => dialog.open);
@@ -221,7 +209,7 @@ export async function testDialogWithWrongPassword(done) {
 /**
  * Tests cancel functionality for multiple encrypted archives.
  */
-export async function testCancelMultiplePasswordPrompts(done) {
+export async function testCancelMultiplePasswordPrompts(done: () => void) {
   // Check that the dialog is closed.
   assertFalse(dialog.open);
 
@@ -242,12 +230,12 @@ export async function testCancelMultiplePasswordPrompts(done) {
   cancel.click();
 
   // The passwordPromise should be rejected with
-  // FilesPasswordDialog.USER_CANCELLED.
+  // USER_CANCELLED.
   try {
     await passwordPromise;
     assertNotReached();
   } catch (e) {
-    assertEquals(FilesPasswordDialog.USER_CANCELLED, e);
+    assertEquals(USER_CANCELLED, e);
   }
 
   // The password input field should be cleared.
@@ -263,12 +251,12 @@ export async function testCancelMultiplePasswordPrompts(done) {
   cancel.click();
 
   // The passwordPromise should be rejected with
-  // FilesPasswordDialog.USER_CANCELLED.
+  // USER_CANCELLED.
   try {
     await passwordPromise2;
     assertNotReached();
   } catch (e) {
-    assertEquals(FilesPasswordDialog.USER_CANCELLED, e);
+    assertEquals(USER_CANCELLED, e);
   }
 
   // The password input field should be cleared.
@@ -283,7 +271,7 @@ export async function testCancelMultiplePasswordPrompts(done) {
 /**
  * Tests unlock functionality for multiple encrypted archives.
  */
-export async function testUnlockMultipleArchives(done) {
+export async function testUnlockMultipleArchives(done: () => void) {
   // Check that the dialog is closed.
   assertFalse(dialog.open);
 

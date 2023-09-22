@@ -24,7 +24,7 @@ import {FileTasks as StoreFileTasks} from '../../externs/ts/state.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {getStore} from '../../state/store.js';
-import {FilesPasswordDialog} from '../elements/files_password_dialog.js';
+import {USER_CANCELLED, XfPasswordDialog} from '../../widgets/xf_password_dialog.js';
 
 import {constants} from './constants.js';
 import {DirectoryChangeTracker, DirectoryModel} from './directory_model.js';
@@ -712,7 +712,7 @@ export class FileTasks {
       while (true) {
         // Ask for password.
         do {
-          const dialog = this.ui_.passwordDialog as FilesPasswordDialog;
+          const dialog = this.ui_.passwordDialog as XfPasswordDialog;
           password = await dialog.askForPassword(filename, password);
         } while (!password);
 
@@ -771,7 +771,7 @@ export class FileTasks {
     } catch (error) {
       // No need to display an error message if user canceled mounting or
       // canceled the password prompt.
-      if (error === FilesPasswordDialog.USER_CANCELLED ||
+      if (error === USER_CANCELLED ||
           error === VolumeManagerCommon.VolumeError.CANCELLED) {
         return;
       }

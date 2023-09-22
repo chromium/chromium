@@ -457,7 +457,6 @@ js_library("deferred_elements") {
   visibility += [ "//ui/file_manager:*" ]
   deps = [
     "//ui/file_manager/file_manager/foreground/elements:files_format_dialog",
-    "//ui/file_manager/file_manager/foreground/elements:files_password_dialog",
     "//ui/file_manager/file_manager/foreground/elements:files_spinner",
     "//ui/file_manager/file_manager/foreground/elements:xf_button",
     "//ui/file_manager/file_manager/foreground/elements:xf_circular_progress",

@@ -17,9 +17,9 @@ import {SearchContainer} from '../../../containers/search_container.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
 import {XfConflictDialog} from '../../../widgets/xf_conflict_dialog.js';
 import {XfDlpRestrictionDetailsDialog} from '../../../widgets/xf_dlp_restriction_details_dialog.js';
+import {XfPasswordDialog} from '../../../widgets/xf_password_dialog.js';
 import {XfSplitter} from '../../../widgets/xf_splitter.js';
 import {XfTree} from '../../../widgets/xf_tree.js';
-import {FilesPasswordDialog} from '../../elements/files_password_dialog.js';
 import {BannerController} from '../banner_controller.js';
 import {LaunchParam} from '../launch_param.js';
 import {ProvidersModel} from '../providers_model.js';
@@ -167,7 +167,7 @@ export class FileManagerUI {
 
     /**
      * Dialog for password prompt
-     * @type {?FilesPasswordDialog}
+     * @type {?XfPasswordDialog}
      */
     this.passwordDialog_ = null;
 
@@ -442,8 +442,8 @@ export class FileManagerUI {
     if (this.passwordDialog_) {
       return this.passwordDialog_;
     }
-    this.passwordDialog_ = /** @type {!FilesPasswordDialog} */ (
-        document.createElement('files-password-dialog'));
+    this.passwordDialog_ = /** @type {!XfPasswordDialog} */ (
+        document.createElement('xf-password-dialog'));
     this.element.appendChild(this.passwordDialog_);
     return this.passwordDialog_;
   }

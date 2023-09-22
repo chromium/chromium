@@ -37,7 +37,6 @@ js_type_check("closure_compile_jsmodules") {
     ":files_format_dialog",
     ":files_metadata_box",
     ":files_metadata_entry",
-    ":files_password_dialog",
     ":files_quick_view",
     ":files_safe_media",
     ":files_spinner",
@@ -54,7 +53,6 @@ html_to_js("web_components") {
     "files_format_dialog.js",
     "files_metadata_box.js",
     "files_metadata_entry.js",
-    "files_password_dialog.js",
     "files_quick_view.js",
     "files_safe_media.js",
     "files_spinner.js",
@@ -93,29 +91,6 @@ js_library("files_metadata_box") {
 js_library("files_metadata_entry") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_unittest("files_password_dialog_unittest") {
-  deps = [
-    ":files_password_dialog",
-    "//ash/webui/common/resources:assert",
-    "//chrome/test/data/webui/chromeos:chai_assert",
-    "//ui/file_manager/file_manager/common/js:test_error_reporting",
-  ]
-  externs_list =
-      [ "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js" ]
-}
-
-js_library("files_password_dialog") {
-  deps = [
-    "//ash/webui/common/resources:load_time_data.m",
-    "//ui/file_manager/file_manager/common/js:async_util",
-  ]
-  externs_list = [
-    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
-    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
-    "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js",
   ]
 }
 
@@ -203,7 +178,6 @@ js_library("xf_display_panel") {
 js_test_type_check("js_test_type_check") {
   is_polymer3 = true
   deps = [
-    ":files_password_dialog_unittest",
     ":files_toast_unittest",
     ":files_tooltip_unittest",
     ":files_xf_elements_unittest",

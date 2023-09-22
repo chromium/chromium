@@ -129,10 +129,6 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FilesDisplayPanel) {
   RunTestURL("foreground/elements/files_xf_elements_unittest.js");
 }
 
-IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FilesPasswordDialog) {
-  RunTestURL("foreground/elements/files_password_dialog_unittest.js");
-}
-
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FilesToast) {
   RunTestURL("foreground/elements/files_toast_unittest.js");
 }
@@ -401,6 +397,10 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, XfDlpRestrictionDetailsDialog) {
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, XfNudge) {
   RunTestURL("widgets/xf_nudge_unittest.js");
+}
+
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, XfPasswordDialog) {
+  RunTestURL("widgets/xf_password_dialog_unittest.js");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, XfSelect) {

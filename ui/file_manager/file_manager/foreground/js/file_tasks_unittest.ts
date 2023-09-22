@@ -17,7 +17,7 @@ import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {EntryLocation} from '../../externs/entry_location.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
-import {FilesPasswordDialog} from '../elements/files_password_dialog.js';
+import {USER_CANCELLED, XfPasswordDialog} from '../../widgets/xf_password_dialog.js';
 
 import {DirectoryChangeTracker, DirectoryModel} from './directory_model.js';
 import {FileManager} from './file_manager.js';
@@ -56,7 +56,7 @@ const countMap = new Map();
  */
 const timeMap = new Map();
 
-let passwordDialog: FilesPasswordDialog;
+let passwordDialog: XfPasswordDialog;
 
 /** Mock metrics.recordEnum.  */
 // @ts-ignore: Remove ignore once metrics_base.recordEnum() is in TS and the
@@ -180,7 +180,7 @@ function failWithMessage(message: string, details?: string) {
 function getMockFileManager(): FileManager {
   const crostini = createCrostiniForTest();
 
-  passwordDialog = {} as unknown as FilesPasswordDialog;
+  passwordDialog = {} as unknown as XfPasswordDialog;
   const fileManager = {
     volumeManager: /** @type {!VolumeManager} */ ({
       getLocationInfo: function(_entry: Entry) {
@@ -702,7 +702,7 @@ testMountArchiveAndChangeDirectoryNotificationCancelPassword(done: () => void) {
 
   passwordDialog.askForPassword =
       async function(_filename: string, _password: string|null = null) {
-    return Promise.reject(FilesPasswordDialog.USER_CANCELLED);
+    return Promise.reject(USER_CANCELLED);
   };
 
   // Mount archive.
