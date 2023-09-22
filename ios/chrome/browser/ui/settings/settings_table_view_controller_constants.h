@@ -39,6 +39,7 @@ typedef NS_ENUM(NSInteger, SettingsItemType) {
   SettingsItemTypePrivacy,
   SettingsItemTypeLanguageSettings,
   SettingsItemTypeContentSettings,
+  SettingsItemTypeDownloadsSettings,
   SettingsItemTypeBandwidth,
   SettingsItemTypeAboutChrome,
   SettingsItemTypeMemoryDebugging,
@@ -109,6 +110,9 @@ extern NSString* const kSettingsLanguagesCellId;
 
 // The accessibility identifier of the Content Settings cell.
 extern NSString* const kSettingsContentSettingsCellId;
+
+// The accessibility identifier of the Downloads Settings cell.
+extern NSString* const kSettingsDownloadsSettingsCellId;
 
 // The accessibility identifier of the Bandwidth cell.
 extern NSString* const kSettingsBandwidthCellId;

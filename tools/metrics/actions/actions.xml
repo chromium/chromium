@@ -30246,6 +30246,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.DownloadsSettings">
+  <owner>qpubert@google.com.org</owner>
+  <owner>djean@google.com</owner>
+  <description>
+    Reported when user navigates to Downloads Settings. iOS only.
+  </description>
+</action>
+
 <action name="Settings.GoogleServices">
   <owner>jlebel@chromium.org</owner>
   <owner>fernandex@chromium.org</owner>

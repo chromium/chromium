@@ -47,6 +47,8 @@
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/password_check_observer_bridge.h"
 #import "ios/chrome/browser/passwords/password_checkup_utils.h"
+#import "ios/chrome/browser/photos/photos_service.h"
+#import "ios/chrome/browser/photos/photos_service_factory.h"
 #import "ios/chrome/browser/search_engines/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/settings/sync/utils/identity_error_util.h"
@@ -105,6 +107,8 @@
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/content_settings/content_settings_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/default_browser/default_browser_settings_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/downloads/downloads_settings_coordinator.h"
+#import "ios/chrome/browser/ui/settings/downloads/downloads_settings_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_coordinator.h"
@@ -169,6 +173,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 @interface SettingsTableViewController () <
     BooleanObserver,
     ChromeAccountManagerServiceObserver,
+    DownloadsSettingsCoordinatorDelegate,
     GoogleServicesSettingsCoordinatorDelegate,
     IdentityManagerObserverBridgeDelegate,
     ManageSyncSettingsCoordinatorDelegate,
@@ -265,6 +270,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
   // Address bar setting coordinator.
   AddressBarPreferenceCoordinator* _addressBarPreferenceCoordinator;
+
+  // Downloads settings coordinator.
+  DownloadsSettingsCoordinator* _downloadsSettingsCoordinator;
 }
 
 // The item related to the switch for the show feed settings.
@@ -510,6 +518,10 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     }
   }
 
+  PhotosService* photosService =
+      PhotosServiceFactory::GetForBrowserState(_browserState);
+  bool shouldShowDownloadsSettings =
+      photosService && photosService->IsSupported();
   if (IsInactiveTabsAvailable() || IsTabPickupEnabled()) {
     [model addItem:[self tabsSettingsDetailItem]
         toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
@@ -520,6 +532,10 @@ UIImage* GetBrandedGoogleServicesSymbol() {
         toSectionWithIdentifier:SettingsSectionIdentifierInfo];
     [model addItem:[self contentSettingsDetailItem]
         toSectionWithIdentifier:SettingsSectionIdentifierInfo];
+    if (shouldShowDownloadsSettings) {
+      [model addItem:[self downloadsSettingsDetailItem]
+          toSectionWithIdentifier:SettingsSectionIdentifierInfo];
+    }
     [model addItem:[self bandwidthManagementDetailItem]
         toSectionWithIdentifier:SettingsSectionIdentifierInfo];
   } else {
@@ -527,6 +543,10 @@ UIImage* GetBrandedGoogleServicesSymbol() {
         toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
     [model addItem:[self contentSettingsDetailItem]
         toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
+    if (shouldShowDownloadsSettings) {
+      [model addItem:[self downloadsSettingsDetailItem]
+          toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
+    }
     [model addItem:[self bandwidthManagementDetailItem]
         toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
 
@@ -1004,6 +1024,16 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       accessibilityIdentifier:kSettingsContentSettingsCellId];
 }
 
+- (TableViewItem*)downloadsSettingsDetailItem {
+  return [self detailItemWithType:SettingsItemTypeDownloadsSettings
+                             text:l10n_util::GetNSString(
+                                      IDS_IOS_SETTINGS_DOWNLOADS_TITLE)
+                       detailText:nil
+                           symbol:DefaultSettingsRootSymbol(kDownloadSymbol)
+            symbolBackgroundColor:[UIColor colorNamed:kGrey400Color]
+          accessibilityIdentifier:kSettingsDownloadsSettingsCellId];
+}
+
 - (TableViewItem*)tabsSettingsDetailItem {
   return [self detailItemWithType:SettingsItemTypeTabs
                              text:l10n_util::GetNSString(
@@ -1386,6 +1416,10 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       base::RecordAction(base::UserMetricsAction("Settings.ContentSettings"));
       controller =
           [[ContentSettingsTableViewController alloc] initWithBrowser:_browser];
+      break;
+    case SettingsItemTypeDownloadsSettings:
+      base::RecordAction(base::UserMetricsAction("Settings.DownloadsSettings"));
+      [self showDownloadsSettings];
       break;
     case SettingsItemTypeTabs:
       base::RecordAction(base::UserMetricsAction("Settings.Tabs"));
@@ -1936,6 +1970,19 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   [self reconfigureCellsForItems:@[ _notificationsItem ]];
 }
 
+- (void)showDownloadsSettings {
+  if (_downloadsSettingsCoordinator) {
+    [_downloadsSettingsCoordinator stop];
+    _downloadsSettingsCoordinator = nil;
+  }
+
+  _downloadsSettingsCoordinator = [[DownloadsSettingsCoordinator alloc]
+      initWithBaseNavigationController:self.navigationController
+                               browser:_browser];
+  _downloadsSettingsCoordinator.delegate = self;
+  [_downloadsSettingsCoordinator start];
+}
+
 #pragma mark - Sign in
 
 - (void)showSignIn {
@@ -2013,6 +2060,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
   [_addressBarPreferenceCoordinator stop];
   _addressBarPreferenceCoordinator = nil;
+
+  [_downloadsSettingsCoordinator stop];
+  _downloadsSettingsCoordinator = nil;
 
   // Stop observable prefs.
   [_showMemoryDebugToolsEnabled stop];
@@ -2332,6 +2382,14 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 - (void)notificationsSettingsDidChangeForClient:
     (PushNotificationClientId)clientID {
   [self updateNotificationsDetailText];
+}
+
+#pragma mark - DownloadsSettingsCoordinatorDelegate
+
+- (void)downloadsSettingsCoordinatorWasRemoved:
+    (DownloadsSettingsCoordinator*)coordinator {
+  [_downloadsSettingsCoordinator stop];
+  _downloadsSettingsCoordinator = nil;
 }
 
 @end

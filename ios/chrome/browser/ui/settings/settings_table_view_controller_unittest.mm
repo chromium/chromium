@@ -43,6 +43,8 @@
 #import "ios/chrome/browser/signin/fake_system_identity_manager.h"
 #import "ios/chrome/browser/sync/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/tabs/inactive_tabs/features.h"
+#import "ios/chrome/browser/tabs/tab_pickup/features.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -536,4 +538,24 @@ TEST_F(SettingsTableViewControllerTest, DontHoldAccountErrorWhenNoError) {
       base::apple::ObjCCast<TableViewAccountItem>(account_items[0]);
   ASSERT_TRUE(identityAccountItem != nil);
   EXPECT_FALSE(identityAccountItem.shouldDisplayError);
+}
+
+// Verifies that if the Save to Photos flag is enabled and Save to Photos is
+// supported, then there is a Downloads Settings item in the expected section.
+TEST_F(SettingsTableViewControllerTest, HasDownloadsMenuItem) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(kIOSSaveToPhotos);
+
+  CreateController();
+  CheckController();
+
+  // The section to check for depends on some other features.
+  SettingsSectionIdentifier section =
+      IsInactiveTabsAvailable() || IsTabPickupEnabled()
+          ? SettingsSectionIdentifierInfo
+          : SettingsSectionIdentifierAdvanced;
+
+  EXPECT_TRUE([controller().tableViewModel
+      hasItemForItemType:SettingsItemTypeDownloadsSettings
+       sectionIdentifier:section]);
 }
