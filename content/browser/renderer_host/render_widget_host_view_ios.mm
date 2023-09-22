@@ -816,13 +816,25 @@ void RenderWidgetHostViewIOS::InjectGestureEvent(
 void RenderWidgetHostViewIOS::InjectMouseEvent(
     const blink::WebMouseEvent& web_mouse,
     const ui::LatencyInfo& latency_info) {
-  NOTIMPLEMENTED();
+  if (ShouldRouteEvents()) {
+    blink::WebMouseEvent mouse_event(web_mouse);
+    host()->delegate()->GetInputEventRouter()->RouteMouseEvent(
+        this, &mouse_event, latency_info);
+  } else {
+    host()->ForwardMouseEventWithLatencyInfo(web_mouse, latency_info);
+  }
 }
 
 void RenderWidgetHostViewIOS::InjectMouseWheelEvent(
     const blink::WebMouseWheelEvent& web_wheel,
     const ui::LatencyInfo& latency_info) {
-  NOTIMPLEMENTED();
+  if (ShouldRouteEvents()) {
+    blink::WebMouseWheelEvent mouse_wheel_event(web_wheel);
+    host()->delegate()->GetInputEventRouter()->RouteMouseWheelEvent(
+        this, &mouse_wheel_event, latency_info);
+  } else {
+    host()->ForwardWheelEventWithLatencyInfo(web_wheel, latency_info);
+  }
 }
 
 bool RenderWidgetHostViewIOS::CanBecomeFirstResponderForTesting() const {
