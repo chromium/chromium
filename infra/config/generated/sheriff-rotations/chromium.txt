@@ -33,7 +33,6 @@ ci/Linux Builder (dbg)
 ci/Linux CFI
 ci/Linux Chromium OS ASan LSan Builder
 ci/Linux Chromium OS ASan LSan Tests (1)
-ci/Linux ChromiumOS Full
 ci/Linux ChromiumOS MSan Builder
 ci/Linux ChromiumOS MSan Tests
 ci/Linux MSan Builder
@@ -92,7 +91,6 @@ ci/ios-device
 ci/ios-simulator
 ci/ios-simulator-full-configs
 ci/ios-simulator-noncq
-ci/lacros-amd64-generic-binary-size-rel
 ci/lacros-amd64-generic-rel
 ci/lacros-amd64-generic-rel-skylab
 ci/lacros-arm-archive-rel
@@ -103,6 +101,7 @@ ci/lacros64-archive-rel
 ci/linux-archive-rel
 ci/linux-bfcache-rel
 ci/linux-cfm-rel
+ci/linux-chromeos-archive-rel
 ci/linux-chromeos-dbg
 ci/linux-chromeos-rel
 ci/linux-extended-tracing-rel

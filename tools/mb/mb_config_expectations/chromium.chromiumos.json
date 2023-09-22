@@ -1,15 +1,4 @@
 {
-  "Linux ChromiumOS Full": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "ffmpeg_branding": "ChromeOS",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "target_os": "chromeos",
-      "use_remoteexec": true
-    }
-  },
   "chromeos-amd64-generic-asan-rel": {
     "args_file": "//build/args/chromeos/amd64-generic.gni",
     "gn_args": {
@@ -110,18 +99,6 @@
       "dcheck_always_on": true,
       "is_chromeos_device": true,
       "ozone_platform_headless": true,
-      "use_remoteexec": true
-    }
-  },
-  "lacros-amd64-generic-binary-size-rel": {
-    "args_file": "//build/args/chromeos/amd64-generic-crostoolchain.gni",
-    "gn_args": {
-      "chromeos_is_browser_only": true,
-      "dcheck_always_on": false,
-      "is_chromeos_device": true,
-      "is_debug": false,
-      "ozone_platform_headless": true,
-      "target_os": "chromeos",
       "use_remoteexec": true
     }
   },

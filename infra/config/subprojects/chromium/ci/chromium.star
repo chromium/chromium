@@ -207,6 +207,46 @@ ci.builder(
 )
 
 ci.builder(
+    name = "linux-chromeos-archive-rel",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "chromeos",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.CHROMEOS,
+        ),
+        build_gs_bucket = "chromium-chromiumos-archive",
+    ),
+    cores = 8,
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "cros",
+        short_name = "lnx",
+    ),
+    properties = {
+        # The format of these properties is defined at archive/properties.proto
+        "$build/archive": {
+            "source_side_spec_path": [
+                "src",
+                "infra",
+                "archive_config",
+                "linux-chromiumos-full.json",
+            ],
+        },
+    },
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+)
+
+ci.builder(
     name = "linux-lacros-archive-rel",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
