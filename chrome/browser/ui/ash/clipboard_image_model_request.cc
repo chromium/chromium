@@ -112,6 +112,8 @@ ClipboardImageModelRequest::ClipboardImageModelRequest(
       web_view_(new views::WebView(profile)),
       on_request_finished_callback_(std::move(on_request_finished_callback)),
       request_creation_time_(base::TimeTicks::Now()) {
+  CHECK(profile);
+
   views::Widget::InitParams widget_params;
   widget_params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
   widget_params.ownership =

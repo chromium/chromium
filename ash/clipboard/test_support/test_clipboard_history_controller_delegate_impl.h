@@ -5,6 +5,8 @@
 #ifndef ASH_CLIPBOARD_TEST_SUPPORT_TEST_CLIPBOARD_HISTORY_CONTROLLER_DELEGATE_IMPL_H_
 #define ASH_CLIPBOARD_TEST_SUPPORT_TEST_CLIPBOARD_HISTORY_CONTROLLER_DELEGATE_IMPL_H_
 
+#include <memory>
+
 #include "ash/ash_export.h"
 #include "ash/clipboard/clipboard_history_controller_delegate.h"
 
@@ -23,6 +25,8 @@ class ASH_EXPORT TestClipboardHistoryControllerDelegateImpl
 
  private:
   // ClipboardHistoryControllerDelegate:
+  std::unique_ptr<ClipboardImageModelFactory> CreateImageModelFactory()
+      const override;
   bool Paste() const override;
 };
 

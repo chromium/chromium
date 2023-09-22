@@ -7,6 +7,7 @@
 #include <set>
 
 #include "ash/constants/ash_features.h"
+#include "chrome/browser/ui/ash/clipboard_image_model_factory_impl.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -62,6 +63,11 @@ ClipboardHistoryControllerDelegateImpl::
 
 ClipboardHistoryControllerDelegateImpl::
     ~ClipboardHistoryControllerDelegateImpl() = default;
+
+std::unique_ptr<ash::ClipboardImageModelFactory>
+ClipboardHistoryControllerDelegateImpl::CreateImageModelFactory() const {
+  return std::make_unique<ClipboardImageModelFactoryImpl>();
+}
 
 bool ClipboardHistoryControllerDelegateImpl::Paste() const {
   if (!ash::features::IsClipboardHistoryWebContentsPasteEnabled()) {

@@ -44,7 +44,6 @@
 #include "chrome/browser/screen_ai/screen_ai_dlc_installer.h"
 #include "chrome/browser/ui/ash/calendar/calendar_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/clipboard_history_url_title_fetcher_impl.h"
-#include "chrome/browser/ui/ash/clipboard_image_model_factory_impl.h"
 #include "chrome/browser/ui/ash/glanceables/glanceables_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/media_client_impl.h"
@@ -250,8 +249,6 @@ void UserSessionInitializer::InitializePrimaryProfileServices(
 
   clipboard_history_url_title_fetcher_impl_ =
       std::make_unique<ClipboardHistoryUrlTitleFetcherImpl>();
-  clipboard_image_model_factory_impl_ =
-      std::make_unique<ClipboardImageModelFactoryImpl>(profile);
 
   if (captions::IsLiveCaptionFeatureSupported() &&
       features::IsSystemLiveCaptionEnabled()) {
