@@ -142,6 +142,7 @@ class ProfileSelections {
 
   // Given a Profile and a ProfileSelection enum, returns the right profile
   // (can potentially return nullptr).
+  // The `profile` is expected to be non-null.
   Profile* ApplyProfileSelection(Profile* profile) const;
 
  private:

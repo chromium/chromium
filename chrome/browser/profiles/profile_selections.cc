@@ -102,7 +102,7 @@ ProfileSelections ProfileSelections::BuildRedirectedInIncognito() {
 }
 
 Profile* ProfileSelections::ApplyProfileSelection(Profile* profile) const {
-  DCHECK(profile);
+  CHECK(profile);
 
   ProfileSelection selection = GetProfileSelection(profile);
   switch (selection) {
