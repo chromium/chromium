@@ -73,7 +73,7 @@ class MockImageDecoder : public ImageDecoder {
       : ImageDecoder(kAlphaPremultiplied,
                      ImageDecoder::kDefaultBitDepth,
                      ColorBehavior::kTransformToSRGB,
-                     kNoDecodedImageByteLimit),
+                     ImageDecoder::kNoDecodedImageByteLimit),
         client_(client) {}
 
   ~MockImageDecoder() override { client_->DecoderBeingDestroyed(); }

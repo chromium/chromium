@@ -2115,21 +2115,6 @@ source_set("blink_platform_unittests_sources") {
     "graphics/video_frame_sink_bundle_test.cc",
     "graphics/video_frame_submitter_test.cc",
     "heap_observer_set_test.cc",
-    "image-decoders/bmp/bmp_image_decoder_test.cc",
-    "image-decoders/fast_shared_buffer_reader_test.cc",
-    "image-decoders/gif/gif_image_decoder_test.cc",
-    "image-decoders/ico/ico_image_decoder_test.cc",
-    "image-decoders/image_decoder_base_test.cc",
-    "image-decoders/image_decoder_base_test.h",
-    "image-decoders/image_decoder_test.cc",
-    "image-decoders/image_decoder_test_helpers.cc",
-    "image-decoders/image_decoder_test_helpers.h",
-    "image-decoders/image_frame_test.cc",
-    "image-decoders/jpeg/jpeg_image_decoder_test.cc",
-    "image-decoders/png/png_image_decoder_test.cc",
-    "image-decoders/rw_buffer_test.cc",
-    "image-decoders/segment_stream_test.cc",
-    "image-decoders/webp/webp_image_decoder_test.cc",
     "json/json_parser_test.cc",
     "json/json_values_test.cc",
     "media/webaudiosourceprovider_impl_test.cc",
@@ -2243,10 +2228,6 @@ source_set("blink_platform_unittests_sources") {
     sources += [ "text/locale_icu_test.cc" ]
   }
 
-  if (enable_av1_decoder) {
-    sources += [ "image-decoders/avif/avif_image_decoder_test.cc" ]
-  }
-
   sources += [ "testing/run_all_tests.cc" ]
 
   configs += [
@@ -2282,6 +2263,7 @@ source_set("blink_platform_unittests_sources") {
     "//third_party/blink/public:test_headers",
     "//third_party/blink/public/strings:strings",
     "//third_party/blink/renderer/platform/blob:unit_tests",
+    "//third_party/blink/renderer/platform/image-decoders:unit_tests",
     "//third_party/blink/renderer/platform/instrumentation:unit_tests",
     "//third_party/blink/renderer/platform/loader:unit_tests",
     "//third_party/blink/renderer/platform/media:unit_tests",

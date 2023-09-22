@@ -232,9 +232,6 @@ ImageDecoder::ImageDecoder(
 
 ImageDecoder::~ImageDecoder() = default;
 
-const wtf_size_t ImageDecoder::kNoDecodedImageByteLimit =
-    static_cast<wtf_size_t>(-1);
-
 std::unique_ptr<ImageDecoder> ImageDecoder::Create(
     scoped_refptr<SegmentReader> data,
     bool data_complete,

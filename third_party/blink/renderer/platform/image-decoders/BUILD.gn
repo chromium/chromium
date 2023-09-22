@@ -82,3 +82,40 @@ component("image_decoders") {
     ]
   }
 }
+
+source_set("unit_tests") {
+  visibility = [ "//third_party/blink/renderer/platform:*" ]
+  testonly = true
+
+  configs +=
+      [ "//third_party/blink/renderer/platform:blink_platform_implementation" ]
+
+  sources = [
+    "bmp/bmp_image_decoder_test.cc",
+    "fast_shared_buffer_reader_test.cc",
+    "gif/gif_image_decoder_test.cc",
+    "ico/ico_image_decoder_test.cc",
+    "image_decoder_base_test.cc",
+    "image_decoder_base_test.h",
+    "image_decoder_test.cc",
+    "image_decoder_test_helpers.cc",
+    "image_decoder_test_helpers.h",
+    "image_frame_test.cc",
+    "jpeg/jpeg_image_decoder_test.cc",
+    "png/png_image_decoder_test.cc",
+    "rw_buffer_test.cc",
+    "segment_stream_test.cc",
+    "webp/webp_image_decoder_test.cc",
+  ]
+
+  deps = [
+    ":image_decoders",
+    "//third_party/blink/renderer/platform:test_support",
+  ]
+
+  if (enable_av1_decoder) {
+    sources += [ "avif/avif_image_decoder_test.cc" ]
+
+    deps += [ "//third_party/libavif:libavif" ]
+  }
+}

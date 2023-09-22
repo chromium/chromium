@@ -18,7 +18,7 @@ class TestImageDecoder : public ImageDecoder {
  public:
   explicit TestImageDecoder(
       ImageDecoder::HighBitDepthDecodingOption high_bit_depth_decoding_option,
-      size_t max_decoded_bytes = kNoDecodedImageByteLimit)
+      wtf_size_t max_decoded_bytes = kNoDecodedImageByteLimit)
       : ImageDecoder(kAlphaNotPremultiplied,
                      high_bit_depth_decoding_option,
                      ColorBehavior::kTransformToSRGB,

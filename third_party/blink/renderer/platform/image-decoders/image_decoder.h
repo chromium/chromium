@@ -145,7 +145,8 @@ class PLATFORM_EXPORT ImageDecoder {
   USING_FAST_MALLOC(ImageDecoder);
 
  public:
-  static const wtf_size_t kNoDecodedImageByteLimit;
+  static constexpr wtf_size_t kNoDecodedImageByteLimit =
+      static_cast<wtf_size_t>(-1);
 
   enum AlphaOption { kAlphaPremultiplied, kAlphaNotPremultiplied };
   enum HighBitDepthDecodingOption {
