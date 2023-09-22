@@ -246,7 +246,7 @@ void VolumeManager::Initialize() {
       base::BindOnce(&RecordDownloadsDiskUsageStats, std::move(localVolume)));
 
   // Subscribe to DriveIntegrationService.
-  drive_integration_service_->AddObserver(this);
+  drive_observer_.Observe(drive_integration_service_);
   if (drive_integration_service_->IsMounted()) {
     DoMountEvent(Volume::CreateForDrive(GetDriveMountPointPath()));
   }
@@ -333,9 +333,7 @@ void VolumeManager::Shutdown() {
     p->RemoveObserver(this);
   }
 
-  if (drive_integration_service_) {
-    drive_integration_service_->RemoveObserver(this);
-  }
+  drive_observer_.Reset();
 
   if (file_system_provider_service_) {
     file_system_provider_service_->RemoveObserver(this);
@@ -557,6 +555,11 @@ void VolumeManager::RemoveVolumeForTesting(
   DoUnmountEvent(*Volume::CreateForTesting(path, volume_type, device_type,
                                            read_only, device_path, drive_label,
                                            file_system_type));
+}
+
+void VolumeManager::OnDriveIntegrationServiceDestroyed() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  drive_observer_.Reset();
 }
 
 void VolumeManager::OnFileSystemMounted() {
