@@ -250,12 +250,10 @@ bool ChromeShellDelegate::ShouldWaitForTouchPressAck(gfx::NativeWindow window) {
 }
 
 bool ChromeShellDelegate::IsTabDrag(const ui::OSExchangeData& drop_data) {
-  DCHECK(ash::features::IsWebUITabStripTabDragIntegrationEnabled());
   return tab_strip_ui::IsDraggedTab(drop_data);
 }
 
 int ChromeShellDelegate::GetBrowserWebUITabStripHeight() {
-  DCHECK(ash::features::IsWebUITabStripTabDragIntegrationEnabled());
   return TabStripUILayout::GetContainerHeight();
 }
 

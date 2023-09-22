@@ -262,8 +262,6 @@ void ChromeNewWindowClient::NewWindowForDetachingTab(
     aura::Window* source_window,
     const ui::OSExchangeData& drop_data,
     NewWindowForDetachingTabCallback closure) {
-  DCHECK(ash::features::IsWebUITabStripTabDragIntegrationEnabled());
-
   BrowserView* source_view = BrowserView::GetBrowserViewForNativeWindow(
       source_window->GetToplevelWindow());
   if (!source_view) {

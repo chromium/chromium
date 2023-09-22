@@ -79,8 +79,7 @@ class TabDragDropDelegateTest : public AshTestBase {
  public:
   TabDragDropDelegateTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kWebUITabStripTabDragIntegration,
-         chromeos::wm::features::kWindowLayoutMenu},
+        {chromeos::wm::features::kWindowLayoutMenu},
         /*disabled_features=*/{});
   }
 

@@ -82,9 +82,6 @@ OverviewSession* GetOverviewSession() {
 
 // static
 bool TabDragDropDelegate::IsChromeTabDrag(const ui::OSExchangeData& drag_data) {
-  if (!features::IsWebUITabStripTabDragIntegrationEnabled())
-    return false;
-
   return Shell::Get()->shell_delegate()->IsTabDrag(drag_data);
 }
 

@@ -4356,11 +4356,6 @@ extern const char kWebUITabStripContextMenuAfterTapName[];
 extern const char kWebUITabStripContextMenuAfterTapDescription[];
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 
-#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP) && BUILDFLAG(IS_CHROMEOS_ASH)
-extern const char kWebUITabStripTabDragIntegrationName[];
-extern const char kWebUITabStripTabDragIntegrationDescription[];
-#endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP) && BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if defined(TOOLKIT_VIEWS) || BUILDFLAG(IS_ANDROID)
 
 extern const char kAutofillCreditCardUploadName[];

@@ -2753,14 +2753,6 @@ BASE_FEATURE(kWallpaperRefreshRevamp,
              "WallpaperRefreshRevamp",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables special handling of Chrome tab drags from a WebUI tab strip.
-// These will be treated similarly to a window drag, showing split view
-// indicators in tablet mode, etc. The functionality is behind a flag right now
-// since it is under development.
-BASE_FEATURE(kWebUITabStripTabDragIntegration,
-             "WebUITabStripTabDragIntegration",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the Welcome Tour that walks new users through ChromeOS System UI.
 BASE_FEATURE(kWelcomeTour, "WelcomeTour", base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -4160,10 +4152,6 @@ bool IsWallpaperPerDeskEnabled() {
 
 bool IsWallpaperRefreshRevampEnabled() {
   return base::FeatureList::IsEnabled(kWallpaperRefreshRevamp);
-}
-
-bool IsWebUITabStripTabDragIntegrationEnabled() {
-  return base::FeatureList::IsEnabled(kWebUITabStripTabDragIntegration);
 }
 
 bool IsWelcomeTourEnabled() {

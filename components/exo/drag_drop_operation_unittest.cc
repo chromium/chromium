@@ -162,10 +162,7 @@ class MockShellDelegate : public ash::TestShellDelegate {
 class DragDropOperationTestWithWebUITabStripTest
     : public DragDropOperationTest {
  public:
-  DragDropOperationTestWithWebUITabStripTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kWebUITabStripTabDragIntegration);
-  }
+  DragDropOperationTestWithWebUITabStripTest() {}
 
   // DragDropOperationTest:
   void SetUp() override {

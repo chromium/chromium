@@ -7527,14 +7527,6 @@ const char kWebUITabStripContextMenuAfterTapDescription[] =
     "following a press gesture.";
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 
-#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP) && BUILDFLAG(IS_CHROMEOS_ASH)
-const char kWebUITabStripTabDragIntegrationName[] =
-    "ChromeOS drag-drop extensions for WebUI tab strip";
-const char kWebUITabStripTabDragIntegrationDescription[] =
-    "Enables special handling in ash for WebUI tab strip tab drags. Allows "
-    "dragging tabs out to new windows.";
-#endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP) && BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if defined(TOOLKIT_VIEWS) || BUILDFLAG(IS_ANDROID)
 
 const char kAutofillCreditCardUploadName[] =
