@@ -567,6 +567,21 @@ ShortcutPublisher* AppServiceProxyAsh::GetShortcutPublisherForTesting(
   return GetShortcutPublisher(app_type);
 }
 
+void AppServiceProxyAsh::LoadDefaultIcon(AppType app_type,
+                                         int32_t size_in_dip,
+                                         IconEffects icon_effects,
+                                         IconType icon_type,
+                                         LoadIconCallback callback) {
+  auto* publisher = GetPublisher(app_type);
+  int default_icon_resource_id = IDR_APP_DEFAULT_ICON;
+  if (publisher) {
+    default_icon_resource_id = publisher->DefaultIconResourceId();
+  }
+  LoadIconFromResource(
+      profile_, absl::nullopt, icon_type, size_in_dip, default_icon_resource_id,
+      /*is_placeholder_icon=*/false, icon_effects, std::move(callback));
+}
+
 AppServiceProxyAsh::ShortcutInnerIconLoader::ShortcutInnerIconLoader(
     AppServiceProxyAsh* host)
     : host_(host), overriding_icon_loader_for_testing_(nullptr) {}

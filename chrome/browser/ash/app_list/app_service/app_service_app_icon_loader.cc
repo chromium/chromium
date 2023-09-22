@@ -141,9 +141,9 @@ void AppServiceAppIconLoader::CallLoadIcon(const std::string& app_id,
   // When a GuestOS shelf app_id doesn't belong to a registered app, use a
   // default icon corresponding to the type of VM the window came from.
   if (guest_os::IsUnregisteredCrostiniShelfAppId(app_id)) {
-    proxy->LoadIconFromIconKey(
-        guest_os::GetAppType(profile(), app_id), app_id, apps::IconKey(),
-        icon_type, icon_size_in_dip(), allow_placeholder_icon,
+    proxy->LoadDefaultIcon(
+        guest_os::GetAppType(profile(), app_id), icon_size_in_dip(),
+        apps::IconEffects::kNone, icon_type,
         base::BindOnce(&AppServiceAppIconLoader::OnLoadIcon,
                        weak_ptr_factory_.GetWeakPtr(), app_id));
     return;

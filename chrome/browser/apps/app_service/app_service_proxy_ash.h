@@ -228,6 +228,14 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
 
   ShortcutPublisher* GetShortcutPublisherForTesting(AppType app_type);
 
+  // Load the default icon for a particular app platform. E.g. load a default
+  // icon for guest os app that is not registered in app service.
+  void LoadDefaultIcon(AppType app_type,
+                       int32_t size_in_dip,
+                       IconEffects icon_effects,
+                       IconType icon_type,
+                       LoadIconCallback callback);
+
  private:
   // ShortcutInnerIconLoader is used to load icons for shortcuts, it follows the
   // same logic as the AppInnerIconLoader defined in AppServiceProxyBase, which
