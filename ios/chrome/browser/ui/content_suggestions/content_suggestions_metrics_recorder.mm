@@ -92,7 +92,7 @@
         // the latest Tab Resumption results as the top module.
         int freshness_impression_count = _localState->GetInteger(
             prefs::
-                kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness);
+                kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness);
         _localState->SetInteger(
             prefs::
                 kIosMagicStackSegmentationTabResumptionImpressionsSinceFreshness,

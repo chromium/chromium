@@ -244,6 +244,8 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   TabResumptionItem* _tabResumptionItem;
   // The latest module ranking returned from the SegmentationService.
   NSArray<NSNumber*>* _magicStackOrderFromSegmentation;
+  // YES if the module ranking has been received from the SegmentationService.
+  BOOL _magicStackOrderFromSegmentationReceived;
   // The latest Magic Stack module order sent up to the consumer. This includes
   // any omissions due to filtering from `_magicStackOrderFromSegmentation` (or
   // `magicStackOrder:` if kSegmentationPlatformIosModuleRanker is disabled) and
@@ -499,6 +501,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   MagicStackOrderChange change{MagicStackOrderChange::Type::kRemove};
   change.old_module = type;
   change.index = [self indexForMagicStackModule:type];
+  CHECK(change.index != NSNotFound);
   [self.consumer updateMagicStackOrder:change];
 }
 
@@ -1226,6 +1229,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
           addObject:@(int(ContentSuggestionsModuleType::kTabResumption))];
     }
   }
+  _magicStackOrderFromSegmentationReceived = YES;
   _magicStackOrderFromSegmentation = magicStackOrder;
   _latestMagicStackOrder = [self segmentationMagicStackOrder];
   [self.consumer setMagicStackOrder:_latestMagicStackOrder];
@@ -1381,14 +1385,20 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
           segmentation_platform::features::kSegmentationPlatformIosModuleRanker)
           ? [self segmentationMagicStackOrder]
           : [self magicStackOrder];
-  if ([_latestMagicStackOrder count] > 0) {
+  if ([self isMagicStackOrderReady]) {
     // Only indicate the need for an explicit insertion if the tab resumption
     // item was received after building the initial Magic Stack order or getting
     // the Magic Stack Order from Segmentation.
+    NSUInteger insertionIndex = [self
+        indexForMagicStackModule:ContentSuggestionsModuleType::kTabResumption];
+    if (insertionIndex == NSNotFound) {
+      return;
+    }
+    // Only continue on to insert Tab Resumption after `isMagicStackOrderReady`
+    // if it is in the Magic Stack order
     MagicStackOrderChange change{MagicStackOrderChange::Type::kInsert,
                                  ContentSuggestionsModuleType::kTabResumption};
-    change.index = [self
-        indexForMagicStackModule:ContentSuggestionsModuleType::kTabResumption];
+    change.index = insertionIndex;
     [self.consumer updateMagicStackOrder:change];
   }
   [self.consumer showTabResumptionWithItem:_tabResumptionItem];
@@ -1401,11 +1411,31 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 }
 
 // Returns the index rank of `moduleType`.
+// Callers of this need to handle a NSNotFound return case and do nothing in
+// that case.
 - (NSUInteger)indexForMagicStackModule:
     (ContentSuggestionsModuleType)moduleType {
   NSUInteger index = [_latestMagicStackOrder indexOfObject:@(int(moduleType))];
-  CHECK(index != NSNotFound);
+  if (index == NSNotFound) {
+    // It is possible that a feature is enabled but the segmentation model being
+    // used didn't return the feature's module (i.e. first browser session after
+    // enabling a feature, so the latest model will not be downloaded until the
+    // following session since experiment models are tied via finch). It is also
+    // possible that the segmentation result has not returned yet.
+    CHECK(base::FeatureList::IsEnabled(
+        segmentation_platform::features::kSegmentationPlatformIosModuleRanker));
+  }
   return index;
+}
+
+// Returns NO if client is expecting the order from Segmentation and it has not
+// returned yet.
+- (BOOL)isMagicStackOrderReady {
+  if (base::FeatureList::IsEnabled(segmentation_platform::features::
+                                       kSegmentationPlatformIosModuleRanker)) {
+    return _magicStackOrderFromSegmentationReceived;
+  }
+  return YES;
 }
 
 #pragma mark - Properties
