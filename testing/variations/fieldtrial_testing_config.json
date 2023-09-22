@@ -10086,29 +10086,6 @@
             ]
         }
     ],
-    "NTPRealboxSize": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "NtpRealboxWidthBehaviorParam": "wide"
-                    },
-                    "enable_features": [
-                        "NtpRealboxIsTall",
-                        "NtpRealboxWidthBehavior"
-                    ]
-                }
-            ]
-        }
-    ],
     "NaCLGPURefactorings": [
         {
             "platforms": [
@@ -10361,7 +10338,26 @@
             ],
             "experiments": [
                 {
-                    "name": "QuestsAllowlist_20230425",
+                    "name": "Redesigned_Quests_ML_20230913",
+                    "params": {
+                        "NtpHistoryClustersModuleCategoriesBoostlistParam": "/m/testparsinglogicboost,/m/testparsinglogicboost-2",
+                        "NtpRealboxWidthBehaviorParam": "wide"
+                    },
+                    "enable_features": [
+                        "NtpChromeCartInHistoryClusterModule",
+                        "NtpDriveModuleShowSixFiles",
+                        "NtpHistoryClustersModule",
+                        "NtpHistoryClustersModuleCategories",
+                        "NtpHistoryClustersModuleUseModelRanking",
+                        "NtpModulesRedesigned",
+                        "NtpRealboxIsTall",
+                        "NtpRealboxWidthBehavior",
+                        "PageContentAnnotationsPersistSalientImageMetadata",
+                        "RemotePageMetadata"
+                    ]
+                },
+                {
+                    "name": "Quests_Cart_ML_20230913",
                     "params": {
                         "NtpHistoryClustersModuleCategoriesBoostlistParam": "/m/testparsinglogicboost,/m/testparsinglogicboost-2"
                     },

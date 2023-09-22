@@ -645,7 +645,7 @@ suite('NewTabPageAppTest', () => {
       ['ntp-realbox', NtpElement.REALBOX],
       ['cr-most-visited', NtpElement.MOST_VISITED],
       ['ntp-middle-slot-promo', NtpElement.MIDDLE_SLOT_PROMO],
-      ['ntp-modules', NtpElement.MODULE],
+      ['#modules', NtpElement.MODULE],
       ['#customizeButton', NtpElement.CUSTOMIZE_BUTTON],
     ] as Array<[string, NtpElement]>)
         .forEach(([selector, element]) => {
@@ -919,7 +919,7 @@ suite('NewTabPageAppTest', () => {
       });
       test('modules can open customize dialog', async () => {
         // Act.
-        $$(app, 'ntp-modules')!.dispatchEvent(new Event('customize-module'));
+        $$(app, '#modules')!.dispatchEvent(new Event('customize-module'));
         app.$.customizeDialogIf.render();
 
         // Assert.
@@ -1027,7 +1027,7 @@ suite('NewTabPageAppTest', () => {
 
       test('modules can open side panel', async () => {
         // Act.
-        $$(app, 'ntp-modules')!.dispatchEvent(new Event('customize-module'));
+        $$(app, '#modules')!.dispatchEvent(new Event('customize-module'));
 
         // Assert.
         assertDeepEquals(

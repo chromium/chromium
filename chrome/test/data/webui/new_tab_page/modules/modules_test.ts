@@ -19,6 +19,12 @@ suite('NewTabPageModulesModulesTest', () => {
   let metrics: MetricsTracker;
   let moduleRegistry: TestMock<ModuleRegistry>;
 
+  suiteSetup(() => {
+    loadTimeData.overrideValues({
+      modulesRedesignedEnabled: false,
+    });
+  });
+
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     metrics = fakeMetricsPrivate();
