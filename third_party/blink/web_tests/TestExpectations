@@ -2733,7 +2733,6 @@ crbug.com/626703 external/wpt/css/css-align/blocks/align-content-block-011.html 
 crbug.com/626703 external/wpt/css/css-align/blocks/align-content-block-break-content-020.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-align/blocks/align-content-block-break-overflow-020.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-align/blocks/align-content-block-overflow-000.html [ Failure ]
-crbug.com/626703 [ Mac12 ] external/wpt/pointerevents/coalesced_events_attributes_under_load.html?pen [ Timeout ]
 crbug.com/626703 external/wpt/css/compositing/root-element-background-image-transparency-001.html [ Failure ]
 crbug.com/626703 [ Mac ] external/wpt/css/compositing/root-element-background-image-transparency-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/compositing/root-element-background-image-transparency-003.html [ Failure ]
