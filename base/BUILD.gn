@@ -4103,6 +4103,7 @@ if (enable_nocompile_tests_new) {
   nocompile_source_set("base_nocompile_tests_new") {
     sources = [
       "callback_list_nocompile.nc",
+      "memory/weak_ptr_nocompile.nc",
       "no_destructor_nocompile.nc",
       "values_nocompile.nc",
     ]
@@ -4127,7 +4128,6 @@ if (enable_nocompile_tests) {
       "functional/function_ref_unittest.nc",
       "functional/overloaded_unittest.nc",
       "memory/ref_counted_unittest.nc",
-      "memory/weak_ptr_unittest.nc",
       "metrics/field_trial_params_unittest.nc",
       "metrics/histogram_unittest.nc",
       "observer_list_unittest.nc",
