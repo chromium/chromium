@@ -39,6 +39,11 @@ bool IsAddressType(const AutofillType& type);
 // ADDRESS_HOME_LINEX. Expects only ADDRESS_HOME_LINE(1|2|3) types.
 size_t AddressLineIndex(ServerFieldType type);
 
+// Returns whether the expiration year should be filled with two or four
+// digits.
+size_t DetermineExpirationYearLength(const AutofillField& field,
+                                     ServerFieldType assumed_field_type);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FIELD_TYPE_UTILS_H_
