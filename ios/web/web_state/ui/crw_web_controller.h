@@ -267,11 +267,8 @@ class WebStateImpl;
 // Retrieves the existing web frames in `contentWorld`.
 - (void)retrieveExistingFramesInContentWorld:(WKContentWorld*)contentWorld;
 
-// Do not use these executeJavaScript functions directly, prefer
-// WebFrame::CallJavaScriptFunction if possible, otherwise use
-// WebState::ExecuteJavaScript and WebState::ExecuteUserJavaScript.
-- (void)executeJavaScript:(NSString*)javascript
-        completionHandler:(void (^)(id result, NSError* error))completion;
+// Do not call this function directly, instead use
+// WebState::ExecuteUserJavaScript.
 - (void)executeUserJavaScript:(NSString*)javascript
             completionHandler:(void (^)(id result, NSError* error))completion;
 
@@ -297,6 +294,12 @@ class WebStateImpl;
 
 // Loads the HTML into the page at the given URL.
 - (void)loadHTML:(NSString*)HTML forURL:(const GURL&)URL;
+
+// Executes `javascript` in the current page.
+// Prefer `WebFrame::CallJavaScriptFunction` if possible, otherwise
+// use `WebState::ExecuteJavaScript`.
+- (void)executeJavaScript:(NSString*)javascript
+        completionHandler:(void (^)(id result, NSError* error))completion;
 
 @end
 
