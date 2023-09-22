@@ -4,13 +4,14 @@
 
 #include "chromeos/ash/components/device_activity/device_active_use_case.h"
 
+#include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 #include "crypto/hmac.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "third_party/private_membership/src/private_membership_rlwe_client.h"
 
 namespace ash::device_activity {
@@ -123,10 +124,8 @@ DeviceActiveUseCase::GetPsmIdentifier() const {
 }
 
 std::string DeviceActiveUseCase::GenerateWindowIdentifier(base::Time ts) const {
-  base::Time::Exploded exploded;
-  ts.UTCExplode(&exploded);
-  return base::StringPrintf("%04d%02d%02d", exploded.year, exploded.month,
-                            exploded.day_of_month);
+  return base::UnlocalizedTimeFormatWithPattern(ts, "yyyyMMdd",
+                                                icu::TimeZone::getGMT());
 }
 
 void DeviceActiveUseCase::SetChurnActiveStatus(
@@ -256,10 +255,8 @@ void DeviceActiveUseCase::SetPsmRlweClient(
 
 
 std::string DeviceActiveUseCase::FormatPTDateString(base::Time ts) {
-  base::Time::Exploded exploded;
-  ts.UTCExplode(&exploded);
-  return base::StringPrintf("%04d-%02d-%02d 00:00:00.000 GMT", exploded.year,
-                            exploded.month, exploded.day_of_month);
+  return base::UnlocalizedTimeFormatWithPattern(ts, "yyyy-MM-dd 00:00:00.000 z",
+                                                icu::TimeZone::getGMT());
 }
 
 absl::optional<psm_rlwe::RlwePlaintextId>

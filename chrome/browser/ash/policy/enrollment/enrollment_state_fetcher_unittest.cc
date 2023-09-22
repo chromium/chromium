@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/functional/bind.h"
+#include "base/i18n/time_formatting.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gmock_callback_support.h"
@@ -42,6 +43,7 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace policy {
 
@@ -305,13 +307,11 @@ TEST_F(EnrollmentStateFetcherTest, SystemClockNotSyncronized) {
 }
 
 TEST_F(EnrollmentStateFetcherTest, EmbargoDateNotPassed) {
-  base::Time::Exploded exploded;
-  base::Time embargo_date = base::Time::Now() + base::Days(7);
-  embargo_date.UTCExplode(&exploded);
   statistics_provider_.SetMachineStatistic(
       ash::system::kRlzEmbargoEndDateKey,
-      base::StringPrintf("%04d-%02d-%02d", exploded.year, exploded.month,
-                         exploded.day_of_month));
+      base::UnlocalizedTimeFormatWithPattern(base::Time::Now() + base::Days(7),
+                                             "yyyy-MM-dd",
+                                             icu::TimeZone::getGMT()));
 
   AutoEnrollmentState state = FetchEnrollmentState();
 

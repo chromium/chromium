@@ -17,6 +17,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/time_formatting.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -53,11 +54,8 @@ constexpr base::TimeDelta kTimeout = base::Minutes(15);
 std::string CreateFilename(const base::Time& start_time,
                            uint32_t page_number,
                            const mojo_ipc::FileType file_type) {
-  base::Time::Exploded exploded;
-  start_time.LocalExplode(&exploded);
-  const std::string timestamp = base::StringPrintf(
-      "%02d%02d%02d-%02d%02d%02d", exploded.year, exploded.month,
-      exploded.day_of_month, exploded.hour, exploded.minute, exploded.second);
+  const std::string timestamp =
+      base::UnlocalizedTimeFormatWithPattern(start_time, "yyMMdd-HHmmss");
 
   std::string file_ext;
   switch (file_type) {

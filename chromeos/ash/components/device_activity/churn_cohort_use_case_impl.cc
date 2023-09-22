@@ -5,12 +5,13 @@
 #include "chromeos/ash/components/device_activity/churn_cohort_use_case_impl.h"
 
 #include "ash/constants/ash_features.h"
-#include "base/strings/stringprintf.h"
+#include "base/i18n/time_formatting.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/device_activity/fresnel_pref_names.h"
 #include "chromeos/ash/components/device_activity/fresnel_service.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/channel.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "third_party/private_membership/src/private_membership_rlwe_client.h"
 
 namespace ash::device_activity {
@@ -61,9 +62,8 @@ ChurnCohortUseCaseImpl::~ChurnCohortUseCaseImpl() = default;
 // then the Churn Cohort window identifier is `202212`
 std::string ChurnCohortUseCaseImpl::GenerateWindowIdentifier(
     base::Time ts) const {
-  base::Time::Exploded exploded;
-  ts.UTCExplode(&exploded);
-  return base::StringPrintf("%04d%02d", exploded.year, exploded.month);
+  return base::UnlocalizedTimeFormatWithPattern(ts, "yyyyMM",
+                                                icu::TimeZone::getGMT());
 }
 
 absl::optional<FresnelImportDataRequest>

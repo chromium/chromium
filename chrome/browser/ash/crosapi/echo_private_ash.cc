@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/i18n/time_formatting.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/common/url_constants.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -28,16 +30,12 @@ namespace {
 
 // Gets the Oobe timestamp on a sequence that allows file-access.
 std::string GetOobeTimestampBackground() {
-  const char kOobeTimestampFile[] = "/home/chronos/.oobe_completed";
-  std::string timestamp;
-  base::File::Info fileInfo;
-  if (base::GetFileInfo(base::FilePath(kOobeTimestampFile), &fileInfo)) {
-    base::Time::Exploded ctime;
-    fileInfo.creation_time.UTCExplode(&ctime);
-    timestamp += base::StringPrintf("%u-%u-%u", ctime.year, ctime.month,
-                                    ctime.day_of_month);
-  }
-  return timestamp;
+  base::File::Info file_info;
+  return base::GetFileInfo(base::FilePath("/home/chronos/.oobe_completed"),
+                           &file_info)
+             ? base::UnlocalizedTimeFormatWithPattern(
+                   file_info.creation_time, "y-M-d", icu::TimeZone::getGMT())
+             : std::string();
 }
 
 }  // namespace

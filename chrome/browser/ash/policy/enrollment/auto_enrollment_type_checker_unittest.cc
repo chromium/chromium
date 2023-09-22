@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/constants/ash_switches.h"
+#include "base/i18n/time_formatting.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
@@ -27,6 +28,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace {
 
@@ -36,21 +38,8 @@ constexpr char kActivateDateValue[] = "activated";
 constexpr char kMalformedEmbargoDateValue[] = "adventure_time";
 
 std::string ToUTCString(const base::Time& time) {
-  base::Time::Exploded exploded;
-  time.UTCExplode(&exploded);
-
-  const std::string time_string = base::StringPrintf(
-      "%04d-%02d-%02d", exploded.year, exploded.month, exploded.day_of_month);
-
-  base::Time reparsed_time;
-  EXPECT_TRUE(base::Time::FromUTCString(time_string.c_str(), &reparsed_time));
-  base::Time::Exploded reparsed_exploded;
-  reparsed_time.UTCExplode(&reparsed_exploded);
-  EXPECT_EQ(exploded.year, reparsed_exploded.year);
-  EXPECT_EQ(exploded.month, reparsed_exploded.month);
-  EXPECT_EQ(exploded.day_of_month, reparsed_exploded.day_of_month);
-
-  return time_string;
+  return base::UnlocalizedTimeFormatWithPattern(time, "yyyy-MM-dd",
+                                                icu::TimeZone::getGMT());
 }
 
 }  // namespace

@@ -12,16 +12,17 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/i18n/time_formatting.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace chromeos {
 namespace version_loader {
@@ -58,10 +59,9 @@ absl::optional<std::string> GetVersion(VersionFormat format) {
     return absl::nullopt;
   }
   if (format == VERSION_SHORT_WITH_DATE) {
-    base::Time::Exploded ctime;
-    base::SysInfo::GetLsbReleaseTime().UTCExplode(&ctime);
-    version += base::StringPrintf("-%02u.%02u.%02u", ctime.year % 100,
-                                  ctime.month, ctime.day_of_month);
+    version += base::UnlocalizedTimeFormatWithPattern(
+        base::SysInfo::GetLsbReleaseTime(), "-yy.MM.dd",
+        icu::TimeZone::getGMT());
   }
 
   return version;

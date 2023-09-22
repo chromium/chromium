@@ -6,11 +6,12 @@
 
 #include <memory>
 
+#include "base/i18n/time_formatting.h"
 #include "base/logging.h"
-#include "base/strings/stringprintf.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/policy/weekly_time/time_utils.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace ash::report::utils {
 
@@ -124,23 +125,18 @@ bool IsSameYearAndMonth(base::Time ts1, base::Time ts2) {
 }
 
 std::string FormatTimestampToMidnightGMTString(base::Time ts) {
-  base::Time::Exploded exploded;
-  ts.UTCExplode(&exploded);
-  return base::StringPrintf("%04d-%02d-%02d 00:00:00.000 GMT", exploded.year,
-                            exploded.month, exploded.day_of_month);
+  return base::UnlocalizedTimeFormatWithPattern(ts, "yyyy-MM-dd 00:00:00.000 z",
+                                                icu::TimeZone::getGMT());
 }
 
 std::string TimeToYYYYMMDDString(base::Time ts) {
-  base::Time::Exploded exploded;
-  ts.UTCExplode(&exploded);
-  return base::StringPrintf("%04d%02d%02d", exploded.year, exploded.month,
-                            exploded.day_of_month);
+  return base::UnlocalizedTimeFormatWithPattern(ts, "yyyyMMdd",
+                                                icu::TimeZone::getGMT());
 }
 
 std::string TimeToYYYYMMString(base::Time ts) {
-  base::Time::Exploded exploded;
-  ts.UTCExplode(&exploded);
-  return base::StringPrintf("%04d%02d", exploded.year, exploded.month);
+  return base::UnlocalizedTimeFormatWithPattern(ts, "yyyyMM",
+                                                icu::TimeZone::getGMT());
 }
 
 }  // namespace ash::report::utils

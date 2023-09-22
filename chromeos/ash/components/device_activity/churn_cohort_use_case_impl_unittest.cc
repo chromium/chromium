@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/device_activity/churn_cohort_use_case_impl.h"
 
+#include "base/i18n/time_formatting.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/device_activity/churn_active_status.h"
@@ -15,6 +16,7 @@
 #include "components/version_info/channel.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "third_party/private_membership/src/private_membership_rlwe_client.h"
 
 namespace ash::device_activity {
@@ -169,10 +171,9 @@ TEST_F(ChurnCohortUseCaseImplTest, ValidateChurnMetadataWithFirstActiveIsTrue) {
       req.import_data(0).churn_cohort_metadata().is_first_active_in_cohort());
 
   base::Time first_active_week = churn_active_status_->GetFirstActiveWeek();
-  base::Time::Exploded exploded;
-  first_active_week.UTCExplode(&exploded);
-  EXPECT_EQ(exploded.year, 2022);
-  EXPECT_EQ(exploded.month, 12);
+  EXPECT_EQ("202212",
+            base::UnlocalizedTimeFormatWithPattern(first_active_week, "yyyyMM",
+                                                   icu::TimeZone::getGMT()));
 }
 
 TEST_F(ChurnCohortUseCaseImplTest, ValidateFirstActiveStatusIsFalse) {

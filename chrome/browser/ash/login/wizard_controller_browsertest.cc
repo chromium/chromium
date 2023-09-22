@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/i18n/time_formatting.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -131,6 +132,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/common/unicode/locid.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -411,24 +413,9 @@ void QuitLoopOnAutoEnrollmentProgress(
 // value represents `days_offset` days in the future. If `days_offset` is
 // negative, the return value represents `days_offset` days in the past.
 std::string GenerateEmbargoEndDate(int days_offset) {
-  base::Time::Exploded exploded;
-  base::Time target_time = base::Time::Now() + base::Days(days_offset);
-  target_time.UTCExplode(&exploded);
-
-  std::string embargo_end_date_string = base::StringPrintf(
-      "%04d-%02d-%02d", exploded.year, exploded.month, exploded.day_of_month);
-
-  // Sanity check that base::Time::FromUTCString can read back the format used
-  // here.
-  base::Time reparsed_time;
-  EXPECT_TRUE(base::Time::FromUTCString(embargo_end_date_string.c_str(),
-                                        &reparsed_time));
-  EXPECT_EQ(target_time.ToDeltaSinceWindowsEpoch().InMicroseconds() /
-                base::Time::kMicrosecondsPerDay,
-            reparsed_time.ToDeltaSinceWindowsEpoch().InMicroseconds() /
-                base::Time::kMicrosecondsPerDay);
-
-  return embargo_end_date_string;
+  return base::UnlocalizedTimeFormatWithPattern(
+      base::Time::Now() + base::Days(days_offset), "yyyy-MM-dd",
+      icu::TimeZone::getGMT());
 }
 
 template <typename View>
