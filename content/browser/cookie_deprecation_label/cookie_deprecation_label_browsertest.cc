@@ -378,7 +378,11 @@ IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelEnabledBrowserTest,
        "Partitioned"},
       {"Header not Partitioned",
        "receive-cookie-deprecation=any-value; Secure; HttpOnly; Path=/; "
-       "SameSite=None;"}};
+       "SameSite=None;"},
+      {"Header default SameSite",
+       "receive-cookie-deprecation=any-value; HttpOnly; Path=/; Secure; "
+       "Partitioned"},
+  };
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.description);
