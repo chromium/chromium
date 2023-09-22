@@ -54,6 +54,8 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager,
   };
 
   using ScenarioCountMap = base::flat_map<std::string, size_t>;
+  using FinishedProcessingCallback =
+      TraceUploadList::FinishedProcessingCallback;
 
   // These values are used for a histogram. Do not reorder.
   enum class Metrics {
