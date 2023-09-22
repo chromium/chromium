@@ -67,3 +67,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelPowerBookmarksTest, DragManager) {
   RunTest("side_panel/bookmarks/power_bookmarks_drag_manager_test.js",
           "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(SidePanelPowerBookmarksTest, Labels) {
+  RunTest("side_panel/bookmarks/power_bookmarks_labels_test.js", "mocha.run()");
+}

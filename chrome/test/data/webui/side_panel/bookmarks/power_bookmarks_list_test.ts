@@ -570,7 +570,7 @@ suite('SidePanelPowerBookmarksListTest', () => {
 
   test('TogglesSectionVisibilityAndEmptyStates', async () => {
     const search = powerBookmarksList.$.searchField;
-    const filterChips = powerBookmarksList.$.filterChips;
+    const labels = powerBookmarksList.$.labels;
     const heading = powerBookmarksList.$.heading;
     const folderEmptyState = powerBookmarksList.$.folderEmptyState;
     const bookmarksList = powerBookmarksList.$.bookmarks;
@@ -582,7 +582,7 @@ suite('SidePanelPowerBookmarksListTest', () => {
 
     // Has bookmarks.
     assertFalse(isHidden(search));
-    assertTrue(isHidden(filterChips));
+    assertTrue(isHidden(labels));
     assertFalse(isHidden(heading));
     assertTrue(isHidden(folderEmptyState));
     assertFalse(isHidden(bookmarksList));
@@ -593,7 +593,7 @@ suite('SidePanelPowerBookmarksListTest', () => {
     await openBookmark('1');
 
     assertFalse(isHidden(search));
-    assertTrue(isHidden(filterChips));
+    assertTrue(isHidden(labels));
     assertFalse(isHidden(heading));
     assertFalse(isHidden(folderEmptyState));
     assertTrue(isHidden(bookmarksList));
@@ -610,7 +610,7 @@ suite('SidePanelPowerBookmarksListTest', () => {
     assertEquals(
         loadTimeData.getString('emptyTitleSearch'), topLevelEmptyState.heading);
     assertFalse(isHidden(search));
-    assertTrue(isHidden(filterChips));
+    assertTrue(isHidden(labels));
     assertTrue(isHidden(heading));
     assertTrue(isHidden(folderEmptyState));
     assertTrue(isHidden(bookmarksList));
@@ -634,6 +634,6 @@ suite('SidePanelPowerBookmarksListTest', () => {
     shoppingListApi.getCallbackRouterRemote().priceTrackedForBookmark(
         newProduct);
     await flushTasks();
-    assertFalse(isHidden(filterChips));
+    assertFalse(isHidden(labels));
   });
 });

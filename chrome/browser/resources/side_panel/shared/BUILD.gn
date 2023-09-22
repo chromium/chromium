@@ -12,7 +12,6 @@ build_webui("build") {
 
   web_component_files = [
     "sp_empty_state.ts",
-    "sp_filter_chip.ts",
     "sp_footer.ts",
     "sp_heading.ts",
     "sp_list_item_badge.ts",

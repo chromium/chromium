@@ -6,11 +6,11 @@ import '../strings.m.js';
 import './commerce/shopping_list.js';
 import './icons.html.js';
 import './power_bookmarks_context_menu.js';
+import './power_bookmarks_labels.js';
 import './power_bookmark_row.js';
 import './power_bookmarks_context_menu.js';
 import './power_bookmarks_edit_dialog.js';
 import '//bookmarks-side-panel.top-chrome/shared/sp_empty_state.js';
-import '//bookmarks-side-panel.top-chrome/shared/sp_filter_chip.js';
 import '//bookmarks-side-panel.top-chrome/shared/sp_footer.js';
 import '//bookmarks-side-panel.top-chrome/shared/sp_heading.js';
 import '//bookmarks-side-panel.top-chrome/shared/sp_icons.html.js';
@@ -49,6 +49,7 @@ import {BookmarksApiProxy, BookmarksApiProxyImpl} from './bookmarks_api_proxy.js
 import {PowerBookmarksContextMenuElement} from './power_bookmarks_context_menu.js';
 import {PowerBookmarksDragManager} from './power_bookmarks_drag_manager.js';
 import {PowerBookmarksEditDialogElement} from './power_bookmarks_edit_dialog.js';
+import {PowerBookmarksLabelsElement} from './power_bookmarks_labels.js';
 import {getTemplate} from './power_bookmarks_list.html.js';
 import {editingDisabledByPolicy, Label, PowerBookmarksService} from './power_bookmarks_service.js';
 
@@ -90,13 +91,13 @@ export interface PowerBookmarksListElement {
     folderEmptyState: SpEmptyStateElement,
     heading: HTMLElement,
     footer: HTMLElement,
-    filterChips: HTMLElement,
+    labels: PowerBookmarksLabelsElement,
   };
 }
 
 interface SectionVisibility {
   search?: boolean;
-  filterChips?: boolean;
+  labels?: boolean;
   heading?: boolean;
   filterHeadings?: boolean;
   folderEmptyState?: boolean;
@@ -136,7 +137,6 @@ export class PowerBookmarksListElement extends PolymerElement {
       labels_: {
         type: Array,
         value: () => [],
-        computed: 'computePriceTrackingLabel_(trackedProductInfos_.*)',
       },
 
       activeSortIndex_: {
@@ -551,26 +551,6 @@ export class PowerBookmarksListElement extends PolymerElement {
 
   private onBookmarkPriceUntracked_(product: BookmarkProductInfo) {
     this.set(`trackedProductInfos_.${product.bookmarkId.toString()}`, null);
-  }
-
-  // TODO(emshack): Once there is more than one bookmark power, remove this
-  // logic and always display the price tracking label button.
-  private computePriceTrackingLabel_() {
-    const showLabel =
-        Object.keys(this.trackedProductInfos_)
-            .some(key => this.get(`trackedProductInfos_.${key}`) !== null);
-    if (showLabel) {
-      // Reuse the current price tracking label if one exists, to maintain its
-      // active state.
-      const currentLabel = this.get('labels_.0');
-      return [currentLabel ? currentLabel : {
-        label: loadTimeData.getString('priceTrackingLabel'),
-        icon: 'bookmarks:price-tracking',
-        active: false,
-      }];
-    } else {
-      return [];
-    }
   }
 
   private bookmarkIsShowing_(bookmark: chrome.bookmarks.BookmarkTreeNode):
@@ -1026,25 +1006,10 @@ export class PowerBookmarksListElement extends PolymerElement {
   }
 
   /**
-   * Returns the appropriate filter button icon depending on whether the given
-   * label is active.
-   */
-  private getLabelIcon_(label: Label): string {
-    if (label.active) {
-      return 'bookmarks:check';
-    } else {
-      return label.icon;
-    }
-  }
-
-  /**
    * Toggles the given label between active and inactive.
    */
-  private onLabelClicked_(event: DomRepeatEvent<Label>) {
-    event.preventDefault();
-    event.stopPropagation();
-    const label = event.model.item;
-    this.set(`labels_.${event.model.index}.active`, !label.active);
+  private onLabelsChanged_() {
+    this.labels_ = [...this.$.labels.labels];
   }
 
   /**
@@ -1310,7 +1275,7 @@ export class PowerBookmarksListElement extends PolymerElement {
 
     return {
       search: true,
-      filterChips: this.labels_.length > 0,
+      labels: this.labels_.length > 0,
       heading: !hasSomeActiveFilter && (hasActiveFolder || hasShownBookmarks),
       filterHeadings: hasSomeActiveFilter,
       folderEmptyState:

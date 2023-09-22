@@ -24,6 +24,7 @@ build_webui("build") {
     "power_bookmark_row.ts",
     "power_bookmarks_context_menu.ts",
     "power_bookmarks_edit_dialog.ts",
+    "power_bookmarks_labels.ts",
     "power_bookmarks_list.ts",
   ]
 

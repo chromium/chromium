@@ -278,17 +278,12 @@
       disabled="[[editing_]]" hidden="[[!sectionVisibility_.search]]"
       on-blur="onSearchBlurred_">
   </cr-toolbar-search-field>
-  <div class="label-row" hidden="[[!sectionVisibility_.filterChips]]"
-      header-hidden$="[[!sectionVisibility_.heading]]" id="filterChips">
-    <template is="dom-repeat" items="[[labels_]]">
-      <sp-filter-chip
-          selected="[[item.active]]"
-          disabled="[[editing_]]"
-          on-click="onLabelClicked_">
-        <iron-icon icon="[[getLabelIcon_(item, item.active)]]"></iron-icon>
-        [[item.label]]
-      </sp-filter-chip>
-    </template>
+  <div class="label-row" hidden="[[!sectionVisibility_.labels]]"
+      header-hidden$="[[!sectionVisibility_.heading]]" id="labelsContainer">
+    <power-bookmarks-labels id="labels" disabled="[[editing_]]"
+        tracked-product-infos="[[trackedProductInfos_]]"
+        on-labels-changed="onLabelsChanged_">
+    </power-bookmarks-labels>
   </div>
 
   <div class="sp-card card-top" hidden$="[[!sectionVisibility_.heading]]">
