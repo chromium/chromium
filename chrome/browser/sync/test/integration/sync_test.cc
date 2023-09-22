@@ -670,8 +670,12 @@ void SyncTest::SetupSyncInternal(SetupSyncMode setup_mode) {
     }
 
     // It's important to wait for each client before setting up the next one,
-    // otherwise multi-client tests get flaky.
-    // TODO(crbug.com/956043): It would be nice to figure out why.
+    // otherwise multi-client tests get flaky. This may happen in some tests
+    // which have local data before sync is enabled. In such tests it's
+    // important (and this is closer to real behavior) that the initial merge is
+    // happening sequentially in two clients, otherwise both clients can upload
+    // their data simultaneously, e.g. resulting in duplicates (most prominent
+    // for bookmarks).
     switch (setup_mode) {
       case NO_WAITING:
         break;
