@@ -30,11 +30,16 @@ BASE_FEATURE(kSmartSuggestionForLargeDownloads,
 BASE_FEATURE(kRefreshExpirationDate,
              "RefreshExpirationDate",
              base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 BASE_FEATURE(kDownloadsMigrateToJobsAPI,
              "DownloadsMigrateToJobsAPI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
 #endif
+);
 
 BASE_FEATURE(kUseInProgressDownloadManagerForDownloadService,
              "UseInProgressDownloadManagerForDownloadService",

@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
@@ -15,6 +16,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/task/task_scheduler.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
@@ -44,6 +46,12 @@ const base::TimeDelta kAutoResumptionExpireInterval = base::Days(7);
 // The task type to use for scheduling a task.
 const download::DownloadTaskType kResumptionTaskType =
     download::DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_TASK;
+
+const download::DownloadTaskType kUnmeteredDownloadsTaskType =
+    download::DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_UNMETERED_TASK;
+
+const download::DownloadTaskType kAnyNetworkDownloadsTaskType =
+    download::DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_ANY_NETWORK_TASK;
 
 // The window start time after which the system should fire the task.
 const int64_t kWindowStartTimeSeconds = 0;
@@ -226,13 +234,20 @@ void AutoResumptionHandler::RescheduleTaskIfNecessary() {
 
   recompute_task_params_scheduled_ = false;
 
+  if (base::FeatureList::IsEnabled(features::kDownloadsMigrateToJobsAPI)) {
+    RescheduleTaskIfNecessaryForTaskType(kUnmeteredDownloadsTaskType);
+    RescheduleTaskIfNecessaryForTaskType(kAnyNetworkDownloadsTaskType);
+    return;
+  }
+
+  DownloadTaskType task_type = kResumptionTaskType;
+
   bool has_resumable_downloads = false;
   bool has_actionable_downloads = false;
   bool can_download_on_metered = false;
 
-  for (auto iter = resumable_downloads_.begin();
-       iter != resumable_downloads_.end(); ++iter) {
-    download::DownloadItem* download = iter->second;
+  for (auto& pair : resumable_downloads_) {
+    download::DownloadItem* download = pair.second;
     if (!IsAutoResumableDownload(download))
       continue;
 
@@ -242,11 +257,11 @@ void AutoResumptionHandler::RescheduleTaskIfNecessary() {
   }
 
   if (!has_actionable_downloads) {
-    task_manager_->NotifyTaskFinished(kResumptionTaskType, false);
+    task_manager_->NotifyTaskFinished(task_type, false);
   }
 
   if (!has_resumable_downloads) {
-    task_manager_->UnscheduleTask(kResumptionTaskType);
+    task_manager_->UnscheduleTask(task_type);
     return;
   }
 
@@ -254,7 +269,53 @@ void AutoResumptionHandler::RescheduleTaskIfNecessary() {
   task_params.require_unmetered_network = !can_download_on_metered;
   task_params.window_start_time_seconds = kWindowStartTimeSeconds;
   task_params.window_end_time_seconds = kWindowEndTimeSeconds;
-  task_manager_->ScheduleTask(kResumptionTaskType, task_params);
+  task_manager_->ScheduleTask(task_type, task_params);
+}
+
+// Go through all the downloads. Filter out only the ones having matching
+// network type. Then the logic is same for both tasks.
+// 1- If no download can resume right now, finish the task and schedule later.
+// 2- If no download is in a resumable state, we dont need a task. Unschedule if
+// there is any.
+// At any point either a task is running or is scheduled but not both, which
+// is handled by TaskManager.
+void AutoResumptionHandler::RescheduleTaskIfNecessaryForTaskType(
+    DownloadTaskType task_type) {
+  bool has_resumable_downloads = false;
+  bool has_actionable_downloads = false;
+
+  bool requires_unmetered = task_type == kUnmeteredDownloadsTaskType;
+  for (auto& pair : resumable_downloads_) {
+    download::DownloadItem* download = pair.second;
+    // Filter out downloads that don't match the network type.
+    if (download->AllowMetered() == requires_unmetered) {
+      continue;
+    }
+
+    if (!IsAutoResumableDownload(download)) {
+      continue;
+    }
+
+    has_resumable_downloads = true;
+    has_actionable_downloads |= ShouldResumeNow(download);
+  }
+
+  if (!has_actionable_downloads) {
+    // We finish the task without specifying system reschedule since we are
+    // scheduling another task below.
+    task_manager_->NotifyTaskFinished(task_type, /*needs_reschedule=*/false);
+  }
+
+  if (!has_resumable_downloads) {
+    task_manager_->UnscheduleTask(task_type);
+    return;
+  }
+
+  download::TaskManager::TaskParams task_params;
+  task_params.require_unmetered_network = requires_unmetered;
+  task_params.window_start_time_seconds = kWindowStartTimeSeconds;
+  task_params.window_end_time_seconds = kWindowEndTimeSeconds;
+  task_manager_->ScheduleTask(task_type, task_params);
 }
 
 void AutoResumptionHandler::ResumePendingDownloads() {

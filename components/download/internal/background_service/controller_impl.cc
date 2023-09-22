@@ -444,6 +444,8 @@ void ControllerImpl::HandleTaskFinished(DownloadTaskType task_type,
       ScheduleCleanupTask();
       break;
     case DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_TASK:
+    case DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_UNMETERED_TASK:
+    case DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_ANY_NETWORK_TASK:
     case DownloadTaskType::DOWNLOAD_LATER_TASK:
       NOTREACHED();
   }

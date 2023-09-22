@@ -95,6 +95,7 @@ class COMPONENTS_DOWNLOAD_EXPORT AutoResumptionHandler
 
   void RecomputeTaskParams();
   void RescheduleTaskIfNecessary();
+  void RescheduleTaskIfNecessaryForTaskType(DownloadTaskType task_type);
   void ResumeDownloadImmediately();
   bool ShouldResumeNow(download::DownloadItem* download) const;
   bool IsAutoResumableDownload(download::DownloadItem* item) const;

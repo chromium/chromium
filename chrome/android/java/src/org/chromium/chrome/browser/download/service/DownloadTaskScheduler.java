@@ -64,6 +64,10 @@ public class DownloadTaskScheduler {
                 return TaskIds.DOWNLOAD_CLEANUP_JOB_ID;
             case DownloadTaskType.DOWNLOAD_AUTO_RESUMPTION_TASK:
                 return TaskIds.DOWNLOAD_AUTO_RESUMPTION_JOB_ID;
+            case DownloadTaskType.DOWNLOAD_AUTO_RESUMPTION_UNMETERED_TASK:
+                return TaskIds.DOWNLOAD_AUTO_RESUMPTION_UNMETERED_JOB_ID;
+            case DownloadTaskType.DOWNLOAD_AUTO_RESUMPTION_ANY_NETWORK_TASK:
+                return TaskIds.DOWNLOAD_AUTO_RESUMPTION_ANY_NETWORK_JOB_ID;
             case DownloadTaskType.DOWNLOAD_LATER_TASK:
                 return TaskIds.DOWNLOAD_LATER_JOB_ID;
         }
@@ -78,6 +82,8 @@ public class DownloadTaskScheduler {
                 return TaskInfo.NetworkType.NONE;
             case DownloadTaskType.DOWNLOAD_TASK: // intentional fall-through
             case DownloadTaskType.DOWNLOAD_AUTO_RESUMPTION_TASK:
+            case DownloadTaskType.DOWNLOAD_AUTO_RESUMPTION_UNMETERED_TASK:
+            case DownloadTaskType.DOWNLOAD_AUTO_RESUMPTION_ANY_NETWORK_TASK:
                 return requiresUnmeteredNetwork ? TaskInfo.NetworkType.UNMETERED
                                                 : TaskInfo.NetworkType.ANY;
             case DownloadTaskType.DOWNLOAD_LATER_TASK:

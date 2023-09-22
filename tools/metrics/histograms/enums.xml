@@ -10458,6 +10458,8 @@ Called by update_autofill_enums.py.-->
   <int value="25" label="Download later task"/>
   <int value="27" label="WebView Component Updater schedule task"/>
   <int value="28" label="Attribution Provider flush task"/>
+  <int value="29" label="Download auto-resumption unmetered task"/>
+  <int value="30" label="Download auto-resumption any network task"/>
 </enum>
 
 <enum name="BackgroundTracingState">

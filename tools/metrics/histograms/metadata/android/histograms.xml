@@ -148,6 +148,10 @@ chromium-metrics-reviews@google.com.
   <variant name="DeprecatedExploreSitesRefresh"
       summary="DeprecatedExploreSitesRefresh"/>
   <variant name="DownloadAutoResumption" summary="DownloadAutoResumption"/>
+  <variant name="DownloadAutoResumptionAnyNetwork"
+      summary="DownloadAutoResumptionAnyNetwork"/>
+  <variant name="DownloadAutoResumptionUnmetered"
+      summary="DownloadAutoResumptionUnmetered"/>
   <variant name="DownloadCleanup" summary="DownloadCleanup"/>
   <variant name="DownloadLater" summary="DownloadLater"/>
   <variant name="DownloadService" summary="DownloadService"/>

@@ -21,6 +21,12 @@ enum class DownloadTaskType {
 
   // Task to start user scheduled downloads.
   DOWNLOAD_LATER_TASK = 3,
+
+  // Task to invoke the download auto-resumption handler.
+  DOWNLOAD_AUTO_RESUMPTION_UNMETERED_TASK = 4,
+
+  // Task to invoke the download auto-resumption handler.
+  DOWNLOAD_AUTO_RESUMPTION_ANY_NETWORK_TASK = 5,
 };
 
 }  // namespace download
