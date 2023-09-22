@@ -196,9 +196,9 @@ ParsingContext::ParseFeatureName(const String& feature_name) {
                       WebFeature::kWindowManagementPermissionPolicyParsed);
   }
   const String& effective_feature_name =
-      (feature_name == "window-management" &&
-       RuntimeEnabledFeatures::WindowManagementPermissionAliasEnabled())
-          ? "window-placement"
+      (feature_name == "window-placement" &&
+       RuntimeEnabledFeatures::WindowPlacementPermissionAliasEnabled())
+          ? "window-management"
           : feature_name;
   if (!feature_names_.Contains(effective_feature_name)) {
     logger_.Warn("Unrecognized feature: '" + effective_feature_name + "'.");

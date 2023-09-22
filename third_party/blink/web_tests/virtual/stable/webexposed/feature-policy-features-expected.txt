@@ -55,6 +55,6 @@ serial
 sync-xhr
 unload
 usb
-window-placement
+window-management
 xr-spatial-tracking
 

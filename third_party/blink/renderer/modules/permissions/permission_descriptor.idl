@@ -34,8 +34,8 @@ enum PermissionName {
     "periodic-background-sync",
     "system-wake-lock",
     "storage-access",
-    // Alias for 'window-placement' (crbug.com/1328581).
     "window-management",
+    // Alias for 'window-management' (crbug.com/1328581).
     "window-placement",
     "local-fonts",
     "top-level-storage-access",

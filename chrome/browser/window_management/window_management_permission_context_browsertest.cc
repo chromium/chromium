@@ -63,8 +63,7 @@ class WindowManagementPermissionContextTest
  public:
   WindowManagementPermissionContextTest() {
     scoped_feature_list_.InitWithFeatureState(
-        permissions::features::kWindowManagementPermissionAlias,
-        AliasEnabled());
+        permissions::features::kWindowPlacementPermissionAlias, AliasEnabled());
   }
   void SetUpOnMainThread() override {
     // Support multiple sites on the test server.
@@ -107,7 +106,7 @@ class WindowManagementPermissionContextTest
   bool UseAlias() const { return std::get<1>(GetParam()); }
   bool ShouldError() const { return UseAlias() && !AliasEnabled(); }
   const std::string AliasToTest() const {
-    return UseAlias() ? kNewPermissionName : kOldPermissionName;
+    return UseAlias() ? kOldPermissionName : kNewPermissionName;
   }
   const std::string GetScreensScript() const {
     return base::ReplaceStringPlaceholders(kGetScreens, {AliasToTest()},

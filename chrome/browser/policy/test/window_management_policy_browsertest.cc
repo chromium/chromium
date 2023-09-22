@@ -68,8 +68,7 @@ class PolicyTestWindowManagement
  public:
   PolicyTestWindowManagement() {
     scoped_feature_list_.InitWithFeatureState(
-        permissions::features::kWindowManagementPermissionAlias,
-        AliasEnabled());
+        permissions::features::kWindowPlacementPermissionAlias, AliasEnabled());
   }
 
  protected:
@@ -80,12 +79,12 @@ class PolicyTestWindowManagement
   std::string GetScreensScript() const {
     return base::ReplaceStringPlaceholders(
         kGetScreensTemplate,
-        {UseAlias() ? kNewPermissionName : kOldPermissionName}, nullptr);
+        {UseAlias() ? kOldPermissionName : kNewPermissionName}, nullptr);
   }
   std::string GetCheckPermissionScript() const {
     return base::ReplaceStringPlaceholders(
         kCheckPermissionTemplate,
-        {UseAlias() ? kNewPermissionName : kOldPermissionName}, nullptr);
+        {UseAlias() ? kOldPermissionName : kNewPermissionName}, nullptr);
   }
 
  private:

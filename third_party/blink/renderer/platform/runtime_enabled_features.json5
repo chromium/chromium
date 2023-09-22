@@ -4363,16 +4363,16 @@
     {
       name: "WindowDefaultStatus",
     },
-    // Allows use of `window-management` as an alias for `window-placement`
-    // permission. See crbug.com/1328581
-    {
-      name: "WindowManagementPermissionAlias",
-      status: "stable",
-    },
     // Allows sites to request fullscreen when the set of screens change.
     {
       name: "WindowPlacementFullscreenOnScreensChange",
       status: "experimental",
+    },
+    // Allows use of `window-placement` as an alias for `window-management`
+    // permission. See crbug.com/1328581
+    {
+      name: "WindowPlacementPermissionAlias",
+      status: "stable",
     },
     // Flag guard for change to XML parser to merge adjacent CDATA sections.
     // See https://crrev.com/c/4790343.

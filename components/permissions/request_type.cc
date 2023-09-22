@@ -399,10 +399,10 @@ const char* PermissionKeyForRequestType(permissions::RequestType request_type) {
 #if !BUILDFLAG(IS_ANDROID)
     case permissions::RequestType::kWindowManagement:
       if (base::FeatureList::IsEnabled(
-              features::kWindowManagementPermissionAlias)) {
-        return "window_management";
-      } else {
+              features::kWindowPlacementPermissionAlias)) {
         return "window_placement";
+      } else {
+        return "window_management";
       }
 #endif
   }

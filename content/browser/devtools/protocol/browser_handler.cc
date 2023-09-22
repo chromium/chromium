@@ -171,11 +171,11 @@ Response PermissionDescriptorToPermissionType(
     *permission_type = PermissionType::WAKE_LOCK_SYSTEM;
   } else if (name == "nfc") {
     *permission_type = PermissionType::NFC;
-  } else if (name == "window-management" &&
-             base::FeatureList::IsEnabled(
-                 blink::features::kWindowManagementPermissionAlias)) {
+  } else if (name == "window-management") {
     *permission_type = PermissionType::WINDOW_MANAGEMENT;
-  } else if (name == "window-placement") {
+  } else if (name == "window-placement" &&
+             base::FeatureList::IsEnabled(
+                 blink::features::kWindowPlacementPermissionAlias)) {
     *permission_type = PermissionType::WINDOW_MANAGEMENT;
   } else if (name == "local-fonts") {
     *permission_type = PermissionType::LOCAL_FONTS;

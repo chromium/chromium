@@ -115,10 +115,10 @@ String PermissionNameToString(PermissionName name) {
     case PermissionName::STORAGE_ACCESS:
       return "storage-access";
     case PermissionName::WINDOW_MANAGEMENT:
-      if (RuntimeEnabledFeatures::WindowManagementPermissionAliasEnabled()) {
-        return "window-management";
+      if (RuntimeEnabledFeatures::WindowPlacementPermissionAliasEnabled()) {
+        return "window_placement";
       }
-      return "window_placement";
+      return "window-management";
     case PermissionName::LOCAL_FONTS:
       return "local_fonts";
     case PermissionName::DISPLAY_CAPTURE:
@@ -355,14 +355,14 @@ PermissionDescriptorPtr ParsePermissionDescriptor(
   if (name == V8PermissionName::Enum::kWindowManagement) {
     UseCounter::Count(CurrentExecutionContext(script_state->GetIsolate()),
                       WebFeature::kWindowManagementPermissionDescriptorUsed);
-    if (!RuntimeEnabledFeatures::WindowManagementPermissionAliasEnabled()) {
-      exception_state.ThrowTypeError(
-          "The Window Management alias is not enabled.");
-      return nullptr;
-    }
     return CreatePermissionDescriptor(PermissionName::WINDOW_MANAGEMENT);
   }
   if (name == V8PermissionName::Enum::kWindowPlacement) {
+    if (!RuntimeEnabledFeatures::WindowPlacementPermissionAliasEnabled()) {
+      exception_state.ThrowTypeError(
+          "The Window Placement alias is not enabled.");
+      return nullptr;
+    }
     Deprecation::CountDeprecation(
         CurrentExecutionContext(script_state->GetIsolate()),
         WebFeature::kWindowPlacementPermissionDescriptorUsed);

@@ -425,8 +425,8 @@
     },
     {
       name: "WindowManagement",
-      // Parser also accepts "window-management" alias (crbug.com/1328581).
-      permissions_policy_name: "window-placement",
+      // Parser also accepts "window-placement" alias (crbug.com/1328581).
+      permissions_policy_name: "window-management",
     },
   ],
 }
