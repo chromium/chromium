@@ -29,7 +29,14 @@ class BASE_EXPORT ScopedTempFile {
   // Returns true on success or if the file was never created.
   [[nodiscard]] bool Delete();
 
+  // Attempts to delete the file.  The managed path is reset regardless of
+  // if the deletion was successful.
+  void Reset();
+
   [[nodiscard]] const base::FilePath& path() const { return path_; }
+
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  operator bool() const { return !path_.empty(); }
 
  private:
   FilePath path_;

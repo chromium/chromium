@@ -20,6 +20,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_file.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/logging.h"
@@ -238,39 +239,22 @@ void ForwardNotificationOperationOnUiThread(
                      action_index, reply, by_user));
 }
 
-class ResourceFile {
- public:
-  explicit ResourceFile(const base::FilePath& file_path)
-      : file_path_(file_path) {
-    DCHECK(!file_path.empty());
-    DCHECK(file_path.IsAbsolute());
-  }
-  ResourceFile(const ResourceFile&) = delete;
-  ResourceFile& operator=(const ResourceFile&) = delete;
-  ~ResourceFile() { base::DeleteFile(file_path_); }
-
-  const base::FilePath& file_path() const { return file_path_; }
-
- private:
-  const base::FilePath file_path_;
-};
-
-// Writes |data| to a new temporary file and returns the ResourceFile
-// that holds it.
-std::unique_ptr<ResourceFile> WriteDataToTmpFile(
+// Writes `data` to a new temporary file and returns the temporary file
+base::ScopedTempFile WriteDataToTmpFile(
     const scoped_refptr<base::RefCountedMemory>& data) {
-  int data_len = data->size();
-  if (data_len == 0)
-    return nullptr;
-  base::FilePath file_path;
-  if (!base::CreateTemporaryFile(&file_path))
-    return nullptr;
-
-  auto resource_file = std::make_unique<ResourceFile>(file_path);
-  if (!base::WriteFile(file_path, *data)) {
-    resource_file.reset();
+  if (data->size() == 0) {
+    return {};
   }
-  return resource_file;
+
+  base::ScopedTempFile file;
+  if (!file.Create()) {
+    return file;
+  }
+
+  if (!base::WriteFile(file.path(), *data)) {
+    return {};
+  }
+  return file;
 }
 
 bool CheckNotificationsNameHasOwnerOrIsActivatable(dbus::Bus* bus) {
@@ -478,7 +462,7 @@ class NotificationPlatformBridgeLinuxImpl
     // Temporary resource files associated with the notification that
     // should be cleaned up when the notification is closed or on
     // shutdown.
-    std::vector<std::unique_ptr<ResourceFile>> resource_files;
+    std::vector<base::ScopedTempFile> resource_files;
   };
 
   ~NotificationPlatformBridgeLinuxImpl() override {
@@ -603,7 +587,7 @@ class NotificationPlatformBridgeLinuxImpl
       bus_->ShutdownAndBlock();
     bus_ = nullptr;
     product_logo_png_bytes_ = nullptr;
-    product_logo_file_.reset();
+    product_logo_file_.Reset();
     product_logo_file_watcher_.reset();
     notifications_.clear();
     clean_up_on_task_runner_called_ = true;
@@ -642,9 +626,9 @@ class NotificationPlatformBridgeLinuxImpl
     if (!product_logo_file_) {
       RewriteProductLogoFile();
     }
-    writer.AppendString(
-        product_logo_file_ ? "file://" + product_logo_file_->file_path().value()
-                           : "");
+    writer.AppendString(product_logo_file_
+                            ? "file://" + product_logo_file_.path().value()
+                            : "");
 
     writer.AppendString(
         base::UTF16ToUTF8(CreateNotificationTitle(*notification)));
@@ -717,11 +701,11 @@ class NotificationPlatformBridgeLinuxImpl
       } else if (notification->type() ==
                      message_center::NOTIFICATION_TYPE_IMAGE &&
                  base::Contains(capabilities_, kCapabilityBodyImages)) {
-        std::unique_ptr<ResourceFile> image_file = WriteDataToTmpFile(
+        auto image_file = WriteDataToTmpFile(
             ResizeImageToFdoMaxSize(notification->image()).As1xPNGBytes());
         if (image_file) {
           body << "<img src=\""
-               << "file://" + base::EscapePath(image_file->file_path().value())
+               << "file://" + base::EscapePath(image_file.path().value())
                << "\" alt=\"\"/>\n";
           data->resource_files.push_back(std::move(image_file));
         }
@@ -816,14 +800,14 @@ class NotificationPlatformBridgeLinuxImpl
     desktop_entry_writer.AppendVariantOfString(desktop_file.value());
     hints_writer.CloseContainer(&desktop_entry_writer);
 
-    std::unique_ptr<ResourceFile> icon_file = WriteDataToTmpFile(
+    auto icon_file = WriteDataToTmpFile(
         gfx::Image(notification->icon().Rasterize(nullptr)).As1xPNGBytes());
     if (icon_file) {
       for (const std::string& hint_name : {"image_path", "image-path"}) {
         dbus::MessageWriter image_path_writer(nullptr);
         hints_writer.OpenDictEntry(&image_path_writer);
         image_path_writer.AppendString(hint_name);
-        image_path_writer.AppendVariantOfString(icon_file->file_path().value());
+        image_path_writer.AppendVariantOfString(icon_file.path().value());
         hints_writer.CloseContainer(&image_path_writer);
       }
       data->resource_files.push_back(std::move(icon_file));
@@ -1089,26 +1073,27 @@ class NotificationPlatformBridgeLinuxImpl
     DCHECK(!error);
     // This callback runs whenever the file is deleted or modified.
     // In either case, we want to rewrite the file.
-    product_logo_file_.reset();
+    product_logo_file_.Reset();
     product_logo_file_watcher_.reset();
   }
 
   void RewriteProductLogoFile() {
     product_logo_file_watcher_.reset();
     product_logo_file_ = WriteDataToTmpFile(product_logo_png_bytes_);
-    if (!product_logo_file_)
+    if (!product_logo_file_) {
       return;
+    }
     // Temporary files may periodically get cleaned up on Linux.
     // Watch for file deletion and rewrite the file in case we have a
     // long-running Chrome process.
     product_logo_file_watcher_ = std::make_unique<base::FilePathWatcher>();
     if (!product_logo_file_watcher_->Watch(
-            product_logo_file_->file_path(),
+            product_logo_file_.path(),
             base::FilePathWatcher::Type::kNonRecursive,
             base::BindRepeating(
                 &NotificationPlatformBridgeLinuxImpl::OnProductLogoFileChanged,
                 this))) {
-      product_logo_file_.reset();
+      product_logo_file_.Reset();
       product_logo_file_watcher_.reset();
     }
   }
@@ -1156,7 +1141,7 @@ class NotificationPlatformBridgeLinuxImpl
   bool should_cleanup_on_signal_connected_ = false;
 
   scoped_refptr<base::RefCountedMemory> product_logo_png_bytes_;
-  std::unique_ptr<ResourceFile> product_logo_file_;
+  base::ScopedTempFile product_logo_file_;
   std::unique_ptr<base::FilePathWatcher> product_logo_file_watcher_;
 
   // A std::set<std::unique_ptr<T>> doesn't work well because

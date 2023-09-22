@@ -64,4 +64,26 @@ TEST(ScopedTempFile, Destruct) {
   EXPECT_FALSE(PathExists(file));
 }
 
+TEST(ScopedTempFile, Reset) {
+  ScopedTempFile temp_file;
+  EXPECT_TRUE(temp_file.path().empty());
+
+  EXPECT_TRUE(temp_file.Create());
+  EXPECT_TRUE(PathExists(temp_file.path()));
+
+  temp_file.Reset();
+  EXPECT_FALSE(PathExists(temp_file.path()));
+}
+
+TEST(ScopedTempFile, OperatorBool) {
+  ScopedTempFile temp_file;
+  EXPECT_FALSE(temp_file);
+
+  EXPECT_TRUE(temp_file.Create());
+  EXPECT_TRUE(temp_file);
+
+  EXPECT_TRUE(temp_file.Delete());
+  EXPECT_FALSE(temp_file);
+}
+
 }  // namespace base

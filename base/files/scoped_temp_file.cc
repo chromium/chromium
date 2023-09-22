@@ -50,4 +50,11 @@ bool ScopedTempFile::Delete() {
   return false;
 }
 
+void ScopedTempFile::Reset() {
+  if (!Delete()) {
+    DLOG(WARNING) << "Could not delete temp dir in Reset().";
+  }
+  path_.clear();
+}
+
 }  // namespace base
