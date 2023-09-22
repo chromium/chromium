@@ -507,6 +507,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   FRIEND_TEST_ALL_PREFIXES(
       ShellSurfaceTest,
       LocalSurfaceIdUpdatedOnHostWindowOriginChangedWithScaleFactor);
+  FRIEND_TEST_ALL_PREFIXES(ShellSurfaceTest, SubpixelPositionOffset);
 
   // Called on widget creation to initialize its window state.
   // TODO(reveman): Remove virtual functions below to avoid FBC problem.

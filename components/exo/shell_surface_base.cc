@@ -1824,13 +1824,36 @@ void ShellSurfaceBase::UpdateHostWindowOrigin() {
   gfx::Point origin = GetClientViewBounds().origin();
 
   origin += GetSurfaceOrigin().OffsetFromOrigin();
+  // As `origin` is in DP here, it eventually needs to be converted to pixels.
+  // We need to make subpixel adjustment so the `origin` in pixel coordinates
+  // will align exactly to a pixel boundary. Here, we calculate the closest
+  // pixel boundary by converting to pixels and rounding the original DP value.
+  // Note that this shouldn't take `scaled_root_origin` into account as its
+  // original value is in pixels and it needs a different type of subpixel
+  // adjustment (i.e. preserving the original pixel distance between two
+  // points).
+  const gfx::Vector2dF surface_origin_subpixel_offset =
+      ScaleVector2d(ToRoundedVector2d(ScaleVector2d(origin.OffsetFromOrigin(),
+                                                    GetScaleFactor())),
+                    1.f / GetScaleFactor()) -
+      origin.OffsetFromOrigin();
+
   const gfx::Vector2dF root_surface_origin_dp = ScaleVector2d(
       root_surface_origin_pixel().OffsetFromOrigin(), 1.f / GetScaleFactor());
   origin -= ToFlooredVector2d(root_surface_origin_dp);
-  // Set subpixel offset to the diff between the dp scaled origin in float and
-  // its floored value to adjust root surface origin to be at the same position.
+  // Subpixel offset used to adjust the offset of `root_origin` so it will
+  // exactly match the original value in pixels.
+  const gfx::Vector2dF root_surface_origin_subpixel_offset =
+      ToFlooredVector2d(root_surface_origin_dp) - root_surface_origin_dp;
+
+  // Two offsets can be simply added together because
+  // `surface_origin_subpixel_offset` is used for shifting the origin on a pixel
+  // boundary while `root_surface_origin_subpixel_offset` just ensures that the
+  // root surface origin stays the same value in pixel while scrolling when a
+  // sub surface moves (e.g. by scrolling) but the actual value it's preserving
+  // doesn't matter.
   host_window()->layer()->SetSubpixelPositionOffset(
-      ToFlooredVector2d(root_surface_origin_dp) - root_surface_origin_dp);
+      surface_origin_subpixel_offset + root_surface_origin_subpixel_offset);
 
   if (origin != host_window()->bounds().origin()) {
     AllocateLocalSurfaceId();
