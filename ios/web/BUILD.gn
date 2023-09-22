@@ -393,7 +393,6 @@ source_set("ios_web_web_state_unittests") {
     "//ios/web/test:test_support",
     "//ios/web/test/fakes",
     "//ios/web/web_state",
-    "//ios/web/web_state:page_viewport_state",
     "//ios/web/web_state:policy_decision_state_tracker",
     "//ios/web/web_state:test_util",
     "//ios/web/web_state:web_state_impl_header",
@@ -408,7 +407,6 @@ source_set("ios_web_web_state_unittests") {
   ]
 
   sources = [
-    "web_state/page_viewport_state_unittest.mm",
     "web_state/policy_decision_state_tracker_unittest.mm",
     "web_state/web_state_context_menu_bridge_unittest.mm",
     "web_state/web_state_delegate_bridge_unittest.mm",

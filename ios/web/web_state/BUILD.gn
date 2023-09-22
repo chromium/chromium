@@ -73,18 +73,6 @@ source_set("web_state_impl_header") {
   sources = [ "web_state_impl.h" ]
 }
 
-source_set("page_viewport_state") {
-  deps = [
-    "//base",
-    "//net",
-  ]
-
-  sources = [
-    "page_viewport_state.h",
-    "page_viewport_state.mm",
-  ]
-}
-
 source_set("web_view_internal_creation_util") {
   deps = [
     "//base",

@@ -51,7 +51,6 @@
 #import "ios/web/security/crw_ssl_status_updater.h"
 #import "ios/web/text_fragments/text_fragments_manager_impl.h"
 #import "ios/web/web_state/crw_web_view.h"
-#import "ios/web/web_state/page_viewport_state.h"
 #import "ios/web/web_state/ui/crw_context_menu_controller.h"
 #import "ios/web/web_state/ui/crw_web_controller_container_view.h"
 #import "ios/web/web_state/ui/crw_web_request_controller.h"
@@ -202,11 +201,6 @@ char const kFullScreenStateHistogram[] = "IOS.Fullscreen.State";
 // may be called multiple times and thus must be idempotent.
 - (void)loadCompleteWithSuccess:(BOOL)loadSuccess
                      forContext:(web::NavigationContextImpl*)context;
-// Extracts the current page's viewport tag information and calls `completion`.
-// If the page has changed before the viewport tag is successfully extracted,
-// `completion` is called with nullptr.
-typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
-- (void)extractViewportTagWithCompletion:(ViewportStateCompletion)completion;
 // Calls the zoom-preparation UIScrollViewDelegate callbacks on the web view.
 // This is called before `-applyWebViewScrollZoomScaleFromScrollState:`.
 - (void)prepareToApplyWebViewScrollZoomScale;
@@ -1281,31 +1275,6 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 }
 
 #pragma mark - Page State
-
-- (void)extractViewportTagWithCompletion:(ViewportStateCompletion)completion {
-  DCHECK(completion);
-  web::NavigationItem* currentItem = self.currentNavItem;
-  if (!currentItem) {
-    completion(nullptr);
-    return;
-  }
-  NSString* const kViewportContentQuery =
-      @"var viewport = document.querySelector('meta[name=\"viewport\"]');"
-       "viewport ? viewport.content : '';";
-  __weak CRWWebController* weakSelf = self;
-  int itemID = currentItem->GetUniqueID();
-  [self executeJavaScript:kViewportContentQuery
-        completionHandler:^(id viewportContent, NSError* error) {
-          web::NavigationItem* item = [weakSelf currentNavItem];
-          if (item && item->GetUniqueID() == itemID) {
-            web::PageViewportState viewportState(
-                base::apple::ObjCCast<NSString>(viewportContent));
-            completion(&viewportState);
-          } else {
-            completion(nullptr);
-          }
-        }];
-}
 
 - (void)surfaceSizeChanged {
   // When rotating, the available zoom scale range may change, zoomScale's
