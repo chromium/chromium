@@ -6,5 +6,6 @@ include_rules = [
   "-ui/ozone/*",
   "+ui/ozone/buildflags.h",
   "+ui/ozone/public/ozone_platform.h",
+  "+ui/ozone/public/ozone_switches.h",
   "+ui/ozone/public/platform_clipboard.h",
 ]

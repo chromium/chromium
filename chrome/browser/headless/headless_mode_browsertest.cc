@@ -43,6 +43,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_non_backed.h"
 #include "ui/base/clipboard/clipboard_sequence_number_token.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/display/display_switches.h"
@@ -250,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTestWithUserDataDirAndIncognito,
 // Clipboard tests -----------------------------------------------------------
 
 IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest, HeadlessClipboardInstalled) {
-  ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+  ui::Clipboard* clipboard = ui::ClipboardNonBacked::GetForCurrentThread();
   ASSERT_TRUE(clipboard);
 
   ui::ClipboardBuffer buffer = ui::ClipboardBuffer::kCopyPaste;
@@ -267,16 +268,38 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest, HeadlessClipboardCopyPaste) {
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
   ASSERT_TRUE(clipboard);
 
-  ui::ClipboardBuffer buffer = ui::ClipboardBuffer::kCopyPaste;
-  ASSERT_TRUE(ui::Clipboard::IsSupportedClipboardBuffer(buffer));
+  static const struct ClipboardBufferInfo {
+    ui::ClipboardBuffer buffer;
+    std::u16string paste_text;
+  } clipboard_buffers[] = {
+      {ui::ClipboardBuffer::kCopyPaste, u"kCopyPaste"},
+      {ui::ClipboardBuffer::kSelection, u"kSelection"},
+      {ui::ClipboardBuffer::kDrag, u"kDrag"},
+  };
 
-  const std::u16string text = u"Clippy!";
-  ui::ScopedClipboardWriter(buffer).WriteText(text);
+  // Check basic write/read ops into each buffer type.
+  for (const auto& [buffer, paste_text] : clipboard_buffers) {
+    if (!ui::Clipboard::IsSupportedClipboardBuffer(buffer)) {
+      continue;
+    }
+    {
+      ui::ScopedClipboardWriter writer(buffer);
+      writer.WriteText(paste_text);
+    }
+    std::u16string copy_text;
+    clipboard->ReadText(buffer, /* data_dst = */ nullptr, &copy_text);
+    EXPECT_EQ(paste_text, copy_text);
+  }
 
-  std::u16string copy_pasted_text;
-  clipboard->ReadText(buffer, /*data_dst=*/nullptr, &copy_pasted_text);
-
-  EXPECT_EQ(text, copy_pasted_text);
+  // Verify that different clipboard buffer data is independent.
+  for (const auto& [buffer, paste_text] : clipboard_buffers) {
+    if (!ui::Clipboard::IsSupportedClipboardBuffer(buffer)) {
+      continue;
+    }
+    std::u16string copy_text;
+    clipboard->ReadText(buffer, /* data_dst = */ nullptr, &copy_text);
+    EXPECT_EQ(paste_text, copy_text);
+  }
 }
 
 }  // namespace

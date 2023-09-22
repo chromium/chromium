@@ -18,13 +18,17 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/custom_data_helper.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/skia_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "ui/base/clipboard/scoped_clipboard_writer.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_OZONE)
+#include "base/command_line.h"
+#include "ui/gfx/switches.h"
+#include "ui/ozone/public/ozone_platform.h"
+#include "ui/ozone/public/ozone_switches.h"
+#endif  // BUILDFLAG(IS_OZONE)
 
 namespace ui {
 namespace {
@@ -45,14 +49,28 @@ class ClipboardNonBackedTestBase : public testing::Test {
       base::test::TaskEnvironment::TimeSource time_source)
       : task_environment_(base::test::TaskEnvironment::MainThreadType::UI,
                           time_source) {}
+  void SetUp() override {
+#if BUILDFLAG(IS_OZONE)
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    command_line->AppendSwitchASCII(::switches::kOzonePlatform,
+                                    switches::kHeadless);
+    ui::OzonePlatform::PreEarlyInitialization();
+#endif  // BUILDFLAG(IS_OZONE)
 
-  ClipboardNonBacked* clipboard() { return &clipboard_; }
+    // Clipboard needs to be instantiated after Ozone is initialized so that
+    // ui::Clipboard::Create() can call ui::OzonePlatform::GetInstance().
+    std::unique_ptr<Clipboard> clipboard(new ClipboardNonBacked());
+    Clipboard::SetClipboardForCurrentThread(std::move(clipboard));
+  }
+
+  void TearDown() override { Clipboard::DestroyClipboardForCurrentThread(); }
+
+  ClipboardNonBacked* clipboard() {
+    return ClipboardNonBacked::GetForCurrentThread();
+  }
 
  protected:
   base::test::TaskEnvironment task_environment_;
-
- private:
-  ClipboardNonBacked clipboard_;
 };
 
 // Base class for tests of `ClipboardNonBacked` which use system time.
@@ -115,8 +133,6 @@ TEST_F(ClipboardNonBackedTest, AdminWriteDoesNotRecordHistograms) {
 // Tests that site bookmark URLs are accessed as text, and
 // IsFormatAvailable('text/uri-list') is only true for files.
 TEST_F(ClipboardNonBackedTest, TextURIList) {
-  EXPECT_EQ("text/uri-list", ClipboardFormatType::FilenamesType().GetName());
-
   auto data = std::make_unique<ClipboardData>();
   data->set_bookmark_url("http://example.com");
   clipboard()->WriteClipboardData(std::move(data));
@@ -124,8 +140,11 @@ TEST_F(ClipboardNonBackedTest, TextURIList) {
   clipboard()->ReadAvailableTypes(ClipboardBuffer::kCopyPaste,
                                   /*data_dst=*/nullptr, &types);
 
-  // Bookmark data uses mime type 'text/plain'.
-  EXPECT_EQ(std::vector<std::string>({"text/plain"}), UTF8Types(types));
+  // Bookmark data uses mime type 'text/plain' on Linux,
+  // 'public.utf8-plain-text' on Macs and CF_UNICODETEXT atom on Windows..
+  EXPECT_EQ(std::vector<std::string>(
+                {ClipboardFormatType::PlainTextType().GetName()}),
+            UTF8Types(types));
   EXPECT_TRUE(clipboard()->IsFormatAvailable(ClipboardFormatType::UrlType(),
                                              ClipboardBuffer::kCopyPaste,
                                              /*data_dst=*/nullptr));
@@ -135,7 +154,8 @@ TEST_F(ClipboardNonBackedTest, TextURIList) {
 
   // Filenames data uses mime type 'text/uri-list'.
   data = std::make_unique<ClipboardData>();
-  data->set_filenames({FileInfo(base::FilePath("/path"), base::FilePath())});
+  data->set_filenames(
+      {FileInfo(base::FilePath(FILE_PATH_LITERAL("/path")), base::FilePath())});
   clipboard()->WriteClipboardData(std::move(data));
   clipboard()->ReadAvailableTypes(ClipboardBuffer::kCopyPaste,
                                   /*data_dst=*/nullptr, &types);
@@ -169,8 +189,6 @@ TEST_F(ClipboardNonBackedTest, TextURIList) {
 
 // Tests that bitmaps written to the clipboard are read out encoded as a PNG.
 TEST_F(ClipboardNonBackedTest, ImageEncoding) {
-  EXPECT_EQ("image/png", ClipboardFormatType::PngType().GetName());
-
   auto data = std::make_unique<ClipboardData>();
   SkBitmap test_bitmap = gfx::test::CreateBitmap(3, 2);
   data->SetBitmapData(test_bitmap);
@@ -205,8 +223,6 @@ TEST_F(ClipboardNonBackedTest, ImageEncoding) {
 // Tests that consecutive calls to read an image from the clipboard only results
 // in the image being encoded once.
 TEST_F(ClipboardNonBackedTest, EncodeImageOnce) {
-  EXPECT_EQ("image/png", ClipboardFormatType::PngType().GetName());
-
   auto data = std::make_unique<ClipboardData>();
   SkBitmap test_bitmap = gfx::test::CreateBitmap(3, 2);
   data->SetBitmapData(test_bitmap);
@@ -261,8 +277,6 @@ TEST_F(ClipboardNonBackedTest, EncodeImageOnce) {
 // in the image being encoded once, but if another image is placed on the
 // clipboard, this image is appropriately encoded.
 TEST_F(ClipboardNonBackedTest, EncodeMultipleImages) {
-  EXPECT_EQ("image/png", ClipboardFormatType::PngType().GetName());
-
   auto data = std::make_unique<ClipboardData>();
   SkBitmap test_bitmap = gfx::test::CreateBitmap(3, 2);
   data->SetBitmapData(test_bitmap);
@@ -323,6 +337,38 @@ TEST_F(ClipboardNonBackedTest, EncodeMultipleImages) {
   EXPECT_TRUE(gfx::BitmapsAreEqual(bitmap, test_bitmap));
   gfx::PNGCodec::Decode(pngs[2].data(), pngs[2].size(), &bitmap);
   EXPECT_TRUE(gfx::BitmapsAreEqual(bitmap, test_bitmap2));
+}
+
+// Tests that different clipboard buffers have independent data.
+TEST_F(ClipboardNonBackedTest, ClipboardBufferTypes) {
+  static const struct ClipboardBufferInfo {
+    ui::ClipboardBuffer buffer;
+    std::u16string paste_text;
+  } clipboard_buffers[] = {
+      {ui::ClipboardBuffer::kCopyPaste, u"kCopyPaste"},
+      {ui::ClipboardBuffer::kSelection, u"kSelection"},
+      {ui::ClipboardBuffer::kDrag, u"kDrag"},
+  };
+
+  // Check basic write/read ops into each buffer type.
+  for (const auto& [buffer, paste_text] : clipboard_buffers) {
+    if (ui::Clipboard::IsSupportedClipboardBuffer(buffer)) {
+      ScopedClipboardWriter(buffer).WriteText(paste_text);
+
+      std::u16string copy_text;
+      clipboard()->ReadText(buffer, /*data_dst=*/nullptr, &copy_text);
+      EXPECT_EQ(paste_text, copy_text);
+    }
+  }
+
+  // Verify that different clipboard buffer data is independent.
+  for (const auto& [buffer, paste_text] : clipboard_buffers) {
+    if (ui::Clipboard::IsSupportedClipboardBuffer(buffer)) {
+      std::u16string copy_text;
+      clipboard()->ReadText(buffer, /*data_dst=*/nullptr, &copy_text);
+      EXPECT_EQ(paste_text, copy_text);
+    }
+  }
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

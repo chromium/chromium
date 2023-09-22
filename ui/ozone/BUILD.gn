@@ -231,8 +231,11 @@ source_set("platform") {
   # Platforms are always linked into //ui/ozone and can include our headers.
   allow_circular_includes_from = ozone_platform_deps
 
-  # This is used for platform tests.
-  visibility += [ "//ui/ozone/platform/*" ]
+  # This is used for platform and clipboard tests.
+  visibility += [
+    "//ui/base/clipboard:clipboard_test",
+    "//ui/ozone/platform/*",
+  ]
 
   # This can be used for out of tree platforms tests.
   visibility += ozone_external_platform_visibility
@@ -251,6 +254,7 @@ source_set("ozone_switches") {
   visibility += [
     "//chrome/test:browser_tests_runner",
     "//media/mojo/services",
+    "//ui/base/clipboard:clipboard_test",
     "//ui/display:display_unittests",
   ]
 }

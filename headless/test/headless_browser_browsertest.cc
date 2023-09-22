@@ -51,6 +51,7 @@
 #include "third_party/blink/public/resources/grit/blink_resources.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_non_backed.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/size.h"
@@ -289,17 +290,35 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, WebGLSupported) {
 
 IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, ClipboardCopyPasteText) {
   // Tests copy-pasting text with the clipboard in headless mode.
-  ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+  ui::Clipboard* clipboard = ui::ClipboardNonBacked::GetForCurrentThread();
   ASSERT_TRUE(clipboard);
-  std::u16string paste_text = u"Clippy!";
-  for (ui::ClipboardBuffer buffer :
-       {ui::ClipboardBuffer::kCopyPaste, ui::ClipboardBuffer::kSelection,
-        ui::ClipboardBuffer::kDrag}) {
+
+  static const struct ClipboardBufferInfo {
+    ui::ClipboardBuffer buffer;
+    std::u16string paste_text;
+  } clipboard_buffers[] = {
+      {ui::ClipboardBuffer::kCopyPaste, u"kCopyPaste"},
+      {ui::ClipboardBuffer::kSelection, u"kSelection"},
+      {ui::ClipboardBuffer::kDrag, u"kDrag"},
+  };
+
+  // Check basic write/read ops into each buffer type.
+  for (const auto& [buffer, paste_text] : clipboard_buffers) {
     if (!ui::Clipboard::IsSupportedClipboardBuffer(buffer))
       continue;
     {
       ui::ScopedClipboardWriter writer(buffer);
       writer.WriteText(paste_text);
+    }
+    std::u16string copy_text;
+    clipboard->ReadText(buffer, /* data_dst = */ nullptr, &copy_text);
+    EXPECT_EQ(paste_text, copy_text);
+  }
+
+  // Verify that different clipboard buffer data is independent.
+  for (const auto& [buffer, paste_text] : clipboard_buffers) {
+    if (!ui::Clipboard::IsSupportedClipboardBuffer(buffer)) {
+      continue;
     }
     std::u16string copy_text;
     clipboard->ReadText(buffer, /* data_dst = */ nullptr, &copy_text);
