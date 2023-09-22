@@ -71,14 +71,6 @@ class AudioListener final : public ScriptWrappable,
                       ExceptionState& exceptionState);
   void setPosition(float x, float y, float z, ExceptionState& exceptionState);
 
-  // Updates the internal state of the listener, including updating the dirty
-  // state of all PannerNodes if necessary.
-  void UpdateState();
-
-  base::Lock& ListenerLock();
-
-  void WaitForHRTFDatabaseLoaderThreadCompletion();
-
   // InspectorHelperMixin: Note that this object belongs to a BaseAudioContext,
   // so these methods get called by the parent context.
   void ReportDidCreate() final;

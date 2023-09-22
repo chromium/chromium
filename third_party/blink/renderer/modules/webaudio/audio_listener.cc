@@ -138,18 +138,6 @@ void AudioListener::setPosition(float x, float y, float z,
   SetPosition(gfx::Point3F(x, y, z), exceptionState);
 }
 
-void AudioListener::UpdateState() {
-  Handler().UpdateState();
-}
-
-base::Lock& AudioListener::ListenerLock() {
-  return Handler().Lock();
-}
-
-void AudioListener::WaitForHRTFDatabaseLoaderThreadCompletion() {
-  Handler().WaitForHRTFDatabaseLoaderThreadCompletion();
-}
-
 void AudioListener::Trace(Visitor* visitor) const {
   visitor->Trace(position_x_);
   visitor->Trace(position_y_);
@@ -199,12 +187,12 @@ void AudioListener::SetPosition(const gfx::Point3F& position,
                                 ExceptionState& exceptionState) {
   DCHECK(IsMainThread());
 
-  const base::AutoLock listener_locker(ListenerLock());
   const double now = position_x_->Context()->currentTime();
   position_x_->setValueAtTime(position.x(), now, exceptionState);
   position_y_->setValueAtTime(position.y(), now, exceptionState);
   position_z_->setValueAtTime(position.z(), now, exceptionState);
 
+  const base::AutoLock listener_locker(Handler().Lock());
   Handler().MarkPannersAsDirty(PannerHandler::kAzimuthElevationDirty |
                                PannerHandler::kDistanceConeGainDirty);
 }
@@ -213,12 +201,12 @@ void AudioListener::SetOrientation(const gfx::Vector3dF& orientation,
                                    ExceptionState& exceptionState) {
   DCHECK(IsMainThread());
 
-  const base::AutoLock listener_locker(ListenerLock());
   const double now = forward_x_->Context()->currentTime();
   forward_x_->setValueAtTime(orientation.x(), now, exceptionState);
   forward_y_->setValueAtTime(orientation.y(), now, exceptionState);
   forward_z_->setValueAtTime(orientation.z(), now, exceptionState);
 
+  const base::AutoLock listener_locker(Handler().Lock());
   Handler().MarkPannersAsDirty(PannerHandler::kAzimuthElevationDirty);
 }
 
@@ -226,12 +214,12 @@ void AudioListener::SetUpVector(const gfx::Vector3dF& up_vector,
                                 ExceptionState& exceptionState) {
   DCHECK(IsMainThread());
 
-  const base::AutoLock listener_locker(ListenerLock());
   const double now = up_x_->Context()->currentTime();
   up_x_->setValueAtTime(up_vector.x(), now, exceptionState);
   up_y_->setValueAtTime(up_vector.y(), now, exceptionState);
   up_z_->setValueAtTime(up_vector.z(), now, exceptionState);
 
+  const base::AutoLock listener_locker(Handler().Lock());
   Handler().MarkPannersAsDirty(PannerHandler::kAzimuthElevationDirty);
 }
 

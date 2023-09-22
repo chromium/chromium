@@ -170,7 +170,7 @@ void BaseAudioContext::Uninitialize() {
   RejectPendingResolvers();
 
   DCHECK(listener_);
-  listener_->WaitForHRTFDatabaseLoaderThreadCompletion();
+  listener_->Handler().WaitForHRTFDatabaseLoaderThreadCompletion();
 
   Clear();
 

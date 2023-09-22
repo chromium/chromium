@@ -398,7 +398,7 @@ bool OfflineAudioContext::HandlePreRenderTasks(
   {
     // OfflineGraphAutoLocker here locks the audio graph for this scope.
     OfflineGraphAutoLocker locker(this);
-    listener()->UpdateState();
+    listener()->Handler().UpdateState();
     GetDeferredTaskHandler().HandleDeferredTasks();
     HandleStoppableSourceNodes();
   }

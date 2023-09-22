@@ -851,8 +851,8 @@ bool AudioContext::HandlePreRenderTasks(const AudioIOPosition* output_position,
     // passed.
     HandleStoppableSourceNodes();
 
-    // Update the dirty state of the listener.
-    listener()->UpdateState();
+    // Update the dirty state of the AudioListenerHandler.
+    listener()->Handler().UpdateState();
 
     // Update output timestamp and metric.
     output_position_ = *output_position;
