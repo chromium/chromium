@@ -43,14 +43,30 @@ crosapi::mojom::EditorPanelManager& GetEditorPanelManager() {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
+PresetQueryCategory GetPresetQueryCategory(
+    const crosapi::mojom::EditorPanelPresetQueryCategory category) {
+  switch (category) {
+    case crosapi::mojom::EditorPanelPresetQueryCategory::kUnknown:
+      return PresetQueryCategory::kUnknown;
+    case crosapi::mojom::EditorPanelPresetQueryCategory::kShorten:
+      return PresetQueryCategory::kShorten;
+    case crosapi::mojom::EditorPanelPresetQueryCategory::kElaborate:
+      return PresetQueryCategory::kElaborate;
+    case crosapi::mojom::EditorPanelPresetQueryCategory::kRephrase:
+      return PresetQueryCategory::kRephrase;
+    case crosapi::mojom::EditorPanelPresetQueryCategory::kFormalize:
+      return PresetQueryCategory::kFormalize;
+    case crosapi::mojom::EditorPanelPresetQueryCategory::kEmojify:
+      return PresetQueryCategory::kEmojify;
+  }
+}
+
 PresetTextQueries GetPresetTextQueries(
     const std::vector<EditorPanelPresetTextQueryPtr>& preset_text_queries) {
-  // TODO(b/295059934): Use EditorPanelPresetTextQueryPtrs to get the actual
-  // query categories.
   PresetTextQueries queries;
   for (const auto& query : preset_text_queries) {
     queries.emplace_back(query->text_query_id, base::UTF8ToUTF16(query->name),
-                         PresetQueryCategory::kUnknown);
+                         GetPresetQueryCategory(query->category));
   }
   return queries;
 }

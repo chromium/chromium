@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Next MinVersion: 2
+
 module crosapi.mojom;
 
 [Stable, Extensible]
@@ -21,6 +23,11 @@ enum EditorPanelMode {
 [Stable, Extensible]
 enum EditorPanelPresetQueryCategory {
   [Default] kUnknown = 0,
+  [MinVersion=1] kShorten = 1,
+  [MinVersion=1] kElaborate = 2,
+  [MinVersion=1] kRephrase = 3,
+  [MinVersion=1] kFormalize = 4,
+  [MinVersion=1] kEmojify = 5,
 };
 
 [Stable]

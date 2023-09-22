@@ -16,15 +16,31 @@ namespace ash::input_method {
 
 namespace {
 
+crosapi::mojom::EditorPanelPresetQueryCategory ToEditorPanelQueryCategory(
+    const orca::mojom::PresetTextQueryType query_type) {
+  switch (query_type) {
+    case orca::mojom::PresetTextQueryType::kUnknown:
+      return crosapi::mojom::EditorPanelPresetQueryCategory::kUnknown;
+    case orca::mojom::PresetTextQueryType::kShorten:
+      return crosapi::mojom::EditorPanelPresetQueryCategory::kShorten;
+    case orca::mojom::PresetTextQueryType::kElaborate:
+      return crosapi::mojom::EditorPanelPresetQueryCategory::kElaborate;
+    case orca::mojom::PresetTextQueryType::kRephrase:
+      return crosapi::mojom::EditorPanelPresetQueryCategory::kRephrase;
+    case orca::mojom::PresetTextQueryType::kFormalize:
+      return crosapi::mojom::EditorPanelPresetQueryCategory::kFormalize;
+    case orca::mojom::PresetTextQueryType::kEmojify:
+      return crosapi::mojom::EditorPanelPresetQueryCategory::kEmojify;
+  }
+}
+
 crosapi::mojom::EditorPanelPresetTextQueryPtr ToEditorPanelQuery(
     const orca::mojom::PresetTextQueryPtr& orca_query) {
   auto editor_panel_query = crosapi::mojom::EditorPanelPresetTextQuery::New();
   editor_panel_query->text_query_id = orca_query->id;
   editor_panel_query->name = orca_query->label;
   editor_panel_query->description = orca_query->description;
-  // TODO(b/295059934): Add the actual preset query categories.
-  editor_panel_query->category =
-      crosapi::mojom::EditorPanelPresetQueryCategory::kUnknown;
+  editor_panel_query->category = ToEditorPanelQueryCategory(orca_query->type);
   return editor_panel_query;
 }
 
