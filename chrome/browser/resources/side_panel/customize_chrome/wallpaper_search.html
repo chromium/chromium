@@ -2,6 +2,16 @@
   sp-heading {
     margin: 0 0 8px;
   }
+
+  .content {
+    padding: 16px;
+  }
+
+  #btnContainer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 16px;
+  }
 </style>
 <div class="sp-card">
   <sp-heading id="heading" on-back-button-click="onBackClick_"
@@ -9,4 +19,20 @@
       back-button-title="$i18n{backButton}">
     <h2 slot="heading">Wallpaper Search</h2>
   </sp-heading>
+  <div class="content">
+    <cr-input
+        id="queryInput"
+        type="text"
+        placeholder="Query"
+        value="{{query_}}">
+    </cr-input>
+    <div id="btnContainer">
+      <cr-button
+          id="submitButton"
+          on-click="onSearchClick_"
+          class="action-button">
+        Search
+      </cr-button>
+    </div>
+  </div>
 </div>
