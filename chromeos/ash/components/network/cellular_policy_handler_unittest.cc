@@ -375,6 +375,12 @@ class CellularPolicyHandlerTest : public testing::Test {
     FastForwardBy(base::Seconds(1));
   }
 
+  // Between the completion of an SM-DS scan and the discovered profile paths
+  // actually being provided to CellularPolicyHandler there can be a delay. This
+  // delay allows Hermes to update the properties of the discovered profiles
+  // before we attempt to read them, e.g. the activation code.
+  void FastForwardProfileWaiterDelay() { FastForwardBy(base::Seconds(30)); }
+
   CellularPolicyHandler* cellular_policy_handler() {
     return cellular_policy_handler_;
   }
@@ -691,6 +697,8 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
 
   InstallProfile(*onc_config);
 
+  FastForwardProfileWaiterDelay();
+
   CompleteShillServiceAutoConnect(*onc_config);
 
   EXPECT_TRUE(IsProfileInstalled(*onc_config, different_activation_code_value,
@@ -881,6 +889,80 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
 
   EXPECT_TRUE(HasESimMetadata(activation_code.value()));
 
+  CheckHistogramState(expected_state);
+}
+
+TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
+       InstallSuccess_WaitForProfileProperties) {
+  SetupGolden();
+
+  ExpectedHistogramState expected_state;
+  CheckHistogramState(expected_state);
+
+  const dbus::ObjectPath profile_path(kTestProfilePath0);
+
+  // Add a profile that is missing the required properties.
+  HermesEuiccClient::Get()->GetTestInterface()->AddCarrierProfile(
+      profile_path, dbus::ObjectPath(kTestEuiccPath0), kTestProfileIccid0,
+      /*name=*/"", kTestProfileNickname0, kTestProfileServiceProvider0,
+      /*activation_code=*/"", kTestProfileServicePath0,
+      /*state=*/hermes::profile::State::kInactive,
+      hermes::profile::ProfileClass::kOperational,
+      HermesEuiccClient::TestInterface::AddCarrierProfileBehavior::
+          kAddProfileWithService);
+  base::RunLoop().RunUntilIdle();
+
+  HermesEuiccClient::Get()
+      ->GetTestInterface()
+      ->SetNextRefreshSmdxProfilesResult({profile_path});
+
+  const policy_util::SmdxActivationCode activation_code(
+      policy_util::SmdxActivationCode::Type::SMDP,
+      HermesEuiccClient::Get()
+          ->GetTestInterface()
+          ->GenerateFakeActivationCode());
+  absl::optional<base::Value::Dict> onc_config =
+      chromeos::onc::ReadDictionaryFromJson(
+          GenerateCellularPolicy(activation_code));
+  ASSERT_TRUE(onc_config.has_value());
+
+  InstallProfile(*onc_config);
+
+  EXPECT_FALSE(IsProfileInstalled(*onc_config, activation_code.value(),
+                                  /*check_for_service=*/true));
+  EXPECT_FALSE(HasESimMetadata(activation_code.value()));
+  CheckHistogramState(expected_state);
+
+  HermesProfileClient::Properties* profile_properties =
+      HermesProfileClient::Get()->GetProperties(profile_path);
+  ASSERT_TRUE(profile_properties);
+
+  profile_properties->name().ReplaceValue(/*value=*/kTestProfileName0);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(IsProfileInstalled(*onc_config, activation_code.value(),
+                                  /*check_for_service=*/true));
+  EXPECT_FALSE(HasESimMetadata(activation_code.value()));
+  CheckHistogramState(expected_state);
+
+  profile_properties->activation_code().ReplaceValue(
+      /*value=*/activation_code.value());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(IsProfileInstalled(*onc_config, activation_code.value(),
+                                  /*check_for_service=*/true));
+  EXPECT_FALSE(HasESimMetadata(activation_code.value()));
+  CheckHistogramState(expected_state);
+
+  profile_properties->state().ReplaceValue(
+      /*value=*/hermes::profile::State::kPending);
+  base::RunLoop().RunUntilIdle();
+
+  CompleteShillServiceAutoConnect(*onc_config);
+
+  EXPECT_TRUE(IsProfileInstalled(*onc_config, activation_code.value(),
+                                 /*check_for_service=*/true));
+  EXPECT_TRUE(HasESimMetadata(activation_code.value()));
+  expected_state.success_initial_count++;
+  expected_state.install_method_via_smdp_count++;
   CheckHistogramState(expected_state);
 }
 

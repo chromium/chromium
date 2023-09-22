@@ -12,6 +12,8 @@
 #include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/ash/components/network/cellular_esim_installer.h"
+#include "chromeos/ash/components/network/cellular_esim_profile_handler.h"
+#include "chromeos/ash/components/network/cellular_esim_profile_waiter.h"
 #include "chromeos/ash/components/network/cellular_utils.h"
 #include "chromeos/ash/components/network/managed_cellular_pref_handler.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
@@ -32,6 +34,10 @@ namespace {
 
 constexpr int kInstallRetryLimit = 3;
 constexpr base::TimeDelta kInstallRetryDelay = base::Days(1);
+
+// The timeout that is provided when waiting for the properties of discovered
+// pending profiles to be set before choosing a profile to install.
+constexpr base::TimeDelta kCellularESimProfileWaiterDelay = base::Seconds(30);
 
 constexpr net::BackoffEntry::Policy kRetryBackoffPolicy = {
     0,               // Number of initial errors to ignore.
@@ -252,6 +258,11 @@ void CellularPolicyHandler::PopRequest() {
   }
 }
 
+void CellularPolicyHandler::PopAndProcessRequests() {
+  PopRequest();
+  ProcessRequests();
+}
+
 void CellularPolicyHandler::AttemptInstallESim() {
   DCHECK(is_installing_);
 
@@ -446,6 +457,54 @@ void CellularPolicyHandler::OnRefreshSmdxProfiles(
     const std::vector<dbus::ObjectPath>& profile_paths) {
   DCHECK(inhibit_lock);
 
+  const bool is_smds =
+      remaining_install_requests_.front()->activation_code.type() ==
+      policy_util::SmdxActivationCode::Type::SMDS;
+  if (is_smds) {
+    CellularNetworkMetricsLogger::LogSmdsScanProfileCount(profile_paths.size());
+    // TODO(b/278135481): Emit
+    // Network.Ash.Cellular.ESim.SMDSScan.{SMDSType}.Duration.
+    // TODO(b/278135630): Emit
+    // Network.Ash.Cellular.ESim.SMDSScan.{SMDSType}.{ResultType}.
+  }
+
+  std::unique_ptr<CellularESimProfileWaiter> waiter =
+      std::make_unique<CellularESimProfileWaiter>();
+  for (const auto& profile_path : profile_paths) {
+    waiter->RequirePendingProfile(profile_path);
+  }
+
+  auto on_success =
+      base::BindOnce(&CellularPolicyHandler::CompleteRefreshSmdxProfiles,
+                     weak_ptr_factory_.GetWeakPtr(), euicc_path,
+                     std::move(new_shill_properties), std::move(inhibit_lock),
+                     status, profile_paths);
+  auto on_shutdown =
+      base::BindOnce(&CellularPolicyHandler::PopAndProcessRequests,
+                     weak_ptr_factory_.GetWeakPtr());
+
+  waiter->Wait(std::move(on_success), std::move(on_shutdown));
+
+  if (waiter->waiting()) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](std::unique_ptr<CellularESimProfileWaiter> waiter) {
+              waiter.reset();
+            },
+            std::move(waiter)),
+        kCellularESimProfileWaiterDelay);
+  }
+}
+
+void CellularPolicyHandler::CompleteRefreshSmdxProfiles(
+    const dbus::ObjectPath& euicc_path,
+    base::Value::Dict new_shill_properties,
+    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
+    HermesResponseStatus status,
+    const std::vector<dbus::ObjectPath>& profile_paths) {
+  DCHECK(inhibit_lock);
+
   auto& current_request = remaining_install_requests_.front();
 
   // Scanning SM-DP+ or SM-DS servers will return both a result and available
@@ -457,14 +516,6 @@ void CellularPolicyHandler::OnRefreshSmdxProfiles(
   NET_LOG(EVENT) << "HermesEuiccClient::RefreshSmdxProfiles returned with "
                  << "result code " << status << " when called for policy eSIM "
                  << "profile: " << current_request->activation_code.ToString();
-
-  const bool is_smds = current_request->activation_code.type() ==
-                       policy_util::SmdxActivationCode::Type::SMDS;
-  if (is_smds) {
-    CellularNetworkMetricsLogger::LogSmdsScanProfileCount(profile_paths.size());
-    // TODO(b/278135481): Emit
-    // Network.Ash.Cellular.ESim.SMDSScan.{SMDSType}.Duration.
-  }
 
   // The activation code will already be known in the SM-DP+ case, but for the
   // sake of using the same flow both both SM-DP+ and SM-DS we choose an
@@ -485,6 +536,8 @@ void CellularPolicyHandler::OnRefreshSmdxProfiles(
 
   const bool is_initial_install =
       current_request->retry_backoff.failure_count() == 0;
+  const bool is_smds = current_request->activation_code.type() ==
+                       policy_util::SmdxActivationCode::Type::SMDS;
   if (is_initial_install) {
     CellularNetworkMetricsLogger::LogESimPolicyInstallMethod(
         is_smds

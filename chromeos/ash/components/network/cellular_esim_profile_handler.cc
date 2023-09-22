@@ -18,8 +18,8 @@
 namespace ash {
 namespace {
 
-// The amount of time to wait for Hermes to update the properties expected of a
-// pending profile before collecting profile properties for
+// The timeout that is provided when waiting for the properties of discovered
+// pending profiles to be set before collecting profile properties for
 // RequestAvailableProfiles().
 constexpr base::TimeDelta kCellularESimProfileWaiterDelay = base::Seconds(30);
 

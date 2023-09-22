@@ -152,6 +152,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
       InstallRetryReason reason);
   void PushRequestAndProcess(std::unique_ptr<InstallPolicyESimRequest> request);
   void PopRequest();
+  void PopAndProcessRequests();
 
   // Attempts to install the first request in the queue. This function is
   // responsible for ensuring that both a cellular device and Hermes are
@@ -175,6 +176,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
       base::Value::Dict new_shill_properties,
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
   void OnRefreshSmdxProfiles(
+      const dbus::ObjectPath& euicc_path,
+      base::Value::Dict new_shill_properties,
+      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
+      HermesResponseStatus status,
+      const std::vector<dbus::ObjectPath>& profile_paths);
+  void CompleteRefreshSmdxProfiles(
       const dbus::ObjectPath& euicc_path,
       base::Value::Dict new_shill_properties,
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
