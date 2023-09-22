@@ -3206,6 +3206,21 @@
             ]
         }
     ],
+    "ChromeOSHWVBREncoding": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230922",
+                    "enable_features": [
+                        "ChromeOSHWVBREncoding"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeOSHoldingSpaceExperiments": [
         {
             "platforms": [
@@ -18849,28 +18864,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AllowWgcDesktopCapturer"
-                    ]
-                }
-            ]
-        }
-    ],
-    "WebRtcEncoderAsyncEncode": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebRtcEncoderAsyncEncode"
                     ]
                 }
             ]
