@@ -1,5 +1,5 @@
 digraph {
-  graph[bgcolor=transparent]
+  graph[bgcolor=white]
   node[shape=box]
 
   component[label="Is it a\ncomponent\nbuild?"]
