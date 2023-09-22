@@ -219,14 +219,6 @@ const NodeOutputInfo& GetInputNodeOutputInfo(
   return input_iterator->second;
 }
 
-const NodeOutputInfo& GetNodeOutputInfo(
-    const IdToNodeOutputMap& id_to_node_output_map,
-    uint64_t operand_id) {
-  const auto input_iterator = id_to_node_output_map.find(operand_id);
-  CHECK(input_iterator != id_to_node_output_map.end());
-  return input_iterator->second;
-}
-
 const TensorDesc GetOutputTensorDesc(const OperatorPtr& operation,
                                      const IdToOperandMap& id_to_operand_map,
                                      uint32_t index = 0) {
@@ -236,13 +228,6 @@ const TensorDesc GetOutputTensorDesc(const OperatorPtr& operation,
   CHECK(output_iterator != id_to_operand_map.end());
   auto& output_operand = output_iterator->second;
 
-  return TensorDesc(GetTensorDataType(output_operand->data_type),
-                    output_operand->dimensions);
-}
-
-const TensorDesc CreateOutputTensorDesc(const IdToOperandMap& id_to_operand_map,
-                                        uint64_t output_id) {
-  const OperandPtr& output_operand = id_to_operand_map.at(output_id);
   return TensorDesc(GetTensorDataType(output_operand->data_type),
                     output_operand->dimensions);
 }
@@ -566,19 +551,21 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBinary(
 
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPool2d(
     const IdToOperandMap& id_to_operand_map,
-    const mojom::Pool2dPtr& pool2d,
+    const OperatorPtr& operation,
     GraphBuilder& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
   const auto& input_node_output_info =
-      GetNodeOutputInfo(id_to_node_output_map, pool2d->input_operand_id);
+      GetInputNodeOutputInfo(operation, id_to_node_output_map);
   auto input_tensor_desc =
       graph_builder.GetNodeOutput(input_node_output_info).tensor_desc;
 
-  uint64_t output_id = pool2d->output_operand_id;
-  auto output_tensor_desc =
-      CreateOutputTensorDesc(id_to_operand_map, output_id);
+  auto output_tensor_desc = GetOutputTensorDesc(operation, id_to_operand_map);
 
-  switch (pool2d->layout) {
+  CHECK(operation->attributes);
+  auto& pool2d_attributes = operation->attributes->get_pool2d();
+  CHECK(pool2d_attributes);
+
+  switch (pool2d_attributes->layout) {
     case mojom::InputOperandLayout::kChannelsFirst: {
       break;
     }
@@ -604,21 +591,24 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPool2d(
     }
   }
 
-  std::array<uint32_t, 2> strides = {pool2d->strides->height,
-                                     pool2d->strides->width};
-  std::array<uint32_t, 2> dilations = {pool2d->dilations->height,
-                                       pool2d->dilations->width};
+  std::array<uint32_t, 2> strides = {pool2d_attributes->strides->height,
+                                     pool2d_attributes->strides->width};
+  std::array<uint32_t, 2> dilations = {pool2d_attributes->dilations->height,
+                                       pool2d_attributes->dilations->width};
   std::array<uint32_t, 2> window_dimensions = {
-      pool2d->window_dimensions->height, pool2d->window_dimensions->width};
-  std::array<uint32_t, 2> start_padding = {pool2d->padding->beginning->height,
-                                           pool2d->padding->beginning->width};
-  std::array<uint32_t, 2> end_padding = {pool2d->padding->ending->height,
-                                         pool2d->padding->ending->width};
+      pool2d_attributes->window_dimensions->height,
+      pool2d_attributes->window_dimensions->width};
+  std::array<uint32_t, 2> start_padding = {
+      pool2d_attributes->padding->beginning->height,
+      pool2d_attributes->padding->beginning->width};
+  std::array<uint32_t, 2> end_padding = {
+      pool2d_attributes->padding->ending->height,
+      pool2d_attributes->padding->ending->width};
   NodeInfo pool2d_node_info;
-  switch (pool2d->kind) {
+  switch (operation->kind) {
       // TODO(crbug.com/1273291): Add L2Pool2d operator.
 
-    case mojom::Pool2d::Kind::kAveragePool2d: {
+    case mojom::Operator::Kind::kAveragePool2d: {
       // TODO(crbug.com/1273291): Work around dilation support for L2 and
       // average pooling. According to WebNN spec:
       // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-pool2d, dilations are
@@ -650,7 +640,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPool2d(
           {input_node_output_info});
       break;
     }
-    case mojom::Pool2d::Kind::kMaxPool2d: {
+    case mojom::Operator::Kind::kMaxPool2d: {
       DML_MAX_POOLING2_OPERATOR_DESC max_pooling_desc = {
           .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
           .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
@@ -677,14 +667,13 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPool2d(
         mojom::Error::New(mojom::Error::Code::kUnknownError,
                           "Failed to create pooling operator."));
   }
-  if (pool2d->layout == mojom::InputOperandLayout::kChannelsLast) {
+  if (pool2d_attributes->layout == mojom::InputOperandLayout::kChannelsLast) {
     // Transpose the output tensor from nchw to nhwc layout.
     output_tensor_desc.Transpose(kNchwToNhwcPermutation);
   }
 
-  CHECK(id_to_node_output_map.find(output_id) == id_to_node_output_map.end());
-  id_to_node_output_map[output_id] = graph_builder.CreateNodeOutput(
-      pool2d_node_info, std::move(output_tensor_desc), 0);
+  CreateNodeOutput(operation, graph_builder, pool2d_node_info,
+                   output_tensor_desc, id_to_node_output_map);
 
   return base::ok();
 }
@@ -1087,8 +1076,7 @@ void GraphImpl::CreateAndBuild(
         ->constant_id_to_graph_input_index_map[constant_id] = graph_input_index;
   }
 
-  // TODO(crbug.com/1469755): Remove this loop when all operators are
-  // implemented with `graph_info->operations`.
+  // Add operations.
   for (auto& operation : graph_info->operators) {
     // For operators that deal with DML API, there is a chance that operator
     // creation will fail. Use `mojom::ErrorPtr` to hold the given error
@@ -1102,6 +1090,12 @@ void GraphImpl::CreateAndBuild(
       }
       case Operator::Kind::kConv2d: {
         create_operator_result = CreateOperatorNodeForConv2d(
+            id_to_operand_map, operation, graph_builder, id_to_node_output_map);
+        break;
+      }
+      case Operator::Kind::kAveragePool2d:
+      case Operator::Kind::kMaxPool2d: {
+        create_operator_result = CreateOperatorNodeForPool2d(
             id_to_operand_map, operation, graph_builder, id_to_node_output_map);
         break;
       }
@@ -1140,27 +1134,6 @@ void GraphImpl::CreateAndBuild(
             mojom::Error::Code::kNotSupportedError,
             "This operator (" + OpKindToString(operation->kind) +
                 ") is not supported."));
-    }
-    if (!create_operator_result.has_value()) {
-      std::move(callback).Run(mojom::CreateGraphResult::NewError(
-          std::move(create_operator_result.error())));
-      return;
-    }
-  }
-
-  // Add operations.
-  for (auto& operation : graph_info->operations) {
-    // For operators that deal with DML API, there is a chance that operator
-    // creation will fail. Use `mojom::ErrorPtr` to hold the given error
-    // message.
-    base::expected<void, mojom::ErrorPtr> create_operator_result;
-    switch (operation->which()) {
-      case mojom::Operation::Tag::kPool2d: {
-        create_operator_result = CreateOperatorNodeForPool2d(
-            id_to_operand_map, operation->get_pool2d(), graph_builder,
-            id_to_node_output_map);
-        break;
-      }
     }
     if (!create_operator_result.has_value()) {
       std::move(callback).Run(mojom::CreateGraphResult::NewError(

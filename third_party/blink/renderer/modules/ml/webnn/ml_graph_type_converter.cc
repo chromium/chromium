@@ -15,6 +15,12 @@
 
 namespace mojo {
 
+namespace {
+
+using webnn::mojom::blink::Size2d;
+
+}  // namespace
+
 webnn::mojom::blink::Operand::DataType BlinkOperandTypeToMojo(
     blink::V8MLOperandType::Enum type) {
   switch (type) {
@@ -74,6 +80,17 @@ struct TypeConverter<webnn::mojom::blink::ClampAttributesPtr,
   }
 };
 
+webnn::mojom::blink::InputOperandLayout BlinkInputOperandLayoutToMojo(
+    blink::V8MLInputOperandLayout::Enum type) {
+  switch (type) {
+    case blink::V8MLInputOperandLayout::Enum::kNchw:
+      return webnn::mojom::blink::InputOperandLayout::kChannelsFirst;
+    case blink::V8MLInputOperandLayout::Enum::kNhwc:
+      return webnn::mojom::blink::InputOperandLayout::kChannelsLast;
+  }
+  NOTREACHED_NORETURN();
+}
+
 // Get height and width of input operand.
 webnn::Size2d GetInputOperandSize2d(const blink::MLOperand* input,
                                     blink::V8MLInputOperandLayout::Enum type) {
@@ -96,17 +113,67 @@ webnn::Size2d GetInputOperandSize2d(const blink::MLOperand* input,
   return {.height = input_height, .width = input_width};
 }
 
+template <>
+struct TypeConverter<webnn::mojom::blink::Pool2dAttributesPtr,
+                     blink::MLOperator*> {
+  static webnn::mojom::blink::Pool2dAttributesPtr Convert(
+      const blink::MLOperator* pool2d) {
+    const auto* options =
+        static_cast<const blink::MLPool2dOptions*>(pool2d->Options());
+    CHECK(options);
+    auto attributes = webnn::mojom::blink::Pool2dAttributes::New();
+    // If strides is not present, the values are assumed to be [1,1].
+    auto strides = options->getStridesOr({1, 1});
+    CHECK_EQ(strides.size(), 2u);
+    attributes->strides = Size2d::New(strides[0], strides[1]);
+
+    // If dilations is not present, the values are assumed to be [1, 1].
+    auto dilations = options->getDilationsOr({1, 1});
+    CHECK_EQ(dilations.size(), 2u);
+    attributes->dilations = Size2d::New(dilations[0], dilations[1]);
+    attributes->layout =
+        BlinkInputOperandLayoutToMojo(options->layout().AsEnum());
+
+    // Get height and width of input for calculating padding.
+    auto input_size = mojo::GetInputOperandSize2d(pool2d->Inputs()[0].Get(),
+                                                  options->layout().AsEnum());
+    // The dimensions of the sliding window are the height and width of input
+    // operand if they are not supplied by user.
+    uint32_t window_height = input_size.height;
+    uint32_t window_width = input_size.width;
+    if (options->hasWindowDimensions()) {
+      auto& window_dimensions = options->windowDimensions();
+      CHECK_EQ(window_dimensions.size(), 2u);
+      window_height = window_dimensions[0];
+      window_width = window_dimensions[1];
+    }
+    attributes->window_dimensions = Size2d::New(window_height, window_width);
+
+    // Calculate the padding given input sizes, window dimensions, padding,
+    // strides and dilations.
+    auto padding = blink::CalculatePadding2D(
+        options, input_size.height, input_size.width, window_height,
+        window_width, attributes->strides->height, attributes->strides->width,
+        attributes->dilations->height, attributes->dilations->width);
+    // The order of sequence array is [beginning_height, ending_height,
+    // beginning_width, ending_width].
+    attributes->padding = webnn::mojom::blink::Padding2d::New(
+        Size2d::New(padding.beginning.height,
+                    padding.beginning.width) /* beginning padding*/,
+        Size2d::New(padding.ending.height,
+                    padding.ending.width) /* ending padding*/);
+    return attributes;
+  }
+};
+
 }  // namespace mojo
 
 namespace blink {
 
 namespace {
 
-using webnn::mojom::blink::Operation;
-using webnn::mojom::blink::OperationPtr;
 using webnn::mojom::blink::Operator;
 using webnn::mojom::blink::OperatorPtr;
-using webnn::mojom::blink::Size2d;
 
 // Maps MLOperand to its id which is used to identify the `mojo::Operand` across
 // processes.
@@ -148,17 +215,6 @@ OperatorPtr CreateClampOperator(const OperandToIdMap& operand_to_id_map,
   return operator_mojo;
 }
 
-webnn::mojom::blink::InputOperandLayout BlinkInputOperandLayoutToMojo(
-    blink::V8MLInputOperandLayout::Enum type) {
-  switch (type) {
-    case blink::V8MLInputOperandLayout::Enum::kNchw:
-      return webnn::mojom::blink::InputOperandLayout::kChannelsFirst;
-    case blink::V8MLInputOperandLayout::Enum::kNhwc:
-      return webnn::mojom::blink::InputOperandLayout::kChannelsLast;
-  }
-  NOTREACHED_NORETURN();
-}
-
 base::expected<webnn::mojom::blink::Conv2dAttributesPtr, String>
 ConvertToConv2dAttributes(const OperandToIdMap& operand_to_id_map,
                           const MLOperator* conv2d) {
@@ -186,7 +242,7 @@ ConvertToConv2dAttributes(const OperandToIdMap& operand_to_id_map,
       webnn::mojom::blink::Size2d::New(dilations[0], dilations[1]);
   attributes->groups = options->groups();
   attributes->input_layout =
-      BlinkInputOperandLayoutToMojo(options->inputLayout().AsEnum());
+      mojo::BlinkInputOperandLayoutToMojo(options->inputLayout().AsEnum());
   if (options->hasBias()) {
     attributes->bias_operand_id = operand_to_id_map.at(options->bias());
   }
@@ -360,72 +416,30 @@ OperatorPtr CreateGemmOperator(const OperandToIdMap& operand_to_id_map,
   return operator_mojo;
 }
 
-OperationPtr CreatePool2dOperation(const OperandToIdMap& operand_to_id_map,
-                                   const MLOperator* pool2d) {
+OperatorPtr CreatePool2dOperator(const OperandToIdMap& operand_to_id_map,
+                                 const MLOperator* pool2d) {
   const uint64_t input_operand_id =
       GetOperatorInputId(pool2d, operand_to_id_map);
   const uint64_t output_operand_id =
       GetOperatorOutputId(pool2d, operand_to_id_map);
 
-  auto pool2d_mojo = webnn::mojom::blink::Pool2d::New();
+  auto operator_mojo = webnn::mojom::blink::Operator::New();
   switch (pool2d->Kind()) {
     case MLOperator::OperatorKind::kAveragePool2d:
-      pool2d_mojo->kind = webnn::mojom::blink::Pool2d::Kind::kAveragePool2d;
+      operator_mojo->kind = Operator::Kind::kAveragePool2d;
       break;
     case MLOperator::OperatorKind::kMaxPool2d:
-      pool2d_mojo->kind = webnn::mojom::blink::Pool2d::Kind::kMaxPool2d;
+      operator_mojo->kind = Operator::Kind::kMaxPool2d;
       break;
     default:
       NOTREACHED();
   }
-  pool2d_mojo->input_operand_id = input_operand_id;
-  pool2d_mojo->output_operand_id = output_operand_id;
-
-  const auto* options =
-      static_cast<const blink::MLPool2dOptions*>(pool2d->Options());
-  CHECK(options);
-  // If strides is not present, the values are assumed to be [1,1].
-  auto strides = options->getStridesOr({1, 1});
-  CHECK_EQ(strides.size(), 2u);
-  pool2d_mojo->strides = Size2d::New(strides[0], strides[1]);
-
-  // If dilations is not present, the values are assumed to be [1, 1].
-  auto dilations = options->getDilationsOr({1, 1});
-  CHECK_EQ(dilations.size(), 2u);
-  pool2d_mojo->dilations = Size2d::New(dilations[0], dilations[1]);
-  pool2d_mojo->layout =
-      BlinkInputOperandLayoutToMojo(options->layout().AsEnum());
-
-  // Get height and width of input for calculating padding.
-  auto input_size = mojo::GetInputOperandSize2d(pool2d->Inputs()[0].Get(),
-                                                options->layout().AsEnum());
-  // The dimensions of the sliding window are the height and width of input
-  // operand if they are not supplied by user.
-  uint32_t window_height = input_size.height;
-  uint32_t window_width = input_size.width;
-  if (options->hasWindowDimensions()) {
-    auto& window_dimensions = options->windowDimensions();
-    CHECK_EQ(window_dimensions.size(), 2u);
-    window_height = window_dimensions[0];
-    window_width = window_dimensions[1];
-  }
-  pool2d_mojo->window_dimensions = Size2d::New(window_height, window_width);
-
-  // Calculate the padding given input sizes, window dimensions, padding,
-  // strides and dilations.
-  auto padding = blink::CalculatePadding2D(
-      options, input_size.height, input_size.width, window_height, window_width,
-      pool2d_mojo->strides->height, pool2d_mojo->strides->width,
-      pool2d_mojo->dilations->height, pool2d_mojo->dilations->width);
-  // The order of sequence array is [beginning_height, ending_height,
-  // beginning_width, ending_width].
-  pool2d_mojo->padding = webnn::mojom::blink::Padding2d::New(
-      Size2d::New(padding.beginning.height,
-                  padding.beginning.width) /* beginning padding*/,
-      Size2d::New(padding.ending.height,
-                  padding.ending.width) /* ending padding*/);
-
-  return webnn::mojom::blink::Operation::NewPool2d(std::move(pool2d_mojo));
+  operator_mojo->input_operands = {input_operand_id};
+  operator_mojo->output_operands = {output_operand_id};
+  operator_mojo->attributes =
+      webnn::mojom::blink::OperatorAttributes::NewPool2d(
+          mojo::ConvertTo<webnn::mojom::blink::Pool2dAttributesPtr>(pool2d));
+  return operator_mojo;
 }
 
 OperatorPtr CreateReluOperator(const OperandToIdMap& operand_to_id_map,
@@ -488,58 +502,15 @@ base::expected<OperatorPtr, String> ConvertToMojoOperator(
       return CreateElementWiseBinaryOperator(operand_to_id_map, op);
     case MLOperator::OperatorKind::kGemm:
       return CreateGemmOperator(operand_to_id_map, op);
+    case MLOperator::OperatorKind::kAveragePool2d:
+    case MLOperator::OperatorKind::kMaxPool2d:
+      return CreatePool2dOperator(operand_to_id_map, op);
     case MLOperator::OperatorKind::kRelu:
       return CreateReluOperator(operand_to_id_map, op);
     case MLOperator::OperatorKind::kReshape:
       return CreateReshapeOperator(operand_to_id_map, op);
     case MLOperator::OperatorKind::kSoftmax:
       return CreateSoftmaxOperator(operand_to_id_map, op);
-    case MLOperator::OperatorKind::kAveragePool2d:
-    case MLOperator::OperatorKind::kMaxPool2d:
-    case MLOperator::OperatorKind::kHardSwish:
-    case MLOperator::OperatorKind::kReduceMean:
-    case MLOperator::OperatorKind::kReduceSum:
-    case MLOperator::OperatorKind::kResample2d:
-    case MLOperator::OperatorKind::kSigmoid:
-    case MLOperator::OperatorKind::kConcat:
-    case MLOperator::OperatorKind::kTranspose:
-    case MLOperator::OperatorKind::kLeakyRelu:
-    case MLOperator::OperatorKind::kConvTranspose2d:
-    case MLOperator::OperatorKind::kPRelu:
-    case MLOperator::OperatorKind::kPad:
-    case MLOperator::OperatorKind::kElu:
-    case MLOperator::OperatorKind::kAbs:
-    case MLOperator::OperatorKind::kCeil:
-    case MLOperator::OperatorKind::kFloor:
-    case MLOperator::OperatorKind::kNeg:
-    case MLOperator::OperatorKind::kSlice:
-    case MLOperator::OperatorKind::kSplit:
-    case MLOperator::OperatorKind::kTanh:
-      return base::unexpected(MLOperator::OperatorKindToString(op->Kind()) +
-                              " is not implemented.");
-  }
-  NOTREACHED_NORETURN();
-}
-
-base::expected<OperationPtr, String> ConvertToMojoOperation(
-    const OperandToIdMap& operand_to_id_map,
-    const MLOperator* op) {
-  switch (op->Kind()) {
-    case MLOperator::OperatorKind::kAveragePool2d:
-    case MLOperator::OperatorKind::kMaxPool2d:
-      return CreatePool2dOperation(operand_to_id_map, op);
-    case MLOperator::OperatorKind::kClamp:
-    case MLOperator::OperatorKind::kConv2d:
-    case MLOperator::OperatorKind::kAdd:
-    case MLOperator::OperatorKind::kSub:
-    case MLOperator::OperatorKind::kMul:
-    case MLOperator::OperatorKind::kDiv:
-    case MLOperator::OperatorKind::kMin:
-    case MLOperator::OperatorKind::kMax:
-    case MLOperator::OperatorKind::kGemm:
-    case MLOperator::OperatorKind::kRelu:
-    case MLOperator::OperatorKind::kReshape:
-    case MLOperator::OperatorKind::kSoftmax:
     case MLOperator::OperatorKind::kHardSwish:
     case MLOperator::OperatorKind::kReduceMean:
     case MLOperator::OperatorKind::kReduceSum:
