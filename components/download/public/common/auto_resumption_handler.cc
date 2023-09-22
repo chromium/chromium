@@ -398,6 +398,11 @@ bool AutoResumptionHandler::IsInterruptedDownloadAutoResumable(
   if (download_item->GetTargetFilePath().empty())
     return false;
 
+  // TODO(shaktisahu): Use DownloadItemImpl::kMaxAutoResumeAttempts.
+  if (download_item->GetAutoResumeCount() >= 5) {
+    return false;
+  }
+
   int interrupt_reason = download_item->GetLastReason();
   DCHECK_NE(interrupt_reason, download::DOWNLOAD_INTERRUPT_REASON_NONE);
   return interrupt_reason ==
