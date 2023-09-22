@@ -19,7 +19,7 @@
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/strcat_win.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_com_initializer.h"
 #include "chrome/installer/util/install_service_work_item.h"
@@ -158,10 +158,10 @@ int RunUninstallScript(UpdaterScope scope, bool uninstall_all) {
   const base::FilePath script_path =
       versioned_dir->AppendASCII(kUninstallScript);
 
-  const std::wstring cmdline = base::StringPrintf(
-      L"\"%ls\" /Q /C \"\"%ls\" --dir=\"%ls\"\"", cmd_exe_path.value().c_str(),
-      script_path.value().c_str(),
-      (uninstall_all ? base_dir : versioned_dir)->value().c_str());
+  const std::wstring cmdline = base::StrCat(
+      {L"\"", cmd_exe_path.value(), L"\" /Q /C \"\"", script_path.value(),
+       L"\" --dir=\"", (uninstall_all ? base_dir : versioned_dir)->value(),
+       L"\"\""});
   base::LaunchOptions options;
   options.start_hidden = true;
 

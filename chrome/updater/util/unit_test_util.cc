@@ -50,7 +50,6 @@
 #if BUILDFLAG(IS_WIN)
 #include <shlobj.h>
 
-#include "base/strings/string_number_conversions_win.h"
 #include "base/win/scoped_handle.h"
 #include "chrome/test/base/process_inspector_win.h"
 #include "chrome/updater/util/win_util.h"

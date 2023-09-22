@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
@@ -510,8 +511,7 @@ std::wstring InstallServiceWorkItemImpl::GetCurrentServiceName() const {
 }
 
 std::wstring InstallServiceWorkItemImpl::GetCurrentServiceDisplayName() const {
-  return base::StringPrintf(L"%ls (%ls)", display_name_.c_str(),
-                            GetCurrentServiceName().c_str());
+  return base::StrCat({display_name_, L" (", GetCurrentServiceName(), L")"});
 }
 
 std::vector<wchar_t> InstallServiceWorkItemImpl::MultiSzToVector(
@@ -611,8 +611,9 @@ bool InstallServiceWorkItemImpl::DeleteService(ScopedScHandle service) const {
 
 std::wstring InstallServiceWorkItemImpl::GenerateVersionedServiceName() const {
   const FILETIME filetime = base::Time::Now().ToFileTime();
-  return base::StringPrintf(L"%ls%x%x", service_name_.c_str(),
-                            filetime.dwHighDateTime, filetime.dwLowDateTime);
+  return service_name_ +
+         base::ASCIIToWide(base::StringPrintf("%lx%lx", filetime.dwHighDateTime,
+                                              filetime.dwLowDateTime));
 }
 
 }  // namespace installer

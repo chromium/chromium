@@ -8,8 +8,8 @@
 #include "base/files/file_path.h"
 #include "base/i18n/case_conversion.h"
 #include "base/path_service.h"
+#include "base/strings/strcat_win.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
 #include "base/win/windows_version.h"
@@ -82,20 +82,19 @@ TEST(ProductInstallDetailsTest, PathIsInProgramFiles) {
     program_files_paths.push_back(path.value());
   }
 
-  static constexpr const wchar_t* kValidFormats[] = {
-      L"%ls",
-      L"%ls\\",
-      L"%ls\\spam",
+  static constexpr const wchar_t* kValidSuffixes[] = {
+      L"",
+      L"\\",
+      L"\\spam",
   };
-  for (const wchar_t* valid : kValidFormats) {
+  for (const wchar_t* valid : kValidSuffixes) {
     for (const std::wstring& program_files_path : program_files_paths) {
-      std::wstring path = base::StringPrintf(valid, program_files_path.c_str());
+      std::wstring path = program_files_path + valid;
       EXPECT_TRUE(PathIsInProgramFiles(path)) << path;
 
-      path = base::StringPrintf(
-          valid, base::AsWString(base::i18n::ToLower(
-                                     base::AsStringPiece16(program_files_path)))
-                     .c_str());
+      path = base::AsWString(base::i18n::ToLower(
+                 base::AsStringPiece16(program_files_path))) +
+             valid;
       EXPECT_TRUE(PathIsInProgramFiles(path)) << path;
     }
   }
@@ -103,21 +102,27 @@ TEST(ProductInstallDetailsTest, PathIsInProgramFiles) {
 
 TEST(ProductInstallDetailsTest, GetInstallSuffix) {
   std::wstring suffix;
-  const std::pair<const wchar_t*, const wchar_t*> kData[] = {
-      {L"%ls\\Application", L""},
-      {L"%ls\\Application\\", L""},
-      {L"\\%ls\\Application", L""},
-      {L"\\%ls\\Application\\", L""},
-      {L"C:\\foo\\%ls\\Application\\foo.exe", L""},
-      {L"%ls Blorf\\Application", L" Blorf"},
-      {L"%ls Blorf\\Application\\", L" Blorf"},
-      {L"\\%ls Blorf\\Application", L" Blorf"},
-      {L"\\%ls Blorf\\Application\\", L" Blorf"},
-      {L"C:\\foo\\%ls Blorf\\Application\\foo.exe", L" Blorf"},
+  struct TestData {
+    base::WStringPiece path_prefix;
+    base::WStringPiece path_suffix;
+    base::WStringPiece install_suffix;
+  };
+  constexpr TestData kData[] = {
+      {L"", L"\\Application", L""},
+      {L"", L"\\Application\\", L""},
+      {L"\\", L"\\Application", L""},
+      {L"\\", L"\\Application\\", L""},
+      {L"C:\\foo\\", L"\\Application\\foo.exe", L""},
+      {L"", L" Blorf\\Application", L" Blorf"},
+      {L"", L" Blorf\\Application\\", L" Blorf"},
+      {L"\\", L" Blorf\\Application", L" Blorf"},
+      {L"\\", L" Blorf\\Application\\", L" Blorf"},
+      {L"C:\\foo\\", L" Blorf\\Application\\foo.exe", L" Blorf"},
   };
   for (const auto& data : kData) {
-    const std::wstring path = base::StringPrintf(data.first, kProductPathName);
-    EXPECT_EQ(std::wstring(data.second), GetInstallSuffix(path)) << path;
+    const std::wstring path =
+        base::StrCat({data.path_prefix, kProductPathName, data.path_suffix});
+    EXPECT_EQ(data.install_suffix, GetInstallSuffix(path)) << path;
   }
 }
 

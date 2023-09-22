@@ -16,7 +16,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/strcat_win.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_shortcut_win.h"
@@ -93,10 +93,11 @@ class CreateVisualElementsManifestTest
   // Creates the VisualElements directory and a light asset, if testing such.
   void PrepareTestVisualElementsDirectory() {
     base::FilePath visual_elements_dir =
-        version_dir_.Append(installer::kVisualElements);
+        version_dir_.AppendASCII(installer::kVisualElements);
     ASSERT_TRUE(base::CreateDirectory(visual_elements_dir));
-    std::wstring light_logo_file_name = base::StringPrintf(
-        L"Logo%ls.png", install_static::InstallDetails::Get().logo_suffix());
+    std::wstring light_logo_file_name = base::StrCat(
+        {L"Logo", install_static::InstallDetails::Get().logo_suffix(),
+         L".png"});
     ASSERT_NO_FATAL_FAILURE(
         CreateTestFile(visual_elements_dir.Append(light_logo_file_name)));
   }

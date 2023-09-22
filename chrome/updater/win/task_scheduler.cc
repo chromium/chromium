@@ -30,6 +30,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_co_mem.h"
@@ -61,13 +62,16 @@ const size_t kDeleteRetryDelayInMs = 100;
 
 // Return |timestamp| in the following string format YYYY-MM-DDTHH:MM:SS.
 std::wstring GetTimestampString(const base::Time& timestamp) {
+  // This intentionally avoids depending on the facilities in
+  // base/i18n/time_formatting.h so the updater will not need to depend on the
+  // ICU data file.
   base::Time::Exploded exploded_time;
   // The Z timezone info at the end of the string means UTC.
   timestamp.UTCExplode(&exploded_time);
-  return base::StringPrintf(L"%04d-%02d-%02dT%02d:%02d:%02dZ",
-                            exploded_time.year, exploded_time.month,
-                            exploded_time.day_of_month, exploded_time.hour,
-                            exploded_time.minute, exploded_time.second);
+  return base::ASCIIToWide(base::StringPrintf(
+      "%04d-%02d-%02dT%02d:%02d:%02dZ", exploded_time.year, exploded_time.month,
+      exploded_time.day_of_month, exploded_time.hour, exploded_time.minute,
+      exploded_time.second));
 }
 
 [[nodiscard]] bool UTCFileTimeToLocalSystemTime(const FILETIME& file_time_utc,

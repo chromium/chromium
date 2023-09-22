@@ -1173,8 +1173,8 @@ bool ShortcutOpListOrRemoveUnknownArgs(
   if (!base::win::ResolveShortcut(shortcut_path, nullptr, &args))
     return false;
 
-  base::CommandLine current_args(base::CommandLine::FromString(
-      base::StringPrintf(L"unused_program %ls", args.c_str())));
+  base::CommandLine current_args(
+      base::CommandLine::FromString(L"unused_program " + args));
   const char* const kept_switches[] = {
       switches::kApp,
       switches::kAppId,
@@ -1295,12 +1295,9 @@ std::wstring ShortenAppModelIdComponent(const std::wstring& component,
 // Gets the registry entry which stores the default handler for |protocol|.
 std::unique_ptr<RegistryEntry> GetProtocolUserChoiceEntry(
     const std::wstring& protocol) {
-  static constexpr wchar_t kUrlAssociationFormat[] =
-      L"SOFTWARE\\Microsoft\\Windows\\Shell\\Associations\\UrlAssociations\\"
-      L"%ls\\UserChoice";
-
-  std::wstring user_choice_path =
-      base::StringPrintf(kUrlAssociationFormat, protocol.c_str());
+  std::wstring user_choice_path = base::StrCat(
+      {L"SOFTWARE\\Microsoft\\Windows\\Shell\\Associations\\UrlAssociations\\",
+       protocol, L"\\UserChoice"});
   return std::make_unique<RegistryEntry>(user_choice_path.c_str(), kRegProgId);
 }
 
@@ -1535,8 +1532,8 @@ std::wstring GetCurrentDateTimeForHashing() {
   system_time.wMilliseconds = 0;
   FILETIME file_time;
   ::SystemTimeToFileTime(&system_time, &file_time);
-  return base::StringPrintf(L"%08lx%08lx", file_time.dwHighDateTime,
-                            file_time.dwLowDateTime);
+  return base::ASCIIToWide(base::StringPrintf(
+      "%08lx%08lx", file_time.dwHighDateTime, file_time.dwLowDateTime));
 }
 
 // The user choice hash function uses a shell32 wide string as a salt. This
@@ -1672,9 +1669,9 @@ bool IsUserChoiceHashValid(const base::win::RegKey& user_choice_reg_key,
   last_write_system_time.wSecond = 0;
   last_write_system_time.wMilliseconds = 0;
   ::SystemTimeToFileTime(&last_write_system_time, &last_write_time);
-  std::wstring last_write_time_string =
-      base::StringPrintf(L"%08lx%08lx", last_write_time.dwHighDateTime,
-                         last_write_time.dwLowDateTime);
+  std::wstring last_write_time_string = base::ASCIIToWide(
+      base::StringPrintf("%08lx%08lx", last_write_time.dwHighDateTime,
+                         last_write_time.dwLowDateTime));
   std::wstring current_hash;
   if (user_choice_reg_key.ReadValue(kRegHash, &current_hash) != ERROR_SUCCESS)
     return false;

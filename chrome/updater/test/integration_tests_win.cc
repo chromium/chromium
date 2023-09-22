@@ -1207,10 +1207,10 @@ HRESULT DoUpdate(UpdaterScope scope,
         state->get_totalBytesToDownload(&total_bytes_to_download);
         LONG download_time_remaining_ms = 0;
         state->get_downloadTimeRemainingMs(&download_time_remaining_ms);
-        extra_data = base::StringPrintf(
-            L"[Bytes downloaded: %d][Bytes total: %d][Time remaining: %d]",
+        extra_data = base::ASCIIToWide(base::StringPrintf(
+            "[Bytes downloaded: %lu][Bytes total: %lu][Time remaining: %ld]",
             bytes_downloaded, total_bytes_to_download,
-            download_time_remaining_ms);
+            download_time_remaining_ms));
         break;
       }
 
@@ -1223,9 +1223,9 @@ HRESULT DoUpdate(UpdaterScope scope,
         state->get_bytesDownloaded(&bytes_downloaded);
         ULONG total_bytes_to_download = 0;
         state->get_totalBytesToDownload(&total_bytes_to_download);
-        extra_data =
-            base::StringPrintf(L"[Bytes downloaded: %d][Bytes total: %d]",
-                               bytes_downloaded, total_bytes_to_download);
+        extra_data = base::ASCIIToWide(
+            base::StringPrintf("[Bytes downloaded: %lu][Bytes total: %lu]",
+                               bytes_downloaded, total_bytes_to_download));
         EXPECT_HRESULT_SUCCEEDED(bundle->install());
         break;
       }
@@ -1237,9 +1237,9 @@ HRESULT DoUpdate(UpdaterScope scope,
         state->get_installProgress(&install_progress);
         LONG install_time_remaining_ms = 0;
         state->get_installTimeRemainingMs(&install_time_remaining_ms);
-        extra_data =
-            base::StringPrintf(L"[Install Progress: %d][Time remaining: %d]",
-                               install_progress, install_time_remaining_ms);
+        extra_data = base::ASCIIToWide(
+            base::StringPrintf("[Install Progress: %ld][Time remaining: %ld]",
+                               install_progress, install_time_remaining_ms));
         break;
       }
 
@@ -1264,9 +1264,10 @@ HRESULT DoUpdate(UpdaterScope scope,
         LONG installer_result_code = 0;
         EXPECT_HRESULT_SUCCEEDED(
             state->get_installerResultCode(&installer_result_code));
-        extra_data = base::StringPrintf(
-            L"[errorCode: %d][completionMessage: %ls][installerResultCode: %d]",
-            error_code, completion_message.Get(), installer_result_code);
+        extra_data = base::ASCIIToWide(base::StringPrintf(
+            "[errorCode: %ld][completionMessage: %ls][installerResultCode: "
+            "%ld]",
+            error_code, completion_message.Get(), installer_result_code));
         break;
       }
 

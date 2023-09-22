@@ -20,8 +20,8 @@
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat_win.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/atl.h"
 #include "base/win/embedded_i18n/language_selector.h"
@@ -116,7 +116,7 @@ std::wstring GetLocalizedEulaResource() {
 
   // Spaces and DOS paths must be url encoded.
   std::wstring url_path =
-      base::StringPrintf(L"res://%ls/#23/%ls", full_exe_path, resource.c_str());
+      base::StrCat({L"res://", full_exe_path, L"/#23/", resource});
 
   // The cast is safe because url_path has limited length
   // (see the definition of full_exe_path and resource).

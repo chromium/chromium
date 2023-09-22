@@ -9,7 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/strcat_win.h"
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "chrome/install_static/install_util.h"
@@ -331,24 +331,18 @@ TEST_F(InstallServiceWorkItemTest, Do_ServiceName) {
       base::CommandLine(base::FilePath(kServiceProgramPath)), kProductRegPath,
       kClsids, kIids);
 
-  EXPECT_STREQ(kServiceName,
-               GetImpl(item.get())->GetCurrentServiceName().c_str());
-  EXPECT_STREQ(
-      base::StringPrintf(L"%ls (%ls)", kServiceDisplayName,
-                         GetImpl(item.get())->GetCurrentServiceName().c_str())
-          .c_str(),
-      GetImpl(item.get())->GetCurrentServiceDisplayName().c_str());
+  EXPECT_EQ(kServiceName, GetImpl(item.get())->GetCurrentServiceName());
+  EXPECT_EQ(base::StrCat({kServiceDisplayName, L" (",
+                          GetImpl(item.get())->GetCurrentServiceName(), L")"}),
+            GetImpl(item.get())->GetCurrentServiceDisplayName());
 
   EXPECT_TRUE(GetImpl(item.get())->CreateAndSetServiceName());
-  EXPECT_STRNE(kServiceName,
-               GetImpl(item.get())->GetCurrentServiceName().c_str());
+  EXPECT_NE(kServiceName, GetImpl(item.get())->GetCurrentServiceName());
   EXPECT_EQ(0UL,
             GetImpl(item.get())->GetCurrentServiceName().find(kServiceName));
-  EXPECT_STREQ(
-      base::StringPrintf(L"%ls (%ls)", kServiceDisplayName,
-                         GetImpl(item.get())->GetCurrentServiceName().c_str())
-          .c_str(),
-      GetImpl(item.get())->GetCurrentServiceDisplayName().c_str());
+  EXPECT_EQ(base::StrCat({kServiceDisplayName, L" (",
+                          GetImpl(item.get())->GetCurrentServiceName(), L")"}),
+            GetImpl(item.get())->GetCurrentServiceDisplayName());
 
   base::win::RegKey key;
   ASSERT_EQ(ERROR_SUCCESS, key.Open(HKEY_LOCAL_MACHINE, kProductRegPath,

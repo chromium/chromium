@@ -36,9 +36,9 @@
 #include "base/process/memory.h"
 #include "base/process/process.h"
 #include "base/process/process_metrics.h"
+#include "base/strings/strcat_win.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/threading/platform_thread.h"
@@ -156,17 +156,17 @@ LONG OverwriteDisplayVersions(const std::wstring& product,
                               const std::wstring& value) {
   // The version is held in two places.  First change it in the MSI Installer
   // registry entry.  It is held under a "squashed guid" key.
-  std::wstring reg_path = base::StringPrintf(
-      L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Installer\\UserData\\"
-      L"%ls\\Products\\%ls\\InstallProperties",
-      kSystemPrincipalSid, InstallUtil::GuidToSquid(product).c_str());
+  std::wstring reg_path = base::StrCat(
+      {L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Installer\\UserData\\",
+       kSystemPrincipalSid, L"\\Products\\", InstallUtil::GuidToSquid(product),
+       L"\\InstallProperties"});
   LONG result1 = OverwriteDisplayVersion(reg_path, value, KEY_WOW64_64KEY);
 
   // The display version also exists under the Unininstall registry key with
   // the original guid.  Check both WOW64_64 and WOW64_32.
-  reg_path = base::StringPrintf(
-      L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{%ls}",
-      product.c_str());
+  reg_path = base::StrCat(
+      {L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{", product,
+       L"}"});
   // Consider the operation a success if either of these succeeds.
   LONG result2 = OverwriteDisplayVersion(reg_path, value, KEY_WOW64_64KEY);
   LONG result3 = OverwriteDisplayVersion(reg_path, value, KEY_WOW64_32KEY);
@@ -874,12 +874,11 @@ installer::InstallStatus RegisterDevChrome(
   if (!existing_chrome)
     existing_chrome = original_state.GetProductState(true);
   if (existing_chrome) {
-    static const wchar_t kPleaseUninstallYourChromeMessage[] =
-        L"You already have a full-installation (non-dev) of %1ls, please "
-        L"uninstall it first using Add/Remove Programs in the control panel.";
-    std::wstring name(InstallUtil::GetDisplayName());
-    std::wstring message(
-        base::StringPrintf(kPleaseUninstallYourChromeMessage, name.c_str()));
+    const std::wstring name = InstallUtil::GetDisplayName();
+    const std::wstring message = base::StrCat(
+        {L"You already have a full-installation (non-dev) of ", name,
+         L", please uninstall it first using Add/Remove Programs in the "
+         L"control panel."});
 
     LOG(ERROR) << "Aborting operation: another installation of " << name
                << " was found, as a last resort (if the product is not present "

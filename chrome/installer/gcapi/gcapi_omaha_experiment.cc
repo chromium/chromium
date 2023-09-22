@@ -5,6 +5,8 @@
 #include "chrome/installer/gcapi/gcapi_omaha_experiment.h"
 
 #include "base/check.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions_win.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -80,9 +82,9 @@ std::wstring GetGCAPIExperimentLabel(const wchar_t* brand_code,
 
   base::Time instance_time = base::Time::FromTimeT(instance_time_value);
 
-  return base::StringPrintf(L"%ls=%ls_%d|%ls", label.c_str(), brand_code,
-                            GetCurrentRlzWeek(instance_time),
-                            BuildExperimentDateString(instance_time).c_str());
+  return base::StrCat({label, L"=", brand_code, L"_",
+                       base::NumberToWString(GetCurrentRlzWeek(instance_time)),
+                       L"|", BuildExperimentDateString(instance_time)});
 }
 
 }  // namespace gcapi_internals
