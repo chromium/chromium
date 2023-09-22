@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 
-// The accessibility identifier of the password details table view.
+// The accessibility identifier of the Password Manager table view.
 extern NSString* const kPasswordsTableViewId;
 extern NSString* const kPasswordsSearchBarId;
 extern NSString* const kPasswordsScrimViewId;
@@ -43,6 +43,14 @@ extern NSString* const kDeleteButtonForPasswordDetailsId;
 // only stored locally and not backed up to any account.
 extern NSString* const kLocalOnlyPasswordIconId;
 
+// Name of the image shown in the Password Manager widget promo that's presented
+// in the Password Manager.
+extern NSString* const kWidgetPromoImageName;
+
+// Name of the image shown in the Password Manager widget promo that's presented
+// in the Password Manager when the promo cell is disabled.
+extern NSString* const kWidgetPromoDisabledImageName;
+
 // Sections of the password settings
 typedef NS_ENUM(NSInteger, PasswordSectionIdentifier) {
   SectionIdentifierSavedPasswords = kSectionIdentifierEnumZero,
@@ -50,6 +58,7 @@ typedef NS_ENUM(NSInteger, PasswordSectionIdentifier) {
   SectionIdentifierPasswordCheck,
   SectionIdentifierAddPasswordButton,
   SectionIdentifierManageAccountHeader,
+  SectionIdentifierWidgetPromo,
 };
 
 // Enum with all possible UI states for the Password Manager's Password Checkup

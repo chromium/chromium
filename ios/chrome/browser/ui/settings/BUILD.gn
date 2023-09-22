@@ -192,6 +192,7 @@ source_set("settings") {
     "//ios/chrome/browser/ui/settings/password",
     "//ios/chrome/browser/ui/settings/password/password_details",
     "//ios/chrome/browser/ui/settings/password/password_details:password_details_ui",
+    "//ios/chrome/browser/ui/settings/password/resources:password_manager_widget_promo",
     "//ios/chrome/browser/ui/settings/privacy",
     "//ios/chrome/browser/ui/settings/privacy:privacy_ui",
     "//ios/chrome/browser/ui/settings/safety_check",

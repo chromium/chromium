@@ -9,6 +9,8 @@
 #import "base/strings/string_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/bind.h"
+#import "base/test/scoped_feature_list.h"
+#import "components/feature_engagement/test/mock_tracker.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -18,6 +20,7 @@
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
@@ -30,6 +33,7 @@
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_consumer.h"
+#import "ios/chrome/browser/ui/settings/password/passwords_mediator+private.h"
 #import "ios/chrome/browser/ui/settings/utils/password_auto_fill_status_observer.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -52,6 +56,12 @@ PasswordForm CreatePasswordForm() {
   return form;
 }
 
+// Create the Feature Engagement Mock Tracker.
+std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
+    web::BrowserState* browser_state) {
+  return std::make_unique<feature_engagement::test::MockTracker>();
+}
+
 }  // namespace
 
 @interface FakePasswordsConsumer : NSObject <PasswordsConsumer> {
@@ -66,6 +76,8 @@ PasswordForm CreatePasswordForm() {
 @property(nonatomic, assign) NSInteger numberOfCallToChangeOnDeviceEncryption;
 
 @property(nonatomic, copy) NSString* detailedText;
+
+@property(nonatomic, assign) BOOL shouldShowPasswordManagerWidgetPromoCalled;
 
 @end
 
@@ -99,6 +111,11 @@ PasswordForm CreatePasswordForm() {
   return _affiliatedGroups;
 }
 
+- (void)setShouldShowPasswordManagerWidgetPromo:
+    (BOOL)shouldShowPasswordManagerWidgetPromo {
+  _shouldShowPasswordManagerWidgetPromoCalled = YES;
+}
+
 @end
 
 // Tests for Passwords mediator.
@@ -118,6 +135,10 @@ class PasswordsMediatorTest : public BlockCleanupTest {
           return std::unique_ptr<KeyedService>(
               std::make_unique<password_manager::FakeAffiliationService>());
         })));
+
+    builder.AddTestingFactory(
+        feature_engagement::TrackerFactory::GetInstance(),
+        base::BindRepeating(&BuildFeatureEngagementMockTracker));
     browser_state_ = builder.Build();
 
     store_ =
@@ -138,6 +159,12 @@ class PasswordsMediatorTest : public BlockCleanupTest {
                          syncService:SyncServiceFactory::GetForBrowserState(
                                          browser_state_.get())
                          prefService:browser_state_->GetPrefs()];
+
+    mock_tracker_ = static_cast<feature_engagement::test::MockTracker*>(
+        feature_engagement::TrackerFactory::GetForBrowserState(browserState()));
+
+    mediator_.tracker = mock_tracker_;
+
     mediator_.consumer = consumer_;
   }
 
@@ -149,6 +176,10 @@ class PasswordsMediatorTest : public BlockCleanupTest {
 
   FakePasswordsConsumer* consumer() { return consumer_; }
 
+  feature_engagement::test::MockTracker* mockTracker() {
+    return mock_tracker_;
+  };
+
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
  private:
@@ -158,6 +189,7 @@ class PasswordsMediatorTest : public BlockCleanupTest {
   scoped_refptr<IOSChromePasswordCheckManager> password_check_;
   FakePasswordsConsumer* consumer_;
   PasswordsMediator* mediator_;
+  feature_engagement::test::MockTracker* mock_tracker_;
 };
 
 // Consumer should be notified when passwords are changed.
@@ -176,4 +208,39 @@ TEST_F(PasswordsMediatorTest, NotifiesConsumerOnPasswordChange) {
   RunUntilIdle();
   affiliatedGroups = [consumer() affiliatedGroups];
   EXPECT_THAT(affiliatedGroups, testing::IsEmpty());
+}
+
+// Tests that `ShouldTriggerHelpUI` is called on the FET and that the consumer
+// is being notified of whether the Password Manager widget promo should be
+// shown when the mediator's consumer is set.
+TEST_F(PasswordsMediatorTest, NotifiesConsumerToShowPromoOrNot) {
+  FakePasswordsConsumer* different_consumer =
+      [[FakePasswordsConsumer alloc] init];
+  // Make sure that `shouldShowPasswordManagerWidgetPromoCalled` isn't already
+  // true.
+  EXPECT_FALSE(different_consumer.shouldShowPasswordManagerWidgetPromoCalled);
+
+  EXPECT_CALL(
+      *mockTracker(),
+      ShouldTriggerHelpUI(testing::Ref(
+          feature_engagement::kIPHiOSPromoPasswordManagerWidgetFeature)))
+      .Times(testing::Exactly(1));
+
+  mediator().consumer = different_consumer;
+
+  EXPECT_TRUE(different_consumer.shouldShowPasswordManagerWidgetPromoCalled);
+}
+
+// Tests that `Dismissed` is called on the FET on disconnect when the promo was
+// shown and was not dismissed by the user.
+TEST_F(PasswordsMediatorTest, NotifiesFETToDismissPromoOnDisconnect) {
+  mediator().shouldNotifyFETToDismissPasswordManagerWidgetPromo = YES;
+
+  EXPECT_CALL(
+      *mockTracker(),
+      Dismissed(testing::Ref(
+          feature_engagement::kIPHiOSPromoPasswordManagerWidgetFeature)))
+      .Times(testing::Exactly(1));
+
+  [mediator() disconnect];
 }

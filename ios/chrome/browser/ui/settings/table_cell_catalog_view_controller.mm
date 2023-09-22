@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/ui/settings/address_bar_preference/cells/address_bar_options_item.h"
 #import "ios/chrome/browser/ui/settings/cells/account_sign_in_item.h"
 #import "ios/chrome/browser/ui/settings/cells/copied_to_chrome_item.h"
+#import "ios/chrome/browser/ui/settings/cells/inline_promo_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
@@ -96,6 +97,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeCheck4,
   ItemTypeCheck5,
   ItemTypeCheck6,
+  ItemTypeInlinePromo,
 };
 }
 
@@ -533,6 +535,16 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [[AddressBarOptionsItem alloc] initWithType:ItemAddressBarOptions];
   addressBarOptions.bottomAddressBarOptionSelected = YES;
   [model addItem:addressBarOptions
+      toSectionWithIdentifier:SectionIdentifierSettings];
+
+  InlinePromoItem* inlinePromoItem =
+      [[InlinePromoItem alloc] initWithType:ItemTypeInlinePromo];
+  inlinePromoItem.promoImage =
+      [UIImage imageNamed:@"password_manager_widget_promo"];
+  inlinePromoItem.promoText =
+      @"Text to promote some cool stuff in Settings. Can be on multiple lines.";
+  inlinePromoItem.moreInfoButtonTitle = @"Show Me How";
+  [model addItem:inlinePromoItem
       toSectionWithIdentifier:SectionIdentifierSettings];
 
   TableViewLinkHeaderFooterItem* linkFooter =

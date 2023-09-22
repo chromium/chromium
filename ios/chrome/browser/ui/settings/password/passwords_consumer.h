@@ -37,6 +37,11 @@ class AffiliatedGroup;
                    (const std::vector<password_manager::CredentialUIEntry>&)
                        blockedSites;
 
+// Displays the Password Manager widget promo if the Feature Engagement Tracker
+// allows it.
+- (void)setShouldShowPasswordManagerWidgetPromo:
+    (BOOL)shouldShowPasswordManagerWidgetPromo;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORDS_CONSUMER_H_

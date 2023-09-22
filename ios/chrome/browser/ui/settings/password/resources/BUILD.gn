@@ -7,3 +7,19 @@ imageset("passwords_empty") {
     "passwords_empty.imageset/passwords_empty_dark.pdf",
   ]
 }
+
+imageset("password_manager_widget_promo") {
+  sources = [
+    "password_manager_widget_promo.imageset/Contents.json",
+    "password_manager_widget_promo.imageset/password_manager_widget_promo@2x.png",
+    "password_manager_widget_promo.imageset/password_manager_widget_promo@3x.png",
+  ]
+}
+
+imageset("password_manager_widget_promo_disabled") {
+  sources = [
+    "password_manager_widget_promo_disabled.imageset/Contents.json",
+    "password_manager_widget_promo_disabled.imageset/password_manager_widget_promo_disabled@2x.png",
+    "password_manager_widget_promo_disabled.imageset/password_manager_widget_promo_disabled@3x.png",
+  ]
+}

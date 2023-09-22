@@ -5504,6 +5504,12 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       </message>
       <message name="IDS_IOS_SETTINGS_DOWNLOADS_ACCOUNT_SELECTION_HEADER" desc="Header of Google Photos account selection section in Downloads settings. The section contains the list of accounts on the device among which the user can choose to save images to Google Photos. [iOS only]">
         Accounts on this Device
+</message>
+      <message name="IDS_IOS_PASSWORD_MANAGER_WIDGET_PROMO_TEXT" desc="Descriptive text for the Password Manager widget promo shown in the Password Manager.">
+        Securely access your passwords from the home screen with the Password Manager widget.
+      </message>
+      <message name="IDS_IOS_PASSWORD_MANAGER_WIDGET_PROMO_BUTTON_TITLE" desc="Title of the button for the Password Manager widget promo shown in the Password Manager." meaning="Title-cased">
+        Show Me How
       </message>
     </messages>
   </release>

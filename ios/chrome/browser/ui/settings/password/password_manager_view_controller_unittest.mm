@@ -11,6 +11,7 @@
 #import "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/feature_engagement/public/feature_constants.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #import "components/password_manager/core/browser/mock_bulk_leak_check_service.h"
@@ -35,6 +36,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/ui/settings/cells/inline_promo_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller+private.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_consumer.h"
@@ -79,6 +81,14 @@ using ::testing::Return;
 @end
 
 namespace {
+
+// Returns the offset to take into account when expecting a certain number of
+// sections. Offset depends on whether or not the Password Manager widget promo
+// flag is enabled.
+int GetNumberOfSectionsOffset() {
+  return base::FeatureList::IsEnabled(
+      feature_engagement::kIPHiOSPromoPasswordManagerWidgetFeature);
+}
 
 // Use this test suite for tests that verify behaviors of
 // PasswordManagerViewController before loading the passwords for the first time
@@ -369,7 +379,7 @@ TEST_F(PasswordManagerViewControllerTest, TestInitialization) {
 TEST_F(PasswordManagerViewControllerTest, AddSavedPasswords) {
   AddSavedForm1();
 
-  EXPECT_EQ(4, NumberOfSections());
+  EXPECT_EQ(4 + GetNumberOfSectionsOffset(), NumberOfSections());
   EXPECT_EQ(1, NumberOfItemsInSection(
                    GetSectionIndex(SectionIdentifierSavedPasswords)));
   [GetPasswordManagerViewController() settingsWillBeDismissed];
@@ -379,7 +389,7 @@ TEST_F(PasswordManagerViewControllerTest, AddSavedPasswords) {
 TEST_F(PasswordManagerViewControllerTest, AddBlockedPasswords) {
   AddBlockedForm1();
 
-  EXPECT_EQ(4, NumberOfSections());
+  EXPECT_EQ(4 + GetNumberOfSectionsOffset(), NumberOfSections());
   EXPECT_EQ(1,
             NumberOfItemsInSection(GetSectionIndex(SectionIdentifierBlocked)));
   [GetPasswordManagerViewController() settingsWillBeDismissed];
@@ -393,7 +403,7 @@ TEST_F(PasswordManagerViewControllerTest, AddSavedAndBlocked) {
   AddBlockedForm2();
 
   // There should be two sections added.
-  EXPECT_EQ(5, NumberOfSections());
+  EXPECT_EQ(5 + GetNumberOfSectionsOffset(), NumberOfSections());
 
   // There should be 1 row in saved password section.
   EXPECT_EQ(1, NumberOfItemsInSection(
@@ -441,7 +451,7 @@ TEST_F(PasswordManagerViewControllerTest, AddSavedDuplicates) {
   AddSavedForm1();
   AddSavedForm1();
 
-  EXPECT_EQ(4, NumberOfSections());
+  EXPECT_EQ(4 + GetNumberOfSectionsOffset(), NumberOfSections());
   EXPECT_EQ(1, NumberOfItemsInSection(
                    GetSectionIndex(SectionIdentifierSavedPasswords)));
   [GetPasswordManagerViewController() settingsWillBeDismissed];
@@ -453,7 +463,7 @@ TEST_F(PasswordManagerViewControllerTest, AddBlockedDuplicates) {
   AddBlockedForm1();
   AddBlockedForm1();
 
-  EXPECT_EQ(4, NumberOfSections());
+  EXPECT_EQ(4 + GetNumberOfSectionsOffset(), NumberOfSections());
   EXPECT_EQ(1,
             NumberOfItemsInSection(GetSectionIndex(SectionIdentifierBlocked)));
   [GetPasswordManagerViewController() settingsWillBeDismissed];
@@ -538,7 +548,7 @@ TEST_F(PasswordManagerViewControllerTest, TestChangePasswordsWhileSearching) {
         return presentation_finished;
       }));
 
-  EXPECT_EQ(4, NumberOfSections());
+  EXPECT_EQ(4 + GetNumberOfSectionsOffset(), NumberOfSections());
   EXPECT_TRUE([passwords_controller.tableViewModel
       hasSectionForSectionIdentifier:SectionIdentifierAddPasswordButton]);
   EXPECT_TRUE([passwords_controller.tableViewModel
@@ -562,7 +572,7 @@ TEST_F(PasswordManagerViewControllerTest, TestChangePasswordsWhileSearching) {
   passwords_controller.navigationItem.searchController.active = NO;
 
   // Sections are restored after search is over.
-  EXPECT_EQ(4, NumberOfSections());
+  EXPECT_EQ(4 + GetNumberOfSectionsOffset(), NumberOfSections());
   EXPECT_TRUE([passwords_controller.tableViewModel
       hasSectionForSectionIdentifier:SectionIdentifierAddPasswordButton]);
   EXPECT_TRUE([passwords_controller.tableViewModel
@@ -678,7 +688,8 @@ TEST_F(PasswordManagerViewControllerTest, TestOpenInSearchMode) {
 
   // Verify that the content of table view model is as expected after leaving
   // search mode.
-  EXPECT_EQ(4, [[passwords_controller tableViewModel] numberOfSections]);
+  EXPECT_EQ(4 + GetNumberOfSectionsOffset(),
+            [[passwords_controller tableViewModel] numberOfSections]);
   EXPECT_TRUE([passwords_controller.tableViewModel
       hasSectionForSectionIdentifier:SectionIdentifierAddPasswordButton]);
   EXPECT_TRUE([passwords_controller.tableViewModel
@@ -738,7 +749,7 @@ TEST_F(PasswordManagerViewControllerTest, FilterItems) {
   AddBlockedForm1();
   AddBlockedForm2();
 
-  EXPECT_EQ(5, NumberOfSections());
+  EXPECT_EQ(5 + GetNumberOfSectionsOffset(), NumberOfSections());
 
   PasswordManagerViewController* passwords_controller =
       GetPasswordManagerViewController();
@@ -1477,6 +1488,42 @@ TEST_F(PasswordManagerViewControllerTest, PasswordStoreListener) {
   RunUntilIdle();
   EXPECT_EQ(1, NumberOfItemsInSection(
                    GetSectionIndex(SectionIdentifierSavedPasswords)));
+  [GetPasswordManagerViewController() settingsWillBeDismissed];
+}
+
+// Test verifies the content of the widget promo cell.
+TEST_F(PasswordManagerViewControllerTest, WidgetPromo) {
+  // Enable Password Manager widget promo feature.
+  base::test::ScopedFeatureList feature_list(
+      feature_engagement::kIPHiOSPromoPasswordManagerWidgetFeature);
+
+  AddSavedForm1();
+
+  GetPasswordManagerViewController().shouldShowPasswordManagerWidgetPromo = YES;
+  [GetPasswordManagerViewController() reloadData];
+
+  EXPECT_EQ(1, NumberOfItemsInSection(
+                   GetSectionIndex(SectionIdentifierSavedPasswords)));
+
+  InlinePromoItem* item = static_cast<InlinePromoItem*>(
+      GetTableViewItem(GetSectionIndex(SectionIdentifierWidgetPromo), 0));
+
+  EXPECT_NSEQ(item.promoImage, [UIImage imageNamed:kWidgetPromoImageName]);
+  EXPECT_NSEQ(item.promoText, l10n_util::GetNSString(
+                                  IDS_IOS_PASSWORD_MANAGER_WIDGET_PROMO_TEXT));
+  EXPECT_NSEQ(item.moreInfoButtonTitle,
+              l10n_util::GetNSString(
+                  IDS_IOS_PASSWORD_MANAGER_WIDGET_PROMO_BUTTON_TITLE));
+  EXPECT_TRUE(item.shouldShowCloseButton);
+  EXPECT_FALSE(GetPasswordManagerViewController().editing);
+  EXPECT_TRUE(item.enabled);
+
+  SetEditing(true);
+  EXPECT_FALSE(item.enabled);
+  EXPECT_NSEQ(item.promoImage,
+              [UIImage imageNamed:kWidgetPromoDisabledImageName]);
+  SetEditing(false);
+
   [GetPasswordManagerViewController() settingsWillBeDismissed];
 }
 

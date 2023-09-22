@@ -7,12 +7,14 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/password_checkup_metrics.h"
@@ -144,6 +146,7 @@ using password_manager::WarningType;
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   FaviconLoader* faviconLoader =
       IOSChromeFaviconLoaderFactory::GetForBrowserState(browserState);
+
   self.mediator = [[PasswordsMediator alloc]
       initWithPasswordCheckManager:IOSChromePasswordCheckManagerFactory::
                                        GetForBrowserState(browserState)
@@ -151,6 +154,9 @@ using password_manager::WarningType;
                        syncService:SyncServiceFactory::GetForBrowserState(
                                        browserState)
                        prefService:browserState->GetPrefs()];
+  self.mediator.tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(browserState);
+
   self.reauthModule = password_manager::BuildReauthenticationModule(
       /*successfulReauthTimeAccessor=*/self.mediator);
   ChromeAccountManagerService* accountManagerService =
