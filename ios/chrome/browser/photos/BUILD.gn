@@ -33,6 +33,7 @@ source_set("photos_service_factory") {
     "//components/keyed_service/ios",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/signin",
     "//ios/public/provider/chrome/browser/photos:photos_api",
   ]
 }

@@ -31,6 +31,7 @@ class PhotosServiceFactory : public BrowserStateKeyedServiceFactory {
       web::BrowserState* context) const override;
   web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
+  bool ServiceIsCreatedWithBrowserState() const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_PHOTOS_PHOTOS_SERVICE_FACTORY_H_

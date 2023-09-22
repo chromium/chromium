@@ -10,6 +10,8 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/public/provider/chrome/browser/photos/photos_api.h"
 
 // static
@@ -28,7 +30,10 @@ PhotosServiceFactory* PhotosServiceFactory::GetInstance() {
 PhotosServiceFactory::PhotosServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "PhotosService",
-          BrowserStateDependencyManager::GetInstance()) {}
+          BrowserStateDependencyManager::GetInstance()) {
+  DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(ChromeAccountManagerServiceFactory::GetInstance());
+}
 
 PhotosServiceFactory::~PhotosServiceFactory() = default;
 
@@ -37,11 +42,23 @@ std::unique_ptr<KeyedService> PhotosServiceFactory::BuildServiceInstanceFor(
   PhotosServiceConfiguration* configuration =
       [[PhotosServiceConfiguration alloc] init];
   ApplicationContext* application_context = GetApplicationContext();
+  ChromeBrowserState* chrome_browser_state =
+      ChromeBrowserState::FromBrowserState(context);
   configuration.ssoService = application_context->GetSSOService();
+  configuration.prefService = chrome_browser_state->GetPrefs();
+  configuration.identityManager =
+      IdentityManagerFactory::GetForBrowserState(chrome_browser_state);
+  configuration.accountManagerService =
+      ChromeAccountManagerServiceFactory::GetForBrowserState(
+          chrome_browser_state);
   return ios::provider::CreatePhotosService(configuration);
 }
 
 web::BrowserState* PhotosServiceFactory::GetBrowserStateToUse(
     web::BrowserState* context) const {
   return GetBrowserStateRedirectedInIncognito(context);
+}
+
+bool PhotosServiceFactory::ServiceIsCreatedWithBrowserState() const {
+  return true;
 }
