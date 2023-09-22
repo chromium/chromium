@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import glob
-import logging
 import os
 import re
 
@@ -13,21 +11,15 @@ _EXCLUSIONS = [
     # Misc files that exist to document directories
     re.compile(r'.*METADATA'),
     re.compile(r'.*OWNERS'),
-    # TODO: revisit the following entries; enabling them breaks the following
-    # tests:
-    # - *.crx: android_webview/nonembedded/component_updater/
-    #          aw_component_update_service_test.cc
-    # - *.md:  net/third_party/quiche/src/quiche/common/
-    #          platform/api/quiche_file_utils_test.cc
-    #re.compile(r'.*\.md'),
-    #re.compile(r'.*\.crx'),  # Chrome extension zip files.
-    #re.compile(r'.*\.crx'),  # Used by download_from_google_storage.
+    re.compile(r'.*\.md'),
+    re.compile(r'.*\.crx'),  # Chrome extension zip files.
     re.compile(r'.*/\.git.*'),  # Any '.git*' directories/files.
     re.compile(r'.*\.so'),  # Libraries packed into .apk.
     re.compile(r'.*Mojo.*manifest\.json'),  # Some source_set()s pull these in.
     re.compile(r'.*\.py'),  # Some test_support targets include python deps.
     re.compile(r'.*\.apk'),  # Should be installed separately.
     re.compile(r'.*\.jar'),  # Never need java intermediates.
+    re.compile(r'.*\.crx'),  # Used by download_from_google_storage.
     re.compile(r'.*\.wpr'),  # Web-page-relay files needed only on host.
     re.compile(r'.*lib.java/.*'),  # Never need java intermediates.
 
@@ -66,32 +58,12 @@ _EXCLUSIONS = [
     re.compile(r'.*\.incremental\.json'),
 ]
 
+
 def _FilterDataDeps(abs_host_files):
   exclusions = _EXCLUSIONS + [
       re.compile(os.path.join(constants.GetOutDirectory(), 'bin'))
   ]
-
-  # Expand all paths to individual files.
-  # Remove all non-file entries (including symlinks).
-  # Set ensures we don't add any items twice.
-  all_files = set()
-  for item in abs_host_files:
-    if os.path.isdir(item):
-      all_files.update(
-          item for item in glob.glob(os.path.join(item, "**/*"), recursive=True)
-          if os.path.isfile(item))
-      # Include hidden files. replace with `include_hidden=True` after migrating
-      # to newer version of Python.
-      all_files.update(
-          item
-          for item in glob.glob(os.path.join(item, "**/.*"), recursive=True)
-          if os.path.isfile(item))
-    elif os.path.isfile(item):
-      all_files.add(item)
-    else:
-      logging.warning('Skipping "%s" (not a file or a directory)', item)
-
-  return sorted(p for p in all_files if not any(r.match(p) for r in exclusions))
+  return [p for p in abs_host_files if not any(r.match(p) for r in exclusions)]
 
 
 def DevicePathComponentsFor(host_path, output_directory=None):
