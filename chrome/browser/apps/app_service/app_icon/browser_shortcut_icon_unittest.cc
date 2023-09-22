@@ -88,9 +88,8 @@ class BrowserShortcutIconTest : public WebAppIconFactoryTest {
         app_constants::kChromeAppId, web_app->app_id());
     shortcut->icon_key = IconKey(0, 0, 0);
     WebAppIconFactoryTest ::RegisterApp(std::move(web_app));
-    ShortcutRegistryCache* cache = app_service_proxy()->ShortcutRegistryCache();
     apps::ShortcutId shortcut_id = shortcut->shortcut_id;
-    cache->UpdateShortcut(std::move(shortcut));
+    app_service_proxy()->PublishShortcut(std::move(shortcut));
     return shortcut_id;
   }
 
@@ -251,6 +250,102 @@ TEST_F(BrowserShortcutIconTest, GetIconDataWithDifferentSizeIcon) {
   ASSERT_EQ(apps::IconType::kStandard, iv2->icon_type);
   VerifyIcon(src_image_skia, iv2->uncompressed);
   EXPECT_EQ(2, fake_shortcut_publisher()->num_get_icon_call());
+}
+
+TEST_F(BrowserShortcutIconTest, IconUpdated) {
+  auto web_app = web_app::test::CreateWebApp();
+  const std::string web_app_id = web_app->app_id();
+
+  const float scale1 = 1.0;
+  const float scale2 = 2.0;
+  const int kIconSize1 = kSizeInDip * scale1;
+  const int kIconSize2 = kSizeInDip * scale2;
+  const std::vector<int> sizes_px{kIconSize1, kIconSize2};
+  const std::vector<SkColor> colors{SK_ColorGREEN, SK_ColorYELLOW};
+  WriteIcons(web_app_id, {IconPurpose::ANY}, sizes_px, colors);
+
+  web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
+  apps::ShortcutId shortcut_id = RegisterShortcut(std::move(web_app));
+
+  ASSERT_TRUE(icon_manager().HasIcons(web_app_id, IconPurpose::ANY, sizes_px));
+
+  apps::ScaleToSize scale_to_size_in_px = {{1.0, kIconSize1},
+                                           {2.0, kIconSize2}};
+  gfx::ImageSkia src_image_skia =
+      GenerateWebAppIcon(web_app_id, IconPurpose::ANY, sizes_px,
+                         scale_to_size_in_px, /*skip_icon_effects=*/true);
+
+  EXPECT_EQ(0, fake_shortcut_publisher()->num_get_icon_call());
+  // Verify the icon reading and writing function in AppService for the
+  // kStandard icon.
+  apps::IconValuePtr iv = LoadShortcutIcon(shortcut_id, IconType::kStandard);
+  EXPECT_EQ(2, fake_shortcut_publisher()->num_get_icon_call());
+  ASSERT_EQ(apps::IconType::kStandard, iv->icon_type);
+  VerifyIcon(src_image_skia, iv->uncompressed);
+
+  // Update the icon
+  const std::vector<SkColor> colors2{SK_ColorRED, SK_ColorBLUE};
+  WriteIcons(web_app_id, {IconPurpose::ANY}, sizes_px, colors2);
+  gfx::ImageSkia src_image_skia2 =
+      GenerateWebAppIcon(web_app_id, IconPurpose::ANY, sizes_px,
+                         scale_to_size_in_px, /*skip_icon_effects=*/true);
+
+  auto delta =
+      std::make_unique<Shortcut>(app_constants::kChromeAppId, web_app_id);
+  delta->icon_key = IconKey(0, 0, 0);
+  delta->icon_key->raw_icon_updated = true;
+  app_service_proxy()->PublishShortcut(std::move(delta));
+
+  apps::IconValuePtr iv2 = LoadShortcutIcon(shortcut_id, IconType::kStandard);
+  // Updating icon will delete the icon from disk, will need to install icon
+  // again.
+  EXPECT_EQ(4, fake_shortcut_publisher()->num_get_icon_call());
+  ASSERT_EQ(apps::IconType::kStandard, iv2->icon_type);
+  VerifyIcon(src_image_skia2, iv2->uncompressed);
+}
+
+TEST_F(BrowserShortcutIconTest, ShortcutRemovedAndCreatedAgain) {
+  auto web_app = web_app::test::CreateWebApp();
+  const std::string web_app_id = web_app->app_id();
+
+  const float scale1 = 1.0;
+  const float scale2 = 2.0;
+  const int kIconSize1 = kSizeInDip * scale1;
+  const int kIconSize2 = kSizeInDip * scale2;
+  const std::vector<int> sizes_px{kIconSize1, kIconSize2};
+  const std::vector<SkColor> colors{SK_ColorGREEN, SK_ColorYELLOW};
+  WriteIcons(web_app_id, {IconPurpose::ANY}, sizes_px, colors);
+
+  web_app->SetDownloadedIconSizes(IconPurpose::ANY, sizes_px);
+  apps::ShortcutId shortcut_id = RegisterShortcut(std::move(web_app));
+
+  ASSERT_TRUE(icon_manager().HasIcons(web_app_id, IconPurpose::ANY, sizes_px));
+
+  apps::ScaleToSize scale_to_size_in_px = {{1.0, kIconSize1},
+                                           {2.0, kIconSize2}};
+  gfx::ImageSkia src_image_skia =
+      GenerateWebAppIcon(web_app_id, IconPurpose::ANY, sizes_px,
+                         scale_to_size_in_px, /*skip_icon_effects=*/true);
+
+  EXPECT_EQ(0, fake_shortcut_publisher()->num_get_icon_call());
+  // Verify the icon reading and writing function in AppService for the
+  // kStandard icon.
+  apps::IconValuePtr iv = LoadShortcutIcon(shortcut_id, IconType::kStandard);
+  EXPECT_EQ(2, fake_shortcut_publisher()->num_get_icon_call());
+  ASSERT_EQ(apps::IconType::kStandard, iv->icon_type);
+  VerifyIcon(src_image_skia, iv->uncompressed);
+
+  app_service_proxy()->ShortcutRemoved(shortcut_id);
+  ShortcutPtr shortcut =
+      std::make_unique<Shortcut>(app_constants::kChromeAppId, web_app_id);
+  shortcut->icon_key = IconKey(0, 0, 0);
+  app_service_proxy()->PublishShortcut(std::move(shortcut));
+
+  apps::IconValuePtr iv2 = LoadShortcutIcon(shortcut_id, IconType::kStandard);
+  // Icon has been deleted from disk, need to install the icon again.
+  EXPECT_EQ(4, fake_shortcut_publisher()->num_get_icon_call());
+  ASSERT_EQ(apps::IconType::kStandard, iv2->icon_type);
+  VerifyIcon(src_image_skia, iv2->uncompressed);
 }
 
 }  // namespace apps

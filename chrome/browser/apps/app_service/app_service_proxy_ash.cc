@@ -456,6 +456,18 @@ apps::ShortcutRegistryCache* AppServiceProxyAsh::ShortcutRegistryCache() {
   return shortcut_registry_cache_ ? shortcut_registry_cache_.get() : nullptr;
 }
 
+void AppServiceProxyAsh::PublishShortcut(ShortcutPtr delta) {
+  if (delta->icon_key.has_value() && delta->icon_key->raw_icon_updated) {
+    MaybeScheduleIconFolderDeletionForShortcut(delta->shortcut_id);
+  }
+  ShortcutRegistryCache()->UpdateShortcut(std::move(delta));
+}
+
+void AppServiceProxyAsh::ShortcutRemoved(const ShortcutId& id) {
+  MaybeScheduleIconFolderDeletionForShortcut(id);
+  ShortcutRegistryCache()->RemoveShortcut(id);
+}
+
 void AppServiceProxyAsh::LaunchShortcut(const ShortcutId& id,
                                         int64_t display_id) {
   std::string host_app_id = ShortcutRegistryCache()->GetShortcutHostAppId(id);
@@ -1076,9 +1088,9 @@ void AppServiceProxyAsh::OnIconInstalled(AppType app_type,
 }
 
 void AppServiceProxyAsh::PostIconFoldersDeletion(
-    const std::vector<std::string>& app_ids) {
-  for (const auto& app_id : app_ids) {
-    auto it = pending_read_icon_requests_.find(app_id);
+    const std::vector<std::string>& ids) {
+  for (const auto& id : ids) {
+    auto it = pending_read_icon_requests_.find(id);
     if (it == pending_read_icon_requests_.end()) {
       continue;
     }
@@ -1154,8 +1166,16 @@ void AppServiceProxyAsh::ReadShortcutIcon(const ShortcutId& shortcut_id,
                                           std::unique_ptr<IconKey> icon_key,
                                           IconType icon_type,
                                           LoadIconCallback callback) {
-  // TODO(crbug.com/1412708): Add pending request handing for icon folder is
-  // being deleted.
+  auto it = pending_read_icon_requests_.find(shortcut_id.value());
+  if (it != pending_read_icon_requests_.end()) {
+    // The icon folder is being deleted, so add the `ReadShortcutIcon` request
+    // to `pending_read_icon_requests_` to wait for the deletion.
+    it->second.push_back(
+        base::BindOnce(&AppServiceProxyAsh::ReadShortcutIcon,
+                       weak_ptr_factory_.GetWeakPtr(), shortcut_id, size_in_dip,
+                       std::move(icon_key), icon_type, std::move(callback)));
+    return;
+  }
   icon_reader_.ReadIcons(
       shortcut_id.value(), size_in_dip, *icon_key, icon_type,
       base::BindOnce(&AppServiceProxyAsh::OnShortcutIconRead,
@@ -1212,6 +1232,19 @@ void AppServiceProxyAsh::OnShortcutIconInstalled(const ShortcutId& shortcut_id,
   icon_key.icon_effects = icon_effects;
   icon_reader_.ReadIcons(shortcut_id.value(), size_in_dip, icon_key, icon_type,
                          std::move(callback));
+}
+
+void AppServiceProxyAsh::MaybeScheduleIconFolderDeletionForShortcut(
+    const ShortcutId& shortcut_id) {
+  if (!base::Contains(pending_read_icon_requests_, shortcut_id.value())) {
+    pending_read_icon_requests_[shortcut_id.value()] =
+        std::vector<base::OnceCallback<void()>>();
+    std::vector<std::string> shortcut_ids({shortcut_id.value()});
+    ScheduleIconFoldersDeletion(
+        profile_->GetPath(), shortcut_ids,
+        base::BindOnce(&AppServiceProxyAsh::PostIconFoldersDeletion,
+                       weak_ptr_factory_.GetWeakPtr(), shortcut_ids));
+  }
 }
 
 }  // namespace apps

@@ -25,12 +25,12 @@ void ShortcutPublisher::RegisterShortcutPublisher(AppType app_type) {
 
 void ShortcutPublisher::PublishShortcut(ShortcutPtr delta) {
   CHECK(proxy_->ShortcutRegistryCache());
-  proxy_->ShortcutRegistryCache()->UpdateShortcut(std::move(delta));
+  proxy_->PublishShortcut(std::move(delta));
 }
 
 void ShortcutPublisher::ShortcutRemoved(const ShortcutId& id) {
   CHECK(proxy_->ShortcutRegistryCache());
-  proxy_->ShortcutRegistryCache()->RemoveShortcut(id);
+  proxy_->ShortcutRemoved(id);
 }
 
 void ShortcutPublisher::GetCompressedIconData(

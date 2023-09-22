@@ -186,18 +186,18 @@ std::map<ui::ResourceScaleFactor, IconValuePtr> ReadIconFilesOnBackgroundThread(
 }
 
 void ScheduleIconFoldersDeletion(const base::FilePath& base_path,
-                                 const std::vector<std::string>& app_ids,
+                                 const std::vector<std::string>& ids,
                                  base::OnceCallback<void()> callback) {
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
       base::BindOnce(
           [](const base::FilePath& base_path,
              const std::vector<std::string>& ids) {
-            for (const auto& app_id : ids) {
-              base::DeletePathRecursively(GetIconFolderPath(base_path, app_id));
+            for (const auto& id : ids) {
+              base::DeletePathRecursively(GetIconFolderPath(base_path, id));
             }
           },
-          base_path, app_ids),
+          base_path, ids),
       std::move(callback));
 }
 

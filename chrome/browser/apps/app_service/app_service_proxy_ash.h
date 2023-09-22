@@ -182,6 +182,14 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   // May return a nullptr if this cache doesn't exist.
   apps::ShortcutRegistryCache* ShortcutRegistryCache();
 
+  // Called by an shortcut publisher to inform the proxy of a change in shortcut
+  // state.
+  void PublishShortcut(ShortcutPtr delta);
+
+  // Called by an shortcut publisher inform the proxy of the removal of a
+  // shortcut.
+  void ShortcutRemoved(const ShortcutId& id);
+
   // Launches shortcut with `id` in it's parent app. `display_id` contains the
   // id of the display from which the shortcut will be launched.
   // display::kInvalidDisplayId means that the default display for new windows
@@ -417,10 +425,10 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
                        LoadIconCallback callback,
                        bool install_success);
 
-  // Invoked when the icon folders for `app_ids` has being deleted. The saved
+  // Invoked when the icon folders for `ids` has being deleted. The saved
   // `ReadIcons` requests in `pending_read_icon_requests_` are run to request
-  // the new raw icon from the app platforms, then load icons for `app_ids`.
-  void PostIconFoldersDeletion(const std::vector<std::string>& app_ids);
+  // the new raw icon from the app platforms, then load icons for `ids`.
+  void PostIconFoldersDeletion(const std::vector<std::string>& ids);
 
   // Returns an instance of `IntentLaunchInfo` created based on `intent`,
   // `filter`, and `update`.
@@ -471,6 +479,9 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
                                int default_icon_resource_id,
                                LoadIconCallback callback,
                                bool install_success);
+
+  void MaybeScheduleIconFolderDeletionForShortcut(
+      const ShortcutId& shortcut_id);
 
   // The LoadIconFromIconKey implementation sends a chained series of requests
   // through each icon loader, starting from the outer and working back to the
