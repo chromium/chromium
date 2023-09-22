@@ -150,23 +150,7 @@
       return null;
     }
 
-    // A more elegant way of doing this would be better, but for now this exception list handles cases where "center" must be omitted.
     var minimal_results = {
-        "background-position: 5% center": "5%",
-        "background-position: 0.5% center": "0.5%",
-        "background-position: -5% center": "-5%",
-        "background-position: -0.5% center": "-0.5%",
-        "background-position: 0px center": "0px",
-        "background-position: 1px center": "1px",
-        "background-position: 0.1em center": "0.1em",
-        "background-position: 0px center": "0px",
-        "background-position: -1px center": "-1px",
-        "background-position: -0.1em center": "-0.1em",
-        "background-position: left center": "left",
-        "background-position: center top": "top",
-        "background-position: center center": "center",
-        "background-position: center bottom": "bottom",
-        "background-position: right center": "right",
     };
 
     function create_result(propertyName, actual, expected) {
