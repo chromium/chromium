@@ -82,16 +82,26 @@ export class OptionPanelOptions {
 
   readonly onStateChanged: (newState: state.State|null) => void;
 
-  constructor({triggerButton, titleLabel, stateOptions, onStateChanged}: {
+  readonly ariaDescribedByElement: HTMLElement;
+
+  constructor({
+    triggerButton,
+    titleLabel,
+    stateOptions,
+    onStateChanged,
+    ariaDescribedByElement,
+  }: {
     triggerButton: HTMLElement,
     titleLabel: I18nString,
     stateOptions: StateOption[],
     onStateChanged: (newState: state.State|null) => void,
+    ariaDescribedByElement: HTMLElement,
   }) {
     this.triggerButton = triggerButton;
     this.titleLabel = titleLabel;
     this.stateOptions = stateOptions;
     this.onStateChanged = onStateChanged;
+    this.ariaDescribedByElement = ariaDescribedByElement;
   }
 }
 

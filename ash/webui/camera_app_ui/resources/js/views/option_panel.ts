@@ -33,8 +33,13 @@ export class OptionPanel extends View {
   }
 
   override entering(options: EnterOptions): void {
-    const {triggerButton, titleLabel, stateOptions, onStateChanged} =
-        assertInstanceof(options, OptionPanelOptions);
+    const {
+      triggerButton,
+      titleLabel,
+      stateOptions,
+      onStateChanged,
+      ariaDescribedByElement,
+    } = assertInstanceof(options, OptionPanelOptions);
     const {bottom, right} = triggerButton.getBoundingClientRect();
     this.panel.style.bottom = `${window.innerHeight - bottom}px`;
     this.panel.style.left = `${right + 6}px`;
@@ -61,8 +66,8 @@ export class OptionPanel extends View {
       input.checked = checked;
       input.addEventListener('change', () => {
         if (input.checked) {
-          triggerButton.setAttribute('i18n-aria', ariaLabel);
-          util.setupI18nElements(triggerButton);
+          ariaDescribedByElement.setAttribute('i18n-text', ariaLabel);
+          util.setupI18nElements(ariaDescribedByElement);
           speak(ariaLabel);
 
           onStateChanged(isDisableOption ? null : targetState);
