@@ -184,7 +184,8 @@ TEST_F(ContentSuggestionsViewControllerTest, TestInsertModuleIntoMagicStack) {
   UIStackView* magicStack = FindMagicStack();
   // Assert order is correct.
   NSArray<UIView*>* subviews = magicStack.arrangedSubviews;
-  ASSERT_EQ(3u, [subviews count]);
+  // Three modules and edit button.
+  ASSERT_EQ(4u, [subviews count]);
   MagicStackModuleContainer* mostVisitedModule =
       (MagicStackModuleContainer*)subviews[0];
   EXPECT_EQ(ContentSuggestionsModuleType::kMostVisited, mostVisitedModule.type);
@@ -236,7 +237,8 @@ TEST_F(ContentSuggestionsViewControllerTest, TestUpdateMagicStackOrder) {
   UIStackView* magicStack = FindMagicStack();
   // Assert order is correct.
   NSArray<UIView*>* subviews = magicStack.arrangedSubviews;
-  ASSERT_EQ(2u, [subviews count]);
+  // Two modules and edit button.
+  ASSERT_EQ(3u, [subviews count]);
   MagicStackModuleContainer* mostVisitedModule =
       (MagicStackModuleContainer*)subviews[0];
   EXPECT_EQ(ContentSuggestionsModuleType::kMostVisited, mostVisitedModule.type);
@@ -258,7 +260,8 @@ TEST_F(ContentSuggestionsViewControllerTest, TestUpdateMagicStackOrder) {
   magicStack = FindMagicStack();
   // Assert order is correct.
   subviews = magicStack.arrangedSubviews;
-  ASSERT_EQ(3u, [subviews count]);
+  // Three modules and edit button.
+  ASSERT_EQ(4u, [subviews count]);
   mostVisitedModule = (MagicStackModuleContainer*)subviews[0];
   EXPECT_EQ(ContentSuggestionsModuleType::kMostVisited, mostVisitedModule.type);
   shortcutsModule = (MagicStackModuleContainer*)subviews[1];
@@ -307,7 +310,8 @@ TEST_F(ContentSuggestionsViewControllerTest,
   // Assert order is correct.
   NSArray<UIView*>* subviews = magicStack.arrangedSubviews;
 
-  ASSERT_EQ(3u, [subviews count]);
+  // Three modules and edit button.
+  ASSERT_EQ(4u, [subviews count]);
 
   MagicStackModuleContainer* mostVisitedModule =
       (MagicStackModuleContainer*)subviews[0];
@@ -338,7 +342,8 @@ TEST_F(ContentSuggestionsViewControllerTest,
   // Assert order is correct.
   subviews = magicStack.arrangedSubviews;
 
-  ASSERT_EQ(3u, [subviews count]);
+  // Three modules and edit button.
+  ASSERT_EQ(4u, [subviews count]);
 
   safetyCheckModule = (MagicStackModuleContainer*)subviews[2];
 
@@ -376,5 +381,6 @@ TEST_F(ContentSuggestionsViewControllerTest, TestMagicStackPlaceholder) {
   ]];
   magicStack = FindMagicStack();
   subviews = magicStack.arrangedSubviews;
-  ASSERT_EQ(1u, [subviews count]);
+  // One module and edit button.
+  ASSERT_EQ(2u, [subviews count]);
 }

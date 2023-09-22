@@ -31,6 +31,7 @@
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -175,7 +176,8 @@ void TapMoreButtonIfVisible() {
         syncer::kReplaceSyncPromosWithSignInPromos);
     config.features_enabled.push_back(kConsistencyNewAccountInterface);
   }
-  if ([self isRunningTest:@selector(testMagicStackSetUpListCompleteAllItems)]) {
+  if ([self isRunningTest:@selector(testMagicStackSetUpListCompleteAllItems)] ||
+      [self isRunningTest:@selector(testMagicStackEditButton)]) {
     config.features_enabled.push_back(kMagicStack);
   } else {
     config.features_disabled.push_back(kMagicStack);
@@ -672,6 +674,54 @@ void TapMoreButtonIfVisible() {
   GREYAssert(
       base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), condition),
       @"Timeout waiting for the All Set Module to show expired.");
+}
+
+// Tests the edit button in the Magic Stack. Opens the edit half sheet, disables
+// Set Up List, returns to the Magic Stack and ensures Set Up List is not in the
+// Magic Stack anymore.
+- (void)testMagicStackEditButton {
+  [self prepareToTestSetUpListInMagicStack];
+
+  // Swipe all the way over to the end of the Magic Stack.
+  [[[EarlGrey selectElementWithMatcher:
+                  grey_allOf(grey_accessibilityID(
+                                 kMagicStackEditButtonAccessibilityIdentifier),
+                             grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_swipeFastInDirection(kGREYDirectionLeft)
+      onElementWithMatcher:grey_accessibilityID(
+                               kMagicStackScrollViewAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // Verify edit half sheet is visible.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(l10n_util::GetNSString(
+                                   IDS_IOS_MAGIC_STACK_EDIT_MODAL_TITLE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  id<GREYMatcher> setUpToggle = grey_allOf(
+      grey_accessibilityID(l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_TITLE)),
+      grey_sufficientlyVisible(), nil);
+  // Assert Set Up List toggle is on, and then turn if off.
+  [[EarlGrey selectElementWithMatcher:setUpToggle]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
+
+  // Dismiss
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kMagicStackEditHalfSheetDoneButtonAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // Swipe back to first module
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kMagicStackScrollViewAccessibilityIdentifier)]
+      performAction:grey_swipeFastInDirection(kGREYDirectionRight)];
+
+  // Assert Set Up List is not there. If it is, it is always the first module.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(l10n_util::GetNSString(
+                                   IDS_IOS_SET_UP_LIST_TITLE))]
+      assertWithMatcher:grey_nil()];
 }
 
 #pragma mark - Test utils

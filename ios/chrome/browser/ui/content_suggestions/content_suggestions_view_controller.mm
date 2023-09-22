@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ntp/set_up_list_item_type.h"
 #import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_cells_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
@@ -83,6 +84,14 @@ const CGFloat kSetUpListWidthWide = 418;
 
 // The distance in which a replaced/replacing module will fade out/in of view.
 const float kMagicStackReplaceModuleFadeAnimationDistance = 50;
+
+// The size configs of the Magic Stack edit button.
+const float kMagicStackEditButtonWidth = 61;
+const float kMagicStackEditButtonIconPointSize = 22;
+
+// Margin spacing between Magic Stack Edit button and horizontal neighboring
+// views.
+const float kMagicStackEditButtonMargin = 32;
 
 // The duration of the animation that hides the Set Up List.
 const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
@@ -478,8 +487,6 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
       [_magicStackModuleOrder removeObjectAtIndex:change.index];
       UIView* moduleToRemove = _magicStack.arrangedSubviews[change.index];
       [moduleToRemove removeFromSuperview];
-      CHECK_EQ(_magicStackModuleOrder.count,
-               _magicStack.arrangedSubviews.count);
       break;
     }
     case MagicStackOrderChange::Type::kReplace: {
@@ -1267,6 +1274,44 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
         break;
     }
   }
+
+  // Add Edit Button.
+  UIButton* editButton = [UIButton buttonWithType:UIButtonTypeSystem];
+  editButton.translatesAutoresizingMaskIntoConstraints = NO;
+  UIImage* image = DefaultSymbolTemplateWithPointSize(
+      kSliderHorizontal, kMagicStackEditButtonIconPointSize);
+  [editButton setImage:image forState:UIControlStateNormal];
+  editButton.tintColor = [UIColor colorNamed:kSolidBlackColor];
+  editButton.backgroundColor =
+      [UIColor colorNamed:@"magic_stack_edit_button_background_color"];
+  editButton.layer.cornerRadius = kMagicStackEditButtonWidth / 2;
+  [editButton addTarget:self.audience
+                 action:@selector(didTapMagicStackEditButton)
+       forControlEvents:UIControlEventTouchUpInside];
+  editButton.accessibilityIdentifier =
+      kMagicStackEditButtonAccessibilityIdentifier;
+  editButton.pointerInteractionEnabled = YES;
+
+  UIView* editContainerView = [[UIView alloc] init];
+  editContainerView.accessibilityIdentifier =
+      kMagicStackEditButtonContainerAccessibilityIdentifier;
+  [editContainerView addSubview:editButton];
+
+  [_magicStack addArrangedSubview:editContainerView];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [editButton.leadingAnchor
+        constraintEqualToAnchor:editContainerView.leadingAnchor
+                       constant:kMagicStackEditButtonMargin],
+    [editButton.trailingAnchor
+        constraintEqualToAnchor:editContainerView.trailingAnchor
+                       constant:-kMagicStackEditButtonMargin],
+    [editButton.centerYAnchor
+        constraintEqualToAnchor:editContainerView.centerYAnchor],
+    [editButton.widthAnchor
+        constraintEqualToConstant:kMagicStackEditButtonWidth],
+    [editButton.heightAnchor constraintEqualToAnchor:editButton.widthAnchor]
+  ]];
 }
 
 // Adds two placeholder modules to Magic Stack.
@@ -1306,6 +1351,11 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 
   NSUInteger magicStackIndex = 0;
   for (UIView* view in _magicStack.arrangedSubviews) {
+    if (view.accessibilityIdentifier ==
+        kMagicStackEditButtonContainerAccessibilityIdentifier) {
+      // Reached the edit button (e.g. end of modules).
+      break;
+    }
     MagicStackModuleContainer* moduleContainer =
         base::apple::ObjCCastStrict<MagicStackModuleContainer>(view);
     if ([self indexForMagicStackModule:moduleContainer.type] >
@@ -1318,8 +1368,8 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   }
 
   // `magicStackIndex` here either represents the position right before the
-  // first found module with a rank higher than `moduleToInsert` or the end of
-  // the array.
+  // first found module with a rank higher than `moduleToInsert` or just before
+  // the last arrangedSubview (e.g. edit button).
   [_magicStack insertArrangedSubview:moduleToInsert atIndex:magicStackIndex];
 }
 

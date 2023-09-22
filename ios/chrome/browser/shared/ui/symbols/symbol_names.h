@@ -176,6 +176,10 @@ extern NSString* const kMovePlatterToTopPhoneSymbol;
 extern NSString* const kMovePlatterToBottomPhoneSymbol;
 extern NSString* const kMapSymbol;
 extern NSString* const kShippingBoxSymbol;
+extern NSString* const kSliderHorizontal;
+extern NSString* const kMacbookAndIPhone;
+extern NSString* const kCheckmarkShield;
+extern NSString* const kListBulletClipboard;
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

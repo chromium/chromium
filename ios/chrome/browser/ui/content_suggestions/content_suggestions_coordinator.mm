@@ -70,6 +70,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack_half_sheet_table_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/types.h"
@@ -100,6 +101,7 @@
 @interface ContentSuggestionsCoordinator () <
     ContentSuggestionsMenuProvider,
     ContentSuggestionsViewControllerAudience,
+    MagicStackHalfSheetTableViewControllerDelegate,
     SafetyCheckViewDelegate,
     SetUpListDefaultBrowserPromoCoordinatorDelegate,
     SetUpListViewDelegate>
@@ -134,6 +136,10 @@
 
   // The Show More Menu presented from the Set Up List in the Magic Stack.
   SetUpListShowMoreViewController* _setUpListShowMoreViewController;
+
+  // The edit half sheet for toggling all Magic Stack modules.
+  MagicStackHalfSheetTableViewController*
+      _magicStackHalfSheetTableViewController;
 }
 
 - (void)start {
@@ -256,6 +262,10 @@
   self.sharingCoordinator = nil;
   [_defaultBrowserPromoCoordinator stop];
   _defaultBrowserPromoCoordinator = nil;
+  [_magicStackHalfSheetTableViewController.presentingViewController
+      dismissViewControllerAnimated:NO
+                         completion:nil];
+  _magicStackHalfSheetTableViewController = nil;
   _started = NO;
 }
 
@@ -313,6 +323,38 @@
     default:
       break;
   }
+}
+
+- (void)didTapMagicStackEditButton {
+  _magicStackHalfSheetTableViewController =
+      [[MagicStackHalfSheetTableViewController alloc]
+          initWithPrefService:GetApplicationContext()->GetLocalState()];
+  _magicStackHalfSheetTableViewController.delegate = self;
+
+  UINavigationController* navViewController = [[UINavigationController alloc]
+      initWithRootViewController:_magicStackHalfSheetTableViewController];
+
+  navViewController.modalPresentationStyle = UIModalPresentationPageSheet;
+  UISheetPresentationController* presentationController =
+      navViewController.sheetPresentationController;
+  presentationController.prefersEdgeAttachedInCompactHeight = YES;
+  presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
+  presentationController.detents = @[
+    UISheetPresentationControllerDetent.mediumDetent,
+    UISheetPresentationControllerDetent.largeDetent
+  ];
+  [self.viewController presentViewController:navViewController
+                                    animated:YES
+                                  completion:nil];
+}
+
+#pragma mark - MagicStackHalfSheetTableViewControllerDelegate
+
+- (void)dismissMagicStackHalfSheet {
+  [_magicStackHalfSheetTableViewController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:nil];
+  _magicStackHalfSheetTableViewController = nil;
 }
 
 #pragma mark - Public methods

@@ -226,7 +226,7 @@ NSString* HostnameFromGURL(GURL URL) {
   [[EarlGrey
       selectElementWithMatcher:
           grey_accessibilityID(kMagicStackScrollViewAccessibilityIdentifier)]
-      performAction:grey_swipeFastInDirection(kGREYDirectionLeft)];
+      performAction:grey_scrollInDirection(kGREYDirectionRight, 343)];
   [[EarlGrey selectElementWithMatcher:
                  grey_accessibilityID(l10n_util::GetNSString(
                      IDS_IOS_CONTENT_SUGGESTIONS_SHORTCUTS_MODULE_TITLE))]

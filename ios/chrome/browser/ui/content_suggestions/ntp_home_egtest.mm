@@ -175,8 +175,7 @@ id<GREYMatcher> notPracticallyVisible() {
 }
 
 - (void)tearDown {
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait
-                                error:nil];
+  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
   [SearchEnginesAppInterface setSearchEngineTo:self.defaultSearchEngine];
 
   [super tearDown];
@@ -1179,7 +1178,7 @@ id<GREYMatcher> notPracticallyVisible() {
   [[EarlGrey
       selectElementWithMatcher:
           grey_accessibilityID(kMagicStackScrollViewAccessibilityIdentifier)]
-      performAction:grey_swipeFastInDirection(kGREYDirectionLeft)];
+      performAction:grey_scrollInDirection(kGREYDirectionRight, 343)];
 
   // Verify Shortcuts module title is visible.
   [[EarlGrey selectElementWithMatcher:
