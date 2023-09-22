@@ -217,9 +217,6 @@
     IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE) \
   E(kActionReadingListMenu, IDC_READING_LIST_MENU) \
   E(kActionReadingListMenuAddTab, IDC_READING_LIST_MENU_ADD_TAB) \
-  E(kActionReadingListMenuShowUi, IDC_READING_LIST_MENU_SHOW_UI) \
-  E(kActionShowBookmarkSidePanel, IDC_SHOW_BOOKMARK_SIDE_PANEL) \
-  E(kActionShowSearchCompanion, IDC_SHOW_SEARCH_COMPANION) \
   E(kActionShowChromeLabs, IDC_SHOW_CHROME_LABS) \
   E(kActionRecentTabsLoginForDeviceTabs, \
     IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS) \
@@ -362,6 +359,20 @@
     IDC_CONTENT_CONTEXT_SHOWALLSAVEDPASSWORDS) \
   E(kActionContentContextPartialTranslate, \
     IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE) \
+  /* Side Panel items */ \
+  E(kActionSidePanelShowReadingList, IDC_READING_LIST_MENU_SHOW_UI) \
+  E(kActionSidePanelShowBookmarks, IDC_SHOW_BOOKMARK_SIDE_PANEL) \
+  E(kActionSidePanelShowHistoryCluster) \
+  E(kActionSidePanelShowUserNote) \
+  E(kActionSidePanelShowFeed) \
+  E(kActionSidePanelShowReadAnything) \
+  E(kActionSidePanelShowSearchCompanion, IDC_SHOW_SEARCH_COMPANION) \
+  E(kActionSidePanelShowShoppingInsights) \
+  E(kActionSidePanelShowLens) \
+  E(kActionSidePanelShowAssistant) \
+  E(kActionSidePanelShowAboutThisSite) \
+  E(kActionSidePanelShowSideSearch) \
+  E(kActionSidePanelShowCustomizeChrome) \
   /* Frame items. */ \
   E(kActionContentContextReloadFrame, IDC_CONTENT_CONTEXT_RELOADFRAME) \
   E(kActionContentContextViewFrameSource, IDC_CONTENT_CONTEXT_VIEWFRAMESOURCE) \
