@@ -798,6 +798,29 @@ module.exports = {
         // find a way to keep running it on presubmit check.
         allowAny: true,
       }],
+
+      // Prevent floating promises, since promises that are not awaited usually
+      // indicates improper sequencing that might cause race, and if the
+      // promise is rejected, the error is only logged by unhandled promise
+      // rejection, and not propagated to caller.
+      //
+      // There are several potential ways to fix the lint error if you
+      // encounter this:
+      // * If the caller should wait for the promise, make the caller async and
+      //   await the promise.
+      // * If the caller doesn't want to wait for the promise, and the promise
+      //   is some kind of "job" that should be run independently but multiple
+      //   jobs shouldn't be run at the same time, consider using AsyncJobQueue
+      //   in async_job_queue.ts.
+      // * As a last resort, add "void" before the promise to suppress the
+      //   lint, ideally with a comment explaining why that is needed, check
+      //   that there won't be issue if multiple of those promises got created
+      //   at the same time, and check that error handling with unhandled
+      //   promise rejection is sufficient.
+      '@typescript-eslint/no-floating-promises': 'error',
+      '@typescript-eslint/require-await': 'error',
+      '@typescript-eslint/await-thenable': 'error',
+      '@typescript-eslint/no-meaningless-void-operator': 'error',
     },
   }],
 };
