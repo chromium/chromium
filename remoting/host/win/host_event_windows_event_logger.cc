@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -62,10 +63,8 @@ void HostEventWindowsEventLogger::LogEvent(const EventTraceData& data) {
        "tid: " + base::NumberToString(data.thread_id),
        EventTraceData::SeverityToString(data.severity),
        base::StringPrintf("%s(%d)", data.file_name.c_str(), data.line),
-       base::StringPrintf("%4d-%02d-%02d - %02d:%02d:%02d.%03d", exploded.year,
-                          exploded.month, exploded.day_of_month, exploded.hour,
-                          exploded.minute, exploded.second,
-                          exploded.millisecond)});
+       base::UnlocalizedTimeFormatWithPattern(data.time_stamp,
+                                              "yyyy-MM-dd - HH:mm:ss.SSS")});
 
   WORD type = SeverityToEventLogType(data.severity);
   if (!event_logger_.Log(type, MSG_HOST_LOG_EVENT, payload)) {

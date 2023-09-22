@@ -8,6 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/i18n/time_formatting.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
@@ -132,12 +133,9 @@ void RtcLogFileReader::DoOpen(OpenCallback callback) {
     return;
   }
 
-  base::Time::Exploded exploded;
-  base::Time::NowFromSystemTime().LocalExplode(&exploded);
-  std::string filename = base::StringPrintf(
-      "host-rtc-log-%d-%d-%d_%d-%d-%d", exploded.year, exploded.month,
-      exploded.day_of_month, exploded.hour, exploded.minute, exploded.second);
-  filename_ = base::FilePath::FromUTF8Unsafe(filename);
+  filename_ =
+      base::FilePath::FromUTF8Unsafe(base::UnlocalizedTimeFormatWithPattern(
+          base::Time::NowFromSystemTime(), "'host-rtc-log'-y-M-d_H-m-s"));
 
   data_ = rtc_log->TakeLogData();
   current_log_section_ = data_.begin();
