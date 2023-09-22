@@ -6,7 +6,6 @@ include_rules = [
     "+third_party/blink/renderer/platform/loader",
 
     # Dependencies.
-    "+base/metrics/field_trial_params.h",  # for fetch/ResourceLoadScheduler.cpp
     "+base/strings/string_number_conversions.h",  # for fetch/ResourceLoadScheduler.cpp
     "+components/link_header_util",  # for LinkHeader.cpp
     "+net/base/load_flags.h",

@@ -16,7 +16,6 @@ specific_include_rules = {
   ],
   "web_media_player_impl_unittest.cc": [
     "+base/command_line.h",
-    "+base/memory/ref_counted.h",
     "+base/run_loop.h",
     "+base/strings/string_number_conversions.h",
     "+base/strings/string_split.h",

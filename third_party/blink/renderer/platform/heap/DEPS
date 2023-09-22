@@ -6,14 +6,11 @@ include_rules = [
     "+third_party/blink/renderer/platform/heap",
 
     # Dependencies.
-    "+base/bits.h",
     "+base/functional/unretained_traits.h",
     "+base/sampling_heap_profiler/poisson_allocation_sampler.h",
     "+base/strings/string_number_conversions.h",
-    "+base/synchronization/lock.h",
     "+base/task/task_runner.h",
     "+base/task/post_job.h",
-    "+base/template_util.h",
     "+gin/public/cppgc.h",
     "+gin/public/v8_platform.h",
     "+testing/perf/perf_result_reporter.h",

@@ -20,10 +20,3 @@ include_rules = [
     "+third_party/blink/renderer/modules/modules_export.h",
     "+third_party/blink/renderer/modules/webrtc",
 ]
-
-specific_include_rules = {
-  "webrtc_audio_renderer\.cc": [
-    # TODO(crbug.com/1198375): Remove this temporary exception after migration.
-    "+base/task/bind_post_task.h",
-  ],
-}

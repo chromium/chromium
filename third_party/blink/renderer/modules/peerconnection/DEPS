@@ -12,8 +12,6 @@ include_rules = [
     "+base/hash/md5.h",
     "+base/lazy_instance.h",
     "+base/power_monitor/power_observer.h",
-    # TODO(crbug.com/787254): Replace base::SequenceChecker by base::ThreadChecker.
-    "+base/sequence_checker.h",
     # TODO(crbug.com/787254): Replace StringPrintf uses here.
     "+base/strings/stringprintf.h",
     # TODO(crbug.com/787254): Remove the use of base::CurrentThread.

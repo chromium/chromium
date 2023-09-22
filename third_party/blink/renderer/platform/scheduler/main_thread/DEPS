@@ -1,6 +1,5 @@
 include_rules = [
   "+base/cpu_reduction_experiment.h",
-  "+base/metrics/single_sample_metrics.h",
   "+cc",
   "+components/viz/common",
 ]

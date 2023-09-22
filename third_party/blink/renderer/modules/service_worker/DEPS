@@ -1,5 +1,4 @@
 include_rules = [
-    "+base/threading/thread_checker.h",
     "+mojo/public/cpp/system/data_pipe.h",
     "+services/network/public",
     "+services/metrics/public/cpp/ukm_source_id.h",

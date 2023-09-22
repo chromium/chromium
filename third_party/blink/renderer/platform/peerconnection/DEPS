@@ -12,13 +12,10 @@ include_rules = [
 
     # Dependencies.
     "+base/containers/circular_deque.h",
-    "+base/functional/bind.h",
-    "+base/functional/bind_post_task.h",
     "+base/strings/string_number_conversions.h",
     "+base/strings/string_split.h",
     "+base/task/bind_post_task.h",
     "+base/task/task_traits.h",
-    "+base/task/sequenced_task_runner.h",
     "+base/threading/thread_restrictions.h",
     "+media/base",
     "+media/capture/capture_switches.h",

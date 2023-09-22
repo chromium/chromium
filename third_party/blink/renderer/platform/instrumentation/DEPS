@@ -6,7 +6,6 @@ include_rules = [
     "+third_party/blink/renderer/platform/instrumentation",
 
     # Dependencies.
-    "+base/gtest_prod_util.h",
     "+base/json",
     "+base/memory",
     "+base/strings",

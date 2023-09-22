@@ -11,7 +11,6 @@ include_rules = [
   "+base/containers/circular_deque.h",
   "+base/strings/string_number_conversions.h",
   "+base/strings/utf_string_conversions.h",
-  "+base/task/bind_post_task.h",
   "+base/task/task_runner.h",
   "+base/threading/thread.h",
   "+cc/layers",

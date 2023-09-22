@@ -12,9 +12,3 @@ include_rules = [
     "+storage/common/quota/padding_key.h",
     "+url/gurl.h",
 ]
-
-specific_include_rules = {
-    "bytes_uploader_test\.cc": [
-        "+base/test/mock_callback.h",
-    ],
-}

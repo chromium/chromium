@@ -2,10 +2,6 @@ include_rules = [
     # This goes away after CompositeAfterPaint is enabled. For now it violates
     # strict onion soup guidelines.
     "+cc/layers/picture_layer.h",
-    # For DCHECK.
-    "+base/logging.h",
-    # Hash function access
-    "+base/hash/hash.h",
 ]
 
 specific_include_rules = {

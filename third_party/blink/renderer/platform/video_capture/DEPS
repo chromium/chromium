@@ -6,8 +6,6 @@ include_rules = [
     "+third_party/blink/renderer/platform/video_capture",
 
     # Dependencies.
-    "+base/task/bind_post_task.h",
-    "+base/token.h",
     "+media/base",
     "+media/capture",
     "+third_party/blink/renderer/platform/allow_discouraged_type.h",

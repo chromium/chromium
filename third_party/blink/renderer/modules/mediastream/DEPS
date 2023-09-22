@@ -25,12 +25,9 @@ include_rules = [
     "+services/viz/public/cpp/gpu/context_provider_command_buffer.h",
     "+skia/ext/platform_canvas.h",
 
-    "+base/task/bind_post_task.h",
     "+base/files/file.h",
     "+base/metrics/field_trial.h",
 
-    "+base/token.h",
-    "+base/sequence_checker.h",
     "+base/unguessable_token.h",
     "+base/uuid.h",
     "+media/audio",

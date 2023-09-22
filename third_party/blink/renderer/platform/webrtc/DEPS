@@ -5,7 +5,6 @@ include_rules = [
 
 specific_include_rules = {
     "webrtc_video_frame_adapter\.cc": [
-        "+base/dcheck_is_on.h",
         "+gpu/command_buffer/client/gpu_memory_buffer_manager.h",
         "+gpu/command_buffer/client/raster_interface.h",
         "+gpu/command_buffer/client/shared_image_interface.h",
