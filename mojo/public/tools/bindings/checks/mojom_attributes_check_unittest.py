@@ -89,6 +89,14 @@ class MojoBindingsCheckTest(MojomParserTestCase):
         [MinVersion=2,Sync,UnlimitedSize,NoInterrupt]
         Bar@1(int32 b, [MinVersion=2]Structure? s) => (bool c);
       };
+
+      [RuntimeFeature=test.mojom.FeatureName]
+      interface FooFeatureControlled {};
+
+      interface FooMethodFeatureControlled {
+        [RuntimeFeature=test.mojom.FeatureName]
+        MethodWithFeature() => (bool c);
+      };
     """)
 
   def testWrongModuleStable(self):

@@ -37,6 +37,7 @@ _INTERFACE_ATTRIBUTES = _COMMON_ATTRIBUTES | {
     'WebUIJsBridge',
     'RenamedFrom',
     'RequireContext',
+    'RuntimeFeature',
     'ServiceSandbox',
     'Stable',
     'Uuid',
@@ -46,6 +47,7 @@ _METHOD_ATTRIBUTES = _COMMON_ATTRIBUTES | {
     'AllowedContext',
     'MinVersion',
     'NoInterrupt',
+    'RuntimeFeature',
     'Sync',
     'UnlimitedSize',
 }

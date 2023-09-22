@@ -423,6 +423,7 @@ ATTRIBUTE_UUID = 'Uuid'
 ATTRIBUTE_SERVICE_SANDBOX = 'ServiceSandbox'
 ATTRIBUTE_REQUIRE_CONTEXT = 'RequireContext'
 ATTRIBUTE_ALLOWED_CONTEXT = 'AllowedContext'
+ATTRIBUTE_RUNTIME_FEATURE = 'RuntimeFeature'
 
 
 class NamedValue:
@@ -1254,6 +1255,18 @@ class Method:
     return self.attributes.get(ATTRIBUTE_ALLOWED_CONTEXT) \
         if self.attributes else None
 
+  @property
+  def runtime_feature(self):
+    if not self.attributes:
+      return None
+    runtime_feature = self.attributes.get(ATTRIBUTE_RUNTIME_FEATURE, None)
+    if runtime_feature is None:
+      return None
+    if not isinstance(runtime_feature, Feature):
+      raise Exception("RuntimeFeature attribute on %s must be a feature." %
+                      self.name)
+    return runtime_feature
+
   def _tuple(self):
     return (self.mojom_name, self.ordinal, self.parameters,
             self.response_parameters, self.attributes)
@@ -1398,6 +1411,18 @@ class Interface(ReferenceKind):
       raise Exception("ServiceSandbox attribute on %s must be an enum value." %
                       self.module.name)
     return service_sandbox
+
+  @property
+  def runtime_feature(self):
+    if not self.attributes:
+      return None
+    runtime_feature = self.attributes.get(ATTRIBUTE_RUNTIME_FEATURE, None)
+    if runtime_feature is None:
+      return None
+    if not isinstance(runtime_feature, Feature):
+      raise Exception("RuntimeFeature attribute on %s must be a feature." %
+                      self.name)
+    return runtime_feature
 
   @property
   def require_context(self):
