@@ -10,9 +10,11 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "chrome/browser/ash/input_method/editor_consent_enums.h"
+#include "base/memory/weak_ptr.h"
+#include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 #include "chromeos/crosapi/mojom/editor_panel.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash::input_method {
 
@@ -59,8 +61,15 @@ class EditorPanelManager : public crosapi::mojom::EditorPanelManager {
                         pending_receiver);
 
  private:
+  void OnGetPresetTextQueriesResult(
+      GetEditorPanelContextCallback callback,
+      std::vector<orca::mojom::PresetTextQueryPtr> queries);
+
   raw_ptr<Delegate> delegate_;
   mojo::ReceiverSet<crosapi::mojom::EditorPanelManager> receivers_;
+  mojo::Remote<orca::mojom::EditorClient> editor_client_remote_;
+
+  base::WeakPtrFactory<EditorPanelManager> weak_ptr_factory_{this};
 };
 
 }  // namespace ash::input_method
