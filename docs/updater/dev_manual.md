@@ -73,37 +73,54 @@ could be in inconsistent state and leads to infra error.
  based on build rule) to swarming server and run the target on bots. The
  upload may take quite some time if the target changed a lot since the last
  upload and/or your network is slow.
+
 * Simple scenario:
+
   ```
   .\tools\mb\mb.bat run -v --swarmed .\out\Default updater_tests -- --gtest_filter=*Integration*
   ```
+
 * Sometimes the mb tool may fail to match the testing OS (when doing
  cross-compile) or you may want to run the task on certain kind of bots.
 This can be done by specifying bots dimension with switch `-d`. Remember
 `--no-default-dimensions` is necessary to avoid dimension value conflict.
 Example:
+
   ```
   .\tools\mb\mb.bat run --swarmed --no-default-dimensions -d pool chromium.win.uac -d os Windows-10 .\out\Default updater_tests_system -- --gtest_filter=*Install*
   ```
+
 * `mb` can schedule tests in the pools managed by different swarming servers.
   The default server is
   [chromium-swarm.appspot.com](https://chromium-swarm.appspot.com/botlist?k=pool).
   To schedule tests to pools managed by
   [chrome-swarming.appspot.com](https://chrome-swarming.appspot.com/botlist?k=pool),
   for example `chrome.tests`, add `--internal` flag in the command line:
+
   ```
     tools/mb/mb run -v --swarmed --internal --no-default-dimensions -d pool chrome.tests -d os Windows-10 out/WinDefault updater_tests
   ```
+
 * If `mb` command failed with error `isolate: original error: interactive login is required`, you need to login:
+
   ```
    tools/luci-go/isolate login
   ```
+
 * If your test introduces dependency on a new app on macOS, you need to let
  `mb` tool know so it can correctly figure out the dependency. Example:
   https://crrev.com/c/3470143.
+
 * To run tests on `Arm64`, the mb tool needs to be invoked as follows:
+
   ```
   .\tools\mb\mb run -v --swarmed --no-default-dimensions --internal -d pool chrome.tests.arm64 out\Default updater_tests_system -- --gtest_filter=LegacyAppCommandWebImplTest.FailedToLaunchStatus
+  ```
+
+* When system tests crash, the stack is missing from the swarming log. This can be avoided if you suppress the test bot mode:
+
+  ```
+  .\tools\mb\mb run -v --swarmed  --no-bot-mode out\Default updater_tests_system
   ```
 
 ### Accessing Bots
