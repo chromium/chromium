@@ -47,7 +47,8 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, VoiceSearchOverlay) {
   RunTest("new_tab_page/voice_search_overlay_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, LensForm) {
+// TODO(crbug.com/1485755):  Re-enable once no longer fails.
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, DISABLED_LensForm) {
   RunTest("new_tab_page/lens_form_test.js", "mocha.run()");
 }
 
