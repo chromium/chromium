@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+@font-face {
+  font-family: halt-font;
+  src: url('support/fonts/NotoSansCJKjp-Regular-subset-halt.otf');
+}
+#container {
+  font-family: halt-font;
+  font-size: 20px;
+  text-spacing-trim: space-all;
+}
+halt {
+  font-feature-settings: 'halt' 1;
+}
+</style>
+<div id="container">
+  <!-- Open + Open/Close/Middle -->
+  <div>国（<halt>（</halt>国</div>
+  <div>国（<halt>（（</halt>国</div>
+  <div>国（）国</div>
+  <div>国（・国</div>
+  <div>国（　国</div>
+  <!-- Close + Open/Close/Middle -->
+  <div>国）<halt>（</halt>国</div>
+  <div>国<halt>）</halt>）国</div>
+  <div>国<halt>））</halt>）国</div>
+  <div>国<halt>）</halt>・国</div>
+  <div>国<halt>）</halt>　国</div>
+  <!-- Middle + Open/Middle/Close -->
+  <div>国・<halt>（</halt>国</div>
+  <div>国・・国</div>
+  <div>国・）国</div>
+  <div>国　<halt>（</halt>国</div>
+  <div>国　　国</div>
+  <div>国　）国</div>
+</div>
