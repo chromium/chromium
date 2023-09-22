@@ -211,10 +211,8 @@ bool SyncServiceImplHarness::SignInPrimaryAccount(
 
   switch (signin_type_) {
     case SigninType::UI_SIGNIN: {
-      // TODO(crbug.com/1455032): UI signin is currently only supported with
-      // ConsentLevel::kSync.
-      CHECK_EQ(consent_level, signin::ConsentLevel::kSync);
-      return signin_delegate_->SigninUI(profile_, username_, password_);
+      return signin_delegate_->SigninUI(profile_, username_, password_,
+                                        consent_level);
     }
 
     case SigninType::FAKE_SIGNIN: {
@@ -318,7 +316,7 @@ bool SyncServiceImplHarness::SetupSyncNoWaitForCompletion(
   FinishSyncSetup();
 
   if (signin_type_ == SigninType::UI_SIGNIN) {
-    return signin_delegate_->ConfirmSigninUI(profile_);
+    return signin_delegate_->ConfirmSyncUI(profile_);
   }
   return true;
 }

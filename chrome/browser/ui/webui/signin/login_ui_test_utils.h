@@ -6,11 +6,10 @@
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_LOGIN_UI_TEST_UTILS_H_
 
 #include <string>
-#include <vector>
 
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/signin/signin_email_confirmation_dialog.h"
-#include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/consent_level.h"
 
 class Browser;
 
@@ -42,7 +41,8 @@ void SigninInOldGaiaFlow(content::WebContents* web_contents,
 // This will block until a signin succeeded or failed notification is observed.
 bool SignInWithUI(Browser* browser,
                   const std::string& email,
-                  const std::string& password);
+                  const std::string& password,
+                  signin::ConsentLevel consent_level);
 
 // Waits for sync confirmation dialog to get displayed, then executes javascript
 // to click on confirm button. Returns false if dialog wasn't dismissed before

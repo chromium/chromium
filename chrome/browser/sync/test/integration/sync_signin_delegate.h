@@ -24,14 +24,13 @@ class SyncSigninDelegate {
 
   // Signs in a real account via the actual UI, for use in end-to-end tests
   // using real servers.
-  // TODO(crbug.com/1455032): This is currently only supported for
-  // Sync-the-feature - we should also support *just* signing in.
   [[nodiscard]] virtual bool SigninUI(Profile* profile,
                                       const std::string& username,
-                                      const std::string& password) = 0;
+                                      const std::string& password,
+                                      signin::ConsentLevel consent_level) = 0;
 
-  // Confirms the sign-in previously triggered via SigninUI.
-  [[nodiscard]] virtual bool ConfirmSigninUI(Profile* profile) = 0;
+  // Confirms the Sync opt-in previously triggered via SigninUI(kSync).
+  [[nodiscard]] virtual bool ConfirmSyncUI(Profile* profile) = 0;
 };
 
 // Creates the platform-specific implementation of SyncSigninDelegate.

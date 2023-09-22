@@ -41,17 +41,19 @@ void SyncSigninDelegateDesktop::SigninFake(Profile* profile,
 
 bool SyncSigninDelegateDesktop::SigninUI(Profile* profile,
                                          const std::string& username,
-                                         const std::string& password) {
+                                         const std::string& password,
+                                         signin::ConsentLevel consent_level) {
   Browser* browser = chrome::FindBrowserWithProfile(profile);
   DCHECK(browser);
-  if (!login_ui_test_utils::SignInWithUI(browser, username, password)) {
+  if (!login_ui_test_utils::SignInWithUI(browser, username, password,
+                                         consent_level)) {
     LOG(ERROR) << "Could not sign in to GAIA servers.";
     return false;
   }
   return true;
 }
 
-bool SyncSigninDelegateDesktop::ConfirmSigninUI(Profile* profile) {
+bool SyncSigninDelegateDesktop::ConfirmSyncUI(Profile* profile) {
   if (!login_ui_test_utils::ConfirmSyncConfirmationDialog(
           chrome::FindBrowserWithProfile(profile))) {
     LOG(ERROR) << "Failed to dismiss sync confirmation dialog.";

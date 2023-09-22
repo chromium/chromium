@@ -25,10 +25,11 @@ void SyncSigninDelegateAndroid::SigninFake(Profile* profile,
 
 bool SyncSigninDelegateAndroid::SigninUI(Profile* profile,
                                          const std::string& username,
-                                         const std::string& password) {
+                                         const std::string& password,
+                                         signin::ConsentLevel consent_level) {
   return false;
 }
 
-bool SyncSigninDelegateAndroid::ConfirmSigninUI(Profile* profile) {
+bool SyncSigninDelegateAndroid::ConfirmSyncUI(Profile* profile) {
   return true;
 }

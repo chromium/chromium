@@ -472,7 +472,8 @@ void ExecuteJsToSigninInSigninFrame(content::WebContents* web_contents,
 
 bool SignInWithUI(Browser* browser,
                   const std::string& username,
-                  const std::string& password) {
+                  const std::string& password,
+                  signin::ConsentLevel consent_level) {
 #if BUILDFLAG(IS_CHROMEOS)
   NOTREACHED();
   return false;
@@ -484,11 +485,22 @@ bool SignInWithUI(Browser* browser,
   scoped_signin_observation.Observe(
       IdentityManagerFactory::GetForProfile(browser->profile()));
 
-  signin_metrics::AccessPoint access_point =
+  const signin_metrics::AccessPoint access_point =
       signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN;
-  browser->signin_view_controller()->ShowDiceEnableSyncTab(
-      access_point, signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
-      /*email_hint=*/std::string());
+
+  switch (consent_level) {
+    case signin::ConsentLevel::kSignin:
+      browser->signin_view_controller()->ShowDiceAddAccountTab(
+          access_point,
+          /*email_hint=*/std::string());
+      break;
+    case signin::ConsentLevel::kSync:
+      browser->signin_view_controller()->ShowDiceEnableSyncTab(
+          access_point,
+          signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
+          /*email_hint=*/std::string());
+      break;
+  }
   content::WebContents* active_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   DCHECK(active_contents);

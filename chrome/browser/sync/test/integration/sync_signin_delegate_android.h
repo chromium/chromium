@@ -22,8 +22,9 @@ class SyncSigninDelegateAndroid : public SyncSigninDelegate {
                   signin::ConsentLevel consent_level) override;
   bool SigninUI(Profile* profile,
                 const std::string& username,
-                const std::string& password) override;
-  bool ConfirmSigninUI(Profile* profile) override;
+                const std::string& password,
+                signin::ConsentLevel consent_level) override;
+  bool ConfirmSyncUI(Profile* profile) override;
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_SIGNIN_DELEGATE_ANDROID_H_
