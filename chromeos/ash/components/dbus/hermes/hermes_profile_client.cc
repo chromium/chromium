@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -22,7 +23,9 @@ namespace dbus {
 // hermes::profile::State enum.
 template <>
 Property<hermes::profile::State>::Property()
-    : value_(hermes::profile::State::kInactive) {}
+    : value_(ash::features::IsSmdsSupportEnabled()
+                 ? hermes::profile::State::kPending
+                 : hermes::profile::State::kInactive) {}
 
 template <>
 bool Property<hermes::profile::State>::PopValueFromReader(
