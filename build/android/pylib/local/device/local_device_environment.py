@@ -86,6 +86,26 @@ def handle_shard_failures_with(on_failure):
   return decorator
 
 
+# TODO(b/293175593): Use PlaceNomediaFile after
+# https://crrev.com/c/4877296 lands
+def place_nomedia_on_device(dev, device_root, as_root=False):
+  """Places .nomedia file in test data root.
+
+  This helps to prevent system from scanning media files inside test data.
+
+  Args:
+    dev: Device to place .nomedia file.
+    device_root: Base path on device to place .nomedia file.
+  """
+
+  dev.RunShellCommand(['mkdir', '-p', device_root],
+                      check_return=True,
+                      as_root=as_root)
+  dev.WriteFile('%s/.nomedia' % device_root,
+                'https://crbug.com/796640',
+                as_root=as_root)
+
+
 # TODO(1262303): After Telemetry is supported by python3 we can re-add
 # super without arguments in this script.
 # pylint: disable=super-with-arguments
