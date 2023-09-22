@@ -45,7 +45,7 @@ import java.io.IOException;
 @Batch(Batch.PER_CLASS)
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "vmodule=metrics_reporter=2"})
-@EnableFeatures({ChromeFeatureList.INTEREST_FEED_V2, ChromeFeatureList.WEB_FEED})
+@EnableFeatures({ChromeFeatureList.WEB_FEED})
 public final class FeedSurfaceCoordinatorIntegrationTest {
     static final String PACKAGE_NAME = "org.chromium.chrome";
 

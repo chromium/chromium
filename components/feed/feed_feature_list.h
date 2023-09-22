@@ -17,16 +17,10 @@
 
 namespace feed {
 
-BASE_DECLARE_FEATURE(kInterestFeedContentSuggestions);
 BASE_DECLARE_FEATURE(kInterestFeedV2);
 BASE_DECLARE_FEATURE(kInterestFeedV2Autoplay);
 BASE_DECLARE_FEATURE(kInterestFeedV2Hearts);
 BASE_DECLARE_FEATURE(kInterestFeedV2Scrolling);
-
-extern const base::FeatureParam<std::string> kDisableTriggerTypes;
-extern const base::FeatureParam<int> kTimeoutDurationSeconds;
-extern const base::FeatureParam<bool> kThrottleBackgroundFetches;
-extern const base::FeatureParam<bool> kOnlySetLastRefreshAttemptOnSuccess;
 
 // Feature that allows the client to automatically dismiss the notice card based
 // on the clicks and views on the notice card.

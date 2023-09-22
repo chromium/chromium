@@ -300,8 +300,6 @@ public abstract class ChromeFeatureList {
     public static final String INSTALLABLE_AMBIENT_BADGE_MESSAGE = "InstallableAmbientBadgeMessage";
     public static final String INSTANCE_SWITCHER = "InstanceSwitcher";
     public static final String INSTANT_START = "InstantStart";
-    public static final String INTEREST_FEED_CONTENT_SUGGESTIONS = "InterestFeedContentSuggestions";
-    public static final String INTEREST_FEED_V2 = "InterestFeedV2";
     public static final String INTEREST_FEED_V2_AUTOPLAY = "InterestFeedV2Autoplay";
     public static final String INTEREST_FEED_V2_HEARTS = "InterestFeedV2Hearts";
     public static final String LENS_CAMERA_ASSISTED_SEARCH = "LensCameraAssistedSearch";
@@ -556,7 +554,6 @@ public abstract class ChromeFeatureList {
             new CachedFlag(INCOGNITO_REAUTHENTICATION_FOR_ANDROID, false);
     public static final CachedFlag sInstanceSwitcher = new CachedFlag(INSTANCE_SWITCHER, true);
     public static final CachedFlag sInstantStart = new CachedFlag(INSTANT_START, false);
-    public static final CachedFlag sInterestFeedV2 = new CachedFlag(INTEREST_FEED_V2, true);
     public static final CachedFlag sHideTabOnTabSwitcher =
             new CachedFlag(HIDE_TAB_ON_TAB_SWITCHER, false);
     public static final CachedFlag sNewTabSearchEngineUrlAndroid =
@@ -655,7 +652,6 @@ public abstract class ChromeFeatureList {
         sIncognitoReauthenticationForAndroid,
         sInstanceSwitcher,
         sInstantStart,
-        sInterestFeedV2,
         sHideTabOnTabSwitcher,
         sNewTabSearchEngineUrlAndroid,
         sPrivacyGuideAndroid3,
