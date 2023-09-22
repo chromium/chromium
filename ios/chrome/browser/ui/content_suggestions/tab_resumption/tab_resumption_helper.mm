@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_helper.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync_sessions/session_sync_service.h"
@@ -123,8 +124,12 @@ void TabResumptionHelper::LastTabResumptionItem(
   if (most_recent_tab) {
     SceneState* scene =
         SceneStateBrowserAgent::FromBrowser(browser_)->GetSceneState();
-    most_recent_tab_opened_time = base::Time::FromNSDate((NSDate*)[scene
-        sessionObjectForKey:kStartSurfaceSceneEnterIntoBackgroundTime]);
+    NSDate* most_recent_tab_date = base::apple::ObjCCastStrict<NSDate>(
+        [scene sessionObjectForKey:kStartSurfaceSceneEnterIntoBackgroundTime]);
+    if (most_recent_tab_date != nil) {
+      most_recent_tab_opened_time =
+          base::Time::FromNSDate(most_recent_tab_date);
+    }
   }
 
   const synced_sessions::DistantSession* session;
