@@ -47,6 +47,8 @@ import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
@@ -92,6 +94,9 @@ public class ChromeMessageQueueMediatorTest {
     private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
     @Mock
+    private BottomSheetController mBottomSheetController;
+
+    @Mock
     private Handler mQueueHandler;
 
     private ChromeMessageQueueMediator mMediator;
@@ -110,7 +115,7 @@ public class ChromeMessageQueueMediatorTest {
         mMediator = new ChromeMessageQueueMediator(mBrowserControlsManager,
                 mMessageContainerCoordinator, mActivityTabProvider,
                 layoutStateProviderOneShotSupplier, modalDialogManagerSupplier,
-                mActivityLifecycleDispatcher, mMessageDispatcher);
+                mBottomSheetController, mActivityLifecycleDispatcher, mMessageDispatcher);
         layoutStateProviderOneShotSupplier.set(mLayoutStateProvider);
         modalDialogManagerSupplier.set(mModalDialogManager);
         mMediator.setQueueHandlerForTesting(mQueueHandler);
@@ -195,7 +200,7 @@ public class ChromeMessageQueueMediatorTest {
         mMediator = new ChromeMessageQueueMediator(mBrowserControlsManager,
                 mMessageContainerCoordinator, mActivityTabProvider,
                 layoutStateProviderOneShotSupplier, modalDialogManagerSupplier,
-                mActivityLifecycleDispatcher, mMessageDispatcher);
+                mBottomSheetController, mActivityLifecycleDispatcher, mMessageDispatcher);
         ChromeMessageQueueMediator.BrowserControlsObserver observer =
                 observerArgumentCaptor.getValue();
         Assert.assertFalse(mMediator.isReadyForShowing());
@@ -304,7 +309,7 @@ public class ChromeMessageQueueMediatorTest {
         mMediator = new ChromeMessageQueueMediator(mBrowserControlsManager,
                 mMessageContainerCoordinator, mActivityTabProvider,
                 layoutStateProviderOneShotSupplier, modalDialogManagerSupplier,
-                mActivityLifecycleDispatcher, mMessageDispatcher);
+                mBottomSheetController, mActivityLifecycleDispatcher, mMessageDispatcher);
         layoutStateProviderOneShotSupplier.set(mLayoutStateProvider);
         // To offer a null value, we have to offer a value other than null first.
         modalDialogManagerSupplier.set(mModalDialogManager);
@@ -323,7 +328,7 @@ public class ChromeMessageQueueMediatorTest {
         mMediator = new ChromeMessageQueueMediator(mBrowserControlsManager,
                 mMessageContainerCoordinator, mActivityTabProvider,
                 layoutStateProviderOneShotSupplier, modalDialogManagerSupplier,
-                mActivityLifecycleDispatcher, mMessageDispatcher);
+                mBottomSheetController, mActivityLifecycleDispatcher, mMessageDispatcher);
         layoutStateProviderOneShotSupplier.set(mLayoutStateProvider);
         modalDialogManagerSupplier.set(mModalDialogManager);
         mMediator.onAnimationStart();
@@ -353,6 +358,22 @@ public class ChromeMessageQueueMediatorTest {
         verify(mMessageDispatcher).resume(EXPECTED_TOKEN);
         Assert.assertEquals("mUrlFocusToken should be invalidated.", TokenHolder.INVALID_TOKEN,
                 mMediator.getUrlFocusTokenForTesting());
+    }
+
+    /**
+     * Test the queue can be suspended and resumed correctly when bottom sheet is open/closed.
+     */
+    @Test
+    public void testBottomSheetChange() {
+        final ArgumentCaptor<BottomSheetObserver> observerArgumentCaptor =
+                ArgumentCaptor.forClass(BottomSheetObserver.class);
+        doNothing().when(mBottomSheetController).addObserver(observerArgumentCaptor.capture());
+        initMediator();
+        var bottomSheetObserver = observerArgumentCaptor.getValue();
+        bottomSheetObserver.onSheetOpened(BottomSheetController.StateChangeReason.NONE);
+        verify(mMessageDispatcher).suspend();
+        bottomSheetObserver.onSheetClosed(BottomSheetController.StateChangeReason.BACK_PRESS);
+        verify(mMessageDispatcher).resume(EXPECTED_TOKEN);
     }
 
     /**
