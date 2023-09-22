@@ -882,6 +882,11 @@ class TemplateURLService : public WebDataServiceConsumer,
   std::string current_token_;
   base::TimeTicks token_expiration_time_;
 
+  // Latest deletion of default search engine, contains sync GUID of the update
+  // with deletion. Used to postpone the deletion in case the default search
+  // engine changes later. See ProcessSyncChanges() for details.
+  std::string postponed_deleted_default_engine_guid_;
+
 #if BUILDFLAG(IS_ANDROID)
   // Manage and fetch the java object that wraps this TemplateURLService on
   // android.
