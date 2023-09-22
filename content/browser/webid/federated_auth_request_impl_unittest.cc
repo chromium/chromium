@@ -3984,9 +3984,7 @@ TEST_F(FederatedAuthRequestImplTest, TooManyRequests) {
   // been finalized.
   RequestExpectations expectations = {
       RequestTokenStatus::kErrorTooManyRequests,
-      // TODO(crbug.com/1456183): We currently do not show any console errors in
-      // this case, but we probably should. For now, pass kSuccess.
-      FederatedAuthRequestResult::kSuccess,
+      FederatedAuthRequestResult::kErrorTooManyRequests,
       /*standalone_console_message=*/absl::nullopt,
       /*selected_idp_config_url=*/absl::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);

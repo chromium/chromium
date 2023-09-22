@@ -705,6 +705,12 @@ void FederatedAuthRequestImpl::RequestToken(
   if (HasPendingRequest()) {
     fedcm_metrics_->RecordRequestTokenStatus(TokenStatus::kTooManyRequests,
                                              requirement);
+
+    AddDevToolsIssue(
+        blink::mojom::FederatedAuthRequestResult::kErrorTooManyRequests);
+    AddConsoleErrorMessage(
+        blink::mojom::FederatedAuthRequestResult::kErrorTooManyRequests);
+
     std::move(callback).Run(RequestTokenStatus::kErrorTooManyRequests,
                             absl::nullopt, "",
                             /*is_account_auto_selected=*/false);
