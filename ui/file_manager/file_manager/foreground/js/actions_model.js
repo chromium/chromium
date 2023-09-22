@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
-import {metrics} from '../../common/js/metrics.js';
+import {recordBoolean} from '../../common/js/metrics.js';
 import {str, strf, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
@@ -247,10 +247,10 @@ class DriveToggleOfflineAction {
       // Check the result of pinning.
       entryPinned: () => {
         error = !!chrome.runtime.lastError;
-        metrics.recordBoolean('DrivePinSuccess', !error);
+        recordBoolean('DrivePinSuccess', !error);
         if (this.metadataModel_.getCache([currentEntry], ['hosted'])[0]
                 .hosted) {
-          metrics.recordBoolean('DriveHostedFilePinSuccess', !error);
+          recordBoolean('DriveHostedFilePinSuccess', !error);
         }
         if (error && this.value_) {
           this.metadataModel_.get([currentEntry], ['size']).then(results => {

@@ -12,7 +12,7 @@ import {createDOMError} from '../../common/js/dom_utils.js';
 import {isEntryInsideDrive} from '../../common/js/entry_utils.js';
 import {FileType} from '../../common/js/file_type.js';
 import {EntryList} from '../../common/js/files_app_entry_types.js';
-import {metrics} from '../../common/js/metrics.js';
+import {recordInterval, recordMediumCount, startInterval} from '../../common/js/metrics.js';
 import {getEarliestTimestamp} from '../../common/js/recent_date_bucket.js';
 import {createTrashReaders} from '../../common/js/trash.js';
 import {util} from '../../common/js/util.js';
@@ -91,7 +91,7 @@ export class DirectoryContentScanner extends ContentScanner {
       return;
     }
 
-    metrics.startInterval('DirectoryScan');
+    startInterval('DirectoryScan');
     const reader = this.entry_.createReader();
     const readEntries = () => {
       reader.readEntries(entries => {
@@ -102,7 +102,7 @@ export class DirectoryContentScanner extends ContentScanner {
 
         if (entries.length === 0) {
           // All entries are read.
-          metrics.recordInterval('DirectoryScan');
+          recordInterval('DirectoryScan');
           successCallback();
           return;
         }
@@ -253,7 +253,7 @@ export class SearchV2ContentScanner extends ContentScanner {
    */
   makeFileSearchPromise_(params, metricVariant) {
     return new Promise((resolve, reject) => {
-      metrics.startInterval(`Search.${metricVariant}.Latency`);
+      startInterval(`Search.${metricVariant}.Latency`);
       chrome.fileManagerPrivate.searchFiles(
           params,
           /**
@@ -267,7 +267,7 @@ export class SearchV2ContentScanner extends ContentScanner {
                   util.FileError.NOT_READABLE_ERR,
                   chrome.runtime.lastError.message));
             } else {
-              metrics.recordInterval(`Search.${metricVariant}.Latency`);
+              recordInterval(`Search.${metricVariant}.Latency`);
               resolve(entries);
             }
           });
@@ -300,7 +300,7 @@ export class SearchV2ContentScanner extends ContentScanner {
           });
     });
     return new Promise((resolve, reject) => {
-      metrics.startInterval(`Search.${metricVariant}.Latency`);
+      startInterval(`Search.${metricVariant}.Latency`);
       const collectedEntries = [];
       let workLeft = 1;
       util.readEntriesRecursively(
@@ -330,7 +330,7 @@ export class SearchV2ContentScanner extends ContentScanner {
                     collectedEntries.push(...modified.filter(e => e !== null));
                     workLeft -= modified.length;
                     if (workLeft <= 0) {
-                      metrics.recordInterval(`Search.${metricVariant}.Latency`);
+                      recordInterval(`Search.${metricVariant}.Latency`);
                       resolve(collectedEntries);
                     }
                   });
@@ -339,14 +339,14 @@ export class SearchV2ContentScanner extends ContentScanner {
           // All entries read callback.
           () => {
             if (--workLeft <= 0) {
-              metrics.recordInterval(`Search.${metricVariant}.Latency`);
+              recordInterval(`Search.${metricVariant}.Latency`);
               resolve(collectedEntries);
             }
           },
           // Error callback.
           () => {
             if (!this.cancelled_ && collectedEntries.length >= maxResults) {
-              metrics.recordInterval(`Search.${metricVariant}.Latency`);
+              recordInterval(`Search.${metricVariant}.Latency`);
               resolve(collectedEntries);
             } else {
               reject();
@@ -482,7 +482,7 @@ export class SearchV2ContentScanner extends ContentScanner {
     const searchType = this.driveSearchTypeMap_.get(this.rootType_) ||
         chrome.fileManagerPrivate.SearchType.ALL;
     return new Promise((resolve, reject) => {
-      metrics.startInterval('Search.Drive.Latency');
+      startInterval('Search.Drive.Latency');
       chrome.fileManagerPrivate.searchDriveMetadata(
           {
             query: this.query_,
@@ -501,7 +501,7 @@ export class SearchV2ContentScanner extends ContentScanner {
             } else if (!results) {
               reject(createDOMError(util.FileError.INVALID_MODIFICATION_ERR));
             } else {
-              metrics.recordInterval('Search.Drive.Latency');
+              recordInterval('Search.Drive.Latency');
               resolve(results.map(r => r.entry));
             }
           });
@@ -605,7 +605,7 @@ export class SearchV2ContentScanner extends ContentScanner {
             }
           }
           successCallback();
-          metrics.recordMediumCount('Search.ResultCount', resultCount);
+          recordMediumCount('Search.ResultCount', resultCount);
         });
   }
 }

@@ -7,7 +7,7 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/ev
 import {getPreferences} from '../../common/js/api.js';
 import {AsyncQueue, Group} from '../../common/js/async_util.js';
 import {FilteredVolumeManager} from '../../common/js/filtered_volume_manager.js';
-import {metrics} from '../../common/js/metrics.js';
+import {recordSmallCount, recordUserAction} from '../../common/js/metrics.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {addFolderShortcut, refreshFolderShortcut, removeFolderShortcut} from '../../state/ducks/folder_shortcuts.js';
@@ -201,7 +201,7 @@ export class FolderShortcutsDataModel extends EventTarget {
       try {
         const shortcutPaths = await this.getPersistedShortcutPaths_();
         // Record metrics.
-        metrics.recordSmallCount('FolderShortcut.Count', shortcutPaths.length);
+        recordSmallCount('FolderShortcut.Count', shortcutPaths.length);
 
         // Resolve and add the entries to the model.
         this.processEntries_(shortcutPaths);  // Runs within a queue.
@@ -315,7 +315,7 @@ export class FolderShortcutsDataModel extends EventTarget {
   add(value) {
     const result = this.addInternal_(value);
     this.store_.dispatch(addFolderShortcut({entry: value}));
-    metrics.recordUserAction('FolderShortcut.Add');
+    recordUserAction('FolderShortcut.Add');
     this.save_();
     return result;
   }
@@ -368,7 +368,7 @@ export class FolderShortcutsDataModel extends EventTarget {
     if (result !== -1) {
       this.store_.dispatch(removeFolderShortcut({key: value.toURL()}));
       this.save_();
-      metrics.recordUserAction('FolderShortcut.Remove');
+      recordUserAction('FolderShortcut.Remove');
     }
     return result;
   }

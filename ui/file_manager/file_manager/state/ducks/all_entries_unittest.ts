@@ -6,7 +6,7 @@ import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue
 
 import {fakeMyFilesVolumeId, MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {EntryList, FakeEntryImpl, GuestOsPlaceholder, VolumeEntry} from '../../common/js/files_app_entry_types.js';
-import {metrics} from '../../common/js/metrics.js';
+import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {MockFileSystem} from '../../common/js/mock_entry.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
@@ -29,6 +29,7 @@ export function setUp() {
   // changeDirectory() reducer uses the VolumeManager.
   // sortEntries() requires the directoryModel on the window.fileManager.
   setUpFileManagerOnWindow();
+  installMockChrome({});
 
   store = setupStore();
 
@@ -43,11 +44,6 @@ export function setUp() {
     '/dir-2/file-2.txt',
     '/dir-3/',
   ]);
-
-  // Mock metrics.recordSmallCount.
-  metrics.recordSmallCount = function() {};
-  metrics.startInterval = function() {};
-  metrics.recordInterval = function() {};
 }
 
 /** Generate MyFiles entry with fake entry list. */

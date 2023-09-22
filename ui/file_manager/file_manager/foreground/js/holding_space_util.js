@@ -6,7 +6,7 @@
  * @fileoverview Utility methods for the holding space feature.
  */
 
-import {metrics} from '../../common/js/metrics.js';
+import {recordValue} from '../../common/js/metrics.js';
 import {storage} from '../../common/js/storage.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 
@@ -109,7 +109,7 @@ export class HoldingSpaceUtil {
     // respectively.
     const oneSecondInMillis = 1000;
     const oneDayInMillis = 24 * 60 * 60 * 1000;
-    metrics.recordValue(
+    recordValue(
         /*name=*/ 'HoldingSpace.TimeFromFirstWelcomeBannerShowToFirstPin',
         chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LOG,
         /*min=*/ oneSecondInMillis,

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {metrics} from '../../common/js/metrics.js';
+import {recordEnum} from '../../common/js/metrics.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
@@ -34,7 +34,7 @@ export class NavigationUma {
   exportRootType_(entry, name) {
     const locationInfo = this.volumeManager_.getLocationInfo(entry);
     if (locationInfo) {
-      metrics.recordEnum(
+      recordEnum(
           name, locationInfo.rootType, VolumeManagerCommon.RootTypesForUMA);
     }
   }

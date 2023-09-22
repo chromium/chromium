@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {metrics} from '../../common/js/metrics.js';
+import {recordDirectoryListLoadWithTolerance, startInterval} from '../../common/js/metrics.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {Store} from '../../externs/ts/store.js';
@@ -90,7 +90,7 @@ export class ScanController {
     if (volumeInfo &&
         (volumeInfo.volumeType === VolumeManagerCommon.VolumeType.DOWNLOADS ||
          volumeInfo.volumeType === VolumeManagerCommon.VolumeType.MY_FILES)) {
-      metrics.startInterval(
+      startInterval(
           `DirectoryListLoad.${VolumeManagerCommon.RootType.MY_FILES}`);
     }
 
@@ -144,7 +144,7 @@ export class ScanController {
            volumeInfo.volumeType === VolumeManagerCommon.VolumeType.MY_FILES)) {
         const metricName =
             `DirectoryListLoad.${VolumeManagerCommon.RootType.MY_FILES}`;
-        metrics.recordDirectoryListLoadWithTolerance(
+        recordDirectoryListLoadWithTolerance(
             metricName, this.directoryModel_.getFileList().length,
             [10, 100, 1000], /*tolerance=*/ 0.2);
       }

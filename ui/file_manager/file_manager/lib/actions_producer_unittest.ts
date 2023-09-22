@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 import {assertEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
+import {installMockChrome} from '../common/js/mock_chrome.js';
 import {waitUntil} from '../common/js/test_error_reporting.js';
 
 import {ConcurrentActionInvalidatedError} from './actions_producer.js';
@@ -10,6 +11,9 @@ import type {Action} from './base_store.js';
 import {keepLatest, keyedKeepFirst} from './concurrency_models.js';
 import {setupTestStore} from './for_tests.js';
 
+export function setUp() {
+  installMockChrome({});
+}
 /**
  * Helper to accumulate all produced actions from the ActionsProducer.
  */

@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 
 import {DialogType} from '../../common/js/dialog_type.js';
 import {FileType} from '../../common/js/file_type.js';
-import {metrics} from '../../common/js/metrics.js';
+import {recordEnum} from '../../common/js/metrics.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
@@ -50,7 +50,7 @@ export class QuickViewUma {
     } else if (UMA_INDEX_KNOWN_EXTENSIONS.indexOf(extension) < 0) {
       extension = 'unknown extension';
     }
-    metrics.recordEnum(name, extension, UMA_INDEX_KNOWN_EXTENSIONS);
+    recordEnum(name, extension, UMA_INDEX_KNOWN_EXTENSIONS);
   }
 
   /**
@@ -70,15 +70,13 @@ export class QuickViewUma {
    */
   onOpened(entry, wayToOpen) {
     this.exportFileType_(entry, 'QuickView.FileTypeOnLaunch');
-    metrics.recordEnum(
-        'QuickView.WayToOpen', wayToOpen, QuickViewUma.WayToOpenValues_);
+    recordEnum('QuickView.WayToOpen', wayToOpen, QuickViewUma.WayToOpenValues_);
 
     const volumeInfo = this.volumeManager_.getVolumeInfo(entry);
     const volumeType = volumeInfo && volumeInfo.volumeType;
     if (volumeType) {
       if (QuickViewUma.VolumeType.includes(volumeType)) {
-        metrics.recordEnum(
-            'QuickView.VolumeType', volumeType, QuickViewUma.VolumeType);
+        recordEnum('QuickView.VolumeType', volumeType, QuickViewUma.VolumeType);
       } else {
         console.warn('Unknown volume type: ' + volumeType);
       }
@@ -87,7 +85,7 @@ export class QuickViewUma {
     }
     // Record stats of dialog types. It must be in sync with
     // FileDialogType enum in tools/metrics/histograms/enums.xml.
-    metrics.recordEnum('QuickView.DialogType', this.dialogType_, [
+    recordEnum('QuickView.DialogType', this.dialogType_, [
       DialogType.SELECT_FOLDER,
       DialogType.SELECT_UPLOAD_FOLDER,
       DialogType.SELECT_SAVEAS_FILE,

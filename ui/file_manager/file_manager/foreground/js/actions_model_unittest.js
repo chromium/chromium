@@ -7,8 +7,7 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/ev
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
-import {metrics} from '../../common/js/metrics.js';
-import {installMockChrome, MockCommandLinePrivate} from '../../common/js/mock_chrome.js';
+import {installMockChrome, MockCommandLinePrivate, MockMetrics} from '../../common/js/mock_chrome.js';
 import {MockDirectoryEntry, MockFileEntry} from '../../common/js/mock_entry.js';
 import {reportPromise} from '../../common/js/test_error_reporting.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
@@ -35,6 +34,17 @@ let driveFileSystem;
  */
 let providedFileSystem;
 
+/** @type {!MockMetrics} */
+let mockMetrics;
+
+/**
+ * @param {string} metricName
+ * @returns {number} total number of calls for that metric.
+ */
+function countMetricCalls(metricName) {
+  const calls = mockMetrics.metricCalls;
+  return (calls[metricName] || []).length;
+}
 
 /**
  * @returns {!FolderShortcutsDataModel}
@@ -91,28 +101,16 @@ class MockUI {
 let ui;
 
 export function setUp() {
+  mockMetrics = new MockMetrics();
   // Mock Chrome APIs.
   const mockChrome = {
+    metricsPrivate: mockMetrics,
     runtime: {
       lastError: null,
     },
   };
   installMockChrome(mockChrome);
   new MockCommandLinePrivate();
-
-  /**
-   * Mock metrics.recordBoolean.
-   * @param {string} name Short metric name.
-   * @param {boolean} value The value to be recorded.
-   */
-  metrics.recordBoolean = (name, value) => {
-    metrics.calls[name]++;
-  };
-
-  metrics.calls = {
-    DrivePinSuccess: 0,
-    DriveHostedFilePinSuccess: 0,
-  };
 
   // Setup Drive file system.
   volumeManager = new MockVolumeManager();
@@ -268,8 +266,9 @@ export function testDriveFileEntry(callback) {
             assertTrue(metadataModel.properties.pinned);
             assertEquals(1, invalidated);
 
-            assertEquals(1, metrics.calls['DrivePinSuccess']);
-            assertEquals(0, metrics.calls['DriveHostedFilePinSuccess']);
+            assertEquals(1, countMetricCalls('FileBrowser.DrivePinSuccess'));
+            assertEquals(
+                0, countMetricCalls('FileBrowser.DriveHostedFilePinSuccess'));
 
             // The model is invalidated, as list of actions have changed.
             // Recreated the model and check that the actions are updated.
@@ -387,8 +386,9 @@ export function testDriveHostedFileEntry(callback) {
             assertTrue(!!metadataModel.getCache([testDocument])[0].pinned);
             assertTrue(!!metadataModel.getCache([testFile])[0].pinned);
 
-            assertEquals(2, metrics.calls['DrivePinSuccess']);
-            assertEquals(1, metrics.calls['DriveHostedFilePinSuccess']);
+            assertEquals(2, countMetricCalls('FileBrowser.DrivePinSuccess'));
+            assertEquals(
+                1, countMetricCalls('FileBrowser.DriveHostedFilePinSuccess'));
 
             model = new ActionsModel(
                 volumeManager, metadataModel, shortcutsModel, ui,
@@ -496,8 +496,9 @@ export function testUnpinnableDriveHostedFileEntry(callback) {
             assertFalse(!!metadataModel.getCache([testDocument])[0].pinned);
             assertTrue(!!metadataModel.getCache([testFile])[0].pinned);
 
-            assertEquals(1, metrics.calls['DrivePinSuccess']);
-            assertEquals(0, metrics.calls['DriveHostedFilePinSuccess']);
+            assertEquals(1, countMetricCalls('FileBrowser.DrivePinSuccess'));
+            assertEquals(
+                0, countMetricCalls('FileBrowser.DriveHostedFilePinSuccess'));
 
             model = new ActionsModel(
                 volumeManager, metadataModel, shortcutsModel, ui,

@@ -29,7 +29,7 @@ import {VolumeManager} from '../../externs/volume_manager.js';
 import {parseTrashInfoFiles, startIOTask} from './api.js';
 import {isFileSystemDirectoryEntry, isFileSystemFileEntry} from './entry_utils.js';
 import {FakeEntryImpl} from './files_app_entry_types.js';
-import {metrics} from './metrics.js';
+import {recordMediumCount} from './metrics.js';
 import {str} from './util.js';
 import {VolumeManagerCommon} from './volume_manager_types.js';
 
@@ -552,7 +552,7 @@ class TrashDirectoryReader implements FileSystemDirectoryReader {
     }
 
     // Record the amount of files seen for this particularly directory reader.
-    metrics.recordMediumCount(
+    recordMediumCount(
         /*name=*/ `TrashFiles.${this.config_.volumeType}`, result.length);
   }
 

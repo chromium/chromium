@@ -58,7 +58,6 @@ group("js_modules") {
     ":main_window_component",
     ":metadata_box_controller",
     ":metadata_update_controller",
-    ":metrics_start",
     ":mock_actions_model",
     ":mock_directory_model",
     ":mock_folder_shortcut_data_model",
@@ -175,7 +174,6 @@ js_library("actions_model") {
     "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:cr_deprecated",
     "//ash/webui/common/resources:event_target",
-    "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_manager",
@@ -208,7 +206,6 @@ js_unittest("actions_model_unittest") {
     "//ash/webui/common/resources:event_target",
     "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/background/js:mock_volume_manager",
-    "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:mock_chrome",
     "//ui/file_manager/file_manager/common/js:mock_entry",
     "//ui/file_manager/file_manager/common/js:test_error_reporting",
@@ -317,7 +314,6 @@ js_library("dialog_action_controller") {
     "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:util",
     "//ui/file_manager/file_manager/common/js:dialog_type",
-    "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_manager",
@@ -333,7 +329,6 @@ js_library("directory_contents") {
     "//ash/webui/common/resources:cr_deprecated",
     "//ash/webui/common/resources:event_target",
     "//ui/file_manager/file_manager/common/js:async_util",
-    "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
@@ -367,7 +362,6 @@ js_library("directory_model") {
     "//ash/webui/common/resources:cr_deprecated",
     "//ash/webui/common/resources:event_target",
     "//ui/file_manager/file_manager/common/js:async_util",
-    "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:entries_changed_event",
@@ -397,7 +391,6 @@ js_unittest("directory_model_unittest") {
 
 js_library("navigation_uma") {
   deps = [
-    "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_manager",
   ]
@@ -548,7 +541,6 @@ js_library("file_manager") {
     "//ui/file_manager/file_manager/common/js:files_app_entry_types",
     "//ui/file_manager/file_manager/common/js:files_app_state",
     "//ui/file_manager/file_manager/common/js:filtered_volume_manager",
-    "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:progress_center_common",
     "//ui/file_manager/file_manager/common/js:storage",
     "//ui/file_manager/file_manager/common/js:util",
@@ -590,7 +582,6 @@ js_library("file_manager_commands") {
     "//ui/file_manager/file_manager/common/js:dialog_type",
     "//ui/file_manager/file_manager/common/js:file_type",
     "//ui/file_manager/file_manager/common/js:files_app_entry_types",
-    "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:progress_center_common",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
@@ -700,7 +691,6 @@ js_library("file_type_filters_controller") {
   deps = [
     ":directory_model",
     "ui:a11y_announce",
-    "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/externs:directory_change_event",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
@@ -716,7 +706,6 @@ js_unittest("file_type_filters_controller_unittest") {
     "//ash/webui/common/resources:load_time_data.m",
     "//chrome/test/data/webui/chromeos:chai_assert",
     "//ui/file_manager/file_manager/common/js:files_app_entry_types",
-    "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:mock_chrome",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:directory_change_event",
@@ -740,7 +729,6 @@ js_library("folder_shortcuts_data_model") {
     "//ui/file_manager/file_manager/common/js:api",
     "//ui/file_manager/file_manager/common/js:async_util",
     "//ui/file_manager/file_manager/common/js:filtered_volume_manager",
-    "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs/ts:store",
@@ -779,7 +767,6 @@ js_library("guest_os_controller") {
 js_library("holding_space_util") {
   deps = [
     "//ash/webui/common/resources:load_time_data.m",
-    "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
   ]
 }
@@ -830,7 +817,6 @@ js_library("main") {
       [ "//ui/webui/resources/cr_components/color_change_listener:build_ts" ]
   deps = [
     ":file_manager",
-    ":metrics_start",
     "//ui/file_manager/file_manager/common/js:glitch",
     "//ui/file_manager/file_manager/common/js:util",
   ]
@@ -848,7 +834,6 @@ js_library("main_window_component") {
     "ui:file_tap_handler",
     "ui:list_container",
     "//ui/file_manager/file_manager/common/js:dialog_type",
-    "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:directory_change_event",
@@ -880,10 +865,6 @@ js_library("metadata_update_controller") {
     "ui:list_container",
     "//ui/file_manager/file_manager/common/js:util",
   ]
-}
-
-js_library("metrics_start") {
-  deps = [ "//ui/file_manager/file_manager/common/js:metrics" ]
 }
 
 js_library("naming_controller") {
@@ -1019,7 +1000,6 @@ js_library("quick_view_uma") {
     "//ash/webui/common/resources:assert",
     "//ui/file_manager/file_manager/common/js:dialog_type",
     "//ui/file_manager/file_manager/common/js:file_type",
-    "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_manager",
   ]
@@ -1032,7 +1012,6 @@ js_library("scan_controller") {
     ":file_selection",
     ":spinner_controller",
     "ui:list_container",
-    "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
   ]
 }

@@ -7,7 +7,6 @@ import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome:/
 
 import {MockVolumeManager} from '../background/js/mock_volume_manager.js';
 import {EntryList, FakeEntryImpl, VolumeEntry} from '../common/js/files_app_entry_types.js';
-import {metrics} from '../common/js/metrics.js';
 import {installMockChrome} from '../common/js/mock_chrome.js';
 import {MockFileSystem} from '../common/js/mock_entry.js';
 import {waitUntil} from '../common/js/test_error_reporting.js';
@@ -60,14 +59,6 @@ export function tearDown() {
   }
   document.body.innerHTML = window.trustedTypes!.emptyHTML;
 }
-
-/**
- * Mock metrics.
- */
-metrics.recordEnum = function() {};
-metrics.recordSmallCount = function() {};
-metrics.startInterval = function() {};
-metrics.recordInterval = function() {};
 
 /**
  * Returns a mock MetadataModel.

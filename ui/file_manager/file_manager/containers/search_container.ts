@@ -5,7 +5,7 @@
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
 import {queryRequiredElement} from '../common/js/dom_utils.js';
-import {metrics} from '../common/js/metrics.js';
+import {recordUserAction} from '../common/js/metrics.js';
 import {str, strf} from '../common/js/util.js';
 import {VolumeManagerCommon} from '../common/js/volume_manager_types.js';
 import {CurrentDirectory, PropStatus, SearchData, SearchLocation, SearchOptions, SearchRecency, State} from '../externs/ts/state.js';
@@ -442,7 +442,7 @@ export class SearchContainer extends EventTarget {
 
     this.store_.dispatch(
         changeDirectory({toKey: this.pathComponents_[index] as FileKey}));
-    metrics.recordUserAction('ClickBreadcrumbs');
+    recordUserAction('ClickBreadcrumbs');
   }
 
   /**

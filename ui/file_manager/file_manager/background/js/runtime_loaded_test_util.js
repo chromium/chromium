@@ -11,7 +11,7 @@ import './test_util.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 
-import {metrics} from '../../common/js/metrics.js';
+import {recordEnum} from '../../common/js/metrics.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileManagerBaseInterface} from '../../externs/background/file_manager_base.js';
@@ -1192,7 +1192,7 @@ test.util.sync.setPreferences = preferences => {
  *
  */
 test.util.sync.recordEnumMetric = (name, value, validValues) => {
-  metrics.recordEnum(name, value, validValues);
+  recordEnum(name, value, validValues);
   return true;
 };
 

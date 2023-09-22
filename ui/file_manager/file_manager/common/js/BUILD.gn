@@ -34,8 +34,6 @@ group("js_modules") {
     ":filtered_volume_manager",
     ":glitch",
     ":icon_util",
-    ":metrics",
-    ":metrics_base",
     ":notifications",
     ":progress_center_common",
     ":recent_date_bucket",
@@ -60,8 +58,6 @@ js_type_check("closure_compile_jsmodules") {
     ":filtered_volume_manager",
     ":glitch",
     ":icon_util",
-    ":metrics",
-    ":metrics_base",
     ":mock_entry",
     ":notifications",
     ":progress_center_common",
@@ -137,7 +133,6 @@ js_library("error_counter") {
 }
 
 js_library("glitch") {
-  deps = [ ":metrics" ]
 }
 
 js_library("dialog_type") {
@@ -219,16 +214,6 @@ js_unittest("filtered_volume_manager_unittest") {
     "//ui/file_manager/file_manager/background/js:mock_volume_manager",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
   ]
-}
-
-js_library("metrics") {
-  visibility = []
-  visibility = [ "//ui/file_manager/file_manager/*" ]
-  deps = [ ":metrics_base" ]
-}
-
-js_library("metrics_base") {
-  externs_list = [ "$externs_path/metrics_private.js" ]
 }
 
 js_library("mock_chrome") {

@@ -4,7 +4,7 @@
 
 import '../widgets/xf_breadcrumb.js';
 
-import {metrics} from '../common/js/metrics.js';
+import {recordUserAction} from '../common/js/metrics.js';
 import {SEARCH_RESULTS_KEY} from '../common/js/url_constants.js';
 import {str} from '../common/js/util.js';
 import {PathComponent, PropStatus, State} from '../externs/ts/state.js';
@@ -115,6 +115,6 @@ export class BreadcrumbContainer {
 
     const fileKey = this.pathKeys_[index];
     this.store_.dispatch(changeDirectory({toKey: fileKey as FileKey}));
-    metrics.recordUserAction('ClickBreadcrumbs');
+    recordUserAction('ClickBreadcrumbs');
   }
 }

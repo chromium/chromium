@@ -9,10 +9,13 @@
 export function installMockChrome(mockChrome) {
   /** @suppress {const|checkTypes} */
   window.chrome = window.chrome || {};
+  mockChrome.metricsPrivate = mockChrome.metricsPrivate || new MockMetrics();
+
   const chrome = window.chrome;
   for (const [key, value] of Object.entries(mockChrome)) {
-    const target = chrome[key] || {};
+    const target = chrome[key] || value;
     Object.assign(target, value);
+    chrome[key] = target;
   }
 }
 
@@ -253,5 +256,89 @@ export class MockChromeFileManagerPrivateDirectoryChanged {
     for (const listener of this.listeners_) {
       listener(event);
     }
+  }
+}
+
+/**
+ * Mock for chrome.metricsPrivate.
+ *
+ * It records the method calls made to chrome.metricsPrivate.
+ *
+ * Typical usage:
+ * const mockMetrics = new MockMetrics();
+ *
+ * // NOTE: installMockChrome() mocks metricsPrivate by default, which useful
+ * when you don't want to check the calls to metrics.
+ * installMockChrome({
+ *   metricsPrivate: mockMetrics,
+ * });
+ *
+ * // Run the code under test:
+ * Then check the calls made to metrics private using either:
+ * mockMetrics.apiCalls
+ * mockMetrics.metricCalls
+ */
+export class MockMetrics {
+  constructor() {
+    /**
+     * Maps the API name to every call which is an array of the call arguments.
+     * @type {!Object<undefined|!Array<*>>}
+     * */
+    this.apiCalls = {};
+
+    /**
+     * Maps the metric names to every call with its arguments, similar to
+     * `apiCalls` but recorded by metric instead of API method.
+     * @type {!Object<undefined|!Array<*>>}
+     * */
+    this.metricCalls = {};
+
+    // The API has this enum which referenced in the code.
+    this.MetricTypeType = {
+      'HISTOGRAM_LINEAR': 'HISTOGRAM_LINEAR',
+    };
+  }
+
+  call(apiName, args) {
+    console.log(apiName, args);
+    this.apiCalls[apiName] = this.apiCalls[apiName] || [];
+    this.apiCalls[apiName].push(args);
+    if (args.length > 0) {
+      let metricName = args[0];
+      // Ignore the first position because it's the metric name.
+      let metricArgs = args.slice(1);
+      // Some APIs uses `metricName` instead of first argument.
+      if (metricName.metricName) {
+        metricArgs = [metricName, ...metricArgs];
+        metricName = metricName.metricName;
+      }
+      this.metricCalls[metricName] = this.metricCalls[metricName] || [];
+      this.metricCalls[metricName].push(metricArgs);
+    }
+  }
+
+  recordMediumCount(...args) {
+    this.call('recordMediumCount', args);
+  }
+  recordSmallCount(...args) {
+    this.call('recordSmallCount', args);
+  }
+  recordTime(...args) {
+    this.call('recordTime', args);
+  }
+  recordBoolean(...args) {
+    this.call('recordBoolean', args);
+  }
+  recordUserAction(...args) {
+    this.call('recordUserAction', args);
+  }
+  recordValue(...args) {
+    this.call('recordValue', args);
+  }
+  recordInterval(...args) {
+    this.call('recordInterval', args);
+  }
+  recordEnum(...args) {
+    this.call('recordEnum', args);
   }
 }

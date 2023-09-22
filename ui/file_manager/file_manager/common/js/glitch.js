@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {metrics} from './metrics.js';
+import {recordEnum} from './metrics.js';
 
 /**
  * Possible error metrics. We allow for errors intercepted by an error counter.
@@ -30,5 +30,5 @@ export const GlitchType = {
  * @param {!GlitchType} glitchType What type of glitch was it.
  */
 export function reportGlitch(glitchType) {
-  metrics.recordEnum(`Glitch`, glitchType, Object.values(GlitchType));
+  recordEnum(`Glitch`, glitchType, Object.values(GlitchType));
 }

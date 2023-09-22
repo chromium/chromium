@@ -21,7 +21,7 @@ import {getKeyModifiers, queryDecoratedElement, queryRequiredElement} from '../.
 import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import {FilesAppState} from '../../common/js/files_app_state.js';
 import {FilteredVolumeManager} from '../../common/js/filtered_volume_manager.js';
-import {metrics} from '../../common/js/metrics.js';
+import {recordEnum, recordInterval, startInterval} from '../../common/js/metrics.js';
 import {ProgressItemState} from '../../common/js/progress_center_common.js';
 import {TrashRootEntry} from '../../common/js/trash.js';
 import {str, util} from '../../common/js/util.js';
@@ -587,10 +587,10 @@ export class FileManager extends EventTarget {
    * @private
    */
   async startInitSettings_() {
-    metrics.startInterval('Load.InitSettings');
+    startInterval('Load.InitSettings');
     this.appStateController_ = new AppStateController(this.dialogType);
     await this.appStateController_.loadInitialViewOptions();
-    metrics.recordInterval('Load.InitSettings');
+    recordInterval('Load.InitSettings');
   }
 
   /**
@@ -894,14 +894,14 @@ export class FileManager extends EventTarget {
     this.dialogDom_ = dialogDom;
     this.document_ = this.dialogDom_.ownerDocument;
 
-    metrics.startInterval('Load.InitDocuments');
+    startInterval('Load.InitDocuments');
     // importElements depend on loadTimeData which is initialized in the
     // initBackgroundPagePromise_.
     await this.initBackgroundPagePromise_;
     await importElements();
-    metrics.recordInterval('Load.InitDocuments');
+    recordInterval('Load.InitDocuments');
 
-    metrics.startInterval('Load.InitUI');
+    startInterval('Load.InitUI');
     this.document_.documentElement.classList.add('files-ng');
     this.dialogDom_.classList.add('files-ng');
 
@@ -925,7 +925,7 @@ export class FileManager extends EventTarget {
     const store = getStore();
     store.init(getEmptyState());
     this.initUIFocus_();
-    metrics.recordInterval('Load.InitUI');
+    recordInterval('Load.InitUI');
 
     chrome.fileManagerPrivate.onDeviceConnectionStatusChanged.addListener(
         this.updateDeviceConnectionState_.bind(this));
@@ -976,7 +976,7 @@ export class FileManager extends EventTarget {
    * @private
    */
   async startInitBackgroundPage_() {
-    metrics.startInterval('Load.InitBackgroundPage');
+    startInterval('Load.InitBackgroundPage');
 
     this.fileBrowserBackground_ =
         /** @type {!ForegroundWindow} */ (window).background;
@@ -995,7 +995,7 @@ export class FileManager extends EventTarget {
         this.fileBrowserBackground_.fileOperationManager;
     this.crostini_ = this.fileBrowserBackground_.crostini;
 
-    metrics.recordInterval('Load.InitBackgroundPage');
+    recordInterval('Load.InitBackgroundPage');
   }
 
   /**
@@ -1039,7 +1039,7 @@ export class FileManager extends EventTarget {
     // array enumerating the types. It must be in sync with
     // FileDialogType enum in tools/metrics/histograms/histogram.xml.
     const metricName = 'SWA.Create';
-    metrics.recordEnum(metricName, this.dialogType, [
+    recordEnum(metricName, this.dialogType, [
       DialogType.SELECT_FOLDER,
       DialogType.SELECT_UPLOAD_FOLDER,
       DialogType.SELECT_SAVEAS_FILE,
@@ -1432,7 +1432,7 @@ export class FileManager extends EventTarget {
     // query, and select it if exists.
     const searchQuery = this.launchParams_.searchQuery;
     if (searchQuery) {
-      metrics.startInterval('Load.ProcessInitialSearchQuery');
+      startInterval('Load.ProcessInitialSearchQuery');
       this.store_.dispatch(updateSearch({
         query: searchQuery,
         status: PropStatus.STARTED,
@@ -1448,7 +1448,7 @@ export class FileManager extends EventTarget {
         nextCurrentDirEntry = queryMatchedDirEntry;
       }
       hideSpinnerCallback();
-      metrics.recordInterval('Load.ProcessInitialSearchQuery');
+      recordInterval('Load.ProcessInitialSearchQuery');
     }
 
     // Resolve the currentDirectoryURL to currentDirectoryEntry (if not done by

@@ -7,8 +7,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeo
 
 import {createCrostiniForTest} from '../../background/js/mock_crostini.js';
 import {MockProgressCenter} from '../../background/js/mock_progress_center.js';
-import {metrics} from '../../common/js/metrics.js';
-import {installMockChrome} from '../../common/js/mock_chrome.js';
+import {installMockChrome, MockMetrics} from '../../common/js/mock_chrome.js';
 import {MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {ProgressItemState} from '../../common/js/progress_center_common.js';
 import {LEGACY_FILES_EXTENSION_ID} from '../../common/js/url_constants.js';
@@ -31,64 +30,13 @@ import {DefaultTaskDialog} from './ui/default_task_dialog.js';
 import {ImportCrostiniImageDialog} from './ui/import_crostini_image_dialog.js';
 import {InstallLinuxPackageDialog} from './ui/install_linux_package_dialog.js';
 
-/** Utility function that appends value under a given name in the store.  */
-function record<T>(store: Map<string, T[]>, name: string, value: T) {
-  let recorded = store.get(name);
-  if (!recorded) {
-    recorded = [];
-    store.set(name, recorded);
-  }
-  recorded.push(value);
-}
-
-/**
- * A map from histogram name to all enums recorded for it.
- */
-const enumMap = new Map();
-
-/**
- * A map from histogram name to all counts recorded for it.
- */
-const countMap = new Map();
-
-/**
- * A map from histogram name to all times recorded for it.
- */
-const timeMap = new Map();
-
 let passwordDialog: XfPasswordDialog;
 
-/** Mock metrics.recordEnum.  */
-// @ts-ignore: Remove ignore once metrics_base.recordEnum() is in TS and the
-// signature is compatible.
-metrics.recordEnum = function<T>(name: string, value: T, valid: T[]): void {
-  assertTrue(valid.includes(value));
-  record(enumMap, name, value);
-};
+/** Mock chrome APIs. */
+let mockChrome: any;
 
-/**
- * Mock metrics.recordSmallCount.
- * @param {string} name Short metric name.
- * @param {number} value Value to be recorded.
- */
-metrics.recordSmallCount = function(name: string, value: number) {
-  record(countMap, name, value);
-};
-
-/**
- * Mock metrics.recordTime.
- * @param {string} name Short metric name.
- * @param {number} time Time to be recorded in milliseconds.
- */
-metrics.recordTime = function(name: string, time: number) {
-  record(timeMap, name, time);
-};
-
-/**
- * Mock chrome APIs.
- * @type {!Object}
- */
-let mockChrome;
+/** Mock to keep track of the calls to metricsPrivate. */
+let mockMetrics: MockMetrics;
 
 /** Mock task history. */
 const mockTaskHistory = {
@@ -137,8 +85,11 @@ export function setUp() {
     isGenericFileHandler: true,
   } as unknown as chrome.fileManagerPrivate.FileTask;
 
+  mockMetrics = new MockMetrics();
+
   // Mock chome APIs.
   mockChrome = {
+    metricsPrivate: mockMetrics,
     fileManagerPrivate: {
       getFileTasks: function(
           _entries: Entry[], _sourceUrls: string[],
@@ -159,9 +110,6 @@ export function setUp() {
   };
 
   installMockChrome(mockChrome);
-  enumMap.clear();
-  countMap.clear();
-  timeMap.clear();
 }
 
 /**
@@ -636,7 +584,7 @@ export async function testMountArchiveAndChangeDirectoryNotificationSuccess(
       undefined, fileManager.progressCenter.getItemById(errorZipMountPanelId));
 
   // Check: a zip mount time UMA has been recorded.
-  assertTrue(timeMap.has('ZipMountTime.Other'));
+  assertTrue('FileBrowser.ZipMountTime.Other' in mockMetrics.metricCalls);
 
   done();
 }
@@ -675,7 +623,7 @@ testMountArchiveAndChangeDirectoryNotificationInvalidArchive(done: () => void) {
 
   // Check: no zip mount time UMA has been recorded since mounting the archive
   // failed.
-  assertFalse(timeMap.has('ZipMountTime.Other'));
+  assertFalse('FileBrowser.ZipMountTime.Other' in mockMetrics.metricCalls);
 
   done();
 }
@@ -719,7 +667,7 @@ testMountArchiveAndChangeDirectoryNotificationCancelPassword(done: () => void) {
 
   // Check: no zip mount time UMA has been recorded since the mount has been
   // cancelled.
-  assertFalse(timeMap.has('ZipMountTime.Other'));
+  assertFalse('FileBrowser.ZipMountTime.Other' in mockMetrics.metricCalls);
 
   done();
 }

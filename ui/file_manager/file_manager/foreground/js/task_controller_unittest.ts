@@ -8,7 +8,6 @@ import {assertDeepEquals, assertEquals, assertNotReached, assertTrue} from 'chro
 
 import {createCrostiniForTest} from '../../background/js/mock_crostini.js';
 import {queryDecoratedElement} from '../../common/js/dom_utils.js';
-import {metrics} from '../../common/js/metrics.js';
 import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {reportPromise} from '../../common/js/test_error_reporting.js';
@@ -33,12 +32,6 @@ import {ComboButton} from './ui/combobutton.js';
 import {Command} from './ui/command.js';
 import {FileManagerUI} from './ui/file_manager_ui.js';
 import {FilesMenuItem} from './ui/files_menu.js';
-
-
-/** Mock metrics. */
-metrics.recordEnum = function(
-    _name: string, _value: any, _valid?: any[]|number) {};
-metrics.recordDirectoryListLoadWithTolerance = function() {};
 
 /** Mock chrome APIs.  */
 let mockChrome: any;

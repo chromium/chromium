@@ -7,6 +7,6 @@
  * this as the first script in main_background.js.
  */
 
-import {metrics} from '../../common/js/metrics.js';
+import {startInterval} from '../../common/js/metrics.js';
 
-metrics.startInterval('Load.BackgroundScript');
+startInterval('Load.BackgroundScript');

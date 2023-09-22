@@ -6,7 +6,7 @@ import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 
 import {resolveIsolatedEntries} from '../../common/js/api.js';
 import {FilesAppState} from '../../common/js/files_app_state.js';
-import {metrics} from '../../common/js/metrics.js';
+import {recordInterval} from '../../common/js/metrics.js';
 import {str, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {Crostini} from '../../externs/background/crostini.js';
@@ -408,6 +408,5 @@ window.background = background;
 
 /**
  * End recording of the background page Load.BackgroundScript metric.
- * NOTE: This call must come after the call to metrics.clearUserId.
  */
-metrics.recordInterval('Load.BackgroundScript');
+recordInterval('Load.BackgroundScript');

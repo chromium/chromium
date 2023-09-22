@@ -6,7 +6,7 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/ev
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {EntryList, FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
-import {metrics} from '../../common/js/metrics.js';
+import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {DirectoryChangeEvent} from '../../externs/directory_change_event.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
@@ -40,17 +40,10 @@ let myFilesEntry;
  */
 let fileTypeFiltersController;
 
-/**
- * Mock metrics.
- * @param {string} name
- * @param {*} value
- * @param {Array<*>|number=} opt_validValues
- */
-metrics.recordEnum = function(name, value, opt_validValues) {};
-
 const TOTAL_FILTER_BUTTON_COUNT = 5;
 
 export function setUp() {
+  installMockChrome({});
   class MockDirectoryModel extends EventTarget {
     constructor() {
       super();

@@ -11,7 +11,7 @@ import {assertInstanceof, assertNotReached} from 'chrome://resources/ash/common/
 
 import {getMimeType, startIOTask} from '../../common/js/api.js';
 import {type AnnotatedTask, getDefaultTask} from '../../common/js/file_tasks.js';
-import {metrics} from '../../common/js/metrics.js';
+import {recordDirectoryListLoadWithTolerance, startInterval} from '../../common/js/metrics.js';
 import {str, strf, util} from '../../common/js/util.js';
 import {Crostini} from '../../externs/background/crostini.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
@@ -419,7 +419,7 @@ export class TaskController {
 
     try {
       const metricName = 'UpdateAvailableApps';
-      metrics.startInterval(metricName);
+      startInterval(metricName);
       const tasks = await this.getFileTasks();
       // Update the DOM.
       this.display_(tasks);
@@ -429,7 +429,7 @@ export class TaskController {
       if (window.IN_TEST) {
         this.ui_.taskMenuButton.toggleAttribute('get-tasks-completed', true);
       }
-      metrics.recordDirectoryListLoadWithTolerance(
+      recordDirectoryListLoadWithTolerance(
           metricName, openTaskItems.length, [10, 100], /*tolerance=*/ 0.8);
     } catch (error: any) {
       if (error) {

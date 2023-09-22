@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {createChild} from '../../common/js/dom_utils.js';
-import {metrics} from '../../common/js/metrics.js';
+import {recordEnum} from '../../common/js/metrics.js';
 import {str, strf, util} from '../../common/js/util.js';
 import {DirectoryChangeEvent} from '../../externs/directory_change_event.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
@@ -155,8 +155,7 @@ export class FileTypeFiltersController {
           chrome.fileManagerPrivate.FileCategory.DOCUMENT,  // 4
         ]);
     Object.freeze(FileTypeFiltersForUMA);
-    metrics.recordEnum(
-        'Recent.FilterByType', fileCategory, FileTypeFiltersForUMA);
+    recordEnum('Recent.FilterByType', fileCategory, FileTypeFiltersForUMA);
   }
 
   /**

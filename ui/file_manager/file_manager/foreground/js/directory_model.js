@@ -8,7 +8,7 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/ev
 
 import {Aggregator, AsyncQueue} from '../../common/js/async_util.js';
 import {EntryList, GuestOsPlaceholder, VolumeEntry} from '../../common/js/files_app_entry_types.js';
-import {metrics} from '../../common/js/metrics.js';
+import {recordMediumCount} from '../../common/js/metrics.js';
 import {util} from '../../common/js/util.js';
 import {isNative, VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
@@ -1014,8 +1014,7 @@ export class DirectoryModel extends EventTarget {
             volumeInfo.volumeType ===
                 VolumeManagerCommon.VolumeType.DOWNLOADS &&
             locationInfo.isRootEntry) {
-          metrics.recordMediumCount(
-              'DownloadsCount', dirContents.getFileListLength());
+          recordMediumCount('DownloadsCount', dirContents.getFileListLength());
         }
       }
 

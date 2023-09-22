@@ -25,7 +25,6 @@ group("js_modules") {
     ":file_operation_handler",
     ":file_operation_manager",
     ":file_operation_util",
-    ":metrics_start",
     ":progress_center",
     ":test_util",
   ]
@@ -42,7 +41,6 @@ js_type_check("closure_compile_jsmodules") {
     ":file_operation_manager",
     ":file_operation_util",
     ":launcher",
-    ":metrics_start",
     ":mock_progress_center",
     ":progress_center",
     ":runtime_loaded_test_util",
@@ -103,7 +101,6 @@ js_library("file_manager_base") {
     ":progress_center",
     ":volume_manager_factory",
     "//ui/file_manager/file_manager/common/js:files_app_state",
-    "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:url_constants",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
@@ -184,10 +181,6 @@ js_library("file_operation_util") {
   deps = [ "//ui/file_manager/file_manager/common/js:util" ]
 }
 
-js_library("metrics_start") {
-  deps = [ "//ui/file_manager/file_manager/common/js:metrics" ]
-}
-
 js_library("launcher") {
   deps = [
     ":app_window_wrapper",
@@ -241,7 +234,6 @@ js_library("runtime_loaded_test_util") {
     ":volume_manager_factory",
     "//ash/webui/common/resources:assert",
     "//ui/file_manager/file_manager/common/js:error_counter",
-    "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:progress_center_common",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs/background:file_manager_base",
@@ -253,7 +245,6 @@ js_library("test_util_base") {
   deps = [
     ":runtime_loaded_test_util",
     "//ash/webui/common/resources:assert",
-    "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
   ]

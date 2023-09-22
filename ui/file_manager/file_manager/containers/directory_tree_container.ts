@@ -8,7 +8,7 @@ import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_butto
 import {maybeShowTooltip} from '../common/js/dom_utils.js';
 import {isEntryInsideComputers, isEntryInsideDrive, isEntryInsideMyDrive, isGrandRootEntryInDrives, isMyFilesEntry, isTrashEntry, isVolumeEntry} from '../common/js/entry_utils.js';
 import {EntryList, FakeEntryImpl, VolumeEntry} from '../common/js/files_app_entry_types.js';
-import {metrics} from '../common/js/metrics.js';
+import {recordEnum, recordUserAction} from '../common/js/metrics.js';
 import {str, strf, util} from '../common/js/util.js';
 import {VolumeManagerCommon} from '../common/js/volume_manager_types.js';
 import {FileData, FileKey, NavigationKey, NavigationRoot, NavigationType, PropStatus, State} from '../externs/ts/state.js';
@@ -776,8 +776,7 @@ export class DirectoryTreeContainer {
     const rootType = fileData.rootType ?? 'unknown';
     const level = fileData.isRootEntry ? 'TopLevel' : 'NonTopLevel';
     const metricName = `Location.OnEntryExpandedOrCollapsed.${level}`;
-    metrics.recordEnum(
-        metricName, rootType, VolumeManagerCommon.RootTypesForUMA);
+    recordEnum(metricName, rootType, VolumeManagerCommon.RootTypesForUMA);
   }
 
   /** Record UMA for tree item selected. */
@@ -785,8 +784,7 @@ export class DirectoryTreeContainer {
     const rootType = fileData.rootType ?? 'unknown';
     const level = fileData.isRootEntry ? 'TopLevel' : 'NonTopLevel';
     const metricName = `Location.OnEntrySelected.${level}`;
-    metrics.recordEnum(
-        metricName, rootType, VolumeManagerCommon.RootTypesForUMA);
+    recordEnum(metricName, rootType, VolumeManagerCommon.RootTypesForUMA);
   }
 
   /** Activate the directory behind the item. */
@@ -827,7 +825,7 @@ export class DirectoryTreeContainer {
 
         if (navigationRootData?.type === NavigationType.SHORTCUT) {
           const onEntryResolved = (resolvedEntry: Entry) => {
-            metrics.recordUserAction('FolderShortcut.Navigate');
+            recordUserAction('FolderShortcut.Navigate');
             this.store_.dispatch(
                 changeDirectory({toKey: resolvedEntry.toURL()}));
           };

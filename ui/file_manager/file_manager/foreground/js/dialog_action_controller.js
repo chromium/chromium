@@ -6,7 +6,7 @@ import {assert, assertNotReached} from 'chrome://resources/ash/common/assert.js'
 import {$} from 'chrome://resources/ash/common/util.js';
 
 import {DialogType, isFolderDialogType} from '../../common/js/dialog_type.js';
-import {metrics} from '../../common/js/metrics.js';
+import {recordEnum} from '../../common/js/metrics.js';
 import {str, UserCanceledError, util} from '../../common/js/util.js';
 import {AllowedPaths, VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
@@ -272,7 +272,7 @@ export class DialogActionController {
     // Record the root types of chosen files in OPEN dialog.
     if (this.dialogType_ == DialogType.SELECT_OPEN_FILE ||
         this.dialogType_ == DialogType.SELECT_OPEN_MULTI_FILE) {
-      metrics.recordEnum(
+      recordEnum(
           'OpenFiles.RootType', currentRootType,
           VolumeManagerCommon.RootTypesForUMA);
     }

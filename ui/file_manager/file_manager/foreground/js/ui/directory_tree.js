@@ -10,7 +10,7 @@ import {maybeShowTooltip} from '../../../common/js/dom_utils.js';
 import {isEntryInsideDrive} from '../../../common/js/entry_utils.js';
 import {FileType} from '../../../common/js/file_type.js';
 import {vmTypeToIconName} from '../../../common/js/icon_util.js';
-import {metrics} from '../../../common/js/metrics.js';
+import {recordEnum, recordInterval, recordSmallCount, recordUserAction, startInterval} from '../../../common/js/metrics.js';
 import {str, strf, util} from '../../../common/js/util.js';
 import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.js';
 import {FileOperationManager} from '../../../externs/background/file_operation_manager.js';
@@ -148,8 +148,7 @@ DirectoryItemTreeBaseMethods.recordUMASelectedEntry =
         metricName = 'Location.OnEntryExpandedOrCollapsed.NonTopLevel';
       }
 
-      metrics.recordEnum(
-          metricName, rootType, VolumeManagerCommon.RootTypesForUMA);
+      recordEnum(metricName, rootType, VolumeManagerCommon.RootTypesForUMA);
     };
 
 Object.freeze(DirectoryItemTreeBaseMethods);
@@ -552,7 +551,7 @@ export class DirectoryItem extends FilesTreeItem {
     const rootType = this.rootType;
     const metricName = rootType ? (`DirectoryTree.Expand.${rootType}`) :
                                   'DirectoryTree.Expand.unknown';
-    metrics.startInterval(metricName);
+    startInterval(metricName);
 
     if (this.supportDriveSpecificIcons && !this.onMetadataUpdateBound_) {
       this.onMetadataUpdateBound_ = this.onMetadataUpdated_.bind(this);
@@ -569,11 +568,11 @@ export class DirectoryItem extends FilesTreeItem {
                     .concat(constants.DLP_METADATA_PREFETCH_PROPERTY_NAMES));
           }
 
-          metrics.recordInterval(metricName);
+          recordInterval(metricName);
         },
         () => {
           this.expanded = false;
-          metrics.recordInterval(metricName);
+          recordInterval(metricName);
         });
 
     e.stopPropagation();
@@ -1376,7 +1375,7 @@ export class DriveVolumeItem extends VolumeItem {
 
       const reader = sharedDriveGrandRoot.createReader();
       reader.readEntries((results) => {
-        metrics.recordSmallCount('TeamDrivesCount', results.length);
+        recordSmallCount('TeamDrivesCount', results.length);
         // Only create grand root if there is at least 1 child/result.
         if (results.length) {
           if (index !== undefined) {
@@ -1442,7 +1441,7 @@ export class DriveVolumeItem extends VolumeItem {
 
       const reader = computerGrandRoot.createReader();
       reader.readEntries((results) => {
-        metrics.recordSmallCount('ComputersCount', results.length);
+        recordSmallCount('ComputersCount', results.length);
         // Only create grand root if there is at least 1 child/result.
         if (results.length) {
           if (index !== undefined) {
@@ -1756,7 +1755,7 @@ export class ShortcutItem extends FilesTreeItem {
     const onEntryResolved = (entry) => {
       // Changes directory to the model item's root directory if needed.
       if (!util.isSameEntry(directoryModel.getCurrentDirEntry(), entry)) {
-        metrics.recordUserAction('FolderShortcut.Navigate');
+        recordUserAction('FolderShortcut.Navigate');
         directoryModel.changeDirectoryEntry(entry);
       }
     };

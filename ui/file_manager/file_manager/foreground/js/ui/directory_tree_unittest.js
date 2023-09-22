@@ -9,7 +9,6 @@ import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome:/
 import {MockVolumeManager} from '../../../background/js/mock_volume_manager.js';
 import {DialogType} from '../../../common/js/dialog_type.js';
 import {EntryList} from '../../../common/js/files_app_entry_types.js';
-import {metrics} from '../../../common/js/metrics.js';
 import {installMockChrome, MockCommandLinePrivate} from '../../../common/js/mock_chrome.js';
 import {MockDirectoryEntry} from '../../../common/js/mock_entry.js';
 import {reportPromise, waitUntil} from '../../../common/js/test_error_reporting.js';
@@ -47,20 +46,6 @@ let fakeFileSystemURLEntries;
 /** @type {!FileSystem} */
 let driveFileSystem;
 
-/**
- * Mock metrics.recordEnum.
- * @param {string} name
- * @param {*} value
- * @param {Array<*>|number=} opt_validValues
- */
-metrics.recordEnum = function(name, value, opt_validValues) {};
-
-/**
- * Mock metrics.recordSmallCount.
- * @param {string} name Short metric name.
- * @param {number} value Value to be recorded.
- */
-metrics.recordSmallCount = function(name, value) {};
 
 /**
  * Mock Chrome APIs

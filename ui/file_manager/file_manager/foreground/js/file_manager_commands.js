@@ -12,7 +12,7 @@ import {DialogType, isModal} from '../../common/js/dialog_type.js';
 import {getFocusedTreeItem, isDirectoryTree, isDirectoryTreeItem} from '../../common/js/dom_utils.js';
 import {FileType} from '../../common/js/file_type.js';
 import {EntryList} from '../../common/js/files_app_entry_types.js';
-import {metrics} from '../../common/js/metrics.js';
+import {recordEnum, recordUserAction} from '../../common/js/metrics.js';
 import {deleteIsForever, RestoreFailedType, RestoreFailedTypesUMA, RestoreFailedUMA, shouldMoveToTrash, TrashEntry} from '../../common/js/trash.js';
 import {str, strf, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
@@ -747,7 +747,7 @@ console.assert(
  * @param {CommandHandler.MenuCommandsForUMA} menuItem The selected menu item.
  */
 CommandHandler.recordMenuItemSelected = menuItem => {
-  metrics.recordEnum(
+  recordEnum(
       'MenuItemSelected', menuItem, CommandHandler.ValidMenuCommandsForUMA);
 };
 
@@ -1019,7 +1019,7 @@ CommandHandler.COMMANDS_['new-folder'] = new (class extends FilesCommand {
                      targetDirectory, newName, {create: true, exclusive: true}))
           .then(
               (newDirectory) => {
-                metrics.recordUserAction('CreateNewFolder');
+                recordUserAction('CreateNewFolder');
 
                 // Select new directory and start rename operation.
                 if (executedFromDirectoryTree) {
@@ -1485,7 +1485,7 @@ CommandHandler
     if (failedParents && failedParents.length > 0) {
       // Only a single item is being trashed and the parent doesn't exist.
       if (failedParents.length === 1 && infoEntries.length === 0) {
-        metrics.recordEnum(
+        recordEnum(
             RestoreFailedUMA, RestoreFailedType.SINGLE_ITEM,
             RestoreFailedTypesUMA);
         fileManager.ui.alertDialog.show(
@@ -1499,7 +1499,7 @@ CommandHandler
             p => p.parentName === failedParents[0].parentName);
         // All the items were from the same parent folder.
         if (isParentFolderSame) {
-          metrics.recordEnum(
+          recordEnum(
               RestoreFailedUMA, RestoreFailedType.MULTIPLE_ITEMS_SAME_PARENTS,
               RestoreFailedTypesUMA);
           fileManager.ui.alertDialog.show(strf(
@@ -1508,7 +1508,7 @@ CommandHandler
           return;
         }
         // All the items are from different parent folders.
-        metrics.recordEnum(
+        recordEnum(
             RestoreFailedUMA,
             RestoreFailedType.MULTIPLE_ITEMS_DIFFERENT_PARENTS,
             RestoreFailedTypesUMA);
@@ -1518,7 +1518,7 @@ CommandHandler
       }
       // A mix of items with parents and without parents are attempting to be
       // restored.
-      metrics.recordEnum(
+      recordEnum(
           RestoreFailedUMA, RestoreFailedType.MULTIPLE_ITEMS_MIXED,
           RestoreFailedTypesUMA);
       fileManager.ui.alertDialog.show(str('CANT_RESTORE_SOME_ITEMS'));

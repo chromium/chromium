@@ -9,7 +9,7 @@
  * @suppress {checkTypes}
  */
 
-import {metrics} from '../../../../common/js/metrics.js';
+import {recordUserAction} from '../../../../common/js/metrics.js';
 import {VolumeManagerCommon} from '../../../../common/js/volume_manager_types.js';
 
 import {EducationalBanner} from './educational_banner.js';
@@ -77,14 +77,14 @@ export class GoogleOneOfferBanner extends EducationalBanner {
    * Called when the banner gets shown in the UI.
    */
   override onShow() {
-    metrics.recordUserAction(UserActions.SHOWN);
+    recordUserAction(UserActions.SHOWN);
   }
 
   /**
    * Called when the get perk button gets clicked.
    */
   private onGetPerkButtonClickHandler_() {
-    metrics.recordUserAction(UserActions.GET_PERK);
+    recordUserAction(UserActions.GET_PERK);
   }
 
   /**
@@ -99,7 +99,7 @@ export class GoogleOneOfferBanner extends EducationalBanner {
       return;
     }
 
-    metrics.recordUserAction(UserActions.DISMISS);
+    recordUserAction(UserActions.DISMISS);
   }
 }
 
