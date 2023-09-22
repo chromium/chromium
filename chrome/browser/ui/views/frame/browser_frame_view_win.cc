@@ -381,8 +381,14 @@ int BrowserFrameViewWin::NonClientHitTest(const gfx::Point& point) {
       point, gfx::Insets::TLBR(top_border_thickness, 0, 0, 0),
       top_border_thickness, kResizeCornerWidth - FrameBorderThickness(),
       frame()->widget_delegate()->CanResize());
+
+  if (window_component != HTNOWHERE) {
+    return window_component;
+  }
+
   // Fall back to the caption if no other component matches.
-  return (window_component == HTNOWHERE) ? HTCAPTION : window_component;
+  TabStripRegionView::ReportCaptionHitTestInReservedGrabHandleSpace(false);
+  return HTCAPTION;
 }
 
 void BrowserFrameViewWin::UpdateWindowIcon() {
