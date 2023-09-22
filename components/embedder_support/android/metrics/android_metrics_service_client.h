@@ -12,11 +12,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/metrics/enabled_state_provider.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_service_client.h"
+#include "components/metrics/persistent_synthetic_trial_observer.h"
 #include "components/variations/synthetic_trial_registry.h"
 #include "components/version_info/android/channel_getter.h"
 #include "components/version_info/version_info.h"
@@ -266,6 +268,11 @@ class AndroidMetricsServiceClient : public MetricsServiceClient,
 
   std::unique_ptr<MetricsStateManager> metrics_state_manager_;
   std::unique_ptr<variations::SyntheticTrialRegistry> synthetic_trial_registry_;
+  // Metrics service observer for synthetic trials.
+  metrics::PersistentSyntheticTrialObserver synthetic_trial_observer_;
+  base::ScopedObservation<variations::SyntheticTrialRegistry,
+                          variations::SyntheticTrialObserver>
+      synthetic_trial_observation_{&synthetic_trial_observer_};
   std::unique_ptr<MetricsService> metrics_service_;
   std::unique_ptr<ukm::UkmService> ukm_service_;
   content::NotificationRegistrar registrar_;

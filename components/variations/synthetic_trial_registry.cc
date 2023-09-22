@@ -34,16 +34,14 @@ SyntheticTrialRegistry::SyntheticTrialRegistry()
           internal::kExternalExperimentAllowlist)) {}
 SyntheticTrialRegistry::~SyntheticTrialRegistry() = default;
 
-void SyntheticTrialRegistry::AddSyntheticTrialObserver(
-    SyntheticTrialObserver* observer) {
+void SyntheticTrialRegistry::AddObserver(SyntheticTrialObserver* observer) {
   synthetic_trial_observer_list_.AddObserver(observer);
   if (!synthetic_trial_groups_.empty())
     observer->OnSyntheticTrialsChanged(synthetic_trial_groups_, {},
                                        synthetic_trial_groups_);
 }
 
-void SyntheticTrialRegistry::RemoveSyntheticTrialObserver(
-    SyntheticTrialObserver* observer) {
+void SyntheticTrialRegistry::RemoveObserver(SyntheticTrialObserver* observer) {
   synthetic_trial_observer_list_.RemoveObserver(observer);
 }
 

@@ -263,8 +263,7 @@ TEST_F(SyntheticTrialRegistryTest, GetSyntheticFieldTrialActiveGroups) {
 
   // Instantiate and set up the corresponding singleton observer which tracks
   // the creation of all SyntheticTrialGroups.
-  registry.AddSyntheticTrialObserver(
-      SyntheticTrialsActiveGroupIdProvider::GetInstance());
+  registry.AddObserver(SyntheticTrialsActiveGroupIdProvider::GetInstance());
 
   // Add two synthetic trials and confirm that they show up in the list.
   SyntheticTrialGroup trial1("TestTrial1", "Group1",
@@ -297,7 +296,7 @@ TEST_F(SyntheticTrialRegistryTest, GetSyntheticFieldTrialActiveGroups) {
 TEST_F(SyntheticTrialRegistryTest, NotifyObserver) {
   SyntheticTrialRegistry registry;
   MockSyntheticTrialObserver observer;
-  registry.AddSyntheticTrialObserver(&observer);
+  registry.AddObserver(&observer);
 
   SyntheticTrialGroup trial1("TestTrial1", "Group1",
                              SyntheticTrialAnnotationMode::kNextLog);
@@ -325,14 +324,14 @@ TEST_F(SyntheticTrialRegistryTest, NotifyObserver) {
                   std::vector<SyntheticTrialGroup>({trial3, trial2})));
   registry.RegisterSyntheticFieldTrial(trial3);
 
-  registry.RemoveSyntheticTrialObserver(&observer);
+  registry.RemoveObserver(&observer);
 }
 
 TEST_F(SyntheticTrialRegistryTest, NotifyObserverExternalTrials) {
   SyntheticTrialRegistry registry(
       /*enable_external_experiment_allowlist=*/false);
   MockSyntheticTrialObserver observer;
-  registry.AddSyntheticTrialObserver(&observer);
+  registry.AddObserver(&observer);
 
   const std::string context = "TestTrial1";
   const auto mode = SyntheticTrialRegistry::kOverrideExistingIds;
@@ -358,7 +357,7 @@ TEST_F(SyntheticTrialRegistryTest, NotifyObserverExternalTrials) {
                   std::vector<SyntheticTrialGroup>({kTrial3})));
   registry.RegisterExternalExperiments(context, {102}, mode);
 
-  registry.RemoveSyntheticTrialObserver(&observer);
+  registry.RemoveObserver(&observer);
 }
 
 }  // namespace variations
