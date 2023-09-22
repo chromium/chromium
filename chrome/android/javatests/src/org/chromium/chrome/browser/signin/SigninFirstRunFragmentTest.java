@@ -25,6 +25,7 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -1202,6 +1203,43 @@ public class SigninFirstRunFragmentTest {
         launchActivityWithFragment();
         checkFragmentWithChildAccount(
                 /* hasDisplayableFullName= */ true, /* hasDisplayableEmail= */ true);
+    }
+
+    @Test
+    @MediumTest
+    public void testDismissWithTosDialogBehaviorPolicy() throws Exception {
+        reset(mPolicyLoadListenerMock);
+        when(mPolicyLoadListenerMock.onAvailable(any())).thenReturn(null);
+        when(mFirstRunPageDelegateMock.isLaunchedFromCct()).thenReturn(true);
+        mFakeEnterpriseInfo.initialize(new OwnedState(
+                /*isDeviceOwned=*/true, /*isProfileOwned=*/false));
+        when(mFirstRunUtils.getCctTosDialogEnabled()).thenReturn(false);
+        launchActivityWithFragment();
+
+        // Detach the current fragment. Needs to be done before the PolicyLoadListener callback
+        // otherwise this test is racy.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ((BlankUiTestActivity) mActivityTestRule.getActivity())
+                    .getSupportFragmentManager()
+                    .beginTransaction()
+                    .detach(mFragment)
+                    .commit();
+        });
+        CriteriaHelper.pollUiThread(() -> mFragment.isDetached());
+        mFragment.setPageDelegate(null);
+
+        // Emulate policy loading being completed, and the ToS behavior policy wants to skip the
+        // ToS/FRE. The fragment should now start waiting some duration.
+        when(mPolicyLoadListenerMock.get()).thenReturn(true);
+        verify(mPolicyLoadListenerMock, atLeastOnce()).onAvailable(mCallbackCaptor.capture());
+
+        // Wait for the delayed task to run. Although this test setup reduces delay to 0 seconds.
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mCallbackCaptor.getValue().onResult(true); });
+
+        // Delayed task should run, but not call into the delegate.
+        CriteriaHelper.pollUiThread(mFragment::getDelayedExitFirstRunCalledForTesting);
+        verify(mFirstRunPageDelegateMock, never()).acceptTermsOfService(false);
+        verify(mFirstRunPageDelegateMock, never()).exitFirstRun();
     }
 
     private void checkFragmentWithSelectedAccount(String email, String fullName, String givenName) {

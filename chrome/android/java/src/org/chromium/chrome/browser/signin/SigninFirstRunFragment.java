@@ -11,7 +11,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +25,8 @@ import androidx.fragment.app.Fragment;
 
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
 import org.chromium.chrome.browser.firstrun.FirstRunFragment;
@@ -59,6 +60,7 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
     private SigninFirstRunCoordinator mSigninFirstRunCoordinator;
     private DeviceLockCoordinator mDeviceLockCoordinator;
     private boolean mExitFirstRunCalled;
+    private boolean mDelayedExitFirstRunCalledForTesting;
 
     public SigninFirstRunFragment() {}
 
@@ -222,7 +224,13 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
         // Make sure this function is called at most once.
         if (!mExitFirstRunCalled) {
             mExitFirstRunCalled = true;
-            new Handler().postDelayed(() -> {
+            PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, () -> {
+                mDelayedExitFirstRunCalledForTesting = true;
+
+                // If we've been detached, someone else has handled something, and it's no longer
+                // clear that we should still be accepting the ToS and exiting the FRE.
+                if (isDetached()) return;
+
                 getPageDelegate().acceptTermsOfService(false);
                 getPageDelegate().exitFirstRun();
             }, FirstRunUtils.getSkipTosExitDelayMs());
@@ -280,5 +288,9 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
     private void restoreMainView() {
         mFragmentView.removeAllViews();
         mFragmentView.addView(mMainView);
+    }
+
+    boolean getDelayedExitFirstRunCalledForTesting() {
+        return mDelayedExitFirstRunCalledForTesting;
     }
 }
