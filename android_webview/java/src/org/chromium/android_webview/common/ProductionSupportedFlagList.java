@@ -487,9 +487,6 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(TracingServiceFeatures.ENABLE_PERFETTO_SYSTEM_TRACING,
                     "When enabled, WebView exports trace events to the Android Perfetto service."
                             + " This works only for Android Q+."),
-            Flag.baseFeature(AwFeatures.WEBVIEW_SAFE_BROWSING_SAFE_MODE,
-                    "Enable doing a JNI call to check safe browsing safe mode status "
-                            + "before doing a safe browsing check."),
             Flag.baseFeature(UiAndroidFeatures.CONVERT_TRACKPAD_EVENTS_TO_MOUSE,
                     "Enables converting trackpad click gestures to mouse events"
                             + " in order for them to be interpreted similar to a desktop"

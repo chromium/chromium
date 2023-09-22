@@ -119,12 +119,6 @@ BASE_FEATURE(kWebViewRestrictSensitiveContent,
              "WebViewRestrictSensitiveContent",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable doing a JNI call to check safe browsing safe mode status before doing
-// a safe browsing check.
-BASE_FEATURE(kWebViewSafeBrowsingSafeMode,
-             "WebViewSafeBrowsingSafeMode",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable detection of loading mature sites (according to Google SafeSearch)
 // on WebViews running on supervised user accounts.
 BASE_FEATURE(kWebViewSupervisedUserSiteDetection,

@@ -29,7 +29,6 @@ import org.chromium.android_webview.safe_browsing.AwSafeBrowsingConfigHelper;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingSafeModeAction;
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 
 import java.util.Set;
@@ -63,7 +62,6 @@ public class SafeBrowsingSafeModeTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"enable-features=WebViewSafeBrowsingSafeMode"})
     public void testSafeBrowsingDisabledForHardcodedMalwareUrl() throws Throwable {
         SafeModeController safeModeController = SafeModeController.getInstance();
         safeModeController.registerActions(
@@ -82,7 +80,6 @@ public class SafeBrowsingSafeModeTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"enable-features=WebViewSafeBrowsingSafeMode"})
     public void testSafeBrowsingDisabledOverridesPerWebViewToggle() throws Throwable {
         SafeModeController safeModeController = SafeModeController.getInstance();
         safeModeController.registerActions(
