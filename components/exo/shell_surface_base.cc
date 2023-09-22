@@ -1929,14 +1929,10 @@ void ShellSurfaceBase::UpdateCornerRadius() {
 
   ash::WindowState* window_state =
       ash::WindowState::Get(widget_->GetNativeWindow());
-  // The host window's transform scales by |1/GetScale()| but we do not want the
-  // rounded corners scaled that way. So we multiply the radius by |GetScale()|.
   if (window_state) {
     ash::SetCornerRadius(
         window_state->window(), host_window()->layer(),
-        window_state->IsPip()
-            ? base::ClampRound(GetScale() * chromeos::kPipRoundedCornerRadius)
-            : 0);
+        window_state->IsPip() ? chromeos::kPipRoundedCornerRadius : 0);
   }
 }
 
