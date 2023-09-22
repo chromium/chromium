@@ -21,7 +21,11 @@ static_library("test_support") {
   ]
   if (is_android) {
     sources += [ "android/supervised_user_settings_service_bridge.cc" ]
-    deps += [ ":test_support_jni_headers" ]
+    deps += [
+      ":test_support_jni_headers",
+      "//components/signin/public/identity_manager:test_support",
+      "//services/network:test_support",
+    ]
   }
 }
 

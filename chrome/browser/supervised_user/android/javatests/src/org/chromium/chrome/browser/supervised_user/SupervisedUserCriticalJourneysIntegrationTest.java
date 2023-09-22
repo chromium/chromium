@@ -25,12 +25,14 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -43,6 +45,7 @@ import org.chromium.net.test.EmbeddedTestServer;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class SupervisedUserCriticalJourneysIntegrationTest {
     private static final String BLOCKED_SITE_URL = "www.example.com";
+    private static final String MATURE_SITE_URL = "www.bestgore.com";
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -96,5 +99,28 @@ public class SupervisedUserCriticalJourneysIntegrationTest {
         onView(withId(R.id.tab_switcher_button)).perform(longClick());
         onView(withText(R.string.menu_new_incognito_tab)).check(matches(not(isEnabled())));
         onView(withText(R.string.menu_new_incognito_tab)).check(matches(not(isClickable())));
+    }
+
+    @Test
+    @LargeTest
+    @Features.EnableFeatures({ChromeFeatureList.ENABLE_PROTO_API_FOR_CLASSIFY_URL})
+    public void matureSitesAreBlockedBySafeSites() throws Exception {
+        SupervisedUserSettingsTestUtils.setUpTestUrlLoaderFactoryHelper();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            SupervisedUserSettingsTestUtils.setSafeSearchResponseForTesting(
+                    Profile.getLastUsedRegularProfile(), /*isAllowed=*/false);
+        });
+
+        EmbeddedTestServer testServer = mActivityTestRule.getEmbeddedTestServerRule().getServer();
+        String blockedHost = testServer.getURLWithHostName(MATURE_SITE_URL, "/");
+        mActivityTestRule.loadUrl(blockedHost);
+
+        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Assert.assertTrue(tab.isShowingErrorPage());
+        String title = mActivityTestRule.getActivity().getCurrentWebContents().getTitle();
+        Assert.assertFalse(title.isEmpty());
+        WebsiteParentApprovalTestUtils.checkLocalApprovalsButtonIsVisible(mWebContents);
+        WebsiteParentApprovalTestUtils.checkRemoteApprovalsButtonIsVisible(mWebContents);
+        SupervisedUserSettingsTestUtils.tearDownTestUrlLoaderFactoryHelper();
     }
 }
