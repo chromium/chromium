@@ -6,6 +6,7 @@ License: Apache 2.0
 License File: LICENSE
 Security Critical: yes
 Shipped: yes
+CPEPrefix: cpe:/a:ced_project:ced
 
 Description:
 Compact Encoding Detection(CED for short) is a library written in C++ that
