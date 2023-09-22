@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserProxy} from './browser_proxy.js';
-
 // Global `window` context.
 declare global {
   interface Window {
@@ -17,22 +15,19 @@ function initialize() {
   script.type = 'text/javascript';
   script.src =
       'https://www.gstatic.com/feedback/js/help/prod/service/lazy.min.js';
-  script.onload = async function() {
-    const {apiKey} = await BrowserProxy.getInstance().handler.getApiKey();
-    requestSurvey(apiKey);
-  };
+  script.onload = requestSurvey;
   document.head.appendChild(script);
 }
 
-function requestSurvey(apiKey: string) {
+function requestSurvey() {
   // Provide a dummy window size, such that the survey renders at its desired
   // size. The actual dialog will be resized to the survey provided size
   // transparently.
   window.innerWidth = 800;
   window.innerHeight = 600;
 
-  const helpApi =
-      window.help.service.Lazy.create(0, {apiKey: apiKey, locale: 'en-US'});
+  const helpApi = window.help.service.Lazy.create(
+      0, {apiKey: 'HATS_API_KEY', locale: 'en-US'});
 
   let loadedSent = false;
 
