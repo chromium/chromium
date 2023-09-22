@@ -290,11 +290,6 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
   // Set the mode to UIViewTintAdjustmentModeAutomatic.
   baseView.tintAdjustmentMode = UIViewTintAdjustmentModeAutomatic;
 
-  // TODO(crbug.com/1483997): Remove this once we know where the issue is coming
-  // from.
-  DUMP_WILL_BE_CHECK(!image ||
-                     (image.size.width != 0 && image.size.height != 0));
-
   return image;
 }
 
@@ -323,7 +318,7 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
       [[UIGraphicsImageRenderer alloc] initWithSize:frameInWindow.size
                                              format:format];
 
-  UIImage* image =
+  return
       [renderer imageWithActions:^(UIGraphicsImageRendererContext* UIContext) {
         CGContextRef context = UIContext.CGContext;
 
@@ -340,13 +335,6 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
                               -frameInWindow.origin.y);
         [self drawOverlays:overlays context:context];
       }];
-
-  // TODO(crbug.com/1483997): Remove this once we know where the issue is coming
-  // from.
-  DUMP_WILL_BE_CHECK(!image ||
-                     (image.size.width != 0 && image.size.height != 0));
-
-  return image;
 }
 
 // Updates the snapshot storage with `snapshot`.
