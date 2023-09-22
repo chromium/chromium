@@ -29,8 +29,6 @@ class LensSidePanelCoordinator
       public TemplateURLServiceObserver {
  public:
   explicit LensSidePanelCoordinator(Browser* browser);
-  LensSidePanelCoordinator(const LensSidePanelCoordinator&) = delete;
-  LensSidePanelCoordinator& operator=(const LensSidePanelCoordinator&) = delete;
   ~LensSidePanelCoordinator() override;
 
   // Registers lens entry in the side panel and shows side panel with lens

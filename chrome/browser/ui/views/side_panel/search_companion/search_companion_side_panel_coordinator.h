@@ -30,10 +30,6 @@ class SearchCompanionSidePanelCoordinator
       public TemplateURLServiceObserver {
  public:
   explicit SearchCompanionSidePanelCoordinator(Browser* browser);
-  SearchCompanionSidePanelCoordinator(
-      const SearchCompanionSidePanelCoordinator&) = delete;
-  SearchCompanionSidePanelCoordinator& operator=(
-      const SearchCompanionSidePanelCoordinator&) = delete;
   ~SearchCompanionSidePanelCoordinator() override;
 
   // If `include_runtime_checks` is true, then the method returns true if the

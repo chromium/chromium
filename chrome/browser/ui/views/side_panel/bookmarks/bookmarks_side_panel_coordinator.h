@@ -22,9 +22,6 @@ class BookmarksSidePanelCoordinator
     : public BrowserUserData<BookmarksSidePanelCoordinator> {
  public:
   explicit BookmarksSidePanelCoordinator(Browser* browser);
-  BookmarksSidePanelCoordinator(const BookmarksSidePanelCoordinator&) = delete;
-  BookmarksSidePanelCoordinator& operator=(
-      const BookmarksSidePanelCoordinator&) = delete;
   ~BookmarksSidePanelCoordinator() override;
 
   void CreateAndRegisterEntry(SidePanelRegistry* global_registry);

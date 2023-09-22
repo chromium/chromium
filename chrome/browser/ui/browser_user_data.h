@@ -37,6 +37,8 @@ template <typename T>
 class BrowserUserData : public base::SupportsUserData::Data {
  public:
   explicit BrowserUserData(Browser& browser) : browser_(&browser) {}
+  BrowserUserData(const BrowserUserData&) = delete;
+  BrowserUserData& operator=(const BrowserUserData&) = delete;
 
   // Creates an object of type T, and attaches it to the specified Browser.
   // If an instance is already attached, does nothing.

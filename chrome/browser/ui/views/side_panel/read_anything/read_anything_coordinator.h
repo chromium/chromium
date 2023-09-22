@@ -50,8 +50,6 @@ class ReadAnythingCoordinator : public BrowserUserData<ReadAnythingCoordinator>,
   };
 
   explicit ReadAnythingCoordinator(Browser* browser);
-  ReadAnythingCoordinator(const ReadAnythingCoordinator&) = delete;
-  ReadAnythingCoordinator& operator=(const ReadAnythingCoordinator&) = delete;
   ~ReadAnythingCoordinator() override;
 
   void CreateAndRegisterSidePanelEntry(SidePanelRegistry* registry);

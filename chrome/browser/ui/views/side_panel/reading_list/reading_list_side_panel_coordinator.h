@@ -20,10 +20,6 @@ class ReadingListSidePanelCoordinator
     : public BrowserUserData<ReadingListSidePanelCoordinator> {
  public:
   explicit ReadingListSidePanelCoordinator(Browser* browser);
-  ReadingListSidePanelCoordinator(const ReadingListSidePanelCoordinator&) =
-      delete;
-  ReadingListSidePanelCoordinator& operator=(
-      const ReadingListSidePanelCoordinator&) = delete;
   ~ReadingListSidePanelCoordinator() override;
 
   void CreateAndRegisterEntry(SidePanelRegistry* global_registry);
