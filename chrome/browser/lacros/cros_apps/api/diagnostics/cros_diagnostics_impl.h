@@ -38,9 +38,6 @@ class CrosDiagnosticsImpl
       content::RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::CrosDiagnostics> receiver);
 
-  void GetCpuInfoPostTaskCallback(GetCpuInfoCallback callback,
-                                  blink::mojom::CrosCpuInfoPtr cpu_info_mojom);
-
   void GetCpuInfoProbeTelemetryInfoCallback(
       GetCpuInfoCallback callback,
       blink::mojom::CrosCpuInfoPtr cpu_info_mojom,

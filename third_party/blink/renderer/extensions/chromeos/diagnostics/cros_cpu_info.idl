@@ -6,17 +6,11 @@
 // temperature.
 dictionary CrosCpuInfo {
   // The architecture of the CPU, e.g. "x86", "x86_64", "ARM", "ARM_64".
+  // Returns "Unknown" if the architecture cannot be determined.
   DOMString architectureName;
 
   // The model name of the CPU, e.g. "AMD Ryzen 7 7840U", "Intel Core i7-1370P".
   DOMString modelName;
-
-  // The number of power-efficient logical processors available. This is
-  // typically the number of LITTLE cores on the Arm big.LITTLE architecture, or
-  // E-cores on the Intel hybrid architecture.
-  //
-  // Evaluates to 0 when the architecture is symmetric or cannot be determined.
-  long numOfEfficientProcessors;
 
   // Information on each logical processor available to the system.
   sequence<CrosLogicalCpuInfo> logicalCpus;

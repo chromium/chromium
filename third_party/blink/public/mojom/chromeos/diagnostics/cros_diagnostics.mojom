@@ -46,21 +46,22 @@ enum GetNetworkInterfacesError {
   kNetworkInterfaceLookupFailed,
 };
 
+// An enumeration of CPU architectures.
+enum CrosCpuArchitecture {
+  kUnknown,
+  kX86_64,
+  kArm,
+  kArm64,
+};
+
 // Diagnostics information of the CPU, e.g. model name, utilization and
 // temperature.
 struct CrosCpuInfo {
-  // The architecture of the CPU, e.g. "x86", "x86_64", "ARM", "ARM_64".
-  string architecture_name;
+  // The architecture of the CPU, represented by the CrosCpuArchitecture enumeration.
+  CrosCpuArchitecture architecture;
 
   // The model name of the CPU, e.g. "AMD Ryzen 7 7840U", "Intel Core i7-1370P".
   string model_name;
-
-  // The number of power-efficient logical processors available. This is
-  // typically the number of LITTLE cores on the Arm big.LITTLE architecture, or
-  // E-cores on the Intel hybrid architecture.
-  //
-  // Evaluates to 0 when the architecture is symmetric or cannot be determined.
-  int32 num_of_efficient_processors;
 
   // Information on each logical processor available to the system.
   array<CrosLogicalCpuInfo> logical_cpus;

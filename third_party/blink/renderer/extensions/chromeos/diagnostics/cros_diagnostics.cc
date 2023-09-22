@@ -87,11 +87,21 @@ void CrosDiagnostics::OnGetCpuInfoResponse(
 
   auto* cpu_info_blink = MakeGarbageCollected<CrosCpuInfo>();
 
-  cpu_info_blink->setArchitectureName(
-      result->get_cpu_info()->architecture_name);
+  switch (result->get_cpu_info()->architecture) {
+    case mojom::blink::CrosCpuArchitecture::kUnknown:
+      cpu_info_blink->setArchitectureName("Unknown");
+      break;
+    case mojom::blink::CrosCpuArchitecture::kX86_64:
+      cpu_info_blink->setArchitectureName("x86_64");
+      break;
+    case mojom::blink::CrosCpuArchitecture::kArm:
+      cpu_info_blink->setArchitectureName("ARM");
+      break;
+    case mojom::blink::CrosCpuArchitecture::kArm64:
+      cpu_info_blink->setArchitectureName("Arm64");
+      break;
+  }
   cpu_info_blink->setModelName(result->get_cpu_info()->model_name);
-  cpu_info_blink->setNumOfEfficientProcessors(
-      result->get_cpu_info()->num_of_efficient_processors);
 
   HeapVector<Member<CrosLogicalCpuInfo>> logical_cpu_infos_blink;
   for (const auto& logical_cpu : result->get_cpu_info()->logical_cpus) {

@@ -61,7 +61,7 @@ IN_PROC_BROWSER_TEST_F(CrosAppsDiagnosticsApiBrowserTest, GetCpuInfo_Success) {
     uint32_t max_clock_speed_khz;
     uint32_t scaling_current_frequency_khz;
     uint32_t scaling_max_frequency_khz;
-  } kLogicalCpuTestVals[] = {
+  } kTestLogicalCpus[] = {
       {
           .core_id = 42,
           .idle_time_ms = 9007199254740991,
@@ -85,6 +85,11 @@ IN_PROC_BROWSER_TEST_F(CrosAppsDiagnosticsApiBrowserTest, GetCpuInfo_Success) {
       },
   };
 
+  const crosapi::mojom::ProbeCpuArchitectureEnum kTestCpuArchitecture =
+      crosapi::mojom::ProbeCpuArchitectureEnum::kX86_64;
+  const std::string kTestCpuArchitectureName = "x86_64";
+  const std::string kTestCpuModelName = "AMD Ryzen 7 7840U";
+
   // Some telemetry info is not available in browser tests, so we need to
   // set up a fake probe service for testing.
   {
@@ -92,58 +97,59 @@ IN_PROC_BROWSER_TEST_F(CrosAppsDiagnosticsApiBrowserTest, GetCpuInfo_Success) {
     {
       auto logical_cpu1 = crosapi::mojom::ProbeLogicalCpuInfo::New();
       logical_cpu1->core_id =
-          crosapi::mojom::UInt32Value::New(kLogicalCpuTestVals[0].core_id);
+          crosapi::mojom::UInt32Value::New(kTestLogicalCpus[0].core_id);
       logical_cpu1->idle_time_ms =
-          crosapi::mojom::UInt64Value::New(kLogicalCpuTestVals[0].idle_time_ms);
+          crosapi::mojom::UInt64Value::New(kTestLogicalCpus[0].idle_time_ms);
       logical_cpu1->max_clock_speed_khz = crosapi::mojom::UInt32Value::New(
-          kLogicalCpuTestVals[0].max_clock_speed_khz);
+          kTestLogicalCpus[0].max_clock_speed_khz);
       logical_cpu1->scaling_current_frequency_khz =
           crosapi::mojom::UInt32Value::New(
-              kLogicalCpuTestVals[0].scaling_current_frequency_khz);
+              kTestLogicalCpus[0].scaling_current_frequency_khz);
       logical_cpu1->scaling_max_frequency_khz =
           crosapi::mojom::UInt32Value::New(
-              kLogicalCpuTestVals[0].scaling_max_frequency_khz);
+              kTestLogicalCpus[0].scaling_max_frequency_khz);
 
       auto logical_cpu2 = crosapi::mojom::ProbeLogicalCpuInfo::New();
       logical_cpu2->core_id =
-          crosapi::mojom::UInt32Value::New(kLogicalCpuTestVals[1].core_id);
+          crosapi::mojom::UInt32Value::New(kTestLogicalCpus[1].core_id);
       logical_cpu2->idle_time_ms =
-          crosapi::mojom::UInt64Value::New(kLogicalCpuTestVals[1].idle_time_ms);
+          crosapi::mojom::UInt64Value::New(kTestLogicalCpus[1].idle_time_ms);
       logical_cpu2->max_clock_speed_khz = crosapi::mojom::UInt32Value::New(
-          kLogicalCpuTestVals[1].max_clock_speed_khz);
+          kTestLogicalCpus[1].max_clock_speed_khz);
       logical_cpu2->scaling_current_frequency_khz =
           crosapi::mojom::UInt32Value::New(
-              kLogicalCpuTestVals[1].scaling_current_frequency_khz);
+              kTestLogicalCpus[1].scaling_current_frequency_khz);
       logical_cpu2->scaling_max_frequency_khz =
           crosapi::mojom::UInt32Value::New(
-              kLogicalCpuTestVals[1].scaling_max_frequency_khz);
+              kTestLogicalCpus[1].scaling_max_frequency_khz);
 
       auto physical_cpu1 = crosapi::mojom::ProbePhysicalCpuInfo::New();
+      physical_cpu1->model_name = kTestCpuModelName;
       physical_cpu1->logical_cpus.push_back(std::move(logical_cpu1));
       physical_cpu1->logical_cpus.push_back(std::move(logical_cpu2));
 
       auto logical_cpu3 = crosapi::mojom::ProbeLogicalCpuInfo::New();
       logical_cpu3->core_id =
-          crosapi::mojom::UInt32Value::New(kLogicalCpuTestVals[2].core_id);
+          crosapi::mojom::UInt32Value::New(kTestLogicalCpus[2].core_id);
       logical_cpu3->idle_time_ms =
-          crosapi::mojom::UInt64Value::New(kLogicalCpuTestVals[2].idle_time_ms);
+          crosapi::mojom::UInt64Value::New(kTestLogicalCpus[2].idle_time_ms);
       logical_cpu3->max_clock_speed_khz = crosapi::mojom::UInt32Value::New(
-          kLogicalCpuTestVals[2].max_clock_speed_khz);
+          kTestLogicalCpus[2].max_clock_speed_khz);
       logical_cpu3->scaling_current_frequency_khz =
           crosapi::mojom::UInt32Value::New(
-              kLogicalCpuTestVals[2].scaling_current_frequency_khz);
+              kTestLogicalCpus[2].scaling_current_frequency_khz);
       logical_cpu3->scaling_max_frequency_khz =
           crosapi::mojom::UInt32Value::New(
-              kLogicalCpuTestVals[2].scaling_max_frequency_khz);
+              kTestLogicalCpus[2].scaling_max_frequency_khz);
 
       auto physical_cpu2 = crosapi::mojom::ProbePhysicalCpuInfo::New();
+      physical_cpu2->model_name = kTestCpuModelName;
       physical_cpu2->logical_cpus.push_back(std::move(logical_cpu3));
 
       auto cpu_info = crosapi::mojom::ProbeCpuInfo::New();
       cpu_info->num_total_threads =
           crosapi::mojom::UInt32Value::New(2147483647);
-      cpu_info->architecture =
-          crosapi::mojom::ProbeCpuArchitectureEnum::kX86_64;
+      cpu_info->architecture = kTestCpuArchitecture;
       cpu_info->physical_cpus.push_back(std::move(physical_cpu1));
       cpu_info->physical_cpus.push_back(std::move(physical_cpu2));
 
@@ -160,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(CrosAppsDiagnosticsApiBrowserTest, GetCpuInfo_Success) {
 
   {
     base::Value::List logical_cpus_expected_list;
-    for (const auto& logical_cpu : kLogicalCpuTestVals) {
+    for (const auto& logical_cpu : kTestLogicalCpus) {
       // `base::Value::Dict().Set()` expects int type; to avoid type casting
       // issues, we compare properties using strings instead.
       logical_cpus_expected_list.Append(
@@ -183,21 +189,12 @@ IN_PROC_BROWSER_TEST_F(CrosAppsDiagnosticsApiBrowserTest, GetCpuInfo_Success) {
                         "(async () => { window.cpuInfoResult = await "
                         "window.chromeos.diagnostics.getCpuInfo(); })();"));
 
-    {
-      // Some base::SysInfo calls are blocking.
-      base::ScopedAllowBlockingForTesting allow_blocking;
-
-      EXPECT_EQ(base::SysInfo::ProcessCPUArchitecture(),
-                content::EvalJs(web_contents,
-                                "window.cpuInfoResult.architectureName;"));
-      EXPECT_EQ(
-          base::SysInfo::CPUModelName(),
-          content::EvalJs(web_contents, "window.cpuInfoResult.modelName;"));
-      EXPECT_EQ(
-          base::SysInfo::NumberOfEfficientProcessors(),
-          content::EvalJs(web_contents,
-                          "window.cpuInfoResult.numOfEfficientProcessors;"));
-    }
+    EXPECT_EQ(kTestCpuArchitectureName,
+              content::EvalJs(web_contents,
+                              "window.cpuInfoResult.architectureName;"));
+    EXPECT_EQ(kTestCpuModelName,
+              content::EvalJs(web_contents, "window.cpuInfoResult.modelName;"));
+    ;
 
     // JavaScript function that converts all properties of an object to
     // string recursively.
