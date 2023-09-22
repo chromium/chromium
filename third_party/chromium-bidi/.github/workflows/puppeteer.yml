@@ -12,59 +12,49 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-bidi:
-    name: Build BiDi
+  run-puppeteer-test:
+    name: Run Puppeteer tests
     runs-on: ubuntu-latest
     if: contains(github.event.label.name, 'puppeteer')
     steps:
-      - name: Checkout
+      - name: Checkout Chromium-BiDi
         uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.5.3
+        with:
+          path: 'bidi'
       - name: Set up Node.js
         uses: actions/setup-node@5e21ff4d9bc1a8cf6de233a3057d20ec6b3fb69d # v3.8.1
         with:
           cache: npm
           node-version: lts/*
-      - name: Install dependencies
+      - name: Install Chromium-BiDi dependencies
+        working-directory: bidi
         run: npm ci
         env:
           PUPPETEER_SKIP_DOWNLOAD: true
-      - name: Build BiDi
+      - name: Build Chromium-BiDi
+        working-directory: bidi
         run: |
           npm run build
-      - name: Pack BiDi
-        run: npm pack
-      - name: Upload BiDi build
-        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
-        with:
-          name: bidi-build
-          if-no-files-found: error
-          path: chromium-bidi-*.tgz
+      - name: Link Chromium-BiDi
+        working-directory: bidi
+        run: npm link
 
-  puppeteer-tests:
-    name: Puppeteer tests
-    needs: build-bidi
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download BiDi build
-        uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
-        with:
-          name: bidi-build
-      - name: Set up Node.js
-        uses: actions/setup-node@5e21ff4d9bc1a8cf6de233a3057d20ec6b3fb69d # v3.8.1
-        with:
-          node-version: lts/*
       - name: Checkout
         uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.5.3
         with:
           repository: 'puppeteer/puppeteer'
           path: 'puppeteer'
-      - name: Install dependencies
+      - name: Install Puppeteer dependencies
         working-directory: puppeteer
         run: npm ci
-      - name: Install BiDi
+      # We need to build Puppeteer first to not hit devtools protocol dep issue
+      - name: Build Puppeteer
+        working-directory: puppeteer
+        run: npm run build
+      - name: Install Chromium-BiDi
         working-directory: puppeteer
         run: |
-          npm i ../$(ls ../ | grep chromium-bidi-) -w puppeteer-core
+          npm link chromium-bidi -w puppeteer-core
       - name: Setup cache for browser binaries
         uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
         with:
@@ -72,7 +62,7 @@ jobs:
           key: ${{ runner.os }}-browsers-${{ hashFiles('.browser') }}) }}
       - name: Install pinned browser
         id: browser
-        run: node tools/install-browser.mjs
+        run: node bidi/tools/install-browser.mjs
       - name: Run tests
         working-directory: puppeteer
         env:
