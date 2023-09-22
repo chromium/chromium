@@ -62,7 +62,6 @@ static_library("session") {
     "//chromeos/ash/components/dbus/upstart",
     "//chromeos/ash/components/memory:memory",
     "//chromeos/ash/components/system",
-    "//chromeos/components/sensors:buildflags",
     "//chromeos/system",
     "//components/prefs:prefs",
     "//components/user_manager",
