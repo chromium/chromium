@@ -453,7 +453,7 @@ void IntentChipButtonBrowserUiTest::ShowUi(const std::string& name) {
   auto* const tab_helper = IntentPickerTabHelper::FromWebContents(web_contents);
   base::RunLoop run_loop;
   tab_helper->SetIconUpdateCallbackForTesting(run_loop.QuitClosure());
-  tab_helper->ShowIconForApps(
+  tab_helper->MaybeShowIconForApps(
       {{apps::PickerEntryType::kWeb, ui::ImageModel(), "app_id", "Test app"}});
   run_loop.Run();
 }

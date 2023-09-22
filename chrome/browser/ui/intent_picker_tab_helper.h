@@ -33,15 +33,26 @@ class IntentPickerTabHelper
 
   ~IntentPickerTabHelper() override;
 
+  // Displays the intent picker icon in the omnibox, based on the last committed
+  // URL in |web_contents|.
+  static void MaybeShowIntentPickerIcon(content::WebContents* web_contents);
+
+  // Shows the intent picker bubble to present a choice between apps to handle
+  // |url|. May launch directly into an app based on user preferences and
+  // installed apps.
+  static void ShowIntentPickerBubbleOrLaunchApp(
+      content::WebContents* web_contents,
+      const GURL& url);
+
   // Shows or hides the intent picker icon for |web_contents|. Always shows a
-  // generic picker icon, even if ShowIconForApps() had previously applied
+  // generic picker icon, even if MaybeShowIconForApps() had previously applied
   // app-specific customizations.
   static void ShowOrHideIcon(content::WebContents* web_contents,
                              bool should_show_icon);
 
   // Shows or hides the intent picker icon for this tab a list of |apps| which
-  // can handle a link intent.
-  void ShowIconForApps(const std::vector<apps::IntentPickerAppInfo>& apps);
+  // can handle a link intent. Visible for testing.
+  void MaybeShowIconForApps(std::vector<apps::IntentPickerAppInfo> apps);
 
   bool should_show_icon() const { return should_show_icon_; }
 
@@ -53,15 +64,6 @@ class IntentPickerTabHelper
 
   const ui::ImageModel& app_icon() const { return current_app_icon_; }
 
-  using IntentPickerIconLoaderCallback =
-      base::OnceCallback<void(std::vector<apps::IntentPickerAppInfo> apps)>;
-
-  // Load multiple app icons from App Service.
-  static void LoadAppIcons(content::WebContents* web_contents,
-                           std::vector<apps::IntentPickerAppInfo> apps,
-                           IntentPickerIconLoaderCallback callback);
-
-  int commit_count() { return commit_count_; }
 
   // Sets a OnceClosure callback which will be called next time the icon is
   // updated. If include_latest_navigation is true, and the latest navigation
@@ -75,14 +77,19 @@ class IntentPickerTabHelper
   explicit IntentPickerTabHelper(content::WebContents* web_contents);
   friend class content::WebContentsUserData<IntentPickerTabHelper>;
 
+  using IntentPickerIconLoaderCallback =
+      base::OnceCallback<void(std::vector<apps::IntentPickerAppInfo> apps)>;
+
+  // Logic to load icons etc for apps in the intent picker:
+
   void OnAppIconLoaded(std::vector<apps::IntentPickerAppInfo> apps,
                        IntentPickerIconLoaderCallback callback,
                        size_t index,
                        apps::IconValuePtr icon_value);
 
   void LoadAppIcon(std::vector<apps::IntentPickerAppInfo> apps,
-                   IntentPickerIconLoaderCallback callback,
-                   size_t index);
+                   size_t index,
+                   IntentPickerIconLoaderCallback callback);
 
   void UpdateExpandedState(bool should_show_icon);
   void OnAppIconLoadedForChip(const std::string& app_id,
@@ -91,6 +98,19 @@ class IntentPickerTabHelper
   // handling.
   void ShowIconForLinkIntent(bool should_show_icon);
   void ShowOrHideIconInternal(bool should_show_icon);
+
+  // Logic to launch the app from the intent picker:
+
+  void ShowIntentPickerOrLaunchAppImpl(
+      const GURL& url,
+      std::vector<apps::IntentPickerAppInfo> apps);
+
+  void OnIntentPickerClosedMaybeLaunch(
+      const GURL& url,
+      const std::string& launch_name,
+      apps::PickerEntryType entry_type,
+      apps::IntentPickerCloseReason close_reason,
+      bool should_persist);
 
   // content::WebContentsObserver:
   void DidStartNavigation(
@@ -117,9 +137,9 @@ class IntentPickerTabHelper
   int commit_count_ = 0;
 
   // Contains the app ID of an app which can be opened through the intent
-  // picker. This is only set when ShowIconForApps() is called with a single
-  // app. Will be set to the empty string in all other cases (e.g. when there
-  // are multiple apps available, or when the icon is not visible).
+  // picker. This is only set when MaybeShowIconForApps() is called with a
+  // single app. Will be set to the empty string in all other cases (e.g. when
+  // there are multiple apps available, or when the icon is not visible).
   std::string current_app_id_;
   // True if |current_app_id_| is set as the preferred app for its http/https
   // links.
@@ -132,7 +152,9 @@ class IntentPickerTabHelper
                           web_app::WebAppInstallManagerObserver>
       install_manager_observation_{this};
 
-  base::WeakPtrFactory<IntentPickerTabHelper> weak_factory_{this};
+  // This weak ptr factory is invalidated when a new navigation finishes.
+  base::WeakPtrFactory<IntentPickerTabHelper> per_navigation_weak_factory_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_UI_INTENT_PICKER_TAB_HELPER_H_

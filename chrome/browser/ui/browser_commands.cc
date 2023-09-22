@@ -78,6 +78,7 @@
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
+#include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
@@ -1989,7 +1990,7 @@ Browser* OpenInChrome(Browser* hosted_app_browser) {
       true);
   auto* web_contents =
       target_browser->tab_strip_model()->GetActiveWebContents();
-  apps::MaybeShowIntentPicker(web_contents);
+  IntentPickerTabHelper::MaybeShowIntentPickerIcon(web_contents);
 #if BUILDFLAG(IS_CHROMEOS)
   apps::SupportedLinksInfoBarDelegate::RemoveSupportedLinksInfoBar(
       web_contents);
