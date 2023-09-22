@@ -343,6 +343,21 @@ class TlmUtf8StringField
   const char* value_;
 };
 
+// Class that represents an event field containing a 64 bit signed integer.
+class TlmInt64Field
+    : public TlmFieldBase<1, 9>  // 1 data descriptor, Type = _TlgInINT64
+{
+ public:
+  // name is a utf-8 nul-terminated string.
+  // value is 64 bit signed integer
+  TlmInt64Field(const char* name, const int64_t value) noexcept;
+  int64_t Value() const noexcept;
+  void FillEventDescriptor(EVENT_DATA_DESCRIPTOR* descriptors) const noexcept;
+
+ private:
+  const int64_t value_;
+};
+
 // Helper for creating event descriptors for use with WriteEvent.
 constexpr EVENT_DESCRIPTOR TlmEventDescriptor(uint8_t level,
                                               uint64_t keyword) noexcept {

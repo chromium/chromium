@@ -277,6 +277,7 @@ void TraceEventETWExport::AddEvent(char phase,
                                    const unsigned char* category_group_enabled,
                                    const char* name,
                                    unsigned long long id,
+                                   TimeTicks timestamp,
                                    const TraceArguments* args) {
   // We bail early in case exporting is disabled or no consumer is listening.
   auto* instance = GetInstance();
@@ -376,20 +377,24 @@ void TraceEventETWExport::AddEvent(char phase,
     }
   }
 
+  int64_t timestamp_ms = (timestamp - TimeTicks()).InMilliseconds();
   // Log the event and include the info needed to decode it via TraceLogging
   if (num_args == 0) {
     instance->etw_provider_->WriteEvent(
         name, TlmEventDescriptor(0, keyword),
-        TlmMbcsStringField("Phase", phase_string));
+        TlmMbcsStringField("Phase", phase_string),
+        TlmInt64Field("Timestamp", timestamp_ms));
   } else if (num_args == 1) {
     instance->etw_provider_->WriteEvent(
         name, TlmEventDescriptor(0, keyword),
         TlmMbcsStringField("Phase", phase_string),
+        TlmInt64Field("Timestamp", timestamp_ms),
         TlmMbcsStringField((args->names()[0]), (arg_values_string[0].c_str())));
   } else if (num_args == 2) {
     instance->etw_provider_->WriteEvent(
         name, TlmEventDescriptor(0, keyword),
         TlmMbcsStringField("Phase", phase_string),
+        TlmInt64Field("Timestamp", timestamp_ms),
         TlmMbcsStringField((args->names()[0]), (arg_values_string[0].c_str())),
         TlmMbcsStringField((args->names()[1]), (arg_values_string[1].c_str())));
   } else {

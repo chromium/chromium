@@ -227,6 +227,18 @@ bool TlmProvider::KeywordEnabled(uint64_t keyword) const noexcept {
          ((keyword & keyword_any_) && (keyword & keyword_all_) == keyword_all_);
 }
 
+TlmInt64Field::TlmInt64Field(const char* name, const int64_t value) noexcept
+    : TlmFieldBase(name), value_(value) {
+  DCHECK_NE(Name(), nullptr);
+}
+int64_t TlmInt64Field::Value() const noexcept {
+  return value_;
+}
+void TlmInt64Field::FillEventDescriptor(
+    EVENT_DATA_DESCRIPTOR* descriptors) const noexcept {
+  EventDataDescCreate(&descriptors[0], (void*)&value_, sizeof(value_));
+}
+
 TlmMbcsStringField::TlmMbcsStringField(const char* name,
                                        const char* value) noexcept
     : TlmFieldBase(name), value_(value) {

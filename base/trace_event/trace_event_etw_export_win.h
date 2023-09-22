@@ -50,6 +50,7 @@ class BASE_EXPORT TraceEventETWExport {
                        const unsigned char* category_group_enabled,
                        const char* name,
                        unsigned long long id,
+                       TimeTicks timestamp,
                        const TraceArguments* args);
 
   // Exports an ETW event that marks the end of a complete event.

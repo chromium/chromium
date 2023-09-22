@@ -280,6 +280,7 @@ class BASE_EXPORT TraceLog :
                                    const char* name,
                                    uint64_t id,
                                    PlatformThreadId thread_id,
+                                   const TimeTicks timestamp,
                                    TraceArguments* args);
   TraceEventHandle AddTraceEvent(char phase,
                                  const unsigned char* category_group_enabled,

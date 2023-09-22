@@ -1564,6 +1564,7 @@ bool TraceLog::ShouldAddAfterUpdatingState(
     const char* name,
     uint64_t id,
     PlatformThreadId thread_id,
+    const TimeTicks timestamp,
     TraceArguments* args) {
   if (!*category_group_enabled)
     return false;
@@ -1617,7 +1618,7 @@ bool TraceLog::ShouldAddAfterUpdatingState(
     // ETW export expects non-null event names.
     name = name ? name : "";
     TraceEventETWExport::AddEvent(phase, category_group_enabled, name, id,
-                                  args);
+                                  timestamp, args);
   }
 #endif  // BUILDFLAG(IS_WIN)
   return true;
@@ -1729,7 +1730,7 @@ TraceEventHandle TraceLog::AddTraceEventWithThreadIdAndTimestamps(
     unsigned int flags) NO_THREAD_SAFETY_ANALYSIS {
   TraceEventHandle handle = {0, 0, 0};
   if (!ShouldAddAfterUpdatingState(phase, category_group_enabled, name, id,
-                                   thread_id, args)) {
+                                   thread_id, timestamp, args)) {
     return handle;
   }
   DCHECK(!timestamp.is_null());
