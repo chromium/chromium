@@ -610,13 +610,10 @@ void DownloadToolbarButtonView::CreateBubbleDialogDelegate() {
     button_click_time_ = base::TimeTicks();
   }
 
-  // The bubble can either be shown as active or inactive. When the current
-  // browser is inactive, make the bubble inactive to avoid stealing focus from
-  // non-Chrome windows or showing on a different workspace.
-  if (browser_->window() && browser_->window()->IsActive()) {
-    bubble_delegate_->GetWidget()->Show();
-  } else {
+  if (ShouldShowBubbleAsInactive()) {
     bubble_delegate_->GetWidget()->ShowInactive();
+  } else {
+    bubble_delegate_->GetWidget()->Show();
   }
 
   // For IPH bubble. The IPH should show when the partial view is closed, either
@@ -717,6 +714,26 @@ void DownloadToolbarButtonView::ShowPendingDownloadStartedAnimation() {
       web_contents, image()->GetBoundsInScreen(),
       color_provider->GetColor(kColorDownloadToolbarButtonAnimationForeground),
       color_provider->GetColor(kColorDownloadToolbarButtonAnimationBackground));
+}
+
+bool DownloadToolbarButtonView::ShouldShowBubbleAsInactive() const {
+  // The bubble can either be shown as active or inactive. When the current
+  // browser is inactive, make the bubble inactive to avoid stealing focus from
+  // non-Chrome windows or showing on a different workspace.
+  if (!browser_->window() || !browser_->window()->IsActive()) {
+    return true;
+  }
+
+  // Don't show as active if there is a running context menu, otherwise the
+  // context menu will be closed.
+  if (content::WebContents* web_contents =
+          browser_->tab_strip_model()->GetActiveWebContents()) {
+    if (web_contents->IsShowingContextMenu()) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 SkColor DownloadToolbarButtonView::GetIconColor() const {

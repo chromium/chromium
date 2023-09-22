@@ -187,6 +187,8 @@ class DownloadToolbarButtonView : public ToolbarButton,
   // a download icon moving upwards towards the toolbar icon.
   void ShowPendingDownloadStartedAnimation();
 
+  bool ShouldShowBubbleAsInactive() const;
+
   SkColor GetProgressColor(bool is_disabled, bool is_active) const;
 
   raw_ptr<Browser> browser_;
