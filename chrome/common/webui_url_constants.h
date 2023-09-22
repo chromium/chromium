@@ -541,6 +541,7 @@ extern const char kResetSubPage[];
 extern const char kResetProfileSettingsSubPage[];
 extern const char kSafeBrowsingEnhancedProtectionSubPage[];
 extern const char kSafetyCheckSubPage[];
+extern const char kSafetyHubSubPage[];
 extern const char kSearchSubPage[];
 extern const char kSearchEnginesSubPage[];
 extern const char kSignOutSubPage[];

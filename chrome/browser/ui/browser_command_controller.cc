@@ -894,6 +894,11 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_UPGRADE_DIALOG:
       OpenUpdateChromeDialog(browser_);
       break;
+    case IDC_OPEN_SAFETY_HUB:
+      ShowSettingsSubPage(browser_->GetBrowserForOpeningWebUi(),
+                          chrome::kSafetyHubSubPage);
+      break;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case IDC_LACROS_DATA_MIGRATION: {
       auto* user_manager = user_manager::UserManager::Get();
@@ -1349,6 +1354,10 @@ void BrowserCommandController::InitCommandState() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   command_updater_.UpdateCommandEnabled(IDC_LACROS_DATA_MIGRATION, true);
 #endif
+
+  // Safety Hub commands.
+  command_updater_.UpdateCommandEnabled(
+      IDC_OPEN_SAFETY_HUB, base::FeatureList::IsEnabled(features::kSafetyHub));
 
   // Distill current page.
   command_updater_.UpdateCommandEnabled(IDC_DISTILL_PAGE,

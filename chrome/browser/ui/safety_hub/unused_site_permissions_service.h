@@ -8,6 +8,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <string>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -82,7 +83,7 @@ class UnusedSitePermissionsService : public SafetyHubService,
 
     ~UnusedSitePermissionsResult() override;
 
-    std::unique_ptr<SafetyHubService::Result> Clone() override;
+    std::unique_ptr<SafetyHubService::Result> Clone() const override;
 
     using UnusedPermissionMap =
         std::map<std::string, std::list<ContentSettingEntry>>;
@@ -104,11 +105,16 @@ class UnusedSitePermissionsService : public SafetyHubService,
     std::set<ContentSettingsPattern> GetRevokedOrigins() const;
 
     // SafetyHubService::Result implementation
-    base::Value::Dict ToDictValue() override;
+    base::Value::Dict ToDictValue() const override;
 
-    bool IsTriggerForMenuNotification() override;
+    bool IsTriggerForMenuNotification() const override;
 
-    bool WarrantsNewMenuNotification(const Result& previousResult) override;
+    bool WarrantsNewMenuNotification(
+        const Result& previousResult) const override;
+
+    std::u16string GetNotificationString() const override;
+
+    int GetNotificationCommandId() const override;
 
    private:
     std::list<RevokedPermission> revoked_permissions_;

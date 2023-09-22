@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
 
 #include <memory>
+#include <string>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -21,7 +22,9 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
@@ -34,6 +37,7 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/permissions/constants.h"
 #include "content/public/browser/browser_thread.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -143,7 +147,7 @@ UnusedSitePermissionsService::UnusedSitePermissionsResult::
 }
 
 std::unique_ptr<SafetyHubService::Result>
-UnusedSitePermissionsService::UnusedSitePermissionsResult::Clone() {
+UnusedSitePermissionsService::UnusedSitePermissionsResult::Clone() const {
   return std::make_unique<UnusedSitePermissionsResult>(*this);
 }
 
@@ -175,7 +179,7 @@ UnusedSitePermissionsService::UnusedSitePermissionsResult::GetRevokedOrigins()
 }
 
 base::Value::Dict
-UnusedSitePermissionsService::UnusedSitePermissionsResult::ToDictValue() {
+UnusedSitePermissionsService::UnusedSitePermissionsResult::ToDictValue() const {
   base::Value::Dict result = BaseToDictValue();
   base::Value::List revoked_permissions;
   content_settings::WebsiteSettingsRegistry* registry =
@@ -199,14 +203,14 @@ UnusedSitePermissionsService::UnusedSitePermissionsResult::ToDictValue() {
 }
 
 bool UnusedSitePermissionsService::UnusedSitePermissionsResult::
-    IsTriggerForMenuNotification() {
+    IsTriggerForMenuNotification() const {
   // A menu notification should be shown when there is at least one permission
   // that was revoked.
   return revoked_permissions_.size() > 0;
 }
 
 bool UnusedSitePermissionsService::UnusedSitePermissionsResult::
-    WarrantsNewMenuNotification(const Result& previousResult) {
+    WarrantsNewMenuNotification(const Result& previousResult) const {
   const auto& previous = static_cast<
       const UnusedSitePermissionsService::UnusedSitePermissionsResult&>(
       previousResult);
@@ -220,6 +224,21 @@ bool UnusedSitePermissionsService::UnusedSitePermissionsResult::
     }
   }
   return false;
+}
+
+std::u16string UnusedSitePermissionsService::UnusedSitePermissionsResult::
+    GetNotificationString() const {
+  if (revoked_permissions_.empty()) {
+    return std::u16string();
+  }
+  return l10n_util::GetPluralStringFUTF16(
+      IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION,
+      revoked_permissions_.size());
+}
+
+int UnusedSitePermissionsService::UnusedSitePermissionsResult::
+    GetNotificationCommandId() const {
+  return IDC_OPEN_SAFETY_HUB;
 }
 
 void UnusedSitePermissionsService::TabHelper::PrimaryPageChanged(

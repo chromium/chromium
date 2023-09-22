@@ -21,7 +21,7 @@ SafetyHubService::Result::Result(const base::Value::Dict& dict) {
       base::ValueToTime(dict.Find(kSafetyHubTimestampResultKey)).value();
 }
 
-base::Value::Dict SafetyHubService::Result::BaseToDictValue() {
+base::Value::Dict SafetyHubService::Result::BaseToDictValue() const {
   base::Value::Dict result;
   result.Set(kSafetyHubTimestampResultKey, base::TimeToValue(timestamp_));
   return result;

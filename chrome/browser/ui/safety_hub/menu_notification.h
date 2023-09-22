@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_SAFETY_HUB_MENU_NOTIFICATION_H_
 
 #include <memory>
+#include <string>
 
 #include "base/time/time.h"
 #include "base/values.h"
@@ -64,6 +65,13 @@ class SafetyHubMenuNotification {
   // available. If the updated result is similar to the current one, no changes
   // are made. Otherwise, the menu notification will be considered as a new one.
   void UpdateResult(std::unique_ptr<SafetyHubService::Result> result);
+
+  // Returns the notification string that will be shown in the three-dot menu.
+  std::u16string GetNotificationString() const;
+
+  // Returns the Command ID of the notification that will be shown in the
+  // three-dot menu.
+  int GetNotificationCommandId() const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SafetyHubMenuNotificationTest, ToFromDictValue);

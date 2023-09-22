@@ -80,17 +80,13 @@ class SafetyHubMenuNotificationTest : public testing::Test {
 TEST_F(SafetyHubMenuNotificationTest, ToFromDictValue) {
   // Creating a mock menu notification.
   base::Time last = kPastTime + base::Days(30);
-  std::set<ContentSettingsType> permission_types(
-      {ContentSettingsType::GEOLOCATION});
-  std::unique_ptr<UnusedSitePermissionsService::UnusedSitePermissionsResult>
-      result =
-          CreateUnusedSitePermissionsResult(base::Value::List().Append(kUrl1));
   auto notification = std::make_unique<SafetyHubMenuNotification>();
   notification->is_currently_active_ = true;
   notification->impression_count_ = 42;
   notification->first_impression_time_ = kPastTime;
   notification->last_impression_time_ = last;
-  notification->result_ = std::move(result);
+  notification->result_ =
+      CreateUnusedSitePermissionsResult(base::Value::List().Append(kUrl1));
 
   // When transforming the notification to a Dict, the properties of the
   // notification should be correct.

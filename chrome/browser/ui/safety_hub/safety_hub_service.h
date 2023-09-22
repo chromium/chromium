@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_SAFETY_HUB_SAFETY_HUB_SERVICE_H_
 
 #include <memory>
+#include <string>
 
 #include "base/gtest_prod_util.h"
 #include "base/observer_list.h"
@@ -35,21 +36,30 @@ class SafetyHubService : public KeyedService,
    public:
     virtual ~Result() = default;
 
-    virtual base::Value::Dict ToDictValue() = 0;
+    virtual base::Value::Dict ToDictValue() const = 0;
 
     // Determines whether the current result meets the bar for showing a
     // notification to the user in the Chrome menu.
-    virtual bool IsTriggerForMenuNotification() = 0;
+    virtual bool IsTriggerForMenuNotification() const = 0;
 
     // Determines whether the previous result is sufficiently different that for
     // the current result a new notification should be shown. This indication is
     // just based on the comparison of the two results, and thus irrelevant to
     // how frequently a menu notification has already been shown.
-    virtual bool WarrantsNewMenuNotification(const Result& previousResult) = 0;
+    virtual bool WarrantsNewMenuNotification(
+        const Result& previousResult) const = 0;
+
+    // Returns the string for the notification that will be shown in the
+    // three-dot menu.
+    virtual std::u16string GetNotificationString() const = 0;
+
+    // Returns the command ID that should be run when the user clicks the
+    // notification in the three-dot menu.
+    virtual int GetNotificationCommandId() const = 0;
 
     // Returns a copy of the current Safety Hub object. This is intended to be
     // used when the caller is unaware of the specific derived class.
-    virtual std::unique_ptr<Result> Clone() = 0;
+    virtual std::unique_ptr<Result> Clone() const = 0;
 
     base::Time timestamp() const;
 
@@ -59,7 +69,7 @@ class SafetyHubService : public KeyedService,
     Result(const Result&) = default;
     Result& operator=(const Result&) = default;
 
-    base::Value::Dict BaseToDictValue();
+    base::Value::Dict BaseToDictValue() const;
 
    private:
     base::Time timestamp_;

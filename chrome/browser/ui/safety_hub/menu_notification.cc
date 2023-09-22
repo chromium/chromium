@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/safety_hub/menu_notification.h"
 
 #include <memory>
+#include <string>
 
 #include "base/json/values_util.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
@@ -143,4 +144,14 @@ SafetyHubMenuNotification::FromDictValue(const base::Value::Dict& dict,
         *dict.FindDict(kSafetyHubMenuNotificationResultKey));
   }
   return notification;
+}
+
+std::u16string SafetyHubMenuNotification::GetNotificationString() const {
+  CHECK(result_);
+  return result_->GetNotificationString();
+}
+
+int SafetyHubMenuNotification::GetNotificationCommandId() const {
+  CHECK(result_);
+  return result_->GetNotificationCommandId();
 }

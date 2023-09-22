@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/json/values_util.h"
@@ -30,19 +31,26 @@ class MockSafetyHubResult : public SafetyHubService::Result {
   explicit MockSafetyHubResult(const base::Value::Dict& dict)
       : SafetyHubService::Result(dict) {}
 
-  std::unique_ptr<SafetyHubService::Result> Clone() override {
+  std::unique_ptr<SafetyHubService::Result> Clone() const override {
     return std::make_unique<MockSafetyHubResult>(*this);
   }
 
-  base::Value::Dict ToDictValue() override { return BaseToDictValue(); }
+  base::Value::Dict ToDictValue() const override { return BaseToDictValue(); }
 
-  bool IsTriggerForMenuNotification() override { return true; }
+  bool IsTriggerForMenuNotification() const override { return true; }
 
-  bool WarrantsNewMenuNotification(const Result& previousResult) override {
+  bool WarrantsNewMenuNotification(
+      const Result& previousResult) const override {
     return true;
   }
 
-  int GetVal() { return val_; }
+  std::u16string GetNotificationString() const override {
+    return std::u16string();
+  }
+
+  int GetNotificationCommandId() const override { return 0; }
+
+  int GetVal() const { return val_; }
 
   void SetVal(int val) { val_ = val; }
 
