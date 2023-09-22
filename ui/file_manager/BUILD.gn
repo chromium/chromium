@@ -383,6 +383,7 @@ copy("copy_fmp_test") {
 copy("for_image_loader") {
   sources = [
     "$target_gen_dir/tsc/file_manager/common/js/file_types_base.js",
+    "$target_gen_dir/tsc/file_manager/common/js/lru_cache.js",
     "file_manager/common/js/test_error_reporting.js",
   ]
   outputs = [ "$target_gen_dir/file_manager/common/js/{{source_file_part}}" ]
@@ -437,6 +438,7 @@ generate_grd("build_grd") {
       # For Image Loader unittests:
       "file_manager/common/js/file_types_base.js",
       "file_manager/common/js/file_types_data.js",
+      "file_manager/common/js/lru_cache.js",
       "file_manager/common/js/test_error_reporting.js",
     ]
 

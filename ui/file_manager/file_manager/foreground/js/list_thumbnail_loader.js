@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
-import {LRUCache} from '../../common/js/lru_cache.js';
+import {LruCache} from '../../common/js/lru_cache.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
@@ -62,9 +62,9 @@ export class ListThumbnailLoader extends EventTarget {
     this.active_ = {};
 
     /**
-     * @private {LRUCache<!ListThumbnailLoader.ThumbnailData>}
+     * @private {LruCache<!ListThumbnailLoader.ThumbnailData>}
      */
-    this.cache_ = new LRUCache(ListThumbnailLoader.CACHE_SIZE);
+    this.cache_ = new LruCache(ListThumbnailLoader.CACHE_SIZE);
 
     /**
      * @private {number}

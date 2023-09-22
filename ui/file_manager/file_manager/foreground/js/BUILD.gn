@@ -800,7 +800,6 @@ js_library("list_thumbnail_loader") {
     "metadata:thumbnail_model",
     "//ash/webui/common/resources:assert",
     "//ash/webui/common/resources:event_target",
-    "//ui/file_manager/file_manager/common/js:lru_cache",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_manager",
   ]

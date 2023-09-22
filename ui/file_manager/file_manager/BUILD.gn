@@ -18,9 +18,6 @@ generate_grd("build_static_grdp") {
     "main.html",
     "init_globals.js",
 
-    # For File Manager unittests:
-    "common/js/lru_cache.js",
-
     # CSS:
     "foreground/css/combobutton.css",
     "foreground/css/combobutton_gm3.css",

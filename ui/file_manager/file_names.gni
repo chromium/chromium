@@ -49,7 +49,6 @@ static_js_files = [
   "file_manager/common/js/files_app_state.js",
   "file_manager/common/js/filtered_volume_manager.js",
   "file_manager/common/js/icon_util.js",
-  "file_manager/common/js/lru_cache.js",
   "file_manager/common/js/metrics.js",
   "file_manager/common/js/metrics_base.js",
   "file_manager/common/js/mock_chrome.js",
@@ -230,6 +229,7 @@ ts_files = [
   "file_manager/common/js/entry_utils.ts",
   "file_manager/common/js/file_tasks.ts",
   "file_manager/common/js/file_types_base.ts",
+  "file_manager/common/js/lru_cache.ts",
   "file_manager/common/js/script_loader.ts",
   "file_manager/common/js/trash.ts",
   "file_manager/common/js/trusted_script_url_policy_util.ts",
@@ -365,6 +365,7 @@ ts_test_files = [
   # Common.
   "file_manager/common/js/entry_utils_unittest.ts",
   "file_manager/common/js/file_types_base_unittest.ts",
+  "file_manager/common/js/lru_cache_unittest.ts",
   "file_manager/common/js/mock_util.ts",
 
   # Containers
@@ -489,7 +490,6 @@ unittest_files = [
   "file_manager/common/js/util_unittest.js",
   "file_manager/common/js/filtered_volume_manager_unittest.js",
   "file_manager/common/js/file_type_unittest.js",
-  "file_manager/common/js/lru_cache_unittest.js",
   "file_manager/common/js/files_app_entry_types_unittest.js",
   "file_manager/common/js/recent_date_bucket_unittest.js",
   "file_manager/common/js/storage_unittest.js",

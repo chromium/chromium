@@ -4,10 +4,10 @@
 
 import {assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {LRUCache} from './lru_cache.js';
+import {LruCache} from './lru_cache.js';
 
-export function testLRUCache() {
-  const cache = new LRUCache(3);
+export function testLruCache() {
+  const cache = new LruCache<string>(3);
 
   // Querying by non-existent key will get null.
   assertEquals(null, cache.get('a'));
@@ -77,7 +77,7 @@ export function testLRUCache() {
 }
 
 export function testLRUCacheWithIndividualSizes() {
-  const cache = new LRUCache(10);
+  const cache = new LruCache(10);
 
   // Querying by non-existent key will get null.
   assertEquals(null, cache.get('a'));
@@ -121,18 +121,18 @@ export function testLRUCacheWithIndividualSizes() {
 }
 
 class RandomNumberGenerator {
-  /** @param {number} seed */
-  constructor(seed) {
-    this.x = seed;
+  private x_: number;
+  constructor(seed: number) {
+    this.x_ = seed;
   }
 
   random() {
-    this.x = (32453 * this.x + 254119) % (1 << 24);
-    return this.x >> 4;
+    this.x_ = (32453 * this.x_ + 254119) % (1 << 24);
+    return this.x_ >> 4;
   }
 }
 
-function generateRandom3letters(generator) {
+function generateRandom3letters(generator: RandomNumberGenerator) {
   const ALPHA = 'abcdefghijklmnopqrstuvwxyz';
   let res = '';
   for (let i = 0; i < 3; i++) {
@@ -142,7 +142,7 @@ function generateRandom3letters(generator) {
 }
 
 export function testSizeCalculationByRandomInput() {
-  const cache = new LRUCache(10000);
+  const cache = new LruCache(10000);
 
   // We need fixed random number sequence to avoid test flakiness, so
   // RandomeNumberGenerator is used instead of Math.random() here.
@@ -157,21 +157,21 @@ export function testSizeCalculationByRandomInput() {
   // Adding items won't make the cache's size exceed the max size.
   for (let i = 0; i < 10000; i++) {
     const size = generator.random() % 100 + 1;
-    const key = keys[generator.random() % keys.length];
+    const key = keys[generator.random() % keys.length]!;
     cache.put(key, 'random item', size);
 
     assertTrue(cache.size() <= 10000);
   }
 
   // Removing all keys will make the cache's size exactly 0.
-  for (let i = 0; i < keys.length; i++) {
-    cache.remove(keys[i]);
+  for (const key of keys) {
+    cache.remove(key);
   }
   assertEquals(0, cache.size());
 }
 
 export function testSetMaxSize() {
-  const cache = new LRUCache(10);
+  const cache = new LruCache(10);
   cache.put('a', 'valueA');
   cache.put('b', 'valueB');
   cache.put('c', 'valueC');

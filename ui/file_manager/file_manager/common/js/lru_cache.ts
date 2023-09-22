@@ -4,49 +4,24 @@
 
 /**
  * A linked-list node which holds data for cache entry such as key, value, size.
- * @template T
  */
-class LRUCacheNode {
-  /**
-   * @param {string} key
-   * @param {T} value
-   * @param {number} size
-   */
-  constructor(key, value, size) {
-    /** @type {string} */
-    this.key = key;
-
-    /** @type {T} */
-    this.value = value;
-
-    /** @type {number} */
-    this.size = size;
-
-    /** @type {LRUCacheNode} */
-    this.next = null;
-
-    /** @type {LRUCacheNode} */
-    this.prev = null;
-  }
+class LruCacheNode<T> {
+  public next: LruCacheNode<T>|null = null;
+  public prev: LruCacheNode<T>|null = null;
+  constructor(public key: string, public value: T, public size: number) {}
 }
 
 /**
  * Container of the list of cache nodes.
  */
-class LRUCacheList {
-  constructor() {
-    /** @private {!LRUCacheNode} */
-    this.sentinelTail_ = new LRUCacheNode('sentinel', null, 0);
-
-    /** @private {LRUCacheNode} */
-    this.head_ = this.sentinelTail_;
-  }
+class LruCacheList<T> {
+  private tail_: LruCacheNode<T>|null = null;
+  private head_: LruCacheNode<T>|null = null;
 
   /**
    * Removes a node from this list.
-   * @param {!LRUCacheNode} node
    */
-  remove(node) {
+  remove(node: LruCacheNode<T>) {
     if (node.prev) {
       node.prev.next = node.next;
     }
@@ -56,63 +31,56 @@ class LRUCacheList {
     if (node === this.head_) {
       this.head_ = node.next;
     }
+    if (node === this.tail_) {
+      this.tail_ = node.prev;
+    }
     node.prev = null;
     node.next = null;
   }
 
   /**
    * Adds a node at the head of this list.
-   * @param {!LRUCacheNode} node
    */
-  prepend(node) {
+  prepend(node: LruCacheNode<T>) {
     node.prev = null;
     node.next = this.head_;
-    node.next.prev = node;
+    if (node.next === null) {
+      this.tail_ = node;
+    } else {
+      node.next.prev = node;
+    }
     this.head_ = node;
   }
 
   /**
    * Returns the last node of the list, or null if the list has no nodes.
-   * @return {LRUCacheNode}
    */
-  lastNode() {
-    return this.sentinelTail_.prev;
+  lastNode(): LruCacheNode<T>|null {
+    return this.tail_;
   }
 }
 
 /**
  * Cache management class implementing LRU algorithm.
- * @template T
  */
-export class LRUCache {
+export class LruCache<T> {
+  private totalSize_ = 0;
+  private list_ = new LruCacheList<T>();
+  private nodes_: {[key: string]: LruCacheNode<T>} = {};
   /**
-   * @param {number} maxSize Maximum total size of items this cache can hold.
+   * @param maxSize_ Maximum total size of items this cache can hold.
    *     When items are put without specifying their sizes, their sizes are
-   *     treated as 1 and the |maxSize| can be interpreted as the maximum number
-   *     of items. If items are put with specifying their sizes in bytes, the
-   *     |maxSize| can be interpreted as the maximum number of bytes.
+   *     treated as 1 and the |maxSize_| can be interpreted as the maximum
+   *     number of items. If items are put with specifying their sizes in bytes,
+   *     the |maxSize_| can be interpreted as the maximum number of bytes.
    */
-  constructor(maxSize) {
-    /** @private {number} */
-    this.totalSize_ = 0;
-
-    /** @private {number} */
-    this.maxSize_ = maxSize;
-
-    /** @private {!LRUCacheList} */
-    this.list_ = new LRUCacheList();
-
-    /** @private {!Object<!LRUCacheNode>} */
-    this.nodes_ = {};
-  }
+  constructor(private maxSize_: number) {}
 
   /**
    * Returns a cached item corresponding to the given key. The referenced item
    * will be the most recently used item and won't be evicted soon.
-   * @param {string} key
-   * @return {T}
    */
-  get(key) {
+  get(key: string): T|null {
     const node = this.nodes_[key];
     if (!node) {
       return null;
@@ -125,10 +93,8 @@ export class LRUCache {
   /**
    * Returns a cached item corresponding to the given key without making the
    * referenced item the most recently used item.
-   * @param {string} key
-   * @return {T}
    */
-  peek(key) {
+  peek(key: string): T|null {
     const node = this.nodes_[key];
     if (!node) {
       return null;
@@ -139,10 +105,8 @@ export class LRUCache {
 
   /**
    * Returns true if the cache contains the key.
-   * @param {string} key
-   * @return {boolean}
    */
-  hasKey(key) {
+  hasKey(key: string): boolean {
     return key in this.nodes_;
   }
 
@@ -151,14 +115,13 @@ export class LRUCache {
    * item and won't be evicted soon. If an item with the same key already exists
    * in the cache, the existing item's value and size will be updated and the
    * item will become the most recently used item.
-   * @param {string} key Key to find the cached item later.
-   * @param {T} value Value of the item to be cached.
-   * @param {number=} opt_size Size of the put item. If not specified, the size
+   * @param key Key to find the cached item later.
+   * @param value Value of the item to be cached.
+   * @param size Size of the put item. If not specified, the size
    *     is regarded as 1. If the size is larger than the |maxSize_|, put
    *     operation will be ignored keeping cache state unchanged.
    */
-  put(key, value, opt_size) {
-    const size = opt_size ? opt_size : 1;
+  put(key: string, value: T, size: number = 1) {
     if (size > this.maxSize_) {
       return;
     }
@@ -175,16 +138,15 @@ export class LRUCache {
       this.updateNode_(node, value, size);
       this.moveNodeToHead_(node);
     } else {
-      node = new LRUCacheNode(key, value, size);
+      node = new LruCacheNode(key, value, size);
       this.prependNode_(node);
     }
   }
 
   /**
    * Removes an item from the cache.
-   * @param {string} key
    */
-  remove(key) {
+  remove(key: string) {
     const node = this.nodes_[key];
     if (node) {
       this.removeNode_(node);
@@ -193,9 +155,8 @@ export class LRUCache {
 
   /**
    * Returns the cache size.
-   * @return {number}
    */
-  size() {
+  size(): number {
     return this.totalSize_;
   }
 
@@ -203,7 +164,7 @@ export class LRUCache {
    * Updates max size of the cache.
    * @param {number} value New max size.
    */
-  setMaxSize(value) {
+  setMaxSize(value: number) {
     this.maxSize_ = value;
     while (this.totalSize_ > this.maxSize_) {
       this.evictLastNode_();
@@ -212,17 +173,15 @@ export class LRUCache {
 
   /**
    * Returns the max size of the cache.
-   * @return {number}
    */
-  getMaxSize() {
+  getMaxSize(): number {
     return this.maxSize_;
   }
 
   /**
    * Evicts the oldest cache node.
-   * @private
    */
-  evictLastNode_() {
+  private evictLastNode_() {
     const lastNode = this.list_.lastNode();
     if (!lastNode) {
       throw new Error('No more nodes to evict.');
@@ -233,10 +192,8 @@ export class LRUCache {
 
   /**
    * Removes given node from this cache store completely.
-   * @param {!LRUCacheNode} node
-   * @private
    */
-  removeNode_(node) {
+  private removeNode_(node: LruCacheNode<T>) {
     this.list_.remove(node);
     this.totalSize_ -= node.size;
     console.assert(this.totalSize_ >= 0);
@@ -246,10 +203,8 @@ export class LRUCache {
 
   /**
    * Prepends given node to the head of list.
-   * @param {!LRUCacheNode} node
-   * @private
    */
-  prependNode_(node) {
+  private prependNode_(node: LruCacheNode<T>) {
     this.list_.prepend(node);
     this.totalSize_ += node.size;
     console.assert(this.totalSize_ <= this.maxSize_);
@@ -259,12 +214,8 @@ export class LRUCache {
 
   /**
    * Updates the given nodes size and value.
-   * @param {!LRUCacheNode} node
-   * @param {T} value
-   * @param {number} size
-   * @private
    */
-  updateNode_(node, value, size) {
+  private updateNode_(node: LruCacheNode<T>, value: T, size: number) {
     this.totalSize_ += size - node.size;
     console.assert(this.totalSize_ >= 0 && this.totalSize_ <= this.maxSize_);
     node.value = value;
@@ -273,10 +224,8 @@ export class LRUCache {
 
   /**
    * Moves the given node to the head of the linked list.
-   * @param {!LRUCacheNode} node
-   * @private
    */
-  moveNodeToHead_(node) {
+  private moveNodeToHead_(node: LruCacheNode<T>) {
     this.list_.remove(node);
     this.list_.prepend(node);
   }
