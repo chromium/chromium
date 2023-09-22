@@ -132,10 +132,6 @@ uint32_t Hash(const std::string& str) {
   return PersistentHash(as_bytes(make_span(str)));
 }
 
-uint32_t Hash(const std::u16string& str) {
-  return PersistentHash(as_bytes(make_span(str)));
-}
-
 uint32_t PersistentHash(span<const uint8_t> data) {
   // This hash function must not change, since it is designed to be persistable
   // to disk.
