@@ -50,6 +50,12 @@ bool GoogleGroupsUpdaterServiceFactory::ServiceIsCreatedWithBrowserState()
   return base::FeatureList::IsEnabled(kVariationsGoogleGroupFiltering);
 }
 
+bool GoogleGroupsUpdaterServiceFactory::ServiceIsNULLWhileTesting() const {
+  // Many unit tests don't initialize local state prefs, so disable this service
+  // in unit tests.
+  return true;
+}
+
 void GoogleGroupsUpdaterServiceFactory::RegisterBrowserStatePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   if (!base::FeatureList::IsEnabled(kVariationsGoogleGroupFiltering)) {

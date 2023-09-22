@@ -15,13 +15,7 @@
 // information from per-profile data to local-state.
 BASE_FEATURE(kVariationsGoogleGroupFiltering,
              "VariationsGoogleGroupFiltering",
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             // TODO(b/286365351): launch on Android, iOS and ChromeOS.
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 GoogleGroupsUpdaterService::GoogleGroupsUpdaterService(
     PrefService& target_prefs,

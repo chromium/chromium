@@ -37,6 +37,8 @@ class GoogleGroupsUpdaterServiceFactory
 
   bool ServiceIsCreatedWithBrowserState() const override;
 
+  bool ServiceIsNULLWhileTesting() const override;
+
   void RegisterBrowserStatePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
 };

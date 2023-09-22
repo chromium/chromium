@@ -18043,24 +18043,6 @@
             ]
         }
     ],
-    "VariationsGoogleGroupFiltering": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230525",
-                    "enable_features": [
-                        "VariationsGoogleGroupFiltering"
-                    ]
-                }
-            ]
-        }
-    ],
     "VerifyDidCommitParams": [
         {
             "platforms": [
