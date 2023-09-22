@@ -505,10 +505,7 @@ void MenuScrollViewContainer::CreateBubbleBorder() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     background_view_->SetBorder(std::make_unique<HighlightBorder>(
-        GetRoundedCorners(),
-        chromeos::features::IsJellyrollEnabled()
-            ? HighlightBorder::Type::kHighlightBorderOnShadow
-            : HighlightBorder::Type::kHighlightBorder1));
+        GetRoundedCorners(), HighlightBorder::Type::kHighlightBorderOnShadow));
 #endif
   } else {
     SetBackground(std::make_unique<BubbleBackground>(bubble_border.get()));
