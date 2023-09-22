@@ -148,7 +148,9 @@ chromium-metrics-reviews@google.com.
     <variant name="Foreground"
         summary="Times when a user is engaged and focuses on a Borealis GUI
                  window."/>
-    <variant name="Total" summary="Should be same as BorealisTotal."/>
+    <variant name="Total"
+        summary="Total engagement time (including when Borealis isn't
+                 running)."/>
   </token>
 </histogram>
 
