@@ -1707,7 +1707,15 @@ IN_PROC_BROWSER_TEST_F(DevToolsExperimentalExtensionTest,
 }
 
 // Tests that a content script is in the scripts list.
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, TestContentScriptIsPresent) {
+//
+// TODO(https://crbug.com/1486055): Flaky on "Linux Tests (dbg)(1)".
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_TestContentScriptIsPresent DISABLED_TestContentScriptIsPresent
+#else
+#define MAYBE_TestContentScriptIsPresent TestContentScriptIsPresent
+#endif
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
+                       MAYBE_TestContentScriptIsPresent) {
   LoadExtension("simple_content_script");
   RunTest("testContentScriptIsPresent", kPageWithContentScript);
 }
