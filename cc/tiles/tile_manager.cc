@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -1057,6 +1058,16 @@ TileManager::PrioritizedWorkToSchedule TileManager::AssignGpuMemoryToTiles() {
   }
 
   did_oom_on_last_assign_ = !had_enough_memory_to_schedule_tiles_needed_now;
+  // Since this is recorded once per frame, subsample these metrics.
+  if (metrics_sub_sampler_.ShouldSample(0.01)) {
+    UMA_HISTOGRAM_BOOLEAN("Compositing.TileManager.EnoughMemory",
+                          had_enough_memory_to_schedule_tiles_needed_now);
+    if (did_oom_on_last_assign_) {
+      UMA_HISTOGRAM_MEMORY_MEDIUM_MB(
+          "Compositing.TileManager.LimitWhenNotEnoughMemory",
+          hard_memory_limit.memory_bytes() / (1024 * 1024));
+    }
+  }
 
   memory_stats_from_last_assign_.total_budget_in_bytes =
       global_state_.hard_memory_limit_in_bytes;

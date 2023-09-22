@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/rand_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/tick_clock.h"
@@ -527,6 +528,8 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
   bool has_pending_tile_trimming_task_ = false;
   scoped_refptr<base::TaskRunner> task_runner_for_testing_ = nullptr;
   raw_ptr<const base::TickClock> tick_clock_for_testing_ = nullptr;
+
+  base::MetricsSubSampler metrics_sub_sampler_;
 
   // The callback scheduled to poll whether the GPU side work for pending tiles
   // has completed.
