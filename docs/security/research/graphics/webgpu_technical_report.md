@@ -86,8 +86,8 @@ WebGPU API call is made from JavaScript the request is serialized in the
 renderer process using the **Dawn Wire Client**, the serialized blob is passed
 to the GPU process using WebGPU extensions to the Chrome GPU Command Buffer
 ([`WebGPUDecoderImpl`](https://source.chromium.org/chromium/chromium/src/+/main:gpu/command_buffer/service/webgpu_decoder_impl.cc;l=1768;drc=34ba1d95a41c614308175e932a2b121018891bbf))
-, and then deserialized in the GPU process by **Dawn Wire Server**.** Dawn Wire
-Server **then calls into **Dawn Native** which is the "native" implementation of
+, and then deserialized in the GPU process by **Dawn Wire Server**. **Dawn Wire
+Server** then calls into **Dawn Native** which is the "native" implementation of
 WebGPU that wraps the underlying platform's GPU APIs.
 
 This portion of the review focused on the WebGPU API implementation from
@@ -133,7 +133,7 @@ implicitly incrementing and decrementing the reference count by sending a
 `wgpuCreateObject` on construction and `wgpuDestroyObject` on destruction over
 IPC to the GPU process.
 
-This** Dawn Wire Server Object** holds a reference to the** Dawn Native
+This **Dawn Wire Server Object** holds a reference to the **Dawn Native
 Object**. Finally, the **Dawn Native Object** holds a raw pointer to the
 underlying Vulkan Object (or other graphics API platform object on non-Vulkan
 platforms.)
@@ -141,7 +141,7 @@ platforms.)
 ![image](resources/chromeoffensiv--dxtg69vpyxl.jpg)
 
 Through this long chain of reference counted objects we hold a pointer to a
-resource in the **Usermode Graphics Driver (UMD) **through our Oilpan managed
+resource in the **Usermode Graphics Driver (UMD)** through our Oilpan managed
 `gpuBuffer` object in JavaScript. This is a lot of state to track!
 
 Interestingly, this means that it's possible to drop references and free objects
@@ -505,7 +505,7 @@ async function trigger() {
 >currently the best way to discover bugs in this area of the codebase. Snapshot
 >fuzzing could help solve this problem.
 
-**Dawn Wire** is a serialization/deserialization library. **Dawn Wire **does not
+**Dawn Wire** is a serialization/deserialization library. **Dawn Wire** does not
 implement IPC mechanisms that can be used to transfer data between processes in
 Chrome. Instead, within Chrome, **Dawn Wire** is built on top of the existing
 [Chrome Command
@@ -513,7 +513,7 @@ Buffer](https://www.chromium.org/developers/design-documents/gpu-command-buffer/
 architecture to facilitate inter-process communication between the Renderer and
 GPU processes. One of the WebGPU-specific GPU Command Buffer [IPC
 handlers](https://source.chromium.org/chromium/chromium/src/+/main:gpu/command_buffer/service/webgpu_decoder_impl.cc;l=1768;drc=34ba1d95a41c614308175e932a2b121018891bbf)
-receives serialized **Dawn Wire **data over shared memory and deserializes and
+receives serialized **Dawn Wire** data over shared memory and deserializes and
 executes it using **Dawn Wire Server.**
 
 ```cpp
@@ -607,7 +607,7 @@ similar manner.
 
 WebGPU moves away from WebGL's GLSL shader language entirely and implements
 **WGSL**, a re-imagined high level shading language for the web.
-**[Tint**](https://dawn.googlesource.com/tint) is Google's translator for
+**[Tint](https://dawn.googlesource.com/tint)** is Google's translator for
 **WGSL**. **Tint** compiles **WGSL** into a platform dependent intermediate
 language - **SPIR-V**, **HLSL**, **MSL** -  that the underlying Usermode
 Graphics Drivers will further compile.
@@ -702,9 +702,9 @@ allocation will lead to out-of-bounds reads/writes.
 
 #### SwiftShader JIT Bugs: Reachable from WebGPU and WebGL
 
-As we mentioned earlier, both **WebGPU** and **WebGL** shaders are compiled to**
-SPIR-V** in **Vulkan** environments. SwiftShader implements the **Vulkan**
-Graphics** **API.
+As we mentioned earlier, both **WebGPU** and **WebGL** shaders are compiled to
+**SPIR-V** in **Vulkan** environments. SwiftShader implements the **Vulkan**
+Graphics API.
 
 ![image](resources/chromeoffensiv--utbsiqyq43e.jpg)
 
@@ -771,7 +771,7 @@ Integer overflows keep popping up in shader compilers and
 [`ValidateTypeSizeLimitations()`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/angle/src/compiler/translator/ValidateTypeSizeLimitations.cpp;l=34;drc=d0ee0197ddff25fe1a9876511c07542ac483702d)
 is being used to further restrict the maximum size of variables within shaders
 to prevent these vulnerabilities. It's unclear if this strategy will prevent
-more variants from popping up in **SwiftShader; **[especially now that
+more variants from popping up in **SwiftShader**; [especially now that
 **WebGPU** will also need to make similar fixes in their front-end
 compiler.](https://bugs.chromium.org/p/chromium/issues/detail?id=1431761#c14)
 
@@ -863,8 +863,7 @@ Chrome GPU process.
 ### Systemic Concerns
 
 We found many one-off vulnerabilities in WebGPU during this exercise, and we
-found some bugs that hinted at future problem areas.** In this document we walk
-through how WebGPU works and a few more concerning areas.**
+found some bugs that hinted at future problem areas:
 
 +   **Dawn use-after-frees**: Dawn has a pattern where objects hold a raw
     pointer to reference counted objects, assuming a reference is held
@@ -888,7 +887,7 @@ through how WebGPU works and a few more concerning areas.**
     address some of these challenges, although manual auditing is currently the
     best way to discover bugs in this area of the codebase.
 
-+   **SwiftShader JIT**: Vulnerabilities in the **SwiftShader JIT **compiler
++   **SwiftShader JIT**: Vulnerabilities in the **SwiftShader JIT compiler**
     aren't being fixed in the **SwiftShader** codebase. Instead they are fixed
     by translating away code patterns using the higher-level front end compilers
     like the **ANGLE Translator**. This has led to bug variants. Furthermore,
