@@ -666,14 +666,6 @@
       'bucket': 'chromiumos-image-archive',
     },
   },
-  'CROS_KEVIN_PUBLIC_LKGM': {
-    'identifier': 'KEVIN_PUBLIC_LKGM',
-    'skylab': {
-      'cros_board': 'kevin',
-      'cros_img': 'kevin-public/R118-15575.0.0',
-      'bucket': 'chromiumos-image-archive',
-    },
-  },
   'CROS_OCTOPUS_PUBLIC_LKGM': {
     'identifier': 'OCTOPUS_PUBLIC_LKGM',
     'skylab': {

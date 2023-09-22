@@ -7292,37 +7292,37 @@
     'gpu_fyi_chromeos_release_telemetry_tests_skylab': {
       'gpu_common_and_optional_telemetry_tests': {
         'variants': [
-          'CROS_KEVIN_PUBLIC_LKGM',
+          'CROS_JACUZZI_RELEASE_LKGM',
         ],
       },
       'gpu_mediapipe_validating_telemetry_tests': {
         'variants': [
-          'CROS_KEVIN_PUBLIC_LKGM',
+          'CROS_JACUZZI_RELEASE_LKGM',
         ],
       },
       'gpu_validating_telemetry_tests': {
         'variants': [
-          'CROS_KEVIN_PUBLIC_LKGM',
+          'CROS_JACUZZI_RELEASE_LKGM',
         ],
       },
       'gpu_webcodecs_validating_telemetry_test': {
         'variants': [
-          'CROS_KEVIN_PUBLIC_LKGM',
+          'CROS_JACUZZI_RELEASE_LKGM',
         ],
       },
       'gpu_webgl_conformance_validating_telemetry_tests': {
         'variants': [
-          'CROS_KEVIN_PUBLIC_LKGM',
+          'CROS_JACUZZI_RELEASE_LKGM',
         ],
       },
       'gpu_webgl2_conformance_gles_passthrough_telemetry_tests': {
         'variants': [
-          'CROS_KEVIN_PUBLIC_LKGM',
+          'CROS_JACUZZI_RELEASE_LKGM',
         ],
       },
       'gpu_webgl2_conformance_validating_telemetry_tests': {
         'variants': [
-          'CROS_KEVIN_PUBLIC_LKGM',
+          'CROS_JACUZZI_RELEASE_LKGM',
         ],
       },
     },

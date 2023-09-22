@@ -2660,9 +2660,9 @@
       },
     },
   },
-  'expected_color_pixel_validating_test KEVIN_PUBLIC_LKGM': {
+  'expected_color_pixel_validating_test JACUZZI_RELEASE_LKGM': {
     'modifications': {
-      'ChromeOS FYI Release Skylab (kevin)': {
+      'ChromeOS FYI Release Skylab (jacuzzi)': {
         'args': [
           # Skylab currently doesn't support use of LUCI_CONTEXT, so Gold cannot
           # automatically get the service account to authenticate with.
@@ -3944,9 +3944,9 @@
       },
     },
   },
-  'pixel_skia_gold_validating_test KEVIN_PUBLIC_LKGM': {
+  'pixel_skia_gold_validating_test JACUZZI_RELEASE_LKGM': {
     'modifications': {
-      'ChromeOS FYI Release Skylab (kevin)': {
+      'ChromeOS FYI Release Skylab (jacuzzi)': {
         'args': [
           # Skylab currently doesn't support use of LUCI_CONTEXT, so Gold cannot
           # automatically get the service account to authenticate with.

@@ -55,6 +55,7 @@
     },
 
     'chrome.gpu.fyi': {
+      'ChromeOS FYI Release Skylab (jacuzzi)': 'gpu_tests_chromeos_jacuzzi_release_trybot_dcheck_off_no_symbols_reclient_skylab',
       'Lacros FYI Release (jacuzzi)': 'gpu_fyi_tests_lacros_jacuzzi_release_trybot_dcheck_off_no_symbols_reclient',
       'Lacros FYI Release (octopus)': 'gpu_fyi_tests_lacros_octopus_release_trybot_dcheck_off_no_symbols_reclient',
     },
@@ -2827,6 +2828,10 @@
     'gpu_tests_chromeos_amd64_release_trybot_dcheck_off_no_symbols_reclient': [
       'gpu_tests', 'chromeos_amd64-generic-vm_reclient',
       'release_trybot_dcheck_off_reclient', 'no_symbols',
+    ],
+
+    'gpu_tests_chromeos_jacuzzi_release_trybot_dcheck_off_no_symbols_reclient_skylab': [
+      'gpu_tests', 'chromeos_jacuzzi_reclient', 'release_trybot_dcheck_off_reclient', 'no_symbols', 'is_skylab',
     ],
 
     'gpu_tests_chromeos_kevin_release_trybot_dcheck_off_no_symbols_reclient': [
