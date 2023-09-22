@@ -262,10 +262,10 @@ class ChildProcessLauncherHelper
   std::unique_ptr<SandboxedProcessLauncherDelegate> delegate_;
   base::WeakPtr<ChildProcessLauncher> child_process_launcher_;
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // The priority of the process. The state is stored to avoid changing the
   // setting repeatedly.
-  base::Process::Priority priority_ = base::Process::Priority::kUserBlocking;
+  absl::optional<base::Process::Priority> priority_;
 #endif
 
   // The PlatformChannel that will be used to transmit an invitation to the
