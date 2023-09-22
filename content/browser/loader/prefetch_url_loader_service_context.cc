@@ -11,8 +11,6 @@
 #include "content/public/browser/url_loader_throttles.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
-#include "net/base/network_anonymization_key.h"
-#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 
