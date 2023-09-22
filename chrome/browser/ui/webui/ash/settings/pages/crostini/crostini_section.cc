@@ -257,11 +257,6 @@ bool CrostiniSection::ShouldShowBruschetta(Profile* profile) {
       !bruschetta::GetInstallableConfigs(profile).empty();
   const bool bru_installed =
       !guest_os::GetContainers(profile, guest_os::VmType::BRUSCHETTA).empty();
-  if (bru_enabled && !bru_installable) {
-    LOG(WARNING)
-        << "Bruschetta is enabled but has no installable configs. Installed = "
-        << bru_installed;
-  }
   return bru_enabled && (bru_installable || bru_installed);
 }
 

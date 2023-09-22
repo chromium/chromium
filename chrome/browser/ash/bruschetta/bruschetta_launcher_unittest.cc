@@ -84,6 +84,7 @@ class BruschettaLauncherTest : public testing::Test,
     base::Value::Dict config;
     config.Set(prefs::kPolicyEnabledKey,
                static_cast<int>(prefs::PolicyEnabledState::RUN_ALLOWED));
+    config.Set(prefs::kPolicyNameKey, "Display Name");
 
     base::Value::Dict vtpm;
     vtpm.Set(prefs::kPolicyVTPMEnabledKey, true);

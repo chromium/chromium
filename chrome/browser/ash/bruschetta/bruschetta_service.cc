@@ -49,7 +49,10 @@ BruschettaService::BruschettaService(Profile* profile) : profile_(profile) {
     return;
   }
 
-  vm_observer_.Observe(ash::ConciergeClient::Get());
+  ash::ConciergeClient* concierge = ash::ConciergeClient::Get();
+  if (concierge != nullptr) {
+    vm_observer_.Observe(concierge);
+  }
 
   pref_observer_.Init(profile_->GetPrefs());
   pref_observer_.Add(
