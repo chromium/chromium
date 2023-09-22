@@ -73,20 +73,21 @@ std::u16string GetNotificationTitle(NotificationType type,
 
 // Returns the message for notification of `type` and with `file_count`
 // blocked/warned files. `first_file` is the name of the first restricted file
-// and is only used for single file notifications. `policy` is the block reason
+// and is only used for single file notifications. `reason` is the block reason
 // of the first restricted file and is only used for single file block
 // notifications.
-std::u16string GetNotificationMessage(NotificationType type,
-                                      size_t file_count,
-                                      const std::u16string& first_file,
-                                      absl::optional<Policy> policy) {
+std::u16string GetNotificationMessage(
+    NotificationType type,
+    size_t file_count,
+    const std::u16string& first_file,
+    absl::optional<FilesPolicyDialog::BlockReason> reason) {
   switch (type) {
     case NotificationType::kError:
-      CHECK(policy.has_value());
+      CHECK(reason.has_value());
       return file_count > 1
                  ? l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_BLOCK_MESSAGE)
                  : policy::files_string_util::GetBlockReasonMessage(
-                       policy.value(), file_count, first_file);
+                       reason.value(), file_count, first_file);
     case NotificationType::kWarning:
       const std::u16string placeholder_value =
           file_count == 1 ? first_file : base::NumberToString16(file_count);
@@ -286,7 +287,8 @@ void FilesPolicyNotificationManager::ShowDlpBlockedFiles(
     }
     for (const auto& file : blocked_files) {
       io_tasks_.at(task_id.value())
-          .AddBlockedFile(DlpConfidentialFile(file), Policy::kDlp);
+          .AddBlockedFile(DlpConfidentialFile(file),
+                          FilesPolicyDialog::BlockReason::kDlp);
     }
   } else {
     ShowDlpBlockNotification(std::move(blocked_files), action);
@@ -297,7 +299,7 @@ void FilesPolicyNotificationManager::AddConnectorsBlockedFiles(
     file_manager::io_task::IOTaskId task_id,
     std::vector<base::FilePath> blocked_files,
     dlp::FileAction action,
-    FilesPolicyDialog::EnterpriseConnectorsBlockReason reason) {
+    FilesPolicyDialog::BlockReason reason) {
   // Sometimes EC checks are done before FilesPolicyNotificationManager is
   // lazily created, so the task is not tracked and the blocked files won't
   // be added. On the other hand, the IOTask may be aborted/canceled already so
@@ -305,10 +307,8 @@ void FilesPolicyNotificationManager::AddConnectorsBlockedFiles(
   if (!HasIOTask(task_id)) {
     AddIOTask(task_id, action);
   }
-  // TODO(b/300643270): store EnterpriseConnectorsBlockReason in the IOTask.
   for (const auto& file : blocked_files) {
-    io_tasks_.at(task_id).AddBlockedFile(DlpConfidentialFile(file),
-                                         Policy::kEnterpriseConnectors);
+    io_tasks_.at(task_id).AddBlockedFile(DlpConfidentialFile(file), reason);
   }
 }
 
@@ -451,7 +451,7 @@ void FilesPolicyNotificationManager::OnErrorItemDismissed(
   io_tasks_.erase(task_id);
 }
 
-std::map<DlpConfidentialFile, Policy>
+std::map<DlpConfidentialFile, FilesPolicyDialog::BlockReason>
 FilesPolicyNotificationManager::GetIOTaskBlockedFilesForTesting(
     file_manager::io_task::IOTaskId task_id) const {
   if (!HasIOTask(task_id)) {
@@ -542,7 +542,7 @@ void FilesPolicyNotificationManager::HandleDlpErrorNotificationClick(
         FileTaskInfo info(action);
         for (const auto& file : files) {
           info.AddBlockedFile(DlpConfidentialFile(file.file_path),
-                              Policy::kDlp);
+                              FilesPolicyDialog::BlockReason::kDlp);
         }
         non_io_tasks_.emplace(notification_id, std::move(info));
         // Always open the Files app. This should notify us through
@@ -656,8 +656,8 @@ bool FilesPolicyNotificationManager::FileTaskInfo::HasWarningInfo() const {
 
 void FilesPolicyNotificationManager::FileTaskInfo::AddBlockedFile(
     DlpConfidentialFile file,
-    Policy policy) {
-  blocked_files_.emplace(file, policy);
+    FilesPolicyDialog::BlockReason reason) {
+  blocked_files_.emplace(file, reason);
 }
 
 void FilesPolicyNotificationManager::FileTaskInfo::OnWidgetDestroying(
@@ -711,7 +711,7 @@ void FilesPolicyNotificationManager::ShowFilesPolicyNotification(
                                                     : NotificationType::kError;
   size_t file_count;
   std::u16string file_name;
-  absl::optional<Policy> policy;
+  absl::optional<FilesPolicyDialog::BlockReason> reason;
   if (HasWarning(task_id)) {
     CHECK(!io_tasks_.at(task_id).GetWarningInfo()->files.empty());
     file_count = io_tasks_.at(task_id).GetWarningInfo()->files.size();
@@ -720,11 +720,11 @@ void FilesPolicyNotificationManager::ShowFilesPolicyNotification(
     CHECK(HasBlockedFiles(task_id));
     file_count = io_tasks_.at(task_id).blocked_files().size();
     file_name = io_tasks_.at(task_id).blocked_files().begin()->first.title;
-    policy = io_tasks_.at(task_id).blocked_files().begin()->second;
+    reason = io_tasks_.at(task_id).blocked_files().begin()->second;
   }
   auto notification = file_manager::CreateSystemNotification(
       notification_id, GetNotificationTitle(type, action, file_count),
-      GetNotificationMessage(type, file_count, file_name, policy),
+      GetNotificationMessage(type, file_count, file_name, reason),
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           std::move(callback)),
       optional_fields);
@@ -1089,7 +1089,8 @@ void FilesPolicyNotificationManager::ShowDlpBlockNotification(
                              blocked_files.size()),
         GetNotificationMessage(
             NotificationType::kError, blocked_files.size(),
-            blocked_files.begin()->BaseName().LossyDisplayName(), Policy::kDlp),
+            blocked_files.begin()->BaseName().LossyDisplayName(),
+            FilesPolicyDialog::BlockReason::kDlp),
         base::MakeRefCounted<PolicyNotificationClickHandler>(base::BindOnce(
             &FilesPolicyNotificationManager::HandleDlpErrorNotificationClick,
             weak_factory_.GetWeakPtr(), notification_id,

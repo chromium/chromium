@@ -23,7 +23,8 @@ class FilesPolicyErrorDialog : public FilesPolicyDialog {
   METADATA_HEADER(FilesPolicyErrorDialog);
 
   FilesPolicyErrorDialog() = delete;
-  FilesPolicyErrorDialog(const std::map<DlpConfidentialFile, Policy>& files,
+  FilesPolicyErrorDialog(const std::map<DlpConfidentialFile,
+                                        FilesPolicyDialog::BlockReason>& files,
                          dlp::FileAction action,
                          gfx::NativeWindow modal_parent);
   FilesPolicyErrorDialog(const FilesPolicyErrorDialog&) = delete;
@@ -42,7 +43,7 @@ class FilesPolicyErrorDialog : public FilesPolicyDialog {
 
   // Adds a row with blocked reason message based on `policy`. Should only be
   // called after `SetupUpperPanel()`.
-  void AddPolicyRow(Policy policy);
+  void AddPolicyRow(FilesPolicyDialog::BlockReason policy);
 
   // Called from the dialog's "Cancel" button.
   // Opens the help page for policy/-ies that blocked the file action.
@@ -53,7 +54,8 @@ class FilesPolicyErrorDialog : public FilesPolicyDialog {
   void Dismiss();
 
   // Maps each policy reason to the list of files blocked because of it.
-  std::map<Policy, std::vector<DlpConfidentialFile>> files_;
+  std::map<FilesPolicyDialog::BlockReason, std::vector<DlpConfidentialFile>>
+      files_;
   // Total number of blocked files for all policies.
   size_t file_count_;
 

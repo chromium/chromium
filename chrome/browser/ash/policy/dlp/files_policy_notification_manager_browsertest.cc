@@ -81,7 +81,8 @@ constexpr base::TimeDelta kWarningTimeout = base::Minutes(5);
 
 }  // namespace
 
-using BlockedFilesMap = std::map<DlpConfidentialFile, Policy>;
+using BlockedFilesMap =
+    std::map<DlpConfidentialFile, FilesPolicyDialog::BlockReason>;
 
 class MockFilesPolicyDialogFactory : public FilesPolicyDialogFactory {
  public:
@@ -550,8 +551,10 @@ class NonIOErrorBrowserTest
 IN_PROC_BROWSER_TEST_P(NonIOErrorBrowserTest, MultiFileOKShowsDialog) {
   auto action = GetParam();
   BlockedFilesMap blocked_map;
-  blocked_map.emplace(base::FilePath("file1.txt"), Policy::kDlp);
-  blocked_map.emplace(base::FilePath("file2.txt"), Policy::kDlp);
+  blocked_map.emplace(base::FilePath("file1.txt"),
+                      FilesPolicyDialog::BlockReason::kDlp);
+  blocked_map.emplace(base::FilePath("file2.txt"),
+                      FilesPolicyDialog::BlockReason::kDlp);
   EXPECT_CALL(*factory_,
               CreateErrorDialog(blocked_map, action, testing::NotNull()))
       .Times(1);
@@ -647,8 +650,10 @@ IN_PROC_BROWSER_TEST_P(NonIOErrorBrowserTest, MultiFileCloseCancels) {
 IN_PROC_BROWSER_TEST_P(NonIOErrorBrowserTest, MultiFileOKShowsDialog_Timeout) {
   auto action = GetParam();
   BlockedFilesMap blocked_map;
-  blocked_map.emplace(base::FilePath("file1.txt"), Policy::kDlp);
-  blocked_map.emplace(base::FilePath("file2.txt"), Policy::kDlp);
+  blocked_map.emplace(base::FilePath("file1.txt"),
+                      FilesPolicyDialog::BlockReason::kDlp);
+  blocked_map.emplace(base::FilePath("file2.txt"),
+                      FilesPolicyDialog::BlockReason::kDlp);
   // Set factory to create a real dialog.
   // Null modal parent means the dialog is a system modal.
   EXPECT_CALL(*factory_,
@@ -1267,8 +1272,10 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
   auto [type, action] = GetParam();
 
   BlockedFilesMap blocked_map;
-  blocked_map.emplace(base::FilePath("file1.txt"), Policy::kDlp);
-  blocked_map.emplace(base::FilePath("file2.txt"), Policy::kDlp);
+  blocked_map.emplace(base::FilePath("file1.txt"),
+                      FilesPolicyDialog::BlockReason::kDlp);
+  blocked_map.emplace(base::FilePath("file2.txt"),
+                      FilesPolicyDialog::BlockReason::kDlp);
   EXPECT_CALL(*factory_,
               CreateErrorDialog(blocked_map, action, testing::NotNull()))
       .Times(2);

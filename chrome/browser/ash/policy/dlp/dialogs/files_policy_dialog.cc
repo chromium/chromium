@@ -64,7 +64,7 @@ views::Widget* FilesPolicyDialog::CreateWarnDialog(
 }
 
 views::Widget* FilesPolicyDialog::CreateErrorDialog(
-    const std::map<DlpConfidentialFile, Policy>& files,
+    const std::map<DlpConfidentialFile, BlockReason>& files,
     dlp::FileAction action,
     gfx::NativeWindow modal_parent) {
   if (factory_) {

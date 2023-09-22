@@ -557,9 +557,8 @@ class CopyOrMoveIOTaskWithScansTest
         .WillOnce(RunClosure(quit_closure));
   }
 
-  void ExpectFPNMBlockedFiles(
-      std::vector<FileInfo> files,
-      policy::FilesPolicyDialog::EnterpriseConnectorsBlockReason reason) {
+  void ExpectFPNMBlockedFiles(std::vector<FileInfo> files,
+                              policy::FilesPolicyDialog::BlockReason reason) {
     std::vector<base::FilePath> blocked_files;
     for (auto&& file : files) {
       blocked_files.push_back(file.source_url.path());
@@ -760,9 +759,8 @@ TEST_P(CopyOrMoveIOTaskWithScansTest, BlockSingleFileUsingResultBlocked) {
            : absl::nullopt});
 
   if (UseNewPolicyUI() && UseNewConnectorsUI()) {
-    ExpectFPNMBlockedFiles({file},
-                           policy::FilesPolicyDialog::
-                               EnterpriseConnectorsBlockReason::kSensitiveData);
+    ExpectFPNMBlockedFiles({file}, policy::FilesPolicyDialog::BlockReason::
+                                       kEnterpriseConnectorsSensitiveData);
   }
 
   // Start the copy/move.
@@ -807,7 +805,7 @@ TEST_P(CopyOrMoveIOTaskWithScansTest, BlockSingleFileUsingResultUnknown) {
   if (UseNewPolicyUI() && UseNewConnectorsUI()) {
     ExpectFPNMBlockedFiles(
         {file},
-        policy::FilesPolicyDialog::EnterpriseConnectorsBlockReason::kUnknown);
+        policy::FilesPolicyDialog::BlockReason::kEnterpriseConnectorsUnknown);
   }
 
   // Start the copy/move.
@@ -1002,8 +1000,8 @@ TEST_P(CopyOrMoveIOTaskWithScansTest, FilesOnDisabledAndEnabledFileSystems) {
 
   if (UseNewPolicyUI() && UseNewConnectorsUI()) {
     ExpectFPNMBlockedFiles({enabled_file},
-                           policy::FilesPolicyDialog::
-                               EnterpriseConnectorsBlockReason::kSensitiveData);
+                           policy::FilesPolicyDialog::BlockReason::
+                               kEnterpriseConnectorsSensitiveData);
   }
 
   // Start the copy/move.
@@ -1081,12 +1079,11 @@ TEST_P(CopyOrMoveIOTaskWithScansTest, DirectoryTransferBlockAll) {
                                maybe_policy_errors);
 
   if (UseNewPolicyUI() && UseNewConnectorsUI()) {
-    ExpectFPNMBlockedFiles({file0},
-                           policy::FilesPolicyDialog::
-                               EnterpriseConnectorsBlockReason::kSensitiveData);
+    ExpectFPNMBlockedFiles({file0}, policy::FilesPolicyDialog::BlockReason::
+                                        kEnterpriseConnectorsSensitiveData);
     ExpectFPNMBlockedFiles(
         {file1},
-        policy::FilesPolicyDialog::EnterpriseConnectorsBlockReason::kMalware);
+        policy::FilesPolicyDialog::BlockReason::kEnterpriseConnectorsMalware);
   }
 
   // Start the copy/move.
@@ -1155,9 +1152,8 @@ TEST_P(CopyOrMoveIOTaskWithScansTest, DirectoryTransferBlockOne) {
            : absl::nullopt});
 
   if (UseNewPolicyUI() && UseNewConnectorsUI()) {
-    ExpectFPNMBlockedFiles({file0},
-                           policy::FilesPolicyDialog::
-                               EnterpriseConnectorsBlockReason::kSensitiveData);
+    ExpectFPNMBlockedFiles({file0}, policy::FilesPolicyDialog::BlockReason::
+                                        kEnterpriseConnectorsSensitiveData);
   }
 
   // Start the copy/move.
@@ -1299,21 +1295,21 @@ TEST_P(CopyOrMoveIOTaskWithScansWarnTest,
   ExpectFPNMFilesWarningDialogAndProceed(task);
 
   if (UseNewPolicyUI()) {
-    // We expect two different calls to
-    // FilesPolicyNotificationManager::AddConnectorsBlockedFiles, one for each
-    // scan result tag.
+    // We expect a call to
+    // FilesPolicyNotificationManager::AddConnectorsBlockedFiles for scan result
+    // tag.
     ExpectFPNMBlockedFiles({blocked_file_0},
-                           policy::FilesPolicyDialog::
-                               EnterpriseConnectorsBlockReason::kSensitiveData);
+                           policy::FilesPolicyDialog::BlockReason::
+                               kEnterpriseConnectorsSensitiveData);
     ExpectFPNMBlockedFiles(
         {blocked_file_1},
-        policy::FilesPolicyDialog::EnterpriseConnectorsBlockReason::kMalware);
+        policy::FilesPolicyDialog::BlockReason::kEnterpriseConnectorsMalware);
     ExpectFPNMBlockedFiles({blocked_file_2},
-                           policy::FilesPolicyDialog::
-                               EnterpriseConnectorsBlockReason::kEncryptedFile);
+                           policy::FilesPolicyDialog::BlockReason::
+                               kEnterpriseConnectorsEncryptedFile);
     ExpectFPNMBlockedFiles(
         {blocked_file_3},
-        policy::FilesPolicyDialog::EnterpriseConnectorsBlockReason::kLargeFile);
+        policy::FilesPolicyDialog::BlockReason::kEnterpriseConnectorsLargeFile);
   }
 
   task.Execute(progress_callback.Get(), complete_callback.Get());

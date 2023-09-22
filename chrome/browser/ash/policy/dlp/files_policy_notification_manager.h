@@ -78,7 +78,7 @@ class FilesPolicyNotificationManager
       file_manager::io_task::IOTaskId task_id,
       std::vector<base::FilePath> blocked_files,
       dlp::FileAction action,
-      FilesPolicyDialog::EnterpriseConnectorsBlockReason reason);
+      FilesPolicyDialog::BlockReason reason);
 
   // Shows DLP Warning UI. If `task_id` is set, the corresponding IOTask
   // will be paused. Otherwise a desktop notification will be shown. Virtual
@@ -131,7 +131,8 @@ class FilesPolicyNotificationManager
   // Clears any info stored about the task with `task_id`.
   virtual void OnErrorItemDismissed(file_manager::io_task::IOTaskId task_id);
 
-  std::map<DlpConfidentialFile, Policy> GetIOTaskBlockedFilesForTesting(
+  std::map<DlpConfidentialFile, FilesPolicyDialog::BlockReason>
+  GetIOTaskBlockedFilesForTesting(
       file_manager::io_task::IOTaskId task_id) const;
   // Returns whether IO task has a warning timeout timer.
   bool HasWarningTimerForTesting(file_manager::io_task::IOTaskId task_id) const;
@@ -205,11 +206,13 @@ class FilesPolicyNotificationManager
     // Returns true if `warning_info_` has value.
     bool HasWarningInfo() const;
 
-    const std::map<DlpConfidentialFile, Policy>& blocked_files() const {
+    const std::map<DlpConfidentialFile, FilesPolicyDialog::BlockReason>&
+    blocked_files() const {
       return blocked_files_;
     }
     // Add `file` to the blocked files map.
-    void AddBlockedFile(DlpConfidentialFile file, Policy policy);
+    void AddBlockedFile(DlpConfidentialFile file,
+                        FilesPolicyDialog::BlockReason reason);
 
     dlp::FileAction action() const { return action_; }
 
@@ -221,7 +224,8 @@ class FilesPolicyNotificationManager
     absl::optional<WarningInfo> warning_info_;
     // A map of all files blocked to be transferred and the block reason for
     // each.
-    std::map<DlpConfidentialFile, Policy> blocked_files_;
+    std::map<DlpConfidentialFile, FilesPolicyDialog::BlockReason>
+        blocked_files_;
     // The action that's restricted.
     dlp::FileAction action_;
     // Warning/Error dialog widget. Each FileTask is expected to have only one

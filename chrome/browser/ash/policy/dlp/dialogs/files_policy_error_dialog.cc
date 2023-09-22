@@ -21,15 +21,16 @@
 namespace policy {
 
 namespace {
-// Returns the block reason description for `policy`.
-std::u16string GetPolicyString(Policy policy, size_t file_count) {
-  return policy::files_string_util::GetBlockReasonMessage(policy, file_count,
+// Returns the block reason description.
+std::u16string GetPolicyString(FilesPolicyDialog::BlockReason reason,
+                               size_t file_count) {
+  return policy::files_string_util::GetBlockReasonMessage(reason, file_count,
                                                           u"");
 }
 }  // namespace
 
 FilesPolicyErrorDialog::FilesPolicyErrorDialog(
-    const std::map<DlpConfidentialFile, Policy>& files,
+    const std::map<DlpConfidentialFile, FilesPolicyDialog::BlockReason>& files,
     dlp::FileAction action,
     gfx::NativeWindow modal_parent)
     : FilesPolicyDialog(files.size(), action, modal_parent) {
@@ -40,14 +41,13 @@ FilesPolicyErrorDialog::FilesPolicyErrorDialog(
   SetButtonLabel(ui::DIALOG_BUTTON_OK, GetOkButton());
   SetButtonLabel(ui::DialogButton::DIALOG_BUTTON_CANCEL, GetCancelButton());
 
-  for (const auto& file : files) {
-    if (!base::Contains(files_, file.second)) {
-      files_.emplace(file.second, std::vector<DlpConfidentialFile>{file.first});
+  for (const auto& [file, reason] : files) {
+    if (!base::Contains(files_, reason)) {
+      files_.emplace(reason, std::vector<DlpConfidentialFile>{file});
     } else {
-      files_.at(file.second).push_back(file.first);
+      files_.at(reason).push_back(file);
     }
   }
-  CHECK(files_.size() == 1 || files_.size() == 2);
   file_count_ = files.size();
 
   AddGeneralInformation();
@@ -98,7 +98,8 @@ std::u16string FilesPolicyErrorDialog::GetMessage() {
   return u"";
 }
 
-void FilesPolicyErrorDialog::AddPolicyRow(Policy policy) {
+void FilesPolicyErrorDialog::AddPolicyRow(
+    FilesPolicyDialog::BlockReason reason) {
   DCHECK(scroll_view_container_);
   views::View* row =
       scroll_view_container_->AddChildView(std::make_unique<views::View>());
@@ -107,7 +108,7 @@ void FilesPolicyErrorDialog::AddPolicyRow(Policy policy) {
       gfx::Insets::TLBR(10, 16, 10, 16), 0));
 
   views::Label* title_label =
-      AddRowTitle(GetPolicyString(policy, files_.at(policy).size()), row);
+      AddRowTitle(GetPolicyString(reason, files_.at(reason).size()), row);
   title_label->SetFontList(
       ash::TypographyProvider::Get()->ResolveTypographyToken(
           ash::TypographyToken::kCrosBody1));

@@ -12,8 +12,7 @@ namespace policy {
 
 // Converts a file transfer analysis result representing a block or unknown
 // verdict into a block reason.
-FilesPolicyDialog::EnterpriseConnectorsBlockReason
-GetEnterpriseConnectorsBlockReason(
+FilesPolicyDialog::BlockReason GetEnterpriseConnectorsBlockReason(
     const enterprise_connectors::FileTransferAnalysisDelegate::
         FileTransferAnalysisResult& result);
 

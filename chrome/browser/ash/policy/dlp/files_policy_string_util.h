@@ -24,10 +24,10 @@ std::u16string GetWarnTitle(dlp::FileAction action);
 std::u16string GetContinueAnywayButton(dlp::FileAction action);
 
 // Returns the message for notification or dialog informing the user that the
-// file action on `file_count` files is blocked due to `policy`. `first_file` is
+// file action on `file_count` files is blocked due to `reason`. `first_file` is
 // the name of the first restricted file and is only used for single file
 // notifications.
-std::u16string GetBlockReasonMessage(Policy policy,
+std::u16string GetBlockReasonMessage(FilesPolicyDialog::BlockReason reason,
                                      size_t file_count,
                                      const std::u16string& first_file = u"");
 

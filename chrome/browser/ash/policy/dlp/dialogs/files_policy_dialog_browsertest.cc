@@ -171,13 +171,13 @@ class ErrorDialogBrowserTest : public FilesPolicyDialogBrowserTest {
     FilesPolicyDialogBrowserTest::SetUpOnMainThread();
 
     blocked_files_.emplace(DlpConfidentialFile(base::FilePath("file1.txt")),
-                           Policy::kDlp);
+                           FilesPolicyDialog::BlockReason::kDlp);
     blocked_files_.emplace(DlpConfidentialFile(base::FilePath("file2.txt")),
-                           Policy::kDlp);
+                           FilesPolicyDialog::BlockReason::kDlp);
   }
 
  protected:
-  std::map<DlpConfidentialFile, Policy> blocked_files_;
+  std::map<DlpConfidentialFile, FilesPolicyDialog::BlockReason> blocked_files_;
 };
 
 // Tests that the error dialog is created as a system modal if no parent is
@@ -185,8 +185,9 @@ class ErrorDialogBrowserTest : public FilesPolicyDialogBrowserTest {
 IN_PROC_BROWSER_TEST_P(ErrorDialogBrowserTest, NoParent) {
   dlp::FileAction action = GetParam();
   // Add another blocked file to test the mixed error case.
-  blocked_files_.emplace(DlpConfidentialFile(base::FilePath("file3.txt")),
-                         Policy::kEnterpriseConnectors);
+  blocked_files_.emplace(
+      DlpConfidentialFile(base::FilePath("file3.txt")),
+      FilesPolicyDialog::BlockReason::kEnterpriseConnectorsSensitiveData);
 
   auto* widget = FilesPolicyDialog::CreateErrorDialog(blocked_files_, action,
                                                       /*modal_parent=*/nullptr);

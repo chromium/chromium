@@ -95,17 +95,22 @@ std::u16string GetContinueAnywayButton(dlp::FileAction action) {
   }
 }
 
-std::u16string GetBlockReasonMessage(Policy policy,
+std::u16string GetBlockReasonMessage(FilesPolicyDialog::BlockReason reason,
                                      size_t file_count,
                                      const std::u16string& first_file) {
   int message_id;
   const std::u16string placeholder_value =
       file_count == 1 ? first_file : base::NumberToString16(file_count);
-  switch (policy) {
-    case Policy::kDlp:
+  switch (reason) {
+    case FilesPolicyDialog::BlockReason::kDlp:
       message_id = IDS_POLICY_DLP_FILES_POLICY_BLOCK_MESSAGE;
       break;
-    case Policy::kEnterpriseConnectors:
+    case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsSensitiveData:
+    case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsMalware:
+    case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsEncryptedFile:
+    case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsLargeFile:
+    case FilesPolicyDialog::BlockReason::kEnterpriseConnectorsUnknown:
+      // TODO(b/300705572): provide a proper message for every switch case.
       message_id = IDS_POLICY_DLP_FILES_CONTENT_BLOCK_MESSAGE;
       break;
   }

@@ -10,14 +10,13 @@
 
 namespace policy {
 
-FilesPolicyDialog::EnterpriseConnectorsBlockReason
-GetEnterpriseConnectorsBlockReason(
+FilesPolicyDialog::BlockReason GetEnterpriseConnectorsBlockReason(
     const enterprise_connectors::FileTransferAnalysisDelegate::
         FileTransferAnalysisResult& result) {
   CHECK(result.IsUnknown() || result.IsBlocked());
 
   if (result.IsUnknown()) {
-    return FilesPolicyDialog::EnterpriseConnectorsBlockReason::kUnknown;
+    return FilesPolicyDialog::BlockReason::kEnterpriseConnectorsUnknown;
   }
 
   // Blocked files without a tag may happen for several reasons including
@@ -31,36 +30,36 @@ GetEnterpriseConnectorsBlockReason(
 
     if (result.final_result().value() ==
         enterprise_connectors::FinalContentAnalysisResult::ENCRYPTED_FILES) {
-      return FilesPolicyDialog::EnterpriseConnectorsBlockReason::kEncryptedFile;
+      return FilesPolicyDialog::BlockReason::kEnterpriseConnectorsEncryptedFile;
     }
     if (result.final_result().value() ==
         enterprise_connectors::FinalContentAnalysisResult::LARGE_FILES) {
-      return policy::FilesPolicyDialog::EnterpriseConnectorsBlockReason::
-          kLargeFile;
+      return policy::FilesPolicyDialog::BlockReason::
+          kEnterpriseConnectorsLargeFile;
     }
 
     NOTREACHED()
         << "Enterprise connector result representing a blocked transfer "
            "without a tag but with an unexpected final result value.";
 
-    return FilesPolicyDialog::EnterpriseConnectorsBlockReason::kUnknown;
+    return FilesPolicyDialog::BlockReason::kEnterpriseConnectorsUnknown;
   }
 
   DCHECK(result.tag() == enterprise_connectors::kDlpTag ||
          result.tag() == enterprise_connectors::kMalwareTag);
 
   if (result.tag() == enterprise_connectors::kDlpTag) {
-    return policy::FilesPolicyDialog::EnterpriseConnectorsBlockReason::
-        kSensitiveData;
+    return policy::FilesPolicyDialog::BlockReason::
+        kEnterpriseConnectorsSensitiveData;
   }
   if (result.tag() == enterprise_connectors::kMalwareTag) {
-    return FilesPolicyDialog::EnterpriseConnectorsBlockReason::kMalware;
+    return FilesPolicyDialog::BlockReason::kEnterpriseConnectorsMalware;
   }
 
   NOTREACHED() << "Enterprise connector result representing a blocked transfer "
                   "with an unexpected tag.";
 
-  return FilesPolicyDialog::EnterpriseConnectorsBlockReason::kUnknown;
+  return FilesPolicyDialog::BlockReason::kEnterpriseConnectorsUnknown;
 }
 
 }  // namespace policy

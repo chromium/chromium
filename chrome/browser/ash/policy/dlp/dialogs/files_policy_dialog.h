@@ -20,6 +20,8 @@
 
 namespace policy {
 
+class FilesPolicyDialogFactory;
+
 // Dialog type (warning or error).
 enum class FilesDialogType {
   kUnknown,  // Not a valid type - no dialog will be created.
@@ -33,44 +35,27 @@ enum class Policy {
   kEnterpriseConnectors,  // Enterprise Connectors policy.
 };
 
-// Interface for creating warn and error FilesPolicyDialogs.
-// Used in tests.
-class FilesPolicyDialogFactory {
- public:
-  virtual ~FilesPolicyDialogFactory() = default;
-
-  virtual views::Widget* CreateWarnDialog(
-      OnDlpRestrictionCheckedWithJustificationCallback callback,
-      const std::vector<DlpConfidentialFile>& files,
-      dlp::FileAction action,
-      gfx::NativeWindow modal_parent,
-      absl::optional<DlpFileDestination> destination,
-      FilesPolicyWarnSettings settings) = 0;
-
-  virtual views::Widget* CreateErrorDialog(
-      const std::map<DlpConfidentialFile, Policy>& files,
-      dlp::FileAction action,
-      gfx::NativeWindow modal_parent) = 0;
-};
-
 // FilesPolicyDialog is a window modal dialog used to show detailed overview of
 // warnings and files blocked by data protection policies.
 class FilesPolicyDialog : public PolicyDialogBase {
  public:
   METADATA_HEADER(FilesPolicyDialog);
 
-  // Reasons for which a file can be blocked by an Enterprise Connectors policy.
-  enum class EnterpriseConnectorsBlockReason {
+  // Reasons for which a file can be blocked either because of an Enterprise
+  // Connectors or DLP policy.
+  enum class BlockReason {
+    // File was blocked because of Data Leak Prevention policies.
+    kDlp,
     // File was blocked but the reason is not known.
-    kUnknown,
+    kEnterpriseConnectorsUnknown,
     // File was blocked because it contains sensitive data (e.g., SSNs).
-    kSensitiveData,
+    kEnterpriseConnectorsSensitiveData,
     // File was blocked because it's a malware.
-    kMalware,
+    kEnterpriseConnectorsMalware,
     // File was blocked because it could not be scanned due to encryption.
-    kEncryptedFile,
+    kEnterpriseConnectorsEncryptedFile,
     // File was blocked because it could not be uploaded due to its size.
-    kLargeFile,
+    kEnterpriseConnectorsLargeFile,
   };
 
   FilesPolicyDialog() = delete;
@@ -94,7 +79,7 @@ class FilesPolicyDialog : public PolicyDialogBase {
   // Creates and shows an instance of FilesPolicyErrorDialog. Returns owning
   // Widget.
   static views::Widget* CreateErrorDialog(
-      const std::map<DlpConfidentialFile, Policy>& files,
+      const std::map<DlpConfidentialFile, BlockReason>& files,
       dlp::FileAction action,
       gfx::NativeWindow modal_parent);
 
@@ -114,6 +99,27 @@ class FilesPolicyDialog : public PolicyDialogBase {
   // PolicyDialogBase overrides:
   views::Label* AddTitle(const std::u16string& title) override;
   views::Label* AddMessage(const std::u16string& message) override;
+};
+
+// Interface for creating warn and error FilesPolicyDialogs.
+// Used in tests.
+class FilesPolicyDialogFactory {
+ public:
+  virtual ~FilesPolicyDialogFactory() = default;
+
+  virtual views::Widget* CreateWarnDialog(
+      OnDlpRestrictionCheckedWithJustificationCallback callback,
+      const std::vector<DlpConfidentialFile>& files,
+      dlp::FileAction action,
+      gfx::NativeWindow modal_parent,
+      absl::optional<DlpFileDestination> destination,
+      FilesPolicyWarnSettings settings) = 0;
+
+  virtual views::Widget* CreateErrorDialog(
+      const std::map<DlpConfidentialFile, FilesPolicyDialog::BlockReason>&
+          files,
+      dlp::FileAction action,
+      gfx::NativeWindow modal_parent) = 0;
 };
 
 }  // namespace policy

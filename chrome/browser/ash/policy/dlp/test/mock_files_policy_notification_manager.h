@@ -44,7 +44,7 @@ class MockFilesPolicyNotificationManager
               (file_manager::io_task::IOTaskId task_id,
                std::vector<base::FilePath> blocked_files,
                dlp::FileAction action,
-               FilesPolicyDialog::EnterpriseConnectorsBlockReason reason),
+               FilesPolicyDialog::BlockReason reason),
               (override));
 
   MOCK_METHOD(void,
