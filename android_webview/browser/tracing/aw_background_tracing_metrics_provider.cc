@@ -6,12 +6,16 @@
 
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "android_webview/browser/tracing/background_tracing_field_trial.h"
+#include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_piece.h"
 #include "base/task/thread_pool.h"
 #include "components/metrics/field_trials_provider.h"
 #include "components/metrics/metrics_features.h"
+#include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_service.h"
+#include "components/metrics/version_utils.h"
+#include "components/version_info/android/channel_getter.h"
 #include "third_party/metrics_proto/trace_log.pb.h"
 #include "third_party/zlib/google/compression_utils.h"
 
@@ -22,7 +26,7 @@ AwBackgroundTracingMetricsProvider::AwBackgroundTracingMetricsProvider() =
 AwBackgroundTracingMetricsProvider::~AwBackgroundTracingMetricsProvider() =
     default;
 
-void AwBackgroundTracingMetricsProvider::Init() {
+void AwBackgroundTracingMetricsProvider::DoInit() {
   android_webview::MaybeSetupWebViewOnlyTracing();
 
   metrics::MetricsService* metrics =
@@ -50,6 +54,14 @@ AwBackgroundTracingMetricsProvider::GetEmbedderMetricsProvider() {
     system_profile->clear_app_package_name();
     return true;
   });
+}
+
+void AwBackgroundTracingMetricsProvider::RecordCoreSystemProfileMetrics(
+    metrics::SystemProfileProto* system_profile_proto) {
+  metrics::MetricsLog::RecordCoreSystemProfile(
+      metrics::GetVersionString(),
+      metrics::AsProtobufChannel(version_info::android::GetChannel()), false,
+      base::i18n::GetConfiguredLocale(), std::string(), system_profile_proto);
 }
 
 }  // namespace tracing

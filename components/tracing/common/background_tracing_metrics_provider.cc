@@ -12,6 +12,7 @@
 #include "components/metrics/content/gpu_metrics_provider.h"
 #include "components/metrics/cpu_metrics_provider.h"
 #include "components/metrics/metrics_features.h"
+#include "components/metrics/metrics_log.h"
 #include "content/public/browser/background_tracing_manager.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 #include "third_party/metrics_proto/trace_log.pb.h"
@@ -40,6 +41,37 @@ void BackgroundTracingMetricsProvider::Init() {
       std::make_unique<metrics::CPUMetricsProvider>());
   system_profile_providers_.emplace_back(
       std::make_unique<metrics::GPUMetricsProvider>());
+
+  content::BackgroundTracingManager::GetInstance().SetSystemProfileRecorder(
+      base::BindRepeating(
+          [](base::WeakPtr<BackgroundTracingMetricsProvider> self) {
+            if (self) {
+              return self->RecordSystemProfileMetrics();
+            }
+            return std::string();
+          },
+          weak_factory_.GetWeakPtr()));
+
+  DoInit();
+}
+
+std::string BackgroundTracingMetricsProvider::RecordSystemProfileMetrics() {
+  metrics::SystemProfileProto system_profile_proto;
+  RecordCoreSystemProfileMetrics(&system_profile_proto);
+  // RecordCoreSystemProfileMetrics is overridden by subclasses in
+  // Chrome/WebView to provide core system profile metrics.
+  // BackgroundTracingManager stores the returned system profile together with
+  // the trace in the trace database at trace recording time.
+  // ProvideIndependentMetrics() later overrides the system_profile in the log
+  // proto with these stored metrics, to ensure that the uploaded system profile
+  // matches the system profile at trace recording time.
+  for (auto& provider : system_profile_providers_) {
+    provider->ProvideSystemProfileMetricsWithLogCreationTime(
+        base::TimeTicks::Now(), &system_profile_proto);
+  }
+  std::string serialized_system_profile;
+  system_profile_proto.SerializeToString(&serialized_system_profile);
+  return serialized_system_profile;
 }
 
 bool BackgroundTracingMetricsProvider::HasIndependentMetrics() {
@@ -51,12 +83,6 @@ void BackgroundTracingMetricsProvider::ProvideIndependentMetrics(
     base::OnceCallback<void(bool)> done_callback,
     metrics::ChromeUserMetricsExtension* uma_proto,
     base::HistogramSnapshotManager* snapshot_manager) {
-  auto* system_profile = uma_proto->mutable_system_profile();
-  for (auto& provider : system_profile_providers_) {
-    provider->ProvideSystemProfileMetricsWithLogCreationTime(
-        base::TimeTicks::Now(), system_profile);
-  }
-
   auto task_runner = base::SequencedTaskRunner::GetCurrentDefault();
   auto provide_embedder_metrics = GetEmbedderMetricsProvider();
   content::BackgroundTracingManager::GetInstance().GetTraceToUpload(
@@ -67,13 +93,19 @@ void BackgroundTracingMetricsProvider::ProvideIndependentMetrics(
              base::OnceCallback<void(bool)> done_callback,
              metrics::ChromeUserMetricsExtension* uma_proto,
              scoped_refptr<base::SequencedTaskRunner> task_runner,
-             std::string compressed_trace) {
-            if (compressed_trace.empty() ||
+             absl::optional<std::string> compressed_trace,
+             absl::optional<std::string> serialized_system_profile) {
+            if (!compressed_trace ||
                 !std::move(provide_embedder_metrics)
-                     .Run(uma_proto, std::move(compressed_trace))) {
+                     .Run(uma_proto, std::move(*compressed_trace))) {
               task_runner->PostTask(
                   FROM_HERE, base::BindOnce(std::move(done_callback), false));
               return;
+            }
+            if (serialized_system_profile) {
+              metrics::SystemProfileProto system_profile;
+              system_profile.ParsePartialFromString(*serialized_system_profile);
+              uma_proto->mutable_system_profile()->MergeFrom(system_profile);
             }
             // If |kMetricsServiceAsyncIndependentLogs| is enabled,
             // serialize the log on the background instead of on the

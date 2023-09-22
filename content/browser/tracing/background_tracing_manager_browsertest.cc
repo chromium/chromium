@@ -1774,10 +1774,13 @@ IN_PROC_BROWSER_TEST_F(ProtoBackgroundTracingTest, ProtoTraceReceived) {
   std::string compressed_trace;
   base::RunLoop run_loop;
   BackgroundTracingManager::GetInstance().GetTraceToUpload(
-      base::BindLambdaForTesting([&](std::string trace_content) {
-        compressed_trace = std::move(trace_content);
-        run_loop.Quit();
-      }));
+      base::BindLambdaForTesting(
+          [&](absl::optional<std::string> trace_content,
+              absl::optional<std::string> system_profile) {
+            ASSERT_TRUE(trace_content);
+            compressed_trace = std::move(*trace_content);
+            run_loop.Quit();
+          }));
   run_loop.Run();
 
   background_tracing_helper.ExpectOnScenarioIdle("");

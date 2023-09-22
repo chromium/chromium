@@ -119,9 +119,13 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager,
                                base::RepeatingCallback<bool()> callback);
 
   bool HasTraceToUpload() override;
-  void GetTraceToUpload(base::OnceCallback<void(std::string)>) override;
+  void GetTraceToUpload(
+      base::OnceCallback<void(absl::optional<std::string>,
+                              absl::optional<std::string>)>) override;
   std::unique_ptr<BackgroundTracingConfig> GetBackgroundTracingConfig(
       const std::string& trial_name) override;
+  void SetSystemProfileRecorder(
+      base::RepeatingCallback<std::string()> recorder) override;
 
   CONTENT_EXPORT size_t GetScenarioSavedCount(const std::string& scenario_name);
   CONTENT_EXPORT void InitializeTraceReportDatabase(
@@ -209,6 +213,7 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager,
   std::vector<std::unique_ptr<TracingScenario>> scenarios_;
   raw_ptr<TracingScenario> active_scenario_{nullptr};
   ReceiveCallback receive_callback_;
+  base::RepeatingCallback<std::string()> system_profile_recorder_;
 
   bool requires_anonymized_data_ = true;
 

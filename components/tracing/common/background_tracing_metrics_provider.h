@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/tracing/tracing_export.h"
+#include "third_party/metrics_proto/system_profile.pb.h"
 #include "third_party/metrics_proto/trace_log.pb.h"
 
 namespace tracing {
@@ -31,6 +32,8 @@ class TRACING_EXPORT BackgroundTracingMetricsProvider
 
   ~BackgroundTracingMetricsProvider() override;
 
+  std::string RecordSystemProfileMetrics();
+
   // metrics::MetricsProvider:
   bool HasIndependentMetrics() override;
   void ProvideIndependentMetrics(
@@ -48,11 +51,18 @@ class TRACING_EXPORT BackgroundTracingMetricsProvider
                                   std::string&&)>
   GetEmbedderMetricsProvider();
 
+  virtual void DoInit() = 0;
+
+  virtual void RecordCoreSystemProfileMetrics(
+      metrics::SystemProfileProto* system_profile_proto) = 0;
+
   // Writes |serialized_trace| into |logs|'s |raw_data| field.
   static void SetTrace(metrics::TraceLog* log, std::string&& serialized_trace);
 
   std::vector<std::unique_ptr<metrics::MetricsProvider>>
       system_profile_providers_;
+
+  base::WeakPtrFactory<BackgroundTracingMetricsProvider> weak_factory_{this};
 };
 
 }  // namespace tracing

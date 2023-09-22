@@ -23,7 +23,7 @@ namespace {
 const base::FilePath::CharType kLocalTracesDatabasePath[] =
     FILE_PATH_LITERAL("LocalTraces.db");
 const char kLocalTracesTableName[] = "local_traces";
-constexpr int kCurrentVersionNumber = 3;
+constexpr int kCurrentVersionNumber = 4;
 
 ClientTraceReport GetReportFromStatement(sql::Statement& statement) {
   auto trace_id = base::Token::FromString(statement.ColumnString(0));
@@ -34,7 +34,7 @@ ClientTraceReport GetReportFromStatement(sql::Statement& statement) {
   client_report.creation_time = statement.ColumnTime(1);
   client_report.scenario_name = statement.ColumnString(2);
   client_report.upload_rule_name = statement.ColumnString(3);
-  client_report.total_size = static_cast<uint64_t>(statement.ColumnInt64(8));
+  client_report.total_size = static_cast<uint64_t>(statement.ColumnInt64(9));
 
   client_report.upload_state =
       static_cast<ReportUploadState>(statement.ColumnInt(4));
@@ -52,7 +52,8 @@ ClientTraceReport GetReportFromStatement(sql::Statement& statement) {
 // `state` The current upload state of the trace.
 // `upload_time` Time at which the trace was uploaded. NULL if not uploaded.
 // `skip_reason` Reason why a trace was not uploaded.
-// `proto` The trace proto string
+// `trace_content` The serialized trace content string
+// `system_profile` The serialized system profile string
 // `file_size` The size of trace in bytes.
 constexpr char kLocalTracesTableSql[] = R"sql(
   CREATE TABLE IF NOT EXISTS local_traces(
@@ -63,7 +64,8 @@ constexpr char kLocalTracesTableSql[] = R"sql(
     state INT NOT NULL,
     upload_time DATETIME NULL,
     skip_reason INT NOT NULL,
-    proto BLOB NULL,
+    trace_content BLOB NULL,
+    system_profile BLOB NULL,
     file_size INTEGER NOT NULL)
 )sql";
 
@@ -154,8 +156,9 @@ bool TraceReportDatabase::AddTrace(const NewTraceReport& new_report) {
       SQL_FROM_HERE, R"sql(INSERT INTO local_traces(
                                    uuid, creation_time, scenario_name,
                                    upload_rule_name, state, upload_time,
-                                   skip_reason, proto, file_size)
-                                   VALUES(?,?,?,?,?,?,?,?,?)
+                                   skip_reason, trace_content, file_size,
+                                   system_profile)
+                                   VALUES(?,?,?,?,?,?,?,?,?,?)
                                   )sql"));
 
   CHECK(create_local_trace.is_valid());
@@ -170,8 +173,9 @@ bool TraceReportDatabase::AddTrace(const NewTraceReport& new_report) {
              : static_cast<int>(ReportUploadState::kNotUploaded));
   create_local_trace.BindNull(5);
   create_local_trace.BindInt(6, static_cast<int>(new_report.skip_reason));
-  create_local_trace.BindBlob(7, new_report.proto);
+  create_local_trace.BindBlob(7, new_report.trace_content);
   create_local_trace.BindInt64(8, new_report.total_size);
+  create_local_trace.BindBlob(9, new_report.system_profile);
 
   return create_local_trace.Run();
 }
@@ -211,7 +215,9 @@ bool TraceReportDatabase::UploadComplete(const base::Token& uuid,
   sql::Statement update_local_trace(
       database_.GetCachedStatement(SQL_FROM_HERE,
                                    R"sql(UPDATE local_traces
-                                   SET state=?, upload_time=?, proto=NULL
+                                   SET state=?, upload_time=?,
+                                   trace_content=NULL,
+                                   system_profile=NULL
                                    WHERE uuid=?)sql"));
 
   CHECK(update_local_trace.is_valid());
@@ -223,27 +229,54 @@ bool TraceReportDatabase::UploadComplete(const base::Token& uuid,
   return update_local_trace.Run();
 }
 
-absl::optional<std::string> TraceReportDatabase::GetProtoValue(
+absl::optional<std::string> TraceReportDatabase::GetTraceContent(
     const base::Token& uuid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!is_initialized()) {
     return absl::nullopt;
   }
 
-  sql::Statement get_local_trace_proto(
-      database_.GetCachedStatement(SQL_FROM_HERE,
-                                   "SELECT proto FROM local_traces WHERE "
-                                   "uuid=?"));
+  sql::Statement get_local_trace_content(database_.GetCachedStatement(
+      SQL_FROM_HERE,
+      "SELECT trace_content FROM local_traces WHERE "
+      "uuid=?"));
 
-  CHECK(get_local_trace_proto.is_valid());
+  CHECK(get_local_trace_content.is_valid());
 
-  get_local_trace_proto.BindString(0, uuid.ToString());
+  get_local_trace_content.BindString(0, uuid.ToString());
 
-  if (!get_local_trace_proto.Step()) {
+  if (!get_local_trace_content.Step()) {
     return absl::nullopt;
   }
 
-  std::string received_value = get_local_trace_proto.ColumnString(0);
+  std::string received_value = get_local_trace_content.ColumnString(0);
+
+  if (received_value.empty()) {
+    return absl::nullopt;
+  }
+  return received_value;
+}
+
+absl::optional<std::string> TraceReportDatabase::GetSystemProfile(
+    const base::Token& uuid) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!is_initialized()) {
+    return absl::nullopt;
+  }
+
+  sql::Statement get_system_profile(database_.GetCachedStatement(
+      SQL_FROM_HERE,
+      "SELECT system_profile FROM local_traces WHERE "
+      "uuid=?"));
+
+  CHECK(get_system_profile.is_valid());
+  get_system_profile.BindString(0, uuid.ToString());
+
+  if (!get_system_profile.Step()) {
+    return absl::nullopt;
+  }
+
+  std::string received_value = get_system_profile.ColumnString(0);
 
   if (received_value.empty()) {
     return absl::nullopt;

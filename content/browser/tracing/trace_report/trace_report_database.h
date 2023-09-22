@@ -76,8 +76,11 @@ struct CONTENT_EXPORT NewTraceReport : BaseTraceReport {
   NewTraceReport& operator=(const NewTraceReport& new_report) = delete;
   NewTraceReport& operator=(NewTraceReport&& new_report) = default;
 
-  // The string containing the trace for this report.
-  std::string proto;
+  // The serialized trace report content.
+  std::string trace_content;
+
+  // The serialized system profile information.
+  std::string system_profile;
 };
 
 // ClientTraceReport represents all metadata of a trace report to be displayed
@@ -133,8 +136,11 @@ class CONTENT_EXPORT TraceReportDatabase {
   bool UploadComplete(const base::Token& uuid, base::Time time);
   bool UploadSkipped(const base::Token& uuid);
 
-  // Get string if the current Trace exists.
-  absl::optional<std::string> GetProtoValue(const base::Token& uuid);
+  // Returns the serialized trace content string if any.
+  absl::optional<std::string> GetTraceContent(const base::Token& uuid);
+
+  // Returns the serialize system profile information if any.
+  absl::optional<std::string> GetSystemProfile(const base::Token& uuid);
 
   // Returns the number of trace for |scenario_name| since |since|.
   absl::optional<size_t> UploadCountSince(std::string scenario_name,

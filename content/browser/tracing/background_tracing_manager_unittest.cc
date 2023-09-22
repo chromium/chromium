@@ -135,9 +135,11 @@ TEST_F(BackgroundTracingManagerTest, GetTraceToUpload) {
 
   std::string compressed_trace;
   base::RunLoop run_loop;
-  background_tracing_manager_->GetTraceToUpload(
-      base::BindLambdaForTesting([&](std::string trace_content) {
-        compressed_trace = std::move(trace_content);
+  background_tracing_manager_->GetTraceToUpload(base::BindLambdaForTesting(
+      [&](absl::optional<std::string> trace_content,
+          absl::optional<std::string> system_profile) {
+        ASSERT_TRUE(trace_content);
+        compressed_trace = std::move(*trace_content);
         run_loop.Quit();
       }));
   run_loop.Run();
@@ -164,8 +166,10 @@ TEST_F(BackgroundTracingManagerTest, GetTraceToUploadNoDatabase) {
   std::string compressed_trace;
   base::RunLoop run_loop;
   background_tracing_manager_->GetTraceToUpload(
-      base::BindLambdaForTesting([&](std::string trace_content) {
-        compressed_trace = std::move(trace_content);
+      base::BindLambdaForTesting([&](absl::optional<std::string> trace_content,
+                                     absl::optional<std::string>) {
+        ASSERT_TRUE(trace_content);
+        compressed_trace = std::move(*trace_content);
         run_loop.Quit();
       }));
   run_loop.Run();

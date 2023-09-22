@@ -86,6 +86,7 @@ void OpenDatabaseOnDatabaseTaskRunner(
 void AddTraceOnDatabaseTaskRunner(
     TraceReportDatabase* database,
     std::string&& serialized_trace,
+    std::string&& serialized_system_profile,
     BaseTraceReport base_report,
     base::OnceCallback<void(absl::optional<NewTraceReport>, bool)>
         on_trace_saved) {
@@ -98,7 +99,8 @@ void AddTraceOnDatabaseTaskRunner(
     UMA_HISTOGRAM_COUNTS_100000("Tracing.Background.CompressedTraceSizeInKB",
                                 compressed_trace.size() / 1024);
     NewTraceReport trace_report = base_report;
-    trace_report.proto = std::move(compressed_trace);
+    trace_report.trace_content = std::move(compressed_trace);
+    trace_report.system_profile = std::move(serialized_system_profile);
 
     success = database->AddTrace(std::move(trace_report));
   }
@@ -125,7 +127,7 @@ void CompressTraceOnDatabaseTaskRunner(
                               compressed_trace.size() / 1024);
 
   NewTraceReport trace_report = base_report;
-  trace_report.proto = std::move(compressed_trace);
+  trace_report.trace_content = std::move(compressed_trace);
 
   // Return the report as-is to hold the trace content in memory until it
   // can be uploaded.
@@ -137,11 +139,13 @@ void CompressTraceOnDatabaseTaskRunner(
 void GetProtoValueOnDatabaseTaskRunner(
     TraceReportDatabase* database,
     base::Token uuid,
-    base::OnceCallback<void(std::string)> receive_callback,
+    base::OnceCallback<void(absl::optional<std::string>,
+                            absl::optional<std::string>)> receive_callback,
     base::OnceCallback<void(absl::optional<BaseTraceReport>, bool)>
         on_finalize_complete) {
   DCHECK(base::FeatureList::IsEnabled(kBackgroundTracingDatabase));
-  auto trace_content = database->GetProtoValue(uuid);
+  auto trace_content = database->GetTraceContent(uuid);
+  auto serialized_system_profile = database->GetSystemProfile(uuid);
   absl::optional<ClientTraceReport> next_report;
   if (trace_content) {
     if (database->UploadComplete(uuid, base::Time::Now())) {
@@ -153,7 +157,7 @@ void GetProtoValueOnDatabaseTaskRunner(
       base::BindOnce(std::move(on_finalize_complete), std::move(next_report),
                      trace_content.has_value()));
   std::move(receive_callback)
-      .Run(trace_content ? *std::move(trace_content) : std::string());
+      .Run(std::move(trace_content), std::move(serialized_system_profile));
 }
 
 }  // namespace
@@ -337,7 +341,7 @@ void BackgroundTracingManagerImpl::DownloadTrace(const base::Token& trace_uuid,
 
   database_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&TraceReportDatabase::GetProtoValue,
+      base::BindOnce(&TraceReportDatabase::GetTraceContent,
                      base::Unretained(trace_database_.get()), trace_uuid),
       base::BindOnce(
           [](GetProtoCallback callback,
@@ -612,16 +616,23 @@ bool BackgroundTracingManagerImpl::HasTraceToUpload() {
 }
 
 void BackgroundTracingManagerImpl::GetTraceToUpload(
-    base::OnceCallback<void(std::string)> receive_callback) {
+    base::OnceCallback<void(absl::optional<std::string>,
+                            absl::optional<std::string>)> receive_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!trace_report_to_upload_) {
-    std::move(receive_callback).Run("");
+    std::move(receive_callback).Run(absl::nullopt, absl::nullopt);
     return;
   }
 
   // Trace content was kept in memory.
-  if (!trace_report_to_upload_->proto.empty()) {
-    std::move(receive_callback).Run(std::move(trace_report_to_upload_->proto));
+  if (!trace_report_to_upload_->trace_content.empty()) {
+    std::string serialized_system_profile;
+    if (system_profile_recorder_) {
+      serialized_system_profile = system_profile_recorder_.Run();
+    }
+    std::move(receive_callback)
+        .Run(std::move(trace_report_to_upload_->trace_content),
+             std::move(serialized_system_profile));
     OnFinalizeComplete(absl::nullopt, true);
     return;
   }
@@ -774,12 +785,18 @@ void BackgroundTracingManagerImpl::OnProtoDataComplete(
     base_report.skip_reason = skip_reason;
     if (base::FeatureList::IsEnabled(kBackgroundTracingDatabase)) {
       DCHECK(trace_database_);
+      std::string serialized_system_profile;
+      if (system_profile_recorder_) {
+        serialized_system_profile = system_profile_recorder_.Run();
+      }
+
       database_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(
               AddTraceOnDatabaseTaskRunner,
               base::Unretained(trace_database_.get()),
-              std::move(serialized_trace), std::move(base_report),
+              std::move(serialized_trace), std::move(serialized_system_profile),
+              std::move(base_report),
               base::BindOnce(&BackgroundTracingManagerImpl::OnTraceSaved,
                              weak_factory_.GetWeakPtr(), scenario_name)));
     } else if (skip_reason == SkipUploadReason::kNoSkip) {
@@ -817,6 +834,11 @@ BackgroundTracingManagerImpl::GetBackgroundTracingConfig(
     return nullptr;
 
   return BackgroundTracingConfig::FromDict(std::move(*value).TakeDict());
+}
+
+void BackgroundTracingManagerImpl::SetSystemProfileRecorder(
+    base::RepeatingCallback<std::string()> recorder) {
+  system_profile_recorder_ = std::move(recorder);
 }
 
 void BackgroundTracingManagerImpl::SetNamedTriggerCallback(

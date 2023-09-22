@@ -47,6 +47,7 @@ component("background_tracing_metrics_provider") {
     "//base",
     "//components/metrics:content",
     "//content/public/browser",
+    "//third_party/metrics_proto:metrics_proto",
   ]
 }
 
