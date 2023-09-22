@@ -109,10 +109,6 @@ std::unique_ptr<AppListToastView> AppListToastView::Builder::Build() {
   if (subtitle_)
     toast->SetSubtitle(*subtitle_);
 
-  if (subtitle_ && is_subtitle_multiline_) {
-    toast->SetSubtitleMultiline(is_subtitle_multiline_);
-  }
-
   return toast;
 }
 
@@ -125,12 +121,6 @@ AppListToastView::Builder& AppListToastView::Builder::SetIcon(
 AppListToastView::Builder& AppListToastView::Builder::SetSubtitle(
     const std::u16string subtitle) {
   subtitle_ = subtitle;
-  return *this;
-}
-
-AppListToastView::Builder& AppListToastView::Builder::SetSubtitleMultiline(
-    bool multiline) {
-  is_subtitle_multiline_ = multiline;
   return *this;
 }
 
@@ -288,14 +278,6 @@ void AppListToastView::SetSubtitle(const std::u16string subtitle) {
   bubble_utils::ApplyStyle(subtitle_label_, TypographyToken::kCrosAnnotation1,
                            label_color_id);
   subtitle_label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-}
-
-void AppListToastView::SetSubtitleMultiline(bool multiline) {
-  if (!subtitle_label_) {
-    return;
-  }
-
-  subtitle_label_->SetMultiLine(multiline);
 }
 
 void AppListToastView::SetIcon(const ui::ImageModel& icon) {

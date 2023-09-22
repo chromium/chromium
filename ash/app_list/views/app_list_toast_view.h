@@ -51,7 +51,6 @@ class ASH_EXPORT AppListToastView : public views::View {
     Builder& SetIconBackground(bool has_icon_background);
 
     Builder& SetSubtitle(const std::u16string subtitle);
-    Builder& SetSubtitleMultiline(bool multiline);
     Builder& SetButton(std::u16string button_text,
                        views::Button::PressedCallback button_callback);
     Builder& SetCloseButton(
@@ -63,7 +62,6 @@ class ASH_EXPORT AppListToastView : public views::View {
    private:
     std::u16string title_;
     absl::optional<std::u16string> subtitle_;
-    bool is_subtitle_multiline_;
     absl::optional<std::u16string> button_text_;
     absl::optional<ui::ImageModel> icon_;
     absl::optional<int> icon_size_;
@@ -95,7 +93,7 @@ class ASH_EXPORT AppListToastView : public views::View {
   void SetIconSize(int icon_size);
   void SetTitle(const std::u16string title);
   void SetSubtitle(const std::u16string subtitle);
-  void SetSubtitleMultiline(bool multiline);
+
   void UpdateInteriorMargins(const gfx::Insets& margins);
 
   void SetViewDelegate(AppListViewDelegate* delegate);

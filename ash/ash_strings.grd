@@ -2276,42 +2276,6 @@ Style notes:
       <message name="IDS_ASH_SEARCH_RESULT_IMAGE_FILE_LOCATION" desc="The title for the file location of the image file search result, where the information is listed beside the launcher image result.">
         Location
       </message>
-      <message name="IDS_ASH_SEARCH_BOX_FILTER_BUTTON_TOOLTIP" desc="The tooltip text of the filter button in the search box, which is used to open a menu to filter the search results by their categories.">
-        Toggle search result categories
-      </message>
-      <message name="IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_TITLE" desc="The title of the search category filter menu which is used to filter the search results by their categories.">
-        Search categories
-      </message>
-      <message name="IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_APPS_TOOLTIP" desc="The tooltip text of the apps menu item in the search category filter menu that shows what search results the category includes.">
-        Your installed apps
-      </message>
-      <message name="IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_APP_SHORTCUTS_TOOLTIP" desc="The tooltip text of the app shortcut menu item in the search category filter menu that shows what search results the category includes.">
-        Quick access to specific pages or actions within installed apps
-      </message>
-      <message name="IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_FILES_TOOLTIP" desc="The tooltip text of the files menu item in the search category filter menu that shows what search results the category includes.">
-        Your files on this device and Google Drive
-      </message>
-      <message name="IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_GAMES_TOOLTIP" desc="The tooltip text of the games menu item in the search category filter menu that shows what search results the category includes.">
-        Games on the Play Store and other gaming platforms
-      </message>
-      <message name="IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_HELP_TOOLTIP" desc="The tooltip text of the help menu item in the search category filter menu that shows what search results the category includes.">
-        Key shortcuts, tips for using device, and more
-      </message>
-      <message name="IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_IMAGES_TOOLTIP" desc="The tooltip text of the images menu item in the search category filter menu that shows what search results the category includes.">
-        Image search by content and image previews
-      </message>
-      <message name="IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_PLAYSTORE_TOOLTIP" desc="The tooltip text of the playstore menu item in the search category filter menu that shows what search results the category includes.">
-        Available apps from the Play Store
-      </message>
-      <message name="IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_WEBSITES_TOOLTIP" desc="The tooltip text of the website menu item in the search category filter menu that shows what search results the category includes.">
-        Websites including pages you've visited and open pages
-      </message>
-      <message name="IDS_ASH_SEARCH_IMAGE_SEARCH_PRIVACY_NOTICE_TITLE" desc="The title of the search privacy notice that guides users to search their image files by the content of the image.">
-        Find your images by the content
-      </message>
-      <message name="IDS_ASH_SEARCH_IMAGE_SEARCH_PRIVACY_NOTICE_CONTENT" desc="The content of the search privacy notice that guides users to search their image files by the content of the image. Sunset and tree are two of the examples for users to try.">
-        Try searching "sunset" or "tree" instead of the file name. You can turn off image search in the search bar.
-      </message>
       <message name="IDS_ASH_SEARCH_RESULT_SEPARATOR" desc="Separator between the title and details text in ash search result view.">
         ''' - '''
       </message>
