@@ -51,6 +51,7 @@ import './os_people_page/lock_screen_subpage.js';
 import './os_people_page/os_sync_controls_subpage.js';
 import './os_people_page/os_sync_subpage.js';
 import './os_privacy_page/manage_users_subpage.js';
+import './os_privacy_page/privacy_hub_microphone_subpage.js';
 import './os_privacy_page/privacy_hub_subpage.js';
 import './os_privacy_page/smart_privacy_subpage.js';
 // TODO(b/263414034) Determine if elements below adhere to the lazy loading
@@ -268,6 +269,7 @@ export {PrintingSettingsCardElement} from './os_printing_page/printing_settings_
 export {SettingsManageUsersSubpageElement} from './os_privacy_page/manage_users_subpage.js';
 export {MediaDevicesProxy} from './os_privacy_page/media_devices_proxy.js';
 export {PrivacyHubBrowserProxy, PrivacyHubBrowserProxyImpl} from './os_privacy_page/privacy_hub_browser_proxy.js';
+export {SettingsPrivacyHubMicrophoneSubpage} from './os_privacy_page/privacy_hub_microphone_subpage.js';
 export {SettingsPrivacyHubSubpage} from './os_privacy_page/privacy_hub_subpage.js';
 export {SettingsSmartPrivacySubpage} from './os_privacy_page/smart_privacy_subpage.js';
 export {OsSettingsPowerwashDialogElement} from './os_reset_page/os_powerwash_dialog.js';
