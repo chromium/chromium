@@ -269,13 +269,10 @@ void AccountManagerMojoService::FinishUpsertAccount(
 
 void AccountManagerMojoService::DeletePendingAccessTokenFetchRequest(
     AccessTokenFetcher* request) {
-  pending_access_token_requests_.erase(
-      std::remove_if(
-          pending_access_token_requests_.begin(),
-          pending_access_token_requests_.end(),
-          [&request](const std::unique_ptr<AccessTokenFetcher>& pending_request)
-              -> bool { return pending_request.get() == request; }),
-      pending_access_token_requests_.end());
+  base::EraseIf(
+      pending_access_token_requests_,
+      [&request](const std::unique_ptr<AccessTokenFetcher>& pending_request)
+          -> bool { return pending_request.get() == request; });
 }
 
 void AccountManagerMojoService::MaybeNotifyAuthErrorObservers(
