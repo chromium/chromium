@@ -1637,7 +1637,8 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
          [self indexOfItemWithID:newItem.identifier] == NSNotFound);
   self.items[index] = newItem;
 
-  if (base::FeatureList::IsEnabled(kTabGridRefactoring)) {
+  if (base::FeatureList::IsEnabled(kTabGridRefactoring) &&
+      base::FeatureList::IsEnabled(kTabGridRefactoringFix)) {
     NSDiffableDataSourceSnapshot* snapshot = self.diffableDataSource.snapshot;
     if ([existingItemID isEqualToString:newItem.identifier]) {
       [snapshot reconfigureItemsWithIdentifiers:@[ existingItemID ]];

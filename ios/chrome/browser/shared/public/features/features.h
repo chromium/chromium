@@ -231,6 +231,10 @@ BASE_DECLARE_FEATURE(kThemeColorInToolbar);
 // Feature flag enabling tab grid refactoring.
 BASE_DECLARE_FEATURE(kTabGridRefactoring);
 
+// Feature flag enabling tab grid refactoring fix for crbug.com/1477499 and
+// crbug.com/1482622.
+BASE_DECLARE_FEATURE(kTabGridRefactoringFix);
+
 // Whether the Safety Check module should be shown in the Magic Stack.
 bool IsSafetyCheckMagicStackEnabled();
 

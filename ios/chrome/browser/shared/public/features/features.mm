@@ -271,6 +271,10 @@ BASE_FEATURE(kTabGridRefactoring,
              "TabGridRefactoring",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTabGridRefactoringFix,
+             "TabGridRefactoringFix",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool IsSafetyCheckMagicStackEnabled() {
   return base::FeatureList::IsEnabled(kSafetyCheckMagicStack);
 }
