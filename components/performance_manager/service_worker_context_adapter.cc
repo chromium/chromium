@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -215,9 +216,9 @@ service_manager::InterfaceProvider&
 ServiceWorkerContextAdapter::GetRemoteInterfaces(
     int64_t service_worker_version_id) {
   NOTIMPLEMENTED();
-  static service_manager::InterfaceProvider interface_provider(
-      base::SingleThreadTaskRunner::GetCurrentDefault());
-  return interface_provider;
+  static base::NoDestructor<service_manager::InterfaceProvider>
+      interface_provider(base::SingleThreadTaskRunner::GetCurrentDefault());
+  return *interface_provider;
 }
 
 void ServiceWorkerContextAdapter::StartServiceWorkerAndDispatchMessage(
@@ -249,10 +250,10 @@ const base::flat_map<int64_t /* version_id */,
                      content::ServiceWorkerRunningInfo>&
 ServiceWorkerContextAdapter::GetRunningServiceWorkerInfos() {
   NOTIMPLEMENTED();
-  static base::flat_map<int64_t /* version_id */,
-                        content::ServiceWorkerRunningInfo>
+  static const base::NoDestructor<
+      base::flat_map<int64_t, content::ServiceWorkerRunningInfo>>
       unused;
-  return unused;
+  return *unused;
 }
 
 void ServiceWorkerContextAdapter::OnRegistrationCompleted(const GURL& scope) {

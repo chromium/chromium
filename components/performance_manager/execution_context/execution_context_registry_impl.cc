@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/memory/raw_ref.h"
+#include "base/notreached.h"
 #include "base/observer_list.h"
 #include "components/performance_manager/execution_context/execution_context_impl.h"
 #include "components/performance_manager/public/execution_context/execution_context.h"
@@ -31,44 +32,23 @@ class DummyExecutionContextForLookup : public ExecutionContext {
 
   // ExecutionContext implementation:
 
-  ExecutionContextType GetType() const override {
-    NOTREACHED();
-    return ExecutionContextType::kFrameNode;
-  }
+  ExecutionContextType GetType() const override { NOTREACHED_NORETURN(); }
 
   blink::ExecutionContextToken GetToken() const override { return *token_; }
 
-  Graph* GetGraph() const override {
-    NOTREACHED();
-    return nullptr;
-  }
+  Graph* GetGraph() const override { NOTREACHED_NORETURN(); }
 
-  const GURL& GetUrl() const override {
-    NOTREACHED();
-    static const GURL kUrl;
-    return kUrl;
-  }
+  const GURL& GetUrl() const override { NOTREACHED_NORETURN(); }
 
-  const ProcessNode* GetProcessNode() const override {
-    NOTREACHED();
-    return nullptr;
-  }
+  const ProcessNode* GetProcessNode() const override { NOTREACHED_NORETURN(); }
 
   const PriorityAndReason& GetPriorityAndReason() const override {
-    NOTREACHED();
-    static const PriorityAndReason kPriorityAndReason;
-    return kPriorityAndReason;
+    NOTREACHED_NORETURN();
   }
 
-  const FrameNode* GetFrameNode() const override {
-    NOTREACHED();
-    return nullptr;
-  }
+  const FrameNode* GetFrameNode() const override { NOTREACHED_NORETURN(); }
 
-  const WorkerNode* GetWorkerNode() const override {
-    NOTREACHED();
-    return nullptr;
-  }
+  const WorkerNode* GetWorkerNode() const override { NOTREACHED_NORETURN(); }
 
  private:
   const raw_ref<const blink::ExecutionContextToken> token_;

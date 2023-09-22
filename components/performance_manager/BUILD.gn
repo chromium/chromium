@@ -239,6 +239,8 @@ static_library("performance_manager") {
     "//url",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   if (!is_android) {
     sources += [
       "decorators/site_data_recorder.cc",
