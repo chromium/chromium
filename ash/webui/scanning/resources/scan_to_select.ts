@@ -5,28 +5,24 @@
 import './scan_settings_section.js';
 import './strings.m.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './scan_to_select.html.js';
-import {ScanningBrowserProxy, ScanningBrowserProxyImpl, SelectedPath} from './scanning_browser_proxy.js';
+import {ScanningBrowserProxyImpl, SelectedPath} from './scanning_browser_proxy.js';
 
 /**
  * @fileoverview
  * 'scan-to-select' displays the chosen directory to save completed scans.
  */
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const ScanToSelectElementBase = mixinBehaviors([I18nBehavior], PolymerElement);
+const ScanToSelectElementBase =
+    I18nMixin(PolymerElement) as {new (): PolymerElement & I18nMixinInterface};
 
-/** @polymer */
 class ScanToSelectElement extends ScanToSelectElementBase {
   static get is() {
-    return 'scan-to-select';
+    return 'scan-to-select' as const;
   }
 
   static get template() {
@@ -35,19 +31,16 @@ class ScanToSelectElement extends ScanToSelectElementBase {
 
   static get properties() {
     return {
-      /** @type {boolean} */
       disabled: Boolean,
 
       /**
        * The lowest level directory in |selectedFilePath|.
-       * @type {string}
        */
       selectedFolder: {
         type: String,
         notify: true,
       },
 
-      /** @type {string} */
       selectedFilePath: {
         type: String,
         notify: true,
@@ -55,28 +48,31 @@ class ScanToSelectElement extends ScanToSelectElementBase {
     };
   }
 
-  /** @override */
+  disabled: boolean;
+  selectedFolder: string;
+  selectedFilePath: string;
+  private browserProxy = ScanningBrowserProxyImpl.getInstance();
+
   constructor() {
     super();
 
     // Default option is 'My files'.
     this.selectedFolder = this.i18n('myFilesSelectOption');
 
-    this.browserProxy_ = ScanningBrowserProxyImpl.getInstance();
-    this.browserProxy_.initialize();
+    this.browserProxy.initialize();
   }
 
   /**
    * Opens the select dialog and updates the dropdown to the user's selected
    * directory.
-   * @private
    */
-  onSelectFolder_() {
-    this.browserProxy_.requestScanToLocation().then(
-        /* @type {!SelectedPath} */ (selectedPath) => {
+  private onSelectFolder(): void {
+    this.browserProxy.requestScanToLocation().then(
+        (selectedPath: SelectedPath): void => {
           // When the select dialog closes, set dropdown back to
           // |selectedFolder| option.
-          this.$.scanToSelect.selectedIndex = 0;
+          strictQuery('#scanToSelect', this.shadowRoot, HTMLSelectElement)
+              .selectedIndex = 0;
 
           const baseName = selectedPath.baseName;
           const filePath = selectedPath.filePath;
@@ -89,6 +85,12 @@ class ScanToSelectElement extends ScanToSelectElementBase {
           this.selectedFolder = baseName;
           this.selectedFilePath = filePath;
         });
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [ScanToSelectElement.is]: ScanToSelectElement;
   }
 }
 
