@@ -15,9 +15,12 @@
 #include "third_party/private_membership/src/private_membership_rlwe_client.h"
 
 #include <algorithm>
+#include <iterator>
+#include <memory>
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h"
 #include "third_party/private_membership/src/internal/crypto_utils.h"
@@ -89,11 +92,11 @@ PrivateMembershipRlweClient::CreateInternal(
   // the key was provided.
   auto ec_cipher =
       ec_cipher_key.has_value()
-          ? private_join_and_compute::ECCommutativeCipher::CreateFromKey(
+          ? ::private_join_and_compute::ECCommutativeCipher::CreateFromKey(
                 kCurveId, ec_cipher_key.value(),
-                private_join_and_compute::ECCommutativeCipher::HashType::SHA256)
-          : private_join_and_compute::ECCommutativeCipher::CreateWithNewKey(
-                kCurveId, private_join_and_compute::ECCommutativeCipher::HashType::SHA256);
+                ::private_join_and_compute::ECCommutativeCipher::HashType::SHA256)
+          : ::private_join_and_compute::ECCommutativeCipher::CreateWithNewKey(
+                kCurveId, ::private_join_and_compute::ECCommutativeCipher::HashType::SHA256);
   if (!ec_cipher.ok()) {
     return ec_cipher.status();
   }
@@ -107,7 +110,7 @@ PrivateMembershipRlweClient::CreateInternal(
 PrivateMembershipRlweClient::PrivateMembershipRlweClient(
     private_membership::rlwe::RlweUseCase use_case,
     const std::vector<RlwePlaintextId>& plaintext_ids,
-    std::unique_ptr<private_join_and_compute::ECCommutativeCipher> ec_cipher,
+    std::unique_ptr<::private_join_and_compute::ECCommutativeCipher> ec_cipher,
     std::unique_ptr<internal::PrngSeedGenerator> prng_seed_generator)
     : use_case_(use_case),
       plaintext_ids_(plaintext_ids),

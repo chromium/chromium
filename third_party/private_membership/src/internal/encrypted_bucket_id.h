@@ -44,14 +44,14 @@ class PRIVATE_MEMBERSHIP_EXPORT EncryptedBucketId {
   // Returns an error if commutative cipher encryption fails.
   static ::rlwe::StatusOr<EncryptedBucketId> Create(
       const RlwePlaintextId& id, const EncryptedBucketsParameters& params,
-      private_join_and_compute::ECCommutativeCipher* ec_cipher, private_join_and_compute::Context* ctx);
+      ::private_join_and_compute::ECCommutativeCipher* ec_cipher, ::private_join_and_compute::Context* ctx);
 
   // Creates encrypted bucket ID from encrypted ID and parameters.
   //
   // Returns an error if parameters are invalid.
   static ::rlwe::StatusOr<EncryptedBucketId> Create(
       absl::string_view encrypted_id, const EncryptedBucketsParameters& params,
-      private_join_and_compute::Context* ctx);
+      ::private_join_and_compute::Context* ctx);
 
   // Converts the bucket id to an unsigned 32 bit integer representation.
   //

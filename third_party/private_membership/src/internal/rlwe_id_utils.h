@@ -34,8 +34,8 @@ namespace rlwe {
 PRIVATE_MEMBERSHIP_EXPORT ::rlwe::StatusOr<std::string>
 ComputeBucketStoredEncryptedId(const RlwePlaintextId& id,
                                const EncryptedBucketsParameters& params,
-                               private_join_and_compute::ECCommutativeCipher* ec_cipher,
-                               private_join_and_compute::Context* ctx);
+                               ::private_join_and_compute::ECCommutativeCipher* ec_cipher,
+                               ::private_join_and_compute::Context* ctx);
 
 // Computes the representation of an encrypted ID stored within buckets using
 // the encrypted ID.
@@ -45,7 +45,7 @@ ComputeBucketStoredEncryptedId(const RlwePlaintextId& id,
 PRIVATE_MEMBERSHIP_EXPORT ::rlwe::StatusOr<std::string>
 ComputeBucketStoredEncryptedId(absl::string_view encrypted_id,
                                const EncryptedBucketsParameters& params,
-                               private_join_and_compute::Context* ctx);
+                               ::private_join_and_compute::Context* ctx);
 
 // Function used to injectively hash RlwePlaintextId proto to string. This hash
 // is not cryptographically secure, nor very compact.
@@ -56,7 +56,7 @@ PRIVATE_MEMBERSHIP_EXPORT std::string HashRlwePlaintextId(
 // salt to force adversaries to recompute rainbow tables.
 PRIVATE_MEMBERSHIP_EXPORT ::rlwe::StatusOr<std::string>
 HashNonsensitiveIdWithSalt(absl::string_view nsid, HashType hash_type,
-                           private_join_and_compute::Context* ctx);
+                           ::private_join_and_compute::Context* ctx);
 
 }  // namespace rlwe
 }  // namespace private_membership

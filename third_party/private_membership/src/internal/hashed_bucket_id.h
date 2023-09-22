@@ -41,7 +41,7 @@ class HashedBucketId {
   // Creates the object from the plaintet ID and parameters.
   static ::rlwe::StatusOr<HashedBucketId> Create(
       const RlwePlaintextId& id, const HashedBucketsParameters& params,
-      private_join_and_compute::Context* ctx);
+      ::private_join_and_compute::Context* ctx);
 
   // Creates the object from the API proto.
   //
@@ -55,6 +55,12 @@ class HashedBucketId {
   // Creates and returns an API proto representing the object.
   private_membership::rlwe::PrivateMembershipRlweQuery::HashedBucketId
   ToApiProto() const;
+  //
+
+  // Converts the bucket id to an unsigned 32 bit integer representation.
+  //
+  // If the bit length > 32, returns an internal error.
+  ::rlwe::StatusOr<uint32_t> ToUint32() const;
 
   // Creates a debug string for logging.
   std::string DebugString() const;

@@ -15,8 +15,10 @@
 #ifndef THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_PRIVATE_MEMBERSHIP_RLWE_CLIENT_H_
 #define THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_PRIVATE_MEMBERSHIP_RLWE_CLIENT_H_
 
+#include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h"
 #include "third_party/private_membership/src/private_membership.pb.h"
@@ -201,7 +203,7 @@ class PRIVATE_MEMBERSHIP_EXPORT PrivateMembershipRlweClient {
   PrivateMembershipRlweClient(
       private_membership::rlwe::RlweUseCase use_case,
       const std::vector<RlwePlaintextId>& plaintext_ids,
-      std::unique_ptr<private_join_and_compute::ECCommutativeCipher> ec_cipher,
+      std::unique_ptr<::private_join_and_compute::ECCommutativeCipher> ec_cipher,
       std::unique_ptr<internal::PrngSeedGenerator> prng_seed_generator);
 
   // Checks whether the id corresponding to the `server_encrypted_id` is in the
@@ -230,12 +232,12 @@ class PRIVATE_MEMBERSHIP_EXPORT PrivateMembershipRlweClient {
   const std::vector<RlwePlaintextId> plaintext_ids_;
 
   // EC commutative cipher for encrypting/decrypting.
-  const std::unique_ptr<private_join_and_compute::ECCommutativeCipher> ec_cipher_;
+  const std::unique_ptr<::private_join_and_compute::ECCommutativeCipher> ec_cipher_;
 
   // Generates PRNG seed.
   const std::unique_ptr<internal::PrngSeedGenerator> prng_seed_generator_;
 
-  private_join_and_compute::Context context_;
+  ::private_join_and_compute::Context context_;
 
   // Map of client encrypted id to plaintext id.
   absl::flat_hash_map<std::string, RlwePlaintextId>

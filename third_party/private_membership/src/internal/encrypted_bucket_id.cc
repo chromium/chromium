@@ -36,7 +36,7 @@ namespace rlwe {
 
 ::rlwe::StatusOr<EncryptedBucketId> EncryptedBucketId::Create(
     const RlwePlaintextId& id, const EncryptedBucketsParameters& params,
-    private_join_and_compute::ECCommutativeCipher* ec_cipher, private_join_and_compute::Context* ctx) {
+    ::private_join_and_compute::ECCommutativeCipher* ec_cipher, ::private_join_and_compute::Context* ctx) {
   if (ec_cipher == nullptr || ctx == nullptr) {
     return absl::InvalidArgumentError(
         "ECCipher and Context must both be non-null.");
@@ -53,7 +53,7 @@ namespace rlwe {
 
 ::rlwe::StatusOr<EncryptedBucketId> EncryptedBucketId::Create(
     absl::string_view encrypted_id, const EncryptedBucketsParameters& params,
-    private_join_and_compute::Context* ctx) {
+    ::private_join_and_compute::Context* ctx) {
   if (ctx == nullptr) {
     return absl::InvalidArgumentError("Context must be non-null.");
   }

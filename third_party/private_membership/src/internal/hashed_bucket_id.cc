@@ -49,7 +49,7 @@ bool IsEmpty(absl::string_view hashed_bucket_id, int bit_length) {
 ::rlwe::StatusOr<HashedBucketId> HashedBucketId::Create(
     const RlwePlaintextId& id,
     const private_membership::rlwe::HashedBucketsParameters& params,
-    private_join_and_compute::Context* ctx) {
+    ::private_join_and_compute::Context* ctx) {
   // If the bucket ID length is 0, ignore hash.
   if (params.hashed_bucket_id_length() == 0) {
     return Create("", /*bit_length=*/0);
@@ -90,6 +90,13 @@ HashedBucketId::ToApiProto() const {
   api_proto.set_hashed_bucket_id(hashed_bucket_id_bytes_);
   api_proto.set_bit_length(bit_length_);
   return api_proto;
+}
+//
+::rlwe::StatusOr<uint32_t> HashedBucketId::ToUint32() const {
+  if (bit_length_ > 32) {
+    return absl::InternalError("Bit length exceeds 32 bits.");
+  }
+  return TruncateAsUint32(hashed_bucket_id_bytes_, bit_length_);
 }
 
 std::string HashedBucketId::DebugString() const {

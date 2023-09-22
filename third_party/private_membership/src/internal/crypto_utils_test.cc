@@ -33,7 +33,7 @@ using ::testing::HasSubstr;
 
 class CryptoUtilsTest : public ::testing::Test {
  protected:
-  private_join_and_compute::Context ctx_;
+  ::private_join_and_compute::Context ctx_;
 };
 
 TEST_F(CryptoUtilsTest, PadMaxByteLengthSmallerThanInputByteLength) {
@@ -92,6 +92,10 @@ TEST_F(CryptoUtilsTest, EncryptValue) {
 
   ASSERT_OK_AND_ASSIGN(auto x, DecryptValue(encrypted_id, ciphertext, &ctx_));
   EXPECT_EQ(x, value);
+
+  ASSERT_OK_AND_ASSIGN(
+      x, DecryptValueWithKey(value_encryption_key, ciphertext, &ctx_));
+  EXPECT_EQ(x, value);
 }
 
 TEST_F(CryptoUtilsTest, EncryptValueCiphertextLength) {
@@ -148,7 +152,7 @@ TEST_F(CryptoUtilsTest, DecryptInvalidCiphertextWithIncorrectLength) {
 }
 
 TEST_F(CryptoUtilsTest, HashEncryptedIdRegression) {
-  private_join_and_compute::Context ctx;
+  ::private_join_and_compute::Context ctx;
   std::string id = "id";
   std::string hash = HashEncryptedId(id, &ctx);
 
@@ -162,7 +166,7 @@ TEST_F(CryptoUtilsTest, HashEncryptedIdRegression) {
 }
 
 TEST_F(CryptoUtilsTest, GetValueEncryptionKeyRegression) {
-  private_join_and_compute::Context ctx;
+  ::private_join_and_compute::Context ctx;
   std::string id = "id";
   ASSERT_OK_AND_ASSIGN(std::string hash, GetValueEncryptionKey(id, &ctx));
 
