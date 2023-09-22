@@ -147,9 +147,17 @@ NativePixmapEGLX11Binding::~NativePixmapEGLX11Binding() {
   if (surface_) {
     eglDestroySurface(display_, surface_);
   }
+
+  if (pixmap_ != x11::Pixmap::None) {
+    auto* connection = x11::Connection::Get();
+    connection->FreePixmap({pixmap_});
+  }
 }
 
 bool NativePixmapEGLX11Binding::Initialize(x11::Pixmap pixmap) {
+  CHECK_NE(pixmap, x11::Pixmap::None);
+  pixmap_ = pixmap;
+
   if (eglInitialize(display_, nullptr, nullptr) != EGL_TRUE) {
     return false;
   }
@@ -223,9 +231,7 @@ std::unique_ptr<NativePixmapGLBinding> NativePixmapEGLX11Binding::Create(
     return nullptr;
   }
 
-  // TODO(https://crbug.com/1411749): if we early out below, should we call
-  // FreePixmap()?
-
+  // Transfer the ownership of `pixmap` to `NativePixmapEGLX11Binding`.
   if (!binding->Initialize(std::move(pixmap))) {
     VLOG(1) << "Unable to initialize binding from pixmap";
     return nullptr;

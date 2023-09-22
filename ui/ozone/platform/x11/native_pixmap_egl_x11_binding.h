@@ -47,6 +47,8 @@ class NativePixmapEGLX11Binding : public NativePixmapGLBinding {
   EGLSurface surface_ = nullptr;
   EGLDisplay display_;
   gfx::BufferFormat format_;
+
+  x11::Pixmap pixmap_ = x11::Pixmap::None;
 };
 
 }  // namespace ui
