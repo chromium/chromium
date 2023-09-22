@@ -6,7 +6,6 @@
 
 #include "base/check_op.h"
 #include "base/containers/cxx20_erase.h"
-#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/logging.h"
@@ -494,10 +493,6 @@ const gfx::VectorIcon& AutocompleteMatch::AnswerTypeToAnswerIcon(int type) {
 const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     bool is_bookmark,
     const TemplateURL* turl) const {
-  // TODO(https://crbug.com/1024114): Remove crash logging once fixed.
-  SCOPED_CRASH_KEY_NUMBER("AutocompleteMatch", "type", type);
-  SCOPED_CRASH_KEY_NUMBER("AutocompleteMatch", "provider_type",
-                          provider ? provider->type() : -1);
   const bool use_chrome_refresh_icons =
       OmniboxFieldTrial::IsChromeRefreshSuggestIconsEnabled();
   if (is_bookmark)
@@ -621,14 +616,8 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
                                       : omnibox::kProductIcon;
 
     case Type::NUM_TYPES:
-      // TODO(https://crbug.com/1024114): Replace with NOTREACHED() once fixed.
-      CHECK(false);
-      return vector_icons::kErrorIcon;
+      NOTREACHED_NORETURN();
   }
-
-  // TODO(https://crbug.com/1024114): Replace with NOTREACHED() once fixed.
-  CHECK(false);
-  return vector_icons::kErrorIcon;
 }
 #endif
 
