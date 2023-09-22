@@ -1048,6 +1048,39 @@ DevToolsAgentHostImpl* GetDevToolsAgentHostForNetworkOverrides(
 
 }  // namespace
 
+void ApplyAuctionNetworkRequestOverrides(
+    FrameTreeNode* frame_tree_node,
+    network::ResourceRequest* request,
+    bool* network_instrumentation_enabled) {
+  bool disable_cache = false;
+  DevToolsAgentHostImpl* agent_host =
+      GetDevToolsAgentHostForNetworkOverrides(frame_tree_node);
+  if (!agent_host) {
+    return;
+  }
+
+  for (auto* network : protocol::NetworkHandler::ForAgentHost(agent_host)) {
+    if (!network->enabled()) {
+      continue;
+    }
+    *network_instrumentation_enabled = true;
+    network->ApplyOverrides(&request->headers, &request->skip_service_worker,
+                            &disable_cache,
+                            &request->devtools_accepted_stream_types);
+  }
+
+  for (auto* emulation : protocol::EmulationHandler::ForAgentHost(agent_host)) {
+    bool ua_overridden = false;
+    bool accept_language_overridden = false;
+    emulation->ApplyOverrides(&request->headers, &ua_overridden,
+                              &accept_language_overridden);
+  }
+
+  if (disable_cache) {
+    request->load_flags = net::LOAD_BYPASS_CACHE;
+  }
+}
+
 void ApplyNetworkRequestOverrides(
     FrameTreeNode* frame_tree_node,
     blink::mojom::BeginNavigationParams* begin_params,

@@ -5,6 +5,9 @@
     { url: base + 'fledge_join.html?10' });
 
   await dp.Network.enable();
+  await dp.Network.setCacheDisabled({ cacheDisabled: true });
+
+  await dp.Emulation.setUserAgentOverride({ userAgent: 'Vending Machine', acceptLanguage: 'ar' });
 
   const requestsById = new Map();
 
@@ -22,6 +25,11 @@
   dp.Network.onRequestWillBeSentExtraInfo(async event => {
     const requestId = event.params.requestId;
     requestsById[requestId].requestExtraInfoReceived = true;
+    requestsById[requestId].headers.userAgent = event.params.headers["User-Agent"];
+    requestsById[requestId].headers.acceptLanguage = event.params.headers["Accept-Language"];
+    if (event.params.headers["Cache-Control"] == "no-cache") {
+      requestsById[requestId].cacheDisabled = true;
+    }
     if (event.params.connectTiming) {
       requestsById[requestId].requestHasTiming = true;
     }

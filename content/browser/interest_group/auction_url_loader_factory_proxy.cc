@@ -187,7 +187,7 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
   new_request.redirect_mode = network::mojom::RedirectMode::kError;
   new_request.credentials_mode = network::mojom::CredentialsMode::kOmit;
   new_request.request_initiator = frame_origin_;
-  new_request.enable_load_timing = true;
+  new_request.enable_load_timing = url_request.enable_load_timing;
 
   if (force_reload_) {
     new_request.load_flags = net::LOAD_BYPASS_CACHE;
@@ -262,12 +262,20 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
     new_request.trusted_params->client_security_state =
         client_security_state_.Clone();
   }
-  if (new_request.trusted_params.has_value()) {
-    new_request.trusted_params->devtools_observer = CreateDevtoolsObserver();
+
+  bool network_instrumentation_enabled = false;
+  if (owner_frame_tree_node_id_ != FrameTreeNode::kFrameTreeNodeInvalidId) {
+    devtools_instrumentation::ApplyAuctionNetworkRequestOverrides(
+        FrameTreeNode::GloballyFindByID(owner_frame_tree_node_id_),
+        &new_request, &network_instrumentation_enabled);
   }
 
-  // TODO(ybourouphael): Make setting of enable_load_timing and
-  // devtools_observer only happen when it is actually needed.
+  if (network_instrumentation_enabled) {
+    new_request.enable_load_timing = true;
+    if (new_request.trusted_params.has_value()) {
+      new_request.trusted_params->devtools_observer = CreateDevtoolsObserver();
+    }
+  }
 
   url_loader_factory_getter.Run()->CreateLoaderAndStart(
       std::move(receiver),

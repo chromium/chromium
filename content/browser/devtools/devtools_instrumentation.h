@@ -80,6 +80,13 @@ class InspectorIssue;
 
 namespace devtools_instrumentation {
 
+// Applies network request overrides to the auction worklet's network
+// request. Will set `network_instrumentation_enabled` to true if there is a
+// network handler listening. Also handles whether cache is disabled or not.
+void ApplyAuctionNetworkRequestOverrides(FrameTreeNode* frame_tree_node,
+                                         network::ResourceRequest* request,
+                                         bool* network_instrumentation_enabled);
+
 // If this function caused the User-Agent header to be overridden,
 // `devtools_user_agent_overridden` will be set to true; otherwise, it will be
 // set to false. If this function caused the Accept-Language header to be
