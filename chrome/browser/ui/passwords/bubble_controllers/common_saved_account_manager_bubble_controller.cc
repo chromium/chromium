@@ -68,7 +68,8 @@ CommonSavedAccountManagerBubbleController::
       dismissal_reason_(password_manager::metrics_util::NO_DIRECT_INTERACTION) {
   state_ = delegate_->GetState();
   CHECK(state_ == password_manager::ui::PENDING_PASSWORD_STATE ||
-        state_ == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE);
+        state_ == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE ||
+        state_ == password_manager::ui::GENERATED_PASSWORD_CONFIRMATION_STATE);
   origin_ = delegate_->GetOrigin();
   pending_password_ = delegate_->GetPendingPassword();
 }
@@ -77,7 +78,8 @@ CommonSavedAccountManagerBubbleController::
     ~CommonSavedAccountManagerBubbleController() = default;
 
 void CommonSavedAccountManagerBubbleController::OnNoThanksClicked() {
-  CHECK_EQ(password_manager::ui::PENDING_PASSWORD_UPDATE_STATE, state_);
+  CHECK(state_ == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE ||
+        state_ == password_manager::ui::GENERATED_PASSWORD_CONFIRMATION_STATE);
   dismissal_reason_ = password_manager::metrics_util::CLICKED_CANCEL;
   if (delegate_) {
     delegate_->OnNopeUpdateClicked();
@@ -88,7 +90,8 @@ void CommonSavedAccountManagerBubbleController::OnCredentialEdited(
     std::u16string new_username,
     std::u16string new_password) {
   CHECK(state_ == password_manager::ui::PENDING_PASSWORD_STATE ||
-        state_ == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE);
+        state_ == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE ||
+        state_ == password_manager::ui::GENERATED_PASSWORD_CONFIRMATION_STATE);
   pending_password_.username_value = std::move(new_username);
   pending_password_.password_value = std::move(new_password);
 }

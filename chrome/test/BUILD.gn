@@ -7525,6 +7525,7 @@ test("unit_tests") {
       "../browser/ui/omnibox/clipboard_utils_unittest.cc",
       "../browser/ui/omnibox/omnibox_pedal_implementations_unittest.cc",
       "../browser/ui/omnibox/omnibox_pedals_unittest.cc",
+      "../browser/ui/passwords/bubble_controllers/add_username_bubble_controller_unittest.cc",
       "../browser/ui/passwords/bubble_controllers/auto_sign_in_bubble_controller_unittest.cc",
       "../browser/ui/passwords/bubble_controllers/common_saved_account_manager_bubble_controller_unittest.cc",
       "../browser/ui/passwords/bubble_controllers/generation_confirmation_bubble_controller_unittest.cc",

@@ -1255,6 +1255,8 @@ static_library("ui") {
       "page_info/page_info_dialog.h",
       "page_info/page_info_infobar_delegate.cc",
       "page_info/page_info_infobar_delegate.h",
+      "passwords/bubble_controllers/add_username_bubble_controller.cc",
+      "passwords/bubble_controllers/add_username_bubble_controller.h",
       "passwords/bubble_controllers/auto_sign_in_bubble_controller.cc",
       "passwords/bubble_controllers/auto_sign_in_bubble_controller.h",
       "passwords/bubble_controllers/common_saved_account_manager_bubble_controller.cc",

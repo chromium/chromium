@@ -688,6 +688,8 @@ void PasswordFormMetricsRecorder::RecordPasswordBubbleShown(
     case metrics_util::MANUAL_BIOMETRIC_AUTHENTICATION_FOR_FILLING:
     case metrics_util::AUTOMATIC_BIOMETRIC_AUTHENTICATION_CONFIRMATION:
     case metrics_util::AUTOMATIC_SHARED_PASSWORDS_NOTIFICATION:
+    case metrics_util::AUTOMATIC_ADD_USERNAME_BUBBLE:
+    case metrics_util::MANUAL_ADD_USERNAME_BUBBLE:
       // Do nothing.
       return;
 

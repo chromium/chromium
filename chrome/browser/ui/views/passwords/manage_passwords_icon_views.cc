@@ -101,6 +101,7 @@ std::u16string ManagePasswordsIconViews::GetTextForTooltipAndAccessibleName()
       return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_TOOLTIP_MANAGE);
     case password_manager::ui::PENDING_PASSWORD_UPDATE_STATE:
     case password_manager::ui::PENDING_PASSWORD_STATE:
+    case password_manager::ui::GENERATED_PASSWORD_CONFIRMATION_STATE:
       return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_TOOLTIP_SAVE);
     case password_manager::ui::CAN_MOVE_PASSWORD_TO_ACCOUNT_STATE:
       return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_TOOLTIP_MOVE);

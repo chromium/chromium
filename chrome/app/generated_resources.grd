@@ -6799,6 +6799,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_SAVE_ACCOUNT" desc="The title of the save password bubble when a federated credential can be saved.">
         Save username?
       </message>
+      <message name="IDS_ADD_USERNAME_TITLE" desc="The title of the add username bubble when username was not detected.">
+        Add username?
+      </message>
       <message name="IDS_UPDATE_PASSWORD" desc="The title of the save password bubble when a password can be updated.">
         Update password?
       </message>

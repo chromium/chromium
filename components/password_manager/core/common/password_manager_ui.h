@@ -58,6 +58,11 @@ enum State {
   // promo dialog and successfully authenticated.
   BIOMETRIC_AUTHENTICATION_CONFIRMATION_STATE,
 
+  // A form that contained generated password and was missing username, was
+  // successfully submited. Only used when there were no credentials saved for
+  // current domain.
+  GENERATED_PASSWORD_CONFIRMATION_STATE,
+
   // For the current sign-in form, one of the stored credentials is shared by
   // another user. The user is notified about the existence of that credential
   // using a native bubble. The bubble keeps showing every time the user visits
