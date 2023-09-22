@@ -16,7 +16,7 @@ Neither has a leading slash.
 
 import json
 import logging
-from typing import Optional, Sequence
+from typing import List, Literal, Optional, Sequence, Tuple
 
 from blinkpy.common.memoized import memoized
 from blinkpy.common.path_finder import PathFinder
@@ -205,7 +205,7 @@ class WPTManifest(object):
         return self._items_for_file_path(path_in_wpt) is not None
 
     def get_test_type(self, test_path: str) -> Optional[str]:
-        """Returns the test type of the given test url."""
+        """Returns the test type of the given test file path."""
         assert not test_path.startswith('/')
         items = self.raw_dict.get('items', {})
         for test_type in self.test_types:
@@ -221,15 +221,18 @@ class WPTManifest(object):
 
     def is_crash_test(self, url):
         """Checks if a WPT is a crashtest according to the manifest."""
-        return self.get_test_type(url) == 'crashtest'
+        test_path = self.file_path_for_test_url(url)
+        return test_path and self.get_test_type(test_path) == 'crashtest'
 
     def is_manual_test(self, url):
         """Checks if a WPT is a manual according to the manifest."""
-        return self.get_test_type(url) == 'manual'
+        test_path = self.file_path_for_test_url(url)
+        return test_path and self.get_test_type(test_path) == 'manual'
 
     def is_print_reftest(self, url):
         """Checks if a WPT is a print reftest according to the manifest."""
-        return self.get_test_type(url) == 'print-reftest'
+        test_path = self.file_path_for_test_url(url)
+        return test_path and self.get_test_type(test_path) == 'print-reftest'
 
     def is_slow_test(self, url):
         """Checks if a WPT is slow (long timeout) according to the manifest.
@@ -268,7 +271,8 @@ class WPTManifest(object):
         extras = self._get_extras_from_item(item)
         return extras.get('pac')
 
-    def extract_reference_list(self, path_in_wpt):
+    def extract_reference_list(
+            self, url: str) -> List[Tuple[Literal['==', '!='], str]]:
         """Extracts reference information of the specified (print) reference test.
 
         The return value is a list of (match/not-match, reference path in wpt)
@@ -277,19 +281,19 @@ class WPTManifest(object):
             ("!=", "/foo/bar/baz-mismatch.html")]
         """
         items = self.raw_dict.get('items', {})
-        test_type = self.get_test_type(path_in_wpt)
-
+        test_path = self.file_path_for_test_url(url)
+        test_type = test_path and self.get_test_type(test_path)
         if test_type not in ['reftest', 'print-reftest']:
             return []
 
         reftest_list = []
-        for item in items[test_type][path_in_wpt]:
-            for ref_path_in_wpt, expectation in item[1]:
-                # Ref URLs in MANIFEST should be absolute, but we double check
-                # just in case.
-                if not ref_path_in_wpt.startswith('/'):
-                    ref_path_in_wpt = '/' + ref_path_in_wpt
-                reftest_list.append((expectation, ref_path_in_wpt))
+        item = self._item_for_url(url)
+        for ref_path_in_wpt, expectation in (item[1] if item else []):
+            # Ref URLs in MANIFEST should be absolute, but we double check
+            # just in case.
+            if not ref_path_in_wpt.startswith('/'):
+                ref_path_in_wpt = '/' + ref_path_in_wpt
+            reftest_list.append((expectation, ref_path_in_wpt))
         return reftest_list
 
     def extract_fuzzy_metadata(self, url):
@@ -316,15 +320,15 @@ class WPTManifest(object):
         """
 
         items = self.raw_dict.get('items', {})
-        test_type = self.get_test_type(url)
+        test_path = self.file_path_for_test_url(url)
+        test_type = test_path and self.get_test_type(test_path)
         if test_type not in ['reftest', 'print-reftest']:
             return None, None
 
-        for item in items[test_type][url]:
-            # Each item is a list of [url, refs, properties], and the fuzzy
-            # metadata is stored in the properties dict.
-            if 'fuzzy' not in item[2]:
-                return None, None
+        item = self._item_for_url(url)
+        # The item is a list of [url, refs, properties], and the fuzzy metadata
+        # is stored in the properties dict.
+        if 'fuzzy' in item[2]:
             fuzzy_metadata_list = item[2]['fuzzy']
             for fuzzy_metadata in fuzzy_metadata_list:
                 # The fuzzy metadata is a nested list of [url, [maxDifference,
@@ -487,8 +491,12 @@ class WPTManifest(object):
                         # As an optimization, the v8 manifest will omit the URL
                         # if it is the same as the filepath. The v7 manifest did
                         # not, so restore that information.
-                        if len(manifest_item) and manifest_item[0] is None:
-                            manifest_item[0] = new_path
+                        if manifest_item:
+                            maybe_url = manifest_item[0]
+                            if maybe_url is None:
+                                manifest_item[0] = new_path
+                            elif maybe_url.startswith('/'):
+                                manifest_item[0] = maybe_url[len('/'):]
                     test_type_items[new_path] = manifest_items
                 else:
                     # Otherwise, we should be at a directory and so can recurse.

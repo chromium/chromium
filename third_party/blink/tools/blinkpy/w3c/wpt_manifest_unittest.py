@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import json
 import unittest
 
 from blinkpy.common.host_mock import MockHost
@@ -231,6 +232,10 @@ class WPTManifestUnitTest(unittest.TestCase):
             "test-crash.html": [
                 "d23fbb8c66def47e31ad01aa7a311064ba8fddbd",
                 [null, {}]
+            ],
+            "test-with-variant-crash.html": [
+                "d23fbb8c66def47e31ad01aa7a311064ba8fddbd",
+                ["/test-with-variant-crash.html?xyz", {}]
             ]
         }
     }
@@ -243,13 +248,60 @@ class WPTManifestUnitTest(unittest.TestCase):
                                MOCK_WEB_TESTS + 'external/wpt/MANIFEST.json')
         self.assertEqual(
             manifest.all_url_items(), {
-                u'test.html': [u'test.html', {}],
-                u'test-crash.html': [u'test-crash.html', {}]
+                'test.html': ['test.html', {}],
+                'test-with-variant-crash.html?xyz':
+                ['test-with-variant-crash.html?xyz', {}],
+                'test-crash.html': ['test-crash.html', {}]
             })
 
-        self.assertTrue(manifest.is_crash_test(u'test-crash.html'))
-        self.assertFalse(manifest.is_crash_test(u'test.html'))
-        self.assertFalse(manifest.is_crash_test(u'different-test-crash.html'))
+        self.assertTrue(manifest.is_crash_test('test-crash.html'))
+        self.assertTrue(
+            manifest.is_crash_test('test-with-variant-crash.html?xyz'))
+        self.assertFalse(manifest.is_crash_test('test.html'))
+        self.assertFalse(manifest.is_crash_test('test-variant-crash.html'))
+        self.assertFalse(manifest.is_crash_test('different-test-crash.html'))
+
+    def test_extract_reference_list(self):
+        host = MockHost()
+        host.filesystem.write_text_file(
+            MOCK_WEB_TESTS + 'external/wpt/MANIFEST.json',
+            json.dumps({
+                'items': {
+                    'reftest': {
+                        'dir': {
+                            'reftest.html': [
+                                'd23fbb8c66def47e31ad01aa7a311064ba8fddbd',
+                                [
+                                    None,
+                                    [['/dir/reftest-ref.html', '=='],
+                                     ['/dir/reftest-mismatch-ref.html', '!=']],
+                                    {},
+                                ],
+                            ],
+                            'reftest-with-variant.html': [
+                                'd23fbb8c66def47e31ad01aa7a311064ba8fddbd',
+                                [
+                                    '/dir/reftest-with-variant.html?xyz',
+                                    [['/dir/reftest-ref.html', '==']],
+                                    {},
+                                ],
+                            ],
+                        },
+                    },
+                },
+            }))
+        manifest = WPTManifest(host,
+                               MOCK_WEB_TESTS + 'external/wpt/MANIFEST.json')
+
+        self.assertEqual(manifest.extract_reference_list('dir/reftest.html'), [
+            ('==', '/dir/reftest-ref.html'),
+            ('!=', '/dir/reftest-mismatch-ref.html'),
+        ])
+        self.assertEqual(
+            manifest.extract_reference_list(
+                'dir/reftest-with-variant.html?xyz'), [
+                    ('==', '/dir/reftest-ref.html'),
+                ])
 
     def test_extract_fuzzy_metadata(self):
         manifest_json = '''
