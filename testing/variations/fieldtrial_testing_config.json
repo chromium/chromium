@@ -8441,6 +8441,21 @@
             ]
         }
     ],
+    "IOSOverflowMenuCustomization": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_CanaryDev",
+                    "enable_features": [
+                        "OverflowMenuCustomization"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSPartialTranslateIncognito": [
         {
             "platforms": [
