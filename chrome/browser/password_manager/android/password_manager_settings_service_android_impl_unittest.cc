@@ -8,11 +8,9 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/password_manager/android/fake_password_manager_lifecycle_helper.h"
 #include "chrome/browser/password_manager/android/password_settings_updater_android_bridge_helper.h"
 #include "components/password_manager/core/browser/password_manager_setting.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -1049,11 +1047,6 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
        OverrideOfferToSaveForError) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {password_manager::features::kUnifiedPasswordManagerAndroid},
-      /*disabled_features=*/{});
   InitializeSettingsService(/*password_sync_enabled=*/true,
                             /*setting_sync_enabled=*/true);
   pref_service()->SetUserPref(
@@ -1070,11 +1063,6 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
        OverrideOfferToSaveForErrorWhenNotSyncing) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {password_manager::features::kUnifiedPasswordManagerAndroid},
-      /*disabled_features=*/{});
   InitializeSettingsService(/*password_sync_enabled=*/false,
                             /*setting_sync_enabled=*/true);
   pref_service()->SetUserPref(
@@ -1090,11 +1078,6 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
        OverrideOfferToSaveForErrorWhenManaged) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {password_manager::features::kUnifiedPasswordManagerAndroid},
-      /*disabled_features=*/{});
   InitializeSettingsService(/*password_sync_enabled=*/false,
                             /*setting_sync_enabled=*/true);
   pref_service()->SetUserPref(
@@ -1113,11 +1096,6 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
        IgnoreOverrideOfferToSaveForErrorWhenUnenrolled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {password_manager::features::kUnifiedPasswordManagerAndroid},
-      /*disabled_features=*/{});
   InitializeSettingsService(/*password_sync_enabled=*/false,
                             /*setting_sync_enabled=*/true);
   pref_service()->SetUserPref(

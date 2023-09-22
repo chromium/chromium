@@ -61,15 +61,8 @@ PasswordManagerSettingsServiceFactory::BuildServiceInstanceForBrowserContext(
   TRACE_EVENT0("passwords", "PasswordManagerSettingsServiceCreation");
   Profile* profile = Profile::FromBrowserContext(context);
 #if BUILDFLAG(IS_ANDROID)
-  if (password_manager::features::UsesUnifiedPasswordManagerUi()) {
     return std::make_unique<PasswordManagerSettingsServiceAndroidImpl>(
         profile->GetPrefs(), SyncServiceFactory::GetForProfile(profile));
-  }
-  // Reset the migration pref in case the client is no longer in the enabled
-  // group.
-  profile->GetPrefs()->SetBoolean(
-      password_manager::prefs::kSettingsMigratedToUPM, false);
-  return std::make_unique<PasswordManagerSettingsServiceImpl>(profile->GetPrefs());
 #else
   return std::make_unique<PasswordManagerSettingsServiceImpl>(profile->GetPrefs());
 #endif

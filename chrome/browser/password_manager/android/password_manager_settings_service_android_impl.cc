@@ -97,8 +97,7 @@ PasswordManagerSettingsServiceAndroidImpl::
     PasswordManagerSettingsServiceAndroidImpl(PrefService* pref_service,
                                               syncer::SyncService* sync_service)
     : pref_service_(pref_service), sync_service_(sync_service) {
-  DCHECK(pref_service_);
-  DCHECK(password_manager::features::UsesUnifiedPasswordManagerUi());
+  CHECK(pref_service_);
   if (!PasswordSettingsUpdaterAndroidBridgeHelper::CanCreateAccessor())
     return;
   bridge_helper_ = PasswordSettingsUpdaterAndroidBridgeHelper::Create();
@@ -119,7 +118,7 @@ PasswordManagerSettingsServiceAndroidImpl::
       sync_service_(sync_service),
       bridge_helper_(std::move(bridge_helper)),
       lifecycle_helper_(std::move(lifecycle_helper)) {
-  DCHECK(pref_service_);
+  CHECK(pref_service_);
   if (!bridge_helper_)
     return;
   Init();
@@ -160,7 +159,7 @@ bool PasswordManagerSettingsServiceAndroidImpl::IsSettingEnabled(
 
   const PrefService::Preference* android_pref =
       GetGMSPrefFromSetting(pref_service_, setting);
-  DCHECK(android_pref);
+  CHECK(android_pref);
   return android_pref->GetValue()->GetBool();
 }
 
@@ -192,7 +191,7 @@ void PasswordManagerSettingsServiceAndroidImpl::TurnOffAutoSignIn() {
 }
 
 void PasswordManagerSettingsServiceAndroidImpl::Init() {
-  DCHECK(bridge_helper_);
+  CHECK(bridge_helper_);
   MigratePrefsIfNeeded();
   bridge_helper_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
 
@@ -247,7 +246,7 @@ void PasswordManagerSettingsServiceAndroidImpl::OnSettingValueFetched(
 
 void PasswordManagerSettingsServiceAndroidImpl::OnSettingValueAbsent(
     password_manager::PasswordManagerSetting setting) {
-  DCHECK(bridge_helper_);
+  CHECK(bridge_helper_);
   UpdateSettingFetchState(setting);
   if (IsUnenrolledFromUPM(pref_service_))
     return;
@@ -323,7 +322,7 @@ void PasswordManagerSettingsServiceAndroidImpl::UpdateSettingFetchState(
 }
 
 void PasswordManagerSettingsServiceAndroidImpl::FetchSettings() {
-  DCHECK(bridge_helper_);
+  CHECK(bridge_helper_);
   for (PasswordManagerSetting setting : kAllPasswordSettings) {
     bridge_helper_->GetPasswordSettingValue(
         SyncingAccount(
