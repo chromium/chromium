@@ -4736,9 +4736,6 @@ crbug.com/1032451 [ Linux ] virtual/threaded/animations/stability/animation-iter
 
 crbug.com/1194958 fast/events/mouse-event-buttons-attribute.html [ Failure Pass ]
 
-# Sheriff 2021-04-08
-crbug.com/1197087 external/wpt/web-animations/interfaces/Animation/finished.html [ Failure Pass ]
-
 # Sheriff 2021-04-09
 crbug.com/1197528 pointer-lock/pointerlockchange-pointerlockerror-events.html [ Failure Pass ]
 

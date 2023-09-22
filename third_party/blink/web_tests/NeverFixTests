@@ -2096,3 +2096,7 @@ crbug.com/1449469 [ Android ] wpt_internal/css/css-fonts/default-monospace-famil
 
 # Subapps are part of IWA and WPT does not support IWAs
 crbug.com/1476305 external/wpt/subapps/* [ Skip ]
+
+# Web-animations tests that use short-lived animations for performance reasons
+# can be problematic on debug builds.
+crbug.com/1197087 [ Debug ] external/wpt/web-animations/interfaces/Animation/finished.html [ Skip ]
