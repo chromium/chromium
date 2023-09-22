@@ -8,6 +8,7 @@
 import os
 import pathlib
 import re
+import shlex
 import sys
 import traceback
 
@@ -24,7 +25,7 @@ class JavacOutputProcessor:
   def __init__(self, target_name):
     self._target_name = self._RemoveSuffixesIfPresent(
         ["__compile_java", "__errorprone", "__header"], target_name)
-    self._suggested_deps = set()
+    self._suggested_targets_list = set()
 
     # Example: ../../ui/android/java/src/org/chromium/ui/base/Clipboard.java:45:
     fileline_prefix = (
@@ -71,7 +72,7 @@ class JavacOutputProcessor:
     lines = self._ElaborateLinesForUnknownSymbol(iter(lines))
     for line in lines:
       yield self._ApplyColors(line)
-    if self._suggested_deps:
+    if self._suggested_targets_list:
 
       def yellow(text):
         return colorama.Fore.YELLOW + text + colorama.Fore.RESET
@@ -80,8 +81,21 @@ class JavacOutputProcessor:
       yield yellow('Hint:') + ' One or more errors due to missing GN deps.'
       yield (yellow('Hint:') + ' Try adding the following to ' +
              yellow(self._target_name))
-      for dep in sorted(self._suggested_deps):
-        yield '    "{}",'.format(dep)
+
+      for targets in sorted(self._suggested_targets_list):
+        if len(targets) > 1:
+          suggested_targets_str = 'one of: ' + ', '.join(targets)
+        else:
+          suggested_targets_str = targets[0]
+        yield '    "{}",'.format(suggested_targets_str)
+
+      yield ''
+      yield yellow('Hint:') + (' Run the following command to add the missing '
+                               'deps:')
+      missing_targets = [targets[0] for targets in self._suggested_targets_list]
+      cmd = dep_utils.CreateAddDepsCommand(self._target_name,
+                                           sorted(missing_targets))
+      yield f'    {shlex.join(cmd)}\n '  # Extra space necessary for new line.
 
   def _ElaborateLinesForUnknownSymbol(self, lines):
     """ Elaborates passed-in javac output for unresolved symbols.
@@ -147,15 +161,11 @@ class JavacOutputProcessor:
     suggested_deps = self._class_lookup_index.match(class_to_lookup)
 
     if not suggested_deps:
+      print(f'No suggested deps for {class_to_lookup}')
       return
 
     suggested_deps = dep_utils.DisambiguateDeps(suggested_deps)
-    suggested_deps_str = ', '.join(s.target for s in suggested_deps)
-
-    if len(suggested_deps) > 1:
-      suggested_deps_str = 'one of: ' + suggested_deps_str
-
-    self._suggested_deps.add(suggested_deps_str)
+    self._suggested_targets_list.add(tuple(d.target for d in suggested_deps))
 
   @staticmethod
   def _RemoveSuffixesIfPresent(suffixes, text):

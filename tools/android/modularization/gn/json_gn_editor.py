@@ -265,6 +265,18 @@ class BuildFile:
                               child_nodes=node_list,
                               operation=operation)
 
+    def _new_literal_node(self, value: str, begin_line: int = 1):
+        return {
+            'location': {
+                'begin_column': 1,
+                'begin_line': begin_line,
+                'end_column': 2,
+                'end_line': begin_line,
+            },
+            'type': 'LITERAL',
+            'value': f'"{value}"'
+        }
+
     def _clone_replacing_value(self, node_to_copy: Dict, new_dep_name: str):
         """Clone the existing node to preserve line numbers and update name.
 
@@ -320,8 +332,14 @@ class BuildFile:
                         f'Skipping existing {new_dep_name} in {target}.deps')
                     continue
                 logging.info(f'Adding {new_dep_name} to {target}.deps')
-                new_dep = self._clone_replacing_value(dep_list.child_nodes[0],
-                                                      new_dep_name)
+                # If there are no existing child nodes, then create a new one.
+                # Otherwise clone an existing child node to ensure more accurate
+                # line numbers and possible better preserve comments.
+                if not dep_list.child_nodes:
+                    new_dep = self._new_literal_node(new_dep_name)
+                else:
+                    new_dep = self._clone_replacing_value(
+                        dep_list.child_nodes[0], new_dep_name)
                 dep_list.child_nodes.append(new_dep)
                 added_new_dep = True
         if not added_new_dep:
