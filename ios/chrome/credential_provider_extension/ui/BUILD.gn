@@ -50,7 +50,7 @@ source_set("ui") {
     ":feature_flags",
     ":utils",
     "//base",
-    "//components/password_manager/core/browser:password_generator",
+    "//components/password_manager/core/browser/generation:core",
     "//components/password_manager/core/common:constants",
     "//ios/chrome/common:constants",
     "//ios/chrome/common/app_group",
