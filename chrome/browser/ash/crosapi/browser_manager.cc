@@ -1226,7 +1226,9 @@ void BrowserManager::StartWithLogFile(bool launching_at_login_screen,
     argv.push_back(std::string("--vmodule=")
                    // TODO(crbug.com/1371493): Remove after fix.
                    + ",wayland_window_drag_controller=1,wayland_data_source=1" +
-                   ",tab_drag_controller=1");
+                   ",tab_drag_controller=1" +
+                   // TODO(crbug.com/1472682): Remove after fix.
+                   ",wayland_data_drag_controller=1");
 
     if (launching_at_login_screen &&
         !command_line->HasSwitch(switches::kDisableLoggingRedirect)) {

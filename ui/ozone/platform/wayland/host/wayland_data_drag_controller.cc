@@ -131,6 +131,8 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
     return false;
   }
 
+  VLOG(1) << "Starting DND session.";
+
   // Create new data source and offers |data|.
   SetOfferedExchangeDataProvider(data);
   data_source_ = data_device_manager_->CreateSource(this);
@@ -264,6 +266,8 @@ SkBitmap WaylandDataDragController::GetIconBitmap() {
 }
 
 void WaylandDataDragController::DrawIconInternal() {
+  VLOG(1) << "Draw drag icon.";
+
   // If there was a drag icon before but now there isn't, attach a null buffer
   // to the icon surface to hide it.
   if (icon_surface_ && icon_image_.isNull()) {
@@ -320,6 +324,7 @@ void WaylandDataDragController::DrawIconInternal() {
 void WaylandDataDragController::OnDragOffer(
     std::unique_ptr<WaylandDataOffer> offer) {
   DCHECK(!data_offer_);
+  VLOG(1) << __FUNCTION__;
   data_offer_ = std::move(offer);
 }
 
@@ -328,6 +333,7 @@ void WaylandDataDragController::OnDragEnter(WaylandWindow* window,
                                             uint32_t serial) {
   DCHECK(window);
   DCHECK(data_offer_);
+  VLOG(1) << __FUNCTION__ << " is_source=" << IsDragSource();
   window_ = window;
 
   unprocessed_mime_types_.clear();
@@ -374,6 +380,10 @@ void WaylandDataDragController::OnDragEnter(WaylandWindow* window,
 }
 
 void WaylandDataDragController::OnDragMotion(const gfx::PointF& location) {
+  VLOG(2) << __FUNCTION__ << " window=" << !!window_
+          << " location=" << location.ToString()
+          << " transferring=" << (state_ == State::kTransferring);
+
   if (!window_) {
     return;
   }
@@ -382,6 +392,7 @@ void WaylandDataDragController::OnDragMotion(const gfx::PointF& location) {
     last_drag_location_ = location;
     return;
   }
+
   DCHECK(data_offer_);
   int available_operations =
       DndActionsToDragOperations(data_offer_->source_actions());
@@ -391,6 +402,9 @@ void WaylandDataDragController::OnDragMotion(const gfx::PointF& location) {
 }
 
 void WaylandDataDragController::OnDragLeave() {
+  VLOG(2) << __FUNCTION__ << " window=" << !!window_
+          << " transferring=" << (state_ == State::kTransferring);
+
   if (state_ == State::kTransferring) {
     // We cannot leave until the transfer is finished.  Postponing.
     is_leave_pending_ = true;
@@ -407,6 +421,7 @@ void WaylandDataDragController::OnDragLeave() {
 }
 
 void WaylandDataDragController::OnDragDrop() {
+  VLOG(1) << __FUNCTION__ << " window=" << !!window_;
   if (!window_) {
     return;
   }
@@ -422,6 +437,9 @@ void WaylandDataDragController::OnDragDrop() {
 
 void WaylandDataDragController::OnDataSourceFinish(bool completed) {
   DCHECK(data_source_);
+  VLOG(1) << __FUNCTION__ << " window=" << !!window_
+          << " origin=" << !!origin_window_
+          << " nested_dispatcher=" << !!nested_dispatcher_;
 
   if (origin_window_) {
     origin_window_->OnDragSessionClose(
@@ -467,6 +485,7 @@ void WaylandDataDragController::OnDataSourceSend(const std::string& mime_type,
                                                  std::string* buffer) {
   DCHECK(data_source_);
   DCHECK(buffer);
+  VLOG(1) << __FUNCTION__ << " mime=" << mime_type;
   if (!GetOfferedExchangeDataProvider()->ExtractData(mime_type, buffer)) {
     LOG(WARNING) << "Cannot deliver data of type " << mime_type
                  << " and no text representation is available.";
@@ -496,6 +515,7 @@ void WaylandDataDragController::OnWindowRemoved(WaylandWindow* window) {
 void WaylandDataDragController::HandleUnprocessedMimeTypes(
     base::TimeTicks start_time) {
   std::string mime_type = GetNextUnprocessedMimeType();
+  VLOG(1) << __FUNCTION__ << " mime=" << mime_type;
   if (mime_type.empty() || is_leave_pending_ || state_ == State::kIdle) {
     OnDataTransferFinished(start_time,
                            std::make_unique<OSExchangeData>(
@@ -526,6 +546,8 @@ void WaylandDataDragController::OnMimeTypeDataTransferred(
 void WaylandDataDragController::OnDataTransferFinished(
     base::TimeTicks start_time,
     std::unique_ptr<OSExchangeData> received_data) {
+  VLOG(1) << __FUNCTION__ << " unprocessed=" << unprocessed_mime_types_.size()
+          << " leave_pending=" << is_leave_pending_;
   unprocessed_mime_types_.clear();
   if (state_ == State::kIdle) {
     return;
@@ -534,9 +556,9 @@ void WaylandDataDragController::OnDataTransferFinished(
   state_ = State::kIdle;
 
   // If |is_leave_pending_| is set, it means a 'leave' event was fired while
-  // data was on transit (see OnDragLeave for more context).  Sending
-  // OnDragEnter to the window makes no sense anymore because the drag is no
-  // longer over it.  Reset and exit.
+  // data was on transit (see OnDragLeave for more context). Sending OnDragEnter
+  // to the window makes no sense anymore because the drag is no longer over it.
+  // Reset and exit.
   if (is_leave_pending_) {
     if (data_offer_) {
       data_offer_->FinishOffer();
