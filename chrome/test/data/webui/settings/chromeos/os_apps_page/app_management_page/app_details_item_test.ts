@@ -131,14 +131,13 @@ suite('<app-management-app-details-item>', () => {
       appSize: '17 MB',
     });
 
-    const shortSize = appDetailsItem.shadowRoot!.querySelector('#shortSize');
+    const appSize = appDetailsItem.shadowRoot!.querySelector('#appSize');
 
-    assertNull(appDetailsItem.shadowRoot!.querySelector('#storageTitle'));
-    assertNull(appDetailsItem.shadowRoot!.querySelector('#appSize'));
+    assertTrue(!!appDetailsItem.shadowRoot!.querySelector('#storageTitle'));
+    assertTrue(!!appSize);
     assertNull(appDetailsItem.shadowRoot!.querySelector('#dataSize'));
-    assertTrue(!!shortSize);
 
-    assertEquals('Size: 17 MB', shortSize.textContent!.trim());
+    assertEquals('App size: 17 MB', appSize.textContent!.trim());
   });
 
   test('Android App from play store', async () => {

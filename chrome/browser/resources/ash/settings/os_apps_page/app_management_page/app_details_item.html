@@ -60,7 +60,7 @@
     </div>
   </template>
 </div>
-<template is="dom-if" if="[[shouldShowFullSizeDetails_(app)]]" restamp>
+<template is="dom-if" if="[[shouldShowStorage_(app)]]" restamp>
   <div class="indented-app-details" id="storageTitle">
     $i18n{appManagementAppDetailsStorageTitle}
     <template is="dom-if" if="[[shouldShowAppSize_(app)]]" restamp>
@@ -73,11 +73,6 @@
         [[i18n('appManagementAppDetailsDataSize', app.dataSize)]]
       </div>
     </template>
-  </div>
-</template>
-<template is="dom-if" if="[[shouldShowShortSizeDetails_(app)]]" restamp>
-  <div class="indented-app-details" id="shortSize">
-    [[i18n('appManagementAppDetailsTotalSize', app.appSize)]]
   </div>
 </template>
 <template is="dom-if" if="[[shouldShowVersion_(app)]]" restamp>

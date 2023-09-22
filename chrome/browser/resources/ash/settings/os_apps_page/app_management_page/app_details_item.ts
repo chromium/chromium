@@ -90,19 +90,11 @@ export class AppManagementAppDetailsItem extends
   }
 
   private shouldShowAppSize_(app: App): boolean {
-    return this.shouldShowStorage_(app) && Boolean(app.appSize);
+    return Boolean(app.appSize);
   }
 
   private shouldShowDataSize_(app: App): boolean {
     return Boolean(app.dataSize);
-  }
-
-  private shouldShowFullSizeDetails_(app: App): boolean {
-    return this.shouldShowAppSize_(app) && this.shouldShowDataSize_(app);
-  }
-
-  private shouldShowShortSizeDetails_(app: App): boolean {
-    return this.shouldShowAppSize_(app) && !this.shouldShowDataSize_(app);
   }
   /**
    * The info icon is only shown for System apps and apps installed from the
