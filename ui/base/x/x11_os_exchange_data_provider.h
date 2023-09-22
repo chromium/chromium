@@ -76,7 +76,6 @@ class COMPONENT_EXPORT(UI_BASE_X) XOSExchangeDataProvider
   bool GetURLAndTitle(FilenameToURLPolicy policy,
                       GURL* url,
                       std::u16string* title) const override;
-  bool GetFilename(base::FilePath* path) const override;
   bool GetFilenames(std::vector<FileInfo>* filenames) const override;
   bool GetPickledData(const ClipboardFormatType& format,
                       base::Pickle* pickle) const override;

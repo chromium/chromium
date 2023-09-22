@@ -152,9 +152,10 @@ TEST_F(OSExchangeDataTest, TestFileToURLConversion) {
     EXPECT_EQ(std::u16string(), actual_title);
   }
   EXPECT_TRUE(copy.HasFile());
-  base::FilePath actual_path;
-  EXPECT_TRUE(copy.GetFilename(&actual_path));
-  EXPECT_EQ(current_directory, actual_path);
+  std::vector<FileInfo> actual_files;
+  EXPECT_TRUE(copy.GetFilenames(&actual_files));
+  EXPECT_EQ(1u, actual_files.size());
+  EXPECT_EQ(current_directory, actual_files[0].path);
 }
 
 TEST_F(OSExchangeDataTest, TestPickledData) {

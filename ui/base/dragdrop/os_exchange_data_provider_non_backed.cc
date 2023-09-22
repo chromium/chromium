@@ -128,14 +128,6 @@ bool OSExchangeDataProviderNonBacked::GetURLAndTitle(
   return true;
 }
 
-bool OSExchangeDataProviderNonBacked::GetFilename(base::FilePath* path) const {
-  if ((formats_ & OSExchangeData::FILE_NAME) == 0)
-    return false;
-  DCHECK(!filenames_.empty());
-  *path = filenames_[0].path;
-  return true;
-}
-
 bool OSExchangeDataProviderNonBacked::GetFilenames(
     std::vector<FileInfo>* filenames) const {
   if ((formats_ & OSExchangeData::FILE_NAME) == 0)
@@ -236,10 +228,11 @@ gfx::Vector2d OSExchangeDataProviderNonBacked::GetDragImageOffset() const {
 }
 
 bool OSExchangeDataProviderNonBacked::GetFileURL(GURL* url) const {
-  base::FilePath file_path;
-  if (!GetFilename(&file_path))
+  if (!HasFile()) {
     return false;
+  }
 
+  base::FilePath file_path = filenames_[0].path;
   GURL test_url = net::FilePathToFileURL(file_path);
   if (!test_url.is_valid())
     return false;

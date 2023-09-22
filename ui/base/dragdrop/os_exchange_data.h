@@ -119,8 +119,7 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeData {
   bool GetURLAndTitle(FilenameToURLPolicy policy,
                       GURL* url,
                       std::u16string* title) const;
-  // Return the path of a file, if available.
-  bool GetFilename(base::FilePath* path) const;
+  // Return information about the contained files, if any.
   bool GetFilenames(std::vector<FileInfo>* file_names) const;
   bool GetPickledData(const ClipboardFormatType& format,
                       base::Pickle* data) const;

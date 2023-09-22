@@ -230,25 +230,14 @@ bool OSExchangeDataProviderMac::GetURLAndTitle(FilenameToURLPolicy policy,
   // TODO(avi): What is going on here? This comment and code was written for the
   // old pasteboard code; is this still true with the new pasteboard code? What
   // uses this, and why does it care about titles or path conversion?
-  base::FilePath path;
+  std::vector<ui::FileInfo> files;
   if (policy != FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES &&
-      GetFilename(&path)) {
-    *url = net::FilePathToFileURL(path);
+      GetFilenames(&files) && !files.empty()) {
+    *url = net::FilePathToFileURL(files[0].path);
     return true;
   }
 
   return false;
-}
-
-bool OSExchangeDataProviderMac::GetFilename(base::FilePath* path) const {
-  std::vector<FileInfo> files =
-      clipboard_util::FilesFromPasteboard(GetPasteboard());
-  if (files.empty()) {
-    return false;
-  }
-
-  *path = files[0].path;
-  return true;
 }
 
 bool OSExchangeDataProviderMac::GetFilenames(

@@ -265,16 +265,6 @@ bool XOSExchangeDataProvider::GetURLAndTitle(FilenameToURLPolicy policy,
   return false;
 }
 
-bool XOSExchangeDataProvider::GetFilename(base::FilePath* path) const {
-  std::vector<FileInfo> filenames;
-  if (GetFilenames(&filenames)) {
-    *path = filenames.front().path;
-    return true;
-  }
-
-  return false;
-}
-
 bool XOSExchangeDataProvider::GetFilenames(
     std::vector<FileInfo>* filenames) const {
   std::vector<x11::Atom> url_atoms = ui::GetURIListAtomsFrom();

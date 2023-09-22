@@ -172,7 +172,6 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderWin
   bool GetURLAndTitle(FilenameToURLPolicy policy,
                       GURL* url,
                       std::u16string* title) const override;
-  bool GetFilename(base::FilePath* path) const override;
   bool GetFilenames(std::vector<FileInfo>* filenames) const override;
   bool HasVirtualFilenames() const override;
   bool GetVirtualFilenames(std::vector<FileInfo>* filenames) const override;

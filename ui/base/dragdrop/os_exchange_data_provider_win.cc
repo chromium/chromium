@@ -572,14 +572,6 @@ bool OSExchangeDataProviderWin::GetURLAndTitle(FilenameToURLPolicy policy,
   return false;
 }
 
-bool OSExchangeDataProviderWin::GetFilename(base::FilePath* path) const {
-  std::vector<std::wstring> filenames;
-  bool success = clipboard_util::GetFilenames(source_object_.Get(), &filenames);
-  if (success)
-    *path = base::FilePath(filenames[0]);
-  return success;
-}
-
 bool OSExchangeDataProviderWin::GetFilenames(
     std::vector<FileInfo>* filenames) const {
   std::vector<std::wstring> filenames_local;

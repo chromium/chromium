@@ -75,10 +75,6 @@ bool OSExchangeData::GetURLAndTitle(FilenameToURLPolicy policy,
   return provider_->GetURLAndTitle(policy, url, title);
 }
 
-bool OSExchangeData::GetFilename(base::FilePath* path) const {
-  return provider_->GetFilename(path);
-}
-
 bool OSExchangeData::GetFilenames(std::vector<FileInfo>* filenames) const {
   return provider_->GetFilenames(filenames);
 }
