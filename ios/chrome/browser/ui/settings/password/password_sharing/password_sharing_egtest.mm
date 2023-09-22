@@ -136,6 +136,25 @@ void SignInAndEnableSync() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+- (void)testShareButtonVisibilityForSignedOutUser {
+  [self saveExamplePasswordAndOpenDetails];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
+}
+
+- (void)testShareButtonVisibilityForUserOptedInToAccountStorage {
+  FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fake_identity enableSync:NO];
+
+  [self saveExamplePasswordAndOpenDetails];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 - (void)testFamilyPickerCancelFlow {
   SignInAndEnableSync();
   [self saveExamplePasswordAndOpenDetails];

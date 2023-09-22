@@ -73,11 +73,6 @@ typedef NS_ENUM(NSInteger, PasswordAccessReason) {
   PasswordAccessReasonEdit,
 };
 
-bool IsSendingPasswordsEnabled() {
-  return base::FeatureList::IsEnabled(
-      password_manager::features::kSendPasswords);
-}
-
 // Size of the symbols.
 const CGFloat kSymbolSize = 15;
 const CGFloat kRecommendationSymbolSize = 22;
@@ -224,17 +219,6 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 
   self.tableView.accessibilityIdentifier = kPasswordDetailsViewControllerId;
   self.tableView.allowsSelectionDuringEditing = YES;
-  if (IsSendingPasswordsEnabled()) {
-    UIBarButtonItem* shareButton = [[UIBarButtonItem alloc]
-        initWithImage:DefaultSymbolWithPointSize(kShareSymbol,
-                                                 kSymbolActionPointSize)
-                style:UIBarButtonItemStylePlain
-               target:self
-               action:@selector(onShareButtonPressed)];
-    shareButton.accessibilityIdentifier = kPasswordShareButtonId;
-    self.navigationItem.rightBarButtonItems =
-        @[ self.navigationItem.rightBarButtonItem, shareButton ];
-  }
 
   [self setOrExtendAuthValidityTimer];
 }
@@ -818,6 +802,18 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 
 - (void)setUserEmail:(NSString*)userEmail {
   _userEmail = userEmail;
+}
+
+- (void)setupRightShareButton {
+  UIBarButtonItem* shareButton = [[UIBarButtonItem alloc]
+      initWithImage:DefaultSymbolWithPointSize(kShareSymbol,
+                                               kSymbolActionPointSize)
+              style:UIBarButtonItemStylePlain
+             target:self
+             action:@selector(onShareButtonPressed)];
+  shareButton.accessibilityIdentifier = kPasswordShareButtonId;
+  self.navigationItem.rightBarButtonItems =
+      @[ self.navigationItem.rightBarButtonItem, shareButton ];
 }
 
 #pragma mark - TableViewTextEditItemDelegate

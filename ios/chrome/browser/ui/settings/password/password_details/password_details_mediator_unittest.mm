@@ -88,6 +88,9 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
 - (void)setUserEmail:(NSString*)userEmail {
 }
 
+- (void)setupRightShareButton {
+}
+
 @end
 
 // Test fixture for testing PasswordDetailsMediator class.
