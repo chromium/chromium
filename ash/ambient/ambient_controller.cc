@@ -1167,6 +1167,10 @@ AmbientWeatherModel* AmbientController::GetAmbientWeatherModel() {
 
 std::unique_ptr<views::Widget> AmbientController::CreateWidget(
     aura::Window* container) {
+  if (!ShouldShowAmbientUi()) {
+    return nullptr;
+  }
+
   CHECK(session_metrics_recorder_);
   session_metrics_recorder_->RegisterScreen();
   std::unique_ptr<AmbientContainerView> container_view;
