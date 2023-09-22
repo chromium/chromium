@@ -22,5 +22,5 @@ Chrome](https://docs.google.com/document/d/1f7tt4cb-JcA5bQFR1oXk60ncJPpkL02_Hi_B
 [Typed trace events in
 //base](https://docs.google.com/document/d/1UQ4Ez7B-TeowijOUuMXuoWj1amZcQ7E2abt3s4jaAEY/edit#).
 
-Note: The integration with Perfetto's SDK is work-in-progress behind the gn flag
-"use_perfetto_client_library".
+Note: The integration with Perfetto's SDK is work-in-progress (https://crbug.com/1006541) behind
+the gn flag "use_perfetto_client_library".
