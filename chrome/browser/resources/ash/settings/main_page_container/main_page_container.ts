@@ -32,9 +32,10 @@ import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '../os_settings_page/settings_idle_load.js';
 import '../os_about_page/eol_offer_section.js';
+import '../os_languages_page/languages.js';
 import '../os_settings_icons.html.js';
+import '../os_settings_page/settings_idle_load.js';
 import './page_displayer.js';
 
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
@@ -49,6 +50,7 @@ import {MainPageMixin} from '../main_page_mixin.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {AboutPageBrowserProxyImpl} from '../os_about_page/about_page_browser_proxy.js';
 import {AndroidAppsBrowserProxyImpl, AndroidAppsInfo} from '../os_apps_page/android_apps_browser_proxy.js';
+import {LanguageHelper, LanguagesModel} from '../os_languages_page/languages_types.js';
 import {OsPageAvailability} from '../os_page_availability.js';
 import {isAboutRoute, isAdvancedRoute, isBasicRoute, Route, Router} from '../router.js';
 
@@ -170,13 +172,30 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
         computed: 'computeShouldShowAboutPageContainer(' +
             'currentRoute_, isRevampWayfindingEnabled_)',
       },
+
+      /**
+       * This is used to cache the set of languages from <settings-languages>
+       * via bi-directional data-binding.
+       */
+      languages_: Object,
+
+      /**
+       * This is used to cache the language helper API from <settings-languages>
+       * via bi-directional data-binding.
+       */
+      languageHelper_: Object,
     };
   }
 
   prefs: PrefsState;
+  advancedToggleExpanded: boolean;
   androidAppsInfo?: AndroidAppsInfo;
   pageAvailability: OsPageAvailability;
-  advancedToggleExpanded: boolean;
+
+  // Languages data and API
+  private languages_: LanguagesModel|undefined;
+  private languageHelper_: LanguageHelper|undefined;
+
   private isShowingSubpage_: boolean;
   private showSecondaryUserBanner_: boolean;
   private showUpdateRequiredEolBanner_: boolean;

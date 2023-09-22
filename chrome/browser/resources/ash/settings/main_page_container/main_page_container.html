@@ -105,6 +105,13 @@
   }
 </style>
 
+<!-- Singleton element for languages data and API. -->
+<settings-languages
+    prefs="{{prefs}}"
+    languages="{{languages_}}"
+    language-helper="{{languageHelper_}}">
+</settings-languages>
+
 <div id="basicPageContainer"
     hidden$="[[!shouldShowBasicPageContainer_]]">
     <template is="dom-if" if="[[computeShowUpdateRequiredEolBanner_(
@@ -230,7 +237,9 @@
         if="[[shouldStampPage_(pageAvailability, Section.kSystemPreferences)]]"
         restamp>
       <page-displayer section="[[Section.kSystemPreferences]]">
-        <settings-system-preferences-page prefs="{{prefs}}">
+        <settings-system-preferences-page prefs="{{prefs}}"
+            languages="[[languages_]]"
+            language-helper="[[languageHelper_]]">
         </settings-system-preferences-page>
       </page-displayer>
     </template>
@@ -267,7 +276,9 @@
               Section.kLanguagesAndInput)]]"
           restamp>
         <page-displayer section="[[Section.kLanguagesAndInput]]">
-          <os-settings-languages-section prefs="{{prefs}}">
+          <os-settings-languages-section prefs="{{prefs}}"
+              languages="[[languages_]]"
+              language-helper="[[languageHelper_]]">
           </os-settings-languages-section>
         </page-displayer>
       </template>

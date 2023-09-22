@@ -12,13 +12,14 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {createRouterForTesting, ensureLazyLoaded, OneDriveBrowserProxy, OsSettingsRoutes, OsSettingsSubpageElement, resetGlobalScrollTargetForTesting, Route, Router, routes, setGlobalScrollTargetForTesting, SettingsSystemPreferencesPageElement} from 'chrome://os-settings/os_settings.js';
+import {createRouterForTesting, CrSettingsPrefs, ensureLazyLoaded, OneDriveBrowserProxy, OsSettingsRoutes, OsSettingsSubpageElement, resetGlobalScrollTargetForTesting, Route, Router, routes, setGlobalScrollTargetForTesting, SettingsPrefsElement, SettingsSystemPreferencesPageElement} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {OneDriveTestBrowserProxy} from '../os_files_page/one_drive_test_browser_proxy.js';
+import {FakeLanguageHelper} from '../os_languages_page/fake_language_helper.js';
 
 interface SubpageData {
   routeName: keyof OsSettingsRoutes;
@@ -26,10 +27,19 @@ interface SubpageData {
 }
 
 suite('<settings-system-preferences-page>', () => {
+  let settingsPrefs: SettingsPrefsElement;
   let page: SettingsSystemPreferencesPageElement;
+
+  async function initializePrefs(): Promise<void> {
+    settingsPrefs = document.createElement('settings-prefs');
+    document.body.appendChild(settingsPrefs);
+    await CrSettingsPrefs.initialized;
+  }
 
   async function createPage() {
     page = document.createElement('settings-system-preferences-page');
+    page.languageHelper = new FakeLanguageHelper();
+    page.prefs = settingsPrefs.prefs;
     document.body.appendChild(page);
     await flushTasks();
   }
@@ -64,6 +74,14 @@ suite('<settings-system-preferences-page>', () => {
         isVisible(subpageParentElement),
         `${elementTagName} should be visible.`);
   }
+
+  suiteSetup(async () => {
+    await initializePrefs();
+  });
+
+  suiteTeardown(() => {
+    settingsPrefs.remove();
+  });
 
   setup(() => {
     loadTimeData.overrideValues({

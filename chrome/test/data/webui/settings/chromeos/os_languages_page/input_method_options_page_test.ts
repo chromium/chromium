@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {LanguageState, SettingsInputMethodOptionsPageElement} from 'chrome://os-settings/lazy_load.js';
+import {SettingsInputMethodOptionsPageElement} from 'chrome://os-settings/lazy_load.js';
 import {CrSettingsPrefs, Router, routes} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -12,100 +12,13 @@ import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
+import {FakeLanguageHelper, FIRST_PARTY_INPUT_METHOD_ID_PREFIX} from './fake_language_helper.js';
+
 /**
  * @fileoverview Suite of tests for the OS Settings input method options page.
  */
-const FIRST_PARTY_INPUT_METHOD_ID_PREFIX =
-    '_comp_ime_jkghodnilhceideoidjikpgommlajknk';
-const PREFS_KEY = 'settings.language.input_method_specific_settings';
 
-class FakeLanguageHelper {
-  async whenReady() {}
-  setProspectiveUiLanguage(_: string) {}
-  requiresRestart() {
-    return false;
-  }
-  getArcImeLanguageCode() {
-    return '';
-  }
-  isLanguageCodeForArcIme(_: string) {
-    return false;
-  }
-  isLanguageTranslatable(_: chrome.languageSettingsPrivate.Language) {
-    return true;
-  }
-  isLanguageEnabled(_: string) {
-    return true;
-  }
-  enableLanguage(_: string) {}
-  disableLanguage(_: string) {}
-  isOnlyTranslateBlockedLanguage(_: LanguageState) {
-    return false;
-  }
-  canDisableLanguage(_: LanguageState) {
-    return true;
-  }
-  canEnableLanguage(_: chrome.languageSettingsPrivate.Language) {
-    return true;
-  }
-  moveLanguage(_1: string, _2: boolean) {}
-  moveLanguageToFront(_: string) {}
-  enableTranslateLanguage(_: string) {}
-  disableTranslateLanguage(_: string) {}
-  setLanguageAlwaysTranslateState(_1: string, _2: boolean) {}
-  toggleSpellCheck(_1: string, _2: boolean) {}
-  convertLanguageCodeForTranslate(_: string) {
-    return '';
-  }
-  getLanguageCodeWithoutRegion(_: string) {
-    return '';
-  }
-  getLanguage(_: string) {
-    return undefined;
-  }
-  retryDownloadDictionary(_: string) {}
-  addInputMethod(_: string) {}
-  removeInputMethod(_: string) {}
-  setCurrentInputMethod(_: string) {}
-  getInputMethodsForLanguage(_: string) {
-    return [
-      {
-        id: 'fake display name',
-        displayName: 'fake display name',
-        languageCodes: ['en', 'en-US'],
-        tags: [],
-        enabled: true,
-      },
-    ];
-  }
-  getInputMethodsForLanguages(_: string[]) {
-    return [
-      {
-        id: 'fake display name',
-        displayName: 'fake display name',
-        languageCodes: ['en', 'en-US'],
-        tags: [],
-        enabled: true,
-      },
-    ];
-  }
-  getEnabledLanguageCodes() {
-    return new Set<string>();
-  }
-  isInputMethodEnabled(_: string) {
-    return true;
-  }
-  isComponentIme(_: chrome.languageSettingsPrivate.InputMethod) {
-    return false;
-  }
-  openInputMethodOptions(_: string) {}
-  getInputMethodDisplayName(_: string) {
-    return 'fake display name';
-  }
-  getCurrentInputMethod() {
-    return Promise.resolve(FIRST_PARTY_INPUT_METHOD_ID_PREFIX + 'xkb:us::eng');
-  }
-}
+const PREFS_KEY = 'settings.language.input_method_specific_settings';
 
 function getFakePrefs() {
   return [{

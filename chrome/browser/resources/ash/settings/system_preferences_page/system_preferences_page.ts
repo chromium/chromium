@@ -11,7 +11,6 @@
 import '../date_time_page/date_time_settings_card.js';
 import '../os_files_page/files_settings_card.js';
 import '../os_languages_page/language_settings_card.js';
-import '../os_languages_page/languages.js';
 import '../os_settings_page/os_settings_animated_pages.js';
 import '../os_settings_page/os_settings_subpage.js';
 import '../os_reset_page/reset_settings_card.js';
@@ -58,14 +57,12 @@ export class SettingsSystemPreferencesPageElement extends
       },
 
       /**
-       * This is used to cache the set of languages from <settings-languages>
-       * via bi-directional data-binding.
+       * Set of languages from <settings-languages>
        */
       languages: Object,
 
       /**
-       * This is used to cache the language helper API from <settings-languages>
-       * via bi-directional data-binding.
+       * Language helper API from <settings-languages>
        */
       languageHelper: Object,
 
@@ -129,9 +126,9 @@ export class SettingsSystemPreferencesPageElement extends
     };
   }
 
-  prefs: PrefsState;
+  prefs: PrefsState|undefined;
 
-  // Languages and Inputs subsection
+  // Languages subsection
   languages: LanguagesModel|undefined;
   languageHelper: LanguageHelper|undefined;
 
