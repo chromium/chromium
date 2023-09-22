@@ -1198,4 +1198,97 @@ export function FeedbackFlowTestSuite() {
 
         window.removeEventListener('message', testMessageListener);
       });
+
+  // Test that when dialog args is present, it will be used to populate the
+  // feedback context.
+  test('Create_feedback_context_from_dialogArguments_if_present', async () => {
+    // Save the original chrome.getVariableValue function.
+    const chromeGetVariableValue = chrome.getVariableValue;
+    // Mock the chrome.getVariableValue to return dialogArguments.
+    const mockChromeGetVariableValue = (message) => {
+      if (message === 'dialogArguments') {
+        return '{' +
+            '"autofillMetadata":{"fake key1": "fake value1"},' +
+            '"categoryTag":"Login",' +
+            '"description":"fake description",' +
+            '"descriptionPlaceholder":"fake description placeholder",' +
+            '"fromAssistant": true, ' +
+            '"fromAutofill": true, ' +
+            '"pageUrl":"chrome://flags/",' +
+            '"systemInformation":[' +
+            '  {' +
+            '    "key": "EXTRA_DIAGNOSTICS",' +
+            '    "value": "fake extra log data"' +
+            '  }' +
+            ']' +
+            '}';
+      }
+      return '{}';
+    };
+    chrome.getVariableValue = mockChromeGetVariableValue;
+
+    await initializePage();
+
+    const feedbackContext = getFeedbackContext_();
+    assertEquals('Login', feedbackContext.categoryTag);
+    assertEquals('fake extra log data', feedbackContext.extraDiagnostics);
+    assertEquals('chrome://flags/', feedbackContext.pageUrl.url);
+    assertEquals(
+        '{"fake key1":"fake value1"}', feedbackContext.autofillMetadata);
+    assertTrue(feedbackContext.fromAssistant);
+    assertTrue(feedbackContext.fromAutofill);
+
+    assertEquals('fake description', page.getDescriptionTemplateForTesting());
+    assertEquals(
+        'fake description placeholder',
+        page.getDescriptionPlaceholderTextForTesting());
+
+    // Restore chrome.getVariableValue.
+    chrome.getVariableValue = chromeGetVariableValue;
+    // Verify that the getFeedbackContext is not called.
+    assertEquals(0, feedbackServiceProvider.getFeedbackContextCallCount());
+  });
+
+  // Test that when dialog args is present, it will be used to populate the
+  // feedback context. Most info are empty or with default values.
+  test(
+      'Create_feedback_context_from_dialogArguments_if_present_empty',
+      async () => {
+        // Save the original chrome.getVariableValue function.
+        const chromeGetVariableValue = chrome.getVariableValue;
+        // Mock the chrome.getVariableValue to return dialogArguments.
+        const mockChromeGetVariableValue = (message) => {
+          if (message === 'dialogArguments') {
+            return '{' +
+                '"autofillMetadata":{},' +
+                '"categoryTag":"",' +
+                '"fromAssistant": false, ' +
+                '"fromAutofill": false, ' +
+                '"pageUrl":"",' +
+                '"systemInformation":[]' +
+                '}';
+          }
+          return '{}';
+        };
+        chrome.getVariableValue = mockChromeGetVariableValue;
+
+        await initializePage();
+
+        const feedbackContext = getFeedbackContext_();
+        assertTrue(!feedbackContext.categoryTag);
+        assertTrue(!feedbackContext.extraDiagnostics);
+        assertTrue(!feedbackContext.pageUrl.url);
+        assertEquals('{}', feedbackContext.autofillMetadata);
+        assertFalse(feedbackContext.fromAssistant);
+        assertFalse(feedbackContext.fromAutofill);
+
+        assertTrue(!page.getDescriptionTemplateForTesting());
+        assertTrue(!page.getDescriptionPlaceholderTextForTesting());
+
+        // Restore chrome.getVariableValue.
+        chrome.getVariableValue = chromeGetVariableValue;
+
+        // Verify that the getFeedbackContext is not called.
+        assertEquals(0, feedbackServiceProvider.getFeedbackContextCallCount());
+      });
 }

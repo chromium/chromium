@@ -8,6 +8,7 @@ import './search_page.js';
 import './share_data_page.js';
 import './strings.m.js';
 
+import {assert} from 'chrome://resources/ash/common/assert.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
@@ -175,7 +176,9 @@ export class FeedbackFlowElement extends PolymerElement {
       feedbackContext_: {type: FeedbackContext, readonly: false, notify: true},
     };
   }
-
+  /**
+   * @suppress {missingProperties}
+   */
   constructor() {
     super();
 
@@ -280,6 +283,15 @@ export class FeedbackFlowElement extends PolymerElement {
      * @private
      */
     this.noHelpContentDisplayed_;
+
+    /**
+     * When the feedback tool is opened as a dialog, feedback context is passed
+     * to front end via dialog args.
+     *
+     * @type {string}
+     * @private
+     */
+    this.dialogArgs_ = chrome.getVariableValue('dialogArguments');
   }
 
   connectedCallback() {
@@ -304,16 +316,11 @@ export class FeedbackFlowElement extends PolymerElement {
 
   ready() {
     super.ready();
-
-    this.feedbackServiceProvider_.getFeedbackContext().then((response) => {
-      this.feedbackContext_ = response.feedbackContext;
-      this.setAdditionalContextFromQueryParams_();
-      this.shouldShowAssistantCheckbox_ = !!this.feedbackContext_ &&
-          this.feedbackContext_.isInternalAccount &&
-          this.feedbackContext_.fromAssistant;
-      this.shouldShowAutofillCheckbox_ =
-          !!this.feedbackContext_ && this.feedbackContext_.fromAutofill;
-    });
+    if (this.dialogArgs_ && this.dialogArgs_.length > 0) {
+      this.initializeForDialogMode_();
+    } else {
+      this.initializeForNonDialogMode_();
+    }
 
     window.addEventListener('message', event => {
       if (event.data.id !== HELP_CONTENT_CLICKED) {
@@ -381,6 +388,63 @@ export class FeedbackFlowElement extends PolymerElement {
   }
 
   /**
+   * @suppress {checkTypes} suppress feedbackInfo type check in closure
+   * compiler.
+   * TODO(http://b/issues/233080620): Add a type definition for feedbackInfo.
+   *
+   * @private
+   */
+  initializeForDialogMode_() {
+    // This is on Dialog mode. The `dialogArgs_` contains feedback context
+    // info.
+    const feedbackInfo = JSON.parse(this.dialogArgs_);
+    assert(!!feedbackInfo);
+    this.feedbackContext_ = {
+      assistantDebugInfoAllowed: false,
+      fromSettingsSearch: feedbackInfo.fromSettingsSearch,
+      isInternalAccount: feedbackInfo.isInternalAccount,
+      traceId: feedbackInfo.traceId,
+      pageUrl: {url: feedbackInfo.pageUrl},
+      fromAssistant: feedbackInfo.fromAssistant,
+      fromAutofill: feedbackInfo.fromAutofill,
+      autofillMetadata: feedbackInfo.autofillMetadata ?
+          JSON.stringify(feedbackInfo.autofillMetadata) :
+          '',
+      hasLinkedCrossDevicePhone: feedbackInfo.hasLinkedCrossDevicePhone,
+      categoryTag: feedbackInfo.categoryTag,
+    };
+    this.descriptionTemplate_ = feedbackInfo.description;
+    this.descriptionPlaceholderText_ = feedbackInfo.descriptionPlaceholder;
+    if (feedbackInfo.systemInformation?.length == 1) {
+      // Currently, one extra diagnostics string may be passed to feedback
+      // app.
+      //
+      // Sample input:
+      //" systemInformation": [
+      //   {
+      //    "key": "EXTRA_DIAGNOSTICS",
+      //    "value": "extra log data"
+      //   }
+      // ].
+      assert('EXTRA_DIAGNOSTICS' === feedbackInfo.systemInformation[0].key);
+      this.feedbackContext_.extraDiagnostics =
+          feedbackInfo.systemInformation[0].value;
+    }
+    this.onFeedbackContextReceived_();
+  }
+
+  /**
+   * @private
+   */
+  initializeForNonDialogMode_() {
+    this.feedbackServiceProvider_.getFeedbackContext().then((response) => {
+      this.feedbackContext_ = response.feedbackContext;
+      this.setAdditionalContextFromQueryParams_();
+      this.onFeedbackContextReceived_();
+    });
+  }
+
+  /**
    * @private
    */
   fetchScreenshot_() {
@@ -398,6 +462,16 @@ export class FeedbackFlowElement extends PolymerElement {
     }
   }
 
+  /**
+   * @private
+   */
+  onFeedbackContextReceived_() {
+    assert(this.feedbackContext_);
+    this.shouldShowAssistantCheckbox_ =
+        this.feedbackContext_.isInternalAccount &&
+        this.feedbackContext_.fromAssistant;
+    this.shouldShowAutofillCheckbox_ = this.feedbackContext_.fromAutofill;
+  }
   /**
    * Sets additional context passed from RequestFeedbackFlow as part of the URL.
    * See `AdditionalContextQueryParam` for valid query parameters.
@@ -607,6 +681,20 @@ export class FeedbackFlowElement extends PolymerElement {
    */
   setNoHelpContentDisplayedForTesting(noHelpContentDisplayed) {
     this.noHelpContentDisplayed_ = noHelpContentDisplayed;
+  }
+
+  /**
+   * @returns {?string}
+   */
+  getDescriptionTemplateForTesting() {
+    return this.descriptionTemplate_;
+  }
+
+  /**
+   * @returns {?string}
+   */
+  getDescriptionPlaceholderTextForTesting() {
+    return this.descriptionPlaceholderText_;
   }
 
   /**

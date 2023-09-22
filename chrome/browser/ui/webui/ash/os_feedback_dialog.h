@@ -31,6 +31,11 @@ class OsFeedbackDialog : public SystemWebDialogDelegate {
  private:
   // SystemWebDialogDelegate:
   void GetDialogSize(gfx::Size* size) const override;
+  std::string GetDialogArgs() const override;
+
+  // Used to populate feedback context when launched from Dialog (eg. from login
+  // screen).
+  const base::Value::Dict feedback_info_;
 };
 
 }  // namespace ash
