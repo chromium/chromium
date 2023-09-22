@@ -363,7 +363,10 @@ TEST_P(AshMessagePopupCollectionTest, Extended) {
   EXPECT_LT(700, for_2nd_display.GetBaseline());
 }
 
-TEST_P(AshMessagePopupCollectionTest, MixedFullscreenNone) {
+// TODO(b/301625873): Fix notification pop-up dismissal on full-screen activated
+// with multiple displays. The unit test is passing but the behavior it is
+// testing does not work in production.
+TEST_P(AshMessagePopupCollectionTest, DISABLED_MixedFullscreenNone) {
   UpdateDisplay("601x600,801x800");
   Shelf* shelf1 = GetPrimaryShelf();
   TestMessagePopupCollection collection1(shelf1);
@@ -388,7 +391,10 @@ TEST_P(AshMessagePopupCollectionTest, MixedFullscreenNone) {
   EXPECT_TRUE(collection2.popup_shown());
 }
 
-TEST_P(AshMessagePopupCollectionTest, MixedFullscreenSome) {
+// TODO(b/301625873): Fix notification pop-up dismissal on full-screen activated
+// with multiple displays. The unit test is passing but the behavior it is
+// testing does not work in production.
+TEST_P(AshMessagePopupCollectionTest, DISABLED_MixedFullscreenSome) {
   UpdateDisplay("601x600,801x800");
   Shelf* shelf1 = GetPrimaryShelf();
   TestMessagePopupCollection collection1(shelf1);
@@ -413,7 +419,10 @@ TEST_P(AshMessagePopupCollectionTest, MixedFullscreenSome) {
   EXPECT_TRUE(collection2.popup_shown());
 }
 
-TEST_P(AshMessagePopupCollectionTest, MixedFullscreenAll) {
+// TODO(b/301625873): Fix notification pop-up dismissal on full-screen activated
+// with multiple displays. The unit test is passing but the behavior it is
+// testing does not work in production.
+TEST_P(AshMessagePopupCollectionTest, DISABLED_MixedFullscreenAll) {
   UpdateDisplay("601x600,801x800");
   Shelf* shelf1 = GetPrimaryShelf();
   TestMessagePopupCollection collection1(shelf1);
