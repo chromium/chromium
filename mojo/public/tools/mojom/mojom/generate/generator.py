@@ -130,6 +130,9 @@ class Stylizer:
   def StylizeEnum(self, mojom_name):
     return mojom_name
 
+  def StylizeFeature(self, mojom_name):
+    return mojom_name
+
   def StylizeModule(self, mojom_namespace):
     return mojom_namespace
 

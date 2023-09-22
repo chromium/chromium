@@ -320,6 +320,25 @@ class ConditionalFeaturesTest(unittest.TestCase):
     """
     self.parseAndAssertEqual(mojom_source, expected_source)
 
+  def testFeaturesWithEnableIf(self):
+    mojom_source = """
+      feature Foo {
+        const string name = "FooFeature";
+        [EnableIf=red]
+        const bool default_state = false;
+        [EnableIf=yellow]
+        const bool default_state = true;
+      };
+    """
+    expected_source = """
+      feature Foo {
+        const string name = "FooFeature";
+        [EnableIf=red]
+        const bool default_state = false;
+      };
+    """
+    self.parseAndAssertEqual(mojom_source, expected_source)
+
   def testMultipleEnableIfs(self):
     source = """
       enum Foo {

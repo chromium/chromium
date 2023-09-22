@@ -405,13 +405,22 @@ def _MapKind(kind):
   return 'x:' + kind
 
 
-def _MapValueToEnum(module, value):
+def _MapAttributeValue(module, kind, value):
   # True/False/None
   if value is None:
     return value
   if not isinstance(value, str):
     return value
-  # Otherwise try to find it.
+  # Is the attribute value the name of a feature?
+  try:
+    # Features cannot be nested in other types, so lookup in the global scope.
+    trial = _LookupKind(module.kinds, 'x:' + value,
+                        _GetScopeForKind(module, kind))
+    if isinstance(trial, mojom.Feature):
+      return trial
+  except ValueError:
+    pass
+  # Is the attribute value a constant or enum value?
   try:
     trial = _LookupValue(module, None, None, ('IDENTIFIER', value))
     if isinstance(trial, mojom.ConstantValue):
@@ -420,11 +429,11 @@ def _MapValueToEnum(module, value):
       return trial
   except ValueError:
     pass
-  # Return the string if it did not resolve to a constant or enum.
+  # If not a referenceable mojo type - return as a string.
   return value
 
 
-def _AttributeListToDict(module, attribute_list):
+def _AttributeListToDict(module, kind, attribute_list):
   if attribute_list is None:
     return None
   assert isinstance(attribute_list, ast.AttributeList)
@@ -432,7 +441,8 @@ def _AttributeListToDict(module, attribute_list):
   for attribute in attribute_list:
     if attribute.key in attributes:
       raise Exception("Duplicate key (%s) in attribute list" % attribute.key)
-    attributes[attribute.key] = _MapValueToEnum(module, attribute.value)
+    attributes[attribute.key] = _MapAttributeValue(module, kind,
+                                                   attribute.value)
   return attributes
 
 
@@ -596,7 +606,8 @@ def _Kind(kinds, spec, scope):
 
 def _Import(module, import_module):
   # Copy the struct kinds from our imports into the current module.
-  importable_kinds = (mojom.Struct, mojom.Union, mojom.Enum, mojom.Interface)
+  importable_kinds = (mojom.Struct, mojom.Union, mojom.Enum, mojom.Interface,
+                      mojom.Feature)
   for kind in import_module.kinds.values():
     if (isinstance(kind, importable_kinds)
         and kind.module.path == import_module.path):
@@ -607,6 +618,32 @@ def _Import(module, import_module):
       module.values[value.GetSpec()] = value
 
   return import_module
+
+
+def _Feature(module, parsed_feature):
+  """
+  Args:
+    module: {mojom.Module} Module currently being constructed.
+    parsed_feature: {ast.Feature} Parsed feature.
+
+  Returns:
+    {mojom.Feature} AST feature.
+  """
+  feature = mojom.Feature(module=module)
+  feature.mojom_name = parsed_feature.mojom_name
+  feature.spec = 'x:' + module.GetNamespacePrefix() + feature.mojom_name
+  module.kinds[feature.spec] = feature
+  feature.constants = []
+  _ProcessElements(
+      parsed_feature.mojom_name, parsed_feature.body, {
+          ast.Const:
+          lambda const: feature.constants.append(
+              _Constant(module, const, feature)),
+      })
+
+  feature.attributes = _AttributeListToDict(module, feature,
+                                            parsed_feature.attribute_list)
+  return feature
 
 
 def _Struct(module, parsed_struct):
@@ -638,7 +675,8 @@ def _Struct(module, parsed_struct):
             struct.fields_data.append,
         })
 
-  struct.attributes = _AttributeListToDict(module, parsed_struct.attribute_list)
+  struct.attributes = _AttributeListToDict(module, struct,
+                                           parsed_struct.attribute_list)
 
   # Enforce that a [Native] attribute is set to make native-only struct
   # declarations more explicit.
@@ -670,7 +708,8 @@ def _Union(module, parsed_union):
   union.fields_data = []
   _ProcessElements(parsed_union.mojom_name, parsed_union.body,
                    {ast.UnionField: union.fields_data.append})
-  union.attributes = _AttributeListToDict(module, parsed_union.attribute_list)
+  union.attributes = _AttributeListToDict(module, union,
+                                          parsed_union.attribute_list)
   return union
 
 
@@ -691,7 +730,8 @@ def _StructField(module, parsed_field, struct):
   field.ordinal = parsed_field.ordinal.value if parsed_field.ordinal else None
   field.default = _LookupValue(module, struct, field.kind,
                                parsed_field.default_value)
-  field.attributes = _AttributeListToDict(module, parsed_field.attribute_list)
+  field.attributes = _AttributeListToDict(module, field,
+                                          parsed_field.attribute_list)
   return field
 
 
@@ -716,7 +756,8 @@ def _UnionField(module, parsed_field, union):
                      (module.mojom_namespace, union.mojom_name))
   field.ordinal = parsed_field.ordinal.value if parsed_field.ordinal else None
   field.default = None
-  field.attributes = _AttributeListToDict(module, parsed_field.attribute_list)
+  field.attributes = _AttributeListToDict(module, field,
+                                          parsed_field.attribute_list)
   if field.is_default and not mojom.IsNullableKind(field.kind) and \
      not mojom.IsIntegralKind(field.kind):
     raise Exception(
@@ -742,7 +783,7 @@ def _Parameter(module, parsed_param, interface):
   parameter.ordinal = (parsed_param.ordinal.value
                        if parsed_param.ordinal else None)
   parameter.default = None  # TODO(tibell): We never have these. Remove field?
-  parameter.attributes = _AttributeListToDict(module,
+  parameter.attributes = _AttributeListToDict(module, parameter,
                                               parsed_param.attribute_list)
   return parameter
 
@@ -768,7 +809,8 @@ def _Method(module, parsed_method, interface):
     method.response_parameters = list(
         map(lambda parameter: _Parameter(module, parameter, interface),
             parsed_method.response_parameter_list))
-  method.attributes = _AttributeListToDict(module, parsed_method.attribute_list)
+  method.attributes = _AttributeListToDict(module, method,
+                                           parsed_method.attribute_list)
 
   # Enforce that only methods with response can have a [Sync] attribute.
   if method.sync and method.response_parameters is None:
@@ -796,7 +838,7 @@ def _Interface(module, parsed_iface):
   interface.mojom_name = parsed_iface.mojom_name
   interface.spec = 'x:' + module.GetNamespacePrefix() + interface.mojom_name
   module.kinds[interface.spec] = interface
-  interface.attributes = _AttributeListToDict(module,
+  interface.attributes = _AttributeListToDict(module, interface,
                                               parsed_iface.attribute_list)
   interface.enums = []
   interface.constants = []
@@ -827,7 +869,8 @@ def _EnumField(module, enum, parsed_field):
   field = mojom.EnumField()
   field.mojom_name = parsed_field.mojom_name
   field.value = _LookupValue(module, enum, None, parsed_field.value)
-  field.attributes = _AttributeListToDict(module, parsed_field.attribute_list)
+  field.attributes = _AttributeListToDict(module, field,
+                                          parsed_field.attribute_list)
   value = mojom.EnumValue(module, enum, field)
   module.values[value.GetSpec()] = value
   return field
@@ -893,7 +936,8 @@ def _Enum(module, parsed_enum, parent_kind):
     mojom_name = parent_kind.mojom_name + '.' + mojom_name
   enum.spec = 'x:%s.%s' % (module.mojom_namespace, mojom_name)
   enum.parent_kind = parent_kind
-  enum.attributes = _AttributeListToDict(module, parsed_enum.attribute_list)
+  enum.attributes = _AttributeListToDict(module, enum,
+                                         parsed_enum.attribute_list)
 
   if not enum.native_only:
     enum.fields = list(
@@ -1105,6 +1149,8 @@ def _Module(tree, path, imports):
   module.structs = []
   module.unions = []
   module.interfaces = []
+  module.features = []
+
   _ProcessElements(
       filename, tree.definition_list, {
           ast.Const:
@@ -1118,6 +1164,8 @@ def _Module(tree, path, imports):
           ast.Interface:
           lambda interface: module.interfaces.append(
               _Interface(module, interface)),
+          ast.Feature:
+          lambda feature: module.features.append(_Feature(module, feature)),
       })
 
   # Second pass expands fields and methods. This allows fields and parameters
@@ -1132,6 +1180,9 @@ def _Module(tree, path, imports):
     all_defined_kinds[struct.spec] = struct
     for enum in struct.enums:
       all_defined_kinds[enum.spec] = enum
+
+  for feature in module.features:
+    all_defined_kinds[feature.spec] = feature
 
   for union in module.unions:
     union.fields = list(

@@ -195,8 +195,17 @@ class Parser:
     p[0] = ast.StructField(p[3], p[1], p[4], p[2], p[5])
 
   def p_feature(self, p):
-    """feature : FEATURE"""
-    raise SyntaxError("`feature` is a mojom keyword reserved for future use.")
+    """feature : attribute_section FEATURE NAME LBRACE feature_body RBRACE SEMI"""
+    p[0] = ast.Feature(p[3], p[1], p[5])
+
+  def p_feature_body_1(self, p):
+    """feature_body : """
+    p[0] = ast.FeatureBody()
+
+  def p_feature_body_2(self, p):
+    """feature_body : feature_body const"""
+    p[0] = p[1]
+    p[0].Append(p[2])
 
   def p_union(self, p):
     """union : attribute_section UNION name_wrapped LBRACE union_body RBRACE SEMI"""

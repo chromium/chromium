@@ -60,15 +60,12 @@ def _FilterDefinition(definition, enabled_features):
   """Filters definitions with a body."""
   if isinstance(definition, ast.Enum):
     _FilterDisabledFromNodeList(definition.enum_value_list, enabled_features)
-  elif isinstance(definition, ast.Interface):
-    _FilterDisabledFromNodeList(definition.body, enabled_features)
   elif isinstance(definition, ast.Method):
     _FilterDisabledFromNodeList(definition.parameter_list, enabled_features)
     _FilterDisabledFromNodeList(definition.response_parameter_list,
                                 enabled_features)
-  elif isinstance(definition, ast.Struct):
-    _FilterDisabledFromNodeList(definition.body, enabled_features)
-  elif isinstance(definition, ast.Union):
+  elif isinstance(definition,
+                  (ast.Interface, ast.Struct, ast.Union, ast.Feature)):
     _FilterDisabledFromNodeList(definition.body, enabled_features)
 
 

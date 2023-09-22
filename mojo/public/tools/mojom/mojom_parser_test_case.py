@@ -67,7 +67,7 @@ class MojomParserTestCase(unittest.TestCase):
     self.ParseMojoms([filename])
     m = self.LoadModule(filename)
     definitions = {}
-    for kinds in (m.enums, m.structs, m.unions, m.interfaces):
+    for kinds in (m.enums, m.structs, m.unions, m.interfaces, m.features):
       for kind in kinds:
         definitions[kind.mojom_name] = kind
     return definitions

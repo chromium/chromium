@@ -185,6 +185,34 @@ class EnumValueList(NodeListBase):
   _list_item_type = EnumValue
 
 
+class Feature(Definition):
+  """Represents a runtime feature definition."""
+  def __init__(self, mojom_name, attribute_list, body, **kwargs):
+    assert attribute_list is None or isinstance(attribute_list, AttributeList)
+    assert isinstance(body, FeatureBody) or body is None
+    super().__init__(mojom_name, **kwargs)
+    self.attribute_list = attribute_list
+    self.body = body
+
+  def __eq__(self, other):
+    return super().__eq__(other) and \
+           self.attribute_list == other.attribute_list and \
+           self.body == other.body
+
+  def __repr__(self):
+    return "Feature(mojom_name = %s, attribute_list = %s, body = %s)" % (
+        self.mojom_name, self.attribute_list, self.body)
+
+
+# This needs to be declared after `FeatureConst` and `FeatureField`.
+class FeatureBody(NodeListBase):
+  """Represents the body of (i.e., list of definitions inside) a feature."""
+
+  # Features are compile time helpers so all fields are initializers/consts
+  # for the underlying platform feature type.
+  _list_item_type = (Const)
+
+
 class Import(NodeBase):
   """Represents an import statement."""
 
