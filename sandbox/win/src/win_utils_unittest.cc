@@ -15,11 +15,13 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/format_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util_win.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"
 #include "sandbox/win/src/nt_internals.h"
@@ -69,8 +71,9 @@ bool GetModuleList(HANDLE process, std::vector<HMODULE>* result) {
 }
 
 std::wstring GetRandomName() {
-  return base::StringPrintf(L"chrome_%08X%08X", base::RandUint64(),
-                            base::RandUint64());
+  return base::ASCIIToWide(
+      base::StringPrintf("chrome_%016" PRIX64 "%016" PRIX64, base::RandUint64(),
+                         base::RandUint64()));
 }
 
 void CompareHandlePath(const base::win::ScopedHandle& handle,

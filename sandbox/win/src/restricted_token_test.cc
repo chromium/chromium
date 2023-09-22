@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/win/access_token.h"
 #include "base/win/scoped_handle.h"
 #include "sandbox/win/src/sandbox.h"
@@ -46,8 +47,9 @@ int RunOpenProcessTest(bool unsandboxed,
     return SBOX_TEST_FAILED_SETUP;
   runner2.SetUnsandboxed(unsandboxed);
   return runner2.RunTest(
-      base::StringPrintf(L"RestrictedTokenTest_openprocess %d 0x%08X",
-                         runner.process_id(), access_mask)
+      base::ASCIIToWide(
+          base::StringPrintf("RestrictedTokenTest_openprocess %lu %#08lX",
+                             runner.process_id(), access_mask))
           .c_str());
 }
 
@@ -79,8 +81,9 @@ int RunRestrictedOpenProcessTest(bool unsandboxed,
     return SBOX_TEST_FAILED_SETUP;
   runner2.SetUnsandboxed(unsandboxed);
   return runner2.RunTest(
-      base::StringPrintf(L"RestrictedTokenTest_openprocess %d 0x%08X",
-                         runner.process_id(), access_mask)
+      base::ASCIIToWide(
+          base::StringPrintf("RestrictedTokenTest_openprocess %lu %#08lX",
+                             runner.process_id(), access_mask))
           .c_str());
 }
 
@@ -90,15 +93,18 @@ int RunRestrictedSelfOpenProcessTest(bool add_random_sid, DWORD access_mask) {
   auto* config = runner.GetPolicy()->GetConfig();
   config->SetDelayedIntegrityLevel(INTEGRITY_LEVEL_LOW);
   ResultCode result = config->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
-  if (result != SBOX_ALL_OK)
+  if (result != SBOX_ALL_OK) {
     return SBOX_TEST_FAILED_SETUP;
+  }
   config->SetLockdownDefaultDacl();
-  if (add_random_sid)
+  if (add_random_sid) {
     config->AddRestrictingRandomSid();
+  }
 
   return runner.RunTest(
-      base::StringPrintf(L"RestrictedTokenTest_currentprocess_dup 0x%08X",
-                         access_mask)
+      base::ASCIIToWide(
+          base::StringPrintf("RestrictedTokenTest_currentprocess_dup %#08lX",
+                             access_mask))
           .c_str());
 }
 

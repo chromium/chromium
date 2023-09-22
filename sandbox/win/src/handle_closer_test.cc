@@ -7,6 +7,7 @@
 
 #include "base/strings/string_util_win.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_handle.h"
 #include "sandbox/win/src/handle_closer_agent.h"
 #include "sandbox/win/src/nt_internals.h"
@@ -36,9 +37,9 @@ HANDLE GetMarkerFile(const wchar_t* extension) {
   CHECK(module.IsValid());
   FILETIME timestamp;
   CHECK(::GetFileTime(module.Get(), &timestamp, nullptr, nullptr));
-  marker_path +=
-      base::StringPrintf(L"%08x%08x%08x", ::GetFileSize(module.Get(), nullptr),
-                         timestamp.dwLowDateTime, timestamp.dwHighDateTime);
+  marker_path += base::ASCIIToWide(base::StringPrintf(
+      "%08lx%08lx%08lx", ::GetFileSize(module.Get(), nullptr),
+      timestamp.dwLowDateTime, timestamp.dwHighDateTime));
   marker_path += extension;
 
   // Make the file delete-on-close so cleanup is automatic.

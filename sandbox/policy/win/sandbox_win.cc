@@ -35,7 +35,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_util_win.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
@@ -257,7 +256,8 @@ DWORD GetSessionId() {
 std::wstring PrependWindowsSessionPath(const wchar_t* object) {
   // Cache this because it can't change after process creation.
   static DWORD s_session_id = GetSessionId();
-  return base::StringPrintf(L"\\Sessions\\%lu%ls", s_session_id, object);
+  return base::StrCat(
+      {L"\\Sessions\\", base::NumberToWString(s_session_id), object});
 }
 
 // Adds the generic config rules to a sandbox TargetConfig.

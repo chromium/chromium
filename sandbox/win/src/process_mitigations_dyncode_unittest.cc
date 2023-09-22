@@ -12,7 +12,8 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/strcat_win.h"
+#include "base/strings/string_number_conversions_win.h"
 #include "base/win/windows_version.h"
 #include "sandbox/win/src/process_mitigations.h"
 #include "sandbox/win/src/sandbox.h"
@@ -289,7 +290,7 @@ void DynamicCodeTestHarness(sandbox::MitigationFlags which_mitigation,
   auto runner = enable_mitigation ? RunnerWithMitigation(which_mitigation)
                                   : std::make_unique<sandbox::TestRunner>();
   std::wstring test =
-      base::StringPrintf(L"%ls %u", shared.c_str(), VIRTUALALLOC);
+      base::StrCat({shared, L" ", base::NumberToWString(VIRTUALALLOC)});
   EXPECT_EQ((expect_success ? sandbox::SBOX_TEST_SUCCEEDED
                             : ERROR_DYNAMIC_CODE_BLOCKED),
             runner->RunTest(test.c_str()));
@@ -297,7 +298,7 @@ void DynamicCodeTestHarness(sandbox::MitigationFlags which_mitigation,
   // Test 2:
   runner = enable_mitigation ? RunnerWithMitigation(which_mitigation)
                              : std::make_unique<sandbox::TestRunner>();
-  test = base::StringPrintf(L"%ls %u", shared.c_str(), VIRTUALPROTECT);
+  test = base::StrCat({shared, L" ", base::NumberToWString(VIRTUALPROTECT)});
   EXPECT_EQ((expect_success ? sandbox::SBOX_TEST_SUCCEEDED
                             : ERROR_DYNAMIC_CODE_BLOCKED),
             runner->RunTest(test.c_str()));
@@ -311,7 +312,7 @@ void DynamicCodeTestHarness(sandbox::MitigationFlags which_mitigation,
                 sandbox::TokenLevel::USER_RESTRICTED_SAME_ACCESS,
                 sandbox::TokenLevel::USER_LIMITED));
 
-  test = base::StringPrintf(L"%ls %u", shared.c_str(), MAPVIEWCUSTOM);
+  test = base::StrCat({shared, L" ", base::NumberToWString(MAPVIEWCUSTOM)});
   EXPECT_EQ((expect_success ? sandbox::SBOX_TEST_SUCCEEDED
                             : ERROR_DYNAMIC_CODE_BLOCKED),
             runner->RunTest(test.c_str()));
@@ -333,8 +334,8 @@ void DynamicCodeTestHarness(sandbox::MitigationFlags which_mitigation,
   EXPECT_TRUE(runner->AddFsRule(sandbox::Semantics::kFilesAllowAny,
                                 temp_dll_path.value().c_str()));
 
-  test = base::StringPrintf(L"%ls %u \"%ls\"", shared.c_str(), MAPVIEWFILE,
-                            temp_dll_path.value().c_str());
+  test = base::StrCat({shared, L" ", base::NumberToWString(MAPVIEWFILE), L" \"",
+                       temp_dll_path.value(), L"\""});
   EXPECT_EQ((expect_success ? sandbox::SBOX_TEST_SUCCEEDED
                             : ERROR_DYNAMIC_CODE_BLOCKED),
             runner->RunTest(test.c_str()));
