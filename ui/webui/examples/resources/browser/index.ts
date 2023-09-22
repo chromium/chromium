@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {PageHandlerFactory, PageHandlerRemote} from './browser.mojom-webui.js';
-import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import {Url as MojoUrl} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {
   DictionaryValue as mojoBase_mojom_DictionaryValue
@@ -83,7 +83,7 @@ class WebviewElement extends HTMLElement {
                                iframeContentWindow);
   }
 
-  navigate(src: Url) {
+  navigate(src: MojoUrl) {
     BrowserProxy.getInstance().navigate(this.guestInstanceId, src);
   }
 
@@ -104,9 +104,17 @@ function navigateToAddressBarUrl() {
   const webview = document.getElementById("webview") as WebviewElement;
   const addressBar = document.getElementById("address") as HTMLInputElement;
   if (webview && addressBar) {
-    const src = new Url();
-    src.url = addressBar.value;
-    webview.navigate(src);
+    try {
+      // Validate the URL before converting it to a Mojo URL to avoid a Mojo
+      // validation error when sending this call to the browser. Successful
+      // construction indicates a valid URL.
+      const src = new URL(addressBar.value);
+      const mojoSrc = new MojoUrl();
+      mojoSrc.url = src.toString();
+      webview.navigate(mojoSrc);
+    } catch (error) {
+      console.error(error);
+    }
   }
 }
 
