@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/permissions_policy/layout_animations_policy.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -175,9 +176,12 @@ CSSParserContext::CSSParserContext(
       use_legacy_background_size_shorthand_behavior_(
           use_legacy_background_size_shorthand_behavior),
       secure_context_mode_(secure_context_mode),
-      charset_(charset),
       document_(use_counter_document),
-      resource_fetch_restriction_(resource_fetch_restriction) {}
+      resource_fetch_restriction_(resource_fetch_restriction) {
+  if (!RuntimeEnabledFeatures::CSSParserIgnoreCharsetForURLsEnabled()) {
+    charset_ = charset;
+  }
+}
 
 bool CSSParserContext::operator==(const CSSParserContext& other) const {
   return base_url_ == other.base_url_ && origin_clean_ == other.origin_clean_ &&

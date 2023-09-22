@@ -134,7 +134,7 @@
       default: "",
     },
 
-    // Specifiy the default value of the base::Feature instance. This field
+    // Specify the default value of the base::Feature instance. This field
     // works only if base_feature is not "none".
     // If the field is missing or "", the default value depends on the 'status'
     // field.  See the comment above.
@@ -1033,6 +1033,11 @@
       name: "CSSPaintingForSpellingGrammarErrors",
       status: "stable",
       base_feature: "CssPaintingForSpellingGrammarErrors",
+    },
+    {
+      // Ignore the stylesheet encoding when parsing URLs, always using UTF-8.
+      // See crbug.com/1485525.
+      name: "CSSParserIgnoreCharsetForURLs",
     },
     {
       // crbug.com/1443291: Phrase Line Breaking
