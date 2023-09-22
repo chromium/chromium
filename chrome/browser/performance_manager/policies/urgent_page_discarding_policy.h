@@ -40,7 +40,7 @@ class UrgentPageDiscardingPolicy : public GraphOwned,
   // Callback called when a discard attempt has completed.
   void PostDiscardAttemptCallback(bool success);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Called when the reclaim target is ready.
   void OnReclaimTarget(absl::optional<uint64_t> reclaim_target_kb);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

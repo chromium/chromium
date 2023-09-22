@@ -28,10 +28,16 @@ BASE_DECLARE_FEATURE(kRunOnDedicatedThreadPoolThread);
 
 #if !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define URGENT_DISCARDING_FROM_PERFORMANCE_MANAGER() false
 #else
 #define URGENT_DISCARDING_FROM_PERFORMANCE_MANAGER() true
+#endif
+
+// Enables urgent discarding of pages directly from PerformanceManager rather
+// than via TabManager on Ash Chrome.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+BASE_DECLARE_FEATURE(kAshUrgentDiscardingFromPerformanceManager);
 #endif
 
 // Enable background tab loading of pages (restored via session restore)
