@@ -5,20 +5,20 @@
 source_set("snapshots") {
   public = [
     "snapshot_browser_agent.h",
-    "snapshot_cache.h",
-    "snapshot_cache_internal.h",
-    "snapshot_cache_observer.h",
     "snapshot_generator_delegate.h",
     "snapshot_id.h",
     "snapshot_lru_cache.h",
+    "snapshot_storage.h",
+    "snapshot_storage_internal.h",
+    "snapshot_storage_observer.h",
     "snapshot_tab_helper.h",
   ]
   sources = [
     "snapshot_browser_agent.mm",
-    "snapshot_cache.mm",
     "snapshot_generator.h",
     "snapshot_generator.mm",
     "snapshot_lru_cache.mm",
+    "snapshot_storage.mm",
     "snapshot_tab_helper.mm",
   ]
   deps = [
@@ -54,8 +54,8 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "snapshot_browser_agent_unittest.mm",
-    "snapshot_cache_unittest.mm",
     "snapshot_lru_cache_unittest.mm",
+    "snapshot_storage_unittest.mm",
     "snapshot_tab_helper_unittest.mm",
   ]
   deps = [

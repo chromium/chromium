@@ -14,24 +14,25 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
-#import "ios/chrome/browser/snapshots/snapshot_cache.h"
+#import "ios/chrome/browser/snapshots/snapshot_storage.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/web/public/web_state.h"
 
 namespace {
 
 // Moves snapshot associated with `snapshot_id` from `source_browser` to
-// `destination_browser`'s snapshot cache.
+// `destination_browser`'s snapshot storage.
 void MoveSnapshot(SnapshotID snapshot_id,
                   Browser* source_browser,
                   Browser* destination_browser) {
   DCHECK(snapshot_id.valid());
-  SnapshotCache* source_cache =
-      SnapshotBrowserAgent::FromBrowser(source_browser)->snapshot_cache();
-  SnapshotCache* destination_cache =
-      SnapshotBrowserAgent::FromBrowser(destination_browser)->snapshot_cache();
-  [source_cache migrateImageWithSnapshotID:snapshot_id
-                           toSnapshotCache:destination_cache];
+  SnapshotStorage* source_storage =
+      SnapshotBrowserAgent::FromBrowser(source_browser)->snapshot_storage();
+  SnapshotStorage* destination_storage =
+      SnapshotBrowserAgent::FromBrowser(destination_browser)
+          ->snapshot_storage();
+  [source_storage migrateImageWithSnapshotID:snapshot_id
+                           toSnapshotStorage:destination_storage];
 }
 
 }  // namespace

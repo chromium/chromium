@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/snapshots/snapshot_cache.h"
-#import "ios/chrome/browser/snapshots/snapshot_cache_internal.h"
+#import "ios/chrome/browser/snapshots/snapshot_storage.h"
+#import "ios/chrome/browser/snapshots/snapshot_storage_internal.h"
 
 #import <UIKit/UIKit.h>
 
@@ -30,27 +30,28 @@
 #import "base/threading/scoped_blocking_call.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/snapshots/snapshot_cache_observer.h"
 #import "ios/chrome/browser/snapshots/snapshot_id.h"
 #import "ios/chrome/browser/snapshots/snapshot_lru_cache.h"
+#import "ios/chrome/browser/snapshots/snapshot_storage_observer.h"
 #import "ios/chrome/browser/tabs/features.h"
 #import "ui/base/device_form_factor.h"
 
 // Protocol observers subclass that explicitly implements
-// <SnapshotCacheObserver>.
-@interface SnapshotCacheObservers : CRBProtocolObservers<SnapshotCacheObserver>
+// <SnapshotStorageObserver>.
+@interface SnapshotStorageObservers
+    : CRBProtocolObservers <SnapshotStorageObserver>
 + (instancetype)observers;
 @end
 
-@implementation SnapshotCacheObservers
+@implementation SnapshotStorageObservers
 + (instancetype)observers {
-  return [self observersWithProtocol:@protocol(SnapshotCacheObserver)];
+  return [self observersWithProtocol:@protocol(SnapshotStorageObserver)];
 }
 @end
 
-@interface SnapshotCache ()
+@interface SnapshotStorage ()
 // List of observers to be notified of changes to the snapshot cache.
-@property(nonatomic, strong) SnapshotCacheObservers* observers;
+@property(nonatomic, strong) SnapshotStorageObservers* observers;
 @end
 
 namespace {
@@ -66,7 +67,8 @@ enum ImageScale {
 };
 
 const ImageType kImageTypes[] = {
-    IMAGE_TYPE_COLOR, IMAGE_TYPE_GREYSCALE,
+    IMAGE_TYPE_COLOR,
+    IMAGE_TYPE_GREYSCALE,
 };
 
 const CGFloat kJPEGImageQuality = 1.0;  // Highest quality. No compression.
@@ -138,8 +140,9 @@ ImageScale ImageScaleForDevice() {
   // the snapshot images should match the scale of the device.
   // On tablet, the color snapshot is only used to generate the grey snapshot,
   // which does not have to be high quality, so use scale of 1.0 on all tablets.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     return IMAGE_SCALE_1X;
+  }
 
   // Cap snapshot resolution to 2x to reduce the amount of memory used.
   return [UIScreen mainScreen].scale == 1.0 ? IMAGE_SCALE_1X : IMAGE_SCALE_2X;
@@ -176,8 +179,9 @@ UIImage* ReadImageForSnapshotIDFromDisk(SnapshotID snapshot_id,
 }
 
 void WriteImageToDisk(UIImage* image, const base::FilePath& file_path) {
-  if (!image)
+  if (!image) {
     return;
+  }
   // CGImage should exist, otherwise UIImageJPEG(PNG)Representation returns nil.
   CHECK(image.CGImage);
 
@@ -227,8 +231,9 @@ void ConvertAndSaveGreyImage(SnapshotID snapshot_id,
   if (!color_image) {
     color_image = ReadImageForSnapshotIDFromDisk(snapshot_id, IMAGE_TYPE_COLOR,
                                                  image_scale, cache_directory);
-    if (!color_image)
+    if (!color_image) {
       return;
+    }
   }
   UIImage* grey_image = GreyImage(color_image);
   base::FilePath image_path = ImagePath(snapshot_id, IMAGE_TYPE_GREYSCALE,
@@ -253,8 +258,9 @@ void RemoveAllImages(const base::FilePath& cache_directory) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
 
-  if (cache_directory.empty() || !base::DirectoryExists(cache_directory))
+  if (cache_directory.empty() || !base::DirectoryExists(cache_directory)) {
     return;
+  }
 
   if (!base::DeletePathRecursively(cache_directory)) {
     DLOG(ERROR) << "Error deleting snapshots storage. "
@@ -273,8 +279,9 @@ void PurgeCacheOlderThan(const base::FilePath& cache_directory,
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
 
-  if (!base::DirectoryExists(cache_directory))
+  if (!base::DirectoryExists(cache_directory)) {
     return;
+  }
 
   std::set<base::FilePath> files_to_keep;
   for (SnapshotID snapshot_id : keep_alive_snapshot_ids) {
@@ -288,13 +295,16 @@ void PurgeCacheOlderThan(const base::FilePath& cache_directory,
 
   for (base::FilePath current_file = enumerator.Next(); !current_file.empty();
        current_file = enumerator.Next()) {
-    if (current_file.Extension() != ".jpg")
+    if (current_file.Extension() != ".jpg") {
       continue;
-    if (base::Contains(files_to_keep, current_file))
+    }
+    if (base::Contains(files_to_keep, current_file)) {
       continue;
+    }
     base::FileEnumerator::FileInfo file_info = enumerator.GetInfo();
-    if (file_info.GetLastModifiedTime() > threshold_date)
+    if (file_info.GetLastModifiedTime() > threshold_date) {
       continue;
+    }
 
     base::DeleteFile(current_file);
   }
@@ -388,15 +398,16 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
                                            snapshot_scale, cache_directory);
   }
 
-  if (!image)
+  if (!image) {
     return nil;
+  }
 
   return GreyImage(image);
 }
 
 }  // anonymous namespace
 
-@implementation SnapshotCache {
+@implementation SnapshotStorage {
   // Cache to hold color snapshots in memory. n.b. Color snapshots are not
   // kept in memory on tablets.
   SnapshotLRUCache<UIImage*>* _lruCache;
@@ -450,7 +461,7 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
         FROM_HERE,
         base::BindOnce(CreateCacheDirectory, _cacheDirectory, legacyPath));
 
-    _observers = [SnapshotCacheObservers observers];
+    _observers = [SnapshotStorageObservers observers];
 
     [[NSNotificationCenter defaultCenter]
         addObserver:self
@@ -513,8 +524,9 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
       base::BindOnce(&ReadImageForSnapshotIDFromDisk, snapshotID,
                      IMAGE_TYPE_COLOR, _snapshotsScale, _cacheDirectory),
       base::BindOnce(^(UIImage* image) {
-        if (image)
+        if (image) {
           [weakLRUCache setObject:image forKey:snapshotID];
+        }
         callback(image);
       }));
 }
@@ -532,7 +544,7 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
                       CGImageGetHeight(image.CGImage) * [_lruCache count];
   base::UmaHistogramMemoryKB("IOS.Snapshots.CacheSize", imageSizes / 1024);
 
-  [self.observers snapshotCache:self didUpdateSnapshotForID:snapshotID];
+  [self.observers snapshotStorage:self didUpdateSnapshotForID:snapshotID];
 
   // Save the image to disk.
   _taskRunner->PostTask(
@@ -546,10 +558,11 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
 
   [_lruCache removeObjectForKey:snapshotID];
 
-  [self.observers snapshotCache:self didUpdateSnapshotForID:snapshotID];
+  [self.observers snapshotStorage:self didUpdateSnapshotForID:snapshotID];
 
-  if (!_taskRunner)
+  if (!_taskRunner) {
     return;
+  }
 
   _taskRunner->PostTask(
       FROM_HERE, base::BindOnce(&DeleteImageWithSnapshotID, _cacheDirectory,
@@ -561,8 +574,9 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
 
   [_lruCache removeAllObjects];
 
-  if (!_taskRunner)
+  if (!_taskRunner) {
     return;
+  }
 
   _taskRunner->PostTask(FROM_HERE,
                         base::BindOnce(&RemoveAllImages, _cacheDirectory));
@@ -587,8 +601,9 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
                     keeping:(const std::vector<SnapshotID>&)liveSnapshotIDs {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
 
-  if (!_taskRunner)
+  if (!_taskRunner) {
     return;
+  }
 
   _taskRunner->PostTask(
       FROM_HERE, base::BindOnce(&PurgeCacheOlderThan, _cacheDirectory, date,
@@ -609,17 +624,17 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
 }
 
 - (void)migrateImageWithSnapshotID:(SnapshotID)snapshotID
-                   toSnapshotCache:(SnapshotCache*)destinationCache {
+                 toSnapshotStorage:(SnapshotStorage*)destinationStorage {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
 
-  // Copy to the destination cache.
+  // Copy to the destination storage.
   if (UIImage* image = [_lruCache objectForKey:snapshotID]) {
     // Copy both on-disk and in-memory versions.
-    [destinationCache setImage:image withSnapshotID:snapshotID];
+    [destinationStorage setImage:image withSnapshotID:snapshotID];
     // Copy the grey scale version, if available.
     auto iterator = _greyImageDictionary.find(snapshotID);
     if (iterator != _greyImageDictionary.end()) {
-      destinationCache->_greyImageDictionary.insert(
+      destinationStorage->_greyImageDictionary.insert(
           std::make_pair(snapshotID, iterator->second));
     }
   } else {
@@ -627,14 +642,14 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
     if (_taskRunner) {
       _taskRunner->PostTask(
           FROM_HERE,
-          base::BindOnce(&CopyImageFile,
-                         [self imagePathForSnapshotID:snapshotID],
-                         [destinationCache imagePathForSnapshotID:snapshotID]));
+          base::BindOnce(
+              &CopyImageFile, [self imagePathForSnapshotID:snapshotID],
+              [destinationStorage imagePathForSnapshotID:snapshotID]));
       _taskRunner->PostTask(
           FROM_HERE,
           base::BindOnce(
               &CopyImageFile, [self greyImagePathForSnapshotID:snapshotID],
-              [destinationCache greyImagePathForSnapshotID:snapshotID]));
+              [destinationStorage greyImagePathForSnapshotID:snapshotID]));
     }
   }
 
@@ -684,10 +699,11 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
   // already in the cache, use it.
   UIImage* image = [_lruCache objectForKey:snapshotID];
 
-  if (!_taskRunner)
+  if (!_taskRunner) {
     return;
+  }
 
-  __weak SnapshotCache* weakSelf = self;
+  __weak SnapshotStorage* weakSelf = self;
   _taskRunner->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&GreyImageFromCachedImage, _cacheDirectory, snapshotID,
@@ -735,7 +751,7 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
     return;
   }
 
-  __weak SnapshotCache* weakSelf = self;
+  __weak SnapshotStorage* weakSelf = self;
   _taskRunner->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&ReadImageForSnapshotIDFromDisk, snapshotID,
@@ -770,8 +786,9 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
     }
   }
 
-  if (!_taskRunner)
+  if (!_taskRunner) {
     return;
+  }
 
   _taskRunner->PostTask(
       FROM_HERE,
@@ -779,11 +796,11 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
                      _backgroundingColorImage, _cacheDirectory));
 }
 
-- (void)addObserver:(id<SnapshotCacheObserver>)observer {
+- (void)addObserver:(id<SnapshotStorageObserver>)observer {
   [self.observers addObserver:observer];
 }
 
-- (void)removeObserver:(id<SnapshotCacheObserver>)observer {
+- (void)removeObserver:(id<SnapshotStorageObserver>)observer {
   [self.observers removeObserver:observer];
 }
 
@@ -793,7 +810,7 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
 
 @end
 
-@implementation SnapshotCache (TestingAdditions)
+@implementation SnapshotStorage (TestingAdditions)
 
 - (void)greyImageForSnapshotID:(SnapshotID)snapshotID
                       callback:(void (^)(UIImage*))callback {

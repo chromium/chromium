@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SNAPSHOTS_SNAPSHOT_CACHE_H_
-#define IOS_CHROME_BROWSER_SNAPSHOTS_SNAPSHOT_CACHE_H_
+#ifndef IOS_CHROME_BROWSER_SNAPSHOTS_SNAPSHOT_STORAGE_H_
+#define IOS_CHROME_BROWSER_SNAPSHOTS_SNAPSHOT_STORAGE_H_
 
 #include <vector>
 
@@ -13,21 +13,21 @@ class SnapshotID;
 namespace base {
 class FilePath;
 class Time;
-}
+}  // namespace base
 
-@protocol SnapshotCacheObserver;
+@protocol SnapshotStorageObserver;
 
-// A class providing an in-memory and on-disk cache of tab snapshots.
+// A class providing an in-memory and on-disk storage of tab snapshots.
 // A snapshot is a full-screen image of the contents of the page at the current
 // scroll offset and zoom level, used to stand in for the WKWebView if it has
 // been purged from memory or when quickly switching tabs.
 // Persists to disk on a background thread each time a snapshot changes.
-@interface SnapshotCache : NSObject
+@interface SnapshotStorage : NSObject
 
 // Designated initializer. `storagePath` is the file path where all images
-// managed by this SnapshotCache are stored. `storagePath` is not guaranteed to
-// exist. The contents of `storagePath` are entirely managed by this
-// SnapshotCache.
+// managed by this SnapshotStorage are stored. `storagePath` is not guaranteed
+// to exist. The contents of `storagePath` are entirely managed by this
+// SnapshotStorage.
 //
 // To support renaming the directory where the snapshots are stored, it is
 // possible to pass a non-empty path via `legacyPath`. If present, then it
@@ -67,7 +67,7 @@ class Time;
 // Removes all images from both the LRU and disk.
 - (void)removeAllImages;
 
-// Purges the cache of snapshots that are older than `date`. The snapshots for
+// Purges the storage of snapshots that are older than `date`. The snapshots for
 // `liveSnapshotIDs` will be kept. This will be done asynchronously on a
 // background thread.
 - (void)purgeCacheOlderThan:(base::Time)date
@@ -78,18 +78,18 @@ class Time;
 - (void)renameSnapshotsWithIDs:(NSArray<NSString*>*)oldIDs
                          toIDs:(const std::vector<SnapshotID>&)newIDs;
 
-// Moves the on-disk tab snapshot from the receiver cache to the destination
-// on-disk cache. If the snapshot was also in-memory, it is moved as well. The
+// Moves the on-disk tab snapshot from the receiver storage to the destination
+// on-disk storage. If the snapshot was also in-memory, it is moved as well. The
 // grey image is handled as well if present.
 - (void)migrateImageWithSnapshotID:(SnapshotID)snapshotID
-                   toSnapshotCache:(SnapshotCache*)destinationCache;
+                 toSnapshotStorage:(SnapshotStorage*)destinationCache;
 
 // Hints that the snapshot for `snapshotID` will likely be saved to disk when
 // the application is backgrounded.  The snapshot is then saved in memory, so it
 // does not need to be read off disk.
 - (void)willBeSavedGreyWhenBackgrounding:(SnapshotID)snapshotID;
 
-// Creates temporary cache of grey images for tablet side-swipe.
+// Creates temporary storage of grey images for tablet side-swipe.
 - (void)createGreyCache:(const std::vector<SnapshotID>&)snapshotIDs;
 
 // Releases alls images in grey cache.
@@ -99,11 +99,11 @@ class Time;
 // if a color version of the snapshot already exists in memory or on disk.
 - (void)saveGreyInBackgroundForSnapshotID:(SnapshotID)snapshotID;
 
-// Adds an observer to this snapshot cache.
-- (void)addObserver:(id<SnapshotCacheObserver>)observer;
+// Adds an observer to this snapshot storage.
+- (void)addObserver:(id<SnapshotStorageObserver>)observer;
 
-// Removes an observer from this snapshot cache.
-- (void)removeObserver:(id<SnapshotCacheObserver>)observer;
+// Removes an observer from this snapshot storage.
+- (void)removeObserver:(id<SnapshotStorageObserver>)observer;
 
 // Must be invoked before the instance is deallocated. It is needed to release
 // all references to C++ objects. The receiver will likely soon be deallocated.
@@ -112,7 +112,7 @@ class Time;
 @end
 
 // Additionnal methods that should only be used for tests.
-@interface SnapshotCache (TestingAdditions)
+@interface SnapshotStorage (TestingAdditions)
 // Requests the grey snapshot for `snapshotID`. If the image is already loaded
 // in memory, this will immediately call back with `callback`. Otherwise, only
 // uses `callback` for the most recent caller. The callback is not guaranteed to
@@ -124,4 +124,4 @@ class Time;
 - (NSUInteger)lruCacheMaxSize;
 @end
 
-#endif  // IOS_CHROME_BROWSER_SNAPSHOTS_SNAPSHOT_CACHE_H_
+#endif  // IOS_CHROME_BROWSER_SNAPSHOTS_SNAPSHOT_STORAGE_H_

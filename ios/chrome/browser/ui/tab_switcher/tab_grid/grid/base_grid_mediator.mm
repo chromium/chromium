@@ -45,8 +45,8 @@
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
-#import "ios/chrome/browser/snapshots/snapshot_cache.h"
-#import "ios/chrome/browser/snapshots/snapshot_cache_observer.h"
+#import "ios/chrome/browser/snapshots/snapshot_storage.h"
+#import "ios/chrome/browser/snapshots/snapshot_storage_observer.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/tabs_search/model/tabs_search_service.h"
@@ -136,7 +136,7 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
 }  // namespace
 
 @interface BaseGridMediator () <CRWWebStateObserver,
-                                SnapshotCacheObserver,
+                                SnapshotStorageObserver,
                                 WebStateListObserving>
 // The browser state from the browser.
 @property(nonatomic, readonly) ChromeBrowserState* browserState;
@@ -181,7 +181,7 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
 #pragma mark - Public properties
 
 - (void)setBrowser:(Browser*)browser {
-  [self.snapshotCache removeObserver:self];
+  [self.snapshotStorage removeObserver:self];
   _scopedWebStateListObservation->RemoveAllObservations();
   _scopedWebStateObservation->RemoveAllObservations();
 
@@ -190,7 +190,7 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
   _webStateList = browser ? browser->GetWebStateList() : nullptr;
   _browserState = browser ? browser->GetBrowserState() : nullptr;
 
-  [self.snapshotCache addObserver:self];
+  [self.snapshotStorage addObserver:self];
 
   if (_webStateList) {
     _scopedWebStateListObservation->AddObservation(_webStateList);
@@ -393,9 +393,9 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
   [self.consumer replaceItemID:webState->GetUniqueIdentifier() withItem:item];
 }
 
-#pragma mark - SnapshotCacheObserver
+#pragma mark - SnapshotStorageObserver
 
-- (void)snapshotCache:(SnapshotCache*)snapshotCache
+- (void)snapshotStorage:(SnapshotStorage*)snapshotStorage
     didUpdateSnapshotForID:(SnapshotID)snapshotID {
   web::WebState* webState = nullptr;
   for (int i = self.webStateList->pinned_tabs_count();
@@ -958,12 +958,12 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
   }
 }
 
-// Returns a SnapshotCache for the current browser.
-- (SnapshotCache*)snapshotCache {
+// Returns a SnapshotStorage for the current browser.
+- (SnapshotStorage*)snapshotStorage {
   if (!self.browser) {
     return nil;
   }
-  return SnapshotBrowserAgent::FromBrowser(self.browser)->snapshot_cache();
+  return SnapshotBrowserAgent::FromBrowser(self.browser)->snapshot_storage();
 }
 
 - (void)addItemsWithIDsToReadingList:(const std::set<web::WebStateID>&)itemIDs {

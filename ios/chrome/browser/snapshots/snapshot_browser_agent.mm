@@ -11,7 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/snapshots/snapshot_cache.h"
+#import "ios/chrome/browser/snapshots/snapshot_storage.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 
 namespace {
@@ -38,7 +38,7 @@ void SnapshotBrowserAgent::BrowserDestroyed(Browser* browser) {
   browser->GetWebStateList()->RemoveObserver(this);
   browser->RemoveObserver(this);
   browser_ = nullptr;
-  [snapshot_cache_ shutdown];
+  [snapshot_storage_ shutdown];
 }
 
 #pragma mark - WebStateListObserver
@@ -91,7 +91,7 @@ void SnapshotBrowserAgent::BatchOperationEnded(WebStateList* web_state_list) {
 
 void SnapshotBrowserAgent::SetSessionID(NSString* session_identifier) {
   // It is incorrect to call this method twice.
-  DCHECK(!snapshot_cache_);
+  DCHECK(!snapshot_storage_);
   DCHECK(session_identifier.length != 0);
 
   const std::string identifier = base::SysNSStringToUTF8(session_identifier);
@@ -110,8 +110,8 @@ void SnapshotBrowserAgent::SetSessionID(NSString* session_identifier) {
   const base::FilePath storage_path =
       browser_state_path.Append(kSnapshots).Append(identifier);
 
-  snapshot_cache_ = [[SnapshotCache alloc] initWithStoragePath:storage_path
-                                                    legacyPath:legacy_path];
+  snapshot_storage_ = [[SnapshotStorage alloc] initWithStoragePath:storage_path
+                                                        legacyPath:legacy_path];
 }
 
 void SnapshotBrowserAgent::PerformStorageMaintenance() {
@@ -120,19 +120,20 @@ void SnapshotBrowserAgent::PerformStorageMaintenance() {
 }
 
 void SnapshotBrowserAgent::RemoveAllSnapshots() {
-  [snapshot_cache_ removeAllImages];
+  [snapshot_storage_ removeAllImages];
 }
 
 void SnapshotBrowserAgent::InsertWebState(web::WebState* web_state) {
-  SnapshotTabHelper::FromWebState(web_state)->SetSnapshotCache(snapshot_cache_);
+  SnapshotTabHelper::FromWebState(web_state)->SetSnapshotStorage(
+      snapshot_storage_);
 }
 
 void SnapshotBrowserAgent::DetachWebState(web::WebState* web_state) {
-  SnapshotTabHelper::FromWebState(web_state)->SetSnapshotCache(nil);
+  SnapshotTabHelper::FromWebState(web_state)->SetSnapshotStorage(nil);
 }
 
 void SnapshotBrowserAgent::MigrateStorageIfNecessary() {
-  DCHECK(snapshot_cache_);
+  DCHECK(snapshot_storage_);
 
   WebStateList* web_state_list = browser_->GetWebStateList();
   const int web_state_list_count = web_state_list->count();
@@ -155,17 +156,17 @@ void SnapshotBrowserAgent::MigrateStorageIfNecessary() {
         SnapshotTabHelper::FromWebState(web_state)->GetSnapshotID());
   }
 
-  [snapshot_cache_ renameSnapshotsWithIDs:stable_identifiers
-                                    toIDs:snapshot_identifiers];
+  [snapshot_storage_ renameSnapshotsWithIDs:stable_identifiers
+                                      toIDs:snapshot_identifiers];
 }
 
 void SnapshotBrowserAgent::PurgeUnusedSnapshots() {
-  DCHECK(snapshot_cache_);
+  DCHECK(snapshot_storage_);
   std::vector<SnapshotID> snapshot_ids = GetSnapshotIDs();
   // Keep snapshots that are less than one minute old, to prevent a concurrency
   // issue if they are created while the purge is running.
   const base::Time one_minute_ago = base::Time::Now() - base::Minutes(1);
-  [snapshot_cache_ purgeCacheOlderThan:one_minute_ago keeping:snapshot_ids];
+  [snapshot_storage_ purgeCacheOlderThan:one_minute_ago keeping:snapshot_ids];
 }
 
 std::vector<SnapshotID> SnapshotBrowserAgent::GetSnapshotIDs() {

@@ -4,7 +4,7 @@ include_rules = [
 
 specific_include_rules = {
   # TODO(crbug.com/1294160): Remove these dependencies.
-  "^snapshot_cache.mm": [
+  "^snapshot_storage.mm": [
     "+ios/chrome/browser/shared/ui/util/uikit_ui_util.h",
     "+ios/chrome/browser/tabs/features.h",
   ],

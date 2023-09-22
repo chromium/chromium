@@ -14,9 +14,9 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/snapshots/snapshot_id.h"
 
-@class SnapshotCache;
+@class SnapshotStorage;
 
-// Associates a SnapshotCache to a Browser.
+// Associates a SnapshotStorage to a Browser.
 class SnapshotBrowserAgent : public BrowserObserver,
                              public WebStateListObserver,
                              public BrowserUserData<SnapshotBrowserAgent> {
@@ -38,7 +38,7 @@ class SnapshotBrowserAgent : public BrowserObserver,
   // Permanently removes all snapshots.
   void RemoveAllSnapshots();
 
-  SnapshotCache* snapshot_cache() { return snapshot_cache_; }
+  SnapshotStorage* snapshot_storage() { return snapshot_storage_; }
 
  private:
   friend class BrowserUserData<SnapshotBrowserAgent>;
@@ -56,7 +56,7 @@ class SnapshotBrowserAgent : public BrowserObserver,
   void WillBeginBatchOperation(WebStateList* web_state_list) override;
   void BatchOperationEnded(WebStateList* web_state_list) override;
 
-  // Helper methods to set a snapshot cache for `web_state`.
+  // Helper methods to set a snapshot storage for `web_state`.
   void InsertWebState(web::WebState* web_state);
   void DetachWebState(web::WebState* web_state);
 
@@ -70,7 +70,7 @@ class SnapshotBrowserAgent : public BrowserObserver,
   // Returns the snapshot IDs of all the WebStates in the Browser.
   std::vector<SnapshotID> GetSnapshotIDs();
 
-  __strong SnapshotCache* snapshot_cache_;
+  __strong SnapshotStorage* snapshot_storage_;
 
   Browser* browser_ = nullptr;
 };

@@ -19,8 +19,8 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
-#import "ios/chrome/browser/snapshots/snapshot_cache.h"
-#import "ios/chrome/browser/snapshots/snapshot_cache_observer.h"
+#import "ios/chrome/browser/snapshots/snapshot_storage.h"
+#import "ios/chrome/browser/snapshots/snapshot_storage_observer.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
@@ -86,12 +86,12 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
 
 @interface InactiveTabsMediator () <CRWWebStateObserver,
                                     PrefObserverDelegate,
-                                    SnapshotCacheObserver,
+                                    SnapshotStorageObserver,
                                     WebStateListObserving> {
   // The list of inactive tabs.
   WebStateList* _webStateList;
-  // The snapshot cache of _webStateList.
-  __weak SnapshotCache* _snapshotCache;
+  // The snapshot storage of _webStateList.
+  __weak SnapshotStorage* _snapshotStorage;
   // The observers of _webStateList.
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserverBridge;
   std::unique_ptr<ScopedWebStateListObservation> _scopedWebStateListObservation;
@@ -135,7 +135,7 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   CHECK(sessionRestorationAgent ||
         web::features::UseSessionSerializationOptimizations());
   CHECK(snapshotAgent);
-  CHECK(snapshotAgent->snapshot_cache());
+  CHECK(snapshotAgent->snapshot_storage());
   CHECK(tabRestoreService);
   self = [super init];
   if (self) {
@@ -165,8 +165,8 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
     _prefObserverBridge->ObserveChangesForPreference(
         prefs::kInactiveTabsTimeThreshold, &_prefChangeRegistrar);
 
-    _snapshotCache = snapshotAgent->snapshot_cache();
-    [_snapshotCache addObserver:self];
+    _snapshotStorage = snapshotAgent->snapshot_storage();
+    [_snapshotStorage addObserver:self];
 
     _sessionRestorationAgent = sessionRestorationAgent;
     _snapshotAgent = snapshotAgent;
@@ -176,7 +176,7 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
 }
 
 - (void)dealloc {
-  [_snapshotCache removeObserver:self];
+  [_snapshotStorage removeObserver:self];
 }
 
 - (void)setConsumer:
@@ -208,8 +208,8 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   _prefChangeRegistrar.RemoveAll();
   _prefObserverBridge.reset();
   _prefService = nullptr;
-  [_snapshotCache removeObserver:self];
-  _snapshotCache = nil;
+  [_snapshotStorage removeObserver:self];
+  _snapshotStorage = nil;
   _sessionRestorationAgent = nullptr;
   [self discardSavedClosedItems];
   _snapshotAgent = nullptr;
@@ -245,9 +245,9 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   }
 }
 
-#pragma mark - SnapshotCacheObserver
+#pragma mark - SnapshotStorageObserver
 
-- (void)snapshotCache:(SnapshotCache*)snapshotCache
+- (void)snapshotStorage:(SnapshotStorage*)snapshotStorage
     didUpdateSnapshotForID:(SnapshotID)snapshotID {
   web::WebState* webState = nullptr;
   for (int i = 0; i < _webStateList->count(); i++) {

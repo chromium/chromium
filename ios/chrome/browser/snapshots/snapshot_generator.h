@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 class SnapshotID;
-@class SnapshotCache;
+@class SnapshotStorage;
 @protocol SnapshotGeneratorDelegate;
 
 namespace web {
@@ -19,9 +19,9 @@ class WebState;
 // tab's web page.
 @interface SnapshotGenerator : NSObject
 
-// Weak reference to the snapshot cache which is used to store and retrieve
+// Weak reference to the snapshot storage which is used to store and retrieve
 // snapshots for the WebState associated with this SnapshotGenerator.
-@property(nonatomic, weak) SnapshotCache* snapshotCache;
+@property(nonatomic, weak) SnapshotStorage* snapshotStorage;
 
 // Designated initializer.
 - (instancetype)initWithWebState:(web::WebState*)webState
@@ -38,18 +38,18 @@ class WebState;
 // `callback` will be called with nil.
 - (void)retrieveGreySnapshot:(void (^)(UIImage*))callback;
 
-// Generates a new snapshot, updates the snapshot cache, and returns the new
+// Generates a new snapshot, updates the snapshot storage, and returns the new
 // snapshot image.
 - (UIImage*)updateSnapshot;
 
-// Asynchronously generates a new snapshot, updates the snapshot cache, and runs
-// `callback` with the new snapshot image. It is an error to call this method if
-// the web state is showing anything other (e.g., native content) than a web
-// view.
+// Asynchronously generates a new snapshot, updates the snapshot storage, and
+// runs `callback` with the new snapshot image. It is an error to call this
+// method if the web state is showing anything other (e.g., native content) than
+// a web view.
 - (void)updateWebViewSnapshotWithCompletion:(void (^)(UIImage*))completion;
 
 // Generates a new snapshot and returns the new snapshot image. This does not
-// update the snapshot cache. If `shouldAddOverlay` is YES, overlays (e.g.,
+// update the snapshot storage. If `shouldAddOverlay` is YES, overlays (e.g.,
 // infobars, the download manager, and sad tab view) are also captured in the
 // snapshot image.
 - (UIImage*)generateSnapshotWithOverlays:(BOOL)shouldAddOverlay;

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SNAPSHOTS_SNAPSHOT_CACHE_INTERNAL_H_
-#define IOS_CHROME_BROWSER_SNAPSHOTS_SNAPSHOT_CACHE_INTERNAL_H_
+#ifndef IOS_CHROME_BROWSER_SNAPSHOTS_SNAPSHOT_STORAGE_INTERNAL_H_
+#define IOS_CHROME_BROWSER_SNAPSHOTS_SNAPSHOT_STORAGE_INTERNAL_H_
 
-#import "ios/chrome/browser/snapshots/snapshot_cache_internal.h"
+#import "ios/chrome/browser/snapshots/snapshot_storage_internal.h"
 
 namespace base {
 class FilePath;
@@ -13,7 +13,7 @@ class FilePath;
 
 @class NSString;
 
-@interface SnapshotCache (Internal)
+@interface SnapshotStorage (Internal)
 // Returns filepath to the color snapshot of `snapshotID`.
 - (base::FilePath)imagePathForSnapshotID:(SnapshotID)snapshotID;
 // Returns filepath to the greyscale snapshot of `snapshotID`.
@@ -22,4 +22,4 @@ class FilePath;
 - (base::FilePath)legacyImagePathForSnapshotID:(NSString*)snapshotID;
 @end
 
-#endif  // IOS_CHROME_BROWSER_SNAPSHOTS_SNAPSHOT_CACHE_INTERNAL_H_
+#endif  // IOS_CHROME_BROWSER_SNAPSHOTS_SNAPSHOT_STORAGE_INTERNAL_H_

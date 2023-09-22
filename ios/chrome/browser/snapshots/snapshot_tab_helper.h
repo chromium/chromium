@@ -13,7 +13,7 @@
 #include "ios/web/public/web_state_observer.h"
 #include "ios/web/public/web_state_user_data.h"
 
-@class SnapshotCache;
+@class SnapshotStorage;
 @class SnapshotGenerator;
 @protocol SnapshotGeneratorDelegate;
 
@@ -34,9 +34,9 @@ class SnapshotTabHelper : public web::WebStateObserver,
   // results in failures. The delegate is not owned by the tab helper.
   void SetDelegate(id<SnapshotGeneratorDelegate> delegate);
 
-  // Sets the snapshot cache to be used to store and retrieve snapshots. This is
-  // not owned by the tab helper.
-  void SetSnapshotCache(SnapshotCache* snapshot_cache);
+  // Sets the snapshot storage to be used to store and retrieve snapshots. This
+  // is not owned by the tab helper.
+  void SetSnapshotStorage(SnapshotStorage* snapshot_storage);
 
   // Retrieves a color snapshot for the current page, invoking `callback` with
   // the image. The callback may be called synchronously if there is a cached
@@ -52,13 +52,13 @@ class SnapshotTabHelper : public web::WebStateObserver,
   // `callback` with nil if a snapshot does not exist.
   void RetrieveGreySnapshot(void (^callback)(UIImage*));
 
-  // Asynchronously generates a new snapshot, updates the snapshot cache, and
+  // Asynchronously generates a new snapshot, updates the snapshot storage, and
   // invokes `callback` with the new snapshot image. Invokes `callback` with nil
   // if snapshot generation fails.
   void UpdateSnapshotWithCallback(void (^callback)(UIImage*));
 
   // Generates a new snapshot without any overlays, and returns the new snapshot
-  // image. This does not update the snapshot cache. Returns nil if snapshot
+  // image. This does not update the snapshot storage. Returns nil if snapshot
   // generation fails.
   UIImage* GenerateSnapshotWithoutOverlays();
 

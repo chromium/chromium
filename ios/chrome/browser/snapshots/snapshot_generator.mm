@@ -15,9 +15,9 @@
 #import "base/functional/bind.h"
 #import "build/blink_buildflags.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/snapshots/snapshot_cache.h"
 #import "ios/chrome/browser/snapshots/snapshot_generator_delegate.h"
 #import "ios/chrome/browser/snapshots/snapshot_id.h"
+#import "ios/chrome/browser/snapshots/snapshot_storage.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_client.h"
@@ -95,8 +95,8 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
 
 - (void)retrieveSnapshot:(void (^)(UIImage*))callback {
   DCHECK(callback);
-  if (_snapshotCache) {
-    [_snapshotCache retrieveImageForSnapshotID:_snapshotID callback:callback];
+  if (_snapshotStorage) {
+    [_snapshotStorage retrieveImageForSnapshotID:_snapshotID callback:callback];
   } else {
     callback(nil);
   }
@@ -115,10 +115,10 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
     callback(image);
   };
 
-  SnapshotCache* snapshotCache = _snapshotCache;
-  if (snapshotCache) {
-    [snapshotCache retrieveGreyImageForSnapshotID:_snapshotID
-                                         callback:wrappedCallback];
+  SnapshotStorage* snapshotStorage = _snapshotStorage;
+  if (snapshotStorage) {
+    [snapshotStorage retrieveGreyImageForSnapshotID:_snapshotID
+                                           callback:wrappedCallback];
   } else {
     wrappedCallback(nil);
   }
@@ -126,7 +126,7 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
 
 - (UIImage*)updateSnapshot {
   UIImage* snapshot = [self generateSnapshotWithOverlays:YES];
-  [self updateSnapshotCacheWithImage:snapshot];
+  [self updateSnapshotStorageWithImage:snapshot];
   return snapshot;
 }
 
@@ -158,7 +158,7 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
                          baseImage:image.ToUIImage()
                      frameInWindow:snapshotInfo.snapshotFrameInWindow];
         }
-        [weakSelf updateSnapshotCacheWithImage:snapshot];
+        [weakSelf updateSnapshotStorageWithImage:snapshot];
         if (completion)
           completion(snapshot);
       }));
@@ -179,15 +179,15 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
 }
 
 - (void)willBeSavedGreyWhenBackgrounding {
-  [_snapshotCache willBeSavedGreyWhenBackgrounding:_snapshotID];
+  [_snapshotStorage willBeSavedGreyWhenBackgrounding:_snapshotID];
 }
 
 - (void)saveGreyInBackground {
-  [_snapshotCache saveGreyInBackgroundForSnapshotID:_snapshotID];
+  [_snapshotStorage saveGreyInBackgroundForSnapshotID:_snapshotID];
 }
 
 - (void)removeSnapshot {
-  [_snapshotCache removeImageWithSnapshotID:_snapshotID];
+  [_snapshotStorage removeImageWithSnapshotID:_snapshotID];
 }
 
 #pragma mark - Private methods
@@ -222,7 +222,7 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
   // Note: When not using device scale, the output image size may slightly
   // differ from the input size due to rounding.
   const CGFloat kScale =
-      std::max<CGFloat>(1.0, [_snapshotCache snapshotScaleForDevice]);
+      std::max<CGFloat>(1.0, [_snapshotStorage snapshotScaleForDevice]);
   UIGraphicsImageRendererFormat* format =
       [UIGraphicsImageRendererFormat preferredFormat];
   format.scale = kScale;
@@ -312,7 +312,7 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
   if (overlays.count == 0)
     return baseImage;
   const CGFloat kScale =
-      std::max<CGFloat>(1.0, [_snapshotCache snapshotScaleForDevice]);
+      std::max<CGFloat>(1.0, [_snapshotStorage snapshotScaleForDevice]);
 
   UIGraphicsImageRendererFormat* format =
       [UIGraphicsImageRendererFormat preferredFormat];
@@ -349,13 +349,13 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
   return image;
 }
 
-// Updates the snapshot cache with `snapshot`.
-- (void)updateSnapshotCacheWithImage:(UIImage*)snapshot {
+// Updates the snapshot storage with `snapshot`.
+- (void)updateSnapshotStorageWithImage:(UIImage*)snapshot {
   if (snapshot) {
-    [_snapshotCache setImage:snapshot withSnapshotID:_snapshotID];
+    [_snapshotStorage setImage:snapshot withSnapshotID:_snapshotID];
   } else {
     // Remove any stale snapshot since the snapshot failed.
-    [_snapshotCache removeImageWithSnapshotID:_snapshotID];
+    [_snapshotStorage removeImageWithSnapshotID:_snapshotID];
   }
 }
 

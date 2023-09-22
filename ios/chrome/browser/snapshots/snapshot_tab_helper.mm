@@ -8,8 +8,8 @@
 #import "base/memory/ptr_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/task/sequenced_task_runner.h"
-#import "ios/chrome/browser/snapshots/snapshot_cache.h"
 #import "ios/chrome/browser/snapshots/snapshot_generator.h"
+#import "ios/chrome/browser/snapshots/snapshot_storage.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
@@ -50,8 +50,8 @@ void SnapshotTabHelper::SetDelegate(id<SnapshotGeneratorDelegate> delegate) {
   snapshot_generator_.delegate = delegate;
 }
 
-void SnapshotTabHelper::SetSnapshotCache(SnapshotCache* snapshot_cache) {
-  snapshot_generator_.snapshotCache = snapshot_cache;
+void SnapshotTabHelper::SetSnapshotStorage(SnapshotStorage* snapshot_storage) {
+  snapshot_generator_.snapshotStorage = snapshot_storage;
 }
 
 void SnapshotTabHelper::RetrieveColorSnapshot(void (^callback)(UIImage*)) {

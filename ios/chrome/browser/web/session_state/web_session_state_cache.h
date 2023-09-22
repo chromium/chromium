@@ -16,7 +16,7 @@ class WebState;
 }
 
 // A browser state keyed service, providing an on-disk cache of WKWebView
-// sessionState data, modeled after the SnapshotCache.  Data is persisted to
+// sessionState data, modeled after the SnapshotStorage. Data is persisted to
 // disk in a background thread with the provided NSData to a file name based on
 // the webState TabId. Data can be written or deleted by tabId, delayed during
 // batch operations, or purged based on any nonexistent tabIds.
