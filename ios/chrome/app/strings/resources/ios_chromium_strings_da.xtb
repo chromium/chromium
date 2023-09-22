@@ -43,6 +43,7 @@
 <translation id="2574528844022712255">Se Chromium-bogmærker</translation>
 <translation id="2590893390871230428">Synkroniser dine Chromium-data</translation>
 <translation id="2618596336309823556">Åbn "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" via indstillingerne på din enhed, og vælg "Chromium"</translation>
+<translation id="2618757400690011108">{COUNT,plural, =1{Chromium hjælper med at spore denne pakke på siden Ny fane.}one{Chromium hjælper med at spore denne pakke på siden Ny fane.}other{Chromium hjælper med at spore disse pakker på siden Ny fane.}}</translation>
 <translation id="2650312721222849884">Aktivér synkronisering for at se dine faner på alle de enheder, hvor du bruger Chromium</translation>
 <translation id="2684230048001240293">Angiv Chromium som standardbrowser for at synkronisere faner, adgangskoder og betalingsoplysninger på alle dine enheder</translation>
 <translation id="2730884209570016437">Chromium kan ikke bruge dit kamera, da det bruges af en anden app</translation>
@@ -52,6 +53,7 @@
 <translation id="2918709798697875261">Din organisation kræver, at du forbliver logget ud af Chromium.</translation>
 <translation id="2942241131342758843">Brug som standard Chromium til at åbne links, søge efter widgets og udfylde adgangskoder automatisk i andre apps</translation>
 <translation id="2977470724722393594">Chromium er opdateret</translation>
+<translation id="3078941082359356771">{COUNT,plural, =1{Chromium kan hjælpe dig med at spore denne pakke på siden Ny fane.}one{Chromium kan hjælpe dig med at spore denne pakke på siden Ny fane.}other{Chromium kan hjælpe dig med at spore disse pakker på siden Ny fane.}}</translation>
 <translation id="3102849287235003384">Hvis du vil logge ud af din Google-konto på alle websites, skal du <ph name="BEGIN_LINK" />logge ud af Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Søg med stemmen i Chromium</translation>
 <translation id="3228349498066165585">Nogle af dine Chromium-data er endnu ikke gemt på din Google-konto.
@@ -114,6 +116,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />rydde Chromium-da
 <translation id="5521125884468363740">Log ind, og aktivér synkronisering på alle de enheder, hvor du bruger Chromium, for at se dine faner på dem</translation>
 <translation id="5522297504975449419">Visse Chromium-funktioner er ikke længere tilgængelige.</translation>
 <translation id="5571094606370987472">Åbner de seneste faner i Chromium.</translation>
+<translation id="5623083843656850677">Lås dine inkognitofaner, når du forlader Chromium eller skifter til en anden app.</translation>
 <translation id="5688047395118852662">Dette kort viser dig forslag til, hvordan du får mest muligt ud af Chromium.</translation>
 <translation id="5700709190537129682">Chromium kan ikke tjekke dine adgangskoder</translation>
 <translation id="5777187867430702742">Chromium-side</translation>

@@ -328,6 +328,7 @@
 <translation id="1618571384971354160">የመጎተት እና የመንገድ ዳር እርዳታ</translation>
 <translation id="1620510694547887537">ካሜራ</translation>
 <translation id="1622571349153632031">የተክል-በል ምግብ</translation>
+<translation id="162285686621567578">ይህ ድር ጣቢያ በወላጅዎ ታግዷል።</translation>
 <translation id="1622966923835127638">የንግድ ፋይናንስ</translation>
 <translation id="1623104350909869708">ይህ ገፅ ተጨማሪ መገናኛዎችን እንዳይፈጥር አግድ</translation>
 <translation id="1633137413609266904">{0,plural, =1{ይህን ፋይል መክፈት በአስተዳዳሪ መመሪያ ታግዷል}one{# ፋይልን መክፈት በአስተዳዳሪ መመሪያ ታግዷል}other{# ፋይሎችን መክፈት በአስተዳዳሪ መመሪያ ታግዷል}}</translation>
@@ -372,6 +373,7 @@
 <translation id="1711528724596764268">machine learning እና artificial intelligence</translation>
 <translation id="1712552549805331520"><ph name="URL" /> ውሂብ በአካባቢያዊ ኮምፒውተርዎ ላይ እስከመጨረሻው ማከማቸት ይፈልጋል</translation>
 <translation id="1713628304598226412">መሳቢያ 2</translation>
+<translation id="1714807406136741351">የአሰሳ ሁነታ ግራፉ ላይ የዋጋ ለውጦችን ለመገምገም የግራ/የቀኝ ቀስትን ለመጠቀም ወደ የቅጾች ሁነታ መለወጥ ይችላሉ</translation>
 <translation id="1717218214683051432">የእንቅስቃሴ ዳሳሾች</translation>
 <translation id="1717494416764505390">የመልዕክት ሳጥን 3</translation>
 <translation id="1717688554309417925">ዴቢት እና የማረጋገጫ አገልግሎቶች</translation>
@@ -3250,6 +3252,7 @@
 <translation id="7667346355482952095">የተመለሰው የመመሪያ ማስመሰያ ባዶ ነው ወይም ከአሁኑ ማስመሰያ ጋር አይዛመድም</translation>
 <translation id="7668654391829183341">ያልታወቀ መሣሪያ</translation>
 <translation id="7669271284792375604">በዚህ ጣቢያ ላይ ያሉ አጥቂዎች እርስዎ የአሰሳ ተሞክሮዎን ሊጎዱ (ለምሳሌ፦ መነሻ ገጽዎን በመቀየር ወይም በሚጎበኟቸው ጣቢያዎች ላይ ተጨማሪ ማስታወቂያዎችን በማሳየት) የሚችሉ ፕሮግራሞችን እንዲጭኑ ለማታለል ሊሞክሩ ይችላሉ።</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />፣ <ph name="ITEM_POSITION" /> ከ<ph name="ITEMS_TOTAL" />።</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{ሚስጥራዊ ተብሎ በተጠቆመ ውሂብ ላይ የተወሰዱ እርምጃዎች (ከገቡ ጊዜ ጀምሮ 1 እርምጃ)። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" />}one{ሚስጥራዊ ተብሎ በተጠቆመ ውሂብ ላይ የተወሰዱ እርምጃዎች (ከገቡ ጊዜ ጀምሮ # እርምጃዎች)። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" />}other{ሚስጥራዊ ተብሎ በተጠቆመ ውሂብ ላይ የተወሰዱ እርምጃዎች (ከገቡ ጊዜ ጀምሮ # እርምጃዎች)። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">የመልዕክት ሳጥን 6</translation>
 <translation id="7675325315208090829">የክፍያ ዘዴዎችን ያስተዳድሩ...</translation>

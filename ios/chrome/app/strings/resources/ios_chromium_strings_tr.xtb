@@ -43,6 +43,7 @@
 <translation id="2574528844022712255">Chromium Yer İşaretlerini Göster</translation>
 <translation id="2590893390871230428">Chromium Verilerimi Senkronize Et</translation>
 <translation id="2618596336309823556">Cihazınızın Ayarlar bölümünden "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" bölümünü açıp "Chromium"u seçin</translation>
+<translation id="2618757400690011108">{COUNT,plural, =1{Chromium, Yeni Sekme sayfasında bu kargoyu takip etmenize yardımcı olacak.}other{Chromium, Yeni Sekme sayfasında bu kargoları takip etmenize yardımcı olacak.}}</translation>
 <translation id="2650312721222849884">Chromium kullandığınız her yerde sekmelerinizi görmek için senkronizasyonu açın.</translation>
 <translation id="2684230048001240293">Tüm cihazlarınızdaki sekmelerinizi, parolalarınızı ve ödeme bilgilerinizi senkronize etmek için Chromium'u varsayılan olarak ayarlayın</translation>
 <translation id="2730884209570016437">Kameranız başka bir uygulama tarafından kullanıldığından Chromium, kameranızı kullanamıyor.</translation>
@@ -52,6 +53,7 @@
 <translation id="2918709798697875261">Kuruluşunuz, Chromium'da oturum kapatmış olarak kalmanızı zorunlu tutuyor.</translation>
 <translation id="2942241131342758843">Bağlantıları açmak, widget'lardan arama yapmak ve diğer uygulamalarda şifreleri otomatik doldurmak için varsayılan olarak Chromium'u kullanın</translation>
 <translation id="2977470724722393594">Chromium güncel durumda</translation>
+<translation id="3078941082359356771">{COUNT,plural, =1{Chromium, Yeni Sekme sayfasında bu kargoyu takip etmenize yardımcı olabilir.}other{Chromium, Yeni Sekme sayfasında bu kargoları takip etmenize yardımcı olabilir.}}</translation>
 <translation id="3102849287235003384">Tüm web sitelerinde Google Hesabınızın oturumunu kapatmak için <ph name="BEGIN_LINK" />Chromium oturumunu kapatın<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Chromium'da Sesle Arama Yap</translation>
 <translation id="3228349498066165585">Chromium verilerinizden bazıları henüz Google Hesabınıza kaydedilmedi.
@@ -114,6 +116,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chromium v
 <translation id="5521125884468363740">Chromium kullandığınız her yerde sekmelerinizi görmek için oturum açın ve senkronizasyonu etkinleştirin</translation>
 <translation id="5522297504975449419">Bazı Chromium özellikleri artık kullanılamayacak.</translation>
 <translation id="5571094606370987472">Chromium'daki Son Sekmeleri Açar.</translation>
+<translation id="5623083843656850677">Chromium'dan çıktığınızda veya farklı bir uygulamaya geçtiğinizde Gizli sekmelerinizi kilitleyin.</translation>
 <translation id="5688047395118852662">Bu kartta, Chromium'dan en iyi şekilde yararlanmayla ilgili öneriler gösterilmektedir.</translation>
 <translation id="5700709190537129682">Chromium, şifrelerinizi kontrol edemiyor</translation>
 <translation id="5777187867430702742">Chromium Sayfası</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hi">
 <translation id="1011749477052068769">यहां मूव करें</translation>
+<translation id="1014147525163127655"><ph name="ORIGIN" /> के लिए, इस डिवाइस पर कोई पासकी नहीं है</translation>
 <translation id="1016498331642356377">बोलकर तेज़ी से खोजें. इस शॉर्टकट में बदलाव करने के लिए, दबाकर रखें.</translation>
 <translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> पर भेजा जा रहा है...</translation>
@@ -674,6 +675,7 @@
 <translation id="452750746583162491">सिंक किए गए डेटा की समीक्षा करें</translation>
 <translation id="4528638190900283934">अतिरिक्त सुविधाएं पाने के लिए साइन इन करें</translation>
 <translation id="4532845899244822526">फ़ोल्डर चुनें</translation>
+<translation id="4543131175509360848">कोई पासकी शीट नहीं है</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> टैब}one{<ph name="TAB_COUNT_MANY" /> टैब, <ph name="TAB_COUNT_INCOGNITO" /> गुप्त टैब}other{<ph name="TAB_COUNT_MANY" /> टैब, <ph name="TAB_COUNT_INCOGNITO" /> गुप्त टैब}}</translation>
 <translation id="4554077758708533499">यूएसबी केबल की मदद से कनेक्ट किया गया</translation>
 <translation id="4558311620361989323">वेबपेज शॉर्टकट</translation>
@@ -948,6 +950,7 @@
 <translation id="5869522115854928033">सेव किए गए पासवर्ड</translation>
 <translation id="587735546353481577">किसी साइट को फ़ॉलो करने के लिए, उस साइट पर जाएं, Chrome मेन्यू को खोलें, और 'फ़ॉलो करें' पर टैप करें.</translation>
 <translation id="5879072387416556377">बेहतर सुझाव पाएं</translation>
+<translation id="5899667542927581604">कोई पासकी शीट बंद नहीं की गई</translation>
 <translation id="5916664084637901428">चालू है</translation>
 <translation id="5919204609460789179">सिंक शुरू करने के लिए <ph name="PRODUCT_NAME" /> अपडेट करें</translation>
 <translation id="5938820472109305350"><ph name="INTEREST" /> जोड़ें</translation>
@@ -1591,6 +1594,7 @@
 <translation id="9063523880881406963">अनुरोध डेस्कटॉप साइट बंद करें</translation>
 <translation id="9065203028668620118">बदलाव करें</translation>
 <translation id="9065383040763568503">सेव किया गया ऐसा डेटा जो Chrome के हिसाब से ज़रूरी नहीं है (उदाहरण के लिए, ऐसी साइटें जिनमें कोई भी सेटिंग सेव नहीं की गई है या जिन पर आप अक्सर नहीं जाते)</translation>
+<translation id="9067341854474068781">पासकी शीट पूरी स्क्रीन पर नहीं खुली</translation>
 <translation id="906781307897697745"><ph name="PRODUCT_NAME" /> में</translation>
 <translation id="9069999660519089861">सभी लेख पढ़ लिए गए हैं</translation>
 <translation id="9070377983101773829">बोलकर खोज चालू करें</translation>

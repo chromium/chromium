@@ -105,6 +105,7 @@ Hafðu í huga:
         Prófaðu að bíða í nokkrar mínútur áður en þú skráir þig út. Ef þú skráir þig út núna verður þessum gögnum eytt.</translation>
 <translation id="484033449593719797">Ekki stutt í Chrome Beta</translation>
 <translation id="4840404732697892756">Google-aðgangsorðastjórnun getur athugað aðgangsorðin þín þegar þú skráir þig inn með Google-reikningnum þínum.</translation>
+<translation id="4860330141789125848">{COUNT,plural, =1{Chrome getur hjálpað þér að rekja þennan pakka á síðu nýrra flipa.}one{Chrome getur hjálpað þér að rekja þessa pakka á síðu nýrra flipa.}other{Chrome getur hjálpað þér að rekja þessa pakka á síðu nýrra flipa.}}</translation>
 <translation id="4903674399067644695">Þetta spjald sýnir þér tillögur um hvernig þú getur nýtt þér Chrome til fulls.</translation>
 <translation id="49200511069271369">Fyrirtækið þitt, <ph name="DOMAIN" />, stjórnar reikningnum sem þú ert að skrá þig inn á og því hvernig hægt er að nota Chrome. Stjórnandinn getur sett upp eða takmarkað tiltekna eiginleika.</translation>
 <translation id="5030102366287574140">Chrome getur veitt þér vernd gegn öryggisbrotum, hættulegum vefsvæðum og fleira.</translation>
@@ -114,10 +115,12 @@ Hafðu í huga:
 <translation id="5156818928311866442">Opnar Chrome-stillingar til að stilla Chrome sem sjálfgefinn vafra.</translation>
 <translation id="5162467219239570114">Chrome er úrelt. Ef engin uppfærsla er til staðar í <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> getur verið að tækið þitt styðji ekki lengur nýjar útgáfur af Chrome.</translation>
 <translation id="5190139289262548459">Fyrirtækið þitt, <ph name="DOMAIN" />, stjórnar reikningnum sem þú ert innskráð(ur) á og hvernig Chrome er notað.</translation>
+<translation id="5278862365980079760">Læstu huliðsflipum þegar þú lokar Chrome eða skiptir yfir í annað forrit.</translation>
 <translation id="5389212809648216794">Google Chrome getur ekki notað myndavélina því að annað forrit er að nota hana</translation>
 <translation id="5395376160638294582">Gakktu úr skugga um að þú getir alltaf notað Chrome-gögnin á Google-reikningnum þínum</translation>
 <translation id="5439191312780166229">Varar þig við hættulegum vefsvæðum, jafnvel þeim sem Google hafði enga vitneskju um, með því að greina fleiri gögn frá vefsvæðum en hefðbundin vörn. Þú getur valið að sleppa Chrome-viðvörunum.</translation>
 <translation id="5460571915754665838">4. Veldu Chrome</translation>
+<translation id="546541279759910616">{COUNT,plural, =1{Chrome getur rakið þennan pakka á síðu nýrra flipa.}one{Chrome getur rakið þessa pakka á síðu nýrra flipa.}other{Chrome getur rakið þessa pakka á síðu nýrra flipa.}}</translation>
 <translation id="5492504007368565877">Google-aðgangsorðastjórnun getur ekki að athugað aðgangsorðin þín.</translation>
 <translation id="5527026824954593399">Ýttu á „Skoða með Google-kortum í Chrome“.</translation>
 <translation id="5552137475244467770">Chrome athugar aðgangsorðin þín reglulega og ber þau saman við lista sem hafa verið birtir á netinu. Meðan á þessu stendur eru aðgangsorðin þín og notandanöfn dulkóðuð svo enginn geti lesið þau, þ.m.t. ekki Google.</translation>

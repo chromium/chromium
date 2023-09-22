@@ -43,6 +43,7 @@
 <translation id="2574528844022712255">Tingnan ang Mga Bookmark sa Chromium</translation>
 <translation id="2590893390871230428">I-sync ang Iyong Data sa Chromium</translation>
 <translation id="2618596336309823556">Sa Mga Setting ng iyong device, buksan ang "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" at piliin ang "Chromium"</translation>
+<translation id="2618757400690011108">{COUNT,plural, =1{Tutulong ang Chromium na subaybayan ang package na ito sa Page ng Bagong Tab.}one{Tutulong ang Chromium na subaybayan ang mga package na ito sa Page ng Bagong Tab.}other{Tutulong ang Chromium na subaybayan ang mga package na ito sa Page ng Bagong Tab.}}</translation>
 <translation id="2650312721222849884">Para makita ang iyong mga tab sa kahit saan ka man gumagamit ng Chromium, i-on ang pag-sync</translation>
 <translation id="2684230048001240293">Itakda ang Chromium bilang default para ma-sync ang iyong mga tab, password, at impormasyon sa pagbabayad sa lahat ng device mo</translation>
 <translation id="2730884209570016437">Hindi magamit ng Chromium ang iyong camera ngayon dahil ginagamit ito sa isa pang application</translation>
@@ -52,6 +53,7 @@
 <translation id="2918709798697875261">Hinihiling sa iyo ng organisasyon mo na manatiling naka-sign out sa Chromium.</translation>
 <translation id="2942241131342758843">Gamitin ang Chromium bilang default para magbukas ng mga link, maghanap mula sa mga widget, at mag-autofill ng mga password sa iba pang app</translation>
 <translation id="2977470724722393594">Napapanahon ang Chromium</translation>
+<translation id="3078941082359356771">{COUNT,plural, =1{Matutulungan ka ng Chromium na subaybayan ang package na ito sa Page ng Bagong Tab.}one{Matutulungan ka ng Chromium na subaybayan ang mga package na ito sa Page ng Bagong Tab.}other{Matutulungan ka ng Chromium na subaybayan ang mga package na ito sa Page ng Bagong Tab.}}</translation>
 <translation id="3102849287235003384">Para mag-sign out sa iyong Google Account sa lahat ng website, <ph name="BEGIN_LINK" />mag-sign out sa Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Maghanap Gamit ang Boses sa Chromium</translation>
 <translation id="3228349498066165585">Hindi pa nase-save sa Google Account mo ang ilan sa iyong data sa Chromium.
@@ -114,6 +116,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chr
 <translation id="5521125884468363740">Para makita ang iyong mga tab sa kahit saan ka man gumagamit ng Chromium, mag-sign in at i-on ang pag-sync</translation>
 <translation id="5522297504975449419">Hindi na magiging available ang ilang feature ng Chromium.</translation>
 <translation id="5571094606370987472">Mabubuksan ang Mga Kamakailang Tab sa Chromium.</translation>
+<translation id="5623083843656850677">I-lock ang iyong mga tab na incognito kapag umalis ka sa Chromium o lumipat ka sa ibang app.</translation>
 <translation id="5688047395118852662">Magpapakita sa iyo ang card na ito ng mga suhestyon sa kung paano masusulit ang Chromium.</translation>
 <translation id="5700709190537129682">Hindi masuri ng Chromium ang iyong mga password</translation>
 <translation id="5777187867430702742">Page ng Chromium</translation>

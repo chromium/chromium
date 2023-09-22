@@ -1764,6 +1764,7 @@
 <translation id="2359345697448000899">Каб кіраваць пашырэннямі, націсніце "Пашырэнні" ў меню "Інструменты".</translation>
 <translation id="2359556993567737338">Падключыць прыладу Bluetooth</translation>
 <translation id="2359808026110333948">Працягнуць</translation>
+<translation id="2360792123962658445">Каб перайсці да зводкі па старонцы, падобных пошукавых запытаў і іншай карыснай інфармацыі пра яе, націсніце на кнопку бакавой панэлі Google Пошуку на панэлі інструментаў</translation>
 <translation id="2361100938102002520">Вы дадаяце ў гэты браўзер профіль пад кіраваннем. Ваш адміністратар можа кіраваць профілем і мець доступ да даных у ім.</translation>
 <translation id="236117173274098341">Аптымізаваць</translation>
 <translation id="2361340419970998028">Ідзе адпраўка водгуку…</translation>
@@ -4715,6 +4716,7 @@
 <translation id="4766598565665644999">Усе пашырэнні могуць счытваць і змяняць даныя на сайце <ph name="HOST" /></translation>
 <translation id="4767427586072640478">Даведацца больш пра адключаныя пашырэнні.</translation>
 <translation id="4768332406694066911">У вас ёсць сертыфікаты ад гэтых арганізацый, якія ідэнтыфікуюць вас</translation>
+<translation id="4769632191812288342">Выбрана стандартная абарона</translation>
 <translation id="4770119228883592393">Запытаны дазвол. Каб адказаць, націсніце ⌘ + Option + стрэлка ўніз</translation>
 <translation id="4773112038801431077">Абнаўленне Linux</translation>
 <translation id="4774456473286455263">Наладзіць з дапамогай тэлефона Android</translation>
@@ -4956,6 +4958,7 @@
 <translation id="4965808351167763748">Сапраўды наладзіць на гэтай прыладзе Hangouts Meet?</translation>
 <translation id="4966972803217407697">Вы ў рэжыме інкогніта</translation>
 <translation id="4967227914555989138">Дадаць нататку</translation>
+<translation id="4967360192915400530">Спампаваць небяспечны файл</translation>
 <translation id="496742804571665842">Адключэнне профіляў eSIM-карт</translation>
 <translation id="4971412780836297815">Адкрыць пасля спампоўвання</translation>
 <translation id="4971735654804503942">Больш хуткая актыўная абарона ад небяспечных вэб-сайтаў, спамповак і пашырэнняў. Папярэджвае пра ўцечкі пароляў. Патрабуе адпраўкі даных прагляду сайтаў у Google.</translation>
@@ -5296,6 +5299,7 @@
 <translation id="5265797726250773323">Памылка падчас усталявання</translation>
 <translation id="5266113311903163739">Памылка імпарту файла цэнтра сертыфікацыі</translation>
 <translation id="526622169288322445">Іншыя дзеянні ў дачыненні да атрымальніка <ph name="ADDRESS_SUMMARY" /></translation>
+<translation id="5267572070504076962">Каб абараніцца ад небяспечных сайтаў, уключыце Бяспечны прагляд</translation>
 <translation id="5268373933383932086">Персаналізаваныя старонкі для вас</translation>
 <translation id="5269977353971873915">Збой друку</translation>
 <translation id="5271578170655641944">Выдаліць доступ да Google Дыска?</translation>
@@ -7538,6 +7542,7 @@
 <translation id="7099337801055912064">Не ўдалося загрузіць вялікі файл PPD. Максімальны памер – 250 КБ.</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{Раскрытых пароляў няма}=1{{COUNT} раскрыты пароль}one{{COUNT} раскрыты пароль}few{{COUNT} раскрытыя паролі}many{{COUNT} раскрытых пароляў}other{{COUNT} раскрытага пароля}}</translation>
 <translation id="710047887584828070">Змесціва гэтай укладкі абагульваецца</translation>
+<translation id="710224247908684995">Адно з пашырэнняў выключыла Бяспечны прагляд</translation>
 <translation id="7102832101143475489">Запыт пратэрмінаваны</translation>
 <translation id="710640343305609397">Адкрыць налады сеткі</translation>
 <translation id="7107609441453408294">Прайграваць адзін аўдыяканал праз усе дынамікі</translation>
@@ -7744,6 +7749,7 @@
 <translation id="7287143125007575591">Доступ забаронены.</translation>
 <translation id="7287411021188441799">Аднавіць стандартны фон</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> DPI</translation>
+<translation id="7289049772085228972">Вы выкарыстоўваеце самую моцную абарону Chrome</translation>
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> – Запытаны дазвол. Каб адказаць, націсніце F6</translation>
 <translation id="7290242001003353852">Гэты сэрвіс уваходу, размешчаны на дамене <ph name="SAML_DOMAIN" />, атрымлівае доступ да вашай камеры.</translation>
 <translation id="7292067737327289208">Вашым <ph name="BEGIN_LINK" />браўзерам кіруе<ph name="END_LINK" /> ваша арганізацыя, а <ph name="BEGIN_LINK" />профілем<ph name="END_LINK" /> – <ph name="PROFILE_DOMAIN" /></translation>
@@ -8368,6 +8374,7 @@
 <translation id="7772127298218883077">Інфармацыя пра <ph name="PRODUCT_NAME" /></translation>
 <translation id="7773726648746946405">Захаванне сеанса</translation>
 <translation id="7774365994322694683">Птушка</translation>
+<translation id="7774581652827321413">Праглядзіце зводку па старонцы, падобныя пошукавыя запыты і іншую карысную інфармацыю пра яе</translation>
 <translation id="7774792847912242537">Занадта многа запытаў.</translation>
 <translation id="7775694664330414886">Укладка перамешчана ў групу без назвы – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340">Сайт <ph name="ORIGIN" /> зможа праглядаць файлы ў папцы "<ph name="FOLDERNAME" />", пакуль вы не закрыеце ўсе яго ўкладкі</translation>
@@ -8429,6 +8436,7 @@
 <translation id="7820400255539998692">Выдаліце файл <ph name="FILENAME" />, каб іншыя карыстальнікі прылады не змаглі пабачыць вашы паролі</translation>
 <translation id="7820561748632634942">Прызначыць дадатковыя пераключальнікі?</translation>
 <translation id="782057141565633384">К&amp;апіраваць адрас відэа</translation>
+<translation id="7824665136384946951">Ваша арганізацыя выключыла Бяспечны прагляд</translation>
 <translation id="7824864914877854148">Рэзервовае капіраванне не ўдалося завяршыць з-за памылкі</translation>
 <translation id="782590969421016895">Выкарыстоўваць бягучыя старонкі</translation>
 <translation id="7826174860695147464">Падтрымка браўзераў ранейшых версій – Унутраныя налады</translation>
@@ -10031,6 +10039,7 @@
 <translation id="9094859731829297286">Сапраўды зарэзерваваць дыск фіксаванага памеру для Linux?</translation>
 <translation id="9095364055741191097">Не ўдалося аднавіць лакальныя даныя</translation>
 <translation id="909554839118732438">Закрыць вокны ў рэжыме інкогніта</translation>
+<translation id="9096053102600371572">Прагортка на зададзенай хуткасці <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="9096776523567481218">не ўсталявана лакальна</translation>
 <translation id="9098860402274800697">Выдаліць Google Play і праграмы для Android</translation>
 <translation id="9099220545925418560">Выкарыстоўваюцца даныя гісторыі прагляду сайтаў. Гэта налада выключана.</translation>

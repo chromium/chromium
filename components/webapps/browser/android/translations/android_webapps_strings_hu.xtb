@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hu">
+<translation id="1213425325105380833">A fiókhoz csatlakozó eszközökön legutóbb használt internetes alkalmazások visszaállítása</translation>
+<translation id="2065911435109240297">Az internetes alkalmazások visszaállítása</translation>
+<translation id="2111649875343992405">A visszaállítani kívánt internetes alkalmazások áttekintése</translation>
 <translation id="2139186145475833000">Kezdőképernyőre</translation>
+<translation id="2172982519592313442">Internetes alkalmazások áttekintése</translation>
 <translation id="2478076885740497414">Alkalmazás telepítése</translation>
 <translation id="3789841737615482174">Telepítés</translation>
 <translation id="3910402514791813257">Nem sikerült a telepítés</translation>

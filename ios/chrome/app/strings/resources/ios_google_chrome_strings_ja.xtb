@@ -105,6 +105,7 @@
         数分待ってからログアウトしてください。今すぐログアウトすると、このデータは削除されます。</translation>
 <translation id="484033449593719797">Chrome ベータ版ではサポートされていません</translation>
 <translation id="4840404732697892756">Google アカウントでログインすると、Google パスワード マネージャーでパスワードを確認できるようになります。</translation>
+<translation id="4860330141789125848">{COUNT,plural, =1{Chrome の新しいタブページでこの荷物を追跡できます。}other{Chrome の新しいタブページでこれらの荷物を追跡できます。}}</translation>
 <translation id="4903674399067644695">このカードでは、Chrome を最大限に活用するためのヒントを紹介しています。</translation>
 <translation id="49200511069271369">組織（<ph name="DOMAIN" />）が、ログインしているアカウントと Chrome の使用方法を管理しています。管理者は特定の機能を設定または制限できます。</translation>
 <translation id="5030102366287574140">Chrome でデータ侵害や安全でないウェブサイトなどの脅威から保護されているか確認します。</translation>
@@ -114,10 +115,12 @@
 <translation id="5156818928311866442">Chrome の設定を開いて Chrome を既定のブラウザに設定します。</translation>
 <translation id="5162467219239570114">Chrome は古いバージョンです。<ph name="BEGIN_LINK" />アプリストア<ph name="END_LINK" />に利用可能なアップデートがない場合は、デバイスで新しいバージョンの Chrome がサポートされなくなった可能性があります。</translation>
 <translation id="5190139289262548459">組織（<ph name="DOMAIN" />）が、ログインしているアカウントと Chrome の使用方法を管理しています。</translation>
+<translation id="5278862365980079760">Chrome から離れたり、別のアプリに切り替えたりするときに、シークレット タブをロックできます。</translation>
 <translation id="5389212809648216794">カメラは別のアプリが使用中のため、Google Chrome では使用できません</translation>
 <translation id="5395376160638294582">Google アカウントの Chrome データを常に使用できるようにしてください</translation>
 <translation id="5439191312780166229">標準保護機能より多くのサイトデータを分析して、危険なサイト（Google が認識していなかったサイトも含む）について警告します。Chrome の警告をスキップすることもできます。</translation>
 <translation id="5460571915754665838">4. [Chrome] を選択する</translation>
+<translation id="546541279759910616">{COUNT,plural, =1{Chrome の新しいタブページでこの荷物を追跡できます。}other{Chrome の新しいタブページでこれらの荷物を追跡できます。}}</translation>
 <translation id="5492504007368565877">現在、Google パスワード マネージャーではパスワードをチェックできません。</translation>
 <translation id="5527026824954593399">[Chrome で Google マップを使用して表示] をタップします。</translation>
 <translation id="5552137475244467770">Chrome では、定期的にパスワードをオンライン上の公開リストと照合し、確認しています。その際、パスワードとユーザー名は Google を含め誰も読み取ることができないよう暗号化されます。</translation>

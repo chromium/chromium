@@ -225,6 +225,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1831565490995294689">Otvaranje "<ph name="APP_TO_OPEN" />" odabirom.</translation>
 <translation id="1838895407229022812">Noćno svjetlo je isključeno.</translation>
 <translation id="1854180393107901205">Zaustavi emitiranje</translation>
+<translation id="1862077610023398675">Sakrivanje kontrola</translation>
 <translation id="1862380676329487333">Ažuriraj i odjavi</translation>
 <translation id="1864454756846565995">USB-C uređaj (stražnji priključak)</translation>
 <translation id="1869497990620230175">Brzi fajlovi</translation>
@@ -786,6 +787,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="4215497585250573029">Postavke za VPN</translation>
 <translation id="4217571870635786043">Diktiranje</translation>
 <translation id="4221957499226645091">Aplikacija <ph name="APP_NAME" /> je instalirana i pauzirana</translation>
+<translation id="4228078597006700451">Kontrole nisu postavljene</translation>
 <translation id="4231053948789591973">Emitiranje je trenutno pauzirano. Možete u svakom trenutku nastaviti ili zaustaviti emitiranje ekrana.</translation>
 <translation id="423685346499232137">Trenutno nije moguće kopirati i zalijepiti sadržaj</translation>
 <translation id="4239069858505860023">GPRS</translation>
@@ -1417,6 +1419,7 @@ Nova instalacija</translation>
 <translation id="6802196538183166658">Otvorite Brze postavke odabirom vremena</translation>
 <translation id="6802687695197837794">Ovo dozvoljava pristup kameri i mikrofonu za aplikacije <ph name="APP1_NAME" /> i <ph name="APP2_NAME" /> te sve aplikacije i web lokacije s odobrenjima za njih</translation>
 <translation id="6803622936009808957">Preslikavanje ekrana nije moguće jer nisu pronađene podržane rezolucije. Umjesto toga, prikazuje se proširena radna površina.</translation>
+<translation id="6809556495807506746">Kontrole nisu dostupne</translation>
 <translation id="6812232930908427253">Pohranjivanje radne površine nije uspjelo. Previše prozora ili kartica.</translation>
 <translation id="6818242057446442178">Riječ unazad</translation>
 <translation id="6819327813400217281">Kamera se uklopila u donji lijevi ugao</translation>
@@ -1441,6 +1444,7 @@ Nova instalacija</translation>
 <translation id="6919251195245069855">Prepoznavanje pametne kartice nije uspjelo. Ponovite.</translation>
 <translation id="6920245099716267363">Uključite/isključite pristupnu tačku. Pristupna tačka je uključena, povezan je 1 uređaj.</translation>
 <translation id="692135145298539227">izbriši</translation>
+<translation id="6929081673585394903">Prikazivanje kontrola</translation>
 <translation id="6931576957638141829">Sačuvaj u</translation>
 <translation id="6942518653766415536">Meni formata snimanja</translation>
 <translation id="6945221475159498467">Odaberi</translation>
@@ -1638,6 +1642,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="7773536009433685931">Umjesto toga uključite WiFi</translation>
 <translation id="7780094051999721182">prečice</translation>
 <translation id="7780159184141939021">Rotiranje ekrana</translation>
+<translation id="7792590255364786396">Vidljivo</translation>
 <translation id="7796735576426975947">Novo obavještenje je skriveno</translation>
 <translation id="7798302898096527229">Za otkazivanje pritisnite tipku za pretraživanje ili Shift.</translation>
 <translation id="780301667611848630">Ne, hvala</translation>

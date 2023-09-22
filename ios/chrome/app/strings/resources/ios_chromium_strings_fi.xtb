@@ -43,6 +43,7 @@
 <translation id="2574528844022712255">Näytä Chromium-kirjanmerkit</translation>
 <translation id="2590893390871230428">Synkronoi Chromium-datasi</translation>
 <translation id="2618596336309823556">Avaa laitteen asetuksista <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /> ja valitse Chromium.</translation>
+<translation id="2618757400690011108">{COUNT,plural, =1{Chromium auttaa paketin seuraamisessa Uusi välilehti ‑sivulla.}other{Chromium auttaa pakettien seuraamisessa Uusi välilehti ‑sivulla.}}</translation>
 <translation id="2650312721222849884">Laita synkronointi päälle, niin voit nähdä Chromium-välilehtesi missä tahansa</translation>
 <translation id="2684230048001240293">Aseta Chromium oletusselaimeksi, niin voit synkronoida välilehdet, salasanat ja maksutiedot kaikilla laitteillasi</translation>
 <translation id="2730884209570016437">Chromium ei voi käyttää kameraa, koska se on toisen sovelluksen käytössä.</translation>
@@ -52,6 +53,7 @@
 <translation id="2918709798697875261">Organisaatiosi edellyttää, että et kirjaudu sisään Chromiumiin.</translation>
 <translation id="2942241131342758843">Käytä Chromiumia oletuksena ja avaa linkkejä, hae widgeteistä sekä täytä salasanoja automaattisesti muissa sovelluksissa</translation>
 <translation id="2977470724722393594">Chromium on ajan tasalla.</translation>
+<translation id="3078941082359356771">{COUNT,plural, =1{Chromium voi auttaa paketin seuraamisessa Uusi välilehti ‐sivulla.}other{Chromium voi auttaa pakettien seuraamisessa Uusi välilehti ‐sivulla.}}</translation>
 <translation id="3102849287235003384">Jos haluat kirjautua ulos Google-tililtäsi kaikilla sivustoilla, <ph name="BEGIN_LINK" />kirjaudu ulos Chromiumista<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Hae puhumalla Chromiumista</translation>
 <translation id="3228349498066165585">Osaa Chromium-datastasi ei ole vielä tallennettu Google-tilillesi.
@@ -114,6 +116,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chro
 <translation id="5521125884468363740">Kirjaudu sisään ja laita synkronointi päälle, jotta voit nähdä Chromium-välilehtesi missä tahansa</translation>
 <translation id="5522297504975449419">Jotkin Chromiumin ominaisuudet eivät ole enää käytettävissä.</translation>
 <translation id="5571094606370987472">Avaa Chromiumin viimeaikaiset välilehdet.</translation>
+<translation id="5623083843656850677">Lukitse incognito-välilehdet, kun poistut Chromiumista tai vaihdat toiseen sovellukseen.</translation>
 <translation id="5688047395118852662">Tässä kortissa on ehdotuksia Chromiumin hyödyntämiseen parhaalla mahdollisella tavalla.</translation>
 <translation id="5700709190537129682">Chromium ei voi tarkistaa salasanojasi</translation>
 <translation id="5777187867430702742">Chromium-sivu</translation>

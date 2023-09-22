@@ -1779,6 +1779,7 @@
 <translation id="2359345697448000899">Уредувајте со наставки со кликнување на Наставки во менито Алатки.</translation>
 <translation id="2359556993567737338">Поврзи уред со Bluetooth</translation>
 <translation id="2359808026110333948">Продолжи</translation>
+<translation id="2360792123962658445">За да добиете резиме на страница, слични пребарувања и други корисни информации за страницава, изберете го копчето за страничната табла на „Пребарување на Google“ во алатникот</translation>
 <translation id="2361100938102002520">Додавате управуван профил на прелистувачов. Вашиот администратор го контролира профилот и може да пристапува до неговите податоци.</translation>
 <translation id="236117173274098341">Оптимизирај</translation>
 <translation id="2361340419970998028">Се испраќаат повратни информации…</translation>
@@ -4733,6 +4734,7 @@
 <translation id="4766598565665644999">Сите екстензии можат да читаат и менуваат <ph name="HOST" /></translation>
 <translation id="4767427586072640478">Дознајте повеќе за оневозможените екстензии.</translation>
 <translation id="4768332406694066911">Имате сертификати од овие организации што ве идентификуваат</translation>
+<translation id="4769632191812288342">Ќе добиете стандардна заштита</translation>
 <translation id="4770119228883592393">Побарана е дозвола. Притиснете ⌘ + „Опција“ + „Стрелка надолу“ за да одговорите</translation>
 <translation id="4773112038801431077">Надградете го Linux</translation>
 <translation id="4774456473286455263">Поставување со телефон со Android</translation>
@@ -4974,6 +4976,7 @@
 <translation id="4965808351167763748">Дали сигурно сакате да поставите уредов да извршува Hangouts Meet?</translation>
 <translation id="4966972803217407697">Во „Инкогнито“ сте</translation>
 <translation id="4967227914555989138">Додај белешка</translation>
+<translation id="4967360192915400530">Преземи опасна датотека</translation>
 <translation id="496742804571665842">Оневозможете ги профилите на eSIM</translation>
 <translation id="4971412780836297815">Отвори кога ќе заврши</translation>
 <translation id="4971735654804503942">Побрза и проактивна заштита од опасни веб-сајтови, преземања и екстензии. Ве предупредува за упади во лозинките. Бара да се испраќаат податоци од прелистувањето до Google.</translation>
@@ -5314,6 +5317,7 @@
 <translation id="5265797726250773323">Грешка при инсталирањето</translation>
 <translation id="5266113311903163739">Грешка при увоз на орган за сертификати</translation>
 <translation id="526622169288322445">Повеќе дејства за <ph name="ADDRESS_SUMMARY" /></translation>
+<translation id="5267572070504076962">Вклучете го „Безбедното прелистување“ за да се заштитите од опасни сајтови</translation>
 <translation id="5268373933383932086">Ваша страница на ваш начин</translation>
 <translation id="5269977353971873915">Печатењето не успеа</translation>
 <translation id="5271578170655641944">Да се отстрани пристапот до Google Drive?</translation>
@@ -7552,6 +7556,7 @@
 <translation id="7099337801055912064">Не може да се вчита голема PPD-датотека. Максималната големина е 250 KB.</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{Нема компромитирани лозинки}=1{{COUNT} компромитирана лозинка}one{{COUNT} компромитирана лозинка}other{{COUNT} компромитирани лозинки}}</translation>
 <translation id="710047887584828070">Содржината на картичкава се споделува</translation>
+<translation id="710224247908684995">Екстензија го исклучи „Безбедното прелистување“</translation>
 <translation id="7102832101143475489">Барањето истече</translation>
 <translation id="710640343305609397">Отвори ги мрежните поставки</translation>
 <translation id="7107609441453408294">Пуштајте го истото аудио на сите звучници</translation>
@@ -7758,6 +7763,7 @@
 <translation id="7287143125007575591">Пристапот е одбиен.</translation>
 <translation id="7287411021188441799">Врати ја стандардната заднина</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
+<translation id="7289049772085228972">Ја имате најсилната безбедност на Chrome</translation>
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - Побарана е дозвола. Притиснете F6 за да одговорите</translation>
 <translation id="7290242001003353852">Услугава за најавување, чиј хост е <ph name="SAML_DOMAIN" />, пристапува до камерата.</translation>
 <translation id="7292067737327289208"><ph name="BEGIN_LINK" />Со вашиот прелистувач управува<ph name="END_LINK" /> вашата организација, а <ph name="BEGIN_LINK" />со вашиот профил управува<ph name="END_LINK" /> <ph name="PROFILE_DOMAIN" /></translation>
@@ -8382,6 +8388,7 @@
 <translation id="7772127298218883077">За <ph name="PRODUCT_NAME" /></translation>
 <translation id="7773726648746946405">Складирање сесија</translation>
 <translation id="7774365994322694683">Птица</translation>
+<translation id="7774581652827321413">Добијте резиме на страница, слични пребарувања и други корисни информации за страницава</translation>
 <translation id="7774792847912242537">Премногу барања.</translation>
 <translation id="7775694664330414886">Картичката е преместена во неименувана група - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> ќе може да прегледува датотеки во <ph name="FOLDERNAME" /> сѐ додека не ги затворите сите картички за сајтов</translation>
@@ -8443,6 +8450,7 @@
 <translation id="7820400255539998692">Избришете ја датотеката <ph name="FILENAME" /> за да не може другите лица што го користат уредов да ги видат вашите лозинки</translation>
 <translation id="7820561748632634942">Да се доделат дополнителни прекинувачи?</translation>
 <translation id="782057141565633384">К&amp;опирај ја адресата на видеото</translation>
+<translation id="7824665136384946951">Вашата организација го исклучи „Безбедното прелистување“</translation>
 <translation id="7824864914877854148">Бекапот не може да се заврши поради грешка</translation>
 <translation id="782590969421016895">Користи тековни страници</translation>
 <translation id="7826174860695147464">Поддршка за застарени прелистувачи (LBS) - Внатрешни функции</translation>
@@ -10049,6 +10057,7 @@
 <translation id="9094859731829297286">Дали сигурно сакате да резервирате фиксна големина на дискот за Linux?</translation>
 <translation id="9095364055741191097">Не успеа да се вратат локалните податоци</translation>
 <translation id="909554839118732438">Затвори „Инкогнито“</translation>
+<translation id="9096053102600371572">Контролирано лизгање <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="9096776523567481218">не е инсталирано локално</translation>
 <translation id="9098860402274800697">Отстрани ги Google Play и апликациите за Android</translation>
 <translation id="9099220545925418560">Според вашата историја на прелистувањето. Оваа поставка е исклучена.</translation>

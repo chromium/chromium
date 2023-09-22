@@ -242,6 +242,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="2359043044084662842">Tarjima qilish</translation>
 <translation id="2359808026110333948">Davom etish</translation>
 <translation id="2360196772093551345">Mobil versiya</translation>
+<translation id="2361721159900796207">Bu obyektni yashiradi</translation>
 <translation id="2362083820973145409">Siz <ph name="USER_NAME" /> nomidan kirdingiz. <ph name="USER_EMAIL" />. Sozlamalarni ochadi.</translation>
 <translation id="236977714248711277">Saytlar sahifalarni kezishingizni yaxshilash, jumladan, kirish axborotingiz yoki xarid qutingizni eslab qolish uchun cookie fayllardan foydalana olmaydi.
 
@@ -778,6 +779,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="5317780077021120954">Saqlash</translation>
 <translation id="5318298563956633672">Siz bu mahsulotni kuzatyapsiz.</translation>
 <translation id="5339316356165661760">Sinxronizatsiyani yoqish</translation>
+<translation id="5345660046352249607">{COUNT,plural, =1{Bu paket kuzatilsinmi?}other{{COUNT} ta paket kuzatilsinmi?}}</translation>
 <translation id="536067926684072644">Bukmarklarni chiqarish</translation>
 <translation id="5360976571138293719">Maxfiylik, xavfsizlik va axborotlar jamlanishi haqida batafsil axborot olish uchun <ph name="BEGIN_LINK" />Google xizmatlari<ph name="END_LINK" /> bilan tanishing</translation>
 <translation id="5386314158584363703">Kuzatuvdagi saytlar shu yerda chiqadi</translation>
@@ -1144,6 +1146,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="723787869754590019">Avtomatik kiritish uchun Chrome ishlatish</translation>
 <translation id="7265758999917665941">Bu saytda hech qachon</translation>
 <translation id="7272437679830969316">Shaxsingiz tasdiqlanmadi. Paroldan nusxa olinmadi.</translation>
+<translation id="7284359491594949826">{COUNT,plural, =1{Yangi paketni kuzatish boshlandi}other{Yangi paketlarni kuzatish boshlandi}}</translation>
 <translation id="7291368939935408496">Parollar tayyorlanmoqda...</translation>
 <translation id="7302503784943202842">Parollarni barcha qurilmalarda ishlating</translation>
 <translation id="730958329302570991">Saytlardagi parollaringizni istalgan vaqt Google Parollar menejeriga oson kiriting.</translation>
@@ -1245,6 +1248,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="7856733331829174190">Yuklab olinmadi</translation>
 <translation id="785938070103630874">Parollar, toʻlov usullari, manzillar va boshqalarni oching</translation>
 <translation id="7859704718976024901">Veb-sahifalarni ko‘rish tarixi</translation>
+<translation id="7866501058614003444">Bu paketni kuzatish bekor qilindi.</translation>
 <translation id="7870750252270996949">Lens xizmatidan nusxalangan rasm</translation>
 <translation id="7879275349003161544">Yuklanmalarni chiqarish</translation>
 <translation id="7883882164760409935">Qayta ishlatilgan parollar bor.</translation>
@@ -1493,6 +1497,7 @@ Maʼlumotlaringiz <ph name="TIME" /> sanasida kodli ibora bilan shifrlangan. Chr
 <translation id="9148126808321036104">Qaytadan kiring</translation>
 <translation id="9157836665414082580">Muloqot oynalarini bloklash</translation>
 <translation id="9162432979321511934">Parollar avtomatik kiritilishini yoqish</translation>
+<translation id="9162941801309769488">Paket kuzatilmadi</translation>
 <translation id="9165320910061267720">Narx tushishiga oid bildirishnomalar olish uchun iOS sozlamalari orqali bildirishnomalarni yoqishingiz kerak.</translation>
 <translation id="9165886811579296457">Xavfsizlik tekshiruvi tuzatiladigan xavfsizlik muammolarini topmadi.</translation>
 <translation id="9172603439892261948">Bukmarklar, tarix va boshqa maʼlumotlarni sinxronlang</translation>

@@ -328,6 +328,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="1618571384971354160">Uvutaji magari yenye hitilafu na Usaidizi wa kando ya barabara</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622571349153632031">Mlo wa wasiokula nyama</translation>
+<translation id="162285686621567578">Tovuti hii imezuiwa na mzazi wako.</translation>
 <translation id="1622966923835127638">Usimamizi wa Kifedha Kwenye Biashara</translation>
 <translation id="1623104350909869708">Zuia ukurasa huu usiunde vidadisi zaidi</translation>
 <translation id="1633137413609266904">{0,plural, =1{Sera ya msimamizi inazuia kufungua faili hii}other{Sera ya msimamizi inazuia kufungua faili #}}</translation>
@@ -372,6 +373,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="1711528724596764268">Akili bandia na mashine kujifunza</translation>
 <translation id="1712552549805331520"><ph name="URL" /> inataka kuhifadhi kabisa data kwenye kompyuta yako ya karibu</translation>
 <translation id="1713628304598226412">Trei ya pili</translation>
+<translation id="1714807406136741351">Hali ya kuvinjari, unaweza kubadilisha utumie Hali ya fomu ili kutumia kishale cha kulia au kushoto kukagua mabadiliko ya bei kwenye grafu</translation>
 <translation id="1717218214683051432">Vitambuzi vya mwendo</translation>
 <translation id="1717494416764505390">Kikasha cha barua cha tatu</translation>
 <translation id="1717688554309417925">Huduma za Malipo na Hundi</translation>
@@ -3249,6 +3251,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7667346355482952095">Tokeni ya sera iliyoletwa haina chochote au hailingani na tokeni ya sasa</translation>
 <translation id="7668654391829183341">Kifaa kisichojulikana</translation>
 <translation id="7669271284792375604">Wavamizi kwenye tovuti hii wanaweza kujaribu kukulaghai kusakinisha programu zinazoathiri hali yako ya kuvinjari (kwa mfano, kwa kubadilisha ukurasa wako wa kwanza au kwa kuonyesha matangazo ya ziada kwenye tovuti unazotembelea).</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> kati ya <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Hatua zilizochukuliwa kwenye data iliyotiwa alama kuwa ni ya siri (hatua moja tangu wakati wa kuingia katika akaunti). <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" />}other{Hatua zilizochukuliwa kwenye data iliyotiwa alama kuwa ni ya siri (hatua # tangu wakati wa kuingia katika akaunti). <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Kikasha cha barua cha sita</translation>
 <translation id="7675325315208090829">Dhibiti Njia za Kulipa...</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="kn">
 <translation id="1011749477052068769">ಇಲ್ಲಿಗೆ ಮೂವ್ ಮಾಡಿ</translation>
+<translation id="1014147525163127655">ಈ ಸಾಧನದಲ್ಲಿ <ph name="ORIGIN" /> ಗಾಗಿ ಯಾವುದೇ ಪಾಸ್‌ಕೀಗಳಿಲ್ಲ</translation>
 <translation id="1016498331642356377">ನಿಮ್ಮ ಧ್ವನಿಯ ಮೂಲಕ ತ್ವರಿತವಾಗಿ ಹುಡುಕಿ. ಈ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಎಡಿಟ್ ಮಾಡಲು ಸ್ಪರ್ಶಿಸಿ ಮತ್ತು ಒತ್ತಿ ಹಿಡಿಯಿರಿ.</translation>
 <translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತಿದೆ...</translation>
@@ -673,6 +674,7 @@
 <translation id="452750746583162491">ಸಿಂಕ್ ಮಾಡಲಾಗಿರುವ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="4528638190900283934">ಹೆಚ್ಚುವರಿ ಫೀಚರ್‌ಗಳಿಗಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="4532845899244822526">ಫೋಲ್ಡರ್‌ ಆಯ್ಕೆಮಾಡಿ</translation>
+<translation id="4543131175509360848">ಯಾವುದೇ ಪಾಸ್‌ಕೀಗಳ ಶೀಟ್ ಇಲ್ಲ</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ಟ್ಯಾಬ್}one{<ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು, <ph name="TAB_COUNT_INCOGNITO" /> ಅಜ್ಞಾತ}other{<ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು, <ph name="TAB_COUNT_INCOGNITO" /> ಅಜ್ಞಾತ}}</translation>
 <translation id="4554077758708533499">USB ಕೇಬಲ್ ಬಳಸಿ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4558311620361989323">ವೆಬ್‌ಪುಟ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು</translation>
@@ -947,6 +949,7 @@
 <translation id="5869522115854928033">ಉಳಿಸಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
 <translation id="587735546353481577">ಸೈಟ್ ಅನ್ನು ಫಾಲೋ ಮಾಡಲು, ಸೈಟ್‌ಗೆ ಹೋಗಿ, Chrome ಮೆನುವನ್ನು ತೆರೆಯಿರಿ, ಹಾಗೂ ಫಾಲೋ ಮಾಡಿ ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
 <translation id="5879072387416556377">ಉತ್ತಮ ಸಲಹೆಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
+<translation id="5899667542927581604">ಯಾವುದೇ ಪಾಸ್‌ಕೀಗಳ ಶೀಟ್ ಅನ್ನು ಮುಚ್ಚಿಲ್ಲ</translation>
 <translation id="5916664084637901428">ಆನ್‌</translation>
 <translation id="5919204609460789179">ಸಿಂಕ್ ಪ್ರಾರಂಭಿಸಲು <ph name="PRODUCT_NAME" /> ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
 <translation id="5938820472109305350"><ph name="INTEREST" /> ಸೇರಿಸಿ</translation>
@@ -1591,6 +1594,7 @@
 <translation id="9063523880881406963">ಡೆಸ್ಕ್‌ಟಾಪ್ ಸೈಟ್ ವಿನಂತಿಯನ್ನು ಆಫ್ ಮಾಡಿ</translation>
 <translation id="9065203028668620118">ಎಡಿಟ್</translation>
 <translation id="9065383040763568503">Chrome ಪ್ರಕಾರ ಮುಖ್ಯವಲ್ಲದ, ಸಂಗ್ರಹಣೆ ಮಾಡಲಾಗಿರುವ ಡೇಟಾ (ಉದಾ., ಉಳಿಸಿದ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿರದ ಸೈಟ್‌ಗಳು ಅಥವಾ ನೀವು ಆಗಾಗ ಭೇಟಿ ನೀಡದ ಸೈಟ್‌ಗಳು)</translation>
+<translation id="9067341854474068781">ಯಾವುದೇ ಪಾಸ್‌ಕೀಗಳ ಶೀಟ್ ಅನ್ನು ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿಲ್ಲ</translation>
 <translation id="906781307897697745"><ph name="PRODUCT_NAME" /> ನಲ್ಲಿ</translation>
 <translation id="9069999660519089861">ಯಾವುದೇ ಓದದಿರುವ ಪುಟಗಳಿಲ್ಲ</translation>
 <translation id="9070377983101773829">ಧ್ವನಿ ಹುಡುಕಾಟವನ್ನು ಪ್ರಾರಂಭಿಸಿ</translation>

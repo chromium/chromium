@@ -1779,6 +1779,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2359345697448000899">Gerencie suas extensões clicando em Extensões no menu Ferramentas.</translation>
 <translation id="2359556993567737338">Conectar dispositivo Bluetooth</translation>
 <translation id="2359808026110333948">Continuar</translation>
+<translation id="2360792123962658445">Para acessar um resumo da página, pesquisas relacionadas e outras informações úteis, selecione o botão do painel lateral da Pesquisa Google na barra de ferramentas</translation>
 <translation id="2361100938102002520">Você está adicionando um perfil gerenciado a este navegador. Seu administrador poderá controlar o perfil e acessar os dados dele.</translation>
 <translation id="236117173274098341">Otimizar</translation>
 <translation id="2361340419970998028">Enviando feedback…</translation>
@@ -4733,6 +4734,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4766598565665644999">Todas as extensões podem ler e mudar o <ph name="HOST" /></translation>
 <translation id="4767427586072640478">Saiba mais sobre as extensões desativadas.</translation>
 <translation id="4768332406694066911">Você tem certificados das seguintes empresas que identificam você</translation>
+<translation id="4769632191812288342">Você está com a proteção padrão</translation>
 <translation id="4770119228883592393">Permissão solicitada. Pressione ⌘ + Option + seta para baixo para responder</translation>
 <translation id="4773112038801431077">Fazer upgrade do Linux</translation>
 <translation id="4774456473286455263">Configurar com o smartphone Android</translation>
@@ -4974,6 +4976,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4965808351167763748">Você quer mesmo configurar este dispositivo para executar o Google Meet?</translation>
 <translation id="4966972803217407697">Você está no modo de navegação anônima</translation>
 <translation id="4967227914555989138">Adicionar uma observação</translation>
+<translation id="4967360192915400530">Fazer o download do arquivo perigoso</translation>
 <translation id="496742804571665842">Desativar perfis de eSIM</translation>
 <translation id="4971412780836297815">Abrir quando estiver concluído</translation>
 <translation id="4971735654804503942">Proteção mais rápida e proativa contra sites, downloads e extensões perigosos. Envia um alerta de violação de senha. Requer que dados de navegação sejam enviados ao Google.</translation>
@@ -5314,6 +5317,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5265797726250773323">Erro ao instalar</translation>
 <translation id="5266113311903163739">Erro de importação da Autoridade de certificação</translation>
 <translation id="526622169288322445">Mais ações para <ph name="ADDRESS_SUMMARY" /></translation>
+<translation id="5267572070504076962">Ative o recurso Navegação segura para ter proteção contra sites perigosos</translation>
 <translation id="5268373933383932086">Sua página, seu jeito</translation>
 <translation id="5269977353971873915">Falha ao imprimir</translation>
 <translation id="5271578170655641944">Remover o acesso ao Google Drive?</translation>
@@ -7554,6 +7558,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7099337801055912064">Não é possível carregar um PPD grande. O tamanho máximo é 250 KB.</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{Nenhuma senha comprometida}=1{{COUNT} senha comprometida}one{{COUNT} senha comprometida}other{{COUNT} senhas comprometidas}}</translation>
 <translation id="710047887584828070">O conteúdo desta guia está sendo compartilhado</translation>
+<translation id="710224247908684995">Uma extensão desativou o recurso Navegação segura</translation>
 <translation id="7102832101143475489">A solicitação expirou</translation>
 <translation id="710640343305609397">Abrir configurações de rede</translation>
 <translation id="7107609441453408294">Ouvir o mesmo áudio pelos alto-falantes</translation>
@@ -7760,6 +7765,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7287143125007575591">Acesso negado.</translation>
 <translation id="7287411021188441799">Restaurar plano de fundo padrão</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
+<translation id="7289049772085228972">Você tem o nível mais alto de segurança do Chrome</translation>
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" />: permissão solicitada. Pressione F6 para responder</translation>
 <translation id="7290242001003353852">Este serviço de login, hospedado por <ph name="SAML_DOMAIN" />, está acessando sua câmara.</translation>
 <translation id="7292067737327289208">O <ph name="BEGIN_LINK" />navegador é gerenciado<ph name="END_LINK" /> pela sua organização, e seu <ph name="BEGIN_LINK" />perfil<ph name="END_LINK" /> é gerenciado por <ph name="PROFILE_DOMAIN" />.</translation>
@@ -8384,6 +8390,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7772127298218883077">Sobre o <ph name="PRODUCT_NAME" /></translation>
 <translation id="7773726648746946405">Armazenamento da sessão</translation>
 <translation id="7774365994322694683">Pássaro</translation>
+<translation id="7774581652827321413">Receba um resumo da página, pesquisas relacionadas e outras informações úteis</translation>
 <translation id="7774792847912242537">Excesso de solicitações.</translation>
 <translation id="7775694664330414886">A guia foi movida para um grupo sem nome: <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> poderá ver arquivos em <ph name="FOLDERNAME" /> até que você feche todas as guias desse site</translation>
@@ -8445,6 +8452,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7820400255539998692">Exclua o arquivo <ph name="FILENAME" /> para que outros usuários deste dispositivo não tenham acesso a suas senhas</translation>
 <translation id="7820561748632634942">Atribuir mais interruptores?</translation>
 <translation id="782057141565633384">C&amp;opiar endereço do vídeo</translation>
+<translation id="7824665136384946951">Sua organização desativou o recurso Navegação segura</translation>
 <translation id="7824864914877854148">Ocorreu um erro e não foi possível concluir o backup</translation>
 <translation id="782590969421016895">Usar as páginas atuais</translation>
 <translation id="7826174860695147464">Suporte a navegadores legados (LBS): configurações internas</translation>
@@ -9809,6 +9817,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8917490105272468696">Sim</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>
 <translation id="891931289445130855">Excluir dados e permissões</translation>
+<translation id="8920133120839850939">Selecione a guia "Mais gestos" e ative a opção "Deslizar entre páginas" para voltar e avançar</translation>
 <translation id="8922624386829239660">Mover a tela quando o mouse tocar na borda dela</translation>
 <translation id="8923880975836399332">Azul-petróleo-escuro</translation>
 <translation id="8925124370124776087">A barra de título está oculta</translation>
@@ -10049,6 +10058,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="9094859731829297286">Tem certeza de que quer reservar um disco de tamanho fixo no Linux?</translation>
 <translation id="9095364055741191097">Falha ao acessar dados locais</translation>
 <translation id="909554839118732438">Fechar navegação anônima</translation>
+<translation id="9096053102600371572">Rolagem controlada. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="9096776523567481218">não está instalado localmente</translation>
 <translation id="9098860402274800697">Remover apps do Google Play e Android</translation>
 <translation id="9099220545925418560">Com base no seu histórico de navegação. Esta configuração está desativada.</translation>

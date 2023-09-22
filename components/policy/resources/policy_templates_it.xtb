@@ -745,6 +745,9 @@ Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le ist
       Se il criterio è impostato, l'installazione di <ph name="PLUGIN_VM_NAME" /> non va a buon fine se lo spazio libero disponibile sul dispositivo è inferiore a quello richiesto dal criterio.</translation>
 <translation id="1686952487081322272">Disattiva Risposte rapide</translation>
 <translation id="1690383938831887552">Impedisci il caricamento di scambi Signed HTTP Exchange</translation>
+<translation id="1692325295652827195">Se il criterio è impostato su True, Google riceverà report sui principali eventi di installazione delle app Android attivati dal criterio.
+
+Se il criterio viene impostato su False o se non viene configurato, non viene registrato alcun evento.</translation>
 <translation id="1692990221685273468">Consente di stabilire se lo strumento di verifica dei certificati integrato forzerà o meno l'applicazione di vincoli codificati nei trust anchor caricati dall'archivio di attendibilità della piattaforma.</translation>
 <translation id="169467210981344373">Disattiva cache di autenticazione HTTP con ambito globale</translation>
 <translation id="1696501581280568361">Suggerisce la separazione dei profili</translation>
@@ -964,6 +967,12 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
       * PIN e impronta, usa ["PIN", "FINGERPRINT"].
 
       Se il criterio non viene configurato o se viene impostato su un elenco vuoto, non è disponibile nessun fattore WebAuthn per i dispositivi gestiti.</translation>
+<translation id="1870669000882901616">Questo criterio consente a un amministratore di specificare le impostazioni relative alle app web installate. Questo criterio associa un ID app web alla relativa impostazione specifica. È possibile impostare con l'ID speciale <ph name="DEFAULT_SCOPE" /> una configurazione predefinita che verrà applicata a tutte le app web senza una configurazione personalizzata in questo criterio.
+
+Il campo <ph name="MANIFEST_ID_FIELD" /> è l'ID manifest dell'app web. Visita la pagina <ph name="WEB_APP_ID_REFERENCE_URL" /> per avere istruzioni su come stabilire l'ID manifest di un'app web installata.
+Il campo <ph name="RUN_ON_OS_LOGIN_FIELD" /> consente di specificare se un'app web può essere eseguita durante l'accesso al sistema operativo. Se questo campo viene impostato su <ph name="BLOCKED" />, l'app web non verrà eseguita durante l'accesso al sistema operativo e l'utente non potrà attivare questa funzionalità in un secondo momento. Se questo campo viene impostato su <ph name="RUN_WINDOWED" />, l'app web verrà eseguita durante l'accesso al sistema operativo e l'utente non potrà disattivare questa funzionalità in un secondo momento. Se questo campo viene impostato su <ph name="ALLOWED" />, l'utente potrà configurare l'esecuzione dell'app web al momento dell'accesso al sistema operativo. Per la configurazione predefinita sono consentiti soltanto i valori <ph name="ALLOWED" /> e <ph name="BLOCKED" />.
+(Dalla versione 117) Il campo <ph name="PREVENT_CLOSE_FIELD" /> consente di specificare se impedire o meno la chiusura di un'app web in qualsiasi modo (ad esempio da parte dell'utente, da Task Manager, da API web). Questo comportamento può essere attivato solo se il criterio <ph name="RUN_ON_OS_LOGIN_FIELD" /> è impostato su <ph name="RUN_WINDOWED" />. Se l'app era già in esecuzione, questa proprietà diventa effettiva solo dopo il suo riavvio. Se questo campo non viene definito, gli utenti potranno chiudere le app.
+(Dalla versione 118) Il campo <ph name="FORCE_UNREGISTER_OS_INTEGRATION" /> consente di specificare se tutte le integrazioni del sistema operativo per un'app web, ad esempio scorciatoie, gestori di file, gestori di protocollo e così via, vengono rimosse o meno. Se un'app è già in esecuzione, questa proprietà diventerà effettiva dopo il suo riavvio. Questa opzione deve essere utilizzata con cautela, poiché può sostituire qualsiasi integrazione del sistema operativo impostata automaticamente durante l'avvio del sistema delle applicazioni web. Al momento funziona solo su piattaforme Windows, Mac e Linux.</translation>
 <translation id="1883274744253492031">Attiva l'upgrade automatico del contenuto misto</translation>
 <translation id="1885782360784839335">Attiva la visualizzazione di contenuti promozionali a scheda intera</translation>
 <translation id="1888871729456797026">Il token di registrazione della norma relativa al cloud su desktop</translation>
@@ -1414,6 +1423,9 @@ Se configuri questo criterio, il criterio <ph name="PRIVACY_SANDBOX_PROMPT_ENABL
       Se questo criterio non viene impostato, tutti i plug-in che corrispondono ai pattern in "DisabledPlugins" verranno disattivati e bloccati e l'utente non potrà attivarli.</translation>
 <translation id="2236488539271255289">Non consentire ai siti di impostare i dati locali</translation>
 <translation id="2236593201136596376">Consenti la raccolta di log di testo WebRTC dai servizi Google</translation>
+<translation id="2237258181338466053">Se il criterio viene impostato su Attivato, <ph name="PRODUCT_NAME" /> proverà ad avviare alcuni URL in un browser alternativo, ad esempio <ph name="IE_PRODUCT_NAME" />. Questa funzionalità viene impostata con i criteri del gruppo <ph name="LEGACY_BROWSER_SUPPORT_POLICY_GROUP" />.
+
+Se il criterio viene impostato su Disattivato o se non viene impostato, <ph name="PRODUCT_NAME" /> non proverà ad avviare gli URL impostati in un browser alternativo.</translation>
 <translation id="2237705286848619561">Se questo criterio viene attivato, le sessioni aziendali di assistenza da remoto avviate dall'amministratore consentiranno il trasferimento di file tra il client e l'host.
 
 Questo criterio non influisce sugli scenari di accesso remoto.
@@ -1442,6 +1454,9 @@ Se questo criterio non viene configurato o se viene disattivato, il trasferiment
 <translation id="2261648512244797294">Disattiva stampa Privet deprecata</translation>
 <translation id="2266422599396179941">Consenti agli utenti di inviare feedback</translation>
 <translation id="2269319728625047531">Abilita la visualizzazione del consenso alla sincronizzazione durante l'accesso</translation>
+<translation id="2270113153862588648">Se il criterio viene impostato su Attivato, l'attestazione remota è consentita per il dispositivo. Un certificato viene generato e caricato automaticamente sul server di gestione del dispositivo.
+
+Se il criterio viene impostato su Disattivato o se non viene configurato, non viene generato alcun certificato e le chiamate a <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> non vengono eseguite correttamente.</translation>
 <translation id="2270747976331889601">Attiva una funzionalità di sicurezza TLS 1.3 per i trust anchor locali</translation>
 <translation id="22754818344448444">Gli utenti possono selezionare un layout di modelli di scrivanie da caricare</translation>
 <translation id="2277117728011250860">Non consentire l'uso del filtro delle prestazioni di accessibilità.</translation>
@@ -1824,6 +1839,9 @@ nel programma di installazione non verrà visualizzato alcun URL "Scopri di più
 <translation id="2623014935069176671">Attesa dell'attività iniziale dell'utente</translation>
 <translation id="2625026032335150744">Seleziona l'opzione per mantenere i dati di navigazione esistenti per impostazione predefinita</translation>
 <translation id="2625398797484317969">Controlla le impostazioni di Risposte rapide.</translation>
+<translation id="2626302212133950795">Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi <ph name="PRODUCT_OS_NAME" /> possono utilizzare l'attestazione remota (Accesso verificato) per ricevere un certificato emesso dall'autorità di certificazione di <ph name="PRODUCT_OS_NAME" /> in cui si afferma che il dispositivo è idoneo alla riproduzione di contenuti protetti. Questo processo comporta l'invio all'autorità di certificazione di <ph name="PRODUCT_OS_NAME" /> di informazioni di approvazione dell'hardware che identificano in modo univoco il dispositivo.
+
+Se il criterio viene impostato su Disattivato, il dispositivo non utilizza l'attestazione remota per la protezione dei contenuti e non può riprodurre contenuti protetti.</translation>
 <translation id="262740370354162807">Attiva l'invio di documenti a <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="2633084400146331575">Attiva la funzione di lettura vocale</translation>
 <translation id="2633907568797306353">Consenti l'attivazione delle notifiche Phone Hub</translation>
@@ -2097,6 +2115,17 @@ Questo criterio può essere impostato soltanto come criterio relativo agli utent
 <translation id="2908277604670530363">Numero massimo di connessioni simultanee al server proxy</translation>
 <translation id="2912366658685903301">Configura il colore del tema del browser</translation>
 <translation id="2914283793640833265">Non consentire l'attivazione della continuazione di attività Phone Hub</translation>
+<translation id="2915787312243722351">Questo criterio consente di controllare l'impostazione "Usa l'Avvio app/il tasto Ricerca per modificare il
+comportamento dei tasti funzione". Questa impostazione consente agli utenti di tenere premuto il tasto Avvio app
+per spostarsi tra i tasti funzione e i tasti della fila superiore del sistema.
+
+Se questo criterio non viene configurato, gli utenti possono scegliere liberamente il valore dell'impostazione "Usa
+l'Avvio app/il tasto Ricerca per modificare il comportamento dei tasti funzione".
+Se questo criterio viene disattivato, l'Avvio app/il tasto Ricerca non sarà in grado di
+modificare il comportamento dei tasti funzione e questa impostazione non sarà modificabile
+dagli utenti.
+Se questo criterio viene attivato, il l'Avvio app/il tasto Ricerca potrà modificare il
+comportamento dei tasti funzione e questa impostazione non sarà modificabile dagli utenti.</translation>
 <translation id="291853569864365550">Non mostrare suggerimenti di contenuti nella pagina Nuova scheda</translation>
 <translation id="2920795918401557243">Questa impostazione consente di raccogliere dati di rilevamento del rendimento a livello di sistema usando il servizio di tracciamento del sistema.
 
@@ -2375,6 +2404,11 @@ Questo criterio è stato pensato per essere temporaneo e verrà rimosso in futur
 <translation id="3118552207903834734">Consente a un utente di configurare il nome host del suo dispositivo</translation>
 <translation id="3122082892722698079">Controlla l'utilizzo delle eccezioni per i contenuti non sicuri</translation>
 <translation id="3125472566440502628">Disattiva Seleziona per ascoltare</translation>
+<translation id="3126229421659523563">In modalità kiosk, consente di controllare se visualizzare o meno il menu Accessibilità mobile.
+
+Se il criterio è impostato su Attivato, il menu Accessibilità mobile verrà mostrato sempre.
+
+Se il criterio è impostato su Disattivato o non è impostato, il menu Accessibilità mobile non verrà mai mostrato.</translation>
 <translation id="3126748868885248792">Il pulsante destro è il principale</translation>
 <translation id="3128072319047570212">Impostazioni keygen</translation>
 <translation id="3131703464330936425">Non consentire il roaming dei dati mobili</translation>
@@ -2650,6 +2684,9 @@ Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le ist
       Se il criterio non viene impostato, il servizio proxy di sistema non sarà disponibile.</translation>
 <translation id="334231891933432876">Disconnetti l'utente non appena il suo account non è più autenticato</translation>
 <translation id="3345323903592385588">L'ordine in cui la configurazione VM verrà visualizzata nel programma di installazione. Quando vengono specificate più configurazioni VM, quella con il valore display_order più basso appare in cima all'elenco. Il valore predefinito è zero.</translation>
+<translation id="3351661569026056296">Se il criterio è impostato su True, i tasti della fila superiore della tastiera riprodurranno i comandi dei tasti funzione. Per ripristinare il comportamento dei tasti multimediali, è necessario premere il tasto Ricerca.
+
+Se il criterio è impostato su False o non è impostato, la tastiera riprodurrà i comandi dei tasti multimediali per impostazione predefinita. Per ripristinare il comportamento dei tasti funzione, è necessario premere il tasto Ricerca.</translation>
 <translation id="3351835664671920945">Imposta una tastiera standard come predefinita per l'inserimento delle password</translation>
 <translation id="3359186795130278362">Viene attivata la sessione Ospite gestita limitata.</translation>
 <translation id="33592541385181121">Non includere porta nel Kerberos SPN generato</translation>
@@ -4151,6 +4188,11 @@ Se il criterio non è configurato, gli utenti possono modificare l'elenco di app
       Questo criterio è deprecato, al suo posto utilizza <ph name="EXTERNAL_PRINT_SERVERS_ALLOWLIST" />.</translation>
 <translation id="4668325077104657568">Impostazione immagini predefinite</translation>
 <translation id="4669083178278833688">Configura la videocamera, le impostazioni del browser, le impostazioni del sistema operativo, nonché le funzionalità di scansione, Web Store, canvas, Esplora, Crosh, Galleria e Terminale da disattivare</translation>
+<translation id="4669292863736266737">A meno che il criterio <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> sia impostato su <ph name="BLOCK_GEOLOCATION_SETTING" />, l'impostazione <ph name="GLS_ENABLED" /> attiva i Servizi di geolocalizzazione di Google durante la configurazione iniziale. Se il criterio è impostato su <ph name="GLS_DISABLED" /> o se non è configurato, i servizi di geolocalizzazione rimangono disattivati durante la configurazione.
+
+Se il criterio è impostato su <ph name="BR_UNDER_USER_CONTROL" />, agli utenti viene chiesto se utilizzare o meno i Servizi di geolocalizzazione di Google. Se vengono attivati, le app Android utilizzano i servizi per cercare la posizione del dispositivo e inviare dati anonimi sulla posizione a Google.
+
+Dopo la configurazione iniziale, gli utenti possono attivare o disattivare i Servizi di geolocalizzazione di Google.</translation>
 <translation id="4670865688564083639">Minimo:</translation>
 <translation id="467236746355332046">Funzionalità supportate:</translation>
 <translation id="4674167212832291997">Consente di personalizzare l'elenco di pattern URL per i quali il rendering deve sempre essere eseguito da <ph name="PRODUCT_FRAME_NAME" />.
@@ -4166,6 +4208,11 @@ Se il criterio non è configurato, gli utenti possono modificare l'elenco di app
 <translation id="468822697351680932">Utilizza il criterio SiteList di Internet Explorer come fonte di regole</translation>
 <translation id="4693190628432874457">Attiva i report sulla posizione del dispositivo</translation>
 <translation id="4693779768620889402">Destinazioni basate su estensioni</translation>
+<translation id="4693861751987983072">Se il criterio viene impostato su Attivato, <ph name="PRODUCT_OS_NAME" /> segnala a Google metriche relative all'utilizzo e dati diagnostici, ad esempio report sugli arresti anomali. Se il criterio viene impostato su Disattivato, la segnalazione di metriche e dati diagnostici viene disattivata.
+
+Per i dispositivi gestiti, questo criterio è attivo per impostazione predefinita e invia le metriche a Google.
+
+Per i dispositivi non gestiti, l'utente può decidere di inviare le metriche.</translation>
 <translation id="4694138212536142867">Attiva i report sullo stato dell'hardware del dispositivo</translation>
 <translation id="4697581738794063407">Controlla la funzionalità di filtro del parametro URL</translation>
 <translation id="4698895924806859508">Non segnalare eventi di rete</translation>
@@ -4185,6 +4232,9 @@ Se il criterio non è configurato, gli utenti possono modificare l'elenco di app
       </translation>
 <translation id="4703402283970867140">Attiva il modello di oscuramento smart per ritardare l'oscuramento dello schermo</translation>
 <translation id="4704958130749494760">Concedi automaticamente ai siti l'autorizzazione a connettersi a dispositivi seriali USB</translation>
+<translation id="4705329890928008808">Se il criterio è impostato su CopyCaCerts, per le app ARC sono disponibili tutti i certificati CA installati su ONC con <ph name="WEB_TRUSTED_BIT" />.
+
+Se è impostato su None o non è configurato, per le app ARC non sono disponibili certificati <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="4707142899480362007">La configurazione del criterio consente di elencare i pattern URL che specificano i siti a cui viene concessa automaticamente l'autorizzazione di accesso a un dispositivo USB con gli ID fornitore e prodotto indicati nella schermata di accesso. Perché il criterio sia valido, ogni elemento nell'elenco richiede entrambi i campi <ph name="DEVICES_FIELD_NAME" /> e <ph name="URLS_FIELD_NAME" />. Ogni elemento nel campo <ph name="DEVICES_FIELD_NAME" /> può avere un campo <ph name="VENDOR_ID_FIELD_NAME" /> e un campo <ph name="PRODUCT_ID_FIELD_NAME" />. Se il campo <ph name="VENDOR_ID_FIELD_NAME" /> non viene specificato, il criterio può corrispondere a qualsiasi dispositivo. Se il campo <ph name="PRODUCT_ID_FIELD_NAME" /> non viene specificato, il criterio può corrispondere a qualsiasi dispositivo con l'ID fornitore specificato. Un criterio con un campo <ph name="PRODUCT_ID_FIELD_NAME" /> senza un campo <ph name="VENDOR_ID_FIELD_NAME" /> non è valido.
 
       Il modello di autorizzazioni USB consentirà all'URL specificato di accedere al dispositivo USB come origine di primo livello. Se i frame incorporati devono accedere ai dispositivi USB, per concedere l'accesso è necessario usare l'intestazione "usb" del criterio <ph name="FEATURE_POLICY_HEADER_NAME" />. Se l'URL non è valido, il criterio viene ignorato.
@@ -5035,6 +5085,17 @@ Questo criterio è stato rimosso nella versione M112.</translation>
 <translation id="5535256585099022933">Imposta l'intervallo di tempo per il riavvio</translation>
 <translation id="553806128266843748">Un flag booleano che indica se la limitazione è attiva o meno.</translation>
 <translation id="5540885720415375851">Consenti rilevamento dei dispositivi locali</translation>
+<translation id="5544059132156503357">La configurazione del criterio consente di determinare quali tipi di crittografia sono consentiti quando vengono richiesti ticket Kerberos a un server <ph name="MS_AD_NAME" />.
+
+La configurazione del criterio su:
+
+* Tutti consente i tipi di crittografia AES aes256-cts-hmac-sha1-96 e aes128-cts-hmac-sha1-96 e il tipo di crittografia RC4 rc4-hmac. Se il server supporta entrambi i tipi di crittografia, AES ha la precedenza.
+
+* Forte o se non viene impostato, sono consentiti solo i tipi AES.
+
+* Precedente, è consentito solo il tipo RC4. RC4 non è un tipo di crittografia sicuro. Dovrebbe essere utilizzato solo in circostanze molto specifiche. Se possibile, riconfigura il server perché possa supportare la crittografia AES.
+
+Consulta anche https://wiki.samba.org/index.php/Samba_4.6_Features_added/changed#Kerberos_client_encryption_types.</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">Attiva l'alto contrasto nella schermata di accesso</translation>
 <translation id="555077880566103058">Consenti l'esecuzione automatica del plug-in <ph name="FLASH_PLUGIN_NAME" /> in tutti i siti</translation>
@@ -5673,6 +5734,11 @@ Se questo criterio viene disattivato, l'app Scorciatoie da tastiera sarà in mod
 <translation id="6157537876488211233">Elenco separato da virgole delle regole di bypass proxy</translation>
 <translation id="6158324314836466367">Nome del web store dell'azienda (obsoleta)</translation>
 <translation id="6164441518097008843">Limita l'accesso a un elenco di utenti</translation>
+<translation id="6169504363239921686">Se il criterio è impostato su <ph name="BR_ENABLED" />, il backup e ripristino di Android è inizialmente attivo. Se il criterio è impostato su <ph name="BR_DISABLED" /> o se non è configurato, il backup e ripristino rimane disattivato durante la configurazione.
+
+Se il criterio è impostato su <ph name="BR_UNDER_USER_CONTROL" />, agli utenti viene chiesto di utilizzare il backup e ripristino. Se gli utenti attivano il backup e ripristino, i dati delle app Android vengono caricati sui server di backup di Android e ripristinati durante la reinstallazione delle app.
+
+Dopo la configurazione iniziale, gli utenti possono attivare o disattivare il backup e ripristino.</translation>
 <translation id="6169768162756928771">Impostazioni di gestione dell'identità degli utenti GAIA</translation>
 <translation id="6172110090237528457">Consente di configurare il salvaschermo a livello di dispositivo per la schermata di accesso.
 
@@ -6160,6 +6226,13 @@ Il salvaschermo dell'utente mostra le immagini a cui fa riferimento il criterio 
 <translation id="6527674993612811419">Mostra avvisi e disattiva la compilazione automatica sui moduli non sicuri</translation>
 <translation id="6532769014584932288">Consenti i wakelock</translation>
 <translation id="6533881418188970751">Chiedi all'utente dove salvare il file prima di avviare il download</translation>
+<translation id="6534181153831265700">La configurazione del criterio consente di specificare la frequenza in giorni con cui un client modifica la password dell'account della propria macchina. La password viene generata automaticamente dal client e non può essere visualizzata dall'utente. Se il criterio viene disattivato o se viene impostato su un numero alto di giorni, la sicurezza potrebbe risentirne, poiché i potenziali utenti malintenzionati hanno più tempo a disposizione per scoprire e utilizzare la password dell'account della macchina.
+
+Se non viene configurato, la password dell'account della macchina viene modificata ogni 30 giorni.
+
+Se viene impostato su 0, la password dell'account della macchina non viene mai modificata.
+
+Nota: se il client è stato offline per un periodo di tempo maggiore del numero di giorni specificato, le password potrebbero durare più a lungo.</translation>
 <translation id="653616551212414363">Se questa impostazione viene attivata, all'utente verrà mostrata una notifica quando verrà collegato un dispositivo USB su <ph name="PRODUCT_OS_NAME" />.
 
       Se questa impostazione viene disattivata, le notifiche relative ai dispositivi USB collegati non verranno mostrate all'utente.
@@ -6228,6 +6301,13 @@ Se il criterio non viene configurato, viene applicata la frequenza predefinita d
 
       Se il criterio non viene impostato, l'utente potrà usare qualsiasi plug-in installato sul sistema ad eccezione di quelli hardcoded incompatibili, obsoleti o pericolosi.</translation>
 <translation id="6574903167639386816">Cancella i dati del profilo su disco al termine della sessione utente</translation>
+<translation id="6575403002861093126">La configurazione del criterio consente di specificare la durata in ore della cache dell'oggetto Criteri di gruppo (Group Policy Object, GPO): tempo massimo in cui i GPO possono essere riutilizzati prima di essere scaricati nuovamente. Invece di scaricarli di nuovo a ogni recupero del criterio, il sistema riutilizza i GPO memorizzati nella cache finché la loro versione non viene modificata.
+
+Se il criterio viene impostato su 0, la memorizzazione nella cache dei GPO viene disattivata. Ciò aumenta il carico del server, perché i GPO vengono scaricati nuovamente a ogni recupero del criterio, anche se non sono stati modificati.
+
+Se non viene configurato, i GPO memorizzati nella cache possono essere riutilizzati per un tempo massimo di 25 ore.
+
+Nota: se il dispositivo viene riavviato o se l'utente esce, la cache viene svuotata.</translation>
 <translation id="6575944031719151455">La configurazione del criterio consente di specificare l'elenco di account locali del dispositivo da visualizzare nella schermata di accesso. Gli identificatori fanno distinzione tra i diversi account locali del dispositivo.
 
       Se il criterio non viene configurato o se l'elenco è vuoto, non vengono visualizzati account locali del dispositivo.</translation>
@@ -6244,6 +6324,9 @@ Se il criterio non viene configurato, viene applicata la frequenza predefinita d
 <translation id="6584541828182430328">Disattiva avviso schermo intero</translation>
 <translation id="6588634282328239769">Visualizza l'URL completo</translation>
 <translation id="6589049539706330510">Attiva il supporto</translation>
+<translation id="6593025196187527239">Se il criterio viene impostato su True o se non viene configurato, gli utenti possono utilizzare ARC, a meno che ARC sia stato disattivato in altri modi. Se il criterio è impostato su False, gli utenti non affiliati non possono utilizzare ARC.
+
+Le modifiche al criterio vengono applicate solo mentre ARC non è in esecuzione, ad esempio durante l'avvio di ChromeOS.</translation>
 <translation id="6593350713192882944">Attiva Risposte rapide</translation>
 <translation id="6594372503585248865">Attiva l'UI relativa alla connessione sul computer desktop host remoto quando è attiva una connessione</translation>
 <translation id="65947892191748867">Disattiva il consenso degli indicatori dei dispositivi per gli utenti gestiti su dispositivi non gestiti</translation>
@@ -6662,6 +6745,9 @@ Se il criterio viene impostato su Disabled o se non viene configurato, verrà ap
 <translation id="6929746927224321095">Disattiva la compilazione automatica</translation>
 <translation id="6931242315485576290">Disattiva la sincronizzazione dei dati con Google</translation>
 <translation id="6932282102911647185">Colore della retroilluminazione della tastiera viola</translation>
+<translation id="6938424179790370595">Se il criterio è impostato su None, la lente d'ingrandimento è disattivata.
+
+Se configuri il criterio, gli utenti non possono modificarlo. Se il criterio non è configurato, la lente d'ingrandimento risulta disattivata all'inizio, ma gli utenti possono attivarla in qualsiasi momento.</translation>
 <translation id="6940243892299228102">Gli utenti non possono usare i modelli di scrivanie</translation>
 <translation id="6943577887654905793">Nome di preferenza per Mac/Linux:</translation>
 <translation id="6946652757373377924">
@@ -6804,6 +6890,7 @@ Se il criterio viene impostato su Disabled o se non viene configurato, verrà ap
 <translation id="7072208053150563108">Frequenza di modifica della password del computer</translation>
 <translation id="7072567600438630966">Consenti l'attivazione di Phone Hub</translation>
 <translation id="7074437930865599190">Blocca la versione principale della stringa user agent a 99</translation>
+<translation id="7077471517869658421">Gli utenti possono modificare liberamente il valore dell'impostazione "Usa l'Avvio app/il tasto Ricerca per modificare il comportamento dei tasti funzione".</translation>
 <translation id="707988220162760379">Apri sempre i file PDF utilizzando un visualizzatore PDF esterno</translation>
 <translation id="7081401546407362463">Elenco dei tipi di file che dovrebbero essere aperti automaticamente al termine del download. Il separatore iniziale non deve essere incluso nell'elenco dei tipi di file, quindi usa "txt" anziché ".txt".
 
@@ -6847,6 +6934,17 @@ Se il criterio viene impostato, l'elenco dei valori predefiniti viene esteso con
 <translation id="7098400392308393199">La protezione dei download in tempo reale è controllata dal criterio <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /></translation>
 <translation id="710003290625031750">Descrizione estesa dello schema:</translation>
 <translation id="7101550508196914704">Non mostrare la scorciatoia applicazioni nella barra dei Preferiti</translation>
+<translation id="7105084505972468353">Se questo criterio viene impostato, consente di controllare il tipo di lente d'ingrandimento che viene attivato.
+
+Se questo criterio viene impostato su "Schermo intero", la lente d'ingrandimento sarà sempre attiva in modalità lente d'ingrandimento a schermo intero sulla schermata di accesso.
+
+Se questo criterio viene impostato su "Ancorata", la lente d'ingrandimento verrà sempre attivata in modalità lente d'ingrandimento ancorata sulla schermata di accesso.
+
+Se questo criterio è impostato su "Nessuno", la lente d'ingrandimento sarà sempre disattivata sulla schermata di accesso.
+
+Se configuri questo criterio, gli utenti non potranno modificarlo o ignorarlo.
+
+Se questo criterio non viene impostato, inizialmente la lente d'ingrandimento è disattivata nella schermata di accesso, ma l'utente può attivarla in qualsiasi momento.</translation>
 <translation id="7109384070286741861">CECPQ2 viene disattivato</translation>
 <translation id="7113439794629928551">Mostra i controlli multimediali per le sessioni <ph name="PRODUCT_NAME" /> avviate da altri dispositivi</translation>
 <translation id="7114169791477667553">Disattiva il provider di ricerca predefinito</translation>
@@ -7000,6 +7098,13 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 
       Se imposti questa norma su true disattivi le stampanti che usano protocolli diversi da IPPS, USB o IPP-over-USB poiché il nome utente e il nome file non devono essere inviati nella rete in modo esplicito.</translation>
 <translation id="7253446510183499868">Non consentire il riavvio automatico dopo gli aggiornamenti</translation>
+<translation id="7253705688881857796">La configurazione del criterio consente di specificare se e come i criteri relativi agli utenti vengono elaborati dall'oggetto Criteri di gruppo (GPO) del computer.
+
+* Se vengono impostati su Impostazione predefinita o se non vengono configurati, i criteri relativi agli utenti vengono letti soltanto dai GPO dell'utente. I GPO del computer vengono ignorati.
+
+* Se vengono impostati su Unisci, i criteri relativi agli utenti nei GPO degli utenti vengono uniti a quelli dei GPO del computer. I GPO del computer hanno la precedenza.
+
+* Se vengono impostati su Sostituisci, i criteri relativi agli utenti nei GPO degli utenti vengono sostituiti da quelli dei GPO del computer. I GPO degli utenti vengono ignorati.</translation>
 <translation id="7258250780552783197">Elenco di impostazioni per i servizi di Chrome Enterprise Connectors da applicare al connettore di Enterprise <ph name="ON_FILE_TRANSFER_ENTERPRISE_CONNECTOR" />, che si attiva quando un file viene trasferito all'interno di <ph name="PRODUCT_OS_NAME" />.
 
       I campi <ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> vengono utilizzati per stabilire se il connettore deve inviare un file per l'analisi quando viene trasferito tra un'origine e una destinazione e quali tag includere nella richiesta di analisi di quel file. Un tag che corrisponde a una regola "enable" verrà incluso nella richiesta di analisi se l'origine e la destinazione corrispondono alla regola associata a questo tag, purché nessuna regola "disable" con lo stesso tag corrisponda al trasferimento. L'analisi viene eseguita se almeno un tag deve essere incluso nella richiesta. Una regola <ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" /> è definita da un elenco di coppie, dove ogni coppia contiene un elenco di origini e un elenco di destinazioni. Il campo <ph name="ENTERPRISE_CONNECTOR_FILE_SYSTEM_TYPE_FIELD" /> definisce il file system a cui deve essere applicata una regola.
@@ -7549,6 +7654,11 @@ Se questo criterio non viene impostato, il renderer del PDF viene scelto dal bro
 <translation id="7732907212083471072">Criteri rimossi</translation>
 <translation id="7734212505800048991">
           Le chiamate a getDisplayMedia che provengono da contesti non aggiunti alla lista consentita vengono rifiutate.</translation>
+<translation id="7736218466096907954">Se il criterio viene impostato su Attivato o se non viene impostato, in <ph name="PRODUCT_NAME" /> viene mostrata l'UI del nuovo fumetto dei download.
+
+      Se il criterio viene impostato su Disattivato, <ph name="PRODUCT_NAME" /> continua a mostrare l'UI della barra dei download precedente.
+
+      Questo criterio era stato pensato per essere temporaneo ed è stato rimosso dopo l'avvio completo della nuova interfaccia utente del fumetto dei download.</translation>
 <translation id="7736521021425189418">Terminale (supportata dalla versione 117)</translation>
 <translation id="77379430721695807">Se il criterio viene configurato, verrà specificato l'elenco di URL i cui pattern vengono confrontati con l'origine di sicurezza dell'URL richiedente. Una corrispondenza assicura l'accesso ai dispositivi per l'acquisizione video senza richieste
 
@@ -7573,6 +7683,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       Se il criterio non viene impostato, si usa il valore predefinito di 3 ore.
 
       Nota: le notifiche relative ai criteri forzano un aggiornamento quando cambiano i criteri, rendendo quindi superflui aggiornamenti più frequenti. Quindi, se la piattaforma supporta queste notifiche, il ritardo dell'aggiornamento verrà impostato su 24 ore (vengono ignorati tutti i valori predefiniti e il valore di questo criterio).</translation>
+<translation id="775822241671489040">Consente di controllare l'impostazione "Usa l'Avvio app/il tasto Ricerca per modificare il comportamento dei tasti funzione"</translation>
 <translation id="7758378441185523981">Attiva l'autenticazione ambientale in base ai tipi di profilo.</translation>
 <translation id="776110834126722255">Deprecata</translation>
 <translation id="7763614521440615342">Mostra suggerimenti di contenuti nella pagina Nuova scheda</translation>
@@ -7656,6 +7767,15 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 
       I valori validi per il campo <ph name="MINUTE_FIELD_NAME" /> in <ph name="START_TIME_FIELD_NAME" />, <ph name="END_TIME_FIELD_NAME" /> e <ph name="CHARGE_START_TIME_FIELD_NAME" /> sono 0, 15, 30 e 45.</translation>
 <translation id="7840258755683573560">Attiva i clic automatici</translation>
+<translation id="784165160128690202">Se il criterio è impostato su None, la lente d'ingrandimento è disattivata nella schermata di accesso.
+
+Se imposti il criterio, gli utenti possono attivare o disattivare temporaneamente la lente d'ingrandimento. Quando la schermata di accesso viene ricaricata o rimane inattiva per un minuto, la lente d'ingrandimento torna allo stato originale.
+
+Se il criterio non è impostato, la lente d'ingrandimento è disattivata nella schermata di accesso. Gli utenti possono attivarla in qualsiasi momento e il suo stato nella schermata di accesso persiste per tutti gli utenti.
+
+Valori validi: • 0 = disattivata• 1 = attivata• 2 = riquadro d'ingrandimento ancorato attivato
+
+Nota: se specificato, <ph name="DEVICE_LOGIN_SCREEN_SCREEN_MAGNIFIER_TYPE_POLICY_NAME" /> sostituisce questo criterio.</translation>
 <translation id="7841880500990419427">Versione TLS minima a cui retrocedere</translation>
 <translation id="7841883965249733328">Disattiva l'upgrade automatico del contenuto misto</translation>
 <translation id="7845130996290850593">Attiva Kerberos</translation>
@@ -8292,6 +8412,9 @@ Se il criterio non viene configurato, in pratica equivale a impostarlo su "<ph n
 <translation id="8395350646076131800">Timeout di inattività della schermata di blocco utente del salvaschermo.</translation>
 <translation id="8395749934754392549">Consente di gestire le impostazioni relative al container Android (ARC) e alle app Android.</translation>
 <translation id="8398952282584132331">Attiva Schermata sulla privacy</translation>
+<translation id="8399825694820904218">Se per il criterio viene impostato un numero, <ph name="PRODUCT_NAME" /> mostra un messaggio relativo al numero di millisecondi impostato, quindi apre un browser alternativo.
+
+Se il criterio non viene impostato o viene impostato su 0 e si passa a un URL definito, l'URL viene aperto subito in un browser alternativo.</translation>
 <translation id="8402079500086185021">Apri sempre file PDF esternamente</translation>
 <translation id="8410477879938914253">Il criterio viene applicato soltanto alle sessioni Ospite gestite.
       Se il criterio viene impostato su Vero o se non viene configurato, viene visualizzata una finestra di dialogo che chiede all'utente di confermare o annullare la disconnessione quando l'ultima finestra viene chiusa.
@@ -8305,6 +8428,7 @@ Se il criterio non viene configurato, in pratica equivale a impostarlo su "<ph n
       Se il criterio non viene configurato, l'API Event.path sarà nello stato predefinito: disponibile prima della versione M109 e non disponibile nelle versioni M109-114.
 
       Questo criterio verrà rimosso nelle versioni successive alla versione 115 di Chrome.</translation>
+<translation id="841395160262233331">L'Avvio app/il tasto Ricerca non sarà in grado di modificare il comportamento dei tasti funzione e questa impostazione non sarà modificabile dagli utenti.</translation>
 <translation id="8415953438346821074">Se attivi questa impostazione, le impostazioni memorizzate nei profili <ph name="PRODUCT_NAME" />, come i preferiti, i dati della compilazione automatica, le password e così via, saranno scritte anche in un file memorizzato nella cartella del profilo utente Roaming o in una posizione specificata dall'amministratore tramite il criterio <ph name="ROAMING_PROFILE_LOCATION_POLICY_NAME" />. Se attivi il criterio, viene disattivata la sincronizzazione nel cloud.
 
       Se il criterio viene disattivato o non viene impostato, saranno utilizzati solo i normali profili locali.</translation>
@@ -9033,6 +9157,13 @@ Se il criterio non viene configurato, per impostazione predefinita <ph name="PRO
 
       I modelli con formato errato verranno ignorati.</translation>
 <translation id="9068629430243705879">porta 6566 (può essere sbloccata fino al 15/10/2021)</translation>
+<translation id="9069503402414011061">La configurazione del criterio consente di specificare la durata in ore dei dati di autenticazione nella cache. La cache include dati relativi alle aree di autenticazione ritenute attendibili dall'area di autenticazione della macchina (aree di autenticazione affiliate). Pertanto, la memorizzazione nella cache dei dati di autenticazione consente di velocizzare l'accesso. I dati specifici degli utenti e quelli per le aree di autenticazione non affiliate non vengono memorizzati nella cache.
+
+Se il criterio viene impostato su 0, la memorizzazione nella cache dei dati di autenticazione viene disattivata. I dati specifici dell'area di autenticazione vengono recuperati a ogni accesso, quindi la relativa memorizzazione nella cache può rallentare in modo significativo l'accesso degli utenti.
+
+Se il criterio non viene configurato, i dati di autenticazione memorizzati nella cache possono essere riutilizzati per un periodo massimo di 73 ore.
+
+Nota: se il dispositivo viene riavviato, la cache viene svuotata. Anche i dati relativi all'area di autenticazione degli utenti temporanei vengono memorizzati nella cache. Disattiva la cache per impedire il tracciamento dell'area di autenticazione degli utenti temporanei.</translation>
 <translation id="9069588907259547232">Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi registrati segnalano il relativo volume dell'audio.
 
       Se il criterio viene impostato su Disattivato, i dispositivi registrati non registrano o non segnalano lo stato dell'audio.
@@ -9211,6 +9342,7 @@ Questo criterio ha effetto soltanto se il criterio <ph name="FULL_RESTORE_ENABLE
 <translation id="983256325512298435">Definisci un elenco di protocolli che possono lanciare un'applicazione esterna dalle origini elencate senza chiedere conferma all'utente</translation>
 <translation id="984365509386992443">Se questo criterio viene attivato o se non viene impostato, l'utente potrebbe ricevere sondaggi relativi a Navigazione sicura.
 Se viene disattivato, l'utente non riceverà sondaggi relativi a Navigazione sicura.</translation>
+<translation id="985148612300045106">L'Avvio app/il tasto Ricerca sarà in grado di modificare il comportamento dei tasti funzione e questa impostazione non sarà modificabile dagli utenti.</translation>
 <translation id="987261962216071510">Consenti solo gli accessi come ospite al browser</translation>
 <translation id="987975731398348803">Se il criterio viene attivato o se non viene configurato, i dispositivi registrati segnalano l'elenco di utenti dei dispositivi che hanno eseguito l'accesso di recente.
 

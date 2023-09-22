@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="my">
 <translation id="1011749477052068769">ဤနေရာသို့ ရွှေ့ရန်</translation>
+<translation id="1014147525163127655">ဤစက်တွင် <ph name="ORIGIN" /> အတွက် လျှို့ဝှက်ကီးများ မရှိပါ</translation>
 <translation id="1016498331642356377">သင့်အသံဖြင့် အမြန်ရှာပါ။ ဤဖြတ်လမ်းလင့်ခ်ကို ပြင်ဆင်ရန် တို့ထိ၍ဖိထားပါ။</translation>
 <translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> သို့ ပို့နေသည်...</translation>
@@ -674,6 +675,7 @@
 <translation id="452750746583162491">သင်စင့်ခ်လုပ်ထားသည့် ဒေတာများကို ပြန်စစ်ခြင်း</translation>
 <translation id="4528638190900283934">ထပ်ဆောင်းဝန်ဆောင်မှုများအတွက် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="4532845899244822526">ဖိုင်တွဲရွေးရန်</translation>
+<translation id="4543131175509360848">လျှို့ဝှက်ကီးစာမျက်နှာများ မရှိပါ</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{တဘ် <ph name="TAB_COUNT_ONE" /> ခု}other{တဘ် <ph name="TAB_COUNT_MANY" /> ခု, ရုပ်ဖျက်တဘ်<ph name="TAB_COUNT_INCOGNITO" /> ခု}}</translation>
 <translation id="4554077758708533499">USB ကြိုးနှင့် ချိတ်ဆက်ထားသည်</translation>
 <translation id="4558311620361989323">ဝဘ်စာမျက်နှာ ဖြတ်လမ်းလင့်ခ်များ</translation>
@@ -948,6 +950,7 @@
 <translation id="5869522115854928033">သိမ်းဆည်းထားသည့် စကားဝှက်များ</translation>
 <translation id="587735546353481577">ဝဘ်ဆိုက်တစ်ခုကို လိုက်ကြည့်ရန် ၎င်းသို့သွားပြီး Chrome မီနူးဖွင့်ကာ ‘လိုက်ကြည့်ရန်’ ကို တို့ပါ။</translation>
 <translation id="5879072387416556377">ပိုကောင်းသည့်အကြံပြုချက်များ ရယူခြင်း</translation>
+<translation id="5899667542927581604">ပိတ်ထားသော လျှို့ဝှက်ကီးစာမျက်နှာများ မရှိပါ</translation>
 <translation id="5916664084637901428">ဖွင့်ရန်</translation>
 <translation id="5919204609460789179">စင့်ခ်လုပ်ရန် <ph name="PRODUCT_NAME" /> ကို အပ်ဒိတ်လုပ်ပါ</translation>
 <translation id="5938820472109305350"><ph name="INTEREST" /> ထည့်ရန်</translation>
@@ -1591,6 +1594,7 @@
 <translation id="9063523880881406963">ဆိုဒ်အကြီး တောင်းဆိုချက် ပိတ်မည်</translation>
 <translation id="9065203028668620118">ပြင်ဆင်ရန်</translation>
 <translation id="9065383040763568503">Chrome က အရေးကြီးသည်ဟု မယူဆသည့် သိမ်းထားသောဒေတာများ (ဥပမာ - သိမ်းထားသောဆက်တင်များ မရှိသည့် သို့မဟုတ် သင် မကြာခဏ ဝင်ကြည့်လေ့မရှိသည့် ဝဘ်ဆိုက်များ)</translation>
+<translation id="9067341854474068781">မြင်ကွင်းအပြည့် ဖွင့်ထားသော လျှို့ဝှက်ကီးစာမျက်နှာများ မရှိပါ</translation>
 <translation id="906781307897697745"><ph name="PRODUCT_NAME" /> တွင်</translation>
 <translation id="9069999660519089861">မဖတ်ရသေးသော စာမျက်နှာ မရှိပါ</translation>
 <translation id="9070377983101773829">အသံဖြင့် ရှာဖွေမှု စတင်ရန်</translation>

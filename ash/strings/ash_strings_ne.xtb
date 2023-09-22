@@ -225,6 +225,7 @@
 <translation id="1831565490995294689"><ph name="APP_TO_OPEN" /> खोल्न चयन गर्नुहोस्।</translation>
 <translation id="1838895407229022812">रात्रि प्रकाश निष्क्रिय छ।</translation>
 <translation id="1854180393107901205">Cast गर्न रोक्नुहोस्</translation>
+<translation id="1862077610023398675">सेटिङ लुकाइयोस्</translation>
 <translation id="1862380676329487333">अपडेट गर्नुहोस् अनि साइन आउट गर्नुहोस्</translation>
 <translation id="1864454756846565995">USB-C यन्त्र (पछाडिको पोर्ट)</translation>
 <translation id="1869497990620230175">क्विक फाइलहरू</translation>
@@ -304,6 +305,7 @@
 <translation id="2268130516524549846">ब्लुतुथ असक्षम गरियो</translation>
 <translation id="2268813581635650749">सबै साइन आउट गर्नु…</translation>
 <translation id="2269016722240250274">एउटा एपले तपाईंको डिभाइसको माइक्रोफोन प्रयोग गरिरहेको छ</translation>
+<translation id="2276987123919776440">१५ मिनेट</translation>
 <translation id="2277103315734023688">अगाडि जानुहोस्</translation>
 <translation id="2282073721614284166">यो लिंक नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="2284237890386182187">अन छ, कुनै पनि डिभाइस कनेक्ट गरिएको छैन</translation>
@@ -513,6 +515,7 @@
 <translation id="3153444934357957346">तपाईंसँग बहुविध साइन-इनमा <ph name="MULTI_PROFILE_USER_LIMIT" /> सम्म खाताहरू मात्रै हुन सक्छ।</translation>
 <translation id="3154351730702813399">यन्त्रको प्रशासकले तपाईंको ब्राउजिङ सम्बन्धी गतिविधिको अनुगमन गर्न सक्छ।</translation>
 <translation id="316086887565479535">टेम्प्लेटमा प्रयोग गर्न नमिल्ने एपहरू छन्</translation>
+<translation id="3160929076476941240">२ घण्टा</translation>
 <translation id="3161500364292033097">डेस्क तथा विन्डोहरू बन्द गर्नुहोस्</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> तपाईंको <ph name="DEVICE_TYPE" /> मा अघिल्लो संस्करण रिस्टोर गर्दै छ। तपाईंको डिभाइस रिसेट हुने छ र डिभाइसमा भएका सबै डेटा मेटाइने छ।</translation>
 <translation id="3171170659304083361">इनपुट विधिसम्बन्धी सेटिङ</translation>
@@ -786,6 +789,7 @@
 <translation id="4215497585250573029">VPN सेटिङहरू</translation>
 <translation id="4217571870635786043">श्रुतिलेखन</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, इन्स्टल गरिएको एप, अस्थायी रूपमा रोकिएको</translation>
+<translation id="4228078597006700451">सेटिङ सेटअप गरिएको छैन</translation>
 <translation id="4231053948789591973">कास्ट गर्ने कार्य केही बेरका लागि रोकिएको छ। तपाईं जुनसुकै बेला आफ्नो स्क्रिन कास्ट गर्ने कार्य सुचारु गर्न वा कास्ट गर्न छाड्न सक्नुहुन्छ।</translation>
 <translation id="423685346499232137">यस बखत सामग्री कपी वा पेस्ट गर्न सकिँदैन</translation>
 <translation id="4239069858505860023">GPRS</translation>
@@ -820,6 +824,7 @@
 <translation id="4333628967105022692">एकभन्दा बढी प्रयोगकर्ताहरू साइन इन अवस्थामा हुँदा Lacros ले काम गर्दैन।</translation>
 <translation id="4338109981321384717">म्याग्निफाइङ्ग ग्लास</translation>
 <translation id="4356872429719185452">हटस्पटसम्बन्धी विवरणहरू देखाइऊन्। हटस्पट अन हुँदै छ।</translation>
+<translation id="4364101114148522660"><ph name="DURATION" />  रेकर्ड गरिँदै छ</translation>
 <translation id="4371348193907997655">कास्टका सेटिङहरू</translation>
 <translation id="4375482231364171368">एड्रेस बारमा खोज्नुहोस्</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" /> प्रतिशत छ</translation>
@@ -1404,6 +1409,7 @@
 <translation id="6752912906630585008">डेस्क <ph name="REMOVED_DESK" /> हटाइयो र डेस्क <ph name="RECEIVE_DESK" /> मा गाभियो</translation>
 <translation id="6753390234084146956">ट्याब</translation>
 <translation id="6757237461819837179">कुनै मिडिया प्ले भइरहेको छैन</translation>
+<translation id="6760438044935091345">गेम ड्यासबोर्ड</translation>
 <translation id="6768043681523654438">भण्डारण</translation>
 <translation id="6777216307882431711">जडान गरिएका USB-C यन्त्रहरू चार्ज गर्दै</translation>
 <translation id="6781002679438061620">डेस्क ९</translation>
@@ -1417,6 +1423,7 @@
 <translation id="6802196538183166658">समय चयन गरी द्रुत सेटिङ खोल्नुहोस्</translation>
 <translation id="6802687695197837794">तपाईंले यसो गर्नुभयो भने क्यामेरा र माइक्रोफोन प्रयोग गर्ने अनुमति भएका <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> र सबै एप तथा वेबसाइटहरूलाई क्यामेरा र माइक्रोफोन प्रयोग गर्ने अनुमति दिन्छ</translation>
 <translation id="6803622936009808957">समर्थित रिजोलुशन फेला नपारेदेखि मिरर डिस्प्ले गर्न सकेन। सट्टामा विस्तारित डेस्कटप प्रविष्ट गरियो।</translation>
+<translation id="6809556495807506746">सेटिङ उपलब्ध छैन</translation>
 <translation id="6812232930908427253">डेस्क सेभ गर्न सकिएन। अत्यन्त धेरै विन्डो वा ट्याबहरू सेभ गरिएका छन्।</translation>
 <translation id="6818242057446442178">कर्सरलाई एक शब्द पछाडि लैजानुहोस्</translation>
 <translation id="6819327813400217281">क्यामेरा पुछारको बायाँ कुनामा स्न्याप गरियो</translation>
@@ -1441,6 +1448,7 @@
 <translation id="6919251195245069855">तपाईंको स्मार्ट कार्ड पहिचान गर्न सकिएन। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="6920245099716267363">हटस्पट टगल गर्नुहोस्। हटस्पट अन छ, एउटा डिभाइस कनेक्ट गरिएको छ।</translation>
 <translation id="692135145298539227">मेटाइयोस्</translation>
+<translation id="6929081673585394903">सेटिङ देखाइयोस्</translation>
 <translation id="6931576957638141829">यसमा सेभ गरियोस्</translation>
 <translation id="6942518653766415536">रेकर्डिङको फर्म्याटसम्बन्धी मेनु</translation>
 <translation id="6945221475159498467">चयन गर्नुहोस्</translation>
@@ -1638,6 +1646,7 @@
 <translation id="7773536009433685931">बरु Wi-Fi अन गर्नुहोस्</translation>
 <translation id="7780094051999721182">सर्टकट</translation>
 <translation id="7780159184141939021">स्क्रिन घुमाउनुहोस्</translation>
+<translation id="7792590255364786396">हेर्न मिल्छ</translation>
 <translation id="7796735576426975947">नयाँ सूचना लुकाइएको छ</translation>
 <translation id="7798302898096527229">रद्द गर्न Search वा Shift बटनमा थिच्नुहोस्।</translation>
 <translation id="780301667611848630">भयो, धन्यवाद</translation>
@@ -1906,6 +1915,7 @@
 <translation id="8940956008527784070">ब्याटरी कम (<ph name="PERCENTAGE" />%)</translation>
 <translation id="8949925099261528566">कनेक्ट भयो, इन्टरनेट छैन</translation>
 <translation id="8951539504029375108">तपाईंको Chromebook मा स्वीकृत Thunderbolt यन्त्रहरू मात्र चल्छन्</translation>
+<translation id="8964525410783593407">१ घण्टा</translation>
 <translation id="8973885907461690937">मेनु जनाउने आइकनमा फोकस गर्नुहोस्</translation>
 <translation id="8980862970816311842">एप ग्रिडमा कुनै एपको आइकन फोल्डर भित्र/बाहिर सार्नुहोस्</translation>
 <translation id="8982906748181120328">नजिकैका यन्त्रमा फेला पर्ने</translation>
@@ -1978,6 +1988,7 @@
 <translation id="951991426597076286">अस्वीकार गर्नुहोस्</translation>
 <translation id="953431725143473984">डिभाइस सट डाउन गर्ने हो?</translation>
 <translation id="954052413789300507"><ph name="FILENAME" /> डाउनलोड गर्नका निम्ति पर्याप्त खाली ठाउँ छैन। ठाउँ खाली गर्नुहोस्।</translation>
+<translation id="954520015070501466">३० मिनेट</translation>
 <translation id="974545358917229949"><ph name="RESULT_COUNT" /> सम्बन्धी <ph name="QUERY" /> परिणामहरू देखाउँदै</translation>
 <translation id="981011780479609956">पूरा गर्नु पर्ने मिति नतोकिएका</translation>
 <translation id="98120814841227350">कागजातको फेदमा जानुहोस्</translation>

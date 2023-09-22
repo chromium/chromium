@@ -1766,6 +1766,7 @@
 <translation id="2359345697448000899">يمكنك إدارة الإضافات من خلال النقر على "الإضافات" في قائمة "الأدوات".</translation>
 <translation id="2359556993567737338">الاتصال بجهاز عبر بلوتوث</translation>
 <translation id="2359808026110333948">متابعة</translation>
+<translation id="2360792123962658445">‏للحصول على ملخّص للصفحة وعمليات البحث ذات الصلة ومعلومات أخرى مفيدة حول هذه الصفحة، انقر على زر اللوحة الجانبية لمحرّك "بحث Google" في شريط الأدوات.</translation>
 <translation id="2361100938102002520">يُرجى العلم أنّ الملف الشخصي الذي تضيفه إلى هذا المتصفّح يخضع لإدارة مشرف. ويمكن لهذا المشرف التحكّم في الملف الشخصي والوصول إلى بياناته.</translation>
 <translation id="236117173274098341">تحسين</translation>
 <translation id="2361340419970998028">جارٍ إرسال الملاحظات...</translation>
@@ -4718,6 +4719,7 @@
 <translation id="4766598565665644999">يمكن لجميع الإضافات قراءة محتوى الموقع الإلكتروني <ph name="HOST" /> وتغييره.</translation>
 <translation id="4767427586072640478">تعرَّف على مزيد من المعلومات حول الإضافات غير المفعّلة.</translation>
 <translation id="4768332406694066911">لديك شهادات تحدد هويتك من هذه المؤسسات</translation>
+<translation id="4769632191812288342">يتم توفير الحماية العادية حاليًا.</translation>
 <translation id="4770119228883592393">‏تم طلب الإذن، اضغط على ⌘ + Option + السهم المتجه للأسفل للاستجابة للطلب</translation>
 <translation id="4773112038801431077">‏ترقية نظام التشغيل Linux</translation>
 <translation id="4774456473286455263">‏إعداد الجهاز باستخدام هاتف Android</translation>
@@ -4959,6 +4961,7 @@
 <translation id="4965808351167763748">‏هل تريد فعلاً إعداد هذا الجهاز لتشغيل Hangouts Meet؟</translation>
 <translation id="4966972803217407697">يتم استخدام وضع التصفُّح المُتخفي حاليًا.</translation>
 <translation id="4967227914555989138">إضافة ملاحظة</translation>
+<translation id="4967360192915400530">تنزيل ملف خطير</translation>
 <translation id="496742804571665842">‏إيقاف الملفات الشخصية لشرائح eSIM</translation>
 <translation id="4971412780836297815">فتح عند اكتمال التنزيل</translation>
 <translation id="4971735654804503942">‏يوفّر حماية استباقية وسريعة من الإضافات وعمليات التنزيل والمواقع الإلكترونية الضارة، ويُحذّرك من عمليات اختراق كلمة المرور. يتطلّب إرسال بيانات التصفّح إلى Google.</translation>
@@ -5299,6 +5302,7 @@
 <translation id="5265797726250773323">حدث خطأ أثناء التثبيت</translation>
 <translation id="5266113311903163739">خطأ استيراد مرجع مصدق</translation>
 <translation id="526622169288322445">مزيد من الإجراءات للعنوان <ph name="ADDRESS_SUMMARY" /></translation>
+<translation id="5267572070504076962">يُرجى تفعيل ميزة "التصفُّح الآمن" للحصول على حماية من المواقع الإلكترونية الخطيرة.</translation>
 <translation id="5268373933383932086">اختيار المواضيع التي تهمّك لعرضها على صفحتك</translation>
 <translation id="5269977353971873915">تعذّرت الطباعة</translation>
 <translation id="5271578170655641944">‏هل تريد إزالة إمكانية الوصول إلى Google Drive؟</translation>
@@ -7544,6 +7548,7 @@
 <translation id="7099337801055912064">‏يتعذّر تحميل ملف PPD كبير الحجم. الحد الأقصى للحجم هو 250 كيلوبايت.</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{ما مِن كلمات مرور محتمَل تعرّضها للاختراق}=1{كلمة مرور واحدة ({COUNT}) محتمَل تعرّضها للاختراق}two{كلمتا مرور ({COUNT}) محتمَل تعرّضهما للاختراق}few{{COUNT} كلمات مرور محتمَل تعرّضها للاختراق}many{{COUNT} كلمة مرور محتمَل تعرّضها للاختراق}other{{COUNT} كلمة مرور محتمَل تعرّضها للاختراق}}</translation>
 <translation id="710047887584828070">تجري حاليًا مشاركة محتوى علامة التبويب هذه.</translation>
+<translation id="710224247908684995">أوقفت إحدى الإضافات ميزة "التصفُّح الآمن".</translation>
 <translation id="7102832101143475489">انتهت مهلة الطلب</translation>
 <translation id="710640343305609397">فتح إعدادات الشبكة</translation>
 <translation id="7107609441453408294">تشغيل الصوت نفسه من خلال جميع مكبِّرات الصوت</translation>
@@ -7751,6 +7756,7 @@
 <translation id="7287143125007575591">تم رفض الدخول</translation>
 <translation id="7287411021188441799">استعادة الخلفية التلقائية</translation>
 <translation id="7288676996127329262">‏<ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> نقطة لكل بوصة</translation>
+<translation id="7289049772085228972">‏يوفِّر لك Chrome أعلى مستويات الأمان.</translation>
 <translation id="7289386924227731009">‏<ph name="WINDOW_TITLE" /> - تم طلب الإذن، اضغط على مفتاح F6 للاستجابة للطلب</translation>
 <translation id="7290242001003353852">تحاول خدمة تسجيل الدخول هذه، المُستضافة من قبل <ph name="SAML_DOMAIN" />، الدخول إلى الكاميرا.</translation>
 <translation id="7292067737327289208">تتولّى مؤسستك <ph name="BEGIN_LINK" />إدارة متصفِّحك<ph name="END_LINK" />، ويتولّى <ph name="PROFILE_DOMAIN" /> <ph name="BEGIN_LINK" />إدارة ملفك الشخصي<ph name="END_LINK" />.</translation>
@@ -8374,6 +8380,7 @@
 <translation id="7772127298218883077">لمحة عن <ph name="PRODUCT_NAME" /></translation>
 <translation id="7773726648746946405">مساحة تخزين الجلسة</translation>
 <translation id="7774365994322694683">طائر</translation>
+<translation id="7774581652827321413">يمكنك الحصول على ملخّص للصفحة وعمليات البحث ذات الصلة ومعلومات أخرى مفيدة حول هذه الصفحة.</translation>
 <translation id="7774792847912242537">عدد الطلبات كبير جدًا.</translation>
 <translation id="7775694664330414886">تم نقل علامة التبويب إلى مجموعة لم تتم تسميتها وتحتوي على <ph name="GROUP_CONTENTS" />.</translation>
 <translation id="7776156998370251340">سيتمكّن <ph name="ORIGIN" /> من الاطّلاع على الملفات في <ph name="FOLDERNAME" /> إلى أن يتم إغلاق جميع علامات تبويب هذا الموقع الإلكتروني.</translation>
@@ -8435,6 +8442,7 @@
 <translation id="7820400255539998692">يمكنك حذف "<ph name="FILENAME" />" لكي لا يتمكّن مستخدمو هذا الجهاز الآخرون من الاطّلاع على كلمات مرورك.</translation>
 <translation id="7820561748632634942">هل تريد تخصيص مفاتيح تحكّم إضافية؟</translation>
 <translation id="782057141565633384">نس&amp;خ عنوان الفيديو</translation>
+<translation id="7824665136384946951">أوقفت مؤسستك ميزة "التصفُّح الآمن".</translation>
 <translation id="7824864914877854148">تعذَّر إكمال النسخ الاحتياطي بسبب حدوث خطأ</translation>
 <translation id="782590969421016895">استخدام الصفحات الحالية</translation>
 <translation id="7826174860695147464">‏الوصول إلى المتصفحات القديمة (LBS): العناصر الداخلية</translation>
@@ -10043,6 +10051,7 @@
 <translation id="9094859731829297286">‏هل تريد فعلاً حجز قرص بحجم ثابت لنظام التشغيل Linux؟</translation>
 <translation id="9095364055741191097">تعذَّر استرداد البيانات المخزَّنة على الجهاز</translation>
 <translation id="909554839118732438">إغلاق جميع النوافذ في وضع "التصفُّح المتخفي"</translation>
+<translation id="9096053102600371572">التمرير المنظَّم <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="9096776523567481218">غير مثبَّت على الجهاز</translation>
 <translation id="9098860402274800697">‏إزالة تطبيقات Google Play وAndroid</translation>
 <translation id="9099220545925418560">تستند مواضيع الإعلانات إلى سجلّ التصفُّح الخاص بك. هذا الإعداد غير مفعَّل.</translation>

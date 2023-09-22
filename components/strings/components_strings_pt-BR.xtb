@@ -328,6 +328,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1618571384971354160">Serviços de guincho e assistência na estrada</translation>
 <translation id="1620510694547887537">Câmera</translation>
 <translation id="1622571349153632031">Culinária vegetariana</translation>
+<translation id="162285686621567578">Este site foi bloqueado pelo seu familiar responsável.</translation>
 <translation id="1622966923835127638">Finanças comerciais</translation>
 <translation id="1623104350909869708">Impedir que esta página crie caixas de diálogo adicionais</translation>
 <translation id="1633137413609266904">{0,plural, =1{A abertura desse arquivo está bloqueada pela política do administrador}one{A abertura de # arquivo está bloqueada pela política do administrador}other{A abertura de # arquivos está bloqueada pela política do administrador}}</translation>
@@ -372,6 +373,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1711528724596764268">Aprendizado de máquina e inteligência artificial</translation>
 <translation id="1712552549805331520"><ph name="URL" /> quer armazenar dados no computador local</translation>
 <translation id="1713628304598226412">Bandeja 2</translation>
+<translation id="1714807406136741351">Modo de navegação: é possível mudar para o modo do Google Formulários e usar as setas para a esquerda/direita para revisar as mudanças de preço no gráfico</translation>
 <translation id="1717218214683051432">Sensores de movimento</translation>
 <translation id="1717494416764505390">Caixa de e-mails 3</translation>
 <translation id="1717688554309417925">Serviços de crédito e débito</translation>
@@ -3251,6 +3253,7 @@ Mais detalhes:
 <translation id="7667346355482952095">O token da política retornado está vazio ou não corresponde ao token atual</translation>
 <translation id="7668654391829183341">Dispositivo desconhecido</translation>
 <translation id="7669271284792375604">Invasores nesse site podem tentar enganar você para que instale programas que prejudicam sua experiência de navegação (por exemplo, alterando sua página inicial ou mostrando mais anúncios nos sites que você visita).</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> de <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Ações realizadas em dados marcados como confidenciais (1 ação desde o login). <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" />}one{Ações realizadas em dados marcados como confidenciais (# ação desde o login). <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" />}other{Ações realizadas em dados marcados como confidenciais (# ações desde o login). <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Caixa de e-mails 6</translation>
 <translation id="7675325315208090829">Gerenciar formas de pagamento…</translation>

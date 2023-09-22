@@ -304,6 +304,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2268130516524549846">Bluetooth dilumpuhkan</translation>
 <translation id="2268813581635650749">Log keluar semua</translation>
 <translation id="2269016722240250274">Satu aplikasi sedang menggunakan mikrofon anda</translation>
+<translation id="2276987123919776440">15 min</translation>
 <translation id="2277103315734023688">Cari Ke Hadapan</translation>
 <translation id="2282073721614284166">Buka pautan dalam tab</translation>
 <translation id="2284237890386182187">Hidup, tiada peranti disambungkan</translation>
@@ -513,6 +514,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3153444934357957346">Anda hanya boleh memiliki sehingga <ph name="MULTI_PROFILE_USER_LIMIT" /> akaun dalam log masuk berbilang.</translation>
 <translation id="3154351730702813399">Pentadbir peranti boleh memantau aktiviti penyemakan imbas anda.</translation>
 <translation id="316086887565479535">Apl tidak disokong dalam templat</translation>
+<translation id="3160929076476941240">2 j</translation>
 <translation id="3161500364292033097">Tutup meja dan tetingkap</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> sedang mengundurkan <ph name="DEVICE_TYPE" /> anda. Peranti anda akan ditetapkan semula dan semua data akan dipadamkan.</translation>
 <translation id="3171170659304083361">Tetapan kaedah input</translation>
@@ -821,6 +823,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4333628967105022692">Lacros tidak disokong semasa berbilang pengguna dilog masuk.</translation>
 <translation id="4338109981321384717">Kanta pembesar</translation>
 <translation id="4356872429719185452">Tunjukkan butiran tempat liputan. Tempat liputan sedang dihidupkan.</translation>
+<translation id="4364101114148522660"><ph name="DURATION" />  Merakam</translation>
 <translation id="4371348193907997655">Tetapan Cast</translation>
 <translation id="4375482231364171368">Buat carian dalam bar alamat</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, kekuatan isyarat <ph name="SIGNAL_STRENGTH" /> peratus</translation>
@@ -1405,6 +1408,7 @@ Pemasangan baharu</translation>
 <translation id="6752912906630585008">Meja <ph name="REMOVED_DESK" /> dialih keluar dan digabungkan dengan Meja <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">tab</translation>
 <translation id="6757237461819837179">Tiada media sedang dimainkan</translation>
+<translation id="6760438044935091345">Papan pemuka permainan</translation>
 <translation id="6768043681523654438">storan</translation>
 <translation id="6777216307882431711">Membekalkan kuasa kepada peranti USB-C yang disambungkan</translation>
 <translation id="6781002679438061620">Meja 9</translation>
@@ -1907,6 +1911,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8940956008527784070">Bateri lemah (<ph name="PERCENTAGE" />%)</translation>
 <translation id="8949925099261528566">Disambungkan, tiada Internet</translation>
 <translation id="8951539504029375108">Hanya peranti Thunderbolt yang diluluskan serasi dengan Chromebook anda</translation>
+<translation id="8964525410783593407">1 j</translation>
 <translation id="8973885907461690937">Letakkan fokus pada ikon menu</translation>
 <translation id="8980862970816311842">Alihkan ikon apl masuk/keluar daripada folder dalam grid apl</translation>
 <translation id="8982906748181120328">Keterlihatan berdekatan</translation>
@@ -1979,6 +1984,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="951991426597076286">Tolak</translation>
 <translation id="953431725143473984">Matikan peranti?</translation>
 <translation id="954052413789300507">Ruang tidak mencukupi untuk <ph name="FILENAME" />. Kosongkan ruang.</translation>
+<translation id="954520015070501466">30 min</translation>
 <translation id="974545358917229949">Memaparkan <ph name="RESULT_COUNT" /> hasil carian untuk <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Tiada tarikh tamat</translation>
 <translation id="98120814841227350">Pergi ke bahagian hujung dokumen</translation>

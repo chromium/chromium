@@ -242,6 +242,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="2359043044084662842">Přeložit</translation>
 <translation id="2359808026110333948">Pokračovat</translation>
 <translation id="2360196772093551345">Vyžádat web pro mobily</translation>
+<translation id="2361721159900796207">Skryje tuto položku</translation>
 <translation id="2362083820973145409">Jste přihlášeni jako <ph name="USER_NAME" />. <ph name="USER_EMAIL" /> Otevře nastavení.</translation>
 <translation id="236977714248711277">Weby nemohou používat soubory cookie ke zlepšování prostředí při prohlížení, například si pomocí nich nemohou pamatovat vaše přihlášení a položky v nákupním košíku.
 
@@ -778,6 +779,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="5317780077021120954">Uložit</translation>
 <translation id="5318298563956633672">Tento produkt již měříte.</translation>
 <translation id="5339316356165661760">Zapnout synchronizaci</translation>
+<translation id="5345660046352249607">{COUNT,plural, =1{Sledovat tuto zásilku?}few{Sledovat {COUNT} zásilky?}many{Sledovat {COUNT} zásilky?}other{Sledovat {COUNT} zásilek?}}</translation>
 <translation id="536067926684072644">Zobrazit záložky</translation>
 <translation id="5360976571138293719">Další nastavení související s ochranou soukromí, zabezpečením a shromažďováním dat najdete v části <ph name="BEGIN_LINK" />Služby Google<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Zde najdete weby, které sledujete</translation>
@@ -1144,6 +1146,7 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="723787869754590019">Používejte Chrome pro automatické vyplňování</translation>
 <translation id="7265758999917665941">Pro tento web nikdy</translation>
 <translation id="7272437679830969316">Vaši totožnost nelze ověřit. Heslo nebylo zkopírováno.</translation>
+<translation id="7284359491594949826">{COUNT,plural, =1{Je sledována nová zásilka}few{Jsou sledovány nové zásilky}many{Jsou sledovány nové zásilky}other{Jsou sledovány nové zásilky}}</translation>
 <translation id="7291368939935408496">Příprava hesel…</translation>
 <translation id="7302503784943202842">Používejte hesla na všech svých zařízeních</translation>
 <translation id="730958329302570991">Hesla webů můžete kdykoli snadno přidat do Správce hesel Google.</translation>
@@ -1245,6 +1248,7 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="7856733331829174190">Stažení se nezdařilo</translation>
 <translation id="785938070103630874">Otevřete hesla, platební metody, adresy a podobně.</translation>
 <translation id="7859704718976024901">Historie procházení</translation>
+<translation id="7866501058614003444">Sledování této zásilky bylo úspěšně zrušeno.</translation>
 <translation id="7870750252270996949">Obrázek zkopírovaný pomocí funkce Lens</translation>
 <translation id="7879275349003161544">Zobrazit stažené položky</translation>
 <translation id="7883882164760409935">Máte opakovaně použitá hesla.</translation>
@@ -1493,6 +1497,7 @@ Vaše data byla <ph name="TIME" /> zašifrována pomocí heslové fráze. Pokud 
 <translation id="9148126808321036104">Znovu přihlásit</translation>
 <translation id="9157836665414082580">Potlačit dialogová okna</translation>
 <translation id="9162432979321511934">Zapněte Automatické vyplnění hesel</translation>
+<translation id="9162941801309769488">Sledování zásilky bylo zrušeno</translation>
 <translation id="9165320910061267720">Pokud chcete dostávat upozornění na pokles ceny, v nastavení systému iOS zapněte oznámení.</translation>
 <translation id="9165886811579296457">Bezpečnostní kontrola nenalezla žádné problémy se zabezpečením, které byste měli opravit.</translation>
 <translation id="9172603439892261948">Synchronizujte své záložky, historii a další položky.</translation>

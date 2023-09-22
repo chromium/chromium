@@ -328,6 +328,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1618571384971354160">Çekici ve yol yardım hizmetleri</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622571349153632031">Vejetaryen mutfağı</translation>
+<translation id="162285686621567578">Bu web sitesi, anne veya babanız tarafından engellendi.</translation>
 <translation id="1622966923835127638">İşletme Maliyesi</translation>
 <translation id="1623104350909869708">Bu sayfanın daha fazla iletişim kutusu oluşturmasını önle</translation>
 <translation id="1633137413609266904">{0,plural, =1{Bu dosyanın açılması yönetici politikası tarafından engellendi}other{# dosyanın açılması yönetici politikası tarafından engellendi}}</translation>
@@ -372,6 +373,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1711528724596764268">Makine öğrenimi ve yapay zeka</translation>
 <translation id="1712552549805331520"><ph name="URL" />, verileri yerel bilgisayarınızda kalıcı olarak saklamak istiyor</translation>
 <translation id="1713628304598226412">Tepsi 2</translation>
+<translation id="1714807406136741351">Göz atma modu. Formlar moduna geçip sol/sağ oku kullanarak grafikteki fiyat değişikliklerini inceleyebilirsiniz</translation>
 <translation id="1717218214683051432">Hareket sensörleri</translation>
 <translation id="1717494416764505390">Posta kutusu 3</translation>
 <translation id="1717688554309417925">Banka Kartı ve Cari Hesap Hizmetleri</translation>
@@ -3251,6 +3253,7 @@ Ek ayrıntılar:
 <translation id="7667346355482952095">Döndürülen politika jetonu boş veya mevcut jetonla eşleşmiyor</translation>
 <translation id="7668654391829183341">Bilinmeyen cihaz</translation>
 <translation id="7669271284792375604">Bu sitedeki saldırganlar web'e göz atma deneyiminize zarar veren programlar yüklemeniz için sizi kandırmayı (örneğin ana sayfanızı değiştirerek ya da ziyaret ettiğiniz sitelerde ek reklamlar görüntüleyerek) deneyebilir.</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" />/<ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Gizli olarak işaretlenmiş verilerle yapılan işlemler (girişten itibaren 1 işlem). <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" />}other{Gizli olarak işaretlenmiş verilerle yapılan işlemler (girişten itibaren # işlem). <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Posta kutusu 6</translation>
 <translation id="7675325315208090829">Ödeme Yöntemlerini yönet...</translation>

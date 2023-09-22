@@ -328,6 +328,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1618571384971354160">Evakuatora pakalpojumi un tehniskā palīdzība uz ceļa</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622571349153632031">Veģetārā virtuve</translation>
+<translation id="162285686621567578">Viens no jūsu vecākiem ir bloķējis šo vietni.</translation>
 <translation id="1622966923835127638">Uzņēmējdarbības finanses</translation>
 <translation id="1623104350909869708">Neļaut šai lapai veidot papildu dialoglodziņus</translation>
 <translation id="1633137413609266904">{0,plural, =1{Administratora politika bloķē šī faila atvēršanu}zero{Administratora politika bloķē # failu atvēršanu}one{Administratora politika bloķē # faila atvēršanu}other{Administratora politika bloķē # failu atvēršanu}}</translation>
@@ -372,6 +373,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1711528724596764268">Mašīnmācīšanās un mākslīgais intelekts</translation>
 <translation id="1712552549805331520">Vietnē <ph name="URL" /> tika pieprasīta atļauja pastāvīgi glabāt datus lokālajā datorā.</translation>
 <translation id="1713628304598226412">2. paplāte</translation>
+<translation id="1714807406136741351">Pārlūkošanas režīms. Varat pārslēgt veidlapu režīmu, lai izmantotu kreiso/labo bultiņu cenu izmaiņu pārskatīšanai diagrammā.</translation>
 <translation id="1717218214683051432">Kustību sensori</translation>
 <translation id="1717494416764505390">3. pastkaste</translation>
 <translation id="1717688554309417925">Debets un ar čekiem saistīti pakalpojumi</translation>
@@ -3250,6 +3252,7 @@ Papildu informācija:
 <translation id="7667346355482952095">Atgrieztais politikas marķieris ir tukšs vai neatbilst pašreizējam marķierim</translation>
 <translation id="7668654391829183341">Nezināma ierīce</translation>
 <translation id="7669271284792375604">Uzbrucēji šajā vietnē var mudināt jūs uz tādu programmu instalēšanu, kuras traucē pārlūkošanu (piemēram, mainot sākumlapu vai apmeklētajās vietnēs rādot papildu reklāmas).</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" />. no <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Darbības ar datiem, kas atzīmēti kā konfidenciāli (viena darbība kopš pieteikšanās). <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" />}zero{Darbības ar datiem, kas atzīmēti kā konfidenciāli (# darbības kopš pieteikšanās). <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" />}one{Darbības ar datiem, kas atzīmēti kā konfidenciāli (# darbība kopš pieteikšanās). <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" />}other{Darbības ar datiem, kas atzīmēti kā konfidenciāli (# darbības kopš pieteikšanās). <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">6. pastkaste</translation>
 <translation id="7675325315208090829">Pārvaldīt maksājumu veidus…</translation>

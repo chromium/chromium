@@ -105,6 +105,7 @@ Considerações:
         Aguarde alguns minutos antes de sair. Se você sair agora, esses dados serão excluídos.</translation>
 <translation id="484033449593719797">Indisponível no Chrome Beta</translation>
 <translation id="4840404732697892756">O Gerenciador de senhas do Google pode verificar suas senhas quando você faz login com sua Conta do Google.</translation>
+<translation id="4860330141789125848">{COUNT,plural, =1{O Chrome pode ajudar você a rastrear o pacote na página "Nova guia".}one{O Chrome pode ajudar você a rastrear o pacote na página "Nova guia".}other{O Chrome pode ajudar você a rastrear os pacotes na página "Nova guia".}}</translation>
 <translation id="4903674399067644695">Este card mostra sugestões para você aproveitar o Chrome ao máximo.</translation>
 <translation id="49200511069271369">Sua organização, <ph name="DOMAIN" />, gerencia a conta em que você faz login e a forma como o Chrome pode ser usado. Seu administrador pode configurar ou restringir determinados recursos.</translation>
 <translation id="5030102366287574140">O Chrome pode ajudar a proteger você de violações de dados, sites perigosos e muito mais.</translation>
@@ -114,10 +115,12 @@ Considerações:
 <translation id="5156818928311866442">Abre as configurações do Chrome para defini-lo como navegador padrão.</translation>
 <translation id="5162467219239570114">O Chrome está desatualizado. Se nenhuma atualização está disponível na <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, é possível que seu dispositivo não seja mais compatível com novas versões do Chrome.</translation>
 <translation id="5190139289262548459">Sua organização, <ph name="DOMAIN" />, gerencia a conta em que você fez login e a forma como o Chrome é usado.</translation>
+<translation id="5278862365980079760">Bloqueie o modo de navegação anônima ao sair do Chrome ou mudar para outro app.</translation>
 <translation id="5389212809648216794">O Google Chrome não pode usar a câmera porque ela está sendo usada por outro app</translation>
 <translation id="5395376160638294582">Garanta que você sempre possa usar os dados do Chrome na sua Conta do Google</translation>
 <translation id="5439191312780166229">Avisa você sobre sites perigosos, mesmo aqueles que o Google não conhecia, analisando mais dados de sites do que a proteção padrão. Você pode ignorar os avisos do Chrome.</translation>
 <translation id="5460571915754665838">4. Selecione o Chrome</translation>
+<translation id="546541279759910616">{COUNT,plural, =1{O Chrome ajudará a rastrear o pacote na página "Nova guia".}one{O Chrome ajudará a rastrear o pacote na página "Nova guia".}other{O Chrome ajudará a rastrear os pacotes na página "Nova guia".}}</translation>
 <translation id="5492504007368565877">O Gerenciador de senhas do Google não pode verificar suas senhas.</translation>
 <translation id="5527026824954593399">Toque em "Abrir com o Google Maps no Chrome".</translation>
 <translation id="5552137475244467770">O Chrome verifica periodicamente se suas senhas estão em listas que foram publicadas on-line. Quando isso é feito, as senhas e os nomes de usuário são criptografados para que não possam ser lidos por ninguém, nem o Google.</translation>

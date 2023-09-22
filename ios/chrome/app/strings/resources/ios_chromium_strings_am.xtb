@@ -42,6 +42,7 @@
 <translation id="2574528844022712255">የChromium እልባቶችን ይመልከቱ</translation>
 <translation id="2590893390871230428">የChromium ውሂብዎን ያስምሩ</translation>
 <translation id="2618596336309823556">ከመሣሪያዎ ቅንብሮች ላይ ሆነው «<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />»ን ይክፈቱ እና «Chromium»ን ይምረጡ</translation>
+<translation id="2618757400690011108">{COUNT,plural, =1{Chromium ይህን ጥቅል በአዲስ ትር ገፅ ላይ ለመከታተል ያግዛል።}one{Chromium ይህን ጥቅል በአዲስ ትር ገፅ ላይ ለመከታተል ያግዛል።}other{Chromium እነዚህን ጥቅሎች በአዲስ ትር ገፅ ላይ ለመከታተል ያግዛል።}}</translation>
 <translation id="2650312721222849884">Chromiumን ከሚጠቀሙበት የትኛዉም ቦታ ትሮችን ለማየት ስምረትን ያብሩ</translation>
 <translation id="2684230048001240293">በሁሉም መሣሪያዎችዎ ላይ ትሮችዎን፣ የይለፍ ቃላትዎን እና የክፍያ መረጃዎን ለማስመር Chromiumን እንደ ነባሪ ያዘጋጁ</translation>
 <translation id="2730884209570016437">ሌላ መተግበሪያ ካሜራዎን እየተጠቀመበት ስለሆነ Chromium ካሜራዎን መጠቀም አይችልም</translation>
@@ -51,6 +52,7 @@
 <translation id="2918709798697875261">የእርስዎ ድርጅት ከChromium ዘግተው እንደወጡ እንዲቆዩ ይፈልጋል።</translation>
 <translation id="2942241131342758843">አገናኞችን ለመክፈት፣ ከመግብሮች ለመፈለግ እና የይለፍ ቃሎችን በራስ-ለመሙላት በሌሎች መተግበሪያዎች ውስጥ በነባሪነት Chromium ይጠቀሙ</translation>
 <translation id="2977470724722393594">Chromium የተዘመነ ነው</translation>
+<translation id="3078941082359356771">{COUNT,plural, =1{Chromium ይህን ጥቅል በአዲስ ትር ገፅ ላይ እንዲከታተሉ ሊያግዝዎት ይችላል።}one{Chromium ይህን ጥቅል በአዲስ ትር ገፅ ላይ እንዲከታተሉ ሊያግዝዎት ይችላል።}other{Chromium እነዚህን ጥቅሎች በአዲስ ትር ገፅ ላይ እንዲከታተሉ ሊያግዝዎት ይችላል።}}</translation>
 <translation id="3102849287235003384">በሁሉም ድር ጣቢያዎች ላይ የእርስዎን የGoogle መለያ ዘግተው ለመውጣት <ph name="BEGIN_LINK" />ከChromium ዘግተው ይውጡ<ph name="END_LINK" />።</translation>
 <translation id="3219277919172823720">በChromium ውስጥ በጽምፅ ይፈልጉ</translation>
 <translation id="3228349498066165585">አንዳንድ የእርስዎ የChromium ውሂብ በእርስዎ Google መለያ ውስጥ እስካሁን አልተቀመጠም።
@@ -113,6 +115,7 @@
 <translation id="5521125884468363740">Chromiumን ከሚጠቀሙበት የትኛዉም ቦታ ሆነዉ ትሮችዎን ለማየት በመለያ ይግቡ እና ስምረትን ያብሩ</translation>
 <translation id="5522297504975449419">የተወሰኑ የChromium ባህሪያት ከእንግዲህ አይገኙም።</translation>
 <translation id="5571094606370987472">የChromium የቅርብ ጊዜ ትሮችን ይከፍታል።</translation>
+<translation id="5623083843656850677">ከChromium ሲወጡ ወይም ወደ ሌላ መተግበሪያ ሲቀይሩ የእርስዎን ማንነት የማያሳውቁ ትሮች ይቆልፉ።</translation>
 <translation id="5688047395118852662">ይህ ካርድ እንዴት ከChromium ምርጡን ማግኘት እንደሚችሉ ጥቆማዎችን ያሳይዎታል።</translation>
 <translation id="5700709190537129682">Chromium የእርስዎን የይለፍ ቃላት መፈተሽ አይችልም</translation>
 <translation id="5777187867430702742">የChromium ገፅ</translation>

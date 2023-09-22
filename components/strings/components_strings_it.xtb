@@ -328,6 +328,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1618571384971354160">Traino e assistenza stradale</translation>
 <translation id="1620510694547887537">Fotocamera</translation>
 <translation id="1622571349153632031">Cucina vegetariana</translation>
+<translation id="162285686621567578">Questo sito web è stato bloccato da uno dei tuoi genitori.</translation>
 <translation id="1622966923835127638">Finanza aziendale</translation>
 <translation id="1623104350909869708">Impedisci la creazione di altre finestre di dialogo in questa pagina</translation>
 <translation id="1633137413609266904">{0,plural, =1{L'apertura di questo file è bloccata dal criterio dell'amministratore}other{L'apertura di # file è bloccata dal criterio dell'amministratore}}</translation>
@@ -372,6 +373,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1711528724596764268">Machine learning e intelligenza artificiale</translation>
 <translation id="1712552549805331520"><ph name="URL" /> vuole memorizzare in modo definitivo i dati sul computer locale</translation>
 <translation id="1713628304598226412">Vassoio 2</translation>
+<translation id="1714807406136741351">Modalità Sfoglia, puoi passare alla modalità Moduli per usare la Freccia sinistra/destra per esaminare le variazioni di prezzo sul grafico</translation>
 <translation id="1717218214683051432">Sensori di movimento</translation>
 <translation id="1717494416764505390">Mailbox 3</translation>
 <translation id="1717688554309417925">Servizi per conti correnti e carte di debito</translation>
@@ -3247,6 +3249,7 @@ Ulteriori dettagli:
 <translation id="7667346355482952095">Il token della norma restituito è vuoto o non corrisponde al token corrente</translation>
 <translation id="7668654391829183341">Dispositivo sconosciuto</translation>
 <translation id="7669271284792375604">I malintenzionati su questo sito potrebbero cercare di indurti con l'inganno a installare programmi che danneggiano la tua navigazione (ad esempio cambiando la tua pagina iniziale o mostrando annunci extra sui siti che visiti).</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> di <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Azioni intraprese con dati segnalati come riservati (1 azione dall'accesso). <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" />}other{Azioni intraprese con dati segnalati come riservati (# azioni dall'accesso). <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Mailbox 6</translation>
 <translation id="7675325315208090829">Gestisci metodi di pagamento…</translation>

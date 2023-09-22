@@ -328,6 +328,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1618571384971354160">Dráttarbílar og vegaaðstoð</translation>
 <translation id="1620510694547887537">Myndavél</translation>
 <translation id="1622571349153632031">Grænmetisfæði</translation>
+<translation id="162285686621567578">Foreldri þitt setti þetta vefsvæði á bannlista.</translation>
 <translation id="1622966923835127638">Viðskiptafjármál</translation>
 <translation id="1623104350909869708">Koma í veg fyrir að þessi síða búi til fleiri glugga.</translation>
 <translation id="1633137413609266904">{0,plural, =1{Regla kerfisstjóra kemur í veg fyrir að hægt sé að opna þessa skrá}one{Regla kerfisstjóra kemur í veg fyrir að hægt sé að opna # skrá}other{Regla kerfisstjóra kemur í veg fyrir að hægt sé að opna # skrár}}</translation>
@@ -372,6 +373,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1711528724596764268">Vélrænt nám og gervigreind</translation>
 <translation id="1712552549805331520"><ph name="URL" /> vill fá að geyma gögn varanlega í tölvunni þinni</translation>
 <translation id="1713628304598226412">Bakki 2</translation>
+<translation id="1714807406136741351">Vafrastilling, þú getur notað eyðublaðastillingu til að nota ör til hægri/vinstri til að yfirfara verðbreytingar á myndritinu</translation>
 <translation id="1717218214683051432">Hreyfiskynjarar</translation>
 <translation id="1717494416764505390">Pósthólf 3</translation>
 <translation id="1717688554309417925">Debet- og tékkareikningsþjónustur</translation>
@@ -3251,6 +3253,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7667346355482952095">Stefnukóðinn sem skilað var er auður eða stemmir ekki við núverandi kóða</translation>
 <translation id="7668654391829183341">Óþekkt tæki</translation>
 <translation id="7669271284792375604">Tölvuþrjótar á þessu vefsvæði gætu verið að reyna að ginna þig til að setja upp forrit sem gætu gert vefskoðun óþægilegri fyrir þig (til dæmis með því að breyta upphafssíðunni eða birta viðbótarauglýsingar á vefsvæðum sem þú heimsækir).</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> af <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Aðgerðir í gögnum sem eru merkt sem trúnaðarmál (1 aðgerð frá innskráningu). <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" />}one{Aðgerðir í gögnum sem eru merkt sem trúnaðarmál (# aðgerðir frá innskráningu). <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" />}other{Aðgerðir í gögnum sem eru merkt sem trúnaðarmál (# aðgerðir frá innskráningu). <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Pósthólf 6</translation>
 <translation id="7675325315208090829">Stjórna greiðslumátum...</translation>

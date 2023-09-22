@@ -328,6 +328,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1618571384971354160">Transporti i automjeteve dhe asistenca rrugore</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622571349153632031">Kuzhina vegjetariane</translation>
+<translation id="162285686621567578">Ky uebsajt është bllokuar nga prindi yt.</translation>
 <translation id="1622966923835127638">Financë biznesi</translation>
 <translation id="1623104350909869708">Parandalo krijimin e dialogëve shtesë nga kjo faqe</translation>
 <translation id="1633137413609266904">{0,plural, =1{Hapja e këtij skedari është bllokuar nga politika e administratorit}other{Hapja e # skedarëve është bllokuar nga politika e administratorit}}</translation>
@@ -372,6 +373,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1711528724596764268">Të mësuarit automatik dhe inteligjenca artificiale</translation>
 <translation id="1712552549805331520"><ph name="URL" /> kërkon të ruajë të dhëna në mënyrë të përhershme në kompjuterin tënd lokal</translation>
 <translation id="1713628304598226412">Tabakaja 2</translation>
+<translation id="1714807406136741351">"Modaliteti i shfletimit"; mund të kalosh te "Modaliteti i formularëve" për të përdorur shigjetat majtas/djathtas për të rishikuar ndryshimet e çmimit në grafik</translation>
 <translation id="1717218214683051432">Sensorët e lëvizjes</translation>
 <translation id="1717494416764505390">Kutia postare 3</translation>
 <translation id="1717688554309417925">Shërbime për karta debiti dhe llogari rrjedhëse</translation>
@@ -3250,6 +3252,7 @@ Detaje shtesë:
 <translation id="7667346355482952095">Shenja e kthyer e politikës është bosh ose nuk përputhet me shenjën aktuale</translation>
 <translation id="7668654391829183341">Pajisje e panjohur</translation>
 <translation id="7669271284792375604">Sulmuesit në këtë sajt mund të përpiqen të të mashtrojnë të instalosh programe që dëmtojnë përvojën tënde të shfletimit (për shembull, duke ndryshuar faqen kryesore ose duke shfaqur reklama shtesë në sajtet që viziton).</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> nga <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Veprimet e kryera me të dhënat e raportuara si konfidenciale (1 veprim që nga identifikimi). <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" />}other{Veprimet e kryera me të dhënat e raportuara si konfidenciale (# veprime që nga identifikimi). <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Kutia postare 6</translation>
 <translation id="7675325315208090829">Menaxho mënyrat e pagesës...</translation>

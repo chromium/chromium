@@ -328,6 +328,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1618571384971354160">Grúas y asistencia en carretera</translation>
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1622571349153632031">Cocina vegetariana</translation>
+<translation id="162285686621567578">Tu padre o madre ha bloqueado este sitio web.</translation>
 <translation id="1622966923835127638">Economía empresarial</translation>
 <translation id="1623104350909869708">Evitar que esta página cree cuadros de diálogo adicionales</translation>
 <translation id="1633137413609266904">{0,plural, =1{La política del administrador ha bloqueado la opción de abrir este archivo}other{La política del administrador ha bloqueado la opción de abrir # archivos}}</translation>
@@ -372,6 +373,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1711528724596764268">Aprendizaje automático e inteligencia artificial</translation>
 <translation id="1712552549805331520"><ph name="URL" /> quiere almacenar datos de forma permanente en tu ordenador local</translation>
 <translation id="1713628304598226412">Bandeja 2</translation>
+<translation id="1714807406136741351">En el modo Navegación puedes cambiar al modo Formularios para usar las flechas izquierda o derecha y revisar los cambios de precios en el gráfico</translation>
 <translation id="1717218214683051432">Sensores de movimiento</translation>
 <translation id="1717494416764505390">Buzón de correo 3</translation>
 <translation id="1717688554309417925">Servicios de débito y cheques</translation>
@@ -3251,6 +3253,7 @@ Más información:
 <translation id="7667346355482952095">El token de política devuelto está vacío o no coincide con el token actual</translation>
 <translation id="7668654391829183341">Dispositivo desconocido</translation>
 <translation id="7669271284792375604">Es posible que los atacantes que se encuentren en este sitio web intenten engañarte para que instales programas que empeoren tu experiencia de navegación (por ejemplo, que cambien tu página principal o muestren anuncios adicionales en los sitios a los que accedas).</translation>
+<translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> de <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Acciones realizadas con datos marcados como confidenciales (1 acción desde el inicio de sesión). <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" />}other{Acciones realizadas con datos marcados como confidenciales (# acciones desde el inicio de sesión). <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Buzón de correo 6</translation>
 <translation id="7675325315208090829">Gestionar métodos de pago...</translation>

@@ -105,6 +105,7 @@ Notas importantes:
         Prueba a esperar unos minutos antes de cerrar sesión. Si cierras sesión ahora, estos datos se eliminarán.</translation>
 <translation id="484033449593719797">No compatible con Chrome Beta</translation>
 <translation id="4840404732697892756">El Gestor de contraseñas de Google puede comprobar tus contraseñas si inicias sesión con tu cuenta de Google.</translation>
+<translation id="4860330141789125848">{COUNT,plural, =1{Chrome puede ayudarte a hacer un seguimiento de este paquete en la página Nueva pestaña.}other{Chrome puede ayudarte a hacer un seguimiento de estos paquetes en la página Nueva pestaña.}}</translation>
 <translation id="4903674399067644695">En esta tarjeta se muestran sugerencias sobre cómo sacarle el máximo partido a Chrome.</translation>
 <translation id="49200511069271369">Tu organización, <ph name="DOMAIN" />, gestiona la cuenta en la que has iniciado sesión y el modo en el que se puede usar Chrome. Tu administrador puede configurar o restringir ciertas funciones.</translation>
 <translation id="5030102366287574140">Chrome puede ayudarte a protegerte frente a quiebras de seguridad de datos, sitios web no seguros y mucho más</translation>
@@ -114,10 +115,12 @@ Notas importantes:
 <translation id="5156818928311866442">Abre el ajuste de Chrome para establecer Chrome como navegador predeterminado.</translation>
 <translation id="5162467219239570114">Chrome no está actualizado. Si no hay ninguna actualización disponible en el <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, es posible que el dispositivo ya no sea compatible con las nuevas versiones de Chrome.</translation>
 <translation id="5190139289262548459">Tu organización, <ph name="DOMAIN" />, gestiona la cuenta en la que has iniciado sesión y el modo en que se usa Chrome.</translation>
+<translation id="5278862365980079760">Bloquea tus pestañas de Incógnito al salir de Chrome o al cambiar de aplicación.</translation>
 <translation id="5389212809648216794">Google Chrome no puede utilizar la cámara porque la está usando otra aplicación</translation>
 <translation id="5395376160638294582">Asegúrate de que siempre puedas usar los datos de Chrome en tu cuenta de Google</translation>
 <translation id="5439191312780166229">Te envía advertencias sobre sitios peligrosos (aunque Google no los conozca) analizando más datos de sitios que la protección estándar. Si quieres, puedes omitir las advertencias de Chrome.</translation>
 <translation id="5460571915754665838">4. Selecciona Chrome</translation>
+<translation id="546541279759910616">{COUNT,plural, =1{Chrome te ayudará a hacer un seguimiento de este paquete en la página Nueva pestaña.}other{Chrome te ayudará a hacer un seguimiento de estos paquetes en la página Nueva pestaña.}}</translation>
 <translation id="5492504007368565877">El Gestor de contraseñas de Google no puede comprobar tus contraseñas.</translation>
 <translation id="5527026824954593399">Toca Ver con Google Maps en Chrome.</translation>
 <translation id="5552137475244467770">Chrome comprueba de forma periódica si tus contraseñas se encuentran en alguna lista publicada en Internet. Cuando lo hace, se cifran tus contraseñas y nombres de usuario para que nadie pueda leerlos, ni siquiera Google.</translation>

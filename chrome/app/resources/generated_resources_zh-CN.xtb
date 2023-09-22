@@ -761,6 +761,7 @@
 <translation id="1604432177629086300">无法打印。请检查打印机，然后重试。</translation>
 <translation id="1604567162047669454">识别视觉布局语义</translation>
 <translation id="1604774728851271529">您需要连接到网络才能升级 Linux。请连接到互联网，然后重试。</translation>
+<translation id="1605148987885002237">键盘和输入</translation>
 <translation id="1605744057217831567">查看所有网站数据和权限</translation>
 <translation id="1606077700029460857">更改鼠标设置</translation>
 <translation id="1606307079840340755">您的 Passpoint 提供商只会从此设备中移除。如需更改订阅，请与您的订阅提供商联系。</translation>
@@ -1217,6 +1218,7 @@
 <translation id="1956050014111002555">该文件包含多个证书，但均未导入：</translation>
 <translation id="1956167375087861299">不得使用标识符来播放受保护内容</translation>
 <translation id="1956390763342388273">此操作会上传“<ph name="FOLDER_PATH" />”下的所有文件。请仅在您信任该网站的情况下执行此操作。</translation>
+<translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{已审核 1 个扩展程序}other{已审核 {NUM_EXTENSIONS} 个扩展程序}}</translation>
 <translation id="1959421829481337178">请输入您的运营商提供的激活码。</translation>
 <translation id="1962233722219655970">此页使用了您的计算机不支持的 Native Client 应用。</translation>
 <translation id="1963976881984600709">标准保护</translation>
@@ -1926,6 +1928,7 @@
 <translation id="2492461744635776704">正在准备证书签名请求</translation>
 <translation id="249330843868392562">打开文字转语音设置</translation>
 <translation id="2494555621641843783">无法安装 Steam</translation>
+<translation id="2495141202137516054">来自您的云端硬盘</translation>
 <translation id="2495524171012645395">最近查看过的食谱</translation>
 <translation id="2496180316473517155">浏览记录</translation>
 <translation id="2497229222757901769">鼠标速度</translation>
@@ -2229,6 +2232,7 @@
 <translation id="2738771556149464852">不晚于</translation>
 <translation id="2739191690716947896">调试</translation>
 <translation id="2739240477418971307">更改您的无障碍设置</translation>
+<translation id="2739331588276254426">已通过“<ph name="HOST_DEVICE_NAME" />”连接到互联网</translation>
 <translation id="274029851662193272">凹陷</translation>
 <translation id="2740531572673183784">确定</translation>
 <translation id="2740876196999178364">这些通行密钥只会保存在此设备上，不会保存到您的 Google 账号中。</translation>
@@ -3184,6 +3188,7 @@
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - 音频已静音</translation>
 <translation id="3537881477201137177">日后需要时，您可在“设置”中修改</translation>
 <translation id="3538066758857505094">卸载 Linux 时出错。请重试。</translation>
+<translation id="3540173484406326944">未通过“<ph name="HOST_DEVICE_NAME" />”连接到网络</translation>
 <translation id="354060433403403521">交流电源适配器</translation>
 <translation id="354068948465830244">可读取和更改网站数据</translation>
 <translation id="3541823293333232175">已分配</translation>
@@ -6377,6 +6382,7 @@
 <translation id="6169967265765719844">您可以在 <ph name="LINK_BEGIN" />Steam 应用设置<ph name="LINK_END" />中管理通过 Steam 安装的游戏和应用的权限。</translation>
 <translation id="6170470584681422115">三明治</translation>
 <translation id="6170498031581934115">无法启用 ADB 调试。请转到“设置”，然后重试。</translation>
+<translation id="6170675927290506430">前往通知设置页面</translation>
 <translation id="6171779718418683144">每次访问时都询问</translation>
 <translation id="617213288191670920">未添加任何语言</translation>
 <translation id="6173623053897475761">再次输入您的 PIN 码</translation>
@@ -6386,6 +6392,7 @@
 <translation id="6177412385419165772">正在移除…</translation>
 <translation id="6178664161104547336">选择证书</translation>
 <translation id="6178682841350631965">您的登录数据已更新</translation>
+<translation id="6179830757749383456">浏览器由“<ph name="BROWSER_DOMAIN" />”管理，个人资料由“<ph name="PROFILE_DOMAIN" />”管理</translation>
 <translation id="6180389074227570449">{NUM_EXTENSIONS,plural, =1{要移除扩展程序？}other{要移除 # 个扩展程序？}}</translation>
 <translation id="6180510783007738939">直线工具</translation>
 <translation id="6180550893222597997">您要将哪个通行密钥用于<ph name="APP_NAME" />？</translation>
@@ -6503,6 +6510,7 @@
 <translation id="6271348838875430303">已撤消更正</translation>
 <translation id="6271824294945464304">正在分享密码</translation>
 <translation id="6273677812470008672">打印质量</translation>
+<translation id="6274089201566806618">正在连接到“<ph name="HOST_DEVICE_NAME" />”</translation>
 <translation id="6274202259872570803">抓屏</translation>
 <translation id="6276210637549544171">代理 <ph name="PROXY_SERVER" /> 要求提供用户名和密码。</translation>
 <translation id="6277105963844135994">网络超时</translation>
@@ -6520,6 +6528,7 @@
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> 的下载方式实属异常，因此它可能存在危险。</translation>
 <translation id="6285770818046456882">正与您分享内容的设备取消了传输</translation>
 <translation id="628726841779494414">在打印机设置中管理您的打印机</translation>
+<translation id="6287828400772161253">Android 手机（“<ph name="HOST_DEVICE_NAME" />”）</translation>
 <translation id="6290613030083731160">附近没有正在分享内容的设备。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="6291086328725007688">正在验证激活码。这可能需要几分钟的时间。</translation>
 <translation id="6291741848715722067">确认码</translation>
@@ -8526,6 +8535,7 @@
 <translation id="7925285046818567682">正在等待 <ph name="HOST_NAME" /> 的响应...</translation>
 <translation id="7926423016278357561">不是我本人。</translation>
 <translation id="7926975587469166629">卡的昵称</translation>
+<translation id="7927610604078150317">大小：<ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">已经更改了此密码？</translation>
 <translation id="7929962904089429003">打开菜单</translation>
 <translation id="7930294771522048157">已保存的付款方式会显示在这里</translation>
@@ -9841,6 +9851,7 @@
 <translation id="8986362086234534611">不保存</translation>
 <translation id="8986494364107987395">将使用情况统计信息和崩溃报告自动发送给 Google</translation>
 <translation id="8987305927843254629">每个人都可对自己的体验进行个性化设置并确保数据的私密性。</translation>
+<translation id="8987321822984361516">浏览器由组织管理，个人资料由“<ph name="PROFILE_DOMAIN" />”管理</translation>
 <translation id="8987927404178983737">月</translation>
 <translation id="8988539543012086784">此网页已保存到“<ph name="BOOKMARK_FOLDER" />”文件夹</translation>
 <translation id="8989359959810288806">刷新网络共享状态</translation>
@@ -9859,6 +9870,7 @@
 <translation id="8999027165951679951">闲置标签页：已释放 <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="8999560016882908256">区段语法错误：<ph name="ERROR_LINE" /></translation>
 <translation id="9000185763019430629">轻触 <ph name="DEVICE_TYPE" /> 右侧的指纹传感器。您的指纹数据会安全地存储在您的 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
+<translation id="9000532564152265066">所有标签页</translation>
 <translation id="9003185744423389627">未能成功连接到设备管理服务器，状态为“<ph name="STATUS_TEXT" />”，失败时间为 <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">自动扫描查找可用的 eSIM 卡配置文件？</translation>
 <translation id="9003647077635673607">允许在所有网站上运行脚本</translation>

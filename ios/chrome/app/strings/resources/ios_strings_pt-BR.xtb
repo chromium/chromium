@@ -242,6 +242,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome
 <translation id="2359043044084662842">Traduzir</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2360196772093551345">Solicitar um site móvel</translation>
+<translation id="2361721159900796207">Oculta este item</translation>
 <translation id="2362083820973145409">Login feito como <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Abre as configurações.</translation>
 <translation id="236977714248711277">Os sites não podem usar cookies para melhorar sua experiência de navegação, como manter sua conta conectada ou se lembrar dos itens em um carrinho de compras.
 
@@ -778,6 +779,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5317780077021120954">Salvar</translation>
 <translation id="5318298563956633672">Você já está acompanhando este produto.</translation>
 <translation id="5339316356165661760">Ativar a sincronização</translation>
+<translation id="5345660046352249607">{COUNT,plural, =1{Rastrear pacote?}one{Rastrear {COUNT} pacote?}other{Rastrear {COUNT} pacotes?}}</translation>
 <translation id="536067926684072644">Mostrar favoritos</translation>
 <translation id="5360976571138293719">Para mais configurações relacionadas à privacidade, segurança e coleta de dados, acesse <ph name="BEGIN_LINK" />Serviços do Google<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Os sites que você segue vão aparecer aqui</translation>
@@ -895,6 +897,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6021332621416007159">Abrir no...</translation>
 <translation id="6027619584715411062">Faça login para ter acesso a favoritos, senhas e muito mais em todos os seus dispositivos.</translation>
 <translation id="6027945736510816438">Você quis dizer <ph name="WEBSITE" />?</translation>
+<translation id="6032845897905314562">novo recurso</translation>
 <translation id="6036215966221662377">Remover dados de navegação</translation>
 <translation id="6036514205982097558">Todas as guias em um só navegador</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
@@ -1144,6 +1147,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="723787869754590019">Usar o preenchimento automático do Chrome</translation>
 <translation id="7265758999917665941">Nunca para este site</translation>
 <translation id="7272437679830969316">Não é possível verificar sua identidade. Senha não copiada.</translation>
+<translation id="7284359491594949826">{COUNT,plural, =1{Novo pacote rastreado}one{Novo pacote rastreado}other{Novos pacotes rastreados}}</translation>
 <translation id="7291368939935408496">Preparando senhas…</translation>
 <translation id="7302503784943202842">Usar senhas em todos os seus dispositivos</translation>
 <translation id="730958329302570991">Adicione senhas de sites com facilidade ao Gerenciador de senhas do Google sempre que quiser.</translation>
@@ -1245,6 +1249,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7856733331829174190">Falha no download</translation>
 <translation id="785938070103630874">Abrir senhas, formas de pagamento, endereço e mais</translation>
 <translation id="7859704718976024901">Histórico de navegação</translation>
+<translation id="7866501058614003444">O rastreamento do pacote foi cancelado.</translation>
 <translation id="7870750252270996949">Imagem copiada no Lens</translation>
 <translation id="7879275349003161544">Mostrar downloads</translation>
 <translation id="7883882164760409935">Você tem senhas reutilizadas.</translation>
@@ -1493,6 +1498,7 @@ Seus dados foram criptografados com a senha longa em <ph name="TIME" />. Digite-
 <translation id="9148126808321036104">Faça login novamente</translation>
 <translation id="9157836665414082580">Bloquear caixas de diálogo</translation>
 <translation id="9162432979321511934">Ative a opção "Preenchimento automático de senhas"</translation>
+<translation id="9162941801309769488">Pacote não rastreado</translation>
 <translation id="9165320910061267720">Para receber notificações de alertas de redução no preço, ative as notificações nas configurações do iOS.</translation>
 <translation id="9165886811579296457">A Confirmação de segurança não encontrou problemas para você corrigir.</translation>
 <translation id="9172603439892261948">Sincronize seus favoritos, histórico e muito mais.</translation>

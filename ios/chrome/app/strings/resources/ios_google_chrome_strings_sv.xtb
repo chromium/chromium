@@ -105,6 +105,7 @@ Tänk på detta:
         Testa att vänta några minuter innan du loggar ut. Om du loggar ut nu raderas denna data.</translation>
 <translation id="484033449593719797">Stöds inte på Chrome Beta</translation>
 <translation id="4840404732697892756">Google Lösenordshantering kan kontrollera dina lösenord när du loggar in med Google-kontot.</translation>
+<translation id="4860330141789125848">{COUNT,plural, =1{Du kan spåra paketet på sidan Ny flik i Chrome.}other{Du kan spåra paketen på sidan Ny flik i Chrome.}}</translation>
 <translation id="4903674399067644695">Det här kortet visar förslag på hur du får ut mesta möjliga av Chrome.</translation>
 <translation id="49200511069271369">Din organisation, <ph name="DOMAIN" />, hanterar kontot du loggar in på och hur Chrome kan användas. Administratören kan konfigurera eller begränsa vissa funktioner.</translation>
 <translation id="5030102366287574140">Chrome kan skydda dig från dataintrång, osäkra webbplatser med mera.</translation>
@@ -114,10 +115,12 @@ Tänk på detta:
 <translation id="5156818928311866442">Öppnar Chrome-inställningen för att ställa in Chrome som standardwebbläsare.</translation>
 <translation id="5162467219239570114">Den här versionen av Chrome är inaktuell. Om det inte finns någon uppdatering i <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> kan det hända att enheten inte längre har stöd för nya versioner av Chrome.</translation>
 <translation id="5190139289262548459">Din organisation, <ph name="DOMAIN" />, hanterar kontot du är inloggad på och hur Chrome används.</translation>
+<translation id="5278862365980079760">Lås inkognitoflikarna när du lämnar Chrome eller byter till en annan app.</translation>
 <translation id="5389212809648216794">Google Chrome kan inte använda kameran eftersom den används av en annan app</translation>
 <translation id="5395376160638294582">Se till att du alltid kan använda Chrome-data i Google-kontot</translation>
 <translation id="5439191312780166229">Varnar dig om farliga webbplatser, även sådana som Google inte kände till tidigare, genom att analysera mer data från webbplatser än standardskyddet. Du kan välja att hoppa över Chrome-varningar.</translation>
 <translation id="5460571915754665838">4. Välj Chrome</translation>
+<translation id="546541279759910616">{COUNT,plural, =1{Du spårar det här paketet på sidan Ny flik i Chrome.}other{Du spårar de här paketen på sidan Ny flik i Chrome.}}</translation>
 <translation id="5492504007368565877">Google Lösenordshantering kan inte kontrollera dina lösenord.</translation>
 <translation id="5527026824954593399">Tryck på Visa med Google Maps i Chrome.</translation>
 <translation id="5552137475244467770">Chrome kontrollerar regelbundet om dina lösenord finns med på listor som har publicerats online. Under kontrollen krypteras dina lösenord och användarnamn så att varken Google eller någon annan kan läsa dem.</translation>

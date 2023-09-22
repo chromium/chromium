@@ -1760,6 +1760,7 @@
 <translation id="2359345697448000899">Кеңейтімдерді реттеу үшін "Құралдар" мәзіріндегі "Кеңейтімдер" опциясын басыңыз.</translation>
 <translation id="2359556993567737338">Bluetooth құрылғысын байланыстыру</translation>
 <translation id="2359808026110333948">Жалғастыру</translation>
+<translation id="2360792123962658445">Беттің қысқартылған нұсқасын, ұқсас сұрауларды және осы бет жайында басқа пайдалы ақпаратты алу үшін құралдар тақтасындағы Google Search бүйірлік панелі түймесін басыңыз</translation>
 <translation id="2361100938102002520">Бұл браузерге басқарылатын профиль қосудасыз. Әкімшіңіз профильді бақылауда және оның деректерін пайдалана алады.</translation>
 <translation id="236117173274098341">Оңтайландыру</translation>
 <translation id="2361340419970998028">Пікір жіберілуде…</translation>
@@ -4713,6 +4714,7 @@
 <translation id="4766598565665644999">Барлық кеңейтім <ph name="HOST" /> сайтын оқып, өзгерте алады.</translation>
 <translation id="4767427586072640478">Өшірулі кеңейтімдер туралы толық ақпарат алыңыз.</translation>
 <translation id="4768332406694066911">Осы ұйымдардан алынған және сізді анықтайтын сертификаттар бар</translation>
+<translation id="4769632191812288342">Стандартты қорғаныс деңгейін пайдаланып жатырсыз.</translation>
 <translation id="4770119228883592393">Рұқсат сұралды, жауап беру үшін ⌘ + Option + төменге бағыттауыш перне тіркесімін басыңыз.</translation>
 <translation id="4773112038801431077">Linux жүйесін жаңарту</translation>
 <translation id="4774456473286455263">Android телефоныңызбен реттеу</translation>
@@ -4954,6 +4956,7 @@
 <translation id="4965808351167763748">Шынымен бұл құрылғыны Hangouts Meet қызметін іске қосу үшін реттегіңіз келе ме?</translation>
 <translation id="4966972803217407697">Инкогнито режиміндесіз.</translation>
 <translation id="4967227914555989138">Ескертпе қосу</translation>
+<translation id="4967360192915400530">Қауіпті файлды жүктеп алу</translation>
 <translation id="496742804571665842">eSIM профильдерін өшіру</translation>
 <translation id="4971412780836297815">Аяқталғанда ашу</translation>
 <translation id="4971735654804503942">Қауіпті веб-сайттардан, жүктеп алынған файлдардан және кеңейтімдерден жылдам әрі белсенді қорғау. Құпия сөздің қолды болғанын хабарлайды. Браузерді пайдалану деректерінің Google-ға жіберілуін талап етеді.</translation>
@@ -5294,6 +5297,7 @@
 <translation id="5265797726250773323">Орнату кезінде қате кетті</translation>
 <translation id="5266113311903163739">Сертификат беру орталығының импорттау қатесі</translation>
 <translation id="526622169288322445">"<ph name="ADDRESS_SUMMARY" />" бойынша қосымша әрекеттер</translation>
+<translation id="5267572070504076962">Қауіпті сайттардан қорғау үшін Safe Browsing функциясын қосыңыз.</translation>
 <translation id="5268373933383932086">Бет те сіздікі, таңдау да сіздікі</translation>
 <translation id="5269977353971873915">Басып шығару сәтсіз аяқталды</translation>
 <translation id="5271578170655641944">Google Drive қызметін пайдалану рұқсатын өшіру керек пе?</translation>
@@ -7142,6 +7146,7 @@
 <translation id="6798578729981748444">Импорттауды аяқтау үшін барлық Firefox терезелерін жабыңыз.</translation>
 <translation id="6798780071646309401">Caps Lock қосулы</translation>
 <translation id="6798954102094737107">Плагин: <ph name="PLUGIN_NAME" /></translation>
+<translation id="679905836499387150">Жасырылған құралдар тақтасының түймелері</translation>
 <translation id="6801129617625983991">Жалпы параметрлер</translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{Бұл кеңейтім осы сайтты оқи немесе өзгерте алатынын таңдаңыз}other{Бұл кеңейтімдер осы сайтты оқи немесе өзгерте алатынын таңдаңыз}}</translation>
 <translation id="6801435275744557998">Сенсорлық экранды калибрлеу</translation>
@@ -7526,6 +7531,7 @@
 <translation id="7099337801055912064">Үлкен PPD файлын жүктеу мүмкін емес. Көлемі 250 Кб-тан аспауы керек.</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{Ұрланған құпия сөздер жоқ.}=1{{COUNT} құпия сөз ұрланған.}other{{COUNT} құпия сөз ұрланған.}}</translation>
 <translation id="710047887584828070">Бұл қойындының контентін бөлісіп жатыр</translation>
+<translation id="710224247908684995">Бір кеңейтім Safe Browsing функциясын өшірді.</translation>
 <translation id="7102832101143475489">Сұрау уақыты өтіп кетті</translation>
 <translation id="710640343305609397">Желі параметрлерін ашу</translation>
 <translation id="7107609441453408294">Бір аудиожазбаны барлық динамиктен ойнату</translation>
@@ -7732,6 +7738,7 @@
 <translation id="7287143125007575591">Кіруге тыйым салынған.</translation>
 <translation id="7287411021188441799">Әдепкі фонды қалпына келтіру</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
+<translation id="7289049772085228972">Сізде Chrome-ның ең күшті қауіпсіздік жүйесі қолданылады.</translation>
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> – рұқсат сұралды, жауап беру үшін F6 пернесін басыңыз.</translation>
 <translation id="7290242001003353852"><ph name="SAML_DOMAIN" /> доменіндегі бұл жүйеге кіру қызметі камераға кіруде.</translation>
 <translation id="7292067737327289208"><ph name="BEGIN_LINK" />Браузеріңізді<ph name="END_LINK" /> ұйымыңыз басқарады және <ph name="BEGIN_LINK" />профиліңізді<ph name="END_LINK" /> <ph name="PROFILE_DOMAIN" /> басқарады.</translation>
@@ -8355,6 +8362,7 @@
 <translation id="7772127298218883077"><ph name="PRODUCT_NAME" /> туралы</translation>
 <translation id="7773726648746946405">Сеанс жады</translation>
 <translation id="7774365994322694683">Құс</translation>
+<translation id="7774581652827321413">Беттің қысқартылған нұсқасын, ұқсас сұрауларды және осы бет жайында басқа пайдалы ақпаратты алыңыз</translation>
 <translation id="7774792847912242537">Сұраулар тым көп.</translation>
 <translation id="7775694664330414886">Қойынды атаусыз топқа (<ph name="GROUP_CONTENTS" />) жылжытылды.</translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> сайтының барлық қойындысы жабылғанға дейін, ол <ph name="FOLDERNAME" /> қалтасындағы файлдарды көре алады.</translation>
@@ -8416,6 +8424,7 @@
 <translation id="7820400255539998692"><ph name="FILENAME" /> файлын осы құрылғыны пайдаланатын басқа адамдар құпия сөздеріңізді көре алмайтындай етіп жою</translation>
 <translation id="7820561748632634942">Қосымша ауыстырғыштар тағайындалсын ба?</translation>
 <translation id="782057141565633384">Бейне мекенжайын к&amp;өшіру</translation>
+<translation id="7824665136384946951">Ұйымыңыз Safe Browsing функциясын өшірді.</translation>
 <translation id="7824864914877854148">Сақтық көшірме жасалмады. Қате шықты.</translation>
 <translation id="782590969421016895">Ағымдағы беттерді пайдалану</translation>
 <translation id="7826174860695147464">Бұрынғы браузерді қолдау (LBS) – ішкі параметрлер</translation>
@@ -10018,6 +10027,7 @@
 <translation id="9094859731829297286">Linux дискісі үшін белгіленген өлшемді шынымен сақтағыңыз келе ме?</translation>
 <translation id="9095364055741191097">Жергілікті деректер қалпына келтірілмеді</translation>
 <translation id="909554839118732438">Инкогнито режимін жабу</translation>
+<translation id="9096053102600371572">Басқарылатын айналдыру әрекеті туралы <ph name="LINK_BEGIN" />толық ақпарат<ph name="LINK_END" /></translation>
 <translation id="9096776523567481218">жергілікті түрде орнатылмаған</translation>
 <translation id="9098860402274800697">Google Play және Android қолданбаларын өшіру</translation>
 <translation id="9099220545925418560">Браузерді қолдану тарихыңызға негізделген. Бұл параметр өшірулі.</translation>

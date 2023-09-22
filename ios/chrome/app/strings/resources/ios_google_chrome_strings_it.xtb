@@ -105,6 +105,7 @@ Aspetti da considerare:
         Prova ad attendere qualche minuto prima di uscire. Se esci ora, questi dati verranno eliminati.</translation>
 <translation id="484033449593719797">Non supportata su Chrome beta</translation>
 <translation id="4840404732697892756">Gestore delle password di Google può controllare le tue password quando accedi con il tuo Account Google.</translation>
+<translation id="4860330141789125848">{COUNT,plural, =1{Chrome può aiutarti a monitorare questo pacchetto nella pagina Nuova scheda.}other{Chrome può aiutarti a monitorare questi pacchetti nella pagina Nuova scheda.}}</translation>
 <translation id="4903674399067644695">In questa scheda vengono mostrati suggerimenti su come utilizzare al meglio Chrome.</translation>
 <translation id="49200511069271369">La tua organizzazione, <ph name="DOMAIN" />, gestisce l'account a cui stai accedendo e la modalità di utilizzo di Chrome. L'amministratore può configurare o limitare determinate funzionalità.</translation>
 <translation id="5030102366287574140">Chrome può contribuire a proteggerti da violazioni dei dati, siti web non sicuri e non solo.</translation>
@@ -114,10 +115,12 @@ Aspetti da considerare:
 <translation id="5156818928311866442">Apre l'impostazione di Chrome per impostare Chrome come browser predefinito.</translation>
 <translation id="5162467219239570114">Chrome non è aggiornato. Se non sono disponibili aggiornamenti nell'<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, è possibile che il dispositivo non supporti più le nuove versioni di Chrome.</translation>
 <translation id="5190139289262548459">La tua organizzazione, <ph name="DOMAIN" />, gestisce l'account a cui hai eseguito l'accesso e la modalità di utilizzo di Chrome.</translation>
+<translation id="5278862365980079760">Blocca le schede di navigazione in incognito quando esci da Chrome o passi a un'altra app.</translation>
 <translation id="5389212809648216794">Google Chrome non può utilizzare la videocamera perché è attualmente utilizzata da un'altra applicazione</translation>
 <translation id="5395376160638294582">Assicurati di poter usare sempre i dati di Chrome nel tuo Account Google</translation>
 <translation id="5439191312780166229">Ricevi un avviso in caso di siti pericolosi, inclusi quelli di cui Google non era a conoscenza, analizzando più dati provenienti dai siti rispetto al livello Protezione standard. Puoi scegliere di ignorare gli avvisi di Chrome.</translation>
 <translation id="5460571915754665838">4. Seleziona Chrome</translation>
+<translation id="546541279759910616">{COUNT,plural, =1{Chrome ti aiuterà a monitorare questo pacchetto nella pagina Nuova scheda.}other{Chrome ti aiuterà a monitorare questi pacchetti nella pagina Nuova scheda.}}</translation>
 <translation id="5492504007368565877">Gestore delle password di Google non può controllare le tue password.</translation>
 <translation id="5527026824954593399">Tocca l'opzione "Visualizza con Google Maps su Chrome".</translation>
 <translation id="5552137475244467770">Chrome confronta periodicamente le tue password con gli elenchi pubblicati online. Durante questa operazione, le tue password e i tuoi nomi utente vengono criptati, quindi non possono essere letti da nessuno, Google compresa.</translation>

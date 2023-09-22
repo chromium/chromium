@@ -242,6 +242,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e 
 <translation id="2359043044084662842">Përkthe</translation>
 <translation id="2359808026110333948">Vazhdo</translation>
 <translation id="2360196772093551345">Kërko sajtin për celular</translation>
+<translation id="2361721159900796207">E fsheh këtë artikull</translation>
 <translation id="2362083820973145409">Identifikuar si <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Hap cilësimet.</translation>
 <translation id="236977714248711277">Sajtet nuk mund t'i përdorin kukit për të përmirësuar përvojën e shfletimit, për shembull për të të mbajtur të identifikuar ose për të kujtuar artikujt në karrocën e blerjeve.
 
@@ -778,6 +779,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="5317780077021120954">Ruaj</translation>
 <translation id="5318298563956633672">Po e monitoron tashmë këtë produkt.</translation>
 <translation id="5339316356165661760">Aktivizo sinkronizimin</translation>
+<translation id="5345660046352249607">{COUNT,plural, =1{Të gjurmohet kjo paketë?}other{Të gjurmohen {COUNT} paketa?}}</translation>
 <translation id="536067926684072644">Shfaq faqeshënuesit</translation>
 <translation id="5360976571138293719">Për cilësime të mëtejshme në lidhje me privatësinë, sigurinë dhe mbledhjen e të dhënave, shih <ph name="BEGIN_LINK" />Shërbimet e Google<ph name="END_LINK" />.</translation>
 <translation id="5386314158584363703">Këtu do të gjesh sajtet që ndjek</translation>
@@ -1144,6 +1146,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="723787869754590019">Përdore Chrome për "Plotësimin automatik"</translation>
 <translation id="7265758999917665941">Asnjëherë për këtë faqe</translation>
 <translation id="7272437679830969316">Nuk mund të verifikohet identiteti yt. Fjalëkalimi nuk u kopjua.</translation>
+<translation id="7284359491594949826">{COUNT,plural, =1{Një paketë e re e gjurmuar}other{Paketa të reja të gjurmuara}}</translation>
 <translation id="7291368939935408496">Po përgatit fjalëkalimet...</translation>
 <translation id="7302503784943202842">Përdor fjalëkalime në të gjitha pajisjet e tua</translation>
 <translation id="730958329302570991">Shto me lehtësi fjalëkalimet e sajteve te "Menaxheri i fjalëkalimeve i Google" në çdo kohë.</translation>
@@ -1245,6 +1248,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7856733331829174190">Nuk mundi të shkarkohej</translation>
 <translation id="785938070103630874">Hap fjalëkalimet, mënyrat e pagesës ose adresat etj.</translation>
 <translation id="7859704718976024901">Historiku i shfletimit</translation>
+<translation id="7866501058614003444">Gjurmimi i kësaj pakete u anulua me sukses.</translation>
 <translation id="7870750252270996949">Imazhi i "Lentes" që kopjove</translation>
 <translation id="7879275349003161544">Shfaq shkarkimet</translation>
 <translation id="7883882164760409935">Ke fjalëkalime të ripërdorura.</translation>
@@ -1493,6 +1497,7 @@ Të dhënat e tua janë enkriptuar me frazën tënde të kalimit më <ph name="T
 <translation id="9148126808321036104">Identifikohu sërish</translation>
 <translation id="9157836665414082580">Fshih dialogjet</translation>
 <translation id="9162432979321511934">Aktivizo "Plotëso automatikisht fjalëkalimet"</translation>
+<translation id="9162941801309769488">Paketë e pagjurmuar</translation>
 <translation id="9165320910061267720">Për të marrë njoftime me sinjalizime për ulje çmimi, do të duhet të aktivizosh njoftimet në cilësimet e iOS.</translation>
 <translation id="9165886811579296457">"Kontrolli i sigurisë" nuk gjeti asnjë problem sigurie për ta rregulluar.</translation>
 <translation id="9172603439892261948">Sinkronizo faqeshënuesit, historikun etj.</translation>

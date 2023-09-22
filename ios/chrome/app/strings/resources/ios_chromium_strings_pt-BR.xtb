@@ -43,6 +43,7 @@
 <translation id="2574528844022712255">Visualizar favoritos do Chromium</translation>
 <translation id="2590893390871230428">Sincronizar seus dados do Chromium</translation>
 <translation id="2618596336309823556">Nas configurações do dispositivo, abra "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" e selecione "Chromium"</translation>
+<translation id="2618757400690011108">{COUNT,plural, =1{O Chromium ajudará a rastrear o pacote na página "Nova guia".}one{O Chromium ajudará a rastrear o pacote na página "Nova guia".}other{O Chromium ajudará a rastrear os pacotes na página "Nova guia".}}</translation>
 <translation id="2650312721222849884">Para ver suas guias em qualquer lugar onde você usar o Chromium, ative a sincronização</translation>
 <translation id="2684230048001240293">Defina o Chromium como padrão para sincronizar guias, senhas e informações de pagamento em todos os seus dispositivos</translation>
 <translation id="2730884209570016437">O Chromium não pode usar a câmera porque ela está sendo usada por outro app</translation>
@@ -52,6 +53,7 @@
 <translation id="2918709798697875261">Sua organização exige que a conta permaneça desconectada do Chromium.</translation>
 <translation id="2942241131342758843">Use o Chromium como padrão para abrir links, pesquisar em widgets e preencher senhas automaticamente em outros apps</translation>
 <translation id="2977470724722393594">O Chromium está atualizado</translation>
+<translation id="3078941082359356771">{COUNT,plural, =1{O Chromium pode ajudar você a rastrear o pacote na página "Nova guia".}one{O Chromium pode ajudar você a rastrear o pacote na página "Nova guia".}other{O Chromium pode ajudar você a rastrear os pacotes na página "Nova guia".}}</translation>
 <translation id="3102849287235003384">Para sair da sua Conta do Google em todos os sites, <ph name="BEGIN_LINK" />saia do Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Pesquisar com voz no Chromium</translation>
 <translation id="3228349498066165585">Alguns dos seus dados do Chromium ainda não foram salvos na sua Conta do Google.
@@ -114,6 +116,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chromi
 <translation id="5521125884468363740">Para ver suas guias em qualquer lugar onde você usar o Chromium, faça login e ative a sincronização</translation>
 <translation id="5522297504975449419">Você vai perder o acesso a alguns recursos do Chromium.</translation>
 <translation id="5571094606370987472">Abre as guias recentes do Chromium.</translation>
+<translation id="5623083843656850677">Bloqueie o modo de navegação anônima ao sair do Chromium ou mudar para outro app.</translation>
 <translation id="5688047395118852662">Este card mostra sugestões para você aproveitar o Chromium ao máximo.</translation>
 <translation id="5700709190537129682">Não é possível verificar suas senhas com o Chromium</translation>
 <translation id="5777187867430702742">Página do Chromium</translation>

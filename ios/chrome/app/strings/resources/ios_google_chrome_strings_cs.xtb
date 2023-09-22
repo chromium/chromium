@@ -105,6 +105,7 @@ Co je třeba zvážit:
         Zkuste s odhlášením několik minut počkat. Pokud se teď odhlásíte, tato data budou smazána.</translation>
 <translation id="484033449593719797">V beta verzi prohlížeče Chrome není podporováno</translation>
 <translation id="4840404732697892756">Pokud chcete, aby Správce hesel Google zkontroloval vaše hesla, přihlaste se pomocí účtu Google.</translation>
+<translation id="4860330141789125848">{COUNT,plural, =1{Chrome vám může pomoci sledovat tuto zásilku na stránce Nová karta.}few{Chrome vám může pomoci sledovat tyto zásilky na stránce Nová karta.}many{Chrome vám může pomoci sledovat tyto zásilky na stránce Nová karta.}other{Chrome vám může pomoci sledovat tyto zásilky na stránce Nová karta.}}</translation>
 <translation id="4903674399067644695">Tato karta zobrazuje návrhy, jak Chrome využít na maximum.</translation>
 <translation id="49200511069271369">Účet, ke kterému jste přihlášeni, a možné způsoby používání prohlížeče Chrome spravuje organizace <ph name="DOMAIN" />. Váš administrátor může nastavit nebo omezit určité funkce.</translation>
 <translation id="5030102366287574140">Chrome vás pomáhá chránit před porušeními zabezpečení údajů, nebezpečnými weby a dalšími hrozbami.</translation>
@@ -114,10 +115,12 @@ Co je třeba zvážit:
 <translation id="5156818928311866442">Otevře nastavení prohlížeče Chrome, pomocí něhož ho lze nastavit jako výchozí prohlížeč.</translation>
 <translation id="5162467219239570114">Chrome je zastaralý. Pokud v obchodě <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> není k dispozici žádná aktualizace, je možné, že vaše zařízení již nové verze Chromu nepodporuje.</translation>
 <translation id="5190139289262548459">Účet, ke kterému jste přihlášeni, a způsob používání prohlížeče Chrome spravuje doména <ph name="DOMAIN" />.</translation>
+<translation id="5278862365980079760">Uzamkněte anonymní karty, když prohlížeč Chrome opustíte nebo přejdete do jiné aplikace.</translation>
 <translation id="5389212809648216794">Google Chrome nemůže použít fotoaparát, protože jej právě používá jiná aplikace</translation>
 <translation id="5395376160638294582">Zajistěte, abyste mohli vždy používat data prohlížeče Chrome ve svém účtu Google</translation>
 <translation id="5439191312780166229">Varuje vás před nebezpečnými weby (včetně těch, o kterých Google dříve nevěděl) tím, že analyzuje více dat z webů než standardní ochrana. Upozornění prohlížeče Chrome můžete přeskočit.</translation>
 <translation id="5460571915754665838">4. Vyberte Chrome.</translation>
+<translation id="546541279759910616">{COUNT,plural, =1{Chrome vám pomůže sledovat tuto zásilku na stránce Nová karta.}few{Chrome vám pomůže sledovat tyto zásilky na stránce Nová karta.}many{Chrome vám pomůže sledovat tyto zásilky na stránce Nová karta.}other{Chrome vám pomůže sledovat tyto zásilky na stránce Nová karta.}}</translation>
 <translation id="5492504007368565877">Správce hesel Google vaše hesla nemůže zkontrolovat.</translation>
 <translation id="5527026824954593399">Klepněte na Zobrazit v Mapách Google v Chromu.</translation>
 <translation id="5552137475244467770">Chrome vaše hesla pravidelně porovnává se seznamy hesel, která unikla na internet. Vaše hesla a uživatelská jména jsou při tom šifrována, takže je nemůže nikdo zobrazit (ani Google).</translation>

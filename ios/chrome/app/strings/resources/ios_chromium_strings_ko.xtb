@@ -43,6 +43,7 @@
 <translation id="2574528844022712255">Chromium 북마크 보기</translation>
 <translation id="2590893390871230428">Chromium 데이터 동기화</translation>
 <translation id="2618596336309823556">기기 설정에서 '<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />' 항목을 열고 'Chromium'을 선택하세요</translation>
+<translation id="2618757400690011108">{COUNT,plural, =1{Chromium의 새 탭 페이지를 통해 이 택배를 추적할 수 있습니다}other{Chromium의 새 탭 페이지를 통해 이 택배를 추적할 수 있습니다}}</translation>
 <translation id="2650312721222849884">Chromium을 사용하는 어느 곳에서나 탭을 확인하려면 동기화를 사용 설정하세요.</translation>
 <translation id="2684230048001240293">Chromium을 모든 기기에서 탭, 비밀번호, 결제 정보를 동기화할 기본값으로 설정합니다.</translation>
 <translation id="2730884209570016437">다른 애플리케이션에서 카메라를 사용하고 있으므로 Chromium에서 카메라를 사용할 수 없습니다.</translation>
@@ -52,6 +53,7 @@
 <translation id="2918709798697875261">조직에서 Chromium 로그아웃 상태를 유지할 것을 요청합니다.</translation>
 <translation id="2942241131342758843">Chromium을 다른 앱에서 링크를 열고, 위젯에서 검색하고, 비밀번호를 자동 완성할 기본값으로 사용합니다.</translation>
 <translation id="2977470724722393594">Chromium이 최신 버전임</translation>
+<translation id="3078941082359356771">{COUNT,plural, =1{Chromium의 새 탭 페이지를 통해 이 택배를 추적할 수 있습니다}other{Chromium의 새 탭 페이지를 통해 이 택배를 추적할 수 있습니다}}</translation>
 <translation id="3102849287235003384">웹사이트에 로그인되어 있는 Google 계정에서 모두 로그아웃하려면 <ph name="BEGIN_LINK" />Chromium에서 로그아웃<ph name="END_LINK" />하세요.</translation>
 <translation id="3219277919172823720">Chromium에서 음성으로 검색하기</translation>
 <translation id="3228349498066165585">Chromium 데이터 중 일부가 아직 Google 계정에 저장되지 않았습니다.
@@ -114,6 +116,7 @@
 <translation id="5521125884468363740">Chromium을 사용하는 어느 곳에서나 탭을 확인하려면 로그인한 후 동기화를 사용 설정하세요.</translation>
 <translation id="5522297504975449419">일부 Chromium 기능을 더 이상 사용할 수 없게 됩니다</translation>
 <translation id="5571094606370987472">Chromium 최근 탭을 엽니다.</translation>
+<translation id="5623083843656850677">Chromium을 종료하거나 다른 앱으로 전환할 때 시크릿 탭을 잠급니다</translation>
 <translation id="5688047395118852662">이 카드는 Chromium을 최대한 활용하는 방법에 관한 추천을 보여줍니다.</translation>
 <translation id="5700709190537129682">Chromium에서 비밀번호를 확인할 수 없습니다.</translation>
 <translation id="5777187867430702742">Chromium 페이지</translation>

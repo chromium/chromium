@@ -1780,6 +1780,7 @@
 <translation id="2359345697448000899">도구 메뉴에서 확장 프로그램을 클릭하여 확장 프로그램을 관리할 수 있습니다.</translation>
 <translation id="2359556993567737338">블루투스 기기 연결</translation>
 <translation id="2359808026110333948">계속</translation>
+<translation id="2360792123962658445">이 페이지에 관한 페이지 요약, 관련 검색어, 기타 유용한 정보를 확인하려면 툴바에서 Google 검색 측면 패널 버튼을 선택하세요.</translation>
 <translation id="2361100938102002520">브라우저에 관리되는 프로필을 추가하려고 합니다. 관리자가 프로필을 제어하고 프로필 데이터에 액세스할 수 있습니다.</translation>
 <translation id="236117173274098341">최적화</translation>
 <translation id="2361340419970998028">의견을 보내는 중...</translation>
@@ -4732,6 +4733,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4766598565665644999">모든 확장 프로그램이 <ph name="HOST" />을 읽고 변경할 수 있습니다.</translation>
 <translation id="4767427586072640478">사용 중지된 확장 프로그램에 관해 자세히 알아봅니다.</translation>
 <translation id="4768332406694066911">다음 기관에 사용자의 신원을 확인하는 인증서가 있습니다.</translation>
+<translation id="4769632191812288342">표준 보호 모드를 사용 중입니다</translation>
 <translation id="4770119228883592393">권한 요청됨, ⌘ 키와 Option 키와 아래쪽 화살표 키를 눌러 응답</translation>
 <translation id="4773112038801431077">Linux 업그레이드</translation>
 <translation id="4774456473286455263">Android 휴대전화로 설정</translation>
@@ -4973,6 +4975,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4965808351167763748">이 기기를 설정하여 행아웃 Meet를 실행하시겠습니까?</translation>
 <translation id="4966972803217407697">시크릿 모드를 사용 중입니다.</translation>
 <translation id="4967227914555989138">메모 추가</translation>
+<translation id="4967360192915400530">위험한 파일 다운로드</translation>
 <translation id="496742804571665842">eSIM 프로필 사용 중지</translation>
 <translation id="4971412780836297815">완료되면 열기</translation>
 <translation id="4971735654804503942">위험한 웹사이트, 다운로드 항목 및 확장 프로그램에 더 빠르게 대응하여 선제적 보호 조치를 취합니다. 비밀번호 유출에 관해 알립니다. Google에 인터넷 사용 기록을 전송해야 합니다.</translation>
@@ -5313,6 +5316,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5265797726250773323">설치 중 오류 발생</translation>
 <translation id="5266113311903163739">인증 기관 가져오기 오류</translation>
 <translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" />의 작업 메뉴 더보기</translation>
+<translation id="5267572070504076962">세이프 브라우징을 사용 설정하여 위험한 사이트로부터 보호하세요</translation>
 <translation id="5268373933383932086">내가 고르는 내 페이지</translation>
 <translation id="5269977353971873915">인쇄 실패</translation>
 <translation id="5271578170655641944">Google Drive 액세스 권한을 삭제하시겠습니까?</translation>
@@ -7550,6 +7554,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7099337801055912064">큰 PPD를 로드할 수 없습니다. 최대 크기는 250KB입니다.</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{유출된 비밀번호 없음}=1{유출된 비밀번호 {COUNT}개}other{유출된 비밀번호 {COUNT}개}}</translation>
 <translation id="710047887584828070">이 탭의 콘텐츠를 공유 중입니다</translation>
+<translation id="710224247908684995">확장 프로그램에서 세이프 브라우징을 사용 중지했습니다</translation>
 <translation id="7102832101143475489">요청 제한 시간 초과</translation>
 <translation id="710640343305609397">네트워크 설정 열기</translation>
 <translation id="7107609441453408294">모든 스피커에서 동일한 오디오 재생</translation>
@@ -7756,6 +7761,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7287143125007575591">액세스가 거부되었습니다.</translation>
 <translation id="7287411021188441799">기본 배경 복원</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" />dpi</translation>
+<translation id="7289049772085228972">Chrome의 가장 강력한 보안 기능을 갖추고 있습니다</translation>
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - 권한 요청됨, F6 키를 눌러 응답</translation>
 <translation id="7290242001003353852"><ph name="SAML_DOMAIN" />에서 호스팅하는 이 로그인 서비스는 카메라에 액세스합니다.</translation>
 <translation id="7292067737327289208">조직에서 <ph name="BEGIN_LINK" />브라우저를 관리<ph name="END_LINK" />하고 <ph name="PROFILE_DOMAIN" />에서 <ph name="BEGIN_LINK" />프로필을 관리<ph name="END_LINK" />합니다.</translation>
@@ -8379,6 +8385,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7772127298218883077"><ph name="PRODUCT_NAME" /> 정보</translation>
 <translation id="7773726648746946405">세션 저장소</translation>
 <translation id="7774365994322694683">새</translation>
+<translation id="7774581652827321413">이 페이지에 관한 페이지 요약, 관련 검색어, 기타 유용한 정보를 받습니다.</translation>
 <translation id="7774792847912242537">요청 횟수가 너무 많습니다.</translation>
 <translation id="7775694664330414886">이름이 지정되지 않은 그룹으로 탭을 이동함 - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340">이 사이트의 탭을 모두 닫을 때까지 <ph name="ORIGIN" />에서 <ph name="FOLDERNAME" />의 파일을 볼 수 있게 됩니다.</translation>
@@ -8440,6 +8447,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7820400255539998692">이 기기를 사용하는 다른 사용자가 내 비밀번호를 볼 수 없도록 <ph name="FILENAME" /> 파일을 삭제하세요.</translation>
 <translation id="7820561748632634942">추가 스위치를 할당하시겠습니까?</translation>
 <translation id="782057141565633384">동영상 주소 복사(&amp;O)</translation>
+<translation id="7824665136384946951">조직에서 세이프 브라우징을 사용 중지했습니다</translation>
 <translation id="7824864914877854148">오류로 인해 백업을 완료할 수 없습니다.</translation>
 <translation id="782590969421016895">현재 페이지 사용</translation>
 <translation id="7826174860695147464">이전 브라우저 지원(LBS): 내부</translation>
@@ -10044,6 +10052,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9094859731829297286">Linux에 사용할 고정된 크기의 디스크를 예약하시겠습니까?</translation>
 <translation id="9095364055741191097">로컬 데이터 복구 실패</translation>
 <translation id="909554839118732438">시크릿 창 닫기</translation>
+<translation id="9096053102600371572">스크롤 제어됨 <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="9096776523567481218">로컬에 설치되지 않음</translation>
 <translation id="9098860402274800697">Google Play 및 Android 앱 삭제</translation>
 <translation id="9099220545925418560">방문 기록을 기반으로 추천됩니다. 설정이 사용 중지되어 있습니다.</translation>

@@ -105,6 +105,7 @@ Points à prendre en compte :
         Patientez quelques minutes avant de vous déconnecter. Si vous vous déconnectez maintenant, ces données seront supprimées.</translation>
 <translation id="484033449593719797">Non disponible dans la version bêta de Chrome</translation>
 <translation id="4840404732697892756">Le Gestionnaire de mots de passe de Google peut vérifier vos mots de passe lorsque vous vous connectez avec votre compte Google.</translation>
+<translation id="4860330141789125848">{COUNT,plural, =1{Chrome peut vous aider à suivre ce colis sur la page "Nouvel onglet".}one{Chrome peut vous aider à suivre ce colis sur la page "Nouvel onglet".}other{Chrome peut vous aider à suivre ces colis sur la page "Nouvel onglet".}}</translation>
 <translation id="4903674399067644695">Cette fiche vous propose des suggestions pour tirer le meilleur parti de Chrome.</translation>
 <translation id="49200511069271369">Votre organisation (<ph name="DOMAIN" />) gère le compte auquel vous vous connectez et la manière dont Chrome peut être utilisé. Votre administrateur peut configurer ou limiter certaines fonctionnalités.</translation>
 <translation id="5030102366287574140">Chrome peut vous aider à vous protéger, entre autres, contre les violations de données et les sites Web dangereux.</translation>
@@ -114,10 +115,12 @@ Points à prendre en compte :
 <translation id="5156818928311866442">Ouvre le paramètre Chrome permettant de définir Chrome comme navigateur par défaut.</translation>
 <translation id="5162467219239570114">Version de Chrome obsolète. Si aucune mise à jour n'est disponible sur l'<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, votre appareil n'est peut-être plus compatible avec les nouvelles versions de Chrome.</translation>
 <translation id="5190139289262548459">Votre organisation (<ph name="DOMAIN" />) gère le compte auquel vous êtes connecté et la manière dont Chrome est utilisé.</translation>
+<translation id="5278862365980079760">Verrouillez vos onglets de navigation privée lorsque vous quittez Chrome ou passez à une autre appli.</translation>
 <translation id="5389212809648216794">Google Chrome ne peut pas utiliser l'appareil photo, car celui-ci est utilisé par une autre application</translation>
 <translation id="5395376160638294582">Assurez-vous de toujours pouvoir utiliser les données Chrome de votre compte Google</translation>
 <translation id="5439191312780166229">Vous avertit en cas de sites dangereux, y compris pour ceux dont Google n'avait pas connaissance, en analysant plus de données provenant des sites que la protection standard. Vous pouvez ignorer les avertissements de Chrome.</translation>
 <translation id="5460571915754665838">4. Sélectionnez Chrome</translation>
+<translation id="546541279759910616">{COUNT,plural, =1{Chrome vous aidera à suivre ce colis sur la page "Nouvel onglet".}one{Chrome vous aidera à suivre ce colis sur la page "Nouvel onglet".}other{Chrome vous aidera à suivre ces colis sur la page "Nouvel onglet".}}</translation>
 <translation id="5492504007368565877">Le Gestionnaire de mots de passe de Google ne peut pas vérifier vos mots de passe.</translation>
 <translation id="5527026824954593399">Appuyez sur "Afficher avec Google Maps sur Chrome".</translation>
 <translation id="5552137475244467770">Chrome vérifie régulièrement que vos mots de passe ne figurent pas dans les listes qui ont été publiées en ligne. Lors de cette opération, vos mots de passe et vos noms d'utilisateur sont chiffrés afin que personne ne puisse les consulter, y compris Google.</translation>

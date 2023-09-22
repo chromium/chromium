@@ -225,6 +225,7 @@
 <translation id="1831565490995294689"><ph name="APP_TO_OPEN" /> විවෘත කිරීමට තෝරන්න.</translation>
 <translation id="1838895407229022812">රාත්‍රී ආලෝකය අක්‍රියයි.</translation>
 <translation id="1854180393107901205">Cast කිරීම නවත්වන්න</translation>
+<translation id="1862077610023398675">පාලන සඟවන්න</translation>
 <translation id="1862380676329487333">යාවත්කාලීන කර වරන්න</translation>
 <translation id="1864454756846565995">USB-C උපාංගය (පසුපස තොට)</translation>
 <translation id="1869497990620230175">ඉක්මන් ගොනු</translation>
@@ -786,6 +787,7 @@
 <translation id="4215497585250573029">VPN සැකසුම්</translation>
 <translation id="4217571870635786043">අනුලේඛනය</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ස්ථාපිත යෙදුම, විරාම කරන ලදී</translation>
+<translation id="4228078597006700451">පාලන සකසා නැත</translation>
 <translation id="4231053948789591973">විකාශය දැනට විරාම කර ඇත. ඔබට ඕනෑම වේලාවක විකාශය නැවත ආරම්භ කිරීමට හෝ ඔබේ තිරය විකාශය කිරීම නැවැත්වීමට හැකිය.</translation>
 <translation id="423685346499232137">මෙම අවස්ථාවේදී අන්තර්ගතය පිටපත් කිරීමට හෝ ඇලවීමට නොහැකිය</translation>
 <translation id="4239069858505860023">GPRS</translation>
@@ -1219,6 +1221,7 @@
 <translation id="5983567367406220847">අක්‍රිය වීම හේතුවෙන්, හොට්ස්පොට් ක්‍රියා විරහිත කර ඇත.</translation>
 <translation id="598407983968395253">අච්චුව භාවිත කරන්න</translation>
 <translation id="598882571027504733">යාවත්කාලීනය ලබා ගැනීමට, අමුණා ඇති යතුරුපුවරුව සමගින් ඔබගේ Chromebook නැවත ආරම්භ කරන්න.</translation>
+<translation id="6000279412553873020">යතුරු, බොත්තම්, සහ තවත් දේ</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" /> න් <ph name="SELECTED_PAGE" /> වැනි පිටුව</translation>
 <translation id="601304062528754300">රාක්කයේ ඊළඟ අයිතමය උද්දීපන කරන්න</translation>
 <translation id="6015573907265691211">සම්පූර්ණ බව සලකුණු කරන්න</translation>
@@ -1416,6 +1419,7 @@
 <translation id="6802196538183166658">වේලාව තේරීමෙන් ක්ෂණික සැකසීම් විවෘත කරන්න</translation>
 <translation id="6802687695197837794">මෙය <ph name="APP1_NAME" />, <ph name="APP2_NAME" />, සහ කැමරා සහ මයික්‍රෆෝන අවසර සහිත සියලු යෙදුම් සහ වෙබ් අඩවි සඳහා ප්‍රවේශ වීමට ඉඩ දෙයි</translation>
 <translation id="6803622936009808957">සහාය වන විසඳුම් හමු නොවුන නිසා ප්‍රදර්ශන කැඩපත්කරනය කළ නොහැකි විය. ඒ වෙනුවට දිගු කළ ඩෙස්ක්ටොප් එකට ඇතුළු විය.</translation>
+<translation id="6809556495807506746">පාලන නොලැබේ</translation>
 <translation id="6812232930908427253">මේසය සුරැකීමට නොහැකි විය. කවුළු හෝ ටැබ ඉතා වැඩි ගණනකි.</translation>
 <translation id="6818242057446442178">වචනයෙන් ආපසු</translation>
 <translation id="6819327813400217281">කැමරාව පහළ වම් කෙළවරට සවි කර ඇත</translation>
@@ -1440,6 +1444,7 @@
 <translation id="6919251195245069855">ඔබේ ස්මාර්ට් කාඩ්පත හඳුනා ගැනීමට නොහැකි විය. නැවත උත්සාහ කරන්න.</translation>
 <translation id="6920245099716267363">හොට්ස්පොට් ටොගල් කරන්න. හොට්ස්පොට් ක්‍රියාත්මකයි, 1 උපාංගයක් සම්බන්ධයි.</translation>
 <translation id="692135145298539227">මකන්න</translation>
+<translation id="6929081673585394903">පාලන පෙන්වන්න</translation>
 <translation id="6931576957638141829">සුරකින්නේ</translation>
 <translation id="6942518653766415536">පටිගත කිරීමේ ආකෘති මෙනුව</translation>
 <translation id="6945221475159498467">තෝරන්න</translation>
@@ -1637,6 +1642,7 @@
 <translation id="7773536009433685931">ඒ වෙනුවට WiFi ක්‍රියාත්මක කරන්න</translation>
 <translation id="7780094051999721182">කෙටි මං</translation>
 <translation id="7780159184141939021">තිරය කරකවන්න</translation>
+<translation id="7792590255364786396">දෘශ්‍යමාන</translation>
 <translation id="7796735576426975947">නව දැනුම්දීම සඟවා ඇත</translation>
 <translation id="7798302898096527229">අවලංගු කිරීමට සෙවීම හෝ Shift ඔබන්න.</translation>
 <translation id="780301667611848630">එපා, ස්තූතියි</translation>

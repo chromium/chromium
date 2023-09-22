@@ -304,6 +304,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2268130516524549846">Bluetooth desativado</translation>
 <translation id="2268813581635650749">Desconectar todos</translation>
 <translation id="2269016722240250274">Um aplicativo está usando o microfone</translation>
+<translation id="2276987123919776440">15min</translation>
 <translation id="2277103315734023688">Avançar</translation>
 <translation id="2282073721614284166">Abrir link na guia</translation>
 <translation id="2284237890386182187">Ativado, nenhum dispositivo conectado</translation>
@@ -513,6 +514,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3153444934357957346">Só é possível ter até <ph name="MULTI_PROFILE_USER_LIMIT" /> contas em login múltiplo.</translation>
 <translation id="3154351730702813399">O administrador do dispositivo pode monitorar sua atividade de navegação.</translation>
 <translation id="316086887565479535">Apps sem suporte no modelo</translation>
+<translation id="3160929076476941240">2h</translation>
 <translation id="3161500364292033097">Fechar espaço de trabalho e janelas</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> está revertendo seu <ph name="DEVICE_TYPE" />. O dispositivo será redefinido e todos os dados serão excluídos.</translation>
 <translation id="3171170659304083361">Configurações de métodos de entrada</translation>
@@ -820,6 +822,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="4333628967105022692">O Lacros não é compatível com o login de vários usuários.</translation>
 <translation id="4338109981321384717">Lupa</translation>
 <translation id="4356872429719185452">Consulte detalhes do ponto de acesso. Ele está sendo ativado.</translation>
+<translation id="4364101114148522660"><ph name="DURATION" /> (gravando)</translation>
 <translation id="4371348193907997655">Configurações de transmissão</translation>
 <translation id="4375482231364171368">Pesquisar na barra de endereço</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%</translation>
@@ -1219,6 +1222,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="5983567367406220847">Devido à inatividade, o ponto de acesso foi desativado.</translation>
 <translation id="598407983968395253">Usar modelo</translation>
 <translation id="598882571027504733">Para receber a atualização, reinicie seu Chromebook com o teclado conectado.</translation>
+<translation id="6000279412553873020">Teclas, botões e muito mais</translation>
 <translation id="6012623610530968780">Página <ph name="SELECTED_PAGE" /> de <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Destacar próximo item na estante</translation>
 <translation id="6015573907265691211">Marcar como concluída</translation>
@@ -1403,6 +1407,7 @@ Nova instalação</translation>
 <translation id="6752912906630585008">Espaço de trabalho <ph name="REMOVED_DESK" /> removido e integrado ao <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">guias</translation>
 <translation id="6757237461819837179">Nenhuma mídia em reprodução</translation>
+<translation id="6760438044935091345">Painel de jogo</translation>
 <translation id="6768043681523654438">armazenamento</translation>
 <translation id="6777216307882431711">Carregando dispositivos USB-C conectados</translation>
 <translation id="6781002679438061620">Espaço de trabalho 9</translation>
@@ -1905,6 +1910,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8940956008527784070">Nível de bateria baixo (<ph name="PERCENTAGE" />%)</translation>
 <translation id="8949925099261528566">Conectada, sem Internet</translation>
 <translation id="8951539504029375108">Apenas dispositivos Thunderbolt aprovados são compatíveis com seu Chromebook</translation>
+<translation id="8964525410783593407">1h</translation>
 <translation id="8973885907461690937">Colocar o foco no ícone de menu</translation>
 <translation id="8980862970816311842">Mover um ícone de app para dentro/fora de uma pasta na grade de apps</translation>
 <translation id="8982906748181120328">Visibilidade por perto</translation>
@@ -1977,6 +1983,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="951991426597076286">Recusar</translation>
 <translation id="953431725143473984">Desligar o dispositivo?</translation>
 <translation id="954052413789300507">Não há espaço suficiente para o arquivo <ph name="FILENAME" />. Libere espaço.</translation>
+<translation id="954520015070501466">30min</translation>
 <translation id="974545358917229949">Exibindo <ph name="RESULT_COUNT" /> resultados para <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Sem data de entrega</translation>
 <translation id="98120814841227350">Ir para o final do documento</translation>

@@ -1761,6 +1761,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2359345697448000899">Menaxho shtesat duke klikuar "Shtesat" në menynë e "Veglave".</translation>
 <translation id="2359556993567737338">Lidh pajisje me Bluetooth</translation>
 <translation id="2359808026110333948">Vazhdo</translation>
+<translation id="2360792123962658445">Për të marrë një përmbledhje të faqes, kërkimet përkatëse dhe informacione të tjera të dobishme, zgjidh butonin e panelit anësor të "Kërko në Google" në shiritin e veglave</translation>
 <translation id="2361100938102002520">Po shton një profil të menaxhuar te ky shfletues. Administratori yt ka kontroll mbi profilin dhe mund të ketë qasje në të dhënat e tij.</translation>
 <translation id="236117173274098341">Optimizo</translation>
 <translation id="2361340419970998028">Komentet po dërgohen...</translation>
@@ -4714,6 +4715,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4766598565665644999">Të gjitha shtesat mund të lexojnë dhe të ndryshojnë <ph name="HOST" /></translation>
 <translation id="4767427586072640478">Mëso më shumë rreth shtesave të çaktivizuara.</translation>
 <translation id="4768332406694066911">Ke certifikata nga këto organizata që të identifikojnë</translation>
+<translation id="4769632191812288342">Po merr mbrojtje standarde</translation>
 <translation id="4770119228883592393">Kërkohet leje, shtyp ⌘ + Option + Shigjetën poshtë për t'u përgjigjur</translation>
 <translation id="4773112038801431077">Përmirëso Linux</translation>
 <translation id="4774456473286455263">Konfiguro me telefonin tënd Android</translation>
@@ -4955,6 +4957,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4965808351167763748">Je i sigurt që dëshiron ta konfigurosh këtë pajisje për të ekzekutuar Hangouts Meet?</translation>
 <translation id="4966972803217407697">Je në modalitetin "e fshehtë"</translation>
 <translation id="4967227914555989138">Shto një shënim</translation>
+<translation id="4967360192915400530">Shkarko skedarin e rrezikshëm</translation>
 <translation id="496742804571665842">Çaktivizo profilet e kartës eSIM</translation>
 <translation id="4971412780836297815">Hape kur të përfundojë</translation>
 <translation id="4971735654804503942">Mbrojtje më e shpejtë dhe proaktive kundër faqeve të internetit, shkarkimeve dhe shtesave të rrezikshme. Të paralajmëron rreth nxjerrjeve të paautorizuara të fjalëkalimeve. Kërkon që të dhënat e shfletimit t'i dërgohen Google.</translation>
@@ -5295,6 +5298,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5265797726250773323">Gabim gjatë instalimit</translation>
 <translation id="5266113311903163739">Gabim në importimin e Autoritetit të Certifikimit</translation>
 <translation id="526622169288322445">Më shumë veprime për "<ph name="ADDRESS_SUMMARY" />"</translation>
+<translation id="5267572070504076962">Aktivizo "Shfletimin e sigurt" për të marrë mbrojtjen ndaj sajteve të rrezikshme</translation>
 <translation id="5268373933383932086">Faqja jote, mënyra jote</translation>
 <translation id="5269977353971873915">Printimi dështoi</translation>
 <translation id="5271578170655641944">Të hiqet qasje te "Disku i Google"?</translation>
@@ -7146,6 +7150,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6798578729981748444">Për të përfunduar importimin, mbyll të gjitha dritaret e Firefox.</translation>
 <translation id="6798780071646309401">kyçja e germave kapitale aktive</translation>
 <translation id="6798954102094737107">Përbërësi shtesë: <ph name="PLUGIN_NAME" /></translation>
+<translation id="679905836499387150">Butonat e fshehur të shiritit të veglave</translation>
 <translation id="6801129617625983991">Cilësimet e përgjithshme</translation>
 <translation id="6801308659697002152">{NUM_EXTENSIONS,plural, =1{Zgjidh nëse kjo shtesë mund të lexojë ose të ndryshojë këtë sajt}other{Zgjidh nëse këto shtesa mund të lexojnë ose të ndryshojnë këtë sajt}}</translation>
 <translation id="6801435275744557998">Kalibro ekranin me prekje</translation>
@@ -7530,6 +7535,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7099337801055912064">PPD-ja nuk mund të ngarkohet. Madhësia maksimale është 250 kB.</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{Asnjë fjalëkalim i komprometuar}=1{{COUNT} fjalëkalim i komprometuar}other{{COUNT} fjalëkalime të komprometuara}}</translation>
 <translation id="710047887584828070">Përmbajtja e kësaj skede po ndahet</translation>
+<translation id="710224247908684995">Një shtesë e ka çaktivizuar "Shfletimin e sigurt"</translation>
 <translation id="7102832101143475489">Kërkesa skadoi</translation>
 <translation id="710640343305609397">Hap cilësimet e rrjetit</translation>
 <translation id="7107609441453408294">Luaj të njëjtën audio në të gjithë altoparlantët</translation>
@@ -7736,6 +7742,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7287143125007575591">Qasja refuzohet</translation>
 <translation id="7287411021188441799">Restauro sfondin e parazgjedhur</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
+<translation id="7289049772085228972">Ti ke sigurinë më të fortë të Chrome</translation>
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - Kërkohet leje, shtyp F6 për t'u përgjigjur</translation>
 <translation id="7290242001003353852">Ky shërbim identifikimi i strehuar nga <ph name="SAML_DOMAIN" />, ka qasje te kamera jote.</translation>
 <translation id="7292067737327289208"><ph name="BEGIN_LINK" />Shfletuesi yt menaxhohet<ph name="END_LINK" /> nga organizata jote dhe <ph name="BEGIN_LINK" />profili yt menaxhohet<ph name="END_LINK" /> nga <ph name="PROFILE_DOMAIN" /></translation>
@@ -8360,6 +8367,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7772127298218883077">Rreth <ph name="PRODUCT_NAME" /></translation>
 <translation id="7773726648746946405">Ruajtja e sesionit</translation>
 <translation id="7774365994322694683">Zog</translation>
+<translation id="7774581652827321413">Merr një përmbledhje të faqes, kërkimet përkatëse dhe informacione të tjera të dobishme</translation>
 <translation id="7774792847912242537">Ka shumë kërkesa.</translation>
 <translation id="7775694664330414886">Skeda u zhvendos në grupin e paemërtuar - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340"><ph name="ORIGIN" /> do të mund t'i shikojë skedarët në <ph name="FOLDERNAME" /> deri sa t'i mbyllësh të gjitha skedat për këtë sajt</translation>
@@ -8420,6 +8428,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7820400255539998692">Fshi <ph name="FILENAME" />, në mënyrë që të tjerët që e përdorin këtë pajisje të mos arrijnë t'i shikojnë fjalëkalimet e tua.</translation>
 <translation id="7820561748632634942">Të caktohen çelësa të tjerë?</translation>
 <translation id="782057141565633384">K&amp;opjo adresën e videos</translation>
+<translation id="7824665136384946951">Organizata jote ka e çaktivizuar "Shfletimin e sigurt"</translation>
 <translation id="7824864914877854148">Rezervimi nuk mund të përfundonte për shkak të një gabimi</translation>
 <translation id="782590969421016895">Përdor faqet aktuale</translation>
 <translation id="7826174860695147464">Mbështetja e shfletuesit të trashëgimisë (LBS) - Pjesët e brendshme</translation>
@@ -10022,6 +10031,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="9094859731829297286">E konfirmon që dëshiron të rezervosh një disk me madhësi fikse për Linux?</translation>
 <translation id="9095364055741191097">Rikuperimi i të dhënave lokale dështoi</translation>
 <translation id="909554839118732438">Mbyll dritaret e fshehta</translation>
+<translation id="9096053102600371572">Lëvizja e kontrolluar <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="9096776523567481218">nuk është instaluar në nivel lokal</translation>
 <translation id="9098860402274800697">Hiq Google Play dhe aplikacionet për Android</translation>
 <translation id="9099220545925418560">Bazuar në historikun tënd të shfletimit. Ky cilësim është joaktiv.</translation>

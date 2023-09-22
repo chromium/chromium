@@ -765,6 +765,9 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
       Si la estableces, fallará la instalación de <ph name="PLUGIN_VM_NAME" /> cuando el espacio libre en disco disponible en el dispositivo sea inferior al espacio que requiere la política.</translation>
 <translation id="1686952487081322272">Inhabilitar Respuestas rápidas</translation>
 <translation id="1690383938831887552">No permitir que se carguen los intercambios HTTP firmados</translation>
+<translation id="1692325295652827195">Si estableces la política como verdadera, se enviarán a Google los informes sobre los eventos clave de instalación de apps para Android que activa la política.
+
+Si la estableces como falsa o no la estableces, no se capturará ningún evento.</translation>
 <translation id="1692990221685273468">Determina si el verificador de certificados integrado aplicará de manera forzosa las restricciones codificadas en las anclas de confianza cargadas desde el almacén de confianza de la plataforma.</translation>
 <translation id="169467210981344373">Inhabilitar la caché de autenticación de HTTP con alcance global</translation>
 <translation id="1696501581280568361">Sugerir separación de perfil</translation>
@@ -1444,6 +1447,9 @@ Para establecer esta política, se debe inhabilitar la política <ph name="PRIVA
       Si no se configura esta política, se inhabilitará cualquier complemento que coincida con patrones incluidos en DisabledPlugins, y el usuario no podrá habilitarlo.</translation>
 <translation id="2236488539271255289">No permitir que ningún sitio configure los datos locales.</translation>
 <translation id="2236593201136596376">Permitir la recopilación de registros de textos de WebRTC de los Servicios de Google</translation>
+<translation id="2237258181338466053">Si habilitas esta política, <ph name="PRODUCT_NAME" /> intentará ejecutar algunas URLs en un navegador alternativo, como <ph name="IE_PRODUCT_NAME" />. Esta función está configurada conforme a las políticas del grupo <ph name="LEGACY_BROWSER_SUPPORT_POLICY_GROUP" />.
+
+Si inhabilitas la política o no la estableces, <ph name="PRODUCT_NAME" /> no intentará ejecutar las URLs designadas en un navegador alternativo.</translation>
 <translation id="2237705286848619561">Si habilitas esta política, las sesiones de asistencia remota empresarial iniciadas por el administrador permitirán la transferencia de archivos entre el cliente y el host.
 
 Esta política no afecta a los casos de acceso remoto.
@@ -1472,6 +1478,9 @@ Si no estableces esta política o la inhabilitas, no se permitirá la transferen
 <translation id="2261648512244797294">Inhabilita la impresión Privet obsoleta</translation>
 <translation id="2266422599396179941">Permitir que los usuarios envíen comentarios</translation>
 <translation id="2269319728625047531">Habilitar que se muestre el consentimiento de sincronización durante el acceso</translation>
+<translation id="2270113153862588648">Si habilitas la política, se permitirá la certificación remota para el dispositivo. Se generará un certificado y se subirá al servidor de administración de dispositivos de forma automática.
+
+Si la inhabilitas o no la estableces, no se generará ningún certificado y las llamadas a <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> fallarán.</translation>
 <translation id="2270747976331889601">Habilita una función de seguridad TLS 1.3 para los anclajes de confianza locales</translation>
 <translation id="22754818344448444">Permitir que los usuarios seleccionen un diseño de plantilla de escritorio para cargar</translation>
 <translation id="2277117728011250860">No permitir el uso del filtro de rendimiento de accesibilidad</translation>
@@ -1866,6 +1875,9 @@ ninguna URL de "más información" en el instalador.</translation>
 <translation id="2623014935069176671">Esperar actividad inicial del usuario</translation>
 <translation id="2625026032335150744">Marcar la opción para conservar los datos de navegación existentes de forma predeterminada</translation>
 <translation id="2625398797484317969">Configuración de los controles de Respuestas rápidas.</translation>
+<translation id="2626302212133950795">Si habilitas la política o no la estableces, los dispositivos con <ph name="PRODUCT_OS_NAME" /> podrán usar la certificación remota (Acceso verificado) para obtener un certificado emitido por la AC de <ph name="PRODUCT_OS_NAME" /> que confirme que el dispositivo es apto para reproducir contenido protegido. Este proceso implica el envío de información de aprobación del hardware a la AC de <ph name="PRODUCT_OS_NAME" /> que identifique al dispositivo de forma única.
+
+Si inhabilitas la política, el dispositivo no utilizará la certificación remota para la protección del contenido. Es posible que el dispositivo no pueda reproducir contenido protegido.</translation>
 <translation id="262740370354162807">Habilitar el envío de documentos a <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="2633084400146331575">Habilitar los comentarios de voz</translation>
 <translation id="2633907568797306353">Permitir que se habiliten las notificaciones de Phone Hub</translation>
@@ -2153,6 +2165,16 @@ Esta política solo se puede establecer como política del usuario basada en la 
 <translation id="2908277604670530363">Cantidad máxima de conexiones simultáneas con el servidor proxy</translation>
 <translation id="2912366658685903301">Configurar el color del tema del navegador</translation>
 <translation id="2914283793640833265">No permitir que se habilite la continuación de tareas en Phone Hub</translation>
+<translation id="2915787312243722351">Esta política controla el parámetro de configuración "Usar el Selector o la tecla de búsqueda para cambiar el comportamiento de las teclas de función" Esta configuración permite que los usuarios mantengan presionada la tecla del Selector
+para alternar entre las teclas de función y las teclas de la fila superior del sistema.
+
+Si no la estableces, los usuarios podrán elegir libremente el valor del parámetro de configuración "Usar
+el Selector o la tecla de búsqueda para cambiar el comportamiento de las teclas de función".
+Si la inhabilitas, el Selector o la tecla de búsqueda no podrá
+cambiar el comportamiento de las teclas de función, y los usuarios no podrán
+cambiar esta configuración.
+Si la habilitas, el Selector o la tecla de búsqueda podrá cambiar el
+comportamiento de las teclas de función, y los usuarios no podrán cambiar esta configuración.</translation>
 <translation id="291853569864365550">No mostrar sugerencias de contenido en la página Nueva pestaña</translation>
 <translation id="2920795918401557243">Esta configuración permite registrar el rendimiento de todo el sistema mediante el servicio de registro del sistema.
 
@@ -2430,6 +2452,11 @@ Esta política es temporal y se quitará en el futuro.</translation>
 <translation id="3118552207903834734">Permitir que el usuario configure el nombre de host de su dispositivo</translation>
 <translation id="3122082892722698079">Controla el uso de excepciones de contenido no seguro</translation>
 <translation id="3125472566440502628">Inhabilitar Seleccionar para pronunciar</translation>
+<translation id="3126229421659523563">En el modo kiosko, esta política controla si se muestra el menú de accesibilidad flotante.
+
+Si habilitas la política, siempre se mostrará el menú de accesibilidad flotante.
+
+Si la inhabilitas o no la estableces, nunca se mostrará el menú de accesibilidad flotante.</translation>
 <translation id="3126748868885248792">El botón principal es el derecho</translation>
 <translation id="3128072319047570212">Configuración de keygen</translation>
 <translation id="3131703464330936425">No permitir el roaming de datos móviles</translation>
@@ -2708,6 +2735,9 @@ En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias
       Si no se establece la política, no estará disponible el servicio de proxy del sistema.</translation>
 <translation id="334231891933432876">Cerrar la sesión del usuario en cuanto se anule la autenticación de su cuenta</translation>
 <translation id="3345323903592385588">El orden en el que se mostrará la configuración de VM en el instalador. Cuando especificas varias configuraciones de VM, la que tiene el valor de display_order más pequeño aparece en la parte superior de la lista. El valor predeterminado es cero.</translation>
+<translation id="3351661569026056296">Si estableces la política como verdadera, las teclas de la fila superior del teclado serán comandos de teclas de funciones. Si presionas la tecla de búsqueda, se restablecerá el comportamiento de las teclas multimedia.
+
+Si la estableces como falsa o no la estableces, el teclado generará comandos de teclas de funciones de forma predeterminada. Si presionas la tecla de búsqueda, se cambiarán a teclas de funciones.</translation>
 <translation id="3351835664671920945">Mostrar un teclado estándar de forma predeterminada para ingresar la contraseña</translation>
 <translation id="3359186795130278362">Habilitar la sesión de invitado administrada y restringida</translation>
 <translation id="33592541385181121">No incluir un puerto en el SPN de Kerberos generado</translation>
@@ -4268,6 +4298,11 @@ Si no estableces la política, los usuarios podrán cambiar la lista de apps fij
       Esta política es obsoleta; usa la política <ph name="EXTERNAL_PRINT_SERVERS_ALLOWLIST" /> en su lugar.</translation>
 <translation id="4668325077104657568">Configuración de imágenes predeterminadas</translation>
 <translation id="4669083178278833688">Inhabilitar las funciones de cámara, configuración del navegador, configuración del SO, escaneo, Web Store, Canvas, Explorar, Crosh, Galería y Terminal</translation>
+<translation id="4669292863736266737">A menos que establezcas la política <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> como <ph name="BLOCK_GEOLOCATION_SETTING" />, el parámetro de configuración <ph name="GLS_ENABLED" /> activará los Servicios de ubicación de Google durante la configuración inicial. Si la estableces como <ph name="GLS_DISABLED" /> o no la estableces, los Servicios de ubicación se mantendrán desactivados durante la configuración.
+
+Si estableces la política como <ph name="BR_UNDER_USER_CONTROL" />, se enviará un mensaje a los usuarios para que acepten o rechacen el uso de los Servicios de ubicación de Google. Si lo aceptan, las apps para Android usarán los servicios para buscar la ubicación del dispositivo y enviarán datos de ubicación anónimos a Google.
+
+Después de la configuración inicial, los usuarios podrán activar o desactivar los Servicios de ubicación de Google.</translation>
 <translation id="4670865688564083639">Mínimo:</translation>
 <translation id="467236746355332046">Características admitidas</translation>
 <translation id="4674167212832291997">Personaliza la lista de los patrones de URL que siempre debe procesar <ph name="PRODUCT_FRAME_NAME" />.
@@ -4307,6 +4342,9 @@ Para dispositivos no administrados, el usuario puede tomar la decisión de envia
       </translation>
 <translation id="4703402283970867140">Habilitar un modelo de atenuación inteligente para extender el tiempo de atenuación de la pantalla</translation>
 <translation id="4704958130749494760">Otorgar permiso automáticamente a los sitios para conectarse a dispositivos seriales USB</translation>
+<translation id="4705329890928008808">Si estableces la política como CopyCaCerts, todos los certificados de la AC instalados mediante ONC con <ph name="WEB_TRUSTED_BIT" /> estarán disponibles para las apps de ARC.
+
+Si la estableces como "None" o no la estableces, los certificados de <ph name="PRODUCT_OS_NAME" /> no estarán disponibles para las apps de ARC.</translation>
 <translation id="4707142899480362007">Si estableces la política, podrás crear una lista de patrones de URL donde se indiquen los sitios a los cuales se les otorga permiso automáticamente para acceder a un dispositivo USB con los IDs del producto y del proveedor especificados en la pantalla de acceso. Para que la política sea válida, cada elemento de la lista debe tener los campos <ph name="DEVICES_FIELD_NAME" /> y <ph name="URLS_FIELD_NAME" />. Cada elemento del campo <ph name="DEVICES_FIELD_NAME" /> puede tener los campos <ph name="VENDOR_ID_FIELD_NAME" /> y <ph name="PRODUCT_ID_FIELD_NAME" />. Si omites el campo <ph name="VENDOR_ID_FIELD_NAME" />, se creará una política que funcione con cualquier dispositivo. Si omites el campo <ph name="PRODUCT_ID_FIELD_NAME" />, se creará una política que funcione con cualquier dispositivo que tenga el ID de proveedor especificado. Las políticas que tengan el campo <ph name="PRODUCT_ID_FIELD_NAME" />, pero que no tengan el campo <ph name="VENDOR_ID_FIELD_NAME" /> no serán válidas.
 
       El modelo de permisos de USB permitirá que la URL especificada acceda al dispositivo USB como origen de nivel superior. Si los marcos incorporados necesitan acceder a dispositivos USB, se deberá usar el encabezado <ph name="FEATURE_POLICY_HEADER_NAME" /> de "usb" para otorgar acceso. Si la URL no es válida, se ignorará la política.
@@ -5163,6 +5201,17 @@ Esto se quitó en M112.</translation>
 <translation id="5535256585099022933">Establecer el lapso para el reinicio</translation>
 <translation id="553806128266843748">Una función experimental booleana que indica si está habilitada la limitación de la red.</translation>
 <translation id="5540885720415375851">Permite el descubrimiento de dispositivos locales</translation>
+<translation id="5544059132156503357">Si estableces la política, se designarán los tipos de encriptación que estarán permitidos cuando se soliciten tickets de Kerberos desde un servidor de <ph name="MS_AD_NAME" />.
+
+Si estableces la política en los siguientes valores:
+
+* Todos: se permitirán los tipos de encriptación AES aes256-cts-hmac-sha1-96 y aes128-cts-hmac-sha1-96, además del tipo de encriptación RC4 rc4-hmac. AES tendrá prioridad si el servidor admite los tipos de encriptación AES y RC4.
+
+* Fuerte o sin establecer: solo se permitirán los tipos AES.
+
+* Heredados: solo se permitirán los tipos RC4. RC4 no es seguro. Solo son necesarios en circunstancias muy específicas. En lo posible, reconfigura el servidor para que admita la encriptación AES.
+
+También consulta https://wiki.samba.org/index.php/Samba_4.6_Features_added/changed#Kerberos_client_encryption_types.</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">Habilita el contraste alto en la pantalla de acceso</translation>
 <translation id="555077880566103058">Permitir que todos los sitios ejecuten el complemento <ph name="FLASH_PLUGIN_NAME" /> de manera automática</translation>
@@ -5820,6 +5869,11 @@ Si la inhabilitas, la app de Combinaciones de teclas estará en modo de solo lec
 <translation id="6157537876488211233">Lista separada por comas de las normas de omisión de proxy</translation>
 <translation id="6158324314836466367">Indica el nombre de la tienda web de la empresa (en desuso).</translation>
 <translation id="6164441518097008843">Restringir el acceso a una lista de usuarios</translation>
+<translation id="6169504363239921686">Si estableces la política como <ph name="BR_ENABLED" />, el servicio de copia de seguridad y restablecimiento de Android estará inicialmente activado. Si estableces la política como <ph name="BR_DISABLED" /> o no la estableces, este servicio se mantendrá desactivado durante la configuración.
+
+Si la estableces como <ph name="BR_UNDER_USER_CONTROL" />, los usuarios recibirán mensajes para usar el servicio de copia de seguridad y restablecimiento. Si activas este servicio, se subirán los datos de las apps para Android a los servidores de copia de seguridad de Android. Estos datos se restablecerán cuando se reinstalen apps compatibles.
+
+Después de la configuración inicial, los usuarios podrán activar o desactivar el servicio de copia de seguridad y restablecimiento.</translation>
 <translation id="6169768162756928771">Configuración de administración de identidad de usuarios de GAIA</translation>
 <translation id="6172110090237528457">Configura el protector de pantalla en el dispositivo para la pantalla de acceso.
 
@@ -6338,6 +6392,13 @@ El tiempo de espera de inactividad para iniciar el protector de pantalla y el in
 <translation id="6527674993612811419">Mostrar advertencias e inhabilitar la opción Autocompletar en los formularios poco seguros</translation>
 <translation id="6532769014584932288">Permitir bloqueos de activación</translation>
 <translation id="6533881418188970751">Preguntar al usuario dónde guardar los archivos antes de descargarlos</translation>
+<translation id="6534181153831265700">Si estableces la política, se especificará la frecuencia (expresada en días) con la que un cliente cambia la contraseña de la cuenta de máquina. El cliente genera la contraseña de forma aleatoria, y el usuario no puede verla. Si inhabilitas esta política o la estableces en una cantidad alta de días, la seguridad puede verse afectada de forma negativa porque los potenciales atacantes tendrán más tiempo para encontrar y usar la contraseña de la cuenta de máquina.
+
+Si no la estableces, se cambiará la contraseña de la cuenta de máquina cada 30 días.
+
+Si estableces la política con el valor "0", se desactivará el cambio de contraseña de la cuenta de máquina.
+
+Nota: Es posible que las contraseñas queden obsoletas antes de la cantidad especificada de días si el cliente no se conecta por un período prolongado.</translation>
 <translation id="653616551212414363">Si habilitas esta configuración, se muestra una notificación al usuario cuando se conecta un dispositivo USB en <ph name="PRODUCT_OS_NAME" />.
 
       Si la inhabilitas, el usuario no recibirá notificaciones sobre los dispositivos USB conectados.
@@ -6406,6 +6467,13 @@ Si no estableces la política, se aplicará la tasa predeterminada de 15 minutos
 
       Si no se configura esta política, el usuario podrá usar cualquier complemento instalado en el sistema, excepto aquellos que sean peligrosos, obsoletos o incompatibles por el código.</translation>
 <translation id="6574903167639386816">Borrar los datos de perfil en el disco cuando finalice la sesión del usuario</translation>
+<translation id="6575403002861093126">Si estableces la política, se especificará la duración (expresada en horas) de almacenamiento en caché del Objeto de directiva de grupo (GPO). Este valor indica el tiempo máximo en el que pueden reutilizarse los GPO antes de que se vuelvan a descargar. En lugar de volverlos a descargar en cada recuperación de la política, el sistema volverá a utilizar los GPO almacenados en caché, siempre que no cambien de versión.
+
+Si estableces la política con el valor "0", se desactivará el almacenamiento en caché del GPO. Con esta acción, aumentará la carga del servidor, ya que se volverán a descargar los GPO en cada recuperación de la política, incluso si no cambiaron.
+
+Si no estableces la política, se podrán reutilizar los GPO almacenados en caché por un máximo de 25 horas.
+
+Nota: Si reinicias el dispositivo y sales de la cuenta, se borrará la caché.</translation>
 <translation id="6575944031719151455">Si estableces la política, esta especificará la lista de cuentas locales del dispositivo que se muestran en la pantalla de acceso. Se usan identificadores para diferenciar las diversas cuentas locales del dispositivo.
 
       Si no estableces la política o la defines con una lista vacía, no habrá ninguna cuenta local del dispositivo.</translation>
@@ -6422,6 +6490,9 @@ Si no estableces la política, se aplicará la tasa predeterminada de 15 minutos
 <translation id="6584541828182430328">Inhabilita la alerta de pantalla completa</translation>
 <translation id="6588634282328239769">Mostrar la URL completa</translation>
 <translation id="6589049539706330510">Habilitar la compatibilidad</translation>
+<translation id="6593025196187527239">Si estableces la política como verdadera o no la estableces, los usuarios podrán usar ARC, a menos que esta tecnología esté desactivada por otros medios. Si la estableces como falsa, los usuarios no afiliados no podrán usar ARC.
+
+Los cambios que se realicen en la política solo se aplicarán cuando ARC no se ejecute, por ejemplo, mientras se inicia ChromeOS.</translation>
 <translation id="6593350713192882944">Habilitar Respuestas rápidas</translation>
 <translation id="6594372503585248865">Habilitar la IU relacionada con la conexión en el escritorio del host remoto cuando una conexión está activa</translation>
 <translation id="65947892191748867">Inhabilitar el consentimiento de la señal del dispositivo para usuarios administrados en dispositivos no administrados</translation>
@@ -6866,6 +6937,9 @@ el comportamiento predeterminado para bloquear esas solicitudes.</translation>
 <translation id="6929746927224321095">Inhabilitar Autocompletar</translation>
 <translation id="6931242315485576290">Inhabilitar la sincronización de datos con Google</translation>
 <translation id="6932282102911647185">Color púrpura para la retroiluminación del teclado</translation>
+<translation id="6938424179790370595">Si estableces la política con el valor "None", se desactivará la lupa.
+
+Si estableces la política, los usuarios no podrán cambiarla. Si no la estableces, la lupa estará desactivada al principio, pero los usuarios podrán activarla en cualquier momento.</translation>
 <translation id="6940243892299228102">No permitir que los usuarios utilicen plantillas de escritorio</translation>
 <translation id="6943577887654905793">Nombre de preferencia de Mac/Linux:</translation>
 <translation id="6946652757373377924">En la versión M77, se quitó esta política.
@@ -7006,6 +7080,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7072208053150563108">Frecuencia de cambio de la contraseña del dispositivo</translation>
 <translation id="7072567600438630966">Permite habilitar Phone Hub</translation>
 <translation id="7074437930865599190">Bloquear la versión principal del string usuario-agente en 99</translation>
+<translation id="7077471517869658421">Los usuarios pueden cambiar libremente el valor del parámetro de configuración "Usar el Selector o la tecla de búsqueda para cambiar el comportamiento de las teclas de función".</translation>
 <translation id="707988220162760379">Abrir siempre los archivos PDF mediante un visor de PDF externo</translation>
 <translation id="7081401546407362463">Lista de los tipos de archivos que se deben abrir automáticamente cuando se descargan. Cuando se enumera el tipo de archivo, no debe incluirse el separador principal. Por lo tanto, usa "txt" en lugar de ".txt".
 
@@ -7049,6 +7124,17 @@ Si estableces la política, la lista de valores predeterminada se extenderá con
 <translation id="7098400392308393199">La política de <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> controla la protección de descargas en tiempo real</translation>
 <translation id="710003290625031750">Descripción del esquema expandido:</translation>
 <translation id="7101550508196914704">No mostrar accesos directos a aplicaciones en la barra de favoritos</translation>
+<translation id="7105084505972468353">Si estableces la política, esta controlará el tipo de lupa habilitado.
+
+Si la estableces como "Pantalla completa", la lupa estará siempre habilitada con el modo de lupa de pantalla completa en la pantalla de acceso.
+
+Si la estableces como "Fijada", la lupa estará siempre habilitada con el modo de lupa fijada en la pantalla de acceso.
+
+Si la estableces como "Ninguna", la lupa estará siempre inhabilitada en la pantalla de acceso.
+
+Si estableces esta política, los usuarios no podrán cambiarla ni anularla.
+
+Si no la estableces, inicialmente la lupa estará inhabilitada en la pantalla de acceso, pero el usuario podrá habilitarla en cualquier momento.</translation>
 <translation id="7109384070286741861">Inhabilitar CECPQ2</translation>
 <translation id="7113439794629928551">Mostrar los controles multimedia de las sesiones de <ph name="PRODUCT_NAME" /> que iniciaron otros dispositivos</translation>
 <translation id="7114169791477667553">Inhabilitar el proveedor de búsqueda predeterminado</translation>
@@ -7202,6 +7288,13 @@ El valor <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indica la cantidad
 
       Si se configura esta política como verdadera, también se inhabilitan las impresoras que usen protocolos que no sean IPPS, USB o IPP por USB, dado que los nombres de usuario y de archivo no deben enviarse a través de la red de forma abierta.</translation>
 <translation id="7253446510183499868">No permitir el reinicio automático después de las actualizaciones</translation>
+<translation id="7253705688881857796">Si estableces la política, se especificará si se procesa la política del usuario del Objeto de directiva de grupo (GPO) de la computadora y cómo se hará ese procesamiento.
+
+* Si la estableces con el valor predeterminado o no la estableces, se especificará la política del usuario de los GPO del usuario como solo lectura. Se ignorarán los GPO de la computadora.
+
+* Si seleccionas Combinar, se combinará la política del usuario de los GPO del usuario con la de los GPO de la computadora. Tendrán prioridad los GPO de la computadora.
+
+* Si seleccionas Reemplazar, se reemplazará la política del usuario de los GPO del usuario por la de los GPO de la computadora. Se ignorarán los GPO del usuario.</translation>
 <translation id="7258250780552783197">Lista de parámetros de configuración para los servicios de Chrome Enterprise Connectors que se aplicarán al Enterprise Connector <ph name="ON_FILE_TRANSFER_ENTERPRISE_CONNECTOR" />, el cual se activa cuando se transfiere un archivo en <ph name="PRODUCT_OS_NAME" />.
 
       Los campos <ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> y <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> se usan para determinar si el conector debe enviar un archivo para que se analice cuando se transfiere entre una fuente y un destino, y qué etiquetas debe incluir la solicitud de análisis del archivo. La solicitud de análisis incluirá la etiqueta correspondiente a una regla "enable" si la fuente y el destino coinciden con la regla asociada a esa etiqueta, siempre y cuando la regla "disable" que tenga la misma etiqueta no coincida con la transferencia. Si la solicitud incluye al menos 1 etiqueta, se realizará el análisis. Una regla <ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD" /> se define mediante una lista de pares, en la que cada par contiene una lista de fuentes y una lista de destinos. El campo <ph name="ENTERPRISE_CONNECTOR_FILE_SYSTEM_TYPE_FIELD" /> define para qué sistema de archivos se debe aplicar una regla.
@@ -7795,6 +7888,7 @@ Si no estableces esta política, el navegador elegirá el renderizador de PDF.</
       Si no estableces la política, se utilizará el valor predeterminado de 3 horas.
 
       Nota: Las notificaciones sobre políticas fuerzan una actualización cuando cambia la política, por lo que no es necesario actualizar de manera frecuente. Por lo tanto, si la plataforma admite estas notificaciones, la demora de la actualización será de 24 horas (se ignorarán los valores predeterminados y el de esta política).</translation>
+<translation id="775822241671489040">Controlar el parámetro de configuración "Usar el Selector o la tecla de búsqueda para cambiar el comportamiento de las teclas de función"</translation>
 <translation id="7758378441185523981">Permite la autenticación ambiental para tipos de perfiles.</translation>
 <translation id="776110834126722255">Obsoleto</translation>
 <translation id="7763614521440615342">Mostrar sugerencias de contenido en la página Nueva pestaña</translation>
@@ -7878,6 +7972,15 @@ Si no estableces esta política, el navegador elegirá el renderizador de PDF.</
 
       Los valores válidos para el campo <ph name="MINUTE_FIELD_NAME" /> en <ph name="START_TIME_FIELD_NAME" />, <ph name="END_TIME_FIELD_NAME" /> y <ph name="CHARGE_START_TIME_FIELD_NAME" /> son 0, 15, 30 y 45.</translation>
 <translation id="7840258755683573560">Habilitar el clic automático</translation>
+<translation id="784165160128690202">Si estableces la política con el valor "None", se desactivará la lupa en la pantalla de acceso.
+
+Si estableces la política, los usuarios podrán activar o desactivar la lupa de forma temporal. Cuando la pantalla de acceso se vuelva a cargar o permanezca inactiva durante un minuto, la lupa se revertirá a su estado original.
+
+Si no la estableces, la lupa estará desactivada en la pantalla de acceso. Los usuarios podrán activarla en cualquier momento, y su estado para la pantalla de acceso se mantendrá entre los diferentes usuarios.
+
+Valores admitidos: • 0 = Desactivada • 1 = Activada • 2 = Lupa fijada activada
+
+Nota: Si se especifica <ph name="DEVICE_LOGIN_SCREEN_SCREEN_MAGNIFIER_TYPE_POLICY_NAME" />, anulará esta política.</translation>
 <translation id="7841880500990419427">Versión mínima de TLS para resguardo</translation>
 <translation id="7841883965249733328">Inhabilitar la actualización automática de contenido mixto</translation>
 <translation id="7845130996290850593">Habilitar Kerberos</translation>
@@ -8550,6 +8653,9 @@ del dispositivo durante el acceso del usuario.</translation>
 <translation id="8395350646076131800">Tiempo de espera de inactividad de la pantalla de bloqueo del protector de pantalla del usuario</translation>
 <translation id="8395749934754392549">Controla la configuración para las apps y el contenedor de Android (ARC).</translation>
 <translation id="8398952282584132331">Habilitar la pantalla de privacidad</translation>
+<translation id="8399825694820904218">Si asignas un número a la política, <ph name="PRODUCT_NAME" /> mostrará un mensaje durante esa cantidad de milisegundos y, luego, abrirá un navegador alternativo.
+
+Si no estableces la política o la estableces con el valor "0", la navegación a una URL desginada la abrirá de inmediato en un navegador alternativo.</translation>
 <translation id="8402079500086185021">Abrir siempre archivos PDF de forma externa</translation>
 <translation id="8410477879938914253">La política solo se aplica a sesiones de invitado administradas.
       Si estableces la política como verdadera o no la estableces, se mostrará un diálogo en el que se le solicitará al usuario que confirme o rechace salir de la cuenta cuando se cierra la última ventana.
@@ -8563,6 +8669,7 @@ del dispositivo durante el acceso del usuario.</translation>
       Si no estableces esta política, la API de Event.path tendrá el estado predeterminado: disponible antes de M109 y no disponible en la versión M109 a la versión M114.
 
       Después de Chrome 115, se quitará esta política.</translation>
+<translation id="841395160262233331">El Selector o la tecla de búsqueda no podrá cambiar el comportamiento de las teclas de función, y los usuarios no podrán cambiar esta configuración.</translation>
 <translation id="8415953438346821074">Si habilitas esta opción, la configuración almacenada en los perfiles de <ph name="PRODUCT_NAME" /> (como los favoritos, los datos de Autocompletar, las contraseñas, etc.) también se guardará en un archivo en la carpeta Roaming del perfil del usuario o en una ubicación que el administrador especifique mediante la política <ph name="ROAMING_PROFILE_LOCATION_POLICY_NAME" />. Si habilitas esta política, se inhabilitará la sincronización en la nube.
 
       Si inhabilitas la política o no la estableces, solo se usarán los perfiles locales comunes.</translation>
@@ -9320,6 +9427,13 @@ Si no estableces la política, <ph name="PRODUCT_NAME" /> podrá recopilar y sub
 
       Se omitirán las plantillas con formato incorrecto.</translation>
 <translation id="9068629430243705879">puerto 6566 (puede desbloquearse hasta el 15/10/2021)</translation>
+<translation id="9069503402414011061">Si estableces la política, se especificará el tiempo (expresado en horas) de almacenamiento en caché de los datos de autenticación. La caché contiene datos sobre dominios en los que confía el dominio de la máquina (dominios afiliados). Por lo tanto, el almacenamiento en caché de los datos de autenticación permite agilizar el acceso. No se almacenan en caché los datos específicos del usuario ni los datos de dominios no afiliados.
+
+Si se establece la política con el valor "0", se desactivará el almacenamiento en caché de los datos de autenticación. En todos los accesos, se recuperan los datos específicos del dominio. Por lo tanto, si se desactiva el almacenamiento en caché de los datos de autenticación, es posible que se reduzca drásticamente la velocidad de acceso del usuario.
+
+Si no estableces la política, se podrán reutilizar los datos de autenticación almacenados en caché por 73 horas como máximo.
+
+Nota: Si reinicias el dispositivo, se borrará la memoria caché. Se almacenan en caché incluso los datos de dominio de usuarios ocasionales. Desactiva la memoria caché para evitar que se registre el dominio de un usuario ocasional.</translation>
 <translation id="9069588907259547232">Si habilitas la política o no la estableces, los dispositivos inscritos informarán el volumen del audio del dispositivo.
 
       Si la inhabilitas, los dispositivos inscritos no grabarán el audio ni informarán su estado.
@@ -9522,6 +9636,7 @@ Esta política solo tendrá efecto si estableces la política <ph name="FULL_RES
 <translation id="983256325512298435">Define una lista de protocolos que puede ejecutar una aplicación externa a partir los orígenes enumerados sin avisarle al usuario</translation>
 <translation id="984365509386992443">Si habilitas esta política o no la estableces, el usuario podría recibir encuestas relacionadas con la Navegación segura.
 Si la inhabilitas, el usuario no recibirá encuestas relacionadas con la Navegación segura.</translation>
+<translation id="985148612300045106">El Selector o la tecla de búsqueda podrá cambiar el comportamiento de las teclas de función, y los usuarios no podrán cambiar esta configuración.</translation>
 <translation id="987261962216071510">Solo permitir los accesos con el modo de invitado del navegador</translation>
 <translation id="987975731398348803">Si habilitas la política o no la estableces, los dispositivos inscritos informarán la lista de usuarios que accedieron recientemente.
 

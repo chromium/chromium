@@ -43,6 +43,7 @@
 <translation id="2574528844022712255">Skatīt Chromium grāmatzīmes</translation>
 <translation id="2590893390871230428">Sinhronizēt jūsu Chromium datus</translation>
 <translation id="2618596336309823556">Ierīces iestatījumos atveriet sadaļu “<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />” un atlasiet opciju “Chromium”.</translation>
+<translation id="2618757400690011108">{COUNT,plural, =1{Chromium palīdzēs izsekot šo sūtījumu jaunas cilnes lapā.}zero{Chromium palīdzēs izsekot šos sūtījumus jaunas cilnes lapā.}one{Chromium palīdzēs izsekot šos sūtījumus jaunas cilnes lapā.}other{Chromium palīdzēs izsekot šos sūtījumus jaunas cilnes lapā.}}</translation>
 <translation id="2650312721222849884">Lai skatītu cilnes no ierīcēm, kurās lietojat pārlūku Chromium, ieslēdziet sinhronizāciju.</translation>
 <translation id="2684230048001240293">Lai visās ierīcēs sinhronizētu savas cilnes, paroles un maksājumu informāciju, iestatiet pārlūku Chromium kā noklusējuma pārlūku</translation>
 <translation id="2730884209570016437">Chromium nevar izmantot kameru, jo to izmanto cita lietojumprogramma.</translation>
@@ -52,6 +53,7 @@
 <translation id="2918709798697875261">Saskaņā ar jūsu organizācijas politiku ir atspējota pierakstīšanās pārlūkā Chromium.</translation>
 <translation id="2942241131342758843">Lai atvērtu saites, veiktu meklēšanu logrīkos un automātiski aizpildītu paroles citās lietotnēs, izmantojiet pārlūku Chromium kā noklusējuma pārlūku</translation>
 <translation id="2977470724722393594">Chromium ir atjaunināts</translation>
+<translation id="3078941082359356771">{COUNT,plural, =1{Chromium var palīdzēt jums izsekot šo sūtījumu jaunas cilnes lapā.}zero{Chromium var palīdzēt jums izsekot šos sūtījumus jaunas cilnes lapā.}one{Chromium var palīdzēt jums izsekot šos sūtījumus jaunas cilnes lapā.}other{Chromium var palīdzēt jums izsekot šos sūtījumus jaunas cilnes lapā.}}</translation>
 <translation id="3102849287235003384">Lai izrakstītos no sava Google konta visās vietnēs, <ph name="BEGIN_LINK" />izrakstieties no pārlūka Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Meklēt ar balsi pārlūkā Chromium</translation>
 <translation id="3228349498066165585">Daži jūsu Chromium dati vēl nav saglabāti jūsu Google kontā.
@@ -114,6 +116,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />notīriet Chromium datus 
 <translation id="5521125884468363740">Lai skatītu cilnes no visām ierīcēm, kurās izmantojat pārlūku Chromium, pierakstieties un ieslēdziet sinhronizāciju.</translation>
 <translation id="5522297504975449419">Dažas Chromium funkcijas vairs nebūs pieejamas.</translation>
 <translation id="5571094606370987472">Pārlūkā Chromium atver nesen atvērtās cilnes.</translation>
+<translation id="5623083843656850677">Bloķējiet savas inkognito cilnes, izejot no pārlūka Chromium vai pārslēdzoties uz citu lietotni.</translation>
 <translation id="5688047395118852662">Šajā kartītē tiek rādīti ieteikumi par to, kā pilnvērtīgi izmantot pārlūku Chromium.</translation>
 <translation id="5700709190537129682">Pārlūkprogrammā Chromium nevar pārbaudīt jūsu paroles.</translation>
 <translation id="5777187867430702742">Chromium lapa</translation>

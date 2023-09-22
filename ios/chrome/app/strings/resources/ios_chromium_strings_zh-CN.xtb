@@ -92,6 +92,7 @@
 <translation id="4736424910885271643">您的账号是由 <ph name="HOSTED_DOMAIN" /> 管理，所以您在此设备上存储的 Chromium 数据将会被清除</translation>
 <translation id="4790638144988730920">请继续使用您的 Google 账号中的 Chromium 数据。</translation>
 <translation id="4828317641996116749">Chromium 无法检查所有密码。请稍后再试。</translation>
+<translation id="4935539884203837577">Chromium 可检测您输入的跟踪编号，并在“新标签页”页面上跟踪包裹，同时还能为 Chromium 中的其他购物体验提供帮助。</translation>
 <translation id="4985291216379576555">已离线，Chromium 无法检查是否有更新</translation>
 <translation id="4996471330284142407">借助比以前更简单、更安全、更快速的 Chromium 提高工作效率。</translation>
 <translation id="4999538639245140991">由于您要退出的账号是由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 管理，因此系统将会从这部设备中删除您的 Chromium 数据，但这些数据仍会保留在您的 Google 账号中。</translation>
@@ -115,6 +116,7 @@
 <translation id="5688047395118852662">此卡片会为您提供一些建议，帮助您充分利用 Chromium。</translation>
 <translation id="5700709190537129682">Chromium 无法检查您的密码</translation>
 <translation id="5777187867430702742">Chromium 网页</translation>
+<translation id="584303319228224680">在 Chromium 上自动跟踪包裹</translation>
 <translation id="5889847953983052353">处于开启状态时：
 <ph name="BEGIN_INDENT" />  • 可协助改进 Chromium，让所有像您这样使用 Chromium 的用户都能获享更好的体验。<ph name="END_INDENT" />
 

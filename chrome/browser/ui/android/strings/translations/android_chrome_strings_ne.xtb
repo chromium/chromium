@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ne">
 <translation id="1011749477052068769">सारेर यहाँ ल्याउनुहोस्</translation>
+<translation id="1014147525163127655">यो डिभाइसमा <ph name="ORIGIN" /> को कुनै पनि पासकी छैन</translation>
 <translation id="1016498331642356377">आफ्नो आवाज प्रयोग गरी छिटोछरितो रूपमा खोज्नुहोस्। यो सर्टकट सम्पादन गर्न टच एण्ड होल्ड गर्नुहोस्।</translation>
 <translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> लाई पठाउँदै...</translation>
@@ -673,6 +674,7 @@
 <translation id="452750746583162491">आफ्नो सिंक गरिएको डेटाको समीक्षा गर्नुहोस्</translation>
 <translation id="4528638190900283934">अतिरिक्त सुविधाहरू प्राप्त गर्न साइन इन गर्नुहोस्</translation>
 <translation id="4532845899244822526">फोल्डर छान्नुहोस्</translation>
+<translation id="4543131175509360848">कुनै पनि पासकी सिट खोलिएको छैन</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ट्याब}other{<ph name="TAB_COUNT_MANY" /> वटा ट्याब, <ph name="TAB_COUNT_INCOGNITO" /> वटा इन्कोग्निटो ट्याब}}</translation>
 <translation id="4554077758708533499">USB केबल प्रयोग गरी कनेक्ट गरिएको छ</translation>
 <translation id="4558311620361989323">वेबपृष्ठका सर्टकटहरू</translation>
@@ -947,6 +949,7 @@
 <translation id="5869522115854928033">बचत गरिएका पासवर्डहरू</translation>
 <translation id="587735546353481577">आफूले चाहेको साइट फलो गर्न उक्त साइटमा जानुहोस्, Chrome मेनु खोल्नुहोस् र 'फलो गर्नुहोस्' मा ट्याप गर्नुहोस्।</translation>
 <translation id="5879072387416556377">अझ राम्रा सुझावहरू प्राप्त गर्नुहोस्</translation>
+<translation id="5899667542927581604">कुनै पनि पासकी सिट बन्द गरिएको छैन</translation>
 <translation id="5916664084637901428">अन</translation>
 <translation id="5919204609460789179">सिंक सुरु गर्न <ph name="PRODUCT_NAME" /> लाई अपडेट गर्नुहोस्</translation>
 <translation id="5938820472109305350"><ph name="INTEREST" /> हाल्नुहोस्</translation>
@@ -1591,6 +1594,7 @@
 <translation id="9063523880881406963">अनुरोध डेस्कटप साइट बन्द गर्नुहोस्</translation>
 <translation id="9065203028668620118">सम्पादन गर्नुहोस</translation>
 <translation id="9065383040763568503">Chrome लाई महत्त्वपूर्ण छैन जस्तो लागेको भण्डारण गरिएका डेटा (जस्तै सेटिङ सेभ नगरिएका साइट वा तपाईंले खासै नखोल्ने साइटका भण्डारण गरिएका डेटा)</translation>
+<translation id="9067341854474068781">कुनै पनि पासकी सिट पूरै स्क्रिनमा खोलिएको छैन</translation>
 <translation id="906781307897697745"><ph name="PRODUCT_NAME" /> मा</translation>
 <translation id="9069999660519089861">सबै लेख पढिसकिएको छ</translation>
 <translation id="9070377983101773829">आवाज खोजी सुरु गर्नुहोस्</translation>
