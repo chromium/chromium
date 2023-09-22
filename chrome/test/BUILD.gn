@@ -2674,6 +2674,12 @@ if (!is_android) {
       "interaction/interaction_test_util_browser_browsertest.cc",
       "interaction/interactive_browser_test_browsertest.cc",
       "interaction/webcontents_interaction_test_util_browsertest.cc",
+
+      # TODO(b/301587955): Fix placement of supervised_user/e2e test files and their dependencies.
+      "supervised_user/family_live_test.cc",
+      "supervised_user/family_live_test.h",
+      "supervised_user/family_member_browser.cc",
+      "supervised_user/family_member_browser.h",
       "v8/wasm_trap_handler_browsertest.cc",
     ]
 
