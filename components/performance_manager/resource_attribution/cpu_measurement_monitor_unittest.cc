@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "components/performance_manager/public/resource_attribution/cpu_measurement_monitor.h"
-#include "build/build_config.h"
 
 #include <map>
 #include <memory>
@@ -1286,12 +1285,7 @@ class CPUMeasurementMonitorTimingTest : public PerformanceManagerTestHarness {
   std::unique_ptr<CPUMeasurementMonitor> cpu_monitor_;
 };
 
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
-#define MAYBE_ProcessLifetime DISABLED_ProcessLifetime
-#else
-#define MAYBE_ProcessLifetime ProcessLifetime
-#endif
-TEST_F(CPUMeasurementMonitorTimingTest, MAYBE_ProcessLifetime) {
+TEST_F(CPUMeasurementMonitorTimingTest, DISABLED_ProcessLifetime) {
   SetContents(CreateTestWebContents());
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("https://www.example.com/"));
