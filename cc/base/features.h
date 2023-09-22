@@ -140,6 +140,9 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kImageCacheNoCache);
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kReclaimOldPrepaintTiles);
 CC_BASE_EXPORT extern const base::FeatureParam<int> kReclaimDelayInSeconds;
 
+// Kill switch for using MapRect() to compute filter pixel movement.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUseMapRectForPixelMovement);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

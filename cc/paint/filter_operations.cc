@@ -14,19 +14,12 @@
 #include "base/feature_list.h"
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
+#include "cc/base/features.h"
 #include "cc/paint/filter_operation.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace cc {
-namespace {
-
-// Kill switch for using MapRect() to compute filter pixel movement.
-BASE_FEATURE(kUseMapRectForPixelMovement,
-             "UseMapRectForPixelMovement",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-}  // namespace
 
 FilterOperations::FilterOperations() = default;
 
@@ -119,7 +112,7 @@ bool FilterOperations::HasFilterThatMovesPixels() const {
 
 gfx::Rect FilterOperations::ExpandRectForPixelMovement(
     const gfx::Rect& rect) const {
-  if (base::FeatureList::IsEnabled(kUseMapRectForPixelMovement)) {
+  if (base::FeatureList::IsEnabled(features::kUseMapRectForPixelMovement)) {
     return MapRect(rect, SkMatrix::I());
   }
 

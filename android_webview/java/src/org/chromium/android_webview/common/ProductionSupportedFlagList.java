@@ -538,6 +538,8 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_BLOCK,
                     "Enable blocking the loading of mature sites on "
                             + "WebViews running on supervised user accounts"),
+            Flag.baseFeature(CcFeatures.USE_MAP_RECT_FOR_PIXEL_MOVEMENT,
+                    "Enables the usage of MapRect for computing filter pixel movement."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };

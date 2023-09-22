@@ -24,6 +24,7 @@
 #include "base/test/null_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "cc/base/features.h"
 #include "cc/base/math_util.h"
 #include "cc/test/scheduler_test_common.h"
 #include "components/viz/common/features.h"
@@ -159,6 +160,11 @@ size_t NumVisibleRects(const QuadList& quads) {
   }
   return visible_rects;
 }
+
+std::string PostTestCaseName(const ::testing::TestParamInfo<bool>& info) {
+  return info.param ? "UseMapRect" : "RectExpansion";
+}
+
 }  // namespace
 
 class DisplayTest : public testing::Test {
@@ -4307,7 +4313,27 @@ TEST_F(DisplayTest, DisplaySizeMismatch) {
   }
 }
 
-TEST_F(DisplayTest, PixelMovingForegroundFilterTest) {
+class UseMapRectDisplayTest : public DisplayTest,
+                              public testing::WithParamInterface<bool> {
+ public:
+  UseMapRectDisplayTest();
+  ~UseMapRectDisplayTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+UseMapRectDisplayTest::UseMapRectDisplayTest() {
+  if (GetParam()) {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kUseMapRectForPixelMovement);
+  } else {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kUseMapRectForPixelMovement);
+  }
+}
+
+TEST_P(UseMapRectDisplayTest, PixelMovingForegroundFilterTest) {
   RendererSettings settings;
   settings.partial_swap_enabled = true;
   id_allocator_.GenerateId();
@@ -4412,8 +4438,9 @@ TEST_F(DisplayTest, PixelMovingForegroundFilterTest) {
       EXPECT_EQ(expected_damage, software_output_device_->damage_rect());
       // The scissor rect is expanded by direct_renderer to include the
       // overlapping pixel-moving foreground filter surface.
-      auto expected_scissor_rect =
-          first_frame ? gfx::Rect(display_size) : gfx::Rect(4, 5, 56, 55);
+      auto expected_scissor_rect = first_frame  ? gfx::Rect(display_size)
+                                   : GetParam() ? gfx::Rect(4, 5, 56, 55)
+                                                : gfx::Rect(0, 0, 60, 60);
       EXPECT_EQ(
           expected_scissor_rect,
           display_->renderer_for_testing()->GetLastRootScissorRectForTesting());
@@ -5173,5 +5200,10 @@ TEST_F(UnsupportedRendererDelegatedInkTest,
   display_->InitDelegatedInkPointRendererReceiver(
       ink_renderer_remote.BindNewPipeAndPassReceiver());
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         UseMapRectDisplayTest,
+                         testing::Bool(),
+                         &PostTestCaseName);
 
 }  // namespace viz
