@@ -16,9 +16,8 @@ namespace crosapi {
 
 // Implements the crosapi interface for DriveIntegrationService. Lives in
 // Ash-Chrome on the UI thread.
-class DriveIntegrationServiceAsh
-    : public mojom::DriveIntegrationService,
-      public drive::DriveIntegrationServiceObserver {
+class DriveIntegrationServiceAsh : public mojom::DriveIntegrationService,
+                                   drive::DriveIntegrationService::Observer {
  public:
   DriveIntegrationServiceAsh();
   DriveIntegrationServiceAsh(const DriveIntegrationServiceAsh&) = delete;
@@ -44,7 +43,7 @@ class DriveIntegrationServiceAsh
       mojo::PendingRemote<crosapi::mojom::DriveFsNativeMessageHostBridge>
           bridge) override;
 
-  // drivefs::DriveIntegrationServiceObserver:
+  // DriveIntegrationService::Observer implementation.
   void OnFileSystemMounted() override;
   void OnFileSystemBeingUnmounted() override;
   void OnFileSystemMountFailed() override;
@@ -52,8 +51,9 @@ class DriveIntegrationServiceAsh
 
  private:
   base::ScopedObservation<drive::DriveIntegrationService,
-                          drive::DriveIntegrationServiceObserver>
-      drive_service_observation_{this};
+                          drive::DriveIntegrationService::Observer>
+      drive_observer_{this};
+
   // This class supports any number of connections. This allows the client to
   // have multiple, potentially thread-affine, remotes.
   mojo::ReceiverSet<mojom::DriveIntegrationService> receivers_;

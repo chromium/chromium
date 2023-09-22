@@ -49,9 +49,8 @@ void DriveIntegrationServiceAsh::GetMountPointPath(
 
 void DriveIntegrationServiceAsh::AddDriveIntegrationServiceObserver(
     mojo::PendingRemote<mojom::DriveIntegrationServiceObserver> observer) {
-  DCHECK(GetDriveService());
-  drive_service_observation_.Reset();
-  drive_service_observation_.Observe(GetDriveService());
+  drive_observer_.Reset();
+  drive_observer_.Observe(GetDriveService());
   mojo::Remote<mojom::DriveIntegrationServiceObserver> remote(
       std::move(observer));
   observers_.Add(std::move(remote));
@@ -98,7 +97,7 @@ void DriveIntegrationServiceAsh::OnFileSystemMountFailed() {
     observer->OnMountPointPathChanged(base::FilePath());
 }
 void DriveIntegrationServiceAsh::OnDriveIntegrationServiceDestroyed() {
-  drive_service_observation_.Reset();
+  drive_observer_.Reset();
 }
 
 }  // namespace crosapi
