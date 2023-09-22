@@ -3446,6 +3446,7 @@ static_library("browser") {
       "//chrome/browser/password_manager/android:password_generation_utils",
       "//chrome/browser/policy/android:android",
       "//chrome/browser/policy/android:jni_headers",
+      "//chrome/browser/preferences:android",
       "//chrome/browser/prefetch/android:jni_headers",
       "//chrome/browser/privacy:jni_headers",
       "//chrome/browser/privacy_sandbox/android:jni_headers",

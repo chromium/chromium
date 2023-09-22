@@ -65,6 +65,17 @@ generate_jni("jni_headers") {
   ]
 }
 
+source_set("android") {
+  sources = [
+    "android/shared_preferences_manager.cc",
+    "android/shared_preferences_manager.h",
+  ]
+  deps = [
+    ":jni_headers",
+    "//base",
+  ]
+}
+
 robolectric_library("preferences_junit_tests") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/preferences/ChromePreferenceKeyCheckerTest.java",
