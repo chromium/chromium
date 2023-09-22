@@ -22,10 +22,10 @@ NamedPlatformChannel::NamedPlatformChannel(const Options& options) {
 NamedPlatformChannel::NamedPlatformChannel(NamedPlatformChannel&& other) =
     default;
 
-NamedPlatformChannel::~NamedPlatformChannel() = default;
-
 NamedPlatformChannel& NamedPlatformChannel::operator=(
     NamedPlatformChannel&& other) = default;
+
+NamedPlatformChannel::~NamedPlatformChannel() = default;
 
 // static
 NamedPlatformChannel::ServerName NamedPlatformChannel::ServerNameFromUTF8(

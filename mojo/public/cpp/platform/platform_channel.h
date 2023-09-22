@@ -38,13 +38,8 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformChannel {
 
   PlatformChannel();
   PlatformChannel(PlatformChannel&& other);
-
-  PlatformChannel(const PlatformChannel&) = delete;
-  PlatformChannel& operator=(const PlatformChannel&) = delete;
-
-  ~PlatformChannel();
-
   PlatformChannel& operator=(PlatformChannel&& other);
+  ~PlatformChannel();
 
   const PlatformChannelEndpoint& local_endpoint() const {
     return local_endpoint_;

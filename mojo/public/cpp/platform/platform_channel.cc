@@ -12,9 +12,6 @@
 
 #include "base/logging.h"
 #include "base/numerics/clamped_math.h"
-#include "base/rand_util.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "mojo/buildflags.h"
 
@@ -22,6 +19,7 @@
 #include <windows.h>
 
 #include "base/win/scoped_handle.h"
+#include "mojo/public/cpp/platform/named_platform_channel.h"
 #elif BUILDFLAG(IS_FUCHSIA)
 #include <lib/zx/channel.h>
 #include <zircon/process.h>
@@ -57,9 +55,8 @@ namespace {
 #if BUILDFLAG(IS_WIN)
 void CreateChannel(PlatformHandle* local_endpoint,
                    PlatformHandle* remote_endpoint) {
-  std::wstring pipe_name = base::StringPrintf(
-      L"\\\\.\\pipe\\mojo.%lu.%lu.%I64u", ::GetCurrentProcessId(),
-      ::GetCurrentThreadId(), base::RandUint64());
+  std::wstring pipe_name = NamedPlatformChannel::GetPipeNameFromServerName(
+      NamedPlatformChannel::GenerateRandomServerName());
   DWORD kOpenMode =
       PIPE_ACCESS_DUPLEX | FILE_FLAG_OVERLAPPED | FILE_FLAG_FIRST_PIPE_INSTANCE;
   const DWORD kPipeMode = PIPE_TYPE_BYTE | PIPE_READMODE_BYTE;
@@ -169,9 +166,9 @@ PlatformChannel::PlatformChannel() {
 
 PlatformChannel::PlatformChannel(PlatformChannel&& other) = default;
 
-PlatformChannel::~PlatformChannel() = default;
-
 PlatformChannel& PlatformChannel::operator=(PlatformChannel&& other) = default;
+
+PlatformChannel::~PlatformChannel() = default;
 
 void PlatformChannel::PrepareToPassRemoteEndpoint(HandlePassingInfo* info,
                                                   std::string* value) {
