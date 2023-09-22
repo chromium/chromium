@@ -329,52 +329,6 @@ const AcceleratorData kDisableWithNewMappingAcceleratorData[] = {
 const size_t kDisableWithNewMappingAcceleratorDataLength =
     std::size(kDisableWithNewMappingAcceleratorData);
 
-const AcceleratorData kEnableWithNewMappingAcceleratorData[] = {
-    // Desk creation and removal:
-    {true, ui::VKEY_OEM_PLUS, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-     AcceleratorAction::kDesksNewDesk},
-    {true, ui::VKEY_OEM_MINUS, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-     AcceleratorAction::kDesksRemoveCurrentDesk},
-
-    // Desk activation:
-    {true, ui::VKEY_LEFT, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN,
-     AcceleratorAction::kDesksActivateDeskLeft},
-    {true, ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN,
-     AcceleratorAction::kDesksActivateDeskRight},
-
-    // Moving windows to desks:
-    {true, ui::VKEY_LEFT, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN,
-     AcceleratorAction::kDesksMoveActiveItemLeft},
-    {true, ui::VKEY_RIGHT, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN,
-     AcceleratorAction::kDesksMoveActiveItemRight},
-
-    // Snap
-    {true, ui::VKEY_OEM_COMMA,
-     ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
-     AcceleratorAction::kWindowCycleSnapLeft},
-    {true, ui::VKEY_OEM_PERIOD,
-     ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
-     AcceleratorAction::kWindowCycleSnapRight},
-
-    // Zoom
-    {true, ui::VKEY_UP,
-     ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,
-     AcceleratorAction::kScaleUiUp},
-    {true, ui::VKEY_DOWN,
-     ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,
-     AcceleratorAction::kScaleUiDown},
-    {true, ui::VKEY_BACK,
-     ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,
-     AcceleratorAction::kScaleUiReset},
-
-    // Shortcut Viewer
-    {true, ui::VKEY_OEM_2, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-     AcceleratorAction::kShowShortcutViewer},
-};
-
-const size_t kEnableWithNewMappingAcceleratorDataLength =
-    std::size(kEnableWithNewMappingAcceleratorData);
-
 const AcceleratorData kEnableWithPositionalAcceleratorsData[] = {
     // These are the desk shortcuts as advertised, but previously
     // they were implicitly implemented in terms of F11 and F12

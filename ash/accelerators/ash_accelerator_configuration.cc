@@ -136,11 +136,6 @@ std::vector<ash::AcceleratorData> GetDefaultAccelerators() {
             ash::kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorData,
             ash::
                 kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorDataLength));
-  } else if (::features::IsNewShortcutMappingEnabled()) {
-    AppendAcceleratorData(
-        accelerators,
-        base::make_span(ash::kEnableWithNewMappingAcceleratorData,
-                        ash::kEnableWithNewMappingAcceleratorDataLength));
   } else {
     AppendAcceleratorData(
         accelerators,

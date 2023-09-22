@@ -41,10 +41,6 @@ ASH_PUBLIC_EXPORT extern const size_t kAcceleratorDataLength;
 // Accelerators that are enabled/disabled with new accelerator mapping.
 // crbug.com/1067269
 ASH_PUBLIC_EXPORT extern const AcceleratorData
-    kEnableWithNewMappingAcceleratorData[];
-ASH_PUBLIC_EXPORT extern const size_t
-    kEnableWithNewMappingAcceleratorDataLength;
-ASH_PUBLIC_EXPORT extern const AcceleratorData
     kDisableWithNewMappingAcceleratorData[];
 ASH_PUBLIC_EXPORT extern const size_t
     kDisableWithNewMappingAcceleratorDataLength;

@@ -651,29 +651,6 @@ bool MaybeRewriteSearchBasedShortcutToSixPackKeyAction(
   bool skip_search_key_remapping =
       delegate && delegate->IsSearchKeyAcceleratorReserved();
 
-  if (!::features::IsImprovedKeyboardShortcutsEnabled()) {
-    // TODO(crbug.com/1179893): This workaround isn't needed once Alt rewrites
-    // are deprecated.
-    strict = ::features::IsNewShortcutMappingEnabled();
-    if (strict) {
-      // These two keys are used to select to Home/End.
-      static const KeyboardRemapping kNewSearchRemappings[] = {
-          {// Search+Shift+Left -> select to home.
-           {EF_COMMAND_DOWN | EF_SHIFT_DOWN, VKEY_LEFT},
-           {EF_SHIFT_DOWN, DomCode::HOME, DomKey::HOME, VKEY_HOME}},
-          {// Search+Shift+Right -> select to end.
-           {EF_COMMAND_DOWN | EF_SHIFT_DOWN, VKEY_RIGHT},
-           {EF_SHIFT_DOWN, DomCode::END, DomKey::END, VKEY_END}},
-      };
-      if (!skip_search_key_remapping &&
-          RewriteWithKeyboardRemappings(kNewSearchRemappings,
-                                        std::size(kNewSearchRemappings),
-                                        incoming, state, /*strict=*/true)) {
-        return true;
-      }
-    }
-  }
-
   // The new Search+Shift+Backspace rewrite is only active when
   // IsImprovedKeyboardShortcutsEnabled() is true.
   // TODO(crbug.com/1179893): Merge this entry into kSixPackRemappings
@@ -1873,7 +1850,6 @@ void EventRewriterAsh::RewriteFunctionKeys(const KeyEvent& key_event,
   // TODO(crbug.com/1179893): Remove this entire block when
   // IsImprovedKeyboardShortcutsEnabled is always on.
   if (state->flags & EF_COMMAND_DOWN) {
-    const bool strict = ::features::IsNewShortcutMappingEnabled();
     struct SearchToFunctionMap {
       DomCode input_dom_code;
       MutableKeyState result;
@@ -1882,22 +1858,8 @@ void EventRewriterAsh::RewriteFunctionKeys(const KeyEvent& key_event,
     // We check the DOM3 |code| here instead of the VKEY, as these keys may
     // have different |KeyboardCode|s when modifiers are pressed, such as
     // shift.
-    if (strict) {
-      DCHECK(!::features::IsImprovedKeyboardShortcutsEnabled());
-      // Remap Search + 1/2 to F11/12.
-      static const SearchToFunctionMap kNumberKeysToFkeys[] = {
-          {DomCode::DIGIT1, {EF_NONE, DomCode::F11, DomKey::F12, VKEY_F11}},
-          {DomCode::DIGIT2, {EF_NONE, DomCode::F12, DomKey::F12, VKEY_F12}},
-      };
-      for (const auto& map : kNumberKeysToFkeys) {
-        if (state->code == map.input_dom_code) {
-          state->flags &= ~EF_COMMAND_DOWN;
-          ApplyRemapping(map.result, state);
-          return;
-        }
-      }
-    } else {
-      // Remap Search + digit row to F1~F12.
+    // Remap Search + digit row to F1~F12.
+    if (!::features::IsImprovedKeyboardShortcutsEnabled()) {
       static const SearchToFunctionMap kNumberKeysToFkeys[] = {
           {DomCode::DIGIT1, {EF_NONE, DomCode::F1, DomKey::F1, VKEY_F1}},
           {DomCode::DIGIT2, {EF_NONE, DomCode::F2, DomKey::F2, VKEY_F2}},
@@ -1913,11 +1875,9 @@ void EventRewriterAsh::RewriteFunctionKeys(const KeyEvent& key_event,
           {DomCode::EQUAL, {EF_NONE, DomCode::F12, DomKey::F12, VKEY_F12}}};
       for (const auto& map : kNumberKeysToFkeys) {
         if (state->code == map.input_dom_code) {
-          if (!::features::IsImprovedKeyboardShortcutsEnabled()) {
-            state->flags &= ~EF_COMMAND_DOWN;
-            ApplyRemapping(map.result, state);
-            RecordSearchPlusDigitFKeyRewrite(key_event.type(), state->key_code);
-          }
+          state->flags &= ~EF_COMMAND_DOWN;
+          ApplyRemapping(map.result, state);
+          RecordSearchPlusDigitFKeyRewrite(key_event.type(), state->key_code);
           return;
         }
       }

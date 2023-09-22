@@ -143,6 +143,11 @@ const AcceleratorMapping kAcceleratorMap[] = {
     {ui::VKEY_F6, ui::EF_NONE, IDC_FOCUS_NEXT_PANE},
     {ui::VKEY_F6, ui::EF_SHIFT_DOWN, IDC_FOCUS_PREVIOUS_PANE},
     {ui::VKEY_F6, ui::EF_CONTROL_DOWN, IDC_FOCUS_WEB_CONTENTS_PANE},
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // On Chrome OS, Control + Search + 7 toggles caret browsing.
+    // Note that VKEY_F7 is not a typo; Search + 7 maps to F7 for accelerators.
+    {ui::VKEY_F7, ui::EF_CONTROL_DOWN, IDC_CARET_BROWSING_TOGGLE},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     {ui::VKEY_F10, ui::EF_NONE, IDC_FOCUS_MENU_BAR},
     {ui::VKEY_F11, ui::EF_NONE, IDC_FULLSCREEN},
     {ui::VKEY_M, ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR,
@@ -262,22 +267,6 @@ const AcceleratorMapping kDevToolsAcceleratorMap[] = {
 #endif  // !BUILDFLAG(IS_MAC)
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Accelerators to enable if features::IsNewShortcutMappingEnabled is false.
-const AcceleratorMapping kDisableWithNewMappingAcceleratorMap[] = {
-    // On Chrome OS, Control + Search + 7 toggles caret browsing.
-    // Note that VKEY_F7 is not a typo; Search + 7 maps to F7 for accelerators.
-    {ui::VKEY_F7, ui::EF_CONTROL_DOWN, IDC_CARET_BROWSING_TOGGLE},
-};
-
-// Accelerators to enable if features::IsNewShortcutMappingEnabled is true.
-const AcceleratorMapping kEnableWithNewMappingAcceleratorMap[] = {
-    // On Chrome OS, Control + Search + 7 toggles caret browsing.
-    {ui::VKEY_7, ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN,
-     IDC_CARET_BROWSING_TOGGLE},
-};
-#endif
-
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 // Accelerators to enable if lens::features::kEnableRegionSearchKeyboardShortcut
 // is true.
@@ -338,17 +327,6 @@ std::vector<AcceleratorMapping> GetAcceleratorList() {
     for (auto& mapping : *accelerators)
       DCHECK((mapping.modifiers & kCtrlAlt) != kCtrlAlt)
           << "Accelerators with Ctrl+Alt are reserved by Windows.";
-#endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    if (::features::IsNewShortcutMappingEnabled()) {
-      accelerators->insert(accelerators->begin(),
-                           std::begin(kEnableWithNewMappingAcceleratorMap),
-                           std::end(kEnableWithNewMappingAcceleratorMap));
-    } else {
-      accelerators->insert(accelerators->begin(),
-                           std::begin(kDisableWithNewMappingAcceleratorMap),
-                           std::end(kDisableWithNewMappingAcceleratorMap));
-    }
 #endif
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)

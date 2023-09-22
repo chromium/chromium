@@ -17,8 +17,7 @@ namespace ui {
 ui::Accelerator GetAcceleratorFromNativeWebKeyboardEvent(
     const content::NativeWebKeyboardEvent& event) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (::features::IsNewShortcutMappingEnabled() ||
-      ::features::IsImprovedKeyboardShortcutsEnabled()) {
+  if (::features::IsImprovedKeyboardShortcutsEnabled()) {
     // TODO: This must be the same as below and it's simpler.
     // Cleanup if this change sticks.
     auto* os_event = static_cast<ui::KeyEvent*>(event.os_event);
