@@ -75,9 +75,9 @@ class RecipientsFetcherImplTest : public testing::Test {
 
 // Tests the happy case in which the server returns a potential candidate to
 // share a password with. This is done by pre-configuring the expected server
-// response. In a real encironment the user the sends the request and the
-// returned conadiate also need ot be in the same family cicle.
-TEST_F(RecipientsFetcherImplTest, ShouldFetchRecpientInfoWhenRequestSucceeds) {
+// response. In a real environment the user that sends the request and the
+// returned candidate also needs to be in the same family circle.
+TEST_F(RecipientsFetcherImplTest, ShouldFetchRecipientInfoWhenRequestSucceeds) {
   const std::string kTestUserId = "12345";
   const std::string kTestUserName = "Theo Tester";
   const std::string kTestEmail = "theo@example.com";
@@ -88,7 +88,7 @@ TEST_F(RecipientsFetcherImplTest, ShouldFetchRecpientInfoWhenRequestSucceeds) {
       "MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MTI=";
   const uint32_t kTestPublicKeyVersion = 0;
 
-  // Create set the server response.
+  // Create the server response.
   sync_pb::PasswordSharingRecipientsResponse response;
   response.set_result(sync_pb::PasswordSharingRecipientsResponse::SUCCESS);
 
@@ -118,7 +118,7 @@ TEST_F(RecipientsFetcherImplTest, ShouldFetchRecpientInfoWhenRequestSucceeds) {
   EXPECT_CALL(callback, Run(ElementsAre(expected_recipient_info),
                             Eq(FetchFamilyMembersRequestStatus::kSuccess)));
 
-  // Create the RecipientFetcher and make a request.
+  // Create the RecipientsFetcher and make a request.
   RecipientsFetcherImpl recipient_fetcher = CreateRecipientFetcher();
   recipient_fetcher.FetchFamilyMembers(callback.Get());
 
@@ -128,7 +128,7 @@ TEST_F(RecipientsFetcherImplTest, ShouldFetchRecpientInfoWhenRequestSucceeds) {
 // Tests the scenario in which the sender of the request is not part of a family
 // circle. This is simulated by pre-configuring the expected server response.
 TEST_F(RecipientsFetcherImplTest,
-       ShouldReturnNotFamilyMemeberStatusIfUserIsNotInFamilyCircle) {
+       ShouldReturnNotFamilyMemberStatusIfUserIsNotInFamilyCircle) {
   sync_pb::PasswordSharingRecipientsResponse response;
   response.set_result(
       sync_pb::PasswordSharingRecipientsResponse::NOT_FAMILY_MEMBER);
@@ -138,6 +138,27 @@ TEST_F(RecipientsFetcherImplTest,
       callback;
   EXPECT_CALL(callback,
               Run(IsEmpty(), Eq(FetchFamilyMembersRequestStatus::kNoFamily)));
+
+  RecipientsFetcherImpl recipient_fetcher = CreateRecipientFetcher();
+  recipient_fetcher.FetchFamilyMembers(callback.Get());
+
+  RunUntilIdle();
+}
+
+// Tests the scenario in which the sender of the request is the only member of a
+// family circle. This is simulated by pre-configuring the expected server
+// response.
+TEST_F(RecipientsFetcherImplTest,
+       ShouldReturnNoOtherFamilyMembersStatusIfUserIsTheOnlyMember) {
+  sync_pb::PasswordSharingRecipientsResponse response;
+  response.set_result(sync_pb::PasswordSharingRecipientsResponse::SUCCESS);
+  SetServerResponse(response);
+
+  StrictMock<base::MockCallback<RecipientsFetcher::FetchFamilyMembersCallback>>
+      callback;
+  EXPECT_CALL(callback,
+              Run(IsEmpty(),
+                  Eq(FetchFamilyMembersRequestStatus::kNoOtherFamilyMembers)));
 
   RecipientsFetcherImpl recipient_fetcher = CreateRecipientFetcher();
   recipient_fetcher.FetchFamilyMembers(callback.Get());
@@ -168,7 +189,9 @@ TEST_F(RecipientsFetcherImplTest,
 TEST_F(RecipientsFetcherImplTest, ShouldNotFetchRecipientIfPendingRequest) {
   StrictMock<base::MockCallback<RecipientsFetcher::FetchFamilyMembersCallback>>
       callback;
-  EXPECT_CALL(callback, Run(_, Eq(FetchFamilyMembersRequestStatus::kSuccess)));
+  EXPECT_CALL(
+      callback,
+      Run(_, Eq(FetchFamilyMembersRequestStatus::kNoOtherFamilyMembers)));
 
   StrictMock<base::MockCallback<RecipientsFetcher::FetchFamilyMembersCallback>>
       callback2;
@@ -188,14 +211,18 @@ TEST_F(RecipientsFetcherImplTest, ShouldNotFetchRecipientIfPendingRequest) {
 }
 
 TEST_F(RecipientsFetcherImplTest,
-       ShouldFetchRecpientInfoWhenRequestSucceedsForConsequitiveRequests) {
+       ShouldFetchRecpientInfoWhenRequestSucceedsForConsecutiveRequests) {
   StrictMock<base::MockCallback<RecipientsFetcher::FetchFamilyMembersCallback>>
       callback;
-  EXPECT_CALL(callback, Run(_, Eq(FetchFamilyMembersRequestStatus::kSuccess)));
+  EXPECT_CALL(
+      callback,
+      Run(_, Eq(FetchFamilyMembersRequestStatus::kNoOtherFamilyMembers)));
 
   StrictMock<base::MockCallback<RecipientsFetcher::FetchFamilyMembersCallback>>
       callback2;
-  EXPECT_CALL(callback2, Run(_, Eq(FetchFamilyMembersRequestStatus::kSuccess)));
+  EXPECT_CALL(
+      callback2,
+      Run(_, Eq(FetchFamilyMembersRequestStatus::kNoOtherFamilyMembers)));
 
   RecipientsFetcherImpl recipient_fetcher = CreateRecipientFetcher();
   recipient_fetcher.FetchFamilyMembers(callback.Get());
@@ -214,7 +241,7 @@ TEST_F(RecipientsFetcherImplTest, FetchRecipientDuringAuthError) {
   identity_test_env()->SetAutomaticIssueOfAccessTokens(false);
   base::MockCallback<RecipientsFetcher::FetchFamilyMembersCallback> callback;
 
-  // Create the RecipientFetcher and make a request.
+  // Create the RecipientsFetcher and make a request.
   RecipientsFetcherImpl recipient_fetcher = CreateRecipientFetcher();
   recipient_fetcher.FetchFamilyMembers(callback.Get());
 
@@ -229,7 +256,7 @@ TEST_F(RecipientsFetcherImplTest, FetchRecipientDuringAuthError) {
 
   RunUntilIdle();
 
-  // Double check that there were not network requests to the server.
+  // Double check that there were no network requests to the server.
   EXPECT_EQ(test_url_loader_factory()->total_requests(), 0u);
 }
 

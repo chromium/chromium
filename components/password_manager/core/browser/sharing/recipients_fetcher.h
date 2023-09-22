@@ -17,12 +17,16 @@ namespace password_manager {
 // request.
 enum class FetchFamilyMembersRequestStatus {
   kUnknown = 0,
+  // The user is a part of a family circle that has other members.
   kSuccess = 1,
+  // The request finished with a network error.
   kNetworkError = 2,
   // The user (sending the request) is not part of a family circle.
   kNoFamily = 3,
   // A pending requests already exists. No new request was created.
   kPendingRequest = 4,
+  // The user is the only member of a family circle.
+  kNoOtherFamilyMembers = 5,
 };
 
 // The RecipientsFetcher class defines the interface for fetching a list of

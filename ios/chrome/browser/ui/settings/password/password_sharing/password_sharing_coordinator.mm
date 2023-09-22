@@ -216,6 +216,10 @@ using password_manager::FetchFamilyMembersRequestStatus;
       self.familyPromoCoordinator.delegate = self;
       [self.familyPromoCoordinator start];
       break;
+    case FetchFamilyMembersRequestStatus::kNoOtherFamilyMembers:
+      // TODO(crbug.com/1463882): Add handling the case where user is the only
+      // member of the family.
+      break;
     case FetchFamilyMembersRequestStatus::kUnknown:
     case FetchFamilyMembersRequestStatus::kNetworkError:
     case FetchFamilyMembersRequestStatus::kPendingRequest:

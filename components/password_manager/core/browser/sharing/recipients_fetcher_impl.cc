@@ -92,9 +92,11 @@ void RecipientsFetcherImpl::ServerRequestCallback() {
       for (const auto& recipient : server_response->recipients()) {
         recipients.push_back(ToRecipientInfo(recipient));
       }
-
-      std::move(callback_).Run(std::move(recipients),
-                               FetchFamilyMembersRequestStatus::kSuccess);
+      FetchFamilyMembersRequestStatus status =
+          recipients.empty()
+              ? FetchFamilyMembersRequestStatus::kNoOtherFamilyMembers
+              : FetchFamilyMembersRequestStatus::kSuccess;
+      std::move(callback_).Run(std::move(recipients), status);
       return;
     }
     case PasswordSharingRecipientsResponse::NOT_FAMILY_MEMBER: {

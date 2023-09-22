@@ -572,6 +572,8 @@ void PasswordsPrivateDelegateImpl::OnFetchingFamilyMembersCompleted(
           FAMILY_FETCH_STATUS_UNKNOWN_ERROR;
       break;
     case FetchFamilyMembersRequestStatus::kSuccess:
+    case FetchFamilyMembersRequestStatus::kNoOtherFamilyMembers:
+      // TODO(crbug.com/1445526): Add new FamilyFetchStatus and its handling.
       results.status = api::passwords_private::FamilyFetchStatus::
           FAMILY_FETCH_STATUS_SUCCESS;
       break;
