@@ -43,7 +43,8 @@ JSModuleScript* JSModuleScript::Create(
   ScriptState* script_state = modulator->GetScriptState();
   ScriptState::Scope scope(script_state);
   v8::Isolate* isolate = script_state->GetIsolate();
-  ExceptionState exception_state(isolate, ExceptionState::kExecutionContext,
+  ExceptionState exception_state(isolate,
+                                 ExceptionContextType::kOperationInvoke,
                                  "JSModuleScript", "Create");
 
   ModuleRecordProduceCacheData* produce_cache_data = nullptr;

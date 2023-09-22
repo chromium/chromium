@@ -79,7 +79,7 @@ LocalDOMWindow* OpenDocumentPictureInPictureWindow(
   // Create the DocumentPictureInPictureOptions.
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ExceptionState exception_state(script_state->GetIsolate(),
-                                 ExceptionState::kExecutionContext,
+                                 ExceptionContextType::kOperationInvoke,
                                  "DocumentPictureInPicture", "requestWindow");
 
   v8::Local<v8::Object> v8_object = v8::Object::New(v8_scope.GetIsolate());
@@ -799,7 +799,7 @@ TEST_F(PictureInPictureControllerTestWithChromeClient,
   // Create the DocumentPictureInPictureOptions.
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ExceptionState exception_state(script_state->GetIsolate(),
-                                 ExceptionState::kExecutionContext,
+                                 ExceptionContextType::kOperationInvoke,
                                  "DocumentPictureInPicture", "requestWindow");
 
   v8::Local<v8::Object> v8_object = v8::Object::New(v8_scope.GetIsolate());

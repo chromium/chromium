@@ -378,26 +378,24 @@ def bind_callback_local_vars(code_node, cg_context):
     text = _format(pattern, _1=_1)
     local_vars.append(S("execution_context_of_document_tree", text))
 
-    # exception_state_context_type
-    pattern = (
-        "const ExceptionState::ContextType ${exception_state_context_type} = "
-        "{_1};")
+    # exception_context_type
+    pattern = ("const ExceptionContextType ${exception_context_type} = "
+               "{_1};")
     if cg_context.attribute_get:
-        _1 = "ExceptionContext::Context::kAttributeGet"
+        _1 = "ExceptionContextType::kAttributeGet"
     elif cg_context.attribute_set:
-        _1 = "ExceptionContext::Context::kAttributeSet"
+        _1 = "ExceptionContextType::kAttributeSet"
     elif cg_context.constructor_group:
-        _1 = "ExceptionContext::Context::kConstructorOperationInvoke"
+        _1 = "ExceptionContextType::kConstructorOperationInvoke"
     elif cg_context.indexed_interceptor_kind:
-        _1 = "ExceptionContext::Context::kIndexedProperty{}".format(
+        _1 = "ExceptionContextType::kIndexedProperty{}".format(
             cg_context.indexed_interceptor_kind)
     elif cg_context.named_interceptor_kind:
-        _1 = "ExceptionContext::Context::kNamedProperty{}".format(
+        _1 = "ExceptionContextType::kNamedProperty{}".format(
             cg_context.named_interceptor_kind)
     else:
-        _1 = "ExceptionContext::Context::kOperationInvoke"
-    local_vars.append(
-        S("exception_state_context_type", _format(pattern, _1=_1)))
+        _1 = "ExceptionContextType::kOperationInvoke"
+    local_vars.append(S("exception_context_type", _format(pattern, _1=_1)))
 
     # exception_state
     def create_exception_state(symbol_node):
@@ -405,7 +403,7 @@ def bind_callback_local_vars(code_node, cg_context):
         pattern = ("{exception_state_type} ${exception_state}({init_args});"
                    "{exception_to_reject_promise}")
         exception_state_type = "ExceptionState"
-        init_args = ["${isolate}", "${exception_state_context_type}"]
+        init_args = ["${isolate}", "${exception_context_type}"]
         exception_to_reject_promise = ""
         if (cg_context.no_alloc_direct_call
                 or cg_context.no_alloc_direct_call_for_testing):

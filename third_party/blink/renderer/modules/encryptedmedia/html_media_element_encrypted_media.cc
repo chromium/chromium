@@ -281,7 +281,7 @@ void SetMediaKeysHandler::Fail(ExceptionCode code,
   // Reject promise with an appropriate error.
   ScriptState::Scope scope(GetScriptState());
   ExceptionState exception_state(GetScriptState()->GetIsolate(),
-                                 ExceptionState::kExecutionContext,
+                                 ExceptionContextType::kOperationInvoke,
                                  "HTMLMediaElement", "setMediaKeys");
   exception_state.ThrowException(code, error_message);
   Reject(exception_state);

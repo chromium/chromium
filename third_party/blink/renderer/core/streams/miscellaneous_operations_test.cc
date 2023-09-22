@@ -66,8 +66,8 @@ TEST(MiscellaneousOperationsTest, CreateAlgorithmNullMethod) {
       ->Set(scope.GetContext(), V8String(scope.GetIsolate(), "pull"),
             v8::Null(scope.GetIsolate()))
       .Check();
-  ExceptionState exception_state(scope.GetIsolate(),
-                                 ExceptionState::kExecutionContext, "", "");
+  ExceptionState exception_state(
+      scope.GetIsolate(), ExceptionContextType::kOperationInvoke, "", "");
   auto* algo = CreateAlgorithmFromUnderlyingMethod(
       scope.GetScriptState(), underlying_object, "pull",
       "underlyingSource.pull", EmptyExtraArg(), exception_state);
@@ -81,8 +81,8 @@ TEST(MiscellaneousOperationsTest, CreateAlgorithmThrowingGetter) {
       &scope, "({ get pull() { throw new TypeError(); } })");
   ASSERT_TRUE(underlying_value.IsObject());
   auto underlying_object = underlying_value.V8Value().As<v8::Object>();
-  ExceptionState exception_state(scope.GetIsolate(),
-                                 ExceptionState::kExecutionContext, "", "");
+  ExceptionState exception_state(
+      scope.GetIsolate(), ExceptionContextType::kOperationInvoke, "", "");
   auto* algo = CreateAlgorithmFromUnderlyingMethod(
       scope.GetScriptState(), underlying_object, "pull",
       "underlyingSource.pull", EmptyExtraArg(), exception_state);
@@ -194,8 +194,8 @@ TEST(MiscellaneousOperationsTest, CreateStartAlgorithmNullMethod) {
   auto* algo = CreateStartAlgorithm(scope.GetScriptState(), underlying_object,
                                     "underlyingSink.start", controller);
   ASSERT_TRUE(algo);
-  ExceptionState exception_state(scope.GetIsolate(),
-                                 ExceptionState::kExecutionContext, "", "");
+  ExceptionState exception_state(
+      scope.GetIsolate(), ExceptionContextType::kOperationInvoke, "", "");
   auto maybe_result = algo->Run(scope.GetScriptState(), exception_state);
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_TRUE(maybe_result.IsEmpty());
@@ -215,8 +215,8 @@ TEST(MiscellaneousOperationsTest, CreateStartAlgorithmThrowingMethod) {
   auto* algo = CreateStartAlgorithm(scope.GetScriptState(), underlying_object,
                                     "underlyingSink.start", controller);
   ASSERT_TRUE(algo);
-  ExceptionState exception_state(scope.GetIsolate(),
-                                 ExceptionState::kExecutionContext, "", "");
+  ExceptionState exception_state(
+      scope.GetIsolate(), ExceptionContextType::kOperationInvoke, "", "");
   auto maybe_result = algo->Run(scope.GetScriptState(), exception_state);
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_TRUE(maybe_result.IsEmpty());
@@ -268,8 +268,8 @@ TEST(MiscellaneousOperationsTest, CallOrNoop1NullMethod) {
       ->Set(scope.GetContext(), V8String(scope.GetIsolate(), "transform"),
             v8::Null(scope.GetIsolate()))
       .Check();
-  ExceptionState exception_state(scope.GetIsolate(),
-                                 ExceptionState::kExecutionContext, "", "");
+  ExceptionState exception_state(
+      scope.GetIsolate(), ExceptionContextType::kOperationInvoke, "", "");
   auto maybe_result =
       CallOrNoop1(scope.GetScriptState(), underlying_object, "transform",
                   "transformer.transform", arg0, exception_state);
@@ -309,7 +309,7 @@ TEST(MiscellaneousOperationsTest, CallOrNoop1ThrowingMethod) {
   auto underlying_object = underlying_value.V8Value().As<v8::Object>();
   v8::Local<v8::Value> arg0 = v8::Number::New(scope.GetIsolate(), 17);
   ExceptionState exception_state(scope.GetIsolate(),
-                                 ExceptionState::kUnknownContext, "", "");
+                                 ExceptionContextType::kUnknown, "", "");
   auto maybe_result =
       CallOrNoop1(scope.GetScriptState(), underlying_object, "transform",
                   "transformer.transform", arg0, exception_state);
@@ -373,16 +373,16 @@ TEST(MiscellaneousOperationsTest, ValidateInfiniteHighWaterMark) {
 
 TEST(MiscellaneousOperationsTest, NegativeHighWaterMarkInvalid) {
   V8TestingScope scope;
-  ExceptionState exception_state(scope.GetIsolate(),
-                                 ExceptionState::kExecutionContext, "", "");
+  ExceptionState exception_state(
+      scope.GetIsolate(), ExceptionContextType::kOperationInvoke, "", "");
   ValidateAndNormalizeHighWaterMark(-1, exception_state);
   EXPECT_TRUE(exception_state.HadException());
 }
 
 TEST(MiscellaneousOperationsTest, NaNHighWaterMarkInvalid) {
   V8TestingScope scope;
-  ExceptionState exception_state(scope.GetIsolate(),
-                                 ExceptionState::kExecutionContext, "", "");
+  ExceptionState exception_state(
+      scope.GetIsolate(), ExceptionContextType::kOperationInvoke, "", "");
   ValidateAndNormalizeHighWaterMark(std::numeric_limits<double>::quiet_NaN(),
                                     exception_state);
   EXPECT_TRUE(exception_state.HadException());
@@ -403,8 +403,8 @@ TEST(MiscellaneousOperationsTest, UndefinedSizeFunction) {
 
 TEST(MiscellaneousOperationsTest, NullSizeFunction) {
   V8TestingScope scope;
-  ExceptionState exception_state(scope.GetIsolate(),
-                                 ExceptionState::kExecutionContext, "", "");
+  ExceptionState exception_state(
+      scope.GetIsolate(), ExceptionContextType::kOperationInvoke, "", "");
   EXPECT_EQ(MakeSizeAlgorithmFromSizeFunction(scope.GetScriptState(),
                                               v8::Null(scope.GetIsolate()),
 
@@ -450,8 +450,8 @@ TEST(MiscellaneousOperationsTest, ThrowingSizeAlgorithm) {
   auto* algo = MakeSizeAlgorithmFromSizeFunction(
       scope.GetScriptState(), function_value.V8Value(), ASSERT_NO_EXCEPTION);
   ASSERT_TRUE(algo);
-  ExceptionState exception_state(scope.GetIsolate(),
-                                 ExceptionState::kExecutionContext, "", "");
+  ExceptionState exception_state(
+      scope.GetIsolate(), ExceptionContextType::kOperationInvoke, "", "");
   auto optional =
       algo->Run(scope.GetScriptState(), V8String(scope.GetIsolate(), "79"),
                 exception_state);
@@ -467,8 +467,8 @@ TEST(MiscellaneousOperationsTest, UnconvertibleSize) {
   ScriptValue unconvertible_value =
       EvalWithPrintingError(&scope, "({ toString() { throw new Error(); }})");
   EXPECT_TRUE(unconvertible_value.IsObject());
-  ExceptionState exception_state(scope.GetIsolate(),
-                                 ExceptionState::kExecutionContext, "", "");
+  ExceptionState exception_state(
+      scope.GetIsolate(), ExceptionContextType::kOperationInvoke, "", "");
   auto optional = algo->Run(scope.GetScriptState(),
                             unconvertible_value.V8Value(), exception_state);
 

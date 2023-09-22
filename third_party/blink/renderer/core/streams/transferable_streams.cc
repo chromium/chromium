@@ -149,7 +149,7 @@ void CrossRealmTransformSendError(ScriptState* script_state,
                                   MessagePort* port,
                                   v8::Local<v8::Value> error) {
   ExceptionState exception_state(script_state->GetIsolate(),
-                                 ExceptionState::kUnknownContext, "", "");
+                                 ExceptionContextType::kUnknown, "", "");
 
   // https://streams.spec.whatwg.org/#abstract-opdef-crossrealmtransformsenderror
   // 1. Perform PackAndPostMessage(port, "error", error), discarding the result.
@@ -177,7 +177,7 @@ bool PackAndPostMessageHandlingError(
     AllowPerChunkTransferring allow_per_chunk_transferring,
     v8::Local<v8::Value>* error) {
   ExceptionState exception_state(script_state->GetIsolate(),
-                                 ExceptionState::kUnknownContext, "", "");
+                                 ExceptionContextType::kUnknown, "", "");
 
   // https://streams.spec.whatwg.org/#abstract-opdef-packandpostmessagehandlingerror
   // 1. Let result be PackAndPostMessage(port, type, value).
@@ -845,7 +845,7 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
               /*high_water_mark=*/0);
 
       ExceptionState exception_state(script_state->GetIsolate(),
-                                     ExceptionState::kUnknownContext, "", "");
+                                     ExceptionContextType::kUnknown, "", "");
       dummy_stream->cancel(
           script_state,
           ScriptValue(script_state->GetIsolate(),
@@ -877,7 +877,7 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
 
   ScriptPromise Start(ScriptState* script_state) override {
     ExceptionState exception_state(script_state->GetIsolate(),
-                                   ExceptionState::kUnknownContext, "", "");
+                                   ExceptionContextType::kUnknown, "", "");
     reader_for_stream1_ = ReadableStream::AcquireDefaultReader(
         script_state, stream1_, exception_state);
     if (exception_state.HadException()) {
@@ -905,7 +905,7 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
       return source2_->Cancel(script_state, reason);
     }
     ExceptionState exception_state(script_state->GetIsolate(),
-                                   ExceptionState::kUnknownContext, "", "");
+                                   ExceptionContextType::kUnknown, "", "");
     ScriptPromise cancel_promise1 =
         reader_for_stream1_->cancel(script_state, reason, exception_state);
     if (exception_state.HadException()) {

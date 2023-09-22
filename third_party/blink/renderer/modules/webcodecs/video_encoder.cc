@@ -1422,9 +1422,8 @@ static void isConfigSupportedWithHardwareOnly(
 class FindAnySupported final : public ScriptFunction::Callable {
  public:
   ScriptValue Call(ScriptState* state, ScriptValue value) override {
-    ExceptionContext context(
-        ExceptionContext::Context::kConstructorOperationInvoke,
-        "VideoEncoderSupport");
+    ExceptionContext context(ExceptionContextType::kConstructorOperationInvoke,
+                             "VideoEncoderSupport");
     ExceptionState exception_state(state->GetIsolate(), context);
     HeapVector<Member<VideoEncoderSupport>> supports =
         NativeValueTraits<IDLSequence<VideoEncoderSupport>>::NativeValue(

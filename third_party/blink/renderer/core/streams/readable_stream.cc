@@ -67,7 +67,7 @@ class ReadableStream::PullAlgorithm final : public StreamAlgorithm {
     DCHECK_EQ(argc, 0);
     DCHECK(controller_);
     ExceptionState exception_state(script_state->GetIsolate(),
-                                   ExceptionState::kUnknownContext, "", "");
+                                   ExceptionContextType::kUnknown, "", "");
     ScriptPromise promise;
     if (script_state->ContextIsValid()) {
       // This is needed because the realm of the underlying source can be
@@ -115,7 +115,7 @@ class ReadableStream::CancelAlgorithm final : public StreamAlgorithm {
                              v8::Local<v8::Value> argv[]) override {
     DCHECK_EQ(argc, 1);
     ExceptionState exception_state(script_state->GetIsolate(),
-                                   ExceptionState::kUnknownContext, "", "");
+                                   ExceptionContextType::kUnknown, "", "");
     ScriptPromise promise;
     if (script_state->ContextIsValid()) {
       // This is needed because the realm of the underlying source can be
@@ -195,8 +195,9 @@ ReadableStream* ReadableStream::CreateWithCountQueueingStrategy(
     AllowPerChunkTransferring allow_per_chunk_transferring,
     std::unique_ptr<ReadableStreamTransferringOptimizer> optimizer) {
   auto* isolate = script_state->GetIsolate();
-  ExceptionState exception_state(isolate, ExceptionState::kConstructionContext,
-                                 "ReadableStream");
+  ExceptionState exception_state(
+      isolate, ExceptionContextType::kConstructorOperationInvoke,
+      "ReadableStream");
   v8::MicrotasksScope microtasks_scope(
       isolate, ToMicrotaskQueue(script_state),
       v8::MicrotasksScope::kDoNotRunMicrotasks);

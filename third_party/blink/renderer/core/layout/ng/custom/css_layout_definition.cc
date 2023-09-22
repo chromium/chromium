@@ -133,7 +133,8 @@ bool CSSLayoutDefinition::Instance::Layout(
     }
   }
 
-  ExceptionState exception_state(isolate, ExceptionState::kExecutionContext,
+  ExceptionState exception_state(isolate,
+                                 ExceptionContextType::kOperationInvoke,
                                  "CSSLayoutAPI", "Layout");
 
   v8::Local<v8::Value> v8_return_value = return_value.V8Value();
@@ -270,7 +271,8 @@ bool CSSLayoutDefinition::Instance::IntrinsicSizes(
     }
   }
 
-  ExceptionState exception_state(isolate, ExceptionState::kExecutionContext,
+  ExceptionState exception_state(isolate,
+                                 ExceptionContextType::kOperationInvoke,
                                  "CSSLayoutAPI", "IntrinsicSizes");
 
   v8::Local<v8::Value> v8_return_value = return_value.V8Value();

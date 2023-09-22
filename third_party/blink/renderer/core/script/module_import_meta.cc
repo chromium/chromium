@@ -22,7 +22,7 @@ const v8::Local<v8::Function> ModuleImportMeta::MakeResolveV8Function(
 ScriptValue ModuleImportMeta::Resolve::Call(ScriptState* script_state,
                                             ScriptValue value) {
   ExceptionState exception_state(script_state->GetIsolate(),
-                                 ExceptionContext::Context::kOperationInvoke,
+                                 ExceptionContextType::kOperationInvoke,
                                  "import.meta", "resolve");
 
   const String specifier = NativeValueTraits<IDLString>::NativeValue(

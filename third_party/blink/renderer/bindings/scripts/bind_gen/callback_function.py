@@ -51,7 +51,7 @@ def bind_local_vars(code_node, cg_context, is_construct_call=False):
     local_vars.extend([
         S("exception_state",
           ("ExceptionState ${exception_state}("
-           "${isolate}, ExceptionContext::Context::kOperationInvoke,"
+           "${isolate}, ExceptionContextType::kOperationInvoke,"
            "${class_like_name}, ${property_name});")),
         S("isolate", "v8::Isolate* ${isolate} = GetIsolate();"),
         S("script_state",

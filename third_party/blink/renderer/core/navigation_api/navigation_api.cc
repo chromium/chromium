@@ -391,10 +391,9 @@ NavigationResult* NavigationApi::navigate(ScriptState* script_state,
   scoped_refptr<SerializedScriptValue> serialized_state = nullptr;
   {
     if (options->hasState()) {
-      ExceptionState exception_state(
-          script_state->GetIsolate(),
-          ExceptionContext::Context::kOperationInvoke, "Navigation",
-          "navigate");
+      ExceptionState exception_state(script_state->GetIsolate(),
+                                     ExceptionContextType::kOperationInvoke,
+                                     "Navigation", "navigate");
       serialized_state = SerializeState(options->state(), exception_state);
       if (exception_state.HadException()) {
         NavigationResult* result =
@@ -456,9 +455,9 @@ NavigationResult* NavigationApi::reload(ScriptState* script_state,
   scoped_refptr<SerializedScriptValue> serialized_state = nullptr;
   {
     if (options->hasState()) {
-      ExceptionState exception_state(
-          script_state->GetIsolate(),
-          ExceptionContext::Context::kOperationInvoke, "Navigation", "reload");
+      ExceptionState exception_state(script_state->GetIsolate(),
+                                     ExceptionContextType::kOperationInvoke,
+                                     "Navigation", "reload");
       serialized_state = SerializeState(options->state(), exception_state);
       if (exception_state.HadException()) {
         NavigationResult* result =

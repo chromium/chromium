@@ -104,8 +104,9 @@ void V8HTMLConstructor::HtmlConstructor(
     }
   }
 
-  ExceptionState exception_state(isolate, ExceptionState::kConstructionContext,
-                                 "HTMLElement");
+  ExceptionState exception_state(
+      isolate, ExceptionContextType::kConstructorOperationInvoke,
+      "HTMLElement");
   // 6. Let prototype be Get(NewTarget, "prototype"). Rethrow any exceptions.
   v8::Local<v8::Value> prototype;
   v8::Local<v8::String> prototype_string = V8AtomicString(isolate, "prototype");

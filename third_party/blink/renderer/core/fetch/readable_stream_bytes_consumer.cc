@@ -153,7 +153,7 @@ void ReadableStreamBytesConsumer::Cancel() {
   if (!ScriptForbiddenScope::IsScriptForbidden()) {
     ScriptState::Scope scope(script_state_);
     ExceptionState exception_state(script_state_->GetIsolate(),
-                                   ExceptionState::kUnknownContext, "", "");
+                                   ExceptionContextType::kUnknown, "", "");
     reader_->cancel(script_state_, exception_state);
     // We ignore exceptions as we can do nothing here.
   }

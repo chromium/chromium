@@ -198,7 +198,7 @@ void IncomingStream::ProcessClose() {
   if (fin_received_.value()) {
     ScriptState::Scope scope(script_state_);
     ExceptionState exception_state(script_state_->GetIsolate(),
-                                   ExceptionState::kUnknownContext, "", "");
+                                   ExceptionContextType::kUnknown, "", "");
     CloseAbortAndReset(exception_state);
     // Ignore exception because stream will be errored soon.
     if (exception_state.HadException()) {

@@ -76,9 +76,9 @@ class StreamCreator {
     mock_client_ = MakeGarbageCollected<StrictMock<MockClient>>();
     auto* outgoing_stream = MakeGarbageCollected<OutgoingStream>(
         script_state, mock_client_, std::move(data_pipe_producer));
-    ExceptionState exception_state(scope.GetIsolate(),
-                                   ExceptionState::kConstructionContext,
-                                   "OutgoingStream");
+    ExceptionState exception_state(
+        scope.GetIsolate(), ExceptionContextType::kConstructorOperationInvoke,
+        "OutgoingStream");
     outgoing_stream->Init(exception_state);
     CHECK(!exception_state.HadException());
     return outgoing_stream;

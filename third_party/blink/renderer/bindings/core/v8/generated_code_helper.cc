@@ -396,7 +396,7 @@ void PerformAttributeSetCEReactionsReflect(
     const char* interface_name,
     const char* attribute_name) {
   v8::Isolate* isolate = info.GetIsolate();
-  ExceptionState exception_state(isolate, ExceptionState::kSetterContext,
+  ExceptionState exception_state(isolate, ExceptionContextType::kAttributeSet,
                                  interface_name, attribute_name);
   if (UNLIKELY(info.Length() < 1)) {
     exception_state.ThrowTypeError(

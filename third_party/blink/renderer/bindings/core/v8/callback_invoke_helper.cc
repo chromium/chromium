@@ -38,7 +38,8 @@ bool CallbackInvokeHelper<CallbackBase, mode, return_type_is_promise>::
   if constexpr (mode == CallbackInvokeHelperMode::kConstructorCall) {
     // step 3. If ! IsConstructor(F) is false, throw a TypeError exception.
     if (!callback_->IsConstructor()) {
-      ExceptionState exception_state(isolate, ExceptionState::kExecutionContext,
+      ExceptionState exception_state(isolate,
+                                     ExceptionContextType::kOperationInvoke,
                                      class_like_name_, property_name_);
       exception_state.ThrowTypeError(
           "The provided callback is not a constructor.");

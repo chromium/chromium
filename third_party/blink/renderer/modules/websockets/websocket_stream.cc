@@ -671,7 +671,7 @@ void WebSocketStream::CloseMaybeWithReason(ScriptValue maybe_reason) {
 
   // Exceptions thrown here are ignored.
   ExceptionState exception_state(script_state_->GetIsolate(),
-                                 ExceptionState::kUnknownContext, "", "");
+                                 ExceptionContextType::kUnknown, "", "");
   WebSocketCloseInfo* info = NativeValueTraits<WebSocketCloseInfo>::NativeValue(
       script_state_->GetIsolate(), maybe_reason.V8Value(), exception_state);
   if (!exception_state.HadException() && info->hasCode()) {
@@ -691,7 +691,7 @@ void WebSocketStream::CloseWithUnspecifiedCode() {
   DVLOG(1) << "WebSocketStream " << this << " CloseWithUnspecifiedCode()";
 
   ExceptionState exception_state(script_state_->GetIsolate(),
-                                 ExceptionState::kUnknownContext, "", "");
+                                 ExceptionContextType::kUnknown, "", "");
   CloseInternal(WebSocketChannel::kCloseEventCodeNotSpecified, String(),
                 exception_state);
   DCHECK(!exception_state.HadException());

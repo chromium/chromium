@@ -271,7 +271,7 @@ String GetStringFromScriptHelper(
   ScriptState::Scope script_state_scope(
       ToScriptState(context, DOMWrapperWorld::MainWorld()));
   ExceptionState exception_state(
-      context->GetIsolate(), ExceptionState::kUnknownContext,
+      context->GetIsolate(), ExceptionContextType::kUnknown,
       element_name_for_exception, attribute_name_for_exception);
 
   TrustedTypePolicy* default_policy = GetDefaultPolicy(context);

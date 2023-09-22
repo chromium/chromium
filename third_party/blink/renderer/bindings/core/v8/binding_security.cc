@@ -319,9 +319,10 @@ bool BindingSecurity::ShouldAllowWrapperCreationOrThrowException(
   if (wrapper_type_info->Equals(V8Location::GetWrapperTypeInfo()))
     return true;
 
-  ExceptionState exception_state(accessing_context->GetIsolate(),
-                                 ExceptionState::kConstructionContext,
-                                 wrapper_type_info->interface_name);
+  ExceptionState exception_state(
+      accessing_context->GetIsolate(),
+      ExceptionContextType::kConstructorOperationInvoke,
+      wrapper_type_info->interface_name);
   return ShouldAllowAccessToV8ContextInternal(
       accessing_context, creation_context, &exception_state);
 }
@@ -333,8 +334,9 @@ void BindingSecurity::RethrowWrapperCreationException(
     v8::Local<v8::Value> cross_context_exception) {
   DCHECK(!cross_context_exception.IsEmpty());
   v8::Isolate* isolate = creation_context.ToLocalChecked()->GetIsolate();
-  ExceptionState exception_state(isolate, ExceptionState::kConstructionContext,
-                                 wrapper_type_info->interface_name);
+  ExceptionState exception_state(
+      isolate, ExceptionContextType::kConstructorOperationInvoke,
+      wrapper_type_info->interface_name);
   if (!ShouldAllowAccessToV8ContextInternal(accessing_context, creation_context,
                                             &exception_state)) {
     // A cross origin exception has turned into a SecurityError.

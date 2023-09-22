@@ -34,9 +34,9 @@ ValueWrapperSyntheticModuleScript::CreateCSSWrapperSyntheticModuleScript(
   ScriptState* script_state = settings_object->GetScriptState();
   ScriptState::Scope scope(script_state);
   v8::Isolate* isolate = script_state->GetIsolate();
-  ExceptionState exception_state(isolate, ExceptionState::kExecutionContext,
-                                 "ModuleScriptLoader",
-                                 "CreateCSSWrapperSyntheticModuleScript");
+  ExceptionState exception_state(
+      isolate, ExceptionContextType::kOperationInvoke, "ModuleScriptLoader",
+      "CreateCSSWrapperSyntheticModuleScript");
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   UseCounter::Count(execution_context, WebFeature::kCreateCSSModuleScript);
   auto* context_window = DynamicTo<LocalDOMWindow>(execution_context);
@@ -98,9 +98,9 @@ ValueWrapperSyntheticModuleScript::CreateJSONWrapperSyntheticModuleScript(
   v8::Local<v8::String> original_json =
       V8String(isolate, params.GetSourceText());
   v8::Local<v8::Value> parsed_json;
-  ExceptionState exception_state(isolate, ExceptionState::kExecutionContext,
-                                 "ModuleScriptLoader",
-                                 "CreateJSONWrapperSyntheticModuleScript");
+  ExceptionState exception_state(
+      isolate, ExceptionContextType::kOperationInvoke, "ModuleScriptLoader",
+      "CreateJSONWrapperSyntheticModuleScript");
   UseCounter::Count(ExecutionContext::From(settings_object->GetScriptState()),
                     WebFeature::kCreateJSONModuleScript);
   // Step 1. "Let script be a new module script that this algorithm will

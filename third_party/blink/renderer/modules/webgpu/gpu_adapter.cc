@@ -242,9 +242,8 @@ void GPUAdapter::OnRequestDeviceCallback(ScriptState* script_state,
 ScriptPromise GPUAdapter::requestDevice(ScriptState* script_state,
                                         GPUDeviceDescriptor* descriptor) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state,
-      ExceptionContext(ExceptionContext::Context::kOperationInvoke,
-                       "GPUAdapter", "requestDevice"));
+      script_state, ExceptionContext(ExceptionContextType::kOperationInvoke,
+                                     "GPUAdapter", "requestDevice"));
   ScriptPromise promise = resolver->Promise();
 
   WGPUDeviceDescriptor dawn_desc = {};

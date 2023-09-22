@@ -75,7 +75,7 @@ class ClipboardPromise::BlobPromiseResolverFunction final
 
   ScriptValue Call(ScriptState* script_state, ScriptValue value) final {
     ExceptionState exception_state(script_state->GetIsolate(),
-                                   ExceptionState::kExecutionContext,
+                                   ExceptionContextType::kOperationInvoke,
                                    "Clipboard", "write");
     if (type_ == ResolveType::kFulfill) {
       HeapVector<Member<Blob>>* blob_list =

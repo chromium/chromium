@@ -41,7 +41,7 @@ class ByteStreamTeeEngine::PullAlgorithm final : public StreamAlgorithm {
     // 17. Let pull1Algorithm be the following steps:
     //   a. If reading is true,
     ExceptionState exception_state(script_state->GetIsolate(),
-                                   ExceptionState::kUnknownContext, "", "");
+                                   ExceptionContextType::kUnknown, "", "");
     if (engine_->reading_) {
       //     i. Set readAgainForBranch1 to true.
       engine_->read_again_for_branch_[branch_] = true;
@@ -148,7 +148,7 @@ class ByteStreamTeeEngine::ByteTeeReadRequest final : public ReadRequest {
     // 1. Set reading to false.
     engine_->reading_ = false;
     ExceptionState exception_state(script_state->GetIsolate(),
-                                   ExceptionState::kUnknownContext, "", "");
+                                   ExceptionContextType::kUnknown, "", "");
     // 2. If canceled1 is false, perform !
     // ReadableByteStreamControllerClose(branch1.[[controller]]).
     // 3. If canceled2 is false, perform !
@@ -217,7 +217,7 @@ class ByteStreamTeeEngine::ByteTeeReadRequest final : public ReadRequest {
     engine_->read_again_for_branch_[1] = false;
 
     ExceptionState exception_state(script_state->GetIsolate(),
-                                   ExceptionState::kUnknownContext, "", "");
+                                   ExceptionContextType::kUnknown, "", "");
 
     // 3. Let chunk1 and chunk2 be chunk.
     NotShared<DOMUint8Array> chunk[2];
@@ -325,7 +325,7 @@ class ByteStreamTeeEngine::ByteTeeReadIntoRequest final
     // 4. If byobCanceled is false, perform !
     //    ReadableByteStreamControllerClose(byobBranch.[[controller]]).
     ExceptionState exception_state(script_state->GetIsolate(),
-                                   ExceptionState::kUnknownContext, "", "");
+                                   ExceptionContextType::kUnknown, "", "");
     if (!byob_canceled) {
       ReadableStreamController* controller =
           byob_branch_->readable_stream_controller_;
@@ -411,7 +411,7 @@ class ByteStreamTeeEngine::ByteTeeReadIntoRequest final
         !for_branch_2_ ? engine_->canceled_[1] : engine_->canceled_[0];
     // 5. If otherCanceled is false,
     ExceptionState exception_state(script_state->GetIsolate(),
-                                   ExceptionState::kUnknownContext, "", "");
+                                   ExceptionContextType::kUnknown, "", "");
     if (!other_canceled) {
       //   a. Let cloneResult be CloneAsUint8Array(chunk).
       auto* clone_result = engine_->CloneAsUint8Array(chunk);

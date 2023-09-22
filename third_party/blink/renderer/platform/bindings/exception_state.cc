@@ -211,40 +211,38 @@ String AddContextToMessage(const String& message,
   const String& p = context.GetPropertyName();
   const String& m = message;
 
-  switch (context.GetContext()) {
-    case ExceptionContext::Context::kConstructorOperationInvoke:
+  switch (context.GetType()) {
+    case ExceptionContextType::kConstructorOperationInvoke:
       return ExceptionMessages::FailedToConstruct(c, m);
-    case ExceptionContext::Context::kOperationInvoke:
+    case ExceptionContextType::kOperationInvoke:
       return ExceptionMessages::FailedToExecute(p, c, m);
-    case ExceptionContext::Context::kAttributeGet:
+    case ExceptionContextType::kAttributeGet:
       return ExceptionMessages::FailedToGet(p, c, m);
-    case ExceptionContext::Context::kAttributeSet:
+    case ExceptionContextType::kAttributeSet:
       return ExceptionMessages::FailedToSet(p, c, m);
-    case ExceptionContext::Context::kNamedPropertyEnumerator:
+    case ExceptionContextType::kNamedPropertyEnumerator:
       return ExceptionMessages::FailedToEnumerate(c, m);
-    case ExceptionContext::Context::kNamedPropertyQuery:
+    case ExceptionContextType::kNamedPropertyQuery:
       break;
-    case ExceptionContext::Context::kIndexedPropertyGetter:
-    case ExceptionContext::Context::kIndexedPropertyDescriptor:
+    case ExceptionContextType::kIndexedPropertyGetter:
+    case ExceptionContextType::kIndexedPropertyDescriptor:
       return ExceptionMessages::FailedToGetIndexed(p, c, m);
-    case ExceptionContext::Context::kIndexedPropertySetter:
-    case ExceptionContext::Context::kIndexedPropertyDefiner:
+    case ExceptionContextType::kIndexedPropertySetter:
+    case ExceptionContextType::kIndexedPropertyDefiner:
       return ExceptionMessages::FailedToSetIndexed(p, c, m);
-    case ExceptionContext::Context::kIndexedPropertyDeleter:
+    case ExceptionContextType::kIndexedPropertyDeleter:
       return ExceptionMessages::FailedToDeleteIndexed(p, c, m);
-    case ExceptionContext::Context::kNamedPropertyGetter:
-    case ExceptionContext::Context::kNamedPropertyDescriptor:
+    case ExceptionContextType::kNamedPropertyGetter:
+    case ExceptionContextType::kNamedPropertyDescriptor:
       return ExceptionMessages::FailedToGetNamed(p, c, m);
-    case ExceptionContext::Context::kNamedPropertySetter:
-    case ExceptionContext::Context::kNamedPropertyDefiner:
+    case ExceptionContextType::kNamedPropertySetter:
+    case ExceptionContextType::kNamedPropertyDefiner:
       return ExceptionMessages::FailedToSetNamed(p, c, m);
-    case ExceptionContext::Context::kNamedPropertyDeleter:
+    case ExceptionContextType::kNamedPropertyDeleter:
       return ExceptionMessages::FailedToDeleteNamed(p, c, m);
-    case ExceptionContext::Context::kDictionaryMemberGet:
+    case ExceptionContextType::kDictionaryMemberGet:
       return ExceptionMessages::FailedToGet(p, c, m);
-    case ExceptionContext::Context::kDictionaryMemberSet:
-      return ExceptionMessages::FailedToSet(p, c, m);
-    case ExceptionContext::Context::kUnknown:
+    case ExceptionContextType::kUnknown:
       break;
     default:
       NOTREACHED();
@@ -279,19 +277,13 @@ void ExceptionState::PropagateException() {
 }
 
 NonThrowableExceptionState::NonThrowableExceptionState()
-    : ExceptionState(nullptr,
-                     ExceptionState::kUnknownContext,
-                     nullptr,
-                     nullptr),
+    : ExceptionState(nullptr, ExceptionContextType::kUnknown, nullptr, nullptr),
       file_(""),
       line_(0) {}
 
 NonThrowableExceptionState::NonThrowableExceptionState(const char* file,
                                                        int line)
-    : ExceptionState(nullptr,
-                     ExceptionState::kUnknownContext,
-                     nullptr,
-                     nullptr),
+    : ExceptionState(nullptr, ExceptionContextType::kUnknown, nullptr, nullptr),
       file_(file),
       line_(line) {}
 

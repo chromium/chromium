@@ -2474,7 +2474,7 @@ ScriptValue NavigatorAuction::AuctionHandle::JsonResolved::Call(
     ScriptState* script_state,
     ScriptValue value) {
   ExceptionState exception_state(script_state->GetIsolate(),
-                                 ExceptionState::kExecutionContext,
+                                 ExceptionContextType::kOperationInvoke,
                                  "NavigatorAuction", "runAdAuction");
   String maybe_json;
   bool maybe_json_ok = false;
@@ -2516,7 +2516,7 @@ ScriptValue NavigatorAuction::AuctionHandle::PerBuyerSignalsResolved::Call(
     ScriptState* script_state,
     ScriptValue value) {
   ExceptionState exception_state(script_state->GetIsolate(),
-                                 ExceptionState::kExecutionContext,
+                                 ExceptionContextType::kOperationInvoke,
                                  "NavigatorAuction", "runAdAuction");
   absl::optional<WTF::HashMap<scoped_refptr<const SecurityOrigin>, String>>
       per_buyer_signals;
@@ -2552,7 +2552,7 @@ ScriptValue NavigatorAuction::AuctionHandle::BuyerTimeoutsResolved::Call(
     ScriptState* script_state,
     ScriptValue value) {
   ExceptionState exception_state(script_state->GetIsolate(),
-                                 ExceptionState::kExecutionContext,
+                                 ExceptionContextType::kOperationInvoke,
                                  "NavigatorAuction", "runAdAuction");
   mojom::blink::AuctionAdConfigBuyerTimeoutsPtr buyer_timeouts;
   if (!value.IsEmpty()) {
@@ -2590,7 +2590,7 @@ ScriptValue NavigatorAuction::AuctionHandle::BuyerCurrenciesResolved::Call(
     ScriptState* script_state,
     ScriptValue value) {
   ExceptionState exception_state(script_state->GetIsolate(),
-                                 ExceptionState::kExecutionContext,
+                                 ExceptionContextType::kOperationInvoke,
                                  "NavigatorAuction", "runAdAuction");
   mojom::blink::AuctionAdConfigBuyerCurrenciesPtr buyer_currencies;
   if (!value.IsEmpty()) {
@@ -2639,7 +2639,7 @@ NavigatorAuction::AuctionHandle::DirectFromSellerSignalsResolved::Call(
   }
 
   ExceptionState exception_state(script_state->GetIsolate(),
-                                 ExceptionState::kExecutionContext,
+                                 ExceptionContextType::kOperationInvoke,
                                  "NavigatorAuction", "runAdAuction");
   mojom::blink::DirectFromSellerSignalsPtr direct_from_seller_signals;
   if (!value.IsEmpty()) {
@@ -2679,7 +2679,7 @@ ScriptValue NavigatorAuction::AuctionHandle::
   }
 
   ExceptionState exception_state(script_state->GetIsolate(),
-                                 ExceptionState::kExecutionContext,
+                                 ExceptionContextType::kOperationInvoke,
                                  "NavigatorAuction", "runAdAuction");
   String direct_from_seller_signals_header_ad_slot;
   if (!value.IsEmpty()) {
@@ -2715,7 +2715,7 @@ ScriptValue NavigatorAuction::AuctionHandle::ServerResponseResolved::Call(
     ScriptState* script_state,
     ScriptValue value) {
   ExceptionState exception_state(script_state->GetIsolate(),
-                                 ExceptionState::kExecutionContext,
+                                 ExceptionContextType::kOperationInvoke,
                                  "NavigatorAuction", "runAdAuction");
   v8::Local<v8::Value> v8_value = value.V8Value();
   if (!v8_value->IsUint8Array()) {

@@ -206,7 +206,8 @@ v8::MaybeLocal<v8::Module> ModuleRecord::ResolveModuleCallback(
           context, referrer, import_assertions,
           /*v8_import_assertions_has_positions=*/true));
 
-  ExceptionState exception_state(isolate, ExceptionState::kExecutionContext,
+  ExceptionState exception_state(isolate,
+                                 ExceptionContextType::kOperationInvoke,
                                  "ModuleRecord", "resolveModuleCallback");
   v8::Local<v8::Module> resolved =
       modulator->GetModuleRecordResolver()->Resolve(module_request, referrer,

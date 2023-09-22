@@ -219,7 +219,7 @@ NamedPropertySetterResult CSSStyleDeclaration::AnonymousNamedSetter(
   // create a std::string to set the ExceptionState's |property_name| argument,
   // while we can use CSSProperty::GetPropertyName() here (see bug 829408).
   ExceptionState exception_state(
-      script_state->GetIsolate(), ExceptionState::kSetterContext,
+      script_state->GetIsolate(), ExceptionContextType::kAttributeSet,
       "CSSStyleDeclaration",
       CSSProperty::Get(ResolveCSSPropertyID(unresolved_property))
           .GetPropertyName());

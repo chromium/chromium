@@ -507,7 +507,7 @@ void StreamFromResponseCallback(
                        "v8.wasm.streamFromResponseCallback",
                        TRACE_EVENT_SCOPE_THREAD);
   ExceptionState exception_state(args.GetIsolate(),
-                                 ExceptionState::kExecutionContext,
+                                 ExceptionContextType::kOperationInvoke,
                                  "WebAssembly", "compile");
   std::shared_ptr<v8::WasmStreaming> streaming =
       v8::WasmStreaming::Unpack(args.GetIsolate(), args.Data());

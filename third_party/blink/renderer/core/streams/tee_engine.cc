@@ -136,7 +136,7 @@ class TeeEngine::PullAlgorithm final : public StreamAlgorithm {
       engine_->read_again_ = false;
 
       ExceptionState exception_state(script_state->GetIsolate(),
-                                     ExceptionState::kUnknownContext, "", "");
+                                     ExceptionContextType::kUnknown, "", "");
 
       // 2. Let chunk1 and chunk2 be chunk.
       v8::Local<v8::Value> chunk[2];

@@ -126,7 +126,7 @@ ScriptPromise PipeToEngine::Start(ReadableStream* readable,
   DCHECK(!WritableStream::IsLocked(destination));
 
   auto* isolate = script_state_->GetIsolate();
-  ExceptionState exception_state(isolate, ExceptionState::kUnknownContext, "",
+  ExceptionState exception_state(isolate, ExceptionContextType::kUnknown, "",
                                  "");
 
   // 8. If source.[[controller]] implements ReadableByteStreamController, let

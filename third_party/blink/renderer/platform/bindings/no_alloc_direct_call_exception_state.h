@@ -21,7 +21,7 @@ class PLATFORM_EXPORT NoAllocDirectCallExceptionState : public ExceptionState {
  public:
   NoAllocDirectCallExceptionState(NoAllocDirectCallHost* host,
                                   v8::Isolate* isolate,
-                                  ExceptionState::ContextType context_type,
+                                  ExceptionContextType context_type,
                                   const char* interface_name,
                                   const char* property_name)
       : ExceptionState(isolate, context_type, interface_name, property_name),

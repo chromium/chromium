@@ -41,9 +41,9 @@ v8::Local<v8::Value> WindowProperties::AnonymousNamedGetter(
     if (name == "then") {
       return v8::Local<v8::Value>();
     }
-    ExceptionState exception_state(isolate, ExceptionState::kNamedGetterContext,
-                                   "Window", name,
-                                   ExceptionState::kForInterceptor);
+    ExceptionState exception_state(
+        isolate, ExceptionContextType::kNamedPropertyGetter, "Window", name,
+        ExceptionState::kForInterceptor);
     exception_state.ThrowSecurityError(
         "Cross-Origin-Opener-Policy: 'restrict-properties' blocked the access.",
         "Cross-Origin-Opener-Policy: 'restrict-properties' blocked the "

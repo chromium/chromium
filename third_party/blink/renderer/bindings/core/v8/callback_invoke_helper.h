@@ -75,7 +75,8 @@ class CallbackInvokeHelper final {
   v8::Maybe<ReturnType> Result() {
     DCHECK(!aborted_);
     v8::Isolate* isolate = callback_->GetIsolate();
-    ExceptionState exception_state(isolate, ExceptionState::kExecutionContext,
+    ExceptionState exception_state(isolate,
+                                   ExceptionContextType::kOperationInvoke,
                                    class_like_name_, property_name_);
     auto&& result = NativeValueTraits<IDLReturnType>::NativeValue(
         isolate, result_, exception_state);

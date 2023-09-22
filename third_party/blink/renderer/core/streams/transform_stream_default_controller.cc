@@ -110,7 +110,7 @@ class TransformStreamDefaultController::DefaultTransformAlgorithm final
                              v8::Local<v8::Value> argv[]) override {
     DCHECK_EQ(argc, 1);
     ExceptionState exception_state(script_state->GetIsolate(),
-                                   ExceptionState::kUnknownContext, "", "");
+                                   ExceptionContextType::kUnknown, "", "");
 
     // https://streams.spec.whatwg.org/#set-up-transform-stream-default-controller-from-transformer
     // 3. Let transformAlgorithm be the following steps, taking a chunk

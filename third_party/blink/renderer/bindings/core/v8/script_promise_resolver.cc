@@ -26,10 +26,7 @@ class ScriptPromiseResolver::ExceptionStateScope final : public ExceptionState {
   explicit ExceptionStateScope(ScriptPromiseResolver* resolver)
       : ExceptionState(resolver->script_state_->GetIsolate(),
                        resolver->exception_context_),
-        resolver_(resolver) {
-    CHECK_NE(resolver->exception_context_.GetContext(),
-             ExceptionContext::Context::kEmpty);
-  }
+        resolver_(resolver) {}
   ~ExceptionStateScope() {
     DCHECK(HadException());
     resolver_->Reject(GetException());
@@ -41,7 +38,9 @@ class ScriptPromiseResolver::ExceptionStateScope final : public ExceptionState {
 };
 
 ScriptPromiseResolver::ScriptPromiseResolver(ScriptState* script_state)
-    : ScriptPromiseResolver(script_state, ExceptionContext()) {}
+    : ScriptPromiseResolver(
+          script_state,
+          ExceptionContext(ExceptionContextType::kUnknown, nullptr, nullptr)) {}
 
 ScriptPromiseResolver::ScriptPromiseResolver(
     ScriptState* script_state,

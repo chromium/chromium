@@ -177,8 +177,8 @@ TEST(V8ScriptValueSerializerTest, ThrowsDataCloneError) {
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   ExceptionState exception_state(scope.GetIsolate(),
-                                 ExceptionState::kExecutionContext, "Window",
-                                 "postMessage");
+                                 ExceptionContextType::kOperationInvoke,
+                                 "Window", "postMessage");
   v8::Local<v8::Value> symbol = Eval("Symbol()", scope);
   DCHECK(symbol->IsSymbol());
   ASSERT_FALSE(
@@ -196,8 +196,8 @@ TEST(V8ScriptValueSerializerTest, RethrowsScriptError) {
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   ExceptionState exception_state(scope.GetIsolate(),
-                                 ExceptionState::kExecutionContext, "Window",
-                                 "postMessage");
+                                 ExceptionContextType::kOperationInvoke,
+                                 "Window", "postMessage");
   v8::Local<v8::Value> exception = Eval("myException=new Error()", scope);
   v8::Local<v8::Value> object =
       Eval("({ get a() { throw myException; }})", scope);
@@ -226,8 +226,8 @@ TEST(V8ScriptValueSerializerTest, DetachHappensAfterSerialization) {
   // As a result, the ArrayBuffer will not be transferred.
   V8TestingScope scope;
   ExceptionState exception_state(scope.GetIsolate(),
-                                 ExceptionState::kExecutionContext, "Window",
-                                 "postMessage");
+                                 ExceptionContextType::kOperationInvoke,
+                                 "Window", "postMessage");
 
   DOMArrayBuffer* array_buffer = DOMArrayBuffer::Create(1, 1);
   ASSERT_FALSE(array_buffer->IsDetached());
@@ -948,8 +948,8 @@ TEST(V8ScriptValueSerializerTest, RoundTripMessagePort) {
 TEST(V8ScriptValueSerializerTest, NeuteredMessagePortThrowsDataCloneError) {
   V8TestingScope scope;
   ExceptionState exception_state(scope.GetIsolate(),
-                                 ExceptionState::kExecutionContext, "Window",
-                                 "postMessage");
+                                 ExceptionContextType::kOperationInvoke,
+                                 "Window", "postMessage");
 
   auto* port = MakeGarbageCollected<MessagePort>(*scope.GetExecutionContext());
   EXPECT_TRUE(port->IsNeutered());
@@ -966,8 +966,8 @@ TEST(V8ScriptValueSerializerTest,
      UntransferredMessagePortThrowsDataCloneError) {
   V8TestingScope scope;
   ExceptionState exception_state(scope.GetIsolate(),
-                                 ExceptionState::kExecutionContext, "Window",
-                                 "postMessage");
+                                 ExceptionContextType::kOperationInvoke,
+                                 "Window", "postMessage");
 
   MessagePort* port = MakeMessagePort(scope.GetExecutionContext());
   v8::Local<v8::Value> wrapper = ToV8(port, scope.GetScriptState());
@@ -1039,8 +1039,8 @@ TEST(V8ScriptValueSerializerTest, RoundTripMojoHandle) {
 TEST(V8ScriptValueSerializerTest, UntransferredMojoHandleThrowsDataCloneError) {
   V8TestingScope scope;
   ExceptionState exception_state(scope.GetIsolate(),
-                                 ExceptionState::kExecutionContext, "Window",
-                                 "postMessage");
+                                 ExceptionContextType::kOperationInvoke,
+                                 "Window", "postMessage");
 
   mojo::MessagePipe pipe;
   auto* handle = MakeGarbageCollected<MojoHandle>(

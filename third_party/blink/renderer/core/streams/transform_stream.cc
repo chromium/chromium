@@ -46,7 +46,7 @@ class TransformStream::FlushAlgorithm final : public StreamAlgorithm {
                                script_state->GetIsolate(), "invalid realm"));
     }
     ExceptionState exception_state(script_state->GetIsolate(),
-                                   ExceptionState::kUnknownContext, "", "");
+                                   ExceptionContextType::kUnknown, "", "");
     ScriptPromise promise;
     {
       // This is needed because the realm of the transformer can be different
@@ -98,7 +98,7 @@ class TransformStream::TransformAlgorithm final : public StreamAlgorithm {
                                script_state->GetIsolate(), "invalid realm"));
     }
     ExceptionState exception_state(script_state->GetIsolate(),
-                                   ExceptionState::kUnknownContext, "", "");
+                                   ExceptionContextType::kUnknown, "", "");
     ScriptPromise promise =
         transformer_->Transform(argv[0], controller_, exception_state);
     if (exception_state.HadException()) {
@@ -768,7 +768,7 @@ void TransformStream::Initialize(
     double readable_high_water_mark,
     StrategySizeAlgorithm* readable_size_algorithm) {
   ExceptionState exception_state(script_state->GetIsolate(),
-                                 ExceptionState::kUnknownContext, "", "");
+                                 ExceptionContextType::kUnknown, "", "");
 
   // https://streams.spec.whatwg.org/#initialize-transform-stream
   // 1. Let startAlgorithm be an algorithm that returns startPromise.

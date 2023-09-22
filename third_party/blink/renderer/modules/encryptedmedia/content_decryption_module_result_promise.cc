@@ -134,7 +134,7 @@ void ContentDecryptionModuleResultPromise::Reject(ExceptionCode code,
   ScriptState::Scope scope(resolver_->GetScriptState());
   ExceptionState exception_state(
       resolver_->GetScriptState()->GetIsolate(),
-      ExceptionState::kExecutionContext,
+      ExceptionContextType::kOperationInvoke,
       EncryptedMediaUtils::GetInterfaceName(api_type_),
       EncryptedMediaUtils::GetPropertyName(api_type_));
   exception_state.ThrowException(code, error_message);

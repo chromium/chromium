@@ -62,7 +62,7 @@ void ReadableStreamDefaultControllerWithScriptScope::Enqueue(
   ScriptState::Scope scope(script_state_);
 
   v8::Isolate* isolate = script_state_->GetIsolate();
-  ExceptionState exception_state(isolate, ExceptionState::kUnknownContext, "",
+  ExceptionState exception_state(isolate, ExceptionContextType::kUnknown, "",
                                  "");
   v8::MicrotasksScope microtasks_scope(
       isolate, ToMicrotaskQueue(script_state_),
