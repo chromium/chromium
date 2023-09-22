@@ -7,8 +7,8 @@
 #include <memory>
 #include <string>
 
+#include "base/strings/strcat_win.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -340,8 +340,8 @@ TEST_F(NotificationTemplateBuilderTest, LocalizedContextMenu) {
   // Disable overriding context menu label.
   SetContextMenuLabelForTesting(nullptr);
 
-  const wchar_t kExpectedXmlTemplate[] =
-      LR"(<toast launch="0|0|Default|0|https://example.com/|notification_id" displayTimestamp="1998-09-04T01:02:03Z">
+  std::wstring expected_xml = base::StrCat(
+      {LR"(<toast launch="0|0|Default|0|https://example.com/|notification_id" displayTimestamp="1998-09-04T01:02:03Z">
  <visual>
   <binding template="ToastGeneric">
    <text>My Title</text>
@@ -350,15 +350,13 @@ TEST_F(NotificationTemplateBuilderTest, LocalizedContextMenu) {
   </binding>
  </visual>
  <actions>
-  <action content="%ls" placement="contextMenu" activationType="foreground" arguments="2|0|Default|0|https://example.com/|notification_id"/>
+  <action content=")",
+       l10n_util::GetWideString(
+           IDS_WIN_NOTIFICATION_SETTINGS_CONTEXT_MENU_ITEM_NAME),
+       LR"(" placement="contextMenu" activationType="foreground" arguments="2|0|Default|0|https://example.com/|notification_id"/>
  </actions>
 </toast>
-)";
-
-  std::wstring settings_msg = l10n_util::GetWideString(
-      IDS_WIN_NOTIFICATION_SETTINGS_CONTEXT_MENU_ITEM_NAME);
-  std::wstring expected_xml =
-      base::StringPrintf(kExpectedXmlTemplate, settings_msg.c_str());
+)"});
 
   ASSERT_NO_FATAL_FAILURE(VerifyXml(notification, expected_xml));
 }

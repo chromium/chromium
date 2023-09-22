@@ -25,7 +25,7 @@
 #include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
@@ -55,6 +55,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+
 #include "base/win/scoped_handle.h"
 #else
 #include <unistd.h>
@@ -221,8 +222,8 @@ TEST_F(NativeMessagingTest, SingleSendMessageWrite) {
 
   base::File read_file;
 #if BUILDFLAG(IS_WIN)
-  std::wstring pipe_name = base::StringPrintf(
-      L"\\\\.\\pipe\\chrome.nativeMessaging.out.%llx", base::RandUint64());
+  std::wstring pipe_name = base::ASCIIToWide(base::StringPrintf(
+      "\\\\.\\pipe\\chrome.nativeMessaging.out.%llx", base::RandUint64()));
   base::File write_handle =
       base::File(base::ScopedPlatformFile(CreateNamedPipeW(
                      pipe_name.c_str(),

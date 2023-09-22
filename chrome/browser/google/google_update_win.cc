@@ -20,6 +20,7 @@
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -144,10 +145,8 @@ HRESULT CoGetClassObjectAsAdmin(gfx::AcceleratedWidget hwnd,
 
   // For Vista+, need to instantiate the class factory via the elevation
   // moniker. This ensures that the UAC dialog shows up.
-  auto class_id_as_string = base::win::WStringFromGUID(class_id);
-
-  std::wstring elevation_moniker_name = base::StringPrintf(
-      L"Elevation:Administrator!clsid:%ls", class_id_as_string.c_str());
+  const std::wstring elevation_moniker_name =
+      L"Elevation:Administrator!clsid:" + base::win::WStringFromGUID(class_id);
 
   BIND_OPTS3 bind_opts;
   // An explicit memset is needed rather than relying on value initialization

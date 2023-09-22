@@ -19,7 +19,7 @@
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/string_number_conversions_win.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/multiprocess_test.h"
 #include "base/time/time.h"
@@ -183,14 +183,14 @@ class ProcessSingletonTest : public base::MultiProcessTest {
 
     // Create the named "ready" event, this is unique to our process.
     ready_event_name_ =
-        base::StringPrintf(L"ready-event-%d", base::GetCurrentProcId());
+        L"ready-event-" + base::NumberToWString(base::GetCurrentProcId());
     base::win::ScopedHandle ready_event(
         ::CreateEvent(NULL, TRUE, FALSE, ready_event_name_.c_str()));
     ASSERT_TRUE(ready_event.IsValid());
 
     // Create the named "continue" event, this is unique to our process.
     continue_event_name_ =
-        base::StringPrintf(L"continue-event-%d", base::GetCurrentProcId());
+        L"continue-event-" + base::NumberToWString(base::GetCurrentProcId());
     continue_event_.Set(
         ::CreateEvent(NULL, TRUE, FALSE, continue_event_name_.c_str()));
     ASSERT_TRUE(continue_event_.IsValid());

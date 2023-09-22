@@ -17,6 +17,7 @@
 #include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -306,8 +307,8 @@ void SyncTest::BeforeSetupClient(int index,
                                  const base::FilePath& profile_path) {}
 
 base::FilePath SyncTest::GetProfileBaseName(int index) {
-  return base::FilePath(base::StringPrintf(
-      FILE_PATH_LITERAL("SyncIntegrationTestClient%d"), index));
+  return base::FilePath::FromASCII("SyncIntegrationTestClient" +
+                                   base::NumberToString(index));
 }
 
 bool SyncTest::CreateProfile(int index) {

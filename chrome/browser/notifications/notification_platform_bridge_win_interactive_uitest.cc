@@ -17,7 +17,7 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/strcat_win.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
@@ -78,9 +78,9 @@ Profile* CreateTestingProfile(const std::string& profile_name) {
 std::wstring GetToastString(const std::wstring& notification_id,
                             const std::wstring& profile_id,
                             bool incognito) {
-  return base::StringPrintf(
-      LR"(<toast launch="0|0|%ls|%d|https://foo.com/|%ls"></toast>)",
-      profile_id.c_str(), incognito, notification_id.c_str());
+  return base::StrCat({L"<toast launch=\"0|0|", profile_id, L"|",
+                       base::NumberToWString(incognito), L"|https://foo.com/|",
+                       notification_id, L"\"></toast>"});
 }
 
 }  // namespace

@@ -20,6 +20,7 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -762,13 +763,12 @@ bool ShortcutFilenameMatcher::IsCanonical(const std::wstring& filename) const {
 
 std::wstring CreateProfileShortcutFlags(const base::FilePath& profile_path,
                                         const bool incognito) {
-  std::wstring flags = base::StringPrintf(
-      L"--%ls=\"%ls\"", base::ASCIIToWide(switches::kProfileDirectory).c_str(),
-      profile_path.BaseName().value().c_str());
+  std::wstring flags =
+      base::StrCat({L"--", base::ASCIIToWide(switches::kProfileDirectory),
+                    L"=\"", profile_path.BaseName().value(), L"\""});
 
   if (incognito) {
-    flags.append(base::StringPrintf(
-        L" --%ls", base::ASCIIToWide(switches::kIncognito).c_str()));
+    flags.append(L" --" + base::ASCIIToWide(switches::kIncognito));
   }
 
   return flags;
