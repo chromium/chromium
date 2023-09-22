@@ -118,6 +118,8 @@ void HandleSafetyCheckPasswordTap(
                                       referrer:password_manager::
                                                    PasswordCheckReferrer::
                                                        kSafetyCheckMagicStack];
+
+    return;
   }
 
   // If there are multiple passwords (with multiple warning types), or no
@@ -125,6 +127,7 @@ void HandleSafetyCheckPasswordTap(
   // overview screen.
   base::RecordAction(
       base::UserMetricsAction("MobileMagicStackOpenPasswordCheckup"));
+
   [handler showPasswordCheckupPageForReferrer:
                password_manager::PasswordCheckReferrer::kSafetyCheckMagicStack];
 }
