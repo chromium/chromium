@@ -53,7 +53,10 @@ if (android_64bit_target_cpu) {
     pydeps_file = "//android_webview/tools/run_cts.pydeps"
     deps = [ "//android_webview:trichrome_webview_64_apk" ]
     data_deps = [ "//build/android:test_runner_py" ]
-    data = [ "//android_webview/tools/cts_config/" ]
+    data = [
+      "//android_webview/tools/cts_config/",
+      "//third_party/chromium-variations",
+    ]
   }
 }
 

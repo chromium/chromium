@@ -411,6 +411,9 @@ def ForwardArgsToTestRunner(known_args):
   if known_args.verbose:
     forwarded_args.extend(['-' + 'v' * known_args.verbose])
   #TODO: Pass quiet to test runner when it becomes supported
+  if known_args.variations_test_seed_path:
+    forwarded_args.extend(
+        ['--variations-test-seed-path', known_args.variations_test_seed_path])
   return forwarded_args
 
 
@@ -436,6 +439,17 @@ def GetDevice(args):
   finally:
     if emulator_instance:
       emulator_instance.Stop()
+
+
+@contextlib.contextmanager
+def GetTemporaryRunTimeDepsFile(known_args):
+  with tempfile.NamedTemporaryFile(mode='w+') as tmpfile:
+    if known_args.variations_test_seed_path:
+      tmpfile.write(known_args.variations_test_seed_path)
+      tmpfile.flush()
+      yield tmpfile.name
+    else:
+      yield None
 
 
 def main():
@@ -508,6 +522,16 @@ def main():
                       default=_DEFAULT_CTS_ARCHIVE_DIR,
                       help='Path to where CTS archives are stored. '
                       'Defaults to: ' + _DEFAULT_CTS_ARCHIVE_DIR)
+
+  # The variations test seed file should be in JSON format. Please look
+  # in //third_party/chromium-variations for examples of variations
+  # test seeds.
+  parser.add_argument('--variations-test-seed-path',
+                      type=os.path.relpath,
+                      default=None,
+                      help='Path to a JSON file that contains the '
+                      'variations test seed. Defaults to running CTS tests '
+                      'without a variations test seed.')
   # We are re-using this argument that is used by our test runner
   # to detect if we are testing against an instant app
   # This allows us to know if we should filter tests based off the app
@@ -557,7 +581,10 @@ def main():
     # MockContentProvider's authority string the same.
     UninstallAnyCtsWebkitPackages(device)
 
-    return RunAllCTSTests(args, arch, cts_release, test_runner_args)
+    with GetTemporaryRunTimeDepsFile(args) as runtime_deps_file:
+      if runtime_deps_file:
+        test_runner_args.extend(['--runtime-deps-path', runtime_deps_file])
+      return RunAllCTSTests(args, arch, cts_release, test_runner_args)
 
 
 if __name__ == '__main__':
