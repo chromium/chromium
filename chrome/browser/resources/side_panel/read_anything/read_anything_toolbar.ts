@@ -27,6 +27,7 @@ export interface ReadAnythingToolbar {
     letterSpacingMenu: CrActionMenuElement,
     fontMenu: CrActionMenuElement,
     fontSizeMenu: CrActionMenuElement,
+    moreOptionsMenu: CrActionMenuElement,
     fontTemplate: DomRepeat,
   };
 }
@@ -83,6 +84,65 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
       rateOptions_: Array,
       textStyleOptions_: Array,
     };
+  }
+
+  // This function has to be static because it's called from the ResizeObserver
+  // callback which doesn't have access to "this"
+  static maybeUpdateMoreOptions(toolbar: HTMLElement) {
+    // Hide the more options button first to calculate if we need it
+    const moreOptionsButton = toolbar.querySelector('#more') as HTMLElement;
+    assert(moreOptionsButton);
+    ReadAnythingToolbar.hideElement(moreOptionsButton, false);
+    const moreOptionsMenu = toolbar.querySelector('#moreOptionsMenu');
+    assert(moreOptionsMenu);
+    Array.from(moreOptionsMenu.children).forEach(child => {
+      ReadAnythingToolbar.hideElement(child as HTMLElement, false);
+    });
+
+    // Show all the buttons before deciding which ones to hide
+    const buttons = toolbar.querySelectorAll('.toolbar-button');
+    assert(buttons);
+    buttons.forEach(btn => {
+      ReadAnythingToolbar.showElement(btn as HTMLElement);
+    });
+
+    // When scroll width and client width are the different, then the content
+    // has overflowed
+    if (toolbar.scrollWidth !== toolbar.clientWidth) {
+      // If x buttons are pushed off screen, put the more options button before
+      // the last x + 1 buttons since adding it will push another button off
+      // screen
+      for (let i = buttons.length - 1; i >= 0; i--) {
+        // Hide the overflowed button in case it's still partially on screen
+        const button = buttons[i] as HTMLElement;
+        ReadAnythingToolbar.hideElement(button, true);
+        // Show the button that was pushed off screen in the more options menu
+        const styleButtonInMoreOptions =
+            moreOptionsMenu.querySelector('#' + button.id) as HTMLElement;
+        if (!styleButtonInMoreOptions) {
+          break;
+        }
+        ReadAnythingToolbar.showElement(styleButtonInMoreOptions);
+        if (button.getBoundingClientRect().right < toolbar.clientWidth) {
+          ReadAnythingToolbar.showElement(moreOptionsButton);
+          toolbar.insertBefore(moreOptionsButton, button);
+          break;
+        }
+      }
+    }
+  }
+
+  static hideElement(element: HTMLElement, keepSpace: boolean) {
+    if (keepSpace) {
+      element.style.visibility = 'hidden';
+    } else {
+      element.style.display = 'none';
+    }
+  }
+
+  static showElement(element: HTMLElement) {
+    element.style.visibility = 'visible';
+    element.style.display = 'inline-block';
   }
 
   // If you change these fonts, please also update read_anything_constants.h
@@ -216,6 +276,18 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     this.isReadAloudEnabled_ = chrome.readingMode.isReadAloudEnabled;
 
     this.updateFonts();
+
+    const shadowRoot = this.shadowRoot;
+    assert(shadowRoot);
+    const toolbar = shadowRoot.getElementById('toolbar-container');
+    assert(toolbar);
+    new ResizeObserver(this.onToolbarResize_).observe(toolbar);
+  }
+
+  private onToolbarResize_(entries: ResizeObserverEntry[]) {
+    assert(entries.length === 1);
+    const toolbar = entries[0].target as HTMLElement;
+    ReadAnythingToolbar.maybeUpdateMoreOptions(toolbar);
   }
 
   restoreSettingsFromPrefs(colorSuffix?: string) {
@@ -284,6 +356,10 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     this.updateStyles({
       '--audio-controls-background': 'var(--color-sys-tonal-container)',
     });
+
+    const toolbar = shadowRoot.getElementById('toolbar-container');
+    assert(toolbar);
+    ReadAnythingToolbar.maybeUpdateMoreOptions(toolbar);
   }
 
   updateUiForPausing() {
@@ -297,6 +373,10 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     this.updateStyles({
       '--audio-controls-background': 'transparent',
     });
+
+    const toolbar = shadowRoot.getElementById('toolbar-container');
+    assert(toolbar);
+    ReadAnythingToolbar.maybeUpdateMoreOptions(toolbar);
   }
 
   private closeMenus_() {
@@ -325,6 +405,10 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
 
   private onShowRateMenuClick_(event: MouseEvent) {
     this.openMenu_(this.$.rateMenu, event.target as HTMLElement);
+  }
+
+  private onMoreOptionsClick_(event: MouseEvent) {
+    this.openMenu_(this.$.moreOptionsMenu, event.target as HTMLElement);
   }
 
   private openMenu_(menuToOpen: CrActionMenuElement, target: HTMLElement) {
@@ -444,10 +528,10 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     checkMarks.forEach((element) => {
       assert(element instanceof HTMLElement);
       // TODO(crbug.com/1465029): Ensure this works with screen readers
-      element.style.visibility = 'hidden';
+      ReadAnythingToolbar.hideElement(element, true);
     });
     const checkMark = checkMarks[index] as IronIconElement;
-    checkMark.style.visibility = 'visible';
+    ReadAnythingToolbar.showElement(checkMark);
   }
 
   private onFontSizeIncreaseClick_() {

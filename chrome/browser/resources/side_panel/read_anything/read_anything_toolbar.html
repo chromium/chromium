@@ -50,32 +50,45 @@
   .check-mark {
     visibility: hidden;
   }
+  #toolbar-container {
+    overflow: visible;
+    white-space: nowrap;
+    max-height: 50px;
+  }
+  #more, cr-icon-button#moreOptionsMenu {
+    display: none;
+  }
 </style>
-<div class="toolbar-container">
+<div id="toolbar-container" class="toolbar-container">
   <span id="read-aloud-container" hidden="[[!isReadAloudEnabled_]]">
     <span id="audio-controls">
       <cr-icon-button
+        class="toolbar-button"
         id="play-pause"
         iron-icon="read-anything-20:play"
         on-click="onPlayPauseClick_">
       </cr-icon-button>
       <span id="granularity-container" hidden="[[isPaused_]]">
         <cr-icon-button id="previousGranularity"
-          iron-icon="read-anything:previous"
+          class="toolbar-button"
+        iron-icon="read-anything:previous"
         on-click="onPreviousGranularityClick_">
-        </cr-icon-button>
-        <cr-icon-button id="nextGranularity"
-          iron-icon="read-anything:next"
+      </cr-icon-button>
+      <cr-icon-button id="nextGranularity"
+        class="toolbar-button"
+        iron-icon="read-anything:next"
         on-click="onNextGranularityClick_">
         </cr-icon-button>
       </span>
     </span>
     <cr-icon-button
+      class="toolbar-button"
       id="rate"
       iron-icon="voice-rate:1"
       on-click="onShowRateMenuClick_">
     </cr-icon-button>
     <cr-icon-button
+      class="toolbar-button"
       id="highlight"
       iron-icon="read-anything:highlight-on"
       title="$i18n{turnHighlightOff}"
@@ -90,6 +103,21 @@
       on-click="onTextStyleMenuButtonClick_">
     </cr-icon-button>
   </template>
+  <cr-icon-button
+      id="more"
+      iron-icon="cr:more-vert"
+      on-click="onMoreOptionsClick_">
+  </cr-icon-button>
+
+  <cr-action-menu id="moreOptionsMenu">
+    <template is="dom-repeat" items="[[textStyleOptions_]]">
+      <cr-icon-button
+        id="[[item.id]]"
+        iron-icon="[[item.icon]]"
+        on-click="onTextStyleMenuButtonClick_">
+      </cr-icon-button>
+    </template>
+  </cr-action-menu>
   <cr-action-menu id="rateMenu">
     <template is="dom-repeat" items="[[rateOptions_]]">
       <button class="dropdown-item" on-click="onRateClick_">
