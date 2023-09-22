@@ -6,26 +6,25 @@
 
 namespace blink {
 
-LayoutNGRubyBase::LayoutNGRubyBase() : LayoutNGBlockFlow(nullptr) {
+LayoutRubyBase::LayoutRubyBase() : LayoutNGBlockFlow(nullptr) {
   SetInline(false);
 }
 
-LayoutNGRubyBase::~LayoutNGRubyBase() = default;
+LayoutRubyBase::~LayoutRubyBase() = default;
 
-bool LayoutNGRubyBase::IsOfType(LayoutObjectType type) const {
+bool LayoutRubyBase::IsOfType(LayoutObjectType type) const {
   NOT_DESTROYED();
   return type == kLayoutObjectRubyBase || LayoutBlockFlow::IsOfType(type);
 }
 
-bool LayoutNGRubyBase::IsChildAllowed(LayoutObject*,
-                                      const ComputedStyle&) const {
+bool LayoutRubyBase::IsChildAllowed(LayoutObject*, const ComputedStyle&) const {
   NOT_DESTROYED();
   NOTREACHED();  // Because LayoutRubyColumn manages child types.
   return true;
 }
 
-void LayoutNGRubyBase::MoveChildren(LayoutNGRubyBase& to_base,
-                                    LayoutObject* before_child) {
+void LayoutRubyBase::MoveChildren(LayoutRubyBase& to_base,
+                                  LayoutObject* before_child) {
   NOT_DESTROYED();
 
   if (before_child && before_child->Parent() != this) {
@@ -44,8 +43,8 @@ void LayoutNGRubyBase::MoveChildren(LayoutNGRubyBase& to_base,
       layout_invalidation_reason::kUnknown);
 }
 
-void LayoutNGRubyBase::MoveInlineChildrenTo(LayoutNGRubyBase& to_base,
-                                            LayoutObject* before_child) {
+void LayoutRubyBase::MoveInlineChildrenTo(LayoutRubyBase& to_base,
+                                          LayoutObject* before_child) {
   NOT_DESTROYED();
   DCHECK(ChildrenInline());
 
@@ -73,8 +72,8 @@ void LayoutNGRubyBase::MoveInlineChildrenTo(LayoutNGRubyBase& to_base,
   MoveChildrenTo(to_block, FirstChild(), before_child);
 }
 
-void LayoutNGRubyBase::MoveBlockChildrenTo(LayoutNGRubyBase& to_base,
-                                           LayoutObject* before_child) {
+void LayoutRubyBase::MoveBlockChildrenTo(LayoutRubyBase& to_base,
+                                         LayoutObject* before_child) {
   NOT_DESTROYED();
   DCHECK(!ChildrenInline());
 

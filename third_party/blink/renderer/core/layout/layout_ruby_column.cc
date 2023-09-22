@@ -47,22 +47,22 @@ bool LayoutRubyColumn::HasRubyBase() const {
   return LastChild() && LastChild()->IsRubyBase();
 }
 
-LayoutNGRubyText* LayoutRubyColumn::RubyText() const {
+LayoutRubyText* LayoutRubyColumn::RubyText() const {
   NOT_DESTROYED();
   LayoutObject* child = FirstChild();
   // If in future it becomes necessary to support floating or positioned ruby
   // text, layout will have to be changed to handle them properly.
   DCHECK(!child || !child->IsRubyText() ||
          !child->IsFloatingOrOutOfFlowPositioned());
-  return DynamicTo<LayoutNGRubyText>(child);
+  return DynamicTo<LayoutRubyText>(child);
 }
 
-LayoutNGRubyBase* LayoutRubyColumn::RubyBase() const {
+LayoutRubyBase* LayoutRubyColumn::RubyBase() const {
   NOT_DESTROYED();
-  return DynamicTo<LayoutNGRubyBase>(LastChild());
+  return DynamicTo<LayoutRubyBase>(LastChild());
 }
 
-LayoutNGRubyBase& LayoutRubyColumn::EnsureRubyBase() {
+LayoutRubyBase& LayoutRubyColumn::EnsureRubyBase() {
   NOT_DESTROYED();
   if (auto* base = RubyBase()) {
     return *base;
@@ -167,9 +167,9 @@ void LayoutRubyColumn::RemoveChild(LayoutObject* child) {
   }
 }
 
-LayoutNGRubyBase& LayoutRubyColumn::CreateRubyBase() const {
+LayoutRubyBase& LayoutRubyColumn::CreateRubyBase() const {
   NOT_DESTROYED();
-  auto* layout_object = MakeGarbageCollected<LayoutNGRubyBase>();
+  auto* layout_object = MakeGarbageCollected<LayoutRubyBase>();
   layout_object->SetDocumentForAnonymous(&GetDocument());
   ComputedStyleBuilder new_style_builder =
       GetDocument().GetStyleResolver().CreateAnonymousStyleBuilderWithDisplay(

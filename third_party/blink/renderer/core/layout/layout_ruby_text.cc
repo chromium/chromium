@@ -8,17 +8,16 @@
 
 namespace blink {
 
-LayoutNGRubyText::LayoutNGRubyText(Element* element)
-    : LayoutNGBlockFlow(element) {}
+LayoutRubyText::LayoutRubyText(Element* element) : LayoutNGBlockFlow(element) {}
 
-LayoutNGRubyText::~LayoutNGRubyText() = default;
+LayoutRubyText::~LayoutRubyText() = default;
 
-bool LayoutNGRubyText::IsOfType(LayoutObjectType type) const {
+bool LayoutRubyText::IsOfType(LayoutObjectType type) const {
   NOT_DESTROYED();
   return type == kLayoutObjectRubyText || LayoutNGBlockFlow::IsOfType(type);
 }
 
-bool LayoutNGRubyText::CreatesNewFormattingContext() const {
+bool LayoutRubyText::CreatesNewFormattingContext() const {
   NOT_DESTROYED();
   // Ruby text objects are pushed around after layout, to become flush with
   // the associated ruby base. As such, we cannot let floats leak out from
@@ -26,14 +25,14 @@ bool LayoutNGRubyText::CreatesNewFormattingContext() const {
   return true;
 }
 
-bool LayoutNGRubyText::IsChildAllowed(LayoutObject* child,
-                                      const ComputedStyle&) const {
+bool LayoutRubyText::IsChildAllowed(LayoutObject* child,
+                                    const ComputedStyle&) const {
   NOT_DESTROYED();
   return child->IsInline();
 }
 
-void LayoutNGRubyText::StyleDidChange(StyleDifference diff,
-                                      const ComputedStyle* old_style) {
+void LayoutRubyText::StyleDidChange(StyleDifference diff,
+                                    const ComputedStyle* old_style) {
   NOT_DESTROYED();
   if (StyleRef().GetTextAlign() !=
       ComputedStyleInitialValues::InitialTextAlign()) {

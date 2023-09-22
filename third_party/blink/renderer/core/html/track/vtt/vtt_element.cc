@@ -151,7 +151,7 @@ LayoutObject* VTTElement::CreateLayoutObject(const ComputedStyle& style) {
     case kVTTNodeTypeRuby:
       return MakeGarbageCollected<LayoutRubyAsInline>(this);
     case kVTTNodeTypeRubyText:
-      return MakeGarbageCollected<LayoutNGRubyText>(this);
+      return MakeGarbageCollected<LayoutRubyText>(this);
   }
   return LayoutObject::CreateObject(this, style);
 }

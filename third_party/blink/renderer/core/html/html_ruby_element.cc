@@ -19,7 +19,7 @@ LayoutObject* HTMLRubyElement::CreateLayoutObject(const ComputedStyle& style) {
     return MakeGarbageCollected<LayoutRubyAsInline>(this);
   if (style.Display() == EDisplay::kBlock) {
     UseCounter::Count(GetDocument(), WebFeature::kRubyElementWithDisplayBlock);
-    return MakeGarbageCollected<LayoutNGRubyAsBlock>(this);
+    return MakeGarbageCollected<LayoutRubyAsBlock>(this);
   }
   return LayoutObject::CreateObject(this, style);
 }

@@ -12,14 +12,14 @@ namespace blink {
 
 // Represents <ruby> with "display: block" or "display: inline-block".
 // If we supports "display: block ruby", we can remove this class.
-class CORE_EXPORT LayoutNGRubyAsBlock : public LayoutNGBlockFlow {
+class CORE_EXPORT LayoutRubyAsBlock : public LayoutNGBlockFlow {
  public:
-  explicit LayoutNGRubyAsBlock(Element*);
-  ~LayoutNGRubyAsBlock() override;
+  explicit LayoutRubyAsBlock(Element*);
+  ~LayoutRubyAsBlock() override;
 
   const char* GetName() const override {
     NOT_DESTROYED();
-    return "LayoutNGRubyAsBlock";
+    return "LayoutRubyAsBlock";
   }
   bool IsOfType(LayoutObjectType type) const override;
   void AddChild(LayoutObject* child,

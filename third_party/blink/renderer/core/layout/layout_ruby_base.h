@@ -12,32 +12,31 @@ namespace blink {
 
 // Represents a ruby base box.
 // https://drafts.csswg.org/css-ruby-1/#ruby-base-box.
-class CORE_EXPORT LayoutNGRubyBase final : public LayoutNGBlockFlow {
+class CORE_EXPORT LayoutRubyBase final : public LayoutNGBlockFlow {
  public:
-  explicit LayoutNGRubyBase();
-  ~LayoutNGRubyBase() override;
+  explicit LayoutRubyBase();
+  ~LayoutRubyBase() override;
 
   const char* GetName() const override {
     NOT_DESTROYED();
-    return "LayoutNGRubyBase";
+    return "LayoutRubyBase";
   }
   bool IsOfType(LayoutObjectType type) const override;
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const override;
 
   // This function removes all children that are before (!) `before_child`
   // and appends them to `to_base`.
-  void MoveChildren(LayoutNGRubyBase& to_base,
+  void MoveChildren(LayoutRubyBase& to_base,
                     LayoutObject* before_child = nullptr);
 
  private:
-  void MoveInlineChildrenTo(LayoutNGRubyBase& to_base,
+  void MoveInlineChildrenTo(LayoutRubyBase& to_base,
                             LayoutObject* before_child);
-  void MoveBlockChildrenTo(LayoutNGRubyBase& to_base,
-                           LayoutObject* before_child);
+  void MoveBlockChildrenTo(LayoutRubyBase& to_base, LayoutObject* before_child);
 };
 
 template <>
-struct DowncastTraits<LayoutNGRubyBase> {
+struct DowncastTraits<LayoutRubyBase> {
   static bool AllowFrom(const LayoutObject& object) {
     return object.IsRubyBase();
   }

@@ -10,20 +10,20 @@
 
 namespace blink {
 
-LayoutNGRubyAsBlock::LayoutNGRubyAsBlock(Element* element)
+LayoutRubyAsBlock::LayoutRubyAsBlock(Element* element)
     : LayoutNGBlockFlow(element) {
   UseCounter::Count(GetDocument(), WebFeature::kRenderRuby);
 }
 
-LayoutNGRubyAsBlock::~LayoutNGRubyAsBlock() = default;
+LayoutRubyAsBlock::~LayoutRubyAsBlock() = default;
 
-bool LayoutNGRubyAsBlock::IsOfType(LayoutObjectType type) const {
+bool LayoutRubyAsBlock::IsOfType(LayoutObjectType type) const {
   NOT_DESTROYED();
   return type == kLayoutObjectRuby || LayoutNGBlockFlow::IsOfType(type);
 }
 
-void LayoutNGRubyAsBlock::AddChild(LayoutObject* child,
-                                   LayoutObject* before_child) {
+void LayoutRubyAsBlock::AddChild(LayoutObject* child,
+                                 LayoutObject* before_child) {
   NOT_DESTROYED();
   // If the child is a ruby column, just add it normally.
   if (child->IsRubyColumn()) {
@@ -61,7 +61,7 @@ void LayoutNGRubyAsBlock::AddChild(LayoutObject* child,
   last_column->AddChild(child);
 }
 
-void LayoutNGRubyAsBlock::RemoveChild(LayoutObject* child) {
+void LayoutRubyAsBlock::RemoveChild(LayoutObject* child) {
   NOT_DESTROYED();
   // If the child's parent is *this (must be a ruby column), just use the normal
   // remove method.
@@ -77,19 +77,19 @@ void LayoutNGRubyAsBlock::RemoveChild(LayoutObject* child) {
   column->RemoveChild(child);
 }
 
-void LayoutNGRubyAsBlock::StyleDidChange(StyleDifference diff,
-                                         const ComputedStyle* old_style) {
+void LayoutRubyAsBlock::StyleDidChange(StyleDifference diff,
+                                       const ComputedStyle* old_style) {
   NOT_DESTROYED();
   LayoutNGBlockFlow::StyleDidChange(diff, old_style);
   PropagateStyleToAnonymousChildren();
 }
 
-bool LayoutNGRubyAsBlock::CreatesAnonymousWrapper() const {
+bool LayoutRubyAsBlock::CreatesAnonymousWrapper() const {
   NOT_DESTROYED();
   return true;
 }
 
-void LayoutNGRubyAsBlock::RemoveLeftoverAnonymousBlock(LayoutBlock*) {
+void LayoutRubyAsBlock::RemoveLeftoverAnonymousBlock(LayoutBlock*) {
   NOT_DESTROYED();
   NOTREACHED();
 }

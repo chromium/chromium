@@ -10,16 +10,16 @@
 
 namespace blink {
 
-// LayoutNGRubyText represents a ruby annotation box.
+// LayoutRubyText represents a ruby annotation box.
 // https://drafts.csswg.org/css-ruby-1/#ruby-annotation-box
-class CORE_EXPORT LayoutNGRubyText final : public LayoutNGBlockFlow {
+class CORE_EXPORT LayoutRubyText final : public LayoutNGBlockFlow {
  public:
-  explicit LayoutNGRubyText(Element* element);
-  ~LayoutNGRubyText() override;
+  explicit LayoutRubyText(Element* element);
+  ~LayoutRubyText() override;
 
   const char* GetName() const override {
     NOT_DESTROYED();
-    return "LayoutNGRubyText";
+    return "LayoutRubyText";
   }
   bool IsOfType(LayoutObjectType type) const override;
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const override;
@@ -29,7 +29,7 @@ class CORE_EXPORT LayoutNGRubyText final : public LayoutNGBlockFlow {
 };
 
 template <>
-struct DowncastTraits<LayoutNGRubyText> {
+struct DowncastTraits<LayoutRubyText> {
   static bool AllowFrom(const LayoutObject& object) {
     return object.IsRubyText();
   }

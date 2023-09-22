@@ -16,7 +16,7 @@ HTMLRTElement::HTMLRTElement(Document& document)
 
 LayoutObject* HTMLRTElement::CreateLayoutObject(const ComputedStyle& style) {
   if (style.Display() == EDisplay::kBlock)
-    return MakeGarbageCollected<LayoutNGRubyText>(this);
+    return MakeGarbageCollected<LayoutRubyText>(this);
   return LayoutObject::CreateObject(this, style);
 }
 
