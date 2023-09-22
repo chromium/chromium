@@ -69,6 +69,7 @@ class EditingList : public views::View, public TouchInjectorObserver {
   // Functions related to buttons.
   void OnAddButtonPressed();
   void OnDoneButtonPressed();
+  void UpdateAddButtonState();
 
   // Drag operations.
   void OnDragStart(const ui::LocatedEvent& event);

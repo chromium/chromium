@@ -45,6 +45,8 @@ constexpr int kHeaderBottomMargin = 16;
 // This is associated to the size of `ash::IconButton::Type::kMedium`.
 constexpr int kIconButtonSize = 32;
 
+constexpr size_t kMaxActionCount = 50;
+
 }  // namespace
 
 EditingList::EditingList(DisplayOverlayController* controller)
@@ -198,6 +200,7 @@ void EditingList::AddHeader(views::View* container) {
           ash::IconButton::Type::kMedium, &kGameControlsAddIcon,
           // TODO(b/279117180): Update a11y string.
           IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
+  UpdateAddButtonState();
 }
 
 void EditingList::AddZeroStateContent() {
@@ -258,6 +261,11 @@ void EditingList::OnDoneButtonPressed() {
   // TODO(b/270969479): Implement the function for the button.
   DCHECK(controller_);
   controller_->OnCustomizeSave();
+}
+
+void EditingList::UpdateAddButtonState() {
+  add_button_->SetEnabled(controller_->GetActiveActionsSize() <
+                          kMaxActionCount);
 }
 
 void EditingList::OnDragStart(const ui::LocatedEvent& event) {
@@ -360,6 +368,7 @@ void EditingList::OnActionAdded(Action& action) {
   scroll_view_->ScrollByOffset(
       gfx::PointF(0, scroll_content_->GetPreferredSize().height()));
 
+  UpdateAddButtonState();
   UpdateWidget();
 }
 
@@ -382,6 +391,7 @@ void EditingList::OnActionRemoved(const Action& action) {
     scroll_view_->InvalidateLayout();
   }
 
+  UpdateAddButtonState();
   UpdateWidget();
 }
 
