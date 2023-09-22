@@ -264,6 +264,11 @@ export class TabSearchAppElement extends TabSearchSearchFieldBase {
     tabsList.selected = NO_SELECTION;
 
     this.updateFilteredTabs_();
+
+    // http://crbug.com/1481787: Dispatch the search event to update the
+    // internal value to make CrSearchFieldMixin function correctly.
+    this.getSearchInput().dispatchEvent(
+        new CustomEvent('search', {composed: true, detail: this.searchText_}));
   }
 
   /**
