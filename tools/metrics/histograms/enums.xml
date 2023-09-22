@@ -60485,6 +60485,7 @@ from previous Chrome versions.
   <int value="-2138883960" label="AutofillRejectCompanyBirthyearName:disabled"/>
   <int value="-2138128164" label="FeedbackOnContinueSectionRemove:enabled"/>
   <int value="-2136173537" label="QuickAnswers:enabled"/>
+  <int value="-2135375480" label="LocalPrinterObserving:enabled"/>
   <int value="-2135013329" label="StylusRichGestures:disabled"/>
   <int value="-2134886830" label="ChromeWideEchoCancellation:disabled"/>
   <int value="-2134653602" label="WebAppSyncGeneratedIconUpdateFix:enabled"/>
@@ -66819,6 +66820,7 @@ from previous Chrome versions.
   <int value="978712907" label="PrintServerUi:disabled"/>
   <int value="979397813" label="WheelEventRegions:disabled"/>
   <int value="979445973" label="OmniboxSpareRenderer:enabled"/>
+  <int value="979915681" label="LocalPrinterObserving:disabled"/>
   <int value="980396200" label="enable-new-korean-ime"/>
   <int value="981818901" label="AppBanners:enabled"/>
   <int value="982032277" label="NTPOfflineBadge:disabled"/>

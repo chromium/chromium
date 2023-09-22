@@ -6697,6 +6697,11 @@ const char kPreferDcheckName[] = "Prefer DCHECK-enabled build";
 const char kPreferDcheckDescription[] =
     "Use a DCHECK-enabled build when available.";
 
+const char kLocalPrinterObservingName[] = "Enable Local Printer Observing";
+const char kLocalPrinterObservingDescription[] =
+    "Allows Print Preview and Printer settings to receive live updates from "
+    "local printers.";
+
 const char kPrinterSettingsPrinterStatusName[] =
     "Enable Printer Settings printer statuses";
 const char kPrinterSettingsPrinterStatusDescription[] =

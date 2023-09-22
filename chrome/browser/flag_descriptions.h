@@ -3849,6 +3849,9 @@ extern const char kPolicyProvidedTrustAnchorsAllowedAtLockScreenDescription[];
 extern const char kPreferDcheckName[];
 extern const char kPreferDcheckDescription[];
 
+extern const char kLocalPrinterObservingName[];
+extern const char kLocalPrinterObservingDescription[];
+
 extern const char kPrinterSettingsPrinterStatusName[];
 extern const char kPrinterSettingsPrinterStatusDescription[];
 
