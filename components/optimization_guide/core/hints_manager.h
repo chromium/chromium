@@ -22,6 +22,7 @@
 #include "base/timer/timer.h"
 #include "components/optimization_guide/core/hints_component_info.h"
 #include "components/optimization_guide/core/hints_fetcher.h"
+#include "components/optimization_guide/core/insertion_ordered_set.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_hints_component_observer.h"
 #include "components/optimization_guide/core/push_notification_manager.h"
@@ -36,6 +37,10 @@ class PrefService;
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
 
 namespace optimization_guide {
 class HintCache;
@@ -60,6 +65,7 @@ class HintsManager : public OptimizationHintsComponentObserver,
       TabUrlProvider* tab_url_provider,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<PushNotificationManager> push_notification_manager,
+      signin::IdentityManager* identity_manager,
       OptimizationGuideLogger* optimization_guide_logger);
 
   ~HintsManager() override;
@@ -301,6 +307,18 @@ class HintsManager : public OptimizationHintsComponentObserver,
   // longer needed removes the request from |batch_update_hints_fetchers_|
   void CleanUpBatchUpdateHintsFetcher(int32_t request_id);
 
+  // Fetch batch hints for all `hosts` and `urls` for the `optimization_types`
+  // with the `request_context`. `access_token` can be empty which indicates no
+  // auth is specified.
+  void FetchOptimizationGuideServiceBatchHints(
+      const InsertionOrderedSet<std::string>& hosts,
+      const InsertionOrderedSet<GURL>& urls,
+      const base::flat_set<optimization_guide::proto::OptimizationType>&
+          optimization_types,
+      optimization_guide::proto::RequestContext request_context,
+      OnDemandOptimizationGuideDecisionRepeatingCallback callback,
+      const std::string& access_token);
+
   // Returns decisions for |url| and |optimization_types| based on what's cached
   // locally.
   base::flat_map<proto::OptimizationType, OptimizationGuideDecisionWithMetadata>
@@ -472,7 +490,7 @@ class HintsManager : public OptimizationHintsComponentObserver,
   const std::string application_locale_;
 
   // The set of OAuth scopes to use for personalized metadata.
-  base::flat_set<std::string> oauth_scopes_ = {};
+  std::set<std::string> oauth_scopes_;
 
   // A reference to the PrefService for this profile. Not owned.
   raw_ptr<PrefService> pref_service_ = nullptr;
@@ -516,6 +534,10 @@ class HintsManager : public OptimizationHintsComponentObserver,
   // The class that handles push notification processing and informs |this| of
   // what to do through the implemented Delegate above.
   std::unique_ptr<PushNotificationManager> push_notification_manager_;
+
+  // Unowned IdentityManager for fetching access tokens. Could be null for
+  // incognito profiles.
+  const raw_ptr<signin::IdentityManager> identity_manager_;
 
   // The clock used to schedule fetching from the remote Optimization Guide
   // Service.

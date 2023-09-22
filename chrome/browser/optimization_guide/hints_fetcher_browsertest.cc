@@ -25,6 +25,7 @@
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -284,6 +285,11 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
     }
   }
 
+  void SetExpectedBearerAccessToken(
+      const std::string& expected_bearer_access_token) {
+    expected_bearer_access_token_ = expected_bearer_access_token;
+  }
+
   void WaitUntilHintsFetcherRequestReceived() {
     {
       // Acquire the |lock_| inside to avoid starving other consumers of the
@@ -363,6 +369,14 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
     // normal response.
     EXPECT_EQ(request.method, net::test_server::METHOD_POST);
     EXPECT_NE(request.headers.end(), request.headers.find("X-Client-Data"));
+
+    EXPECT_EQ(expected_bearer_access_token_.empty(),
+              !base::Contains(request.headers,
+                              net::HttpRequestHeaders::kAuthorization));
+    if (!expected_bearer_access_token_.empty()) {
+      EXPECT_EQ(expected_bearer_access_token_,
+                request.headers.at(net::HttpRequestHeaders::kAuthorization));
+    }
 
     optimization_guide::proto::GetHintsRequest hints_request;
     EXPECT_TRUE(hints_request.ParseFromString(request.content));
@@ -473,6 +487,9 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
   absl::optional<base::flat_set<std::string>>
       expect_hints_request_for_hosts_and_urls_;
 
+  // The expected authorization header holding the bearer access token.
+  std::string expected_bearer_access_token_;
+
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 };
 
@@ -496,19 +513,21 @@ class HintsFetcherBrowserTest : public HintsFetcherDisabledBrowserTest {
   ~HintsFetcherBrowserTest() override = default;
 
   void SetUp() override {
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {optimization_guide::features::kOptimizationHints, {}},
+        {
+            optimization_guide::features::kRemoteOptimizationGuideFetching,
+            {{"max_concurrent_page_navigation_fetches", "2"},
+             {"max_urls_for_optimization_guide_service_hints_fetch", "30"},
+             // This delay is set to 0 to avoid flaky timeouts in
+             // HintsFetcherSearchPagePrerenderingBrowserTest.
+             {"onload_delay_for_hints_fetching_ms", "0"},
+             {"batch_update_hints_for_top_hosts", "true"}},
+        }};
+    PopulateEnabledFeatures(&enabled_features);
+
     // Enable OptimizationHintsFetching with |kRemoteOptimizationGuideFetching|.
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{optimization_guide::features::kOptimizationHints, {}},
-         {
-             optimization_guide::features::kRemoteOptimizationGuideFetching,
-             {{"max_concurrent_page_navigation_fetches", "2"},
-              {"max_urls_for_optimization_guide_service_hints_fetch", "30"},
-              // This delay is set to 0 to avoid flaky timeouts in
-              // HintsFetcherSearchPagePrerenderingBrowserTest.
-              {"onload_delay_for_hints_fetching_ms", "0"},
-              {"batch_update_hints_for_top_hosts", "true"}},
-         }},
-        {});
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
     // Call to inherited class to match same set up with feature flags added.
     HintsFetcherDisabledBrowserTest::SetUp();
   }
@@ -521,6 +540,10 @@ class HintsFetcherBrowserTest : public HintsFetcherDisabledBrowserTest {
 
     HintsFetcherDisabledBrowserTest::SetUpOnMainThread();
   }
+
+  // Allows subclasses to expand on the features to enable.
+  virtual void PopulateEnabledFeatures(
+      std::vector<base::test::FeatureRefAndParams>* enabled_features) {}
 
   optimization_guide::TopHostProvider* top_host_provider() {
     OptimizationGuideKeyedService* keyed_service =
@@ -1623,4 +1646,131 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherSearchPageLimitedURLsBrowserTest,
       "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount", 1, 1);
   histogram_tester->ExpectTotalCount(
       "OptimizationGuide.HintsFetcher.RequestStatus.BatchUpdateGoogleSRP", 1);
+}
+
+class PersonalizedHintsFetcherBrowserTest : public HintsFetcherBrowserTest {
+ public:
+  PersonalizedHintsFetcherBrowserTest() = default;
+
+  PersonalizedHintsFetcherBrowserTest(
+      const PersonalizedHintsFetcherBrowserTest&) = delete;
+  PersonalizedHintsFetcherBrowserTest& operator=(
+      const HintsFetcherBrowserTest&) = delete;
+
+  ~PersonalizedHintsFetcherBrowserTest() override = default;
+
+  void SetUp() override { HintsFetcherBrowserTest::SetUp(); }
+
+  void SetUpOnMainThread() override {
+    HintsFetcherBrowserTest::SetUpOnMainThread();
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
+            browser()->profile());
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating(&PersonalizedHintsFetcherBrowserTest::
+                                        OnWillCreateBrowserContextServices,
+                                    base::Unretained(this)));
+  }
+
+  void PopulateEnabledFeatures(
+      std::vector<base::test::FeatureRefAndParams>* enabled_features) override {
+    base::FieldTrialParams personalized_fetching_params = {
+        {"allowed_contexts", "CONTEXT_BOOKMARKS"},
+    };
+    enabled_features->emplace_back(
+        optimization_guide::features::kOptimizationGuidePersonalizedFetching,
+        personalized_fetching_params);
+  }
+
+  void EnableSignin() {
+    identity_test_env_adaptor_->identity_test_env()
+        ->MakePrimaryAccountAvailable("user@gmail.com",
+                                      signin::ConsentLevel::kSignin);
+    identity_test_env_adaptor_->identity_test_env()
+        ->SetAutomaticIssueOfAccessTokens(true);
+  }
+
+  void CanApplyOptimizationOnDemand(
+      optimization_guide::proto::OptimizationType optimization_type,
+      optimization_guide::proto::RequestContext request_context) {
+    std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+    OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+        ->CanApplyOptimizationOnDemand(
+            {GURL("https://example.com")}, {optimization_type}, request_context,
+            base::BindRepeating(
+                [](optimization_guide::proto::OptimizationType
+                       optimization_type,
+                   base::RunLoop* run_loop, const GURL& url,
+                   const base::flat_map<
+                       optimization_guide::proto::OptimizationType,
+                       optimization_guide::
+                           OptimizationGuideDecisionWithMetadata>& decisions) {
+                  // Expect one decision per requested type.
+                  EXPECT_EQ(decisions.size(), 1u);
+                  auto it = decisions.find(optimization_type);
+                  EXPECT_NE(it, decisions.end());
+                  EXPECT_EQ(
+                      it->second.decision,
+                      optimization_guide::OptimizationGuideDecision::kFalse);
+
+                  run_loop->Quit();
+                },
+                optimization_type, run_loop.get()));
+    run_loop->Run();
+  }
+
+ private:
+  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+    IdentityTestEnvironmentProfileAdaptor::
+        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+  }
+
+  // Identity test support.
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_adaptor_;
+  base::CallbackListSubscription create_services_subscription_;
+};
+
+IN_PROC_BROWSER_TEST_F(PersonalizedHintsFetcherBrowserTest, NoUserSignIn) {
+  base::HistogramTester histogram_tester;
+  SetResponseType(
+      optimization_guide::HintsFetcherRemoteResponseType::kSuccessful);
+
+  // No access token set when user is not signed in.
+  SetExpectedBearerAccessToken(std::string());
+  CanApplyOptimizationOnDemand(
+      optimization_guide::proto::OptimizationType::NOSCRIPT,
+      optimization_guide::proto::CONTEXT_BOOKMARKS);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.HintsFetcher.RequestStatus.Bookmarks",
+      optimization_guide::HintsFetcherRequestStatus::kSuccess, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PersonalizedHintsFetcherBrowserTest, UserSignedIn) {
+  base::HistogramTester histogram_tester;
+  EnableSignin();
+  SetResponseType(
+      optimization_guide::HintsFetcherRemoteResponseType::kSuccessful);
+
+  SetExpectedBearerAccessToken("Bearer access_token");
+  CanApplyOptimizationOnDemand(
+      optimization_guide::proto::OptimizationType::NOSCRIPT,
+      optimization_guide::proto::CONTEXT_BOOKMARKS);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.HintsFetcher.RequestStatus.Bookmarks",
+      optimization_guide::HintsFetcherRequestStatus::kSuccess, 1);
+
+  // Only the enabled RequestContext will have access token enabled.
+  SetExpectedBearerAccessToken(std::string());
+  CanApplyOptimizationOnDemand(
+      optimization_guide::proto::OptimizationType::NOSCRIPT,
+      optimization_guide::proto::CONTEXT_JOURNEYS);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.HintsFetcher.RequestStatus.Journeys",
+      optimization_guide::HintsFetcherRequestStatus::kSuccess, 1);
 }

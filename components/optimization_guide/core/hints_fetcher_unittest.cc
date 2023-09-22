@@ -106,7 +106,7 @@ class HintsFetcherTest : public testing::Test,
     bool status = hints_fetcher_->FetchOptimizationGuideServiceHints(
         hosts, urls, {optimization_guide::proto::NOSCRIPT},
         optimization_guide::proto::CONTEXT_BATCH_UPDATE_ACTIVE_TABS, "en-US",
-        absl::nullopt, skip_cache,
+        /*access_token=*/std::string(), skip_cache,
         base::BindOnce(&HintsFetcherTest::OnHintsFetched,
                        base::Unretained(this)));
     RunUntilIdle();

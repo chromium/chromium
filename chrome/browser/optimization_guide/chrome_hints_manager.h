@@ -12,6 +12,10 @@
 class OptimizationGuideLogger;
 class Profile;
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 namespace optimization_guide {
 
 class ChromeHintsManager : public HintsManager,
@@ -26,6 +30,7 @@ class ChromeHintsManager : public HintsManager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<optimization_guide::PushNotificationManager>
           push_notification_manager,
+      signin::IdentityManager* identity_manager,
       OptimizationGuideLogger* optimization_guide_logger);
 
   ~ChromeHintsManager() override;

@@ -160,6 +160,8 @@ static_library("features") {
 
 static_library("core") {
   sources = [
+    "access_token_helper.cc",
+    "access_token_helper.h",
     "command_line_top_host_provider.cc",
     "command_line_top_host_provider.h",
     "hint_cache.cc",
@@ -269,6 +271,7 @@ static_library("core") {
     ":bloomfilter",
     "//base",
     "//components/prefs",
+    "//components/signin/public/identity_manager:identity_manager",
     "//components/unified_consent",
     "//components/variations",
     "//components/variations/net",
@@ -460,6 +463,7 @@ source_set("unit_tests") {
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs:test_support",
     "//components/services/unzip:in_process",
+    "//components/signin/public/identity_manager:test_support",
     "//components/sync_preferences:test_support",
     "//components/ukm:test_support",
     "//components/unified_consent",

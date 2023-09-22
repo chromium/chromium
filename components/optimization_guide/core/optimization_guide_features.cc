@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/enum_set.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
@@ -22,6 +23,7 @@
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/variations/hashing.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -512,36 +514,48 @@ bool ShouldPersistHintsToDisk() {
                                            "persist_hints_to_disk", true);
 }
 
-bool EnabledPersonalizedMetadata(proto::RequestContext request_context) {
+bool ShouldEnablePersonalizedMetadata(proto::RequestContext request_context) {
   if (!base::FeatureList::IsEnabled(kOptimizationGuidePersonalizedFetching)) {
     return false;
   }
+  using RequestContextSet =
+      base::EnumSet<proto::RequestContext, proto::RequestContext_MIN,
+                    proto::RequestContext_MAX>;
 
-  static const base::flat_set<std::string> contexts =
-      []() -> base::flat_set<std::string> {
-    if (base::FeatureList::IsEnabled(kOptimizationGuidePersonalizedFetching)) {
-      std::string param = base::GetFieldTrialParamValueByFeature(
-          kOptimizationGuidePersonalizedFetching, "allowed_contexts");
-      std::vector<std::string> allowed_contexts = base::SplitString(
-          param, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-      return base::flat_set<std::string>(allowed_contexts);
+  static const RequestContextSet allowed_contexts = []() -> RequestContextSet {
+    DCHECK(
+        base::FeatureList::IsEnabled(kOptimizationGuidePersonalizedFetching));
+    std::string param = base::GetFieldTrialParamValueByFeature(
+        kOptimizationGuidePersonalizedFetching, "allowed_contexts");
+    RequestContextSet allowed_contexts;
+    for (const auto& context_str : base::SplitString(
+             param, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+      proto::RequestContext context;
+      if (proto::RequestContext_Parse(context_str, &context)) {
+        allowed_contexts.Put(context);
+      }
     }
-    return {};
+    return allowed_contexts;
   }();
 
-  return base::Contains(contexts, proto::RequestContext_Name(request_context));
+  return allowed_contexts.Has(request_context);
 }
 
-base::flat_set<std::string> OAuthScopesForPersonalizedMetadata() {
+std::set<std::string> GetOAuthScopesForPersonalizedMetadata() {
+  std::set<std::string> scopes;
   if (base::FeatureList::IsEnabled(kOptimizationGuidePersonalizedFetching)) {
     std::string param = base::GetFieldTrialParamValueByFeature(
         kOptimizationGuidePersonalizedFetching, "oauth_scopes");
-    std::vector<std::string> scopes = base::SplitString(
-        param, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-    return base::flat_set<std::string>(scopes);
-  };
+    for (const auto& scope : base::SplitString(
+             param, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+      scopes.insert(scope);
+    }
+  }
+  if (scopes.empty()) {
+    scopes.insert(GaiaConstants::kGoogleUserInfoProfile);
+  }
 
-  return {};
+  return scopes;
 }
 
 bool ShouldOverrideOptimizationTargetDecisionForMetricsPurposes(

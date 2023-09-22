@@ -7,6 +7,10 @@
 
 #include "components/optimization_guide/core/hints_manager.h"
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 namespace optimization_guide {
 
 class IOSChromeHintsManager : public HintsManager {
@@ -19,6 +23,7 @@ class IOSChromeHintsManager : public HintsManager {
       optimization_guide::TopHostProvider* top_host_provider,
       optimization_guide::TabUrlProvider* tab_url_provider,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      signin::IdentityManager* identity_manager,
       OptimizationGuideLogger* optimization_guide_logger);
 
   ~IOSChromeHintsManager() override = default;

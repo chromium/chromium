@@ -24,6 +24,7 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/optimization_guide/core/access_token_helper.h"
 #include "components/optimization_guide/core/bloom_filter.h"
 #include "components/optimization_guide/core/hint_cache.h"
 #include "components/optimization_guide/core/hints_component_util.h"
@@ -324,13 +325,14 @@ HintsManager::HintsManager(
     TabUrlProvider* tab_url_provider,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<PushNotificationManager> push_notification_manager,
+    signin::IdentityManager* identity_manager,
     OptimizationGuideLogger* optimization_guide_logger)
     : optimization_guide_logger_(optimization_guide_logger),
       failed_component_version_(
           GetPendingOptimizationHintsComponentVersionFromPref(pref_service)),
       is_off_the_record_(is_off_the_record),
       application_locale_(application_locale),
-      oauth_scopes_(features::OAuthScopesForPersonalizedMetadata()),
+      oauth_scopes_(features::GetOAuthScopesForPersonalizedMetadata()),
       pref_service_(pref_service),
       hint_cache_(
           std::make_unique<HintCache>(hint_store,
@@ -345,11 +347,13 @@ HintsManager::HintsManager(
       top_host_provider_(top_host_provider),
       tab_url_provider_(tab_url_provider),
       push_notification_manager_(std::move(push_notification_manager)),
+      identity_manager_(identity_manager),
       clock_(base::DefaultClock::GetInstance()),
       background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT})) {
-  if (push_notification_manager_)
+  if (push_notification_manager_) {
     push_notification_manager_->SetDelegate(this);
+  }
 
   // Register as an observer to get updates for the component. This is
   // needed as a signal during testing.
@@ -786,7 +790,7 @@ void HintsManager::FetchHintsForActiveTabs() {
   active_tabs_batch_update_hints_fetcher_->FetchOptimizationGuideServiceHints(
       top_hosts, active_tab_urls_to_refresh, registered_optimization_types_,
       proto::CONTEXT_BATCH_UPDATE_ACTIVE_TABS, application_locale_,
-      absl::nullopt,
+      /*access_token=*/std::string(),
       /*skip_cache=*/false,
       base::BindOnce(&HintsManager::OnHintsForActiveTabsFetched,
                      weak_ptr_factory_.GetWeakPtr(), top_hosts_set,
@@ -959,7 +963,7 @@ void HintsManager::FetchHintsForURLs(const std::vector<GURL>& urls,
   request_id_and_fetcher.second->FetchOptimizationGuideServiceHints(
       target_hosts.vector(), target_urls.vector(),
       registered_optimization_types_, request_context, application_locale_,
-      absl::nullopt,
+      /*access_token=*/std::string(),
       /*skip_cache=*/false,
       base::BindOnce(
           &HintsManager::OnBatchUpdateHintsFetched,
@@ -1105,22 +1109,40 @@ void HintsManager::CanApplyOptimizationOnDemand(
                              urls_to_fetch.vector(), hosts_to_fetch.vector(),
                              optimization_guide_logger_);
 
-  absl::optional<std::string> access_token;
-  if (!features::EnabledPersonalizedMetadata(request_context) &&
+  if (features::ShouldEnablePersonalizedMetadata(request_context) &&
       !oauth_scopes_.empty()) {
-    // TODO(b/280082735): Get access token and include here.
+    // Request the token before fetching the hints.
+    RequestAccessToken(
+        identity_manager_, oauth_scopes_,
+        base::BindOnce(&HintsManager::FetchOptimizationGuideServiceBatchHints,
+                       weak_ptr_factory_.GetWeakPtr(), hosts_to_fetch,
+                       urls_to_fetch, optimization_types, request_context,
+                       callback));
+  } else {
+    FetchOptimizationGuideServiceBatchHints(hosts_to_fetch, urls_to_fetch,
+                                            optimization_types, request_context,
+                                            callback,
+                                            /*access_token=*/std::string());
   }
-  // Fetch the data for the entries we don't have all information for.
+}
+
+void HintsManager::FetchOptimizationGuideServiceBatchHints(
+    const InsertionOrderedSet<std::string>& hosts,
+    const InsertionOrderedSet<GURL>& urls,
+    const base::flat_set<optimization_guide::proto::OptimizationType>&
+        optimization_types,
+    optimization_guide::proto::RequestContext request_context,
+    OnDemandOptimizationGuideDecisionRepeatingCallback callback,
+    const std::string& access_token) {
   std::pair<int32_t, HintsFetcher*> request_id_and_fetcher =
       CreateAndTrackBatchUpdateHintsFetcher();
   request_id_and_fetcher.second->FetchOptimizationGuideServiceHints(
-      hosts_to_fetch.vector(), urls_to_fetch.vector(), optimization_types,
-      request_context, application_locale_, access_token, /*skip_cache=*/true,
+      hosts.vector(), urls.vector(), optimization_types, request_context,
+      application_locale_, access_token, /*skip_cache=*/true,
       base::BindOnce(&HintsManager::OnBatchUpdateHintsFetched,
                      weak_ptr_factory_.GetWeakPtr(),
-                     request_id_and_fetcher.first, request_context,
-                     hosts_to_fetch.set(), urls_to_fetch.set(),
-                     urls_to_fetch.vector(), optimization_types, callback));
+                     request_id_and_fetcher.first, request_context, hosts.set(),
+                     urls.set(), urls.vector(), optimization_types, callback));
 }
 
 // TODO(1313521): Improve metrics coverage between all of these apis.
@@ -1660,7 +1682,8 @@ void HintsManager::MaybeFetchHintsForNavigation(
                              optimization_guide_logger_);
   bool fetch_attempted = it->second->FetchOptimizationGuideServiceHints(
       hosts, urls, registered_optimization_types_,
-      proto::CONTEXT_PAGE_NAVIGATION, application_locale_, absl::nullopt,
+      proto::CONTEXT_PAGE_NAVIGATION, application_locale_,
+      /*access_token=*/std::string(),
       /*skip_cache=*/false,
       base::BindOnce(&HintsManager::OnPageNavigationHintsFetched,
                      weak_ptr_factory_.GetWeakPtr(),

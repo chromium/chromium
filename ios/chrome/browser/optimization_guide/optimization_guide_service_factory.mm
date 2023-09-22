@@ -13,11 +13,12 @@
 #import "components/optimization_guide/core/prediction_manager.h"
 #import "ios/chrome/browser/optimization_guide/ios_chrome_hints_manager.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
-#import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/paths/paths.h"
+#import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
@@ -68,7 +69,8 @@ std::unique_ptr<KeyedService> BuildOptimizationGuideService(
           // by PredictionManager which is a transitively owned by
           // OptimizationGuideService (a keyed service that is
           // killed before ChromeBrowserState is deallocated).
-          base::Unretained(chrome_browser_state)));
+          base::Unretained(chrome_browser_state)),
+      IdentityManagerFactory::GetForBrowserState(chrome_browser_state));
 }
 }
 
@@ -106,6 +108,7 @@ OptimizationGuideServiceFactory::OptimizationGuideServiceFactory()
           BrowserStateDependencyManager::GetInstance()) {
   DependsOn(BackgroundDownloadServiceFactory::GetInstance());
   DependsOn(BrowserListFactory::GetInstance());
+  DependsOn(IdentityManagerFactory::GetInstance());
 }
 
 OptimizationGuideServiceFactory::~OptimizationGuideServiceFactory() = default;
