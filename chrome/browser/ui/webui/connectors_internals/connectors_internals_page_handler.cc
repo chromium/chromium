@@ -21,6 +21,10 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/secure_enclave_client.h"
+#endif  // BUILDFLAG(IS_MAC)
+
 namespace enterprise_connectors {
 
 namespace {
@@ -72,6 +76,20 @@ void ConnectorsInternalsPageHandler::GetDeviceTrustState(
       base::BindOnce(&ConnectorsInternalsPageHandler::OnSignalsCollected,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      device_trust_service->IsEnabled()));
+}
+
+void ConnectorsInternalsPageHandler::DeleteDeviceTrustKey(
+    DeleteDeviceTrustKeyCallback callback) {
+#if BUILDFLAG(IS_MAC)
+  auto client = SecureEnclaveClient::Create();
+
+  // Delete both the permanent and temporary keys.
+  client->DeleteKey(SecureEnclaveClient::KeyType::kTemporary);
+  client->DeleteKey(SecureEnclaveClient::KeyType::kPermanent);
+  std::move(callback).Run();
+#else
+  NOTIMPLEMENTED();
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 void ConnectorsInternalsPageHandler::OnSignalsCollected(

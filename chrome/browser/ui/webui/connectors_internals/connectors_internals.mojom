@@ -101,4 +101,8 @@ struct DeviceTrustState {
 interface PageHandler {
   // Get state information about the Device Trust connector.
   GetDeviceTrustState() => (DeviceTrustState state);
+
+  // Deletes the Device Trust key stored on the device. Will only work on
+  // developer builds or early release channels.
+  DeleteDeviceTrustKey() => ();
 };

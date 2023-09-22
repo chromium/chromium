@@ -14,6 +14,10 @@ namespace utils {
 // key.
 connectors_internals::mojom::KeyInfoPtr GetKeyInfo();
 
+// Returns true if the current Chrome build is allowed to delete Device Trust
+// keys.
+bool CanDeleteDeviceTrustKey();
+
 }  // namespace utils
 }  // namespace enterprise_connectors
 

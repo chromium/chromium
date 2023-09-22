@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {ConsentMetadata, DeviceTrustState, Int32Value, KeyInfo, KeyManagerInitializedValue, KeyManagerPermanentFailure, KeyTrustLevel, KeyType, PageHandler, PageHandlerInterface} from './connectors_internals.mojom-webui.js';
 import {getTemplate} from './device_trust_connector.html.js';
@@ -40,6 +41,10 @@ export class DeviceTrustConnectorElement extends CustomElement {
 
   static override get template() {
     return getTemplate();
+  }
+
+  public get deleteKeyEnabled(): boolean {
+    return loadTimeData.getBoolean('canDeleteDeviceTrustKey');
   }
 
   public set enabledString(isEnabledString: string) {
@@ -121,6 +126,12 @@ export class DeviceTrustConnectorElement extends CustomElement {
       } else {
         this.hideElement(keyLoadedRows);
       }
+
+      const deleteKeyButton = this.deleteKeyButton;
+      if (deleteKeyButton) {
+        this.deleteKeyEnabled ? this.showElement(deleteKeyButton) :
+                                this.hideElement(deleteKeyButton);
+      }
     }
   }
 
@@ -139,6 +150,10 @@ export class DeviceTrustConnectorElement extends CustomElement {
     return this.$('#copy-signals') as HTMLButtonElement;
   }
 
+  public get deleteKeyButton(): HTMLButtonElement|undefined {
+    return this.$('#delete-key') as HTMLButtonElement;
+  }
+
   public get signalsString(): string {
     return this.signalsString_;
   }
@@ -149,15 +164,14 @@ export class DeviceTrustConnectorElement extends CustomElement {
     super();
     this.pageHandler = PageHandler.getRemote();
 
-    this.fetchDeviceTrustValues()
-        .then(state => this.setDeviceTrustValues(state))
-        .then(() => {
-          const copyButton = this.copyButton;
-          if (copyButton) {
-            copyButton.addEventListener(
-                'click', () => this.copySignals(copyButton));
-          }
-        });
+    this.fetchDeviceTrustValues();
+
+    if (this.deleteKeyEnabled) {
+      const deleteKeyButton = this.deleteKeyButton;
+      if (deleteKeyButton) {
+        deleteKeyButton.addEventListener('click', () => this.deleteKey());
+      }
+    }
   }
 
   private setDeviceTrustValues(state: DeviceTrustState|undefined) {
@@ -173,12 +187,22 @@ export class DeviceTrustConnectorElement extends CustomElement {
     this.signalsString = state.signalsJson;
   }
 
-  private async fetchDeviceTrustValues(): Promise<DeviceTrustState|undefined> {
-    return this.pageHandler.getDeviceTrustState().then(
-        (response: {state: DeviceTrustState}) => response && response.state,
-        (e: object) => {
-          console.warn(`fetchDeviceTrustValues failed: ${JSON.stringify(e)}`);
-          return undefined;
+  private async fetchDeviceTrustValues(): Promise<void> {
+    this.pageHandler.getDeviceTrustState()
+        .then(
+            (response: {state: DeviceTrustState}) => response && response.state,
+            (e: object) => {
+              console.warn(
+                  `fetchDeviceTrustValues failed: ${JSON.stringify(e)}`);
+              return undefined;
+            })
+        .then(state => this.setDeviceTrustValues(state))
+        .then(() => {
+          const copyButton = this.copyButton;
+          if (copyButton) {
+            copyButton.addEventListener(
+                'click', () => this.copySignals(copyButton));
+          }
         });
   }
 
@@ -186,6 +210,10 @@ export class DeviceTrustConnectorElement extends CustomElement {
     copyButton.disabled = true;
     navigator.clipboard.writeText(this.signalsString)
         .finally(() => copyButton.disabled = false);
+  }
+
+  private async deleteKey(): Promise<void> {
+    await this.pageHandler.deleteDeviceTrustKey();
   }
 
   private showElement(element: Element) {
