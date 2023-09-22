@@ -30,6 +30,10 @@ class MockSafetyHubResult : public SafetyHubService::Result {
   explicit MockSafetyHubResult(const base::Value::Dict& dict)
       : SafetyHubService::Result(dict) {}
 
+  std::unique_ptr<SafetyHubService::Result> Clone() override {
+    return std::make_unique<MockSafetyHubResult>(*this);
+  }
+
   base::Value::Dict ToDictValue() override { return BaseToDictValue(); }
 
   bool IsTriggerForMenuNotification() override { return true; }
@@ -50,6 +54,13 @@ class MockSafetyHubResult : public SafetyHubService::Result {
 
 class MockSafetyHubService : public SafetyHubService {
  public:
+  MockSafetyHubService() {
+    // Note: for testing purposes, the repeated updates are not started in the
+    // constructor.
+
+    InitializeLatestResult();
+  }
+
   // Returns the number of times that the UpdateOnBackgroundThread function was
   // called.
   int GetNumBackgroundUpdates() const { return num_updates_background_; }
@@ -59,10 +70,16 @@ class MockSafetyHubService : public SafetyHubService {
   int GetNumUIUpdates() const { return num_updates_ui_; }
 
   // Set the latest result to a specific value - 42 in this case.
-  void InitializeLatestResult() override {
+  std::unique_ptr<SafetyHubService::Result> InitializeLatestResultImpl()
+      override {
     auto init_result = std::make_unique<MockSafetyHubResult>();
     init_result->SetVal(42);
-    latest_result_ = std::move(init_result);
+    return init_result;
+  }
+
+  std::unique_ptr<SafetyHubService::Result> GetResultFromDictValue(
+      const base::Value::Dict& dict) override {
+    return std::make_unique<MockSafetyHubResult>(dict);
   }
 
  protected:
@@ -202,19 +219,13 @@ TEST_F(SafetyHubServiceTest, UpdateOnBackgroundThread) {
 }
 
 TEST_F(SafetyHubServiceTest, GetCachedResult) {
-  // The mock service does not initialize the latest result on construction, so
-  // the cached result should be null.
-  absl::optional<std::unique_ptr<MockSafetyHubResult>> opt_result1 =
-      service()->GetCachedResult<MockSafetyHubResult>();
-  EXPECT_FALSE(opt_result1.has_value());
-
-  // We have to call InitializeLatestResult here as the service is not created
-  // using a factory (which usually calls it).
-  service()->InitializeLatestResult();
-  absl::optional<std::unique_ptr<MockSafetyHubResult>> opt_result2 =
-      service()->GetCachedResult<MockSafetyHubResult>();
-  EXPECT_TRUE(opt_result2.has_value());
-  std::unique_ptr<MockSafetyHubResult> result = std::move(opt_result2.value());
+  // The mock service initializes the latest result on construction, so its
+  // value should be those that we'd expect.
+  absl::optional<std::unique_ptr<SafetyHubService::Result>> opt_result =
+      service()->GetCachedResult();
+  EXPECT_TRUE(opt_result.has_value());
+  MockSafetyHubResult* result =
+      static_cast<MockSafetyHubResult*>(opt_result.value().get());
   EXPECT_EQ(result->GetVal(), 42);
 }
 
@@ -227,7 +238,7 @@ TEST_F(SafetyHubServiceTest, ResultBaseToFromDict) {
   EXPECT_EQ(*dict.Find(kSafetyHubTimestampResultKey), base::TimeToValue(time));
   // When in the future we update from the dict again, the timestamp should be
   // set to whatever is in the dict.
-  std::unique_ptr<MockSafetyHubResult> new_result =
-      MockSafetyHubResult::FromDictValue<MockSafetyHubResult>(dict);
+  std::unique_ptr<SafetyHubService::Result> new_result =
+      service()->GetResultFromDictValue(dict);
   EXPECT_EQ(result->timestamp(), time);
 }

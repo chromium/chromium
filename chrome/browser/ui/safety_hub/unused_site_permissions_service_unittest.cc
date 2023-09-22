@@ -659,12 +659,13 @@ TEST_F(UnusedSitePermissionsServiceTest, InitializeLatestResult) {
   // When we start up a new service instance, the latest result (i.e. the list
   // of revoked permissions) should be immediately available.
   auto new_service = std::make_unique<UnusedSitePermissionsService>(hcsm());
-  absl::optional<std::unique_ptr<
-      UnusedSitePermissionsService::UnusedSitePermissionsResult>>
-      result = new_service->GetCachedResult<
-          UnusedSitePermissionsService::UnusedSitePermissionsResult>();
-  EXPECT_TRUE(result.has_value());
-  EXPECT_EQ(2U, result.value()->GetRevokedPermissions().size());
+  absl::optional<std::unique_ptr<SafetyHubService::Result>> opt_result =
+      new_service->GetCachedResult();
+  EXPECT_TRUE(opt_result.has_value());
+  auto* result =
+      static_cast<UnusedSitePermissionsService::UnusedSitePermissionsResult*>(
+          opt_result.value().get());
+  EXPECT_EQ(2U, result->GetRevokedPermissions().size());
 }
 
 TEST_F(UnusedSitePermissionsServiceTest, ResultToFromDict) {
@@ -700,12 +701,12 @@ TEST_F(UnusedSitePermissionsServiceTest, ResultToFromDict) {
 
   // When the Dict is restored into a UnusedSitePermissionsResult, the values
   // should be correctly created.
-  std::unique_ptr<UnusedSitePermissionsService::UnusedSitePermissionsResult>
-      new_result = UnusedSitePermissionsService::UnusedSitePermissionsResult::
-          FromDictValue<
-              UnusedSitePermissionsService::UnusedSitePermissionsResult>(dict);
+  std::unique_ptr<SafetyHubService::Result> new_result =
+      service()->GetResultFromDictValue(dict);
   std::list<UnusedSitePermissionsService::RevokedPermission> new_revoked_perms =
-      new_result->GetRevokedPermissions();
+      static_cast<UnusedSitePermissionsService::UnusedSitePermissionsResult*>(
+          new_result.get())
+          ->GetRevokedPermissions();
   EXPECT_EQ(1U, new_revoked_perms.size());
   EXPECT_EQ(origin, new_revoked_perms.front().origin);
   EXPECT_EQ(1U, new_revoked_perms.front().permission_types.size());

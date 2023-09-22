@@ -132,3 +132,15 @@ void SafetyHubMenuNotification::UpdateResult(
   }
   result_ = std::move(result);
 }
+
+// static
+std::unique_ptr<SafetyHubMenuNotification>
+SafetyHubMenuNotification::FromDictValue(const base::Value::Dict& dict,
+                                         SafetyHubService* service) {
+  auto notification = std::make_unique<SafetyHubMenuNotification>(dict);
+  if (dict.contains(kSafetyHubMenuNotificationResultKey)) {
+    notification->result_ = service->GetResultFromDictValue(
+        *dict.FindDict(kSafetyHubMenuNotificationResultKey));
+  }
+  return notification;
+}

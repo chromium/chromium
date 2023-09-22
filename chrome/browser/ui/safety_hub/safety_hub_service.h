@@ -33,8 +33,6 @@ class SafetyHubService : public KeyedService,
   // thread task should be included as well.
   class Result {
    public:
-    Result(const Result&) = default;
-    Result& operator=(const Result&) = delete;
     virtual ~Result() = default;
 
     virtual base::Value::Dict ToDictValue() = 0;
@@ -49,16 +47,17 @@ class SafetyHubService : public KeyedService,
     // how frequently a menu notification has already been shown.
     virtual bool WarrantsNewMenuNotification(const Result& previousResult) = 0;
 
-    template <typename T>
-    static std::unique_ptr<T> FromDictValue(const base::Value::Dict& dict) {
-      return std::make_unique<T>(dict);
-    }
+    // Returns a copy of the current Safety Hub object. This is intended to be
+    // used when the caller is unaware of the specific derived class.
+    virtual std::unique_ptr<Result> Clone() = 0;
 
     base::Time timestamp() const;
 
    protected:
     explicit Result(base::Time timestamp = base::Time::Now());
     explicit Result(const base::Value::Dict& dict);
+    Result(const Result&) = default;
+    Result& operator=(const Result&) = default;
 
     base::Value::Dict BaseToDictValue();
 
@@ -93,14 +92,11 @@ class SafetyHubService : public KeyedService,
   bool IsUpdateRunning();
 
   // Returns the latest result that is available in memory.
-  template <typename T,
-            typename = std::enable_if_t<std::is_base_of_v<Result, T>>>
-  absl::optional<std::unique_ptr<T>> GetCachedResult() {
-    if (latest_result_ != nullptr) {
-      return std::make_unique<T>(*static_cast<T*>(latest_result_.get()));
-    }
-    return absl::nullopt;
-  }
+  absl::optional<std::unique_ptr<SafetyHubService::Result>> GetCachedResult();
+
+  // Initializes a result object from a base::Value::Dict value.
+  virtual std::unique_ptr<SafetyHubService::Result> GetResultFromDictValue(
+      const base::Value::Dict& dict) = 0;
 
   // KeyedService implementation.
   void Shutdown() override;
@@ -112,8 +108,9 @@ class SafetyHubService : public KeyedService,
 
   // SafetyHubService overrides.
 
-  // Initializes the latest result such that it is available in memory.
-  virtual void InitializeLatestResult() = 0;
+  // Initializes the latest result such that it is available in memory. It needs
+  // to be called on creation of the service.
+  void InitializeLatestResult();
 
   // The value returned by this function determines the interval of how often
   // the Update function will be called.
@@ -136,8 +133,11 @@ class SafetyHubService : public KeyedService,
 
   virtual base::WeakPtr<SafetyHubService> GetAsWeakRef() = 0;
 
-  // The latest available result, which is initialized at the start.
-  std::unique_ptr<Result> latest_result_ = nullptr;
+  // Returns the result that should be initialized upon starting the service.
+  // Typically, this will be the outcome of running the lightweight step of the
+  // update process (i.e. `UpdateOnUIThread()`).
+  virtual std::unique_ptr<SafetyHubService::Result>
+  InitializeLatestResultImpl() = 0;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SafetyHubServiceTest, ManageObservers);
@@ -160,6 +160,11 @@ class SafetyHubService : public KeyedService,
 
   // Indicator of how many requested updates are still pending.
   int pending_updates_ = 0;
+
+  // The latest available result, which is initialized when the service is
+  // started. The value is set by `InitializeLatestResult()`, which is called
+  // in the constructor of each service.
+  std::unique_ptr<Result> latest_result_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_SAFETY_HUB_SAFETY_HUB_SERVICE_H_

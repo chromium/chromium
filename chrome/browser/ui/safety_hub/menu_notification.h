@@ -40,16 +40,9 @@ class SafetyHubMenuNotification {
 
   base::Value::Dict ToDictValue() const;
 
-  template <typename T>
   static std::unique_ptr<SafetyHubMenuNotification> FromDictValue(
-      const base::Value::Dict& dict) {
-    auto notification = std::make_unique<SafetyHubMenuNotification>(dict);
-    if (dict.contains(kSafetyHubMenuNotificationResultKey)) {
-      notification->result_ = SafetyHubService::Result::FromDictValue<T>(
-          *dict.FindDict(kSafetyHubMenuNotificationResultKey));
-    }
-    return notification;
-  }
+      const base::Value::Dict& dict,
+      SafetyHubService* service);
 
   // Called when the menu notification will be shown. This will make the
   // notification the currently active one.

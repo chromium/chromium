@@ -7,6 +7,7 @@
 
 #include <list>
 #include <map>
+#include <memory>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -77,9 +78,11 @@ class UnusedSitePermissionsService : public SafetyHubService,
 
     UnusedSitePermissionsResult(const UnusedSitePermissionsResult&);
     UnusedSitePermissionsResult& operator=(const UnusedSitePermissionsResult&) =
-        delete;
+        default;
 
     ~UnusedSitePermissionsResult() override;
+
+    std::unique_ptr<SafetyHubService::Result> Clone() override;
 
     using UnusedPermissionMap =
         std::map<std::string, std::list<ContentSettingEntry>>;
@@ -189,6 +192,8 @@ class UnusedSitePermissionsService : public SafetyHubService,
       const scoped_refptr<HostContentSettingsMap> hcsm);
 
   // SafetyHubService implementation
+  std::unique_ptr<SafetyHubService::Result> GetResultFromDictValue(
+      const base::Value::Dict& dict) override;
 
   // Returns a weak pointer to the service.
   base::WeakPtr<SafetyHubService> GetAsWeakRef() override;
@@ -224,7 +229,8 @@ class UnusedSitePermissionsService : public SafetyHubService,
 
   // SafetyHubService implementation
 
-  void InitializeLatestResult() override;
+  std::unique_ptr<SafetyHubService::Result> InitializeLatestResultImpl()
+      override;
 
   // Returns the interval at which the repeated updates will be run.
   base::TimeDelta GetRepeatedUpdateInterval() override;

@@ -9,8 +9,12 @@
 #include "base/json/values_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,7 +40,15 @@ CreateUnusedSitePermissionsResult(base::Value::List urls) {
 
 class SafetyHubMenuNotificationTest : public testing::Test {
  public:
-  SafetyHubMenuNotificationTest() = default;
+  SafetyHubMenuNotificationTest() {
+    testing_profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    EXPECT_TRUE(testing_profile_manager_->SetUp());
+    profile_ = testing_profile_manager_->CreateTestingProfile(
+        "user@example.com", {},
+        /*is_main_profile=*/true);
+    EXPECT_TRUE(profile_);
+  }
   ~SafetyHubMenuNotificationTest() override = default;
 
   void SetUp() override {
@@ -44,6 +56,9 @@ class SafetyHubMenuNotificationTest : public testing::Test {
     // the correct permission types.
     auto* registry = content_settings::ContentSettingsRegistry::GetInstance();
     registry->ResetForTest();
+    HostContentSettingsMap* hcsm =
+        HostContentSettingsMapFactory::GetForProfile(profile());
+    service_ = std::make_unique<UnusedSitePermissionsService>(hcsm);
   }
 
  protected:
@@ -51,9 +66,15 @@ class SafetyHubMenuNotificationTest : public testing::Test {
     task_environment_.FastForwardBy(delta);
   }
 
+  UnusedSitePermissionsService* service() { return service_.get(); }
+  TestingProfile* profile() { return profile_.get(); }
+
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  std::unique_ptr<TestingProfileManager> testing_profile_manager_;
+  raw_ptr<TestingProfile> profile_ = nullptr;
+  std::unique_ptr<UnusedSitePermissionsService> service_;
 };
 
 TEST_F(SafetyHubMenuNotificationTest, ToFromDictValue) {
@@ -92,9 +113,8 @@ TEST_F(SafetyHubMenuNotificationTest, ToFromDictValue) {
 
   // Using the dict from before, we can create another menu notification object
   // that should have the same properties as when it was initially created.
-  auto new_notification = SafetyHubMenuNotification::FromDictValue<
-      UnusedSitePermissionsService::UnusedSitePermissionsResult>(
-      std::move(dict));
+  std::unique_ptr<SafetyHubMenuNotification> new_notification =
+      SafetyHubMenuNotification::FromDictValue(std::move(dict), service());
   EXPECT_TRUE(new_notification->is_currently_active_);
   EXPECT_EQ(42, new_notification->impression_count_);
   EXPECT_EQ(kPastTime, new_notification->first_impression_time_);

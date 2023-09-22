@@ -21,6 +21,7 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
@@ -141,6 +142,11 @@ UnusedSitePermissionsService::UnusedSitePermissionsResult::
   }
 }
 
+std::unique_ptr<SafetyHubService::Result>
+UnusedSitePermissionsService::UnusedSitePermissionsResult::Clone() {
+  return std::make_unique<UnusedSitePermissionsResult>(*this);
+}
+
 void UnusedSitePermissionsService::UnusedSitePermissionsResult::
     AddRevokedPermission(ContentSettingsPattern origin,
                          std::set<ContentSettingsType> permission_types,
@@ -237,8 +243,9 @@ UnusedSitePermissionsService::UnusedSitePermissionsService(
 
 UnusedSitePermissionsService::~UnusedSitePermissionsService() = default;
 
-void UnusedSitePermissionsService::InitializeLatestResult() {
-  latest_result_ = GetRevokedPermissions();
+std::unique_ptr<SafetyHubService::Result>
+UnusedSitePermissionsService::InitializeLatestResultImpl() {
+  return GetRevokedPermissions();
 }
 
 void UnusedSitePermissionsService::OnContentSettingChanged(
@@ -630,4 +637,10 @@ void UnusedSitePermissionsService::SetClockForTesting(base::Clock* clock) {
 
 base::WeakPtr<SafetyHubService> UnusedSitePermissionsService::GetAsWeakRef() {
   return weak_factory_.GetWeakPtr();
+}
+
+std::unique_ptr<SafetyHubService::Result>
+UnusedSitePermissionsService::GetResultFromDictValue(
+    const base::Value::Dict& dict) {
+  return std::make_unique<UnusedSitePermissionsResult>(dict);
 }
