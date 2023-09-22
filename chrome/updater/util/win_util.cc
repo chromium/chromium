@@ -449,8 +449,10 @@ std::string GetUACState() {
                         is_user_non_elevated_admin.value());
   }
 
-  base::StringAppendF(&s, "IsUACOn: %d, IsElevatedWithUACOn: %d", IsUACOn(),
+  base::StringAppendF(&s, "IsUACOn: %d, IsElevatedWithUACOn: %d, ", IsUACOn(),
                       IsElevatedWithUACOn());
+
+  base::StringAppendF(&s, "LUA: %d", base::win::UserAccountControlIsEnabled());
   return s;
 }
 
