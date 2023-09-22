@@ -41,7 +41,7 @@ found in the LICENSE file.
                 android:layout_below="@id/webauthn_incognito_confirmation_imageview"
                 android:gravity="center"
                 android:layout_marginHorizontal="24dp"
-                android:layout_marginBottom="24dp"
+                android:layout_marginBottom="4dp"
                 android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle"
                 android:text="@string/webauthn_incognito_confirmation_title"/>
 
