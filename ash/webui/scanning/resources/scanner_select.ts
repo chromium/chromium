@@ -8,12 +8,13 @@ import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-w
 import './scan_settings_section.js';
 import './strings.m.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {afterNextRender, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './scanner_select.html.js';
 import {Scanner} from './scanning.mojom-webui.js';
-import {ScannerArr, ScannerInfo} from './scanning_app_types.js';
+import {ScannerInfo} from './scanning_app_types.js';
 import {alphabeticalCompare, getScannerDisplayName, tokenToString} from './scanning_app_util.js';
 
 /**
@@ -21,17 +22,12 @@ import {alphabeticalCompare, getScannerDisplayName, tokenToString} from './scann
  * 'scanner-select' displays the connected scanners in a dropdown.
  */
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const ScannerSelectElementBase = mixinBehaviors([I18nBehavior], PolymerElement);
+const ScannerSelectElementBase =
+    I18nMixin(PolymerElement) as {new (): PolymerElement & I18nMixinInterface};
 
-/** @polymer */
 class ScannerSelectElement extends ScannerSelectElementBase {
   static get is() {
-    return 'scanner-select';
+    return 'scanner-select' as const;
   }
 
   static get template() {
@@ -40,59 +36,51 @@ class ScannerSelectElement extends ScannerSelectElementBase {
 
   static get properties() {
     return {
-      /** @type {boolean} */
       disabled: Boolean,
 
-      /** @type {!ScannerArr} */
       scanners: {
         type: Array,
         value: () => [],
       },
 
-      /** @type {string} */
       selectedScannerId: {
         type: String,
         notify: true,
       },
 
-      /** @type {!Map<string, !ScannerInfo>} */
       scannerInfoMap: Object,
 
-      /** @type {string} */
       lastUsedScannerId: String,
     };
   }
 
   static get observers() {
-    return ['onScannersChange_(scanners.*)'];
+    return ['scannersChanged(scanners.*)'];
   }
 
-  /**
-   * @param {!Scanner} scanner
-   * @return {string}
-   * @private
-   */
-  getScannerDisplayName_(scanner) {
+  disabled: boolean;
+  scanners: Scanner[];
+  selectedScannerId: string;
+  scannerInfoMap: Map<string, ScannerInfo>;
+  lastUsedScannerId: string;
+
+  private getScannerDisplayName(scanner: Scanner): string {
     return getScannerDisplayName(scanner);
   }
 
   /**
    * Converts an unguessable token to a string so it can be used as the value of
    * an option.
-   * @param {!Scanner} scanner
-   * @return {string}
-   * @private
    */
-  getTokenAsString_(scanner) {
+  private getTokenAsString(scanner: Scanner): string {
     return tokenToString(scanner.id);
   }
 
   /**
    * Sorts the scanners and sets the selected scanner when the scanners array
    * changes.
-   * @private
    */
-  onScannersChange_() {
+  private scannersChanged(): void {
     if (this.scanners.length > 1) {
       this.scanners.sort((a, b) => {
         return alphabeticalCompare(
@@ -113,21 +101,23 @@ class ScannerSelectElement extends ScannerSelectElementBase {
       // After the dropdown renders with the scanner options, set the selected
       // scanner.
       afterNextRender(this, () => {
-        this.shadowRoot.querySelector('#scannerSelect').selectedIndex =
-            this.getSelectedScannerIndex_();
+        strictQuery('#scannerSelect', this.shadowRoot, HTMLSelectElement)
+            .selectedIndex = this.getSelectedScannerIndex();
       });
     }
   }
 
-  /**
-   * @return {number}
-   * @private
-   */
-  getSelectedScannerIndex_() {
+  private getSelectedScannerIndex(): number {
     const selectedScannerToken =
-        this.scannerInfoMap.get(this.selectedScannerId).token;
+        this.scannerInfoMap.get(this.selectedScannerId)!.token;
     return this.scanners.findIndex(
-        scanner => scanner.id === selectedScannerToken);
+        (scanner: Scanner) => scanner.id === selectedScannerToken);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [ScannerSelectElement.is]: ScannerSelectElement;
   }
 }
 
