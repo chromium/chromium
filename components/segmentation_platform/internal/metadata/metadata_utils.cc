@@ -354,6 +354,9 @@ bool HasExpiredOrUnavailableResult(const proto::SegmentInfo& segment_info,
                                    const base::Time& now) {
   if (!segment_info.has_prediction_result())
     return true;
+  if (segment_info.prediction_result().result_size() == 0) {
+    return true;
+  }
 
   base::Time last_result_timestamp = base::Time::FromDeltaSinceWindowsEpoch(
       base::Microseconds(segment_info.prediction_result().timestamp_us()));

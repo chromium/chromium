@@ -28,7 +28,7 @@ class FilterExtractor {
   explicit FilterExtractor(
       const SegmentInfoDatabase::SegmentInfoList& segment_infos) {
     for (auto& info : segment_infos) {
-      proto::SegmentInfo segment_info = info.second;
+      const proto::SegmentInfo& segment_info = *info.second;
       const auto& metadata = segment_info.model_metadata();
       AddUmaFeatures(metadata);
       if (AddUkmFeatures(metadata)) {
@@ -128,10 +128,10 @@ void SignalFilterProcessor::FilterSignals(
   for (const auto& segment_info : *segment_infos) {
     if (is_first_time_model_update_) {
       stats::RecordModelUpdateTimeDifference(
-          segment_info.first, segment_info.second.model_update_time_s());
+          segment_info.first, segment_info.second->model_update_time_s());
     }
     storage_service_->signal_storage_config()->OnSignalCollectionStarted(
-        segment_info.second.model_metadata());
+        segment_info.second->model_metadata());
   }
   is_first_time_model_update_ = false;
 }

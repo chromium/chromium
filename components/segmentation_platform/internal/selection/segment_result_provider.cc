@@ -4,8 +4,6 @@
 
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
 
-#include <map>
-
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -24,27 +22,24 @@ namespace segmentation_platform {
 namespace {
 
 float ComputeDiscreteMapping(const std::string& discrete_mapping_key,
-                             const proto::SegmentInfo& segment_info) {
-  float rank = metadata_utils::ConvertToDiscreteScore(
-      discrete_mapping_key, segment_info.prediction_result().result()[0],
-      segment_info.model_metadata());
-  VLOG(1) << __func__
-          << ": segment=" << SegmentId_Name(segment_info.segment_id())
-          << ": result=" << segment_info.prediction_result().result()[0]
-          << ", rank=" << rank;
+                             float model_score,
+                             const proto::SegmentationModelMetadata& metadata) {
+  float rank = metadata_utils::ConvertToDiscreteScore(discrete_mapping_key,
+                                                      model_score, metadata);
+  VLOG(1) << __func__ << ": segment=" << discrete_mapping_key
+          << ": result=" << model_score << ", rank=" << rank;
 
   return rank;
 }
 
-proto::SegmentInfo* FilterSegmentInfoBySource(
-    const SegmentInfoDatabase::SegmentInfoList& available_segments,
+const proto::SegmentInfo* FilterSegmentInfoBySource(
+    const std::map<ModelSource, SegmentInfo>& available_segments,
     ModelSource needed_source) {
-  for (const auto& info : available_segments) {
-    if (info.second.model_source() == needed_source) {
-      return const_cast<proto::SegmentInfo*>(&info.second);
-    }
+  auto it = available_segments.find(needed_source);
+  if (it == available_segments.end()) {
+    return nullptr;
   }
-  return nullptr;
+  return &it->second;
 }
 
 class SegmentResultProviderImpl : public SegmentResultProvider {
@@ -72,7 +67,7 @@ class SegmentResultProviderImpl : public SegmentResultProvider {
     std::unordered_map<ModelSource,
                        raw_ptr<ModelProvider, AcrossTasksDanglingUntriaged>>
         model_providers;
-    std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> available_segments;
+    std::map<ModelSource, SegmentInfo> copied_segment_info;
     std::unique_ptr<GetResultOptions> options;
   };
 
@@ -143,7 +138,9 @@ void SegmentResultProviderImpl::OnGetSegmentInfo(
   const SegmentId segment_id = options->segment_id;
   auto request_state = std::make_unique<RequestState>();
   request_state->options = std::move(options);
-  request_state->available_segments.swap(available_segments);
+  for (const auto& it : *available_segments) {
+    request_state->copied_segment_info[it.second->model_source()] = *it.second;
+  }
   request_state->model_providers[ModelSource::SERVER_MODEL_SOURCE] =
       execution_service_ ? execution_service_->GetModelProvider(
                                segment_id, ModelSource::SERVER_MODEL_SOURCE)
@@ -254,7 +251,7 @@ void SegmentResultProviderImpl::GetCachedModelScore(
     ModelSource model_source,
     ResultCallbackWithState callback) {
   const proto::SegmentInfo* db_segment_info = FilterSegmentInfoBySource(
-      *request_state->available_segments, model_source);
+      request_state->copied_segment_info, model_source);
   if (!db_segment_info) {
     VLOG(1) << __func__ << ": segment="
             << SegmentId_Name(request_state->options->segment_id)
@@ -288,8 +285,10 @@ void SegmentResultProviderImpl::GetCachedModelScore(
           << " for segment "
           << proto::SegmentId_Name(request_state->options->segment_id);
 
-  float rank = ComputeDiscreteMapping(
-      request_state->options->discrete_mapping_key, *db_segment_info);
+  float rank =
+      ComputeDiscreteMapping(request_state->options->discrete_mapping_key,
+                             db_segment_info->prediction_result().result()[0],
+                             db_segment_info->model_metadata());
   std::move(callback).Run(std::move(request_state),
                           std::make_unique<SegmentResult>(
                               model_source == ModelSource::DEFAULT_MODEL_SOURCE
@@ -303,7 +302,7 @@ void SegmentResultProviderImpl::ExecuteModelAndGetScore(
     ModelSource model_source,
     ResultCallbackWithState callback) {
   const proto::SegmentInfo* segment_info = FilterSegmentInfoBySource(
-      *request_state->available_segments, model_source);
+      request_state->copied_segment_info, model_source);
   if (!segment_info) {
     VLOG(1) << __func__ << ": segment="
             << SegmentId_Name(request_state->options->segment_id)
@@ -354,14 +353,15 @@ void SegmentResultProviderImpl::OnModelExecuted(
     ModelSource model_source,
     ResultCallbackWithState callback,
     std::unique_ptr<ModelExecutionResult> result) {
-  auto* segment_info = FilterSegmentInfoBySource(
-      *request_state->available_segments, model_source);
+  const proto::SegmentInfo* segment_info = FilterSegmentInfoBySource(
+      request_state->copied_segment_info, model_source);
 
   ResultState state = ResultState::kUnknown;
   proto::PredictionResult prediction_result;
   std::unique_ptr<SegmentResult> segment_result;
 
-  bool success = result->status == ModelExecutionStatus::kSuccess;
+  bool success = result->status == ModelExecutionStatus::kSuccess &&
+                 !result->scores.empty();
   bool is_default_model = model_source == ModelSource::DEFAULT_MODEL_SOURCE;
 
   if (success) {
@@ -370,9 +370,9 @@ void SegmentResultProviderImpl::OnModelExecuted(
     prediction_result = metadata_utils::CreatePredictionResult(
         result->scores, segment_info->model_metadata().output_config(),
         clock_->Now(), segment_info->model_version());
-    segment_info->mutable_prediction_result()->CopyFrom(prediction_result);
     float rank = ComputeDiscreteMapping(
-        request_state->options->discrete_mapping_key, *segment_info);
+        request_state->options->discrete_mapping_key,
+        prediction_result.result(0), segment_info->model_metadata());
     segment_result =
         std::make_unique<SegmentResult>(state, prediction_result, rank);
     VLOG(1) << __func__ << ": " << (is_default_model ? "Default" : "Server")

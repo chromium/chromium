@@ -250,10 +250,10 @@ TEST_F(SegmentInfoDatabaseTest, GetSegmentInfoForBothModels) {
 
   EXPECT_EQ(2u, segments->size());
   EXPECT_EQ(kSegmentId, segments->at(0).first);
-  EXPECT_EQ(kServerModelSource, segments->at(0).second.model_source());
+  EXPECT_EQ(kServerModelSource, segments->at(0).second->model_source());
 
   EXPECT_EQ(kSegmentId, segments->at(1).first);
-  EXPECT_EQ(kDefaultModelSource, segments->at(1).second.model_source());
+  EXPECT_EQ(kDefaultModelSource, segments->at(1).second->model_source());
 }
 
 TEST_F(SegmentInfoDatabaseTest, Update) {
@@ -378,11 +378,11 @@ TEST_F(SegmentInfoDatabaseTest, UpdateMultipleSegments) {
   VerifyDb({});
 
   // Insert multiple segments and verify.
-  std::vector<std::pair<SegmentId, proto::SegmentInfo>> segments_to_update;
-  segments_to_update.emplace_back(
-      kSegmentId, CreateSegment(kSegmentId, kServerModelSource));
-  segments_to_update.emplace_back(
-      kSegmentId2, CreateSegment(kSegmentId2, kUnknownModelSource));
+  auto segment_info1 = CreateSegment(kSegmentId, kServerModelSource);
+  auto segment_info2 = CreateSegment(kSegmentId2, kUnknownModelSource);
+  SegmentInfoDatabase::SegmentInfoList segments_to_update;
+  segments_to_update.emplace_back(kSegmentId, &segment_info1);
+  segments_to_update.emplace_back(kSegmentId2, &segment_info2);
   segment_db_->UpdateMultipleSegments(segments_to_update, {},
                                       base::DoNothing());
   db_->UpdateCallback(true);
@@ -395,7 +395,7 @@ TEST_F(SegmentInfoDatabaseTest, UpdateMultipleSegments) {
   segment_info.mutable_prediction_result()->add_result(0.9f);
   // Add this entry to `segments_to_update`.
   segments_to_update.clear();
-  segments_to_update.emplace_back(std::make_pair(kSegmentId2, segment_info));
+  segments_to_update.emplace_back(std::make_pair(kSegmentId2, &segment_info));
   // Call and Verify.
   segment_db_->UpdateMultipleSegments(segments_to_update, {},
                                       base::DoNothing());

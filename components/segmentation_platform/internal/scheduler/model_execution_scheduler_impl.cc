@@ -110,7 +110,7 @@ void ModelExecutionSchedulerImpl::FilterEligibleSegments(
   std::vector<const proto::SegmentInfo*> models_to_run;
   for (const auto& pair : *all_segments) {
     SegmentId segment_id = pair.first;
-    const proto::SegmentInfo& segment_info = pair.second;
+    const proto::SegmentInfo& segment_info = *pair.second;
     if (!ShouldExecuteSegment(expired_only, segment_info)) {
       VLOG(1) << "Segmentation scheduler: Skipped executed segment "
               << proto::SegmentId_Name(segment_id);

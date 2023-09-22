@@ -674,6 +674,7 @@ TEST_F(MetadataUtilsTest, HasExpiredOrUnavailableResult) {
   base::Time result_time = base::Time::Now() - base::Days(3);
   prediction_result->set_timestamp_us(
       result_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  prediction_result->add_result(1);
   EXPECT_FALSE(
       metadata_utils::HasExpiredOrUnavailableResult(segment_info, now));
 

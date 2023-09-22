@@ -4,8 +4,6 @@
 
 #include "components/segmentation_platform/internal/service_proxy_impl.h"
 
-#include <inttypes.h>
-#include <limits>
 #include <memory>
 #include <sstream>
 
@@ -178,14 +176,14 @@ void ServiceProxyImpl::OnGetAllSegmentationInfo(
     return;
   // TODO(ritikagup@) : Use TrainingDataCollectorImpl GetPreferredInfo method.
   // Convert the |segment_info| vector to a map for quick lookup.
-  base::flat_map<SegmentId, proto::SegmentInfo> segment_info_map;
+  base::flat_map<SegmentId, const proto::SegmentInfo*> segment_info_map;
   for (const auto& segment_id_and_info : *segment_info_list) {
     const SegmentId segment_id = segment_id_and_info.first;
     auto it = segment_info_map.find(segment_id);
     if (it == segment_info_map.end() ||
-        segment_id_and_info.second.model_source() !=
+        segment_id_and_info.second->model_source() !=
             proto::ModelSource::DEFAULT_MODEL_SOURCE) {
-      segment_info_map[segment_id] = std::move(segment_id_and_info.second);
+      segment_info_map[segment_id] = segment_id_and_info.second;
     }
   }
 
@@ -215,15 +213,15 @@ void ServiceProxyImpl::OnGetAllSegmentationInfo(
       // from all segments once we have ranking API support.
       absl::optional<float> current_segment_rank =
           segment_id.first == selected ? selected_segment_rank : absl::nullopt;
-      const auto& info = segment_info_map[segment_id.first];
+      const auto* info = segment_info_map[segment_id.first];
       bool can_execute_segment =
           force_refresh_results_ ||
           (signal_storage_config_ &&
            signal_storage_config_->MeetsSignalCollectionRequirement(
-               info.model_metadata()));
+               info->model_metadata()));
       result.back().segment_status.emplace_back(
-          segment_id.first, SegmentMetadataToString(info),
-          PredictionResultToString(info, current_segment_rank),
+          segment_id.first, SegmentMetadataToString(*info),
+          PredictionResultToString(*info, current_segment_rank),
           can_execute_segment);
     }
   }

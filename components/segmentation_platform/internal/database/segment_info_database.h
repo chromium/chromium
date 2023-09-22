@@ -35,7 +35,8 @@ class PredictionResult;
 class SegmentInfoDatabase {
  public:
   using SuccessCallback = base::OnceCallback<void(bool)>;
-  using SegmentInfoList = std::vector<std::pair<SegmentId, proto::SegmentInfo>>;
+  using SegmentInfoList =
+      std::vector<std::pair<SegmentId, const proto::SegmentInfo*>>;
   using MultipleSegmentInfoCallback =
       base::OnceCallback<void(std::unique_ptr<SegmentInfoList>)>;
   using SegmentInfoCallback =

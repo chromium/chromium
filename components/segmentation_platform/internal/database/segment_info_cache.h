@@ -26,7 +26,8 @@ using proto::SegmentInfo;
 // the time to read from DB in consecutive calls
 class SegmentInfoCache {
  public:
-  using SegmentInfoList = std::vector<std::pair<SegmentId, proto::SegmentInfo>>;
+  using SegmentInfoList =
+      std::vector<std::pair<SegmentId, const proto::SegmentInfo*>>;
 
   SegmentInfoCache();
   ~SegmentInfoCache();

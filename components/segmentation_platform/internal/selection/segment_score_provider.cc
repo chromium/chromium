@@ -52,7 +52,7 @@ class SegmentScoreProviderImpl : public SegmentScoreProvider {
     // Read results from last session to memory.
     for (const auto& pair : *all_segments) {
       SegmentId id = pair.first;
-      const proto::SegmentInfo& info = pair.second;
+      const proto::SegmentInfo& info = *pair.second;
       if (!info.has_prediction_result())
         continue;
 

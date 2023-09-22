@@ -33,7 +33,7 @@ void TestSegmentInfoDatabase::GetSegmentInfoForSegments(
   for (const auto& pair : segment_infos_) {
     if (pair.second.model_source() != ModelSource::DEFAULT_MODEL_SOURCE &&
         base::Contains(segment_ids, pair.first)) {
-      result->emplace_back(pair);
+      result->emplace_back(pair.first, &pair.second);
     }
   }
   std::move(callback).Run(std::move(result));
@@ -45,7 +45,7 @@ TestSegmentInfoDatabase::GetSegmentInfoForBothModels(
   auto result = std::make_unique<SegmentInfoDatabase::SegmentInfoList>();
   for (const auto& pair : segment_infos_) {
     if (base::Contains(segment_ids, pair.first)) {
-      result->emplace_back(pair);
+      result->emplace_back(pair.first, &pair.second);
     }
   }
   return result;

@@ -165,11 +165,11 @@ TEST_F(SegmentInfoCacheTest, GetSegmentInfoForBothModelsFromCache) {
 
   EXPECT_EQ(kSegmentId, segments_found.get()->at(0).first);
   EXPECT_EQ(kServerModelSource,
-            segments_found.get()->at(0).second.model_source());
+            segments_found.get()->at(0).second->model_source());
 
   EXPECT_EQ(kSegmentId, segments_found.get()->at(1).first);
   EXPECT_EQ(kDefaultModelSource,
-            segments_found.get()->at(1).second.model_source());
+            segments_found.get()->at(1).second->model_source());
 
   // Updating SegmentInfo for 'kSegmentId2' and calling
   // GetSegmentInfoForBothModels with both segment ids.
@@ -181,15 +181,15 @@ TEST_F(SegmentInfoCacheTest, GetSegmentInfoForBothModelsFromCache) {
   EXPECT_EQ(3u, segments_found.get()->size());
   EXPECT_EQ(kSegmentId, segments_found.get()->at(0).first);
   EXPECT_EQ(kServerModelSource,
-            segments_found.get()->at(0).second.model_source());
+            segments_found.get()->at(0).second->model_source());
 
   EXPECT_EQ(kSegmentId, segments_found.get()->at(1).first);
   EXPECT_EQ(kDefaultModelSource,
-            segments_found.get()->at(1).second.model_source());
+            segments_found.get()->at(1).second->model_source());
 
   EXPECT_EQ(kSegmentId2, segments_found.get()->at(2).first);
   EXPECT_EQ(kDefaultModelSource,
-            segments_found.get()->at(2).second.model_source());
+            segments_found.get()->at(2).second->model_source());
 
   // Updating SegmentInfo for 'kSegmentId2' with absl::nullopt and calling
   // GetSegmentInfoForBothModels with both segment ids.
@@ -200,11 +200,11 @@ TEST_F(SegmentInfoCacheTest, GetSegmentInfoForBothModelsFromCache) {
   EXPECT_EQ(2u, segments_found.get()->size());
   EXPECT_EQ(kSegmentId, segments_found.get()->at(0).first);
   EXPECT_EQ(kServerModelSource,
-            segments_found.get()->at(0).second.model_source());
+            segments_found.get()->at(0).second->model_source());
 
   EXPECT_EQ(kSegmentId, segments_found.get()->at(1).first);
   EXPECT_EQ(kDefaultModelSource,
-            segments_found.get()->at(1).second.model_source());
+            segments_found.get()->at(1).second->model_source());
 
   // Calling GetSegmentInfoForBothModels for `segment_id` not present in cache
   // for both model sources.

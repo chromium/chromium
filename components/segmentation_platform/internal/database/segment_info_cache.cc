@@ -32,10 +32,9 @@ SegmentInfoCache::GetSegmentInfoForSegments(
   std::unique_ptr<SegmentInfoCache::SegmentInfoList> segments_found =
       std::make_unique<SegmentInfoCache::SegmentInfoList>();
   for (SegmentId target : segment_ids) {
-    absl::optional<SegmentInfo> info = GetSegmentInfo(target, model_source);
-    if (info.has_value()) {
-      segments_found->emplace_back(
-          std::make_pair(target, std::move(info.value())));
+    auto it = segment_info_cache_.find(std::make_pair(target, model_source));
+    if (it != segment_info_cache_.end()) {
+      segments_found->emplace_back(std::make_pair(target, &it->second));
     }
   }
   return segments_found;

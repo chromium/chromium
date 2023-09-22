@@ -7,7 +7,6 @@
 #include <deque>
 #include <memory>
 #include <set>
-#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -48,7 +47,7 @@ std::set<SignalIdentifier> CollectAllSignalIdentifiers(
     std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segment_infos) {
   std::set<SignalIdentifier> signal_ids;
   for (const auto& info : *segment_infos) {
-    const proto::SegmentInfo& segment_info = info.second;
+    const proto::SegmentInfo& segment_info = *info.second;
     const auto& metadata = segment_info.model_metadata();
     auto features =
         metadata_utils::GetAllUmaFeatures(metadata, /*include_outputs=*/true);
