@@ -6,6 +6,7 @@
 #define ANDROID_WEBVIEW_JS_SANDBOX_SERVICE_JS_SANDBOX_ISOLATE_H_
 
 #include <memory>
+#include <set>
 #include <string>
 #include <unordered_map>
 
@@ -83,6 +84,8 @@ class JsSandboxIsolate {
   void EvaluateJavascriptOnThread(
       const std::string code,
       scoped_refptr<JsSandboxIsolateCallback> callback);
+  void PromiseFulfillCallback(scoped_refptr<JsSandboxIsolateCallback> callback,
+                              gin::Arguments* args);
   void PromiseRejectCallback(scoped_refptr<JsSandboxIsolateCallback> callback,
                              gin::Arguments* args);
 
@@ -131,11 +134,22 @@ class JsSandboxIsolate {
 
   // Must only be used from isolate thread
   [[noreturn]] void MemoryLimitExceeded();
+  // Must only be used from isolate thread
+  void ReportOutOfMemory();
   [[noreturn]] void FreezeThread();
 
   void EnableOrDisableInspectorAsNeeded();
   void SetConsoleEnabledOnControlThread(bool enable);
   void SetConsoleEnabledOnIsolateThread(bool enable);
+
+  // Remove a callback from the ongoing_evaluation_callbacks_ set.
+  //
+  // Returns the passed reference to allow chaining. (The caller must make sure
+  // the reference continues to be valid if it is used.)
+  //
+  // Must only be used from isolate thread.
+  const scoped_refptr<JsSandboxIsolateCallback>& UseCallback(
+      const scoped_refptr<JsSandboxIsolateCallback>& callback);
 
   // Java-side JsSandboxIsolate object corresponding to this isolate.
   const base::android::ScopedJavaGlobalRef<jobject> j_isolate_;
@@ -174,16 +188,22 @@ class JsSandboxIsolate {
   std::unordered_map<std::string, FdWithLength> named_fd_
       GUARDED_BY(named_fd_lock_);
 
-  // The callback associated with the current evaluation, if any. Used for
-  // signaling errors from V8 callbacks.
+  // Callbacks associated with evaluations which have begun but not yet
+  // finished. More precisely, these are callbacks which have been passed to
+  // EvaluateJavascriptOnThread, but which have not yet been called with a final
+  // result or error.
   //
-  // This can be nullptr outside of active evaluation, including when the result
-  // of an evaluation is a JS promise which is pending resolution/rejection.
+  // When a callback is used to send a result or error, it should be removed via
+  // UseCallback().
   //
-  // This pointer must only be accessed from the isolate thread.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION JsSandboxIsolateCallback* current_callback_;
+  // This may contain multiple items when evaluations return a promise that must
+  // be resolved asynchronously. However, an empty set does not imply that the
+  // isolate is idle, as this does not track microtasks or background processing
+  // which may result in further execution, such as WASM compilation promises.
+  //
+  // Used for signaling errors from V8 callbacks.
+  std::set<scoped_refptr<JsSandboxIsolateCallback>>
+      ongoing_evaluation_callbacks_;
 
   bool console_enabled_;
 

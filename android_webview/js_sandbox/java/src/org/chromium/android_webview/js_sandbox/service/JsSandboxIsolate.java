@@ -12,6 +12,7 @@ import androidx.javascriptengine.common.Utils;
 import org.chromium.android_webview.js_sandbox.common.IJsSandboxConsoleCallback;
 import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolate;
 import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolateCallback;
+import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolateClient;
 import org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolateSyncCallback;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
@@ -38,12 +39,20 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
     @GuardedBy("mLock")
     private long mJsSandboxIsolate;
 
+    private final IJsSandboxIsolateClient mIsolateClient;
+
     JsSandboxIsolate(JsSandboxService service) {
         this(service, 0);
     }
 
     JsSandboxIsolate(JsSandboxService service, long maxHeapSizeBytes) {
+        this(service, maxHeapSizeBytes, null);
+    }
+
+    JsSandboxIsolate(JsSandboxService service, long maxHeapSizeBytes,
+            IJsSandboxIsolateClient isolateClient) {
         mService = service;
+        mIsolateClient = isolateClient;
         mJsSandboxIsolate = JsSandboxIsolateJni.get().createNativeJsSandboxIsolateWrapper(
                 this, maxHeapSizeBytes);
     }
@@ -166,6 +175,30 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
             }
             mConsoleCallback.set(callback);
             JsSandboxIsolateJni.get().setConsoleEnabled(mJsSandboxIsolate, this, callback != null);
+        }
+    }
+
+    // Notify the client side that the isolate should be terminated.
+    //
+    // Returns true if the client supports and received the onTerminated notification. (It is OK to
+    // call this method regardless of whether the client supports the notification.)
+    //
+    // The service must ensure no other Binder calls (related to this isolate) are made back to the
+    // client if this method returns true.
+    @CalledByNative
+    public boolean sendTermination(int status, String message) {
+        if (mIsolateClient == null) {
+            return false;
+        }
+        try {
+            final String binderFriendlyMessage = truncateUnicodeString(message, 32768);
+            mIsolateClient.onTerminated(status, binderFriendlyMessage);
+            return true;
+        } catch (RemoteException e) {
+            // The client theoretically supports notifications, but probably didn't get it.
+            // Ignoring this failure might cause the client to hang forever, so kill the whole
+            // sandbox with an exception, which the client shouldn't ignore.
+            throw new RuntimeException(e);
         }
     }
 

@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <algorithm>
 #include <memory>
+#include <set>
 #include <string>
 
 #include "android_webview/js_sandbox/js_sandbox_jni_headers/JsSandboxIsolate_jni.h"
@@ -15,7 +16,6 @@
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/files/file_util.h"
@@ -167,6 +167,14 @@ class NoopInspectorChannel final : public v8_inspector::V8Inspector::Channel {
   void sendNotification(
       std::unique_ptr<v8_inspector::StringBuffer> message) override {}
   void flushProtocolNotifications() override {}
+};
+
+// This must match the values defined in IJsSandboxIsolateInstanceCallback's
+// TERMINATED_ constants;
+enum class TerminationStatus {
+  kUnknownError = 1,
+  kSandboxDead = 2,
+  kMemoryLimitExceeded = 3,
 };
 
 }  // namespace
@@ -523,8 +531,7 @@ void JsSandboxIsolate::InitializeIsolateOnThread() {
 void JsSandboxIsolate::EvaluateJavascriptOnThread(
     const std::string code,
     scoped_refptr<JsSandboxIsolateCallback> callback) {
-  base::AutoReset<JsSandboxIsolateCallback*> callback_autoreset(
-      &current_callback_, callback.get());
+  ongoing_evaluation_callbacks_.emplace(callback);
 
   v8::HandleScope handle_scope(isolate_holder_->isolate());
   v8::Context::Scope scope(context_holder_->context());
@@ -542,7 +549,8 @@ void JsSandboxIsolate::EvaluateJavascriptOnThread(
   }
   v8::Local<v8::Script> script;
   if (!maybe_script.ToLocal(&script)) {
-    callback->ReportJsEvaluationError(compile_error);
+    UseCallback(callback)->ReportError(
+        JsSandboxIsolateCallback::ErrorType::kJsEvaluationError, compile_error);
     return;
   }
 
@@ -565,34 +573,32 @@ void JsSandboxIsolate::EvaluateJavascriptOnThread(
       // directly.
       if (promise->State() == v8::Promise::PromiseState::kFulfilled) {
         std::string result = gin::V8ToString(v8_isolate, promise->Result());
-        callback->ReportResult(result);
+        UseCallback(callback)->ReportResult(result);
         return;
       }
       if (promise->State() == v8::Promise::PromiseState::kRejected) {
         v8::Local<v8::Message> message = v8::Exception::CreateMessage(
             isolate_holder_->isolate(), promise->Result());
         std::string error_message = GetStackTrace(message, v8_isolate);
-        callback->ReportJsEvaluationError(error_message);
+        UseCallback(callback)->ReportError(
+            JsSandboxIsolateCallback::ErrorType::kJsEvaluationError,
+            error_message);
         return;
       }
       v8::Local<v8::Function> fulfill_fun =
           gin::CreateFunctionTemplate(
               v8_isolate,
-              base::BindRepeating(
-                  [](scoped_refptr<JsSandboxIsolateCallback> callback,
-                     gin::Arguments* args) {
-                    std::string output;
-                    args->GetNext(&output);
-                    callback->ReportResult(output);
-                  },
-                  callback))
+              base::BindRepeating(&JsSandboxIsolate::PromiseFulfillCallback,
+                                  base::Unretained(this),
+                                  base::RetainedRef(callback)))
               ->GetFunction(context_holder_->context())
               .ToLocalChecked();
       v8::Local<v8::Function> reject_fun =
           gin::CreateFunctionTemplate(
               v8_isolate,
               base::BindRepeating(&JsSandboxIsolate::PromiseRejectCallback,
-                                  base::Unretained(this), callback))
+                                  base::Unretained(this),
+                                  base::RetainedRef(callback)))
               ->GetFunction(context_holder_->context())
               .ToLocalChecked();
 
@@ -600,23 +606,34 @@ void JsSandboxIsolate::EvaluateJavascriptOnThread(
           .ToLocalChecked();
     } else {
       std::string result = gin::V8ToString(v8_isolate, value);
-      callback->ReportResult(result);
+      UseCallback(callback)->ReportResult(result);
     }
   } else {
-    callback->ReportJsEvaluationError(run_error);
+    UseCallback(callback)->ReportError(
+        JsSandboxIsolateCallback::ErrorType::kJsEvaluationError, run_error);
   }
+}
+
+void JsSandboxIsolate::PromiseFulfillCallback(
+    scoped_refptr<JsSandboxIsolateCallback> callback,
+    gin::Arguments* args) {
+  std::string result;
+  args->GetNext(&result);
+  UseCallback(callback)->ReportResult(result);
 }
 
 void JsSandboxIsolate::PromiseRejectCallback(
     scoped_refptr<JsSandboxIsolateCallback> callback,
     gin::Arguments* args) {
+  v8::HandleScope handle_scope(isolate_holder_->isolate());
   v8::Local<v8::Value> value;
   args->GetNext(&value);
   v8::Local<v8::Message> message =
       v8::Exception::CreateMessage(isolate_holder_->isolate(), value);
   std::string error_message =
       GetStackTrace(message, isolate_holder_->isolate());
-  callback->ReportJsEvaluationError(error_message);
+  UseCallback(callback)->ReportError(
+      JsSandboxIsolateCallback::ErrorType::kJsEvaluationError, error_message);
 }
 
 // Called from isolate thread.
@@ -749,24 +766,68 @@ void JsSandboxIsolate::ConsumeNamedDataAsArrayBuffer(gin::Arguments* args) {
 
 // Called from isolate thread.
 [[noreturn]] void JsSandboxIsolate::MemoryLimitExceeded() {
+  ReportOutOfMemory();
+  FreezeThread();
+}
+
+// Called from isolate thread
+void JsSandboxIsolate::ReportOutOfMemory() {
   LOG(ERROR) << "Isolate has OOMed";
-  // TODO(ashleynewson): An isolate could run out of memory outside of an
-  // evaluation when processing asynchronous code. We should add a crash
-  // signalling mechanism which doesn't rely on us having a callback for a
-  // currently running evaluation.
-  CHECK(current_callback_)
-      << "Isolate ran out of memory outside of an evaluation.";
-  uint64_t memory_limit = uint64_t{isolate_max_heap_size_bytes_};
+
+  const uint64_t memory_limit = uint64_t{isolate_max_heap_size_bytes_};
   v8::HeapStatistics heap_statistics;
   isolate_holder_->isolate()->GetHeapStatistics(&heap_statistics);
-  uint64_t v8_heap_usage = heap_statistics.used_heap_size();
+  const uint64_t v8_heap_usage = heap_statistics.used_heap_size();
   // Note that we use our own memory accounting, and not V8's external memory
   // accounting, for non-heap usage. These numbers can differ, particularly as
   // our own memory accounting considers whole pages rather than just bytes.
-  uint64_t non_v8_heap_usage = uint64_t{array_buffer_allocator_->GetUsage()};
-  current_callback_->ReportMemoryLimitExceededError(memory_limit, v8_heap_usage,
-                                                    non_v8_heap_usage);
-  FreezeThread();
+  const uint64_t non_v8_heap_usage =
+      uint64_t{array_buffer_allocator_->GetUsage()};
+
+  std::ostringstream details;
+  details << "Memory limit exceeded.\n";
+  if (memory_limit > 0) {
+    details << "Memory limit: " << memory_limit << " bytes\n";
+  } else {
+    details << "Memory limit not explicitly configured\n";
+  }
+  details << "V8 heap usage: " << v8_heap_usage << " bytes\n";
+  details << "Non-V8 heap usage: " << non_v8_heap_usage << " bytes\n";
+  const std::string details_str = details.str();
+
+  JNIEnv* const env = base::android::AttachCurrentThread();
+
+  const bool client_got_termination =
+      android_webview::Java_JsSandboxIsolate_sendTermination(
+          env, j_isolate_,
+          static_cast<jint>(TerminationStatus::kMemoryLimitExceeded),
+          base::android::ConvertUTF8ToJavaString(env, details_str));
+  if (client_got_termination) {
+    // Don't send any evaluation errors - the client will deal with them itself.
+    return;
+  }
+
+  bool client_notified_via_evaluation = false;
+  if (ongoing_evaluation_callbacks_.size() > 0) {
+    // It is safe to erase items from a std::set while iterating through it.
+    auto callback_it = ongoing_evaluation_callbacks_.begin();
+    while (callback_it != ongoing_evaluation_callbacks_.end()) {
+      UseCallback(*callback_it)
+          ->ReportError(
+              JsSandboxIsolateCallback::ErrorType::kMemoryLimitExceeded,
+              details_str);
+      callback_it++;
+    }
+    client_notified_via_evaluation = true;
+  }
+
+  // Some pre-stable clients do not support termination notifications and only
+  // support signaling OOMs via evaluation callbacks. Ensure the client has been
+  // notified through at least one mechanism.
+  CHECK(client_notified_via_evaluation)
+      << "Isolate ran out of memory but the client does not support "
+      << "termination notifications and there are no ongoing evaluations "
+      << "through which to signal an error.";
 }
 
 // Halt thread until process dies.
@@ -876,6 +937,13 @@ void JsSandboxIsolate::SetConsoleEnabledOnControlThread(const bool enable) {
 void JsSandboxIsolate::SetConsoleEnabledOnIsolateThread(const bool enable) {
   console_enabled_ = enable;
   EnableOrDisableInspectorAsNeeded();
+}
+
+const scoped_refptr<JsSandboxIsolateCallback>& JsSandboxIsolate::UseCallback(
+    const scoped_refptr<JsSandboxIsolateCallback>& callback) {
+  const size_t removed = ongoing_evaluation_callbacks_.erase(callback);
+  CHECK_EQ(removed, size_t{1});
+  return callback;
 }
 
 static void JNI_JsSandboxIsolate_InitializeEnvironment(JNIEnv* env) {

@@ -28,23 +28,11 @@ class JsSandboxIsolateCallback final
   JsSandboxIsolateCallback& operator=(const JsSandboxIsolateCallback&) = delete;
 
   void ReportResult(const std::string& result);
-  void ReportJsEvaluationError(const std::string& error);
-  // Report that the isolate has exceeded its memory limit, with various stats.
-  //
-  // memory_limit == 0 indicates that no explicit limit was configured.
-  //
-  // v8_heap_usage describes V8-internal (V8 heap) memory usage before the
-  // failed allocation. non_v8_heap_usage describes memory usage external to the
-  // V8 heap.
-  void ReportMemoryLimitExceededError(uint64_t memory_limit,
-                                      uint64_t v8_heap_usage,
-                                      uint64_t non_v8_heap_usage);
+  void ReportError(ErrorType error_type, const std::string& error);
 
  private:
   friend class base::RefCounted<JsSandboxIsolateCallback>;
   ~JsSandboxIsolateCallback();
-
-  void ReportError(ErrorType error_type, const std::string& error);
 
   base::android::ScopedJavaGlobalRef<jobject> UseCallback();
 
