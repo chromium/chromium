@@ -57,8 +57,8 @@ class EditorMediator
   static bool HasInstance();
 
   // Binds a new editor instance request from a client.
-  void BindEditorClient(
-      mojo::PendingReceiver<orca::mojom::EditorClient> pending_receiver);
+  void BindEditorClient(mojo::PendingReceiver<orca::mojom::EditorClient>
+                            pending_receiver) override;
 
   // Binds a new panel manager request from a client.
   void BindEditorPanelManager(

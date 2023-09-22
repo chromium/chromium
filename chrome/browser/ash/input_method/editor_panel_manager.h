@@ -27,6 +27,10 @@ class EditorPanelManager : public crosapi::mojom::EditorPanelManager {
   class Delegate {
    public:
     virtual ~Delegate() = default;
+
+    virtual void BindEditorClient(
+        mojo::PendingReceiver<orca::mojom::EditorClient> pending_receiver) = 0;
+
     virtual void OnPromoCardDeclined() = 0;
     virtual void HandleTrigger() = 0;
   };
@@ -59,6 +63,8 @@ class EditorPanelManager : public crosapi::mojom::EditorPanelManager {
 
   void BindReceiver(mojo::PendingReceiver<crosapi::mojom::EditorPanelManager>
                         pending_receiver);
+
+  void BindEditorClient();
 
  private:
   void OnGetPresetTextQueriesResult(

@@ -41,6 +41,15 @@ void EditorPanelManager::BindReceiver(
   receivers_.Add(this, std::move(pending_receiver));
 }
 
+void EditorPanelManager::BindEditorClient() {
+  if (!editor_client_remote_.is_bound()) {
+    delegate_->BindEditorClient(
+      editor_client_remote_.BindNewPipeAndPassReceiver());
+
+    editor_client_remote_.reset_on_disconnect();
+  }
+}
+
 void EditorPanelManager::GetEditorPanelContext(
     GetEditorPanelContextCallback callback) {
   // TODO(b/295059934): Get the panel mode from the editor mediator.
