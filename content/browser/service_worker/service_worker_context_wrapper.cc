@@ -1728,7 +1728,7 @@ ServiceWorkerContextWrapper::GetLoaderFactoryForBrowserInitiatedRequest(
           context()->loader_factory_bundle_for_update_check()->Clone();
 
   if (auto* config = content::WebUIConfigMap::GetInstance().GetConfig(
-          browser_context(), scope_origin)) {
+          browser_context(), scope)) {
     // If this is a Service Worker for a WebUI, the WebUI's URLDataSource
     // needs to be registered. Registering a URLDataSource allows the
     // WebUIURLLoaderFactory below to serve the resources for the WebUI. We

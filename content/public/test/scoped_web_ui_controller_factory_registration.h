@@ -7,7 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "url/origin.h"
+#include "url/gurl.h"
 
 namespace content {
 
@@ -45,14 +45,14 @@ class ScopedWebUIConfigRegistration {
   explicit ScopedWebUIConfigRegistration(
       std::unique_ptr<WebUIConfig> webui_config);
 
-  // Removes the WebUIConfig with `webui_origin`. The removed WebUIConfig is
+  // Removes the WebUIConfig with `webui_url`. The removed WebUIConfig is
   // re-registered on destruction.
-  explicit ScopedWebUIConfigRegistration(const GURL& webui_origin);
+  explicit ScopedWebUIConfigRegistration(const GURL& webui_url);
 
   ~ScopedWebUIConfigRegistration();
 
  private:
-  const url::Origin webui_config_origin_;
+  const GURL webui_config_url_;
   std::unique_ptr<WebUIConfig> replaced_webui_config_;
 };
 
