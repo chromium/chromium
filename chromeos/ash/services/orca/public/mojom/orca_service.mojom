@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 3
+// Next MinVersion: 4
 
 module ash.orca.mojom;
 
@@ -70,6 +70,12 @@ struct TextQueryResult {
 enum TextQueryErrorCode {
   [Default] kUnknown = 0,
   kInvalidArgument = 1,
+  [MinVersion=3] kResourceExhausted = 2,
+  [MinVersion=3] kBackendFailure = 3,
+  [MinVersion=3] kNoInternetConnection = 4,
+  [MinVersion=3] kUnsupportedLanguage = 5,
+  [MinVersion=3] kBlockedOutputs = 6,
+  [MinVersion=3] kRestrictedRegion = 7,
 };
 
 // An error that occurred when processing a `TextQueryRequest`.

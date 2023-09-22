@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ash/input_method/editor_text_query_provider.h"
 
+#include "base/notreached.h"
 #include "base/values.h"
 #include "chrome/browser/manta/manta_service.h"
 #include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/manta/manta_status.h"
+#include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 
 namespace ash::input_method {
 
@@ -36,19 +38,40 @@ std::map<std::string, std::string> CreateProviderRequest(
   return provider_request;
 }
 
-orca::mojom::TextQueryResponsePtr ParseResponse(
-    base::Value::Dict& raw_response) {
-  if (raw_response.FindBool("error").value_or(false)) {
-    // TODO: b:300557202 - use the right error code
-    auto* error_message = raw_response.FindString("error_message");
-    return orca::mojom::TextQueryResponse::NewError(
-        orca::mojom::TextQueryError::New(
-            orca::mojom::TextQueryErrorCode::kInvalidArgument,
-            error_message != nullptr ? *error_message : std::string()));
+orca::mojom::TextQueryErrorCode ConvertErrorCode(
+    manta::MantaStatusCode status_code) {
+  switch (status_code) {
+    case manta::MantaStatusCode::kGenericError:
+    case manta::MantaStatusCode::kMalformedResponse:
+      return orca::mojom::TextQueryErrorCode::kUnknown;
+    case manta::MantaStatusCode::kInvalidInput:
+      return orca::mojom::TextQueryErrorCode::kInvalidArgument;
+    case manta::MantaStatusCode::kResourceExhausted:
+      return orca::mojom::TextQueryErrorCode::kResourceExhausted;
+    case manta::MantaStatusCode::kBackendFailure:
+      return orca::mojom::TextQueryErrorCode::kBackendFailure;
+    case manta::MantaStatusCode::kNoInternetConnection:
+      return orca::mojom::TextQueryErrorCode::kNoInternetConnection;
+    case manta::MantaStatusCode::kUnsupportedLanguage:
+      return orca::mojom::TextQueryErrorCode::kUnsupportedLanguage;
+    case manta::MantaStatusCode::kBlockedOutputs:
+      return orca::mojom::TextQueryErrorCode::kBlockedOutputs;
+    case manta::MantaStatusCode::kRestrictedCountry:
+      return orca::mojom::TextQueryErrorCode::kRestrictedRegion;
+    case manta::MantaStatusCode::kOk:
+      NOTREACHED_NORETURN();
   }
+}
 
+orca::mojom::TextQueryErrorPtr ConvertErrorResponse(manta::MantaStatus status) {
+  return orca::mojom::TextQueryError::New(ConvertErrorCode(status.status_code),
+                                          status.message);
+}
+
+std::vector<orca::mojom::TextQueryResultPtr> ParseSuccessResponse(
+    base::Value::Dict& response) {
   std::vector<orca::mojom::TextQueryResultPtr> results;
-  if (auto* output_data_list = raw_response.FindList("outputData")) {
+  if (auto* output_data_list = response.FindList("outputData")) {
     int result_id = 0;
     for (const auto& data : *output_data_list) {
       if (const auto* text = data.GetDict().FindString("text")) {
@@ -58,7 +81,7 @@ orca::mojom::TextQueryResponsePtr ParseResponse(
       }
     }
   }
-  return orca::mojom::TextQueryResponse::NewResults(std::move(results));
+  return results;
 }
 
 }  // namespace
@@ -90,11 +113,13 @@ void EditorTextQueryProvider::Process(orca::mojom::TextQueryRequestPtr request,
       CreateProviderRequest(std::move(request)),
       base::BindOnce(
           [](ProcessCallback process_callback, base::Value::Dict dict,
-             manta::MantaStatus manta_status) {
-            // TODO(b:298285960): Deal with manta_status to obtain the errors
-            // properly.
-            auto response = ParseResponse(dict);
-            std::move(process_callback).Run(std::move(response));
+             manta::MantaStatus status) {
+            std::move(process_callback)
+                .Run(status.status_code == manta::MantaStatusCode::kOk
+                         ? orca::mojom::TextQueryResponse::NewResults(
+                               ParseSuccessResponse(dict))
+                         : orca::mojom::TextQueryResponse::NewError(
+                               ConvertErrorResponse(status)));
           },
           std::move(callback)));
 }
