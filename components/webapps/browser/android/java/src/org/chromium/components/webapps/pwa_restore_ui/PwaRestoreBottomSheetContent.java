@@ -44,7 +44,7 @@ public class PwaRestoreBottomSheetContent implements BottomSheetContent {
 
     @Override
     public float getFullHeightRatio() {
-        return BottomSheetContent.HeightMode.WRAP_CONTENT;
+        return 1f;
     }
 
     @Override
@@ -62,7 +62,7 @@ public class PwaRestoreBottomSheetContent implements BottomSheetContent {
 
     @Override
     public boolean swipeToDismissEnabled() {
-        return true;
+        return false;
     }
 
     @Override

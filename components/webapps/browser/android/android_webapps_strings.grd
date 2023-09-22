@@ -217,6 +217,15 @@
       <message name="IDS_PWA_RESTORE_TITLE_PEEKING" desc="The sheet title when the PWA Restore BottomSheet UI is in peeking state.">
          Restore your web apps
       </message>
+      <message name="IDS_PWA_RESTORE_BUTTON_EXPANDED" desc="The button label when the PWA Restore BottomSheet UI is in expanded state.">
+         Restore web apps
+      </message>
+      <message name="IDS_PWA_RESTORE_DESCRIPTION_EXPANDED" desc="The sheet description when the PWA Restore BottomSheet UI is in expanded state.">
+         Choose web apps to restore on this device. Apps shown here are based on your Chrome history.
+      </message>
+      <message name="IDS_PWA_RESTORE_TITLE_EXPANDED" desc="The sheet title when the PWA Restore BottomSheet UI is in expanded state.">
+         Review web apps
+      </message>
 
       <message name="IDS_PWA_RESTORE_BOTTOM_SHEET_ACCESSIBILITY" desc="The content description for the bottom sheet install UI.">
          Review which web apps to restore

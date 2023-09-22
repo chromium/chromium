@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import org.chromium.components.webapps.R;
+import org.chromium.components.webapps.pwa_restore_ui.PwaRestoreProperties.ViewState;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -16,18 +17,38 @@ import org.chromium.ui.modelutil.PropertyModel;
  */
 class PwaRestoreBottomSheetViewBinder {
     static void bind(PropertyModel model, PwaRestoreBottomSheetView view, PropertyKey propertyKey) {
-        if (propertyKey.equals(PwaRestoreProperties.BUTTON_LABEL)) {
-            ((Button) view.getPreviewView().findViewById(R.id.button))
-                    .setText(model.get(PwaRestoreProperties.BUTTON_LABEL));
-        } else if (propertyKey.equals(PwaRestoreProperties.DESCRIPTION)) {
+        if (propertyKey == PwaRestoreProperties.VIEW_STATE) {
+            @ViewState
+            int viewState = model.get(PwaRestoreProperties.VIEW_STATE);
+            view.setDisplayedView(viewState);
+        } else if (propertyKey.equals(PwaRestoreProperties.PEEK_DESCRIPTION)) {
             ((TextView) view.getPreviewView().findViewById(R.id.description))
-                    .setText(model.get(PwaRestoreProperties.DESCRIPTION));
-        } else if (propertyKey.equals(PwaRestoreProperties.TITLE)) {
+                    .setText(model.get(PwaRestoreProperties.PEEK_DESCRIPTION));
+        } else if (propertyKey.equals(PwaRestoreProperties.PEEK_TITLE)) {
             ((TextView) view.getPreviewView().findViewById(R.id.title))
-                    .setText(model.get(PwaRestoreProperties.TITLE));
-        } else if (propertyKey.equals(PwaRestoreProperties.CAN_SUBMIT)) {
-            ((Button) view.getPreviewView().findViewById(R.id.button))
-                    .setEnabled(model.get(PwaRestoreProperties.CAN_SUBMIT));
+                    .setText(model.get(PwaRestoreProperties.PEEK_TITLE));
+        } else if (propertyKey.equals(PwaRestoreProperties.PEEK_BUTTON_LABEL)) {
+            ((Button) view.getPreviewView().findViewById(R.id.review_button))
+                    .setText(model.get(PwaRestoreProperties.PEEK_BUTTON_LABEL));
+        } else if (propertyKey.equals(PwaRestoreProperties.REVIEW_BUTTON_ON_CLICK_CALLBACK)) {
+            ((Button) view.getPreviewView().findViewById(R.id.review_button))
+                    .setOnClickListener(
+                            model.get(PwaRestoreProperties.REVIEW_BUTTON_ON_CLICK_CALLBACK));
+            ((Button) view.getPreviewView().findViewById(R.id.review_button)).setEnabled(true);
+        } else if (propertyKey.equals(PwaRestoreProperties.EXPANDED_DESCRIPTION)) {
+            ((TextView) view.getContentView().findViewById(R.id.description))
+                    .setText(model.get(PwaRestoreProperties.EXPANDED_DESCRIPTION));
+        } else if (propertyKey.equals(PwaRestoreProperties.EXPANDED_TITLE)) {
+            ((TextView) view.getContentView().findViewById(R.id.title))
+                    .setText(model.get(PwaRestoreProperties.EXPANDED_TITLE));
+        } else if (propertyKey.equals(PwaRestoreProperties.EXPANDED_BUTTON_LABEL)) {
+            ((Button) view.getContentView().findViewById(R.id.restore_button))
+                    .setText(model.get(PwaRestoreProperties.EXPANDED_BUTTON_LABEL));
+        } else if (propertyKey.equals(PwaRestoreProperties.RESTORE_BUTTON_ON_CLICK_CALLBACK)) {
+            ((Button) view.getContentView().findViewById(R.id.restore_button))
+                    .setOnClickListener(
+                            model.get(PwaRestoreProperties.RESTORE_BUTTON_ON_CLICK_CALLBACK));
+            ((Button) view.getContentView().findViewById(R.id.restore_button)).setEnabled(true);
         }
     }
 }

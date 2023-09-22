@@ -11,8 +11,38 @@ found in the LICENSE file.
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/extra_details"
+        android:id="@+id/title"
+        android:drawablePadding="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:textAppearance="@style/TextAppearance.Headline.Primary" />
+
+    <TextView
+        android:id="@+id/description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:ellipsize="end"
+        android:lineHeight="20sp"
+        android:maxLines="7"
         android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/restore_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginStart="32dp"
+        android:enabled="false"
+        android:singleLine="true"
+        android:gravity="center"
+        style="@style/FilledButton.Flat"/>
 </LinearLayout>

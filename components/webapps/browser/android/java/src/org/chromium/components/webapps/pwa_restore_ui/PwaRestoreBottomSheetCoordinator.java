@@ -10,6 +10,7 @@ import android.view.View;
 import androidx.annotation.MainThread;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /**
@@ -26,13 +27,13 @@ public class PwaRestoreBottomSheetCoordinator {
      */
     @MainThread
     public PwaRestoreBottomSheetCoordinator(
-            Activity activity, BottomSheetController bottomSheetController) {
+            Activity activity, BottomSheetController bottomSheetController, int backArrowId) {
         mController = bottomSheetController;
 
         mView = new PwaRestoreBottomSheetView(activity);
-        mView.initialize();
+        mView.initialize(backArrowId);
         mContent = new PwaRestoreBottomSheetContent(mView);
-        mMediator = new PwaRestoreBottomSheetMediator(activity);
+        mMediator = new PwaRestoreBottomSheetMediator(activity, this::onReviewButtonClicked);
 
         PropertyModelChangeProcessor.create(
                 mMediator.getModel(), mView, PwaRestoreBottomSheetViewBinder::bind);
@@ -46,7 +47,20 @@ public class PwaRestoreBottomSheetCoordinator {
         return mController.requestShowContent(mContent, true);
     }
 
-    public View getBottomSheetToolbarViewForTesting() {
+    protected void onReviewButtonClicked() {
+        mMediator.setPreviewState();
+        mController.expandSheet();
+    }
+
+    protected PropertyModel getModelForTesting() {
+        return mMediator.getModel();
+    }
+
+    protected View getBottomSheetToolbarViewForTesting() {
         return mView.getPreviewView();
+    }
+
+    protected View getBottomSheetContentViewForTesting() {
+        return mView.getContentView();
     }
 }

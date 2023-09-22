@@ -7,6 +7,7 @@ package org.chromium.components.webapps.pwa_restore_ui;
 import android.app.Activity;
 
 import org.chromium.components.webapps.R;
+import org.chromium.components.webapps.pwa_restore_ui.PwaRestoreProperties.ViewState;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -19,21 +20,41 @@ class PwaRestoreBottomSheetMediator {
     // The underlying property model for the bottom sheeet.
     private final PropertyModel mModel;
 
-    PwaRestoreBottomSheetMediator(Activity activity) {
+    PwaRestoreBottomSheetMediator(Activity activity, Runnable onReviewButtonClicked) {
         mActivity = activity;
-        mModel = PwaRestoreProperties.createModel();
+        mModel = PwaRestoreProperties.createModel(
+                onReviewButtonClicked, this::onRestoreButtonClicked);
 
+        initializeState();
         setPeekingState();
     }
 
-    private void setPeekingState() {
-        mModel.set(PwaRestoreProperties.TITLE,
+    private void initializeState() {
+        mModel.set(PwaRestoreProperties.PEEK_TITLE,
                 mActivity.getString(R.string.pwa_restore_title_peeking));
-        mModel.set(PwaRestoreProperties.DESCRIPTION,
+        mModel.set(PwaRestoreProperties.PEEK_DESCRIPTION,
                 mActivity.getString(R.string.pwa_restore_description_peeking));
-        mModel.set(PwaRestoreProperties.BUTTON_LABEL,
+        mModel.set(PwaRestoreProperties.PEEK_BUTTON_LABEL,
                 mActivity.getString(R.string.pwa_restore_button_peeking));
-        mModel.set(PwaRestoreProperties.CAN_SUBMIT, true);
+
+        mModel.set(PwaRestoreProperties.EXPANDED_TITLE,
+                mActivity.getString(R.string.pwa_restore_title_expanded));
+        mModel.set(PwaRestoreProperties.EXPANDED_DESCRIPTION,
+                mActivity.getString(R.string.pwa_restore_description_expanded));
+        mModel.set(PwaRestoreProperties.EXPANDED_BUTTON_LABEL,
+                mActivity.getString(R.string.pwa_restore_button_expanded));
+    }
+
+    private void setPeekingState() {
+        mModel.set(PwaRestoreProperties.VIEW_STATE, ViewState.PREVIEW);
+    }
+
+    public void setPreviewState() {
+        mModel.set(PwaRestoreProperties.VIEW_STATE, ViewState.VIEW_PWA_LIST);
+    }
+
+    private void onRestoreButtonClicked() {
+        // TODO(finnur): Implement.
     }
 
     PropertyModel getModel() {
