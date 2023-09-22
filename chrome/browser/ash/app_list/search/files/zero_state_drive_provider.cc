@@ -83,6 +83,10 @@ ZeroStateDriveProvider::ZeroStateDriveProvider(
 
 ZeroStateDriveProvider::~ZeroStateDriveProvider() = default;
 
+void ZeroStateDriveProvider::OnDriveIntegrationServiceDestroyed() {
+  drive_observation_.Reset();
+}
+
 void ZeroStateDriveProvider::OnFileSystemMounted() {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,

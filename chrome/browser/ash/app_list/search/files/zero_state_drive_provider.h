@@ -36,10 +36,10 @@ namespace app_list {
 class SearchController;
 
 class ZeroStateDriveProvider : public SearchProvider,
-                               public drive::DriveIntegrationServiceObserver,
-                               public session_manager::SessionManagerObserver,
-                               public chromeos::PowerManagerClient::Observer,
-                               public ash::FileSuggestKeyedService::Observer {
+                               drive::DriveIntegrationService::Observer,
+                               session_manager::SessionManagerObserver,
+                               chromeos::PowerManagerClient::Observer,
+                               ash::FileSuggestKeyedService::Observer {
  public:
   ZeroStateDriveProvider(Profile* profile,
                          SearchController* search_controller,
@@ -50,7 +50,8 @@ class ZeroStateDriveProvider : public SearchProvider,
   ZeroStateDriveProvider(const ZeroStateDriveProvider&) = delete;
   ZeroStateDriveProvider& operator=(const ZeroStateDriveProvider&) = delete;
 
-  // drive::DriveIntegrationServiceObserver:
+  // DriveIntegrationService::Observer implementation.
+  void OnDriveIntegrationServiceDestroyed() override;
   void OnFileSystemMounted() override;
 
   // session_manager::SessionManagerObserver:
@@ -104,7 +105,7 @@ class ZeroStateDriveProvider : public SearchProvider,
   bool screen_off_ = true;
 
   base::ScopedObservation<drive::DriveIntegrationService,
-                          drive::DriveIntegrationServiceObserver>
+                          drive::DriveIntegrationService::Observer>
       drive_observation_{this};
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>
