@@ -936,6 +936,7 @@ ci.builder(
         category = "perfetto",
         short_name = "lnx",
     ),
+    notifies = ["chrometto-sheriff"],
 )
 
 fyi_mac_builder(
@@ -958,6 +959,7 @@ fyi_mac_builder(
         category = "perfetto",
         short_name = "mac",
     ),
+    notifies = ["chrometto-sheriff"],
 )
 
 ci.builder(
@@ -980,6 +982,7 @@ ci.builder(
         category = "perfetto",
         short_name = "win",
     ),
+    notifies = ["chrometto-sheriff"],
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
 

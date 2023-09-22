@@ -293,3 +293,11 @@ luci.notifier(
     ],
     on_new_status = ["FAILURE"],
 )
+
+luci.notifier(
+    name = "chrometto-sheriff",
+    notify_emails = [
+        "chrometto-sheriff-oncall@google.com",
+    ],
+    on_new_status = ["FAILURE"],
+)
