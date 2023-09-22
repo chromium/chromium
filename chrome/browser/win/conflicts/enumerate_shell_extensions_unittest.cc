@@ -10,7 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/strcat_win.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_reg_util_win.h"
 #include "chrome/browser/win/conflicts/module_info_util.h"
@@ -53,9 +53,8 @@ class EnumerateShellExtensionsTest : public testing::Test {
 void RegisterFakeApprovedShellExtension(HKEY key,
                                         const wchar_t* guid,
                                         const wchar_t* path) {
-  base::win::RegKey class_id(
-      HKEY_CLASSES_ROOT,
-      base::StringPrintf(kClassIdRegistryKeyFormat, guid).c_str(), KEY_WRITE);
+  base::win::RegKey class_id(HKEY_CLASSES_ROOT, GuidToClsid(guid).c_str(),
+                             KEY_WRITE);
   ASSERT_TRUE(class_id.Valid());
 
   ASSERT_EQ(ERROR_SUCCESS, class_id.WriteValue(nullptr, path));
@@ -72,17 +71,16 @@ void RegisterFakeShellExtension(const wchar_t* guid,
                                 const wchar_t* path,
                                 const wchar_t* shell_extension_type,
                                 const wchar_t* shell_object_type) {
-  base::win::RegKey class_id(
-      HKEY_CLASSES_ROOT,
-      base::StringPrintf(kClassIdRegistryKeyFormat, guid).c_str(), KEY_WRITE);
+  base::win::RegKey class_id(HKEY_CLASSES_ROOT, GuidToClsid(guid).c_str(),
+                             KEY_WRITE);
   ASSERT_TRUE(class_id.Valid());
 
   ASSERT_EQ(ERROR_SUCCESS, class_id.WriteValue(nullptr, path));
 
   base::win::RegKey registration(
       HKEY_CLASSES_ROOT,
-      base::StringPrintf(L"%ls\\shellex\\%ls\\&ls", shell_object_type,
-                         shell_extension_type, guid)
+      base::StrCat({shell_object_type, L"\\shellex\\", shell_extension_type,
+                    L"\\", guid})
           .c_str(),
       KEY_WRITE);
   ASSERT_EQ(ERROR_SUCCESS, registration.WriteValue(nullptr, guid));

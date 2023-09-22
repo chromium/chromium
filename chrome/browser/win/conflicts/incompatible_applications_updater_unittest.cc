@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/run_loop.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
@@ -146,11 +145,8 @@ class IncompatibleApplicationsUpdaterTest : public testing::Test,
   void AddIncompatibleApplication(const base::FilePath& injected_module_path,
                                   const std::wstring& application_name,
                                   Option option) {
-    static constexpr wchar_t kUninstallRegKeyFormat[] =
-        L"dummy\\uninstall\\%ls";
-
     const std::wstring registry_key_path =
-        base::StringPrintf(kUninstallRegKeyFormat, application_name.c_str());
+        L"dummy\\uninstall\\" + application_name;
 
     installed_applications_.AddIncompatibleApplication(
         injected_module_path, {application_name, HKEY_CURRENT_USER,

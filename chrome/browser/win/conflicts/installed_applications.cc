@@ -6,8 +6,8 @@
 
 #include <algorithm>
 
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
@@ -167,8 +167,7 @@ void InstalledApplications::CheckRegistryKeyForInstalledApplication(
     const std::wstring& key_name,
     const MsiUtil& msi_util,
     const std::wstring& user_sid) {
-  std::wstring candidate_key_path =
-      base::StringPrintf(L"%ls\\%ls", key_path.c_str(), key_name.c_str());
+  std::wstring candidate_key_path = base::StrCat({key_path, L"\\", key_name});
   base::win::RegKey candidate(hkey, candidate_key_path.c_str(),
                               KEY_QUERY_VALUE | wow64access);
 

@@ -16,8 +16,8 @@
 
 #include <utility>
 
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/uuid.h"
 #include "base/win/registry.h"
@@ -116,10 +116,6 @@ bool GetMsiComponentPath(base::WStringPiece product_guid,
                          base::WStringPiece component_guid,
                          const std::wstring& user_sid,
                          std::wstring* path) {
-  constexpr wchar_t kRegistryKeyPathFormat[] =
-      L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Installer\\UserData\\"
-      L"%ls\\Components\\%ls";
-
   // Internally, the Microsoft Installer uses a special formatting of the guids
   // to store the information in the registry.
   product_guid = product_guid.substr(1, 36);
@@ -146,8 +142,9 @@ bool GetMsiComponentPath(base::WStringPiece product_guid,
     std::wstring value;
     base::win::RegKey registry_key(
         HKEY_LOCAL_MACHINE,
-        base::StringPrintf(kRegistryKeyPathFormat, sid.c_str(),
-                           component_squid.c_str())
+        base::StrCat({L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Installer"
+                      L"\\UserData\\",
+                      sid, L"\\Components\\", component_squid})
             .c_str(),
         KEY_QUERY_VALUE | KEY_WOW64_64KEY);
     if (registry_key.Valid() &&

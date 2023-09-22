@@ -18,6 +18,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/logging.h"
 #include "base/scoped_generic.h"
+#include "base/strings/strcat_win.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -207,7 +208,9 @@ void GetCatalogCertificateInfo(const base::FilePath& filename,
 
 }  // namespace
 
-const wchar_t kClassIdRegistryKeyFormat[] = L"CLSID\\%ls\\InProcServer32";
+std::wstring GuidToClsid(base::WStringPiece guid) {
+  return base::StrCat({L"CLSID\\", guid, L"\\InProcServer32"});
+}
 
 // ModuleDatabase::CertificateInfo ---------------------------------------------
 
