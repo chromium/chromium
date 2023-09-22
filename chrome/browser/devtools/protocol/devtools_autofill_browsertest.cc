@@ -332,9 +332,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerCreditCardInIframe) {
   EXPECT_EQ(GetFilledOutForm(unique_context_id), GetTestCreditCard());
 }
 
-// Disabled due to nullptr deref; see https://crbug.com/1477600.
-IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest,
-                       DISABLED_TriggerCreditCardInOOPIFIframe) {
+IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerCreditCardInOOPIFIframe) {
   embedded_test_server()->ServeFilesFromSourceDirectory(
       "chrome/test/data/autofill");
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -347,36 +345,43 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest,
 
   EXPECT_TRUE(main_autofill_manager().WaitForFormsSeen(1));
 
-  const base::Value::Dict* result = SendCommandSync("Target.getTargets");
+  {
+    base::Value::Dict params;
+    params.Set("discover", true);
+    SendCommandSync("Target.setDiscoverTargets", std::move(params));
+    ASSERT_TRUE(result());
+  }
 
-  base::Value::Dict iframe_target;
-  for (const auto& target : *result->FindList("targetInfos")) {
-    if (*target.GetDict().FindString("type") == "iframe") {
-      iframe_target = target.Clone().TakeDict();
+  std::string frame_target_id;
+  while (true) {
+    base::Value::Dict result;
+    result = WaitForNotification("Target.targetCreated", true);
+    if (*result.FindStringByDottedPath("targetInfo.type") == "iframe") {
+      frame_target_id =
+          std::string(*result.FindStringByDottedPath("targetInfo.targetId"));
       break;
     }
   }
-  std::string target_id = CHECK_DEREF(iframe_target.FindString("targetId"));
 
   {
     base::Value::Dict params;
-    params.Set("targetId", target_id);
+    params.Set("targetId", frame_target_id);
     params.Set("flatten", true);
-    result = SendCommandSync("Target.attachToTarget", std::move(params));
+    SendCommandSync("Target.attachToTarget", std::move(params));
+    ASSERT_TRUE(result());
   }
-  std::string session_id = CHECK_DEREF(result->FindString("sessionId"));
+  std::string session_id = CHECK_DEREF(result()->FindString("sessionId"));
 
   int backend_node_id =
       GetBackendNodeIdByIdAttribute("CREDIT_CARD_NUMBER", "", session_id);
 
   base::Value::Dict params;
   params.Set("fieldId", backend_node_id);
-  params.Set("frameId", target_id);
+  params.Set("frameId", frame_target_id);
   params.Set("card", GetTestCreditCard());
-  result = SendSessionCommand("Autofill.trigger", std::move(params), session_id,
-                              /*wait=*/true);
-
-  EXPECT_EQ(*result, base::Value::Dict());
+  SendSessionCommand("Autofill.trigger", std::move(params), session_id,
+                     /*wait=*/true);
+  EXPECT_EQ(*result(), base::Value::Dict());
   EXPECT_EQ(GetFilledOutForm("", session_id), GetTestCreditCard());
 }
 
