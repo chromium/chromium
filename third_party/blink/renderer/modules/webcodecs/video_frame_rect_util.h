@@ -7,6 +7,7 @@
 
 #include "media/base/video_types.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -22,21 +23,19 @@ gfx::Rect ToGfxRect(const DOMRectInit* rect,
                     const gfx::Size& coded_size,
                     ExceptionState& exception_state);
 
-// Checks |rect| x, y, width, and height for sample alignment in all planes.
-bool ValidateCropAlignment(media::VideoPixelFormat format,
-                           const char* format_str,
-                           const gfx::Rect& rect,
-                           const char* rect_name,
-                           ExceptionState& exception_state);
-
 // Checks |rect| x and y for sample alignment in all planes.
 bool ValidateOffsetAlignment(media::VideoPixelFormat format,
                              const gfx::Rect& rect,
                              const char* rect_name,
                              ExceptionState& exception_state);
 
-// Aligns a crop by expanding the size if necessary.
-gfx::Rect AlignCrop(media::VideoPixelFormat format, const gfx::Rect& rect);
+// Computes the dimension of a plane (rounding up).
+int PlaneSize(int frame_size, int sample_size);
+
+// Computes the subsampled coordinates of a rect. |frame_rect| must already have
+// a sample-aligned offset. The size of the rect is rounded up to the nearest
+// sample boundary.
+gfx::Rect PlaneRect(gfx::Rect frame_rect, gfx::Size sample_size);
 
 }  // namespace blink
 

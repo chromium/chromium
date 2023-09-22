@@ -18,6 +18,7 @@
 #include "media/base/wait_and_replace_sync_token_client.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data_init.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_frame_rect_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_util.h"
@@ -394,10 +395,7 @@ bool SyncReadbackThread::ReadbackToBuffer(
   for (wtf_size_t i = 0; i < dest_layout.NumPlanes(); i++) {
     const gfx::Size sample_size =
         media::VideoFrame::SampleSize(dest_layout.Format(), i);
-    gfx::Rect plane_src_rect(src_rect.x() / sample_size.width(),
-                             src_rect.y() / sample_size.height(),
-                             src_rect.width() / sample_size.width(),
-                             src_rect.height() / sample_size.height());
+    gfx::Rect plane_src_rect = PlaneRect(src_rect, sample_size);
     uint8_t* dest_pixels = dest_buffer.data() + dest_layout.Offset(i);
     if (!media::ReadbackTexturePlaneToMemorySync(
             *frame, i, plane_src_rect, dest_pixels, dest_layout.Stride(i), ri,

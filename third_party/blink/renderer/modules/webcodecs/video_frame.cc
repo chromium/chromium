@@ -404,11 +404,12 @@ void CopyMappablePlanes(const media::VideoFrame& src_frame,
         src_frame.data(i) +
         src_rect.y() / sample_size.height() * src_frame.stride(i) +
         src_rect.x() / sample_size.width() * sample_bytes;
-    libyuv::CopyPlane(src, static_cast<int>(src_frame.stride(i)),
-                      dest_buffer.data() + dest_layout.Offset(i),
-                      static_cast<int>(dest_layout.Stride(i)),
-                      src_rect.width() / sample_size.width() * sample_bytes,
-                      src_rect.height() / sample_size.height());
+    libyuv::CopyPlane(
+        src, static_cast<int>(src_frame.stride(i)),
+        dest_buffer.data() + dest_layout.Offset(i),
+        static_cast<int>(dest_layout.Stride(i)),
+        PlaneSize(src_rect.width(), sample_size.width()) * sample_bytes,
+        PlaneSize(src_rect.height(), sample_size.height()));
   }
 }
 
@@ -432,10 +433,7 @@ bool CopyTexturablePlanes(media::VideoFrame& src_frame,
   for (wtf_size_t i = 0; i < dest_layout.NumPlanes(); i++) {
     const gfx::Size sample_size =
         media::VideoFrame::SampleSize(dest_layout.Format(), i);
-    gfx::Rect plane_src_rect(src_rect.x() / sample_size.width(),
-                             src_rect.y() / sample_size.height(),
-                             src_rect.width() / sample_size.width(),
-                             src_rect.height() / sample_size.height());
+    gfx::Rect plane_src_rect = PlaneRect(src_rect, sample_size);
     uint8_t* dest_pixels = dest_buffer.data() + dest_layout.Offset(i);
     if (!media::ReadbackTexturePlaneToMemorySync(
             src_frame, i, plane_src_rect, dest_pixels, dest_layout.Stride(i),
@@ -463,8 +461,6 @@ bool ParseCopyToOptions(const media::VideoFrame& frame,
         "Operation is not supported when format is null.");
     return false;
   }
-  absl::optional<V8VideoPixelFormat> v8_format =
-      ToV8VideoPixelFormat(*copy_to_format);
 
   gfx::Rect src_rect = frame.visible_rect();
   if (options->hasRect()) {
@@ -473,9 +469,9 @@ bool ParseCopyToOptions(const media::VideoFrame& frame,
     if (exception_state.HadException())
       return false;
   }
-  if (!ValidateCropAlignment(*copy_to_format, (*v8_format).AsCStr(), src_rect,
-                             options->hasRect() ? "rect" : "visibleRect",
-                             exception_state)) {
+  if (!ValidateOffsetAlignment(*copy_to_format, src_rect,
+                               options->hasRect() ? "rect" : "visibleRect",
+                               exception_state)) {
     return false;
   }
 
@@ -875,9 +871,9 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   }
 
   // Set up the copy to be minimally-sized.
-  gfx::Rect crop = AlignCrop(media_fmt, src_visible_rect);
+  gfx::Rect crop = src_visible_rect;
   gfx::Size dest_coded_size = crop.size();
-  gfx::Rect dest_visible_rect = gfx::Rect(src_visible_rect.size());
+  gfx::Rect dest_visible_rect = gfx::Rect(crop.size());
 
   // Create a frame.
   const auto timestamp = base::Microseconds(init->timestamp());
@@ -916,8 +912,9 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   for (wtf_size_t i = 0; i < media::VideoFrame::NumPlanes(media_fmt); i++) {
     const gfx::Size sample_size = media::VideoFrame::SampleSize(media_fmt, i);
     const int sample_bytes = media::VideoFrame::BytesPerElement(media_fmt, i);
-    const int row_bytes = crop.width() / sample_size.width() * sample_bytes;
-    const int rows = crop.height() / sample_size.height();
+    const int rows = PlaneSize(crop.height(), sample_size.height());
+    const int columns = PlaneSize(crop.width(), sample_size.width());
+    const int row_bytes = columns * sample_bytes;
     libyuv::CopyPlane(buffer.data() + src_layout.Offset(i),
                       static_cast<int>(src_layout.Stride(i)),
                       frame->writable_data(i),

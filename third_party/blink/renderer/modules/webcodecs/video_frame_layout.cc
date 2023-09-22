@@ -35,28 +35,12 @@ VideoFrameLayout::VideoFrameLayout(media::VideoPixelFormat format,
     const gfx::Size sample_size = media::VideoFrame::SampleSize(format_, i);
     const uint32_t sample_bytes =
         media::VideoFrame::BytesPerElement(format_, i);
-
-    if (coded_size_.width() % sample_size.width()) {
-      exception_state.ThrowTypeError(
-          String::Format("Invalid layout. Expected codedWidth to be a multiple "
-                         "of %u (the sample width in plane %u), found %u.",
-                         sample_size.width(), i, coded_size_.width()));
-      return;
-    }
-    if (coded_size_.height() % sample_size.height()) {
-      exception_state.ThrowTypeError(String::Format(
-          "Invalid layout. Expected codedHeight to be a multiple "
-          "of %u (the sample height in plane %u), found %u.",
-          sample_size.height(), i, coded_size_.height()));
-      return;
-    }
-    const uint32_t width = coded_size_.width() / sample_size.width();
-    const uint32_t height = coded_size_.height() / sample_size.height();
-    const uint32_t stride = width * sample_bytes;
-
+    const uint32_t columns =
+        PlaneSize(coded_size_.width(), sample_size.width());
+    const uint32_t rows = PlaneSize(coded_size_.height(), sample_size.height());
+    const uint32_t stride = columns * sample_bytes;
     planes_.push_back(Plane{offset, stride});
-
-    offset += stride * height;
+    offset += stride * rows;
   }
 }
 
@@ -83,29 +67,14 @@ VideoFrameLayout::VideoFrameLayout(
     const gfx::Size sample_size = media::VideoFrame::SampleSize(format_, i);
     const uint32_t sample_bytes =
         media::VideoFrame::BytesPerElement(format_, i);
-
-    if (coded_size_.width() % sample_size.width()) {
-      exception_state.ThrowTypeError(
-          String::Format("Invalid layout. Expected codedWidth to be a multiple "
-                         "of %u (the sample width in plane %u), found %u.",
-                         sample_size.width(), i, coded_size_.width()));
-      return;
-    }
-    if (coded_size_.height() % sample_size.height()) {
-      exception_state.ThrowTypeError(String::Format(
-          "Invalid layout. Expected codedHeight to be a multiple "
-          "of %u (the sample height in plane %u), found %u.",
-          sample_size.height(), i, coded_size_.height()));
-      return;
-    }
-    const uint32_t width = coded_size_.width() / sample_size.width();
-    const uint32_t height = coded_size_.height() / sample_size.height();
-
+    const uint32_t columns =
+        PlaneSize(coded_size_.width(), sample_size.width());
+    const uint32_t rows = PlaneSize(coded_size_.height(), sample_size.height());
     const uint32_t offset = layout[i]->offset();
     const uint32_t stride = layout[i]->stride();
 
     // Each row must fit inside the stride.
-    const uint32_t min_stride = width * sample_bytes;
+    const uint32_t min_stride = columns * sample_bytes;
     if (stride < min_stride) {
       exception_state.ThrowTypeError(
           String::Format("Invalid layout. Expected plane %u to have stride at "
@@ -114,7 +83,7 @@ VideoFrameLayout::VideoFrameLayout(
       return;
     }
 
-    const auto checked_bytes = base::CheckedNumeric<uint32_t>(stride) * height;
+    const auto checked_bytes = base::CheckedNumeric<uint32_t>(stride) * rows;
     const auto checked_end = checked_bytes + offset;
 
     // Each plane size must not overflow int for compatibility with libyuv.
@@ -123,7 +92,7 @@ VideoFrameLayout::VideoFrameLayout(
       exception_state.ThrowTypeError(String::Format(
           "Invalid layout. Plane %u with stride %u and height %u exceeds "
           "implementation limit.",
-          i, stride, height));
+          i, stride, rows));
       return;
     }
 
@@ -155,8 +124,8 @@ uint32_t VideoFrameLayout::Size() const {
   uint32_t size = 0;
   for (wtf_size_t i = 0; i < planes_.size(); i++) {
     const gfx::Size sample_size = media::VideoFrame::SampleSize(format_, i);
-    const uint32_t height = coded_size_.height() / sample_size.height();
-    const uint32_t end = planes_[i].offset + planes_[i].stride * height;
+    const uint32_t rows = PlaneSize(coded_size_.height(), sample_size.height());
+    const uint32_t end = planes_[i].offset + planes_[i].stride * rows;
     size = std::max(size, end);
   }
   return size;
