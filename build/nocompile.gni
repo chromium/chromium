@@ -137,6 +137,12 @@ if (enable_nocompile_tests_new) {
         # Disable the error limit so that nocompile tests do not need to be
         # arbitrarily split up when they hit the default error limit.
         "-ferror-limit=0",
+
+        # So funny characters don't show up in error messages.
+        "-fno-color-diagnostics",
+
+        # Always treat warnings as errors.
+        "-Werror",
       ]
 
       if (!is_win) {
