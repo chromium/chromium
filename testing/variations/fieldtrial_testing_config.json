@@ -8839,6 +8839,21 @@
             ]
         }
     ],
+    "ImmersiveFullscreen": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ImmersiveFullscreen"
+                    ]
+                }
+            ]
+        }
+    ],
     "ImprovedDownloadBubbleWarnings": [
         {
             "platforms": [
