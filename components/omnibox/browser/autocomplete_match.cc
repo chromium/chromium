@@ -1898,11 +1898,12 @@ AutocompleteMatch AutocompleteMatch::CreateActionMatch(
   CHECK_LT(action_index, actions.size());
   CHECK_EQ(actions[action_index]->ActionId(), OmniboxActionId::PEDAL);
 
-  AutocompleteMatch action_match(nullptr, relevance, false,
+  AutocompleteMatch action_match(provider, relevance, false,
                                  AutocompleteMatchType::PEDAL);
   action_match.takeover_action = actions[action_index];
   action_match.transition = ui::PAGE_TRANSITION_GENERATED;
   action_match.suggest_type = omnibox::SuggestType::TYPE_NATIVE_CHROME;
+  action_match.suggestion_group_id = suggestion_group_id;
 
   // Use the pedal text as primary match `contents`.
   action_match.contents = action_match.takeover_action->GetLabelStrings().hint;
