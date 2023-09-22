@@ -52,13 +52,8 @@ class TwoClientAutofillProfileSyncTest : public SyncTest {
   ~TwoClientAutofillProfileSyncTest() override = default;
 };
 
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_PersonalDataManagerSanity DISABLED_PersonalDataManagerSanity
-#else
-#define MAYBE_PersonalDataManagerSanity PersonalDataManagerSanity
-#endif
 IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest,
-                       MAYBE_PersonalDataManagerSanity) {
+                       PersonalDataManagerSanity) {
   ASSERT_TRUE(SetupSync());
 
   base::HistogramTester histograms;

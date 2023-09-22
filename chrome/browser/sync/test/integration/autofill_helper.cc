@@ -7,7 +7,8 @@
 #include <stddef.h>
 
 #include <map>
-#include <utility>
+#include <ostream>
+#include <sstream>
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -15,7 +16,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/uuid.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -115,16 +115,16 @@ std::vector<AutofillEntry> GetAllAutofillEntries(AutofillWebDataService* wds) {
   return entries;
 }
 
-bool ProfilesMatchImpl(
-    const absl::optional<unsigned int>& expected_count,
-    int profile_a,
-    const std::vector<AutofillProfile*>& autofill_profiles_a,
-    int profile_b,
-    const std::vector<AutofillProfile*>& autofill_profiles_b) {
+bool ProfilesMatchImpl(const absl::optional<unsigned int>& expected_count,
+                       int profile_a,
+                       const std::vector<AutofillProfile*>& autofill_profiles_a,
+                       int profile_b,
+                       const std::vector<AutofillProfile*>& autofill_profiles_b,
+                       std::ostream* os) {
   if (expected_count.has_value() &&
       autofill_profiles_a.size() != *expected_count) {
-    DVLOG(1) << "Profile " << profile_a
-             << " does not have expected count of entities " << *expected_count;
+    *os << "Profile " << profile_a
+        << " does not have expected count of entities " << *expected_count;
     return false;
   }
 
@@ -138,28 +138,28 @@ bool ProfilesMatchImpl(
   // after the first is erased from |autofill_profiles_a_map| the second will
   // not be found.
   if (autofill_profiles_a.size() != autofill_profiles_a_map.size()) {
-    DVLOG(1) << "Profile " << profile_a << " contains duplicate GUID(s).";
+    *os << "Profile " << profile_a << " contains duplicate GUID(s).";
     return false;
   }
 
   for (AutofillProfile* p : autofill_profiles_b) {
     if (!autofill_profiles_a_map.count(p->guid())) {
-      DVLOG(1) << "GUID " << p->guid() << " not found in profile " << profile_b
-               << ".";
+      *os << "GUID " << p->guid() << " not found in profile " << profile_b
+          << ".";
       return false;
     }
     AutofillProfile* expected_profile = &autofill_profiles_a_map[p->guid()];
     expected_profile->set_guid(p->guid());
     if (*expected_profile != *p) {
-      DVLOG(1) << "Mismatch in profile with GUID " << p->guid() << ".";
+      *os << "Mismatch in profile with GUID " << p->guid() << ".";
       return false;
     }
     autofill_profiles_a_map.erase(p->guid());
   }
 
   if (!autofill_profiles_a_map.empty()) {
-    DVLOG(1) << "Entries present in Profile " << profile_a << " but not in "
-             << profile_b << ".";
+    *os << "Entries present in Profile " << profile_a << " but not in "
+        << profile_b << ".";
     return false;
   }
   return true;
@@ -378,8 +378,14 @@ bool ProfilesMatch(int profile_a, int profile_b) {
       GetAllAutoFillProfiles(profile_a);
   const std::vector<AutofillProfile*>& autofill_profiles_b =
       GetAllAutoFillProfiles(profile_b);
-  return ProfilesMatchImpl(absl::nullopt, profile_a, autofill_profiles_a,
-                           profile_b, autofill_profiles_b);
+  std::ostringstream mismatch_reason_stream;
+  bool matched = ProfilesMatchImpl(
+      absl::nullopt, profile_a, autofill_profiles_a, profile_b,
+      autofill_profiles_b, &mismatch_reason_stream);
+  if (!matched) {
+    DLOG(INFO) << "Profiles mismatch: " << mismatch_reason_stream.str();
+  }
+  return matched;
 }
 
 }  // namespace autofill_helper
@@ -456,7 +462,7 @@ bool AutofillProfileChecker::IsExitConditionSatisfied(std::ostream* os) {
   const std::vector<AutofillProfile*>& autofill_profiles_b =
       autofill_helper::GetPersonalDataManager(profile_b_)->GetProfiles();
   return ProfilesMatchImpl(expected_count_, profile_a_, autofill_profiles_a,
-                           profile_b_, autofill_profiles_b);
+                           profile_b_, autofill_profiles_b, os);
 }
 
 void AutofillProfileChecker::OnPersonalDataChanged() {
