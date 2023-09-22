@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/base64.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/oobe_quick_start_pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -20,6 +21,7 @@ namespace ash::quick_start {
 namespace {
 
 // The keys expected in the dict returned by PrepareForUpdate()
+constexpr char kPrepareForUpdateSessionIdKey[] = "session_id";
 constexpr char kPrepareForUpdateAdvertisingIdKey[] = "advertising_id";
 constexpr char kPrepareForUpdateSecondarySharedSecretKey[] =
     "secondary_shared_secret";
@@ -59,6 +61,8 @@ TEST_F(SessionContextTest, GetPrepareForUpdateInfo) {
   base::Value::Dict prepare_for_update_info =
       session_context_->GetPrepareForUpdateInfo();
   EXPECT_FALSE(prepare_for_update_info.empty());
+  EXPECT_EQ(base::NumberToString(session_context_->session_id()),
+            *prepare_for_update_info.FindString(kPrepareForUpdateSessionIdKey));
   EXPECT_EQ(
       session_context_->advertising_id().ToString(),
       *prepare_for_update_info.FindString(kPrepareForUpdateAdvertisingIdKey));
@@ -74,6 +78,8 @@ TEST_F(SessionContextTest, ResumeAfterUpdate) {
   GetLocalState()->SetDict(prefs::kResumeQuickStartAfterRebootInfo,
                            session_context_->GetPrepareForUpdateInfo());
 
+  SessionContext::SessionId expected_session_id =
+      session_context_->session_id();
   std::string expected_advertising_id =
       session_context_->advertising_id().ToString();
   SessionContext::SharedSecret expected_shared_secret =
@@ -83,6 +89,7 @@ TEST_F(SessionContextTest, ResumeAfterUpdate) {
   // local state prefs set.
   session_context_ = std::make_unique<SessionContext>();
 
+  ASSERT_EQ(expected_session_id, session_context_->session_id());
   ASSERT_EQ(expected_advertising_id,
             session_context_->advertising_id().ToString());
   ASSERT_EQ(expected_shared_secret, session_context_->shared_secret());

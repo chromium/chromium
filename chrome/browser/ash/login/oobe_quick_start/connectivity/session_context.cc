@@ -5,8 +5,8 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/session_context.h"
 
 #include "base/base64.h"
-#include "base/hash/hash.h"
-#include "base/uuid.h"
+#include "base/rand_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/oobe_quick_start_pref_names.h"
 #include "chrome/browser/browser_process.h"
@@ -21,6 +21,7 @@ namespace {
 
 // The keys used inside the kResumeQuickStartAfterRebootInfo local state
 // pref dict.
+constexpr char kPrepareForUpdateSessionIdKey[] = "session_id";
 constexpr char kPrepareForUpdateAdvertisingIdKey[] = "advertising_id";
 constexpr char kPrepareForUpdateSecondarySharedSecretKey[] =
     "secondary_shared_secret";
@@ -37,15 +38,11 @@ SessionContext::SessionContext() {
   if (is_resume_after_update_) {
     FetchPersistedSessionContext();
   } else {
+    session_id_ = base::RandUint64();
     advertising_id_ = AdvertisingId();
     crypto::RandBytes(shared_secret_);
     crypto::RandBytes(secondary_shared_secret_);
   }
-
-  // Create session ID by generating UUID and then hashing.
-  const base::Uuid random_uuid = base::Uuid::GenerateRandomV4();
-  session_id_ = static_cast<uint64_t>(
-      base::PersistentHash(random_uuid.AsLowercaseString()));
 }
 
 SessionContext::SessionContext(SessionId session_id,
@@ -68,6 +65,8 @@ SessionContext::~SessionContext() = default;
 
 base::Value::Dict SessionContext::GetPrepareForUpdateInfo() {
   base::Value::Dict prepare_for_update_info;
+  prepare_for_update_info.Set(kPrepareForUpdateSessionIdKey,
+                              base::NumberToString(session_id_));
   prepare_for_update_info.Set(kPrepareForUpdateAdvertisingIdKey,
                               advertising_id_.ToString());
   std::string secondary_shared_secret_bytes(secondary_shared_secret_.begin(),
@@ -88,9 +87,14 @@ void SessionContext::FetchPersistedSessionContext() {
   PrefService* prefs = g_browser_process->local_state();
   CHECK(prefs->GetBoolean(prefs::kShouldResumeQuickStartAfterReboot));
   prefs->ClearPref(prefs::kShouldResumeQuickStartAfterReboot);
-
   const base::Value::Dict& session_info =
       prefs->GetDict(prefs::kResumeQuickStartAfterRebootInfo);
+
+  const std::string* session_id_str =
+      session_info.FindString(kPrepareForUpdateSessionIdKey);
+  CHECK(session_id_str);
+  base::StringToUint64(*session_id_str, &session_id_);
+
   const std::string* advertising_id_str =
       session_info.FindString(kPrepareForUpdateAdvertisingIdKey);
   CHECK(advertising_id_str);

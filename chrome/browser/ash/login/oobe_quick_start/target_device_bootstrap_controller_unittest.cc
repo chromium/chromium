@@ -653,6 +653,8 @@ TEST_F(TargetDeviceBootstrapControllerTest, SessionContext) {
   GetLocalState()->SetDict(prefs::kResumeQuickStartAfterRebootInfo,
                            GetSessionContext().GetPrepareForUpdateInfo());
 
+  SessionContext::SessionId expected_session_id =
+      GetSessionContext().session_id();
   std::string expected_advertising_id =
       GetSessionContext().advertising_id().ToString();
   SessionContext::SharedSecret expected_shared_secret =
@@ -663,6 +665,7 @@ TEST_F(TargetDeviceBootstrapControllerTest, SessionContext) {
   CreateBootstrapController();
 
   EXPECT_TRUE(GetSessionContext().is_resume_after_update());
+  EXPECT_EQ(expected_session_id, GetSessionContext().session_id());
   EXPECT_EQ(expected_advertising_id,
             GetSessionContext().advertising_id().ToString());
   EXPECT_EQ(expected_shared_secret, GetSessionContext().shared_secret());
