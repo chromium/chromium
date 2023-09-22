@@ -108,6 +108,4 @@ void SavedTabGroupDragData::WriteToOSExchangeData(
   base::Pickle data_pickle;
   data_pickle.WriteString(button->guid().AsLowercaseString());
   data->SetPickledData(GetFormatType(), data_pickle);
-
-  // TODO(tbergquist): Save profile too so we can prevent cross-profile drops.
 }

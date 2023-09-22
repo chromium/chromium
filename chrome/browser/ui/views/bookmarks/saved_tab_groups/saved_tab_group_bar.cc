@@ -348,8 +348,13 @@ bool SavedTabGroupBar::AreDropTypesRequired() {
 }
 
 bool SavedTabGroupBar::CanDrop(const OSExchangeData& data) {
-  // TODO(tbergquist): prevent cross-profile drops.
-  return data.HasCustomFormat(SavedTabGroupDragData::GetFormatType());
+  absl::optional<SavedTabGroupDragData> drag_data =
+      SavedTabGroupDragData::ReadFromOSExchangeData(&data);
+  if (!drag_data.has_value()) {
+    return false;
+  }
+
+  return saved_tab_group_model_->Contains(drag_data.value().guid());
 }
 
 void SavedTabGroupBar::OnDragEntered(const ui::DropTargetEvent& event) {
