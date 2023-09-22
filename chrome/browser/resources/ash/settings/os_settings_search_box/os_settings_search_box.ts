@@ -206,7 +206,7 @@ export class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
         OsSettingsSearchBoxBrowserProxyImpl.getInstance();
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     this.addEventListener('blur', this.onBlur_);
@@ -214,7 +214,7 @@ export class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
     this.addEventListener('search-changed', this.onSearchChanged_);
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     const toolbarSearchField = this.$.search;
@@ -261,7 +261,7 @@ export class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
             .bindNewPipeAndPassRemote());
   }
 
-  override disconnectedCallback() {
+  override disconnectedCallback(): void {
     super.disconnectedCallback();
 
     assert(
@@ -279,7 +279,7 @@ export class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
    * Overrides SearchResultsObserverInterface
    * Overrides PersonalizationSearchResultsObserverInterface
    */
-  onSearchResultsChanged() {
+  onSearchResultsChanged(): void {
     this.fetchSearchResults_();
   }
 
@@ -308,12 +308,12 @@ export class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
     return this.searchResults_.length !== 0;
   }
 
-  private onSearchChanged_() {
+  private onSearchChanged_(): void {
     this.hasSearchQuery = this.getCurrentQuery_().trim().length !== 0;
     this.fetchSearchResults_();
   }
 
-  private fetchSearchResults_() {
+  private fetchSearchResults_(): void {
     const query = this.getCurrentQuery_();
     if (query === '') {
       this.searchResults_ = [];
@@ -355,7 +355,8 @@ export class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
    * @param query The string used to find search results.
    * @param results Array of search results.
    */
-  private onSearchResultsReceived_(query: string, results: SearchResult[]) {
+  private onSearchResultsReceived_(query: string, results: SearchResult[]):
+      void {
     chrome.metricsPrivate.recordSparseValue(
         'ChromeOS.Settings.NumSearchResultsFetched', results.length);
 
@@ -379,7 +380,7 @@ export class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
     recordSearch();
   }
 
-  private onNavigatedToResultRowRoute_() {
+  private onNavigatedToResultRowRoute_(): void {
     // Blur search input to prevent blinking caret. Note that this blur event
     // will not always be propagated to OsSettingsSearchBox (e.g. user decides
     // to click on the same search result twice) so |this.shouldShowDropdown_|
@@ -395,7 +396,7 @@ export class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
         Object.keys(OsSettingSearchBoxUserAction).length);
   }
 
-  private onBlur_(event: UIEvent) {
+  private onBlur_(event: UIEvent): void {
     event.stopPropagation();
 
     // A blur event generated programmatically (as is most of the time the case
@@ -415,7 +416,7 @@ export class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
     this.shouldShowDropdown_ = false;
   }
 
-  private onSearchInputFocused_() {
+  private onSearchInputFocused_(): void {
     this.lastFocused_ = null;
 
     if (this.searchResultsExist_) {
@@ -427,7 +428,7 @@ export class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
     this.fetchSearchResults_();
   }
 
-  private onSearchInputMousedown_() {
+  private onSearchInputMousedown_(): void {
     // If the search input is clicked while the dropdown is closed, and there
     // already contains input text from a previous query, highlight the entire
     // query text so that the user can choose to easily replace the query
@@ -470,7 +471,7 @@ export class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
     return this.isItemSelected_(item) && this.shouldShowDropdown_ ? 0 : -1;
   }
 
-  private onSearchResultsChanged_() {
+  private onSearchResultsChanged_(): void {
     // Select the first search result if it exists.
     if (this.searchResultsExist_) {
       this.selectedItem_ = this.searchResults_[0];
@@ -495,7 +496,7 @@ export class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
    * |selectedItem| will be assigned to is stored in
    * |this.$.searchResultList.selectedItem|.
    */
-  private onSelectedItemChanged_() {
+  private onSelectedItemChanged_(): void {
     // <iron-list> causes |this.$.searchResultList.selectedItem| to be null if
     // tapped a second time.
     if (!this.$.searchResultList.selectedItem && this.lastSelectedItem_) {
@@ -514,7 +515,7 @@ export class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
   /**
    * @param key The string associated with a key.
    */
-  private selectRowViaKeys_(key: string) {
+  private selectRowViaKeys_(key: string): void {
     assert(key === 'ArrowDown' || key === 'ArrowUp', 'Only arrow keys.');
     assert(!!this.selectedItem_, 'There should be a selected item already.');
 
@@ -554,7 +555,7 @@ export class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
    * interacts with search results in the dropdown. Note that 'Enter' on keyDown
    * when a row is focused is blocked by FocusRowMixin.
    */
-  private onKeyDown_(e: KeyboardEvent) {
+  private onKeyDown_(e: KeyboardEvent): void {
     if (!this.searchResultsExist_ ||
         (!this.$.search.isSearchFocused() && !this.lastFocused_)) {
       // No action should be taken if there are no search results, or when
@@ -576,7 +577,7 @@ export class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
     }
   }
 
-  private onSearchIconClicked_() {
+  private onSearchIconClicked_(): void {
     this.$.search.getSearchInput().select();
     if (this.getCurrentQuery_()) {
       this.shouldShowDropdown_ = true;

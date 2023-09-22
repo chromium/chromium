@@ -189,7 +189,7 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     this.boundTriggerSettingsHats_ = this.triggerSettingsHats_.bind(this);
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     window.CrPolicyStrings = {
@@ -239,7 +239,7 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     this.listenForDrawerOpening_();
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     document.documentElement.classList.remove('loading');
@@ -252,14 +252,14 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     document.fonts.load('bold 12px Roboto');
     setGlobalScrollTarget(this.$.container);
 
-    const scrollToTop = (top: number) => new Promise<void>(resolve => {
+    const scrollToTop = (top: number): Promise<void> => new Promise(resolve => {
       if (this.$.container.scrollTop === top) {
         resolve();
         return;
       }
 
       this.$.container.scrollTo({top: top, behavior: 'auto'});
-      const onScroll = () => {
+      const onScroll = (): void => {
         this.scrollEndDebouncer_ = Debouncer.debounce(
             this.scrollEndDebouncer_, timeOut.after(75), () => {
               this.$.container.removeEventListener('scroll', onScroll);
@@ -301,7 +301,7 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     }
   }
 
-  override disconnectedCallback() {
+  override disconnectedCallback(): void {
     super.disconnectedCallback();
 
     window.removeEventListener('focus', recordPageFocus);
@@ -311,7 +311,7 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     Router.getInstance().resetRouteForTesting();
   }
 
-  override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
     if (oldRoute && newRoute !== oldRoute) {
       // Search triggers route changes and currentRouteChanged() is called
       // in attached() state which is extraneous for this metric.
@@ -330,7 +330,7 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
   }
 
   // Override FindShortcutMixin methods.
-  override handleFindShortcut(modalContextOpen: boolean) {
+  override handleFindShortcut(modalContextOpen: boolean): boolean {
     if (modalContextOpen || !this.showToolbar_) {
       return false;
     }
@@ -341,7 +341,7 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
   }
 
   // Override FindShortcutMixin methods.
-  override searchInputHasFocus() {
+  override searchInputHasFocus(): boolean {
     if (!this.showToolbar_) {
       return false;
     }
@@ -381,11 +381,12 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     return castExists(this.shadowRoot!.querySelector('os-toolbar'));
   }
 
-  private onRefreshPref_(e: CustomEvent<string>) {
-    return this.$.prefs.refresh(e.detail);
+  private onRefreshPref_(e: CustomEvent<string>): void {
+    this.$.prefs.refresh(e.detail);
   }
 
-  private onSettingChange_(e: CustomEvent<{prefKey: string, prefValue: any}>) {
+  private onSettingChange_(e: CustomEvent<{prefKey: string, prefValue: any}>):
+      void {
     const {prefKey, prefValue} = e.detail;
     const settingMetric = convertPrefToSettingMetric(prefKey, prefValue);
 
@@ -401,7 +402,7 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
   /**
    * Called when a menu item is selected.
    */
-  private onMenuItemSelected_(e: CustomEvent<{selected: string}>) {
+  private onMenuItemSelected_(e: CustomEvent<{selected: string}>): void {
     assert(this.showNavMenu_);
     const path = e.detail.selected;
     const route = Router.getInstance().getRouteForPath(path);
@@ -417,7 +418,7 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     this.navigateToActiveRoute_();
   }
 
-  private onMenuButtonClick_() {
+  private onMenuButtonClick_(): void {
     if (!this.showNavMenu_) {
       return;
     }
@@ -428,7 +429,7 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
    * Navigates to |activeRoute_| if set. Used to delay navigation until after
    * animations complete to ensure focus ends up in the right place.
    */
-  private navigateToActiveRoute_() {
+  private navigateToActiveRoute_(): void {
     if (this.activeRoute_) {
       Router.getInstance().navigateTo(
           this.activeRoute_, /* dynamicParams */ undefined,
@@ -445,7 +446,7 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
    * used to scroll the container, and pressing tab focuses a component in
    * settings.
    */
-  private onMenuClose_() {
+  private onMenuClose_(): void {
     if (!this.getDrawer_().wasCanceled()) {
       // If a navigation happened, MainPageMixin#currentRouteChanged
       // handles focusing the corresponding section when we call
@@ -463,21 +464,21 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     });
   }
 
-  private onAdvancedOpenedInMainChanged_() {
+  private onAdvancedOpenedInMainChanged_(): void {
     // Only sync value when opening, not closing.
     if (this.advancedOpenedInMain_) {
       this.advancedOpenedInMenu_ = true;
     }
   }
 
-  private onAdvancedOpenedInMenuChanged_() {
+  private onAdvancedOpenedInMenuChanged_(): void {
     // Only sync value when opening, not closing.
     if (this.advancedOpenedInMenu_) {
       this.advancedOpenedInMain_ = true;
     }
   }
 
-  private onNarrowChanged_() {
+  private onNarrowChanged_(): void {
     if (this.showNavMenu_) {
       const drawer = this.getDrawer_();
       if (drawer.open && !this.isNarrow) {
@@ -489,7 +490,7 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
   /**
    * Handles a tap on the drawer's icon.
    */
-  private onDrawerIconClick_() {
+  private onDrawerIconClick_(): void {
     this.getDrawer_().cancel();
   }
 

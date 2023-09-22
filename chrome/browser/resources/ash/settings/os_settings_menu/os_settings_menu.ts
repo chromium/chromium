@@ -120,7 +120,7 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
     this.$.topMenuRepeat.render();
   }
 
-  override currentRouteChanged(newRoute: Route) {
+  override currentRouteChanged(newRoute: Route): void {
     const urlSearchQuery =
         Router.getInstance().getQueryParameters().get('search');
     // If the route navigated to by a search result is in the advanced
@@ -136,7 +136,7 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
    * Set the selected menu item based on a menu item's route matching or
    * containing the given |route|.
    */
-  private setSelectedItemPathForRoute_(route: Route) {
+  private setSelectedItemPathForRoute_(route: Route): void {
     const menuItems =
         this.shadowRoot!.querySelectorAll('os-settings-menu-item');
     for (const menuItem of menuItems) {
@@ -352,7 +352,7 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
         ({section}) => !!this.pageAvailability[section]);
   }
 
-  private onAdvancedButtonToggle_() {
+  private onAdvancedButtonToggle_(): void {
     this.advancedOpened = !this.advancedOpened;
   }
 
@@ -373,11 +373,11 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
     this.setSelectedItemPath_(event.detail.selected);
   }
 
-  private onItemSelected_(e: CustomEvent<{item: HTMLElement}>) {
+  private onItemSelected_(e: CustomEvent<{item: HTMLElement}>): void {
     e.detail.item.setAttribute('aria-current', 'true');
   }
 
-  private onItemDeselected_(e: CustomEvent<{item: HTMLElement}>) {
+  private onItemDeselected_(e: CustomEvent<{item: HTMLElement}>): void {
     e.detail.item.removeAttribute('aria-current');
   }
 

@@ -19,8 +19,10 @@ import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SearchResult as PersonalizationSearchResult} from '../mojom-webui/personalization_search.mojom-webui.js';
+import {Section, Subpage} from '../mojom-webui/routes.mojom-webui.js';
 import {SearchResult as SettingsSearchResult, SearchResultIdentifier, SearchResultType} from '../mojom-webui/search.mojom-webui.js';
 import {SearchResultIcon} from '../mojom-webui/search_result_icon.mojom-webui.js';
+import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {Router} from '../router.js';
 import {SearchResult} from '../search/combined_search_handler.js';
 
@@ -194,7 +196,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
   listLength: number;
   private resultText_: string;
 
-  private makeA11yAnnouncementIfSelectedAndUnfocused_() {
+  private makeA11yAnnouncementIfSelectedAndUnfocused_(): void {
     if (!this.selected || this.lastFocused) {
       // Do not alert the user if the result is not selected, or
       // the list is focused, defer to aria tags instead.
@@ -256,7 +258,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
 
     // Filters out query tokens that are not substrings of the currently
     // processing text token to be displayed.
-    const queryTokenFilter = (queryToken: string) => {
+    const queryTokenFilter = (queryToken: string): boolean => {
       return !!queryToken && normalizedToken.includes(queryToken);
     };
 
@@ -266,7 +268,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
     // 'Wi-Fi-no-blankspsc-WiFi', (i.e. |normalizedToken| =
     // 'WiFinoblankspcWiFi') and |queryTokenLowerCaseNoSpecial| = 'wif', the
     // resulting mapping would be ['Wi-F', 'WiF'].
-    const queryTokenToSegment = (queryToken: string) => {
+    const queryTokenToSegment = (queryToken: string): string[] => {
       const regExpStr = queryToken.split('').join(`${HYPHENS_REGEX_STR}*`);
 
       // Since |queryToken| does not contain accents and |innerHtmlToken| may
@@ -340,7 +342,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
     // substring for "and"). Only the queryToken "ssistan" should be kept
     // since it's the longest queryToken.
     const getLongestTokensPerSegment =
-        ([querySegment, queryTokens]: [string, string[]]) => {
+        ([querySegment, queryTokens]: [string, string[]]): string[] => {
           // If there are no queryTokens, return none.
           // Example: |normalizedResultText| = "search and assistant"
           //          |normalizedQuery| = "hi goog"
@@ -552,14 +554,14 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
    * Only relevant when the focus-row-control is focus()ed. This keypress
    * handler specifies that pressing 'Enter' should cause a route change.
    */
-  private onKeyPress_(e: KeyboardEvent) {
+  private onKeyPress_(e: KeyboardEvent): void {
     if (e.key === 'Enter') {
       e.stopPropagation();
       this.onSearchResultSelected();
     }
   }
 
-  private recordSearchResultMetrics_() {
+  private recordSearchResultMetrics_(): void {
     if (isPersonalizationSearchResult(this.searchResult)) {
       chrome.metricsPrivate.recordSparseValue(
           'ChromeOS.Settings.SearchResultPersonalizationSelected',
@@ -578,27 +580,32 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         'ChromeOS.Settings.SearchResultTypeSelected', settingsSearchResult.type,
         SearchResultType.MAX_VALUE);
 
-    const metricArgs = (type: number, id: SearchResultIdentifier) => {
-      switch (type) {
-        case SearchResultType.kSection:
-          return {
-            metricName: 'ChromeOS.Settings.SearchResultSectionSelected',
-            value: id.section,
-          };
-        case SearchResultType.kSubpage:
-          return {
-            metricName: 'ChromeOS.Settings.SearchResultSubpageSelected',
-            value: id.subpage,
-          };
-        case SearchResultType.kSetting:
-          return {
-            metricName: 'ChromeOS.Settings.SearchResultSettingSelected',
-            value: id.setting,
-          };
-        default:
-          assertNotReached('Search Result Type not specified.');
-      }
-    };
+    interface MetricArg {
+      metricName: string;
+      value?: Section|Subpage|Setting;
+    }
+    const metricArgs =
+        (type: number, id: SearchResultIdentifier): MetricArg => {
+          switch (type) {
+            case SearchResultType.kSection:
+              return {
+                metricName: 'ChromeOS.Settings.SearchResultSectionSelected',
+                value: id.section,
+              };
+            case SearchResultType.kSubpage:
+              return {
+                metricName: 'ChromeOS.Settings.SearchResultSubpageSelected',
+                value: id.subpage,
+              };
+            case SearchResultType.kSetting:
+              return {
+                metricName: 'ChromeOS.Settings.SearchResultSettingSelected',
+                value: id.setting,
+              };
+            default:
+              assertNotReached('Search Result Type not specified.');
+          }
+        };
 
     const args =
         metricArgs(settingsSearchResult.type, settingsSearchResult.id)!;
@@ -611,7 +618,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
    * Navigate to a search result route or launch an external url based on
    * the search result's id.
    */
-  onSearchResultSelected() {
+  onSearchResultSelected(): void {
     if (isPersonalizationSearchResult(this.searchResult)) {
       this.recordSearchResultMetrics_();
       OpenWindowProxyImpl.getInstance().openUrl(

@@ -111,7 +111,7 @@ export class OsSettingsMainElement extends OsSettingsMainElementBase {
     this.boundScroll_ = null;
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     this.addEventListener('showing-main-page', this.onShowingMainPage);
@@ -119,7 +119,7 @@ export class OsSettingsMainElement extends OsSettingsMainElementBase {
     this.addEventListener('showing-section', this.onShowingSection);
   }
 
-  private overscrollChanged_() {
+  private overscrollChanged_(): void {
     assertExists(this.offsetParent);
 
     if (!this.overscroll_ && this.boundScroll_) {
@@ -143,7 +143,7 @@ export class OsSettingsMainElement extends OsSettingsMainElementBase {
    * any currently visible overflow as-is.
    * @param minHeight The minimum overscroll height needed.
    */
-  private setOverscroll_(minHeight?: number) {
+  private setOverscroll_(minHeight?: number): void {
     const scroller = this.offsetParent;
     if (!scroller) {
       return;
@@ -161,7 +161,7 @@ export class OsSettingsMainElement extends OsSettingsMainElementBase {
    * Updates the hidden state of the about and settings pages based on the
    * current route.
    */
-  override currentRouteChanged(newRoute: Route) {
+  override currentRouteChanged(newRoute: Route): void {
     const inAbout = isAboutRoute(newRoute);
     this.isShowingAboutPage_ = inAbout;
 

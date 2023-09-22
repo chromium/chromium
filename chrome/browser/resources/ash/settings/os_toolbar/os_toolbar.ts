@@ -77,7 +77,7 @@ export class OsToolbarElement extends PolymerElement {
         searchBox.shadowRoot!.querySelector('cr-toolbar-search-field'));
   }
 
-  private onMenuClick_() {
+  private onMenuClick_(): void {
     const event =
         new CustomEvent('os-toolbar-menu-tap', {bubbles: true, composed: true});
     this.dispatchEvent(event);

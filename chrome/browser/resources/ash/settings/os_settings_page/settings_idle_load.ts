@@ -44,7 +44,7 @@ export class SettingsIdleLoadElement extends PolymerElement {
   }
 
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.idleCallback_ = requestIdleCallback(() => {
@@ -52,7 +52,7 @@ export class SettingsIdleLoadElement extends PolymerElement {
     });
   }
 
-  override disconnectedCallback() {
+  override disconnectedCallback(): void {
     super.disconnectedCallback();
 
     // No-op if callback already fired.
@@ -108,7 +108,7 @@ export class SettingsIdleLoadElement extends PolymerElement {
   }
 
   /* eslint-disable-next-line @typescript-eslint/naming-convention */
-  private _forwardHostPropV2(prop: string, value: any) {
+  private _forwardHostPropV2(prop: string, value: any): void {
     if (this.instance_) {
       this.instance_.forwardHostProp(prop, value);
     }

@@ -51,6 +51,10 @@ export class OsSettingsSubpageElement extends OsSettingsSubpageElementBase {
     return 'os-settings-subpage';
   }
 
+  static get template() {
+    return getTemplate();
+  }
+
   static get properties() {
     return {
       pageTitle: String,
@@ -139,7 +143,7 @@ export class OsSettingsSubpageElement extends OsSettingsSubpageElementBase {
     this.findShortcutListenOnAttach = false;
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     if (this.searchLabel) {
@@ -150,7 +154,7 @@ export class OsSettingsSubpageElement extends OsSettingsSubpageElementBase {
     }
   }
 
-  override disconnectedCallback() {
+  override disconnectedCallback(): void {
     super.disconnectedCallback();
 
     if (this.eventTracker_) {
@@ -175,7 +179,7 @@ export class OsSettingsSubpageElement extends OsSettingsSubpageElementBase {
   }
 
   /** Restore search field value from URL search param */
-  private restoreSearchInput_() {
+  private restoreSearchInput_(): void {
     const searchField = this.shadowRoot!.querySelector('cr-search-field')!;
     const urlSearchQuery =
         Router.getInstance().getQueryParameters().get('searchSubpage') || '';
@@ -184,7 +188,7 @@ export class OsSettingsSubpageElement extends OsSettingsSubpageElementBase {
   }
 
   /** Preserve search field value to URL search param */
-  private preserveSearchInput_() {
+  private preserveSearchInput_(): void {
     const query = this.searchTerm;
     const searchParams = query.length > 0 ?
         new URLSearchParams('searchSubpage=' + encodeURIComponent(query)) :
@@ -194,14 +198,14 @@ export class OsSettingsSubpageElement extends OsSettingsSubpageElementBase {
   }
 
   /** Focuses the back button when page is loaded. */
-  focusBackButton() {
+  focusBackButton(): void {
     if (this.hideCloseButton) {
       return;
     }
     afterNextRender(this, () => focusWithoutInk(this.$.closeButton));
   }
 
-  override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
     this.active_ = this.getAttribute('route-path') === newRoute.path;
     if (this.active_ && this.searchLabel && this.preserveSearchTerm) {
       this.getSearchField_().then(() => this.restoreSearchInput_());
@@ -217,7 +221,7 @@ export class OsSettingsSubpageElement extends OsSettingsSubpageElementBase {
     }
   }
 
-  private onActiveChanged_() {
+  private onActiveChanged_(): void {
     if (this.lastActiveValue_ === this.active_) {
       return;
     }
@@ -245,20 +249,20 @@ export class OsSettingsSubpageElement extends OsSettingsSubpageElementBase {
   }
 
   /** Clear the value of the search field. */
-  private onClearSubpageSearch_(e: Event) {
+  private onClearSubpageSearch_(e: Event): void {
     e.stopPropagation();
     this.shadowRoot!.querySelector('cr-search-field')!.setValue('');
   }
 
-  private onBackClick_() {
+  private onBackClick_(): void {
     Router.getInstance().navigateToPreviousRoute();
   }
 
-  private onHelpClick_() {
+  private onHelpClick_(): void {
     window.open(this.learnMoreUrl);
   }
 
-  private onSearchChanged_(e: CustomEvent<string>) {
+  private onSearchChanged_(e: CustomEvent<string>): void {
     if (this.searchTerm === e.detail) {
       return;
     }
@@ -269,20 +273,20 @@ export class OsSettingsSubpageElement extends OsSettingsSubpageElementBase {
     }
   }
 
-  private getBackButtonAriaLabel_() {
+  private getBackButtonAriaLabel_(): string {
     return this.i18n('subpageBackButtonAriaLabel', this.pageTitle);
   }
 
-  private getBackButtonAriaRoleDescription_() {
+  private getBackButtonAriaRoleDescription_(): string {
     return this.i18n('subpageBackButtonAriaRoleDescription', this.pageTitle);
   }
 
-  private getLearnMoreAriaLabel_() {
+  private getLearnMoreAriaLabel_(): string {
     return this.i18n('subpageLearnMoreAriaLabel', this.pageTitle);
   }
 
   // Override FindShortcutMixin methods.
-  override handleFindShortcut(modalContextOpen: boolean) {
+  override handleFindShortcut(modalContextOpen: boolean): boolean {
     if (modalContextOpen) {
       return false;
     }
@@ -291,13 +295,9 @@ export class OsSettingsSubpageElement extends OsSettingsSubpageElementBase {
   }
 
   // Override FindShortcutMixin methods.
-  override searchInputHasFocus() {
+  override searchInputHasFocus(): boolean {
     const field = this.shadowRoot!.querySelector('cr-search-field')!;
     return field.getSearchInput() === field.shadowRoot!.activeElement;
-  }
-
-  static get template() {
-    return getTemplate();
   }
 }
 
