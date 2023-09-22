@@ -289,6 +289,12 @@ TEST_F(SyncServiceImplStartupTest, WebSignoutDuringDeferredStartup) {
   base::HistogramTester histogram_tester;
   SignInWithSyncConsent();
   SetSyncFeatureEnabledPrefs();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // On Ash, deferred startup is only possible if first sync completed earlier.
+  component_factory()->set_first_time_sync_configure_done(true);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   CreateSyncService();
   sync_service()->Initialize();
 
@@ -753,6 +759,12 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceNthTime) {
 TEST_F(SyncServiceImplStartupTest, DeferredStartInterruptedByDataType) {
   base::HistogramTester histogram_tester;
   SetSyncFeatureEnabledPrefs();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // On Ash, deferred startup is only possible if first sync completed earlier.
+  component_factory()->set_first_time_sync_configure_done(true);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   SignInWithSyncConsent();
   CreateSyncService();
 

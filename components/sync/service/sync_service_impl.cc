@@ -357,21 +357,31 @@ void SyncServiceImpl::Initialize() {
     SetSyncFeatureRequested();
   }
 
-  bool force_immediate =
-      ShouldAutoStartSyncFeature() &&
-      !user_settings_->IsInitialSyncFeatureSetupComplete() &&
-      (IsLocalSyncEnabled() || IsSyncFeatureConsideredRequested());
-  if (force_immediate) {
-    TryStart();
-  } else if (IsEngineAllowedToRun()) {
-    // Defer starting the engine, for browser startup performance. If another
-    // TryStart() happens in the meantime, this deferred task will no-op.
-    deferring_first_start_since_ = base::Time::Now();
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&SyncServiceImpl::TryStartImpl,
-                       weak_factory_.GetWeakPtr()),
-        GetDeferredInitDelay());
+  if (IsEngineAllowedToRun()) {
+    // TODO(crbug.com/1374718): Consider simplifying the logic and always
+    // triggering an immediate start if transport data is missing.
+    const bool force_immediate_start =
+        !sync_client_->GetSyncApiComponentFactory()
+             ->HasTransportDataIncludingFirstSync() &&
+        ShouldAutoStartSyncFeature() &&
+        (IsLocalSyncEnabled() || IsSyncFeatureConsideredRequested());
+
+    if (force_immediate_start) {
+      // Sync never initialized before on this profile, so let's try immediately
+      // the very first time. This is particularly useful for Chrome Ash (where
+      // the user is signed in to begin with) and local sync (where sign-in
+      // state doesn't matter to start the engine).
+      TryStart();
+    } else {
+      // Defer starting the engine, for browser startup performance. If another
+      // TryStart() happens in the meantime, this deferred task will no-op.
+      deferring_first_start_since_ = base::Time::Now();
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&SyncServiceImpl::TryStartImpl,
+                         weak_factory_.GetWeakPtr()),
+          GetDeferredInitDelay());
+    }
   }
 }
 

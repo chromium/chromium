@@ -589,6 +589,14 @@ SyncApiComponentFactoryImpl::CreateSyncEngine(
                           base::Unretained(sync_client_)));
 }
 
+bool SyncApiComponentFactoryImpl::HasTransportDataIncludingFirstSync() {
+  syncer::SyncTransportDataPrefs sync_transport_data_prefs(
+      sync_client_->GetPrefService());
+  // NOTE: Keep this logic consistent with how SyncEngineImpl reports
+  // is-first-sync.
+  return !sync_transport_data_prefs.GetLastSyncedTime().is_null();
+}
+
 void SyncApiComponentFactoryImpl::ClearAllTransportData() {
   syncer::SyncTransportDataPrefs sync_transport_data_prefs(
       sync_client_->GetPrefService());

@@ -56,6 +56,7 @@ class FakeSyncApiComponentFactory : public SyncApiComponentFactory {
   std::unique_ptr<SyncEngine> CreateSyncEngine(
       const std::string& name,
       syncer::SyncInvalidationsService* sync_invalidations_service) override;
+  bool HasTransportDataIncludingFirstSync() override;
   void ClearAllTransportData() override;
 
  private:

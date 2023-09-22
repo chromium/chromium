@@ -55,6 +55,10 @@ std::unique_ptr<SyncEngine> FakeSyncApiComponentFactory::CreateSyncEngine(
   return engine;
 }
 
+bool FakeSyncApiComponentFactory::HasTransportDataIncludingFirstSync() {
+  return is_first_time_sync_configure_done_;
+}
+
 void FakeSyncApiComponentFactory::ClearAllTransportData() {
   ++clear_transport_data_call_count_;
 }
