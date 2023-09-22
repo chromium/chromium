@@ -112,7 +112,7 @@ std::unique_ptr<QuickStartMessage> BuildGetInfoRequestMessage() {
 }
 
 std::unique_ptr<QuickStartMessage> BuildRequestWifiCredentialsMessage(
-    int32_t session_id,
+    uint64_t session_id,
     std::string& shared_secret) {
   std::unique_ptr<QuickStartMessage> message =
       std::make_unique<QuickStartMessage>(
@@ -122,7 +122,7 @@ std::unique_ptr<QuickStartMessage> BuildRequestWifiCredentialsMessage(
   std::string shared_secret_base64;
   base::Base64Encode(shared_secret_str, &shared_secret_base64);
   message->GetPayload()->Set(kSharedSecretKey, shared_secret_base64);
-  message->GetPayload()->Set(kSessionIdKey, session_id);
+  message->GetPayload()->Set(kSessionIdKey, static_cast<int>(session_id));
 
   return message;
 }
@@ -157,7 +157,7 @@ std::vector<uint8_t> CBOREncodeGetAssertionRequest(const cbor::Value& request) {
 }
 
 std::unique_ptr<QuickStartMessage> BuildNotifySourceOfUpdateMessage(
-    int32_t session_id,
+    uint64_t session_id,
     const base::span<uint8_t, 32> shared_secret) {
   std::unique_ptr<QuickStartMessage> message =
       std::make_unique<QuickStartMessage>(
@@ -168,7 +168,7 @@ std::unique_ptr<QuickStartMessage> BuildNotifySourceOfUpdateMessage(
   std::string shared_secret_base64;
   base::Base64Encode(shared_secret_str, &shared_secret_base64);
   message->GetPayload()->Set(kSharedSecretKey, shared_secret_base64);
-  message->GetPayload()->Set(kSessionIdKey, session_id);
+  message->GetPayload()->Set(kSessionIdKey, static_cast<int>(session_id));
 
   return message;
 }

@@ -103,7 +103,6 @@ void Connection::Close(
 }
 
 void Connection::RequestWifiCredentials(
-    int64_t session_id,
     RequestWifiCredentialsCallback callback) {
   // Build the Wifi Credential Request payload
   SessionContext::SharedSecret secondary_shared_secret =
@@ -115,14 +114,14 @@ void Connection::RequestWifiCredentials(
                      weak_ptr_factory_.GetWeakPtr(),
                      &mojom::QuickStartDecoder::DecodeWifiCredentialsResponse,
                      std::move(callback));
-  SendMessageAndReadResponse(requests::BuildRequestWifiCredentialsMessage(
-                                 session_id, shared_secret_str),
-                             QuickStartResponseType::kWifiCredentials,
-                             std::move(on_response_received));
+  SendMessageAndReadResponse(
+      requests::BuildRequestWifiCredentialsMessage(
+          session_context_.session_id(), shared_secret_str),
+      QuickStartResponseType::kWifiCredentials,
+      std::move(on_response_received));
 }
 
-void Connection::NotifySourceOfUpdate(int64_t session_id,
-                                      NotifySourceOfUpdateCallback callback) {
+void Connection::NotifySourceOfUpdate(NotifySourceOfUpdateCallback callback) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           kQuickStartTestForcedUpdateSwitch)) {
     HandleNotifySourceOfUpdateResponse(
@@ -135,7 +134,7 @@ void Connection::NotifySourceOfUpdate(int64_t session_id,
   SessionContext::SharedSecret secondary_shared_secret =
       session_context_.secondary_shared_secret();
   SendMessageAndReadResponse(
-      requests::BuildNotifySourceOfUpdateMessage(session_id,
+      requests::BuildNotifySourceOfUpdateMessage(session_context_.session_id(),
                                                  secondary_shared_secret),
       QuickStartResponseType::kNotifySourceOfUpdate,
       base::BindOnce(&Connection::OnNotifySourceOfUpdateResponse,

@@ -19,11 +19,13 @@ namespace ash::quick_start {
 class SessionContext {
  public:
   using SharedSecret = std::array<uint8_t, 32>;
+  using SessionId = uint64_t;
 
   SessionContext();
 
   // Alternative constructor used for testing.
-  SessionContext(AdvertisingId advertising_id,
+  SessionContext(SessionId session_id,
+                 AdvertisingId advertising_id,
                  SharedSecret shared_secret,
                  SharedSecret secondary_shared_secret,
                  bool is_resume_after_update = false);
@@ -31,6 +33,8 @@ class SessionContext {
   SessionContext(const SessionContext& other);
   SessionContext& operator=(const SessionContext& other);
   ~SessionContext();
+
+  SessionId session_id() const { return session_id_; }
 
   AdvertisingId advertising_id() const { return advertising_id_; }
 
@@ -56,6 +60,7 @@ class SessionContext {
   void FetchPersistedSessionContext();
   void DecodeSharedSecret(const std::string& encoded_shared_secret);
 
+  SessionId session_id_;
   AdvertisingId advertising_id_;
   SharedSecret shared_secret_;
   SharedSecret secondary_shared_secret_;

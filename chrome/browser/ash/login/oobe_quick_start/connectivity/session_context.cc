@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/session_context.h"
 
 #include "base/base64.h"
+#include "base/hash/hash.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/oobe_quick_start_pref_names.h"
 #include "chrome/browser/browser_process.h"
@@ -39,13 +41,20 @@ SessionContext::SessionContext() {
     crypto::RandBytes(shared_secret_);
     crypto::RandBytes(secondary_shared_secret_);
   }
+
+  // Create session ID by generating UUID and then hashing.
+  const base::Uuid random_uuid = base::Uuid::GenerateRandomV4();
+  session_id_ = static_cast<uint64_t>(
+      base::PersistentHash(random_uuid.AsLowercaseString()));
 }
 
-SessionContext::SessionContext(AdvertisingId advertising_id,
+SessionContext::SessionContext(SessionId session_id,
+                               AdvertisingId advertising_id,
                                SharedSecret shared_secret,
                                SharedSecret secondary_shared_secret,
                                bool is_resume_after_update)
-    : advertising_id_(advertising_id),
+    : session_id_(session_id),
+      advertising_id_(advertising_id),
       shared_secret_(shared_secret),
       secondary_shared_secret_(secondary_shared_secret),
       is_resume_after_update_(is_resume_after_update) {}

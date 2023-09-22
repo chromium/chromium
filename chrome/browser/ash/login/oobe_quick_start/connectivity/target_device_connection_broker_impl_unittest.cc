@@ -54,6 +54,9 @@ constexpr std::array<uint8_t, 32> kSecondarySharedSecret = {
     0xab, 0xa0, 0xe3, 0xfc, 0xd3, 0x5a, 0x04, 0x01, 0x63, 0xf6, 0xf5,
     0xeb, 0x40, 0x7f, 0x4b, 0xac, 0xe4, 0xd1, 0xbf, 0x20, 0x19};
 
+// random int with 64 bits to use as SessionId.
+constexpr uint64_t kSessionId = 184467440;
+
 // Arbitrary string to use as the endpoint id.
 constexpr char kEndpointId[] = "endpoint_id";
 
@@ -311,8 +314,8 @@ class TargetDeviceConnectionBrokerImplTest : public testing::Test {
     connection_factory_ = connection_factory.get();
     advertising_id_ = AdvertisingId();
     auto session_context =
-        SessionContext(advertising_id_, kSharedSecret, kSecondarySharedSecret,
-                       is_resume_after_update);
+        SessionContext(kSessionId, advertising_id_, kSharedSecret,
+                       kSecondarySharedSecret, is_resume_after_update);
     connection_broker_ = std::make_unique<TargetDeviceConnectionBrokerImpl>(
         session_context, fake_quick_start_connectivity_service_.get(),
         std::move(connection_factory));

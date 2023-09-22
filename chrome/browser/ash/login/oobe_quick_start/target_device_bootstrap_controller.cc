@@ -9,10 +9,8 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/hash/hash.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/qr_code.h"
@@ -145,7 +143,6 @@ void TargetDeviceBootstrapController::PrepareForUpdate() {
   }
 
   authenticated_connection_->NotifySourceOfUpdate(
-      session_id_,
       base::BindOnce(
           &TargetDeviceBootstrapController::OnNotifySourceOfUpdateResponse,
           weak_ptr_factory_.GetWeakPtr()));
@@ -173,11 +170,6 @@ void TargetDeviceBootstrapController::OnConnectionAuthenticated(
   CHECK(base::Contains(kPossibleSteps, status_.step));
 
   authenticated_connection_ = authenticated_connection;
-
-  // Create session ID by generating UUID and then hashing.
-  const base::Uuid random_uuid = base::Uuid::GenerateRandomV4();
-  session_id_ = static_cast<int64_t>(
-      base::PersistentHash(random_uuid.AsLowercaseString()));
 
   status_.step = Step::CONNECTED;
   status_.payload.emplace<absl::monostate>();
@@ -296,7 +288,7 @@ void TargetDeviceBootstrapController::AttemptWifiCredentialTransfer() {
   WaitForUserVerification(base::BindOnce(
       &TargetDeviceConnectionBroker::AuthenticatedConnection::
           RequestWifiCredentials,
-      authenticated_connection_, session_id_,
+      authenticated_connection_,
       base::BindOnce(
           &TargetDeviceBootstrapController::OnWifiCredentialsReceived,
           weak_ptr_factory_.GetWeakPtr())));
