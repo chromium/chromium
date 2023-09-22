@@ -278,7 +278,7 @@ class COMPONENT_EXPORT(ACTIONS) ActionManager
   void ResetActionItemInitializerList();
 
   // Appends `initializer` to the end of the current `initializer_list_`.
-  void AppendActionItemInitializer(
+  [[nodiscard]] base::CallbackListSubscription AppendActionItemInitializer(
       ActionItemInitializerList::CallbackType initializer);
 
  protected:
@@ -298,9 +298,6 @@ class COMPONENT_EXPORT(ACTIONS) ActionManager
 
   // Holds the chain of ActionManager initializer callbacks.
   std::unique_ptr<ActionItemInitializerList> initializer_list_;
-
-  // Holds the subscriptions for initializers in the `initializer_list_`.
-  std::vector<base::CallbackListSubscription> initializer_subscriptions_;
 
   // All "root" actions are parented to this action.
   BaseAction root_action_parent_;

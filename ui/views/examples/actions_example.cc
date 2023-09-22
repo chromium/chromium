@@ -420,8 +420,10 @@ ProposedLayout FlowLayout::CalculateProposedLayout(
 }  // namespace
 
 ActionsExample::ActionsExample() : ExampleBase("Actions") {
-  actions::ActionManager::Get().AppendActionItemInitializer(base::BindRepeating(
-      &ActionsExample::CreateActions, base::Unretained(this)));
+  subscriptions_.push_back(
+      actions::ActionManager::Get().AppendActionItemInitializer(
+          base::BindRepeating(&ActionsExample::CreateActions,
+                              base::Unretained(this))));
 }
 
 ActionsExample::~ActionsExample() = default;

@@ -565,16 +565,14 @@ void ActionManager::ResetActions() {
 void ActionManager::ResetActionItemInitializerList() {
   ResetActions();
   initializer_list_ = std::make_unique<ActionItemInitializerList>();
-  initializer_subscriptions_.clear();
 }
 
-void ActionManager::AppendActionItemInitializer(
+base::CallbackListSubscription ActionManager::AppendActionItemInitializer(
     ActionItemInitializerList::CallbackType initializer) {
   DCHECK(initializer_list_);
   ResetActions();
 
-  initializer_subscriptions_.push_back(
-      initializer_list_->Add(std::move(initializer)));
+  return initializer_list_->Add(std::move(initializer));
 }
 
 ActionItem* ActionManager::FindActionImpl(ActionId action_id,

@@ -4,6 +4,7 @@
 
 #include "ui/actions/actions.h"
 
+#include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -52,9 +53,13 @@ class ActionManagerTest : public testing::Test {
   }
   void SetupInitializer() {
     auto& manager = ActionManager::GetForTesting();
-    manager.AppendActionItemInitializer(base::BindRepeating(
-        &ActionManagerTest::InitializeActions, base::Unretained(this)));
+    initialization_subscription_ =
+        manager.AppendActionItemInitializer(base::BindRepeating(
+            &ActionManagerTest::InitializeActions, base::Unretained(this)));
   }
+
+ private:
+  base::CallbackListSubscription initialization_subscription_;
 };
 
 using ActionItemTest = ActionManagerTest;
@@ -73,7 +78,7 @@ TEST_F(ActionManagerTest, Harness) {
 TEST_F(ActionManagerTest, InitializerTest) {
   bool initializer_called = false;
   auto& manager = ActionManager::GetForTesting();
-  manager.AppendActionItemInitializer(base::BindRepeating(
+  auto subscription = manager.AppendActionItemInitializer(base::BindRepeating(
       [](bool* called, ActionManager* manager) { *called = true; },
       &initializer_called));
   EXPECT_FALSE(initializer_called);
@@ -85,7 +90,7 @@ TEST_F(ActionManagerTest, ActionRegisterAndInvoke) {
   const std::u16string text = u"Test Action";
   int action_invoked_count = 0;
   auto& manager = ActionManager::GetForTesting();
-  manager.AppendActionItemInitializer(base::BindRepeating(
+  auto subscription = manager.AppendActionItemInitializer(base::BindRepeating(
       [](int* invoked_count, const std::u16string& text,
          ActionManager* manager) {
         auto action = std::make_unique<ActionItem>(base::BindRepeating(
