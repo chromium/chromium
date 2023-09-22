@@ -35,6 +35,8 @@ std::map<std::string, std::string> CreateProviderRequest(
   for (auto it = params.begin(); it != params.end(); ++it) {
     provider_request[it->first] = it->second;
   }
+
+  provider_request["tone"] = request->text_query_id;
   return provider_request;
 }
 
