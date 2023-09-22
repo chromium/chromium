@@ -175,19 +175,14 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
     config->session_rate_impact.type = SessionRateImpact::Type::NONE;
-    // Show promo up to 3 times if user has not interacted with UB: initial
-    // show, then again at >3 days later, and again at >30 days later.
-    config->trigger = EventConfig("iph_3pcd_user_bypass_triggered",
-                                  Comparator(EQUAL, 0), 3, 3);
+    // Show promo once
+    config->trigger =
+        EventConfig("iph_3pcd_user_bypass_triggered", Comparator(EQUAL, 0),
+                    feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
     config->used =
         EventConfig(feature_engagement::events::kCookieControlsBubbleShown,
-                    Comparator(EQUAL, 0), 720, 720);
-    // Use 2 years as we only want to show this IPH up to 3 times total and
-    // anticipate the IPH will be retired by that time.
-    config->event_configs.insert(EventConfig(
-        "iph_3pcd_user_bypass_triggered", Comparator(LESS_THAN, 3), 720, 720));
-    config->event_configs.insert(EventConfig("iph_3pcd_user_bypass_triggered",
-                                             Comparator(LESS_THAN, 2), 30, 30));
+                    Comparator(ANY, 0), 360, 360);
     return config;
   }
 
