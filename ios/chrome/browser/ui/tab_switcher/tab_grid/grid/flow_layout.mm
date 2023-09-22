@@ -7,15 +7,14 @@
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 
-@interface FlowLayout ()
-@property(nonatomic, strong) NSArray<NSIndexPath*>* indexPathsOfDeletingItems;
-@property(nonatomic, strong) NSArray<NSIndexPath*>* indexPathsOfInsertingItems;
-@end
-
-@implementation FlowLayout
+@implementation FlowLayout {
+  NSArray<NSIndexPath*>* _indexPathsOfDeletingItems;
+  NSArray<NSIndexPath*>* _indexPathsOfInsertingItems;
+}
 
 - (instancetype)init {
-  if (self = [super init]) {
+  self = [super init];
+  if (self) {
     _animatesItemUpdates = YES;
   }
   return self;
@@ -43,15 +42,15 @@
         break;
     }
   }
-  self.indexPathsOfDeletingItems = [deletingItems copy];
-  self.indexPathsOfInsertingItems = [insertingItems copy];
+  _indexPathsOfDeletingItems = [deletingItems copy];
+  _indexPathsOfInsertingItems = [insertingItems copy];
 }
 
 - (UICollectionViewLayoutAttributes*)
     finalLayoutAttributesForDisappearingItemAtIndexPath:
         (NSIndexPath*)itemIndexPath {
   // Return initial layout if animations are disabled.
-  if (!self.animatesItemUpdates) {
+  if (!_animatesItemUpdates) {
     return [self layoutAttributesForItemAtIndexPath:itemIndexPath];
   }
   // Note that this method is called for any item whose index path changing from
@@ -63,7 +62,7 @@
       finalLayoutAttributesForDisappearingItemAtIndexPath:itemIndexPath] copy];
   // Disappearing items that aren't being deleted just use the default
   // attributes.
-  if (![self.indexPathsOfDeletingItems containsObject:itemIndexPath]) {
+  if (![_indexPathsOfDeletingItems containsObject:itemIndexPath]) {
     return attributes;
   }
   // Cells being deleted scale to 0, and are z-positioned behind all others.
@@ -83,7 +82,7 @@
     initialLayoutAttributesForAppearingItemAtIndexPath:
         (NSIndexPath*)itemIndexPath {
   // Return final layout if animations are disabled.
-  if (!self.animatesItemUpdates) {
+  if (!_animatesItemUpdates) {
     return [self layoutAttributesForItemAtIndexPath:itemIndexPath];
   }
   // Note that this method is called for any item whose index path is becoming
@@ -95,7 +94,7 @@
       initialLayoutAttributesForAppearingItemAtIndexPath:itemIndexPath] copy];
   // Appearing items that aren't being inserted just use the default
   // attributes.
-  if (![self.indexPathsOfInsertingItems containsObject:itemIndexPath]) {
+  if (![_indexPathsOfInsertingItems containsObject:itemIndexPath]) {
     return attributes;
   }
   // TODO(crbug.com/820410) : Polish the animation, and put constants where they
@@ -112,8 +111,8 @@
 }
 
 - (void)finalizeCollectionViewUpdates {
-  self.indexPathsOfDeletingItems = @[];
-  self.indexPathsOfInsertingItems = @[];
+  _indexPathsOfDeletingItems = nil;
+  _indexPathsOfInsertingItems = nil;
   [super finalizeCollectionViewUpdates];
 }
 

@@ -22,7 +22,7 @@
   [super prepareLayout];
 
   NSInteger itemCount = [self.collectionView numberOfItemsInSection:0];
-  // No neeed to update the layout if the collectionView is empty.
+  // No need to update the layout if the collectionView is empty.
   if (itemCount == 0) {
     return;
   }

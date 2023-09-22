@@ -54,6 +54,9 @@
 #import "third_party/abseil-cpp/absl/types/optional.h"
 #import "ui/base/l10n/l10n_util.h"
 
+using base::apple::ObjCCast;
+using base::apple::ObjCCastStrict;
+
 class ScopedScrollingTimeLogger {
  public:
   ScopedScrollingTimeLogger() : start_(base::TimeTicks::Now()) {}
@@ -162,19 +165,17 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
 // ID of the last item to be inserted. This is used to track if the active tab
 // was newly created when building the animation layout for transitions.
 @property(nonatomic, assign) web::WebStateID lastInsertedItemID;
-// Identifier of the lastest dragged item. This property is set when the item is
+// Identifier of the latest dragged item. This property is set when the item is
 // long pressed which does not always result in a drag action.
 @property(nonatomic, assign) web::WebStateID draggedItemID;
 // Animator to show or hide the empty state.
 @property(nonatomic, strong) UIViewPropertyAnimator* emptyStateAnimator;
-// The current layout for the tab switcher.
-@property(nonatomic, strong) FlowLayout* currentLayout;
 // The layout for the tab grid.
 @property(nonatomic, strong) GridLayout* gridLayout;
 // By how much the user scrolled past the view's content size. A negative value
 // means the user hasn't scrolled past the end of the scroll view.
 @property(nonatomic, assign, readonly) CGFloat offsetPastEndOfScrollView;
-// The view controller that holds the view of the suggested saerch actions.
+// The view controller that holds the view of the suggested search actions.
 @property(nonatomic, strong)
     SuggestedActionsViewController* suggestedActionsViewController;
 // Grid cells for which pointer interactions have been added. Pointer
@@ -244,11 +245,10 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
 
 - (void)loadView {
   self.gridLayout = [[GridLayout alloc] init];
-  self.currentLayout = self.gridLayout;
 
   UICollectionView* collectionView =
       [[UICollectionView alloc] initWithFrame:CGRectZero
-                         collectionViewLayout:self.currentLayout];
+                         collectionViewLayout:self.gridLayout];
   // During deletion (in horizontal layout) the backgroundView can resize,
   // revealing temporarily the collectionView background. This makes sure
   // both are the same color.
@@ -528,7 +528,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
   for (NSIndexPath* path in self.collectionView.indexPathsForVisibleItems) {
     if (path.section != kOpenTabsSectionIndex)
       continue;
-    GridCell* cell = base::apple::ObjCCastStrict<GridCell>(
+    GridCell* cell = ObjCCastStrict<GridCell>(
         [self.collectionView cellForItemAtIndexPath:path]);
     UICollectionViewLayoutAttributes* attributes =
         [self.collectionView layoutAttributesForItemAtIndexPath:path];
@@ -571,7 +571,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
 }
 
 - (void)contentWillAppearAnimated:(BOOL)animated {
-  self.currentLayout.animatesItemUpdates = YES;
+  self.gridLayout.animatesItemUpdates = YES;
   if (base::FeatureList::IsEnabled(kTabGridRefactoring)) {
     [self reloadCollectionViewData];
   } else {
@@ -603,7 +603,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
 - (void)prepareForDismissal {
   // Stop animating the collection view to prevent the insertion animation from
   // interfering with the tab presentation animation.
-  self.currentLayout.animatesItemUpdates = NO;
+  self.gridLayout.animatesItemUpdates = NO;
 }
 
 #pragma mark - Public Editing Mode Selection
@@ -705,7 +705,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
         dequeueReusableCellWithReuseIdentifier:kSuggestedActionsCellIdentifier
                                   forIndexPath:indexPath];
     SuggestedActionsGridCell* suggestedActionsCell =
-        base::apple::ObjCCastStrict<SuggestedActionsGridCell>(cell);
+        ObjCCastStrict<SuggestedActionsGridCell>(cell);
     suggestedActionsCell.suggestedActionsView =
         self.suggestedActionsViewController.view;
   } else {
@@ -998,14 +998,12 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
 - (CGSize)collectionView:(UICollectionView*)collectionView
                     layout:(UICollectionViewLayout*)collectionViewLayout
     sizeForItemAtIndexPath:(NSIndexPath*)indexPath {
-  // `collectionViewLayout` should always be a flow layout.
-  DCHECK(
-      [collectionViewLayout isKindOfClass:[UICollectionViewFlowLayout class]]);
   if (self.isClosingAllOrUndoRunning) {
     return CGSizeZero;
   }
+  // `collectionViewLayout` should always be a flow layout.
   UICollectionViewFlowLayout* layout =
-      (UICollectionViewFlowLayout*)collectionViewLayout;
+      ObjCCastStrict<UICollectionViewFlowLayout>(collectionViewLayout);
   CGSize itemSize = layout.itemSize;
   // The SuggestedActions cell can't use the item size that is set in
   // `prepareLayout` of the layout class. For that specific cell calculate the
@@ -1121,7 +1119,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
     return nil;
   }
 
-  GridCell* cell = base::apple::ObjCCastStrict<GridCell>(
+  GridCell* cell = ObjCCastStrict<GridCell>(
       [self.collectionView cellForItemAtIndexPath:indexPath]);
 
   MenuScenarioHistogram scenario;
@@ -1162,7 +1160,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
   //
   // See crbug.com//1427278
   if ([cell isKindOfClass:[GridCell class]]) {
-    GridCell* gridCell = base::apple::ObjCCastStrict<GridCell>(cell);
+    GridCell* gridCell = ObjCCastStrict<GridCell>(cell);
 
     BOOL isTabGridInSelectionMode = _mode == TabGridModeSelection;
     BOOL isGridCellInSelectionMode = gridCell.state != GridCellStateNotEditing;
@@ -1182,7 +1180,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
     // This is important to prevent cells from animating indefinitely. This is
     // safe because the animation state of GridCells is set in
     // `configureCell:withItem:atIndex:` whenever a cell is used.
-    [base::apple::ObjCCastStrict<GridCell>(cell) hideActivityIndicator];
+    [ObjCCastStrict<GridCell>(cell) hideActivityIndicator];
   }
 }
 
@@ -1294,7 +1292,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
     return nil;
   }
 
-  GridCell* gridCell = base::apple::ObjCCastStrict<GridCell>(
+  GridCell* gridCell = ObjCCastStrict<GridCell>(
       [self.collectionView cellForItemAtIndexPath:indexPath]);
   return gridCell.dragPreviewParameters;
 }
@@ -1365,14 +1363,12 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
               initWithInsertionIndexPath:dropIndexPath
                          reuseIdentifier:kCellIdentifier];
       placeholder.cellUpdateHandler = ^(UICollectionViewCell* placeholderCell) {
-        GridCell* gridCell =
-            base::apple::ObjCCastStrict<GridCell>(placeholderCell);
+        GridCell* gridCell = ObjCCastStrict<GridCell>(placeholderCell);
         gridCell.theme = self.theme;
       };
       placeholder.previewParametersProvider =
           ^UIDragPreviewParameters*(UICollectionViewCell* placeholderCell) {
-            GridCell* gridCell =
-                base::apple::ObjCCastStrict<GridCell>(placeholderCell);
+            GridCell* gridCell = ObjCCastStrict<GridCell>(placeholderCell);
             return gridCell.dragPreviewParameters;
           };
 
@@ -1642,7 +1638,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
     }
     [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
   } else {
-    GridCell* cell = base::apple::ObjCCastStrict<GridCell>(
+    GridCell* cell = ObjCCastStrict<GridCell>(
         [self.collectionView cellForItemAtIndexPath:CreateIndexPath(index)]);
     // `cell` may be nil if it is scrolled offscreen.
     if (cell) {
@@ -1704,7 +1700,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
   NSIndexPath* indexPath = [NSIndexPath indexPathForItem:0
                                                inSection:kOpenTabsSectionIndex];
   InactiveTabsButtonHeader* header =
-      base::apple::ObjCCast<InactiveTabsButtonHeader>([self.collectionView
+      ObjCCast<InactiveTabsButtonHeader>([self.collectionView
           supplementaryViewForElementKind:UICollectionElementKindSectionHeader
                               atIndexPath:indexPath]);
   header.hidden = NO;
@@ -2017,10 +2013,6 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
          self.collectionView.frame.size.width -
          self.collectionView.collectionViewLayout.collectionViewContentSize
              .width;
-}
-
-- (void)setCurrentLayout:(FlowLayout*)currentLayout {
-  _currentLayout = currentLayout;
 }
 
 #pragma mark - Private
@@ -2383,7 +2375,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
   NSIndexPath* indexPath = [NSIndexPath indexPathForItem:0
                                                inSection:kOpenTabsSectionIndex];
   InactiveTabsButtonHeader* header =
-      base::apple::ObjCCast<InactiveTabsButtonHeader>([self.collectionView
+      ObjCCast<InactiveTabsButtonHeader>([self.collectionView
           supplementaryViewForElementKind:UICollectionElementKindSectionHeader
                               atIndexPath:indexPath]);
   if (!header) {
@@ -2440,7 +2432,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
   NSIndexPath* indexPath = [NSIndexPath indexPathForItem:0
                                                inSection:kOpenTabsSectionIndex];
   InactiveTabsButtonHeader* header =
-      base::apple::ObjCCast<InactiveTabsButtonHeader>([self.collectionView
+      ObjCCast<InactiveTabsButtonHeader>([self.collectionView
           supplementaryViewForElementKind:UICollectionElementKindSectionHeader
                               atIndexPath:indexPath]);
   // Note: At this point, `header` could be nil if not visible, or if the
@@ -2453,7 +2445,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
   NSIndexPath* indexPath = [NSIndexPath indexPathForItem:0
                                                inSection:kOpenTabsSectionIndex];
   InactiveTabsPreambleHeader* header =
-      base::apple::ObjCCast<InactiveTabsPreambleHeader>([self.collectionView
+      ObjCCast<InactiveTabsPreambleHeader>([self.collectionView
           supplementaryViewForElementKind:UICollectionElementKindSectionHeader
                               atIndexPath:indexPath]);
   // Note: At this point, `header` could be nil if not visible, or if the

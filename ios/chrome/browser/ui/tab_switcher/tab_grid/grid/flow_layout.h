@@ -9,16 +9,11 @@
 
 // Collection view flow layout that displays items in a grid or horizontally.
 // Items are square-ish. Item sizes adapt to the size classes they are shown in.
-// Item deletions are animated.
+// Item insertions and deletions are animated by default.
 @interface FlowLayout : UICollectionViewFlowLayout
 
-// Whether to animate item insertions and deletions.
+// Whether to animate item insertions and deletions. Defaults to YES.
 @property(nonatomic, assign) BOOL animatesItemUpdates;
-
-// Index paths of items being inserted. Exposed for subclasses, and populated on
-// this class -prepareForCollectionViewUpdates:.
-@property(nonatomic, readonly)
-    NSArray<NSIndexPath*>* indexPathsOfInsertingItems;
 
 @end
 
