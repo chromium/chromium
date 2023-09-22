@@ -864,7 +864,7 @@ inline constexpr char kNightLightTemperature[] =
 // respectively.
 // 2 -> NightLight schedule times are explicitly set by the user.
 //
-// See ash::NightLightController::ScheduleType.
+// See ash::ScheduleType.
 inline constexpr char kNightLightScheduleType[] =
     "ash.night_light.schedule_type";
 

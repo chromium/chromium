@@ -51,8 +51,7 @@ class NightLightClientImpl : public ash::NightLightClient,
   void OnSystemGeolocationPermissionChanged(bool enabled) override;
 
   // ash::NightLightController::Observer:
-  void OnScheduleTypeChanged(
-      ash::NightLightController::ScheduleType new_type) override;
+  void OnScheduleTypeChanged(ScheduleType new_type) override;
 
   // ash::system::TimezoneSettings::Observer:
   void TimezoneChanged(const icu::TimeZone& timezone) override;

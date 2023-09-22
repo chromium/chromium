@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "ash/public/cpp/schedule_enums.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/time/clock.h"
@@ -69,9 +70,8 @@ void NightLightClientImpl::OnSystemGeolocationPermissionChanged(bool enabled) {
   }
 }
 
-void NightLightClientImpl::OnScheduleTypeChanged(
-    ash::NightLightController::ScheduleType new_type) {
-  if (new_type == ash::NightLightController::ScheduleType::kNone) {
+void NightLightClientImpl::OnScheduleTypeChanged(ScheduleType new_type) {
+  if (new_type == ScheduleType::kNone) {
     using_geoposition_ = false;
     timer_->Stop();
     return;

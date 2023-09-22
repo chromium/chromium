@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/night_light_controller.h"
+#include "ash/public/cpp/schedule_enums.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/time/time_of_day.h"
 #include "base/containers/flat_map.h"

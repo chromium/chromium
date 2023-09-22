@@ -7,6 +7,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
+#include "ash/public/cpp/schedule_enums.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -131,20 +132,19 @@ void NightLightFeaturePodController::Refresh() {
 const std::u16string NightLightFeaturePodController::GetPodSubLabel() {
   auto* controller = Shell::Get()->night_light_controller();
   const bool is_enabled = controller->GetEnabled();
-  const NightLightController::ScheduleType schedule_type =
-      controller->GetScheduleType();
+  const ScheduleType schedule_type = controller->GetScheduleType();
   std::u16string sublabel;
   switch (schedule_type) {
-    case NightLightController::ScheduleType::kNone:
+    case ScheduleType::kNone:
       return l10n_util::GetStringUTF16(
           is_enabled ? IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_ON_STATE
                      : IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_OFF_STATE);
-    case NightLightController::ScheduleType::kSunsetToSunrise:
+    case ScheduleType::kSunsetToSunrise:
       return l10n_util::GetStringUTF16(
           is_enabled
               ? IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_ON_STATE_SUNSET_TO_SUNRISE_SCHEDULED
               : IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_OFF_STATE_SUNSET_TO_SUNRISE_SCHEDULED);
-    case NightLightController::ScheduleType::kCustom:
+    case ScheduleType::kCustom:
       const TimeOfDay time_of_day = is_enabled
                                         ? controller->GetCustomEndTime()
                                         : controller->GetCustomStartTime();

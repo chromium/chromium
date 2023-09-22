@@ -554,8 +554,7 @@ void NightLightControllerImpl::UpdateAmbientRgbScalingFactors() {
           ambient_temperature_);
 }
 
-NightLightController::ScheduleType NightLightControllerImpl::GetScheduleType()
-    const {
+ScheduleType NightLightControllerImpl::GetScheduleType() const {
   if (active_user_pref_service_) {
     return static_cast<ScheduleType>(
         active_user_pref_service_->GetInteger(prefs::kNightLightScheduleType));

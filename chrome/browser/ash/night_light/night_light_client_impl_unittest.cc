@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/night_light/night_light_client_impl.h"
 
 #include "ash/public/cpp/night_light_controller.h"
+#include "ash/public/cpp/schedule_enums.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
@@ -22,7 +23,6 @@ namespace ash {
 
 namespace {
 
-using ScheduleType = ash::NightLightController::ScheduleType;
 using SimpleGeoposition = ash::NightLightController::SimpleGeoposition;
 
 // Constructs a TimeZone object from the given |timezone_id|.

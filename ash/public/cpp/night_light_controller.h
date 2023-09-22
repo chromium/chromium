@@ -6,30 +6,13 @@
 #define ASH_PUBLIC_CPP_NIGHT_LIGHT_CONTROLLER_H_
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "ash/public/cpp/schedule_enums.h"
 #include "base/observer_list.h"
 
 namespace ash {
 
 class ASH_PUBLIC_EXPORT NightLightController {
  public:
-  // These values are written to logs. New enum values can be added, but
-  // existing enums must never be renumbered or deleted and reused.
-  enum class ScheduleType {
-    // Automatic toggling of NightLight is turned off.
-    kNone = 0,
-
-    // Turned automatically on at the user's local sunset time, and off at the
-    // user's local sunrise time.
-    kSunsetToSunrise = 1,
-
-    // Toggled automatically based on the custom set start and end times
-    // selected by the user from the system settings.
-    kCustom = 2,
-
-    // kMaxValue is required for UMA_HISTOGRAM_ENUMERATION.
-    kMaxValue = kCustom,
-  };
-
   // Represents a geolocation position fix. It's "simple" because it doesn't
   // expose all the parameters of the position interface as defined by the
   // Geolocation API Specification:
