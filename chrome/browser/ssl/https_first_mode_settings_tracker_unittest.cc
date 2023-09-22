@@ -303,16 +303,11 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, UndoTypicallySecureUser) {
   feature_list.InitAndDisableFeature(
       features::kHttpsFirstModeV2ForTypicallySecureUsers);
 
-  HttpsFirstModeService* service =
-      HttpsFirstModeServiceFactory::GetForProfile(profile());
-  ASSERT_TRUE(service);
-
   // Pretend that the feature had been erroneously enabled previously.
   profile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeAutoEnabled, true);
   profile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, true);
 
-  EXPECT_FALSE(
-      service->MaybeEnableHttpsFirstModeForUser(/*add_fallback_entry=*/true));
+  HttpsFirstModeService::FixTypicallySecureUserPrefs(profile());
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled));
   EXPECT_FALSE(
       profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeAutoEnabled));

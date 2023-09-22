@@ -145,6 +145,27 @@ std::unique_ptr<KeyedService> BuildService(content::BrowserContext* context) {
 
 }  // namespace
 
+// static
+void HttpsFirstModeService::FixTypicallySecureUserPrefs(Profile* profile) {
+  if (!base::FeatureList::IsEnabled(
+          features::kHttpsFirstModeV2ForTypicallySecureUsers)) {
+    // HFM-for-typically-secure-users has never been enabled intentionally. If
+    // we see that the preference is enabled, that was by accident. Unset the
+    // relevant preferences to undo the damage.
+    if (profile->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeAutoEnabled)) {
+      // If HFM had already been enabled, the code wouldn't have toggled
+      // kHttpsOnlyModeAutoEnabled. That means it's safe to disable HFM here --
+      // HFM can only be enabled because we set it that way. We clear the pref
+      // here so it is treated as though the user has not explicitly set it.
+      profile->GetPrefs()->ClearPref(prefs::kHttpsOnlyModeEnabled);
+      // Clear the kHttpsOnlyModeAutoEnabled pref entirely, as some of the
+      // HFM-for-typically-secure users logic relies on checking whether it has
+      // ever been set.
+      profile->GetPrefs()->ClearPref(prefs::kHttpsOnlyModeAutoEnabled);
+    }
+  }
+}
+
 HttpsFirstModeService::HttpsFirstModeService(Profile* profile,
                                              base::Clock* clock)
     : profile_(profile), clock_(clock) {
@@ -227,18 +248,6 @@ bool HttpsFirstModeService::MaybeEnableHttpsFirstModeForUser(
 
   if (!base::FeatureList::IsEnabled(
           features::kHttpsFirstModeV2ForTypicallySecureUsers)) {
-    // Temporary fix for users impacted by crbug.com/1475747:
-    // HFM-for-typically-secure-users has never been enabled intentionally. If
-    // we see that the preference has been set, that was by accident. Unset the
-    // relevant preferences to undo the damage.
-    if (profile_->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeAutoEnabled)) {
-      profile_->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeAutoEnabled, false);
-      // If HFM had already been enabled, the code wouldn't have toggled
-      // kHttpsOnlyModeAutoEnabled. That means it's safe to disable HFM here --
-      // HFM can only be enabled because we set it that way.
-      profile_->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, false);
-    }
-
     return false;
   }
 
@@ -302,6 +311,8 @@ bool HttpsFirstModeService::MaybeEnableHttpsFirstModeForUser(
   if (enable_https_first_mode &&
       !profile_->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeEnabled) &&
       !profile_->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeAutoEnabled)) {
+    // The prefs must be set in this order, as setting kHttpsOnlyModeEnabled
+    // will cause kHttpsOnlyModeAutoEnabled to be reset to false.
     profile_->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled,
                                      enable_https_first_mode);
     profile_->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeAutoEnabled,
