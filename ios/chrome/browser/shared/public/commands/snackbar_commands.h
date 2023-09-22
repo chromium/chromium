@@ -12,10 +12,15 @@
 // Commands related to Snackbar.
 @protocol SnackbarCommands
 
-// Shows a snackbar with `message`. It will use the Bottom toolbar height as
-// bottom offset. Use this method if displaying a Snackbar while the Web content
-// is visible. If there's no bottom toolbar offset will be 0.
+// Shows a snackbar with `message`. On navigation controllers, use the bottom
+// toolbar height as bottom offset. Otherwise, use the browser's bottom toolbar
+// height as bottom offset.
 - (void)showSnackbarMessage:(MDCSnackbarMessage*)message;
+
+// Shows a snackbar with `message`. Use the browser's bottom toolbar height as
+// bottom offset. This is used when the presented view will be dismissed and web
+// content will become visible.
+- (void)showSnackbarMessageOverBrowserToolbar:(MDCSnackbarMessage*)message;
 
 // Shows a snackbar with `message` while having a haptic feedback with `type`.
 - (void)showSnackbarMessage:(MDCSnackbarMessage*)message

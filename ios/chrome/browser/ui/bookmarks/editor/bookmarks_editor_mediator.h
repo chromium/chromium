@@ -13,6 +13,7 @@
 @protocol BookmarksEditorMediatorDelegate;
 class ChromeBrowserState;
 class PrefService;
+@protocol SnackbarCommands;
 
 namespace bookmarks {
 class BookmarkModel;
@@ -34,6 +35,8 @@ class SyncService;
 @property(nonatomic, weak) id<BookmarksEditorMediatorDelegate> delegate;
 // Consumer to reflect user’s change in the model.
 @property(nonatomic, weak) id<BookmarksEditorConsumer> consumer;
+// Handler for snackbar commands.
+@property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
 
 // Designated initializer.
 // `localOrSyncableBookmarkModel` is the bookmark model for the localOrSyncable

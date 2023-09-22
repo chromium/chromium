@@ -101,6 +101,7 @@
                               browserState:browserState];
   _mediator.consumer = _viewController;
   _mediator.delegate = self;
+  _mediator.snackbarCommandsHandler = _snackbarCommandsHandler;
   _viewController.mutator = _mediator;
 
   _navigationController =
@@ -120,6 +121,7 @@
   [_mediator disconnect];
   [self dismissActionSheetCoordinator];
   _mediator.consumer = nil;
+  _mediator.snackbarCommandsHandler = nil;
   _mediator = nil;
   _viewController.delegate = nil;
   _viewController.mutator = nil;
@@ -249,10 +251,6 @@
 
 - (void)bookmarkDidMoveToParent:(const bookmarks::BookmarkNode*)newParent {
   [_folderChooserCoordinator setSelectedFolder:newParent];
-}
-
-- (void)showSnackbarMessage:(MDCSnackbarMessage*)message {
-  [_snackbarCommandsHandler showSnackbarMessage:message];
 }
 
 - (void)bookmarkEditorWillCommitTitleOrURLChange:
