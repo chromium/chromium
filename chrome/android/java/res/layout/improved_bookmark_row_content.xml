@@ -35,7 +35,8 @@ found in the LICENSE file.
         android:layout_width="@dimen/min_touch_target_size"
         android:layout_height="match_parent"
         android:layout_gravity="end"
-        android:src="@drawable/ic_selection_check_24dp"
+        android:src="@drawable/material_ic_check_circle_filled_24dp"
+        app:tint="@macro/default_icon_color_accent1"
         android:scaleType="center"
         android:importantForAccessibility="no" />
 
