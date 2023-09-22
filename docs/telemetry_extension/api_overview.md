@@ -360,6 +360,8 @@ extension-event based interface in M119. The interface is described in
 | touchpad_button |
 | touchpad_touch |
 | touchpad_connected |
+| touchscreen_touch |
+| touchscreen_connected |
 | external_display |
 | stylus_touch |
 | stylus_connected |
