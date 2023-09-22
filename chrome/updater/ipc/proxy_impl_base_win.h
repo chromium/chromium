@@ -49,7 +49,7 @@ class ProxyImplBase {
  protected:
   explicit ProxyImplBase(UpdaterScope scope) : scope_(scope) {
     DETACH_FROM_SEQUENCE(sequence_checker_);
-    VLOG(2) << __func__ << ": Interface: " << typeid(Interface).name()
+    VLOG(3) << __func__ << ": Interface: " << typeid(Interface).name()
             << ": iid_user: " << base::win::WStringFromGUID(iid_user)
             << ": iid_system: " << base::win::WStringFromGUID(iid_system)
             << ": scope: " << scope;

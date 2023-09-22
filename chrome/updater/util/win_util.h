@@ -115,7 +115,7 @@ template <typename Interface, REFIID iid_user, REFIID iid_system>
 class DynamicIIDsImpl : public internal::WrlRuntimeClass<Interface> {
  public:
   DynamicIIDsImpl() {
-    VLOG(2) << __func__ << ": Interface: " << typeid(Interface).name()
+    VLOG(3) << __func__ << ": Interface: " << typeid(Interface).name()
             << ": iid_user: " << base::win::WStringFromGUID(iid_user)
             << ": iid_system: " << base::win::WStringFromGUID(iid_system)
             << ": IsSystemInstall(): " << IsSystemInstall();
