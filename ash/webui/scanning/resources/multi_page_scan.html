@@ -44,30 +44,30 @@
   }
 </style>
 <div id="multiPageScanText" class="container">
-  <span class="label" hidden$="[[showCancelButton_]]">
+  <span class="label" hidden$="[[showCancelButton]]">
     [[i18n('multiPageScanInstructionsText')]]
   </span>
-  <div hidden$="[[!showCancelButton_]]">
-    <span class="label" hidden$="[[showCancelingText_]]">
-      [[getProgressText_(pageNumber)]]
+  <div hidden$="[[!showCancelButton]]">
+    <span class="label" hidden$="[[showCancelingText]]">
+      [[getProgressText(pageNumber)]]
     </span>
-    <span class="label" hidden$="[[!showCancelingText_]]">
+    <span class="label" hidden$="[[!showCancelingText]]">
       [[i18n('multiPageCancelingScanningText')]]
     </span>
   </div>
 </div>
 <div id="buttonContainer">
-  <div hidden$="[[showCancelButton_]]">
-    <cr-button id="saveButton" on-click="onSaveClick_">
+  <div hidden$="[[showCancelButton]]">
+    <cr-button id="saveButton" on-click="onSaveClick">
       [[i18n('saveButtonLabel')]]
     </cr-button>
-    <cr-button id="scanButton" class="action-button" on-click="onScanClick_">
-      [[scanButtonText_]]
+    <cr-button id="scanButton" class="action-button" on-click="onScanClick">
+      [[scanButtonText]]
     </cr-button>
   </div>
-  <cr-button id="cancelButton" on-click="onCancelClick_"
-      hidden$="[[!showCancelButton_]]"
-      disabled$="[[cancelButtonDisabled_]]">
+  <cr-button id="cancelButton" on-click="onCancelClick"
+      hidden$="[[!showCancelButton]]"
+      disabled$="[[cancelButtonDisabled]]">
     [[i18n('cancelButtonText')]]
   </cr-button>
 </div>

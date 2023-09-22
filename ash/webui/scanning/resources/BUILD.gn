@@ -36,7 +36,7 @@ build_webui("build") {
     "file_type_select.ts",
     "loading_page.ts",
     "multi_page_checkbox.ts",
-    "multi_page_scan.js",
+    "multi_page_scan.ts",
     "page_size_select.ts",
     "resolution_select.ts",
     "scan_done_section.js",

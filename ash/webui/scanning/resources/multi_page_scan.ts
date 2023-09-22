@@ -7,29 +7,23 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import './scanning_fonts_css.js';
 import './strings.m.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './multi_page_scan.html.js';
 import {AppState} from './scanning_app_types.js';
-import {ScanningBrowserProxyImpl, SelectedPath} from './scanning_browser_proxy.js';
+import {ScanningBrowserProxyImpl} from './scanning_browser_proxy.js';
 
 /**
  * @fileoverview
  * 'multi-page-scan' shows the available actions for a multi-page scan.
  */
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const MultiPageScanElementBase = mixinBehaviors([I18nBehavior], PolymerElement);
+const MultiPageScanElementBase = I18nMixin(PolymerElement);
 
-/** @polymer */
 class MultiPageScanElement extends MultiPageScanElementBase {
   static get is() {
-    return 'multi-page-scan';
+    return 'multi-page-scan' as const;
   }
 
   static get template() {
@@ -38,84 +32,87 @@ class MultiPageScanElement extends MultiPageScanElementBase {
 
   static get properties() {
     return {
-      /** @type {!AppState} */
       appState: {
         type: Number,
-        observer: 'onAppStateChange_',
+        observer: 'appStateChanged',
       },
 
-      /** @type {number} */
       pageNumber: {
         type: Number,
-        observer: 'onPageNumberChange_',
+        observer: 'pageNumberChanged',
       },
 
-      /** @private {string} */
-      scanButtonText_: String,
+      scanButtonText: String,
 
-      /** @private {boolean} */
-      showCancelButton_: {
+      showCancelButton: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {boolean} */
-      cancelButtonDisabled_: {
+      cancelButtonDisabled: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {boolean} */
-      showCancelingText_: {
+      showCancelingText: {
         type: Boolean,
         value: false,
       },
     };
   }
 
-  /** @private */
-  onAppStateChange_() {
-    this.showCancelButton_ = this.appState === AppState.MULTI_PAGE_SCANNING ||
+  appState: AppState;
+  pageNumber: number;
+  private scanButtonText: string;
+  private showCancelButton: boolean;
+  private cancelButtonDisabled: boolean;
+  private showCancelingText: boolean;
+
+  private appStateChanged(): void {
+    this.showCancelButton = this.appState === AppState.MULTI_PAGE_SCANNING ||
         this.appState === AppState.MULTI_PAGE_CANCELING;
-    this.cancelButtonDisabled_ =
-        this.appState === AppState.MULTI_PAGE_CANCELING;
-    this.showCancelingText_ = this.appState === AppState.MULTI_PAGE_CANCELING;
+    this.cancelButtonDisabled = this.appState === AppState.MULTI_PAGE_CANCELING;
+    this.showCancelingText = this.appState === AppState.MULTI_PAGE_CANCELING;
   }
 
-  /** @private */
-  onPageNumberChange_() {
+  private pageNumberChanged(): void {
     ScanningBrowserProxyImpl.getInstance()
         .getPluralString('scanButtonText', this.pageNumber + 1)
         .then(
             /* @type {string} */ (pluralString) => {
-              this.scanButtonText_ = pluralString;
+              this.scanButtonText = pluralString;
             });
   }
 
-  /** @private */
-  onScanClick_() {
+  private onScanClick(): void {
     this.dispatchEvent(
         new CustomEvent('scan-next-page', {bubbles: true, composed: true}));
   }
 
-  /** @private */
-  onSaveClick_() {
+  private onSaveClick(): void {
     this.dispatchEvent(new CustomEvent(
         'complete-multi-page-scan', {bubbles: true, composed: true}));
   }
 
-  /** @private */
-  onCancelClick_() {
+  private onCancelClick(): void {
     this.dispatchEvent(
         new CustomEvent('cancel-click', {bubbles: true, composed: true}));
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getProgressText_() {
+  private getProgressText(): string {
     return this.i18n('multiPageScanProgressText', this.pageNumber);
+  }
+}
+
+declare global {
+  interface HTMLElementEventMap {
+    'cancel-click': CustomEvent<void>;
+    'complete-multi-page-scan': CustomEvent<void>;
+    'scan-next-page': CustomEvent<void>;
+  }
+
+  interface HTMLElementTagNameMap {
+    [MultiPageScanElement.is]: MultiPageScanElement;
   }
 }
 
