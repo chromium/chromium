@@ -658,12 +658,13 @@ TEST_F(SurfaceSynchronizationTest, NewFrameOverridesOldDependencies) {
 // DidReceiveCompositorFrameAck.
 class OnBeginFrameAcksSurfaceSynchronizationTest
     : public SurfaceSynchronizationTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   OnBeginFrameAcksSurfaceSynchronizationTest();
   ~OnBeginFrameAcksSurfaceSynchronizationTest() override = default;
 
-  bool BeginFrameAcksEnabled() const { return GetParam(); }
+  bool BeginFrameAcksEnabled() const { return std::get<0>(GetParam()); }
+  bool AutoNeedsBeginFrame() const { return std::get<1>(GetParam()); }
 
   // SurfaceSynchronizationTest:
   void SetUp() override;
@@ -674,11 +675,22 @@ class OnBeginFrameAcksSurfaceSynchronizationTest
 
 OnBeginFrameAcksSurfaceSynchronizationTest::
     OnBeginFrameAcksSurfaceSynchronizationTest() {
+  std::vector<base::test::FeatureRef> enabled_features;
+  std::vector<base::test::FeatureRef> disabled_features;
+
   if (BeginFrameAcksEnabled()) {
-    scoped_feature_list_.InitAndEnableFeature(features::kOnBeginFrameAcks);
+    enabled_features.push_back(features::kOnBeginFrameAcks);
   } else {
-    scoped_feature_list_.InitAndDisableFeature(features::kOnBeginFrameAcks);
+    disabled_features.push_back(features::kOnBeginFrameAcks);
   }
+
+  if (AutoNeedsBeginFrame()) {
+    enabled_features.push_back(features::kAutoNeedsBeginFrame);
+  } else {
+    disabled_features.push_back(features::kAutoNeedsBeginFrame);
+  }
+
+  scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 }
 
 void OnBeginFrameAcksSurfaceSynchronizationTest::SetUp() {
@@ -832,6 +844,15 @@ TEST_P(OnBeginFrameAcksSurfaceSynchronizationTest, ResourcesOnlyReturnedOnce) {
   EXPECT_THAT(parent_surface()->activation_dependencies(), IsEmpty());
 
   if (BeginFrameAcksEnabled()) {
+    if (AutoNeedsBeginFrame()) {
+      // In this case, both the parent and the child have been set to needing
+      // BeginFrame events because of the previous unsolicited frames.
+      // Therefore, explicitly set the child to not needing BeginFrame events,
+      // so that the expectation below for the client to receive exactly 1
+      // OnBeginFrame call won't break.
+      child_support1().SetNeedsBeginFrame(false);
+    }
+
     ResourceId id = resource.ToReturnedResource().id;
     EXPECT_CALL(support_client_, OnBeginFrame(_, _, _, _))
         .WillOnce([=](const BeginFrameArgs& args,
@@ -1826,8 +1847,17 @@ TEST_P(OnBeginFrameAcksSurfaceSynchronizationTest, FallbackSurfacesClosed) {
   // Any further CompositorFrames sent to |child_id1| will also activate
   // immediately so that the child can submit another frame and catch up with
   // the parent.
+  //
+  // When using AutoNeedsBeginFrame and OnBeginFrameAcks, the OnBeginFrame
+  // associated with this feature will include the ACK, rather that a later
+  // separate call.
+  if (AutoNeedsBeginFrame() && BeginFrameAcksEnabled()) {
+    EXPECT_CALL(support_client_, OnBeginFrame(_, _, false, _)).Times(1);
+    EXPECT_CALL(support_client_, OnBeginFrame(_, _, true, _)).Times(1);
+  }
   SendNextBeginFrame();
-  EXPECT_CALL(support_client_, DidReceiveCompositorFrameAck(_)).Times(1);
+  EXPECT_CALL(support_client_, DidReceiveCompositorFrameAck(_))
+      .Times((AutoNeedsBeginFrame() && BeginFrameAcksEnabled()) ? 0 : 1);
   child_support1().SubmitCompositorFrame(
       child_id1.local_surface_id(),
       MakeCompositorFrame({arbitrary_id},
@@ -3530,12 +3560,19 @@ TEST_P(OnBeginFrameAcksSurfaceSynchronizationTest,
   EXPECT_FALSE(child_surface1()->HasUnackedActiveFrame());
 }
 
+// The first boolean parameter is whether BeginFrameAcks is enabled;
+// the second is whether AutoNeedsBeginFrame is enabled.
 INSTANTIATE_TEST_SUITE_P(,
                          OnBeginFrameAcksSurfaceSynchronizationTest,
-                         testing::Bool(),
+                         testing::Combine(testing::Bool(), testing::Bool()),
                          [](auto& info) {
-                           return info.param ? "BeginFrameAcks"
-                                             : "CompositoFrameAcks";
+                           std::string name = std::get<0>(info.param)
+                                                  ? "BeginFrameAcks"
+                                                  : "CompositoFrameAcks";
+                           if (std::get<1>(info.param)) {
+                             name += "_AutoNeedsBeginFrame";
+                           }
+                           return name;
                          });
 
 }  // namespace viz
