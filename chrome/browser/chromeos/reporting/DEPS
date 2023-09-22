@@ -3,4 +3,7 @@ specific_include_rules = {
   "network_bandwidth_sampler_ash_browsertest\.cc": [
     "+chrome/browser/ash",
   ],
+  "website_events_observer_ash_browsertest\.cc": [
+    "+chrome/browser/ash",
+  ],
 }

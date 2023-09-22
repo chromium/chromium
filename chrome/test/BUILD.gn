@@ -4435,6 +4435,7 @@ if (!is_android) {
         "../browser/ash/video_conference/video_conference_integration_browsertest.cc",
         "../browser/ash/wallpaper/wallpaper_drivefs_delegate_impl_browsertest.cc",
         "../browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_web_request_service_browsertest.cc",
+        "../browser/chromeos/reporting/websites/website_events_observer_ash_browsertest.cc",
         "../browser/chromeos/smart_reader/smart_reader_client_browsertest.cc",
         "../browser/chromeos/tablet_mode/chrome_content_browser_client_tablet_mode_part_browsertest.cc",
         "../browser/chromeos/tablet_mode/tablet_mode_page_behavior_browsertest.cc",
@@ -5263,10 +5264,11 @@ if (is_chromeos_lacros) {
     sources = [
       "../browser/accessibility/live_caption/live_caption_surface_browsertest.cc",
       "../browser/chromeos/extensions/contact_center_insights/contact_center_insights_extension_manager_lacros_browsertest.cc",
-      "../browser/chromeos/reporting/network/network_bandwidth_sampler_lacros_browsertest.cc",
 
       # dlp_content_manager_lacros_browsertest.cc should become a unit test.
       "../browser/chromeos/policy/dlp/dlp_content_manager_lacros_browsertest.cc",
+      "../browser/chromeos/reporting/network/network_bandwidth_sampler_lacros_browsertest.cc",
+      "../browser/chromeos/reporting/websites/website_events_observer_lacros_browsertest.cc",
       "../browser/extensions/api/shared_storage/shared_storage_private_apitest.cc",
       "../browser/lacros/desk_template_client_lacros_browsertest.cc",
       "../browser/lacros/device_attributes_lacros_browsertest.cc",
@@ -5304,6 +5306,7 @@ if (is_chromeos_lacros) {
       "//chromeos/lacros:test_support",
       "//chromeos/startup",
       "//components/proxy_config:proxy_config",
+      "//components/reporting/proto:metric_data_proto",
       "//components/sync:test_support",
       "//components/user_manager",
       "//ui/ozone",
