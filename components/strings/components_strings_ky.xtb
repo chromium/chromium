@@ -681,7 +681,7 @@
 <translation id="2385809941344967209">Chrome'дун параметрлерине өтүп, Chrome'ду жаңыртыңыз</translation>
 <translation id="2386255080630008482">Сервер тастыктамасы жокко чыгарылды.</translation>
 <translation id="239293030466334554">Кабриолеттер</translation>
-<translation id="2392959068659972793">Мааниси коюлбаган саясаттарды көрсөтүү</translation>
+<translation id="2392959068659972793">Мааниси коюлбаган эрежелерди көрсөтүү</translation>
 <translation id="239429038616798445">Жөнөтүүнүн мындай ыкмасы мүмкүн эмес. Башка ыкманы байкап көрүңүз.</translation>
 <translation id="2395840535409704129">Суу спорт оюндары</translation>
 <translation id="2396249848217231973">Жок кылууну &amp;жасабоо</translation>
@@ -2938,7 +2938,7 @@
 <translation id="7186833457841277072">Конверт (сыя басып чыгаруусу)</translation>
 <translation id="7186840261985974511">Конверт #12</translation>
 <translation id="718872491229180389">Чирлидерлик</translation>
-<translation id="7188840756966467339">Серепчини өчүрүп күйгүзүп, саясаттарды колдонуу</translation>
+<translation id="7188840756966467339">Серепчини өчүрүп күйгүзүп, эрежелерди колдонуу</translation>
 <translation id="7192188280913829296">"vendor_id" атрибуту да көрсөтүлүшү керек.</translation>
 <translation id="7192203810768312527"><ph name="SIZE" /> орун бошотулат. Кийинки жолу киргениңизде, айрым сайттар жайыраак жүктөлүшү мүмкүн.</translation>
 <translation id="7192537357091279678">Компьютердик дисктер жана сактагыч</translation>
@@ -3542,7 +3542,7 @@
 <translation id="8390725133630534698"><ph name="ORIGIN_NAME" /> сайтынан <ph name="VM_NAME" /> тутуму менен бөлүшүү аракети администратордун эрежеси боюнча бөгөттөлгөн</translation>
 <translation id="8396522675989118466">Бул <ph name="NUMBER_OF_DIGITS" /> сандан турган <ph name="SIDE_OF_CARD" /> жайгашкан код</translation>
 <translation id="8398335999901363925">Тийип толтурула турган төлөм ыкмалары толугу менен ачылды.</translation>
-<translation id="8398446215576328011">Колдонулган саясаттарды артка кайтаруу</translation>
+<translation id="8398446215576328011">Колдонулган эрежелерди артка кайтаруу</translation>
 <translation id="8398790343843005537">Телефонуңузду табыңыз</translation>
 <translation id="8401772916834964810">{COUNT,plural, =0{Chrome бүгүн cookie файлдарын кайра бөгөттөйт}=1{Chrome эртең cookie файлдарын кайра бөгөттөйт}other{Chrome # күндөн кийин cookie файлдарын кайра бөгөттөйт}}</translation>
 <translation id="8403506619177967839">Фанаттардын чыгармалары</translation>
@@ -3605,7 +3605,7 @@
 <translation id="8530813470445476232">Chrome'дун параметрлерине өтүп, серептөө таржымалын, cookie файлдарын, кэштерди жана башкаларды өчүрүңүз</translation>
 <translation id="853246364274116957">Бродвей жана музыкалык театр</translation>
 <translation id="853332391023689529">Жүк ташуучу пикап унаалары</translation>
-<translation id="8533619373899488139">Бөгөттөлгөн URL'дерди жана тутум администраторуңуз ишке киргизген саясаттарды көрүү үчүн &lt;strong&gt;chrome://policy&lt;/strong&gt; дарегине кириңиз.</translation>
+<translation id="8533619373899488139">Бөгөттөлгөн URL'дерди жана тутум администраторуңуз ишке киргизген эрежелерди көрүү үчүн &lt;strong&gt;chrome://policy&lt;/strong&gt; дарегине кириңиз.</translation>
 <translation id="8536234749087605613">Конверт (терезеси менен)</translation>
 <translation id="8539500321752640291">2 уруксатты бересизби?</translation>
 <translation id="8541158209346794904">Bluetooth түзмөгү</translation>
