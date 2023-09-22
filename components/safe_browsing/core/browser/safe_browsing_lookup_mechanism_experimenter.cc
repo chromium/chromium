@@ -324,6 +324,12 @@ bool SafeBrowsingLookupMechanismExperimenter::AreAnyChecksEligibleForLogging() {
   bool any_eligible = false;
   bool all_eligible = true;
   for (auto& check : checks_to_run_) {
+    if (!check->would_check_show_warning_if_unsafe.has_value()) {
+      // Race conditions can very rarely cause this property to remain unset
+      // even when the experiment is expected to be complete. In this rare
+      // case, we fail gracefully by not logging any results.
+      return false;
+    }
     if (check->would_check_show_warning_if_unsafe.value()) {
       any_eligible = true;
     } else {
