@@ -91,6 +91,10 @@ class ReadAnythingCoordinatorTest : public TestWithBrowserView {
     return read_anything_coordinator_->CreateContainerView();
   }
 
+  void OnBrowserSetLastActive(Browser* browser) {
+    read_anything_coordinator_->OnBrowserSetLastActive(browser);
+  }
+
  protected:
   raw_ptr<SidePanelCoordinator, DanglingUntriaged> side_panel_coordinator_ =
       nullptr;
@@ -155,6 +159,55 @@ TEST_F(ReadAnythingCoordinatorTest,
 
   EXPECT_CALL(coordinator_observer_, Activate(false)).Times(1);
   entry->OnEntryHidden();
+}
+
+TEST_F(ReadAnythingCoordinatorTest,
+       OnBrowserSetLastActive_SidePanelIsNotVisible) {
+  Browser* browser = browser_view()->browser();
+  OnBrowserSetLastActive(browser);
+
+  EXPECT_FALSE(side_panel_coordinator_->IsSidePanelShowing());
+}
+
+class ReadAnythingCoordinatorScreen2xDataCollectionModeTest
+    : public TestWithBrowserView {
+ public:
+  void SetUp() override {
+    base::test::ScopedFeatureList features;
+    scoped_feature_list_.InitWithFeatures(
+        {features::kReadAnything, features::kDataCollectionModeForScreen2x},
+        {});
+    TestWithBrowserView::SetUp();
+
+    side_panel_coordinator_ =
+        SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+    read_anything_coordinator_ =
+        ReadAnythingCoordinator::GetOrCreateForBrowser(browser());
+
+    AddTab(browser_view()->browser(), GURL("http://foo1.com"));
+    browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
+  }
+
+  void OnBrowserSetLastActive(Browser* browser) {
+    read_anything_coordinator_->OnBrowserSetLastActive(browser);
+  }
+
+ protected:
+  raw_ptr<SidePanelCoordinator, DanglingUntriaged> side_panel_coordinator_ =
+      nullptr;
+  raw_ptr<ReadAnythingCoordinator, DanglingUntriaged>
+      read_anything_coordinator_ = nullptr;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(ReadAnythingCoordinatorScreen2xDataCollectionModeTest,
+       OnBrowserSetLastActive_SidePanelIsVisible) {
+  Browser* browser = browser_view()->browser();
+  OnBrowserSetLastActive(browser);
+
+  EXPECT_TRUE(side_panel_coordinator_->IsSidePanelShowing());
+  EXPECT_EQ(SidePanelUI::GetSidePanelUIForBrowser(browser)->GetCurrentEntryId(),
+            SidePanelEntryId::kReadAnything);
 }
 
 #endif  // !defined(ADDRESS_SANITIZER)

@@ -11,6 +11,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_user_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_model.h"
@@ -38,7 +39,8 @@ class View;
 class ReadAnythingCoordinator : public BrowserUserData<ReadAnythingCoordinator>,
                                 public SidePanelEntryObserver,
                                 public TabStripModelObserver,
-                                public content::WebContentsObserver {
+                                public content::WebContentsObserver,
+                                public BrowserListObserver {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -64,6 +66,7 @@ class ReadAnythingCoordinator : public BrowserUserData<ReadAnythingCoordinator>,
  private:
   friend class BrowserUserData<ReadAnythingCoordinator>;
   friend class ReadAnythingCoordinatorTest;
+  friend class ReadAnythingCoordinatorScreen2xDataCollectionModeTest;
 
   // Used during construction to initialize the model with saved user prefs.
   void InitModelWithUserPrefs();
@@ -107,6 +110,9 @@ class ReadAnythingCoordinator : public BrowserUserData<ReadAnythingCoordinator>,
 
   bool post_tab_change_delay_complete_ = true;
   base::RetainingOneShotTimer delay_timer_;
+
+  // BrowserListObserver:
+  void OnBrowserSetLastActive(Browser* browser) override;
 
   BROWSER_USER_DATA_KEY_DECL();
 };

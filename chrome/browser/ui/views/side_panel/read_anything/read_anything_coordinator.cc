@@ -16,6 +16,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/side_panel/read_anything/read_anything_side_panel_controller_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_container_view.h"
@@ -69,6 +70,10 @@ ReadAnythingCoordinator::ReadAnythingCoordinator(Browser* browser)
 
   browser->tab_strip_model()->AddObserver(this);
   Observe(GetActiveWebContents());
+
+  if (features::IsDataCollectionModeForScreen2xEnabled()) {
+    BrowserList::GetInstance()->AddObserver(this);
+  }
 }
 
 void ReadAnythingCoordinator::InitModelWithUserPrefs() {
@@ -333,6 +338,20 @@ void ReadAnythingCoordinator::CancelShowReadingModeSidePanelIPH() {
 void ReadAnythingCoordinator::MaybeShowReadingModeSidePanelIPH() {
   GetBrowser().window()->MaybeShowFeaturePromo(
       feature_engagement::kIPHReadingModeSidePanelFeature);
+}
+
+void ReadAnythingCoordinator::OnBrowserSetLastActive(Browser* browser) {
+  if (!features::IsDataCollectionModeForScreen2xEnabled() ||
+      browser != &GetBrowser()) {
+    return;
+  }
+  // This code is called as part of a screen2x data generation workflow, where
+  // the browser is opened by a CLI and the read-anything side panel is
+  // automatically opened.
+  auto* side_panel_ui = SidePanelUI::GetSidePanelUIForBrowser(browser);
+  if (side_panel_ui->GetCurrentEntryId() != SidePanelEntryId::kReadAnything) {
+    side_panel_ui->Show(SidePanelEntryId::kReadAnything);
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ReadAnythingCoordinator);
