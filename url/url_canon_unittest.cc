@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -120,12 +119,12 @@ TEST(URLCanonTest, DoAppendUTF8) {
     {0x10FFFF, "\xF4\x8F\xBF\xBF"},
   };
   std::string out_str;
-  for (size_t i = 0; i < std::size(utf_cases); i++) {
+  for (const auto& utf_case : utf_cases) {
     out_str.clear();
     StdStringCanonOutput output(&out_str);
-    AppendUTF8Value(utf_cases[i].input, &output);
+    AppendUTF8Value(utf_case.input, &output);
     output.Complete();
-    EXPECT_EQ(utf_cases[i].output, out_str);
+    EXPECT_EQ(utf_case.output, out_str);
   }
 }
 
@@ -172,27 +171,27 @@ TEST(URLCanonTest, UTF) {
   };
 
   std::string out_str;
-  for (size_t i = 0; i < std::size(utf_cases); i++) {
-    if (utf_cases[i].input8) {
+  for (const auto& utf_case : utf_cases) {
+    if (utf_case.input8) {
       out_str.clear();
       StdStringCanonOutput output(&out_str);
 
-      size_t input_len = strlen(utf_cases[i].input8);
+      size_t input_len = strlen(utf_case.input8);
       bool success = true;
       for (size_t ch = 0; ch < input_len; ch++) {
-        success &= AppendUTF8EscapedChar(utf_cases[i].input8, &ch, input_len,
-                                         &output);
+        success &=
+            AppendUTF8EscapedChar(utf_case.input8, &ch, input_len, &output);
       }
       output.Complete();
-      EXPECT_EQ(utf_cases[i].expected_success, success);
-      EXPECT_EQ(std::string(utf_cases[i].output), out_str);
+      EXPECT_EQ(utf_case.expected_success, success);
+      EXPECT_EQ(std::string(utf_case.output), out_str);
     }
-    if (utf_cases[i].input16) {
+    if (utf_case.input16) {
       out_str.clear();
       StdStringCanonOutput output(&out_str);
 
       std::u16string input_str(
-          test_utils::TruncateWStringToUTF16(utf_cases[i].input16));
+          test_utils::TruncateWStringToUTF16(utf_case.input16));
       size_t input_len = input_str.length();
       bool success = true;
       for (size_t ch = 0; ch < input_len; ch++) {
@@ -200,18 +199,17 @@ TEST(URLCanonTest, UTF) {
                                          &output);
       }
       output.Complete();
-      EXPECT_EQ(utf_cases[i].expected_success, success);
-      EXPECT_EQ(std::string(utf_cases[i].output), out_str);
+      EXPECT_EQ(utf_case.expected_success, success);
+      EXPECT_EQ(std::string(utf_case.output), out_str);
     }
 
-    if (utf_cases[i].input8 && utf_cases[i].input16 &&
-        utf_cases[i].expected_success) {
+    if (utf_case.input8 && utf_case.input16 && utf_case.expected_success) {
       // Check that the UTF-8 and UTF-16 inputs are equivalent.
 
       // UTF-16 -> UTF-8
-      std::string input8_str(utf_cases[i].input8);
+      std::string input8_str(utf_case.input8);
       std::u16string input16_str(
-          test_utils::TruncateWStringToUTF16(utf_cases[i].input16));
+          test_utils::TruncateWStringToUTF16(utf_case.input16));
       EXPECT_EQ(input8_str, base::UTF16ToUTF8(input16_str));
 
       // UTF-8 -> UTF-16
@@ -243,36 +241,36 @@ TEST(URLCanonTest, Scheme) {
 
   std::string out_str;
 
-  for (size_t i = 0; i < std::size(scheme_cases); i++) {
-    int url_len = static_cast<int>(strlen(scheme_cases[i].input));
+  for (const auto& scheme_case : scheme_cases) {
+    int url_len = static_cast<int>(strlen(scheme_case.input));
     Component in_comp(0, url_len);
     Component out_comp;
 
     out_str.clear();
     StdStringCanonOutput output1(&out_str);
-    bool success = CanonicalizeScheme(scheme_cases[i].input, in_comp, &output1,
-                                      &out_comp);
+    bool success =
+        CanonicalizeScheme(scheme_case.input, in_comp, &output1, &out_comp);
     output1.Complete();
 
-    EXPECT_EQ(scheme_cases[i].expected_success, success);
-    EXPECT_EQ(std::string(scheme_cases[i].expected), out_str);
-    EXPECT_EQ(scheme_cases[i].expected_component.begin, out_comp.begin);
-    EXPECT_EQ(scheme_cases[i].expected_component.len, out_comp.len);
+    EXPECT_EQ(scheme_case.expected_success, success);
+    EXPECT_EQ(std::string(scheme_case.expected), out_str);
+    EXPECT_EQ(scheme_case.expected_component.begin, out_comp.begin);
+    EXPECT_EQ(scheme_case.expected_component.len, out_comp.len);
 
     // Now try the wide version.
     out_str.clear();
     StdStringCanonOutput output2(&out_str);
 
-    std::u16string wide_input(base::UTF8ToUTF16(scheme_cases[i].input));
+    std::u16string wide_input(base::UTF8ToUTF16(scheme_case.input));
     in_comp.len = static_cast<int>(wide_input.length());
     success = CanonicalizeScheme(wide_input.c_str(), in_comp, &output2,
                                  &out_comp);
     output2.Complete();
 
-    EXPECT_EQ(scheme_cases[i].expected_success, success);
-    EXPECT_EQ(std::string(scheme_cases[i].expected), out_str);
-    EXPECT_EQ(scheme_cases[i].expected_component.begin, out_comp.begin);
-    EXPECT_EQ(scheme_cases[i].expected_component.len, out_comp.len);
+    EXPECT_EQ(scheme_case.expected_success, success);
+    EXPECT_EQ(std::string(scheme_case.expected), out_str);
+    EXPECT_EQ(scheme_case.expected_component.begin, out_comp.begin);
+    EXPECT_EQ(scheme_case.expected_component.len, out_comp.len);
   }
 
   // Test the case where the scheme is declared nonexistent, it should be
@@ -330,15 +328,15 @@ TEST_P(URLCanonHostTest, Host) {
       {"Goo%2a*goo.com", L"Goo%2a*goo.com", "goo%2A%2Agoo.com",
        Component(0, 16), CanonHostInfo::NEUTRAL, -1, ""},
       // Exciting different types of spaces!
-      {NULL, L"GOO\x00a0\x3000goo.com", "goo%20%20goo.com", Component(0, 16),
+      {nullptr, L"GOO\x00a0\x3000goo.com", "goo%20%20goo.com", Component(0, 16),
        CanonHostInfo::NEUTRAL, -1, ""},
       // Other types of space (no-break, zero-width, zero-width-no-break) are
       // name-prepped away to nothing.
-      {NULL, L"GOO\x200b\x2060\xfeffgoo.com", "googoo.com", Component(0, 10),
+      {nullptr, L"GOO\x200b\x2060\xfeffgoo.com", "googoo.com", Component(0, 10),
        CanonHostInfo::NEUTRAL, -1, ""},
       // Ideographic full stop (full-width period for Chinese, etc.) should be
       // treated as a dot.
-      {NULL,
+      {nullptr,
        L"www.foo\x3002"
        L"bar.com",
        "www.foo.bar.com", Component(0, 15), CanonHostInfo::NEUTRAL, -1, ""},
@@ -608,34 +606,34 @@ TEST_P(URLCanonHostTest, Host) {
 
   // CanonicalizeHost() non-verbose.
   std::string out_str;
-  for (size_t i = 0; i < std::size(host_cases); i++) {
+  for (const auto& host_case : host_cases) {
     // Narrow version.
-    if (host_cases[i].input8) {
-      int host_len = static_cast<int>(strlen(host_cases[i].input8));
+    if (host_case.input8) {
+      int host_len = static_cast<int>(strlen(host_case.input8));
       Component in_comp(0, host_len);
       Component out_comp;
 
       out_str.clear();
       StdStringCanonOutput output(&out_str);
 
-      bool success = CanonicalizeHost(host_cases[i].input8, in_comp, &output,
-                                      &out_comp);
+      bool success =
+          CanonicalizeHost(host_case.input8, in_comp, &output, &out_comp);
       output.Complete();
 
-      EXPECT_EQ(host_cases[i].expected_family != CanonHostInfo::BROKEN,
-                success) << "for input: " << host_cases[i].input8;
-      EXPECT_EQ(std::string(host_cases[i].expected), out_str) <<
-                "for input: " << host_cases[i].input8;
-      EXPECT_EQ(host_cases[i].expected_component.begin, out_comp.begin) <<
-                "for input: " << host_cases[i].input8;
-      EXPECT_EQ(host_cases[i].expected_component.len, out_comp.len) <<
-                "for input: " << host_cases[i].input8;
+      EXPECT_EQ(host_case.expected_family != CanonHostInfo::BROKEN, success)
+          << "for input: " << host_case.input8;
+      EXPECT_EQ(std::string(host_case.expected), out_str)
+          << "for input: " << host_case.input8;
+      EXPECT_EQ(host_case.expected_component.begin, out_comp.begin)
+          << "for input: " << host_case.input8;
+      EXPECT_EQ(host_case.expected_component.len, out_comp.len)
+          << "for input: " << host_case.input8;
     }
 
     // Wide version.
-    if (host_cases[i].input16) {
+    if (host_case.input16) {
       std::u16string input16(
-          test_utils::TruncateWStringToUTF16(host_cases[i].input16));
+          test_utils::TruncateWStringToUTF16(host_case.input16));
       int host_len = static_cast<int>(input16.length());
       Component in_comp(0, host_len);
       Component out_comp;
@@ -647,46 +645,43 @@ TEST_P(URLCanonHostTest, Host) {
                                       &out_comp);
       output.Complete();
 
-      EXPECT_EQ(host_cases[i].expected_family != CanonHostInfo::BROKEN,
-                success);
-      EXPECT_EQ(std::string(host_cases[i].expected), out_str);
-      EXPECT_EQ(host_cases[i].expected_component.begin, out_comp.begin);
-      EXPECT_EQ(host_cases[i].expected_component.len, out_comp.len);
+      EXPECT_EQ(host_case.expected_family != CanonHostInfo::BROKEN, success);
+      EXPECT_EQ(std::string(host_case.expected), out_str);
+      EXPECT_EQ(host_case.expected_component.begin, out_comp.begin);
+      EXPECT_EQ(host_case.expected_component.len, out_comp.len);
     }
   }
 
   // CanonicalizeHostVerbose()
-  for (size_t i = 0; i < std::size(host_cases); i++) {
+  for (const auto& host_case : host_cases) {
     // Narrow version.
-    if (host_cases[i].input8) {
-      int host_len = static_cast<int>(strlen(host_cases[i].input8));
+    if (host_case.input8) {
+      int host_len = static_cast<int>(strlen(host_case.input8));
       Component in_comp(0, host_len);
 
       out_str.clear();
       StdStringCanonOutput output(&out_str);
       CanonHostInfo host_info;
 
-      CanonicalizeHostVerbose(host_cases[i].input8, in_comp, &output,
-                              &host_info);
+      CanonicalizeHostVerbose(host_case.input8, in_comp, &output, &host_info);
       output.Complete();
 
-      EXPECT_EQ(host_cases[i].expected_family, host_info.family);
-      EXPECT_EQ(std::string(host_cases[i].expected), out_str);
-      EXPECT_EQ(host_cases[i].expected_component.begin,
-                host_info.out_host.begin);
-      EXPECT_EQ(host_cases[i].expected_component.len, host_info.out_host.len);
-      EXPECT_EQ(std::string(host_cases[i].expected_address_hex),
+      EXPECT_EQ(host_case.expected_family, host_info.family);
+      EXPECT_EQ(std::string(host_case.expected), out_str);
+      EXPECT_EQ(host_case.expected_component.begin, host_info.out_host.begin);
+      EXPECT_EQ(host_case.expected_component.len, host_info.out_host.len);
+      EXPECT_EQ(std::string(host_case.expected_address_hex),
                 BytesToHexString(host_info.address, host_info.AddressLength()));
-      if (host_cases[i].expected_family == CanonHostInfo::IPV4) {
-        EXPECT_EQ(host_cases[i].expected_num_ipv4_components,
+      if (host_case.expected_family == CanonHostInfo::IPV4) {
+        EXPECT_EQ(host_case.expected_num_ipv4_components,
                   host_info.num_ipv4_components);
       }
     }
 
     // Wide version.
-    if (host_cases[i].input16) {
+    if (host_case.input16) {
       std::u16string input16(
-          test_utils::TruncateWStringToUTF16(host_cases[i].input16));
+          test_utils::TruncateWStringToUTF16(host_case.input16));
       int host_len = static_cast<int>(input16.length());
       Component in_comp(0, host_len);
 
@@ -697,15 +692,14 @@ TEST_P(URLCanonHostTest, Host) {
       CanonicalizeHostVerbose(input16.c_str(), in_comp, &output, &host_info);
       output.Complete();
 
-      EXPECT_EQ(host_cases[i].expected_family, host_info.family);
-      EXPECT_EQ(std::string(host_cases[i].expected), out_str);
-      EXPECT_EQ(host_cases[i].expected_component.begin,
-                host_info.out_host.begin);
-      EXPECT_EQ(host_cases[i].expected_component.len, host_info.out_host.len);
-      EXPECT_EQ(std::string(host_cases[i].expected_address_hex),
+      EXPECT_EQ(host_case.expected_family, host_info.family);
+      EXPECT_EQ(std::string(host_case.expected), out_str);
+      EXPECT_EQ(host_case.expected_component.begin, host_info.out_host.begin);
+      EXPECT_EQ(host_case.expected_component.len, host_info.out_host.len);
+      EXPECT_EQ(std::string(host_case.expected_address_hex),
                 BytesToHexString(host_info.address, host_info.AddressLength()));
-      if (host_cases[i].expected_family == CanonHostInfo::IPV4) {
-        EXPECT_EQ(host_cases[i].expected_num_ipv4_components,
+      if (host_case.expected_family == CanonHostInfo::IPV4) {
+        EXPECT_EQ(host_case.expected_num_ipv4_components,
                   host_info.num_ipv4_components);
       }
     }
@@ -1189,34 +1183,30 @@ TEST(URLCanonTest, UserInfo) {
     {"ftp://me\\mydomain:pass@foo.com/", "", Component(0, -1), Component(0, -1), true},
   };
 
-  for (size_t i = 0; i < std::size(user_info_cases); i++) {
-    int url_len = static_cast<int>(strlen(user_info_cases[i].input));
+  for (const auto& user_info_case : user_info_cases) {
+    int url_len = static_cast<int>(strlen(user_info_case.input));
     Parsed parsed;
-    ParseStandardURL(user_info_cases[i].input, url_len, &parsed);
+    ParseStandardURL(user_info_case.input, url_len, &parsed);
     Component out_user, out_pass;
     std::string out_str;
     StdStringCanonOutput output1(&out_str);
 
-    bool success = CanonicalizeUserInfo(user_info_cases[i].input,
-                                        parsed.username,
-                                        user_info_cases[i].input,
-                                        parsed.password,
-                                        &output1,
-                                        &out_user,
-                                        &out_pass);
+    bool success = CanonicalizeUserInfo(user_info_case.input, parsed.username,
+                                        user_info_case.input, parsed.password,
+                                        &output1, &out_user, &out_pass);
     output1.Complete();
 
-    EXPECT_EQ(user_info_cases[i].expected_success, success);
-    EXPECT_EQ(std::string(user_info_cases[i].expected), out_str);
-    EXPECT_EQ(user_info_cases[i].expected_username.begin, out_user.begin);
-    EXPECT_EQ(user_info_cases[i].expected_username.len, out_user.len);
-    EXPECT_EQ(user_info_cases[i].expected_password.begin, out_pass.begin);
-    EXPECT_EQ(user_info_cases[i].expected_password.len, out_pass.len);
+    EXPECT_EQ(user_info_case.expected_success, success);
+    EXPECT_EQ(std::string(user_info_case.expected), out_str);
+    EXPECT_EQ(user_info_case.expected_username.begin, out_user.begin);
+    EXPECT_EQ(user_info_case.expected_username.len, out_user.len);
+    EXPECT_EQ(user_info_case.expected_password.begin, out_pass.begin);
+    EXPECT_EQ(user_info_case.expected_password.len, out_pass.len);
 
     // Now try the wide version
     out_str.clear();
     StdStringCanonOutput output2(&out_str);
-    std::u16string wide_input(base::UTF8ToUTF16(user_info_cases[i].input));
+    std::u16string wide_input(base::UTF8ToUTF16(user_info_case.input));
     success = CanonicalizeUserInfo(wide_input.c_str(),
                                    parsed.username,
                                    wide_input.c_str(),
@@ -1226,12 +1216,12 @@ TEST(URLCanonTest, UserInfo) {
                                    &out_pass);
     output2.Complete();
 
-    EXPECT_EQ(user_info_cases[i].expected_success, success);
-    EXPECT_EQ(std::string(user_info_cases[i].expected), out_str);
-    EXPECT_EQ(user_info_cases[i].expected_username.begin, out_user.begin);
-    EXPECT_EQ(user_info_cases[i].expected_username.len, out_user.len);
-    EXPECT_EQ(user_info_cases[i].expected_password.begin, out_pass.begin);
-    EXPECT_EQ(user_info_cases[i].expected_password.len, out_pass.len);
+    EXPECT_EQ(user_info_case.expected_success, success);
+    EXPECT_EQ(std::string(user_info_case.expected), out_str);
+    EXPECT_EQ(user_info_case.expected_username.begin, out_user.begin);
+    EXPECT_EQ(user_info_case.expected_username.len, out_user.len);
+    EXPECT_EQ(user_info_case.expected_password.begin, out_pass.begin);
+    EXPECT_EQ(user_info_case.expected_password.len, out_pass.len);
   }
 }
 
@@ -1258,39 +1248,33 @@ TEST(URLCanonTest, Port) {
     {"80", PORT_UNSPECIFIED, ":80", Component(1, 2), true},
   };
 
-  for (size_t i = 0; i < std::size(port_cases); i++) {
-    int url_len = static_cast<int>(strlen(port_cases[i].input));
+  for (const auto& port_case : port_cases) {
+    int url_len = static_cast<int>(strlen(port_case.input));
     Component in_comp(0, url_len);
     Component out_comp;
     std::string out_str;
     StdStringCanonOutput output1(&out_str);
-    bool success = CanonicalizePort(port_cases[i].input,
-                                    in_comp,
-                                    port_cases[i].default_port,
-                                    &output1,
-                                    &out_comp);
+    bool success = CanonicalizePort(
+        port_case.input, in_comp, port_case.default_port, &output1, &out_comp);
     output1.Complete();
 
-    EXPECT_EQ(port_cases[i].expected_success, success);
-    EXPECT_EQ(std::string(port_cases[i].expected), out_str);
-    EXPECT_EQ(port_cases[i].expected_component.begin, out_comp.begin);
-    EXPECT_EQ(port_cases[i].expected_component.len, out_comp.len);
+    EXPECT_EQ(port_case.expected_success, success);
+    EXPECT_EQ(std::string(port_case.expected), out_str);
+    EXPECT_EQ(port_case.expected_component.begin, out_comp.begin);
+    EXPECT_EQ(port_case.expected_component.len, out_comp.len);
 
     // Now try the wide version
     out_str.clear();
     StdStringCanonOutput output2(&out_str);
-    std::u16string wide_input(base::UTF8ToUTF16(port_cases[i].input));
-    success = CanonicalizePort(wide_input.c_str(),
-                               in_comp,
-                               port_cases[i].default_port,
-                               &output2,
-                               &out_comp);
+    std::u16string wide_input(base::UTF8ToUTF16(port_case.input));
+    success = CanonicalizePort(wide_input.c_str(), in_comp,
+                               port_case.default_port, &output2, &out_comp);
     output2.Complete();
 
-    EXPECT_EQ(port_cases[i].expected_success, success);
-    EXPECT_EQ(std::string(port_cases[i].expected), out_str);
-    EXPECT_EQ(port_cases[i].expected_component.begin, out_comp.begin);
-    EXPECT_EQ(port_cases[i].expected_component.len, out_comp.len);
+    EXPECT_EQ(port_case.expected_success, success);
+    EXPECT_EQ(std::string(port_case.expected), out_str);
+    EXPECT_EQ(port_case.expected_component.begin, out_comp.begin);
+    EXPECT_EQ(port_case.expected_component.len, out_comp.len);
   }
 }
 
@@ -1496,34 +1480,34 @@ TEST(URLCanonTest, Query) {
     {"q=\"asdf\"", L"q=\"asdf\"", "?q=%22asdf%22"},
   };
 
-  for (size_t i = 0; i < std::size(query_cases); i++) {
+  for (const auto& query_case : query_cases) {
     Component out_comp;
 
-    if (query_cases[i].input8) {
-      int len = static_cast<int>(strlen(query_cases[i].input8));
+    if (query_case.input8) {
+      int len = static_cast<int>(strlen(query_case.input8));
       Component in_comp(0, len);
       std::string out_str;
 
       StdStringCanonOutput output(&out_str);
-      CanonicalizeQuery(query_cases[i].input8, in_comp, NULL, &output,
+      CanonicalizeQuery(query_case.input8, in_comp, nullptr, &output,
                         &out_comp);
       output.Complete();
 
-      EXPECT_EQ(query_cases[i].expected, out_str);
+      EXPECT_EQ(query_case.expected, out_str);
     }
 
-    if (query_cases[i].input16) {
+    if (query_case.input16) {
       std::u16string input16(
-          test_utils::TruncateWStringToUTF16(query_cases[i].input16));
+          test_utils::TruncateWStringToUTF16(query_case.input16));
       int len = static_cast<int>(input16.length());
       Component in_comp(0, len);
       std::string out_str;
 
       StdStringCanonOutput output(&out_str);
-      CanonicalizeQuery(input16.c_str(), in_comp, NULL, &output, &out_comp);
+      CanonicalizeQuery(input16.c_str(), in_comp, nullptr, &output, &out_comp);
       output.Complete();
 
-      EXPECT_EQ(query_cases[i].expected, out_str);
+      EXPECT_EQ(query_case.expected, out_str);
     }
   }
 
@@ -1531,7 +1515,8 @@ TEST(URLCanonTest, Query) {
   std::string out_str;
   StdStringCanonOutput output(&out_str);
   Component out_comp;
-  CanonicalizeQuery("a \x00z\x01", Component(0, 5), NULL, &output, &out_comp);
+  CanonicalizeQuery("a \x00z\x01", Component(0, 5), nullptr, &output,
+                    &out_comp);
   output.Complete();
   EXPECT_EQ("?a%20%00z%01", out_str);
 }
@@ -1568,27 +1553,27 @@ TEST(URLCanonTest, Ref) {
       {"#asdf", L"#asdf", "##asdf", Component(1, 5), true},
   };
 
-  for (size_t i = 0; i < std::size(ref_cases); i++) {
+  for (const auto& ref_case : ref_cases) {
     // 8-bit input
-    if (ref_cases[i].input8) {
-      int len = static_cast<int>(strlen(ref_cases[i].input8));
+    if (ref_case.input8) {
+      int len = static_cast<int>(strlen(ref_case.input8));
       Component in_comp(0, len);
       Component out_comp;
 
       std::string out_str;
       StdStringCanonOutput output(&out_str);
-      CanonicalizeRef(ref_cases[i].input8, in_comp, &output, &out_comp);
+      CanonicalizeRef(ref_case.input8, in_comp, &output, &out_comp);
       output.Complete();
 
-      EXPECT_EQ(ref_cases[i].expected_component.begin, out_comp.begin);
-      EXPECT_EQ(ref_cases[i].expected_component.len, out_comp.len);
-      EXPECT_EQ(ref_cases[i].expected, out_str);
+      EXPECT_EQ(ref_case.expected_component.begin, out_comp.begin);
+      EXPECT_EQ(ref_case.expected_component.len, out_comp.len);
+      EXPECT_EQ(ref_case.expected, out_str);
     }
 
     // 16-bit input
-    if (ref_cases[i].input16) {
+    if (ref_case.input16) {
       std::u16string input16(
-          test_utils::TruncateWStringToUTF16(ref_cases[i].input16));
+          test_utils::TruncateWStringToUTF16(ref_case.input16));
       int len = static_cast<int>(input16.length());
       Component in_comp(0, len);
       Component out_comp;
@@ -1598,9 +1583,9 @@ TEST(URLCanonTest, Ref) {
       CanonicalizeRef(input16.c_str(), in_comp, &output, &out_comp);
       output.Complete();
 
-      EXPECT_EQ(ref_cases[i].expected_component.begin, out_comp.begin);
-      EXPECT_EQ(ref_cases[i].expected_component.len, out_comp.len);
-      EXPECT_EQ(ref_cases[i].expected, out_str);
+      EXPECT_EQ(ref_case.expected_component.begin, out_comp.begin);
+      EXPECT_EQ(ref_case.expected_component.len, out_comp.len);
+      EXPECT_EQ(ref_case.expected, out_str);
     }
   }
 
@@ -1674,21 +1659,21 @@ TEST(URLCanonTest, CanonicalizeStandardURL) {
   };
   // clang-format on
 
-  for (size_t i = 0; i < std::size(cases); i++) {
-    int url_len = static_cast<int>(strlen(cases[i].input));
+  for (const auto& i : cases) {
+    int url_len = static_cast<int>(strlen(i.input));
     Parsed parsed;
-    ParseStandardURL(cases[i].input, url_len, &parsed);
+    ParseStandardURL(i.input, url_len, &parsed);
 
     Parsed out_parsed;
     std::string out_str;
     StdStringCanonOutput output(&out_str);
     bool success = CanonicalizeStandardURL(
-        cases[i].input, url_len, parsed,
-        SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION, NULL, &output, &out_parsed);
+        i.input, url_len, parsed, SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION,
+        nullptr, &output, &out_parsed);
     output.Complete();
 
-    EXPECT_EQ(cases[i].expected_success, success);
-    EXPECT_EQ(cases[i].expected, out_str);
+    EXPECT_EQ(i.expected_success, success);
+    EXPECT_EQ(i.expected, out_str);
   }
 }
 
@@ -1715,8 +1700,8 @@ TEST(URLCanonTest, ReplaceStandardURL) {
        "filesystem://a:b@google.com:22/foo?baz@cat"},
   };
 
-  for (size_t i = 0; i < std::size(replace_cases); i++) {
-    const ReplaceCase& cur = replace_cases[i];
+  for (const auto& replace_case : replace_cases) {
+    const ReplaceCase& cur = replace_case;
     int base_len = static_cast<int>(strlen(cur.base));
     Parsed parsed;
     ParseStandardURL(cur.base, base_len, &parsed);
@@ -1738,12 +1723,12 @@ TEST(URLCanonTest, ReplaceStandardURL) {
     std::string out_str;
     StdStringCanonOutput output(&out_str);
     Parsed out_parsed;
-    ReplaceStandardURL(replace_cases[i].base, parsed, r,
-                       SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION, NULL,
+    ReplaceStandardURL(replace_case.base, parsed, r,
+                       SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION, nullptr,
                        &output, &out_parsed);
     output.Complete();
 
-    EXPECT_EQ(replace_cases[i].expected, out_str);
+    EXPECT_EQ(replace_case.expected, out_str);
   }
 
   // The path pointer should be ignored if the address is invalid.
@@ -1762,7 +1747,7 @@ TEST(URLCanonTest, ReplaceStandardURL) {
     StdStringCanonOutput output1(&out_str1);
     Parsed new_parsed;
     ReplaceStandardURL(src, parsed, r,
-                       SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION, NULL,
+                       SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION, nullptr,
                        &output1, &new_parsed);
     output1.Complete();
     EXPECT_STREQ("http://www.google.com/", out_str1.c_str());
@@ -1772,7 +1757,7 @@ TEST(URLCanonTest, ReplaceStandardURL) {
     std::string out_str2;
     StdStringCanonOutput output2(&out_str2);
     ReplaceStandardURL(src, parsed, r,
-                       SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION, NULL,
+                       SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION, nullptr,
                        &output2, &new_parsed);
     output2.Complete();
     EXPECT_STREQ("http://www.google.com/", out_str2.c_str());
@@ -1815,8 +1800,8 @@ TEST(URLCanonTest, ReplaceFileURL) {
        nullptr, nullptr, nullptr, "file:///C:/gaba?query#ref"},
   };
 
-  for (size_t i = 0; i < std::size(replace_cases); i++) {
-    const ReplaceCase& cur = replace_cases[i];
+  for (const auto& replace_case : replace_cases) {
+    const ReplaceCase& cur = replace_case;
     SCOPED_TRACE(cur.base);
     int base_len = static_cast<int>(strlen(cur.base));
     Parsed parsed;
@@ -1836,10 +1821,10 @@ TEST(URLCanonTest, ReplaceFileURL) {
     std::string out_str;
     StdStringCanonOutput output(&out_str);
     Parsed out_parsed;
-    ReplaceFileURL(cur.base, parsed, r, NULL, &output, &out_parsed);
+    ReplaceFileURL(cur.base, parsed, r, nullptr, &output, &out_parsed);
     output.Complete();
 
-    EXPECT_EQ(replace_cases[i].expected, out_str);
+    EXPECT_EQ(replace_case.expected, out_str);
   }
 }
 
@@ -1884,8 +1869,8 @@ TEST(URLCanonTest, ReplaceFileSystemURL) {
        "filesystem:http://bar.com:40/t/gaba?query#ref"},
   };
 
-  for (size_t i = 0; i < std::size(replace_cases); i++) {
-    const ReplaceCase& cur = replace_cases[i];
+  for (const auto& replace_case : replace_cases) {
+    const ReplaceCase& cur = replace_case;
     int base_len = static_cast<int>(strlen(cur.base));
     Parsed parsed;
     ParseFileSystemURL(cur.base, base_len, &parsed);
@@ -1904,10 +1889,10 @@ TEST(URLCanonTest, ReplaceFileSystemURL) {
     std::string out_str;
     StdStringCanonOutput output(&out_str);
     Parsed out_parsed;
-    ReplaceFileSystemURL(cur.base, parsed, r, NULL, &output, &out_parsed);
+    ReplaceFileSystemURL(cur.base, parsed, r, nullptr, &output, &out_parsed);
     output.Complete();
 
-    EXPECT_EQ(replace_cases[i].expected, out_str);
+    EXPECT_EQ(replace_case.expected, out_str);
   }
 }
 
@@ -1928,8 +1913,8 @@ TEST(URLCanonTest, ReplacePathURL) {
        nullptr, nullptr, "data:"},
   };
 
-  for (size_t i = 0; i < std::size(replace_cases); i++) {
-    const ReplaceCase& cur = replace_cases[i];
+  for (const auto& replace_case : replace_cases) {
+    const ReplaceCase& cur = replace_case;
     int base_len = static_cast<int>(strlen(cur.base));
     Parsed parsed;
     ParsePathURL(cur.base, base_len, false, &parsed);
@@ -1951,36 +1936,46 @@ TEST(URLCanonTest, ReplacePathURL) {
     ReplacePathURL(cur.base, parsed, r, &output, &out_parsed);
     output.Complete();
 
-    EXPECT_EQ(replace_cases[i].expected, out_str);
+    EXPECT_EQ(replace_case.expected, out_str);
   }
 }
 
 TEST(URLCanonTest, ReplaceMailtoURL) {
   ReplaceCase replace_cases[] = {
       // Replace everything
-    {"mailto:jon@foo.com?body=sup", "mailto", NULL, NULL, NULL, NULL, "addr1", "to=tony", NULL, "mailto:addr1?to=tony"},
+      {"mailto:jon@foo.com?body=sup", "mailto", nullptr, nullptr, nullptr,
+       nullptr, "addr1", "to=tony", nullptr, "mailto:addr1?to=tony"},
       // Replace nothing
-    {"mailto:jon@foo.com?body=sup", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, "mailto:jon@foo.com?body=sup"},
+      {"mailto:jon@foo.com?body=sup", nullptr, nullptr, nullptr, nullptr,
+       nullptr, nullptr, nullptr, nullptr, "mailto:jon@foo.com?body=sup"},
       // Replace the path
-    {"mailto:jon@foo.com?body=sup", NULL, NULL, NULL, NULL, NULL, "jason", NULL, NULL, "mailto:jason?body=sup"},
+      {"mailto:jon@foo.com?body=sup", nullptr, nullptr, nullptr, nullptr,
+       nullptr, "jason", nullptr, nullptr, "mailto:jason?body=sup"},
       // Replace the query
-    {"mailto:jon@foo.com?body=sup", NULL, NULL, NULL, NULL, NULL, NULL, "custom=1", NULL, "mailto:jon@foo.com?custom=1"},
+      {"mailto:jon@foo.com?body=sup", nullptr, nullptr, nullptr, nullptr,
+       nullptr, nullptr, "custom=1", nullptr, "mailto:jon@foo.com?custom=1"},
       // Replace the path and query
-    {"mailto:jon@foo.com?body=sup", NULL, NULL, NULL, NULL, NULL, "jason", "custom=1", NULL, "mailto:jason?custom=1"},
+      {"mailto:jon@foo.com?body=sup", nullptr, nullptr, nullptr, nullptr,
+       nullptr, "jason", "custom=1", nullptr, "mailto:jason?custom=1"},
       // Set the query to empty (should leave trailing question mark)
-    {"mailto:jon@foo.com?body=sup", NULL, NULL, NULL, NULL, NULL, NULL, "", NULL, "mailto:jon@foo.com?"},
+      {"mailto:jon@foo.com?body=sup", nullptr, nullptr, nullptr, nullptr,
+       nullptr, nullptr, "", nullptr, "mailto:jon@foo.com?"},
       // Clear the query
-    {"mailto:jon@foo.com?body=sup", NULL, NULL, NULL, NULL, NULL, NULL, "|", NULL, "mailto:jon@foo.com"},
+      {"mailto:jon@foo.com?body=sup", nullptr, nullptr, nullptr, nullptr,
+       nullptr, nullptr, "|", nullptr, "mailto:jon@foo.com"},
       // Clear the path
-    {"mailto:jon@foo.com?body=sup", NULL, NULL, NULL, NULL, NULL, "|", NULL, NULL, "mailto:?body=sup"},
+      {"mailto:jon@foo.com?body=sup", nullptr, nullptr, nullptr, nullptr,
+       nullptr, "|", nullptr, nullptr, "mailto:?body=sup"},
       // Clear the path + query
-    {"mailto:", NULL, NULL, NULL, NULL, NULL, "|", "|", NULL, "mailto:"},
+      {"mailto:", nullptr, nullptr, nullptr, nullptr, nullptr, "|", "|",
+       nullptr, "mailto:"},
       // Setting the ref should have no effect
-    {"mailto:addr1", NULL, NULL, NULL, NULL, NULL, NULL, NULL, "BLAH", "mailto:addr1"},
+      {"mailto:addr1", nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
+       nullptr, "BLAH", "mailto:addr1"},
   };
 
-  for (size_t i = 0; i < std::size(replace_cases); i++) {
-    const ReplaceCase& cur = replace_cases[i];
+  for (const auto& replace_case : replace_cases) {
+    const ReplaceCase& cur = replace_case;
     int base_len = static_cast<int>(strlen(cur.base));
     Parsed parsed;
     ParseMailtoURL(cur.base, base_len, &parsed);
@@ -2002,7 +1997,7 @@ TEST(URLCanonTest, ReplaceMailtoURL) {
     ReplaceMailtoURL(cur.base, parsed, r, &output, &out_parsed);
     output.Complete();
 
-    EXPECT_EQ(replace_cases[i].expected, out_str);
+    EXPECT_EQ(replace_case.expected, out_str);
   }
 }
 
@@ -2092,31 +2087,31 @@ TEST(URLCanonTest, CanonicalizeFileURL) {
 #endif  // _WIN32
   };
 
-  for (size_t i = 0; i < std::size(cases); i++) {
-    int url_len = static_cast<int>(strlen(cases[i].input));
+  for (const auto& i : cases) {
+    int url_len = static_cast<int>(strlen(i.input));
     Parsed parsed;
-    ParseFileURL(cases[i].input, url_len, &parsed);
+    ParseFileURL(i.input, url_len, &parsed);
 
     Parsed out_parsed;
     std::string out_str;
     StdStringCanonOutput output(&out_str);
-    bool success = CanonicalizeFileURL(cases[i].input, url_len, parsed, NULL,
+    bool success = CanonicalizeFileURL(i.input, url_len, parsed, nullptr,
                                        &output, &out_parsed);
     output.Complete();
 
-    EXPECT_EQ(cases[i].expected_success, success);
-    EXPECT_EQ(cases[i].expected, out_str);
+    EXPECT_EQ(i.expected_success, success);
+    EXPECT_EQ(i.expected, out_str);
 
     // Make sure the spec was properly identified, the file canonicalizer has
     // different code for writing the spec.
     EXPECT_EQ(0, out_parsed.scheme.begin);
     EXPECT_EQ(4, out_parsed.scheme.len);
 
-    EXPECT_EQ(cases[i].expected_host.begin, out_parsed.host.begin);
-    EXPECT_EQ(cases[i].expected_host.len, out_parsed.host.len);
+    EXPECT_EQ(i.expected_host.begin, out_parsed.host.begin);
+    EXPECT_EQ(i.expected_host.len, out_parsed.host.len);
 
-    EXPECT_EQ(cases[i].expected_path.begin, out_parsed.path.begin);
-    EXPECT_EQ(cases[i].expected_path.len, out_parsed.path.len);
+    EXPECT_EQ(i.expected_path.begin, out_parsed.path.begin);
+    EXPECT_EQ(i.expected_path.len, out_parsed.path.len);
   }
 }
 
@@ -2141,20 +2136,20 @@ TEST(URLCanonTest, CanonicalizeFileSystemURL) {
       {"FilEsysteM:htTp:E=/.", "filesystem:http://e=//", false},
   };
 
-  for (size_t i = 0; i < std::size(cases); i++) {
-    int url_len = static_cast<int>(strlen(cases[i].input));
+  for (const auto& i : cases) {
+    int url_len = static_cast<int>(strlen(i.input));
     Parsed parsed;
-    ParseFileSystemURL(cases[i].input, url_len, &parsed);
+    ParseFileSystemURL(i.input, url_len, &parsed);
 
     Parsed out_parsed;
     std::string out_str;
     StdStringCanonOutput output(&out_str);
-    bool success = CanonicalizeFileSystemURL(cases[i].input, url_len, parsed,
-                                             NULL, &output, &out_parsed);
+    bool success = CanonicalizeFileSystemURL(i.input, url_len, parsed, nullptr,
+                                             &output, &out_parsed);
     output.Complete();
 
-    EXPECT_EQ(cases[i].expected_success, success);
-    EXPECT_EQ(cases[i].expected, out_str);
+    EXPECT_EQ(i.expected_success, success);
+    EXPECT_EQ(i.expected, out_str);
 
     // Make sure the spec was properly identified, the filesystem canonicalizer
     // has different code for writing the spec.
@@ -2180,26 +2175,26 @@ TEST(URLCanonTest, CanonicalizePathURL) {
       {"javascript:\uFFFF", "javascript:%EF%BF%BF"},
   };
 
-  for (size_t i = 0; i < std::size(path_cases); i++) {
-    int url_len = static_cast<int>(strlen(path_cases[i].input));
+  for (const auto& path_case : path_cases) {
+    int url_len = static_cast<int>(strlen(path_case.input));
     Parsed parsed;
-    ParsePathURL(path_cases[i].input, url_len, true, &parsed);
+    ParsePathURL(path_case.input, url_len, true, &parsed);
 
     Parsed out_parsed;
     std::string out_str;
     StdStringCanonOutput output(&out_str);
-    bool success = CanonicalizePathURL(path_cases[i].input, url_len, parsed,
+    bool success = CanonicalizePathURL(path_case.input, url_len, parsed,
                                        &output, &out_parsed);
     output.Complete();
 
     EXPECT_TRUE(success);
-    EXPECT_EQ(path_cases[i].expected, out_str);
+    EXPECT_EQ(path_case.expected, out_str);
 
     EXPECT_EQ(0, out_parsed.host.begin);
     EXPECT_EQ(-1, out_parsed.host.len);
 
     // When we end with a colon at the end, there should be no path.
-    if (path_cases[i].input[url_len - 1] == ':') {
+    if (path_case.input[url_len - 1] == ':') {
       EXPECT_EQ(0, out_parsed.GetContent().begin);
       EXPECT_EQ(-1, out_parsed.GetContent().len);
     }
@@ -2218,20 +2213,20 @@ TEST(URLCanonTest, CanonicalizePathURLPath) {
       {"\uFFFF", L"\uFFFF", "%EF%BF%BF"},
   };
 
-  for (size_t i = 0; i < std::size(path_cases); i++) {
+  for (const auto& path_case : path_cases) {
     // 8-bit string input
     std::string out_str;
     StdStringCanonOutput output(&out_str);
     url::Component out_component;
-    CanonicalizePathURLPath(path_cases[i].input.data(),
-                            Component(0, path_cases[i].input.size()), &output,
+    CanonicalizePathURLPath(path_case.input.data(),
+                            Component(0, path_case.input.size()), &output,
                             &out_component);
     output.Complete();
 
-    EXPECT_EQ(path_cases[i].expected, out_str);
+    EXPECT_EQ(path_case.expected, out_str);
 
     EXPECT_EQ(0, out_component.begin);
-    EXPECT_EQ(path_cases[i].expected.size(),
+    EXPECT_EQ(path_case.expected.size(),
               static_cast<size_t>(out_component.len));
 
     // 16-bit string input
@@ -2239,16 +2234,16 @@ TEST(URLCanonTest, CanonicalizePathURLPath) {
     StdStringCanonOutput output16(&out_str16);
     url::Component out_component16;
     std::u16string input16(
-        test_utils::TruncateWStringToUTF16(path_cases[i].input16.data()));
+        test_utils::TruncateWStringToUTF16(path_case.input16.data()));
     CanonicalizePathURLPath(input16.c_str(),
-                            Component(0, path_cases[i].input16.size()),
-                            &output16, &out_component16);
+                            Component(0, path_case.input16.size()), &output16,
+                            &out_component16);
     output16.Complete();
 
-    EXPECT_EQ(path_cases[i].expected, out_str16);
+    EXPECT_EQ(path_case.expected, out_str16);
 
     EXPECT_EQ(0, out_component16.begin);
-    EXPECT_EQ(path_cases[i].expected.size(),
+    EXPECT_EQ(path_case.expected.size(),
               static_cast<size_t>(out_component16.len));
   }
 }
@@ -2443,148 +2438,209 @@ TEST(URLCanonTest, ResolveRelativeURL) {
     const char* resolved;  // What we expect in the result when resolving.
   } rel_cases[] = {
       // Basic absolute input.
-    {"http://host/a", true, false, "http://another/", true, false, false, NULL},
-    {"http://host/a", true, false, "http:////another/", true, false, false, NULL},
+      {"http://host/a", true, false, "http://another/", true, false, false,
+       nullptr},
+      {"http://host/a", true, false, "http:////another/", true, false, false,
+       nullptr},
       // Empty relative URLs should only remove the ref part of the URL,
       // leaving the rest unchanged.
-    {"http://foo/bar", true, false, "", true, true, true, "http://foo/bar"},
-    {"http://foo/bar#ref", true, false, "", true, true, true, "http://foo/bar"},
-    {"http://foo/bar#", true, false, "", true, true, true, "http://foo/bar"},
+      {"http://foo/bar", true, false, "", true, true, true, "http://foo/bar"},
+      {"http://foo/bar#ref", true, false, "", true, true, true,
+       "http://foo/bar"},
+      {"http://foo/bar#", true, false, "", true, true, true, "http://foo/bar"},
       // Spaces at the ends of the relative path should be ignored.
-    {"http://foo/bar", true, false, "  another  ", true, true, true, "http://foo/another"},
-    {"http://foo/bar", true, false, "  .  ", true, true, true, "http://foo/"},
-    {"http://foo/bar", true, false, " \t ", true, true, true, "http://foo/bar"},
+      {"http://foo/bar", true, false, "  another  ", true, true, true,
+       "http://foo/another"},
+      {"http://foo/bar", true, false, "  .  ", true, true, true, "http://foo/"},
+      {"http://foo/bar", true, false, " \t ", true, true, true,
+       "http://foo/bar"},
       // Matching schemes without two slashes are treated as relative.
-    {"http://host/a", true, false, "http:path", true, true, true, "http://host/path"},
-    {"http://host/a/", true, false, "http:path", true, true, true, "http://host/a/path"},
-    {"http://host/a", true, false, "http:/path", true, true, true, "http://host/path"},
-    {"http://host/a", true, false, "HTTP:/path", true, true, true, "http://host/path"},
+      {"http://host/a", true, false, "http:path", true, true, true,
+       "http://host/path"},
+      {"http://host/a/", true, false, "http:path", true, true, true,
+       "http://host/a/path"},
+      {"http://host/a", true, false, "http:/path", true, true, true,
+       "http://host/path"},
+      {"http://host/a", true, false, "HTTP:/path", true, true, true,
+       "http://host/path"},
       // Nonmatching schemes are absolute.
-    {"http://host/a", true, false, "https:host2", true, false, false, NULL},
-    {"http://host/a", true, false, "htto:/host2", true, false, false, NULL},
+      {"http://host/a", true, false, "https:host2", true, false, false,
+       nullptr},
+      {"http://host/a", true, false, "htto:/host2", true, false, false,
+       nullptr},
       // Absolute path input
-    {"http://host/a", true, false, "/b/c/d", true, true, true, "http://host/b/c/d"},
-    {"http://host/a", true, false, "\\b\\c\\d", true, true, true, "http://host/b/c/d"},
-    {"http://host/a", true, false, "/b/../c", true, true, true, "http://host/c"},
-    {"http://host/a?b#c", true, false, "/b/../c", true, true, true, "http://host/c"},
-    {"http://host/a", true, false, "\\b/../c?x#y", true, true, true, "http://host/c?x#y"},
-    {"http://host/a?b#c", true, false, "/b/../c?x#y", true, true, true, "http://host/c?x#y"},
+      {"http://host/a", true, false, "/b/c/d", true, true, true,
+       "http://host/b/c/d"},
+      {"http://host/a", true, false, "\\b\\c\\d", true, true, true,
+       "http://host/b/c/d"},
+      {"http://host/a", true, false, "/b/../c", true, true, true,
+       "http://host/c"},
+      {"http://host/a?b#c", true, false, "/b/../c", true, true, true,
+       "http://host/c"},
+      {"http://host/a", true, false, "\\b/../c?x#y", true, true, true,
+       "http://host/c?x#y"},
+      {"http://host/a?b#c", true, false, "/b/../c?x#y", true, true, true,
+       "http://host/c?x#y"},
       // Relative path input
-    {"http://host/a", true, false, "b", true, true, true, "http://host/b"},
-    {"http://host/a", true, false, "bc/de", true, true, true, "http://host/bc/de"},
-    {"http://host/a/", true, false, "bc/de?query#ref", true, true, true, "http://host/a/bc/de?query#ref"},
-    {"http://host/a/", true, false, ".", true, true, true, "http://host/a/"},
-    {"http://host/a/", true, false, "..", true, true, true, "http://host/"},
-    {"http://host/a/", true, false, "./..", true, true, true, "http://host/"},
-    {"http://host/a/", true, false, "../.", true, true, true, "http://host/"},
-    {"http://host/a/", true, false, "././.", true, true, true, "http://host/a/"},
-    {"http://host/a?query#ref", true, false, "../../../foo", true, true, true, "http://host/foo"},
+      {"http://host/a", true, false, "b", true, true, true, "http://host/b"},
+      {"http://host/a", true, false, "bc/de", true, true, true,
+       "http://host/bc/de"},
+      {"http://host/a/", true, false, "bc/de?query#ref", true, true, true,
+       "http://host/a/bc/de?query#ref"},
+      {"http://host/a/", true, false, ".", true, true, true, "http://host/a/"},
+      {"http://host/a/", true, false, "..", true, true, true, "http://host/"},
+      {"http://host/a/", true, false, "./..", true, true, true, "http://host/"},
+      {"http://host/a/", true, false, "../.", true, true, true, "http://host/"},
+      {"http://host/a/", true, false, "././.", true, true, true,
+       "http://host/a/"},
+      {"http://host/a?query#ref", true, false, "../../../foo", true, true, true,
+       "http://host/foo"},
       // Query input
-    {"http://host/a", true, false, "?foo=bar", true, true, true, "http://host/a?foo=bar"},
-    {"http://host/a?x=y#z", true, false, "?", true, true, true, "http://host/a?"},
-    {"http://host/a?x=y#z", true, false, "?foo=bar#com", true, true, true, "http://host/a?foo=bar#com"},
+      {"http://host/a", true, false, "?foo=bar", true, true, true,
+       "http://host/a?foo=bar"},
+      {"http://host/a?x=y#z", true, false, "?", true, true, true,
+       "http://host/a?"},
+      {"http://host/a?x=y#z", true, false, "?foo=bar#com", true, true, true,
+       "http://host/a?foo=bar#com"},
       // Ref input
-    {"http://host/a", true, false, "#ref", true, true, true, "http://host/a#ref"},
-    {"http://host/a#b", true, false, "#", true, true, true, "http://host/a#"},
-    {"http://host/a?foo=bar#hello", true, false, "#bye", true, true, true, "http://host/a?foo=bar#bye"},
+      {"http://host/a", true, false, "#ref", true, true, true,
+       "http://host/a#ref"},
+      {"http://host/a#b", true, false, "#", true, true, true, "http://host/a#"},
+      {"http://host/a?foo=bar#hello", true, false, "#bye", true, true, true,
+       "http://host/a?foo=bar#bye"},
       // Non-hierarchical base: no relative handling. Relative input should
       // error, and if a scheme is present, it should be treated as absolute.
-    {"data:foobar", false, false, "baz.html", false, false, false, NULL},
-    {"data:foobar", false, false, "data:baz", true, false, false, NULL},
-    {"data:foobar", false, false, "data:/base", true, false, false, NULL},
+      {"data:foobar", false, false, "baz.html", false, false, false, nullptr},
+      {"data:foobar", false, false, "data:baz", true, false, false, nullptr},
+      {"data:foobar", false, false, "data:/base", true, false, false, nullptr},
       // Non-hierarchical base: absolute input should succeed.
-    {"data:foobar", false, false, "http://host/", true, false, false, NULL},
-    {"data:foobar", false, false, "http:host", true, false, false, NULL},
+      {"data:foobar", false, false, "http://host/", true, false, false,
+       nullptr},
+      {"data:foobar", false, false, "http:host", true, false, false, nullptr},
       // Non-hierarchical base: empty URL should give error.
-    {"data:foobar", false, false, "", false, false, false, NULL},
+      {"data:foobar", false, false, "", false, false, false, nullptr},
       // Invalid schemes should be treated as relative.
-    {"http://foo/bar", true, false, "./asd:fgh", true, true, true, "http://foo/asd:fgh"},
-    {"http://foo/bar", true, false, ":foo", true, true, true, "http://foo/:foo"},
-    {"http://foo/bar", true, false, " hello world", true, true, true, "http://foo/hello%20world"},
-    {"data:asdf", false, false, ":foo", false, false, false, NULL},
-    {"data:asdf", false, false, "bad(':foo')", false, false, false, NULL},
+      {"http://foo/bar", true, false, "./asd:fgh", true, true, true,
+       "http://foo/asd:fgh"},
+      {"http://foo/bar", true, false, ":foo", true, true, true,
+       "http://foo/:foo"},
+      {"http://foo/bar", true, false, " hello world", true, true, true,
+       "http://foo/hello%20world"},
+      {"data:asdf", false, false, ":foo", false, false, false, nullptr},
+      {"data:asdf", false, false, "bad(':foo')", false, false, false, nullptr},
       // We should treat semicolons like any other character in URL resolving
-    {"http://host/a", true, false, ";foo", true, true, true, "http://host/;foo"},
-    {"http://host/a;", true, false, ";foo", true, true, true, "http://host/;foo"},
-    {"http://host/a", true, false, ";/../bar", true, true, true, "http://host/bar"},
+      {"http://host/a", true, false, ";foo", true, true, true,
+       "http://host/;foo"},
+      {"http://host/a;", true, false, ";foo", true, true, true,
+       "http://host/;foo"},
+      {"http://host/a", true, false, ";/../bar", true, true, true,
+       "http://host/bar"},
       // Relative URLs can also be written as "//foo/bar" which is relative to
       // the scheme. In this case, it would take the old scheme, so for http
       // the example would resolve to "http://foo/bar".
-    {"http://host/a", true, false, "//another", true, true, true, "http://another/"},
-    {"http://host/a", true, false, "//another/path?query#ref", true, true, true, "http://another/path?query#ref"},
-    {"http://host/a", true, false, "///another/path", true, true, true, "http://another/path"},
-    {"http://host/a", true, false, "//Another\\path", true, true, true, "http://another/path"},
-    {"http://host/a", true, false, "//", true, true, false, "http:"},
+      {"http://host/a", true, false, "//another", true, true, true,
+       "http://another/"},
+      {"http://host/a", true, false, "//another/path?query#ref", true, true,
+       true, "http://another/path?query#ref"},
+      {"http://host/a", true, false, "///another/path", true, true, true,
+       "http://another/path"},
+      {"http://host/a", true, false, "//Another\\path", true, true, true,
+       "http://another/path"},
+      {"http://host/a", true, false, "//", true, true, false, "http:"},
       // IE will also allow one or the other to be a backslash to get the same
       // behavior.
-    {"http://host/a", true, false, "\\/another/path", true, true, true, "http://another/path"},
-    {"http://host/a", true, false, "/\\Another\\path", true, true, true, "http://another/path"},
+      {"http://host/a", true, false, "\\/another/path", true, true, true,
+       "http://another/path"},
+      {"http://host/a", true, false, "/\\Another\\path", true, true, true,
+       "http://another/path"},
 #ifdef WIN32
       // Resolving against Windows file base URLs.
-    {"file:///C:/foo", true, true, "http://host/", true, false, false, NULL},
-    {"file:///C:/foo", true, true, "bar", true, true, true, "file:///C:/bar"},
-    {"file:///C:/foo", true, true, "../../../bar.html", true, true, true, "file:///C:/bar.html"},
-    {"file:///C:/foo", true, true, "/../bar.html", true, true, true, "file:///C:/bar.html"},
+      {"file:///C:/foo", true, true, "http://host/", true, false, false,
+       nullptr},
+      {"file:///C:/foo", true, true, "bar", true, true, true, "file:///C:/bar"},
+      {"file:///C:/foo", true, true, "../../../bar.html", true, true, true,
+       "file:///C:/bar.html"},
+      {"file:///C:/foo", true, true, "/../bar.html", true, true, true,
+       "file:///C:/bar.html"},
       // But two backslashes on Windows should be UNC so should be treated
       // as absolute.
-    {"http://host/a", true, false, "\\\\another\\path", true, false, false, NULL},
+      {"http://host/a", true, false, "\\\\another\\path", true, false, false,
+       nullptr},
       // IE doesn't support drive specs starting with two slashes. It fails
       // immediately and doesn't even try to load. We fix it up to either
       // an absolute path or UNC depending on what it looks like.
-    {"file:///C:/something", true, true, "//c:/foo", true, true, true, "file:///C:/foo"},
-    {"file:///C:/something", true, true, "//localhost/c:/foo", true, true, true, "file:///C:/foo"},
+      {"file:///C:/something", true, true, "//c:/foo", true, true, true,
+       "file:///C:/foo"},
+      {"file:///C:/something", true, true, "//localhost/c:/foo", true, true,
+       true, "file:///C:/foo"},
       // Windows drive specs should be allowed and treated as absolute.
-    {"file:///C:/foo", true, true, "c:", true, false, false, NULL},
-    {"file:///C:/foo", true, true, "c:/foo", true, false, false, NULL},
-    {"http://host/a", true, false, "c:\\foo", true, false, false, NULL},
+      {"file:///C:/foo", true, true, "c:", true, false, false, nullptr},
+      {"file:///C:/foo", true, true, "c:/foo", true, false, false, nullptr},
+      {"http://host/a", true, false, "c:\\foo", true, false, false, nullptr},
       // Relative paths with drive letters should be allowed when the base is
       // also a file.
-    {"file:///C:/foo", true, true, "/z:/bar", true, true, true, "file:///Z:/bar"},
+      {"file:///C:/foo", true, true, "/z:/bar", true, true, true,
+       "file:///Z:/bar"},
       // Treat absolute paths as being off of the drive.
-    {"file:///C:/foo", true, true, "/bar", true, true, true, "file:///C:/bar"},
-    {"file://localhost/C:/foo", true, true, "/bar", true, true, true, "file://localhost/C:/bar"},
-    {"file:///C:/foo/com/", true, true, "/bar", true, true, true, "file:///C:/bar"},
+      {"file:///C:/foo", true, true, "/bar", true, true, true,
+       "file:///C:/bar"},
+      {"file://localhost/C:/foo", true, true, "/bar", true, true, true,
+       "file://localhost/C:/bar"},
+      {"file:///C:/foo/com/", true, true, "/bar", true, true, true,
+       "file:///C:/bar"},
       // On Windows, two slashes without a drive letter when the base is a file
       // means that the path is UNC.
-    {"file:///C:/something", true, true, "//somehost/path", true, true, true, "file://somehost/path"},
-    {"file:///C:/something", true, true, "/\\//somehost/path", true, true, true, "file://somehost/path"},
+      {"file:///C:/something", true, true, "//somehost/path", true, true, true,
+       "file://somehost/path"},
+      {"file:///C:/something", true, true, "/\\//somehost/path", true, true,
+       true, "file://somehost/path"},
 #else
       // On Unix we fall back to relative behavior since there's nothing else
       // reasonable to do.
-    {"http://host/a", true, false, "\\\\Another\\path", true, true, true, "http://another/path"},
+      {"http://host/a", true, false, "\\\\Another\\path", true, true, true,
+       "http://another/path"},
 #endif
       // Even on Windows, we don't allow relative drive specs when the base
       // is not file.
-    {"http://host/a", true, false, "/c:\\foo", true, true, true, "http://host/c:/foo"},
-    {"http://host/a", true, false, "//c:\\foo", true, true, true, "http://c/foo"},
+      {"http://host/a", true, false, "/c:\\foo", true, true, true,
+       "http://host/c:/foo"},
+      {"http://host/a", true, false, "//c:\\foo", true, true, true,
+       "http://c/foo"},
       // Cross-platform relative file: resolution behavior.
-    {"file://host/a", true, true, "/", true, true, true, "file://host/"},
-    {"file://host/a", true, true, "//", true, true, true, "file:///"},
-    {"file://host/a", true, true, "/b", true, true, true, "file://host/b"},
-    {"file://host/a", true, true, "//b", true, true, true, "file://b/"},
+      {"file://host/a", true, true, "/", true, true, true, "file://host/"},
+      {"file://host/a", true, true, "//", true, true, true, "file:///"},
+      {"file://host/a", true, true, "/b", true, true, true, "file://host/b"},
+      {"file://host/a", true, true, "//b", true, true, true, "file://b/"},
       // Ensure that ports aren't allowed for hosts relative to a file url.
       // Although the result string shows a host:port portion, the call to
       // resolve the relative URL returns false, indicating parse failure,
       // which is what is required.
-    {"file:///foo.txt", true, true, "//host:80/bar.txt", true, true, false, "file://host:80/bar.txt"},
+      {"file:///foo.txt", true, true, "//host:80/bar.txt", true, true, false,
+       "file://host:80/bar.txt"},
       // Filesystem URL tests; filesystem URLs are only valid and relative if
       // they have no scheme, e.g. "./index.html". There's no valid equivalent
       // to http:index.html.
-    {"filesystem:http://host/t/path", true, false, "filesystem:http://host/t/path2", true, false, false, NULL},
-    {"filesystem:http://host/t/path", true, false, "filesystem:https://host/t/path2", true, false, false, NULL},
-    {"filesystem:http://host/t/path", true, false, "http://host/t/path2", true, false, false, NULL},
-    {"http://host/t/path", true, false, "filesystem:http://host/t/path2", true, false, false, NULL},
-    {"filesystem:http://host/t/path", true, false, "./path2", true, true, true, "filesystem:http://host/t/path2"},
-    {"filesystem:http://host/t/path/", true, false, "path2", true, true, true, "filesystem:http://host/t/path/path2"},
-    {"filesystem:http://host/t/path", true, false, "filesystem:http:path2", true, false, false, NULL},
+      {"filesystem:http://host/t/path", true, false,
+       "filesystem:http://host/t/path2", true, false, false, nullptr},
+      {"filesystem:http://host/t/path", true, false,
+       "filesystem:https://host/t/path2", true, false, false, nullptr},
+      {"filesystem:http://host/t/path", true, false, "http://host/t/path2",
+       true, false, false, nullptr},
+      {"http://host/t/path", true, false, "filesystem:http://host/t/path2",
+       true, false, false, nullptr},
+      {"filesystem:http://host/t/path", true, false, "./path2", true, true,
+       true, "filesystem:http://host/t/path2"},
+      {"filesystem:http://host/t/path/", true, false, "path2", true, true, true,
+       "filesystem:http://host/t/path/path2"},
+      {"filesystem:http://host/t/path", true, false, "filesystem:http:path2",
+       true, false, false, nullptr},
       // Absolute URLs are still not relative to a non-standard base URL.
-    {"about:blank", false, false, "http://X/A", true, false, true, ""},
-    {"about:blank", false, false, "content://content.Provider/", true, false, true, ""},
+      {"about:blank", false, false, "http://X/A", true, false, true, ""},
+      {"about:blank", false, false, "content://content.Provider/", true, false,
+       true, ""},
   };
 
-  for (size_t i = 0; i < std::size(rel_cases); i++) {
-    const RelativeCase& cur_case = rel_cases[i];
-
+  for (const auto& cur_case : rel_cases) {
     Parsed parsed;
     int base_len = static_cast<int>(strlen(cur_case.base));
     if (cur_case.is_base_file)
@@ -2614,7 +2670,7 @@ TEST(URLCanonTest, ResolveRelativeURL) {
 
       bool succeed_resolve = ResolveRelativeURL(
           cur_case.base, parsed, cur_case.is_base_file, cur_case.test,
-          relative_component, NULL, &output, &resolved_parsed);
+          relative_component, nullptr, &output, &resolved_parsed);
       output.Complete();
 
       EXPECT_EQ(cur_case.succeed_resolve, succeed_resolve);
@@ -2664,7 +2720,7 @@ TEST(URLCanonTest, ReplacementOverflow) {
   Parsed repl_parsed;
   std::string repl_str;
   StdStringCanonOutput repl_output(&repl_str);
-  ReplaceFileURL(src, parsed, repl, NULL, &repl_output, &repl_parsed);
+  ReplaceFileURL(src, parsed, repl, nullptr, &repl_output, &repl_parsed);
   repl_output.Complete();
 
   // Generate the expected string and check.
@@ -2692,7 +2748,7 @@ TEST(URLCanonTest, DefaultPortForScheme) {
       {"WSS", PORT_UNSPECIFIED},
   };
 
-  for (auto& test_case : cases) {
+  for (const auto& test_case : cases) {
     SCOPED_TRACE(test_case.scheme);
     EXPECT_EQ(test_case.expected_port,
               DefaultPortForScheme(test_case.scheme, strlen(test_case.scheme)));
