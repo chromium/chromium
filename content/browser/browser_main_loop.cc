@@ -767,6 +767,12 @@ void BrowserMainLoop::CreateMessageLoopForEarlyShutdown() {
 int BrowserMainLoop::PreCreateThreads() {
   TRACE_EVENT0("startup", "BrowserMainLoop::PreCreateThreads");
 
+  // This must occur before metrics recording initialization in
+  // ChromeBrowserMainParts::PreCreateThreads() because it's used in
+  // BackgroundTracingMetricsProvider.
+  background_tracing_manager_ =
+      content::BackgroundTracingManagerImpl::CreateInstance();
+
   // Make sure no accidental call to initialize GpuDataManager earlier.
   DCHECK(!GpuDataManagerImpl::Initialized());
   if (parts_) {
@@ -958,8 +964,6 @@ int BrowserMainLoop::PostCreateThreads() {
   TRACE_EVENT0("startup", "BrowserMainLoop::PostCreateThreads");
 
   tracing_controller_ = std::make_unique<content::TracingControllerImpl>();
-  background_tracing_manager_ =
-      content::BackgroundTracingManagerImpl::CreateInstance();
   content::BackgroundTracingManagerImpl::GetInstance()
       .AddMetadataGeneratorFunction();
 
