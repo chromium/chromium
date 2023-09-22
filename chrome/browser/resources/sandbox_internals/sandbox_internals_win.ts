@@ -245,6 +245,12 @@ class DecodeMitigations {
       new Pc2Field(
           'CET_DYNAMIC_APIS_OUT_OF_PROC_ONLY_ALWAYS_OFF', 0x2, 0x03, 48),
       new Pc2Field('CET_DYNAMIC_APIS_OUT_OF_PROC_ONLY_RESERVED', 0x3, 0x03, 48),
+      new Pc2Field('RESTRICT_CORE_SHARING', 0x1, 0x03, 52),
+      new Pc2Field('RESTRICT_CORE_SHARING_ALWAYS_OFF', 0x2, 0x03, 52),
+      new Pc2Field('RESTRICT_CORE_SHARING_RESERVED', 0x3, 0x03, 52),
+      new Pc2Field('FSCTL_SYSTEM_CALL_DISABLE', 0x1, 0x03, 56),
+      new Pc2Field('FSCTL_SYSTEM_CALL_DISABLE_ALWAYS_OFF', 0x2, 0x03, 56),
+      new Pc2Field('FSCTL_SYSTEM_CALL_DISABLE_RESERVED', 0x3, 0x03, 56),
     ];
   }
 

@@ -33,6 +33,22 @@
 // only defined starting 10.0.20226.0.
 #define CET_DYNAMIC_APIS_OUT_OF_PROC_ONLY_MASK (1 << 8)
 
+// From insider SDK 10.0.25295.0 and also from MSDN.
+// TODO: crbug.com/1414570 Remove this struct when SDK updates
+typedef struct _PROCESS_MITIGATION_SYSTEM_CALL_DISABLE_POLICY_2 {
+  union {
+    DWORD Flags;
+    struct {
+      DWORD DisallowWin32kSystemCalls : 1;
+      DWORD AuditDisallowWin32kSystemCalls : 1;
+      DWORD DisallowFsctlSystemCalls : 1;
+      DWORD AuditDisallowFsctlSystemCalls : 1;
+      DWORD ReservedFlags : 28;
+    } DUMMYSTRUCTNAME;
+  } DUMMYUNIONNAME;
+} PROCESS_MITIGATION_SYSTEM_CALL_DISABLE_POLICY_2,
+    *PPROCESS_MITIGATION_SYSTEM_CALL_DISABLE_POLICY_2;
+
 namespace {
 
 //------------------------------------------------------------------------------
@@ -382,6 +398,23 @@ SBOX_TESTS_COMMAND int CheckPolicy(int argc, wchar_t** argv) {
 
       if (!policy.PreferSystem32Images)
         return SBOX_TEST_FAILED;
+
+      break;
+    }
+    //--------------------------------------------------
+    // MITIGATION_FSCTL_DISABLED
+    //--------------------------------------------------
+    case (TESTPOLICY_FSCTLDISABLED): {
+      PROCESS_MITIGATION_SYSTEM_CALL_DISABLE_POLICY_2 policy = {};
+      if (!::GetProcessMitigationPolicy(::GetCurrentProcess(),
+                                        ProcessSystemCallDisablePolicy, &policy,
+                                        sizeof(policy))) {
+        return SBOX_TEST_NOT_FOUND;
+      }
+      // We wish to disable the policy.
+      if (!policy.DisallowFsctlSystemCalls) {
+        return SBOX_TEST_FAILED;
+      }
 
       break;
     }
@@ -1149,6 +1182,29 @@ TEST(ProcessMitigationsTest, SetPreAndPostStartupSamePolicy_ASLR) {
                 MITIGATION_RELOCATE_IMAGE | MITIGATION_RELOCATE_IMAGE_REQUIRED),
             SBOX_ALL_OK);
 
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_command.c_str()));
+}
+
+// This test validates that setting MITIGATION_FSCTL_DISABLED applies the
+// FSCTL syscall mitigation to the child process.
+TEST(ProcessMitigationsTest, FsctlDisabled) {
+  // TODO: update version check when the planned OS servicing is done for Win10
+  // 22H2 & later.
+  if (base::win::GetVersion() <= base::win::Version::WIN11_22H2) {
+    return;
+  }
+
+  std::wstring test_command = L"CheckPolicy ";
+  test_command += std::to_wstring(TESTPOLICY_FSCTLDISABLED);
+
+  //---------------------------------
+  // 1) Test setting pre-startup.
+  //---------------------------------
+  TestRunner runner;
+  sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
+
+  EXPECT_EQ(config->SetProcessMitigations(MITIGATION_FSCTL_DISABLED),
+            SBOX_ALL_OK);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_command.c_str()));
 }
 

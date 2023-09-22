@@ -102,6 +102,12 @@ BASE_FEATURE(kWinSboxForceRendererCodeIntegrity,
 BASE_FEATURE(kWinSboxZeroAppShim,
              "WinSboxZeroAppShim",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, applies the FSCTL syscall lockdown mitigation to all sandboxed
+// processes, if supported by the OS.
+BASE_FEATURE(kWinSboxFsctlLockdown,
+             "WinSboxFsctlLockdown",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

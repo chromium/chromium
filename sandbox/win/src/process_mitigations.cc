@@ -33,6 +33,13 @@
   (0x00000002ui64 << 48)
 #endif
 
+// From insider SDK 10.0.25295.0 and also from MSDN.
+// TODO: crbug.com/1414570 Remove after updating SDK
+#ifndef PROCESS_CREATION_MITIGATION_POLICY2_FSCTL_SYSTEM_CALL_DISABLE_ALWAYS_ON
+#define PROCESS_CREATION_MITIGATION_POLICY2_FSCTL_SYSTEM_CALL_DISABLE_ALWAYS_ON \
+  (0x00000001ui64 << 56)
+#endif
+
 namespace sandbox {
 
 namespace {
@@ -510,6 +517,17 @@ void ConvertProcessMitigationsToPolicy(MitigationFlags flags,
           << "Cannot enable in-process CET apis if dynamic code is disabled.";
       *policy_value_2 |=
           PROCESS_CREATION_MITIGATION_POLICY2_CET_DYNAMIC_APIS_OUT_OF_PROC_ONLY_ALWAYS_OFF;
+    }
+  }
+
+  // Mitigations >= Win10 22H2
+  //----------------------------------------------------------------------------
+  if (version >= base::win::Version::WIN10_22H2) {
+    // Note that this mitigation requires not only Win10 22H2, but also a
+    // servicing update [TBD].
+    if (flags & MITIGATION_FSCTL_DISABLED) {
+      *policy_value_2 |=
+          PROCESS_CREATION_MITIGATION_POLICY2_FSCTL_SYSTEM_CALL_DISABLE_ALWAYS_ON;
     }
   }
 

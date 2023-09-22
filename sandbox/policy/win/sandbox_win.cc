@@ -586,6 +586,10 @@ ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
   if (!delegate->CetCompatible())
     mitigations |= MITIGATION_CET_DISABLED;
 
+  if (base::FeatureList::IsEnabled(features::kWinSboxFsctlLockdown)) {
+    mitigations |= MITIGATION_FSCTL_DISABLED;
+  }
+
   ResultCode result = config->SetProcessMitigations(mitigations);
   if (result != SBOX_ALL_OK)
     return result;
