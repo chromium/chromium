@@ -78,8 +78,6 @@ void AboutThisSiteTabHelper::OnOptimizationGuideDecision(
   if (page_info::IsPersistentSidePanelEntryFeatureEnabled()) {
     auto status = ValidateMetadata(about_this_site_metadata_);
 
-    base::UmaHistogramEnumeration("Privacy.AboutThisSite.PageLoadValidation",
-                                  status);
     if (status != AboutThisSiteStatus::kValid) {
       return;
     }
