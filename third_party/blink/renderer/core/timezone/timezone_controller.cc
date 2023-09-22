@@ -65,8 +65,9 @@ void DispatchTimeZoneChangeEventToFrames() {
     for (Frame* frame = page->MainFrame(); frame;
          frame = frame->Tree().TraverseNext()) {
       if (auto* main_local_frame = DynamicTo<LocalFrame>(frame)) {
-        main_local_frame->DomWindow()->DispatchEvent(
-            *Event::Create(event_type_names::kTimezonechange));
+        main_local_frame->DomWindow()->EnqueueWindowEvent(
+            *Event::Create(event_type_names::kTimezonechange),
+            TaskType::kMiscPlatformAPI);
       }
     }
   }
