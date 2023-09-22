@@ -80,7 +80,7 @@ export const GlobalScrollTargetMixin = dedupingMixin(
         subpageScrollTarget: HTMLElement;
         private active_: boolean;
 
-        override connectedCallback() {
+        override connectedCallback(): void {
           super.connectedCallback();
 
           this.active_ =
@@ -88,7 +88,7 @@ export const GlobalScrollTargetMixin = dedupingMixin(
           scrollTargetResolver.promise.then(this._setScrollTarget.bind(this));
         }
 
-        override currentRouteChanged(route: Route) {
+        override currentRouteChanged(route: Route): void {
           // Immediately set the scroll target to active when this page is
           // activated, but wait a task to remove the scroll target when the
           // page is deactivated. This gives scroll handlers like iron-list a

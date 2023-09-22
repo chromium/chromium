@@ -63,7 +63,7 @@ export const RouteOriginMixin = dedupingMixin(
               `Route origin element "${this.tagName}" must specify its route.`);
         }
 
-        override currentRouteChanged(newRoute: Route, prevRoute?: Route) {
+        override currentRouteChanged(newRoute: Route, prevRoute?: Route): void {
           // Only attempt to focus an anchor element if the most recent
           // navigation was a 'pop' (backwards) navigation.
           if (!Router.getInstance().lastRouteChangeWasPopstate()) {
@@ -95,7 +95,7 @@ export const RouteOriginMixin = dedupingMixin(
          *  3) A function that returns the element, or returns null if the
          *     element will be focused manually.
          */
-        addFocusConfig(route: Route|undefined, value: ElementConfig) {
+        addFocusConfig(route: Route|undefined, value: ElementConfig): void {
           if (route) {
             this.focusConfig_.set(route.path, value);
           }
@@ -105,7 +105,7 @@ export const RouteOriginMixin = dedupingMixin(
          * Focuses the element for a given route by finding the associated
          * query selector or calling the configured function.
          */
-        private focusTriggerElement(route: Route) {
+        private focusTriggerElement(route: Route): void {
           const config = this.focusConfig_.get(route.path);
           if (!config) {
             return;

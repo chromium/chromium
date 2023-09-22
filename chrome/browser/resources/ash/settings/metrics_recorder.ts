@@ -55,7 +55,7 @@ export function recordSearch(): void {
  * TODO(b/263414450): make |setting| non-optional when migration is complete.
  */
 export function recordSettingChange(
-    setting?: Setting, value?: SettingChangeValue) {
+    setting?: Setting, value?: SettingChangeValue): void {
   if (setting === undefined) {
     getRecorder().recordSettingChange();
   } else {

@@ -448,7 +448,7 @@ export const MainPageMixin = dedupingMixin(
         }
 
         private dispatchCustomEvent_(
-            name: string, options?: CustomEventInit<unknown>) {
+            name: string, options?: CustomEventInit<unknown>): void {
           const event = new CustomEvent(
               name, {bubbles: true, composed: true, ...options});
           this.dispatchEvent(event);

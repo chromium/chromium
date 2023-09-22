@@ -10,7 +10,7 @@ let instance: LacrosExtensionControlBrowserProxy|null = null;
 
 export class LacrosExtensionControlBrowserProxyImpl implements
     LacrosExtensionControlBrowserProxy {
-  manageLacrosExtension(extensionId: string) {
+  manageLacrosExtension(extensionId: string): void {
     chrome.send('openExtensionPageInLacros', [extensionId]);
   }
 
@@ -19,7 +19,7 @@ export class LacrosExtensionControlBrowserProxyImpl implements
         (instance = new LacrosExtensionControlBrowserProxyImpl());
   }
 
-  static setInstance(obj: LacrosExtensionControlBrowserProxy) {
+  static setInstance(obj: LacrosExtensionControlBrowserProxy): void {
     instance = obj;
   }
 }

@@ -301,7 +301,7 @@ export class Router {
  *
  * Can be used from tests to re-create a Router with a new set of routes.
  */
-export function createRouter() {
+export function createRouter(): Router {
   return new Router(createRoutes());
 }
 
