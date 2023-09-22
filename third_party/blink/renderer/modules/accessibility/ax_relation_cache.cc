@@ -183,6 +183,16 @@ bool AXRelationCache::IsValidOwner(AXObject* owner) {
   if (owner->IsTextField())
     return false;
 
+  // Temporary fix for M117 only. Ignore aria-owns on HTML <label for> where
+  // they have the same value. This redundant markup is using angular and
+  // causes an OOM crash, in 117 only. See crbug.com/1484715.
+  if (auto* label = DynamicTo<HTMLLabelElement>(owner->GetNode())) {
+    if (label->getAttribute(html_names::kForAttr) ==
+        label->getAttribute(html_names::kAriaOwnsAttr)) {
+      return false;
+    }
+  }
+
   // A frame/iframe/fencedframe can only parent a document.
   if (AXObject::IsFrame(owner->GetNode()))
     return false;
