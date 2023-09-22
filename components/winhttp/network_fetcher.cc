@@ -69,19 +69,19 @@ NetworkFetcher::NetworkFetcher(
       proxy_configuration_(proxy_configuration) {}
 
 NetworkFetcher::~NetworkFetcher() {
-  DVLOG(3) << "~NetworkFetcher";
+  DVLOG(3) << __func__;
 }
 
 void NetworkFetcher::HandleClosing() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // `write_data_callback_` maintains an outstanding reference to this object
+  // and the reference must be released to avoid leaking the object.
+  write_data_callback_.Reset();
   self_ = nullptr;
 }
 
 void NetworkFetcher::Close() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // |write_data_callback_| maintains an outstanding reference to this object
-  // and the reference must be released to avoid leaking the object.
-  write_data_callback_.Reset();
   request_handle_.reset();
 }
 
