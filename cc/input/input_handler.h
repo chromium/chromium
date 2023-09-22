@@ -571,33 +571,18 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   bool SnapAtScrollEnd(SnapReason reason);
 
   // `layer` is returned from a regular hit test, and
-  // `first_scrolling_layer_or_drawn_scrollbar` is returned from a hit test
-  // performed only on scrollers and scrollbars.
-  // - If the latter is the direct scroll ancestor of `layer`, this function
-  //   returns true;
-  // - Otherwise, which scroller to scroll depends on the hit test opaqueness
-  //   of `layer`:
-  //   - If `layer` is opaque to hit test, then we should scroll `layer`'s
-  //     direct scroll ancestor.
-  //   - Otherwise the initial scroll hit testing is unreliable and this
-  //     function returns false. Then we will fall back to main thread
-  //     scrolling because the compositor thread doesn't know which layer to
-  //     scroll.
-  //   This happens when a layer covers a scroller that doesn't scroll the
-  //   former, or a scroller is masked by a mask layer for mask image,
-  //   clip-path, rounded border, etc.
-  // If this function returns true, `out_node_to_scroll` is set to the scroll
-  // node to scroll.
-  //
-  // Note, position: fixed layers use the inner viewport as their ScrollNode
-  // (since they don't scroll with the outer viewport), however, scrolls from
-  // the fixed layer still chain to the outer viewport. It's also possible for a
-  // node to have the inner viewport as its ancestor without going through the
-  // outer viewport; however, it may still scroll using the viewport(). Hence,
-  // this method must use the same scroll chaining logic we use in ApplyScroll.
+  // `first_scrollable_or_opaque_to_hit_test_layer` is the first scroller,
+  // scrollbar, or layer opaque to hit test, when we perform a hit test for
+  // all layers from top to bottom in z order.
+  // This function returns true if we know which scroller to scroll, and
+  // `out_node_to_scroll` is set to the scroll node to scroll. It returns
+  // false when `layer` covers `first_layer_scrollable_or_opaque_to_hit_test`
+  // but they have different nearest scroll ancestors, and we don't know
+  // which scroll ancestor to scroll. This includes the case that a scroller is
+  // masked by a mask layer for mask image, clip-path, rounded border, etc.
   bool IsInitialScrollHitTestReliable(
       const LayerImpl* layer,
-      const LayerImpl* first_scrolling_layer_or_drawn_scrollbar,
+      const LayerImpl* first_layer_scrollable_or_opaque_to_hit_test,
       ScrollNode*& out_node_to_scroll) const;
 
   // Similar to above but includes complicated logic to determine whether the

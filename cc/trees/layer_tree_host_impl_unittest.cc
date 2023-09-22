@@ -17767,6 +17767,16 @@ class UnifiedScrollingTest : public LayerTreeHostImplTest {
     UpdateDrawProperties(host_impl_->active_tree());
   }
 
+  void CreateLayerCoveringWholeViewportInScroller(
+      HitTestOpaqueness opaqueness) {
+    LayerImpl* layer = AddLayer();
+    layer->SetBounds(gfx::Size(100, 100));
+    layer->SetDrawsContent(true);
+    layer->SetHitTestOpaqueness(opaqueness);
+    CopyProperties(scroller_layer_.get(), layer);
+    UpdateDrawProperties(host_impl_->active_tree());
+  }
+
   ScrollStatus ScrollBegin(const gfx::Vector2d& delta) {
     auto scroll_state =
         BeginState(gfx::Point(25, 25), delta, ui::ScrollInputType::kWheel);
@@ -18035,7 +18045,36 @@ TEST_F(UnifiedScrollingTest,
   }
 }
 
-// Similar to the above, but the layer is opaque to hit test.
+// Similar to LayerMixedHitTestOpaquenessCausesMainThreadHitTest, with more
+// layers that have mixed hit-test opaqueness but are reliable to hit test.
+// These layers should not affect the unreliable hit test on the target layer.
+TEST_F(UnifiedScrollingTest,
+       LayerMixedHitTestOpaquenessCausesMainThreadHitTest2) {
+  CreateScroller(MainThreadScrollingReason::kNotScrollingOnMain);
+  CreateLayerCoveringWholeViewportInScroller(HitTestOpaqueness::kMixed);
+  CreateLayerCoveringWholeViewportEscapingScrollers(HitTestOpaqueness::kMixed);
+  CreateLayerCoveringWholeViewportInScroller(HitTestOpaqueness::kMixed);
+
+  {
+    ScrollStatus status = ScrollBegin(gfx::Vector2d(0, 10));
+    EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
+    EXPECT_EQ(MainThreadScrollingReason::kFailedHitTest,
+              status.main_thread_hit_test_reasons);
+  }
+
+  {
+    ScrollStatus status = ContinuedScrollBegin(ScrollerElementId());
+    EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
+    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
+              status.main_thread_hit_test_reasons);
+
+    EXPECT_TRUE(CurrentlyScrollingNode());
+    EXPECT_EQ(ScrollerNode(), CurrentlyScrollingNode());
+  }
+}
+
+// Similar to LayerMixedHitTestOpaquenessCausesMainThreadHitTest, but the layer
+// is opaque to hit test.
 TEST_F(UnifiedScrollingTest, LayerOpaqueToHitTestScrollsOnCompositor) {
   CreateScroller(MainThreadScrollingReason::kNotScrollingOnMain);
   CreateLayerCoveringWholeViewportEscapingScrollers(HitTestOpaqueness::kOpaque);
@@ -18047,6 +18086,35 @@ TEST_F(UnifiedScrollingTest, LayerOpaqueToHitTestScrollsOnCompositor) {
     // We can start scroll the scroll parent of the layer, which is the outer
     // viewport scroll layer.
     EXPECT_EQ(host_impl_->OuterViewportScrollNode(), CurrentlyScrollingNode());
+  }
+}
+
+TEST_F(UnifiedScrollingTest,
+       LayerOpaqueToHitTestEscapingScrollersWithMixedToHitTestLayers) {
+  CreateScroller(MainThreadScrollingReason::kNotScrollingOnMain);
+  CreateLayerCoveringWholeViewportInScroller(HitTestOpaqueness::kMixed);
+  CreateLayerCoveringWholeViewportEscapingScrollers(HitTestOpaqueness::kOpaque);
+  CreateLayerCoveringWholeViewportInScroller(HitTestOpaqueness::kMixed);
+  {
+    ScrollStatus status = ScrollBegin(gfx::Vector2d(0, 10));
+    EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
+    EXPECT_EQ(MainThreadScrollingReason::kFailedHitTest,
+              status.main_thread_hit_test_reasons);
+  }
+}
+
+TEST_F(UnifiedScrollingTest,
+       ReliableScrollHitTestWithOpaqueAndMixedToHitTestLayers) {
+  CreateScroller(MainThreadScrollingReason::kNotScrollingOnMain);
+  CreateLayerCoveringWholeViewportInScroller(HitTestOpaqueness::kMixed);
+  CreateLayerCoveringWholeViewportInScroller(HitTestOpaqueness::kOpaque);
+  CreateLayerCoveringWholeViewportInScroller(HitTestOpaqueness::kMixed);
+  {
+    ScrollStatus status = ScrollBegin(gfx::Vector2d(0, 10));
+    EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
+    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
+              status.main_thread_hit_test_reasons);
+    EXPECT_EQ(ScrollerNode(), CurrentlyScrollingNode());
   }
 }
 

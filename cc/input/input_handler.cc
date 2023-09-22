@@ -1485,8 +1485,9 @@ InputHandler::ScrollHitTestResult InputHandler::HitTestScrollNode(
       ActiveTree().FindLayersUpToFirstScrollableOrOpaqueToHitTest(
           device_viewport_point);
 
-  const LayerImpl* scroller_layer =
-      (!layers.empty() && layers.back()->IsScrollerOrScrollbar())
+  const LayerImpl* first_scrollable_or_opaque_to_hit_test_layer =
+      !layers.empty() && (layers.back()->IsScrollerOrScrollbar() ||
+                          layers.back()->OpaqueToHitTest())
           ? layers.back()
           : nullptr;
   ScrollNode* node_to_scroll = nullptr;
@@ -1495,8 +1496,9 @@ InputHandler::ScrollHitTestResult InputHandler::HitTestScrollNode(
   // scrolling if they come from outside the scroller's scroll-subtree or if we
   // hit a non-fast-scrolling-region.
   for (const auto* layer_impl : layers) {
-    if (!IsInitialScrollHitTestReliable(layer_impl, scroller_layer,
-                                        node_to_scroll)) {
+    if (!IsInitialScrollHitTestReliable(
+            layer_impl, first_scrollable_or_opaque_to_hit_test_layer,
+            node_to_scroll)) {
       TRACE_EVENT_INSTANT0("cc", "Failed Hit Test", TRACE_EVENT_SCOPE_THREAD);
       result.main_thread_hit_test_reasons =
           MainThreadScrollingReason::kFailedHitTest;
@@ -1576,11 +1578,11 @@ ScrollNode* InputHandler::GetNodeToScroll(ScrollNode* node) const {
 
 bool InputHandler::IsInitialScrollHitTestReliable(
     const LayerImpl* layer_impl,
-    const LayerImpl* first_scrolling_layer_or_scrollbar,
+    const LayerImpl* first_scrollable_or_opaque_to_hit_test_layer,
     ScrollNode*& out_node_to_scroll) const {
   // Hit tests directly on a composited scrollbar are always reliable.
   if (layer_impl->IsScrollbarLayer()) {
-    DCHECK(layer_impl == first_scrolling_layer_or_scrollbar);
+    DCHECK(layer_impl == first_scrollable_or_opaque_to_hit_test_layer);
     // If we hit a scrollbar layer, get the ScrollNode from its associated
     // scrolling layer, rather than directly from the scrollbar layer. The
     // latter would return the parent scroller's ScrollNode.
@@ -1597,42 +1599,37 @@ bool InputHandler::IsInitialScrollHitTestReliable(
   ScrollNode* scroll_node = scroll_tree.Node(layer_impl->scroll_tree_index());
   for (; scroll_tree.parent(scroll_node);
        scroll_node = scroll_tree.parent(scroll_node)) {
-    // TODO(bokan): |scrollable| appears to always be true in LayerList mode.
-    // In non-LayerList, scroll hit tests should always be reliable because we
-    // don't have situations where a layer can be hit testable but pass some
-    // points through (e.g. squashing layers). Perhaps we can remove this
-    // condition?
+    // TODO(crbug.com/1413877): This is inconsistent with the condition in
+    // LayerTreeImpl::FindLayersUpToFirstScrollableOrOpaqueToHitTest(), and
+    // may be a reason for kFailedHitTest main thread scrolling. Can we change
+    // FindLayersUpToFirstScrollableOrOpaqueToHitTest() not to return
+    // a non-scrollable scroller, or not to check scrollable here? We may also
+    // need to consider overscroll behavior of a non-scrollable scroller.
     if (scroll_node->scrollable) {
       closest_scroll_node = GetNodeToScroll(scroll_node);
       break;
     }
   }
-  // We can reliably use layer_impl's closest scroll node if layer_impl is
-  // opaque to hit test (which can be true only if the blink feature
-  // HitTestOpaqueness is enabled).
-  if (layer_impl->OpaqueToHitTest()) {
-    out_node_to_scroll = closest_scroll_node;
-    return true;
-  }
+
   // If there's a scrolling layer, we should also have a closest scroll node,
   // and vice versa. Otherwise, the hit test is not reliable.
-  if ((first_scrolling_layer_or_scrollbar && !closest_scroll_node) ||
-      (closest_scroll_node && !first_scrolling_layer_or_scrollbar)) {
+  if ((first_scrollable_or_opaque_to_hit_test_layer && !closest_scroll_node) ||
+      (closest_scroll_node && !first_scrollable_or_opaque_to_hit_test_layer)) {
     return false;
   }
-  if (!first_scrolling_layer_or_scrollbar && !closest_scroll_node) {
+  if (!first_scrollable_or_opaque_to_hit_test_layer && !closest_scroll_node) {
     // It's ok if we have neither.
     out_node_to_scroll = nullptr;
     return true;
   }
 
-  // If |first_scrolling_layer_or_scrollbar| is not a scrollbar, it must be
-  // a scrollable layer with a scroll node. If this scroll node corresponds to
-  // first scrollable ancestor along the scroll tree for |layer_impl|, the hit
-  // test has not escaped to other areas of the scroll tree and is reliable.
-  if (!first_scrolling_layer_or_scrollbar->IsScrollbarLayer() &&
+  // If `first_scrollable_or_opaque_to_hit_test_layer` is not a scrollbar, and
+  // its scroll tree index corresponds to the first scrollable ancestor for
+  // `layer_impl`, the hit test has not escaped to other areas of the scroll
+  // tree and is reliable.
+  if (!first_scrollable_or_opaque_to_hit_test_layer->IsScrollbarLayer() &&
       closest_scroll_node->id ==
-          first_scrolling_layer_or_scrollbar->scroll_tree_index()) {
+          first_scrollable_or_opaque_to_hit_test_layer->scroll_tree_index()) {
     out_node_to_scroll = closest_scroll_node;
     return true;
   }
