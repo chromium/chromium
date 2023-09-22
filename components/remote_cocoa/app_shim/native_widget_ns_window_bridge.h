@@ -297,16 +297,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // update widget and compositor size.
   void UpdateWindowGeometry();
 
-  // Is immersive fullscreen enabled. True will be returned at the start of the
-  // fullscreen transition.
-  bool ImmersiveFullscreenIsEnabled();
-
-  // Returns true if kImmersiveFullscreenTabs is being used.
-  bool ImmersiveFullscreenIsTabbed();
-
-  // Returns the last style set with `UpdateToolbarVisibility()`. Defaults to
-  // kAlways.
-  mojom::ToolbarVisibilityStyle ImmersiveFullscreenLastUsedStyle();
+  bool ShouldUseCustomTitlebarHeightForFullscreen() const;
 
   // Called by the ImmersiveModeController when the toolbar reveal status
   // changes. Note that the toolbar may be revealed while the menubar is hidden,

@@ -1029,26 +1029,13 @@ void NativeWidgetNSWindowBridge::ImmersiveFullscreenRevealUnlock() {
   }
 }
 
-bool NativeWidgetNSWindowBridge::ImmersiveFullscreenIsEnabled() {
-  if (!immersive_mode_controller_) {
-    return false;
-  }
-  return immersive_mode_controller_->is_initialized();
-}
-
-bool NativeWidgetNSWindowBridge::ImmersiveFullscreenIsTabbed() {
-  if (!immersive_mode_controller_) {
-    return false;
-  }
-  return immersive_mode_controller_->IsTabbed();
-}
-
-mojom::ToolbarVisibilityStyle
-NativeWidgetNSWindowBridge::ImmersiveFullscreenLastUsedStyle() {
-  if (!immersive_mode_controller_) {
-    return mojom::ToolbarVisibilityStyle::kAlways;
-  }
-  return immersive_mode_controller_->last_used_style();
+bool NativeWidgetNSWindowBridge::ShouldUseCustomTitlebarHeightForFullscreen()
+    const {
+  return immersive_mode_controller_ &&
+         immersive_mode_controller_->is_initialized() &&
+         immersive_mode_controller_->IsTabbed() &&
+         immersive_mode_controller_->last_used_style() !=
+             remote_cocoa::mojom::ToolbarVisibilityStyle::kNone;
 }
 
 void NativeWidgetNSWindowBridge::OnImmersiveFullscreenToolbarRevealChanged(
