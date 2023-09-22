@@ -439,9 +439,16 @@ H265Parser::Result H265Parser::ParseVPS(int* vps_id) {
             dim_bit_offset[j - 1] + dimension_id_len_minus1[j - 1] + 1;
       }
       // F.7.4.3.1.1 dimension_id_len_minus1
-      dimension_id_len_minus1[num_scalability_types - 1] =
-          5 - dim_bit_offset[num_scalability_types - 1];
+      // Note: this value is specified to be inferred regardless of the value of
+      // NumScalabilityTypes, but the indices would be negative if it were zero.
+      if (num_scalability_types) {
+        dimension_id_len_minus1[num_scalability_types - 1] =
+            5 - dim_bit_offset[num_scalability_types - 1];
+      }
       dim_bit_offset[num_scalability_types] = 6;
+      if (num_scalability_types) {
+        LE_OR_RETURN(dim_bit_offset[num_scalability_types - 1], 5);
+      }
     }
 
     bool vps_nuh_layer_id_present_flag;
