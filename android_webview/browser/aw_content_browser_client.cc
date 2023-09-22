@@ -1108,6 +1108,12 @@ bool AwContentBrowserClient::WillCreateRestrictedCookieManager(
 }
 
 std::string AwContentBrowserClient::GetProduct() {
+  // Return the unreduced product version regardless of the user agent reduction
+  // policy. The call sites do not require user agent reduction and having the
+  // unreduced version is necessary for performance tracing.
+  if (base::FeatureList::IsEnabled(features::kWebViewUnreducedProductVersion)) {
+    return std::string(version_info::GetProductNameAndVersionForUserAgent());
+  }
   return android_webview::GetProduct();
 }
 

@@ -153,6 +153,12 @@ BASE_FEATURE(kWebViewPropagateNetworkSignals,
              "webViewPropagateNetworkSignals",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Provide the unreduced product version from the AwContentBrowserClient API,
+// regardless of the user agent reduction policy.
+BASE_FEATURE(kWebViewUnreducedProductVersion,
+             "WebViewUnreducedPrductVersion",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enable raster in wide color gamut for apps that use webview in a wide color
 // gamut activity.
 BASE_FEATURE(kWebViewWideColorGamutSupport,
