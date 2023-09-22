@@ -1412,9 +1412,9 @@ int AddressComponent::GetStructureVerificationScore() const {
       result += 1;
       break;
     case VerificationStatus::kUserVerified:
-      // In the current implementation, only the root not can be verified by
-      // the user.
-      NOTREACHED();
+      // This score is chosen so high that a component with a verified value
+      // will always win over non-verified ones.
+      result += 1000;
       break;
   }
   for (const auto& component : subcomponents_) {
