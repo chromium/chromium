@@ -77060,6 +77060,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="16" label="WPA 1/2/3"/>
   <int value="17" label="Enterprise WPA 1/2/3"/>
   <int value="18" label="Enterprise WEP"/>
+  <int value="19" label="Transitional OWE"/>
+  <int value="20" label="OWE"/>
 </enum>
 
 <enum name="NetworkServiceCorpResult">
