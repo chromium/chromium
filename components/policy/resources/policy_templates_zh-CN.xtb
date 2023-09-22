@@ -880,6 +880,7 @@
 如果已停用此政策，Chrome 清理功能将不会定期进行扫描，并且手动触发会被停用。
 
 在 <ph name="MS_WIN_NAME" /> 上，此政策仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、已加入 <ph name="MS_AAD_NAME" /> 的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。</translation>
+<translation id="1736990730683753958">chrome://history/grouped 中不会以网页分组的方式显示“Chrome 历史记录”页面。</translation>
 <translation id="1744340218280697033">不允许家长添加受监督的账号</translation>
 <translation id="1751429117283165017">通过设置此政策，您可以罗列一些网址格式，从而指定哪些网站无法请求用户向其授予对主机操作系统的文件系统中的文件或目录的写入权限。
 
@@ -1299,6 +1300,7 @@
 <translation id="208566302163036794">禁用已停用的功能</translation>
 <translation id="208623333578980446">允许使用屏幕唤醒锁定以便进行电源管理</translation>
 <translation id="2089541797660774692">为受管理浏览器启用云报告功能</translation>
+<translation id="2090712407517297305">chrome://history/grouped 中会以网页分组的方式显示“Chrome 历史记录”页面。</translation>
 <translation id="2090939118981888335">如果此政策已启用，系统会允许使用数据压缩代理。如果此政策已停用，系统将禁止使用该代理。
 
       如果您设置了此政策，用户便无法更改相关设置。如果您未设置此政策，用户可以选择使用该功能。</translation>
@@ -1449,6 +1451,7 @@
 <translation id="2204379573346866896">当前小时内已流逝的分钟数。</translation>
 <translation id="2204753382813641270">控制任务栏是否自动隐藏</translation>
 <translation id="2208976000652006649">在使用 POST 的搜索网址中所需的参数</translation>
+<translation id="2212011154693551439">默认情况下，chrome://history/grouped 中会以网页分组的方式显示“Chrome 历史记录”页面。</translation>
 <translation id="2213059592185933570">允许创建漫游个人资料</translation>
 <translation id="2213342458177721585">启用设备级印地语 Inscript 布局。</translation>
 <translation id="2215238871726750562">如果此政策设为 True，系统会阻止浏览器窗口在会话开始时启动。
@@ -2877,6 +2880,16 @@
 未通过此检查的连接将失败并显示错误 ERR_SSL_KEY_USAGE_INCOMPATIBLE。显示此错误的网站可能存在证书配置错误。新型 ECDHE_RSA 加密套件使用“digitalSignature”密钥用法选项，旧版 RSA 解密加密套件则使用“keyEncryptoment”密钥用法选项。如果不确定，管理员应该在用于 HTTPS 的 RSA 证书中同时添加这两种选项。</translation>
 <translation id="3459509316159669723">打印</translation>
 <translation id="3461279434465463233">报告电源状态</translation>
+<translation id="3468115890799739909">此政策用于控制是否以网页分组的方式显示“Chrome 历史记录”页面。
+
+      如果已启用此政策，chrome://history/grouped 中会以网页分组的方式显示“Chrome 历史记录”页面。
+
+      如果已停用此政策，chrome://history/grouped 中不会以网页分组的方式显示“Chrome 历史记录”页面。
+
+      如果未设置此政策，默认情况下，chrome://history/grouped 中会以网页分组的方式显示“Chrome 历史记录”页面。
+
+      请注意，如果已停用 <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> 政策，但已启用或未设置 <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" />，chrome://history/grouped 中仍然会以网页分组的方式显示“Chrome 历史记录”页面，但与用户的相关程度可能会变低。
+</translation>
 <translation id="3478024346823118645">退出时清除用户数据</translation>
 <translation id="3480961938508521469">以标准速率将电池充满。</translation>
 <translation id="348110646151632565">在登录屏幕上启用“随选朗读”无障碍功能。
