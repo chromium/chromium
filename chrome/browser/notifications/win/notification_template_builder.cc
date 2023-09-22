@@ -23,6 +23,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/url_formatter/elide_url.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "third_party/libxml/chromium/xml_writer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -128,13 +129,11 @@ void StartToastElement(XmlWriter* xml_writer,
   if (notification.timestamp().is_null())
     return;
 
-  base::Time::Exploded exploded;
-  notification.timestamp().UTCExplode(&exploded);
   xml_writer->AddAttribute(
       kToastElementDisplayTimestamp,
-      base::StringPrintf("%04d-%02d-%02dT%02d:%02d:%02dZ", exploded.year,
-                         exploded.month, exploded.day_of_month, exploded.hour,
-                         exploded.minute, exploded.second));
+      base::UnlocalizedTimeFormatWithPattern(notification.timestamp(),
+                                             "yyyy-MM-dd'T'HH:mm:ssX",
+                                             icu::TimeZone::getGMT()));
 }
 
 void EndToastElement(XmlWriter* xml_writer) {

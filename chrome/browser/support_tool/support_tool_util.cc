@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/strings/stringprintf.h"
+#include "base/i18n/time_formatting.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/feedback/system_logs/log_sources/chrome_internal_log_source.h"
@@ -23,6 +23,7 @@
 #include "chrome/browser/support_tool/signin_data_collector.h"
 #include "chrome/browser/support_tool/support_tool_handler.h"
 #include "chrome/browser/support_tool/system_log_source_data_collector_adaptor.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/browser_manager.h"
@@ -90,14 +91,6 @@ constexpr support_tool::DataCollectorType kDataCollectorsChromeosHwDetails[] = {
 // logs for Lacros.
 constexpr support_tool::DataCollectorType kOptionalDataCollectors[] = {
     support_tool::CHROMEOS_CROS_API, support_tool::CHROMEOS_LACROS};
-
-// Returns the current time in UTCYYYY_MM_DD_HH_mm format.
-std::string GetTimestampString(base::Time timestamp) {
-  base::Time::Exploded tex;
-  timestamp.UTCExplode(&tex);
-  return base::StringPrintf("UTC%04d%02d%02d_%02d%02d", tex.year, tex.month,
-                            tex.day_of_month, tex.hour, tex.minute);
-}
 
 }  // namespace
 
@@ -335,5 +328,7 @@ base::FilePath GetFilepathToExport(base::FilePath target_directory,
   if (!case_id.empty()) {
     filename += case_id + "_";
   }
-  return target_directory.AppendASCII(filename + GetTimestampString(timestamp));
+  return target_directory.AppendASCII(
+      filename + base::UnlocalizedTimeFormatWithPattern(
+                     timestamp, "'UTC'yyyyMMdd_HHmm", icu::TimeZone::getGMT()));
 }

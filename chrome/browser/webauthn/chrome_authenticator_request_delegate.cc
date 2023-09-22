@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/i18n/time_formatting.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
@@ -72,6 +73,7 @@
 #include "extensions/common/constants.h"
 #include "net/base/url_util.h"
 #include "third_party/icu/source/common/unicode/locid.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -568,13 +570,12 @@ void ChromeAuthenticatorRequestDelegate::OnTransactionSuccessful(
   }
 
   if (authenticator_type == device::AuthenticatorType::kTouchID) {
-    base::Time::Exploded exploded;
-    base::Time::Now().UTCExplode(&exploded);
     Profile::FromBrowserContext(GetBrowserContext())
         ->GetPrefs()
-        ->SetString(kWebAuthnTouchIdLastUsed,
-                    base::StringPrintf("%04d-%02d-%02d", exploded.year,
-                                       exploded.month, exploded.day_of_month));
+        ->SetString(
+            kWebAuthnTouchIdLastUsed,
+            base::UnlocalizedTimeFormatWithPattern(
+                base::Time::Now(), "yyyy-MM-dd", icu::TimeZone::getGMT()));
   }
 
   dialog_model_->RecordMacOsSuccessHistogram(request_type, authenticator_type);

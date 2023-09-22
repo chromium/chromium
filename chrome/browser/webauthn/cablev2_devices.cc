@@ -11,10 +11,10 @@
 #include "base/base64.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/i18n/time_formatting.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
@@ -30,6 +30,7 @@
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/cable/v2_handshake.h"
 #include "device/fido/features.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 
 using device::cablev2::Pairing;
 
@@ -416,13 +417,9 @@ void AddPairing(Profile* profile, std::unique_ptr<Pairing> pairing) {
     dict.Set(kPairingPrefNewImpl, true);
   }
 
-  base::Time::Exploded now;
-  base::Time::Now().UTCExplode(&now);
-  dict.Set(
-      kPairingPrefTime,
-      // RFC 3339 time format.
-      base::StringPrintf("%04d-%02d-%02dT%02d:%02d:%02dZ", now.year, now.month,
-                         now.day_of_month, now.hour, now.minute, now.second));
+  dict.Set(kPairingPrefTime, base::UnlocalizedTimeFormatWithPattern(
+                                 base::Time::Now(), "yyyy-MM-dd'T'HH:mm:ssX",
+                                 icu::TimeZone::getGMT()));
 
   update->Append(std::move(dict));
 }

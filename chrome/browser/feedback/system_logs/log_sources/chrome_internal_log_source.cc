@@ -16,7 +16,6 @@
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -43,6 +42,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/ash_interfaces.h"
+#include "base/i18n/time_formatting.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
@@ -57,6 +57,7 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/version/version_loader.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -65,6 +66,7 @@
 #include "ui/base/win/hidden_window.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/google/google_update_win.h"
 #endif
 #endif
@@ -594,12 +596,9 @@ void ChromeInternalLogSource::PopulateOnboardingTime(
       profile->GetPrefs()->GetTime(ash::prefs::kOobeOnboardingTime);
   if (time.is_null())
     return;
-
-  base::Time::Exploded exploded;
-  time.UTCExplode(&exploded);
   response->emplace(kOnboardingTime,
-                    base::StringPrintf("%04d-%02d-%02d", exploded.year,
-                                       exploded.month, exploded.day_of_month));
+                    base::UnlocalizedTimeFormatWithPattern(
+                        time, "yyyy-MM-dd", icu::TimeZone::getGMT()));
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

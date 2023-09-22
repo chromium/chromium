@@ -6,12 +6,11 @@
 
 #include <string>
 
+#include "base/i18n/time_formatting.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_service_log.h"
@@ -24,12 +23,7 @@ namespace {
 
 // This is for debugging, so it doesn't use local time conversions.
 std::string EventTimeToString(const SessionServiceEvent& event) {
-  base::Time::Exploded time_details;
-  event.time.LocalExplode(&time_details);
-  return base::StringPrintf("%d/%d/%d %d:%02d:%02d", time_details.month,
-                            time_details.day_of_month, time_details.year,
-                            time_details.hour, time_details.minute,
-                            time_details.second);
+  return base::UnlocalizedTimeFormatWithPattern(event.time, "M/d/y H:mm:ss");
 }
 
 std::string EventToString(const SessionServiceEvent& event) {

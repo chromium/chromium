@@ -18,6 +18,7 @@
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/settings/public/constants/setting.mojom.h"
 #include "base/command_line.h"
+#include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -26,7 +27,6 @@
 #include "base/notreached.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
-#include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -79,6 +79,7 @@
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user_manager.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "ui/events/event_constants.h"
 #include "url/gurl.h"
 
@@ -743,11 +744,9 @@ void SystemTrayClientImpl::ShowCalendarEvent(
     official_url = event_url->ReplaceComponents(replacements);
   } else {
     // No event URL provided, so fall back on opening calendar with `date`.
-    base::Time::Exploded date_exp;
-    date.UTCExplode(&date_exp);
-    official_url = GURL(base::StringPrintf(
-        "%sr/week/%d/%d/%d", kOfficialCalendarUrlPrefix, date_exp.year,
-        date_exp.month, date_exp.day_of_month));
+    official_url = GURL(kOfficialCalendarUrlPrefix +
+                        base::UnlocalizedTimeFormatWithPattern(
+                            date, "'r/week/'y/M/d", icu::TimeZone::getGMT()));
   }
 
   // Return the URL we actually opened.
