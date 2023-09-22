@@ -6952,17 +6952,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="GridTabSwitcher.DirtySpan" units="ms"
-    expires_after="2024-02-11">
-  <owner>ckitagawa@chromium.org</owner>
-  <owner>meiliang@chromium.org</owner>
-  <summary>
-    This histogram records the dirty span of the transition animation between
-    Tab and Grid Tab Switcher. The dirty span is the duration from the start of
-    the animation to the last View invalidation.
-  </summary>
-</histogram>
-
 <histogram base="true" name="GridTabSwitcher.FramePerSecond" units="frame/sec"
     expires_after="2024-02-11">
   <owner>ckitagawa@chromium.org</owner>

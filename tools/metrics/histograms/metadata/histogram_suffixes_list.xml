@@ -1853,7 +1853,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram
       name="Android.GridTabSwitcher.Animation.FirstFrameLatency"/>
   <affected-histogram name="Android.GridTabSwitcher.Animation.TotalDuration"/>
-  <affected-histogram name="GridTabSwitcher.DirtySpan"/>
   <affected-histogram name="GridTabSwitcher.FramePerSecond"/>
   <affected-histogram name="GridTabSwitcher.MaxFrameInterval"/>
 </histogram_suffixes>

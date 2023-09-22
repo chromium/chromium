@@ -652,10 +652,6 @@ public class TabListCoordinator
         return mRecyclerView.getResourceId();
     }
 
-    long getLastDirtyTime() {
-        return mRecyclerView.getLastDirtyTime();
-    }
-
     /**
      * Register a new view type for the component.
      * @see MVCListAdapter#registerType(int, MVCListAdapter.ViewBuilder,

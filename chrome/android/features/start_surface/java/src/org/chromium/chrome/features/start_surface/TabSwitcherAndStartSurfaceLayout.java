@@ -16,7 +16,6 @@ import android.os.SystemClock;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
@@ -45,7 +44,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.TabListDelegate;
-import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherLayout.PerfListener;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherLayout;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherLayout.TransitionType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurface.TabSwitcherViewObserver;
@@ -53,34 +53,23 @@ import org.chromium.chrome.features.tasks.TasksView;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
-import org.chromium.components.version_info.VersionInfo;
 import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.animation.AnimationPerformanceTracker;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.resources.ResourceManager;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * A {@link Layout} that shows all tabs in one grid or carousel view.
  */
 public class TabSwitcherAndStartSurfaceLayout extends Layout {
     private static final String TAG = "SSLayout";
-
-    @IntDef({TransitionType.NONE, TransitionType.SHRINK, TransitionType.EXPAND})
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface TransitionType {
-        int NONE = 0;
-        int SHRINK = 1;
-        int EXPAND = 2;
-    }
 
     // Duration of the transition animation
     public static final long ZOOMING_DURATION = 325;
@@ -119,12 +108,9 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
     private float mBackgroundAlpha;
     private int mTabListTopOffset;
 
-    private @TransitionType int mFirstFrameTransitionType;
+    private final AnimationPerformanceTracker mAnimationTracker;
+    private @TransitionType int mAnimationTransitionType;
     private long mTransitionStartTime;
-    private int mFrameCount;
-    private long mAnimationStartTime;
-    private long mLastFrameTime;
-    private long mMaxFrameInterval;
 
     private boolean mAndroidViewFinishedShowing;
 
@@ -158,8 +144,6 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
 
     private Animator mBackgroundTabAnimation;
 
-    private PerfListener mPerfListenerForTesting;
-
     public TabSwitcherAndStartSurfaceLayout(Context context, LayoutUpdateHost updateHost,
             LayoutRenderHost renderHost, BrowserControlsStateProvider browserControlsStateProvider,
             StartSurface startSurface, ViewGroup tabSwitcherScrimAnchor,
@@ -171,6 +155,11 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
         mScrimAnchor = tabSwitcherScrimAnchor;
         mScrimCoordinator = scrimCoordinator;
         mHandler = new Handler();
+        mAnimationTracker = new AnimationPerformanceTracker();
+        mAnimationTracker.addListener((metrics) -> {
+            TabSwitcherLayout.reportAnimationPerf(
+                    metrics, mTransitionStartTime, mAnimationTransitionType);
+        });
 
         mTabSwitcherObserver = new TabSwitcherViewObserver() {
             @Override
@@ -316,7 +305,6 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
     private void showTabSwitcher(long time, boolean animate) {
         try (TraceEvent e = TraceEvent.scoped(TRACE_SHOW_TAB_SWITCHER)) {
             mTransitionStartTime = SystemClock.elapsedRealtime();
-            mFirstFrameTransitionType = TransitionType.SHRINK;
 
             show(time, animate, false /*isShowingStartSurfaceHomepage*/);
         }
@@ -453,7 +441,6 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
     private void startHidingTabSwitcher(int nextId, boolean hintAtTabSelection) {
         try (TraceEvent e = TraceEvent.scoped(TRACE_HIDE_TAB_SWITCHER)) {
             mTransitionStartTime = SystemClock.elapsedRealtime();
-            mFirstFrameTransitionType = TransitionType.EXPAND;
 
             startHidingImpl(nextId, hintAtTabSelection);
         }
@@ -655,6 +642,7 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
         mTabToSwitcherAnimation.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
+                mAnimationTracker.onStart();
                 TabSwitcher.Controller controller = mStartSurface.getGridTabSwitcherController();
                 if (controller != null) {
                     controller.prepareShowTabSwitcherView();
@@ -667,10 +655,11 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
                 // Step 2: fade in the real GTS RecyclerView.
                 mStartSurface.showOverview(true);
 
-                reportAnimationPerf(TransitionType.SHRINK);
+                mAnimationTracker.onEnd();
+                mAnimationTransitionType = TransitionType.NONE;
             }
         });
-        resetPerfCounters();
+        mAnimationTransitionType = TransitionType.SHRINK;
         mTabToSwitcherAnimation.start();
     }
 
@@ -719,14 +708,20 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
         mTabToSwitcherAnimation.playTogether(animationList);
         mTabToSwitcherAnimation.addListener(new AnimatorListenerAdapter() {
             @Override
+            public void onAnimationStart(Animator animation) {
+                mAnimationTracker.onStart();
+            }
+
+            @Override
             public void onAnimationEnd(Animator animation) {
                 mTabToSwitcherAnimation = null;
                 postHiding();
 
-                reportAnimationPerf(TransitionType.EXPAND);
+                mAnimationTracker.onEnd();
+                mAnimationTransitionType = TransitionType.NONE;
             }
         });
-        resetPerfCounters();
+        mAnimationTransitionType = TransitionType.EXPAND;
         mTabToSwitcherAnimation.start();
     }
 
@@ -864,83 +859,17 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
         doneHiding();
     }
 
-    public void setPerfListenerForTesting(PerfListener perfListener) {
-        mPerfListenerForTesting = perfListener;
-        ResettersForTesting.register(() -> mPerfListenerForTesting = null);
+    public void removePerfListenerForTesting(AnimationPerformanceTracker.Listener perfListener) {
+        mAnimationTracker.removeListener(perfListener);
+    }
+
+    public void addPerfListenerForTesting(AnimationPerformanceTracker.Listener perfListener) {
+        mAnimationTracker.addListener(perfListener);
+        ResettersForTesting.register(() -> removePerfListenerForTesting(perfListener));
     }
 
     public StartSurface getStartSurfaceForTesting() {
         return mStartSurface;
-    }
-
-    private String transitionTypeToString(@TransitionType int transitionType) {
-        switch (transitionType) {
-            case TransitionType.SHRINK:
-                return ".Shrink";
-            case TransitionType.EXPAND:
-                return ".Expand";
-            case TransitionType.NONE:
-                assert false : "TransitionType should not be none for string conversion.";
-        }
-        return "";
-    }
-
-    private void resetPerfCounters() {
-        mFrameCount = 0;
-        mAnimationStartTime = SystemClock.elapsedRealtime();
-        mLastFrameTime = SystemClock.elapsedRealtime();
-        mMaxFrameInterval = 0;
-    }
-
-    private void updatePerfCounters() {
-        final long currentTime = SystemClock.elapsedRealtime();
-        if (mFrameCount == 0 && mFirstFrameTransitionType != TransitionType.NONE) {
-            String suffix = transitionTypeToString(mFirstFrameTransitionType);
-            RecordHistogram.recordTimesHistogram(
-                    "Android.GridTabSwitcher.Animation.FirstFrameLatency" + suffix,
-                    currentTime - mTransitionStartTime);
-            mFirstFrameTransitionType = TransitionType.NONE;
-        }
-        mFrameCount++;
-        if (mLastFrameTime != 0) {
-            mMaxFrameInterval = Math.max(mMaxFrameInterval, currentTime - mLastFrameTime);
-        }
-        mLastFrameTime = currentTime;
-    }
-
-    private void reportAnimationPerf(@TransitionType int transitionType) {
-        if (mFrameCount == 0) return;
-
-        final long currentTime = SystemClock.elapsedRealtime();
-        final long elapsedMs = currentTime - mAnimationStartTime;
-        final long totalDurationMs = currentTime - mTransitionStartTime;
-        final long lastDirty = mGridTabListDelegate.getLastDirtyTime();
-        final int dirtySpan = (int) (lastDirty - mAnimationStartTime);
-        final float fps = 1000.f * mFrameCount / elapsedMs;
-
-        // TODO(crbug.com/964406): stop logging it after this feature stabilizes.
-        if (!VersionInfo.isStableBuild()) {
-            String message = String.format(Locale.US,
-                    "fps = %.2f (%d / %dms), maxFrameInterval = %d, dirtySpan = %d", fps,
-                    mFrameCount, elapsedMs, mMaxFrameInterval, dirtySpan);
-            Log.i(TAG, message);
-        }
-
-        String suffix = transitionTypeToString(transitionType);
-
-        // TODO(crbug.com/982018): Separate histograms for carousel tab switcher.
-        RecordHistogram.recordCount100Histogram(
-                "GridTabSwitcher.FramePerSecond" + suffix, (int) fps);
-        RecordHistogram.recordTimesHistogram(
-                "GridTabSwitcher.MaxFrameInterval" + suffix, mMaxFrameInterval);
-        RecordHistogram.recordTimesHistogram("GridTabSwitcher.DirtySpan" + suffix, dirtySpan);
-        RecordHistogram.recordTimesHistogram(
-                "Android.GridTabSwitcher.Animation.TotalDuration" + suffix, totalDurationMs);
-
-        if (mPerfListenerForTesting != null) {
-            mPerfListenerForTesting.onAnimationDone(
-                    mFrameCount, elapsedMs, mMaxFrameInterval, dirtySpan);
-        }
     }
 
     private void reportTabletAnimationPerf(boolean translatingUp) {
@@ -965,7 +894,9 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
                         : 0,
                 mBackgroundAlpha, mTabListTopOffset);
 
-        updatePerfCounters();
+        if (mAnimationTransitionType != TransitionType.NONE) {
+            mAnimationTracker.onUpdate();
+        }
     }
 
     @Override

@@ -144,7 +144,6 @@ class TabListRecyclerView
     private ViewResourceAdapter mDynamicView;
     private boolean mBlockTouchInput;
     private boolean mIsDynamicViewRegistered;
-    private long mLastDirtyTime;
     private ImageView mShadowImageView;
     private int mShadowTopOffset;
     private TabListOnScrollListener mScrollListener;
@@ -396,10 +395,6 @@ class TabListRecyclerView
         return mResourceId;
     }
 
-    long getLastDirtyTime() {
-        return mLastDirtyTime;
-    }
-
     private float getDownsamplingScale() {
         return DEFAULT_DOWNSAMPLING_SCALE;
     }
@@ -423,9 +418,6 @@ class TabListRecyclerView
             @Override
             public boolean isDirty() {
                 boolean dirty = super.isDirty();
-                if (dirty) {
-                    mLastDirtyTime = SystemClock.elapsedRealtime();
-                }
                 if (SystemClock.elapsedRealtime() < mSuppressedUntil || mSuppressCapture) {
                     if (dirty) {
                         Log.d(TAG, "Dynamic View is dirty but suppressed");

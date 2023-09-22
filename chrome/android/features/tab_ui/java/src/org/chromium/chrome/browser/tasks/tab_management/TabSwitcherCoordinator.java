@@ -638,11 +638,6 @@ public class TabSwitcherCoordinator
     }
 
     @Override
-    public long getLastDirtyTime() {
-        return mTabListCoordinator.getLastDirtyTime();
-    }
-
-    @Override
     public void setBitmapCallbackForTesting(Callback<Bitmap> callback) {
         TabListMediator.ThumbnailFetcher.sBitmapCallbackForTesting = callback;
         ResettersForTesting.register(

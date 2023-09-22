@@ -98,12 +98,6 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
             }
 
             @Override
-            public long getLastDirtyTime() {
-                assert false : "should not reach here";
-                return 0;
-            }
-
-            @Override
             public void setBitmapCallbackForTesting(Callback<Bitmap> callback) {
                 assert false : "should not reach here";
             }

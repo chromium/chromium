@@ -56,7 +56,6 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherLayout.PerfListener;
 import org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.LegacyTestParams;
 import org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.RefactorTestParams;
 import org.chromium.chrome.features.start_surface.TabSwitcherAndStartSurfaceLayout;
@@ -70,6 +69,7 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.animation.AnimationPerformanceTracker;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.UiRestriction;
 
@@ -408,18 +408,15 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
             throws InterruptedException {
         List<Float> frameRates = new LinkedList<>();
         List<Float> frameInterval = new LinkedList<>();
-        List<Float> dirtySpans = new LinkedList<>();
         int[] iteration = new int[] {0};
-        PerfListener collector = (frameRendered, elapsedMs, maxFrameInterval, dirtySpan) -> {
+        AnimationPerformanceTracker.Listener collector = (metrics) -> {
             assertThat("Elapsed time was less than expected duration for iteration " + iteration[0],
-                    elapsedMs,
+                    metrics.getElapsedTimeMs(),
                     greaterThanOrEqualTo(
                             (long) Math.floor(TabSwitcherAndStartSurfaceLayout.ZOOMING_DURATION
                                     * CompositorAnimator.sDurationScale)));
-            float fps = 1000.f * frameRendered / elapsedMs;
-            frameRates.add(fps);
-            frameInterval.add((float) maxFrameInterval);
-            dirtySpans.add((float) dirtySpan);
+            frameRates.add(metrics.getFramesPerSecond());
+            frameInterval.add((float) metrics.getMaxFrameIntervalMs());
         };
 
         mActivityTestRule.loadUrl(fromUrl);
@@ -427,7 +424,7 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
 
         for (int i = 0; i < mRepeat; i++) {
             iteration[0] = i;
-            setPerfListenerForTesting(collector);
+            addPerfListenerForTesting(collector);
             Thread.sleep(mWaitingTime);
             TestThreadUtils.runOnUiThreadBlocking(
                     ()
@@ -442,7 +439,7 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
             assertTrue(mActivityTestRule.getActivity().getLayoutManager().isLayoutVisible(
                     LayoutType.TAB_SWITCHER));
 
-            setPerfListenerForTesting(null);
+            removePerfListenerForTesting(collector);
             TabUiTestHelper.pressBackOnTabSwitcher(mIsStartSurfaceRefactorEnabled,
                     mTabSwitcherLayout, mTabSwitcherAndStartSurfaceLayout);
             LayoutTestUtils.waitForLayout(
@@ -450,8 +447,8 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
             Thread.sleep(mWaitingTime);
         }
         assertEquals(mRepeat, frameRates.size());
-        Log.i(TAG, "%s: fps = %.2f, maxFrameInterval = %.0f, dirtySpan = %.0f", description,
-                median(frameRates), median(frameInterval), median(dirtySpans));
+        Log.i(TAG, "%s: fps = %.2f, maxFrameInterval = %.0f", description, median(frameRates),
+                median(frameInterval));
     }
 
     @Test
@@ -592,21 +589,20 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
         List<Float> frameRates = new LinkedList<>();
         List<Float> frameInterval = new LinkedList<>();
         int[] iteration = new int[] {0};
-        PerfListener collector = (frameRendered, elapsedMs, maxFrameInterval, dirtySpan) -> {
+        AnimationPerformanceTracker.Listener collector = (metrics) -> {
             assertThat("Elapsed time was less than expected duration for iteration " + iteration[0],
-                    elapsedMs,
+                    metrics.getElapsedTimeMs(),
                     greaterThanOrEqualTo(
                             (long) Math.floor(TabSwitcherAndStartSurfaceLayout.ZOOMING_DURATION
                                     * CompositorAnimator.sDurationScale)));
-            float fps = 1000.f * frameRendered / elapsedMs;
-            frameRates.add(fps);
-            frameInterval.add((float) maxFrameInterval);
+            frameRates.add(metrics.getFramesPerSecond());
+            frameInterval.add((float) metrics.getMaxFrameIntervalMs());
         };
         Thread.sleep(mWaitingTime);
 
         for (int i = 0; i < mRepeat; i++) {
             iteration[0] = i;
-            setPerfListenerForTesting(null);
+            removePerfListenerForTesting(collector);
             LayoutTestUtils.startShowingAndWaitForLayout(
                     mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER,
                     true);
@@ -620,7 +616,7 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
                 Thread.sleep(1000);
             }
 
-            setPerfListenerForTesting(collector);
+            addPerfListenerForTesting(collector);
             Thread.sleep(mWaitingTime);
             Espresso.onView(allOf(withParent(withId(TabUiTestHelper.getTabSwitcherParentId(
                                           mActivityTestRule.getActivity()))),
@@ -663,11 +659,23 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
         return array[array.length / 2];
     }
 
-    private void setPerfListenerForTesting(PerfListener perfListener) {
-        if (mTabSwitcherLayout != null) {
-            mTabSwitcherLayout.setPerfListenerForTesting(perfListener);
-        } else {
-            mTabSwitcherAndStartSurfaceLayout.setPerfListenerForTesting(perfListener);
-        }
+    private void addPerfListenerForTesting(AnimationPerformanceTracker.Listener perfListener) {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            if (mTabSwitcherLayout != null) {
+                mTabSwitcherLayout.addPerfListenerForTesting(perfListener);
+            } else {
+                mTabSwitcherAndStartSurfaceLayout.addPerfListenerForTesting(perfListener);
+            }
+        });
+    }
+
+    private void removePerfListenerForTesting(AnimationPerformanceTracker.Listener perfListener) {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            if (mTabSwitcherLayout != null) {
+                mTabSwitcherLayout.removePerfListenerForTesting(perfListener);
+            } else {
+                mTabSwitcherAndStartSurfaceLayout.removePerfListenerForTesting(perfListener);
+            }
+        });
     }
 }

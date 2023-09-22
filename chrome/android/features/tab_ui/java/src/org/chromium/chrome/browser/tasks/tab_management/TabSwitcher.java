@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
-import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 
 /**
  * Interface for the Tab Switcher.
@@ -188,12 +187,6 @@ public interface TabSwitcher {
          * @return The dynamic resource ID of the TabSwitcher RecyclerView.
          */
         int getResourceId();
-
-        /**
-         * @return The timestamp of last dirty event of {@link ViewResourceAdapter} of
-         * {@link TabListRecyclerView}.
-         */
-        long getLastDirtyTime();
 
         /**
          * Call before showing the Grid Tab Switcher from Start Surface with refactor disabled to
