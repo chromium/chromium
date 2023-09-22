@@ -130,7 +130,6 @@ void FileSystemObserver::unobserve(FileSystemHandle* handle) {
 void FileSystemObserver::disconnect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observer_receivers_.Clear();
-  host_remote_.reset();
 }
 
 void FileSystemObserver::OnFileChanges(
