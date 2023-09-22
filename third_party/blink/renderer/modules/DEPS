@@ -67,7 +67,6 @@ specific_include_rules = {
         "+net/base/ip_endpoint.h",
     ],
     ".*socket.cc": [
-        "+base/barrier_callback.h",
         "+base/functional/identity.h",
     ],
 }

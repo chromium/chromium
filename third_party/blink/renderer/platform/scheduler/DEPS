@@ -7,14 +7,12 @@ include_rules = [
 
   # Dependencies.
   "+base/atomic_sequence_num.h",
-  "+base/barrier_closure.h",
   "+base/cancelable_callback.h",
   "+base/command_line.h",
   "+base/compiler_specific.h",
   "+base/containers/circular_deque.h",
   "+base/feature_list.h",
   "+base/format_macros.h",
-  "+base/functional/callback_helpers.h",
   "+base/gtest_prod_util.h",
   "+base/logging.h",
   "+base/message_loop/message_loop.h",
@@ -24,7 +22,6 @@ include_rules = [
   "+base/metrics/field_trial_params.h",
   "+base/metrics/histogram_functions.h",
   "+base/metrics/histogram_macros.h",
-  "+base/observer_list.h",
   "+base/pending_task.h",
   "+base/profiler/sample_metadata.h",
   "+base/run_loop.h",

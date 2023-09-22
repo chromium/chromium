@@ -2,7 +2,6 @@ include_rules = [
     "+base/apple/bridging.h",
     "+base/apple/scoped_cftyperef.h",
     "+base/atomic_sequence_num.h",
-    "+base/barrier_closure.h",
     "+base/cancelable_callback.h",
     "+base/memory/values_equivalent.h",
     "+base/files/file.h",

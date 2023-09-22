@@ -67,9 +67,6 @@ specific_include_rules = {
     "+printing/metafile_skia.h",
     "+ui/gfx/transform_util.h",
   ],
-  "root_frame_viewport\.cc": [
-    "+base/barrier_callback.h",
-  ],
   "visual_viewport\.cc": [
     "+cc/layers/solid_color_scrollbar_layer.h",
   ],

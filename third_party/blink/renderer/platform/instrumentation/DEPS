@@ -10,7 +10,6 @@ include_rules = [
     "+base/json",
     "+base/memory",
     "+base/strings",
-    "+base/trace_event",
     "+base/values.h",
     "+components/performance_manager/public/mojom",
     "+skia/ext/skia_trace_memory_dump_impl.h",
