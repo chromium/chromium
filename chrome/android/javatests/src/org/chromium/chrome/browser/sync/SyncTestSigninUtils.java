@@ -18,7 +18,6 @@ final class SyncTestSigninUtils {
      */
     @CalledByNative
     private static void setUpAccountAndSignInForTesting() {
-        sSigninTestRule.waitForSeeding();
         sSigninTestRule.addTestAccountThenSignin();
     }
 
@@ -27,7 +26,6 @@ final class SyncTestSigninUtils {
      */
     @CalledByNative
     private static void setUpAccountAndSignInAndEnableSyncForTesting() {
-        sSigninTestRule.waitForSeeding();
         sSigninTestRule.addTestAccountThenSigninAndEnableSync();
     }
 
