@@ -111,6 +111,8 @@ static_library("test_support") {
     "run_until.h",
     "scoped_amount_of_physical_memory_override.cc",
     "scoped_amount_of_physical_memory_override.h",
+    "scoped_block_tests_writing_to_special_dirs.cc",
+    "scoped_block_tests_writing_to_special_dirs.h",
     "scoped_command_line.cc",
     "scoped_command_line.h",
     "scoped_feature_list.cc",

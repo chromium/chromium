@@ -9,6 +9,7 @@
 #include <shlobj.h>
 #include <wrl/client.h>
 
+#include "base/files/block_tests_writing_to_special_dirs.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
@@ -72,6 +73,9 @@ bool CreateOrUpdateShortcutLink(const FilePath& shortcut_path,
                                 ShortcutOperation operation) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
 
+  if (!BlockTestsWritingToSpecialDirs::CanWriteToPath(shortcut_path)) {
+    return false;
+  }
   // Make sure the parent directories exist when creating the shortcut.
   if (operation == ShortcutOperation::kCreateAlways &&
       !base::CreateDirectory(shortcut_path.DirName())) {

@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/base_paths.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
@@ -28,6 +29,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/allow_check_is_test_for_testing.h"
 #include "base/test/launcher/test_launcher.h"
+#include "base/test/scoped_block_tests_writing_to_special_dirs.h"
 #include "base/test/test_switches.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_checker.h"
@@ -237,6 +239,19 @@ int LaunchUnitTestsInternal(RunTestSuiteCallback run_test_suite,
                                 std::move(gtest_init)));
   return RunTestsFromIOSApp();
 #else
+  ScopedBlockTestsWritingToSpecialDirs scoped_blocker(
+      {
+        base::DIR_SRC_TEST_DATA_ROOT,
+#if BUILDFLAG(IS_WIN)
+            base::DIR_USER_STARTUP,
+#endif  // BUILDFLAG(IS_WIN)
+      },
+      ([](const base::FilePath& path) {
+        ADD_FAILURE()
+            << "Attempting to write file in dir " << path
+            << " Use ScopedPathOverride or other mechanism to not write to this"
+               " directory.";
+      }));
   return RunTestSuite(std::move(run_test_suite), parallel_jobs,
                       default_batch_limit, retry_limit, use_job_objects,
                       timeout_callback, std::move(gtest_init));

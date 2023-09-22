@@ -8,14 +8,15 @@
 
 #include <map>
 #include <memory>
-#include <set>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/base_paths.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/debug/debugger.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"
@@ -32,6 +33,7 @@
 #include "base/task/single_thread_task_executor.h"
 #include "base/test/gtest_xml_util.h"
 #include "base/test/launcher/test_launcher.h"
+#include "base/test/scoped_block_tests_writing_to_special_dirs.h"
 #include "base/test/test_suite.h"
 #include "base/test/test_support_ios.h"
 #include "base/test/test_switches.h"
@@ -451,6 +453,19 @@ int LaunchTests(TestLauncherDelegate* launcher_delegate,
   base::CommandLine::Init(argc, argv);
   AppendCommandLineSwitches();
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  base::ScopedBlockTestsWritingToSpecialDirs scoped_blocker(
+      {
+        base::DIR_SRC_TEST_DATA_ROOT,
+#if BUILDFLAG(IS_WIN)
+            base::DIR_USER_STARTUP,
+#endif  // BUILDFLAG(IS_WIN)
+      },
+      ([](const base::FilePath& path) {
+        ADD_FAILURE()
+            << "Attempting to write file in dir " << path
+            << " Use ScopedPathOverride or other mechanism to not write to this"
+               " directory.";
+      }));
 
   // TODO(tluk) Remove deprecation warning after a few releases. Deprecation
   // warning issued version 79.
