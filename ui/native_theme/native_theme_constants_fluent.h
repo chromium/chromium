@@ -11,8 +11,8 @@ constexpr int kFluentScrollbarThickness = 15;
 constexpr int kFluentScrollbarThumbThickness = 9;
 
 // A sufficiently large value ensures the most round curve for the corners of
-// the scrollbar thumb.
-constexpr int kFluentScrollbarThumbRadius = 999;
+// the scrollbar thumb and overlay buttons.
+constexpr int kFluentScrollbarPartsRadius = 999;
 
 // The value specifies the minimum length the scrollbar thumb can have*.
 // We choose 17px for compatibility reasons with the default scrollbar on the

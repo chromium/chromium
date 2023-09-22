@@ -109,8 +109,8 @@ void NativeThemeFluent::PaintScrollbarThumb(
 
   cc::PaintCanvasAutoRestore auto_restore(canvas, true);
   SkRRect rrect =
-      SkRRect::MakeRectXY(gfx::RectToSkRect(rect), kFluentScrollbarThumbRadius,
-                          kFluentScrollbarThumbRadius);
+      SkRRect::MakeRectXY(gfx::RectToSkRect(rect), kFluentScrollbarPartsRadius,
+                          kFluentScrollbarPartsRadius);
 
   // Clip the canvas to match the round rect and create round corners.
   SkPath path;
@@ -210,14 +210,24 @@ void NativeThemeFluent::PaintButton(
     outline_flags.setStyle(cc::PaintFlags::kStroke_Style);
     outline_flags.setStrokeWidth(kFluentScrollbarTrackOutlineWidth);
 
-    canvas->drawRect(gfx::RectFToSkRect(outline_rect), outline_flags);
+    if (IsFluentOverlayScrollbarEnabled()) {
+      PaintRoundedButton(canvas, gfx::RectFToSkRect(outline_rect),
+                         outline_flags, direction);
+    } else {
+      canvas->drawRect(gfx::RectFToSkRect(outline_rect), outline_flags);
+    }
 
     // Adjust the fill rect to not overlap with the outline stroke rect.
     constexpr gfx::Insets fill_insets(kFluentScrollbarTrackOutlineWidth);
     button_fill_rect.Inset(fill_insets + edge_insets);
   }
 
-  canvas->drawIRect(gfx::RectToSkIRect(button_fill_rect), flags);
+  if (IsFluentOverlayScrollbarEnabled()) {
+    PaintRoundedButton(canvas, gfx::RectToSkRect(button_fill_rect), flags,
+                       direction);
+  } else {
+    canvas->drawIRect(gfx::RectToSkIRect(button_fill_rect), flags);
+  }
 }
 
 void NativeThemeFluent::PaintArrow(
@@ -347,4 +357,36 @@ const char* NativeThemeFluent::GetArrowCodePointForScrollbarPart(
 int NativeThemeFluent::GetPaintedScrollbarTrackInset() const {
   return kFluentPaintedScrollbarTrackInset;
 }
+
+void NativeThemeFluent::PaintRoundedButton(cc::PaintCanvas* canvas,
+                                           SkRect rect,
+                                           cc::PaintFlags paint_flags,
+                                           NativeTheme::Part direction) const {
+  paint_flags.setAntiAlias(true);
+
+  SkScalar upper_left_radius = 0;
+  SkScalar lower_left_radius = 0;
+  SkScalar upper_right_radius = 0;
+  SkScalar lower_right_radius = 0;
+  if (direction == NativeTheme::kScrollbarUpArrow) {
+    upper_left_radius = kFluentScrollbarPartsRadius;
+    upper_right_radius = kFluentScrollbarPartsRadius;
+  } else if (direction == NativeTheme::kScrollbarDownArrow) {
+    lower_left_radius = kFluentScrollbarPartsRadius;
+    lower_right_radius = kFluentScrollbarPartsRadius;
+  } else if (direction == NativeTheme::kScrollbarLeftArrow) {
+    lower_left_radius = kFluentScrollbarPartsRadius;
+    upper_left_radius = kFluentScrollbarPartsRadius;
+  } else if (direction == NativeTheme::kScrollbarRightArrow) {
+    lower_right_radius = kFluentScrollbarPartsRadius;
+    upper_right_radius = kFluentScrollbarPartsRadius;
+  }
+
+  gfx::RRectF rounded_rect(
+      gfx::SkRectToRectF(rect), upper_left_radius, upper_left_radius,
+      upper_right_radius, upper_right_radius, lower_right_radius,
+      lower_right_radius, lower_left_radius, lower_left_radius);
+  canvas->drawRRect(static_cast<SkRRect>(rounded_rect), paint_flags);
+}
+
 }  // namespace ui
