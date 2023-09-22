@@ -296,7 +296,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 <!-- Name completed by histogram_suffixes
      name="ChromeOS.Camera.StreamFormat" -->
 
-  <owner>wtlee@chromium.org</owner>
+  <owner>beckerh@chromium.org</owner>
   <owner>chromeos-camera-eng@google.com</owner>
   <summary>
     Records the resolution of output stream that is configured by Chrome OS
@@ -306,7 +306,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram name="ChromeOS.Camera.ConfigureStreamsLatency" units="microseconds"
     expires_after="2024-02-04">
-  <owner>wtlee@chromium.org</owner>
+  <owner>beckerh@chromium.org</owner>
   <owner>chromeos-camera-eng@google.com</owner>
   <summary>
     Records the process time of ConfigureStreams() method in Chrome OS camera
@@ -475,7 +475,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram name="ChromeOS.Camera.ErrorType" enum="ChromeOSCameraErrorType"
     expires_after="2024-02-04">
-  <owner>wtlee@chromium.org</owner>
+  <owner>beckerh@chromium.org</owner>
   <owner>chromeos-camera-eng@google.com</owner>
   <summary>
     Records the type of the error which triggers the Notify() method in Chrome
@@ -486,7 +486,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 <histogram name="ChromeOS.Camera.FaceAutoExposure.FunctionStatus"
     enum="ChromeOSCameraFaceAutoExposureFunctionStatus"
     expires_after="2023-10-01">
-  <owner>mojahsu@chromium.org</owner>
+  <owner>beckerh@chromium.org</owner>
   <owner>chromeos-camera-eng@google.com</owner>
   <summary>
     Records face auto exposure function status of the Chrome OS device. The
@@ -496,7 +496,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram name="ChromeOS.Camera.FaceAutoExposure.MaxNumDetectedFaces"
     units="faces" expires_after="2024-02-04">
-  <owner>mojahsu@chromium.org</owner>
+  <owner>beckerh@chromium.org</owner>
   <owner>chromeos-camera-eng@google.com</owner>
   <summary>
     Records max number of detected faces of the camera session in Chrome OS
@@ -506,7 +506,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram name="ChromeOS.Camera.Facing" enum="ChromeOSCameraFacing"
     expires_after="2024-02-04">
-  <owner>wtlee@chromium.org</owner>
+  <owner>beckerh@chromium.org</owner>
   <owner>chromeos-camera-eng@google.com</owner>
   <summary>
     Records the camera facing of the camera session in Chrome OS camera service.
@@ -642,7 +642,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
      name="ChromeOS.Camera.JpegProcessMethod" and
      name="ChromeOS.Camera.JpegProcessType" -->
 
-  <owner>wtlee@chromium.org</owner>
+  <owner>beckerh@chromium.org</owner>
   <owner>chromeos-camera-eng@google.com</owner>
   <summary>
     Records the process time of the JDA (Jpeg Decode Accelerator) or JEA (Jpeg
@@ -661,7 +661,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
      name="ChromeOS.Camera.JpegProcessMethod" and
      name="ChromeOS.Camera.JpegProcessType" -->
 
-  <owner>wtlee@chromium.org</owner>
+  <owner>beckerh@chromium.org</owner>
   <owner>chromeos-camera-eng@google.com</owner>
   <summary>
     Records the resolution of the image that JDA/JEA process by Chrome OS camera
@@ -684,7 +684,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram name="ChromeOS.Camera.OpenDeviceClientType"
     enum="ChromeOSCameraClientType" expires_after="2024-02-04">
-  <owner>lnishan@chromium.org</owner>
+  <owner>dorahkim@chromium.org</owner>
   <owner>chromeos-camera-eng@google.com</owner>
   <summary>
     Records which client type (e.g., Chrome, Android) is opening a camera
@@ -694,7 +694,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram name="ChromeOS.Camera.OpenDeviceLatency" units="microseconds"
     expires_after="2024-02-04">
-  <owner>wtlee@chromium.org</owner>
+  <owner>beckerh@chromium.org</owner>
   <owner>chromeos-camera-eng@google.com</owner>
   <summary>
     Records the process time of OpenDevice() method in Chrome OS camera service.
@@ -740,7 +740,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram name="ChromeOS.Camera.SessionDuration" units="seconds"
     expires_after="2024-02-20">
-  <owner>wtlee@chromium.org</owner>
+  <owner>beckerh@chromium.org</owner>
   <owner>chromeos-camera-eng@google.com</owner>
   <summary>Records the session duration in Chrome OS camera service.</summary>
 </histogram>
