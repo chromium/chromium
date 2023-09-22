@@ -28,10 +28,10 @@ struct GlanceablesTask;
 // |                                                               |
 // | +-----------------+ +---------------------------------------+ |
 // | |'button_'        | |'contents_view_'                       | |
-// | |                 | | +---------------------------------  + | |
+// | |                 | | +-----------------------------------+ | |
 // | |                 | | |'tasks_title_view_'                | | |
 // | |                 | | +-----------------------------------+ | |
-// | |                 | | +---------------------------------  + | |
+// | |                 | | +-----------------------------------+ | |
 // | |                 | | |'tasks_details_view_'              | | |
 // | |                 | | +-----------------------------------+ | |
 // | +-----------------+ +---------------------------------------+ |
@@ -40,13 +40,14 @@ class ASH_EXPORT GlanceablesTaskView : public views::FlexLayoutView {
  public:
   METADATA_HEADER(GlanceablesTaskView);
 
+  // Modes of `tasks_title_view_` (simple label or text field).
+  enum class TaskTitleViewState { kView, kEdit };
+
   GlanceablesTaskView(const std::string& task_list_id,
                       const GlanceablesTask* task);
   GlanceablesTaskView(const GlanceablesTaskView&) = delete;
   GlanceablesTaskView& operator=(const GlanceablesTaskView&) = delete;
   ~GlanceablesTaskView() override;
-
-  void ButtonPressed();
 
   const views::ImageButton* GetButtonForTest() const;
   bool GetCompletedForTest() const;
@@ -54,6 +55,19 @@ class ASH_EXPORT GlanceablesTaskView : public views::FlexLayoutView {
  private:
   class CheckButton;
   class TaskTitleButton;
+
+  // Handles press events on `button_`.
+  void CheckButtonPressed();
+
+  // Handles press events on `task_title_button_`.
+  void TaskTitleButtonPressed();
+
+  // Handles finished editing event from the text field, updates `task_title_`
+  // and propagates new `title` to the server.
+  void OnFinishedEditing(const std::u16string& title);
+
+  // Updates `tasks_title_view_` according to `state`.
+  void UpdateTaskTitleViewForState(TaskTitleViewState state);
 
   // Owned by views hierarchy.
   raw_ptr<CheckButton> button_ = nullptr;
@@ -67,6 +81,9 @@ class ASH_EXPORT GlanceablesTaskView : public views::FlexLayoutView {
 
   // ID for the task represented by this view.
   const std::string task_id_;
+
+  // Title of the task.
+  std::u16string task_title_;
 };
 
 }  // namespace ash

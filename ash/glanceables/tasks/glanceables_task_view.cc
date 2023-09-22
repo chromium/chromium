@@ -24,9 +24,12 @@
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -37,7 +40,10 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/widget/widget_delegate.h"
 
 namespace ash {
 namespace {
@@ -95,6 +101,52 @@ std::unique_ptr<views::ImageView> CreateSecondRowIcon(
       icon, cros_tokens::kCrosSysOnSurfaceVariant));
   return icon_view;
 }
+
+class TaskViewTextField : public views::Textfield,
+                          public views::TextfieldController {
+ public:
+  using OnFinishedEditingCallback =
+      base::OnceCallback<void(const std::u16string& title)>;
+
+  TaskViewTextField(const std::u16string& title,
+                    OnFinishedEditingCallback on_finished_editing)
+      : on_finished_editing_(std::move(on_finished_editing)) {
+    SetAccessibleName(u"[l10n] Title");
+    SetBackgroundColor(SK_ColorTRANSPARENT);
+    SetBorder(nullptr);
+    SetController(this);
+    SetID(base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField));
+    SetPlaceholderText(u"[l10n] Title");
+    SetText(title);
+  }
+  TaskViewTextField(const TaskViewTextField&) = delete;
+  TaskViewTextField& operator=(const TaskViewTextField&) = delete;
+  ~TaskViewTextField() override = default;
+
+  // views::TextfieldController:
+  bool HandleKeyEvent(views::Textfield* sender,
+                      const ui::KeyEvent& key_event) override {
+    if (key_event.type() == ui::ET_KEY_PRESSED &&
+        (key_event.key_code() == ui::VKEY_ESCAPE ||
+         key_event.key_code() == ui::VKEY_RETURN)) {
+      OnFinishedEditing();
+      return true;
+    }
+    return views::TextfieldController::HandleKeyEvent(sender, key_event);
+  }
+
+  // TODO(b/301253574): implement other triggers to run the callback:
+  // - tab navigation away from the text field;
+  // - mouse click outside.
+
+ private:
+  void OnFinishedEditing() {
+    // Running `on_finished_editing_` deletes `this`.
+    std::move(on_finished_editing_).Run(GetText());
+  }
+
+  OnFinishedEditingCallback on_finished_editing_;
+};
 
 }  // namespace
 
@@ -159,8 +211,6 @@ class GlanceablesTaskView::TaskTitleButton : public views::LabelButton {
       SetFocusBehavior(FocusBehavior::NEVER);
       SetState(ButtonState::STATE_DISABLED);
     }
-
-    UpdateLabelForState(/*completed=*/false);
   }
 
   void UpdateLabelForState(bool completed) {
@@ -182,7 +232,9 @@ class GlanceablesTaskView::TaskTitleButton : public views::LabelButton {
 
 GlanceablesTaskView::GlanceablesTaskView(const std::string& task_list_id,
                                          const GlanceablesTask* task)
-    : task_list_id_(task_list_id), task_id_(task->id) {
+    : task_list_id_(task_list_id),
+      task_id_(task->id),
+      task_title_(base::UTF8ToUTF16(task->title)) {
   SetAccessibleRole(ax::mojom::Role::kListItem);
 
   SetBackground(views::CreateThemedRoundedRectBackground(
@@ -191,7 +243,7 @@ GlanceablesTaskView::GlanceablesTaskView(const std::string& task_list_id,
   SetOrientation(views::LayoutOrientation::kHorizontal);
 
   button_ = AddChildView(std::make_unique<CheckButton>(base::BindRepeating(
-      &GlanceablesTaskView::ButtonPressed, base::Unretained(this))));
+      &GlanceablesTaskView::CheckButtonPressed, base::Unretained(this))));
 
   contents_view_ = AddChildView(std::make_unique<views::FlexLayoutView>());
   contents_view_->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
@@ -209,9 +261,7 @@ GlanceablesTaskView::GlanceablesTaskView(const std::string& task_list_id,
   tasks_details_view_->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
   tasks_details_view_->SetOrientation(views::LayoutOrientation::kHorizontal);
 
-  task_title_button_ = tasks_title_view_->AddChildView(
-      std::make_unique<TaskTitleButton>(base::UTF8ToUTF16(task->title),
-                                        views::LabelButton::PressedCallback()));
+  UpdateTaskTitleViewForState(TaskTitleViewState::kView);
 
   std::vector<std::u16string> details;
   if (task->due.has_value()) {
@@ -272,23 +322,62 @@ GlanceablesTaskView::GlanceablesTaskView(const std::string& task_list_id,
 
 GlanceablesTaskView::~GlanceablesTaskView() = default;
 
-void GlanceablesTaskView::ButtonPressed() {
-  bool target_state = !button_->checked();
-  // Visually mark the task as completed.
-  button_->SetChecked(target_state);
-  task_title_button_->UpdateLabelForState(/*completed=*/target_state);
-  RecordTaskMarkedAsCompleted(target_state);
-
-  Shell::Get()->glanceables_v2_controller()->GetTasksClient()->MarkAsCompleted(
-      task_list_id_, task_id_, /*completed=*/target_state);
-}
-
 const views::ImageButton* GlanceablesTaskView::GetButtonForTest() const {
   return button_;
 }
 
 bool GlanceablesTaskView::GetCompletedForTest() const {
   return button_->checked();
+}
+
+void GlanceablesTaskView::CheckButtonPressed() {
+  bool target_state = !button_->checked();
+  // Visually mark the task as completed.
+  button_->SetChecked(target_state);
+  if (task_title_button_) {
+    task_title_button_->UpdateLabelForState(/*completed=*/target_state);
+  }
+  RecordTaskMarkedAsCompleted(target_state);
+
+  Shell::Get()->glanceables_v2_controller()->GetTasksClient()->MarkAsCompleted(
+      task_list_id_, task_id_, /*completed=*/target_state);
+}
+
+void GlanceablesTaskView::TaskTitleButtonPressed() {
+  // TODO(b/301253574): notify siblings to switch to `kView`.
+  UpdateTaskTitleViewForState(TaskTitleViewState::kEdit);
+}
+
+void GlanceablesTaskView::OnFinishedEditing(const std::u16string& title) {
+  task_title_ = title;
+  UpdateTaskTitleViewForState(TaskTitleViewState::kView);
+}
+
+void GlanceablesTaskView::UpdateTaskTitleViewForState(
+    TaskTitleViewState state) {
+  task_title_button_ = nullptr;
+  tasks_title_view_->RemoveAllChildViews();
+
+  switch (state) {
+    case TaskTitleViewState::kView:
+      task_title_button_ =
+          tasks_title_view_->AddChildView(std::make_unique<TaskTitleButton>(
+              task_title_,
+              base::BindRepeating(&GlanceablesTaskView::TaskTitleButtonPressed,
+                                  base::Unretained(this))));
+      task_title_button_->UpdateLabelForState(/*completed=*/button_->checked());
+      break;
+    case TaskTitleViewState::kEdit:
+      auto* const text_field =
+          tasks_title_view_->AddChildView(std::make_unique<TaskViewTextField>(
+              task_title_,
+              base::BindOnce(&GlanceablesTaskView::OnFinishedEditing,
+                             base::Unretained(this))));
+      tasks_title_view_->SetFlexForView(text_field, /*flex=*/1);
+      GetWidget()->widget_delegate()->SetCanActivate(true);
+      text_field->RequestFocus();
+      break;
+  }
 }
 
 BEGIN_METADATA(GlanceablesTaskView, views::View)
