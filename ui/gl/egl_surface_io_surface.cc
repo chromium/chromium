@@ -46,8 +46,9 @@ InternalFormatType BufferFormatToInternalFormatType(BufferFormat format) {
     case BufferFormat::RGBX_8888:
       return {GL_RGB, GL_UNSIGNED_BYTE};
     case BufferFormat::BGRA_8888:
-    case BufferFormat::RGBA_8888:
       return {GL_BGRA_EXT, GL_UNSIGNED_BYTE};
+    case BufferFormat::RGBA_8888:
+      return {GL_RGBA, GL_UNSIGNED_BYTE};
     case BufferFormat::RGBA_F16:
       return {GL_RGBA, GL_HALF_FLOAT};
     case BufferFormat::BGRA_1010102:

@@ -1294,6 +1294,15 @@ bool IOSurfaceImageBacking::IOSurfaceBackingEGLStateBeginAccess(
       if (format().is_single_plane()) {
         plane = io_surface_plane_;
         buffer_format = ToBufferFormat(format());
+        // See comments in IOSurfaceImageBackingFactory::CreateSharedImage about
+        // RGBA versus BGRA when using Skia Ganesh GL backend or ANGLE.
+        if (io_surface_format_ == 'BGRA') {
+          if (buffer_format == gfx::BufferFormat::RGBA_8888) {
+            buffer_format = gfx::BufferFormat::BGRA_8888;
+          } else if (buffer_format == gfx::BufferFormat::RGBX_8888) {
+            buffer_format = gfx::BufferFormat::BGRX_8888;
+          }
+        }
       } else {
         // For multiplanar formats (without external sampler) get planar buffer
         // format.
