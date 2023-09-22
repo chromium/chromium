@@ -9,11 +9,16 @@
 #include <array>
 #include <cstddef>
 #include <functional>
+#include <list>
 #include <mutex>
 #include <thread>
 #include <unordered_set>
 #include <utility>
+#include <vector>
 
+#include "base/debug/crash_logging.h"
+#include "base/strings/string_piece.h"
+#include "base/strings/stringprintf.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -54,7 +59,7 @@ struct AllocatorMockBase {
 
 struct TLSSystemMockBase {
   TLSSystemMockBase() {
-    ON_CALL(*this, Setup(_)).WillByDefault(Return(true));
+    ON_CALL(*this, Setup(_, _)).WillByDefault(Return(true));
     ON_CALL(*this, TearDownForTesting()).WillByDefault(Return(true));
     ON_CALL(*this, SetThreadSpecificData(_)).WillByDefault(Return(true));
   }
@@ -62,34 +67,48 @@ struct TLSSystemMockBase {
   MOCK_METHOD(
       bool,
       Setup,
-      (internal::OnThreadTerminationFunction thread_termination_function),
+      (internal::OnThreadTerminationFunction thread_termination_function,
+       const base::StringPiece instance_id),
       ());
   MOCK_METHOD(bool, TearDownForTesting, (), ());
   MOCK_METHOD(void*, GetThreadSpecificData, (), ());
   MOCK_METHOD(bool, SetThreadSpecificData, (void* data), ());
 };
 
+struct CrashKeyImplementationMockBase
+    : public base::debug::CrashKeyImplementation {
+  MOCK_METHOD(base::debug::CrashKeyString*,
+              Allocate,
+              (const char name[], base::debug::CrashKeySize size),
+              (override));
+  MOCK_METHOD(void,
+              Set,
+              (base::debug::CrashKeyString * crash_key,
+               base::StringPiece value),
+              (override));
+  MOCK_METHOD(void,
+              Clear,
+              (base::debug::CrashKeyString * crash_key),
+              (override));
+  MOCK_METHOD(void, OutputCrashKeysToStream, (std::ostream & out), (override));
+};
+
 using AllocatorMock = NiceMock<AllocatorMockBase>;
 using TLSSystemMock = NiceMock<TLSSystemMockBase>;
+using CrashKeyImplementationMock = NiceMock<CrashKeyImplementationMockBase>;
 
 template <typename T, typename Allocator, typename TLSSystem>
-ThreadLocalStorage<T,
-                   std::reference_wrapper<Allocator>,
-                   std::reference_wrapper<TLSSystem>,
-                   0,
-                   true>
-CreateThreadLocalStorage(Allocator& allocator, TLSSystem& tlsSystem) {
-  return {std::ref(allocator), std::ref(tlsSystem)};
+auto CreateThreadLocalStorage(Allocator& allocator, TLSSystem& tlsSystem) {
+  return ThreadLocalStorage<T, std::reference_wrapper<Allocator>,
+                            std::reference_wrapper<TLSSystem>, 0, true>(
+      "ThreadLocalStorage", std::ref(allocator), std::ref(tlsSystem));
 }
 
 template <typename T>
-ThreadLocalStorage<T,
-                   internal::DefaultAllocator,
-                   internal::DefaultTLSSystem,
-                   0,
-                   true>
-CreateThreadLocalStorage() {
-  return {};
+auto CreateThreadLocalStorage() {
+  return ThreadLocalStorage<T, internal::DefaultAllocator,
+                            internal::DefaultTLSSystem, 0, true>(
+      "ThreadLocalStorage");
 }
 
 }  // namespace
@@ -200,7 +219,7 @@ TEST_F(BaseThreadLocalStorageTest, VerifySetupTeardownSequence) {
 
   EXPECT_CALL(allocator_mock, AllocateMemory(_))
       .WillOnce([](size_t size_in_bytes) { return malloc(size_in_bytes); });
-  EXPECT_CALL(tlsSystem_mock, Setup(NotNull())).WillOnce(Return(true));
+  EXPECT_CALL(tlsSystem_mock, Setup(NotNull(), _)).WillOnce(Return(true));
   EXPECT_CALL(tlsSystem_mock, TearDownForTesting()).WillOnce(Return(true));
   EXPECT_CALL(allocator_mock, FreeMemoryForTesting(_, _))
       .WillOnce([](void* pointer_to_allocated, size_t size_in_bytes) {
@@ -303,7 +322,7 @@ TEST_F(BaseThreadLocalStorageTest, VerifyTLSSystemIsUsed) {
 
   InSequence execution_sequence;
 
-  EXPECT_CALL(tlsSystem_mock, Setup(NotNull())).WillOnce(Return(true));
+  EXPECT_CALL(tlsSystem_mock, Setup(NotNull(), _)).WillOnce(Return(true));
   EXPECT_CALL(tlsSystem_mock, GetThreadSpecificData())
       .WillOnce(Return(nullptr));
   EXPECT_CALL(tlsSystem_mock, SetThreadSpecificData(NotNull()));
@@ -361,7 +380,7 @@ TEST_F(BaseThreadLocalStorageDeathTest, VerifyDeathIfTLSSetupFails) {
 
     // Setup all expectations here. If we're setting them up in the parent
     // process, they will fail because the parent doesn't execute any test.
-    EXPECT_CALL(tlsSystem_mock, Setup(_)).WillOnce(Return(false));
+    EXPECT_CALL(tlsSystem_mock, Setup(_, _)).WillOnce(Return(false));
     EXPECT_CALL(tlsSystem_mock, GetThreadSpecificData()).Times(0);
     EXPECT_CALL(tlsSystem_mock, SetThreadSpecificData(_)).Times(0);
     EXPECT_CALL(tlsSystem_mock, TearDownForTesting()).Times(0);
@@ -398,7 +417,7 @@ TEST_F(BaseThreadLocalStorageDeathTest, VerifyDeathIfTLSTeardownFails) {
 
     // Setup all expectations here. If we're setting them up in the parent
     // process, they will fail because the parent doesn't execute any test.
-    EXPECT_CALL(tlsSystem_mock, Setup(_)).WillOnce(Return(true));
+    EXPECT_CALL(tlsSystem_mock, Setup(_, _)).WillOnce(Return(true));
     EXPECT_CALL(tlsSystem_mock, TearDownForTesting()).WillOnce(Return(false));
 
     CreateThreadLocalStorage<DataToStore>(allocator_mock, tlsSystem_mock);
@@ -422,17 +441,72 @@ std::atomic<size_t> BasePThreadTLSSystemTest::thread_termination_counter{0};
 TEST_F(BasePThreadTLSSystemTest, VerifySetupNTeardownSequence) {
   internal::PThreadTLSSystem sut;
 
-  for (size_t idx = 0; idx < 5; ++idx) {
-    EXPECT_TRUE(sut.Setup(nullptr));
-    EXPECT_TRUE(sut.TearDownForTesting());
+  const std::vector<std::string> instance_ids = {"first", "second"};
+  const std::vector<std::string> crash_key_values = {"tls_system-first",
+                                                     "tls_system-second"};
+  std::list<base::debug::CrashKeyString> crash_keys;
+
+  const auto handle_allocate =
+      [&](const char* name,
+          base::debug::CrashKeySize size) -> base::debug::CrashKeyString* {
+    const auto it_crash_key_value = std::find(std::begin(crash_key_values),
+                                              std::end(crash_key_values), name);
+    EXPECT_NE(it_crash_key_value, std::end(crash_key_values));
+    crash_keys.emplace_back(it_crash_key_value->c_str(), size);
+    return &(crash_keys.back());
+  };
+
+  const auto handle_set = [&](base::debug::CrashKeyString* crash_key,
+                              base::StringPiece value) {
+    const auto it_crash_key =
+        std::find_if(std::begin(crash_keys), std::end(crash_keys),
+                     [&](const base::debug::CrashKeyString& key) {
+                       return &key == crash_key;
+                     });
+    ASSERT_NE(it_crash_key, std::end(crash_keys));
+    ASSERT_GT(value.size(), 0ul);
+  };
+
+  const auto handle_clear = [&](base::debug::CrashKeyString* crash_key) {
+    const auto it_crash_key =
+        std::find_if(std::begin(crash_keys), std::end(crash_keys),
+                     [&](const base::debug::CrashKeyString& key) {
+                       return &key == crash_key;
+                     });
+    ASSERT_NE(it_crash_key, std::end(crash_keys));
+
+    crash_keys.erase(it_crash_key);
+  };
+
+  auto crash_key_implementation =
+      std::make_unique<CrashKeyImplementationMock>();
+
+  InSequence execution_sequence;
+
+  for (size_t instance_index = 0; instance_index < instance_ids.size();
+       ++instance_index) {
+    EXPECT_CALL(*crash_key_implementation, Allocate(_, _))
+        .WillOnce(handle_allocate);
+    EXPECT_CALL(*crash_key_implementation, Set(_, _)).WillOnce(handle_set);
+    EXPECT_CALL(*crash_key_implementation, Clear(_)).WillOnce(handle_clear);
   }
+
+  base::debug::SetCrashKeyImplementation(std::move(crash_key_implementation));
+
+  for (const auto& instance_id : instance_ids) {
+    ASSERT_TRUE(sut.Setup(nullptr, instance_id));
+    ASSERT_TRUE(sut.TearDownForTesting());
+  }
+
+  // Set an empty crash key impl to ensure deletion and evaluation of the mock.
+  base::debug::SetCrashKeyImplementation({});
 }
 
 TEST_F(BasePThreadTLSSystemTest, VerifyThreadTerminationFunctionIsCalled) {
   std::array<std::thread, 10> threads;
 
   internal::PThreadTLSSystem sut;
-  sut.Setup(&ThreadTerminationFunction);
+  sut.Setup(&ThreadTerminationFunction, "PThreadTLSSystemInstance");
 
   for (auto& t : threads) {
     t = std::thread{[&] {
@@ -452,7 +526,7 @@ TEST_F(BasePThreadTLSSystemTest, VerifyThreadTerminationFunctionIsCalled) {
 
 TEST_F(BasePThreadTLSSystemTest, VerifyGetWithoutSetReturnsNull) {
   internal::PThreadTLSSystem sut;
-  sut.Setup(nullptr);
+  sut.Setup(nullptr, "PThreadTLSSystemInstance");
 
   EXPECT_EQ(nullptr, sut.GetThreadSpecificData());
 
@@ -461,7 +535,7 @@ TEST_F(BasePThreadTLSSystemTest, VerifyGetWithoutSetReturnsNull) {
 
 TEST_F(BasePThreadTLSSystemTest, VerifyGetAfterTeardownReturnsNull) {
   internal::PThreadTLSSystem sut;
-  sut.Setup(nullptr);
+  sut.Setup(nullptr, "PThreadTLSSystemInstance");
   sut.SetThreadSpecificData(this);
   sut.TearDownForTesting();
 
@@ -480,7 +554,7 @@ TEST_F(BasePThreadTLSSystemTest, VerifyGetAfterTeardownReturnsNullThreaded) {
   std::atomic_bool threads_can_finish{false};
 
   internal::PThreadTLSSystem sut;
-  ASSERT_TRUE(sut.Setup(nullptr));
+  ASSERT_TRUE(sut.Setup(nullptr, "PThreadTLSSystemInstance"));
 
   for (auto& t : threads) {
     t = std::thread{[&] {
@@ -536,7 +610,7 @@ TEST_F(BasePThreadTLSSystemTest, VerifyGetSetSequence) {
   std::array<std::thread, 50> threads;
 
   internal::PThreadTLSSystem sut;
-  sut.Setup(nullptr);
+  sut.Setup(nullptr, "PThreadTLSSystemInstance");
 
   for (auto& t : threads) {
     t = std::thread{[&] {
@@ -573,8 +647,8 @@ struct BasePThreadTLSSystemDeathTest : public ::testing::Test {};
 TEST_F(BasePThreadTLSSystemDeathTest, VerifyDeathIfSetupTwice) {
   internal::PThreadTLSSystem sut;
 
-  EXPECT_TRUE(sut.Setup(nullptr));
-  EXPECT_DEATH(sut.Setup(nullptr), "");
+  EXPECT_TRUE(sut.Setup(nullptr, "PThreadTLSSystemInstance"));
+  EXPECT_DEATH(sut.Setup(nullptr, "PThreadTLSSystemInstance"), "");
 }
 
 TEST_F(BasePThreadTLSSystemDeathTest, VerifyDeathIfTearDownWithoutSetup) {
