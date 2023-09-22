@@ -2043,6 +2043,7 @@ Frame* DocumentLoader::CalculateOwnerFrame() {
 scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
     Document* owner_document) {
   scoped_refptr<SecurityOrigin> origin;
+  StringBuilder debug_info_builder;
   if (origin_to_commit_) {
     // Origin to commit is specified by the browser process, it must be taken
     // and used directly. It is currently supplied only for failed navigations
@@ -2050,14 +2051,14 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
     CHECK(is_error_page_for_failed_navigation_ || url_.ProtocolIsData());
     CHECK(origin_to_commit_->IsOpaque());
     origin = origin_to_commit_;
-    origin_calculation_debug_info_ = AtomicString("use_origin_to_commit");
+    debug_info_builder.Append("use_origin_to_commit");
   } else if (IsPagePopupRunningInWebTest(frame_)) {
     // If we are a page popup in LayoutTests ensure we use the popup
     // owner's security origin so the tests can possibly access the
     // document via internals API.
     auto* owner_context = frame_->PagePopupOwner()->GetExecutionContext();
     origin = owner_context->GetSecurityOrigin()->IsolatedCopy();
-    origin_calculation_debug_info_ = AtomicString("use_popup_owner_origin");
+    debug_info_builder.Append("use_popup_owner_origin");
   } else if (owner_document && owner_document->domWindow()) {
     // Prefer taking `origin` from `owner_document` if one is available - this
     // will correctly inherit/alias `SecurityOrigin::domain_` from the
@@ -2076,9 +2077,21 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
     // But origin_to_commit_ is currently cloned with IsolatedCopy() which
     // breaks aliasing...
     origin = owner_document->domWindow()->GetMutableSecurityOrigin();
-    origin_calculation_debug_info_ = AtomicString("use_owner_document_origin");
+    debug_info_builder.Append("use_owner_document_origin(");
+    // Add debug information about the owner document too.
+    if (owner_document->GetFrame() == frame_->Tree().Parent()) {
+      debug_info_builder.Append("parent");
+    } else {
+      debug_info_builder.Append("opener");
+    }
+    debug_info_builder.Append(":");
+    debug_info_builder.Append(
+        owner_document->Loader()->origin_calculation_debug_info_);
+    debug_info_builder.Append(", url=");
+    debug_info_builder.Append(owner_document->Url().BaseAsString());
+    debug_info_builder.Append(")");
   } else {
-    origin_calculation_debug_info_ = AtomicString("use_url_with_precursor");
+    debug_info_builder.Append("use_url_with_precursor");
     // Otherwise, create an origin that propagates precursor information
     // as needed. For non-opaque origins, this creates a standard tuple
     // origin, but for opaque origins, it creates an origin with the
@@ -2090,8 +2103,7 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
   if ((policy_container_->GetPolicies().sandbox_flags &
        network::mojom::blink::WebSandboxFlags::kOrigin) !=
       network::mojom::blink::WebSandboxFlags::kNone) {
-    origin_calculation_debug_info_ =
-        origin_calculation_debug_info_ + ", add_sandbox";
+    debug_info_builder.Append(", add_sandbox");
     auto sandbox_origin = origin->DeriveNewOpaqueOrigin();
 
     // If we're supposed to inherit our security origin from our
@@ -2106,13 +2118,12 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
     if (owner_document) {
       if (origin->IsPotentiallyTrustworthy()) {
         sandbox_origin->SetOpaqueOriginIsPotentiallyTrustworthy(true);
-        origin_calculation_debug_info_ =
-            origin_calculation_debug_info_ + "_potentially_trustworthy";
+        debug_info_builder.Append(", _potentially_trustworthy");
       }
       if (origin->CanLoadLocalResources() && !loading_srcdoc_) {
         sandbox_origin->GrantLoadLocalResources();
-        origin_calculation_debug_info_ =
-            origin_calculation_debug_info_ + "_load_local";
+
+        debug_info_builder.Append(", _load_local");
       }
     }
     origin = sandbox_origin;
@@ -2127,46 +2138,41 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
     // navigated.
     CHECK(origin->IsOpaque());
     origin->GrantUniversalAccess();
-    origin_calculation_debug_info_ =
-        origin_calculation_debug_info_ + ", universal_access_webview";
+    debug_info_builder.Append(", universal_access_webview");
   } else if (!frame_->GetSettings()->GetWebSecurityEnabled()) {
     // Web security is turned off. We should let this document access
     // every other document. This is used primary by testing harnesses for
     // web sites.
     origin->GrantUniversalAccess();
-    origin_calculation_debug_info_ =
-        origin_calculation_debug_info_ + ", universal_access_no_web_security";
+    debug_info_builder.Append(", universal_access_no_web_security");
   } else if (origin->IsLocal()) {
     if (frame_->GetSettings()->GetAllowUniversalAccessFromFileURLs()) {
       // Some clients want local URLs to have universal access, but that
       // setting is dangerous for other clients.
       origin->GrantUniversalAccess();
-      origin_calculation_debug_info_ =
-          origin_calculation_debug_info_ + ", universal_access_allow_file";
+      debug_info_builder.Append(", universal_access_allow_file");
     } else if (!frame_->GetSettings()->GetAllowFileAccessFromFileURLs()) {
       // Some clients do not want local URLs to have access to other local
       // URLs.
       origin->BlockLocalAccessFromLocalOrigin();
-      origin_calculation_debug_info_ =
-          origin_calculation_debug_info_ + ", universal_access_block_file";
+      debug_info_builder.Append(", universal_access_block_file");
     }
   }
 
   if (grant_load_local_resources_) {
     origin->GrantLoadLocalResources();
-    origin_calculation_debug_info_ =
-        origin_calculation_debug_info_ + ", grant_load_local_resources";
+    debug_info_builder.Append(", grant_load_local_resources");
   }
 
   if (origin->IsOpaque()) {
     KURL url = url_.IsEmpty() ? BlankURL() : url_;
     if (SecurityOrigin::Create(url)->IsPotentiallyTrustworthy()) {
       origin->SetOpaqueOriginIsPotentiallyTrustworthy(true);
-      origin_calculation_debug_info_ =
-          origin_calculation_debug_info_ + ", is_potentially_trustworthy";
+      debug_info_builder.Append(", is_potentially_trustworthy");
     }
   }
 
+  origin_calculation_debug_info_ = debug_info_builder.ToAtomicString();
   return origin;
 }
 
