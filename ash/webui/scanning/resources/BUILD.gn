@@ -44,7 +44,7 @@ build_webui("build") {
     "scanning_app.ts",
     "scanning_fonts_css.js",
     "scanning_shared_css.js",
-    "scan_preview.js",
+    "scan_preview.ts",
     "scan_settings_section.ts",
     "scan_to_select.ts",
     "source_select.ts",
@@ -67,6 +67,8 @@ build_webui("build") {
     "//ash/webui/common/mojom:mojom_webui_js",
     "//ash/webui/scanning/mojom:mojom_webui_js",
   ]
+
+  ts_tsconfig_base = "tsconfig.json"
 
   ts_deps = [
     "//ash/webui/common/resources:build_ts",

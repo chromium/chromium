@@ -88,7 +88,7 @@
     box-shadow: 0 0 0 var(--preview-border-width) rgba(var(--google-blue-600-rgb), .4);
   }
 
-  :host([show-single-image-focus_]) .preview:hover {
+  :host([show-single-image-focus]) .preview:hover {
     box-shadow: none;
   }
 
@@ -110,11 +110,11 @@
     width: 50%;
   }
 
-  :host([show-single-image-focus_]) .preview:hover .focused-scanned-image {
+  :host([show-single-image-focus]) .preview:hover .focused-scanned-image {
     box-shadow: var(--image-focus-shadow);
   }
 
-  :host([show-single-image-focus_]) #scannedImages:focus-within .focused-scanned-image {
+  :host([show-single-image-focus]) #scannedImages:focus-within .focused-scanned-image {
     box-shadow: var(--image-focus-shadow);
   }
 
@@ -132,7 +132,7 @@
     visibility: hidden;
   }
 
-  :host([force-action-toolbar-visible_]) action-toolbar {
+  :host([force-action-toolbar-visible]) action-toolbar {
     visibility: visible;
   }
 
@@ -144,12 +144,12 @@
     visibility: visible;
   }
 
-  :host([multi-page-scanning_]) .preview {
+  :host([multi-page-scanning]) .preview {
     overflow-y: hidden;
     position: relative;
   }
 
-  :host([multi-page-scanning_]) #helpOrProgress {
+  :host([multi-page-scanning]) #helpOrProgress {
     height: var(--multi-page-scan-progress-height);
     margin-top: -4px;
     opacity: .9;
@@ -159,20 +159,20 @@
   }
 </style>
 <iron-media-query query="(prefers-color-scheme: dark)"
-  query-matches="{{isDarkModeEnabled_}}">
+  query-matches="{{isDarkModeEnabled}}">
 </iron-media-query>
-<div id="previewDiv" class="preview" aria-label="[[previewAriaLabel_]]"
-    tabindex="0" on-scroll="onScannedImagesScroll_">
+<div id="previewDiv" class="preview" aria-label="[[previewAriaLabel]]"
+    tabindex="0" on-scroll="onScannedImagesScroll">
   <div id="helpOrProgress" class="preview-item" aria-hidden="true"
-      hidden$="[[!showHelpOrProgress_]]">
-    <div id="helpDiv" hidden$="[[!showHelperText_]]">
-      <template is="dom-if" if="[[!isJellyEnabled_]]">
+      hidden$="[[!showHelpOrProgress]]">
+    <div id="helpDiv" hidden$="[[!showHelperText]]">
+      <template is="dom-if" if="[[!isJellyEnabled]]">
         <img id="readyToScanImg"
-            src$="[[getReadyToScanSvgSrc_(isDarkModeEnabled_)]]"
+            src$="[[getReadyToScanSvgSrc(isDarkModeEnabled)]]"
             alt="[[i18n('scanPreviewHelperText')]]">
         </img>
       </template>
-      <template is="dom-if" if="[[isJellyEnabled_]]">
+      <template is="dom-if" if="[[isJellyEnabled]]">
         <span class="svg-wrapper">
           <svg id="readyToScanSvg" preserveAspectRatio="xMidYMid meet"
               role="img" viewBox="0 0 257 256">
@@ -185,43 +185,43 @@
         [[i18n('scanPreviewHelperText')]]
       </span>
     </div>
-    <div id="scanProgress" hidden$="[[!showScanProgress_]]">
-      <span id="progressText">[[progressTextString_]]</span>
+    <div id="scanProgress" hidden$="[[!showScanProgress]]">
+      <span id="progressText">[[progressTextString]]</span>
       <paper-progress id="scanProgressBar" value="[[progressPercent]]">
       </paper-progress>
     </div>
-    <div id="cancelingProgress" hidden$="[[!showCancelingProgress_]]">
+    <div id="cancelingProgress" hidden$="[[!showCancelingProgress]]">
       <span id="cancelingText">[[i18n('cancelingScanningText')]]</span>
       <paper-progress id="cancelingProgressBar" indeterminate></paper-progress>
     </div>
   </div>
-  <div id="scannedImages" hidden$="[[!showScannedImages_]]">
+  <div id="scannedImages" hidden$="[[!showScannedImages]]">
     <template is="dom-repeat" items="[[objectUrls]]" as="url">
       <img class="preview-item scanned-image" src="[[url]]"
-          on-load="onScannedImageLoaded_" on-click="onScannedImageClick_"
-          on-focus="onScannedImageInFocus_" tabindex="-1"
-          aria-label="[[getScannedImageAriaLabel_(index, objectUrls.length)]]">
-      <action-toolbar hidden$="[[!showActionToolbarByIndex_(index,
-          currentPageIndexInView_, showActionToolbar_)]]"
+          on-load="onScannedImageLoaded" on-click="onScannedImageClick"
+          on-focus="onScannedImageInFocus" tabindex="-1"
+          aria-label="[[getScannedImageAriaLabel(index, objectUrls.length)]]">
+      <action-toolbar hidden$="[[!showActionToolbarByIndex(index,
+          currentPageIndexInView, showActionToolbar)]]"
           num-total-pages="[[objectUrls.length]]" page-index="[[index]]"
-          on-show-remove-page-dialog="onShowRemovePageDialog_"
-          on-show-rescan-page-dialog="onShowRescanPageDialog_">
+          on-show-remove-page-dialog="onShowRemovePageDialog"
+          on-show-rescan-page-dialog="onShowRescanPageDialog">
     </template>
   </div>
 </div>
-<cr-dialog id="scanPreviewDialog" on-cancel="closeDialog_">
+<cr-dialog id="scanPreviewDialog" on-cancel="closeDialog">
   <div id="dialogTitle" slot="title">
-    [[dialogTitleText_]]
+    [[dialogTitleText]]
   </div>
   <div id="dialogConfirmationText" slot="body">
-    [[dialogConfirmationText_]]
+    [[dialogConfirmationText]]
   </div>
   <div slot="button-container">
-    <cr-button id="cancelButton" class="cancel-button" on-click="closeDialog_">
+    <cr-button id="cancelButton" class="cancel-button" on-click="closeDialog">
       [[i18n('cancelButtonText')]]
     </cr-button>
     <cr-button id="actionButton" class="action-button">
-      [[dialogButtonText_]]
+      [[dialogButtonText]]
     </cr-button>
   </div>
 </cr-dialog>
