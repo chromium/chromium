@@ -443,6 +443,7 @@
       "cros_model": "voxel",
       "cros_chrome_version": "119.0.6020.0",
       "cros_img": "volteer-public/R119-15623.0.0",
+      "autotest_name": "tast.lacros-from-gcs",
       "bucket": "chromiumos-image-archive",
       "dut_pool": "chromium",
       "public_builder": "cros_test_platform_public",
