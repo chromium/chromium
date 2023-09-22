@@ -252,11 +252,6 @@ void FieldTrialRegisterImpl::RegisterSubsegmentFieldTrialIfNeeded(
   if (segment_id == SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER) {
     group_name = FeedUserSegment::GetSubsegmentName(subsegment_rank);
   }
-#if BUILDFLAG(IS_ANDROID)
-  if (segment_id == SegmentId::POWER_USER_SEGMENT) {
-    group_name = PowerUserSegment::GetSubsegmentName(subsegment_rank);
-  }
-#endif
   if (segment_id == SegmentId::CROSS_DEVICE_USER_SEGMENT) {
     group_name = CrossDeviceUserSegment::GetSubsegmentName(subsegment_rank);
   }

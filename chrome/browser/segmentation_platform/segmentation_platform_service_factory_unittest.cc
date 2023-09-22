@@ -327,6 +327,18 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestIntentionalUserModel) {
       std::vector<std::string>(1, kLegacyNegativeLabel));
 }
 
+TEST_F(SegmentationPlatformServiceFactoryTest, TestPowerUserSegment) {
+  InitServiceAndCacheResults(kPowerUserKey);
+
+  PredictionOptions prediction_options;
+
+  ExpectGetClassificationResult(
+      kPowerUserKey, prediction_options, nullptr,
+      /*expected_status=*/PredictionStatus::kSucceeded,
+      /*expected_labels=*/
+      std::vector<std::string>{"None"});
+}
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace segmentation_platform
