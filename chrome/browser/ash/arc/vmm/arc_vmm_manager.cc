@@ -387,14 +387,11 @@ class ArcVmmManager::AcceleratorTarget : public ui::AcceleratorTarget {
  private:
   // ui::AcceleratorTarget:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override {
-    // TODO(b/287411215): The log just for test / dogfood usage, since this
-    // class hide by flag and will never be enabled in production env. Remove
-    // it after experiment / dogfood finish.
     if (accelerator == vmm_swap_enabled_) {
-      LOG(WARNING) << "Set force enable vmm swap state.";
+      DVLOG(1) << "Set force enable vmm swap state by keyboard shortcut.";
       manager_->SetSwapState(SwapState::FORCE_ENABLE);
     } else if (accelerator == vmm_swap_disabled_) {
-      LOG(WARNING) << "Set diable vmm swap state.";
+      DVLOG(1) << "Set diable vmm swap state by keyboard shortcut.";
       manager_->SetSwapState(SwapState::DISABLE);
     } else {
       NOTREACHED();
