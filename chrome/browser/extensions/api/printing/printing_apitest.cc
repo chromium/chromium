@@ -108,7 +108,9 @@ class PrintingApiTest : public ExtensionApiTest,
   void AddAvailablePrinter(
       const std::string& printer_id,
       std::unique_ptr<printing::PrinterSemanticCapsAndDefaults> capabilities) {
-    GetPrintersManager()->AddPrinter(chromeos::Printer(printer_id),
+    auto printer = chromeos::Printer(printer_id);
+    printer.SetUri("ipp://192.168.1.0");
+    GetPrintersManager()->AddPrinter(printer,
                                      chromeos::PrinterClass::kEnterprise);
     chromeos::CupsPrinterStatus status(printer_id);
     status.AddStatusReason(

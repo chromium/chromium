@@ -24,6 +24,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/printing/cups_print_job_manager_factory.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 class PrefRegistrySimple;
 
 namespace chromeos {
@@ -186,6 +190,9 @@ struct BrowserContextFactoryDependencies<PrintingAPIHandler> {
   static void DeclareFactoryDependencies(
       BrowserContextKeyedAPIFactory<PrintingAPIHandler>* factory) {
     factory->DependsOn(EventRouterFactory::GetInstance());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    factory->DependsOn(ash::CupsPrintJobManagerFactory::GetInstance());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 };
 
