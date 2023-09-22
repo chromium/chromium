@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_node.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
 #include "third_party/blink/renderer/core/inspector/inspector_css_agent.h"
@@ -83,6 +84,46 @@ using RemoteObjectIdType = WTF::String;
 
 static const char REPLAY_CDT_PAUSE_OBJECT_GROUP[] =
     "REPLAY_CDT_PAUSE_OBJECT_GROUP";
+
+class InspectorData {
+public:
+  // These are untraced, because they are rooted in a global variable which
+  // won't be crawled by the GC.  However, I don't think we need to worry about
+  // this, as inspector actions can't be initiated against non-existant frames,
+  // and likewise, any inspector objects that get culled should never be accessible
+  // via an inspector action (any inspector action will be against some other 
+  // isolate/frame/context group that exists), so we shouldn't be able to cause an 
+  // invalid dereference.
+  v8::Isolate* isolate;
+  UntracedMember<InspectorDOMAgent> inspectorDomAgent;
+  UntracedMember<InspectorDOMDebuggerAgent> inspectorDomDebuggerAgent;
+  UntracedMember<InspectorNetworkAgent> inspectorNetworkAgent;
+  UntracedMember<InspectorCSSAgent> inspectorCssAgent;
+  UntracedMember<InspectedFrames> inspectedFrames;
+  v8_inspector::V8InspectorSession* inspectorSession;
+
+  InspectorData(v8::Isolate* i) {
+    isolate = i; 
+    inspectorDomAgent = nullptr;
+    inspectorDomDebuggerAgent = nullptr;
+    inspectorNetworkAgent = nullptr;
+    inspectorCssAgent = nullptr;
+    inspectedFrames = nullptr;
+    inspectorSession = nullptr;
+  }
+
+  LocalFrame* GetLocalFrame() const {
+    if (CurrentDOMWindow(isolate) == nullptr) {
+      return nullptr;
+    }
+    return CurrentDOMWindow(isolate)->GetFrame();
+  }
+};
+
+typedef std::unordered_map<int, InspectorData*> ContextGroupIdInspectorMap;
+
+std::unordered_map<v8::Isolate*, ContextGroupIdInspectorMap*>* gInspectorData = nullptr;
+std::unordered_map<v8::Isolate*, v8_inspector::V8Inspector*>* gV8Inspectors = nullptr;
 
 // Script which defines handlers for recorder commands, and is only loaded while
 // replaying.
@@ -3640,33 +3681,75 @@ struct InspectorChannel final : public v8_inspector::V8Inspector::Channel {
   void flushProtocolNotifications() final {}
 };
 
-static v8_inspector::V8Inspector* gInspector;
-static v8_inspector::V8InspectorSession* gInspectorSession;
+int GetCurrentContextGroupIdForIsolate(v8::Isolate* isolate) {
+  LocalDOMWindow* window = CurrentDOMWindow(isolate);
+
+  if (window == nullptr || window->GetFrame() == nullptr) {
+    return 1;
+  }
+  LocalFrame& local_frame_root = window->GetFrame()->LocalFrameRoot();
+  return WeakIdentifierMap<LocalFrame>::Identifier(&local_frame_root);
+}
+
+InspectorData* getInspectorFor(v8::Isolate* isolate, int contextGroupId) {
+  InspectorData* data = nullptr;
+  ContextGroupIdInspectorMap* inspectorData;
+
+  CHECK(gInspectorData);
+
+  if (gInspectorData->find(isolate) == gInspectorData->end()) {
+    inspectorData = new ContextGroupIdInspectorMap();
+    gInspectorData->insert(std::make_pair(isolate, inspectorData));
+  } else {
+    inspectorData = (*gInspectorData)[isolate];
+  }
+
+  if (inspectorData->find(contextGroupId) == inspectorData->end()) {
+    data = new InspectorData(isolate);
+    inspectorData->insert(std::pair(contextGroupId, data));
+  } else {
+    data = inspectorData->at(contextGroupId);
+  }
+  return data;
+}
 
 /**
  * This function makes sure that the session exists and
  * we are on main thread when accessing it.
  */
-v8_inspector::V8InspectorSession* getInspectorSession() {
-  CHECK(gInspectorSession);
+v8_inspector::V8InspectorSession* getInspectorSession(v8::Isolate* isolate, int currentContextId) {
   CHECK(v8::IsMainThread());
-  return gInspectorSession;
+  CHECK(recordreplay::IsReplaying());
+  CHECK(gV8Inspectors);
+
+  v8_inspector::V8Inspector* inspector = (*gV8Inspectors)[isolate];
+  CHECK(inspector);
+
+  InspectorData* data = getInspectorFor(isolate, currentContextId);
+
+  if (!data->inspectorSession) {
+    recordreplay::AutoDisallowEvents disallow("RecordReplayRegisterV8Inspector");
+    data->inspectorSession = inspector->connect(currentContextId,
+                                            new InspectorChannel(),
+                                            v8_inspector::StringView(),
+                                            v8_inspector::V8Inspector::kFullyTrusted).release();
+  }
+  return data->inspectorSession;
 }
+
+
+                                
 
 void
 RecordReplayRegisterV8Inspector(v8_inspector::V8Inspector* inspector,
                                 v8::Isolate* isolate) {
   if (v8::IsMainThread() && recordreplay::IsReplaying()) {
-    gInspector = inspector;
+    if (!gV8Inspectors) {
+      gV8Inspectors = new std::unordered_map<v8::Isolate*,v8_inspector::V8Inspector*>();
+      gInspectorData = new std::unordered_map<v8::Isolate*, ContextGroupIdInspectorMap*>();
+    }
 
-    // For now we only connect to the first frame.
-    static int ContextGroupId = 1;
-
-    recordreplay::AutoDisallowEvents disallow("RecordReplayRegisterV8Inspector");
-    gInspectorSession = gInspector->connect(ContextGroupId,
-                                            new InspectorChannel(),
-                                            v8_inspector::StringView(),
-                                            v8_inspector::V8Inspector::kFullyTrusted).release();
+    gV8Inspectors->insert(std::make_pair(isolate, inspector));
   }
 }
 
@@ -3684,11 +3767,15 @@ RecordReplayRegisterV8Inspector(v8_inspector::V8Inspector* inspector,
 static void SendCDPMessage(const v8::FunctionCallbackInfo<v8::Value>& args) {
   CHECK(args.Length() == 1 && args[0]->IsString() &&
         "must be called with a single string");
+
+  v8::Isolate* isolate = args.GetIsolate();
+  int contextGroupId = GetCurrentContextGroupIdForIsolate(isolate);
+
   v8::String::Utf8Value message(args.GetIsolate(), args[0]);
 
   std::string nmessage(*message);
   v8_inspector::StringView messageView((const uint8_t*)nmessage.c_str(), nmessage.length());
-  getInspectorSession()->dispatchProtocolMessage(messageView);
+  getInspectorSession(isolate, contextGroupId)->dispatchProtocolMessage(messageView);
 }
 
 static std::string GetRecordingDirectory() {
@@ -3968,70 +4055,79 @@ v8::MaybeLocal<v8::Value> convertCborToJSMaybe(v8::Isolate* isolate,
  * @see https://chromedevtools.github.io/devtools-protocol/tot/DOM/
  * ##########################################################################*/
 
-static LocalFrame* gLocalFrame;
-static InspectorDOMAgent* gInspectorDomAgent;
-static InspectorDOMDebuggerAgent* gInspectorDomDebuggerAgent;
-static InspectorNetworkAgent* gInspectorNetworkAgent;
-static InspectorCSSAgent* gInspectorCssAgent;
-static InspectedFrames* gInspectedFrames;
 
-static InspectedFrames* getOrCreateInspectedFrames() {
-  if (!gInspectedFrames) {
-    gInspectedFrames = MakeGarbageCollected<InspectedFrames>(gLocalFrame);
+static InspectedFrames* getOrCreateInspectedFrames(v8::Isolate* isolate, int contextGroupId) {
+  InspectorData *data = getInspectorFor(isolate, contextGroupId);
+
+  if (!data->inspectedFrames) {
+    data->inspectedFrames = MakeGarbageCollected<InspectedFrames>(data->GetLocalFrame());
   }
-  return gInspectedFrames;
+  return data->inspectedFrames;
 }
 
 // NOTE: we need to instantiate all inspectors indivudally because we
 //    are not fully hooked up with a `DevToolsSession` + `UberDispatcher`.
 //    We also cannot enable them for the same reason.
 InspectorDOMAgent* getOrCreateInspectorDOMAgent(v8::Isolate* isolate) {
-  if (!gInspectorDomAgent) {
+  int contextGroupId = GetCurrentContextGroupIdForIsolate(isolate);
+  InspectorData *data = getInspectorFor(isolate, contextGroupId);
+
+  if (!data->inspectorDomAgent) {
     // NOTE: based on WebDevToolsAgentImpl::AttachSession
+    InspectedFrames* inspectedFrames = getOrCreateInspectedFrames(isolate, contextGroupId);
+    data->inspectorDomAgent = MakeGarbageCollected<InspectorDOMAgent>(
+        isolate, inspectedFrames, getInspectorSession(isolate, contextGroupId));
 
-    InspectedFrames* inspectedFrames = getOrCreateInspectedFrames();
-    gInspectorDomAgent = MakeGarbageCollected<InspectorDOMAgent>(
-        isolate, inspectedFrames, getInspectorSession());
-
-    gInspectorDomAgent->FrameDocumentUpdated(gLocalFrame);
+    data->inspectorDomAgent->FrameDocumentUpdated(data->GetLocalFrame());
   }
-  return gInspectorDomAgent;
+  return data->inspectorDomAgent;
 }
 
 InspectorDOMDebuggerAgent* getOrCreateInspectorDOMDebuggerAgent(
     v8::Isolate* isolate) {
-  if (!gInspectorDomDebuggerAgent) {
-    gInspectorDomDebuggerAgent =
+  int contextGroupId = GetCurrentContextGroupIdForIsolate(isolate);
+  InspectorData *data = getInspectorFor(isolate, contextGroupId);
+
+  if (!data->inspectorDomDebuggerAgent) {
+    data->inspectorDomDebuggerAgent =
         MakeGarbageCollected<InspectorDOMDebuggerAgent>(
-            isolate, getOrCreateInspectorDOMAgent(isolate), getInspectorSession());
+            isolate, getOrCreateInspectorDOMAgent(isolate), getInspectorSession(isolate, contextGroupId));
 
     // NOTE: registering the agent here allows it to receive `UserCallback` events
     //   see https://linear.app/replay/issue/RUN-1061#comment-d059a1ce
-    gLocalFrame->GetProbeSink()->AddInspectorDOMDebuggerAgent(gInspectorDomDebuggerAgent);
+    if (data->GetLocalFrame() != nullptr) {
+      data->GetLocalFrame()->GetProbeSink()->AddInspectorDOMDebuggerAgent(data->inspectorDomDebuggerAgent);
+    }
   }
-  return gInspectorDomDebuggerAgent;
+  return data->inspectorDomDebuggerAgent;
 }
 
-InspectorNetworkAgent* getOrCreateInspectorNetworkAgent() {
-  if (!gInspectorNetworkAgent) {
-    InspectedFrames* inspectedFrames = getOrCreateInspectedFrames();
-    gInspectorNetworkAgent = MakeGarbageCollected<InspectorNetworkAgent>(
-        inspectedFrames, nullptr, getInspectorSession());
+InspectorNetworkAgent* getOrCreateInspectorNetworkAgent(v8::Isolate* isolate) {
+  int contextGroupId = GetCurrentContextGroupIdForIsolate(isolate);
+  InspectorData *data = getInspectorFor(isolate, contextGroupId);
+  
+  if (!data->inspectorNetworkAgent) {
+    InspectedFrames* inspectedFrames = getOrCreateInspectedFrames(isolate, contextGroupId);
+    data->inspectorNetworkAgent = MakeGarbageCollected<InspectorNetworkAgent>(
+        inspectedFrames, nullptr, getInspectorSession(isolate, contextGroupId));
   }
-  return gInspectorNetworkAgent;
+  return data->inspectorNetworkAgent;
 }
 
 InspectorCSSAgent* getOrCreateInspectorCSSAgent(v8::Isolate* isolate) {
-  if (!gInspectorCssAgent) {
+  int contextGroupId = GetCurrentContextGroupIdForIsolate(isolate);
+  InspectorData *data = getInspectorFor(isolate, contextGroupId);
+
+  if (!data->inspectorCssAgent) {
     // NOTE: based on WebDevToolsAgentImpl::AttachSession
-    InspectedFrames* inspectedFrames = getOrCreateInspectedFrames();
+    InspectedFrames* inspectedFrames = getOrCreateInspectedFrames(isolate, contextGroupId);
     auto* resource_content_loader =
-        MakeGarbageCollected<InspectorResourceContentLoader>(gLocalFrame);
+        MakeGarbageCollected<InspectorResourceContentLoader>(data->GetLocalFrame());
     auto* resource_container =
         MakeGarbageCollected<InspectorResourceContainer>(inspectedFrames);
     auto* domAgent = getOrCreateInspectorDOMAgent(isolate);
-    auto* networkAgent = getOrCreateInspectorNetworkAgent();
-    gInspectorCssAgent = MakeGarbageCollected<InspectorCSSAgent>(
+    auto* networkAgent = getOrCreateInspectorNetworkAgent(isolate);
+    data->inspectorCssAgent = MakeGarbageCollected<InspectorCSSAgent>(
         domAgent, inspectedFrames, networkAgent, resource_content_loader,
         resource_container);
 
@@ -4041,7 +4137,7 @@ InspectorCSSAgent* getOrCreateInspectorCSSAgent(v8::Isolate* isolate) {
     // std::unique_ptr<blink::protocol::CSS::Backend::EnableCallback>
     // cb(nullptr); gInspectorCssAgent->enable(std::move(cb));
   }
-  return gInspectorCssAgent;
+  return data->inspectorCssAgent;
 }
 
 /** ###########################################################################
@@ -4055,7 +4151,9 @@ getObjectByCdpId(v8::Isolate* isolate,
   auto context = isolate->GetCurrentContext();
   std::unique_ptr<v8_inspector::StringBuffer> error;
   v8::Local<v8::Value> unwrapped;
-  if (!getInspectorSession()->unwrapObject(&error, cdpIdV8, &unwrapped, &context,
+
+  int contextGroupId = GetCurrentContextGroupIdForIsolate(isolate);  
+  if (!getInspectorSession(isolate, contextGroupId)->unwrapObject(&error, cdpIdV8, &unwrapped, &context,
                                        nullptr)) {
     recordreplay::Warning("getObjectByCdpId - Failed to look up cdpId: %s",
                         ToCoreString(error->string()).Ascii().c_str());
@@ -4097,6 +4195,8 @@ static void fromJsMakeDebuggeeValue(
   CHECK(args.Length() == 1 &&
         "must be called with a single value");
 
+  int contextGroupId = GetCurrentContextGroupIdForIsolate(isolate);
+
   auto context = isolate->GetCurrentContext();
   auto value = args[0];
 
@@ -4105,7 +4205,7 @@ static void fromJsMakeDebuggeeValue(
 
   // NOTE: `wrapObject` always creates a new `RemoteObject` and binds it
   // to a new id.
-  auto remoteObjSerialized = getInspectorSession()->wrapObject(
+  auto remoteObjSerialized = getInspectorSession(isolate, contextGroupId)->wrapObject(
       context, value, ToV8InspectorStringView(object_group), generatePreview);
 
   if (remoteObjSerialized) {
@@ -4124,15 +4224,14 @@ static void fromJsGetArgumentsInFrame(
   CHECK(args.Length() == 1 && args[0]->IsString() &&
         "must be called with a single object");
   v8::Isolate* isolate = args.GetIsolate();
-
+  int contextGroupId = GetCurrentContextGroupIdForIsolate(isolate);
   // convert v8::String → v8::String::Utf8Value → v8_inspector::StringView
   // future-work: can this be improved?
   v8::String::Utf8Value frameId(isolate, args[0]);
   const uint8_t* frameIdPtr = reinterpret_cast<const uint8_t*>(*frameId);
   v8_inspector::StringView frameIdV8(frameIdPtr, frameId.length());
 
-  // v8::Isolate* isolate = args.GetIsolate();
-  auto result = getInspectorSession()->getArgumentsOfCallFrame(frameIdV8);
+  auto result = getInspectorSession(isolate, contextGroupId)->getArgumentsOfCallFrame(frameIdV8);
 
   if (result.IsEmpty()) {
     args.GetReturnValue().SetNull();
@@ -5111,8 +5210,6 @@ void OnNewWindow1(v8::Isolate* isolate, LocalFrame* localFrame) {
 void SetupRecordReplayCommands(v8::Isolate* isolate, LocalFrame* localFrame) {
   V8RecordReplaySetAPIObjectIdCallback(GetAPIObjectIdCallback);
   V8RecordReplayRegisterBrowserEventCallback(HandleBrowserEvent);
-
-  gLocalFrame = localFrame;
 
   gActiveNetworkRequests =
       new std::unordered_map<std::string, NetworkRequestStatus>();
