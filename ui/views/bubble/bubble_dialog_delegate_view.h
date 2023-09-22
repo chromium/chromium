@@ -471,10 +471,15 @@ class VIEWS_EXPORT BubbleDialogDelegateView : public BubbleDialogDelegate,
  public:
   METADATA_HEADER(BubbleDialogDelegateView);
 
+  template <typename T>
+  static bool IsBubbleDialogDelegateView(const BubbleDialogDelegateView* view) {
+    return ui::metadata::IsClass<T, BubbleDialogDelegateView>(view);
+  }
+
   // Create and initialize the bubble Widget(s) with proper bounds.
   template <typename T>
   static Widget* CreateBubble(std::unique_ptr<T> delegate) {
-    CHECK(IsViewClass<BubbleDialogDelegateView>(delegate.get()));
+    CHECK(IsBubbleDialogDelegateView<T>(delegate.get()));
     return BubbleDialogDelegate::CreateBubble(std::move(delegate));
   }
   static Widget* CreateBubble(BubbleDialogDelegateView* bubble_delegate);
