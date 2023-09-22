@@ -179,6 +179,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
       const dbus::ObjectPath& euicc_path,
       base::Value::Dict new_shill_properties,
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
+      base::TimeTicks start_time,
       HermesResponseStatus status,
       const std::vector<dbus::ObjectPath>& profile_paths);
   void CompleteRefreshSmdxProfiles(

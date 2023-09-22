@@ -140,6 +140,12 @@ class CellularPolicyHandlerTest : public testing::Test {
     size_t smds_scan_profile_sum = 0u;
     size_t install_method_via_smdp_count = 0u;
     size_t install_method_via_smds_count = 0u;
+    size_t scan_duration_other_success_count = 0u;
+    size_t scan_duration_other_failure_count = 0u;
+    size_t scan_duration_android_success_count = 0u;
+    size_t scan_duration_android_failure_count = 0u;
+    size_t scan_duration_gsma_success_count = 0u;
+    size_t scan_duration_gsma_failure_count = 0u;
   };
 
   CellularPolicyHandlerTest(
@@ -344,6 +350,24 @@ class CellularPolicyHandlerTest : public testing::Test {
         CellularNetworkMetricsLogger::kESimPolicyInstallMethod,
         CellularNetworkMetricsLogger::ESimPolicyInstallMethod::kViaSmds,
         /*expected_count=*/state.install_method_via_smds_count);
+    histogram_tester_.ExpectTotalCount(
+        CellularNetworkMetricsLogger::kSmdsScanAndroidDurationSuccess,
+        /*expected_count=*/state.scan_duration_android_success_count);
+    histogram_tester_.ExpectTotalCount(
+        CellularNetworkMetricsLogger::kSmdsScanAndroidDurationFailure,
+        /*expected_count=*/state.scan_duration_android_failure_count);
+    histogram_tester_.ExpectTotalCount(
+        CellularNetworkMetricsLogger::kSmdsScanOtherDurationSuccess,
+        /*expected_count=*/state.scan_duration_other_success_count);
+    histogram_tester_.ExpectTotalCount(
+        CellularNetworkMetricsLogger::kSmdsScanOtherDurationFailure,
+        /*expected_count=*/state.scan_duration_other_failure_count);
+    histogram_tester_.ExpectTotalCount(
+        CellularNetworkMetricsLogger::kSmdsScanGsmaDurationSuccess,
+        /*expected_count=*/state.scan_duration_gsma_success_count);
+    histogram_tester_.ExpectTotalCount(
+        CellularNetworkMetricsLogger::kSmdsScanGsmaDurationFailure,
+        /*expected_count=*/state.scan_duration_gsma_failure_count);
   }
 
   // This functionality was explicitly separated from InstallProfile() since
@@ -472,13 +496,11 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
 
   ExpectedHistogramState expected_state;
   CheckHistogramState(expected_state);
-
   const policy_util::SmdxActivationCode activation_code(
       policy_util::SmdxActivationCode::Type::SMDP,
       HermesEuiccClient::Get()
           ->GetTestInterface()
           ->GenerateFakeActivationCode());
-
   absl::optional<base::Value::Dict> onc_config =
       chromeos::onc::ReadDictionaryFromJson(
           GenerateCellularPolicy(activation_code));
@@ -561,6 +583,46 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
   expected_state.smds_scan_profile_total_count++;
   expected_state.smds_scan_profile_sum++;
   expected_state.install_method_via_smds_count++;
+  expected_state.scan_duration_other_success_count++;
+  CheckHistogramState(expected_state);
+}
+
+TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
+       InstallSuccess_DespiteHermesErrors) {
+  SetupGolden();
+
+  ExpectedHistogramState expected_state;
+  CheckHistogramState(expected_state);
+
+  const policy_util::SmdxActivationCode activation_code(
+      policy_util::SmdxActivationCode::Type::SMDS,
+      HermesEuiccClient::Get()
+          ->GetTestInterface()
+          ->GenerateFakeActivationCode());
+
+  absl::optional<base::Value::Dict> onc_config =
+      chromeos::onc::ReadDictionaryFromJson(
+          GenerateCellularPolicy(activation_code));
+  ASSERT_TRUE(onc_config.has_value());
+
+  // Queue a successful result for each time we refresh the installed profiles
+  // (these tests use two EUICCs).
+  for (size_t i = 0;
+       i < HermesManagerClient::Get()->GetAvailableEuiccs().size(); ++i) {
+    HermesEuiccClient::Get()->GetTestInterface()->QueueHermesErrorStatus(
+        HermesResponseStatus::kSuccess);
+  }
+
+  // Queue a failure result for the SM-DS scan itself.
+  HermesEuiccClient::Get()->GetTestInterface()->QueueHermesErrorStatus(
+      HermesResponseStatus::kErrorUnknown);
+  InstallProfile(*onc_config);
+
+  EXPECT_FALSE(IsProfileInstalled(*onc_config, activation_code.value(),
+                                  /*check_for_service=*/true));
+  EXPECT_FALSE(HasESimMetadata(activation_code.value()));
+  expected_state.smds_scan_profile_total_count++;
+  expected_state.scan_duration_other_failure_count++;
   CheckHistogramState(expected_state);
 }
 
@@ -708,6 +770,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
   expected_state.smds_scan_profile_total_count++;
   expected_state.smds_scan_profile_sum = 5;
   expected_state.install_method_via_smds_count++;
+  expected_state.scan_duration_other_success_count++;
   CheckHistogramState(expected_state);
 }
 
@@ -1025,6 +1088,7 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
   EXPECT_FALSE(HasESimMetadata(activation_code.value()));
   expected_state.smds_scan_profile_total_count++;
   expected_state.smds_scan_profile_sum++;
+  expected_state.scan_duration_other_success_count++;
   CheckHistogramState(expected_state);
 }
 

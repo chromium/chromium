@@ -446,13 +446,15 @@ void CellularPolicyHandler::OnInhibitedForRefreshSmdxProfiles(
       /*restore_slot=*/true,
       base::BindOnce(&CellularPolicyHandler::OnRefreshSmdxProfiles,
                      weak_ptr_factory_.GetWeakPtr(), euicc_path,
-                     std::move(new_shill_properties), std::move(inhibit_lock)));
+                     std::move(new_shill_properties), std::move(inhibit_lock),
+                     base::TimeTicks::Now()));
 }
 
 void CellularPolicyHandler::OnRefreshSmdxProfiles(
     const dbus::ObjectPath& euicc_path,
     base::Value::Dict new_shill_properties,
     std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
+    base::TimeTicks start_time,
     HermesResponseStatus status,
     const std::vector<dbus::ObjectPath>& profile_paths) {
   DCHECK(inhibit_lock);
@@ -462,8 +464,10 @@ void CellularPolicyHandler::OnRefreshSmdxProfiles(
       policy_util::SmdxActivationCode::Type::SMDS;
   if (is_smds) {
     CellularNetworkMetricsLogger::LogSmdsScanProfileCount(profile_paths.size());
-    // TODO(b/278135481): Emit
-    // Network.Ash.Cellular.ESim.SMDSScan.{SMDSType}.Duration.
+    CellularNetworkMetricsLogger::LogSmdsScanDuration(
+        base::TimeTicks::Now() - start_time,
+        status == HermesResponseStatus::kSuccess,
+        remaining_install_requests_.front()->activation_code.ToString());
     // TODO(b/278135630): Emit
     // Network.Ash.Cellular.ESim.SMDSScan.{SMDSType}.{ResultType}.
   }
