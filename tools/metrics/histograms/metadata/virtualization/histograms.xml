@@ -23,6 +23,11 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="DiskStatsDuration">
+  <variant name="Boot" summary="boot"/>
+  <variant name="Daily" summary="last 24 hours"/>
+</variants>
+
 <variants name="VmName">
   <variant name="ARCVM" summary="ARCVM"/>
   <variant name="BOREALIS" summary="BOREALIS"/>
@@ -30,6 +35,54 @@ chromium-metrics-reviews@google.com.
   <variant name="PLUGIN_VM" summary="PLUGIN_VM"/>
   <variant name="TERMINA" summary="TERMINA"/>
 </variants>
+
+<histogram name="Virtualization.{Name}.Disk.{Duration}.IoCount" units="count"
+    expires_after="2024-01-31">
+  <owner>uekawa@google.com</owner>
+  <owner>takayas@google.com</owner>
+  <summary>
+    The total count of read, write, flush, and discard operations that
+    virtio-blk devices during {Duration} in {Name}.
+  </summary>
+  <token key="Name" variants="VmName"/>
+  <token key="Duration" variants="DiskStatsDuration"/>
+</histogram>
+
+<histogram name="Virtualization.{Name}.Disk.{Duration}.IoSize" units="MiB"
+    expires_after="2024-01-31">
+  <owner>uekawa@google.com</owner>
+  <owner>takayas@google.com</owner>
+  <summary>
+    The total size of read and write IO that virtio-blk devices performed during
+    {Duration} in {Name}.
+  </summary>
+  <token key="Name" variants="VmName"/>
+  <token key="Duration" variants="DiskStatsDuration"/>
+</histogram>
+
+<histogram name="Virtualization.{Name}.Disk.{Duration}.IoTicks"
+    units="Milliseconds" expires_after="2024-01-31">
+  <owner>uekawa@google.com</owner>
+  <owner>takayas@google.com</owner>
+  <summary>
+    The total time that virtio-blk devices performed read, write, flush, and
+    discard operations during {Duration} in {Name}.
+  </summary>
+  <token key="Name" variants="VmName"/>
+  <token key="Duration" variants="DiskStatsDuration"/>
+</histogram>
+
+<histogram name="Virtualization.{Name}.Disk.{Duration}.KbPerTicks"
+    units="KiBPerMilliSecond" expires_after="2024-01-31">
+  <owner>uekawa@google.com</owner>
+  <owner>takayas@google.com</owner>
+  <summary>
+    The average throughput of read and write operations that virio-blk devices
+    performed during {Duration} in {Name}.
+  </summary>
+  <token key="Name" variants="VmName"/>
+  <token key="Duration" variants="DiskStatsDuration"/>
+</histogram>
 
 <histogram name="Virtualization.{Name}.StartDuration" units="Milliseconds"
     expires_after="2024-01-31">
