@@ -1587,6 +1587,75 @@
     ],
     "skylab_tests": [
       {
+        "cros_board": "brya",
+        "cros_img": "brya-release/R116-15509.50.0",
+        "dut_pool": "chrome",
+        "name": "lacros_all_tast_tests BRYA_RELEASE_BETA",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "shards": 2,
+        "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
+        "test": "lacros_all_tast_tests",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
+        "test_level_retries": 2,
+        "timeout_sec": 10800,
+        "variant_id": "BRYA_RELEASE_BETA"
+      },
+      {
+        "cros_board": "brya",
+        "cros_img": "brya-release/R117-15563.0.0",
+        "dut_pool": "chrome",
+        "name": "lacros_all_tast_tests BRYA_RELEASE_DEV",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "shards": 2,
+        "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
+        "test": "lacros_all_tast_tests",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
+        "test_level_retries": 2,
+        "timeout_sec": 10800,
+        "variant_id": "BRYA_RELEASE_DEV"
+      },
+      {
+        "autotest_name": "tast.lacros-from-gcs",
+        "cros_board": "brya",
+        "cros_img": "brya-release/R119-15619.0.0",
+        "dut_pool": "chrome",
+        "name": "lacros_all_tast_tests BRYA_RELEASE_LKGM",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "shards": 2,
+        "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
+        "test": "lacros_all_tast_tests",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
+        "test_level_retries": 2,
+        "timeout_sec": 10800,
+        "variant_id": "BRYA_RELEASE_LKGM"
+      },
+      {
+        "cros_board": "brya",
+        "cros_img": "brya-release/R115-15474.70.0",
+        "dut_pool": "chrome",
+        "name": "lacros_all_tast_tests BRYA_RELEASE_STABLE",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "shards": 2,
+        "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
+        "test": "lacros_all_tast_tests",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
+        "test_level_retries": 2,
+        "timeout_sec": 10800,
+        "variant_id": "BRYA_RELEASE_STABLE"
+      },
+      {
         "cros_board": "dedede",
         "cros_img": "dedede-release/R116-15509.50.0",
         "name": "lacros_all_tast_tests DEDEDE_RELEASE_BETA",

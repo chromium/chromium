@@ -436,6 +436,39 @@
       'autotest_name': 'tast.chrome-from-gcs',
     },
   },
+  'CROS_BRYA_RELEASE_LKGM': {
+    'identifier': 'BRYA_RELEASE_LKGM',
+    'skylab': {
+      'cros_board': 'brya',
+      'cros_img': 'brya-release/R119-15619.0.0',
+      'autotest_name': 'tast.lacros-from-gcs',
+      'dut_pool': 'chrome',
+    },
+  },
+  'CROS_BRYA_RELEASE_DEV': {
+    'identifier': 'BRYA_RELEASE_DEV',
+    'skylab': {
+      'cros_board': 'brya',
+      'cros_img': 'brya-release/R117-15563.0.0',
+      'dut_pool': 'chrome',
+    },
+  },
+  'CROS_BRYA_RELEASE_BETA': {
+    'identifier': 'BRYA_RELEASE_BETA',
+    'skylab': {
+      'cros_board': 'brya',
+      'cros_img': 'brya-release/R116-15509.50.0',
+      'dut_pool': 'chrome',
+    },
+  },
+  'CROS_BRYA_RELEASE_STABLE': {
+    'identifier': 'BRYA_RELEASE_STABLE',
+    'skylab': {
+      'cros_board': 'brya',
+      'cros_img': 'brya-release/R115-15474.70.0',
+      'dut_pool': 'chrome',
+    },
+  },
   'CROS_DEDEDE_RELEASE_LKGM': {
     'identifier': 'DEDEDE_RELEASE_LKGM',
     'skylab': {
