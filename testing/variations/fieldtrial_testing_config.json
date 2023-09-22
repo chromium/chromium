@@ -3833,7 +3833,6 @@
                     "enable_features": [
                         "CacheMacSandboxProfiles",
                         "InhibitLoadingStateUpdate",
-                        "MacSetDefaultTaskRole",
                         "MainThreadCompositingPriority",
                         "QuickIntensiveWakeUpThrottlingAfterLoading",
                         "RunTasksByBatches",
@@ -9631,6 +9630,23 @@
                     "name": "Enabled",
                     "enable_features": [
                         "LowerMemoryLimitForNonMainRenderers"
+                    ]
+                }
+            ]
+        }
+    ],
+    "MacChildProcessPriority": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AdjustGpuProcessPriority",
+                        "MacAllowBackgroundingRenderProcesses",
+                        "MacSetDefaultTaskRole"
                     ]
                 }
             ]
