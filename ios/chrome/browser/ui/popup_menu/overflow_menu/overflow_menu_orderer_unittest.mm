@@ -1304,7 +1304,16 @@ TEST_F(OverflowMenuOrdererTest, CustomizingDestinationsClearsBadgeImpressions) {
   EXPECT_FALSE(destination_provider_.badgesCleared);
 
   // Edit the menu, which should clear the badge impressions remaining.
+  DestinationCustomizationModel* customizationModel =
+      overflow_menu_orderer_.destinationCustomizationModel;
+  OverflowMenuDestination* destinationToHide =
+      customizationModel.shownDestinations[6];
+  ASSERT_EQ(destinationToHide.destination,
+            static_cast<int>(initial_ranking[5]));
+  destinationToHide.shown = NO;
+  customizationModel.destinationUsageEnabled = YES;
   [overflow_menu_orderer_ commitDestinationsUpdate];
+
   [overflow_menu_orderer_ reorderDestinationsForInitialMenu];
   updated_ranking =
       RankingFromDestinationArray(overflow_menu_model_.destinations);
@@ -2028,6 +2037,8 @@ TEST_F(OverflowMenuOrdererTest, DestinationCustomizationRecordsMetrics) {
 
   tester.ExpectBucketCount("IOS.OverflowMenu.SmartSortingStateChange", 1, 1);
 
+  tester.ExpectTotalCount("IOS.OverflowMenu.Customization.DestinationRemoved",
+                          2);
   tester.ExpectBucketCount("IOS.OverflowMenu.Customization.DestinationRemoved",
                            4, 1);
   tester.ExpectBucketCount("IOS.OverflowMenu.Customization.DestinationRemoved",
@@ -2066,6 +2077,7 @@ TEST_F(OverflowMenuOrdererTest, DestinationCustomizationRecordsMetrics) {
 
   tester.ExpectBucketCount("IOS.OverflowMenu.SmartSortingStateChange", 0, 1);
 
+  tester.ExpectTotalCount("IOS.OverflowMenu.Customization.DestinationAdded", 1);
   tester.ExpectBucketCount("IOS.OverflowMenu.Customization.DestinationAdded", 4,
                            1);
 
@@ -2093,6 +2105,44 @@ TEST_F(OverflowMenuOrdererTest, DestinationCustomizationRecordsMetrics) {
   EXPECT_FALSE(buckets[1].min & 1 << 3);
   EXPECT_TRUE(buckets[1].min & 1 << 4);
   EXPECT_FALSE(buckets[1].min & 1 << 5);
+}
+
+// Tests that no metrics are recorded if there were no actual changes.
+TEST_F(OverflowMenuOrdererTest, DestinationCustomizationNoMetricsIfNoChange) {
+  base::test::ScopedFeatureList features(kOverflowMenuCustomization);
+
+  DestinationRanking all_destinations = SampleDestinations();
+  DestinationRanking current_destinations = {
+      all_destinations[0], all_destinations[1], all_destinations[2],
+      all_destinations[3], all_destinations[4], all_destinations[5],
+  };
+
+  InitializeOverflowMenuOrdererWithRanking(NO, current_destinations);
+
+  // Access model to start customization session
+  DestinationCustomizationModel* destinationModel =
+      overflow_menu_orderer_.destinationCustomizationModel;
+
+  ASSERT_EQ(destinationModel.hasChanged, NO);
+
+  base::HistogramTester tester;
+
+  [overflow_menu_orderer_ commitDestinationsUpdate];
+
+  tester.ExpectTotalCount("IOS.OverflowMenu.Customization.DestinationRemoved",
+                          0);
+  tester.ExpectTotalCount("IOS.OverflowMenu.Customization.DestinationAdded", 0);
+  tester.ExpectTotalCount(
+      "IOS.OverflowMenu.Customization.DestinationsCustomized", 0);
+
+  tester.ExpectTotalCount(
+      "IOS.OverflowMenu.Customization.DestinationsReordered.FirstPosition", 0);
+  tester.ExpectTotalCount(
+      "IOS.OverflowMenu.Customization.DestinationsReordered.SecondPosition", 0);
+  tester.ExpectTotalCount(
+      "IOS.OverflowMenu.Customization.DestinationsReordered.ThirdPosition", 0);
+  tester.ExpectTotalCount(
+      "IOS.OverflowMenu.Customization.DestinationsReordered.FourthPosition", 0);
 }
 
 // Tests that the proper metrics are recorded when action customization
@@ -2123,6 +2173,7 @@ TEST_F(OverflowMenuOrdererTest, ActionCustomizationRecordsMetrics) {
 
   [overflow_menu_orderer_ commitActionsUpdate];
 
+  tester.ExpectTotalCount("IOS.OverflowMenu.Customization.ActionRemoved", 2);
   tester.ExpectBucketCount("IOS.OverflowMenu.Customization.ActionRemoved", 8,
                            1);
   tester.ExpectBucketCount("IOS.OverflowMenu.Customization.ActionRemoved", 9,
@@ -2150,6 +2201,7 @@ TEST_F(OverflowMenuOrdererTest, ActionCustomizationRecordsMetrics) {
 
   [overflow_menu_orderer_ commitActionsUpdate];
 
+  tester.ExpectTotalCount("IOS.OverflowMenu.Customization.ActionAdded", 1);
   tester.ExpectBucketCount("IOS.OverflowMenu.Customization.ActionAdded", 8, 1);
 
   tester.ExpectBucketCount(
@@ -2167,4 +2219,43 @@ TEST_F(OverflowMenuOrdererTest, ActionCustomizationRecordsMetrics) {
   EXPECT_FALSE(buckets[1].min & 1 << 0);
   EXPECT_TRUE(buckets[1].min & 1 << 1);
   EXPECT_FALSE(buckets[1].min & 1 << 2);
+}
+
+// Tests that no metrics are recorded if there were no actual changes.
+TEST_F(OverflowMenuOrdererTest, ActionCustomizationNoMetricsIfNoChange) {
+  base::test::ScopedFeatureList features(kOverflowMenuCustomization);
+
+  ActionRanking all_actions = SampleActions();
+  ActionRanking current_actions = {
+      all_actions[0], all_actions[1], all_actions[2],
+      all_actions[3], all_actions[4], all_actions[5],
+  };
+
+  InitializeOverflowMenuOrderer(NO);
+  action_provider_.basePageActions = current_actions;
+  [overflow_menu_orderer_ updatePageActions];
+
+  // Access model to start customization session
+  ActionCustomizationModel* actionModel =
+      overflow_menu_orderer_.actionCustomizationModel;
+
+  ASSERT_EQ(actionModel.hasChanged, NO);
+
+  base::HistogramTester tester;
+
+  [overflow_menu_orderer_ commitActionsUpdate];
+
+  tester.ExpectTotalCount("IOS.OverflowMenu.Customization.ActionRemoved", 0);
+  tester.ExpectTotalCount("IOS.OverflowMenu.Customization.ActionAdded", 0);
+  tester.ExpectTotalCount("IOS.OverflowMenu.Customization.ActionsCustomized",
+                          0);
+
+  tester.ExpectTotalCount(
+      "IOS.OverflowMenu.Customization.ActionsReordered.FirstPosition", 0);
+  tester.ExpectTotalCount(
+      "IOS.OverflowMenu.Customization.ActionsReordered.SecondPosition", 0);
+  tester.ExpectTotalCount(
+      "IOS.OverflowMenu.Customization.ActionsReordered.ThirdPosition", 0);
+  tester.ExpectTotalCount(
+      "IOS.OverflowMenu.Customization.ActionsReordered.FourthPosition", 0);
 }

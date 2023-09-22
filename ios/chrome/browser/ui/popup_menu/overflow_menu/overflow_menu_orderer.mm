@@ -397,6 +397,11 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
 }
 
 - (void)commitActionsUpdate {
+  if (!_actionCustomizationModel.hasChanged) {
+    [self cancelActionsUpdate];
+    return;
+  }
+
   ActionOrderData actionOrderData;
   for (OverflowMenuAction* action in self.actionCustomizationModel
            .shownActions) {
@@ -422,6 +427,11 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
 }
 
 - (void)commitDestinationsUpdate {
+  if (!_destinationCustomizationModel.hasChanged) {
+    [self cancelDestinationsUpdate];
+    return;
+  }
+
   DestinationOrderData orderData;
   for (OverflowMenuDestination* destination in self
            .destinationCustomizationModel.shownDestinations) {

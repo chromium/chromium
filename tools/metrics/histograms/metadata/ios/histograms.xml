@@ -1710,7 +1710,8 @@ chromium-metrics-reviews@google.com.
   <owner>bling-mony-pod@google.com</owner>
   <summary>
     A bitfield value representing various sub-events that can take place during
-    an action customization session.
+    an action customization session. Only fired when some customization actually
+    occurred.
   </summary>
 </histogram>
 
@@ -1774,7 +1775,8 @@ chromium-metrics-reviews@google.com.
   <owner>bling-mony-pod@google.com</owner>
   <summary>
     A bitfield value representing various sub-events that can take place during
-    a destination customization session.
+    a destination customization session. Only fired when some customization
+    actually occurred.
   </summary>
 </histogram>
 
