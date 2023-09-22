@@ -295,7 +295,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
         Tap "Chrome" then "Default Browser App."
       </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_SUBTITLE_TEXT" desc="Subtitle for the default browser video promo. [iOS only]">
-        Open Chrome Settings in iOS, then tap on "Browser Default APP" and select Chrome.
+        Open Chrome Settings in iOS, then tap on "Default Browser App" and select Chrome.
       </message>
       <message name="IDS_IOS_DISCONNECT_DIALOG_TITLE" desc="The title of the disconnect dialog [Length: 30em].">
         Sign out of Chrome?
