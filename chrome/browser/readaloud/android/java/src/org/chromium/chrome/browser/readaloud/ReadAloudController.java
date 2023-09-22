@@ -15,7 +15,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.expandedplayer.ExpandedPlayerCoordinator;
-import org.chromium.chrome.browser.readaloud.miniplayer.MiniPlayerCoordinator;
 import org.chromium.chrome.browser.readaloud.player.PlayerCoordinator;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.tab.Tab;
@@ -44,7 +43,6 @@ public class ReadAloudController {
     private final Map<String, Boolean> mTimepointsSupportedMap = new HashMap<>();
     private final HashSet<String> mPendingRequests = new HashSet<>();
     private final TabModel mTabModel;
-    private final MiniPlayerCoordinator mMiniPlayer;
     private final ExpandedPlayer mExpandedPlayer;
     private final PlayerCoordinator mPlayerCoordinator;
     private TabModelTabObserver mTabObserver;
@@ -86,7 +84,6 @@ public class ReadAloudController {
         mReadabilityHooks = sReadabilityHooksForTesting != null
                 ? sReadabilityHooksForTesting
                 : new ReadAloudReadabilityHooksImpl(context, ReadAloudFeatures.getApiKeyOverride());
-        mMiniPlayer = new MiniPlayerCoordinator(miniPlayerStub);
         mExpandedPlayer = new ExpandedPlayerCoordinator(context, bottomSheetController);
         mPlayerCoordinator = new PlayerCoordinator(context);
         if (mReadabilityHooks.isEnabled()) {

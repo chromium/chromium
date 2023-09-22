@@ -6004,6 +6004,12 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_READALOUD_OPTIONS_MENU_BUTTON" desc="Accessibility string for the 'Listen to this page' options menu button.">
         More options
       </message>
+      <message name="IDS_READALOUD_PLAYBACK_ERROR" desc="Message displayed when an error occured during 'Listen to this page' playback.">
+        Playback is unavailable for this page.
+      </message>
+       <message name="IDS_READALOUD_PLAYBACK_LOADING" desc="Message displayed when 'Listen to this page' playback is buffering.">
+        Loading…
+      </message>
 
       <!-- Touch To Fill No Passkeys Sheet -->
       <message name="IDS_NO_PASSKEYS_SHEET_CONTENT_DESCRIPTION" is_accessibility_with_no_ui="true" desc="Accessibility string read when the no passkeys sheet is opened. It describes the bottom sheet informing users that no passkeys are available.">

@@ -7,5 +7,4 @@ found in the LICENSE file.
 <resources xmlns:tools="http://schemas.android.com/tools">
     <color name="readaloud_button_primary_light">@color/baseline_primary_40_alpha_10</color>
     <color name="readaloud_button_secondary_light">@color/baseline_primary_40_alpha_6</color>
-    <color name="readaloud_progress_bar_bg">@color/baseline_primary_40_alpha_6</color>
 </resources>

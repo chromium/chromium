@@ -105,7 +105,7 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:layout_height="@dimen/readaloud_expanded_player_seek_bar_height"
             android:layout_marginTop="@dimen/readaloud_expanded_player_seek_bar_margin_top"
-            android:background="@color/readaloud_progress_bar_bg"/>
+            android:background="?attr/colorSurfaceVariant"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
