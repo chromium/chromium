@@ -42,8 +42,7 @@ class TabOrganizationButton : public TabStripControlButton {
   PressedCallback pressed_callback_;
 
   // TODO(emshack): Remove when session_ is populated via triggering.
-  const std::unique_ptr<TabOrganizationSession> placeholder_session_ =
-      std::make_unique<TabOrganizationSession>();
+  const std::unique_ptr<TabOrganizationSession> placeholder_session_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_ORGANIZATION_BUTTON_H_

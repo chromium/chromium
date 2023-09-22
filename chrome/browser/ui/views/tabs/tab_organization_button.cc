@@ -26,7 +26,8 @@ TabOrganizationButton::TabOrganizationButton(TabStrip* tab_strip,
                               base::Unretained(this)),
           l10n_util::GetStringUTF16(IDS_TAB_ORGANIZE),
           flat_edge),
-      pressed_callback_(std::move(pressed_callback)) {
+      pressed_callback_(std::move(pressed_callback)),
+      placeholder_session_(std::make_unique<TabOrganizationSession>()) {
   SetProperty(views::kElementIdentifierKey, kTabOrganizationButtonElementId);
 
   SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_ORGANIZE));
