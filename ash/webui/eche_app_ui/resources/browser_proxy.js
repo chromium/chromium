@@ -176,6 +176,14 @@ accessibilityObserverRouter.performAction.addListener((action) => {
   });
 });
 
+accessibilityObserverRouter.refreshWithExtraData.addListener((action) => {
+  return new Promise(async (resolve) => {
+    const result = await guestMessagePipe.sendMessage(
+        Message.ACCESSIBILITY_REFRESH_WITH_EXTRA_DATA, action);
+    resolve({result});
+  });
+});
+
 // Add stream action listener and send result via pipes.
 streamActionObserverRouter.onStreamAction.addListener((action) => {
   console.log(`echeapi browser_proxy.js OnStreamAction ${action}`);

@@ -85,10 +85,23 @@ interface AccessibilityProvider {
 
 // Observer for accessibility provider. Should be created using
 // SetAccessibilityObserver in AccessibilityProvider.
+// Used to send messages from chrome to interact
+// with the android phone through the SWA.
+// Proto from: ash/webui/eche_app_ui/proto/accessibility_mojom.proto
 interface AccessibilityObserver {
   // Sends the accessibility action to the SWA for processing.
-  // Proto from: ash/webui/eche_app_ui/proto/accessibility_mojom.proto
+  // The proto sent is proto::AccessibilityActionData.
   PerformAction(array<uint8> serialized_proto) => (bool result);
+
+  // Refreshes the current node with extra data.
+  // Returns Rect specifying location, or null if textLocation is not available.
+  // The result rect is encoded in binary as proto::Rect from the accessibility
+  // mojom.
+  // `refresh_data_proto` is proto::AccessibilityActionData with the type of
+  // GET_TEXT_LOCATION.
+  // `text_location_proto` is proto::Rect.
+  RefreshWithExtraData(array<uint8> refresh_data_proto)
+      => (array<uint8>? text_location_proto);
 };
 
 // Interface for generating uid. The uid is unique and persistent.

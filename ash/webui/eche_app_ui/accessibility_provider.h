@@ -11,6 +11,7 @@
 #include "ash/system/eche/eche_tray.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 
+#include "ash/webui/eche_app_ui/proto/accessibility_mojom.pb.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -42,7 +43,12 @@ class AccessibilityProvider
   // Track the current eche web view.
   void TrackView(AshWebView* view);
   void HandleStreamClosed();
+  // Handles the result from perform action.
   void OnActionResult(const ui::AXActionData& data, bool result) const;
+  // Handles the result of a refreshWithExtraData call.
+  void OnGetTextLocationDataResult(const ui::AXActionData& action,
+                                   const absl::optional<std::vector<uint8_t>>&
+                                       serialized_text_location) const;
 
   // mojom::AccessibilityProvider overrides.
   // Proto from ash/webui/eche_app_ui/proto/accessibility_mojom.proto.
@@ -61,6 +67,7 @@ class AccessibilityProvider
  private:
   ax::android::mojom::AccessibilityFilterType GetFilterType();
   void UpdateDeviceBounds(int width, int height);
+  gfx::Rect OnGetTextLocationDataResultInternal(proto::Rect proto_rect) const;
 
   class SerializationDelegate
       : public ax::android::AXTreeSourceAndroid::SerializationDelegate {

@@ -117,6 +117,9 @@
   CONNECTION_STATUS_CHANGED: 'connection_status_changed',
   // Message for sending accessibility event data.
   ACCESSIBILITY_EVENT_DATA: 'accessibility_event_data',
+  // Message for getting the location of text in android.
+  ACCESSIBILITY_REFRESH_WITH_EXTRA_DATA:
+      'accessibility_refresh_with_extra_data',
   // Message for sending actions and their parameters.
   ACCESSIBILITY_PERFORM_ACTION: 'accessibility_perform_action',
   // Message for requesting keyboard layout information.

@@ -17,6 +17,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "services/accessibility/android/public/mojom/accessibility_helper.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
@@ -173,6 +174,48 @@ void AccessibilityProvider::OnActionResult(const ui::AXActionData& action,
   }
 }
 
+void AccessibilityProvider::OnGetTextLocationDataResult(
+    const ui::AXActionData& action,
+    const absl::optional<std::vector<uint8_t>>& serialized_text_location)
+    const {
+  absl::optional<gfx::Rect> result_rect;
+  // There was a rect returned. Parse and validate it.
+  if (serialized_text_location.has_value()) {
+    proto::Rect proto_rect;
+    // Parse the rect.
+    if (!proto_rect.ParseFromArray(serialized_text_location->data(),
+                                   serialized_text_location->size())) {
+      // Failed to parse the response. Fail the action.
+      OnActionResult(action, false);
+      return;
+    }
+    // Validate the rect.
+    if (proto_rect.bottom() > proto_rect.top() &&
+        proto_rect.right() > proto_rect.left()) {
+      result_rect = OnGetTextLocationDataResultInternal(proto_rect);
+    } else {
+      // Rect was invalid. Fail the action.
+      OnActionResult(action, false);
+      return;
+    }
+  }
+  if (!tree_source_) {
+    // Simple return, there is no way to notify a
+    // tree source that doesn't exist.
+    return;
+  }
+
+  tree_source_->NotifyGetTextLocationDataResult(action, result_rect);
+}
+
+gfx::Rect AccessibilityProvider::OnGetTextLocationDataResultInternal(
+    proto::Rect proto_rect) const {
+  // TODO(francisjp): Determine if there is additional processing required.
+  int height = proto_rect.bottom() - proto_rect.top();
+  int width = proto_rect.right() - proto_rect.left();
+  return gfx::Rect(proto_rect.top(), proto_rect.left(), width, height);
+}
+
 void AccessibilityProvider::OnAction(const ui::AXActionData& action) const {
   if (!tree_source_) {
     return;
@@ -188,10 +231,18 @@ void AccessibilityProvider::OnAction(const ui::AXActionData& action) const {
     size_t nbytes = proto_action->ByteSizeLong();
     std::vector<uint8_t> serialized_proto(nbytes);
     proto_action->SerializeToArray(serialized_proto.data(), nbytes);
-    mojom::AccessibilityObserver::PerformActionCallback cb =
-        base::BindOnce(&AccessibilityProvider::OnActionResult,
-                       weak_ptr_factory_.GetWeakPtr(), action);
-    observer_remote_->PerformAction(serialized_proto, std::move(cb));
+    if (action.action == ax::mojom::Action::kGetTextLocation) {
+      mojom::AccessibilityObserver::RefreshWithExtraDataCallback cb =
+          base::BindOnce(&AccessibilityProvider::OnGetTextLocationDataResult,
+                         weak_ptr_factory_.GetWeakPtr(), action);
+      observer_remote_->RefreshWithExtraData(serialized_proto, std::move(cb));
+    } else {
+      mojom::AccessibilityObserver::PerformActionCallback cb =
+          base::BindOnce(&AccessibilityProvider::OnActionResult,
+                         weak_ptr_factory_.GetWeakPtr(), action);
+      observer_remote_->PerformAction(serialized_proto, std::move(cb));
+    }
+
   } else {
     OnActionResult(action, false);
   }
