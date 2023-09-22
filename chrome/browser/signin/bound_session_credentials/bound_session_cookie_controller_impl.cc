@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_observer.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h"
@@ -48,7 +49,8 @@ BoundSessionCookieControllerImpl::BoundSessionCookieControllerImpl(
 
 BoundSessionCookieControllerImpl::~BoundSessionCookieControllerImpl() {
   // On shutdown or session termination, resume blocked requests if any.
-  ResumeBlockedRequests();
+  ResumeBlockedRequests(
+      ResumeBlockedRequestsTrigger::kShutdownOrSessionTermination);
 }
 
 void BoundSessionCookieControllerImpl::Initialize() {
@@ -64,7 +66,8 @@ void BoundSessionCookieControllerImpl::OnConnectionChanged(
     // instead of holding them up until the network is back or timeout occurs.
     // The network could come back shortly before the timeout which would result
     // in requests being released without a valid cookie.
-    ResumeBlockedRequests();
+    ResumeBlockedRequests(
+        ResumeBlockedRequestsTrigger::kNetworkConnectionOffline);
   }
 }
 
@@ -90,7 +93,8 @@ void BoundSessionCookieControllerImpl::OnRequestBlockedOnCookie(
 
   if (IsConnectionTypeAvailableAndOffline()) {
     // See the comment in `OnConnectionChanged()` for explanation.
-    ResumeBlockedRequests();
+    ResumeBlockedRequests(
+        ResumeBlockedRequestsTrigger::kNetworkConnectionOffline);
     return;
   }
 
@@ -125,7 +129,7 @@ void BoundSessionCookieControllerImpl::SetCookieExpirationTimeAndNotify(
   base::Time old_min_expiration_time = min_cookie_expiration_time();
   it->second = expiration_time;
   if (AreAllCookiesFresh()) {
-    ResumeBlockedRequests();
+    ResumeBlockedRequests(ResumeBlockedRequestsTrigger::kObservedFreshCookies);
   }
 
   if (min_cookie_expiration_time() != old_min_expiration_time) {
@@ -188,8 +192,12 @@ void BoundSessionCookieControllerImpl::OnCookieRefreshFetched(
   // TODO(b/263263352): Record histogram with the result of the fetch.
   refresh_cookie_fetcher_.reset();
 
+  ResumeBlockedRequestsTrigger trigger =
+      result == BoundSessionRefreshCookieFetcher::Result::kSuccess
+          ? ResumeBlockedRequestsTrigger::kCookieRefreshFetchSuccess
+          : ResumeBlockedRequestsTrigger::kCookieRefreshFetchFailure;
   // Resume blocked requests regardless of the result.
-  ResumeBlockedRequests();
+  ResumeBlockedRequests(trigger);
 
   // Persistent errors result in session termination.
   // Transient errors have no impact on future requests.
@@ -218,19 +226,24 @@ void BoundSessionCookieControllerImpl::MaybeScheduleCookieRotation() {
                           base::Unretained(this)));
 }
 
-void BoundSessionCookieControllerImpl::ResumeBlockedRequests() {
+void BoundSessionCookieControllerImpl::ResumeBlockedRequests(
+    ResumeBlockedRequestsTrigger trigger) {
   resume_blocked_requests_timer_.Stop();
+  if (resume_blocked_requests_.empty()) {
+    return;
+  }
   std::vector<base::OnceClosure> callbacks;
   std::swap(callbacks, resume_blocked_requests_);
   for (auto& callback : callbacks) {
     std::move(callback).Run();
   }
+  base::UmaHistogramEnumeration(
+      "Signin.BoundSessionCredentials.ResumeThrottledRequestsTrigger", trigger);
 }
 
 void BoundSessionCookieControllerImpl::OnResumeBlockedRequestsTimeout() {
-  // TODO(b/292511796): Add a histogram.
   // Reset the fetcher, it has been taking at least
   // kResumeBlockedRequestTimeout. New requests will trigger a new fetch.
   refresh_cookie_fetcher_.reset();
-  ResumeBlockedRequests();
+  ResumeBlockedRequests(ResumeBlockedRequestsTrigger::kTimeout);
 }

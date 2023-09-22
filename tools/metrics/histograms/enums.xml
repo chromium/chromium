@@ -94469,6 +94469,17 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="IO exception"/>
 </enum>
 
+<enum name="ResumeBlockedRequestsTrigger">
+  <int value="0" label="Cookie fresh notification"/>
+  <int value="1"
+      label="Cookie rotation success (request completed before cookie fresh
+             notification)"/>
+  <int value="2" label="Cookie rotation failure"/>
+  <int value="3" label="Network connection offline"/>
+  <int value="4" label="Timeout"/>
+  <int value="5" label="Shutdown or session termination"/>
+</enum>
+
 <enum name="ReusedPasswordType">
   <int value="0" label="Saved password"/>
   <int value="1" label="Primary account password"/>

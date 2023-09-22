@@ -8,6 +8,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -250,9 +251,12 @@ class BoundSessionCookieControllerImplTest
         ->IsConnectionTypeAvailableAndOffline();
   }
 
+  base::HistogramTester* histogram_tester() { return &histogram_tester_; }
+
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::HistogramTester histogram_tester_;
   crypto::ScopedMockUnexportableKeyProvider scoped_key_provider_;
   unexportable_keys::UnexportableKeyTaskManager unexportable_key_task_manager_;
   unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_;
@@ -406,6 +410,16 @@ TEST_F(BoundSessionCookieControllerImplTest,
   task_environment()->RunUntilIdle();
   EXPECT_TRUE(future.IsReady());
   EXPECT_TRUE(AreAllCookiesFresh());
+  // Note: In reality the histogram may record `kCookieRefreshFetchSuccess` or
+  // `kObservedFreshCookies` depending on which happens first the notification
+  // of cookie change or the refresh request completed.
+  EXPECT_THAT(
+      histogram_tester()->GetAllSamples(
+          "Signin.BoundSessionCredentials.ResumeThrottledRequestsTrigger"),
+      testing::ElementsAre(base::Bucket(
+          BoundSessionCookieControllerImpl::ResumeBlockedRequestsTrigger::
+              kCookieRefreshFetchSuccess,
+          /*count=*/1)));
 }
 
 TEST_F(BoundSessionCookieControllerImplTest,
@@ -431,7 +445,20 @@ TEST_F(BoundSessionCookieControllerImplTest,
   SetExpirationTimeAndNotify(k3PSIDTSCookieName, GetTimeInTenMinutes());
   EXPECT_TRUE(future.IsReady());
   EXPECT_TRUE(AreAllCookiesFresh());
+  EXPECT_THAT(
+      histogram_tester()->GetAllSamples(
+          "Signin.BoundSessionCredentials.ResumeThrottledRequestsTrigger"),
+      testing::ElementsAre(
+          base::Bucket(BoundSessionCookieControllerImpl::
+                           ResumeBlockedRequestsTrigger::kObservedFreshCookies,
+                       /*count=*/1)));
+
   CompletePendingRefreshRequestIfAny();
+  // All throttled requests should have been released on cookie fresh.
+  // The refresh fetch doesn't release any throttled requests as there isn't any
+  // and shouldn't record a histogram.
+  histogram_tester()->ExpectTotalCount(
+      "Signin.BoundSessionCredentials.ResumeThrottledRequestsTrigger", 1u);
 }
 
 TEST_F(BoundSessionCookieControllerImplTest,
@@ -464,6 +491,13 @@ TEST_F(BoundSessionCookieControllerImplTest,
   EXPECT_TRUE(on_cookie_refresh_persistent_failure_called());
   EXPECT_TRUE(future.IsReady());
   EXPECT_EQ(controller->min_cookie_expiration_time(), min_cookie_expiration);
+  EXPECT_THAT(
+      histogram_tester()->GetAllSamples(
+          "Signin.BoundSessionCredentials.ResumeThrottledRequestsTrigger"),
+      testing::ElementsAre(base::Bucket(
+          BoundSessionCookieControllerImpl::ResumeBlockedRequestsTrigger::
+              kCookieRefreshFetchFailure,
+          /*count=*/1)));
 }
 
 TEST_F(BoundSessionCookieControllerImplTest, RefreshFailedTransient) {
@@ -496,6 +530,19 @@ TEST_F(BoundSessionCookieControllerImplTest, RefreshFailedTransient) {
       GetTimeInTenMinutes());
   EXPECT_TRUE(future.IsReady());
   EXPECT_FALSE(on_cookie_refresh_persistent_failure_called());
+
+  EXPECT_THAT(
+      histogram_tester()->GetAllSamples(
+          "Signin.BoundSessionCredentials.ResumeThrottledRequestsTrigger"),
+      testing::ElementsAre(
+          base::Bucket(
+              BoundSessionCookieControllerImpl::ResumeBlockedRequestsTrigger::
+                  kCookieRefreshFetchSuccess,
+              /*count=*/1),
+          base::Bucket(
+              BoundSessionCookieControllerImpl::ResumeBlockedRequestsTrigger::
+                  kCookieRefreshFetchFailure,
+              /*count=*/2)));
 }
 
 TEST_F(BoundSessionCookieControllerImplTest,
@@ -522,6 +569,13 @@ TEST_F(BoundSessionCookieControllerImplTest,
   }
   EXPECT_EQ(on_bound_session_throttler_params_changed_call_count(), 1u);
   EXPECT_TRUE(AreAllCookiesFresh());
+  EXPECT_THAT(
+      histogram_tester()->GetAllSamples(
+          "Signin.BoundSessionCredentials.ResumeThrottledRequestsTrigger"),
+      testing::ElementsAre(base::Bucket(
+          BoundSessionCookieControllerImpl::ResumeBlockedRequestsTrigger::
+              kCookieRefreshFetchSuccess,
+          /*count=*/1)));
 }
 
 TEST_F(BoundSessionCookieControllerImplTest,
@@ -549,6 +603,14 @@ TEST_F(BoundSessionCookieControllerImplTest,
   SimulateCompleteRefreshRequest(
       BoundSessionRefreshCookieFetcher::Result::kSuccess,
       GetTimeInTenMinutes());
+
+  EXPECT_THAT(
+      histogram_tester()->GetAllSamples(
+          "Signin.BoundSessionCredentials.ResumeThrottledRequestsTrigger"),
+      testing::ElementsAre(
+          base::Bucket(BoundSessionCookieControllerImpl::
+                           ResumeBlockedRequestsTrigger::kObservedFreshCookies,
+                       /*count=*/1)));
 }
 
 TEST_F(BoundSessionCookieControllerImplTest,
@@ -565,6 +627,13 @@ TEST_F(BoundSessionCookieControllerImplTest,
   for (auto& future : futures) {
     EXPECT_TRUE(future.IsReady());
   }
+  EXPECT_THAT(
+      histogram_tester()->GetAllSamples(
+          "Signin.BoundSessionCredentials.ResumeThrottledRequestsTrigger"),
+      testing::ElementsAre(base::Bucket(
+          BoundSessionCookieControllerImpl::ResumeBlockedRequestsTrigger::
+              kShutdownOrSessionTermination,
+          /*count=*/1)));
 }
 
 TEST_F(BoundSessionCookieControllerImplTest, ResumeBlockedRequestsOnTimeout) {
@@ -583,6 +652,13 @@ TEST_F(BoundSessionCookieControllerImplTest, ResumeBlockedRequestsOnTimeout) {
   EXPECT_FALSE(cookie_fetcher());
   EXPECT_FALSE(resume_blocked_requests_timer()->IsRunning());
   EXPECT_FALSE(preemptive_cookie_refresh_timer()->IsRunning());
+  EXPECT_THAT(
+      histogram_tester()->GetAllSamples(
+          "Signin.BoundSessionCredentials.ResumeThrottledRequestsTrigger"),
+      testing::ElementsAre(
+          base::Bucket(BoundSessionCookieControllerImpl::
+                           ResumeBlockedRequestsTrigger::kTimeout,
+                       /*count=*/1)));
 }
 
 TEST_F(BoundSessionCookieControllerImplTest,
@@ -654,6 +730,13 @@ TEST_F(BoundSessionCookieControllerImplTest,
   EXPECT_FALSE(future.IsReady());
   CompletePendingRefreshRequestIfAny();
   EXPECT_TRUE(future.IsReady());
+  EXPECT_THAT(
+      histogram_tester()->GetAllSamples(
+          "Signin.BoundSessionCredentials.ResumeThrottledRequestsTrigger"),
+      testing::ElementsAre(base::Bucket(
+          BoundSessionCookieControllerImpl::ResumeBlockedRequestsTrigger::
+              kCookieRefreshFetchSuccess,
+          /*count=*/1)));
 }
 
 TEST_F(BoundSessionCookieControllerImplTest,
@@ -672,6 +755,13 @@ TEST_F(BoundSessionCookieControllerImplTest,
   EXPECT_TRUE(cookie_fetcher());
   EXPECT_TRUE(future.IsReady());
   EXPECT_FALSE(resume_blocked_requests_timer()->IsRunning());
+  EXPECT_THAT(
+      histogram_tester()->GetAllSamples(
+          "Signin.BoundSessionCredentials.ResumeThrottledRequestsTrigger"),
+      testing::ElementsAre(base::Bucket(
+          BoundSessionCookieControllerImpl::ResumeBlockedRequestsTrigger::
+              kNetworkConnectionOffline,
+          /*count=*/1)));
 }
 
 TEST_F(BoundSessionCookieControllerImplTest,
