@@ -12,9 +12,17 @@
 namespace ash::hermes_metrics {
 
 void LogInstallViaQrCodeResult(HermesResponseStatus status,
-                               dbus::DBusResult dbusResult) {
+                               dbus::DBusResult dbusResult,
+                               bool is_initial_install) {
   base::UmaHistogramEnumeration("Network.Cellular.ESim.InstallViaQrCode.Result",
                                 status);
+  if (is_initial_install) {
+    base::UmaHistogramEnumeration(
+        "Network.Cellular.ESim.InstallViaQrCode.Result.InitialAttempt", status);
+  } else {
+    base::UmaHistogramEnumeration(
+        "Network.Cellular.ESim.InstallViaQrCode.Result.Retry", status);
+  }
 
   if (status == HermesResponseStatus::kErrorUnknownResponse) {
     base::UmaHistogramEnumeration(

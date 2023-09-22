@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/components/dbus/hermes/constants.h"
 #include "chromeos/ash/components/dbus/hermes/fake_hermes_euicc_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_response_status.h"
@@ -59,17 +60,42 @@ class HermesEuiccClientImpl : public HermesEuiccClient {
       const std::string& activation_code,
       const std::string& confirmation_code,
       InstallCarrierProfileCallback callback) override {
+    dbus::ObjectProxy* object_proxy = GetOrCreateProperties(euicc_path).first;
+    // On managed devices, attempts to install profile could happen right after
+    // boot and it results in a dbus error if hermes hasn't started yet. This
+    // call waits for hermes to start before attempting installation.
+    object_proxy->WaitForServiceToBeAvailable(base::BindOnce(
+        &HermesEuiccClientImpl::InstallProfileFromActivationCodeImpl,
+        weak_ptr_factory_.GetWeakPtr(), std::move(euicc_path), activation_code,
+        confirmation_code, std::move(callback), /*attempt=*/0));
+  }
+
+  void InstallProfileFromActivationCodeImpl(
+      const dbus::ObjectPath& euicc_path,
+      const std::string& activation_code,
+      const std::string& confirmation_code,
+      InstallCarrierProfileCallback callback,
+      int attempt,
+      bool service_is_available) {
+    if (!service_is_available) {
+      NET_LOG(ERROR) << "Failed to wait for D-Bus service to become available";
+      std::move(callback).Run(HermesResponseStatus::kErrorWrongState,
+                              dbus::DBusResult::kErrorServiceUnknown, nullptr);
+      return;
+    }
+    dbus::ObjectProxy* object_proxy = GetOrCreateProperties(euicc_path).first;
     dbus::MethodCall method_call(
         hermes::kHermesEuiccInterface,
         hermes::euicc::kInstallProfileFromActivationCode);
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(activation_code);
     writer.AppendString(confirmation_code);
-    dbus::ObjectProxy* object_proxy = GetOrCreateProperties(euicc_path).first;
     object_proxy->CallMethodWithErrorResponse(
         &method_call, hermes_constants::kHermesNetworkOperationTimeoutMs,
         base::BindOnce(&HermesEuiccClientImpl::OnProfileInstallResponse,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                       weak_ptr_factory_.GetWeakPtr(), std::move(euicc_path),
+                       activation_code, confirmation_code, std::move(callback),
+                       attempt));
   }
 
   void InstallPendingProfile(const dbus::ObjectPath& euicc_path,
@@ -198,12 +224,29 @@ class HermesEuiccClientImpl : public HermesEuiccClient {
     }
   }
 
-  void OnProfileInstallResponse(InstallCarrierProfileCallback callback,
+  void OnProfileInstallResponse(const dbus::ObjectPath& euicc_path,
+                                const std::string& activation_code,
+                                const std::string& confirmation_code,
+                                InstallCarrierProfileCallback callback,
+                                int attempt,
                                 dbus::Response* response,
                                 dbus::ErrorResponse* error_response) {
     if (error_response) {
       NET_LOG(ERROR) << "Profile install failed with error: "
                      << error_response->GetErrorName();
+      if (HermesResponseStatusFromErrorName(error_response->GetErrorName()) ==
+              HermesResponseStatus::kErrorUnknownResponse &&
+          attempt < kMaxInstallAttempts) {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+            FROM_HERE,
+            base::BindOnce(
+                &HermesEuiccClientImpl::InstallProfileFromActivationCodeImpl,
+                weak_ptr_factory_.GetWeakPtr(), std::move(euicc_path),
+                activation_code, confirmation_code, std::move(callback),
+                attempt + 1, /*service_is_available=*/true),
+            kInstallRetryDelay);
+        return;
+      }
       std::move(callback).Run(
           HermesResponseStatusFromErrorName(error_response->GetErrorName()),
           GetResult(error_response), nullptr);

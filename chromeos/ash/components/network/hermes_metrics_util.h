@@ -14,7 +14,8 @@ namespace ash::hermes_metrics {
 
 void COMPONENT_EXPORT(CHROMEOS_NETWORK)
     LogInstallViaQrCodeResult(HermesResponseStatus status,
-                              dbus::DBusResult dbus_result);
+                              dbus::DBusResult dbus_result,
+                              bool is_initial_install);
 
 void COMPONENT_EXPORT(CHROMEOS_NETWORK)
     LogInstallPendingProfileResult(HermesResponseStatus status);

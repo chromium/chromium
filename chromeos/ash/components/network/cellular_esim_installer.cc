@@ -299,7 +299,8 @@ void CellularESimInstaller::OnProfileInstallResult(
     HermesResponseStatus status,
     dbus::DBusResult dbusResult,
     const dbus::ObjectPath* profile_path) {
-  hermes_metrics::LogInstallViaQrCodeResult(status, dbusResult);
+  hermes_metrics::LogInstallViaQrCodeResult(status, dbusResult,
+                                            is_initial_install);
 
   bool is_managed = IsManagedNetwork(new_shill_properties);
   const bool is_install_via_qr_code =
