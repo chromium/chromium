@@ -2894,6 +2894,7 @@
       },
       {
         "args": [
+          "--store-data-dependencies-in-temp",
           "--disable-field-trial-config",
           "--webview-verbose-logging",
           "--gs-results-bucket=chromium-result-details",
@@ -2954,6 +2955,140 @@
         "test": "webview_trichrome_64_cts_tests",
         "test_id_prefix": "ninja://android_webview/test:webview_trichrome_64_cts_tests/",
         "variant_id": "Disable Field Trial Config"
+      },
+      {
+        "args": [
+          "--store-data-dependencies-in-temp",
+          "--variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_existing_behavior/seed.json",
+          "--accept-empty-variations-seed-signature",
+          "--webview-verbose-logging",
+          "--disable-field-trial-config",
+          "--fake-variations-channel=stable",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices",
+          "--avd-config=../../tools/android/avd/proto/generic_android31.textpb"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "webview_trichrome_64_cts_tests Single Group Per Study Prefer Existing Behavior Field Trial Config"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "webview_trichrome_64_cts_tests Single Group Per Study Prefer Existing Behavior Field Trial Config",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "chromium/android_webview/tools/cts_archive",
+              "location": "android_webview/tools/cts_archive",
+              "revision": "akIIr4yAFQwo3j5WYo2PQvy6z8XI51UiwiikPYzI4tUC"
+            }
+          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.finch"
+          },
+          "named_caches": [
+            {
+              "name": "generic_android31",
+              "path": ".android_emulator/generic_android31"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "generic_android31"
+            }
+          },
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
+        },
+        "test": "webview_trichrome_64_cts_tests",
+        "test_id_prefix": "ninja://android_webview/test:webview_trichrome_64_cts_tests/",
+        "variant_id": "Single Group Per Study Prefer Existing Behavior Field Trial Config"
+      },
+      {
+        "args": [
+          "--store-data-dependencies-in-temp",
+          "--variations-test-seed-path=../../third_party/chromium-variations/single_group_per_study_prefer_new_behavior/seed.json",
+          "--accept-empty-variations-seed-signature",
+          "--webview-verbose-logging",
+          "--disable-field-trial-config",
+          "--fake-variations-channel=stable",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices",
+          "--avd-config=../../tools/android/avd/proto/generic_android31.textpb"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "webview_trichrome_64_cts_tests Single Group Per Study Prefer New Behavior Field Trial Config"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "webview_trichrome_64_cts_tests Single Group Per Study Prefer New Behavior Field Trial Config",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "chromium/android_webview/tools/cts_archive",
+              "location": "android_webview/tools/cts_archive",
+              "revision": "akIIr4yAFQwo3j5WYo2PQvy6z8XI51UiwiikPYzI4tUC"
+            }
+          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.finch"
+          },
+          "named_caches": [
+            {
+              "name": "generic_android31",
+              "path": ".android_emulator/generic_android31"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "generic_android31"
+            }
+          },
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
+        },
+        "test": "webview_trichrome_64_cts_tests",
+        "test_id_prefix": "ninja://android_webview/test:webview_trichrome_64_cts_tests/",
+        "variant_id": "Single Group Per Study Prefer New Behavior Field Trial Config"
       },
       {
         "args": [

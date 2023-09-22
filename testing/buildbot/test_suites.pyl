@@ -5707,6 +5707,22 @@
       },
     },
 
+    'webview_trichrome_64_cts_field_trial_tests': {
+      'webview_trichrome_64_cts_tests': {
+        'args': [ '--store-data-dependencies-in-temp' ],
+        'swarming': {
+          'shards': 2,
+          'cipd_packages': [
+            {
+              'cipd_package': 'chromium/android_webview/tools/cts_archive',
+              'location': 'android_webview/tools/cts_archive',
+              'revision': 'akIIr4yAFQwo3j5WYo2PQvy6z8XI51UiwiikPYzI4tUC',
+            }
+          ]
+        },
+      },
+    },
+
     'webview_trichrome_64_cts_tests': {
       'webview_trichrome_64_cts_tests': {
         'swarming': {
@@ -7141,9 +7157,11 @@
           'SINGLE_GROUP_PER_STUDY_PREFER_NEW_BEHAVIOR',
         ]
       },
-      'webview_trichrome_64_cts_tests': {
+      'webview_trichrome_64_cts_field_trial_tests': {
         'variants': [
           'DISABLE_FIELD_TRIAL_CONFIG',
+          'SINGLE_GROUP_PER_STUDY_PREFER_EXISTING_BEHAVIOR',
+          'SINGLE_GROUP_PER_STUDY_PREFER_NEW_BEHAVIOR',
         ]
       },
       'webview_ui_instrumentation_tests': {
