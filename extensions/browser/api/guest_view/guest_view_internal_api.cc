@@ -23,13 +23,6 @@ using guest_view::GuestViewManagerDelegate;
 
 namespace guest_view_internal = extensions::api::guest_view_internal;
 
-namespace {
-// Kill switch for the fix for crbug.com/769461.
-BASE_FEATURE(kPreciseGuestViewOwnerAtCreation,
-             "PreciseGuestViewOwnerAtCreation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-}  // namespace
-
 namespace extensions {
 
 GuestViewInternalCreateGuestFunction::GuestViewInternalCreateGuestFunction() =
@@ -57,22 +50,16 @@ ExtensionFunction::ResponseAction GuestViewInternalCreateGuestFunction::Run() {
     return RespondNow(Error("Guest views can only be embedded in web content"));
   }
 
-  content::RenderFrameHost* owner_rfh = nullptr;
-  if (base::FeatureList::IsEnabled(kPreciseGuestViewOwnerAtCreation)) {
-    // The renderer identifies the window which owns the guest view element. We
-    // consider this the most likely owner for the guest view. It is possible,
-    // however, for the guest to be embedded in another same-process frame upon
-    // attachment.
-    const int sender_process_id = render_frame_host()->GetProcess()->GetID();
-    owner_rfh = content::RenderFrameHost::FromID(sender_process_id,
-                                                 params->owner_routing_id);
-    if (!owner_rfh) {
-      // If the renderer can't determine the owner at creation, fall back to
-      // assuming the main frame.
-      owner_rfh = render_frame_host()->GetMainFrame();
-    }
-  } else {
-    // The old behaviour was to assume the main frame is the owner.
+  // The renderer identifies the window which owns the guest view element. We
+  // consider this the most likely owner for the guest view. It is possible,
+  // however, for the guest to be embedded in another same-process frame upon
+  // attachment.
+  const int sender_process_id = render_frame_host()->GetProcess()->GetID();
+  content::RenderFrameHost* owner_rfh = content::RenderFrameHost::FromID(
+      sender_process_id, params->owner_routing_id);
+  if (!owner_rfh) {
+    // If the renderer can't determine the owner at creation, fall back to
+    // assuming the main frame.
     owner_rfh = render_frame_host()->GetMainFrame();
   }
 
