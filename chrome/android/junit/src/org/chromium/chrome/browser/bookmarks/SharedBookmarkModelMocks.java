@@ -15,7 +15,6 @@ import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 /** Shared set of {@link BookmarkModel} mocks used by multiple tests. */
 public class SharedBookmarkModelMocks {
@@ -82,9 +81,10 @@ public class SharedBookmarkModelMocks {
         doReturn(MOBILE_BOOKMARK_ID).when(bookmarkModel).getMobileFolderId();
         doReturn(READING_LIST_BOOKMARK_ID).when(bookmarkModel).getReadingListFolder();
         doReturn(PARTNER_BOOKMARK_ID).when(bookmarkModel).getPartnerFolderId();
-        doReturn(Collections.singletonList(READING_LIST_BOOKMARK_ID))
+        doReturn(Arrays.asList(DESKTOP_BOOKMARK_ID, OTHER_BOOKMARK_ID, MOBILE_BOOKMARK_ID,
+                         PARTNER_BOOKMARK_ID, READING_LIST_BOOKMARK_ID))
                 .when(bookmarkModel)
-                .getTopLevelFolderIds(/*getSpecial*/ true, /*getNormal*/ false);
+                .getTopLevelFolderIds();
 
         doReturn(DESKTOP_BOOKMARK_ITEM).when(bookmarkModel).getBookmarkById(DESKTOP_BOOKMARK_ID);
         doReturn(OTHER_BOOKMARK_ITEM).when(bookmarkModel).getBookmarkById(OTHER_BOOKMARK_ID);

@@ -613,53 +613,6 @@ public class BookmarkUtils {
     }
 
     /**
-     * Populates the top level bookmark folder ids.
-     * @param bookmarkModel The bookmark model that talks to bookmark native backend.
-     * @return The list of top level bookmark folder ids.
-     */
-    public static List<BookmarkId> populateTopLevelFolders(BookmarkModel bookmarkModel) {
-        List<BookmarkId> topLevelFolders = new ArrayList<>();
-        BookmarkId desktopNodeId = bookmarkModel.getDesktopFolderId();
-        BookmarkId mobileNodeId = bookmarkModel.getMobileFolderId();
-        BookmarkId othersNodeId = bookmarkModel.getOtherFolderId();
-
-        List<BookmarkId> specialFoldersIds =
-                bookmarkModel.getTopLevelFolderIds(/*getSpecial=*/true, /*getNormal=*/false);
-        BookmarkId rootFolder = bookmarkModel.getRootFolderId();
-
-        // managed and partner bookmark folders will be put to the bottom.
-        List<BookmarkId> managedAndPartnerFolderIds = new ArrayList<>();
-
-        for (BookmarkId bookmarkId : specialFoldersIds) {
-            // Adds reading list as the first top level folder.
-            if (bookmarkId.getType() == BookmarkType.READING_LIST) {
-                topLevelFolders.add(bookmarkId);
-                TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
-                        .notifyEvent(EventConstants.READ_LATER_BOTTOM_SHEET_FOLDER_SEEN);
-                continue;
-            }
-            BookmarkId parent = bookmarkModel.getBookmarkById(bookmarkId).getParentId();
-            if (parent.equals(rootFolder)) managedAndPartnerFolderIds.add(bookmarkId);
-        }
-
-        // Adds normal bookmark top level folders.
-        if (bookmarkModel.isFolderVisible(mobileNodeId)) {
-            topLevelFolders.add(mobileNodeId);
-        }
-        if (bookmarkModel.isFolderVisible(desktopNodeId)) {
-            topLevelFolders.add(desktopNodeId);
-        }
-        if (bookmarkModel.isFolderVisible(othersNodeId)) {
-            topLevelFolders.add(othersNodeId);
-        }
-
-        // Add any top-level managed and partner bookmark folders that are children of the root
-        // folder.
-        topLevelFolders.addAll(managedAndPartnerFolderIds);
-        return topLevelFolders;
-    }
-
-    /**
      * Expires the stored last used url if Chrome has been in the background long enough to mark it
      * as a new session. We're using the "Start Surface" concept of session here which is if the
      * app has been in the background for X amount of time. Called from #onStartWithNative, after
@@ -831,8 +784,7 @@ public class BookmarkUtils {
         BookmarkId mobileNodeId = bookmarkModel.getMobileFolderId();
         BookmarkId othersNodeId = bookmarkModel.getOtherFolderId();
 
-        List<BookmarkId> specialFoldersIds =
-                bookmarkModel.getTopLevelFolderIds(/*getSpecial=*/true, /*getNormal=*/false);
+        List<BookmarkId> specialFoldersIds = bookmarkModel.getTopLevelFolderIds();
         return !Objects.equals(folder, rootNodeId) && !Objects.equals(folder, desktopNodeId)
                 && !Objects.equals(folder, mobileNodeId) && !Objects.equals(folder, othersNodeId)
                 && !specialFoldersIds.contains(folder);

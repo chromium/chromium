@@ -91,6 +91,6 @@ public class LegacyBookmarkQueryHandler implements BookmarkQueryHandler {
 
     private void populateTopLevelFoldersList() {
         mTopLevelFolders.clear();
-        mTopLevelFolders.addAll(BookmarkUtils.populateTopLevelFolders(mBookmarkModel));
+        mTopLevelFolders.addAll(mBookmarkModel.getTopLevelFolderIds());
     }
 }

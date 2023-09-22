@@ -131,7 +131,7 @@ class BookmarkManagerMediator
                 // If the folder is removed in folder mode, show the parent folder or falls back to
                 // all bookmarks mode.
                 if (Objects.equals(id, getCurrentFolderId())) {
-                    if (mBookmarkModel.getTopLevelFolderIds(true, true).contains(id)) {
+                    if (mBookmarkModel.getTopLevelFolderIds().contains(id)) {
                         openFolder(mBookmarkModel.getDefaultFolderViewLocation());
                     } else {
                         openFolder(parent.getId());

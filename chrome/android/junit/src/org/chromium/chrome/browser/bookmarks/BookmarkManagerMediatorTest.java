@@ -317,9 +317,10 @@ public class BookmarkManagerMediatorTest {
                     .getBookmarkById(mReadingListFolderId);
             doReturn(mReadingListItem).when(mBookmarkModel).getBookmarkById(mReadingListId);
             doReturn(true).when(mBookmarkModel).isFolderVisible(any());
-            doReturn(Arrays.asList(mReadingListFolderId))
+            doReturn(Arrays.asList(mDesktopFolderId, mMobileFolderId, mOtherFolderId,
+                             mReadingListFolderId))
                     .when(mBookmarkModel)
-                    .getTopLevelFolderIds(/*getSpecial=*/true, /*getNormal=*/false);
+                    .getTopLevelFolderIds();
 
             // Setup SelectableListLayout.
             doReturn(mActivity).when(mSelectableListLayout).getContext();
@@ -545,16 +546,11 @@ public class BookmarkManagerMediatorTest {
             syncStateChangedListener.syncStateChanged();
         }
 
-        verify(mBookmarkModel, times(0)).getDesktopFolderId();
-        verify(mBookmarkModel, times(0)).getMobileFolderId();
-        verify(mBookmarkModel, times(0)).getOtherFolderId();
-        verify(mBookmarkModel, times(0)).getTopLevelFolderIds(true, false);
+        verify(mBookmarkModel, times(0)).getTopLevelFolderIds();
 
         finishLoading();
-        verify(mBookmarkModel, times(1)).getDesktopFolderId();
-        verify(mBookmarkModel, times(1)).getMobileFolderId();
-        verify(mBookmarkModel, times(1)).getOtherFolderId();
-        verify(mBookmarkModel, times(1)).getTopLevelFolderIds(true, false);
+        mMediator.openFolder(mBookmarkModel.getRootFolderId());
+        verify(mBookmarkModel, times(1)).getTopLevelFolderIds();
     }
 
     @Test

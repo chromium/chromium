@@ -223,30 +223,15 @@ class BookmarkBridge {
     }
 
     /**
-     * @return The top level folder's parents.
+     * @return The top level folders, including special folders (managed bookmarks, reading list,
+     *         partner bookmarks).
      */
-    public List<BookmarkId> getTopLevelFolderParentIds() {
+    public List<BookmarkId> getTopLevelFolderIds() {
         ThreadUtils.assertOnUiThread();
         if (mNativeBookmarkBridge == 0) return new ArrayList<>();
         assert mIsNativeBookmarkModelLoaded;
         List<BookmarkId> result = new ArrayList<>();
-        BookmarkBridgeJni.get().getTopLevelFolderParentIds(mNativeBookmarkBridge, result);
-        return result;
-    }
-
-    /**
-     * @param getSpecial Whether special top folders should be returned.
-     * @param getNormal  Whether normal top folders should be returned.
-     * @return The top level folders. Note that special folders come first and normal top folders
-     *         will be in the alphabetical order.
-     */
-    public List<BookmarkId> getTopLevelFolderIds(boolean getSpecial, boolean getNormal) {
-        ThreadUtils.assertOnUiThread();
-        if (mNativeBookmarkBridge == 0) return new ArrayList<>();
-        assert mIsNativeBookmarkModelLoaded;
-        List<BookmarkId> result = new ArrayList<>();
-        BookmarkBridgeJni.get().getTopLevelFolderIds(
-                mNativeBookmarkBridge, getSpecial, getNormal, result);
+        BookmarkBridgeJni.get().getTopLevelFolderIds(mNativeBookmarkBridge, result);
         return result;
     }
 
@@ -962,9 +947,7 @@ class BookmarkBridge {
         BookmarkId getBookmarkIdForWebContents(
                 long nativeBookmarkBridge, WebContents webContents, boolean onlyEditable);
         BookmarkItem getBookmarkById(long nativeBookmarkBridge, long id, int type);
-        void getTopLevelFolderParentIds(long nativeBookmarkBridge, List<BookmarkId> bookmarksList);
-        void getTopLevelFolderIds(long nativeBookmarkBridge, boolean getSpecial, boolean getNormal,
-                List<BookmarkId> bookmarksList);
+        void getTopLevelFolderIds(long nativeBookmarkBridge, List<BookmarkId> bookmarksList);
         BookmarkId getReadingListFolder(long nativeBookmarkBridge);
         void getAllFoldersWithDepths(
                 long nativeBookmarkBridge, List<BookmarkId> folderList, List<Integer> depthList);

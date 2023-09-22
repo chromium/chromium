@@ -15,6 +15,7 @@ import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.DES
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.FOLDER_BOOKMARK_ID_A;
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.MOBILE_BOOKMARK_ID;
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.OTHER_BOOKMARK_ID;
+import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.PARTNER_BOOKMARK_ID;
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.READING_LIST_BOOKMARK_ID;
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.ROOT_BOOKMARK_ID;
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.URL_BOOKMARK_ID_A;
@@ -99,22 +100,14 @@ public class LegacyBookmarkQueryHandlerTest {
     }
 
     @Test
-    public void testBuildBookmarkListForParent_rootFolder_isFolderVisible() {
+    public void testBuildBookmarkListForParent_rootFolder() {
         verify(mBookmarkModel)
                 .finishLoadingBookmarkModel(mFinishLoadingBookmarkModelCaptor.capture());
         doReturn(true).when(mBookmarkModel).isBookmarkModelLoaded();
         mFinishLoadingBookmarkModelCaptor.getValue().run();
 
         List<BookmarkListEntry> result = mHandler.buildBookmarkListForParent(ROOT_BOOKMARK_ID);
-        assertEquals(3, result.size());
-
-        doReturn(true).when(mBookmarkModel).isFolderVisible(OTHER_BOOKMARK_ID);
-        verify(mSyncService).addSyncStateChangedListener(mSyncStateChangedListenerCaptor.capture());
-        mSyncStateChangedListenerCaptor.getValue().syncStateChanged();
-
-        List<BookmarkListEntry> updatedResult =
-                mHandler.buildBookmarkListForParent(ROOT_BOOKMARK_ID);
-        assertEquals(4, updatedResult.size());
+        assertEquals(5, result.size());
     }
 
     @Test
@@ -139,12 +132,14 @@ public class LegacyBookmarkQueryHandlerTest {
         mFinishLoadingBookmarkModelCaptor.getValue().run();
 
         List<BookmarkListEntry> result = mHandler.buildBookmarkListForParent(ROOT_BOOKMARK_ID);
-        assertEquals(5, result.size());
-        assertEquals(READING_LIST_BOOKMARK_ID, result.get(0).getBookmarkItem().getId());
-        assertEquals(MOBILE_BOOKMARK_ID, result.get(1).getBookmarkItem().getId());
-        assertEquals(DESKTOP_BOOKMARK_ID, result.get(2).getBookmarkItem().getId());
-        assertEquals(ViewType.DIVIDER, result.get(3).getViewType());
-        assertEquals(ViewType.SHOPPING_FILTER, result.get(4).getViewType());
+        assertEquals(7, result.size());
+        assertEquals(DESKTOP_BOOKMARK_ID, result.get(0).getBookmarkItem().getId());
+        assertEquals(OTHER_BOOKMARK_ID, result.get(1).getBookmarkItem().getId());
+        assertEquals(MOBILE_BOOKMARK_ID, result.get(2).getBookmarkItem().getId());
+        assertEquals(PARTNER_BOOKMARK_ID, result.get(3).getBookmarkItem().getId());
+        assertEquals(READING_LIST_BOOKMARK_ID, result.get(4).getBookmarkItem().getId());
+        assertEquals(ViewType.DIVIDER, result.get(5).getViewType());
+        assertEquals(ViewType.SHOPPING_FILTER, result.get(6).getViewType());
 
         assertFalse(mHandler.buildBookmarkListForParent(ROOT_BOOKMARK_ID).isEmpty());
     }

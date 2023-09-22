@@ -262,7 +262,7 @@ public class BookmarkToolbarMediatorTest {
     public void onFolderStateSet_EmptyTitleWhenChildOfRoot() {
         ArrayList<BookmarkId> topLevelFolders = new ArrayList<>();
         topLevelFolders.add(mBookmarkId);
-        doReturn(topLevelFolders).when(mBookmarkModel).getTopLevelFolderParentIds();
+        doReturn(topLevelFolders).when(mBookmarkModel).getTopLevelFolderIds();
         doReturn(mBookmarkId).when(mBookmarkItem).getParentId();
         doReturn(true).when(mBookmarkItem).isEditable();
         doReturn("").when(mBookmarkItem).getTitle();

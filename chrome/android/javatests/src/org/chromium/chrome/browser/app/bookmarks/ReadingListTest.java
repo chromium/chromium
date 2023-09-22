@@ -28,7 +28,9 @@ import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
+import org.hamcrest.Description;
 import org.hamcrest.Matchers;
+import org.hamcrest.TypeSafeMatcher;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -51,7 +53,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkManagerCoordinator;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkPage;
 import org.chromium.chrome.browser.bookmarks.BookmarkPromoHeader;
-import org.chromium.chrome.browser.bookmarks.BookmarkRow;
 import org.chromium.chrome.browser.bookmarks.BookmarkToolbar;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
@@ -164,9 +165,7 @@ public class ReadingListTest {
     }
 
     void openReadingList() {
-        BookmarkRow readingListFolder =
-                (BookmarkRow) mItemsContainer.findViewHolderForAdapterPosition(0).itemView;
-        TouchCommon.singleClickView(readingListFolder);
+        onView(withText("Reading list")).perform(click());
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
@@ -425,12 +424,19 @@ public class ReadingListTest {
         openRootFolder();
 
         // Reading list should show in the root folder.
-        View readingListRow = mItemsContainer.findViewHolderForAdapterPosition(0).itemView;
-        Assert.assertEquals("No overflow menu for reading list folder.", View.GONE,
-                readingListRow.findViewById(R.id.more).getVisibility());
-        Assert.assertEquals("The 1st view should be reading list.", BookmarkType.READING_LIST,
-                getIdByPosition(0).getType());
         onView(withText("Reading list")).check(matches(isDisplayed()));
+        onView(withText("Reading list")).check(matches(new TypeSafeMatcher<View>() {
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("No overflow menu for reading list folder");
+            }
+
+            @Override
+            public boolean matchesSafely(View view) {
+                return ((View) view.getParent().getParent()).findViewById(R.id.more).getVisibility()
+                        == View.GONE;
+            }
+        }));
     }
 
     @Test

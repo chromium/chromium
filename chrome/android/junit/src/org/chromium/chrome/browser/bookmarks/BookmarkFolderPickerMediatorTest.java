@@ -155,9 +155,6 @@ public class BookmarkFolderPickerMediatorTest {
         // Reading list folder
         doReturn(mReadingListFolderId).when(mBookmarkModel).getReadingListFolder();
         doReturn(mReadingListFolderItem).when(mBookmarkModel).getBookmarkById(mReadingListFolderId);
-        doReturn(Arrays.asList(mReadingListFolderId))
-                .when(mBookmarkModel)
-                .getTopLevelFolderIds(/*getSpecial=*/true, /*getNormal=*/false);
         // Mobile bookmarks folder
         doReturn(mMobileFolderId).when(mBookmarkModel).getMobileFolderId();
         doReturn(mMobileFolderItem).when(mBookmarkModel).getBookmarkById(mMobileFolderId);
@@ -175,6 +172,10 @@ public class BookmarkFolderPickerMediatorTest {
         doReturn(mOtherFolderItem).when(mBookmarkModel).getBookmarkById(mOtherFolderId);
         doReturn(Arrays.asList()).when(mBookmarkModel).getChildIds(mOtherFolderId);
         doReturn(0).when(mBookmarkModel).getTotalBookmarkCount(mMobileFolderId);
+        doReturn(Arrays.asList(
+                         mMobileFolderId, mDesktopFolderId, mOtherFolderId, mReadingListFolderId))
+                .when(mBookmarkModel)
+                .getTopLevelFolderIds();
         // User folders/bookmarks.
         doReturn(mUserFolderItem).when(mBookmarkModel).getBookmarkById(mUserFolderId);
         doReturn(Arrays.asList(mUserBookmarkId)).when(mBookmarkModel).getChildIds(mUserFolderId);
