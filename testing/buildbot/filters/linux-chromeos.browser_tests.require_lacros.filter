@@ -31,8 +31,6 @@ TestAsNormalAndGuestUser/SpokenFeedbackTest.*
 # TODO(b/301253962): Some Switch Access tests fail/flake on Lacros.
 -SwitchAccessItemScanManagerTest.*
 -SwitchAccessPointScanManagerTest.PointScanLeftClick
-# TODO(b/275342946): Flaky on Lacros.
--SwitchAccessPointScanManagerTest.PointScanRightClick
 # TODO(https://crbug.com/1378291) Ash and Lacros browser window sizes differ.
 -ChromeVoxEditingTest.SelectAcrossSoftLineWraps
 # TODO(crbug.com/1339456) Disabled when switch to LacrosOnly.

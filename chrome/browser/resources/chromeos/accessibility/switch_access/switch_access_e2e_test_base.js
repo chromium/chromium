@@ -14,6 +14,10 @@ SwitchAccessE2ETest = class extends E2ETestBase {
     super.testGenCppIncludes();
     GEN(`
 #include "ash/keyboard/ui/keyboard_util.h"
+#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/accessibility_controller.h"
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
     `);
   }
 
@@ -21,6 +25,18 @@ SwitchAccessE2ETest = class extends E2ETestBase {
   testGenPreamble() {
     super.testGenPreamble();
     GEN(`
+    auto* controller = ash::AccessibilityController::Get();
+    controller->DisableSwitchAccessDisableConfirmationDialogTesting();
+    // Don't show the dialog saying Switch Access was enabled.
+    controller->DisableSwitchAccessEnableNotificationTesting();
+    // Set some Switch Access prefs so that the os://settings page is not
+    // opened (this is done if settings are not configured on first use):
+    auto* manager = ash::AccessibilityManager::Get();
+    manager->SetSwitchAccessKeysForTest(
+        {'1', 'A'}, ash::prefs::kAccessibilitySwitchAccessNextDeviceKeyCodes);
+    manager->SetSwitchAccessKeysForTest(
+        {'2', 'B'},
+        ash::prefs::kAccessibilitySwitchAccessSelectDeviceKeyCodes);
   base::OnceClosure load_cb =
       base::BindOnce(&ash::AccessibilityManager::SetSwitchAccessEnabled,
           base::Unretained(ash::AccessibilityManager::Get()),
