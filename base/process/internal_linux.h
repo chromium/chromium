@@ -35,7 +35,7 @@ extern const char kProcDir[];
 extern const char kStatFile[];
 
 // Returns a FilePath to "/proc/pid".
-base::FilePath GetProcPidDir(pid_t pid);
+BASE_EXPORT base::FilePath GetProcPidDir(pid_t pid);
 
 // Reads a file from /proc into a string. This is allowed on any thread as
 // reading from /proc does not hit the disk. Returns true if the file can be

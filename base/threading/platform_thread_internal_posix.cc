@@ -17,7 +17,7 @@ namespace base {
 
 namespace internal {
 
-int ThreadTypeToNiceValue(ThreadType thread_type) {
+BASE_EXPORT int ThreadTypeToNiceValue(ThreadType thread_type) {
   for (const auto& pair : kThreadTypeToNiceValueMap) {
     if (pair.thread_type == thread_type)
       return pair.nice_value;

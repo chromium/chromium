@@ -180,6 +180,54 @@ GetCurrentThreadPriorityForPlatformForTest() {
 
 }  // namespace internal
 
+// Determine if thread_id is a background thread by looking up whether
+// it is in the urgent or non-urgent cpuset.
+bool PlatformThreadLinux::IsThreadBackgroundedForTest(
+    PlatformThreadId thread_id) {
+  FilePath cgroup_filepath(kCgroupDirectory);
+
+  FilePath urgent_cgroup_directory =
+      cgroup_filepath.Append(FILE_PATH_LITERAL("cpuset"))
+          .Append(FILE_PATH_LITERAL("chrome"))
+          .Append(FILE_PATH_LITERAL("urgent"));
+  FilePath non_urgent_cgroup_directory =
+      cgroup_filepath.Append(FILE_PATH_LITERAL("cpuset"))
+          .Append(FILE_PATH_LITERAL("chrome"))
+          .Append(FILE_PATH_LITERAL("non-urgent"));
+
+  // Silently ignore request if cgroup directory doesn't exist.
+  if (!DirectoryExists(urgent_cgroup_directory) ||
+      !DirectoryExists(non_urgent_cgroup_directory)) {
+    return false;
+  }
+
+  FilePath urgent_tasks_filepath =
+      urgent_cgroup_directory.Append(FILE_PATH_LITERAL("tasks"));
+  FilePath non_urgent_tasks_filepath =
+      non_urgent_cgroup_directory.Append(FILE_PATH_LITERAL("tasks"));
+
+  std::string tid = NumberToString(thread_id);
+  // Check if thread_id is in the urgent cpuset
+  std::string urgent_tasks;
+  if (!ReadFileToString(urgent_tasks_filepath, &urgent_tasks)) {
+    return false;
+  }
+  if (urgent_tasks.find(tid) != std::string::npos) {
+    return false;
+  }
+
+  // Check if thread_id is in the non-urgent cpuset
+  std::string non_urgent_tasks;
+  if (!ReadFileToString(non_urgent_tasks_filepath, &non_urgent_tasks)) {
+    return false;
+  }
+  if (non_urgent_tasks.find(tid) != std::string::npos) {
+    return true;
+  }
+
+  return false;
+}
+
 void PlatformThreadBase::SetName(const std::string& name) {
   SetNameCommon(name);
 

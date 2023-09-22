@@ -321,6 +321,10 @@ class BASE_EXPORT PlatformThreadLinux : public PlatformThreadBase {
   // CGroups for the thread.
   static void SetThreadCgroupsForThreadType(PlatformThreadId thread_id,
                                             ThreadType thread_type);
+
+  // Determine if thread_id is a background thread by looking up whether
+  // it is in the urgent or non-urgent cpuset
+  static bool IsThreadBackgroundedForTest(PlatformThreadId thread_id);
 };
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
