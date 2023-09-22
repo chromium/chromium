@@ -528,7 +528,8 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
 
   // Replace stream_.
   void CreateStream(bool wait_for_initialization = true,
-                    bool start_surface = false);
+                    bool start_surface = false,
+                    bool is_new_tab_search_engine_url_android_enabled = false);
   std::unique_ptr<StreamModel> CreateStreamModel();
   bool IsTaskQueueIdle() const;
   void WaitForIdleTaskQueue();

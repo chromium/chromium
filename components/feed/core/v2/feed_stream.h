@@ -426,6 +426,7 @@ class FeedStream : public FeedApi,
 
   bool IsFeedEnabledByEnterprisePolicy();
   bool IsFeedEnabled();
+  bool IsFeedEnabledByDse();
 
   bool HasReachedConditionsToUploadActionsWithNoticeCard();
 
@@ -506,6 +507,7 @@ class FeedStream : public FeedApi,
   BooleanPrefMember has_stored_data_;
   BooleanPrefMember snippets_enabled_by_policy_;
   BooleanPrefMember articles_list_visible_;
+  BooleanPrefMember snippets_enabled_by_dse_;
   BooleanPrefMember signin_allowed_;
 
   // State loaded at startup:

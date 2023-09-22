@@ -92,7 +92,8 @@ enum class LoadStreamStatus {
   kAccountTokenFetchTimedOut = 28,
   kNetworkFetchTimedOut = 29,
   kLoadNotAllowedDisabled = 30,
-  kMaxValue = kLoadNotAllowedDisabled,
+  kLoadNotAllowedDisabledByDse = 31,
+  kMaxValue = kLoadNotAllowedDisabledByDse,
 };
 
 // Were we able to load fresh Feed data. This should be 'true' unless some kind
@@ -173,7 +174,9 @@ enum class UserSettingsOnStart {
   kSignedInNoRecentData = 8,
   // The Feed is disabled.
   kFeedNotEnabled = 9,
-  kMaxValue = kFeedNotEnabled,
+  // The Feed is disabled if swapping out NTP is enabled and DSE isn't Google.
+  kFeedNotEnabledByDse = 10,
+  kMaxValue = kFeedNotEnabledByDse,
 };
 base::StringPiece ToString(UserSettingsOnStart v);
 std::ostream& operator<<(std::ostream& out, UserSettingsOnStart value);

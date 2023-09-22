@@ -10,6 +10,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "build/buildflag.h"
 #include "components/feed/core/common/pref_names.h"
 #include "components/feed/core/proto/v2/wire/feed_entry_point_source.pb.h"
 #include "components/feed/core/proto/v2/wire/feed_query.pb.h"
@@ -57,6 +58,32 @@ TEST_F(FeedApiTest, DoNotRefreshIfArticlesListIsHidden) {
       RefreshTaskId::kRefreshForYouFeed));
   EXPECT_EQ(std::set<RefreshTaskId>({RefreshTaskId::kRefreshForYouFeed}),
             refresh_scheduler_.completed_tasks);
+}
+
+TEST_F(FeedApiTest,
+       DoNotRefreshIfSnippetsByDseDisabled_ignoredWithoutFlagEnabled) {
+  profile_prefs_.SetBoolean(prefs::kEnableSnippetsByDse, false);
+  stream_->ExecuteRefreshTask(RefreshTaskId::kRefreshForYouFeed);
+  WaitForIdleTaskQueue();
+  EXPECT_TRUE(refresh_scheduler_.scheduled_run_times.count(
+      RefreshTaskId::kRefreshForYouFeed));
+}
+
+TEST_F(FeedApiTest, DoNotRefreshIfSnippetsByDseDisabled) {
+  profile_prefs_.SetBoolean(prefs::kEnableSnippetsByDse, false);
+  CreateStream(/*wait_for_initialization=*/true, /*start_surface=*/false,
+               /*is_new_tab_search_engine_url_android_enabled*/ true);
+  stream_->ExecuteRefreshTask(RefreshTaskId::kRefreshForYouFeed);
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_FALSE(refresh_scheduler_.scheduled_run_times.count(
+      RefreshTaskId::kRefreshForYouFeed));
+  EXPECT_EQ(std::set<RefreshTaskId>({RefreshTaskId::kRefreshForYouFeed}),
+            refresh_scheduler_.completed_tasks);
+#else
+  WaitForIdleTaskQueue();
+  EXPECT_TRUE(refresh_scheduler_.scheduled_run_times.count(
+      RefreshTaskId::kRefreshForYouFeed));
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 TEST_F(FeedApiTest, BackgroundRefreshForYouSuccess) {
@@ -2878,6 +2905,32 @@ TEST_F(FeedApiTest, ClearAllOnStartupIfFeedIsDisabled) {
                                 UserSettingsOnStart::kFeedNotEnabledByPolicy,
                                 1);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(FeedApiTest, ClearAllOnStartupIfFeedIsDisabledByDse) {
+  CallbackReceiver<> on_clear_all;
+  on_clear_all_ = on_clear_all.BindRepeating();
+
+  // Fetch a feed, so that there's stored data.
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  // Turn off the feed, and re-create FeedStream. It should perform a ClearAll.
+  profile_prefs_.SetBoolean(feed::prefs::kEnableSnippetsByDse, false);
+  CreateStream(/*wait_for_initialization=*/true, /*start_surface=*/false,
+               /*is_new_tab_search_engine_url_android_enabled*/ true);
+  EXPECT_TRUE(on_clear_all.called());
+
+  // Re-create the feed, and verify ClearAll isn't called again.
+  on_clear_all.Clear();
+  base::HistogramTester histograms;
+  CreateStream(/*wait_for_initialization=*/true, /*start_surface=*/false,
+               /*is_new_tab_search_engine_url_android_enabled*/ true);
+
+  EXPECT_FALSE(on_clear_all.called());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(FeedApiTest, ReportUserSettingsFromMetadataWaaOnDpOff) {
   // Fetch a feed, so that there's stored data.

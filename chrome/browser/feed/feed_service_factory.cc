@@ -213,8 +213,12 @@ FeedServiceFactory::BuildServiceInstanceForBrowserContext(
 #if BUILDFLAG(IS_ANDROID)
   chrome_info.start_surface =
       base::FeatureList::IsEnabled(chrome::android::kStartSurfaceAndroid);
+  chrome_info.is_new_tab_search_engine_url_android_enabled =
+      base::FeatureList::IsEnabled(
+          chrome::android::kNewTabSearchEngineUrlAndroid);
 #else
   chrome_info.start_surface = false;
+  chrome_info.is_new_tab_search_engine_url_android_enabled = false;
 #endif
 
   return std::make_unique<FeedService>(

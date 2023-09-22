@@ -23,6 +23,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "build/buildflag.h"
 #include "components/feed/core/common/pref_names.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/ui.pb.h"
@@ -177,6 +178,8 @@ FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
                                    preference_change_callback);
   articles_list_visible_.Init(prefs::kArticlesListVisible, profile_prefs,
                               preference_change_callback);
+  snippets_enabled_by_dse_.Init(prefs::kEnableSnippetsByDse, profile_prefs,
+                                preference_change_callback);
   has_stored_data_.Init(feed::prefs::kHasStoredData, profile_prefs);
   signin_allowed_.Init(
       ::prefs::kSigninAllowed, profile_prefs,
@@ -618,7 +621,16 @@ bool FeedStream::IsFeedEnabled() {
 }
 
 bool FeedStream::IsEnabledAndVisible() {
-  return IsArticlesListVisible() && IsFeedEnabled();
+  return IsArticlesListVisible() && IsFeedEnabled() && IsFeedEnabledByDse();
+}
+
+bool FeedStream::IsFeedEnabledByDse() {
+#if BUILDFLAG(IS_ANDROID)
+  if (chrome_info_.is_new_tab_search_engine_url_android_enabled) {
+    return snippets_enabled_by_dse_.GetValue();
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+  return true;
 }
 
 void FeedStream::EnabledPreferencesChanged() {
@@ -1020,6 +1032,12 @@ LaunchResult FeedStream::ShouldAttemptLoad(const StreamType& stream_type,
   if (!IsFeedEnabled()) {
     return {LoadStreamStatus::kLoadNotAllowedDisabled,
             feedwire::DiscoverLaunchResult::INELIGIBLE_DISCOVER_DISABLED};
+  }
+
+  if (!IsFeedEnabledByDse()) {
+    return {
+        LoadStreamStatus::kLoadNotAllowedDisabledByDse,
+        feedwire::DiscoverLaunchResult::INELIGIBLE_DISCOVER_DISABLED_BY_DSE};
   }
 
   if (!delegate_->IsEulaAccepted()) {
