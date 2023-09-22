@@ -237,16 +237,10 @@ try_.orchestrator_builder(
         "ci/GPU Linux Builder",
         "ci/Linux Release (NVIDIA)",
     ],
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
-    ),
     check_for_flakiness = True,
     compilator = "linux-rel-compilator",
     coverage_test_types = ["unit", "overall"],
     experiments = {
-        "chromium_rts.inverted_rts": 100,
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
     },
@@ -282,16 +276,8 @@ try_.orchestrator_builder(
         "ci/Linux Builder (Wayland)",
         "ci/Linux Tests (Wayland)",
     ],
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
-    ),
     compilator = "linux-wayland-rel-compilator",
     coverage_test_types = ["unit", "overall"],
-    experiments = {
-        "chromium_rts.inverted_rts": 100,
-    },
     main_list_view = "try",
     tryjob = try_.job(),
     use_clang_coverage = True,
@@ -407,14 +393,8 @@ try_.orchestrator_builder(
         "ci/Linux ASan LSan Builder",
         "ci/Linux ASan LSan Tests (1)",
     ],
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
-    ),
     compilator = "linux_chromium_asan_rel_ng-compilator",
     experiments = {
-        "chromium_rts.inverted_rts": 100,
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
     },
@@ -562,14 +542,8 @@ try_.orchestrator_builder(
         "ci/Linux TSan Builder",
         "ci/Linux TSan Tests",
     ],
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
-    ),
     compilator = "linux_chromium_tsan_rel_ng-compilator",
     experiments = {
-        "chromium_rts.inverted_rts": 100,
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
     },
@@ -778,23 +752,6 @@ try_.builder(
     use_javascript_coverage = True,
 )
 ############### Coverage Builders End ##################
-
-# ML experimental builder, modifies RTS itself to use a ml model
-try_.builder(
-    name = "linux-rel-ml",
-    mirrors = builder_config.copy_from("linux-rel"),
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.ALWAYS,
-        ),
-    ),
-    builderless = False,
-    cores = 16,
-    experiments = {"chromium_rts.experimental_model": 100},
-    tryjob = try_.job(
-        experiment_percentage = 5,
-    ),
-)
 
 try_.builder(
     name = "linux-cr23-rel",

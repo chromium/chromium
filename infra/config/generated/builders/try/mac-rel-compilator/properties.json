@@ -173,10 +173,7 @@
           "builder": "Mac12 Tests",
           "project": "chromium-m116"
         }
-      ],
-      "rts_config": {
-        "condition": "QUICK_RUN_ONLY"
-      }
+      ]
     }
   },
   "$build/code_coverage": {

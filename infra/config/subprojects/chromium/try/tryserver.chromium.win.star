@@ -75,18 +75,12 @@ try_.orchestrator_builder(
         "ci/GPU Win x64 Builder",
         "ci/Win10 x64 Release (NVIDIA)",
     ],
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
-    ),
     compilator = "win-rel-compilator",
     # TODO (crbug.com/1413505) - disabling due to high pending times. test
     # history inaccuracies causing additional tests to be run.
     # check_for_flakiness = True,
     coverage_test_types = ["unit", "overall"],
     experiments = {
-        "chromium_rts.inverted_rts": 100,
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 5,
     },

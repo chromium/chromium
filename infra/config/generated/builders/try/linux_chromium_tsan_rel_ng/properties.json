@@ -73,10 +73,7 @@
           "builder": "Linux TSan Tests",
           "project": "chromium-m116"
         }
-      ],
-      "rts_config": {
-        "condition": "QUICK_RUN_ONLY"
-      }
+      ]
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

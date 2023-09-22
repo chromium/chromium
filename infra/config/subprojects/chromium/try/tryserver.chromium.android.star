@@ -59,16 +59,8 @@ try_.orchestrator_builder(
     mirrors = [
         "ci/android-12-x64-rel",
     ],
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
-    ),
     compilator = "android-12-x64-rel-compilator",
     coverage_test_types = ["unit", "overall"],
-    experiments = {
-        "chromium_rts.inverted_rts": 100,
-    },
     main_list_view = "try",
     tryjob = try_.job(),
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
@@ -107,17 +99,9 @@ try_.orchestrator_builder(
         "ci/Android Release (Nexus 5X)",  # Nexus 5X on Nougat
         "ci/android-pie-arm64-rel",  # Pixel 1, 2 on Pie
     ],
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
-    ),
     check_for_flakiness = True,
     compilator = "android-arm64-rel-compilator",
     coverage_test_types = ["unit", "overall"],
-    experiments = {
-        "chromium_rts.inverted_rts": 100,
-    },
     main_list_view = "try",
     tryjob = try_.job(),
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
@@ -311,18 +295,12 @@ try_.orchestrator_builder(
     mirrors = [
         "ci/android-nougat-x86-rel",
     ],
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
-    ),
     # crbug/1434778 - disabling due to high flake rate. See crbug/1422481 for
     # root cause.
     # check_for_flakiness = True,
     compilator = "android-nougat-x86-rel-compilator",
     coverage_test_types = ["unit", "overall"],
     experiments = {
-        "chromium_rts.inverted_rts": 100,
         "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
