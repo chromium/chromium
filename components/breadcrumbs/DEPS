@@ -3,6 +3,9 @@ include_rules = [
   "+components/crash/core/common/crash_key.h",
   "+components/infobars/core",
   "+components/keyed_service/core",
+  "+components/prefs",
+  "+components/variations",
+  "+components/version_info",
   "+net/base/net_errors.h",
   "+ui/base",
 ]
