@@ -36,6 +36,8 @@ message RequestConfig {
     REPHRASE = 3;
     FORMALIZE = 4;
     EMOJIFY = 5;
+    FREEFORM_REWRITE = 6;
+    FREEFORM_WRITE = 7;
   }
 
   optional Tone tone = 5;

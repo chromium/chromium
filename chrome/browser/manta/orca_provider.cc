@@ -48,6 +48,8 @@ GetToneMap() {
           {"REPHRASE", proto::RequestConfig::REPHRASE},
           {"FORMALIZE", proto::RequestConfig::FORMALIZE},
           {"EMOJIFY", proto::RequestConfig::EMOJIFY},
+          {"FREEFORM_REWRITE", proto::RequestConfig::FREEFORM_REWRITE},
+          {"FREEFORM_WRITE", proto::RequestConfig::FREEFORM_WRITE},
       });
 
   return *tone_map;
