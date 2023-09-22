@@ -369,6 +369,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::RunRecoveryComponent(updater_scope_, app_id, version);
   }
 
+  void SetLastChecked(const base::Time& time) const override {
+    updater::test::SetLastChecked(updater_scope_, time);
+  }
+
   void ExpectLastChecked() const override {
     updater::test::ExpectLastChecked(updater_scope_);
   }

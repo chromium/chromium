@@ -499,6 +499,10 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->RunRecoveryComponent(app_id, version);
   }
 
+  void SetLastChecked(const base::Time& time) {
+    test_commands_->SetLastChecked(time);
+  }
+
   void ExpectLastChecked() { test_commands_->ExpectLastChecked(); }
 
   void ExpectLastStarted() { test_commands_->ExpectLastStarted(); }
@@ -885,6 +889,45 @@ TEST_F(IntegrationTest, UpdateApp) {
   ASSERT_NO_FATAL_FAILURE(ExpectLastChecked());
   ASSERT_NO_FATAL_FAILURE(ExpectLastStarted());
 
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTest, NoCheckWhenLastCheckedRecently) {
+  ScopedServer test_server(test_commands_);
+  ASSERT_NO_FATAL_FAILURE(SetLastChecked(base::Time::Now() - base::Minutes(5)));
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(InstallApp("test"));
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTest, NoCheckWhenLastCheckedRecentlyPolicy) {
+  ScopedServer test_server(test_commands_);
+  base::Value::Dict group_policies;
+  group_policies.Set("autoupdatecheckperiodminutes", 60 * 18);
+  ASSERT_NO_FATAL_FAILURE(SetLastChecked(base::Time::Now() - base::Hours(12)));
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(SetGroupPolicies(group_policies));
+  ASSERT_NO_FATAL_FAILURE(InstallApp("test"));
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTest, NoCheckWhenSuppressed) {
+  ScopedServer test_server(test_commands_);
+  base::Time::Exploded now;
+  base::Time::Now().LocalExplode(&now);
+  base::Value::Dict group_policies;
+  group_policies.Set("updatessuppressedstarthour", (now.hour - 1 + 24) % 24);
+  group_policies.Set("updatessuppressedstartmin", 0);
+  group_policies.Set("updatessuppresseddurationmin", 120);
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(SetGroupPolicies(group_policies));
+  ASSERT_NO_FATAL_FAILURE(InstallApp("test"));
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }

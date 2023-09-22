@@ -422,6 +422,12 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
         {Param("app_id", app_id), Param("version", version.GetString())});
   }
 
+  void SetLastChecked(const base::Time& time) const override {
+    RunCommand(
+        "set_last_checked",
+        {Param("time", base::NumberToString(time.ToJsTimeIgnoringNull()))});
+  }
+
   void ExpectLastChecked() const override { RunCommand("expect_last_checked"); }
 
   void ExpectLastStarted() const override { RunCommand("expect_last_started"); }

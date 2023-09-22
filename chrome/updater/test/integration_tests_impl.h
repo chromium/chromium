@@ -363,6 +363,8 @@ void RunRecoveryComponent(UpdaterScope scope,
                           const std::string& app_id,
                           const base::Version& version);
 
+void SetLastChecked(UpdaterScope scope, const base::Time& time);
+
 void ExpectLastChecked(UpdaterScope scope);
 
 void ExpectLastStarted(UpdaterScope scope);

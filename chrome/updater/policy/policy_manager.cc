@@ -4,6 +4,7 @@
 
 #include "chrome/updater/policy/policy_manager.h"
 
+#include <set>
 #include <string>
 #include <vector>
 
@@ -193,6 +194,12 @@ absl::optional<std::vector<std::string>> PolicyManager::GetForceInstallApps()
 
 absl::optional<std::vector<std::string>> PolicyManager::GetAppsWithPolicy()
     const {
+  const std::set<std::string> kPrefixedPolicyNames = {
+      // prefixed by kUpdateAppPrefix:
+      base::ToLowerASCII(kUpdatesSuppressedStartHour),
+      base::ToLowerASCII(kUpdatesSuppressedStartMin),
+      base::ToLowerASCII(kUpdatesSuppressedDurationMin),
+  };
   const char* kAppPolicyPrefixes[] = {
       kInstallAppsDefault,     kInstallAppPrefix,    kUpdateAppsDefault,
       kUpdateAppPrefix,        kTargetVersionPrefix, kTargetChannel,
@@ -201,7 +208,8 @@ absl::optional<std::vector<std::string>> PolicyManager::GetAppsWithPolicy()
   base::ranges::for_each(policies_, [&](const auto& policy) {
     const std::string policy_name = policy.first;
     base::ranges::for_each(kAppPolicyPrefixes, [&](const auto& prefix) {
-      if (base::StartsWith(policy_name, base::ToLowerASCII(prefix))) {
+      if (base::StartsWith(policy_name, base::ToLowerASCII(prefix)) &&
+          kPrefixedPolicyNames.count(policy_name) == 0) {
         apps_with_policy.push_back(
             policy_name.substr(base::StringPiece(prefix).length()));
       }

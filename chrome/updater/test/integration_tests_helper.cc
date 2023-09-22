@@ -148,6 +148,23 @@ base::RepeatingCallback<bool(Args...)> WithSwitch(
       }));
 }
 
+// Overload for Time switches.
+template <typename... Args>
+base::RepeatingCallback<bool(Args...)> WithSwitch(
+    const std::string& flag,
+    base::RepeatingCallback<bool(const base::Time&, Args...)> callback) {
+  return WithSwitch(
+      flag,
+      base::BindLambdaForTesting([=](const std::string& flag, Args... args) {
+        double flag_value;
+        if (base::StringToDouble(flag, &flag_value)) {
+          return callback.Run(base::Time::FromJsTime(flag_value),
+                              std::move(args)...);
+        }
+        return false;
+      }));
+}
+
 // Overload for TimeDelta switches.
 template <typename... Args>
 base::RepeatingCallback<bool(Args...)> WithSwitch(
@@ -400,6 +417,8 @@ void AppTestHelper::FirstTaskRun() {
     {"run_recovery_component",
      WithSwitch("version", WithSwitch("app_id", WithSystemScope(Wrap(
                                                     &RunRecoveryComponent))))},
+    {"set_last_checked",
+     WithSwitch("time", WithSystemScope(Wrap(&SetLastChecked)))},
     {"expect_last_checked", WithSystemScope(Wrap(&ExpectLastChecked))},
     {"expect_last_started", WithSystemScope(Wrap(&ExpectLastStarted))},
     {"run_offline_install",
