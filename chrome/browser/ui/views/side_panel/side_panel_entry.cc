@@ -62,6 +62,10 @@ void SidePanelEntry::OnEntryShown() {
   entry_shown_timestamp_ = base::TimeTicks::Now();
   SidePanelUtil::RecordEntryShownMetrics(key_.id(),
                                          entry_show_triggered_timestamp_);
+  // After the initial load time is recorded, we need to reset the triggered
+  // timestamp so we don't keep recording this entry after its selected from the
+  // combobox.
+  ResetLoadTimestamp();
   for (SidePanelEntryObserver& observer : observers_)
     observer.OnEntryShown(this);
 }
