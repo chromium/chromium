@@ -146,6 +146,7 @@ void EditorMediator::OnSurroundingTextChanged(const std::u16string& text,
 
 void EditorMediator::ProcessConsentAction(ConsentAction consent_action) {
   consent_store_->ProcessConsentAction(consent_action);
+  HandleTrigger();
 }
 
 void EditorMediator::OnPromoCardDeclined() {
@@ -153,10 +154,16 @@ void EditorMediator::OnPromoCardDeclined() {
 }
 
 void EditorMediator::HandleTrigger() {
-  if (!editor_switch_->CanBeTriggered()) {
-    return;
+  switch (editor_switch_->GetEditorMode()) {
+    case EditorMode::kEditor:
+      mako_page_handler_.ShowRewriteUI(profile_);
+      break;
+    case EditorMode::kConsentNeeded:
+      mako_page_handler_.ShowConsentUI(profile_);
+      break;
+    case EditorMode::kBlocked:
+      mako_page_handler_.CloseUI();
   }
-  mako_page_handler_.ShowRewriteUI(profile_);
 }
 
 void EditorMediator::OnTextInserted() {
@@ -173,10 +180,6 @@ void EditorMediator::OnTextFieldContextualInfoChanged(
 
 bool EditorMediator::IsAllowedForUse() {
   return editor_switch_->IsAllowedForUse();
-}
-
-bool EditorMediator::CanBeTriggered() {
-  return editor_switch_->CanBeTriggered();
 }
 
 ConsentStatus EditorMediator::GetConsentStatus() {

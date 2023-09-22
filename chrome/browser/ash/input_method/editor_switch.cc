@@ -70,7 +70,7 @@ EditorSwitch::EditorSwitch(Profile* profile, std::string_view country_code)
 
 EditorSwitch::~EditorSwitch() = default;
 
-bool EditorSwitch::IsAllowedForUse() {
+bool EditorSwitch::IsAllowedForUse() const {
   bool is_managed = profile_->GetProfilePolicyConnector()->IsManaged();
 
   return  // Conditions required for dogfooding.
@@ -82,7 +82,7 @@ bool EditorSwitch::IsAllowedForUse() {
        !is_managed && IsCountryAllowed(country_code_));
 }
 
-bool EditorSwitch::CanBeTriggered() {
+bool EditorSwitch::CanBeTriggered() const {
   ConsentStatus current_consent_status = GetConsentStatusFromInteger(
       profile_->GetPrefs()->GetInteger(prefs::kOrcaConsentStatus));
 
@@ -93,6 +93,22 @@ bool EditorSwitch::CanBeTriggered() {
          // user pref value
          profile_->GetPrefs()->GetBoolean(prefs::kOrcaEnabled);
   ;
+}
+
+EditorMode EditorSwitch::GetEditorMode() const {
+  if (!CanBeTriggered()) {
+    return EditorMode::kBlocked;
+  }
+
+  ConsentStatus current_consent_status = GetConsentStatusFromInteger(
+      profile_->GetPrefs()->GetInteger(prefs::kOrcaConsentStatus));
+
+  if (current_consent_status == ConsentStatus::kPending ||
+      current_consent_status == ConsentStatus::kUnset) {
+    return EditorMode::kConsentNeeded;
+  } else {
+    return EditorMode::kEditor;
+  }
 }
 
 void EditorSwitch::OnInputContextUpdated(

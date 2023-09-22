@@ -115,7 +115,7 @@ TEST_F(EditorSwitchTest, FeatureCannotBeTriggeredIfConsentDeclined) {
       CreateFakeTextFieldContextualInfo(AppType::BROWSER));
 
   EXPECT_TRUE(editor_switch.IsAllowedForUse());
-  EXPECT_FALSE(editor_switch.CanBeTriggered());
+  EXPECT_EQ(editor_switch.GetEditorMode(), EditorMode::kBlocked);
 }
 
 TEST_F(EditorSwitchTest, FeatureCannotBeTriggeredOnAPasswordField) {
@@ -141,7 +141,7 @@ TEST_F(EditorSwitchTest, FeatureCannotBeTriggeredOnAPasswordField) {
       CreateFakeTextFieldContextualInfo(AppType::BROWSER));
 
   EXPECT_TRUE(editor_switch.IsAllowedForUse());
-  EXPECT_FALSE(editor_switch.CanBeTriggered());
+  EXPECT_EQ(editor_switch.GetEditorMode(), EditorMode::kBlocked);
 }
 
 TEST_F(EditorSwitchTest, FeatureCannotBeTriggeredWithNonEnglishInputMethod) {
@@ -165,7 +165,7 @@ TEST_F(EditorSwitchTest, FeatureCannotBeTriggeredWithNonEnglishInputMethod) {
       CreateFakeTextFieldContextualInfo(AppType::BROWSER));
 
   EXPECT_TRUE(editor_switch.IsAllowedForUse());
-  EXPECT_FALSE(editor_switch.CanBeTriggered());
+  EXPECT_EQ(editor_switch.GetEditorMode(), EditorMode::kBlocked);
 }
 
 TEST_F(EditorSwitchTest, FeatureCanNotBeTriggeredOnArcApps) {
@@ -189,7 +189,7 @@ TEST_F(EditorSwitchTest, FeatureCanNotBeTriggeredOnArcApps) {
       CreateFakeTextFieldContextualInfo(AppType::ARC_APP));
 
   EXPECT_TRUE(editor_switch.IsAllowedForUse());
-  EXPECT_FALSE(editor_switch.CanBeTriggered());
+  EXPECT_EQ(editor_switch.GetEditorMode(), EditorMode::kBlocked);
 }
 
 TEST_F(EditorSwitchTest,
@@ -214,7 +214,7 @@ TEST_F(EditorSwitchTest,
       CreateFakeTextFieldContextualInfo(AppType::ARC_APP));
 
   EXPECT_TRUE(editor_switch.IsAllowedForUse());
-  EXPECT_FALSE(editor_switch.CanBeTriggered());
+  EXPECT_EQ(editor_switch.GetEditorMode(), EditorMode::kBlocked);
 }
 
 TEST_F(EditorSwitchTest, FeatureCanNotBeTriggeredOnTabletMode) {
@@ -238,7 +238,7 @@ TEST_F(EditorSwitchTest, FeatureCanNotBeTriggeredOnTabletMode) {
       CreateFakeTextFieldContextualInfo(AppType::BROWSER));
 
   EXPECT_TRUE(editor_switch.IsAllowedForUse());
-  EXPECT_FALSE(editor_switch.CanBeTriggered());
+  EXPECT_EQ(editor_switch.GetEditorMode(), EditorMode::kBlocked);
 }
 
 TEST_F(
@@ -264,7 +264,7 @@ TEST_F(
       CreateFakeTextFieldContextualInfo(AppType::BROWSER));
 
   EXPECT_TRUE(editor_switch.IsAllowedForUse());
-  EXPECT_TRUE(editor_switch.CanBeTriggered());
+  EXPECT_EQ(editor_switch.GetEditorMode(), EditorMode::kConsentNeeded);
 }
 
 TEST_F(
@@ -290,7 +290,7 @@ TEST_F(
       CreateFakeTextFieldContextualInfo(AppType::BROWSER));
 
   EXPECT_TRUE(editor_switch.IsAllowedForUse());
-  EXPECT_TRUE(editor_switch.CanBeTriggered());
+  EXPECT_EQ(editor_switch.GetEditorMode(), EditorMode::kEditor);
 }
 
 }  // namespace

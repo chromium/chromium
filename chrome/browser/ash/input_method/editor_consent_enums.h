@@ -40,6 +40,12 @@ enum class ConsentStatus : int {
   kUnset,
 };
 
+enum class EditorMode {
+  kBlocked,
+  kConsentNeeded,
+  kEditor,
+};
+
 ConsentStatus GetConsentStatusFromInteger(int status_value);
 
 }  // namespace ash::input_method
