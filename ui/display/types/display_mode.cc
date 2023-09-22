@@ -6,6 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
+#include "ui/display/types/display_types_util.h"
 
 namespace display {
 
@@ -35,6 +36,12 @@ bool DisplayMode::operator<(const DisplayMode& other) const {
 
 bool DisplayMode::operator>(const DisplayMode& other) const {
   return other < *this;
+}
+
+bool DisplayMode::operator==(const DisplayMode& other) const {
+  return size_ == other.size_ &&
+         IsWithinEpsilon(refresh_rate_, other.refresh_rate_) &&
+         is_interlaced_ == other.is_interlaced_;
 }
 
 std::string DisplayMode::ToString() const {

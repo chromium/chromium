@@ -254,6 +254,12 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   void SetSelectedModeForDisplayId(int64_t display_id,
                                    const ManagedDisplayMode& display_mode);
 
+  // Returns true and fills the |mode| for a given |mode_info| in |display_id|
+  // if found, otherwise false.
+  bool GetMatchingModeForDisplayId(int64_t display_id,
+                                   const DisplayMode* mode_info,
+                                   ManagedDisplayMode* mode);
+
   // Tells if the virtual resolution feature is enabled.
   bool IsDisplayUIScalingEnabled() const;
 

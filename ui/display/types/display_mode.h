@@ -32,6 +32,7 @@ class DISPLAY_TYPES_EXPORT DisplayMode {
 
   bool operator<(const DisplayMode& other) const;
   bool operator>(const DisplayMode& other) const;
+  bool operator==(const DisplayMode& other) const;
 
   std::string ToString() const;
 
