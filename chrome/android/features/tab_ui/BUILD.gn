@@ -98,6 +98,7 @@ android_library("unit_device_javatests") {
   testonly = true
   resources_package = "org.chromium.chrome.tab_ui"
   sources = [
+    "javatests/src/org/chromium/chrome/browser/tasks/tab_management/GtsRectAnimatorTest.java",
     "javatests/src/org/chromium/chrome/browser/tasks/tab_management/LargeMessageCardViewBinderTest.java",
     "javatests/src/org/chromium/chrome/browser/tasks/tab_management/MessageCardProviderTest.java",
     "javatests/src/org/chromium/chrome/browser/tasks/tab_management/MessageCardViewBinderTest.java",
@@ -139,6 +140,7 @@ android_library("unit_device_javatests") {
     "//third_party/android_deps:material_design_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/android_sdk:android_test_base_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_core_core_java",
