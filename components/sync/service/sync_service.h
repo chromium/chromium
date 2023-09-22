@@ -569,9 +569,9 @@ class SyncService : public KeyedService {
   // having DISABLE_REASON_USER_CHOICE.
   // TODO(crbug.com/1444344): Remove this API together with
   // CanSyncFeatureStart().
-  // TODO(crbug.com/1219990): This API may also be removed once feature
-  // kSyncIgnoreSyncRequestedPreference is cleaned up, since HasSyncConsent()
-  // and GetDisableReasons() guarantee that this function returns true.
+  // TODO(crbug.com/1219990): This API may also be removed since
+  // HasSyncConsent() and GetDisableReasons() guarantee that this function
+  // returns true.
   virtual bool IsSyncFeatureConsideredRequested() const = 0;
 };
 

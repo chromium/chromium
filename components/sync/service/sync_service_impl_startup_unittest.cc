@@ -511,26 +511,7 @@ TEST_F(SyncServiceImplStartupTest, ManagedStartup) {
   EXPECT_FALSE(engine());
 }
 
-class SyncServiceImplStartupTestWithIgnoreSyncRequestedFeature
-    : public SyncServiceImplStartupTest,
-      public ::testing::WithParamInterface<bool> {
- public:
-  SyncServiceImplStartupTestWithIgnoreSyncRequestedFeature() {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-    scoped_feature_list_.InitWithFeatureState(
-        kSyncIgnoreSyncRequestedPreference, GetParam());
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-  }
-
-  ~SyncServiceImplStartupTestWithIgnoreSyncRequestedFeature() override =
-      default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_P(SyncServiceImplStartupTestWithIgnoreSyncRequestedFeature,
-       SwitchManaged) {
+TEST_F(SyncServiceImplStartupTest, SwitchManaged) {
   // Sync starts out fully set up and enabled.
   SetSyncFeatureEnabledPrefs();
   SignInWithSyncConsent();
@@ -592,11 +573,6 @@ TEST_P(SyncServiceImplStartupTestWithIgnoreSyncRequestedFeature,
   EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
   EXPECT_FALSE(sync_service()->IsSyncFeatureActive());
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    SyncIgnoreSyncRequestedPreference,
-    SyncServiceImplStartupTestWithIgnoreSyncRequestedFeature,
-    ::testing::Values(false, true));
 
 TEST_F(SyncServiceImplStartupTest, StartDownloadFailed) {
   sync_prefs()->SetSyncRequested(true);

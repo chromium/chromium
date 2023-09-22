@@ -379,25 +379,7 @@ TEST_F(SyncServiceImplTest, DisabledByPolicyBeforeInit) {
             service()->GetTransportState());
 }
 
-class SyncServiceImplTestWithIgnoreSyncRequestedFeature
-    : public SyncServiceImplTest,
-      public ::testing::WithParamInterface<bool> {
- public:
-  SyncServiceImplTestWithIgnoreSyncRequestedFeature() {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-    scoped_feature_list_.InitWithFeatureState(
-        kSyncIgnoreSyncRequestedPreference, GetParam());
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-  }
-
-  ~SyncServiceImplTestWithIgnoreSyncRequestedFeature() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_P(SyncServiceImplTestWithIgnoreSyncRequestedFeature,
-       DisabledByPolicyBeforeInitThenPolicyRemoved) {
+TEST_F(SyncServiceImplTest, DisabledByPolicyBeforeInitThenPolicyRemoved) {
   PopulatePrefsForInitialSyncFeatureSetupComplete();
   prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(true));
   SignInWithSyncConsent();
@@ -454,10 +436,6 @@ TEST_P(SyncServiceImplTestWithIgnoreSyncRequestedFeature,
   EXPECT_TRUE(service()->IsSyncFeatureEnabled());
   EXPECT_TRUE(service()->IsSyncFeatureActive());
 }
-
-INSTANTIATE_TEST_SUITE_P(SyncIgnoreSyncRequestedPreference,
-                         SyncServiceImplTestWithIgnoreSyncRequestedFeature,
-                         ::testing::Values(false, true));
 
 // Verify that disable by enterprise policy works even after the backend has
 // been initialized.
