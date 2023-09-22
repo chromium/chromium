@@ -59,6 +59,10 @@ void QuickAnswersStateAsh::OnChromeTerminating() {
   session_observation_.Reset();
 }
 
+void QuickAnswersStateAsh::OnShellDestroying() {
+  session_observation_.Reset();
+}
+
 void QuickAnswersStateAsh::RegisterPrefChanges(PrefService* pref_service) {
   pref_change_registrar_.reset();
 

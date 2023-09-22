@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_QUICK_ANSWERS_QUICK_ANSWERS_STATE_ASH_H_
 
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/shell_observer.h"
 #include "base/scoped_observation.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 
@@ -18,6 +19,7 @@ class SessionController;
 
 // A class that holds Quick Answers related prefs and states.
 class QuickAnswersStateAsh : public ash::SessionObserver,
+                             public ash::ShellObserver,
                              public QuickAnswersState {
  public:
   QuickAnswersStateAsh();
@@ -28,9 +30,12 @@ class QuickAnswersStateAsh : public ash::SessionObserver,
   ~QuickAnswersStateAsh() override;
 
  private:
-  // SessionObserver:
+  // ash::SessionObserver:
   void OnFirstSessionStarted() override;
   void OnChromeTerminating() override;
+
+  // ash::ShellObserver:
+  void OnShellDestroying() override;
 
   void RegisterPrefChanges(PrefService* pref_service);
 
