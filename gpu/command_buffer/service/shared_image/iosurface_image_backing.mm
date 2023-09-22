@@ -1110,8 +1110,7 @@ IOSurfaceImageBacking::ProduceSkiaGraphite(
       LOG(ERROR) << "Could not create Dawn Representation";
       return nullptr;
     }
-    const bool is_yuv_plane =
-        format().is_single_plane() && (io_surface_format_ == '420v');
+    const bool is_yuv_plane = io_surface_format_ == '420v';
     // Use GPU main recorder since this should only be called for
     // fulfilling Graphite promise images on GPU main thread.
     return SkiaGraphiteDawnImageRepresentation::Create(

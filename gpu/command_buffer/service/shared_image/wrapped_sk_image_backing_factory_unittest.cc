@@ -83,10 +83,6 @@ class WrappedSkImageBackingFactoryTest
           format == viz::SinglePlaneFormat::kRGB_565) {
         GTEST_SKIP();
       }
-      // TODO(crbug.com/1442381): Remove early return once YUV support is added.
-      if (format.is_multi_plane()) {
-        GTEST_SKIP();
-      }
     }
 
     backing_factory_ =

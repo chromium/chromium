@@ -689,8 +689,8 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageMultiPlane(
          plane_index++) {
       CHECK_EQ(image_context->origin(), kTopLeft_GrSurfaceOrigin);
       fulfills[plane_index] = new FulfillForPlane(image_context, plane_index);
-      texture_infos.emplace_back(
-          gpu::GetGraphiteTextureInfo(gr_context_type_, format, plane_index));
+      texture_infos.emplace_back(gpu::GetGraphiteTextureInfo(
+          gr_context_type_, format, plane_index, /*is_yuv_plane=*/true));
     }
 
     skgpu::graphite::YUVABackendTextureInfo yuva_backend_info(

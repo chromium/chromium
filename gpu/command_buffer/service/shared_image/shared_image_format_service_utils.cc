@@ -430,13 +430,9 @@ WGPUTextureFormat ToWGPUFormat(viz::SharedImageFormat format, int plane_index) {
   return static_cast<WGPUTextureFormat>(ToDawnFormat(format, plane_index));
 }
 
-wgpu::TextureUsage GetSupportedDawnTextureUsage(viz::SharedImageFormat format,
-                                                bool is_yuv_plane,
+wgpu::TextureUsage GetSupportedDawnTextureUsage(bool is_yuv_plane,
                                                 bool is_dcomp_surface) {
   if (is_dcomp_surface) {
-    DCHECK(format.is_single_plane());
-    DCHECK(!is_yuv_plane);
-    DCHECK(!format.IsLegacyMultiplanar());
     // Textures from DComp surfaces cannot be used as TextureBinding, however
     // DCompSurfaceImageBacking creates a textureable intermediate texture.
     // TODO(crbug.com/1468844): Remove TextureBinding usage when the
@@ -451,8 +447,7 @@ wgpu::TextureUsage GetSupportedDawnTextureUsage(viz::SharedImageFormat format,
   // correct usages. This needs support in Skia to loosen TextureUsage
   // validation. Alternatively, add support in Dawn for multiplanar formats to
   // be Renderable.
-  if (format.is_single_plane() && !format.IsLegacyMultiplanar() &&
-      !is_yuv_plane) {
+  if (!is_yuv_plane) {
     return wgpu::TextureUsage::RenderAttachment |
            wgpu::TextureUsage::TextureBinding | wgpu::TextureUsage::CopySrc |
            wgpu::TextureUsage::CopyDst;
@@ -508,11 +503,10 @@ skgpu::graphite::DawnTextureInfo GetGraphiteDawnTextureInfo(
   skgpu::graphite::DawnTextureInfo dawn_texture_info;
   wgpu::TextureFormat wgpu_format = ToDawnFormat(format, plane_index);
   if (wgpu_format != wgpu::TextureFormat::Undefined) {
-    wgpu::TextureUsage wgpu_usage = GetSupportedDawnTextureUsage(
-        format, is_yuv_plane, scanout_dcomp_surface);
     dawn_texture_info.fSampleCount = 1;
     dawn_texture_info.fFormat = wgpu_format;
-    dawn_texture_info.fUsage = wgpu_usage;
+    dawn_texture_info.fUsage =
+        GetSupportedDawnTextureUsage(is_yuv_plane, scanout_dcomp_surface);
     dawn_texture_info.fMipmapped =
         mipmapped ? skgpu::Mipmapped::kYes : skgpu::Mipmapped::kNo;
   }

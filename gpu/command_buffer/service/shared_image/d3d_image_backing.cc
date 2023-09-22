@@ -1080,8 +1080,7 @@ D3DImageBacking::ProduceSkiaGraphite(
   device.GetAdapter().GetProperties(&adapter_properties);
   auto dawn_representation = ProduceDawn(manager, tracker, device.Get(),
                                          adapter_properties.backendType, {});
-  const bool is_yuv_plane =
-      format().is_single_plane() && NumPlanes(d3d11_texture_desc_.Format) > 1;
+  const bool is_yuv_plane = NumPlanes(d3d11_texture_desc_.Format) > 1;
   return SkiaGraphiteDawnImageRepresentation::Create(
       std::move(dawn_representation), context_state,
       context_state->gpu_main_graphite_recorder(), manager, this, tracker,
