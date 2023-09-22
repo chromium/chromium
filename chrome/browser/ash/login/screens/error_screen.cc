@@ -264,7 +264,6 @@ void ErrorScreen::ShowImpl() {
       LoginDisplayHost::default_host()->HasUserPods() && !is_persistent_;
   view_->ShowScreenWithParam(is_closeable);
   LOG(WARNING) << "Network error screen message is shown";
-  NetworkHandler::Get()->network_state_handler()->RequestPortalDetection();
 }
 
 void ErrorScreen::HideImpl() {
