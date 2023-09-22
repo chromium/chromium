@@ -61,7 +61,8 @@ jobs:
           key: ${{ runner.os }}-browsers-${{ hashFiles('.browser') }}) }}
       - name: Install pinned browser
         id: browser
-        run: node bidi/tools/install-browser.mjs
+        working-directory: bidi
+        run: node tools/install-browser.mjs
       - name: Run tests
         working-directory: puppeteer
         env:
