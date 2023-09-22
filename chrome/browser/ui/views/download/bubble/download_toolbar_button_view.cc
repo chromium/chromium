@@ -755,31 +755,21 @@ bool DownloadToolbarButtonView::ShouldShowBubbleAsInactive() const {
 }
 
 SkColor DownloadToolbarButtonView::GetIconColor() const {
-  return icon_color_.value_or(
+  return GetColorProvider()->GetColor(
       active_ == IconActive::kActive ||
               GetProperty(user_education::kHasInProductHelpPromoKey)
-          ? GetColorProvider()->GetColor(kColorDownloadToolbarButtonActive)
-          : GetColorProvider()->GetColor(kColorDownloadToolbarButtonInactive));
-}
-
-void DownloadToolbarButtonView::SetIconColor(SkColor color) {
-  if (icon_color_ == color)
-    return;
-  icon_color_ = color;
-  UpdateIcon();
+          ? kColorDownloadToolbarButtonActive
+          : kColorDownloadToolbarButtonInactive);
 }
 
 SkColor DownloadToolbarButtonView::GetProgressColor(bool is_disabled,
                                                     bool is_active) const {
   if (is_disabled) {
-    return icon_color_.value_or(
-        GetForegroundColor(ButtonState::STATE_DISABLED));
-  } else if (is_active) {
-    return icon_color_.value_or(
-        GetColorProvider()->GetColor(kColorDownloadToolbarButtonActive));
+    return GetForegroundColor(ButtonState::STATE_DISABLED);
   }
-  return icon_color_.value_or(
-      GetColorProvider()->GetColor(kColorDownloadToolbarButtonInactive));
+  return GetColorProvider()->GetColor(
+      is_active ? kColorDownloadToolbarButtonActive
+                : kColorDownloadToolbarButtonInactive);
 }
 
 void DownloadToolbarButtonView::DisableAutoCloseTimerForTesting() {

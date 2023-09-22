@@ -133,7 +133,6 @@ class DownloadToolbarButtonView : public ToolbarButton,
   DownloadDisplayController* display_controller() { return controller_.get(); }
 
   SkColor GetIconColor() const;
-  void SetIconColor(SkColor color);
 
   void DisableAutoCloseTimerForTesting();
   void DisableDownloadStartedAnimationForTesting();
@@ -240,10 +239,6 @@ class DownloadToolbarButtonView : public ToolbarButton,
   // default tooltip ("Downloads"), the entries for larger numbers are the
   // tooltips for N in-progress downloads ("N downloads in progress").
   std::map<int, std::u16string> tooltip_texts_;
-
-  // Override for the icon color. Used for PWAs, which don't have full
-  // ThemeProvider color support.
-  absl::optional<SkColor> icon_color_;
 
   gfx::SlideAnimation scanning_animation_{this};
 

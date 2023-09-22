@@ -23,15 +23,15 @@ class WindowControlsOverlayToggleButton : public ToolbarButton {
   ~WindowControlsOverlayToggleButton() override;
 
   void ButtonPressed(const ui::Event& event);
-  void SetColor(SkColor color);
+  void UpdateState();
 
+ protected:
   // ToolbarButton:
-  void UpdateIcon() override;
+  int GetIconSize() const override;
 
  private:
   // The containing browser view.
   raw_ptr<BrowserView> browser_view_;
-  SkColor icon_color_ = gfx::kPlaceholderColor;
   base::WeakPtrFactory<WindowControlsOverlayToggleButton> weak_factory_{this};
 };
 

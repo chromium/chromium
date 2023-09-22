@@ -48,9 +48,6 @@ class ToolbarIconContainerView : public views::View,
 
   views::View* main_item() { return main_item_; }
 
-  void SetIconColor(SkColor icon_color);
-  SkColor GetIconColor() const;
-
   bool GetHighlighted() const;
 
   // views::View:
@@ -110,9 +107,6 @@ class ToolbarIconContainerView : public views::View,
   // The main view is nominally always present and is last child in the view
   // hierarchy.
   raw_ptr<views::View, AcrossTasksDanglingUntriaged> main_item_ = nullptr;
-
-  // Override for the icon color. If not set, |kColorToolbarButtonIcon| is used.
-  absl::optional<SkColor> icon_color_;
 
   // Points to the child buttons that we know are currently highlighted.
   // TODO(pbos): Consider observing buttons leaving our hierarchy and removing

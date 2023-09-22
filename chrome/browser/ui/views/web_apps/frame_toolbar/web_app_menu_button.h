@@ -29,13 +29,6 @@ class WebAppMenuButton : public AppMenuButton {
   WebAppMenuButton& operator=(const WebAppMenuButton&) = delete;
   ~WebAppMenuButton() override;
 
-  // Sets the color of the menu button icon and highlight.
-  void SetColor(SkColor color);
-  SkColor GetColor() const;
-
-  // Sets the icon.
-  void set_icon(const gfx::VectorIcon& icon) { icon_ = &icon; }
-
   // Fades the menu button highlight on and off.
   void StartHighlightAnimation();
 
@@ -44,14 +37,14 @@ class WebAppMenuButton : public AppMenuButton {
  protected:
   BrowserView* browser_view() { return browser_view_; }
 
+  // ToolbarButton:
+  int GetIconSize() const override;
+
  private:
   void FadeHighlightOff();
 
   // The containing browser view.
   raw_ptr<BrowserView> browser_view_;
-
-  SkColor color_ = gfx::kPlaceholderColor;
-  raw_ptr<const gfx::VectorIcon> icon_ = &kBrowserToolsIcon;
 
   base::OneShotTimer highlight_off_timer_;
 };

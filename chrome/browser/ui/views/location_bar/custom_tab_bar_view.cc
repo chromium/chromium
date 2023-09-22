@@ -96,6 +96,20 @@ ui::ColorId GetSecurityChipColorId(
   }
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// The CustomTabBarView uses a WebAppMenuButton with a custom color. This class
+// overrides the GetForegroundColor method to achieve this effect.
+class CustomTabBarAppMenuButton : public WebAppMenuButton {
+ public:
+  using WebAppMenuButton::WebAppMenuButton;
+
+ protected:
+  SkColor GetForegroundColor(ButtonState state) const override {
+    return GetColorProvider()->GetColor(kColorPwaMenuButtonIcon);
+  }
+};
+#endif
+
 }  // namespace
 
 // Container view for laying out and rendering the title/origin of the current
@@ -240,9 +254,10 @@ CustomTabBarView::CustomTabBarView(BrowserView* browser_view,
       GetLayoutInsets(LayoutInset::TOOLBAR_INTERIOR_MARGIN);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (browser_->is_type_custom_tab()) {
-    web_app_menu_button_ = AddChildView(std::make_unique<WebAppMenuButton>(
-        browser_view, l10n_util::GetStringUTF16(
-                          IDS_CUSTOM_TABS_ACTION_MENU_ACCESSIBLE_NAME)));
+    web_app_menu_button_ =
+        AddChildView(std::make_unique<CustomTabBarAppMenuButton>(
+            browser_view, l10n_util::GetStringUTF16(
+                              IDS_CUSTOM_TABS_ACTION_MENU_ACCESSIBLE_NAME)));
 
     // Remove the vertical portion of the interior margin here to avoid
     // increasing the height of the toolbar when |web_app_menu_button_| is drawn
@@ -338,10 +353,6 @@ void CustomTabBarView::OnThemeChanged() {
   SetBackground(views::CreateSolidBackground(background_color_));
 
   title_origin_view_->SetColors(background_color_);
-  if (web_app_menu_button_) {
-    web_app_menu_button_->SetColor(
-        color_provider->GetColor(kColorPwaMenuButtonIcon));
-  }
 }
 
 void CustomTabBarView::TabChangedAt(content::WebContents* contents,

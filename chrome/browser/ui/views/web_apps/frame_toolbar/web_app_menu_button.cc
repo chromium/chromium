@@ -35,6 +35,8 @@ WebAppMenuButton::WebAppMenuButton(BrowserView* browser_view,
       browser_view_(browser_view) {
   views::SetHitTestComponent(this, static_cast<int>(HTCLIENT));
 
+  SetVectorIcons(kBrowserToolsIcon, kBrowserToolsTouchIcon);
+
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
 
   SetFocusBehavior(FocusBehavior::ALWAYS);
@@ -58,20 +60,6 @@ WebAppMenuButton::WebAppMenuButton(BrowserView* browser_view,
 }
 
 WebAppMenuButton::~WebAppMenuButton() = default;
-
-void WebAppMenuButton::SetColor(SkColor color) {
-  if (color_ == color)
-    return;
-  color_ = color;
-  SetImageModel(views::Button::STATE_NORMAL,
-                ui::ImageModel::FromVectorIcon(*icon_, color));
-  views::InkDrop::Get(this)->SetBaseColor(color_);
-  OnPropertyChanged(&color_, views::kPropertyEffectsNone);
-}
-
-SkColor WebAppMenuButton::GetColor() const {
-  return color_;
-}
 
 void WebAppMenuButton::StartHighlightAnimation() {
   views::InkDrop::Get(this)->GetInkDrop()->SetHoverHighlightFadeDuration(
@@ -99,6 +87,13 @@ void WebAppMenuButton::ButtonPressed(const ui::Event& event) {
       base::UserMetricsAction("HostedAppMenuButtonButton_Clicked"));
 }
 
+int WebAppMenuButton::GetIconSize() const {
+  // Rather than use the default toolbar icon size, use whatever icon size is
+  // embedded in the vector icon. This matches the behavior of
+  // BrowserAppMenuButton.
+  return 0;
+}
+
 void WebAppMenuButton::FadeHighlightOff() {
   if (!ShouldEnterHoveredState()) {
     views::InkDrop::Get(this)->GetInkDrop()->SetHoverHighlightFadeDuration(
@@ -111,5 +106,4 @@ void WebAppMenuButton::FadeHighlightOff() {
 }
 
 BEGIN_METADATA(WebAppMenuButton, AppMenuButton)
-ADD_PROPERTY_METADATA(SkColor, Color, ui::metadata::SkColorConverter)
 END_METADATA

@@ -210,18 +210,10 @@ void WebAppToolbarButtonContainer::SetColors(SkColor foreground_color,
     web_app_origin_text_->SetTextColor(foreground_color_,
                                        /*show_text=*/color_changed);
   }
-  if (window_controls_overlay_toggle_button_)
-    window_controls_overlay_toggle_button_->SetColor(foreground_color_);
 
   if (content_settings_container_)
     content_settings_container_->SetIconColor(foreground_color_);
-  if (extensions_container_)
-    extensions_container_->SetIconColor(foreground_color_);
   page_action_icon_controller_->SetIconColor(foreground_color_);
-  if (web_app_menu_button_)
-    web_app_menu_button_->SetColor(foreground_color_);
-  if (download_button_)
-    download_button_->SetIconColor(foreground_color_);
 }
 
 views::FlexRule WebAppToolbarButtonContainer::GetFlexRule() const {

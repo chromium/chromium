@@ -16,23 +16,20 @@ WindowControlsOverlayToggleButton::WindowControlsOverlayToggleButton(
     : ToolbarButton(
           base::BindRepeating(&WindowControlsOverlayToggleButton::ButtonPressed,
                               base::Unretained(this))),
-      browser_view_(browser_view) {}
+      browser_view_(browser_view) {
+  UpdateState();
+}
 
 WindowControlsOverlayToggleButton::~WindowControlsOverlayToggleButton() =
     default;
 
 void WindowControlsOverlayToggleButton::ButtonPressed(const ui::Event& event) {
   browser_view_->ToggleWindowControlsOverlayEnabled(
-      base::BindOnce(&WindowControlsOverlayToggleButton::UpdateIcon,
+      base::BindOnce(&WindowControlsOverlayToggleButton::UpdateState,
                      weak_factory_.GetWeakPtr()));
 }
 
-void WindowControlsOverlayToggleButton::SetColor(SkColor icon_color) {
-  icon_color_ = icon_color;
-  UpdateIcon();
-}
-
-void WindowControlsOverlayToggleButton::UpdateIcon() {
+void WindowControlsOverlayToggleButton::UpdateState() {
   // Use app_controller's IsWindowControlsOverlayEnabled rather than
   // browser_view's to avoid this returning false at startup due to the CCT
   // displaying momentarily.
@@ -40,16 +37,16 @@ void WindowControlsOverlayToggleButton::UpdateIcon() {
                      ->app_controller()
                      ->IsWindowControlsOverlayEnabled();
 
-  SetImageModel(
-      views::Button::STATE_NORMAL,
-      enabled
-          ? ui::ImageModel::FromVectorIcon(kKeyboardArrowDownIcon, icon_color_)
-          : ui::ImageModel::FromVectorIcon(kKeyboardArrowUpIcon, icon_color_));
+  SetVectorIcon(enabled ? kKeyboardArrowDownIcon : kKeyboardArrowUpIcon);
+  SetTooltipText(l10n_util::GetStringUTF16(
+      enabled ? IDS_WEB_APP_DISABLE_WINDOW_CONTROLS_OVERLAY_TOOLTIP
+              : IDS_WEB_APP_ENABLE_WINDOW_CONTROLS_OVERLAY_TOOLTIP));
+}
 
-  SetTooltipText(enabled
-                     ? l10n_util::GetStringUTF16(
-                           IDS_WEB_APP_DISABLE_WINDOW_CONTROLS_OVERLAY_TOOLTIP)
-                     : l10n_util::GetStringUTF16(
-                           IDS_WEB_APP_ENABLE_WINDOW_CONTROLS_OVERLAY_TOOLTIP));
-  ToolbarButton::UpdateIcon();
+int WindowControlsOverlayToggleButton::GetIconSize() const {
+  // Rather than use the default toolbar icon size, use whatever icon size is
+  // embedded in the vector icon. While this matches the original implementation
+  // of this class, perhaps using the default toolbar icon size would make more
+  // sense.
+  return 0;
 }
