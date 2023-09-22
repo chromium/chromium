@@ -283,7 +283,7 @@ vars = {
   # reclient CIPD package
   'reclient_package': 'infra/rbe/client/',
   # reclient CIPD package version
-  'reclient_version': 're_client_version:0.114.2.81e819b-gomaip',
+  'reclient_version': 're_client_version:0.115.1.3dbd341-gomaip',
 
   # The path of the sysroots.json file.
   # This is used by vendor builds like Electron.
