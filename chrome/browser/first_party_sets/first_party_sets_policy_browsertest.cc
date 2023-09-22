@@ -35,8 +35,6 @@ namespace {
 
 using ::testing::UnorderedPointwise;
 
-enum class PrefState { kDefault, kDisabled, kEnabled };
-
 const char* kHostA = "a.test";
 const char* kHostB = "b.test";
 const char* kHostC = "c.test";
@@ -44,7 +42,8 @@ const char* kHostD = "d.test";
 
 class EnabledPolicyBrowsertest
     : public PolicyTest,
-      public ::testing::WithParamInterface<std::tuple<bool, PrefState>> {
+      public ::testing::WithParamInterface<
+          std::tuple<bool, PolicyTest::BooleanPolicy>> {
  public:
   EnabledPolicyBrowsertest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
@@ -95,9 +94,10 @@ class EnabledPolicyBrowsertest
       SetPolicyValue(policy::key::kFirstPartySetsOverrides,
                      base::JSONReader::Read(policy.value()));
     }
-    if (GetPrefState() != PrefState::kDefault) {
+    if (GetInitialPolicyState() != PolicyTest::BooleanPolicy::kNotConfigured) {
       SetPolicyValue(policy::key::kFirstPartySetsEnabled,
-                     base::Value(GetPrefState() == PrefState::kEnabled));
+                     base::Value(GetInitialPolicyState() ==
+                                 PolicyTest::BooleanPolicy::kTrue));
     }
 
     provider_.UpdateChromePolicy(policies_);
@@ -132,17 +132,18 @@ class EnabledPolicyBrowsertest
     return absl::nullopt;
   }
 
-  // Sets the state of the First-Party Sets enabled preference.
-  void SetEnabledPolicyState(bool enabled) {
+  // Sets the state of the FirstPartySetsEnabled policy.
+  void SetFirstPartySetsEnabledPolicyState(bool enabled) {
     SetPolicyValue(policy::key::kFirstPartySetsEnabled, base::Value(enabled));
 
     provider_.UpdateChromePolicy(policies_);
   }
 
   // Returns whether or not First-Party Sets was enabled at the start of the
-  // test. This does not account for calls to `SetEnabledPolicyState`.
+  // test. This does not account for calls to
+  // `SetFirstPartySetsEnabledPolicyState`.
   bool IsFirstPartySetsEnabledInitially() {
-    return IsFeatureEnabled() && GetPrefState() != PrefState::kDisabled;
+    return IsFeatureEnabled() && IsPrefEnabledInitially();
   }
 
   void NavigateToPageWithFrame(const std::string& host) {
@@ -165,7 +166,14 @@ class EnabledPolicyBrowsertest
   }
 
   bool IsFeatureEnabled() { return std::get<0>(GetParam()); }
-  PrefState GetPrefState() { return std::get<1>(GetParam()); }
+  PolicyTest::BooleanPolicy GetInitialPolicyState() {
+    return std::get<1>(GetParam());
+  }
+
+  // We expect the Pref to be true if the Policy is unset or enabled.
+  bool IsPrefEnabledInitially() {
+    return GetInitialPolicyState() != PolicyTest::BooleanPolicy::kFalse;
+  }
 
  private:
   void SetPolicyValue(const char* key, absl::optional<base::Value> value) {
@@ -183,26 +191,22 @@ class EnabledPolicyBrowsertest
 };
 
 IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest, ToggleFeature_Memberships) {
-  const bool feature_enabled = IsFeatureEnabled();
-  const bool pref_initially_enabled = GetPrefState() != PrefState::kDisabled;
-
-  EXPECT_EQ(feature_enabled && pref_initially_enabled,
+  EXPECT_EQ(IsFeatureEnabled() && IsPrefEnabledInitially(),
             AreSitesInSameFirstPartySet(kHostA, kHostC));
-  EXPECT_EQ(feature_enabled && pref_initially_enabled,
+  EXPECT_EQ(IsFeatureEnabled() && IsPrefEnabledInitially(),
             AreSitesInSameFirstPartySet(kHostA, kHostB));
 
-  SetEnabledPolicyState(!pref_initially_enabled);
+  SetFirstPartySetsEnabledPolicyState(!IsPrefEnabledInitially());
 
-  EXPECT_EQ(feature_enabled && !pref_initially_enabled,
+  EXPECT_EQ(IsFeatureEnabled() && !IsPrefEnabledInitially(),
             AreSitesInSameFirstPartySet(kHostA, kHostC));
-  EXPECT_EQ(feature_enabled && !pref_initially_enabled,
+  EXPECT_EQ(IsFeatureEnabled() && !IsPrefEnabledInitially(),
             AreSitesInSameFirstPartySet(kHostA, kHostB));
 }
 
 IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest, ToggleFeature_NonMemberships) {
   EXPECT_FALSE(AreSitesInSameFirstPartySet(kHostD, kHostA));
-  const bool pref_initially_enabled = GetPrefState() != PrefState::kDisabled;
-  SetEnabledPolicyState(!pref_initially_enabled);
+  SetFirstPartySetsEnabledPolicyState(!IsPrefEnabledInitially());
 
   EXPECT_FALSE(AreSitesInSameFirstPartySet(kHostD, kHostA));
 }
@@ -210,10 +214,11 @@ IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest, ToggleFeature_NonMemberships) {
 INSTANTIATE_TEST_SUITE_P(
     FirstPartySets,
     EnabledPolicyBrowsertest,
-    ::testing::Combine(::testing::Bool(),
-                       ::testing::Values(PrefState::kDefault,
-                                         PrefState::kDisabled,
-                                         PrefState::kEnabled)));
+    ::testing::Combine(
+        ::testing::Bool(),
+        ::testing::Values(PolicyTest::BooleanPolicy::kNotConfigured,
+                          PolicyTest::BooleanPolicy::kFalse,
+                          PolicyTest::BooleanPolicy::kTrue)));
 
 class OverridesPolicyEmptyBrowsertest : public EnabledPolicyBrowsertest {
  public:
@@ -237,10 +242,11 @@ IN_PROC_BROWSER_TEST_P(OverridesPolicyEmptyBrowsertest, CheckMemberships) {
 INSTANTIATE_TEST_SUITE_P(
     FirstPartySets,
     OverridesPolicyEmptyBrowsertest,
-    ::testing::Combine(::testing::Bool(),
-                       ::testing::Values(PrefState::kDefault,
-                                         PrefState::kDisabled,
-                                         PrefState::kEnabled)));
+    ::testing::Combine(
+        ::testing::Bool(),
+        ::testing::Values(PolicyTest::BooleanPolicy::kNotConfigured,
+                          PolicyTest::BooleanPolicy::kFalse,
+                          PolicyTest::BooleanPolicy::kTrue)));
 
 class OverridesPolicyReplacementBrowsertest : public EnabledPolicyBrowsertest {
  public:
@@ -276,10 +282,11 @@ IN_PROC_BROWSER_TEST_P(OverridesPolicyReplacementBrowsertest,
 INSTANTIATE_TEST_SUITE_P(
     FirstPartySets,
     OverridesPolicyReplacementBrowsertest,
-    ::testing::Combine(::testing::Bool(),
-                       ::testing::Values(PrefState::kDefault,
-                                         PrefState::kDisabled,
-                                         PrefState::kEnabled)));
+    ::testing::Combine(
+        ::testing::Bool(),
+        ::testing::Values(PolicyTest::BooleanPolicy::kNotConfigured,
+                          PolicyTest::BooleanPolicy::kFalse,
+                          PolicyTest::BooleanPolicy::kTrue)));
 
 class OverridesPolicyAdditionBrowsertest : public EnabledPolicyBrowsertest {
  public:
@@ -315,10 +322,11 @@ IN_PROC_BROWSER_TEST_P(OverridesPolicyAdditionBrowsertest, CheckMemberships) {
 INSTANTIATE_TEST_SUITE_P(
     FirstPartySets,
     OverridesPolicyAdditionBrowsertest,
-    ::testing::Combine(::testing::Bool(),
-                       ::testing::Values(PrefState::kDefault,
-                                         PrefState::kDisabled,
-                                         PrefState::kEnabled)));
+    ::testing::Combine(
+        ::testing::Bool(),
+        ::testing::Values(PolicyTest::BooleanPolicy::kNotConfigured,
+                          PolicyTest::BooleanPolicy::kFalse,
+                          PolicyTest::BooleanPolicy::kTrue)));
 
 class OverridesPolicyReplacementAndAdditionBrowsertest
     : public EnabledPolicyBrowsertest {
@@ -360,9 +368,10 @@ IN_PROC_BROWSER_TEST_P(OverridesPolicyReplacementAndAdditionBrowsertest,
 INSTANTIATE_TEST_SUITE_P(
     FirstPartySets,
     OverridesPolicyReplacementAndAdditionBrowsertest,
-    ::testing::Combine(::testing::Bool(),
-                       ::testing::Values(PrefState::kDefault,
-                                         PrefState::kDisabled,
-                                         PrefState::kEnabled)));
+    ::testing::Combine(
+        ::testing::Bool(),
+        ::testing::Values(PolicyTest::BooleanPolicy::kNotConfigured,
+                          PolicyTest::BooleanPolicy::kFalse,
+                          PolicyTest::BooleanPolicy::kTrue)));
 }  // namespace
 }  // namespace policy
