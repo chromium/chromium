@@ -346,9 +346,9 @@ void BruschettaInstallerImpl::OnCreateVmDisk(
     install_running_ = false;
     Error(BruschettaInstallResult::kCreateDiskError);
     if (result) {
-      LOG(ERROR) << "Create VM failed: " << result->failure_reason();
+      LOG(ERROR) << "Create VM disk failed: " << result->failure_reason();
     } else {
-      LOG(ERROR) << "Create VM failed, no response";
+      LOG(ERROR) << "Create VM disk failed, no response";
     }
     return;
   }
