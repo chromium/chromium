@@ -7,7 +7,9 @@ package org.chromium.android_webview.test.services;
 import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PROCESS;
 
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 import android.os.Build;
+import android.os.ParcelFileDescriptor;
 
 import androidx.annotation.RequiresApi;
 import androidx.javascriptengine.EvaluationFailedException;
@@ -34,6 +36,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
@@ -322,6 +326,51 @@ public class JsSandboxServiceTest {
             String result = resultFuture1.get(5, TimeUnit.SECONDS);
 
             Assert.assertEquals(provideString, result);
+        }
+    }
+
+    @Test
+    @MediumTest
+    public void testEvaluateJSFileAsAfd() throws Throwable {
+        Context context = ContextUtils.getApplicationContext();
+        try (AssetFileDescriptor afd = context.getAssets().openFd("print_hello.js")) {
+            ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
+                    JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
+            try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS);
+                    JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
+                Assume.assumeTrue(jsSandbox.isFeatureSupported(
+                        JavaScriptSandbox.JS_FEATURE_EVALUATE_FROM_FD));
+                ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(afd);
+                String result = resultFuture.get(5, TimeUnit.SECONDS);
+                Assert.assertEquals("hello", result);
+            }
+        }
+    }
+
+    @Test
+    @MediumTest
+    public void testEvaluateJSFileAsPfd() throws Throwable {
+        Context context = ContextUtils.getApplicationContext();
+        String fileName = "test_print_hello.js";
+        String fileContent = "function hello() { return 'hello'; } hello();";
+        try (FileOutputStream fos = context.openFileOutput(fileName, Context.MODE_PRIVATE)) {
+            fos.write(fileContent.getBytes(StandardCharsets.UTF_8));
+            File jsFile = new File(context.getFilesDir(), fileName);
+            try (ParcelFileDescriptor pfd = ParcelFileDescriptor.open(
+                         jsFile, ParcelFileDescriptor.MODE_READ_ONLY)) {
+                ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
+                        JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
+                try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS);
+                        JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
+                    Assume.assumeTrue(jsSandbox.isFeatureSupported(
+                            JavaScriptSandbox.JS_FEATURE_EVALUATE_FROM_FD));
+                    ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(pfd);
+                    String result = resultFuture.get(5, TimeUnit.SECONDS);
+                    Assert.assertEquals("hello", result);
+                }
+            } finally {
+                jsFile.delete();
+            }
         }
     }
 
@@ -1230,9 +1279,7 @@ public class JsSandboxServiceTest {
             final ListenableFuture<String> resultFuture =
                     jsIsolate.evaluateJavaScriptAsync(JS_UNICODE_TEST_STRING);
             final String result = resultFuture.get(5, TimeUnit.SECONDS);
-
             Assert.assertEquals(UNICODE_TEST_STRING, result);
-
         }
     }
 

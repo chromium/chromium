@@ -60,8 +60,10 @@ class JsSandboxIsolate {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       const jint fd,
-      const jint length,
-      const base::android::JavaParamRef<jobject>& j_callback);
+      const jlong length,
+      const jlong offset,
+      const base::android::JavaParamRef<jobject>& j_callback,
+      const base::android::JavaParamRef<jobject>& pfd);
   void DestroyNative(JNIEnv* env,
                      const base::android::JavaParamRef<jobject>& obj);
   jboolean ProvideNamedData(JNIEnv* env,
@@ -96,6 +98,22 @@ class JsSandboxIsolate {
   void PostEvaluationToIsolateThread(
       const std::string code,
       scoped_refptr<JsSandboxIsolateCallback> callback);
+  void PostFileDescriptorReadToIsolateThread(
+      int fd,
+      int64_t length,
+      int64_t offset,
+      base::android::ScopedJavaGlobalRef<jobject> pfd,
+      scoped_refptr<JsSandboxIsolateCallback> callback);
+  void ReadFileDescriptorOnThread(
+      int fd,
+      int64_t length,
+      int64_t offset,
+      base::android::ScopedJavaGlobalRef<jobject> pfd,
+      scoped_refptr<JsSandboxIsolateCallback> callback);
+  void ReportFileDescriptorIOError(
+      base::android::ScopedJavaGlobalRef<jobject> pfd,
+      scoped_refptr<JsSandboxIsolateCallback> callback,
+      std::string errorMessage);
   void ConvertPromiseToArrayBufferInThreadPool(
       base::ScopedFD fd,
       ssize_t length,

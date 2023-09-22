@@ -208,6 +208,7 @@ android_resources("webview_instrumentation_apk_resources") {
 }
 
 android_assets("webview_instrumentation_apk_assets") {
+  disable_compression = true
   deps = [
     "//android_webview:pak_file_assets",
     "//gin:v8_snapshot_assets",
@@ -215,6 +216,8 @@ android_assets("webview_instrumentation_apk_assets") {
   ]
 
   sources = [
+    "../javatests/assets/print_hello.js",
+    "../javatests/assets/wrong_js.txt",
     "shell/assets/asset_file.html",
     "shell/assets/asset_icon.png",
     "shell/assets/autofill.html",

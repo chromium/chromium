@@ -44,6 +44,32 @@ void JsSandboxIsolateCallback::ReportResult(const std::string& result) {
   }
 }
 
+void JsSandboxIsolateCallback::ReportJsEvaluationError(
+    const std::string& error) {
+  ReportError(ErrorType::kJsEvaluationError, error);
+}
+
+void JsSandboxIsolateCallback::ReportFileDescriptorIOFailedError(
+    const std::string& error) {
+  ReportError(ErrorType::kFileDescriptorIOFailedError, error);
+}
+
+void JsSandboxIsolateCallback::ReportMemoryLimitExceededError(
+    const uint64_t memory_limit,
+    const uint64_t v8_heap_usage,
+    const uint64_t non_v8_heap_usage) {
+  std::ostringstream details;
+  details << "Memory limit exceeded.\n";
+  if (memory_limit > 0) {
+    details << "Memory limit: " << memory_limit << " bytes\n";
+  } else {
+    details << "Memory limit not explicitly configured\n";
+  }
+  details << "V8 heap usage: " << v8_heap_usage << " bytes\n";
+  details << "Non-V8 heap usage: " << non_v8_heap_usage << " bytes\n";
+  ReportError(ErrorType::kMemoryLimitExceeded, details.str());
+}
+
 void JsSandboxIsolateCallback::ReportError(const ErrorType error_type,
                                            const std::string& error) {
   JNIEnv* env = base::android::AttachCurrentThread();

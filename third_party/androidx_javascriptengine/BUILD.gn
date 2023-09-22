@@ -44,6 +44,7 @@ android_library("javascriptengine_java") {
     "src/main/java/androidx/javascriptengine/EvaluationFailedException.java",
     "src/main/java/androidx/javascriptengine/EvaluationResultSizeLimitExceededException.java",
     "src/main/java/androidx/javascriptengine/ExecutionErrorTypes.java",
+    "src/main/java/androidx/javascriptengine/FileDescriptorIOException.java",
     "src/main/java/androidx/javascriptengine/IsolateClosedState.java",
     "src/main/java/androidx/javascriptengine/IsolateStartupParameters.java",
     "src/main/java/androidx/javascriptengine/IsolateState.java",
@@ -56,6 +57,7 @@ android_library("javascriptengine_java") {
     "src/main/java/androidx/javascriptengine/MemoryLimitExceededException.java",
     "src/main/java/androidx/javascriptengine/SandboxDeadException.java",
     "src/main/java/androidx/javascriptengine/SandboxUnsupportedException.java",
+    "src/main/java/androidx/javascriptengine/StreamingFailedException.java",
     "src/main/java/androidx/javascriptengine/TerminationInfo.java",
   ]
 

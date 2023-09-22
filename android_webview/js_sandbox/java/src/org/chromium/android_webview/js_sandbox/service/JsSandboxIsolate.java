@@ -5,6 +5,7 @@
 package org.chromium.android_webview.js_sandbox.service;
 
 import android.content.res.AssetFileDescriptor;
+import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
 
 import androidx.javascriptengine.common.Utils;
@@ -19,6 +20,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 
+import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.annotation.concurrent.GuardedBy;
@@ -75,14 +77,15 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
             if (mJsSandboxIsolate == 0) {
                 throw new IllegalStateException("evaluateJavascript() called after close()");
             }
-            Utils.checkAssetFileDescriptor(afd);
+
+            Utils.checkAssetFileDescriptor(afd, /*allowUnknownLength=*/true);
             if (afd.getLength() > Integer.MAX_VALUE) {
                 throw new IllegalArgumentException("Evaluation code larger than "
                         + Integer.MAX_VALUE + " bytes not supported");
             }
             JsSandboxIsolateJni.get().evaluateJavascriptWithFd(mJsSandboxIsolate, this,
-                    afd.getParcelFileDescriptor().detachFd(), (int) afd.getLength(),
-                    new JsSandboxIsolateFdCallback(callback));
+                    afd.getParcelFileDescriptor().getFd(), afd.getLength(), afd.getStartOffset(),
+                    new JsSandboxIsolateFdCallback(callback), afd.getParcelFileDescriptor());
         }
     }
 
@@ -104,7 +107,8 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
                 throw new IllegalStateException(
                         "provideNamedData(String, AssetFileDescriptor) called after close()");
             }
-            Utils.checkAssetFileDescriptor(afd);
+
+            Utils.checkAssetFileDescriptor(afd, /*allowUnknownLength=*/false);
             if (afd.getLength() > Integer.MAX_VALUE) {
                 throw new IllegalArgumentException(
                         "Named data larger than " + Integer.MAX_VALUE + " bytes not supported");
@@ -167,6 +171,29 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
         }
     }
 
+    // Checks for errors thrown by client side while reading the stream and closes the Pfd.
+    @CalledByNative
+    private static String checkStreamingErrorAndClosePfd(ParcelFileDescriptor pfd) {
+        try {
+            if (pfd.canDetectErrors()) {
+                try {
+                    pfd.checkError();
+                } catch (IOException e) {
+                    // This streaming error would have already been thrown on the client side.
+                    return e.toString();
+                }
+            }
+        } finally {
+            try {
+                pfd.close();
+            } catch (IOException e) {
+                Log.e(TAG, "could not close Pfd", e);
+            }
+        }
+        // Either Pfd is not associated with a reliablePipe or remote-side has no errors to report
+        return null;
+    }
+
     @Override
     public void setConsoleCallback(IJsSandboxConsoleCallback callback) {
         synchronized (mLock) {
@@ -220,7 +247,8 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
                 String script, JsSandboxIsolateCallback callback);
 
         boolean evaluateJavascriptWithFd(long nativeJsSandboxIsolate, JsSandboxIsolate caller,
-                int fd, int length, JsSandboxIsolateFdCallback callback);
+                int fd, long length, long offset, JsSandboxIsolateFdCallback callback,
+                ParcelFileDescriptor pfd);
 
         boolean provideNamedData(long nativeJsSandboxIsolate, JsSandboxIsolate caller, String name,
                 int fd, int length);

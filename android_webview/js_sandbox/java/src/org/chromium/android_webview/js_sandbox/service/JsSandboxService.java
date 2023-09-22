@@ -27,7 +27,10 @@ public class JsSandboxService extends Service {
             IJsSandboxService.ISOLATE_TERMINATION, IJsSandboxService.WASM_FROM_ARRAY_BUFFER,
             IJsSandboxService.ISOLATE_MAX_HEAP_SIZE_LIMIT,
             IJsSandboxService.EVALUATE_WITHOUT_TRANSACTION_LIMIT,
-            IJsSandboxService.CONSOLE_MESSAGING, IJsSandboxService.ISOLATE_CLIENT + ":DEV");
+            IJsSandboxService.CONSOLE_MESSAGING, IJsSandboxService.ISOLATE_CLIENT + ":DEV",
+            IJsSandboxService.CONSOLE_MESSAGING,
+            // Temporarily adding :DEV suffix here for this feature flag
+            IJsSandboxService.EVALUATE_FROM_FD + ":DEV");
 
     /**
      * Feature for {@link #isClientSideFeatureSupported(String)}.

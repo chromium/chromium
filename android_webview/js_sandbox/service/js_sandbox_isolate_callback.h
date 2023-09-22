@@ -19,6 +19,7 @@ class JsSandboxIsolateCallback final
   enum class ErrorType {
     kJsEvaluationError = 0,
     kMemoryLimitExceeded = 1,
+    kFileDescriptorIOFailedError = 2,
   };
 
   explicit JsSandboxIsolateCallback(
@@ -29,6 +30,18 @@ class JsSandboxIsolateCallback final
 
   void ReportResult(const std::string& result);
   void ReportError(ErrorType error_type, const std::string& error);
+  void ReportJsEvaluationError(const std::string& error);
+  void ReportFileDescriptorIOFailedError(const std::string& error);
+  // Report that the isolate has exceeded its memory limit, with various stats.
+  //
+  // memory_limit == 0 indicates that no explicit limit was configured.
+  //
+  // v8_heap_usage describes V8-internal (V8 heap) memory usage before the
+  // failed allocation. non_v8_heap_usage describes memory usage external to the
+  // V8 heap.
+  void ReportMemoryLimitExceededError(uint64_t memory_limit,
+                                      uint64_t v8_heap_usage,
+                                      uint64_t non_v8_heap_usage);
 
  private:
   friend class base::RefCounted<JsSandboxIsolateCallback>;

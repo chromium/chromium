@@ -4,8 +4,10 @@
 
 #include "android_webview/js_sandbox/service/js_sandbox_isolate.h"
 
+#include <errno.h>
 #include <unistd.h>
 #include <algorithm>
+#include <cstddef>
 #include <memory>
 #include <set>
 #include <string>
@@ -26,6 +28,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_math.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
@@ -57,9 +61,12 @@ using base::android::JavaParamRef;
 using base::android::JavaRef;
 
 namespace {
+
 // TODO(crbug.com/1297672): This is what shows up as filename in errors. Revisit
 // this once error handling is in place.
 constexpr base::StringPiece resource_name = "<expression>";
+constexpr jlong kUnknownAssetFileDescriptorLength = -1;
+constexpr int64_t kDefaultChunkSize = 1 << 16;
 
 size_t GetAllocatePageSize() {
   return gin::V8Platform::Get()->GetPageAllocator()->AllocatePageSize();
@@ -79,6 +86,54 @@ size_t AdjustToValidHeapSize(const size_t heap_size_bytes) {
   } else {
     return max_supported_heap_size;
   }
+}
+
+// Reads content of an Fd from current position to EOF
+// Returns true iff success
+// Returns false on failure and sets errno
+bool ReadFdToStringTillEof(int fd, std::string& contents) {
+  contents.clear();
+  char temp_buffer[kDefaultChunkSize];
+  int64_t bytes_read_this_pass;
+
+  while ((bytes_read_this_pass =
+              HANDLE_EINTR(read(fd, temp_buffer, kDefaultChunkSize))) > 0) {
+    contents.append(temp_buffer, 0, bytes_read_this_pass);
+  }
+
+  if (bytes_read_this_pass == -1) {
+    contents.clear();
+    return false;
+  }
+
+  contents.shrink_to_fit();
+  return true;
+}
+
+// Skip bytes in case lseek fails
+// Returns -1 on read failure and sets errno
+// Otherwise returns number of bytes read, including cases where eof is reached
+// early and less than expected bytes are read.
+int64_t ReadBytesFromFdAndDiscard(int fd, int64_t bytes_to_read) {
+  int64_t bytes_read_this_pass;
+  int64_t bytes_read_so_far = 0;
+  char local_contents[kDefaultChunkSize];
+
+  while (bytes_read_so_far < bytes_to_read) {
+    bytes_read_this_pass = HANDLE_EINTR(
+        read(fd, &local_contents[0],
+             std::min(bytes_to_read - bytes_read_so_far, kDefaultChunkSize)));
+
+    if (bytes_read_this_pass == -1) {
+      return -1;
+    } else if (bytes_read_this_pass == 0) {
+      // eof is reached early
+      return bytes_read_so_far;
+    }
+    bytes_read_so_far += bytes_read_this_pass;
+  }
+
+  return bytes_read_so_far;
 }
 
 v8::Local<v8::String> GetSourceLine(v8::Isolate* isolate,
@@ -310,25 +365,27 @@ jboolean JsSandboxIsolate::EvaluateJavascript(
 }
 
 // Called from Binder thread.
-// Refer to comment above EvaluateJavascript method.
+// Refer to comment above EvaluateJavascript method. In addition, this method
+// checks for streaming failures.
 jboolean JsSandboxIsolate::EvaluateJavascriptWithFd(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
     const jint fd,
-    const jint length,
-    const base::android::JavaParamRef<jobject>& j_callback) {
-  base::ScopedFD scoped_fd(fd);
-  std::string code;
-  code.resize(length);
-  CHECK(base::ReadFromFD(scoped_fd.get(), &code[0], length));
+    const jlong length,
+    const jlong offset,
+    const base::android::JavaParamRef<jobject>& j_callback,
+    const base::android::JavaParamRef<jobject>& j_pfd) {
   scoped_refptr<JsSandboxIsolateCallback> callback =
       base::MakeRefCounted<JsSandboxIsolateCallback>(
           base::android::ScopedJavaGlobalRef(j_callback), true);
+
   control_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&JsSandboxIsolate::PostEvaluationToIsolateThread,
-                     base::Unretained(this), std::move(code),
+      base::BindOnce(&JsSandboxIsolate::PostFileDescriptorReadToIsolateThread,
+                     base::Unretained(this), fd, length, offset,
+                     base::android::ScopedJavaGlobalRef(j_pfd),
                      std::move(callback)));
+
   return true;
 }
 
@@ -374,6 +431,20 @@ void JsSandboxIsolate::PostEvaluationToIsolateThread(
       isolate_task_runner_.get(), FROM_HERE,
       base::BindOnce(&JsSandboxIsolate::EvaluateJavascriptOnThread,
                      base::Unretained(this), std::move(code),
+                     std::move(callback)));
+}
+
+// Called from control sequence
+void JsSandboxIsolate::PostFileDescriptorReadToIsolateThread(
+    int fd,
+    int64_t length,
+    int64_t offset,
+    base::android::ScopedJavaGlobalRef<jobject> pfd,
+    scoped_refptr<JsSandboxIsolateCallback> callback) {
+  cancelable_task_tracker_->PostTask(
+      isolate_task_runner_.get(), FROM_HERE,
+      base::BindOnce(&JsSandboxIsolate::ReadFileDescriptorOnThread,
+                     base::Unretained(this), fd, length, offset, std::move(pfd),
                      std::move(callback)));
 }
 
@@ -483,6 +554,92 @@ v8::Local<v8::ObjectTemplate> JsSandboxIsolate::CreateAndroidNamespaceTemplate(
                               base::Unretained(this))));
   android_namespace_template->Set(isolate, "android", consume_template);
   return android_namespace_template;
+}
+
+// Called from isolate thread.
+void JsSandboxIsolate::ReadFileDescriptorOnThread(
+    int fd,
+    int64_t length,
+    int64_t offset,
+    base::android::ScopedJavaGlobalRef<jobject> pfd,
+    scoped_refptr<JsSandboxIsolateCallback> callback) {
+  std::string code;
+
+  if (lseek64(fd, offset, SEEK_SET) == -1) {
+    if (errno != ESPIPE) {
+      ReportFileDescriptorIOError(
+          std::move(pfd), std::move(callback),
+          base::StrCat({"Could not seek to offset: ", strerror(errno)}));
+      return;
+    } else {
+      // Just read these bytes and discard
+      int64_t bytes_read = ReadBytesFromFdAndDiscard(fd, offset);
+      if (bytes_read == -1) {
+        ReportFileDescriptorIOError(
+            std::move(pfd), std::move(callback),
+            base::StrCat({"Could not skip to offset: ", strerror(errno)}));
+        return;
+      } else if (bytes_read != offset) {
+        ReportFileDescriptorIOError(
+            std::move(pfd), std::move(callback),
+            base::StrCat({"Short read, could only read ",
+                          base::NumberToString(bytes_read), " bytes"}));
+        return;
+      }
+    }
+  }
+
+  if (length >= 0) {
+    code.resize(length);
+    if (!base::ReadFromFD(fd, &code[0], length)) {
+      ReportFileDescriptorIOError(std::move(pfd), std::move(callback),
+                                  "Failed to read data from file descriptor");
+      return;
+    }
+  } else if (length == kUnknownAssetFileDescriptorLength) {
+    if (!ReadFdToStringTillEof(fd, code)) {
+      ReportFileDescriptorIOError(
+          std::move(pfd), std::move(callback),
+          base::StrCat({"Failed to read data till EOF: ", strerror(errno)}));
+      return;
+    }
+  }
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+
+  // check for error on the client side irrespective of errorCode
+  base::android::ScopedJavaLocalRef<jstring> error =
+      android_webview::Java_JsSandboxIsolate_checkStreamingErrorAndClosePfd(
+          env, pfd);
+
+  if (error) {
+    callback->ReportFileDescriptorIOFailedError(
+        base::StrCat({"Failed to read data from file descriptor: ",
+                      ConvertJavaStringToUTF8(env, error)}));
+    return;
+  }
+
+  // no error reported, proceed for evaluation
+  EvaluateJavascriptOnThread(std::move(code), std::move(callback));
+}
+
+void JsSandboxIsolate::ReportFileDescriptorIOError(
+    base::android::ScopedJavaGlobalRef<jobject> pfd,
+    scoped_refptr<JsSandboxIsolateCallback> callback,
+    std::string errorMessage) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+
+  // check for error on the client side irrespective of errorCode
+  base::android::ScopedJavaLocalRef<jstring> error =
+      android_webview::Java_JsSandboxIsolate_checkStreamingErrorAndClosePfd(
+          env, pfd);
+
+  if (error) {
+    errorMessage += base::StrCat(
+        {"; Application sent error: ", ConvertJavaStringToUTF8(env, error)});
+  }
+
+  callback->ReportFileDescriptorIOFailedError(errorMessage);
 }
 
 // Called from isolate thread.

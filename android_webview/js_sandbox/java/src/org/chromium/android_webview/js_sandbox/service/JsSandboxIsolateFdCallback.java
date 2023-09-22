@@ -51,7 +51,7 @@ public class JsSandboxIsolateFdCallback {
      *
      * @param errorType See
      *                  {@link
-     *                  org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolateCallback}
+     *                  org.chromium.android_webview.js_sandbox.common.IJsSandboxIsolateSyncCallback}
      * for error types.
      * @param fd        The fd to which the description of the error is written into.
      * @param length    Number of bytes written into the fd.
