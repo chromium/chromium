@@ -31,7 +31,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/pe_image.h"
 #include "base/win/win_util.h"
@@ -188,7 +187,7 @@ extern "C" HANDLE __declspec(dllexport) __cdecl InjectDumpForHungInput(
 std::wstring GetProfileType() {
   DWORD profile_bits = 0;
   if (!::GetProfileType(&profile_bits)) {
-    return base::StringPrintf(L"error %u", ::GetLastError());
+    return L"error " + base::NumberToWString(::GetLastError());
   }
 
   std::wstring profile_type;

@@ -20,10 +20,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_number_conversions_win.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -515,14 +516,14 @@ void __stdcall NetworkFetcher::WinHttpStatusCallback(HINTERNET handle,
     case WINHTTP_CALLBACK_STATUS_DATA_AVAILABLE:
       status_string = "data available";
       DCHECK_EQ(info_len, sizeof(uint32_t));
-      info_string = base::StringPrintf(L"%lu", *static_cast<uint32_t*>(info));
+      info_string = base::NumberToWString(*static_cast<uint32_t*>(info));
       break;
     case WINHTTP_CALLBACK_STATUS_HEADERS_AVAILABLE:
       status_string = "headers available";
       break;
     case WINHTTP_CALLBACK_STATUS_READ_COMPLETE:
       status_string = "read complete";
-      info_string = base::StringPrintf(L"%lu", info_len);
+      info_string = base::NumberToWString(info_len);
       break;
     case WINHTTP_CALLBACK_STATUS_SENDREQUEST_COMPLETE:
       status_string = "send request complete";
@@ -537,7 +538,8 @@ void __stdcall NetworkFetcher::WinHttpStatusCallback(HINTERNET handle,
       status_string = "https failure";
       DCHECK(info);
       DCHECK_EQ(info_len, sizeof(uint32_t));
-      info_string = base::StringPrintf(L"%#x", *static_cast<uint32_t*>(info));
+      info_string = base::ASCIIToWide(
+          base::StringPrintf("%#x", *static_cast<uint32_t*>(info)));
       break;
     default:
       status_string = "unknown callback";
