@@ -46,6 +46,24 @@
   DEFINE_CUSTOM_PROTO_CROSSOVER_IMPL(use_binary, FuzzerProtoType) \
   DEFINE_POST_PROCESS_PROTO_MUTATION_IMPL(FuzzerProtoType)
 
+namespace {
+ui::ElementTracker::ElementList GetTargetableEvents() {
+  // Only views can be targeted by clicks or mouse drag.
+  // See ui/views/interaction/interactive_views_test.cc:330.
+  auto elements =
+      ui::ElementTracker::GetElementTracker()->GetAllElementsForTesting();
+  elements.erase(std::remove_if(elements.begin(), elements.end(), [](auto* e1) {
+    // We must ensure to never select `kInteractiveTestPivotElementId` because
+    // it is an internal element of the interactive test framework. Selecting it
+    // will likely result in asserting in the framework.
+    return !e1->template IsA<views::TrackedElementViews>() ||
+           e1->identifier() ==
+               ui::test::internal::kInteractiveTestPivotElementId;
+  }));
+  return elements;
+}
+}  // namespace
+
 KombuchaInProcessFuzzer::KombuchaInProcessFuzzer() = default;
 KombuchaInProcessFuzzer::~KombuchaInProcessFuzzer() = default;
 
@@ -159,22 +177,11 @@ int KombuchaInProcessFuzzer::Fuzz(const uint8_t* data, size_t size) {
       case test::fuzzing::ui_fuzzing::Step::kClickAt: {
         int target = step.click_at().target();
         AddStep(input_buffer,
-                NameElement(
-                    TargetName, base::BindLambdaForTesting([target]() {
-                      auto elements = ui::ElementTracker::GetElementTracker()
-                                          ->GetAllElementsForTesting();
-                      auto* choice = elements[target % elements.size()];
-                      // TODO(xrosado) Make sure we don't ever select this
-                      // element in the first place
-                      // Check if we chose the internal test element
-                      // This isn't a valid element, so we have to ignore it.
-                      if (choice->identifier() ==
-                          ui::test::internal::kInteractiveTestPivotElementId) {
-                        choice = elements[(target - 1) % elements.size()];
-                      }
-
-                      return choice;
-                    })));
+                NameElement(TargetName, base::BindLambdaForTesting([target]() {
+                              auto elements = GetTargetableEvents();
+                              auto* choice = elements[target % elements.size()];
+                              return choice;
+                            })));
 
         AddStep(input_buffer,
                 Steps(step.click_at().right_click() ? ClickRight(TargetName)
@@ -188,20 +195,17 @@ int KombuchaInProcessFuzzer::Fuzz(const uint8_t* data, size_t size) {
         int dest = step.drag_from_to().dest();
         AddStep(input_buffer,
                 NameElement(TargetName, base::BindLambdaForTesting([source]() {
-                              auto elements =
-                                  ui::ElementTracker::GetElementTracker()
-                                      ->GetAllElementsForTesting();
+                              auto elements = GetTargetableEvents();
                               auto* choice = elements[source % elements.size()];
                               return choice;
                             })));
-        AddStep(input_buffer,
-                NameElement(
-                    OtherTargetName, base::BindLambdaForTesting([dest]() {
-                      auto elements = ui::ElementTracker::GetElementTracker()
-                                          ->GetAllElementsForTesting();
-                      auto* choice = elements[dest % elements.size()];
-                      return choice;
-                    })));
+        AddStep(
+            input_buffer,
+            NameElement(OtherTargetName, base::BindLambdaForTesting([dest]() {
+                          auto elements = GetTargetableEvents();
+                          auto* choice = elements[dest % elements.size()];
+                          return choice;
+                        })));
         AddStep(input_buffer, DragFromTo(TargetName, OtherTargetName));
         AddStep(input_buffer, Log("[KOMB] Added DragFromTo"));
         break;
