@@ -77,7 +77,7 @@ PathLengthDepthAndHash GetUrlPathLengthDepthAndHash(const GURL& target_url) {
   int64_t path_depth = std::min(num_slashes, static_cast<int64_t>(5));
 
   // 10-bucket hash of the URL's path.
-  uint32_t hash = base::PersistentHash(path.data(), path.length());
+  uint32_t hash = base::PersistentHash(path);
   hash = hash % 10;
   return {path_length, path_depth, hash};
 }

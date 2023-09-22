@@ -340,7 +340,7 @@ absl::optional<uint32_t> GoogleUpdateSettings::GetHashedCohortId() {
     // to interpret it.
     return absl::nullopt;
   }
-  return base::PersistentHash(id_utf8.c_str(), last_colon);
+  return base::PersistentHash(std::string_view(id_utf8.c_str(), last_colon));
 }
 
 void GoogleUpdateSettings::StoreMetricsClientInfo(

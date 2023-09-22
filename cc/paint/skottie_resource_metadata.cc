@@ -63,7 +63,7 @@ bool SkottieResourceMetadataMap::RegisterAsset(base::StringPiece resource_path,
 
 SkottieResourceIdHash HashSkottieResourceId(base::StringPiece resource_id) {
   return SkottieResourceIdHash::FromUnsafeValue(
-      base::PersistentHash(resource_id.data(), resource_id.length()));
+      base::PersistentHash(resource_id));
 }
 
 }  // namespace cc

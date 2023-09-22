@@ -529,7 +529,7 @@ Status StorageQueue::ScanLastFile() {
     }
     // Verify record hash.
     uint32_t actual_record_hash = base::PersistentHash(
-        read_result.ValueOrDie().data(), header.record_size);
+        read_result.ValueOrDie().substr(0, header.record_size));
     if (header.record_hash != actual_record_hash) {
       LOG(ERROR) << "Hash mismatch, seq=" << header.record_sequencing_id
                  << " actual_hash=" << std::hex << actual_record_hash
@@ -617,7 +617,7 @@ Status StorageQueue::WriteHeaderAndBlock(
       RoundUpToFrameSize(RecordHeader::kSize + data.size());
   // Assign sequencing id.
   header.record_sequencing_id = next_sequencing_id_++;
-  header.record_hash = base::PersistentHash(data.data(), data.size());
+  header.record_hash = base::PersistentHash(data);
   header.record_size = data.size();
   // Store last record digest.
   last_record_digest_.emplace(current_record_digest);
@@ -1306,7 +1306,7 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
     }
     // Verify record hash.
     uint32_t actual_record_hash = base::PersistentHash(
-        read_result.ValueOrDie().data(), header.record_size);
+        read_result.ValueOrDie().substr(0, header.record_size));
     if (header.record_hash != actual_record_hash) {
       return Status(
           error::INTERNAL,

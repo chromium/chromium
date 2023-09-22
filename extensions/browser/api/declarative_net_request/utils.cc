@@ -126,7 +126,7 @@ int GetChecksum(base::span<const uint8_t> data) {
   if (g_override_checksum_for_test != kInvalidOverrideChecksumForTest)
     return g_override_checksum_for_test;
 
-  uint32_t hash = base::PersistentHash(data.data(), data.size());
+  uint32_t hash = base::PersistentHash(data);
 
   // Strip off the sign bit since this needs to be persisted in preferences
   // which don't support unsigned ints.

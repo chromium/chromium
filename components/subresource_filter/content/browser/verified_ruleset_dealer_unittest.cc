@@ -340,9 +340,7 @@ TEST_F(SubresourceFilterVerifiedRulesetDealerTest,
 // the corrupted file is detected as invalid.
 TEST_F(SubresourceFilterVerifiedRulesetDealerTest,
        OpenAndSetRulesetFileInvalidChecksum) {
-  int expected_checksum =
-      base::PersistentHash(&(rulesets().indexed_1().contents[0]),
-                           rulesets().indexed_1().contents.size());
+  int expected_checksum = base::PersistentHash(rulesets().indexed_1().contents);
   // See also SubresourceFilterBrowserTest.InvalidRuleset_Checksum, corrupting
   // in this manner doesn't invalidate the Flatbuffer Verifier check.
   testing::TestRuleset::CorruptByFilling(rulesets().indexed_1(), 28246, 28247,

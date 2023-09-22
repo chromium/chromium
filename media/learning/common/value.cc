@@ -4,8 +4,6 @@
 
 #include "media/learning/common/value.h"
 
-#include <cstring>
-
 #include "base/hash/hash.h"
 
 namespace media {
@@ -18,7 +16,7 @@ Value::Value(const char* x) {
   // different instances of the class.  In other words, Value("foo") !=
   // Value("foo") necessarily.
   if (x)
-    value_ = base::PersistentHash(x, strlen(x));
+    value_ = base::PersistentHash(x);
 }
 
 Value::Value(const std::string& x) : value_(base::PersistentHash(x)) {}
