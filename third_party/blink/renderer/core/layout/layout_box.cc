@@ -4655,6 +4655,17 @@ const NGBoxStrut& LayoutBox::OutOfFlowInsetsForGetComputedStyle() const {
   return GetLayoutResults().front()->OutOfFlowInsetsForGetComputedStyle();
 }
 
+bool LayoutBox::UsesPositionFallbackStyle() const {
+  if (!IsOutOfFlowPositioned()) {
+    return false;
+  }
+  if (StyleRef().PositionFallback()) {
+    return true;
+  }
+  // TODO(crbug.com/1475321): Return true for the new auto fallback syntax.
+  return false;
+}
+
 WritingModeConverter LayoutBox::CreateWritingModeConverter() const {
   return WritingModeConverter({Style()->GetWritingMode(), TextDirection::kLtr},
                               Size());
