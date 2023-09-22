@@ -570,7 +570,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tutorial.TabGroup.EditedTitle" enum="BooleanSuccess"
-    expires_after="2023-09-24">
+    expires_after="2024-09-20">
   <owner>dpenning@chromium.org</owner>
   <owner>dfried@chromium.org</owner>
   <summary>
@@ -616,7 +616,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tutorial{TutorialID}.StartedFromWhatsNewPage"
-    enum="BooleanSuccess" expires_after="2023-12-31">
+    enum="BooleanSuccess" expires_after="2024-09-20">
   <owner>dpenning@chromium.org</owner>
   <owner>dfried@chromium.org</owner>
   <summary>
