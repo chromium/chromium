@@ -5,18 +5,26 @@
 #ifndef CHROME_BROWSER_TPCD_EXPERIMENT_EXPERIMENT_MANAGER_H_
 #define CHROME_BROWSER_TPCD_EXPERIMENT_EXPERIMENT_MANAGER_H_
 
+#include "base/no_destructor.h"
+
 namespace tpcd::experiment {
 
 class ExperimentManager {
  public:
-  ExperimentManager() = default;
+  static ExperimentManager* GetInstance();
 
   // Called by EligibilityService to tell the manager whether a profile is
   // eligible. Mode B also needs to know whether the profile has been onboarded
   // to the 3PCD UX, but Mode A does not.
   void SetClientEligibility(bool is_eligible, bool is_onboarded = false);
 
+ protected:
+  ExperimentManager();
+  ~ExperimentManager() = default;
+
  private:
+  friend base::NoDestructor<ExperimentManager>;
+
   // Mode B experiment will need to register the client for the synthetic trial
   // IFF the client is eligible and onboarded (TCPDExperimentState ==
   // kOnboardedEligible). Register the client for the correct arm of the

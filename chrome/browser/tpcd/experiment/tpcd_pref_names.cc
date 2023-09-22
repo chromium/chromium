@@ -12,6 +12,8 @@ namespace prefs {
 
 // Local State Prefs
 const char kTPCDExperimentClientState[] = "tpcd_experiment.client_state";
+const char kTPCDExperimentClientStateVersion[] =
+    "tpcd_experiment.client_state_version";
 
 // Profile Prefs
 const char kTPCDExperimentProfileState[] = "tpcd_experiment.profile_state";
@@ -22,6 +24,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kTPCDExperimentClientState,
       static_cast<int>(utils::ExperimentState::kUnknownEligiblity));
+  registry->RegisterIntegerPref(prefs::kTPCDExperimentClientStateVersion, 0);
 }
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {

@@ -11,6 +11,11 @@
 
 namespace tpcd::experiment {
 
+// Set the version of the experiment finch config.
+const base::FeatureParam<int> kVersion{
+    &features::kCookieDeprecationFacilitatedTesting, /*name=*/"version",
+    /*default_value=*/0};
+
 // Set which experiment cohort a user is assigned to ("modea", "modeb",
 // "modebprime", "control", etc.).
 const base::FeatureParam<std::string> kCohort{

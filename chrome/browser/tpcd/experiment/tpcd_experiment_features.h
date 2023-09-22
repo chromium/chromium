@@ -11,6 +11,7 @@
 
 namespace tpcd::experiment {
 
+extern const base::FeatureParam<int> kVersion;
 extern const base::FeatureParam<std::string> kCohort;
 extern const base::FeatureParam<bool> kDisable3PCookies;
 extern const base::FeatureParam<bool> kDisableAdsAPIs;

@@ -15,6 +15,10 @@ namespace prefs {
 // pref) is in. Refer to |ExperimentState|
 extern const char kTPCDExperimentClientState[];
 
+// Integer that indicates the experiment state version the client (i.e. local
+// state pref) is in.
+extern const char kTPCDExperimentClientStateVersion[];
+
 // Boolean that indicates the experiment eligibility for the profile (i.e.
 // profile pref).
 extern const char kTPCDExperimentProfileState[];
