@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 680 tests; 664 PASS, 16 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 687 tests; 664 PASS, 23 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS background-attachment: scroll
 PASS background-attachment: fixed
 PASS background-attachment: inherit
@@ -325,6 +325,13 @@ PASS content: counter(par-num, decimal)
 PASS content: counter(par-num, upper-roman)
 PASS content: attr(foo-bar)
 PASS content: attr(foo_bar)
+FAIL content: attr(|bar) assert_equals: content raw inline style declaration expected "attr(bar)" but got ""
+FAIL content: attr( |bar ) assert_equals: content raw inline style declaration expected "attr(bar)" but got ""
+FAIL content: attr(foo-bar, "fallback") assert_equals: content raw inline style declaration expected "attr(foo-bar, \"fallback\")" but got ""
+FAIL content: attr(foo_bar, "fallback") assert_equals: content raw inline style declaration expected "attr(foo_bar, \"fallback\")" but got ""
+FAIL content: attr(|bar, "fallback") assert_equals: content raw inline style declaration expected "attr(bar, \"fallback\")" but got ""
+FAIL content: attr(foo, "") assert_equals: content raw inline style declaration expected "attr(foo)" but got ""
+FAIL content: attr( |foo ,  "" ) assert_equals: content raw inline style declaration expected "attr(foo)" but got ""
 PASS content: inherit
 PASS cursor: auto
 PASS cursor: crosshair
