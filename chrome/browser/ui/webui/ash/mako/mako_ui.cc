@@ -21,6 +21,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
+#include "net/base/url_util.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -199,22 +200,55 @@ void MakoPageHandler::ShowConsentUI(Profile* profile) {
       ->Show();
 }
 
+void MakoPageHandler::ShowWriteUI(Profile* profile) {
+  ShowEditorUI(
+      net::AppendOrReplaceQueryParameter(GURL(kChromeUIMakoOrcaURL),
+                                         kOrcaModeParamKey, kOrcaWriteMode),
+      profile);
+}
+
 void MakoPageHandler::ShowRewriteUI(Profile* profile) {
+  ShowEditorUI(
+      net::AppendOrReplaceQueryParameter(GURL(kChromeUIMakoOrcaURL),
+                                         kOrcaModeParamKey, kOrcaRewriteMode),
+      profile);
+}
+
+void MakoPageHandler::ShowRewriteUIFromPreset(Profile* profile,
+                                              std::string_view text_query_id) {
+  GURL url = net::AppendOrReplaceQueryParameter(
+      GURL(kChromeUIMakoOrcaURL), kOrcaModeParamKey, kOrcaRewriteMode);
+  ShowEditorUI(net::AppendOrReplaceQueryParameter(url, kOrcaPresetParamKey,
+                                                  text_query_id),
+               profile);
+}
+
+void MakoPageHandler::ShowRewriteUIFromFreeform(Profile* profile,
+                                                std::string_view text) {
+  GURL url = net::AppendOrReplaceQueryParameter(
+      GURL(kChromeUIMakoOrcaURL), kOrcaModeParamKey, kOrcaRewriteMode);
+  ShowEditorUI(
+      net::AppendOrReplaceQueryParameter(url, kOrcaPresetParamKey, text),
+      profile);
+}
+
+void MakoPageHandler::ShowEditorUI(const GURL& url,
+                                   content::BrowserContext* browser_context) {
   if (contents_wrapper_ != nullptr) {
-    // If switching to the rewrite UI (e.g. from consent UI to rewrite UI),
-    // close the current contents and use the cached caret bounds.
+    // If switching contents (e.g. from consent UI to rewrite UI), close the
+    // current contents and use the cached caret bounds.
     contents_wrapper_->CloseUI();
     CHECK(caret_bounds_.has_value());
   } else if (const auto* text_input_client = GetTextInputClient()) {
     // Otherwise, try to get the caret bounds from the text input client.
     caret_bounds_ = text_input_client->GetCaretBounds();
   } else {
-    // Otherwise, don't show the rewrite UI.
+    // Otherwise, don't show mako UI.
     return;
   }
 
   contents_wrapper_ = std::make_unique<BubbleContentsWrapperT<MakoUntrustedUI>>(
-      GURL(kChromeUIMakoOrcaURL), profile, kMakoTaskManagerStringID);
+      url, browser_context, kMakoTaskManagerStringID);
   contents_wrapper_->ReloadWebContents();
   views::BubbleDialogDelegateView::CreateBubble(
       std::make_unique<MakoRewriteView>(contents_wrapper_.get(),

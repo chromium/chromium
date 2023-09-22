@@ -32,7 +32,6 @@ class MakoUntrustedUIConfig : public content::WebUIConfig {
 // The WebUI for chrome://mako
 class MakoUntrustedUI : public ui::UntrustedBubbleWebUIController {
  public:
-  static void Show(Profile* profile);
   explicit MakoUntrustedUI(content::WebUI* web_ui);
   ~MakoUntrustedUI() override;
 
@@ -50,13 +49,17 @@ class MakoPageHandler {
   MakoPageHandler& operator=(const MakoPageHandler&) = delete;
   ~MakoPageHandler();
 
-  // TODO(b/300554470): Add parameters to specify when the WebUI is being opened
-  // via a preset text query.
   void ShowConsentUI(Profile* profile);
+  void ShowWriteUI(Profile* profile);
   void ShowRewriteUI(Profile* profile);
+  void ShowRewriteUIFromPreset(Profile* profile,
+                               std::string_view text_query_id);
+  void ShowRewriteUIFromFreeform(Profile* profile, std::string_view text);
   void CloseUI();
 
  private:
+  void ShowEditorUI(const GURL& url, content::BrowserContext* browser_context);
+
   // Cached caret bounds to use as the mako UI anchor when there is no text
   // input client (e.g. if focus is not regained after switching from the
   // consent UI to the rewrite UI).
