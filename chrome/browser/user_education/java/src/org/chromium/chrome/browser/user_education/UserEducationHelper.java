@@ -46,6 +46,8 @@ public class UserEducationHelper {
     private final Handler mHandler;
 
     public UserEducationHelper(Activity activity, Handler handler) {
+        assert activity != null : "Trying to show an IPH for a null activity.";
+
         mActivity = activity;
         mHandler = handler;
     }
@@ -73,7 +75,8 @@ public class UserEducationHelper {
     private void showIPH(Tracker tracker, IPHCommand iphCommand) {
         // Activity was destroyed; don't show IPH.
         View anchorView = iphCommand.anchorView;
-        if (mActivity.isFinishing() || mActivity.isDestroyed() || anchorView == null) {
+        if (mActivity == null || mActivity.isFinishing() || mActivity.isDestroyed()
+                || anchorView == null) {
             iphCommand.onBlockedCallback.run();
             return;
         }
