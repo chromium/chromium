@@ -38,6 +38,14 @@
                     android:layout_height="wrap_content"
                     >
 
+                    <com.zpj.widget.setting.CommonSettingItem
+                        android:id="@+id/item_web_limit_policy"
+                        style="@style/setting_item_style"
+                        app:z_setting_titleText="网页保活策略"
+                        app:z_setting_infoText="默认"
+                        app:z_setting_leftIcon="@drawable/ic_h5"
+                        />
+
                     <com.ark.browser.ui.widget.TintSettingItem
                         android:id="@+id/item_all_sites"
                         style="@style/setting_item_style"

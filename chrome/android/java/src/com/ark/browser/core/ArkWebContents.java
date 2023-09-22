@@ -84,9 +84,12 @@ public class ArkWebContents {
 
     EventLiveData<List<String>> imagesLiveData;
 
+    private long mLastVisitTime;
+
     public ArkWebContents(PageInfo pageInfo, @NonNull WebContents webContents) {
         mPageInfo = pageInfo;
         mWebContents = webContents;
+        mLastVisitTime = System.nanoTime();
         if (mWebContents instanceof WebContentsImpl) {
             ((WebContentsImpl) mWebContents).setObserverFactory(new ObserverProxyFactory() {
                 @Override
@@ -352,8 +355,9 @@ public class ArkWebContents {
     }
 
     public void attach(ArkTabImpl tab) {
+        mLastVisitTime = System.nanoTime();
         ArkLogger.e(this, "attach pageInfo=" + mPageInfo);
-        setImportance(ChildProcessImportance.MODERATE);
+        setImportance(ChildProcessImportance.IMPORTANT);
         ContentView cv = tab.getContentView();
         if (cv == null) {
             mWebContents.setOverscrollRefreshHandler(null);
@@ -383,12 +387,17 @@ public class ArkWebContents {
         mWebContents.setViewAndroidDelegate(ViewAndroidDelegate.createBasicDelegate(/* containerView */ null));
         mWebContents.setOverscrollRefreshHandler(null);
         mWebContents.setFocus(false);
+        mLastVisitTime = System.nanoTime();
 
 //        JavascriptInjector mInjector = JavascriptInjector.fromWebContents(mWebContents, true);
 //        mInjector.removeInterface("ark_bridge");
     }
 
-//    public void destroy() {
+    public long getLastVisitTime() {
+        return mLastVisitTime;
+    }
+
+    //    public void destroy() {
 //        // TODO
 ////        ArkWebManager.getInstance().remove()
 //    }

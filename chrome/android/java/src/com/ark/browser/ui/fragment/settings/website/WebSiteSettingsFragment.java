@@ -6,15 +6,22 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.ark.browser.core.ArkWebManager;
 import com.ark.browser.ui.fragment.base.BaseSwipeBackFragment;
 import com.ark.browser.ui.widget.TintSettingItem;
 import com.ark.browser.utils.ColorPool;
+import com.zpj.fragmentation.dialog.ZDialog;
+import com.zpj.recyclerview.EasyRecycler;
 import com.zpj.widget.setting.CommonSettingItem;
 import com.zpj.widget.setting.OnCommonItemClickListener;
 
-import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.chrome.R;
+import org.chromium.components.content_settings.ContentSettingsType;
+
+import java.util.List;
 
 public class WebSiteSettingsFragment extends BaseSwipeBackFragment
         implements OnCommonItemClickListener {
@@ -60,6 +67,20 @@ public class WebSiteSettingsFragment extends BaseSwipeBackFragment
         setToolbarTitle("网页管理");
 
         LinearLayout llContainer = findViewById(R.id.ll_container);
+        CommonSettingItem webKeepAlivePolicyItem = findViewById(R.id.item_web_limit_policy);
+        webKeepAlivePolicyItem.setInfoText(UserAgentSelectDialog.ITEMS[ArkWebManager.getKeepAlivePolicy()]);
+        webKeepAlivePolicyItem.setOnItemClickListener(new OnCommonItemClickListener() {
+            @Override
+            public void onItemClick(CommonSettingItem commonSettingItem) {
+                new UserAgentSelectDialog()
+                        .onSingleSelect((dialog, i, s) -> {
+                            ArkWebManager.setKeepAlivePolicy(i);
+                            webKeepAlivePolicyItem.setInfoText(s);
+                        })
+                        .show(context);
+
+            }
+        });
         for (int i = 0; i < llContainer.getChildCount(); i++) {
             View child = llContainer.getChildAt(i);
             if (child instanceof TintSettingItem) {
@@ -141,6 +162,40 @@ public class WebSiteSettingsFragment extends BaseSwipeBackFragment
         } else if (id == R.id.item_midi) {
             start(new MidiFragment());
         }
+    }
+
+    public static class UserAgentSelectDialog extends ZDialog.BottomSelectDialogFragmentImpl<String> {
+
+        private static final String[] ITEMS = new String[]{"懒惰", "保守", "默认", "积极", "激进", "无限制"};
+
+        @Override
+        protected int getImplLayoutId() {
+            return R.layout.fragment_dialog_layout_center_impl_list;
+        }
+
+        public UserAgentSelectDialog() {
+            setTitle("网页保活策略");
+            setData(ITEMS);
+            setSelected(ArkWebManager.getKeepAlivePolicy());
+            onBindTitle((titleView, item, position) -> titleView.setText(item));
+        }
+
+        @Override
+        protected void initRecyclerView(RecyclerView recyclerView, List<String> list) {
+            this.mRecycler = new EasyRecycler<>(recyclerView, list);
+            this.mRecycler.setItemRes(this.getItemRes())
+                    .setLayoutManager(new LinearLayoutManager(recyclerView.getContext(),
+                            LinearLayoutManager.VERTICAL, true))
+                    .onBindViewHolder(this)
+                    .build();
+        }
+
+        @Override
+        protected void initView(View view, @Nullable Bundle savedInstanceState) {
+            super.initView(view, savedInstanceState);
+            findViewById(R.id.btn_close).setOnClickListener(v -> dismiss());
+        }
+
     }
 }
 
