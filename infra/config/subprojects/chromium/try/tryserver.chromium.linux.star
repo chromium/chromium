@@ -240,15 +240,9 @@ try_.orchestrator_builder(
         "ci/GPU Linux Builder",
         "ci/Linux Release (NVIDIA)",
     ],
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
-    ),
     compilator = "linux-rel-compilator",
     coverage_test_types = ["unit", "overall"],
     experiments = {
-        "chromium_rts.inverted_rts": 100,
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
     },
@@ -275,14 +269,10 @@ This builder should be removed after migrating linux-rel from Ninja to Siso. b/2
     mirrors = builder_config.copy_from("try/linux-rel"),
     try_settings = builder_config.try_settings(
         is_compile_only = True,
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
     ),
     compilator = "linux-siso-rel-compilator",
     coverage_test_types = ["unit", "overall"],
     experiments = {
-        "chromium_rts.inverted_rts": 100,
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
     },
@@ -316,16 +306,8 @@ try_.orchestrator_builder(
         "ci/Linux Builder (Wayland)",
         "ci/Linux Tests (Wayland)",
     ],
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
-    ),
     compilator = "linux-wayland-rel-compilator",
     coverage_test_types = ["unit", "overall"],
-    experiments = {
-        "chromium_rts.inverted_rts": 100,
-    },
     main_list_view = "try",
     tryjob = try_.job(),
     use_clang_coverage = True,
@@ -347,15 +329,9 @@ This builder should be removed after migrating linux-wayland-rel from Ninja to S
     mirrors = builder_config.copy_from("try/linux-wayland-rel"),
     try_settings = builder_config.try_settings(
         is_compile_only = True,
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
     ),
     compilator = "linux-wayland-siso-rel-compilator",
     coverage_test_types = ["unit", "overall"],
-    experiments = {
-        "chromium_rts.inverted_rts": 100,
-    },
     main_list_view = "try",
     tryjob = try_.job(
         experiment_percentage = 20,
@@ -471,14 +447,8 @@ try_.orchestrator_builder(
         "ci/Linux ASan LSan Builder",
         "ci/Linux ASan LSan Tests (1)",
     ],
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
-    ),
     compilator = "linux_chromium_asan_rel_ng-compilator",
     experiments = {
-        "chromium_rts.inverted_rts": 100,
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
     },
@@ -504,13 +474,9 @@ This builder should be removed after migrating linux_chromium_asan_rel_ng from N
     mirrors = builder_config.copy_from("try/linux_chromium_asan_rel_ng"),
     try_settings = builder_config.try_settings(
         is_compile_only = True,
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
     ),
     compilator = "linux_chromium_asan_siso_rel_ng-compilator",
     experiments = {
-        "chromium_rts.inverted_rts": 100,
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
     },
@@ -657,14 +623,8 @@ try_.orchestrator_builder(
         "ci/Linux TSan Builder",
         "ci/Linux TSan Tests",
     ],
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
-    ),
     compilator = "linux_chromium_tsan_rel_ng-compilator",
     experiments = {
-        "chromium_rts.inverted_rts": 100,
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
     },
@@ -690,13 +650,9 @@ This builder should be removed after migrating linux_chromium_tsan_rel_ng from N
     mirrors = builder_config.copy_from("try/linux_chromium_tsan_rel_ng"),
     try_settings = builder_config.try_settings(
         is_compile_only = True,
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
     ),
     compilator = "linux_chromium_tsan_siso_rel_ng-compilator",
     experiments = {
-        "chromium_rts.inverted_rts": 100,
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
     },

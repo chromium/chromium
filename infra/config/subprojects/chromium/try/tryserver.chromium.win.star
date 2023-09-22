@@ -78,15 +78,9 @@ try_.orchestrator_builder(
         "ci/GPU Win x64 Builder",
         "ci/Win10 x64 Release (NVIDIA)",
     ],
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
-    ),
     compilator = "win-rel-compilator",
     coverage_test_types = ["unit", "overall"],
     experiments = {
-        "chromium_rts.inverted_rts": 100,
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 5,
     },
@@ -113,15 +107,9 @@ This builder shadows win-rel builder to compare between Siso builds and Ninja bu
 This builder should be removed after migrating win-rel from Ninja to Siso. b/277863839
 """,
     mirrors = builder_config.copy_from("try/win-rel"),
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
-    ),
     compilator = "win-siso-rel-compilator",
     coverage_test_types = ["unit", "overall"],
     experiments = {
-        "chromium_rts.inverted_rts": 100,
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 5,
     },

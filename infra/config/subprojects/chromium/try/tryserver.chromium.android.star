@@ -63,16 +63,8 @@ try_.orchestrator_builder(
     mirrors = [
         "ci/android-12-x64-rel",
     ],
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
-    ),
     compilator = "android-12-x64-rel-compilator",
     coverage_test_types = ["unit", "overall"],
-    experiments = {
-        "chromium_rts.inverted_rts": 100,
-    },
     main_list_view = "try",
     tryjob = try_.job(),
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
@@ -94,16 +86,8 @@ This builder shadows android-12-x64-rel builder to compare between Siso builds a
 This builder should be removed after migrating android-12-x64-rel from Ninja to Siso. b/277863839
 """,
     mirrors = builder_config.copy_from("try/android-12-x64-rel"),
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
-    ),
     compilator = "android-12-x64-siso-rel-compilator",
     coverage_test_types = ["unit", "overall"],
-    experiments = {
-        "chromium_rts.inverted_rts": 100,
-    },
     main_list_view = "try",
     tryjob = try_.job(
         # Decreasing the experiment percentage while enabling tests to reduce
@@ -143,16 +127,8 @@ try_.orchestrator_builder(
         "ci/Android Release (Nexus 5X)",  # Nexus 5X on Nougat
         "ci/android-pie-arm64-rel",  # Pixel 1, 2 on Pie
     ],
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
-    ),
     compilator = "android-arm64-rel-compilator",
     coverage_test_types = ["unit", "overall"],
-    experiments = {
-        "chromium_rts.inverted_rts": 100,
-    },
     main_list_view = "try",
     tryjob = try_.job(),
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
@@ -178,15 +154,9 @@ This builder should be removed after migrating android-arm64-rel from Ninja to S
         # TODO: b/294287964 - waiting test devices to be allocated to handle
         # extra traffic.
         is_compile_only = True,
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
     ),
     compilator = "android-arm64-siso-rel-compilator",
     coverage_test_types = ["unit", "overall"],
-    experiments = {
-        "chromium_rts.inverted_rts": 100,
-    },
     main_list_view = "try",
     tryjob = try_.job(
         experiment_percentage = 20,
@@ -434,14 +404,10 @@ This builder should be removed after migrating android-nougat-x86-rel from Ninja
     mirrors = builder_config.copy_from("try/android-nougat-x86-rel"),
     try_settings = builder_config.try_settings(
         is_compile_only = True,
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
     ),
     compilator = "android-nougat-x86-siso-rel-compilator",
     coverage_test_types = ["unit", "overall"],
     experiments = {
-        "chromium_rts.inverted_rts": 100,
         "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
@@ -464,15 +430,9 @@ try_.orchestrator_builder(
     mirrors = [
         "ci/android-nougat-x86-rel",
     ],
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
-    ),
     compilator = "android-nougat-x86-rel-compilator",
     coverage_test_types = ["unit", "overall"],
     experiments = {
-        "chromium_rts.inverted_rts": 100,
         "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",

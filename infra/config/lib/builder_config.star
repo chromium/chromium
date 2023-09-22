@@ -311,39 +311,13 @@ def _builder_spec(
         bisect_archive = bisect_archive,
     )
 
-_rts_condition = _enum(
-    NEVER = "NEVER",
-    QUICK_RUN_ONLY = "QUICK_RUN_ONLY",
-    ALWAYS = "ALWAYS",
-)
-
-def _rts_config(*, condition, recall = None):
-    """The details for applying RTS for the builder.
-
-    RTS (regression test selection) is an algorithm that trades off accuracy
-    against speed by skipping tests that are less likely to provide a useful
-    signal. See http://bit.ly/chromium-rts for more information.
-
-    Args:
-        condition: (rts_condition) When the RTS algorithm should be applied for
-            builds of the builder.
-        recall: (float) The recall level to use for the RTS algorithm.
-    """
-    if condition not in _rts_condition._values:
-        fail("unknown RTS condition: {}".format(condition))
-    return struct(
-        condition = condition,
-        recall = recall,
-    )
-
 def _try_settings(
         *,
         include_all_triggered_testers = False,
         is_compile_only = None,
         analyze_names = None,
         retry_failed_shards = None,
-        retry_without_patch = None,
-        rts_config = None):
+        retry_without_patch = None):
     """Settings specific to try builders.
 
     Args:
@@ -358,7 +332,6 @@ def _try_settings(
         retry_without_patch: (bool) Whether or not failing tests will be retried
             without the patch applied. If the retry for a test fails, the test
             will be considered to have passed.
-        rts_config: (rts_config) The rts_config object for the builder.
 
     Returns:
         A struct that can be passed to the `try_settings` argument of the
@@ -370,7 +343,6 @@ def _try_settings(
         analyze_names = analyze_names,
         retry_failed_shards = retry_failed_shards,
         retry_without_patch = retry_without_patch,
-        rts_config = rts_config,
     )
 
 def _is_copy_from(obj):
@@ -428,8 +400,6 @@ builder_config = struct(
 
     # Function for defining try-specific settings
     try_settings = _try_settings,
-    rts_config = _rts_config,
-    rts_condition = _rts_condition,
 )
 
 # Internal details =============================================================

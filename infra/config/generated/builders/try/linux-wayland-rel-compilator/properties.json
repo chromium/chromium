@@ -75,10 +75,7 @@
           "builder": "Linux Tests (Wayland)",
           "project": "chromium-m118"
         }
-      ],
-      "rts_config": {
-        "condition": "QUICK_RUN_ONLY"
-      }
+      ]
     }
   },
   "$build/code_coverage": {

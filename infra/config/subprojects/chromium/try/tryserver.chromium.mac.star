@@ -120,15 +120,9 @@ try_.orchestrator_builder(
         "ci/Mac Release (Intel)",
         "ci/Mac Retina Release (AMD)",
     ],
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
-    ),
     compilator = "mac-rel-compilator",
     coverage_test_types = ["overall", "unit"],
     experiments = {
-        "chromium_rts.inverted_rts": 100,
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
     },
