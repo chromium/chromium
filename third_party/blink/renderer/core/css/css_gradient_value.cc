@@ -901,7 +901,8 @@ bool CSSGradientValue::ShouldSerializeColorSpace() const {
       base::ranges::all_of(stops_, [](const CSSGradientColorStop& stop) {
         const auto* color_value =
             DynamicTo<cssvalue::CSSColor>(stop.color_.Get());
-        return !color_value || color_value->Value().IsLegacyColor();
+        return !color_value ||
+               Color::IsLegacyColorSpace(color_value->Value().GetColorSpace());
       });
 
   // OKLab is the default and should not be serialized unless all colors are

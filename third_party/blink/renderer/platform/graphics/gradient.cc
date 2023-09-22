@@ -210,7 +210,7 @@ SkGradientShader::Interpolation Gradient::ResolveSkInterpolation() const {
       break;
     case Color::ColorSpace::kNone:
       for (const auto& stop : stops_) {
-        if (!stop.color.IsLegacyColor()) {
+        if (!Color::IsLegacyColorSpace(stop.color.GetColorSpace())) {
           has_non_legacy_color = true;
         }
       }

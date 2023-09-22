@@ -401,6 +401,9 @@ bool ColorFunctionParser::MakePerColorSpaceAdjustments() {
     bool uses_percentage = false;
     bool uses_bare_numbers = false;
     for (int i = 0; i < 3; i++) {
+      if (channel_types_[i] == ChannelType::kNone) {
+        continue;
+      }
       if (channel_types_[i] == ChannelType::kPercentage) {
         if (uses_bare_numbers && !is_relative_color_) {
           return false;
@@ -414,8 +417,11 @@ bool ColorFunctionParser::MakePerColorSpaceAdjustments() {
         channels_[i].value() /= 255.0;
       }
 
-      if (channels_[i].has_value() && !isfinite(channels_[i].value())) {
+      if (!isfinite(channels_[i].value())) {
         channels_[i].value() = channels_[i].value() > 0 ? 1 : 0;
+      } else if (!is_relative_color_) {
+        // Clamp to [0, 1] range, but allow out-of-gamut relative colors.
+        channels_[i].value() = ClampTo<double>(channels_[i].value(), 0.0, 1.0);
       }
     }
     // TODO(crbug.com/1399566): There are many code paths that still compress

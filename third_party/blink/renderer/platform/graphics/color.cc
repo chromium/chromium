@@ -243,10 +243,9 @@ Color Color::FromColorMix(Color::ColorSpace interpolation_space,
   // Legacy colors that are the result of color-mix should serialize as
   // color(srgb ... ).
   // See: https://github.com/mozilla/wg-decisions/issues/1125
-  if (result.IsLegacyColor()) {
+  if (result.IsLegacyColorSpace(result.color_space_)) {
     result.ConvertToColorSpace(Color::ColorSpace::kSRGB);
   }
-
   return result;
 }
 
@@ -870,7 +869,7 @@ static String ColorParamToString(float param, int precision = 6) {
 }
 
 String Color::SerializeAsCanvasColor() const {
-  if (IsOpaque() && IsLegacyColor()) {
+  if (IsOpaque() && IsLegacyColorSpace(color_space_)) {
     return String::Format("#%02x%02x%02x", Red(), Green(), Blue());
   }
 
@@ -893,22 +892,16 @@ String Color::SerializeLegacyColorAsCSSColor() const {
   // down to 127 when being converted to an integer. Add a small epsilon to
   // avoid this. See crbug.com/1425856.
   constexpr float kEpsilon = 1e-07;
-  result.Append(ColorParamToString(
-      isfinite(rgb_color.fR)
-          ? ClampTo(round((rgb_color.fR + kEpsilon) * 255.0), 0.0, 255.0)
-          : rgb_color.fR));
+  result.AppendNumber(
+      ClampTo(round((rgb_color.fR + kEpsilon) * 255.0), 0.0, 255.0));
   result.Append(", ");
-  result.Append(ColorParamToString(
-      isfinite(rgb_color.fG)
-          ? ClampTo(round((rgb_color.fG + kEpsilon) * 255.0), 0.0, 255.0)
-          : rgb_color.fG));
+  result.AppendNumber(
+      ClampTo(round((rgb_color.fG + kEpsilon) * 255.0), 0.0, 255.0));
   result.Append(", ");
-  result.Append(ColorParamToString(
-      isfinite(rgb_color.fB)
-          ? ClampTo(round((rgb_color.fB + kEpsilon) * 255.0), 0.0, 255.0)
-          : rgb_color.fB));
+  result.AppendNumber(
+      ClampTo(round((rgb_color.fB + kEpsilon) * 255.0), 0.0, 255.0));
 
-  if (!IsOpaque() && isfinite(alpha_)) {
+  if (!IsOpaque()) {
     result.Append(", ");
 
     // See <alphavalue> section in
@@ -928,9 +921,6 @@ String Color::SerializeLegacyColorAsCSSColor() const {
           round(int_alpha * 1000.0 / 255.0) / 1000.0;
       result.Append(ColorParamToString(three_decimal_rounded_alpha, 3));
     }
-  } else if (!isfinite(alpha_)) {
-    result.Append(", ");
-    result.Append(ColorParamToString(alpha_));
   }
 
   result.Append(')');
@@ -938,7 +928,7 @@ String Color::SerializeLegacyColorAsCSSColor() const {
 }
 
 String Color::SerializeAsCSSColor() const {
-  if (IsLegacyColor()) {
+  if (IsLegacyColorSpace(color_space_)) {
     return SerializeLegacyColorAsCSSColor();
   }
 
@@ -976,7 +966,7 @@ String Color::SerializeAsCSSColor() const {
 }
 
 String Color::NameForLayoutTreeAsText() const {
-  if (!IsLegacyColor()) {
+  if (!IsLegacyColorSpace(color_space_)) {
     return SerializeAsCSSColor();
   }
 
@@ -1185,12 +1175,6 @@ RGBA32 PremultipliedARGBFromColor(const Color& color) {
   return pixel_color;
 }
 
-// https://www.w3.org/TR/css-color-4/#legacy-color-syntax
-bool Color::IsLegacyColor() const {
-  return (color_space_ == ColorSpace::kSRGBLegacy ||
-          color_space_ == ColorSpace::kHSL || color_space_ == ColorSpace::kHWB);
-}
-
 // From https://www.w3.org/TR/css-color-4/#interpolation
 // If the host syntax does not define what color space interpolation should
 // take place in, it defaults to Oklab.
@@ -1198,8 +1182,9 @@ bool Color::IsLegacyColor() const {
 // formats (hex colors, named colors, rgb(), hsl() or hwb() and the equivalent
 // alpha-including forms) in gamma-encoded sRGB space.
 Color::ColorSpace Color::GetColorInterpolationSpace() const {
-  if (IsLegacyColor())
+  if (IsLegacyColorSpace(color_space_)) {
     return ColorSpace::kSRGBLegacy;
+  }
 
   return ColorSpace::kOklab;
 }

@@ -136,6 +136,10 @@ class PLATFORM_EXPORT Color {
     return color_space == ColorSpace::kLch || color_space == ColorSpace::kOklch;
   }
 
+  // https://www.w3.org/TR/css-color-4/#legacy-color-syntax
+  // Returns true if the color is of a type that predates CSS Color 4. Includes
+  // rgb(), rgba(), hex color, named color, hsl() and hwb() types. These colors
+  // interpolate and serialize differently from other color types.
   static bool IsLegacyColorSpace(ColorSpace color_space) {
     return color_space == ColorSpace::kSRGBLegacy ||
            color_space == ColorSpace::kHSL || color_space == ColorSpace::kHWB;
@@ -359,11 +363,6 @@ class PLATFORM_EXPORT Color {
   inline bool operator!=(const Color& other) const { return !(*this == other); }
 
   unsigned GetHash() const;
-  // Returns true if the color is of a type that predates CSS Color 4. Includes
-  // rgb(), rgba(), hex color, named color, hsl() and hwb() types. These colors
-  // are always assumed to be in the sRGB color space and interpolate and
-  // serialize differently from other color types.
-  bool IsLegacyColor() const;
 
   // What colorspace space a color wants to interpolate in. This is not
   // equivalent to the colorspace of the color itself.

@@ -310,7 +310,7 @@ void AppendStyleInfo(Element* element,
     if (value->IsColorValue()) {
       Color color = static_cast<const cssvalue::CSSColor*>(value)->Value();
       computed_style->setArray(name + "-unclamped-rgba", ToRGBAList(color));
-      if (!color.IsLegacyColor()) {
+      if (!Color::IsLegacyColorSpace(color.GetColorSpace())) {
         computed_style->setString(name + "-css-text", value->CssText());
       }
       computed_style->setString(name, ToHEXA(color));

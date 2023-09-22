@@ -16,6 +16,10 @@
   <div id="target"></div>
 </div>
 <style>
+  :root {
+    --high: 500;
+    --negative: -100;
+  }
   #container {
     color: rgb(255, 0, 0);
   }
@@ -105,6 +109,9 @@ tests = [
     ["rgb(0, calc(0 / 0), 0)", "rgb(0, 0, 0)", "Green channel resolves NaN equivalent calc statements to zero"],
     ["rgb(0, 0, calc(0 / 0))", "rgb(0, 0, 0)", "Blue channel resolves NaN equivalent calc statements to zero"],
     ["rgba(0, 0, 0, calc(0 / 0))", "rgba(0, 0, 0, 0)", "Alpha channel resolves NaN equivalent calc statements to zero"],
+
+    ["rgb(var(--high), 0, 0)", "rgb(255, 0, 0)", "Variables above 255 get clamped to 255."],
+    ["rgb(var(--negative), 64, 128)", "rgb(0, 64, 128)", "Variables below 0 get clamped to 0."],
 ];
 
 for (const test of tests) {
