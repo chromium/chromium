@@ -7,11 +7,23 @@ found in the LICENSE file.
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
        xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <View
+        android:layout_width="16dp"
+        android:layout_height="match_parent" />
+
+    <!-- Common title/description shared between list item views. -->
+    <include layout="@layout/title_and_description_layout" />
+
+    <View
+        android:layout_width="16dp"
+        android:layout_height="match_parent" />
+
     <org.chromium.components.browser_ui.widget.listmenu.ListMenuButton
         android:id="@+id/more"
         android:visibility="gone"
         android:layout_width="@dimen/min_touch_target_size"
         android:layout_height="match_parent"
+        android:layout_gravity="end"
         android:background="@null"
         android:src="@drawable/ic_more_vert_24dp"
         app:tint="@color/default_icon_color_tint_list"
@@ -22,6 +34,7 @@ found in the LICENSE file.
         android:visibility="gone"
         android:layout_width="@dimen/min_touch_target_size"
         android:layout_height="match_parent"
+        android:layout_gravity="end"
         android:src="@drawable/ic_selection_check_24dp"
         android:scaleType="center"
         android:importantForAccessibility="no" />
@@ -30,6 +43,7 @@ found in the LICENSE file.
         android:id="@+id/end_image"
         android:layout_width="@dimen/min_touch_target_size"
         android:layout_height="@dimen/min_touch_target_size"
+        android:layout_gravity="end"
         android:scaleType="center"
         android:importantForAccessibility="no"
         android:focusable="false" />

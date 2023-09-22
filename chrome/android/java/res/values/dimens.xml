@@ -237,8 +237,10 @@ found in the LICENSE file.
     <dimen name="improved_bookmark_icon_radius">24dp</dimen>
     <dimen name="add_new_folder_dialog_horizontal_margin">22dp</dimen>
     <dimen name="bookmark_folder_picker_button_container_height">54dp</dimen>
-    <dimen name="improved_bookmark_row_start_margin">16dp</dimen>
-    <dimen name="improved_bookmark_row_start_negative_margin">-16dp</dimen>
+    <dimen name="improved_bookmark_row_horizontal_margin">10dp</dimen>
+    <dimen name="improved_bookmark_row_horizontal_padding">6dp</dimen>
+    <dimen name="improved_bookmark_row_horizontal_negative_margin">-10dp</dimen>
+    <dimen name="improved_bookmark_row_vertical_margin">1dp</dimen>
     <dimen name="bookmark_promo_top_margin_with_search_box">4dp</dimen>
     <dimen name="shopping_chip_padding">8dp</dimen>
 
@@ -426,7 +428,7 @@ found in the LICENSE file.
 
     <!-- Improved bookmark row folder dimensions. -->
     <dimen name="improved_bookmark_row_outer_corner_radius">16dp</dimen>
-    <dimen name="improved_bookmark_row_inner_corner_radius">6dp</dimen>
+    <dimen name="improved_bookmark_row_inner_corner_radius">4dp</dimen>
     <dimen name="improved_bookmark_row_size">80dp</dimen>
     <dimen name="improved_bookmark_row_secondary_outer_size">41dp</dimen>
     <dimen name="improved_bookmark_row_secondary_inner_size">39dp</dimen>

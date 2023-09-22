@@ -13,7 +13,9 @@ found in the LICENSE file.
     android:gravity="center_vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingStart="@dimen/improved_bookmark_row_start_margin"
+    android:layout_marginHorizontal="@dimen/improved_bookmark_row_horizontal_margin"
+    android:layout_marginVertical="@dimen/improved_bookmark_row_vertical_margin"
+    android:paddingStart="@dimen/improved_bookmark_row_horizontal_padding"
     android:paddingVertical="8dp"
     android:background="@drawable/rounded_rectangle_surface_0">
 
@@ -29,13 +31,6 @@ found in the LICENSE file.
         android:importantForAccessibility="no"
         android:background="@drawable/oval_surface_1" />
 
-    <View
-        android:layout_width="16dp"
-        android:layout_height="match_parent" />
-
-    <!-- Common title/description shared between list item views. -->
-    <include layout="@layout/title_and_description_layout" />
-
-    <include layout="@layout/improved_bookmark_row_end" />
+    <include layout="@layout/improved_bookmark_row_content" />
 
 </LinearLayout>
