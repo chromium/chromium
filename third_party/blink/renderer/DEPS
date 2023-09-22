@@ -44,6 +44,7 @@ include_rules = [
     "+base/state_transitions.h",
     "+base/stl_util.h",
     "+base/strings/strcat.h",
+    "+base/strings/string_util.h",
     "+base/synchronization",
     "+base/sys_byteorder.h",
     "+base/system/sys_info.h",

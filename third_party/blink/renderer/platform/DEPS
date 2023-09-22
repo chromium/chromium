@@ -31,8 +31,6 @@ include_rules = [
     "+base/strings/string_number_conversions.h",
     "+base/strings/string_piece.h",
     "+base/strings/string_split.h",
-    "+base/strings/string_util.h",
-    "+base/strings/string_util.h",
     "+base/strings/stringprintf.h",
     "+base/task/common/lazy_now.h",
     "+base/task/delay_policy.h",
