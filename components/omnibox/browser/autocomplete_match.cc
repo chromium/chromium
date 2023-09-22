@@ -6,10 +6,12 @@
 
 #include "base/check_op.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -110,35 +112,36 @@ int GetDeduplicationProviderPreferenceScore(
     return 0;
   }
   const AutocompleteProvider::Type type = provider->type();
-  const static int shortcuts_preference =
-      base::FeatureList::IsEnabled(
-          omnibox::kPreferNonShortcutMatchesWhenDeduping)
-          ? -1
-          : 0;
-  const static std::unordered_map<AutocompleteProvider::Type, int>
-      provider_preference = {
-          {// Prefer live document suggestions. We check provider type instead
-           // of match type in order to distinguish live suggestions from the
-           // document provider from stale suggestions from the shortcuts
-           // providers, because the latter omits changing metadata such as last
-           // access date.
-           AutocompleteProvider::TYPE_DOCUMENT, 2},
-          {// Prefer bookmark suggestions, as 1) their titles may be explicitly
-           // set, and 2) they may display enhanced information such as the
-           // bookmark folders path.
-           AutocompleteProvider::TYPE_BOOKMARK, 1},
-          {// Prefer non-shorcut matches over shortcuts, the latter of which may
-           // have stale or missing URL titles (the latter from what-you-typed
-           // matches).
-           AutocompleteProvider::TYPE_SHORTCUTS, shortcuts_preference},
-          {// Prefer non-fuzzy matches over fuzzy matches.
-           AutocompleteProvider::TYPE_HISTORY_FUZZY, -2},
-      };
-  const auto it = provider_preference.find(type);
-  if (it == provider_preference.end()) {
-    return 0;
-  }
-  return it->second;
+
+  using ProviderPrefMap = base::flat_map<AutocompleteProvider::Type, int>;
+  static const base::NoDestructor<ProviderPrefMap> provider_prefs({
+      // Prefer live document suggestions. We check provider type instead
+      // of match type in order to distinguish live suggestions from the
+      // document provider from stale suggestions from the shortcuts
+      // providers, because the latter omits changing metadata such as last
+      // access date.
+      {AutocompleteProvider::TYPE_DOCUMENT, 2},
+      // Prefer bookmark suggestions, as:
+      // 1) Their titles may be explicitly set.
+      // 2) They may display enhanced information such as the bookmark
+      //    folders path.
+      {AutocompleteProvider::TYPE_BOOKMARK, 1},
+      // Prefer non-shorcut matches over shortcuts, the latter of which may
+      // have stale or missing URL titles (the latter from what-you-typed
+      // matches).
+      //
+      // If the value here becomes a fixed value, then change `provider_prefs`
+      // from a NoDestructor to a FixedFlatMap.
+      {AutocompleteProvider::TYPE_SHORTCUTS,
+       base::FeatureList::IsEnabled(
+           omnibox::kPreferNonShortcutMatchesWhenDeduping)
+           ? -1
+           : 0},
+      // Prefer non-fuzzy matches over fuzzy matches.
+      {AutocompleteProvider::TYPE_HISTORY_FUZZY, -2},
+  });
+  const auto it = provider_prefs->find(type);
+  return it != provider_prefs->end() ? it->second : 0;
 }
 
 // Implementation of boost::hash_combine
@@ -910,21 +913,21 @@ GURL AutocompleteMatch::GURLToStrippedGURL(
   // or from the search/keyword provider matches.
   const TemplateURL* template_url = GetTemplateURLWithKeyword(
       template_url_service, keyword, stripped_destination_url.host());
-  if (template_url != nullptr &&
-      template_url->SupportsReplacement(
-          template_url_service->search_terms_data())) {
+  if (template_url && template_url->SupportsReplacement(
+                          template_url_service->search_terms_data())) {
     using CacheKey = std::tuple<const TemplateURL*, GURL, bool, bool>;
-    static base::LRUCache<CacheKey, GURL> template_cache(30);
+    static base::NoDestructor<base::LRUCache<CacheKey, GURL>> template_cache(
+        30);
     const CacheKey cache_key = {template_url, url, keep_search_intent_params,
                                 normalize_search_terms};
-    const auto& cached = template_cache.Get(cache_key);
-    if (cached != template_cache.end()) {
+    const auto& cached = template_cache->Get(cache_key);
+    if (cached != template_cache->end()) {
       stripped_destination_url = cached->second;
     } else if (template_url->KeepSearchTermsInURL(
                    url, template_url_service->search_terms_data(),
                    keep_search_intent_params, normalize_search_terms,
                    &stripped_destination_url)) {
-      template_cache.Put(cache_key, stripped_destination_url);
+      template_cache->Put(cache_key, stripped_destination_url);
     }
   }
 

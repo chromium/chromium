@@ -8,7 +8,6 @@
 
 #include <algorithm>
 #include <iterator>
-#include <map>
 #include <memory>
 #include <numeric>
 #include <string>
@@ -17,6 +16,8 @@
 #include <vector>
 
 #include "base/containers/adapters.h"
+#include "base/containers/fixed_flat_map.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/containers/lru_cache.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -24,6 +25,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -103,34 +105,34 @@ void LogRequestTime(base::TimeTicks start_time, bool interrupted) {
 }
 
 // MIME types sent by the server for different document types.
-const char kDocumentMimetype[] = "application/vnd.google-apps.document";
-const char kFormMimetype[] = "application/vnd.google-apps.form";
-const char kSpreadsheetMimetype[] = "application/vnd.google-apps.spreadsheet";
-const char kPresentationMimetype[] = "application/vnd.google-apps.presentation";
+constexpr char kDocumentMimetype[] = "application/vnd.google-apps.document";
+constexpr char kFormMimetype[] = "application/vnd.google-apps.form";
+constexpr char kSpreadsheetMimetype[] =
+    "application/vnd.google-apps.spreadsheet";
+constexpr char kPresentationMimetype[] =
+    "application/vnd.google-apps.presentation";
 
 // Returns mappings from MIME types to overridden icons.
 AutocompleteMatch::DocumentType GetIconForMIMEType(
     const base::StringPiece& mimetype) {
-  static const auto kIconMap =
-      std::map<base::StringPiece, AutocompleteMatch::DocumentType>{
-          {kDocumentMimetype, AutocompleteMatch::DocumentType::DRIVE_DOCS},
-          {kFormMimetype, AutocompleteMatch::DocumentType::DRIVE_FORMS},
-          {kSpreadsheetMimetype, AutocompleteMatch::DocumentType::DRIVE_SHEETS},
-          {kPresentationMimetype,
-           AutocompleteMatch::DocumentType::DRIVE_SLIDES},
-          {"image/jpeg", AutocompleteMatch::DocumentType::DRIVE_IMAGE},
-          {"image/png", AutocompleteMatch::DocumentType::DRIVE_IMAGE},
-          {"image/gif", AutocompleteMatch::DocumentType::DRIVE_IMAGE},
-          {"application/pdf", AutocompleteMatch::DocumentType::DRIVE_PDF},
-          {"video/mp4", AutocompleteMatch::DocumentType::DRIVE_VIDEO},
-          {"application/vnd.google-apps.folder",
-           AutocompleteMatch::DocumentType::DRIVE_FOLDER},
-      };
+  constexpr auto kIconMap = base::MakeFixedFlatMap<
+      base::StringPiece, AutocompleteMatch::DocumentType>({
+      {kDocumentMimetype, AutocompleteMatch::DocumentType::DRIVE_DOCS},
+      {kFormMimetype, AutocompleteMatch::DocumentType::DRIVE_FORMS},
+      {kSpreadsheetMimetype, AutocompleteMatch::DocumentType::DRIVE_SHEETS},
+      {kPresentationMimetype, AutocompleteMatch::DocumentType::DRIVE_SLIDES},
+      {"image/jpeg", AutocompleteMatch::DocumentType::DRIVE_IMAGE},
+      {"image/png", AutocompleteMatch::DocumentType::DRIVE_IMAGE},
+      {"image/gif", AutocompleteMatch::DocumentType::DRIVE_IMAGE},
+      {"application/pdf", AutocompleteMatch::DocumentType::DRIVE_PDF},
+      {"video/mp4", AutocompleteMatch::DocumentType::DRIVE_VIDEO},
+      {"application/vnd.google-apps.folder",
+       AutocompleteMatch::DocumentType::DRIVE_FOLDER},
+  });
 
-  const auto& iterator = kIconMap.find(mimetype);
-  return iterator != kIconMap.end()
-             ? iterator->second
-             : AutocompleteMatch::DocumentType::DRIVE_OTHER;
+  const auto* it = kIconMap.find(mimetype);
+  return it != kIconMap.end() ? it->second
+                              : AutocompleteMatch::DocumentType::DRIVE_OTHER;
 }
 
 // Concats `v2` onto `v1`.
@@ -217,7 +219,7 @@ bool IsCompletelyMatchedInTitleOrOwner(const std::u16string& input,
 
 // Derived from google3/apps/share/util/docs_url_extractor.cc.
 std::string ExtractDocIdFromUrl(const std::string& url) {
-  static const RE2 docs_url_pattern_(
+  static const base::NoDestructor<RE2> docs_url_pattern(
       "\\b("  // The first groups matches the whole URL.
       // Domain.
       "(?:https?://)?(?:"
@@ -255,17 +257,17 @@ std::string ExtractDocIdFromUrl(const std::string& url) {
       ")");
 
   std::vector<std::string_view> matched_doc_ids(
-      docs_url_pattern_.NumberOfCapturingGroups() + 1);
+      docs_url_pattern->NumberOfCapturingGroups() + 1);
   // ANCHOR_START deviates from google3 which uses UNANCHORED. Using
   // ANCHOR_START prevents incorrectly matching with non-drive URLs but which
   // contain a drive URL; e.g.,
   // url-parser.com/?url=https://docs.google.com/document/d/(id)/edit.
-  if (!docs_url_pattern_.Match(url, 0, url.size(), RE2::ANCHOR_START,
+  if (!docs_url_pattern->Match(url, 0, url.size(), RE2::ANCHOR_START,
                                matched_doc_ids.data(),
                                matched_doc_ids.size())) {
     return std::string();
   }
-  for (const auto& doc_id_group : docs_url_pattern_.NamedCapturingGroups()) {
+  for (const auto& doc_id_group : docs_url_pattern->NamedCapturingGroups()) {
     std::string_view identified_doc_id = matched_doc_ids[doc_id_group.second];
     if (!identified_doc_id.empty()) {
       return std::string(identified_doc_id);
@@ -284,10 +286,15 @@ bool ValidHostPrefix(const std::string& host) {
   // There are 66 (5*11) valid, e.g. 'docs5.google.com', so rather than check
   // all 66, we just check the 6 prefixes. Keep these prefixes consistent with
   // those in `ExtractDocIdFromUrl()`.
-  static const std::vector<const char*> valid_host_prefixes = {
-      "spreadsheets", "docs", "drive", "script", "sites", "jamboard",
-  };
-  for (const char* valid_host_prefix : valid_host_prefixes) {
+  constexpr auto kValidHostPrefixes = base::MakeFixedFlatSet<std::string_view>({
+      "spreadsheets",
+      "docs",
+      "drive",
+      "script",
+      "sites",
+      "jamboard",
+  });
+  for (const auto& valid_host_prefix : kValidHostPrefixes) {
     if (base::StartsWith(host, valid_host_prefix,
                          base::CompareCase::INSENSITIVE_ASCII)) {
       return true;
@@ -802,10 +809,11 @@ const GURL DocumentProvider::GetURLForDeduping(const GURL& url) {
   // That's the most expensive part of this algorithm, and memoizing the earlier
   // trivial checks would worsen performance by pushing out more useful cache
   // entries.
-  static base::LRUCache<GURL, GURL> cache(10);
-  const auto& cached = cache.Get(url);
-  if (cached != cache.end())
+  static base::NoDestructor<base::LRUCache<GURL, GURL>> cache(10);
+  const auto& cached = cache->Get(url);
+  if (cached != cache->end()) {
     return cached->second;
+  }
 
   // Early exit to avoid unnecessary and more involved checks. Don't update the
   // cache for trivial cases to avoid pushing out a more useful entry.
@@ -856,6 +864,6 @@ const GURL DocumentProvider::GetURLForDeduping(const GURL& url) {
   // This is similar to what we expect from the server.
   GURL deduping_url =
       id.empty() ? GURL() : GURL("https://drive.google.com/open?id=" + id);
-  cache.Put(url, deduping_url);
+  cache->Put(url, deduping_url);
   return deduping_url;
 }

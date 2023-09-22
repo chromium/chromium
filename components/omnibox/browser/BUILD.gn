@@ -307,20 +307,6 @@ static_library("browser") {
     "zero_suggest_verbatim_match_provider.cc",
     "zero_suggest_verbatim_match_provider.h",
   ]
-  if (build_with_tflite_lib) {
-    sources += [
-      "autocomplete_scoring_model_executor.cc",
-      "autocomplete_scoring_model_executor.h",
-      "autocomplete_scoring_model_handler.cc",
-      "autocomplete_scoring_model_handler.h",
-      "autocomplete_scoring_model_service.cc",
-      "autocomplete_scoring_model_service.h",
-      "on_device_tail_model_executor.cc",
-      "on_device_tail_model_executor.h",
-      "on_device_tail_model_service.cc",
-      "on_device_tail_model_service.h",
-    ]
-  }
 
   public_deps = [
     ":buildflags",
@@ -336,14 +322,6 @@ static_library("browser") {
     "//third_party/omnibox_proto",
     "//url",
   ]
-  if (build_with_tflite_lib) {
-    public_deps += [
-      "//third_party/tflite",
-      "//third_party/tflite:tflite_public_headers",
-      "//third_party/tflite_support",
-      "//third_party/tflite_support:tflite_support_proto",
-    ]
-  }
 
   deps = [
     "//components/bookmarks/browser",
@@ -384,16 +362,29 @@ static_library("browser") {
     "//ui/gfx",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  if (is_android) {
+    sources += [
+      "actions/omnibox_action_factory_android.cc",
+      "actions/omnibox_action_factory_android.h",
+      "autocomplete_match_android.cc",
+      "autocomplete_result_android.cc",
+    ]
+    deps += [
+      ":jni_headers",
+      "//url:gurl_android",
+    ]
+  } else {
+    deps += [ "//components/keep_alive_registry" ]
+  }
+
   if ((!is_android || enable_vr) && !is_ios) {
     deps += [ ":vector_icons" ]
   }
 
   if (is_chrome_branded) {
     deps += [ "//components/vector_icons" ]
-  }
-
-  if (!is_android) {
-    deps += [ "//components/keep_alive_registry" ]
   }
 
   if (!is_ios) {
@@ -425,16 +416,24 @@ static_library("browser") {
     ]
   }
 
-  if (is_android) {
+  if (build_with_tflite_lib) {
     sources += [
-      "actions/omnibox_action_factory_android.cc",
-      "actions/omnibox_action_factory_android.h",
-      "autocomplete_match_android.cc",
-      "autocomplete_result_android.cc",
+      "autocomplete_scoring_model_executor.cc",
+      "autocomplete_scoring_model_executor.h",
+      "autocomplete_scoring_model_handler.cc",
+      "autocomplete_scoring_model_handler.h",
+      "autocomplete_scoring_model_service.cc",
+      "autocomplete_scoring_model_service.h",
+      "on_device_tail_model_executor.cc",
+      "on_device_tail_model_executor.h",
+      "on_device_tail_model_service.cc",
+      "on_device_tail_model_service.h",
     ]
-    deps += [
-      ":jni_headers",
-      "//url:gurl_android",
+    public_deps += [
+      "//third_party/tflite",
+      "//third_party/tflite:tflite_public_headers",
+      "//third_party/tflite_support",
+      "//third_party/tflite_support:tflite_support_proto",
     ]
   }
 }
