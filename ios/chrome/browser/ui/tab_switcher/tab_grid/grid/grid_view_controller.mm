@@ -1625,19 +1625,36 @@ NSString* GridCellAccessibilityIdentifier(NSUInteger index) {
   [self updateSelectedCollectionViewItemRingAndBringIntoView:NO];
 }
 
-- (void)replaceItemID:(NSString*)itemID withItem:(TabSwitcherItem*)item {
-  if ([self indexOfItemWithID:itemID] == NSNotFound)
+- (void)replaceItemID:(NSString*)existingItemID
+             withItem:(TabSwitcherItem*)newItem {
+  NSUInteger index = [self indexOfItemWithID:existingItemID];
+  if (index == NSNotFound) {
     return;
-  // Consistency check: `item`'s ID is either `itemID` or not in `items`.
-  DCHECK([item.identifier isEqualToString:itemID] ||
-         [self indexOfItemWithID:item.identifier] == NSNotFound);
-  NSUInteger index = [self indexOfItemWithID:itemID];
-  self.items[index] = item;
-  GridCell* cell = base::mac::ObjCCastStrict<GridCell>(
-      [self.collectionView cellForItemAtIndexPath:CreateIndexPath(index)]);
-  // `cell` may be nil if it is scrolled offscreen.
-  if (cell) {
-    [self configureCell:cell withItem:item atIndex:index];
+  }
+  // Consistency check: `newItem`'s ID is either `existingItemID` or not in
+  // `self.items`.
+  DCHECK([newItem.identifier isEqualToString:existingItemID] ||
+         [self indexOfItemWithID:newItem.identifier] == NSNotFound);
+  self.items[index] = newItem;
+
+  if (base::FeatureList::IsEnabled(kTabGridRefactoring)) {
+    NSDiffableDataSourceSnapshot* snapshot = self.diffableDataSource.snapshot;
+    if ([existingItemID isEqualToString:newItem.identifier]) {
+      [snapshot reconfigureItemsWithIdentifiers:@[ existingItemID ]];
+    } else {
+      // Add the new item before the existing item.
+      [snapshot insertItemsWithIdentifiers:@[ newItem.identifier ]
+                  beforeItemWithIdentifier:existingItemID];
+      [snapshot deleteItemsWithIdentifiers:@[ existingItemID ]];
+    }
+    [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
+  } else {
+    GridCell* cell = base::mac::ObjCCastStrict<GridCell>(
+        [self.collectionView cellForItemAtIndexPath:CreateIndexPath(index)]);
+    // `cell` may be nil if it is scrolled offscreen.
+    if (cell) {
+      [self configureCell:cell withItem:newItem atIndex:index];
+    }
   }
 }
 
