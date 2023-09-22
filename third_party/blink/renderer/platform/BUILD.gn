@@ -1731,6 +1731,7 @@ component("platform") {
     "//ui/base/cursor/mojom:cursor_type_blink",
     "//ui/base/prediction",
     "//ui/color",
+    "//ui/color:mixers",
     "//ui/events/ipc",
     "//ui/gfx/geometry",
     "//ui/gfx/mojom",

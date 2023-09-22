@@ -44,6 +44,7 @@ struct UpdateSystemColorInfoParams {
   // Maps used to reconstruct ColorProvider instances in the renderer.
   map<color.mojom.RendererColorId, skia.mojom.SkColor> light_colors;
   map<color.mojom.RendererColorId, skia.mojom.SkColor> dark_colors;
+  map<color.mojom.RendererColorId, skia.mojom.SkColor> forced_colors_map;
 };
 
 // The background state for the render process.  When backgrounded the process's

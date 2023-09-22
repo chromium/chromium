@@ -197,6 +197,7 @@ WebThemeEngineDefault::WebThemeEngineDefault() {
   light_color_provider_.GenerateColorMap();
   dark_color_provider_.GenerateColorMap();
   emulated_forced_colors_provider_.GenerateColorMap();
+  forced_colors_provider_.GenerateColorMap();
 }
 
 WebThemeEngineDefault::~WebThemeEngineDefault() = default;
@@ -340,6 +341,10 @@ void WebThemeEngineDefault::OverrideForcedColorsTheme(bool is_dark_theme) {
       {ui::NativeTheme::SystemThemeColor::kWindow, 0xFFFFFFFF},
       {ui::NativeTheme::SystemThemeColor::kWindowText, 0xFF000000},
   };
+  AdjustForcedColorsProvider(ui::ColorProviderKey::ForcedColors::kEmulated,
+                             is_dark_theme
+                                 ? ui::ColorProviderKey::ColorMode::kDark
+                                 : ui::ColorProviderKey::ColorMode::kLight);
   EmulateForcedColors(is_dark_theme, /*is_web_test=*/false);
   ui::NativeTheme::GetInstanceForWeb()->UpdateSystemColorInfo(
       false, true, is_dark_theme ? dark_theme : light_theme);
@@ -362,6 +367,15 @@ void WebThemeEngineDefault::ResetToSystemColors(
     SystemColorInfoState system_color_info_state) {
   base::flat_map<ui::NativeTheme::SystemThemeColor, uint32_t> colors;
 
+  ui::ColorProviderKey::ForcedColors initial_forced_colors_state =
+      system_color_info_state.forced_colors
+          ? ui::ColorProviderKey::ForcedColors::kActive
+          : ui::ColorProviderKey::ForcedColors::kNone;
+  ui::ColorProviderKey::ColorMode initial_color_mode =
+      system_color_info_state.is_dark_mode
+          ? ui::ColorProviderKey::ColorMode::kDark
+          : ui::ColorProviderKey::ColorMode::kLight;
+  AdjustForcedColorsProvider(initial_forced_colors_state, initial_color_mode);
   for (const auto& color : system_color_info_state.colors) {
     colors.insert({NativeSystemThemeColor(color.first), color.second});
   }
@@ -394,7 +408,8 @@ WebThemeEngineDefault::GetSystemColorInfo() {
 
 bool WebThemeEngineDefault::UpdateColorProviders(
     const ui::RendererColorMap& light_colors,
-    const ui::RendererColorMap& dark_colors) {
+    const ui::RendererColorMap& dark_colors,
+    const ui::RendererColorMap& forced_colors_map) {
   if (WebTestSupport::IsRunningWebTest() &&
       GetForcedColors() == ForcedColors::kActive) {
     // Web tests use a different set of colors when determining which system
@@ -404,16 +419,44 @@ bool WebThemeEngineDefault::UpdateColorProviders(
 
   // Do not create new ColorProviders if the renderer color maps match the
   // existing ColorProviders.
-  if (IsRendererColorMappingEquivalent(light_color_provider_, light_colors) &&
-      IsRendererColorMappingEquivalent(dark_color_provider_, dark_colors)) {
-    return false;
+  bool did_color_provider_update = false;
+  if (!IsRendererColorMappingEquivalent(light_color_provider_, light_colors)) {
+    light_color_provider_ =
+        ui::CreateColorProviderFromRendererColorMap(light_colors);
+    did_color_provider_update = true;
+  }
+  if (!IsRendererColorMappingEquivalent(dark_color_provider_, dark_colors)) {
+    dark_color_provider_ =
+        ui::CreateColorProviderFromRendererColorMap(dark_colors);
+    did_color_provider_update = true;
+  }
+  if (!IsRendererColorMappingEquivalent(forced_colors_provider_,
+                                        forced_colors_map)) {
+    forced_colors_provider_ =
+        ui::CreateColorProviderFromRendererColorMap(forced_colors_map);
+    did_color_provider_update = true;
   }
 
-  light_color_provider_ =
-      ui::CreateColorProviderFromRendererColorMap(light_colors);
-  dark_color_provider_ =
-      ui::CreateColorProviderFromRendererColorMap(dark_colors);
-  return true;
+  return did_color_provider_update;
+}
+
+void WebThemeEngineDefault::AdjustForcedColorsProvider(
+    ui::ColorProviderKey::ForcedColors forced_colors_state,
+    ui::ColorProviderKey::ColorMode color_mode) {
+  auto key = ui::NativeTheme::GetInstanceForWeb()->GetColorProviderKey(
+      /*custom_theme=*/nullptr);
+  key.forced_colors = forced_colors_state;
+  key.color_mode = color_mode;
+  ui::ColorProvider* color_provider =
+      ui::ColorProviderManager::Get().GetColorProviderFor(key);
+  CHECK(color_provider);
+
+  const ui::RendererColorMap& emulated_forced_colors_map =
+      ui::CreateRendererColorMap(*color_provider);
+  if (!IsRendererColorMappingEquivalent(forced_colors_provider_,
+                                        emulated_forced_colors_map)) {
+    forced_colors_provider_ = std::move(*color_provider);
+  }
 }
 
 bool WebThemeEngineDefault::ShouldPartBeAffectedByAccentColor(

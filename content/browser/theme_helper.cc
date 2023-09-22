@@ -37,20 +37,34 @@ mojom::UpdateSystemColorInfoParamsPtr MakeUpdateSystemColorInfoParams(
   // the global NativeTheme web instance and instead have WebContents instances
   // propagate their specific ColorProviders to hosted frames.
   const auto get_renderer_color_map =
-      [](ui::ColorProviderKey::ColorMode color_mode) {
+      [](ui::ColorProviderKey::ColorMode color_mode,
+         bool override_forced_colors) {
         auto key =
             ui::NativeTheme::GetInstanceForWeb()->GetColorProviderKey(nullptr);
         key.color_mode = color_mode;
+        // TODO(samomekarajr): Currently, the light/dark providers are used to
+        // paint controls when the OS triggers forced colors mode. To keep
+        // current behavior, we shouldn't modify the `forced_colors` key. We
+        // should remove the conditional check when we use the forced colors
+        // provider for painitng.
+        if (override_forced_colors) {
+          key.forced_colors = ui::ColorProviderKey::ForcedColors::kActive;
+        }
         const auto* color_provider =
             ui::ColorProviderManager::Get().GetColorProviderFor(key);
         DCHECK(color_provider);
         return ui::CreateRendererColorMap(*color_provider);
       };
   params->light_colors =
-      get_renderer_color_map(ui::ColorProviderKey::ColorMode::kLight);
-  params->dark_colors =
-      get_renderer_color_map(ui::ColorProviderKey::ColorMode::kDark);
-
+      get_renderer_color_map(ui::ColorProviderKey::ColorMode::kLight,
+                             /*override_forced_colors=*/false);
+  params->dark_colors = get_renderer_color_map(
+      ui::ColorProviderKey::ColorMode::kDark, /*override_forced_colors=*/false);
+  params->forced_colors_map =
+      get_renderer_color_map(native_theme->ShouldUseDarkColors()
+                                 ? ui::ColorProviderKey::ColorMode::kDark
+                                 : ui::ColorProviderKey::ColorMode::kLight,
+                             /*override_forced_colors=*/true);
   return params;
 }
 
