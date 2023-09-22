@@ -26,8 +26,15 @@ class ASH_EXPORT DoNotDisturbNotificationController
 
   static const char kDoNotDisturbNotificationId[];
 
+  // Gets the singleton instance that lives within `Shell` if available.
+  static DoNotDisturbNotificationController* Get();
+
   // message_center::MessageCenterObserver:
   void OnQuietModeChanged(bool in_quiet_mode) override;
+
+  // This is called by `FocusModeController::ExtendActiveSessionDuration` to
+  // update the do not disturb notification with the latest end time.
+  void MaybeUpdateNotification();
 };
 
 }  // namespace ash

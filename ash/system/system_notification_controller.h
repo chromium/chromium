@@ -40,6 +40,10 @@ class SystemNotificationController {
 
   ~SystemNotificationController();
 
+  DoNotDisturbNotificationController* do_not_disturb() {
+    return do_not_disturb_.get();
+  }
+
   PrivacyHubNotificationController* privacy_hub() const {
     return privacy_hub_.get();
   }

@@ -7,10 +7,13 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
+#include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -176,6 +179,44 @@ TEST_F(DoNotDisturbNotificationControllerWithFocusModeTest,
   auto* notification = GetDoNotDisturbNotification();
   EXPECT_TRUE(notification);
   EXPECT_EQ(notification->message(), GetDoNotDisturbInFocusModeDescription());
+
+  // End the focus session, and the system DND state will be restored to
+  // `false`.
+  focus_mode_controller->ToggleFocusMode();
+  EXPECT_FALSE(focus_mode_controller->in_focus_session());
+  EXPECT_FALSE(GetDoNotDisturbNotification());
+}
+
+// Tests that if the focus session is extended by 10 minutes; correspondingly,
+// the notification will show the updated end time after adding the 10 minutes.
+TEST_F(DoNotDisturbNotificationControllerWithFocusModeTest,
+       CheckNotificationTextAfterExtendingFocusSession) {
+  auto* focus_mode_controller = FocusModeController::Get();
+
+  // The system DND is off before starting a focus session.
+  ASSERT_FALSE(GetDoNotDisturbNotification());
+
+  // Start a focus session where `turn_on_do_not_disturb` is defaulted to
+  // `true`.
+  EXPECT_TRUE(focus_mode_controller->turn_on_do_not_disturb());
+  focus_mode_controller->ToggleFocusMode();
+  EXPECT_TRUE(focus_mode_controller->in_focus_session());
+  const base::Time end_time1 = focus_mode_controller->end_time();
+
+  auto* notification = GetDoNotDisturbNotification();
+  EXPECT_TRUE(notification);
+  EXPECT_EQ(notification->title(),
+            focus_mode_util::GetNotificationTitleForFocusSession(end_time1));
+
+  // Extend the focus duration.
+  focus_mode_controller->ExtendActiveSessionDuration();
+  const base::Time end_time2 = focus_mode_controller->end_time();
+  EXPECT_EQ(end_time2 - end_time1, base::Minutes(10));
+
+  notification = GetDoNotDisturbNotification();
+  EXPECT_TRUE(notification);
+  EXPECT_EQ(notification->title(),
+            focus_mode_util::GetNotificationTitleForFocusSession(end_time2));
 
   // End the focus session, and the system DND state will be restored to
   // `false`.

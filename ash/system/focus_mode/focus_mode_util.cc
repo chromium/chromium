@@ -6,15 +6,22 @@
 
 #include <vector>
 
+#include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
+#include "ash/system/model/clock_model.h"
+#include "ash/system/model/system_tray_model.h"
 #include "base/i18n/time_formatting.h"
 #include "base/i18n/unicodestring.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/icu/source/i18n/unicode/measfmt.h"
 #include "third_party/icu/source/i18n/unicode/measunit.h"
 #include "third_party/icu/source/i18n/unicode/measure.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace ash::focus_mode_util {
+
+namespace {
 
 bool ShouldShowHours(TimeFormatType format_type) {
   return format_type != TimeFormatType::kMinutesOnly ||
@@ -34,6 +41,8 @@ bool ShouldShowMinutes(TimeFormatType format_type,
          !ShouldShowSeconds(format_type) ||
          (total_seconds >= base::Time::kSecondsPerMinute);
 }
+
+}  // namespace
 
 bool TimeDurationFormatShortWidthWithNonzeroUnits(
     base::TimeDelta duration_to_format,
@@ -81,6 +90,15 @@ bool TimeDurationFormatShortWidthWithNonzeroUnits(
 
   out_duration_string = base::i18n::UnicodeStringToString16(formatted);
   return U_SUCCESS(status);
+}
+
+std::u16string GetNotificationTitleForFocusSession(const base::Time& end_time) {
+  const std::u16string time_str = base::TimeFormatTimeOfDayWithHourClockType(
+      end_time, Shell::Get()->system_tray_model()->clock()->hour_clock_type(),
+      base::kKeepAmPm);
+
+  return l10n_util::GetStringFUTF16(
+      IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_IN_FOCUS_MODE_TITLE, time_str);
 }
 
 }  // namespace ash::focus_mode_util

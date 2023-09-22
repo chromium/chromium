@@ -12,11 +12,10 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
-#include "ash/system/model/clock_model.h"
-#include "ash/system/model/system_tray_model.h"
+#include "ash/system/focus_mode/focus_mode_util.h"
+#include "ash/system/system_notification_controller.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/i18n/time_formatting.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -35,22 +34,14 @@ const char kDoNotDisturbNotifierId[] =
     "ash.do_not_disturb_notification_controller";
 
 // Creates a notification for do not disturb. If a focus session is active, the
-// title and the message of the notification will indicate if DND will be
-// turned off when the focus session ends.
+// title and the message of the notification will indicate if DND will be turned
+// off when the focus session ends.
 std::unique_ptr<message_center::Notification> CreateNotification() {
   auto* focus_mode_controller =
       features::IsFocusModeEnabled() ? FocusModeController::Get() : nullptr;
   const bool should_show_focus_text =
       focus_mode_controller && focus_mode_controller->in_focus_session() &&
       !focus_mode_controller->previous_do_not_disturb_state();
-
-  std::u16string time_str;
-  if (should_show_focus_text) {
-    time_str = base::TimeFormatTimeOfDayWithHourClockType(
-        focus_mode_controller->end_time(),
-        Shell::Get()->system_tray_model()->clock()->hour_clock_type(),
-        base::kKeepAmPm);
-  }
 
   message_center::RichNotificationData optional_fields;
   optional_fields.buttons.emplace_back(
@@ -60,9 +51,8 @@ std::unique_ptr<message_center::Notification> CreateNotification() {
       message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE,
       DoNotDisturbNotificationController::kDoNotDisturbNotificationId,
       should_show_focus_text
-          ? l10n_util::GetStringFUTF16(
-                IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_IN_FOCUS_MODE_TITLE,
-                time_str)
+          ? focus_mode_util::GetNotificationTitleForFocusSession(
+                focus_mode_controller->end_time())
           : l10n_util::GetStringUTF16(
                 IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_TITLE),
       l10n_util::GetStringUTF16(
@@ -102,6 +92,15 @@ DoNotDisturbNotificationController::~DoNotDisturbNotificationController() {
 const char DoNotDisturbNotificationController::kDoNotDisturbNotificationId[] =
     "do_not_disturb";
 
+// static
+DoNotDisturbNotificationController* DoNotDisturbNotificationController::Get() {
+  SystemNotificationController* system_notification_controller =
+      Shell::Get()->system_notification_controller();
+  return system_notification_controller
+             ? system_notification_controller->do_not_disturb()
+             : nullptr;
+}
+
 void DoNotDisturbNotificationController::OnQuietModeChanged(
     bool in_quiet_mode) {
   auto* message_center = MessageCenter::Get();
@@ -113,6 +112,15 @@ void DoNotDisturbNotificationController::OnQuietModeChanged(
   DCHECK(message_center->FindNotificationById(kDoNotDisturbNotificationId));
   message_center->RemoveNotification(kDoNotDisturbNotificationId,
                                      /*by_user=*/false);
+}
+
+void DoNotDisturbNotificationController::MaybeUpdateNotification() {
+  auto* message_center = message_center::MessageCenter::Get();
+  if (message_center->FindVisibleNotificationById(
+          kDoNotDisturbNotificationId)) {
+    message_center->UpdateNotification(kDoNotDisturbNotificationId,
+                                       CreateNotification());
+  }
 }
 
 }  // namespace ash

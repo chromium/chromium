@@ -883,14 +883,18 @@ Shell::~Shell() {
   multitask_menu_nudge_delegate_.reset();
   tablet_mode_controller_.reset();
   login_screen_controller_.reset();
+
+  // This must be destroyed before `message_center_controller_` in order to
+  // restore the original settings if a focus session was active. Also, this
+  // should be destroyed before `system_notification_controller_`, which could
+  // be indirectly called by `focus_mode_controller_` to update the DND
+  // notification.
+  focus_mode_controller_.reset();
+
   system_notification_controller_.reset();
   // Should be destroyed after Shelf and |system_notification_controller_|.
   system_tray_model_.reset();
   system_sounds_delegate_.reset();
-
-  // This must be destroyed before `message_center_controller_` in order to
-  // restore the original settings if a focus session was active.
-  focus_mode_controller_.reset();
 
   // MultiDisplayMetricsController has a dependency on `mru_window_tracker_`.
   multi_display_metrics_controller_.reset();
@@ -1222,10 +1226,6 @@ void Shell::Init(
 
   capture_mode_controller_ = std::make_unique<CaptureModeController>(
       shell_delegate_->CreateCaptureModeDelegate());
-
-  if (features::IsFocusModeEnabled()) {
-    focus_mode_controller_ = std::make_unique<FocusModeController>();
-  }
 
   // Accelerometer file reader starts listening to tablet mode controller.
   AccelerometerReader::GetInstance()->StartListenToTabletModeController();
@@ -1588,6 +1588,10 @@ void Shell::Init(
   // One of the subcontrollers accesses the SystemNotificationController.
   system_notification_controller_ =
       std::make_unique<SystemNotificationController>();
+
+  if (features::IsFocusModeEnabled()) {
+    focus_mode_controller_ = std::make_unique<FocusModeController>();
+  }
 
   // WmModeController should be created before initializing the window tree
   // hosts, since the latter will initialize the shelf on each display, which

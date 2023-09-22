@@ -48,6 +48,11 @@ ASH_EXPORT bool TimeDurationFormatShortWidthWithNonzeroUnits(
     TimeFormatType format_type,
     std::u16string& out_duration_string);
 
+// Returns a string indicating that do not disturb will be turned off when the
+// focus session ends at `end_time`.
+ASH_EXPORT std::u16string GetNotificationTitleForFocusSession(
+    const base::Time& end_time);
+
 }  // namespace ash::focus_mode_util
 
 #endif  // ASH_SYSTEM_FOCUS_MODE_FOCUS_MODE_UTIL_H_
