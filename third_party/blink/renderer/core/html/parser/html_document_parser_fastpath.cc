@@ -960,11 +960,15 @@ class HTMLFastPathParser {
           return Fail(HtmlFastPathResult::kFailedParsingAttributes);
         }
       }
-      if (attr_name.size() >= 2 && attr_name[0] == 'o' && attr_name[1] == 'n') {
+      if (attr_name.size() > 2 && attr_name[0] == 'o' && attr_name[1] == 'n') {
         // These attributes likely contain script that may be executed at random
         // points, which could cause problems if parsing via the fast path
         // fails. For example, an image's onload event.
         return Fail(HtmlFastPathResult::kFailedOnAttribute);
+      }
+      if (attr_name.size() == 2 && attr_name[0] == 'i' && attr_name[1] == 's') {
+        // This is for the "is" attribute case.
+        return Fail(HtmlFastPathResult::kFailedParsingAttributes);
       }
       if (GetNext() != '=') {
         SkipWhitespace();
@@ -976,11 +980,8 @@ class HTMLFastPathParser {
         SkipWhitespace();
       }
       Attribute attribute = ProcessAttribute(attr_name, attr_value);
-      attribute_buffer_.push_back(attribute);
-      if (attribute.GetName() == html_names::kIsAttr) {
-        return Fail(HtmlFastPathResult::kFailedParsingAttributes);
-      }
       attribute_names_.push_back(attribute.LocalName().Impl());
+      attribute_buffer_.push_back(std::move(attribute));
     }
     std::sort(attribute_names_.begin(), attribute_names_.end());
     if (std::adjacent_find(attribute_names_.begin(), attribute_names_.end()) !=
