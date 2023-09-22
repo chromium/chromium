@@ -536,7 +536,8 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
     OnDictationKeyboardDialogDismissed();
   }
 
-  void AddShowToastCallbackForTesting(base::RepeatingClosure callback);
+  void AddShowToastCallbackForTesting(
+      base::RepeatingCallback<void(AccessibilityToastType)> callback);
 
  private:
   // Populate |features_| with the feature of the correct type.

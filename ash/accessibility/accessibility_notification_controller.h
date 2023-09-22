@@ -22,10 +22,12 @@ class ASH_EXPORT AccessibilityNotificationController {
   ~AccessibilityNotificationController();
 
   void ShowToast(AccessibilityToastType type);
-  void AddShowToastCallbackForTesting(base::RepeatingClosure callback);
+  void AddShowToastCallbackForTesting(
+      base::RepeatingCallback<void(AccessibilityToastType)> callback);
 
  private:
-  base::RepeatingClosure show_anchored_nudge_callback_for_testing_;
+  base::RepeatingCallback<void(AccessibilityToastType)>
+      show_anchored_nudge_callback_for_testing_;
 };
 
 }  // namespace ash

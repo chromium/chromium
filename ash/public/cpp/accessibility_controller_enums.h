@@ -235,6 +235,7 @@ enum class DictationNotificationType {
 // The types of accessibility-related toasts. This enum should be kept in sync
 // with chrome.accessibilityPrivate.ToastType.
 enum class AccessibilityToastType {
+  kDictationMicMuted,
   kDictationNoFocusedTextField,
 };
 

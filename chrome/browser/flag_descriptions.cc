@@ -1111,7 +1111,8 @@ const char kAccessibilityDictationKeyboardImprovementsName[] =
 const char kAccessibilityDictationKeyboardImprovementsDescription[] =
     "This option enables Dictation keyboard improvements to enable a more "
     "seemless experience when pressing Search + D or the Dictation key on "
-    "supported keyboards.";
+    "supported keyboards. This feature also includes some UI enhancements for "
+    "Dictation, including notifications during error states.";
 
 const char kAccessibilityGameFaceIntegrationName[] =
     "Experimental GameFace integration";

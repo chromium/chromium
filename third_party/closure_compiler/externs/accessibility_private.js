@@ -345,6 +345,7 @@ chrome.accessibilityPrivate.DictationBubbleProperties;
  */
 chrome.accessibilityPrivate.ToastType = {
   DICTATION_NO_FOCUSED_TEXT_FIELD: 'dictationNoFocusedTextField',
+  DICTATION_MIC_MUTED: 'dictationMicMuted',
 };
 
 /**

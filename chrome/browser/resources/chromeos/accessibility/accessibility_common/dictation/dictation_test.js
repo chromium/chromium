@@ -318,3 +318,32 @@ AX_TEST_F(
       this.toggleDictationOff();
       assertEquals(null, this.getInputController().surroundingInfo_);
     });
+
+AX_TEST_F('DictationE2ETest', 'ShowsToastWhenMicMuted', async function() {
+  const StreamType = chrome.audio.StreamType;
+  const ToastType = chrome.accessibilityPrivate.ToastType;
+
+  assertEquals(
+      0,
+      this.mockAccessibilityPrivate.getShowToastCount(
+          ToastType.DICTATION_MIC_MUTED));
+  await new Promise(
+      resolve =>
+          chrome.audio.setMute(StreamType.INPUT, /*isMuted=*/ true, resolve));
+
+  // Use callOnToggleDictation instead of toggleDictation because the latter
+  // asserts that speech recognition successfully starts, which won't be the
+  // case here.
+  this.mockAccessibilityPrivate.callOnToggleDictation(true);
+  assertTrue(this.getDictationActive());
+  this.checkDictationImeActive();
+  // Focus the input context so that we try to start speech recognition. We'll
+  // fail to start since the device is muted.
+  this.focusInputContext();
+  // Confirm that a toast was shown and that Dictation is inactive.
+  assertEquals(
+      1,
+      this.mockAccessibilityPrivate.getShowToastCount(
+          ToastType.DICTATION_MIC_MUTED));
+  assertFalse(this.getDictationActive());
+});

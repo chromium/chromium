@@ -26,6 +26,12 @@ ToastData GetToastData(AccessibilityToastType type) {
               /*text=*/
               l10n_util::GetStringUTF16(
                   IDS_ASH_ACCESSIBILITY_NUDGE_DICTATION_NO_FOCUSED_TEXT_FIELD)};
+    case AccessibilityToastType::kDictationMicMuted:
+      return {/*id=*/kAccessibilityToastId,
+              /*catalog_name=*/ToastCatalogName::kDictationMicMuted,
+              /*text=*/
+              l10n_util::GetStringUTF16(
+                  IDS_ASH_ACCESSIBILITY_NUDGE_DICTATION_MIC_MUTED)};
   }
 }
 
@@ -44,12 +50,12 @@ void AccessibilityNotificationController::ShowToast(
 
   Shell::Get()->toast_manager()->Show(GetToastData(type));
   if (show_anchored_nudge_callback_for_testing_) {
-    show_anchored_nudge_callback_for_testing_.Run();
+    show_anchored_nudge_callback_for_testing_.Run(type);
   }
 }
 
 void AccessibilityNotificationController::AddShowToastCallbackForTesting(
-    base::RepeatingClosure callback) {
+    base::RepeatingCallback<void(AccessibilityToastType)> callback) {
   show_anchored_nudge_callback_for_testing_ = std::move(callback);
 }
 

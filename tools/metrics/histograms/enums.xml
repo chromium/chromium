@@ -105338,6 +105338,8 @@ would be helpful to identify which type is being sent.
   <int value="42" label="Copy Gif To Clipboard Action"/>
   <int value="44" label="Battery Saver Disabled"/>
   <int value="45" label="Dictation No Focused Text Field"/>
+  <int value="46" label="Battery Saver Enabled"/>
+  <int value="47" label="Dictation Mic Muted"/>
 </enum>
 
 <enum name="TokenBinding.KeyMatch">

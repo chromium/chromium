@@ -74,6 +74,7 @@ class MockAccessibilityPrivate {
     this.SyntheticKeyboardEventType = {KEYDOWN: 'keydown', KEYUP: 'keyup'};
 
     this.ToastType = {
+      DICTATION_MIC_MUTED: 'dictationMicMuted',
       DICTATION_NO_FOCUSED_TEXT_FIELD: 'dictationNoFocusedTextField',
     };
 
@@ -131,6 +132,9 @@ class MockAccessibilityPrivate {
 
     /** @private {?MockPumpkinData} */
     this.pumpkinData_ = null;
+
+    /** @private {!Object<chrome.accessibilityPrivate.ToastType, number} */
+    this.showToastData_ = {};
 
     // Methods from AccessibilityPrivate API. //
 
@@ -430,6 +434,18 @@ class MockAccessibilityPrivate {
   }
 
   /**
+   * @param {!chrome.accessibilityPrivate.ToastType} type
+   * @return {number}
+   */
+  getShowToastCount(type) {
+    if (!this.showToastData_[type]) {
+      return 0;
+    }
+
+    return this.showToastData_[type];
+  }
+
+  /**
    * Enables or disables a feature for testing, causing
    * this.isFeatureEnabled to consider it enabled.
    * @param {AccessibilityFeature} feature
@@ -490,5 +506,10 @@ class MockAccessibilityPrivate {
   }
 
   /** @param {!chrome.accessibilityPrivate.ToastType} type */
-  showToast(type) {}
+  showToast(type) {
+    if (!this.showToastData_[type]) {
+      this.showToastData_[type] = 0;
+    }
+    this.showToastData_[type] += 1;
+  }
 }

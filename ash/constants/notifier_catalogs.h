@@ -275,7 +275,8 @@ enum class ToastCatalogName {
   kBatterySaverDisabled = 44,
   kDictationNoFocusedTextField = 45,
   kBatterySaverEnabled = 46,
-  kMaxValue = kBatterySaverEnabled
+  kDictationMicMuted = 47,
+  kMaxValue = kDictationMicMuted
 };
 
 }  // namespace ash

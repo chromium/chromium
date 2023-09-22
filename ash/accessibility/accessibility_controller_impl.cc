@@ -2939,7 +2939,7 @@ void AccessibilityControllerImpl::ShowToast(AccessibilityToastType type) {
 }
 
 void AccessibilityControllerImpl::AddShowToastCallbackForTesting(
-    base::RepeatingClosure callback) {
+    base::RepeatingCallback<void(AccessibilityToastType)> callback) {
   accessibility_notification_controller_->AddShowToastCallbackForTesting(
       std::move(callback));
 }

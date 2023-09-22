@@ -76,6 +76,8 @@ ash::AccessibilityToastType ConvertToastType(
     case accessibility_private::ToastType::
         TOAST_TYPE_DICTATIONNOFOCUSEDTEXTFIELD:
       return ash::AccessibilityToastType::kDictationNoFocusedTextField;
+    case accessibility_private::ToastType::TOAST_TYPE_DICTATIONMICMUTED:
+      return ash::AccessibilityToastType::kDictationMicMuted;
     case accessibility_private::ToastType::TOAST_TYPE_NONE:
       NOTREACHED_NORETURN();
   }

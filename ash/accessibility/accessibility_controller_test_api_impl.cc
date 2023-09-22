@@ -54,7 +54,7 @@ void AccessibilityControllerTestApiImpl::DismissDictationKeyboardDialog() {
 }
 
 void AccessibilityControllerTestApiImpl::AddShowToastCallbackForTesting(
-    base::RepeatingClosure callback) const {
+    base::RepeatingCallback<void(AccessibilityToastType)> callback) const {
   GetController()->AddShowToastCallbackForTesting(
       std::move(callback));  // IN-TEST
 }

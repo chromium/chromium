@@ -115,6 +115,7 @@ js2gtest("accessibility_common_extjs_tests") {
     "../common/testing/common_e2e_test_base.js",
     "../common/testing/e2e_test_base.js",
     "../common/testing/mock_accessibility_private.js",
+    "../common/testing/mock_audio.js",
     "../common/testing/mock_input_ime.js",
     "../common/testing/mock_input_method_private.js",
     "../common/testing/mock_language_settings_private.js",
@@ -194,6 +195,7 @@ js_library("dictation") {
   ]
   externs_list = [
     "$externs_path/accessibility_private.js",
+    "$externs_path/audio.js",
     "$externs_path/speech_recognition_private.js",
     "dictation/parse/pumpkin/pumpkin_tagger_externs.js",
   ]
