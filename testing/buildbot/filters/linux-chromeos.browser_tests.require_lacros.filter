@@ -54,6 +54,9 @@ TestAsNormalAndGuestUser/SpokenFeedbackTest.*
 -TestAsNormalAndGuestUser/SpokenFeedbackTest.MoveByCharacterPhoneticSpeechAndHints*
 -TestAsNormalAndGuestUser/SpokenFeedbackTest.ShelfIconFocusForward*
 -TestAsNormalAndGuestUser/SpokenFeedbackTest.FocusShelf*
+# TODO(b/301475127): These tests use the Ash web contents directly and cannot
+# currently work in Lacros.
+-TestAsNormalAndGuestUser/SpokenFeedbackTest.TouchExploreWebContents*
 # The following tests have no dependency on Lacros browser, do not run these tests
 # as browser_tests_require_lacros.
 # TODO(b/290096429): Audit these tests, re-work to run these tests against Lacros

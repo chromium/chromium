@@ -42,7 +42,9 @@ class LoggedInSpokenFeedbackTest : public InProcessBrowserTest {
   void SendKeyPress(ui::KeyboardCode key);
   void SendKeyPressWithControl(ui::KeyboardCode key);
   void SendKeyPressWithControlAndAlt(ui::KeyboardCode key);
+  void SendKeyPressWithControlAndShift(ui::KeyboardCode key);
   void SendKeyPressWithShift(ui::KeyboardCode key);
+  void SendKeyPressWithAltAndShift(ui::KeyboardCode key);
   void SendKeyPressWithSearchAndShift(ui::KeyboardCode key);
   void SendKeyPressWithSearch(ui::KeyboardCode key);
   void SendKeyPressWithSearchAndControl(ui::KeyboardCode key);
@@ -67,6 +69,7 @@ class LoggedInSpokenFeedbackTest : public InProcessBrowserTest {
   void RunJSForChromeVox(const std::string& script);
   void ImportJSModuleForChromeVox(std::string name, std::string path);
   void NavigateToUrl(const GURL& url);
+  bool IsLacrosRunning() const;
 
   test::SpeechMonitor sm_;
 

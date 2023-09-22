@@ -76,6 +76,7 @@
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/widget/widget.h"
@@ -105,6 +106,7 @@ void LoggedInSpokenFeedbackTest::SetUpOnMainThread() {
   InProcessBrowserTest::SetUpOnMainThread();
   event_generator_ = std::make_unique<ui::test::EventGenerator>(
       Shell::Get()->GetPrimaryRootWindow());
+  CHECK(ash_starter_);
   if (ash_starter_->HasLacrosArgument()) {
     ash_starter_->StartLacros(this);
   }
@@ -120,43 +122,65 @@ void LoggedInSpokenFeedbackTest::TearDownOnMainThread() {
 }
 
 void LoggedInSpokenFeedbackTest::SendKeyPress(ui::KeyboardCode key) {
-  ui::test::EmulateFullKeyPressReleaseSequence(event_generator_.get(), key,
-                                               false, false, false, false);
+  ui::test::EmulateFullKeyPressReleaseSequence(
+      event_generator_.get(), key,
+      /*control=*/false, /*shift=*/false, /*alt=*/false, /*command=*/false);
 }
 
 void LoggedInSpokenFeedbackTest::SendKeyPressWithControl(ui::KeyboardCode key) {
   ui::test::EmulateFullKeyPressReleaseSequence(
-      event_generator_.get(), key, /*control=*/true, false, false, false);
+      event_generator_.get(), key, /*control=*/true, /*shift=*/false,
+      /*alt=*/false, /*command=*/false);
 }
 
 void LoggedInSpokenFeedbackTest::SendKeyPressWithControlAndAlt(
     ui::KeyboardCode key) {
   ui::test::EmulateFullKeyPressReleaseSequence(event_generator_.get(), key,
-                                               /*control=*/true, false,
-                                               /*shift=*/true, false);
+                                               /*control=*/true,
+                                               /*shift=*/false,
+                                               /*alt=*/true, /*command=*/false);
+}
+
+void LoggedInSpokenFeedbackTest::SendKeyPressWithControlAndShift(
+    ui::KeyboardCode key) {
+  ui::test::EmulateFullKeyPressReleaseSequence(event_generator_.get(), key,
+                                               /*control=*/true, /*shift=*/true,
+                                               /*alt=*/false,
+                                               /*command=*/false);
 }
 
 void LoggedInSpokenFeedbackTest::SendKeyPressWithShift(ui::KeyboardCode key) {
   ui::test::EmulateFullKeyPressReleaseSequence(
-      event_generator_.get(), key, false, /*shift=*/true, false, false);
+      event_generator_.get(), key, /*control=*/false, /*shift=*/true,
+      /*alt=*/false, /*command=*/false);
+}
+
+void LoggedInSpokenFeedbackTest::SendKeyPressWithAltAndShift(
+    ui::KeyboardCode key) {
+  ui::test::EmulateFullKeyPressReleaseSequence(
+      event_generator_.get(), key, /*control=*/false, /*shift=*/true,
+      /*alt=*/true, /*command=*/false);
 }
 
 void LoggedInSpokenFeedbackTest::SendKeyPressWithSearchAndShift(
     ui::KeyboardCode key) {
   ui::test::EmulateFullKeyPressReleaseSequence(event_generator_.get(), key,
-                                               false, /*shift=*/true, false,
+                                               /*control=*/false,
+                                               /*shift=*/true, /*alt=*/false,
                                                /*command=*/true);
 }
 
 void LoggedInSpokenFeedbackTest::SendKeyPressWithSearch(ui::KeyboardCode key) {
   ui::test::EmulateFullKeyPressReleaseSequence(
-      event_generator_.get(), key, false, false, false, /*command=*/true);
+      event_generator_.get(), key, /*control=*/false, /*shift=*/false,
+      /*alt=*/false, /*command=*/true);
 }
 
 void LoggedInSpokenFeedbackTest::SendKeyPressWithSearchAndControl(
     ui::KeyboardCode key) {
   ui::test::EmulateFullKeyPressReleaseSequence(event_generator_.get(), key,
-                                               /*control=*/true, false, false,
+                                               /*control=*/true,
+                                               /*shift=*/false, /*alt=*/false,
                                                /*command=*/true);
 }
 
@@ -164,7 +188,7 @@ void LoggedInSpokenFeedbackTest::SendKeyPressWithSearchAndControlAndShift(
     ui::KeyboardCode key) {
   ui::test::EmulateFullKeyPressReleaseSequence(event_generator_.get(), key,
                                                /*control=*/true, /*shift=*/true,
-                                               false, /*command=*/true);
+                                               /*alt=*/false, /*command=*/true);
 }
 
 void LoggedInSpokenFeedbackTest::SendStickyKeyCommand() {
@@ -233,9 +257,8 @@ void LoggedInSpokenFeedbackTest::EnableChromeVox(bool check_for_intro) {
 
 void LoggedInSpokenFeedbackTest::StablizeChromeVoxState() {
   sm_.Call([this]() {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), GURL(R"(data:text/html;charset=utf-8,
-        <button autofocus>Click me</button>)")));
+    NavigateToUrl(GURL(R"(data:text/html;charset=utf-8,
+        <button autofocus>Click me</button>)"));
   });
   sm_.ExpectSpeech("Click me");
 }
@@ -250,6 +273,7 @@ void LoggedInSpokenFeedbackTest::ExecuteCommandHandlerCommand(
 }
 
 void LoggedInSpokenFeedbackTest::NavigateToUrl(const GURL& url) {
+  CHECK(ash_starter_);
   if (ash_starter_->HasLacrosArgument()) {
     crosapi::BrowserManager::Get()->OpenUrl(
         url, crosapi::mojom::OpenUrlFrom::kUnspecified,
@@ -260,16 +284,20 @@ void LoggedInSpokenFeedbackTest::NavigateToUrl(const GURL& url) {
   }
 }
 
+bool LoggedInSpokenFeedbackTest::IsLacrosRunning() const {
+  CHECK(ash_starter_);
+  return ash_starter_->HasLacrosArgument();
+}
+
 // Flaky test, crbug.com/1081563
 IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, DISABLED_AddBookmark) {
   EnableChromeVox();
 
-  sm_.Call(
-      [this]() { chrome::ExecuteCommand(browser(), IDC_SHOW_BOOKMARK_BAR); });
+  // Open the bookmarks bar.
+  sm_.Call([this]() { SendKeyPressWithControlAndShift(ui::VKEY_B); });
 
   // Create a bookmark with title "foo".
-  sm_.Call(
-      [this]() { chrome::ExecuteCommand(browser(), IDC_BOOKMARK_THIS_TAB); });
+  sm_.Call([this]() { SendKeyPressWithControl(ui::VKEY_D); });
 
   sm_.ExpectSpeech("Bookmark name");
   sm_.ExpectSpeech("about:blank");
@@ -308,8 +336,10 @@ IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, DISABLED_AddBookmark) {
   sm_.ExpectSpeechPattern("about:blank*");
 
   // Focus bookmarks bar and listen for "foo".
-  sm_.Call(
-      [this]() { chrome::ExecuteCommand(browser(), IDC_FOCUS_BOOKMARKS); });
+  sm_.Call([this]() {
+    // Focus bookmarks bar.
+    SendKeyPressWithAltAndShift(ui::VKEY_B);
+  });
   sm_.ExpectSpeech("foo");
   sm_.ExpectSpeech("Button");
   sm_.ExpectSpeech("Bookmarks");
@@ -510,10 +540,19 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, EnableSpokenFeedback) {
 
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, FocusToolbar) {
   EnableChromeVox();
-  sm_.Call([this]() { chrome::ExecuteCommand(browser(), IDC_FOCUS_TOOLBAR); });
-  sm_.ExpectSpeech("Reload");
-  sm_.ExpectSpeech("Button");
-
+  // Wait for the browser to show up.
+  // In Ash, this results in a navigation, while in Lacros, this creates
+  // a new window. Thus the former has a "back" button while the latter
+  // does not, and focus will jump directly to the "reload" button.
+  StablizeChromeVoxState();
+  sm_.Call([this]() { SendKeyPressWithAltAndShift(ui::VKEY_T); });
+  if (IsLacrosRunning()) {
+    // The reload button should become focused.
+    sm_.ExpectSpeech("Reload");
+  } else {
+    // The back button should become focused.
+    sm_.ExpectSpeech("Back");
+  }
   sm_.Replay();
 }
 
@@ -522,8 +561,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DISABLED_TypeInOmnibox) {
   EnableChromeVox();
 
   sm_.Call([this]() {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), GURL("data:text/html;charset=utf-8,<p>unused</p>")));
+    NavigateToUrl(GURL("data:text/html;charset=utf-8,<p>unused</p>"));
   });
 
   sm_.Call([this]() { SendKeyPressWithControl(ui::VKEY_L); });
@@ -653,13 +691,14 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, NavigateSpeechMenu) {
 
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OpenContextMenu) {
   EnableChromeVox();
+  StablizeChromeVoxState();
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_M); });
   sm_.ExpectSpeech("menu opened");
   // Close the menu
   sm_.Call([this]() { SendKeyPress(ui::VKEY_ESCAPE); });
   sm_.Call([this]() {
     NavigateToUrl(GURL(R"(data:text/html;charset=utf-8,
-            <button autofocus>Click me</button>)"));
+            <button autofocus>I'm a button</button>)"));
   });
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_M); });
   sm_.ExpectSpeech("menu opened");
@@ -1102,12 +1141,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, LandmarkNavigation) {
 
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OverviewMode) {
   EnableChromeVox();
-  sm_.Call([this]() {
-    NavigateToUrl(GURL(R"(data:text/html;charset=utf-8,
-        <button autofocus>Click me</button>)"));
-  });
-
-  sm_.ExpectSpeech("Click me");
+  StablizeChromeVoxState();
 
   sm_.Call([this]() {
     (PerformAcceleratorAction(AcceleratorAction::kToggleOverview));
@@ -1152,10 +1186,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, NextGraphic) {
 // Verify that enable chromeVox won't end overview.
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
                        DISABLED_EnableChromeVoxOnOverviewMode) {
-  sm_.Call([this]() {
-    NavigateToUrl(GURL(R"(data:text/html;charset=utf-8,
-        <button autofocus>Click me</button>)"));
-  });
+  StablizeChromeVoxState();
 
   sm_.Call([this]() {
     (PerformAcceleratorAction(AcceleratorAction::kToggleOverview));
@@ -1183,13 +1214,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
 
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, MAYBE_ChromeVoxFindInPage) {
   EnableChromeVox();
-
-  sm_.Call([this]() {
-    NavigateToUrl(GURL(R"(data:text/html;charset=utf-8,
-        <button autofocus>Click me</button>)"));
-  });
-
-  sm_.ExpectSpeech("Click me");
+  StablizeChromeVoxState();
 
   // Press Search+/ to enter ChromeVox's "find in page".
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_OEM_2); });
@@ -1550,12 +1575,11 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, TouchExploreWebContents) {
   gfx::Rect b3_bounds;
 
   sm_.Call([this]() {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), GURL(R"(data:text/html;charset=utf-8,
+    NavigateToUrl(GURL(R"(data:text/html;charset=utf-8,
             <button id="b1" autofocus>First</button>
             <button id="b2">Second</button>
             <button id="b3">Third</button>
-        )")));
+        )"));
   });
   sm_.ExpectSpeech("First");
   sm_.Call([this, clock_ptr, generator_ptr, &b2_bounds, &b3_bounds]() {
@@ -1619,11 +1643,10 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, TouchExploreWebContentsHighDPI) {
   auto* generator_ptr = &generator;
 
   sm_.Call([this]() {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), GURL(R"(data:text/html;charset=utf-8,
+    NavigateToUrl(GURL(R"(data:text/html;charset=utf-8,
             <button id="b1" autofocus>First</button>
             <button id="b2">Second</button>
-        )")));
+        )"));
   });
   sm_.ExpectSpeech("First");
   sm_.Call([this, clock_ptr, generator_ptr]() {
@@ -1708,11 +1731,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ChromeVoxNextTabRecovery) {
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
                        MoveByCharacterPhoneticSpeechAndHints) {
   EnableChromeVox();
-  sm_.Call([this]() {
-    NavigateToUrl(GURL(R"(data:text/html;charset=utf-8,
-        <button autofocus>Click me</button>)"));
-  });
-  sm_.ExpectSpeech("Click me");
+  StablizeChromeVoxState();
   sm_.ExpectSpeech("Button");
   sm_.ExpectSpeech("Press Search plus Space to activate");
 
@@ -1771,12 +1790,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
 
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ResetTtsSettings) {
   EnableChromeVox();
-  sm_.Call([this]() {
-    NavigateToUrl(GURL(R"(data:text/html;charset=utf-8,
-        <button autofocus>Click me</button>)"));
-  });
-
-  sm_.ExpectSpeech("Click me");
+  StablizeChromeVoxState();
 
   // Reset Tts settings using hotkey and assert speech output.
   sm_.Call(
