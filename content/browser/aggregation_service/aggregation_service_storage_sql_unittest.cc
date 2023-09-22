@@ -15,8 +15,9 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
@@ -1226,11 +1227,9 @@ class AggregationServiceStorageSqlMigrationsTest
   std::string GetDatabaseData(int version_id) {
     base::FilePath source_path;
     base::PathService::Get(content::DIR_TEST_DATA, &source_path);
-    // Should be safe cross platform because StringPrintf has overloads for wide
-    // strings.
-    source_path = source_path.Append(base::FilePath(base::StringPrintf(
-        FILE_PATH_LITERAL("aggregation_service/databases/version_%d.sql"),
-        version_id)));
+    source_path = source_path.Append(base::FilePath::FromASCII(
+        base::StrCat({"aggregation_service/databases/version_",
+                      base::NumberToString(version_id), ".sql"})));
 
     if (!base::PathExists(source_path))
       return std::string();

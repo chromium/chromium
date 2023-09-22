@@ -18,6 +18,8 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -509,9 +511,12 @@ bool SavePackage::GenerateFileName(const std::string& disposition,
     }
   } else {
     for (int i = ordinal_number; i < kMaxFileOrdinalNumber; ++i) {
-      base::FilePath::StringType new_name =
-          base_file_name + base::StringPrintf(FILE_PATH_LITERAL("(%d)"), i) +
-          file_name_ext;
+      base::FilePath new_filepath(base_file_name);
+      new_filepath = new_filepath
+                         .InsertBeforeExtensionASCII(
+                             base::StrCat({"(", base::NumberToString(i), ")"}))
+                         .AddExtension(file_name_ext);
+      base::FilePath::StringType new_name = new_filepath.value();
       if (!base::Contains(file_name_set_, new_name)) {
         // Resolved name conflict.
         file_name = new_name;

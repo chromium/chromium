@@ -8,6 +8,8 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -65,10 +67,8 @@ class AttributionStorageSqlMigrationsTest : public testing::Test {
   }
 
   static base::FilePath GetVersionFilePath(int version_id) {
-    // Should be safe cross platform because StringPrintf has overloads for wide
-    // strings.
-    return base::FilePath(
-        base::StringPrintf(FILE_PATH_LITERAL("version_%d.sql"), version_id));
+    return base::FilePath::FromASCII(
+        base::StrCat({"version_", base::NumberToString(version_id), ".sql"}));
   }
 
   std::string GetCurrentSchema() {
