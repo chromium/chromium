@@ -30,7 +30,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/view.h"
-#include "ui/views/widget/any_widget_observer.h"
 
 class ShortcutRemovalDialogViewBrowserTest
     : public InProcessBrowserTest,
@@ -219,4 +218,20 @@ IN_PROC_BROWSER_TEST_F(ShortcutRemovalDialogViewBrowserTest, InvokeUiTwice) {
   EXPECT_NE(first_dialog, LastCreatedView());
   EXPECT_NE(second_dialog, LastCreatedView());
   EXPECT_TRUE(LastCreatedView()->GetOkButton()->HasFocus());
+}
+
+IN_PROC_BROWSER_TEST_F(ShortcutRemovalDialogViewBrowserTest,
+                       ShortcutRemovedClosesDialog) {
+  apps::ShortcutId shortcut_id =
+      CreateWebAppBasedShortcut(GURL("https://example.org/"), u"Example");
+  SetStubIconLoaders(shortcut_id, app_constants::kChromeAppId);
+
+  proxy()->RemoveShortcut(shortcut_id, apps::UninstallSource::kUnknown,
+                          nullptr);
+
+  ASSERT_TRUE(LastCreatedView()->GetVisible());
+
+  proxy()->ShortcutRemoved(shortcut_id);
+
+  EXPECT_TRUE(LastCreatedView()->GetWidget()->IsClosed());
 }

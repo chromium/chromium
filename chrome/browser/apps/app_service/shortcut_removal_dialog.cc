@@ -51,4 +51,13 @@ void ShortcutRemovalDialog::OnDialogClosed(bool remove) {
   std::move(shortcut_removal_callback_).Run(remove, this);
 }
 
+void ShortcutRemovalDialog::CloseDialog() {
+  if (widget_) {
+    widget_->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+    return;
+  }
+
+  OnDialogClosed(false);
+}
+
 }  // namespace apps

@@ -465,6 +465,9 @@ void AppServiceProxyAsh::PublishShortcut(ShortcutPtr delta) {
 
 void AppServiceProxyAsh::ShortcutRemoved(const ShortcutId& id) {
   MaybeScheduleIconFolderDeletionForShortcut(id);
+  if (base::Contains(shortcut_removal_dialogs_, id)) {
+    shortcut_removal_dialogs_[id]->CloseDialog();
+  }
   ShortcutRegistryCache()->RemoveShortcut(id);
 }
 

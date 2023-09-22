@@ -60,6 +60,11 @@ class ShortcutRemovalDialog {
   // the remove.
   void OnDialogClosed(bool remove);
 
+  // Closes this dialog if it is open. If the dialog is not open yet because
+  // icons are still loading, immediately runs `shortcut_removal_callback_` so
+  // that `this` can be deleted.
+  void CloseDialog();
+
  private:
   const raw_ptr<Profile> profile_;
   const apps::ShortcutId shortcut_id_;
