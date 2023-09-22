@@ -94,10 +94,6 @@ bool CanvasResourceHost::IsComposited() const {
          !LowLatencyEnabled();
 }
 
-bool CanvasResourceHost::IsHibernating() const {
-  return false;
-}
-
 void CanvasResourceHost::SetIsDisplayed(bool displayed) {
   is_displayed_ = displayed;
   // If the canvas is no longer being displayed, stop using the rate
@@ -118,6 +114,23 @@ SharedContextRateLimiter* CanvasResourceHost::RateLimiter() const {
 void CanvasResourceHost::CreateRateLimiter() {
   rate_limiter_ =
       std::make_unique<SharedContextRateLimiter>(kMaxCanvasAnimationBacklog);
+}
+
+RasterMode CanvasResourceHost::GetRasterMode() const {
+  if (preferred_2d_raster_mode() == RasterModeHint::kPreferCPU) {
+    return RasterMode::kCPU;
+  }
+  if (IsHibernating()) {
+    return RasterMode::kCPU;
+  }
+  if (resource_provider_) {
+    return resource_provider_->IsAccelerated() ? RasterMode::kGPU
+                                               : RasterMode::kCPU;
+  }
+
+  // Whether or not to accelerate is not yet resolved, the canvas cannot be
+  // accelerated if the gpu context is lost.
+  return ShouldTryToUseGpuRaster() ? RasterMode::kGPU : RasterMode::kCPU;
 }
 
 }  // namespace blink

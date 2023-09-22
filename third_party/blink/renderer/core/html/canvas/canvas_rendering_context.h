@@ -155,12 +155,11 @@ class CORE_EXPORT CanvasRenderingContext
 
   virtual scoped_refptr<StaticBitmapImage> GetImage(FlushReason) = 0;
   virtual bool IsComposited() const = 0;
-  virtual bool IsAccelerated() const = 0;
   virtual bool IsOriginTopLeft() const {
     // Canvas contexts have the origin of coordinates on the top left corner.
     // Accelerated resources (e.g. GPU textures) have their origin of
-    // coordinates in the upper left corner.
-    return !IsAccelerated();
+    // coordinates in the bottom left corner.
+    return Host()->GetRasterMode() == RasterMode::kCPU;
   }
   virtual bool ShouldAntialias() const { return false; }
   // Called when the entire tab is backgrounded or unbackgrounded.

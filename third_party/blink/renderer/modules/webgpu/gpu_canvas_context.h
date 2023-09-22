@@ -77,7 +77,6 @@ class GPUCanvasContext : public CanvasRenderingContext,
   void PageVisibilityChanged() override {}
   bool isContextLost() const override { return false; }
   bool IsComposited() const final { return true; }
-  bool IsAccelerated() const final { return true; }
   bool IsOriginTopLeft() const final { return true; }
   void SetFilterQuality(cc::PaintFlags::FilterQuality) override;
   bool IsPaintable() const final { return true; }

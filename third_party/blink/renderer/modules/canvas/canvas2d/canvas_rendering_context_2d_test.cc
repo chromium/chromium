@@ -902,10 +902,10 @@ TEST_P(CanvasRenderingContext2DTest,
   // pixel per buffer, and 2 is an estimate of num of gpu buffers required
 
   context->fillRect(10, 10, 100, 100);
-  EXPECT_TRUE(CanvasElement().GetCanvas2DLayerBridge()->IsAccelerated());
+  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
   CanvasElement().DisableAcceleration();
-  EXPECT_FALSE(CanvasElement().GetCanvas2DLayerBridge()->IsAccelerated());
+  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
 
   context->fillRect(10, 10, 100, 100);
 }
@@ -936,12 +936,12 @@ TEST_P(CanvasRenderingContext2DTest,
   EXPECT_CALL(*fake_deaccelerate_surface, DidRestoreCanvasMatrixClipStack(_))
       .Times(1);
 
-  EXPECT_TRUE(CanvasElement().GetCanvas2DLayerBridge()->IsAccelerated());
+  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
   EXPECT_TRUE(
       IsCanvasResourceHostSet(CanvasElement().GetCanvas2DLayerBridge()));
 
   CanvasElement().DisableAcceleration(std::move(fake_deaccelerate_surface));
-  EXPECT_FALSE(CanvasElement().GetCanvas2DLayerBridge()->IsAccelerated());
+  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
   EXPECT_TRUE(
       IsCanvasResourceHostSet(CanvasElement().GetCanvas2DLayerBridge()));
 
@@ -1244,7 +1244,7 @@ TEST_P(CanvasRenderingContext2DTest,
       CanvasElement()
           .GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferCPU)
           ->SupportsSingleBuffering());
-  EXPECT_FALSE(CanvasElement().GetCanvas2DLayerBridge()->IsAccelerated());
+  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
 }
 
 TEST_P(CanvasRenderingContext2DTest,
@@ -1254,8 +1254,7 @@ TEST_P(CanvasRenderingContext2DTest,
   DrawSomething();
   EXPECT_EQ(Context2D()->getContextAttributes()->willReadFrequently(),
             V8CanvasWillReadFrequently::Enum::kTrue);
-  EXPECT_FALSE(
-      CanvasElement().GetOrCreateCanvas2DLayerBridge()->IsAccelerated());
+  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
 }
 
 TEST_P(CanvasRenderingContext2DTest,
@@ -1266,7 +1265,7 @@ TEST_P(CanvasRenderingContext2DTest,
   DrawSomething();
   EXPECT_EQ(Context2D()->getContextAttributes()->willReadFrequently(),
             V8CanvasWillReadFrequently::Enum::kTrue);
-  EXPECT_FALSE(CanvasElement().GetCanvas2DLayerBridge()->IsAccelerated());
+  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
 }
 
 TEST_P(CanvasRenderingContext2DTest,
@@ -1287,7 +1286,7 @@ TEST_P(CanvasRenderingContext2DTest,
   while (read_count--) {
     Context2D()->getImageData(0, 0, 1, 1, settings, exception_state);
   }
-  EXPECT_FALSE(CanvasElement().GetCanvas2DLayerBridge()->IsAccelerated());
+  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
 }
 
 TEST_P(CanvasRenderingContext2DTest, AutoFlush) {
@@ -1477,9 +1476,9 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   DrawSomething();
   NonThrowableExceptionState exception_state;
   ImageDataSettings* settings = ImageDataSettings::Create();
-  ASSERT_TRUE(CanvasElement().GetCanvas2DLayerBridge()->IsAccelerated());
+  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
   Context2D()->getImageData(0, 0, 1, 1, settings, exception_state);
-  EXPECT_TRUE(CanvasElement().GetCanvas2DLayerBridge()->IsAccelerated());
+  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 }
 
 // https://crbug.com/708445: When the Canvas2DLayerBridge hibernates or wakes up
@@ -1497,12 +1496,12 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CanvasElement().GetCanvas2DLayerBridge()->SetCanvasResourceHost(
       canvas_element_);
 
-  EXPECT_TRUE(CanvasElement().GetCanvas2DLayerBridge()->IsAccelerated());
+  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
   // Take a snapshot to trigger lazy resource provider creation
   CanvasElement().GetCanvas2DLayerBridge()->NewImageSnapshot(
       FlushReason::kTesting);
   EXPECT_TRUE(!!CanvasElement().ResourceProvider());
-  EXPECT_TRUE(CanvasElement().ResourceProvider()->IsAccelerated());
+  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
   auto* box = CanvasElement().GetLayoutBoxModelObject();
   EXPECT_TRUE(box);
   PaintLayer* painting_layer = box->PaintingLayer();
@@ -1550,7 +1549,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
                                                 size);
   CanvasElement().GetCanvas2DLayerBridge()->SetCanvasResourceHost(
       canvas_element_);
-  EXPECT_TRUE(CanvasElement().GetCanvas2DLayerBridge()->IsAccelerated());
+  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
   EXPECT_TRUE(CanvasElement().GetLayoutBoxModelObject());
   auto* box = CanvasElement().GetLayoutBoxModelObject();
@@ -1589,7 +1588,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, LowLatencyIsNotSingleBuffered) {
       CanvasElement()
           .GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)
           ->SupportsSingleBuffering());
-  EXPECT_TRUE(CanvasElement().GetCanvas2DLayerBridge()->IsAccelerated());
+  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated, DrawImage_Video_Flush) {
@@ -1598,7 +1597,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, DrawImage_Video_Flush) {
   CreateContext(kNonOpaque);
   // No need to set-up the layer bridge when testing low latency mode.
   CanvasElement().GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
-  EXPECT_TRUE(CanvasElement().GetCanvas2DLayerBridge()->IsAccelerated());
+  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
   gfx::Size visible_size(10, 10);
   scoped_refptr<media::VideoFrame> media_frame =
@@ -1728,7 +1727,7 @@ TEST_P(CanvasRenderingContext2DTestImageChromium, LowLatencyIsSingleBuffered) {
   EXPECT_EQ(Context2D()->getContextAttributes()->willReadFrequently(),
             V8CanvasWillReadFrequently::Enum::kUndefined);
   EXPECT_TRUE(CanvasElement().LowLatencyEnabled());
-  EXPECT_TRUE(CanvasElement().GetCanvas2DLayerBridge()->IsAccelerated());
+  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
   EXPECT_TRUE(CanvasElement()
                   .GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)
                   ->SupportsSingleBuffering());
@@ -1774,7 +1773,7 @@ TEST_P(CanvasRenderingContext2DTestSwapChain, LowLatencyIsSingleBuffered) {
   EXPECT_EQ(Context2D()->getContextAttributes()->willReadFrequently(),
             V8CanvasWillReadFrequently::Enum::kUndefined);
   EXPECT_TRUE(CanvasElement().LowLatencyEnabled());
-  EXPECT_TRUE(CanvasElement().GetCanvas2DLayerBridge()->IsAccelerated());
+  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
   EXPECT_TRUE(CanvasElement()
                   .GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)
                   ->SupportsSingleBuffering());

@@ -205,7 +205,6 @@ class CORE_EXPORT HTMLCanvasElement final
   bool IsCanvasElement() const override { return true; }
   bool IsOpaque() const override;
   bool IsAccelerated() const override;
-  bool IsHibernating() const override;
 
   // SurfaceLayerBridgeObserver implementation
   void OnWebLayerUpdated() override;
@@ -224,6 +223,7 @@ class CORE_EXPORT HTMLCanvasElement final
       RasterModeHint hint) override;
   bool IsPrinting() const override;
   void SetFilterQuality(cc::PaintFlags::FilterQuality filter_quality) override;
+  bool IsHibernating() const override;
 
   // CanvasRenderingContextHost implementation.
   UkmParameters GetUkmParameters() override;

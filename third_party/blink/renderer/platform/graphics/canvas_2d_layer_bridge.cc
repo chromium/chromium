@@ -66,7 +66,7 @@ Canvas2DLayerBridge::~Canvas2DLayerBridge() {
   if (!layer_)
     return;
 
-  if (IsAccelerated()) {
+  if (resource_host_ && resource_host_->GetRasterMode() == RasterMode::kGPU) {
     layer_->ClearTexture();
     // Orphaning the layer is required to trigger the recreation of a new layer
     // in the case where destruction is caused by a canvas resize. Test:
@@ -84,21 +84,6 @@ void Canvas2DLayerBridge::SetCanvasResourceHost(CanvasResourceHost* host) {
 void Canvas2DLayerBridge::ResetResourceProvider() {
   if (resource_host_)
     resource_host_->ReplaceResourceProvider(nullptr);
-}
-
-bool Canvas2DLayerBridge::IsAccelerated() const {
-  if (resource_host_ && resource_host_->preferred_2d_raster_mode() ==
-                            RasterModeHint::kPreferCPU) {
-    return false;
-  }
-  if (IsHibernating())
-    return false;
-  if (resource_host_ && resource_host_->ResourceProvider())
-    return resource_host_->ResourceProvider()->IsAccelerated();
-
-  // Whether or not to accelerate is not yet resolved, the canvas cannot be
-  // accelerated if the gpu context is lost.
-  return resource_host_ && resource_host_->ShouldTryToUseGpuRaster();
 }
 
 static void HibernateWrapper(base::WeakPtr<Canvas2DLayerBridge> bridge,
@@ -126,6 +111,7 @@ void Canvas2DLayerBridge::Hibernate() {
   CHECK(resource_host_);
   DCHECK(!IsHibernating());
   DCHECK(hibernation_scheduled_);
+  CHECK(resource_host_);
 
   hibernation_scheduled_ = false;
 
@@ -144,7 +130,7 @@ void Canvas2DLayerBridge::Hibernate() {
     return;
   }
 
-  if (!IsAccelerated()) {
+  if (resource_host_->GetRasterMode() == RasterMode::kCPU) {
     logger_->ReportHibernationEvent(
         kHibernationAbortedDueToSwitchToUnacceleratedRendering);
     return;
@@ -338,7 +324,8 @@ void Canvas2DLayerBridge::PageVisibilityChanged() {
 
   // Conserve memory.
   if (base::FeatureList::IsEnabled(features::kCanvasFreeMemoryWhenHidden) &&
-      IsAccelerated() && SharedGpuContext::ContextProviderWrapper() &&
+      resource_host_->GetRasterMode() == RasterMode::kGPU &&
+      SharedGpuContext::ContextProviderWrapper() &&
       SharedGpuContext::ContextProviderWrapper()->ContextProvider()) {
     auto* context_support = SharedGpuContext::ContextProviderWrapper()
                                 ->ContextProvider()
@@ -355,7 +342,8 @@ void Canvas2DLayerBridge::PageVisibilityChanged() {
     ThreadScheduler::Current()->PostIdleTask(
         FROM_HERE, WTF::BindOnce(&LoseContextInBackgroundWrapper,
                                  weak_ptr_factory_.GetWeakPtr()));
-  } else if (IsHibernationEnabled() && ResourceProvider() && IsAccelerated() &&
+  } else if (IsHibernationEnabled() && ResourceProvider() &&
+             resource_host_->GetRasterMode() == RasterMode::kGPU &&
              !page_is_visible && !hibernation_scheduled_ &&
              !base::FeatureList::IsEnabled(
                  ::features::kCanvasContextLostInBackground)) {
@@ -408,8 +396,8 @@ void Canvas2DLayerBridge::SkipQueuedDrawCommands() {
 }
 
 void Canvas2DLayerBridge::FlushRecording(FlushReason reason) {
-  CanvasResourceProvider* provider = GetOrCreateResourceProvider();
-  if (!provider || !provider->HasRecordedDrawOps()) {
+  CHECK(resource_host_);
+  if (!GetOrCreateResourceProvider()) {
     return;
   }
 
@@ -439,7 +427,8 @@ bool Canvas2DLayerBridge::IsValid() {
   if (context_lost_) {
     return false;
   }
-  if (ResourceProvider() && IsAccelerated() &&
+  if (ResourceProvider() &&
+      resource_host_->GetRasterMode() == RasterMode::kGPU &&
       ResourceProvider()->IsGpuContextLost()) {
     context_lost_ = true;
     ResetResourceProvider();
@@ -453,8 +442,9 @@ bool Canvas2DLayerBridge::IsValid() {
 
 bool Canvas2DLayerBridge::Restore() {
   DCHECK(context_lost_);
-  if (!IsAccelerated())
+  if (resource_host_ && resource_host_->GetRasterMode() == RasterMode::kCPU) {
     return false;
+  }
   DCHECK(!ResourceProvider());
 
   if (layer_)
@@ -472,7 +462,8 @@ bool Canvas2DLayerBridge::Restore() {
     // non-accelerated, which would be tricky due to changes to the layer tree,
     // which can only happen at specific times during the document lifecycle.
     // Therefore, we can only accept the restored surface if it is accelerated.
-    if (resource_provider && !IsAccelerated()) {
+    if (resource_provider &&
+        resource_host_->GetRasterMode() == RasterMode::kCPU) {
       resource_host_->ReplaceResourceProvider(nullptr);
       // FIXME: draw sad canvas picture into new buffer crbug.com/243842
     } else {

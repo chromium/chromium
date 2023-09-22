@@ -146,6 +146,16 @@ class Canvas2DLayerBridgeTest : public Test {
     return host_.get();
   }
 
+  RasterMode GetRasterMode(Canvas2DLayerBridge* bridge) {
+    // Temporary bootstrap. In non-test code HTMLCanvasElement overrides
+    // IsHibernating to propagate the value from Canvas2DLayerBridge, but
+    // FakeCanvasResourceHost does not do this. This can be removed once
+    // hibernation management is removed from Canvas2DLayerBridge.
+    host_->SetIsHibernating(bridge->IsHibernating());
+
+    return Host()->GetRasterMode();
+  }
+
  protected:
   scoped_refptr<viz::TestContextProvider> test_context_provider_;
   ImageTrackingDecodeCache image_decode_cache_;
@@ -181,7 +191,7 @@ TEST_F(Canvas2DLayerBridgeTest, PrepareMailboxWhenContextIsLost) {
   std::unique_ptr<Canvas2DLayerBridge> bridge =
       MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
 
-  EXPECT_TRUE(bridge->IsAccelerated());
+  EXPECT_TRUE(GetRasterMode(bridge.get()) == RasterMode::kGPU);
   bridge->FinalizeFrame(FlushReason::kTesting);  // Trigger the creation
                                                  // of a backing store
   // When the context is lost we are not sure if we should still be producing
@@ -288,7 +298,7 @@ TEST_F(Canvas2DLayerBridgeTest, RasterModeHint) {
     scoped_refptr<StaticBitmapImage> image =
         bridge->NewImageSnapshot(FlushReason::kTesting);
     EXPECT_TRUE(bridge->IsValid());
-    EXPECT_TRUE(bridge->IsAccelerated());
+    EXPECT_EQ(GetRasterMode(bridge.get()), RasterMode::kGPU);
   }
 
   {
@@ -299,7 +309,7 @@ TEST_F(Canvas2DLayerBridgeTest, RasterModeHint) {
     scoped_refptr<StaticBitmapImage> image =
         bridge->NewImageSnapshot(FlushReason::kTesting);
     EXPECT_TRUE(bridge->IsValid());
-    EXPECT_TRUE(bridge->IsAccelerated());
+    EXPECT_EQ(GetRasterMode(bridge.get()), RasterMode::kGPU);
   }
 
   {
@@ -310,7 +320,7 @@ TEST_F(Canvas2DLayerBridgeTest, RasterModeHint) {
     scoped_refptr<StaticBitmapImage> image =
         bridge->NewImageSnapshot(FlushReason::kTesting);
     EXPECT_TRUE(bridge->IsValid());
-    EXPECT_FALSE(bridge->IsAccelerated());
+    EXPECT_EQ(GetRasterMode(bridge.get()), RasterMode::kCPU);
   }
 
   {
@@ -321,7 +331,7 @@ TEST_F(Canvas2DLayerBridgeTest, RasterModeHint) {
     scoped_refptr<StaticBitmapImage> image =
         bridge->NewImageSnapshot(FlushReason::kTesting);
     EXPECT_TRUE(bridge->IsValid());
-    EXPECT_FALSE(bridge->IsAccelerated());
+    EXPECT_EQ(GetRasterMode(bridge.get()), RasterMode::kCPU);
   }
 }
 
@@ -330,7 +340,7 @@ TEST_F(Canvas2DLayerBridgeTest, FallbackToSoftwareIfContextLost) {
   std::unique_ptr<Canvas2DLayerBridge> bridge =
       MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
   EXPECT_TRUE(bridge->IsValid());
-  EXPECT_FALSE(bridge->IsAccelerated());
+  EXPECT_EQ(GetRasterMode(bridge.get()), RasterMode::kCPU);
 }
 
 void DrawSomething(Canvas2DLayerBridge* bridge) {
@@ -346,10 +356,10 @@ TEST_F(Canvas2DLayerBridgeTest, FallbackToSoftwareOnFailedTextureAlloc) {
     std::unique_ptr<Canvas2DLayerBridge> bridge =
         MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
     EXPECT_TRUE(bridge->IsValid());
-    EXPECT_TRUE(bridge->IsAccelerated());
+    EXPECT_EQ(GetRasterMode(bridge.get()), RasterMode::kGPU);
     scoped_refptr<StaticBitmapImage> snapshot =
         bridge->NewImageSnapshot(FlushReason::kTesting);
-    EXPECT_TRUE(bridge->IsAccelerated());
+    EXPECT_EQ(GetRasterMode(bridge.get()), RasterMode::kGPU);
     EXPECT_TRUE(snapshot->IsTextureBacked());
   }
 
@@ -365,15 +375,16 @@ TEST_F(Canvas2DLayerBridgeTest, FallbackToSoftwareOnFailedTextureAlloc) {
     bridge->SetCanvasResourceHost(host_.get());
     host_->AlwaysEnableRasterTimersForTesting();
     EXPECT_TRUE(bridge->IsValid());
-    EXPECT_TRUE(bridge->IsAccelerated());  // We don't yet know that
-                                           // allocation will fail.
+    EXPECT_EQ(GetRasterMode(bridge.get()),
+              RasterMode::kGPU);  // We don't yet know that
+                                  // allocation will fail.
     // This will cause SkSurface_Gpu creation to fail without
     // Canvas2DLayerBridge otherwise detecting that anything was disabled.
     gr->abandonContext();
     DrawSomething(bridge.get());
     scoped_refptr<StaticBitmapImage> snapshot =
         bridge->NewImageSnapshot(FlushReason::kTesting);
-    EXPECT_FALSE(bridge->IsAccelerated());
+    EXPECT_EQ(GetRasterMode(bridge.get()), RasterMode::kCPU);
     EXPECT_FALSE(snapshot->IsTextureBacked());
   }
 }
@@ -394,7 +405,7 @@ TEST_F(Canvas2DLayerBridgeTest, HibernationLifeCycle) {
   std::unique_ptr<Canvas2DLayerBridge> bridge =
       MakeBridge(gfx::Size(300, 300), RasterModeHint::kPreferGPU, kNonOpaque);
   DrawSomething(bridge.get());
-  EXPECT_TRUE(bridge->IsAccelerated());
+  EXPECT_EQ(GetRasterMode(bridge.get()), RasterMode::kGPU);
 
   // Register an alternate Logger for tracking hibernation events
   std::unique_ptr<MockLogger> mock_logger = std::make_unique<MockLogger>();
@@ -415,7 +426,7 @@ TEST_F(Canvas2DLayerBridgeTest, HibernationLifeCycle) {
   platform->RunUntilIdle();
 
   testing::Mock::VerifyAndClearExpectations(mock_logger_ptr);
-  EXPECT_FALSE(bridge->IsAccelerated());
+  EXPECT_EQ(GetRasterMode(bridge.get()), RasterMode::kCPU);
   EXPECT_TRUE(bridge->IsHibernating());
   EXPECT_TRUE(bridge->IsValid());
 
@@ -428,7 +439,7 @@ TEST_F(Canvas2DLayerBridgeTest, HibernationLifeCycle) {
   bridge->PageVisibilityChanged();  // Temporary plumbing
 
   testing::Mock::VerifyAndClearExpectations(mock_logger_ptr);
-  EXPECT_TRUE(bridge->IsAccelerated());
+  EXPECT_EQ(GetRasterMode(bridge.get()), RasterMode::kGPU);
   EXPECT_FALSE(bridge->IsHibernating());
   EXPECT_TRUE(bridge->IsValid());
 }
@@ -466,7 +477,7 @@ TEST_F(Canvas2DLayerBridgeTest, HibernationReEntry) {
   platform->RunUntilIdle();
 
   testing::Mock::VerifyAndClearExpectations(mock_logger_ptr);
-  EXPECT_FALSE(bridge->IsAccelerated());
+  EXPECT_EQ(GetRasterMode(bridge.get()), RasterMode::kCPU);
   EXPECT_TRUE(bridge->IsHibernating());
   EXPECT_TRUE(bridge->IsValid());
 
@@ -479,7 +490,7 @@ TEST_F(Canvas2DLayerBridgeTest, HibernationReEntry) {
   bridge->PageVisibilityChanged();  // Temporary plumbing
 
   testing::Mock::VerifyAndClearExpectations(mock_logger_ptr);
-  EXPECT_TRUE(bridge->IsAccelerated());
+  EXPECT_EQ(GetRasterMode(bridge.get()), RasterMode::kGPU);
   EXPECT_FALSE(bridge->IsHibernating());
   EXPECT_TRUE(bridge->IsValid());
 }
@@ -510,7 +521,7 @@ TEST_F(Canvas2DLayerBridgeTest, TeardownWhileHibernating) {
       ->StartIdlePeriodForTesting();
   platform->RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(mock_logger_ptr);
-  EXPECT_FALSE(bridge->IsAccelerated());
+  EXPECT_EQ(GetRasterMode(bridge.get()), RasterMode::kCPU);
   EXPECT_TRUE(bridge->IsHibernating());
   EXPECT_TRUE(bridge->IsValid());
 
@@ -548,7 +559,7 @@ TEST_F(Canvas2DLayerBridgeTest, SnapshotWhileHibernating) {
       ->StartIdlePeriodForTesting();
   platform->RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(mock_logger_ptr);
-  EXPECT_FALSE(bridge->IsAccelerated());
+  EXPECT_EQ(GetRasterMode(bridge.get()), RasterMode::kCPU);
   EXPECT_TRUE(bridge->IsHibernating());
   EXPECT_TRUE(bridge->IsValid());
 
@@ -559,7 +570,7 @@ TEST_F(Canvas2DLayerBridgeTest, SnapshotWhileHibernating) {
   image = nullptr;
 
   // Verify that taking a snapshot did not affect the state of bridge
-  EXPECT_FALSE(bridge->IsAccelerated());
+  EXPECT_EQ(GetRasterMode(bridge.get()), RasterMode::kCPU);
   EXPECT_TRUE(bridge->IsHibernating());
   EXPECT_TRUE(bridge->IsValid());
 
@@ -637,7 +648,7 @@ TEST_F(Canvas2DLayerBridgeTest, HibernationAbortedDueToVisibilityChange) {
       ->StartIdlePeriodForTesting();
   platform->RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(mock_logger_ptr);
-  EXPECT_TRUE(bridge->IsAccelerated());
+  EXPECT_EQ(GetRasterMode(bridge.get()), RasterMode::kGPU);
   EXPECT_FALSE(bridge->IsHibernating());
   EXPECT_TRUE(bridge->IsValid());
 }
@@ -1037,8 +1048,8 @@ TEST_F(Canvas2DLayerBridgeTest, SoftwareCanvasIsCompositedIfImageChromium) {
       MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferCPU, kNonOpaque);
   EXPECT_TRUE(bridge->IsValid());
   DrawSomething(bridge.get());
-  EXPECT_FALSE(bridge->IsAccelerated());
   EXPECT_TRUE(Host()->IsComposited());
+  EXPECT_EQ(GetRasterMode(bridge.get()), RasterMode::kCPU);
 }
 
 TEST_F(Canvas2DLayerBridgeTest, SoftwareCanvasNotCompositedIfNotImageChromium) {
@@ -1047,8 +1058,8 @@ TEST_F(Canvas2DLayerBridgeTest, SoftwareCanvasNotCompositedIfNotImageChromium) {
       MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferCPU, kNonOpaque);
   EXPECT_TRUE(bridge->IsValid());
   DrawSomething(bridge.get());
-  EXPECT_FALSE(bridge->IsAccelerated());
   EXPECT_FALSE(Host()->IsComposited());
+  EXPECT_EQ(GetRasterMode(bridge.get()), RasterMode::kCPU);
 }
 
 }  // namespace blink

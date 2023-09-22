@@ -379,7 +379,7 @@ bool OffscreenCanvas::OriginClean() const {
 }
 
 bool OffscreenCanvas::IsAccelerated() const {
-  return context_ && context_->IsAccelerated();
+  return GetRasterMode() == RasterMode::kGPU;
 }
 
 bool OffscreenCanvas::HasPlaceholderCanvas() const {

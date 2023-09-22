@@ -133,13 +133,6 @@ NoAllocDirectCallHost* CanvasRenderingContext2D::AsNoAllocDirectCallHost() {
 
 CanvasRenderingContext2D::~CanvasRenderingContext2D() = default;
 
-bool CanvasRenderingContext2D::IsAccelerated() const {
-  Canvas2DLayerBridge* layer_bridge = canvas()->GetCanvas2DLayerBridge();
-  if (!layer_bridge)
-    return false;
-  return layer_bridge->IsAccelerated();
-}
-
 bool CanvasRenderingContext2D::IsOriginTopLeft() const {
   // Use top-left origin since Skia Graphite won't support bottom-left origin.
   return true;
@@ -603,7 +596,7 @@ void CanvasRenderingContext2D::FinalizeFrame(FlushReason reason) {
 }
 
 CanvasRenderingContextHost*
-CanvasRenderingContext2D::GetCanvasRenderingContextHost() {
+CanvasRenderingContext2D::GetCanvasRenderingContextHost() const {
   return Host();
 }
 

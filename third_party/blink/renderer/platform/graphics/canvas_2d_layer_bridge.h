@@ -79,7 +79,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
   virtual void WillOverwriteCanvas();
   virtual void DrawFullImage(const cc::PaintImage&);
   virtual void DidRestoreCanvasMatrixClipStack(cc::PaintCanvas*) {}
-  virtual bool IsAccelerated() const;
 
   // This may recreate CanvasResourceProvider
   cc::PaintCanvas* GetPaintCanvas();

@@ -558,10 +558,6 @@ bool HTMLCanvasElement::ShouldBeDirectComposited() const {
   return (context_ && context_->IsComposited()) || (!!surface_layer_bridge_);
 }
 
-bool HTMLCanvasElement::IsAccelerated() const {
-  return context_ && context_->IsAccelerated();
-}
-
 Settings* HTMLCanvasElement::GetSettings() const {
   auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext());
   if (window && window->GetFrame())
@@ -1571,8 +1567,8 @@ void HTMLCanvasElement::RemovedFrom(ContainerNode& insertion_point) {
 
 void HTMLCanvasElement::WillDrawImageTo2DContext(CanvasImageSource* source) {
   if (SharedGpuContext::AllowSoftwareToAcceleratedCanvasUpgrade() &&
-      source->IsAccelerated() && GetOrCreateCanvas2DLayerBridge() &&
-      !canvas2d_bridge_->IsAccelerated() && ShouldAccelerate()) {
+      source->IsAccelerated() && (GetRasterMode() == RasterMode::kCPU) &&
+      ShouldAccelerate()) {
     SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
     std::unique_ptr<Canvas2DLayerBridge> surface = Create2DLayerBridge();
     if (surface) {
@@ -1867,7 +1863,8 @@ void HTMLCanvasElement::ReplaceExisting2dLayerBridge(
   // to avoid all of this clip stack manipulation.
   if (image) {
     auto paint_image = image->PaintImageForCurrentFrame();
-    if (!canvas2d_bridge_->IsAccelerated() && paint_image.IsTextureBacked()) {
+    if ((GetRasterMode() == RasterMode::kCPU) &&
+        paint_image.IsTextureBacked()) {
       // If new bridge is unaccelrated we must read back |paint_image| here.
       // DrawFullImage will record the image and potentially raster on a worker
       // thread, but texture backed PaintImages can't be used on a different
@@ -1934,6 +1931,10 @@ RespectImageOrientationEnum HTMLCanvasElement::RespectImageOrientation() const {
 
 bool HTMLCanvasElement::IsHibernating() const {
   return canvas2d_bridge_ && canvas2d_bridge_->IsHibernating();
+}
+
+bool HTMLCanvasElement::IsAccelerated() const {
+  return GetRasterMode() == RasterMode::kGPU;
 }
 
 }  // namespace blink

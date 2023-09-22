@@ -172,7 +172,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   void FinalizeFrame(FlushReason) override;
 
-  CanvasRenderingContextHost* GetCanvasRenderingContextHost() override;
+  CanvasRenderingContextHost* GetCanvasRenderingContextHost() const override;
   ExecutionContext* GetTopExecutionContext() const override;
 
   bool IsPaintable() const final {
@@ -245,7 +245,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void UpdateElementAccessibility(const Path&, Element*);
 
   bool IsComposited() const override;
-  bool IsAccelerated() const override;
   bool IsOriginTopLeft() const override;
   bool HasAlpha() const override { return CreationAttributes().alpha; }
   bool IsDesynchronized() const override {

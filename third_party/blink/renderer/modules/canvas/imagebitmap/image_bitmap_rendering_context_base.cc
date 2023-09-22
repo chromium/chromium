@@ -111,10 +111,6 @@ void ImageBitmapRenderingContextBase::Trace(Visitor* visitor) const {
   CanvasRenderingContext::Trace(visitor);
 }
 
-bool ImageBitmapRenderingContextBase::IsAccelerated() const {
-  return image_layer_bridge_->IsAccelerated();
-}
-
 bool ImageBitmapRenderingContextBase::CanCreateCanvas2dResourceProvider()
     const {
   DCHECK(Host());
@@ -150,7 +146,7 @@ bool ImageBitmapRenderingContextBase::PushFrame() {
 bool ImageBitmapRenderingContextBase::IsOriginTopLeft() const {
   if (Host()->IsOffscreenCanvas())
     return false;
-  return IsAccelerated();
+  return Host()->IsAccelerated();
 }
 
 }  // namespace blink

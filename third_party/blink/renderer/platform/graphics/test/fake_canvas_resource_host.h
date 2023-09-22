@@ -26,6 +26,10 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
   void UpdateMemoryUsage() override {}
   bool PrintedInCurrentTask() const override { return false; }
   bool IsPageVisible() override { return page_visible_; }
+  bool IsHibernating() const override { return is_hibernating_; }
+  void SetIsHibernating(bool is_hibernating) {
+    is_hibernating_ = is_hibernating;
+  }
   size_t GetMemoryUsage() const override { return 0; }
   CanvasResourceProvider* GetOrCreateCanvasResourceProvider(
       RasterModeHint hint) override {
@@ -77,6 +81,7 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
 
  private:
   bool page_visible_ = true;
+  bool is_hibernating_ = false;
 };
 
 }  // namespace blink

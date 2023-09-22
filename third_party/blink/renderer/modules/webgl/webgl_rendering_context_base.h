@@ -736,7 +736,6 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
 
   // CanvasRenderingContext implementation.
   bool IsComposited() const override { return true; }
-  bool IsAccelerated() const override { return true; }
   bool UsingSwapChain() const override;
   bool IsOriginTopLeft() const override;
   void PageVisibilityChanged() override;

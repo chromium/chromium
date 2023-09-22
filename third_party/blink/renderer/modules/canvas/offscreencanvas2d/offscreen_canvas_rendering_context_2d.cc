@@ -228,7 +228,7 @@ bool OffscreenCanvasRenderingContext2D::PushFrame() {
 }
 
 CanvasRenderingContextHost*
-OffscreenCanvasRenderingContext2D::GetCanvasRenderingContextHost() {
+OffscreenCanvasRenderingContext2D::GetCanvasRenderingContextHost() const {
   return Host();
 }
 ExecutionContext* OffscreenCanvasRenderingContext2D::GetTopExecutionContext()
@@ -350,10 +350,6 @@ bool OffscreenCanvasRenderingContext2D::WritePixels(
 
   return offscreenCanvasForBinding()->ResourceProvider()->WritePixels(
       orig_info, pixels, row_bytes, x, y);
-}
-
-bool OffscreenCanvasRenderingContext2D::IsAccelerated() const {
-  return IsPaintable() && GetCanvasResourceProvider()->IsAccelerated();
 }
 
 void OffscreenCanvasRenderingContext2D::WillOverwriteCanvas() {

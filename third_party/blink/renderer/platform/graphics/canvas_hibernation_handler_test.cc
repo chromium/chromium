@@ -204,7 +204,7 @@ TEST_F(CanvasHibernationHandlerTest, SimpleTest) {
   histogram_tester.ExpectTotalCount(
       "Blink.Canvas.2DLayerBridge.Compression.DecompressionTime", 1);
 
-  EXPECT_TRUE(bridge->IsAccelerated());
+  EXPECT_TRUE(Host()->GetRasterMode() == RasterMode::kGPU);
   EXPECT_FALSE(bridge->IsHibernating());
   EXPECT_TRUE(bridge->IsValid());
 }

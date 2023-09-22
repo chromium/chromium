@@ -262,10 +262,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   virtual int Width() const = 0;
   virtual int Height() const = 0;
 
-  virtual bool IsAccelerated() const {
-    NOTREACHED();
-    return false;
-  }
+  bool IsAccelerated() const;
   virtual bool CanCreateCanvas2dResourceProvider() const = 0;
 
   virtual RespectImageOrientationEnum RespectImageOrientation() const = 0;
@@ -288,7 +285,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   virtual sk_sp<PaintFilter> StateGetFilter() = 0;
   void SnapshotStateForFilter();
 
-  virtual CanvasRenderingContextHost* GetCanvasRenderingContextHost() {
+  virtual CanvasRenderingContextHost* GetCanvasRenderingContextHost() const {
     return nullptr;
   }
 

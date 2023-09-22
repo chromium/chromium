@@ -80,7 +80,6 @@ class MODULES_EXPORT PaintRenderingContext2D : public ScriptWrappable,
   // PaintRenderingContext2D uses a recording canvas, so it should never
   // allocate a pixel buffer and is not accelerated.
   bool CanCreateCanvas2dResourceProvider() const final { return false; }
-  bool IsAccelerated() const final { return false; }
 
   // CSS Paint doesn't have any notion of image orientation.
   RespectImageOrientationEnum RespectImageOrientation() const final {

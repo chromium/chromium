@@ -172,6 +172,8 @@ class CORE_EXPORT OffscreenCanvas final
     return gfx::SizeF(width(), height());
   }
   bool IsOpaque() const final;
+
+  // overrides CanvasImageSource::IsAccelerated()
   bool IsAccelerated() const final;
 
   DispatchEventResult HostDispatchEvent(Event* event) override {

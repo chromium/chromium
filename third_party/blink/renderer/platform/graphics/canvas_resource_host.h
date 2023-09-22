@@ -36,7 +36,6 @@ class PLATFORM_EXPORT CanvasResourceHost {
       RasterModeHint hint) = 0;
   virtual CanvasResourceProvider* GetOrCreateCanvasResourceProviderImpl(
       RasterModeHint hint) = 0;
-  virtual bool IsHibernating() const;
   bool IsComposited() const;
   gfx::Size Size() const { return size_; }
   virtual void SetSize(gfx::Size size) { size_ = size; }
@@ -66,6 +65,7 @@ class PLATFORM_EXPORT CanvasResourceHost {
 
   virtual bool IsPrinting() const { return false; }
   virtual bool PrintedInCurrentTask() const = 0;
+  virtual bool IsHibernating() const { return false; }
 
   RasterModeHint preferred_2d_raster_mode() const {
     return preferred_2d_raster_mode_;
@@ -84,6 +84,9 @@ class PLATFORM_EXPORT CanvasResourceHost {
   void AlwaysEnableRasterTimersForTesting() {
     always_enable_raster_timers_for_testing_ = true;
   }
+
+  // Actual RasterMode used for rendering 2d primitives.
+  RasterMode GetRasterMode() const;
 
  private:
   void InitializeForRecording(cc::PaintCanvas* canvas);

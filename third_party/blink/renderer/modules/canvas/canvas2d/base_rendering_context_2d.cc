@@ -3014,4 +3014,12 @@ FontSelector* BaseRenderingContext2D::GetFontSelector() const {
   return nullptr;
 }
 
+bool BaseRenderingContext2D::IsAccelerated() const {
+  CanvasRenderingContextHost* host = GetCanvasRenderingContextHost();
+  if (host) {
+    return host->GetRasterMode() == RasterMode::kGPU;
+  }
+  return false;
+}
+
 }  // namespace blink
