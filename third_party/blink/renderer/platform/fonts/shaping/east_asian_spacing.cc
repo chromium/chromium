@@ -140,25 +140,38 @@ void EastAsianSpacing::ComputeKerning(const String& text,
     last_type = GetCharType(text[start], font_data);
   }
 
-  // Compute for characters in the middle.
-  // TODO(crbug.com/1463891): This part can be skipped if the font has `chws`.
-  CharType type;
-  for (wtf_size_t i = start + 1; i < end; ++i, last_type = type) {
-    const UChar ch = text[i];
-    type = GetCharType(ch, font_data);
-    if (ShouldKernLast(type, last_type)) {
-      DCHECK_GT(i, 0u);
-      indices.push_back(i - 1);
-    } else if (ShouldKern(type, last_type)) {
-      indices.push_back(i);
+  if (font_data.has_contextual_spacing) {
+    // The `chws` feature can handle charcters in a run.
+    // Compute the end edge if there are following runs.
+    if (end < text.length()) {
+      if (end - 1 > start) {
+        last_type = GetCharType(text[end - 1], font_data);
+      }
+      const CharType type = GetCharType(text[end], font_data);
+      if (ShouldKernLast(type, last_type)) {
+        indices.push_back(end - 1);
+      }
     }
-  }
+  } else {
+    // Compute for characters in the middle.
+    CharType type;
+    for (wtf_size_t i = start + 1; i < end; ++i, last_type = type) {
+      const UChar ch = text[i];
+      type = GetCharType(ch, font_data);
+      if (ShouldKernLast(type, last_type)) {
+        DCHECK_GT(i, 0u);
+        indices.push_back(i - 1);
+      } else if (ShouldKern(type, last_type)) {
+        indices.push_back(i);
+      }
+    }
 
-  // Compute for the last character.
-  if (end < text.length()) {
-    type = GetCharType(text[end], font_data);
-    if (ShouldKernLast(type, last_type)) {
-      indices.push_back(end - 1);
+    // Compute for the last character.
+    if (end < text.length()) {
+      type = GetCharType(text[end], font_data);
+      if (ShouldKernLast(type, last_type)) {
+        indices.push_back(end - 1);
+      }
     }
   }
 
