@@ -511,6 +511,10 @@ def AddInstrumentationTestOptions(parser):
       '--apk-under-test',
       help='Path or name of the apk under test.')
   parser.add_argument(
+      '--store-data-dependencies-in-temp',
+      action='store_true',
+      help='Store data dependencies in /data/local/tmp/chromium_tests_root')
+  parser.add_argument(
       '--module',
       action='append',
       dest='modules',

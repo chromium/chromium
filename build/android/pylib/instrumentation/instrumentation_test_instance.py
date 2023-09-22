@@ -610,6 +610,7 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     self._variations_test_seed_path = args.variations_test_seed_path
     self._webview_variations_test_seed_path = (
         args.webview_variations_test_seed_path)
+    self._store_data_dependencies_in_temp = False
     self._initializeDataDependencyAttributes(args, data_deps_delegate)
     self._annotations = None
     self._excluded_annotations = None
@@ -792,6 +793,7 @@ class InstrumentationTestInstance(test_instance.TestInstance):
   def _initializeDataDependencyAttributes(self, args, data_deps_delegate):
     self._data_deps = []
     self._data_deps_delegate = data_deps_delegate
+    self._store_data_dependencies_in_temp = args.store_data_dependencies_in_temp
     self._runtime_deps_path = args.runtime_deps_path
 
     if not self._runtime_deps_path:
@@ -1027,6 +1029,10 @@ class InstrumentationTestInstance(test_instance.TestInstance):
   @property
   def skia_gold_properties(self):
     return self._skia_gold_properties
+
+  @property
+  def store_data_dependencies_in_temp(self):
+    return self._store_data_dependencies_in_temp
 
   @property
   def store_tombstones(self):

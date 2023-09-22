@@ -57,7 +57,9 @@ with host_paths.SysPath(
   import jinja2  # pylint: disable=import-error
   import markupsafe  # pylint: disable=import-error,unused-import
 
-
+_CHROMIUM_TESTS_ROOT = 'chromium_tests_root'
+_DEVICE_TEMP_DIR_DATA_ROOT = posixpath.join('/data/local/tmp',
+                                            _CHROMIUM_TESTS_ROOT)
 _JINJA_TEMPLATE_DIR = os.path.join(
     host_paths.DIR_SOURCE_ROOT, 'build', 'android', 'pylib', 'instrumentation')
 _JINJA_TEMPLATE_FILENAME = 'render_test.html.jinja'
@@ -219,6 +221,14 @@ class LocalDeviceInstrumentationTestRun(
       # Functions to run concurrerntly when --concurrent-adb is enabled.
       install_steps = []
       post_install_steps = []
+
+      if self._test_instance.store_data_dependencies_in_temp:
+        test_data_root_dir = _DEVICE_TEMP_DIR_DATA_ROOT
+      else:
+        test_data_root_dir = posixpath.join(device.GetExternalStoragePath(),
+                                            _CHROMIUM_TESTS_ROOT)
+        if self._env.force_main_user:
+          test_data_root_dir = device.ResolveSpecialPath(test_data_root_dir)
 
       if self._test_instance.replace_system_package:
         @trace_event.traced
@@ -443,26 +453,24 @@ class LocalDeviceInstrumentationTestRun(
 
       @instrumentation_tracing.no_tracing
       def push_test_data(dev):
-        device_root = posixpath.join(dev.GetExternalStoragePath(),
-                                     'chromium_tests_root')
-        if self._env.force_main_user:
-          device_root = dev.ResolveSpecialPath(device_root)
         host_device_tuples_substituted = [
-            (h, local_device_test_run.SubstituteDeviceRoot(d, device_root))
+            (h,
+             local_device_test_run.SubstituteDeviceRoot(d, test_data_root_dir))
             for h, d in host_device_tuples
         ]
         logging.info('Pushing data dependencies.')
         for h, d in host_device_tuples_substituted:
           logging.debug('  %r -> %r', h, d)
-        local_device_environment.place_nomedia_on_device(dev, device_root)
+        local_device_environment.place_nomedia_on_device(
+            dev, test_data_root_dir)
         dev.PushChangedFiles(host_device_tuples_substituted,
                              delete_device_stale=True,
                              as_root=self._env.force_main_user)
         if not host_device_tuples_substituted:
-          dev.RunShellCommand(['rm', '-rf', device_root],
+          dev.RunShellCommand(['rm', '-rf', test_data_root_dir],
                               check_return=True,
                               as_root=self._env.force_main_user)
-          dev.RunShellCommand(['mkdir', '-p', device_root],
+          dev.RunShellCommand(['mkdir', '-p', test_data_root_dir],
                               check_return=True,
                               as_root=self._env.force_main_user)
 
@@ -470,8 +478,6 @@ class LocalDeviceInstrumentationTestRun(
       def create_flag_changer(dev):
         flags = self._test_instance.flags
         webview_flags = self._test_instance.webview_flags
-        test_data_root_dir = posixpath.join(dev.GetExternalStoragePath(),
-                                            'chromium_tests_root')
 
         def _get_variations_seed_path_arg(seed_path):
           seed_path_components = DevicePathComponentsFor(seed_path)
