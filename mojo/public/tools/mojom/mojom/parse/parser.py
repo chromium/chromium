@@ -3,6 +3,9 @@
 # found in the LICENSE file.
 """Generates a syntax tree from a Mojo IDL file."""
 
+# Breaking parser stanzas is unhelpful so allow longer lines.
+# pylint: disable=line-too-long
+
 import os.path
 import sys
 
@@ -111,7 +114,8 @@ class Parser:
                   | union
                   | interface
                   | enum
-                  | const"""
+                  | const
+                  | feature"""
     p[0] = p[1]
 
   def p_attribute_section_1(self, p):
@@ -140,19 +144,19 @@ class Parser:
     p[0].Append(p[3])
 
   def p_attribute_1(self, p):
-    """attribute : NAME EQUALS identifier_wrapped"""
+    """attribute : name_wrapped EQUALS identifier_wrapped"""
     p[0] = ast.Attribute(p[1],
                          p[3][1],
                          filename=self.filename,
                          lineno=p.lineno(1))
 
   def p_attribute_2(self, p):
-    """attribute : NAME EQUALS evaled_literal
-                 | NAME EQUALS NAME"""
+    """attribute : name_wrapped EQUALS evaled_literal
+                 | name_wrapped EQUALS name_wrapped"""
     p[0] = ast.Attribute(p[1], p[3], filename=self.filename, lineno=p.lineno(1))
 
   def p_attribute_3(self, p):
-    """attribute : NAME"""
+    """attribute : name_wrapped"""
     p[0] = ast.Attribute(p[1], True, filename=self.filename, lineno=p.lineno(1))
 
   def p_evaled_literal(self, p):
@@ -168,11 +172,11 @@ class Parser:
       p[0] = eval(p[1])
 
   def p_struct_1(self, p):
-    """struct : attribute_section STRUCT NAME LBRACE struct_body RBRACE SEMI"""
+    """struct : attribute_section STRUCT name_wrapped LBRACE struct_body RBRACE SEMI"""
     p[0] = ast.Struct(p[3], p[1], p[5])
 
   def p_struct_2(self, p):
-    """struct : attribute_section STRUCT NAME SEMI"""
+    """struct : attribute_section STRUCT name_wrapped SEMI"""
     p[0] = ast.Struct(p[3], p[1], None)
 
   def p_struct_body_1(self, p):
@@ -187,11 +191,15 @@ class Parser:
     p[0].Append(p[2])
 
   def p_struct_field(self, p):
-    """struct_field : attribute_section typename NAME ordinal default SEMI"""
+    """struct_field : attribute_section typename name_wrapped ordinal default SEMI"""
     p[0] = ast.StructField(p[3], p[1], p[4], p[2], p[5])
 
+  def p_feature(self, p):
+    """feature : FEATURE"""
+    raise SyntaxError("`feature` is a mojom keyword reserved for future use.")
+
   def p_union(self, p):
-    """union : attribute_section UNION NAME LBRACE union_body RBRACE SEMI"""
+    """union : attribute_section UNION name_wrapped LBRACE union_body RBRACE SEMI"""
     p[0] = ast.Union(p[3], p[1], p[5])
 
   def p_union_body_1(self, p):
@@ -204,7 +212,7 @@ class Parser:
     p[1].Append(p[2])
 
   def p_union_field(self, p):
-    """union_field : attribute_section typename NAME ordinal SEMI"""
+    """union_field : attribute_section typename name_wrapped ordinal SEMI"""
     p[0] = ast.UnionField(p[3], p[1], p[4], p[2])
 
   def p_default_1(self, p):
@@ -216,8 +224,7 @@ class Parser:
     p[0] = p[2]
 
   def p_interface(self, p):
-    """interface : attribute_section INTERFACE NAME LBRACE interface_body \
-                       RBRACE SEMI"""
+    """interface : attribute_section INTERFACE name_wrapped LBRACE interface_body RBRACE SEMI"""
     p[0] = ast.Interface(p[3], p[1], p[5])
 
   def p_interface_body_1(self, p):
@@ -240,8 +247,7 @@ class Parser:
     p[0] = p[3]
 
   def p_method(self, p):
-    """method : attribute_section NAME ordinal LPAREN parameter_list RPAREN \
-                    response SEMI"""
+    """method : attribute_section name_wrapped ordinal LPAREN parameter_list RPAREN response SEMI"""
     p[0] = ast.Method(p[2], p[1], p[3], p[5], p[7])
 
   def p_parameter_list_1(self, p):
@@ -262,7 +268,7 @@ class Parser:
     p[0].Append(p[3])
 
   def p_parameter(self, p):
-    """parameter : attribute_section typename NAME ordinal"""
+    """parameter : attribute_section typename name_wrapped ordinal"""
     p[0] = ast.Parameter(
         p[3], p[1], p[4], p[2], filename=self.filename, lineno=p.lineno(3))
 
@@ -303,18 +309,16 @@ class Parser:
     p[0] = "rcv<%s>" % p[3]
 
   def p_associatedremotetype(self, p):
-    """associatedremotetype : PENDING_ASSOCIATED_REMOTE LANGLE identifier \
-                                  RANGLE"""
+    """associatedremotetype : PENDING_ASSOCIATED_REMOTE LANGLE identifier RANGLE"""
     p[0] = "rma<%s>" % p[3]
 
   def p_associatedreceivertype(self, p):
-    """associatedreceivertype : PENDING_ASSOCIATED_RECEIVER LANGLE identifier \
-                                    RANGLE"""
+    """associatedreceivertype : PENDING_ASSOCIATED_RECEIVER LANGLE identifier RANGLE"""
     p[0] = "rca<%s>" % p[3]
 
   def p_handletype(self, p):
     """handletype : HANDLE
-                  | HANDLE LANGLE NAME RANGLE"""
+                  | HANDLE LANGLE name_wrapped RANGLE"""
     if len(p) == 2:
       p[0] = p[1]
     else:
@@ -364,15 +368,14 @@ class Parser:
     p[0] = ast.Ordinal(value, filename=self.filename, lineno=p.lineno(1))
 
   def p_enum_1(self, p):
-    """enum : attribute_section ENUM NAME LBRACE enum_value_list \
-                  RBRACE SEMI
-            | attribute_section ENUM NAME LBRACE nonempty_enum_value_list \
-                  COMMA RBRACE SEMI"""
+    """enum : attribute_section ENUM name_wrapped LBRACE enum_value_list RBRACE SEMI
+            | attribute_section ENUM name_wrapped LBRACE \
+                    nonempty_enum_value_list COMMA RBRACE SEMI"""
     p[0] = ast.Enum(
         p[3], p[1], p[5], filename=self.filename, lineno=p.lineno(2))
 
   def p_enum_2(self, p):
-    """enum : attribute_section ENUM NAME SEMI"""
+    """enum : attribute_section ENUM name_wrapped SEMI"""
     p[0] = ast.Enum(
         p[3], p[1], None, filename=self.filename, lineno=p.lineno(2))
 
@@ -394,9 +397,9 @@ class Parser:
     p[0].Append(p[3])
 
   def p_enum_value(self, p):
-    """enum_value : attribute_section NAME
-                  | attribute_section NAME EQUALS int
-                  | attribute_section NAME EQUALS identifier_wrapped"""
+    """enum_value : attribute_section name_wrapped
+                  | attribute_section name_wrapped EQUALS int
+                  | attribute_section name_wrapped EQUALS identifier_wrapped"""
     p[0] = ast.EnumValue(
         p[2],
         p[1],
@@ -405,7 +408,7 @@ class Parser:
         lineno=p.lineno(2))
 
   def p_const(self, p):
-    """const : attribute_section CONST typename NAME EQUALS constant SEMI"""
+    """const : attribute_section CONST typename name_wrapped EQUALS constant SEMI"""
     p[0] = ast.Const(p[4], p[1], p[3], p[6])
 
   def p_constant(self, p):
@@ -420,9 +423,15 @@ class Parser:
   # TODO(vtl): Make this produce a "wrapped" identifier (probably as an
   # |ast.Identifier|, to be added) and get rid of identifier_wrapped.
   def p_identifier(self, p):
-    """identifier : NAME
-                  | NAME DOT identifier"""
+    """identifier : name_wrapped
+                  | name_wrapped DOT identifier"""
     p[0] = ''.join(p[1:])
+
+  # Allow 'feature' to be a name literal not just a keyword.
+  def p_name_wrapped(self, p):
+    """name_wrapped : NAME
+                    | FEATURE"""
+    p[0] = p[1]
 
   def p_literal(self, p):
     """literal : int
@@ -455,6 +464,12 @@ class Parser:
       # Unexpected EOF.
       # TODO(vtl): Can we figure out what's missing?
       raise ParseError(self.filename, "Unexpected end of file")
+
+    if e.value == 'feature':
+      raise ParseError(self.filename,
+                       "`feature` is reserved for a future mojom keyword",
+                       lineno=e.lineno,
+                       snippet=self._GetSnippet(e.lineno))
 
     raise ParseError(
         self.filename,
