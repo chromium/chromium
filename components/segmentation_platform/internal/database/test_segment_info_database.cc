@@ -5,13 +5,8 @@
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
 
 #include "base/containers/contains.h"
-#include "base/logging.h"
-#include "base/metrics/metrics_hashes.h"
-#include "base/ranges/algorithm.h"
-#include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
-#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -51,22 +46,16 @@ TestSegmentInfoDatabase::GetSegmentInfoForBothModels(
   return result;
 }
 
-void TestSegmentInfoDatabase::GetSegmentInfo(SegmentId segment_id,
-                                             ModelSource model_source,
-                                             SegmentInfoCallback callback) {
-  std::move(callback).Run(GetCachedSegmentInfo(segment_id, model_source));
-}
-
-absl::optional<SegmentInfo> TestSegmentInfoDatabase::GetCachedSegmentInfo(
+const SegmentInfo* TestSegmentInfoDatabase::GetCachedSegmentInfo(
     SegmentId segment_id,
     ModelSource model_source) {
   for (const auto& pair : segment_infos_) {
     if (segment_id == pair.first &&
         model_source == pair.second.model_source()) {
-      return absl::make_optional(pair.second);
+      return &pair.second;
     }
   }
-  return absl::nullopt;
+  return nullptr;
 }
 
 void TestSegmentInfoDatabase::UpdateSegment(

@@ -17,12 +17,11 @@ SegmentInfoCache::SegmentInfoCache() = default;
 
 SegmentInfoCache::~SegmentInfoCache() = default;
 
-absl::optional<SegmentInfo> SegmentInfoCache::GetSegmentInfo(
+const SegmentInfo* SegmentInfoCache::GetSegmentInfo(
     SegmentId segment_id,
     ModelSource model_source) const {
   auto it = segment_info_cache_.find(std::make_pair(segment_id, model_source));
-  return (it == segment_info_cache_.end()) ? absl::nullopt
-                                           : absl::make_optional(it->second);
+  return (it == segment_info_cache_.end()) ? nullptr : &it->second;
 }
 
 std::unique_ptr<SegmentInfoCache::SegmentInfoList>

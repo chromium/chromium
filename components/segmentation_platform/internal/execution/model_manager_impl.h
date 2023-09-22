@@ -83,7 +83,7 @@ class ModelManagerImpl : public ModelManager {
       proto::ModelSource model_source,
       proto::SegmentationModelMetadata metadata,
       int64_t model_version,
-      absl::optional<proto::SegmentInfo> segment_info);
+      const proto::SegmentInfo* segment_info);
 
   // Callback after storing the updated version of the SegmentInfo.
   // Responsible for invoking the SegmentationModelUpdatedCallback.

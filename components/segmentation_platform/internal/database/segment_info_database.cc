@@ -12,7 +12,6 @@
 #include "components/segmentation_platform/internal/logging.h"
 #include "components/segmentation_platform/internal/stats.h"
 
-#include <sstream>
 #include <string>
 
 namespace segmentation_platform {
@@ -70,10 +69,15 @@ void SegmentInfoDatabase::GetSegmentInfoForSegments(
 void SegmentInfoDatabase::GetSegmentInfo(SegmentId segment_id,
                                          proto::ModelSource model_source,
                                          SegmentInfoCallback callback) {
-  std::move(callback).Run(cache_->GetSegmentInfo(segment_id, model_source));
+  absl::optional<SegmentInfo> result;
+  const auto* cached = GetCachedSegmentInfo(segment_id, model_source);
+  if (cached) {
+    result = *cached;
+  }
+  std::move(callback).Run(std::move(result));
 }
 
-absl::optional<SegmentInfo> SegmentInfoDatabase::GetCachedSegmentInfo(
+const SegmentInfo* SegmentInfoDatabase::GetCachedSegmentInfo(
     SegmentId segment_id,
     proto::ModelSource model_source) {
   return cache_->GetSegmentInfo(segment_id, model_source);
@@ -84,20 +88,20 @@ void SegmentInfoDatabase::GetTrainingData(SegmentId segment_id,
                                           TrainingRequestId request_id,
                                           bool delete_from_db,
                                           TrainingDataCallback callback) {
-  absl::optional<SegmentInfo> segment_info =
-      cache_->GetSegmentInfo(segment_id, model_source);
   absl::optional<proto::TrainingData> result;
+  const auto* cached = cache_->GetSegmentInfo(segment_id, model_source);
 
   // Ignore results if the metadata no longer exists.
-  if (!segment_info.has_value()) {
+  if (!cached) {
     std::move(callback).Run(std::move(result));
     return;
   }
+  SegmentInfo segment_info = *cached;  // Make a copy for update.
 
-  const auto& info = segment_info.value();
-  for (int i = 0; i < info.training_data_size(); i++) {
-    if (info.training_data(i).request_id() == request_id.GetUnsafeValue()) {
-      result = info.training_data(i);
+  for (int i = 0; i < segment_info.training_data_size(); i++) {
+    if (segment_info.training_data(i).request_id() ==
+        request_id.GetUnsafeValue()) {
+      result = segment_info.training_data(i);
       break;
     }
   }
@@ -105,10 +109,10 @@ void SegmentInfoDatabase::GetTrainingData(SegmentId segment_id,
   if (delete_from_db) {
     // Delete the training data from cache and then post update to delete from
     // database.
-    for (int i = 0; i < segment_info->training_data_size(); i++) {
-      if (segment_info->training_data(i).request_id() ==
+    for (int i = 0; i < segment_info.training_data_size(); i++) {
+      if (segment_info.training_data(i).request_id() ==
           request_id.GetUnsafeValue()) {
-        segment_info->mutable_training_data()->DeleteSubrange(i, 1);
+        segment_info.mutable_training_data()->DeleteSubrange(i, 1);
       }
     }
     UpdateSegment(segment_id, model_source, std::move(segment_info),
@@ -190,13 +194,14 @@ void SegmentInfoDatabase::SaveSegmentResult(
     ModelSource model_source,
     absl::optional<proto::PredictionResult> result,
     SuccessCallback callback) {
-  auto segment_info = cache_->GetSegmentInfo(segment_id, model_source);
+  const auto* cached = cache_->GetSegmentInfo(segment_id, model_source);
 
   // Ignore results if the metadata no longer exists.
-  if (!segment_info.has_value()) {
+  if (!cached) {
     std::move(callback).Run(false);
     return;
   }
+  SegmentInfo segment_info = *cached;  // Make a copy for update.
 
   // Update results.
   if (result.has_value()) {
@@ -204,11 +209,11 @@ void SegmentInfoDatabase::SaveSegmentResult(
             << segmentation_platform::PredictionResultToDebugString(
                    result.value())
             << " for segment id: " << proto::SegmentId_Name(segment_id);
-    segment_info->mutable_prediction_result()->Swap(&(*result));
+    segment_info.mutable_prediction_result()->Swap(&(*result));
   } else {
     VLOG(1) << "SaveSegmentResult: clearing prediction result for segment "
             << proto::SegmentId_Name(segment_id);
-    segment_info->clear_prediction_result();
+    segment_info.clear_prediction_result();
   }
 
   UpdateSegment(segment_id, model_source, std::move(segment_info),
@@ -219,16 +224,17 @@ void SegmentInfoDatabase::SaveTrainingData(SegmentId segment_id,
                                            ModelSource model_source,
                                            const proto::TrainingData& data,
                                            SuccessCallback callback) {
-  auto segment_info = cache_->GetSegmentInfo(segment_id, model_source);
+  const auto* cached = cache_->GetSegmentInfo(segment_id, model_source);
 
-  // Ignore data if the metadata no longer exists.
-  if (!segment_info.has_value()) {
+  // Ignore results if the metadata no longer exists.
+  if (!cached) {
     std::move(callback).Run(false);
     return;
   }
+  SegmentInfo segment_info = *cached;  // Make a copy for update.
 
   // Update training data.
-  segment_info->add_training_data()->CopyFrom(data);
+  segment_info.add_training_data()->CopyFrom(data);
 
   UpdateSegment(segment_id, model_source, std::move(segment_info),
                 std::move(callback));

@@ -121,11 +121,11 @@ void ModelManagerImpl::OnSegmentationModelUpdated(
   // field.
   metadata_utils::SetFeatureNameHashesFromName(&metadata.value());
 
-  auto old_segment_info =
+  const auto* old_segment_info =
       segment_database_->GetCachedSegmentInfo(segment_id, model_source);
   OnSegmentInfoFetchedForModelUpdate(segment_id, model_source,
                                      std::move(metadata.value()), model_version,
-                                     std::move(old_segment_info));
+                                     old_segment_info);
 }
 
 void ModelManagerImpl::OnSegmentInfoFetchedForModelUpdate(
@@ -133,7 +133,7 @@ void ModelManagerImpl::OnSegmentInfoFetchedForModelUpdate(
     proto::ModelSource model_source,
     proto::SegmentationModelMetadata metadata,
     int64_t model_version,
-    absl::optional<proto::SegmentInfo> old_segment_info) {
+    const proto::SegmentInfo* old_segment_info) {
   TRACE_EVENT("segmentation_platform",
               "ModelManagerImpl::OnSegmentInfoFetchedForModelUpdate");
   proto::SegmentInfo new_segment_info;
@@ -152,7 +152,7 @@ void ModelManagerImpl::OnSegmentInfoFetchedForModelUpdate(
   // is valid, and we can copy over the PredictionResult to the new version
   // we are creating.
   absl::optional<int64_t> old_model_version;
-  if (old_segment_info.has_value()) {
+  if (old_segment_info) {
     // The retrieved SegmentInfo's ID should match the one we looked up,
     // otherwise the DB has not upheld its contract.
     // If does not match, we should just overwrite the old entry with one
@@ -173,7 +173,7 @@ void ModelManagerImpl::OnSegmentInfoFetchedForModelUpdate(
         // If we have an old PredictionResult, we need to keep it around in the
         // new version of the SegmentInfo.
         auto* prediction_result = new_segment_info.mutable_prediction_result();
-        prediction_result->Swap(old_segment_info->mutable_prediction_result());
+        prediction_result->CopyFrom(old_segment_info->prediction_result());
       }
 
       if (old_segment_info->has_model_update_time_s()) {

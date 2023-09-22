@@ -33,12 +33,8 @@ class TestSegmentInfoDatabase : public SegmentInfoDatabase {
   std::unique_ptr<SegmentInfoDatabase::SegmentInfoList>
   GetSegmentInfoForBothModels(
       const base::flat_set<SegmentId>& segment_ids) override;
-  void GetSegmentInfo(SegmentId segment_id,
-                      ModelSource model_source,
-                      SegmentInfoCallback callback) override;
-  absl::optional<SegmentInfo> GetCachedSegmentInfo(
-      SegmentId segment_id,
-      ModelSource model_source) override;
+  const SegmentInfo* GetCachedSegmentInfo(SegmentId segment_id,
+                                          ModelSource model_source) override;
   void UpdateSegment(SegmentId segment_id,
                      ModelSource model_score,
                      absl::optional<proto::SegmentInfo> segment_info,

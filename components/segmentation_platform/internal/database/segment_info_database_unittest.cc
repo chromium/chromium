@@ -108,8 +108,7 @@ class SegmentInfoDatabaseTest : public testing::Test {
                                        ? absl::make_optional(prediction_result)
                                        : absl::nullopt,
                                    base::DoNothing());
-    if (!segment_info_cache_->GetSegmentInfo(segment_id, model_source)
-             .has_value()) {
+    if (!segment_info_cache_->GetSegmentInfo(segment_id, model_source)) {
       db_->GetCallback(true);
     }
     db_->UpdateCallback(true);
@@ -125,8 +124,7 @@ class SegmentInfoDatabaseTest : public testing::Test {
 
     segment_db_->SaveTrainingData(segment_id, model_source, training_data,
                                   base::DoNothing());
-    if (!segment_info_cache_->GetSegmentInfo(segment_id, model_source)
-             .has_value()) {
+    if (!segment_info_cache_->GetSegmentInfo(segment_id, model_source)) {
       db_->GetCallback(true);
     }
     db_->UpdateCallback(true);
@@ -141,8 +139,7 @@ class SegmentInfoDatabaseTest : public testing::Test {
         segment_id, model_source,
         base::BindOnce(&SegmentInfoDatabaseTest::OnGetSegment,
                        base::Unretained(this)));
-    if (!segment_info_cache_->GetSegmentInfo(segment_id, model_source)
-             .has_value()) {
+    if (!segment_info_cache_->GetSegmentInfo(segment_id, model_source)) {
       db_->GetCallback(true);
     }
 
@@ -173,8 +170,8 @@ class SegmentInfoDatabaseTest : public testing::Test {
                        base::Unretained(this), loop.QuitClosure()));
 
     for (SegmentId segment_id : segment_ids) {
-      if (!segment_info_cache_->GetSegmentInfo(segment_id, kServerModelSource)
-               .has_value()) {
+      if (!segment_info_cache_->GetSegmentInfo(segment_id,
+                                               kServerModelSource)) {
         db_->LoadCallback(true);
         break;
       }
@@ -219,8 +216,7 @@ TEST_F(SegmentInfoDatabaseTest, Get) {
       kSegmentId, kServerModelSource,
       base::BindOnce(&SegmentInfoDatabaseTest::OnGetSegment,
                      base::Unretained(this)));
-  if (!segment_info_cache_->GetSegmentInfo(kSegmentId, kServerModelSource)
-           .has_value()) {
+  if (!segment_info_cache_->GetSegmentInfo(kSegmentId, kServerModelSource)) {
     db_->GetCallback(true);
   }
   EXPECT_TRUE(get_segment_result_.has_value());
@@ -426,14 +422,12 @@ TEST_F(SegmentInfoDatabaseTest, WriteResult) {
   segment_db_->Initialize(base::DoNothing());
   db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
   EXPECT_FALSE(
-      segment_info_cache_->GetSegmentInfo(kSegmentId, kServerModelSource)
-          .has_value());
+      segment_info_cache_->GetSegmentInfo(kSegmentId, kServerModelSource));
 
   // Verify that all DB entries are loaded into cache on initialization.
   db_->LoadCallback(true);
   EXPECT_TRUE(
-      segment_info_cache_->GetSegmentInfo(kSegmentId, kServerModelSource)
-          .has_value());
+      segment_info_cache_->GetSegmentInfo(kSegmentId, kServerModelSource));
 
   // Update results and verify that db is updated.
   WriteResult(kSegmentId, kServerModelSource, 0.4f);
@@ -461,8 +455,7 @@ TEST_F(SegmentInfoDatabaseTest, WriteTrainingData) {
   db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
   db_->LoadCallback(true);
   EXPECT_TRUE(
-      segment_info_cache_->GetSegmentInfo(kSegmentId, kServerModelSource)
-          .has_value());
+      segment_info_cache_->GetSegmentInfo(kSegmentId, kServerModelSource));
 
   std::vector<ModelProvider::Request> expected_training_inputs;
 

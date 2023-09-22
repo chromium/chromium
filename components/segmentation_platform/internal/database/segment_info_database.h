@@ -71,9 +71,11 @@ class SegmentInfoDatabase {
                               ModelSource model_source,
                               SegmentInfoCallback callback);
 
-  virtual absl::optional<SegmentInfo> GetCachedSegmentInfo(
-      SegmentId segment_id,
-      ModelSource model_source);
+  // Gets the cached segment info. Segment info is always cached if available to
+  // the service, can be used as replacement for GetSegmentInfo(). Returns
+  // nullptr when not available.
+  virtual const SegmentInfo* GetCachedSegmentInfo(SegmentId segment_id,
+                                                  ModelSource model_source);
 
   // Called to get the training data for a given segment with given model source
   // and request ID. If delete_from_db is set to true, it will delete the
