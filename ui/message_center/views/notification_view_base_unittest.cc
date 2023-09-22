@@ -7,6 +7,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1245,4 +1246,22 @@ TEST_F(NotificationViewBaseWithNotificationGestureUpdateTest,
   EXPECT_TRUE(IsPopupRemovedAfterIdle(kDefaultNotificationId));
   EXPECT_FALSE(IsRemovedAfterIdle(kDefaultNotificationId));
 }
+
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_SlideOutByTrackpad DISABLED_SlideOutByTrackpad
+#else
+#define MAYBE_SlideOutByTrackpad SlideOutByTrackpad
+#endif
+TEST_F(NotificationViewBaseWithNotificationGestureUpdateTest,
+       MAYBE_SlideOutByTrackpad) {
+  ui::ScopedAnimationDurationScaleMode zero_duration_scope(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  ui::test::EventGenerator generator(
+      GetRootWindow(notification_view()->GetWidget()));
+  generator.ScrollSequence(gfx::Point(), base::TimeDelta(), /*x_offset=*/20,
+                           /*y_offset=*/0, /*steps=*/1, /*num_fingers=*/2);
+  EXPECT_TRUE(IsPopupRemovedAfterIdle(kDefaultNotificationId));
+}
+
 }  // namespace message_center

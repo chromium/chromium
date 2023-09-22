@@ -69,6 +69,9 @@ MessageView::MessageView(const Notification& notification)
       notifier_id_(notification.notifier_id()),
       timestamp_(notification.timestamp()),
       slide_out_controller_(this, this) {
+  if (features::IsNotificationGesturesUpdateEnabled()) {
+    slide_out_controller_.set_trackpad_gestures_enabled(true);
+  }
   SetFocusBehavior(FocusBehavior::ALWAYS);
   views::FocusRing::Install(this);
   views::HighlightPathGenerator::Install(

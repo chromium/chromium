@@ -8,8 +8,13 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
+#include "ui/events/event.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/views/animation/slide_out_controller_delegate.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
@@ -19,6 +24,7 @@ namespace views {
 namespace {
 constexpr int kSwipeControlWidth = 30;  // px
 constexpr int kTargetWidth = 200;       // px
+constexpr int kScrollOffsetThreshold = 20;
 }  // namespace
 
 class TestSlideOutControllerDelegate : public SlideOutControllerDelegate {
@@ -115,6 +121,13 @@ class SlideOutControllerTest : public ViewsTestBase {
         ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_UPDATE, swipe_amount, 0));
     PostSequentialGestureEvent(
         ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_END));
+  }
+
+  void PostTrackPadSwipeEvent(int swipe_amount, int finger_count) {
+    auto scroll_event = ui::ScrollEvent(ui::ET_SCROLL, gfx::PointF(),
+                                        gfx::PointF(), base::TimeTicks(), 0,
+                                        swipe_amount, 0, 0, 0, finger_count);
+    slide_out_controller()->OnScrollEvent(&scroll_event);
   }
 
  private:
@@ -542,6 +555,41 @@ TEST_P(SwipeControlTest, SwipeControlWidth_NotSnapAndBackToOrigin) {
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(delegate()->IsOnSlideChangedCalled());
   EXPECT_EQ(0, delegate()->slide_out_count_);
+}
+
+// Test class for making sure trackpad gestures work to trigger slide out
+// events.
+class TrackPadGestureTest : public SlideOutControllerTest {
+ public:
+  TrackPadGestureTest() = default;
+
+  explicit TrackPadGestureTest(const SwipeControlTest&) = delete;
+  TrackPadGestureTest& operator=(const TrackPadGestureTest&) = delete;
+
+  ~TrackPadGestureTest() override = default;
+
+  void SetUp() override {
+    SlideOutControllerTest::SetUp();
+    slide_out_controller()->set_trackpad_gestures_enabled(true);
+  }
+};
+
+TEST_F(TrackPadGestureTest, SlideOut) {
+  // A slide out should not be triggered if the scroll offset is below
+  // `kScrollOffsetThreshold`.
+  PostTrackPadSwipeEvent(kScrollOffsetThreshold - 1, /*finger_count=*/2);
+  EXPECT_EQ(0, delegate()->slide_out_count_);
+
+  // A slide out should not be triggered if the finger count is not equal to 2.
+  PostTrackPadSwipeEvent(kScrollOffsetThreshold,
+                         /*finger_count=*/3);
+  EXPECT_EQ(0, delegate()->slide_out_count_);
+
+  // A slide out should be triggered with both of the conditions above being
+  // met.
+  PostTrackPadSwipeEvent(kScrollOffsetThreshold,
+                         /*finger_count=*/2);
+  EXPECT_EQ(1, delegate()->slide_out_count_);
 }
 
 }  // namespace views

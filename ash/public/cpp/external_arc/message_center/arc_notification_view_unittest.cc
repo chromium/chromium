@@ -24,6 +24,7 @@
 #include "ui/base/ime/dummy_text_input_client.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_client.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/event.h"
@@ -217,7 +218,7 @@ class ArcNotificationViewTest : public AshTestBase {
       nullptr;  // owned by its widget.
 
   std::unique_ptr<MockArcNotificationItem> item_;
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ArcNotificationViewTest, Events) {
@@ -385,6 +386,36 @@ TEST_F(ArcNotificationViewTest, ChangeContentHeight) {
   size = notification_view()->GetPreferredSize();
   size.Enlarge(0, -notification_view()->GetInsets().height());
   EXPECT_EQ("344x1000", size.ToString());
+}
+
+class NotificationGestureUpdateTest : public ArcNotificationViewTest {
+ public:
+  NotificationGestureUpdateTest() = default;
+  NotificationGestureUpdateTest(const NotificationGestureUpdateTest&) = delete;
+  NotificationGestureUpdateTest& operator=(
+      const NotificationGestureUpdateTest&) = delete;
+
+  // Overridden from ViewsTestBase:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {::features::kNotificationGesturesUpdate}, {});
+
+    ArcNotificationViewTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(NotificationGestureUpdateTest, TrackPadGestureSlideOut) {
+  ui::ScopedAnimationDurationScaleMode zero_duration_scope(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  ui::test::EventGenerator generator(
+      (notification_view()->GetWidget()->GetNativeWindow()->GetRootWindow()));
+  generator.ScrollSequence(gfx::Point(), base::TimeDelta(), /*x_offset=*/20,
+                           /*y_offset=*/0, /*steps=*/1, /*num_fingers=*/2);
+  EXPECT_TRUE(IsPopupRemovedAfterIdle(kDefaultNotificationId));
 }
 
 }  // namespace ash
