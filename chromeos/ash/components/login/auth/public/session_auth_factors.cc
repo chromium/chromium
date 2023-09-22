@@ -85,6 +85,20 @@ bool SessionAuthFactors::HasPasswordKey(const std::string& label) const {
   return false;
 }
 
+bool SessionAuthFactors::HasSinglePasswordFactor() const {
+  CHECK(keys_.empty());
+  size_t passwords = base::ranges::count_if(session_factors_, [](auto& f) {
+    if (f.ref().type() != cryptohome::AuthFactorType::kPassword) {
+      return false;
+    }
+    auto label = f.ref().label().value();
+    return label == kCryptohomeGaiaKeyLabel ||
+           label == kCryptohomeLocalPasswordKeyLabel ||
+           (label.find(kCryptohomeGaiaKeyLegacyLabelPrefix) == 0);
+  });
+  return passwords == 1u;
+}
+
 const cryptohome::KeyDefinition* SessionAuthFactors::FindPinKey() const {
   DCHECK(session_factors_.empty());
   for (const cryptohome::KeyDefinition& key_def : keys_) {
@@ -120,6 +134,20 @@ const cryptohome::AuthFactor* SessionAuthFactors::FindOnlinePasswordFactor()
   if (result == session_factors_.end())
     return nullptr;
   return &(*result);
+}
+
+const cryptohome::AuthFactor* SessionAuthFactors::FindLocalPasswordFactor()
+    const {
+  return FindPasswordFactor(
+      cryptohome::KeyLabel{kCryptohomeLocalPasswordKeyLabel});
+}
+
+const cryptohome::AuthFactor* SessionAuthFactors::FindAnyPasswordFactor()
+    const {
+  if (const auto* gaia = FindOnlinePasswordFactor()) {
+    return gaia;
+  }
+  return FindLocalPasswordFactor();
 }
 
 const cryptohome::AuthFactor* SessionAuthFactors::FindPasswordFactor(

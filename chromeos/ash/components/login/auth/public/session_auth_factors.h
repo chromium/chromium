@@ -48,6 +48,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC)
   // Checks if password key with given label exists.
   bool HasPasswordKey(const std::string& label) const;
 
+  bool HasSinglePasswordFactor() const;
+
   // Returns metadata for the PIN key, so that it can be identified for
   // further operations.
   const cryptohome::KeyDefinition* FindPinKey() const;
@@ -55,6 +57,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC)
   const cryptohome::AuthFactor* FindPasswordFactor(
       const cryptohome::KeyLabel& label) const;
   const cryptohome::AuthFactor* FindOnlinePasswordFactor() const;
+  const cryptohome::AuthFactor* FindLocalPasswordFactor() const;
+  const cryptohome::AuthFactor* FindAnyPasswordFactor() const;
   const cryptohome::AuthFactor* FindKioskFactor() const;
   const cryptohome::AuthFactor* FindPinFactor() const;
   const cryptohome::AuthFactor* FindRecoveryFactor() const;
