@@ -49,7 +49,7 @@ namespace {
 constexpr int kDefaultBorderThicknessPx = 6;
 
 const Vector<LayoutUnit>& ColumnSizes(const LayoutBox& box) {
-  DCHECK(IsA<LayoutNGFrameSet>(box));
+  DCHECK(IsA<LayoutFrameSet>(box));
   // |object| should have only 1 physical fragment because <frameset> is
   // monolithic.
   const auto* data = box.GetPhysicalFragment(0)->GetFrameSetLayoutData();
@@ -58,7 +58,7 @@ const Vector<LayoutUnit>& ColumnSizes(const LayoutBox& box) {
 }
 
 const Vector<LayoutUnit>& RowSizes(const LayoutBox& box) {
-  DCHECK(IsA<LayoutNGFrameSet>(box));
+  DCHECK(IsA<LayoutFrameSet>(box));
   // |object| should have only 1 physical fragment because <frameset> is
   // monolithic.
   const auto* data = box.GetPhysicalFragment(0)->GetFrameSetLayoutData();
@@ -410,7 +410,7 @@ bool HTMLFrameSetElement::LayoutObjectIsNeeded(
 LayoutObject* HTMLFrameSetElement::CreateLayoutObject(
     const ComputedStyle& style) {
   if (style.ContentBehavesAsNormal())
-    return MakeGarbageCollected<LayoutNGFrameSet>(this);
+    return MakeGarbageCollected<LayoutFrameSet>(this);
   return LayoutObject::CreateObject(this, style);
 }
 

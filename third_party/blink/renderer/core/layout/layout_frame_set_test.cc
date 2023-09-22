@@ -7,9 +7,9 @@
 
 namespace blink {
 
-class LayoutNGFrameSetTest : public RenderingTest {};
+class LayoutFrameSetTest : public RenderingTest {};
 
-TEST_F(LayoutNGFrameSetTest, GetCursor) {
+TEST_F(LayoutFrameSetTest, GetCursor) {
   SetHtmlInnerHTML(R"HTML(
     <frameset id='f' rows='50%,50%' cols='50%,50%' border='20'>
     <frame src=""></frame>
@@ -29,7 +29,7 @@ TEST_F(LayoutNGFrameSetTest, GetCursor) {
   EXPECT_EQ(ColumnResizeCursor(), cursor);
 }
 
-TEST_F(LayoutNGFrameSetTest, HitTestingCrash) {
+TEST_F(LayoutFrameSetTest, HitTestingCrash) {
   SetBodyInnerHTML(R"HTML(<hgroup id="container">a
 <style>frameset {  transform-style: preserve-3d; }</style></hgroup>)HTML");
   auto& doc = GetDocument();

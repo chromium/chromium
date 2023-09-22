@@ -897,7 +897,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
   bool IsFrameSet() const {
     NOT_DESTROYED();
-    return IsOfType(kLayoutObjectNGFrameSet);
+    return IsOfType(kLayoutObjectFrameSet);
   }
   bool IsLayoutNGBlockFlow() const {
     NOT_DESTROYED();
@@ -3518,6 +3518,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     kLayoutObjectIFrame,
     kLayoutObjectImage,
     kLayoutObjectFieldset,
+    kLayoutObjectFrameSet,
     kLayoutObjectListMarkerImage,
     kLayoutObjectMathML,
     kLayoutObjectMathMLRoot,
@@ -3527,7 +3528,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     kLayoutObjectNGBlockFlow,
     kLayoutObjectNGCustom,
     kLayoutObjectNGFlexibleBox,
-    kLayoutObjectNGFrameSet,
     kLayoutObjectNGGrid,
     kLayoutObjectNGInlineListItem,
     kLayoutObjectNGInsideListMarker,

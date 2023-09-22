@@ -9,9 +9,9 @@
 
 namespace blink {
 
-class LayoutNGFrameSet final : public LayoutNGBlock {
+class LayoutFrameSet final : public LayoutNGBlock {
  public:
-  explicit LayoutNGFrameSet(Element*);
+  explicit LayoutFrameSet(Element*);
 
  private:
   const char* GetName() const override;
@@ -24,7 +24,7 @@ class LayoutNGFrameSet final : public LayoutNGBlock {
 };
 
 template <>
-struct DowncastTraits<LayoutNGFrameSet> {
+struct DowncastTraits<LayoutFrameSet> {
   static bool AllowFrom(const LayoutObject& object) {
     return object.IsFrameSet();
   }

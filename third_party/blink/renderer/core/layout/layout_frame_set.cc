@@ -10,33 +10,33 @@
 
 namespace blink {
 
-LayoutNGFrameSet::LayoutNGFrameSet(Element* element) : LayoutNGBlock(element) {
+LayoutFrameSet::LayoutFrameSet(Element* element) : LayoutNGBlock(element) {
   DCHECK(IsA<HTMLFrameSetElement>(element));
 }
 
-const char* LayoutNGFrameSet::GetName() const {
+const char* LayoutFrameSet::GetName() const {
   NOT_DESTROYED();
-  return "LayoutNGFrameSet";
+  return "LayoutFrameSet";
 }
 
-bool LayoutNGFrameSet::IsOfType(LayoutObjectType type) const {
+bool LayoutFrameSet::IsOfType(LayoutObjectType type) const {
   NOT_DESTROYED();
-  return type == kLayoutObjectNGFrameSet || LayoutNGBlock::IsOfType(type);
+  return type == kLayoutObjectFrameSet || LayoutNGBlock::IsOfType(type);
 }
 
-bool LayoutNGFrameSet::IsChildAllowed(LayoutObject* child,
-                                      const ComputedStyle&) const {
+bool LayoutFrameSet::IsChildAllowed(LayoutObject* child,
+                                    const ComputedStyle&) const {
   NOT_DESTROYED();
   return child->IsFrame() || child->IsFrameSet();
 }
 
-void LayoutNGFrameSet::AddChild(LayoutObject* new_child,
-                                LayoutObject* before_child) {
+void LayoutFrameSet::AddChild(LayoutObject* new_child,
+                              LayoutObject* before_child) {
   LayoutNGBlock::AddChild(new_child, before_child);
   To<HTMLFrameSetElement>(GetNode())->DirtyEdgeInfoAndFullPaintInvalidation();
 }
 
-void LayoutNGFrameSet::RemoveChild(LayoutObject* child) {
+void LayoutFrameSet::RemoveChild(LayoutObject* child) {
   LayoutNGBlock::RemoveChild(child);
   if (DocumentBeingDestroyed()) {
     return;
@@ -44,8 +44,8 @@ void LayoutNGFrameSet::RemoveChild(LayoutObject* child) {
   To<HTMLFrameSetElement>(GetNode())->DirtyEdgeInfoAndFullPaintInvalidation();
 }
 
-CursorDirective LayoutNGFrameSet::GetCursor(const PhysicalOffset& point,
-                                            ui::Cursor& cursor) const {
+CursorDirective LayoutFrameSet::GetCursor(const PhysicalOffset& point,
+                                          ui::Cursor& cursor) const {
   NOT_DESTROYED();
   const auto& frame_set = *To<HTMLFrameSetElement>(GetNode());
   gfx::Point rounded_point = ToRoundedPoint(point);
