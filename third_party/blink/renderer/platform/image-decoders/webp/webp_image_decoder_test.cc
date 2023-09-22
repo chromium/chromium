@@ -61,30 +61,11 @@ void TestInvalidImage(const char* webp_file, bool parse_error_expected) {
   EXPECT_TRUE(decoder->Failed());
 }
 
-// If histogram_name is a null pointer, the test should not emit to any
-// histogram and `sample` is ignored.
-void TestBppHistogram(const char* image_name,
-                      const char* histogram_name = nullptr,
-                      base::HistogramBase::Sample sample = 0) {
-  base::HistogramTester histogram_tester;
-  std::unique_ptr<ImageDecoder> decoder = CreateWEBPDecoder();
-  decoder->SetData(ReadFile(image_name), true);
-  ASSERT_TRUE(decoder->IsSizeAvailable());
-  if (histogram_name) {
-    histogram_tester.ExpectTotalCount(histogram_name, 0);
-  }
-  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
-  ASSERT_TRUE(frame);
-  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
-  EXPECT_FALSE(decoder->Failed());
-  base::HistogramTester::CountsMap expected_counts;
-  if (histogram_name) {
-    histogram_tester.ExpectUniqueSample(histogram_name, sample, 1);
-    expected_counts[histogram_name] = 1;
-  }
-  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
-                  "Blink.DecodedImage.WebPDensity.Count."),
-              testing::ContainerEq(expected_counts));
+void TestWebPBppHistogram(const char* image_name,
+                          const char* histogram_name = nullptr,
+                          base::HistogramBase::Sample sample = 0) {
+  TestBppHistogram(CreateWEBPDecoder, "WebP", image_name, histogram_name,
+                   sample);
 }
 
 }  // anonymous namespace
@@ -531,16 +512,16 @@ TEST(StaticWebPTests, bppHistogramSmall) {
   constexpr int kFileSize = 19436;
   constexpr int kSample =
       (kFileSize * 100 * 8 + kImageArea / 2) / kImageArea;  // = 24
-  TestBppHistogram("/images/resources/webp-color-profile-lossy.webp",
-                   "Blink.DecodedImage.WebPDensity.Count.0.7MP", kSample);
+  TestWebPBppHistogram("/images/resources/webp-color-profile-lossy.webp",
+                       "Blink.DecodedImage.WebPDensity.Count.0.7MP", kSample);
 }
 
 TEST(StaticWebPTests, bppHistogramSmall3x3) {
   // The centi bpp = 68 * 100 * 8 / (3 * 3) ~= 6044, which is greater than the
   // histogram's max value (1000), so this sample goes into the overflow bucket.
   constexpr int kSample = 1000;
-  TestBppHistogram("/images/resources/red3x3-lossy.webp",
-                   "Blink.DecodedImage.WebPDensity.Count.0.1MP", kSample);
+  TestWebPBppHistogram("/images/resources/red3x3-lossy.webp",
+                       "Blink.DecodedImage.WebPDensity.Count.0.1MP", kSample);
 }
 
 TEST(StaticWebPTests, bppHistogramSmall900000) {
@@ -548,8 +529,8 @@ TEST(StaticWebPTests, bppHistogramSmall900000) {
   constexpr int kFileSize = 11180;
   constexpr int kSample =
       (kFileSize * 100 * 8 + kImageArea / 2) / kImageArea;  // = 10
-  TestBppHistogram("/images/resources/peach_900000.webp",
-                   "Blink.DecodedImage.WebPDensity.Count.0.9MP", kSample);
+  TestWebPBppHistogram("/images/resources/peach_900000.webp",
+                       "Blink.DecodedImage.WebPDensity.Count.0.9MP", kSample);
 }
 
 TEST(StaticWebPTests, bppHistogramBig) {
@@ -557,8 +538,8 @@ TEST(StaticWebPTests, bppHistogramBig) {
   constexpr int kFileSize = 87822;
   constexpr int kSample =
       (kFileSize * 100 * 8 + kImageArea / 2) / kImageArea;  // = 6
-  TestBppHistogram("/images/resources/bee.webp",
-                   "Blink.DecodedImage.WebPDensity.Count.13MP", kSample);
+  TestWebPBppHistogram("/images/resources/bee.webp",
+                       "Blink.DecodedImage.WebPDensity.Count.13MP", kSample);
 }
 
 TEST(StaticWebPTests, bppHistogramBig13000000) {
@@ -566,8 +547,8 @@ TEST(StaticWebPTests, bppHistogramBig13000000) {
   constexpr int kFileSize = 58402;
   constexpr int kSample =
       (kFileSize * 100 * 8 + kImageArea / 2) / kImageArea;  // = 4
-  TestBppHistogram("/images/resources/peach_13000000.webp",
-                   "Blink.DecodedImage.WebPDensity.Count.13MP", kSample);
+  TestWebPBppHistogram("/images/resources/peach_13000000.webp",
+                       "Blink.DecodedImage.WebPDensity.Count.13MP", kSample);
 }
 
 TEST(StaticWebPTests, bppHistogramHuge) {
@@ -575,8 +556,8 @@ TEST(StaticWebPTests, bppHistogramHuge) {
   constexpr int kFileSize = 66594;
   constexpr int kSample =
       (kFileSize * 100 * 8 + kImageArea / 2) / kImageArea;  // = 3
-  TestBppHistogram("/images/resources/peach.webp",
-                   "Blink.DecodedImage.WebPDensity.Count.14+MP", kSample);
+  TestWebPBppHistogram("/images/resources/peach.webp",
+                       "Blink.DecodedImage.WebPDensity.Count.14+MP", kSample);
 }
 
 TEST(StaticWebPTests, bppHistogramHuge13000002) {
@@ -584,8 +565,8 @@ TEST(StaticWebPTests, bppHistogramHuge13000002) {
   constexpr int kFileSize = 53968;
   constexpr int kSample =
       (kFileSize * 100 * 8 + kImageArea / 2) / kImageArea;  // = 3
-  TestBppHistogram("/images/resources/peach_13000002.webp",
-                   "Blink.DecodedImage.WebPDensity.Count.14+MP", kSample);
+  TestWebPBppHistogram("/images/resources/peach_13000002.webp",
+                       "Blink.DecodedImage.WebPDensity.Count.14+MP", kSample);
 }
 
 // Although parsing of the image succeeds, decoding of the image fails, so the
@@ -608,15 +589,15 @@ TEST(StaticWebPTests, bppHistogramInvalid) {
 }
 
 TEST(StaticWebPTests, bppHistogramLossless) {
-  TestBppHistogram("/images/resources/red3x3-lossless.webp");
+  TestWebPBppHistogram("/images/resources/red3x3-lossless.webp");
 }
 
 TEST(StaticWebPTests, bppHistogramAlpha) {
-  TestBppHistogram("/images/resources/webp-color-profile-lossy-alpha.webp");
+  TestWebPBppHistogram("/images/resources/webp-color-profile-lossy-alpha.webp");
 }
 
 TEST(StaticWebPTests, bppHistogramAnimated) {
-  TestBppHistogram("/images/resources/webp-animated-opaque.webp");
+  TestWebPBppHistogram("/images/resources/webp-animated-opaque.webp");
 }
 
 }  // namespace blink

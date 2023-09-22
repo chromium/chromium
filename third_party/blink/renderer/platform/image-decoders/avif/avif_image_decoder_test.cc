@@ -861,30 +861,11 @@ void InspectImage(
   }
 }
 
-// If histogram_name is a null pointer, the test should not emit to any
-// histogram and `sample` is ignored.
-void TestBppHistogram(const char* image_name,
-                      const char* histogram_name = nullptr,
-                      base::HistogramBase::Sample sample = 0) {
-  base::HistogramTester histogram_tester;
-  std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
-  decoder->SetData(ReadFile(image_name), true);
-  ASSERT_TRUE(decoder->IsSizeAvailable());
-  if (histogram_name) {
-    histogram_tester.ExpectTotalCount(histogram_name, 0);
-  }
-  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
-  ASSERT_TRUE(frame);
-  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
-  EXPECT_FALSE(decoder->Failed());
-  base::HistogramTester::CountsMap expected_counts;
-  if (histogram_name) {
-    histogram_tester.ExpectUniqueSample(histogram_name, sample, 1);
-    expected_counts[histogram_name] = 1;
-  }
-  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
-                  "Blink.DecodedImage.AvifDensity.Count."),
-              testing::ContainerEq(expected_counts));
+void TestAvifBppHistogram(const char* image_name,
+                          const char* histogram_name = nullptr,
+                          base::HistogramBase::Sample sample = 0) {
+  TestBppHistogram(CreateAVIFDecoder, "Avif", image_name, histogram_name,
+                   sample);
 }
 
 }  // namespace
@@ -1481,16 +1462,16 @@ TEST(StaticAVIFTests, BppHistogramSmall) {
   constexpr int kFileSize = 25724;
   constexpr int kSample =
       (kFileSize * 100 * 8 + kImageArea / 2) / kImageArea;  // = 52
-  TestBppHistogram("/images/resources/avif/kodim03.avif",
-                   "Blink.DecodedImage.AvifDensity.Count.0.4MP", kSample);
+  TestAvifBppHistogram("/images/resources/avif/kodim03.avif",
+                       "Blink.DecodedImage.AvifDensity.Count.0.4MP", kSample);
 }
 
 TEST(StaticAVIFTests, BppHistogramSmall3x3) {
   // The centi bpp = 318 * 100 * 8 / (3 * 3) ~= 28267, which is greater than the
   // histogram's max value (1000), so this sample goes into the overflow bucket.
   constexpr int kSample = 1000;
-  TestBppHistogram("/images/resources/avif/red-full-range-420-8bpc.avif",
-                   "Blink.DecodedImage.AvifDensity.Count.0.1MP", kSample);
+  TestAvifBppHistogram("/images/resources/avif/red-full-range-420-8bpc.avif",
+                       "Blink.DecodedImage.AvifDensity.Count.0.1MP", kSample);
 }
 
 TEST(StaticAVIFTests, BppHistogramSmall900000) {
@@ -1498,8 +1479,8 @@ TEST(StaticAVIFTests, BppHistogramSmall900000) {
   constexpr int kFileSize = 8144;
   constexpr int kSample =
       (kFileSize * 100 * 8 + kImageArea / 2) / kImageArea;  // = 7
-  TestBppHistogram("/images/resources/avif/peach_900000.avif",
-                   "Blink.DecodedImage.AvifDensity.Count.0.9MP", kSample);
+  TestAvifBppHistogram("/images/resources/avif/peach_900000.avif",
+                       "Blink.DecodedImage.AvifDensity.Count.0.9MP", kSample);
 }
 
 TEST(StaticAVIFTests, BppHistogramBig) {
@@ -1507,8 +1488,8 @@ TEST(StaticAVIFTests, BppHistogramBig) {
   constexpr int kFileSize = 88692;
   constexpr int kSample =
       (kFileSize * 100 * 8 + kImageArea / 2) / kImageArea;  // = 6
-  TestBppHistogram("/images/resources/avif/bee.avif",
-                   "Blink.DecodedImage.AvifDensity.Count.13MP", kSample);
+  TestAvifBppHistogram("/images/resources/avif/bee.avif",
+                       "Blink.DecodedImage.AvifDensity.Count.13MP", kSample);
 }
 
 TEST(StaticAVIFTests, BppHistogramBig13000000) {
@@ -1516,8 +1497,8 @@ TEST(StaticAVIFTests, BppHistogramBig13000000) {
   constexpr int kFileSize = 16725;
   constexpr int kSample =
       (kFileSize * 100 * 8 + kImageArea / 2) / kImageArea;  // = 1
-  TestBppHistogram("/images/resources/avif/peach_13000000.avif",
-                   "Blink.DecodedImage.AvifDensity.Count.13MP", kSample);
+  TestAvifBppHistogram("/images/resources/avif/peach_13000000.avif",
+                       "Blink.DecodedImage.AvifDensity.Count.13MP", kSample);
 }
 
 TEST(StaticAVIFTests, BppHistogramHuge) {
@@ -1525,8 +1506,8 @@ TEST(StaticAVIFTests, BppHistogramHuge) {
   constexpr int kFileSize = 20095;
   constexpr int kSample =
       (kFileSize * 100 * 8 + kImageArea / 2) / kImageArea;  // = 1
-  TestBppHistogram("/images/resources/avif/peach.avif",
-                   "Blink.DecodedImage.AvifDensity.Count.14+MP", kSample);
+  TestAvifBppHistogram("/images/resources/avif/peach.avif",
+                       "Blink.DecodedImage.AvifDensity.Count.14+MP", kSample);
 }
 
 TEST(StaticAVIFTests, BppHistogramHuge13000002) {
@@ -1534,8 +1515,8 @@ TEST(StaticAVIFTests, BppHistogramHuge13000002) {
   constexpr int kFileSize = 16379;
   constexpr int kSample =
       (kFileSize * 100 * 8 + kImageArea / 2) / kImageArea;  // = 1
-  TestBppHistogram("/images/resources/avif/peach_13000002.avif",
-                   "Blink.DecodedImage.AvifDensity.Count.14+MP", kSample);
+  TestAvifBppHistogram("/images/resources/avif/peach_13000002.avif",
+                       "Blink.DecodedImage.AvifDensity.Count.14+MP", kSample);
 }
 
 TEST(StaticAVIFTests, BppHistogramInvalid) {
@@ -1560,19 +1541,19 @@ TEST(StaticAVIFTests, BppHistogramInvalid) {
 }
 
 TEST(StaticAVIFTests, BppHistogram10bit) {
-  TestBppHistogram("/images/resources/avif/red-full-range-420-10bpc.avif");
+  TestAvifBppHistogram("/images/resources/avif/red-full-range-420-10bpc.avif");
 }
 
 TEST(StaticAVIFTests, BppHistogramMonochrome) {
-  TestBppHistogram("/images/resources/avif/silver-400-matrix-6.avif");
+  TestAvifBppHistogram("/images/resources/avif/silver-400-matrix-6.avif");
 }
 
 TEST(StaticAVIFTests, BppHistogramAlpha) {
-  TestBppHistogram("/images/resources/avif/red-with-alpha-8bpc.avif");
+  TestAvifBppHistogram("/images/resources/avif/red-with-alpha-8bpc.avif");
 }
 
 TEST(StaticAVIFTests, BppHistogramAnimated) {
-  TestBppHistogram("/images/resources/avif/star-animated-8bpc.avif");
+  TestAvifBppHistogram("/images/resources/avif/star-animated-8bpc.avif");
 }
 
 using StaticAVIFColorTests = ::testing::TestWithParam<StaticColorCheckParam>;

@@ -99,30 +99,11 @@ void ReadYUV(size_t max_decoded_bytes,
   EXPECT_TRUE(decoder->HasDisplayableYUVData());
 }
 
-// If histogram_name is a null pointer, the test should not emit to any
-// histogram and `sample` is ignored.
-void TestBppHistogram(const char* image_name,
-                      const char* histogram_name = nullptr,
-                      base::HistogramBase::Sample sample = 0) {
-  base::HistogramTester histogram_tester;
-  std::unique_ptr<ImageDecoder> decoder = CreateJPEGDecoder();
-  decoder->SetData(ReadFile(image_name), true);
-  ASSERT_TRUE(decoder->IsSizeAvailable());
-  if (histogram_name) {
-    histogram_tester.ExpectTotalCount(histogram_name, 0);
-  }
-  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
-  ASSERT_TRUE(frame);
-  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
-  EXPECT_FALSE(decoder->Failed());
-  base::HistogramTester::CountsMap expected_counts;
-  if (histogram_name) {
-    histogram_tester.ExpectUniqueSample(histogram_name, sample, 1);
-    expected_counts[histogram_name] = 1;
-  }
-  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
-                  "Blink.DecodedImage.JpegDensity.Count."),
-              testing::ContainerEq(expected_counts));
+void TestJpegBppHistogram(const char* image_name,
+                          const char* histogram_name = nullptr,
+                          base::HistogramBase::Sample sample = 0) {
+  TestBppHistogram(CreateJPEGDecoder, "Jpeg", image_name, histogram_name,
+                   sample);
 }
 
 }  // anonymous namespace
@@ -666,8 +647,8 @@ TEST(JPEGImageDecoderTest, BppHistogramSmall) {
   constexpr int kFileSize = 98527;
   constexpr int kSample =
       (kFileSize * 100 * 8 + kImageArea / 2) / kImageArea;  // = 245
-  TestBppHistogram("/images/resources/flowchart.jpg",
-                   "Blink.DecodedImage.JpegDensity.Count.0.4MP", kSample);
+  TestJpegBppHistogram("/images/resources/flowchart.jpg",
+                       "Blink.DecodedImage.JpegDensity.Count.0.4MP", kSample);
 }
 
 TEST(JPEGImageDecoderTest, BppHistogramSmall16x16) {
@@ -675,8 +656,8 @@ TEST(JPEGImageDecoderTest, BppHistogramSmall16x16) {
   // the histogram's max value (1000), so this sample goes into the overflow
   // bucket.
   constexpr int kSample = 1000;
-  TestBppHistogram("/images/resources/green.jpg",
-                   "Blink.DecodedImage.JpegDensity.Count.0.1MP", kSample);
+  TestJpegBppHistogram("/images/resources/green.jpg",
+                       "Blink.DecodedImage.JpegDensity.Count.0.1MP", kSample);
 }
 
 TEST(JPEGImageDecoderTest, BppHistogramSmall900000) {
@@ -684,8 +665,8 @@ TEST(JPEGImageDecoderTest, BppHistogramSmall900000) {
   constexpr int kFileSize = 13726;
   constexpr int kSample =
       (kFileSize * 100 * 8 + kImageArea / 2) / kImageArea;  // = 12
-  TestBppHistogram("/images/resources/peach_900000.jpg",
-                   "Blink.DecodedImage.JpegDensity.Count.0.9MP", kSample);
+  TestJpegBppHistogram("/images/resources/peach_900000.jpg",
+                       "Blink.DecodedImage.JpegDensity.Count.0.9MP", kSample);
 }
 
 TEST(JPEGImageDecoderTest, BppHistogramBig) {
@@ -693,8 +674,8 @@ TEST(JPEGImageDecoderTest, BppHistogramBig) {
   constexpr int kFileSize = 54423;
   constexpr int kSample =
       (kFileSize * 100 * 8 + kImageArea / 2) / kImageArea;  // = 4
-  TestBppHistogram("/images/resources/bee.jpg",
-                   "Blink.DecodedImage.JpegDensity.Count.13MP", kSample);
+  TestJpegBppHistogram("/images/resources/bee.jpg",
+                       "Blink.DecodedImage.JpegDensity.Count.13MP", kSample);
 }
 
 TEST(JPEGImageDecoderTest, BppHistogramBig13000000) {
@@ -702,8 +683,8 @@ TEST(JPEGImageDecoderTest, BppHistogramBig13000000) {
   constexpr int kFileSize = 49203;
   constexpr int kSample =
       (kFileSize * 100 * 8 + kImageArea / 2) / kImageArea;  // = 3
-  TestBppHistogram("/images/resources/peach_13000000.jpg",
-                   "Blink.DecodedImage.JpegDensity.Count.13MP", kSample);
+  TestJpegBppHistogram("/images/resources/peach_13000000.jpg",
+                       "Blink.DecodedImage.JpegDensity.Count.13MP", kSample);
 }
 
 TEST(JPEGImageDecoderTest, BppHistogramHuge) {
@@ -711,8 +692,8 @@ TEST(JPEGImageDecoderTest, BppHistogramHuge) {
   constexpr int kFileSize = 60007;
   constexpr int kSample =
       (kFileSize * 100 * 8 + kImageArea / 2) / kImageArea;  // = 3
-  TestBppHistogram("/images/resources/peach.jpg",
-                   "Blink.DecodedImage.JpegDensity.Count.14+MP", kSample);
+  TestJpegBppHistogram("/images/resources/peach.jpg",
+                       "Blink.DecodedImage.JpegDensity.Count.14+MP", kSample);
 }
 
 TEST(JPEGImageDecoderTest, BppHistogramHuge13000002) {
@@ -720,8 +701,8 @@ TEST(JPEGImageDecoderTest, BppHistogramHuge13000002) {
   constexpr int kFileSize = 49325;
   constexpr int kSample =
       (kFileSize * 100 * 8 + kImageArea / 2) / kImageArea;  // = 3
-  TestBppHistogram("/images/resources/peach_13000002.jpg",
-                   "Blink.DecodedImage.JpegDensity.Count.14+MP", kSample);
+  TestJpegBppHistogram("/images/resources/peach_13000002.jpg",
+                       "Blink.DecodedImage.JpegDensity.Count.14+MP", kSample);
 }
 
 TEST(JPEGImageDecoderTest, BppHistogramInvalid) {
@@ -742,7 +723,7 @@ TEST(JPEGImageDecoderTest, BppHistogramInvalid) {
 }
 
 TEST(JPEGImageDecoderTest, BppHistogramGrayscale) {
-  TestBppHistogram("/images/resources/cs-uma-grayscale.jpg");
+  TestJpegBppHistogram("/images/resources/cs-uma-grayscale.jpg");
 }
 
 }  // namespace blink
