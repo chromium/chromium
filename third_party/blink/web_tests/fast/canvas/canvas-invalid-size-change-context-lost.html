@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<script src="../../resources/js-test.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/canvas-context-lost-events.js"></script>
+<canvas id="canvas"></canvas>
+<script>
+
+async_test(function(t) {
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+
+  canvas.oncontextlost = t.step_func(() => {
+    contextLost(ctx);
+
+    // The canvas will retry restoring after 500ms, 4 times before giving up.
+    // Wait passed this deadline and verify that the context could not be
+    // restored.
+    t.step_timeout(() => {
+      verifyContextLost(true, ctx);
+      t.done();
+    }, 500 * 5);
+  });
+  canvas.oncontextrestored = t.step_func(() => {
+    assert_true(false, "Context should be restored, it's size is invalid.");
+  });
+
+  verifyContextLost(false, ctx);
+  canvas.width = 1000000000;
+  verifyContextLost(true, ctx);
+}, "Test the behavior of disconnected canvas recovery after a gpu context loss");
+
+</script>

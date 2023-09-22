@@ -1890,8 +1890,13 @@ void HTMLCanvasElement::ReplaceExisting2dLayerBridge(
 
 CanvasResourceProvider* HTMLCanvasElement::GetOrCreateCanvasResourceProvider(
     RasterModeHint hint) {
-  if (IsRenderingContext2D())
-    return GetOrCreateCanvas2DLayerBridge()->GetOrCreateResourceProvider();
+  if (IsRenderingContext2D()) {
+    Canvas2DLayerBridge* bridge = GetOrCreateCanvas2DLayerBridge();
+    if (bridge == nullptr) {
+      return nullptr;
+    }
+    return bridge->GetOrCreateResourceProvider();
+  }
 
   return CanvasRenderingContextHost::GetOrCreateCanvasResourceProvider(hint);
 }

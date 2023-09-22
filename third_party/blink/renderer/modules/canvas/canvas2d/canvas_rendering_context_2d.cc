@@ -223,8 +223,9 @@ void CanvasRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
   // If lost mode is |kSyntheticLostContext| and |context_restorable_| is set to
   // true, it means context is forced to be lost for testing purpose. Restore
   // the context.
-  if (context_lost_mode_ == kSyntheticLostContext && Host() &&
-      Host()->GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)) {
+  if (context_lost_mode_ == kSyntheticLostContext &&
+      canvas()->GetOrCreateCanvas2DLayerBridge() &&
+      canvas()->GetCanvas2DLayerBridge()->GetPaintCanvas()) {
     try_restore_context_event_timer_.Stop();
     DispatchContextRestoredEvent(nullptr);
     return;
