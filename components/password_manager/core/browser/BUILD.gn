@@ -224,7 +224,6 @@ static_library("browser") {
     "ui/credential_ui_entry.cc",
     "ui/credential_ui_entry.h",
     "ui/credential_utils.h",
-    "ui/export_progress_status.h",
     "ui/insecure_credentials_manager.cc",
     "ui/insecure_credentials_manager.h",
     "ui/password_check_referrer.cc",
@@ -386,13 +385,6 @@ static_library("browser") {
       "password_store_signin_notifier_impl.h",
     ]
   }
-}
-
-source_set("import_results") {
-  sources = [
-    "ui/import_results.cc",
-    "ui/import_results.h",
-  ]
 }
 
 # PasswordForm is an extremely common struct used by many sub-components and

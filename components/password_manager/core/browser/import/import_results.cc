@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/ui/import_results.h"
+#include "components/password_manager/core/browser/import/import_results.h"
 
 namespace password_manager {
 

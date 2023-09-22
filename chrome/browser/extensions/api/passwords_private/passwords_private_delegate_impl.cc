@@ -105,19 +105,19 @@ const char kReauthenticationFailed[] = "reauth-failed";
 extensions::api::passwords_private::ExportProgressStatus ConvertStatus(
     password_manager::ExportProgressStatus status) {
   switch (status) {
-    case password_manager::ExportProgressStatus::NOT_STARTED:
+    case password_manager::ExportProgressStatus::kNotStarted:
       return extensions::api::passwords_private::ExportProgressStatus::
           EXPORT_PROGRESS_STATUS_NOT_STARTED;
-    case password_manager::ExportProgressStatus::IN_PROGRESS:
+    case password_manager::ExportProgressStatus::kInProgress:
       return extensions::api::passwords_private::ExportProgressStatus::
           EXPORT_PROGRESS_STATUS_IN_PROGRESS;
-    case password_manager::ExportProgressStatus::SUCCEEDED:
+    case password_manager::ExportProgressStatus::kSucceeded:
       return extensions::api::passwords_private::ExportProgressStatus::
           EXPORT_PROGRESS_STATUS_SUCCEEDED;
-    case password_manager::ExportProgressStatus::FAILED_CANCELLED:
+    case password_manager::ExportProgressStatus::kFailedCancelled:
       return extensions::api::passwords_private::ExportProgressStatus::
           EXPORT_PROGRESS_STATUS_FAILED_CANCELLED;
-    case password_manager::ExportProgressStatus::FAILED_WRITE_FAILED:
+    case password_manager::ExportProgressStatus::kFailedWrite:
       return extensions::api::passwords_private::ExportProgressStatus::
           EXPORT_PROGRESS_STATUS_FAILED_WRITE_FAILED;
   }

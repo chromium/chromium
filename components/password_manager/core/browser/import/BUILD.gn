@@ -12,6 +12,8 @@ if (is_android) {
 if (use_blink) {
   source_set("importer") {
     sources = [
+      "import_results.cc",
+      "import_results.h",
       "password_importer.cc",
       "password_importer.h",
     ]
@@ -23,7 +25,6 @@ if (use_blink) {
 
     deps = [
       "//components/password_manager/core/browser",
-      "//components/password_manager/core/browser:import_results",
       "//components/password_manager/core/common:features",
       "//components/password_manager/services/csv_password:service",
       "//components/sync/base:base",
@@ -36,7 +37,6 @@ if (use_blink) {
     deps = [
       ":importer",
       "//base/test:test_support",
-      "//components/password_manager/core/browser:import_results",
       "//components/password_manager/core/browser:test_support",
       "//components/password_manager/core/browser/affiliation:test_support",
       "//mojo/public/cpp/bindings:bindings",

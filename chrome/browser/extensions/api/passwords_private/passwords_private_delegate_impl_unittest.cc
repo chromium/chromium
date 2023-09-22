@@ -54,6 +54,7 @@
 #include "components/password_manager/content/browser/password_manager_log_router_factory.h"
 #include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/import/import_results.h"
 #include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -65,7 +66,6 @@
 #include "components/password_manager/core/browser/sharing/password_sharing_recipients_downloader.h"
 #include "components/password_manager/core/browser/sharing/recipients_fetcher_impl.h"
 #include "components/password_manager/core/browser/test_password_store.h"
-#include "components/password_manager/core/browser/ui/import_results.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -165,7 +165,7 @@ class FakePasswordManagerPorter : public PasswordManagerPorterInterface {
   void CancelExport() override {}
 
   password_manager::ExportProgressStatus GetExportProgressStatus() override {
-    return password_manager::ExportProgressStatus::SUCCEEDED;
+    return password_manager::ExportProgressStatus::kSucceeded;
   }
 
   void Import(content::WebContents* web_contents,

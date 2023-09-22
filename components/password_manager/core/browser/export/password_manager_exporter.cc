@@ -71,7 +71,7 @@ PasswordManagerExporter::PasswordManagerExporter(
     base::OnceClosure completion_callback)
     : presenter_(presenter),
       on_progress_(std::move(on_progress)),
-      last_progress_status_(ExportProgressStatus::NOT_STARTED),
+      last_progress_status_(ExportProgressStatus::kNotStarted),
       write_function_(base::BindRepeating(&DefaultWriteFunction)),
       delete_function_(base::BindRepeating(&DefaultDeleteFunction)),
       completion_callback_(std::move(completion_callback)),
@@ -88,7 +88,7 @@ PasswordManagerExporter::PasswordManagerExporter(
 PasswordManagerExporter::~PasswordManagerExporter() = default;
 
 void PasswordManagerExporter::PreparePasswordsForExport() {
-  DCHECK_EQ(GetProgressStatus(), ExportProgressStatus::NOT_STARTED);
+  DCHECK_EQ(GetProgressStatus(), ExportProgressStatus::kNotStarted);
 
   std::vector<CredentialUIEntry> credentials =
       presenter_->GetSavedCredentials();
@@ -106,14 +106,14 @@ void PasswordManagerExporter::PreparePasswordsForExport() {
 
 void PasswordManagerExporter::SetDestination(
     const base::FilePath& destination) {
-  DCHECK_EQ(GetProgressStatus(), ExportProgressStatus::NOT_STARTED);
+  DCHECK_EQ(GetProgressStatus(), ExportProgressStatus::kNotStarted);
 
   destination_ = destination;
 
   if (IsReadyForExport())
     Export();
 
-  OnProgress({.status = ExportProgressStatus::IN_PROGRESS});
+  OnProgress({.status = ExportProgressStatus::kInProgress});
 }
 
 void PasswordManagerExporter::SetSerialisedPasswordList(
@@ -131,7 +131,7 @@ void PasswordManagerExporter::Cancel() {
 
   // If we are currently still serialising, Export() will see the cancellation
   // status and won't schedule writing.
-  OnProgress({.status = ExportProgressStatus::FAILED_CANCELLED});
+  OnProgress({.status = ExportProgressStatus::kFailedCancelled});
 
   // If we are currently writing to the disk, we will have to cleanup the file
   // once writing stops.
@@ -166,7 +166,7 @@ bool PasswordManagerExporter::IsReadyForExport() {
 void PasswordManagerExporter::Export() {
   // If cancelling was requested while we were serialising the passwords, don't
   // write anything to the disk.
-  if (GetProgressStatus() == ExportProgressStatus::FAILED_CANCELLED) {
+  if (GetProgressStatus() == ExportProgressStatus::kFailedCancelled) {
     serialised_password_list_.clear();
     return;
   }
@@ -188,11 +188,11 @@ void PasswordManagerExporter::OnPasswordsExported(bool success) {
     std::string file_path = base::WideToUTF8(destination_.value());
 #endif
     OnProgress(
-        {.status = ExportProgressStatus::SUCCEEDED, .file_path = file_path});
+        {.status = ExportProgressStatus::kSucceeded, .file_path = file_path});
 
   } else {
     OnProgress(
-        {.status = ExportProgressStatus::FAILED_WRITE_FAILED,
+        {.status = ExportProgressStatus::kFailedWrite,
          .folder_name = destination_.DirName().BaseName().AsUTF8Unsafe()});
     // Don't leave partial password files, if we tell the user we couldn't write
     Cleanup();

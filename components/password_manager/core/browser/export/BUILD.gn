@@ -9,6 +9,7 @@ source_set("export") {
   sources = [
     "csv_writer.cc",
     "csv_writer.h",
+    "export_progress_status.h",
     "password_csv_writer.cc",
     "password_csv_writer.h",
     "password_manager_exporter.cc",
@@ -16,6 +17,7 @@ source_set("export") {
   ]
   deps = [
     "//base",
+
     # TODO(crbug.com/1479425): Remove dependency on core/browser. Instead depend on subdirectories of browser.
     "//components/password_manager/core/browser",
   ]

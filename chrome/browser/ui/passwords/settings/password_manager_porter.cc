@@ -80,7 +80,7 @@ PasswordManagerPorter::~PasswordManagerPorter() {
 
 bool PasswordManagerPorter::Export(content::WebContents* web_contents) {
   if (exporter_ && exporter_->GetProgressStatus() ==
-                       password_manager::ExportProgressStatus::IN_PROGRESS) {
+                       password_manager::ExportProgressStatus::kInProgress) {
     return false;
   }
 
@@ -108,7 +108,7 @@ void PasswordManagerPorter::CancelExport() {
 password_manager::ExportProgressStatus
 PasswordManagerPorter::GetExportProgressStatus() {
   return exporter_ ? exporter_->GetProgressStatus()
-                   : password_manager::ExportProgressStatus::NOT_STARTED;
+                   : password_manager::ExportProgressStatus::kNotStarted;
 }
 
 void PasswordManagerPorter::SetExporterForTesting(
