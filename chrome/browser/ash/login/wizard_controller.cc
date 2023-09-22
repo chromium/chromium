@@ -369,7 +369,8 @@ WizardController* WizardController::default_controller() {
 PrefService* WizardController::local_state_for_testing_ = nullptr;
 
 WizardController::WizardController(WizardContext* wizard_context)
-    : quickstart_controller_(std::make_unique<QuickStartController>()),
+    : quickstart_controller_(
+          std::make_unique<quick_start::QuickStartController>()),
       screen_manager_(std::make_unique<ScreenManager>()),
       wizard_context_(wizard_context),
       shared_url_loader_factory_(
@@ -918,8 +919,6 @@ void WizardController::ShowWelcomeScreen() {
 
 void WizardController::ShowQuickStartScreen() {
   CHECK(wizard_context_->quick_start_enabled);
-  GetScreen<QuickStartScreen>()->SetFlowState(
-      QuickStartScreen::FlowState::INITIAL);
   SetCurrentScreen(GetScreen(QuickStartView::kScreenId));
 }
 
@@ -1259,10 +1258,9 @@ void WizardController::OnUserCreationScreenExit(
       AdvanceToScreen(GaiaView::kScreenId);
       break;
     case UserCreationScreen::Result::CONTINUE_QUICK_START_FLOW:
+      // TODO(b:283965994) - Improve this logic.
       CHECK(wizard_context_->quick_start_enabled &&
             wizard_context_->quick_start_setup_ongoing);
-      GetScreen<QuickStartScreen>()->SetFlowState(
-          QuickStartScreen::FlowState::CONTINUING_AFTER_ENROLLMENT_CHECKS);
       AdvanceToScreen(QuickStartView::kScreenId);
       break;
     case UserCreationScreen::Result::ADD_CHILD:

@@ -203,7 +203,7 @@ class WizardController : public OobeUI::Observer {
   }
 
   // Main QuickStart controller, always present.
-  QuickStartController* quick_start_controller() {
+  quick_start::QuickStartController* quick_start_controller() {
     return quickstart_controller_.get();
   }
 
@@ -535,7 +535,7 @@ class WizardController : public OobeUI::Observer {
 
   std::unique_ptr<policy::AutoEnrollmentController> auto_enrollment_controller_;
   std::unique_ptr<ChoobeFlowController> choobe_flow_controller_;
-  std::unique_ptr<QuickStartController> quickstart_controller_;
+  std::unique_ptr<quick_start::QuickStartController> quickstart_controller_;
   std::unique_ptr<ScreenManager> screen_manager_;
 
   // The `BaseScreen*` here point to the objects owned by the `screen_manager_`.

@@ -5,17 +5,12 @@
 #include "chrome/browser/ash/login/screens/quick_start_screen.h"
 
 #include "base/memory/weak_ptr.h"
-#include "base/notreached.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/qr_code.h"
-#include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/login/quickstart_controller.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ui/webui/ash/login/quick_start_screen_handler.h"
-#include "chromeos/ash/components/quick_start/logging.h"
-#include "chromeos/ash/components/quick_start/quick_start_metrics.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace ash {
 
@@ -23,6 +18,14 @@ namespace {
 
 constexpr const char kUserActionCancelClicked[] = "cancel";
 constexpr const char kUserActionWifiConnected[] = "wifi_connected";
+
+base::Value::List ConvertQrCode(quick_start::QRCode::PixelData qr_code) {
+  base::Value::List qr_code_list;
+  for (const auto& it : qr_code) {
+    qr_code_list.Append(base::Value(static_cast<bool>(it & 1)));
+  }
+  return qr_code_list;
+}
 
 }  // namespace
 
@@ -40,17 +43,18 @@ std::string QuickStartScreen::GetResultString(Result result) {
   }
 }
 
-QuickStartScreen::QuickStartScreen(base::WeakPtr<TView> view,
-                                   QuickStartController* controller,
-                                   const ScreenExitCallback& exit_callback)
+QuickStartScreen::QuickStartScreen(
+    base::WeakPtr<TView> view,
+    quick_start::QuickStartController* controller,
+    const ScreenExitCallback& exit_callback)
     : BaseScreen(QuickStartView::kScreenId, OobeScreenPriority::DEFAULT),
       view_(std::move(view)),
       controller_(controller),
       exit_callback_(exit_callback) {}
 
 QuickStartScreen::~QuickStartScreen() {
-  if (controller_->bootstrap_controller()) {
-    controller_->bootstrap_controller()->RemoveObserver(this);
+  if (controller_) {
+    controller_->DetachFrontend(this);
   }
 }
 
@@ -59,166 +63,81 @@ bool QuickStartScreen::MaybeSkip(WizardContext& context) {
 }
 
 void QuickStartScreen::ShowImpl() {
+  // Attach to the controller whenever the screen is shown.
+  // QuickStartController will request the UI updates via |OnUiUpdateRequested|.
+  controller_->AttachFrontend(this);
+
   if (!view_) {
     return;
   }
   view_->Show();
-
-  DCHECK(controller_->bootstrap_controller());
-  controller_->bootstrap_controller()->AddObserver(this);
-  DetermineDiscoverableName();
-
-  switch (flow_state_) {
-    case FlowState::INITIAL:
-      controller_->bootstrap_controller()->StartAdvertisingAndMaybeGetQRCode();
-      break;
-    case FlowState::CONTINUING_AFTER_ENROLLMENT_CHECKS:
-      view_->ShowTransferringGaiaCredentials();
-      controller_->bootstrap_controller()->AttemptGoogleAccountTransfer();
-      break;
-    case FlowState::RESUMING_AFTER_CRITICAL_UPDATE:
-    case FlowState::UNKNOWN:
-      NOTREACHED();
-      break;
-  }
-}
-
-void QuickStartScreen::SetFlowState(FlowState flow_state) {
-  flow_state_ = flow_state;
 }
 
 void QuickStartScreen::HideImpl() {
-  DCHECK(controller_->bootstrap_controller());
-  controller_->bootstrap_controller()->RemoveObserver(this);
+  // Detach from the controller whenever the screen is hidden.
+  controller_->DetachFrontend(this);
 }
 
 void QuickStartScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionCancelClicked) {
-    DCHECK(controller_->bootstrap_controller());
-    controller_->bootstrap_controller()->CloseOpenConnections();
-    controller_->bootstrap_controller()->StopAdvertising();
-    const auto return_entry_point = controller_->GetExitPoint();
-    switch (return_entry_point) {
-      case ash::QuickStartController::EntryPoint::WELCOME_SCREEN:
-        exit_callback_.Run(Result::CANCEL_AND_RETURN_TO_WELCOME);
-        return;
-      case ash::QuickStartController::EntryPoint::NETWORK_SCREEN:
-        exit_callback_.Run(Result::CANCEL_AND_RETURN_TO_NETWORK);
-        return;
-      case ash::QuickStartController::EntryPoint::GAIA_SCREEN:
-        exit_callback_.Run(Result::CANCEL_AND_RETURN_TO_SIGNIN);
-        return;
-    }
+    CancelAndExitScreen();
   } else if (action_id == kUserActionWifiConnected) {
+    // TODO(b:283965994) - Remove this once WiFi transfer is implemented.
     exit_callback_.Run(Result::WIFI_CONNECTED);
   }
 }
 
-void QuickStartScreen::OnStatusChanged(
-    const quick_start::TargetDeviceBootstrapController::Status& status) {
-  using Step = quick_start::TargetDeviceBootstrapController::Step;
-  using QRCodePixelData = quick_start::QRCode::PixelData;
-
-  switch (status.step) {
-    case Step::ADVERTISING_WITH_QR_CODE: {
-      CHECK(absl::holds_alternative<QRCodePixelData>(status.payload));
-      if (!view_) {
-        return;
-      }
-      const auto& code = absl::get<QRCodePixelData>(status.payload);
-      base::Value::List qr_code_list;
-      for (const auto& it : code) {
-        qr_code_list.Append(base::Value(static_cast<bool>(it & 1)));
-      }
-      view_->SetQRCode(std::move(qr_code_list));
-      quick_start::quick_start_metrics::RecordScreenOpened(
-          ScreenName::kSetUpAndroidPhone);
-      return;
-    }
-    case Step::PIN_VERIFICATION: {
-      CHECK(status.pin.length() == 4);
-      view_->SetPIN(status.pin);
-      quick_start::quick_start_metrics::RecordScreenOpened(
-          ScreenName::kSetUpAndroidPhone);
-      return;
-    }
-    case Step::ERROR:
-      NOTIMPLEMENTED();
-      return;
-    case Step::CONNECTING_TO_WIFI:
-      view_->ShowConnectingToWifi();
-      quick_start::quick_start_metrics::RecordScreenOpened(
-          ScreenName::kConnectingToWifi);
-      return;
-    case Step::CONNECTED_TO_WIFI:
-      view_->ShowConnectedToWifi(status.ssid, status.password);
-      context()->quick_start_setup_ongoing = true;
-      return;
-
-    case Step::TRANSFERRING_GOOGLE_ACCOUNT_DETAILS:
-      // Intermediate state. Nothing to do.
-      CHECK(flow_state_ == FlowState::CONTINUING_AFTER_ENROLLMENT_CHECKS);
-      // TODO(b/298042953): Record Gaia Transfer screen shown once UI is
-      // implemented.
-      break;
-    case Step::TRANSFERRED_GOOGLE_ACCOUNT_DETAILS:
-      CHECK(flow_state_ == FlowState::CONTINUING_AFTER_ENROLLMENT_CHECKS);
-      OnTransferredGoogleAccountDetails(status);
-      SavePhoneInstanceID();
-      break;
-    case Step::NONE:
-    case Step::ADVERTISING_WITHOUT_QR_CODE:
-    case Step::CONNECTED:
-      // TODO(b/282934168): Implement these screens fully
-      quick_start::QS_LOG(INFO)
-          << "Hit screen which is not implemented. Continuing";
-      return;
-  }
-}
-
-void QuickStartScreen::OnTransferredGoogleAccountDetails(
-    const quick_start::TargetDeviceBootstrapController::Status& status) {
-  using FidoAssertionInfo = quick_start::FidoAssertionInfo;
-  using ErrorCode = quick_start::TargetDeviceBootstrapController::ErrorCode;
-
-  if (absl::holds_alternative<FidoAssertionInfo>(status.payload)) {
-    quick_start::QS_LOG(INFO) << "Successfully received FIDO assertion.";
-    auto fido_assertion = absl::get<FidoAssertionInfo>(status.payload);
-    view_->ShowFidoAssertionReceived(fido_assertion.email);
-  } else {
-    CHECK(absl::holds_alternative<ErrorCode>(status.payload));
-    quick_start::QS_LOG(ERROR)
-        << "Error receiving FIDO assertion. Error Code = "
-        << static_cast<int>(absl::get<ErrorCode>(status.payload));
-
-    // TODO(b:286873060) - Implement retry mechanism/graceful exit.
-    NOTIMPLEMENTED();
-  }
-}
-
-void QuickStartScreen::DetermineDiscoverableName() {
-  DCHECK(controller_->bootstrap_controller());
-  discoverable_name_ =
-      controller_->bootstrap_controller()->GetDiscoverableName();
-  if (view_) {
-    view_->SetDiscoverableName(discoverable_name_);
-  }
-}
-
-void QuickStartScreen::SavePhoneInstanceID() {
-  DCHECK(controller_->bootstrap_controller());
-  std::string phone_instance_id =
-      controller_->bootstrap_controller()->GetPhoneInstanceId();
-  if (phone_instance_id.empty()) {
+void QuickStartScreen::OnUiUpdateRequested(
+    quick_start::QuickStartController::UiState state) {
+  if (!view_) {
     return;
   }
 
-  quick_start::QS_LOG(INFO)
-      << "Adding Phone Instance ID to Wizard Object for Unified "
-         "Setup UI enhancements. quick_start_phone_instance_id: "
-      << phone_instance_id;
-  context()->quick_start_phone_instance_id = phone_instance_id;
+  // Update discoverable name
+  view_->SetDiscoverableName(controller_->GetDiscoverableName());
+
+  switch (state) {
+    case ash::quick_start::QuickStartController::UiState::SHOWING_QR:
+      view_->SetQRCode(ConvertQrCode(controller_->GetQrCode()));
+      break;
+    case quick_start::QuickStartController::UiState::SHOWING_FIDO:
+      view_->ShowFidoAssertionReceived(controller_->GetFidoAssertion().email);
+      break;
+    case quick_start::QuickStartController::UiState::SHOWING_PIN:
+      view_->SetPIN(controller_->GetPin());
+      break;
+    case quick_start::QuickStartController::UiState::CONNECTING_TO_WIFI:
+      view_->ShowConnectingToWifi();
+      break;
+    case quick_start::QuickStartController::UiState::CONNECTED_TO_WIFI_DEBUG:
+      view_->ShowConnectedToWifi(controller_->GetWiFiName(), "**PWD**");
+      break;
+    case ash::quick_start::QuickStartController::UiState::
+        TRANSFERRING_GAIA_CREDENTIALS:
+      view_->ShowTransferringGaiaCredentials();
+      break;
+    case ash::quick_start::QuickStartController::UiState::LOADING:
+      // TODO(b:283724988) - Add method to view to show the loading spinner.
+      break;
+  }
+}
+
+void QuickStartScreen::CancelAndExitScreen() {
+  // Get exit point before cancelling the whole flow.
+  const auto return_entry_point = controller_->GetExitPoint();
+  controller_->HandleFlowCancellationRequest();
+  switch (return_entry_point) {
+    case ash::quick_start::QuickStartController::EntryPoint::WELCOME_SCREEN:
+      exit_callback_.Run(Result::CANCEL_AND_RETURN_TO_WELCOME);
+      return;
+    case ash::quick_start::QuickStartController::EntryPoint::NETWORK_SCREEN:
+      exit_callback_.Run(Result::CANCEL_AND_RETURN_TO_NETWORK);
+      return;
+    case ash::quick_start::QuickStartController::EntryPoint::GAIA_SCREEN:
+      exit_callback_.Run(Result::CANCEL_AND_RETURN_TO_SIGNIN);
+      return;
+  }
 }
 
 }  // namespace ash
