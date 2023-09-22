@@ -54,9 +54,6 @@ class SessionsSyncPerfTest : public SyncTest {
   // Update all tabs in |profile| by visiting a new URL.
   void UpdateTabs(int profile);
 
-  // Close all tabs in |profile|.
-  void RemoveTabs(int profile);
-
   // Returns the number of open tabs in all sessions (local + foreign) for
   // |profile|.  Returns -1 on failure.
   int GetTabCount(int profile);
@@ -96,10 +93,6 @@ void SessionsSyncPerfTest::UpdateTabs(int profile) {
   WaitForTabsToLoad(profile, urls);
 }
 
-void SessionsSyncPerfTest::RemoveTabs(int profile) {
-  GetBrowser(profile)->tab_strip_model()->CloseAllTabs();
-}
-
 int SessionsSyncPerfTest::GetTabCount(int profile) {
   const sync_sessions::SyncedSession* local_session;
   if (!GetLocalSession(profile, &local_session)) {
@@ -133,8 +126,7 @@ GURL SessionsSyncPerfTest::IntToURL(int n) {
   return GURL(base::StringPrintf("http://localhost/%d", n));
 }
 
-// TODO(lipalani): Re-enable after crbug.com/96921 is fixed.
-IN_PROC_BROWSER_TEST_F(SessionsSyncPerfTest, DISABLED_P0) {
+IN_PROC_BROWSER_TEST_F(SessionsSyncPerfTest, P0) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   perf_test::PerfResultReporter reporter =
@@ -150,11 +142,4 @@ IN_PROC_BROWSER_TEST_F(SessionsSyncPerfTest, DISABLED_P0) {
   ASSERT_EQ(kNumTabs, GetTabCount(0));
   ASSERT_EQ(kNumTabs, GetTabCount(1));
   reporter.AddResult(kMetricUpdateTabSyncTime, dt);
-
-  RemoveTabs(0);
-  dt = TimeMutualSyncCycle(GetClient(0), GetClient(1));
-  // New tab page remains open on profile 0 after closing all tabs.
-  ASSERT_EQ(1, GetTabCount(0));
-  ASSERT_EQ(0, GetTabCount(1));
-  reporter.AddResult(kMetricDeleteTabSyncTime, dt);
 }
