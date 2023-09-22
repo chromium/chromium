@@ -62,10 +62,6 @@ const WebContentsInteractionTestUtil::DeepQuery kDiscardOnTimerQuery = {
 class PerformanceSettingsInteractiveTest : public InteractiveBrowserTest {
  public:
   void SetUp() override {
-    SetUpFakeBatterySampler();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    scoped_feature_list_.InitAndDisableFeature(ash::features::kBatterySaver);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     InteractiveBrowserTest::SetUp();
   }
 
@@ -81,23 +77,6 @@ class PerformanceSettingsInteractiveTest : public InteractiveBrowserTest {
   void TearDownOnMainThread() override {
     EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
     InteractiveBrowserTest::TearDownOnMainThread();
-  }
-
-  void SetUpFakeBatterySampler() {
-    auto test_sampling_event_source =
-        std::make_unique<base::test::TestSamplingEventSource>();
-    auto test_battery_level_provider =
-        std::make_unique<base::test::TestBatteryLevelProvider>();
-
-    sampling_source_ = test_sampling_event_source.get();
-    battery_level_provider_ = test_battery_level_provider.get();
-    test_battery_level_provider->SetBatteryState(
-        base::test::TestBatteryLevelProvider::CreateBatteryState(1, true, 100));
-
-    battery_state_sampler_ =
-        base::BatteryStateSampler::CreateInstanceForTesting(
-            std::move(test_sampling_event_source),
-            std::move(test_battery_level_provider));
   }
 
   auto ClickElement(const ui::ElementIdentifier& contents_id,
@@ -128,16 +107,6 @@ class PerformanceSettingsInteractiveTest : public InteractiveBrowserTest {
     return Do(base::BindLambdaForTesting([=, &histogram_tester]() {
       histogram_tester.ExpectBucketCount(
           "PerformanceControls.HighEfficiency.SettingsChangeMode2",
-          static_cast<int>(state), expected_count);
-    }));
-  }
-
-  auto CheckBatteryStateLogged(const base::HistogramTester& histogram_tester,
-                               BatterySaverModeState state,
-                               int expected_count) {
-    return Do(base::BindLambdaForTesting([=, &histogram_tester]() {
-      histogram_tester.ExpectBucketCount(
-          "PerformanceControls.BatterySaver.SettingsChangeMode",
           static_cast<int>(state), expected_count);
     }));
   }
@@ -181,11 +150,6 @@ class PerformanceSettingsInteractiveTest : public InteractiveBrowserTest {
   }
 
  private:
-  raw_ptr<base::test::TestSamplingEventSource, DanglingUntriaged>
-      sampling_source_;
-  raw_ptr<base::test::TestBatteryLevelProvider, DanglingUntriaged>
-      battery_level_provider_;
-  std::unique_ptr<base::BatteryStateSampler> battery_state_sampler_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -236,24 +200,6 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
-                       BatterySaverLearnMoreLink) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kLearnMorePage);
-  const DeepQuery battery_saver_learn_more = {
-      "settings-ui",           "settings-main",          "settings-basic-page",
-      "settings-battery-page", "settings-toggle-button", "a#learn-more"};
-
-  RunTestSequence(
-      InstrumentTab(kPerformanceSettingsPage),
-      NavigateWebContents(kPerformanceSettingsPage,
-                          GURL(chrome::kChromeUIPerformanceSettingsURL)),
-      InstrumentNextTab(kLearnMorePage),
-      ClickElement(kPerformanceSettingsPage, battery_saver_learn_more),
-      WaitForShow(kLearnMorePage), CheckTabCount(2),
-      WaitForWebContentsReady(kLearnMorePage,
-                              GURL(chrome::kBatterySaverModeLearnMoreUrl)));
-}
-
-IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
                        HighEfficiencyMetricsShouldLogOnToggle) {
   base::HistogramTester histogram_tester;
 
@@ -281,68 +227,6 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
                                     histogram_tester));
 }
 
-IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
-                       BatterySaverMetricsShouldLogOnToggle) {
-  const DeepQuery battery_saver_toggle = {
-      "settings-ui",           "settings-main",          "settings-basic-page",
-      "settings-battery-page", "settings-toggle-button", "cr-toggle#control"};
-
-  const DeepQuery iron_collapse = {
-      "settings-ui", "settings-main", "settings-basic-page",
-      "settings-battery-page", "iron-collapse#radioGroupCollapse"};
-
-  const DeepQuery turn_on_at_threshold_button = {
-      "settings-ui", "settings-main", "settings-basic-page",
-      "settings-battery-page", "controlled-radio-button"};
-
-  const DeepQuery turn_on_when_unplugged_button = {
-      "settings-ui", "settings-main", "settings-basic-page",
-      "settings-battery-page",
-      "controlled-radio-button#enabledOnBatteryButton"};
-
-  base::HistogramTester histogram_tester;
-  RunTestSequence(
-      InstrumentTab(kPerformanceSettingsPage),
-      NavigateWebContents(kPerformanceSettingsPage,
-                          GURL(chrome::kChromeUIPerformanceSettingsURL)),
-      WaitForElementToRender(kPerformanceSettingsPage, battery_saver_toggle),
-      CheckJsResultAt(kPerformanceSettingsPage, battery_saver_toggle,
-                      kCheckJsElementIsChecked),
-
-      // Turn off Battery Saver Mode
-      ClickElement(kPerformanceSettingsPage, battery_saver_toggle),
-      WaitForButtonStateChange(kPerformanceSettingsPage, battery_saver_toggle,
-                               false),
-      CheckBatteryStateLogged(histogram_tester,
-                              BatterySaverModeState::kDisabled, 1),
-
-      // Turn Battery Saver Mode back on
-      ClickElement(kPerformanceSettingsPage, battery_saver_toggle),
-      WaitForButtonStateChange(kPerformanceSettingsPage, battery_saver_toggle,
-                               true),
-      CheckBatteryStateLogged(histogram_tester,
-                              BatterySaverModeState::kEnabledBelowThreshold, 1),
-
-      // Wait for the iron-collapse animation to finish so that the battery
-      // saver radio buttons will show on screen
-      WaitForIronListCollapseStateChange(kPerformanceSettingsPage,
-                                         iron_collapse),
-
-      // Change Battery Saver Setting to turn on when unplugged
-      ClickElement(kPerformanceSettingsPage, turn_on_when_unplugged_button),
-      WaitForButtonStateChange(kPerformanceSettingsPage,
-                               turn_on_when_unplugged_button, true),
-      CheckBatteryStateLogged(histogram_tester,
-                              BatterySaverModeState::kEnabledOnBattery, 1),
-
-      // Change Battery Saver Setting to turn on when battery is at 20%
-      ClickElement(kPerformanceSettingsPage, turn_on_at_threshold_button),
-      WaitForButtonStateChange(kPerformanceSettingsPage,
-                               turn_on_at_threshold_button, true),
-      CheckBatteryStateLogged(
-          histogram_tester, BatterySaverModeState::kEnabledBelowThreshold, 2));
-}
-
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // TODO(http://b/281528238): reenable the test.
 IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
@@ -358,86 +242,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
       ClickElement(kPerformanceSettingsPage, high_efficiency_feedback),
       InAnyContext(WaitForShow(FeedbackDialog::kFeedbackDialogForTesting)));
 }
-
-// TODO(http://b/281528238): reenable the test.
-IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
-                       DISABLED_BatterySaverSendFeedbackDialogOpens) {
-  const DeepQuery battery_saver_feedback = {
-      "settings-ui", "settings-main", "settings-basic-page",
-      "settings-section#batterySettingsSection", "cr-icon-button#feedback"};
-
-  RunTestSequence(
-      InstrumentTab(kPerformanceSettingsPage),
-      NavigateWebContents(kPerformanceSettingsPage,
-                          GURL(chrome::kChromeUIPerformanceSettingsURL)),
-      ClickElement(kPerformanceSettingsPage, battery_saver_feedback),
-      InAnyContext(WaitForShow(FeedbackDialog::kFeedbackDialogForTesting)));
-}
-
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-class BatterySettingsInteractiveTest : public InteractiveAshTest {
- public:
-  BatterySettingsInteractiveTest()
-      : scoped_feature_list_(ash::features::kBatterySaver) {}
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(
-        performance_manager::user_tuning::BatterySaverModeManager::
-            kForceDeviceHasBatterySwitch);
-  }
-
-  auto WaitForElementToRender(const ui::ElementIdentifier& contents_id,
-                              const DeepQuery& element) {
-    StateChange element_renders;
-    element_renders.event = kElementRenders;
-    element_renders.where = element;
-    element_renders.type = StateChange::Type::kExistsAndConditionTrue;
-    element_renders.test_function =
-        "(el) => { return el !== null && el.clientWidth > 0 && el.clientHeight "
-        "> 0; }";
-
-    return WaitForStateChange(contents_id, element_renders);
-  }
-
-  auto ClickElement(const ui::ElementIdentifier& contents_id,
-                    const DeepQuery& element) {
-    return Steps(WaitForElementToRender(contents_id, element),
-                 MoveMouseTo(contents_id, element), ClickMouse());
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(BatterySettingsInteractiveTest,
-                       BatterySaverSettingsLinksToOSSettings) {
-  SetupContextWidget();
-  InstallSystemApps();
-
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOsSettingsElementId);
-
-  const DeepQuery battery_saver_link_row = {
-      "settings-ui", "settings-main", "settings-basic-page",
-      "settings-battery-page", "cr-link-row#batterySaverOSSettingsLinkRow"};
-
-  CreateBrowserWindow(GURL(chrome::kChromeUIPerformanceSettingsURL));
-  Browser* const browser = chrome::FindLastActive();
-  ASSERT_NE(browser, nullptr);
-
-  RunTestSequence(
-      InContext(browser->window()->GetElementContext(),
-                InstrumentTab(kPerformanceSettingsPage)),
-      WaitForElementToRender(kPerformanceSettingsPage, battery_saver_link_row),
-      InstrumentNextTab(kOsSettingsElementId, AnyBrowser()),
-      ClickElement(kPerformanceSettingsPage, battery_saver_link_row),
-      WaitForShow(kOsSettingsElementId),
-      WaitForWebContentsReady(kOsSettingsElementId,
-                              GURL("chrome://os-settings/power")));
-}
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class PerformanceSettingsMultiStateModeInteractiveTest
     : public PerformanceSettingsInteractiveTest {
@@ -623,3 +428,267 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsMultiStateModeInteractiveTest,
       CheckJsResultAt(kPerformanceSettingsPage, discard_time_drop_down,
                       "(el) => el.value", discard_timer_value));
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+class BatterySettingsInteractiveTest : public InteractiveBrowserTest {
+ public:
+  void SetUp() override {
+    SetUpFakeBatterySampler();
+    InteractiveBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    InteractiveBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    embedded_test_server()->StartAcceptingConnections();
+  }
+
+  void TearDownOnMainThread() override {
+    EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
+    InteractiveBrowserTest::TearDownOnMainThread();
+  }
+
+  void SetUpFakeBatterySampler() {
+    auto test_sampling_event_source =
+        std::make_unique<base::test::TestSamplingEventSource>();
+    auto test_battery_level_provider =
+        std::make_unique<base::test::TestBatteryLevelProvider>();
+
+    sampling_source_ = test_sampling_event_source.get();
+    battery_level_provider_ = test_battery_level_provider.get();
+    test_battery_level_provider->SetBatteryState(
+        base::test::TestBatteryLevelProvider::CreateBatteryState(1, true, 100));
+
+    battery_state_sampler_ =
+        base::BatteryStateSampler::CreateInstanceForTesting(
+            std::move(test_sampling_event_source),
+            std::move(test_battery_level_provider));
+  }
+
+  auto ClickElement(const ui::ElementIdentifier& contents_id,
+                    const DeepQuery& element) {
+    return Steps(MoveMouseTo(contents_id, element), ClickMouse());
+  }
+
+  auto CheckTabCount(int expected_tab_count) {
+    auto get_tab_count = base::BindLambdaForTesting(
+        [this]() { return browser()->tab_strip_model()->GetTabCount(); });
+
+    return CheckResult(get_tab_count, expected_tab_count);
+  }
+
+  auto CheckBatteryStateLogged(const base::HistogramTester& histogram_tester,
+                               BatterySaverModeState state,
+                               int expected_count) {
+    return Do(base::BindLambdaForTesting([=, &histogram_tester]() {
+      histogram_tester.ExpectBucketCount(
+          "PerformanceControls.BatterySaver.SettingsChangeMode",
+          static_cast<int>(state), expected_count);
+    }));
+  }
+
+  auto WaitForButtonStateChange(const ui::ElementIdentifier& contents_id,
+                                DeepQuery element,
+                                bool is_checked) {
+    StateChange toggle_selection_change;
+    toggle_selection_change.event = kButtonWasClicked;
+    toggle_selection_change.where = element;
+    toggle_selection_change.type = StateChange::Type::kExistsAndConditionTrue;
+    toggle_selection_change.test_function =
+        is_checked ? kCheckJsElementIsChecked : kCheckJsElementIsNotChecked;
+
+    return WaitForStateChange(contents_id, toggle_selection_change);
+  }
+
+  auto WaitForElementToRender(const ui::ElementIdentifier& contents_id,
+                              const DeepQuery& element) {
+    StateChange element_renders;
+    element_renders.event = kElementRenders;
+    element_renders.where = element;
+    element_renders.type = StateChange::Type::kExistsAndConditionTrue;
+    element_renders.test_function =
+        "(el) => { return el.clientWidth > 0 && el.clientHeight > 0; }";
+
+    return WaitForStateChange(contents_id, element_renders);
+  }
+
+  auto WaitForIronListCollapseStateChange(ui::ElementIdentifier webcontents_id,
+                                          DeepQuery query) {
+    StateChange iron_collapse_finish_animating;
+    iron_collapse_finish_animating.event = kIronCollapseContentShows;
+    iron_collapse_finish_animating.where = query;
+    iron_collapse_finish_animating.type =
+        StateChange::Type::kExistsAndConditionTrue;
+    iron_collapse_finish_animating.test_function =
+        "(el) => { return !el.transitioning; }";
+
+    return WaitForStateChange(webcontents_id, iron_collapse_finish_animating);
+  }
+
+ private:
+  raw_ptr<base::test::TestSamplingEventSource, DanglingUntriaged>
+      sampling_source_;
+  raw_ptr<base::test::TestBatteryLevelProvider, DanglingUntriaged>
+      battery_level_provider_;
+  std::unique_ptr<base::BatteryStateSampler> battery_state_sampler_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(BatterySettingsInteractiveTest,
+                       BatterySaverLearnMoreLink) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kLearnMorePage);
+  const DeepQuery battery_saver_learn_more = {
+      "settings-ui",           "settings-main",          "settings-basic-page",
+      "settings-battery-page", "settings-toggle-button", "a#learn-more"};
+
+  RunTestSequence(
+      InstrumentTab(kPerformanceSettingsPage),
+      NavigateWebContents(kPerformanceSettingsPage,
+                          GURL(chrome::kChromeUIPerformanceSettingsURL)),
+      InstrumentNextTab(kLearnMorePage),
+      ClickElement(kPerformanceSettingsPage, battery_saver_learn_more),
+      WaitForShow(kLearnMorePage), CheckTabCount(2),
+      WaitForWebContentsReady(kLearnMorePage,
+                              GURL(chrome::kBatterySaverModeLearnMoreUrl)));
+}
+
+IN_PROC_BROWSER_TEST_F(BatterySettingsInteractiveTest,
+                       BatterySaverMetricsShouldLogOnToggle) {
+  const DeepQuery battery_saver_toggle = {
+      "settings-ui",           "settings-main",          "settings-basic-page",
+      "settings-battery-page", "settings-toggle-button", "cr-toggle#control"};
+
+  const DeepQuery iron_collapse = {
+      "settings-ui", "settings-main", "settings-basic-page",
+      "settings-battery-page", "iron-collapse#radioGroupCollapse"};
+
+  const DeepQuery turn_on_at_threshold_button = {
+      "settings-ui", "settings-main", "settings-basic-page",
+      "settings-battery-page", "controlled-radio-button"};
+
+  const DeepQuery turn_on_when_unplugged_button = {
+      "settings-ui", "settings-main", "settings-basic-page",
+      "settings-battery-page",
+      "controlled-radio-button#enabledOnBatteryButton"};
+
+  base::HistogramTester histogram_tester;
+  RunTestSequence(
+      InstrumentTab(kPerformanceSettingsPage),
+      NavigateWebContents(kPerformanceSettingsPage,
+                          GURL(chrome::kChromeUIPerformanceSettingsURL)),
+      WaitForElementToRender(kPerformanceSettingsPage, battery_saver_toggle),
+      CheckJsResultAt(kPerformanceSettingsPage, battery_saver_toggle,
+                      kCheckJsElementIsChecked),
+
+      // Turn off Battery Saver Mode
+      ClickElement(kPerformanceSettingsPage, battery_saver_toggle),
+      WaitForButtonStateChange(kPerformanceSettingsPage, battery_saver_toggle,
+                               false),
+      CheckBatteryStateLogged(histogram_tester,
+                              BatterySaverModeState::kDisabled, 1),
+
+      // Turn Battery Saver Mode back on
+      ClickElement(kPerformanceSettingsPage, battery_saver_toggle),
+      WaitForButtonStateChange(kPerformanceSettingsPage, battery_saver_toggle,
+                               true),
+      CheckBatteryStateLogged(histogram_tester,
+                              BatterySaverModeState::kEnabledBelowThreshold, 1),
+
+      // Wait for the iron-collapse animation to finish so that the battery
+      // saver radio buttons will show on screen
+      WaitForIronListCollapseStateChange(kPerformanceSettingsPage,
+                                         iron_collapse),
+
+      // Change Battery Saver Setting to turn on when unplugged
+      ClickElement(kPerformanceSettingsPage, turn_on_when_unplugged_button),
+      WaitForButtonStateChange(kPerformanceSettingsPage,
+                               turn_on_when_unplugged_button, true),
+      CheckBatteryStateLogged(histogram_tester,
+                              BatterySaverModeState::kEnabledOnBattery, 1),
+
+      // Change Battery Saver Setting to turn on when battery is at 20%
+      ClickElement(kPerformanceSettingsPage, turn_on_at_threshold_button),
+      WaitForButtonStateChange(kPerformanceSettingsPage,
+                               turn_on_at_threshold_button, true),
+      CheckBatteryStateLogged(
+          histogram_tester, BatterySaverModeState::kEnabledBelowThreshold, 2));
+}
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// TODO(http://b/281528238): reenable the test.
+IN_PROC_BROWSER_TEST_F(BatterySettingsInteractiveTest,
+                       DISABLED_BatterySaverSendFeedbackDialogOpens) {
+  const DeepQuery battery_saver_feedback = {
+      "settings-ui", "settings-main", "settings-basic-page",
+      "settings-section#batterySettingsSection", "cr-icon-button#feedback"};
+
+  RunTestSequence(
+      InstrumentTab(kPerformanceSettingsPage),
+      NavigateWebContents(kPerformanceSettingsPage,
+                          GURL(chrome::kChromeUIPerformanceSettingsURL)),
+      ClickElement(kPerformanceSettingsPage, battery_saver_feedback),
+      InAnyContext(WaitForShow(FeedbackDialog::kFeedbackDialogForTesting)));
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+class BatterySettingsInteractiveTest : public InteractiveAshTest {
+ public:
+  BatterySettingsInteractiveTest()
+      : scoped_feature_list_(ash::features::kBatterySaver) {}
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(
+        performance_manager::user_tuning::BatterySaverModeManager::
+            kForceDeviceHasBatterySwitch);
+  }
+
+  auto WaitForElementToRender(const ui::ElementIdentifier& contents_id,
+                              const DeepQuery& element) {
+    StateChange element_renders;
+    element_renders.event = kElementRenders;
+    element_renders.where = element;
+    element_renders.type = StateChange::Type::kExistsAndConditionTrue;
+    element_renders.test_function =
+        "(el) => { return el !== null && el.clientWidth > 0 && el.clientHeight "
+        "> 0; }";
+
+    return WaitForStateChange(contents_id, element_renders);
+  }
+
+  auto ClickElement(const ui::ElementIdentifier& contents_id,
+                    const DeepQuery& element) {
+    return Steps(WaitForElementToRender(contents_id, element),
+                 MoveMouseTo(contents_id, element), ClickMouse());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(BatterySettingsInteractiveTest,
+                       BatterySaverSettingsLinksToOSSettings) {
+  SetupContextWidget();
+  InstallSystemApps();
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOsSettingsElementId);
+
+  const DeepQuery battery_saver_link_row = {
+      "settings-ui", "settings-main", "settings-basic-page",
+      "settings-battery-page", "cr-link-row#batterySaverOSSettingsLinkRow"};
+
+  CreateBrowserWindow(GURL(chrome::kChromeUIPerformanceSettingsURL));
+  Browser* const browser = chrome::FindLastActive();
+  ASSERT_NE(browser, nullptr);
+
+  RunTestSequence(
+      InContext(browser->window()->GetElementContext(),
+                InstrumentTab(kPerformanceSettingsPage)),
+      WaitForElementToRender(kPerformanceSettingsPage, battery_saver_link_row),
+      InstrumentNextTab(kOsSettingsElementId, AnyBrowser()),
+      ClickElement(kPerformanceSettingsPage, battery_saver_link_row),
+      WaitForShow(kOsSettingsElementId),
+      WaitForWebContentsReady(kOsSettingsElementId,
+                              GURL("chrome://os-settings/power")));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
