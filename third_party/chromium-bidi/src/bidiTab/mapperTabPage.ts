@@ -28,7 +28,8 @@ const mapperPageSource =
  * <h3>${name}</h3>
  * <div id="${name}_log" class="log">
  */
-function findOrCreateTypeLogContainer(logType: LogPrefix): HTMLElement {
+function findOrCreateTypeLogContainer(logPrefix: LogPrefix): HTMLElement {
+  const logType = logPrefix.split(':')[0];
   const containerId = `${logType}_log`;
 
   const existingContainer = document.getElementById(containerId);
@@ -63,24 +64,33 @@ export function generatePage() {
   findOrCreateTypeLogContainer(LogType.cdp);
 }
 
-export function log(logType: LogPrefix, ...messages: unknown[]) {
+function stringify(message: unknown) {
+  if (typeof message === 'object') {
+    return JSON.stringify(message, null, 2);
+  }
+  return message;
+}
+
+export function log(logPrefix: LogPrefix, ...messages: unknown[]) {
   // If run not in browser (e.g. unit test), do nothing.
   if (!globalThis.document.documentElement) {
     return;
   }
 
   // Skip sending BiDi logs as they are logged once by `bidi:server:*`
-  if (!logType.startsWith(LogType.bidi)) {
+  if (!logPrefix.startsWith(LogType.bidi)) {
     // If `sendDebugMessage` is defined, send the log message there.
-    global.window?.sendDebugMessage?.(JSON.stringify({logType, messages}));
+    global.window?.sendDebugMessage?.(
+      JSON.stringify({logType: logPrefix, messages})
+    );
   }
 
-  const typeLogContainer = findOrCreateTypeLogContainer(logType);
+  const typeLogContainer = findOrCreateTypeLogContainer(logPrefix);
 
   // This piece of HTML should be added:
   // <div class="pre">...log message...</div>
   const lineElement = document.createElement('div');
   lineElement.className = 'pre';
-  lineElement.textContent = messages.join(' ');
+  lineElement.textContent = [logPrefix, ...messages].map(stringify).join(' ');
   typeLogContainer.appendChild(lineElement);
 }
