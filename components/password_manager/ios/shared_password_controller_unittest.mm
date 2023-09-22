@@ -307,7 +307,6 @@ TEST_F(SharedPasswordControllerTest, FormsArePropagatedOnHTMLPageLoad) {
         OCMExpect([driver_helper_ PasswordManagerDriver:frame]);
         EXPECT_CALL(password_manager_, OnPasswordFormsParsed);
         EXPECT_CALL(password_manager_, OnPasswordFormsRendered);
-        OCMExpect([suggestion_helper_ updateStateOnPasswordFormExtracted]);
         autofill::FormData form_data = test_helpers::MakeSimpleFormData();
         completionHandler({form_data}, 1);
         return YES;
@@ -838,7 +837,6 @@ TEST_F(SharedPasswordControllerTest,
         // OnPasswordFormsRendered is responsible for detecting submissions.
         // Making sure it's not called after element additions.
         EXPECT_CALL(password_manager_, OnPasswordFormsRendered).Times(0);
-        OCMExpect([suggestion_helper_ updateStateOnPasswordFormExtracted]);
         autofill::FormData form_data = test_helpers::MakeSimpleFormData();
         completionHandler({form_data}, 1);
         return YES;
@@ -973,6 +971,9 @@ TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
             typedValue:@""
                frameID:kTestFrameID];
 
+  [[form_helper_ expect] findPasswordFormsInFrame:frame
+                                completionHandler:[OCMArg any]];
+
   __block BOOL completion_was_called = NO;
 
   [controller_ checkIfSuggestionsAvailableForForm:form_query
@@ -1041,6 +1042,9 @@ TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
                 typedValue:@""
                    frameID:kTestFrameID];
 
+  [[form_helper_ expect] findPasswordFormsInFrame:frame
+                                completionHandler:[OCMArg any]];
+
   __block BOOL completion_was_called1 = NO;
   [controller_ checkIfSuggestionsAvailableForForm:form_query1
                                    hasUserGesture:NO
@@ -1065,6 +1069,9 @@ TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
                 typedValue:@""
                    frameID:kTestFrameID];
 
+  [[form_helper_ expect] findPasswordFormsInFrame:frame
+                                completionHandler:[OCMArg any]];
+
   __block BOOL completion_was_called2 = NO;
   [controller_ checkIfSuggestionsAvailableForForm:form_query2
                                    hasUserGesture:NO
@@ -1073,7 +1080,9 @@ TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
                                   completion_was_called2 = YES;
                                 }];
 
-  // Check that completion handler wasn't called.
+  // Check that completion handler wasn't called yet, not until processing fill
+  // data.
+  EXPECT_FALSE(completion_was_called1);
   EXPECT_FALSE(completion_was_called2);
 
   // Receive suggestions from PasswordManager.
@@ -1089,8 +1098,8 @@ TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
                                isMainFrame:frame->IsMainFrame()
                          forSecurityOrigin:frame->GetSecurityOrigin()];
 
-  // Check that completion handler was called for the second form query.
-  EXPECT_FALSE(completion_was_called1);
+  // Check that completion handlers were called.
+  EXPECT_TRUE(completion_was_called1);
   EXPECT_TRUE(completion_was_called2);
 }
 

@@ -734,7 +734,6 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
   IOSPasswordManagerDriver* driver =
       [_driverHelper PasswordManagerDriver:frame];
   if (!forms.empty()) {
-    [self.suggestionHelper updateStateOnPasswordFormExtracted];
     UniqueIDDataTabHelper* uniqueIDDataTabHelper =
         UniqueIDDataTabHelper::FromWebState(_webState);
     // Update NextAvailableRendererId if a bigger value was extracted.

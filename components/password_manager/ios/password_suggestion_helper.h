@@ -30,7 +30,7 @@ class WebFrame;
 class WebState;
 }  // namespace web
 
-// A protocol implemented by a delegate of PasswordSuggestionHelper.
+// Delegate to perform tasks outside of PasswordSuggestionHelper.
 @protocol PasswordSuggestionHelperDelegate<NSObject>
 
 // Called when form extraction is required for checking suggestion availability.
@@ -49,8 +49,9 @@ class WebState;
 
 @end
 
-// Provides common logic of password autofill suggestions for both ios/chrome
-// and ios/web_view.
+// Processes and provides password suggestions for form fields across frames
+// within a specific web state. Also a hub for password filling signals (e.g.
+// track focus on field).
 // TODO(crbug.com/1097353): Consider folding this class into
 // SharedPasswordController.
 @interface PasswordSuggestionHelper : NSObject
@@ -58,36 +59,33 @@ class WebState;
 // Delegate to receive callbacks.
 @property(nonatomic, weak) id<PasswordSuggestionHelperDelegate> delegate;
 
-// Creates a instance with the given |webState|.
+// Creates a instance for the given |webState|.
 - (instancetype)initWithWebState:(web::WebState*)webState
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Retrieves suggestions as username and realm pairs
-// (defined in |password_manager::UsernameAndRealm|) and converts
-// them into objective C representations. In the returned |FormSuggestion|
-// items, |value| field will be the username and |displayDescription| will be
-// the realm.
+// Retrieves suggestions for a field within a form with `formIdentifier`.
 - (NSArray<FormSuggestion*>*)
     retrieveSuggestionsWithFormID:(autofill::FormRendererId)formIdentifier
                   fieldIdentifier:(autofill::FieldRendererId)fieldIdentifier
                        forFrameId:(const std::string&)frameId
                         fieldType:(NSString*)fieldType;
 
-// Checks if suggestions are available for the field.
-// |completion| will be called when the check is completed, with boolean
-// parameter indicating whether suggestions are available or not.
-// See //components/autofill/ios/form_util/form_activity_params.h for definition
-// of other parameters.
+// Checks if suggestions are available for the field within a form targeted by
+// the provided |formQuery|. Calls |completion| on completion with a boolean
+// parameter indicating the availability of suggestions.
+//
+// The |completion| callback will be called asynchronously if it has to try
+// extracting password forms from the renderer when there is no fill data
+// at the moment of the check (in an attempt to retrieve fill data in the case
+// the forms in the renderer were dynamically updated).
 - (void)checkIfSuggestionsAvailableForForm:
             (FormSuggestionProviderQuery*)formQuery
                          completionHandler:
                              (SuggestionsAvailableCompletion)completion;
 
-// Retrieves password form fill data for |username| for use in
-// |PasswordFormHelper|'s
-// -fillPasswordFormWithFillData:completionHandler:.
+// Retrieves password form fill data for `frameId` and `username`.
 - (std::unique_ptr<password_manager::FillData>)
     passwordFillDataForUsername:(NSString*)username
                      forFrameId:(const std::string&)frameId;
@@ -109,18 +107,12 @@ class WebState;
                             isMainFrame:(BOOL)isMainFrame
                       forSecurityOrigin:(const GURL&)origin;
 
-// Processes field for which no saved credentials are available.
-// Triggers callback for -checkIfSuggestionsAvailableForForm... if needed.
-// This method should be called in password controller's
-// -onNoSavedCredentials.
-// The frame is used to get the AccountSelectFillData and reset the credentials
-// cache.
+// Processes the case in which no saved credentials are available when
+// extracting forms in the renderer. Will complete the pending check query
+// with the available fill data at that moment (likely empty but there might be
+// asynchronous server suggestions that were processed in the meantime; between
+// the moment extraction started and completion).
 - (void)processWithNoSavedCredentialsWithFrameId:(const std::string&)frameId;
-
-// Updates the state for password form extraction state.
-// This method should be called in password controller's
-// -didFinishPasswordFormExtraction:, when the extracted forms are not empty.
-- (void)updateStateOnPasswordFormExtracted;
 
 @end
 
