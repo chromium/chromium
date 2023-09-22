@@ -7,10 +7,14 @@
  */
 
 /**
- * @param {!chrome.fileManagerPrivate.VmType} vmType
+ * @param {!chrome.fileManagerPrivate.VmType|undefined} vmType
  * @return {string}
  */
 export function vmTypeToIconName(vmType) {
+  if (vmType === undefined) {
+    console.error('vmType: is undefined');
+    return '';
+  }
   switch (vmType) {
     case chrome.fileManagerPrivate.VmType.BRUSCHETTA:
       return 'bruschetta';

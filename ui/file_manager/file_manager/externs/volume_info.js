@@ -134,9 +134,9 @@ export class VolumeInfo {
     this.diskFileSystemType;
 
     /**
-     * @type {FilesAppEntry} an entry to be used as prefix of this volume on
-     *     breadcrumbs, e.g. "My Files > Downloads", "My Files" is a prefixEntry
-     *     on "Downloads" VolumeInfo.
+     * @type {?FilesAppEntry} an entry to be used as prefix of this volume
+     *     on breadcrumbs, e.g. "My Files > Downloads", "My Files" is a
+     *     prefixEntry on "Downloads" VolumeInfo.
      */
     this.prefixEntry;
 
@@ -149,7 +149,7 @@ export class VolumeInfo {
 
     /**
      * If this is a GuestOS volume, the type of the VM which owns this volume.
-     * @type {chrome.fileManagerPrivate.VmType}
+     * @type {chrome.fileManagerPrivate.VmType|undefined}
      */
     this.vmType;
   }

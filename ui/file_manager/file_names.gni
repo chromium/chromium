@@ -31,7 +31,6 @@ static_js_files = [
   "file_manager/background/js/runtime_loaded_test_util.js",
   "file_manager/background/js/test_util.js",
   "file_manager/background/js/test_util_base.js",
-  "file_manager/background/js/volume_info_impl.js",
   "file_manager/background/js/volume_info_list_impl.js",
   "file_manager/background/js/volume_manager_factory.js",
   "file_manager/background/js/volume_manager_impl.js",
@@ -310,6 +309,7 @@ ts_files = [
   "file_manager/background/js/crostini.ts",
   "file_manager/background/js/drive_sync_handler.ts",
   "file_manager/background/js/entry_location_impl.ts",
+  "file_manager/background/js/volume_info_impl.ts",
 
   # Foreground.
   "file_manager/foreground/js/banner_controller.ts",

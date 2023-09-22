@@ -47,7 +47,6 @@ js_type_check("closure_compile_jsmodules") {
     ":progress_center",
     ":runtime_loaded_test_util",
     ":test_util_base",
-    ":volume_info_impl",
     ":volume_info_list_impl",
     ":volume_manager_factory",
     ":volume_manager_impl",
@@ -201,7 +200,6 @@ js_library("launcher") {
 js_library("mock_volume_manager") {
   visibility += related_apps
   deps = [
-    ":volume_info_impl",
     ":volume_info_list_impl",
     ":volume_manager_factory",
     ":volume_manager_impl",
@@ -247,21 +245,6 @@ js_library("runtime_loaded_test_util") {
     "//ui/file_manager/file_manager/common/js:progress_center_common",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs/background:file_manager_base",
-  ]
-}
-
-js_library("volume_info_impl") {
-  deps = [
-    "//ash/webui/common/resources:assert",
-    "//ui/file_manager/file_manager/common/js:files_app_entry_types",
-    "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
-    "//ui/file_manager/file_manager/externs:volume_info",
-  ]
-  visibility += [
-    "//ui/file_manager/file_manager/foreground/js:navigation_list_model_unittest",
-    "//ui/file_manager/file_manager/foreground/js:providers_model_unittest",
   ]
 }
 
@@ -320,7 +303,6 @@ js_library("volume_manager_factory") {
 
 js_unittest("volume_manager_unittest") {
   deps = [
-    ":volume_info_impl",
     ":volume_manager_factory",
     ":volume_manager_impl",
     ":volume_manager_util",
@@ -335,7 +317,6 @@ js_unittest("volume_manager_unittest") {
 
 js_library("volume_manager_util") {
   deps = [
-    ":volume_info_impl",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_info",
