@@ -238,6 +238,7 @@ luci.builder.defaults.test_presentation.set(resultdb.test_presentation(grouping_
 exec("//swarming.star")
 
 exec("//recipes.star")
+exec("//gn_args/gn_args.star")
 exec("//targets/mixins.star")
 exec("//targets/targets.star")
 exec("//targets/variants.star")

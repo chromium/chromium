@@ -10,6 +10,7 @@ load("//lib/builders.star", "cpu", "os", "reclient", "sheriff_rotations")
 load("//lib/branches.star", "branches")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -485,6 +486,9 @@ ci.builder(
         short_name = "off",
     ),
     execution_timeout = 7 * time.hour,
+    gn_args = gn_args.config(
+        configs = ["official_optimize", "reclient"],
+    ),
     health_spec = health_spec.modified_default(
         build_time = struct(
             p50_mins = 240,

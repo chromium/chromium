@@ -1,1 +1,8 @@
-{}
+{
+  "chromium": {
+    "linux-official": "ci/linux-official/gn-args.json"
+  },
+  "tryserver.chromium": {
+    "linux-official": "try/linux-official/gn-args.json"
+  }
+}

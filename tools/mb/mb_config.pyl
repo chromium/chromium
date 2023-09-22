@@ -89,7 +89,6 @@
       'linux-archive-rel': 'linux_archive_release_bot_reclient',
       'linux-chromeos-archive-rel': 'chromeos_with_codecs_release_bot_reclient',
       'linux-lacros-archive-rel': 'lacros_on_linux_release_bot_reclient',
-      'linux-official': 'official_optimize_reclient',
       'mac-archive-rel': 'release_bot_mac_strip_minimal_symbols_reclient',
       'mac-arm64-archive-rel': 'release_bot_mac_strip_minimal_symbols_arm64_reclient',
       'mac-official': 'official_optimize_reclient',
@@ -1039,7 +1038,6 @@
     'tryserver.chromium': {
       'android-official': 'android_official_optimize_reclient_trybot',
       'fuchsia-official': 'fuchsia_official_optimize_reclient_trybot',
-      'linux-official': 'official_optimize_reclient_trybot',
       'mac-official': 'official_optimize_reclient_trybot',
       'win-official': 'official_optimize_reclient_trybot',
       'win32-official': 'x86_official_optimize_reclient_trybot',

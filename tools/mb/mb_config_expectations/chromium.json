@@ -107,12 +107,6 @@
       "use_remoteexec": true
     }
   },
-  "linux-official": {
-    "gn_args": {
-      "is_official_build": true,
-      "use_remoteexec": true
-    }
-  },
   "mac-archive-rel": {
     "gn_args": {
       "dcheck_always_on": false,
