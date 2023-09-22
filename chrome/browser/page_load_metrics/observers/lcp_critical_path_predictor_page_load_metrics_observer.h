@@ -17,7 +17,8 @@ extern const char kHistogramLCPPLargestContentfulPaint[];
 }  // namespace internal
 
 // PageLoadMetricsObserver responsible for:
-// - Staging LCP element locator information until LCP is finalized, and
+// - Staging LCP element locator, LCP influencer scripts, used fonts and other
+//   information until LCP is finalized, and
 // - Reporting "PageLoad.Clients.LCPP." UMAs
 class LcpCriticalPathPredictorPageLoadMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
@@ -62,6 +63,11 @@ class LcpCriticalPathPredictorPageLoadMetricsObserver
     lcp_influencer_scripts_ = lcp_influencer_scripts;
   }
 
+  // Append fetched font URLs to the list to be passed to LCPP.
+  void AppendFetchedFontUrl(const GURL& font_url) {
+    font_urls_.push_back(font_url);
+  }
+
  private:
   // PageLoadMetricsObserver implementation:
   ObservePolicy OnStart(content::NavigationHandle* navigation_handle,
@@ -94,6 +100,8 @@ class LcpCriticalPathPredictorPageLoadMetricsObserver
   std::string lcp_element_locator_;
   // async script urls of the latest LCP candidate element.
   std::vector<GURL> lcp_influencer_scripts_;
+  // Fetched font URLs.
+  std::vector<GURL> font_urls_;
 
   base::WeakPtrFactory<LcpCriticalPathPredictorPageLoadMetricsObserver>
       weak_factory_{this};
