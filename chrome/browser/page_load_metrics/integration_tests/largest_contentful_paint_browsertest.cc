@@ -11,6 +11,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/trace_event_analyzer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -335,6 +336,10 @@ class MAYBE_IsAnimatedLCPTest : public MetricIntegrationTest {
                         blink::LargestContentfulPaintType flag_set,
                         bool expected,
                         unsigned entries = 1) {
+    // Install a ScopedRunLoopTimeout override to distinguish the timeout from
+    // IsAnimatedLCPTest vs browser_test_base.
+    base::test::ScopedRunLoopTimeout run_loop_timeout(FROM_HERE, absl::nullopt,
+                                                      base::NullCallback());
     auto waiter =
         std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
             web_contents());
@@ -405,6 +410,10 @@ class MAYBE_MouseoverLCPTest : public MetricIntegrationTest,
                       int x2,
                       int y2,
                       bool expected) {
+    // Install a ScopedRunLoopTimeout override to distinguish the timeout from
+    // MouseoverLCPTest vs browser_test_base.
+    base::test::ScopedRunLoopTimeout run_loop_timeout(FROM_HERE, absl::nullopt,
+                                                      base::NullCallback());
     auto waiter =
         std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
             web_contents());
