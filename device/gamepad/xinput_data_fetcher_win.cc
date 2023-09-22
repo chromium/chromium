@@ -9,10 +9,10 @@
 
 #include <utility>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -48,33 +48,6 @@ constexpr base::FilePath::CharType kXInputDllFileName[] =
 
 float NormalizeXInputAxis(SHORT value) {
   return ((value + 32768.f) / 32767.5f) - 1.f;
-}
-
-const wchar_t* GamepadSubTypeName(BYTE sub_type) {
-  switch (sub_type) {
-    case kDeviceSubTypeGamepad:
-      return L"GAMEPAD";
-    case kDeviceSubTypeWheel:
-      return L"WHEEL";
-    case kDeviceSubTypeArcadeStick:
-      return L"ARCADE_STICK";
-    case kDeviceSubTypeFlightStick:
-      return L"FLIGHT_STICK";
-    case kDeviceSubTypeDancePad:
-      return L"DANCE_PAD";
-    case kDeviceSubTypeGuitar:
-      return L"GUITAR";
-    case kDeviceSubTypeGuitarAlternate:
-      return L"GUITAR_ALTERNATE";
-    case kDeviceSubTypeDrumKit:
-      return L"DRUM_KIT";
-    case kDeviceSubTypeGuitarBass:
-      return L"GUITAR_BASS";
-    case kDeviceSubTypeArcadePad:
-      return L"ARCADE_PAD";
-    default:
-      return L"<UNKNOWN>";
-  }
 }
 
 }  // namespace
@@ -133,9 +106,25 @@ void XInputDataFetcherWin::EnumerateDevices() {
         pad.vibration_actuator.type = GamepadHapticActuatorType::kDualRumble;
         pad.vibration_actuator.not_null = true;
 
-        pad.SetID(base::WideToUTF16(
-            base::StringPrintf(L"Xbox 360 Controller (XInput STANDARD %ls)",
-                               GamepadSubTypeName(caps.SubType))));
+        const auto name = [](BYTE sub_type) -> base::StringPiece16 {
+          static constexpr auto kNames =
+              base::MakeFixedFlatMap<BYTE, base::StringPiece16>({
+                  {kDeviceSubTypeGamepad, u"GAMEPAD"},
+                  {kDeviceSubTypeWheel, u"WHEEL"},
+                  {kDeviceSubTypeArcadeStick, u"ARCADE_STICK"},
+                  {kDeviceSubTypeFlightStick, u"FLIGHT_STICK"},
+                  {kDeviceSubTypeDancePad, u"DANCE_PAD"},
+                  {kDeviceSubTypeGuitar, u"GUITAR"},
+                  {kDeviceSubTypeGuitarAlternate, u"GUITAR_ALTERNATE"},
+                  {kDeviceSubTypeDrumKit, u"DRUM_KIT"},
+                  {kDeviceSubTypeGuitarBass, u"GUITAR_BASS"},
+                  {kDeviceSubTypeArcadePad, u"ARCADE_PAD"},
+              });
+          const auto* const it = kNames.find(sub_type);
+          return (it == kNames.end()) ? u"<UNKNOWN>" : it->second;
+        }(caps.SubType);
+        pad.SetID(base::StrCat(
+            {u"Xbox 360 Controller (XInput STANDARD ", name, u")"}));
         pad.mapping = GamepadMapping::kStandard;
       }
     }
