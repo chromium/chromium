@@ -1,0 +1,42 @@
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package autofill;
+
+// Used for differentiating forms with the same form signature (see the
+// comment for `AlternativeType`). A context is a set of conditions
+// (practically, only one) for fields (e.g. a field label) and/or forms (not
+// implemented, e.g. form name). A context is considered matched when all
+// listed conditions are met.
+message Context {
+  // This provides additional information about a single field in the form.
+  message FieldContext {
+    // This group of fields will uniquely identify a specific field in a form.
+    optional fixed32 field_signature = 1;
+    optional int32 field_rank = 2;
+
+    // This group of fields will contain the additional field information
+    // that will be used to differentiate forms. It is supposed to be
+    // extended when needed (e.g. add form/field id/name attributes).
+    optional string label = 3;
+  }
+  repeated FieldContext field_contexts = 1;
+}
+
+// When a form signature is not enough to identify a web form, i.e.
+// several different forms share one form signature, e.g. sign-in and
+// sign-up forms are 2-field forms with empty field names, a field type and
+// other predictions can be corrected based on additional context. An
+// `alternative_type` must be used instead of `new_type` if a given
+// web form matches `contexts[context_index]` (e.g. a specified field
+// (signature=12345) has a 'New password' label). Also used when both Autofill
+// and Password types are needed (e.g. username+email).
+message AlternativeType {
+  // This refers to the index of contexts in the `contexts` array that will
+  // be used to differentiate forms with the same form signatures (e.g. use
+  // NEW_PASSWORD type instead of PASSWORD type if that field label is 'New
+  // password').
+  optional int32 context_index = 1;
+  optional int32 alternative_type = 2;
+}

@@ -10,6 +10,7 @@ option optimize_for = LITE_RUNTIME;
 
 package autofill;
 
+import "alternative_type_and_context.proto";
 import "password_requirements.proto";
 import "server.proto";
 
@@ -70,12 +71,12 @@ message AutofillPageQueryRequest {
 // as in the request that gave the response.
 // Next ID: 2
 message AutofillQueryResponse {
-  // Next ID: 2
+  // Next ID: 3
   message FormSuggestion {
     // Next ID: 7
     message FieldSuggestion {
       // Prediction made on a field.
-      // Next ID: 4
+      // Next ID: 5
       message FieldPrediction {
         // This lists all the different ways predictions can be provided,
         // including some experiments.
@@ -109,6 +110,14 @@ message AutofillQueryResponse {
         // The source of the prediction. E.g. which pipeline, which experiment,
         // etc.
         optional Source source = 3;
+        // When a form signature is not enough to identify a web form, i.e.
+        // several different forms share one form signature, e.g. sign-in and
+        // sign-up forms are 2-field forms with empty field names, a field type
+        // and other predictions can be corrected based on additional context.
+        // An `alternative_type` must be used instead of `new_type` if a given
+        // web form matches `contexts[context_index]` (e.g. a specified field
+        // (signature=12345) has a 'New password' label).
+        repeated .autofill.AlternativeType alternative_types = 4;
       }
       // Signature identifying the field that is the same as in the request.
       optional fixed32 field_signature = 1;
@@ -126,6 +135,10 @@ message AutofillQueryResponse {
     };
     // Suggestions on the fields in the same form.
     repeated FieldSuggestion field_suggestions = 1;
+    // Additional contexts to specify when new field types should be applied.
+    // See more in the comments for `AlternativeType` and `Context`
+    // (alternative_type_and_context.proto).
+    repeated .autofill.Context contexts = 2;
   };
   // Suggestions for forms in the same page.
   repeated FormSuggestion form_suggestions = 1;
