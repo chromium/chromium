@@ -9,9 +9,9 @@ import './share_password_dialog_header.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getTemplate} from './share_password_no_members_dialog.html.js';
+import {getTemplate} from './share_password_not_family_member_dialog.html.js';
 
-export interface SharePasswordNoMembersDialogElement {
+export interface SharePasswordNotFamilyMemberDialogElement {
   $: {
     description: HTMLElement,
     action: HTMLElement,
@@ -19,10 +19,10 @@ export interface SharePasswordNoMembersDialogElement {
   };
 }
 
-export class SharePasswordNoMembersDialogElement extends I18nMixin
+export class SharePasswordNotFamilyMemberDialogElement extends I18nMixin
 (PolymerElement) {
   static get is() {
-    return 'share-password-no-members-dialog';
+    return 'share-password-not-family-member-dialog';
   }
 
   static get template() {
@@ -30,7 +30,9 @@ export class SharePasswordNoMembersDialogElement extends I18nMixin
   }
 
   static get properties() {
-    return {dialogTitle: {type: String}};
+    return {
+      dialogTitle: String,
+    };
   }
 
   dialogTitle: string;
@@ -43,10 +45,11 @@ export class SharePasswordNoMembersDialogElement extends I18nMixin
 
 declare global {
   interface HTMLElementTagNameMap {
-    'share-password-no-members-dialog': SharePasswordNoMembersDialogElement;
+    'share-password-not-family-member-dialog':
+        SharePasswordNotFamilyMemberDialogElement;
   }
 }
 
 customElements.define(
-    SharePasswordNoMembersDialogElement.is,
-    SharePasswordNoMembersDialogElement);
+    SharePasswordNotFamilyMemberDialogElement.is,
+    SharePasswordNotFamilyMemberDialogElement);

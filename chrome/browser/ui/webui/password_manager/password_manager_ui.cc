@@ -394,10 +394,16 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
           base::ASCIIToUTF16(chrome::kPasswordManagerLearnMoreURL)));
 
   source->AddString(
-      "sharePasswordNoMembersDescription",
+      "sharePasswordNotFamilyMember",
       l10n_util::GetStringFUTF16(
-          IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_NO_MEMBERS_DESCRIPTION,
+          IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_NOT_FAMILY_MEMBER,
           base::ASCIIToUTF16(chrome::kFamilyGroupCreateURL)));
+
+  source->AddString(
+      "sharePasswordNoOtherFamilyMembers",
+      l10n_util::GetStringFUTF16(
+          IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_NO_OTHER_FAMILY_MEMBERS,
+          base::ASCIIToUTF16(chrome::kFamilyGroupViewURL)));
 
   source->AddString("familyGroupViewURL", chrome::kFamilyGroupViewURL);
 

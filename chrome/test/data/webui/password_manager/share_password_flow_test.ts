@@ -11,7 +11,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
-import {makeFamilyFetchResults} from './test_util.js';
+import {makeFamilyFetchResults, makeRecipientInfo} from './test_util.js';
 
 const SITE = 'test.com';
 
@@ -103,7 +103,27 @@ suite('SharePasswordFlowTest', function() {
     await shareFlowDone;
   });
 
-  test('Has correct no members state', async function() {
+  test('Has correct no other members state', async function() {
+    passwordManager.data.familyFetchResults = makeFamilyFetchResults(
+        chrome.passwordsPrivate.FamilyFetchStatus.SUCCESS, /*members=*/[]);
+    const shareElement = startPasswordShare();
+    await passwordManager.whenCalled('fetchFamilyMembers');
+    await flushTasks();
+
+    const dialog = shareElement.shadowRoot!.querySelector(
+        'share-password-no-other-family-members-dialog');
+    assertTrue(!!dialog);
+
+    assertVisibleTextContent(
+        dialog.$.header, shareElement.i18n('shareDialogTitle', SITE));
+    assertVisibleTextContent(
+        dialog.$.description,
+        shareElement.i18n('sharePasswordNoOtherFamilyMembers'));
+    assertVisibleTextContent(
+        dialog.$.action, shareElement.i18n('sharePasswordGotIt'));
+  });
+
+  test('Has correct not a family member state', async function() {
     passwordManager.data.familyFetchResults = makeFamilyFetchResults(
         chrome.passwordsPrivate.FamilyFetchStatus.NO_MEMBERS);
     const shareElement = startPasswordShare();
@@ -111,19 +131,19 @@ suite('SharePasswordFlowTest', function() {
     await flushTasks();
 
     const dialog = shareElement.shadowRoot!.querySelector(
-        'share-password-no-members-dialog');
+        'share-password-not-family-member-dialog');
     assertTrue(!!dialog);
 
     assertVisibleTextContent(
         dialog.$.header, shareElement.i18n('shareDialogTitle', SITE));
     assertVisibleTextContent(
         dialog.$.description,
-        shareElement.i18n('sharePasswordNoMembersDescription'));
+        shareElement.i18n('sharePasswordNotFamilyMember'));
     assertVisibleTextContent(
         dialog.$.action, shareElement.i18n('sharePasswordGotIt'));
   });
 
-  test('Action button should hide the no members dialog', async function() {
+  test('Action button should hide not family member dialog', async function() {
     passwordManager.data.familyFetchResults = makeFamilyFetchResults(
         chrome.passwordsPrivate.FamilyFetchStatus.NO_MEMBERS);
     const shareElement = startPasswordShare();
@@ -133,7 +153,25 @@ suite('SharePasswordFlowTest', function() {
     const shareFlowDone = eventToPromise('share-flow-done', shareElement);
 
     const dialog = shareElement.shadowRoot!.querySelector(
-        'share-password-no-members-dialog');
+        'share-password-not-family-member-dialog');
+    assertTrue(!!dialog);
+    dialog.$.action.click();
+    await flushTasks();
+
+    await shareFlowDone;
+  });
+
+  test('Action button should hide no other members dialog', async function() {
+    passwordManager.data.familyFetchResults = makeFamilyFetchResults(
+        chrome.passwordsPrivate.FamilyFetchStatus.SUCCESS, /*members=*/[]);
+    const shareElement = startPasswordShare();
+    await passwordManager.whenCalled('fetchFamilyMembers');
+    await flushTasks();
+
+    const shareFlowDone = eventToPromise('share-flow-done', shareElement);
+
+    const dialog = shareElement.shadowRoot!.querySelector(
+        'share-password-no-other-family-members-dialog');
     assertTrue(!!dialog);
     dialog.$.action.click();
     await flushTasks();
@@ -143,7 +181,8 @@ suite('SharePasswordFlowTest', function() {
 
   test('Cancel button should hide family picker dialog', async function() {
     passwordManager.data.familyFetchResults = makeFamilyFetchResults(
-        chrome.passwordsPrivate.FamilyFetchStatus.SUCCESS);
+        chrome.passwordsPrivate.FamilyFetchStatus.SUCCESS,
+        /*members=*/[makeRecipientInfo()]);
     const shareElement = startPasswordShare();
     await passwordManager.whenCalled('fetchFamilyMembers');
     await flushTasks();
