@@ -33,6 +33,7 @@
 #include "chrome/browser/support_tool/support_tool_util.h"
 #include "chrome/browser/ui/webui/support_tool/support_tool_ui_utils.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/feedback/redaction_tool/pii_types.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -277,7 +278,7 @@ bool DeviceCommandFetchSupportPacketJob::ParseCommandPayloadImpl(
 
 // static
 bool DeviceCommandFetchSupportPacketJob::CommandEnabledForUser() {
-  return ash::LoginState::Get()->IsKioskSession();
+  return chromeos::IsKioskSession();
 }
 
 void DeviceCommandFetchSupportPacketJob::RunImpl(

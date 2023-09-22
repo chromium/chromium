@@ -26,6 +26,7 @@
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
+#include "chromeos/components/kiosk/kiosk_test_utils.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/reporting/client/mock_report_queue.h"
 #include "components/reporting/util/status.h"
@@ -113,10 +114,10 @@ class DeviceCommandFetchSupportPacketTest : public ::testing::Test {
 };
 
 TEST_F(DeviceCommandFetchSupportPacketTest, Success) {
-  // Set LoginState as kiosk device.
-  ash::LoginState::Get()->SetLoggedInState(
-      ash::LoginState::LoggedInState::LOGGED_IN_ACTIVE,
-      ash::LoginState::LoggedInUserType::LOGGED_IN_USER_KIOSK);
+  // Set up as kiosk device.
+  user_manager::ScopedUserManager user_manager(
+      std::make_unique<user_manager::FakeUserManager>());
+  chromeos::SetUpFakeKioskSession();
 
   std::unique_ptr<DeviceCommandFetchSupportPacketJob> job =
       std::make_unique<DeviceCommandFetchSupportPacketJob>();
