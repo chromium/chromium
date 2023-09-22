@@ -9,6 +9,7 @@
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
+#include "components/autofill/core/browser/metrics/field_filling_stats_and_score_metrics.h"
 #include "components/autofill/core/browser/metrics/precedence_over_autocomplete_metrics.h"
 #include "components/autofill/core/browser/metrics/shadow_prediction_metrics.h"
 #include "components/autofill/core/browser/validation.h"
@@ -386,20 +387,8 @@ void LogQualityMetrics(
     // Log the field filling statistics if autofill was used.
     // The metrics are only emitted if there was at least one field in the
     // corresponding form group that is or was filled by autofill.
-    AutofillMetrics::LogFieldFillingStats(FormType::kAddressForm,
-                                          address_field_stats);
-    AutofillMetrics::LogFieldFillingStats(FormType::kCreditCardForm,
-                                          cc_field_stats);
-
-    AutofillMetrics::LogFormFillingScore(FormType::kAddressForm,
-                                         address_field_stats);
-    AutofillMetrics::LogFormFillingScore(FormType::kCreditCardForm,
-                                         cc_field_stats);
-
-    AutofillMetrics::LogFormFillingComplexScore(FormType::kAddressForm,
-                                                address_field_stats);
-    AutofillMetrics::LogFormFillingComplexScore(FormType::kCreditCardForm,
-                                                cc_field_stats);
+    autofill_metrics::LogFieldFillingStatsAndScore(address_field_stats,
+                                                   cc_field_stats);
 
     if (card_form) {
       AutofillMetrics::LogCreditCardSeamlessnessAtSubmissionTime(
