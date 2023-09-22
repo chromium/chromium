@@ -6349,7 +6349,7 @@
   {
     "name": "one-time-permission",
     "owners": ["fjacky", "permissions-core@google.com"],
-    "expiry_milestone": 118
+    "expiry_milestone": 122
   },
   {
     "name": "only-access-clipboard-async",
