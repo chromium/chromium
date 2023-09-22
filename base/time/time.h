@@ -571,14 +571,20 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
       (sizeof(time_t) == 4 ? 2037 : std::numeric_limits<int>::max());
 #endif
 
-  // Represents an exploded time that can be formatted nicely. This is kind of
-  // like the Win32 SYSTEMTIME structure or the Unix "struct tm" with a few
-  // additions and changes to prevent errors.
+  // Represents an exploded time. This is kind of like the Win32 SYSTEMTIME
+  // structure or the Unix "struct tm" with a few additions and changes to
+  // prevent errors.
+  //
   // This structure always represents dates in the Gregorian calendar and always
   // encodes day_of_week as Sunday==0, Monday==1, .., Saturday==6. This means
   // that base::Time::LocalExplode and base::Time::FromLocalExploded only
   // respect the current local time zone in the conversion and do *not* use a
   // calendar or day-of-week encoding from the current locale.
+  //
+  // NOTE: Generally, you should prefer the functions in
+  // base/i18n/time_formatting.h (in particular,
+  // `UnlocalizedTimeFormatWithPattern()`) over trying to create a formatted
+  // time string from this object.
   struct BASE_EXPORT Exploded {
     int year;          // Four digit year "2007"
     int month;         // 1-based month (values 1 = January, etc.)
