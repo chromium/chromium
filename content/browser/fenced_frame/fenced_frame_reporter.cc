@@ -713,6 +713,22 @@ void FencedFrameReporter::SendPrivateAggregationRequestsForEventInternal(
   private_aggregation_event_map_.erase(it);
 }
 
+const std::vector<blink::FencedFrame::ReportingDestination>
+FencedFrameReporter::ReportingDestinations() {
+  std::vector<blink::FencedFrame::ReportingDestination> out;
+  for (const auto& reporting_metadata : reporting_metadata_) {
+    // Only add the reporting destination if the URL map has at least 1 entry.
+    // If the reporting URL map is null, it hasn't been received yet, so add
+    // the destination in case the URL map ends up populated with at least 1
+    // entry.
+    if (!reporting_metadata.second.reporting_url_map ||
+        !reporting_metadata.second.reporting_url_map->empty()) {
+      out.emplace_back(reporting_metadata.first);
+    }
+  }
+  return out;
+}
+
 base::flat_map<blink::FencedFrame::ReportingDestination,
                FencedFrameReporter::ReportingUrlMap>
 FencedFrameReporter::GetAdBeaconMapForTesting() {

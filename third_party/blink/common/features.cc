@@ -761,6 +761,8 @@ BASE_FEATURE(kFencedFrames, "FencedFrames", base::FEATURE_DISABLED_BY_DEFAULT);
 //   {%AD_WIDTH%} and {%AD_HEIGHT%}.
 // * Input validation (no disallowed URI component characters) in
 //   registerAdMacro keys and values.
+// * Send automatic beacons to all registered destinations without requiring
+//   event data to be in place.
 BASE_FEATURE(kFencedFramesM119Features,
              "FencedFramesM119Features",
              base::FEATURE_DISABLED_BY_DEFAULT);

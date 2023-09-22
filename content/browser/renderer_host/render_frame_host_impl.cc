@@ -8576,7 +8576,7 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeaconToCustomURL(
       GetFrameTreeNodeId());
 }
 
-void RenderFrameHostImpl::MaybeSendFencedFrameReportingBeacon(
+void RenderFrameHostImpl::MaybeSendFencedFrameAutomaticReportingBeacon(
     NavigationRequest& navigation_request) {
   // The fenced frame "reserved.top_navigation" automatic beacon only cares
   // about top-frame navigations.
@@ -8622,10 +8622,14 @@ void RenderFrameHostImpl::MaybeSendFencedFrameReportingBeacon(
     return;
   }
 
-  // If there is no automatic beacon declared, there is nothing to send.
+  // Before M119: If there is no automatic beacon declared, there is nothing to
+  //              send.
+  // After M119: If there is no automatic beacon data set, beacons will be sent
+  //             out for all registered destinations, but with no data.
   absl::optional<AutomaticBeaconInfo> info =
       properties->automatic_beacon_info();
-  if (!info) {
+  if (!info && !base::FeatureList::IsEnabled(
+                   blink::features::kFencedFramesM119Features)) {
     return;
   }
 
@@ -8638,14 +8642,45 @@ void RenderFrameHostImpl::MaybeSendFencedFrameReportingBeacon(
     return;
   }
 
-  for (blink::FencedFrame::ReportingDestination destination :
-       info->destinations) {
-    initiator_rfh->SendFencedFrameReportingBeaconInternal(
-        DestinationEnumEvent(blink::kFencedFrameTopNavigationBeaconType,
-                             info->data),
-        destination,
-        /*from_renderer=*/false, info->attribution_reporting_runtime_features,
-        GetFrameTreeNodeId(), navigation_request.GetNavigationId());
+  // Before M119: Only destinations explicitly registered when calling
+  //              setReportEventDataForAutomaticBeacons() will have beacons sent
+  //              to their endpoints.
+  // After M119: Any destination registered in a Protected Audience/Shared
+  //             Storage worklet will have a beacon sent to its endpoint.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kFencedFramesM119Features)) {
+    network::AttributionReportingRuntimeFeatures
+        attribution_reporting_features =
+            info ? info->attribution_reporting_runtime_features
+                 : network::AttributionReportingRuntimeFeatures();
+
+    for (const auto& destination :
+         properties->fenced_frame_reporter_->ReportingDestinations()) {
+      std::string data;
+      // For data to be sent in the automatic beacon, it must be specified in
+      // the event's "destination" for setReportEventDataForAutomaticBeacons().
+      if (info &&
+          std::find(info->destinations.begin(), info->destinations.end(),
+                    destination) != info->destinations.end()) {
+        data = info->data;
+      }
+      initiator_rfh->SendFencedFrameReportingBeaconInternal(
+          DestinationEnumEvent(blink::kFencedFrameTopNavigationBeaconType,
+                               data),
+          destination,
+          /*from_renderer=*/false, attribution_reporting_features,
+          GetFrameTreeNodeId(), navigation_request.GetNavigationId());
+    }
+  } else {
+    for (blink::FencedFrame::ReportingDestination destination :
+         info->destinations) {
+      initiator_rfh->SendFencedFrameReportingBeaconInternal(
+          DestinationEnumEvent(blink::kFencedFrameTopNavigationBeaconType,
+                               info->data),
+          destination,
+          /*from_renderer=*/false, info->attribution_reporting_runtime_features,
+          GetFrameTreeNodeId(), navigation_request.GetNavigationId());
+    }
   }
 
   initiator_rfh->frame_tree_node()
@@ -13522,7 +13557,7 @@ void RenderFrameHostImpl::SendCommitNavigation(
   // 2. The initiator hasn't been unloaded yet due to this navigation, and
   //    still exists at this point (unless explicitly removed from the DOM
   //    otherwise).
-  MaybeSendFencedFrameReportingBeacon(*navigation_request);
+  MaybeSendFencedFrameAutomaticReportingBeacon(*navigation_request);
 
   // If this commit is for a main frame in another browsing context group, warn
   // the renderer that it should update the browsing context group information

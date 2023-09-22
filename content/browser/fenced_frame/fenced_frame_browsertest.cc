@@ -2081,7 +2081,8 @@ class FencedFrameParameterizedBrowserTest : public FencedFrameBrowserTestBase {
          {features::kBackForwardCache, {}},
          // This feature allows `runAdAuction()`'s promise to resolve to a
          // `FencedFrameConfig` object upon developer request.
-         {blink::features::kFencedFramesAPIChanges, {}}},
+         {blink::features::kFencedFramesAPIChanges, {}},
+         {blink::features::kFencedFramesM119Features, {}}},
         {/* disabled_features */});
   }
 

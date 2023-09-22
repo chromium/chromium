@@ -221,6 +221,11 @@ class CONTENT_EXPORT FencedFrameReporter
   // need to be sent after this is called.
   void SendPrivateAggregationRequestsForEvent(const std::string& pa_event_type);
 
+  // Returns a list of reporting destinations that have at least 1 URL
+  // registered with them.
+  const std::vector<blink::FencedFrame::ReportingDestination>
+  ReportingDestinations();
+
   // Returns a copy of the internal reporting metadata's `reporting_url_map`, so
   // it can be validated in tests. Only includes ad beacon maps for which maps
   // have been received - i.e., if wait for OnUrlMappingReady() to be invoked

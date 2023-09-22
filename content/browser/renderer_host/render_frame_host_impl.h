@@ -4043,7 +4043,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Send an automatic `reserved.top_navigation` beacon if one was registered
   // with the NavigationRequest's initiator frame using the
   // `window.fence.setReportEventDataForAutomaticBeacons` API.
-  void MaybeSendFencedFrameReportingBeacon(
+  void MaybeSendFencedFrameAutomaticReportingBeacon(
       NavigationRequest& navigation_request);
 
   // Helper function that handles creating and sending a fenced frame beacon.

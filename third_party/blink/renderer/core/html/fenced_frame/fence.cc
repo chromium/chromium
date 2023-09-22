@@ -255,6 +255,10 @@ void Fence::setReportEventDataForAutomaticBeacons(
                           std::back_inserter(destinations),
                           ToPublicDestination);
 
+  // TODO(crbug.com/1485222) The attribution reporting runtime features should
+  // be sent to the browser separately from the automatic beacon data, since
+  // it's not guaranteed that any beacon data will be set before an automatic
+  // beacon is sent out.
   network::AttributionReportingRuntimeFeatures
       attribution_reporting_runtime_features;
   if (AttributionSrcLoader* attribution_src_loader =

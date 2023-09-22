@@ -50,7 +50,8 @@ FencedFrameTestHelper::FencedFrameTestHelper() {
        {blink::features::kFledge, {}},
        {blink::features::kFencedFramesAPIChanges, {}},
        {blink::features::kFencedFramesDefaultMode, {}},
-       {features::kFencedFramesEnforceFocus, {}}},
+       {features::kFencedFramesEnforceFocus, {}},
+       {blink::features::kFencedFramesM119Features, {}}},
       {/* disabled_features */});
 }
 
