@@ -153,9 +153,7 @@ void QuickStartScreen::OnStatusChanged(
       return;
     case Step::CONNECTED_TO_WIFI:
       view_->ShowConnectedToWifi(status.ssid, status.password);
-      LoginDisplayHost::default_host()
-          ->GetWizardContext()
-          ->quick_start_setup_ongoing = true;
+      context()->quick_start_setup_ongoing = true;
       return;
 
     case Step::TRANSFERRING_GOOGLE_ACCOUNT_DETAILS:
@@ -220,9 +218,7 @@ void QuickStartScreen::SavePhoneInstanceID() {
       << "Adding Phone Instance ID to Wizard Object for Unified "
          "Setup UI enhancements. quick_start_phone_instance_id: "
       << phone_instance_id;
-  LoginDisplayHost::default_host()
-      ->GetWizardContext()
-      ->quick_start_phone_instance_id = phone_instance_id;
+  context()->quick_start_phone_instance_id = phone_instance_id;
 }
 
 }  // namespace ash

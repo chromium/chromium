@@ -182,9 +182,7 @@ void ThemeSelectionScreen::OnUserAction(const base::Value::List& args) {
         WizardController::default_controller()->choobe_flow_controller());
     exit_callback_.Run(Result::kProceed);
   } else if (action_id == kUserActionReturn) {
-    LoginDisplayHost::default_host()
-        ->GetWizardContext()
-        ->return_to_choobe_screen = true;
+    context()->return_to_choobe_screen = true;
     RecordSelectedTheme(profile, initial_theme_);
     ReportScreenCompletedToChoobe(
         WizardController::default_controller()->choobe_flow_controller());

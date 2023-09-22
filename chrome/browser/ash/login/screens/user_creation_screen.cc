@@ -102,9 +102,7 @@ void UserCreationScreen::ShowImpl() {
     return;
 
   // Maybe continue QuickStart flow is there is an ongoing setup.
-  const auto quick_start_setup_ongoig = LoginDisplayHost::default_host()
-                                            ->GetWizardContext()
-                                            ->quick_start_setup_ongoing;
+  const auto quick_start_setup_ongoig = context()->quick_start_setup_ongoing;
   if (quick_start_setup_ongoig) {
     RunExitCallback(Result::CONTINUE_QUICK_START_FLOW);
     return;

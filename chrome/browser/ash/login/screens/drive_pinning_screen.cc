@@ -248,9 +248,7 @@ void DrivePinningScreen::OnUserAction(const base::Value::List& args) {
     ReportScreenCompletedToChoobe(
         WizardController::default_controller()->choobe_flow_controller());
     const bool drive_pinning = args[1].GetBool();
-    LoginDisplayHost::default_host()
-        ->GetWizardContext()
-        ->return_to_choobe_screen = true;
+    context()->return_to_choobe_screen = true;
     OnNext(drive_pinning);
     return;
   }
