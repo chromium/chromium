@@ -4,6 +4,7 @@
 // Description: Linux specific functionality. Other Linux-derivatives layer on
 // top of this translation unit.
 
+#include "base/no_destructor.h"
 #include "base/threading/platform_thread.h"
 
 #include <errno.h>
@@ -103,22 +104,37 @@ void SetThreadCgroupForThreadType(PlatformThreadId thread_id,
 namespace internal {
 
 const ThreadPriorityToNiceValuePairForTest
-    kThreadPriorityToNiceValueMapForTest[5] = {
+    kThreadPriorityToNiceValueMapForTest[7] = {
         {ThreadPriorityForTest::kRealtimeAudio, -10},
         {ThreadPriorityForTest::kDisplay, -8},
+#if BUILDFLAG(IS_CHROMEOS)
+        {ThreadPriorityForTest::kCompositing, -8},
+#else
+        // TODO(1329208): Experiment with bringing IS_LINUX inline with
+        // IS_CHROMEOS.
+        {ThreadPriorityForTest::kCompositing, -1},
+#endif
         {ThreadPriorityForTest::kNormal, 0},
-        {ThreadPriorityForTest::kUtility, 1},
+        {ThreadPriorityForTest::kResourceEfficient, 1},
+        {ThreadPriorityForTest::kUtility, 2},
         {ThreadPriorityForTest::kBackground, 10},
 };
 
+// These nice values are shared with ChromeOS platform code
+// (platform_thread_cros.cc) and have to be unique as ChromeOS has a unique
+// type -> nice value mapping. An exception is kCompositing and
+// kDisplayCritical where aliasing is OK as they have the same scheduler
+// attributes (cpusets, latency_sensitive etc) including nice value.
+// The uniqueness of the nice value per-type helps to change and restore the
+// scheduling params of threads when their process toggles between FG and BG.
 const ThreadTypeToNiceValuePair kThreadTypeToNiceValueMap[7] = {
-    {ThreadType::kBackground, 10},       {ThreadType::kUtility, 1},
-    {ThreadType::kResourceEfficient, 0}, {ThreadType::kDefault, 0},
+    {ThreadType::kBackground, 10},       {ThreadType::kUtility, 2},
+    {ThreadType::kResourceEfficient, 1}, {ThreadType::kDefault, 0},
 #if BUILDFLAG(IS_CHROMEOS)
     {ThreadType::kCompositing, -8},
 #else
     // TODO(1329208): Experiment with bringing IS_LINUX inline with IS_CHROMEOS.
-    {ThreadType::kCompositing, 0},
+    {ThreadType::kCompositing, -1},
 #endif
     {ThreadType::kDisplayCritical, -8},  {ThreadType::kRealtimeAudio, -10},
 };
@@ -144,7 +160,7 @@ bool SetCurrentThreadTypeForPlatform(ThreadType thread_type,
     return true;
   }
 
-  PlatformThread::SetThreadType(getpid(), tid, thread_type);
+  PlatformThread::SetThreadType(getpid(), tid, thread_type, IsViaIPC(false));
   return true;
 }
 
@@ -210,7 +226,8 @@ void PlatformThreadLinux::SetThreadCgroupsForThreadType(
 // static
 void PlatformThreadLinux::SetThreadType(ProcessId process_id,
                                         PlatformThreadId thread_id,
-                                        ThreadType thread_type) {
+                                        ThreadType thread_type,
+                                        IsViaIPC via_ipc) {
   SetThreadCgroupsForThreadType(thread_id, thread_type);
 
   // Some scheduler syscalls require thread ID of 0 for current thread.

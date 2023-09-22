@@ -28,10 +28,12 @@ namespace internal {
 // result in heavy throttling and force the thread onto a little core on
 // big.LITTLE devices.
 const ThreadPriorityToNiceValuePairForTest
-    kThreadPriorityToNiceValueMapForTest[5] = {
+    kThreadPriorityToNiceValueMapForTest[7] = {
         {ThreadPriorityForTest::kRealtimeAudio, -16},
         {ThreadPriorityForTest::kDisplay, -4},
+        {ThreadPriorityForTest::kCompositing, -4},
         {ThreadPriorityForTest::kNormal, 0},
+        {ThreadPriorityForTest::kResourceEfficient, 0},
         {ThreadPriorityForTest::kUtility, 1},
         {ThreadPriorityForTest::kBackground, 10},
 };

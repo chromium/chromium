@@ -151,7 +151,7 @@ void RenderMessageFilter::SetThreadTypeOnLauncherThread(
     return;
   }
 
-  base::PlatformThread::SetThreadType(peer_pid(), peer_tid, thread_type);
+  base::PlatformThread::SetThreadType(peer_pid(), peer_tid, thread_type, base::IsViaIPC(true));
 }
 #endif
 

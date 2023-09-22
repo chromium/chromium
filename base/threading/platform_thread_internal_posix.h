@@ -33,7 +33,7 @@ extern const ThreadTypeToNiceValuePair kThreadTypeToNiceValueMap[7];
 // priority first), that is, in the order of increasing nice values (lowest nice
 // value first).
 extern const ThreadPriorityToNiceValuePairForTest
-    kThreadPriorityToNiceValueMapForTest[5];
+    kThreadPriorityToNiceValueMapForTest[7];
 
 // Returns the nice value matching |priority| based on the platform-specific
 // implementation of kThreadTypeToNiceValueMap.

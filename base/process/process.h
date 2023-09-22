@@ -37,6 +37,12 @@ namespace base {
 // of all threads in the process when deciding on the next thread to schedule.
 // It will help guarantee fairness between renderers.
 BASE_EXPORT BASE_DECLARE_FEATURE(kOneGroupPerRenderer);
+
+// Set all threads of a background process as backgrounded, which changes the
+// thread attributes including c-group, latency sensitivity. But the nice value
+// is unchanged, since background process is under the spell of the background
+// CPU c-group (via cgroup.procs).
+BASE_EXPORT BASE_DECLARE_FEATURE(kSetThreadBgForBgProcess);
 #endif
 
 #if BUILDFLAG(IS_WIN)
