@@ -357,11 +357,6 @@ class CORE_EXPORT XMLHttpRequest final
   // |m_responseTypeCode| is NOT ResponseTypeBlob.
   Member<BlobLoader> blob_loader_;
 
-  // Positive if we are dispatching events.
-  // This is an integer specifying the recursion level rather than a boolean
-  // because in some cases we have recursive dispatching.
-  int event_dispatch_recursion_level_ = 0;
-
   bool async_ = true;
 
   bool with_credentials_ = false;

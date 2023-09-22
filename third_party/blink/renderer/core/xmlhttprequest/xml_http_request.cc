@@ -108,23 +108,6 @@ namespace blink {
 
 namespace {
 
-// This class protects the wrapper of the associated XMLHttpRequest object
-// via hasPendingActivity method which returns true if
-// m_eventDispatchRecursionLevel is positive.
-class ScopedEventDispatchProtect final {
-  STACK_ALLOCATED();
-
- public:
-  explicit ScopedEventDispatchProtect(int* level) : level_(level) { ++*level_; }
-  ~ScopedEventDispatchProtect() {
-    DCHECK_GT(*level_, 0);
-    --*level_;
-  }
-
- private:
-  int* const level_;
-};
-
 // These methods were placed in HTTPParsers.h. Since these methods don't
 // perform ABNF validation but loosely look for the part that is likely to be
 // indicating the charset parameter, new code should use
@@ -616,7 +599,6 @@ void XMLHttpRequest::DispatchReadyStateChangeEvent() {
   if (!GetExecutionContext())
     return;
 
-  ScopedEventDispatchProtect protect(&event_dispatch_recursion_level_);
   if (async_ || (state_ <= kOpened || state_ == kDone)) {
     DEVTOOLS_TIMELINE_TRACE_EVENT("XHRReadyStateChange",
                                   inspector_xhr_ready_state_change_event::Data,
@@ -1720,7 +1702,6 @@ String XMLHttpRequest::statusText() const {
 
 void XMLHttpRequest::DidFail(uint64_t, const ResourceError& error) {
   DVLOG(1) << this << " didFail()";
-  ScopedEventDispatchProtect protect(&event_dispatch_recursion_level_);
 
   // If we are already in an error state, for instance we called abort(), bail
   // out early.
@@ -1747,14 +1728,12 @@ void XMLHttpRequest::DidFail(uint64_t, const ResourceError& error) {
 
 void XMLHttpRequest::DidFailRedirectCheck(uint64_t) {
   DVLOG(1) << this << " didFailRedirectCheck()";
-  ScopedEventDispatchProtect protect(&event_dispatch_recursion_level_);
 
   HandleNetworkError();
 }
 
 void XMLHttpRequest::DidFinishLoading(uint64_t identifier) {
   DVLOG(1) << this << " didFinishLoading(" << identifier << ")";
-  ScopedEventDispatchProtect protect(&event_dispatch_recursion_level_);
 
   if (error_)
     return;
@@ -1794,14 +1773,12 @@ void XMLHttpRequest::DidFinishLoadingInternal() {
 
 void XMLHttpRequest::DidFinishLoadingFromBlob() {
   DVLOG(1) << this << " didFinishLoadingFromBlob";
-  ScopedEventDispatchProtect protect(&event_dispatch_recursion_level_);
 
   DidFinishLoadingInternal();
 }
 
 void XMLHttpRequest::DidFailLoadingFromBlob() {
   DVLOG(1) << this << " didFailLoadingFromBlob()";
-  ScopedEventDispatchProtect protect(&event_dispatch_recursion_level_);
 
   if (error_)
     return;
@@ -1809,8 +1786,6 @@ void XMLHttpRequest::DidFailLoadingFromBlob() {
 }
 
 void XMLHttpRequest::NotifyParserStopped() {
-  ScopedEventDispatchProtect protect(&event_dispatch_recursion_level_);
-
   // This should only be called when response document is parsed asynchronously.
   DCHECK(response_document_parser_);
   DCHECK(!response_document_parser_->IsParsing());
@@ -1853,8 +1828,6 @@ void XMLHttpRequest::DidSendData(uint64_t bytes_sent,
                                  uint64_t total_bytes_to_be_sent) {
   DVLOG(1) << this << " didSendData(" << bytes_sent << ", "
            << total_bytes_to_be_sent << ")";
-  ScopedEventDispatchProtect protect(&event_dispatch_recursion_level_);
-
   if (!upload_)
     return;
 
@@ -1876,8 +1849,6 @@ void XMLHttpRequest::DidReceiveResponse(uint64_t identifier,
   CHECK(&response);
 
   DVLOG(1) << this << " didReceiveResponse(" << identifier << ")";
-  ScopedEventDispatchProtect protect(&event_dispatch_recursion_level_);
-
   response_ = response;
 }
 
@@ -1947,7 +1918,6 @@ std::unique_ptr<TextResourceDecoder> XMLHttpRequest::CreateDecoder() const {
 }
 
 void XMLHttpRequest::DidReceiveData(const char* data, unsigned len) {
-  ScopedEventDispatchProtect protect(&event_dispatch_recursion_level_);
   if (error_)
     return;
 
@@ -1993,7 +1963,6 @@ void XMLHttpRequest::DidReceiveData(const char* data, unsigned len) {
 }
 
 void XMLHttpRequest::DidDownloadData(uint64_t data_length) {
-  ScopedEventDispatchProtect protect(&event_dispatch_recursion_level_);
   if (error_)
     return;
 
@@ -2017,7 +1986,6 @@ void XMLHttpRequest::DidDownloadData(uint64_t data_length) {
 }
 
 void XMLHttpRequest::DidDownloadToBlob(scoped_refptr<BlobDataHandle> blob) {
-  ScopedEventDispatchProtect protect(&event_dispatch_recursion_level_);
   if (error_)
     return;
 
@@ -2070,12 +2038,12 @@ bool XMLHttpRequest::HasPendingActivity() const {
   // Neither this object nor the JavaScript wrapper should be deleted while
   // a request is in progress because we need to keep the listeners alive,
   // and they are referenced by the JavaScript wrapper.
-  // |m_loader| is non-null while request is active and ThreadableLoaderClient
-  // callbacks may be called, and |m_responseDocumentParser| is non-null while
+  // `loader_` is non-null while request is active and ThreadableLoaderClient
+  // callbacks may be called, and `response_document_parser_` is non-null while
   // DocumentParserClient callbacks may be called.
-  if (loader_ || response_document_parser_)
-    return true;
-  return event_dispatch_recursion_level_ > 0;
+  // TODO(crbug.com/1486065): I believe we actually don't need
+  // `response_document_parser_` condition.
+  return loader_ || response_document_parser_;
 }
 
 const AtomicString& XMLHttpRequest::InterfaceName() const {
