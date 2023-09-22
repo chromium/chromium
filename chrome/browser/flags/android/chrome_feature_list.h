@@ -212,7 +212,6 @@ BASE_DECLARE_FEATURE(kWebOtpCrossDeviceSimpleString);
 BASE_DECLARE_FEATURE(kWebApkAllowIconUpdate);
 BASE_DECLARE_FEATURE(kWebApkBackupAndRestoreBackend);
 BASE_DECLARE_FEATURE(kWebApkInstallService);
-BASE_DECLARE_FEATURE(kWebApkTrampolineOnInitialIntent);
 
 }  // namespace android
 }  // namespace chrome

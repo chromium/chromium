@@ -344,7 +344,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kWebApkAllowIconUpdate,
     &kWebApkBackupAndRestoreBackend,
     &kWebApkInstallService,
-    &kWebApkTrampolineOnInitialIntent,
     &features::kDnsOverHttps,
     &notifications::features::kUseChimeAndroidSdk,
     &paint_preview::kPaintPreviewDemo,
@@ -1176,10 +1175,6 @@ BASE_FEATURE(kWebApkBackupAndRestoreBackend,
 BASE_FEATURE(kWebApkInstallService,
              "WebApkInstallService",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kWebApkTrampolineOnInitialIntent,
-             "WebApkTrampolineOnInitialIntent",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace android
 }  // namespace chrome

@@ -475,8 +475,6 @@ public abstract class ChromeFeatureList {
     public static final String WEBNOTES_STYLIZE = "WebNotesStylize";
     public static final String WEB_APK_ALLOW_ICON_UPDATA = "WebApkAllowIconUpdate";
     public static final String WEB_APK_INSTALL_SERVICE = "WebApkInstallService";
-    public static final String WEB_APK_TRAMPOLINE_ON_INITIAL_INTENT =
-            "WebApkTrampolineOnInitialIntent";
     public static final String WEB_APP_AMBIENT_BADGE_SUPRESS_FIRST_VISIT =
             "AmbientBadgeSuppressFirstVisit";
     public static final String WEB_APK_INSTALL_FAILURE_NOTIFICATION =
@@ -617,8 +615,6 @@ public abstract class ChromeFeatureList {
             new CachedFlag(USE_CHIME_ANDROID_SDK, false);
     public static final CachedFlag sUseLibunwindstackNativeUnwinderAndroid =
             new CachedFlag(USE_LIBUNWINDSTACK_NATIVE_UNWINDER_ANDROID, false);
-    public static final CachedFlag sWebApkTrampolineOnInitialIntent =
-            new CachedFlag(WEB_APK_TRAMPOLINE_ON_INITIAL_INTENT, true);
 
     public static final List<CachedFlag> sFlagsCachedFullBrowser = List.of(
             // clang-format off
@@ -690,8 +686,7 @@ public abstract class ChromeFeatureList {
         sTabToGTSAnimation,
         sToolbarUseHardwareBitmapDraw,
         sUseChimeAndroidSdk,
-        sUseLibunwindstackNativeUnwinderAndroid,
-        sWebApkTrampolineOnInitialIntent
+        sUseLibunwindstackNativeUnwinderAndroid
             // clang-format on
     );
 

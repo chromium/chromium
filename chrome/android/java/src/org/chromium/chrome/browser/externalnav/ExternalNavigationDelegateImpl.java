@@ -20,7 +20,6 @@ import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -205,8 +204,7 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
 
     @Override
     public boolean shouldLaunchWebApksOnInitialIntent() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-                && ChromeFeatureList.sWebApkTrampolineOnInitialIntent.isEnabled();
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S;
     }
 
     @Override
