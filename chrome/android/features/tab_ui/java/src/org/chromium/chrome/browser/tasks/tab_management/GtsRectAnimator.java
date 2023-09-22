@@ -14,6 +14,8 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.build.annotations.UsedByReflection;
+
 /** Animator for scaling a view from one rect to another. */
 public class GtsRectAnimator {
     /**
@@ -69,6 +71,7 @@ public class GtsRectAnimator {
      * {@link mFinalRect}.
      * @param rect The rect to scale the view to for the current frame.
      */
+    @UsedByReflection("Used in ObjectAnimator")
     public void setRect(@NonNull Rect rect) {
         final float scaleX = (float) rect.width() / mInitialRect.width();
         final float scaleY = (float) rect.height() / mInitialRect.height();
