@@ -9,14 +9,13 @@
 #include <string>
 #include <utility>
 
-#include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/values_test_util.h"
 #include "base/types/expected.h"
-#include "base/types/optional_util.h"
 #include "base/values.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -24,61 +23,62 @@ namespace attribution_reporting {
 namespace {
 
 using ::attribution_reporting::mojom::TriggerRegistrationError;
+using ::base::test::ErrorIs;
+using ::base::test::ValueIs;
+using ::testing::_;
+using ::testing::ElementsAre;
+using ::testing::IsEmpty;
+using ::testing::Pair;
+using ::testing::Property;
 
 TEST(AggregatableValuesTest, Parse) {
+  EXPECT_THAT(AggregatableValues::FromJSON(nullptr),
+              ValueIs(Property(&AggregatableValues::values, IsEmpty())));
+
   const struct {
     const char* description;
-    absl::optional<base::Value> json;
-    base::expected<AggregatableValues, TriggerRegistrationError> expected;
+    const char* json;
+    ::testing::Matcher<
+        base::expected<AggregatableValues, TriggerRegistrationError>>
+        matches;
   } kTestCases[] = {
       {
-          "null",
-          absl::nullopt,
-          AggregatableValues(),
-      },
-      {
           "empty",
-          base::Value(base::Value::Dict()),
-          AggregatableValues(),
+          R"json({})json",
+          ValueIs(Property(&AggregatableValues::values, IsEmpty())),
       },
       {
           "not_dictionary",
-          base::Value(base::Value::List()),
-          base::unexpected(
-              TriggerRegistrationError::kAggregatableValuesWrongType),
+          R"json([])json",
+          ErrorIs(TriggerRegistrationError::kAggregatableValuesWrongType),
       },
       {
           "value_not_int",
-          base::test::ParseJson(R"json({"a": true})json"),
-          base::unexpected(
-              TriggerRegistrationError::kAggregatableValuesValueWrongType),
+          R"json({"a": true})json",
+          ErrorIs(TriggerRegistrationError::kAggregatableValuesValueWrongType),
       },
       {
           "value_below_range",
-          base::test::ParseJson(R"json({"a": 0})json"),
-          base::unexpected(
-              TriggerRegistrationError::kAggregatableValuesValueOutOfRange),
+          R"json({"a": 0})json",
+          ErrorIs(TriggerRegistrationError::kAggregatableValuesValueOutOfRange),
       },
       {
           "value_above_range",
-          base::test::ParseJson(R"json({"a": 65537})json"),
-          base::unexpected(
-              TriggerRegistrationError::kAggregatableValuesValueOutOfRange),
+          R"json({"a": 65537})json",
+          ErrorIs(TriggerRegistrationError::kAggregatableValuesValueOutOfRange),
       },
       {
           "valid",
-          base::test::ParseJson(R"json({"a": 1, "b": 65536})json"),
-          *AggregatableValues::Create({
-              {"a", 1},
-              {"b", 65536},
-          }),
+          R"json({"a": 1, "b": 65536})json",
+          ValueIs(Property(&AggregatableValues::values,
+                           ElementsAre(Pair("a", 1), Pair("b", 65536)))),
       },
   };
 
   for (const auto& test_case : kTestCases) {
-    EXPECT_EQ(AggregatableValues::FromJSON(base::OptionalToPtr(test_case.json)),
-              test_case.expected)
-        << test_case.description;
+    SCOPED_TRACE(test_case.description);
+    base::Value value = base::test::ParseJson(test_case.json);
+    EXPECT_THAT(AggregatableValues::FromJSON(&value), test_case.matches);
   }
 }
 
@@ -91,12 +91,11 @@ TEST(AggregatableValuesTest, Parse_KeyLength) {
   };
 
   for (size_t length = 0; length < 26; length++) {
-    EXPECT_TRUE(parse_dict_with_key_length(length).has_value());
+    EXPECT_THAT(parse_dict_with_key_length(length), ValueIs(_));
   }
 
   EXPECT_THAT(parse_dict_with_key_length(26),
-              base::test::ErrorIs(
-                  TriggerRegistrationError::kAggregatableValuesKeyTooLong));
+              ErrorIs(TriggerRegistrationError::kAggregatableValuesKeyTooLong));
 }
 
 TEST(AggregatableValuesTest, ToJson) {

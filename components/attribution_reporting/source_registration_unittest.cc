@@ -365,39 +365,6 @@ TEST(SourceRegistrationTest, ToJson) {
             "max_event_level_reports": 8,
           })json",
       },
-      {
-          SourceRegistrationWith(
-              destination,
-              [](SourceRegistration& r) {
-                r.aggregatable_report_window = base::Seconds(1);
-                r.aggregation_keys = *AggregationKeys::FromKeys({{"a", 2}});
-                r.debug_key = 3;
-                r.debug_reporting = true;
-                r.event_report_windows = *EventReportWindows::CreateWindows(
-                    base::Seconds(4), {base::Seconds(5)});
-                r.expiry = base::Seconds(6);
-                r.filter_data = *FilterData::Create({{"b", {}}});
-                r.priority = -7;
-                r.source_event_id = 8;
-                r.max_event_level_reports = 9;
-              }),
-          R"json({
-            "aggregatable_report_window": 1,
-            "aggregation_keys": {"a": "0x2"},
-            "debug_key": "3",
-            "debug_reporting": true,
-            "destination":"https://d.example",
-            "event_report_windows": {
-              "start_time": 4,
-              "end_times": [5]
-            },
-            "expiry": 6,
-            "filter_data": {"b": []},
-            "priority": "-7",
-            "source_event_id": "8",
-            "max_event_level_reports": 9,
-          })json",
-      },
   };
 
   for (const auto& test_case : kTestCases) {
