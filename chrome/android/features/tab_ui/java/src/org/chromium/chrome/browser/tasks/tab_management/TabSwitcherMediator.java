@@ -318,7 +318,13 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
         mOnTabSwitcherShownCallback = onTabSwitcherShownCallback;
         if (layoutStateProviderSupplier != null) {
-            layoutStateProviderSupplier.onAvailable(this::onLayoutStateProviderAvailable);
+            if (layoutStateProviderSupplier.hasValue()) {
+                onLayoutStateProviderAvailable(layoutStateProviderSupplier.get());
+            } else {
+                // Only use onAvailable if no value is available as waiting for the Promise to
+                // resolve risks getActiveLayoutType changing before the value is supplied.
+                layoutStateProviderSupplier.onAvailable(this::onLayoutStateProviderAvailable);
+            }
         }
 
         if (incognitoReauthControllerSupplier != null) {
@@ -1243,6 +1249,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
 
     private void onLayoutStateProviderAvailable(LayoutStateProvider layoutStateProvider) {
         mLayoutStateProvider = layoutStateProvider;
+        mLastActiveLayoutType = mLayoutStateProvider.getActiveLayoutType();
         if (mLayoutStateObserver == null) {
             mLayoutStateObserver = new LayoutStateObserver() {
                 @Override
