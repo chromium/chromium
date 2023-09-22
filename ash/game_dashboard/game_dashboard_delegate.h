@@ -24,6 +24,9 @@ class ASH_EXPORT GameDashboardDelegate {
   // `callback` with true if it's a game.
   virtual void GetIsGame(const std::string& app_id,
                          IsGameCallback callback) = 0;
+
+  // Gets the app name by `app_id`.
+  virtual std::string GetArcAppName(const std::string& app_id) const = 0;
 };
 
 }  // namespace ash

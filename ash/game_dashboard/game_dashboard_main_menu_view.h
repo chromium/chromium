@@ -5,6 +5,8 @@
 #ifndef ASH_GAME_DASHBOARD_GAME_DASHBOARD_MAIN_MENU_VIEW_H_
 #define ASH_GAME_DASHBOARD_GAME_DASHBOARD_MAIN_MENU_VIEW_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -66,6 +68,12 @@ class ASH_EXPORT GameDashboardMainMenuView
 
   // Updates the `game_controls_tile_` states, sub-label and tooltip text.
   void UpdateGameControlsTile();
+
+  // Updates the sub-title of `game_controls_details_`.
+  void UpdateGameControlsDetailsSubtitle(bool is_game_controls_enabled);
+
+  // Caches `app_name_`.
+  void CacheAppName();
 
   // Handles when the Screen Size Settings is pressed.
   void OnScreenSizeSettingsButtonPressed();
@@ -133,6 +141,9 @@ class ASH_EXPORT GameDashboardMainMenuView
 
   // Hint switch to toggle the Game Controls feature.
   raw_ptr<Switch> game_controls_feature_switch_ = nullptr;
+
+  // App name from the app where this view is anchored.
+  std::string app_name_;
 };
 
 }  // namespace ash

@@ -11,4 +11,9 @@ void TestGameDashboardDelegate::GetIsGame(const std::string& app_id,
   std::move(callback).Run(app_id == kGameAppId);
 }
 
+std::string TestGameDashboardDelegate::GetArcAppName(
+    const std::string& app_id) const {
+  return std::string();
+}
+
 }  // namespace ash

@@ -19,6 +19,7 @@ class ChromeGameDashboardDelegate : public ash::GameDashboardDelegate {
 
   // ash::GameDashboardDelegate:
   void GetIsGame(const std::string& app_id, IsGameCallback callback) override;
+  std::string GetArcAppName(const std::string& app_id) const override;
 
  private:
   // Callback when `IsGame` queries ARC to get the app category.

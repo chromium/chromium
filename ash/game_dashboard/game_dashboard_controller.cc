@@ -73,6 +73,11 @@ GameDashboardController::~GameDashboardController() {
   CaptureModeController::Get()->RemoveObserver(this);
 }
 
+std::string GameDashboardController::GetArcAppName(
+    const std::string& app_id) const {
+  return delegate_->GetArcAppName(app_id);
+}
+
 GameDashboardContext* GameDashboardController::GetGameDashboardContext(
     aura::Window* window) const {
   DCHECK(window);

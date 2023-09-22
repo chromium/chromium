@@ -40,6 +40,21 @@ void ChromeGameDashboardDelegate::GetIsGame(const std::string& app_id,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+std::string ChromeGameDashboardDelegate::GetArcAppName(
+    const std::string& app_id) const {
+  // Get the app category from ArcAppListPrefs.
+  auto* profile = ProfileManager::GetPrimaryUserProfile();
+  CHECK(profile);
+
+  auto app_info =
+      ArcAppListPrefsFactory::GetForBrowserContext(profile)->GetApp(app_id);
+  if (!app_info) {
+    LOG(ERROR) << "Failed to get app info: " << app_id << ".";
+    return std::string();
+  }
+  return app_info->name;
+}
+
 void ChromeGameDashboardDelegate::OnReceiveAppCategory(
     IsGameCallback callback,
     arc::mojom::AppCategory category) {

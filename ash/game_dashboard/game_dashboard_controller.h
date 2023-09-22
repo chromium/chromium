@@ -48,6 +48,9 @@ class ASH_EXPORT GameDashboardController : public aura::EnvObserver,
   // Checks whether the `window` can respond to accelerator commands.
   static bool ReadyForAccelerator(aura::Window* window);
 
+  // Gets the app name by `app_id`.
+  std::string GetArcAppName(const std::string& app_id) const;
+
   GameDashboardContext* active_recording_context() {
     return active_recording_context_;
   }

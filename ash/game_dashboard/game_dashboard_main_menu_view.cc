@@ -28,6 +28,7 @@
 #include "ash/style/typography.h"
 #include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_tile.h"
+#include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -316,8 +317,7 @@ void GameDashboardMainMenuView::OnGameControlsSetUpButtonPressed() {
 
 void GameDashboardMainMenuView::OnGameControlsFeatureSwitchButtonPressed() {
   const bool is_toggled = game_controls_feature_switch_->GetIsOn();
-  // TODO(b/274690042): Replace the strings with localized strings.
-  game_controls_details_->SetSubtitle(is_toggled ? u"On" : u"Off");
+  UpdateGameControlsDetailsSubtitle(/*is_game_controls_enabled=*/is_toggled);
 
   auto* game_window = context_->game_window();
   game_window->SetProperty(
@@ -360,6 +360,23 @@ void GameDashboardMainMenuView::UpdateGameControlsTile() {
           : (is_hint_on ? IDS_ASH_GAME_DASHBOARD_GC_TILE_VISIBLE
                         : IDS_ASH_GAME_DASHBOARD_GC_TILE_HIDDEN)));
   game_controls_tile_->SetSubLabelVisibility(true);
+}
+
+void GameDashboardMainMenuView::UpdateGameControlsDetailsSubtitle(
+    bool is_game_controls_enabled) {
+  // TODO(b/274690042): Replace the strings with localized strings.
+  game_controls_details_->SetSubtitle(
+      (is_game_controls_enabled ? u"On for " : u"Off for ") +
+      base::UTF8ToUTF16(app_name_));
+}
+
+void GameDashboardMainMenuView::CacheAppName() {
+  auto* window = context_->game_window();
+  DCHECK(IsArcWindow(window));
+  std::string* app_id = window->GetProperty(kAppIDKey);
+  if (app_id) {
+    app_name_ = GameDashboardController::Get()->GetArcAppName(*app_id);
+  }
 }
 
 void GameDashboardMainMenuView::OnScreenSizeSettingsButtonPressed() {
@@ -475,6 +492,9 @@ void GameDashboardMainMenuView::MaybeAddGameControlsDetailsRow(
   }
 
   DCHECK(game_controls_tile_);
+
+  CacheAppName();
+
   game_controls_details_ =
       container->AddChildView(std::make_unique<FeatureDetailsRow>(
           base::BindRepeating(
@@ -506,10 +526,8 @@ void GameDashboardMainMenuView::MaybeAddGameControlsDetailsRow(
   } else {
     const bool is_game_controls_enabled =
         game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kEnabled);
-    // TODO(b/279117180): Include application name in the subtitle.
-    // TODO(b/274690042): Replace the strings with localized strings.
-    game_controls_details_->SetSubtitle(is_game_controls_enabled ? u"On"
-                                                                 : u"Off");
+    UpdateGameControlsDetailsSubtitle(
+        /*is_game_controls_enabled=*/is_game_controls_enabled);
 
     // Add toggle button and arrow icon for non-empty state.
     auto* edit_container = game_controls_details_->AddCustomizedTailView(
