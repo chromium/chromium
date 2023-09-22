@@ -395,6 +395,11 @@ OSStatus GetTextFromKeychainIdentifier(const std::string& keychain_identifier,
 // |keychain_identifier|. It's stored as the encrypted password value.
 void DeleteEncryptedPasswordFromKeychain(
     const std::string& keychain_identifier);
+
+// Retrieves everything from the keychain. |key_password_pairs| contains
+// pairs of UUID and plaintext password.
+OSStatus GetAllPasswordsFromKeychain(
+    std::unordered_map<std::string, std::u16string>* key_password_pairs);
 #endif
 
 }  // namespace password_manager

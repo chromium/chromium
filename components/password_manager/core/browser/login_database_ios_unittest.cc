@@ -18,7 +18,10 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/os_crypt/sync/os_crypt.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/common/passwords_directory_util_ios.h"
@@ -238,11 +241,22 @@ TEST_F(LoginDatabaseIOSTest, RemoveLoginsCreatedBetween) {
   DeleteEncryptedPasswordFromKeychain(logins[2]->keychain_identifier);
 }
 
-class LoginDatabaseMigrationToOSCryptTest : public LoginDatabaseIOSTest {
+class LoginDatabaseMigrationToOSCryptTest
+    : public LoginDatabaseIOSTest,
+      public testing::WithParamInterface<bool> {
  public:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     database_path_ = temp_dir_.GetPath().AppendASCII("test.db");
+    if (GetParam()) {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{features::kOneReadLoginDatabaseMigration},
+          /*disabled_features=*/{});
+    } else {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{features::kOneReadLoginDatabaseMigration});
+    }
   }
 
   // Creates the database from |sql_file|.
@@ -312,13 +326,14 @@ class LoginDatabaseMigrationToOSCryptTest : public LoginDatabaseIOSTest {
   base::FilePath get_database_path() { return database_path_; }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   base::ScopedTempDir temp_dir_;
   base::FilePath database_path_;
 };
 
 // Tests the migration of the login database from version() to
 // kCurrentVersionNumber.
-TEST_F(LoginDatabaseMigrationToOSCryptTest, MigrationToVersion39ProfileStore) {
+TEST_P(LoginDatabaseMigrationToOSCryptTest, MigrationToVersion39ProfileStore) {
   // Keychain identifier used in the test file.
   const std::string password_keychain_identifier =
       "2572a7dc-5046-429b-b8d4-3696f87dc9c2";
@@ -369,7 +384,7 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest, MigrationToVersion39ProfileStore) {
   DeleteEncryptedPasswordFromKeychain(note_keychain_identifier);
 }
 
-TEST_F(LoginDatabaseMigrationToOSCryptTest,
+TEST_P(LoginDatabaseMigrationToOSCryptTest,
        MigrationToVersion39SuccessMetricsAccountStore) {
   CreateDatabase("login_db_v38_with_keychain_id.sql");
 
@@ -414,7 +429,7 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
   DeleteEncryptedPasswordFromKeychain(note_keychain_identifier);
 }
 
-TEST_F(LoginDatabaseMigrationToOSCryptTest,
+TEST_P(LoginDatabaseMigrationToOSCryptTest,
        MigrationToVersion39WithMissingKeychainItems) {
   CreateDatabase("login_db_v38_with_keychain_ids.sql");
 
@@ -449,5 +464,9 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
   // tests.
   DeleteEncryptedPasswordFromKeychain(password_keychain_identifier);
 }
+
+INSTANTIATE_TEST_SUITE_P(,  // Empty instantiation name.
+                         LoginDatabaseMigrationToOSCryptTest,
+                         testing::Bool());
 
 }  // namespace password_manager
