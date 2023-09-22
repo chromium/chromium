@@ -78,6 +78,14 @@ enum class TaskIds {
   // team_email:
   // owner: qinmin@chromium.org
   DOWNLOAD_LATER_JOB_ID = 57,
+  // component: UI>Browser>Downloads
+  // team_email:
+  // owner: qinmin@chromium.org
+  DOWNLOAD_AUTO_RESUMPTION_UNMETERED_JOB_ID = 58,
+  // component: UI>Browser>Downloads
+  // team_email:
+  // owner: qinmin@chromium.org
+  DOWNLOAD_AUTO_RESUMPTION_ANY_NETWORK_JOB_ID = 59,
   // component: UI>Browser>ContentSuggestions>Feed
   // team_email: feed@chromium.org
   // owner: dewittj@chromium.org

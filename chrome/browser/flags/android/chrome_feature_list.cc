@@ -107,6 +107,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &content_settings::features::kUserBypassUI,
     &download::features::kSmartSuggestionForLargeDownloads,
     &download::features::kUseDownloadOfflineContentProvider,
+    &download::features::kDownloadsMigrateToJobsAPI,
     &features::kPWAsDefaultOfflinePage,
     &features::kGenericSensorExtraClasses,
     &features::kBackForwardCache,

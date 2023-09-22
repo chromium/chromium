@@ -11,6 +11,10 @@ import android.app.Notification;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.components.background_task_scheduler.BackgroundTask.TaskFinishedCallback;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * User initiated jobs implementation of {@link DownloadContinuityManager} that plays a role in
@@ -21,15 +25,35 @@ import org.chromium.base.Log;
 public class DownloadUserInitiatedTaskManager extends DownloadContinuityManager {
     private static final String TAG = "DownloadUitm";
 
-    /** Constructor. */
+    private Map<Integer, TaskFinishedCallback> mTaskNotificationCallbacks = new HashMap<>();
+
+    /** Constructor.*/
     public DownloadUserInitiatedTaskManager() {}
+
+    /**
+     * Called to add a callback that will be run to attach a notification to the background task
+     * life-cycle.
+     *
+     * @param taskNotificationCallback The callback to be invoked to attach notification.
+     */
+    public void setTaskNotificationCallback(
+            int taskId, TaskFinishedCallback taskNotificationCallback) {
+        if (taskNotificationCallback == null) {
+            mTaskNotificationCallbacks.remove(taskId);
+        } else {
+            mTaskNotificationCallbacks.put(taskId, taskNotificationCallback);
+        }
+    }
+
+    @Override
+    boolean isEnabled() {
+        return DownloadUtils.shouldUseUserInitiatedJobs();
+    }
 
     /**
      * Process the notification queue for all cases and initiate any needed actions, i.e. attach
      * the best download notification to the background job.
-     * @param isProcessingPending Whether the call was made to process pending notifications that
-     *                            have accumulated in the queue during the startup process or if it
-     *                            was made based on during a basic update.
+     * @param isProcessingPending Unused.
      */
     @VisibleForTesting
     @Override
@@ -51,7 +75,7 @@ public class DownloadUserInitiatedTaskManager extends DownloadContinuityManager 
         cleanDownloadUpdateQueue();
     }
 
-    /** Helper code to start or update foreground service. */
+    /** Helper code to attach notification the Job. */
     @VisibleForTesting
     void attachNotificationToJob(DownloadUpdate update) {
         Log.w(TAG, "attachNotificationToJob id: " + update.mNotificationId);
@@ -62,8 +86,12 @@ public class DownloadUserInitiatedTaskManager extends DownloadContinuityManager 
             return;
         }
 
-        // TODO(shaktisahu): Attach notification to the job.
-        // setNotification(notificationId, notification);
+        if (mTaskNotificationCallbacks.isEmpty()) return;
+
+        // Attach notification to the job.
+        for (TaskFinishedCallback taskFinishedCallback : mTaskNotificationCallbacks.values()) {
+            taskFinishedCallback.setNotification(notificationId, notification);
+        }
 
         mPinnedNotificationId = notificationId;
     }

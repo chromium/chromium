@@ -18,15 +18,18 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.notifications.ThrottlingNotificationScheduler;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -49,6 +52,8 @@ public class SystemDownloadNotifierTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        FeatureList.setTestFeatures(Map.of(ChromeFeatureList.DOWNLOADS_MIGRATE_TO_JOBS_API, true));
+
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             DownloadManagerService.setDownloadManagerService(mDownloadManagerService);
             mMockDownloadNotificationService = new MockDownloadNotificationService();

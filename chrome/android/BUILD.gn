@@ -1428,6 +1428,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/test/android:chrome_java_unit_test_support",
       "//components/autofill/android:main_autofill_java",
       "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
+      "//components/background_task_scheduler:public_java",
       "//components/bookmarks/common/android:bookmarks_java",
       "//components/browser_ui/modaldialog/android:java",
       "//components/browser_ui/notifications/android:java",

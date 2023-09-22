@@ -58,11 +58,12 @@ public abstract class DownloadContinuityManager {
      * @param context Android {@link Context}.
      * @param downloadStatus Download status.
      * @param notificationId The notification id.
-     * @param notification The notification associated with the id. Can be null if {@link
-     *         DownloadNotificationService} tries to cancel a notification.
+     * @param notification The notification associated with the id. Can be null if
+     *     {@link DownloadNotificationService} tries to cancel a notification.
      */
     public void updateDownloadStatus(Context context, @DownloadStatus int downloadStatus,
             int notificationId, @Nullable Notification notification) {
+        if (!isEnabled()) return;
         if (downloadStatus != DownloadStatus.IN_PROGRESS) {
             Log.w(TAG,
                     "updateDownloadStatus status: " + downloadStatus + ", id: " + notificationId);
@@ -79,6 +80,9 @@ public abstract class DownloadContinuityManager {
      *                            was made based on during a basic update.
      */
     abstract void processDownloadUpdateQueue(boolean isProcessingPending);
+
+    /** Whether this manager is enabled. */
+    abstract boolean isEnabled();
 
     /** Helper code to process download update queue. */
     protected @Nullable DownloadUpdate findInterestingDownloadUpdate() {

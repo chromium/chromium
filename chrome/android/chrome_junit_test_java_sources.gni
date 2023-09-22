@@ -182,6 +182,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/download/DownloadSharedPreferenceEntryTest.java",
   "junit/src/org/chromium/chrome/browser/download/OfflineContentAvailabilityStatusProviderTest.java",
   "junit/src/org/chromium/chrome/browser/download/items/OfflineContentAggregatorNotificationBridgeUiTest.java",
+  "junit/src/org/chromium/chrome/browser/download/service/DownloadBackgroundTaskTest.java",
   "junit/src/org/chromium/chrome/browser/dragdrop/ChromeDragAndDropBrowserDelegateUnitTest.java",
   "junit/src/org/chromium/chrome/browser/dragdrop/toolbar/ToolbarDragDropCoordinatorUnitTest.java",
   "junit/src/org/chromium/chrome/browser/feed/FeedActionDelegateImplTest.java",

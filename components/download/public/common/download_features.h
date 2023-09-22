@@ -28,6 +28,9 @@ COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(
     kSmartSuggestionForLargeDownloads);
 #endif
 
+// Whether downloads uses Android Jobs API instead of FGS.
+COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kDownloadsMigrateToJobsAPI);
+
 // Whether in-progress download manager will be used to initialize download
 // service.
 COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(

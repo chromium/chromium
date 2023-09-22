@@ -13,6 +13,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.Build;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -87,6 +88,13 @@ public class DownloadUtils {
     private static final String DOCUMENTS_UI_PACKAGE_NAME = "com.android.documentsui";
     public static final String EXTRA_SHOW_PREFETCHED_CONTENT =
             "org.chromium.chrome.browser.download.SHOW_PREFETCHED_CONTENT";
+
+    // TODO(crbug/1483735): Remove this once robolectric support is added.
+    private static Integer sMinSdkVersionForUserInitiatedJobsForTesting;
+
+    public static void setMinSdkVersionForUserInitiatedJobsForTesting(Integer minVersion) {
+        sMinSdkVersionForUserInitiatedJobsForTesting = minVersion;
+    }
 
     /**
      * Displays the download manager UI. Note the UI is different on tablets and on phones.
@@ -229,6 +237,18 @@ public class DownloadUtils {
      */
     public static boolean shouldShowPrefetchContent(Intent intent) {
         return IntentUtils.safeGetBooleanExtra(intent, EXTRA_SHOW_PREFETCHED_CONTENT, false);
+    }
+
+    /**
+     * Called to determine whether to use user initiated Jobs API for ensuring download completion.
+     * @return True for using Jobs. False for using Foreground service.
+     */
+    public static boolean shouldUseUserInitiatedJobs() {
+        int minSupportedVersion = sMinSdkVersionForUserInitiatedJobsForTesting == null
+                ? 34
+                : sMinSdkVersionForUserInitiatedJobsForTesting;
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOADS_MIGRATE_TO_JOBS_API)
+                && Build.VERSION.SDK_INT >= minSupportedVersion;
     }
 
     /**

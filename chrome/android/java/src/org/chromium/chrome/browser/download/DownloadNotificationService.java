@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.background_task_scheduler.BackgroundTask.TaskFinishedCallback;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.offline_items_collection.ContentId;
@@ -98,6 +99,7 @@ public class DownloadNotificationService {
     private Bitmap mDownloadSuccessLargeIcon;
     private DownloadSharedPreferenceHelper mDownloadSharedPreferenceHelper;
     private DownloadForegroundServiceManager mDownloadForegroundServiceManager;
+    private DownloadUserInitiatedTaskManager mDownloadUserInitiatedTaskManager;
 
     private static class LazyHolder {
         private static final DownloadNotificationService INSTANCE =
@@ -111,7 +113,7 @@ public class DownloadNotificationService {
         return sInstanceForTesting == null ? LazyHolder.INSTANCE : sInstanceForTesting;
     }
 
-    static void setInstanceForTests(DownloadNotificationService service) {
+    public static void setInstanceForTests(DownloadNotificationService service) {
         sInstanceForTesting = service;
         ResettersForTesting.register(() -> sInstanceForTesting = null);
     }
@@ -122,6 +124,20 @@ public class DownloadNotificationService {
                 new NotificationManagerProxyImpl(ContextUtils.getApplicationContext());
         mDownloadSharedPreferenceHelper = DownloadSharedPreferenceHelper.getInstance();
         mDownloadForegroundServiceManager = new DownloadForegroundServiceManager();
+        mDownloadUserInitiatedTaskManager = new DownloadUserInitiatedTaskManager();
+    }
+
+    /**
+     * Called to set a callback that will be run to attach a notification to the background task
+     * life-cycle.
+     *
+     * @param backgroundTaskNotificationCallback The callback to be invoked to attach
+     *     notification.
+     */
+    public void setBackgroundTaskNotificationCallback(
+            int taskId, TaskFinishedCallback backgroundTaskNotificationCallback) {
+        mDownloadUserInitiatedTaskManager.setTaskNotificationCallback(
+                taskId, backgroundTaskNotificationCallback);
     }
 
     @VisibleForTesting
@@ -226,6 +242,8 @@ public class DownloadNotificationService {
                         canDownloadWhileMetered, fileName, true, isTransient));
         mDownloadForegroundServiceManager.updateDownloadStatus(
                 context, DownloadStatus.IN_PROGRESS, notificationId, notification);
+        mDownloadUserInitiatedTaskManager.updateDownloadStatus(
+                context, DownloadStatus.IN_PROGRESS, notificationId, notification);
     }
 
     private void cancelNotification(int notificationId) {
@@ -255,6 +273,8 @@ public class DownloadNotificationService {
     @VisibleForTesting
     public void notifyDownloadCanceled(ContentId id, int notificationId, boolean hasUserGesture) {
         mDownloadForegroundServiceManager.updateDownloadStatus(ContextUtils.getApplicationContext(),
+                DownloadStatus.CANCELLED, notificationId, null);
+        mDownloadUserInitiatedTaskManager.updateDownloadStatus(ContextUtils.getApplicationContext(),
                 DownloadStatus.CANCELLED, notificationId, null);
         cancelNotification(notificationId, id);
     }
@@ -333,6 +353,8 @@ public class DownloadNotificationService {
 
         mDownloadForegroundServiceManager.updateDownloadStatus(
                 context, DownloadStatus.PAUSED, notificationId, notification);
+        mDownloadUserInitiatedTaskManager.updateDownloadStatus(
+                context, DownloadStatus.PAUSED, notificationId, notification);
     }
 
     /**
@@ -387,6 +409,8 @@ public class DownloadNotificationService {
         updateNotification(notificationId, notification, id, null);
         mDownloadForegroundServiceManager.updateDownloadStatus(
                 context, DownloadStatus.COMPLETED, notificationId, notification);
+        mDownloadUserInitiatedTaskManager.updateDownloadStatus(
+                context, DownloadStatus.COMPLETED, notificationId, notification);
         return notificationId;
     }
 
@@ -429,6 +453,8 @@ public class DownloadNotificationService {
 
         updateNotification(notificationId, notification, id, null);
         mDownloadForegroundServiceManager.updateDownloadStatus(
+                context, DownloadStatus.FAILED, notificationId, notification);
+        mDownloadUserInitiatedTaskManager.updateDownloadStatus(
                 context, DownloadStatus.FAILED, notificationId, notification);
     }
 

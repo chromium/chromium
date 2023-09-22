@@ -69,6 +69,11 @@ public class DownloadForegroundServiceManager extends DownloadContinuityManager 
 
     public DownloadForegroundServiceManager() {}
 
+    @Override
+    boolean isEnabled() {
+        return !DownloadUtils.shouldUseUserInitiatedJobs();
+    }
+
     /**
      * Process the notification queue for all cases and initiate any needed actions.
      * In the happy path, the logic should be:

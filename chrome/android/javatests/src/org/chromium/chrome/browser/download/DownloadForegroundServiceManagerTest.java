@@ -60,6 +60,11 @@ public final class DownloadForegroundServiceManagerTest {
         public MockDownloadForegroundServiceManager() {}
 
         @Override
+        boolean isEnabled() {
+            return true;
+        }
+
+        @Override
         void startAndBindService(Context context) {
             mIsServiceBound = true;
             super.startAndBindService(context);
