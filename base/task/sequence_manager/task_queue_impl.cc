@@ -112,13 +112,15 @@ bool TaskQueueImpl::GuardedTaskPoster::PostTask(PostedTask task) {
     auto token = record_replay_unordered_operations_controller_.value().TryBeginOperation();
     if (!token)
       return false;
+
+    outer_->PostTask(std::move(task));
   } else {
     auto token = operations_controller_.TryBeginOperation();
     if (!token)
       return false;
-  }
 
-  outer_->PostTask(std::move(task));
+    outer_->PostTask(std::move(task));
+  }
   return true;
 }
 
