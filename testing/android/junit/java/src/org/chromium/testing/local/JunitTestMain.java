@@ -29,9 +29,7 @@ import java.util.regex.Pattern;
  *  provided filter configurations.
  */
 public final class JunitTestMain {
-    /** Enforced by {@link org.chromium.tools.errorprone.plugin.TestClassNameCheck}. */
-    private static final String TEST_CLASS_FILE_END = "Test.class";
-    private static final String CLASS_FILE_EXT = ".class";
+    private static final int CLASS_SUFFIX_LEN = ".class".length();
     private static final Pattern COLON = Pattern.compile(":");
     private static final Pattern FORWARD_SLASH = Pattern.compile("/");
 
@@ -45,15 +43,26 @@ public final class JunitTestMain {
         String[] jarPaths = COLON.split(System.getProperty("java.class.path"));
         List<Class> classes = new ArrayList<Class>();
         for (String jp : jarPaths) {
+            // Do not look at android.jar.
+            if (jp.contains("third_party/android_sdk")) {
+                continue;
+            }
             try {
                 JarFile jf = new JarFile(jp);
                 for (Enumeration<JarEntry> eje = jf.entries(); eje.hasMoreElements();) {
                     JarEntry je = eje.nextElement();
                     String cn = je.getName();
-                    if (!cn.endsWith(TEST_CLASS_FILE_END) || cn.indexOf('$') != -1) {
+                    // Skip classes in common libraries.
+                    if (cn.startsWith("androidx.") || cn.startsWith("junit")) {
                         continue;
                     }
-                    cn = cn.substring(0, cn.length() - CLASS_FILE_EXT.length());
+                    // Skip nested classes and classes that do not end with "Test".
+                    // That tests end with "Test" is enforced by TestClassNameCheck ErrorProne
+                    // check.
+                    if (cn.contains("$") || !cn.endsWith("Test.class")) {
+                        continue;
+                    }
+                    cn = cn.substring(0, cn.length() - CLASS_SUFFIX_LEN);
                     cn = FORWARD_SLASH.matcher(cn).replaceAll(".");
                     Class<?> c = classOrNull(cn);
                     if (c != null && c.isAnnotationPresent(RunWith.class)) {

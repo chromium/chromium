@@ -92,6 +92,9 @@ template("_androidx_prebuilt") {
       ]
     } else if (target_name == "androidx_test_uiautomator_uiautomator_java") {
       deps += [ ":androidx_test_runner_java" ]
+    } else if (target_name == "androidx_tracing_tracing_perfetto_java") {
+      # b/280878596
+      jar_excluded_patterns = [ "dalvik/*" ]
     } else if (target_name == "androidx_transition_transition_java") {
       # Not specified in the POM, compileOnly dependency not supposed to be used unless
       # the library is present: b/70887421

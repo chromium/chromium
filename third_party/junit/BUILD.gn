@@ -8,10 +8,26 @@ android_library("junit") {
   chromium_code = false
   testonly = true
   proguard_configs = [ "//third_party/junit/proguard.flags" ]
-  deps = [
+  deps = [ "//third_party/hamcrest:hamcrest_java" ]
+  public_deps = [
+    # Contains:
+    # junit/framework/Assert.class
+    # junit/framework/AssertionFailedError.class
+    # junit/framework/ComparisonFailure.class
+    # junit/framework/Protectable.class
+    # junit/framework/Test.class
+    # junit/framework/TestCase.class
+    # junit/framework/TestFailure.class
+    # junit/framework/TestListener.class
+    # junit/framework/TestResult.class
+    # junit/framework/TestSuite.class
     "//third_party/android_sdk:android_test_base_java",
+
+    # Contains:
+    # junit/runner/BaseTestRunner.class
+    # junit/runner/TestSuiteLoader.class
+    # junit/runner/Version.class
     "//third_party/android_sdk:android_test_runner_java",
-    "//third_party/hamcrest:hamcrest_java",
   ]
   sources = [
     "src/src/main/java/junit/extensions/ActiveTestSuite.java",
@@ -19,24 +35,11 @@ android_library("junit") {
     "src/src/main/java/junit/extensions/TestDecorator.java",
     "src/src/main/java/junit/extensions/TestSetup.java",
     "src/src/main/java/junit/extensions/package-info.java",
-    "src/src/main/java/junit/framework/Assert.java",
-    "src/src/main/java/junit/framework/AssertionFailedError.java",
     "src/src/main/java/junit/framework/ComparisonCompactor.java",
-    "src/src/main/java/junit/framework/ComparisonFailure.java",
     "src/src/main/java/junit/framework/JUnit4TestAdapter.java",
     "src/src/main/java/junit/framework/JUnit4TestAdapterCache.java",
     "src/src/main/java/junit/framework/JUnit4TestCaseFacade.java",
-    "src/src/main/java/junit/framework/Protectable.java",
-    "src/src/main/java/junit/framework/Test.java",
-    "src/src/main/java/junit/framework/TestCase.java",
-    "src/src/main/java/junit/framework/TestFailure.java",
-    "src/src/main/java/junit/framework/TestListener.java",
-    "src/src/main/java/junit/framework/TestResult.java",
-    "src/src/main/java/junit/framework/TestSuite.java",
     "src/src/main/java/junit/framework/package-info.java",
-    "src/src/main/java/junit/runner/BaseTestRunner.java",
-    "src/src/main/java/junit/runner/TestRunListener.java",
-    "src/src/main/java/junit/runner/Version.java",
     "src/src/main/java/junit/runner/package-info.java",
     "src/src/main/java/junit/textui/ResultPrinter.java",
     "src/src/main/java/junit/textui/TestRunner.java",
