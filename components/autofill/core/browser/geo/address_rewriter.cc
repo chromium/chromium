@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/address_rewriter.h"
+#include "components/autofill/core/browser/geo/address_rewriter.h"
 
 #include <memory>
 #include <unordered_map>
@@ -42,8 +42,9 @@ static bool ExtractRegionRulesData(const std::string& region,
     }
   }
 
-  if (!resource_id)
+  if (!resource_id) {
     return false;
+  }
 
   // Gets and uncompresses resource data.
   base::StringPiece raw_resource =
@@ -101,15 +102,17 @@ class Cache {
 
     // If we find a cached set of rules, return a pointer to the data.
     auto cache_iter = data_.find(region);
-    if (cache_iter != data_.end())
+    if (cache_iter != data_.end()) {
       return &cache_iter->second;
+    }
 
     // Cache miss. Look for the raw rules. If none, then return nullptr.
     std::string region_rules;
     bool region_found = ExtractRegionRulesData(region, &region_rules);
 
-    if (!region_found)
+    if (!region_found) {
       return nullptr;
+    }
 
     // Add a new rule vector to the cache and populate it with compiled rules.
     CompiledRuleVector& compiled_rules = data_[region];
@@ -176,8 +179,9 @@ AddressRewriter AddressRewriter::ForCustomRules(
 }
 
 std::u16string AddressRewriter::Rewrite(const std::u16string& text) const {
-  if (impl_ == nullptr)
+  if (impl_ == nullptr) {
     return base::CollapseWhitespace(text, true);
+  }
 
   // Apply all of the string replacement rules. We don't have to worry about
   // whitespace during these passes because the patterns are all whitespace
