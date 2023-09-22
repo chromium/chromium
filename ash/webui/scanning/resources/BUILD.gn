@@ -47,7 +47,7 @@ build_webui("build") {
     "scan_preview.js",
     "scan_settings_section.ts",
     "scan_to_select.js",
-    "source_select.js",
+    "source_select.ts",
   ]
 
   non_web_component_files = [
