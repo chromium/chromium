@@ -395,13 +395,11 @@ AnnotatorImpl::ExtractCategoriesFromModelOutput(
 
   // Prune out categories that do not meet the minimum threshold.
   if (category_params.min_category_weight() > 0) {
-    categories.erase(
-        std::remove_if(categories.begin(), categories.end(),
+    base::EraseIf(categories,
                        [&](const std::pair<int32_t, float>& category) {
                          return category.second <
                                 category_params.min_category_weight();
-                       }),
-        categories.end());
+                       });
   }
 
   // Prune out none weights.
