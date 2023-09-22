@@ -32,15 +32,6 @@ class SyncSetupService : public KeyedService {
 
   ~SyncSetupService() override;
 
-  // Returns whether all datatypes are being synced.
-  virtual bool IsSyncEverythingEnabled() const;
-  // Sets whether all datatypes should be synced or not. Changes won't take
-  // effect before the next call to `CommitChanges`.
-  virtual void SetSyncEverythingEnabled(bool sync_all);
-
-  // Returns whether all sync data is being encrypted.
-  virtual bool IsEncryptEverythingEnabled() const;
-
   // Pauses sync allowing the user to configure what data to sync before
   // actually starting to sync data with the server.
   // TODO(crbug.com/1438800): Rename to PrepareForSyncSetup().

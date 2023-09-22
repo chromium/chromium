@@ -19,20 +19,6 @@ SyncSetupService::SyncSetupService(syncer::SyncService* sync_service)
 
 SyncSetupService::~SyncSetupService() {}
 
-bool SyncSetupService::IsSyncEverythingEnabled() const {
-  return sync_service_->GetUserSettings()->IsSyncEverythingEnabled();
-}
-
-void SyncSetupService::SetSyncEverythingEnabled(bool sync_all) {
-  CHECK(sync_blocker_);
-  sync_service_->GetUserSettings()->SetSelectedTypes(
-      sync_all, sync_service_->GetUserSettings()->GetSelectedTypes());
-}
-
-bool SyncSetupService::IsEncryptEverythingEnabled() const {
-  return sync_service_->GetUserSettings()->IsEncryptEverythingEnabled();
-}
-
 void SyncSetupService::PrepareForFirstSyncSetup() {
   if (!sync_blocker_)
     sync_blocker_ = sync_service_->GetSetupInProgressHandle();
