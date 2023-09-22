@@ -24,6 +24,8 @@ const char kOfferToSavePasswordsEnabledGMS[] =
 const char kSavePasswordsSuspendedByError[] =
     "profile.save_passwords_suspended_by_error";
 const char kSettingsMigratedToUPM[] = "profile.settings_migrated_to_upm";
+const char kSettingsMigratedToUPMLocal[] =
+    "profile.settings_migrated_to_upm_local";
 
 const char kCurrentMigrationVersionToGoogleMobileServices[] =
     "current_migration_version_to_google_mobile_services";

@@ -66,8 +66,13 @@ extern const char kOfferToSavePasswordsEnabledGMS[];
 extern const char kSavePasswordsSuspendedByError[];
 
 // Boolean value indicating whether the regular prefs were migrated to UPM
-// settings.
+// settings for syncing users.
 extern const char kSettingsMigratedToUPM[];
+
+// Boolean value indicating whether the regular prefs that apply to the local
+// password store were migrated to UPM settings. It will be set to true
+// automatically if there is nothing to migrate.
+extern const char kSettingsMigratedToUPMLocal[];
 
 // Integer value which indicates the version used to migrate passwords from
 // built in storage to Google Mobile Services.
