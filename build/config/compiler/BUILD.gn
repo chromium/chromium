@@ -1657,7 +1657,7 @@ config("runtime_library") {
 # treat_warnings_as_errors ----------------------------------------------------
 #
 # Adding this config causes the compiler to treat warnings as fatal errors.
-# This is used as a subconfig of both default_warnings and no_chromium_code, and
+# This is used as a subconfig of both chromium_code and no_chromium_code, and
 # is broken out separately so nocompile tests can force-enable this setting
 # independently of the default warning flags.
 config("treat_warnings_as_errors") {
@@ -1691,10 +1691,6 @@ config("default_warnings") {
   cflags_cc = []
   ldflags = []
   configs = []
-
-  if (treat_warnings_as_errors) {
-    configs += [ ":treat_warnings_as_errors" ]
-  }
 
   if (is_win) {
     if (fatal_linker_warnings) {
@@ -1977,6 +1973,9 @@ config("chromium_code") {
     ":default_warnings",
     ":noshadowing",
   ]
+  if (treat_warnings_as_errors) {
+    configs += [ ":treat_warnings_as_errors" ]
+  }
 }
 
 config("no_chromium_code") {
