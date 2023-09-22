@@ -1,7 +1,7 @@
 # Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Definitions of builders in the tryserver.chromium.fuchsia builder group."""
+"""Definitions of builders in the tryserver.chromium.fuzz builder group."""
 
 load("//lib/builders.star", "os", "reclient", "siso")
 load("//lib/consoles.star", "consoles")
