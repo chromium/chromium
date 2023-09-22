@@ -907,7 +907,7 @@ def main():
   if sys.platform == 'win32':
     AddGnuWinToPath()
 
-    base_cmake_args.append('-DLLVM_USE_CRT_RELEASE=MT')
+    base_cmake_args.append('-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded')
 
     # Require zlib compression.
     zlib_dir = AddZlibToPath()
