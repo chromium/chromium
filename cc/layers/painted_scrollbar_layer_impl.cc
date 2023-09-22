@@ -137,7 +137,8 @@ void PaintedScrollbarLayerImpl::AppendQuads(
   }
 
   if (IsFluentOverlayScrollbarEnabled() &&
-      thumb_thickness_scale_factor() <= kIdleThicknessScale) {
+      thumb_thickness_scale_factor() <= kIdleThicknessScale &&
+      !has_find_in_page_tickmarks()) {
     return;
   }
 

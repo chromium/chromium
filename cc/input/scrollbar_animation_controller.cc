@@ -226,6 +226,7 @@ void ScrollbarAnimationController::UpdateTickmarksVisibility(bool show) {
     return;
 
   tickmarks_showing_ = show;
+  vertical_controller_->UpdateTickmarksVisibility(show);
   UpdateScrollbarState();
 }
 

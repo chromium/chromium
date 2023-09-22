@@ -171,8 +171,6 @@ class ScrollbarAnimationControllerAuraOverlayTest
       : ScrollbarAnimationControllerOverlayTest(/*is_fluent=*/false) {}
 };
 
-// TODO(https://crbug.com/1479200): Implement unit tests for fluent overlay
-// scrollbars tickmarks when they are implemented.
 class ScrollbarAnimationControllerFluentOverlayTest
     : public ScrollbarAnimationControllerOverlayTest {
  public:
@@ -1273,7 +1271,7 @@ TEST_F(ScrollbarAnimationControllerAuraOverlayTest,
               client_.start_fade().IsCancelled());
 }
 
-// Ensure Aura Overlay Scrollbars shows and did not fade out when tickmarks show
+// Ensure overlay scrollbars show and don't fade out when tickmarks are visible,
 // and fade out when tickmarks hide.
 TEST_P(ScrollbarAnimationControllerOverlayTest, TickmarksShowHide) {
   base::TimeTicks time;

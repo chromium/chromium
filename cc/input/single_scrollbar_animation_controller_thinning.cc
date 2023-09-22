@@ -61,7 +61,8 @@ SingleScrollbarAnimationControllerThinning::
       mouse_is_near_scrollbar_thumb_(false),
       mouse_is_near_scrollbar_track_(false),
       thickness_change_(AnimationChange::kNone),
-      thinning_duration_(thinning_duration) {
+      thinning_duration_(thinning_duration),
+      tickmarks_showing_(false) {
   ApplyThumbThicknessScale(kIdleThicknessScale);
 }
 
@@ -219,8 +220,10 @@ void SingleScrollbarAnimationControllerThinning::CalculateThicknessShouldChange(
     // scrollbar is visible and either the mouse has moved over the track
     // (increase thickness) or the mouse has moved far away from the track
     // and there is no previously queued animation (decreasse thickness).
-    thickness_should_change =
-        is_visible && (moved_over_track || mouse_far_from_track);
+    // If tickmarks are shown, the scrollbars should be and should remain in
+    // Full mode.
+    thickness_should_change = !tickmarks_showing_ && is_visible &&
+                              (moved_over_track || mouse_far_from_track);
   } else {
     thickness_should_change =
         (mouse_is_near_scrollbar_thumb_ != mouse_is_near_scrollbar_thumb);
@@ -240,18 +243,22 @@ void SingleScrollbarAnimationControllerThinning::CalculateThicknessShouldChange(
   mouse_is_over_scrollbar_thumb_ = mouse_is_over_scrollbar_thumb;
 }
 
-float SingleScrollbarAnimationControllerThinning::
-    ThumbThicknessScaleByMouseDistanceToScrollbar() const {
-  const bool mouse_is_near_scrollbar_part =
-      client_->IsFluentOverlayScrollbar() ? mouse_is_near_scrollbar_track_
-                                          : mouse_is_near_scrollbar_thumb_;
-  return mouse_is_near_scrollbar_part ? 1.f : kIdleThicknessScale;
+float SingleScrollbarAnimationControllerThinning::CurrentThumbThicknessScale()
+    const {
+  bool thumb_should_be_expanded;
+  if (client_->IsFluentOverlayScrollbar()) {
+    thumb_should_be_expanded =
+        mouse_is_near_scrollbar_track_ || tickmarks_showing_;
+  } else {
+    thumb_should_be_expanded = mouse_is_near_scrollbar_thumb_;
+  }
+  return thumb_should_be_expanded ? 1.f : kIdleThicknessScale;
 }
 
 float SingleScrollbarAnimationControllerThinning::ThumbThicknessScaleAt(
     float progress) const {
   if (thickness_change_ == AnimationChange::kNone) {
-    return ThumbThicknessScaleByMouseDistanceToScrollbar();
+    return CurrentThumbThicknessScale();
   }
   float factor = thickness_change_ == AnimationChange::kIncrease
                      ? progress
@@ -284,7 +291,7 @@ float SingleScrollbarAnimationControllerThinning::AdjustScale(
 
 void SingleScrollbarAnimationControllerThinning::UpdateThumbThicknessScale() {
   StopAnimation();
-  ApplyThumbThicknessScale(ThumbThicknessScaleByMouseDistanceToScrollbar());
+  ApplyThumbThicknessScale(CurrentThumbThicknessScale());
 }
 
 void SingleScrollbarAnimationControllerThinning::ApplyThumbThicknessScale(
@@ -300,6 +307,11 @@ void SingleScrollbarAnimationControllerThinning::ApplyThumbThicknessScale(
 
     scrollbar->SetThumbThicknessScaleFactor(scale);
   }
+}
+
+void SingleScrollbarAnimationControllerThinning::UpdateTickmarksVisibility(
+    bool show) {
+  tickmarks_showing_ = show;
 }
 
 float SingleScrollbarAnimationControllerThinning::

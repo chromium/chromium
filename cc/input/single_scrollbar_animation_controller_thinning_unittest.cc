@@ -497,6 +497,61 @@ TEST_F(SingleScrollbarAnimationControllerThinningFluentTest,
   EXPECT_FLOAT_EQ(0.f, scrollbar_layer_->Opacity());
 }
 
+// Check that Fluent overlay scrollbar doesn't get thinner when released outside
+// of the scrollbar area with tickmarks showing.
+TEST_F(SingleScrollbarAnimationControllerThinningFluentTest,
+       ShowTickmarksAndReleaseOutsideBar) {
+  EXPECT_CALL(client_, SetNeedsAnimateForScrollbarAnimation()).Times(0);
+  // Simulate tickmarks showing. Scrollbar should be visible and fully thick.
+  scrollbar_controller_->UpdateTickmarksVisibility(true);
+  scrollbar_controller_->UpdateThumbThicknessScale();
+  EXPECT_FLOAT_EQ(1.f, scrollbar_layer_->thumb_thickness_scale_factor());
+  EXPECT_FLOAT_EQ(1.f, scrollbar_layer_->Opacity());
+
+  // Move mouse on top of scrollbar and capture it.
+  scrollbar_controller_->DidMouseMove(NearScrollbar(0, 0));
+  scrollbar_controller_->DidMouseDown();
+  EXPECT_TRUE(scrollbar_controller_->captured());
+
+  // Move mouse away from scrollbar and release it.
+  scrollbar_controller_->DidMouseMove(
+      NearScrollbar(-mouse_move_distance_to_trigger_fade_in_ - 1, 0));
+  scrollbar_controller_->DidMouseUp();
+
+  // Pass time and ensure scrollbar remains visible and fully thick.
+  base::TimeTicks time;
+  time += base::Seconds(1);
+  scrollbar_controller_->Animate(time);
+  scrollbar_controller_->Animate(time + kThinningDuration);
+  EXPECT_FLOAT_EQ(1.f, scrollbar_layer_->thumb_thickness_scale_factor());
+  EXPECT_FLOAT_EQ(1.f, scrollbar_layer_->Opacity());
+}
+
+// Check that Fluent overlay scrollbar doesn't get thinner when tickmarks are
+// showing and the mouse moves over the scrollbar and then leaves the scrollable
+// area.
+TEST_F(SingleScrollbarAnimationControllerThinningFluentTest,
+       ShowTickmarksAndMouseLeave) {
+  EXPECT_CALL(client_, SetNeedsAnimateForScrollbarAnimation()).Times(0);
+  // Simulate tickmarks showing. Scrollbar should be visible and fully thick.
+  scrollbar_controller_->UpdateTickmarksVisibility(true);
+  scrollbar_controller_->UpdateThumbThicknessScale();
+  EXPECT_FLOAT_EQ(1.f, scrollbar_layer_->thumb_thickness_scale_factor());
+  EXPECT_FLOAT_EQ(1.f, scrollbar_layer_->Opacity());
+
+  // Move mouse on top of scrollbar and leave scrollable area.
+  scrollbar_controller_->DidMouseMove(NearScrollbar(0, 0));
+  scrollbar_controller_->DidMouseLeave();
+
+  // Pass time and ensure scrollbar remains visible and fully thick.
+  base::TimeTicks time;
+  time += base::Seconds(1);
+  scrollbar_controller_->Animate(time);
+  scrollbar_controller_->Animate(time + kThinningDuration);
+  EXPECT_FLOAT_EQ(1.f, scrollbar_layer_->thumb_thickness_scale_factor());
+  EXPECT_FLOAT_EQ(1.f, scrollbar_layer_->Opacity());
+}
+
 // Test that the last pointer location variable is set on DidMouseMove calls and
 // mouse position variables are correctly updated in DidScrollUpdate() calls.
 TEST_P(SingleScrollbarAnimationControllerThinningTest,

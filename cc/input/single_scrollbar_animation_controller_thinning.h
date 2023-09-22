@@ -68,6 +68,8 @@ class CC_EXPORT SingleScrollbarAnimationControllerThinning {
   float MouseMoveDistanceToTriggerExpand();
   float MouseMoveDistanceToTriggerFadeIn();
 
+  void UpdateTickmarksVisibility(bool show);
+
  private:
   SingleScrollbarAnimationControllerThinning(
       ElementId scroll_element_id,
@@ -83,7 +85,7 @@ class CC_EXPORT SingleScrollbarAnimationControllerThinning {
   // a bar or kDecrease it (thin).
   enum class AnimationChange { kNone, kIncrease, kDecrease };
   float ThumbThicknessScaleAt(float progress) const;
-  float ThumbThicknessScaleByMouseDistanceToScrollbar() const;
+  float CurrentThumbThicknessScale() const;
   void CalculateThicknessShouldChange(const gfx::PointF& device_viewport_point);
 
   float AdjustScale(float new_value,
@@ -112,6 +114,7 @@ class CC_EXPORT SingleScrollbarAnimationControllerThinning {
 
   base::TimeDelta thinning_duration_;
 
+  bool tickmarks_showing_;
   // Save last known pointer location in the device viewport for use in
   // DidScrollUpdate() to check the pointers proximity to the thumb in case of a
   // scroll.
