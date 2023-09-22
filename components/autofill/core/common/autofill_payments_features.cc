@@ -199,7 +199,7 @@ BASE_FEATURE(kAutofillEnableVirtualCardMetadata,
 // views.
 BASE_FEATURE(kAutofillMoveLegalTermsAndIconForNewCardEnrollment,
              "AutofillMoveLegalTermsAndIconForNewCardEnrollment",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, Autofill will offer saving a card to the users when the Chrome
 // detects a card number with the last 4 digits that matches an existing server
