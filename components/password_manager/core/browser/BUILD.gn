@@ -234,10 +234,6 @@ static_library("browser") {
     "votes_uploader.cc",
     "votes_uploader.h",
     "webauthn_credentials_delegate.h",
-    "well_known_change_password_state.cc",
-    "well_known_change_password_state.h",
-    "well_known_change_password_util.cc",
-    "well_known_change_password_util.h",
   ]
 
   all_dependent_configs = [ ":password_reuse_detection_config" ]
@@ -247,6 +243,7 @@ static_library("browser") {
     ":sql_builder",
     "//base",
     "//components/password_manager/core/browser/affiliation",
+    "//components/password_manager/core/browser/well_known_change_password",
     "//components/safe_browsing:buildflags",
     "//components/sync",
   ]
@@ -607,8 +604,6 @@ source_set("unit_tests") {
     "ui/saved_passwords_presenter_unittest.cc",
     "vote_uploads_test_matchers.h",
     "votes_uploader_unittest.cc",
-    "well_known_change_password_state_unittest.cc",
-    "well_known_change_password_util_unittest.cc",
   ]
   if (is_android) {
     sources += [

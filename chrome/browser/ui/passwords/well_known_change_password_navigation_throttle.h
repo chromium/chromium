@@ -10,8 +10,8 @@
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/navigation_throttle.h"
 
-#include "components/password_manager/core/browser/well_known_change_password_state.h"
-#include "components/password_manager/core/browser/well_known_change_password_util.h"
+#include "components/password_manager/core/browser/well_known_change_password/well_known_change_password_state.h"
+#include "components/password_manager/core/browser/well_known_change_password/well_known_change_password_util.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 class GURL;

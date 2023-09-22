@@ -8,7 +8,7 @@
 #import "base/test/bind.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
-#import "components/password_manager/core/browser/well_known_change_password_util.h"
+#import "components/password_manager/core/browser/well_known_change_password/well_known_change_password_util.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/ukm/test_ukm_recorder.h"
 #import "ios/chrome/browser/passwords/ios_chrome_affiliation_service_factory.h"

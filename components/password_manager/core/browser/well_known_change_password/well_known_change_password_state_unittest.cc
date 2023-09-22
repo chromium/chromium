@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/well_known_change_password_state.h"
+#include "components/password_manager/core/browser/well_known_change_password/well_known_change_password_state.h"
 #include <cstddef>
 
 #include "base/files/file_util.h"
@@ -14,7 +14,7 @@
 #include "components/password_manager/core/browser/affiliation/mock_affiliation_fetcher.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliation_fetcher_factory.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
-#include "components/password_manager/core/browser/well_known_change_password_util.h"
+#include "components/password_manager/core/browser/well_known_change_password/well_known_change_password_util.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/cpp/resource_request.h"

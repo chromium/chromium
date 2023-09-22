@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/well_known_change_password_state.h"
+#include "components/password_manager/core/browser/well_known_change_password/well_known_change_password_state.h"
 
 #include <utility>
 
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_service.h"
-#include "components/password_manager/core/browser/well_known_change_password_util.h"
-#include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/browser/well_known_change_password/well_known_change_password_util.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -55,11 +54,20 @@ CreateResourceRequestToWellKnownNonExistingResourceFor(
             "[ORIGIN]/.well-known/change-password special URL, Chrome makes "
             "this additional request. Chrome Password manager shows a button "
             "with the link in the password checkup for compromised passwords "
-            "view (chrome://settings/passwords/check) and in a dialog when the "
+            "view (chrome://password-manager/checkup/compromised) and in a dialog when the "
             "user signs in using compromised credentials."
           data:
             "The request body is empty. No user data is included."
           destination: WEBSITE
+          internal {
+            contacts {
+              email: "chrome-worker@google.com"
+            }
+          }
+          user_data {
+            type: NONE
+          }
+          last_reviewed: "2023-09-22"
         }
         policy {
           cookies_allowed: NO
@@ -133,8 +141,9 @@ void WellKnownChangePasswordState::ContinueProcessing() {
     bool is_well_known_supported = SupportsWellKnownChangePasswordUrl();
     // Don't wait for change password URL from Affiliation Service if
     // .well-known/change-password is supported.
-    if (is_well_known_supported || !prefetch_timer_.IsRunning())
+    if (is_well_known_supported || !prefetch_timer_.IsRunning()) {
       delegate_->OnProcessingFinished(is_well_known_supported);
+    }
   }
 }
 
