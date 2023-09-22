@@ -38,9 +38,6 @@ const CGFloat kIconSize = 53.0f;
 // Spacing between text StackView subviews.
 const CGFloat kTextStackViewSpacing = 5.0f;
 
-// Spacing between status bar StackView and its above view.
-const CGFloat kStatusBarsTopSpacing = 20.0f;
-
 // Spacing between status bars.
 const CGFloat kStatusBarViewSpacing = 6.0f;
 
@@ -149,21 +146,46 @@ const CGFloat kStatusBarCornerRadius = 3.0f;
     NSString* dateString =
         base::SysUTF16ToNSString(base::LocalizedTimeFormatWithPattern(
             config.estimatedDeliveryTime, "EEEE MMMM d"));
-    self.titleLabel.text = l10n_util::GetNSStringF(
-        IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_ARRIVING_STATUS,
-        base::SysNSStringToUTF16(dateString));
 
     // Configure the status bars (and title text color if needed) depending on
     // status.
     switch (config.status) {
       case ParcelState::kNew:
-      case ParcelState::kLabelCreated:
+        self.titleLabel.text = l10n_util::GetNSString(
+            IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_NEW_STATUS);
         [_firstStatusBar configureAsError:NO lighterTone:NO];
         [_secondStatusBar configureAsError:NO lighterTone:YES];
         [_thirdStatusBar configureAsError:NO lighterTone:YES];
         break;
-      case ParcelState::kFinished:
+      case ParcelState::kLabelCreated:
+        self.titleLabel.text = l10n_util::GetNSString(
+            IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_LABEL_CREATED_STATUS);
+        [_firstStatusBar configureAsError:NO lighterTone:NO];
+        [_secondStatusBar configureAsError:NO lighterTone:YES];
+        [_thirdStatusBar configureAsError:NO lighterTone:YES];
+        break;
+      case ParcelState::kFinished: {
+        // Use Today date descriptor if the delivery day matches the current day
+        if ([[NSCalendar currentCalendar]
+                         isDate:config.estimatedDeliveryTime.ToNSDate()
+                inSameDayAsDate:[NSDate date]]) {
+          dateString = l10n_util::GetNSString(
+              IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_DELIVERED_TODAY);
+        }
+        self.titleLabel.text = [NSString
+            stringWithFormat:
+                @"%@ %@",
+                l10n_util::GetNSString(
+                    IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_DELIVERED_STATUS),
+                dateString];
+        [_firstStatusBar configureAsError:NO lighterTone:NO];
+        [_secondStatusBar configureAsError:NO lighterTone:NO];
+        [_thirdStatusBar configureAsError:NO lighterTone:NO];
+        break;
+      }
       case ParcelState::kAtPickupLocation:
+        self.titleLabel.text = l10n_util::GetNSString(
+            IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_READY_PICKUP_STATUS);
         [_firstStatusBar configureAsError:NO lighterTone:NO];
         [_secondStatusBar configureAsError:NO lighterTone:NO];
         [_thirdStatusBar configureAsError:NO lighterTone:NO];
@@ -171,23 +193,61 @@ const CGFloat kStatusBarCornerRadius = 3.0f;
       case ParcelState::kPickedUp:
       case ParcelState::kHandedOff:
       case ParcelState::kWithCarrier:
+        self.titleLabel.text = l10n_util::GetNSStringF(
+            IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_ARRIVING_STATUS,
+            base::SysNSStringToUTF16(dateString));
+        [_firstStatusBar configureAsError:NO lighterTone:NO];
+        [_secondStatusBar configureAsError:NO lighterTone:NO];
+        [_thirdStatusBar configureAsError:NO lighterTone:YES];
+        break;
       case ParcelState::kOutForDelivery:
+        self.titleLabel.text = l10n_util::GetNSStringF(
+            IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_ARRIVING_STATUS,
+            base::SysNSStringToUTF16(l10n_util::GetNSString(
+                IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_DELIVERED_TODAY)));
         [_firstStatusBar configureAsError:NO lighterTone:NO];
         [_secondStatusBar configureAsError:NO lighterTone:NO];
         [_thirdStatusBar configureAsError:NO lighterTone:YES];
         break;
       case ParcelState::kDeliveryFailed:
-      case ParcelState::kError:
-      case ParcelState::kCancelled:
+        self.titleLabel.text = l10n_util::GetNSString(
+            IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_DELIVERY_ATTEMPTED_STATUS);
         self.titleLabel.textColor = [UIColor colorNamed:kRed600Color];
         [_firstStatusBar configureAsError:YES lighterTone:NO];
         [_secondStatusBar configureAsError:YES lighterTone:NO];
         [_thirdStatusBar configureAsError:YES lighterTone:YES];
         break;
+      case ParcelState::kError:
+        self.titleLabel.text = l10n_util::GetNSString(
+            IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_ERROR_STATUS);
+        self.titleLabel.textColor = [UIColor colorNamed:kRed600Color];
+        [_firstStatusBar configureAsError:YES lighterTone:NO];
+        [_secondStatusBar configureAsError:YES lighterTone:NO];
+        [_thirdStatusBar configureAsError:YES lighterTone:YES];
+        break;
+      case ParcelState::kCancelled:
+        self.titleLabel.text = l10n_util::GetNSString(
+            IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_CANCELLED_STATUS);
+        self.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+        // No status bars.
+        [_firstStatusBar removeFromSuperview];
+        [_secondStatusBar removeFromSuperview];
+        [_thirdStatusBar removeFromSuperview];
+        break;
       case ParcelState::kUndeliverable:
+        self.titleLabel.text = l10n_util::GetNSString(
+            IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_UNDELIVERABLE_STATUS);
+        self.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+        // No status bars.
+        [_firstStatusBar removeFromSuperview];
+        [_secondStatusBar removeFromSuperview];
+        [_thirdStatusBar removeFromSuperview];
+        break;
       case ParcelState::kReturnToSender:
       case ParcelState::kReturnCompleted:
-      case ParcelState::kOrderTooOld:
+        self.titleLabel.text = l10n_util::GetNSString(
+            IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_PACKAGE_RETURNED_TO_SENDER_STATUS);
+        self.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
         // No status bars.
         [_firstStatusBar removeFromSuperview];
         [_secondStatusBar removeFromSuperview];
@@ -211,6 +271,11 @@ const CGFloat kStatusBarCornerRadius = 3.0f;
     _imageContainer.layer.borderColor =
         [UIColor colorNamed:kGrey200Color].CGColor;
   }
+  if (previousTraitCollection.preferredContentSizeCategory !=
+      self.traitCollection.preferredContentSizeCategory) {
+    _titleLabel.font =
+        CreateDynamicFont(UIFontTextStyleBody, UIFontWeightSemibold);
+  }
 }
 
 - (void)constructView {
@@ -222,8 +287,14 @@ const CGFloat kStatusBarCornerRadius = 3.0f;
   _titleLabel.numberOfLines = 2;
   _titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
   _titleLabel.textColor = [UIColor colorNamed:kGreen600Color];
+  [_titleLabel setContentHuggingPriority:UILayoutPriorityDefaultLow
+                                 forAxis:UILayoutConstraintAxisVertical];
+  [_titleLabel
+      setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisVertical];
 
   _subtitleLabel = [[UILabel alloc] init];
+  _subtitleLabel.numberOfLines = 1;
   _subtitleLabel.font =
       [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   _subtitleLabel.adjustsFontForContentSizeCategory = YES;
@@ -240,15 +311,18 @@ const CGFloat kStatusBarCornerRadius = 3.0f;
   statusBarStackView.alignment = UIStackViewAlignmentCenter;
   statusBarStackView.spacing = kStatusBarViewSpacing;
 
+  // Add empty view to serve as spacing between status bars and subtitle that
+  // dynamically expands vertically to fill space.
+  UIView* emptySpaceFiller = [[UIView alloc] init];
+  [emptySpaceFiller setContentHuggingPriority:UILayoutPriorityDefaultLow
+                                      forAxis:UILayoutConstraintAxisVertical];
   UIStackView* rightVerticalStackView =
       [[UIStackView alloc] initWithArrangedSubviews:@[
-        _titleLabel, _subtitleLabel, statusBarStackView
+        _titleLabel, _subtitleLabel, emptySpaceFiller, statusBarStackView
       ]];
   rightVerticalStackView.axis = UILayoutConstraintAxisVertical;
   rightVerticalStackView.alignment = UIStackViewAlignmentLeading;
   rightVerticalStackView.spacing = kTextStackViewSpacing;
-  [rightVerticalStackView setCustomSpacing:kStatusBarsTopSpacing
-                                 afterView:_subtitleLabel];
 
   _iconImageView = [[UIImageView alloc] init];
   _iconImageView.contentMode = UIViewContentModeScaleAspectFit;
@@ -271,7 +345,7 @@ const CGFloat kStatusBarCornerRadius = 3.0f;
       initWithArrangedSubviews:@[ _imageContainer, rightVerticalStackView ]];
   horizontalStackView.translatesAutoresizingMaskIntoConstraints = NO;
   horizontalStackView.axis = UILayoutConstraintAxisHorizontal;
-  horizontalStackView.alignment = UIStackViewAlignmentLeading;
+  horizontalStackView.alignment = UIStackViewAlignmentTrailing;
   horizontalStackView.spacing = kIconContainerTextSpacing;
   [self addSubview:horizontalStackView];
 
@@ -279,6 +353,8 @@ const CGFloat kStatusBarCornerRadius = 3.0f;
     [_imageContainer.widthAnchor constraintEqualToConstant:kIconContainerWidth],
     [_imageContainer.heightAnchor
         constraintEqualToAnchor:_imageContainer.widthAnchor],
+    [rightVerticalStackView.heightAnchor
+        constraintGreaterThanOrEqualToConstant:kIconContainerWidth],
     [horizontalStackView.topAnchor constraintEqualToAnchor:self.topAnchor],
     [horizontalStackView.bottomAnchor
         constraintEqualToAnchor:self.bottomAnchor],
