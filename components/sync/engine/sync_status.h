@@ -11,8 +11,8 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/engine/sync_encryption_handler.h"
+#include "components/sync/engine/sync_protocol_error.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
-#include "components/sync/protocol/sync_protocol_error.h"
 
 namespace syncer {
 

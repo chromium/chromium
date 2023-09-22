@@ -1,8 +1,8 @@
 // Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#ifndef COMPONENTS_SYNC_PROTOCOL_SYNC_PROTOCOL_ERROR_H_
-#define COMPONENTS_SYNC_PROTOCOL_SYNC_PROTOCOL_ERROR_H_
+#ifndef COMPONENTS_SYNC_ENGINE_SYNC_PROTOCOL_ERROR_H_
+#define COMPONENTS_SYNC_ENGINE_SYNC_PROTOCOL_ERROR_H_
 
 #include <memory>
 #include <string>
@@ -84,4 +84,4 @@ const char* GetClientActionString(ClientAction action);
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_PROTOCOL_SYNC_PROTOCOL_ERROR_H_
+#endif  // COMPONENTS_SYNC_ENGINE_SYNC_PROTOCOL_ERROR_H_

@@ -17,11 +17,11 @@
 #include "components/sync/base/time.h"
 #include "components/sync/engine/cycle/sync_cycle_context.h"
 #include "components/sync/engine/net/server_connection_manager.h"
+#include "components/sync/engine/sync_protocol_error.h"
 #include "components/sync/engine/syncer.h"
 #include "components/sync/engine/traffic_logger.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
-#include "components/sync/protocol/sync_protocol_error.h"
 #include "google_apis/google_api_keys.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

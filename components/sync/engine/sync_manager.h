@@ -27,8 +27,8 @@
 #include "components/sync/engine/net/http_post_provider_factory.h"
 #include "components/sync/engine/sync_credentials.h"
 #include "components/sync/engine/sync_encryption_handler.h"
+#include "components/sync/engine/sync_protocol_error.h"
 #include "components/sync/engine/sync_status.h"
-#include "components/sync/protocol/sync_protocol_error.h"
 #include "url/gurl.h"
 
 namespace syncer {

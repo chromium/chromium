@@ -17,7 +17,7 @@
 #include "components/sync/engine/cycle/sync_cycle_context.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/engine/sync_cycle_event.h"
-#include "components/sync/protocol/sync_protocol_error.h"
+#include "components/sync/engine/sync_protocol_error.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
