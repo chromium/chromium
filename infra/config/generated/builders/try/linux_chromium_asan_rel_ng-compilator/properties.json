@@ -71,10 +71,7 @@
           "builder": "Linux ASan LSan Tests (1)",
           "project": "chromium-m117"
         }
-      ],
-      "rts_config": {
-        "condition": "QUICK_RUN_ONLY"
-      }
+      ]
     }
   },
   "$build/reclient": {

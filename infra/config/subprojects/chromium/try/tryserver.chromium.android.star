@@ -62,20 +62,12 @@ try_.orchestrator_builder(
     mirrors = [
         "ci/android-12-x64-rel",
     ],
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
-    ),
     # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
     # the original property once all builders have migrated.
     # check_for_flakiness = True,
     check_for_flakiness_with_resultdb = True,
     compilator = "android-12-x64-rel-compilator",
     coverage_test_types = ["unit", "overall"],
-    experiments = {
-        "chromium_rts.inverted_rts": 100,
-    },
     main_list_view = "try",
     tryjob = try_.job(),
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
@@ -104,15 +96,9 @@ try_.orchestrator_builder(
     try_settings = builder_config.try_settings(
         include_all_triggered_testers = True,
         is_compile_only = True,
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
     ),
     compilator = "android-12-x64-siso-rel-compilator",
     coverage_test_types = ["unit", "overall"],
-    experiments = {
-        "chromium_rts.inverted_rts": 100,
-    },
     main_list_view = "try",
     tryjob = try_.job(
         # TODO(b/277863839): increase percentage.
@@ -151,20 +137,12 @@ try_.orchestrator_builder(
         "ci/Android Release (Nexus 5X)",  # Nexus 5X on Nougat
         "ci/android-pie-arm64-rel",  # Pixel 1, 2 on Pie
     ],
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
-    ),
     # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
     # the original property once all builders have migrated.
     # check_for_flakiness = True,
     check_for_flakiness_with_resultdb = True,
     compilator = "android-arm64-rel-compilator",
     coverage_test_types = ["unit", "overall"],
-    experiments = {
-        "chromium_rts.inverted_rts": 100,
-    },
     main_list_view = "try",
     tryjob = try_.job(),
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
@@ -195,9 +173,6 @@ try_.orchestrator_builder(
     try_settings = builder_config.try_settings(
         include_all_triggered_testers = True,
         is_compile_only = True,
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
     ),
     # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
     # the original property once all builders have migrated.
@@ -205,9 +180,6 @@ try_.orchestrator_builder(
     check_for_flakiness_with_resultdb = True,
     compilator = "android-arm64-siso-rel-compilator",
     coverage_test_types = ["unit", "overall"],
-    experiments = {
-        "chromium_rts.inverted_rts": 100,
-    },
     main_list_view = "try",
     tryjob = try_.job(
         # TODO(b/277863839): increase percentage.
@@ -453,9 +425,6 @@ try_.orchestrator_builder(
     try_settings = builder_config.try_settings(
         include_all_triggered_testers = True,
         is_compile_only = True,
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
     ),
     # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
     # the original property once all builders have migrated.
@@ -464,7 +433,6 @@ try_.orchestrator_builder(
     compilator = "android-nougat-x86-siso-rel-compilator",
     coverage_test_types = ["unit", "overall"],
     experiments = {
-        "chromium_rts.inverted_rts": 100,
         "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
@@ -492,11 +460,6 @@ try_.orchestrator_builder(
     mirrors = [
         "ci/android-nougat-x86-rel",
     ],
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
-    ),
     # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
     # the original property once all builders have migrated.
     # check_for_flakiness = True,
@@ -504,7 +467,6 @@ try_.orchestrator_builder(
     compilator = "android-nougat-x86-rel-compilator",
     coverage_test_types = ["unit", "overall"],
     experiments = {
-        "chromium_rts.inverted_rts": 100,
         "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",

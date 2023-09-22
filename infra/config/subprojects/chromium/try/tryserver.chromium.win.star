@@ -78,11 +78,6 @@ try_.orchestrator_builder(
         "ci/GPU Win x64 Builder",
         "ci/Win10 x64 Release (NVIDIA)",
     ],
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
-    ),
     # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
     # the original property once all builders have migrated.
     # check_for_flakiness = True,
@@ -90,7 +85,6 @@ try_.orchestrator_builder(
     compilator = "win-rel-compilator",
     coverage_test_types = ["unit", "overall"],
     experiments = {
-        "chromium_rts.inverted_rts": 100,
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 5,
     },
@@ -127,9 +121,6 @@ try_.orchestrator_builder(
     try_settings = builder_config.try_settings(
         include_all_triggered_testers = True,
         is_compile_only = True,
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
     ),
     # TODO(crbug.com/1456545) - _with_resultdb should be deprecated in favor for
     # the original property once all builders have migrated.
@@ -138,7 +129,6 @@ try_.orchestrator_builder(
     compilator = "win-siso-rel-compilator",
     coverage_test_types = ["unit", "overall"],
     experiments = {
-        "chromium_rts.inverted_rts": 100,
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 5,
     },
