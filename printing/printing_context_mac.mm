@@ -16,6 +16,7 @@
 #include "base/apple/foundation_util.h"
 #include "base/apple/osstatus_logging.h"
 #include "base/apple/scoped_cftyperef.h"
+#include "base/apple/scoped_typeref.h"
 #include "base/check_op.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/sys_string_conversions.h"
@@ -38,6 +39,19 @@
 namespace printing {
 
 namespace {
+
+template <typename T>
+struct ScopedPMTypeTraits {
+  static T InvalidValue() { return nullptr; }
+  static T Retain(T object) {
+    PMRetain(object);
+    return object;
+  }
+  static void Release(T object) { PMRelease(object); }
+};
+
+template <typename T>
+using ScopedPMType = base::apple::ScopedTypeRef<T, ScopedPMTypeTraits<T>>;
 
 const int kMaxPaperSizeDifferenceInPoints = 2;
 
@@ -234,9 +248,9 @@ void ApplySystemPrintSettings(const base::Value::Dict& system_print_dialog_data,
   CHECK(data_ref);
   base::apple::ScopedCFTypeRef<CFDataRef> scoped_data_ref(data_ref);
 
-  PMPrintSettings new_print_settings = nullptr;
+  ScopedPMType<PMPrintSettings> new_print_settings;
   OSStatus status = PMPrintSettingsCreateWithDataRepresentation(
-      data_ref, &new_print_settings);
+      data_ref, new_print_settings.InitializeInto());
   CHECK_EQ(status, noErr) << logging::DescriptionFromOSStatus(status);
 
   status = PMSessionValidatePrintSettings(print_session, new_print_settings,
@@ -246,7 +260,6 @@ void ApplySystemPrintSettings(const base::Value::Dict& system_print_dialog_data,
   CHECK_EQ(status, noErr) << logging::DescriptionFromOSStatus(status);
 
   [print_info updateFromPMPrintSettings];
-  PMRelease(new_print_settings);
 }
 
 void ApplySystemPageFormat(const base::Value::Dict& system_print_dialog_data,
@@ -263,9 +276,9 @@ void ApplySystemPageFormat(const base::Value::Dict& system_print_dialog_data,
                    static_cast<const UInt8*>(&data->front()), data_size);
   CHECK(data_ref);
 
-  PMPageFormat new_page_format = nullptr;
-  OSStatus status =
-      PMPageFormatCreateWithDataRepresentation(data_ref, &new_page_format);
+  ScopedPMType<PMPageFormat> new_page_format;
+  OSStatus status = PMPageFormatCreateWithDataRepresentation(
+      data_ref, new_page_format.InitializeInto());
   CHECK_EQ(status, noErr) << logging::DescriptionFromOSStatus(status);
   status = PMSessionValidatePageFormat(print_session, page_format,
                                        kPMDontWantBoolean);
@@ -273,7 +286,6 @@ void ApplySystemPageFormat(const base::Value::Dict& system_print_dialog_data,
   CHECK_EQ(status, noErr) << logging::DescriptionFromOSStatus(status);
 
   [print_info updateFromPMPageFormat];
-  PMRelease(new_page_format);
 }
 
 void ApplySystemDestination(const std::u16string& device_name,
@@ -310,10 +322,10 @@ void ApplySystemDestination(const std::u16string& device_name,
 
   base::apple::ScopedCFTypeRef<CFStringRef> destination_name(
       base::SysUTF16ToCFStringRef(device_name));
-  PMPrinter printer = PMPrinterCreateFromPrinterID(destination_name.get());
+  ScopedPMType<PMPrinter> printer(
+      PMPrinterCreateFromPrinterID(destination_name.get()));
   CHECK(printer);
   OSStatus status = PMSessionSetCurrentPMPrinter(print_session, printer);
-  PMRelease(printer);
   CHECK_EQ(status, noErr) << logging::DescriptionFromOSStatus(status);
 
   status = PMSessionSetDestination(
@@ -533,13 +545,13 @@ bool PrintingContextMac::SetPrinter(const std::string& device_name) {
     return true;
   }
 
-  PMPrinter new_printer = PMPrinterCreateFromPrinterID(new_printer_id.get());
-  if (!new_printer)
+  ScopedPMType<PMPrinter> new_printer(
+      PMPrinterCreateFromPrinterID(new_printer_id.get()));
+  if (!new_printer) {
     return false;
+  }
 
-  OSStatus status = PMSessionSetCurrentPMPrinter(print_session, new_printer);
-  PMRelease(new_printer);
-  return status == noErr;
+  return PMSessionSetCurrentPMPrinter(print_session, new_printer) == noErr;
 }
 
 bool PrintingContextMac::UpdatePageFormatWithPaperInfo() {
@@ -594,26 +606,25 @@ bool PrintingContextMac::UpdatePageFormatWithPaperInfo() {
   if (media.IsDefault())
     return true;
 
-  PMPaper paper = nullptr;
+  ScopedPMType<PMPaper> paper;
   if (PMPaperCreateCustom(current_printer, CFSTR("Custom paper ID"),
                           CFSTR("Custom paper"), page_width, page_height,
-                          &margins, &paper) != noErr) {
+                          &margins, paper.InitializeInto()) != noErr) {
     return false;
   }
-  bool result = UpdatePageFormatWithPaper(paper, default_page_format);
-  PMRelease(paper);
-  return result;
+  return UpdatePageFormatWithPaper(paper, default_page_format);
 }
 
 bool PrintingContextMac::UpdatePageFormatWithPaper(PMPaper paper,
                                                    PMPageFormat page_format) {
-  PMPageFormat new_format = nullptr;
-  if (PMCreatePageFormatWithPMPaper(&new_format, paper) != noErr)
+  ScopedPMType<PMPageFormat> new_format;
+  if (PMCreatePageFormatWithPMPaper(new_format.InitializeInto(), paper) !=
+      noErr) {
     return false;
+  }
   // Copy over the original format with the new page format.
   bool result = (PMCopyPageFormat(new_format, page_format) == noErr);
   [print_info_ updateFromPMPageFormat];
-  PMRelease(new_format);
   return result;
 }
 
