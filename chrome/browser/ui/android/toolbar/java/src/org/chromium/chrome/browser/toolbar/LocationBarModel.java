@@ -382,7 +382,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
             if (DomDistillerUrlUtils.isDistilledPage(url)) {
                 GURL originalUrl =
                         DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(new GURL(url));
-                return buildUrlBarData(originalUrl.getSpec(), isOfflinePage);
+                return buildUrlBarData(mUrlFormatter.format(originalUrl), isOfflinePage);
             }
 
             if (isOfflinePage) {
@@ -442,8 +442,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
             autocompleteSchemeClassifier = mChromeAutocompleteSchemeClassifier;
 
             if (cachedSpannableDisplayText != null) {
-                return UrlBarData.forUrlAndText(
-                        new GURL(url), cachedSpannableDisplayText, editingText);
+                return UrlBarData.forUrlAndText(url, cachedSpannableDisplayText, editingText);
             } else {
                 spannableDisplayText = new SpannableStringBuilder(displayText);
                 OmniboxUrlEmphasizer.emphasizeUrl(spannableDisplayText,
@@ -453,7 +452,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
                 mSpannableDisplayTextCache.put(cacheKey, spannableDisplayText);
             }
         }
-        return UrlBarData.forUrlAndText(new GURL(url), spannableDisplayText, editingText);
+        return UrlBarData.forUrlAndText(url, spannableDisplayText, editingText);
     }
 
     /**

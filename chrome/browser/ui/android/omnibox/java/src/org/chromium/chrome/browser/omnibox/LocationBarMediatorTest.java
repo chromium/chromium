@@ -701,10 +701,10 @@ public class LocationBarMediatorTest {
 
     @Test
     public void testUpdateColors_setColorScheme() {
-        var url = JUnitTestGURLs.BLUE_1;
+        String url = JUnitTestGURLs.BLUE_1.getSpec();
         UrlBarData urlBarData = UrlBarData.forUrl(url);
         doReturn(urlBarData).when(mLocationBarDataProvider).getUrlBarData();
-        doReturn(url).when(mLocationBarDataProvider).getCurrentGurl();
+        doReturn(new GURL(url)).when(mLocationBarDataProvider).getCurrentGurl();
         doReturn(true).when(mUrlCoordinator).setBrandedColorScheme(anyInt());
 
         mMediator.updateBrandedColorScheme();
@@ -719,14 +719,14 @@ public class LocationBarMediatorTest {
 
     @Test
     public void testSetUrl() {
-        var url = JUnitTestGURLs.BLUE_1;
+        String url = JUnitTestGURLs.BLUE_1.getSpec();
         UrlBarData urlBarData = UrlBarData.forUrl(url);
-        mMediator.setUrl(url, urlBarData);
+        mMediator.setUrl(new GURL(url), urlBarData);
 
         // Assume that the URL bar is now focused without focus animations.
         doReturn(true).when(mUrlCoordinator).hasFocus();
         mMediator.setIsUrlBarFocusedWithoutAnimationsForTesting(true);
-        mMediator.setUrl(url, urlBarData);
+        mMediator.setUrl(new GURL(url), urlBarData);
 
         // Verify that setUrl() never clears focus when the URL bar is focused without animations.
         verify(mUrlCoordinator, never()).clearFocus();
