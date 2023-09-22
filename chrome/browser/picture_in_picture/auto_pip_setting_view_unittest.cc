@@ -9,13 +9,16 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
+#include "components/url_formatter/url_formatter.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
 
+using ::testing::HasSubstr;
 using ::testing::NotNull;
+
 using UiResult = AutoPipSettingView::UiResult;
 
 struct TestParams {
@@ -47,8 +50,9 @@ class AutoPipSettingViewTest : public views::ViewsTestBase,
 
     // Create the Auto PiP Setting View.
     setting_view_ = std::make_unique<AutoPipSettingView>(
-        result_cb().Get(), hide_view_cb().Get(), browser_view_overridden_bounds,
-        anchor_view, views::BubbleBorder::TOP_CENTER);
+        result_cb().Get(), hide_view_cb().Get(), origin_,
+        browser_view_overridden_bounds, anchor_view,
+        views::BubbleBorder::TOP_CENTER);
   }
 
   void TearDown() override {
@@ -58,6 +62,8 @@ class AutoPipSettingViewTest : public views::ViewsTestBase,
   }
 
   std::unique_ptr<AutoPipSettingView>& setting_view() { return setting_view_; }
+
+  const GURL origin() const { return origin_; }
 
   base::MockOnceCallback<void(UiResult)>& result_cb() { return result_cb_; }
   base::MockOnceCallback<void()>& hide_view_cb() { return hide_view_cb_; }
@@ -95,6 +101,7 @@ class AutoPipSettingViewTest : public views::ViewsTestBase,
  private:
   base::MockOnceCallback<void(UiResult)> result_cb_;
   base::MockOnceCallback<void()> hide_view_cb_;
+  const GURL origin_{"https://example.com"};
   std::unique_ptr<views::Widget> anchor_view_widget_;
   std::unique_ptr<AutoPipSettingView> setting_view_;
 };
@@ -110,15 +117,6 @@ TEST_F(AutoPipSettingViewTest, TestInitControlViewButton) {
   EXPECT_EQ(ui::ButtonStyle::kTonal, allow_once_button->GetStyle());
 }
 
-TEST_F(AutoPipSettingViewTest, TestSetTitle) {
-  const auto* expected_title =
-      u"Sample long title, that should cause the widget size to be adjusted.";
-  // Set small size, which should be updated to accommodate the long title.
-  setting_view()->SetDialogTitle(expected_title);
-  EXPECT_FALSE(setting_view()->ShouldCenterWindowTitleText());
-  EXPECT_EQ(expected_title, setting_view()->GetWindowTitle());
-}
-
 TEST_F(AutoPipSettingViewTest, TestShow) {
   views::Widget* widget =
       views::BubbleDialogDelegate::CreateBubble(std::move(setting_view()));
@@ -129,6 +127,77 @@ TEST_F(AutoPipSettingViewTest, TestShow) {
 TEST_F(AutoPipSettingViewTest, TestViewConstructor) {
   EXPECT_EQ(views::BubbleBorder::TOP_CENTER, setting_view()->arrow());
   EXPECT_TRUE(setting_view()->use_custom_frame());
+}
+
+TEST_F(AutoPipSettingViewTest, TestBubbleTitleElideBehaviorForNonFileURL) {
+  // Get the origin label for testing.
+  const auto* origin_label = setting_view()->get_origin_label_for_testing();
+
+  // Create and show bubble.
+  views::Widget* widget =
+      views::BubbleDialogDelegate::CreateBubble(std::move(setting_view()));
+  widget->Show();
+
+  // Ensure that the origin label has the expected elide behavior.
+  EXPECT_EQ(gfx::ELIDE_HEAD, origin_label->GetElideBehavior());
+
+  // Verify that the bubble title contains the origin.
+  EXPECT_THAT(base::UTF16ToUTF8(origin_label->GetText()),
+              HasSubstr(origin().host()));
+}
+
+TEST_F(AutoPipSettingViewTest, TestBubbleTitleElideBehaviorForFileURL) {
+  // Set up the setting view.
+  const GURL origin{"file://example"};
+
+  auto anchor_view_widget = CreateTestWidget();
+  anchor_view_widget->Show();
+  auto* anchor_view =
+      anchor_view_widget->SetContentsView(std::make_unique<views::View>());
+
+  auto setting_view = std::make_unique<AutoPipSettingView>(
+      result_cb().Get(), hide_view_cb().Get(), origin, gfx::Rect(), anchor_view,
+      views::BubbleBorder::TOP_CENTER);
+
+  // Get the origin label for testing.
+  const auto* origin_label = setting_view->get_origin_label_for_testing();
+
+  // Create and show bubble.
+  views::Widget* widget =
+      views::BubbleDialogDelegate::CreateBubble(std::move(setting_view));
+  widget->Show();
+
+  // Ensure that the origin label has the expected elide behavior.
+  EXPECT_EQ(gfx::ELIDE_TAIL, origin_label->GetElideBehavior());
+
+  // Verify that the bubble title contains the origin.
+  EXPECT_THAT(base::UTF16ToUTF8(origin_label->GetText()),
+              HasSubstr(origin.host()));
+}
+
+TEST_F(AutoPipSettingViewTest, TestOriginLabelForGURLWithLocalHost) {
+  // Set up the setting view.
+  const GURL origin{"file:///example"};
+
+  auto anchor_view_widget = CreateTestWidget();
+  anchor_view_widget->Show();
+  auto* anchor_view =
+      anchor_view_widget->SetContentsView(std::make_unique<views::View>());
+
+  auto setting_view = std::make_unique<AutoPipSettingView>(
+      result_cb().Get(), hide_view_cb().Get(), origin, gfx::Rect(), anchor_view,
+      views::BubbleBorder::TOP_CENTER);
+
+  // Get the origin label for testing.
+  const auto* origin_label = setting_view->get_origin_label_for_testing();
+
+  // Create and show bubble.
+  views::Widget* widget =
+      views::BubbleDialogDelegate::CreateBubble(std::move(setting_view));
+  widget->Show();
+
+  // Verify that the bubble title contains the origin.
+  EXPECT_EQ(origin_label->GetText(), u"localhost");
 }
 
 const struct TestParams kTestParams[] = {{UiResult::kAllowOnce},

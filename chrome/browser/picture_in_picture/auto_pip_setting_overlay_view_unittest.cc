@@ -43,7 +43,7 @@ class AutoPipSettingOverlayViewTest : public views::ViewsTestBase {
 
     setting_overlay_ =
         widget_->SetContentsView(std::make_unique<AutoPipSettingOverlayView>(
-            cb().Get(), browser_view_overridden_bounds, anchor_view,
+            cb().Get(), origin_, browser_view_overridden_bounds, anchor_view,
             views::BubbleBorder::TOP_CENTER));
   }
 
@@ -76,6 +76,7 @@ class AutoPipSettingOverlayViewTest : public views::ViewsTestBase {
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<AutoPipSettingOverlayView> setting_overlay_ = nullptr;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
+  const GURL origin_{"https://example.com"};
 };
 
 TEST_F(AutoPipSettingOverlayViewTest, TestViewInitialization) {

@@ -40,6 +40,8 @@ class AutoPipSettingView : public views::BubbleDialogDelegate {
   //   according to the button pressed.
   //   * hide_view_cb: Callback responsible for hiding the AutoPiP overlay view.
   //   Callback is executed after the |AutoPipSettingView| is closed.
+  //   * origin: GURL from which the origin will be extracted and added to the
+  //   bubble title.
   //   * browser_view_overridden_bounds: These bounds represent the
   //   Picture-in-Picture window bounds. Used to adjust the PiP window size to
   //   accommodate the |AutoPipSettingView|.
@@ -47,6 +49,7 @@ class AutoPipSettingView : public views::BubbleDialogDelegate {
   //   * arrow: The arrow position for the bubble.
   explicit AutoPipSettingView(ResultCb result_cb,
                               HideViewCb hide_view_cb,
+                              const GURL& origin,
                               const gfx::Rect& browser_view_overridden_bounds,
                               views::View* anchor_view,
                               views::BubbleBorder::Arrow arrow);
@@ -55,10 +58,6 @@ class AutoPipSettingView : public views::BubbleDialogDelegate {
   AutoPipSettingView& operator=(const AutoPipSettingView&) = delete;
   ~AutoPipSettingView() override;
 
-  // Set the bubble dialog title. Needed to propagate the origin, which is
-  // included in the title, from the Picture-in-Picture frame view.
-  void SetDialogTitle(const std::u16string& text);
-
   // Override |GetAnchorRect| to allow overlapping the bubble with the window
   // title bar.
   gfx::Rect GetAnchorRect() const override;
@@ -66,6 +65,11 @@ class AutoPipSettingView : public views::BubbleDialogDelegate {
   // views::WidgetDelegate:
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
+  void OnWidgetInitialized() override;
+
+  const views::Label* get_origin_label_for_testing() const {
+    return origin_label_;
+  }
 
  private:
   // AnchorViewObserver observes the anchor widget view. When the anchor view is
@@ -98,9 +102,11 @@ class AutoPipSettingView : public views::BubbleDialogDelegate {
 
   ResultCb result_cb_;
   raw_ptr<views::Label> autopip_description_ = nullptr;
+  raw_ptr<views::Label> origin_label_ = nullptr;
   raw_ptr<views::MdTextButton> allow_once_button_ = nullptr;
   raw_ptr<views::MdTextButton> allow_on_every_visit_button_ = nullptr;
   raw_ptr<views::MdTextButton> block_button_ = nullptr;
+  std::unique_ptr<views::View> dialog_title_view_;
   std::unique_ptr<AutoPipSettingView::AnchorViewObserver> anchor_view_observer_;
 
   // Initialize bubble with all it's child views. Called at construction time.
@@ -114,9 +120,8 @@ class AutoPipSettingView : public views::BubbleDialogDelegate {
 
   void OnButtonPressed(UiResult result);
 
-  // TODO(crbug.com/1472386): Test through the class public interface, once
-  // buttons are added to the view.
-  FRIEND_TEST_ALL_PREFIXES(AutoPipSettingViewTest, TestInitControlViewButton);
+  // Initializes the bubble dialog title view.
+  void InitBubbleTitleView(const GURL& origin);
 };
 
 #endif  // CHROME_BROWSER_PICTURE_IN_PICTURE_AUTO_PIP_SETTING_VIEW_H_

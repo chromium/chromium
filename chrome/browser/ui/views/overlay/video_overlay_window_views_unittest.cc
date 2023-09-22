@@ -46,6 +46,7 @@ class MockOverlayView : public AutoPipSettingOverlayView {
  public:
   explicit MockOverlayView(views::View* anchor_view)
       : AutoPipSettingOverlayView(base::DoNothing(),
+                                  GURL{"https://example.com"},
                                   gfx::Rect(),
                                   anchor_view,
                                   views::BubbleBorder::Arrow::FLOAT) {}

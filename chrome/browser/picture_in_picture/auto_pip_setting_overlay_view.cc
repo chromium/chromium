@@ -18,6 +18,7 @@ constexpr float kOverlayViewOpacity = 0.7f;
 
 AutoPipSettingOverlayView::AutoPipSettingOverlayView(
     ResultCb result_cb,
+    const GURL& origin,
     const gfx::Rect& browser_view_overridden_bounds,
     views::View* anchor_view,
     views::BubbleBorder::Arrow arrow) {
@@ -27,7 +28,7 @@ AutoPipSettingOverlayView::AutoPipSettingOverlayView(
       std::move(result_cb),
       base::BindOnce(&AutoPipSettingOverlayView::OnHideView,
                      weak_factory_.GetWeakPtr()),
-      browser_view_overridden_bounds, anchor_view, arrow);
+      origin, browser_view_overridden_bounds, anchor_view, arrow);
   // Create the content setting UI.
   SetLayoutManager(std::make_unique<views::FillLayout>());
   SetPaintToLayer(ui::LAYER_NOT_DRAWN);

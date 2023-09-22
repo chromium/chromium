@@ -56,8 +56,8 @@ AutoPipSettingHelper::CreateOverlayViewIfNeeded(
     case CONTENT_SETTING_ASK:
       // Create and return the UI to ask the user.
       return std::make_unique<AutoPipSettingOverlayView>(
-          std::move(result_cb_), browser_view_overridden_bounds, anchor_view,
-          arrow);
+          std::move(result_cb_), origin_, browser_view_overridden_bounds,
+          anchor_view, arrow);
     case CONTENT_SETTING_ALLOW:
       // Nothing to do -- allow the auto pip to proceed.
       return nullptr;

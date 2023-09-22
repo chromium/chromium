@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/picture_in_picture/auto_pip_setting_view.h"
+#include "components/url_formatter/url_formatter.h"
+#include "ui/views/layout/flex_layout_view.h"
 
 // Represents the bubble top border offset, with respect to the
-// Picture-in-Picture window tittle bar. Used to allow the Bubble to overlap the
+// Picture-in-Picture window title bar. Used to allow the Bubble to overlap the
 // title bar.
 constexpr int kBubbleTopOffset = -2;
 
@@ -26,7 +28,7 @@ constexpr int kDescriptionViewHeight = 32;
 // Short AutoPiP Description. To be displayed below the Bubble title.
 // TODO(crbug.com/1465529): Localize this.
 constexpr char16_t kAutopipDescription[] =
-    u"Automatically enter Picture-in-Picture";
+    u"Enter picture-in-picture if you switch tabs on certain sites.";
 
 // Bubble fixed width.
 constexpr int kBubbleFixedWidth = 320;
@@ -38,14 +40,23 @@ constexpr int kBubbleBorderCornerRadius = 15;
 constexpr int kBubbleBorderMdShadowElevation = 2;
 
 // Bubble margins.
-constexpr gfx::Insets kBubbleMargins = gfx::Insets::TLBR(0, 15, 15, 20);
+constexpr gfx::Insets kBubbleMargins = gfx::Insets::TLBR(0, 20, 15, 20);
 
 // Bubble title margins.
-constexpr gfx::Insets kBubbleTitleMargins = gfx::Insets::TLBR(15, 10, 10, 10);
+constexpr gfx::Insets kBubbleTitleMargins = gfx::Insets::TLBR(15, 15, 10, 15);
+
+// Bubble title, without origin.
+// TODO(crbug.com/1465529): Localize this.
+constexpr char16_t kBubbleTitleSuffix[] = u" wants to";
+
+// Maximum width for the origin label, for cases where the origin needs to be
+// elided.
+constexpr int kBubbleOriginLabelMaximumWidth = 230;
 
 AutoPipSettingView::AutoPipSettingView(
     ResultCb result_cb,
     HideViewCb hide_view_cb,
+    const GURL& origin,
     const gfx::Rect& browser_view_overridden_bounds,
     views::View* anchor_view,
     views::BubbleBorder::Arrow arrow)
@@ -69,14 +80,19 @@ AutoPipSettingView::AutoPipSettingView(
       std::make_unique<AutoPipSettingView::AnchorViewObserver>(anchor_view,
                                                                this);
 
+  // Init Bubble title view.
+  InitBubbleTitleView(origin);
+
   // Initialize Bubble.
   InitBubble();
 }
 
 AutoPipSettingView::~AutoPipSettingView() {
   autopip_description_ = nullptr;
+  origin_label_ = nullptr;
   allow_once_button_ = allow_on_every_visit_button_ = block_button_ = nullptr;
   anchor_view_observer_.reset();
+  dialog_title_view_.reset();
 }
 
 void AutoPipSettingView::InitBubble() {
@@ -143,9 +159,50 @@ raw_ptr<views::MdTextButton> AutoPipSettingView::InitControlViewButton(
   return button;
 }
 
-void AutoPipSettingView::SetDialogTitle(const std::u16string& text) {
-  SetTitle(text);
-  OnAnchorBoundsChanged();
+void AutoPipSettingView::InitBubbleTitleView(const GURL& origin) {
+  DCHECK(origin.has_host() || origin.SchemeIsFile());
+
+  dialog_title_view_ = std::make_unique<views::View>();
+  auto* layout_manager = dialog_title_view_->SetLayoutManager(
+      std::make_unique<views::FlexLayout>());
+  layout_manager->SetOrientation(views::LayoutOrientation::kHorizontal);
+
+  dialog_title_view_->AddChildView(
+      views::Builder<views::FlexLayoutView>()
+          .SetOrientation(views::LayoutOrientation::kHorizontal)
+          .Build());
+
+  // For file URLs, we want to elide the tail, since the file name and/or query
+  // part of the file URL can be made to look like an origin for spoofing. For
+  // HTTPS URLs, we elide the head to prevent spoofing via long origins, since
+  // in the HTTPS case everything besides the origin is removed for display.
+  auto elide_behavior =
+      origin.SchemeIsFile() ? gfx::ELIDE_TAIL : gfx::ELIDE_HEAD;
+  // Determining the origin of a file URL is left as an exercise to the reader
+  // https://url.spec.whatwg.org/#concept-url-origin. Therefore, for URLs with a
+  // file scheme which do not have an origin, we use a default string.
+  //
+  // TODO(crbug.com/1485611): Investigate what to display as the origin for file
+  // URLs hosted locally.
+  const std::u16string host = (origin.SchemeIsFile() && !origin.has_host())
+                                  ? u"localhost"
+                                  : url_formatter::IDNToUnicode(origin.host());
+
+  dialog_title_view_->AddChildView(views::Builder<views::Label>()
+                                       .CopyAddressTo(&origin_label_)
+                                       .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                                       .SetElideBehavior(elide_behavior)
+                                       .SetMultiLine(false)
+                                       .SetText(host)
+                                       .Build());
+  origin_label_->SetMaximumWidthSingleLine(kBubbleOriginLabelMaximumWidth);
+
+  dialog_title_view_->AddChildView(views::Builder<views::Label>()
+                                       .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                                       .SetElideBehavior(gfx::NO_ELIDE)
+                                       .SetMultiLine(false)
+                                       .SetText(kBubbleTitleSuffix)
+                                       .Build());
 }
 
 void AutoPipSettingView::OnButtonPressed(UiResult result) {
@@ -185,6 +242,10 @@ AutoPipSettingView::CreateNonClientFrameView(views::Widget* widget) {
   static_cast<views::BubbleFrameView*>(frame.get())
       ->SetBubbleBorder(std::move(bubble_border));
   return frame;
+}
+
+void AutoPipSettingView::OnWidgetInitialized() {
+  GetBubbleFrameView()->SetTitleView(std::move(dialog_title_view_));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
