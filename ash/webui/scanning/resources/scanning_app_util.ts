@@ -11,10 +11,8 @@ import {ColorMode, FileType, PageSize, Scanner, SourceType} from './scanning.moj
 /**
  * Converts a ColorMode string to the corresponding enum
  * value.
- * @param {string} colorModeString
- * @return {ColorMode}
  */
-export function colorModeFromString(colorModeString) {
+export function colorModeFromString(colorModeString: string): ColorMode {
   switch (colorModeString) {
     case ColorMode.kBlackAndWhite.toString():
       return ColorMode.kBlackAndWhite;
@@ -31,10 +29,8 @@ export function colorModeFromString(colorModeString) {
 /**
  * Converts a FileType string to the corresponding
  * enum value.
- * @param {string} fileTypeString
- * @return {FileType}
  */
-export function fileTypeFromString(fileTypeString) {
+export function fileTypeFromString(fileTypeString: string): FileType {
   switch (fileTypeString) {
     case FileType.kJpg.toString():
       return FileType.kJpg;
@@ -51,10 +47,8 @@ export function fileTypeFromString(fileTypeString) {
 /**
  * Converts a ColorMode to a string that can be
  * displayed in the color mode dropdown.
- * @param {ColorMode} mojoColorMode
- * @return {string}
  */
-export function getColorModeString(mojoColorMode) {
+export function getColorModeString(mojoColorMode: ColorMode): string {
   switch (mojoColorMode) {
     case ColorMode.kBlackAndWhite:
       return loadTimeData.getString('blackAndWhiteOptionText');
@@ -71,10 +65,8 @@ export function getColorModeString(mojoColorMode) {
 /**
  * Converts a PageSize to a string that can be
  * displayed in the page size dropdown.
- * @param {PageSize} pageSize
- * @return {string}
  */
-export function getPageSizeString(pageSize) {
+export function getPageSizeString(pageSize: PageSize): string {
   switch (pageSize) {
     case PageSize.kIsoA3:
       return loadTimeData.getString('a3OptionText');
@@ -99,10 +91,8 @@ export function getPageSizeString(pageSize) {
 /**
  * Converts a SourceType to a string that can be
  * displayed in the source dropdown.
- * @param {SourceType} mojoSourceType
- * @return {string}
  */
-export function getSourceTypeString(mojoSourceType) {
+export function getSourceTypeString(mojoSourceType: SourceType): string {
   switch (mojoSourceType) {
     case SourceType.kFlatbed:
       return loadTimeData.getString('flatbedOptionText');
@@ -122,10 +112,8 @@ export function getSourceTypeString(mojoSourceType) {
 /**
  * Converts a PageSize string to the corresponding enum
  * value.
- * @param {string} pageSizeString
- * @return {PageSize}
  */
-export function pageSizeFromString(pageSizeString) {
+export function pageSizeFromString(pageSizeString: string): PageSize {
   switch (pageSizeString) {
     case PageSize.kIsoA3.toString():
       return PageSize.kIsoA3;
@@ -149,30 +137,23 @@ export function pageSizeFromString(pageSizeString) {
 
 /**
  * Converts a scanner's display name from UTF-16 to a displayable string.
- * @param {!Scanner} scanner
- * @return {string}
  */
-export function getScannerDisplayName(scanner) {
+export function getScannerDisplayName(scanner: Scanner): string {
   return scanner.displayName.data.map(ch => String.fromCodePoint(ch)).join('');
 }
 
 /**
  * Converts an unguessable token to a string by combining the high and low
  * values as strings with a hashtag as the separator.
- * @param {!UnguessableToken} token
- * @return {string}
  */
-export function tokenToString(token) {
+export function tokenToString(token: UnguessableToken): string {
   return `${token.high.toString()}#${token.low.toString()}`;
 }
 
 /**
  * A comparison function used for determining sort order based on the current
  * locale's collation order.
- * @param {string} first
- * @param {string} second
- * @return {number} The result of the comparison.
  */
-export function alphabeticalCompare(first, second) {
+export function alphabeticalCompare(first: string, second: string): number {
   return first.toLocaleLowerCase().localeCompare(second.toLocaleLowerCase());
 }
