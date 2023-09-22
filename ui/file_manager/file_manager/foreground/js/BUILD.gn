@@ -73,7 +73,6 @@ group("js_modules") {
     ":quick_view_model",
     ":quick_view_uma",
     ":scan_controller",
-    ":search_controller",
     ":selection_menu_controller",
     ":sort_menu_controller",
     ":spinner_controller",
@@ -144,7 +143,6 @@ js_type_check("closure_compile_jsmodules") {
     ":quick_view_model",
     ":quick_view_uma",
     ":scan_controller",
-    ":search_controller",
     ":selection_menu_controller",
     ":sort_menu_controller",
     ":spinner_controller",
@@ -523,7 +521,6 @@ js_library("file_manager") {
     ":quick_view_model",
     ":quick_view_uma",
     ":scan_controller",
-    ":search_controller",
     ":selection_menu_controller",
     ":sort_menu_controller",
     ":spinner_controller",
@@ -1039,17 +1036,6 @@ js_library("scan_controller") {
     "ui:list_container",
     "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
-  ]
-}
-
-js_library("search_controller") {
-  deps = [
-    ":directory_model",
-    "ui:file_manager_ui",
-    "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/externs:entry_location",
-    "//ui/file_manager/file_manager/externs:volume_manager",
   ]
 }
 

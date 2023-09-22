@@ -526,7 +526,8 @@ export class FileManagerUI {
     this.searchContainer = new SearchContainer(
         volumeManager, queryRequiredElement('#search-wrapper', this.element),
         queryRequiredElement('#search-options-container', this.element),
-        queryRequiredElement('#path-display-container', this.element));
+        queryRequiredElement('#path-display-container', this.element),
+        /*a11y=*/ this);
 
     if (util.isDriveFsBulkPinningEnabled()) {
       /**
