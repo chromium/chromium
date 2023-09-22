@@ -52,8 +52,8 @@ TEST_F(DeviceOwnershipWaiterTest, DelaysCorrectly) {
     DeviceOwnershipWaiterImpl waiter;
 
     base::test::TestFuture<void> future;
-    waiter.WaitForOwnerhipFetched(future.GetCallback(),
-                                  /*launching_at_login_screen=*/true);
+    waiter.WaitForOwnershipFetched(future.GetCallback(),
+                                   /*launching_at_login_screen=*/true);
 
     GetFakeUserManager().SetOwnerId(user_manager::StubAccountId());
 
@@ -65,8 +65,8 @@ TEST_F(DeviceOwnershipWaiterTest, DelaysCorrectly) {
     DeviceOwnershipWaiterImpl waiter;
 
     base::test::TestFuture<void> future;
-    waiter.WaitForOwnerhipFetched(future.GetCallback(),
-                                  /*launching_at_login_screen=*/false);
+    waiter.WaitForOwnershipFetched(future.GetCallback(),
+                                   /*launching_at_login_screen=*/false);
 
     GetFakeUserManager().SetOwnerId(user_manager::StubAccountId());
 
@@ -84,8 +84,8 @@ TEST_F(DeviceOwnershipWaiterTest, DoesNotDelayForChromeOsOnLinux) {
   DeviceOwnershipWaiterImpl waiter;
 
   base::test::TestFuture<void> future;
-  waiter.WaitForOwnerhipFetched(future.GetCallback(),
-                                /*launching_at_login_screen=*/false);
+  waiter.WaitForOwnershipFetched(future.GetCallback(),
+                                 /*launching_at_login_screen=*/false);
 
   EXPECT_TRUE(future.Wait());
 }

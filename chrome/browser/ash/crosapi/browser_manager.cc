@@ -1732,8 +1732,8 @@ void BrowserManager::WaitForDeviceOwnerFetchedAndThen(
     base::OnceClosure cb,
     bool launching_at_login_screen) {
   device_ownership_waiter_called_ = true;
-  device_ownership_waiter_->WaitForOwnerhipFetched(std::move(cb),
-                                                   launching_at_login_screen);
+  device_ownership_waiter_->WaitForOwnershipFetched(std::move(cb),
+                                                    launching_at_login_screen);
 }
 
 void BrowserManager::OnLaunchParamsFetched(bool launching_at_login_screen,

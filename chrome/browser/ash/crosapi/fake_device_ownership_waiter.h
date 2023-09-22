@@ -23,8 +23,8 @@ class FakeDeviceOwnershipWaiter : public DeviceOwnershipWaiter {
   ~FakeDeviceOwnershipWaiter() override = default;
 
   // `DeviceOwnershipWaiter`:
-  void WaitForOwnerhipFetched(base::OnceClosure callback,
-                              bool launching_at_login_screen) override;
+  void WaitForOwnershipFetched(base::OnceClosure callback,
+                               bool launching_at_login_screen) override;
 };
 
 }  // namespace crosapi

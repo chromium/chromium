@@ -15,7 +15,7 @@
 
 namespace crosapi {
 
-void DeviceOwnershipWaiterImpl::WaitForOwnerhipFetched(
+void DeviceOwnershipWaiterImpl::WaitForOwnershipFetched(
     base::OnceClosure callback,
     bool launching_at_login_screen) {
   if (launching_at_login_screen ||

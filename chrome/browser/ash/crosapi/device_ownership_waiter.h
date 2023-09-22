@@ -27,8 +27,8 @@ class DeviceOwnershipWaiter {
   // - we are running ChromeOS on Linux: The `DeviceSettingsService` is not
   // behaving as in the real world for these builds, hence we can skip the
   // check.
-  virtual void WaitForOwnerhipFetched(base::OnceClosure callback,
-                                      bool launching_at_login_screen) = 0;
+  virtual void WaitForOwnershipFetched(base::OnceClosure callback,
+                                       bool launching_at_login_screen) = 0;
 };
 
 }  // namespace crosapi
