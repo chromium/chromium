@@ -100,9 +100,6 @@ esto no impide que se tomen capturas de pantalla con aplicaciones del sistema op
 
 Si no estableces la política, no se permitirán excepciones a <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="1068801725746725727">Habilitar la recepción de encuestas de Navegación segura</translation>
-<translation id="1069489575852947981">Si habilitas la política o no la estableces, se definirá una cuenta local del dispositivo para el acceso automático sin tiempos de espera. <ph name="PRODUCT_OS_NAME" /> permitirá usar la combinación de teclas Ctrl+Alt+S para omitir el acceso automático y mostrar la pantalla de acceso.
-
-      Si inhabilitas la política, los usuarios no podrán omitir el acceso automático sin tiempos de espera (si se configuró).</translation>
 <translation id="1073983258515362346">Envía información sobre la luz de fondo del dispositivo.
 
       Si se establece la política como falsa o no se establece, no se enviará la información.
@@ -134,11 +131,6 @@ Si no estableces la política, no se permitirán excepciones a <ph name="DEVICE_
 
       Si estableces esta política, los usuarios no podrán cambiarla.</translation>
 <translation id="1123650965531933634">Rechazar el permiso de Ubicación de ventanas para todos los sitios de forma predeterminada</translation>
-<translation id="112496019059412872">Determina si se habilita la función "Recordar contraseña" en el cuadro de diálogo de la autenticación Kerberos. Las contraseñas se almacenan encriptadas en el disco, y solo puede acceder a ellas el daemon del sistema Kerberos durante la sesión de usuario.
-
-          Si se habilita esta política o no se establece, los usuarios podrán decidir si se recuerdan las contraseñas de Kerberos para no tener que ingresarlas de nuevo. Los tickets de Kerberos se recuperan automáticamente a menos que se requiera autenticación adicional (autenticación de dos factores).
-
-          Si se inhabilita esta política, las contraseñas no se recordarán nunca y se quitarán todas las contraseñas previamente almacenadas. Los usuarios deberán ingresar su contraseña cada vez que necesiten autenticación en el sistema Kerberos. Según la configuración del servidor, esta acción debe realizarse cada 8 horas o cada varios meses.</translation>
 <translation id="1126456433590366966">Automatizar el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="GOOGLE_DRIVE_NAME" /> y <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="112794759469625182">Se quitó esta política en la versión M118. Permitía habilitar e inhabilitar la Certificación remota para el usuario, pero ahora este mecanismo está habilitado de forma predeterminada.
 
@@ -2070,9 +2062,6 @@ Si no estableces la política, <ph name="PRODUCT_OS_NAME" /> podrá seleccionar 
 <translation id="2823870601012066791">Ubicación del registro de Windows para los clientes de <ph name="PRODUCT_OS_NAME" />:</translation>
 <translation id="2824715612115726353">Activar el modo de incógnito</translation>
 <translation id="282870810415075521">Permitir que JavaScript utilice JIT en estos sitios</translation>
-<translation id="283478052049914107">Si habilitas esta política e introduces un puerto no estándar (es decir, cualquiera que no sea el 80 ni el 443), ese puerto se incluirá en el SPN de Kerberos generado.
-
-      Si la inhabilitas o no la estableces, el SPN de Kerberos que se genere no incluirá ningún puerto.</translation>
 <translation id="2834965199373338033">Habilitar el modo de segundo plano</translation>
 <translation id="2835686964326214400">Establecer un cronograma personalizado para reiniciar los dispositivos</translation>
 <translation id="2838830882081735096">No permitir la migración de datos y ARC</translation>
@@ -2257,11 +2246,6 @@ comportamiento de las teclas de función, y los usuarios no podrán cambiar esta
 <translation id="2985927503455169394">Usa el modo predeterminado de la experiencia de integración del Asistente</translation>
 <translation id="2987155890997901449">Habilitar ARC</translation>
 <translation id="2987227569419001736">Controlar el uso de la API de Bluetooth web</translation>
-<translation id="2988481278211008583">Si habilitas esta política, el valor de la clave del manifiesto de <ph name="REQUIRED_PLATFORM_VERSION" /> de la aplicación de kiosco sin tiempos de espera con inicio automático se usará como prefijo de la versión de destino de actualización automática.
-
-      Si inhabilitas la política o no la estableces, se ignorará la clave del manifiesto de <ph name="REQUIRED_PLATFORM_VERSION" /> y la actualización automática se realizará con normalidad.
-
-      Advertencia: No delegues el control de la versión de <ph name="PRODUCT_OS_NAME" /> a una aplicación de kiosco, ya que hacerlo podría impedir que el dispositivo reciba actualizaciones de software y correcciones de seguridad importantes. La delegación del control de la versión de <ph name="PRODUCT_OS_NAME" />podría poner en riesgo a los usuarios.</translation>
 <translation id="2989404644164421834">Volver a cargar páginas</translation>
 <translation id="299446489108785864">Se trata de una lista que incluye las URLs en las que se aplicará <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />. Esta política no afecta los valores abiertos automáticamente que configuran los usuarios.
 
@@ -2779,11 +2763,6 @@ Si la inhabilitas, no se permitirá la escritura predictiva en el teclado físic
 <translation id="3387999258705169775">Comportamiento predeterminado de la restricción anidada de la función setTimeout()</translation>
 <translation id="3388628790024977864">No permitir el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="GOOGLE_DRIVE_NAME" /> y <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="3389088527709746815">Habilitar la autenticación gnubby para el host de acceso remoto</translation>
-<translation id="3391457705621770207">Si estableces la política, se determinará la cantidad de tiempo (expresado en milisegundos) sin actividad del usuario antes de acceder automáticamente a la cuenta local del dispositivo especificada en la política <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" />.
-
-      Si no la estableces, se utilizará 0 milisegundos como tiempo de espera.
-
-      Si no estableces la política <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" />, esta política no tendrá efecto.</translation>
 <translation id="3397883909301547525">No mostrar recomendaciones de apps en el selector de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3398051852031115795">Comportamiento predeterminado del sistema (según el tamaño de la pantalla)</translation>
 <translation id="3399859571630358395">Inhabilitar de manera automática la Vinculación rápida (vinculación rápida por Bluetooth)</translation>
@@ -3361,11 +3340,6 @@ Esta política es una solución temporal y se quitará en algunos momentos impor
 
       Los usuarios no podrán quitar un controlador de protocolo que haya registrado la política. Sin embargo, al instalar un nuevo controlador predeterminado, los usuarios podrán cambiar los controladores de protocolo que haya instalado la política.</translation>
 <translation id="3851443303439635700">Controlar el umbral de anidación antes de que la función de JavaScript setTimeout() comience a restringirse</translation>
-<translation id="3858128774616573616">Si habilitas la política, se mostrará el ícono de Cast en la barra de herramientas o el menú ampliado; los usuarios no podrán quitarlo.
-
-      Si la inhabilitas o no la estableces, los usuarios podrán fijar o quitar el ícono desde el menú contextual.
-
-      Si inhabilitas la política <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" />, el valor de esta política no tendrá ningún efecto y no se mostrará el ícono de la barra de herramientas.</translation>
 <translation id="3858658082795336534">Modo predeterminado de impresión doble</translation>
 <translation id="3859780406608282662">Permite agregar un parámetro para la obtención del valor de inicialización de variaciones en <ph name="PRODUCT_OS_NAME" />.
 
@@ -3938,19 +3912,6 @@ Esta política no afecta el análisis de contenido de descargas configurado por 
           Si la estableces como verdadera, WebSQL en contextos no seguros estará disponible.
           Si estableces esta política como falsa o no la estableces, WebSQL en contextos no seguros seguirá disponible hasta la versión M109 y, luego, no estará disponible a partir de M110.
 Esto se quitó en M112.</translation>
-<translation id="4401496838830169080">Te permite controlar si se habilita o no la función de Navegación segura de <ph name="PRODUCT_NAME" /> y el modo en el que opera.
-
-      Si se establece esta política como "NoProtection" (valor 0), no se activará nunca la Navegación segura.
-
-      Si se establece como "StandardProtection" (valor 1, el cual es el predeterminado), la Navegación segura estará siempre activa en el modo estándar.
-
-      Si se establece como "EnhancedProtection" (valor 2), la Navegación segura estará siempre activa en el modo mejorado, el cual es más seguro, pero requiere que compartas con Google más datos sobre la navegación.
-
-      Si la estableces como obligatoria, los usuarios no podrán cambiar ni anular la configuración de la Navegación segura en <ph name="PRODUCT_NAME" />.
-
-      Si no se establece, la Navegación segura operará en el modo de protección estándar, pero los usuarios podrán cambiar esta configuración.
-
-      Para obtener más información sobre la Navegación segura, consulta https://developers.google.com/safe-browsing.</translation>
 <translation id="4402887080007986374">La versión válida de las Condiciones del Servicio de Edu Coexistence</translation>
 <translation id="4408428864159735559">Lista de archivos compartidos de red configurados previamente</translation>
 <translation id="4410236409016356088">Habilitar la velocidad moderada del ancho de banda de la red</translation>
@@ -4916,9 +4877,6 @@ Si no estableces esta política, o la lista no contiene referencias de imagen v�
       Si la política no se establece, se establece con un intervalo de puertos no válido o se deja como una cadena vacía, WebRTC puede usar cualquier puerto UDP local disponible.</translation>
 <translation id="5288776487100096897">Permitir que las políticas de nube destinadas a los usuarios anulen las políticas de <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /></translation>
 <translation id="5290940294294002042">Especificar una lista de complementos que el usuario puede habilitar o inhabilitar.</translation>
-<translation id="5293044154216294358">Si estableces la política como verdadera, los usuarios podrán jugar al juego del dinosaurio. Si estableces la política como falsa, los usuarios no podrán jugar al juego del huevo de pascua del dinosaurio cuando el dispositivo esté sin conexión.
-
-      Si no la estableces, los usuario no podrán jugar al juego en el <ph name="PRODUCT_OS_NAME" /> registrado, pero podrán hacerlo en otras circunstancias.</translation>
 <translation id="5293285950307241933">Borrar todos los datos locales del usuario</translation>
 <translation id="5293619885162445352">Permitir que <ph name="PEPPER_NAME" /> use el nuevo decodificador de video</translation>
 <translation id="529457411593078576">Habilita las Condiciones del Servicio en la primera ejecución para CCT</translation>
@@ -5049,9 +5007,6 @@ A partir de la versión 92 de <ph name="PRODUCT_NAME" />, esta política tambié
 
       Si se establece la política como falsa o no se establece, no se enviará la información.
       Si se establece como verdadera, se enviará la información.</translation>
-<translation id="5418892536013005088">Si habilitas la política o no la estableces, podrán borrarse los historiales de navegación y de descargas en Chrome, y los usuarios no podrán cambiar esta configuración.
-
-      Si inhabilitas la política, no podrán borrarse los historiales de navegación ni de descargas. Incluso con la política desactivada, no se garantiza la conservación de los historiales de navegación y de descarga. Es posible que los usuarios puedan editar o borrar los archivos de la base de datos del historial directamente, y que el propio navegador pueda caducar o archivar algunos o todos los elementos del historial en cualquier momento.</translation>
 <translation id="5420245232720940848">Inhabilitar la tunelización PCIe para los dispositivos periféricos Thunderbolt/USB4, lo que limita las capacidades de los dispositivos</translation>
 <translation id="5420774177427557782">Controla si las VM que usan esta configuración se pueden instalar y ejecutar (<ph name="INSTALL_ALLOWED" />), ejecutar, pero no instalar (<ph name="RUN_ALLOWED" />) o si no se pueden ejecutar (<ph name="BLOCKED" />). Ten en cuenta que, para instalar una VM, también se debe configurar la clave installer_image_x86_64. Si quitas una configuración, se la establece de forma implícita en <ph name="BLOCKED" />, lo que evita que las VMs se ejecuten sin una política.</translation>
 <translation id="5422643441807528365">Clave de licencia de <ph name="PLUGIN_VM_NAME" /></translation>
@@ -5400,11 +5355,6 @@ Cuando se establece para el kiosco de <ph name="PRODUCT_OS_NAME" />, esta polít
       Esta política obligatoria afecta las políticas de la nube con alcance en la máquina.
 
       Esta política solo está disponible en <ph name="PRODUCT_NAME" /> y no tiene efecto en <ph name="GOOGLE_UPDATE_NAME" />.</translation>
-<translation id="5699770471852263667">Si habilitas la política, se desactivará el visor de PDF interno de <ph name="PRODUCT_NAME" />, se tratarán los archivos PDF como descargas y los usuarios podrán abrir los archivos PDF con la aplicación predeterminada.
-
-      Si inhabilitas la política, se abrirán los archivos PDF, a menos que los usuarios desactiven el complemento de PDF.
-
-      Si estableces esta política, los usuarios no podrán cambiarla en <ph name="PRODUCT_NAME" />. Si no la estableces, los usuarios podrán elegir si desean abrir los archivos PDF de forma externa o no.</translation>
 <translation id="5705055136345677598">Inhabilitar el modo de segundo plano</translation>
 <translation id="5705828032077475554">Informar las sesiones de CRD</translation>
 <translation id="57072195677044908">Inhabilitar la separación de perfiles</translation>
@@ -6120,7 +6070,6 @@ principal del string usuario-agente en 99.
           El valor de la política debe especificarse en milisegundos. Los valores deben ser menores o iguales que la demora de inactividad.
 
           Solo se muestra el mensaje de advertencia si la acción de inactividad es salir de la cuenta o apagar el dispositivo.</translation>
-<translation id="6331172765821724350">Permitir que una marca de Chrome inhabilite WebSQL</translation>
 <translation id="6331943515692769234">Forzar el uso del algoritmo GREASE de usuario-agente anterior</translation>
 <translation id="6332546092866098577">Impide el acceso de lectura a través de la API de File System en estos sitios</translation>
 <translation id="6334330017384340264">Esta política especifica qué apps y URL deben incluirse en la lista de elementos permitidos para las restricciones de uso por app.
@@ -6326,11 +6275,6 @@ NOTA: Esta política tenía un valor predeterminado "verdadero" documentado de f
 
       Nota: Si el método de entrada actual no es compatible, este cambiará al diseño de teclado del hardware (si se permite) o a la primera entrada válida de la lista. Se ignorarán los métodos no válidos o no compatibles.</translation>
 <translation id="6483115462650732746">Mostrar el menú de accesibilidad flotante en el modo kiosco</translation>
-<translation id="6489084406497912050">Determina si los usuarios pueden agregar cuentas de Kerberos.
-
-          Si inhabilitas esta política o no la estableces, los usuarios podrán agregar cuentas de Kerberos mediante la configuración de las cuentas de Kerberos en la página de configuración de Kerberos. Los usuarios tendrán control total de las cuentas que agregan y podrán modificarlas o quitarlas.
-
-          Si inhabilitas esta política, los usuarios no podrán agregar cuentas de Kerberos. Las cuentas solo se pueden agregar mediante la política "Configurar cuentas de Kerberos". Este es un procedimiento eficaz para proteger las cuentas.</translation>
 <translation id="6491139795995924304">Permitir Bluetooth en el dispositivo</translation>
 <translation id="6491305972928809525">No mostrar el menú de accesibilidad flotante en el modo kiosco</translation>
 <translation id="6491872498385040936">Esta política es obsoleta. Considera usar <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />, que anula esta política y te permite implementar una configuración más detallada.
@@ -6756,9 +6700,6 @@ Esta política siempre será válida para <ph name="PRODUCT_OS_NAME" />.</transl
 <translation id="6810445994095397827">Bloquear JavaScript en estos sitios</translation>
 <translation id="6813263547126514821">Encendido y apagado</translation>
 <translation id="681446116407619279">Esquemas de autenticación compatibles</translation>
-<translation id="6815483833848348029">Si habilitas la política o no la estableces, en caso de que una cuenta local de un dispositivo sin conexión se haya configurado para el acceso automático sin tiempos de espera, <ph name="PRODUCT_OS_NAME" /> mostrará una solicitud de configuración de red.
-
-      Si inhabilitas la política, se mostrará un mensaje de error en lugar de la solicitud de configuración de red.</translation>
 <translation id="6815628711329903153">Permitir la asignación moderna de búfer para el complemento PPAPI de las APIs de Graphics3D</translation>
 <translation id="6819838337315703072">Si está activada la compatibilidad para apps de <ph name="LINUX_OS_NAME" /> y habilitas la política, se enviará información sobre el uso de las apps de <ph name="LINUX_OS_NAME" /> al servidor.
 
@@ -7332,11 +7273,6 @@ El valor <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indica la cantidad
 <translation id="7269263983506766969">Usa la prioridad predeterminada para el proceso de audio</translation>
 <translation id="7270001383428188269">El identificador para este certificado de cliente.</translation>
 <translation id="7271085005502526897">Importar la página principal del navegador predeterminado en la primera ejecución</translation>
-<translation id="7271181393214180342">Si habilitas esta política, la autenticación HTTP respetará la aprobación de la política de KDC, es decir, <ph name="PRODUCT_NAME" /> delegará las credenciales de usuario para el servicio al que se accede si KDC establece <ph name="OK_AS_DELEGATE" /> en el ticket de servicio. Consulta la RFC 5896 ( https://tools.ietf.org/html/rfc5896.html ). La política <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" /> debe permitir este servicio.
-
-      Si inhabilitas la política o no la estableces, se ignorará la política de KDC en las plataformas admitidas y solo se respetará la política <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />.
-
-      En <ph name="MS_WIN_NAME" />, siempre se respeta la política de KDC.</translation>
 <translation id="7273785848231509306">No mostrar nunca los nombres de usuario y las fotos</translation>
 <translation id="7274077256421167535">Habilitar el uso compartido de energía por USB</translation>
 <translation id="7275334191706090484">Favoritos administrados</translation>
@@ -7488,11 +7424,6 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
       Si la inhabilitas o no la estableces, los dispositivos inscritos no registrarán ni informarán el estado de seguridad del TPM.
       Excepción: la información del TPM es controlada por <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> para M95 y versiones anteriores.</translation>
 <translation id="739556497251174388">Permite reutilizar las credenciales de acceso de <ph name="PRODUCT_OS_NAME" /> para la autenticación de la red</translation>
-<translation id="7400971609879083218">Si habilitas la política, las imágenes de terceros de una página podrán mostrar una solicitud de autenticación.
-
-       Si inhabilitas la política o no la estableces, las imágenes de terceros no podrán mostrar una solicitud de autenticación.
-
-      Esta política suele estar inhabilitada para ofrecer protección frente a los ataques de phishing.</translation>
 <translation id="7402772023599097052">Si inhabilitas la política o no la estableces, aparecerán las advertencias de seguridad cuando se usen funciones experimentales de línea de comandos potencialmente peligrosas para iniciar Chrome.
 
 Si la inhabilitas, no aparecerán las advertencias de seguridad cuando se inicie Chrome con funciones experimentales de línea de comandos potencialmente peligrosas.
@@ -7989,11 +7920,6 @@ Nota: Si se especifica <ph name="DEVICE_LOGIN_SCREEN_SCREEN_MAGNIFIER_TYPE_POLIC
 <translation id="7850846808758624237">Si habilitas la política, se importará la página principal del navegador predeterminado anterior en la primera ejecución. Si la inhabilitas o no la estableces, no se importará la página principal en la primera ejecución.
 
       Los usuarios podrán activar un diálogo de importación; la casilla de verificación correspondiente a la página principal estará marcada o desmarcada en función del valor de esta política.</translation>
-<translation id="7851772934080809511">Determina si se habilita la funcionalidad Kerberos. Kerberos es un protocolo de autenticación que puede usarse para autenticar aplicaciones web y archivos compartidos.
-
-          Si habilitas esta política, se permitirá la funcionalidad Kerberos. Podrán agregarse las cuentas de Kerberos mediante la política "Configurar cuentas de Kerberos" o la configuración de las cuentas de Kerberos en la página de configuración de Kerberos.
-
-          Si inhabilitas esta política o no la estableces, no se permitirá la configuración de las cuentas de Kerberos. No se podrán agregar cuentas de Kerberos ni usar la autenticación Kerberos. Se borrarán todas las cuentas de Kerberos existentes y todas las contraseñas almacenadas.</translation>
 <translation id="7853140303943875314">Habilitar el rescate de acceso automático</translation>
 <translation id="7854187834842629068">Inhabilitar el dictado en la pantalla de acceso</translation>
 <translation id="7863947545897944083">Habilita la función de accesibilidad de contraste alto en la pantalla de acceso.
@@ -8032,9 +7958,6 @@ Nota: Si se especifica <ph name="DEVICE_LOGIN_SCREEN_SCREEN_MAGNIFIER_TYPE_POLIC
 <translation id="7899952578398457262">Solicitar el consentimiento de los usuarios administrados para compartir señales de dispositivos no administrados a fin de obtener acceso</translation>
 <translation id="7900469325540540107">Conservar los datos de navegación de forma predeterminada cuando se cree un perfil empresarial</translation>
 <translation id="7902040092815978832">Muestra el teclado numérico para la contraseña</translation>
-<translation id="7904177352786629708">Si habilitas la política, se omitirá la búsqueda de CNAME. Se usará el nombre del servidor tal como se haya introducido al generar el SPN de Kerberos.
-
-      Si inhabilitas la política o no la estableces, la búsqueda de CNAME determinará el nombre canónico del servidor al generar el SPN de Kerberos.</translation>
 <translation id="7904434413881624417">Lista de patrones de URL. Las solicitudes iniciadas en sitios web entregados por orígenes coincidentes no están sujetas a verificaciones del <ph name="PRIVATE_NETWORK_ACCESS" />.
 
           Si no estableces esta política, se comportará como si se hubiera establecido con una lista vacía.
@@ -8249,9 +8172,6 @@ Si no estableces esta política o la estableces con un valor vacío, se podrá u
 Si estableces esta política como un nombre de dominio o un ID de usuario (consulta https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-protocols#endpoints), solo se pueden usar las cuentas de ese nombre de dominio o el ID de usuario para acceder.
 
 Si cambias la restricción, es posible que los usuarios salgan de su cuenta de <ph name="MICROSOFT_ONE_DRIVE_NAME" /> si no cumple con la nueva restricción.</translation>
-<translation id="8076521374016204899">Si habilitas la política o no la estableces, los usuarios que se autentiquen con una contraseña podrán bloquear la pantalla.
-
-      Si inhabilitas la política, los usuarios no podrán bloquear la pantalla (solo podrán salir de la sesión de usuario).</translation>
 <translation id="8078297389450285582">Si habilitas la política o no la estableces, se activará el modelo de atenuación inteligente y podrá extenderse el tiempo indicado para la atenuación de la pantalla. Si se cambia el tiempo de espera, se modificarán el apagado de la pantalla, el bloqueo de pantalla y los tiempos de espera de inactividad a fin de mantener las mismas distancias con respecto al tiempo de espera para la atenuación de la pantalla según la configuración original.
 
       Si inhabilitas la política, el modelo de atenuación inteligente no influenciará la atenuación de la pantalla.</translation>
@@ -8542,9 +8462,6 @@ Si se inhabilita, se bloqueará la página.</translation>
 <translation id="8295496526151576383">Esta política especifica las extensiones permitidas para omitir el cuadro de diálogo de confirmación de los trabajos de impresión cuando utilizan la función <ph name="SUBMIT_JOB_FUNCTION" /> de <ph name="PRINTING_API" /> para enviar un trabajo de impresión.
 
       Si no se encuentra una extensión en la lista, o no se establece la lista, el usuario verá el cuadro de diálogo de confirmación de los trabajos de impresión en todas las llamadas a la función <ph name="SUBMIT_JOB_FUNCTION" />.</translation>
-<translation id="829703642501504476">Si estableces la política como verdadera, <ph name="PRODUCT_NAME" /> utilizará páginas de error alternativas integradas en el navegador (como "no se encontró la página"). Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no utilizará nunca páginas de error alternativas.
-
-      Si estableces la política, los usuarios no podrán cambiarla. Si no la estableces, la política estará activa, pero los usuarios podrán cambiar esta configuración.</translation>
 <translation id="8300992833374611099">Controlar dónde se pueden usar las Herramientas para desarrolladores</translation>
 <translation id="8301065459352777588">Los usuarios de la sesión de invitado administrada pueden almacenar la configuración de la pantalla de todo el dispositivo</translation>
 <translation id="8303780229975459754">Permitir que Chrome muestre advertencias cuando se ejecute en un sistema incompatible</translation>
@@ -9057,9 +8974,6 @@ Si no estableces la política, no se importará ninguna contraseña guardada en 
 <translation id="8757552286070680084">Configuración de DTC wilco</translation>
 <translation id="8758831693895931466">Habilitar la inscripción obligatoria en la administración de la nube</translation>
 <translation id="8759829385824155666">Se permiten los tipos de encriptación de Kerberos</translation>
-<translation id="8763716376920670835">WebSQL está activada de forma predeterminada a partir de M101, pero se puede inhabilitar mediante una función experimental de Chrome.
-          Si estableces esta política como falsa o no la estableces, WebSQL puede inhabilitarse.
-          Si estableces esta política como verdadera, WebSQL no puede inhabilitarse.</translation>
 <translation id="8766308369516978190">Si habilitas la política, los usuarios podrán usar <ph name="ASSISTANT_PRODUCT_NAME" /> en la Web, p. ej., para agilizar la confirmación de la compra y los cambios de contraseña. El uso de <ph name="ASSISTANT_PRODUCT_NAME" /> requiere consentimiento adicional del usuario, y <ph name="ASSISTANT_PRODUCT_NAME" /> solo se ejecutará si los usuarios lo otorgan, incluso si la política está habilitada.
 
       Si la inhabilitas, los usuarios no podrán usar <ph name="ASSISTANT_PRODUCT_NAME" /> en la Web.

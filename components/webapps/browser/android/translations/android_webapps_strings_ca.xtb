@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
+<translation id="1213425325105380833">Restaura les aplicacions web que has utilitzat recentment en dispositius connectats a aquest compte</translation>
+<translation id="2065911435109240297">Restaura les aplicacions web</translation>
+<translation id="2111649875343992405">Revisa quines aplicacions web s'han de restaurar</translation>
 <translation id="2139186145475833000">Afegeix a pantalla d'inici</translation>
+<translation id="2172982519592313442">Revisa les aplicacions web</translation>
 <translation id="2478076885740497414">Instal·la l'aplicació</translation>
 <translation id="3789841737615482174">Instal·la</translation>
 <translation id="3910402514791813257">No s'ha pogut instal·lar</translation>

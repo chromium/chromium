@@ -1483,6 +1483,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4084219288110917128">Koverta C1</translation>
 <translation id="4088981014127559358">Pomeranje slike 1. strane po Y osi</translation>
 <translation id="4089152113577680600">14. fioka</translation>
+<translation id="4092349052316400070">Popunite polje za adresu</translation>
 <translation id="4096237801206588987">11×15 in</translation>
 <translation id="4098354747657067197">Pred vama je obmanjujući sajt</translation>
 <translation id="4099048595830172239">Smernice administratora ne preporučuju deljenje ekrana sa <ph name="APPLICATION_TITLE" /> kada se vidi poverljiv sadržaj:</translation>
@@ -1696,7 +1697,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4489023393592172404">Koverta Kaku 4</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">Šifruj sinhronizovane lozinke pomoću Google naloga</translation>
-<translation id="4492519888999857993">Ove funkcije su podrazumevano onemogućene. One neće biti dostupne u budućim verzijama Chrome-a.</translation>
 <translation id="4493480324863638523">URL je nevažeći. URL mora da ima standardnu šemu, npr. http://example.com ili https://example.com.</translation>
 <translation id="4494323206460475851">Možete da vidite teme oglasa u podešavanjima i da blokirate one za koje ne želite da se dele sa sajtovima. Chrome automatski briše i teme oglasa starije od 4 nedelje.</translation>
 <translation id="4500587658229086076">nebezbedan sadržaj</translation>

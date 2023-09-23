@@ -1482,6 +1482,7 @@
 <translation id="4084219288110917128">Envelope C1</translation>
 <translation id="4088981014127559358">เปลี่ยนตำแหน่งรูปภาพด้าน 1 ตามแกน Y</translation>
 <translation id="4089152113577680600">ถาด 14</translation>
+<translation id="4092349052316400070">กรอกที่อยู่</translation>
 <translation id="4096237801206588987">11 x 15 นิ้ว</translation>
 <translation id="4098354747657067197">เว็บไซต์ที่กำลังจะเข้าชมไม่ปลอดภัย</translation>
 <translation id="4099048595830172239">นโยบายของผู้ดูแลระบบไม่แนะนำให้แชร์หน้าจอกับ <ph name="APPLICATION_TITLE" /> เมื่อมีเนื้อหาที่เป็นความลับแสดงอยู่</translation>
@@ -1695,7 +1696,6 @@
 <translation id="4489023393592172404">Envelope Kaku 4</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">เข้ารหัสรหัสผ่านที่ซิงค์กับบัญชี Google ของคุณ</translation>
-<translation id="4492519888999857993">ฟีเจอร์เหล่านี้ปิดใช้งานอยู่โดยค่าเริ่มต้น และจะไม่มีให้ใช้งานใน Chrome เวอร์ชันต่อๆ ไป</translation>
 <translation id="4493480324863638523">URL ไม่ถูกต้อง ต้องเป็น URL ที่มีรูปแบบมาตรฐาน เช่น http://example.com หรือ https://example.com</translation>
 <translation id="4494323206460475851">คุณสามารถดูหัวข้อโฆษณาและบล็อกหัวข้อที่ไม่ต้องการแชร์กับเว็บไซต์ได้ในการตั้งค่า นอกจากนี้ Chrome จะลบหัวข้อโฆษณาที่เก่ากว่า 4 สัปดาห์โดยอัตโนมัติด้วย</translation>
 <translation id="4500587658229086076">เนื้อหาที่ไม่ปลอดภัย</translation>

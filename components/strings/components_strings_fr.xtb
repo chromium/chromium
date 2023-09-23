@@ -1483,6 +1483,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4084219288110917128">Enveloppe C1</translation>
 <translation id="4088981014127559358">Décalage Y de l'image côté 1</translation>
 <translation id="4089152113577680600">Bac 14</translation>
+<translation id="4092349052316400070">Remplir le champ de l'adresse</translation>
 <translation id="4096237801206588987">11 x 15 pouces</translation>
 <translation id="4098354747657067197">Le site Web que vous allez ouvrir est trompeur</translation>
 <translation id="4099048595830172239">Une règle de l'administrateur déconseille de partager votre écran avec <ph name="APPLICATION_TITLE" /> lorsque du contenu confidentiel est visible :</translation>
@@ -1696,7 +1697,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4489023393592172404">Enveloppe Kaku 4</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">Chiffrer les mots de passe synchronisés avec votre compte Google</translation>
-<translation id="4492519888999857993">Ces fonctionnalités sont désactivées par défaut. Elles ne seront plus disponibles dans les prochaines versions de Chrome.</translation>
 <translation id="4493480324863638523">URL non valide : vous devez saisir une URL avec un schéma standard, comme http://example.com ou https://example.com.</translation>
 <translation id="4494323206460475851">Vous pouvez voir les thèmes d'annonces dans les paramètres, et bloquer ceux que vous ne souhaitez pas partager avec les sites. Par ailleurs, Chrome supprime automatiquement les thèmes d'annonces qui datent de plus de quatre semaines.</translation>
 <translation id="4500587658229086076">contenu non sécurisé</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ml">
 <translation id="1011749477052068769">ഇവിടേക്ക് നീക്കുക</translation>
+<translation id="1014147525163127655">ഈ ഉപകരണത്തിൽ <ph name="ORIGIN" /> എന്നതിനുള്ള പാസ്‌കീകളൊന്നുമില്ല</translation>
 <translation id="1016498331642356377">നിങ്ങളുടെ ശബ്ദം ഉപയോഗിച്ച് വേഗത്തിൽ തിരയുക. ഈ കുറുക്കുവഴി എഡിറ്റ് ചെയ്യാൻ, സ്‌പർശിച്ചുപിടിക്കുക.</translation>
 <translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> എന്നതിലേക്ക് അയ‌യ്‌ക്കുന്നു...</translation>
@@ -674,6 +675,7 @@
 <translation id="452750746583162491">നിങ്ങളുടെ സമന്വയിപ്പിച്ച ഡാറ്റ അവലോകനം ചെയ്യുക</translation>
 <translation id="4528638190900283934">അധിക ഫീച്ചറുകൾക്കായി സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="4532845899244822526">ഫോൾഡർ തിരഞ്ഞെടുക്കുക</translation>
+<translation id="4543131175509360848">പാസ്‌കീകളുടെ ഷീറ്റൊന്നുമില്ല</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ടാബ്}other{<ph name="TAB_COUNT_MANY" /> ടാബുകൾ, <ph name="TAB_COUNT_INCOGNITO" /> അദൃശ്യ മോഡ്}}</translation>
 <translation id="4554077758708533499">USB കേബിൾ ഉപയോഗിച്ച് കണക്റ്റ് ചെയ്തു</translation>
 <translation id="4558311620361989323">വെബ്‌പേജ് കുറുക്കുവഴികൾ</translation>
@@ -948,6 +950,7 @@
 <translation id="5869522115854928033">സംരക്ഷിച്ച പാസ്‌വേഡുകള്‍</translation>
 <translation id="587735546353481577">ഒരു സൈറ്റ് പിന്തുടരാൻ, സൈറ്റിലേക്ക് പോയി Chrome മെനു തുറന്ന് 'ഫോളോ ചെയ്യുക' ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="5879072387416556377">മെച്ചപ്പെട്ട നിർദ്ദേശങ്ങൾ നേടുക</translation>
+<translation id="5899667542927581604">പാസ്‌കീ ഷീറ്റുകളൊന്നും അടച്ചിട്ടില്ല</translation>
 <translation id="5916664084637901428">ഓൺ ചെയ്യുക</translation>
 <translation id="5919204609460789179">സമന്വയിപ്പിക്കാൻ തുടങ്ങുന്നതിന്, <ph name="PRODUCT_NAME" /> അപ്‌ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="5938820472109305350"><ph name="INTEREST" /> ചേർക്കുക</translation>
@@ -1592,6 +1595,7 @@
 <translation id="9063523880881406963">'ഡെസ്‌ക്‌ടോപ്പ് സൈറ്റ് അഭ്യർത്ഥിക്കുക' ഓഫാക്കുക</translation>
 <translation id="9065203028668620118">എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="9065383040763568503">Chrome അപ്രധാനമായി കാണുന്ന സംഭരിച്ച ഡാറ്റ (ഉദാ: ക്രമീകരണം സംരക്ഷിച്ചിട്ടില്ലാത്തതോ നിങ്ങൾ ഇടയ്‌ക്കിടെ സന്ദർശിക്കാത്തതോ ആയ സൈറ്റുകൾ)</translation>
+<translation id="9067341854474068781">മുഴുവൻ ഉയരത്തിൽ പാസ്‌കീകളുടെ ഷീറ്റൊന്നും തുറന്നിട്ടില്ല</translation>
 <translation id="906781307897697745"><ph name="PRODUCT_NAME" /> എന്നതിൽ</translation>
 <translation id="9069999660519089861">വായിക്കാത്ത പേജുകൾ ഇല്ല</translation>
 <translation id="9070377983101773829">ശബ്ദ തിരയൽ ആരംഭിക്കുക</translation>

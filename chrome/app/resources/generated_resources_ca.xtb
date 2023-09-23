@@ -434,6 +434,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1340527397989195812">Feu una còpia de seguretat dels fitxers multimèdia del dispositiu mitjançant l'aplicació Fitxers.</translation>
 <translation id="1341701348342335220">Ben fet!</translation>
 <translation id="1341871421050612057">No es pot sincronitzar amb <ph name="USERNAME" /></translation>
+<translation id="1342886103232377846">Per comprovar si hi ha contrasenyes en perill, ves al gestor de contrasenyes de Google</translation>
 <translation id="1343865611738742294">Concedeix permís a les aplicacions de Linux per accedir als dispositius USB. Linux no recordarà els dispositius USB després d'extreure'ls.</translation>
 <translation id="1343920184519992513">Continua des d'on ho vas deixar i obre un conjunt de pàgines específic</translation>
 <translation id="1344141078024003905">Estàs emetent la teva pantalla. Pots posar en pausa o aturar l'emissió de la pantalla en qualsevol moment.</translation>
@@ -457,6 +458,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1363585519747660921">La impressora USB s'ha de configurar</translation>
 <translation id="136378536198524553">L'estalvi d'energia està activat</translation>
 <translation id="1368603372088757436">Linux no s'admet al teu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
+<translation id="1370384480654163477">Consulta i edita els fitxers de la darrera vegada que vas visitar aquest lloc web:</translation>
 <translation id="1372841398847029212">Sincronitza amb el meu compte</translation>
 <translation id="1373176046406139583">La visibilitat del dispositiu determina qui pot compartir contingut amb tu quan tens la pantalla desbloquejada. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">El certificat necessari per a la xarxa "<ph name="NETWORK_NAME" />" no està instal·lat o ja no és vàlid. Obtingueu un certificat nou i proveu de tornar-vos a connectar.</translation>
@@ -715,6 +717,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1570235441606255261">Instal·lador de Steam</translation>
 <translation id="1570604804919108255">Deixa de silenciar les notificacions</translation>
 <translation id="1570990174567554976">S'ha creat la carpeta d'adreces d'interès "<ph name="BOOKMARK_TITLE" />".</translation>
+<translation id="1571041387761170095">No tens cap contrasenya poc segura o reutilitzada</translation>
 <translation id="1571304935088121812">Copia el nom d'usuari</translation>
 <translation id="1571738973904005196">Mostra la pestanya <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (convidat)</translation>
@@ -1236,6 +1239,9 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969550816138571473">S'està preparant</translation>
 <translation id="1969654639948595766">Registres de text de WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
+<translation id="1970895205072379091"><ph name="BEGIN_PARAGRAPH1" />Si permets que els dispositius ChromeOS ens enviïn informes automàtics, ens ajudaràs a prioritzar què s'ha de corregir i millorar a ChromeOS. Aquests informes poden incloure dades com ara quan falla ChromeOS, quines funcions fas servir i quanta memòria utilitzes normalment. Una part de les dades agregades també serà útil per a les aplicacions i per als partners de Google, com ara els desenvolupadors d'Android. Es recolliran altres dades de diagnòstic i d'ús d'aplicacions, incloses les d'aplicacions web i d'Android, si la sincronització d'aplicacions també està activada.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Pots iniciar o aturar l'enviament d'aquests informes en qualsevol moment a la configuració del dispositiu ChromeOS. Si ets l'administrador d'un domini, pots canviar aquesta opció de configuració a la consola d'administració.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Si l'opció de configuració Activitat al web i en aplicacions està activada per al teu Compte de Google, és possible que les teves dades d'Android es desin al teu Compte de Google. Pots veure les teves dades, suprimir-les i modificar la configuració del teu compte a account.google.com.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1972313920920745320">Els llocs web que afegeixis estaran sempre actius i no se n'alliberarà memòria. <ph name="BEGIN_LINK" />Més informació sobre com pots mantenir actius llocs web específics<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Navegaràs més de pressa perquè el contingut es carrega de forma proactiva en funció de la pàgina web que estiguis visitant</translation>
 <translation id="197288927597451399">Conserva</translation>
@@ -1973,6 +1979,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2519250377986324805">Com es fa</translation>
 <translation id="2519517390894391510">Nom del perfil del certificat</translation>
 <translation id="2520644704042891903">Estem esperant que hi hagi un sòcol disponible...</translation>
+<translation id="2521427645491031107">La sincronització d'aplicacions s'estableix a la configuració del dispositiu</translation>
 <translation id="2521854691574443804">S'està comprovant si <ph name="FILE_NAME" /> compleix les polítiques de seguretat de la teva organització...</translation>
 <translation id="2523184218357549926">Envia a Google els URL de les pàgines que visites</translation>
 <translation id="252418934079508528">Instal·la <ph name="DEVICE_OS" /></translation>
@@ -2794,6 +2801,9 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3193695589337931419">Utilitats per a senyals del sistema</translation>
 <translation id="3194786596445804250">Mostra els detalls sobre com es permeten les galetes de tercers</translation>
 <translation id="3197453258332670132">Si mantens el text premut o hi fas clic amb el botó dret, es mostrarà informació relacionada amb el text seleccionat</translation>
+<translation id="3198487209506801480"><ph name="BEGIN_PARAGRAPH1" />Si permets que els dispositius ChromeOS ens enviïn informes automàtics, ens ajudaràs a prioritzar què s'ha de corregir i millorar a ChromeOS. Aquests informes poden incloure dades com ara quan falla ChromeOS, quines funcions s'han fet servir i quanta memòria s'utilitzava normalment. Una part de les dades agregades també serà útil per a les aplicacions i per als partners de Google, com ara els desenvolupadors d'Android. Es recolliran altres dades de diagnòstic i d'ús d'aplicacions, incloses les d'aplicacions web i d'Android, si la sincronització d'aplicacions també està activada.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Pots iniciar o aturar l'enviament d'aquests informes en qualsevol moment a la configuració del dispositiu ChromeOS del teu fill o filla. Si ets l'administrador d'un domini, pots canviar aquesta opció de configuració a la consola d'administració.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH4" />Si l'opció de configuració Activitat al web i en aplicacions està activada per al Compte de Google del teu fill o filla, és possible que les seves dades es desin al seu Compte de Google. Per obtenir més informació sobre aquestes opcions de configuració i sobre com pots ajustar-les, ves a families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="3199127022143353223">Servidors</translation>
 <translation id="3199637719075529971">Aquesta pestanya està connectada a un port en sèrie</translation>
 <translation id="3200061262156232574">Al carretó electrònic</translation>
@@ -6277,6 +6287,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6071181508177083058">confirmeu la contrasenya</translation>
 <translation id="6071576563962215370">El sistema no ha pogut establir el bloqueig dels atributs de temps d'instal·lació del dispositiu.</translation>
 <translation id="6071938745001252305"><ph name="MEMORY_VALUE" /> de memòria estalviada</translation>
+<translation id="6071995715087444295">Per comprovar si hi ha contrasenyes en perill, inicia la sessió al teu Compte de Google</translation>
 <translation id="6072442788591997866">No es permet <ph name="APP_NAME" /> en aquest dispositiu. Contacta amb l'administrador. Codi d'error: <ph name="ERROR_CODE" />.</translation>
 <translation id="6073451960410192870">Atura la gravació</translation>
 <translation id="6073903501322152803">Afegeix funcions d'accessibilitat</translation>
@@ -6807,6 +6818,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6513247462497316522">Google Chrome utilitzarà dades mòbils si no esteu connectat a una altra xarxa.</translation>
 <translation id="6514010653036109809">Dispositiu disponible:</translation>
 <translation id="6514565641373682518">Aquesta pàgina ha desactivat el cursor del ratolí.</translation>
+<translation id="6517227424170598783">Vols suprimir la drecera <ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" />?</translation>
 <translation id="6517420300299531857">Els fitxers de La meva unitat se sincronitzaran automàticament amb el Chromebook perquè hi puguis accedir sense connexió a Internet. Aquesta acció utilitzarà aproximadament <ph name="REQUIRED_SPACE" />. Actualment tens <ph name="FREE_SPACE_AVAILABLE" /> disponibles.</translation>
 <translation id="6517709704288360414">És possible que el dispositiu ja no funcioni correctament i que tinguis problemes de seguretat i de rendiment. La desactivació de les actualitzacions pot afectar el teu dret de presentar reclamacions legals si tens cap problema.</translation>
 <translation id="6518014396551869914">Copia&amp; la imatge</translation>
@@ -7952,6 +7964,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7453467225369441013">Et tanca la sessió de la majoria de llocs web, però no la del Compte de Google.</translation>
 <translation id="7453597054492098060">{NUM_EXTENSIONS,plural, =1{És possible que aquesta extensió no sigui segura. Chrome et recomana que la suprimeixis.}other{És possible que aquestes extensions no siguin segures. Chrome et recomana que les suprimeixis.}}</translation>
 <translation id="7454548535253569100">Portal: <ph name="SUBFRAME_SITE" /></translation>
+<translation id="7454744349230173024">La teva organització ha desactivat l'opció de desar contrasenyes</translation>
 <translation id="7455730275746867420">Gestiona els contenidors addicionals</translation>
 <translation id="7455988709578031708">Segons el teu historial de navegació. Aquesta opció de configuració està activada.</translation>
 <translation id="7456142309650173560">dev</translation>
@@ -8266,6 +8279,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7697109152153663933">Fes clic a Contrasenyes i emplenament automàtic</translation>
 <translation id="769824636077131955">Aquest document és massa gran per fer-hi una comprovació de seguretat. Pots imprimir documents de fins a 50 MB.</translation>
 <translation id="7698507637739331665">Alguns elements estan bloquejats</translation>
+<translation id="7700516433658473670">Impressores i escàners</translation>
 <translation id="7701040980221191251">Cap</translation>
 <translation id="7701869757853594372">Controls d'USUARI</translation>
 <translation id="7702463352133825032">Atura l'emissió a <ph name="DEVICE_NAME" /></translation>

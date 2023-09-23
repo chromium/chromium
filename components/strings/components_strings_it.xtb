@@ -1480,6 +1480,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4084219288110917128">Busta C1</translation>
 <translation id="4088981014127559358">Spostamento Y lato 1 immagine</translation>
 <translation id="4089152113577680600">Vassoio 14</translation>
+<translation id="4092349052316400070">Inserisci l'indirizzo</translation>
 <translation id="4096237801206588987">11 x 15 in</translation>
 <translation id="4098354747657067197">Sito ingannevole in vista</translation>
 <translation id="4099048595830172239">Il criterio dell'amministratore sconsiglia la condivisione dello schermo con <ph name="APPLICATION_TITLE" /> quando sono visibili contenuti riservati:</translation>
@@ -1693,7 +1694,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4489023393592172404">Busta Kaku 4</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">Cripta le password sincronizzate con il tuo Account Google</translation>
-<translation id="4492519888999857993">Queste funzionalità sono disattivate per impostazione predefinita. Non saranno disponibili nelle future versioni di Chrome.</translation>
 <translation id="4493480324863638523">URL non valido. Deve essere un URL con schema standard, ad esempio http://example.com o https://example.com.</translation>
 <translation id="4494323206460475851">Puoi vedere gli argomenti degli annunci nelle impostazioni e bloccare quelli che non vuoi condividere con i siti. Inoltre, Chrome elimina automaticamente gli argomenti degli annunci più vecchi di 4 settimane.</translation>
 <translation id="4500587658229086076">contenuti non sicuri</translation>
@@ -3702,6 +3702,7 @@ Ulteriori dettagli:
 <translation id="8586082901536468629">Attrezzature e articoli per squash e racquetball</translation>
 <translation id="858637041960032120">Aggiungi telefono</translation>
 <translation id="8589998999637048520">Migliore qualità</translation>
+<translation id="8590264442799989746"><ph name="HOST_NAME" /> e altri</translation>
 <translation id="8600271352425265729">Solo questa volta</translation>
 <translation id="860043288473659153">Nome del titolare della carta</translation>
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Quali dati vengono usati:<ph name="END_BOLD" /> la tua attività su un sito che visiti usando Chrome su questo dispositivo.</translation>

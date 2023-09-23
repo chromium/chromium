@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ur">
 <translation id="1011749477052068769">یہاں منتقل کریں</translation>
+<translation id="1014147525163127655">اس آلے پر <ph name="ORIGIN" /> کے لیے کوئی پاس کیز نہیں ہیں</translation>
 <translation id="1016498331642356377">فوری طور پر اپنی آواز سے تلاش کریں۔ اس شارٹ کٹ میں ترمیم کرنے کے لیے، ٹچ کریں اور دبائے رکھیں۔</translation>
 <translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" /> پر بھیجا جا رہا ہے…</translation>
@@ -674,6 +675,7 @@
 <translation id="452750746583162491">اپنے مطابقت پذیر ڈیٹا کا جائزہ لیں</translation>
 <translation id="4528638190900283934">اضافی خصوصیات کے لیے سائن ان کریں</translation>
 <translation id="4532845899244822526">فولڈر منتخب کریں</translation>
+<translation id="4543131175509360848">کوئی پاسکیز شیٹ نہیں ہے</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ٹیب}other{<ph name="TAB_COUNT_MANY" /> ٹیبز، <ph name="TAB_COUNT_INCOGNITO" /> پوشیدگی}}</translation>
 <translation id="4554077758708533499">‏USB کیبل کے ساتھ منسلک ہے</translation>
 <translation id="4558311620361989323">ویب صفحہ شارٹ کٹس</translation>
@@ -948,6 +950,7 @@
 <translation id="5869522115854928033">محفوظ کردہ پاس ورڈز</translation>
 <translation id="587735546353481577">‏کسی سائٹ کی پیروی کرنے کے لیے، سائٹ پر جائیں، Chrome مینیو کھولیں اور "پیروی کریں" پر تھپتھپائیں۔</translation>
 <translation id="5879072387416556377">بہتر تجاویز حاصل کریں</translation>
+<translation id="5899667542927581604">کوئی پاسکیز شیٹ بند نہیں تھی</translation>
 <translation id="5916664084637901428">آن</translation>
 <translation id="5919204609460789179">مطابقت پذیری شروع کرنے کیلئے <ph name="PRODUCT_NAME" /> کو اپ ڈیٹ کریں</translation>
 <translation id="5938820472109305350"><ph name="INTEREST" /> شامل کریں</translation>
@@ -1592,6 +1595,7 @@
 <translation id="9063523880881406963">ڈیسک ٹاپ سائٹ کی درخواست کو آف کریں</translation>
 <translation id="9065203028668620118">تبدیل کریں</translation>
 <translation id="9065383040763568503">‏اسٹور شدہ وہ ڈیٹا جسے Chrome اہم نہیں سمجھتا ہے (جیسے، بغیر محفوظ کردہ ترتیبات والی سائٹس یا وہ جنہیں آپ اکثر ملاحظہ نہیں کرتے ہیں)</translation>
+<translation id="9067341854474068781">کوئی پاس کیز شیٹ مکمل اونچائی پر کھلی ہوئی نہیں ہے</translation>
 <translation id="906781307897697745"><ph name="PRODUCT_NAME" /> میں</translation>
 <translation id="9069999660519089861">کوئی نہ پڑھا ہوا صفحہ نہیں ہے</translation>
 <translation id="9070377983101773829">صوتی تلاش شروع کریں</translation>

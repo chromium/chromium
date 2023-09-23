@@ -1483,6 +1483,7 @@
 <translation id="4084219288110917128">봉투 C1</translation>
 <translation id="4088981014127559358">첫 번째 면 이미지 Y 시프트</translation>
 <translation id="4089152113577680600">트레이 14</translation>
+<translation id="4092349052316400070">주소 입력</translation>
 <translation id="4096237801206588987">11x15인치</translation>
 <translation id="4098354747657067197">사기성 사이트 주의</translation>
 <translation id="4099048595830172239">관리자 정책에 따라 기밀 콘텐츠가 화면에 표시되어 있을 때 <ph name="APPLICATION_TITLE" /> 앱과 화면을 공유하지 않는 것이 좋습니다.</translation>
@@ -1696,7 +1697,6 @@
 <translation id="4489023393592172404">봉투 Kaku 4</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">Google 계정을 사용해 동기화된 비밀번호 암호화</translation>
-<translation id="4492519888999857993">이 기능은 기본적으로 사용 중지되어 있습니다. Chrome의 이후 버전에서는 사용할 수 없습니다.</translation>
 <translation id="4493480324863638523">잘못된 URL입니다. URL에는 표준 스키마가 있어야 합니다(예: http://example.com 또는 https://example.com).</translation>
 <translation id="4494323206460475851">설정에서 광고 주제를 확인하고 사이트와 공유하길 원하지 않는 주제를 차단할 수 있습니다. Chrome에서는 4주가 지난 광고 주제를 자동 삭제합니다.</translation>
 <translation id="4500587658229086076">안전하지 않은 콘텐츠</translation>

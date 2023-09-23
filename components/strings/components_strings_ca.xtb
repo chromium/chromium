@@ -1483,6 +1483,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4084219288110917128">Sobre C1</translation>
 <translation id="4088981014127559358">Desplaçament a l'eix Y del costat 1 de la imatge</translation>
 <translation id="4089152113577680600">Safata 14</translation>
+<translation id="4092349052316400070">Emplena amb l'adreça</translation>
 <translation id="4096237801206588987">11 x 15 polzades</translation>
 <translation id="4098354747657067197">Aquest lloc web és enganyós</translation>
 <translation id="4099048595830172239">La política de l'administrador no recomana compartir la pantalla amb <ph name="APPLICATION_TITLE" /> quan hi hagi contingut confidencial visible:</translation>
@@ -1696,7 +1697,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4489023393592172404">Sobre Kaku 4</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">Encripta contrasenyes sincronitzades amb el teu Compte de Google</translation>
-<translation id="4492519888999857993">Aquestes funcions estan desactivades de manera predeterminada. Deixaran d'estar disponibles en versions futures de Chrome.</translation>
 <translation id="4493480324863638523">L'URL no és vàlid. Ha de tenir un esquema estàndard, com ara "http://example.com" o "https://example.com".</translation>
 <translation id="4494323206460475851">Pots veure els temes d'anuncis a la configuració i bloquejar els que no vulguis que es comparteixin amb els llocs web. Chrome també suprimeix automàticament els temes d'anuncis que tenen més de 4 setmanes.</translation>
 <translation id="4500587658229086076">contingut no segur</translation>
@@ -3705,6 +3705,7 @@ Detalls addicionals:
 <translation id="8586082901536468629">Equipament de raquetbol i esquaix</translation>
 <translation id="858637041960032120">Afegeix un número de telèfon</translation>
 <translation id="8589998999637048520">Qualitat òptima</translation>
+<translation id="8590264442799989746"><ph name="HOST_NAME" /> i més</translation>
 <translation id="8600271352425265729">Només aquesta vegada</translation>
 <translation id="860043288473659153">Nom del titular de la targeta</translation>
 <translation id="8601027005147870853"><ph name="BEGIN_BOLD" />Quines dades s'utilitzen<ph name="END_BOLD" />: la teva activitat en un lloc web que visites amb Chrome en aquest dispositiu.</translation>

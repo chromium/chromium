@@ -1483,6 +1483,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4084219288110917128">Envelope C1</translation>
 <translation id="4088981014127559358">Side 1 image Y shift</translation>
 <translation id="4089152113577680600">Tray 14</translation>
+<translation id="4092349052316400070">Fill address</translation>
 <translation id="4096237801206588987">11 in x 15 in</translation>
 <translation id="4098354747657067197">Deceptive site ahead</translation>
 <translation id="4099048595830172239">Administrator policy doesn’t recommend sharing your screen with <ph name="APPLICATION_TITLE" /> when confidential content is visible:</translation>
@@ -1696,7 +1697,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4489023393592172404">Envelope Kaku 4</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">Encrypt synced passwords with your Google Account</translation>
-<translation id="4492519888999857993">These features are disabled by default. They will not be available in future versions of Chrome.</translation>
 <translation id="4493480324863638523">Invalid URL. Must be a URL with a standard scheme, e.g. http://example.com or https://example.com.</translation>
 <translation id="4494323206460475851">You can see ad topics in settings and block the ones that you don’t want shared with sites. Chrome also auto-deletes ad topics that are older than four weeks.</translation>
 <translation id="4500587658229086076">insecure content</translation>

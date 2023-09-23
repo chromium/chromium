@@ -98,9 +98,6 @@ Beachte, dass unter <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> und <ph
 
 Wenn sie nicht konfiguriert ist, sind keine Ausnahmen zu „<ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />“ möglich.</translation>
 <translation id="1068801725746725727">Empfang von Safe Browsing-Umfragen aktivieren</translation>
-<translation id="1069489575852947981">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird ein lokales Gerätekonto für die verzögerungsfreie automatische Anmeldung eingerichtet. <ph name="PRODUCT_OS_NAME" /> verwendet die Tastenkombination Strg + Alt + S, um die automatische Anmeldung zu umgehen und stattdessen den Anmeldebildschirm aufzurufen.
-
-      Wenn die Richtlinie deaktiviert ist, kann eine verzögerungsfreie automatische Anmeldung, sofern konfiguriert, nicht umgangen werden.</translation>
 <translation id="1073983258515362346">Diese Richtlinie gibt Informationen zur Hintergrundbeleuchtung eines Geräts aus.
 
       Wenn sie auf "false" gesetzt oder nicht konfiguriert ist, werden keine Informationen ausgegeben.
@@ -132,11 +129,6 @@ Wenn sie nicht konfiguriert ist, sind keine Ausnahmen zu „<ph name="DEVICE_AUT
 
       Wenn du diese Richtlinie konfigurierst, kann sie von Nutzern nicht geändert werden.</translation>
 <translation id="1123650965531933634">Die Berechtigung für die Fensterpositionierung wird standardmäßig auf allen Websites verweigert</translation>
-<translation id="112496019059412872">Diese Richtlinie legt fest, ob die „Passwort speichern“-Funktion im Dialogfeld für die Kerberos-Authentifizierung aktiviert ist. Passwörter werden verschlüsselt auf dem Laufwerk gespeichert und sind nur für den Kerberos-System-Daemon während einer Nutzersitzung zugänglich.
-
-          Ist die Richtlinie aktiviert oder nicht konfiguriert, können Nutzer entscheiden, ob Kerberos-Passwörter gespeichert werden, sodass sie nicht wieder eingegeben werden müssen. Kerberos-Tickets werden automatisch abgerufen, sofern keine zusätzliche Authentifizierung erforderlich ist (2-Faktor-Authentifizierung).
-
-          Wenn die Richtlinie deaktiviert ist, werden Passwörter nie gespeichert und alle zuvor gespeicherten Passwörter werden gelöscht. Nutzer müssen ihr Passwort dann jedes Mal eingeben, wenn eine Authentifizierung beim Kerberos-System erforderlich ist. Je nach Servereinstellungen kann das alle 8 Stunden oder alle paar Monate der Fall sein.</translation>
 <translation id="1126456433590366966"><ph name="CLOUD_UPLOAD_NAME" />-Ablauf für <ph name="GOOGLE_DRIVE_NAME" /> und <ph name="GOOGLE_WORKSPACE_NAME" /> automatisieren</translation>
 <translation id="112794759469625182">Diese Richtlinie wurde in M118 entfernt. Sie diente dazu, Remote Attestation für den Nutzer zu aktivieren und zu deaktivieren, allerdings war diese Einstellung standardmäßig aktiviert.
 
@@ -1995,9 +1987,6 @@ Wenn die Richtlinie nicht konfiguriert ist, kann <ph name="PRODUCT_OS_NAME" /> g
 <translation id="2823870601012066791">Windows-Registrierungspfad für <ph name="PRODUCT_OS_NAME" />-Clients:</translation>
 <translation id="2824715612115726353">Inkognitomodus aktivieren</translation>
 <translation id="282870810415075521">Verwendung von JIT durch JavaScript auf diesen Websites zulassen</translation>
-<translation id="283478052049914107">Wenn die Richtlinie aktiviert ist und ein Nicht-Standard-Port, d. h. ein anderer Port als 80 oder 443, eingegeben wird, wird dieser in den generierten Kerberos-SPN aufgenommen.
-
-      Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, umfasst der generierte Kerberos-SPN keinen Port.</translation>
 <translation id="2834965199373338033">Hintergrundmodus aktivieren</translation>
 <translation id="2835686964326214400">Benutzerdefinierten Zeitplan für den Neustart von Geräten festlegen</translation>
 <translation id="2838830882081735096">Datenmigration und ARC nicht zulassen</translation>
@@ -2172,11 +2161,6 @@ Diese Richtlinie kann nur als Cloud-Nutzerrichtlinie konfiguriert werden.</trans
 <translation id="2985927503455169394">Standardmodus für das Einrichten von Assistant verwenden</translation>
 <translation id="2987155890997901449">ARC aktivieren</translation>
 <translation id="2987227569419001736">Verwendung der Web Bluetooth API steuern</translation>
-<translation id="2988481278211008583">Wenn die Richtlinie aktiviert ist, wird der Wert des Manifestschlüssels <ph name="REQUIRED_PLATFORM_VERSION" /> der automatisch verzögerungsfrei gestarteten Kiosk-App als Zielversionspräfix beim automatischen Update verwendet.
-
-      Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, wird der Manifestschlüssel <ph name="REQUIRED_PLATFORM_VERSION" /> ignoriert und das automatische Update erfolgt wie gewohnt.
-
-      Achtung: Es wird nicht empfohlen, die Steuerung der <ph name="PRODUCT_OS_NAME" />-Version einer Kiosk-App zu überlassen, da das Gerät dann unter Umständen Softwareupdates und wichtige Sicherheitspatches nicht erhält. Wird die Steuerung der <ph name="PRODUCT_OS_NAME" />-Version abgegeben, besteht eventuell ein Risiko für die Nutzer.</translation>
 <translation id="2989404644164421834">Seiten neu laden</translation>
 <translation id="299446489108785864">Eine Liste von URLs, die angibt, auf welche URLs die Richtlinie <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> angewendet wird. Diese Richtlinie hat keine Auswirkung auf automatisch geöffnete Werte, die von Nutzern festgelegt werden.
 
@@ -2674,11 +2658,6 @@ Ist die Richtlinie deaktiviert, sind keine Wortvorschläge bei Nutzung der physi
 <translation id="3387999258705169775">Standardverhalten für die verschachtelte Mindestverzögerung der Funktion „setTimeout()“.</translation>
 <translation id="3388628790024977864"><ph name="CLOUD_UPLOAD_NAME" />-Ablauf für <ph name="GOOGLE_DRIVE_NAME" /> und <ph name="GOOGLE_WORKSPACE_NAME" /> nicht zulassen</translation>
 <translation id="3389088527709746815">Gnubby-Authentifizierung für den Host für den Remote-Zugriff aktivieren</translation>
-<translation id="3391457705621770207">Wenn die Richtlinie konfiguriert ist, gibt sie an, wie viele Millisekunden der Nutzer inaktiv sein kann, bevor er automatisch in einem lokalen Gerätekonto angemeldet wird, das über die Richtlinie <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> festgelegt wird.
-
-      Wenn diese Richtlinie nicht konfiguriert ist, werden 0 Millisekunden als Zeitlimit verwendet.
-
-      Wenn die Richtlinie <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> nicht konfiguriert ist, hat diese Richtlinie keine Auswirkungen.</translation>
 <translation id="3397883909301547525">Keine App-Empfehlungen im Launcher von <ph name="PRODUCT_OS_NAME" /> anzeigen</translation>
 <translation id="3398051852031115795">Standardmäßiges Systemverhalten (abhängig von der Bildschirmgröße)</translation>
 <translation id="3399859571630358395">Deaktivierung von schnellem Pairing (schnellem Bluetooth-Koppeln) erzwingen.</translation>
@@ -3204,11 +3183,6 @@ Diese Richtlinie ist eine vorübergehende Problemumgehung, die in einem zukünft
 
       Ein von der Richtlinie registrierter Protokoll-Handler kann vom Nutzer nicht entfernt werden. Allerdings können durch Installation eines neuen Standard-Handlers die von der Richtlinie installierten Protokoll-Handler geändert werden.</translation>
 <translation id="3851443303439635700">Steuert den Verschachtelungsgrenzwert, bevor die JavaScript-Funktion „setTimeout()“ verzögert wird</translation>
-<translation id="3858128774616573616">Wenn die Richtlinie aktiviert ist, erscheint das Google Cast-Symbol in der Symbolleiste oder im Dreipunkt-Menü und Nutzer können es nicht entfernen.
-
-      Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, können Nutzer das Symbol über das Kontextmenü anpinnen oder entfernen.
-
-      Wenn die Richtlinie "<ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" />" deaktiviert ist, hat diese Richtlinie keine Auswirkungen und das Symbol wird nicht angezeigt.</translation>
 <translation id="3858658082795336534">Standardmäßiger Duplexmodus</translation>
 <translation id="3859780406608282662">Fügt einen Parameter für den Abruf des Varianten-Seeds in <ph name="PRODUCT_OS_NAME" /> hinzu.
 
@@ -3765,19 +3739,6 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
           Wenn diese Richtlinie auf „true“ gesetzt ist, ist WebSQL in unsicheren Kontexten verfügbar.
           Ist sie auf „false“ gesetzt oder nicht konfiguriert, bleibt WebSQL in unsicheren Kontexten bis M109 verfügbar. Ab M110 ist sie dann nicht mehr verfügbar.
 WebSQL in unsicheren Kontexten wurde in M112 entfernt.</translation>
-<translation id="4401496838830169080">Mit dieser Richtlinie kannst du festlegen, ob die Safe Browsing-Funktion von <ph name="PRODUCT_NAME" /> aktiviert ist und in welchem Modus sie ausgeführt wird.
-
-      Wird die Richtlinie auf "NoProtection" (Wert 0) gesetzt, ist Safe Browsing nie aktiv.
-
-      Wird sie auf "StandardProtection" (Wert 1, die Standardeinstellung) gesetzt, ist Safe Browsing immer im Standardmodus aktiv.
-
-      Wird die Richtlinie auf "EnhancedProtection" (Wert 2), gesetzt, ist Safe Browsing immer im erweiterten Modus aktiv. Dieser bietet einen besseren Schutz, es müssen jedoch mehr Browserdaten mit Google geteilt werden.
-
-      Wird diese Richtlinie als verbindlich konfiguriert, können Nutzer die Safe Browsing-Einstellung in <ph name="PRODUCT_NAME" /> nicht ändern oder überschreiben.
-
-      Wird sie nicht konfiguriert, ist Safe Browsing im Standardschutz-Modus aktiv, Nutzer können diese Einstellung jedoch ändern.
-
-      Weitere Informationen zu Safe Browsing findest du unter https://developers.google.com/safe-browsing.</translation>
 <translation id="4402887080007986374">Die gültige Version der Nutzungsbedingungen von Edu Coexistence</translation>
 <translation id="4408428864159735559">Liste der vorkonfigurierten Netzwerkfreigaben.</translation>
 <translation id="4410236409016356088">Begrenzung der Netzwerkbandbreite erlauben</translation>
@@ -4685,9 +4646,6 @@ Wenn diese Richtlinie für ein Konto auf <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_
       Wenn die Richtlinie nicht konfiguriert ist oder sie auf den leeren String oder einen ungültigen Portbereich eingestellt ist, kann von WebRTC jeder beliebige verfügbare lokale UDP-Port verwendet werden.</translation>
 <translation id="5288776487100096897">Zulassen, dass Cloud-Richtlinien auf Nutzerebene <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />-Richtlinien überschreiben.</translation>
 <translation id="5290940294294002042">Liste von Plug-ins angeben, die der Nutzer aktivieren oder deaktivieren kann</translation>
-<translation id="5293044154216294358">Wenn die Richtlinie auf "True" gesetzt ist, können Nutzer das Dinosaurierspiel spielen. Ist sie auf "False" gesetzt, können Nutzer das Easter-Egg-Dinosaurierspiel nicht spielen, wenn das Gerät offline ist.
-
-      Wenn die Richtlinie nicht konfiguriert ist, können Nutzer das Dinosaurierspiel nicht auf registrierten <ph name="PRODUCT_OS_NAME" />-Geräten spielen, auf anderen aber schon.</translation>
 <translation id="5293285950307241933">Alle lokalen Nutzerdaten löschen</translation>
 <translation id="5293619885162445352">Erlauben, dass <ph name="PEPPER_NAME" /> den neuen Videodecoder verwendet.</translation>
 <translation id="529457411593078576">Nutzungsbedingungen während der ersten Ausführung für CCT aktivieren</translation>
@@ -4811,9 +4769,6 @@ Ab Version 92 von <ph name="PRODUCT_NAME" /> wird diese Richtlinie auch im moni
 
       Wenn sie auf "false" gesetzt oder nicht konfiguriert ist, werden keine Informationen ausgegeben.
       Ist sie auf "true" gesetzt, werden Informationen zu Anwendungen und zur Verwendung eines Geräts ausgegeben.</translation>
-<translation id="5418892536013005088">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können der Browser- und der Downloadverlauf in Chrome gelöscht werden und Nutzer können diese Einstellung nicht ändern.
-
-      Ist die Richtlinie deaktiviert, können der Browser- und der Downloadverlauf nicht gelöscht werden. Das bedeutet jedoch nicht unbedingt, dass der Verlauf erhalten bleibt. Möglicherweise sind die Nutzer berechtigt, die Verlaufsdatenbankdateien direkt zu bearbeiten oder zu löschen. Außerdem kann der Browser jederzeit selbst einige oder alle Verlaufselemente archivieren oder nach deren Ablaufdatum löschen.</translation>
 <translation id="5420245232720940848">Aktiviert PCIe-Tunneling für Thunderbolt/USB4-Peripheriegeräte und schränkt die Gerätefunktion ein</translation>
 <translation id="5420774177427557782">Bestimmt, ob VMs, für die diese Konfiguration verwendet wird, installiert und ausgeführt (<ph name="INSTALL_ALLOWED" />), ausgeführt, aber nicht installiert (<ph name="RUN_ALLOWED" />), oder nicht ausgeführt (<ph name="BLOCKED" />) werden können. Hinweis: Zum Installieren einer VM muss auch der installer_image_x86_64-Schlüssel festgelegt sein. Wenn eine Konfiguration vollständig entfernt wird, wird die Property implizit auf „<ph name="BLOCKED" />“ gesetzt. Dadurch wird verhindert, dass VMs ohne Richtlinie ausgeführt werden.</translation>
 <translation id="5422643441807528365">Lizenzschlüssel "<ph name="PLUGIN_VM_NAME" />"</translation>
@@ -5151,11 +5106,6 @@ Wenn diese Richtlinie für <ph name="PRODUCT_OS_NAME" /> Kiosk festgelegt ist, w
       Diese obligatorische Richtlinie wirkt sich auf Cloud-Richtlinien auf Computern aus.
 
       Diese Richtlinie ist nur in <ph name="PRODUCT_NAME" /> verfügbar und hat keine Auswirkungen auf <ph name="GOOGLE_UPDATE_NAME" />.</translation>
-<translation id="5699770471852263667">Wenn die Richtlinie auf „Enabled“ gesetzt ist, wird der interne PDF-Viewer in <ph name="PRODUCT_NAME" /> ausgeschaltet und PDF-Dateien werden als Download behandelt. Nutzer können sie dann mit der Standardanwendung öffnen.
-
-      Ist die Richtlinie auf „Disabled“ gesetzt, werden PDF-Dateien mit dem PDF-Plug-in geöffnet, sofern es nicht von den Nutzern deaktiviert wird.
-
-      Wenn du diese Richtlinie konfigurierst, kann sie von Nutzern in <ph name="PRODUCT_NAME" /> nicht geändert werden. Wenn sie nicht konfiguriert ist, können Nutzer entscheiden, ob das PDF extern geöffnet werden soll.</translation>
 <translation id="5705055136345677598">Hintergrundmodus deaktivieren</translation>
 <translation id="5705828032077475554">CRD-Sitzungen melden</translation>
 <translation id="57072195677044908">Dadurch wird die Profiltrennung deaktiviert</translation>
@@ -5823,7 +5773,6 @@ Weitere Informationen findest du unter https://developer.chrome.com/blog/immutab
           Der Wert für die Richtlinie muss in Millisekunden angegeben werden. Werte müssen kleiner oder gleich dem Wert für die Inaktivitätsverzögerung sein.
 
           Die Warnung wird nur eingeblendet, wenn infolge der Inaktivität der Nutzer abgemeldet oder das Gerät heruntergefahren wird.</translation>
-<translation id="6331172765821724350">Deaktivieren von WebSQL per Chrome-Flag zulassen.</translation>
 <translation id="6331943515692769234">Erzwingt die Verwendung der vorherigen Spezifikation des GREASE-Algorithmus für „User-Agent“-Header.</translation>
 <translation id="6332546092866098577">Lesezugriff über die File System API auf diesen Websites blockieren</translation>
 <translation id="6334330017384340264">Mit dieser Richtlinie wird festgelegt, welche Apps und URLs in Bezug auf Nutzungsbeschränkungen auf die Zulassungsliste gesetzt werden sollen.
@@ -6004,11 +5953,6 @@ HINWEIS: Diese Richtlinie hatte in M117 den falsch dokumentierten Standardwert �
 
       Hinweis: Falls die aktuelle Eingabemethode nicht unterstützt wird, wird die Eingabemethode auf das Hardware-Tastaturlayout (falls zulässig) oder den ersten gültigen Eintrag in dieser Liste eingestellt. Alle ungültigen oder nicht unterstützten Eingabemethoden in der Liste werden ignoriert.</translation>
 <translation id="6483115462650732746">Unverankertes Menü für Bedienungshilfen im Kioskmodus anzeigen</translation>
-<translation id="6489084406497912050">Damit wird festgelegt, ob Nutzer Kerberos-Konten hinzufügen können.
-
-          Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer Kerberos-Konten über die Kontoeinstellungen von Kerberos auf der Kerberos-Einstellungsseite hinzufügen. Die Nutzer haben die vollständige Kontrolle über Konten, die sie hinzufügen, und können diese ändern oder entfernen.
-
-          Wenn die Richtlinie deaktiviert ist, können Nutzer keine Kerberos-Konten hinzufügen. Dies ist dann nur über die Richtlinie „Kerberos-Konten konfigurieren“ möglich. So lassen sich Konten effektiv sperren.</translation>
 <translation id="6491139795995924304">Bluetooth auf Gerät zulassen</translation>
 <translation id="6491305972928809525">Unverankertes Menü für Bedienungshilfen im Kioskmodus nicht anzeigen</translation>
 <translation id="6491872498385040936">Diese Richtlinie wurde eingestellt. Du kannst stattdessen "<ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />" verwenden. Damit wird diese Richtlinie überschrieben und eine bessere Feinabstimmung ermöglicht.
@@ -6412,9 +6356,6 @@ Wird die Richtlinie deaktiviert, wird das Symbol für den Zugriff auf experiment
 <translation id="6810445994095397827">JavaScript auf diesen Websites blockieren</translation>
 <translation id="6813263547126514821">Energiesparmodus und Herunterfahren</translation>
 <translation id="681446116407619279">Unterstützte Authentifizierungsschemas</translation>
-<translation id="6815483833848348029">Wenn die Richtlinie aktiviert oder nicht konfiguriert und ein lokales Gerätekonto für die automatische Anmeldung ohne Verzögerung bei einem Gerät im Offlinemodus konfiguriert ist, zeigt <ph name="PRODUCT_OS_NAME" /> eine Eingabeaufforderung zur Netzwerkkonfiguration an.
-
-      Wenn die Richtlinie deaktiviert ist, wird stattdessen eine Fehlermeldung angezeigt,</translation>
 <translation id="6815628711329903153">Moderne Zwischenspeicherzuweisung für Graphics3D-APIs im PPAPI-Plug-in zulassen.</translation>
 <translation id="6819838337315703072">Wenn der Support für die <ph name="LINUX_OS_NAME" />-App und die Richtlinie aktiviert sind, werden Informationen zur Nutzung von <ph name="LINUX_OS_NAME" />-Apps an den Server zurückgesendet.
 
@@ -6940,11 +6881,6 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
 <translation id="7269263983506766969">Standardpriorität für den Audioprozess verwenden</translation>
 <translation id="7270001383428188269">ID für dieses Clientzertifikat</translation>
 <translation id="7271085005502526897">Startseite bei erster Ausführung aus Standardbrowser importieren</translation>
-<translation id="7271181393214180342">Wenn die Richtlinie aktiviert ist, wird bei der HTTP-Authentifizierung die Genehmigung durch die KDC-Richtlinie berücksichtigt. Das heißt, <ph name="PRODUCT_NAME" /> leitet nur dann Anmeldedaten an die verwendeten Dienste weiter, wenn KDC "<ph name="OK_AS_DELEGATE" />" für ein Dienstticket festlegt. Weitere Informationen findest du unter RFC 5896 ( https://tools.ietf.org/html/rfc5896.html ). Die Dienste sollten auch durch "<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />" zugelassen sein.
-
-      Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, wird die KDC-Richtlinie auf unterstützten Plattformen ignoriert und nur die Richtlinie "<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />" berücksichtigt.
-
-      Unter <ph name="MS_WIN_NAME" /> wird die KDC-Richtlinie immer umgesetzt.</translation>
 <translation id="7273785848231509306">Nutzernamen und ‑fotos nie anzeigen</translation>
 <translation id="7274077256421167535">Gemeinsame Stromversorgung per USB aktivieren</translation>
 <translation id="7275334191706090484">Verwaltete Lesezeichen</translation>
@@ -7085,11 +7021,6 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
       Ist die Richtlinie deaktiviert oder nicht konfiguriert, zeichnen angemeldete Geräte den TPM-Sicherheitsstatus nicht auf und melden ihn auch nicht.
       Ausnahme: TPM-Informationen werden für M95 und niedriger von <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> gesteuert.</translation>
 <translation id="739556497251174388">Verwenden der <ph name="PRODUCT_OS_NAME" />-Anmeldedaten für die Netzwerkauthentifizierung zulassen</translation>
-<translation id="7400971609879083218">Wenn die Richtlinie aktiviert ist, kann in Bildern von Drittanbietern auf einer Seite eine Authentifizierungsaufforderung angezeigt werden.
-
-       Ist die Richtlinie deaktiviert oder nicht konfiguriert, kann in Bildern von Drittanbietern keine Authentifizierungsaufforderung angezeigt werden.
-
-      Diese Richtlinie ist normalerweise zum Schutz vor Phishing deaktiviert.</translation>
 <translation id="7402772023599097052">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, werden Sicherheitswarnungen angezeigt, wenn Chrome mit potenziell schädlichen Befehlszeilen-Flags gestartet wird.
 
 Ist diese Richtlinie deaktiviert, werden keine Sicherheitswarnungen angezeigt, wenn Chrome mit potenziell schädlichen Befehlszeilen-Flags gestartet wird.
@@ -7564,11 +7495,6 @@ werden abgelehnt.</translation>
 <translation id="7850846808758624237">Wenn die Richtlinie aktiviert ist, wird bei der ersten Ausführung die Startseite des vorherigen Standardbrowsers importiert. Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird bei der ersten Ausführung keine Startseite importiert.
 
       Nutzer können einen Importdialog öffnen. Das Kästchen für die Startseite wird je nach Konfiguration dieser Richtlinie aktiviert oder deaktiviert.</translation>
-<translation id="7851772934080809511">Diese Richtlinie steuert, ob die Kerberos-Funktion aktiviert ist. Kerberos ist ein Authentifizierungsprotokoll, das bei Web-Apps und Dateifreigaben zur Authentifizierung verwendet werden kann.
-
-          Wenn diese Richtlinie aktiviert wird, ist die Kerberos-Funktion aktiviert. Kerberos-Konten können entweder über die Richtlinie „Kerberos-Konten konfigurieren“ oder über die Kontoeinstellungen von Kerberos auf der Kerberos-Einstellungsseite hinzugefügt werden.
-
-          Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, stehen die Kontoeinstellungen von Kerberos nicht zur Verfügung. In diesem Fall können keine Kerberos-Konten hinzugefügt werden und die Nutzung der Kerberos-Authentifizierung ist nicht möglich. Alle vorhandenen Kerberos-Konten werden gelöscht, ebenso wie alle gespeicherten Passwörter.</translation>
 <translation id="7853140303943875314">Umgehung der automatischen Anmeldung aktivieren</translation>
 <translation id="7854187834842629068">„Spracheingabe“ auf dem Anmeldebildschirm deaktivieren</translation>
 <translation id="7863947545897944083">Hiermit wird die Bedienungshilfe für hohen Kontrast auf dem Anmeldebildschirm aktiviert.
@@ -7607,9 +7533,6 @@ werden abgelehnt.</translation>
 <translation id="7899952578398457262">Verwaltete Nutzer auf nicht verwalteten Geräten für die Freigabe von Gerätesignalen um Einwilligung bitten</translation>
 <translation id="7900469325540540107">Beim Erstellen eines Unternehmensprofils Browserdaten standardmäßig beibehalten</translation>
 <translation id="7902040092815978832">Numerische Tastatur für Passwort anzeigen</translation>
-<translation id="7904177352786629708">Wenn die Richtlinie aktiviert ist, wird die CNAME-Suche übersprungen. Der Servername wird so wie eingegeben verwendet, wenn der Kerberos-SPN generiert wird.
-
-      Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, bestimmt die CNAME-Suche den kanonischen Namen des Servers, wenn der Kerberos-SPN generiert wird.</translation>
 <translation id="7904434413881624417">Liste der URL-Muster. Anfragen, die von Websites initiiert werden, die durch übereinstimmende Ursprünge bereitgestellt werden, unterliegen keinen <ph name="PRIVATE_NETWORK_ACCESS" />-Prüfungen.
 
           Wenn diese Richtlinie nicht konfiguriert ist, verhält sie sich, als wäre sie auf die leere Liste eingestellt.
@@ -7806,9 +7729,6 @@ Wenn diese Richtlinie nicht konfiguriert oder auf einen leeren Wert festgelegt i
 Wenn für diese Richtlinie ein Domainname oder eine Mandanten-ID festgelegt ist (siehe https://learn.microsoft.com/de-de/azure/active-directory/develop/v2-protocols#endpoints), können nur Konten mit diesem Domainnamen oder dieser Mandanten-ID zur Anmeldung verwendet werden.
 
 Wird die Einschränkung geändert, werden Nutzer möglicherweise von ihrem <ph name="MICROSOFT_ONE_DRIVE_NAME" />-Konto abgemeldet, wenn es nicht der neuen Einschränkung entspricht.</translation>
-<translation id="8076521374016204899">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer, die sich mit einem Passwort authentifizieren, den Bildschirm sperren.
-
-      Wenn die Richtlinie deaktiviert ist, können Nutzer den Bildschirm nicht sperren, sondern sich lediglich von der Nutzersitzung abmelden.</translation>
 <translation id="8078297389450285582">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird das intelligente Dimm-Modell verwendet und der Zeitraum bis zum Dimmen des Bildschirms kann verlängert werden. Wenn das Dimmen des Bildschirms durch das Modell verzögert wird, werden die Verzögerungen für das Ausschalten des Bildschirms, die Bildschirmsperre und die Inaktivität entsprechend angepasst, um die ursprünglich konfigurierten Abstände beizubehalten.
 
       Wenn die Richtlinie deaktiviert ist, wird das Dimmen des Bildschirms nicht durch das intelligente Dimm-Modell beeinflusst.</translation>
@@ -8102,9 +8022,6 @@ Ist die Richtlinie deaktiviert, wird die Seite blockiert.</translation>
 <translation id="8295496526151576383">Diese Richtlinie gibt die Erweiterungen an, die den Dialog zur Bestätigung des Druckauftrags überspringen dürfen, wenn die <ph name="PRINTING_API" />-Funktion "<ph name="SUBMIT_JOB_FUNCTION" />" zum Senden eines Druckauftrags verwendet wird.
 
       Steht eine Erweiterung nicht auf der Liste oder ist die Liste nicht konfiguriert, wird dem Nutzer für jeden Aufruf von "<ph name="SUBMIT_JOB_FUNCTION" />" der Bestätigungsdialog für den Druckauftrag angezeigt.</translation>
-<translation id="829703642501504476">Wenn für diese Richtlinie "True" festgelegt ist, verwendet <ph name="PRODUCT_NAME" /> alternative Fehlerseiten (z. B. "Seite nicht gefunden"). Wenn für diese Richtlinie "False" festgelegt ist, verwendet <ph name="PRODUCT_NAME" /> niemals alternative Fehlerseiten.
-
-      Wenn du diese Richtlinie konfigurierst, können Nutzer sie nicht ändern. Wird die Richtlinie nicht konfiguriert, ist sie aktiviert, aber Nutzer können die Einstellung ändern.</translation>
 <translation id="8300992833374611099">Festlegen, wo Entwicklertools verwendet werden können</translation>
 <translation id="8301065459352777588">Nutzer verwalteter Gastsitzungen können Anzeigeeinstellungen für das ganze Gerät speichern</translation>
 <translation id="8303780229975459754">Chrome darf Warnungen anzeigen, wenn es auf einem nicht unterstützten System ausgeführt wird</translation>
@@ -8594,9 +8511,6 @@ Wenn die Richtlinie nicht konfiguriert ist, werden bei der ersten Ausführung ke
 <translation id="8757552286070680084">Wilco DTC-Konfiguration</translation>
 <translation id="8758831693895931466">Erforderliche Registrierung für Cloud Management aktivieren</translation>
 <translation id="8759829385824155666">Erlaubte Kerberos-Verschlüsselungstypen</translation>
-<translation id="8763716376920670835">WebSQL ist ab M101 standardmäßig aktiviert, kann jedoch per Chrome-Flag deaktiviert werden.
-          Wenn diese Richtlinie auf „false“ gesetzt oder nicht konfiguriert ist, kann WebSQL deaktiviert werden.
-          Ist sie auf „true“ festgelegt, ist es nicht möglich, WebSQL zu deaktivieren.</translation>
 <translation id="8766308369516978190">Wenn diese Richtlinie aktiviert ist, können Nutzer <ph name="ASSISTANT_PRODUCT_NAME" /> im Web verwenden, z. B. für schnelleres Bezahlen und schnellere Passwortänderungen. Für die Verwendung von <ph name="ASSISTANT_PRODUCT_NAME" /> ist eine zusätzliche Nutzereinwilligung erforderlich. <ph name="ASSISTANT_PRODUCT_NAME" /> wird nur dann ausgeführt, wenn Nutzer einwilligen, selbst wenn die Richtlinie aktiviert ist.
 
       Ist die Richtlinie deaktiviert, können Nutzer <ph name="ASSISTANT_PRODUCT_NAME" /> nicht im Web verwenden.

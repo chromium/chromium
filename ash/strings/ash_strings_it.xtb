@@ -225,6 +225,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1831565490995294689">Seleziona per aprire <ph name="APP_TO_OPEN" />.</translation>
 <translation id="1838895407229022812">Luminosità notturna non attiva.</translation>
 <translation id="1854180393107901205">Interrompi trasmissione</translation>
+<translation id="1862077610023398675">Nascondi controlli</translation>
 <translation id="1862380676329487333">Aggiorna e disconnetti</translation>
 <translation id="1864454756846565995">Dispositivo USB-C (porta posteriore)</translation>
 <translation id="1869497990620230175">File rapidi</translation>
@@ -501,7 +502,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3105917916468784889">Acquisisce uno screenshot</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">Evidenzia l'elemento precedente nella barra delle app</translation>
-<translation id="3120421559657122717">Arrestare il dispositivo?</translation>
+<translation id="3120421559657122717">Spegnere il dispositivo?</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Tipo di lavori del corso</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -783,6 +784,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="4215497585250573029">Impostazioni VPN</translation>
 <translation id="4217571870635786043">Dettatura</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, app installata, messa in pausa</translation>
+<translation id="4228078597006700451">Controlli non configurati</translation>
 <translation id="4231053948789591973">La trasmissione è attualmente in pausa. Puoi riprendere la trasmissione dello schermo o interromperla in qualsiasi momento.</translation>
 <translation id="423685346499232137">Al momento non è possibile copiare o incollare contenuti</translation>
 <translation id="4239069858505860023">GPRS</translation>
@@ -1414,6 +1416,7 @@ Nuova installazione</translation>
 <translation id="6802196538183166658">Apri le Impostazioni rapide selezionando l'ora</translation>
 <translation id="6802687695197837794">Consente l'accesso per <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> e tutti i siti web e tutte le app che dispongono delle autorizzazioni di accesso al microfono e alla fotocamera</translation>
 <translation id="6803622936009808957">Impossibile duplicare i display perché non sono state trovate risoluzioni supportate. È stato attivato il desktop esteso.</translation>
+<translation id="6809556495807506746">Controlli non disponibili</translation>
 <translation id="6812232930908427253">Impossibile salvare la scrivania. Troppe finestre o schede.</translation>
 <translation id="6818242057446442178">Indietro per parola</translation>
 <translation id="6819327813400217281">Fotocamera allineata all'angolo in basso a sinistra</translation>
@@ -1438,6 +1441,7 @@ Nuova installazione</translation>
 <translation id="6919251195245069855">Impossibile riconoscere la smart card. Riprova.</translation>
 <translation id="6920245099716267363">Attiva/disattiva l'hotspot. L'hotspot è attivo, 1 dispositivo connesso.</translation>
 <translation id="692135145298539227">elimina</translation>
+<translation id="6929081673585394903">Mostra controlli</translation>
 <translation id="6931576957638141829">Salva in</translation>
 <translation id="6942518653766415536">Menu del formato di registrazione</translation>
 <translation id="6945221475159498467">Seleziona</translation>
@@ -1635,6 +1639,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7773536009433685931">Attiva invece il Wi-Fi</translation>
 <translation id="7780094051999721182">scorciatoie</translation>
 <translation id="7780159184141939021">Ruota lo schermo</translation>
+<translation id="7792590255364786396">Visibile</translation>
 <translation id="7796735576426975947">Nuova notifica nascosta</translation>
 <translation id="7798302898096527229">Premi il tasto per la ricerca o MAIUSC per annullare.</translation>
 <translation id="780301667611848630">No, grazie</translation>

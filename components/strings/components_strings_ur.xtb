@@ -1485,6 +1485,7 @@
 <translation id="4084219288110917128">‏C1 لفافہ</translation>
 <translation id="4088981014127559358">‏سائڈ 1 تصویر Y شفٹ</translation>
 <translation id="4089152113577680600">ٹرے 14</translation>
+<translation id="4092349052316400070">پتہ درج کریں</translation>
 <translation id="4096237801206588987">‏‎11 x 15 انچ</translation>
 <translation id="4098354747657067197">آگے پرفریب سائٹ ہے</translation>
 <translation id="4099048595830172239">رازدارانہ مواد کے مرئی ہونے پر منتظم کی پالیسی <ph name="APPLICATION_TITLE" /> کے ساتھ آپ کی اسکرین کے اشتراک کو تجویز نہیں کرتی ہے:</translation>
@@ -1698,7 +1699,6 @@
 <translation id="4489023393592172404">‏Kaku 4 لفافہ</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">‏مطابقت پذیر کردہ پاس ورڈز کو اپنے Google اکاؤنٹ کے ساتھ مرموز کریں</translation>
-<translation id="4492519888999857993">‏یہ خصوصیات بذریعہ ڈیفالٹ غیر فعال ہیں۔ یہ Chrome کے آئندہ کے ورژنز میں دستیاب نہیں ہوں گی۔</translation>
 <translation id="4493480324863638523">‏غلط URL۔ معیاری اسکیم والا URL ہونا ضروری ہے، جیسے http://example.com یا https://example.com۔</translation>
 <translation id="4494323206460475851">‏آپ ترتیبات میں اشتہار کے موضوعات دیکھ سکتے ہیں اور ان کو مسدود کر سکتے ہیں جن کا آپ سائٹس کے ساتھ اشتراک نہیں کرنا چاہتے۔ Chrome ‏4 ہفتوں سے پرانے اشتہار کے موضوعات کو خودکار طور پر بھی حذف کر دیتا ہے۔</translation>
 <translation id="4500587658229086076">غیر محفوظ مواد</translation>
@@ -3708,6 +3708,7 @@
 <translation id="8586082901536468629">اسکویش اور ریکٹ بال کا ساز و سامان</translation>
 <translation id="858637041960032120">فون نمبر شامل کریں</translation>
 <translation id="8589998999637048520">بہترین معیار</translation>
+<translation id="8590264442799989746"><ph name="HOST_NAME" /> اور مزید</translation>
 <translation id="8600271352425265729">صرف اس وقت</translation>
 <translation id="860043288473659153">کارڈ کے حامل کا نام</translation>
 <translation id="8601027005147870853">‏<ph name="BEGIN_BOLD" />کون سا ڈیٹا استعمال کیا جاتا ہے:<ph name="END_BOLD" /> اس آلے پر Chrome کا استعمال کر کے آپ کی ملاحظہ کردہ سائٹ پر آپ کی سرگرمی۔</translation>

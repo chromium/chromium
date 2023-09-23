@@ -1483,6 +1483,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4084219288110917128">Sobre C1</translation>
 <translation id="4088981014127559358">Cara 1 del desplazamiento de la imagen en el eje Y</translation>
 <translation id="4089152113577680600">Bandeja 14</translation>
+<translation id="4092349052316400070">Rellenar dirección</translation>
 <translation id="4096237801206588987">11x15 pulgadas</translation>
 <translation id="4098354747657067197">El sitio web al que vas a acceder es engañoso</translation>
 <translation id="4099048595830172239">La política del administrador no recomienda que compartas tu pantalla con <ph name="APPLICATION_TITLE" /> cuando se muestra contenido confidencial:</translation>
@@ -1696,7 +1697,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4489023393592172404">Sobre Kaku 4</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">Cifrar contraseñas sincronizadas con tu cuenta de Google</translation>
-<translation id="4492519888999857993">Estas funciones están inhabilitadas de forma predeterminada. No estarán disponibles en futuras versiones de Chrome.</translation>
 <translation id="4493480324863638523">La URL no es válida. Debe ser una URL con una estructura estándar, como "http://example.com" o "https://example.com".</translation>
 <translation id="4494323206460475851">Puedes ver los temas de anuncios en la configuración y bloquear los que no quieras que se compartan con los sitios. Chrome también elimina automáticamente los temas de anuncios que tienen una antigüedad superior a 4 semanas.</translation>
 <translation id="4500587658229086076">contenido no seguro</translation>

@@ -1483,6 +1483,7 @@
 <translation id="4084219288110917128">C1 封筒</translation>
 <translation id="4088981014127559358">1 面の画像の Y 軸移動</translation>
 <translation id="4089152113577680600">トレイ 14</translation>
+<translation id="4092349052316400070">住所を入力してください</translation>
 <translation id="4096237801206588987">11x15 インチ</translation>
 <translation id="4098354747657067197">偽のサイトにアクセスしようとしています</translation>
 <translation id="4099048595830172239">機密コンテンツが表示されているときに <ph name="APPLICATION_TITLE" /> で画面を共有することは、管理者が設定したポリシーで推奨されていません。</translation>
@@ -1696,7 +1697,6 @@
 <translation id="4489023393592172404">角形 4 号封筒</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">Google アカウントで同期パスワードを暗号化する</translation>
-<translation id="4492519888999857993">これらの機能はデフォルトで無効になっています。Chrome の今後のバージョンではご利用いただけません。</translation>
 <translation id="4493480324863638523">URL が無効です。標準のスキームを使用した URL を指定してください（例: http://example.com、https://example.com）。</translation>
 <translation id="4494323206460475851">設定で広告のトピックを確認して、ウェブサイトと共有したくないトピックをブロックできます。Chrome では、4 週間以上経過した広告のトピックは自動削除されます。</translation>
 <translation id="4500587658229086076">安全でないコンテンツ</translation>

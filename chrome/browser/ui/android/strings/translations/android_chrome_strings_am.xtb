@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="am">
 <translation id="1011749477052068769">ወደዚህ አንቀሳቅስ</translation>
+<translation id="1014147525163127655">በዚህ መሣሪያ ላይ ለ<ph name="ORIGIN" /> ምንም የይለፍ ቁልፎች የሉም</translation>
 <translation id="1016498331642356377">በድምጽዎ በፍጥነት ይፈልጉ። ይህን አቋራጭ ለማርትዕ ነክተው ይያዙ።</translation>
 <translation id="1024113959924243553">Chrome ገንቢ</translation>
 <translation id="1028699632127661925">ወደ <ph name="DEVICE_NAME" /> በመላክ ላይ...</translation>
@@ -674,6 +675,7 @@
 <translation id="452750746583162491">የሰመረ ውሂብዎን ይገምግሙ</translation>
 <translation id="4528638190900283934">ለተጨማሪ ባህሪያት ይመዝገቡ</translation>
 <translation id="4532845899244822526">አቃፊ ይምረጡ</translation>
+<translation id="4543131175509360848">ምንም የይለፍ ቁልፎች ሉህ የለም</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ትር}one{<ph name="TAB_COUNT_MANY" /> ትሮች፣ <ph name="TAB_COUNT_INCOGNITO" /> ማንነት የማያሳውቅ}other{<ph name="TAB_COUNT_MANY" /> ትሮች፣ <ph name="TAB_COUNT_INCOGNITO" /> ማንነት የማያሳውቅ}}</translation>
 <translation id="4554077758708533499">በዩኤስቢ ገመድ ተገናኝቷል</translation>
 <translation id="4558311620361989323">የድረ-ገፅ አቋራጮች</translation>
@@ -948,6 +950,7 @@
 <translation id="5869522115854928033">የተቀመጡ የይለፍ ቃሎች</translation>
 <translation id="587735546353481577">አንድን ጣቢያ ለመከተል ወደ ጣቢያው ይሂዱ፣ የChrome ምናሌውን ይክፈቱ እና ይከተሉን መታ ያድርጉ።</translation>
 <translation id="5879072387416556377">የተሻሉ ጥቆማዎችን ያግኙ</translation>
+<translation id="5899667542927581604">ምንም የይለፍ ቁልፎች ሉህ አልተዘጋም</translation>
 <translation id="5916664084637901428">በርቷል</translation>
 <translation id="5919204609460789179">ስምረትን ለመጀመር <ph name="PRODUCT_NAME" />ን ያዘምኑ</translation>
 <translation id="5938820472109305350"><ph name="INTEREST" />ን አክል</translation>
@@ -1592,6 +1595,7 @@
 <translation id="9063523880881406963">የዴስክቶፕ ጣቢያ ጠይቅን አጥፋ</translation>
 <translation id="9065203028668620118">አርትዕ</translation>
 <translation id="9065383040763568503">Chrome አላስፈላጊ ነው የሚያስበው የተከማቸ ውሂብ (ለምሳሌ፦ ምንም የተቀመጡ ቅንብሮች የሌላቸው ጣቢያዎች ወይም እርስዎ ብዙ ጊዜ የማይጎበኟቸው)</translation>
+<translation id="9067341854474068781">በሙሉ ቁመት የተከፈተ ምንም የይለፍ ቁልፎች ሉህ የለም</translation>
 <translation id="906781307897697745">በ<ph name="PRODUCT_NAME" /> ውስጥ</translation>
 <translation id="9069999660519089861">ያልተነበቡ ገጾች የሉም</translation>
 <translation id="9070377983101773829">የድምጽ ፍለጋን ጀምር</translation>

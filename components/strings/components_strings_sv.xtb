@@ -1483,6 +1483,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4084219288110917128">C1-kuvert</translation>
 <translation id="4088981014127559358">Sida 1 bild Y – byte</translation>
 <translation id="4089152113577680600">Fack 14</translation>
+<translation id="4092349052316400070">Fyll i adress</translation>
 <translation id="4096237801206588987">11 x 15 tum</translation>
 <translation id="4098354747657067197">Webbplatsen som öppnas är bedräglig</translation>
 <translation id="4099048595830172239">Enligt administratörspolicyn är det inte rekommenderat att dela skärmen med <ph name="APPLICATION_TITLE" /> när konfidentiellt innehåll är synligt:</translation>
@@ -1696,7 +1697,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4489023393592172404">Kaku 4-kuvert</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">Kryptera synkroniserade lösenord med ditt Google-konto</translation>
-<translation id="4492519888999857993">De här funktionerna är inaktiverade som standard. I kommande versioner av Chrome kommer de inte längre att vara tillgängliga.</translation>
 <translation id="4493480324863638523">Ogiltig webbadress. Måste vara en webbadress med ett standardprotokoll, t.ex. http://example.com eller https://example.com.</translation>
 <translation id="4494323206460475851">Du kan se annonsämnen i inställningarna och blockera dem som du inte vill ska delas med webbplatser. Chrome raderar även annonsämnen som är äldre än fyra veckor automatiskt.</translation>
 <translation id="4500587658229086076">osäkert innehåll</translation>

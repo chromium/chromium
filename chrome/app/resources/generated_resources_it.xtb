@@ -434,6 +434,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1340527397989195812">Importa elementi multimediali dal dispositivo utilizzando l'app File.</translation>
 <translation id="1341701348342335220">Ottimo lavoro.</translation>
 <translation id="1341871421050612057">Impossibile sincronizzare con <ph name="USERNAME" /></translation>
+<translation id="1342886103232377846">Per controllare la presenza di password compromesse, vai a Gestore delle password di Google</translation>
 <translation id="1343865611738742294">Concedi alle app Linux l'autorizzazione ad accedere ai dispositivi USB. Dopo la rimozione di un dispositivo USB, Linux non manterrà memorizzato il dispositivo.</translation>
 <translation id="1343920184519992513">Continua dal punto in cui avevi interrotto e apri un insieme di pagine specifiche</translation>
 <translation id="1344141078024003905">Stai trasmettendo lo schermo. Puoi mettere in pausa la trasmissione dello schermo o interromperla in qualsiasi momento.</translation>
@@ -457,6 +458,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1363585519747660921">La stampante USB deve essere configurata</translation>
 <translation id="136378536198524553">Risparmio energetico attivo</translation>
 <translation id="1368603372088757436">Linux non è supportato su <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
+<translation id="1370384480654163477">Visualizza e modifica i file dall'ultima visita al sito:</translation>
 <translation id="1372841398847029212">Sincronizza con il tuo account</translation>
 <translation id="1373176046406139583">L'impostazione Visibilità del dispositivo ti consente di stabilire chi può condividere file con te mentre il tuo schermo è sbloccato. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Il certificato richiesto dalla rete "<ph name="NETWORK_NAME" />" non è installato o non è più valido. Richiedi un nuovo certificato e riprova a connetterti.</translation>
@@ -715,6 +717,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1570235441606255261">Programma di installazione di Steam</translation>
 <translation id="1570604804919108255">Riattiva audio notifiche</translation>
 <translation id="1570990174567554976">Cartella Preferiti "<ph name="BOOKMARK_TITLE" />" creata.</translation>
+<translation id="1571041387761170095">Nessuna password inefficace o riutilizzata</translation>
 <translation id="1571304935088121812">Copia nome utente</translation>
 <translation id="1571738973904005196">Visualizza la scheda <ph name="TAB_ORIGIN" /></translation>
 <translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (Ospite)</translation>
@@ -1236,6 +1239,9 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1969550816138571473">Preparazione in corso…</translation>
 <translation id="1969654639948595766">Log di testo WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
+<translation id="1970895205072379091"><ph name="BEGIN_PARAGRAPH1" />Se consenti ai dispositivi ChromeOS di inviare i report automatici, ci aiuti a capire a quali problemi e miglioramenti dare la priorità in ChromeOS. Questi report possono includere, ad esempio, informazioni su quando ChromeOS ha un arresto anomalo, sulle funzionalità che utilizzi e sulla quantità di memoria solitamente impiegata. Alcuni dati aggregati saranno utili anche per app e partner di Google, ad esempio gli sviluppatori Android. Se è attiva anche la sincronizzazione app, verranno raccolti altri dati diagnostici e sull'utilizzo delle app, incluse le app per Android e web.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Puoi attivare o disattivare l'invio di questi report in qualsiasi momento nelle impostazioni del tuo dispositivo Chrome OS. Se sei un amministratore di dominio, puoi modificare questa impostazione nella Console di amministrazione.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Se l'impostazione Attività web e app è attiva per il tuo Account Google, i tuoi dati Android potrebbero essere salvati nell'account. Puoi vedere ed eliminare i tuoi dati, nonché modificare le impostazioni dell'account, all'indirizzo account.google.com.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1972313920920745320">I siti che aggiungi saranno sempre attivi e non verrà eliminata memoria per questi siti. <ph name="BEGIN_LINK" />Scopri di più su come mantenere attivi siti specifici<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Navigherai più velocemente perché i contenuti vengono caricati in modo proattivo in base alla pagina web che stai visitando</translation>
 <translation id="197288927597451399">Conserva</translation>
@@ -1973,6 +1979,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2519250377986324805">Scopri come fare</translation>
 <translation id="2519517390894391510">Nome profilo di certificato</translation>
 <translation id="2520644704042891903">In attesa di socket disponibile...</translation>
+<translation id="2521427645491031107">La sincronizzazione delle app è configurata nelle impostazioni del dispositivo</translation>
 <translation id="2521854691574443804">Controllo della conformità di <ph name="FILE_NAME" /> alle norme di sicurezza della tua organizzazione in corso…</translation>
 <translation id="2523184218357549926">Invia a Google gli URL delle pagine che visiti</translation>
 <translation id="252418934079508528">Installa <ph name="DEVICE_OS" /></translation>
@@ -2794,6 +2801,9 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3193695589337931419">System Signals Utilities</translation>
 <translation id="3194786596445804250">Mostra dettagli sul blocco dei cookie di terze parti</translation>
 <translation id="3197453258332670132">Se fai clic con il pulsante destro del mouse o se applichi una pressione prolungata, vengono mostrate informazioni correlate al testo selezionato</translation>
+<translation id="3198487209506801480"><ph name="BEGIN_PARAGRAPH1" />Se consenti ai dispositivi ChromeOS di inviare i report automatici, ci aiuti a capire a quali problemi e miglioramenti dare la priorità in ChromeOS. Questi report possono includere, ad esempio, informazioni su quando ChromeOS ha un arresto anomalo, sulle funzionalità che hai utilizzato e sulla quantità di memoria solitamente impiegata. Alcuni dati aggregati saranno utili anche per app e partner di Google, ad esempio gli sviluppatori Android. Se è attiva anche la sincronizzazione app, verranno raccolti altri dati diagnostici e sull'utilizzo delle app, incluse le app per Android e web.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Puoi attivare o disattivare l'invio di questi report in qualsiasi momento nelle impostazioni del dispositivo ChromeOS di tuo figlio. Se sei un amministratore di dominio, puoi modificare questa impostazione nella Console di amministrazione.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH4" />Se l'impostazione Attività web e app è attiva per l'Account Google di tuo figlio, i suoi dati potrebbero essere salvati nel suo account. Scopri di più su queste impostazioni e su come configurarle all'indirizzo families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="3199127022143353223">Server</translation>
 <translation id="3199637719075529971">Questa scheda è collegata a una porta seriale</translation>
 <translation id="3200061262156232574">Nel tuo carrello degli acquisti</translation>
@@ -6276,6 +6286,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6071181508177083058">conferma password</translation>
 <translation id="6071576563962215370">Il sistema non è riuscito a stabilire il blocco degli attributi installation-time del dispositivo.</translation>
 <translation id="6071938745001252305"><ph name="MEMORY_VALUE" /> di memoria salvata</translation>
+<translation id="6071995715087444295">Per controllare la presenza di password compromesse, accedi al tuo Account Google</translation>
 <translation id="6072442788591997866">L'app <ph name="APP_NAME" /> non è consentita su questo dispositivo. Contatta l'amministratore. Codice di errore: <ph name="ERROR_CODE" />.</translation>
 <translation id="6073451960410192870">Interrompi registrazione</translation>
 <translation id="6073903501322152803">Aggiungi funzioni di accessibilità</translation>
@@ -6806,6 +6817,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6513247462497316522">Google Chrome utilizzerà i dati mobili se non sei connesso a un'altra rete.</translation>
 <translation id="6514010653036109809">Dispositivo disponibile:</translation>
 <translation id="6514565641373682518">Questa pagina ha disattivato il puntatore del mouse.</translation>
+<translation id="6517227424170598783">Rimuovere la scorciatoia "<ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" />"?</translation>
 <translation id="6517420300299531857">I tuoi file in Il mio Drive verranno sincronizzati automaticamente con Chromebook per potervi accedere senza connessione a internet. Spazio richiesto: circa <ph name="REQUIRED_SPACE" />. Spazio attualmente disponibile: <ph name="FREE_SPACE_AVAILABLE" />.</translation>
 <translation id="6517709704288360414">Il tuo dispositivo potrebbe non funzionare più correttamente e potresti riscontrare problemi di prestazioni e sicurezza. La disattivazione degli aggiornamenti può anche incidere sul tuo diritto a presentare rivendicazioni legali in caso di problemi.</translation>
 <translation id="6518014396551869914">Cop&amp;ia immagine</translation>
@@ -7951,6 +7963,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7453467225369441013">Verrai disconnesso dalla maggior parte dei siti, ma non dal tuo Account Google.</translation>
 <translation id="7453597054492098060">{NUM_EXTENSIONS,plural, =1{Questa estensione potrebbe non essere sicura. Chrome consiglia di rimuoverla.}other{Queste estensioni potrebbero non essere sicure. Chrome consiglia di rimuoverle.}}</translation>
 <translation id="7454548535253569100">Portale: <ph name="SUBFRAME_SITE" /></translation>
+<translation id="7454744349230173024">La tua organizzazione ha disattivato il salvataggio delle password</translation>
 <translation id="7455730275746867420">Gestisci altri container</translation>
 <translation id="7455988709578031708">In base alla tua cronologia di navigazione. Questa impostazione è attiva.</translation>
 <translation id="7456142309650173560">dev</translation>
@@ -8265,6 +8278,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7697109152153663933">Fai clic su "Password e compilazione automatica"</translation>
 <translation id="769824636077131955">Il documento è troppo grande per essere sottoposto a un controllo di sicurezza. Puoi stampare documenti di dimensioni massime pari a 50 MB.</translation>
 <translation id="7698507637739331665">Alcuni elementi sono bloccati</translation>
+<translation id="7700516433658473670">Stampanti e scanner</translation>
 <translation id="7701040980221191251">Nulla</translation>
 <translation id="7701869757853594372">Handle UTENTE</translation>
 <translation id="7702463352133825032">Interrompi la trasmissione su <ph name="DEVICE_NAME" /></translation>

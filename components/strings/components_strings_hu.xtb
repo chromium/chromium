@@ -1481,6 +1481,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4084219288110917128">C1 boríték</translation>
 <translation id="4088981014127559358">1. oldali kép Y-eltolása</translation>
 <translation id="4089152113577680600">14. tálca</translation>
+<translation id="4092349052316400070">Cím kitöltése</translation>
 <translation id="4096237801206588987">11 × 15 hüvelyk</translation>
 <translation id="4098354747657067197">Megtévesztő webhely megnyitására készül</translation>
 <translation id="4099048595830172239">A rendszergazda által beállított házirend nem javasolja a képernyő <ph name="APPLICATION_TITLE" /> alkalmazással való megosztását, ha bizalmas tartalom látható a képernyőn:</translation>
@@ -1694,7 +1695,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4489023393592172404">Kaku 4 boríték</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">Szinkronizált jelszavak titkosítása a Google-fiókkal</translation>
-<translation id="4492519888999857993">Ezek a funkciók alapértelmezés szerint le vannak tiltva. A Chrome későbbi verzióiban nem állnak majd rendelkezésre.</translation>
 <translation id="4493480324863638523">Érvénytelen URL. Az URL-nek szabványos sémával kell rendelkeznie, például http://example.com vagy https://example.com.</translation>
 <translation id="4494323206460475851">A hirdetéstémákat megtekintheti a beállítások között, ahol le is tilthatja azokat a témákat, amelyeket nem szeretne megosztani a webhelyekkel. A Chrome ezenkívül automatikusan törli a négy hétnél régebbi hirdetéstémákat.</translation>
 <translation id="4500587658229086076">nem biztonságos tartalmak</translation>

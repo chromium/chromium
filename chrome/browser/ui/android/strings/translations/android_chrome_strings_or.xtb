@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="or">
 <translation id="1011749477052068769">ଏଠାକୁ ମୁଭ କରନ୍ତୁ</translation>
+<translation id="1014147525163127655">ଏହି ଡିଭାଇସରେ <ph name="ORIGIN" /> ପାଇଁ କୌଣସି ପାସକୀ ନାହିଁ</translation>
 <translation id="1016498331642356377">ଆପଣଙ୍କ ଭଏସ୍ ମାଧ୍ୟମରେ ଶୀଘ୍ର ସନ୍ଧାନ କରନ୍ତୁ। ଏହି ସର୍ଟକଟକୁ ଏଡିଟ୍ କରିବା ପାଇଁ, ସ୍ପର୍ଶ କରି ଧରି ରଖନ୍ତୁ।</translation>
 <translation id="1024113959924243553">Chrome Dev</translation>
 <translation id="1028699632127661925"><ph name="DEVICE_NAME" />କୁ ପଠାଉଛି...</translation>
@@ -674,6 +675,7 @@
 <translation id="452750746583162491">ଆପଣଙ୍କ ସିଙ୍କ୍ କରାଯାଇଥିବା ଡାଟାର ସମୀକ୍ଷା କରନ୍ତୁ</translation>
 <translation id="4528638190900283934">ଅତିରିକ୍ତ ଫିଚର ପାଇଁ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="4532845899244822526">ଫୋଲ୍ଡର୍ ଚୟନ କରନ୍ତୁ</translation>
+<translation id="4543131175509360848">କୌଣସି ପାସକୀ ସିଟ ନାହିଁ</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" />ଟି ଟାବ୍}other{<ph name="TAB_COUNT_MANY" />ଟି ଟାବ୍, <ph name="TAB_COUNT_INCOGNITO" />ଟି ଇନକଗ୍ନିଟୋ}}</translation>
 <translation id="4554077758708533499">USB କେବୁଲ ମାଧ୍ୟମରେ ସଂଯୋଗ କରାଯାଇଛି</translation>
 <translation id="4558311620361989323">ୱେବ୍‍ପୃଷ୍ଟା ସର୍ଟକଟ୍</translation>
@@ -948,6 +950,7 @@
 <translation id="5869522115854928033">ସଞ୍ଚିତ ପାସୱାର୍ଡସମୂହ</translation>
 <translation id="587735546353481577">ଏକ ସାଇଟର ଅନୁସରଣ କରିବା ପାଇଁ ସାଇଟକୁ ଯାଆନ୍ତୁ, Chrome ମେନୁ ଖୋଲି 'ଅନୁସରଣ କରନ୍ତୁ'ରେ ଟାପ୍ କରନ୍ତୁ।</translation>
 <translation id="5879072387416556377">ଆହୁରି ଭଲ ପରାମର୍ଶ ପାଆନ୍ତୁ</translation>
+<translation id="5899667542927581604">କୌଣସି ପାସକୀ ସିଟ ବନ୍ଦ କରାଯାଇନାହିଁ</translation>
 <translation id="5916664084637901428">ଚାଲୁ</translation>
 <translation id="5919204609460789179">ସିଙ୍କ ଆରମ୍ଭ କରିବା ପାଇଁ <ph name="PRODUCT_NAME" /> ଅପ୍‍‍ଡେଟ୍ କରନ୍ତୁ</translation>
 <translation id="5938820472109305350"><ph name="INTEREST" /> ଯୋଗ କରନ୍ତୁ</translation>
@@ -1592,6 +1595,7 @@
 <translation id="9063523880881406963">ଡେସ୍କଟପ୍ ସାଇଟ୍ ଅନୁରୋଧକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="9065203028668620118">ସମ୍ପାଦନ</translation>
 <translation id="9065383040763568503">Chrome ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ବୋଲି ମନେ କରୁନଥିବା ଷ୍ଟୋର୍ କରାଯାଇଥିବା ଡାଟା (ଉ.ଦା. ସେଭ୍ କରାଯାଇଥିବା କୌଣସି ସେଟିଂସ୍ ନଥିବା କିମ୍ବା ଆପଣ ପ୍ରାୟତଃ ଭିଜିଟ୍ କରୁନଥିବା ସାଇଟଗୁଡ଼ିକ)</translation>
+<translation id="9067341854474068781">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରେ କୌଣସି ପାସକୀ ସିଟ ଖୋଲାଯାଇନାହିଁ</translation>
 <translation id="906781307897697745"><ph name="PRODUCT_NAME" />ରେ</translation>
 <translation id="9069999660519089861">ପଢ଼ାଯାଇନଥିବା କୌଣସି ପୃଷ୍ଠା ନାହିଁ</translation>
 <translation id="9070377983101773829">ଭଏସ୍ ସନ୍ଧାନ ଆରମ୍ଭ କରନ୍ତୁ</translation>

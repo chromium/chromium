@@ -1483,6 +1483,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4084219288110917128">C1-konvolutt</translation>
 <translation id="4088981014127559358">Y-forskyvning av bilde på side 1</translation>
 <translation id="4089152113577680600">Skuff 14</translation>
+<translation id="4092349052316400070">Fyll ut adressen</translation>
 <translation id="4096237801206588987">11 x 15 tommer</translation>
 <translation id="4098354747657067197">Villedende nettsted i sikte</translation>
 <translation id="4099048595830172239">Administratorreglene anbefaler ikke at du deler skjermen med <ph name="APPLICATION_TITLE" /> når konfidensielt innhold er synlig:</translation>
@@ -1696,7 +1697,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4489023393592172404">Kaku 4-konvolutt</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">Kryptér synkroniserte passord med Google-kontoen din</translation>
-<translation id="4492519888999857993">Som standard er disse funksjonene avslått. De kommer ikke til å være tilgjengelige i fremtidige versjoner av Chrome.</translation>
 <translation id="4493480324863638523">Ugyldig nettadresse. Dette må være en nettadresse på standardformat, f.eks. http://example.com eller https://example.com.</translation>
 <translation id="4494323206460475851">Du kan se annonseemner i innstillingene og blokkere de du ikke vil dele med nettsteder. Chrome sletter også automatisk annonseemner som er eldre enn fire uker.</translation>
 <translation id="4500587658229086076">usikkert innhold</translation>

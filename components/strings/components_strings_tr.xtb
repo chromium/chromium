@@ -1483,6 +1483,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4084219288110917128">Zarf C1</translation>
 <translation id="4088981014127559358">Taraf 1 resim Y kayması</translation>
 <translation id="4089152113577680600">Tepsi 14</translation>
+<translation id="4092349052316400070">Adresi doldur</translation>
 <translation id="4096237801206588987">11 x 15 inç</translation>
 <translation id="4098354747657067197">Yanıltıcı bir siteye girmek üzeresiniz</translation>
 <translation id="4099048595830172239">Yönetici politikası, gizli içerik görünür durumdayken ekranınızı <ph name="APPLICATION_TITLE" /> ile paylaşmanızı önermez:</translation>
@@ -1696,7 +1697,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4489023393592172404">Zarf Kaku 4</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">Senkronize edilen şifreleri Google Hesabınızla şifreleyin</translation>
-<translation id="4492519888999857993">Bu özellikler varsayılan olarak devre dışı bırakılmıştır. Chrome'un gelecek sürümlerinde kullanılamayacaktır.</translation>
 <translation id="4493480324863638523">Geçersiz URL. Standart şemaya sahip bir URL olmalıdır. Ör. http://example.com veya https://example.com.</translation>
 <translation id="4494323206460475851">Reklam konularını ayarlarda görebilir ve sitelerle paylaşılmasını istemediğiniz konuları engelleyebilirsiniz. Ayrıca Chrome, 4 haftadan daha eski reklam konularını otomatik olarak siler.</translation>
 <translation id="4500587658229086076">güvenli olmayan içerik</translation>

@@ -1484,6 +1484,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4084219288110917128">Kirjekuori C1</translation>
 <translation id="4088981014127559358">1. puolen kuvan Y vaihto</translation>
 <translation id="4089152113577680600">Lokero 14</translation>
+<translation id="4092349052316400070">Täytä osoite</translation>
 <translation id="4096237801206588987">11 x 15 tuumaa</translation>
 <translation id="4098354747657067197">Seuraava sivusto on petollinen</translation>
 <translation id="4099048595830172239">Järjestelmänvalvojakäytännössä ei suositella näytön jakamista (<ph name="APPLICATION_TITLE" />) luottamuksellisen sisällön ollessa näkyvissä:</translation>
@@ -1697,7 +1698,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4489023393592172404">Kirjekuori Kaku 4</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">Salaa synkronoidut salasanat Google-tilisi avulla</translation>
-<translation id="4492519888999857993">Nämä ominaisuudet ovat oletuksena poissa käytöstä. Ne eivät ole käytettävissä Chromen tulevissa versioissa.</translation>
 <translation id="4493480324863638523">Virheellinen URL-osoite URL-osoitteen on oltava vakiomallien mukainen, esimerkiksi "http://example.com" tai "https://example.com".</translation>
 <translation id="4494323206460475851">Asetuksista näet mainosaiheet ja voit estää sellaiset, joita et halua jakaa sivustoille. Chrome myös poistaa yli neljä viikkoa vanhat mainosaiheet automaattisesti.</translation>
 <translation id="4500587658229086076">suojaamaton sisältö</translation>

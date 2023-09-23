@@ -225,6 +225,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1831565490995294689">Selecciona per obrir <ph name="APP_TO_OPEN" />.</translation>
 <translation id="1838895407229022812">La funció Llum nocturna està desactivada.</translation>
 <translation id="1854180393107901205">Atura l'emissió</translation>
+<translation id="1862077610023398675">Amaga els controls</translation>
 <translation id="1862380676329487333">Actualitza i tanca la sessió</translation>
 <translation id="1864454756846565995">Dispositiu USB-C (port posterior)</translation>
 <translation id="1869497990620230175">Fitxers ràpids</translation>
@@ -786,6 +787,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="4215497585250573029">Configuració de VPN</translation>
 <translation id="4217571870635786043">Dictat</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, aplicació instal·lada, en pausa</translation>
+<translation id="4228078597006700451">Els controls no s'han configurat</translation>
 <translation id="4231053948789591973">Actualment l'emissió està en pausa. Pots reprendre o aturar l'emissió de la pantalla en qualsevol moment.</translation>
 <translation id="423685346499232137">En aquests moments no es pot copiar ni enganxar contingut</translation>
 <translation id="4239069858505860023">GPRS</translation>
@@ -1417,6 +1419,7 @@ Instal·lació nova</translation>
 <translation id="6802196538183166658">Obre la configuració ràpida seleccionant l'hora</translation>
 <translation id="6802687695197837794">Permet l'accés a <ph name="APP1_NAME" />, <ph name="APP2_NAME" />  i a totes les aplicacions i tots els llocs web amb permisos per accedir a la càmera i al micròfon.</translation>
 <translation id="6803622936009808957">No s'han pogut projectar les pantalles, perquè no s'ha trobat cap resolució compatible. S'ha entrat al mode d'escriptori ampliat.</translation>
+<translation id="6809556495807506746">Els controls no estan disponibles</translation>
 <translation id="6812232930908427253">No s'ha pogut desar l'escriptori. Hi ha massa finestres o pestanyes.</translation>
 <translation id="6818242057446442178">Enrere per paraula</translation>
 <translation id="6819327813400217281">La càmera s'ha ajustat a l'extrem inferior esquerre</translation>
@@ -1441,6 +1444,7 @@ Instal·lació nova</translation>
 <translation id="6919251195245069855">No s'ha reconegut la targeta intel·ligent. Torna-ho a provar.</translation>
 <translation id="6920245099716267363">Commuta el punt d'accés Wi‐Fi. Està activat i hi ha 1 dispositiu connectat.</translation>
 <translation id="692135145298539227">suprimeix</translation>
+<translation id="6929081673585394903">Mostra els controls</translation>
 <translation id="6931576957638141829">Desa a</translation>
 <translation id="6942518653766415536">Menú de format de gravació</translation>
 <translation id="6945221475159498467">Selecciona</translation>
@@ -1635,6 +1639,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7773536009433685931">Activa la Wi-Fi</translation>
 <translation id="7780094051999721182">dreceres</translation>
 <translation id="7780159184141939021">Gira la pantalla</translation>
+<translation id="7792590255364786396">Visible</translation>
 <translation id="7796735576426975947">S'ha amagat una altra notificació</translation>
 <translation id="7798302898096527229">Prem Cerca o Maj per cancel·lar.</translation>
 <translation id="780301667611848630">No, gràcies</translation>
