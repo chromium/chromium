@@ -264,8 +264,8 @@ export class ActionDispatcher {
               {
                 x,
                 y,
-                radiusX: width,
-                radiusY: height,
+                radiusX: width && width / 2,
+                radiusY: height && height / 2,
                 tangentialPressure,
                 tiltX,
                 tiltY,
@@ -441,8 +441,8 @@ export class ActionDispatcher {
                     {
                       x,
                       y,
-                      radiusX: width,
-                      radiusY: height,
+                      radiusX: width && width / 2,
+                      radiusY: height && height / 2,
                       tangentialPressure,
                       tiltX,
                       tiltY,
