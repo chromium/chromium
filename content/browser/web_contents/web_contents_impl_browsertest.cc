@@ -488,7 +488,13 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   EXPECT_EQ(new_size, shell()->web_contents()->GetContainerBounds().size());
 }
 
-IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, SetTitleOnUnload) {
+// TODO(crbug.com/1486164): Times out on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SetTitleOnUnload DISABLED_SetTitleOnUnload
+#else
+#define MAYBE_SetTitleOnUnload SetTitleOnUnload
+#endif
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, MAYBE_SetTitleOnUnload) {
   GURL url(
       "data:text/html,"
       "<title>A</title>"
