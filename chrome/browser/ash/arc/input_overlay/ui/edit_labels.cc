@@ -35,8 +35,7 @@ EditLabels::EditLabels(DisplayOverlayController* controller,
     : controller_(controller),
       action_(action),
       name_tag_(name_tag),
-      should_update_title_(should_update_title),
-      is_new_(action_->is_new()) {}
+      should_update_title_(should_update_title) {}
 
 EditLabels::~EditLabels() = default;
 
@@ -59,7 +58,6 @@ void EditLabels::Init() {
 }
 
 void EditLabels::OnActionInputBindingUpdated() {
-  is_new_ = false;
   for (auto* label : labels_) {
     label->OnActionInputBindingUpdated();
   }
@@ -78,7 +76,7 @@ void EditLabels::SetNameTagState(bool is_error,
   // still has label unassigned, `name_tag_` still needs to show error.
   if (!is_error && missing_assign_) {
     name_tag_->SetState(
-        /*is_error=*/!is_new_,
+        /*is_error=*/!action_->is_new(),
         l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_EDIT_MISSING_BINDING));
   } else {
     name_tag_->SetState(is_error, error_tooltip);
@@ -178,14 +176,13 @@ void EditLabels::UpdateNameTag() {
   name_tag_->SetState(
       // The name tag is not set to be in an error state if it was newly
       // created.
-      /*is_error=*/missing_assign_ && !is_new_,
+      /*is_error=*/missing_assign_ && !action_->is_new(),
       missing_assign_
           ? l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_EDIT_MISSING_BINDING)
           : u"");
 }
 
 void EditLabels::RemoveNewState() {
-  is_new_ = false;
   for (auto* label : labels_) {
     label->RemoveNewState();
   }

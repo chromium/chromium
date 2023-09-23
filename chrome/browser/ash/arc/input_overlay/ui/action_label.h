@@ -26,7 +26,6 @@ class ActionLabel : public views::LabelButton {
       views::View* parent,
       ActionType action_type,
       const InputElement& input_element,
-      bool is_new,
       TapLabelPosition label_position = TapLabelPosition::kTopLeft);
 
   explicit ActionLabel(MouseAction mouse_action);
@@ -70,7 +69,6 @@ class ActionLabel : public views::LabelButton {
  protected:
   int radius_ = 0;
   size_t index_ = 0;
-  bool is_new_ = false;
 
   MouseAction mouse_action_ = MouseAction::NONE;
 

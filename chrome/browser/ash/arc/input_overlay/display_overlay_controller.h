@@ -95,6 +95,8 @@ class DisplayOverlayController : public ui::EventHandler,
   // Returns the size of active actions which include the deleted default
   // actions.
   size_t GetActiveActionsSize();
+  // Return true if action is not deleted.
+  bool IsActiveAction(Action* action);
 
   // For menu entry hover state:
   void SetMenuEntryHoverState(bool curr_hover_state);

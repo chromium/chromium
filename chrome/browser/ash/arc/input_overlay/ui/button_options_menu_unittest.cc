@@ -205,6 +205,12 @@ TEST_F(ButtonOptionsMenuTest, TestChangeActionType) {
   auto* menu = ShowButtonOptionsMenu(tap_action_);
   int list_index = GetIndexInEditingList(tap_action_);
   EXPECT_EQ(GetActionType(menu), ActionType::TAP);
+
+  // Left click on `ButtonOptionsMenu::labels_view_` will focus on one of the
+  // `labels_` which is tested in `TestClickActionEdit`. This is to test
+  // `EditLabel::OnBlur()` doesn't crash when changing action type.
+  PressActionEdit(menu);
+
   PressActionMoveButton(menu);
   EXPECT_EQ(GetActionType(menu), ActionType::MOVE);
   EXPECT_TRUE(IsActionInTouchInjector(menu->action()));
@@ -214,6 +220,11 @@ TEST_F(ButtonOptionsMenuTest, TestChangeActionType) {
   menu = ShowButtonOptionsMenu(move_action_);
   list_index = GetIndexInEditingList(move_action_);
   EXPECT_EQ(GetActionType(menu), ActionType::MOVE);
+
+  // Press Action Edit twice to focus on the second label.
+  PressActionEdit(menu);
+  PressActionEdit(menu);
+
   PressTapButton(menu);
   EXPECT_EQ(GetActionType(menu), ActionType::TAP);
   EXPECT_TRUE(IsActionInTouchInjector(menu->action()));

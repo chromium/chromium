@@ -54,7 +54,7 @@ class EditLabel : public views::LabelButton {
 
   raw_ptr<DisplayOverlayController> controller_ = nullptr;
   raw_ptr<Action, DanglingUntriaged> action_ = nullptr;
-  bool is_new_ = false;
+
   size_t index_ = 0;
 };
 

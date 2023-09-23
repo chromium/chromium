@@ -215,7 +215,6 @@ class ActionLabelMove : public ActionLabel {
 std::vector<ActionLabel*> ActionLabel::Show(views::View* parent,
                                             ActionType action_type,
                                             const InputElement& input_element,
-                                            bool is_new,
                                             TapLabelPosition label_position) {
   std::vector<ActionLabel*> labels;
   gfx::Size touch_point_size;
@@ -264,7 +263,6 @@ std::vector<ActionLabel*> ActionLabel::Show(views::View* parent,
   }
 
   for (auto* label : labels) {
-    label->is_new_ = is_new;
     label->Init();
     label->set_touch_point_size(touch_point_size);
   }
@@ -303,7 +301,7 @@ void ActionLabel::SetTextActionLabel(const std::u16string& text) {
     return;
   }
 
-  if (text == kUnknownBind) {
+  if (text == kUnknownBind && !GetParent()->action()->is_new()) {
     SetToEditUnbindInput();
   } else {
     SetToEditDefault();
@@ -357,7 +355,6 @@ void ActionLabel::SetDisplayMode(DisplayMode mode) {
 }
 
 void ActionLabel::RemoveNewState() {
-  is_new_ = false;
   SetBackgroundForEdit();
 }
 
@@ -565,8 +562,9 @@ void ActionLabel::SetToEditInactive() {
 
 void ActionLabel::SetBackgroundForEdit() {
   SetBackground(views::CreateRoundedRectBackground(
-      (IsInputUnbound() && !is_new_) ? kEditedUnboundBgColor
-                                     : kBackgroundColorDefault,
+      IsInputUnbound() && !(GetParent()->action()->is_new())
+          ? kEditedUnboundBgColor
+          : kBackgroundColorDefault,
       kCornerRadius));
 }
 

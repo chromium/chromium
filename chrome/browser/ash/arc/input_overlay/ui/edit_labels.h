@@ -88,9 +88,6 @@ class EditLabels : public views::View {
 
   // Allows for title modification if true.
   bool should_update_title_ = false;
-
-  // Prevents new actions from being in the error state by default.
-  bool is_new_ = false;
 };
 }  // namespace arc::input_overlay
 

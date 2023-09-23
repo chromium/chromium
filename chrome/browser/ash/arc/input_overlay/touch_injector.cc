@@ -1004,6 +1004,7 @@ void TouchInjector::ChangeActionName(Action* action, int index) {
 
 void TouchInjector::RemoveActionNewState(Action* action) {
   DCHECK(IsBeta());
+  DCHECK(action->is_new());
   action->set_is_new(false);
   NotifyActionNewStateRemoved(*action);
 }

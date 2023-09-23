@@ -637,11 +637,26 @@ void DisplayOverlayController::ChangeActionName(Action* action, int index) {
 }
 
 void DisplayOverlayController::RemoveActionNewState(Action* action) {
+  if (!action->is_new()) {
+    return;
+  }
   touch_injector_->RemoveActionNewState(action);
 }
 
 size_t DisplayOverlayController::GetActiveActionsSize() {
   return touch_injector_->GetActiveActionsSize();
+}
+
+bool DisplayOverlayController::IsActiveAction(Action* action) {
+  const auto& actions = touch_injector_->actions();
+  if (actions.empty()) {
+    return false;
+  }
+
+  auto it = std::find_if(
+      actions.begin(), actions.end(),
+      [&](const std::unique_ptr<Action>& p) { return action == p.get(); });
+  return it != actions.end() && !(it->get()->IsDeleted());
 }
 
 void DisplayOverlayController::AddTouchInjectorObserver(
@@ -680,6 +695,14 @@ void DisplayOverlayController::AddButtonOptionsMenuWidget(Action* action) {
 
 void DisplayOverlayController::RemoveButtonOptionsMenuWidget() {
   if (button_options_widget_) {
+    // Check if related action is already deleted.
+    auto* menu_action = static_cast<ButtonOptionsMenu*>(
+                            button_options_widget_->GetContentsView())
+                            ->action();
+    if (IsActiveAction(menu_action)) {
+      RemoveActionNewState(menu_action);
+    }
+
     button_options_widget_->Close();
     button_options_widget_.reset();
 

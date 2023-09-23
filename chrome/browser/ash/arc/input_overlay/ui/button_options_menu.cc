@@ -248,9 +248,6 @@ void ButtonOptionsMenu::OnTrashButtonPressed() {
 }
 
 void ButtonOptionsMenu::OnDoneButtonPressed() {
-  if (action_->is_new()) {
-    controller_->RemoveActionNewState(action_);
-  }
   controller_->SaveToProtoFile();
   controller_->MayShowEduNudgeForEditingTip();
 
