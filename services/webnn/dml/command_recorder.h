@@ -33,6 +33,8 @@ class CommandRecorder final {
   CommandRecorder(const CommandRecorder&) = delete;
   CommandRecorder& operator=(const CommandRecorder&) = delete;
 
+  IDMLDevice* GetDMLDevice() const;
+
   // Get the command queue that this command recorder submits command list to.
   CommandQueue* GetCommandQueue() const;
 

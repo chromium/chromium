@@ -497,28 +497,44 @@ bool ValidateOperator(const IdToOperandMap& id_to_operand_map,
   NOTREACHED_NORETURN();
 }
 
+base::flat_map<std::string, size_t> CreateByteLengthMap(
+    const std::vector<uint64_t>& operand_ids,
+    const base::flat_map<uint64_t, mojom::OperandPtr>& id_to_operand_map) {
+  base::flat_map<std::string, size_t> name_to_byte_length_map;
+  name_to_byte_length_map.reserve(operand_ids.size());
+  for (auto& operand_id : operand_ids) {
+    const mojom::OperandPtr& operand = id_to_operand_map.at(operand_id);
+    // The `operand` is valid and the byte length of it was already verified in
+    // `ValidateGraph` function.
+    CHECK(operand);
+
+    auto byte_length = ValidateAndCalculateByteLength(
+        GetBytesPerElement(operand->data_type), operand->dimensions);
+    CHECK(byte_length.has_value());
+    CHECK(operand->name.has_value());
+    name_to_byte_length_map[operand->name.value()] = byte_length.value();
+  }
+  return name_to_byte_length_map;
+}
+
 }  // namespace
 
 WebNNGraphImpl::ComputeResourceInfo::ComputeResourceInfo(
     const mojom::GraphInfoPtr& graph_info) {
-  // Calculate the byte length of inputs for validating before computing.
-  for (auto& input_id : graph_info->input_operands) {
-    const mojom::OperandPtr& operand =
-        graph_info->id_to_operand_map.at(input_id);
-    // The `operand` is valid and the byte length of it was already verified in
-    // `ValidateGraph` function.
-    CHECK(operand);
-    auto byte_length = ValidateAndCalculateByteLength(
-        GetBytesPerElement(operand->data_type), operand->dimensions);
-    CHECK(byte_length.has_value());
-    input_name_to_byte_length_map[operand->name.value()] = byte_length.value();
-  }
+  input_name_to_byte_length_map = CreateByteLengthMap(
+      graph_info->input_operands, graph_info->id_to_operand_map);
+  output_name_to_byte_length_map = CreateByteLengthMap(
+      graph_info->output_operands, graph_info->id_to_operand_map);
 }
+
+WebNNGraphImpl::ComputeResourceInfo::ComputeResourceInfo(
+    ComputeResourceInfo&&) = default;
+WebNNGraphImpl::ComputeResourceInfo&
+WebNNGraphImpl::ComputeResourceInfo::operator=(ComputeResourceInfo&&) = default;
 
 WebNNGraphImpl::ComputeResourceInfo::~ComputeResourceInfo() = default;
 
-WebNNGraphImpl::WebNNGraphImpl(
-    std::unique_ptr<ComputeResourceInfo> compute_resource_info)
+WebNNGraphImpl::WebNNGraphImpl(ComputeResourceInfo compute_resource_info)
     : compute_resource_info_(std::move(compute_resource_info)) {}
 
 WebNNGraphImpl::~WebNNGraphImpl() = default;
@@ -618,7 +634,7 @@ void WebNNGraphImpl::Compute(
     mojom::WebNNGraph::ComputeCallback callback) {
   // Validate the inputs for computation match the built graph's expected.
   if (!base::ranges::equal(
-          named_inputs, compute_resource_info_->input_name_to_byte_length_map,
+          named_inputs, compute_resource_info_.input_name_to_byte_length_map,
           [](const auto& iter_a, const auto& iter_b) {
             // Compare the input name with the key of map and the byte length of
             // buffer with value of map.

@@ -97,12 +97,14 @@ class GraphBuilder final {
                                   TensorDesc tensor,
                                   uint32_t output_index = 0);
 
+  // Create an output edge from a node output info, return the graph's output
+  // index.
+  uint32_t CreateOutputEdge(const NodeOutputInfo& node_output_info);
+
   // Notice that IDMLDevice1::CompileGraph may take long time to compile
   // shaders (if not cached before), so this method may block current thread.
   // Consider posting this method to thread pool to avoid blocking.
-  ComPtr<IDMLCompiledOperator> Compile(
-      const std::vector<NodeOutputInfo>& node_output_infos,
-      DML_EXECUTION_FLAGS flags) const;
+  ComPtr<IDMLCompiledOperator> Compile(DML_EXECUTION_FLAGS flags) const;
 
   const NodeOutput& GetNodeOutput(const NodeOutputInfo& node_output_info) const;
 
@@ -110,6 +112,7 @@ class GraphBuilder final {
   std::vector<DML_OPERATOR_GRAPH_NODE_DESC> dml_nodes_;
   std::vector<DML_INPUT_GRAPH_EDGE_DESC> dml_input_edges_;
   std::vector<DML_INTERMEDIATE_GRAPH_EDGE_DESC> dml_intermediate_edges_;
+  std::vector<DML_OUTPUT_GRAPH_EDGE_DESC> dml_output_edges_;
   // IDMLOperator is referenced by DML_OPERATOR_GRAPH_NODE_DESC. It should
   // outlive the DML_OPERATOR_GRAPH_NODE_DESC.
   std::vector<ComPtr<IDMLOperator>> dml_operators_;

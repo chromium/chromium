@@ -8,7 +8,6 @@
 
 #include "base/bits.h"
 #include "base/check.h"
-#include "base/containers/flat_map.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -28,6 +27,7 @@ namespace webnn::dml {
 namespace {
 
 using Microsoft::WRL::ComPtr;
+using mojom::ComputeResult;
 using mojom::Operand;
 using mojom::OperandPtr;
 using mojom::Operator;
@@ -91,61 +91,88 @@ std::string OpKindToString(Operator::Kind kind) {
   }
 }
 
-// Upload constants/inputs buffers in one Direct3D 12 committed resource, the
-// DML_BUFFER_BINDING specifies a resource binding described by a range of bytes
-// in the single buffer.
-template <typename T>
-absl::optional<base::flat_map<T, DML_BUFFER_BINDING>>
-UploadAndCreateBufferBinding(
-    CommandRecorder* command_recorder,
-    const base::flat_map<T, mojo_base::BigBuffer>& input_to_buffer_map) {
-  // Copy all array buffers of constants/inputs to an upload heap and create a
-  // committed resource which is mapped to the heap.
-  //
-  // Calculate the total byte length of constants/inputs array buffer to create
-  // an upload buffer which can be read by GPU.
+// Record the total byte length of buffers and the D3D12_RANGE for each
+// buffer, all with the required alignment.
+template <typename Key>
+struct AlignedByteLength {
+  size_t total_byte_length = 0;
+  std::map<Key, D3D12_RANGE> key_to_d3d12_range_map;
+};
+
+// Calculate the total byte length of buffers and the D3D12_RANGE for each
+// buffer, all with the required alignment.
+template <typename Map>
+absl::optional<AlignedByteLength<typename Map::key_type>>
+CalculateAlignedByteLength(const Map& buffer_to_byte_length_map) {
   base::CheckedNumeric<size_t> total_byte_length(0);
-  base::flat_map<T, D3D12_RANGE> input_to_range_map;
-  for (auto& [input_id, input_buffer] : input_to_buffer_map) {
-    auto& subresource_range = input_to_range_map[input_id];
-    // There is only one upload heap for all constants/inputs, the byte offset
-    // in the `Begin` attribute is used to get the copied address for each
-    // constant/input tensor.
-    subresource_range.Begin = total_byte_length.ValueOrDie();
+  std::map<typename Map::key_type, D3D12_RANGE> key_to_d3d12_range_map;
+
+  for (auto& [buffer, byte_length] : buffer_to_byte_length_map) {
+    auto& d3d12_range = key_to_d3d12_range_map[buffer];
+    d3d12_range.Begin = total_byte_length.ValueOrDie();
 
     // The buffer has a minimum base address alignment requirement of 16 bytes
     // in the macro `DML_MINIMUM_BUFFER_TENSOR_ALIGNMENT`:
     // https://learn.microsoft.com/en-us/windows/win32/direct3d12/direct3d-directml-constants
     total_byte_length += base::bits::AlignUp<size_t>(
-        input_buffer.size(), DML_MINIMUM_BUFFER_TENSOR_ALIGNMENT);
+        byte_length, DML_MINIMUM_BUFFER_TENSOR_ALIGNMENT);
     if (!total_byte_length.IsValid()) {
-      DLOG(ERROR) << "Failed to calculate the total byte length of the input.";
+      DLOG(ERROR) << "Failed to calculate the total byte length.";
       return absl::nullopt;
     }
+
     // The aligned byte length calculated with `End` sub `Begin` attribute is
     // used to set the `SizeInBytes` field of `DML_BUFFER_BINDING`.
-    subresource_range.End = total_byte_length.ValueOrDie();
+    d3d12_range.End = total_byte_length.ValueOrDie();
   }
 
-  // Create the upload heap that can be written by CPU and read from GPU, and
-  // create a resource to map the heap.
+  return AlignedByteLength<typename Map::key_type>{
+      .total_byte_length = total_byte_length.ValueOrDie(),
+      .key_to_d3d12_range_map = std::move(key_to_d3d12_range_map)};
+}
+
+// Upload constants/inputs buffers in one Direct3D 12 committed resource, the
+// DML_BUFFER_BINDING specifies a resource binding described by a range of bytes
+// in the single buffer.
+template <typename Key>
+absl::optional<std::map<Key, DML_BUFFER_BINDING>> UploadAndCreateBufferBinding(
+    CommandRecorder* command_recorder,
+    const base::flat_map<Key, mojo_base::BigBuffer>& key_to_buffer_map) {
+  // Copy all array buffers of constants/inputs to an upload heap and create a
+  // committed resource which is mapped to the heap.
+  //
+  // Calculate the total byte length of constants/inputs array buffer to create
+  // an upload buffer which can be read by GPU.
+  std::map<Key, size_t> key_to_byte_length_map;
+  for (auto& [key, buffer] : key_to_buffer_map) {
+    key_to_byte_length_map[key] = buffer.size();
+  }
+
+  absl::optional<AlignedByteLength<Key>> aligned_byte_length =
+      CalculateAlignedByteLength(key_to_byte_length_map);
+  if (!aligned_byte_length) {
+    DLOG(ERROR) << "Failed to calculate the aligned byte length.";
+    return absl::nullopt;
+  }
+
+  // Create the upload heap that can be written by CPU and read from GPU,
+  // and create a resource to map the heap.
+  size_t total_byte_length = aligned_byte_length.value().total_byte_length;
   ComPtr<ID3D12Resource> upload_buffer;
   HRESULT hr = command_recorder->CreateUploadBuffer(
-      total_byte_length.ValueOrDie(), L"WebNN_Inputs_Upload_Buffer",
-      upload_buffer);
+      total_byte_length, L"WebNN_Upload_Buffer", upload_buffer);
   if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to create upload buffer for the input: "
+    DLOG(ERROR) << "Failed to create upload buffer for inputs: "
                 << logging::SystemErrorCodeToString(hr);
     return absl::nullopt;
   }
   // Create the default heap that only can be accessed by GPU not provide CPU
   // access, and create a resource to map the heap.
   ComPtr<ID3D12Resource> default_buffer;
-  hr = command_recorder->CreateDefaultBuffer(total_byte_length.ValueOrDie(),
-                                             L"WebNN_Inputs_Default_Buffer",
-                                             default_buffer);
+  hr = command_recorder->CreateDefaultBuffer(
+      total_byte_length, L"WebNN_Default_Input_Buffer", default_buffer);
   if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to create default buffer: "
+    DLOG(ERROR) << "Failed to create default buffer for inputs: "
                 << logging::SystemErrorCodeToString(hr);
     return absl::nullopt;
   }
@@ -159,28 +186,27 @@ UploadAndCreateBufferBinding(
                 << logging::SystemErrorCodeToString(hr);
     return absl::nullopt;
   }
-  base::flat_map<T, DML_BUFFER_BINDING> buffer_binding;
-  for (auto& [input_id, input_buffer] : input_to_buffer_map) {
+
+  std::map<Key, DML_BUFFER_BINDING> key_to_buffer_binding_map;
+  for (auto& [key, buffer] : key_to_buffer_map) {
     // Copy the input data to the upload heap with byte offset
-    auto& subresource_range = input_to_range_map.at(input_id);
-    memcpy(
-        static_cast<uint8_t*>(mapped_upload_buffer) + subresource_range.Begin,
-        input_buffer.data(), input_buffer.size());
+    auto& d3d12_range = aligned_byte_length.value().key_to_d3d12_range_map[key];
+    memcpy(static_cast<uint8_t*>(mapped_upload_buffer) + d3d12_range.Begin,
+           buffer.data(), buffer.size());
     // Create the buffer binding for each constant/input and push back into the
     // DML_BUFFER_BINDING array.
-    auto size_in_bytes = subresource_range.End - subresource_range.Begin;
-    buffer_binding[input_id] =
+    auto size_in_bytes = d3d12_range.End - d3d12_range.Begin;
+    key_to_buffer_binding_map[key] =
         DML_BUFFER_BINDING{.Buffer = default_buffer.Get(),
-                           .Offset = subresource_range.Begin,
+                           .Offset = d3d12_range.Begin,
                            .SizeInBytes = size_in_bytes};
   }
   upload_buffer->Unmap(0, nullptr);
 
   UploadBufferWithBarrier(command_recorder, std::move(default_buffer),
-                          std::move(upload_buffer),
-                          total_byte_length.ValueOrDie());
+                          std::move(upload_buffer), total_byte_length);
 
-  return buffer_binding;
+  return key_to_buffer_binding_map;
 }
 
 // Define some methods like CreateInputNode and CreateOperatorNodeForRelu here
@@ -841,26 +867,49 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGemm(
 
 }  // namespace
 
-GraphImpl::InputBufferBindingInfo::InputBufferBindingInfo() = default;
-GraphImpl::InputBufferBindingInfo::~InputBufferBindingInfo() = default;
+GraphImpl::GraphBufferBindingInfo::GraphBufferBindingInfo() = default;
+GraphImpl::GraphBufferBindingInfo::~GraphBufferBindingInfo() = default;
+
+GraphImpl::GraphBufferBindingInfo::GraphBufferBindingInfo(
+    GraphBufferBindingInfo&&) = default;
+GraphImpl::GraphBufferBindingInfo& GraphImpl::GraphBufferBindingInfo::operator=(
+    GraphBufferBindingInfo&&) = default;
 
 GraphImpl::GraphImpl(std::unique_ptr<CommandRecorder> command_recorder,
                      ComPtr<ID3D12Resource> persistent_buffer,
                      ComPtr<IDMLCompiledOperator> compiled_operator,
-                     std::unique_ptr<ComputeResourceInfo> compute_resource_info)
+                     ComputeResourceInfo compute_resource_info,
+                     GraphBufferBindingInfo graph_buffer_binding_info)
     : WebNNGraphImpl(std::move(compute_resource_info)),
       persistent_buffer_(std::move(persistent_buffer)),
       command_recorder_(std::move(command_recorder)),
-      compiled_operator_(std::move(compiled_operator)) {}
+      compiled_operator_(std::move(compiled_operator)),
+      graph_buffer_binding_info_(std::move(graph_buffer_binding_info)) {
+  command_queue_ = command_recorder_->GetCommandQueue();
+  dml_device_ = command_recorder_->GetDMLDevice();
+
+  // Create the persistent buffer binding for the graph execution.
+  uint64_t persistent_buffer_size =
+      compiled_operator_->GetBindingProperties().PersistentResourceSize;
+  if (persistent_buffer_size) {
+    CHECK_NE(persistent_buffer_.Get(), nullptr);
+    persistent_buffer_binding_ =
+        DML_BUFFER_BINDING{.Buffer = persistent_buffer_.Get(),
+                           .Offset = 0,
+                           .SizeInBytes = persistent_buffer_size};
+    persistent_buffer_binding_desc_ =
+        DML_BINDING_DESC{.Type = DML_BINDING_TYPE_BUFFER,
+                         .Desc = &persistent_buffer_binding_.value()};
+  }
+}
 
 //  Notice that it's the CommandQueue's responsibility to wait for all of the
 //  queued work to complete before destructing itself.
 GraphImpl::~GraphImpl() = default;
 
 ComPtr<IDMLCompiledOperator> GraphImpl::CompileOnBackgroundThread(
-    std::vector<NodeOutputInfo> graph_outputs,
     GraphBuilder graph_builder) {
-  return graph_builder.Compile(graph_outputs, DML_EXECUTION_FLAG_NONE);
+  return graph_builder.Compile(DML_EXECUTION_FLAG_NONE);
 }
 
 // static
@@ -868,8 +917,9 @@ void GraphImpl::OnCompilationComplete(
     mojom::WebNNContext::CreateGraphCallback callback,
     std::unique_ptr<CommandRecorder> command_recorder,
     base::flat_map<uint64_t, mojo_base::BigBuffer> constant_id_to_buffer_map,
-    std::unique_ptr<InputBufferBindingInfo> input_buffer_binding_info,
-    std::unique_ptr<ComputeResourceInfo> compute_resource_info,
+    std::unordered_map<uint64_t, uint32_t> constant_id_to_input_index_map,
+    GraphBufferBindingInfo graph_buffer_binding_info,
+    ComputeResourceInfo compute_resource_info,
     ComPtr<IDMLCompiledOperator> compiled_operator) {
   if (!compiled_operator) {
     DLOG(ERROR) << "Failed to compile the graph.";
@@ -896,16 +946,12 @@ void GraphImpl::OnCompilationComplete(
   // The constant tensor specifying DML_TENSOR_FLAG_OWNED_BY_DML need to bind
   // the resource in the buffer binding (DML_BUFFER_BINDING) array, the index
   // of constant in the array is DML_INPUT_GRAPH_EDGE_DESC.GraphInputIndex which
-  // is got from `constant_id_to_graph_input_index_map`.
+  // is got from `constant_id_to_input_index_map`.
   //
-  // TODO(crbug.com/1273291): Support single operator input buffer binding.
-  auto num_inputs =
-      compute_resource_info->input_name_to_byte_length_map.size() +
-      constant_id_to_buffer_map.size();
   // The inputs tensors without the DML_TENSOR_FLAG_OWNED_BY_DML flag is
   // expected to be bound during execution, and not during initialization.
   std::vector<DML_BUFFER_BINDING> input_buffer_binding(
-      num_inputs,
+      graph_buffer_binding_info.input_buffer_binding_count,
       DML_BUFFER_BINDING{.Buffer = nullptr, .Offset = 0, .SizeInBytes = 0});
   if (!constant_id_to_buffer_map.empty()) {
     auto constant_buffer_binding = UploadAndCreateBufferBinding<uint64_t>(
@@ -922,12 +968,9 @@ void GraphImpl::OnCompilationComplete(
     for (auto& [constant_id, buffer_binding] :
          constant_buffer_binding.value()) {
       // Get the graph input index with the constant id.
-      auto& constant_id_to_graph_input_index_map =
-          input_buffer_binding_info->constant_id_to_graph_input_index_map;
       const auto graph_input_index_iterator =
-          constant_id_to_graph_input_index_map.find(constant_id);
-      CHECK(graph_input_index_iterator !=
-            constant_id_to_graph_input_index_map.end());
+          constant_id_to_input_index_map.find(constant_id);
+      CHECK(graph_input_index_iterator != constant_id_to_input_index_map.end());
       input_buffer_binding[graph_input_index_iterator->second] =
           std::move(buffer_binding);
     }
@@ -949,7 +992,8 @@ void GraphImpl::OnCompilationComplete(
   ComPtr<ID3D12Resource> persistent_buffer;
   if (persistent_buffer_size) {
     hr = command_recorder->CreateDefaultBuffer(
-        persistent_buffer_size, L"WebNN_Persistent_Buffer", persistent_buffer);
+        persistent_buffer_size, L"WebNN_Default_Persistent_Buffer",
+        persistent_buffer);
     if (FAILED(hr)) {
       DLOG(ERROR) << "Failed to create the default buffer: "
                   << logging::SystemErrorCodeToString(hr);
@@ -997,7 +1041,8 @@ void GraphImpl::OnCompilationComplete(
   command_queue->WaitAsync(base::BindOnce(
       &GraphImpl::OnInitializationComplete, std::move(command_recorder),
       std::move(persistent_buffer), std::move(compiled_operator),
-      std::move(compute_resource_info), std::move(callback)));
+      std::move(compute_resource_info), std::move(graph_buffer_binding_info),
+      std::move(callback)));
 }
 
 // static
@@ -1005,7 +1050,8 @@ void GraphImpl::OnInitializationComplete(
     std::unique_ptr<CommandRecorder> command_recorder,
     ComPtr<ID3D12Resource> persistent_buffer,
     ComPtr<IDMLCompiledOperator> compiled_operator,
-    std::unique_ptr<ComputeResourceInfo> compute_resource_info,
+    ComputeResourceInfo compute_resource_info,
+    GraphBufferBindingInfo graph_buffer_binding_info,
     mojom::WebNNContext::CreateGraphCallback callback,
     HRESULT hr) {
   if (FAILED(hr)) {
@@ -1025,7 +1071,8 @@ void GraphImpl::OnInitializationComplete(
   mojo::MakeSelfOwnedReceiver<mojom::WebNNGraph>(
       base::WrapUnique(new GraphImpl(
           std::move(command_recorder), std::move(persistent_buffer),
-          std::move(compiled_operator), std::move(compute_resource_info))),
+          std::move(compiled_operator), std::move(compute_resource_info),
+          std::move(graph_buffer_binding_info))),
       blink_remote.InitWithNewPipeAndPassReceiver());
   command_queue->ReleaseCompletedResources();
   std::move(callback).Run(
@@ -1052,28 +1099,28 @@ void GraphImpl::CreateAndBuild(
   GraphBuilder graph_builder(dml_device);
   IdToNodeOutputMap id_to_node_output_map;
   const IdToOperandMap& id_to_operand_map = graph_info->id_to_operand_map;
-  auto input_buffer_binding_info = std::make_unique<InputBufferBindingInfo>();
+  std::unordered_map<uint64_t, uint32_t> constant_id_to_input_index_map;
+  GraphBufferBindingInfo graph_buffer_binding_info;
   // Add inputs.
   for (auto& input_id : graph_info->input_operands) {
     auto graph_input_index = CreateInputNode(
         id_to_operand_map, input_id, graph_builder, id_to_node_output_map);
     const OperandPtr& operand = id_to_operand_map.at(input_id);
     CHECK(operand);
-    input_buffer_binding_info
-        ->graph_input_name_to_index_map[operand->name.value()] =
+    graph_buffer_binding_info
+        .graph_input_name_to_index_map[operand->name.value()] =
         graph_input_index;
   }
 
   // The constant operand in WebNNGraph also is treated as input node in graph
   // desc, the tensor is identified by DML_TENSOR_FLAG_OWNED_BY_DML which must
-  // be bound to the binding table during operator initialization, and not
+  // be bound to the binding table during the graph initialization, and not
   // during execution.
   for (auto& [constant_id, _] : graph_info->constant_id_to_buffer_map) {
     auto graph_input_index =
         CreateInputNode(id_to_operand_map, constant_id, graph_builder,
                         id_to_node_output_map, DML_TENSOR_FLAG_OWNED_BY_DML);
-    input_buffer_binding_info
-        ->constant_id_to_graph_input_index_map[constant_id] = graph_input_index;
+    constant_id_to_input_index_map[constant_id] = graph_input_index;
   }
 
   // Add operations.
@@ -1144,10 +1191,13 @@ void GraphImpl::CreateAndBuild(
 
   std::vector<NodeOutputInfo> graph_outputs;
   graph_outputs.reserve(graph_info->output_operands.size());
+
   for (auto& output_id : graph_info->output_operands) {
     const auto output_iterator = id_to_node_output_map.find(output_id);
     CHECK(output_iterator != id_to_node_output_map.end());
     NodeOutputInfo node_output_info = output_iterator->second;
+    NodeOutput node_output = graph_builder.GetNodeOutput(node_output_info);
+    TensorDesc output_tensor_desc = node_output.tensor_desc;
 
     // TODO: A DML graph's output tensor may have adjusted strides rather than
     // default strides which are calculated by its' dimensions. For example,
@@ -1160,56 +1210,241 @@ void GraphImpl::CreateAndBuild(
     // Appending an identity operator DML_OPERATOR_ELEMENT_WISE_IDENTITY which
     // effectively copies input tensor to the output tensor to avoid directly
     // using graph input as output.
-    NodeOutput output_node_output =
-        graph_builder.GetNodeOutput(node_output_info);
-    TensorDesc output_tensor_desc = output_node_output.tensor_desc;
-    auto output_type = output_node_output.node_info.type;
+    auto output_type = node_output.node_info.type;
     if (output_type == NodeInfo::Type::kInput) {
       TensorDesc identity_tensor_desc(output_tensor_desc.GetDataType(),
                                       DML_TENSOR_FLAG_NONE,
                                       output_tensor_desc.GetDimensions());
-
       NodeInfo identity_node =
           CreateUnaryOperator<DML_ELEMENT_WISE_IDENTITY_OPERATOR_DESC>(
               output_tensor_desc, identity_tensor_desc, node_output_info,
               graph_builder, DML_OPERATOR_ELEMENT_WISE_IDENTITY);
 
-      NodeOutputInfo identity_node_output_info = graph_builder.CreateNodeOutput(
+      node_output_info = graph_builder.CreateNodeOutput(
           identity_node, std::move(identity_tensor_desc));
-
-      graph_outputs.push_back(std::move(identity_node_output_info));
-    } else {
-      graph_outputs.push_back(std::move(node_output_info));
     }
+
+    std::string name = id_to_operand_map.at(output_id)->name.value();
+    graph_buffer_binding_info.graph_output_name_to_index_map[std::move(name)] =
+        graph_builder.CreateOutputEdge(node_output_info);
   }
+
+  graph_buffer_binding_info.input_buffer_binding_count =
+      constant_id_to_input_index_map.size() +
+      graph_buffer_binding_info.graph_input_name_to_index_map.size();
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&GraphImpl::CompileOnBackgroundThread,
-                     std::move(graph_outputs), std::move(graph_builder)),
+                     std::move(graph_builder)),
       base::BindOnce(&GraphImpl::OnCompilationComplete, std::move(callback),
                      std::move(command_recorder),
                      std::move(graph_info->constant_id_to_buffer_map),
-                     std::move(input_buffer_binding_info),
-                     std::make_unique<ComputeResourceInfo>(graph_info)));
+                     std::move(constant_id_to_input_index_map),
+                     std::move(graph_buffer_binding_info),
+                     ComputeResourceInfo(graph_info)));
+}
+
+void GraphImpl::HandleComputationFailure(
+    mojom::WebNNGraph::ComputeCallback callback) {
+  command_recorder_.reset();
+  std::move(callback).Run(ComputeResult::kUnknownError, absl::nullopt);
+}
+
+void GraphImpl::HandleComputationFailure(
+    const char* error,
+    mojom::WebNNGraph::ComputeCallback callback) {
+  DLOG(ERROR) << error;
+  HandleComputationFailure(std::move(callback));
+}
+
+void GraphImpl::HandleComputationFailure(
+    const char* error,
+    HRESULT hr,
+    mojom::WebNNGraph::ComputeCallback callback) {
+  DLOG(ERROR) << error << " " << logging::SystemErrorCodeToString(hr);
+  HandleComputationFailure(std::move(callback));
 }
 
 void GraphImpl::ComputeImpl(
     base::flat_map<std::string, mojo_base::BigBuffer> named_inputs,
     mojom::WebNNGraph::ComputeCallback callback) {
-  // Create the input resource binding for graph execution. Only the input
-  // tensors of graph need to be bound.
-  absl::optional<base::flat_map<std::string, DML_BUFFER_BINDING>>
-      input_buffer_binding = UploadAndCreateBufferBinding<std::string>(
-          command_recorder_.get(), named_inputs);
-  if (!input_buffer_binding) {
-    DLOG(ERROR) << "Failed to upload input buffers";
-    std::move(callback).Run(mojom::ComputeResult::kUnknownError, absl::nullopt);
+  // Recreate the command recorder if it has been released by last failed
+  // computation.
+  if (!command_recorder_) {
+    command_recorder_ = CommandRecorder::Create(command_queue_, dml_device_);
+    if (!command_recorder_) {
+      HandleComputationFailure("Failed to create the command recorder.",
+                               std::move(callback));
+      return;
+    }
+  }
+  // Re-open the command recorder for recording the graph execution commands.
+  HRESULT hr = command_recorder_->Open();
+  if (FAILED(hr)) {
+    HandleComputationFailure("Failed to open the command recorder.", hr,
+                             std::move(callback));
     return;
   }
 
-  // TODO(crbug.com/1273291): Execute the compiled operator with inputs/outputs.
-  std::move(callback).Run(mojom::ComputeResult::kUnknownError, absl::nullopt);
+  // Create the input resource binding for graph execution.
+  auto input_buffer_binding = UploadAndCreateBufferBinding<std::string>(
+      command_recorder_.get(), named_inputs);
+  if (!input_buffer_binding) {
+    HandleComputationFailure(
+        "Failed to upload and create the input buffer binding.",
+        std::move(callback));
+    return;
+  }
+
+  std::vector<DML_BINDING_DESC> input_buffer_binding_desc(
+      graph_buffer_binding_info_.input_buffer_binding_count,
+      DML_BINDING_DESC{.Type = DML_BINDING_TYPE_NONE, .Desc = nullptr});
+
+  // The graph input tensors must be bound to the binding table during the graph
+  // execution.
+  for (auto& [name, buffer_binding] : input_buffer_binding.value()) {
+    // Get the graph input index with the name.
+    const auto graph_input_index_iterator =
+        graph_buffer_binding_info_.graph_input_name_to_index_map.find(name);
+    CHECK(graph_input_index_iterator !=
+          graph_buffer_binding_info_.graph_input_name_to_index_map.end());
+    uint32_t graph_input_index = graph_input_index_iterator->second;
+    input_buffer_binding_desc[graph_input_index] = {DML_BINDING_TYPE_BUFFER,
+                                                    &buffer_binding};
+  }
+
+  // Calculate the total byte length of outputs array buffer to create
+  // an output buffer and readback buffer, also records the aligned D3D12_RANGE
+  // for each output.
+  // TODO(crbug.com/1480227): Allows to compute for some selected outputs
+  // instead of all outputs of the DML graph.
+  absl::optional<AlignedByteLength<std::string>>
+      aligned_byte_length_of_outputs = CalculateAlignedByteLength(
+          compute_resource_info().output_name_to_byte_length_map);
+  if (!aligned_byte_length_of_outputs) {
+    HandleComputationFailure(
+        "Failed to calculate the aligned byte length of outputs.",
+        std::move(callback));
+    return;
+  }
+
+  // Create the output buffer which will be bound for the graph execution.
+  size_t total_byte_length_of_outputs =
+      aligned_byte_length_of_outputs.value().total_byte_length;
+  ComPtr<ID3D12Resource> default_output_buffer;
+  hr = command_recorder_->CreateDefaultBuffer(total_byte_length_of_outputs,
+                                              L"WebNN_Default_Output_Buffer",
+                                              default_output_buffer);
+  if (FAILED(hr)) {
+    HandleComputationFailure("Failed to create the default output buffer.", hr,
+                             std::move(callback));
+    return;
+  }
+
+  // Create the readback buffer which will be read by CPU.
+  ComPtr<ID3D12Resource> readback_output_buffer;
+  hr = command_recorder_->CreateReadbackBuffer(total_byte_length_of_outputs,
+                                               L"WebNN_Readback_Output_Buffer",
+                                               readback_output_buffer);
+  if (FAILED(hr)) {
+    HandleComputationFailure("Failed to create the readback output buffer.", hr,
+                             std::move(callback));
+    return;
+  }
+
+  // Create the output buffer bindings for the graph execution.
+  size_t output_buffer_binding_count =
+      graph_buffer_binding_info_.graph_output_name_to_index_map.size();
+  std::vector<DML_BINDING_DESC> output_buffer_binding_desc(
+      output_buffer_binding_count,
+      DML_BINDING_DESC{.Type = DML_BINDING_TYPE_NONE, .Desc = nullptr});
+  std::vector<DML_BUFFER_BINDING> output_buffer_binding;
+  output_buffer_binding.reserve(output_buffer_binding_count);
+
+  std::map<std::string, D3D12_RANGE> graph_output_name_to_d3d12_range_map =
+      std::move(aligned_byte_length_of_outputs.value().key_to_d3d12_range_map);
+  for (auto& [name, graph_output_index] :
+       graph_buffer_binding_info_.graph_output_name_to_index_map) {
+    auto& d3d12_range = graph_output_name_to_d3d12_range_map[name];
+    output_buffer_binding.push_back(
+        DML_BUFFER_BINDING{.Buffer = default_output_buffer.Get(),
+                           .Offset = d3d12_range.Begin,
+                           .SizeInBytes = d3d12_range.End - d3d12_range.Begin});
+    output_buffer_binding_desc[graph_output_index] = {
+        DML_BINDING_TYPE_BUFFER, &output_buffer_binding.back()};
+  }
+
+  // Execute the graph with input, output and persistent buffer bindings.
+  hr = command_recorder_->ExecuteOperator(
+      compiled_operator_.Get(), input_buffer_binding_desc,
+      output_buffer_binding_desc, persistent_buffer_binding_desc_);
+  if (FAILED(hr)) {
+    HandleComputationFailure("Failed to execute the operator.", hr,
+                             std::move(callback));
+    return;
+  }
+
+  // Copy the output data from output buffer to readback buffer.
+  D3D12_RESOURCE_BARRIER barriers[1];
+  barriers[0] = CreateTransitionBarrier(default_output_buffer.Get(),
+                                        D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+                                        D3D12_RESOURCE_STATE_COPY_SOURCE);
+  command_recorder_->ResourceBarrier(barriers);
+  command_recorder_->CopyBufferRegion(readback_output_buffer.Get(), 0,
+                                      default_output_buffer.Get(), 0,
+                                      total_byte_length_of_outputs);
+  barriers[0] = CreateTransitionBarrier(default_output_buffer.Get(),
+                                        D3D12_RESOURCE_STATE_COPY_SOURCE,
+                                        D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+  command_recorder_->ResourceBarrier(barriers);
+
+  hr = command_recorder_->CloseAndExecute();
+  if (FAILED(hr)) {
+    HandleComputationFailure("Failed to close and execute the command list.",
+                             hr, std::move(callback));
+    return;
+  }
+
+  command_queue_->WaitAsync(base::BindOnce(
+      &GraphImpl::OnComputationComplete, weak_factory_.GetWeakPtr(),
+      std::move(callback), std::move(readback_output_buffer),
+      std::move(graph_output_name_to_d3d12_range_map)));
+}
+
+void GraphImpl::OnComputationComplete(
+    mojom::WebNNGraph::ComputeCallback callback,
+    ComPtr<ID3D12Resource> readback_output_buffer,
+    std::map<std::string, D3D12_RANGE> graph_output_name_to_d3d12_range_map,
+    HRESULT hr) {
+  if (FAILED(hr)) {
+    HandleComputationFailure("Failed to wait for the computation to complete.",
+                             hr, std::move(callback));
+    return;
+  }
+
+  // Map entire buffer to readback the output data one by one with byte
+  // offset.
+  void* mapped_readback_output_buffer = nullptr;
+  hr = readback_output_buffer->Map(0, nullptr, &mapped_readback_output_buffer);
+  if (FAILED(hr)) {
+    HandleComputationFailure("Failed to map the readback output buffer.", hr,
+                             std::move(callback));
+    return;
+  }
+
+  base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+  named_outputs.reserve(graph_output_name_to_d3d12_range_map.size());
+  for (auto& [name, d3d12_range] : graph_output_name_to_d3d12_range_map) {
+    named_outputs[name] = mojo_base::BigBuffer(base::make_span(
+        static_cast<const uint8_t*>(mapped_readback_output_buffer) +
+            d3d12_range.Begin,
+        compute_resource_info().output_name_to_byte_length_map.at(name)));
+  }
+
+  readback_output_buffer->Unmap(0, nullptr);
+  command_queue_->ReleaseCompletedResources();
+  std::move(callback).Run(ComputeResult::kOk, std::move(named_outputs));
 }
 
 }  // namespace webnn::dml

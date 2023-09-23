@@ -23,8 +23,7 @@ namespace {
 // computing graph message.
 class FakeWebNNGraphImpl final : public WebNNGraphImpl {
  public:
-  explicit FakeWebNNGraphImpl(
-      std::unique_ptr<ComputeResourceInfo> compute_resource_info)
+  explicit FakeWebNNGraphImpl(ComputeResourceInfo compute_resource_info)
       : WebNNGraphImpl(std::move(compute_resource_info)) {}
   ~FakeWebNNGraphImpl() override = default;
 
@@ -34,8 +33,7 @@ class FakeWebNNGraphImpl final : public WebNNGraphImpl {
     mojo::PendingRemote<mojom::WebNNGraph> blink_remote;
     // The receiver bound to FakeWebNNGraphImpl.
     mojo::MakeSelfOwnedReceiver<mojom::WebNNGraph>(
-        std::make_unique<FakeWebNNGraphImpl>(
-            std::make_unique<ComputeResourceInfo>(graph_info)),
+        std::make_unique<FakeWebNNGraphImpl>(ComputeResourceInfo(graph_info)),
         blink_remote.InitWithNewPipeAndPassReceiver());
     std::move(callback).Run(
         mojom::CreateGraphResult::NewGraphRemote(std::move(blink_remote)));

@@ -79,8 +79,8 @@ TEST_F(WebNNGraphBuilderTest, BuildSingleOperatorRelu) {
   NodeOutputInfo output =
       graph_builder.CreateNodeOutput(relu_node, input_tensor_desc);
 
-  EXPECT_NE(graph_builder.Compile({output}, DML_EXECUTION_FLAG_NONE).Get(),
-            nullptr);
+  EXPECT_EQ(graph_builder.CreateOutputEdge(output), 0u);
+  EXPECT_NE(graph_builder.Compile(DML_EXECUTION_FLAG_NONE).Get(), nullptr);
 }
 
 // Test building a DML graph with single operator conv2d which has multiple
@@ -130,8 +130,8 @@ TEST_F(WebNNGraphBuilderTest, BuildSingleOperatorConv2d) {
   NodeOutputInfo output =
       graph_builder.CreateNodeOutput(conv_node, output_tensor_desc);
 
-  EXPECT_NE(graph_builder.Compile({output}, DML_EXECUTION_FLAG_NONE).Get(),
-            nullptr);
+  EXPECT_EQ(graph_builder.CreateOutputEdge(output), 0u);
+  EXPECT_NE(graph_builder.Compile(DML_EXECUTION_FLAG_NONE).Get(), nullptr);
 }
 
 // Test building a DML graph with single operator split which has multiple
@@ -174,10 +174,10 @@ TEST_F(WebNNGraphBuilderTest, BuildSingleOperatorSplit) {
   NodeOutputInfo output2 =
       graph_builder.CreateNodeOutput(split_node, output_tensor_desc2, 2);
 
-  EXPECT_NE(graph_builder
-                .Compile({output0, output1, output2}, DML_EXECUTION_FLAG_NONE)
-                .Get(),
-            nullptr);
+  EXPECT_EQ(graph_builder.CreateOutputEdge(output0), 0u);
+  EXPECT_EQ(graph_builder.CreateOutputEdge(output1), 1u);
+  EXPECT_EQ(graph_builder.CreateOutputEdge(output2), 2u);
+  EXPECT_NE(graph_builder.Compile(DML_EXECUTION_FLAG_NONE).Get(), nullptr);
 }
 
 // Test building a DML graph with two operators: relu and conv2d.
@@ -241,8 +241,8 @@ TEST_F(WebNNGraphBuilderTest, BuildGraphWithReluAndConv2d) {
   NodeOutputInfo output =
       graph_builder.CreateNodeOutput(conv_node, output_tensor_desc);
 
-  EXPECT_NE(graph_builder.Compile({output}, DML_EXECUTION_FLAG_NONE).Get(),
-            nullptr);
+  EXPECT_EQ(graph_builder.CreateOutputEdge(output), 0u);
+  EXPECT_NE(graph_builder.Compile(DML_EXECUTION_FLAG_NONE).Get(), nullptr);
 }
 
 }  // namespace webnn::dml

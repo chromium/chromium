@@ -5,7 +5,6 @@
 #ifndef SERVICES_WEBNN_WEBNN_GRAPH_IMPL_H_
 #define SERVICES_WEBNN_WEBNN_GRAPH_IMPL_H_
 
-#include <memory>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -28,13 +27,14 @@ class WebNNGraphImpl : public mojom::WebNNGraph {
     ComputeResourceInfo(const ComputeResourceInfo&) = delete;
     ComputeResourceInfo& operator=(const ComputeResourceInfo&) = delete;
 
+    ComputeResourceInfo(ComputeResourceInfo&&);
+    ComputeResourceInfo& operator=(ComputeResourceInfo&&);
+
     base::flat_map<std::string, size_t> input_name_to_byte_length_map;
-    // TODO(crbug.com/1455278): Add output information.
-    // base::flat_map<std::string, size_t> output_name_to_byte_length_map;
+    base::flat_map<std::string, size_t> output_name_to_byte_length_map;
   };
 
-  explicit WebNNGraphImpl(
-      std::unique_ptr<ComputeResourceInfo> compute_resource_info);
+  explicit WebNNGraphImpl(ComputeResourceInfo compute_resource_info);
   WebNNGraphImpl(const WebNNGraphImpl&) = delete;
   WebNNGraphImpl& operator=(const WebNNGraphImpl&) = delete;
   ~WebNNGraphImpl() override;
@@ -42,10 +42,14 @@ class WebNNGraphImpl : public mojom::WebNNGraph {
   // Return false if the graph is invalid.
   static bool ValidateGraph(const mojom::GraphInfoPtr& graph_info);
 
+  const ComputeResourceInfo& compute_resource_info() const {
+    return compute_resource_info_;
+  }
+
  private:
   // The validator is to make sure the inputs from a compute call match the
   // built graph's expected.
-  std::unique_ptr<ComputeResourceInfo> compute_resource_info_;
+  ComputeResourceInfo compute_resource_info_;
 
   // mojom::WebNNGraph
   void Compute(base::flat_map<std::string, mojo_base::BigBuffer> named_inputs,

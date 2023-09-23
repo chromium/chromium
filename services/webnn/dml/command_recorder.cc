@@ -83,6 +83,10 @@ CommandRecorder::CommandRecorder(
 
 CommandRecorder::~CommandRecorder() = default;
 
+IDMLDevice* CommandRecorder::GetDMLDevice() const {
+  return dml_device_.Get();
+}
+
 CommandQueue* CommandRecorder::GetCommandQueue() const {
   return command_queue_.get();
 }
