@@ -145,7 +145,7 @@ class ArcGraphicsTracingHandlerTest : public ChromeAshTestBase {
   }
 
   void SendStartStopKey() {
-    ui::KeyEvent ev{ui::ET_KEY_RELEASED, ui::VKEY_G,
+    ui::KeyEvent ev{ui::ET_KEY_PRESSED, ui::VKEY_G,
                     ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN};
     handler_->OnKeyEvent(&ev);
   }

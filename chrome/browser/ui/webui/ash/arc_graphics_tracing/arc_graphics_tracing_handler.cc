@@ -40,6 +40,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/events/event.h"
+#include "ui/events/event_constants.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia_rep.h"
 
@@ -321,8 +322,16 @@ void ArcGraphicsTracingHandler::OnWindowDestroying(aura::Window* window) {
 
 void ArcGraphicsTracingHandler::OnKeyEvent(ui::KeyEvent* event) {
   DCHECK(arc_active_window_);
-  if (event->type() != ui::ET_KEY_RELEASED || event->key_code() != ui::VKEY_G ||
-      !event->IsControlDown() || !event->IsShiftDown()) {
+
+  // Only two flags (decorators) must be on.
+  constexpr int kFlags = ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN;
+  // Four flags must be off (avoids future conflict, and prevents long
+  // press from double-activating).
+  constexpr int kMask = kFlags | ui::EF_COMMAND_DOWN | ui::EF_ALTGR_DOWN |
+                        ui::EF_ALT_DOWN | ui::EF_IS_REPEAT;
+
+  if (event->type() != ui::ET_KEY_PRESSED || event->key_code() != ui::VKEY_G ||
+      (event->flags() & kMask) != kFlags) {
     return;
   }
   if (active_trace_) {
