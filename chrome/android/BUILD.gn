@@ -3633,6 +3633,7 @@ group("jni_headers") {
     "//chrome/browser/ui/android/fast_checkout:jni_headers",
     "//chrome/browser/ui/android/favicon:jni_headers",
     "//chrome/browser/ui/android/hats:jni_headers",
+    "//chrome/browser/ui/android/hats/internal:jni_headers",
     "//chrome/browser/ui/android/logo:jni_headers",
     "//chrome/browser/ui/android/omnibox:jni_headers",
     "//chrome/browser/ui/android/page_insights:jni_headers",

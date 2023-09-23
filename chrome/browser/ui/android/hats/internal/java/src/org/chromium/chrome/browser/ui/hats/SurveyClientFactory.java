@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 
 /**
  * Factory class used to create SurveyClient.
@@ -74,5 +75,12 @@ public class SurveyClientFactory {
 
         return new SurveyClientImpl(config, uiDelegate, SurveyControllerProvider.create(),
                 mCrashUploadPermissionSupplier);
+    }
+
+    /**
+     * Get the crash upload supplier initialized in this factory.
+     */
+    public Supplier<Boolean> getCrashUploadPermissionSupplier() {
+        return mCrashUploadPermissionSupplier;
     }
 }
