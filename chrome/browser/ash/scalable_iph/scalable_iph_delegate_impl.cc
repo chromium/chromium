@@ -356,9 +356,6 @@ void ScalableIphDelegateImpl::ShowBubble(
 
   ShelfAppButton* anchor_view = nullptr;
   if (!params.anchor_view_app_id.empty()) {
-    // In the case that the specified app ID cannot be found on the shelf,
-    // the nudge will not be anchored and will show in the bottom left
-    // default position instead.
     anchor_view =
         Shell::GetPrimaryRootWindowController()
             ->shelf()
@@ -366,10 +363,15 @@ void ScalableIphDelegateImpl::ShowBubble(
             ->GetShelfView()
             ->GetShelfAppButton(ash::ShelfID(params.anchor_view_app_id));
     if (!anchor_view) {
+      // In the case that the specified app ID cannot be found on the shelf,
+      // the bubble can't be anchored and will not be shown.
       SCALABLE_IPH_LOG(GetLogger())
           << "Unable to find a view for specified anchor view app id. Anchor "
              "view app id: "
-          << params.anchor_view_app_id;
+          << params.anchor_view_app_id << " -> Not showing a bubble.";
+      bubble_iph_session_.reset();
+      bubble_id_ = "";
+      return;
     }
   }
 
