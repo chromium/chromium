@@ -7,9 +7,11 @@
 #include <string>
 #include <utility>
 
+#include "ash/accelerators/accelerator_capslock_state_machine.h"
 #include "ash/accelerators/accelerator_commands.h"
 #include "ash/accelerators/accelerator_launcher_state_machine.h"
 #include "ash/accelerators/accelerator_notifications.h"
+#include "ash/accelerators/accelerator_shift_disable_capslock_state_machine.h"
 #include "ash/accelerators/debug_commands.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/constants/ash_features.h"
@@ -266,7 +268,13 @@ bool CanHandleToggleAppList(
   return true;
 }
 
-bool CanHandleDisableCapsLock(const ui::Accelerator& previous_accelerator) {
+bool CanHandleDisableCapsLock(const ui::Accelerator& previous_accelerator,
+                              const AcceleratorShiftDisableCapslockStateMachine&
+                                  shift_disable_state_machine) {
+  if (base::FeatureList::IsEnabled(features::kShortcutStateMachines)) {
+    return shift_disable_state_machine.CanHandleCapsLock() &&
+           Shell::Get()->ime_controller()->IsCapsLockEnabled();
+  }
   ui::KeyboardCode previous_key_code = previous_accelerator.key_code();
   if (previous_accelerator.key_state() == ui::Accelerator::KeyState::RELEASED ||
       (previous_key_code != ui::VKEY_LSHIFT &&
@@ -276,19 +284,26 @@ bool CanHandleDisableCapsLock(const ui::Accelerator& previous_accelerator) {
     // and released, then ignore the release of the Shift key.
     return false;
   }
+
   return Shell::Get()->ime_controller()->IsCapsLockEnabled();
 }
 
 bool CanHandleToggleCapsLock(
     const ui::Accelerator& accelerator,
     const ui::Accelerator& previous_accelerator,
-    const std::set<ui::KeyboardCode>& currently_pressed_keys) {
+    const std::set<ui::KeyboardCode>& currently_pressed_keys,
+    const AcceleratorCapslockStateMachine& capslock_state_machine) {
+  if (base::FeatureList::IsEnabled(features::kShortcutStateMachines)) {
+    return capslock_state_machine.CanHandleCapsLock();
+  }
+
   // Iterate the set of pressed keys. If any redundant key is pressed, CapsLock
   // should not be triggered. Otherwise, CapsLock may be triggered accidentally.
   // See issue 789283 (https://crbug.com/789283)
   for (const auto& pressed_key : currently_pressed_keys) {
-    if (pressed_key != ui::VKEY_LWIN && pressed_key != ui::VKEY_MENU)
+    if (pressed_key != ui::VKEY_LWIN && pressed_key != ui::VKEY_MENU) {
       return false;
+    }
   }
 
   // This shortcut is set to be trigger on release. Either the current
@@ -400,6 +415,11 @@ AcceleratorControllerImpl::AcceleratorControllerImpl(
       accelerator_history_(std::make_unique<AcceleratorHistoryImpl>()),
       launcher_state_machine_(std::make_unique<AcceleratorLauncherStateMachine>(
           ui::OzonePlatform::GetInstance()->GetInputController())),
+      capslock_state_machine_(std::make_unique<AcceleratorCapslockStateMachine>(
+          ui::OzonePlatform::GetInstance()->GetInputController())),
+      shift_disable_state_machine_(
+          std::make_unique<AcceleratorShiftDisableCapslockStateMachine>(
+              ui::OzonePlatform::GetInstance()->GetInputController())),
       accelerator_configuration_(config),
       output_volume_metric_delay_timer_(
           FROM_HERE,
@@ -434,6 +454,12 @@ AcceleratorControllerImpl::AcceleratorControllerImpl(
     aura::Env::GetInstance()->AddPreTargetHandler(
         launcher_state_machine_.get(),
         ui::EventTarget::Priority::kAccessibility);
+    aura::Env::GetInstance()->AddPreTargetHandler(
+        capslock_state_machine_.get(),
+        ui::EventTarget::Priority::kAccessibility);
+    aura::Env::GetInstance()->AddPreTargetHandler(
+        shift_disable_state_machine_.get(),
+        ui::EventTarget::Priority::kAccessibility);
   }
 }
 
@@ -456,6 +482,10 @@ AcceleratorControllerImpl::~AcceleratorControllerImpl() {
   if (base::FeatureList::IsEnabled(features::kShortcutStateMachines)) {
     aura::Env::GetInstance()->RemovePreTargetHandler(
         launcher_state_machine_.get());
+    aura::Env::GetInstance()->RemovePreTargetHandler(
+        capslock_state_machine_.get());
+    aura::Env::GetInstance()->RemovePreTargetHandler(
+        shift_disable_state_machine_.get());
   }
 }
 
@@ -748,7 +778,8 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case AcceleratorAction::kDevToggleUnifiedDesktop:
       return debug::DeveloperAcceleratorsEnabled();
     case AcceleratorAction::kDisableCapsLock:
-      return CanHandleDisableCapsLock(previous_accelerator);
+      return CanHandleDisableCapsLock(previous_accelerator,
+                                      *shift_disable_state_machine_);
     case AcceleratorAction::kLockScreen:
       return accelerators::CanLock();
     case AcceleratorAction::kMagnifierZoomIn:
@@ -797,7 +828,8 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case AcceleratorAction::kToggleCapsLock:
       return CanHandleToggleCapsLock(
           accelerator, previous_accelerator,
-          accelerator_history_->currently_pressed_keys());
+          accelerator_history_->currently_pressed_keys(),
+          *capslock_state_machine_);
     case AcceleratorAction::kToggleClipboardHistory:
       return true;
     case AcceleratorAction::kEnableOrToggleDictation:

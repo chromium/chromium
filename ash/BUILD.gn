@@ -29,6 +29,8 @@ component("ash") {
   sources = [
     "accelerators/accelerator_alias_converter.cc",
     "accelerators/accelerator_alias_converter.h",
+    "accelerators/accelerator_capslock_state_machine.cc",
+    "accelerators/accelerator_capslock_state_machine.h",
     "accelerators/accelerator_commands.cc",
     "accelerators/accelerator_commands.h",
     "accelerators/accelerator_controller_impl.cc",
@@ -43,6 +45,8 @@ component("ash") {
     "accelerators/accelerator_prefs.cc",
     "accelerators/accelerator_prefs.h",
     "accelerators/accelerator_prefs_delegate.h",
+    "accelerators/accelerator_shift_disable_capslock_state_machine.cc",
+    "accelerators/accelerator_shift_disable_capslock_state_machine.h",
     "accelerators/accelerator_table.cc",
     "accelerators/accelerator_table.h",
     "accelerators/accelerator_tracker.cc",
@@ -3072,12 +3076,14 @@ test("ash_unittests") {
 
   sources = [
     "accelerators/accelerator_alias_converter_unittest.cc",
+    "accelerators/accelerator_capslock_state_machine_unittest.cc",
     "accelerators/accelerator_commands_unittest.cc",
     "accelerators/accelerator_controller_unittest.cc",
     "accelerators/accelerator_filter_unittest.cc",
     "accelerators/accelerator_history_unittest.cc",
     "accelerators/accelerator_launcher_state_machine_unittest.cc",
     "accelerators/accelerator_prefs_unittest.cc",
+    "accelerators/accelerator_shift_disable_capslock_state_machine_unittest.cc",
     "accelerators/accelerator_table_unittest.cc",
     "accelerators/accelerator_tracker_unittest.cc",
     "accelerators/accelerator_unittest.cc",
