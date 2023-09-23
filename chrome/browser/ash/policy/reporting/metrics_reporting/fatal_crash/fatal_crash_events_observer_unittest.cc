@@ -374,7 +374,7 @@ class FatalCrashEventsObserverReportedLocalIdsTestBase
     return fatal_crash_test_environment_.GetSaveFilePath();
   }
 
-  // Generates a uninteresting fatal crash event to alter the observer's state
+  // Generates an uninteresting fatal crash event to alter the observer's state
   // in preparation for the test.
   void CreateFatalCrashEvent(
       std::string_view local_id,
@@ -522,6 +522,40 @@ TEST_P(FatalCrashEventsObserverReportedLocalIdsTest,
   EXPECT_EQ(
       fatal_crash_telemetry.timestamp_us(),
       FatalCrashEventsObserver::ConvertTimeToMicroseconds(kCaptureTimeLate));
+}
+
+TEST_P(FatalCrashEventsObserverReportedLocalIdsTest,
+       RepeatedLocalIDReportedIfFirstTimeIsInterrupted) {
+  base::test::TestFuture<MetricData> result_metric_data;
+  auto fatal_crash_events_observer =
+      CreateAndEnableFatalCrashEventsObserver(&result_metric_data);
+  // Simulate the thread is interrupted after event observed callback is called.
+  fatal_crash_test_environment_.SetInterruptedAfterEventObserved(
+      *fatal_crash_events_observer, /*interrupted_after_event_observed=*/true);
+  CreateFatalCrashEvent(
+      /*local_id=*/kLocalId, /*capture_time=*/kCaptureTime,
+      *fatal_crash_events_observer, &result_metric_data);
+  if (reload()) {
+    fatal_crash_events_observer =
+        CreateAndEnableFatalCrashEventsObserver(&result_metric_data);
+  }
+
+  // Now back to what production code does.
+  fatal_crash_test_environment_.SetInterruptedAfterEventObserved(
+      *fatal_crash_events_observer, /*interrupted_after_event_observed=*/false);
+
+  // Event with the same local ID is reported again.
+  auto crash_event_info = NewCrashEventInfo(/*is_uploaded=*/false);
+  crash_event_info->local_id = kLocalId;
+  crash_event_info->capture_time = kCaptureTime;
+  const auto fatal_crash_telemetry = WaitForFatalCrashTelemetry(
+      std::move(crash_event_info), fatal_crash_events_observer.get(),
+      &result_metric_data);
+  ASSERT_TRUE(fatal_crash_telemetry.has_local_id());
+  EXPECT_EQ(fatal_crash_telemetry.local_id(), kLocalId);
+  ASSERT_TRUE(fatal_crash_telemetry.has_timestamp_us());
+  EXPECT_EQ(fatal_crash_telemetry.timestamp_us(),
+            FatalCrashEventsObserver::ConvertTimeToMicroseconds(kCaptureTime));
 }
 
 // TODO(b/266018440): After implementing the logic that controls whether an

@@ -65,11 +65,16 @@ class FatalCrashEventsObserver
 
     virtual ~ReportedLocalIdManager();
 
-    // Updates local ID. If the local ID is already in the reported Local IDs or
+    // Returns true unless the local ID is already in the reported Local IDs or
     // the timestamp is no later than the earliest timestamp corresponding to
-    // reported local IDs, do nothing and return false. Otherwise, writes the
-    // update to the save file; if there are more than maximum allowed local
-    // IDs, remove the oldest one.
+    // reported local IDs.
+    bool ShouldReport(const std::string& local_id,
+                      int64_t capture_timestamp_us) const;
+
+    // Updates local ID. Does nothing and returns false if a crash with the
+    // given local ID and capture timestamp should not be reported. Otherwise,
+    // writes the update to the save file; if there are more than maximum
+    // allowed local IDs, remove the oldest one.
     bool UpdateLocalId(const std::string& local_id,
                        int64_t capture_timestamp_us);
 
@@ -137,6 +142,12 @@ class FatalCrashEventsObserver
   // CrosHealthdEventsObserverBase
   void AddObserver() override;
 
+  // Sets whether to continue postprocessing after event observed callback is
+  // called. Pass in true to simulate that event observed callback is
+  // interrupted right after it's finished.
+  void SetInterruptedAfterEventObservedForTest(
+      bool interrupted_after_event_observed);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Manages saved local IDs for reported unuploaded crashes.
@@ -147,6 +158,11 @@ class FatalCrashEventsObserver
   // tests but production code may also use it in the future.
   base::RepeatingCallback<void(LocalIdEntry)> skipped_callback_
       GUARDED_BY_CONTEXT(sequence_checker_){base::DoNothing()};
+
+  // If true, stop the processing after the event observed callback is called.
+  // Only used for testing.
+  bool interrupted_after_event_observed_for_test_
+      GUARDED_BY_CONTEXT(sequence_checker_){false};
 };
 }  // namespace reporting
 #endif  // CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_FATAL_CRASH_FATAL_CRASH_EVENTS_OBSERVER_H_

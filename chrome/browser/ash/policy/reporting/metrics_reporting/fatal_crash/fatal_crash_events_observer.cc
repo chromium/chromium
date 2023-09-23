@@ -119,13 +119,13 @@ void FatalCrashEventsObserver::OnEvent(
   }
   const auto& crash_event_info = info->get_crash_event_info();
 
-  // Unuploaded crash. Need to look up whether the crash has been reported or
-  // not.
   if (crash_event_info->upload_info.is_null()) {
+    // Unuploaded crash. Need to look up whether the crash has been reported or
+    // not.
     if (auto capture_timestamp_us =
             ConvertTimeToMicroseconds(crash_event_info->capture_time);
-        !reported_local_id_manager_->UpdateLocalId(crash_event_info->local_id,
-                                                   capture_timestamp_us)) {
+        !reported_local_id_manager_->ShouldReport(crash_event_info->local_id,
+                                                  capture_timestamp_us)) {
       // Crash is already reported. Skip.
       skipped_callback_.Run({.local_id = std::move(crash_event_info->local_id),
                              .capture_timestamp_us = capture_timestamp_us});
@@ -137,6 +137,21 @@ void FatalCrashEventsObserver::OnEvent(
 
   MetricData metric_data = FillFatalCrashTelemetry(crash_event_info);
   OnEventObserved(std::move(metric_data));
+
+  if (interrupted_after_event_observed_for_test_) {
+    return;
+  }
+
+  if (crash_event_info->upload_info.is_null()) {
+    // Unuploaded crash. Need to update saved reported local IDs.
+    if (auto capture_timestamp_us =
+            ConvertTimeToMicroseconds(crash_event_info->capture_time);
+        !reported_local_id_manager_->UpdateLocalId(crash_event_info->local_id,
+                                                   capture_timestamp_us)) {
+      LOG(ERROR) << "Failed to update local ID: " << crash_event_info->local_id;
+      return;
+    }
+  }
 }
 
 void FatalCrashEventsObserver::AddObserver() {
@@ -188,6 +203,12 @@ MetricData FatalCrashEventsObserver::FillFatalCrashTelemetry(
   return metric_data;
 }
 
+void FatalCrashEventsObserver::SetInterruptedAfterEventObservedForTest(
+    bool interrupted_after_event_observed) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  interrupted_after_event_observed_for_test_ = interrupted_after_event_observed;
+}
+
 FatalCrashEventsObserver::ReportedLocalIdManager::ReportedLocalIdManager(
     base::FilePath save_file_path)
     : save_file_{std::move(save_file_path)} {
@@ -206,9 +227,9 @@ FatalCrashEventsObserver::ReportedLocalIdManager::Create(
       new ReportedLocalIdManager(std::move(save_file_path)));
 }
 
-bool FatalCrashEventsObserver::ReportedLocalIdManager::UpdateLocalId(
+bool FatalCrashEventsObserver::ReportedLocalIdManager::ShouldReport(
     const std::string& local_id,
-    int64_t capture_timestamp_us) {
+    int64_t capture_timestamp_us) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(local_id_entries_.size(), local_ids_.size());
 
@@ -226,6 +247,18 @@ bool FatalCrashEventsObserver::ReportedLocalIdManager::UpdateLocalId(
   // Max number of crash events reached and the current crash event is too old.
   if (local_id_entries_.size() >= kMaxNumOfLocalIds &&
       capture_timestamp_us <= local_id_entries_.top().capture_timestamp_us) {
+    return false;
+  }
+
+  return true;
+}
+
+bool FatalCrashEventsObserver::ReportedLocalIdManager::UpdateLocalId(
+    const std::string& local_id,
+    int64_t capture_timestamp_us) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!ShouldReport(local_id, capture_timestamp_us)) {
     return false;
   }
 

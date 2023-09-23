@@ -25,4 +25,12 @@ const base::FilePath&
 FatalCrashEventsObserver::TestEnvironment::GetSaveFilePath() const {
   return save_file_path_;
 }
+
+// static
+void FatalCrashEventsObserver::TestEnvironment::
+    SetInterruptedAfterEventObserved(FatalCrashEventsObserver& observer,
+                                     bool interrupted_after_event_observed) {
+  observer.SetInterruptedAfterEventObservedForTest(
+      interrupted_after_event_observed);
+}
 }  // namespace reporting
