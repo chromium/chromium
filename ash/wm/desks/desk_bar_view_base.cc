@@ -48,12 +48,14 @@
 #include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/events/event_observer.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/views/background.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/highlight_border.h"
+#include "ui/views/view.h"
 #include "ui/wm/core/window_animations.h"
 
 namespace ash {
@@ -138,9 +140,11 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
   ~DeskBarScrollViewLayout() override = default;
 
   int GetContentViewX(int content_width) const {
-    // `bar_view` is centralized in overview mode or when shelf is on the
-    // bottom. When shelf is on the left/right, bar view anchors to the desk
-    // button.
+    // The x of the first mini view should include the focus ring thickness and
+    // padding into consideration, otherwise the focus ring won't be drawn on
+    // the left side of the first mini view. `bar_view` is centralized in
+    // overview mode or when shelf is on the bottom. When shelf is on the
+    // left/right, bar view anchors to the desk button.
     const auto shelf_type = Shelf::ForWindow(bar_view_->root())->alignment();
     if (bar_view_->type() == DeskBarViewBase::Type::kOverview ||
         shelf_type == ShelfAlignment::kBottom ||
@@ -156,6 +160,27 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
     CHECK_EQ(shelf_type, ShelfAlignment::kRight);
     return width_ - content_width +
            kDeskBarDeskPreviewViewFocusRingThicknessAndPadding;
+  }
+
+  void LayoutBackground() {
+    if (!bar_view_->background_view_) {
+      return;
+    }
+
+    const ShelfAlignment shelf_alignment =
+        Shelf::ForWindow(bar_view_->root_)->alignment();
+    const gfx::Rect perferred_bounds =
+        gfx::Rect(bar_view_->CalculatePreferredSize());
+    const gfx::Rect current_bounds = gfx::Rect(bar_view_->size());
+    gfx::Rect new_bounds = perferred_bounds;
+    if (shelf_alignment == ShelfAlignment::kBottom) {
+      new_bounds = current_bounds;
+      new_bounds.ClampToCenteredSize(perferred_bounds.size());
+    } else if ((shelf_alignment == ShelfAlignment::kLeft) ==
+               base::i18n::IsRTL()) {
+      new_bounds.Offset(current_bounds.width() - perferred_bounds.width(), 0);
+    }
+    bar_view_->background_view_->SetBoundsRect(new_bounds);
   }
 
   void LayoutInternal(views::View* host) {
@@ -243,6 +268,8 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
 
     // Content width is sum of the width of all views, and plus the spacing
     // between the views, the focus ring's thickness and padding on each sides.
+    // TODO(b/301663756): consolidate size calculation for the desk bar and its
+    // scroll contents.
     const int content_width =
         num_items * (mini_view_size.width() + kDeskBarMiniViewsSpacing) -
         kDeskBarMiniViewsSpacing +
@@ -273,6 +300,8 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
       expanded_state_library_button->SetBoundsRect(
           gfx::Rect(gfx::Point(x, y), mini_view_size));
     }
+
+    LayoutBackground();
   }
 
   // Layout the label which is shown below the desk icon button when the button
@@ -297,8 +326,8 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
         gfx::Size(button_label_size.width(), desk_name_view->height())));
   }
 
-  // TODO(http://b/291622042): After CrOS Next is launched, remove function
-  // `LayoutInternal`, and move this to Layout.
+  // TODO(b/291622042): After CrOS Next is launched, remove function
+  // `LayoutInternal`, and move this to `Layout`.
   void LayoutInternalCrOSNext(views::View* host) {
     TRACE_EVENT0("ui", "DeskBarScrollViewLayout::LayoutInternalCrOSNext");
 
@@ -371,7 +400,8 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
     // When RTL is enabled, we still want desks to be laid our in LTR, to match
     // the spatial order of desks. Therefore, we reverse the order of the mini
     // views before laying them out.
-    if (base::i18n::IsRTL()) {
+    const bool is_rtl = base::i18n::IsRTL();
+    if (is_rtl) {
       base::ranges::reverse(mini_views);
     }
 
@@ -388,6 +418,8 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
 
     // Content width is sum of the width of all views, and plus the spacing
     // between the views, the focus ring's thickness and padding on each sides.
+    // TODO(b/301663756): consolidate size calculation for the desk bar and its
+    // scroll contents.
     const int content_width =
         mini_views.size() *
             (mini_view_size.width() + kDeskBarMiniViewsSpacing) +
@@ -404,32 +436,42 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
     // be scolled or not.
     host->SetSize(gfx::Size(width_, scroll_bounds.height()));
 
-    // The x of the first mini view should include the focus ring thickness and
-    // padding into consideration, otherwise the focus ring won't be drawn on
-    // the left side of the first mini view.
-    int x = GetContentViewX(content_width);
+    const int increment = is_rtl ? -1 : 1;
     const int y =
         kDeskBarMiniViewsY - mini_views[0]->GetPreviewBorderInsets().top();
-    for (auto* mini_view : mini_views) {
-      mini_view->SetBoundsRect(gfx::Rect(gfx::Point(x, y), mini_view_size));
-      x += (mini_view_size.width() + kDeskBarMiniViewsSpacing);
-    }
-
-    const gfx::Rect new_desk_button_bounds(
-        gfx::Rect(gfx::Point(x, y), new_desk_button_size));
-    new_desk_button->SetBoundsRect(new_desk_button_bounds);
-
+    auto layout_mini_views = [&](int& x) {
+      const int start = is_rtl ? mini_views.size() - 1 : 0;
+      const int end = is_rtl ? -1 : mini_views.size();
+      const int delta_x =
+          (mini_view_size.width() + kDeskBarMiniViewsSpacing) * increment;
+      for (int i = start; i != end; i += increment) {
+        auto* mini_view = mini_views[i];
+        mini_view->SetBoundsRect(
+            gfx::Rect(gfx::Point(is_rtl ? x - mini_view_size.width() : x, y),
+                      mini_view_size));
+        x += delta_x;
+      }
+    };
     auto* desk_name_view = mini_views[0]->desk_name_view();
-
-    LayoutDeskIconButtonLabel(new_desk_button_label, new_desk_button_bounds,
-                              desk_name_view, IDS_ASH_DESKS_NEW_DESK_BUTTON);
-    new_desk_button_label->SetVisible(new_desk_button->state() ==
-                                      CrOSNextDeskIconButton::State::kActive);
-
-    if (library_button) {
-      x += (new_desk_button_size.width() + kDeskBarMiniViewsSpacing);
+    auto layout_new_desk_button = [&](int& x) {
+      const gfx::Rect new_desk_button_bounds(gfx::Rect(
+          gfx::Point(is_rtl ? x - new_desk_button_size.width() : x, y),
+          new_desk_button_size));
+      new_desk_button->SetBoundsRect(new_desk_button_bounds);
+      LayoutDeskIconButtonLabel(new_desk_button_label, new_desk_button_bounds,
+                                desk_name_view, IDS_ASH_DESKS_NEW_DESK_BUTTON);
+      new_desk_button_label->SetVisible(new_desk_button->state() ==
+                                        CrOSNextDeskIconButton::State::kActive);
+      x +=
+          (new_desk_button_size.width() + kDeskBarMiniViewsSpacing) * increment;
+    };
+    auto layout_library_button = [&](int& x) {
+      if (!library_button) {
+        return;
+      }
       const gfx::Rect library_button_bounds(
-          gfx::Rect(gfx::Point(x, y), library_button_size));
+          gfx::Rect(gfx::Point(is_rtl ? x - library_button_size.width() : x, y),
+                    library_button_size));
       library_button->SetBoundsRect(library_button_bounds);
       LayoutDeskIconButtonLabel(
           library_button_label, library_button_bounds, desk_name_view,
@@ -439,7 +481,28 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
               : IDS_ASH_DESKS_TEMPLATES_DESKS_BAR_BUTTON_SAVED_FOR_LATER);
       library_button_label->SetVisible(library_button->state() ==
                                        CrOSNextDeskIconButton::State::kActive);
+      x += (library_button_size.width() + kDeskBarMiniViewsSpacing) * increment;
+    };
+
+    // When the desk bar is in middle of bar shrink animation, the bounds of
+    // scroll view contents is actually wider than `content_width`. When RTL is
+    // not on, we layout UIs from left to right with `x` indicating the current
+    // available position to place the next UI; to make animation work for RTL,
+    // we need to layout from right to left.
+    // TODO(b/301665941): improve layout calculation for RTL.
+    if (is_rtl) {
+      int x = width_ - GetContentViewX(content_width);
+      layout_library_button(x);
+      layout_new_desk_button(x);
+      layout_mini_views(x);
+    } else {
+      int x = GetContentViewX(content_width);
+      layout_mini_views(x);
+      layout_new_desk_button(x);
+      layout_library_button(x);
     }
+
+    LayoutBackground();
   }
 
   // views::LayoutManager:
@@ -781,7 +844,7 @@ std::unique_ptr<views::Widget> DeskBarViewBase::CreateDeskWidget(
 void DeskBarViewBase::Layout() {
   TRACE_EVENT0("ui", "DeskBarViewBase::Layout");
 
-  if (is_bounds_animation_on_going_) {
+  if (pause_layout_) {
     return;
   }
 
@@ -791,75 +854,33 @@ void DeskBarViewBase::Layout() {
     return;
   }
 
-  const ShelfAlignment shelf_alignment = Shelf::ForWindow(root_)->alignment();
-  // TODO(b/293658108): Set bounds needs to be done separately from Layout().
-  if (!hold_update_for_view_bounds_) {
-    // Refresh bounds as preferred. This is needed for dynamic width for the
-    // bar.
-    gfx::Size preferred_size = CalculatePreferredSize();
-    gfx::Rect new_bounds = GetAvailableBounds();
-    switch (shelf_alignment) {
-      case ShelfAlignment::kBottom:
-        new_bounds.ClampToCenteredSize(preferred_size);
-        break;
-      case ShelfAlignment::kLeft:
-      case ShelfAlignment::kRight:
-        if ((shelf_alignment == ShelfAlignment::kRight) ==
-            base::i18n::IsRTL()) {
-          new_bounds.set_size(preferred_size);
-        } else {
-          new_bounds.set_origin(
-              {new_bounds.right() - preferred_size.width(),
-               new_bounds.bottom() - preferred_size.height()});
-          new_bounds.set_size(preferred_size);
-        }
-        break;
-      case ShelfAlignment::kBottomLocked:
-        break;
-    }
-    SetBoundsRect(new_bounds);
-    if (background_view_) {
-      background_view_->SetBoundsRect(gfx::Rect(new_bounds.size()));
-    }
-    // Scroll buttons are kept `scroll_view_padding` away from the edge of the
-    // scroll view. So the horizontal padding of the scroll view is set to
-    // guarantee enough space for the scroll buttons.
-    const gfx::Insets insets = (type_ == Type::kOverview)
-                                   ? overview_grid_->GetGridInsets()
-                                   : gfx::Insets();
-    CHECK(insets.left() == insets.right());
-    const int scroll_view_padding =
-        (type_ == Type::kOverview
-             ? kDeskBarScrollViewMinimumHorizontalPaddingOverview
-             : kDeskBarScrollViewMinimumHorizontalPaddingDeskButton);
-    const int horizontal_padding = std::max(scroll_view_padding, insets.left());
-    left_scroll_button_->SetBounds(horizontal_padding - scroll_view_padding,
-                                   bounds().y(), kDeskBarScrollButtonWidth,
-                                   bounds().height());
-    right_scroll_button_->SetBounds(
-        bounds().right() - horizontal_padding -
-            (kDeskBarScrollButtonWidth - scroll_view_padding),
-        bounds().y(), kDeskBarScrollButtonWidth, bounds().height());
+  // Scroll buttons are kept `scroll_view_padding` away from the edge of the
+  // scroll view. So the horizontal padding of the scroll view is set to
+  // guarantee enough space for the scroll buttons.
+  const gfx::Insets insets = (type_ == Type::kOverview)
+                                 ? overview_grid_->GetGridInsets()
+                                 : gfx::Insets();
+  CHECK(insets.left() == insets.right());
+  const int scroll_view_padding =
+      (type_ == Type::kOverview
+           ? kDeskBarScrollViewMinimumHorizontalPaddingOverview
+           : kDeskBarScrollViewMinimumHorizontalPaddingDeskButton);
+  const int horizontal_padding = std::max(scroll_view_padding, insets.left());
+  left_scroll_button_->SetBounds(horizontal_padding - scroll_view_padding,
+                                 bounds().y(), kDeskBarScrollButtonWidth,
+                                 bounds().height());
+  right_scroll_button_->SetBounds(
+      bounds().right() - horizontal_padding -
+          (kDeskBarScrollButtonWidth - scroll_view_padding),
+      bounds().y(), kDeskBarScrollButtonWidth, bounds().height());
 
-    gfx::Rect scroll_bounds(size());
-    // Align with the overview grid in horizontal, so only horizontal insets are
-    // needed here.
-    scroll_bounds.Inset(gfx::Insets::VH(0, horizontal_padding));
-    scroll_view_->SetBoundsRect(scroll_bounds);
-  } else {
-    if (background_view_) {
-      auto content_bounds = gfx::Rect(CalculatePreferredSize());
-      if (shelf_alignment == ShelfAlignment::kRight) {
-        content_bounds.Offset(width() - content_bounds.width(), 0);
-      } else if (shelf_alignment == ShelfAlignment::kBottom) {
-        content_bounds = gfx::Rect(size());
-        content_bounds.ClampToCenteredSize(CalculatePreferredSize());
-      }
-      background_view_->SetBoundsRect(content_bounds);
-    }
-    scroll_view_contents_->Layout();
-  }
-
+  gfx::Rect scroll_bounds(size());
+  // Align with the overview grid in horizontal, so only horizontal insets are
+  // needed here.
+  scroll_bounds.Inset(gfx::Insets::VH(0, horizontal_padding));
+  scroll_view_->SetBoundsRect(scroll_bounds);
+  // When the bar reaches its max possible size, it's size does not change, but
+  // we still need to layout child UIs to their right positions.
   scroll_view_->Layout();
 
   UpdateScrollButtonsVisibility();
@@ -1493,7 +1514,7 @@ void DeskBarViewBase::OnDeskRemoved(const Desk* desk) {
   // finishes initializing (i.e. removed on a separate root window before the
   // overview starting animation completes). In those cases, that mini_view
   // would not exist and the bar view will already be in the correct state so we
-  // do not need to update the UI (https://crbug.com/1346154).
+  // do not need to update the UI (crbug.com/1346154).
   if (iter == mini_views_.end()) {
     return;
   }
@@ -1558,10 +1579,7 @@ void DeskBarViewBase::OnDeskRemoved(const Desk* desk) {
     // Desk button bar does not have mini view removal animation, mini view will
     // disappear immediately. Desk button bar will shrink during desk removal.
     removed_mini_view->parent()->RemoveChildViewT(removed_mini_view);
-    // Do not set the view bounds at layout. Bounds will be set after animation
-    // is finished.
-    hold_update_for_view_bounds_ = true;
-    Layout();
+    scroll_view_->Layout();
     PerformDeskBarRemoveDeskAnimation(this, old_background_bounds);
   }
   PerformDeskBarChildViewShiftAnimation(this, views_previous_x_map);
@@ -1657,6 +1675,12 @@ void DeskBarViewBase::UpdateNewMiniViews(bool initializing_bar_view,
 
   const gfx::Rect old_bar_bounds = this->GetBoundsInScreen();
 
+  // Bar widget bounds may need an update. Please note, we pause layout here so
+  // it does not do it twice.
+  pause_layout_ = true;
+  UpdateBarBounds();
+  pause_layout_ = false;
+
   Layout();
 
   if (initializing_bar_view) {
@@ -1719,11 +1743,11 @@ void DeskBarViewBase::OnUiUpdateDone() {
   }
 }
 
+void DeskBarViewBase::UpdateBarBounds() {}
+
 int DeskBarViewBase::GetFirstMiniViewXOffset() const {
-  // TODO(b/293658108): Change it back to `GetMirroredX` to make sure the
-  // removing and adding a desk transform is correct while in RTL layout.
   return mini_views_.empty() ? bounds().CenterPoint().x()
-                             : mini_views_[0]->GetBoundsInScreen().x();
+                             : mini_views_[0]->GetMirroredX();
 }
 
 base::flat_map<views::View*, int>
@@ -1973,10 +1997,6 @@ bool DeskBarViewBase::MaybeScrollByDraggedDesk() {
   }
 
   return false;
-}
-
-gfx::Rect DeskBarViewBase::GetAvailableBounds() const {
-  return GetWidget()->GetRootView()->bounds();
 }
 
 BEGIN_METADATA(DeskBarViewBase, View)

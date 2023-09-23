@@ -26,6 +26,9 @@ class ASH_EXPORT LegacyDeskBarView : public DeskBarViewBase {
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
+
+  // DeskBarViewBase:
+  gfx::Rect GetAvailableBounds() const override;
 };
 
 }  // namespace ash

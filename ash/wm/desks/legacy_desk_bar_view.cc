@@ -23,6 +23,12 @@ gfx::Size LegacyDeskBarView::CalculatePreferredSize() const {
           GetPreferredBarHeight(root_, type_, state_)};
 }
 
+gfx::Rect LegacyDeskBarView::GetAvailableBounds() const {
+  // Information is retrieved from the widget as it comes with the full
+  // available bounds at initialization time and remains unchanged.
+  return GetWidget()->GetRootView()->bounds();
+}
+
 BEGIN_METADATA(LegacyDeskBarView, DeskBarViewBase)
 END_METADATA
 

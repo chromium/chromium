@@ -245,26 +245,25 @@ void AnimateDeskBarBounds(DeskBarViewBase* bar_view, bool to_zero_state) {
       // button during the desk bar states transition, thus the buttons need to
       // be layout and put at the correct positions before the animation starts.
       desk_widget->SetBounds(target_widget_bounds);
-      bar_view->set_is_bounds_animation_on_going(true);
+      bar_view->set_pause_layout(true);
       desk_widget->SetBounds(current_widget_bounds);
     } else {
-      bar_view->set_is_bounds_animation_on_going(true);
+      bar_view->set_pause_layout(true);
     }
   } else {
     // While switching desk bar from zero state to expanded state, setting
     // its bounds to its bounds at expanded state directly without animation,
     // which will trigger Layout and make sure the contents of
     // desk bar(e.g, desk mini view, new desk button) are at the correct
-    // positions before the animation. And set `is_bounds_animation_on_going_`
-    // to be true, which will help hold Layout until the animation is done.
-    // Then set the bounds of the desk bar back to its bounds at zero state
-    // to start the bounds change animation. See more details at
-    // `is_bounds_animation_on_going_`.
+    // positions before the animation. And set `pause_layout_` to be true, which
+    // will help hold Layout until the animation is done. Then set the bounds of
+    // the desk bar back to its bounds at zero state to start the bounds change
+    // animation. See more details at `pause_layout_`.
     target_widget_bounds.set_height(DeskBarViewBase::GetPreferredBarHeight(
         desk_widget->GetNativeWindow()->GetRootWindow(),
         DeskBarViewBase::Type::kOverview, DeskBarViewBase::State::kExpanded));
     desk_widget->SetBounds(target_widget_bounds);
-    bar_view->set_is_bounds_animation_on_going(true);
+    bar_view->set_pause_layout(true);
     desk_widget->SetBounds(current_widget_bounds);
   }
 
@@ -278,7 +277,7 @@ void AnimateDeskBarBounds(DeskBarViewBase* bar_view, bool to_zero_state) {
                                           : gfx::Tween::ACCEL_20_DECEL_60;
   base::OnceClosure ondone = base::BindOnce(
       base::BindOnce([](DeskBarViewBase* bar_view) {
-        bar_view->set_is_bounds_animation_on_going(false);
+        bar_view->set_pause_layout(false);
 
         // Updated the desk buttons and layout the desk bar to make sure the
         // buttons visibility will be updated on desk bar state changes. Also
@@ -514,10 +513,7 @@ void PerformDeskBarRemoveDeskAnimation(DeskBarViewBase* bar_view,
 
   base::OnceClosure ondone =
       base::BindOnce(base::BindOnce([](DeskBarViewBase* bar_view) {
-                       bar_view->set_hold_update_for_view_bounds(false);
-                       // TODO(b/293658108): Set bounds needs to be done
-                       // separately from Layout().
-                       bar_view->Layout();
+                       bar_view->UpdateBarBounds();
                      }),
                      base::Unretained(bar_view));
   views::AnimationBuilder animation_builder;

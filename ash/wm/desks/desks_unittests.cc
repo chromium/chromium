@@ -9571,8 +9571,11 @@ struct DeskBarTestBasicCase {
   // Indicates if there are any saved desks.
   bool has_saved_desks;
 
-  // The expected bar widget bounds for desk button desk bar.
-  gfx::Rect desk_button_bar_widget_bounds;
+  // The expected bar widget bounds for desk button desk bar without jelly.
+  gfx::Rect desk_button_bar_widget_bounds_no_jelly;
+
+  // The expected bar widget bounds for desk button desk bar with jelly.
+  gfx::Rect desk_button_bar_widget_bounds_with_jelly;
 
   // The expected bar view bounds for desk button desk bar without jelly.
   gfx::Rect desk_button_bar_view_bounds_no_jelly;
@@ -9602,9 +9605,10 @@ TEST_P(DeskBarTest, Basic) {
        .active_desk = 0,
        .shelf_alignment = ShelfAlignment::kBottom,
        .has_saved_desks = true,
-       .desk_button_bar_widget_bounds = {0, 446, 800, 98},
-       .desk_button_bar_view_bounds_no_jelly = {269, 0, 262, 98},
-       .desk_button_bar_view_bounds_with_jelly = {299, 0, 202, 98},
+       .desk_button_bar_widget_bounds_no_jelly = {269, 446, 262, 98},
+       .desk_button_bar_widget_bounds_with_jelly = {299, 446, 202, 98},
+       .desk_button_bar_view_bounds_no_jelly = {0, 0, 262, 98},
+       .desk_button_bar_view_bounds_with_jelly = {0, 0, 202, 98},
        .overview_bar_widget_bounds = {0, 0, 800, 40},
        .overview_bar_view_bounds = {0, 0, 800, 40}},
       {.test_name = "single desk + bottom shelf",
@@ -9612,9 +9616,10 @@ TEST_P(DeskBarTest, Basic) {
        .active_desk = 0,
        .shelf_alignment = ShelfAlignment::kBottom,
        .has_saved_desks = false,
-       .desk_button_bar_widget_bounds = {0, 446, 800, 98},
-       .desk_button_bar_view_bounds_no_jelly = {308, 0, 184, 98},
-       .desk_button_bar_view_bounds_with_jelly = {323, 0, 154, 98},
+       .desk_button_bar_widget_bounds_no_jelly = {308, 446, 184, 98},
+       .desk_button_bar_widget_bounds_with_jelly = {323, 446, 154, 98},
+       .desk_button_bar_view_bounds_no_jelly = {0, 0, 184, 98},
+       .desk_button_bar_view_bounds_with_jelly = {0, 0, 154, 98},
        .overview_bar_widget_bounds = {0, 0, 800, 40},
        .overview_bar_view_bounds = {0, 0, 800, 40}},
       {.test_name = "single desk + left shelf + saved desks",
@@ -9622,7 +9627,8 @@ TEST_P(DeskBarTest, Basic) {
        .active_desk = 0,
        .shelf_alignment = ShelfAlignment::kLeft,
        .has_saved_desks = true,
-       .desk_button_bar_widget_bounds = {56, 254, 744, 98},
+       .desk_button_bar_widget_bounds_no_jelly = {56, 254, 262, 98},
+       .desk_button_bar_widget_bounds_with_jelly = {56, 254, 202, 98},
        .desk_button_bar_view_bounds_no_jelly = {0, 0, 262, 98},
        .desk_button_bar_view_bounds_with_jelly = {0, 0, 202, 98},
        .overview_bar_widget_bounds = {48, 0, 752, 40},
@@ -9632,9 +9638,10 @@ TEST_P(DeskBarTest, Basic) {
        .active_desk = 0,
        .shelf_alignment = ShelfAlignment::kRight,
        .has_saved_desks = true,
-       .desk_button_bar_widget_bounds = {0, 254, 744, 98},
-       .desk_button_bar_view_bounds_no_jelly = {482, 0, 262, 98},
-       .desk_button_bar_view_bounds_with_jelly = {542, 0, 202, 98},
+       .desk_button_bar_widget_bounds_no_jelly = {482, 254, 262, 98},
+       .desk_button_bar_widget_bounds_with_jelly = {542, 254, 202, 98},
+       .desk_button_bar_view_bounds_no_jelly = {0, 0, 262, 98},
+       .desk_button_bar_view_bounds_with_jelly = {0, 0, 202, 98},
        .overview_bar_widget_bounds = {0, 0, 752, 40},
        .overview_bar_view_bounds = {0, 0, 752, 40}},
       {.test_name = "multiple desks + bottom shelf + saved desks",
@@ -9642,9 +9649,10 @@ TEST_P(DeskBarTest, Basic) {
        .active_desk = 0,
        .shelf_alignment = ShelfAlignment::kBottom,
        .has_saved_desks = true,
-       .desk_button_bar_widget_bounds = {0, 446, 800, 98},
-       .desk_button_bar_view_bounds_no_jelly = {191, 0, 418, 98},
-       .desk_button_bar_view_bounds_with_jelly = {221, 0, 358, 98},
+       .desk_button_bar_widget_bounds_no_jelly = {191, 446, 418, 98},
+       .desk_button_bar_widget_bounds_with_jelly = {221, 446, 358, 98},
+       .desk_button_bar_view_bounds_no_jelly = {0, 0, 418, 98},
+       .desk_button_bar_view_bounds_with_jelly = {0, 0, 358, 98},
        .overview_bar_widget_bounds = {0, 0, 800, 98},
        .overview_bar_view_bounds = {0, 0, 800, 98}},
   };
@@ -9687,7 +9695,9 @@ TEST_P(DeskBarTest, Basic) {
       EXPECT_THAT(desk_bar_view->IsZeroState(), test.desks.size() == 1);
     } else {
       EXPECT_THAT(desk_bar_widget->GetWindowBoundsInScreen(),
-                  test.desk_button_bar_widget_bounds);
+                  enable_jellyroll_
+                      ? test.desk_button_bar_widget_bounds_with_jelly
+                      : test.desk_button_bar_widget_bounds_no_jelly);
       EXPECT_THAT(desk_bar_view->bounds(),
                   enable_jellyroll_
                       ? test.desk_button_bar_view_bounds_with_jelly
@@ -9743,10 +9753,11 @@ TEST_P(DeskBarTest, BasicSecondaryDisplay) {
     EXPECT_FALSE(desk_bar_view->IsZeroState());
   } else {
     EXPECT_THAT(desk_bar_widget->GetWindowBoundsInScreen(),
-                gfx::Rect(800, 446, 800, 98));
+                enable_jellyroll_ ? gfx::Rect(1084, 446, 232, 98)
+                                  : gfx::Rect(1069, 446, 262, 98));
     EXPECT_THAT(desk_bar_view->bounds(), enable_jellyroll_
-                                             ? gfx::Rect(284, 0, 232, 98)
-                                             : gfx::Rect(269, 0, 262, 98));
+                                             ? gfx::Rect(0, 0, 232, 98)
+                                             : gfx::Rect(0, 0, 262, 98));
     EXPECT_FALSE(desk_bar_view->IsZeroState());
   }
 
@@ -11545,14 +11556,7 @@ TEST_P(DeskButtonTest, BarBoundsWithRTL) {
   ASSERT_TRUE(base::i18n::IsRTL());
 
   OpenDeskBar();
-  gfx::Rect bounds = GetDeskBarView()->bounds();
-  if (GetParam().alignment == ShelfAlignment::kBottom) {
-    EXPECT_EQ(bounds, gfx::Rect(323, 0, 154, 98));
-  } else if (GetParam().alignment == ShelfAlignment::kLeft) {
-    EXPECT_EQ(bounds, gfx::Rect(590, 0, 154, 98));
-  } else {
-    EXPECT_EQ(bounds, gfx::Rect(0, 0, 154, 98));
-  }
+  EXPECT_EQ(GetDeskBarView()->bounds(), gfx::Rect(0, 0, 154, 98));
 
   CloseDeskBar();
 

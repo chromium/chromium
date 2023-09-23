@@ -25,6 +25,10 @@ class ASH_EXPORT DeskBarView : public DeskBarViewBase {
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
+
+  // DeskBarViewBase:
+  gfx::Rect GetAvailableBounds() const override;
+  void UpdateBarBounds() override;
 };
 
 }  // namespace ash
