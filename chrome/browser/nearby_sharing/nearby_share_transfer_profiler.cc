@@ -379,7 +379,16 @@ void NearbyShareTransferProfiler::OnBandwidthUpgrade(
   // An endpoint must either be a sender or a receiver.
   bool is_sender = sender_data_.contains(endpoint_id);
   bool is_receiver = receiver_data_.contains(endpoint_id);
-  CHECK(is_sender != is_receiver);
+
+  if (!is_sender && !is_receiver) {
+    // It is possible for the |endpoint_id| to be in neither |sender_data_| nor
+    // |receiver_data_| if, e.g. the transfer is canceled just before the
+    // bandwidth upgrade completes.
+    return;
+  }
+
+  // An endpoint cannot be both a sender and a receiver.
+  CHECK(!(is_sender && is_receiver));
 
   if (is_sender) {
     // A connection must have been established at this point.
