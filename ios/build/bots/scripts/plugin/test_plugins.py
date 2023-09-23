@@ -10,6 +10,7 @@ import shutil
 import subprocess
 import signal
 import sys
+from typing import List, Tuple, Optional
 
 # if the current directory is in scripts (pwd), then we need to
 # add plugin in order to import from that directory
@@ -31,21 +32,19 @@ LOGGER = logging.getLogger(__name__)
 class BasePlugin(object):
   """ Base plugin class """
 
-  def __init__(self, device_id, out_dir):
+  def __init__(self, device_info_cache, out_dir):
     """ Initializes a new instance of this class.
 
     Args:
-      device_id: device id of the tests we are running on, useful for
-      invoking xc commands target that specific device.
+      device_info_cache: a dictionary where keys are device names and values are
+      dictionaries of information about that testing device. A single
+      device_info_cache can be shared between multiple plugins so that those
+      plugins can share state.
       out_dir: output directory for saving any useful data
 
     """
-    self.device_id = device_id
+    self.device_info_cache = device_info_cache
     self.out_dir = out_dir
-
-    # Dict where keys are `request.device_info.name`. The value is a dictionary
-    # where useful information about that device name can be stored.
-    self.devices = {}
 
   def test_case_will_start(self, request):
     """ Optional method to implement when a test case is about to start """
@@ -107,13 +106,14 @@ class BasePlugin(object):
       the device and path the location of the simulator. If the device is not
       able to be found (None, None) will be returned.
     """
-    if self.devices.get(device_name) and self.devices[device_name].get(
-        'UDID') and self.devices[device_name].get('path'):
+    if self.device_info_cache.get(
+        device_name) and self.device_info_cache[device_name].get(
+            'UDID') and self.device_info_cache[device_name].get('path'):
       LOGGER.info('Found device named %s in cache. UDID: %s PATH: %s',
-                  device_name, self.devices[device_name]['UDID'],
-                  self.devices[device_name]['path'])
-      return (self.devices[device_name]['UDID'],
-              self.devices[device_name]['path'])
+                  device_name, self.device_info_cache[device_name]['UDID'],
+                  self.device_info_cache[device_name]['path'])
+      return (self.device_info_cache[device_name]['UDID'],
+              self.device_info_cache[device_name]['path'])
 
     # search over simulators to find device name
     # loop over paths
@@ -122,10 +122,10 @@ class BasePlugin(object):
           path)['devices'].items():
         for simulator in simulators:
           if simulator['name'] == device_name:
-            if not self.devices.get(device_name):
-              self.devices[device_name] = {}
-            self.devices[device_name]['UDID'] = simulator['udid']
-            self.devices[device_name]['path'] = path
+            if not self.device_info_cache.get(device_name):
+              self.device_info_cache[device_name] = {}
+            self.device_info_cache[device_name]['UDID'] = simulator['udid']
+            self.device_info_cache[device_name]['path'] = path
             return (simulator['udid'], path)
     # Return none if not found
     return (None, None)
@@ -134,20 +134,22 @@ class BasePlugin(object):
 class VideoRecorderPlugin(BasePlugin):
   """ Video plugin class for recording test execution """
 
-  def __init__(self, device_id, out_dir):
+  def __init__(self, device_info_cache, out_dir):
     """ Initializes a new instance of this class, which is a subclass
     of BasePlugin
 
     Args:
-      device_id: device id of the tests we are running on, useful for
-      invoking xc commands target that specific device.
+      device_info_cache: a dictionary where keys are device names and values are
+      dictionaries of information about that testing device. A single
+      device_info_cache can be shared between multiple plugins so that those
+      plugins can share state.
       out_dir: output directory where the video plugin should be saved to
 
     """
-    super(VideoRecorderPlugin, self).__init__(device_id, out_dir)
+    super(VideoRecorderPlugin, self).__init__(device_info_cache, out_dir)
 
     self.testcase_recorded_count = {}
-    self.recording_process = RecordingProcess()
+    self.device_recording_process_map = {}
 
   def __str__(self):
     return "VideoRecorderPlugin"
@@ -173,23 +175,27 @@ class VideoRecorderPlugin(BasePlugin):
       LOGGER.info('%s has been recorded for at least %s times, skipping...',
                   request.test_case_info.name, MAX_RECORDED_COUNT)
       return
-    if (self.recording_process.process != None):
+    udid, path = self.get_udid_and_path_for_device_name(
+        request.device_info.name)
+    recording_process = self.recording_process_for_device_name(
+        request.device_info.name)
+    if (recording_process.process != None):
       LOGGER.warning(
           'Previous recording for test case %s is still ongoing, '
           'terminating before starting new recording...',
-          self.recording_process.test_case_name)
-      self.stop_recording(False)
+          recording_process.test_case_name)
+      self.stop_recording(False, recording_process)
 
     file_name = self.get_video_file_name(request.test_case_info.name,
                                          attempt_count)
     file_dir = os.path.join(self.out_dir, file_name)
     cmd = [
-        'xcrun', 'simctl', 'io', self.device_id, 'recordVideo', '--codec=h264',
-        '-f', file_dir
+        'xcrun', 'simctl', '--set', path, 'io', udid, 'recordVideo',
+        '--codec=h264', '-f', file_dir
     ]
     process = self.start_proc(cmd)
-    self.recording_process.process = process
-    self.recording_process.test_case_name = request.test_case_info.name
+    recording_process.process = process
+    recording_process.test_case_name = request.test_case_info.name
 
   def test_case_did_fail(self, request):
     """ Executes when a test class fails unexpectedly...
@@ -200,8 +206,10 @@ class VideoRecorderPlugin(BasePlugin):
     It will also save the video file to local disk (by default).
     Otherwise, it will do nothing.
     """
-    if (request.test_case_info.name == self.recording_process.test_case_name):
-      self.stop_recording(True)
+    recording_process = self.recording_process_for_device_name(
+        request.device_info.name)
+    if (request.test_case_info.name == recording_process.test_case_name):
+      self.stop_recording(True, recording_process)
       self.testcase_recorded_count[request.test_case_info.name] = (
           self.testcase_recorded_count.get(request.test_case_info.name, 0) + 1)
     else:
@@ -217,32 +225,36 @@ class VideoRecorderPlugin(BasePlugin):
     It will not save the video file to local disk.
     Otherwise, it will do nothing.
     """
-    if (request.test_case_info.name == self.recording_process.test_case_name):
-      self.stop_recording(False)
-      self.recording_process.reset()
+    recording_process = self.recording_process_for_device_name(
+        request.device_info.name)
+    if (request.test_case_info.name == recording_process.test_case_name):
+      self.stop_recording(False, recording_process)
+      recording_process.reset()
     else:
       LOGGER.warning('No video recording process is currently running for %s',
                      request.test_case_info.name)
 
-  def stop_recording(self, should_save):
+  def stop_recording(self, should_save: bool,
+                     recording_process: 'RecordingProcess'):
     """ Terminate existing running video recording process
 
     Args:
       shouldSave: required flag to decide whether the recorded vide should
       be saved to local disk.
+      recording_process: the recording process that should be halted
 
     """
     LOGGER.info('Terminating video recording process for test case %s',
-                self.recording_process.test_case_name)
+                recording_process.test_case_name)
     if not should_save:
       # SIGTERM will immediately terminate the process, and the video
       # file will be left corrupted. We will still need to delete the
       # corrupted video file.
-      os.kill(self.recording_process.process.pid, signal.SIGTERM)
+      os.kill(recording_process.process.pid, signal.SIGTERM)
       attempt_count = self.testcase_recorded_count.get(
-          self.recording_process.test_case_name, 0)
-      file_name = self.get_video_file_name(
-          self.recording_process.test_case_name, attempt_count)
+          recording_process.test_case_name, 0)
+      file_name = self.get_video_file_name(recording_process.test_case_name,
+                                           attempt_count)
       file_dir = os.path.join(self.out_dir, file_name)
       LOGGER.info('shouldSave is false, deleting video file %s', file_dir)
       try:
@@ -257,9 +269,14 @@ class VideoRecorderPlugin(BasePlugin):
       # SIGINT will send a signal to terminate the process, and the video
       # will be written to the file asynchronously, while the process is
       # being terminated gracefully
-      os.kill(self.recording_process.process.pid, signal.SIGINT)
+      os.kill(recording_process.process.pid, signal.SIGINT)
 
-    self.recording_process.reset()
+    recording_process.reset()
+
+  def recording_process_for_device_name(self,
+                                        device_name: str) -> 'RecordingProcess':
+    return self.device_recording_process_map.setdefault(device_name,
+                                                        RecordingProcess())
 
   def reset(self):
     """ Executes in between each test attempet to reset any running
@@ -269,8 +286,9 @@ class VideoRecorderPlugin(BasePlugin):
     if there is any.
     """
     LOGGER.info('Clearing any running processes...')
-    if (self.recording_process.process != None):
-      self.stop_recording(False)
+    for recording_process in self.device_recording_process_map.values():
+      if recording_process.process != None:
+        self.stop_recording(False, recording_process)
 
   def get_video_file_name(self, test_case_name, attempt_count):
     # Remove all non-word characters (everything except numbers and letters)
@@ -285,7 +303,7 @@ class VideoRecorderPlugin(BasePlugin):
 class FileCopyPlugin(BasePlugin):
   """ File Copy Plugin. Copies files from simulator at end of test execution """
 
-  def __init__(self, glob_pattern, out_dir):
+  def __init__(self, glob_pattern, out_dir, device_info_cache):
     """ Initializes a file copy plugin which will copy all files matching
     the glob pattern to the dest_dir
 
@@ -297,7 +315,7 @@ class FileCopyPlugin(BasePlugin):
       out_dir: (str) Destination directory, it will be created if it doesn't
         exist
     """
-    super(FileCopyPlugin, self).__init__(None, out_dir)
+    super(FileCopyPlugin, self).__init__(device_info_cache, out_dir)
     self.glob_pattern = glob_pattern
 
   def __str__(self):

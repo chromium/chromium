@@ -25,18 +25,17 @@ class UnitTest(unittest.TestCase):
 
   def test_get_video_plugin_from_args(self):
     plugins = plugin_utils.init_plugins_from_args(
-        TEST_DEVICE_ID,
         TEST_OUT_DIR,
         video_plugin_option=VIDEO_RECORDER_PLUGIN_OPTIONS.failed_only.name)
     self.assertIsInstance(plugins[0], VideoRecorderPlugin)
 
   def test_no_plugin_specified_from_args(self):
-    plugins = plugin_utils.init_plugins_from_args(TEST_DEVICE_ID, TEST_OUT_DIR)
+    plugins = plugin_utils.init_plugins_from_args(TEST_OUT_DIR)
     self.assertTrue(len(plugins) == 0)
 
   def test_get_clang_coverage_plugin_from_args(self):
     plugins = plugin_utils.init_plugins_from_args(
-        TEST_DEVICE_ID, TEST_OUT_DIR, use_clang_coverage=True)
+        TEST_OUT_DIR, use_clang_coverage=True)
     self.assertIsInstance(plugins[0], FileCopyPlugin)
     self.assertEqual(plugins[0].glob_pattern, 'data/*.profraw')
 
