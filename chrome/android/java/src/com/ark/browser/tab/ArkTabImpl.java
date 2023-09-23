@@ -442,8 +442,10 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
         if (mArkWeb != null) {
             if (mWindowAndroid == null) {
-//                mArkWeb.detach(this);
-                destroyWebContents(false);
+                mArkWeb.detach(this);
+                TabJni.get().releaseWebContents(mNativeTabAndroid);
+                mArkWeb.reset();
+                mArkWeb = null;
             } else {
                 mArkWeb.attach(this);
                 notifyContentChanged();

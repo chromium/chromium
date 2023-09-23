@@ -31,6 +31,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
@@ -196,6 +197,11 @@ public class BottomController {
 
             @Override
             public void onLoadFinished(Tab tab, boolean toDifferentDocument) {
+                updateLoadingState(false);
+            }
+
+            @Override
+            public void onDidFinishNavigation(Tab tab, NavigationHandle navigationHandle) {
                 updateLoadingState(false);
             }
 

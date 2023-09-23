@@ -38,7 +38,9 @@ import org.chromium.content.browser.webcontents.WebContentsObserverProxy;
 import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.JavaScriptCallback;
+import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.ui.base.ViewAndroidDelegate;
@@ -98,6 +100,7 @@ public class ArkWebContents {
 
                         @Override
                         public void titleWasSet(String title) {
+                            ArkLogger.e(this, "titleWasSet title=" + title);
                             if (!TextUtils.isEmpty(title) && !TextUtils.equals(mPageInfo.getTitle(), title)) {
                                 mPageInfo.setTitle(title);
                             }
@@ -106,6 +109,7 @@ public class ArkWebContents {
 
                         @Override
                         public void didStartLoading(GURL url) {
+                            ArkLogger.e(this, "didStartLoading url=" + url);
                             mFinishLoad = false;
                             mStartLoad = true;
                             mIsLoading = true;
@@ -114,14 +118,28 @@ public class ArkWebContents {
                         }
 
                         @Override
-                        public void didFailLoad(boolean isInPrimaryMainFrame, int errorCode, GURL failingUrl, int frameLifecycleState) {
+                        public void didFailLoad(boolean isInPrimaryMainFrame, int errorCode,
+                                                GURL failingUrl,
+                                                int frameLifecycleState) {
+                            ArkLogger.e(this, "didFailLoad isInPrimaryMainFrame=" + isInPrimaryMainFrame
+                                    + " errorCode=" + errorCode
+                                    + " failingUrl=" + failingUrl
+                                    + " frameLifecycleState=" + frameLifecycleState);
                             mIsLoading = false;
                             super.didFailLoad(isInPrimaryMainFrame, errorCode, failingUrl, frameLifecycleState);
                             updateThemeColor();
                         }
 
                         @Override
-                        public void didFinishLoad(GlobalRenderFrameHostId rfhId, GURL url, boolean isKnownValid, boolean isInPrimaryMainFrame, int rfhLifecycleState) {
+                        public void didFinishLoad(GlobalRenderFrameHostId rfhId, GURL url,
+                                                  boolean isKnownValid,
+                                                  boolean isInPrimaryMainFrame,
+                                                  int rfhLifecycleState) {
+                            ArkLogger.e(this, "didFinishLoad isInPrimaryMainFrame=" + isInPrimaryMainFrame
+                                    + " isKnownValid=" + isKnownValid
+                                    + " rfhLifecycleState=" + rfhLifecycleState
+                                    + " url=" + url
+                            );
                             mStartLoad = true;
                             mFinishLoad = true;
                             mIsLoading = false;
@@ -131,20 +149,82 @@ public class ArkWebContents {
 
                         @Override
                         public void didStopLoading(GURL url, boolean isKnownValid) {
+                            ArkLogger.e(this, "didStopLoading isKnownValid=" + isKnownValid
+                                    + " url=" + url);
                             mIsLoading = false;
                             super.didStopLoading(url, isKnownValid);
                         }
 
                         @Override
+                        public void didStartNavigation(NavigationHandle navigation) {
+                            ArkLogger.e(this, "didStartNavigation navigation=" + navigation);
+                            super.didStartNavigation(navigation);
+                        }
+
+                        @Override
+                        public void didRedirectNavigation(NavigationHandle navigation) {
+                            ArkLogger.e(this, "didRedirectNavigation navigation=" + navigation);
+                            super.didRedirectNavigation(navigation);
+                        }
+
+                        @Override
+                        public void didFinishNavigation(NavigationHandle navigation) {
+                            ArkLogger.e(this, "didFinishNavigation navigation=" + navigation);
+                            mStartLoad = true;
+                            mFinishLoad = true;
+                            mIsLoading = false;
+                            super.didFinishNavigation(navigation);
+                            updateThemeColor();
+                        }
+
+                        @Override
                         public void didFirstVisuallyNonEmptyPaint() {
+                            ArkLogger.e(this, "didFirstVisuallyNonEmptyPaint");
                             super.didFirstVisuallyNonEmptyPaint();
                             updateThemeColor();
                         }
 
                         @Override
+                        public void primaryMainDocumentElementAvailable() {
+                            ArkLogger.e(this, "primaryMainDocumentElementAvailable");
+                            super.primaryMainDocumentElementAvailable();
+                        }
+
+                        @Override
+                        public void loadProgressChanged(float progress) {
+                            ArkLogger.e(this, "loadProgressChanged progress=" + progress);
+                            super.loadProgressChanged(progress);
+                        }
+
+                        @Override
                         public void renderProcessGone() {
+                            ArkLogger.e(this, "renderProcessGone isDestroyed=" + isDestroyed());
                             mIsLoading = false;
                             super.renderProcessGone();
+                        }
+
+                        @Override
+                        public void didChangeThemeColor() {
+                            ArkLogger.e(this, "didChangeThemeColor");
+                            super.didChangeThemeColor();
+                        }
+
+                        @Override
+                        public void navigationEntriesDeleted() {
+                            ArkLogger.e(this, "navigationEntriesDeleted");
+                            super.navigationEntriesDeleted();
+                        }
+
+                        @Override
+                        public void navigationEntriesChanged() {
+                            ArkLogger.e(this, "navigationEntriesChanged");
+                            super.navigationEntriesChanged();
+                        }
+
+                        @Override
+                        public void navigationEntryCommitted(LoadCommittedDetails details) {
+                            ArkLogger.e(this, "navigationEntryCommitted details=" + details);
+                            super.navigationEntryCommitted(details);
                         }
                     };
                 }

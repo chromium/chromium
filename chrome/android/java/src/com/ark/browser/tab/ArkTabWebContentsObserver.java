@@ -314,14 +314,14 @@ public class ArkTabWebContentsObserver implements UserData {
 
         @Override
         public void didRedirectNavigation(NavigationHandle navigation) {
-
             String host = navigation.getUrl().getHost();
             GURL originalUrl = mTab.getOriginalUrl();
             if (!TextUtils.equals(host, originalUrl.getHost())) {
                 int index = UserAgentManager.getUserAgentIndexByUrl(originalUrl);
                 UserAgentManager.setUserAgentByUrl(host, index);
             }
-
+            ArkLogger.e(this, "didRedirectNavigation originalUrl=" + originalUrl
+                    + " currentUrl=" + navigation.getUrl());
             RewindableIterator<TabObserver> observers = mTab.getTabObservers();
             while (observers.hasNext()) {
                 observers.next().onDidRedirectNavigation(mTab, navigation);
@@ -375,7 +375,6 @@ public class ArkTabWebContentsObserver implements UserData {
 
         @Override
         public void didFirstVisuallyNonEmptyPaint() {
-            ArkLogger.e(this, "didFirstVisuallyNonEmptyPaint");
             mTab.cacheThumbnail();
             RewindableIterator<TabObserver> observers = mTab.getTabObservers();
             while (observers.hasNext()) {
@@ -386,14 +385,12 @@ public class ArkTabWebContentsObserver implements UserData {
 
         @Override
         public void primaryMainDocumentElementAvailable() {
-            ArkLogger.e(this, "primaryMainDocumentElementAvailable");
             mTab.cacheThumbnail();
             AdblockPlusHelper.markAds(mTab, mTab.getUrl().getSpec());
         }
 
         @Override
         public void didChangeThemeColor() {
-            ArkLogger.e(this, "didChangeThemeColor color=" + mTab.getThemeColor());
             mTab.cacheThumbnail();
             mTab.updateThemeColor(mTab.getThemeColor());
         }

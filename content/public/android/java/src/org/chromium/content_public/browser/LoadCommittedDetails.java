@@ -56,4 +56,16 @@ public class LoadCommittedDetails {
     public int getHttpStatusCode() {
         return mHttpStatusCode;
     }
+
+    @Override
+    public String toString() {
+        return "LoadCommittedDetails{" +
+                "mDidReplaceEntry=" + mDidReplaceEntry +
+                ", mPreviousEntryIndex=" + mPreviousEntryIndex +
+                ", mPreviousMainFrameUrl=" + mPreviousMainFrameUrl +
+                ", mIsSameDocument=" + mIsSameDocument +
+                ", mIsMainFrame=" + mIsMainFrame +
+                ", mHttpStatusCode=" + mHttpStatusCode +
+                '}';
+    }
 }
