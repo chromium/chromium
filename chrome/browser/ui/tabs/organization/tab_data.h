@@ -34,6 +34,9 @@ class TabData : public TabStripModelObserver {
   content::WebContents* web_contents() { return web_contents_; }
   const GURL& original_url() const { return original_url_; }
 
+  // Checks if the Tab is still valid for an organization.
+  bool IsValidForOrganizing() const;
+
   // TabStripModelObserver:
   void OnTabStripModelDestroyed(TabStripModel* tab_strip_model) override;
   void OnTabStripModelChanged(

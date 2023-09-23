@@ -145,6 +145,43 @@ TEST_F(TabOrganizationTest, TabDataOnDestroyWebContentsReplaceUpdatesContents) {
   EXPECT_EQ(tab_data->web_contents(), new_contents_ptr);
 }
 
+TEST_F(TabOrganizationTest, TabDataURLChangeIsNotValidForOrganizing) {
+  content::WebContents* web_contents = AddTab();
+  GURL old_gurl = GURL("chrome://page_1");
+  content::WebContentsTester::For(web_contents)->NavigateAndCommit(old_gurl);
+
+  std::unique_ptr<TabData> tab_data =
+      std::make_unique<TabData>(tab_strip_model(), web_contents);
+
+  EXPECT_TRUE(tab_data->IsValidForOrganizing());
+
+  // update the URL for the webcontents, expect the tab data to not be valid.
+  // When updating tab URL, the TabData shouldn't update.
+  content::WebContentsTester::For(web_contents)
+      ->NavigateAndCommit(GURL("chrome://page_2"));
+  EXPECT_FALSE(tab_data->IsValidForOrganizing());
+}
+
+TEST_F(TabOrganizationTest, TabDataWebContentsDeletionIsNotValidForOrganizing) {
+  content::WebContents* web_contents = AddTab();
+  GURL old_gurl = GURL("chrome://page_1");
+  content::WebContentsTester::For(web_contents)->NavigateAndCommit(old_gurl);
+
+  std::unique_ptr<TabData> tab_data =
+      std::make_unique<TabData>(tab_strip_model(), web_contents);
+
+  EXPECT_TRUE(tab_data->IsValidForOrganizing());
+
+  // Add a new tab so that the tabstripmodel doesnt close.
+  AddTab();
+
+  // Delete the webcontents and check validity.
+  tab_strip_model()->CloseWebContentsAt(
+      tab_strip_model()->GetIndexOfWebContents(web_contents),
+      TabCloseTypes::CLOSE_NONE);
+  EXPECT_FALSE(tab_data->IsValidForOrganizing());
+}
+
 // TabOrganization tests.
 
 TEST_F(TabOrganizationTest, TabOrganizationAddingTabData) {

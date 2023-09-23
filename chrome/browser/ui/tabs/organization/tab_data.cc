@@ -33,6 +33,27 @@ TabData::~TabData() {
   }
 }
 
+bool TabData::IsValidForOrganizing() const {
+  // if the model or the web_contents have been destroyed, then it's not valid.
+  if (!original_tab_strip_model_ || !web_contents_) {
+    return false;
+  }
+
+  // If the web_contents is no longer the same URL, then it's not valid.
+  if (original_url_ != web_contents_->GetLastCommittedURL()) {
+    return false;
+  }
+
+  if (original_tab_strip_model_
+          ->GetTabGroupForTab(
+              original_tab_strip_model_->GetIndexOfWebContents(web_contents_))
+          .has_value()) {
+    return false;
+  }
+
+  return true;
+}
+
 void TabData::OnTabStripModelDestroyed(TabStripModel* tab_strip_model) {
   if (original_tab_strip_model_ == tab_strip_model) {
     original_tab_strip_model_ = nullptr;

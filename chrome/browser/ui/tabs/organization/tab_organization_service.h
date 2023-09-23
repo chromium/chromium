@@ -46,7 +46,7 @@ class TabOrganizationService : public KeyedService {
   }
 
  private:
-  // mapping of browser to
+  // mapping of browser to session.
   BrowserSessionMap browser_session_map_;
 
   // A list of the observers of a tab organization Service.
