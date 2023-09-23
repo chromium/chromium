@@ -108,6 +108,7 @@ class DisplayOverlayController : public ui::EventHandler,
   void AddButtonOptionsMenuWidget(Action* action);
   void RemoveButtonOptionsMenuWidget();
   void OnButtonOptionsMenuButtonLabelPressed(Action* action);
+  void SetButtonOptionsMenuWidgetVisibility(bool is_visible);
 
   void AddButtonLabelListWidget(Action* action);
   void RemoveButtonLabelListWidget();

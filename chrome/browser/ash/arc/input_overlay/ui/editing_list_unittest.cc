@@ -84,6 +84,21 @@ class EditingListTest : public OverlayViewTestBase {
     event_generator->ReleaseLeftButton();
   }
 
+  // Mouse dragging `action` view by `(x, y)` without releasing mouse left
+  // button.
+  void MouseDraggingActionViewBy(Action* action, int x, int y) {
+    auto* event_generator = GetEventGenerator();
+    auto* touch_point = action->action_view()->touch_point();
+    if (!touch_point) {
+      LOG(WARNING) << "Mouse dragging has no valid touch point.";
+      return;
+    }
+    event_generator->MoveMouseTo(
+        touch_point->GetBoundsInScreen().CenterPoint());
+    event_generator->PressLeftButton();
+    event_generator->MoveMouseBy(x, y);
+  }
+
   void TouchDragEditingListBy(int x, int y) {
     auto* event_generator = GetEventGenerator();
 
@@ -120,6 +135,11 @@ class EditingListTest : public OverlayViewTestBase {
 
   bool ButtonOptionsMenuExists() {
     return !!controller_->button_options_widget_;
+  }
+
+  bool IsButtonOptionsMenuVisible() {
+    auto* menu_widget = controller_->button_options_widget_.get();
+    return menu_widget && menu_widget->IsVisible();
   }
 
   void PressDoneButtonOnButtonOptionsMenu() {
@@ -168,6 +188,22 @@ TEST_F(EditingListTest, TestAddNewAction) {
   // Make sure `Action::touch_down_positions_` is not empty for the new action.
   auto* new_action = touch_injector_->actions()[3].get();
   EXPECT_FALSE(new_action->touch_down_positions().empty());
+}
+
+TEST_F(EditingListTest, TestDragAtNewAction) {
+  CheckActions(touch_injector_, /*expect_size=*/3u, /*expect_types=*/
+               {ActionType::TAP, ActionType::TAP, ActionType::MOVE},
+               /*expect_ids=*/{0, 1, 2});
+  PressAddButton();
+  EXPECT_TRUE(IsButtonOptionsMenuVisible());
+  auto* action = GetButtonOptionsAction();
+  EXPECT_TRUE(action->is_new());
+  MouseDraggingActionViewBy(action, /*x=*/10, /*y=*/10);
+  EXPECT_FALSE(IsButtonOptionsMenuVisible());
+  EXPECT_TRUE(action->is_new());
+  GetEventGenerator()->ReleaseLeftButton();
+  EXPECT_TRUE(IsButtonOptionsMenuVisible());
+  EXPECT_TRUE(action->is_new());
 }
 
 TEST_F(EditingListTest, TestPressAtActionViewListItem) {

@@ -717,6 +717,23 @@ void DisplayOverlayController::OnButtonOptionsMenuButtonLabelPressed(
   AddButtonLabelListWidget(action);
 }
 
+void DisplayOverlayController::SetButtonOptionsMenuWidgetVisibility(
+    bool is_visible) {
+  if (!button_options_widget_) {
+    return;
+  }
+
+  if (is_visible) {
+    UpdateButtonOptionsMenuWidgetBounds(
+        static_cast<ButtonOptionsMenu*>(
+            button_options_widget_->GetContentsView())
+            ->action());
+    button_options_widget_->Show();
+  } else {
+    button_options_widget_->Hide();
+  }
+}
+
 void DisplayOverlayController::AddButtonLabelListWidget(Action* action) {
   if (button_label_list_widget_) {
     return;

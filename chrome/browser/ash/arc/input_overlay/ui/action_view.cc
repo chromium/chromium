@@ -204,7 +204,8 @@ void ActionView::ShowButtonOptionsMenu() {
 
 void ActionView::OnDraggingCallback() {
   MayUpdateLabelPosition();
-  display_overlay_controller_->RemoveButtonOptionsMenuWidget();
+  display_overlay_controller_->SetButtonOptionsMenuWidgetVisibility(
+      /*is_visible=*/false);
 }
 
 void ActionView::OnMouseDragEndCallback() {
@@ -214,6 +215,10 @@ void ActionView::OnMouseDragEndCallback() {
   if (IsBeta()) {
     action_->BindPending();
   }
+
+  display_overlay_controller_->SetButtonOptionsMenuWidgetVisibility(
+      /*is_visible=*/true);
+
   RecordInputOverlayActionReposition(
       display_overlay_controller_->GetPackageName(),
       RepositionType::kMouseDragRepostion,
@@ -227,6 +232,10 @@ void ActionView::OnGestureDragEndCallback() {
   if (IsBeta()) {
     action_->BindPending();
   }
+
+  display_overlay_controller_->SetButtonOptionsMenuWidgetVisibility(
+      /*is_visible=*/true);
+
   RecordInputOverlayActionReposition(
       display_overlay_controller_->GetPackageName(),
       RepositionType::kTouchscreenDragRepostion,
