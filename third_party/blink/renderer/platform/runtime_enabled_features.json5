@@ -3220,7 +3220,7 @@
     {
       // https://wicg.github.io/webcomponents/proposals/Scoped-Custom-Element-Registries
       name: "ScopedCustomElementRegistry",
-      status: "test",
+      status: "experimental",
       base_feature: "none",
     },
     // WebSpeech API with both speech recognition and synthesis functionality
