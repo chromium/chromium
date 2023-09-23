@@ -4,8 +4,10 @@
 
 #include <bitset>
 #include <vector>
+
 #include "base/base64.h"
 #include "base/command_line.h"
+#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -200,8 +202,8 @@ IN_PROC_BROWSER_TEST_P(ChromeOriginTrialsDisabledTokensTest,
                        DisabledTokensInPolicy) {
   // Convert the uint8_t[] from generate_token.py into strings.
   std::set<std::string> expected_signatures;
-  std::transform(
-      GetParam().expected_list.begin(), GetParam().expected_list.end(),
+  base::ranges::transform(
+      GetParam().expected_list,
       std::inserter(expected_signatures, expected_signatures.begin()),
       [](const uint8_t bytes[]) -> std::string {
         return std::string(reinterpret_cast<const char*>(bytes),

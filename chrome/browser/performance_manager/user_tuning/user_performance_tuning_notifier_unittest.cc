@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
@@ -40,12 +41,10 @@ class UserPerformanceTuningNotifierTest : public GraphTestHarness {
     void NotifyMemoryMetricsRefreshed(
         ProxyAndPmfKbVector proxies_and_pmf) override {
       pages_pmf_kb_.clear();
-      std::transform(
-          proxies_and_pmf.begin(), proxies_and_pmf.end(),
-          std::back_inserter(pages_pmf_kb_),
-          [](const std::pair<WebContentsProxy, uint64_t>& proxy_and_pmf) {
-            return proxy_and_pmf.second;
-          });
+
+      base::ranges::transform(proxies_and_pmf,
+                              std::back_inserter(pages_pmf_kb_),
+                              &std::pair<WebContentsProxy, uint64_t>::second);
       ++memory_refreshed_count_;
     }
 

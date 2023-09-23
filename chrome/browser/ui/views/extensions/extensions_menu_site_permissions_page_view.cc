@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/extensions/site_permissions_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -65,11 +66,12 @@ std::vector<views::RadioButton*> GetSiteAccessButtons(views::View* page) {
 
   std::vector<views::RadioButton*> site_access_buttons;
   site_access_buttons.reserve(buttons.size());
-  std::transform(buttons.begin(), buttons.end(),
-                 std::back_inserter(site_access_buttons),
-                 [](views::View* button) {
-                   return views::AsViewClass<views::RadioButton>(button);
-                 });
+
+  base::ranges::transform(
+      buttons, std::back_inserter(site_access_buttons),
+      [](views::View* button) {
+        return views::AsViewClass<views::RadioButton>(button);
+      });
   return site_access_buttons;
 }
 

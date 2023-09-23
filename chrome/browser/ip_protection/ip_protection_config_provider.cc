@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/ip_protection/get_proxy_config.pb.h"
 #include "chrome/browser/ip_protection/ip_protection_config_http.h"
 #include "chrome/browser/profiles/profile.h"
@@ -210,13 +211,13 @@ void IpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted(
                           current_time - bsa_get_tokens_start_time);
 
   std::vector<network::mojom::BlindSignedAuthTokenPtr> bsa_tokens;
-  std::transform(tokens->begin(), tokens->end(), std::back_inserter(bsa_tokens),
-                 [](quiche::BlindSignToken bsa_token) {
-                   base::Time expiration = base::Time::FromTimeT(
-                       absl::ToTimeT(bsa_token.expiration));
-                   return network::mojom::BlindSignedAuthToken::New(
-                       bsa_token.token, expiration);
-                 });
+  base::ranges::transform(tokens.value(), std::back_inserter(bsa_tokens),
+                          [](quiche::BlindSignToken bsa_token) {
+                            base::Time expiration = base::Time::FromTimeT(
+                                absl::ToTimeT(bsa_token.expiration));
+                            return network::mojom::BlindSignedAuthToken::New(
+                                bsa_token.token, expiration);
+                          });
 
   TryGetAuthTokensComplete(absl::make_optional(std::move(bsa_tokens)),
                            std::move(callback),

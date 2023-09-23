@@ -343,8 +343,8 @@ class ExternallyAppManagerTest : public WebAppTest {
       ExternalInstallSource source,
       absl::optional<ExternalInstallOptions> template_options = absl::nullopt) {
     std::vector<ExternalInstallOptions> output;
-    std::transform(
-        install_urls.begin(), install_urls.end(), std::back_inserter(output),
+    base::ranges::transform(
+        install_urls, std::back_inserter(output),
         [source, &template_options](const GURL& install_url) {
           ExternalInstallOptions options = template_options.value_or(
               ExternalInstallOptions(install_url, absl::nullopt, source));
