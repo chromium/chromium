@@ -122,6 +122,8 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 8;
     case DISTANCE_DROPDOWN_BUTTON_RIGHT_MARGIN:
       return 12;
+    case DISTANCE_EXTENSIONS_MENU_WIDTH:
+      return kMediumDialogWidth;
     case DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SIZE:
       return features::IsChromeRefresh2023() ? 20 : 16;
     case DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SMALL_SIZE:
