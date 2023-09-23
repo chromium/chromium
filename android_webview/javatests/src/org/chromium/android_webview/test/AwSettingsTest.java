@@ -1166,10 +1166,17 @@ public class AwSettingsTest {
             final boolean expectPopupEnabled = value;
             AwActivityTestRule.pollInstrumentationThread(() -> {
                 String title = getTitleOnUiThread();
-                return expectPopupEnabled ? POPUP_ENABLED.equals(title) :
-                        POPUP_BLOCKED.equals(title);
+                // When popup is enabled, expect the title to be either POPUP_ENABLED or
+                // "about:blank". The latter is possible if the document.write() that sets the
+                // title finishes before the "about:blank" navigation commits. After that
+                // navigation commits, the title will be set to "about:blank".
+                return expectPopupEnabled
+                        ? (POPUP_ENABLED.equals(title) || "about:blank".equals(title))
+                        : POPUP_BLOCKED.equals(title);
             });
-            Assert.assertEquals(value ? POPUP_ENABLED : POPUP_BLOCKED, getTitleOnUiThread());
+            String title = getTitleOnUiThread();
+            Assert.assertTrue(value ? (POPUP_ENABLED.equals(title) || "about:blank".equals(title))
+                                    : POPUP_BLOCKED.equals(title));
         }
 
         private String getData() {

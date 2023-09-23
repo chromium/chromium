@@ -228,12 +228,16 @@ public class ContentViewFocusTest {
         mActivityTestRule.loadUrl(url);
         ViewEventSink eventSink = WebContentsUtils.getViewEventSink(webContents);
         onTitleUpdatedHelper.waitForCallback(callCount);
-        Assert.assertEquals("initial", mTitle);
+        // The document can start out as focused or not focused at first, depending on whether a
+        // RenderWidgetHost swap happened during the navigation, triggering a focus call.
+        Assert.assertTrue("initial".equals(mTitle) || "focused".equals(mTitle));
         callCount = onTitleUpdatedHelper.getCallCount();
+
         PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> eventSink.onPauseForTesting());
         onTitleUpdatedHelper.waitForCallback(callCount);
         Assert.assertEquals("blurred", mTitle);
         callCount = onTitleUpdatedHelper.getCallCount();
+
         PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> eventSink.onResumeForTesting());
         onTitleUpdatedHelper.waitForCallback(callCount);
         Assert.assertEquals("focused", mTitle);
