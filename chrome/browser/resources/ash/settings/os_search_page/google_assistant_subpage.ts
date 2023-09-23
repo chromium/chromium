@@ -166,7 +166,7 @@ export class SettingsGoogleAssistantSubpageElement extends
     this.browserProxy_ = GoogleAssistantBrowserProxyImpl.getInstance();
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     this.addWebUiListener('hotwordDeviceUpdated', (hasHotword: boolean) => {
@@ -176,7 +176,7 @@ export class SettingsGoogleAssistantSubpageElement extends
     chrome.send('initializeGoogleAssistantPage');
   }
 
-  override currentRouteChanged(route: Route, _oldRoute?: Route) {
+  override currentRouteChanged(route: Route, _oldRoute?: Route): void {
     // Does not apply to this page.
     if (route !== routes.GOOGLE_ASSISTANT) {
       return;
@@ -190,24 +190,24 @@ export class SettingsGoogleAssistantSubpageElement extends
         toggleValue ? 'searchGoogleAssistantOn' : 'searchGoogleAssistantOff');
   }
 
-  private onGoogleAssistantSettingsTapped_() {
+  private onGoogleAssistantSettingsTapped_(): void {
     this.browserProxy_.showGoogleAssistantSettings();
     recordSettingChange();
   }
 
-  private onRetrainVoiceModelTapped_() {
+  private onRetrainVoiceModelTapped_(): void {
     this.browserProxy_.retrainAssistantVoiceModel();
     recordSettingChange();
   }
 
-  private onEnableHotwordChange_(event: Event) {
+  private onEnableHotwordChange_(event: Event): void {
     const target = cast(event.target, SettingsToggleButtonElement);
     if (target.checked) {
       this.browserProxy_.syncVoiceModelStatus();
     }
   }
 
-  private onDspHotwordStateChange_() {
+  private onDspHotwordStateChange_(): void {
     const dspHotwordStateEl =
         castExists(this.shadowRoot!.querySelector<HTMLSelectElement>(
             '#dsp-hotword-state'));
@@ -238,7 +238,7 @@ export class SettingsGoogleAssistantSubpageElement extends
     return state === this.dspHotwordState_;
   }
 
-  private onPrefsChanged_() {
+  private onPrefsChanged_(): void {
     if (this.getPref('settings.assistant.disabled_by_policy').value) {
       this.setPrefValue('settings.voice_interaction.enabled', false);
       return;
@@ -261,7 +261,7 @@ export class SettingsGoogleAssistantSubpageElement extends
             chrome.settingsPrivate.ControlledBy.CHILD_RESTRICTION;
   }
 
-  private refreshDspHotwordState_() {
+  private refreshDspHotwordState_(): void {
     if (!this.getPref('settings.voice_interaction.hotword.enabled').value) {
       this.dspHotwordState_ = DspHotwordState.OFF;
     } else if (this.getPref('settings.voice_interaction.hotword.always_on')

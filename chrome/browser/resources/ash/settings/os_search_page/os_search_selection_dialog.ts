@@ -63,7 +63,7 @@ class OsSettingsSearchSelectionDialogElement extends
     this.browserProxy_ = SearchEnginesBrowserProxyImpl.getInstance();
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     this.browserProxy_.getSearchEnginesList().then(
@@ -72,14 +72,14 @@ class OsSettingsSearchSelectionDialogElement extends
         'search-engines-changed', this.updateSearchEngines_.bind(this));
   }
 
-  private updateSearchEngines_(searchEngines: SearchEnginesInfo) {
+  private updateSearchEngines_(searchEngines: SearchEnginesInfo): void {
     this.set('searchEngines_', searchEngines.defaults);
   }
 
   /**
    * Enables the checked languages.
    */
-  private onActionButtonClick_() {
+  private onActionButtonClick_(): void {
     const select = castExists(this.shadowRoot!.querySelector('select'));
     const searchEngine = this.searchEngines_[select.selectedIndex];
     this.browserProxy_.setDefaultSearchEngine(searchEngine.modelIndex);
@@ -87,11 +87,11 @@ class OsSettingsSearchSelectionDialogElement extends
     this.$.dialog.close();
   }
 
-  private onCancelButtonClick_() {
+  private onCancelButtonClick_(): void {
     this.$.dialog.close();
   }
 
-  private onKeydown_(e: KeyboardEvent) {
+  private onKeydown_(e: KeyboardEvent): void {
     if (e.key === 'Escape') {
       this.onCancelButtonClick_();
     }

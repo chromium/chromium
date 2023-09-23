@@ -101,7 +101,7 @@ export class SettingsSearchSubpageElement extends
             .toString());
   }
 
-  override currentRouteChanged(route: Route, _oldRoute?: Route) {
+  override currentRouteChanged(route: Route, _oldRoute?: Route): void {
     // Does not apply to this page.
     if (route !== routes.SEARCH_SUBPAGE) {
       return;
@@ -110,7 +110,7 @@ export class SettingsSearchSubpageElement extends
     this.attemptDeepLink();
   }
 
-  private onSettingsLinkClick_() {
+  private onSettingsLinkClick_(): void {
     Router.getInstance().navigateTo(routes.OS_LANGUAGES_LANGUAGES);
   }
 

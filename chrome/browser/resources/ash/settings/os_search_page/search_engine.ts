@@ -59,7 +59,7 @@ class SettingsSearchEngineElement extends SettingsSearchEngineElementBase {
     this.browserProxy_ = SearchEnginesBrowserProxyImpl.getInstance();
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     this.browserProxy_.getSearchEnginesList().then(
@@ -68,17 +68,17 @@ class SettingsSearchEngineElement extends SettingsSearchEngineElementBase {
         'search-engines-changed', this.updateCurrentSearchEngine_.bind(this));
   }
 
-  private updateCurrentSearchEngine_(searchEngines: SearchEnginesInfo) {
+  private updateCurrentSearchEngine_(searchEngines: SearchEnginesInfo): void {
     const defaultSearchEngine = castExists(
         searchEngines.defaults.find(searchEngine => searchEngine.default));
     this.currentSearchEngine_ = defaultSearchEngine;
   }
 
-  override focus() {
+  override focus(): void {
     this.getBrowserSearchSettingsLink_().focus();
   }
 
-  private onDisableExtension_() {
+  private onDisableExtension_(): void {
     const event = new CustomEvent('refresh-pref', {
       bubbles: true,
       composed: true,
@@ -87,16 +87,16 @@ class SettingsSearchEngineElement extends SettingsSearchEngineElementBase {
     this.dispatchEvent(event);
   }
 
-  private onSearchEngineLinkClick_() {
+  private onSearchEngineLinkClick_(): void {
     this.browserProxy_.openBrowserSearchSettings();
   }
 
-  private getBrowserSearchSettingsLink_() {
+  private getBrowserSearchSettingsLink_(): HTMLElement {
     return castExists(
         this.shadowRoot!.getElementById('browserSearchSettingsLink'));
   }
 
-  private getSearchSelectionDialogButton_() {
+  private getSearchSelectionDialogButton_(): HTMLElement {
     return castExists(
         this.shadowRoot!.getElementById('searchSelectionDialogButton'));
   }
