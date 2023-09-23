@@ -28,5 +28,9 @@
 [
     ActiveScriptWrappable,
     Exposed=(Window,Worker)
-] interface WebGLRenderingContext { };
+] interface WebGLRenderingContext {
+
+    [RuntimeEnabled=WebGLDrawingBufferStorage] const GLenum RGB8   = 0x8051;
+    [RuntimeEnabled=WebGLDrawingBufferStorage] const GLenum RGBA8  = 0x8058;
+};
 WebGLRenderingContext includes WebGLRenderingContextBase;

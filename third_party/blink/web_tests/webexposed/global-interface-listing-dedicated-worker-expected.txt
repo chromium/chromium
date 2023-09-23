@@ -3292,8 +3292,10 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute RGB
 [Worker]     attribute RGB565
 [Worker]     attribute RGB5_A1
+[Worker]     attribute RGB8
 [Worker]     attribute RGBA
 [Worker]     attribute RGBA4
+[Worker]     attribute RGBA8
 [Worker]     attribute SAMPLER_2D
 [Worker]     attribute SAMPLER_CUBE
 [Worker]     attribute SAMPLES

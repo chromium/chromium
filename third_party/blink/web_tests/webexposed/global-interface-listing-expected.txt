@@ -11105,8 +11105,10 @@ interface WebGLRenderingContext
     attribute RGB
     attribute RGB565
     attribute RGB5_A1
+    attribute RGB8
     attribute RGBA
     attribute RGBA4
+    attribute RGBA8
     attribute SAMPLER_2D
     attribute SAMPLER_CUBE
     attribute SAMPLES
