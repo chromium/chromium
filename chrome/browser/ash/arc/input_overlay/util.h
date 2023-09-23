@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/game_dashboard/game_dashboard_utils.h"
 #include "ash/public/cpp/arc_game_controls_flag.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
@@ -22,6 +23,10 @@ class View;
 }  // namespace views
 
 namespace arc::input_overlay {
+
+using ash::game_dashboard_utils::IsFlagChanged;
+using ash::game_dashboard_utils::IsFlagSet;
+using ash::game_dashboard_utils::UpdateFlag;
 
 class Action;
 class InputElement;

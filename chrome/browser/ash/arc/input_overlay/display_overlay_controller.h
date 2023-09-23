@@ -171,6 +171,10 @@ class DisplayOverlayController : public ui::EventHandler,
   // event target on the layer underneath the overlay layer.
   void SetEventTarget(views::Widget* overlay_widget, bool on_overlay);
 
+  // Update display mode when initializing DisplayOverlayController or the
+  // window property is changed on `ash::kArcGameControlsFlagsKey`.
+  void UpdateDisplayMode();
+
   // On charge of Add/Remove nudge view.
   void AddNudgeView(views::Widget* overlay_widget);
   void RemoveNudgeView();

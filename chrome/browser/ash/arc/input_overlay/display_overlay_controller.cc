@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/frame/non_client_frame_view_ash.h"
-#include "ash/game_dashboard/game_dashboard_utils.h"
 #include "ash/public/cpp/arc_game_controls_flag.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
@@ -92,11 +91,8 @@ DisplayOverlayController::DisplayOverlayController(
   if (IsBeta()) {
     auto* window = touch_injector_->window();
     window->AddObserver(this);
-    SetDisplayMode(ash::game_dashboard_utils::IsFlagSet(
-                       window->GetProperty(ash::kArcGameControlsFlagsKey),
-                       ash::ArcGameControlsFlag::kEdit)
-                       ? DisplayMode::kEdit
-                       : DisplayMode::kView);
+
+    UpdateDisplayMode();
   } else {
     // There is no instance for unittest.
     if (!ash::Shell::HasInstance()) {
@@ -175,6 +171,16 @@ void DisplayOverlayController::SetEventTarget(views::Widget* overlay_widget,
     overlay_window->SetEventTargetingPolicy(aura::EventTargetingPolicy::kNone);
     EnsureTaskWindowToFrontForViewMode(overlay_widget);
   }
+}
+
+void DisplayOverlayController::UpdateDisplayMode() {
+  ash::ArcGameControlsFlag flags =
+      touch_injector_->window()->GetProperty(ash::kArcGameControlsFlagsKey);
+  SetDisplayMode(IsFlagSet(flags, ash::ArcGameControlsFlag::kEnabled)
+                     ? (IsFlagSet(flags, ash::ArcGameControlsFlag::kEdit)
+                            ? DisplayMode::kEdit
+                            : DisplayMode::kView)
+                     : DisplayMode::kNone);
 }
 
 void DisplayOverlayController::AddNudgeView(views::Widget* overlay_widget) {
@@ -911,31 +917,20 @@ void DisplayOverlayController::OnWindowPropertyChanged(aura::Window* window,
     ash::ArcGameControlsFlag flags =
         window->GetProperty(ash::kArcGameControlsFlagsKey);
     if (flags != old_flags) {
-      bool is_enabled = ash::game_dashboard_utils::IsFlagSet(
-          flags, ash::ArcGameControlsFlag::kEnabled);
-      SetTouchInjectorEnable(is_enabled);
+      UpdateDisplayMode();
 
-      bool is_edit_mode = ash::game_dashboard_utils::IsFlagSet(
-          touch_injector_->window()->GetProperty(ash::kArcGameControlsFlagsKey),
-          ash::ArcGameControlsFlag::kEdit);
-
-      // Call `SetDisplayMode` before `SetInputMappingVisible` since
-      // `input_mapping_widget_` is created or destroyed in `SetDisplayMode`.
-      SetDisplayMode(
-          is_enabled ? (is_edit_mode ? DisplayMode::kEdit : DisplayMode::kView)
-                     : DisplayMode::kNone);
+      SetTouchInjectorEnable(
+          IsFlagSet(flags, ash::ArcGameControlsFlag::kEnabled));
 
       // `input_mapping_widget_` is always visible in edit mode.
-      SetInputMappingVisible(is_edit_mode
-                                 ? true
-                                 : ash::game_dashboard_utils::IsFlagSet(
-                                       flags, ash::ArcGameControlsFlag::kHint));
+      SetInputMappingVisible(
+          IsFlagSet(flags, ash::ArcGameControlsFlag::kEdit)
+              ? true
+              : IsFlagSet(flags, ash::ArcGameControlsFlag::kHint));
 
       // Save the menu states upon menu closing.
-      if (ash::game_dashboard_utils::IsFlagChanged(
-              flags, old_flags, ash::ArcGameControlsFlag::kMenu) &&
-          !ash::game_dashboard_utils::IsFlagSet(
-              flags, ash::ArcGameControlsFlag::kMenu)) {
+      if (IsFlagChanged(flags, old_flags, ash::ArcGameControlsFlag::kMenu) &&
+          !IsFlagSet(flags, ash::ArcGameControlsFlag::kMenu)) {
         touch_injector_->OnInputMenuViewRemoved();
       }
 
@@ -1174,15 +1169,10 @@ void DisplayOverlayController::UpdateEventRewriteCapability() {
       touch_injector_->window()->GetProperty(ash::kArcGameControlsFlagsKey);
 
   touch_injector_->set_can_rewrite_event(
-      ash::game_dashboard_utils::IsFlagSet(
-          flags, ash::ArcGameControlsFlag::kEnabled) &&
-      !ash::game_dashboard_utils::IsFlagSet(flags,
-                                            ash::ArcGameControlsFlag::kEmpty) &&
-      !ash::game_dashboard_utils::IsFlagSet(flags,
-                                            ash::ArcGameControlsFlag::kMenu) &&
-      !ash::game_dashboard_utils::IsFlagSet(
-          touch_injector_->window()->GetProperty(ash::kArcGameControlsFlagsKey),
-          ash::ArcGameControlsFlag::kEdit));
+      IsFlagSet(flags, ash::ArcGameControlsFlag::kEnabled) &&
+      !IsFlagSet(flags, ash::ArcGameControlsFlag::kEmpty) &&
+      !IsFlagSet(flags, ash::ArcGameControlsFlag::kMenu) &&
+      !IsFlagSet(flags, ash::ArcGameControlsFlag::kEdit));
 }
 
 void DisplayOverlayController::DismissEducationalViewForTesting() {

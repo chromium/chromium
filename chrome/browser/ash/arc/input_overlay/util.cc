@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "ash/constants/ash_features.h"
-#include "ash/game_dashboard/game_dashboard_utils.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
@@ -118,10 +117,9 @@ void UpdateFlagAndProperty(aura::Window* window,
   const ash::ArcGameControlsFlag flags =
       window->GetProperty(ash::kArcGameControlsFlagsKey);
 
-  if (ash::game_dashboard_utils::IsFlagSet(flags, flag) != turn_on) {
-    window->SetProperty(
-        ash::kArcGameControlsFlagsKey,
-        ash::game_dashboard_utils::UpdateFlag(flags, flag, turn_on));
+  if (IsFlagSet(flags, flag) != turn_on) {
+    window->SetProperty(ash::kArcGameControlsFlagsKey,
+                        UpdateFlag(flags, flag, turn_on));
   }
 }
 
