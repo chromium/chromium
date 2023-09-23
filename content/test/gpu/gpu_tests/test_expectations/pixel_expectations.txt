@@ -388,10 +388,10 @@ crbug.com/1469875 [ mac graphite-enabled ] Pixel_OffscreenCanvasTransferAfterSty
 crbug.com/1469875 [ mac graphite-enabled amd release no-asan ] Pixel_SVGHuge [ Failure ]
 crbug.com/1469875 [ mac graphite-enabled apple ] Pixel_SVGHuge [ Failure ]
 crbug.com/1469875 [ mac graphite-enabled intel release no-asan ] Pixel_SVGHuge [ Failure ]
-crbug.com/1469875 [ mac graphite-enabled ] Pixel_WebGPUImportVideoFrame [ Failure ]
+crbug.com/1469875 [ apple-angle-metal-renderer:-apple-m2 graphite-enabled mac-arm64 no-asan ventura ] Pixel_WebGPUImportVideoFrame [ Failure ]
 crbug.com/1469875 [ mac graphite-enabled ] Pixel_WebGPUImportVideoFrameOffscreenCanvas [ Failure ]
-crbug.com/1469875 [ mac graphite-enabled ] Pixel_WebGPUImportVideoFrameUnaccelerated [ Failure ]
-crbug.com/1469875 [ mac graphite-enabled ] Pixel_WebGPUImportVideoFrameUnacceleratedOffscreenCanvas [ Failure ]
+crbug.com/1469875 [ apple-angle-metal-renderer:-apple-m2 graphite-enabled mac-arm64 no-asan ventura ] Pixel_WebGPUImportVideoFrameUnaccelerated [ Failure ]
+crbug.com/1469875 [ apple graphite-enabled mac-arm64 no-asan ventura ] Pixel_WebGPUImportVideoFrameUnacceleratedOffscreenCanvas [ Failure ]
 
 crbug.com/1474611 [ mac nvidia angle-opengl graphite-disabled ] Pixel_WebGLGreenTriangle_NonChromiumImage_NoAA_NoAlpha [ Failure ]
 crbug.com/1476029 [ mac asan graphite-enabled ] Pixel_Video_BackdropFilter [ Failure ]
