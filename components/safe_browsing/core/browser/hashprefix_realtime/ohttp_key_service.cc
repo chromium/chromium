@@ -58,7 +58,7 @@ constexpr int kServerTriggeredFetchMaxDelayTimeSec = 60;
 // Backoff constants
 const size_t kNumFailuresToEnforceBackoff = 3;
 const size_t kMinBackOffResetDurationInSeconds = 5 * 60;   //  5 minutes.
-const size_t kMaxBackOffResetDurationInSeconds = 30 * 60;  // 30 minutes.
+const size_t kMaxBackOffResetDurationInSeconds = 24 * 60 * 60;  // 1 day.
 
 constexpr net::NetworkTrafficAnnotationTag kOhttpKeyTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("safe_browsing_ohttp_key_fetch",
