@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.device_lock;
+package org.chromium.components.browser_ui.device_lock;
 
 import android.app.Activity;
 import android.app.KeyguardManager;
@@ -13,15 +13,20 @@ import androidx.annotation.NonNull;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.ui.signin.DeviceLockActivityLauncher;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
  * This bridge allows native web C++ code to launch DeviceLockActivity.
  */
 public class DeviceLockBridge {
+    /**
+     * Whether the Device Lock page has been shown to the user and acknowledged with a device lock
+     * present. This is used to determine whether to show the device lock page when the user is
+     * interacting with sensitive personal data on the device.
+     */
+    public static final String DEVICE_LOCK_PAGE_HAS_BEEN_PASSED =
+            "Chrome.DeviceLockPage.HasBeenPassed";
+
     private long mNativeDeviceLockBridge;
 
     private DeviceLockBridge(long nativeDeviceLockBridge) {
@@ -34,16 +39,13 @@ public class DeviceLockBridge {
     }
 
     /**
-     * Launches {@link DeviceLockActivity} (explainer dialog and PIN/password setup flow) before
-     * allowing users to continue with the saving passwords flow if the user's device is not secure
-     * (ex: no PIN or password set). Currently, these additional steps are only added for Android
-     * automotive devices. Note that the explainer dialog will not be shown if the user has already
-     * seen it.
+     * Launches DeviceLockActivity (explainer dialog and PIN/password setup flow) before allowing
+     * users to continue if the user's device is not secure (ex: no PIN or password set).
      *
      * TODO(crbug/1474036): Handle edge case where Chrome is killed when switching to OS PIN flow.
      */
     @CalledByNative
-    private void launchDeviceLockUiBeforeSavingPassword(@NonNull WindowAndroid windowAndroid) {
+    private void launchDeviceLockUiBeforeRunningCallback(@NonNull WindowAndroid windowAndroid) {
         if (mNativeDeviceLockBridge == 0) {
             return;
         }
@@ -66,16 +68,16 @@ public class DeviceLockBridge {
     }
 
     @CalledByNative
-    private boolean isDeviceSecure() {
+    private static boolean isDeviceSecure() {
         return ((KeyguardManager) ContextUtils.getApplicationContext().getSystemService(
                         Context.KEYGUARD_SERVICE))
                 .isDeviceSecure();
     }
 
     @CalledByNative
-    private boolean deviceLockPageHasBeenPassed() {
-        return SharedPreferencesManager.getInstance().readBoolean(
-                ChromePreferenceKeys.DEVICE_LOCK_PAGE_HAS_BEEN_PASSED, false);
+    public static boolean deviceLockPageHasBeenPassed() {
+        return ContextUtils.getAppSharedPreferences().getBoolean(
+                DEVICE_LOCK_PAGE_HAS_BEEN_PASSED, false);
     }
 
     /**

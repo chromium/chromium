@@ -38,6 +38,7 @@ include_rules = [
   "+components/sync/test",
   "+components/ukm/android",
   "+components/webauthn/android",
+  "+components/browser_ui/device_lock/android",
 
   "-content/public/android/java",
   "+content/public/android/java/src/org/chromium/content_public",

@@ -15,6 +15,7 @@ include_rules = [
   "+chrome/android/java/src/org/chromium/chrome/browser/share",
   "+chrome/services/qrcode_generator",
   "+components/browser_ui/bottomsheet/android",
+  "+components/browser_ui/device_lock/android",
   "+components/browser_ui/notifications/android",
   "+components/browser_ui/share/android",
   "+components/favicon/android",

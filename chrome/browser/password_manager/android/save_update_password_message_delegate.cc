@@ -376,12 +376,12 @@ void SaveUpdatePasswordMessageDelegate::HandleSaveButtonClicked() {
 }
 
 void SaveUpdatePasswordMessageDelegate::SavePassword() {
-  if (!device_lock_bridge_->ShowDeviceLockUiBeforeSavingPassword()) {
+  if (!device_lock_bridge_->ShouldShowDeviceLockUi()) {
     passwords_state_.form_manager()->Save();
     return;
   }
   if (auto* window = web_contents_->GetNativeView()->GetWindowAndroid()) {
-    device_lock_bridge_->LaunchDeviceLockUiBeforeSavingPassword(
+    device_lock_bridge_->LaunchDeviceLockUiBeforeRunningCallback(
         window,
         base::BindOnce(
             &SaveUpdatePasswordMessageDelegate::SavePasswordAfterDeviceLockUi,
@@ -460,7 +460,7 @@ void SaveUpdatePasswordMessageDelegate::HandleMessageDismissed(
   // If Device Lock UI needs to be shown and can be (i.e. WindowAndroid is
   // available), these lines are handled in the SavePasswordAfterDeviceLockUi()
   // callback.
-  if (!(device_lock_bridge_->ShowDeviceLockUiBeforeSavingPassword() &&
+  if (!(device_lock_bridge_->ShouldShowDeviceLockUi() &&
         web_contents_->GetNativeView()->GetWindowAndroid())) {
     if (dismiss_reason == messages::DismissReason::PRIMARY_ACTION) {
       TryToShowPasswordMigrationWarning(create_migration_warning_callback_,
@@ -511,7 +511,7 @@ void SaveUpdatePasswordMessageDelegate::HandleDialogDismissed(
   // If Device Lock UI needs to be shown and can be (i.e. WindowAndroid is
   // available), these lines are handled in the SavePasswordAfterDeviceLockUi()
   // callback.
-  if (!(device_lock_bridge_->ShowDeviceLockUiBeforeSavingPassword() &&
+  if (!(device_lock_bridge_->ShouldShowDeviceLockUi() &&
         web_contents_->GetNativeView()->GetWindowAndroid())) {
     TryToShowPasswordMigrationWarning(create_migration_warning_callback_,
                                       web_contents_);

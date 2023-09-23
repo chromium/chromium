@@ -23,12 +23,14 @@ import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.ON
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.ON_GO_TO_OS_SETTINGS_CLICKED;
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.ON_USER_UNDERSTANDS_CLICKED;
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.PREEXISTING_DEVICE_LOCK;
+import static org.chromium.components.browser_ui.device_lock.DeviceLockBridge.DEVICE_LOCK_PAGE_HAS_BEEN_PASSED;
 
 import android.accounts.Account;
 import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -46,13 +48,12 @@ import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.AccountReauthenticationUtils;
@@ -156,8 +157,8 @@ public class DeviceLockMediatorUnitTest {
                 ChromeFeatureList.ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW,
                 DeviceLockMediator.ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW_PARAM, "10");
         FeatureList.setTestValues(testValues);
-        SharedPreferencesManager.getInstance().removeKey(
-                ChromePreferenceKeys.DEVICE_LOCK_PAGE_HAS_BEEN_PASSED);
+        SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
+        prefs.edit().remove(DEVICE_LOCK_PAGE_HAS_BEEN_PASSED).apply();
     }
 
     @Test
@@ -418,13 +419,13 @@ public class DeviceLockMediatorUnitTest {
         if (onDeviceLockReadyCalls > 0) {
             assertTrue("Chrome should have recorded as passing the device lock page if the "
                             + "device lock is ready.",
-                    SharedPreferencesManager.getInstance().readBoolean(
-                            ChromePreferenceKeys.DEVICE_LOCK_PAGE_HAS_BEEN_PASSED, false));
+                    ContextUtils.getAppSharedPreferences().getBoolean(
+                            DEVICE_LOCK_PAGE_HAS_BEEN_PASSED, false));
         } else {
             assertFalse("Chrome should not have recorded as passing the device lock page if the "
                             + "device lock is not ready.",
-                    SharedPreferencesManager.getInstance().readBoolean(
-                            ChromePreferenceKeys.DEVICE_LOCK_PAGE_HAS_BEEN_PASSED, false));
+                    ContextUtils.getAppSharedPreferences().getBoolean(
+                            DEVICE_LOCK_PAGE_HAS_BEEN_PASSED, false));
         }
     }
 

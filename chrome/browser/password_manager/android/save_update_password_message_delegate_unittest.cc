@@ -26,6 +26,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/browser_ui/device_lock/android/device_lock_bridge.h"
 #include "components/messages/android/mock_message_dispatcher_bridge.h"
 #include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -36,7 +37,6 @@
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/web_contents_tester.h"
-#include "device_lock_bridge.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -90,13 +90,11 @@ class TestDeviceLockBridge : public DeviceLockBridge {
   TestDeviceLockBridge(const TestDeviceLockBridge&) = delete;
   TestDeviceLockBridge& operator=(const TestDeviceLockBridge&) = delete;
 
-  bool ShowDeviceLockUiBeforeSavingPassword() override {
-    return show_device_lock_ui_before_saving_password_;
-  }
+  bool ShouldShowDeviceLockUi() override { return should_show_device_lock_ui_; }
 
   bool RequiresDeviceLock() override { return requires_device_lock_; }
 
-  void LaunchDeviceLockUiBeforeSavingPassword(
+  void LaunchDeviceLockUiBeforeRunningCallback(
       ui::WindowAndroid* window_android,
       DeviceLockConfirmedCallback callback) override {
     callback_ = std::move(callback);
@@ -107,18 +105,16 @@ class TestDeviceLockBridge : public DeviceLockBridge {
     std::move(callback_).Run(is_device_lock_set);
   }
 
-  void SetShowDeviceLockUiBeforeSavingPassword(
-      bool show_device_lock_ui_before_saving_password) {
-    requires_device_lock_ = show_device_lock_ui_before_saving_password;
-    show_device_lock_ui_before_saving_password_ =
-        show_device_lock_ui_before_saving_password;
+  void SetShouldShowDeviceLockUi(bool should_show_device_lock_ui) {
+    requires_device_lock_ = should_show_device_lock_ui;
+    should_show_device_lock_ui_ = should_show_device_lock_ui;
   }
 
   int device_lock_ui_shown_count() { return device_lock_ui_shown_count_; }
 
  private:
   bool requires_device_lock_ = false;
-  bool show_device_lock_ui_before_saving_password_ = false;
+  bool should_show_device_lock_ui_ = false;
   int device_lock_ui_shown_count_ = 0;
   DeviceLockConfirmedCallback callback_;
 };
@@ -1254,7 +1250,7 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
       ui::WindowAndroid::CreateForTesting();
   window.get()->get()->AddChild(web_contents()->GetNativeView());
 
-  test_bridge()->SetShowDeviceLockUiBeforeSavingPassword(true);
+  test_bridge()->SetShouldShowDeviceLockUi(true);
 
   // Launch save password UI and click the save button.
   auto form_manager =
@@ -1285,7 +1281,7 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
       ui::WindowAndroid::CreateForTesting();
   window.get()->get()->AddChild(web_contents()->GetNativeView());
 
-  test_bridge()->SetShowDeviceLockUiBeforeSavingPassword(true);
+  test_bridge()->SetShouldShowDeviceLockUi(true);
 
   // Launch save password UI and click the save button.
   auto form_manager =
@@ -1316,7 +1312,7 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
       ui::WindowAndroid::CreateForTesting();
   window.get()->get()->AddChild(web_contents()->GetNativeView());
 
-  test_bridge()->SetShowDeviceLockUiBeforeSavingPassword(true);
+  test_bridge()->SetShouldShowDeviceLockUi(true);
 
   // Launch save password UI and click the save button.
   auto form_manager =
@@ -1338,7 +1334,7 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 // not.
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
        SavePassword_DeviceLockUiNotShown) {
-  test_bridge()->SetShowDeviceLockUiBeforeSavingPassword(true);
+  test_bridge()->SetShouldShowDeviceLockUi(true);
 
   // Launch save password UI and click the save button.
   auto form_manager =

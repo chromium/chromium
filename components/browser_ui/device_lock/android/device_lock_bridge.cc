@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/android/device_lock_bridge.h"
+#include "components/browser_ui/device_lock/android/device_lock_bridge.h"
 
 #include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "chrome/android/chrome_jni_headers/DeviceLockBridge_jni.h"
-#include "chrome/browser/password_manager/android/save_update_password_message_delegate.h"
-#include "components/password_manager/core/browser/password_form_manager_for_ui.h"
+#include "components/browser_ui/device_lock/android/device_lock_bridge_jni_headers/DeviceLockBridge_jni.h"
 #include "ui/android/window_android.h"
 
 using base::android::JavaParamRef;
@@ -24,13 +22,13 @@ DeviceLockBridge::~DeviceLockBridge() {
                                            java_object_);
 }
 
-void DeviceLockBridge::LaunchDeviceLockUiBeforeSavingPassword(
+void DeviceLockBridge::LaunchDeviceLockUiBeforeRunningCallback(
     ui::WindowAndroid* window_android,
     DeviceLockConfirmedCallback callback) {
   CHECK(window_android) << "Can be null before creation and during clean-up";
   CHECK(callback);
   device_lock_confirmed_callback_ = std::move(callback);
-  Java_DeviceLockBridge_launchDeviceLockUiBeforeSavingPassword(
+  Java_DeviceLockBridge_launchDeviceLockUiBeforeRunningCallback(
       base::android::AttachCurrentThread(), java_object_,
       window_android->GetJavaObject());
 }
@@ -40,7 +38,7 @@ void DeviceLockBridge::OnDeviceLockUiFinished(JNIEnv* env,
   std::move(device_lock_confirmed_callback_).Run(is_device_lock_set);
 }
 
-bool DeviceLockBridge::ShowDeviceLockUiBeforeSavingPassword() {
+bool DeviceLockBridge::ShouldShowDeviceLockUi() {
   return RequiresDeviceLock() &&
          (!IsDeviceSecure() || !DeviceLockPageHasBeenPassed());
 }
@@ -51,10 +49,10 @@ bool DeviceLockBridge::RequiresDeviceLock() {
 
 bool DeviceLockBridge::IsDeviceSecure() {
   return Java_DeviceLockBridge_isDeviceSecure(
-      base::android::AttachCurrentThread(), java_object_);
+      base::android::AttachCurrentThread());
 }
 
 bool DeviceLockBridge::DeviceLockPageHasBeenPassed() {
   return Java_DeviceLockBridge_deviceLockPageHasBeenPassed(
-      base::android::AttachCurrentThread(), java_object_);
+      base::android::AttachCurrentThread());
 }

@@ -11,10 +11,9 @@ import android.content.Intent;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.ui.device_lock.DeviceLockCoordinator;
-import org.chromium.chrome.browser.ui.signin.DeviceLockActivityLauncher;
+import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
+import org.chromium.components.browser_ui.device_lock.DeviceLockBridge;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -87,11 +86,9 @@ public class DeviceLockActivityLauncherImpl implements DeviceLockActivityLaunche
     }
 
     private static boolean shouldShowDeviceLockPage(Context context) {
-        boolean deviceLockPageHasBeenPassed = SharedPreferencesManager.getInstance().readBoolean(
-                ChromePreferenceKeys.DEVICE_LOCK_PAGE_HAS_BEEN_PASSED, false);
         boolean deviceLockIsPresent =
                 ((KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE))
                         .isDeviceSecure();
-        return !deviceLockPageHasBeenPassed || !deviceLockIsPresent;
+        return !DeviceLockBridge.deviceLockPageHasBeenPassed() || !deviceLockIsPresent;
     }
 }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ui.signin;
+package org.chromium.components.browser_ui.device_lock;
 
 import android.content.Context;
 

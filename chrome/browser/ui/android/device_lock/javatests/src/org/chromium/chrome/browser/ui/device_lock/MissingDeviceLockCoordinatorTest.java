@@ -8,7 +8,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.components.browser_ui.device_lock.DeviceLockBridge.DEVICE_LOCK_PAGE_HAS_BEEN_PASSED;
+
 import android.app.Activity;
+import android.content.SharedPreferences;
 
 import androidx.test.filters.SmallTest;
 
@@ -23,11 +26,10 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -92,8 +94,8 @@ public class MissingDeviceLockCoordinatorTest {
     @Test
     @SmallTest
     public void testMissingDeviceLockCoordinator_continueWithoutDeviceLock() {
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.DEVICE_LOCK_PAGE_HAS_BEEN_PASSED, true);
+        SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
+        prefs.edit().putBoolean(DEVICE_LOCK_PAGE_HAS_BEEN_PASSED, true).apply();
 
         MissingDeviceLockCoordinator missingDeviceLockCoordinator =
                 new MissingDeviceLockCoordinator(
@@ -107,7 +109,6 @@ public class MissingDeviceLockCoordinatorTest {
                 mOnContinueWithoutDeviceLockCalledWith.get());
         assertFalse("DEVICE_LOCK_PAGE_HAS_BEEN_PASSED should have been removed from the "
                         + "SharedPreferencesManager keys.",
-                SharedPreferencesManager.getInstance().contains(
-                        ChromePreferenceKeys.DEVICE_LOCK_PAGE_HAS_BEEN_PASSED));
+                prefs.contains(DEVICE_LOCK_PAGE_HAS_BEEN_PASSED));
     }
 }

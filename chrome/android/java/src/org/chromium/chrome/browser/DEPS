@@ -10,6 +10,7 @@ include_rules = [
   "+chrome/browser/ui/android/theme",
   "+chrome/browser/ui/android/toolbar",
   "+third_party/blink/public/mojom:mojom_platform_java",
+  "+components/browser_ui/device_lock/android",
 ]
 
 specific_include_rules = {

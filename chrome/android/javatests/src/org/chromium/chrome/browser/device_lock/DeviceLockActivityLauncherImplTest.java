@@ -16,10 +16,13 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.components.browser_ui.device_lock.DeviceLockBridge.DEVICE_LOCK_PAGE_HAS_BEEN_PASSED;
+
 import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 
 import androidx.test.filters.MediumTest;
 
@@ -33,10 +36,9 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -71,8 +73,8 @@ public class DeviceLockActivityLauncherImplTest {
         mReauthenticatorBridge = Mockito.mock(ReauthenticatorBridge.class);
 
         mCallbackCalled.set(false);
-        SharedPreferencesManager.getInstance().removeKey(
-                ChromePreferenceKeys.DEVICE_LOCK_PAGE_HAS_BEEN_PASSED);
+        SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
+        prefs.edit().remove(DEVICE_LOCK_PAGE_HAS_BEEN_PASSED).apply();
         ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorBridge);
 
         doReturn(mKeyguardManager).when(mContext).getSystemService(eq(Context.KEYGUARD_SERVICE));
@@ -106,8 +108,8 @@ public class DeviceLockActivityLauncherImplTest {
     @MediumTest
     public void
     testEnsureDeviceLockSecureForSignedOutFlow_launchesDeviceLockActivity_callbackCalled() {
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.DEVICE_LOCK_PAGE_HAS_BEEN_PASSED, false);
+        SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
+        prefs.edit().putBoolean(DEVICE_LOCK_PAGE_HAS_BEEN_PASSED, false).apply();
 
         doAnswer((invocation) -> {
             Intent intent = invocation.getArgument(0);
@@ -132,8 +134,8 @@ public class DeviceLockActivityLauncherImplTest {
     @MediumTest
     public void
     testEnsureDeviceLockSecureForSignedOutFlow_launchesDeviceLockActivity_callbackNotCalled() {
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.DEVICE_LOCK_PAGE_HAS_BEEN_PASSED, false);
+        SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
+        prefs.edit().putBoolean(DEVICE_LOCK_PAGE_HAS_BEEN_PASSED, false).apply();
 
         doAnswer((invocation) -> {
             Intent intent = invocation.getArgument(0);
@@ -159,8 +161,8 @@ public class DeviceLockActivityLauncherImplTest {
     @MediumTest
     public void
     testEnsureDeviceLockSecureForSignedOutFlow_reauthenticationChallenge_authSucceeded() {
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.DEVICE_LOCK_PAGE_HAS_BEEN_PASSED, true);
+        SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
+        prefs.edit().putBoolean(DEVICE_LOCK_PAGE_HAS_BEEN_PASSED, true).apply();
         doReturn(mKeyguardManager).when(mContext).getSystemService(eq(Context.KEYGUARD_SERVICE));
         doReturn(true).when(mKeyguardManager).isDeviceSecure();
 
@@ -183,8 +185,8 @@ public class DeviceLockActivityLauncherImplTest {
     @Test
     @MediumTest
     public void testEnsureDeviceLockSecureForSignedOutFlow_reauthenticationChallenge_authFailed() {
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.DEVICE_LOCK_PAGE_HAS_BEEN_PASSED, true);
+        SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
+        prefs.edit().putBoolean(DEVICE_LOCK_PAGE_HAS_BEEN_PASSED, true).apply();
         doReturn(mKeyguardManager).when(mContext).getSystemService(eq(Context.KEYGUARD_SERVICE));
         doReturn(true).when(mKeyguardManager).isDeviceSecure();
 
