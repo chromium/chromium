@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view_list_item.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/ui_utils.h"
 #include "chrome/grit/component_extension_resources.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -38,8 +39,6 @@ namespace {
 
 constexpr int kMainContainerWidth = 296;
 
-// Default offset when the attached widget inside of the game window.
-constexpr int kWidgetOffsetInside = 24;
 constexpr int kInsideBorderInsets = 16;
 constexpr int kHeaderBottomMargin = 16;
 // This is associated to the size of `ash::IconButton::Type::kMedium`.
@@ -63,10 +62,6 @@ void EditingList::UpdateWidget() {
   auto* widget = GetWidget();
   DCHECK(widget);
 
-  scroll_view_->ClipHeightTo(
-      /*min_height=*/0,
-      /*max_height=*/controller_->touch_injector()->content_bounds().height() -
-          2 * kInsideBorderInsets - kHeaderBottomMargin - kIconButtonSize);
   controller_->UpdateWidgetBoundsInRootWindow(
       widget, gfx::Rect(GetWidgetMagneticPositionLocal(), GetPreferredSize()));
 }
@@ -133,9 +128,6 @@ void EditingList::Init() {
   scroll_view_ =
       main_container->AddChildView(std::make_unique<views::ScrollView>());
   scroll_view_->SetBackgroundColor(absl::nullopt);
-  scroll_view_->ClipHeightTo(
-      0, controller_->touch_injector()->content_bounds().height() -
-             2 * kInsideBorderInsets - kHeaderBottomMargin - kIconButtonSize);
   scroll_content_ = scroll_view_->SetContents(std::make_unique<views::View>());
   scroll_content_
       ->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -293,8 +285,8 @@ gfx::Point EditingList::GetWidgetMagneticPositionLocal() {
 
   const auto width = GetPreferredSize().width();
   const auto anchor_bounds = controller_->touch_injector()->content_bounds();
-  const auto root_window_bounds =
-      controller_->touch_injector()->window()->GetRootWindow()->bounds();
+  const auto available_bounds = CalculateAvailableBounds(
+      controller_->touch_injector()->window()->GetRootWindow());
 
   // Check if there is space on left and right side outside of the sibling game
   // window.
@@ -302,7 +294,7 @@ gfx::Point EditingList::GetWidgetMagneticPositionLocal() {
       anchor_bounds.x() - width - kEditingListSpaceBetweenMainWindow >= 0;
   bool has_space_on_right =
       anchor_bounds.right() + width + kEditingListSpaceBetweenMainWindow <
-      root_window_bounds.width();
+      available_bounds.width();
 
   // Check if the attached widget should be inside or outside of the attached
   // sibling game window.
@@ -327,19 +319,35 @@ gfx::Point EditingList::GetWidgetMagneticPositionLocal() {
     window_origin.SetPoint(
         should_be_outside
             ? anchor_bounds.x() - width - kEditingListSpaceBetweenMainWindow
-            : anchor_bounds.x() + kWidgetOffsetInside,
-        should_be_outside ? window_origin.y()
-                          : window_origin.y() + kWidgetOffsetInside);
+            : anchor_bounds.x() + kEditingListOffsetInsideMainWindow,
+        should_be_outside
+            ? window_origin.y()
+            : window_origin.y() + kEditingListOffsetInsideMainWindow);
   } else {
     window_origin.SetPoint(
         should_be_outside
             ? anchor_bounds.right() + kEditingListSpaceBetweenMainWindow
-            : anchor_bounds.right() - width - kWidgetOffsetInside,
-        should_be_outside ? window_origin.y()
-                          : window_origin.y() + kWidgetOffsetInside);
+            : anchor_bounds.right() - width -
+                  kEditingListOffsetInsideMainWindow,
+        should_be_outside
+            ? window_origin.y()
+            : window_origin.y() + kEditingListOffsetInsideMainWindow);
   }
 
+  ClipScrollViewHeight(should_be_outside);
+
   return window_origin;
+}
+
+void EditingList::ClipScrollViewHeight(bool is_outside) {
+  int max_height = controller_->touch_injector()->content_bounds().height() -
+                   2 * kInsideBorderInsets - kHeaderBottomMargin -
+                   kIconButtonSize;
+  if (!is_outside) {
+    max_height -= kEditingListOffsetInsideMainWindow;
+  }
+
+  scroll_view_->ClipHeightTo(/*min_height=*/0, /*max_height=*/max_height);
 }
 
 gfx::Size EditingList::CalculatePreferredSize() const {
@@ -405,6 +413,7 @@ void EditingList::OnActionTypeChanged(Action* action, Action* new_action) {
       scroll_content_->RemoveChildViewT(list_item);
       scroll_content_->AddChildViewAt(
           std::make_unique<ActionViewListItem>(controller_, new_action), i);
+      scroll_view_->InvalidateLayout();
       break;
     }
   }

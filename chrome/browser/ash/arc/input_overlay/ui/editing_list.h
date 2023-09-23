@@ -80,6 +80,10 @@ class EditingList : public views::View, public TouchInjectorObserver {
   // outside of the attached sibling game window inside or outside.
   gfx::Point GetWidgetMagneticPositionLocal();
 
+  // Clips the height of `scroll_view_` based on it is located inside or outside
+  // of the game window.
+  void ClipScrollViewHeight(bool is_outside);
+
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
   void VisibilityChanged(View* starting_from, bool is_visible) override;

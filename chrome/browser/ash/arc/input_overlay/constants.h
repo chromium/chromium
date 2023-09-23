@@ -40,7 +40,10 @@ constexpr int kOffsetToTouchPoint = -1;  // 2 - 3(kDotOutsideStrokeThickness)
 
 // The space between EditingList and main window when EditingList is outside of
 // the game window.
-static constexpr int kEditingListSpaceBetweenMainWindow = 5;
+constexpr int kEditingListSpaceBetweenMainWindow = 5;
+// The offset from the game window content when EditingList is inside of the
+// game window.
+constexpr int kEditingListOffsetInsideMainWindow = 24;
 
 // Display mode for display overlay.
 enum class DisplayMode {

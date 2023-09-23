@@ -338,6 +338,12 @@ TEST_F(EditingListTest, TestScrollView) {
   EXPECT_EQ(window_content_height + 50,
             touch_injector_->content_bounds().height());
   EXPECT_EQ(window_content_height + 50, list_window->bounds().height());
+
+  // Make the game window bounds larger so EditingList will be placed inside.
+  widget_->GetNativeWindow()->SetBounds(gfx::Rect(100, 300, 800, 400));
+  window_content_height = touch_injector_->content_bounds().height();
+  EXPECT_EQ(window_content_height, list_window->bounds().height() +
+                                       kEditingListOffsetInsideMainWindow);
 }
 
 }  // namespace arc::input_overlay
