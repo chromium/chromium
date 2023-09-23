@@ -136,13 +136,13 @@
   </message>
   <if expr="is_linux">
     <then>
-      <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD" desc="Title text for the Autofill save card prompt when the card is to be saved by uploading it to Google Payments and also saved locally. The prompt can be either a bubble or an infobar.">
-        Do you want to save this card to your Google Account?
+      <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD" desc="Title text for the Autofill save card prompt when the card is to be saved by uploading it to Google Payments and also saved locally. The prompt is a bubble.">
+        Do you want to save this card in your Google Account?
       </message>
     </then>
     <else>
-      <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD" desc="Title text for the Autofill save card prompt when the card is to be saved by uploading it to Google Payments and also saved locally. The prompt can be either a bubble or an infobar.">
-        Do you want to save this card to your Google Account and on this device?
+      <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD" desc="Title text for the Autofill save card prompt when the card is to be saved by uploading it to Google Payments and also saved locally. The prompt can be either a bubble, a bottom sheet, or an infobar.">
+        Do you want to save this card in your Google Account and on this device?
       </message>
     </else>
   </if>
@@ -196,8 +196,8 @@
   <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION" desc="Explanation of the effect of the Autofill save card prompt when the card is to be saved by uploading it to Google Payments and also saved locally. The prompt can be either a bubble or an infobar.">
     Pay quickly on sites and apps across devices using cards you have saved with Google.
   </message>
-  <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V3" desc="Explanation of the effect of the Autofill save card prompt when the card is to be saved by uploading it to Google Payments, according to April 2018 UI guidelines. The prompt will be shown in a bubble below the omnibox.">
-    To pay faster next time, save your card and billing address to your Google Account.
+  <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V3" desc="Explanation of the effect of the Autofill save card prompt when the card is to be saved by uploading it to Google Payments, according to April 2018 UI guidelines, and minorly updated again in September 2023. The prompt will be shown either in a bubble below the omnibox, or in a bottom sheet, or in an infobar.">
+    To pay faster next time, save your card and billing address in your Google Account
   </message>
   <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_EXPERIMENT_ENCRYPTED_AND_SECURE" desc="Explanation of the effect of the Autofill save card prompt when the card is to be saved by uploading it to Google Payments. The prompt will be shown in a bubble below the omnibox. This is an experiment text and may change in the future.">
     It’ll be encrypted, saved securely and the CVC is never stored.
@@ -205,8 +205,8 @@
   <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_EXPERIMENT_FASTER_AND_PROTECTED" desc="Explanation of the effect of the Autofill save card prompt when the card is to be saved by uploading it to Google Payments. The prompt will be shown in a bubble below the omnibox. This is an experiment text and may change in the future.">
     Pay faster next time and protect your card with Google’s industry-leading security.
   </message>
-  <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V3_WITH_NAME" desc="Explanation of the effect of the Autofill save card prompt when the card is to be saved by uploading it to Google Payments, according to April 2018 UI guidelines. The prompt will be shown in a bubble below the omnibox.">
-    To pay faster next time, save your card, name, and billing address to your Google Account.
+  <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V3_WITH_NAME" desc="Explanation of the effect of the Autofill save card prompt when the card is to be saved by uploading it to Google Payments, according to April 2018 UI guidelines, and minorly updated again in September 2023. The prompt will be shown either in a bubble below the omnibox, or in a bottom sheet, or in an infobar.">
+    To pay faster next time, save your card, name, and billing address in your Google Account
   </message>
   <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V4" desc="Explanation of the effect of the Autofill save card prompt when the card is to be saved by uploading it to Google Payments, based on the results for the Save Card UI experiment. The prompt will be shown in a bubble below the omnibox.">
     Pay faster next time and protect your card with Google’s industry-leading security.
