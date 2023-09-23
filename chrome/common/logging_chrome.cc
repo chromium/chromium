@@ -56,7 +56,8 @@
 #include "ipc/ipc_logging.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "base/strings/stringprintf.h"
+#include "base/i18n/time_formatting.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -553,12 +554,9 @@ bool DialogsAreSuppressed() {
 #if BUILDFLAG(IS_CHROMEOS)
 base::FilePath GenerateTimestampedName(const base::FilePath& base_path,
                                        base::Time timestamp) {
-  base::Time::Exploded time_deets;
-  timestamp.UTCExplode(&time_deets);
-  return base_path.InsertBeforeExtensionASCII(base::StringPrintf(
-      "_%02d%02d%02d-%02d%02d%02d", time_deets.year, time_deets.month,
-      time_deets.day_of_month, time_deets.hour, time_deets.minute,
-      time_deets.second));
+  return base_path.InsertBeforeExtensionASCII(
+      base::UnlocalizedTimeFormatWithPattern(timestamp, "_yyMMdd-HHmmss",
+                                             icu::TimeZone::getGMT()));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

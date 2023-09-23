@@ -47,6 +47,7 @@ source_set("lib") {
 
   deps = [
     "//base",
+    "//base:i18n",
     "//chrome/installer/launcher_support",
     "//chrome/installer/util:constants",
     "//google_update",

@@ -60,7 +60,7 @@ const size_t kDeleteRetryDelayInMs = 100;
          hr == HRESULT_FROM_WIN32(ERROR_PATH_NOT_FOUND);
 }
 
-// Return |timestamp| in the following string format YYYY-MM-DDTHH:MM:SS.
+// Returns |timestamp| in the format YYYY-MM-DDTHH:MM:SS.
 std::wstring GetTimestampString(const base::Time& timestamp) {
   // This intentionally avoids depending on the facilities in
   // base/i18n/time_formatting.h so the updater will not need to depend on the
