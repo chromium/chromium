@@ -6895,7 +6895,7 @@ static_library("browser") {
         "//chromeos/crosapi/mojom",
       ]
     }
-    if (is_linux || is_chromeos) {
+    if (is_linux) {
       sources += [ "printing/printer_manager_dialog_linux.cc" ]
     }
     if (is_fuchsia) {
