@@ -14,23 +14,63 @@ namespace {
 int kNextTabID = 1;
 }  // namespace
 
-TabData::TabData(TabID id,
-                 TabStripModel* model,
-                 GURL url,
-                 absl::optional<int> index)
-    : tab_id_(id),
-      original_tab_strip_model_(model),
-      original_url_(url),
-      original_index_(index) {}
-
-TabData::TabData(TabStripModel* model, content::WebContents* web_contents) {
+TabData::TabData(TabStripModel* model, content::WebContents* web_contents)
+    : tab_id_(kNextTabID),
+      web_contents_(web_contents),
+      original_url_(web_contents->GetLastCommittedURL()) {
   CHECK(model);
   CHECK(web_contents);
 
-  this->tab_id_ = kNextTabID;
   kNextTabID++;
 
-  this->original_tab_strip_model_ = model;
-  this->original_index_ = model->GetIndexOfWebContents(web_contents);
-  this->original_url_ = web_contents->GetLastCommittedURL();
+  original_tab_strip_model_ = model;
+  model->AddObserver(this);
+}
+
+TabData::~TabData() {
+  if (original_tab_strip_model_) {
+    original_tab_strip_model_->RemoveObserver(this);
+  }
+}
+
+void TabData::OnTabStripModelDestroyed(TabStripModel* tab_strip_model) {
+  if (original_tab_strip_model_ == tab_strip_model) {
+    original_tab_strip_model_ = nullptr;
+    web_contents_ = nullptr;
+  }
+}
+
+void TabData::OnTabStripModelChanged(TabStripModel* tab_strip_model,
+                                     const TabStripModelChange& change,
+                                     const TabStripSelectionChange& selection) {
+  // If the webcontents has already been destroyed, then further updates dont
+  // matter.
+  if (web_contents_ == nullptr) {
+    return;
+  }
+
+  switch (change.type()) {
+    // For replaced webcontents, just replace the underlying webcontents.
+    case TabStripModelChange::Type::kReplaced: {
+      const TabStripModelChange::Replace* replace = change.GetReplace();
+      if (replace->old_contents == web_contents_) {
+        web_contents_ = replace->new_contents;
+      }
+      return;
+    }
+    // If the tab is removed, then delete the webcontents, and mark as invalid.
+    case TabStripModelChange::Type::kRemoved: {
+      const TabStripModelChange::Remove* remove = change.GetRemove();
+      for (const TabStripModelChange::RemovedTab& removed_tab :
+           remove->contents) {
+        if (removed_tab.contents == web_contents_) {
+          web_contents_ = nullptr;
+        }
+      }
+      return;
+    }
+    default: {
+      return;
+    }
+  }
 }

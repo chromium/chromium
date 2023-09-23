@@ -11,11 +11,11 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 TabOrganization::TabOrganization(
-    std::vector<TabData> tab_datas,
+    TabDatas tab_datas,
     std::vector<std::u16string> names,
     absl::variant<size_t, std::u16string> current_name,
     absl::optional<UserChoice> choice)
-    : tab_datas_(tab_datas),
+    : tab_datas_(std::move(tab_datas)),
       names_(names),
       current_name_(current_name),
       choice_(choice) {}
@@ -34,16 +34,17 @@ const std::u16string TabOrganization::GetDisplayName() const {
 }
 
 // TODO(1469128) Add UKM/UMA Logging on user add.
-void TabOrganization::AddTabData(TabData tab_data) {
-  tab_datas_.emplace_back(tab_data);
+void TabOrganization::AddTabData(std::unique_ptr<TabData> tab_data) {
+  tab_datas_.emplace_back(std::move(tab_data));
 }
 
 // TODO(1469128) Add UKM/UMA Logging on user remove.
 void TabOrganization::RemoveTabData(TabData::TabID tab_id) {
-  std::vector<TabData>::iterator position = std::find_if(
-      tab_datas_.begin(), tab_datas_.end(), [tab_id](const TabData& tab_data) {
-        return tab_data.tab_id() == tab_id;
-      });
+  TabDatas::iterator position =
+      std::find_if(tab_datas_.begin(), tab_datas_.end(),
+                   [tab_id](const std::unique_ptr<TabData>& tab_data) {
+                     return tab_data->tab_id() == tab_id;
+                   });
   CHECK(position != tab_datas_.end());
   tab_datas_.erase(position);
 }

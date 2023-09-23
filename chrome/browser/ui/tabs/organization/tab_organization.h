@@ -14,12 +14,14 @@
 
 class TabOrganization {
  public:
+  using TabDatas = std::vector<std::unique_ptr<TabData>>;
+
   enum class UserChoice {
     ACCEPTED,
     REJECTED,
   };
 
-  TabOrganization(std::vector<TabData> tab_datas,
+  TabOrganization(TabDatas tab_datas,
                   std::vector<std::u16string> names,
                   absl::variant<size_t, std::u16string> current_name,
                   absl::optional<UserChoice> choice);
@@ -27,7 +29,7 @@ class TabOrganization {
   TabOrganization& operator=(const TabOrganization& other) = default;
   ~TabOrganization();
 
-  const std::vector<TabData>& tab_datas() const { return tab_datas_; }
+  const TabDatas& tab_datas() const { return tab_datas_; }
   const std::vector<std::u16string>& names() const { return names_; }
   const absl::variant<size_t, std::u16string>& current_name() const {
     return current_name_;
@@ -35,14 +37,14 @@ class TabOrganization {
   const absl::optional<UserChoice> choice() const { return choice_; }
   const std::u16string GetDisplayName() const;
 
-  void AddTabData(TabData tab_data);
+  void AddTabData(std::unique_ptr<TabData> tab_data);
   void RemoveTabData(TabData::TabID id);
   void SetCurrentName(absl::variant<size_t, std::u16string> new_current_name);
   void Accept();
   void Reject();
 
  private:
-  std::vector<TabData> tab_datas_;
+  TabDatas tab_datas_;
   std::vector<std::u16string> names_;
   absl::variant<size_t, std::u16string> current_name_;
   absl::optional<UserChoice> choice_;

@@ -26,8 +26,7 @@ TabOrganizationResponse::~TabOrganizationResponse() = default;
 TabOrganizationRequest::TabOrganizationRequest(
     BackendStartRequest backend_start_request_lambda,
     BackendCancelRequest backend_cancel_request_lambda)
-    : tab_datas_({}),
-      backend_start_request_lambda_(std::move(backend_start_request_lambda)),
+    : backend_start_request_lambda_(std::move(backend_start_request_lambda)),
       backend_cancel_request_lambda_(std::move(backend_cancel_request_lambda)) {
 }
 

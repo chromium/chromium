@@ -48,7 +48,9 @@ class TabOrganizationRequest {
   ~TabOrganizationRequest();
 
   State state() const { return state_; }
-  const std::vector<TabData>& tab_datas() const { return tab_datas_; }
+  const std::vector<std::unique_ptr<TabData>>& tab_datas() const {
+    return tab_datas_;
+  }
   const absl::optional<TabData::TabID> base_tab_id() const {
     return base_tab_id_;
   }
@@ -67,7 +69,7 @@ class TabOrganizationRequest {
   void CompleteRequest(std::unique_ptr<TabOrganizationResponse> response);
 
   State state_ = State::NOT_STARTED;
-  std::vector<TabData> tab_datas_;
+  std::vector<std::unique_ptr<TabData>> tab_datas_;
   absl::optional<TabData::TabID> base_tab_id_ = absl::nullopt;
   std::unique_ptr<TabOrganizationResponse> response_;
   OnResponseCallback response_callback_;

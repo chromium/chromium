@@ -8,7 +8,6 @@
 
 #include "base/containers/contains.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
-#include "tab_organization_service.h"
 
 TabOrganizationService::TabOrganizationService() = default;
 TabOrganizationService::~TabOrganizationService() = default;

@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_request.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/test/base/testing_profile.h"
@@ -47,11 +48,14 @@ class TabOrganizationTest : public testing::Test {
                                                              nullptr);
   }
 
-  content::WebContents* AddTab() {
+  content::WebContents* AddTab(TabStripModel* tab_strip_model = nullptr) {
     std::unique_ptr<content::WebContents> contents_unique_ptr =
         CreateWebContents();
     content::WebContents* content_ptr = contents_unique_ptr.get();
-    tab_strip_model()->AppendWebContents(std::move(contents_unique_ptr), true);
+    if (!tab_strip_model) {
+      tab_strip_model = tab_strip_model_.get();
+    }
+    tab_strip_model->AppendWebContents(std::move(contents_unique_ptr), true);
 
     return content_ptr;
   }
@@ -65,6 +69,8 @@ class TabOrganizationTest : public testing::Test {
   const std::unique_ptr<TabStripModel> tab_strip_model_;
 };
 
+// TabData tests.
+
 // The constructor that takes the webcontents and tabstrip model should
 // instantiate correctly.
 TEST_F(TabOrganizationTest, TabDataTabStripModelConstructor) {
@@ -72,41 +78,81 @@ TEST_F(TabOrganizationTest, TabDataTabStripModelConstructor) {
   TabData tab_data(tab_strip_model(), web_contents);
   EXPECT_EQ(tab_strip_model(), tab_data.original_tab_strip_model());
   EXPECT_EQ(web_contents->GetLastCommittedURL(), tab_data.original_url());
-  EXPECT_EQ(tab_strip_model()->GetIndexOfWebContents(web_contents),
-            tab_data.original_index());
 
   // TODO(1476012) Add a check for TabID once TabStripModel::Tab has the new
   // handle.
 }
 
 // Check that TabData isn't updated when the tabstrip updates.
-TEST_F(TabOrganizationTest, TabDataTabStripTabUpdatingDoesntUpdateTabData) {
+TEST_F(TabOrganizationTest, TabDataTabStripTabUpdatingURL) {
   content::WebContents* web_contents = AddTab();
   GURL old_gurl = GURL("chrome://page_1");
   content::WebContentsTester::For(web_contents)->NavigateAndCommit(old_gurl);
 
-  TabData tab_data(tab_strip_model(), web_contents);
+  std::unique_ptr<TabData> tab_data =
+      std::make_unique<TabData>(tab_strip_model(), web_contents);
 
   // When updating tab URL, the TabData shouldn't update.
   content::WebContentsTester::For(web_contents)
       ->NavigateAndCommit(GURL("chrome://page_2"));
-  EXPECT_NE(tab_data.original_url(), web_contents->GetLastCommittedURL());
-
-  // Add an extra tab so that there's room to move.
-  int current_index = tab_strip_model()->GetIndexOfWebContents(web_contents);
-  AddTab();
-  tab_strip_model()->MoveWebContentsAt(current_index, current_index + 1, false);
-  EXPECT_EQ(tab_data.original_index(), current_index);
-  EXPECT_NE(tab_data.original_index(),
-            tab_strip_model()->GetIndexOfWebContents(web_contents));
+  EXPECT_NE(tab_data->original_url(), web_contents->GetLastCommittedURL());
 }
+
+TEST_F(TabOrganizationTest, TabDataOnTabStripModelDestroyed) {
+  // Create a destroyable tabstripmodel.
+  std::unique_ptr<TabStripModel> new_tab_strip_model =
+      std::make_unique<TabStripModel>(delegate(), profile());
+
+  // Create a tab data that should be listening to the tabstrip model.
+  std::unique_ptr<TabData> tab_data = std::make_unique<TabData>(
+      new_tab_strip_model.get(), AddTab(new_tab_strip_model.get()));
+
+  // destroy the tabstripmodel. expect that the original tab strip model is
+  // nullptr.
+  EXPECT_EQ(tab_data->original_tab_strip_model(), new_tab_strip_model.get());
+  new_tab_strip_model.reset();
+  EXPECT_EQ(tab_data->original_tab_strip_model(), nullptr);
+}
+
+TEST_F(TabOrganizationTest, TabDataOnDestroyWebContentsSetToNull) {
+  content::WebContents* web_contents = AddTab();
+  GURL old_gurl = GURL("chrome://page_1");
+  content::WebContentsTester::For(web_contents)->NavigateAndCommit(old_gurl);
+
+  std::unique_ptr<TabData> tab_data =
+      std::make_unique<TabData>(tab_strip_model(), web_contents);
+
+  tab_strip_model()->CloseWebContentsAt(
+      tab_strip_model()->GetIndexOfWebContents(web_contents),
+      TabCloseTypes::CLOSE_NONE);
+  EXPECT_EQ(tab_data->web_contents(), nullptr);
+}
+
+TEST_F(TabOrganizationTest, TabDataOnDestroyWebContentsReplaceUpdatesContents) {
+  content::WebContents* old_contents = AddTab();
+  GURL old_gurl = GURL("chrome://page_1");
+  content::WebContentsTester::For(old_contents)->NavigateAndCommit(old_gurl);
+
+  std::unique_ptr<TabData> tab_data =
+      std::make_unique<TabData>(tab_strip_model(), old_contents);
+
+  std::unique_ptr<content::WebContents> new_contents = CreateWebContents();
+  content::WebContents* new_contents_ptr = new_contents.get();
+  EXPECT_EQ(tab_data->web_contents(), old_contents);
+  tab_strip_model()->ReplaceWebContentsAt(
+      tab_strip_model()->GetIndexOfWebContents(old_contents),
+      std::move(new_contents));
+  EXPECT_EQ(tab_data->web_contents(), new_contents_ptr);
+}
+
+// TabOrganization tests.
 
 TEST_F(TabOrganizationTest, TabOrganizationAddingTabData) {
   TabOrganization organization({}, {u"default_name"}, 0, absl::nullopt);
   EXPECT_EQ(static_cast<int>(organization.tab_datas().size()), 0);
-
   content::WebContents* web_contents = AddTab();
-  TabData tab_data(tab_strip_model(), web_contents);
+  std::unique_ptr<TabData> tab_data =
+      std::make_unique<TabData>(tab_strip_model(), web_contents);
 
   organization.AddTabData(std::move(tab_data));
   EXPECT_EQ(static_cast<int>(organization.tab_datas().size()), 1);
@@ -115,8 +161,9 @@ TEST_F(TabOrganizationTest, TabOrganizationAddingTabData) {
 TEST_F(TabOrganizationTest, TabOrganizationRemovingTabData) {
   TabOrganization organization({}, {u"default_name"}, 0, absl::nullopt);
   content::WebContents* web_contents = AddTab();
-  TabData tab_data(tab_strip_model(), web_contents);
-  TabData::TabID tab_data_id = tab_data.tab_id();
+  std::unique_ptr<TabData> tab_data =
+      std::make_unique<TabData>(tab_strip_model(), web_contents);
+  TabData::TabID tab_data_id = tab_data->tab_id();
   organization.AddTabData(std::move(tab_data));
   EXPECT_EQ(static_cast<int>(organization.tab_datas().size()), 1);
 
