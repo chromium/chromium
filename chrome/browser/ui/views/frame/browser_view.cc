@@ -3709,6 +3709,14 @@ views::View* BrowserView::CreateMacOverlayView() {
     params.parent = parent->GetNativeView();
     params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
     OverlayWidget* overlay_widget = new OverlayWidget(GetWidget());
+
+    // When the overlay is used some Views are moved to the overlay_widget. When
+    // this happens we want the fullscreen state of the overlay_widget to match
+    // that of BrowserView's Widget. Without this, some views would not think
+    // they are in a fullscreen Widget, when we want them to behave as though
+    // they are in a fullscreen Widget.
+    overlay_widget->SetCheckParentForFullscreen();
+
     overlay_widget->Init(std::move(params));
     overlay_widget->SetNativeWindowProperty(kBrowserViewKey, this);
 

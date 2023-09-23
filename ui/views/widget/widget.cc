@@ -947,7 +947,15 @@ void Widget::SetFullscreen(bool fullscreen, int64_t target_display_id) {
 }
 
 bool Widget::IsFullscreen() const {
-  return native_widget_ ? native_widget_->IsFullscreen() : false;
+  if (native_widget_ && native_widget_->IsFullscreen()) {
+    return true;
+  }
+  // Some widgets are logically the same window as their parent, and thus their
+  // parent must also be checked for fullscreen.
+  if (parent() && check_parent_for_fullscreen_) {
+    return parent()->IsFullscreen();
+  }
+  return false;
 }
 
 void Widget::SetCanAppearInExistingFullscreenSpaces(
@@ -2018,6 +2026,10 @@ const ui::ColorProvider* Widget::GetColorProvider() const {
 
 ui::ColorProviderKey Widget::GetColorProviderKeyForTesting() const {
   return GetColorProviderKey();
+}
+
+void Widget::SetCheckParentForFullscreen() {
+  check_parent_for_fullscreen_ = true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

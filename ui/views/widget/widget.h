@@ -1167,6 +1167,10 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   ui::ColorProviderKey GetColorProviderKeyForTesting() const;
 
+  // Causes IsFullscreen() to also check parent state, since this widget is
+  // logically part of the same window as the parent.
+  void SetCheckParentForFullscreen();
+
  protected:
   // Creates the RootView to be used within this Widget. Subclasses may override
   // to create custom RootViews that do specialized event processing.
@@ -1432,6 +1436,12 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // `native_theme_`. This is necessary during testing as theme updates may
   // trigger a reset of the explicitly set test theme.
   bool native_theme_set_for_testing_ = false;
+
+  // By default, widgets are assumed to correspond to windows. If a parent
+  // widget is fullscreen, then the child widget is a popup which is not
+  // fullscreen. However, on macOS some child widgets logically correspond to
+  // the same window. Their fullscreen state should inherit from their parents.
+  bool check_parent_for_fullscreen_ = false;
 
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
       native_theme_observation_{this};
