@@ -34,6 +34,7 @@ extern const base::FeatureParam<int> kChromeLabsActivationPercentage;
 BASE_DECLARE_FEATURE(kChromeWhatsNewUI);
 
 BASE_DECLARE_FEATURE(kExtensionsMenuInAppMenu);
+bool IsExtensionMenuInRootAppMenu();
 
 #if !defined(ANDROID)
 BASE_DECLARE_FEATURE(kAccessCodeCastUI);

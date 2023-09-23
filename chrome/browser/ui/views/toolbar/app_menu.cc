@@ -1140,8 +1140,7 @@ bool AppMenu::IsCommandEnabled(int command_id) const {
     return true;
   }
 
-  if ((base::FeatureList::IsEnabled(features::kExtensionsMenuInAppMenu) ||
-       features::IsChromeRefresh2023()) &&
+  if (features::IsExtensionMenuInRootAppMenu() &&
       command_id == IDC_EXTENSIONS_SUBMENU) {
     return true;
   }

@@ -149,12 +149,14 @@ class ExtensionsMenuModelPresenceTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     ExtensionsMenuModelPresenceTest,
-    /* features::kNewExtensionsTopLevelMenu status */ testing::Bool());
+    testing::Bool(),
+    [](const testing::TestParamInfo<ExtensionsMenuModelPresenceTest::ParamType>&
+           info) { return info.param ? "InRootAppMenu" : "NotInRootAppMenu"; });
 
 // Test to confirm that the structure of the Extensions menu is present but that
 // no histograms are logged since it isn't interacted with.
 IN_PROC_BROWSER_TEST_P(ExtensionsMenuModelPresenceTest, MenuPresence) {
-  if (GetParam()) {  // Menu enabled
+  if (features::IsExtensionMenuInRootAppMenu()) {  // Menu enabled
     RunTestSequence(
         InstrumentTab(kPrimaryTabPageElementId),
         PressButton(kToolbarAppMenuButtonElementId),
