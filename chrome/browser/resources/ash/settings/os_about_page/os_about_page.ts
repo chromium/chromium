@@ -24,6 +24,7 @@ import '../os_settings_icons.html.js';
 import '../os_reset_page/os_powerwash_dialog.js';
 import './eol_offer_section.js';
 import './update_warning_dialog.js';
+import '../crostini_page/crostini_settings_card.js';
 
 import {LifetimeBrowserProxyImpl} from '/shared/settings/lifetime_browser_proxy.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';

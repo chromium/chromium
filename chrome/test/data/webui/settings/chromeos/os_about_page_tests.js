@@ -12,7 +12,7 @@ import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {FakeUserActionRecorder} from './fake_user_action_recorder.js';
 import {TestAboutPageBrowserProxyChromeOS} from './test_about_page_browser_proxy_chromeos.js';
@@ -118,6 +118,19 @@ suite('AboutPageTest', function() {
     assertTrue(!!page);
     page.isDarkModeActive_ = active;
   }
+
+  suite('When OsSettingsRevampWayfinding feature is enabled', () => {
+    setup(() => {
+      loadTimeData.overrideValues({isRevampWayfindingEnabled: true});
+    });
+
+    test('Crostini settings card is visible', async () => {
+      await initNewPage();
+      const crostiniSettingsCard =
+          page.shadowRoot.querySelector('crostini-settings-card');
+      assertTrue(isVisible(crostiniSettingsCard));
+    });
+  });
 
   ['light', 'dark'].forEach((mode) => {
     suite(`with ${mode} mode active`, () => {

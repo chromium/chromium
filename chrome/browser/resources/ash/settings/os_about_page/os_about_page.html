@@ -243,6 +243,10 @@
         </cr-link-row>
       </settings-card>
 
+      <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
+        <crostini-settings-card prefs="{{prefs}}"></crostini-settings-card>
+      </template>
+
       <settings-card>
         <div class="settings-box padded block first">
           <div class="info-section">
@@ -296,6 +300,81 @@
             prefs="{{prefs}}">
         </settings-detailed-build-info-subpage>
       </os-settings-subpage>
+    </template>
+
+    <!-- Crostini settings subpages -->
+    <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
+      <template is="dom-if" route-path="/crostini/details">
+        <os-settings-subpage page-title="$i18n{crostiniPageLabel}">
+          <settings-crostini-subpage prefs="{{prefs}}">
+          </settings-crostini-subpage>
+        </os-settings-subpage>
+      </template>
+
+      <template is="dom-if" route-path="/crostini/androidAdb">
+        <os-settings-subpage page-title="$i18n{crostiniArcAdbTitle}">
+          <settings-crostini-arc-adb prefs="{{prefs}}">
+          </settings-crostini-arc-adb>
+        </os-settings-subpage>
+      </template>
+
+      <template is="dom-if" route-path="/crostini/portForwarding">
+        <os-settings-subpage page-title="$i18n{crostiniPortForwarding}">
+          <settings-crostini-port-forwarding prefs="{{prefs}}">
+          </settings-crostini-port-forwarding>
+        </os-settings-subpage>
+      </template>
+
+      <template is="dom-if" route-path="/crostini/exportImport">
+        <os-settings-subpage page-title="$i18n{crostiniExportImportTitle}">
+          <settings-crostini-export-import prefs="{{prefs}}">
+          </settings-crostini-export-import>
+        </os-settings-subpage>
+      </template>
+
+      <template is="dom-if" route-path="/crostini/sharedPaths">
+        <os-settings-subpage page-title="$i18n{guestOsSharedPaths}">
+          <settings-guest-os-shared-paths
+              guest-os-type="crostini" prefs="{{prefs}}">
+          </settings-guest-os-shared-paths>
+        </os-settings-subpage>
+      </template>
+
+      <template is="dom-if" route-path="/crostini/sharedUsbDevices">
+        <os-settings-subpage page-title="$i18n{guestOsSharedUsbDevicesLabel}">
+          <settings-crostini-shared-usb-devices>
+          </settings-crostini-shared-usb-devices>
+        </os-settings-subpage>
+      </template>
+
+      <template is="dom-if" route-path="/crostini/extraContainers">
+        <os-settings-subpage page-title="$i18n{crostiniExtraContainersLabel}">
+          <settings-crostini-extra-containers guest-os-type="crostini">
+          </settings-crostini-extra-containers>
+        </os-settings-subpage>
+      </template>
+
+      <template is="dom-if" route-path="/bruschetta/details">
+        <os-settings-subpage page-title="$i18n{bruschettaPageLabel}">
+          <settings-bruschetta-subpage prefs="{{prefs}}">
+          </settings-bruschetta-subpage>
+        </os-settings-subpage>
+      </template>
+
+      <template is="dom-if" route-path="/bruschetta/sharedUsbDevices">
+        <os-settings-subpage page-title="$i18n{guestOsSharedUsbDevicesLabel}">
+          <settings-guest-os-shared-usb-devices guest-os-type="bruschetta">
+          </settings-guest-os-shared-usb-devices>
+        </os-settings-subpage>
+      </template>
+
+      <template is="dom-if" route-path="/bruschetta/sharedPaths">
+        <os-settings-subpage page-title="$i18n{guestOsSharedPaths}">
+          <settings-guest-os-shared-paths
+              guest-os-type="bruschetta" prefs="{{prefs}}">
+          </settings-guest-os-shared-paths>
+        </os-settings-subpage>
+      </template>
     </template>
   </os-settings-animated-pages>
 

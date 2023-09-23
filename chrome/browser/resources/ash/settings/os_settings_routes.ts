@@ -458,56 +458,6 @@ export function createRoutes(): OsSettingsRoutes {
       routesMojom.SWITCH_ACCESS_OPTIONS_SUBPAGE_PATH,
       Subpage.kSwitchAccessOptions);
 
-  // Crostini section.
-  r.CROSTINI = createSection(
-      r.ADVANCED, routesMojom.CROSTINI_SECTION_PATH, Section.kCrostini);
-  if (isCrostiniSupported()) {
-    r.CROSTINI_DETAILS = createSubpage(
-        r.CROSTINI, routesMojom.CROSTINI_DETAILS_SUBPAGE_PATH,
-        Subpage.kCrostiniDetails);
-    r.CROSTINI_SHARED_PATHS = createSubpage(
-        r.CROSTINI_DETAILS,
-        routesMojom.CROSTINI_MANAGE_SHARED_FOLDERS_SUBPAGE_PATH,
-        Subpage.kCrostiniManageSharedFolders);
-    r.CROSTINI_SHARED_USB_DEVICES = createSubpage(
-        r.CROSTINI_DETAILS, routesMojom.CROSTINI_USB_PREFERENCES_SUBPAGE_PATH,
-        Subpage.kCrostiniUsbPreferences);
-    if (loadTimeData.valueExists('showCrostiniExportImport') &&
-        loadTimeData.getBoolean('showCrostiniExportImport')) {
-      r.CROSTINI_EXPORT_IMPORT = createSubpage(
-          r.CROSTINI_DETAILS,
-          routesMojom.CROSTINI_BACKUP_AND_RESTORE_SUBPAGE_PATH,
-          Subpage.kCrostiniBackupAndRestore);
-    }
-    if (loadTimeData.valueExists('showCrostiniExtraContainers') &&
-        loadTimeData.getBoolean('showCrostiniExtraContainers')) {
-      r.CROSTINI_EXTRA_CONTAINERS = createSubpage(
-          r.CROSTINI_DETAILS,
-          routesMojom.CROSTINI_EXTRA_CONTAINERS_SUBPAGE_PATH,
-          Subpage.kCrostiniExtraContainers);
-    }
-
-    r.CROSTINI_ANDROID_ADB = createSubpage(
-        r.CROSTINI_DETAILS,
-        routesMojom.CROSTINI_DEVELOP_ANDROID_APPS_SUBPAGE_PATH,
-        Subpage.kCrostiniDevelopAndroidApps);
-    r.CROSTINI_PORT_FORWARDING = createSubpage(
-        r.CROSTINI_DETAILS, routesMojom.CROSTINI_PORT_FORWARDING_SUBPAGE_PATH,
-        Subpage.kCrostiniPortForwarding);
-
-    r.BRUSCHETTA_DETAILS = createSubpage(
-        r.CROSTINI, routesMojom.BRUSCHETTA_DETAILS_SUBPAGE_PATH,
-        Subpage.kBruschettaDetails);
-    r.BRUSCHETTA_SHARED_USB_DEVICES = createSubpage(
-        r.BRUSCHETTA_DETAILS,
-        routesMojom.BRUSCHETTA_USB_PREFERENCES_SUBPAGE_PATH,
-        Subpage.kBruschettaUsbPreferences);
-    r.BRUSCHETTA_SHARED_PATHS = createSubpage(
-        r.BRUSCHETTA_DETAILS,
-        routesMojom.BRUSCHETTA_MANAGE_SHARED_FOLDERS_SUBPAGE_PATH,
-        Subpage.kBruschettaManageSharedFolders);
-  }
-
   // Privacy and Security section.
   r.OS_PRIVACY = createSection(
       r.BASIC, routesMojom.PRIVACY_AND_SECURITY_SECTION_PATH,
@@ -608,6 +558,17 @@ export function createRoutes(): OsSettingsRoutes {
     r.CUPS_PRINTERS = createSubpage(
         r.DEVICE, routesMojom.PRINTING_DETAILS_SUBPAGE_PATH,
         Subpage.kPrintingDetails);
+
+    // Crostini subpages.
+    if (isCrostiniSupported()) {
+      r.CROSTINI_DETAILS = createSubpage(
+          r.ABOUT, routesMojom.CROSTINI_DETAILS_SUBPAGE_PATH,
+          Subpage.kCrostiniDetails);
+
+      r.BRUSCHETTA_DETAILS = createSubpage(
+          r.ABOUT, routesMojom.BRUSCHETTA_DETAILS_SUBPAGE_PATH,
+          Subpage.kBruschettaDetails);
+    }
   } else {
     // Date and Time section.
     r.DATETIME = createSection(
@@ -681,13 +642,68 @@ export function createRoutes(): OsSettingsRoutes {
     r.GOOGLE_ASSISTANT = createSubpage(
         r.OS_SEARCH, routesMojom.ASSISTANT_SUBPAGE_PATH, Subpage.kAssistant);
 
-
     // Printing section.
     r.OS_PRINTING = createSection(
         r.ADVANCED, routesMojom.PRINTING_SECTION_PATH, Section.kPrinting);
     r.CUPS_PRINTERS = createSubpage(
         r.OS_PRINTING, routesMojom.PRINTING_DETAILS_SUBPAGE_PATH,
         Subpage.kPrintingDetails);
+
+    // Crostini section.
+    r.CROSTINI = createSection(
+        r.ADVANCED, routesMojom.CROSTINI_SECTION_PATH, Section.kCrostini);
+    if (isCrostiniSupported()) {
+      r.CROSTINI_DETAILS = createSubpage(
+          r.CROSTINI, routesMojom.CROSTINI_DETAILS_SUBPAGE_PATH,
+          Subpage.kCrostiniDetails);
+      r.BRUSCHETTA_DETAILS = createSubpage(
+          r.CROSTINI, routesMojom.BRUSCHETTA_DETAILS_SUBPAGE_PATH,
+          Subpage.kBruschettaDetails);
+    }
+  }
+
+  // Crostini details subpages.
+  if (isCrostiniSupported()) {
+    assert(r.CROSTINI_DETAILS);
+    assert(r.BRUSCHETTA_DETAILS);
+    r.CROSTINI_SHARED_PATHS = createSubpage(
+        r.CROSTINI_DETAILS,
+        routesMojom.CROSTINI_MANAGE_SHARED_FOLDERS_SUBPAGE_PATH,
+        Subpage.kCrostiniManageSharedFolders);
+    r.CROSTINI_SHARED_USB_DEVICES = createSubpage(
+        r.CROSTINI_DETAILS, routesMojom.CROSTINI_USB_PREFERENCES_SUBPAGE_PATH,
+        Subpage.kCrostiniUsbPreferences);
+    if (loadTimeData.valueExists('showCrostiniExportImport') &&
+        loadTimeData.getBoolean('showCrostiniExportImport')) {
+      r.CROSTINI_EXPORT_IMPORT = createSubpage(
+          r.CROSTINI_DETAILS,
+          routesMojom.CROSTINI_BACKUP_AND_RESTORE_SUBPAGE_PATH,
+          Subpage.kCrostiniBackupAndRestore);
+    }
+    if (loadTimeData.valueExists('showCrostiniExtraContainers') &&
+        loadTimeData.getBoolean('showCrostiniExtraContainers')) {
+      r.CROSTINI_EXTRA_CONTAINERS = createSubpage(
+          r.CROSTINI_DETAILS,
+          routesMojom.CROSTINI_EXTRA_CONTAINERS_SUBPAGE_PATH,
+          Subpage.kCrostiniExtraContainers);
+    }
+
+    r.CROSTINI_ANDROID_ADB = createSubpage(
+        r.CROSTINI_DETAILS,
+        routesMojom.CROSTINI_DEVELOP_ANDROID_APPS_SUBPAGE_PATH,
+        Subpage.kCrostiniDevelopAndroidApps);
+    r.CROSTINI_PORT_FORWARDING = createSubpage(
+        r.CROSTINI_DETAILS, routesMojom.CROSTINI_PORT_FORWARDING_SUBPAGE_PATH,
+        Subpage.kCrostiniPortForwarding);
+
+    r.BRUSCHETTA_SHARED_USB_DEVICES = createSubpage(
+        r.BRUSCHETTA_DETAILS,
+        routesMojom.BRUSCHETTA_USB_PREFERENCES_SUBPAGE_PATH,
+        Subpage.kBruschettaUsbPreferences);
+    r.BRUSCHETTA_SHARED_PATHS = createSubpage(
+        r.BRUSCHETTA_DETAILS,
+        routesMojom.BRUSCHETTA_MANAGE_SHARED_FOLDERS_SUBPAGE_PATH,
+        Subpage.kBruschettaManageSharedFolders);
   }
 
   return r as OsSettingsRoutes;

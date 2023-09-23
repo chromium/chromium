@@ -38,7 +38,6 @@ export function createPageAvailability(): OsPageAvailability {
     [Section.kAccessibility]: !!routes.OS_ACCESSIBILITY,
     [Section.kApps]: !!routes.APPS,
     [Section.kBluetooth]: !!routes.BLUETOOTH,
-    [Section.kCrostini]: !!routes.CROSTINI,
     [Section.kDevice]: !!routes.DEVICE,
     [Section.kKerberos]: !!routes.KERBEROS,
     [Section.kMultiDevice]: !!routes.MULTIDEVICE,
@@ -51,6 +50,7 @@ export function createPageAvailability(): OsPageAvailability {
     [Section.kSystemPreferences]: !!routes.SYSTEM_PREFERENCES,
 
     // Only available when OsSettingsRevampWayfinding feature is disabled.
+    [Section.kCrostini]: !!routes.CROSTINI,
     [Section.kDateAndTime]: !!routes.DATETIME,
     [Section.kFiles]: !!routes.FILES,
     [Section.kLanguagesAndInput]: !!routes.OS_LANGUAGES,
