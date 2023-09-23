@@ -172,10 +172,6 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
   const bool tile_overlay_candidate_;
   const uint32_t tile_texture_target_;
 
-  // Whether the current data in the staging buffer came from a shared memory
-  // resource.
-  bool is_shared_memory_ = false;
-
   StagingBufferPool staging_pool_;
 };
 
