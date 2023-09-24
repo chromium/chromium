@@ -14,4 +14,8 @@
 #define DECLARE_VECTOR_COMMAND(x) using gfx::x;
 DECLARE_VECTOR_COMMANDS
 
+namespace ui {
+
 TEMPLATE_PLACEHOLDER
+
+}  // namespace ui

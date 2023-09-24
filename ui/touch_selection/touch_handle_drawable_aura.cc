@@ -66,7 +66,7 @@ gfx::Image* GetHandleImage(TouchHandleOrientation orientation) {
 }
 
 // Returns the appropriate handle vector icon based on the handle orientation.
-ui::ImageModel GetHandleVectorIcon(TouchHandleOrientation orientation) {
+ImageModel GetHandleVectorIcon(TouchHandleOrientation orientation) {
   const gfx::VectorIcon* icon = nullptr;
   switch (orientation) {
     case TouchHandleOrientation::LEFT:
@@ -81,8 +81,8 @@ ui::ImageModel GetHandleVectorIcon(TouchHandleOrientation orientation) {
     case TouchHandleOrientation::UNDEFINED:
       NOTREACHED_NORETURN() << "Invalid touch handle bound type.";
   }
-  return ui::ImageModel::FromVectorIcon(*icon,
-                                        /*color_id=*/ui::kColorSysPrimary);
+  return ImageModel::FromVectorIcon(*icon,
+                                    /*color_id=*/kColorSysPrimary);
 }
 
 bool IsNearlyZero(float value) {
@@ -103,7 +103,7 @@ TouchHandleDrawableAura::TouchHandleDrawableAura(aura::Window* parent)
   window_->layer()->set_delegate(this);
   parent->AddChild(window_.get());
 
-  theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
+  theme_observation_.Observe(NativeTheme::GetInstanceForNativeUi());
 }
 
 TouchHandleDrawableAura::~TouchHandleDrawableAura() = default;
@@ -149,7 +149,7 @@ void TouchHandleDrawableAura::SetOrientation(TouchHandleOrientation orientation,
 
   handle_image_ = ::features::IsTouchTextEditingRedesignEnabled()
                       ? GetHandleVectorIcon(orientation)
-                      : ui::ImageModel::FromImage(*GetHandleImage(orientation));
+                      : ImageModel::FromImage(*GetHandleImage(orientation));
   UpdateWindowBounds();
   window_->SchedulePaintInRect(gfx::Rect(window_->bounds().size()));
 }
@@ -201,20 +201,19 @@ float TouchHandleDrawableAura::GetDrawableHorizontalPaddingRatio() const {
          (window_->bounds().width() + 2.0f * kSelectionHandlePadding);
 }
 
-void TouchHandleDrawableAura::OnPaintLayer(const ui::PaintContext& context) {
-  ui::PaintRecorder recorder(context, window_->bounds().size());
+void TouchHandleDrawableAura::OnPaintLayer(const PaintContext& context) {
+  PaintRecorder recorder(context, window_->bounds().size());
   if (!handle_image_.IsEmpty()) {
     recorder.canvas()->DrawImageInt(
-        handle_image_.Rasterize(
-            ui::ColorProviderManager::Get().GetColorProviderFor(
-                ui::NativeTheme::GetInstanceForNativeUi()->GetColorProviderKey(
-                    nullptr))),
+        handle_image_.Rasterize(ColorProviderManager::Get().GetColorProviderFor(
+            NativeTheme::GetInstanceForNativeUi()->GetColorProviderKey(
+                nullptr))),
         0, 0);
   }
 }
 
 void TouchHandleDrawableAura::OnNativeThemeUpdated(
-    ui::NativeTheme* observed_theme) {
+    NativeTheme* observed_theme) {
   if (!::features::IsTouchTextEditingRedesignEnabled()) {
     return;
   }

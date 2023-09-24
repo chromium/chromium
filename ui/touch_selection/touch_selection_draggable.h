@@ -41,7 +41,7 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionDraggable {
 
   // Offers a touch sequence to the draggable target. Returns true if the event
   // was consumed, in which case the caller should cease further handling.
-  virtual bool WillHandleTouchEvent(const ui::MotionEvent& event) = 0;
+  virtual bool WillHandleTouchEvent(const MotionEvent& event) = 0;
 
   // Whether a drag is active OR being detected for the current touch sequence.
   virtual bool IsActive() const = 0;

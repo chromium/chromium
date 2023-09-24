@@ -131,7 +131,7 @@ gfx::Point GetMagnifierSourceCenter(const gfx::Size& parent_container_size,
 // Delegate for drawing the magnifier border and shadows onto the border layer.
 class TouchSelectionMagnifierAura::BorderRenderer : public LayerDelegate {
  public:
-  BorderRenderer() { UpdateTheme(ui::NativeTheme::GetInstanceForNativeUi()); }
+  BorderRenderer() { UpdateTheme(NativeTheme::GetInstanceForNativeUi()); }
   BorderRenderer(const BorderRenderer&) = delete;
   BorderRenderer& operator=(const BorderRenderer&) = delete;
   ~BorderRenderer() override = default;
@@ -176,14 +176,14 @@ class TouchSelectionMagnifierAura::BorderRenderer : public LayerDelegate {
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                   float new_device_scale_factor) override {}
 
-  void UpdateTheme(ui::NativeTheme* theme) {
+  void UpdateTheme(NativeTheme* theme) {
     auto* color_provider = ColorProviderManager::Get().GetColorProviderFor(
         theme->GetColorProviderKey(nullptr));
-    border_color_ = color_provider->GetColor(ui::kColorSeparator);
+    border_color_ = color_provider->GetColor(kColorSeparator);
     key_shadow_color_ =
-        color_provider->GetColor(ui::kColorShadowValueKeyShadowElevationThree);
-    ambient_shadow_color = color_provider->GetColor(
-        ui::kColorShadowValueAmbientShadowElevationThree);
+        color_provider->GetColor(kColorShadowValueKeyShadowElevationThree);
+    ambient_shadow_color =
+        color_provider->GetColor(kColorShadowValueAmbientShadowElevationThree);
   }
 
  private:
@@ -194,7 +194,7 @@ class TouchSelectionMagnifierAura::BorderRenderer : public LayerDelegate {
 
 TouchSelectionMagnifierAura::TouchSelectionMagnifierAura() {
   CreateMagnifierLayer();
-  theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
+  theme_observation_.Observe(NativeTheme::GetInstanceForNativeUi());
 }
 
 TouchSelectionMagnifierAura::~TouchSelectionMagnifierAura() = default;
@@ -211,20 +211,19 @@ void TouchSelectionMagnifierAura::ShowFocusBound(Layer* parent,
   }
 
   // Set up the animation for updating the magnifier bounds.
-  ui::ScopedLayerAnimationSettings settings(magnifier_layer_->GetAnimator());
+  ScopedLayerAnimationSettings settings(magnifier_layer_->GetAnimator());
   if (!magnifier_layer_->IsVisible()) {
     // Set the magnifier to appear immediately once its bounds are set.
     settings.SetTransitionDuration(base::Milliseconds(0));
     settings.SetTweenType(gfx::Tween::ZERO);
-    settings.SetPreemptionStrategy(
-        ui::LayerAnimator::IMMEDIATELY_SET_NEW_TARGET);
+    settings.SetPreemptionStrategy(LayerAnimator::IMMEDIATELY_SET_NEW_TARGET);
   } else {
     // Set the magnifier to move smoothly from its current bounds to the updated
     // bounds.
     settings.SetTransitionDuration(kMagnifierTransitionDuration);
     settings.SetTweenType(gfx::Tween::LINEAR);
     settings.SetPreemptionStrategy(
-        ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
+        LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
   }
 
   const gfx::Size magnifier_parent_size =
@@ -252,7 +251,7 @@ void TouchSelectionMagnifierAura::ShowFocusBound(Layer* parent,
 }
 
 void TouchSelectionMagnifierAura::OnNativeThemeUpdated(
-    ui::NativeTheme* observed_theme) {
+    NativeTheme* observed_theme) {
   border_renderer_->UpdateTheme(observed_theme);
   border_layer_->SchedulePaint(gfx::Rect(border_layer_->size()));
 }

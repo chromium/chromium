@@ -18,8 +18,7 @@ namespace {
 class TouchSelectionMagnifierAuraTest : public testing::Test {
  public:
   TouchSelectionMagnifierAuraTest()
-      : disable_animations_(
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {}
+      : disable_animations_(ScopedAnimationDurationScaleMode::ZERO_DURATION) {}
 
   TouchSelectionMagnifierAuraTest(const TouchSelectionMagnifierAuraTest&) =
       delete;
@@ -29,7 +28,7 @@ class TouchSelectionMagnifierAuraTest : public testing::Test {
   ~TouchSelectionMagnifierAuraTest() override = default;
 
  private:
-  ui::ScopedAnimationDurationScaleMode disable_animations_;
+  ScopedAnimationDurationScaleMode disable_animations_;
 };
 
 // Tests that the magnifier is horizontally centered above a vertical caret.

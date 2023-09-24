@@ -412,7 +412,7 @@ void TouchSelectionController::OnSwipeToMoveCursorEnd() {
   if (config_.hide_active_handle) {
     SetTemporarilyHidden(false);
   }
-  RecordTouchSelectionDrag(ui::TouchSelectionDragType::kCursorDrag);
+  RecordTouchSelectionDrag(TouchSelectionDragType::kCursorDrag);
 }
 
 void TouchSelectionController::OnDragBegin(
@@ -738,16 +738,16 @@ void TouchSelectionController::LogSelectionEnd() {
 void TouchSelectionController::LogDragType(
     const TouchSelectionDraggable& draggable) {
   if (&draggable == insertion_handle_.get()) {
-    RecordTouchSelectionDrag(ui::TouchSelectionDragType::kCursorHandleDrag);
+    RecordTouchSelectionDrag(TouchSelectionDragType::kCursorHandleDrag);
   } else if (&draggable == start_selection_handle_.get() ||
              &draggable == end_selection_handle_.get()) {
-    RecordTouchSelectionDrag(ui::TouchSelectionDragType::kSelectionHandleDrag);
+    RecordTouchSelectionDrag(TouchSelectionDragType::kSelectionHandleDrag);
   } else if (drag_selector_initiating_gesture_ ==
              DragSelectorInitiatingGesture::kLongPress) {
-    RecordTouchSelectionDrag(ui::TouchSelectionDragType::kLongPressDrag);
+    RecordTouchSelectionDrag(TouchSelectionDragType::kLongPressDrag);
   } else if (drag_selector_initiating_gesture_ ==
              DragSelectorInitiatingGesture::kDoublePress) {
-    RecordTouchSelectionDrag(ui::TouchSelectionDragType::kDoublePressDrag);
+    RecordTouchSelectionDrag(TouchSelectionDragType::kDoublePressDrag);
   }
 }
 

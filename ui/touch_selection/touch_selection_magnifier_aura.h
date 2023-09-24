@@ -23,7 +23,7 @@ class Layer;
 // A magnifier which shows the text caret or selection endpoint during a touch
 // selection session.
 class UI_TOUCH_SELECTION_EXPORT TouchSelectionMagnifierAura
-    : public ui::NativeThemeObserver {
+    : public NativeThemeObserver {
  public:
   TouchSelectionMagnifierAura();
 
@@ -43,8 +43,8 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionMagnifierAura
                       const gfx::Point& focus_start,
                       const gfx::Point& focus_end);
 
-  // ui::NativeThemeObserver:
-  void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
+  // NativeThemeObserver:
+  void OnNativeThemeUpdated(NativeTheme* observed_theme) override;
 
   // Returns the bounds of the zoomed contents in coordinates of the magnifier's
   // parent layer.
@@ -71,8 +71,8 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionMagnifierAura
   std::unique_ptr<BorderRenderer> border_renderer_;
   std::unique_ptr<Layer> border_layer_;
 
-  base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
-      theme_observation_{this};
+  base::ScopedObservation<NativeTheme, NativeThemeObserver> theme_observation_{
+      this};
 };
 
 }  // namespace ui

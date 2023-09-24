@@ -32,7 +32,7 @@ class UI_TOUCH_SELECTION_EXPORT TouchHandleDrawable {
   // Update the handle visuals to |orientation|.
   // |mirror_vertical| and |mirror_horizontal| are used to invert the drawables
   // if required for adaptive handle orientation.
-  virtual void SetOrientation(ui::TouchHandleOrientation orientation,
+  virtual void SetOrientation(TouchHandleOrientation orientation,
                               bool mirror_vertical,
                               bool mirror_horizontal) = 0;
 

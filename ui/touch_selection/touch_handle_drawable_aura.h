@@ -22,8 +22,8 @@ namespace ui {
 
 class UI_TOUCH_SELECTION_EXPORT TouchHandleDrawableAura
     : public TouchHandleDrawable,
-      public ui::LayerDelegate,
-      public ui::NativeThemeObserver {
+      public LayerDelegate,
+      public NativeThemeObserver {
  public:
   explicit TouchHandleDrawableAura(aura::Window* parent);
 
@@ -48,13 +48,13 @@ class UI_TOUCH_SELECTION_EXPORT TouchHandleDrawableAura
   gfx::RectF GetVisibleBounds() const override;
   float GetDrawableHorizontalPaddingRatio() const override;
 
-  // ui::LayerDelegate:
-  void OnPaintLayer(const ui::PaintContext& context) override;
+  // LayerDelegate:
+  void OnPaintLayer(const PaintContext& context) override;
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                   float new_device_scale_factor) override {}
 
-  // ui::NativeThemeObserver:
-  void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
+  // NativeThemeObserver:
+  void OnNativeThemeUpdated(NativeTheme* observed_theme) override;
 
   // The window for drawing the handle image. This doesn't include invisible
   // padding which is applied around the handle image.
@@ -66,7 +66,7 @@ class UI_TOUCH_SELECTION_EXPORT TouchHandleDrawableAura
   // is further scaled by a max opacity value (since the handle can be slightly
   // transparent by default).
   float alpha_;
-  ui::TouchHandleOrientation orientation_;
+  TouchHandleOrientation orientation_;
 
   // The origin of the targetable area of the touch handle, in coordinates of
   // the handle window's parent. When drawing the handle image, an additional
@@ -74,10 +74,10 @@ class UI_TOUCH_SELECTION_EXPORT TouchHandleDrawableAura
   gfx::PointF targetable_origin_;
 
   // The handle image to draw.
-  ui::ImageModel handle_image_;
+  ImageModel handle_image_;
 
-  base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
-      theme_observation_{this};
+  base::ScopedObservation<NativeTheme, NativeThemeObserver> theme_observation_{
+      this};
 };
 
 }  // namespace ui

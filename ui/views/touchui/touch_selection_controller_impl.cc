@@ -152,13 +152,13 @@ ui::ImageModel GetHandleVectorIcon(gfx::SelectionBound::Type bound_type) {
   const gfx::VectorIcon* icon = nullptr;
   switch (bound_type) {
     case gfx::SelectionBound::LEFT:
-      icon = &kTextSelectionHandleLeftIcon;
+      icon = &ui::kTextSelectionHandleLeftIcon;
       break;
     case gfx::SelectionBound::CENTER:
-      icon = &kTextSelectionHandleCenterIcon;
+      icon = &ui::kTextSelectionHandleCenterIcon;
       break;
     case gfx::SelectionBound::RIGHT:
-      icon = &kTextSelectionHandleRightIcon;
+      icon = &ui::kTextSelectionHandleRightIcon;
       break;
     default:
       NOTREACHED_NORETURN()
