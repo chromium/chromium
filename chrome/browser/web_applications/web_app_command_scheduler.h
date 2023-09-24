@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/browser/web_applications/commands/compute_app_size_command.h"
+#include "chrome/browser/web_applications/commands/external_app_resolution_command.h"
 #include "chrome/browser/web_applications/commands/fetch_installability_for_chrome_management.h"
 #include "chrome/browser/web_applications/commands/manifest_update_check_command.h"
 #include "chrome/browser/web_applications/commands/manifest_update_finalize_command.h"
@@ -51,7 +52,6 @@ struct IsolatedWebAppApplyUpdateCommandError;
 struct IsolatedWebAppUpdatePrepareAndStoreCommandError;
 class IsolatedWebAppUrlInfo;
 class WebApp;
-class WebAppDataRetriever;
 struct WebAppInstallInfo;
 class WebAppProvider;
 enum class ApiApprovalState;
@@ -127,19 +127,8 @@ class WebAppCommandScheduler {
   // Install web apps managed by `ExternallyInstalledAppManager`.
   void InstallExternallyManagedApp(
       const ExternalInstallOptions& external_install_options,
-      base::OnceCallback<void(const AppId& app_id,
-                              webapps::InstallResultCode code,
-                              bool did_uninstall_and_replace)> install_callback,
-      base::WeakPtr<content::WebContents> contents,
-      std::unique_ptr<WebAppDataRetriever> data_retriever,
-      const base::Location& location = FROM_HERE);
-
-  // Install a placeholder app, this is used during externally managed install
-  // flow when url load fails.
-  void InstallPlaceholder(
-      const ExternalInstallOptions& install_options,
-      base::OnceCallback<void(ExternallyManagedAppManager::InstallResult)>
-          callback,
+      absl::optional<AppId> installed_placeholder_app_id,
+      ExternalAppResolutionCommand::InstalledCallback installed_callback,
       const base::Location& location = FROM_HERE);
 
   void PersistFileHandlersUserChoice(

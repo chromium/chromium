@@ -4,7 +4,6 @@
 
 #include "chrome/browser/web_applications/commands/dedupe_install_urls_command.h"
 
-#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"

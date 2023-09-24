@@ -5356,6 +5356,7 @@ if (is_chromeos_lacros) {
       "../browser/extensions/api/vpn_provider/vpn_provider_apitest.cc",
       "../browser/extensions/extension_keeplist_lacros_browsertest.cc",
       "../browser/feedback/show_feedback_page_lacros_browsertest.cc",
+      "../browser/lacros/app_mode/web_kiosk_installer_lacros_browsertest.cc",
       "../browser/lacros/browser_launcher_browsertest.cc",
       "../browser/lacros/browser_service_lacros_browsertest.cc",
       "../browser/lacros/cert/cert_db_initializer_browsertest.cc",
@@ -5415,6 +5416,7 @@ if (is_chromeos_lacros) {
       "../browser/ui/views/web_apps/web_app_integration_browsertest_cros.cc",
       "../browser/ui/views/web_apps/web_app_integration_browsertest_win_linux_cros.cc",
       "../browser/web_applications/app_service/lacros_web_apps_controller_lacros_browsertest.cc",
+      "../browser/web_applications/externally_managed_app_manager_browsertest.cc",
     ]
 
     deps = [
@@ -5466,6 +5468,7 @@ if (is_chromeos_lacros) {
       "//components/services/app_service/public/cpp:test_support",
       "//components/soda:constants",
       "//components/user_manager:user_manager",
+      "//components/webapps/browser",
       "//services/preferences/public/cpp:cpp",
       "//ui/display:test_support",
       "//ui/events:test_support",

@@ -24,14 +24,13 @@
 #include "chrome/browser/web_applications/commands/clear_browsing_data_command.h"
 #include "chrome/browser/web_applications/commands/compute_app_size_command.h"
 #include "chrome/browser/web_applications/commands/dedupe_install_urls_command.h"
-#include "chrome/browser/web_applications/commands/externally_managed_install_command.h"
+#include "chrome/browser/web_applications/commands/external_app_resolution_command.h"
 #include "chrome/browser/web_applications/commands/fetch_install_info_from_install_url_command.h"
 #include "chrome/browser/web_applications/commands/fetch_installability_for_chrome_management.h"
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_install_command.h"
 #include "chrome/browser/web_applications/commands/install_app_locally_command.h"
 #include "chrome/browser/web_applications/commands/install_from_info_command.h"
 #include "chrome/browser/web_applications/commands/install_from_sync_command.h"
-#include "chrome/browser/web_applications/commands/install_placeholder_command.h"
 #include "chrome/browser/web_applications/commands/manifest_update_check_command.h"
 #include "chrome/browser/web_applications/commands/manifest_update_finalize_command.h"
 #include "chrome/browser/web_applications/commands/navigate_and_trigger_install_dialog_command.h"
@@ -216,45 +215,26 @@ void WebAppCommandScheduler::InstallFromInfoWithParams(
 
 void WebAppCommandScheduler::InstallExternallyManagedApp(
     const ExternalInstallOptions& external_install_options,
-    base::OnceCallback<void(const AppId& app_id,
-                            webapps::InstallResultCode code,
-                            bool did_uninstall_and_replace)> install_callback,
-    base::WeakPtr<content::WebContents> contents,
-    std::unique_ptr<WebAppDataRetriever> data_retriever,
+    absl::optional<AppId> installed_placeholder_app_id,
+    ExternalAppResolutionCommand::InstalledCallback installed_callback,
     const base::Location& location) {
   if (IsShuttingDown()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(
-            std::move(install_callback), AppId(),
-            webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown,
-            /*did_uninstall_and_replace=*/false));
+        base::BindOnce(std::move(installed_callback),
+                       web_app::ExternallyManagedAppManager::InstallResult(
+                           webapps::InstallResultCode::
+                               kCancelledOnWebAppProviderShuttingDown,
+                           AppId(),
+                           /*did_uninstall_and_replace=*/false)));
     return;
   }
 
   provider_->command_manager().ScheduleCommand(
-      std::make_unique<ExternallyManagedInstallCommand>(
-          &profile_.get(), external_install_options,
-          std::move(install_callback), contents, std::move(data_retriever)),
-      location);
-}
-
-void WebAppCommandScheduler::InstallPlaceholder(
-    const ExternalInstallOptions& install_options,
-    base::OnceCallback<void(ExternallyManagedAppManager::InstallResult)>
-        callback,
-    const base::Location& location) {
-  if (IsShuttingDown()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback),
-                       ExternallyManagedAppManager::InstallResult()));
-    return;
-  }
-
-  provider_->command_manager().ScheduleCommand(
-      std::make_unique<InstallPlaceholderCommand>(
-          &profile_.get(), install_options, std::move(callback)),
+      std::make_unique<ExternalAppResolutionCommand>(
+          *profile_, external_install_options,
+          std::move(installed_placeholder_app_id),
+          std::move(installed_callback)),
       location);
 }
 

@@ -19,6 +19,9 @@
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
@@ -39,6 +42,7 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "chrome/common/chrome_features.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/common/web_page_metadata.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1277,6 +1281,7 @@ TEST_F(ExternallyAppManagerTest, PlaceholderFullInstallConflictCanUpdate) {
     provider().externally_managed_app_manager().InstallNow(
         std::move(options), install_future.GetCallback());
     ASSERT_TRUE(install_future.Wait());
+
     EXPECT_THAT(
         install_future.Get(),
         Eq(std::make_tuple(kInstallUrl1,

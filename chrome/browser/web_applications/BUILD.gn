@@ -17,8 +17,8 @@ source_set("web_applications") {
     "commands/compute_app_size_command.h",
     "commands/dedupe_install_urls_command.cc",
     "commands/dedupe_install_urls_command.h",
-    "commands/externally_managed_install_command.cc",
-    "commands/externally_managed_install_command.h",
+    "commands/external_app_resolution_command.cc",
+    "commands/external_app_resolution_command.h",
     "commands/fetch_install_info_from_install_url_command.cc",
     "commands/fetch_install_info_from_install_url_command.h",
     "commands/fetch_installability_for_chrome_management.cc",
@@ -33,8 +33,6 @@ source_set("web_applications") {
     "commands/install_from_info_command.h",
     "commands/install_from_sync_command.cc",
     "commands/install_from_sync_command.h",
-    "commands/install_placeholder_command.cc",
-    "commands/install_placeholder_command.h",
     "commands/manifest_update_check_command.cc",
     "commands/manifest_update_check_command.h",
     "commands/manifest_update_finalize_command.cc",
@@ -638,13 +636,12 @@ source_set("web_applications_unit_tests") {
   sources = [
     "commands/clear_browsing_data_command_unittest.cc",
     "commands/dedupe_install_urls_command_unittest.cc",
-    "commands/externally_managed_install_command_unittest.cc",
+    "commands/external_app_resolution_command_unittest.cc",
     "commands/fetch_install_info_from_install_url_command_unittest.cc",
     "commands/fetch_installability_for_chrome_management_unittest.cc",
     "commands/fetch_manifest_and_install_command_unittest.cc",
     "commands/install_app_locally_command_unittest.cc",
     "commands/install_from_sync_command_unittest.cc",
-    "commands/install_placeholder_command_unittest.cc",
     "commands/install_placeholder_job_unittest.cc",
     "commands/manifest_update_check_command_unittest.cc",
     "commands/manifest_update_finalize_command_unittest.cc",
@@ -655,7 +652,6 @@ source_set("web_applications_unit_tests") {
     "commands/web_app_uninstall_command_unittest.cc",
     "daily_metrics_helper_unittest.cc",
     "external_install_options_unittest.cc",
-    "externally_managed_app_install_task_unittest.cc",
     "externally_managed_app_manager_impl_unittest.cc",
     "externally_managed_app_manager_unittest.cc",
     "isolated_web_apps/error/uma_logging_unittest.cc",
@@ -855,7 +851,6 @@ source_set("web_applications_browser_tests") {
     "commands/install_from_sync_command_browsertest.cc",
     "commands/navigate_and_trigger_install_dialog_command_browsertest.cc",
     "commands/update_protocol_handler_approval_command_browsertest.cc",
-    "externally_managed_app_manager_browsertest.cc",
     "isolated_web_apps/garbage_collect_storage_partitions_command_browsertest.cc",
     "isolated_web_apps/get_isolated_web_app_browsing_data_command_browsertest.cc",
     "isolated_web_apps/install_isolated_web_app_from_command_line_browsertest.cc",
@@ -964,6 +959,11 @@ source_set("app_service_browser_tests") {
     sources += [ "chromeos_web_app_experiments_browsertest.cc" ]
   }
 
+  # On Lacros, this test is added to the lacros_chrome_browsertests_run_in_series target.
+  if (!is_chromeos_lacros) {
+    sources += [ "externally_managed_app_manager_browsertest.cc" ]
+  }
+
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   deps = [
@@ -974,6 +974,7 @@ source_set("app_service_browser_tests") {
     "//chrome/browser/apps/app_service:app_registry_cache_waiter",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
+    "//components/webapps/browser",
   ]
 
   if (is_chromeos) {

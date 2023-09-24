@@ -234,7 +234,9 @@ class ExternallyManagedAppManager {
   void MaybeStartNext();
   void MaybeStartNextOnLockAcquired(AllAppsLock& lock);
 
-  void StartInstallationTask(std::unique_ptr<TaskAndCallback> task);
+  void StartInstallationTask(
+      std::unique_ptr<TaskAndCallback> task,
+      absl::optional<AppId> installed_placeholder_app_id);
 
   bool RunNextRegistration();
 

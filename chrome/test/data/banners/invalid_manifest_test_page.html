@@ -1,0 +1,11 @@
+<html>
+  <head>
+    <title>Web app banner test page</title>
+    <script src="main.js"></script>
+    <link rel="manifest" href="invalid_manifest.json">
+  </head>
+  <body onload="initializeWithWorker('service_worker.js')">
+    Service worker returns a response object if it's offline, so the page
+    supports the offline environment.
+  </body>
+</html>

@@ -206,8 +206,8 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManager {
   std::unique_ptr<ExternallyManagedAppInstallTask> CreateInstallationTask(
       ExternalInstallOptions install_options) override {
     return std::make_unique<TestExternallyManagedAppInstallTask>(
-        this, profile(), &test_url_loader_, provider(),
-        *test_install_task_manager_, std::move(install_options));
+        this, profile(), provider(), *test_install_task_manager_,
+        std::move(install_options));
   }
 
   std::unique_ptr<ExternallyManagedAppRegistrationTaskBase> CreateRegistration(
@@ -276,16 +276,10 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManager {
     TestExternallyManagedAppInstallTask(
         TestExternallyManagedAppManager* externally_managed_app_manager_impl,
         Profile* profile,
-        TestWebAppUrlLoader* test_url_loader,
         WebAppProvider& provider,
         TestExternallyManagedAppInstallTaskManager& test_install_task_manager,
         ExternalInstallOptions install_options)
-        : ExternallyManagedAppInstallTask(
-              profile,
-              test_url_loader,
-              provider,
-              /*data_retriever_factory=*/base::NullCallback(),
-              std::move(install_options)),
+        : ExternallyManagedAppInstallTask(provider, std::move(install_options)),
           externally_managed_app_manager_impl_(
               externally_managed_app_manager_impl),
           test_install_task_manager_(test_install_task_manager),
@@ -327,7 +321,7 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManager {
           ExternallyManagedAppManager::InstallResult(result.code, app_id));
     }
 
-    void Install(content::WebContents* web_contents,
+    void Install(absl::optional<AppId> placeholder_app_id,
                  ResultCallback callback) override {
       externally_managed_app_manager_impl_->OnInstallCalled(install_options());
 

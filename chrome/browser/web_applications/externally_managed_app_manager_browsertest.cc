@@ -4,41 +4,41 @@
 
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 
+#include <memory>
+
 #include "base/functional/bind.h"
-#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
+#include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_registration_task.h"
-#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/external_app_registration_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/origin.h"
 
@@ -46,6 +46,31 @@ namespace web_app {
 
 class ExternallyManagedAppManagerBrowserTest
     : public WebAppControllerBrowserTest {
+ public:
+  std::unique_ptr<net::test_server::HttpResponse> SimulateRedirectHandler(
+      const net::test_server::HttpRequest& request) {
+    if (!simulate_redirect_) {
+      // Fall back to default handlers.
+      return nullptr;
+    }
+
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    if (request.GetURL().spec().find("redirected") != std::string::npos) {
+      response->set_code(net::HTTP_MOVED_PERMANENTLY);
+      response->set_content("Redirect successful");
+      return response;
+    }
+
+    std::string destination = request.GetURL().spec() + "/redirected";
+    response->set_code(net::HTTP_TEMPORARY_REDIRECT);
+    response->set_content_type("text/html");
+    response->AddCustomHeader("Location", destination);
+    response->AddCustomHeader("Access-Control-Allow-Origin", "*");
+    response->set_content(base::StringPrintf(
+        "<!doctype html><p>Redirecting to %s", destination.c_str()));
+    return response;
+  }
+
  protected:
   void SetUpOnMainThread() override {
     WebAppControllerBrowserTest::SetUpOnMainThread();
@@ -82,6 +107,7 @@ class ExternallyManagedAppManagerBrowserTest
   }
 
   absl::optional<webapps::InstallResultCode> result_code_;
+  bool simulate_redirect_ = false;
 };
 
 // Basic integration test to make sure the whole flow works. Each step in the
@@ -168,6 +194,144 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
   ASSERT_TRUE(app_id.has_value());
   EXPECT_TRUE(
       registrar().IsPlaceholderApp(app_id.value(), WebAppManagement::kPolicy));
+}
+
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
+                       UpdatePlaceholderSucceedsSameAppId) {
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      &ExternallyManagedAppManagerBrowserTest::SimulateRedirectHandler,
+      base::Unretained(this)));
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  simulate_redirect_ = true;
+  GURL url = embedded_test_server()->GetURL("/banners/manifest_test_page.html");
+  ExternalInstallOptions options =
+      CreateInstallOptions(url, ExternalInstallSource::kExternalPolicy);
+  options.install_placeholder = true;
+  options.add_to_applications_menu = true;
+  options.add_to_desktop = true;
+  InstallApp(options);
+
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+            result_code_.value());
+  absl::optional<AppId> app_id = registrar().LookupExternalAppId(url);
+  ASSERT_TRUE(app_id.has_value());
+  EXPECT_TRUE(
+      registrar().IsPlaceholderApp(app_id.value(), WebAppManagement::kPolicy));
+
+  simulate_redirect_ = false;
+  InstallApp(options);
+
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+            result_code_.value());
+  absl::optional<AppId> final_app_id = registrar().LookupExternalAppId(url);
+  ASSERT_TRUE(final_app_id.has_value());
+  EXPECT_FALSE(registrar().IsPlaceholderApp(final_app_id.value(),
+                                            WebAppManagement::kPolicy));
+  EXPECT_EQ(0, registrar().CountUserInstalledApps());
+  EXPECT_EQ(1u, registrar()
+                    .GetExternallyInstalledApps(
+                        ExternalInstallSource::kExternalPolicy)
+                    .size());
+}
+
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
+                       UpdatePlaceholderSucceedsDifferentAppIdFomStartUrl) {
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      &ExternallyManagedAppManagerBrowserTest::SimulateRedirectHandler,
+      base::Unretained(this)));
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  simulate_redirect_ = true;
+  GURL install_url = embedded_test_server()->GetURL(
+      "/banners/manifest_with_start_url_test_page.html");
+  ExternalInstallOptions options =
+      CreateInstallOptions(install_url, ExternalInstallSource::kExternalPolicy);
+  options.install_placeholder = true;
+  options.add_to_applications_menu = true;
+  options.add_to_desktop = true;
+  InstallApp(options);
+
+  const AppId placeholder_app_id = GenerateAppId(absl::nullopt, install_url);
+  apps::AppReadinessWaiter(profile(), placeholder_app_id).Await();
+
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+            result_code_.value());
+  absl::optional<AppId> app_id = registrar().LookupExternalAppId(install_url);
+  ASSERT_TRUE(app_id.has_value());
+  EXPECT_EQ(placeholder_app_id, *app_id);
+  EXPECT_TRUE(registrar().IsPlaceholderApp(*app_id, WebAppManagement::kPolicy));
+
+  simulate_redirect_ = false;
+  InstallApp(options);
+
+  GURL start_url = embedded_test_server()->GetURL(
+      "/banners/different_manifest_test_page.html");
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+            result_code_.value());
+
+  const AppId new_app_id = GenerateAppId(absl::nullopt, start_url);
+
+  EXPECT_NE(new_app_id, placeholder_app_id);
+  EXPECT_FALSE(registrar().IsInstalled(placeholder_app_id));
+  EXPECT_TRUE(registrar().IsInstalled(new_app_id));
+  EXPECT_FALSE(
+      registrar().IsPlaceholderApp(new_app_id, WebAppManagement::kPolicy));
+  EXPECT_EQ(0, registrar().CountUserInstalledApps());
+  EXPECT_EQ(1u, registrar()
+                    .GetExternallyInstalledApps(
+                        ExternalInstallSource::kExternalPolicy)
+                    .size());
+}
+
+IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
+                       UpdatePlaceholderSucceedsDifferentAppIdFomManifestId) {
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      &ExternallyManagedAppManagerBrowserTest::SimulateRedirectHandler,
+      base::Unretained(this)));
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  simulate_redirect_ = true;
+  GURL install_url = embedded_test_server()->GetURL(
+      "/banners/manifest_with_id_test_page.html");
+  ExternalInstallOptions options =
+      CreateInstallOptions(install_url, ExternalInstallSource::kExternalPolicy);
+  options.install_placeholder = true;
+  options.add_to_applications_menu = true;
+  options.add_to_desktop = true;
+  InstallApp(options);
+
+  const AppId placeholder_app_id = GenerateAppId(absl::nullopt, install_url);
+  apps::AppReadinessWaiter(profile(), placeholder_app_id).Await();
+
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+            result_code_.value());
+  absl::optional<AppId> app_id = registrar().LookupExternalAppId(install_url);
+  ASSERT_TRUE(app_id.has_value());
+  EXPECT_EQ(placeholder_app_id, *app_id);
+  EXPECT_TRUE(registrar().IsPlaceholderApp(*app_id, WebAppManagement::kPolicy));
+
+  simulate_redirect_ = false;
+  InstallApp(options);
+
+  GURL start_url = embedded_test_server()->GetURL("/banners/start");
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+            result_code_.value());
+
+  const AppId new_app_id = GenerateAppId("some_id", start_url);
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_NE(new_app_id, placeholder_app_id);
+  EXPECT_FALSE(registrar().IsInstalled(placeholder_app_id));
+  EXPECT_TRUE(registrar().IsInstalled(new_app_id));
+  EXPECT_FALSE(
+      registrar().IsPlaceholderApp(new_app_id, WebAppManagement::kPolicy));
+  EXPECT_EQ(0, registrar().CountUserInstalledApps());
+  EXPECT_EQ(1u, registrar()
+                    .GetExternallyInstalledApps(
+                        ExternalInstallSource::kExternalPolicy)
+                    .size());
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

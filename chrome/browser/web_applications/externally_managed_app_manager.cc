@@ -248,8 +248,7 @@ ExternallyManagedAppManager::CreateInstallationTask(
     ExternalInstallOptions install_options) {
   std::unique_ptr<ExternallyManagedAppInstallTask> install_task =
       std::make_unique<ExternallyManagedAppInstallTask>(
-          profile_, url_loader_.get(), *provider_, data_retriever_factory_,
-          std::move(install_options));
+          *provider_, std::move(install_options));
   return install_task;
 }
 
@@ -269,7 +268,12 @@ ExternallyManagedAppManager::CreateRegistration(
 void ExternallyManagedAppManager::OnRegistrationFinished(
     const GURL& install_url,
     RegistrationResultCode result) {
-  DCHECK_EQ(current_registration_->install_url(), install_url);
+  if (IsShuttingDown()) {
+    return;
+  }
+
+  DCHECK(!current_registration_ ||
+         current_registration_->install_url() == install_url);
 
   if (registration_callback_) {
     registration_callback_.Run(install_url, result);
@@ -310,18 +314,29 @@ void ExternallyManagedAppManager::MaybeStartNextOnLockAcquired(
     const ExternalInstallOptions& install_options =
         front->task->install_options();
 
-    if (install_options.force_reinstall) {
-      StartInstallationTask(std::move(front));
-      return;
-    }
-
     absl::optional<AppId> app_id =
         lock.registrar().LookupExternalAppId(install_options.install_url);
+    const bool is_placeholder_installed =
+        app_id.has_value()
+            ? lock.registrar().IsPlaceholderApp(
+                  app_id.value(), ConvertExternalInstallSourceToSource(
+                                      install_options.install_source))
+            : false;
+
+    if (install_options.force_reinstall) {
+      StartInstallationTask(
+          std::move(front),
+          /*installed_placeholder_app_id=*/is_placeholder_installed
+              ? std::move(app_id)
+              : absl::nullopt);
+      return;
+    }
 
     // If the URL is not in web_app registrar,
     // then no external source has installed it.
     if (!app_id.has_value()) {
-      StartInstallationTask(std::move(front));
+      StartInstallationTask(std::move(front),
+                            /*installed_placeholder_app_id=*/absl::nullopt);
       return;
     }
 
@@ -338,10 +353,8 @@ void ExternallyManagedAppManager::MaybeStartNextOnLockAcquired(
 
       // If the app is already installed, only reinstall it if the app is a
       // placeholder app and the client asked for it to be reinstalled.
-      if (lock.registrar().IsPlaceholderApp(
-              app_id.value(), ConvertExternalInstallSourceToSource(
-                                  install_options.install_source))) {
-        StartInstallationTask(std::move(front));
+      if (is_placeholder_installed) {
+        StartInstallationTask(std::move(front), std::move(app_id));
         return;
       }
 
@@ -352,7 +365,8 @@ void ExternallyManagedAppManager::MaybeStartNextOnLockAcquired(
           (!lock.registrar()
                 .GetAppById(app_id.value())
                 ->IsPolicyInstalledApp())) {
-        StartInstallationTask(std::move(front));
+        StartInstallationTask(std::move(front),
+                              /*installed_placeholder_app_id=*/absl::nullopt);
         return;
       } else {
         // Add install source before returning the result.
@@ -376,7 +390,8 @@ void ExternallyManagedAppManager::MaybeStartNextOnLockAcquired(
     // If neither of the above conditions applies, the app probably got
     // uninstalled but it wasn't been removed from the map. We should install
     // the app in this case.
-    StartInstallationTask(std::move(front));
+    StartInstallationTask(std::move(front),
+                          /*installed_placeholder_app_id=*/absl::nullopt);
     return;
   }
   DCHECK(!current_install_);
@@ -389,7 +404,8 @@ void ExternallyManagedAppManager::MaybeStartNextOnLockAcquired(
 }
 
 void ExternallyManagedAppManager::StartInstallationTask(
-    std::unique_ptr<TaskAndCallback> task) {
+    std::unique_ptr<TaskAndCallback> task,
+    absl::optional<AppId> installed_placeholder_app_id) {
   if (IsShuttingDown()) {
     return;
   }
@@ -406,7 +422,7 @@ void ExternallyManagedAppManager::StartInstallationTask(
   current_install_ = std::move(task);
   CreateWebContentsIfNecessary();
   current_install_->task->Install(
-      web_contents_.get(),
+      std::move(installed_placeholder_app_id),
       base::BindOnce(&ExternallyManagedAppManager::OnInstalled,
                      weak_ptr_factory_.GetWeakPtr()));
 }
