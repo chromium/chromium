@@ -30,11 +30,6 @@ class PwaRestoreBottomSheetViewBinder {
         } else if (propertyKey.equals(PwaRestoreProperties.PEEK_BUTTON_LABEL)) {
             ((Button) view.getPreviewView().findViewById(R.id.review_button))
                     .setText(model.get(PwaRestoreProperties.PEEK_BUTTON_LABEL));
-        } else if (propertyKey.equals(PwaRestoreProperties.REVIEW_BUTTON_ON_CLICK_CALLBACK)) {
-            ((Button) view.getPreviewView().findViewById(R.id.review_button))
-                    .setOnClickListener(
-                            model.get(PwaRestoreProperties.REVIEW_BUTTON_ON_CLICK_CALLBACK));
-            ((Button) view.getPreviewView().findViewById(R.id.review_button)).setEnabled(true);
         } else if (propertyKey.equals(PwaRestoreProperties.EXPANDED_DESCRIPTION)) {
             ((TextView) view.getContentView().findViewById(R.id.description))
                     .setText(model.get(PwaRestoreProperties.EXPANDED_DESCRIPTION));
@@ -44,6 +39,14 @@ class PwaRestoreBottomSheetViewBinder {
         } else if (propertyKey.equals(PwaRestoreProperties.EXPANDED_BUTTON_LABEL)) {
             ((Button) view.getContentView().findViewById(R.id.restore_button))
                     .setText(model.get(PwaRestoreProperties.EXPANDED_BUTTON_LABEL));
+        } else if (propertyKey.equals(PwaRestoreProperties.BACK_BUTTON_ON_CLICK_CALLBACK)) {
+            view.setBackButtonListener(
+                    model.get(PwaRestoreProperties.BACK_BUTTON_ON_CLICK_CALLBACK));
+        } else if (propertyKey.equals(PwaRestoreProperties.REVIEW_BUTTON_ON_CLICK_CALLBACK)) {
+            ((Button) view.getPreviewView().findViewById(R.id.review_button))
+                    .setOnClickListener(
+                            model.get(PwaRestoreProperties.REVIEW_BUTTON_ON_CLICK_CALLBACK));
+            ((Button) view.getPreviewView().findViewById(R.id.review_button)).setEnabled(true);
         } else if (propertyKey.equals(PwaRestoreProperties.RESTORE_BUTTON_ON_CLICK_CALLBACK)) {
             ((Button) view.getContentView().findViewById(R.id.restore_button))
                     .setOnClickListener(

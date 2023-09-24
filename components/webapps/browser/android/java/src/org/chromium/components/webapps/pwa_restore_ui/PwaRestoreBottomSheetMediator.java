@@ -20,10 +20,11 @@ class PwaRestoreBottomSheetMediator {
     // The underlying property model for the bottom sheeet.
     private final PropertyModel mModel;
 
-    PwaRestoreBottomSheetMediator(Activity activity, Runnable onReviewButtonClicked) {
+    PwaRestoreBottomSheetMediator(
+            Activity activity, Runnable onReviewButtonClicked, Runnable onBackButtonClicked) {
         mActivity = activity;
         mModel = PwaRestoreProperties.createModel(
-                onReviewButtonClicked, this::onRestoreButtonClicked);
+                onReviewButtonClicked, onBackButtonClicked, this::onRestoreButtonClicked);
 
         initializeState();
         setPeekingState();
@@ -45,11 +46,11 @@ class PwaRestoreBottomSheetMediator {
                 mActivity.getString(R.string.pwa_restore_button_expanded));
     }
 
-    private void setPeekingState() {
+    protected void setPeekingState() {
         mModel.set(PwaRestoreProperties.VIEW_STATE, ViewState.PREVIEW);
     }
 
-    public void setPreviewState() {
+    protected void setPreviewState() {
         mModel.set(PwaRestoreProperties.VIEW_STATE, ViewState.VIEW_PWA_LIST);
     }
 

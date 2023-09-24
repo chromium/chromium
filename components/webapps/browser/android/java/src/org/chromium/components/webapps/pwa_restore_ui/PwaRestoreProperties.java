@@ -52,6 +52,8 @@ public class PwaRestoreProperties {
             new WritableObjectPropertyKey<>();
 
     // Button handling:
+    static final ReadableObjectPropertyKey<OnClickListener> BACK_BUTTON_ON_CLICK_CALLBACK =
+            new ReadableObjectPropertyKey<>();
     static final ReadableObjectPropertyKey<OnClickListener> REVIEW_BUTTON_ON_CLICK_CALLBACK =
             new ReadableObjectPropertyKey<>();
     static final ReadableObjectPropertyKey<OnClickListener> RESTORE_BUTTON_ON_CLICK_CALLBACK =
@@ -65,12 +67,15 @@ public class PwaRestoreProperties {
             EXPANDED_DESCRIPTION,
             EXPANDED_TITLE,
             EXPANDED_BUTTON_LABEL,
+            BACK_BUTTON_ON_CLICK_CALLBACK,
             REVIEW_BUTTON_ON_CLICK_CALLBACK,
             RESTORE_BUTTON_ON_CLICK_CALLBACK,
     };
 
-    static PropertyModel createModel(Runnable onReviewClicked, Runnable onRestoreClicked) {
+    static PropertyModel createModel(
+            Runnable onReviewClicked, Runnable onBackClicked, Runnable onRestoreClicked) {
         return new PropertyModel.Builder(ALL_KEYS)
+                .with(BACK_BUTTON_ON_CLICK_CALLBACK, v -> onBackClicked.run())
                 .with(REVIEW_BUTTON_ON_CLICK_CALLBACK, v -> onReviewClicked.run())
                 .with(RESTORE_BUTTON_ON_CLICK_CALLBACK, v -> onRestoreClicked.run())
                 .build();

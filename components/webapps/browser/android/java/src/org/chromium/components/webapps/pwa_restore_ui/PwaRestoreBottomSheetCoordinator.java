@@ -33,7 +33,8 @@ public class PwaRestoreBottomSheetCoordinator {
         mView = new PwaRestoreBottomSheetView(activity);
         mView.initialize(backArrowId);
         mContent = new PwaRestoreBottomSheetContent(mView);
-        mMediator = new PwaRestoreBottomSheetMediator(activity, this::onReviewButtonClicked);
+        mMediator = new PwaRestoreBottomSheetMediator(
+                activity, this::onReviewButtonClicked, this::onBackButtonClicked);
 
         PropertyModelChangeProcessor.create(
                 mMediator.getModel(), mView, PwaRestoreBottomSheetViewBinder::bind);
@@ -50,6 +51,11 @@ public class PwaRestoreBottomSheetCoordinator {
     protected void onReviewButtonClicked() {
         mMediator.setPreviewState();
         mController.expandSheet();
+    }
+
+    protected void onBackButtonClicked() {
+        mMediator.setPeekingState();
+        mController.collapseSheet(/* animate= */ true);
     }
 
     protected PropertyModel getModelForTesting() {
