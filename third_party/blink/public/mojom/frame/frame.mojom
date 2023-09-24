@@ -1266,7 +1266,7 @@ interface LocalMainFrameHost {
   // Causes a window previously opened via content.mojom.FrameHost::CreateNewWindow
   // to be shown on the screen. This message contains the opener_frame_token
   // which is always set. This is called on the main frame of the window to be shown.
-  ShowCreatedWindow(blink.mojom.LocalFrameToken opener_frame_token,
+  ShowCreatedWindow(blink.mojom.LocalFrameToken opener_frame_token, string frame_name,
                     ui.mojom.WindowOpenDisposition disposition,
                     gfx.mojom.Rect rect, bool opened_by_user_gesture) => ();
 

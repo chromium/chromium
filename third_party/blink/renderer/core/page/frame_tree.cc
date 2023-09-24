@@ -200,6 +200,7 @@ Frame* FrameTree::FindFrameByName(const AtomicString& name) const {
 FrameTree::FindResult FrameTree::FindOrCreateFrameForNavigation(
     FrameLoadRequest& request,
     const AtomicString& name) const {
+  LOG(ERROR) << "FrameTree::FindOrCreateFrameForNavigation name=" << name;
   // Named frame lookup should always be relative to a local frame.
   DCHECK(IsA<LocalFrame>(this_frame_.Get()));
   LocalFrame* current_frame = To<LocalFrame>(this_frame_.Get());
@@ -212,6 +213,8 @@ FrameTree::FindResult FrameTree::FindOrCreateFrameForNavigation(
 
   const KURL& url = request.GetResourceRequest().Url();
   Frame* frame = FindFrameForNavigationInternal(name, url, &request);
+  LOG(ERROR) << "FrameTree::FindOrCreateFrameForNavigation url=" << url
+    << " nameIsNull=" << name.IsNull() << " frame=" << frame;
   bool new_window = false;
   if (!frame) {
     frame = CreateNewWindow(*current_frame, request, name);
@@ -238,6 +241,8 @@ Frame* FrameTree::FindFrameForNavigationInternal(
     const AtomicString& name,
     const KURL& url,
     FrameLoadRequest* request) const {
+  LOG(ERROR) << "FrameTree::FindFrameForNavigationInternal name=" << name
+    << " isNull=" << name.IsNull() << " url=" << url;
   if (EqualIgnoringASCIICase(name, "_current")) {
     UseCounter::Count(
         blink::DynamicTo<blink::LocalFrame>(this_frame_.Get())->GetDocument(),
@@ -246,7 +251,10 @@ Frame* FrameTree::FindFrameForNavigationInternal(
 
   if (EqualIgnoringASCIICase(name, "_self") ||
       EqualIgnoringASCIICase(name, "_current") || name.IsEmpty()) {
-    return this_frame_;
+    // TODO remove
+    // request->SetNoOpener();
+    return nullptr;
+    // return this_frame_;
   }
 
   if (EqualIgnoringASCIICase(name, "_top"))
@@ -282,8 +290,10 @@ Frame* FrameTree::FindFrameForNavigationInternal(
 
   // Since "_blank" should never be any frame's name, the following just amounts
   // to an optimization.
+  LOG(ERROR) << "FrameTree::FindFrameForNavigationInternal 1";
   if (EqualIgnoringASCIICase(name, "_blank"))
     return nullptr;
+  LOG(ERROR) << "FrameTree::FindFrameForNavigationInternal 2";
 
   // Search subtree starting with this frame first.
   for (Frame* frame = this_frame_; frame;

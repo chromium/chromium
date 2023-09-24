@@ -226,6 +226,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   // browser will discard the unnecessary show request.
   virtual void Show(LocalFrame& frame,
                     LocalFrame& opener_frame,
+                    const AtomicString& frame_name,
                     NavigationPolicy navigation_policy,
                     const gfx::Rect& initial_rect,
                     bool consumed_user_gesture) = 0;

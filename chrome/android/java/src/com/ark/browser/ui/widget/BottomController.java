@@ -202,6 +202,11 @@ public class BottomController {
 
             @Override
             public void onDidFinishNavigation(Tab tab, NavigationHandle navigationHandle) {
+
+            }
+
+            @Override
+            public void didFirstVisuallyNonEmptyPaint(Tab tab) {
                 updateLoadingState(false);
             }
 

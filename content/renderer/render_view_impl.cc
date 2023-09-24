@@ -259,6 +259,7 @@ WebView* RenderViewImpl::CreateView(
     const blink::SessionStorageNamespaceId& session_storage_namespace_id,
     bool& consumed_user_gesture,
     const absl::optional<blink::WebImpression>& impression) {
+  LOG(ERROR) << "RenderViewImpl::CreateView";
   consumed_user_gesture = false;
   RenderFrameImpl* creator_frame = RenderFrameImpl::FromWebFrame(creator);
   mojom::CreateNewWindowParamsPtr params = mojom::CreateNewWindowParams::New();
@@ -280,6 +281,8 @@ WebView* RenderViewImpl::CreateView(
 
   const std::string& frame_name_utf8 = frame_name.Utf8(
       WebString::UTF8ConversionMode::kStrictReplacingErrorsWithFFFD);
+  LOG(ERROR) << "RenderViewImpl::CreateView frame_name_utf8=" << frame_name_utf8
+    << " noopener=" << features.noopener;
   params->frame_name = frame_name_utf8;
   params->opener_suppressed = features.noopener;
   params->disposition = NavigationPolicyToDisposition(policy);
@@ -310,12 +313,15 @@ WebView* RenderViewImpl::CreateView(
   mojom::CreateNewWindowStatus status;
   mojom::CreateNewWindowReplyPtr reply;
   auto* frame_host = creator_frame->GetFrameHost();
+  LOG(ERROR) << "RenderViewImpl::CreateView params->frame_name=" << params->frame_name;
   if (!frame_host->CreateNewWindow(std::move(params), &status, &reply)) {
     // The sync IPC failed, e.g. maybe the render process is in the middle of
     // shutting down. Can't create a new window without the browser process,
     // so just bail out.
+    LOG(ERROR) << "RenderViewImpl::CreateView 1";
     return nullptr;
   }
+  LOG(ERROR) << "RenderViewImpl::CreateView status=" << status;
 
   // If creation of the window was blocked (e.g. because this frame doesn't
   // have user activation), return before consuming user activation. A frame
@@ -344,11 +350,13 @@ WebView* RenderViewImpl::CreateView(
   // now that user activation was consumed.
   if (status == mojom::CreateNewWindowStatus::kIgnore)
     return nullptr;
+  LOG(ERROR) << "RenderViewImpl::CreateView 2";
 
   DCHECK(reply);
   DCHECK_NE(MSG_ROUTING_NONE, reply->route_id);
   DCHECK_NE(MSG_ROUTING_NONE, reply->main_frame_route_id);
   DCHECK_NE(MSG_ROUTING_NONE, reply->widget_params->routing_id);
+  LOG(ERROR) << "RenderViewImpl::CreateView 3";
 
   // While this view may be a background extension page, it can spawn a visible
   // render view. So we just assume that the new one is not another background
@@ -373,7 +381,7 @@ WebView* RenderViewImpl::CreateView(
 
   view_params->replication_state = blink::mojom::FrameReplicationState::New();
   view_params->replication_state->frame_policy.sandbox_flags = sandbox_flags;
-  view_params->replication_state->name = frame_name_utf8;
+  view_params->replication_state->name = frame_name_utf8 == "_blank" ? "" : frame_name_utf8;
   view_params->devtools_main_frame_token = reply->devtools_main_frame_token;
 
   auto main_frame_params = mojom::CreateLocalMainFrameParams::New();
@@ -393,15 +401,21 @@ WebView* RenderViewImpl::CreateView(
   view_params->blink_page_broadcast = std::move(reply->page_broadcast);
   view_params->session_storage_namespace_id =
       reply->cloned_session_storage_namespace_id;
+  LOG(ERROR) << "RenderViewImpl::CreateView 4";
   DCHECK(!view_params->session_storage_namespace_id.empty())
       << "Session storage namespace must be populated.";
+  LOG(ERROR) << "RenderViewImpl::CreateView 5";
   view_params->hidden = is_background_tab;
   view_params->never_composited = never_composited;
+
+  LOG(ERROR) << "RenderViewImpl::CreateView 6";
 
   RenderViewImpl* view = RenderViewImpl::Create(
       agent_scheduling_group_, std::move(view_params),
       /*was_created_by_renderer=*/true,
       creator->GetTaskRunner(blink::TaskType::kInternalDefault));
+
+  LOG(ERROR) << "RenderViewImpl::CreateView 7";
 
   if (reply->wait_for_debugger) {
     blink::WebFrameWidget* frame_widget = view->GetWebView()
@@ -411,6 +425,7 @@ WebView* RenderViewImpl::CreateView(
                                               ->FrameWidget();
     frame_widget->WaitForDebuggerWhenShown();
   }
+  LOG(ERROR) << "RenderViewImpl::CreateView 8";
 
   return view->GetWebView();
 }

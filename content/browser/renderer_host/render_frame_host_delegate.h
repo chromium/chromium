@@ -417,6 +417,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // Note: this is not called "ShowWindow" because that will clash with
   // the Windows function which is actually a #define.
   virtual void ShowCreatedWindow(RenderFrameHostImpl* opener,
+                                 const std::string& frame_name,
                                  int main_frame_widget_route_id,
                                  WindowOpenDisposition disposition,
                                  const gfx::Rect& initial_rect,

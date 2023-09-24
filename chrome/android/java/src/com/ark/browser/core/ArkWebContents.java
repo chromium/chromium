@@ -170,9 +170,7 @@ public class ArkWebContents {
                         @Override
                         public void didFinishNavigation(NavigationHandle navigation) {
                             ArkLogger.e(this, "didFinishNavigation navigation=" + navigation);
-                            mStartLoad = true;
-                            mFinishLoad = true;
-                            mIsLoading = false;
+
                             super.didFinishNavigation(navigation);
                             updateThemeColor();
                         }
@@ -180,6 +178,9 @@ public class ArkWebContents {
                         @Override
                         public void didFirstVisuallyNonEmptyPaint() {
                             ArkLogger.e(this, "didFirstVisuallyNonEmptyPaint");
+                            mStartLoad = true;
+                            mFinishLoad = true;
+                            mIsLoading = false;
                             super.didFirstVisuallyNonEmptyPaint();
                             updateThemeColor();
                         }
@@ -572,6 +573,7 @@ public class ArkWebContents {
 
         private boolean mInitiallyHidden;
         private TabState mTabState;
+        private WebContents mWebContents;
 
         private final PageInfo mPageInfo;
 
@@ -581,6 +583,11 @@ public class ArkWebContents {
 
         public Builder(IPage page) {
             mPageInfo = page.getPageInfo();
+        }
+
+        public Builder setWebContents(WebContents webContents) {
+            mWebContents = webContents;
+            return this;
         }
 
         /**
@@ -641,8 +648,8 @@ public class ArkWebContents {
 
             ArkWebContents arkWeb = ArkWebManager.get(mPageInfo.pageId);
             if (arkWeb == null || arkWeb.isDestroyed()) {
-                WebContents webContents = null;
-                if (mTabState != null) {
+                WebContents webContents = mWebContents;
+                if (webContents == null && mTabState != null) {
                     webContents = WebContentsStateBridge.restoreContentsFromByteBuffer(
                             mTabState.contentsState, mInitiallyHidden);
                 }

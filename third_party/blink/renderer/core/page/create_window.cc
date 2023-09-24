@@ -259,6 +259,7 @@ static void MaybeLogWindowOpen(LocalFrame& opener_frame) {
 Frame* CreateNewWindow(LocalFrame& opener_frame,
                        FrameLoadRequest& request,
                        const AtomicString& frame_name) {
+  LOG(ERROR) << "CreateNewWindow frame_name=" << frame_name;
   LocalDOMWindow& opener_window = *opener_frame.DomWindow();
   DCHECK(request.GetResourceRequest().RequestorOrigin() ||
          opener_window.Url().IsEmpty());
@@ -294,6 +295,7 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
   }
 
   const WebWindowFeatures& features = request.GetWindowFeatures();
+  LOG(ERROR) << "CreateNewWindow old noopener=" << features.noopener;
   const auto& picture_in_picture_window_options =
       request.GetPictureInPictureWindowOptions();
   if (picture_in_picture_window_options.has_value()) {
@@ -303,6 +305,7 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
     probe::WindowOpen(&opener_window, url, frame_name, features,
                       LocalFrame::HasTransientUserActivation(&opener_frame));
   }
+  LOG(ERROR) << "CreateNewWindow new noopener=" << features.noopener;
 
   // Sandboxed frames cannot open new auxiliary browsing contexts.
   if (opener_window.IsSandboxed(
@@ -337,9 +340,11 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
   Page* page = old_page->GetChromeClient().CreateWindow(
       &opener_frame, request, frame_name, features, sandbox_flags,
       new_namespace_id, consumed_user_gesture);
+  LOG(ERROR) << "CreateNewWindow page=" << page;
   if (!page)
     return nullptr;
 
+  LOG(ERROR) << "CreateNewWindow 1";
   if (page == old_page) {
     Frame* frame = &opener_frame.Tree().Top();
     if (!opener_frame.CanNavigate(*frame))
@@ -349,8 +354,10 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
     return frame;
   }
 
+  LOG(ERROR) << "CreateNewWindow 2";
   DCHECK(page->MainFrame());
   LocalFrame& frame = *To<LocalFrame>(page->MainFrame());
+  LOG(ERROR) << "CreateNewWindow 3";
 
   page->SetWindowFeatures(features);
 
@@ -366,10 +373,13 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
   if (features.height_set)
     window_rect.set_height(features.height);
 
-  page->GetChromeClient().Show(frame, opener_frame,
+  const AtomicString& name = frame_name.IsNull() ? g_empty_atom : frame_name;
+  page->GetChromeClient().Show(frame, opener_frame, name,
                                request.GetNavigationPolicy(), window_rect,
                                consumed_user_gesture);
+  LOG(ERROR) << "CreateNewWindow 4";
   MaybeLogWindowOpen(opener_frame);
+  LOG(ERROR) << "CreateNewWindow 5";
   return &frame;
 }
 

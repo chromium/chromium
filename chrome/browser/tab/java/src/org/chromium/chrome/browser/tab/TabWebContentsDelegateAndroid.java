@@ -29,8 +29,8 @@ public abstract class TabWebContentsDelegateAndroid extends WebContentsDelegateA
      * @param userGesture {@code true} if opened by user gesture.
      * @return {@code true} if new tab was created successfully with a give WebContents.
      */
-    public abstract boolean addNewContents(WebContents sourceWebContents,
-            WebContents webContents, int disposition, Rect initialPosition, boolean userGesture);
+    public abstract boolean addNewContents(WebContents sourceWebContents, WebContents webContents,
+            String frameName, int disposition, Rect initialPosition, boolean userGesture);
 
     /**
      * Sets the overlay mode.

@@ -287,6 +287,7 @@ Page* ChromeClientImpl::CreateWindowDelegate(
     network::mojom::blink::WebSandboxFlags sandbox_flags,
     const SessionStorageNamespaceId& session_storage_namespace_id,
     bool& consumed_user_gesture) {
+  LOG(ERROR) << "ChromeClientImpl::CreateWindowDelegate name=" << name;
   DCHECK(web_view_);
   if (!web_view_->Client())
     return nullptr;
@@ -296,10 +297,12 @@ Page* ChromeClientImpl::CreateWindowDelegate(
 
   NotifyPopupOpeningObservers();
   const AtomicString& frame_name =
-      !EqualIgnoringASCIICase(name, "_blank") ? name : g_empty_atom;
+      !name.IsNull() && !EqualIgnoringASCIICase(name, "_blank") ? name : g_empty_atom;
+  LOG(ERROR) << "ChromeClientImpl::CreateWindowDelegate name=" << name
+    << " frame_name=" << frame_name << " g_empty_atom=" << g_empty_atom << " noopener=" << features.noopener;
   WebViewImpl* new_view = To<WebViewImpl>(web_view_->Client()->CreateView(
       WebLocalFrameImpl::FromFrame(frame),
-      WrappedResourceRequest(r.GetResourceRequest()), features, frame_name,
+      WrappedResourceRequest(r.GetResourceRequest()), features, name,
       static_cast<WebNavigationPolicy>(r.GetNavigationPolicy()), sandbox_flags,
       session_storage_namespace_id, consumed_user_gesture, r.Impression()));
   if (!new_view)
@@ -343,9 +346,11 @@ void ChromeClientImpl::SetOverscrollBehavior(
 
 void ChromeClientImpl::Show(LocalFrame& frame,
                             LocalFrame& opener_frame,
+                            const AtomicString& frame_name,
                             NavigationPolicy navigation_policy,
                             const gfx::Rect& initial_rect,
                             bool user_gesture) {
+  LOG(ERROR) << "ChromeClientImpl::Show";
   DCHECK(web_view_);
   const gfx::Rect rect_adjusted_for_minimum =
       AdjustWindowRectForMinimum(initial_rect);
@@ -360,7 +365,7 @@ void ChromeClientImpl::Show(LocalFrame& frame,
   const bool request_unadjusted_rect =
       RuntimeEnabledFeatures::WindowPlacementEnabled(opener_frame.DomWindow());
   web_view_->Show(
-      opener_frame.GetLocalFrameToken(), navigation_policy,
+      opener_frame.GetLocalFrameToken(), frame_name, navigation_policy,
       request_unadjusted_rect ? rect_adjusted_for_minimum : adjusted_rect,
       adjusted_rect, user_gesture);
 }

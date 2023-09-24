@@ -103,6 +103,7 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
   void TakeFocus(mojom::blink::FocusType) override {}
   void Show(LocalFrame& frame,
             LocalFrame& opener_frame,
+            const AtomicString& frame_name,
             NavigationPolicy navigation_policy,
             const gfx::Rect& initial_rect,
             bool consumed_user_gesture) override {}

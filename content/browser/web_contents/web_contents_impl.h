@@ -671,6 +671,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       bool has_user_gesture,
       SessionStorageNamespace* session_storage_namespace) override;
   void ShowCreatedWindow(RenderFrameHostImpl* opener,
+                         const std::string& frame_name,
                          int main_frame_widget_route_id,
                          WindowOpenDisposition disposition,
                          const gfx::Rect& initial_rect,

@@ -19,6 +19,7 @@ import androidx.collection.ArrayMap;
 import com.ark.browser.core.ArkCompositorViewHolder;
 import com.ark.browser.core.utils.PolicyAuditor;
 import com.ark.browser.tab.ArkTabImpl;
+import com.ark.browser.tab.core.ITab;
 import com.ark.browser.utils.ArkLogger;
 
 import org.chromium.base.ActivityState;
@@ -133,23 +134,27 @@ public class ArkTabWebContentsDelegateAndroid extends TabWebContentsDelegateAndr
 
     @Override
     public boolean addNewContents(WebContents sourceWebContents, WebContents webContents,
-            int disposition, Rect initialPosition, boolean userGesture) {
-
-        // TODO addNewContents
-        Toast.makeText(ContextUtils.getApplicationContext(), "TODO addNewContents", Toast.LENGTH_SHORT).show();
-
+                                  String frameName, int disposition, Rect initialPosition,
+                                  boolean userGesture) {
         // Grab the URL, which might not be available via the Tab.
         GURL url = mWebContentsUrlMapping.remove(webContents);
+        ArkLogger.e(this, "addNewContents url=" + url
+                + " visibleUrl=" + webContents.getVisibleUrl() + " frame_name=" + frameName);
 
         // Skip opening a new Tab if it doesn't make sense.
         if (mTab.isClosing() || url == null) return false;
 
-
-
         LoadUrlParams params = new LoadUrlParams(UrlFormatter.fixupUrl(url.getSpec()));
         params.setHasUserGesture(userGesture);
-        ((ArkTabImpl) mTab).loadInNewPage(params);
 
+//        ((ArkTabImpl) mTab).loadInNewPage(params);
+
+        if ("_blank".equalsIgnoreCase(frameName)) {
+            ITab iTab = ((ArkTabImpl) mTab).getTab();
+            iTab.openNewTab(webContents, params);
+        } else {
+            ((ArkTabImpl) mTab).loadInNewPage(webContents, params);
+        }
 
         if (disposition == org.chromium.ui.mojom.WindowOpenDisposition.NEW_POPUP) {
             PolicyAuditor auditor = AppHooks.get().getPolicyAuditor();

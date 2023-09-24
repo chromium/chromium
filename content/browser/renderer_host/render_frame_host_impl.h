@@ -2170,6 +2170,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
                            callback) override;
   void RequestClose() override;
   void ShowCreatedWindow(const blink::LocalFrameToken& opener_frame_token,
+                         const std::string& frame_name,
                          WindowOpenDisposition disposition,
                          const gfx::Rect& initial_rect,
                          bool user_gesture,

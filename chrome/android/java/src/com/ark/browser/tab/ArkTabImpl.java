@@ -280,16 +280,32 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         return mTab;
     }
 
+    public void loadInNewTab(WebContents webContents, LoadUrlParams params) {
+        mTab.getParentGroup().openInNewTab(mTab, webContents, params);
+    }
+
+    public IPage loadInNewPage(WebContents webContents, LoadUrlParams params) {
+        IPage page = mTab.openNewPage();
+        ArkWebContents arkWeb = new ArkWebContents.Builder(page.getPageInfo())
+                .setInitiallyHidden(isHidden())
+                .setWebContents(webContents)
+                .build();
+        swapWebContents(arkWeb, false, false);
+        updateSelectPage(page);
+        @TabLoadStatus int result = arkWeb.loadUrlInternal(params);
+        for (TabObserver observer : mObservers) {
+            observer.onLoadUrl(this, params, result);
+        }
+        return page;
+    }
+
     public IPage loadInNewPage(LoadUrlParams params) {
-        stopLoading();
         IPage page = mTab.openNewPage();
         ArkWebContents arkWeb = new ArkWebContents.Builder(page.getPageInfo())
                 .setInitiallyHidden(isHidden())
                 .build();
         swapWebContents(arkWeb, false, false);
-
         updateSelectPage(page);
-
         @TabLoadStatus int result = arkWeb.loadUrlInternal(params);
         for (TabObserver observer : mObservers) {
             observer.onLoadUrl(this, params, result);

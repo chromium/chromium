@@ -555,6 +555,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
 
   // Shows a previously created WebView (via window.open()).
   void Show(const LocalFrameToken& opener_frame_token,
+            const WebString& frame_name,
             NavigationPolicy policy,
             const gfx::Rect& requested_rect,
             const gfx::Rect& adjusted_rect,

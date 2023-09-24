@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.WebContents;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -288,6 +289,39 @@ public class GroupTab implements ITabGroup {
             return cloneTab;
         }
         return null;
+    }
+
+    @Override
+    public void openInNewTab(ITab currentTab, WebContents webContents, LoadUrlParams loadUrlParams) {
+        ArkLogger.e(TAG, "openNewTab url=" + webContents.getVisibleUrl()
+                + " params=" + loadUrlParams);
+        ChildTab newTab = new ChildTab(this);
+        if (currentTab != null) {
+            int index = indexOf(currentTab);
+            int position = currentTab.getTabInfo().getPosition();
+            ArkLogger.d(TAG, "openNewTab currentPosition=" + position + " index=" + index);
+
+            mTabList.add(++index, newTab);
+            newTab.getTabInfo().setPosition(++position);
+            newTab.saveTabInfo();
+
+            saveTabPosition(index, position);
+        } else {
+            newTab.getTabInfo().setPosition(getCount());
+            mTabList.add(newTab);
+        }
+
+        ArkLogger.d(TAG, "openNewTab newPos=" + newTab.getTabInfo().getPosition());
+
+        newTab.getTabInfo().setLaunchType(TabLaunchType.FROM_LINK);
+        ArkTabImpl nativeTab = ArkTabImpl.create(newTab, currentTab);
+
+        for (TabInfoObserver obs : mObservers) {
+            obs.didAddTab(newTab, TabSelectionType.FROM_NEW);
+        }
+
+        IPage page = nativeTab.loadInNewPage(webContents, loadUrlParams);
+        selectTab(newTab, page);
     }
 
     @Override

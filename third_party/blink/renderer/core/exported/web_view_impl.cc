@@ -2863,16 +2863,21 @@ void WebViewImpl::TakeFocus(bool reverse) {
 }
 
 void WebViewImpl::Show(const LocalFrameToken& opener_frame_token,
+                       const WebString& frame_name,
                        NavigationPolicy policy,
                        const gfx::Rect& requested_rect,
                        const gfx::Rect& adjusted_rect,
                        bool opened_by_user_gesture) {
+  const std::string& frame_name_utf8 = frame_name.Utf8(
+        WebString::UTF8ConversionMode::kStrictReplacingErrorsWithFFFD);
+  LOG(ERROR) << "WebViewImpl::Show frame_name_utf8=" << frame_name_utf8;
   // This is only called on local main frames.
   DCHECK(local_main_frame_host_remote_);
   DCHECK(web_widget_);
   web_widget_->SetPendingWindowRect(adjusted_rect);
   local_main_frame_host_remote_->ShowCreatedWindow(
-      opener_frame_token, NavigationPolicyToDisposition(policy), requested_rect,
+      opener_frame_token, frame_name,
+      NavigationPolicyToDisposition(policy), requested_rect,
       opened_by_user_gesture,
       WTF::Bind(&WebViewImpl::DidShowCreatedWindow, WTF::Unretained(this)));
 

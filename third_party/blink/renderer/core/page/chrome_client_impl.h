@@ -95,6 +95,7 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
                              bool& consumed_user_gesture) override;
   void Show(LocalFrame& frame,
             LocalFrame& opener_frame,
+            const AtomicString& frame_name,
             NavigationPolicy navigation_policy,
             const gfx::Rect& initial_rect,
             bool user_gesture) override;

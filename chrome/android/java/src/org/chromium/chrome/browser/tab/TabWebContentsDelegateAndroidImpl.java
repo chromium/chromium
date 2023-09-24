@@ -114,12 +114,12 @@ public final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDeleg
     @CalledByNative
     @Override
     public boolean addNewContents(WebContents sourceWebContents, WebContents webContents,
-            int disposition, Rect initialPosition, boolean userGesture) {
+            String frameName, int disposition, Rect initialPosition, boolean userGesture) {
         if (mDelegate == null) {
             return false;
         }
         return mDelegate.addNewContents(
-                sourceWebContents, webContents, disposition, initialPosition, userGesture);
+                sourceWebContents, webContents, frameName, disposition, initialPosition, userGesture);
     }
 
     // WebContentsDelegateAndroid

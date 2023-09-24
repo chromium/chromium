@@ -5,6 +5,10 @@ import android.graphics.Color;
 import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.TabInfo;
 
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.WebContents;
+
 public interface ITab {
 
     int INVALID_TAB_INDEX = -1;
@@ -33,6 +37,14 @@ public interface ITab {
 
     default int getParentId() {
         return getTabInfo().getParentId();
+    }
+
+    default void openNewTab(WebContents webContents, LoadUrlParams params) {
+        getParentGroup().openInNewTab(this, webContents, params);
+    }
+
+    default void openNewTab(LoadUrlParams loadUrlParams, @TabLaunchType int type) {
+        getParentGroup().openInNewTab(this, loadUrlParams, type);
     }
 
     ITabGroup getParentGroup();

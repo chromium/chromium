@@ -83,6 +83,7 @@ class TabWebContentsDelegateAndroid
   void AddNewContents(content::WebContents* source,
                       std::unique_ptr<content::WebContents> new_contents,
                       const GURL& target_url,
+                      const std::string& frame_name,
                       WindowOpenDisposition disposition,
                       const gfx::Rect& initial_rect,
                       bool user_gesture,

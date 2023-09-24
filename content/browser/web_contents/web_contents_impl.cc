@@ -3869,6 +3869,8 @@ FrameTree* WebContentsImpl::CreateNewWindow(
     bool is_new_browsing_instance,
     bool has_user_gesture,
     SessionStorageNamespace* session_storage_namespace) {
+  LOG(ERROR) << "WebContentsImpl::CreateNewWindow frame_name=" << params.frame_name
+    << " opener_suppressed=" << params.opener_suppressed;
   TRACE_EVENT2("browser,content,navigation", "WebContentsImpl::CreateNewWindow",
                "opener", opener, "params", params);
   DCHECK(opener);
@@ -3892,10 +3894,12 @@ FrameTree* WebContentsImpl::CreateNewWindow(
     CHECK(session_storage_namespace_impl->IsFromContext(dom_storage_context));
   }
 
+  LOG(ERROR) << "WebContentsImpl::CreateNewWindow 1";
   if (delegate_ && delegate_->IsWebContentsCreationOverridden(
                        source_site_instance, params.window_container_type,
                        opener->GetLastCommittedURL(), params.frame_name,
                        params.target_url)) {
+    LOG(ERROR) << "WebContentsImpl::CreateNewWindow 1.1";
     auto* web_contents_impl =
         static_cast<WebContentsImpl*>(delegate_->CreateCustomWebContents(
             opener, source_site_instance, is_new_browsing_instance,
@@ -3905,6 +3909,7 @@ FrameTree* WebContentsImpl::CreateNewWindow(
       return nullptr;
     return &web_contents_impl->GetPrimaryFrameTree();
   }
+  LOG(ERROR) << "WebContentsImpl::CreateNewWindow 2";
 
   bool renderer_started_hidden =
       params.disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB;
@@ -3990,11 +3995,13 @@ FrameTree* WebContentsImpl::CreateNewWindow(
     AddWebContentsDestructionObserver(new_contents_impl);
   }
 
+  LOG(ERROR) << "WebContentsImpl::CreateNewWindow 3";
   if (delegate_) {
     delegate_->WebContentsCreated(this, render_process_id,
                                   opener->GetRoutingID(), params.frame_name,
                                   params.target_url, new_contents_impl);
   }
+  LOG(ERROR) << "WebContentsImpl::CreateNewWindow 4";
 
   observers_.NotifyObservers(&WebContentsObserver::DidOpenRequestedURL,
                              new_contents_impl, opener, params.target_url,
@@ -4002,7 +4009,8 @@ FrameTree* WebContentsImpl::CreateNewWindow(
                              ui::PAGE_TRANSITION_LINK,
                              false,  // started_from_context_menu
                              true);  // renderer_initiated
-
+  LOG(ERROR) << "WebContentsImpl::CreateNewWindow opener_suppressed=" << params.opener_suppressed
+    << " delegate_=" << delegate_ << " new_contents_impl=" << new_contents_impl;
   if (params.opener_suppressed) {
     // When the opener is suppressed, the original renderer cannot access the
     // new window.  As a result, we need to show and navigate the window here.
@@ -4013,13 +4021,15 @@ FrameTree* WebContentsImpl::CreateNewWindow(
           new_contents_impl->weak_factory_.GetWeakPtr();
 
       gfx::Rect initial_rect;  // Report an empty initial rect.
-      delegate_->AddNewContents(this, std::move(new_contents),
-                                params.target_url, params.disposition,
+      LOG(ERROR) << "WebContentsImpl::CreateNewWindow 5";
+      delegate_->AddNewContents(this, std::move(new_contents), params.target_url,
+                                params.frame_name, params.disposition,
                                 initial_rect, has_user_gesture, &was_blocked);
       // The delegate may delete |new_contents_impl| during AddNewContents().
       if (!weak_new_contents)
         return nullptr;
     }
+    LOG(ERROR) << "WebContentsImpl::CreateNewWindow was_blocked=" << was_blocked;
 
     if (!was_blocked) {
       std::unique_ptr<NavigationController::LoadURLParams> load_params =
@@ -4049,7 +4059,9 @@ FrameTree* WebContentsImpl::CreateNewWindow(
         // We are in asynchronous add new contents path, delay navigation.
         DCHECK(!new_contents_impl->delayed_open_url_params_);
         new_contents_impl->delayed_load_url_params_ = std::move(load_params);
+        LOG(ERROR) << "WebContentsImpl::CreateNewWindow load url delayed";
       } else {
+        LOG(ERROR) << "WebContentsImpl::CreateNewWindow load url";
         new_contents_impl->GetController().LoadURLWithParams(
             *load_params.get());
         if (!is_guest)
@@ -4092,10 +4104,12 @@ RenderWidgetHostImpl* WebContentsImpl::CreateNewPopupWidget(
 }
 
 void WebContentsImpl::ShowCreatedWindow(RenderFrameHostImpl* opener,
+                                        const std::string& frame_name,
                                         int main_frame_widget_route_id,
                                         WindowOpenDisposition disposition,
                                         const gfx::Rect& initial_rect,
                                         bool user_gesture) {
+  LOG(ERROR) << "WebContentsImpl::ShowCreatedWindow frame_name=" << frame_name;
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::ShowCreatedWindow",
                         "opener", opener, "main_frame_widget_route_id",
                         main_frame_widget_route_id);
@@ -4147,8 +4161,8 @@ void WebContentsImpl::ShowCreatedWindow(RenderFrameHostImpl* opener,
       created->ResumeLoadingCreatedWebContents();
 
     delegate->AddNewContents(this, std::move(owned_created->contents),
-                             std::move(owned_created->target_url), disposition,
-                             adjusted_rect, user_gesture, nullptr);
+                             std::move(owned_created->target_url), frame_name,
+                             disposition, adjusted_rect, user_gesture, nullptr);
   }
 }
 
@@ -6049,7 +6063,7 @@ void WebContentsImpl::ViewSource(RenderFrameHostImpl* frame) {
   gfx::Rect initial_rect;
   constexpr bool kUserGesture = true;
   bool ignored_was_blocked;
-  delegate_->AddNewContents(this, std::move(view_source_contents), url,
+  delegate_->AddNewContents(this, std::move(view_source_contents), url, "",
                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
                             initial_rect, kUserGesture, &ignored_was_blocked);
   // Note that the |delegate_| could have deleted |view_source_contents| during

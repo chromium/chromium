@@ -5051,10 +5051,12 @@ void RenderFrameHostImpl::RequestClose() {
 
 void RenderFrameHostImpl::ShowCreatedWindow(
     const blink::LocalFrameToken& opener_frame_token,
+    const std::string& frame_name,
     WindowOpenDisposition disposition,
     const gfx::Rect& initial_rect,
     bool user_gesture,
     ShowCreatedWindowCallback callback) {
+  LOG(ERROR) << "RenderFrameHostImpl::ShowCreatedWindow frame_name=" << frame_name;
   // This needs to be sent to the opener frame's delegate since it stores
   // the handle to this class's associated RenderWidgetHostView.
   RenderFrameHostImpl* opener_frame_host =
@@ -5069,7 +5071,7 @@ void RenderFrameHostImpl::ShowCreatedWindow(
     return;
   }
   opener_frame_host->delegate()->ShowCreatedWindow(
-      opener_frame_host, GetRenderWidgetHost()->GetRoutingID(), disposition,
+      opener_frame_host, frame_name, GetRenderWidgetHost()->GetRoutingID(), disposition,
       initial_rect, user_gesture);
   std::move(callback).Run();
 }
@@ -6815,6 +6817,8 @@ base::WeakPtr<RenderFrameHostImpl> RenderFrameHostImpl::GetWeakPtr() {
 void RenderFrameHostImpl::CreateNewWindow(
     mojom::CreateNewWindowParamsPtr params,
     CreateNewWindowCallback callback) {
+  LOG(ERROR) << "RenderFrameHostImpl::CreateNewWindow url=" << params->target_url
+    << " frame_name=" << params->frame_name << " opener_suppressed=" << params->opener_suppressed;
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TRACE_EVENT2("navigation", "RenderFrameHostImpl::CreateNewWindow",
                "render_frame_host", this, "url", params->target_url);
@@ -6935,6 +6939,9 @@ void RenderFrameHostImpl::CreateNewWindow(
       }
     }
   }
+
+  LOG(ERROR) << "RenderFrameHostImpl::CreateNewWindow frame_name=" << params->frame_name
+    << " opener_suppressed=" << params->opener_suppressed;
 
   int popup_virtual_browsing_context_group =
       params->opener_suppressed

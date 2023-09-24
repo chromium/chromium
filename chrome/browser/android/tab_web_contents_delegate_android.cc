@@ -356,10 +356,12 @@ void TabWebContentsDelegateAndroid::AddNewContents(
     WebContents* source,
     std::unique_ptr<WebContents> new_contents,
     const GURL& target_url,
+    const std::string& frame_name,
     WindowOpenDisposition disposition,
     const gfx::Rect& initial_rect,
     bool user_gesture,
     bool* was_blocked) {
+  LOG(ERROR) << "TabWebContentsDelegateAndroid::AddNewContents frame_name=" << frame_name << " url=" << target_url;
   // No code for this yet.
   DCHECK_NE(disposition, WindowOpenDisposition::SAVE_TO_DISK);
   // Can't create a new contents for the current tab - invalid case.
@@ -400,8 +402,8 @@ void TabWebContentsDelegateAndroid::AddNewContents(
       jnew_contents = new_contents->GetJavaWebContents();
 
     handled = Java_TabWebContentsDelegateAndroidImpl_addNewContents(
-        env, obj, jsource, jnew_contents, static_cast<jint>(disposition),
-        nullptr, user_gesture);
+        env, obj, jsource, jnew_contents, base::android::ConvertUTF8ToJavaString(env, frame_name),
+        static_cast<jint>(disposition), nullptr, user_gesture);
   }
 
   if (was_blocked)

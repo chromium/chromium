@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.WebContents;
 
 import java.util.List;
 
@@ -211,6 +212,8 @@ public interface ITabGroup extends ITab {
     ITab cloneTab(ITab tabInfo);
 
     void openInNewTab(ITab currentTab, LoadUrlParams loadUrlParams, @TabLaunchType int type);
+
+    void openInNewTab(ITab currentTab, WebContents webContents, LoadUrlParams loadUrlParams);
 
     default void openInNewTab(PageInfo pageInfo, LoadUrlParams loadUrlParams, @TabLaunchType int type) {
         ITab currentTab = pageInfo == null ? null : findTabById(pageInfo.getTabId());
