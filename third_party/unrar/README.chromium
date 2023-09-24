@@ -3,8 +3,9 @@ Short Name: unrar
 URL: https://github.com/aawc/unrar.git
 Revision: d84d61312db5dd83ed1da9fe3e45cb233a56630c
 Version: 6.0.3
-License: Non-standard
+License: UnRAR
 License File: src/license.txt
+License Android Compatible: No
 Security Critical: yes
 Shipped: yes
 
