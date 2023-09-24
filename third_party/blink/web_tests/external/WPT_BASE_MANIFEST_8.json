@@ -282357,11 +282357,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "8c5512d95c696a18ae53cce67108337ab2fcd887",
+     "a60a9eaab0b1145388f74540cec5cd1ac9afd6f7",
      []
     ],
     "mtime.json": [
-     "3cd41b1ddaeec555b050912c99cf18d2083deff6",
+     "9f1d368a1b8f7bd92d8805486ee422ce92fd2388",
      []
     ]
    },
@@ -300768,7 +300768,7 @@
       []
      ],
      "box-shadow-radius-000.html.ini": [
-      "49af1d25d94a46b84d8e8ee305ab8ef9b39460c6",
+      "fe9aeff747f29a3b06ecbb5559fb0bc7d0b8389f",
       []
      ],
      "box-shadow-radius-001-ref.html": [
@@ -335016,6 +335016,10 @@
       ],
       "text-transform-capitalize-003.html.ini": [
        "82bf193fcb14382cf7bdea7ac15a07fe1ac3f4c4",
+       []
+      ],
+      "text-transform-capitalize-007.html.ini": [
+       "eccd490d21bb962ad58b65c6ee46ced1f63eda76",
        []
       ],
       "text-transform-capitalize-010.html.ini": [
@@ -488105,6 +488109,13 @@
       ]
      ],
      "forms": {
+      "button-appearance-native-computed-style.html": [
+       "dd82b54d6d088a6718daf5933c7a99561e172b21",
+       [
+        null,
+        {}
+       ]
+      ],
       "meter-appearance-native-computed-style.optional.html": [
        "446036b73c92734f8d4099b3d9018879bdce1239",
        [
