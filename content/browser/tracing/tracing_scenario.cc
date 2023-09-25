@@ -43,10 +43,9 @@ using Metrics = BackgroundTracingManagerImpl::Metrics;
 std::unique_ptr<TracingScenario> TracingScenario::Create(
     const perfetto::protos::gen::ScenarioConfig& config,
     bool requires_anonymized_data,
-    Delegate* scenario_delegate,
-    TracingDelegate* tracing_delegate) {
-  auto scenario = base::WrapUnique(
-      new TracingScenario(config, scenario_delegate, tracing_delegate));
+    Delegate* scenario_delegate) {
+  auto scenario =
+      base::WrapUnique(new TracingScenario(config, scenario_delegate));
   if (!scenario->Initialize(requires_anonymized_data)) {
     return nullptr;
   }
@@ -55,12 +54,10 @@ std::unique_ptr<TracingScenario> TracingScenario::Create(
 
 TracingScenario::TracingScenario(
     const perfetto::protos::gen::ScenarioConfig& config,
-    Delegate* scenario_delegate,
-    TracingDelegate* tracing_delegate)
+    Delegate* scenario_delegate)
     : scenario_name_(config.scenario_name()),
       trace_config_(config.trace_config()),
       scenario_delegate_(scenario_delegate),
-      tracing_delegate_(tracing_delegate),
       task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   for (const auto& rule : config.start_rules()) {
     start_rules_.push_back(BackgroundTracingRule::Create(rule));
@@ -159,17 +156,13 @@ bool TracingScenario::OnSetupTrigger(
     const BackgroundTracingRule* triggered_rule) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (tracing_delegate_ &&
-      !tracing_delegate_->IsAllowedToBeginBackgroundScenario(
-          scenario_name(), requires_anonymized_data_,
-          /*is_crash_scenario=*/false)) {
+  if (!scenario_delegate_->OnScenarioActive(this)) {
     return false;
   }
 
   for (auto& rule : setup_rules_) {
     rule->Uninstall();
   }
-  scenario_delegate_->OnScenarioActive(this);
   for (auto& rule : stop_rules_) {
     rule->Install(base::BindRepeating(&TracingScenario::OnStopTrigger,
                                       base::Unretained(this)));
@@ -309,29 +302,25 @@ void TracingScenario::OnTracingStop() {
       rule->Uninstall();
     }
   }
-  bool should_finalize = (current_state_ == State::kFinalizing);
-  if (tracing_delegate_ &&
-      (!tracing_delegate_->IsAllowedToEndBackgroundScenario(
-          scenario_name(), requires_anonymized_data_,
-          /*is_crash_scenario=*/false))) {
-    BackgroundTracingManagerImpl::RecordMetric(
-        Metrics::FINALIZATION_DISALLOWED);
-    should_finalize = false;
+  for (auto& rule : upload_rules_) {
+    rule->Uninstall();
   }
-  if (!should_finalize) {
-    for (auto& rule : upload_rules_) {
-      rule->Uninstall();
-    }
-    tracing_session_.reset();
-    SetState(State::kDisabled);
-    scenario_delegate_->OnScenarioIdle(this);
+  bool should_upload = (current_state_ == State::kFinalizing);
+  auto tracing_session = std::move(tracing_session_);
+  SetState(State::kDisabled);
+  if (!scenario_delegate_->OnScenarioIdle(this)) {
+    should_upload = false;
+  }
+  if (!should_upload) {
+    tracing_session.reset();
     return;
   }
-  CHECK_EQ(current_state_, State::kFinalizing);
-  auto reader = base::MakeRefCounted<TraceReader>(std::move(tracing_session_));
+  DCHECK(triggered_rule_);
+  auto reader = base::MakeRefCounted<TraceReader>(std::move(tracing_session));
   reader->tracing_session->ReadTrace(
-      [task_runner = task_runner_, weak_ptr = GetWeakPtr(),
-       reader](perfetto::TracingSession::ReadTraceCallbackArgs args) mutable {
+      [task_runner = task_runner_, weak_ptr = GetWeakPtr(), reader,
+       triggered_rule = std::move(triggered_rule_).get()](
+          perfetto::TracingSession::ReadTraceCallbackArgs args) mutable {
         if (args.size) {
           reader->serialized_trace.append(args.data, args.size);
         }
@@ -340,19 +329,20 @@ void TracingScenario::OnTracingStop() {
               FROM_HERE,
               base::BindOnce(&TracingScenario::OnFinalizingDone, weak_ptr,
                              std::move(reader->serialized_trace),
-                             std::move(reader->tracing_session)));
+                             std::move(reader->tracing_session),
+                             triggered_rule));
         }
       });
-  SetState(State::kDisabled);
-  scenario_delegate_->OnScenarioIdle(this);
 }
 
-void TracingScenario::OnFinalizingDone(std::string&& serialized_trace,
-                                       TracingSession tracing_session) {
+void TracingScenario::OnFinalizingDone(
+    std::string&& serialized_trace,
+    TracingSession tracing_session,
+    const BackgroundTracingRule* triggered_rule) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   tracing_session.reset();
-  scenario_delegate_->SaveTrace(this, triggered_rule_.get(),
+  scenario_delegate_->SaveTrace(this, triggered_rule,
                                 std::move(serialized_trace));
 }
 

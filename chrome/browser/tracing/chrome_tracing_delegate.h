@@ -39,16 +39,12 @@ class ChromeTracingDelegate : public content::TracingDelegate,
   // before tracing is started. If this returns true, a tasks is posted 30
   // seconds into the future that will mark a successful startup / run of a
   // trace and will allow tracing to run next time.
-  bool IsAllowedToBeginBackgroundScenario(const std::string& scenario_name,
-                                          bool requires_anonymized_data,
-                                          bool is_crash_scenario) override;
+  bool OnBackgroundTracingActive(bool requires_anonymized_data) override;
 
   // Returns true if tracing is allowed to end. Also updates the background
   // tracing state in prefs using BackgroundTracingStateManager when returning
   // true. This is required to be called before stopping background tracing.
-  bool IsAllowedToEndBackgroundScenario(const std::string& scenario_name,
-                                        bool requires_anonymized_data,
-                                        bool is_crash_scenario) override;
+  bool OnBackgroundTracingIdle(bool requires_anonymized_data) override;
 
   bool ShouldSaveUnuploadedTrace() const override;
   bool IsSystemWideTracingEnabled() override;
@@ -91,9 +87,7 @@ class ChromeTracingDelegate : public content::TracingDelegate,
   // Returns true if the delegate should be allowed to perform `action` for the
   // scenario described in `config`.
   bool IsActionAllowed(BackgroundScenarioAction action,
-                       const std::string& scenario_name,
-                       bool requires_anonymized_data,
-                       bool ignore_trace_limit) const;
+                       bool requires_anonymized_data) const;
 
   bool incognito_launched_ = false;
 };

@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_helpers.h"
+#include "base/path_service.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_proto_loader.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/browser/tracing/background_tracing_config_impl.h"
@@ -51,6 +54,22 @@ class TestBackgroundTracingHelper
  private:
   base::RunLoop wait_for_trace_saved_;
 };
+
+perfetto::protos::gen::ChromeFieldTracingConfig ParseFieldTracingConfigFromText(
+    const std::string& proto_text) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::TestProtoLoader config_loader(
+      base::PathService::CheckedGet(base::DIR_GEN_TEST_DATA_ROOT)
+          .Append(
+              FILE_PATH_LITERAL("third_party/perfetto/protos/perfetto/"
+                                "config/chrome/scenario_config.descriptor")),
+      "perfetto.protos.ChromeFieldTracingConfig");
+  std::string serialized_message;
+  config_loader.ParseFromText(proto_text, serialized_message);
+  perfetto::protos::gen::ChromeFieldTracingConfig destination;
+  destination.ParseFromString(serialized_message);
+  return destination;
+}
 
 class MockBrowserClient : public content::ContentBrowserClient {
  public:
@@ -151,34 +170,36 @@ TEST_F(BackgroundTracingManagerTest, GetTraceToUpload) {
   EXPECT_FALSE(background_tracing_manager_->HasTraceToUpload());
 }
 
-TEST_F(BackgroundTracingManagerTest, GetTraceToUploadNoDatabase) {
-  base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndDisableFeature(kBackgroundTracingDatabase);
-  {
+TEST_F(BackgroundTracingManagerTest, SavedCountPreventsStart) {
+  constexpr const char kScenarioConfig[] = R"pb(
+    scenarios: {
+      scenario_name: "test_scenario"
+      start_rules: {
+        name: "start_trigger"
+        manual_trigger_name: "start_trigger"
+      }
+      trace_config: {
+        data_sources: { config: { name: "org.chromium.trace_metadata" } }
+      }
+    }
+  )pb";
+
+  constexpr size_t kNumSavedTraces = 20;
+  for (size_t i = 0; i < kNumSavedTraces; ++i) {
     TestBackgroundTracingHelper background_tracing_helper;
     background_tracing_manager_->SaveTraceForTesting(
         kDummyTrace, "test_scenario", "test_rule");
     background_tracing_helper.WaitForTraceSaved();
   }
+  EXPECT_EQ(kNumSavedTraces,
+            BackgroundTracingManagerImpl::GetInstance().GetScenarioSavedCount(
+                "test_scenario"));
 
-  EXPECT_TRUE(background_tracing_manager_->HasTraceToUpload());
+  background_tracing_manager_->InitializeScenarios(
+      ParseFieldTracingConfigFromText(kScenarioConfig),
+      BackgroundTracingManager::NO_DATA_FILTERING);
 
-  std::string compressed_trace;
-  base::RunLoop run_loop;
-  background_tracing_manager_->GetTraceToUpload(
-      base::BindLambdaForTesting([&](absl::optional<std::string> trace_content,
-                                     absl::optional<std::string>) {
-        ASSERT_TRUE(trace_content);
-        compressed_trace = std::move(*trace_content);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-
-  std::string serialized_trace;
-  ASSERT_TRUE(compression::GzipUncompress(compressed_trace, &serialized_trace));
-  EXPECT_EQ(kDummyTrace, serialized_trace);
-
-  EXPECT_FALSE(background_tracing_manager_->HasTraceToUpload());
+  EXPECT_FALSE(BackgroundTracingManager::EmitNamedTrigger("start_trigger"));
 }
 
 TEST_F(BackgroundTracingManagerTest, SavedCountAfterClean) {
@@ -220,6 +241,56 @@ TEST_F(BackgroundTracingManagerTest, SavedCountAfterDelete) {
   EXPECT_EQ(0U,
             BackgroundTracingManagerImpl::GetInstance().GetScenarioSavedCount(
                 "test_scenario"));
+}
+
+TEST_F(BackgroundTracingManagerTest, UploadScenarioQuotaExceeded) {
+  {
+    TestBackgroundTracingHelper background_tracing_helper;
+    background_tracing_manager_->SaveTraceForTesting(
+        kDummyTrace, "test_scenario", "test_rule");
+    background_tracing_helper.WaitForTraceSaved();
+  }
+  EXPECT_TRUE(background_tracing_manager_->HasTraceToUpload());
+
+  base::RunLoop run_loop;
+  background_tracing_manager_->GetTraceToUpload(
+      base::IgnoreArgs<absl::optional<std::string>,
+                       absl::optional<std::string>>(run_loop.QuitClosure()));
+  run_loop.Run();
+
+  {
+    TestBackgroundTracingHelper background_tracing_helper;
+    background_tracing_manager_->SaveTraceForTesting(
+        kDummyTrace, "test_scenario", "test_rule");
+    background_tracing_helper.WaitForTraceSaved();
+  }
+  EXPECT_FALSE(background_tracing_manager_->HasTraceToUpload());
+}
+
+TEST_F(BackgroundTracingManagerTest, UploadScenarioQuotaReset) {
+  {
+    TestBackgroundTracingHelper background_tracing_helper;
+    background_tracing_manager_->SaveTraceForTesting(
+        kDummyTrace, "test_scenario", "test_rule");
+    background_tracing_helper.WaitForTraceSaved();
+  }
+  EXPECT_TRUE(background_tracing_manager_->HasTraceToUpload());
+
+  base::RunLoop run_loop;
+  background_tracing_manager_->GetTraceToUpload(
+      base::IgnoreArgs<absl::optional<std::string>,
+                       absl::optional<std::string>>(run_loop.QuitClosure()));
+  run_loop.Run();
+
+  task_environment_.FastForwardBy(base::Days(8));
+
+  {
+    TestBackgroundTracingHelper background_tracing_helper;
+    background_tracing_manager_->SaveTraceForTesting(
+        kDummyTrace, "test_scenario", "test_rule");
+    background_tracing_helper.WaitForTraceSaved();
+  }
+  EXPECT_TRUE(background_tracing_manager_->HasTraceToUpload());
 }
 
 TEST(BackgroundTracingManagerPersistentTest, DeleteTracesInDateRange) {

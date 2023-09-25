@@ -50,6 +50,8 @@ EnumTraits<SkipUploadReason, content::SkipUploadReason>::ToMojom(
       return SkipUploadReason::kSizeLimitExceeded;
     case content::SkipUploadReason::kNotAnonymized:
       return SkipUploadReason::kNotAnonymized;
+    case content::SkipUploadReason::kScenarioQuotaExceeded:
+      return SkipUploadReason::kScenarioQuotaExceeded;
   }
 }
 
@@ -65,6 +67,9 @@ bool EnumTraits<SkipUploadReason, content::SkipUploadReason>::FromMojom(
       return true;
     case SkipUploadReason::kNotAnonymized:
       *output = content::SkipUploadReason::kNotAnonymized;
+      return true;
+    case SkipUploadReason::kScenarioQuotaExceeded:
+      *output = content::SkipUploadReason::kScenarioQuotaExceeded;
       return true;
   }
 }

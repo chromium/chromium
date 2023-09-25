@@ -37,8 +37,6 @@ enum class BackgroundTracingState : int {
 // UI thread.
 class COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS) BackgroundTracingStateManager {
  public:
-  using ScenarioUploadTimestampMap = base::flat_map<std::string, base::Time>;
-
   static BackgroundTracingStateManager& GetInstance();
 
   // Initializes state from previous session and writes current state to
@@ -54,27 +52,16 @@ class COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS) BackgroundTracingStateManager {
   // background tracing in current session.
   bool DidLastSessionEndUnexpectedly() const;
 
-  // True if the embedder uploaded a trace for the given |config| recently, and
-  // uploads should be throttled for the |config|.
-  bool DidRecentlyUploadForScenario(const std::string& scenario_name) const;
-
   // The embedder should call this method every time background tracing starts
   // so that the state in prefs is updated. Posts a timer task to the current
   // sequence to update the state once more to denote no crashes after a
   // reasonable time (see DidLastSessionEndUnexpectedly()).
-  void NotifyTracingStarted();
+  void OnTracingStarted();
 
-  // The embedder should call this method every time background tracing finishes
-  // so that the state in prefs is updated.
-  void NotifyFinalizationStarted();
-
-  // Updates the state to include the upload time for |scenario_name|, and
-  // saves it to prefs.
-  void OnScenarioUploaded(const std::string& scenario_name);
+  void OnTracingStopped();
 
   // Saves the given state to prefs, public for testing.
-  void SaveState(const ScenarioUploadTimestampMap& upload_times,
-                 BackgroundTracingState state);
+  void SaveState(BackgroundTracingState state);
 
  private:
   friend base::NoDestructor<BackgroundTracingStateManager>;
@@ -102,8 +89,6 @@ class COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS) BackgroundTracingStateManager {
   // Following are valid only when |initialized_| = true.
   BackgroundTracingState last_session_end_state_ =
       BackgroundTracingState::NOT_ACTIVATED;
-
-  ScenarioUploadTimestampMap scenario_last_upload_timestamp_;
 };
 
 }  // namespace tracing

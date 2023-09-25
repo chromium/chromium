@@ -11,7 +11,6 @@
 #include "base/trace_event/trace_config.h"
 #include "content/browser/tracing/background_tracing_rule.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/tracing_delegate.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 #include "third_party/perfetto/protos/perfetto/config/chrome/scenario_config.gen.h"
@@ -44,10 +43,12 @@ class CONTENT_EXPORT TracingScenario {
   // The delegate gets notified of state transitions and receives traces.
   class Delegate {
    public:
-    // Called when |scenario| becomes active, i.e. kSetup or kRecoding.
-    virtual void OnScenarioActive(TracingScenario* scenario) = 0;
-    // Called when |scenario| becomes idle again.
-    virtual void OnScenarioIdle(TracingScenario* scenario) = 0;
+    // Called when |scenario| becomes active, i.e. kSetup or kRecoding. Returns
+    // true if tracing is allowed to begin.
+    virtual bool OnScenarioActive(TracingScenario* scenario) = 0;
+    // Called when |scenario| becomes idle again. Returns true if tracing is
+    // allowed to finalize.
+    virtual bool OnScenarioIdle(TracingScenario* scenario) = 0;
     // Called when |scenario| starts recording a trace.
     virtual void OnScenarioRecording(TracingScenario* scenario) = 0;
     // Called when a trace was collected.
@@ -62,8 +63,7 @@ class CONTENT_EXPORT TracingScenario {
   static std::unique_ptr<TracingScenario> Create(
       const perfetto::protos::gen::ScenarioConfig& config,
       bool requires_anonymized_data,
-      Delegate* scenario_delegate,
-      TracingDelegate* tracing_delegate);
+      Delegate* scenario_delegate);
 
   virtual ~TracingScenario();
 
@@ -81,8 +81,7 @@ class CONTENT_EXPORT TracingScenario {
 
  protected:
   TracingScenario(const perfetto::protos::gen::ScenarioConfig& config,
-                  Delegate* scenario_delegate,
-                  TracingDelegate* tracing_delegate);
+                  Delegate* scenario_delegate);
 
   virtual std::unique_ptr<perfetto::TracingSession> CreateTracingSession();
 
@@ -107,7 +106,8 @@ class CONTENT_EXPORT TracingScenario {
   void OnTracingStop();
   void OnTracingStart();
   void OnFinalizingDone(std::string&& serialized_trace,
-                        TracingSession tracing_session);
+                        TracingSession tracing_session,
+                        const BackgroundTracingRule* triggered_rule);
 
   bool OnSetupTrigger(const BackgroundTracingRule* rule);
   bool OnStartTrigger(const BackgroundTracingRule* rule);
@@ -126,10 +126,8 @@ class CONTENT_EXPORT TracingScenario {
   std::string scenario_name_;
   perfetto::TraceConfig trace_config_;
   raw_ptr<Delegate> scenario_delegate_;
-  raw_ptr<TracingDelegate> tracing_delegate_;
   TracingSession tracing_session_;
   raw_ptr<const BackgroundTracingRule> triggered_rule_;
-  const bool requires_anonymized_data_ = false;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   SEQUENCE_CHECKER(sequence_checker_);

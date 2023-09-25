@@ -67,50 +67,21 @@ std::unique_ptr<content::BackgroundTracingConfig> CreateValidConfig() {
 }
 
 TEST_F(AwTracingDelegateTest, IsAllowedToBegin) {
-  auto config = CreateValidConfig();
-
-  EXPECT_TRUE(delegate_.IsAllowedToBeginBackgroundScenario(
-      config->scenario_name(), /*requires_anonymized_data=*/false,
-      /*is_crash_scenario=*/false));
-  EXPECT_TRUE(delegate_.IsAllowedToEndBackgroundScenario(
-      config->scenario_name(), /*requires_anonymized_data=*/false,
-      /*is_crash_scenario=*/false));
+  EXPECT_TRUE(delegate_.OnBackgroundTracingActive(
+      /*requires_anonymized_data=*/false));
+  EXPECT_TRUE(delegate_.OnBackgroundTracingIdle(
+      /*requires_anonymized_data=*/false));
 }
 
 TEST_F(AwTracingDelegateTest, IsAllowedToBeginSessionEndedUnexpectedly) {
   tracing::BackgroundTracingStateManager::GetInstance().SaveState(
-      {}, tracing::BackgroundTracingState::STARTED);
+      tracing::BackgroundTracingState::STARTED);
 
   base::Value dict(base::Value::Type::DICT);
   tracing::BackgroundTracingStateManager::GetInstance().Initialize(nullptr);
 
-  auto config = CreateValidConfig();
-
-  EXPECT_FALSE(delegate_.IsAllowedToBeginBackgroundScenario(
-      config->scenario_name(), /*requires_anonymized_data=*/false,
-      /*is_crash_scenario=*/false));
-}
-
-TEST_F(AwTracingDelegateTest, IsAllowedToBeginRecentlyUploaded) {
-  tracing::BackgroundTracingStateManager::GetInstance().Initialize(nullptr);
-  tracing::BackgroundTracingStateManager::GetInstance().OnScenarioUploaded(
-      "TestScenario");
-
-  auto config = CreateValidConfig();
-  EXPECT_FALSE(delegate_.IsAllowedToBeginBackgroundScenario(
-      config->scenario_name(), /*requires_anonymized_data=*/false,
-      /*is_crash_scenario=*/false));
-}
-
-TEST_F(AwTracingDelegateTest, IsAllowedToEndRecentlyUploaded) {
-  tracing::BackgroundTracingStateManager::GetInstance().Initialize(nullptr);
-  tracing::BackgroundTracingStateManager::GetInstance().OnScenarioUploaded(
-      "TestScenario");
-
-  auto config = CreateValidConfig();
-  EXPECT_FALSE(delegate_.IsAllowedToEndBackgroundScenario(
-      config->scenario_name(), /*requires_anonymized_data=*/false,
-      /*is_crash_scenario=*/false));
+  EXPECT_FALSE(delegate_.OnBackgroundTracingActive(
+      /*requires_anonymized_data=*/false));
 }
 
 }  // namespace android_webview

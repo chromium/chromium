@@ -108,8 +108,8 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager,
   void DeleteTracesInDateRange(base::Time start, base::Time end) override;
 
   // TracingScenario::Delegate:
-  void OnScenarioActive(TracingScenario* scenario) override;
-  void OnScenarioIdle(TracingScenario* scenario) override;
+  bool OnScenarioActive(TracingScenario* scenario) override;
+  bool OnScenarioIdle(TracingScenario* scenario) override;
   void OnScenarioRecording(TracingScenario* scenario) override;
   void SaveTrace(TracingScenario* scenario,
                  const BackgroundTracingRule* triggered_rule,
@@ -160,7 +160,8 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager,
   void OnStartTracingDone();
   void OnProtoDataComplete(std::string&& serialized_trace,
                            const std::string& scenario_name,
-                           const std::string& rule_name);
+                           const std::string& rule_name,
+                           bool is_crash_scenario);
 
   // For tests
   CONTENT_EXPORT BackgroundTracingActiveScenario* GetActiveScenarioForTesting();

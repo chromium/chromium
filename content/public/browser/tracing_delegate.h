@@ -18,16 +18,12 @@ class CONTENT_EXPORT TracingDelegate {
  public:
   virtual ~TracingDelegate() = default;
 
-  // This can be used to veto a particular background tracing scenario.
-  virtual bool IsAllowedToBeginBackgroundScenario(
-      const std::string& scenario_name,
-      bool requires_anonymized_data,
-      bool is_crash_scenario);
-
-  virtual bool IsAllowedToEndBackgroundScenario(
-      const std::string& scenario_name,
-      bool requires_anonymized_data,
-      bool is_crash_scenario);
+  // Notifies that background tracing became active and a tracing session
+  // started. Returns true if the tracing session is allowed to begin.
+  virtual bool OnBackgroundTracingActive(bool requires_anonymized_data);
+  // Notifies that a tracing session stopped and background tracing became idle
+  // again. Returns true if the tracing session is allowed finalize.
+  virtual bool OnBackgroundTracingIdle(bool requires_anonymized_data);
 
   // Specifies whether traces that aren't uploaded should still be saved.
   virtual bool ShouldSaveUnuploadedTrace() const;

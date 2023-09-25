@@ -149,14 +149,11 @@ void ChromeTracingDelegate::OnBrowserAdded(Browser* browser) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-bool ChromeTracingDelegate::IsActionAllowed(BackgroundScenarioAction action,
-                                            const std::string& scenario_name,
-                                            bool requires_anonymized_data,
-                                            bool ignore_trace_limit) const {
-  // If the background tracing is specified on the command-line, we
-  // allow any scenario to be traced and uploaded.
-  // TODO(crbug.com/1418116): Allow tracing scenarios when a local
-  // output is specified.
+bool ChromeTracingDelegate::IsActionAllowed(
+    BackgroundScenarioAction action,
+    bool requires_anonymized_data) const {
+  // If the background tracing is specified on the command-line, we allow
+  // any scenario to be traced and uploaded.
   if (IsBackgroundTracingCommandLine()) {
     return true;
   }
@@ -180,22 +177,11 @@ bool ChromeTracingDelegate::IsActionAllowed(BackgroundScenarioAction action,
     return false;
   }
 
-  // Check the trace limit for both kStartTracing and kUploadTrace actions
-  // because there is no point starting a trace that can't be uploaded.
-  if (!ignore_trace_limit &&
-      state.DidRecentlyUploadForScenario(scenario_name)) {
-    tracing::RecordDisallowedMetric(
-        tracing::TracingFinalizationDisallowedReason::kTraceUploadedRecently);
-    return false;
-  }
-
   return true;
 }
 
-bool ChromeTracingDelegate::IsAllowedToBeginBackgroundScenario(
-    const std::string& scenario_name,
-    bool requires_anonymized_data,
-    bool is_crash_scenario) {
+bool ChromeTracingDelegate::OnBackgroundTracingActive(
+    bool requires_anonymized_data) {
   // We call Initialize() only when a tracing scenario tries to start, and
   // unless this happens we never save state. In particular, if the background
   // tracing experiment is disabled, Initialize() will never be called, and we
@@ -210,39 +196,23 @@ bool ChromeTracingDelegate::IsAllowedToBeginBackgroundScenario(
       BackgroundTracingStateManager::GetInstance();
   state.Initialize(g_browser_process->local_state());
 
-  // If the config includes a crash scenario, ignore the trace limit so that a
-  // trace can be taken on crash. We check if the trigger is actually due to a
-  // crash later before uploading.
-  const bool ignore_trace_limit = is_crash_scenario;
-
-  if (!IsActionAllowed(BackgroundScenarioAction::kStartTracing, scenario_name,
-                       requires_anonymized_data, ignore_trace_limit)) {
+  if (!IsActionAllowed(BackgroundScenarioAction::kStartTracing,
+                       requires_anonymized_data)) {
     return false;
   }
 
-  state.NotifyTracingStarted();
+  state.OnTracingStarted();
   return true;
 }
 
-bool ChromeTracingDelegate::IsAllowedToEndBackgroundScenario(
-    const std::string& scenario_name,
-    bool requires_anonymized_data,
-    bool is_crash_scenario) {
+bool ChromeTracingDelegate::OnBackgroundTracingIdle(
+    bool requires_anonymized_data) {
   BackgroundTracingStateManager& state =
       BackgroundTracingStateManager::GetInstance();
-  state.NotifyFinalizationStarted();
+  state.OnTracingStopped();
 
-  // If a crash scenario triggered, ignore the trace upload limit and continue
-  // uploading.
-  const bool ignore_trace_limit = is_crash_scenario;
-
-  if (!IsActionAllowed(BackgroundScenarioAction::kUploadTrace, scenario_name,
-                       requires_anonymized_data, ignore_trace_limit)) {
-    return false;
-  }
-
-  state.OnScenarioUploaded(scenario_name);
-  return true;
+  return IsActionAllowed(BackgroundScenarioAction::kUploadTrace,
+                         requires_anonymized_data);
 }
 
 bool ChromeTracingDelegate::ShouldSaveUnuploadedTrace() const {
