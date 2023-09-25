@@ -11,7 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
-#include "chrome/browser/ash/file_manager/file_tasks.h"
+#include "chrome/browser/ash/file_manager/office_file_tasks.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
