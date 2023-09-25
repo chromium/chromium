@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.autofill.vcn;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -54,6 +55,8 @@ public final class AutofillVcnEnrollBottomSheetCoordinatorTest {
 
     private WindowAndroid mWindow;
     private AutofillVcnEnrollBottomSheetCoordinator mCoordinator;
+    private boolean mAcceptClicked;
+    private boolean mCancelClicked;
 
     @Before
     public void setUp() {
@@ -73,9 +76,13 @@ public final class AutofillVcnEnrollBottomSheetCoordinatorTest {
                 mLayoutStateProvider, mTabModelSelectorSupplier,
                 new AutofillVcnEnrollBottomSheetCoordinator.Delegate() {
                     @Override
-                    public void onAccept() {}
+                    public void onAccept() {
+                        mAcceptClicked = true;
+                    }
                     @Override
-                    public void onCancel() {}
+                    public void onCancel() {
+                        mCancelClicked = true;
+                    }
                     @Override
                     public void onDismiss() {}
                 });
@@ -83,6 +90,8 @@ public final class AutofillVcnEnrollBottomSheetCoordinatorTest {
 
     @After
     public void tearDown() {
+        mAcceptClicked = false;
+        mCancelClicked = false;
         BottomSheetControllerFactory.detach(mBottomSheetController);
         mWindow.destroy();
     }
@@ -122,5 +131,31 @@ public final class AutofillVcnEnrollBottomSheetCoordinatorTest {
         mCoordinator.hide();
 
         verifyNoInteractions(mBottomSheetController);
+    }
+
+    @Test
+    public void testClickAcceptDismissesTheBottomSheet() {
+        mCoordinator.requestShowContent(mWindow);
+
+        mCoordinator.getAutofillVcnEnrollBottomSheetViewForTesting().mAcceptButton.performClick();
+
+        assertTrue(mAcceptClicked);
+        verify(mBottomSheetController)
+                .hideContent(any(AutofillVcnEnrollBottomSheetContent.class),
+                        /*animate=*/eq(true),
+                        eq(BottomSheetController.StateChangeReason.INTERACTION_COMPLETE));
+    }
+
+    @Test
+    public void testClickCancelDismissesTheBottomSheet() {
+        mCoordinator.requestShowContent(mWindow);
+
+        mCoordinator.getAutofillVcnEnrollBottomSheetViewForTesting().mCancelButton.performClick();
+
+        assertTrue(mCancelClicked);
+        verify(mBottomSheetController)
+                .hideContent(any(AutofillVcnEnrollBottomSheetContent.class),
+                        /*animate=*/eq(true),
+                        eq(BottomSheetController.StateChangeReason.INTERACTION_COMPLETE));
     }
 }

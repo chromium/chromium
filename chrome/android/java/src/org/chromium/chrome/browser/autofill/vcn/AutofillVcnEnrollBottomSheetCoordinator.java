@@ -28,6 +28,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
         void onDismiss();
     }
 
+    private final AutofillVcnEnrollBottomSheetView mView;
     private final AutofillVcnEnrollBottomSheetMediator mMediator;
 
     /**
@@ -42,16 +43,22 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
     AutofillVcnEnrollBottomSheetCoordinator(Context context, PropertyModel.Builder modelBuilder,
             LayoutStateProvider layoutStateProvider,
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier, Delegate delegate) {
-        AutofillVcnEnrollBottomSheetView view = new AutofillVcnEnrollBottomSheetView(context);
-        view.mAcceptButton.setOnClickListener((View button) -> delegate.onAccept());
-        view.mCancelButton.setOnClickListener((View button) -> delegate.onCancel());
+        mView = new AutofillVcnEnrollBottomSheetView(context);
+        mView.mAcceptButton.setOnClickListener((View button) -> {
+            delegate.onAccept();
+            hide();
+        });
+        mView.mCancelButton.setOnClickListener((View button) -> {
+            delegate.onCancel();
+            hide();
+        });
 
         PropertyModelChangeProcessor.create(
-                modelBuilder.build(), view, AutofillVcnEnrollBottomSheetViewBinder::bind);
+                modelBuilder.build(), mView, AutofillVcnEnrollBottomSheetViewBinder::bind);
 
         mMediator = new AutofillVcnEnrollBottomSheetMediator(
                 new AutofillVcnEnrollBottomSheetContent(
-                        view.mContentView, view.mScrollView, delegate::onDismiss),
+                        mView.mContentView, mView.mScrollView, delegate::onDismiss),
                 new AutofillVcnEnrollBottomSheetLifecycle(
                         layoutStateProvider, tabModelSelectorSupplier));
     }
@@ -70,5 +77,9 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
     /** Hides the virtual card enrollment bottom sheet, if present. */
     void hide() {
         mMediator.hide();
+    }
+
+    AutofillVcnEnrollBottomSheetView getAutofillVcnEnrollBottomSheetViewForTesting() {
+        return mView;
     }
 }
