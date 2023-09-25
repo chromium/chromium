@@ -6,7 +6,9 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/test/bind.h"
 #include "components/performance_manager/public/graph/frame_node.h"
+#include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/performance_manager.h"
@@ -218,6 +220,31 @@ IN_PROC_BROWSER_TEST_F(PageContextRegistryTest, InvalidPageContexts) {
   EXPECT_THAT(PageContextRegistry::AllMainRenderFrameHostsFromContext(
                   invalid_resource_context),
               IsEmpty());
+}
+
+IN_PROC_BROWSER_TEST_F(PageContextRegistryTest, OnBeforePageNodeRemoved) {
+  CreateNodes();
+
+  auto* main_frame = content::RenderFrameHost::FromID(main_frame_id_);
+  ASSERT_TRUE(main_frame);
+  absl::optional<PageContext> page_context =
+      PageContextRegistry::ContextForRenderFrameHost(main_frame);
+  ASSERT_TRUE(page_context.has_value());
+
+  RemovePageNodeWaiter waiter(
+      PerformanceManager::GetPageNodeForRenderFrameHost(main_frame),
+      base::BindLambdaForTesting([&](const PageNode* page_node) {
+        // `page_node` should still be available from PageContextRegistry in
+        // OnBeforePageNodeRemoved.
+        const auto* registry =
+            PageContextRegistry::GetFromGraph(page_node->GetGraph());
+        ASSERT_TRUE(registry);
+        EXPECT_EQ(registry->GetPageNodeForContext(page_context.value()),
+                  page_node);
+      }));
+
+  DeleteNodes();
+  waiter.Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(PageContextRegistryDisabledTest, UIThreadAccess) {

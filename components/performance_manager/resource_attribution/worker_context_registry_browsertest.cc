@@ -14,6 +14,7 @@
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/worker_node_impl.h"
 #include "components/performance_manager/performance_manager_impl.h"
+#include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/worker_node.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/test_support/resource_attribution/registry_browsertest_harness.h"
@@ -173,6 +174,29 @@ IN_PROC_BROWSER_TEST_F(WorkerContextRegistryTest, InvalidWorkerContexts) {
         EXPECT_EQ(nullptr,
                   registry->GetWorkerNodeForContext(invalid_resource_context));
       });
+}
+
+IN_PROC_BROWSER_TEST_F(WorkerContextRegistryTest, OnBeforeWorkerNodeRemoved) {
+  CreateNodes();
+
+  absl::optional<WorkerContext> worker_context =
+      WorkerContextRegistry::ContextForWorkerToken(worker_token_a_);
+  ASSERT_TRUE(worker_context.has_value());
+
+  RemoveWorkerNodeWaiter waiter(
+      weak_worker_node_a_,
+      base::BindLambdaForTesting([&](const WorkerNode* worker_node) {
+        // `worker_node` should still be available from WorkerContextRegistry in
+        // OnBeforeWorkerNodeRemoved.
+        const auto* registry =
+            WorkerContextRegistry::GetFromGraph(worker_node->GetGraph());
+        ASSERT_TRUE(registry);
+        EXPECT_EQ(registry->GetWorkerNodeForContext(worker_context.value()),
+                  worker_node);
+      }));
+
+  DeleteNodes();
+  waiter.Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(WorkerContextRegistryDisabledTest, UIThreadAccess) {

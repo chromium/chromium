@@ -8,12 +8,14 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/performance_manager_impl.h"
 #include "components/performance_manager/public/browser_child_process_host_id.h"
 #include "components/performance_manager/public/browser_child_process_host_proxy.h"
+#include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/render_process_host_id.h"
@@ -362,6 +364,53 @@ IN_PROC_BROWSER_TEST_F(ProcessContextRegistryTest, InvalidProcessContexts) {
         EXPECT_EQ(nullptr,
                   registry->GetProcessNodeForContext(invalid_resource_context));
       });
+}
+
+IN_PROC_BROWSER_TEST_F(ProcessContextRegistryTest, OnBeforeProcessNodeRemoved) {
+  CreateNodes();
+
+  absl::optional<ProcessContext> browser_process_context =
+      ProcessContextRegistry::BrowserProcessContext();
+  ASSERT_TRUE(browser_process_context.has_value());
+
+  auto* rph =
+      content::RenderProcessHost::FromID(render_process_id_a_.GetUnsafeValue());
+  ASSERT_TRUE(rph);
+  absl::optional<ProcessContext> render_process_context =
+      ProcessContextRegistry::ContextForRenderProcessHost(rph);
+  ASSERT_TRUE(render_process_context.has_value());
+
+  absl::optional<ProcessContext> browser_child_process_context =
+      ProcessContextRegistry::ContextForBrowserChildProcessHost(
+          utility_process_->host());
+  ASSERT_TRUE(browser_child_process_context.has_value());
+
+  auto expect_process_context = [&](const ProcessContext& process_context,
+                                    const ProcessNode* process_node) {
+    // `process_node` should still be available from ProcessContextRegistry
+    // in OnBeforeProcessNodeRemoved.
+    const auto* registry =
+        ProcessContextRegistry::GetFromGraph(process_node->GetGraph());
+    ASSERT_TRUE(registry);
+    EXPECT_EQ(registry->GetProcessNodeForContext(process_context),
+              process_node);
+  };
+
+  RemoveProcessNodeWaiter browser_process_waiter(
+      weak_browser_process_node_,
+      base::BindOnce(expect_process_context, browser_process_context.value()));
+  RemoveProcessNodeWaiter render_process_waiter(
+      PerformanceManager::GetProcessNodeForRenderProcessHost(rph),
+      base::BindOnce(expect_process_context, render_process_context.value()));
+  RemoveProcessNodeWaiter browser_child_process_waiter(
+      weak_utility_process_node_,
+      base::BindOnce(expect_process_context,
+                     browser_child_process_context.value()));
+
+  DeleteNodes();
+  browser_process_waiter.Wait();
+  render_process_waiter.Wait();
+  browser_child_process_waiter.Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(ProcessContextRegistryDisabledTest, UIThreadAccess) {

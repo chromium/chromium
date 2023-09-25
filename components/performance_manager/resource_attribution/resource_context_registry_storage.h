@@ -9,6 +9,7 @@
 #include <memory>
 #include <set>
 
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/public/browser_child_process_host_id.h"
 #include "components/performance_manager/public/graph/frame_node.h"
@@ -131,15 +132,16 @@ class ResourceContextRegistryStorage final
   // Validates that non-static methods are called on the PM sequence.
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // Storage used only from the PM sequence.
-  std::map<FrameContext, const FrameNode*> frame_nodes_by_context_
+  // Storage used only from the PM sequence. Mutable so that invalidated
+  // WeakPtr's can be cleaned up from logically const methods.
+  mutable std::map<FrameContext, base::WeakPtr<FrameNode>>
+      frame_nodes_by_context_ GUARDED_BY_CONTEXT(sequence_checker_);
+  mutable std::map<PageContext, base::WeakPtr<PageNode>> page_nodes_by_context_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  std::map<PageContext, const PageNode*> page_nodes_by_context_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-  std::map<ProcessContext, const ProcessNode*> process_nodes_by_context_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-  std::map<WorkerContext, const WorkerNode*> worker_nodes_by_context_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  mutable std::map<ProcessContext, base::WeakPtr<ProcessNode>>
+      process_nodes_by_context_ GUARDED_BY_CONTEXT(sequence_checker_);
+  mutable std::map<WorkerContext, base::WeakPtr<WorkerNode>>
+      worker_nodes_by_context_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   std::unique_ptr<UIThreadStorage> ui_thread_storage_;
 

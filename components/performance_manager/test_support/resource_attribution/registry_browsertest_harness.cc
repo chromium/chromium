@@ -112,4 +112,55 @@ void RegistryBrowserTestHarness::PostRunTestOnMainThread() {
   Super::PostRunTestOnMainThread();
 }
 
+RemoveFrameNodeWaiter::RemoveFrameNodeWaiter(
+    base::WeakPtr<FrameNode> watched_node,
+    Super::OnRemovedCallback on_removed_callback)
+    : Super(watched_node,
+            std::move(on_removed_callback),
+            &Graph::AddFrameNodeObserver,
+            &Graph::RemoveFrameNodeObserver) {}
+
+void RemoveFrameNodeWaiter::OnBeforeFrameNodeRemoved(
+    const FrameNode* frame_node) {
+  OnBeforeNodeRemoved(frame_node);
+}
+
+RemovePageNodeWaiter::RemovePageNodeWaiter(
+    base::WeakPtr<PageNode> watched_node,
+    Super::OnRemovedCallback on_removed_callback)
+    : Super(watched_node,
+            std::move(on_removed_callback),
+            &Graph::AddPageNodeObserver,
+            &Graph::RemovePageNodeObserver) {}
+
+void RemovePageNodeWaiter::OnBeforePageNodeRemoved(const PageNode* page_node) {
+  OnBeforeNodeRemoved(page_node);
+}
+
+RemoveProcessNodeWaiter::RemoveProcessNodeWaiter(
+    base::WeakPtr<ProcessNode> watched_node,
+    Super::OnRemovedCallback on_removed_callback)
+    : Super(watched_node,
+            std::move(on_removed_callback),
+            &Graph::AddProcessNodeObserver,
+            &Graph::RemoveProcessNodeObserver) {}
+
+void RemoveProcessNodeWaiter::OnBeforeProcessNodeRemoved(
+    const ProcessNode* process_node) {
+  OnBeforeNodeRemoved(process_node);
+}
+
+RemoveWorkerNodeWaiter::RemoveWorkerNodeWaiter(
+    base::WeakPtr<WorkerNode> watched_node,
+    Super::OnRemovedCallback on_removed_callback)
+    : Super(watched_node,
+            std::move(on_removed_callback),
+            &Graph::AddWorkerNodeObserver,
+            &Graph::RemoveWorkerNodeObserver) {}
+
+void RemoveWorkerNodeWaiter::OnBeforeWorkerNodeRemoved(
+    const WorkerNode* worker_node) {
+  OnBeforeNodeRemoved(worker_node);
+}
+
 }  // namespace performance_manager::resource_attribution

@@ -12,6 +12,10 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "components/performance_manager/graph/frame_node_impl.h"
+#include "components/performance_manager/graph/page_node_impl.h"
+#include "components/performance_manager/graph/process_node_impl.h"
+#include "components/performance_manager/graph/worker_node_impl.h"
 #include "components/performance_manager/public/browser_child_process_host_id.h"
 #include "components/performance_manager/public/browser_child_process_host_proxy.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -30,6 +34,28 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace performance_manager::resource_attribution {
+
+namespace {
+
+// Helper to return a node from a map of ResourceContext -> WeakPtr, and clear
+// any invalidated WeakPtr from the map.
+template <typename NodeType, typename ContextType>
+const NodeType* GetWeakNodeForContext(
+    const ContextType& context,
+    std::map<ContextType, base::WeakPtr<NodeType>>& weak_nodes_by_context) {
+  const auto it = weak_nodes_by_context.find(context);
+  if (it == weak_nodes_by_context.end()) {
+    return nullptr;
+  }
+  if (!it->second) {
+    // Clear invalidated WeakPtr from map.
+    weak_nodes_by_context.erase(it);
+    return nullptr;
+  }
+  return it->second.get();
+}
+
+}  // namespace
 
 using UIThreadStorage = ResourceContextRegistryStorage::UIThreadStorage;
 
@@ -705,29 +731,25 @@ ResourceContextRegistryStorage::WorkerTokenFromContext(
 const FrameNode* ResourceContextRegistryStorage::GetFrameNodeForContext(
     const FrameContext& context) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const auto it = frame_nodes_by_context_.find(context);
-  return it != frame_nodes_by_context_.end() ? it->second : nullptr;
+  return GetWeakNodeForContext(context, frame_nodes_by_context_);
 }
 
 const PageNode* ResourceContextRegistryStorage::GetPageNodeForContext(
     const PageContext& context) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const auto it = page_nodes_by_context_.find(context);
-  return it != page_nodes_by_context_.end() ? it->second : nullptr;
+  return GetWeakNodeForContext(context, page_nodes_by_context_);
 }
 
 const ProcessNode* ResourceContextRegistryStorage::GetProcessNodeForContext(
     const ProcessContext& context) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const auto it = process_nodes_by_context_.find(context);
-  return it != process_nodes_by_context_.end() ? it->second : nullptr;
+  return GetWeakNodeForContext(context, process_nodes_by_context_);
 }
 
 const WorkerNode* ResourceContextRegistryStorage::GetWorkerNodeForContext(
     const WorkerContext& context) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const auto it = worker_nodes_by_context_.find(context);
-  return it != worker_nodes_by_context_.end() ? it->second : nullptr;
+  return GetWeakNodeForContext(context, worker_nodes_by_context_);
 }
 
 void ResourceContextRegistryStorage::OnFrameNodeAdded(
@@ -745,16 +767,14 @@ void ResourceContextRegistryStorage::OnFrameNodeAdded(
                      frame_node->GetRenderFrameHostProxy(),
                      frame_node->IsMainFrame(), frame_node->IsCurrent()));
   const auto [_, inserted] = frame_nodes_by_context_.emplace(
-      frame_node->GetResourceContext(), frame_node);
+      frame_node->GetResourceContext(),
+      FrameNodeImpl::FromNode(frame_node)->GetWeakPtr());
   CHECK(inserted);
 }
 
 void ResourceContextRegistryStorage::OnBeforeFrameNodeRemoved(
     const FrameNode* frame_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const size_t erased =
-      frame_nodes_by_context_.erase(frame_node->GetResourceContext());
-  CHECK_EQ(erased, 1u);
   CHECK(ui_thread_storage_);
   // Unretained is safe because `ui_thread_storage_` is passed to the UI
   // thread to delete.
@@ -765,6 +785,9 @@ void ResourceContextRegistryStorage::OnBeforeFrameNodeRemoved(
                                 frame_node->GetPageNode()->GetResourceContext(),
                                 frame_node->GetRenderFrameHostProxy(),
                                 frame_node->IsMainFrame()));
+  // Leave the WeakPtr to `frame_node` in `frame_nodes_by_context_` so it can
+  // still be resolved until all OnBeforeFrameNodeRemoved() notifications are
+  // done. At that point the WeakPtr will be invalidated.
 }
 
 void ResourceContextRegistryStorage::OnIsCurrentChanged(
@@ -788,7 +811,8 @@ void ResourceContextRegistryStorage::OnPageNodeAdded(
     const PageNode* page_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto [_, inserted] = page_nodes_by_context_.emplace(
-      page_node->GetResourceContext(), page_node);
+      page_node->GetResourceContext(),
+      PageNodeImpl::FromNode(page_node)->GetWeakPtr());
   CHECK(inserted);
   CHECK(ui_thread_storage_);
   // Unretained is safe because `ui_thread_storage_` is deleted on the UI
@@ -803,9 +827,6 @@ void ResourceContextRegistryStorage::OnPageNodeAdded(
 void ResourceContextRegistryStorage::OnBeforePageNodeRemoved(
     const PageNode* page_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const size_t erased =
-      page_nodes_by_context_.erase(page_node->GetResourceContext());
-  CHECK_EQ(erased, 1u);
   CHECK(ui_thread_storage_);
   // Unretained is safe because `ui_thread_storage_` is deleted on the UI
   // thread.
@@ -813,6 +834,9 @@ void ResourceContextRegistryStorage::OnBeforePageNodeRemoved(
       FROM_HERE, base::BindOnce(&UIThreadStorage::OnPageNodeRemoved,
                                 base::Unretained(ui_thread_storage_.get()),
                                 page_node->GetResourceContext()));
+  // Leave the WeakPtr to `page_node` in `page_nodes_by_context_` so it can
+  // still be resolved until all OnBeforePageNodeRemoved() notifications are
+  // done. At that point the WeakPtr will be invalidated.
 }
 
 void ResourceContextRegistryStorage::OnProcessNodeAdded(
@@ -846,7 +870,8 @@ void ResourceContextRegistryStorage::OnProcessNodeAdded(
       break;
   }
   const auto [_, inserted] = process_nodes_by_context_.emplace(
-      std::move(process_context), process_node);
+      std::move(process_context),
+      ProcessNodeImpl::FromNode(process_node)->GetWeakPtr());
   CHECK(inserted);
 }
 
@@ -854,9 +879,6 @@ void ResourceContextRegistryStorage::OnBeforeProcessNodeRemoved(
     const ProcessNode* process_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(ui_thread_storage_);
-  const ProcessContext& process_context = process_node->GetResourceContext();
-  const size_t erased = process_nodes_by_context_.erase(process_context);
-  CHECK_EQ(erased, 1u);
   // Unretained is safe because `ui_thread_storage_` is passed to the UI
   // thread to delete.
   switch (process_node->GetProcessType()) {
@@ -865,14 +887,14 @@ void ResourceContextRegistryStorage::OnBeforeProcessNodeRemoved(
           FROM_HERE,
           base::BindOnce(&UIThreadStorage::OnBrowserProcessNodeRemoved,
                          base::Unretained(ui_thread_storage_.get()),
-                         process_context));
+                         process_node->GetResourceContext()));
       break;
     case content::PROCESS_TYPE_RENDERER:
       content::GetUIThreadTaskRunner()->PostTask(
           FROM_HERE,
           base::BindOnce(&UIThreadStorage::OnRenderProcessNodeRemoved,
                          base::Unretained(ui_thread_storage_.get()),
-                         process_context,
+                         process_node->GetResourceContext(),
                          process_node->GetRenderProcessHostProxy()));
       break;
     default:
@@ -880,18 +902,23 @@ void ResourceContextRegistryStorage::OnBeforeProcessNodeRemoved(
           FROM_HERE,
           base::BindOnce(&UIThreadStorage::OnBrowserChildProcessNodeRemoved,
                          base::Unretained(ui_thread_storage_.get()),
-                         process_context,
+                         process_node->GetResourceContext(),
                          process_node->GetBrowserChildProcessHostProxy()));
       break;
   }
+  // Leave the WeakPtr to `process_node` in `process_nodes_by_context_` so it
+  // can still be resolved until all OnBeforeProcessNodeRemoved() notifications
+  // are done. At that point the WeakPtr will be invalidated.
 }
 
 void ResourceContextRegistryStorage::OnWorkerNodeAdded(
     const WorkerNode* worker_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto [_, inserted] = worker_nodes_by_context_.emplace(
-      worker_node->GetResourceContext(), worker_node);
+      worker_node->GetResourceContext(),
+      WorkerNodeImpl::FromNode(worker_node)->GetWeakPtr());
   CHECK(inserted);
+  CHECK(ui_thread_storage_);
   // Unretained is safe because the pointer is deleted on the UI thread.
   content::GetUIThreadTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&UIThreadStorage::OnWorkerNodeAdded,
@@ -902,14 +929,15 @@ void ResourceContextRegistryStorage::OnWorkerNodeAdded(
 void ResourceContextRegistryStorage::OnBeforeWorkerNodeRemoved(
     const WorkerNode* worker_node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const size_t erased =
-      worker_nodes_by_context_.erase(worker_node->GetResourceContext());
-  CHECK_EQ(erased, 1u);
+  CHECK(ui_thread_storage_);
   // Unretained is safe because the pointer is deleted on the UI thread.
   content::GetUIThreadTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&UIThreadStorage::OnWorkerNodeRemoved,
                                 base::Unretained(ui_thread_storage_.get()),
                                 worker_node->GetResourceContext()));
+  // Leave the WeakPtr to `worker_node` in `worker_nodes_by_context_` so it
+  // can still be resolved until all OnBeforeWorkerNodeRemoved() notifications
+  // are done. At that point the WeakPtr will be invalidated.
 }
 
 void ResourceContextRegistryStorage::OnPassedToGraph(Graph* graph) {

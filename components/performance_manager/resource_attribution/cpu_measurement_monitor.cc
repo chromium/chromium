@@ -498,29 +498,15 @@ void CPUMeasurementMonitor::ApplyMeasurementDeltas(
 
     // Aggregate new frame and worker measurements to pages.
     if (ContextIs<FrameContext>(context)) {
-      // A FrameNode that's being removed` may not be in the registry anymore,
-      // depending on the order OnBeforeFrameNodeRemoved() observers fire.
-      const auto* remove_frame_change =
-          absl::get_if<GraphChangeRemoveFrame>(&graph_change);
       const FrameNode* frame_node =
-          (remove_frame_change &&
-           remove_frame_change->frame_node->GetResourceContext() == context)
-              ? remove_frame_change->frame_node
-              : frame_registry->GetFrameNodeForContext(context);
+          frame_registry->GetFrameNodeForContext(context);
       CHECK(frame_node);
       ApplyOverlappingDelta(
           measurement_results_[frame_node->GetPageNode()->GetResourceContext()],
           delta);
     } else if (ContextIs<WorkerContext>(context)) {
-      // A WorkerNode that's being removed` may not be in the registry anymore,
-      // depending on the order OnBeforeWorkerNodeRemoved() observers fire.
-      const auto* remove_worker_change =
-          absl::get_if<GraphChangeRemoveWorker>(&graph_change);
       const WorkerNode* worker_node =
-          (remove_worker_change &&
-           remove_worker_change->worker_node->GetResourceContext() == context)
-              ? remove_worker_change->worker_node
-              : worker_registry->GetWorkerNodeForContext(context);
+          worker_registry->GetWorkerNodeForContext(context);
       CHECK(worker_node);
       for (const PageNode* page_node :
            GetClientPages(worker_node, graph_change)) {

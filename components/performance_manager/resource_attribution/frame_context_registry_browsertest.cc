@@ -5,7 +5,9 @@
 #include "components/performance_manager/public/resource_attribution/frame_context_registry.h"
 
 #include "base/memory/weak_ptr.h"
+#include "base/test/bind.h"
 #include "components/performance_manager/public/graph/frame_node.h"
+#include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/test_support/resource_attribution/registry_browsertest_harness.h"
@@ -94,6 +96,31 @@ IN_PROC_BROWSER_TEST_F(FrameContextRegistryTest, InvalidFrameContexts) {
         EXPECT_EQ(nullptr,
                   registry->GetFrameNodeForContext(invalid_resource_context));
       });
+}
+
+IN_PROC_BROWSER_TEST_F(FrameContextRegistryTest, OnBeforeFrameNodeRemoved) {
+  CreateNodes();
+
+  auto* rfh = content::RenderFrameHost::FromID(main_frame_id_);
+  ASSERT_TRUE(rfh);
+  absl::optional<FrameContext> frame_context =
+      FrameContextRegistry::ContextForRenderFrameHost(rfh);
+  ASSERT_TRUE(frame_context.has_value());
+
+  RemoveFrameNodeWaiter waiter(
+      PerformanceManager::GetFrameNodeForRenderFrameHost(rfh),
+      base::BindLambdaForTesting([&](const FrameNode* frame_node) {
+        // `frame_node` should still be available from FrameContextRegistry in
+        // OnBeforeFrameNodeRemoved.
+        const auto* registry =
+            FrameContextRegistry::GetFromGraph(frame_node->GetGraph());
+        ASSERT_TRUE(registry);
+        EXPECT_EQ(registry->GetFrameNodeForContext(frame_context.value()),
+                  frame_node);
+      }));
+
+  DeleteNodes();
+  waiter.Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(FrameContextRegistryDisabledTest, UIThreadAccess) {
