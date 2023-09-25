@@ -662,6 +662,37 @@ void UpdateDefaultTask(Profile* profile,
                                suffixes_to_set);
 }
 
+void RemoveDefaultTask(Profile* profile,
+                       const TaskDescriptor& task_descriptor,
+                       const std::set<std::string>& suffixes,
+                       const std::set<std::string>& mime_types) {
+  PrefService* pref_service = profile->GetPrefs();
+  std::string task_id = TaskDescriptorToId(task_descriptor);
+
+  std::set<std::string> suffixes_to_remove;
+  // Suffixes are case insensitive.
+  base::ranges::transform(
+      suffixes, std::inserter(suffixes_to_remove, suffixes_to_remove.begin()),
+      [](const std::string& suffix) { return base::ToLowerASCII(suffix); });
+
+  ScopedDictPrefUpdate mime_type_pref(pref_service,
+                                      prefs::kDefaultTasksByMimeType);
+  for (const auto& mime_type : mime_types) {
+    std::string* pref_value = mime_type_pref->FindString(mime_type);
+    if (pref_value && *pref_value == task_id) {
+      mime_type_pref->Remove(mime_type);
+    }
+  }
+
+  ScopedDictPrefUpdate suffix_pref(pref_service, prefs::kDefaultTasksBySuffix);
+  for (const auto& suffix : suffixes_to_remove) {
+    std::string* pref_value = suffix_pref->FindString(suffix);
+    if (pref_value && *pref_value == task_id) {
+      suffix_pref->Remove(suffix);
+    }
+  }
+}
+
 absl::optional<TaskDescriptor> GetDefaultTaskFromPrefs(
     const PrefService& pref_service,
     const std::string& mime_type,

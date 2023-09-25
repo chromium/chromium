@@ -179,68 +179,86 @@ TEST_F(FileManagerOfficeFileTasksTest, SetOfficeFileHandlersToFilesSWA) {
                       "chrome://file-manager/?a");
 
   // Check no default tasks exist for Doc files.
-  ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-      *profile()->GetPrefs(), "application/msword", ".doc"));
-  ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-      *profile()->GetPrefs(),
+  std::string docx_mime(
       "application/"
-      "vnd.openxmlformats-officedocument.wordprocessingml.document",
-      ".docx"));
+      "vnd.openxmlformats-officedocument.wordprocessingml.document");
+  EXPECT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+      *profile()->GetPrefs(), "application/msword", ".doc"));
+  EXPECT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+      *profile()->GetPrefs(), docx_mime, ".docx"));
   // Set default task for Doc files as a Files App SWA with action id "a".
   SetWordFileHandlerToFilesSWA(profile(), "a");
   // Check the default task for Doc files is `task`.
-  ASSERT_EQ(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+  EXPECT_EQ(file_manager::file_tasks::GetDefaultTaskFromPrefs(
                 *profile()->GetPrefs(), "application/msword", ".doc"),
             task);
-  ASSERT_EQ(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-                *profile()->GetPrefs(),
-                "application/"
-                "vnd.openxmlformats-officedocument.wordprocessingml.document",
-                ".docx"),
+  EXPECT_EQ(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+                *profile()->GetPrefs(), docx_mime, ".docx"),
             task);
+  // Removing an action which is not set should not change the default.
+  RemoveFilesSWAWordFileHandler(profile(), "b");
+  EXPECT_EQ(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+                *profile()->GetPrefs(), "application/msword", ".doc"),
+            task);
+  EXPECT_EQ(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+                *profile()->GetPrefs(), docx_mime, ".docx"),
+            task);
+  // Remove the task.
+  RemoveFilesSWAWordFileHandler(profile(), "a");
+  EXPECT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+      *profile()->GetPrefs(), "application/msword", ".doc"));
+  EXPECT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+      *profile()->GetPrefs(), docx_mime, ".docx"));
 
   // Check no default tasks exist for Excel files.
-  ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+  std::string xlsx_mime(
+      "application/"
+      "vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+  EXPECT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
       *profile()->GetPrefs(), "application/vnd.ms-excel", ".xls"));
-  ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-      *profile()->GetPrefs(),
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      ".xlsx"));
+  EXPECT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+      *profile()->GetPrefs(), xlsx_mime, ".xlsx"));
   // Set default task for Excel files as a Files App SWA with action id "a".
   SetExcelFileHandlerToFilesSWA(profile(), "a");
   // Check the default task for Excel files is `task`.
   ASSERT_EQ(file_manager::file_tasks::GetDefaultTaskFromPrefs(
                 *profile()->GetPrefs(), "application/vnd.ms-excel", ".xls"),
             task);
-  ASSERT_EQ(
-      file_manager::file_tasks::GetDefaultTaskFromPrefs(
-          *profile()->GetPrefs(),
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-          ".xlsx"),
-      task);
+  ASSERT_EQ(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+                *profile()->GetPrefs(), xlsx_mime, ".xlsx"),
+            task);
+  // Remove the task.
+  RemoveFilesSWAExcelFileHandler(profile(), "a");
+  EXPECT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+      *profile()->GetPrefs(), "application/vnd.ms-excel", ".xls"));
+  EXPECT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+      *profile()->GetPrefs(), xlsx_mime, ".xlsx"));
 
   // Check no default tasks exist for Powerpoint files.
-  ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-      *profile()->GetPrefs(), "application/vnd.ms-powerpoint", ".ppt"));
-  ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-      *profile()->GetPrefs(),
+  std::string pptx_mime(
       "application/"
-      "vnd.openxmlformats-officedocument.presentationml.presentation",
-      ".pptx"));
+      "vnd.openxmlformats-officedocument.presentationml.presentation");
+  EXPECT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+      *profile()->GetPrefs(), "application/vnd.ms-powerpoint", ".ppt"));
+  EXPECT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+      *profile()->GetPrefs(), pptx_mime, ".pptx"));
   // Set default task for Powerpoint files as a Files App SWA with action id
   // "a".
   SetPowerPointFileHandlerToFilesSWA(profile(), "a");
   // Check the default task for Powerpoint files is `task`.
-  ASSERT_EQ(
+  EXPECT_EQ(
       file_manager::file_tasks::GetDefaultTaskFromPrefs(
           *profile()->GetPrefs(), "application/vnd.ms-powerpoint", ".ppt"),
       task);
-  ASSERT_EQ(file_manager::file_tasks::GetDefaultTaskFromPrefs(
-                *profile()->GetPrefs(),
-                "application/"
-                "vnd.openxmlformats-officedocument.presentationml.presentation",
-                ".pptx"),
+  EXPECT_EQ(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+                *profile()->GetPrefs(), pptx_mime, ".pptx"),
             task);
+  // Remove the task.
+  RemoveFilesSWAPowerPointFileHandler(profile(), "a");
+  EXPECT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+      *profile()->GetPrefs(), "application/vnd.ms-powerpoint", ".ppt"));
+  EXPECT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+      *profile()->GetPrefs(), pptx_mime, ".pptx"));
 }
 
 }  // namespace file_manager::file_tasks

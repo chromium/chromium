@@ -497,4 +497,27 @@ void SetOfficeFileMovedToGoogleDrive(Profile* profile, base::Time moved) {
   profile->GetPrefs()->SetTime(prefs::kOfficeFileMovedToGoogleDrive, moved);
 }
 
+void RemoveFilesSWAWordFileHandler(Profile* profile,
+                                   const std::string& action_id) {
+  TaskDescriptor task(kFileManagerSwaAppId, TaskType::TASK_TYPE_WEB_APP,
+                      ToSwaActionId(action_id));
+  RemoveDefaultTask(profile, task, WordGroupExtensions(), WordGroupMimeTypes());
+}
+
+void RemoveFilesSWAExcelFileHandler(Profile* profile,
+                                    const std::string& action_id) {
+  TaskDescriptor task(kFileManagerSwaAppId, TaskType::TASK_TYPE_WEB_APP,
+                      ToSwaActionId(action_id));
+  RemoveDefaultTask(profile, task, ExcelGroupExtensions(),
+                    ExcelGroupMimeTypes());
+}
+
+void RemoveFilesSWAPowerPointFileHandler(Profile* profile,
+                                         const std::string& action_id) {
+  TaskDescriptor task(kFileManagerSwaAppId, TaskType::TASK_TYPE_WEB_APP,
+                      ToSwaActionId(action_id));
+  RemoveDefaultTask(profile, task, PowerPointGroupExtensions(),
+                    PowerPointGroupMimeTypes());
+}
+
 }  // namespace file_manager::file_tasks

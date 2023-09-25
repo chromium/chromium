@@ -755,4 +755,35 @@ TEST_F(FileManagerFileTaskPreferencesTest,
   ASSERT_EQ(*default_task_id, files_task_id);
 }
 
+TEST_F(FileManagerFileTaskPreferencesTest, RemoveDefaultTask) {
+  TaskDescriptor app1_view("app1", TASK_TYPE_FILE_BROWSER_HANDLER, "view");
+  TaskDescriptor app1_edit("app1", TASK_TYPE_FILE_BROWSER_HANDLER, "edit");
+  TaskDescriptor app2_view("app2", TASK_TYPE_FILE_BROWSER_HANDLER, "view");
+
+  UpdateDefaultTask(profile(), app1_view, {"eXT1", "ext2"}, {"mime1", "mime2"});
+  UpdateDefaultTask(profile(), app1_edit, {"Ext3"}, {"mime3"});
+  UpdateDefaultTask(profile(), app2_view, {"ext4"}, {"mime4"});
+
+  // Removing app1_edit or app2_view should not change app1_view.
+  RemoveDefaultTask(profile(), app1_edit, {"ext1"}, {"mime1"});
+  RemoveDefaultTask(profile(), app2_view, {"ext1"}, {"mime1"});
+  EXPECT_EQ("app1|file|view", *tasks_by_suffix().FindString("ext1"));
+  EXPECT_EQ("app1|file|view", *tasks_by_mime_type().FindString("mime1"));
+
+  // Suffix match should be case-insensitive. Only specified suffixes or mimes
+  // should be removed, others should not change.
+  RemoveDefaultTask(profile(), app1_view, {"Ext1"}, {"mime1"});
+  EXPECT_EQ(nullptr, tasks_by_suffix().FindString("ext1"));
+  EXPECT_EQ(nullptr, tasks_by_mime_type().FindString("mime1"));
+  EXPECT_EQ("app1|file|view", *tasks_by_suffix().FindString("ext2"));
+  EXPECT_EQ("app1|file|view", *tasks_by_mime_type().FindString("mime2"));
+
+  // Remove all matches for app1_view.
+  RemoveDefaultTask(profile(), app1_view, {"ext1", "ext2"}, {"mime1", "mime2"});
+  EXPECT_EQ(nullptr, tasks_by_suffix().FindString("ext1"));
+  EXPECT_EQ(nullptr, tasks_by_suffix().FindString("ext2"));
+  EXPECT_EQ(nullptr, tasks_by_mime_type().FindString("mime1"));
+  EXPECT_EQ(nullptr, tasks_by_mime_type().FindString("mime2"));
+}
+
 }  // namespace file_manager::file_tasks

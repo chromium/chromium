@@ -216,6 +216,15 @@ void SetExcelFileHandlerToFilesSWA(Profile* profile,
 void SetPowerPointFileHandlerToFilesSWA(Profile* profile,
                                         const std::string& action_id);
 
+// Removes the specified default task for |action_id| for each of the office
+// file types.
+void RemoveFilesSWAWordFileHandler(Profile* profile,
+                                   const std::string& action_id);
+void RemoveFilesSWAExcelFileHandler(Profile* profile,
+                                    const std::string& action_id);
+void RemoveFilesSWAPowerPointFileHandler(Profile* profile,
+                                         const std::string& action_id);
+
 // Sets the user preference storing whether we should always move office files
 // to Google Drive without first asking the user.
 void SetAlwaysMoveOfficeFilesToDrive(Profile* profile, bool complete = true);

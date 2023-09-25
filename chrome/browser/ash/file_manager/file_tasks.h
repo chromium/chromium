@@ -248,6 +248,13 @@ void UpdateDefaultTask(Profile* profile,
                        const std::set<std::string>& suffixes,
                        const std::set<std::string>& mime_types);
 
+// Remove the specified file handler for the given sets of suffixes and MIME
+// types.
+void RemoveDefaultTask(Profile* profile,
+                       const TaskDescriptor& task_descriptor,
+                       const std::set<std::string>& suffixes,
+                       const std::set<std::string>& mime_types);
+
 // Returns the default task for the given |mime_type|/|suffix| combination in
 // |task_out|. If it finds a MIME type match, then it prefers that over a suffix
 // match. If a default can't be found, then it returns absl::nullopt.
