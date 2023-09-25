@@ -61,6 +61,10 @@ class HttpStreamFactory::Job
   // https://crbug.com/718576
   static const int kHTTP2ThrottleMs = 300;
 
+  // Returns true when QUIC is forcibly used for `destination`.
+  static bool OriginToForceQuicOn(const QuicParams& quic_params,
+                                  const url::SchemeHostPort& destination);
+
   // Delegate to report Job's status to HttpStreamRequest and HttpStreamFactory.
   class NET_EXPORT_PRIVATE Delegate {
    public:

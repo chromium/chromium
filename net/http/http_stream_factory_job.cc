@@ -388,6 +388,18 @@ void HttpStreamFactory::Job::GetSSLInfo(SSLInfo* ssl_info) {
 }
 
 // static
+bool HttpStreamFactory::Job::OriginToForceQuicOn(
+    const QuicParams& quic_params,
+    const url::SchemeHostPort& destination) {
+  // TODO(crbug.com/1206799): Consider converting `origins_to_force_quic_on` to
+  // use url::SchemeHostPort.
+  return (
+      base::Contains(quic_params.origins_to_force_quic_on, HostPortPair()) ||
+      base::Contains(quic_params.origins_to_force_quic_on,
+                     HostPortPair::FromSchemeHostPort(destination)));
+}
+
+// static
 bool HttpStreamFactory::Job::ShouldForceQuic(
     HttpNetworkSession* session,
     const url::SchemeHostPort& destination,
@@ -403,13 +415,8 @@ bool HttpStreamFactory::Job::ShouldForceQuic(
   // handled by the socket pools, using an HttpProxyConnectJob.
   if (proxy_info.is_quic())
     return !using_ssl;
-  const QuicParams* quic_params = session->context().quic_context->params();
-  // TODO(crbug.com/1206799): Consider converting `origins_to_force_quic_on` to
-  // use url::SchemeHostPort.
-  return (base::Contains(quic_params->origins_to_force_quic_on,
-                         HostPortPair()) ||
-          base::Contains(quic_params->origins_to_force_quic_on,
-                         HostPortPair::FromSchemeHostPort(destination))) &&
+  return OriginToForceQuicOn(*session->context().quic_context->params(),
+                             destination) &&
          proxy_info.is_direct() &&
          base::EqualsCaseInsensitiveASCII(destination.scheme(),
                                           url::kHttpsScheme);

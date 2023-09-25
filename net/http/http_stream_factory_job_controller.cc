@@ -819,6 +819,8 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
     DCHECK_NE(quic_version, quic::ParsedQuicVersion::Unsupported());
   }
   const bool dns_alpn_h3_job_enabled =
+      !HttpStreamFactory::Job::OriginToForceQuicOn(
+          *session_->context().quic_context->params(), destination) &&
       enable_alternative_services_ &&
       session_->params().use_dns_https_svcb_alpn &&
       base::EqualsCaseInsensitiveASCII(origin_url.scheme(),
