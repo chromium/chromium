@@ -53,7 +53,6 @@
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/webui_url_constants.h"
@@ -64,6 +63,7 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_observer.h"
@@ -2663,7 +2663,7 @@ bool TabStripModel::PolicyAllowsTabClosing(
   web_app::WebAppProvider* provider =
       web_app::WebAppProvider::GetForWebContents(contents);
   // Can be null if there is no tab helper or app id.
-  const web_app::AppId* app_id = web_app::WebAppTabHelper::GetAppId(contents);
+  const webapps::AppId* app_id = web_app::WebAppTabHelper::GetAppId(contents);
   if (!app_id) {
     return true;
   }
