@@ -14,6 +14,8 @@
 #include "content/browser/indexed_db/indexed_db_backing_store.h"
 #include "content/browser/indexed_db/indexed_db_database.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-forward.h"
 
 namespace storage {
@@ -29,7 +31,6 @@ class IndexedDBCursor : public blink::mojom::IDBCursor {
       std::unique_ptr<IndexedDBBackingStore::Cursor> cursor,
       indexed_db::CursorType cursor_type,
       blink::mojom::IDBTaskType task_type,
-      IndexedDBDispatcherHost& dispatcher_host,
       base::WeakPtr<IndexedDBTransaction> transaction,
       mojo::PendingAssociatedRemote<blink::mojom::IDBCursor>& pending_remote);
 
@@ -63,7 +64,6 @@ class IndexedDBCursor : public blink::mojom::IDBCursor {
   IndexedDBCursor(std::unique_ptr<IndexedDBBackingStore::Cursor> cursor,
                   indexed_db::CursorType cursor_type,
                   blink::mojom::IDBTaskType task_type,
-                  IndexedDBDispatcherHost& dispatcher_host,
                   base::WeakPtr<IndexedDBTransaction> transaction);
 
   leveldb::Status ContinueOperation(
@@ -86,8 +86,6 @@ class IndexedDBCursor : public blink::mojom::IDBCursor {
 
   // We rely on the transaction calling Close() to clear this.
   base::WeakPtr<IndexedDBTransaction> transaction_;
-
-  raw_ptr<IndexedDBDispatcherHost> dispatcher_host_;
 
   // Must be destroyed before transaction_.
   std::unique_ptr<IndexedDBBackingStore::Cursor> cursor_;

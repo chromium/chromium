@@ -48,6 +48,7 @@ class SequencedTaskRunner;
 namespace content {
 class IndexedDBBucketContextHandle;
 class IndexedDBClassFactory;
+class IndexedDBClientStateCheckerWrapper;
 class IndexedDBContextImpl;
 class IndexedDBDatabase;
 class TransactionalLevelDBFactory;
@@ -146,8 +147,6 @@ class CONTENT_EXPORT IndexedDBFactory : base::trace_event::MemoryDumpProvider {
       const storage::BucketLocator& bucket_locator,
       const base::FilePath& blob_path,
       std::unique_ptr<TransactionalLevelDBDatabase> db,
-      storage::mojom::BlobStorageContext* blob_storage_context,
-      storage::mojom::FileSystemAccessContext* file_system_access_context,
       std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
       IndexedDBBackingStore::BlobFilesCleanedCallback blob_files_cleaned,
       IndexedDBBackingStore::ReportOutstandingBlobsCallback

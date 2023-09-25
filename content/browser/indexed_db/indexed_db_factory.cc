@@ -45,6 +45,7 @@
 #include "content/browser/indexed_db/indexed_db_bucket_context.h"
 #include "content/browser/indexed_db/indexed_db_bucket_context_handle.h"
 #include "content/browser/indexed_db/indexed_db_class_factory.h"
+#include "content/browser/indexed_db/indexed_db_client_state_checker_wrapper.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "content/browser/indexed_db/indexed_db_data_format_version.h"
@@ -751,12 +752,28 @@ IndexedDBFactory::GetOrCreateBucketContext(const storage::BucketInfo& bucket,
   bucket_delegate.for_each_bucket_context = base::BindRepeating(
       &IndexedDBFactory::ForEachBucketContext, weak_factory_.GetWeakPtr());
 
+  mojo::PendingRemote<storage::mojom::BlobStorageContext> blob_storage_context;
+  // May be null in unit tests.
+  if (context_->blob_storage_context()) {
+    context_->blob_storage_context()->Clone(
+        blob_storage_context.InitWithNewPipeAndPassReceiver());
+  }
+
+  mojo::PendingRemote<storage::mojom::FileSystemAccessContext> fsa_context;
+  // May be null in unit tests.
+  if (context_->file_system_access_context()) {
+    context_->file_system_access_context()->Clone(
+        fsa_context.InitWithNewPipeAndPassReceiver());
+  }
+
   auto bucket_context = std::make_unique<IndexedDBBucketContext>(
       bucket,
       /*persist_for_incognito=*/is_incognito_and_in_memory, clock_,
       &class_factory_->transactional_leveldb_factory(), std::move(lock_manager),
       std::move(bucket_delegate), std::move(backing_store),
-      context_->quota_manager_proxy(), for_each_bucket_context_);
+      context_->quota_manager_proxy(), context_->IOTaskRunner(),
+      std::move(blob_storage_context), std::move(fsa_context),
+      for_each_bucket_context_);
 
   it = bucket_contexts_.emplace(bucket_locator.id, std::move(bucket_context))
            .first;
@@ -771,8 +788,6 @@ std::unique_ptr<IndexedDBBackingStore> IndexedDBFactory::CreateBackingStore(
     const storage::BucketLocator& bucket_locator,
     const base::FilePath& blob_path,
     std::unique_ptr<TransactionalLevelDBDatabase> db,
-    storage::mojom::BlobStorageContext* blob_storage_context,
-    storage::mojom::FileSystemAccessContext* file_system_access_context,
     std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
     IndexedDBBackingStore::BlobFilesCleanedCallback blob_files_cleaned,
     IndexedDBBackingStore::ReportOutstandingBlobsCallback
@@ -780,8 +795,7 @@ std::unique_ptr<IndexedDBBackingStore> IndexedDBFactory::CreateBackingStore(
     scoped_refptr<base::SequencedTaskRunner> idb_task_runner) {
   return std::make_unique<IndexedDBBackingStore>(
       backing_store_mode, transactional_leveldb_factory, bucket_locator,
-      blob_path, std::move(db), blob_storage_context,
-      file_system_access_context, std::move(filesystem_proxy),
+      blob_path, std::move(db), std::move(filesystem_proxy),
       std::move(blob_files_cleaned), std::move(report_outstanding_blobs),
       std::move(idb_task_runner));
 }
@@ -910,7 +924,6 @@ IndexedDBFactory::OpenAndVerifyIndexedDBBackingStore(
   std::unique_ptr<IndexedDBBackingStore> backing_store = CreateBackingStore(
       backing_store_mode, &class_factory_->transactional_leveldb_factory(),
       bucket_locator, blob_path, std::move(database),
-      context_->blob_storage_context(), context_->file_system_access_context(),
       std::move(filesystem_proxy),
       base::BindRepeating(&IndexedDBFactory::BlobFilesCleaned,
                           weak_factory_.GetWeakPtr(), bucket_locator),

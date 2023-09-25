@@ -22,9 +22,13 @@
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
+#include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
+#include "components/services/storage/public/mojom/file_system_access_context.mojom.h"
 #include "content/browser/indexed_db/indexed_db_bucket_context_handle.h"
+#include "content/browser/indexed_db/indexed_db_external_object.h"
 #include "content/browser/indexed_db/indexed_db_task_helper.h"
 #include "content/common/content_export.h"
+#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 
 namespace storage {
@@ -34,6 +38,7 @@ class QuotaManagerProxy;
 namespace content {
 class IndexedDBBackingStore;
 class IndexedDBDatabase;
+class IndexedDBDataItemReader;
 class IndexedDBFactory;
 class IndexedDBPreCloseTaskQueue;
 class TransactionalLevelDBFactory;
@@ -158,6 +163,11 @@ class CONTENT_EXPORT IndexedDBBucketContext {
       Delegate&& delegate,
       std::unique_ptr<IndexedDBBackingStore> backing_store,
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
+      scoped_refptr<base::TaskRunner> io_task_runner,
+      mojo::PendingRemote<storage::mojom::BlobStorageContext>
+          blob_storage_context,
+      mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
+          file_system_access_context,
       InstanceClosure initialization_closure);
 
   IndexedDBBucketContext(const IndexedDBBucketContext&) = delete;
@@ -194,6 +204,12 @@ class CONTENT_EXPORT IndexedDBBucketContext {
   void CheckCanUseDiskSpace(
       int64_t space_requested,
       base::OnceCallback<void(bool)> disk_space_check_callback);
+
+  // Create external objects from |objects| and store the results in
+  // |mojo_objects|. |mojo_objects| must be the same length as |objects|.
+  void CreateAllExternalObjects(
+      const std::vector<IndexedDBExternalObject>& objects,
+      std::vector<blink::mojom::IDBExternalObjectPtr>* mojo_objects);
 
   const storage::BucketInfo& bucket_info() { return bucket_info_; }
   storage::BucketLocator bucket_locator() {
@@ -240,6 +256,13 @@ class CONTENT_EXPORT IndexedDBBucketContext {
 
   storage::QuotaManagerProxy* quota_manager() {
     return quota_manager_proxy_.get();
+  }
+
+  storage::mojom::BlobStorageContext* blob_storage_context() {
+    return blob_storage_context_.get();
+  }
+  storage::mojom::FileSystemAccessContext* file_system_access_context() {
+    return file_system_access_context_.get();
   }
 
  private:
@@ -297,6 +320,15 @@ class CONTENT_EXPORT IndexedDBBucketContext {
   // since `bucket_space_remaining_timestamp_`.
   int64_t GetBucketSpaceToAllot();
 
+  // Bind `receiver` to read from the file at `path`.
+  void BindFileReader(
+      const base::FilePath& path,
+      base::Time expected_modification_time,
+      base::OnceClosure release_callback,
+      mojo::PendingReceiver<storage::mojom::BlobDataItemReader> receiver);
+  // Removes all readers for this file path.
+  void RemoveBoundReaders(const base::FilePath& path);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   storage::BucketInfo bucket_info_;
@@ -341,6 +373,20 @@ class CONTENT_EXPORT IndexedDBBucketContext {
   // Timestamp when `bucket_space_remaining_` was last fetched from the quota
   // manager.
   base::TimeTicks bucket_space_remaining_timestamp_;
+
+  // Members in the following block are used for `CreateAllExternalObjects`.
+  // Shared task runner used to read blob files on.
+  const scoped_refptr<base::TaskRunner> file_task_runner_;
+  // Shared task runner used for async I/O while reading blob files.
+  const scoped_refptr<base::TaskRunner> io_task_runner_;
+  // Mojo connection to `BlobStorageContext`, which runs on the IO thread.
+  mojo::Remote<storage::mojom::BlobStorageContext> blob_storage_context_;
+  // Mojo connection to `FileSystemAccessContextImpl`, which runs on the UI
+  // thread.
+  mojo::Remote<storage::mojom::FileSystemAccessContext>
+      file_system_access_context_;
+  std::map<base::FilePath, std::unique_ptr<IndexedDBDataItemReader>>
+      file_reader_map_;
 
   std::unique_ptr<IndexedDBPreCloseTaskQueue> pre_close_task_queue_;
 

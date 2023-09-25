@@ -256,6 +256,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobStorageContext
                        bool flush_on_write,
                        absl::optional<base::Time> last_modified,
                        WriteBlobToFileCallback callback) override;
+  void Clone(mojo::PendingReceiver<mojom::BlobStorageContext> cloned) override;
 
   base::FilePath profile_directory_;
   BlobStorageRegistry registry_;

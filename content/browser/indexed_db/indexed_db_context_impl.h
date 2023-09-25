@@ -64,7 +64,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
       scoped_refptr<IndexedDBContextImpl>&& context);
 
   // If `base_data_path` is empty, nothing will be saved to disk.
-  // `task_runner` is optional, and only set during testing.
   // This is *not* called on the IDBTaskRunner, unlike most other functions.
   IndexedDBContextImpl(
       const base::FilePath& base_data_path,
@@ -162,8 +161,13 @@ class CONTENT_EXPORT IndexedDBContextImpl
 
   int64_t GetBucketDiskUsage(const storage::BucketLocator& bucket_locator);
 
-  // This getter is thread-safe.
-  base::SequencedTaskRunner* IDBTaskRunner() { return idb_task_runner_.get(); }
+  const scoped_refptr<base::SequencedTaskRunner>& IDBTaskRunner() {
+    return idb_task_runner_;
+  }
+
+  const scoped_refptr<base::TaskRunner>& IOTaskRunner() {
+    return io_task_runner_;
+  }
 
   // Methods called by IndexedDBFactory or IndexedDBDispatcherHost for
   // quota support.
@@ -299,6 +303,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
       std::vector<storage::QuotaErrorOr<storage::BucketInfo>> bucket_infos);
 
   const scoped_refptr<base::SequencedTaskRunner> idb_task_runner_;
+  const scoped_refptr<base::TaskRunner> io_task_runner_;
   IndexedDBDispatcherHost dispatcher_host_;
 
   // Bound and accessed on the `idb_task_runner_`.

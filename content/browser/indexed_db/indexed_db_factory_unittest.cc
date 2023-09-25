@@ -1036,8 +1036,7 @@ TEST_F(IndexedDBFactoryTest, GetDatabaseNames_ExistingFactory) {
 class LookingForQuotaErrorMockFactoryClient : public IndexedDBFactoryClient {
  public:
   LookingForQuotaErrorMockFactoryClient()
-      : IndexedDBFactoryClient(nullptr,
-                               mojo::NullAssociatedRemote(),
+      : IndexedDBFactoryClient(mojo::NullAssociatedRemote(),
                                base::SequencedTaskRunner::GetCurrentDefault()) {
   }
   ~LookingForQuotaErrorMockFactoryClient() override = default;
@@ -1069,7 +1068,8 @@ TEST_F(IndexedDBFactoryTest, QuotaErrorOnDiskFull) {
       std::make_unique<LookingForQuotaErrorMockFactoryClient>();
   auto dummy_database_callbacks =
       base::MakeRefCounted<IndexedDBDatabaseCallbacks>(
-          nullptr, mojo::NullAssociatedRemote(), context()->IDBTaskRunner());
+          nullptr, mojo::NullAssociatedRemote(),
+          context()->IDBTaskRunner().get());
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
   auto bucket_locator = storage::BucketLocator();

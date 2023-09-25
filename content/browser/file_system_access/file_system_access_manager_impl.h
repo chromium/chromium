@@ -154,6 +154,8 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
       const std::vector<uint8_t>& bits,
       mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken> token)
       override;
+  void Clone(mojo::PendingReceiver<storage::mojom::FileSystemAccessContext>
+                 receiver) override;
 
   // FileSystemAccessEntryFactory:
   blink::mojom::FileSystemAccessEntryPtr CreateFileEntryFromPath(

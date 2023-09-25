@@ -64,8 +64,6 @@
 #include "third_party/zlib/google/zip.h"
 #include "url/origin.h"
 
-using storage::DatabaseUtil;
-
 namespace content {
 
 namespace {
@@ -127,7 +125,8 @@ IndexedDBContextImpl::IndexedDBContextImpl(
                      base::TaskPriority::USER_VISIBLE,
                      // BLOCK_SHUTDOWN to support clearing session-only storage.
                      base::TaskShutdownBehavior::BLOCK_SHUTDOWN}))),
-      dispatcher_host_(this, std::move(io_task_runner)),
+      io_task_runner_(std::move(io_task_runner)),
+      dispatcher_host_(this),
       base_data_path_(base_data_path.empty() ? base::FilePath()
                                              : base_data_path),
       force_keep_session_state_(false),

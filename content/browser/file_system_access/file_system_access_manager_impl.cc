@@ -1017,6 +1017,11 @@ void FileSystemAccessManagerImpl::DeserializeHandle(
   }
 }
 
+void FileSystemAccessManagerImpl::Clone(
+    mojo::PendingReceiver<storage::mojom::FileSystemAccessContext> receiver) {
+  BindInternalsReceiver(std::move(receiver));
+}
+
 blink::mojom::FileSystemAccessEntryPtr
 FileSystemAccessManagerImpl::CreateFileEntryFromPath(
     const BindingContext& binding_context,

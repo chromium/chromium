@@ -185,7 +185,6 @@ class CONTENT_EXPORT IndexedDBDatabase {
                                  std::u16string old_name);
 
   leveldb::Status GetOperation(
-      base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host,
       int64_t object_store_id,
       int64_t index_id,
       std::unique_ptr<blink::IndexedDBKeyRange> key_range,
@@ -194,7 +193,6 @@ class CONTENT_EXPORT IndexedDBDatabase {
       IndexedDBTransaction* transaction);
 
   leveldb::Status GetAllOperation(
-      base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host,
       int64_t object_store_id,
       int64_t index_id,
       std::unique_ptr<blink::IndexedDBKeyRange> key_range,
@@ -248,7 +246,6 @@ class CONTENT_EXPORT IndexedDBDatabase {
   leveldb::Status OpenCursorOperation(
       std::unique_ptr<OpenCursorOperationParams> params,
       const storage::BucketLocator& bucket_locator,
-      base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host,
       IndexedDBTransaction* transaction);
 
   leveldb::Status CountOperation(

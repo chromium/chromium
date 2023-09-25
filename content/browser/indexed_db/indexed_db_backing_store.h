@@ -29,8 +29,6 @@
 #include "components/services/storage/indexed_db/locks/partitioned_lock.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/filesystem/filesystem_proxy.h"
-#include "components/services/storage/public/mojom/blob_storage_context.mojom-forward.h"
-#include "components/services/storage/public/mojom/file_system_access_context.mojom-forward.h"
 #include "content/browser/indexed_db/indexed_db.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
 #include "content/browser/indexed_db/indexed_db_external_object_storage.h"
@@ -391,8 +389,6 @@ class CONTENT_EXPORT IndexedDBBackingStore {
       const storage::BucketLocator& bucket_locator,
       const base::FilePath& blob_path,
       std::unique_ptr<TransactionalLevelDBDatabase> db,
-      storage::mojom::BlobStorageContext* blob_storage_context,
-      storage::mojom::FileSystemAccessContext* file_system_access_context,
       std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
       BlobFilesCleanedCallback blob_files_cleaned,
       ReportOutstandingBlobsCallback report_outstanding_blobs,
@@ -662,6 +658,10 @@ class CONTENT_EXPORT IndexedDBBackingStore {
  protected:
   friend class IndexedDBBucketContext;
 
+  void set_bucket_context(IndexedDBBucketContext* bucket_context) {
+    bucket_context_ = bucket_context;
+  }
+
   leveldb::Status AnyDatabaseContainsBlobs(bool* blobs_exist);
 
   // A helper function for V4 schema migration.
@@ -730,19 +730,13 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   // Can run a journal cleaning job if one is pending.
   void DidCommitTransaction();
 
+  // Owns `this`. Should be initialized shortly after construction.
+  raw_ptr<IndexedDBBucketContext> bucket_context_ = nullptr;
+
   const Mode backing_store_mode_;
   const raw_ptr<TransactionalLevelDBFactory> transactional_leveldb_factory_;
   const storage::BucketLocator bucket_locator_;
   const base::FilePath blob_path_;
-
-  // IndexedDB can store blobs and File System Access handles. These mojo
-  // interfaces are used to make this possible by communicating with the
-  // relevant subsystems.
-  // Raw pointers are safe because the bindings are owned by
-  // IndexedDBContextImpl.
-  const raw_ptr<storage::mojom::BlobStorageContext> blob_storage_context_;
-  const raw_ptr<storage::mojom::FileSystemAccessContext>
-      file_system_access_context_;
 
   // Filesystem proxy to use for file operations.  nullptr if in memory.
   const std::unique_ptr<storage::FilesystemProxy> filesystem_proxy_;

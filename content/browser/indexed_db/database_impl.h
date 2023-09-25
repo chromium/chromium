@@ -27,19 +27,16 @@ class IndexedDBKeyRange;
 
 namespace content {
 class IndexedDBConnection;
-class IndexedDBDispatcherHost;
 
 class DatabaseImpl : public blink::mojom::IDBDatabase {
  public:
   static mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> CreateAndBind(
-      std::unique_ptr<IndexedDBConnection> connection,
-      IndexedDBDispatcherHost* dispatcher_host);
+      std::unique_ptr<IndexedDBConnection> connection);
 
   ~DatabaseImpl() override;
 
  private:
-  DatabaseImpl(std::unique_ptr<IndexedDBConnection> connection,
-               IndexedDBDispatcherHost* dispatcher_host);
+  explicit DatabaseImpl(std::unique_ptr<IndexedDBConnection> connection);
 
   DatabaseImpl(const DatabaseImpl&) = delete;
   DatabaseImpl& operator=(const DatabaseImpl&) = delete;
@@ -125,9 +122,6 @@ class DatabaseImpl : public blink::mojom::IDBDatabase {
   const storage::BucketInfo& GetBucketInfo();
   storage::BucketLocator GetBucketLocator();
 
-  // This raw pointer is safe because all DatabaseImpl instances are owned by
-  // an IndexedDBDispatcherHost.
-  raw_ptr<IndexedDBDispatcherHost> dispatcher_host_;
   std::unique_ptr<IndexedDBConnection> connection_;
 
   SEQUENCE_CHECKER(sequence_checker_);

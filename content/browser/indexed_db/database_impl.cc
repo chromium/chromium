@@ -16,7 +16,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/indexed_db/indexed_db_callback_helpers.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
-#include "content/browser/indexed_db/indexed_db_dispatcher_host.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
 #include "content/browser/indexed_db/transaction_impl.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -44,20 +43,16 @@ const char kTransactionAlreadyExists[] = "Transaction already exists";
 
 // static
 mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase>
-DatabaseImpl::CreateAndBind(std::unique_ptr<IndexedDBConnection> connection,
-                            IndexedDBDispatcherHost* dispatcher_host) {
+DatabaseImpl::CreateAndBind(std::unique_ptr<IndexedDBConnection> connection) {
   mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_remote;
   mojo::MakeSelfOwnedAssociatedReceiver(
-      base::WrapUnique(
-          new DatabaseImpl(std::move(connection), dispatcher_host)),
+      base::WrapUnique(new DatabaseImpl(std::move(connection))),
       pending_remote.InitWithNewEndpointAndPassReceiver());
   return pending_remote;
 }
 
-DatabaseImpl::DatabaseImpl(std::unique_ptr<IndexedDBConnection> connection,
-                           IndexedDBDispatcherHost* dispatcher_host)
-    : dispatcher_host_(dispatcher_host),
-      connection_(std::move(connection)) {
+DatabaseImpl::DatabaseImpl(std::unique_ptr<IndexedDBConnection> connection)
+    : connection_(std::move(connection)) {
   DCHECK(connection_);
 }
 
@@ -209,8 +204,7 @@ void DatabaseImpl::Get(int64_t transaction_id,
 
   transaction->ScheduleTask(BindWeakOperation(
       &IndexedDBDatabase::GetOperation, connection_->database()->AsWeakPtr(),
-      dispatcher_host_->AsWeakPtr(), object_store_id, index_id,
-      std::make_unique<IndexedDBKeyRange>(key_range),
+      object_store_id, index_id, std::make_unique<IndexedDBKeyRange>(key_range),
       key_only ? indexed_db::CURSOR_KEY_ONLY : indexed_db::CURSOR_KEY_AND_VALUE,
       std::move(aborting_callback)));
 }
@@ -274,8 +268,7 @@ void DatabaseImpl::GetAll(int64_t transaction_id,
 
   transaction->ScheduleTask(BindWeakOperation(
       &IndexedDBDatabase::GetAllOperation, connection_->database()->AsWeakPtr(),
-      dispatcher_host_->AsWeakPtr(), object_store_id, index_id,
-      std::make_unique<IndexedDBKeyRange>(key_range),
+      object_store_id, index_id, std::make_unique<IndexedDBKeyRange>(key_range),
       key_only ? indexed_db::CURSOR_KEY_ONLY : indexed_db::CURSOR_KEY_AND_VALUE,
       max_count, std::move(aborting_callback)));
 }
@@ -422,7 +415,7 @@ void DatabaseImpl::OpenCursor(
   transaction->ScheduleTask(
       BindWeakOperation(&IndexedDBDatabase::OpenCursorOperation,
                         connection_->database()->AsWeakPtr(), std::move(params),
-                        GetBucketLocator(), dispatcher_host_->AsWeakPtr()));
+                        GetBucketLocator()));
 }
 
 void DatabaseImpl::Count(int64_t transaction_id,

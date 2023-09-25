@@ -33,4 +33,7 @@ interface FileSystemAccessContext {
       blink.mojom.StorageKey storage_key,
       array<uint8> bits,
       pending_receiver<blink.mojom.FileSystemAccessTransferToken> token);
+
+  // Binds another mojo pipe to `this`.
+  Clone(pending_receiver<FileSystemAccessContext> receiever);
 };

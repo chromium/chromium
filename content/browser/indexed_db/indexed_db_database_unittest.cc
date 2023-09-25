@@ -86,7 +86,9 @@ class IndexedDBDatabaseTest : public ::testing::Test {
         &IndexedDBClassFactory::Get()->transactional_leveldb_factory(),
         std::make_unique<PartitionedLockManager>(), std::move(delegate),
         std::make_unique<IndexedDBFakeBackingStore>(), quota_manager_proxy_,
-        base::DoNothing());
+        /*io_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault(),
+        /*blob_storage_context=*/mojo::NullRemote(),
+        /*file_system_access_context=*/mojo::NullRemote(), base::DoNothing());
 
     db_ = IndexedDBClassFactory::Get()->CreateIndexedDBDatabase(
         u"db", *bucket_context_, IndexedDBDatabase::Identifier());
@@ -211,7 +213,6 @@ class MockFactoryClient : public IndexedDBFactoryClient {
  public:
   MockFactoryClient()
       : IndexedDBFactoryClient(
-            nullptr,
             mojo::NullAssociatedRemote(),
             base::SingleThreadTaskRunner::GetCurrentDefault()) {}
   ~MockFactoryClient() override = default;
@@ -497,7 +498,9 @@ class IndexedDBDatabaseOperationTest : public testing::Test {
         &IndexedDBClassFactory::Get()->transactional_leveldb_factory(),
         std::make_unique<PartitionedLockManager>(), std::move(delegate),
         std::make_unique<IndexedDBFakeBackingStore>(), quota_manager_proxy_,
-        base::DoNothing());
+        /*io_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault(),
+        /*blob_storage_context=*/mojo::NullRemote(),
+        /*file_system_access_context=*/mojo::NullRemote(), base::DoNothing());
 
     db_ = IndexedDBClassFactory::Get()->CreateIndexedDBDatabase(
         u"db", *bucket_context_, IndexedDBDatabase::Identifier());

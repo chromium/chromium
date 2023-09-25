@@ -39,7 +39,9 @@
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_iterator.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_transaction.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
+#include "components/services/storage/public/mojom/file_system_access_context.mojom.h"
 #include "content/browser/indexed_db/indexed_db_active_blob_registry.h"
+#include "content/browser/indexed_db/indexed_db_bucket_context.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "content/browser/indexed_db/indexed_db_data_format_version.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
@@ -943,8 +945,6 @@ IndexedDBBackingStore::IndexedDBBackingStore(
     const storage::BucketLocator& bucket_locator,
     const base::FilePath& blob_path,
     std::unique_ptr<TransactionalLevelDBDatabase> db,
-    storage::mojom::BlobStorageContext* blob_storage_context,
-    storage::mojom::FileSystemAccessContext* file_system_access_context,
     std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
     BlobFilesCleanedCallback blob_files_cleaned,
     ReportOutstandingBlobsCallback report_outstanding_blobs,
@@ -954,8 +954,6 @@ IndexedDBBackingStore::IndexedDBBackingStore(
       bucket_locator_(bucket_locator),
       blob_path_(backing_store_mode == Mode::kInMemory ? base::FilePath()
                                                        : blob_path),
-      blob_storage_context_(blob_storage_context),
-      file_system_access_context_(file_system_access_context),
       filesystem_proxy_(std::move(filesystem_proxy)),
       origin_identifier_(ComputeOriginIdentifier(bucket_locator)),
       idb_task_runner_(std::move(idb_task_runner)),
@@ -4343,9 +4341,6 @@ leveldb::Status IndexedDBBackingStore::Transaction::WriteNewBlobs(
 
   write_state_.emplace(num_objects_to_write, std::move(callback));
 
-  storage::mojom::BlobStorageContext* blob_storage_context =
-      backing_store_->blob_storage_context_;
-
   auto write_result_callback = base::BindRepeating(
       [](base::WeakPtr<Transaction> transaction,
          storage::mojom::WriteBlobToFileResult result) {
@@ -4407,12 +4402,13 @@ leveldb::Status IndexedDBBackingStore::Transaction::WriteNewBlobs(
                               ? absl::nullopt
                               : absl::make_optional(entry.last_modified());
 #endif
-          blob_storage_context->WriteBlobToFile(
-              std::move(pending_blob),
-              backing_store_->GetBlobFileName(database_id_,
-                                              entry.blob_number()),
-              IndexedDBBackingStore::ShouldSyncOnCommit(durability_),
-              last_modified, write_result_callback);
+          backing_store_->bucket_context_->blob_storage_context()
+              ->WriteBlobToFile(
+                  std::move(pending_blob),
+                  backing_store_->GetBlobFileName(database_id_,
+                                                  entry.blob_number()),
+                  IndexedDBBackingStore::ShouldSyncOnCommit(durability_),
+                  last_modified, write_result_callback);
           break;
         }
         case IndexedDBExternalObject::ObjectType::kFileSystemAccessHandle: {
@@ -4427,31 +4423,34 @@ leveldb::Status IndexedDBBackingStore::Transaction::WriteNewBlobs(
           entry.file_system_access_token_remote()->Clone(
               token_clone.InitWithNewPipeAndPassReceiver());
 
-          backing_store_->file_system_access_context_->SerializeHandle(
-              std::move(token_clone),
-              base::BindOnce(
-                  [](base::WeakPtr<Transaction> transaction,
-                     IndexedDBExternalObject* object,
-                     base::OnceCallback<void(
-                         storage::mojom::WriteBlobToFileResult)> callback,
-                     const std::vector<uint8_t>& serialized_token) {
-                    // `object` is owned by `transaction`, so make sure
-                    // `transaction` is still valid before doing anything else.
-                    if (!transaction)
-                      return;
-                    if (serialized_token.empty()) {
-                      std::move(callback).Run(
-                          storage::mojom::WriteBlobToFileResult::kError);
-                      return;
-                    }
-                    object->set_serialized_file_system_access_handle(
-                        serialized_token);
-                    std::move(callback).Run(
-                        storage::mojom::WriteBlobToFileResult::kSuccess);
-                  },
-                  weak_ptr_factory_.GetWeakPtr(),
-                  base::UnsafeDanglingUntriaged(&entry),
-                  write_result_callback));
+          backing_store_->bucket_context_->file_system_access_context()
+              ->SerializeHandle(
+                  std::move(token_clone),
+                  base::BindOnce(
+                      [](base::WeakPtr<Transaction> transaction,
+                         IndexedDBExternalObject* object,
+                         base::OnceCallback<void(
+                             storage::mojom::WriteBlobToFileResult)> callback,
+                         const std::vector<uint8_t>& serialized_token) {
+                        // `object` is owned by `transaction`, so make sure
+                        // `transaction` is still valid before doing anything
+                        // else.
+                        if (!transaction) {
+                          return;
+                        }
+                        if (serialized_token.empty()) {
+                          std::move(callback).Run(
+                              storage::mojom::WriteBlobToFileResult::kError);
+                          return;
+                        }
+                        object->set_serialized_file_system_access_handle(
+                            serialized_token);
+                        std::move(callback).Run(
+                            storage::mojom::WriteBlobToFileResult::kSuccess);
+                      },
+                      weak_ptr_factory_.GetWeakPtr(),
+                      base::UnsafeDanglingUntriaged(&entry),
+                      write_result_callback));
           break;
         }
       }

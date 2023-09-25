@@ -54,8 +54,6 @@ TEST(IndexedDBIOErrorTest, CleanUpTest) {
               leveldb::Status::IOError("It's broken!"), path),
           nullptr, task_runner.get(),
           TransactionalLevelDBDatabase::kDefaultMaxOpenIteratorsPerDatabase),
-      /*blob_storage_context=*/nullptr,
-      /*file_system_access_context=*/nullptr,
       /*filesystem_proxy=*/nullptr,
       IndexedDBBackingStore::BlobFilesCleanedCallback(),
       IndexedDBBackingStore::ReportOutstandingBlobsCallback(), task_runner);
@@ -94,8 +92,6 @@ TEST(IndexedDBNonRecoverableIOErrorTest, NuancedCleanupTest) {
             FakeLevelDBFactory::GetBrokenLevelDB(error_status, path), nullptr,
             task_runner.get(),
             TransactionalLevelDBDatabase::kDefaultMaxOpenIteratorsPerDatabase),
-        /*blob_storage_context=*/nullptr,
-        /*file_system_access_context=*/nullptr,
         /*filesystem_proxy=*/nullptr,
         IndexedDBBackingStore::BlobFilesCleanedCallback(),
         IndexedDBBackingStore::ReportOutstandingBlobsCallback(), task_runner);

@@ -743,4 +743,9 @@ void BlobStorageContext::WriteBlobToFile(
           std::move(callback)));
 }
 
+void BlobStorageContext::Clone(
+    mojo::PendingReceiver<mojom::BlobStorageContext> receiver) {
+  Bind(std::move(receiver));
+}
+
 }  // namespace storage

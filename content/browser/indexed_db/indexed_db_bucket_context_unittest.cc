@@ -52,7 +52,9 @@ class IndexedDBBucketContextTest : public testing::Test {
         std::make_unique<PartitionedLockManager>(),
         IndexedDBBucketContext::Delegate(),
         std::make_unique<IndexedDBFakeBackingStore>(), quota_manager_proxy_,
-        base::DoNothing());
+        /*io_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault(),
+        /*blob_storage_context=*/mojo::NullRemote(),
+        /*file_system_access_context=*/mojo::NullRemote(), base::DoNothing());
   }
 
   void SetQuotaLeft(int64_t quota_manager_response) {

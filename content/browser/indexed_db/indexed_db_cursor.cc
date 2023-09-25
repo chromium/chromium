@@ -52,11 +52,10 @@ IndexedDBCursor* IndexedDBCursor::CreateAndBind(
     std::unique_ptr<IndexedDBBackingStore::Cursor> cursor,
     indexed_db::CursorType cursor_type,
     blink::mojom::IDBTaskType task_type,
-    IndexedDBDispatcherHost& dispatcher_host,
     base::WeakPtr<IndexedDBTransaction> transaction,
     mojo::PendingAssociatedRemote<blink::mojom::IDBCursor>& pending_remote) {
   auto instance = base::WrapUnique(new IndexedDBCursor(
-      std::move(cursor), cursor_type, task_type, dispatcher_host, transaction));
+      std::move(cursor), cursor_type, task_type, transaction));
   IndexedDBCursor* instance_ptr = instance.get();
   mojo::MakeSelfOwnedAssociatedReceiver(
       std::move(instance), pending_remote.InitWithNewEndpointAndPassReceiver());
@@ -67,7 +66,6 @@ IndexedDBCursor::IndexedDBCursor(
     std::unique_ptr<IndexedDBBackingStore::Cursor> cursor,
     indexed_db::CursorType cursor_type,
     blink::mojom::IDBTaskType task_type,
-    IndexedDBDispatcherHost& dispatcher_host,
     base::WeakPtr<IndexedDBTransaction> transaction)
     : bucket_locator_(transaction->BackingStoreTransaction()
                           ->backing_store()
@@ -75,7 +73,6 @@ IndexedDBCursor::IndexedDBCursor(
       task_type_(task_type),
       cursor_type_(cursor_type),
       transaction_(std::move(transaction)),
-      dispatcher_host_(&dispatcher_host),
       cursor_(std::move(cursor)) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("IndexedDB", "IndexedDBCursor::open", this);
 }
@@ -140,8 +137,8 @@ leveldb::Status IndexedDBCursor::AdvanceOperation(
   if (value) {
     mojo_value = IndexedDBValue::ConvertAndEraseValue(value);
     external_objects.swap(value->external_objects);
-    dispatcher_host_->CreateAllExternalObjects(
-        bucket_locator_, external_objects, &mojo_value->external_objects);
+    transaction_->bucket_context()->CreateAllExternalObjects(
+        external_objects, &mojo_value->external_objects);
   } else {
     mojo_value = blink::mojom::IDBValue::New();
   }
@@ -219,8 +216,8 @@ leveldb::Status IndexedDBCursor::ContinueOperation(
   if (value) {
     mojo_value = IndexedDBValue::ConvertAndEraseValue(value);
     external_objects.swap(value->external_objects);
-    dispatcher_host_->CreateAllExternalObjects(
-        bucket_locator_, external_objects, &mojo_value->external_objects);
+    transaction_->bucket_context()->CreateAllExternalObjects(
+        external_objects, &mojo_value->external_objects);
   } else {
     mojo_value = blink::mojom::IDBValue::New();
   }
@@ -341,9 +338,8 @@ leveldb::Status IndexedDBCursor::PrefetchIterationOperation(
   for (size_t i = 0; i < found_values.size(); ++i) {
     mojo_values.push_back(
         IndexedDBValue::ConvertAndEraseValue(&found_values[i]));
-    dispatcher_host_->CreateAllExternalObjects(
-        bucket_locator_, found_values[i].external_objects,
-        &mojo_values[i]->external_objects);
+    transaction_->bucket_context()->CreateAllExternalObjects(
+        found_values[i].external_objects, &mojo_values[i]->external_objects);
   }
 
   std::move(callback).Run(blink::mojom::IDBCursorResult::NewValues(

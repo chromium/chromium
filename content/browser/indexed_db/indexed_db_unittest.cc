@@ -425,8 +425,7 @@ class ForceCloseFactoryClient : public IndexedDBFactoryClient {
  public:
   ForceCloseFactoryClient(scoped_refptr<IndexedDBContextImpl> idb_context,
                           const storage::BucketInfo& bucket_info)
-      : IndexedDBFactoryClient(nullptr,
-                               mojo::NullAssociatedRemote(),
+      : IndexedDBFactoryClient(mojo::NullAssociatedRemote(),
                                idb_context->IDBTaskRunner()),
         idb_context_(idb_context),
         bucket_locator_(bucket_info.ToBucketLocator()) {}

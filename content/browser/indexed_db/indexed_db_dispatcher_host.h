@@ -18,24 +18,20 @@
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
-#include "components/services/storage/public/mojom/blob_storage_context.mojom-forward.h"
-#include "components/services/storage/public/mojom/file_system_access_context.mojom-forward.h"
 #include "content/browser/indexed_db/indexed_db_client_state_checker_wrapper.h"
-#include "content/browser/indexed_db/indexed_db_external_object.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/unique_associated_receiver_set.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
 namespace base {
 class SequencedTaskRunner;
-class TaskRunner;
 }  // namespace base
 
 namespace content {
 class IndexedDBContextImpl;
-class IndexedDBDataItemReader;
 
 // All calls but the constructor (including destruction) must
 // happen on the IDB sequenced task runner.
@@ -65,9 +61,7 @@ class CONTENT_EXPORT IndexedDBDispatcherHost : public blink::mojom::IDBFactory {
     scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker;
   };
 
-  explicit IndexedDBDispatcherHost(
-      IndexedDBContextImpl* indexed_db_context,
-      scoped_refptr<base::TaskRunner> io_task_runner);
+  explicit IndexedDBDispatcherHost(IndexedDBContextImpl* indexed_db_context);
 
   IndexedDBDispatcherHost(const IndexedDBDispatcherHost&) = delete;
   IndexedDBDispatcherHost& operator=(const IndexedDBDispatcherHost&) = delete;
@@ -86,27 +80,8 @@ class CONTENT_EXPORT IndexedDBDispatcherHost : public blink::mojom::IDBFactory {
     return weak_factory_.GetWeakPtr();
   }
 
-  // Bind this receiver to read from this given file.
-  void BindFileReader(
-      const base::FilePath& path,
-      base::Time expected_modification_time,
-      base::RepeatingClosure release_callback,
-      mojo::PendingReceiver<storage::mojom::BlobDataItemReader> receiver);
-  // Removes all readers for this file path.
-  void RemoveBoundReaders(const base::FilePath& path);
-
-  // Create external objects from |objects| and store the results in
-  // |mojo_objects|.  |mojo_objects| must be the same length as |objects|.
-  void CreateAllExternalObjects(
-      const storage::BucketLocator& bucket_locator,
-      const std::vector<IndexedDBExternalObject>& objects,
-      std::vector<blink::mojom::IDBExternalObjectPtr>* mojo_objects);
-
  private:
   friend class IndexedDBDispatcherHostTest;
-
-  storage::mojom::BlobStorageContext* mojo_blob_storage_context();
-  storage::mojom::FileSystemAccessContext* file_system_access_context();
 
   // blink::mojom::IDBFactory implementation:
   void GetDatabaseInfo(GetDatabaseInfoCallback callback) override;
@@ -131,17 +106,9 @@ class CONTENT_EXPORT IndexedDBDispatcherHost : public blink::mojom::IDBFactory {
   // rewriter to see that |.get()| needs to be appended.
   RAW_PTR_EXCLUSION IndexedDBContextImpl* indexed_db_context_;
 
-  // Shared task runner used for async I/O while reading blob files.
-  const scoped_refptr<base::TaskRunner> io_task_runner_;
-  // Shared task runner used to read blob files on.
-  const scoped_refptr<base::TaskRunner> file_task_runner_;
-
   mojo::ReceiverSet<blink::mojom::IDBFactory,
                     IndexedDBDispatcherHost::ReceiverContext>
       receivers_;
-
-  std::map<base::FilePath, std::unique_ptr<IndexedDBDataItemReader>>
-      file_reader_map_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

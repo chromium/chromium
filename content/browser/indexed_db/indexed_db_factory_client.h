@@ -14,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
-#include "content/browser/indexed_db/indexed_db_dispatcher_host.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -40,7 +39,6 @@ struct IndexedDBDataLossInfo;
 class CONTENT_EXPORT IndexedDBFactoryClient {
  public:
   IndexedDBFactoryClient(
-      base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host,
       mojo::PendingAssociatedRemote<blink::mojom::IDBFactoryClient>
           pending_client,
       scoped_refptr<base::SequencedTaskRunner> idb_runner);
@@ -84,7 +82,6 @@ class CONTENT_EXPORT IndexedDBFactoryClient {
   // The "blocked" event should be sent at most once per request.
   bool sent_blocked_ = false;
 
-  base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host_;
   scoped_refptr<base::SequencedTaskRunner> idb_runner_;
   mojo::AssociatedRemote<blink::mojom::IDBFactoryClient> remote_;
 

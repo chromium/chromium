@@ -29,7 +29,7 @@ class CONTENT_EXPORT IndexedDBExternalObject {
 
   // Partially converts a list of |objects| to their mojo representation. The
   // mojo representation won't be complete until later
-  // IndexedDBDispatcherHost::CreateAllExternalObjects is also called with the
+  // IndexedDBBucketContext::CreateAllExternalObjects is also called with the
   // same parameters.
   static void ConvertToMojo(
       const std::vector<IndexedDBExternalObject>& objects,

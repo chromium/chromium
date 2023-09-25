@@ -84,12 +84,10 @@ class SafeCursorWrapper {
 }  // namespace
 
 IndexedDBFactoryClient::IndexedDBFactoryClient(
-    base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host,
     mojo::PendingAssociatedRemote<blink::mojom::IDBFactoryClient>
         pending_client,
     scoped_refptr<base::SequencedTaskRunner> idb_runner)
     : data_loss_(blink::mojom::IDBDataLoss::None),
-      dispatcher_host_(std::move(dispatcher_host)),
       idb_runner_(std::move(idb_runner)) {
   DCHECK(idb_runner_->RunsTasksInCurrentSequence());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -114,10 +112,6 @@ void IndexedDBFactoryClient::OnError(const IndexedDBDatabaseError& error) {
   if (!remote_) {
     return;
   }
-  if (!dispatcher_host_) {
-    OnConnectionError();
-    return;
-  }
   remote_->Error(error.code(), error.message());
   complete_ = true;
 }
@@ -132,10 +126,6 @@ void IndexedDBFactoryClient::OnBlocked(int64_t existing_version) {
 
   sent_blocked_ = true;
 
-  if (!dispatcher_host_) {
-    OnConnectionError();
-    return;
-  }
   if (remote_) {
     remote_->Blocked(existing_version);
   }
@@ -158,14 +148,9 @@ void IndexedDBFactoryClient::OnUpgradeNeeded(
   if (!remote_) {
     return;
   }
-  if (!dispatcher_host_) {
-    OnConnectionError();
-    return;
-  }
 
   mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending =
-      DatabaseImpl::CreateAndBind(std::move(wrapper.connection_),
-                                  dispatcher_host_.get());
+      DatabaseImpl::CreateAndBind(std::move(wrapper.connection_));
   remote_->UpgradeNeeded(std::move(pending), old_version, data_loss_info.status,
                          data_loss_info.message, metadata);
 }
@@ -189,15 +174,11 @@ void IndexedDBFactoryClient::OnOpenSuccess(
   if (!remote_) {
     return;
   }
-  if (!dispatcher_host_) {
-    OnConnectionError();
-    return;
-  }
 
   mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_remote;
   if (wrapper.connection_) {
-    pending_remote = DatabaseImpl::CreateAndBind(std::move(wrapper.connection_),
-                                                 dispatcher_host_.get());
+    pending_remote =
+        DatabaseImpl::CreateAndBind(std::move(wrapper.connection_));
   }
   remote_->OpenSuccess(std::move(pending_remote), metadata);
   complete_ = true;
@@ -210,10 +191,6 @@ void IndexedDBFactoryClient::OnDeleteSuccess(int64_t old_version) {
   if (!remote_) {
     return;
   }
-  if (!dispatcher_host_) {
-    OnConnectionError();
-    return;
-  }
   remote_->DeleteSuccess(old_version);
   complete_ = true;
 }
@@ -221,7 +198,6 @@ void IndexedDBFactoryClient::OnDeleteSuccess(int64_t old_version) {
 void IndexedDBFactoryClient::OnConnectionError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   remote_.reset();
-  dispatcher_host_ = nullptr;
 }
 
 }  // namespace content

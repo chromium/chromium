@@ -70,15 +70,14 @@ namespace {
 
 std::vector<blink::mojom::IDBReturnValuePtr> CreateMojoValues(
     std::vector<IndexedDBReturnValue>& found_values,
-    IndexedDBDispatcherHost* dispatcher_host,
-    const storage::BucketLocator& bucket_locator) {
+    IndexedDBBucketContext& bucket_context) {
   std::vector<blink::mojom::IDBReturnValuePtr> mojo_values;
   mojo_values.reserve(found_values.size());
   for (size_t i = 0; i < found_values.size(); ++i) {
     mojo_values.push_back(
         IndexedDBReturnValue::ConvertReturnValue(&found_values[i]));
-    dispatcher_host->CreateAllExternalObjects(
-        bucket_locator, found_values[i].external_objects,
+    bucket_context.CreateAllExternalObjects(
+        found_values[i].external_objects,
         &mojo_values[i]->value->external_objects);
   }
   return mojo_values;
@@ -734,7 +733,6 @@ void IndexedDBDatabase::RenameIndexAbortOperation(int64_t object_store_id,
 }
 
 Status IndexedDBDatabase::GetOperation(
-    base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host,
     int64_t object_store_id,
     int64_t index_id,
     std::unique_ptr<IndexedDBKeyRange> key_range,
@@ -760,13 +758,6 @@ Status IndexedDBDatabase::GetOperation(
   const IndexedDBKey* key;
 
   Status s = Status::OK();
-  if (!dispatcher_host) {
-    std::move(callback).Run(blink::mojom::IDBDatabaseGetResult::NewErrorResult(
-        CreateIDBErrorPtr(blink::mojom::IDBException::kUnknownError,
-                          "Unknown error", transaction)));
-    return s;
-  }
-
   std::unique_ptr<IndexedDBBackingStore::Cursor> backing_store_cursor;
   if (key_range->IsOnlyKey()) {
     key = &key_range->lower();
@@ -845,9 +836,8 @@ Status IndexedDBDatabase::GetOperation(
 
     blink::mojom::IDBReturnValuePtr mojo_value =
         IndexedDBReturnValue::ConvertReturnValue(&value);
-    dispatcher_host->CreateAllExternalObjects(
-        bucket_locator(), value.external_objects,
-        &mojo_value->value->external_objects);
+    bucket_context_->CreateAllExternalObjects(
+        value.external_objects, &mojo_value->value->external_objects);
     std::move(callback).Run(
         blink::mojom::IDBDatabaseGetResult::NewValue(std::move(mojo_value)));
     return s;
@@ -899,9 +889,8 @@ Status IndexedDBDatabase::GetOperation(
 
   blink::mojom::IDBReturnValuePtr mojo_value =
       IndexedDBReturnValue::ConvertReturnValue(&value);
-  dispatcher_host->CreateAllExternalObjects(
-      bucket_locator(), value.external_objects,
-      &mojo_value->value->external_objects);
+  bucket_context_->CreateAllExternalObjects(
+      value.external_objects, &mojo_value->value->external_objects);
   std::move(callback).Run(
       blink::mojom::IDBDatabaseGetResult::NewValue(std::move(mojo_value)));
   return s;
@@ -913,7 +902,6 @@ static_assert(blink::mojom::kIDBMaxMessageOverhead <= INT32_MAX,
               "kIDBMaxMessageOverhead is more than INT32_MAX");
 
 Status IndexedDBDatabase::GetAllOperation(
-    base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host,
     int64_t object_store_id,
     int64_t index_id,
     std::unique_ptr<IndexedDBKeyRange> key_range,
@@ -941,13 +929,6 @@ Status IndexedDBDatabase::GetAllOperation(
       metadata_.object_stores[object_store_id];
 
   Status s = Status::OK();
-  if (!dispatcher_host) {
-    result_sink->OnError(
-        CreateIDBErrorPtr(blink::mojom::IDBException::kUnknownError,
-                          "Unknown error", transaction));
-    return s;
-  }
-
   std::unique_ptr<IndexedDBBackingStore::Cursor> cursor;
 
   if (cursor_type == indexed_db::CURSOR_KEY_ONLY) {
@@ -1053,8 +1034,8 @@ Status IndexedDBDatabase::GetAllOperation(
       }
     } else {
       if (found_values.size() >= max_values_before_sending) {
-        result_sink->ReceiveValues(CreateMojoValues(
-            found_values, dispatcher_host.get(), bucket_locator()));
+        result_sink->ReceiveValues(
+            CreateMojoValues(found_values, bucket_context_.get()));
         found_values.clear();
       }
     }
@@ -1066,8 +1047,8 @@ Status IndexedDBDatabase::GetAllOperation(
     }
   } else {
     if (!found_values.empty()) {
-      result_sink->ReceiveValues(CreateMojoValues(
-          found_values, dispatcher_host.get(), bucket_locator()));
+      result_sink->ReceiveValues(
+          CreateMojoValues(found_values, bucket_context_.get()));
     }
   }
   return s;
@@ -1268,19 +1249,9 @@ Status IndexedDBDatabase::SetIndexesReadyOperation(
 Status IndexedDBDatabase::OpenCursorOperation(
     std::unique_ptr<OpenCursorOperationParams> params,
     const storage::BucketLocator& bucket_locator,
-    base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host,
     IndexedDBTransaction* transaction) {
   TRACE_EVENT1("IndexedDB", "IndexedDBDatabase::OpenCursorOperation", "txn.id",
                transaction->id());
-
-  Status s;
-  if (!dispatcher_host) {
-    std::move(params->callback)
-        .Run(blink::mojom::IDBDatabaseOpenCursorResult::NewErrorResult(
-            CreateIDBErrorPtr(blink::mojom::IDBException::kUnknownError,
-                              "Dispatcher not connected.", transaction)));
-    return s;
-  }
 
   if (!IsObjectStoreIdAndMaybeIndexIdInMetadata(params->object_store_id,
                                                 params->index_id)) {
@@ -1295,6 +1266,7 @@ Status IndexedDBDatabase::OpenCursorOperation(
   if (params->task_type == blink::mojom::IDBTaskType::Preemptive)
     transaction->AddPreemptiveEvent();
 
+  Status s;
   std::unique_ptr<IndexedDBBackingStore::Cursor> backing_store_cursor;
   if (params->index_id == IndexedDBIndexMetadata::kInvalidId) {
     if (params->cursor_type == indexed_db::CURSOR_KEY_ONLY) {
@@ -1335,7 +1307,7 @@ Status IndexedDBDatabase::OpenCursorOperation(
   mojo::PendingAssociatedRemote<blink::mojom::IDBCursor> pending_remote;
   IndexedDBCursor* cursor = IndexedDBCursor::CreateAndBind(
       std::move(backing_store_cursor), params->cursor_type, params->task_type,
-      *dispatcher_host, transaction->AsWeakPtr(), pending_remote);
+      transaction->AsWeakPtr(), pending_remote);
   transaction->RegisterOpenCursor(cursor);
 
   blink::mojom::IDBValuePtr mojo_value;
@@ -1346,7 +1318,7 @@ Status IndexedDBDatabase::OpenCursorOperation(
   }
 
   if (mojo_value) {
-    dispatcher_host->CreateAllExternalObjects(bucket_locator, external_objects,
+    bucket_context_->CreateAllExternalObjects(external_objects,
                                               &mojo_value->external_objects);
   }
 
