@@ -2648,19 +2648,19 @@
     Not allowed to automatically download multiple files
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE_DESCRIPTION" desc="Description of the auto-picture-in-picture content setting.">
-    Sites might open a picture-in-picture window when you change to a different tab
+    Sites use this setting to enter picture-in-picture mode if you switch tabs on certain sites. This lets you continue watching a video, while freeing up your screen for other tasks.
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE_ALLOWED" desc="Label for the enabled option of the auto-picture-in-picture content setting.">
-    Sites can open a picture-in-picture window when you change to a different tab
+    Sites can enter picture-in-picture automatically
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE_BLOCKED" desc="Label for the disabled option of the auto-picture-in-picture content setting.">
-    Don't allow sites to open a picture-in-picture window when you change to a different tab
+    Don't allow sites to enter picture-in-picture automatically
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the auto-picture-in-picture content setting.">
-    Allowed to open a picture-in-picture window when you change to a different tab
+    Allowed to enter picture-in-picture automatically
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the auto-picture-in-picture content setting.">
-    Not allowed to open a picture-in-picture window when you change to a different tab
+    Not allowed to enter picture-in-picture automatically
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_BACKGROUND_SYNC_DESCRIPTION" desc="Description of the background sync content setting.">
     After you leave a site, it can keep syncing to finish tasks, like uploading photos or sending a chat message
