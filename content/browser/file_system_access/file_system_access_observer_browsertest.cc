@@ -20,6 +20,58 @@
 
 namespace content {
 
+// Helpful macros to reduce the boilerplate script in the tests below.
+
+// Resolves a promise with a serialized copy of the first `records` fired in the
+// change callback.
+//
+// Notably, several FileSystemChangeRecord fields are not serializable, so tests
+// which need to assert some behavior about the non-serializable fields may
+// overwrite the `onChange` function.
+#define CREATE_PROMISE_AND_RESOLVERS \
+  "let promiseResolve, promiseReject; \
+   let promise = new Promise(function(resolve, reject) { \
+     promiseResolve = resolve; \
+     promiseReject = reject; \
+   }); \
+   async function onChange(records, observer) { \
+     let serializedRecords = records.map(record => { \
+       let info = {}; \
+       info.type = record.type; \
+       info.relativePathComponents = record.relativePathComponents; \
+       return info; \
+     }); \
+     promiseResolve(serializedRecords); \
+   };"
+
+#define START_OBSERVING_LOCAL_FILE \
+  "const [file] = await self.showOpenFilePicker();    \
+   const observer = new FileSystemObserver(onChange);  \
+   await observer.observe(file);"
+
+#define START_OBSERVING_LOCAL_DIRECTORY \
+  "const dir = await self.showDirectoryPicker();    \
+   const observer = new FileSystemObserver(onChange);  \
+   await observer.observe(dir);"
+
+#define START_RECURSIVELY_OBSERVING_LOCAL_DIRECTORY \
+  "const dir = await self.showDirectoryPicker();    \
+   const observer = new FileSystemObserver(onChange);  \
+   await observer.observe(dir, { recursive: true });"
+
+#define WRITE_TO_FILE \
+  "const writable = await file.createWritable();  \
+   await writable.write('blah');                  \
+   await writable.close();"
+
+#define SET_CHANGE_TIMEOUT     \
+  +JsReplace(                  \
+      "setTimeout(() => {      \
+         promiseResolve([]);   \
+       }, $1);                 \
+       return await promise;", \
+      base::Int64ToValue(TestTimeouts::tiny_timeout().InMilliseconds())) +
+
 // TODO(https://crbug.com/1019297): Consider making these WPTs, and adding a
 // lot more of them. For example:
 //   - change types
@@ -80,19 +132,6 @@ class FileSystemAccessObserverBrowserTestBase : public ContentBrowserTest {
             std::vector<base::FilePath>{dir_path}));
     EXPECT_TRUE(NavigateToURL(shell(), test_url_));
     return dir_path;
-  }
-
-  bool CreatePromiseAndResolvers() {
-    return ExecJs(shell(),
-                  "(async () => {"
-                  "self.promise = new Promise(function(resolve, reject) {"
-                  "  self.promiseResolve = resolve;"
-                  "  self.promiseReject = reject;"
-                  "});"
-                  "async function onChange(records, observer) {"
-                  "  self.promiseResolve(true);"
-                  "};"
-                  "self.onChange = onChange; })()");
   }
 
  protected:
@@ -160,29 +199,25 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest, CreateObserver) {
 IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest, ObserveFile) {
   base::FilePath file_path = CreateFileToBePicked();
 
-// `base::FilePatchWatcher` is not implemented on Fuchsia. See
-// https://crbug.com/851641. Instead, just check that attempting to observe a
-// handle does not crash.
+  const std::string script =
+      // clang-format off
+      "(async () => {"
+         CREATE_PROMISE_AND_RESOLVERS
+         START_OBSERVING_LOCAL_FILE
+         WRITE_TO_FILE
+         SET_CHANGE_TIMEOUT
+      "})()";
+  // clang-format on
+  auto result = EvalJs(shell(), script);
 #if BUILDFLAG(IS_FUCHSIA)
-  auto result = EvalJs(shell(),
-                       "(async () => {"
-                       "const [file] = await self.showOpenFilePicker();"
-                       "const observer = new FileSystemObserver(() => {});"
-                       "await observer.observe(file); })()");
+  // `base::FilePatchWatcher` is not implemented on Fuchsia. See
+  // https://crbug.com/851641. Instead, just check that attempting to observe a
+  // handle does not crash.
   EXPECT_TRUE(result.error.find("did not support") != std::string::npos)
       << result.error;
 #else
-  ASSERT_TRUE(CreatePromiseAndResolvers());
-  EXPECT_TRUE(EvalJs(shell(),
-                     "(async () => {"
-                     "const [file] = await self.showOpenFilePicker();"
-                     "const observer = new FileSystemObserver(self.onChange);"
-                     "await observer.observe(file);"
-                     "const writable = await file.createWritable();"
-                     "await writable.write('blah');"
-                     "await writable.close();"
-                     "return await self.promise; })()")
-                  .ExtractBool());
+  auto records = result.ExtractList();
+  EXPECT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
 #endif  // BUILDFLAG(IS_FUCHSIA)
 }
 
@@ -193,42 +228,42 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest, ObserveFile) {
 IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest, ObserveFileRename) {
   base::FilePath file_path = CreateFileToBePicked();
 
-  ASSERT_TRUE(CreatePromiseAndResolvers());
-  EXPECT_TRUE(EvalJs(shell(),
-                     "(async () => {"
-                     "const [file] = await self.showOpenFilePicker();"
-                     "const observer = new FileSystemObserver(self.onChange);"
-                     "await observer.observe(file);"
-                     "await file.move('newName.txt');"
-                     "return await self.promise; })()")
-                  .ExtractBool());
+  const std::string script =
+      // clang-format off
+      "(async () => {"
+         CREATE_PROMISE_AND_RESOLVERS
+         START_OBSERVING_LOCAL_FILE
+         "await file.move('newName.txt');"
+         SET_CHANGE_TIMEOUT
+      "})()";
+  // clang-format on
+  auto records = EvalJs(shell(), script).ExtractList();
+  EXPECT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
 }
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest, ObserveDirectory) {
   base::FilePath dir_path = CreateDirectoryToBePicked();
 
-// `base::FilePatchWatcher` is not implemented on Fuchsia. See
-// https://crbug.com/851641. Instead, just check that attempting to observe a
-// handle does not crash.
+  const std::string script =
+      // clang-format off
+      "(async () => {"
+         CREATE_PROMISE_AND_RESOLVERS
+         START_OBSERVING_LOCAL_DIRECTORY
+         "await dir.getFileHandle('newFile.txt', { create: true });"
+         SET_CHANGE_TIMEOUT
+      "})()";
+  // clang-format on
+  auto result = EvalJs(shell(), script);
 #if BUILDFLAG(IS_FUCHSIA)
-  auto result = EvalJs(shell(),
-                       "(async () => {"
-                       "const dir = await self.showDirectoryPicker();"
-                       "const observer = new FileSystemObserver(() => {});"
-                       "await observer.observe(dir); })()");
+  // `base::FilePatchWatcher` is not implemented on Fuchsia. See
+  // https://crbug.com/851641. Instead, just check that attempting to observe a
+  // handle does not crash.
   EXPECT_TRUE(result.error.find("did not support") != std::string::npos)
       << result.error;
 #else
-  ASSERT_TRUE(CreatePromiseAndResolvers());
-  EXPECT_TRUE(EvalJs(shell(),
-                     "(async () => {"
-                     "const dir = await self.showDirectoryPicker();"
-                     "const observer = new FileSystemObserver(self.onChange);"
-                     "await observer.observe(dir);"
-                     "await dir.getFileHandle('newFile.txt', { create:true });"
-                     "return await self.promise; })()")
-                  .ExtractBool());
+  auto records = result.ExtractList();
+  EXPECT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
 #endif  // BUILDFLAG(IS_FUCHSIA)
 }
 
@@ -241,32 +276,29 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
     base::CreateDirectory(dir_path.AppendASCII("sub1").AppendASCII("sub2"));
   }
 
-// `base::FilePatchWatcher` is not implemented on Fuchsia. See
-// https://crbug.com/851641. Instead, just check that attempting to observe a
-// handle does not crash.
-// Meanwhile, recursive watches are not supported on iOS.
+  // The creation of 'newFile.txt' should trigger a change record.
+  const std::string script =
+      // clang-format off
+      "(async () => {"
+         CREATE_PROMISE_AND_RESOLVERS
+         START_RECURSIVELY_OBSERVING_LOCAL_DIRECTORY
+         "const subDir1 = await dir.getDirectoryHandle('sub1');"
+         "const subDir2 = await subDir1.getDirectoryHandle('sub2');"
+         "await subDir2.getFileHandle('newFile.txt', { create: true });"
+         SET_CHANGE_TIMEOUT
+      "})()";
+  // clang-format on
+  auto result = EvalJs(shell(), script);
 #if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS)
-  auto result =
-      EvalJs(shell(),
-             "(async () => {"
-             "const dir = await self.showDirectoryPicker();"
-             "const observer = new FileSystemObserver(() => {});"
-             "await observer.observe(dir, { recursive: true }); })()");
+  // `base::FilePatchWatcher` is not implemented on Fuchsia. See
+  // https://crbug.com/851641. Instead, just check that attempting to observe a
+  // handle does not crash.
+  // Meanwhile, recursive watches are not supported on iOS.
   EXPECT_TRUE(result.error.find("did not support") != std::string::npos)
       << result.error;
 #else
-  ASSERT_TRUE(CreatePromiseAndResolvers());
-  EXPECT_TRUE(
-      EvalJs(shell(),
-             "(async () => {"
-             "const dir = await self.showDirectoryPicker();"
-             "const observer = new FileSystemObserver(self.onChange);"
-             "await observer.observe(dir, { recursive: true });"
-             "const subDir1 = await dir.getDirectoryHandle('sub1');"
-             "const subDir2 = await subDir1.getDirectoryHandle('sub2');"
-             "await subDir2.getFileHandle('newFile.txt', { create: true });"
-             "return await self.promise; })()")
-          .ExtractBool());
+  auto records = result.ExtractList();
+  EXPECT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
 #endif  // BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS)
 }
 
@@ -276,95 +308,86 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
                        ObserveThenUnobserve) {
   base::FilePath file_path = CreateFileToBePicked();
 
-  // Calling unobserve() with a corresponding observe() should not crash.
-  EXPECT_TRUE(ExecJs(shell(),
-                     "(async () => {"
-                     "const [file] = await self.showOpenFilePicker();"
-                     "const observer = new FileSystemObserver(() => {});"
-                     "await observer.observe(file);"
-                     "observer.unobserve(file); })()"));
+  // Calling unobserve() on an active observation should not crash.
+  const char* script =
+      // clang-format off
+      "(async () => {"
+         CREATE_PROMISE_AND_RESOLVERS
+         START_OBSERVING_LOCAL_FILE
+         "observer.unobserve(file);"
+      "})()";
+  // clang-format on
+  EXPECT_TRUE(ExecJs(shell(), script));
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
                        ObserveThenUnobserveUnrelated) {
   base::FilePath file_path = CreateFileToBePicked();
 
-  // Calling unobserve() with a handle unrelated to a corresponding observe()
+  // Calling unobserve() with a handle unrelated to any active observations
   // should not crash.
-  EXPECT_TRUE(ExecJs(shell(),
-                     "(async () => {"
-                     "const [file] = await self.showOpenFilePicker();"
-                     "const root = await navigator.storage.getDirectory();"
-                     "const observer = new FileSystemObserver(() => {});"
-                     "await observer.observe(file);"
-                     "observer.unobserve(root); })()"));
+  const char* script =
+      // clang-format off
+      "(async () => {"
+         CREATE_PROMISE_AND_RESOLVERS
+         START_OBSERVING_LOCAL_FILE
+         "const unrelatedDir = await navigator.storage.getDirectory();"
+         "observer.unobserve(unrelatedDir);"
+      "})()";
+  // clang-format on
+  EXPECT_TRUE(ExecJs(shell(), script));
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
                        NoChangesAfterUnobserve) {
   base::FilePath file_path = CreateFileToBePicked();
 
-  ASSERT_TRUE(CreatePromiseAndResolvers());
-  // No changes should be received. The promise should be resolved after the
-  // setTimeout().
-  EXPECT_FALSE(
-      EvalJs(shell(),
-             JsReplace(
-                 "(async () => {"
-                 "const [file] = await self.showOpenFilePicker();"
-                 "const observer = new FileSystemObserver(self.onChange);"
-                 "await observer.observe(file);"
-                 "observer.unobserve(file);"
-                 "const writable = await file.createWritable();"
-                 "await writable.write('blah');"
-                 "await writable.close();"
-                 "setTimeout(() => {"
-                 "  self.promiseResolve(false);"  // No changes received. Good!
-                 "}, $1);"
-                 "return await self.promise; })()",
-                 base::Int64ToValue(
-                     TestTimeouts::tiny_timeout().InMilliseconds())))
-          .ExtractBool());
+  const std::string script =
+      // clang-format off
+      "(async () => {"
+         CREATE_PROMISE_AND_RESOLVERS
+         START_OBSERVING_LOCAL_FILE
+         "observer.unobserve(file);"
+         WRITE_TO_FILE
+         SET_CHANGE_TIMEOUT
+      "})()";
+  // clang-format on
+  auto records = EvalJs(shell(), script).ExtractList();
+  EXPECT_THAT(records.GetList(), testing::IsEmpty());
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
                        ObserveThenDisconnect) {
   base::FilePath file_path = CreateFileToBePicked();
 
-  // Calling disconnect() after calling observe() should not crash.
-  EXPECT_TRUE(ExecJs(shell(),
-                     "(async () => {"
-                     "const [file] = await self.showOpenFilePicker();"
-                     "const observer = new FileSystemObserver(() => {});"
-                     "await observer.observe(file);"
-                     "observer.disconnect(); })()"));
+  // Calling disconnect() with active observations should not crash.
+  const char* script =
+      // clang-format off
+      "(async () => {"
+         CREATE_PROMISE_AND_RESOLVERS
+         START_OBSERVING_LOCAL_FILE
+         "observer.disconnect();"
+      "})()";
+  // clang-format on
+  EXPECT_TRUE(ExecJs(shell(), script));
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
                        NoChangesAfterDisconnect) {
   base::FilePath file_path = CreateFileToBePicked();
 
-  ASSERT_TRUE(CreatePromiseAndResolvers());
-  // No changes should be received. The promise should be resolved after the
-  // setTimeout().
-  EXPECT_FALSE(
-      EvalJs(shell(),
-             JsReplace(
-                 "(async () => {"
-                 "const [file] = await self.showOpenFilePicker();"
-                 "const observer = new FileSystemObserver(self.onChange);"
-                 "await observer.observe(file);"
-                 "observer.disconnect();"
-                 "const writable = await file.createWritable();"
-                 "await writable.write('blah');"
-                 "await writable.close();"
-                 "setTimeout(() => {"
-                 "  self.promiseResolve(false);"  // No changes received. Good!
-                 "}, $1);"
-                 "return await self.promise; })()",
-                 base::Int64ToValue(
-                     TestTimeouts::tiny_timeout().InMilliseconds())))
-          .ExtractBool());
+  const std::string script =
+      // clang-format off
+      "(async () => {"
+         CREATE_PROMISE_AND_RESOLVERS
+         START_OBSERVING_LOCAL_FILE
+         "observer.disconnect();"
+         WRITE_TO_FILE
+         SET_CHANGE_TIMEOUT
+      "})()";
+  // clang-format on
+  auto records = EvalJs(shell(), script).ExtractList();
+  EXPECT_THAT(records.GetList(), testing::IsEmpty());
 }
 
 // TODO(https://crbug.com/1019297): Add a ReObserveAfterUnobserve test once the
@@ -373,160 +396,140 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
                        ReObserveAfterDisconnect) {
   base::FilePath file_path = CreateFileToBePicked();
 
-  ASSERT_TRUE(CreatePromiseAndResolvers());
-  EXPECT_TRUE(EvalJs(shell(),
-                     "(async () => {"
-                     "const [file] = await self.showOpenFilePicker();"
-                     "const observer = new FileSystemObserver(self.onChange);"
-                     "await observer.observe(file);"
-                     "observer.disconnect();"
-                     "await observer.observe(file);"  // Start observing the
-                                                      // file again.
-                     "const writable = await file.createWritable();"
-                     "await writable.write('blah');"
-                     "await writable.close();"  // We should see this change.
-                     "return await self.promise; })()")
-                  .ExtractBool());
+  // We should see changes after re-observing the file.
+  const std::string script =
+      // clang-format off
+      "(async () => {"
+         CREATE_PROMISE_AND_RESOLVERS
+         START_OBSERVING_LOCAL_FILE
+         "observer.disconnect();"
+         "await observer.observe(file);"
+         WRITE_TO_FILE
+         SET_CHANGE_TIMEOUT
+      "})()";
+  // clang-format on
+  auto records = EvalJs(shell(), script).ExtractList();
+  EXPECT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
                        ObserveFileReportsModifiedType) {
   base::FilePath file_path = CreateFileToBePicked();
 
-  ASSERT_TRUE(CreatePromiseAndResolvers());
+  const std::string script =
+      // clang-format off
+      "(async () => {"
+         CREATE_PROMISE_AND_RESOLVERS
+         START_OBSERVING_LOCAL_FILE
+         WRITE_TO_FILE
+         SET_CHANGE_TIMEOUT
+      "})()";
+  // clang-format on
+  auto records = EvalJs(shell(), script).ExtractList();
+  ASSERT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
   // TODO(https://crbug.com/1425601): Support change types. For now, just
   // confirm that "modified" is plumbed through properly.
-  EXPECT_TRUE(EvalJs(shell(),
-                     "(async () => {"
-                     "async function onChange(records, observer) {"
-                     "  const record = records[0];"
-                     "  promiseResolve(record.type === 'modified');"
-                     "};"
-                     "const [file] = await self.showOpenFilePicker();"
-                     "const observer = new FileSystemObserver(onChange);"
-                     "await observer.observe(file);"
-                     "const writable = await file.createWritable();"
-                     "await writable.write('blah');"
-                     "await writable.close();"
-                     "return await self.promise; })()")
-                  .ExtractBool());
+  EXPECT_THAT(*records.GetList().front().GetDict().FindString("type"),
+              testing::StrEq("modified"));
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
                        ObserveFileReportsCorrectHandle) {
-  base::FilePath file_path;
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    EXPECT_TRUE(
-        base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &file_path));
-    EXPECT_TRUE(base::WriteFile(file_path, "observe me"));
-  }
+  base::FilePath file_path = CreateFileToBePicked();
 
-  ui::SelectFileDialog::SetFactory(
-      std::make_unique<FakeSelectFileDialogFactory>(
-          std::vector<base::FilePath>{file_path}));
-  EXPECT_TRUE(NavigateToURL(shell(), test_url_));
-
-  ASSERT_TRUE(CreatePromiseAndResolvers());
   // The `changedHandle` should the same as `root`, which is the same as the
-  // handle passed to `observe()`.
-  EXPECT_TRUE(
-      EvalJs(shell(),
-             "(async () => {"
-             "async function onChange(records, observer) {"
-             "  const record = records[0];"
-             "  promiseResolve(await file.isSameEntry(record.root) &&"
-             "                 await file.isSameEntry(record.changedHandle));"
-             "};"
-             "const [file] = await self.showOpenFilePicker();"
-             "const observer = new FileSystemObserver(onChange);"
-             "await observer.observe(file);"
-             "const writable = await file.createWritable();"
-             "await writable.write('blah');"
-             "await writable.close();"
-             "return await self.promise; })()")
-          .ExtractBool());
+  // handle passed to `observe()` (in this case, `file`).
+  const std::string script =
+      // clang-format off
+      "(async () => {"
+         CREATE_PROMISE_AND_RESOLVERS
+         "async function onChange(records, observer) {"
+         "  const record = records[0];"
+         "  promiseResolve(await file.isSameEntry(record.root) &&"
+         "                 await file.isSameEntry(record.changedHandle));"
+         "};"
+         START_OBSERVING_LOCAL_FILE
+         WRITE_TO_FILE
+         SET_CHANGE_TIMEOUT
+      "})()";
+  // clang-format on
+  EXPECT_TRUE(EvalJs(shell(), script).ExtractBool());
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
                        ObserveFileReportsCorrectRelativePathComponents) {
   base::FilePath file_path = CreateFileToBePicked();
 
-  ASSERT_TRUE(CreatePromiseAndResolvers());
+  const std::string script =
+      // clang-format off
+      "(async () => {"
+         CREATE_PROMISE_AND_RESOLVERS
+         START_OBSERVING_LOCAL_FILE
+         WRITE_TO_FILE
+         SET_CHANGE_TIMEOUT
+      "})()";
+  // clang-format on
+  auto records = EvalJs(shell(), script).ExtractList();
+  ASSERT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
   // The `relativePathComponents` should be an empty array, since the change
   // occurred on the path corresponding to the handle passed to `observe()`.
-  EXPECT_TRUE(
-      EvalJs(shell(),
-             "(async () => {"
-             "async function onChange(records, observer) {"
-             "  const record = records[0];"
-             "  promiseResolve(record.relativePathComponents.length === 0);"
-             "};"
-             "const [file] = await self.showOpenFilePicker();"
-             "const observer = new FileSystemObserver(onChange);"
-             "await observer.observe(file);"
-             "const writable = await file.createWritable();"
-             "await writable.write('blah');"
-             "await writable.close();"
-             "return await self.promise; })()")
-          .ExtractBool());
+  EXPECT_THAT(
+      *records.GetList().front().GetDict().FindList("relativePathComponents"),
+      testing::IsEmpty());
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
                        ObserveDirectoryReportsCorrectHandle) {
   base::FilePath dir_path = CreateDirectoryToBePicked();
 
-  ASSERT_TRUE(CreatePromiseAndResolvers());
-  // TODO(https://crbug.com/1425601): Don't assume the type of the changed
-  // handle is the same as the type of the handle passed into observe().
-  EXPECT_TRUE(
-      EvalJs(shell(),
-             "(async () => {"
-             "async function onChange(records, observer) {"
-             "  const record = records[0];"
-             "  promiseResolve(await dir.isSameEntry(record.root) &&"
+  const std::string script =
+      // clang-format off
+      "(async () => {"
+         CREATE_PROMISE_AND_RESOLVERS
+         "async function onChange(records, observer) {"
+         "  const record = records[0];"
+         "  promiseResolve(await dir.isSameEntry(record.root) &&"
   // TODO(https://crbug.com/1425601): Some platforms do not report the modified
   // path. In these cases, `changedHandle` will always be the same as `root`.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-             "                 await subDir.isSameEntry(record.changedHandle));"
+         "                 await subDir.isSameEntry(record.changedHandle));"
 #else
-             "                 await dir.isSameEntry(record.changedHandle));"
+         "                 await dir.isSameEntry(record.changedHandle));"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-             "};"
-             "const dir = await self.showDirectoryPicker();"
-             "const observer = new FileSystemObserver(onChange);"
-             "await observer.observe(dir);"
-             "const subDir = await dir.getDirectoryHandle('subdir', { "
-             "create:true });"
-             "return await self.promise; })()")
-          .ExtractBool());
+         "};"
+         START_OBSERVING_LOCAL_DIRECTORY
+         "const subDir = await dir.getDirectoryHandle('sub', { create:true });"
+         SET_CHANGE_TIMEOUT
+      "})()";
+  // clang-format on
+  EXPECT_TRUE(EvalJs(shell(), script).ExtractBool());
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
                        ObserveDirectoryReportsCorrectRelativePathComponents) {
   base::FilePath dir_path = CreateDirectoryToBePicked();
 
-  ASSERT_TRUE(CreatePromiseAndResolvers());
-  EXPECT_TRUE(
-      EvalJs(shell(),
-             "(async () => {"
-             "async function onChange(records, observer) {"
-             "  const record = records[0];"
+  const std::string script =
+      // clang-format off
+      "(async () => {"
+         CREATE_PROMISE_AND_RESOLVERS
+         START_OBSERVING_LOCAL_DIRECTORY
+         "const subDir = await dir.getDirectoryHandle('sub', { create: true });"
+         SET_CHANGE_TIMEOUT
+      "})()";
+  // clang-format on
+  auto records = EvalJs(shell(), script).ExtractList();
+  ASSERT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
   // TODO(https://crbug.com/1425601): Some platforms do not report the modified
   // path. In these cases, `relativePathComponents` will always be empty.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-             "  promiseResolve(record.relativePathComponents.length === 1);"
+  const auto relative_path_component_matcher = testing::SizeIs(1);
 #else
-             "  promiseResolve(record.relativePathComponents.length === 0);"
+  const auto relative_path_component_matcher = testing::IsEmpty();
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-             "};"
-             "const dir = await self.showDirectoryPicker();"
-             "const observer = new FileSystemObserver(onChange);"
-             "await observer.observe(dir);"
-             "const subDir = await dir.getDirectoryHandle('subdir', { "
-             "create:true });"
-             "return await self.promise; })()")
-          .ExtractBool());
+  EXPECT_THAT(
+      *records.GetList().front().GetDict().FindList("relativePathComponents"),
+      relative_path_component_matcher);
 }
 
 #endif  // !BUILDFLAG(IS_FUCHSIA)
