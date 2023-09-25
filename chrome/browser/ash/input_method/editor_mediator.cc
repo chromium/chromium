@@ -103,6 +103,10 @@ void EditorMediator::BindEditorPanelManager(
 }
 
 void EditorMediator::OnFocus(int context_id) {
+  if (mako_page_handler_.IsVisible()) {
+    return;
+  }
+
   if (IsAllowedForUse() && !editor_service_connector_.IsBound()) {
     SetUpNewEditorService();
   }
@@ -116,6 +120,10 @@ void EditorMediator::OnFocus(int context_id) {
 }
 
 void EditorMediator::OnBlur() {
+  if (mako_page_handler_.IsVisible()) {
+    return;
+  }
+
   if (text_actuator_ != nullptr) {
     text_actuator_->OnBlur();
   }
@@ -139,6 +147,10 @@ void EditorMediator::OnTabletControllerDestroyed() {
 
 void EditorMediator::OnSurroundingTextChanged(const std::u16string& text,
                                               gfx::Range selection_range) {
+  if (mako_page_handler_.IsVisible()) {
+    return;
+  }
+
   if (editor_event_proxy_ != nullptr) {
     editor_event_proxy_->OnSurroundingTextChanged(text, selection_range);
   }

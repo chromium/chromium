@@ -57,6 +57,8 @@ class MakoPageHandler {
   void ShowRewriteUIFromFreeform(Profile* profile, std::string_view text);
   void CloseUI();
 
+  bool IsVisible() const;
+
  private:
   void ShowEditorUI(const GURL& url, content::BrowserContext* browser_context);
 

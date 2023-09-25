@@ -264,4 +264,11 @@ void MakoPageHandler::CloseUI() {
   }
 }
 
+bool MakoPageHandler::IsVisible() const {
+  // TODO(b/301518440): To accurately check if the bubble is open, detect when
+  // the JS has finished loading instead of checking this pointer.
+  return contents_wrapper_ != nullptr &&
+         contents_wrapper_->GetHost() != nullptr;
+}
+
 }  // namespace ash
