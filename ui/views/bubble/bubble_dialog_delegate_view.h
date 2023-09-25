@@ -459,6 +459,12 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   absl::optional<Button::ScopedAnchorHighlight> button_anchor_higlight_;
 
   absl::optional<base::TimeTicks> bubble_created_time_;
+
+  // Timestamp when the bubble turns visible.
+  absl::optional<base::TimeTicks> bubble_shown_time_;
+
+  // Cumulated time of bubble being visible.
+  base::TimeDelta bubble_shown_duration_;
 };
 
 // BubbleDialogDelegateView is a BubbleDialogDelegate that is also a View.

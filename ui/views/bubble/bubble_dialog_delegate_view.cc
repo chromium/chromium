@@ -606,6 +606,14 @@ void BubbleDialogDelegate::OnBubbleWidgetClosing() {
   if (GetAnchorView() &&
       GetAnchorView()->GetProperty(kAnchoredDialogKey) == this)
     GetAnchorView()->ClearProperty(kAnchoredDialogKey);
+
+  if (base::FeatureList::IsEnabled(::features::kBubbleMetricsApi)) {
+    if (bubble_shown_time_.has_value()) {
+      bubble_shown_duration_ += base::TimeTicks::Now() - *bubble_shown_time_;
+      bubble_shown_time_.reset();
+    }
+    UmaHistogramLongTimes("Bubble.All.TimeVisible", bubble_shown_duration_);
+  }
 }
 
 void BubbleDialogDelegate::OnAnchorWidgetDestroying() {
@@ -970,18 +978,28 @@ void BubbleDialogDelegate::UpdateColorsFromTheme() {
 void BubbleDialogDelegate::OnBubbleWidgetVisibilityChanged(bool visible) {
   // Log time from bubble dialog delegate creation to bubble becoming
   // visible.
-  if (base::FeatureList::IsEnabled(::features::kBubbleMetricsApi) && visible &&
-      bubble_created_time_.has_value()) {
-    GetWidget()->GetCompositor()->RequestSuccessfulPresentationTimeForNextFrame(
-        base::BindOnce(
-            [](base::TimeTicks bubble_created_time,
-               base::TimeTicks presentation_timestamp) {
-              base::UmaHistogramMediumTimes(
-                  "Bubble.All.CreateToVisibleTime",
-                  presentation_timestamp - bubble_created_time);
-            },
-            *bubble_created_time_));
-    bubble_created_time_.reset();
+  if (base::FeatureList::IsEnabled(::features::kBubbleMetricsApi)) {
+    if (visible) {
+      if (bubble_created_time_.has_value()) {
+        GetWidget()
+            ->GetCompositor()
+            ->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
+                [](base::TimeTicks bubble_created_time,
+                   base::TimeTicks presentation_timestamp) {
+                  base::UmaHistogramMediumTimes(
+                      "Bubble.All.CreateToVisibleTime",
+                      presentation_timestamp - bubble_created_time);
+                },
+                *bubble_created_time_));
+        bubble_created_time_.reset();
+      }
+      bubble_shown_time_ = base::TimeTicks::Now();
+    } else {
+      if (bubble_shown_time_.has_value()) {
+        bubble_shown_duration_ += base::TimeTicks::Now() - *bubble_shown_time_;
+        bubble_shown_time_.reset();
+      }
+    }
   }
 
   UpdateHighlightedButton(visible);
