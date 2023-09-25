@@ -26,6 +26,7 @@ class RenderFrameHost;
 namespace captions {
 
 class CaptionBubbleContextBrowser;
+class GreedyTextStabilizer;
 class LiveCaptionController;
 class LiveTranslateController;
 
@@ -94,6 +95,9 @@ class LiveCaptionSpeechRecognitionHost
   // does not exist. Lifetime is tied to the BrowserContext.
   LiveTranslateController* GetLiveTranslateController();
 
+  // Processes and returns the text to be dispatched.
+  std::string GetTextForDispatch(const std::string& text, bool is_final);
+
   std::unique_ptr<CaptionBubbleContextBrowser> context_;
 
   // A flag used by the Live Translate feature indicating whether transcriptions
@@ -116,6 +120,8 @@ class LiveCaptionSpeechRecognitionHost
 
   // The number of characters sent to the translation service.
   int characters_translated_ = 0;
+
+  std::unique_ptr<captions::GreedyTextStabilizer> greedy_text_stabilizer_;
 
   base::WeakPtrFactory<LiveCaptionSpeechRecognitionHost> weak_factory_{this};
 };

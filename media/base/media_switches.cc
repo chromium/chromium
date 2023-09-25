@@ -953,6 +953,18 @@ BASE_FEATURE(kLiveCaptionLogFlickerRate,
              "LiveCaptionLogFlickerRate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Use a greedy text stabilizer to reduce flickering when translating partial
+// speech recognition results.
+BASE_FEATURE(kLiveCaptionUseGreedyTextStabilizer,
+             "LiveCaptionUseGreedyTextStabilizer",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Use a wait-k approach to reduce flickering when translating partial speech
+// recognition results.
+BASE_FEATURE(kLiveCaptionUseWaitK,
+             "LiveCaptionUseWaitK",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Live Caption can be used in multiple languages, as opposed to just English.
 BASE_FEATURE(kLiveCaptionMultiLanguage,
              "LiveCaptionMultiLanguage",

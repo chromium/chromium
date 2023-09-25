@@ -21,6 +21,7 @@
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
 #include "chrome/browser/accessibility/live_translate_controller_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/live_caption/greedy_text_stabilizer.h"
 #include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/live_translate_controller.h"
 #include "components/live_caption/pref_names.h"
@@ -38,6 +39,8 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
+static constexpr int kMinTokenFrequency = 1;
+static constexpr int kWaitKValue = 1;
 
 // Split the transcription into sentences. Spaces are included in the preceding
 // sentence.
@@ -118,6 +121,31 @@ bool IsIdeographicLocale(const std::string& locale) {
           script_code[0] == USCRIPT_YI || script_code[0] == USCRIPT_KATAKANA);
 }
 
+std::string RemoveLastKWords(const std::string& input) {
+  int words_to_remove = kWaitKValue;
+
+  if (words_to_remove == 0) {
+    return input;
+  }
+
+  size_t length = input.length();
+  size_t last_space_pos = 0;
+
+  while (words_to_remove > 0 && length > 0) {
+    length--;
+    if (std::isspace(input[length])) {
+      words_to_remove--;
+      last_space_pos = length;
+    }
+  }
+
+  if (words_to_remove == 0) {
+    return input.substr(0, last_space_pos);
+  } else {
+    return std::string();
+  }
+}
+
 }  // namespace
 
 namespace captions {
@@ -149,6 +177,12 @@ LiveCaptionSpeechRecognitionHost::LiveCaptionSpeechRecognitionHost(
   context_ = CaptionBubbleContextBrowser::Create(web_contents);
 
   source_language_ = prefs_->GetString(prefs::kLiveCaptionLanguageCode);
+
+  if (base::FeatureList::IsEnabled(
+          media::kLiveCaptionUseGreedyTextStabilizer)) {
+    greedy_text_stabilizer_ =
+        std::make_unique<captions::GreedyTextStabilizer>(kMinTokenFrequency);
+  }
 }
 
 LiveCaptionSpeechRecognitionHost::~LiveCaptionSpeechRecognitionHost() {
@@ -223,7 +257,9 @@ void LiveCaptionSpeechRecognitionHost::OnSpeechRecognitionRecognitionEvent(
       // cached.
       std::move(reply).Run(live_caption_controller->DispatchTranscription(
           context_.get(),
-          media::SpeechRecognitionResult(cached_translation, result.is_final)));
+          media::SpeechRecognitionResult(
+              GetTextForDispatch(cached_translation, result.is_final),
+              result.is_final)));
     }
   } else {
     std::move(reply).Run(
@@ -315,10 +351,11 @@ void LiveCaptionSpeechRecognitionHost::OnTranslationCallback(
   }
 
   LiveCaptionController* live_caption_controller = GetLiveCaptionController();
+  auto text = base::StrCat({cached_translation, formatted_result});
+
   stop_transcriptions_ = !live_caption_controller->DispatchTranscription(
-      context_.get(),
-      media::SpeechRecognitionResult(
-          base::StrCat({cached_translation, formatted_result}), is_final));
+      context_.get(), media::SpeechRecognitionResult(
+                          GetTextForDispatch(text, is_final), is_final));
 }
 
 content::WebContents* LiveCaptionSpeechRecognitionHost::GetWebContents() {
@@ -351,4 +388,19 @@ LiveCaptionSpeechRecognitionHost::GetLiveTranslateController() {
   return LiveTranslateControllerFactory::GetForProfile(profile);
 }
 
+std::string LiveCaptionSpeechRecognitionHost::GetTextForDispatch(
+    const std::string& input_text,
+    bool is_final) {
+  std::string text = input_text;
+  if (base::FeatureList::IsEnabled(media::kLiveCaptionUseWaitK) && !is_final) {
+    text = RemoveLastKWords(text);
+  }
+
+  if (base::FeatureList::IsEnabled(
+          media::kLiveCaptionUseGreedyTextStabilizer)) {
+    text = greedy_text_stabilizer_->UpdateText(text, is_final);
+  }
+
+  return text;
+}
 }  // namespace captions
