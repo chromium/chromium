@@ -348,6 +348,9 @@ void UseCounterCallback(v8::Isolate* isolate,
     case v8::Isolate::kWasmGC:
       blink_feature = WebFeature::kV8WasmGC;
       break;
+    case v8::Isolate::kWasmImportedStrings:
+      blink_feature = WebFeature::kV8WebAssemblyJSStringBuiltins;
+      break;
     default:
       // This can happen if V8 has added counters that this version of Blink
       // does not know about. It's harmless.

@@ -578,6 +578,15 @@ bool WasmGCEnabledCallback(v8::Local<v8::Context> context) {
   return RuntimeEnabledFeatures::WebAssemblyGCEnabled(execution_context);
 }
 
+bool WasmJSStringBuiltinsEnabledCallback(v8::Local<v8::Context> context) {
+  ExecutionContext* execution_context = ToExecutionContext(context);
+  if (!execution_context) {
+    return false;
+  }
+  return RuntimeEnabledFeatures::WebAssemblyJSStringBuiltinsEnabled(
+      execution_context);
+}
+
 bool JavaScriptCompileHintsMagicEnabledCallback(
     v8::Local<v8::Context> context) {
   ExecutionContext* execution_context = ToExecutionContext(context);
@@ -706,6 +715,8 @@ void InitializeV8Common(v8::Isolate* isolate) {
   isolate->SetWasmModuleCallback(WasmModuleOverride);
   isolate->SetWasmInstanceCallback(WasmInstanceOverride);
   isolate->SetWasmGCEnabledCallback(WasmGCEnabledCallback);
+  isolate->SetWasmImportedStringsEnabledCallback(
+      WasmJSStringBuiltinsEnabledCallback);
   isolate->SetSharedArrayBufferConstructorEnabledCallback(
       SharedArrayBufferConstructorEnabledCallback);
   isolate->SetJavaScriptCompileHintsMagicEnabledCallback(

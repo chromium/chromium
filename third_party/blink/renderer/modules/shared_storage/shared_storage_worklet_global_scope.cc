@@ -333,7 +333,8 @@ bool SharedStorageWorkletGlobalScope::FeatureEnabled(
     return true;
   }
 
-  if (feature == OriginTrialFeature::kJavaScriptCompileHintsMagicRuntime) {
+  if (feature == OriginTrialFeature::kJavaScriptCompileHintsMagicRuntime ||
+      feature == OriginTrialFeature::kWebAssemblyJSStringBuiltins) {
     return false;
   }
 

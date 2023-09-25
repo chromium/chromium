@@ -44064,6 +44064,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4668" label="OutOfFlowAlignSelfNoInsets"/>
   <int value="4669" label="OutOfFlowAlignSelfSingleInset"/>
   <int value="4670" label="OutOfFlowAlignSelfBothInsets"/>
+  <int value="4671" label="V8WebAssemblyJSStringBuiltins"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
