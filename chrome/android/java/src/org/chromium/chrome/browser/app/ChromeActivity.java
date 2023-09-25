@@ -2806,8 +2806,14 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             mIsTabReparentingPrepared = true;
             if (!isFinishing()) {
                 mIsRecreatingForTabletModeChange = true;
-                // Store the OnPause timestamp before recreation to capture unfold latency metric.
-                if (isTablet) super.setOnPauseBeforeFoldRecreateTimestampMs();
+                // Store the OnPause timestamp before recreation to capture unfold latency metric
+                // only if the activity is currently not in stopped state, to not capture the time
+                // when system was suspended. Hence, unfolding instances where Chrome wasn't in
+                // foreground are not captured in this metric.
+                if (isTablet
+                        && ApplicationStatus.getStateForActivity(this) != ActivityState.STOPPED) {
+                    super.setOnPauseBeforeFoldRecreateTimestampMs();
+                }
                 recreate();
                 mHandler.removeCallbacks(mShowContentRunnable);
                 return true;
