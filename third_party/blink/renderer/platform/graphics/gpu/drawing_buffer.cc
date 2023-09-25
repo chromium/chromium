@@ -325,8 +325,10 @@ void DrawingBuffer::SetIsInHiddenPage(bool hidden) {
   if (is_hidden_ == hidden)
     return;
   is_hidden_ = hidden;
-  if (is_hidden_)
+  if (is_hidden_) {
     recycled_color_buffer_queue_.clear();
+    recycled_bitmaps_.clear();
+  }
 
   // Make sure to interrupt pixel local storage.
   ScopedStateRestorer scoped_state_restorer(this);
