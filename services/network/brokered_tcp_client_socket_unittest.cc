@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/tcp_client_socket_brokered.h"
+#include "services/network/brokered_tcp_client_socket.h"
 
 #include "base/test/bind.h"
 #include "base/test/scoped_run_loop_timeout.h"
@@ -35,16 +35,16 @@ using testing::Not;
 
 namespace network {
 
-class TCPClientSocketBrokeredTest : public testing::Test,
+class BrokeredTcpClientSocketTest : public testing::Test,
                                     public net::WithTaskEnvironment {
  public:
-  TCPClientSocketBrokeredTest()
+  BrokeredTcpClientSocketTest()
       : receiver_(&socket_broker_impl_),
         client_socket_factory_(
             BrokeredClientSocketFactory(receiver_.BindNewPipeAndPassRemote())) {
   }
 
-  ~TCPClientSocketBrokeredTest() override = default;
+  ~BrokeredTcpClientSocketTest() override = default;
 
   void SetUp() override {
     // Open a server socket on an ephemeral port.
@@ -110,7 +110,7 @@ class TCPClientSocketBrokeredTest : public testing::Test,
   bool close_server_socket_on_next_send_;
 };
 
-TEST_F(TCPClientSocketBrokeredTest, FailedConnect) {
+TEST_F(BrokeredTcpClientSocketTest, FailedConnect) {
   net::TestCompletionCallback callback;
   base::test::ScopedDisableRunLoopTimeout disable_timeout;
 
@@ -123,7 +123,7 @@ TEST_F(TCPClientSocketBrokeredTest, FailedConnect) {
   EXPECT_EQ(result, net::ERR_CONNECTION_FAILED);
 }
 
-TEST_F(TCPClientSocketBrokeredTest, Bind) {
+TEST_F(BrokeredTcpClientSocketTest, Bind) {
   net::TestCompletionCallback callback;
 
   EXPECT_THAT(
@@ -145,7 +145,7 @@ TEST_F(TCPClientSocketBrokeredTest, Bind) {
 #else
 #define MAYBE_FailedBind FailedBind
 #endif
-TEST_F(TCPClientSocketBrokeredTest, MAYBE_FailedBind) {
+TEST_F(BrokeredTcpClientSocketTest, MAYBE_FailedBind) {
   net::TestCompletionCallback callback;
 
   net::TCPServerSocket ipv6_server_socket(nullptr, net::NetLogSource());
@@ -178,7 +178,7 @@ TEST_F(TCPClientSocketBrokeredTest, MAYBE_FailedBind) {
   EXPECT_THAT(callback.GetResult(result), Not(IsOk()));
 }
 
-TEST_F(TCPClientSocketBrokeredTest, WasEverUsed) {
+TEST_F(BrokeredTcpClientSocketTest, WasEverUsed) {
   net::TestCompletionCallback callback;
   EXPECT_FALSE(socket_->WasEverUsed());
 
@@ -209,7 +209,7 @@ TEST_F(TCPClientSocketBrokeredTest, WasEverUsed) {
   socket_->Disconnect();
 }
 
-TEST_F(TCPClientSocketBrokeredTest, SetKeepAlive) {
+TEST_F(BrokeredTcpClientSocketTest, SetKeepAlive) {
   net::TestCompletionCallback callback;
 
   // Non-connected sockets should not be able to set KeepAlive.
@@ -226,7 +226,7 @@ TEST_F(TCPClientSocketBrokeredTest, SetKeepAlive) {
   socket_->Disconnect();
 }
 
-TEST_F(TCPClientSocketBrokeredTest, SetNoDelay) {
+TEST_F(BrokeredTcpClientSocketTest, SetNoDelay) {
   net::TestCompletionCallback callback;
 
   // Non-connected sockets should not be able to set NoDelay.
@@ -243,7 +243,7 @@ TEST_F(TCPClientSocketBrokeredTest, SetNoDelay) {
   socket_->Disconnect();
 }
 
-TEST_F(TCPClientSocketBrokeredTest, CancelReadIfReady) {
+TEST_F(BrokeredTcpClientSocketTest, CancelReadIfReady) {
   net::TestCompletionCallback callback;
   ASSERT_FALSE(socket_->IsConnected());
 
@@ -300,7 +300,7 @@ TEST_F(TCPClientSocketBrokeredTest, CancelReadIfReady) {
 // IsConnected, FullDuplex_ReadFirst, and FullDuplex_WriteFirst are duplicated
 // from transport_client_socket_unittest.cc since tests in //net can't depend on
 // anything outside of //net.
-TEST_F(TCPClientSocketBrokeredTest, IsConnected) {
+TEST_F(BrokeredTcpClientSocketTest, IsConnected) {
   scoped_refptr<net::IOBuffer> buf = base::MakeRefCounted<net::IOBuffer>(4096);
   net::TestCompletionCallback callback;
   uint32_t bytes_read;
@@ -364,7 +364,7 @@ TEST_F(TCPClientSocketBrokeredTest, IsConnected) {
   EXPECT_FALSE(socket_->IsConnectedAndIdle());
 }
 
-TEST_F(TCPClientSocketBrokeredTest, FullDuplex_ReadFirst) {
+TEST_F(BrokeredTcpClientSocketTest, FullDuplex_ReadFirst) {
   net::TestCompletionCallback callback;
   ConnectClientSocket(&callback);
 
@@ -405,7 +405,7 @@ TEST_F(TCPClientSocketBrokeredTest, FullDuplex_ReadFirst) {
   EXPECT_GE(rv, 0);
 }
 
-TEST_F(TCPClientSocketBrokeredTest, FullDuplex_WriteFirst) {
+TEST_F(BrokeredTcpClientSocketTest, FullDuplex_WriteFirst) {
   net::TestCompletionCallback callback;
   ConnectClientSocket(&callback);
 
@@ -423,8 +423,9 @@ TEST_F(TCPClientSocketBrokeredTest, FullDuplex_WriteFirst) {
                        write_callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS);
     ASSERT_TRUE(rv >= 0 || rv == net::ERR_IO_PENDING);
 
-    if (rv == net::ERR_IO_PENDING)
+    if (rv == net::ERR_IO_PENDING) {
       break;
+    }
     bytes_written += rv;
   }
 
@@ -437,8 +438,9 @@ TEST_F(TCPClientSocketBrokeredTest, FullDuplex_WriteFirst) {
   while (true) {
     int rv = socket_->Read(buf.get(), kBufLen, callback.callback());
     ASSERT_TRUE(rv >= 0 || rv == net::ERR_IO_PENDING);
-    if (rv == net::ERR_IO_PENDING)
+    if (rv == net::ERR_IO_PENDING) {
       break;
+    }
   }
 
   // At this point, both read and write have returned ERR_IO_PENDING.  Now we
@@ -458,7 +460,7 @@ TEST_F(TCPClientSocketBrokeredTest, FullDuplex_WriteFirst) {
 // real sockets, socket options often have to be set before the connect() call,
 // and the BeforeConnectCallback is the only way to do that, with a
 // TCPClientSocket.
-TEST_F(TCPClientSocketBrokeredTest, BeforeConnectCallback) {
+TEST_F(BrokeredTcpClientSocketTest, BeforeConnectCallback) {
   net::TestCompletionCallback callback;
 
   EXPECT_FALSE(socket_->IsConnected());
@@ -480,9 +482,9 @@ TEST_F(TCPClientSocketBrokeredTest, BeforeConnectCallback) {
 // depend on anything outside of //net.
 //
 // On Android, where socket tagging is
-// supported, verify that TCPClientSocketBrokered::Tag works as expected.
+// supported, verify that BrokeredTcpClientSocket::Tag works as expected.
 #if BUILDFLAG(IS_ANDROID)
-TEST_F(TCPClientSocketBrokeredTest, Tag) {
+TEST_F(BrokeredTcpClientSocketTest, Tag) {
   if (!net::CanGetTaggedBytes()) {
     DVLOG(0) << "Skipping test - GetTaggedBytes unsupported.";
     return;
@@ -496,7 +498,7 @@ TEST_F(TCPClientSocketBrokeredTest, Tag) {
   net::AddressList addr_list;
   ASSERT_TRUE(test_server.GetAddressList(&addr_list));
 
-  TCPClientSocketBrokered client_socket(addr_list, nullptr, nullptr, nullptr,
+  BrokeredTcpClientSocket client_socket(addr_list, nullptr, nullptr, nullptr,
                                         net::NetLogSource(),
                                         &client_socket_factory_);
 

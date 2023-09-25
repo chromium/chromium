@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/tcp_client_socket_brokered.h"
+#include "services/network/brokered_tcp_client_socket.h"
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -17,7 +17,7 @@
 
 namespace network {
 
-TCPClientSocketBrokered::TCPClientSocketBrokered(
+BrokeredTcpClientSocket::BrokeredTcpClientSocket(
     const net::AddressList& addresses,
     std::unique_ptr<net::SocketPerformanceWatcher> socket_performance_watcher,
     net::NetworkQualityEstimator* network_quality_estimator,
@@ -34,12 +34,12 @@ TCPClientSocketBrokered::TCPClientSocketBrokered(
       net::NetLogEventType::BROKERED_SOCKET_ALIVE, source);
 }
 
-TCPClientSocketBrokered::~TCPClientSocketBrokered() {
+BrokeredTcpClientSocket::~BrokeredTcpClientSocket() {
   net_log_source_.EndEvent(net::NetLogEventType::BROKERED_SOCKET_ALIVE);
   Disconnect();
 }
 
-int TCPClientSocketBrokered::Bind(const net::IPEndPoint& address) {
+int BrokeredTcpClientSocket::Bind(const net::IPEndPoint& address) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (IsConnected() || is_connect_in_progress_) {
     // Cannot bind the socket if we are already connected or connecting.
@@ -53,7 +53,7 @@ int TCPClientSocketBrokered::Bind(const net::IPEndPoint& address) {
   return net::OK;
 }
 
-bool TCPClientSocketBrokered::SetKeepAlive(bool enable, int delay) {
+bool BrokeredTcpClientSocket::SetKeepAlive(bool enable, int delay) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!brokered_socket_) {
     return false;
@@ -61,7 +61,7 @@ bool TCPClientSocketBrokered::SetKeepAlive(bool enable, int delay) {
   return brokered_socket_->SetKeepAlive(enable, delay);
 }
 
-bool TCPClientSocketBrokered::SetNoDelay(bool no_delay) {
+bool BrokeredTcpClientSocket::SetNoDelay(bool no_delay) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!brokered_socket_) {
     return false;
@@ -69,7 +69,7 @@ bool TCPClientSocketBrokered::SetNoDelay(bool no_delay) {
   return brokered_socket_->SetNoDelay(no_delay);
 }
 
-void TCPClientSocketBrokered::SetBeforeConnectCallback(
+void BrokeredTcpClientSocket::SetBeforeConnectCallback(
     const BeforeConnectCallback& before_connect_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!before_connect_callback_);
@@ -79,14 +79,15 @@ void TCPClientSocketBrokered::SetBeforeConnectCallback(
   before_connect_callback_ = before_connect_callback;
 }
 
-int TCPClientSocketBrokered::Connect(net::CompletionOnceCallback callback) {
+int BrokeredTcpClientSocket::Connect(net::CompletionOnceCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(liza): add support for reconnecting disconnected socket, or look into
   // removing support for reconnection from TCPClientSocket if it's not needed.
   DCHECK(!callback.is_null());
   // If connecting or already connected, then just return OK.
-  if (IsConnected() || is_connect_in_progress_)
+  if (IsConnected() || is_connect_in_progress_) {
     return net::OK;
+  }
 
   is_connect_in_progress_ = true;
 
@@ -95,14 +96,14 @@ int TCPClientSocketBrokered::Connect(net::CompletionOnceCallback callback) {
   // TODO(https://crbug.com/1321274): Pass in AddressFamily of single IPEndPoint
   client_socket_factory_->BrokerCreateTcpSocket(
       addresses_.begin()->GetFamily(),
-      base::BindOnce(&TCPClientSocketBrokered::DidCompleteCreate,
+      base::BindOnce(&BrokeredTcpClientSocket::DidCompleteCreate,
                      brokered_weak_ptr_factory_.GetWeakPtr(),
                      std::move(callback)));
 
   return net::ERR_IO_PENDING;
 }
 
-void TCPClientSocketBrokered::DidCompleteConnect(
+void BrokeredTcpClientSocket::DidCompleteConnect(
     net::CompletionOnceCallback callback,
     int result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -113,7 +114,7 @@ void TCPClientSocketBrokered::DidCompleteConnect(
   std::move(callback).Run(result);
 }
 
-void TCPClientSocketBrokered ::DidCompleteCreate(
+void BrokeredTcpClientSocket ::DidCompleteCreate(
     net::CompletionOnceCallback callback,
     network::TransferableSocket socket,
     int result) {
@@ -160,7 +161,7 @@ void TCPClientSocketBrokered ::DidCompleteCreate(
 
   auto split_connect_callback = base::SplitOnceCallback(std::move(callback));
   int connect_result = brokered_socket_->Connect(
-      base::BindOnce(&TCPClientSocketBrokered::DidCompleteConnect,
+      base::BindOnce(&BrokeredTcpClientSocket::DidCompleteConnect,
                      brokered_weak_ptr_factory_.GetWeakPtr(),
                      std::move(split_connect_callback.first)));
   if (connect_result != net::ERR_IO_PENDING) {
@@ -169,7 +170,7 @@ void TCPClientSocketBrokered ::DidCompleteCreate(
   }
 }
 
-void TCPClientSocketBrokered::Disconnect() {
+void BrokeredTcpClientSocket::Disconnect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (brokered_socket_) {
     brokered_socket_->Disconnect();
@@ -178,7 +179,7 @@ void TCPClientSocketBrokered::Disconnect() {
   is_connect_in_progress_ = false;
 }
 
-bool TCPClientSocketBrokered::IsConnected() const {
+bool BrokeredTcpClientSocket::IsConnected() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!brokered_socket_) {
     return false;
@@ -187,7 +188,7 @@ bool TCPClientSocketBrokered::IsConnected() const {
   return brokered_socket_->IsConnected();
 }
 
-bool TCPClientSocketBrokered::IsConnectedAndIdle() const {
+bool BrokeredTcpClientSocket::IsConnectedAndIdle() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!brokered_socket_) {
     return false;
@@ -195,7 +196,7 @@ bool TCPClientSocketBrokered::IsConnectedAndIdle() const {
   return brokered_socket_->IsConnectedAndIdle();
 }
 
-int TCPClientSocketBrokered::GetPeerAddress(net::IPEndPoint* address) const {
+int BrokeredTcpClientSocket::GetPeerAddress(net::IPEndPoint* address) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!brokered_socket_) {
     return net::ERR_SOCKET_NOT_CONNECTED;
@@ -203,7 +204,7 @@ int TCPClientSocketBrokered::GetPeerAddress(net::IPEndPoint* address) const {
   return brokered_socket_->GetPeerAddress(std::move(address));
 }
 
-int TCPClientSocketBrokered::GetLocalAddress(net::IPEndPoint* address) const {
+int BrokeredTcpClientSocket::GetLocalAddress(net::IPEndPoint* address) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!brokered_socket_) {
     return net::ERR_SOCKET_NOT_CONNECTED;
@@ -211,12 +212,12 @@ int TCPClientSocketBrokered::GetLocalAddress(net::IPEndPoint* address) const {
   return brokered_socket_->GetLocalAddress(std::move(address));
 }
 
-const net::NetLogWithSource& TCPClientSocketBrokered::NetLog() const {
+const net::NetLogWithSource& BrokeredTcpClientSocket::NetLog() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return net_log_source_;
 }
 
-bool TCPClientSocketBrokered::WasEverUsed() const {
+bool BrokeredTcpClientSocket::WasEverUsed() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!brokered_socket_) {
     return false;
@@ -224,19 +225,19 @@ bool TCPClientSocketBrokered::WasEverUsed() const {
   return brokered_socket_->WasEverUsed();
 }
 
-bool TCPClientSocketBrokered::WasAlpnNegotiated() const {
+bool BrokeredTcpClientSocket::WasAlpnNegotiated() const {
   return false;
 }
 
-net::NextProto TCPClientSocketBrokered::GetNegotiatedProtocol() const {
+net::NextProto BrokeredTcpClientSocket::GetNegotiatedProtocol() const {
   return net::kProtoUnknown;
 }
 
-bool TCPClientSocketBrokered::GetSSLInfo(net::SSLInfo* ssl_info) {
+bool BrokeredTcpClientSocket::GetSSLInfo(net::SSLInfo* ssl_info) {
   return false;
 }
 
-int64_t TCPClientSocketBrokered::GetTotalReceivedBytes() const {
+int64_t BrokeredTcpClientSocket::GetTotalReceivedBytes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!brokered_socket_) {
     return 0;
@@ -244,7 +245,7 @@ int64_t TCPClientSocketBrokered::GetTotalReceivedBytes() const {
   return brokered_socket_->GetTotalReceivedBytes();
 }
 
-void TCPClientSocketBrokered::ApplySocketTag(const net::SocketTag& tag) {
+void BrokeredTcpClientSocket::ApplySocketTag(const net::SocketTag& tag) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!brokered_socket_) {
     tag_ = tag;
@@ -253,7 +254,7 @@ void TCPClientSocketBrokered::ApplySocketTag(const net::SocketTag& tag) {
   }
 }
 
-int TCPClientSocketBrokered::Read(net::IOBuffer* buf,
+int BrokeredTcpClientSocket::Read(net::IOBuffer* buf,
                                   int buf_len,
                                   net::CompletionOnceCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -263,7 +264,7 @@ int TCPClientSocketBrokered::Read(net::IOBuffer* buf,
   return brokered_socket_->Read(buf, buf_len, std::move(callback));
 }
 
-int TCPClientSocketBrokered::ReadIfReady(net::IOBuffer* buf,
+int BrokeredTcpClientSocket::ReadIfReady(net::IOBuffer* buf,
                                          int buf_len,
                                          net::CompletionOnceCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -273,7 +274,7 @@ int TCPClientSocketBrokered::ReadIfReady(net::IOBuffer* buf,
   return brokered_socket_->ReadIfReady(buf, buf_len, std::move(callback));
 }
 
-int TCPClientSocketBrokered::CancelReadIfReady() {
+int BrokeredTcpClientSocket::CancelReadIfReady() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!brokered_socket_) {
     return net::ERR_SOCKET_NOT_CONNECTED;
@@ -281,7 +282,7 @@ int TCPClientSocketBrokered::CancelReadIfReady() {
   return brokered_socket_->CancelReadIfReady();
 }
 
-int TCPClientSocketBrokered::Write(
+int BrokeredTcpClientSocket::Write(
     net::IOBuffer* buf,
     int buf_len,
     net::CompletionOnceCallback callback,
@@ -294,7 +295,7 @@ int TCPClientSocketBrokered::Write(
                                  traffic_annotation);
 }
 
-int TCPClientSocketBrokered::SetReceiveBufferSize(int32_t size) {
+int BrokeredTcpClientSocket::SetReceiveBufferSize(int32_t size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!brokered_socket_) {
     return net::ERR_SOCKET_NOT_CONNECTED;
@@ -302,7 +303,7 @@ int TCPClientSocketBrokered::SetReceiveBufferSize(int32_t size) {
   return brokered_socket_->SetReceiveBufferSize(size);
 }
 
-int TCPClientSocketBrokered::SetSendBufferSize(int32_t size) {
+int BrokeredTcpClientSocket::SetSendBufferSize(int32_t size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!brokered_socket_) {
     return net::ERR_SOCKET_NOT_CONNECTED;

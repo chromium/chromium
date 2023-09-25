@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_TCP_CLIENT_SOCKET_BROKERED_H_
-#define SERVICES_NETWORK_TCP_CLIENT_SOCKET_BROKERED_H_
+#ifndef SERVICES_NETWORK_BROKERED_TCP_CLIENT_SOCKET_H_
+#define SERVICES_NETWORK_BROKERED_TCP_CLIENT_SOCKET_H_
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
@@ -40,10 +40,10 @@ class TransferableSocket;
 // process using the net:SocketBroker interface. This is because socket creation
 // needs to be brokered, and TCPClientSocket only creates and opens a socket
 // within Bind and Connect.
-class COMPONENT_EXPORT(NETWORK_SERVICE) TCPClientSocketBrokered
+class COMPONENT_EXPORT(NETWORK_SERVICE) BrokeredTcpClientSocket
     : public net::TransportClientSocket {
  public:
-  TCPClientSocketBrokered(
+  BrokeredTcpClientSocket(
       const net::AddressList& addresses,
       std::unique_ptr<net::SocketPerformanceWatcher>
           brokered_socket_performance_watcher,
@@ -52,10 +52,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPClientSocketBrokered
       const net::NetLogSource& source,
       BrokeredClientSocketFactory* client_socket_factory);
 
-  ~TCPClientSocketBrokered() override;
+  ~BrokeredTcpClientSocket() override;
 
-  TCPClientSocketBrokered(const TCPClientSocketBrokered&) = delete;
-  TCPClientSocketBrokered& operator=(const TCPClientSocketBrokered&) = delete;
+  BrokeredTcpClientSocket(const BrokeredTcpClientSocket&) = delete;
+  BrokeredTcpClientSocket& operator=(const BrokeredTcpClientSocket&) = delete;
 
   // TransportClientSocket implementation.
   int Bind(const net::IPEndPoint& address) override;
@@ -146,10 +146,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPClientSocketBrokered
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<TCPClientSocketBrokered> brokered_weak_ptr_factory_{
+  base::WeakPtrFactory<BrokeredTcpClientSocket> brokered_weak_ptr_factory_{
       this};
 };
 
 }  // namespace network
 
-#endif  // SERVICES_NETWORK_TCP_CLIENT_SOCKET_BROKERED_H_
+#endif  // SERVICES_NETWORK_BROKERED_TCP_CLIENT_SOCKET_H_
