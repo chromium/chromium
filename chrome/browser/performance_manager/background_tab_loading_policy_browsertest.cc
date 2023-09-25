@@ -89,7 +89,13 @@ class BackgroundTabLoadingBrowserTest : public InProcessBrowserTest {
 };
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
-IN_PROC_BROWSER_TEST_F(BackgroundTabLoadingBrowserTest, RestoreTab) {
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1486393): Re-enable the test.
+#define MAYBE_RestoreTab DISABLED_RestoreTab
+#else
+#define MAYBE_RestoreTab RestoreTab
+#endif
+IN_PROC_BROWSER_TEST_F(BackgroundTabLoadingBrowserTest, MAYBE_RestoreTab) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url_, WindowOpenDisposition::NEW_WINDOW,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
