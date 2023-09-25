@@ -807,6 +807,25 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self.assertEqual({},
                      self._driver.ExecuteScript(
                          'return new Set(["one", 2])'))
+    [body1, body2] = self._driver.ExecuteScript(
+        'return [document.body, document.body]')
+    self.assertEqual(body1._id, body2._id)
+    [body2, obj1] = self._driver.ExecuteScript(
+        'return [document.body, {"a": document.body}]')
+    self.assertEqual(body1._id, body2._id)
+    self.assertEqual(body1._id, obj1['a']._id)
+    [root1, body2] = self._driver.ExecuteScript(
+        'return [document.documentElement, document.body]')
+    self.assertEqual(body1._id, body2._id)
+    self.assertNotEqual(root1._id, body1._id)
+    [root2, obj1] = self._driver.ExecuteScript(
+        ''.join(['return [document.documentElement, {',
+                 '  "a": document.body, ',
+                 '  "b": {"c": document.documentElement}}]']))
+    self.assertEqual(root1._id, root2._id)
+    self.assertEqual(body1._id, obj1['a']._id)
+    self.assertEqual(root1._id, obj1['b']['c']._id)
+
 
   def testEvaluateScriptWithArgs(self):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))

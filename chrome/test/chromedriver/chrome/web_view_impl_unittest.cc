@@ -4,12 +4,10 @@
 
 #include "chrome/test/chromedriver/chrome/web_view_impl.h"
 
-#include <list>
 #include <memory>
 #include <queue>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -53,16 +51,46 @@ testing::AssertionResult StatusOk(const Status& status) {
   return StatusCodeIs<kOk>(status);
 }
 
-base::Value::Dict GenerateResponse(int backend_node_id) {
+base::Value::Dict CreateElementPlaceholder(
+    int index,
+    std::string element_key = kElementKeyW3C) {
+  base::Value::Dict placeholder;
+  placeholder.Set(element_key, index);
+  return placeholder;
+}
+
+// Create weak local object reference on a node
+base::Value::Dict CreateWeakNodeReference(int weak_local_object_reference) {
+  base::Value::Dict node;
+  node.Set("type", "node");
+  node.Set("weakLocalObjectReference", weak_local_object_reference);
+  return node;
+}
+
+base::Value::Dict CreateNode(int backend_node_id,
+                             int weak_local_object_reference = -1) {
+  base::Value::Dict node;
+  node.Set("type", "node");
+  node.SetByDottedPath("value.backendNodeId", backend_node_id);
+  if (weak_local_object_reference >= 0) {
+    node.Set("weakLocalObjectReference", weak_local_object_reference);
+  }
+  return node;
+}
+
+std::string WrapToJson(base::Value value, int status = 0) {
   base::Value::Dict result;
-  result.SetByDottedPath(std::string("value.") + kElementKeyW3C, 0);
+  result.Set("value", std::move(value));
   result.Set("status", 0);
   std::string json;
   base::JSONWriter::Write(result, &json);
+  return json;
+}
+
+base::Value::Dict GenerateResponse(int backend_node_id) {
   base::Value::Dict dict;
-  dict.Set("value", std::move(json));
-  base::Value::Dict node;
-  node.SetByDottedPath("value.backendNodeId", backend_node_id);
+  dict.Set("value", WrapToJson(base::Value(CreateElementPlaceholder(0)), 0));
+  base::Value::Dict node = CreateNode(backend_node_id);
   base::Value::List serialized_list;
   serialized_list.Append(std::move(dict));
   serialized_list.Append(std::move(node));
@@ -89,21 +117,12 @@ base::Value::Dict GenerateResponseWithScriptArguments(
       continue;
     }
 
-    base::Value::Dict node;
-    base::Value::Dict ref;
-    ref.Set(element_key, static_cast<int>(nodes.size()));
-    arr.Append(std::move(ref));
-    node.SetByDottedPath("value.backendNodeId", object_id);
-    nodes.Append(std::move(node));
+    arr.Append(CreateElementPlaceholder(nodes.size(), element_key));
+    nodes.Append(CreateNode(object_id));
   }
 
-  base::Value::Dict result;
-  result.Set("value", std::move(arr));
-  result.Set("status", 0);
-  std::string json;
-  base::JSONWriter::Write(result, &json);
   base::Value::Dict dict;
-  dict.Set("value", std::move(json));
+  dict.Set("value", WrapToJson(base::Value(std::move(arr)), 0));
   base::Value::List serialized_list;
   serialized_list.Append(std::move(dict));
 
@@ -966,3 +985,114 @@ INSTANTIATE_TEST_SUITE_P(References,
                                            std::make_pair(kElementKey, false),
                                            std::make_pair(kShadowRootKey,
                                                           false)));
+
+TEST(CallUserSyncScript, WeakReference) {
+  base::Value::Dict node = CreateNode(557, 13);
+  base::Value::Dict weak_ref = CreateWeakNodeReference(13);
+  base::Value::Dict dict;
+  base::Value::List placeholder_list;
+  placeholder_list.Append(CreateElementPlaceholder(0));
+  placeholder_list.Append(CreateElementPlaceholder(1));
+  dict.Set("value", WrapToJson(base::Value(std::move(placeholder_list)), 0));
+  base::Value::List serialized_list;
+  serialized_list.Append(std::move(dict));
+  serialized_list.Append(std::move(node));
+  serialized_list.Append(std::move(weak_ref));
+  base::Value::Dict response;
+  response.SetByDottedPath("result.webDriverValue.value",
+                           std::move(serialized_list));
+
+  std::unique_ptr<FakeDevToolsClient> client_uptr =
+      std::make_unique<FakeDevToolsClient>("root");
+  client_uptr->SetResult(response);
+
+  BrowserInfo browser_info;
+  WebViewImpl view("root", true, nullptr, &browser_info, std::move(client_uptr),
+                   absl::nullopt, PageLoadStrategy::kEager);
+  view.GetFrameTracker()->SetContextIdForFrame("root", "irrelevant");
+
+  std::unique_ptr<base::Value> result;
+  EXPECT_TRUE(
+      StatusOk(view.CallUserSyncScript("root", "some_code", base::Value::List(),
+                                       base::TimeDelta::Max(), &result)));
+
+  ASSERT_TRUE(result->is_list());
+  const base::Value::List& result_list = result->GetList();
+  ASSERT_EQ(2u, result_list.size());
+  ASSERT_TRUE(result_list[0].is_dict());
+  EXPECT_THAT(result_list[0].GetDict().FindString(kElementKeyW3C),
+              Pointee(Eq("root_loader_element_557")));
+  ASSERT_TRUE(result_list[1].is_dict());
+  EXPECT_THAT(result_list[1].GetDict().FindString(kElementKeyW3C),
+              Pointee(Eq("root_loader_element_557")));
+}
+
+TEST(CallUserSyncScript, WeakReferenceOrderInsensitive) {
+  base::Value::Dict node = CreateNode(557, 13);
+  base::Value::Dict weak_ref = CreateWeakNodeReference(13);
+  base::Value::Dict dict;
+  base::Value::List placeholder_list;
+  placeholder_list.Append(CreateElementPlaceholder(0));
+  placeholder_list.Append(CreateElementPlaceholder(1));
+  dict.Set("value", WrapToJson(base::Value(std::move(placeholder_list)), 0));
+  base::Value::List serialized_list;
+  serialized_list.Append(std::move(dict));
+  serialized_list.Append(std::move(weak_ref));
+  serialized_list.Append(std::move(node));
+  base::Value::Dict response;
+  response.SetByDottedPath("result.webDriverValue.value",
+                           std::move(serialized_list));
+
+  std::unique_ptr<FakeDevToolsClient> client_uptr =
+      std::make_unique<FakeDevToolsClient>("root");
+  client_uptr->SetResult(response);
+
+  BrowserInfo browser_info;
+  WebViewImpl view("root", true, nullptr, &browser_info, std::move(client_uptr),
+                   absl::nullopt, PageLoadStrategy::kEager);
+  view.GetFrameTracker()->SetContextIdForFrame("root", "irrelevant");
+
+  std::unique_ptr<base::Value> result;
+  EXPECT_TRUE(
+      StatusOk(view.CallUserSyncScript("root", "some_code", base::Value::List(),
+                                       base::TimeDelta::Max(), &result)));
+
+  ASSERT_TRUE(result->is_list());
+  const base::Value::List& result_list = result->GetList();
+  ASSERT_EQ(2u, result_list.size());
+  ASSERT_TRUE(result_list[0].is_dict());
+  EXPECT_THAT(result_list[0].GetDict().FindString(kElementKeyW3C),
+              Pointee(Eq("root_loader_element_557")));
+  ASSERT_TRUE(result_list[1].is_dict());
+  EXPECT_THAT(result_list[1].GetDict().FindString(kElementKeyW3C),
+              Pointee(Eq("root_loader_element_557")));
+}
+
+TEST(CallUserSyncScript, WeakReferenceNotResolved) {
+  base::Value::Dict weak_ref = CreateWeakNodeReference(13);
+  base::Value::Dict dict;
+  base::Value::List placeholder_list;
+  placeholder_list.Append(CreateElementPlaceholder(0));
+  dict.Set("value", WrapToJson(base::Value(std::move(placeholder_list)), 0));
+  base::Value::List serialized_list;
+  serialized_list.Append(std::move(dict));
+  serialized_list.Append(std::move(weak_ref));
+  base::Value::Dict response;
+  response.SetByDottedPath("result.webDriverValue.value",
+                           std::move(serialized_list));
+
+  std::unique_ptr<FakeDevToolsClient> client_uptr =
+      std::make_unique<FakeDevToolsClient>("root");
+  client_uptr->SetResult(response);
+
+  BrowserInfo browser_info;
+  WebViewImpl view("root", true, nullptr, &browser_info, std::move(client_uptr),
+                   absl::nullopt, PageLoadStrategy::kEager);
+  view.GetFrameTracker()->SetContextIdForFrame("root", "irrelevant");
+
+  std::unique_ptr<base::Value> result;
+  Status status =
+      view.CallUserSyncScript("root", "some_code", base::Value::List(),
+                              base::TimeDelta::Max(), &result);
+  EXPECT_TRUE(status.IsError());
+}

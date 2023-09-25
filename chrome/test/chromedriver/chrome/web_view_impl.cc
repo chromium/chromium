@@ -287,6 +287,55 @@ Status GetFrameIdForBackendNodeId(DevToolsClient* client,
   return Status(kOk);
 }
 
+Status ResolveWeakReferences(base::Value::List& nodes) {
+  Status status{kOk};
+  std::map<int, int> ref_to_idx;
+  // Mapping
+  for (int k = 0; static_cast<size_t>(k) < nodes.size(); ++k) {
+    if (!nodes[k].is_dict()) {
+      continue;
+    }
+    const base::Value::Dict& node = nodes[k].GetDict();
+    absl::optional<int> weak_node_ref =
+        node.FindIntByDottedPath("weakLocalObjectReference");
+    if (!weak_node_ref) {
+      continue;
+    }
+    absl::optional<int> maybe_backend_node_id =
+        node.FindIntByDottedPath("value.backendNodeId");
+    if (!maybe_backend_node_id) {
+      continue;
+    }
+    ref_to_idx[weak_node_ref.value()] = k;
+  }
+  // Resolving
+  for (int k = 0; static_cast<size_t>(k) < nodes.size(); ++k) {
+    if (!nodes[k].is_dict()) {
+      continue;
+    }
+    const base::Value::Dict& node = nodes[k].GetDict();
+    absl::optional<int> weak_node_ref =
+        node.FindIntByDottedPath("weakLocalObjectReference");
+    if (!weak_node_ref) {
+      continue;
+    }
+    absl::optional<int> maybe_backend_node_id =
+        node.FindIntByDottedPath("value.backendNodeId");
+    if (maybe_backend_node_id) {
+      continue;
+    }
+    auto it = ref_to_idx.find(*weak_node_ref);
+    if (it == ref_to_idx.end()) {
+      return Status{
+          kUnknownError,
+          base::StringPrintf("Unable to resolve weakLocalObjectReference=%d",
+                             *weak_node_ref)};
+    }
+    nodes[k] = nodes[it->second].Clone();
+  }
+  return status;
+}
+
 }  // namespace
 
 WebViewImpl::WebViewImpl(const std::string& id,
@@ -769,6 +818,10 @@ Status WebViewImpl::CallFunctionWithTimeoutInternal(
   if (call_result_value == nullptr) {
     // Missing 'value' indicates the JavaScript code didn't return a value.
     return Status(kOk);
+  }
+  status = ResolveWeakReferences(received_list);
+  if (!status.IsOk()) {
+    return status;
   }
   status = CreateElementReferences(call_result_value, received_list, loader_id);
   if (!status.IsOk()) {
