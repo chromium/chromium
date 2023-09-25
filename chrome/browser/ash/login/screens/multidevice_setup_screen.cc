@@ -81,6 +81,7 @@ void MultiDeviceSetupScreen::TryInitSetupClient() {
 bool MultiDeviceSetupScreen::MaybeSkip(WizardContext& context) {
   // Skip multidevice setup screen during oobe.SmokeEndToEnd test.
   if (switches::ShouldMultideviceScreenBeSkippedForTesting()) {
+    exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
   }
 
