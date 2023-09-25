@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-The OT token is needed so we can call IdentityProvider.login.
+The OT token is needed so we can call navigator.login.setStatus.
 
 generated with:
 generate_token.py https://devtools.test:8443/ FedCmIdpSigninStatus  --expire-timestamp=2000000000
@@ -11,7 +11,7 @@ onerror = (e) => console.log(e);
 
 async function doLogin() {
   await fetch("set-accounts.php?default");
-  IdentityProvider.login();
+  navigator.login.setStatus("logged-in");
   IdentityProvider.close();
 }
 onload = doLogin;

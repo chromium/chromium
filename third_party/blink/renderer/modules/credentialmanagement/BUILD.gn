@@ -28,6 +28,8 @@ blink_modules_sources("credentialmanagement") {
     "identity_provider.h",
     "json.cc",
     "json.h",
+    "navigator_login.cc",
+    "navigator_login.h",
     "otp_credential.cc",
     "otp_credential.h",
     "password_credential.cc",

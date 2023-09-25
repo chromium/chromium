@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <script>
 function doLogin() {
-  IdentityProvider.login();
+  navigator.login.setStatus("logged-in");
   IdentityProvider.close();
 }
 onload = doLogin;

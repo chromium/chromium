@@ -176,6 +176,7 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/credentialmanagement/identity_provider_config.idl",
   "//third_party/blink/renderer/modules/credentialmanagement/identity_standard_claims.idl",
   "//third_party/blink/renderer/modules/credentialmanagement/navigator_credentials.idl",
+  "//third_party/blink/renderer/modules/credentialmanagement/navigator_login.idl",
   "//third_party/blink/renderer/modules/credentialmanagement/otp_credential.idl",
   "//third_party/blink/renderer/modules/credentialmanagement/otp_credential_request_options.idl",
   "//third_party/blink/renderer/modules/credentialmanagement/password_credential.idl",

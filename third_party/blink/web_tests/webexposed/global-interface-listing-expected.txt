@@ -5241,8 +5241,6 @@ interface IdentityCredential : Credential
 interface IdentityProvider
     static method close
     static method getUserInfo
-    static method login
-    static method logout
     static method register
     static method resolve
     static method unregister
@@ -6422,6 +6420,7 @@ interface Navigator
     getter language
     getter languages
     getter locks
+    getter login
     getter managed
     getter maxTouchPoints
     getter mediaCapabilities
@@ -6484,6 +6483,10 @@ interface Navigator
     method updateAdInterestGroups
     method vibrate
     method webkitGetUserMedia
+interface NavigatorLogin
+    attribute @@toStringTag
+    method constructor
+    method setStatus
 interface NavigatorManagedData : EventTarget
     attribute @@toStringTag
     getter onmanagedconfigurationchange

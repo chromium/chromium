@@ -120,26 +120,6 @@ ScriptPromise IdentityProvider::getUserInfo(
   return promise;
 }
 
-void IdentityProvider::login(ScriptState* script_state) {
-  // TODO(https://crbug.com/1382193): Determine if we should add an origin
-  // parameter.
-  auto* context = ExecutionContext::From(script_state);
-  auto* request =
-      CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
-  request->SetIdpSigninStatus(context->GetSecurityOrigin(),
-                              mojom::blink::IdpSigninStatus::kSignedIn);
-}
-
-void IdentityProvider::logout(ScriptState* script_state) {
-  // TODO(https://crbug.com/1382193): Determine if we should add an origin
-  // parameter.
-  auto* context = ExecutionContext::From(script_state);
-  auto* request =
-      CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
-  request->SetIdpSigninStatus(context->GetSecurityOrigin(),
-                              mojom::blink::IdpSigninStatus::kSignedOut);
-}
-
 void IdentityProvider::close(ScriptState* script_state) {
   auto* request =
       CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
