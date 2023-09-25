@@ -549,19 +549,18 @@ TEST_F(AttributionStorageTest,
 // <reporting_origin, destination_origin> pair, all existing impressions for
 // that origin that have converted are marked ineligible for new conversions per
 // the multi-touch model.
-//
-// TODO: The fast-forwards in this test don't seem relevant, but the test fails
-// without them.
 TEST_F(AttributionStorageTest,
        NewImpressionForConvertedImpression_MarkedInactive) {
   storage()->StoreSource(SourceBuilder().SetSourceEventId(0).Build());
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
 
-  task_environment_.FastForwardBy(kReportDelay);
-
   // Delete the report.
-  DeleteReports(storage()->GetAttributionReports(base::Time::Now()));
+  DeleteReports(
+      storage()->GetAttributionReports(/*max_report_time=*/base::Time::Max()));
+
+  // Fast forward to ensure a later source time.
+  task_environment_.FastForwardBy(base::Milliseconds(1));
 
   // Store a new impression that should mark the first inactive.
   storage()->StoreSource(SourceBuilder().SetSourceEventId(1000).Build());
@@ -571,11 +570,10 @@ TEST_F(AttributionStorageTest,
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(conversion));
 
-  task_environment_.FastForwardBy(kReportDelay);
-
   // Verify it was the new impression that converted.
-  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Now()),
-              ElementsAre(ReportSourceIs(SourceEventIdIs(1000u))));
+  EXPECT_THAT(
+      storage()->GetAttributionReports(/*max_report_time=*/base::Time::Max()),
+      ElementsAre(ReportSourceIs(SourceEventIdIs(1000u))));
 }
 
 TEST_F(AttributionStorageTest,
