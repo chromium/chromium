@@ -427,7 +427,7 @@ TEST_F(LimitedInMemoryURLIndexTest, Initialization) {
   // history_info_map_ should have the same number of items as were filtered.
   EXPECT_EQ(1U, private_data.history_info_map_.size());
   EXPECT_EQ(35U, private_data.char_word_map_.size());
-  EXPECT_EQ(17U, private_data.word_map_.size());
+  EXPECT_EQ(19U, private_data.word_map_.size());
 }
 
 TEST_F(InMemoryURLIndexTest, HiddenURLRowsAreIgnored) {

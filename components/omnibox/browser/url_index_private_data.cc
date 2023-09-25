@@ -18,7 +18,6 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/stack.h"
 #include "base/feature_list.h"
-#include "base/i18n/break_iterator.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -727,8 +726,7 @@ void URLIndexPrivateData::CalculateWordStartsOffsets(
   // starts at offset 1.
   lower_terms_to_word_starts_offsets->resize(lower_terms.size(), 0u);
   for (size_t i = 0; i < lower_terms.size(); ++i) {
-    TailoredWordBreakIterator iter(lower_terms[i],
-                                   base::i18n::BreakIterator::BREAK_WORD);
+    TailoredWordBreakIterator iter(lower_terms[i]);
     // If the iterator doesn't work, assume an offset of 0.
     if (!iter.Init())
       continue;

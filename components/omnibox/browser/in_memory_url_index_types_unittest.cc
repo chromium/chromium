@@ -28,8 +28,7 @@ bool IntArraysEqual(const size_t* expected,
   return true;
 }
 
-class InMemoryURLIndexTypesTest : public testing::Test {
-};
+class InMemoryURLIndexTypesTest : public testing::Test {};
 
 TEST_F(InMemoryURLIndexTypesTest, StaticFunctions) {
   // Test String16VectorFromString16
@@ -55,9 +54,9 @@ TEST_F(InMemoryURLIndexTypesTest, StaticFunctions) {
       u" funky%20string-with=@strange   sequences, intended(to exceed)");
   WordStarts actual_starts_b;
   string_vec = String16VectorFromString16(string_b, &actual_starts_b);
-  ASSERT_EQ(8U, string_vec.size());
+  ASSERT_EQ(9U, string_vec.size());
   // Note that we stop collecting words and word starts at kMaxSignificantChars.
-  size_t expected_starts_b[] = {1, 7, 16, 22, 32, 43, 52, 55};
+  size_t expected_starts_b[] = {1, 7, 9, 16, 22, 32, 43, 52, 55};
   EXPECT_TRUE(IntArraysEqual(expected_starts_b, std::size(expected_starts_b),
                              actual_starts_b));
 
@@ -133,7 +132,7 @@ TEST_F(InMemoryURLIndexTypesTest, StaticFunctions) {
   // Test MatchTermInString
   TermMatches matches_g =
       MatchTermInString(u"x", u"axbxcxdxex fxgx/hxixjx.kx", 123);
-  const size_t expected_offsets[] = { 1, 3, 5, 7, 9, 12, 14, 17, 19, 21, 24 };
+  const size_t expected_offsets[] = {1, 3, 5, 7, 9, 12, 14, 17, 19, 21, 24};
   ASSERT_EQ(std::size(expected_offsets), matches_g.size());
   for (size_t i = 0; i < std::size(expected_offsets); ++i)
     EXPECT_EQ(expected_offsets[i], matches_g[i].offset);

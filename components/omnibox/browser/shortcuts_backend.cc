@@ -13,7 +13,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/i18n/break_iterator.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
@@ -147,8 +146,7 @@ std::u16string ExpandToFullWord(std::u16string trimmed_text,
     // Cut off the common prefix.
     const auto cut_match_text = match_text.substr(trimmed_lower_text.length());
     // Find the 1st word of the cut `match_text`.
-    TailoredWordBreakIterator iter(cut_match_text,
-                                   base::i18n::BreakIterator::BREAK_WORD);
+    TailoredWordBreakIterator iter(cut_match_text);
     // Append that word to the text.
     if (iter.Init() && iter.Advance() && iter.IsWord())
       return base::StrCat({trimmed_text, iter.GetString()});

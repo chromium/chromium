@@ -584,8 +584,8 @@ TEST_F(HistoryQuickProviderTest, ContentsClass) {
   // Verify that contents_class divides the string in the right places.
   // [22, 24) is the "第二".  All the other pairs are the "e3".
   ACMatchClassifications contents_class(ac_matches()[0].contents_class);
-  size_t expected_offsets[] = {0,  22, 24, 31, 33, 40, 42, 49,
-                               51, 58, 60, 67, 69, 76, 78};
+  size_t expected_offsets[] = {0,  22, 24, 31, 33, 40, 42, 49, 51, 58,
+                               60, 67, 69, 76, 78, 85, 86, 94, 95};
   // ScoredHistoryMatch may not highlight all the occurrences of these terms
   // because it only highlights terms at word breaks, and it only stores word
   // breaks up to some specified number of characters (50 at the time of this

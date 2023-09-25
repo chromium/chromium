@@ -447,9 +447,9 @@ TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut_Expanding) {
   InitBackend();
 
   AutocompleteMatch match;
-  match.destination_url = GURL("https://www.host-shared2.com/path");
+  match.destination_url = GURL("https://www.host-sharedB.com/path");
   match.description = u"https://www.description.com";
-  match.contents = u"a an app apple i it word ZaZaaZZ symbols(╯°□°）╯ shared1";
+  match.contents = u"a an app apple i it word ZaZaaZZ symbols(╯°□°）╯ sharedA";
   match.contents_class.emplace_back(0, 0);
   match.description_class.emplace_back(0, 0);
 
@@ -499,7 +499,7 @@ TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut_Expanding) {
 
   // Should prefer expanding to words in the `contents`.
   backend()->AddOrUpdateShortcut(u"shar", match);
-  EXPECT_THAT(ShortcutsMapTexts(), testing::ElementsAre(u"shared1"));
+  EXPECT_THAT(ShortcutsMapTexts(), testing::ElementsAre(u"sharedA"));
   ClearShortcutsMap();
 
   // When updating, should expand the last word after appending up to 3 chars.
@@ -608,28 +608,28 @@ TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut_Expanding_Prefix) {
 
   // When `text` does prefix `match_text`, should expand to the next word in
   // `match_text` instead of the 1st matching word.
-  test("x", "x1 x2", "x1");
-  test("x1 x", "x1 x2", "x1 x2");
+  test("x", "xA xB", "xA");
+  test("xA x", "xA xB", "xA xB");
 
   // When `text` doesn't prefix `match_text`, should expand to the 1st matching
   // word in `match_text`.
-  test("x2 x", "x1 x2", "x2 x1");
+  test("xB x", "xA xB", "xB xA");
   // Even if that produces repeated words. (It'd be too complicated to avoid
   // this without introducing even greater edge cases).
-  test("x1 x", "x1 y x2", "x1 x1");
+  test("xA x", "xA y xB", "xA xA");
 
   // When prefix matching, should use the next word even if its short.
-  test("x1 x", "x1 y x2 xyz", "x1 xyz");
+  test("xA x", "xA y xB xyz", "xA xyz");
   // When not prefix matching, should use the 1st word at least 3 chars long if
   // available.
-  test("x1 x", "x1 x2 xyz", "x1 x2");
+  test("xA x", "xA xB xyz", "xA xB");
 
   // Both prefix and non prefix matching should handle trailing whitespace.
   // Trailing whitespace should not prompt expansion to the next `match_text`.
-  test("x1 ", "x1 x2", "x1");
+  test("xA ", "xA xB", "xA");
   // Trailing whitespace should not prevent expansion of the last `text` word.
-  test("x1 xy ", "x1 xyz", "x1 xyz");
-  test("x1 xyz ", "x1 xyz", "x1 xyz");
+  test("xA xy ", "xA xyz", "xA xyz");
+  test("xA xyz ", "xA xyz", "xA xyz");
 }
 
 TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut_Expanding_Case) {
