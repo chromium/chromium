@@ -332,6 +332,7 @@ class DownloadDisplayControllerTest : public testing::Test {
     EXPECT_CALL(item(index), GetDangerType())
         .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS));
     EXPECT_CALL(item(index), IsDangerous()).WillRepeatedly(Return(false));
+    EXPECT_CALL(item(index), IsInsecure()).WillRepeatedly(Return(false));
     int received_bytes =
         state == download::DownloadItem::IN_PROGRESS ? 50 : 100;
     EXPECT_CALL(item(index), GetReceivedBytes())
@@ -400,7 +401,8 @@ class DownloadDisplayControllerTest : public testing::Test {
                           DownloadState state,
                           download::DownloadDangerType danger_type =
                               download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
-                          bool may_show_details = true) {
+                          bool may_show_details = true,
+                          bool is_insecure = false) {
     DCHECK_GT(items_.size(), static_cast<size_t>(item_index));
 
     // In-progress but dangerous downloads are considered complete.
@@ -411,6 +413,8 @@ class DownloadDisplayControllerTest : public testing::Test {
     EXPECT_CALL(item(item_index), GetState()).WillRepeatedly(Return(state));
     EXPECT_CALL(item(item_index), GetDangerType())
         .WillRepeatedly(Return(danger_type));
+    EXPECT_CALL(item(item_index), IsInsecure())
+        .WillRepeatedly(Return(is_insecure));
     if (state == DownloadState::COMPLETE) {
       EXPECT_CALL(item(item_index), IsDone()).WillRepeatedly(Return(true));
       DownloadPrefs::FromBrowserContext(profile())->SetLastCompleteTime(
@@ -767,6 +771,28 @@ TEST_F(DownloadDisplayControllerTest,
 
   UpdateDownloadItem(/*item_index=*/0, DownloadState::IN_PROGRESS,
                      download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING);
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
+                                 /*icon_state=*/DownloadIconState::kComplete,
+                                 /*is_active=*/false));
+}
+
+TEST_F(DownloadDisplayControllerTest,
+       UpdateToolbarButtonState_InsecureDownload) {
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/false, /*detail_shown=*/false,
+                                 /*icon_state=*/DownloadIconState::kComplete,
+                                 /*is_active=*/false));
+
+  InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
+                   download::DownloadItem::IN_PROGRESS);
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
+                                 /*icon_state=*/DownloadIconState::kProgress,
+                                 /*is_active=*/true));
+
+  UpdateDownloadItem(/*item_index=*/0, DownloadState::IN_PROGRESS,
+                     download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST,
+                     /*may_show_details=*/true, /*is_insecure=*/true);
+  // Insecure downloads should be considered completed and
+  // should display details if there are no other in-progress downloads.
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
                                  /*icon_state=*/DownloadIconState::kComplete,
                                  /*is_active=*/false));

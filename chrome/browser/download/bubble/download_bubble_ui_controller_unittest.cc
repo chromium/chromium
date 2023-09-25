@@ -263,6 +263,7 @@ class DownloadBubbleUIControllerTest : public testing::Test {
         .WillRepeatedly(Return(creation_type));
     EXPECT_CALL(item(index), IsPaused()).WillRepeatedly(Return(false));
     EXPECT_CALL(item(index), IsDangerous()).WillRepeatedly(Return(false));
+    EXPECT_CALL(item(index), IsInsecure()).WillRepeatedly(Return(false));
     // Functions called when checking ShouldShowDownloadStartedAnimation().
     EXPECT_CALL(item(index), IsSavePackageDownload())
         .WillRepeatedly(Return(false));
