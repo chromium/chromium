@@ -268,11 +268,14 @@ void DownloadBubbleSecurityView::AddHeader() {
 }
 
 void DownloadBubbleSecurityView::BackButtonPressed() {
-  delegate_->AddSecuritySubpageWarningActionEvent(
-      content_id_, DownloadItemWarningData::WarningAction::BACK);
-  did_log_action_ = true;
-  base::UmaHistogramEnumeration(
-      kSubpageActionHistogram, DownloadBubbleSubpageAction::kPressedBackButton);
+  if (IsInitialized()) {
+    delegate_->AddSecuritySubpageWarningActionEvent(
+        content_id_, DownloadItemWarningData::WarningAction::BACK);
+    did_log_action_ = true;
+    base::UmaHistogramEnumeration(
+        kSubpageActionHistogram,
+        DownloadBubbleSubpageAction::kPressedBackButton);
+  }
   Reset();
   navigation_handler_->OpenPrimaryDialog();
 }
@@ -284,9 +287,11 @@ void DownloadBubbleSecurityView::UpdateHeader() {
 }
 
 void DownloadBubbleSecurityView::CloseBubble() {
-  delegate_->AddSecuritySubpageWarningActionEvent(
-      content_id_, DownloadItemWarningData::WarningAction::CLOSE);
-  did_log_action_ = true;
+  if (IsInitialized()) {
+    delegate_->AddSecuritySubpageWarningActionEvent(
+        content_id_, DownloadItemWarningData::WarningAction::CLOSE);
+    did_log_action_ = true;
+  }
   // CloseDialog will delete the object. Do not access any members below.
   navigation_handler_->CloseDialog(
       views::Widget::ClosedReason::kCloseButtonClicked);
@@ -687,6 +692,9 @@ void DownloadBubbleSecurityView::UpdateProgressBar() {
 }
 
 void DownloadBubbleSecurityView::UpdatePasswordPrompt() {
+  if (!IsInitialized()) {
+    return;
+  }
   if (!base::FeatureList::IsEnabled(
           safe_browsing::kDeepScanningEncryptedArchives)) {
     return;
@@ -908,6 +916,9 @@ int DownloadBubbleSecurityView::GetMinimumLabelWidth() const {
 
 bool DownloadBubbleSecurityView::ProcessDeepScanClick() {
   absl::optional<std::string> password;
+  if (!IsInitialized()) {
+    return true;
+  }
   if (base::FeatureList::IsEnabled(
           safe_browsing::kDeepScanningEncryptedArchives)) {
     password = base::UTF16ToUTF8(password_prompt_->GetText());
