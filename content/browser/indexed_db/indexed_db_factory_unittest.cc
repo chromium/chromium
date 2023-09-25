@@ -36,7 +36,6 @@
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "content/browser/indexed_db/indexed_db_data_format_version.h"
 #include "content/browser/indexed_db/indexed_db_factory.h"
-#include "content/browser/indexed_db/indexed_db_leveldb_env.h"
 #include "content/browser/indexed_db/indexed_db_pre_close_task_queue.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
 #include "content/browser/indexed_db/mock_indexed_db_database_callbacks.h"
@@ -1057,8 +1056,7 @@ class LookingForQuotaErrorMockFactoryClient : public IndexedDBFactoryClient {
 };
 
 TEST_F(IndexedDBFactoryTest, QuotaErrorOnDiskFull) {
-  FakeLevelDBFactory fake_ldb_factory(
-      IndexedDBClassFactory::GetLevelDBOptions(), "indexed-db");
+  FakeLevelDBFactory fake_ldb_factory({}, "indexed-db");
   fake_ldb_factory.EnqueueNextOpenLevelDBStateResult(
       nullptr, leveldb::Status::IOError("Disk is full."), true);
   SetUpContextWithFactories(&fake_ldb_factory,

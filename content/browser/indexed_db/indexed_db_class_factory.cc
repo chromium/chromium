@@ -8,14 +8,15 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "components/services/storage/filesystem_proxy_factory.h"
 #include "components/services/storage/indexed_db/leveldb/leveldb_factory.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scope.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_factory.h"
-#include "content/browser/indexed_db/indexed_db_leveldb_env.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_operations.h"
 #include "content/browser/indexed_db/indexed_db_reporting.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
+#include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
 #include "third_party/leveldatabase/src/include/leveldb/filter_policy.h"
 
@@ -32,23 +33,18 @@ DefaultTransactionalLevelDBFactory* GetDefaultTransactionalLevelDBFactory() {
   return transactional_leveldb_factory.get();
 }
 }  // namespace
-static ::base::LazyInstance<IndexedDBClassFactory::GetterCallback>::Leaky
-    s_factory_getter = LAZY_INSTANCE_INITIALIZER;
+
 static ::base::LazyInstance<IndexedDBClassFactory>::Leaky s_factory =
     LAZY_INSTANCE_INITIALIZER;
 
-void IndexedDBClassFactory::SetIndexedDBClassFactoryGetter(GetterCallback cb) {
-  s_factory_getter.Get() = cb;
-}
-
 // static
 IndexedDBClassFactory* IndexedDBClassFactory::Get() {
-  if (s_factory_getter.IsCreated()) {
-    return s_factory_getter.Get().Run();
-  }
-
   return s_factory.Pointer();
 }
+
+IndexedDBClassFactory::IndexedDBClassFactory()
+    : leveldb_factory_(GetDefaultLevelDBFactory()),
+      transactional_leveldb_factory_(GetDefaultTransactionalLevelDBFactory()) {}
 
 // static
 leveldb_env::Options IndexedDBClassFactory::GetLevelDBOptions() {
@@ -62,24 +58,18 @@ leveldb_env::Options IndexedDBClassFactory::GetLevelDBOptions() {
   // For info about the troubles we've run into with this parameter, see:
   // https://crbug.com/227313#c11
   options.max_open_files = 80;
-  options.env = IndexedDBLevelDBEnv::Get();
   options.block_cache = leveldb_chrome::GetSharedWebBlockCache();
   options.on_get_error = base::BindRepeating(
       indexed_db::ReportLevelDBError, "WebCore.IndexedDB.LevelDBReadErrors");
   options.on_write_error = base::BindRepeating(
       indexed_db::ReportLevelDBError, "WebCore.IndexedDB.LevelDBWriteErrors");
+
+  static base::NoDestructor<leveldb_env::ChromiumEnv> g_leveldb_env(
+      "LevelDBEnv.IDB");
+  options.env = g_leveldb_env.get();
+
   return options;
 }
-
-IndexedDBClassFactory::IndexedDBClassFactory()
-    : IndexedDBClassFactory(GetDefaultLevelDBFactory(),
-                            GetDefaultTransactionalLevelDBFactory()) {}
-
-IndexedDBClassFactory::IndexedDBClassFactory(
-    LevelDBFactory* leveldb_factory,
-    TransactionalLevelDBFactory* transactional_leveldb_factory)
-    : leveldb_factory_(leveldb_factory),
-      transactional_leveldb_factory_(transactional_leveldb_factory) {}
 
 LevelDBFactory& IndexedDBClassFactory::leveldb_factory() {
   return *leveldb_factory_;
@@ -87,6 +77,15 @@ LevelDBFactory& IndexedDBClassFactory::leveldb_factory() {
 TransactionalLevelDBFactory&
 IndexedDBClassFactory::transactional_leveldb_factory() {
   return *transactional_leveldb_factory_;
+}
+
+void IndexedDBClassFactory::SetTransactionalLevelDBFactoryForTesting(
+    TransactionalLevelDBFactory* factory) {
+  if (factory) {
+    transactional_leveldb_factory_ = factory;
+  } else {
+    transactional_leveldb_factory_ = GetDefaultTransactionalLevelDBFactory();
+  }
 }
 
 void IndexedDBClassFactory::SetLevelDBFactoryForTesting(

@@ -74,7 +74,6 @@ class TestableIndexedDBBackingStore : public IndexedDBBackingStore {
  public:
   TestableIndexedDBBackingStore(
       IndexedDBBackingStore::Mode backing_store_mode,
-      TransactionalLevelDBFactory* leveldb_factory,
       const storage::BucketLocator& bucket_locator,
       const base::FilePath& blob_path,
       std::unique_ptr<TransactionalLevelDBDatabase> db,
@@ -83,7 +82,6 @@ class TestableIndexedDBBackingStore : public IndexedDBBackingStore {
       ReportOutstandingBlobsCallback report_outstanding_blobs,
       scoped_refptr<base::SequencedTaskRunner> idb_task_runner)
       : IndexedDBBackingStore(backing_store_mode,
-                              leveldb_factory,
                               bucket_locator,
                               blob_path,
                               std::move(db),
@@ -123,7 +121,6 @@ class TestIDBFactory : public IndexedDBFactory {
  public:
   explicit TestIDBFactory(IndexedDBContextImpl* idb_context)
       : IndexedDBFactory(idb_context,
-                         IndexedDBClassFactory::Get(),
                          base::DefaultClock::GetInstance()) {}
 
   TestIDBFactory(const TestIDBFactory&) = delete;
@@ -134,7 +131,6 @@ class TestIDBFactory : public IndexedDBFactory {
  protected:
   std::unique_ptr<IndexedDBBackingStore> CreateBackingStore(
       IndexedDBBackingStore::Mode backing_store_mode,
-      TransactionalLevelDBFactory* leveldb_factory,
       const storage::BucketLocator& bucket_locator,
       const base::FilePath& blob_path,
       std::unique_ptr<TransactionalLevelDBDatabase> db,
@@ -147,10 +143,9 @@ class TestIDBFactory : public IndexedDBFactory {
     // than the versions that were passed in to this method. This way tests can
     // use a different context from what is stored in the IndexedDBContext.
     return std::make_unique<TestableIndexedDBBackingStore>(
-        backing_store_mode, leveldb_factory, bucket_locator, blob_path,
-        std::move(db), std::move(filesystem_proxy),
-        std::move(blob_files_cleaned), std::move(report_outstanding_blobs),
-        std::move(idb_task_runner));
+        backing_store_mode, bucket_locator, blob_path, std::move(db),
+        std::move(filesystem_proxy), std::move(blob_files_cleaned),
+        std::move(report_outstanding_blobs), std::move(idb_task_runner));
   }
 };
 

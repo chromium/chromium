@@ -27,6 +27,7 @@
 #include "content/browser/indexed_db/file_stream_reader_to_data_pipe.h"
 #include "content/browser/indexed_db/indexed_db_active_blob_registry.h"
 #include "content/browser/indexed_db/indexed_db_backing_store.h"
+#include "content/browser/indexed_db/indexed_db_class_factory.h"
 #include "content/browser/indexed_db/indexed_db_compaction_task.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_database.h"
@@ -269,7 +270,6 @@ IndexedDBBucketContext::IndexedDBBucketContext(
     storage::BucketInfo bucket_info,
     bool persist_for_incognito,
     base::Clock* clock,
-    TransactionalLevelDBFactory* transactional_leveldb_factory,
     std::unique_ptr<PartitionedLockManager> lock_manager,
     Delegate&& delegate,
     std::unique_ptr<IndexedDBBackingStore> backing_store,
@@ -283,7 +283,6 @@ IndexedDBBucketContext::IndexedDBBucketContext(
     : bucket_info_(std::move(bucket_info)),
       persist_for_incognito_(persist_for_incognito),
       clock_(clock),
-      transactional_leveldb_factory_(transactional_leveldb_factory),
       lock_manager_(std::move(lock_manager)),
       backing_store_(std::move(backing_store)),
       quota_manager_proxy_(std::move(quota_manager_proxy)),
@@ -683,8 +682,9 @@ bool IndexedDBBucketContext::ShouldRunTombstoneSweeper() {
       &IndexedDBBucketContext::SetInternalState, earliest_global_sweep_time_,
       earliest_global_compaction_time_));
   std::unique_ptr<LevelDBDirectTransaction> txn =
-      transactional_leveldb_factory_->CreateLevelDBDirectTransaction(
-          backing_store_->db());
+      IndexedDBClassFactory::Get()
+          ->transactional_leveldb_factory()
+          .CreateLevelDBDirectTransaction(backing_store_->db());
   s = indexed_db::SetEarliestSweepTime(txn.get(),
                                        GenerateNextBucketSweepTime(now));
   // TODO(dmurph): Log this or report to UMA.
@@ -727,8 +727,9 @@ bool IndexedDBBucketContext::ShouldRunCompaction() {
       &IndexedDBBucketContext::SetInternalState, earliest_global_sweep_time_,
       earliest_global_compaction_time_));
   std::unique_ptr<LevelDBDirectTransaction> txn =
-      transactional_leveldb_factory_->CreateLevelDBDirectTransaction(
-          backing_store_->db());
+      IndexedDBClassFactory::Get()
+          ->transactional_leveldb_factory()
+          .CreateLevelDBDirectTransaction(backing_store_->db());
   s = indexed_db::SetEarliestCompactionTime(
       txn.get(), GenerateNextBucketCompactionTime(now));
   // TODO(dmurph): Log this or report to UMA.

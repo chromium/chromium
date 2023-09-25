@@ -13,7 +13,6 @@
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_factory.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
-#include "content/browser/indexed_db/indexed_db_leveldb_env.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
@@ -22,11 +21,6 @@ namespace {
 using blink::IndexedDBKey;
 using blink::IndexedDBKeyRange;
 using leveldb::Status;
-
-TransactionalLevelDBFactory* GetTransactionalLevelDBFactory() {
-  static base::NoDestructor<DefaultTransactionalLevelDBFactory> factory;
-  return factory.get();
-}
 
 const storage::BucketLocator GetBucketLocator(blink::StorageKey storage_key) {
   auto bucket_locator = storage::BucketLocator();
@@ -38,7 +32,6 @@ const storage::BucketLocator GetBucketLocator(blink::StorageKey storage_key) {
 
 IndexedDBFakeBackingStore::IndexedDBFakeBackingStore()
     : IndexedDBBackingStore(IndexedDBBackingStore::Mode::kInMemory,
-                            GetTransactionalLevelDBFactory(),
                             storage::BucketLocator(GetBucketLocator(
                                 blink::StorageKey::CreateFromStringForTesting(
                                     "http://localhost:81"))),
@@ -55,7 +48,6 @@ IndexedDBFakeBackingStore::IndexedDBFakeBackingStore(
     ReportOutstandingBlobsCallback report_outstanding_blobs,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : IndexedDBBackingStore(IndexedDBBackingStore::Mode::kOnDisk,
-                            GetTransactionalLevelDBFactory(),
                             storage::BucketLocator(GetBucketLocator(
                                 blink::StorageKey::CreateFromStringForTesting(
                                     "http://localhost:81"))),

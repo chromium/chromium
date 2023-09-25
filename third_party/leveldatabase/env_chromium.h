@@ -144,6 +144,10 @@ class LEVELDB_EXPORT ChromiumEnv : public leveldb::Env {
   // Constructs a ChromiumEnv instance with a custom FilesystemProxy instance.
   explicit ChromiumEnv(std::unique_ptr<storage::FilesystemProxy> filesystem);
 
+  // Constructs a ChromiumEnv instance with a local unrestricted FilesystemProxy
+  // instance that performs direct filesystem access.
+  explicit ChromiumEnv(const std::string& name);
+
   ~ChromiumEnv() override;
 
   bool FileExists(const std::string& fname) override;
@@ -178,10 +182,6 @@ class LEVELDB_EXPORT ChromiumEnv : public leveldb::Env {
   void SetReadOnlyFileLimitForTesting(int max_open_files);
 
  protected:
-  // Constructs a ChromiumEnv instance with a local unrestricted FilesystemProxy
-  // instance that performs direct filesystem access.
-  explicit ChromiumEnv(const std::string& name);
-
   // Constructs a ChromiumEnv instance with a custom FilesystemProxy instance.
   ChromiumEnv(const std::string& name,
               std::unique_ptr<storage::FilesystemProxy> filesystem);

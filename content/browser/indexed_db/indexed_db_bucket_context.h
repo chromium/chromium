@@ -41,7 +41,6 @@ class IndexedDBDatabase;
 class IndexedDBDataItemReader;
 class IndexedDBFactory;
 class IndexedDBPreCloseTaskQueue;
-class TransactionalLevelDBFactory;
 
 constexpr const char kIDBCloseImmediatelySwitch[] = "idb-close-immediately";
 
@@ -158,7 +157,6 @@ class CONTENT_EXPORT IndexedDBBucketContext {
       storage::BucketInfo bucket_info,
       bool persist_for_incognito,
       base::Clock* clock,
-      TransactionalLevelDBFactory* transactional_leveldb_factory,
       std::unique_ptr<PartitionedLockManager> lock_manager,
       Delegate&& delegate,
       std::unique_ptr<IndexedDBBackingStore> backing_store,
@@ -343,7 +341,6 @@ class CONTENT_EXPORT IndexedDBBucketContext {
   bool has_blobs_outstanding_ = false;
   bool skip_closing_sequence_ = false;
   const raw_ptr<base::Clock> clock_;
-  const raw_ptr<TransactionalLevelDBFactory> transactional_leveldb_factory_;
 
   bool running_tasks_ = false;
   bool task_run_scheduled_ = false;

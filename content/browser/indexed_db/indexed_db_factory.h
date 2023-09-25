@@ -47,17 +47,14 @@ class SequencedTaskRunner;
 
 namespace content {
 class IndexedDBBucketContextHandle;
-class IndexedDBClassFactory;
 class IndexedDBClientStateCheckerWrapper;
 class IndexedDBContextImpl;
 class IndexedDBDatabase;
-class TransactionalLevelDBFactory;
 class TransactionalLevelDBDatabase;
 
 class CONTENT_EXPORT IndexedDBFactory : base::trace_event::MemoryDumpProvider {
  public:
   IndexedDBFactory(IndexedDBContextImpl* context,
-                   IndexedDBClassFactory* indexed_db_class_factory,
                    base::Clock* clock);
 
   IndexedDBFactory(const IndexedDBFactory&) = delete;
@@ -143,7 +140,6 @@ class CONTENT_EXPORT IndexedDBFactory : base::trace_event::MemoryDumpProvider {
   // Used by unittests to allow subclassing of IndexedDBBackingStore.
   virtual std::unique_ptr<IndexedDBBackingStore> CreateBackingStore(
       IndexedDBBackingStore::Mode backing_store_mode,
-      TransactionalLevelDBFactory* leveldb_factory,
       const storage::BucketLocator& bucket_locator,
       const base::FilePath& blob_path,
       std::unique_ptr<TransactionalLevelDBDatabase> db,
@@ -208,7 +204,6 @@ class CONTENT_EXPORT IndexedDBFactory : base::trace_event::MemoryDumpProvider {
   SEQUENCE_CHECKER(sequence_checker_);
   // Raw pointer is safe because IndexedDBContextImpl owns this object.
   raw_ptr<IndexedDBContextImpl> context_;
-  const raw_ptr<IndexedDBClassFactory> class_factory_;
   const raw_ptr<base::Clock> clock_;
 
   IndexedDBBucketContext::InstanceClosure for_each_bucket_context_;

@@ -57,7 +57,6 @@ class IndexedDBBucketContext;
 class IndexedDBActiveBlobRegistry;
 class LevelDBWriteBatch;
 class TransactionalLevelDBDatabase;
-class TransactionalLevelDBFactory;
 class TransactionalLevelDBIterator;
 class TransactionalLevelDBTransaction;
 struct IndexedDBValue;
@@ -210,8 +209,6 @@ class CONTENT_EXPORT IndexedDBBackingStore {
     // https://crbug.com/1012918
     base::WeakPtr<IndexedDBBackingStore> backing_store_
         GUARDED_BY_CONTEXT(sequence_checker_);
-
-    const raw_ptr<TransactionalLevelDBFactory> transactional_leveldb_factory_;
 
     scoped_refptr<TransactionalLevelDBTransaction> transaction_
         GUARDED_BY_CONTEXT(sequence_checker_);
@@ -385,7 +382,6 @@ class CONTENT_EXPORT IndexedDBBackingStore {
 
   IndexedDBBackingStore(
       Mode backing_store_mode,
-      TransactionalLevelDBFactory* transactional_leveldb_factory,
       const storage::BucketLocator& bucket_locator,
       const base::FilePath& blob_path,
       std::unique_ptr<TransactionalLevelDBDatabase> db,
@@ -734,7 +730,6 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   raw_ptr<IndexedDBBucketContext> bucket_context_ = nullptr;
 
   const Mode backing_store_mode_;
-  const raw_ptr<TransactionalLevelDBFactory> transactional_leveldb_factory_;
   const storage::BucketLocator bucket_locator_;
   const base::FilePath blob_path_;
 

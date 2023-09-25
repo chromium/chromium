@@ -2402,7 +2402,6 @@ test("content_unittests") {
     "../browser/indexed_db/indexed_db_fake_backing_store.cc",
     "../browser/indexed_db/indexed_db_fake_backing_store.h",
     "../browser/indexed_db/indexed_db_leveldb_coding_unittest.cc",
-    "../browser/indexed_db/indexed_db_leveldb_env_unittest.cc",
     "../browser/indexed_db/indexed_db_pre_close_task_queue_unittest.cc",
     "../browser/indexed_db/indexed_db_quota_client_unittest.cc",
     "../browser/indexed_db/indexed_db_tombstone_sweeper_unittest.cc",

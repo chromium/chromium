@@ -1118,8 +1118,6 @@ source_set("browser") {
     "indexed_db/indexed_db_internals_ui.h",
     "indexed_db/indexed_db_leveldb_coding.cc",
     "indexed_db/indexed_db_leveldb_coding.h",
-    "indexed_db/indexed_db_leveldb_env.cc",
-    "indexed_db/indexed_db_leveldb_env.h",
     "indexed_db/indexed_db_leveldb_operations.cc",
     "indexed_db/indexed_db_leveldb_operations.h",
     "indexed_db/indexed_db_pending_connection.cc",

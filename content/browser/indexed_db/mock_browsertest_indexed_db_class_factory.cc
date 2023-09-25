@@ -314,11 +314,6 @@ MockBrowserTestIndexedDBClassFactory::MockBrowserTestIndexedDBClassFactory()
 MockBrowserTestIndexedDBClassFactory::~MockBrowserTestIndexedDBClassFactory() =
     default;
 
-TransactionalLevelDBFactory&
-MockBrowserTestIndexedDBClassFactory::transactional_leveldb_factory() {
-  return *this;
-}
-
 std::unique_ptr<TransactionalLevelDBDatabase>
 MockBrowserTestIndexedDBClassFactory::CreateLevelDBDatabase(
     scoped_refptr<LevelDBState> state,
@@ -334,11 +329,10 @@ MockBrowserTestIndexedDBClassFactory::CreateLevelDBDatabase(
         std::move(state), std::move(scopes), this, std::move(task_runner),
         max_open_iterators, failure_method_,
         fail_on_call_num_[FailClass::LEVELDB_DATABASE]);
-  } else {
-    return DefaultTransactionalLevelDBFactory::CreateLevelDBDatabase(
-        std::move(state), std::move(scopes), std::move(task_runner),
-        max_open_iterators);
   }
+  return DefaultTransactionalLevelDBFactory::CreateLevelDBDatabase(
+      std::move(state), std::move(scopes), std::move(task_runner),
+      max_open_iterators);
 }
 
 std::unique_ptr<LevelDBDirectTransaction>
@@ -352,10 +346,8 @@ MockBrowserTestIndexedDBClassFactory::CreateLevelDBDirectTransaction(
     return std::make_unique<LevelDBTestDirectTransaction>(
         db, failure_method_,
         fail_on_call_num_[FailClass::LEVELDB_DIRECT_TRANSACTION]);
-  } else {
-    return DefaultTransactionalLevelDBFactory::CreateLevelDBDirectTransaction(
-        db);
   }
+  return DefaultTransactionalLevelDBFactory::CreateLevelDBDirectTransaction(db);
 }
 
 scoped_refptr<TransactionalLevelDBTransaction>
@@ -367,18 +359,16 @@ MockBrowserTestIndexedDBClassFactory::CreateLevelDBTransaction(
   if (only_trace_calls_) {
     return base::MakeRefCounted<LevelDBTraceTransaction>(
         db, std::move(scope), instance_count_[FailClass::LEVELDB_TRANSACTION]);
-  } else {
-    if (failure_class_ == FailClass::LEVELDB_TRANSACTION &&
-        instance_count_[FailClass::LEVELDB_TRANSACTION] ==
-            fail_on_instance_num_[FailClass::LEVELDB_TRANSACTION]) {
-      return base::MakeRefCounted<LevelDBTestTransaction>(
-          db, std::move(scope), failure_method_,
-          fail_on_call_num_[FailClass::LEVELDB_TRANSACTION]);
-    } else {
-      return DefaultTransactionalLevelDBFactory::CreateLevelDBTransaction(
-          db, std::move(scope));
-    }
   }
+  if (failure_class_ == FailClass::LEVELDB_TRANSACTION &&
+      instance_count_[FailClass::LEVELDB_TRANSACTION] ==
+          fail_on_instance_num_[FailClass::LEVELDB_TRANSACTION]) {
+    return base::MakeRefCounted<LevelDBTestTransaction>(
+        db, std::move(scope), failure_method_,
+        fail_on_call_num_[FailClass::LEVELDB_TRANSACTION]);
+  }
+  return DefaultTransactionalLevelDBFactory::CreateLevelDBTransaction(
+      db, std::move(scope));
 }
 
 std::unique_ptr<TransactionalLevelDBIterator>
@@ -393,18 +383,16 @@ MockBrowserTestIndexedDBClassFactory::CreateIterator(
     return std::make_unique<LevelDBTraceIterator>(
         std::move(iterator), db, std::move(txn), std::move(snapshot),
         instance_count_[FailClass::LEVELDB_ITERATOR]);
-  } else {
-    if (failure_class_ == FailClass::LEVELDB_ITERATOR &&
-        instance_count_[FailClass::LEVELDB_ITERATOR] ==
-            fail_on_instance_num_[FailClass::LEVELDB_ITERATOR]) {
-      return std::make_unique<LevelDBTestIterator>(
-          std::move(iterator), db, std::move(txn), std::move(snapshot),
-          failure_method_, fail_on_call_num_[FailClass::LEVELDB_ITERATOR]);
-    } else {
-      return DefaultTransactionalLevelDBFactory::CreateIterator(
-          std::move(iterator), db, std::move(txn), std::move(snapshot));
-    }
   }
+  if (failure_class_ == FailClass::LEVELDB_ITERATOR &&
+      instance_count_[FailClass::LEVELDB_ITERATOR] ==
+          fail_on_instance_num_[FailClass::LEVELDB_ITERATOR]) {
+    return std::make_unique<LevelDBTestIterator>(
+        std::move(iterator), db, std::move(txn), std::move(snapshot),
+        failure_method_, fail_on_call_num_[FailClass::LEVELDB_ITERATOR]);
+  }
+  return DefaultTransactionalLevelDBFactory::CreateIterator(
+      std::move(iterator), db, std::move(txn), std::move(snapshot));
 }
 
 void MockBrowserTestIndexedDBClassFactory::FailOperation(

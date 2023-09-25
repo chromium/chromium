@@ -12,7 +12,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_factory.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control_test.mojom.h"
-#include "content/browser/indexed_db/indexed_db_class_factory.h"
 
 namespace content {
 
@@ -24,17 +23,13 @@ class TransactionalLevelDBTransaction;
 class TransactionalLevelDBDatabase;
 
 class MockBrowserTestIndexedDBClassFactory
-    : public IndexedDBClassFactory,
-      public DefaultTransactionalLevelDBFactory,
+    : public DefaultTransactionalLevelDBFactory,
       public storage::mojom::MockFailureInjector {
  public:
   MockBrowserTestIndexedDBClassFactory();
   ~MockBrowserTestIndexedDBClassFactory() override;
 
   void Reset();
-
-  // IndexedDBClassFactory:
-  TransactionalLevelDBFactory& transactional_leveldb_factory() override;
 
   // DefaultTransactionalLevelDBFactory:
   std::unique_ptr<TransactionalLevelDBDatabase> CreateLevelDBDatabase(

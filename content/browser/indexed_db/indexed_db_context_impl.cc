@@ -802,7 +802,7 @@ void IndexedDBContextImpl::CompactBackingStoreForTesting(
 
 void IndexedDBContextImpl::BindMockFailureSingletonForTesting(
     mojo::PendingReceiver<storage::mojom::MockFailureInjector> receiver) {
-  IndexedDBTransaction::DisableInactivityTimeoutForTesting();
+  IndexedDBTransaction::DisableInactivityTimeoutForTesting();  // IN-TEST
   // Lazily instantiate the GetTestClassFactory.
   if (!mock_failure_injector_.has_value())
     mock_failure_injector_.emplace(GetTestClassFactory());
@@ -810,10 +810,9 @@ void IndexedDBContextImpl::BindMockFailureSingletonForTesting(
   // TODO(enne): this should really not be a static setter.
   CHECK(!mock_failure_injector_->is_bound());
   GetTestClassFactory()->Reset();
-  IndexedDBClassFactory::SetIndexedDBClassFactoryGetter(
-      base::BindRepeating([]() {
-        return static_cast<IndexedDBClassFactory*>(GetTestClassFactory());
-      }));
+  IndexedDBClassFactory::Get()
+      ->SetTransactionalLevelDBFactoryForTesting(  // IN-TEST
+          GetTestClassFactory());
 
   mock_failure_injector_->Bind(std::move(receiver));
 }
@@ -826,8 +825,7 @@ void IndexedDBContextImpl::GetDatabaseKeysForTesting(
 IndexedDBFactory* IndexedDBContextImpl::GetIDBFactory() {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
   if (!indexeddb_factory_.get()) {
-    indexeddb_factory_ = std::make_unique<IndexedDBFactory>(
-        this, IndexedDBClassFactory::Get(), clock_);
+    indexeddb_factory_ = std::make_unique<IndexedDBFactory>(this, clock_);
   }
   return indexeddb_factory_.get();
 }

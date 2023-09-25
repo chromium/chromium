@@ -24,12 +24,12 @@
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom-test-utils.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/indexed_db/indexed_db_bucket_context.h"
+#include "content/browser/indexed_db/indexed_db_class_factory.h"
 #include "content/browser/indexed_db/indexed_db_client_state_checker_wrapper.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "content/browser/indexed_db/indexed_db_factory.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
-#include "content/browser/indexed_db/indexed_db_leveldb_env.h"
 #include "content/browser/indexed_db/mock_indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/mock_indexed_db_factory_client.h"
 #include "content/browser/indexed_db/mock_mojo_indexed_db_factory_client.h"
@@ -43,6 +43,7 @@
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/leveldatabase/src/include/leveldb/env.h"
 
 using blink::IndexedDBDatabaseMetadata;
 
@@ -74,7 +75,7 @@ class LevelDBLock {
 };
 
 std::unique_ptr<LevelDBLock> LockForTesting(const base::FilePath& file_name) {
-  leveldb::Env* env = IndexedDBLevelDBEnv::Get();
+  leveldb::Env* env = IndexedDBClassFactory::GetLevelDBOptions().env;
   base::FilePath lock_path = file_name.AppendASCII("LOCK");
   leveldb::FileLock* lock = nullptr;
   leveldb::Status status = env->LockFile(lock_path.AsUTF8Unsafe(), &lock);
