@@ -1493,7 +1493,6 @@ chromium-metrics-reviews@google.com.
   <suffix base="true" name="WebP"
       label="This metric is for only WebP image types."/>
   <affected-histogram name="Renderer4.ImageDecodeTaskDurationUs"/>
-  <affected-histogram name="Renderer4.ImageUploadTaskDurationUs"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="DetachedResourceRequestSource" separator=".">

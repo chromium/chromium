@@ -149,19 +149,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Renderer4.ImageUploadTaskDurationUs"
-    units="microseconds" expires_after="2021-08-09">
-<!-- Name completed by histogram_suffixes name="DecodedImageType" -->
-
-  <owner>sashamcintosh@chromium.org</owner>
-  <owner>chromeos-gfx@google.com</owner>
-  <summary>
-    This metric records the duration of an image upload for the raster path in
-    the compositor. It is recorded every time we upload an image. The metric is
-    optionally suffixed by the image type (WebP, Jpeg, etc.) or OutOfRaster.
-  </summary>
-</histogram>
-
 <histogram name="Renderer4.InvalidationRegionApproximateRectCount"
     units="rects" expires_after="M85">
   <owner>wiltzius@chromium.org</owner>
