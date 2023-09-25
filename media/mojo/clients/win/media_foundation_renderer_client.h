@@ -146,6 +146,7 @@ class MediaFoundationRendererClient
   void OnOverlayStateChanged(const gpu::Mailbox& mailbox, bool promoted);
   void UpdateRenderMode();
   void OnPaintComplete(const base::UnguessableToken& token);
+  void LogRenderingStrategy();
 
   // This class is constructed on the main thread. Hence we store
   // PendingRemotes so we can bind the Remotes on the media task
