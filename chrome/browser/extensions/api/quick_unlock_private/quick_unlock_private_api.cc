@@ -22,6 +22,7 @@
 #include "chrome/browser/extensions/api/quick_unlock_private/quick_unlock_private_ash_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
@@ -469,13 +470,19 @@ QuickUnlockPrivateGetCredentialRequirementsFunction::Run() {
       GetCredentialRequirements::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params_);
 
-  // GetCredentialRequirements could be called before user sign-in during
-  // UI initialization in SetupPinKeyboardElement.connectedCallback.
+  // GetCredentialRequirements could be called before user sign-in, or before
+  // the user profile is finished loading during UI initialization in
+  // SetupPinKeyboardElement.connectedCallback,
   // Use the sign-in profile from browser_context() in such case.
   // TODO(b/288150711): Revert to `GetActiveProfile` after fix.
-  Profile* profile = user_manager::UserManager::Get()->IsUserLoggedIn()
-                         ? GetActiveProfile(browser_context())
-                         : Profile::FromBrowserContext(browser_context());
+  const user_manager::User* active_user =
+      user_manager::UserManager::Get()->GetActiveUser();
+  Profile* profile =
+      active_user && active_user->is_profile_created()
+          ? Profile::FromBrowserContext(
+                ash::BrowserContextHelper::Get()->GetBrowserContextByUser(
+                    active_user))
+          : Profile::FromBrowserContext(browser_context());
 
   auto result = std::make_unique<CredentialRequirements>();
   std::tie(result->min_length, result->max_length) =
