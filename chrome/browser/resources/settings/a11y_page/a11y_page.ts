@@ -33,15 +33,13 @@ import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 
+import {AccessibilityBrowserProxy, AccessibilityBrowserProxyImpl} from './a11y_browser_proxy.js';
 import {getTemplate} from './a11y_page.html.js';
 
 // clang-format off
 // <if expr="not is_chromeos">
 import {LanguageHelper, LanguagesModel} from '../languages_page/languages_types.js';
 
-// </if>
-// <if expr="is_macosx">
-import {MacSystemSettingsBrowserProxyImpl} from './mac_system_settings_browser_proxy.js';
 // </if>
 // clang-format on
 
@@ -176,6 +174,9 @@ class SettingsA11yPageElement extends SettingsA11yPageElementBase {
     };
   }
 
+  private accessibilityBrowserProxy: AccessibilityBrowserProxy =
+      AccessibilityBrowserProxyImpl.getInstance();
+
   // <if expr="not is_chromeos">
   languages: LanguagesModel;
   languageHelper: LanguageHelper;
@@ -267,10 +268,17 @@ class SettingsA11yPageElement extends SettingsA11yPageElementBase {
     }
   }
 
+  // <if expr="is_win or is_linux">
+  private onOverscrollHistoryNavigationChange_(event: Event) {
+    const enabled = (event.target as SettingsToggleButtonElement).checked;
+    this.accessibilityBrowserProxy.recordOverscrollHistoryNavigationChanged(
+        enabled);
+  }
+  // </if>
+
   // <if expr="is_macosx">
   private onMacTrackpadGesturesLinkClick_() {
-    MacSystemSettingsBrowserProxyImpl.getInstance()
-        .openTrackpadGesturesSettings();
+    this.accessibilityBrowserProxy.openTrackpadGesturesSettings();
   }
   // </if>
 }

@@ -249,6 +249,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Settings.OverscrollHistoryNavigation.Enabled"
+    enum="BooleanEnabled" expires_after="2024-01-21">
+  <owner>charlesmeng@chromium.org</owner>
+  <owner>estalin@chromium.org</owner>
+  <summary>
+    Logs whether the overscroll history navigation setting is enabled or
+    disabled when it is toggled in chrome://settings/accessibility.
+  </summary>
+</histogram>
+
 <histogram name="Settings.PinUnlockSetup" enum="LockScreenProgress"
     expires_after="2024-02-25">
   <owner>anastasiian@chromium.org</owner>
