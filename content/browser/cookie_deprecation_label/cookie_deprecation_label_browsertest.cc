@@ -345,10 +345,11 @@ IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelEnabledBrowserTest,
   http_response_a_b->set_code(net::HTTP_MOVED_PERMANENTLY);
   http_response_a_b->AddCustomHeader(
       "Location", https_server->GetURL("a.test", "/a_c").spec());
+  // Opt-in without specifying the Path
   http_response_a_b->AddCustomHeader(
       "Set-Cookie",
       "receive-cookie-deprecation=any-value; Secure; HttpOnly; "
-      "Path=/; SameSite=None; Partitioned");
+      "SameSite=None; Partitioned");
   response_a_b->Send(http_response_a_b->ToResponseString());
   response_a_b->Done();
 
@@ -370,18 +371,21 @@ IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelEnabledBrowserTest,
     const char* description;
     const char* header_value;
   } kTestCases[] = {
-      {"Header not Secure",
+      {"Not Secure",
        "receive-cookie-deprecation=any-value; HttpOnly; Path=/; SameSite=None; "
        "Partitioned"},
-      {"Header not HttpOnly",
+      {"Not HttpOnly",
        "receive-cookie-deprecation=any-value; Secure; Path=/; SameSite=None; "
        "Partitioned"},
-      {"Header not Partitioned",
+      {"Not Partitioned",
        "receive-cookie-deprecation=any-value; Secure; HttpOnly; Path=/; "
        "SameSite=None;"},
-      {"Header default SameSite",
+      {"Default SameSite",
        "receive-cookie-deprecation=any-value; HttpOnly; Path=/; Secure; "
        "Partitioned"},
+      {"Non matching Path",
+       "receive-cookie-deprecation=any-value; Secure; HttpOnly; Secure; "
+       "Path=/non-matching; SameSite=None; Partitioned"},
   };
 
   for (const auto& test_case : kTestCases) {
