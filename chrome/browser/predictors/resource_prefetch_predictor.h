@@ -41,6 +41,7 @@ namespace predictors {
 
 struct OriginRequestSummary;
 struct PageRequestSummary;
+struct LcppDataInputs;
 
 namespace internal {
 struct LastVisitTimeCompare {
@@ -202,9 +203,7 @@ class ResourcePrefetchPredictor : public history::HistoryServiceObserver {
 
   // Record LCP element locators after a page has finished loading and LCP has
   // been determined.
-  void LearnLcpp(const std::string& host,
-                 const std::string& lcp_element_locator,
-                 const std::vector<GURL>& lcp_influencer_scripts);
+  void LearnLcpp(const std::string& host, const LcppDataInputs& inputs);
 
   // Deletes all URLs from the predictor database and caches.
   void DeleteAllUrls();

@@ -118,16 +118,14 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::FinalizeLCP() {
   // `IsOffTheRecord`.
   // TODO(crbug.com/715525): kSpeculativePreconnectFeature flag can also affect
   // this. Unflag the feature.
-  if (auto* loading_predictor =
-          predictors::LoadingPredictorFactory::GetForProfile(
-              Profile::FromBrowserContext(
-                  GetDelegate().GetWebContents()->GetBrowserContext()))) {
-    predictors::ResourcePrefetchPredictor* predictor =
-        loading_predictor->resource_prefetch_predictor();
-
-    if (!lcp_element_locator_.empty() || !lcp_influencer_scripts_.empty()) {
-      predictor->LearnLcpp(commit_url_->host(), lcp_element_locator_,
-                           lcp_influencer_scripts_);
+  if (lcpp_data_inputs_.has_value()) {
+    if (auto* loading_predictor =
+            predictors::LoadingPredictorFactory::GetForProfile(
+                Profile::FromBrowserContext(
+                    GetDelegate().GetWebContents()->GetBrowserContext()))) {
+      predictors::ResourcePrefetchPredictor* predictor =
+          loading_predictor->resource_prefetch_predictor();
+      predictor->LearnLcpp(commit_url_->host(), *lcpp_data_inputs_);
     }
   }
 
@@ -154,4 +152,29 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::
       page_load_metrics::CorrectEventAsNavigationOrActivationOrigined(
           GetDelegate(), timing.paint_timing->first_contentful_paint.value());
   PAGE_LOAD_HISTOGRAM(internal::kHistogramLCPPFirstContentfulPaint, corrected);
+}
+
+void LcpCriticalPathPredictorPageLoadMetricsObserver::SetLcpElementLocator(
+    const std::string& lcp_element_locator) {
+  if (!lcpp_data_inputs_) {
+    lcpp_data_inputs_.emplace();
+  }
+  lcpp_data_inputs_->lcp_element_locator = lcp_element_locator;
+}
+
+void LcpCriticalPathPredictorPageLoadMetricsObserver::AppendFetchedFontUrl(
+    const GURL& font_url) {
+  if (!lcpp_data_inputs_) {
+    lcpp_data_inputs_.emplace();
+  }
+  lcpp_data_inputs_->font_urls.push_back(font_url);
+}
+
+void LcpCriticalPathPredictorPageLoadMetricsObserver::
+    SetLcpInfluencerScriptUrls(
+        const std::vector<GURL>& lcp_influencer_scripts) {
+  if (!lcpp_data_inputs_) {
+    lcpp_data_inputs_.emplace();
+  }
+  lcpp_data_inputs_->lcp_influencer_scripts = lcp_influencer_scripts;
 }

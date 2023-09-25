@@ -18,6 +18,7 @@
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_test_util.h"
 #include "chrome/browser/predictors/predictors_features.h"
@@ -143,6 +144,15 @@ class ResourcePrefetchPredictorTest : public testing::Test {
   }
 
   void InitializeSampleData();
+
+  void LearnLcpp(const std::string& host,
+                 const std::string& lcp_element_locator,
+                 const std::vector<GURL>& lcp_influencer_scripts) {
+    predictors::LcppDataInputs inputs;
+    inputs.lcp_element_locator = lcp_element_locator;
+    inputs.lcp_influencer_scripts = lcp_influencer_scripts;
+    predictor_->LearnLcpp(host, inputs);
+  }
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
@@ -1094,7 +1104,7 @@ TEST_F(ResourcePrefetchPredictorTest, LearnLcpp) {
   };
 
   for (int i = 0; i < 3; ++i) {
-    predictor_->LearnLcpp("a.com", "/#a", {});
+    LearnLcpp("a.com", "/#a", {});
   }
   {
     LcppData data = CreateLcppData("a.com", 10);
@@ -1104,7 +1114,7 @@ TEST_F(ResourcePrefetchPredictorTest, LearnLcpp) {
   }
 
   for (int i = 0; i < 2; ++i) {
-    predictor_->LearnLcpp("a.com", "/#b", {});
+    LearnLcpp("a.com", "/#b", {});
   }
   {
     LcppData data = CreateLcppData("a.com", 10);
@@ -1114,7 +1124,7 @@ TEST_F(ResourcePrefetchPredictorTest, LearnLcpp) {
     EXPECT_DOUBLE_EQ(5, SumOfElementLocatorFrequency(data));
   }
 
-  predictor_->LearnLcpp("a.com", "/#c", {});
+  LearnLcpp("a.com", "/#c", {});
   {
     LcppData data = CreateLcppData("a.com", 10);
     InitializeLcpElementLocatorBucket(data, "/#a", 2.4);
@@ -1124,7 +1134,7 @@ TEST_F(ResourcePrefetchPredictorTest, LearnLcpp) {
     EXPECT_DOUBLE_EQ(5, SumOfElementLocatorFrequency(data));
   }
 
-  predictor_->LearnLcpp("a.com", "/#d", {});
+  LearnLcpp("a.com", "/#d", {});
   {
     LcppData data = CreateLcppData("a.com", 10);
     InitializeLcpElementLocatorBucket(data, "/#a", 1.92);
@@ -1135,8 +1145,8 @@ TEST_F(ResourcePrefetchPredictorTest, LearnLcpp) {
   }
 
   for (int i = 0; i < 2; ++i) {
-    predictor_->LearnLcpp("a.com", "/#c", {});
-    predictor_->LearnLcpp("a.com", "/#d", {});
+    LearnLcpp("a.com", "/#c", {});
+    LearnLcpp("a.com", "/#d", {});
   }
   {
     LcppData data = CreateLcppData("a.com", 10);
@@ -1149,7 +1159,7 @@ TEST_F(ResourcePrefetchPredictorTest, LearnLcpp) {
 
   // Test that element locators and influencer scripts are independently learnt.
   for (int i = 0; i < 2; ++i) {
-    predictor_->LearnLcpp(
+    LearnLcpp(
         "a.com", "",
         {GURL("https://a.com/script1.js"), GURL("https://a.com/script2.js")});
   }
@@ -1169,7 +1179,7 @@ TEST_F(ResourcePrefetchPredictorTest, LearnLcpp) {
   }
 
   for (int i = 0; i < 3; ++i) {
-    predictor_->LearnLcpp(
+    LearnLcpp(
         "a.com", "",
         {GURL("https://a.com/script3.js"), GURL("https://a.com/script4.js")});
   }
@@ -1203,7 +1213,7 @@ TEST_F(ResourcePrefetchPredictorTest, WhenLcppDataIsCorrupted_ResetData) {
   }
 
   // Confirm that new learning process reset the corrupted data.
-  predictor_->LearnLcpp("a.com", "/#a", {});
+  LearnLcpp("a.com", "/#a", {});
   {
     LcppData data = CreateLcppData("a.com", 10);
     InitializeLcpElementLocatorBucket(data, "/#a", 1);
