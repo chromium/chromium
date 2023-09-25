@@ -2515,6 +2515,7 @@ crbug.com/1350027 [ Mac ] external/wpt/css/css-values/ic-unit-002.html [ Failure
 crbug.com/1350027 [ Mac ] external/wpt/css/css-values/ic-unit-003.html [ Failure ]
 crbug.com/1350027 [ Mac ] external/wpt/css/css-values/ic-unit-009.html [ Failure ]
 crbug.com/1350027 [ Mac ] external/wpt/css/css-values/ic-unit-010.html [ Failure ]
+crbug.com/246571 external/wpt/css/css-values/attr-notype-fallback.html [ Failure ]
 
 crbug.com/1069300 external/wpt/css/css-pseudo/active-selection-063.html [ Failure ]
 crbug.com/1108711 external/wpt/css/css-pseudo/active-selection-057.html [ Failure ]
@@ -2720,7 +2721,6 @@ crbug.com/1484043 [ Win ] virtual/fetch-later/external/wpt/fetch/fetch-later/sen
 crbug.com/626703 [ Mac13 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/view-timeline-range-animation.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] virtual/threaded/external/wpt/scroll-animations/css/view-timeline-range-animation.html [ Timeout ]
 crbug.com/626703 [ Win10.20h2 ] virtual/threaded/external/wpt/css/css-backgrounds/background-attachment-margin-root-001.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-values/attr-notype-fallback.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-align/blocks/align-content-block-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-align/blocks/align-content-block-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-align/blocks/align-content-block-003.html [ Failure ]
