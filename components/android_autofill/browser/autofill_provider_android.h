@@ -31,12 +31,11 @@ class AutofillProviderAndroid : public AutofillProvider,
   static AutofillProviderAndroid* FromWebContents(
       content::WebContents* web_contents);
 
-  ~AutofillProviderAndroid() override;
-
   AutofillProviderAndroid(const AutofillProviderAndroid&) = delete;
   AutofillProviderAndroid& operator=(const AutofillProviderAndroid&) = delete;
+  ~AutofillProviderAndroid() override;
 
-  // Attach this detached object to |jcaller|.
+  // Attach this detached object to `jcaller`.
   void AttachToJavaAutofillProvider(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jcaller);
@@ -82,7 +81,7 @@ class AutofillProviderAndroid : public AutofillProvider,
   void OnServerQueryRequestError(AndroidAutofillManager* manager,
                                  FormSignature form_signature) override;
 
-  void Reset(AndroidAutofillManager* manager) override;
+  void OnManagerResetOrDestroyed(AndroidAutofillManager* manager) override;
 
   bool GetCachedIsAutofilled(const FormFieldData& field) const override;
 

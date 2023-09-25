@@ -118,19 +118,16 @@ void AutofillProviderAndroid::StartNewSession(AndroidAutofillManager* manager,
                                               const FormFieldData& field,
                                               const gfx::RectF& bounding_box) {
   form_ = std::make_unique<FormDataAndroid>(form);
-  field_id_ = field.global_id();
-  field_type_group_ = manager->ComputeFieldTypeGroupForField(form, field);
-  triggered_origin_ = field.origin;
-
   FieldInfo field_info;
   if (!form_->GetFieldIndex(field, &field_info.index)) {
-    form_.reset();
-    field_id_ = {};
-    field_type_group_ = FieldTypeGroup::kNoGroup;
-    triggered_origin_ = {};
+    Reset();
     return;
   }
 
+  field_id_ = field.global_id();
+  field_type_group_ = manager->ComputeFieldTypeGroupForField(form, field);
+  triggered_origin_ = field.origin;
+  check_submission_ = false;
   manager_ = manager->GetWeakPtrToLeafClass();
 
   // Set the field type predictions in `form_`.
@@ -376,7 +373,8 @@ void AutofillProviderAndroid::OnServerQueryRequestError(
   }
 }
 
-void AutofillProviderAndroid::Reset(AndroidAutofillManager* manager) {
+void AutofillProviderAndroid::OnManagerResetOrDestroyed(
+    AndroidAutofillManager* manager) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!IsCurrentlyLinkedManager(manager)) {
     return;
@@ -415,7 +413,7 @@ gfx::RectF AutofillProviderAndroid::ToClientAreaBound(
 }
 
 void AutofillProviderAndroid::Reset() {
-  form_.reset(nullptr);
+  form_.reset();
   field_id_ = {};
   field_type_group_ = FieldTypeGroup::kNoGroup;
   triggered_origin_ = {};
