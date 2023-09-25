@@ -43,6 +43,27 @@ public class ChromeAccessibilitySettingsDelegate implements AccessibilitySetting
         }
     }
 
+    private static class TextSizeContrastAccessibilityDelegate
+            implements IntegerPreferenceDelegate {
+        private final BrowserContextHandle mBrowserContextHandle;
+
+        public TextSizeContrastAccessibilityDelegate(BrowserContextHandle mBrowserContextHandle) {
+            this.mBrowserContextHandle = mBrowserContextHandle;
+        }
+
+        @Override
+        public int getValue() {
+            return UserPrefs.get(mBrowserContextHandle)
+                    .getInteger(Pref.ACCESSIBILITY_TEXT_SIZE_CONTRAST_FACTOR);
+        }
+
+        @Override
+        public void setValue(int value) {
+            UserPrefs.get(mBrowserContextHandle)
+                    .setInteger(Pref.ACCESSIBILITY_TEXT_SIZE_CONTRAST_FACTOR, value);
+        }
+    }
+
     private final Profile mProfile;
 
     /**
@@ -61,6 +82,11 @@ public class ChromeAccessibilitySettingsDelegate implements AccessibilitySetting
     @Override
     public BooleanPreferenceDelegate getReaderForAccessibilityDelegate() {
         return new ReaderForAccessibilityDelegate(mProfile);
+    }
+
+    @Override
+    public IntegerPreferenceDelegate getTextSizeContrastAccessibilityDelegate() {
+        return new TextSizeContrastAccessibilityDelegate(getBrowserContextHandle());
     }
 
     @Override

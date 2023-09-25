@@ -20,9 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
-import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.components.browser_ui.accessibility.AccessibilitySettingsDelegate.IntegerPreferenceDelegate;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.ui.widget.ChromeImageButton;
@@ -32,17 +30,16 @@ import org.chromium.ui.widget.ChromeImageButton;
  */
 public class PageZoomPreference extends Preference implements SeekBar.OnSeekBarChangeListener {
     private int mInitialValue;
-    private BrowserContextHandle mBrowserContextHandle;
     private SeekBar mSeekBar;
     private ChromeImageButton mDecreaseButton;
     private ChromeImageButton mIncreaseButton;
     private TextView mCurrentValueText;
 
-    private int mInitialTextSizeContrastLevel;
     private SeekBar mTextSizeContrastSeekBar;
     private ChromeImageButton mTextSizeContrastDecreaseButton;
     private ChromeImageButton mTextSizeContrastIncreaseButton;
     private TextView mTextSizeContrastCurrentLevelText;
+    private IntegerPreferenceDelegate mTextSizeContrastDelegate;
     private static final int TEXT_SIZE_CONTRAST_BUTTON_INCREMENT = 10;
 
     // Values taken from dimens of text_size_* in //ui/android/java/res/values/dimens.xml
@@ -65,10 +62,6 @@ public class PageZoomPreference extends Preference implements SeekBar.OnSeekBarC
         super(context, attrs);
 
         setLayoutResource(R.layout.page_zoom_preference);
-    }
-
-    public void setmBrowserContextHandle(BrowserContextHandle browserContextHandle) {
-        mBrowserContextHandle = browserContextHandle;
     }
 
     @Override
@@ -136,9 +129,9 @@ public class PageZoomPreference extends Preference implements SeekBar.OnSeekBarC
                     (SeekBar) holder.findViewById(R.id.text_size_contrast_slider);
             mTextSizeContrastSeekBar.setOnSeekBarChangeListener(this);
             mTextSizeContrastSeekBar.setMax(PageZoomUtils.TEXT_SIZE_CONTRAST_MAX_LEVEL);
-            mTextSizeContrastSeekBar.setProgress(mInitialTextSizeContrastLevel);
-            mTextSizeContrastFactor = mInitialTextSizeContrastLevel;
-            updateViewsOnProgressChanged(mInitialTextSizeContrastLevel, mTextSizeContrastSeekBar);
+            mTextSizeContrastFactor = mTextSizeContrastDelegate.getValue();
+            mTextSizeContrastSeekBar.setProgress(mTextSizeContrastFactor);
+            updateViewsOnProgressChanged(mTextSizeContrastFactor, mTextSizeContrastSeekBar);
 
             mTextSizeContrastCurrentLevelText.setVisibility(View.VISIBLE);
             holder.findViewById(R.id.text_size_contrast_current_value_text)
@@ -157,11 +150,11 @@ public class PageZoomPreference extends Preference implements SeekBar.OnSeekBarC
     }
 
     /**
-     * Initial values to set the progress of seekbars.
-     * @param contrastLevel int - existing user pref value for contrast factor (or default).
+     * Set a delegate for the text size contrast slider functionality.
+     * @param delegate IntegerPreferenceDelegate - embedder's instance of a preference delegate.
      */
-    public void setInitialTextSizeContrastValue(int contrastLevel) {
-        mInitialTextSizeContrastLevel = contrastLevel;
+    public void setTextSizeContrastDelegate(IntegerPreferenceDelegate delegate) {
+        mTextSizeContrastDelegate = delegate;
     }
 
     private void updateViewsOnProgressChanged(int progress, SeekBar seekBar) {
@@ -290,8 +283,6 @@ public class PageZoomPreference extends Preference implements SeekBar.OnSeekBarC
     }
 
     private void saveTextSizeContrastValueToPreferences() {
-        UserPrefs.get(mBrowserContextHandle)
-                .setInteger(Pref.ACCESSIBILITY_TEXT_SIZE_CONTRAST_FACTOR,
-                        mTextSizeContrastSeekBar.getProgress());
+        mTextSizeContrastDelegate.setValue(mTextSizeContrastSeekBar.getProgress());
     }
 }

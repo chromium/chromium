@@ -12,13 +12,11 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettingsDelegate.BooleanPreferenceDelegate;
 import org.chromium.components.browser_ui.accessibility.FontSizePrefs.FontSizePrefsObserver;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
-import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
 
@@ -86,18 +84,17 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
 
         if (mDelegate.showPageZoomSettingsUI()) {
             mTextScalePref.setVisible(false);
-            // Set the initial values for page zoom and text contrast.
+            // Set the initial values for the page zoom settings, and set change listeners.
             mPageZoomDefaultZoomPref.setInitialValue(PageZoomUtils.getDefaultZoomAsSeekBarValue(
                     mDelegate.getBrowserContextHandle()));
-            mPageZoomDefaultZoomPref.setmBrowserContextHandle(mDelegate.getBrowserContextHandle());
-            if (ContentFeatureMap.isEnabled(ContentFeatureList.SMART_ZOOM)) {
-                mPageZoomDefaultZoomPref.setInitialTextSizeContrastValue(
-                        UserPrefs.get(mDelegate.getBrowserContextHandle())
-                                .getInteger(Pref.ACCESSIBILITY_TEXT_SIZE_CONTRAST_FACTOR));
-            }
             mPageZoomDefaultZoomPref.setOnPreferenceChangeListener(this);
             mPageZoomAlwaysShowPref.setChecked(PageZoomUtils.shouldShowZoomMenuItem());
             mPageZoomAlwaysShowPref.setOnPreferenceChangeListener(this);
+            // When Smart Zoom feature is enabled, set the required delegate.
+            if (ContentFeatureMap.isEnabled(ContentFeatureList.SMART_ZOOM)) {
+                mPageZoomDefaultZoomPref.setTextSizeContrastDelegate(
+                        mDelegate.getTextSizeContrastAccessibilityDelegate());
+            }
         } else {
             mPageZoomDefaultZoomPref.setVisible(false);
             mPageZoomAlwaysShowPref.setVisible(false);

@@ -29,6 +29,20 @@ public interface AccessibilitySettingsDelegate {
         void setEnabled(boolean value);
     }
 
+    /** An interface to control a single integer preference. */
+    interface IntegerPreferenceDelegate {
+        /**
+         * @return int - Current value of the preference of this instance.
+         */
+        int getValue();
+
+        /**
+         * Sets a new value for the preference of this instance.
+         * @param value
+         */
+        void setValue(int value);
+    }
+
     /**
      * @return The BrowserContextHandle that should be used to read and update settings.
      */
@@ -39,6 +53,12 @@ public interface AccessibilitySettingsDelegate {
      * for accessibility preference. Return null to omit the preference.
      */
     BooleanPreferenceDelegate getReaderForAccessibilityDelegate();
+
+    /**
+     * @return the InterPreferenceDelegate instance that should be used for reading and setting the
+     * text size contrast value for accessibility settings. Return null to omit the preference.
+     */
+    IntegerPreferenceDelegate getTextSizeContrastAccessibilityDelegate();
 
     /**
      * Allows the embedder to add more preferences to the preference screen.
