@@ -12,6 +12,7 @@ import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -54,6 +55,11 @@ public class MultiProfileTest {
             awContents.setBrowserContext(browserContext);
             return null;
         });
+    }
+
+    @After
+    public void tearDown() {
+        mActivityTestRule.tearDown();
     }
 
     @Test
@@ -300,6 +306,22 @@ public class MultiProfileTest {
         setBrowserContextSync(secondAwContents, otherProfile);
         Assert.assertSame(defaultProfile, firstAwContents.getBrowserContext());
         Assert.assertSame(otherProfile, secondAwContents.getBrowserContext());
+    }
+
+    @Test
+    @SmallTest
+    @OnlyRunIn(MULTI_PROCESS)
+    @Feature({"AndroidWebView"})
+    public void testGetBrowserContextThrowsExceptionIfWebViewDestroyed() throws Throwable {
+        mActivityTestRule.startBrowserProcess();
+        final AwBrowserContext myProfile = getContextSync("my-profile", true);
+        final AwContents awContents =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient)
+                        .getAwContents();
+        setBrowserContextSync(awContents, myProfile);
+        awContents.destroy();
+        Assert.assertThrows("Cannot get profile for destroyed WebView.",
+                IllegalStateException.class, awContents::getBrowserContext);
     }
 
     @Test

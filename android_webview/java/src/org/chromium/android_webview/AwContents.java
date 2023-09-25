@@ -1278,17 +1278,24 @@ public class AwContents implements SmartClipProvider {
 
     /**
      * For multi-profile public API. For internal access to the browser context,
-     * use the member variable {@link AwContents#mBrowserContext} directly.
+     * use the member variable {@link AwContents#mBrowserContext} directly. All Exception messages
+     * should be developer friendly and refer to the browser context as a "Profile".
+     *
+     * @throws IllegalStateException if the WebView has been destroyed via. {@link
+     *         AwContents#destroy()}.
      */
     @NonNull
     public AwBrowserContext getBrowserContext() {
+        if (isDestroyed(NO_WARN)) {
+            throw new IllegalStateException("Cannot get profile for destroyed WebView.");
+        }
         mBrowserContextAccessed = true;
         return mBrowserContext;
     }
 
     /**
      * For multi-profile public API. Sets a new browser context which will
-     * cause the web contents to reinitialize. All exception messages should
+     * cause the web contents to reinitialize. All Exception messages should
      * be developer friendly and refer to the browser context as a "Profile".
      *
      * @throws IllegalStateException if the WebView has been destroyed via. {@link
