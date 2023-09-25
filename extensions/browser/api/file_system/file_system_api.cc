@@ -16,6 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/i18n/time_formatting.h"
 #include "base/json/values_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -224,13 +225,9 @@ base::FilePath GenerateUniqueSavePath(const base::FilePath& path) {
       // Try a timestamp suffix.
       // Generate an ISO8601 compliant local timestamp suffix that avoids
       // reserved characters that are forbidden on some OSes like Windows.
-      base::Time::Exploded exploded;
-      base::Time::Now().LocalExplode(&exploded);
-      std::string suffix = base::StringPrintf(
-          " - %04d-%02d-%02dT%02d%02d%02d.%03d", exploded.year, exploded.month,
-          exploded.day_of_month, exploded.hour, exploded.minute,
-          exploded.second, exploded.millisecond);
-      unique_path = path.InsertBeforeExtensionASCII(suffix);
+      unique_path = path.InsertBeforeExtensionASCII(
+          base::UnlocalizedTimeFormatWithPattern(base::Time::Now(),
+                                                 " - yyyy-MM-dd'T'HHmmss.SSS"));
     }
     if (!filename_generation::TruncateFilename(&unique_path, limit))
       return base::FilePath();
