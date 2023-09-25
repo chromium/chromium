@@ -31,7 +31,7 @@ import org.chromium.chrome.browser.autofill.AutofillEditorBase;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
-import org.chromium.chrome.browser.device_reauth.DeviceAuthRequester;
+import org.chromium.chrome.browser.device_reauth.DeviceAuthSource;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.payments.ServiceWorkerPaymentAppBridge;
@@ -158,8 +158,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
         if (ChromeFeatureList.isEnabled(
                     ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH)) {
             if (mReauthenticatorBridge == null) {
-                mReauthenticatorBridge = ReauthenticatorBridge.create(
-                        DeviceAuthRequester.PAYMENT_METHODS_REAUTH_IN_SETTINGS);
+                mReauthenticatorBridge = ReauthenticatorBridge.create(DeviceAuthSource.AUTOFILL);
             }
             ChromeSwitchPreference mandatoryReauthSwitch =
                     new ChromeSwitchPreference(getStyledContext(), null);

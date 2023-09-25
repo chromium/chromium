@@ -24,7 +24,6 @@
 namespace {
 
 using base::test::RunOnceCallback;
-using device_reauth::DeviceAuthRequester;
 using device_reauth::MockDeviceAuthenticator;
 using testing::_;
 using testing::Eq;

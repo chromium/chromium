@@ -38,7 +38,6 @@ using ::testing::UnorderedElementsAre;
 
 using autofill::mojom::FocusedFieldType;
 using base::test::RunOnceCallback;
-using device_reauth::DeviceAuthRequester;
 using device_reauth::MockDeviceAuthenticator;
 using password_manager::PasswordForm;
 using password_manager::TestPasswordStore;

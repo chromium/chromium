@@ -63,7 +63,6 @@ using autofill::FooterCommand;
 using autofill::UserInfo;
 using autofill::mojom::FocusedFieldType;
 using base::test::RunOnceCallback;
-using device_reauth::DeviceAuthRequester;
 using device_reauth::MockDeviceAuthenticator;
 using password_manager::CreateEntry;
 using password_manager::CredentialCache;

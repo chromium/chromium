@@ -17,8 +17,6 @@
 
 namespace {
 
-using device_reauth::DeviceAuthRequester;
-
 // Implementation of ChromeDeviceAuthenticatorCommon for testing.
 class FakeChromeDeviceAuthenticatorCommon
     : public ChromeDeviceAuthenticatorCommon {

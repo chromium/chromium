@@ -52,7 +52,6 @@ using ToShowVirtualKeyboard =
     password_manager::PasswordManagerDriver::ToShowVirtualKeyboard;
 using autofill::mojom::SubmissionReadinessState;
 using base::test::RunOnceCallback;
-using device_reauth::DeviceAuthRequester;
 using device_reauth::MockDeviceAuthenticator;
 using password_manager::PasskeyCredential;
 using password_manager::UiCredential;

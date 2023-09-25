@@ -23,8 +23,6 @@ namespace {
 using MockAuthResultCallback =
     base::MockCallback<DeviceAuthenticatorMac::AuthenticateCallback>;
 
-using device_reauth::DeviceAuthRequester;
-
 constexpr base::TimeDelta kAuthValidityPeriod = base::Seconds(60);
 
 }  // namespace

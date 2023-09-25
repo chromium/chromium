@@ -82,7 +82,6 @@ using autofill::SuggestionVectorLabelsContains;
 using autofill::SuggestionVectorMainTextsAre;
 using autofill::password_generation::PasswordGenerationType;
 using base::test::RunOnceCallback;
-using device_reauth::DeviceAuthRequester;
 using favicon_base::FaviconImageCallback;
 using gfx::test::AreImagesEqual;
 using testing::_;

@@ -19,8 +19,8 @@ public class ReauthenticatorBridge {
     private long mNativeReauthenticatorBridge;
     private Callback<Boolean> mAuthResultCallback;
 
-    private ReauthenticatorBridge(@DeviceAuthRequester int requester) {
-        mNativeReauthenticatorBridge = ReauthenticatorBridgeJni.get().create(this, requester);
+    private ReauthenticatorBridge(@DeviceAuthSource int source) {
+        mNativeReauthenticatorBridge = ReauthenticatorBridgeJni.get().create(this, source);
     }
 
     /**
@@ -60,13 +60,13 @@ public class ReauthenticatorBridge {
 
     /**
      * Create an instance of {@link ReauthenticatorBridge} based on the provided
-     * {@link DeviceAuthRequester}.
+     * {@link DeviceAuthSource}.
      * */
-    public static ReauthenticatorBridge create(@DeviceAuthRequester int requester) {
+    public static ReauthenticatorBridge create(@DeviceAuthSource int source) {
         if (sReauthenticatorBridgeForTesting != null) {
             return sReauthenticatorBridgeForTesting;
         }
-        return new ReauthenticatorBridge(requester);
+        return new ReauthenticatorBridge(source);
     }
 
     /** For testing only. */
@@ -84,7 +84,7 @@ public class ReauthenticatorBridge {
 
     @NativeMethods
     interface Natives {
-        long create(ReauthenticatorBridge reauthenticatorBridge, int requester);
+        long create(ReauthenticatorBridge reauthenticatorBridge, int source);
         boolean canUseAuthenticationWithBiometric(long nativeReauthenticatorBridge);
         boolean canUseAuthenticationWithBiometricOrScreenLock(long nativeReauthenticatorBridge);
         void reauthenticate(long nativeReauthenticatorBridge, boolean useLastValidAuth);

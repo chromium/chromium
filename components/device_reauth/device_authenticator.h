@@ -12,69 +12,11 @@
 
 namespace device_reauth {
 
-// The UI surface requesting the device reauthentication flow.
-//
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-//
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.device_reauth
-enum class DeviceAuthRequester {
-  // The filling surface shown on the first tap on the field after page load.
-  // This surface has replaced autofilling on Android.
-  kTouchToFill = 0,
-
-  // The suggestion presented in the keyboard accessory or autofill popup.
-  kAutofillSuggestion = 1,
-
-  // The keyboard accessory sheet displaying suggestions for manual filling.
-  kFallbackSheet = 2,
-
-  // The list displaying all saved passwords. Can be used for filling on
-  // Android.
-  kAllPasswordsList = 3,
-
-  // The dialog displayed via the Credential Management API.
-  kAccountChooserDialog = 4,
-
-  // The list displaying all compromised passwords. Reauth is triggered before
-  // starting automated password change.
-  kPasswordCheckAutoPwdChange = 5,
-
-  // The dialog displayed to access existing Incognito tabs if the Incognito
-  // lock setting in on and Chrome came to foreground.
-  kIncognitoReauthPage = 6,
-
-  // The prompt displayed when user is trying to copy/edit/view/export their
-  // passwords from settings page on Windows and Mac.
-  kPasswordsInSettings = 7,
-
-  // The prompt displayed when the user is trying to autofill a local card, and
-  // re-auth is triggered.
-  kLocalCardAutofill = 8,
-
-  // The page displayed to inform the user that a device lock is needed for
-  // sign-in to protect their data privacy on this particular device. The
-  // page will prompt the user to re-authenticate their existing device lock,
-  // or create one if none exist.
-  kDeviceLockPage = 9,
-
-  // The prompt displayed when user is trying to enable/disable payment method
-  // mandatory reauth toggle or edit local card when reauth is enabled in
-  // Settings page on Android.
-  kPaymentMethodsReauthInSettings = 10,
-
-  // The prompt displayed when the user is trying to autofill a virtual card,
-  // and re-auth is triggered.
-  kVirtualCardAutofill = 11,
-
-  // The prompt displayed while we were trying to opt the user into payments
-  // autofill re-auth.
-  kPaymentsAutofillOptIn = 12,
-
-  kMaxValue = kPaymentsAutofillOptIn,
-};
 
 // The place where the device reauthentication flow is requested from.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.device_reauth
 enum class DeviceAuthSource {
   kPasswordManager = 0,
   kAutofill = 1,

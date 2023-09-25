@@ -11,7 +11,7 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.device_reauth.DeviceAuthRequester;
+import org.chromium.chrome.browser.device_reauth.DeviceAuthSource;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -92,7 +92,11 @@ public class DeviceLockCoordinator {
      * Get a {@link ReauthenticatorBridge} for the Device Lock page.
      */
     public static ReauthenticatorBridge createDeviceLockAuthenticatorBridge() {
-        return ReauthenticatorBridge.create(DeviceAuthRequester.DEVICE_LOCK_PAGE);
+        /**
+         * TODO(crbug.com/1486015): Add a new value for the enum and a new bucket for the
+         * corresponding metric: DEVICE_LOCK_PAGE.
+         */
+        return ReauthenticatorBridge.create(DeviceAuthSource.AUTOFILL);
     }
 
     /**

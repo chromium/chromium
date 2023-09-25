@@ -9,7 +9,7 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.ResettersForTesting;
-import org.chromium.chrome.browser.device_reauth.DeviceAuthRequester;
+import org.chromium.chrome.browser.device_reauth.DeviceAuthSource;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -38,7 +38,7 @@ public class IncognitoReauthManager {
     }
 
     public IncognitoReauthManager() {
-        this(ReauthenticatorBridge.create(DeviceAuthRequester.INCOGNITO_REAUTH_PAGE));
+        this(ReauthenticatorBridge.create(DeviceAuthSource.INCOGNITO));
     }
 
     public IncognitoReauthManager(ReauthenticatorBridge reauthenticatorBridge) {

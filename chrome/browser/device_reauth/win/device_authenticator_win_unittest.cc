@@ -28,7 +28,6 @@
 namespace {
 
 using device_reauth::DeviceAuthenticator;
-using device_reauth::DeviceAuthRequester;
 using testing::_;
 using testing::Return;
 
