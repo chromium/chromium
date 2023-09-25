@@ -182,7 +182,9 @@ void FirstPartySetsHandlerImplInstance::Init(
     const base::FilePath& user_data_dir,
     const LocalSetDeclaration& local_set) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!initialized_);
+  if (initialized_) {
+    return;
+  }
   CHECK(sets_loader_);
 
   initialized_ = true;

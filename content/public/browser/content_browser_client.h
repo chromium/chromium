@@ -2626,6 +2626,10 @@ class CONTENT_EXPORT ContentBrowserClient {
   // "Cache-control: no-store" header in BFCache.
   virtual bool ShouldAllowBackForwardCacheForCacheControlNoStorePage(
       content::BrowserContext* browser_context);
+
+  // Set whether the browser is running in minimal mode (where most subsystems
+  // are left uninitialized).
+  virtual void SetIsMinimalMode(bool minimal) {}
 };
 
 }  // namespace content

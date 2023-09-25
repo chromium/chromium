@@ -32,7 +32,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   // persisted sets, since we may still need to clear data from a previous
   // invocation of Chromium which had First-Party Sets enabled.
   //
-  // Must be called exactly once.
+  // Only the first call has any effect.
   void virtual Init(const base::FilePath& user_data_dir,
                     const LocalSetDeclaration& local_set) = 0;
 

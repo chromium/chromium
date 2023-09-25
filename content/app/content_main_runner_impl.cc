@@ -59,6 +59,8 @@
 #include "content/browser/browser_main.h"
 #include "content/browser/browser_process_io_thread.h"
 #include "content/browser/browser_thread_impl.h"
+#include "content/browser/first_party_sets/first_party_sets_handler_impl.h"
+#include "content/browser/first_party_sets/local_set_declaration.h"
 #include "content/browser/gpu/gpu_main_thread_factory.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/scheduler/browser_task_executor.h"
@@ -1249,8 +1251,14 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
     AndroidBatteryMetrics::CreateInstance();
 #endif
 
-    if (start_minimal_browser)
+    GetContentClient()->browser()->SetIsMinimalMode(start_minimal_browser);
+    if (start_minimal_browser) {
       ForceInProcessNetworkService();
+      // Minimal browser mode doesn't initialize First-Party Sets the "usual"
+      // way, so we do it manually.
+      content::FirstPartySetsHandlerImpl::GetInstance()->Init(
+          base::FilePath(), LocalSetDeclaration());
+    }
 
     discardable_shared_memory_manager_ =
         std::make_unique<discardable_memory::DiscardableSharedMemoryManager>();

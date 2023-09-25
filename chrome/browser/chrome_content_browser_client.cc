@@ -7830,7 +7830,8 @@ bool ChromeContentBrowserClient::ShouldDisableOriginAgentClusterDefault(
 
 bool ChromeContentBrowserClient::WillProvidePublicFirstPartySets() {
 #if BUILDFLAG(ENABLE_COMPONENT_UPDATER)
-  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
+  return !is_minimal_mode_ &&
+         !base::CommandLine::ForCurrentProcess()->HasSwitch(
              switches::kDisableComponentUpdate) &&
          base::FeatureList::IsEnabled(features::kFirstPartySets);
 #else
@@ -8109,4 +8110,8 @@ bool ChromeContentBrowserClient::
   // If the pref is not found or not managed, BFCaching CCNS page should be
   // enabled by default.
   return true;
+}
+
+void ChromeContentBrowserClient::SetIsMinimalMode(bool minimal) {
+  is_minimal_mode_ = minimal;
 }

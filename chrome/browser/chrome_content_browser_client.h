@@ -939,6 +939,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool ShouldAllowBackForwardCacheForCacheControlNoStorePage(
       content::BrowserContext* browser_context) override;
 
+  void SetIsMinimalMode(bool minimal) override;
+
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);
   static bool HandleWebUIReverse(GURL* url,
@@ -1092,6 +1094,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 #if BUILDFLAG(IS_MAC)
   std::string GetChildProcessSuffix(int child_flags) override;
 #endif  // BUILDFLAG(IS_MAC)
+
+  // Tracks whether the browser was started in "minimal" mode (as opposed to
+  // full browser mode), where most subsystems are not initialized.
+  bool is_minimal_mode_ = false;
 
   base::WeakPtrFactory<ChromeContentBrowserClient> weak_factory_{this};
 };

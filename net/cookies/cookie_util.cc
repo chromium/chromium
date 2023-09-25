@@ -898,7 +898,7 @@ absl::optional<FirstPartySetMetadata> ComputeFirstPartySetMetadataMaybeAsync(
     const IsolationInfo& isolation_info,
     const CookieAccessDelegate* cookie_access_delegate,
     base::OnceCallback<void(FirstPartySetMetadata)> callback) {
-  if (!isolation_info.is_internal() && cookie_access_delegate) {
+  if (cookie_access_delegate) {
     return cookie_access_delegate->ComputeFirstPartySetMetadataMaybeAsync(
         request_site,
         base::OptionalToPtr(
