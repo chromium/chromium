@@ -154,6 +154,11 @@ HEADER = headers.header(
                     alt = "Chromium Android console",
                 ),
                 headers.link(
+                    text = "checks",
+                    url = "/p/{}/checks/builders".format(settings.project),
+                    alt = "Checks console",
+                ),
+                headers.link(
                     text = "clang",
                     url = "/p/{}/g/chromium.clang".format(settings.project),
                     alt = "Chromium Clang console",
