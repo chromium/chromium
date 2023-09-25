@@ -382,15 +382,13 @@ TEST(NativeUnwinderAndroidTest, MAYBE_ResumeUnwinding) {
 }
 
 // Checks that java frames can be unwound through.
-TEST(NativeUnwinderAndroidTest, JavaFunction) {
+// Disabled, see: https://crbug.com/1076997
+TEST(NativeUnwinderAndroidTest, DISABLED_JavaFunction) {
   auto* build_info = base::android::BuildInfo::GetInstance();
-  const auto sdk_version = build_info->sdk_int();
-
-  // Skip this test on anything Android O or earlier, because Java unwinding
-  // fails on these.
-  if (sdk_version <= base::android::SDK_VERSION_OREO) {
-    GTEST_SKIP();
-  }
+  // Due to varying availability of compiled java unwind tables, unwinding is
+  // only expected to succeed on > SDK_VERSION_MARSHMALLOW.
+  bool can_always_unwind =
+      build_info->sdk_int() > base::android::SDK_VERSION_MARSHMALLOW;
 
   UnwindScenario scenario(base::BindRepeating(callWithJavaFunction));
 
@@ -409,7 +407,8 @@ TEST(NativeUnwinderAndroidTest, JavaFunction) {
                         ASSERT_TRUE(unwinder->CanUnwindFrom(sample->back()));
                         UnwindResult result = unwinder->TryUnwind(
                             thread_context, stack_top, sample);
-                        EXPECT_EQ(UnwindResult::kCompleted, result);
+                        if (can_always_unwind)
+                          EXPECT_EQ(UnwindResult::kCompleted, result);
                       }));
 
   // Check that all the modules are valid.
@@ -417,9 +416,11 @@ TEST(NativeUnwinderAndroidTest, JavaFunction) {
     EXPECT_NE(nullptr, frame.module);
 
   // The stack should contain a full unwind.
-  ExpectStackContains(sample, {scenario.GetWaitForSampleAddressRange(),
-                               scenario.GetSetupFunctionAddressRange(),
-                               scenario.GetOuterFunctionAddressRange()});
+  if (can_always_unwind) {
+    ExpectStackContains(sample, {scenario.GetWaitForSampleAddressRange(),
+                                 scenario.GetSetupFunctionAddressRange(),
+                                 scenario.GetOuterFunctionAddressRange()});
+  }
 }
 
 TEST(NativeUnwinderAndroidTest, UnwindStackMemoryTest) {
