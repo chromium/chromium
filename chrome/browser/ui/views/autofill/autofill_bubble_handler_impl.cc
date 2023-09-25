@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/autofill/autofill_bubble_handler_impl.h"
 
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
@@ -38,8 +37,6 @@
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -50,10 +47,6 @@ AutofillBubbleHandlerImpl::AutofillBubbleHandlerImpl(
     Browser* browser,
     ToolbarButtonProvider* toolbar_button_provider)
     : browser_(browser), toolbar_button_provider_(toolbar_button_provider) {
-  if (browser->profile()) {
-    personal_data_manager_observation_.Observe(
-        PersonalDataManagerFactory::GetForProfile(browser->profile()));
-  }
   if (toolbar_button_provider_->GetAvatarToolbarButton()) {
     avatar_toolbar_button_observation_.Observe(
         toolbar_button_provider_->GetAvatarToolbarButton());
@@ -327,9 +320,6 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowMandatoryReauthBubble(
 }
 
 void AutofillBubbleHandlerImpl::OnPasswordSaved() {}
-
-void AutofillBubbleHandlerImpl::OnCreditCardSaved(
-    bool should_show_sign_in_promo_if_applicable) {}
 
 void AutofillBubbleHandlerImpl::OnAvatarHighlightAnimationFinished() {
   if (should_show_sign_in_promo_if_applicable_) {

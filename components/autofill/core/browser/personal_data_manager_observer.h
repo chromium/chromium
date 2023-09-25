@@ -29,11 +29,6 @@ class PersonalDataManagerObserver {
   // handle.
   virtual void OnPersonalDataFinishedProfileTasks() {}
 
-  // Notifies the observer whenever at least one (can be multiple) credit card
-  // is suceesfully saved.
-  virtual void OnCreditCardSaved(bool should_show_sign_in_promo_if_applicable) {
-  }
-
   // Called when (part of) the browsing history is cleared.
   virtual void OnBrowsingHistoryCleared(
       const history::DeletionInfo& deletion_info) {}

@@ -9,8 +9,6 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager_observer.h"
 
 class Browser;
 class ToolbarButtonProvider;
@@ -27,7 +25,6 @@ class IbanBubbleController;
 enum class IbanBubbleType;
 
 class AutofillBubbleHandlerImpl : public AutofillBubbleHandler,
-                                  public PersonalDataManagerObserver,
                                   public AvatarToolbarButton::Observer {
  public:
   AutofillBubbleHandlerImpl(Browser* browser,
@@ -84,9 +81,6 @@ class AutofillBubbleHandlerImpl : public AutofillBubbleHandler,
 
   void OnPasswordSaved() override;
 
-  // PersonalDataManagerObserver:
-  void OnCreditCardSaved(bool should_show_sign_in_promo_if_applicable) override;
-
   // AvatarToolbarButton::Observer:
   void OnAvatarHighlightAnimationFinished() override;
 
@@ -102,8 +96,6 @@ class AutofillBubbleHandlerImpl : public AutofillBubbleHandler,
   // button after the highlight animation finishes.
   bool should_show_sign_in_promo_if_applicable_ = false;
 
-  base::ScopedObservation<PersonalDataManager, PersonalDataManagerObserver>
-      personal_data_manager_observation_{this};
   base::ScopedObservation<AvatarToolbarButton, AvatarToolbarButton::Observer>
       avatar_toolbar_button_observation_{this};
 };
