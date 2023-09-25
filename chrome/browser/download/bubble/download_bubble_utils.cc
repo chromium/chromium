@@ -143,7 +143,7 @@ Browser* FindBrowserToShowAnimation(download::DownloadItem* item,
   return browser_to_show_animation;
 }
 
-const web_app::AppId* GetWebAppIdForBrowser(const Browser* browser) {
+const webapps::AppId* GetWebAppIdForBrowser(const Browser* browser) {
   return web_app::AppBrowserController::IsWebApp(browser)
              ? &browser->app_controller()->app_id()
              : nullptr;

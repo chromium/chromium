@@ -263,7 +263,7 @@ bool DownloadBubbleUpdateService::CacheManager::IsOfflineItemCacheAtMax()
 }
 
 DownloadBubbleUpdateService::CacheManager&
-DownloadBubbleUpdateService::GetCacheForWebApp(const web_app::AppId& app_id) {
+DownloadBubbleUpdateService::GetCacheForWebApp(const webapps::AppId& app_id) {
   auto it = web_app_caches_.find(app_id);
   if (it == web_app_caches_.end()) {
     // Create a new CacheManager for this |app_id|.
@@ -274,7 +274,7 @@ DownloadBubbleUpdateService::GetCacheForWebApp(const web_app::AppId& app_id) {
 
 const DownloadBubbleUpdateService::CacheManager*
 DownloadBubbleUpdateService::GetExistingCacheForWebApp(
-    const web_app::AppId& app_id) const {
+    const webapps::AppId& app_id) const {
   if (auto it = web_app_caches_.find(app_id); it != web_app_caches_.end()) {
     return &it->second;
   }
@@ -460,7 +460,7 @@ bool DownloadBubbleUpdateService::CacheManager::GetAllModelsToDisplay(
 
 bool DownloadBubbleUpdateService::GetAllModelsToDisplay(
     std::vector<DownloadUIModelPtr>& models,
-    const web_app::AppId* web_app_id,
+    const webapps::AppId* web_app_id,
     bool force_backfill_download_items) {
   if (web_app_id == nullptr) {
     return main_cache_.GetAllModelsToDisplay(models,
@@ -476,7 +476,7 @@ DownloadBubbleUpdateService::CacheManager::GetDisplayInfo() const {
 }
 
 const DownloadBubbleDisplayInfo& DownloadBubbleUpdateService::GetDisplayInfo(
-    const web_app::AppId* web_app_id) {
+    const webapps::AppId* web_app_id) {
   if (web_app_id == nullptr) {
     return main_cache_.GetDisplayInfo();
   }
@@ -575,7 +575,7 @@ ProgressInfo DownloadBubbleUpdateService::CacheManager::GetProgressInfo()
 }
 
 ProgressInfo DownloadBubbleUpdateService::GetProgressInfo(
-    const web_app::AppId* web_app_id) const {
+    const webapps::AppId* web_app_id) const {
   if (web_app_id == nullptr) {
     return main_cache_.GetProgressInfo();
   }

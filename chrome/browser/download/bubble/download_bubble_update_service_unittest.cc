@@ -16,7 +16,6 @@
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/offline_items_collection/offline_content_aggregator_factory.h"
 #include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -26,6 +25,7 @@
 #include "components/offline_items_collection/core/offline_item_state.h"
 #include "components/offline_items_collection/core/test_support/mock_offline_content_provider.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_download_manager.h"
@@ -163,7 +163,7 @@ class DownloadBubbleUpdateServiceTest : public testing::Test {
                         const std::string& guid,
                         bool is_paused,
                         base::Time start_time = base::Time::Now(),
-                        const web_app::AppId* web_app_id = nullptr,
+                        const webapps::AppId* web_app_id = nullptr,
                         bool is_crx = false,
                         bool observe = true) {
     InitDownloadItem(*download_manager_, *update_service_, download_items_,
@@ -180,7 +180,7 @@ class DownloadBubbleUpdateServiceTest : public testing::Test {
       const std::string& guid,
       bool is_paused,
       base::Time start_time = base::Time::Now(),
-      const web_app::AppId* web_app_id = nullptr,
+      const webapps::AppId* web_app_id = nullptr,
       bool is_crx = false,
       bool observe = true) {
     size_t index = download_items.size();
@@ -704,8 +704,8 @@ TEST_F(DownloadBubbleUpdateServiceTest, CachesExtraItems) {
 TEST_F(DownloadBubbleUpdateServiceTest, GetAllModelsToDisplayForWebApp) {
   base::Time now = base::Time::Now();
   base::Time before = now - base::Hours(1);
-  web_app::AppId app_a_id = "app_a";
-  web_app::AppId app_b_id = "app_b";
+  webapps::AppId app_a_id = "app_a";
+  webapps::AppId app_b_id = "app_b";
   InitDownloadItem(DownloadState::IN_PROGRESS, "app_a_download",
                    /*is_paused=*/false, now, &app_a_id);
   InitDownloadItem(DownloadState::IN_PROGRESS, "app_b_download",
@@ -757,8 +757,8 @@ TEST_F(DownloadBubbleUpdateServiceTest, GetProgressInfo) {
 
 TEST_F(DownloadBubbleUpdateServiceTest, GetProgressInfoForWebApp) {
   base::Time now = base::Time::Now();
-  web_app::AppId app_a_id = "app_a";
-  web_app::AppId app_b_id = "app_b";
+  webapps::AppId app_a_id = "app_a";
+  webapps::AppId app_b_id = "app_b";
   InitDownloadItem(DownloadState::IN_PROGRESS, "app_a_download1",
                    /*is_paused=*/false, now, &app_a_id);
   InitDownloadItem(DownloadState::IN_PROGRESS, "app_a_download2",
@@ -817,8 +817,8 @@ TEST_F(DownloadBubbleUpdateServiceTest, GetAllUIModelsInfo) {
 TEST_F(DownloadBubbleUpdateServiceTest, GetAllUIModelsInfoForWebApp) {
   base::Time now = base::Time::Now();
   base::Time two_hours_ago = now - base::Hours(2);
-  web_app::AppId app_a_id = "app_a";
-  web_app::AppId app_b_id = "app_b";
+  webapps::AppId app_a_id = "app_a";
+  webapps::AppId app_b_id = "app_b";
   InitDownloadItem(DownloadState::IN_PROGRESS, "non_app_download",
                    /*is_paused=*/false, now);
   InitOfflineItems({OfflineItemState::PAUSED, OfflineItemState::PAUSED},
@@ -846,7 +846,7 @@ TEST_F(DownloadBubbleUpdateServiceTest, GetAllUIModelsInfoForWebApp) {
 TEST_F(DownloadBubbleUpdateServiceTest,
        DownloadUpdatedWithWebAppDataAfterCreation) {
   base::Time now = base::Time::Now();
-  web_app::AppId app_id = "app";
+  webapps::AppId app_id = "app";
   // This simulates the restoration of a web app download from the history
   // database, during which the item is created first without the
   // DownloadItemWebAppData, and then subsequently tagged with the data.
