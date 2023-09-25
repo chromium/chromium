@@ -14,6 +14,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
@@ -27,6 +28,7 @@
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_budgeter.h"
+#include "content/browser/private_aggregation/private_aggregation_features.h"
 #include "content/browser/private_aggregation/private_aggregation_utils.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
@@ -189,8 +191,8 @@ bool PrivateAggregationHost::IsDebugModeAllowed(
     return false;
   }
 
-  if (!blink::features::kPrivateAggregationApiDebugModeSettingsCheckEnabled
-           .Get()) {
+  if (!base::FeatureList::IsEnabled(
+          kPrivateAggregationApiBundledEnhancements)) {
     return true;
   }
 

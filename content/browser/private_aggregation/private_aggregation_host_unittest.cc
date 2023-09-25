@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -24,6 +25,7 @@
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_budgeter.h"
+#include "content/browser/private_aggregation/private_aggregation_features.h"
 #include "content/browser/private_aggregation/private_aggregation_test_utils.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
@@ -72,10 +74,6 @@ class PrivateAggregationHostTest : public testing::Test {
   PrivateAggregationHostTest() = default;
 
   void SetUp() override {
-    // Ensure debug mode is always available by default for tests.
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kPrivateAggregationApi,
-        {{"debug_mode_settings_check_enabled", "false"}});
     host_ = std::make_unique<PrivateAggregationHost>(
         /*on_report_request_received=*/mock_callback_.Get(),
         /*browser_context=*/&test_browser_context_);
@@ -93,7 +91,6 @@ class PrivateAggregationHostTest : public testing::Test {
   std::unique_ptr<PrivateAggregationHost> host_;
   BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
   TestBrowserContext test_browser_context_;
@@ -809,7 +806,7 @@ TEST_F(PrivateAggregationHostTest, ContextIdNotSet_NoNullReportSent) {
 TEST_F(PrivateAggregationHostTest,
        DebugModeFeatureParamsAndSettingsCheckAppliedCorrectly) {
   struct {
-    base::FieldTrialParams field_trial_params;
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
     bool expected_debug_mode_settings_check;
 
     // No effect if `expected_debug_mode_settings_check` is false.
@@ -818,27 +815,28 @@ TEST_F(PrivateAggregationHostTest,
     AggregatableReportSharedInfo::DebugMode expected_debug_mode;
   } kTestCases[] = {
       {
-          .field_trial_params = {{"debug_mode_enabled_at_all", "false"}},
+          .enabled_features = {{blink::features::kPrivateAggregationApi,
+                                {{"debug_mode_enabled_at_all", "false"}}}},
           .expected_debug_mode_settings_check = false,
           .expected_debug_mode =
               AggregatableReportSharedInfo::DebugMode::kDisabled,
       },
       {
-          .field_trial_params = {{"debug_mode_settings_check_enabled", "true"}},
+          .enabled_features = {{kPrivateAggregationApiBundledEnhancements, {}}},
           .expected_debug_mode_settings_check = true,
           .approve_debug_mode_settings_check = false,
           .expected_debug_mode =
               AggregatableReportSharedInfo::DebugMode::kDisabled,
       },
       {
-          .field_trial_params = {{"debug_mode_settings_check_enabled", "true"}},
+          .enabled_features = {{kPrivateAggregationApiBundledEnhancements, {}}},
           .expected_debug_mode_settings_check = true,
           .approve_debug_mode_settings_check = true,
           .expected_debug_mode =
               AggregatableReportSharedInfo::DebugMode::kEnabled,
       },
       {
-          .field_trial_params = {{"debug_mode_settings_check_enabled", "true"}},
+          .enabled_features = {{kPrivateAggregationApiBundledEnhancements, {}}},
           .expected_debug_mode_settings_check = false,
           .call_enable_debug_mode = false,
           .expected_debug_mode =
@@ -846,9 +844,9 @@ TEST_F(PrivateAggregationHostTest,
       }};
 
   for (auto& test_case : kTestCases) {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kPrivateAggregationApi, test_case.field_trial_params);
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeaturesAndParameters(
+        test_case.enabled_features, /*disabled_features=*/{});
 
     base::HistogramTester histogram;
     MockPrivateAggregationContentBrowserClient browser_client;

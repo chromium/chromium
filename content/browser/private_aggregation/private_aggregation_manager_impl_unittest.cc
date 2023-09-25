@@ -26,6 +26,7 @@
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_budgeter.h"
+#include "content/browser/private_aggregation/private_aggregation_features.h"
 #include "content/browser/private_aggregation/private_aggregation_host.h"
 #include "content/browser/private_aggregation/private_aggregation_test_utils.h"
 #include "content/public/browser/private_aggregation_data_model.h"
@@ -649,8 +650,8 @@ TEST_F(PrivateAggregationManagerImplTest,
 TEST_F(PrivateAggregationManagerImplTest,
        BudgetDeniedWithSendNullReportBehavior_RequestSent) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      blink::features::kPrivateAggregationApi, {{"send_null_reports", "true"}});
+  scoped_feature_list.InitAndEnableFeature(
+      kPrivateAggregationApiBundledEnhancements);
   base::HistogramTester histogram;
 
   AggregatableReportRequest example_request =
@@ -732,9 +733,8 @@ TEST_F(
     PrivateAggregationManagerImplTest,
     BudgetDeniedWithSendNullReportBehaviorButFeatureParamDisabled_RequestNotSent) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      blink::features::kPrivateAggregationApi,
-      {{"send_null_reports", "false"}});
+  scoped_feature_list.InitAndDisableFeature(
+      kPrivateAggregationApiBundledEnhancements);
   base::HistogramTester histogram;
 
   AggregatableReportRequest example_request =
@@ -792,8 +792,8 @@ TEST_F(
 TEST_F(PrivateAggregationManagerImplTest,
        NoContributions_BudgetNotCheckedButNullReportSent) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      blink::features::kPrivateAggregationApi, {{"send_null_reports", "true"}});
+  scoped_feature_list.InitAndEnableFeature(
+      kPrivateAggregationApiBundledEnhancements);
   base::HistogramTester histogram;
 
   AggregatableReportRequest example_request =

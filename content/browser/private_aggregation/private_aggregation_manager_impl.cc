@@ -13,6 +13,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -28,6 +29,7 @@
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_budgeter.h"
+#include "content/browser/private_aggregation/private_aggregation_features.h"
 #include "content/browser/private_aggregation/private_aggregation_host.h"
 #include "content/browser/private_aggregation/private_aggregation_utils.h"
 #include "content/browser/storage_partition_impl.h"
@@ -212,8 +214,8 @@ void PrivateAggregationManagerImpl::OnContributionsFinalized(
     PrivateAggregationBudgetKey::Api api_for_budgeting) {
   // Temporary feature until change is approved.
   // TODO(alexmt): Remove once approved.
-  if (contributions.empty() &&
-      !blink::features::kPrivateAggregationApiSendNullReports.Get()) {
+  if (contributions.empty() && !base::FeatureList::IsEnabled(
+                                   kPrivateAggregationApiBundledEnhancements)) {
     return;
   }
 
