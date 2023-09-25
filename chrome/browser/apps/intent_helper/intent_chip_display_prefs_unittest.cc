@@ -2,25 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/intent_helper/intent_picker_auto_display_prefs.h"
+#include "chrome/browser/apps/intent_helper/intent_chip_display_prefs.h"
 
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-using PickerPrefs = IntentPickerAutoDisplayPrefs;
+using PickerPrefs = IntentChipDisplayPrefs;
 
-class IntentPickerAutoDisplayPrefsTest : public testing::Test {
+class IntentChipDisplayPrefsTest : public testing::Test {
  public:
-  IntentPickerAutoDisplayPrefsTest()
+  IntentChipDisplayPrefsTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
 };
 
-TEST_F(IntentPickerAutoDisplayPrefsTest, ResetIntentChipCounter) {
+TEST_F(IntentChipDisplayPrefsTest, ResetIntentChipCounter) {
   GURL url("https://www.google.com/abcde");
 
   TestingProfile profile;
@@ -48,7 +48,7 @@ TEST_F(IntentPickerAutoDisplayPrefsTest, ResetIntentChipCounter) {
 
 // Checks that calling GetChipStateAndIncrementCounter tracks views per-URL
 // and collapses the chip after a fixed number of views.
-TEST_F(IntentPickerAutoDisplayPrefsTest, GetChipStateAndIncrementCounter) {
+TEST_F(IntentChipDisplayPrefsTest, GetChipStateAndIncrementCounter) {
   using ChipState = PickerPrefs::ChipState;
 
   GURL url1("https://www.google.com/abcde");

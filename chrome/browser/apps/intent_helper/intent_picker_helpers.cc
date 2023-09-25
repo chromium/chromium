@@ -14,7 +14,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
 #include "chrome/browser/apps/intent_helper/chromeos_intent_picker_helpers.h"
-#include "chrome/browser/apps/intent_helper/intent_picker_auto_display_prefs.h"
+#include "chrome/browser/apps/intent_helper/intent_chip_display_prefs.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/share/share_attempt.h"
@@ -139,7 +139,7 @@ void LaunchAppFromIntentPicker(content::WebContents* web_contents,
   if (base::FeatureList::IsEnabled(apps::features::kLinkCapturingUiUpdate)) {
     Profile* profile =
         Profile::FromBrowserContext(web_contents->GetBrowserContext());
-    IntentPickerAutoDisplayPrefs::ResetIntentChipCounter(profile, url);
+    IntentChipDisplayPrefs::ResetIntentChipCounter(profile, url);
   }
 
   switch (app_type) {

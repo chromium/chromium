@@ -12,7 +12,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
-#include "chrome/browser/apps/intent_helper/intent_picker_auto_display_prefs.h"
+#include "chrome/browser/apps/intent_helper/intent_chip_display_prefs.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_features.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_helpers.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
@@ -307,10 +307,9 @@ void IntentPickerTabHelper::UpdateExpandedState(bool should_show_icon) {
     Profile* profile =
         Profile::FromBrowserContext(web_contents()->GetBrowserContext());
     auto chip_state =
-        IntentPickerAutoDisplayPrefs ::GetChipStateAndIncrementCounter(profile,
-                                                                       url);
+        IntentChipDisplayPrefs::GetChipStateAndIncrementCounter(profile, url);
     show_expanded_chip_from_usage_ =
-        chip_state == IntentPickerAutoDisplayPrefs::ChipState::kExpanded;
+        chip_state == IntentChipDisplayPrefs::ChipState::kExpanded;
   }
 }
 

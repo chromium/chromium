@@ -8,7 +8,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
-#include "chrome/browser/apps/intent_helper/intent_picker_auto_display_prefs.h"
+#include "chrome/browser/apps/intent_helper/intent_chip_display_prefs.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -79,8 +79,8 @@ TEST_F(IntentPickerTabHelperTest, ShowIconForApps_CollapsedChip) {
   // Simulate having seen the chip for this URL several times before, so that it
   // appears collapsed.
   for (int i = 0; i < 3; i++) {
-    IntentPickerAutoDisplayPrefs::GetChipStateAndIncrementCounter(profile(),
-                                                                  kTestUrl);
+    IntentChipDisplayPrefs::GetChipStateAndIncrementCounter(profile(),
+                                                            kTestUrl);
   }
 
   NavigateAndCommit(kTestUrl);

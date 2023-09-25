@@ -8,7 +8,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
-#include "chrome/browser/apps/intent_helper/intent_picker_auto_display_prefs.h"
+#include "chrome/browser/apps/intent_helper/intent_chip_display_prefs.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_features.h"
 #include "chrome/browser/apps/intent_helper/metrics/intent_handling_metrics.h"
 #include "chrome/browser/apps/intent_helper/supported_links_infobar_delegate.h"
@@ -81,7 +81,7 @@ void LaunchAppFromIntentPickerChromeOs(content::WebContents* web_contents,
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
   if (base::FeatureList::IsEnabled(features::kLinkCapturingUiUpdate)) {
-    IntentPickerAutoDisplayPrefs::ResetIntentChipCounter(profile, url);
+    IntentChipDisplayPrefs::ResetIntentChipCounter(profile, url);
   }
 
   apps::IntentHandlingMetrics::RecordLinkCapturingEvent(

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/intent_helper/intent_picker_auto_display_prefs.h"
+#include "chrome/browser/apps/intent_helper/intent_chip_display_prefs.h"
 
 #include "base/values.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -44,9 +44,9 @@ base::Value GetAutoDisplayDictForSettings(
 }  // namespace
 
 // static
-IntentPickerAutoDisplayPrefs::ChipState
-IntentPickerAutoDisplayPrefs::GetChipStateAndIncrementCounter(Profile* profile,
-                                                              const GURL& url) {
+IntentChipDisplayPrefs::ChipState
+IntentChipDisplayPrefs::GetChipStateAndIncrementCounter(Profile* profile,
+                                                        const GURL& url) {
   auto* settings_map = HostContentSettingsMapFactory::GetForProfile(profile);
   base::Value pref_dict = GetAutoDisplayDictForSettings(settings_map, url);
 
@@ -66,8 +66,8 @@ IntentPickerAutoDisplayPrefs::GetChipStateAndIncrementCounter(Profile* profile,
 }
 
 // static
-void IntentPickerAutoDisplayPrefs::ResetIntentChipCounter(Profile* profile,
-                                                          const GURL& url) {
+void IntentChipDisplayPrefs::ResetIntentChipCounter(Profile* profile,
+                                                    const GURL& url) {
   auto* settings_map = HostContentSettingsMapFactory::GetForProfile(profile);
   base::Value pref_dict = GetAutoDisplayDictForSettings(settings_map, url);
 
