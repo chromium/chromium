@@ -545,8 +545,15 @@ class AutofillAcrossIframesTest_Dynamic : public AutofillAcrossIframesTest {
 };
 
 // Tests that a newly emerging frame with a field triggers a refill.
+// TODO(crbug.com/1486516): Test is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_RefillDynamicFormWithNewFrame \
+  DISABLED_RefillDynamicFormWithNewFrame
+#else
+#define MAYBE_RefillDynamicFormWithNewFrame RefillDynamicFormWithNewFrame
+#endif
 IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_Dynamic,
-                       RefillDynamicFormWithNewFrame) {
+                       MAYBE_RefillDynamicFormWithNewFrame) {
   const FormStructure* form = LoadFormWithAppearingFrame();
   ASSERT_TRUE(form);
   EXPECT_THAT(FillForm(*form, *form->field(1)),
