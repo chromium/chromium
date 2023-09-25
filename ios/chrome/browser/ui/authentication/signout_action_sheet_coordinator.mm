@@ -15,6 +15,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
@@ -22,8 +23,6 @@
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/sync/enterprise_utils.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
-#import "ios/chrome/browser/sync/sync_setup_service.h"
-#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -135,9 +134,8 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
 // Returns the user's sign-in and syncing state.
 - (SignedInUserState)signedInUserState {
   DCHECK(self.browser);
-  SyncSetupService* syncSetupService =
-      SyncSetupServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
   // TODO(crbug.com/1462552): Simplify once ConsentLevel::kSync and
   // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
   if (!self.authenticationService->HasPrimaryIdentity(
@@ -146,7 +144,8 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
           syncer::kReplaceSyncPromosWithSignInPromos)) {
     return SignedInUserStateWithNotSyncingAndReplaceSyncWithSignin;
   }
-  BOOL syncEnabled = syncSetupService->IsInitialSyncFeatureSetupComplete();
+  BOOL syncEnabled =
+      syncService->GetUserSettings()->IsInitialSyncFeatureSetupComplete();
 
   // Need a first step to show logout contextual information about the forced
   // sign-in policy. Only return this state when sync is enabled because it is

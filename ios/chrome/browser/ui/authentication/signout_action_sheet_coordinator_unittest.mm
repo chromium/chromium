@@ -63,8 +63,8 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
         std::make_unique<FakeAuthenticationServiceDelegate>());
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
 
-    sync_setup_service_mock_ = static_cast<SyncSetupServiceMock*>(
-        SyncSetupServiceFactory::GetForBrowserState(browser_state_.get()));
+    sync_service_mock_ = static_cast<syncer::MockSyncService*>(
+        SyncServiceFactory::GetForBrowserState(browser_state_.get()));
   }
 
   void TearDown() override {
@@ -108,7 +108,7 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   id<SystemIdentity> identity_ = nil;
 
-  SyncSetupServiceMock* sync_setup_service_mock_ = nullptr;
+  syncer::MockSyncService* sync_service_mock_ = nullptr;
 };
 
 // Tests that a signed-in user with Sync enabled will have an action sheet with
@@ -116,7 +116,8 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
 TEST_F(SignoutActionSheetCoordinatorTest, SignedInUserWithSync) {
   authentication_service()->SignIn(
       identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
-  ON_CALL(*sync_setup_service_mock_, IsInitialSyncFeatureSetupComplete())
+  ON_CALL(*sync_service_mock_->GetMockUserSettings(),
+          IsInitialSyncFeatureSetupComplete())
       .WillByDefault(testing::Return(true));
 
   CreateCoordinator();
@@ -130,7 +131,8 @@ TEST_F(SignoutActionSheetCoordinatorTest, SignedInUserWithSync) {
 TEST_F(SignoutActionSheetCoordinatorTest, SignedInUserWithoutSync) {
   authentication_service()->SignIn(
       identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
-  ON_CALL(*sync_setup_service_mock_, IsInitialSyncFeatureSetupComplete())
+  ON_CALL(*sync_service_mock_->GetMockUserSettings(),
+          IsInitialSyncFeatureSetupComplete())
       .WillByDefault(testing::Return(false));
 
   CreateCoordinator();
@@ -148,7 +150,8 @@ TEST_F(SignoutActionSheetCoordinatorTest, SignedInUserWithForcedSignin) {
 
   authentication_service()->SignIn(
       identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
-  ON_CALL(*sync_setup_service_mock_, IsInitialSyncFeatureSetupComplete())
+  ON_CALL(*sync_service_mock_->GetMockUserSettings(),
+          IsInitialSyncFeatureSetupComplete())
       .WillByDefault(testing::Return(false));
 
   CreateCoordinator();
@@ -163,7 +166,8 @@ TEST_F(SignoutActionSheetCoordinatorTest, SignedInUserWithForcedSignin) {
 TEST_F(SignoutActionSheetCoordinatorTest, SignedInManagedUserWithSync) {
   authentication_service()->SignIn(
       identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
-  ON_CALL(*sync_setup_service_mock_, IsInitialSyncFeatureSetupComplete())
+  ON_CALL(*sync_service_mock_->GetMockUserSettings(),
+          IsInitialSyncFeatureSetupComplete())
       .WillByDefault(testing::Return(true));
 
   CreateCoordinator();
@@ -177,7 +181,8 @@ TEST_F(SignoutActionSheetCoordinatorTest, SignedInManagedUserWithSync) {
 TEST_F(SignoutActionSheetCoordinatorTest, SignedInManagedUserWithoutSync) {
   authentication_service()->SignIn(
       identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
-  ON_CALL(*sync_setup_service_mock_, IsInitialSyncFeatureSetupComplete())
+  ON_CALL(*sync_service_mock_->GetMockUserSettings(),
+          IsInitialSyncFeatureSetupComplete())
       .WillByDefault(testing::Return(false));
 
   CreateCoordinator();

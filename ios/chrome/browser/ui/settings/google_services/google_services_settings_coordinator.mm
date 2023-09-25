@@ -8,7 +8,8 @@
 #import "components/google/core/common/google_util.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/sync/service/sync_service_utils.h"
+#import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -25,8 +26,6 @@
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
-#import "ios/chrome/browser/sync/sync_setup_service.h"
-#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/signout_action_sheet_coordinator.h"
@@ -139,11 +138,11 @@ using signin_metrics::PromoAction;
 - (void)showSignOutFromTargetRect:(CGRect)targetRect
                        completion:(signin_ui::CompletionCallback)completion {
   DCHECK(completion);
-  SyncSetupService* syncSetupService =
-      SyncSetupServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
   BOOL isSyncConsentGiven =
-      syncSetupService && syncSetupService->IsInitialSyncFeatureSetupComplete();
+      syncService &&
+      syncService->GetUserSettings()->IsInitialSyncFeatureSetupComplete();
 
   self.signOutCoordinator = [[ActionSheetCoordinator alloc]
       initWithBaseViewController:self.viewController

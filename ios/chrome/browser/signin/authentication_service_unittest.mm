@@ -586,7 +586,8 @@ TEST_F(AuthenticationServiceTest, ManagedAccountSignOut) {
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
   EXPECT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
       signin::ConsentLevel::kSignin));
-  ON_CALL(*sync_setup_service_mock(), IsInitialSyncFeatureSetupComplete())
+  ON_CALL(*mock_sync_service()->GetMockUserSettings(),
+          IsInitialSyncFeatureSetupComplete())
       .WillByDefault(Return(true));
 
   SetCachedMDMInfo(identity(2), CreateRefreshAccessTokenError(identity(0)));

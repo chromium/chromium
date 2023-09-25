@@ -435,7 +435,7 @@ void AuthenticationService::SignOut(
       HasPrimaryIdentityManaged(signin::ConsentLevel::kSignin);
   // Get first setup complete value before to stop the sync service.
   const bool is_initial_sync_feature_setup_complete =
-      sync_setup_service_->IsInitialSyncFeatureSetupComplete();
+      sync_service_->GetUserSettings()->IsInitialSyncFeatureSetupComplete();
 
   auto* account_mutator = identity_manager_->GetPrimaryAccountMutator();
   // GetPrimaryAccountMutator() returns nullptr on ChromeOS only.

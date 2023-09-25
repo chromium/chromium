@@ -37,10 +37,6 @@ void SyncSetupService::SetInitialSyncFeatureSetupComplete(
   }
 }
 
-bool SyncSetupService::IsInitialSyncFeatureSetupComplete() const {
-  return sync_service_->GetUserSettings()->IsInitialSyncFeatureSetupComplete();
-}
-
 void SyncSetupService::CommitSyncChanges() {
   sync_blocker_.reset();
 }
