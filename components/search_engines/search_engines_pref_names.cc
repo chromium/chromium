@@ -45,4 +45,9 @@ const char kSearchProviderOverrides[] = "search_provider_overrides";
 const char kSearchProviderOverridesVersion[] =
     "search_provider_overrides_version";
 
+// Path to the profile selected to show the search engine choice prompt.
+// NOTE: Unlike most of the other preferences here, this one is stored in the
+// local state, not the profile prefs.
+const char kSearchEnginesChoiceProfile[] = "search_engines.choice_profile";
+
 }  // namespace prefs

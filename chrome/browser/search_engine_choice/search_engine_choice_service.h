@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 
@@ -77,6 +78,10 @@ class SearchEngineChoiceService : public KeyedService {
   // dialog for those tests. If you set this outside of that context, you should
   // ensure it is reset at the end of your test.
   static void SetDialogDisabledForTests(bool dialog_disabled);
+
+  // Registers the local state preferences used by the search engine choice
+  // screen.
+  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
  private:
   // Observes the BrowserList to make sure that closed browsers are correctly

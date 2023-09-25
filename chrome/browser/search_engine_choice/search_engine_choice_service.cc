@@ -6,6 +6,7 @@
 
 #include "base/check_is_test.h"
 #include "base/containers/contains.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/startup/first_run_service.h"
@@ -13,6 +14,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
@@ -21,7 +23,27 @@
 
 namespace {
 bool g_dialog_disabled_for_testing = false;
+
+// Checks that the profile is the first profile that sees the search engine
+// choice dialog.
+bool IsSelectedChoiceProfile(Profile& profile, PrefService* local_state) {
+  base::CommandLine* const command_line =
+      base::CommandLine::ForCurrentProcess();
+  // Force-enable the choice screen for testing the screen itself.
+  if (command_line->HasSwitch(switches::kForceSearchEngineChoiceScreen)) {
+    return true;
+  }
+
+  if (!local_state->HasPrefPath(prefs::kSearchEnginesChoiceProfile)) {
+    local_state->SetFilePath(prefs::kSearchEnginesChoiceProfile,
+                             profile.GetBaseName());
+    return true;
+  }
+
+  return profile.GetBaseName() ==
+         local_state->GetFilePath(prefs::kSearchEnginesChoiceProfile);
 }
+}  // namespace
 
 SearchEngineChoiceService::BrowserObserver::BrowserObserver(
     SearchEngineChoiceService& service)
@@ -120,6 +142,13 @@ void SearchEngineChoiceService::SetDialogDisabledForTests(
   g_dialog_disabled_for_testing = dialog_disabled;
 }
 
+// static
+void SearchEngineChoiceService::RegisterLocalStatePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterFilePathPref(prefs::kSearchEnginesChoiceProfile,
+                                 base::FilePath());
+}
+
 bool SearchEngineChoiceService::IsShowingDialog(Browser* browser) {
   return base::Contains(browsers_with_open_dialogs_, browser);
 }
@@ -132,6 +161,11 @@ SearchEngineChoiceService::GetSearchEngines() {
 }
 
 bool SearchEngineChoiceService::CanShowDialog(Browser& browser) {
+  if (!IsSelectedChoiceProfile(profile_.get(),
+                               g_browser_process->local_state())) {
+    return false;
+  }
+
   if (web_app::AppBrowserController::IsWebApp(&browser)) {
     // Showing a Chrome-specific search engine dialog on top of a window
     // dedicated to a specific web app is a horrible UX, we suppress it for this

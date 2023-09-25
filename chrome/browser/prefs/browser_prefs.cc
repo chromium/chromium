@@ -224,6 +224,12 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+// `search_engine_choice_service.h` includes `chrome/browser/ui/browser_list.h`
+// that can't be included on android.
+#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
+#include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
+#endif
+
 #if BUILDFLAG(ENABLE_PDF)
 #include "chrome/browser/pdf/pdf_pref_names.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
@@ -1561,6 +1567,10 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_WIN)
   PlatformAuthPolicyObserver::RegisterPrefs(registry);
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
+  SearchEngineChoiceService::RegisterLocalStatePrefs(registry);
+#endif
 
   // This is intentionally last.
   RegisterLocalStatePrefsForMigration(registry);
