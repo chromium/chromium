@@ -6,48 +6,85 @@
 
 #include <utility>
 
+#include "base/containers/flat_map.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/strings/string_split.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/service_process_host_passkeys.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/strings/utf_string_conversions.h"
+#endif
+
 namespace {
 
-// TODO(https://crbug.com/1443341): Move file names into a shared constants
-// file before adding more files.
-class ComponentModelFiles {
+// The name of the file that contains the list of files that are downloaded with
+// the component and are required to initialize the library.
+const base::FilePath::CharType kMainContentExtractionFilesList[] =
+    FILE_PATH_LITERAL("files_list_main_content_extraction.txt");
+
+class ComponentFiles {
  public:
-  explicit ComponentModelFiles(const base::FilePath& library_binary_path);
-  ComponentModelFiles(const ComponentModelFiles&) = delete;
-  ComponentModelFiles& operator=(const ComponentModelFiles&) = delete;
-  ~ComponentModelFiles() = default;
+  explicit ComponentFiles(const base::FilePath& library_binary_path,
+                          const base::FilePath::CharType* files_list_file_name);
+  ComponentFiles(const ComponentFiles&) = delete;
+  ComponentFiles& operator=(const ComponentFiles&) = delete;
+  ~ComponentFiles() = default;
 
-  static std::unique_ptr<ComponentModelFiles> LoadComponentFiles();
+  static std::unique_ptr<ComponentFiles> Load(
+      const base::FilePath::CharType* files_list_file_name);
 
+  base::flat_map<std::string, base::File> model_files_;
   base::FilePath library_binary_path_;
-  base::File screen2x_model_config_;
-  base::File screen2x_model_;
 };
 
-ComponentModelFiles::ComponentModelFiles(
-    const base::FilePath& library_binary_path)
-    : library_binary_path_(library_binary_path),
-      screen2x_model_config_(library_binary_path.DirName().Append(
-                                 FILE_PATH_LITERAL("screen2x_config.pbtxt")),
-                             base::File::FLAG_OPEN | base::File::FLAG_READ),
-      screen2x_model_(library_binary_path.DirName().Append(
-                          FILE_PATH_LITERAL("screen2x_model.tflite")),
-                      base::File::FLAG_OPEN | base::File::FLAG_READ) {}
+ComponentFiles::ComponentFiles(
+    const base::FilePath& library_binary_path,
+    const base::FilePath::CharType* files_list_file_name)
+    : library_binary_path_(library_binary_path) {
+  base::FilePath component_folder = library_binary_path.DirName();
 
-std::unique_ptr<ComponentModelFiles> ComponentModelFiles::LoadComponentFiles() {
-  return std::make_unique<ComponentModelFiles>(
+  // Get the files list.
+  std::string file_content;
+  if (!base::ReadFileToString(component_folder.Append(files_list_file_name),
+                              &file_content)) {
+    VLOG(0) << "Could not read list of files for " << files_list_file_name;
+    return;
+  }
+  std::vector<std::string> files_list = base::SplitString(
+      file_content, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  if (files_list.empty()) {
+    VLOG(0) << "Could not parse files list for " << files_list_file_name;
+    return;
+  }
+
+  // TODO(b/297824387): Consider fixing file path separators for Windows when
+  // files with sub-directories are added.
+  for (auto& relative_file_path : files_list) {
+    const base::FilePath full_path =
+#if BUILDFLAG(IS_WIN)
+        component_folder.Append(base::UTF8ToWide(relative_file_path));
+#else
+        component_folder.Append(relative_file_path);
+#endif
+    model_files_[relative_file_path] =
+        base::File(full_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  }
+}
+
+std::unique_ptr<ComponentFiles> ComponentFiles::Load(
+    const base::FilePath::CharType* files_list_file_name) {
+  return std::make_unique<ComponentFiles>(
       screen_ai::ScreenAIInstallState::GetInstance()
-          ->get_component_binary_path());
+          ->get_component_binary_path(),
+      files_list_file_name);
 }
 
 }  // namespace
@@ -156,7 +193,7 @@ void ScreenAIServiceRouter::InitializeMainContentExtractionIfNeeded() {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&ComponentModelFiles::LoadComponentFiles),
+      base::BindOnce(&ComponentFiles::Load, kMainContentExtractionFilesList),
       base::BindOnce(
           &ScreenAIServiceRouter::InitializeMainContentExtraction,
           weak_ptr_factory_.GetWeakPtr(),
@@ -165,11 +202,15 @@ void ScreenAIServiceRouter::InitializeMainContentExtractionIfNeeded() {
 
 void ScreenAIServiceRouter::InitializeMainContentExtraction(
     mojo::PendingReceiver<mojom::MainContentExtractionService> receiver,
-    std::unique_ptr<ComponentModelFiles> model_files) {
+    std::unique_ptr<ComponentFiles> component_files) {
+  if (component_files->model_files_.empty()) {
+    ScreenAIServiceRouter::SetLibraryLoadState(false);
+    return;
+  }
+
   screen_ai_service_factory_->InitializeMainContentExtraction(
-      std::move(model_files->screen2x_model_config_),
-      std::move(model_files->screen2x_model_),
-      model_files->library_binary_path_, std::move(receiver),
+      component_files->library_binary_path_,
+      std::move(component_files->model_files_), std::move(receiver),
       base::BindOnce(&ScreenAIServiceRouter::SetLibraryLoadState,
                      weak_ptr_factory_.GetWeakPtr()));
 }

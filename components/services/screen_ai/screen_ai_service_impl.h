@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_SERVICES_SCREEN_AI_SCREEN_AI_SERVICE_IMPL_H_
 #define COMPONENTS_SERVICES_SCREEN_AI_SCREEN_AI_SERVICE_IMPL_H_
 
+#include <string>
+
+#include "base/containers/flat_map.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -25,6 +28,8 @@ class UkmRecorder;
 }
 
 namespace screen_ai {
+
+class PreloadedModelData;
 
 // Uses a local machine intelligence library to augment the accessibility
 // tree. Functionalities include extracting layout and running OCR on passed
@@ -51,6 +56,8 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
  private:
   std::unique_ptr<ScreenAILibraryWrapper> library_;
 
+  void LoadLibrary(const base::FilePath& library_path);
+
   // mojom::ScreenAIAnnotator:
   void ExtractSemanticLayout(const SkBitmap& image,
                              const ui::AXTreeID& parent_tree_id,
@@ -73,9 +80,8 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
 
   // mojom::ScreenAIServiceFactory:
   void InitializeMainContentExtraction(
-      base::File model_config,
-      base::File model_tflite,
       const base::FilePath& library_path,
+      base::flat_map<std::string, base::File> model_files,
       mojo::PendingReceiver<mojom::MainContentExtractionService>
           main_content_extractor_service_receiver,
       InitializeMainContentExtractionCallback callback) override;
@@ -103,8 +109,7 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
       mojo::PendingReceiver<mojom::MainContentExtractionService>
           main_content_extractor_service_receiver,
       InitializeMainContentExtractionCallback callback,
-      std::unique_ptr<ScreenAILibraryWrapper::MainContentExtractionModelData>
-          model_data);
+      std::unique_ptr<PreloadedModelData> model_data);
 
   // Wrapper to call `PerformOcr` library function and record metrics.
   absl::optional<chrome_screen_ai::VisualAnnotation> PerformOcrAndRecordMetrics(

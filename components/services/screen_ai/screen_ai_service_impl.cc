@@ -31,66 +31,6 @@ namespace screen_ai {
 
 namespace {
 
-// Returns an empty result if load fails.
-std::unique_ptr<ScreenAILibraryWrapper> LoadLibrary(
-    const base::FilePath& library_path) {
-  DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  std::unique_ptr<ScreenAILibraryWrapper> library =
-      std::make_unique<ScreenAILibraryWrapper>();
-
-  bool load_sucessful = library->Load(library_path);
-  base::UmaHistogramBoolean("Accessibility.ScreenAI.Library.Initialized",
-                            load_sucessful);
-
-  if (!load_sucessful) {
-    library.reset();
-    return library;
-  }
-
-  uint32_t version_major;
-  uint32_t version_minor;
-  library->GetLibraryVersion(version_major, version_minor);
-  VLOG(2) << "Screen AI library version: " << version_major << "."
-          << version_minor;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  library->SetLogger();
-#endif
-
-  if (features::IsScreenAIDebugModeEnabled()) {
-    library->EnableDebugMode();
-  }
-
-  return library;
-}
-
-std::vector<char> LoadModelFile(base::File& model_file) {
-  std::vector<char> buffer;
-  int64_t length = model_file.GetLength();
-  if (length < 0) {
-    VLOG(0) << "Could not query Screen AI model file's length.";
-    return buffer;
-  }
-
-  buffer.resize(length);
-  if (model_file.Read(0, buffer.data(), length) != length) {
-    buffer.clear();
-    VLOG(0) << "Could not read Screen AI model file's content.";
-  }
-
-  return buffer;
-}
-
-std::unique_ptr<
-    screen_ai::ScreenAILibraryWrapper::MainContentExtractionModelData>
-LoadMainContentExtractionModelFiles(base::File& model_config_file,
-                                    base::File& model_tflite_file) {
-  auto model_data = std::make_unique<
-      screen_ai::ScreenAILibraryWrapper::MainContentExtractionModelData>(
-      LoadModelFile(model_config_file), LoadModelFile(model_tflite_file));
-  return model_data;
-}
-
 ui::AXTreeUpdate ConvertVisualAnnotationToTreeUpdate(
     const absl::optional<chrome_screen_ai::VisualAnnotation>& annotation_proto,
     const gfx::Rect& image_rect) {
@@ -104,6 +44,77 @@ ui::AXTreeUpdate ConvertVisualAnnotationToTreeUpdate(
 
 }  // namespace
 
+// The only instance of `PreloadedModelData`, valid through the call to any of
+// the library initialization functions.
+PreloadedModelData* g_preloaded_model_data_instance = nullptr;
+
+// Keeps the content of model files, and replies to calls for copying them.
+class PreloadedModelData {
+ public:
+  PreloadedModelData(const PreloadedModelData&) = delete;
+  PreloadedModelData& operator=(const PreloadedModelData&) = delete;
+  ~PreloadedModelData() {
+    CHECK_NE(g_preloaded_model_data_instance, nullptr);
+    g_preloaded_model_data_instance = nullptr;
+  }
+
+  static std::unique_ptr<PreloadedModelData> Create(
+      base::flat_map<std::string, base::File> model_files) {
+    return base::WrapUnique<PreloadedModelData>(
+        new PreloadedModelData(std::move(model_files)));
+  }
+
+  // Returns 0 if file is not found.
+  static uint32_t GetDataSize(const char* relative_file_path) {
+    CHECK(g_preloaded_model_data_instance);
+    return base::Contains(g_preloaded_model_data_instance->data_,
+                          relative_file_path)
+               ? g_preloaded_model_data_instance->data_[relative_file_path]
+                     .size()
+               : 0;
+  }
+
+  // Assumes that `buffer` has enough size.
+  static void CopyData(const char* relative_file_path,
+                       uint32_t buffer_size,
+                       char* buffer) {
+    CHECK(g_preloaded_model_data_instance);
+    CHECK(base::Contains(g_preloaded_model_data_instance->data_,
+                         relative_file_path));
+    const std::vector<char>& data =
+        g_preloaded_model_data_instance->data_[relative_file_path];
+    CHECK_GE(buffer_size, data.size());
+    memcpy(buffer, data.data(), data.size());
+  }
+
+  std::map<std::string, std::vector<char>> data_;
+
+ private:
+  explicit PreloadedModelData(
+      base::flat_map<std::string, base::File> model_files) {
+    CHECK_EQ(g_preloaded_model_data_instance, nullptr);
+    g_preloaded_model_data_instance = this;
+
+    for (auto& model_file : model_files) {
+      std::vector<char> buffer;
+      int64_t length = model_file.second.GetLength();
+      if (length < 0) {
+        VLOG(0) << "Could not query Screen AI model file's length: "
+                << model_file.first;
+        continue;
+      }
+
+      buffer.resize(length);
+      if (model_file.second.Read(0, buffer.data(), length) != length) {
+        VLOG(0) << "Could not read Screen AI model file's content: "
+                << model_file.first;
+        continue;
+      }
+      data_[model_file.first] = std::move(buffer);
+    }
+  }
+};
+
 ScreenAIService::ScreenAIService(
     mojo::PendingReceiver<mojom::ScreenAIServiceFactory> receiver)
     : factory_receiver_(this, std::move(receiver)),
@@ -112,15 +123,45 @@ ScreenAIService::ScreenAIService(
 
 ScreenAIService::~ScreenAIService() = default;
 
+void ScreenAIService::LoadLibrary(const base::FilePath& library_path) {
+  DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  library_ = std::make_unique<ScreenAILibraryWrapper>();
+
+  bool load_sucessful = library_->Load(library_path);
+  base::UmaHistogramBoolean("Accessibility.ScreenAI.Library.Initialized",
+                            load_sucessful);
+
+  if (!load_sucessful) {
+    library_.reset();
+    return;
+  }
+
+  uint32_t version_major;
+  uint32_t version_minor;
+  library_->GetLibraryVersion(version_major, version_minor);
+  VLOG(2) << "Screen AI library version: " << version_major << "."
+          << version_minor;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  library_->SetLogger();
+#endif
+
+  if (features::IsScreenAIDebugModeEnabled()) {
+    library_->EnableDebugMode();
+  }
+
+  library_->SetFileContentFunctions(&PreloadedModelData::GetDataSize,
+                                    &PreloadedModelData::CopyData);
+}
+
 void ScreenAIService::InitializeMainContentExtraction(
-    base::File model_config,
-    base::File model_tflite,
     const base::FilePath& library_path,
+    base::flat_map<std::string, base::File> model_files,
     mojo::PendingReceiver<mojom::MainContentExtractionService>
         main_content_extractor_service_receiver,
     InitializeMainContentExtractionCallback callback) {
   if (!library_) {
-    library_ = LoadLibrary(library_path);
+    LoadLibrary(library_path);
   }
 
   if (!library_) {
@@ -131,9 +172,7 @@ void ScreenAIService::InitializeMainContentExtraction(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&LoadMainContentExtractionModelFiles,
-                     base::OwnedRef(std::move(model_config)),
-                     base::OwnedRef(std::move(model_tflite))),
+      base::BindOnce(&PreloadedModelData::Create, std::move(model_files)),
       base::BindOnce(&ScreenAIService::InitializeMainContentExtractionInternal,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(main_content_extractor_service_receiver),
@@ -144,9 +183,8 @@ void ScreenAIService::InitializeMainContentExtractionInternal(
     mojo::PendingReceiver<mojom::MainContentExtractionService>
         main_content_extractor_service_receiver,
     InitializeMainContentExtractionCallback callback,
-    std::unique_ptr<ScreenAILibraryWrapper::MainContentExtractionModelData>
-        model_data) {
-  bool init_successful = library_->InitMainContentExtraction(*model_data);
+    std::unique_ptr<PreloadedModelData> model_data) {
+  bool init_successful = library_->InitMainContentExtraction();
   base::UmaHistogramBoolean(
       "Accessibility.ScreenAI.MainContentExtraction.Initialized",
       init_successful);
@@ -169,7 +207,7 @@ void ScreenAIService::InitializeOCR(
     mojo::PendingReceiver<mojom::OCRService> ocr_service_receiver,
     InitializeOCRCallback callback) {
   if (!library_) {
-    library_ = LoadLibrary(library_path);
+    LoadLibrary(library_path);
   }
 
   if (!library_) {

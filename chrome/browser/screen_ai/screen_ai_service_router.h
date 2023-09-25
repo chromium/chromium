@@ -13,7 +13,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace {
-class ComponentModelFiles;
+class ComponentFiles;
 }
 
 namespace screen_ai {
@@ -40,7 +40,7 @@ class ScreenAIServiceRouter : public KeyedService {
  private:
   void InitializeMainContentExtraction(
       mojo::PendingReceiver<mojom::MainContentExtractionService> receiver,
-      std::unique_ptr<ComponentModelFiles> model_files);
+      std::unique_ptr<ComponentFiles> model_files);
 
   void LaunchIfNotRunning();
 

@@ -27,7 +27,7 @@
 
 namespace {
 const int kScreenAICleanUpDelayInDays = 30;
-const char kMinExpectedVersion[] = "114.0";
+const char kMinExpectedVersion[] = "119.0";
 
 bool IsDeviceCompatible() {
   // Check if the CPU has the required instruction set to run the Screen AI

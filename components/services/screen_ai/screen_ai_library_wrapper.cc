@@ -83,6 +83,7 @@ bool ScreenAILibraryWrapper::Load(const base::FilePath& library_path) {
   if (!LoadFunction(get_library_version_, "GetLibraryVersion") ||
       !LoadFunction(get_library_version_, "GetLibraryVersion") ||
       !LoadFunction(enable_debug_mode_, "EnableDebugMode") ||
+      !LoadFunction(set_file_content_functions_, "SetFileContentFunctions") ||
       !LoadFunction(free_library_allocated_int32_array_,
                     "FreeLibraryAllocatedInt32Array") ||
       !LoadFunction(free_library_allocated_char_array_,
@@ -107,7 +108,7 @@ bool ScreenAILibraryWrapper::Load(const base::FilePath& library_path) {
 
   // Main Content Extraction functions.
   if (!LoadFunction(init_main_content_extraction_,
-                    "InitMainContentExtraction") ||
+                    "InitMainContentExtractionUsingCallback") ||
       !LoadFunction(extract_main_content_, "ExtractMainContent")) {
     return false;
   }
@@ -131,6 +132,16 @@ void ScreenAILibraryWrapper::GetLibraryVersion(uint32_t& major,
 }
 
 NO_SANITIZE("cfi-icall")
+void ScreenAILibraryWrapper::SetFileContentFunctions(
+    uint32_t (*get_file_content_size)(const char* /*relative_file_path*/),
+    void (*get_file_content)(const char* /*relative_file_path*/,
+                             uint32_t /*buffer_size*/,
+                             char* /*buffer*/)) {
+  CHECK(set_file_content_functions_);
+  set_file_content_functions_(get_file_content_size, get_file_content);
+}
+
+NO_SANITIZE("cfi-icall")
 void ScreenAILibraryWrapper::EnableDebugMode() {
   CHECK(enable_debug_mode_);
   enable_debug_mode_();
@@ -149,17 +160,9 @@ bool ScreenAILibraryWrapper::InitOCR(const base::FilePath& models_folder) {
 }
 
 NO_SANITIZE("cfi-icall")
-bool ScreenAILibraryWrapper::InitMainContentExtraction(
-    const MainContentExtractionModelData& model_data) {
+bool ScreenAILibraryWrapper::InitMainContentExtraction() {
   CHECK(init_main_content_extraction_);
-
-  if (model_data.config.empty() || model_data.tflite.empty()) {
-    return false;
-  }
-
-  return init_main_content_extraction_(
-      model_data.config.data(), model_data.config.size(),
-      model_data.tflite.data(), model_data.tflite.size());
+  return init_main_content_extraction_();
 }
 
 NO_SANITIZE("cfi-icall")

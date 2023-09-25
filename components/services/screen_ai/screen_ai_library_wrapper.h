@@ -47,11 +47,16 @@ class ScreenAILibraryWrapper {
 #endif
 
   void GetLibraryVersion(uint32_t& major, uint32_t& minor);
+  void SetFileContentFunctions(
+      uint32_t (*get_file_content_size)(const char* relative_file_path),
+      void (*get_file_content)(const char* relative_file_path,
+                               uint32_t buffer_size,
+                               char* buffer));
   void EnableDebugMode();
   bool InitLayoutExtraction();
+
   bool InitOCR(const base::FilePath& models_folder);
-  bool InitMainContentExtraction(
-      const MainContentExtractionModelData& model_data);
+  bool InitMainContentExtraction();
 
   absl::optional<chrome_screen_ai::VisualAnnotation> ExtractLayout(
       const SkBitmap& image);
@@ -75,6 +80,13 @@ class ScreenAILibraryWrapper {
   typedef void (*GetLibraryVersionFn)(uint32_t& major, uint32_t& minor);
   GetLibraryVersionFn get_library_version_ = nullptr;
 
+  typedef void (*SetFileContentFunctionsFn)(
+      uint32_t (*get_file_content_size)(const char* /*relative_file_path*/),
+      void (*get_file_content)(const char* /*relative_file_path*/,
+                               uint32_t /*buffer_size*/,
+                               char* /*buffer*/));
+  SetFileContentFunctionsFn set_file_content_functions_ = nullptr;
+
   // Enables the debug mode which stores all i/o protos in the temp folder.
   typedef void (*EnableDebugModeFn)();
   EnableDebugModeFn enable_debug_mode_ = nullptr;
@@ -86,18 +98,12 @@ class ScreenAILibraryWrapper {
   // Initializes the pipeline for OCR.
   // |models_folder| is a null terminated string pointing to the
   // folder that includes model files for OCR.
-  // TODO(http://crbug.com/1443341): Replace |models_folder| with file
-  // handle(s).
+  // TODO(b/297824387): Remove |models_folder|.
   typedef bool (*InitOCRFn)(const char* /*models_folder*/);
   InitOCRFn init_ocr_ = nullptr;
 
   // Initializes the pipeline for main content extraction.
-  // |model_config| and |model_tflite| pass content of the required files to
-  // initialize Screen2x engine.
-  typedef bool (*InitMainContentExtractionFn)(const char* model_config,
-                                              uint32_t model_config_length,
-                                              const char* model_tflite,
-                                              uint32_t model_tflite_length);
+  typedef bool (*InitMainContentExtractionFn)();
   InitMainContentExtractionFn init_main_content_extraction_ = nullptr;
 
   // Sends the given bitmap to layout extraction pipeline and returns visual

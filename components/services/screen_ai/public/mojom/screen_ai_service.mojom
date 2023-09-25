@@ -145,13 +145,14 @@ interface ScreenAIServiceFactory {
 
   // Triggers the service to load and initialize the Screen AI library at
   // |library_path| for main content extraction.
-  // |screen2x_model_config| and |screen2x_model| are already open file handles
-  // to Screen2x model files.
   // This should be called from the browser process.
+  // |model_files| includes a map from file paths relative the the library base
+  // path, to opened file handles. The list of files is downloaded with the
+  // component. The file handles will be closed once the file is read.
+  // TODO(b/297824387): Replace `string` with `RelativePath`.
   InitializeMainContentExtraction(
-    mojo_base.mojom.ReadOnlyFile screen2x_model_config,
-    mojo_base.mojom.ReadOnlyFile screen2x_model,
     mojo_base.mojom.FilePath library_path,
+    map<string, mojo_base.mojom.ReadOnlyFile> model_files,
     pending_receiver<MainContentExtractionService>
       main_content_extractor_service) =>
       (bool initialized);
