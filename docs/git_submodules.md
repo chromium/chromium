@@ -151,7 +151,7 @@ are updating v8, the command would be `gclient setdep -r src/v8@<hash>.
 
 ## Workflows with submodules
 
-### Submodules during `git status` and `git commit`
+### Submodules during 'git status' and 'git commit'
 Submodules that show up under `Changes not staged for commit` when you run
 `git status` can be hidden with `git -c diff.ignoreSubmodules=all status`
 
@@ -176,7 +176,7 @@ Then running `git c` will still include these submodules in your commit.
 
 We recommend you use the pre-commit git hook detailed below.
 
-### Submodules during a `git rebase-update`
+### Submodules during a 'git rebase-update'
 While resolving merge conflicts during a `git rebase-update` you may see
 submodules show up in unexpected places.
 
