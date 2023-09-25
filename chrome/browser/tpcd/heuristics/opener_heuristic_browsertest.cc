@@ -552,8 +552,17 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
   EXPECT_EQ(entries[0].metrics["UrlIndex"], 1);
 }
 
-IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
-                       PopupInteraction_IsFollowedByPostPopupCookieAccess) {
+#if BUILDFLAG(IS_MAC)
+// Very flaky on macOS 11 Tests: https://crbug.com/1486448
+#define MAYBE_PopupInteraction_IsFollowedByPostPopupCookieAccess \
+  DISABLED_PopupInteraction_IsFollowedByPostPopupCookieAccess
+#else
+#define MAYBE_PopupInteraction_IsFollowedByPostPopupCookieAccess \
+  PopupInteraction_IsFollowedByPostPopupCookieAccess
+#endif
+IN_PROC_BROWSER_TEST_F(
+    OpenerHeuristicBrowserTest,
+    MAYBE_PopupInteraction_IsFollowedByPostPopupCookieAccess) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   GURL opener_url = embedded_test_server()->GetURL("a.test", "/title1.html");
   GURL popup_url_1 = embedded_test_server()->GetURL("c.test", "/title1.html");
