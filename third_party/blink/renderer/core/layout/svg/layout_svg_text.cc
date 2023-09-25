@@ -41,7 +41,7 @@ const LayoutSVGText* FindTextRoot(const LayoutObject* start) {
 }  // namespace
 
 LayoutSVGText::LayoutSVGText(Element* element)
-    : LayoutNGBlockFlowMixin<LayoutSVGBlock>(element),
+    : LayoutSVGBlock(element),
       needs_update_bounding_box_(true),
       needs_text_metrics_update_(true) {
   DCHECK(IsA<SVGTextElement>(element));
@@ -53,7 +53,7 @@ void LayoutSVGText::StyleDidChange(StyleDifference diff,
   if (needs_text_metrics_update_ && diff.HasDifference() && old_style) {
     diff.SetNeedsFullLayout();
   }
-  LayoutNGBlockFlowMixin<LayoutSVGBlock>::StyleDidChange(diff, old_style);
+  LayoutSVGBlock::StyleDidChange(diff, old_style);
   SVGResources::UpdatePaints(*this, old_style, StyleRef());
 
   if (old_style) {
@@ -70,7 +70,7 @@ void LayoutSVGText::StyleDidChange(StyleDifference diff,
 void LayoutSVGText::WillBeDestroyed() {
   NOT_DESTROYED();
   SVGResources::ClearPaints(*this, Style());
-  LayoutNGBlockFlowMixin<LayoutSVGBlock>::WillBeDestroyed();
+  LayoutSVGBlock::WillBeDestroyed();
 }
 
 const char* LayoutSVGText::GetName() const {
@@ -80,8 +80,7 @@ const char* LayoutSVGText::GetName() const {
 
 bool LayoutSVGText::IsOfType(LayoutObjectType type) const {
   NOT_DESTROYED();
-  return type == kLayoutObjectSVGText ||
-         LayoutNGBlockFlowMixin<LayoutSVGBlock>::IsOfType(type);
+  return type == kLayoutObjectSVGText || LayoutSVGBlock::IsOfType(type);
 }
 
 bool LayoutSVGText::CreatesNewFormattingContext() const {
@@ -91,7 +90,7 @@ bool LayoutSVGText::CreatesNewFormattingContext() const {
 
 void LayoutSVGText::UpdateFromStyle() {
   NOT_DESTROYED();
-  LayoutNGBlockFlowMixin<LayoutSVGBlock>::UpdateFromStyle();
+  LayoutSVGBlock::UpdateFromStyle();
   SetHasNonVisibleOverflow(false);
 }
 
@@ -116,7 +115,7 @@ void LayoutSVGText::RemoveChild(LayoutObject* child) {
 
 void LayoutSVGText::InsertedIntoTree() {
   NOT_DESTROYED();
-  LayoutNGBlockFlowMixin<LayoutSVGBlock>::InsertedIntoTree();
+  LayoutSVGBlock::InsertedIntoTree();
   bool seen_svg_root = false;
   for (auto* ancestor = Parent(); ancestor; ancestor = ancestor->Parent()) {
     auto* root = DynamicTo<LayoutSVGRoot>(ancestor);
@@ -141,7 +140,7 @@ void LayoutSVGText::WillBeRemovedFromTree() {
       block->RemoveSvgTextDescendant(*this);
     }
   }
-  LayoutNGBlockFlowMixin<LayoutSVGBlock>::WillBeRemovedFromTree();
+  LayoutSVGBlock::WillBeRemovedFromTree();
 }
 
 void LayoutSVGText::SubtreeStructureChanged(
@@ -206,7 +205,7 @@ void LayoutSVGText::Paint(const PaintInfo& paint_info) const {
     SVGModelObjectPainter::RecordHitTestData(*this, block_info);
     SVGModelObjectPainter::RecordRegionCaptureData(*this, block_info);
   }
-  LayoutNGBlockFlowMixin<LayoutSVGBlock>::Paint(block_info);
+  LayoutSVGBlock::Paint(block_info);
 
   // Svg doesn't follow HTML PaintPhases, but is implemented with HTML classes.
   // The nearest self-painting layer is the containing <svg> element which is
@@ -214,7 +213,7 @@ void LayoutSVGText::Paint(const PaintInfo& paint_info) const {
   // Begin a fake kOutline to paint outlines, if any.
   if (paint_info.phase == PaintPhase::kForeground) {
     block_info.phase = PaintPhase::kOutline;
-    LayoutNGBlockFlowMixin<LayoutSVGBlock>::Paint(block_info);
+    LayoutSVGBlock::Paint(block_info);
   }
 }
 
@@ -361,8 +360,8 @@ bool LayoutSVGText::NodeAtPoint(HitTestResult& result,
     return false;
   }
 
-  return LayoutNGBlockFlowMixin<LayoutSVGBlock>::NodeAtPoint(
-      result, *local_location, accumulated_offset, phase);
+  return LayoutSVGBlock::NodeAtPoint(result, *local_location,
+                                     accumulated_offset, phase);
 }
 
 PositionWithAffinity LayoutSVGText::PositionForPoint(

@@ -27,7 +27,6 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_relative_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_caption.h"
-#include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_box_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 
@@ -187,7 +186,6 @@ void LayoutNGBlockFlowMixin<Base>::Trace(Visitor* visitor) const {
 }
 
 template class CORE_TEMPLATE_EXPORT LayoutNGBlockFlowMixin<LayoutBlockFlow>;
-template class CORE_TEMPLATE_EXPORT LayoutNGBlockFlowMixin<LayoutSVGBlock>;
 template class CORE_TEMPLATE_EXPORT LayoutNGBlockFlowMixin<LayoutView>;
 
 }  // namespace blink

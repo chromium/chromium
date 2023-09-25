@@ -6,16 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_LAYOUT_SVG_FOREIGN_OBJECT_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow_mixin.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_block.h"
 
 namespace blink {
 
-extern template class CORE_EXTERN_TEMPLATE_EXPORT LayoutNGMixin<LayoutSVGBlock>;
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    LayoutNGBlockFlowMixin<LayoutSVGBlock>;
-
-// LayoutNGSVGForeignObject is the LayoutObject associated with <foreignobject>.
+// LayoutSVGForeignObject is the LayoutObject associated with <foreignobject>.
 // http://www.w3.org/TR/SVG/extend.html#ForeignObjectElement
 //
 // Foreign object is a way of inserting arbitrary non-SVG content into SVG.
@@ -37,8 +32,7 @@ extern template class CORE_EXTERN_TEMPLATE_EXPORT
 // Because of this, the frame rect and visual rect includes effective zoom. The
 // object bounding box (ObjectBoundingBox method) is however not zoomed to be
 // compatible with the expectations of the getBBox() DOM interface.
-class LayoutSVGForeignObject final
-    : public LayoutNGBlockFlowMixin<LayoutSVGBlock> {
+class LayoutSVGForeignObject final : public LayoutSVGBlock {
  public:
   explicit LayoutSVGForeignObject(Element* element);
 

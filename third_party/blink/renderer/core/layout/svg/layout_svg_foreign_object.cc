@@ -16,7 +16,7 @@
 namespace blink {
 
 LayoutSVGForeignObject::LayoutSVGForeignObject(Element* element)
-    : LayoutNGBlockFlowMixin<LayoutSVGBlock>(element) {
+    : LayoutSVGBlock(element) {
   DCHECK(IsA<SVGForeignObjectElement>(element));
 }
 
@@ -28,7 +28,7 @@ const char* LayoutSVGForeignObject::GetName() const {
 bool LayoutSVGForeignObject::IsOfType(LayoutObjectType type) const {
   NOT_DESTROYED();
   return type == kLayoutObjectSVGForeignObject ||
-         LayoutNGBlockFlowMixin<LayoutSVGBlock>::IsOfType(type);
+         LayoutSVGBlock::IsOfType(type);
 }
 
 bool LayoutSVGForeignObject::IsChildAllowed(LayoutObject* child,
@@ -193,7 +193,7 @@ bool LayoutSVGForeignObject::UpdateAfterSvgLayout(bool bounds_changed) {
 void LayoutSVGForeignObject::StyleDidChange(StyleDifference diff,
                                             const ComputedStyle* old_style) {
   NOT_DESTROYED();
-  LayoutNGBlockFlowMixin<LayoutSVGBlock>::StyleDidChange(diff, old_style);
+  LayoutSVGBlock::StyleDidChange(diff, old_style);
 
   float old_zoom = old_style ? old_style->EffectiveZoom()
                              : ComputedStyleInitialValues::InitialZoom();

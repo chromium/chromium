@@ -122,7 +122,6 @@ bool LayoutNGMixin<Base>::IsLayoutNGObject() const {
 
 template class CORE_TEMPLATE_EXPORT LayoutNGMixin<LayoutBlock>;
 template class CORE_TEMPLATE_EXPORT LayoutNGMixin<LayoutBlockFlow>;
-template class CORE_TEMPLATE_EXPORT LayoutNGMixin<LayoutSVGBlock>;
 template class CORE_TEMPLATE_EXPORT LayoutNGMixin<LayoutView>;
 
 }  // namespace blink
