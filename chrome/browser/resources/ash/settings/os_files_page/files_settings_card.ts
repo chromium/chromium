@@ -66,7 +66,6 @@ export class FilesSettingsCardElement extends FilesSettingsCardElementBase {
         readOnly: true,
       },
 
-
       isRevampWayfindingEnabled_: {
         type: Boolean,
         value: () => {
