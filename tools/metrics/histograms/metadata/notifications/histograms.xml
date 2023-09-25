@@ -779,16 +779,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Notifications.PersistentWebNotificationClickEventResult"
-    enum="ServiceWorkerStatusCode" expires_after="2022-05-01">
-  <owner>peter@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    Recorded delivery status for persistent notification clicks to a Service
-    Worker when handling a click on a persistent WebNotification has finished.
-  </summary>
-</histogram>
-
 <histogram name="Notifications.PersistentWebNotificationClickResult"
     enum="PlatformNotificationStatus" expires_after="2023-04-23">
   <owner>peter@chromium.org</owner>
@@ -796,16 +786,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Recorded delivery status for persistent notification clicks to a Service
     Worker when handling a click on a persistent WebNotification has finished.
-  </summary>
-</histogram>
-
-<histogram name="Notifications.PersistentWebNotificationCloseEventResult"
-    enum="ServiceWorkerStatusCode" expires_after="M98">
-  <owner>peter@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    Records delivery status for persistent notification close events sent to a
-    Service Worker when the event has been handled.
   </summary>
 </histogram>
 
