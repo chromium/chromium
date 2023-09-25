@@ -74,6 +74,8 @@ class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
   absl::optional<content::PermissionResult> GetEmbargoResult(
       ContentSettingsType type) override;
 
+  bool IsTrackingProtection3pcdEnabled() override;
+
  private:
   Profile* GetProfile() const;
 

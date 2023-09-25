@@ -21,6 +21,7 @@ class PageInfoUiDelegate {
   virtual bool IsBlockAutoPlayEnabled() = 0;
   virtual bool IsMultipleTabsOpen() = 0;
 #endif
+  virtual bool IsTrackingProtection3pcdEnabled() = 0;
   virtual content::PermissionResult GetPermissionResult(
       blink::PermissionType permission) = 0;
   virtual absl::optional<content::PermissionResult> GetEmbargoResult(
