@@ -436,11 +436,6 @@ bool HttpUtil::IsNonCoalescingHeader(base::StringPiece name) {
   return false;
 }
 
-bool HttpUtil::IsLWS(char c) {
-  const base::StringPiece kWhiteSpaceCharacters(HTTP_LWS);
-  return kWhiteSpaceCharacters.find(c) != base::StringPiece::npos;
-}
-
 // static
 void HttpUtil::TrimLWS(std::string::const_iterator* begin,
                        std::string::const_iterator* end) {

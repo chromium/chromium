@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
@@ -123,7 +124,15 @@ class NET_EXPORT HttpUtil {
   // Return true if the character is HTTP "linear white space" (SP | HT).
   // This definition corresponds with the HTTP_LWS macro, and does not match
   // newlines.
-  static bool IsLWS(char c);
+  //
+  // ALWAYS_INLINE to force inlining even when compiled with -Oz in Clang.
+  ALWAYS_INLINE static bool IsLWS(char c) {
+    constexpr base::StringPiece kWhiteSpaceCharacters(HTTP_LWS);
+    // Clang performs this optimization automatically at -O3, but Android is
+    // compiled at -Oz, so we need to do it by hand.
+    static_assert(kWhiteSpaceCharacters == " \t");
+    return c == ' ' || c == '\t';
+  }
 
   // Trim HTTP_LWS chars from the beginning and end of the string.
   static void TrimLWS(std::string::const_iterator* begin,
