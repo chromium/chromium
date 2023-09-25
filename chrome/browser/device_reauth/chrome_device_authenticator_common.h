@@ -14,7 +14,8 @@
 class ChromeDeviceAuthenticatorCommon
     : public device_reauth::DeviceAuthenticator {
  public:
-  explicit ChromeDeviceAuthenticatorCommon(DeviceAuthenticatorProxy* proxy);
+  ChromeDeviceAuthenticatorCommon(DeviceAuthenticatorProxy* proxy,
+                                  base::TimeDelta auth_validity_period);
 
  protected:
   ~ChromeDeviceAuthenticatorCommon() override;
@@ -28,6 +29,10 @@ class ChromeDeviceAuthenticatorCommon
  private:
   // Used to obtain/update the last successful authentication timestamp.
   base::WeakPtr<DeviceAuthenticatorProxy> device_authenticator_proxy_;
+
+  // Used to calculate how much time needs to pass before the user needs to
+  // authenticate again.
+  base::TimeDelta auth_validity_period_;
 };
 
 #endif  // CHROME_BROWSER_DEVICE_REAUTH_CHROME_DEVICE_AUTHENTICATOR_COMMON_H_

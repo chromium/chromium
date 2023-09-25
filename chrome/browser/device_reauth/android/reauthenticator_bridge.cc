@@ -15,7 +15,7 @@
 
 namespace {
 
-device_reauth::DeviceAuthSource ConvertRequesterToSoruce(
+device_reauth::DeviceAuthParams ConvertRequesterToParams(
     device_reauth::DeviceAuthRequester requester) {
   switch (requester) {
     case device_reauth::DeviceAuthRequester::kTouchToFill:
@@ -24,17 +24,20 @@ device_reauth::DeviceAuthSource ConvertRequesterToSoruce(
     case device_reauth::DeviceAuthRequester::kAllPasswordsList:
     case device_reauth::DeviceAuthRequester::kAccountChooserDialog:
     case device_reauth::DeviceAuthRequester::kPasswordCheckAutoPwdChange:
-      return device_reauth::DeviceAuthSource::kPasswordManager;
+      return device_reauth::DeviceAuthParams(
+          base::Seconds(60), device_reauth::DeviceAuthSource::kPasswordManager);
 
     case device_reauth::DeviceAuthRequester::kLocalCardAutofill:
     case device_reauth::DeviceAuthRequester::kDeviceLockPage:
     case device_reauth::DeviceAuthRequester::kPaymentMethodsReauthInSettings:
     case device_reauth::DeviceAuthRequester::kVirtualCardAutofill:
     case device_reauth::DeviceAuthRequester::kPaymentsAutofillOptIn:
-      return device_reauth::DeviceAuthSource::kAutofill;
+      return device_reauth::DeviceAuthParams(
+          base::Seconds(60), device_reauth::DeviceAuthSource::kAutofill);
 
     case device_reauth::DeviceAuthRequester::kIncognitoReauthPage:
-      return device_reauth::DeviceAuthSource::kIncognito;
+      return device_reauth::DeviceAuthParams(
+          base::Seconds(60), device_reauth::DeviceAuthSource::kIncognito);
 
     // kPasswordsInSettings flag is used only for desktop.
     case device_reauth::DeviceAuthRequester::kPasswordsInSettings:
@@ -57,13 +60,13 @@ ReauthenticatorBridge::ReauthenticatorBridge(
     jint requester)
     : java_bridge_(java_bridge) {
   // TODO(crbug.com/1476842): Update Java code to use DeviceAuthSource.
-  device_reauth::DeviceAuthSource source = ConvertRequesterToSoruce(
+  device_reauth::DeviceAuthParams params = ConvertRequesterToParams(
       static_cast<device_reauth::DeviceAuthRequester>(requester));
 
   // TODO(crbug.com/1479361): Replace GetLastUsedProfile() when Android starts
   // supporting multiple profiles.
   authenticator_ = ChromeDeviceAuthenticatorFactory::GetForProfile(
-      ProfileManager::GetLastUsedProfile(), source);
+      ProfileManager::GetLastUsedProfile(), params);
 }
 
 ReauthenticatorBridge::~ReauthenticatorBridge() {

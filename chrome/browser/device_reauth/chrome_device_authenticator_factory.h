@@ -59,7 +59,7 @@ class ChromeDeviceAuthenticatorFactory : public ProfileKeyedServiceFactory {
   // link error.
   static std::unique_ptr<device_reauth::DeviceAuthenticator> GetForProfile(
       Profile* profile,
-      device_reauth::DeviceAuthSource source);
+      const device_reauth::DeviceAuthParams& params);
 
  private:
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(

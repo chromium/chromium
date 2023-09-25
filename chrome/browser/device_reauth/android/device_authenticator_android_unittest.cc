@@ -14,6 +14,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chrome/browser/device_reauth/android/device_authenticator_bridge.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "content/public/test/browser_task_environment.h"
@@ -50,13 +51,17 @@ class MockDeviceAuthenticatorBridge : public DeviceAuthenticatorBridge {
 
 class DeviceAuthenticatorAndroidTest : public testing::Test {
  public:
+  DeviceAuthenticatorAndroidTest()
+      : device_authenticator_params_(
+            base::Seconds(60),
+            device_reauth::DeviceAuthSource::kPasswordManager) {}
+
   void SetUp() override {
     std::unique_ptr<MockDeviceAuthenticatorBridge> bridge =
         std::make_unique<MockDeviceAuthenticatorBridge>();
     bridge_ = bridge.get();
     authenticator_ = std::make_unique<DeviceAuthenticatorAndroid>(
-        std::move(bridge), &proxy_,
-        device_reauth::DeviceAuthSource::kPasswordManager);
+        std::move(bridge), &proxy_, device_authenticator_params_);
   }
 
   DeviceAuthenticatorAndroid* authenticator() { return authenticator_.get(); }
@@ -67,6 +72,7 @@ class DeviceAuthenticatorAndroidTest : public testing::Test {
 
  private:
   DeviceAuthenticatorProxy proxy_;
+  device_reauth::DeviceAuthParams device_authenticator_params_;
   std::unique_ptr<DeviceAuthenticatorAndroid> authenticator_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};

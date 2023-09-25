@@ -37,8 +37,10 @@ void SaveAvailability(BiometricAuthenticationStatusWin availability) {
 
 DeviceAuthenticatorWin::DeviceAuthenticatorWin(
     std::unique_ptr<AuthenticatorWinInterface> authenticator,
-    DeviceAuthenticatorProxy* proxy)
-    : ChromeDeviceAuthenticatorCommon(proxy),
+    DeviceAuthenticatorProxy* proxy,
+    const device_reauth::DeviceAuthParams& params)
+    : ChromeDeviceAuthenticatorCommon(proxy,
+                                      params.GetAuthenticationValidityPeriod()),
       authenticator_(std::move(authenticator)) {}
 
 DeviceAuthenticatorWin::~DeviceAuthenticatorWin() = default;

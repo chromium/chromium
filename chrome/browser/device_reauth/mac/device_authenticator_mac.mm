@@ -22,8 +22,10 @@
 
 DeviceAuthenticatorMac::DeviceAuthenticatorMac(
     std::unique_ptr<AuthenticatorMacInterface> authenticator,
-    DeviceAuthenticatorProxy* proxy)
-    : ChromeDeviceAuthenticatorCommon(proxy),
+    DeviceAuthenticatorProxy* proxy,
+    const device_reauth::DeviceAuthParams& params)
+    : ChromeDeviceAuthenticatorCommon(proxy,
+                                      params.GetAuthenticationValidityPeriod()),
       authenticator_(std::move(authenticator)) {}
 
 DeviceAuthenticatorMac::~DeviceAuthenticatorMac() = default;

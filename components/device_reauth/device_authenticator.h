@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/time/time.h"
 
 namespace device_reauth {
 
@@ -79,6 +80,27 @@ enum class DeviceAuthSource {
   kAutofill = 1,
   kIncognito = 2,
   kMaxValue = kIncognito,
+};
+
+// When creating a device authenticator, one should create a |DeviceAuthParam|
+// object, set its values and pass it as a parameter to
+// ChromeDeviceAuthenticatorFactory::GetForProfile .
+class DeviceAuthParams {
+ public:
+  DeviceAuthParams(base::TimeDelta auth_validity_period,
+                   device_reauth::DeviceAuthSource source)
+      : auth_validity_period_(auth_validity_period), source_(source) {}
+
+  base::TimeDelta GetAuthenticationValidityPeriod() const {
+    return auth_validity_period_;
+  }
+  device_reauth::DeviceAuthSource GetDeviceAuthSource() const {
+    return source_;
+  }
+
+ private:
+  base::TimeDelta auth_validity_period_;
+  device_reauth::DeviceAuthSource source_;
 };
 
 // This interface encapsulates operations related to biometric authentication.

@@ -16,7 +16,8 @@ class DeviceAuthenticatorChromeOS : public ChromeDeviceAuthenticatorCommon {
  public:
   DeviceAuthenticatorChromeOS(
       std::unique_ptr<AuthenticatorChromeOSInterface> authenticator,
-      DeviceAuthenticatorProxy* proxy);
+      DeviceAuthenticatorProxy* proxy,
+      const device_reauth::DeviceAuthParams& params);
   ~DeviceAuthenticatorChromeOS() override;
 
   bool CanAuthenticateWithBiometrics() override;

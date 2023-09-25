@@ -16,7 +16,8 @@ class DeviceAuthenticatorWin : public ChromeDeviceAuthenticatorCommon {
  public:
   DeviceAuthenticatorWin(
       std::unique_ptr<AuthenticatorWinInterface> authenticator,
-      DeviceAuthenticatorProxy* proxy);
+      DeviceAuthenticatorProxy* proxy,
+      const device_reauth::DeviceAuthParams& params);
   ~DeviceAuthenticatorWin() override;
 
   // Returns true, when biometrics are available.

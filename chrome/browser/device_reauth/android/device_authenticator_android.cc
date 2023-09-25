@@ -80,10 +80,11 @@ void LogCanAuthenticate(BiometricsAvailability availability) {
 DeviceAuthenticatorAndroid::DeviceAuthenticatorAndroid(
     std::unique_ptr<DeviceAuthenticatorBridge> bridge,
     DeviceAuthenticatorProxy* proxy,
-    device_reauth::DeviceAuthSource source)
-    : ChromeDeviceAuthenticatorCommon(proxy),
+    const device_reauth::DeviceAuthParams& params)
+    : ChromeDeviceAuthenticatorCommon(proxy,
+                                      params.GetAuthenticationValidityPeriod()),
       bridge_(std::move(bridge)),
-      source_(source) {}
+      source_(params.GetDeviceAuthSource()) {}
 
 DeviceAuthenticatorAndroid::~DeviceAuthenticatorAndroid() = default;
 

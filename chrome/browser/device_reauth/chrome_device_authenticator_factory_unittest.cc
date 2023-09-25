@@ -11,10 +11,13 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/password_manager/core/browser/password_access_authenticator.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace {
+constexpr base::TimeDelta kAuthValidityPeriod = base::Seconds(60);
+}  // namespace
 
 // Exposes protected methods of ChromeDeviceAuthenticatorCommon for testing.
 class FakeChromeDeviceAuthenticatorCommon
@@ -30,7 +33,10 @@ class FakeChromeDeviceAuthenticatorCommon
 class ChromeDeviceAuthenticatorFactoryTest : public testing::Test {
  public:
   ChromeDeviceAuthenticatorFactoryTest()
-      : profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+      : profile_manager_(TestingBrowserProcess::GetGlobal()),
+        device_authenticator_params_(
+            kAuthValidityPeriod,
+            device_reauth::DeviceAuthSource::kPasswordManager) {}
 
   void SetUp() override {
     profile_manager_.SetUp();
@@ -53,8 +59,13 @@ class ChromeDeviceAuthenticatorFactoryTest : public testing::Test {
 
   TestingProfile* profile2() { return profile_ptr2_; }
 
+  const device_reauth::DeviceAuthParams& GetDeviceAuthenticatorParams() {
+    return device_authenticator_params_;
+  }
+
  private:
   TestingProfileManager profile_manager_;
+  device_reauth::DeviceAuthParams device_authenticator_params_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   raw_ptr<TestingProfile> profile_ptr1_;
@@ -68,32 +79,27 @@ class ChromeDeviceAuthenticatorFactoryTest : public testing::Test {
 TEST_F(ChromeDeviceAuthenticatorFactoryTest, NeedAuthentication) {
   static_cast<FakeChromeDeviceAuthenticatorCommon*>(
       ChromeDeviceAuthenticatorFactory::GetForProfile(
-          profile1(), device_reauth::DeviceAuthSource::kPasswordManager)
+          profile1(), GetDeviceAuthenticatorParams())
           .get())
       ->RecordAuthenticationTimeIfSuccessful(
           /*success=*/true);
 
-  task_environment().FastForwardBy(
-      password_manager::PasswordAccessAuthenticator::kAuthValidityPeriod / 2);
-  EXPECT_FALSE(
-      static_cast<FakeChromeDeviceAuthenticatorCommon*>(
-          ChromeDeviceAuthenticatorFactory::GetForProfile(
-              profile1(), device_reauth::DeviceAuthSource::kPasswordManager)
-              .get())
-          ->NeedsToAuthenticate());
-  EXPECT_TRUE(
-      static_cast<FakeChromeDeviceAuthenticatorCommon*>(
-          ChromeDeviceAuthenticatorFactory::GetForProfile(
-              profile2(), device_reauth::DeviceAuthSource::kPasswordManager)
-              .get())
-          ->NeedsToAuthenticate());
+  task_environment().FastForwardBy(kAuthValidityPeriod / 2);
+  EXPECT_FALSE(static_cast<FakeChromeDeviceAuthenticatorCommon*>(
+                   ChromeDeviceAuthenticatorFactory::GetForProfile(
+                       profile1(), GetDeviceAuthenticatorParams())
+                       .get())
+                   ->NeedsToAuthenticate());
+  EXPECT_TRUE(static_cast<FakeChromeDeviceAuthenticatorCommon*>(
+                  ChromeDeviceAuthenticatorFactory::GetForProfile(
+                      profile2(), GetDeviceAuthenticatorParams())
+                      .get())
+                  ->NeedsToAuthenticate());
 
-  task_environment().FastForwardBy(
-      password_manager::PasswordAccessAuthenticator::kAuthValidityPeriod);
-  EXPECT_TRUE(
-      static_cast<FakeChromeDeviceAuthenticatorCommon*>(
-          ChromeDeviceAuthenticatorFactory::GetForProfile(
-              profile1(), device_reauth::DeviceAuthSource::kPasswordManager)
-              .get())
-          ->NeedsToAuthenticate());
+  task_environment().FastForwardBy(kAuthValidityPeriod);
+  EXPECT_TRUE(static_cast<FakeChromeDeviceAuthenticatorCommon*>(
+                  ChromeDeviceAuthenticatorFactory::GetForProfile(
+                      profile1(), GetDeviceAuthenticatorParams())
+                      .get())
+                  ->NeedsToAuthenticate());
 }

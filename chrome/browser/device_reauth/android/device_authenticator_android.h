@@ -50,7 +50,7 @@ class DeviceAuthenticatorAndroid : public ChromeDeviceAuthenticatorCommon {
  public:
   DeviceAuthenticatorAndroid(std::unique_ptr<DeviceAuthenticatorBridge> bridge,
                              DeviceAuthenticatorProxy* proxy,
-                             device_reauth::DeviceAuthSource source);
+                             const device_reauth::DeviceAuthParams& params);
   ~DeviceAuthenticatorAndroid() override;
 
   bool CanAuthenticateWithBiometrics() override;

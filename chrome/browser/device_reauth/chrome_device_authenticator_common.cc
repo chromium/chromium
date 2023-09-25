@@ -9,17 +9,12 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
-#include "components/password_manager/core/browser/password_access_authenticator.h"
-
-namespace {
-
-using password_manager::PasswordAccessAuthenticator;
-
-}  // namespace
 
 ChromeDeviceAuthenticatorCommon::ChromeDeviceAuthenticatorCommon(
-    DeviceAuthenticatorProxy* proxy)
-    : device_authenticator_proxy_(proxy->GetWeakPtr()) {}
+    DeviceAuthenticatorProxy* proxy,
+    base::TimeDelta auth_validity_period)
+    : device_authenticator_proxy_(proxy->GetWeakPtr()),
+      auth_validity_period_(auth_validity_period) {}
 ChromeDeviceAuthenticatorCommon::~ChromeDeviceAuthenticatorCommon() = default;
 
 void ChromeDeviceAuthenticatorCommon::RecordAuthenticationTimeIfSuccessful(
@@ -36,5 +31,5 @@ bool ChromeDeviceAuthenticatorCommon::NeedsToAuthenticate() const {
 
   return !last_good_auth_timestamp.has_value() ||
          base::TimeTicks::Now() - last_good_auth_timestamp.value() >=
-             PasswordAccessAuthenticator::kAuthValidityPeriod;
+             auth_validity_period_;
 }

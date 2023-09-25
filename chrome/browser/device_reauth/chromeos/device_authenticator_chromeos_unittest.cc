@@ -9,14 +9,13 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "components/password_manager/core/browser/password_access_authenticator.h"
+#include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
 using device_reauth::DeviceAuthenticator;
-using password_manager::PasswordAccessAuthenticator;
 
 class MockSystemAuthenticator : public AuthenticatorChromeOSInterface {
  public:
@@ -26,17 +25,22 @@ class MockSystemAuthenticator : public AuthenticatorChromeOSInterface {
               (override));
 };
 
+constexpr base::TimeDelta kAuthValidityPeriod = base::Seconds(60);
+
 }  // namespace
 
 class DeviceAuthenticatorChromeOSTest : public testing::Test {
  public:
-  DeviceAuthenticatorChromeOSTest() = default;
+  DeviceAuthenticatorChromeOSTest()
+      : device_authenticator_params_(
+            kAuthValidityPeriod,
+            device_reauth::DeviceAuthSource::kPasswordManager) {}
   void SetUp() override {
     std::unique_ptr<MockSystemAuthenticator> system_authenticator =
         std::make_unique<MockSystemAuthenticator>();
     system_authenticator_ = system_authenticator.get();
     authenticator_ = std::make_unique<DeviceAuthenticatorChromeOS>(
-        std::move(system_authenticator), &proxy_);
+        std::move(system_authenticator), &proxy_, device_authenticator_params_);
   }
 
   DeviceAuthenticatorChromeOS* authenticator() { return authenticator_.get(); }
@@ -58,6 +62,7 @@ class DeviceAuthenticatorChromeOSTest : public testing::Test {
 
  private:
   DeviceAuthenticatorProxy proxy_;
+  device_reauth::DeviceAuthParams device_authenticator_params_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<DeviceAuthenticatorChromeOS> authenticator_;
@@ -76,8 +81,7 @@ TEST_F(DeviceAuthenticatorChromeOSTest,
 
   // The delay is smaller than kAuthValidityPeriod there shouldn't be
   // another prompt, so the auth should be reported as successful.
-  task_environment().FastForwardBy(
-      PasswordAccessAuthenticator::kAuthValidityPeriod / 2);
+  task_environment().FastForwardBy(kAuthValidityPeriod / 2);
 
   EXPECT_CALL(system_authenticator(), AuthenticateUser).Times(0);
   base::MockCallback<DeviceAuthenticator::AuthenticateCallback> result_callback;
@@ -97,8 +101,7 @@ TEST_F(DeviceAuthenticatorChromeOSTest, ReauthenticationIfMoreThan60Seconds) {
   authenticator()->AuthenticateWithMessage(
       /*message=*/u"Chrome is trying to show passwords.", base::DoNothing());
 
-  task_environment().FastForwardBy(
-      PasswordAccessAuthenticator::kAuthValidityPeriod * 2);
+  task_environment().FastForwardBy(kAuthValidityPeriod * 2);
 
   // The next call to `Authenticate()` should re-trigger an authentication.
   ExpectAuthenticationAndSetResult(false);

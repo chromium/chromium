@@ -21,7 +21,8 @@ class DeviceAuthenticatorMac : public ChromeDeviceAuthenticatorCommon {
  public:
   DeviceAuthenticatorMac(
       std::unique_ptr<AuthenticatorMacInterface> authenticator,
-      DeviceAuthenticatorProxy* proxy);
+      DeviceAuthenticatorProxy* proxy,
+      const device_reauth::DeviceAuthParams& params);
   ~DeviceAuthenticatorMac() override;
 
   bool CanAuthenticateWithBiometrics() override;
