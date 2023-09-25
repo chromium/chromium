@@ -23,8 +23,15 @@
   .container + .container {
     flex-direction: row;
     margin-inline-start: 40px; /* icon width + text padding */
-    padding-bottom: 12px;
     padding-top: 0;
+    padding-bottom: 12px;
+  }
+
+  .actions.inlined {
+    flex-grow: 1;
+    align-self: center;
+    padding-top: 0;
+    padding-bottom: 0;
   }
 
   #contents,
@@ -74,6 +81,10 @@
     padding-inline-end: 8px;
     padding-inline-start: 8px;
     white-space: nowrap;
+  }
+
+  #text-container.simplified {
+    flex-grow: 0;
   }
 
   :host([is-rich-suggestion]) #text-container {
@@ -208,7 +219,7 @@
 <div class="container" aria-hidden="true">
   <div id="focus-indicator"></div>
   <cr-realbox-icon id="icon" match="[[match]]"></cr-realbox-icon>
-  <div id="text-container">
+  <div id="text-container" class$="[[simplifiedClass_]]">
     <span id="tail-suggest-prefix" hidden$="[[!tailSuggestPrefix_]]">
       <span id="prefix">[[tailSuggestPrefix_]]</span>
       <!-- This is equivalent to AutocompleteMatch::kEllipsis which is
@@ -219,6 +230,14 @@
     <span id="separator" class="dim">[[separatorText_]]</span>
     <span id="description" inner-h-t-m-l="[[descriptionHtml_]]"></span>
   </div>
+  <div class="actions container inlined" aria-hidden="true" hidden="[[!showActionsInlined_()]]">
+    <template is="dom-repeat" items="[[match.actions]]">
+      <cr-realbox-action id="action" action="[[item]]"
+        action-index="[[actionIndex_(item)]]"
+        on-execute-action="onExecuteAction_" tabindex="1">
+      </cr-realbox-action>
+    </template>
+  </div>
   <cr-icon-button id="remove" class="action-icon icon-clear"
     aria-label="[[removeButtonAriaLabel_]]"
     on-click="onRemoveButtonClick_" on-mousedown="onRemoveButtonMouseDown_"
@@ -226,7 +245,7 @@
     tabindex="2">
   </cr-icon-button>
 </div>
-<div class="container" aria-hidden="true" hidden="[[!match.actions.length]]">
+<div class="actions container underneath" aria-hidden="true" hidden="[[!showActionsUnderneath_(match)]]">
   <template is="dom-repeat" items="[[match.actions]]">
     <cr-realbox-action id="action" action="[[item]]"
       action-index="[[actionIndex_(item)]]"

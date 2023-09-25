@@ -587,6 +587,10 @@ void RealboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
   source->AddBoolean(
       "realboxLensDirectUpload",
       base::FeatureList::IsEnabled(ntp_features::kNtpLensDirectUpload));
+
+  source->AddBoolean(
+      "omniboxActionsUISimplification",
+      base::FeatureList::IsEnabled(omnibox::kOmniboxActionsUISimplification));
 }
 
 // static

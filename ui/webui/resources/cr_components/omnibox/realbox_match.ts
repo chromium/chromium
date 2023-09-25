@@ -162,6 +162,17 @@ export class RealboxMatchElement extends PolymerElement {
         type: String,
         computed: `computeTailSuggestPrefix_(match)`,
       },
+
+      /**
+         Conditional CSS class that enables styling of elements differently
+          according to feature state.
+       */
+      simplifiedClass_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('omniboxActionsUISimplification') ?
+            'simplified' :
+            '',
+      },
     };
   }
 
@@ -362,6 +373,17 @@ export class RealboxMatchElement extends PolymerElement {
 
   private computeSideTypeClass_(): string {
     return sideTypeToClass(this.sideType);
+  }
+
+  private showActionsInlined_(): boolean {
+    // Always show inlined div when feature is enabled, so that it will
+    // grow and push other elements like remove button to the right.
+    return loadTimeData.getBoolean('omniboxActionsUISimplification');
+  }
+
+  private showActionsUnderneath_(match: AutocompleteMatch): boolean {
+    return match.actions.length > 0 &&
+        !loadTimeData.getBoolean('omniboxActionsUISimplification');
   }
 
   /**
