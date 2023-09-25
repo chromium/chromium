@@ -971,9 +971,6 @@
   "ios/chrome/share_extension/strings/ios_share_extension_strings.grd": {
     "messages": [1120],
   },
-  "ios/chrome/search_widget_extension/strings/ios_search_widget_extension_strings.grd": {
-    "messages": [1140],
-  },
   "ios/chrome/search_widget_extension/strings/ios_search_widget_extension_chromium_strings.grd": {
     "messages": [1160],
   },

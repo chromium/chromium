@@ -32,7 +32,6 @@ ios_appex_bundle("appex") {
   deps = [
     "//ios/chrome/search_widget_extension:search_widget",
     "//ios/chrome/search_widget_extension:system_strings",
-    "//ios/chrome/search_widget_extension/resources:quick_action_incognito",
   ]
 
   assert_no_deps = ios_extension_assert_no_deps
