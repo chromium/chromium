@@ -5,8 +5,10 @@
 #include "components/privacy_sandbox/tracking_protection_onboarding.h"
 #include <memory>
 #include <utility>
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,7 +45,7 @@ class TrackingProtectionOnboardingTest : public testing::Test {
 
   TestingPrefServiceSimple* prefs() { return &prefs_; }
 
- private:
+ protected:
   base::test::TaskEnvironment task_env_;
   TestingPrefServiceSimple prefs_;
   std::unique_ptr<TrackingProtectionOnboarding>
@@ -336,5 +338,26 @@ INSTANTIATE_TEST_SUITE_P(
                   TrackingProtectionOnboarding::OnboardingStatus::kEligible),
         std::pair(TrackingProtectionOnboardingStatus::kOnboarded,
                   TrackingProtectionOnboarding::OnboardingStatus::kOnboarded)));
+
+class TrackingProtectionOnboardingWithFeatureOverrideTest
+    : public TrackingProtectionOnboardingTest {
+ public:
+  void SetUp() override {
+    feature_list_.InitAndEnableFeature(
+        privacy_sandbox::kTrackingProtectionOnboardingForceEligibility);
+    tracking_protection_onboarding_service_ =
+        std::make_unique<TrackingProtectionOnboarding>(prefs());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(TrackingProtectionOnboardingWithFeatureOverrideTest,
+       StartsUpAsEligible) {
+  EXPECT_EQ(tracking_protection_onboarding()->GetOnboardingStatus(),
+            TrackingProtectionOnboarding::OnboardingStatus::kEligible);
+}
+
 }  // namespace
 }  // namespace privacy_sandbox

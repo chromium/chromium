@@ -88,6 +88,7 @@ source_set("tracking_protection_onboarding") {
   ]
 
   deps = [
+    ":features",
     ":tracking_protection_prefs",
     "//components/keyed_service/core:core",
     "//components/pref_registry:pref_registry",

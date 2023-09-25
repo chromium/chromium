@@ -4,9 +4,11 @@
 
 #include "components/privacy_sandbox/tracking_protection_onboarding.h"
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 
 namespace privacy_sandbox {
@@ -40,6 +42,14 @@ TrackingProtectionOnboarding::TrackingProtectionOnboarding(
       base::BindRepeating(
           &TrackingProtectionOnboarding::OnOnboardingAckedChanged,
           base::Unretained(this)));
+
+  // If we're forcing eligibility, then let' set it now.
+  if (base::FeatureList::IsEnabled(
+          privacy_sandbox::kTrackingProtectionOnboardingForceEligibility) &&
+      GetInternalOnboardingStatus(pref_service_) ==
+          TrackingProtectionOnboardingStatus::kIneligible) {
+    MaybeMarkEligible();
+  }
 }
 
 TrackingProtectionOnboarding::~TrackingProtectionOnboarding() = default;
