@@ -18,21 +18,28 @@ import java.util.regex.Pattern;
 
 /**
  * Class that checks if given Strings are valid SharedPreferences keys to use.
+ *
+ * Checks that:
+ * 1. Keys are registered as "in use".
+ * 2. The key format is valid, either:
+ *   - "Chrome.[Feature].[Key]"
+ *   - "Chrome.[Feature].[KeyPrefix].[Suffix]"
+ *   - Legacy key prior to this restriction
  */
 @CheckDiscard("Validation is performed in tests and in debug builds.")
-class ChromePreferenceKeyChecker extends BaseChromePreferenceKeyChecker {
-    private static final ChromePreferenceKeyChecker INSTANCE = new ChromePreferenceKeyChecker();
+class StrictPreferenceKeyChecker implements PreferenceKeyChecker {
+    // The dynamic part cannot be empty, but otherwise it is anything that does not contain
+    // stars.
+    private static final Pattern DYNAMIC_PART_PATTERN = Pattern.compile("[^\\*]+");
 
-    private Set<String> mKeysInUse;
-    private Set<String> mLegacyFormatKeys;
-    private List<KeyPrefix> mLegacyPrefixes;
-    private Pattern mDynamicPartPattern;
+    private final Set<String> mKeysInUse;
+    private final Set<String> mLegacyFormatKeys;
+    private final List<KeyPrefix> mLegacyPrefixes;
 
     /**
-     * Constructor called by the singleton, pulls the lists of keys from {@link
-     * ChromePreferenceKeys}.
+     * Constructor that pulls the lists of keys from {@link ChromePreferenceKeys}.
      */
-    private ChromePreferenceKeyChecker() {
+    StrictPreferenceKeyChecker() {
         this(ChromePreferenceKeys.getKeysInUse(), LegacyChromePreferenceKeys.getKeysInUse(),
                 LegacyChromePreferenceKeys.getPrefixesInUse());
     }
@@ -41,22 +48,11 @@ class ChromePreferenceKeyChecker extends BaseChromePreferenceKeyChecker {
      * Generic constructor, dependencies are passed in.
      */
     @VisibleForTesting
-    ChromePreferenceKeyChecker(
+    StrictPreferenceKeyChecker(
             List<String> keysInUse, List<String> legacyKeys, List<KeyPrefix> legacyPrefixes) {
         mKeysInUse = new HashSet<>(keysInUse);
         mLegacyFormatKeys = new HashSet<>(legacyKeys);
         mLegacyPrefixes = legacyPrefixes;
-
-        // The dynamic part cannot be empty, but otherwise it is anything that does not contain
-        // stars.
-        mDynamicPartPattern = Pattern.compile("[^\\*]+");
-    }
-
-    /**
-     * @return The ChromePreferenceKeyChecker singleton.
-     */
-    public static ChromePreferenceKeyChecker getInstance() {
-        return INSTANCE;
     }
 
     /**
@@ -64,7 +60,7 @@ class ChromePreferenceKeyChecker extends BaseChromePreferenceKeyChecker {
      * @throws RuntimeException if the key is not in use.
      */
     @Override
-    void checkIsKeyInUse(String key) {
+    public void checkIsKeyInUse(String key) {
         if (!isKeyInUse(key)) {
             throw new RuntimeException("SharedPreferences key \"" + key
                     + "\" is not registered in ChromePreferenceKeys.createKeysInUse()");
@@ -103,7 +99,7 @@ class ChromePreferenceKeyChecker extends BaseChromePreferenceKeyChecker {
 
             // Check if the dynamic part is correctly formed.
             String dynamicPart = parts[3];
-            return mDynamicPartPattern.matcher(dynamicPart).matches();
+            return DYNAMIC_PART_PATTERN.matcher(dynamicPart).matches();
         } else {
             // Regular key in format "Chrome.[Feature].[Key]" which was not present in |mKeysInUse|.
             // Just check if it is in [keys in use].
@@ -112,7 +108,7 @@ class ChromePreferenceKeyChecker extends BaseChromePreferenceKeyChecker {
     }
 
     @Override
-    void checkIsPrefixInUse(KeyPrefix prefix) {
+    public void checkIsPrefixInUse(KeyPrefix prefix) {
         if (mLegacyPrefixes.contains(prefix)) {
             return;
         }

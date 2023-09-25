@@ -7,14 +7,15 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
   sources = [
-    "android/java/src/org/chromium/chrome/browser/preferences/BaseChromePreferenceKeyChecker.java",
-    "android/java/src/org/chromium/chrome/browser/preferences/ChromePreferenceKeyChecker.java",
     "android/java/src/org/chromium/chrome/browser/preferences/ChromePreferenceKeys.java",
     "android/java/src/org/chromium/chrome/browser/preferences/DeprecatedChromePreferenceKeys.java",
     "android/java/src/org/chromium/chrome/browser/preferences/KeyPrefix.java",
     "android/java/src/org/chromium/chrome/browser/preferences/LegacyChromePreferenceKeys.java",
+    "android/java/src/org/chromium/chrome/browser/preferences/NoOpPreferenceKeyChecker.java",
     "android/java/src/org/chromium/chrome/browser/preferences/PrefChangeRegistrar.java",
+    "android/java/src/org/chromium/chrome/browser/preferences/PreferenceKeyChecker.java",
     "android/java/src/org/chromium/chrome/browser/preferences/SharedPreferencesManager.java",
+    "android/java/src/org/chromium/chrome/browser/preferences/StrictPreferenceKeyChecker.java",
   ]
   deps = [
     "//base:base_java",
@@ -78,10 +79,10 @@ source_set("android") {
 
 robolectric_library("preferences_junit_tests") {
   sources = [
-    "android/java/src/org/chromium/chrome/browser/preferences/ChromePreferenceKeyCheckerTest.java",
     "android/java/src/org/chromium/chrome/browser/preferences/ChromePreferenceKeysTest.java",
     "android/java/src/org/chromium/chrome/browser/preferences/KeyPrefixTest.java",
     "android/java/src/org/chromium/chrome/browser/preferences/SharedPreferencesManagerTest.java",
+    "android/java/src/org/chromium/chrome/browser/preferences/StrictPreferenceKeyCheckerTest.java",
   ]
   deps = [
     ":java",

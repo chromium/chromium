@@ -7,12 +7,14 @@ package org.chromium.chrome.browser.preferences;
 /**
  * A placeholder key checker that never throws exceptions. Used in production builds.
  */
-class BaseChromePreferenceKeyChecker {
-    void checkIsKeyInUse(String key) {
+class NoOpPreferenceKeyChecker implements PreferenceKeyChecker {
+    @Override
+    public void checkIsKeyInUse(String key) {
         // No-op.
     }
 
-    void checkIsPrefixInUse(KeyPrefix prefix) {
+    @Override
+    public void checkIsPrefixInUse(KeyPrefix prefix) {
         // No-op.
     }
 }

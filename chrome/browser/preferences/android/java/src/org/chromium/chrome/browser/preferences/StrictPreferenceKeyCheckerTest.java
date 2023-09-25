@@ -16,10 +16,10 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Unit tests for {@link ChromePreferenceKeyChecker}.
+ * Unit tests for {@link StrictPreferenceKeyChecker}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-public class ChromePreferenceKeyCheckerTest {
+public class StrictPreferenceKeyCheckerTest {
     private static final String KEY1_IN_USE = "Chrome.Feature.Key1";
     private static final String KEY2_IN_USE = "Chrome.Feature.Key2";
     private static final String KEY3_NOT_IN_USE = "Chrome.Feature.Key3";
@@ -32,7 +32,7 @@ public class ChromePreferenceKeyCheckerTest {
     private static final String LEGACY_KEY_IN_USE = "legacykey";
     private static final String LEGACY_PREFIX_IN_USE = "legacyprefix_";
 
-    private ChromePreferenceKeyChecker mSubject;
+    private StrictPreferenceKeyChecker mSubject;
 
     @Before
     public void setUp() {
@@ -40,7 +40,7 @@ public class ChromePreferenceKeyCheckerTest {
                 KEY_PREFIX1_IN_USE.pattern(), KEY_PREFIX2_IN_USE.pattern());
         List<String> legacyKeys = Arrays.asList(LEGACY_KEY_IN_USE);
         List<KeyPrefix> legacyPrefixes = Arrays.asList(new KeyPrefix(LEGACY_PREFIX_IN_USE + "*"));
-        mSubject = new ChromePreferenceKeyChecker(keysInUse, legacyKeys, legacyPrefixes);
+        mSubject = new StrictPreferenceKeyChecker(keysInUse, legacyKeys, legacyPrefixes);
     }
 
     @Test

@@ -33,7 +33,7 @@ import java.util.Set;
 @RunWith(BaseRobolectricTestRunner.class)
 public class SharedPreferencesManagerTest {
     @Mock
-    private ChromePreferenceKeyChecker mChecker;
+    private PreferenceKeyChecker mChecker;
 
     private static final KeyPrefix TEST_PREFIX = new KeyPrefix("TestPrefix.*");
     private static final String PREFIXED_KEY_1 = TEST_PREFIX.createKey("stemA");

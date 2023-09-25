@@ -43,7 +43,7 @@ import java.util.List;
  * LegacyChromePreferenceKeys#getPrefixesInUse()}.
  * 3. Delete the KeyPrefix constant.
  *
- * Tests in ChromePreferenceKeysTest and checks in {@link ChromePreferenceKeyChecker} ensure the
+ * Tests in ChromePreferenceKeysTest and checks in {@link StrictPreferenceKeyChecker} ensure the
  * validity of this file.
  */
 public final class ChromePreferenceKeys {
