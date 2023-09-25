@@ -1570,18 +1570,16 @@ public class TabImpl implements Tab {
      * the load codepath is the same (run in loadIfNecessary()) and the same caching policies of
      * history load are used.
      */
-    private final void restoreIfNeeded(@LoadIfNeededCaller int caller) {
-        // Attempts to display the Paint Preview representation of this Tab. Please note that this
-        // is behind an experimental flag (crbug.com/1008520).
+    private void restoreIfNeeded(@LoadIfNeededCaller int caller) {
+        // Attempts to display the Paint Preview representation of this Tab.
         if (isFrozen()) StartupPaintPreviewHelper.showPaintPreviewOnRestore(this);
 
         try {
             TraceEvent.begin("Tab.restoreIfNeeded");
-            if (isFrozen()) {
-                assert mWebContentsState
-                        != null
-                    : "crbug/1393848: A frozen tab must have WebContentsState to restore from.";
-            }
+            assert !isFrozen()
+                    || mWebContentsState
+                            != null
+                : "crbug/1393848: A frozen tab must have WebContentsState to restore from.";
             // Restore is needed for a tab that is loaded for the first time. WebContents will
             // be restored from a saved state.
             if ((isFrozen() && mWebContentsState != null && !unfreezeContents())

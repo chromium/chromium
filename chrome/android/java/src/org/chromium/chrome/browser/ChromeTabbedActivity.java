@@ -1833,17 +1833,15 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         boolean shouldShowOverviewPageOnStart = shouldShowOverviewPageOnStart();
         StartSurfaceUserData.getInstance().setUnusedTabRestoredAtStartup(
                 shouldShowOverviewPageOnStart);
-        if (StartupPaintPreviewHelper.isEnabled()) {
-            StartupPaintPreviewHelper paintPreviewHelper = new StartupPaintPreviewHelper(
-                    getWindowAndroid(), getOnCreateTimestampMs(), getBrowserControlsManager(),
-                    getTabModelSelector(), shouldShowOverviewPageOnStart, () -> {
-                        return getToolbarManager() == null
-                                ? null
-                                : getToolbarManager().getProgressBarCoordinator();
-                    });
-            mStartupPaintPreviewHelperSupplier.set(paintPreviewHelper);
-            getActivityTabStartupMetricsTracker().registerPaintPreviewObserver(paintPreviewHelper);
-        }
+        StartupPaintPreviewHelper paintPreviewHelper = new StartupPaintPreviewHelper(
+                getWindowAndroid(), getOnCreateTimestampMs(), getBrowserControlsManager(),
+                getTabModelSelector(), shouldShowOverviewPageOnStart, () -> {
+                    return getToolbarManager() == null
+                            ? null
+                            : getToolbarManager().getProgressBarCoordinator();
+                });
+        mStartupPaintPreviewHelperSupplier.set(paintPreviewHelper);
+        getActivityTabStartupMetricsTracker().registerPaintPreviewObserver(paintPreviewHelper);
     }
 
     private boolean shouldIgnoreIntent() {

@@ -106,14 +106,6 @@ public class StartupPaintPreviewHelper {
     }
 
     /**
-     * Checks whether the paint preview feature is enabled
-     * @return the feature availability
-     */
-    public static boolean isEnabled() {
-        return true;
-    }
-
-    /**
      * Sets whether a Paint Preview should attempt to be shown on restoration of a tab. If the
      * feature is not enabled this is effectively a no-op.
      */
