@@ -369,13 +369,10 @@ MetricsService::MetricsService(MetricsStateManager* state_manager,
     logs_event_manager_.AddObserver(logs_event_observer_.get());
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kMetricsClearLogsOnClonedInstall)) {
-    cloned_install_subscription_ =
-        state_manager->AddOnClonedInstallDetectedCallback(
-            base::BindOnce(&MetricsService::OnClonedInstallDetected,
-                           self_ptr_factory_.GetWeakPtr()));
-  }
+  cloned_install_subscription_ =
+      state_manager->AddOnClonedInstallDetectedCallback(
+          base::BindOnce(&MetricsService::OnClonedInstallDetected,
+                         self_ptr_factory_.GetWeakPtr()));
 
   RegisterMetricsProvider(
       std::make_unique<StabilityMetricsProvider>(local_state_));

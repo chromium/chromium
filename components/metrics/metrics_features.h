@@ -17,10 +17,6 @@ namespace metrics::features {
 // service can close a log starting from when the first log is opened.
 BASE_DECLARE_FEATURE(kMetricsServiceAllowEarlyLogClose);
 
-// Determines whether logs stored in Local State are cleared when the Chrome
-// install is detected as cloned.
-BASE_DECLARE_FEATURE(kMetricsClearLogsOnClonedInstall);
-
 // This can be used to disable structured metrics as a whole.
 BASE_DECLARE_FEATURE(kStructuredMetrics);
 

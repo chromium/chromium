@@ -345,27 +345,17 @@ class MetricsServiceTest : public testing::Test {
 
 class MetricsServiceTestWithFeatures
     : public MetricsServiceTest,
-      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+      public ::testing::WithParamInterface<std::tuple<bool>> {
  public:
   MetricsServiceTestWithFeatures() = default;
   ~MetricsServiceTestWithFeatures() override = default;
 
-  bool ShouldClearLogsOnClonedInstall() { return std::get<0>(GetParam()); }
-
-  bool ShouldSnapshotInBg() { return std::get<1>(GetParam()); }
+  bool ShouldSnapshotInBg() { return std::get<0>(GetParam()); }
 
   void SetUp() override {
     MetricsServiceTest::SetUp();
     std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
-
-    if (ShouldClearLogsOnClonedInstall()) {
-      enabled_features.emplace_back(features::kMetricsClearLogsOnClonedInstall,
-                                    base::FieldTrialParams());
-    } else {
-      disabled_features.emplace_back(
-          features::kMetricsClearLogsOnClonedInstall);
-    }
 
     if (ShouldSnapshotInBg()) {
       enabled_features.emplace_back(features::kMetricsServiceDeltaSnapshotInBg,
@@ -391,27 +381,17 @@ struct StartupVisibilityTestParams {
 class MetricsServiceTestWithStartupVisibility
     : public MetricsServiceTest,
       public ::testing::WithParamInterface<
-          std::tuple<StartupVisibilityTestParams, bool, bool>> {
+          std::tuple<StartupVisibilityTestParams, bool>> {
  public:
   MetricsServiceTestWithStartupVisibility() = default;
   ~MetricsServiceTestWithStartupVisibility() override = default;
 
-  bool ShouldClearLogsOnClonedInstall() { return std::get<1>(GetParam()); }
-
-  bool ShouldSnapshotInBg() { return std::get<2>(GetParam()); }
+  bool ShouldSnapshotInBg() { return std::get<1>(GetParam()); }
 
   void SetUp() override {
     MetricsServiceTest::SetUp();
     std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
-
-    if (ShouldClearLogsOnClonedInstall()) {
-      enabled_features.emplace_back(features::kMetricsClearLogsOnClonedInstall,
-                                    base::FieldTrialParams());
-    } else {
-      disabled_features.emplace_back(
-          features::kMetricsClearLogsOnClonedInstall);
-    }
 
     if (ShouldSnapshotInBg()) {
       enabled_features.emplace_back(features::kMetricsServiceDeltaSnapshotInBg,
@@ -470,8 +450,7 @@ base::HistogramBase::Count GetHistogramDeltaTotalCount(base::StringPiece name) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          MetricsServiceTestWithFeatures,
-                         ::testing::Combine(::testing::Bool(),
-                                            ::testing::Bool()));
+                         ::testing::Combine(::testing::Bool()));
 
 TEST_P(MetricsServiceTestWithFeatures, RecordId) {
   EnableMetricsReporting();
@@ -792,7 +771,6 @@ INSTANTIATE_TEST_SUITE_P(
             StartupVisibilityTestParams{
                 .startup_visibility = StartupVisibility::kForeground,
                 .expected_beacon_value = false}),
-        ::testing::Bool(),
         ::testing::Bool()));
 
 TEST_P(MetricsServiceTestWithStartupVisibility, InitialStabilityLogAfterCrash) {
@@ -1499,15 +1477,9 @@ TEST_P(MetricsServiceTestWithFeatures, PurgeLogsOnClonedInstallDetected) {
   // Save a machine id that will cause a clone to be detected.
   GetLocalState()->SetInteger(prefs::kMetricsMachineId, kTestHashedId + 1);
   cloned_install_detector->SaveMachineId(GetLocalState(), kTestRawId);
-  // Verify that the logs were purged if the |kMetricsClearLogsOnClonedInstall|
-  // feature is enabled.
-  if (ShouldClearLogsOnClonedInstall()) {
-    EXPECT_FALSE(test_log_store->has_staged_log());
-    EXPECT_FALSE(test_log_store->has_unsent_logs());
-  } else {
-    EXPECT_TRUE(test_log_store->has_staged_log());
-    EXPECT_TRUE(test_log_store->has_unsent_logs());
-  }
+  // Verify that the logs were purged.
+  EXPECT_FALSE(test_log_store->has_staged_log());
+  EXPECT_FALSE(test_log_store->has_unsent_logs());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

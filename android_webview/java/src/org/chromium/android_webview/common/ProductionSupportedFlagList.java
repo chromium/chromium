@@ -406,9 +406,6 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(MetricsFeatures.METRICS_SERVICE_ASYNC_INDEPENDENT_LOGS,
                     "Controls whether the metrics service should finalize certain independent"
                             + " logs asynchronously."),
-            Flag.baseFeature(MetricsFeatures.METRICS_CLEAR_LOGS_ON_CLONED_INSTALL,
-                    "Controls whether UMA logs are cleared when a cloned "
-                            + "install is detected."),
             Flag.baseFeature(MetricsFeatures.MERGE_SUBPROCESS_METRICS_ON_BG_AND_FG,
                     "Controls whether child process histograms are merged on background "
                             + "and foreground."),
