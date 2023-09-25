@@ -1497,7 +1497,7 @@
     /**
      * Assert that ``actual`` is the same value as ``expected``.
      *
-     * For objects this compares by cobject identity; for primitives
+     * For objects this compares by object identity; for primitives
      * this distinguishes between 0 and -0, and has correct handling
      * of NaN.
      *
