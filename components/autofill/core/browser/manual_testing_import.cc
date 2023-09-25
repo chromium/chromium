@@ -93,7 +93,12 @@ absl::optional<AutofillProfile> MakeProfile(const base::Value::Dict& dict) {
   if (!source.has_value()) {
     return absl::nullopt;
   }
-  AutofillProfile profile(*source);
+  const std::string* country_code =
+      dict.FindString(FieldTypeToStringPiece(ADDRESS_HOME_COUNTRY));
+  AddressCountryCode address_country_code =
+      country_code ? AddressCountryCode(*country_code) : AddressCountryCode("");
+
+  AutofillProfile profile(*source, address_country_code);
   // `dict` is a dictionary of std::string -> base::Value.
   for (const auto [key, value] : dict) {
     if (key == kKeySource) {

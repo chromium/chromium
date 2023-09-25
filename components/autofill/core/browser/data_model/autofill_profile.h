@@ -16,6 +16,7 @@
 
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/address.h"
 #include "components/autofill/core/browser/data_model/autofill_data_model.h"
 #include "components/autofill/core/browser/data_model/birthdate.h"
@@ -65,9 +66,13 @@ class AutofillProfile : public AutofillDataModel {
   static constexpr int kInitialCreatorOrModifierChrome = 70073;
 
   AutofillProfile();
-  explicit AutofillProfile(const std::string& guid,
-                           Source source = Source::kLocalOrSyncable);
-  explicit AutofillProfile(Source source);
+  explicit AutofillProfile(
+      const std::string& guid,
+      Source source = Source::kLocalOrSyncable,
+      AddressCountryCode country_code = AddressCountryCode(""));
+  explicit AutofillProfile(
+      Source source,
+      AddressCountryCode country_code = AddressCountryCode(""));
 
   // Server profile constructor. The type must be SERVER_PROFILE (this serves
   // to differentiate this constructor). |server_id| can be empty. If empty,
@@ -280,6 +285,9 @@ class AutofillProfile : public AutofillDataModel {
 
   // Returns a constant reference to the |address_| field.
   const Address& GetAddress() const { return address_; }
+
+  // Returns the profile country code.
+  AddressCountryCode GetAddressCountryCode() const;
 
   // Returns the label of the profile.
   const std::string& profile_label() const { return profile_label_; }

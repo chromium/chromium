@@ -340,7 +340,7 @@ TEST(AutofillStructuredAddressAddressComponent, TestGetSupportedTypes) {
                                 NAME_LAST, NAME_FULL}));
 }
 
-// Tests the comparison of thw atoms of the same type.
+// Tests the comparison of the atoms of the same type.
 TEST(AutofillStructuredAddressAddressComponent, TestComparison_Atom) {
   AddressComponent left(NAME_FIRST, {}, MergeMode::kReplaceEmpty);
   AddressComponent right(NAME_FIRST, {}, MergeMode::kReplaceEmpty);

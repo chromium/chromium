@@ -31,13 +31,14 @@
 
 namespace autofill {
 
-Address::Address()
-    : structured_address_(
-          i18n_model_definition::CreateAddressComponentModel()){};
+Address::Address() : Address(AddressCountryCode("")) {}
 
-Address::Address(const Address& address) {
-  *this = address;
-}
+Address::Address(AddressCountryCode country_code)
+    : structured_address_(
+          i18n_model_definition::CreateAddressComponentModel(country_code)),
+      is_legacy_address_(
+          !i18n_model_definition::IsCustomHierarchyAvailableForCountry(
+              country_code)) {}
 
 Address::~Address() = default;
 
@@ -45,6 +46,14 @@ Address& Address::operator=(const Address& address) {
   if (this == &address) {
     return *this;
   }
+
+  // Only build an i18n address hierarchy for `this` in case the copied
+  // `address` uses an i18n hierarchy. Otherwise the legacy address should be
+  // used.
+  structured_address_ = i18n_model_definition::CreateAddressComponentModel(
+      address.GetAddressCountryCode());
+  is_legacy_address_ = address.IsLegacyAddress();
+
   structured_address_->CopyFrom(address.GetStructuredAddress());
   return *this;
 };
@@ -90,6 +99,12 @@ bool Address::IsStructuredAddressMergeable(const Address& newer) const {
 
 const AddressComponent& Address::GetStructuredAddress() const {
   return *structured_address_.get();
+}
+
+AddressCountryCode Address::GetAddressCountryCode() const {
+  std::string country_code = base::UTF16ToUTF8(
+      structured_address_->GetValueForType(ADDRESS_HOME_COUNTRY));
+  return AddressCountryCode(country_code);
 }
 
 std::u16string Address::GetRawInfo(ServerFieldType type) const {

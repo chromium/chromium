@@ -32,6 +32,9 @@ using i18n_model_definition::kAutofillParsingRulesMap;
 using TreeDefinition =
     base::flat_map<ServerFieldType, base::span<const ServerFieldType>>;
 
+using TreeEdgesList =
+    base::span<const autofill::i18n_model_definition::FieldTypeDescription>;
+
 // Address lines are currently the only computed types. These are are shared by
 // all countries.
 constexpr ServerFieldTypeSet kAddressComputedTypes = {
@@ -174,8 +177,7 @@ std::unique_ptr<AddressComponent> BuildSubTree(const TreeDefinition& tree_def,
   return BuildTreeNode(root, std::move(children));
 }
 
-base::span<const autofill::i18n_model_definition::FieldTypeDescription>
-GetTreeEdges(AddressCountryCode country_code) {
+TreeEdgesList GetTreeEdges(AddressCountryCode country_code) {
   // Always use legacy rules while `kAutofillUseI18nAddressModel` is not rolled
   // out.
   if (!base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel)) {
@@ -194,8 +196,7 @@ GetTreeEdges(AddressCountryCode country_code) {
 
 std::unique_ptr<AddressComponent> CreateAddressComponentModel(
     AddressCountryCode country_code) {
-  base::span<const autofill::i18n_model_definition::FieldTypeDescription>
-      tree_edges = GetTreeEdges(country_code);
+  TreeEdgesList tree_edges = GetTreeEdges(country_code);
 
   // Convert the list of node properties into an adjacency lookup table.
   // For each field type it stores the list of children of the field type.
@@ -275,6 +276,15 @@ bool IsTypeEnabledForCountry(ServerFieldType field_type,
         return description.field_type == field_type ||
                base::Contains(description.children, field_type);
       });
+}
+
+bool IsCustomHierarchyAvailableForCountry(AddressCountryCode country_code) {
+  if (country_code->empty() ||
+      !base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel)) {
+    return false;
+  }
+  return kAutofillModelRules.find(country_code.value()) !=
+         kAutofillModelRules.end();
 }
 
 }  // namespace autofill::i18n_model_definition

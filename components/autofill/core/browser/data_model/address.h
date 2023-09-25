@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address.h"
 #include "components/autofill/core/browser/data_model/form_group.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map.h"
@@ -19,7 +20,7 @@ namespace autofill {
 class Address : public FormGroup {
  public:
   Address();
-  Address(const Address& address);
+  explicit Address(AddressCountryCode country_code);
   ~Address() override;
 
   Address& operator=(const Address& address);
@@ -58,6 +59,12 @@ class Address : public FormGroup {
   // Returns a constant reference to |structured_address_|.
   const AddressComponent& GetStructuredAddress() const;
 
+  // Returns the structured address country code.
+  AddressCountryCode GetAddressCountryCode() const;
+
+  // Returns whether the structured address uses the legacy address hierarchy.
+  bool IsLegacyAddress() const { return is_legacy_address_; }
+
  private:
   // FormGroup:
   void GetSupportedTypes(ServerFieldTypeSet* supported_types) const override;
@@ -75,6 +82,9 @@ class Address : public FormGroup {
   // This data structure holds the address information if the structured address
   // feature is enabled.
   std::unique_ptr<AddressComponent> structured_address_;
+
+  // Whether the structured address uses the legacy hierarchy.
+  bool is_legacy_address_;
 };
 
 }  // namespace autofill

@@ -44,6 +44,9 @@ i18n_model_definition::ValueParsingResults ParseValueByI18nRegularExpression(
 bool IsTypeEnabledForCountry(ServerFieldType field_type,
                              AddressCountryCode country_code);
 
+// Returns whether there is a custom address hierarchy available for the
+// provided `country_code`.
+bool IsCustomHierarchyAvailableForCountry(AddressCountryCode country_code);
 }  // namespace autofill::i18n_model_definition
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_I18N_API_H_

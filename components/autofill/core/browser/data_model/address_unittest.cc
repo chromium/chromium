@@ -557,4 +557,33 @@ TEST_F(AddressTest, ResetStructuredTokens) {
             VerificationStatus::kNoStatus);
 }
 
+class I18nAddressTest : public testing::Test {
+ public:
+  I18nAddressTest() = default;
+
+ private:
+  base::test::ScopedFeatureList features_{
+      features::kAutofillUseI18nAddressModel};
+};
+
+TEST_F(I18nAddressTest, IsLegacyAddress) {
+  Address address;
+  EXPECT_TRUE(address.IsLegacyAddress());
+
+  Address address_br(AddressCountryCode("BR"));
+  EXPECT_FALSE(address_br.IsLegacyAddress());
+
+  Address address_mx(AddressCountryCode("MX"));
+  EXPECT_FALSE(address_mx.IsLegacyAddress());
+
+  Address i18_copy;
+  // The legacy address should adopt the non legacy one.
+  i18_copy = address_mx;
+  EXPECT_FALSE(i18_copy.IsLegacyAddress());
+
+  Address legacy_copy;
+  legacy_copy = address;
+  EXPECT_TRUE(legacy_copy.IsLegacyAddress());
+}
+
 }  // namespace autofill

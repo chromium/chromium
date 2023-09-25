@@ -225,9 +225,12 @@ void GetFieldsForDistinguishingProfiles(
 AutofillProfile::AutofillProfile()
     : AutofillProfile(Source::kLocalOrSyncable) {}
 
-AutofillProfile::AutofillProfile(const std::string& guid, Source source)
+AutofillProfile::AutofillProfile(const std::string& guid,
+                                 Source source,
+                                 AddressCountryCode country_code)
     : guid_(guid),
       phone_number_(this),
+      address_(country_code),
       record_type_(LOCAL_PROFILE),
       has_converted_(false),
       source_(source),
@@ -235,9 +238,10 @@ AutofillProfile::AutofillProfile(const std::string& guid, Source source)
       last_modifier_id_(kInitialCreatorOrModifierChrome),
       token_quality_(this) {}
 
-AutofillProfile::AutofillProfile(Source source)
+AutofillProfile::AutofillProfile(Source source, AddressCountryCode country_code)
     : AutofillProfile(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                      source) {}
+                      source,
+                      country_code) {}
 
 // TODO(crbug.com/1177366): Remove this constructor.
 AutofillProfile::AutofillProfile(RecordType type, const std::string& server_id)
@@ -676,6 +680,12 @@ bool AutofillProfile::IsStrictSupersetOf(
          !IsSubsetOf(comparator, profile);
 }
 
+AddressCountryCode AutofillProfile::GetAddressCountryCode() const {
+  std::string country_code =
+      base::UTF16ToUTF8(GetRawInfo(ADDRESS_HOME_COUNTRY));
+  return AddressCountryCode(country_code);
+}
+
 void AutofillProfile::OverwriteDataFrom(const AutofillProfile& profile) {
   DCHECK_EQ(guid(), profile.guid());
 
@@ -920,7 +930,8 @@ std::u16string AutofillProfile::ConstructInferredLabel(
 
   // A copy of |this| pruned down to contain only data for the address fields in
   // |included_fields|.
-  AutofillProfile trimmed_profile(guid());
+  AutofillProfile trimmed_profile(guid(), Source::kLocalOrSyncable,
+                                  GetAddressCountryCode());
   trimmed_profile.SetInfo(AutofillType(HtmlFieldType::kCountryCode),
                           profile_region_code, app_locale);
   trimmed_profile.set_language_code(language_code());
