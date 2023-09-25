@@ -16,11 +16,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
-#include "url/gurl.h"
-
-namespace content {
-class BrowserContext;
-}
 
 // This class may only be used from the UI thread.
 class BlobReader : public blink::mojom::BlobReaderClient,
@@ -33,13 +28,12 @@ class BlobReader : public blink::mojom::BlobReaderClient,
                                   int64_t blob_total_size)>
       BlobReadCallback;
 
-  static void Read(content::BrowserContext* browser_context,
-                   const std::string& blob_uuid,
+  static void Read(mojo::PendingRemote<blink::mojom::Blob> blob,
                    BlobReadCallback callback,
-                   int64_t offset,
-                   int64_t length);
-  static void Read(content::BrowserContext* browser_context,
-                   const std::string& blob_uuid,
+                   uint64_t offset,
+                   uint64_t length);
+
+  static void Read(mojo::PendingRemote<blink::mojom::Blob> blob,
                    BlobReadCallback callback);
 
   BlobReader(const BlobReader&) = delete;
@@ -53,10 +47,9 @@ class BlobReader : public blink::mojom::BlobReaderClient,
     uint64_t length;
   };
 
-  static void Read(content::BrowserContext* browser_context,
-                   const std::string& blob_uuid,
+  static void Read(mojo::PendingRemote<blink::mojom::Blob> blob,
                    BlobReadCallback callback,
-                   absl::optional<BlobReader::Range> range);
+                   absl::optional<Range> range);
 
   BlobReader(mojo::PendingRemote<blink::mojom::Blob> blob,
              absl::optional<Range> range);

@@ -147,8 +147,9 @@ void FeedbackService::FetchAttachedFileAndScreenshot(
         },
         feedback_data);
 
-    BlobReader::Read(browser_context_, feedback_data->attached_file_uuid(),
-                     std::move(populate_attached_file).Then(barrier_closure));
+    BlobReader::Read(
+        browser_context_->GetBlobRemote(feedback_data->attached_file_uuid()),
+        std::move(populate_attached_file).Then(barrier_closure));
   }
 
   if (must_attach_screenshot) {
@@ -160,8 +161,9 @@ void FeedbackService::FetchAttachedFileAndScreenshot(
             feedback_data->set_image(std::move(*data));
         },
         feedback_data);
-    BlobReader::Read(browser_context_, feedback_data->screenshot_uuid(),
-                     std::move(populate_screenshot).Then(barrier_closure));
+    BlobReader::Read(
+        browser_context_->GetBlobRemote(feedback_data->screenshot_uuid()),
+        std::move(populate_screenshot).Then(barrier_closure));
   }
 }
 

@@ -8,42 +8,37 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "content/public/browser/browser_context.h"
+#include "base/memory/ptr_util.h"
 #include "content/public/browser/browser_thread.h"
 
 // static
-void BlobReader::Read(content::BrowserContext* browser_context,
-                      const std::string& blob_uuid,
-                      BlobReader::BlobReadCallback callback,
-                      int64_t offset,
-                      int64_t length) {
+void BlobReader::Read(mojo::PendingRemote<blink::mojom::Blob> blob,
+                      BlobReadCallback callback,
+                      uint64_t offset,
+                      uint64_t length) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  CHECK_GE(offset, 0);
-  CHECK_GT(length, 0);
-  CHECK_LE(offset, std::numeric_limits<int64_t>::max() - length);
+  CHECK_GE(offset, 0U);
+  CHECK_GT(length, 0U);
+  CHECK_LE(offset, std::numeric_limits<uint64_t>::max() - length);
 
-  absl::optional<Range> range =
-      Range{static_cast<uint64_t>(offset), static_cast<uint64_t>(length)};
-  Read(browser_context, blob_uuid, std::move(callback), std::move(range));
+  Read(std::move(blob), std::move(callback), Range{offset, length});
 }
 
 // static
-void BlobReader::Read(content::BrowserContext* browser_context,
-                      const std::string& blob_uuid,
-                      BlobReader::BlobReadCallback callback) {
+void BlobReader::Read(mojo::PendingRemote<blink::mojom::Blob> blob,
+                      BlobReadCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  Read(browser_context, blob_uuid, std::move(callback), absl::nullopt);
+  Read(std::move(blob), std::move(callback), /*range=*/absl::nullopt);
 }
 
 BlobReader::~BlobReader() { DCHECK_CURRENTLY_ON(content::BrowserThread::UI); }
 
 // static
-void BlobReader::Read(content::BrowserContext* browser_context,
-                      const std::string& blob_uuid,
-                      BlobReader::BlobReadCallback callback,
+void BlobReader::Read(mojo::PendingRemote<blink::mojom::Blob> blob,
+                      BlobReadCallback callback,
                       absl::optional<BlobReader::Range> range) {
-  std::unique_ptr<BlobReader> reader(new BlobReader(
-      browser_context->GetBlobRemote(blob_uuid), std::move(range)));
+  auto reader =
+      base::WrapUnique(new BlobReader(std::move(blob), std::move(range)));
 
   // Move the reader to be owned by the callback, so hold onto a temporary
   // pointer to it so we can still call Start on it.

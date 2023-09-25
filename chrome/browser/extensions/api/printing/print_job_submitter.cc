@@ -185,9 +185,10 @@ void PrintJobSubmitter::CheckCapabilitiesCompatibility(
 
 void PrintJobSubmitter::ReadDocumentData() {
   DCHECK(request_.document_blob_uuid);
-  BlobReader::Read(browser_context_, *request_.document_blob_uuid,
-                   base::BindOnce(&PrintJobSubmitter::OnDocumentDataRead,
-                                  weak_ptr_factory_.GetWeakPtr()));
+  BlobReader::Read(
+      browser_context_->GetBlobRemote(*request_.document_blob_uuid),
+      base::BindOnce(&PrintJobSubmitter::OnDocumentDataRead,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PrintJobSubmitter::OnDocumentDataRead(std::unique_ptr<std::string> data,
