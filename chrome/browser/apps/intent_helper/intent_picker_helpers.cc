@@ -16,7 +16,6 @@
 #include "chrome/browser/apps/intent_helper/chromeos_intent_picker_helpers.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_auto_display_prefs.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_features.h"
-#include "chrome/browser/apps/intent_helper/intent_picker_internal.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/share/share_attempt.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
@@ -40,6 +39,36 @@ std::vector<apps::IntentPickerAppInfo> CombinePossibleMacAppWithOtherApps(
     apps.emplace_back(std::move(mac_app.value()));
   }
   return apps;
+}
+
+PickerEntryType GetPickerEntryType(AppType app_type) {
+  PickerEntryType picker_entry_type = PickerEntryType::kUnknown;
+  switch (app_type) {
+    case AppType::kUnknown:
+    case AppType::kBuiltIn:
+    case AppType::kCrostini:
+    case AppType::kPluginVm:
+    case AppType::kChromeApp:
+    case AppType::kExtension:
+    case AppType::kStandaloneBrowser:
+    case AppType::kStandaloneBrowserChromeApp:
+    case AppType::kRemote:
+    case AppType::kBorealis:
+    case AppType::kBruschetta:
+    case AppType::kStandaloneBrowserExtension:
+      break;
+    case AppType::kArc:
+      picker_entry_type = PickerEntryType::kArc;
+      break;
+    case AppType::kWeb:
+    case AppType::kSystemWeb:
+      picker_entry_type = PickerEntryType::kWeb;
+      break;
+    case AppType::kMacOs:
+      picker_entry_type = PickerEntryType::kMacOs;
+      break;
+  }
+  return picker_entry_type;
 }
 
 }  // namespace
@@ -77,7 +106,7 @@ void FindAllAppsForUrl(
   for (const std::string& app_id : app_ids) {
     proxy->AppRegistryCache().ForOneApp(
         app_id, [&apps](const apps::AppUpdate& update) {
-          apps.emplace_back(apps::GetPickerEntryType(update.AppType()),
+          apps.emplace_back(GetPickerEntryType(update.AppType()),
                             ui::ImageModel(), update.AppId(), update.Name());
         });
   }
