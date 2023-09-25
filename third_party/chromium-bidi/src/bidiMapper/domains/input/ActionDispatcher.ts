@@ -225,8 +225,7 @@ export class ActionDispatcher {
     source.pressed.add(button);
     const {x, y, subtype: pointerType} = source;
     const {width, height, pressure, twist, tangentialPressure} = action;
-    const {tiltX, tiltY} = 'tiltX' in action ? action : ({} as never);
-    // TODO: Implement azimuth/altitude angle.
+    const {tiltX, tiltY} = getTilt(action);
 
     // --- Platform-specific code begins here ---
     const {modifiers} = keyState;
@@ -348,8 +347,7 @@ export class ActionDispatcher {
       origin = 'viewport',
       duration = this.#tickDuration,
     } = action;
-    const {tiltX, tiltY} = 'tiltX' in action ? action : ({} as never);
-    // TODO: Implement azimuth/altitude angle.
+    const {tiltX, tiltY} = getTilt(action);
 
     const {targetX, targetY} = await this.#getCoordinateFromOrigin(
       origin,
@@ -821,4 +819,71 @@ function getCdpButton(button: number) {
     default:
       return 'none';
   }
+}
+
+function getTilt(
+  action:
+    | {tiltX?: number; tiltY?: number}
+    | {azimuthAngle?: number; altitudeAngle?: number}
+): {tiltX: number; tiltY: number} {
+  let tiltX = 0;
+  let tiltY = 0;
+  if ('tiltX' in action || 'tiltY' in action) {
+    tiltX = action.tiltX ?? tiltX;
+    tiltY = action.tiltY ?? tiltY;
+  }
+  if ('azimuthAngle' in action || 'altitudeAngle' in action) {
+    // https://w3c.github.io/pointerevents/#converting-between-tiltx-tilty-and-altitudeangle-azimuthangle
+    const altitudeAngle = action.altitudeAngle ?? 0;
+    const azimuthAngle = action.azimuthAngle ?? 0;
+    let tiltXRadians = 0;
+    let tiltYRadians = 0;
+
+    if (altitudeAngle === 0) {
+      // the pen is in the X-Y plane
+      if (azimuthAngle === 0 || azimuthAngle === 2 * Math.PI) {
+        // pen is on positive X axis
+        tiltXRadians = Math.PI / 2;
+      }
+      if (azimuthAngle === Math.PI / 2) {
+        // pen is on positive Y axis
+        tiltYRadians = Math.PI / 2;
+      }
+      if (azimuthAngle === Math.PI) {
+        // pen is on negative X axis
+        tiltXRadians = -Math.PI / 2;
+      }
+      if (azimuthAngle === (3 * Math.PI) / 2) {
+        // pen is on negative Y axis
+        tiltYRadians = -Math.PI / 2;
+      }
+      if (azimuthAngle > 0 && azimuthAngle < Math.PI / 2) {
+        tiltXRadians = Math.PI / 2;
+        tiltYRadians = Math.PI / 2;
+      }
+      if (azimuthAngle > Math.PI / 2 && azimuthAngle < Math.PI) {
+        tiltXRadians = -Math.PI / 2;
+        tiltYRadians = Math.PI / 2;
+      }
+      if (azimuthAngle > Math.PI && azimuthAngle < (3 * Math.PI) / 2) {
+        tiltXRadians = -Math.PI / 2;
+        tiltYRadians = -Math.PI / 2;
+      }
+      if (azimuthAngle > (3 * Math.PI) / 2 && azimuthAngle < 2 * Math.PI) {
+        tiltXRadians = Math.PI / 2;
+        tiltYRadians = -Math.PI / 2;
+      }
+    }
+
+    if (altitudeAngle !== 0) {
+      const tanAlt = Math.tan(altitudeAngle);
+      tiltXRadians = Math.atan(Math.cos(azimuthAngle) / tanAlt);
+      tiltYRadians = Math.atan(Math.sin(azimuthAngle) / tanAlt);
+    }
+
+    const factor = 180 / Math.PI;
+    tiltX = tiltXRadians * factor;
+    tiltY = tiltYRadians * factor;
+  }
+  return {tiltX, tiltY};
 }
