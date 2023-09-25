@@ -1,6 +1,6 @@
 Name: error-prone check api
 Short Name: error_prone_check_api
-URL: https://errorprone.info/
+URL: 
 Version: 2.11.0
 License: Apache 2.0
 License File: LICENSE

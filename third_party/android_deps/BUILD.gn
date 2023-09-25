@@ -167,6 +167,7 @@ java_prebuilt("com_google_auto_service_auto_service_java") {
 java_prebuilt("com_google_auto_service_auto_service_annotations_java") {
   jar_path = "libs/com_google_auto_service_auto_service_annotations/auto-service-annotations-1.0-rc6.jar"
   output_name = "com_google_auto_service_auto_service_annotations"
+  supports_android = true
   enable_bytecode_checks = false
 }
 
