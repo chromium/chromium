@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
@@ -54,26 +53,40 @@ GetVerifierProfilePasswordStoreInterface();
 password_manager::PasswordStoreInterface* GetAccountPasswordStoreInterface(
     int index);
 
+// Gets either the profile-scoped or the account-scoped password store of the
+// profile with index |index|.
+password_manager::PasswordStoreInterface* GetPasswordStoreInterface(
+    int index,
+    password_manager::PasswordForm::Store store);
+
 // Returns true iff the profile with index |index| contains the same password
 // forms as the verifier profile.
 bool ProfileContainsSamePasswordFormsAsVerifier(int index);
 
 // Returns true iff the profile with index |index_a| contains the same
 // password forms as the profile with index |index_b|.
-bool ProfilesContainSamePasswordForms(int index_a, int index_b);
+bool ProfilesContainSamePasswordForms(
+    int index_a,
+    int index_b,
+    password_manager::PasswordForm::Store store =
+        password_manager::PasswordForm::Store::kProfileStore);
 
 // Returns true iff all profiles contain the same password forms as the
 // verifier profile.
 bool AllProfilesContainSamePasswordFormsAsVerifier();
 
 // Returns true iff all profiles contain the same password forms.
-bool AllProfilesContainSamePasswordForms();
+bool AllProfilesContainSamePasswordForms(
+    password_manager::PasswordForm::Store store =
+        password_manager::PasswordForm::Store::kProfileStore);
 
 bool AwaitProfileContainsSamePasswordFormsAsVerifier(int index);
 
 // Returns the number of forms in the password store of the profile with index
 // |index|.
-int GetPasswordCount(int index);
+int GetPasswordCount(int index,
+                     password_manager::PasswordForm::Store store =
+                         password_manager::PasswordForm::Store::kProfileStore);
 
 // Returns the number of forms in the password store of the verifier profile.
 int GetVerifierPasswordCount();
@@ -123,12 +136,15 @@ class PasswordSyncActiveChecker : public SingleClientStatusChangeChecker {
 // Checker to block until all profiles contain the same password forms.
 class SamePasswordFormsChecker : public MultiClientStatusChangeChecker {
  public:
-  SamePasswordFormsChecker();
+  explicit SamePasswordFormsChecker(
+      password_manager::PasswordForm::Store store =
+          password_manager::PasswordForm::Store::kProfileStore);
   ~SamePasswordFormsChecker() override;
   // StatusChangeChecker implementation.
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
  private:
+  const password_manager::PasswordForm::Store store_;
   bool in_progress_ = false;
   bool needs_recheck_ = false;
 };

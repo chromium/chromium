@@ -9,7 +9,6 @@
 
 #include "base/hash/hash.h"
 #include "base/rand_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
@@ -20,11 +19,11 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/sync/base/features.h"
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
-#include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/test/fake_server_http_post_provider.h"
 #include "content/public/test/browser_test.h"
 #include "net/base/network_change_notifier.h"
@@ -32,6 +31,7 @@
 using passwords_helper::AllProfilesContainSamePasswordForms;
 using passwords_helper::AllProfilesContainSamePasswordFormsAsVerifier;
 using passwords_helper::CreateTestPasswordForm;
+using passwords_helper::GetAccountPasswordStoreInterface;
 using passwords_helper::GetAllLogins;
 using passwords_helper::GetLogins;
 using passwords_helper::GetPasswordCount;
@@ -81,6 +81,40 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, E2E_ENABLED(Add)) {
 
   ASSERT_TRUE(SamePasswordFormsChecker().Wait());
   ASSERT_EQ(1, GetPasswordCount(1));
+}
+
+IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
+                       E2E_ENABLED(AddInTransportMode)) {
+  ResetSyncForPrimaryAccount();
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+
+  // Sign in on all clients without enabling Sync-the-feature.
+  for (int i = 0; i < num_clients(); i++) {
+    GetClient(i)->SignInPrimaryAccount();
+    ASSERT_TRUE(GetClient(i)->AwaitSyncTransportActive());
+    // The user hasn't opted in, so PASSWORDS is not active yet.
+    ASSERT_FALSE(GetSyncService(i)->GetActiveDataTypes().Has(
+        syncer::ModelType::PASSWORDS));
+    ASSERT_FALSE(GetSyncService(i)->IsSyncFeatureEnabled());
+
+    // Opt in. PASSWORDS should become active.
+    password_manager::features_util::OptInToAccountStorage(
+        GetProfile(i)->GetPrefs(), GetSyncService(i));
+    PasswordSyncActiveChecker(GetSyncService(i)).Wait();
+  }
+
+  ASSERT_TRUE(
+      SamePasswordFormsChecker(PasswordForm::Store::kAccountStore).Wait());
+
+  // Create an account password on the first client.
+  PasswordForm form = CreateTestPasswordForm(0);
+  GetAccountPasswordStoreInterface(0)->AddLogin(form);
+  ASSERT_EQ(1, GetPasswordCount(0, PasswordForm::Store::kAccountStore));
+
+  // The second client should receive the password in its own account store.
+  EXPECT_TRUE(
+      SamePasswordFormsChecker(PasswordForm::Store::kAccountStore).Wait());
+  EXPECT_EQ(1, GetPasswordCount(1, PasswordForm::Store::kAccountStore));
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest, E2E_ENABLED(Race)) {

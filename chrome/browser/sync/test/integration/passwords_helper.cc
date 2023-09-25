@@ -143,6 +143,19 @@ PasswordStoreInterface* GetAccountPasswordStoreInterface(int index) {
       .get();
 }
 
+password_manager::PasswordStoreInterface* GetPasswordStoreInterface(
+    int index,
+    PasswordForm::Store store) {
+  switch (store) {
+    case PasswordForm::Store::kNotSet:
+      NOTREACHED_NORETURN();
+    case PasswordForm::Store::kProfileStore:
+      return GetProfilePasswordStoreInterface(index);
+    case PasswordForm::Store::kAccountStore:
+      return GetAccountPasswordStoreInterface(index);
+  }
+}
+
 bool ProfileContainsSamePasswordFormsAsVerifier(int index) {
   std::vector<std::unique_ptr<PasswordForm>> verifier_forms =
       GetLogins(GetVerifierProfilePasswordStoreInterface());
@@ -160,11 +173,13 @@ bool ProfileContainsSamePasswordFormsAsVerifier(int index) {
   return is_matching;
 }
 
-bool ProfilesContainSamePasswordForms(int index_a, int index_b) {
+bool ProfilesContainSamePasswordForms(int index_a,
+                                      int index_b,
+                                      PasswordForm::Store store) {
   std::vector<std::unique_ptr<PasswordForm>> forms_a =
-      GetLogins(GetProfilePasswordStoreInterface(index_a));
+      GetLogins(GetPasswordStoreInterface(index_a, store));
   std::vector<std::unique_ptr<PasswordForm>> forms_b =
-      GetLogins(GetProfilePasswordStoreInterface(index_b));
+      GetLogins(GetPasswordStoreInterface(index_b, store));
 
   std::ostringstream mismatch_details_stream;
   bool is_matching = password_manager::ContainsEqualPasswordFormsUnordered(
@@ -191,9 +206,9 @@ bool AllProfilesContainSamePasswordFormsAsVerifier() {
   return true;
 }
 
-bool AllProfilesContainSamePasswordForms() {
+bool AllProfilesContainSamePasswordForms(PasswordForm::Store store) {
   for (int i = 1; i < test()->num_clients(); ++i) {
-    if (!ProfilesContainSamePasswordForms(0, i)) {
+    if (!ProfilesContainSamePasswordForms(0, i, store)) {
       DVLOG(1) << "Profile " << i
                << " does not contain the same password"
                   " forms as Profile 0.";
@@ -203,8 +218,8 @@ bool AllProfilesContainSamePasswordForms() {
   return true;
 }
 
-int GetPasswordCount(int index) {
-  return GetLogins(GetProfilePasswordStoreInterface(index)).size();
+int GetPasswordCount(int index, PasswordForm::Store store) {
+  return GetLogins(GetPasswordStoreInterface(index, store)).size();
 }
 
 int GetVerifierPasswordCount() {
@@ -279,9 +294,10 @@ bool PasswordSyncActiveChecker::IsExitConditionSatisfied(std::ostream* os) {
   return service()->GetActiveDataTypes().Has(syncer::PASSWORDS);
 }
 
-SamePasswordFormsChecker::SamePasswordFormsChecker()
+SamePasswordFormsChecker::SamePasswordFormsChecker(PasswordForm::Store store)
     : MultiClientStatusChangeChecker(
-          sync_datatype_helper::test()->GetSyncServices()) {}
+          sync_datatype_helper::test()->GetSyncServices()),
+      store_(store) {}
 
 SamePasswordFormsChecker::~SamePasswordFormsChecker() = default;
 
@@ -313,7 +329,7 @@ bool SamePasswordFormsChecker::IsExitConditionSatisfied(std::ostream* os) {
   in_progress_ = true;
   do {
     needs_recheck_ = false;
-    result = passwords_helper::AllProfilesContainSamePasswordForms();
+    result = passwords_helper::AllProfilesContainSamePasswordForms(store_);
   } while (needs_recheck_);
   in_progress_ = false;
   return result;
