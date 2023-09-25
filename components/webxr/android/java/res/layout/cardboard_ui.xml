@@ -52,7 +52,7 @@ found in the LICENSE file.
             <org.chromium.ui.widget.ChromeImageButton
                 style="@style/CardboardUiButton"
                 android:id="@+id/cardboard_ui_settings_button"
-                android:contentDescription="@string/menu"
+                android:contentDescription="@string/vr_menu"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_more_vert_24dp_on_dark_bg"
