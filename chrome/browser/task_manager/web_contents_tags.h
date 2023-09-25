@@ -13,7 +13,7 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/web_applications/web_app_id.h"
+#include "components/webapps/common/web_app_id.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 class BackgroundContents;
@@ -116,7 +116,7 @@ class WebContentsTags {
   // not have to be cleaned up by the caller, as it is owned by |web_contents|.
   // |app_id| is the string ID of the web app.
   static void CreateForWebApp(content::WebContents* web_contents,
-                              const web_app::AppId& app_id,
+                              const webapps::AppId& app_id,
                               const bool is_isolated_web_app);
 #endif  // !BUILDFLAG(IS_ANDROID)
 

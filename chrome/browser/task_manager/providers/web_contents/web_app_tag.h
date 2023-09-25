@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_TASK_MANAGER_PROVIDERS_WEB_CONTENTS_WEB_APP_TAG_H_
 
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_tag.h"
-#include "chrome/browser/web_applications/web_app_id.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace task_manager {
 
@@ -25,10 +25,10 @@ class WebAppTag : public WebContentsTag {
   friend class WebContentsTags;
 
   WebAppTag(content::WebContents* web_contents,
-            const web_app::AppId& app_id,
+            const webapps::AppId& app_id,
             const bool is_isolated_web_app);
 
-  const web_app::AppId app_id_;
+  const webapps::AppId app_id_;
   const bool is_isolated_web_app_;
 };
 
