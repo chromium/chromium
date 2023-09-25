@@ -58,7 +58,12 @@ def parse_args(argv):
 
 
 def main(args):
-  for f in ('gn_isolate_map.pyl', 'mixins.pyl', 'variants.pyl'):
+  for f in (
+      'gn_isolate_map.pyl',
+      'mixins.pyl',
+      'test_suites.pyl',
+      'variants.pyl',
+  ):
     error = args.func(os.path.normpath(f'{GENERATED_TESTING_DIR}/{f}'),
                       os.path.normpath(f'{TESTING_BUILDBOT_DIR}/{f}'))
     if error is not None:

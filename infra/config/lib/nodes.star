@@ -118,16 +118,17 @@ def _create_unscoped_node_type(kind, allow_unnamed = False):
         get = get,
     )
 
-def _create_bucket_scoped_node_type(kind):
-    """Create a node type scoped to a bucket.
+def _create_scoped_node_type(kind, scope_kind):
+    """Create a node type scoped to another kind.
 
-    Bucket-scoped node types allow for one node to exist with a given key_value
-    per bucket. Key values are arbitrary, it is up to the calling code to assign
-    meaning to the key values and enforce validity.
+    Scoped node types allow for a node to exist with a given key value per key
+    value of the scope kind. Key values are arbitrary, it is up to the calling
+    code to assign meaning to the key values and enforce validity.
 
     Args:
-        kind: (str) An identifier for the kind of the node. Must be unique
-            within the chromium namespace.
+        kind: (str) An identifier for the kind of the node. Must be unique within
+            the chromium namespace.
+        scope_kind: (str) An identifier for the scope kind.
 
     Returns:
         A node type that can be used for creating and getting nodes of
@@ -137,25 +138,25 @@ def _create_bucket_scoped_node_type(kind):
         * kind: The kind of nodes of the type.
 
         The node types has the following methods:
-        * key(bucket_name, key_value): Creates a key with the given bucket and
-            value.
-        * add(bucket_name, key_value, **kwargs): Adds a node with a key created
-            via `key(bucket_name, key_value)`. `graph.add_node` will be called
-            with the key and `**kwargs`. Returns the key.
-        * get(key_value): Gets the node with the key given by
-            `key(bucket_name, key_value)`.
+        * key(scope_key_value, key_value): Creates a key with the given scope
+            value as the container and key_value as the ID.
+        * add(scope_key_value, key_value, **kwargs): Adds a node with a key
+            created via `key(scope_key_value, key_value)`. `graph.add_node` will
+            be called with the key and `**kwargs`. Returns the key.
+        * get(scope_key_value, key_value): Gets the node with the key given by
+            `key(scope_key_value, key_value)`.
     """
 
-    def key(bucket_name, key_value):
-        return graph.key(_CHROMIUM_NS_KIND, "", kinds.BUCKET, bucket_name, kind, key_value)
+    def key(scope_key_value, key_value):
+        return graph.key(_CHROMIUM_NS_KIND, "", scope_kind, scope_key_value, kind, key_value)
 
-    def add(bucket_name, key_value, **kwargs):
-        k = key(bucket_name, key_value)
+    def add(scope_key_value, key_value, **kwargs):
+        k = key(scope_key_value, key_value)
         graph.add_node(k, **kwargs)
         return k
 
-    def get(bucket_name, key_value):
-        return graph.node(key(bucket_name, key_value))
+    def get(scope_key_value, key_value):
+        return graph.node(key(scope_key_value, key_value))
 
     return struct(
         kind = kind,
@@ -387,7 +388,8 @@ nodes = struct(
     BUILDER = _BUILDER,
     create_singleton_node_type = _create_singleton_node_type,
     create_unscoped_node_type = _create_unscoped_node_type,
-    create_bucket_scoped_node_type = _create_bucket_scoped_node_type,
+    create_scoped_node_type = _create_scoped_node_type,
+    create_bucket_scoped_node_type = lambda kind: _create_scoped_node_type(kind, kinds.BUCKET),
     create_node_type_with_builder_ref = _create_node_type_with_builder_ref,
     create_link_node_type = _create_link_node_type,
 )

@@ -87,19 +87,51 @@ rules {
         arg: "executable_suffix"
         arg: "skip_usage_check"
 
-        # mixin/variant
+        # variant
         arg: "enabled"
         arg: "identifier"
         arg: "description"
+
+        # tests
+        arg: "test"
+        arg: "override_compile_targets"
+        arg: "results_handler"
+        arg: "telemetry_test_name"
+        arg: "tast_expr"
+        arg: "test_level_retries"
+        arg: "mixins"
+        arg: "remove_mixins"
+
+        # mixin/variant/test common fields
         arg: "args"
         arg: "precommit_args"
+        arg: "android_args"
+        arg: "chromeos_args"
+        arg: "desktop_args"
+        arg: "lacros_args"
         arg: "linux_args"
         arg: "mac_args"
         arg: "win64_args"
+        arg: "ci_only"
+        arg: "swarming"
+        arg: "android_swarming"
+        arg: "chromeos_swarming"
+        arg: "merge"
+        arg: "resultdb"
+        arg: "timeout_sec"
+        arg: "experiment_percentage"
 
         # swarming
+        arg: "shards"
         arg: "dimensions"
         arg: "optional_dimensions"
+        arg: "expiration_sec"
+        arg: "hard_timeout_sec"
+        arg: "io_timeout_sec"
+
+        # resultdb
+        arg: "enable"
+        arg: "result_format"
 
         # cipd_package
         arg: "package"
