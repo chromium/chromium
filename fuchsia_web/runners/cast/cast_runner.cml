@@ -80,24 +80,4 @@
       path: "/cache",
     },
   ],
-  environments: [
-    {
-      name: "cast-capable-env",
-      extends: "none",
-      __stop_timeout_ms: 1000,
-      resolvers: [
-        {
-          resolver: "cast-resolver",
-          from: "self",
-          scheme: "cast",
-        },
-      ],
-      runners: [
-        {
-          runner: "cast-runner",
-          from: "self",
-        },
-      ],
-    },
-  ],
 }
