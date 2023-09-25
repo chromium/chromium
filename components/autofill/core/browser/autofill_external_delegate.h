@@ -14,7 +14,10 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
+#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
+#include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -34,7 +37,8 @@ class CreditCard;
 // this logic. See http://crbug.com/51644
 
 // Delegate for in-browser Autocomplete and Autofill display and selection.
-class AutofillExternalDelegate : public AutofillPopupDelegate {
+class AutofillExternalDelegate : public AutofillPopupDelegate,
+                                 public PersonalDataManagerObserver {
  public:
   // Creates an AutofillExternalDelegate for the specified
   // BrowserAutofillManager and AutofillDriver.
@@ -124,6 +128,9 @@ class AutofillExternalDelegate : public AutofillPopupDelegate {
   // values or settings.
   void Reset();
 
+  // PersonalDataManagerObserver:
+  void OnPersonalDataFinishedProfileTasks() override;
+
   const FormData& query_form() const { return query_form_; }
 
   base::WeakPtr<AutofillExternalDelegate> GetWeakPtrForTest() {
@@ -135,6 +142,15 @@ class AutofillExternalDelegate : public AutofillPopupDelegate {
                            FillCreditCardFormImpl);
 
   base::WeakPtr<AutofillExternalDelegate> GetWeakPtr();
+
+  // Shows the address editor to the user. The Autofill profile to edit is
+  // determined by passed `guid`.
+  void ShowEditAddressProfileDialog(const std::string& guid);
+
+  // Triggered when user closes the address editor dialog.
+  void OnAddressEditorClosed(
+      AutofillClient::SaveAddressProfileOfferUserDecision decision,
+      AutofillProfile profile);
 
   // Called when a credit card is scanned using device camera.
   void OnCreditCardScanned(const AutofillTriggerSource trigger_source,
@@ -206,6 +222,9 @@ class AutofillExternalDelegate : public AutofillPopupDelegate {
 
   // If not null then it will be called in destructor.
   base::OnceClosure deletion_callback_;
+
+  base::ScopedObservation<PersonalDataManager, PersonalDataManagerObserver>
+      pdm_observation_{this};
 
   base::WeakPtrFactory<AutofillExternalDelegate> weak_ptr_factory_{this};
 };

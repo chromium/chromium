@@ -392,7 +392,8 @@ void ChromeAutofillClientIOS::ConfirmSaveAddressProfile(
 }
 
 void ChromeAutofillClientIOS::ShowEditAddressProfileDialog(
-    const AutofillProfile& profile) {
+    const AutofillProfile& profile,
+    AddressProfileSavePromptCallback on_user_decision_callback) {
   NOTREACHED_NORETURN();
 }
 

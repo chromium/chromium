@@ -387,7 +387,10 @@ class TestAutofillClientTemplate : public T {
       AutofillClient::SaveAddressProfilePromptOptions options,
       AutofillClient::AddressProfileSavePromptCallback callback) override {}
 
-  void ShowEditAddressProfileDialog(const AutofillProfile& profile) override {}
+  void ShowEditAddressProfileDialog(
+      const AutofillProfile& profile,
+      AutofillClient::AddressProfileSavePromptCallback
+          on_user_decision_callback) override {}
 
   void ShowDeleteAddressProfileDialog() override {}
 

@@ -207,7 +207,8 @@ void AwAutofillClient::ConfirmSaveCreditCardLocally(
 }
 
 void AwAutofillClient::ShowEditAddressProfileDialog(
-    const autofill::AutofillProfile& profile) {
+    const autofill::AutofillProfile& profile,
+    AddressProfileSavePromptCallback on_user_decision_callback) {
   NOTREACHED();
 }
 

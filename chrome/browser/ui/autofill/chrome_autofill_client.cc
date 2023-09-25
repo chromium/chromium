@@ -845,16 +845,18 @@ void ChromeAutofillClient::ConfirmCreditCardFillAssist(
 }
 
 void ChromeAutofillClient::ShowEditAddressProfileDialog(
-    const AutofillProfile& profile) {
+    const AutofillProfile& profile,
+    AddressProfileSavePromptCallback on_user_decision_callback) {
 #if !BUILDFLAG(IS_ANDROID)
   EditAddressProfileDialogControllerImpl::CreateForWebContents(web_contents());
   EditAddressProfileDialogControllerImpl* controller =
       EditAddressProfileDialogControllerImpl::FromWebContents(web_contents());
   CHECK(controller);
-  controller->OfferEdit(profile, /*original_profile=*/nullptr,
-                        /*footer_message=*/u"",
-                        /*on_user_decision_callback=*/base::DoNothing(),
-                        /*is_migration_to_account=*/false);
+  controller->OfferEdit(
+      profile, /*original_profile=*/nullptr,
+      /*footer_message=*/u"",
+      /*on_user_decision_callback=*/std::move(on_user_decision_callback),
+      /*is_migration_to_account=*/false);
 #else
   // Edit address profile dialog is only available is desktop.
   NOTREACHED_NORETURN();

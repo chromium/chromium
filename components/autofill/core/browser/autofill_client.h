@@ -373,6 +373,8 @@ class AutofillClient : public RiskDataLoader {
   typedef base::RepeatingCallback<void(WebauthnDialogCallbackType)>
       WebauthnDialogCallback;
 
+  // TODO(crbug.com/1486412): investigate if AutofillProfile should be passed
+  // by const reference.
   using AddressProfileSavePromptCallback =
       base::OnceCallback<void(SaveAddressProfileOfferUserDecision,
                               AutofillProfile profile)>;
@@ -702,8 +704,11 @@ class AutofillClient : public RiskDataLoader {
                                            base::OnceClosure callback) = 0;
 
   // Show an edit address profile dialog, giving the user an option to alter
-  // autofill profile data.
-  virtual void ShowEditAddressProfileDialog(const AutofillProfile& profile) = 0;
+  // autofill profile data. `on_user_decision_callback` is used to react to the
+  // user decision of either saving changes or not.
+  virtual void ShowEditAddressProfileDialog(
+      const AutofillProfile& profile,
+      AddressProfileSavePromptCallback on_user_decision_callback) = 0;
 
   // Show a delete address profile dialog asking if users want to proceed with
   // deletion.

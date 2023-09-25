@@ -265,7 +265,8 @@ void WebViewAutofillClientIOS::ConfirmSaveAddressProfile(
 }
 
 void WebViewAutofillClientIOS::ShowEditAddressProfileDialog(
-    const AutofillProfile& profile) {
+    const AutofillProfile& profile,
+    AddressProfileSavePromptCallback on_user_decision_callback) {
   // Please note: This method is only implemented on desktop and is therefore
   // unreachable here.
   NOTREACHED();

@@ -20,6 +20,7 @@ bool ShouldAutofillOnEmptyValues(
     case AutofillSuggestionTriggerSource::kOpenTextDataListChooser:
     case AutofillSuggestionTriggerSource::
         kManualFallbackForAutocompleteUnrecognized:
+    case AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed:
       return true;
     case AutofillSuggestionTriggerSource::kTextFieldDidChange:
       return false;
@@ -45,6 +46,7 @@ bool RequiresCaretAtEnd(AutofillSuggestionTriggerSource trigger_source) {
     case AutofillSuggestionTriggerSource::kOpenTextDataListChooser:
     case AutofillSuggestionTriggerSource::
         kManualFallbackForAutocompleteUnrecognized:
+    case AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed:
       return false;
     // `kShowCardsFromAccount`, `kPasswordManager`, `kAndroidWebView` and `kiOS`
     // are not used in the renderer code. As such, suggestion properties don't
@@ -73,6 +75,7 @@ bool ShouldShowFullSuggestionListForPasswordManager(
     case AutofillSuggestionTriggerSource::kOpenTextDataListChooser:
     case AutofillSuggestionTriggerSource::
         kManualFallbackForAutocompleteUnrecognized:
+    case AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed:
       return false;
     // `kShowCardsFromAccount`, `kPasswordManager`, `kAndroidWebView` and `kiOS`
     // are not used in the renderer code. As such, suggestion properties don't

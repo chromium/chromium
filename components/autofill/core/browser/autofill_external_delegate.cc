@@ -94,6 +94,7 @@ AutofillTriggerSource TriggerSourceFromSuggestionTriggerSource(
     case AutofillSuggestionTriggerSource::kPasswordManager:
     case AutofillSuggestionTriggerSource::kAndroidWebView:
     case AutofillSuggestionTriggerSource::kiOS:
+    case AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed:
       // On Android, no popup exists. Instead, the keyboard accessory is used.
 #if BUILDFLAG(IS_ANDROID)
       return AutofillTriggerSource::kKeyboardAccessory;
@@ -330,10 +331,11 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       autofill_metrics::LogAutofillSelectedManageEntry(popup_type_);
       manager_->ShowAutofillSettings(popup_type_);
       break;
-    case PopupItemId::kEditAddressProfile:
-      // TODO(crbug.com/1459990): call the manager to display the edit address
-      // profile dialog.
+    case PopupItemId::kEditAddressProfile: {
+      ShowEditAddressProfileDialog(
+          suggestion.GetPayload<Suggestion::BackendId>().value());
       break;
+    }
     case PopupItemId::kDeleteAddressProfile:
       // TODO(crbug.com/1459990): call the manager to display the delete address
       // profile dialog.
@@ -536,6 +538,42 @@ void AutofillExternalDelegate::Reset() {
 
 base::WeakPtr<AutofillExternalDelegate> AutofillExternalDelegate::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+void AutofillExternalDelegate::ShowEditAddressProfileDialog(
+    const std::string& guid) {
+  AutofillProfile* profile =
+      manager_->client().GetPersonalDataManager()->GetProfileByGUID(guid);
+  if (profile) {
+    manager_->client().ShowEditAddressProfileDialog(
+        *profile,
+        base::BindOnce(&AutofillExternalDelegate::OnAddressEditorClosed,
+                       GetWeakPtr()));
+  }
+}
+
+void AutofillExternalDelegate::OnAddressEditorClosed(
+    AutofillClient::SaveAddressProfileOfferUserDecision decision,
+    AutofillProfile profile) {
+  if (decision ==
+      AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted) {
+    PersonalDataManager* pdm = manager_->client().GetPersonalDataManager();
+    if (!pdm_observation_.IsObserving()) {
+      pdm_observation_.Observe(pdm);
+    }
+    pdm->UpdateProfile(profile);
+    return;
+  }
+  manager_->driver().RendererShouldTriggerSuggestions(
+      query_field_.global_id(),
+      AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed);
+}
+
+void AutofillExternalDelegate::OnPersonalDataFinishedProfileTasks() {
+  pdm_observation_.Reset();
+  manager_->driver().RendererShouldTriggerSuggestions(
+      query_field_.global_id(),
+      AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed);
 }
 
 void AutofillExternalDelegate::OnCreditCardScanned(

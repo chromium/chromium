@@ -15,15 +15,19 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
 #include "components/autofill/core/browser/autofill_granular_filling_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
+#include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_test_helpers.h"
@@ -47,6 +51,7 @@ using testing::_;
 using testing::Field;
 using testing::Matcher;
 using testing::NiceMock;
+using testing::Return;
 
 namespace autofill {
 
@@ -62,6 +67,19 @@ Matcher<const AutofillTriggerDetails&> EqualsAutofilltriggerDetails(
 
 constexpr auto kDefaultTriggerSource =
     AutofillSuggestionTriggerSource::kFormControlElementClicked;
+
+class MockPersonalDataManager : public TestPersonalDataManager {
+ public:
+  MockPersonalDataManager() = default;
+  ~MockPersonalDataManager() override = default;
+  MOCK_METHOD(void, AddObserver, (PersonalDataManagerObserver*), (override));
+  MOCK_METHOD(void, RemoveObserver, (PersonalDataManagerObserver*), (override));
+  MOCK_METHOD(AutofillProfile*,
+              GetProfileByGUID,
+              (const std::string&),
+              (const override));
+  MOCK_METHOD(void, UpdateProfile, (const AutofillProfile&), (override));
+};
 
 class MockAutofillDriver : public TestAutofillDriver {
  public:
@@ -82,6 +100,10 @@ class MockAutofillDriver : public TestAutofillDriver {
   MOCK_METHOD(void,
               RendererShouldPreviewFieldWithValue,
               (const FieldGlobalId&, const std::u16string&),
+              (override));
+  MOCK_METHOD(void,
+              RendererShouldTriggerSuggestions,
+              (const FieldGlobalId&, AutofillSuggestionTriggerSource),
               (override));
 };
 
@@ -116,6 +138,11 @@ class MockAutofillClient : public TestAutofillClient {
   MOCK_METHOD(void,
               OfferPlusAddressCreation,
               (const url::Origin&, plus_addresses::PlusAddressCallback),
+              (override));
+  MOCK_METHOD(TestPersonalDataManager*, GetPersonalDataManager, (), (override));
+  MOCK_METHOD(void,
+              ShowEditAddressProfileDialog,
+              (const AutofillProfile&, AddressProfileSavePromptCallback),
               (override));
 
 #if BUILDFLAG(IS_IOS)
@@ -202,6 +229,8 @@ class MockBrowserAutofillManager : public BrowserAutofillManager {
 class AutofillExternalDelegateUnitTest : public testing::Test {
  protected:
   void SetUp() override {
+    ON_CALL(autofill_client_, GetPersonalDataManager)
+        .WillByDefault(Return(&personal_data_manager_));
     autofill_driver_ = std::make_unique<NiceMock<MockAutofillDriver>>();
     browser_autofill_manager_ =
         std::make_unique<NiceMock<MockBrowserAutofillManager>>(
@@ -243,11 +272,13 @@ class AutofillExternalDelegateUnitTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
 
+  NiceMock<MockPersonalDataManager> personal_data_manager_;
   NiceMock<MockAutofillClient> autofill_client_;
   std::unique_ptr<NiceMock<MockAutofillDriver>> autofill_driver_;
   std::unique_ptr<MockBrowserAutofillManager> browser_autofill_manager_;
   std::unique_ptr<AutofillExternalDelegate> external_delegate_;
 
+  AutofillProfile profile_ = test::GetFullProfile();
   FormGlobalId form_id_ = test::MakeFormGlobalId();
   FieldGlobalId field_id_ = test::MakeFieldGlobalId();
 };
@@ -262,6 +293,168 @@ class AutofillExternalDelegateCardsFromAccountTest
     browser_autofill_manager_->ShowCardsFromAccountOption();
   }
 };
+
+// Test that address editor is not shown if there's no autofill profile with
+// the provided GUID.
+TEST_F(AutofillExternalDelegateUnitTest, ShowEditorForNonexistingProfile) {
+  IssueOnQuery();
+
+  const std::string guid = base::Uuid().AsLowercaseString();
+  ON_CALL(personal_data_manager_, GetProfileByGUID(guid))
+      .WillByDefault(Return(nullptr));
+  EXPECT_CALL(autofill_client_, ShowEditAddressProfileDialog(_, _)).Times(0);
+
+  auto suggestion = Suggestion(PopupItemId::kEditAddressProfile);
+  suggestion.payload = Suggestion::BackendId(guid);
+  external_delegate_->DidAcceptSuggestion(
+      suggestion, 0,
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
+}
+
+// Test that address editor is shown for the GUID identifying existing autofill
+// profile.
+TEST_F(AutofillExternalDelegateUnitTest, ShowEditorForExistingProfile) {
+  IssueOnQuery();
+
+  const std::string guid = base::Uuid().AsLowercaseString();
+  ON_CALL(personal_data_manager_, GetProfileByGUID(guid))
+      .WillByDefault(Return(&profile_));
+  EXPECT_CALL(autofill_client_, ShowEditAddressProfileDialog(profile_, _));
+
+  auto suggestion = Suggestion(PopupItemId::kEditAddressProfile);
+  suggestion.payload = Suggestion::BackendId(guid);
+  external_delegate_->DidAcceptSuggestion(
+      suggestion, 0,
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
+}
+
+// Test that editor changes are not persisted if the user has canceled editing.
+TEST_F(AutofillExternalDelegateUnitTest, UserCancelsEditing) {
+  IssueOnQuery();
+
+  const std::string guid = base::Uuid().AsLowercaseString();
+  ON_CALL(personal_data_manager_, GetProfileByGUID(guid))
+      .WillByDefault(Return(&profile_));
+  EXPECT_CALL(autofill_client_, ShowEditAddressProfileDialog(profile_, _))
+      .WillOnce([this](auto profile, auto save_prompt_callback) {
+        std::move(save_prompt_callback)
+            .Run(AutofillClient::SaveAddressProfileOfferUserDecision::
+                     kEditDeclined,
+                 profile_);
+      });
+  // No changes should be saved when user cancels editing.
+  EXPECT_CALL(personal_data_manager_, AddObserver(_)).Times(0);
+  EXPECT_CALL(personal_data_manager_, UpdateProfile(_)).Times(0);
+  // The Autofill popup must be reopened when editor dialog is closed.
+  EXPECT_CALL(
+      *autofill_driver_,
+      RendererShouldTriggerSuggestions(
+          field_id_,
+          AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed));
+
+  auto suggestion = Suggestion(PopupItemId::kEditAddressProfile);
+  suggestion.payload = Suggestion::BackendId(guid);
+  external_delegate_->DidAcceptSuggestion(
+      suggestion, 0,
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
+}
+
+// Test that editor changes are persisted if the user has canceled editing.
+TEST_F(AutofillExternalDelegateUnitTest, UserSavesEdits) {
+  IssueOnQuery();
+
+  const std::string guid = base::Uuid().AsLowercaseString();
+  ON_CALL(personal_data_manager_, GetProfileByGUID(guid))
+      .WillByDefault(Return(&profile_));
+  EXPECT_CALL(autofill_client_, ShowEditAddressProfileDialog(profile_, _))
+      .WillOnce([this](auto profile, auto save_prompt_callback) {
+        std::move(save_prompt_callback)
+            .Run(AutofillClient::SaveAddressProfileOfferUserDecision::
+                     kEditAccepted,
+                 profile_);
+      });
+  // Updated autofill profile must be persisted when user saves changes through
+  // the address editor.
+  EXPECT_CALL(personal_data_manager_, AddObserver(external_delegate_.get()));
+  EXPECT_CALL(personal_data_manager_, UpdateProfile(profile_));
+  // The Autofill popup must be reopened when editor dialog is closed.
+  EXPECT_CALL(
+      *autofill_driver_,
+      RendererShouldTriggerSuggestions(
+          field_id_,
+          AutofillSuggestionTriggerSource::kShowPromptAfterDialogClosed));
+
+  auto suggestion = Suggestion(PopupItemId::kEditAddressProfile);
+  suggestion.payload = Suggestion::BackendId(guid);
+  external_delegate_->DidAcceptSuggestion(
+      suggestion, 0,
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
+
+  external_delegate_->OnPersonalDataFinishedProfileTasks();
+}
+
+// Test the situation when database changes take long enough for the user to
+// open the address editor for the second time.
+TEST_F(AutofillExternalDelegateUnitTest,
+       UserOpensEditorTwiceBeforeProfileIsPersisted) {
+  IssueOnQuery();
+
+  const std::string guid = base::Uuid().AsLowercaseString();
+  ON_CALL(personal_data_manager_, GetProfileByGUID(guid))
+      .WillByDefault(Return(&profile_));
+  EXPECT_CALL(autofill_client_, ShowEditAddressProfileDialog(profile_, _))
+      .Times(2)
+      .WillRepeatedly([this](auto profile, auto save_prompt_callback) {
+        std::move(save_prompt_callback)
+            .Run(AutofillClient::SaveAddressProfileOfferUserDecision::
+                     kEditAccepted,
+                 profile_);
+      });
+  // PDM observer must be added only once.
+  EXPECT_CALL(personal_data_manager_, AddObserver(external_delegate_.get()));
+  // Changes to the autofill profile must be persisted both times.
+  EXPECT_CALL(personal_data_manager_, UpdateProfile(profile_)).Times(2);
+
+  auto suggestion = Suggestion(PopupItemId::kEditAddressProfile);
+  suggestion.payload = Suggestion::BackendId(guid);
+
+  external_delegate_->DidAcceptSuggestion(
+      suggestion, 0,
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
+  external_delegate_->DidAcceptSuggestion(
+      suggestion, 0,
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
+}
+
+// Test the situation when AutofillExternalDelegate is destroyed before the
+// PersonalDataManager observer is notified that all tasks have been processed.
+TEST_F(AutofillExternalDelegateUnitTest,
+       DelegateIsDestroyedBeforeUpdateIsFinished) {
+  IssueOnQuery();
+
+  const std::string guid = base::Uuid().AsLowercaseString();
+  ON_CALL(personal_data_manager_, GetProfileByGUID(guid))
+      .WillByDefault(Return(&profile_));
+  EXPECT_CALL(autofill_client_, ShowEditAddressProfileDialog(profile_, _))
+      .WillOnce([this](auto profile, auto save_prompt_callback) {
+        std::move(save_prompt_callback)
+            .Run(AutofillClient::SaveAddressProfileOfferUserDecision::
+                     kEditAccepted,
+                 profile_);
+      });
+
+  EXPECT_CALL(personal_data_manager_, AddObserver(external_delegate_.get()));
+  EXPECT_CALL(personal_data_manager_, UpdateProfile(profile_));
+
+  auto suggestion = Suggestion(PopupItemId::kEditAddressProfile);
+  suggestion.payload = Suggestion::BackendId(guid);
+  external_delegate_->DidAcceptSuggestion(
+      suggestion, 0,
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
+
+  EXPECT_CALL(personal_data_manager_, RemoveObserver(external_delegate_.get()));
+  external_delegate_.reset();
+}
 
 // Test that our external delegate called the virtual methods at the right time.
 TEST_F(AutofillExternalDelegateUnitTest, TestExternalDelegateVirtualCalls) {
