@@ -452,12 +452,6 @@ public class ChromePaymentRequestService
         return mPaymentUiService.hasAvailableApps();
     }
 
-    // Implements BrowserPaymentRequest:
-    @Override
-    public boolean isPaymentSheetBasedPaymentAppSupported() {
-        // TODO(crbug.com/1209835): Remove this method entirely.
-        return false;
-    }
 
     // Implements BrowserPaymentRequest:
     @Override

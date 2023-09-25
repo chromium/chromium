@@ -1766,7 +1766,7 @@ public class PaymentRequestService
     // PaymentAppFactoryParams implementation.
     @Override
     public boolean getMayCrawl() {
-        return !mBrowserPaymentRequest.isPaymentSheetBasedPaymentAppSupported();
+        return true;
     }
 
     // PaymentAppFactoryParams implementation.
