@@ -8,6 +8,7 @@
 #include "ash/ambient/ambient_ui_settings.h"
 #include "ash/ash_export.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -15,6 +16,9 @@ namespace ash {
 // single ambient session:
 // * Construction     - Ambient session starts by preparing any assets needed
 //                      for rendering.
+// * SetInitStatus    - Ambient session is initialized either successfully or
+//                      unsuccessfully. If successful, it can start rendering
+//                      and RegisterScreen() calls can be made.
 // * RegisterScreen() - Ambient session is rendering. There is one call for each
 //                      screen (display).
 // * Destruction      - Ambient session ends.
@@ -28,14 +32,21 @@ class ASH_EXPORT AmbientSessionMetricsRecorder {
       const AmbientSessionMetricsRecorder&) = delete;
   ~AmbientSessionMetricsRecorder();
 
+  // `init_status` should be the result of `AmbientUiLauncher::Initialize()`.
+  // Must only be called once in `AmbientSessionMetricsRecorder`'s lifetime.
+  void SetInitStatus(bool init_status);
+
   // Should be called once per each screen rendering the UI during an ambient
   // session.
   void RegisterScreen();
 
  private:
+  void RecordInitStatus(bool init_status);
+
   const AmbientUiSettings ui_settings_;
   const base::TimeTicks session_start_time_;
   int num_registered_screens_ = 0;
+  absl::optional<bool> session_init_status_;
 };
 
 }  // namespace ash

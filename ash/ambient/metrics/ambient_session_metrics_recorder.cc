@@ -41,6 +41,12 @@ AmbientSessionMetricsRecorder::~AmbientSessionMetricsRecorder() {
   if (!ambient_ui_was_rendering && elapsed >= ambient::kMetricsStartupTimeMax) {
     LOG(ERROR) << "Ambient UI completely failed to start";
     ambient::RecordAmbientModeStartupTime(elapsed, ui_settings_);
+    // If `AmbientUiLauncher::Initialize()` never ran the completion callback
+    // within `kMetricsStartupTimeMax`, that still counts as a failure. It
+    // should be completed (either successfully or unsuccessfully by then).
+    if (!session_init_status_.has_value()) {
+      RecordInitStatus(false);
+    }
   }
 
   base::UmaHistogramCounts100(
@@ -48,7 +54,15 @@ AmbientSessionMetricsRecorder::~AmbientSessionMetricsRecorder() {
       num_registered_screens_);
 }
 
+void AmbientSessionMetricsRecorder::SetInitStatus(bool init_status) {
+  CHECK(!session_init_status_.has_value());
+  session_init_status_ = init_status;
+  RecordInitStatus(init_status);
+}
+
 void AmbientSessionMetricsRecorder::RegisterScreen() {
+  CHECK(session_init_status_.has_value() && session_init_status_.value())
+      << "Ambient UI should not be rendering on screen if init failed";
   ++num_registered_screens_;
   // The very first screen registered means the ambient session has finished
   // initializing the required assets and is starting to render.
@@ -57,6 +71,12 @@ void AmbientSessionMetricsRecorder::RegisterScreen() {
     ambient::RecordAmbientModeStartupTime(
         base::TimeTicks::Now() - session_start_time_, ui_settings_);
   }
+}
+
+void AmbientSessionMetricsRecorder::RecordInitStatus(bool init_status) {
+  base::UmaHistogramBoolean(
+      base::StrCat({"Ash.AmbientMode.Init.", ui_settings_.ToString()}),
+      init_status);
 }
 
 }  // namespace ash

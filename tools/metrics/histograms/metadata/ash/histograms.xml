@@ -404,6 +404,20 @@ chromium-metrics-reviews@google.com.
   <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
+<histogram name="Ash.AmbientMode.Init.{Settings}" enum="Boolean"
+    expires_after="2024-02-20">
+  <owner>esum@google.com</owner>
+  <owner>wutao@google.com</owner>
+  <summary>
+    Background initialization tasks must be completed successfully before the
+    ambient UI can be launched. For example, slide show mode must download an
+    initial set of photos from the server before the UI can be rendered. This
+    records the initialization success/failure count per ambient setting; each
+    ambient setting (slide show, video, etc) has a different initialization
+    process. This is emitted each time ash tries to launch the ambient UI.
+  </summary>
+</histogram>
+
 <histogram name="Ash.AmbientMode.LottieAnimationSmoothness.{Settings}"
     units="%" expires_after="2023-12-01">
   <owner>esum@google.com</owner>

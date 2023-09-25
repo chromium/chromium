@@ -67,6 +67,7 @@ TEST_P(AmbientSessionMetricsRecorderTest, MetricsEngagementTime) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
   {
     AmbientSessionMetricsRecorder recorder(GetParam());
+    recorder.SetInitStatus(true);
     recorder.RegisterScreen();
     task_environment()->FastForwardBy(kExpectedEngagementTime);
   }
@@ -82,6 +83,7 @@ TEST_P(AmbientSessionMetricsRecorderTest, MetricsEngagementTime) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   {
     AmbientSessionMetricsRecorder recorder(GetParam());
+    recorder.SetInitStatus(true);
     recorder.RegisterScreen();
     task_environment()->FastForwardBy(kExpectedEngagementTime);
   }
@@ -99,6 +101,7 @@ TEST_P(AmbientSessionMetricsRecorderTest, MetricsStartupTime) {
   base::HistogramTester histogram_tester;
   AmbientSessionMetricsRecorder recorder(GetParam());
   task_environment()->FastForwardBy(kExpectedStartupTime);
+  recorder.SetInitStatus(true);
   recorder.RegisterScreen();
   // Should be ignored. The time that the first screen starts rendering should
   // be when the startup time is recorded.
@@ -119,12 +122,36 @@ TEST_P(AmbientSessionMetricsRecorderTest, MetricsStartupTimeFailedToStart) {
   histogram_tester.ExpectUniqueTimeSample(
       base::StrCat({"Ash.AmbientMode.StartupTime.", GetParam().ToString()}),
       kFailedStartupTime, 1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({"Ash.AmbientMode.Init.", GetParam().ToString()}),
+      /*sample=*/0, /*expected_count=*/1);
+}
+
+TEST_P(AmbientSessionMetricsRecorderTest, InitStatusSuccess) {
+  base::HistogramTester histogram_tester;
+  AmbientSessionMetricsRecorder recorder(GetParam());
+  recorder.SetInitStatus(true);
+  recorder.RegisterScreen();
+  recorder.RegisterScreen();
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({"Ash.AmbientMode.Init.", GetParam().ToString()}),
+      /*sample=*/1, /*expected_count=*/1);
+}
+
+TEST_P(AmbientSessionMetricsRecorderTest, InitStatusFailed) {
+  base::HistogramTester histogram_tester;
+  AmbientSessionMetricsRecorder recorder(GetParam());
+  recorder.SetInitStatus(false);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({"Ash.AmbientMode.Init.", GetParam().ToString()}),
+      /*sample=*/0, /*expected_count=*/1);
 }
 
 TEST_P(AmbientSessionMetricsRecorderTest, RecordsScreenCount) {
   base::HistogramTester histogram_tester;
   {
     AmbientSessionMetricsRecorder recorder(GetParam());
+    recorder.SetInitStatus(true);
     recorder.RegisterScreen();
   }
   histogram_tester.ExpectUniqueSample(
@@ -132,6 +159,7 @@ TEST_P(AmbientSessionMetricsRecorderTest, RecordsScreenCount) {
       /*expected_bucket_count=*/1);
   {
     AmbientSessionMetricsRecorder recorder(GetParam());
+    recorder.SetInitStatus(true);
     recorder.RegisterScreen();
     recorder.RegisterScreen();
   }

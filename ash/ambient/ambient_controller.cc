@@ -1213,6 +1213,8 @@ std::unique_ptr<views::Widget> AmbientController::CreateWidget(
 }
 
 void AmbientController::OnUiLauncherInitialized(bool success) {
+  CHECK(session_metrics_recorder_);
+  session_metrics_recorder_->SetInitStatus(success);
   if (!success) {
     // Success = false denotes a case where the screensaver is in a permanent
     // error state and such that the UI and any further attempts to launch the
