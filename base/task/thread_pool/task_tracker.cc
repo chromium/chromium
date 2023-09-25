@@ -309,6 +309,7 @@ bool TaskTracker::WillPostTask(Task* task,
   DCHECK(task);
   DCHECK(task->task);
 
+  task->sequence_num = sequence_nums_.GetNext();
   if (state_->HasShutdownStarted()) {
     // A non BLOCK_SHUTDOWN task is allowed to be posted iff shutdown hasn't
     // started and the task is not delayed.
