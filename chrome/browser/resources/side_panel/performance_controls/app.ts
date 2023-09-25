@@ -5,6 +5,7 @@
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
+import {PerformanceApiProxy, PerformanceApiProxyImpl} from './performance_api_proxy.js';
 
 export interface PerformanceAppElement {
   $: {};
@@ -22,6 +23,9 @@ export class PerformanceAppElement extends PolymerElement {
   static get properties() {
     return {};
   }
+
+  private performanceApi_: PerformanceApiProxy =
+      PerformanceApiProxyImpl.getInstance();
 }
 declare global {
   interface HTMLElementTagNameMap {
