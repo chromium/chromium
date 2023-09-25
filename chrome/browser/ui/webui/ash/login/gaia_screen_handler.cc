@@ -642,7 +642,7 @@ void GaiaScreenHandler::DeclareJSCallbacks() {
   AddCallback("launchSAMLPublicSession",
               &GaiaScreenHandler::HandleLaunchSAMLPublicSession);
   AddCallback("completeAuthentication",
-              &GaiaScreenHandler::HandleCompleteAuthentication);
+              &GaiaScreenHandler::HandleCompleteAuthenticationEvent);
   AddCallback("usingSAMLAPI", &GaiaScreenHandler::HandleUsingSAMLAPI);
   AddCallback("recordSAMLProvider",
               &GaiaScreenHandler::HandleRecordSAMLProvider);
@@ -711,7 +711,7 @@ void GaiaScreenHandler::HandleWebviewLoadAborted(int error_code) {
   UpdateState(error_reason);
 }
 
-void GaiaScreenHandler::HandleCompleteAuthentication(
+void GaiaScreenHandler::HandleCompleteAuthenticationEvent(
     const std::string& gaia_id,
     const std::string& email,
     const std::string& password_value,
@@ -721,45 +721,103 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
     bool services_provided,
     const base::Value::Dict& password_attributes,
     const base::Value::Dict& sync_trusted_vault_keys) {
+  if (gaia_id.empty()) {
+    LOG(WARNING) << "GaiaId is empty!";
+  }
+  if (email.empty()) {
+    LOG(WARNING) << "The user email is empty!";
+  }
+
+  // Prepare the data delivered by Gaia
+  ash::login::OnlineSigninArtifacts signin_artifacts;
+  signin_artifacts.gaia_id = gaia_id;
+  signin_artifacts.email = email;
+  signin_artifacts.using_saml = using_saml;
+
+  // Optional fields
+  if (!password_value.empty() ||
+      ash::switches::AreEmptyPasswordsAllowedForForTesting()) {
+    signin_artifacts.password = password_value;
+  }
+  if (!scraped_saml_passwords_value.empty()) {
+    signin_artifacts.scraped_saml_passwords =
+        ::login::ConvertToStringList(scraped_saml_passwords_value);
+  }
+  if (!services_list.empty()) {
+    signin_artifacts.services_list =
+        ::login::ConvertToStringList(services_list);
+  }
+  if (!password_attributes.empty()) {
+    signin_artifacts.saml_password_attributes =
+        SamlPasswordAttributes::FromJs(password_attributes);
+  }
+  signin_artifacts.sync_trusted_vault_keys =
+      GetSyncTrustedVaultKeysForUserContext(sync_trusted_vault_keys, gaia_id);
+
+  // Clear collected passwords if a client certificate was used.
+  if (IsSamlUserPasswordless()) {
+    // In the passwordless case, the user data will be protected by non password
+    // based mechanisms. Clear anything that got collected into passwords.
+    signin_artifacts.scraped_saml_passwords.reset();
+    signin_artifacts.password.reset();
+  }
+
+  // Retrieve cookies and continue with authentication
+  login::SigninPartitionManager* signin_partition_manager =
+      login::SigninPartitionManager::Factory::GetForBrowserContext(
+          Profile::FromWebUI(web_ui()));
+  gaia_cookie_retriever_ = std::make_unique<GaiaCookieRetriever>(
+      signin_partition_name_, signin_partition_manager,
+      base::BindOnce(&GaiaScreenHandler::OnCookieWaitTimeout,
+                     weak_factory_.GetWeakPtr()));
+
+  gaia_cookie_retriever_->RetrieveCookies(
+      base::BindOnce(&GaiaScreenHandler::CompleteAuthWithCookies,
+                     weak_factory_.GetWeakPtr(), std::move(signin_artifacts)));
+}
+
+void GaiaScreenHandler::CompleteAuthWithCookies(
+    ash::login::OnlineSigninArtifacts signin_artifacts,
+    login::GaiaCookiesData gaia_cookies) {
+  // Set cookies and finish.
+  signin_artifacts.cookies = gaia_cookies;
+  CompleteAuthentication(std::move(signin_artifacts));
+}
+
+void GaiaScreenHandler::CompleteAuthentication(
+    ash::login::OnlineSigninArtifacts signin_artifacts) {
   if (!LoginDisplayHost::default_host()) {
     return;
   }
 
-  DCHECK(!email.empty());
-  DCHECK(!gaia_id.empty());
-
-  if (!using_saml) {
+  if (!signin_artifacts.using_saml) {
     base::UmaHistogramEnumeration("OOBE.GaiaScreen.SuccessLoginRequests",
                                   login_request_variant_);
     // Report whether the password has characters ignored by Gaia
     // (leading/trailing whitespaces).
-    base::UmaHistogramBoolean("OOBE.GaiaScreen.PasswordIgnoredChars",
-                              HasLeadingOrTrailingWhitespaces(password_value));
-  }
-  auto scraped_saml_passwords =
-      ::login::ConvertToStringList(scraped_saml_passwords_value);
-  const auto services = ::login::ConvertToStringList(services_list);
-  auto password = password_value;
-
-  if (IsSamlUserPasswordless()) {
-    // In the passwordless case, the user data will be protected by non password
-    // based mechanisms. Clear anything that got collected into passwords.
-    scraped_saml_passwords.clear();
-    password.clear();
+    base::UmaHistogramBoolean(
+        "OOBE.GaiaScreen.PasswordIgnoredChars",
+        HasLeadingOrTrailingWhitespaces(
+            signin_artifacts.password.value_or(std::string())));
   }
 
-  if (using_saml && !using_saml_api_ && !IsSamlUserPasswordless()) {
-    RecordScrapedPasswordCount(scraped_saml_passwords.size());
+  if (signin_artifacts.using_saml && !using_saml_api_ &&
+      !IsSamlUserPasswordless()) {
+    RecordScrapedPasswordCount(
+        signin_artifacts.scraped_saml_passwords.has_value()
+            ? signin_artifacts.scraped_saml_passwords.value().size()
+            : 0);
   }
 
-  const AccountId account_id =
-      login::GetAccountId(email, gaia_id, AccountType::GOOGLE);
+  const AccountId account_id = login::GetAccountId(
+      signin_artifacts.email, signin_artifacts.gaia_id, AccountType::GOOGLE);
   // Execute delayed allowlist check that is based on user type. If Gaia done
   // times out and doesn't provide us with services list try to use a saved
   // UserType.
   const user_manager::UserType user_type =
-      services_provided
-          ? login::GetUsertypeFromServicesString(services)
+      signin_artifacts.services_list.has_value()
+          ? login::GetUsertypeFromServicesString(
+                signin_artifacts.services_list.value())
           : user_manager::UserManager::Get()->GetUserType(account_id);
   if (ShouldCheckUserTypeBeforeAllowing() &&
       !LoginDisplayHost::default_host()->IsUserAllowlisted(account_id,
@@ -771,7 +829,7 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
   // Record amount of time from the moment screen was shown till
   // completeAuthentication signal come. Only for no SAML flow and only during
   // first run in OOBE.
-  if (elapsed_timer_ && !using_saml &&
+  if (elapsed_timer_ && !signin_artifacts.using_saml &&
       session_manager::SessionManager::Get()->session_state() ==
           session_manager::SessionState::OOBE) {
     base::UmaHistogramMediumTimes("OOBE.GaiaLoginTime",
@@ -779,16 +837,20 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
     elapsed_timer_.reset();
   }
 
-  const std::string sanitized_email = gaia::SanitizeEmail(email);
+  // ------ Set user's email on the UI
+  // ---
+  const std::string sanitized_email =
+      gaia::SanitizeEmail(signin_artifacts.email);
   LoginDisplayHost::default_host()->SetDisplayEmail(sanitized_email);
 
   auto user_context = std::make_unique<UserContext>();
   SigninError error;
   if (!login::BuildUserContextForGaiaSignIn(
-          user_type, account_id, using_saml, using_saml_api_, password,
-          SamlPasswordAttributes::FromJs(password_attributes),
-          GetSyncTrustedVaultKeysForUserContext(sync_trusted_vault_keys,
-                                                gaia_id),
+          user_type, account_id, signin_artifacts.using_saml, using_saml_api_,
+          signin_artifacts.password.value_or(std::string()),
+          signin_artifacts.saml_password_attributes.value_or(
+              SamlPasswordAttributes()),
+          signin_artifacts.sync_trusted_vault_keys,
           *extension_provided_client_cert_usage_observer_, user_context.get(),
           &error)) {
     LoginDisplayHost::default_host()->GetSigninUI()->ShowSigninError(
@@ -796,26 +858,20 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
     return;
   }
 
-  // Create GaiaCookiesRetriever
-  login::SigninPartitionManager* signin_partition_manager =
-      login::SigninPartitionManager::Factory::GetForBrowserContext(
-          Profile::FromWebUI(web_ui()));
-  gaia_cookie_retriever_ = std::make_unique<GaiaCookieRetriever>(
-      signin_partition_name_, signin_partition_manager,
-      base::BindOnce(&GaiaScreenHandler::OnCookieWaitTimeout,
-                     weak_factory_.GetWeakPtr()));
+  // Transfer the received cookies into the UserContext
+  signin_artifacts.cookies->TransferCookiesToUserContext(*user_context);
 
-  // Create the callback that will be invoked once cookies are received.
+  // Finish the authentication
   const bool needs_saml_confirm_password =
-      password.empty() && !IsSamlUserPasswordless();
-  GaiaCookieRetriever::OnCookieRetrievedCallback finish_auth_callback =
-      base::BindOnce(&GaiaScreenHandler::CompleteAuthenticationWithCookies,
-                     weak_factory_.GetWeakPtr(), needs_saml_confirm_password,
-                     std::move(scraped_saml_passwords),
-                     std::move(user_context));
-
-  // Request cookies and proceed with authentication.
-  gaia_cookie_retriever_->RetrieveCookies(std::move(finish_auth_callback));
+      !signin_artifacts.password.has_value() && !IsSamlUserPasswordless();
+  if (needs_saml_confirm_password) {
+    auto scraped_saml_passwords =
+        signin_artifacts.scraped_saml_passwords.value_or(::login::StringList{});
+    CHECK_NE(scraped_saml_passwords.size(), 1u);
+    SAMLConfirmPassword(scraped_saml_passwords, std::move(user_context));
+  } else {
+    LoginDisplayHost::default_host()->CompleteLogin(*user_context);
+  }
 
   populated_account_id_.clear();
 
@@ -826,24 +882,6 @@ void GaiaScreenHandler::HandleCompleteAuthentication(
     test_expects_complete_login_ = false;
     test_user_.clear();
     test_pass_.clear();
-  }
-}
-
-void GaiaScreenHandler::CompleteAuthenticationWithCookies(
-    bool needs_saml_confirm_password,
-    ::login::StringList scraped_saml_passwords,
-    std::unique_ptr<UserContext> user_context,
-    login::GaiaCookiesData gaia_cookies) {
-  // Transfer the received cookies into the UserContext
-  gaia_cookies.TransferCookiesToUserContext(*user_context);
-
-  // Finish the authentication
-  if (needs_saml_confirm_password) {
-    CHECK_NE(scraped_saml_passwords.size(), 1u);
-    SAMLConfirmPassword(std::move(scraped_saml_passwords),
-                        std::move(user_context));
-  } else {
-    LoginDisplayHost::default_host()->CompleteLogin(*user_context);
   }
 }
 

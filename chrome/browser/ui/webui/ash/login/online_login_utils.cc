@@ -50,6 +50,20 @@ void GaiaCookiesData::TransferCookiesToUserContext(UserContext& user_context) {
   }
 }
 
+OnlineSigninArtifacts::~OnlineSigninArtifacts() = default;
+OnlineSigninArtifacts::OnlineSigninArtifacts() = default;
+
+OnlineSigninArtifacts::OnlineSigninArtifacts(OnlineSigninArtifacts&& original)
+    : gaia_id(original.gaia_id),
+      email(original.email),
+      using_saml(original.using_saml),
+      password(original.password),
+      scraped_saml_passwords(std::move(original.scraped_saml_passwords)),
+      services_list(std::move(original.services_list)),
+      saml_password_attributes(std::move(original.saml_password_attributes)),
+      sync_trusted_vault_keys(std::move(original.sync_trusted_vault_keys)),
+      cookies(original.cookies) {}
+
 bool ExtractSamlPasswordAttributesEnabled() {
   return base::FeatureList::IsEnabled(::features::kInSessionPasswordChange);
 }

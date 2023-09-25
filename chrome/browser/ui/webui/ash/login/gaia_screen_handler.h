@@ -243,7 +243,10 @@ class GaiaScreenHandler
 
   // WebUI message handlers.
   void HandleWebviewLoadAborted(int error_code);
-  void HandleCompleteAuthentication(
+
+  // Handles Authenticator's 'completeAuthentication' event and gathers all the
+  // data into `OnlineSigninArtifacts` and fetches cookies.
+  void HandleCompleteAuthenticationEvent(
       const std::string& gaia_id,
       const std::string& email,
       const std::string& password,
@@ -254,11 +257,15 @@ class GaiaScreenHandler
       const base::Value::Dict& password_attributes,
       const base::Value::Dict& sync_trusted_vault_keys);
 
-  void CompleteAuthenticationWithCookies(
-      bool needs_saml_confirm_password,
-      ::login::StringList scraped_saml_passwords,
-      std::unique_ptr<UserContext> user_context,
-      login::GaiaCookiesData gaia_cookies);
+  // Intermediate step when cookies are received. The cookies are added into
+  // their final location within `OnlineSigninArtifacts` and then passed to
+  // `CompleteAuthentication`.
+  void CompleteAuthWithCookies(ash::login::OnlineSigninArtifacts artifacts,
+                               login::GaiaCookiesData gaia_cookies);
+
+  // Final step of the `completeAuthentication` flow.
+  // TODO(b/292242156) - Move to OnlineAuthenticationScreen
+  void CompleteAuthentication(ash::login::OnlineSigninArtifacts artifacts);
 
   void HandleCompleteLogin(const std::string& gaia_id,
                            const std::string& typed_email,
