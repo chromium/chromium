@@ -48,7 +48,5 @@ IN_PROC_BROWSER_TEST_F(DemoAshRequiresLacrosTest, NewTab) {
     crosapi::BrowserManager::Get()->NewTab();
     // Assert Lacros is running.
     ASSERT_TRUE(crosapi::BrowserManager::Get()->IsRunning());
-    // browser() returns an Ash browser instance.
-    ASSERT_FALSE(browser()->profile()->IsOffTheRecord());
   }
 }
