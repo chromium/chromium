@@ -750,15 +750,10 @@ bool MostVisitedSites::WasNtpAppMigratedToWebApp(PrefService* prefs, GURL url) {
 
 NTPTilesVector MostVisitedSites::RemoveInvalidPreinstallApps(
     NTPTilesVector new_tiles) {
-  new_tiles.erase(
-      std::remove_if(new_tiles.begin(), new_tiles.end(),
-                     [this](NTPTile ntp_tile) {
-                       return MostVisitedSites::IsNtpTileFromPreinstalledApp(
-                                  ntp_tile.url) &&
-                              MostVisitedSites::WasNtpAppMigratedToWebApp(
-                                  prefs_, ntp_tile.url);
-                     }),
-      new_tiles.end());
+  base::EraseIf(new_tiles, [this](NTPTile ntp_tile) {
+    return MostVisitedSites::IsNtpTileFromPreinstalledApp(ntp_tile.url) &&
+           MostVisitedSites::WasNtpAppMigratedToWebApp(prefs_, ntp_tile.url);
+  });
   return new_tiles;
 }
 

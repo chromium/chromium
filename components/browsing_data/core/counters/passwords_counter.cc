@@ -131,13 +131,11 @@ void PasswordStoreFetcher::OnGetPasswordStoreResults(
     std::vector<std::unique_ptr<password_manager::PasswordForm>> results) {
   domain_examples_.clear();
 
-  results.erase(
-      std::remove_if(
-          results.begin(), results.end(),
-          [this](const std::unique_ptr<password_manager::PasswordForm>& form) {
-            return (form->date_created < start_ || form->date_created >= end_);
-          }),
-      results.end());
+  base::EraseIf(
+      results,
+      [this](const std::unique_ptr<password_manager::PasswordForm>& form) {
+        return (form->date_created < start_ || form->date_created >= end_);
+      });
   num_passwords_ = results.size();
   std::sort(results.begin(), results.end(),
             [](const std::unique_ptr<password_manager::PasswordForm>& a,
