@@ -837,14 +837,6 @@ bool MediaStreamVideoTrack::UsingAlpha() {
          only_sinks_with_alpha_depending_on_other_sinks;
 }
 
-base::RepeatingCallback<void(media::VideoCaptureFrameDropReason)>
-MediaStreamVideoTrack::NotifyFrameDroppedOnVideoTaskRunnerCallbackForTesting() {
-  return ConvertToBaseRepeatingCallback(
-      CrossThreadBindRepeating(&MediaStreamVideoTrack::FrameDeliverer::
-                                   NotifyFrameDroppedOnVideoTaskRunner,
-                               frame_deliverer_));
-}
-
 void MediaStreamVideoTrack::SetSinkNotifyFrameDroppedCallback(
     WebMediaStreamSink* sink,
     const VideoCaptureNotifyFrameDroppedCB& callback) {

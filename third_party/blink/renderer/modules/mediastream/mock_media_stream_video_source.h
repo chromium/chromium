@@ -61,6 +61,11 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
   // destroyed before the frame has been delivered.
   void DeliverEncodedVideoFrame(scoped_refptr<EncodedVideoFrame> frame);
 
+  // Signal that a frame was dropped. It's up to the caller to make sure
+  // MockMediaStreamVideoSource is not destroyed before the frame drop has
+  // happened on the video task runner.
+  void DropFrame(media::VideoCaptureFrameDropReason reason);
+
   // Send |crop_version| to all registered tracks on the video task runner. It's
   // up to the caller to keep MockMediaStreamVideoSource alive until the
   // crop_version_callback (registered with MediaStreamVideoSource::AddTrack)

@@ -198,14 +198,18 @@ class VideoTrackAdapter::VideoFrameResolutionAdapter
   // callbacks if |track| was not present in the adapter.
   VideoTrackCallbacks RemoveAndGetCallbacks(const MediaStreamVideoTrack* track);
 
+  // The source has provided us with a frame.
   void DeliverFrame(
       scoped_refptr<media::VideoFrame> frame,
       std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
       const base::TimeTicks& estimated_capture_time,
       bool is_device_rotated);
-
-  // Deliver an indication that a frame was dropped.
-  void DoNotifyFrameDropped(media::VideoCaptureFrameDropReason reason);
+  // The source has dropped a frame that will not be delivered.
+  void OnFrameDropped(media::VideoCaptureFrameDropReason reason);
+  // This method is called when a frame is dropped, whether dropped by the
+  // source (OnFrameDropped) or dropped internally by us (in DeliverFrame).
+  void DoNotifyFrameDropped(media::VideoCaptureFrameDropReason reason,
+                            bool dropped_by_source = false);
 
   void DeliverEncodedVideoFrame(scoped_refptr<EncodedVideoFrame> frame,
                                 base::TimeTicks estimated_capture_time);
@@ -459,6 +463,13 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::DeliverFrame(
                  std::move(scaled_video_frames), estimated_capture_time);
 }
 
+void VideoTrackAdapter::VideoFrameResolutionAdapter::OnFrameDropped(
+    media::VideoCaptureFrameDropReason reason) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
+  // This frame was dropped by the source.
+  DoNotifyFrameDropped(reason, /*dropped_by_source=*/true);
+}
+
 void VideoTrackAdapter::VideoFrameResolutionAdapter::DeliverEncodedVideoFrame(
     scoped_refptr<EncodedVideoFrame> frame,
     base::TimeTicks estimated_capture_time) {
@@ -504,15 +515,21 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::DoDeliverFrame(
 }
 
 void VideoTrackAdapter::VideoFrameResolutionAdapter::DoNotifyFrameDropped(
-    media::VideoCaptureFrameDropReason reason) {
+    media::VideoCaptureFrameDropReason reason,
+    bool dropped_by_source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
-  // Notify the MediaStreamVideoSource, mostly for UMA purposes. In the case
-  // that a source has multiple track adapters it's possible that the same frame
-  // is reported as dropped multiple times (at most once per adapter).
-  PostCrossThreadTask(
-      *renderer_task_runner_, FROM_HERE,
-      CrossThreadBindOnce(&MediaStreamVideoSource::OnFrameDroppedInRenderer,
-                          media_stream_video_source_, reason));
+  // Notify the MediaStreamVideoSource for UMA purposes. No need to do this if
+  // the frame drop signal originated from the source because in that case the
+  // frame drop has already been counted (we don't want to count it twice).
+  // TODO(https://crbug.com/1481448): Move the UMA reporting from
+  // VideoCaptureController to MediaStreamVideoTrack and delete this callback,
+  // along with all the other callbacks.
+  if (!dropped_by_source) {
+    PostCrossThreadTask(
+        *renderer_task_runner_, FROM_HERE,
+        CrossThreadBindOnce(&MediaStreamVideoSource::OnFrameDroppedInRenderer,
+                            media_stream_video_source_, reason));
+  }
   // Notify callbacks, such as
   // MediaStreamVideoTrack::FrameDeliverer::NotifyFrameDroppedOnVideoTaskRunner.
   for (const auto& callback : callbacks_) {
@@ -911,6 +928,15 @@ void VideoTrackAdapter::DeliverEncodedVideoFrameOnVideoTaskRunner(
                "VideoTrackAdapter::DeliverEncodedVideoFrameOnVideoTaskRunner");
   for (const auto& adapter : adapters_)
     adapter->DeliverEncodedVideoFrame(frame, estimated_capture_time);
+}
+
+void VideoTrackAdapter::OnFrameDroppedOnVideoTaskRunner(
+    media::VideoCaptureFrameDropReason reason) {
+  DCHECK(video_task_runner_->RunsTasksInCurrentSequence());
+  TRACE_EVENT0("media", "VideoTrackAdapter::OnFrameDroppedOnVideoTaskRunner");
+  for (const auto& adapter : adapters_) {
+    adapter->OnFrameDropped(reason);
+  }
 }
 
 void VideoTrackAdapter::NewCropVersionOnVideoTaskRunner(uint32_t crop_version) {

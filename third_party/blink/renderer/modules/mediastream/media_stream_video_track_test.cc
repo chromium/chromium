@@ -423,28 +423,6 @@ TEST_F(MediaStreamVideoTrackTest, FrameStatsIncrementsForEnabledTracks) {
       MediaStreamVideoTrack::From(track);
   EXPECT_FALSE(native_track->max_frame_rate().has_value());
 
-  const auto kOnFrameDropped = base::BindRepeating(
-      [](base::SequencedTaskRunner* video_task_runner,
-         MediaStreamVideoTrack* const native_track,
-         media::VideoCaptureFrameDropReason reason) {
-        base::RunLoop run_loop;
-        video_task_runner->PostTask(
-            FROM_HERE,
-            base::BindOnce(
-                [](MediaStreamVideoTrack* const native_track,
-                   media::VideoCaptureFrameDropReason reason,
-                   base::RunLoop* run_loop) {
-                  native_track
-                      ->NotifyFrameDroppedOnVideoTaskRunnerCallbackForTesting()
-                      .Run(reason);
-                  run_loop->Quit();
-                },
-                base::Unretained(native_track), reason,
-                base::Unretained(&run_loop)));
-        run_loop.Run();
-      },
-      base::Unretained(mock_source()->video_task_runner()));
-
   // Initially, no fames have been delivered.
   MediaStreamTrackPlatform::VideoFrameStats stats =
       native_track->GetVideoFrameStats();
@@ -462,15 +440,14 @@ TEST_F(MediaStreamVideoTrackTest, FrameStatsIncrementsForEnabledTracks) {
 
   // Discard one frame (due to frame rate decimation) and drop two frames (other
   // reasons);
-  kOnFrameDropped.Run(native_track,
-                      media::VideoCaptureFrameDropReason::
-                          kResolutionAdapterFrameRateIsHigherThanRequested);
-  kOnFrameDropped.Run(
-      native_track,
+  mock_source()->DropFrame(
+      media::VideoCaptureFrameDropReason::
+          kResolutionAdapterFrameRateIsHigherThanRequested);
+  mock_source()->DropFrame(
       media::VideoCaptureFrameDropReason::kGpuMemoryBufferMapFailed);
-  kOnFrameDropped.Run(
-      native_track,
+  mock_source()->DropFrame(
       media::VideoCaptureFrameDropReason::kGpuMemoryBufferMapFailed);
+  DepleteIOCallbacks();
   stats = native_track->GetVideoFrameStats();
   EXPECT_EQ(stats.deliverable_frames, 1u);
   EXPECT_EQ(stats.discarded_frames, 1u);
@@ -479,12 +456,13 @@ TEST_F(MediaStreamVideoTrackTest, FrameStatsIncrementsForEnabledTracks) {
   // And some more...
   DeliverVideoFrameAndWaitForRenderer(
       media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400)), &sink);
-  kOnFrameDropped.Run(native_track,
-                      media::VideoCaptureFrameDropReason::
-                          kResolutionAdapterFrameRateIsHigherThanRequested);
-  kOnFrameDropped.Run(native_track,
-                      media::VideoCaptureFrameDropReason::
-                          kResolutionAdapterFrameRateIsHigherThanRequested);
+  mock_source()->DropFrame(
+      media::VideoCaptureFrameDropReason::
+          kResolutionAdapterFrameRateIsHigherThanRequested);
+  mock_source()->DropFrame(
+      media::VideoCaptureFrameDropReason::
+          kResolutionAdapterFrameRateIsHigherThanRequested);
+  DepleteIOCallbacks();
   stats = native_track->GetVideoFrameStats();
   EXPECT_EQ(stats.deliverable_frames, 2u);
   EXPECT_EQ(stats.discarded_frames, 3u);
@@ -495,12 +473,12 @@ TEST_F(MediaStreamVideoTrackTest, FrameStatsIncrementsForEnabledTracks) {
   native_track->SetEnabled(false);
   DeliverVideoFrameAndWaitForRenderer(
       media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400)), &sink);
-  kOnFrameDropped.Run(native_track,
-                      media::VideoCaptureFrameDropReason::
-                          kResolutionAdapterFrameRateIsHigherThanRequested);
-  kOnFrameDropped.Run(
-      native_track,
+  mock_source()->DropFrame(
+      media::VideoCaptureFrameDropReason::
+          kResolutionAdapterFrameRateIsHigherThanRequested);
+  mock_source()->DropFrame(
       media::VideoCaptureFrameDropReason::kGpuMemoryBufferMapFailed);
+  DepleteIOCallbacks();
   stats = native_track->GetVideoFrameStats();
   EXPECT_EQ(stats.deliverable_frames, 2u);
   EXPECT_EQ(stats.discarded_frames, 3u);
@@ -510,12 +488,12 @@ TEST_F(MediaStreamVideoTrackTest, FrameStatsIncrementsForEnabledTracks) {
   native_track->SetEnabled(true);
   DeliverVideoFrameAndWaitForRenderer(
       media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400)), &sink);
-  kOnFrameDropped.Run(native_track,
-                      media::VideoCaptureFrameDropReason::
-                          kResolutionAdapterFrameRateIsHigherThanRequested);
-  kOnFrameDropped.Run(
-      native_track,
+  mock_source()->DropFrame(
+      media::VideoCaptureFrameDropReason::
+          kResolutionAdapterFrameRateIsHigherThanRequested);
+  mock_source()->DropFrame(
       media::VideoCaptureFrameDropReason::kGpuMemoryBufferMapFailed);
+  DepleteIOCallbacks();
   stats = native_track->GetVideoFrameStats();
   EXPECT_EQ(stats.deliverable_frames, 3u);
   EXPECT_EQ(stats.discarded_frames, 4u);

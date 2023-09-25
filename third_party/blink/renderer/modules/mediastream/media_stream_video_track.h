@@ -200,14 +200,6 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
 
   bool UsingAlpha();
 
-  // Today the source does not tell the track of frame drops, only the other way
-  // around. For this reason we need a test-only method to test frame stats.
-  // TODO(https://crbug.com/1472978): When source frame drops are forwarded to
-  // the track (instead of the other way around), delete this test-only method
-  // in favor of testing drops via a fake source instead.
-  base::RepeatingCallback<void(media::VideoCaptureFrameDropReason)>
-  NotifyFrameDroppedOnVideoTaskRunnerCallbackForTesting();
-
  private:
   FRIEND_TEST_ALL_PREFIXES(MediaStreamRemoteVideoSourceTest, StartTrack);
   FRIEND_TEST_ALL_PREFIXES(MediaStreamRemoteVideoSourceTest, RemoteTrackStop);

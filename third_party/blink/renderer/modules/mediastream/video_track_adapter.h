@@ -81,6 +81,11 @@ class MODULES_EXPORT VideoTrackAdapter
       scoped_refptr<EncodedVideoFrame> frame,
       base::TimeTicks estimated_capture_time);
 
+  // Called if a frame was dropped prior to delivery, i.e.
+  // DeliverFrameOnVideoTaskRunner() will not be called for this frame.
+  void OnFrameDroppedOnVideoTaskRunner(
+      media::VideoCaptureFrameDropReason reason);
+
   // Called when it is guaranteed that all subsequent frames delivered
   // over DeliverFrameOnVideoTaskRunner() will have a crop version that is
   // equal-to-or-greater-than the given crop version.

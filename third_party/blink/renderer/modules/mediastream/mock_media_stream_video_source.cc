@@ -122,6 +122,14 @@ void MockMediaStreamVideoSource::DeliverEncodedVideoFrame(
                                           std::move(frame), base::TimeTicks()));
 }
 
+void MockMediaStreamVideoSource::DropFrame(
+    media::VideoCaptureFrameDropReason reason) {
+  DCHECK(!is_stopped_for_restart_);
+  DCHECK(!frame_dropped_callback_.is_null());
+  PostCrossThreadTask(*video_task_runner(), FROM_HERE,
+                      CrossThreadBindOnce(frame_dropped_callback_, reason));
+}
+
 void MockMediaStreamVideoSource::DeliverNewCropVersion(uint32_t crop_version) {
   DCHECK(!crop_version_callback_.is_null());
   PostCrossThreadTask(
