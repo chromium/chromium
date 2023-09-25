@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/controls/rich_controls_container_view.h"
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
@@ -144,7 +145,12 @@ void CookieControlsContentView::SetEnforcedIconVisible(bool visible) {
 }
 
 void CookieControlsContentView::SetFeedbackSectionVisibility(bool visible) {
-  feedback_section_->SetVisible(visible);
+  if (visible && base::FeatureList::IsEnabled(
+                     content_settings::features::kUserBypassFeedback)) {
+    feedback_section_->SetVisible(true);
+  } else {
+    feedback_section_->SetVisible(false);
+  }
   PreferredSizeChanged();
 }
 
