@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/ng/ng_text_combine_painter.h"
 
-#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
+#include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_text_decoration_offset.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
@@ -31,7 +31,7 @@ NGTextCombinePainter::~NGTextCombinePainter() = default;
 
 void NGTextCombinePainter::Paint(const PaintInfo& paint_info,
                                  const PhysicalOffset& paint_offset,
-                                 const LayoutNGTextCombine& text_combine) {
+                                 const LayoutTextCombine& text_combine) {
   if (paint_info.phase == PaintPhase::kBlockBackground ||
       paint_info.phase == PaintPhase::kForcedColorsModeBackplate ||
       paint_info.phase == PaintPhase::kFloat ||
@@ -79,8 +79,7 @@ void NGTextCombinePainter::Paint(const PaintInfo& paint_info,
 }
 
 // static
-bool NGTextCombinePainter::ShouldPaint(
-    const LayoutNGTextCombine& text_combine) {
+bool NGTextCombinePainter::ShouldPaint(const LayoutTextCombine& text_combine) {
   const auto& style = text_combine.Parent()->StyleRef();
   return style.HasAppliedTextDecorations() ||
          style.GetTextEmphasisMark() != TextEmphasisMark::kNone;

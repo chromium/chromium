@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
+#include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 
 #include "third_party/blink/renderer/core/css/resolver/style_adjuster.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
@@ -21,17 +21,16 @@
 
 namespace blink {
 
-LayoutNGTextCombine::LayoutNGTextCombine() : LayoutNGBlockFlow(nullptr) {
+LayoutTextCombine::LayoutTextCombine() : LayoutNGBlockFlow(nullptr) {
   SetIsAtomicInlineLevel(true);
 }
 
-LayoutNGTextCombine::~LayoutNGTextCombine() = default;
+LayoutTextCombine::~LayoutTextCombine() = default;
 
 // static
-LayoutNGTextCombine* LayoutNGTextCombine::CreateAnonymous(
-    LayoutText* text_child) {
+LayoutTextCombine* LayoutTextCombine::CreateAnonymous(LayoutText* text_child) {
   DCHECK(ShouldBeParentOf(*text_child)) << text_child;
-  auto* const layout_object = MakeGarbageCollected<LayoutNGTextCombine>();
+  auto* const layout_object = MakeGarbageCollected<LayoutTextCombine>();
   auto& document = text_child->GetDocument();
   layout_object->SetDocumentForAnonymous(&document);
   ComputedStyleBuilder new_style_builder =
@@ -40,17 +39,17 @@ LayoutNGTextCombine* LayoutNGTextCombine::CreateAnonymous(
   StyleAdjuster::AdjustStyleForTextCombine(new_style_builder);
   layout_object->SetStyle(new_style_builder.TakeStyle());
   layout_object->AddChild(text_child);
-  LayoutNGTextCombine::AssertStyleIsValid(text_child->StyleRef());
+  LayoutTextCombine::AssertStyleIsValid(text_child->StyleRef());
   return layout_object;
 }
 
-String LayoutNGTextCombine::GetTextContent() const {
+String LayoutTextCombine::GetTextContent() const {
   DCHECK(!NeedsCollectInlines() && GetNGInlineNodeData()) << this;
   return GetNGInlineNodeData()->ItemsData(false).text_content;
 }
 
 // static
-void LayoutNGTextCombine::AssertStyleIsValid(const ComputedStyle& style) {
+void LayoutTextCombine::AssertStyleIsValid(const ComputedStyle& style) {
   // See also |StyleAdjuster::AdjustStyleForTextCombine()|.
 #if DCHECK_IS_ON()
   DCHECK_EQ(style.GetTextDecorationLine(), TextDecorationLine::kNone);
@@ -64,20 +63,20 @@ void LayoutNGTextCombine::AssertStyleIsValid(const ComputedStyle& style) {
 #endif
 }
 
-bool LayoutNGTextCombine::IsOfType(LayoutObjectType type) const {
+bool LayoutTextCombine::IsOfType(LayoutObjectType type) const {
   NOT_DESTROYED();
-  return type == kLayoutObjectNGTextCombine ||
-         LayoutNGBlockFlow::IsOfType(type);
+  return type == kLayoutObjectTextCombine || LayoutNGBlockFlow::IsOfType(type);
 }
 
-float LayoutNGTextCombine::DesiredWidth() const {
+float LayoutTextCombine::DesiredWidth() const {
   DCHECK_EQ(StyleRef().GetFont().GetFontDescription().Orientation(),
             FontOrientation::kHorizontal);
   const float one_em = StyleRef().ComputedFontSize();
   if (EnumHasFlags(
           Parent()->StyleRef().TextDecorationsInEffect(),
-          TextDecorationLine::kUnderline | TextDecorationLine::kOverline))
+          TextDecorationLine::kUnderline | TextDecorationLine::kOverline)) {
     return one_em;
+  }
   // Allow em + 10% margin if there are no underline and overeline for
   // better looking. This isn't specified in the spec[1], but EPUB group
   // wants this.
@@ -86,7 +85,7 @@ float LayoutNGTextCombine::DesiredWidth() const {
   return one_em * kTextCombineMargin;
 }
 
-float LayoutNGTextCombine::ComputeInlineSpacing() const {
+float LayoutTextCombine::ComputeInlineSpacing() const {
   DCHECK_EQ(StyleRef().GetFont().GetFontDescription().Orientation(),
             FontOrientation::kHorizontal);
   DCHECK(scale_x_);
@@ -94,7 +93,7 @@ float LayoutNGTextCombine::ComputeInlineSpacing() const {
   return (line_height - DesiredWidth()) / 2;
 }
 
-PhysicalOffset LayoutNGTextCombine::ApplyScaleX(
+PhysicalOffset LayoutTextCombine::ApplyScaleX(
     const PhysicalOffset& offset) const {
   DCHECK(scale_x_.has_value());
   const float spacing = ComputeInlineSpacing();
@@ -102,17 +101,17 @@ PhysicalOffset LayoutNGTextCombine::ApplyScaleX(
                         offset.top);
 }
 
-PhysicalRect LayoutNGTextCombine::ApplyScaleX(const PhysicalRect& rect) const {
+PhysicalRect LayoutTextCombine::ApplyScaleX(const PhysicalRect& rect) const {
   DCHECK(scale_x_.has_value());
   return PhysicalRect(ApplyScaleX(rect.offset), ApplyScaleX(rect.size));
 }
 
-PhysicalSize LayoutNGTextCombine::ApplyScaleX(const PhysicalSize& size) const {
+PhysicalSize LayoutTextCombine::ApplyScaleX(const PhysicalSize& size) const {
   DCHECK(scale_x_.has_value());
   return PhysicalSize(LayoutUnit(size.width * *scale_x_), size.height);
 }
 
-PhysicalOffset LayoutNGTextCombine::UnapplyScaleX(
+PhysicalOffset LayoutTextCombine::UnapplyScaleX(
     const PhysicalOffset& offset) const {
   DCHECK(scale_x_.has_value());
   const float spacing = ComputeInlineSpacing();
@@ -120,29 +119,32 @@ PhysicalOffset LayoutNGTextCombine::UnapplyScaleX(
                         offset.top);
 }
 
-PhysicalOffset LayoutNGTextCombine::AdjustOffsetForHitTest(
+PhysicalOffset LayoutTextCombine::AdjustOffsetForHitTest(
     const PhysicalOffset& offset_in_container) const {
-  if (!scale_x_)
+  if (!scale_x_) {
     return offset_in_container;
+  }
   return UnapplyScaleX(offset_in_container);
 }
 
-PhysicalOffset LayoutNGTextCombine::AdjustOffsetForLocalCaretRect(
+PhysicalOffset LayoutTextCombine::AdjustOffsetForLocalCaretRect(
     const PhysicalOffset& offset_in_container) const {
-  if (!scale_x_)
+  if (!scale_x_) {
     return offset_in_container;
+  }
   return ApplyScaleX(offset_in_container);
 }
 
-PhysicalRect LayoutNGTextCombine::AdjustRectForBoundingBox(
+PhysicalRect LayoutTextCombine::AdjustRectForBoundingBox(
     const PhysicalRect& rect) const {
-  if (!scale_x_)
+  if (!scale_x_) {
     return rect;
+  }
   // See "text-combine-upright-compression-007.html"
   return ApplyScaleX(rect);
 }
 
-PhysicalRect LayoutNGTextCombine::ComputeTextBoundsRectForHitTest(
+PhysicalRect LayoutTextCombine::ComputeTextBoundsRectForHitTest(
     const NGFragmentItem& text_item,
     const PhysicalOffset& inline_root_offset) const {
   DCHECK(text_item.IsText()) << text_item;
@@ -153,21 +155,21 @@ PhysicalRect LayoutNGTextCombine::ComputeTextBoundsRectForHitTest(
   return rect;
 }
 
-void LayoutNGTextCombine::ResetLayout() {
+void LayoutTextCombine::ResetLayout() {
   compressed_font_.reset();
   scale_x_.reset();
 }
 
-LayoutUnit LayoutNGTextCombine::AdjustTextLeftForPaint(
+LayoutUnit LayoutTextCombine::AdjustTextLeftForPaint(
     LayoutUnit position) const {
-  if (!scale_x_)
+  if (!scale_x_) {
     return position;
+  }
   const float spacing = ComputeInlineSpacing();
   return LayoutUnit(position + spacing / *scale_x_);
 }
 
-LayoutUnit LayoutNGTextCombine::AdjustTextTopForPaint(
-    LayoutUnit text_top) const {
+LayoutUnit LayoutTextCombine::AdjustTextTopForPaint(LayoutUnit text_top) const {
   DCHECK_EQ(StyleRef().GetFont().GetFontDescription().Orientation(),
             FontOrientation::kHorizontal);
   const SimpleFontData& font_data = *StyleRef().GetFont().PrimaryFont();
@@ -177,7 +179,7 @@ LayoutUnit LayoutNGTextCombine::AdjustTextTopForPaint(
   return LayoutUnit(text_top + ascent - half_leading);
 }
 
-AffineTransform LayoutNGTextCombine::ComputeAffineTransformForPaint(
+AffineTransform LayoutTextCombine::ComputeAffineTransformForPaint(
     const PhysicalOffset& paint_offset) const {
   DCHECK(NeedsAffineTransformInPaint());
   AffineTransform matrix;
@@ -201,11 +203,11 @@ AffineTransform LayoutNGTextCombine::ComputeAffineTransformForPaint(
   return matrix;
 }
 
-bool LayoutNGTextCombine::NeedsAffineTransformInPaint() const {
+bool LayoutTextCombine::NeedsAffineTransformInPaint() const {
   return scale_x_.has_value() || UsingSyntheticOblique();
 }
 
-PhysicalRect LayoutNGTextCombine::ComputeTextFrameRect(
+PhysicalRect LayoutTextCombine::ComputeTextFrameRect(
     const PhysicalOffset paint_offset) const {
   const ComputedStyle& style = Parent()->StyleRef();
   DCHECK(style.GetFont().GetFontDescription().IsVerticalBaseline());
@@ -221,7 +223,7 @@ PhysicalRect LayoutNGTextCombine::ComputeTextFrameRect(
                       PhysicalSize(one_em, line_height));
 }
 
-PhysicalRect LayoutNGTextCombine::RecalcContentsInkOverflow(
+PhysicalRect LayoutTextCombine::RecalcContentsInkOverflow(
     const NGInlineCursor& cursor) const {
   const ComputedStyle& style = Parent()->StyleRef();
   DCHECK(style.GetFont().GetFontDescription().IsVerticalBaseline());
@@ -232,7 +234,7 @@ PhysicalRect LayoutNGTextCombine::RecalcContentsInkOverflow(
                            text_rect.size.width, text_rect.size.height);
 
   if (style.HasAppliedTextDecorations()) {
-    // |LayoutNGTextCombine| does not support decorating box, as it is not
+    // |LayoutTextCombine| does not support decorating box, as it is not
     // supported in vertical flow and text-combine is only for vertical flow.
     const LogicalRect decoration_rect =
         NGInkOverflow::ComputeDecorationOverflow(
@@ -255,7 +257,7 @@ PhysicalRect LayoutNGTextCombine::RecalcContentsInkOverflow(
   return local_ink_overflow;
 }
 
-gfx::Rect LayoutNGTextCombine::VisualRectForPaint(
+gfx::Rect LayoutTextCombine::VisualRectForPaint(
     const PhysicalOffset& paint_offset) const {
   DCHECK_EQ(PhysicalFragmentCount(), 1u);
   PhysicalRect ink_overflow = GetPhysicalFragment(0)->InkOverflow();
@@ -263,7 +265,7 @@ gfx::Rect LayoutNGTextCombine::VisualRectForPaint(
   return ToEnclosingRect(ink_overflow);
 }
 
-void LayoutNGTextCombine::SetScaleX(float new_scale_x) {
+void LayoutTextCombine::SetScaleX(float new_scale_x) {
   DCHECK_GT(new_scale_x, 0.0f);
   DCHECK(!scale_x_.has_value());
   DCHECK(!compressed_font_.has_value());
@@ -272,13 +274,13 @@ void LayoutNGTextCombine::SetScaleX(float new_scale_x) {
   scale_x_ = new_scale_x;
 }
 
-void LayoutNGTextCombine::SetCompressedFont(const Font& font) {
+void LayoutTextCombine::SetCompressedFont(const Font& font) {
   DCHECK(!compressed_font_.has_value());
   DCHECK(!scale_x_.has_value());
   compressed_font_ = font;
 }
 
-bool LayoutNGTextCombine::UsingSyntheticOblique() const {
+bool LayoutTextCombine::UsingSyntheticOblique() const {
   return Parent()
       ->StyleRef()
       .GetFont()

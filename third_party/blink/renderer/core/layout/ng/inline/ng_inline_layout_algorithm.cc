@@ -12,7 +12,7 @@
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
+#include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_bidi_paragraph.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_initial_letter_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_box_state.h"
@@ -807,7 +807,7 @@ NGInlineBoxState* NGInlineLayoutAlgorithm::PlaceAtomicInline(
   NGInlineBoxState* box = box_states_->OnOpenTag(
       ConstraintSpace(), item, *item_result, baseline_type_, *line_box);
 
-  if (LIKELY(!IsA<LayoutNGTextCombine>(layout_object))) {
+  if (LIKELY(!IsA<LayoutTextCombine>(layout_object))) {
     PlaceLayoutResult(item_result, line_box, box, box->margin_inline_start);
   } else {
     // The metrics should be as text instead of atomic inline box.
@@ -900,7 +900,7 @@ void NGInlineLayoutAlgorithm::PlaceInitialLetterBox(
     NGInlineItemResult* item_result,
     NGLogicalLineItems* line_box) {
   DCHECK(item_result->layout_result);
-  DCHECK(!IsA<LayoutNGTextCombine>(item.GetLayoutObject()));
+  DCHECK(!IsA<LayoutTextCombine>(item.GetLayoutObject()));
   DCHECK(!item_result->spacing_before);
 
   // Because of the initial letter box should not contribute baseline position

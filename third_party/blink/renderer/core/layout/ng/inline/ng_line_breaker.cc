@@ -7,7 +7,7 @@
 #include "base/containers/adapters.h"
 #include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
+#include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_bidi_paragraph.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
@@ -318,10 +318,10 @@ float ComputeWordWidth(const ShapeResult& shape_result,
                                          : start_position - end_position;
 }
 
-inline LayoutNGTextCombine* MayBeTextCombine(const NGInlineItem* item) {
+inline LayoutTextCombine* MayBeTextCombine(const NGInlineItem* item) {
   if (!item)
     return nullptr;
-  return DynamicTo<LayoutNGTextCombine>(item->GetLayoutObject());
+  return DynamicTo<LayoutTextCombine>(item->GetLayoutObject());
 }
 
 }  // namespace
@@ -3023,7 +3023,7 @@ void NGLineBreaker::HandleCloseTag(const NGInlineItem& item,
   const NGInlineItemResults& item_results = line_info->Results();
   if (item_results.size() >= 2) {
     NGInlineItemResult* last = std::prev(item_result);
-    if (UNLIKELY(IsA<LayoutNGTextCombine>(last->item->GetLayoutObject()))) {
+    if (UNLIKELY(IsA<LayoutTextCombine>(last->item->GetLayoutObject()))) {
       // |can_break_after| for close tag should be as same as text-combine box.
       // See "text-combine-upright-break-inside-001a.html"
       // e.g. A<tcy style="white-space: pre">x y</tcy>B

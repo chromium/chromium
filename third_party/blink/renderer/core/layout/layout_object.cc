@@ -85,12 +85,12 @@
 #include "third_party/blink/renderer/core/layout/layout_object_inl.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_ruby_column.h"
+#include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/custom/layout_ng_custom.h"
 #include "third_party/blink/renderer/core/layout/ng/flex/layout_ng_flexible_box.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_inline_list_item.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_inside_list_marker.h"
@@ -661,32 +661,31 @@ void LayoutObject::AddChild(LayoutObject* new_child,
   } else if (LIKELY(new_child->IsHorizontalWritingMode()) ||
              !new_child->IsText()) {
     children->InsertChildNode(this, new_child, before_child);
-  } else if (IsA<LayoutNGTextCombine>(*this)) {
-    DCHECK(LayoutNGTextCombine::ShouldBeParentOf(*new_child)) << new_child;
+  } else if (IsA<LayoutTextCombine>(*this)) {
+    DCHECK(LayoutTextCombine::ShouldBeParentOf(*new_child)) << new_child;
     new_child->SetStyle(Style());
     children->InsertChildNode(this, new_child, before_child);
   } else if (!IsHorizontalWritingMode() &&
-             LayoutNGTextCombine::ShouldBeParentOf(*new_child)) {
+             LayoutTextCombine::ShouldBeParentOf(*new_child)) {
     if (before_child) {
-      if (IsA<LayoutNGTextCombine>(before_child)) {
-        DCHECK(!DynamicTo<LayoutNGTextCombine>(before_child->PreviousSibling()))
+      if (IsA<LayoutTextCombine>(before_child)) {
+        DCHECK(!DynamicTo<LayoutTextCombine>(before_child->PreviousSibling()))
             << before_child->PreviousSibling();
         before_child->AddChild(new_child, before_child->SlowFirstChild());
-      } else if (auto* const previous_sibling = DynamicTo<LayoutNGTextCombine>(
+      } else if (auto* const previous_sibling = DynamicTo<LayoutTextCombine>(
                      before_child->PreviousSibling())) {
         previous_sibling->AddChild(new_child);
       } else {
         children->InsertChildNode(
-            this,
-            LayoutNGTextCombine::CreateAnonymous(To<LayoutText>(new_child)),
+            this, LayoutTextCombine::CreateAnonymous(To<LayoutText>(new_child)),
             before_child);
       }
     } else if (auto* const last_child =
-                   DynamicTo<LayoutNGTextCombine>(SlowLastChild())) {
+                   DynamicTo<LayoutTextCombine>(SlowLastChild())) {
       last_child->AddChild(new_child);
     } else {
-      children->AppendChildNode(this, LayoutNGTextCombine::CreateAnonymous(
-                                          To<LayoutText>(new_child)));
+      children->AppendChildNode(
+          this, LayoutTextCombine::CreateAnonymous(To<LayoutText>(new_child)));
     }
   } else {
     // In case of append/insert <br style="writing-mode:vertical-rl">
@@ -2522,7 +2521,7 @@ void LayoutObject::SetPseudoElementStyle(const ComputedStyle* pseudo_style,
     return;
   }
 
-  if (IsText() && UNLIKELY(IsA<LayoutNGTextCombine>(Parent()))) {
+  if (IsText() && UNLIKELY(IsA<LayoutTextCombine>(Parent()))) {
     // See http://crbug.com/1222640
     ComputedStyleBuilder combined_text_style_builder =
         GetDocument()

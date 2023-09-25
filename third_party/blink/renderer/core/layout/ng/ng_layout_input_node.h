@@ -136,7 +136,7 @@ class CORE_EXPORT NGLayoutInputNode {
   bool IsSliderThumb() const;
   bool IsSvgText() const;
   bool IsTable() const { return IsBlock() && box_->IsTable(); }
-  bool IsTextCombine() const { return box_->IsLayoutNGTextCombine(); }
+  bool IsTextCombine() const { return box_->IsLayoutTextCombine(); }
 
   bool IsTableCaption() const { return IsBlock() && box_->IsTableCaption(); }
   bool IsTableSection() const { return IsBlock() && box_->IsTableSection(); }

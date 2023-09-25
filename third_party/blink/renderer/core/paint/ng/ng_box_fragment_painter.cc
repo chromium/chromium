@@ -14,9 +14,9 @@
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
+#include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_items.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
@@ -439,7 +439,7 @@ void NGBoxFragmentPainter::PaintInternal(const PaintInfo& paint_info) {
   absl::optional<DrawingRecorder> recorder;
   absl::optional<GraphicsContextStateSaver> graphics_context_state_saver;
   const auto* const text_combine =
-      DynamicTo<LayoutNGTextCombine>(box_fragment_.GetLayoutObject());
+      DynamicTo<LayoutTextCombine>(box_fragment_.GetLayoutObject());
   if (UNLIKELY(text_combine)) {
     if (text_combine->NeedsAffineTransformInPaint()) {
       if (original_phase == PaintPhase::kForeground)
@@ -2127,7 +2127,7 @@ bool NGBoxFragmentPainter::HitTestTextItem(
   }
 
   const auto* const text_combine =
-      DynamicTo<LayoutNGTextCombine>(box_fragment_.GetLayoutObject());
+      DynamicTo<LayoutTextCombine>(box_fragment_.GetLayoutObject());
 
   // TODO(layout-dev): Clip to line-top/bottom.
   const PhysicalRect rect =

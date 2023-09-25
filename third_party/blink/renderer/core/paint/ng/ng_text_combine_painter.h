@@ -10,7 +10,7 @@
 namespace blink {
 
 class ComputedStyle;
-class LayoutNGTextCombine;
+class LayoutTextCombine;
 
 // The painter for painting text decorations and emphasis marks for
 // LayoutNGTextCombine.
@@ -23,9 +23,9 @@ class NGTextCombinePainter final : public NGTextPainterBase {
 
   static void Paint(const PaintInfo& paint_info,
                     const PhysicalOffset& paint_offset,
-                    const LayoutNGTextCombine& text_combine);
+                    const LayoutTextCombine& text_combine);
 
-  static bool ShouldPaint(const LayoutNGTextCombine& text_combine);
+  static bool ShouldPaint(const LayoutTextCombine& text_combine);
 
  protected:
   void ClipDecorationsStripe(const NGTextFragmentPaintInfo&,

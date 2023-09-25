@@ -53,7 +53,7 @@ class NGInlineItemsBuilderTemplate {
       : block_flow_(block_flow),
         items_(items),
         text_chunk_offsets_(chunk_offsets),
-        is_text_combine_(block_flow_->IsLayoutNGTextCombine()) {}
+        is_text_combine_(block_flow_->IsLayoutTextCombine()) {}
   ~NGInlineItemsBuilderTemplate();
 
   LayoutBlockFlow* GetLayoutBlockFlow() const { return block_flow_; }

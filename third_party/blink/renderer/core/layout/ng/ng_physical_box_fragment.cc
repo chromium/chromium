@@ -15,9 +15,9 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
+#include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item.h"
@@ -1238,7 +1238,7 @@ PhysicalRect NGPhysicalBoxFragment::RecalcContentsInkOverflow() {
     // Add text decorations and emphasis mark ink over flow for combined
     // text.
     const auto* const text_combine =
-        DynamicTo<LayoutNGTextCombine>(GetLayoutObject());
+        DynamicTo<LayoutTextCombine>(GetLayoutObject());
     if (UNLIKELY(text_combine)) {
       // Reset the cursor for text combine to provide a current item for
       // decorations.

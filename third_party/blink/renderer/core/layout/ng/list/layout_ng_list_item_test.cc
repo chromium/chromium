@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_base_layout_algorithm_test.h"
 
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
+#include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
 
 namespace blink {
@@ -29,7 +29,7 @@ TEST_F(LayoutNGListItemTest, FindSymbolMarkerLayoutTextWithTextCombine) {
   const auto* const marker_layout_text =
       LayoutNGListItem::FindSymbolMarkerLayoutText(target.GetLayoutObject());
   const auto* const text_combine =
-      To<LayoutNGTextCombine>(marker_layout_text->Parent());
+      To<LayoutTextCombine>(marker_layout_text->Parent());
   EXPECT_EQ(marker_layout_text,
             LayoutNGListItem::FindSymbolMarkerLayoutText(text_combine));
 }

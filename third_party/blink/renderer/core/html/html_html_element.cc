@@ -34,7 +34,7 @@
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
+#include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/core/loader/render_blocking_resource_manager.h"
@@ -169,7 +169,7 @@ void HTMLHtmlElement::PropagateWritingModeAndDirectionFromBody() {
       continue;
     }
     auto* const text_combine =
-        DynamicTo<LayoutNGTextCombine>(layout_text->Parent());
+        DynamicTo<LayoutTextCombine>(layout_text->Parent());
     if (UNLIKELY(text_combine)) {
       layout_text->SetStyle(text_combine->Style());
       continue;

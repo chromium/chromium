@@ -9,9 +9,9 @@
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_utils.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
+#include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
@@ -806,7 +806,7 @@ void NGPhysicalFragment::AddOutlineRectsForCursor(
     const LayoutBoxModelObject* containing_block,
     NGInlineCursor* cursor) const {
   const auto* const text_combine =
-      DynamicTo<LayoutNGTextCombine>(containing_block);
+      DynamicTo<LayoutTextCombine>(containing_block);
   while (*cursor) {
     DCHECK(cursor->Current().Item());
     const NGFragmentItem& item = *cursor->Current().Item();

@@ -177,9 +177,9 @@
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_controller.h"
 #include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
+#include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
@@ -3756,7 +3756,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
   if (LayoutObject* layout_object = GetLayoutObject()) {
     DCHECK(new_style);
     if (UNLIKELY(layout_object->IsText()) &&
-        UNLIKELY(IsA<LayoutNGTextCombine>(layout_object->Parent()))) {
+        UNLIKELY(IsA<LayoutTextCombine>(layout_object->Parent()))) {
       // Adjust style for <br> and <wbr> in combined text.
       // See http://crbug.com/1228058
       ComputedStyleBuilder adjust_builder(*new_style);

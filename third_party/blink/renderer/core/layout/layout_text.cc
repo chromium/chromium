@@ -48,8 +48,8 @@
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
+#include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_abstract_inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
@@ -585,7 +585,7 @@ void LayoutText::AbsoluteQuadsForRange(Vector<gfx::QuadF>& quads,
     if (!MapDOMOffsetToTextContentOffset(*mapping, &start, &end))
       return;
 
-    const auto* const text_combine = DynamicTo<LayoutNGTextCombine>(Parent());
+    const auto* const text_combine = DynamicTo<LayoutTextCombine>(Parent());
 
     // We don't want to add collapsed (i.e., start == end) quads from text
     // fragments that intersect [start, end] only at the boundary, unless they
@@ -693,7 +693,7 @@ PositionWithAffinity LayoutText::PositionForPoint(
       point_in_contents += PhysicalOffset(
           containing_block_flow->PixelSnappedScrolledContentOffset());
     }
-    const auto* const text_combine = DynamicTo<LayoutNGTextCombine>(Parent());
+    const auto* const text_combine = DynamicTo<LayoutTextCombine>(Parent());
     const NGPhysicalBoxFragment* container_fragment = nullptr;
     PhysicalOffset point_in_container_fragment;
     DCHECK(!IsSVGInlineText());
@@ -986,7 +986,7 @@ void LayoutText::ForceSetText(String text) {
 
 void LayoutText::SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
     LayoutInvalidationReasonForTracing reason) {
-  auto* const text_combine = DynamicTo<LayoutNGTextCombine>(Parent());
+  auto* const text_combine = DynamicTo<LayoutTextCombine>(Parent());
   if (UNLIKELY(text_combine)) {
     // Number of characters in text may change compressed font or scaling of
     // text combine. So, we should invalidate |LayoutNGTextCombine| to repaint.
@@ -1070,7 +1070,7 @@ PhysicalRect LayoutText::PhysicalLinesBoundingBox() const {
   if (result == PhysicalRect())
     result.offset = FirstLineBoxTopLeft();
   // Note: |result.offset| is relative to container fragment.
-  const auto* const text_combine = DynamicTo<LayoutNGTextCombine>(Parent());
+  const auto* const text_combine = DynamicTo<LayoutTextCombine>(Parent());
   if (UNLIKELY(text_combine))
     return text_combine->AdjustRectForBoundingBox(result);
   return result;
@@ -1366,7 +1366,7 @@ const DisplayItemClient* LayoutText::GetSelectionDisplayItemClient() const {
     return nullptr;
   // When |this| is in text-combine box, we should use text-combine box as
   // display client item to paint caret with affine transform.
-  const auto* const text_combine = DynamicTo<LayoutNGTextCombine>(Parent());
+  const auto* const text_combine = DynamicTo<LayoutTextCombine>(Parent());
   if (UNLIKELY(text_combine) && text_combine->NeedsAffineTransformInPaint())
     return text_combine;
   if (!IsSelected())

@@ -525,7 +525,7 @@ class CORE_EXPORT NGFragmentItem final {
   FRIEND_TEST_ALL_PREFIXES(NGFragmentItemTest, CopyMove);
   FRIEND_TEST_ALL_PREFIXES(NGFragmentItemTest, SelfPaintingInlineBox);
   FRIEND_TEST_ALL_PREFIXES(StyleChangeTest, NeedsCollectInlinesOnStyle);
-  friend class LayoutNGTextCombineTest;
+  friend class LayoutTextCombineTest;
 
   // Create a text item.
   NGFragmentItem(const NGInlineItem& inline_item,

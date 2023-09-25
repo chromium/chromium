@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/core/layout/layout_multi_column_spanner_placeholder.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inl.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
+#include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 
 namespace blink {
@@ -154,7 +154,7 @@ void LayoutObject::PropagateStyleToAnonymousChildren() {
         GetDocument().GetStyleResolver().CreateAnonymousStyleBuilderWithDisplay(
             StyleRef(), child->StyleRef().Display());
 
-    if (UNLIKELY(IsA<LayoutNGTextCombine>(child))) {
+    if (UNLIKELY(IsA<LayoutTextCombine>(child))) {
       if (blink::IsHorizontalWritingMode(new_style_builder.GetWritingMode())) {
         // |LayoutNGTextCombine| will be removed when recalculating style for
         // <br> or <wbr>.

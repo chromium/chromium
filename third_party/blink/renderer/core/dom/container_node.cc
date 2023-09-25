@@ -63,7 +63,7 @@
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
+#include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
@@ -705,9 +705,10 @@ static bool ShouldMergeCombinedTextAfterRemoval(const Node& old_child) {
   auto* const next_sibling = layout_object->NextSibling();
   if (!next_sibling)
     return false;
-  if (UNLIKELY(IsA<LayoutNGTextCombine>(previous_sibling)) &&
-      UNLIKELY(IsA<LayoutNGTextCombine>(next_sibling)))
+  if (UNLIKELY(IsA<LayoutTextCombine>(previous_sibling)) &&
+      UNLIKELY(IsA<LayoutTextCombine>(next_sibling))) {
     return true;
+  }
 
   // Request to merge combined texts in anonymous block.
   // See http://crbug.com/1233432
@@ -715,9 +716,8 @@ static bool ShouldMergeCombinedTextAfterRemoval(const Node& old_child) {
       !next_sibling->IsAnonymousBlock())
     return false;
 
-  return UNLIKELY(
-             IsA<LayoutNGTextCombine>(previous_sibling->SlowLastChild())) &&
-         UNLIKELY(IsA<LayoutNGTextCombine>(next_sibling->SlowFirstChild()));
+  return UNLIKELY(IsA<LayoutTextCombine>(previous_sibling->SlowLastChild())) &&
+         UNLIKELY(IsA<LayoutTextCombine>(next_sibling->SlowFirstChild()));
 }
 
 Node* ContainerNode::RemoveChild(Node* old_child,

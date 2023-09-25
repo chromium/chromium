@@ -10,8 +10,8 @@
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_image_resource_style_image.h"
 #include "third_party/blink/renderer/core/layout/layout_list_marker_image.h"
+#include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_inline_list_item.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_inside_list_marker.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
@@ -115,8 +115,9 @@ void ListMarker::OrdinalValueChanged(LayoutObject& marker) {
 LayoutObject* ListMarker::GetContentChild(const LayoutObject& marker) const {
   DCHECK_EQ(Get(&marker), this);
   LayoutObject* const first_child = marker.SlowFirstChild();
-  if (IsA<LayoutNGTextCombine>(first_child))
+  if (IsA<LayoutTextCombine>(first_child)) {
     return first_child->SlowFirstChild();
+  }
   return first_child;
 }
 
@@ -249,10 +250,11 @@ void ListMarker::UpdateMarkerContentIfNeeded(LayoutObject& marker) {
       if (!child->IsLayoutImage() ||
           To<LayoutImage>(child)->ImageResource()->ImagePtr() !=
               list_style_image->Data()) {
-        if (UNLIKELY(IsA<LayoutNGTextCombine>(child->Parent())))
+        if (UNLIKELY(IsA<LayoutTextCombine>(child->Parent()))) {
           child->Parent()->Destroy();
-        else
+        } else {
           child->Destroy();
+        }
         child = nullptr;
       }
     }

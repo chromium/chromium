@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/html_names.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
+#include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_child_layout_context.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_span.h"
@@ -358,8 +358,8 @@ TEST_F(NGInlineNodeTest, CollectInlinesTextCombineListItemMarker) {
   //        LayoutText (anonymous) "\x{2022} "
   //   LayoutNGTextCombine (anonymous)
   //     LayoutText {#text} "a"
-  NGInlineNodeForTest node = CreateInlineNode(
-      To<LayoutNGTextCombine>(layout_object_->SlowFirstChild()));
+  NGInlineNodeForTest node =
+      CreateInlineNode(To<LayoutTextCombine>(layout_object_->SlowFirstChild()));
   node.CollectInlines();
   EXPECT_EQ("\u2022", node.Text());
   HeapVector<NGInlineItem>& items = node.Items();
@@ -1606,13 +1606,13 @@ TEST_F(NGInlineNodeTest, TextCombineUsesScalingX) {
       "}");
   SetBodyInnerHTML("<div id=t1>0123456789</div><div id=t2>0</div>");
 
-  EXPECT_TRUE(To<LayoutNGTextCombine>(
-                  GetLayoutObjectByElementId("t1")->SlowFirstChild())
-                  ->UsesScaleX())
+  EXPECT_TRUE(
+      To<LayoutTextCombine>(GetLayoutObjectByElementId("t1")->SlowFirstChild())
+          ->UsesScaleX())
       << "We paint combined text '0123456789' with scaling in X-axis.";
-  EXPECT_FALSE(To<LayoutNGTextCombine>(
-                   GetLayoutObjectByElementId("t2")->SlowFirstChild())
-                   ->UsesScaleX())
+  EXPECT_FALSE(
+      To<LayoutTextCombine>(GetLayoutObjectByElementId("t2")->SlowFirstChild())
+          ->UsesScaleX())
       << "We paint combined text '0' without scaling in X-axis.";
 }
 

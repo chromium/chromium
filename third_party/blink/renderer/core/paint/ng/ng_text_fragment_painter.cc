@@ -14,8 +14,8 @@
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
 #include "third_party/blink/renderer/core/layout/layout_ruby_column.h"
 #include "third_party/blink/renderer/core/layout/layout_ruby_text.h"
+#include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/list_marker.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
@@ -57,11 +57,10 @@ inline const DisplayItemClient& AsDisplayItemClient(
   return *cursor.Current().GetDisplayItemClient();
 }
 
-inline PhysicalRect BoxInPhysicalSpace(
-    const NGInlineCursor& cursor,
-    const PhysicalOffset& paint_offset,
-    const PhysicalOffset& parent_offset,
-    const LayoutNGTextCombine* text_combine) {
+inline PhysicalRect BoxInPhysicalSpace(const NGInlineCursor& cursor,
+                                       const PhysicalOffset& paint_offset,
+                                       const PhysicalOffset& parent_offset,
+                                       const LayoutTextCombine* text_combine) {
   PhysicalRect box_rect;
   if (const auto* svg_data = cursor.CurrentItem()->SvgFragmentData()) {
     box_rect = PhysicalRect::FastAndLossyFromRectF(svg_data->rect);
@@ -118,7 +117,7 @@ bool ShouldPaintEmphasisMark(const ComputedStyle& style,
     return false;
   // Note: We set text-emphasis-style:none for combined text and we paint
   // emphasis mark at left/right side of |LayoutNGTextCombine|.
-  DCHECK(!IsA<LayoutNGTextCombine>(layout_object.Parent()));
+  DCHECK(!IsA<LayoutTextCombine>(layout_object.Parent()));
   const LayoutObject* containing_block = layout_object.ContainingBlock();
   if (!containing_block || !containing_block->IsRubyBase())
     return true;
@@ -274,12 +273,12 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   // pattern or feImage (element reference.)
   const bool is_rendering_resource = paint_info.IsRenderingResourceSubtree();
   const auto* const text_combine =
-      DynamicTo<LayoutNGTextCombine>(layout_object->Parent());
+      DynamicTo<LayoutTextCombine>(layout_object->Parent());
   const PhysicalRect physical_box =
       BoxInPhysicalSpace(cursor_, paint_offset, parent_offset_, text_combine);
 #if DCHECK_IS_ON()
   if (UNLIKELY(text_combine))
-    LayoutNGTextCombine::AssertStyleIsValid(style);
+    LayoutTextCombine::AssertStyleIsValid(style);
 #endif
 
   ObjectPainter object_painter(*layout_object);

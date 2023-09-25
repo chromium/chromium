@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
+#include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 
 #include <sstream>
 #include "testing/gmock/include/gmock/gmock.h"
@@ -19,7 +19,7 @@ namespace blink {
 
 using ::testing::ElementsAre;
 
-class LayoutNGTextCombineTest : public RenderingTest {
+class LayoutTextCombineTest : public RenderingTest {
  protected:
   std::string AsInkOverflowString(const LayoutBlockFlow& root) {
     std::ostringstream ostream;
@@ -39,15 +39,17 @@ class LayoutNGTextCombineTest : public RenderingTest {
   }
 
   static PhysicalRect ContentsInkOverflow(const NGFragmentItem& item) {
-    if (const NGPhysicalBoxFragment* box_fragment = item.BoxFragment())
+    if (const NGPhysicalBoxFragment* box_fragment = item.BoxFragment()) {
       return box_fragment->ContentsInkOverflow();
-    if (!item.HasInkOverflow())
+    }
+    if (!item.HasInkOverflow()) {
       return PhysicalRect();
+    }
     return item.ink_overflow_.Contents(item.InkOverflowType(), item.Size());
   }
 };
 
-TEST_F(LayoutNGTextCombineTest, AppendChild) {
+TEST_F(LayoutTextCombineTest, AppendChild) {
   InsertStyleElement(
       "c { text-combine-upright: all; }"
       "div { writing-mode: vertical-rl; }");
@@ -60,7 +62,7 @@ TEST_F(LayoutNGTextCombineTest, AppendChild) {
 LayoutNGBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
-  |  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "XY"
   +--LayoutText #text "de"
 )DUMP",
@@ -72,7 +74,7 @@ LayoutNGBlockFlow DIV id="root"
 LayoutNGBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
-  |  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "XY"
   |  |  +--LayoutText #text "Z"
   +--LayoutText #text "de"
@@ -80,7 +82,7 @@ LayoutNGBlockFlow DIV id="root"
             ToSimpleLayoutTree(root_layout_object));
 }
 
-TEST_F(LayoutNGTextCombineTest, BoxBoundary) {
+TEST_F(LayoutTextCombineTest, BoxBoundary) {
   InsertStyleElement(
       "c { text-combine-upright: all; }"
       "div { writing-mode: vertical-rl; }");
@@ -93,17 +95,17 @@ TEST_F(LayoutNGTextCombineTest, BoxBoundary) {
 LayoutNGBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
-  |  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "X"
   |  +--LayoutInline B
-  |  |  +--LayoutNGTextCombine (anonymous)
+  |  |  +--LayoutTextCombine (anonymous)
   |  |  |  +--LayoutText #text "Y"
   +--LayoutText #text "de"
 )DUMP",
             ToSimpleLayoutTree(root_layout_object));
 }
 
-TEST_F(LayoutNGTextCombineTest, DeleteDataToEmpty) {
+TEST_F(LayoutTextCombineTest, DeleteDataToEmpty) {
   InsertStyleElement(
       "c { text-combine-upright: all; }"
       "div { writing-mode: vertical-rl; }");
@@ -116,7 +118,7 @@ TEST_F(LayoutNGTextCombineTest, DeleteDataToEmpty) {
 LayoutNGBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
-  |  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "XY"
   +--LayoutText #text "de"
 )DUMP",
@@ -135,7 +137,7 @@ LayoutNGBlockFlow DIV id="root"
 }
 
 // http://crbug.com/1228058
-TEST_F(LayoutNGTextCombineTest, ElementRecalcOwnStyle) {
+TEST_F(LayoutTextCombineTest, ElementRecalcOwnStyle) {
   InsertStyleElement(
       "#root { text-combine-upright: all; writing-mode: vertical-rl; }");
   SetBodyInnerHTML("<div id=root><br id=target></div>");
@@ -145,7 +147,7 @@ TEST_F(LayoutNGTextCombineTest, ElementRecalcOwnStyle) {
 
   EXPECT_EQ(R"DUMP(
 LayoutNGBlockFlow DIV id="root"
-  +--LayoutNGTextCombine (anonymous)
+  +--LayoutTextCombine (anonymous)
   |  +--LayoutBR BR id="target"
 )DUMP",
             ToSimpleLayoutTree(root_layout_object));
@@ -158,14 +160,14 @@ LayoutNGBlockFlow DIV id="root"
 
   EXPECT_EQ(R"DUMP(
 LayoutNGBlockFlow DIV id="root"
-  +--LayoutNGTextCombine (anonymous)
+  +--LayoutTextCombine (anonymous)
   |  +--LayoutBR BR id="target" style="color: red;"
 )DUMP",
             ToSimpleLayoutTree(root_layout_object));
 }
 
 // http://crbug.com/1241194
-TEST_F(LayoutNGTextCombineTest, HtmlElement) {
+TEST_F(LayoutTextCombineTest, HtmlElement) {
   InsertStyleElement(
       "html {"
       "text-combine-upright: all;"
@@ -184,13 +186,13 @@ TEST_F(LayoutNGTextCombineTest, HtmlElement) {
 LayoutNGBlockFlow HTML
   +--LayoutNGBlockFlow BODY
   +--LayoutNGBlockFlow (anonymous)
-  |  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "X"
 )DUMP",
       ToSimpleLayoutTree(*GetDocument().documentElement()->GetLayoutObject()));
 }
 
-TEST_F(LayoutNGTextCombineTest, InkOverflow) {
+TEST_F(LayoutTextCombineTest, InkOverflow) {
   LoadAhem();
   InsertStyleElement(
       "body { font: 100px/110px Ahem; }"
@@ -230,7 +232,7 @@ TEST_F(LayoutNGTextCombineTest, InkOverflow) {
             AsInkOverflowString(root));
 
   // Note: text item rect has non-scaled size.
-  const auto& text_combine = *To<LayoutNGTextCombine>(
+  const auto& text_combine = *To<LayoutTextCombine>(
       GetElementById("combine")->GetLayoutObject()->SlowFirstChild());
   EXPECT_EQ(R"DUMP(
 {Line #descendants=2 LTR Standard}
@@ -247,7 +249,7 @@ TEST_F(LayoutNGTextCombineTest, InkOverflow) {
             AsInkOverflowString(text_combine));
 }
 
-TEST_F(LayoutNGTextCombineTest, InkOverflowEmphasisMark) {
+TEST_F(LayoutTextCombineTest, InkOverflowEmphasisMark) {
   LoadAhem();
   InsertStyleElement(
       "body { font: 100px/110px Ahem; }"
@@ -289,7 +291,7 @@ TEST_F(LayoutNGTextCombineTest, InkOverflowEmphasisMark) {
 
   // Note: Emphasis mark is part of text-combine box instead of combined text.
   // Note: text item rect has non-scaled size.
-  const auto& text_combine = *To<LayoutNGTextCombine>(
+  const auto& text_combine = *To<LayoutTextCombine>(
       GetElementById("combine")->GetLayoutObject()->SlowFirstChild());
   EXPECT_EQ(R"DUMP(
 {Line #descendants=2 LTR Standard}
@@ -306,7 +308,7 @@ TEST_F(LayoutNGTextCombineTest, InkOverflowEmphasisMark) {
             AsInkOverflowString(text_combine));
 }
 
-TEST_F(LayoutNGTextCombineTest, InkOverflowOverline) {
+TEST_F(LayoutTextCombineTest, InkOverflowOverline) {
   LoadAhem();
   InsertStyleElement(
       "body { font: 100px/110px Ahem; }"
@@ -346,7 +348,7 @@ TEST_F(LayoutNGTextCombineTest, InkOverflowOverline) {
 )DUMP",
             AsInkOverflowString(root));
 
-  const auto& text_combine = *To<LayoutNGTextCombine>(
+  const auto& text_combine = *To<LayoutTextCombine>(
       GetElementById("combine")->GetLayoutObject()->SlowFirstChild());
   EXPECT_EQ(R"DUMP(
 {Line #descendants=2 LTR Standard}
@@ -363,7 +365,7 @@ TEST_F(LayoutNGTextCombineTest, InkOverflowOverline) {
             AsInkOverflowString(text_combine));
 }
 
-TEST_F(LayoutNGTextCombineTest, InkOverflowUnderline) {
+TEST_F(LayoutTextCombineTest, InkOverflowUnderline) {
   LoadAhem();
   InsertStyleElement(
       "body { font: 100px/110px Ahem; }"
@@ -403,7 +405,7 @@ TEST_F(LayoutNGTextCombineTest, InkOverflowUnderline) {
 )DUMP",
             AsInkOverflowString(root));
 
-  const auto& text_combine = *To<LayoutNGTextCombine>(
+  const auto& text_combine = *To<LayoutTextCombine>(
       GetElementById("combine")->GetLayoutObject()->SlowFirstChild());
   EXPECT_EQ(R"DUMP(
 {Line #descendants=2 LTR Standard}
@@ -420,7 +422,7 @@ TEST_F(LayoutNGTextCombineTest, InkOverflowUnderline) {
             AsInkOverflowString(text_combine));
 }
 
-TEST_F(LayoutNGTextCombineTest, InkOverflowWBR) {
+TEST_F(LayoutTextCombineTest, InkOverflowWBR) {
   LoadAhem();
   InsertStyleElement(
       "body { font: 100px/110px Ahem; }"
@@ -460,7 +462,7 @@ TEST_F(LayoutNGTextCombineTest, InkOverflowWBR) {
             AsInkOverflowString(root));
 
   // Note: text item rect has non-scaled size.
-  const auto& text_combine = *To<LayoutNGTextCombine>(
+  const auto& text_combine = *To<LayoutTextCombine>(
       GetElementById("combine")->GetLayoutObject()->SlowFirstChild());
   EXPECT_EQ(R"DUMP(
 {Line #descendants=4 LTR Standard}
@@ -487,7 +489,7 @@ TEST_F(LayoutNGTextCombineTest, InkOverflowWBR) {
             AsInkOverflowString(text_combine));
 }
 
-TEST_F(LayoutNGTextCombineTest, InsertBefore) {
+TEST_F(LayoutTextCombineTest, InsertBefore) {
   InsertStyleElement(
       "c { text-combine-upright: all; }"
       "div { writing-mode: vertical-rl; }");
@@ -500,7 +502,7 @@ TEST_F(LayoutNGTextCombineTest, InsertBefore) {
 LayoutNGBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
-  |  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "XY"
   +--LayoutText #text "de"
 )DUMP",
@@ -513,7 +515,7 @@ LayoutNGBlockFlow DIV id="root"
 LayoutNGBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
-  |  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "Z"
   |  |  +--LayoutText #text "XY"
   +--LayoutText #text "de"
@@ -523,7 +525,7 @@ LayoutNGBlockFlow DIV id="root"
 
 // http://crbug.com/1258331
 // See also VerticalWritingModeByWBR
-TEST_F(LayoutNGTextCombineTest, InsertBR) {
+TEST_F(LayoutTextCombineTest, InsertBR) {
   InsertStyleElement(
       "br { text-combine-upright: all; writing-mode: vertical-rl; }");
   SetBodyInnerHTML("<div id=root>x</div>");
@@ -540,7 +542,7 @@ LayoutNGBlockFlow DIV id="root"
             ToSimpleLayoutTree(*root.GetLayoutObject()));
 }
 
-TEST_F(LayoutNGTextCombineTest, LayoutOverflow) {
+TEST_F(LayoutTextCombineTest, LayoutOverflow) {
   LoadAhem();
   InsertStyleElement(
       "div {"
@@ -555,7 +557,7 @@ TEST_F(LayoutNGTextCombineTest, LayoutOverflow) {
   // Layout tree is
   //    LayoutNGBlockFlow {DIV} at (0,0) size 100x200
   //      LayoutInline {TCY} at (0,0) size 100x100
-  //        LayoutNGTextCombine (anonymous) at (0,0) size 100x100
+  //        LayoutTextCombine (anonymous) at (0,0) size 100x100
   //          LayoutText {#text} at (0,0) size 110x100
   //            text run at (0,0) width 700: "abcefgh"
   //      LayoutText {#text} at (0,100) size 100x100
@@ -582,7 +584,7 @@ TEST_F(LayoutNGTextCombineTest, LayoutOverflow) {
 }
 
 // http://crbug.com/1223015
-TEST_F(LayoutNGTextCombineTest, ListItemStyleToImage) {
+TEST_F(LayoutTextCombineTest, ListItemStyleToImage) {
   InsertStyleElement(
       "li { text-combine-upright: all; }"
       "ol { writing-mode: vertical-rl; }");
@@ -595,7 +597,7 @@ TEST_F(LayoutNGTextCombineTest, ListItemStyleToImage) {
 LayoutNGBlockFlow OL id="root"
   +--LayoutNGListItem LI
   |  +--LayoutNGOutsideListMarker ::marker
-  |  |  +--LayoutNGTextCombine (anonymous)
+  |  |  +--LayoutTextCombine (anonymous)
   |  |  |  +--LayoutTextFragment (anonymous) ("1. ")
 )DUMP",
             ToSimpleLayoutTree(root_layout_object));
@@ -622,7 +624,7 @@ LayoutNGBlockFlow OL id="root" style="list-style-image: url(\"data:image/gif;bas
 }
 
 // http://crbug.com/1342520
-TEST_F(LayoutNGTextCombineTest, ListMarkerWidthOfSymbol) {
+TEST_F(LayoutTextCombineTest, ListMarkerWidthOfSymbol) {
   InsertStyleElement(
       "#root {"
       " text-combine-upright: all;"
@@ -637,15 +639,15 @@ TEST_F(LayoutNGTextCombineTest, ListMarkerWidthOfSymbol) {
   EXPECT_EQ(R"DUMP(
 LayoutNGListItem LI id="root"
   +--LayoutNGInsideListMarker ::marker
-  |  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutTextFragment (anonymous) ("\u2022 ")
-  +--LayoutNGTextCombine (anonymous)
+  +--LayoutTextCombine (anonymous)
   |  +--LayoutText #text "ab"
 )DUMP",
             ToSimpleLayoutTree(root_layout_object));
 }
 
-TEST_F(LayoutNGTextCombineTest, MultipleTextNode) {
+TEST_F(LayoutTextCombineTest, MultipleTextNode) {
   InsertStyleElement(
       "c { text-combine-upright: all; }"
       "div { writing-mode: vertical-rl; }");
@@ -658,7 +660,7 @@ TEST_F(LayoutNGTextCombineTest, MultipleTextNode) {
 LayoutNGBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
-  |  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "X"
   |  |  +--LayoutText #text "Y"
   +--LayoutText #text "de"
@@ -666,7 +668,7 @@ LayoutNGBlockFlow DIV id="root"
             ToSimpleLayoutTree(root_layout_object));
 }
 
-TEST_F(LayoutNGTextCombineTest, Nested) {
+TEST_F(LayoutTextCombineTest, Nested) {
   InsertStyleElement(
       "c { text-combine-upright: all; }"
       "div { writing-mode: vertical-rl; }");
@@ -680,14 +682,14 @@ LayoutNGBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
   |  +--LayoutInline B
-  |  |  +--LayoutNGTextCombine (anonymous)
+  |  |  +--LayoutTextCombine (anonymous)
   |  |  |  +--LayoutText #text "XY"
   +--LayoutText #text "de"
 )DUMP",
             ToSimpleLayoutTree(root_layout_object));
 }
 
-TEST_F(LayoutNGTextCombineTest, Outline) {
+TEST_F(LayoutTextCombineTest, Outline) {
   LoadAhem();
   InsertStyleElement(
       "div {"
@@ -703,7 +705,7 @@ TEST_F(LayoutNGTextCombineTest, Outline) {
   // Layout tree is
   //    LayoutNGBlockFlow {DIV} at (0,0) size 100x200
   //      LayoutInline {TCY} at (0,0) size 100x100
-  //        LayoutNGTextCombine (anonymous) at (0,0) size 100x100
+  //        LayoutTextCombine (anonymous) at (0,0) size 100x100
   //          LayoutText {#text} at (0,0) size 110x100
   //            text run at (0,0) width 700: "abcefgh"
   //      LayoutText {#text} at (0,100) size 100x100
@@ -761,7 +763,7 @@ TEST_F(LayoutNGTextCombineTest, Outline) {
 }
 
 // http://crbug.com/1256783
-TEST_F(LayoutNGTextCombineTest, PropageWritingModeFromBodyToHorizontal) {
+TEST_F(LayoutTextCombineTest, PropageWritingModeFromBodyToHorizontal) {
   InsertStyleElement(
       "body { writing-mode: horizontal-tb; }"
       "html {"
@@ -786,7 +788,7 @@ LayoutNGBlockFlow HTML
       ToSimpleLayoutTree(*GetDocument().documentElement()->GetLayoutObject()));
 }
 
-TEST_F(LayoutNGTextCombineTest, PropageWritingModeFromBodyToVertical) {
+TEST_F(LayoutTextCombineTest, PropageWritingModeFromBodyToVertical) {
   InsertStyleElement(
       "body { writing-mode: vertical-rl; }"
       "html {"
@@ -805,7 +807,7 @@ TEST_F(LayoutNGTextCombineTest, PropageWritingModeFromBodyToVertical) {
       R"DUMP(
 LayoutNGBlockFlow HTML
   +--LayoutNGBlockFlow (anonymous)
-  |  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "X"
   +--LayoutNGBlockFlow BODY
 )DUMP",
@@ -813,7 +815,7 @@ LayoutNGBlockFlow HTML
 }
 
 // http://crbug.com/1222160
-TEST_F(LayoutNGTextCombineTest, RebuildLayoutTreeForDetails) {
+TEST_F(LayoutTextCombineTest, RebuildLayoutTreeForDetails) {
   InsertStyleElement(
       "details { text-combine-upright: all; writing-mode: vertical-rl;  }");
   SetBodyInnerHTML("<details id=root open>ab<summary>XY</summary>cd</details>");
@@ -825,12 +827,12 @@ TEST_F(LayoutNGTextCombineTest, RebuildLayoutTreeForDetails) {
 LayoutNGBlockFlow DETAILS id="root"
   +--LayoutNGListItem SUMMARY
   |  +--LayoutNGInsideListMarker ::marker
-  |  |  +--LayoutNGTextCombine (anonymous)
+  |  |  +--LayoutTextCombine (anonymous)
   |  |  |  +--LayoutTextFragment (anonymous) ("\u25BE ")
-  |  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "XY"
   +--LayoutNGBlockFlow (anonymous)
-  |  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "ab"
   |  |  +--LayoutText #text "cd"
 )DUMP",
@@ -845,12 +847,12 @@ LayoutNGBlockFlow DETAILS id="root"
 LayoutNGBlockFlow DETAILS id="root" style="color: red !important;"
   +--LayoutNGListItem SUMMARY
   |  +--LayoutNGInsideListMarker ::marker
-  |  |  +--LayoutNGTextCombine (anonymous)
+  |  |  +--LayoutTextCombine (anonymous)
   |  |  |  +--LayoutTextFragment (anonymous) ("\u25BE ")
-  |  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "XY"
   +--LayoutNGBlockFlow (anonymous)
-  |  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "ab"
   |  |  +--LayoutText #text "cd"
 )DUMP",
@@ -858,7 +860,7 @@ LayoutNGBlockFlow DETAILS id="root" style="color: red !important;"
 }
 
 // http;//crbug.com/1233432
-TEST_F(LayoutNGTextCombineTest, RemoveBlockChild) {
+TEST_F(LayoutTextCombineTest, RemoveBlockChild) {
   InsertStyleElement(
       "div { text-combine-upright: all; }"
       "div { writing-mode: vertical-rl; }");
@@ -868,13 +870,13 @@ TEST_F(LayoutNGTextCombineTest, RemoveBlockChild) {
   EXPECT_EQ(R"DUMP(
 LayoutNGBlockFlow DIV id="root"
   +--LayoutNGBlockFlow (anonymous)
-  |  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "ab"
   +--LayoutNGBlockFlow P id="block"
-  |  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "XY"
   +--LayoutNGBlockFlow (anonymous)
-  |  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "de"
 )DUMP",
             ToSimpleLayoutTree(*root.GetLayoutObject()));
@@ -883,14 +885,14 @@ LayoutNGBlockFlow DIV id="root"
   RunDocumentLifecycle();
   EXPECT_EQ(R"DUMP(
 LayoutNGBlockFlow DIV id="root"
-  +--LayoutNGTextCombine (anonymous)
+  +--LayoutTextCombine (anonymous)
   |  +--LayoutText #text "ab"
   |  +--LayoutText #text "de"
 )DUMP",
             ToSimpleLayoutTree(*root.GetLayoutObject()));
 }
 
-TEST_F(LayoutNGTextCombineTest, RemoveChildCombine) {
+TEST_F(LayoutTextCombineTest, RemoveChildCombine) {
   InsertStyleElement(
       "c { text-combine-upright: all; }"
       "div { writing-mode: vertical-rl; }");
@@ -903,7 +905,7 @@ TEST_F(LayoutNGTextCombineTest, RemoveChildCombine) {
 LayoutNGBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
-  |  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "XY"
   +--LayoutText #text "de"
 )DUMP",
@@ -919,7 +921,7 @@ LayoutNGBlockFlow DIV id="root"
             ToSimpleLayoutTree(root_layout_object));
 }
 
-TEST_F(LayoutNGTextCombineTest, RemoveChildToEmpty) {
+TEST_F(LayoutTextCombineTest, RemoveChildToEmpty) {
   InsertStyleElement(
       "c { text-combine-upright: all; }"
       "div { writing-mode: vertical-rl; }");
@@ -932,7 +934,7 @@ TEST_F(LayoutNGTextCombineTest, RemoveChildToEmpty) {
 LayoutNGBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
-  |  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "XY"
   +--LayoutText #text "de"
 )DUMP",
@@ -950,7 +952,7 @@ LayoutNGBlockFlow DIV id="root"
 }
 
 // http://crbug.com/1227066
-TEST_F(LayoutNGTextCombineTest, RemoveChildToOneCombinedText) {
+TEST_F(LayoutTextCombineTest, RemoveChildToOneCombinedText) {
   InsertStyleElement(
       "c { text-combine-upright: all; }"
       "div { writing-mode: vertical-rl; }");
@@ -962,12 +964,12 @@ TEST_F(LayoutNGTextCombineTest, RemoveChildToOneCombinedText) {
   EXPECT_EQ(R"DUMP(
 LayoutNGBlockFlow DIV id="root"
   +--LayoutInline C
-  |  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "a"
   |  +--LayoutInline B id="t"
-  |  |  +--LayoutNGTextCombine (anonymous)
+  |  |  +--LayoutTextCombine (anonymous)
   |  |  |  +--LayoutText #text "x"
-  |  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "z"
 )DUMP",
             ToSimpleLayoutTree(root_layout_object));
@@ -978,7 +980,7 @@ LayoutNGBlockFlow DIV id="root"
   EXPECT_EQ(R"DUMP(
 LayoutNGBlockFlow DIV id="root"
   +--LayoutInline C
-  |  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "a"
   |  |  +--LayoutText #text "z"
 )DUMP",
@@ -986,7 +988,7 @@ LayoutNGBlockFlow DIV id="root"
 }
 
 // http://crbug.com/1227066
-TEST_F(LayoutNGTextCombineTest, ReplaceChildToOneCombinedText) {
+TEST_F(LayoutTextCombineTest, ReplaceChildToOneCombinedText) {
   InsertStyleElement(
       "c { text-combine-upright: all; }"
       "div { writing-mode: vertical-rl; }");
@@ -998,12 +1000,12 @@ TEST_F(LayoutNGTextCombineTest, ReplaceChildToOneCombinedText) {
   EXPECT_EQ(R"DUMP(
 LayoutNGBlockFlow DIV id="root"
   +--LayoutInline C
-  |  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "a"
   |  +--LayoutInline B id="t"
-  |  |  +--LayoutNGTextCombine (anonymous)
+  |  |  +--LayoutTextCombine (anonymous)
   |  |  |  +--LayoutText #text "x"
-  |  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "z"
 )DUMP",
             ToSimpleLayoutTree(root_layout_object));
@@ -1016,7 +1018,7 @@ LayoutNGBlockFlow DIV id="root"
   EXPECT_EQ(R"DUMP(
 LayoutNGBlockFlow DIV id="root"
   +--LayoutInline C
-  |  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "a"
   |  |  +--LayoutText #text "X"
   |  |  +--LayoutText #text "z"
@@ -1024,7 +1026,7 @@ LayoutNGBlockFlow DIV id="root"
             ToSimpleLayoutTree(root_layout_object));
 }
 
-TEST_F(LayoutNGTextCombineTest, SetDataToEmpty) {
+TEST_F(LayoutTextCombineTest, SetDataToEmpty) {
   InsertStyleElement(
       "c { text-combine-upright: all; }"
       "div { writing-mode: vertical-rl; }");
@@ -1037,7 +1039,7 @@ TEST_F(LayoutNGTextCombineTest, SetDataToEmpty) {
 LayoutNGBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
-  |  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "XY"
   +--LayoutText #text "de"
 )DUMP",
@@ -1055,7 +1057,7 @@ LayoutNGBlockFlow DIV id="root"
       << "We should not have a wrapper.";
 }
 
-TEST_F(LayoutNGTextCombineTest, SplitText) {
+TEST_F(LayoutTextCombineTest, SplitText) {
   V8TestingScope scope;
 
   InsertStyleElement(
@@ -1070,7 +1072,7 @@ TEST_F(LayoutNGTextCombineTest, SplitText) {
 LayoutNGBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
-  |  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "XY"
   +--LayoutText #text "de"
 )DUMP",
@@ -1083,7 +1085,7 @@ LayoutNGBlockFlow DIV id="root"
 LayoutNGBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
-  |  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "X"
   |  |  +--LayoutText #text "Y"
   +--LayoutText #text "de"
@@ -1091,7 +1093,7 @@ LayoutNGBlockFlow DIV id="root"
             ToSimpleLayoutTree(root_layout_object));
 }
 
-TEST_F(LayoutNGTextCombineTest, SplitTextAtZero) {
+TEST_F(LayoutTextCombineTest, SplitTextAtZero) {
   V8TestingScope scope;
 
   InsertStyleElement(
@@ -1106,7 +1108,7 @@ TEST_F(LayoutNGTextCombineTest, SplitTextAtZero) {
 LayoutNGBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
-  |  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "XY"
   +--LayoutText #text "de"
 )DUMP",
@@ -1119,7 +1121,7 @@ LayoutNGBlockFlow DIV id="root"
 LayoutNGBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
-  |  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "XY"
   +--LayoutText #text "de"
 )DUMP",
@@ -1127,7 +1129,7 @@ LayoutNGBlockFlow DIV id="root"
       << "There are no empty LayoutText.";
 }
 
-TEST_F(LayoutNGTextCombineTest, SplitTextBeforeBox) {
+TEST_F(LayoutTextCombineTest, SplitTextBeforeBox) {
   V8TestingScope scope;
 
   InsertStyleElement(
@@ -1142,10 +1144,10 @@ TEST_F(LayoutNGTextCombineTest, SplitTextBeforeBox) {
 LayoutNGBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
-  |  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "XY"
   |  +--LayoutInline B
-  |  |  +--LayoutNGTextCombine (anonymous)
+  |  |  +--LayoutTextCombine (anonymous)
   |  |  |  +--LayoutText #text "Z"
   +--LayoutText #text "de"
 )DUMP",
@@ -1158,18 +1160,18 @@ LayoutNGBlockFlow DIV id="root"
 LayoutNGBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
-  |  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "X"
   |  |  +--LayoutText #text "Y"
   |  +--LayoutInline B
-  |  |  +--LayoutNGTextCombine (anonymous)
+  |  |  +--LayoutTextCombine (anonymous)
   |  |  |  +--LayoutText #text "Z"
   +--LayoutText #text "de"
 )DUMP",
             ToSimpleLayoutTree(root_layout_object));
 }
 
-TEST_F(LayoutNGTextCombineTest, StyleToTextCombineUprightAll) {
+TEST_F(LayoutTextCombineTest, StyleToTextCombineUprightAll) {
   InsertStyleElement("div { writing-mode: vertical-rl; }");
   SetBodyInnerHTML("<div id=root>ab<c id=combine><b>XY</b></c>de</div>");
   auto& root = *GetElementById("root");
@@ -1195,7 +1197,7 @@ LayoutNGBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine" style="text-combine-upright: all"
   |  +--LayoutInline B
-  |  |  +--LayoutNGTextCombine (anonymous)
+  |  |  +--LayoutTextCombine (anonymous)
   |  |  |  +--LayoutText #text "XY"
   +--LayoutText #text "de"
 )DUMP",
@@ -1203,7 +1205,7 @@ LayoutNGBlockFlow DIV id="root"
       << "There are no wrapper.";
 }
 
-TEST_F(LayoutNGTextCombineTest, StyleToTextCombineUprightNone) {
+TEST_F(LayoutTextCombineTest, StyleToTextCombineUprightNone) {
   InsertStyleElement(
       "c { text-combine-upright: all; }"
       "div { writing-mode: vertical-rl; }");
@@ -1217,7 +1219,7 @@ LayoutNGBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
   |  +--LayoutInline B
-  |  |  +--LayoutNGTextCombine (anonymous)
+  |  |  +--LayoutTextCombine (anonymous)
   |  |  |  +--LayoutText #text "XY"
   +--LayoutText #text "de"
 )DUMP",
@@ -1238,7 +1240,7 @@ LayoutNGBlockFlow DIV id="root"
       << "There are no wrapper.";
 }
 
-TEST_F(LayoutNGTextCombineTest, StyleToHorizontalWritingMode) {
+TEST_F(LayoutTextCombineTest, StyleToHorizontalWritingMode) {
   InsertStyleElement(
       "c { text-combine-upright: all; }"
       "div { writing-mode: vertical-rl; }");
@@ -1252,7 +1254,7 @@ LayoutNGBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
   |  +--LayoutInline B
-  |  |  +--LayoutNGTextCombine (anonymous)
+  |  |  +--LayoutTextCombine (anonymous)
   |  |  |  +--LayoutText #text "XY"
   +--LayoutText #text "de"
 )DUMP",
@@ -1273,7 +1275,7 @@ LayoutNGBlockFlow DIV id="root" style="writing-mode: horizontal-tb"
       << "There are no wrapper.";
 }
 
-TEST_F(LayoutNGTextCombineTest, StyleToHorizontalWritingModeWithWordBreak) {
+TEST_F(LayoutTextCombineTest, StyleToHorizontalWritingModeWithWordBreak) {
   InsertStyleElement(
       "wbr { text-combine-upright: all; }"
       "div { writing-mode: vertical-rl; }");
@@ -1282,7 +1284,7 @@ TEST_F(LayoutNGTextCombineTest, StyleToHorizontalWritingModeWithWordBreak) {
 
   EXPECT_EQ(R"DUMP(
 LayoutNGBlockFlow DIV id="root"
-  +--LayoutNGTextCombine (anonymous)
+  +--LayoutTextCombine (anonymous)
   |  +--LayoutWordBreak WBR
 )DUMP",
             ToSimpleLayoutTree(*root.GetLayoutObject()));
@@ -1297,7 +1299,7 @@ LayoutNGBlockFlow DIV id="root" style="writing-mode: horizontal-tb"
             ToSimpleLayoutTree(*root.GetLayoutObject()));
 }
 
-TEST_F(LayoutNGTextCombineTest, StyleToVerticalWritingMode) {
+TEST_F(LayoutTextCombineTest, StyleToVerticalWritingMode) {
   InsertStyleElement("c { text-combine-upright: all; }");
   SetBodyInnerHTML("<div id=root>ab<c id=combine><b>XY</b></c>de</div>");
   auto& root = *GetElementById("root");
@@ -1322,7 +1324,7 @@ LayoutNGBlockFlow DIV id="root" style="writing-mode: vertical-rl"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
   |  +--LayoutInline B
-  |  |  +--LayoutNGTextCombine (anonymous)
+  |  |  +--LayoutTextCombine (anonymous)
   |  |  |  +--LayoutText #text "XY"
   +--LayoutText #text "de"
 )DUMP",
@@ -1330,7 +1332,7 @@ LayoutNGBlockFlow DIV id="root" style="writing-mode: vertical-rl"
 }
 
 // http://crbug.com/1222121
-TEST_F(LayoutNGTextCombineTest, VerticalWritingModeByBR) {
+TEST_F(LayoutTextCombineTest, VerticalWritingModeByBR) {
   InsertStyleElement(
       "#sample {  text-combine-upright: all; writing-mode: vertical-rl; }");
   SetBodyInnerHTML("<br id=sample>");
@@ -1345,7 +1347,7 @@ LayoutNGBlockFlow BODY
 }
 
 // http://crbug.com/1222121
-TEST_F(LayoutNGTextCombineTest, VerticalWritingModeByWBR) {
+TEST_F(LayoutTextCombineTest, VerticalWritingModeByWBR) {
   InsertStyleElement(
       "#sample {  text-combine-upright: all; writing-mode: vertical-rl; }");
   SetBodyInnerHTML("<wbr id=sample>");
@@ -1360,7 +1362,7 @@ LayoutNGBlockFlow BODY
 }
 
 // http://crbug.com/1222069
-TEST_F(LayoutNGTextCombineTest, WithBidiControl) {
+TEST_F(LayoutTextCombineTest, WithBidiControl) {
   InsertStyleElement(
       "c { text-combine-upright: all; -webkit-rtl-ordering: visual; }"
       "div { writing-mode: vertical-rl; }");
@@ -1372,14 +1374,14 @@ TEST_F(LayoutNGTextCombineTest, WithBidiControl) {
 LayoutNGBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
-  |  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "XY"
   +--LayoutText #text "de"
 )DUMP",
             ToSimpleLayoutTree(root_layout_object));
 }
 
-TEST_F(LayoutNGTextCombineTest, WithBR) {
+TEST_F(LayoutTextCombineTest, WithBR) {
   InsertStyleElement(
       "c { text-combine-upright: all; }"
       "div { writing-mode: vertical-rl; }");
@@ -1391,7 +1393,7 @@ TEST_F(LayoutNGTextCombineTest, WithBR) {
 LayoutNGBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
-  |  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "XY"
   |  |  +--LayoutBR BR
   |  |  +--LayoutText #text "Z"
@@ -1401,7 +1403,7 @@ LayoutNGBlockFlow DIV id="root"
 }
 
 // http://crbug.com/1060007
-TEST_F(LayoutNGTextCombineTest, WithMarker) {
+TEST_F(LayoutTextCombineTest, WithMarker) {
   InsertStyleElement(
       "li { text-combine-upright: all; }"
       "p {"
@@ -1419,7 +1421,7 @@ TEST_F(LayoutNGTextCombineTest, WithMarker) {
   EXPECT_EQ(R"DUMP(
 LayoutNGListItem P id="root"
   +--LayoutNGOutsideListMarker ::marker
-  |  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutTextFragment (anonymous) ("<")
   |  |  +--LayoutCounter (anonymous) "1"
   |  |  +--LayoutTextFragment (anonymous) (">")
@@ -1428,7 +1430,7 @@ LayoutNGListItem P id="root"
             ToSimpleLayoutTree(root_layout_object));
 }
 
-TEST_F(LayoutNGTextCombineTest, WithOrderedList) {
+TEST_F(LayoutTextCombineTest, WithOrderedList) {
   InsertStyleElement(
       "li { text-combine-upright: all; }"
       "ol { writing-mode: vertical-rl; }");
@@ -1439,15 +1441,15 @@ TEST_F(LayoutNGTextCombineTest, WithOrderedList) {
 LayoutNGBlockFlow OL id="root"
   +--LayoutNGListItem LI
   |  +--LayoutNGOutsideListMarker ::marker
-  |  |  +--LayoutNGTextCombine (anonymous)
+  |  |  +--LayoutTextCombine (anonymous)
   |  |  |  +--LayoutTextFragment (anonymous) ("1. ")
-  |  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "ab"
 )DUMP",
             ToSimpleLayoutTree(root_layout_object));
 }
 
-TEST_F(LayoutNGTextCombineTest, WithQuote) {
+TEST_F(LayoutTextCombineTest, WithQuote) {
   InsertStyleElement(
       "q { text-combine-upright: all; }"
       "div { writing-mode: vertical-rl; }");
@@ -1459,20 +1461,20 @@ LayoutNGBlockFlow DIV id="root"
   +--LayoutInline Q
   |  +--LayoutInline ::before
   |  |  +--LayoutQuote (anonymous)
-  |  |  |  +--LayoutNGTextCombine (anonymous)
+  |  |  |  +--LayoutTextCombine (anonymous)
   |  |  |  |  +--LayoutTextFragment (anonymous) ("\u201C")
-  |  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "XY"
   |  +--LayoutInline ::after
   |  |  +--LayoutQuote (anonymous)
-  |  |  |  +--LayoutNGTextCombine (anonymous)
+  |  |  |  +--LayoutTextCombine (anonymous)
   |  |  |  |  +--LayoutTextFragment (anonymous) ("\u201D")
 )DUMP",
             ToSimpleLayoutTree(root_layout_object));
 }
 
 // http://crbug.com/1223423
-TEST_F(LayoutNGTextCombineTest, WithTab) {
+TEST_F(LayoutTextCombineTest, WithTab) {
   InsertStyleElement(
       "c { text-combine-upright: all; white-space: pre; }"
       "div { writing-mode: vertical-rl; }");
@@ -1484,7 +1486,7 @@ TEST_F(LayoutNGTextCombineTest, WithTab) {
 LayoutNGBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
-  |  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "X\tY"
   +--LayoutText #text "de"
 )DUMP",
@@ -1492,7 +1494,7 @@ LayoutNGBlockFlow DIV id="root"
 }
 
 // http://crbug.com/1242755
-TEST_F(LayoutNGTextCombineTest, WithTextIndent) {
+TEST_F(LayoutTextCombineTest, WithTextIndent) {
   LoadAhem();
   InsertStyleElement(
       "body { font: 20px/30px Ahem; }"
@@ -1509,7 +1511,7 @@ TEST_F(LayoutNGTextCombineTest, WithTextIndent) {
             cursor.Current().RectInContainerFragment());
 }
 
-TEST_F(LayoutNGTextCombineTest, WithWordBreak) {
+TEST_F(LayoutTextCombineTest, WithWordBreak) {
   InsertStyleElement(
       "c { text-combine-upright: all; }"
       "div { writing-mode: vertical-rl; }");
@@ -1521,7 +1523,7 @@ TEST_F(LayoutNGTextCombineTest, WithWordBreak) {
 LayoutNGBlockFlow DIV id="root"
   +--LayoutText #text "ab"
   +--LayoutInline C id="combine"
-  |  +--LayoutNGTextCombine (anonymous)
+  |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutText #text "XY"
   |  |  +--LayoutWordBreak WBR
   |  |  +--LayoutText #text "Z"
@@ -1531,13 +1533,13 @@ LayoutNGBlockFlow DIV id="root"
 }
 
 // crbug.com/1430617
-TEST_F(LayoutNGTextCombineTest, ShouldBeParentOfSvg) {
+TEST_F(LayoutTextCombineTest, ShouldBeParentOfSvg) {
   SetBodyInnerHTML(R"HTML(
     <div id="root" style="text-combine-upright: all;">
     <svg>
     <text style="writing-mode: vertical-rl;">Text)HTML");
 
-  // Should have no LayoutNGTextCombine.
+  // Should have no LayoutTextCombine.
   EXPECT_EQ(R"DUMP(
 LayoutNGBlockFlow DIV id="root" style="text-combine-upright: all;"
   +--LayoutSVGRoot svg
@@ -1547,7 +1549,7 @@ LayoutNGBlockFlow DIV id="root" style="text-combine-upright: all;"
             ToSimpleLayoutTree(*GetLayoutObjectByElementId("root")));
 }
 
-TEST_F(LayoutNGTextCombineTest, InHorizontal) {
+TEST_F(LayoutTextCombineTest, InHorizontal) {
   InsertStyleElement(
       "div { writing-mode: horizontal-tb; }"
       "tcy { text-combine-upright: all; }");
@@ -1561,7 +1563,7 @@ LayoutInline TCY id="sample"
             ToSimpleLayoutTree(sample_layout_object));
 }
 
-TEST_F(LayoutNGTextCombineTest, InVertical) {
+TEST_F(LayoutTextCombineTest, InVertical) {
   InsertStyleElement(
       "div { writing-mode: vertical-rl; }"
       "tcy { text-combine-upright: all; }");
@@ -1570,7 +1572,7 @@ TEST_F(LayoutNGTextCombineTest, InVertical) {
 
   EXPECT_EQ(R"DUMP(
 LayoutInline TCY id="sample"
-  +--LayoutNGTextCombine (anonymous)
+  +--LayoutTextCombine (anonymous)
   |  +--LayoutText #text "ab"
 )DUMP",
             ToSimpleLayoutTree(sample_layout_object));

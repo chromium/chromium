@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_LAYOUT_NG_TEXT_COMBINE_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_LAYOUT_NG_TEXT_COMBINE_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_TEXT_COMBINE_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_TEXT_COMBINE_H_
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -20,12 +20,12 @@ class NGInlineCursor;
 // vertical writing mode, e.g. <i style="text-upright:all"><b>12</b>34<i>.
 // Note: When the element is in horizontal writing mode, we don't use this.
 // Note: Children of this class must be |LayoutText| associated to |Text| node.
-class CORE_EXPORT LayoutNGTextCombine final : public LayoutNGBlockFlow {
+class CORE_EXPORT LayoutTextCombine final : public LayoutNGBlockFlow {
  public:
   // Note: Mark constructor public for |MakeGarbageCollected|. We should not
   // call this directly.
-  LayoutNGTextCombine();
-  ~LayoutNGTextCombine() override;
+  LayoutTextCombine();
+  ~LayoutTextCombine() override;
 
   float DesiredWidth() const;
   String GetTextContent() const;
@@ -96,16 +96,16 @@ class CORE_EXPORT LayoutNGTextCombine final : public LayoutNGBlockFlow {
   static void AssertStyleIsValid(const ComputedStyle& style);
 
   // Create anonymous wrapper having |text_child|.
-  static LayoutNGTextCombine* CreateAnonymous(LayoutText* text_child);
+  static LayoutTextCombine* CreateAnonymous(LayoutText* text_child);
 
-  // Returns true if |layout_object| is a child of |LayoutNGTextCombine|.
+  // Returns true if |layout_object| is a child of |LayoutTextCombine|.
   static bool ShouldBeParentOf(const LayoutObject& layout_object);
 
  private:
   bool IsOfType(LayoutObjectType) const override;
   const char* GetName() const override {
     NOT_DESTROYED();
-    return "LayoutNGTextCombine";
+    return "LayoutTextCombine";
   }
 
   // Helper functions for scaling.
@@ -126,7 +126,7 @@ class CORE_EXPORT LayoutNGTextCombine final : public LayoutNGBlockFlow {
 };
 
 // static
-inline bool LayoutNGTextCombine::ShouldBeParentOf(
+inline bool LayoutTextCombine::ShouldBeParentOf(
     const LayoutObject& layout_object) {
   if (LIKELY(layout_object.IsHorizontalWritingMode()) ||
       !layout_object.IsText() || layout_object.IsSVGInlineText()) {
@@ -137,12 +137,12 @@ inline bool LayoutNGTextCombine::ShouldBeParentOf(
 }
 
 template <>
-struct DowncastTraits<LayoutNGTextCombine> {
+struct DowncastTraits<LayoutTextCombine> {
   static bool AllowFrom(const LayoutObject& object) {
-    return object.IsLayoutNGTextCombine();
+    return object.IsLayoutTextCombine();
   }
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_LAYOUT_NG_TEXT_COMBINE_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_TEXT_COMBINE_H_

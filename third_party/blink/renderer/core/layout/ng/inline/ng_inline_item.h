@@ -150,7 +150,7 @@ class CORE_EXPORT NGInlineItem {
     return GetLayoutObject() && GetLayoutObject()->IsRubyColumn();
   }
   bool IsTextCombine() const {
-    return GetLayoutObject() && GetLayoutObject()->IsLayoutNGTextCombine();
+    return GetLayoutObject() && GetLayoutObject()->IsLayoutTextCombine();
   }
 
   void SetOffset(unsigned start, unsigned end) {

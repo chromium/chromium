@@ -18,8 +18,8 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
+#include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/list_marker.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_bidi_paragraph.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_initial_letter_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_break_token.h"
@@ -580,8 +580,9 @@ class NGInlineNodeDataEditor final {
 
     // For "text-combine-upright:all", we choose font to fit layout result in
     // 1em, so font can be different than original font.
-    if (UNLIKELY(IsA<LayoutNGTextCombine>(block_flow_)))
+    if (UNLIKELY(IsA<LayoutTextCombine>(block_flow_))) {
       return nullptr;
+    }
 
     // Because of current text content has secured text, e.g. whole text is
     // "***", all characters including collapsed white spaces are marker, and
@@ -1310,7 +1311,7 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
     } else {
       DCHECK_EQ(font.GetFontDescription().Orientation(),
                 FontOrientation::kHorizontal);
-      LayoutNGTextCombine::AssertStyleIsValid(start_style);
+      LayoutTextCombine::AssertStyleIsValid(start_style);
       DCHECK(!override_font ||
              font.GetFontDescription().WidthVariant() != kRegularWidth);
     }
@@ -2020,7 +2021,7 @@ void NGInlineNode::AdjustFontForTextCombineUprightAll() const {
   const float content_width = CalculateWidthForTextCombine(ItemsData(false));
   if (UNLIKELY(content_width == 0.0f))
     return;  // See "fast/css/zero-font-size-crash.html".
-  auto& text_combine = *To<LayoutNGTextCombine>(GetLayoutBlockFlow());
+  auto& text_combine = *To<LayoutTextCombine>(GetLayoutBlockFlow());
   const float desired_width = text_combine.DesiredWidth();
   text_combine.ResetLayout();
   if (UNLIKELY(desired_width == 0.0f)) {
