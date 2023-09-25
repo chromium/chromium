@@ -399,6 +399,11 @@ absl::optional<std::string> GetIframeOriginForDisplay(
   return iframe_for_display;
 }
 
+bool IsFrameVisible(RenderFrameHost* frame) {
+  return frame && frame->IsActive() &&
+         frame->GetVisibilityState() == content::PageVisibilityState::kVisible;
+}
+
 }  // namespace
 
 FederatedAuthRequestImpl::FetchData::FetchData() = default;
@@ -1189,9 +1194,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   // if the RenderFrameHost is hidden because the user does not seem interested
   // in the contents of the current page.
   if (!fetch_data_.for_idp_signin) {
-    bool is_visible = (render_frame_host().IsActive() &&
-                       render_frame_host().GetVisibilityState() ==
-                           content::PageVisibilityState::kVisible);
+    bool is_visible = IsFrameVisible(render_frame_host().GetMainFrame());
     fedcm_metrics_->RecordWebContentsVisibilityUponReadyToShowDialog(
         is_visible);
 
@@ -1377,10 +1380,7 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
     return;
   }
 
-  bool is_visible = (render_frame_host().IsActive() &&
-                     render_frame_host().GetVisibilityState() ==
-                         content::PageVisibilityState::kVisible);
-  if (!is_visible) {
+  if (!IsFrameVisible(render_frame_host().GetMainFrame())) {
     CompleteRequestWithError(FederatedAuthRequestResult::kErrorRpPageNotVisible,
                              TokenStatus::kRpPageNotVisible,
                              /*should_delay_callback=*/true);
