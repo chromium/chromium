@@ -97,6 +97,12 @@ PrefetchRequestHandler PrefetchResponseReader::CreateRequestHandler() {
     streaming_url_loader_->OnStartServing();
   }
 
+  // Currently only one client is allowed.
+  // This CHECK is also for investigation of crbug.com/1483599.
+  // TODO(crbug.com/1449360): Actually support multiple clients.
+  CHECK(!create_request_handler_called_);
+  create_request_handler_called_ = true;
+
   return base::BindOnce(&PrefetchResponseReader::BindAndStart,
                         base::WrapRefCounted(this), std::move(body_));
 }
@@ -125,14 +131,8 @@ void PrefetchResponseReader::BindAndStart(
 
   forward_body_ = std::move(body);
 
-  // TODO(crbug.com/1483599): Remove this alias.
-  auto load_state = load_state_;
-  base::debug::Alias(&load_state);
-
   switch (load_state_) {
     case LoadState::kResponseReceived:
-    case LoadState::kCompleted:
-    case LoadState::kFailed:
       // In these cases, `ForwardResponse()` is expected to be called always
       // inside `RunEventQueue()` below, because `CreateRequestHandler()` was
       // called after response headers are received. Both the head and body
@@ -146,9 +146,19 @@ void PrefetchResponseReader::BindAndStart(
       // reach here.
       //
       // TODO(crbug.com/1449360): we might want to revisit this behavior.
+
+      // TODO(crbug.com/1483599): The code below is duplicated to investigate
+      // the `load_state_` value on CHECK failure. Remove the duplicated code.
       CHECK(GetHead());
-      CHECK(forward_body_) << "Body is null for load state: "
-                           << static_cast<int>(load_state_);
+      CHECK(forward_body_);
+      break;
+    case LoadState::kCompleted:
+      CHECK(GetHead());
+      CHECK(forward_body_);
+      break;
+    case LoadState::kFailed:
+      CHECK(GetHead());
+      CHECK(forward_body_);
       break;
 
     case LoadState::kRedirectHandled:
