@@ -21,12 +21,14 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"  // nogncheck
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/menu_item_constants.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_web_apps_utils.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
@@ -255,6 +257,19 @@ void WebApps::PublishWebApps(std::vector<apps::AppPtr> apps) {
     return;
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // This is for prototyping and testing only. It is to provide an easy way to
+  // simulate web app promise icon behaviour for the UI/ client development of
+  // web app promise icons.
+  // TODO(b/261907269): Remove this code snippet and use real listeners for web
+  // app installation events.
+  if (ash::features::ArePromiseIconsForWebAppsEnabled()) {
+    for (auto& app : apps) {
+      apps::MaybeSimulatePromiseAppInstallationEvents(proxy(), app.get());
+    }
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   apps::AppPublisher::Publish(std::move(apps), app_type(),
                               /*should_notify_initialized=*/false);
 
@@ -274,7 +289,14 @@ void WebApps::PublishWebApp(apps::AppPtr app) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool is_projector = app->app_id == ash::kChromeUIUntrustedProjectorSwaAppId;
-#endif
+
+  // This is for prototyping and testing only.
+  // TODO(b/261907269): Remove this code snippet and use real listeners for web
+  // app installation events.
+  if (ash::features::ArePromiseIconsForWebAppsEnabled()) {
+    apps::MaybeSimulatePromiseAppInstallationEvents(proxy(), app.get());
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   apps::AppPublisher::Publish(std::move(app));
 

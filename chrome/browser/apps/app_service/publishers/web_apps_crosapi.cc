@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_web_apps_utils.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/crosapi_utils.h"
@@ -380,6 +382,16 @@ void WebAppsCrosapi::OnControllerDisconnected() {
 }
 
 void WebAppsCrosapi::PublishImpl(std::vector<AppPtr> deltas) {
+  // This is for prototyping and testing only. It is to provide an easy way to
+  // simulate web app promise icon behaviour for the UI/ client development of
+  // web app promise icons.
+  // TODO(b/261907269): Remove this code snippet and use real listeners for web
+  // app installation events.
+  if (ash::features::ArePromiseIconsForWebAppsEnabled()) {
+    for (auto& delta : deltas) {
+      apps::MaybeSimulatePromiseAppInstallationEvents(proxy(), delta.get());
+    }
+  }
   apps::AppPublisher::Publish(std::move(deltas), AppType::kWeb,
                               should_notify_initialized_);
   should_notify_initialized_ = false;
