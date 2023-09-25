@@ -215,7 +215,7 @@ void IpProtectionConfigCacheImpl::OnGotProxyList(
   if (!disable_proxy_refreshing_for_testing_) {
     base::TimeDelta delay =
         net::features::kIpPrivacyProxyListFetchInterval.Get();
-    next_maybe_refill_cache_.Start(
+    next_refresh_proxy_list_.Start(
         FROM_HERE, delay,
         base::BindOnce(&IpProtectionConfigCacheImpl::RefreshProxyList,
                        weak_ptr_factory_.GetWeakPtr()));
