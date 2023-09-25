@@ -8,21 +8,15 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/contains.h"
-#include "base/containers/fixed_flat_set.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
-#include "base/json/json_writer.h"
-#include "base/no_destructor.h"
-#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/signin/public/base/consent_level.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
-#include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace manta {
@@ -37,11 +31,11 @@ constexpr char kEndpointUrl[] =
 constexpr char kOAuthScope[] = "https://www.googleapis.com/auth/mdi.aratea";
 constexpr base::TimeDelta kTimeoutMs = base::Seconds(90);
 
-const std::unordered_map<std::string, proto::RequestConfig::Tone>&
-GetToneMap() {
-  static const base::NoDestructor<
-      std::unordered_map<std::string, proto::RequestConfig::Tone>>
-      tone_map({
+using Tone = proto::RequestConfig::Tone;
+
+absl::optional<Tone> GetTone(const std::string& tone) {
+  static constexpr auto tone_map =
+      base::MakeFixedFlatMap<base::StringPiece, Tone>({
           {"UNSPECIFIED", proto::RequestConfig::UNSPECIFIED},
           {"SHORTEN", proto::RequestConfig::SHORTEN},
           {"ELABORATE", proto::RequestConfig::ELABORATE},
@@ -50,25 +44,32 @@ GetToneMap() {
           {"EMOJIFY", proto::RequestConfig::EMOJIFY},
           {"FREEFORM_REWRITE", proto::RequestConfig::FREEFORM_REWRITE},
           {"FREEFORM_WRITE", proto::RequestConfig::FREEFORM_WRITE},
-      });
 
-  return *tone_map;
+      });
+  auto* iter = tone_map.find(tone);
+
+  return iter != tone_map.end() ? absl::optional<Tone>(iter->second)
+                                : absl::nullopt;
 }
 
 absl::optional<proto::Request> ComposeRequest(
     const std::map<std::string, std::string>& input) {
-  auto& tone_map = GetToneMap();
   auto tone_iter = input.find("tone");
-  if (tone_iter == input.end() ||
-      !base::Contains(tone_map, tone_iter->second)) {
-    DVLOG(1) << "No valid tone in the parameters";
+  if (tone_iter == input.end()) {
+    DVLOG(1) << "Tone not found in the parameters";
+    return absl::nullopt;
+  }
+
+  auto tone = GetTone(tone_iter->second);
+  if (tone == absl::nullopt) {
+    DVLOG(1) << "Invalid tone";
     return absl::nullopt;
   }
 
   proto::Request request;
   request.set_feature_name(proto::FeatureName::TEXT_TEST);
   auto& request_config = *request.mutable_request_config();
-  request_config.set_tone(tone_map.find(tone_iter->second)->second);
+  request_config.set_tone(tone.value());
 
   for (const auto& kv : input) {
     auto* input_data = request.add_input_data();
