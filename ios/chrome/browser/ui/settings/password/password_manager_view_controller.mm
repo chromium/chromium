@@ -702,6 +702,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
       l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER_WIDGET_PROMO_TEXT);
   _widgetPromoItem.moreInfoButtonTitle = l10n_util::GetNSString(
       IDS_IOS_PASSWORD_MANAGER_WIDGET_PROMO_BUTTON_TITLE);
+  _widgetPromoItem.accessibilityIdentifier = kWidgetPromoId;
   return _widgetPromoItem;
 }
 
@@ -820,6 +821,16 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   errorInfoPopover.popoverPresentationController.permittedArrowDirections =
       UIPopoverArrowDirectionAny;
   [self presentViewController:errorInfoPopover animated:YES completion:nil];
+}
+
+- (void)didTapWidgetPromoCloseButton {
+  [self clearSectionWithIdentifier:SectionIdentifierWidgetPromo
+                  withRowAnimation:UITableViewRowAnimationFade];
+  [self.delegate notifyFETOfPasswordManagerWidgetPromoDismissal];
+}
+
+- (void)didTapWidgetPromoMoreInfoButton {
+  [self.presentationDelegate showPasswordManagerWidgetPromoInstructions];
 }
 
 #pragma mark - PasswordsConsumer
@@ -956,6 +967,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 - (void)setShouldShowPasswordManagerWidgetPromo:
     (BOOL)shouldShowPasswordManagerWidgetPromo {
   _shouldShowPasswordManagerWidgetPromo = shouldShowPasswordManagerWidgetPromo;
+
   // Reload data to display the promo. No to need to reload before the view is
   // loaded, as loading the view triggers a data reload.
   if (self.viewLoaded) {
@@ -2119,11 +2131,27 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   [self deleteItemAtIndexPaths:@[ indexPath ]];
 }
 
+// TODO(crbug.com/1486507): Stop downcasting cells to configure them.
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
   switch ([self.tableViewModel itemTypeForIndexPath:indexPath]) {
+    case ItemTypeWidgetPromo: {
+      InlinePromoCell* widgetPromoCell =
+          base::apple::ObjCCastStrict<InlinePromoCell>(cell);
+      [widgetPromoCell.closeButton
+                 addTarget:self
+                    action:@selector(didTapWidgetPromoCloseButton)
+          forControlEvents:UIControlEventTouchUpInside];
+      [widgetPromoCell.moreInfoButton
+                 addTarget:self
+                    action:@selector(didTapWidgetPromoMoreInfoButton)
+          forControlEvents:UIControlEventTouchUpInside];
+      widgetPromoCell.closeButton.accessibilityIdentifier =
+          kWidgetPromoCloseButtonId;
+      break;
+    }
     case ItemTypePasswordCheckStatus: {
       SettingsCheckCell* passwordCheckCell =
           base::apple::ObjCCastStrict<SettingsCheckCell>(cell);

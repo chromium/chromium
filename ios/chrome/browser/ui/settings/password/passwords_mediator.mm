@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/settings/password/passwords_mediator.h"
 
 #import "base/memory/raw_ptr.h"
+#import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/password_manager/core/browser/leak_detection_dialog_utils.h"
@@ -256,6 +257,16 @@ using password_manager::features::IsPasswordCheckupEnabled;
 - (BOOL)shouldShowLocalOnlyIconForGroup:
     (const password_manager::AffiliatedGroup&)group {
   return password_manager::ShouldShowLocalOnlyIconForGroup(group, _syncService);
+}
+
+- (void)notifyFETOfPasswordManagerWidgetPromoDismissal {
+  if (self.tracker) {
+    self.tracker->NotifyEvent(
+        feature_engagement::events::kPasswordManagerWidgetPromoClosed);
+    self.tracker->Dismissed(
+        feature_engagement::kIPHiOSPromoPasswordManagerWidgetFeature);
+  }
+  _shouldNotifyFETToDismissPasswordManagerWidgetPromo = NO;
 }
 
 #pragma mark - PasswordCheckObserver

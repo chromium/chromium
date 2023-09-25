@@ -2637,11 +2637,20 @@ void InjectNTP(Browser* browser) {
 }
 
 - (void)startPasswordSearch {
-  if (!self.currentInterface.browser) {
+  Browser* browser = self.currentInterface.browser;
+  if (!browser) {
     return;
   }
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(
+          browser->GetBrowserState());
+  if (tracker) {
+    tracker->NotifyEvent(
+        feature_engagement::events::kPasswordManagerWidgetPromoUsed);
+  }
+
   id<ApplicationSettingsCommands> applicationSettingsCommandsHandler =
-      HandlerForProtocol(self.currentInterface.browser->GetCommandDispatcher(),
+      HandlerForProtocol(browser->GetCommandDispatcher(),
                          ApplicationSettingsCommands);
   [applicationSettingsCommandsHandler showPasswordSearchPage];
 }

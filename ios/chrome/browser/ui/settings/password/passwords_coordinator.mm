@@ -401,6 +401,10 @@ using password_manager::WarningType;
   [self.passwordSettingsCoordinator start];
 }
 
+- (void)showPasswordManagerWidgetPromoInstructions {
+  // TODO(crbug.com/1463033): Present the instruction view.
+}
+
 // TODO(crbug.com/1406871): Remove when kIOSPasswordCheckup is enabled by
 // default.
 #pragma mark - PasswordIssuesCoordinatorDelegate

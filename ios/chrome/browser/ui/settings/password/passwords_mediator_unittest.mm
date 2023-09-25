@@ -10,6 +10,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/bind.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
@@ -162,7 +163,6 @@ class PasswordsMediatorTest : public BlockCleanupTest {
 
     mock_tracker_ = static_cast<feature_engagement::test::MockTracker*>(
         feature_engagement::TrackerFactory::GetForBrowserState(browserState()));
-
     mediator_.tracker = mock_tracker_;
 
     mediator_.consumer = consumer_;
@@ -216,6 +216,7 @@ TEST_F(PasswordsMediatorTest, NotifiesConsumerOnPasswordChange) {
 TEST_F(PasswordsMediatorTest, NotifiesConsumerToShowPromoOrNot) {
   FakePasswordsConsumer* different_consumer =
       [[FakePasswordsConsumer alloc] init];
+
   // Make sure that `shouldShowPasswordManagerWidgetPromoCalled` isn't already
   // true.
   EXPECT_FALSE(different_consumer.shouldShowPasswordManagerWidgetPromoCalled);
@@ -231,8 +232,8 @@ TEST_F(PasswordsMediatorTest, NotifiesConsumerToShowPromoOrNot) {
   EXPECT_TRUE(different_consumer.shouldShowPasswordManagerWidgetPromoCalled);
 }
 
-// Tests that `Dismissed` is called on the FET on disconnect when the promo was
-// shown and was not dismissed by the user.
+// Tests that `Dismissed` is called on the FET on disconnect when the Password
+// Manager widget promo was shown and was not dismissed by the user.
 TEST_F(PasswordsMediatorTest, NotifiesFETToDismissPromoOnDisconnect) {
   mediator().shouldNotifyFETToDismissPasswordManagerWidgetPromo = YES;
 
@@ -243,4 +244,24 @@ TEST_F(PasswordsMediatorTest, NotifiesFETToDismissPromoOnDisconnect) {
       .Times(testing::Exactly(1));
 
   [mediator() disconnect];
+}
+
+// Tests that `NotifyEvent` and `Dismissed` is called on the FET when the user
+// taps the close button of the Password Manager widget promo.
+TEST_F(PasswordsMediatorTest, NotifiesFETToDismissPromoOnPromoClosed) {
+  mediator().shouldNotifyFETToDismissPasswordManagerWidgetPromo = YES;
+
+  EXPECT_CALL(
+      *mockTracker(),
+      NotifyEvent(
+          feature_engagement::events::kPasswordManagerWidgetPromoClosed));
+  EXPECT_CALL(
+      *mockTracker(),
+      Dismissed(testing::Ref(
+          feature_engagement::kIPHiOSPromoPasswordManagerWidgetFeature)))
+      .Times(testing::Exactly(1));
+
+  [mediator() notifyFETOfPasswordManagerWidgetPromoDismissal];
+
+  EXPECT_FALSE(mediator().shouldNotifyFETToDismissPasswordManagerWidgetPromo);
 }

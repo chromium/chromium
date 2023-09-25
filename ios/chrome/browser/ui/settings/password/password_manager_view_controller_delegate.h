@@ -68,6 +68,10 @@ struct CredentialUIEntry;
 - (BOOL)shouldShowLocalOnlyIconForGroup:
     (const password_manager::AffiliatedGroup&)group;
 
+// Tells the delegate that the user has dismissed the Password Manager widget
+// promo. Used to notify the Feature Engagement Tracker of the dismissal.
+- (void)notifyFETOfPasswordManagerWidgetPromoDismissal;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_MANAGER_VIEW_CONTROLLER_DELEGATE_H_

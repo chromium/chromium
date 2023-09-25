@@ -37,3 +37,7 @@ NSString* const kWidgetPromoImageName = @"password_manager_widget_promo";
 
 NSString* const kWidgetPromoDisabledImageName =
     @"password_manager_widget_promo_disabled";
+
+NSString* const kWidgetPromoId = @"WidgetPromoId";
+
+NSString* const kWidgetPromoCloseButtonId = @"WidgetPromoCloseButtonId";
