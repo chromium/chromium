@@ -531,6 +531,9 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContextInternal(
   if (!IsRenderingContext2D())
     SetNeedsCompositingUpdate();
 
+  SetOpacityMode(GetRenderingContextSkColorInfo().isOpaque() ? kOpaque
+                                                             : kNonOpaque);
+
   return context_.Get();
 }
 
@@ -549,8 +552,6 @@ void HTMLCanvasElement::configureHighDynamicRange(
   CanvasResourceHost::SetHdrMetadata(hdr_metadata);
   if (context_ && (IsWebGL() || IsWebGPU())) {
     context_->SetHdrMetadata(hdr_metadata);
-  } else if (canvas2d_bridge_) {
-    canvas2d_bridge_->SetHdrMetadata(hdr_metadata);
   }
 }
 
@@ -735,10 +736,7 @@ void HTMLCanvasElement::DoDeferredPaintInvalidation() {
     if (dirty_rect_.IsEmpty())
       return;
 
-    if (canvas2d_bridge_) {
-      canvas2d_bridge_->DoPaintInvalidation(
-          gfx::ToEnclosingRect(invalidation_rect));
-    }
+    DoPaintInvalidation(gfx::ToEnclosingRect(invalidation_rect));
   }
 
   if (context_ && HasImageBitmapContext() && context_->CcLayer())
@@ -927,8 +925,6 @@ void HTMLCanvasElement::SetFilterQuality(
 
   if (context_ && (IsWebGL() || IsWebGPU()))
     context_->SetFilterQuality(filter_quality);
-  else if (canvas2d_bridge_)
-    canvas2d_bridge_->SetFilterQuality(filter_quality);
 }
 
 // In some instances we don't actually want to paint to the parent layer
@@ -1393,12 +1389,7 @@ bool HTMLCanvasElement::ShouldDisableAccelerationBecauseOfReadback() const {
 }
 
 std::unique_ptr<Canvas2DLayerBridge> HTMLCanvasElement::Create2DLayerBridge() {
-  auto surface = std::make_unique<Canvas2DLayerBridge>(
-      GetRenderingContextSkColorInfo().isOpaque() ? kOpaque : kNonOpaque);
-  if (!surface->IsValid())
-    return nullptr;
-
-  return surface;
+  return std::make_unique<Canvas2DLayerBridge>();
 }
 
 void HTMLCanvasElement::SetCanvas2DLayerBridgeInternal(
@@ -1410,8 +1401,7 @@ void HTMLCanvasElement::SetCanvas2DLayerBridgeInternal(
     return;
 
   if (external_canvas2d_bridge) {
-    if (external_canvas2d_bridge->IsValid())
-      canvas2d_bridge_ = std::move(external_canvas2d_bridge);
+    canvas2d_bridge_ = std::move(external_canvas2d_bridge);
   } else {
     // If the canvas meets the criteria to use accelerated-GPU rendering, and
     // the user signals that the canvas will not be read frequently through
@@ -1929,12 +1919,22 @@ RespectImageOrientationEnum HTMLCanvasElement::RespectImageOrientation() const {
   return LayoutObject::ShouldRespectImageOrientation(GetLayoutObject());
 }
 
+// Temporary plumbing
 bool HTMLCanvasElement::IsHibernating() const {
   return canvas2d_bridge_ && canvas2d_bridge_->IsHibernating();
 }
 
 bool HTMLCanvasElement::IsAccelerated() const {
   return GetRasterMode() == RasterMode::kGPU;
+}
+
+// Temporary plumbing
+void HTMLCanvasElement::FlushRecording(FlushReason reason) {
+  if (canvas2d_bridge_) {
+    canvas2d_bridge_->FlushRecording(reason);
+  } else {
+    CanvasResourceHost::FlushRecording(reason);
+  }
 }
 
 }  // namespace blink

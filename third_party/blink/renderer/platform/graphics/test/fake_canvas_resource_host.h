@@ -20,6 +20,7 @@ namespace blink {
 class FakeCanvasResourceHost : public CanvasResourceHost {
  public:
   explicit FakeCanvasResourceHost(gfx::Size size) : CanvasResourceHost(size) {}
+  ~FakeCanvasResourceHost() override = default;
   void NotifyGpuContextLost() override {}
   void SetNeedsCompositingUpdate() override {}
   void RestoreCanvasMatrixClipStack(cc::PaintCanvas*) const override {}

@@ -224,6 +224,7 @@ class CORE_EXPORT HTMLCanvasElement final
   bool IsPrinting() const override;
   void SetFilterQuality(cc::PaintFlags::FilterQuality filter_quality) override;
   bool IsHibernating() const override;
+  void FlushRecording(FlushReason reason) override;
 
   // CanvasRenderingContextHost implementation.
   UkmParameters GetUkmParameters() override;

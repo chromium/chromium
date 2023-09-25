@@ -32,7 +32,7 @@ class CanvasHibernationHandlerTest : public Test {
       OpacityMode opacity_mode,
       std::unique_ptr<FakeCanvasResourceHost> custom_host = nullptr) {
     std::unique_ptr<Canvas2DLayerBridge> bridge =
-        std::make_unique<Canvas2DLayerBridge>(opacity_mode);
+        std::make_unique<Canvas2DLayerBridge>();
     if (custom_host) {
       host_ = std::move(custom_host);
     }
@@ -40,6 +40,7 @@ class CanvasHibernationHandlerTest : public Test {
       host_ = std::make_unique<FakeCanvasResourceHost>(size);
     }
     host_->SetPreferred2DRasterMode(raster_mode);
+    host_->SetOpacityMode(opacity_mode);
     bridge->SetCanvasResourceHost(host_.get());
     return bridge;
   }
@@ -206,7 +207,7 @@ TEST_F(CanvasHibernationHandlerTest, SimpleTest) {
 
   EXPECT_TRUE(Host()->GetRasterMode() == RasterMode::kGPU);
   EXPECT_FALSE(bridge->IsHibernating());
-  EXPECT_TRUE(bridge->IsValid());
+  EXPECT_TRUE(Host()->IsResourceValid());
 }
 
 TEST_F(CanvasHibernationHandlerTest, ForegroundTooEarly) {

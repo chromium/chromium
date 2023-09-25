@@ -25,7 +25,9 @@ bool CanUseGPU() {
 
 CanvasResourceHost::CanvasResourceHost(gfx::Size size) : size_(size) {}
 
-CanvasResourceHost::~CanvasResourceHost() = default;
+CanvasResourceHost::~CanvasResourceHost() {
+  ResetLayer();
+}
 
 CanvasResourceProvider* CanvasResourceHost::ResourceProvider() const {
   return resource_provider_.get();
@@ -69,6 +71,13 @@ void CanvasResourceHost::InitializeForRecording(cc::PaintCanvas* canvas) {
 void CanvasResourceHost::SetFilterQuality(
     cc::PaintFlags::FilterQuality filter_quality) {
   filter_quality_ = filter_quality;
+  if (resource_provider_) {
+    resource_provider_->SetFilterQuality(filter_quality);
+  }
+  if (cc_layer_) {
+    cc_layer_->SetNearestNeighbor(filter_quality ==
+                                  cc::PaintFlags::FilterQuality::kNone);
+  }
 }
 
 void CanvasResourceHost::SetPreferred2DRasterMode(RasterModeHint hint) {
@@ -131,6 +140,168 @@ RasterMode CanvasResourceHost::GetRasterMode() const {
   // Whether or not to accelerate is not yet resolved, the canvas cannot be
   // accelerated if the gpu context is lost.
   return ShouldTryToUseGpuRaster() ? RasterMode::kGPU : RasterMode::kCPU;
+}
+
+void CanvasResourceHost::ResetLayer() {
+  if (cc_layer_) {
+    if (GetRasterMode() == RasterMode::kGPU) {
+      cc_layer_->ClearTexture();
+      // Orphaning the layer is required to trigger the recreation of a new
+      // layer in the case where destruction is caused by a canvas resize. Test:
+      // virtual/gpu/fast/canvas/canvas-resize-after-paint-without-layout.html
+      cc_layer_->RemoveFromParent();
+    }
+    cc_layer_->ClearClient();
+    cc_layer_ = nullptr;
+  }
+}
+
+void CanvasResourceHost::ClearLayerTexture() {
+  if (cc_layer_) {
+    cc_layer_->ClearTexture();
+  }
+}
+
+void CanvasResourceHost::SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) {
+  hdr_metadata_ = hdr_metadata;
+  if (cc_layer_) {
+    cc_layer_->SetHdrMetadata(hdr_metadata_);
+  }
+}
+
+cc::TextureLayer* CanvasResourceHost::GetOrCreateCcLayerIfNeeded() {
+  if (!IsComposited()) {
+    return nullptr;
+  }
+  if (UNLIKELY(!cc_layer_)) {
+    cc_layer_ = cc::TextureLayer::CreateForMailbox(this);
+    cc_layer_->SetIsDrawable(true);
+    cc_layer_->SetHitTestable(true);
+    cc_layer_->SetContentsOpaque(opacity_mode_ == kOpaque);
+    cc_layer_->SetBlendBackgroundColor(opacity_mode_ != kOpaque);
+    cc_layer_->SetNearestNeighbor(FilterQuality() ==
+                                  cc::PaintFlags::FilterQuality::kNone);
+    cc_layer_->SetHdrMetadata(hdr_metadata_);
+    cc_layer_->SetFlipped(!resource_provider_->IsOriginTopLeft());
+  }
+  return cc_layer_.get();
+}
+
+namespace {
+
+// Adapter for wrapping a CanvasResourceReleaseCallback into a
+// viz::ReleaseCallback
+void ReleaseCanvasResource(CanvasResource::ReleaseCallback callback,
+                           scoped_refptr<CanvasResource> canvas_resource,
+                           const gpu::SyncToken& sync_token,
+                           bool is_lost) {
+  std::move(callback).Run(std::move(canvas_resource), sync_token, is_lost);
+}
+
+}  // unnamed namespace
+
+bool CanvasResourceHost::PrepareTransferableResource(
+    cc::SharedBitmapIdRegistrar* bitmap_registrar,
+    viz::TransferableResource* out_resource,
+    viz::ReleaseCallback* out_release_callback) {
+  CHECK(cc_layer_);  // This explodes if FinalizeFrame() was not called.
+
+  frames_since_last_commit_ = 0;
+  if (rate_limiter_) {
+    rate_limiter_->Reset();
+  }
+
+  // If hibernating but not hidden, we want to wake up from hibernation.
+  if (IsHibernating() && !IsPageVisible()) {
+    return false;
+  }
+
+  if (!IsResourceValid()) {
+    return false;
+  }
+
+  // The beforeprint event listener is sometimes scheduled in the same task
+  // as BeginFrame, which means that this code may sometimes be called between
+  // the event listener and its associated FinalizeFrame call. So in order to
+  // preserve the display list for printing, FlushRecording needs to know
+  // whether any printing occurred in the current task.
+  FlushReason reason = FlushReason::kCanvasPushFrame;
+  if (PrintedInCurrentTask() || IsPrinting()) {
+    reason = FlushReason::kCanvasPushFrameWhilePrinting;
+  }
+  FlushRecording(reason);
+
+  // If the context is lost, we don't know if we should be producing GPU or
+  // software frames, until we get a new context, since the compositor will
+  // be trying to get a new context and may change modes.
+  if (!GetOrCreateCanvasResourceProvider(preferred_2d_raster_mode_)) {
+    return false;
+  }
+
+  scoped_refptr<CanvasResource> frame =
+      resource_provider_->ProduceCanvasResource(reason);
+  if (!frame || !frame->IsValid()) {
+    return false;
+  }
+
+  CanvasResource::ReleaseCallback release_callback;
+  if (!frame->PrepareTransferableResource(out_resource, &release_callback,
+                                          kUnverifiedSyncToken) ||
+      *out_resource == cc_layer_->current_transferable_resource()) {
+    // If the resource did not change, the release will be handled correctly
+    // when the callback from the previous frame is dispatched. But run the
+    // |release_callback| to release the ref acquired above.
+    std::move(release_callback)
+        .Run(std::move(frame), gpu::SyncToken(), false /* is_lost */);
+    return false;
+  }
+  // Note: frame is kept alive via a reference kept in out_release_callback.
+  *out_release_callback = base::BindOnce(
+      ReleaseCanvasResource, std::move(release_callback), std::move(frame));
+
+  return true;
+}
+
+void CanvasResourceHost::DoPaintInvalidation(const gfx::Rect& dirty_rect) {
+  if (cc_layer_ && IsComposited()) {
+    cc_layer_->SetNeedsDisplayRect(dirty_rect);
+  }
+}
+
+void CanvasResourceHost::SetOpacityMode(OpacityMode opacity_mode) {
+  opacity_mode_ = opacity_mode;
+  if (cc_layer_) {
+    cc_layer_->SetContentsOpaque(opacity_mode_ == kOpaque);
+    cc_layer_->SetBlendBackgroundColor(opacity_mode_ != kOpaque);
+  }
+}
+
+void CanvasResourceHost::FlushRecording(FlushReason reason) {
+  if (resource_provider_) {
+    resource_provider_->FlushCanvas(reason);
+    // Flushing consumed locked images.
+    resource_provider_->ReleaseLockedImages();
+  }
+}
+
+bool CanvasResourceHost::IsResourceValid() {
+  if (IsHibernating()) {
+    return true;
+  }
+  if (!cc_layer_ || (preferred_2d_raster_mode_ == RasterModeHint::kPreferCPU)) {
+    return true;
+  }
+  if (context_lost_) {
+    return false;
+  }
+  if (resource_provider_ && resource_provider_->IsAccelerated() &&
+      resource_provider_->IsGpuContextLost()) {
+    context_lost_ = true;
+    ReplaceResourceProvider(nullptr);
+    NotifyGpuContextLost();
+    return false;
+  }
+  return !!GetOrCreateCanvasResourceProvider(preferred_2d_raster_mode_);
 }
 
 }  // namespace blink

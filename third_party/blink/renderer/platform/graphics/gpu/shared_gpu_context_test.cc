@@ -178,7 +178,7 @@ TEST_F(SharedGpuContextTest, Canvas2DLayerBridgeAutoRecovery) {
       std::make_unique<FakeCanvasResourceHost>(size);
   host->SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
   std::unique_ptr<Canvas2DLayerBridge> bridge =
-      std::make_unique<Canvas2DLayerBridge>(kNonOpaque);
+      std::make_unique<Canvas2DLayerBridge>();
   bridge->SetCanvasResourceHost(host.get());
   EXPECT_EQ(host->GetRasterMode(), RasterMode::kGPU);
   EXPECT_TRUE(SharedGpuContext::IsValidWithoutRestoring());

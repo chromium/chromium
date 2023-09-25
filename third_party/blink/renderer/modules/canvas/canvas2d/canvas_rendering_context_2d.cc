@@ -653,7 +653,10 @@ void CanvasRenderingContext2D::PageVisibilityChanged() {
 }
 
 cc::Layer* CanvasRenderingContext2D::CcLayer() const {
-  return IsPaintable() ? canvas()->GetCanvas2DLayerBridge()->Layer() : nullptr;
+  if (!IsPaintable()) {
+    return nullptr;
+  }
+  return canvas()->GetOrCreateCcLayerIfNeeded();
 }
 
 CanvasRenderingContext2DSettings*
@@ -796,7 +799,7 @@ bool CanvasRenderingContext2D::ShouldDisableAccelerationBecauseOfReadback()
 
 bool CanvasRenderingContext2D::IsCanvas2DBufferValid() const {
   if (IsPaintable()) {
-    return canvas()->GetCanvas2DLayerBridge()->IsValid();
+    return canvas()->IsResourceValid();
   }
   return false;
 }

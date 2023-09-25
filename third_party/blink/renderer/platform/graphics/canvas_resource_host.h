@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "cc/layers/texture_layer.h"
+#include "cc/layers/texture_layer_client.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -15,16 +17,23 @@
 
 namespace cc {
 class PaintCanvas;
-}
+}  // namespace cc
 
 namespace blink {
+
 class CanvasResourceProvider;
 class SharedContextRateLimiter;
 
-class PLATFORM_EXPORT CanvasResourceHost {
+class PLATFORM_EXPORT CanvasResourceHost : public cc::TextureLayerClient {
  public:
   explicit CanvasResourceHost(gfx::Size size);
-  virtual ~CanvasResourceHost();
+  ~CanvasResourceHost() override;
+
+  // cc::TextureLayerClient implementation.
+  bool PrepareTransferableResource(
+      cc::SharedBitmapIdRegistrar* bitmap_registrar,
+      viz::TransferableResource* out_resource,
+      viz::ReleaseCallback* out_release_callback) override;
 
   virtual void NotifyGpuContextLost() = 0;
   virtual void SetNeedsCompositingUpdate() = 0;
@@ -37,6 +46,7 @@ class PLATFORM_EXPORT CanvasResourceHost {
   virtual CanvasResourceProvider* GetOrCreateCanvasResourceProviderImpl(
       RasterModeHint hint) = 0;
   bool IsComposited() const;
+  bool IsResourceValid();
   gfx::Size Size() const { return size_; }
   virtual void SetSize(gfx::Size size) { size_ = size; }
 
@@ -44,14 +54,15 @@ class PLATFORM_EXPORT CanvasResourceHost {
   cc::PaintFlags::FilterQuality FilterQuality() const {
     return filter_quality_;
   }
-  void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) {
-    hdr_metadata_ = hdr_metadata;
-  }
+  void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata);
   const gfx::HDRMetadata& GetHDRMetadata() const { return hdr_metadata_; }
 
   virtual bool LowLatencyEnabled() const { return false; }
 
   CanvasResourceProvider* ResourceProvider() const;
+
+  // TODO(junov): remove "virtual" when refactoring is complete.
+  virtual void FlushRecording(FlushReason reason);
 
   std::unique_ptr<CanvasResourceProvider> ReplaceResourceProvider(
       std::unique_ptr<CanvasResourceProvider>);
@@ -80,18 +91,28 @@ class PLATFORM_EXPORT CanvasResourceHost {
   unsigned IncrementFramesSinceLastCommit() {
     return ++frames_since_last_commit_;
   }
-  void ResetFramesSinceLastCommit() { frames_since_last_commit_ = 0; }
   void AlwaysEnableRasterTimersForTesting() {
     always_enable_raster_timers_for_testing_ = true;
   }
 
   // Actual RasterMode used for rendering 2d primitives.
   RasterMode GetRasterMode() const;
+  void ResetLayer();
+  void ClearLayerTexture();
+  cc::TextureLayer* GetOrCreateCcLayerIfNeeded();
+  cc::TextureLayer* CcLayer() { return cc_layer_.get(); }
+  void DoPaintInvalidation(const gfx::Rect& dirty_rect);
+  void SetOpacityMode(OpacityMode opacity_mode);
+
+  // Temporary, for canvas_2d_layer_bridge use.
+  bool context_lost() { return context_lost_; }
+  void set_context_lost(bool value) { context_lost_ = value; }
 
  private:
   void InitializeForRecording(cc::PaintCanvas* canvas);
 
   bool is_displayed_ = false;
+  bool context_lost_ = false;
   unsigned frames_since_last_commit_ = 0;
   std::unique_ptr<SharedContextRateLimiter> rate_limiter_;
   std::unique_ptr<CanvasResourceProvider> resource_provider_;
@@ -101,6 +122,8 @@ class PLATFORM_EXPORT CanvasResourceHost {
   RasterModeHint preferred_2d_raster_mode_ = RasterModeHint::kPreferCPU;
   gfx::Size size_;
   bool always_enable_raster_timers_for_testing_ = false;
+  scoped_refptr<cc::TextureLayer> cc_layer_;
+  OpacityMode opacity_mode_ = kNonOpaque;
 };
 
 }  // namespace blink

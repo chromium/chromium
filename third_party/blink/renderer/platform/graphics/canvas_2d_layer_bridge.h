@@ -32,7 +32,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/rand_util.h"
 #include "build/build_config.h"
-#include "cc/layers/texture_layer_client.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_hibernation_handler.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_host.h"
@@ -43,36 +42,21 @@
 
 struct SkImageInfo;
 
-namespace cc {
-class Layer;
-class TextureLayer;
-}  // namespace cc
-
 namespace blink {
 
 class Canvas2DLayerBridgeTest;
 class StaticBitmapImage;
 
-class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
+class PLATFORM_EXPORT Canvas2DLayerBridge {
  public:
-  explicit Canvas2DLayerBridge(OpacityMode opacity_mode);
+  explicit Canvas2DLayerBridge();
   Canvas2DLayerBridge(const Canvas2DLayerBridge&) = delete;
   Canvas2DLayerBridge& operator=(const Canvas2DLayerBridge&) = delete;
 
-  ~Canvas2DLayerBridge() override;
-
-  // cc::TextureLayerClient implementation.
-  bool PrepareTransferableResource(
-      cc::SharedBitmapIdRegistrar* bitmap_registrar,
-      viz::TransferableResource* out_resource,
-      viz::ReleaseCallback* out_release_callback) override;
+  virtual ~Canvas2DLayerBridge();
 
   void FinalizeFrame(FlushReason);
   void PageVisibilityChanged();
-  void SetFilterQuality(cc::PaintFlags::FilterQuality filter_quality);
-  void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata);
-  void DoPaintInvalidation(const gfx::Rect& dirty_rect);
-  cc::Layer* Layer();
   bool Restore();
 
   // virtual for unit testing
@@ -82,7 +66,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
 
   // This may recreate CanvasResourceProvider
   cc::PaintCanvas* GetPaintCanvas();
-  bool IsValid();
   bool WritePixels(const SkImageInfo&,
                    const void* pixels,
                    size_t row_bytes,
@@ -97,8 +80,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
   bool IsHibernating() const { return hibernation_handler_.IsHibernating(); }
 
   scoped_refptr<StaticBitmapImage> NewImageSnapshot(FlushReason);
-
-  cc::TextureLayer* layer_for_testing() { return layer_.get(); }
 
   // The values of the enum entries must not change because they are used for
   // usage metrics histograms. New values can be added to the end.
@@ -159,7 +140,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
 
   CanvasHibernationHandler hibernation_handler_;
 
-  scoped_refptr<cc::TextureLayer> layer_;
   std::unique_ptr<Logger> logger_;
   bool hibernation_scheduled_ = false;
   bool context_lost_ = false;
@@ -169,8 +149,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
   // WritePixels content is not saved in recording. If a call was made to
   // WritePixels, the recording is now missing that information.
   bool last_record_tainted_by_write_pixels_ = false;
-
-  const OpacityMode opacity_mode_;
 
   enum SnapshotState {
     kInitialSnapshotState,
