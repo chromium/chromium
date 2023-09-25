@@ -5,6 +5,7 @@
 #import "components/storage_monitor/image_capture_device.h"
 
 #include <ImageCaptureCore/ImageCaptureCore.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
@@ -174,9 +175,16 @@ base::FilePath PathForCameraItem(ICCameraItem* item) {
 
 - (void)cameraDevice:(ICCameraDevice*)camera
          didAddItems:(NSArray<ICCameraItem*>*)items {
+  NSString* folderIdentifier;
+  if (@available(macOS 11, *)) {
+    folderIdentifier = UTTypeFolder.identifier;
+  } else {
+    folderIdentifier = base::apple::CFToNSPtrCast(kUTTypeFolder);
+  }
+
   for (ICCameraItem* item in items) {
     base::File::Info info;
-    if ([item.UTI isEqualToString:base::apple::CFToNSPtrCast(kUTTypeFolder)]) {
+    if ([item.UTI isEqualToString:folderIdentifier]) {
       info.is_directory = true;
     } else {
       info.size = base::apple::ObjCCastStrict<ICCameraFile>(item).fileSize;
