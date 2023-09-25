@@ -1028,6 +1028,12 @@
       * 允許 PIN 碼和指紋，請使用 ["PIN", "FINGERPRINT"]。
 
       如果不設定這項政策或設為空白清單，則受管理的裝置不可使用任何 WebAuthn 要素。</translation>
+<translation id="1870669000882901616">這項政策允許管理員指定已安裝網頁應用程式的設定，並將網頁應用程式 ID 對應到特定設定。你可以利用特殊 ID <ph name="DEFAULT_SCOPE" /> 指定預設設定，所有未透過此政策自訂設定的網頁應用程式一律會套用這項預設設定。
+
+「<ph name="MANIFEST_ID_FIELD" />」欄位是這個網頁應用程式的資訊清單 ID。請參閱 <ph name="WEB_APP_ID_REFERENCE_URL" /> 的操作說明，瞭解如何決定已安裝網頁應用程式的資訊清單 ID。
+「<ph name="RUN_ON_OS_LOGIN_FIELD" />」欄位會指定網頁應用程式是否可在 OS 登入期間執行。如果將這個欄位設為 <ph name="BLOCKED" />，網頁應用程式不會在 OS 登入期間執行，使用者之後也無法啟用此欄位。如果將這個欄位設為 <ph name="RUN_WINDOWED" />，網頁應用程式就會在 OS 登入期間執行，而且使用者之後無法停用此欄位。如果將這個欄位設為 <ph name="ALLOWED" />，使用者則可將網頁應用程式設為在 OS 登入期間執行。請注意，預設設定值僅限「<ph name="ALLOWED" />」和「<ph name="BLOCKED" />」。
+(自 117 版起)「<ph name="PREVENT_CLOSE_FIELD" />」欄位會指定是否應避免網頁應用程式遭任何方式 (例如使用者、工作管理員、網頁 API) 關閉。必須將 <ph name="RUN_ON_OS_LOGIN_FIELD" /> 設為「<ph name="RUN_WINDOWED" />」，才能啟用這項行為。如果應用程式已在執行，必須重新啟動，這個屬性才會生效。如未定義這個欄位，使用者就可以關閉應用程式。
+(自 118 版起)「<ph name="FORCE_UNREGISTER_OS_INTEGRATION" />」欄位會指定是否移除網頁應用程式的所有 OS 整合功能，即捷徑、檔案處理常式、通訊協定處理常式等。如果應用程式已在執行，這個屬性會在應用程式重新啟動後生效。使用時請小心謹慎，因為這麼做可能會覆寫網頁應用程式系統啟動期間自動設定的所有 OS 整合功能。目前僅適用於 Windows、Mac 和 Linux 平台。</translation>
 <translation id="1881471688033371681"><ph name="UNLOAD_EVENT_NAME" />事件處理常式已遭淘汰。這類處理常式是否會觸發，取決於<ph name="UNLOAD_EVENT_NAME" />事件的「<ph name="PERMISSIONS_POLICY_NAME" />」。目前，政策預設為允許觸發，但日後會逐漸改為禁止觸發，而網站也必須透過「<ph name="PERMISSIONS_POLICY_NAME" />」標頭明確啟用這類處理常式。您可以透過這項企業政策，選擇不採用這個逐步淘汰機制，方法是強制將預設設定維持在啟用狀態。
 
 網頁可能會仰賴<ph name="UNLOAD_EVENT_NAME" />事件處理常式來儲存資料，或將使用者工作階段結束的信號傳送到伺服器，因此不建議採取這個方式；因為這不僅不可靠，還會導致系統封鎖 <ph name="PRODUCT_NAME" />，進而影響效能。雖然是有建議的替代做法，但使用<ph name="UNLOAD_EVENT_NAME" />事件已行之良久，因此有些應用程式仍可能需要使用這些事件。
@@ -3278,11 +3284,6 @@
       注意：政策通知會在政策變更時強制重新整理，因此系統不需要時常重新整理。如果平台支援這類通知，重新整理延遲時間會是 24 小時 (系統會忽略預設值以及這項政策的值)。</translation>
 <translation id="382476126209906314">為遠端存取主機設定 TalkGadget 前置詞</translation>
 <translation id="3824972131618513497">控管電源管理和重新啟動的相關設定。</translation>
-<translation id="3825313562760682300">這項政策允許管理員指定已安裝網頁應用程式的設定，並將網頁應用程式 ID 對應到特定設定。你可以利用特殊 ID <ph name="DEFAULT_SCOPE" /> 指定預設設定，所有未透過此政策自訂設定的網頁應用程式一律會套用這項預設設定。
-
-「<ph name="MANIFEST_ID_FIELD" />」欄位是這個網頁應用程式的資訊清單 ID。請參閱 <ph name="WEB_APP_ID_REFERENCE_URL" /> 的操作說明，瞭解如何決定已安裝網頁應用程式的資訊清單 ID。
-「<ph name="RUN_ON_OS_LOGIN_FIELD" />」欄位會指定網頁應用程式是否可在 OS 登入期間執行。如果將這個欄位設為「<ph name="BLOCKED" />」，網頁應用程式不會在 OS 登入期間執行，使用者之後也無法啟用此欄位。如果將這個欄位設為「<ph name="RUN_WINDOWED" />」，網頁應用程式就會在 OS 登入期間執行，而且使用者之後無法停用此欄位。如果將這個欄位設為「<ph name="ALLOWED" />」，使用者則可將網頁應用程式設為在 OS 登入期間執行。請注意，預設設定值僅限「<ph name="ALLOWED" />」和「<ph name="BLOCKED" />」。
-(自 117 版起)「<ph name="PREVENT_CLOSE_FIELD" />」欄位會指定是否應避免網頁應用程式遭任何方式 (例如使用者、工作管理員、網頁 API) 關閉。必須將 <ph name="RUN_ON_OS_LOGIN_FIELD" /> 設為「<ph name="RUN_WINDOWED" />」，才能啟用這項行為。如果應用程式已在執行，必須重新啟動，這個屬性才會生效。如未定義這個欄位，使用者就可以關閉應用程式。</translation>
 <translation id="3825873934240606959">禁止本機裝置探索</translation>
 <translation id="3826475866868158882">已啟用 Google 定位服務</translation>
 <translation id="3829344785870486923">企業設定檔區隔次要網域許可清單</translation>

@@ -3306,11 +3306,6 @@
       注意：当此政策有变时，政策通知会强制进行刷新，因此您不必频繁刷新。如果平台支持此类通知，刷新延迟时间将为 24 小时（忽略默认值和此政策的值）。</translation>
 <translation id="382476126209906314">为远程访问主机配置 TalkGadget 前缀</translation>
 <translation id="3824972131618513497">控制与电源管理和重新启动相关的设置。</translation>
-<translation id="3825313562760682300">通过此政策，管理员可为已安装的 Web 应用指定设置。此政策将 Web 应用 ID 与其具体设置对应起来。可以使用特殊 ID“<ph name="DEFAULT_SCOPE" />”设定一项默认配置，这样，未在此政策中自定义配置的所有 Web 应用都将采用该默认配置。
-
-<ph name="MANIFEST_ID_FIELD" /> 字段用于指明相应 Web 应用的清单 ID。如需了解怎样确定某个已安装 Web 应用的清单 ID，请参阅 <ph name="WEB_APP_ID_REFERENCE_URL" />。
-<ph name="RUN_ON_OS_LOGIN_FIELD" /> 字段用于指明 Web 应用能否在 OS 登录期间运行。如果此字段设为“<ph name="BLOCKED" />”，该 Web 应用将不会在 OS 登录期间运行，用户后续也无法启用此设置。如果此字段设为“<ph name="RUN_WINDOWED" />”，该 Web 应用将会在 OS 登录期间运行，且用户后续无法停用此设置。如果此字段设为“<ph name="ALLOWED" />”，则用户可以将该 Web 应用配置为在 OS 登录期间运行。默认配置仅接受“<ph name="ALLOWED" />”值和“<ph name="BLOCKED" />”值。
-（自 117 版起）<ph name="PREVENT_CLOSE_FIELD" /> 字段用于指明是否应阻止以任何方式（例如由用户、任务管理器、Web API）关闭 Web 应用的行为。只有在 <ph name="RUN_ON_OS_LOGIN_FIELD" /> 设为“<ph name="RUN_WINDOWED" />”时，才能允许这种行为。如果该应用已经在运行，只有在重启该应用后，此属性才会生效。如果未指定此字段，用户将可以关闭应用。</translation>
 <translation id="3825873934240606959">阻止使用“本地设备发现”功能</translation>
 <translation id="3826475866868158882">已启用 Google 位置信息服务</translation>
 <translation id="3829344785870486923">企业资料分离辅助网域许可名单</translation>
