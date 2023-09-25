@@ -178,6 +178,8 @@ if (UPDATE_EXPECTATIONS === 'true') {
     wptBinary,
     [
       'update-expectations',
+      '--properties-file',
+      './update_properties.json',
       '--product',
       PRODUCT,
       '--manifest',
