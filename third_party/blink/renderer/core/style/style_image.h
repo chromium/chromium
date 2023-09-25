@@ -43,7 +43,11 @@ class Document;
 class ComputedStyle;
 class ImageResourceObserver;
 
-typedef void* WrappedImagePtr;
+// A const pointer to either an ImageResource or a CSSImageGeneratorValue. It is
+// used as a handle when checking whether ImageResources and generated images
+// like gradients which have changed their backings are used in ComputedStyle
+// objects for LayoutObjects. Use to decide if we need to do paint invalidation.
+using WrappedImagePtr = const void*;
 
 // This class represents a CSS <image> value in ComputedStyle. The underlying
 // object can be an image, a gradient or anything else defined as an <image>

@@ -109,7 +109,7 @@ class CSSCrossfadeValue::ObserverProxy final
  private:
   const ClientSizeCountMap& Clients() const { return owner_->Clients(); }
 
-  Member<CSSCrossfadeValue> owner_;
+  Member<const CSSCrossfadeValue> owner_;
 };
 
 ImageResourceObserver* CSSCrossfadeValue::GetObserverProxy() {
