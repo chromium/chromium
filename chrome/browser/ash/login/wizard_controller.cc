@@ -96,6 +96,7 @@
 #include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ash/login/screens/network_screen.h"
 #include "chrome/browser/ash/login/screens/offline_login_screen.h"
+#include "chrome/browser/ash/login/screens/online_authentication_screen.h"
 #include "chrome/browser/ash/login/screens/packaged_license_screen.h"
 #include "chrome/browser/ash/login/screens/password_selection_screen.h"
 #include "chrome/browser/ash/login/screens/pin_setup_screen.h"
@@ -181,6 +182,7 @@
 #include "chrome/browser/ui/webui/ash/login/multidevice_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/offline_login_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/online_authentication_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/ash/login/os_install_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/os_trial_screen_handler.h"
@@ -754,6 +756,11 @@ WizardController::CreateScreens() {
   append(std::make_unique<GaiaScreen>(
       oobe_ui->GetView<GaiaScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnGaiaScreenExit,
+                          weak_factory_.GetWeakPtr())));
+
+  append(std::make_unique<OnlineAuthenticationScreen>(
+      oobe_ui->GetView<OnlineAuthenticationScreenHandler>()->AsWeakPtr(),
+      base::BindRepeating(&WizardController::OnOnlineAuthenticationScreenExit,
                           weak_factory_.GetWeakPtr())));
 
   append(std::make_unique<UserAllowlistCheckScreen>(
@@ -1420,6 +1427,9 @@ void WizardController::OnUserAllowlistCheckScreenExit(
                UserAllowlistCheckScreen::GetResultString(result));
   AdvanceToScreen(GaiaView::kScreenId);
 }
+
+void WizardController::OnOnlineAuthenticationScreenExit(
+    OnlineAuthenticationScreen::Result result) {}
 
 void WizardController::OnGaiaInfoScreenExit(GaiaInfoScreen::Result result) {
   OnScreenExit(GaiaInfoScreenView::kScreenId,

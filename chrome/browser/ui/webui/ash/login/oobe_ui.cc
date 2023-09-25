@@ -91,6 +91,7 @@
 #include "chrome/browser/ui/webui/ash/login/network_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
 #include "chrome/browser/ui/webui/ash/login/offline_login_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/online_authentication_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_display_chooser.h"
 #include "chrome/browser/ui/webui/ash/login/os_install_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/os_trial_screen_handler.h"
@@ -482,6 +483,8 @@ void OobeUI::ConfigureOobeDisplay() {
 
   AddScreenHandler(std::make_unique<GaiaScreenHandler>(network_state_informer_,
                                                        error_screen));
+
+  AddScreenHandler(std::make_unique<OnlineAuthenticationScreenHandler>());
 
   AddScreenHandler(std::make_unique<UserAllowlistCheckScreenHandler>());
 

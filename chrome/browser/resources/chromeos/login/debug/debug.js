@@ -1803,6 +1803,10 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       id: 'user-allowlist-check-screen',
       kind: ScreenKind.NORMAL,
     },
+    {
+      id: 'online-authentication-screen',
+      kind: ScreenKind.NORMAL,
+    },
   ];
 
   class DebugButton {

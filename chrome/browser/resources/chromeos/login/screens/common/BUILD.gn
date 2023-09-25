@@ -793,6 +793,7 @@ html_to_js("web_components") {
     "marketing_opt_in.js",
     "multidevice_setup.js",
     "offline_ad_login.js",
+    "online_authentication_screen.js",
     "oobe_reset.js",
     "os_install.js",
     "os_trial.js",

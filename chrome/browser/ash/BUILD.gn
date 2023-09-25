@@ -1890,6 +1890,8 @@ source_set("ash") {
     "login/screens/network_screen.h",
     "login/screens/offline_login_screen.cc",
     "login/screens/offline_login_screen.h",
+    "login/screens/online_authentication_screen.cc",
+    "login/screens/online_authentication_screen.h",
     "login/screens/os_install_screen.cc",
     "login/screens/os_install_screen.h",
     "login/screens/os_trial_screen.cc",

@@ -3062,6 +3062,8 @@ static_library("ui") {
       "webui/ash/login/network_state_informer.h",
       "webui/ash/login/offline_login_screen_handler.cc",
       "webui/ash/login/offline_login_screen_handler.h",
+      "webui/ash/login/online_authentication_screen_handler.cc",
+      "webui/ash/login/online_authentication_screen_handler.h",
       "webui/ash/login/online_login_utils.cc",
       "webui/ash/login/online_login_utils.h",
       "webui/ash/login/oobe_display_chooser.cc",
