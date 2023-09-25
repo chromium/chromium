@@ -52,6 +52,7 @@ class AutofillPopupControllerImpl;
 class AutofillSaveCardBottomSheetBridge;
 class AutofillSnackbarControllerImpl;
 #endif  // BUILDFLAG(IS_ANDROID)
+struct OfferNotificationOptions;
 struct VirtualCardEnrollmentFields;
 class VirtualCardEnrollmentManager;
 struct VirtualCardManualFallbackBubbleOptions;
@@ -244,9 +245,9 @@ class ChromeAutofillClient : public ContentAutofillClient,
                    PopupType popup_type,
                    AutofillSuggestionTriggerSource trigger_source) override;
   void HideAutofillPopup(PopupHidingReason reason) override;
-  void UpdateOfferNotification(const AutofillOfferData* offer,
-                               bool notification_has_been_shown,
-                               bool expand_notification_icon) override;
+  void UpdateOfferNotification(
+      const AutofillOfferData* offer,
+      const OfferNotificationOptions& options) override;
   void DismissOfferNotification() override;
   void OnVirtualCardDataAvailable(
       const VirtualCardManualFallbackBubbleOptions& options) override;

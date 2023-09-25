@@ -99,6 +99,7 @@ class IbanManager;
 class LogManager;
 class MigratableCreditCard;
 class MerchantPromoCodeManager;
+struct OfferNotificationOptions;
 class OtpUnmaskDelegate;
 enum class OtpUnmaskResult;
 class PersonalDataManager;
@@ -795,13 +796,10 @@ class AutofillClient : public RiskDataLoader {
   //                          The server is passing down full origin of the
   //                          urls. "Domain" is no longer accurate.
   // Notifies the client to update the offer notification when the `offer` is
-  // available. `notification_has_been_shown` indicates whether this
-  // notification has been shown since profile start-up.
-  // `expand_notification_icon` indicates whether the notification will
-  // automatically expand upon being shown.
+  // available. `options` carries extra configuration options for the offer
+  // notification.
   virtual void UpdateOfferNotification(const AutofillOfferData* offer,
-                                       bool notification_has_been_shown,
-                                       bool expand_notification_icon);
+                                       const OfferNotificationOptions& options);
 
   // Dismiss any visible offer notification on the current tab.
   virtual void DismissOfferNotification();

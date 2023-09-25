@@ -13,6 +13,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
+#include "components/autofill/core/browser/payments/offer_notification_options.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
@@ -52,13 +53,10 @@ class OfferNotificationIconViewBrowserTest : public UiBrowserTest {
         ChromeAutofillClient::FromWebContentsForTesting(GetWebContents());
 
     if (name == "show_offer_notification_icon_only") {
-      autofill_client->UpdateOfferNotification(
-          &offer, /*notification_has_been_shown=*/false,
-          /*expand_notification_icon=*/false);
+      autofill_client->UpdateOfferNotification(&offer, {});
     } else if (name == "show_offer_notification_icon_expanded") {
       autofill_client->UpdateOfferNotification(
-          &offer, /*notification_has_been_shown=*/false,
-          /*expand_notification_icon=*/true);
+          &offer, {.expand_notification_icon = true});
     }
   }
 

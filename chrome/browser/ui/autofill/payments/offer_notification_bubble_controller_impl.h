@@ -19,6 +19,7 @@
 namespace autofill {
 
 class AutofillOfferData;
+struct OfferNotificationOptions;
 
 // Implementation of per-tab class to control the offer notification bubble and
 // Omnibox icon.
@@ -57,14 +58,12 @@ class OfferNotificationBubbleControllerImpl
 
   // Displays an offer notification for the given `offer` on the current page.
   // The information of the `card`, if present, will be displayed in the bubble
-  // for a card-linked offer. `should_show_icon_only` indicates whether client
-  // should just show the offer omnibox icon instead of the icon and the bubble
-  // on this merchant website. `expand_notification_icon` indicates whether
-  // the offer omnibox icon will automatically expand upon being shown.
-  void ShowOfferNotificationIfApplicable(const AutofillOfferData* offer,
-                                         const CreditCard* card,
-                                         bool should_show_icon_only,
-                                         bool expand_notification_icon);
+  // for a card-linked offer. `options` contains information on how the offer
+  // notification should show.
+  void ShowOfferNotificationIfApplicable(
+      const AutofillOfferData* offer,
+      const CreditCard* card,
+      const OfferNotificationOptions& options);
 
   // Called when user clicks on omnibox icon.
   void ReshowBubble();

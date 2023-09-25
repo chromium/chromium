@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
+#include "components/autofill/core/browser/payments/offer_notification_options.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -164,11 +165,10 @@ void OfferNotificationBubbleControllerImpl::OnPromoCodeButtonClicked() {
 void OfferNotificationBubbleControllerImpl::ShowOfferNotificationIfApplicable(
     const AutofillOfferData* offer,
     const CreditCard* card,
-    bool should_show_icon_only,
-    bool expand_notification_icon) {
+    const OfferNotificationOptions& options) {
   DCHECK(offer);
 
-  icon_should_expand_ = expand_notification_icon;
+  icon_should_expand_ = options.expand_notification_icon;
 
   // If this is not the bubble's first show, and offer to be shown has not
   // changed, and it has not been shown for more than
@@ -210,6 +210,7 @@ void OfferNotificationBubbleControllerImpl::ShowOfferNotificationIfApplicable(
 
   is_user_gesture_ = false;
 
+  bool should_show_icon_only = options.notification_has_been_shown;
   if (should_show_icon_only)
     HideBubbleAndClearTimestamp(/*should_show_icon=*/true);
   else
