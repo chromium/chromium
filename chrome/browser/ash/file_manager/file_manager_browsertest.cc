@@ -1586,8 +1586,14 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     GuestOs, /* guest_os.js */
     FilesAppBrowserTest,
     ::testing::Values(TestCase("fakesListed"),
-                      TestCase("listUpdatedWhenGuestsChanged"),
+                      TestCase("listUpdatedWhenGuestsChanged")
+// TODO(http://crbug.com/1486453): Flaky on ASan.
+#if !defined(ADDRESS_SANITIZER) && !defined(LEAK_SANITIZER) && \
+    !defined(MEMORY_SANITIZER)
+                          ,
                       TestCase("mountGuestSuccess"),
-                      TestCase("mountAndroidVolumeSuccess").EnableArcVm()));
+                      TestCase("mountAndroidVolumeSuccess").EnableArcVm()
+#endif
+                          ));
 
 }  // namespace file_manager
