@@ -236,7 +236,8 @@ public class ChromeStrictMode {
         // non-Nexus, non-Pixel devices to improve the signal to noise ratio.
         String lowercaseModel = Build.MODEL.toLowerCase(Locale.US);
         if (!lowercaseModel.contains("nexus") && !lowercaseModel.contains("pixel")) {
-            threadInterceptor.onlyDetectViolationsForPackage("org.chromium.content");
+            threadInterceptor.onlyDetectViolationsForPackage(
+                    "org.chromium.content", "org.chromium.chrome");
         }
     }
 }

@@ -10,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 import android.os.StrictMode;
 import android.os.StrictMode.ThreadPolicy;
 
-import androidx.core.content.ContextCompat;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
@@ -18,15 +17,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.components.strictmode.test.disk_write_helper.DiskWriteHelper;
+import org.chromium.components.strictmode.test.disk_write_proxy.DiskWriteProxy;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-
-import java.io.File;
-import java.io.FileOutputStream;
 
 /**
  * Tests for {@link ThreadStrictModeInterceptor}.
  */
+@Batch(Batch.PER_CLASS)
 @RunWith(BaseJUnit4ClassRunner.class)
 public class ThreadStrictModeInterceptorTest {
     /**
@@ -39,10 +39,10 @@ public class ThreadStrictModeInterceptorTest {
         ThreadStrictModeInterceptor.Builder threadInterceptor =
                 new ThreadStrictModeInterceptor.Builder();
         threadInterceptor.addAllowedMethod(Violation.DETECT_DISK_IO,
-                "org.chromium.components.strictmode.ThreadStrictModeInterceptorTest#doDiskWrite");
+                "org.chromium.components.strictmode.test.disk_write_helper.DiskWriteHelper#doDiskWrite");
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             installThreadInterceptor(threadInterceptor, strictModeDetector);
-            doDiskWrite();
+            DiskWriteHelper.doDiskWrite();
         });
 
         // Wait for any tasks posted to the main thread by android.os.StrictMode to complete.
@@ -62,7 +62,7 @@ public class ThreadStrictModeInterceptorTest {
                 new ThreadStrictModeInterceptor.Builder();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             installThreadInterceptor(threadInterceptor, strictModeDetector);
-            doDiskWrite();
+            DiskWriteHelper.doDiskWrite();
         });
 
         // Wait for any tasks posted to the main thread by android.os.StrictMode to complete.
@@ -71,13 +71,81 @@ public class ThreadStrictModeInterceptorTest {
         assertTrue(strictModeDetector.getCallCount() >= 1);
     }
 
-    private void doDiskWrite() {
-        File dataDir = ContextCompat.getDataDir(InstrumentationRegistry.getTargetContext());
-        File outFile = new File(dataDir, "random.txt");
-        try (FileOutputStream out = new FileOutputStream(outFile)) {
-            out.write(1);
-        } catch (Exception e) {
-        }
+    /**
+     * Test that when ThreadStrictModeInterceptor#onlyDetectViolationsForPackage() is used, that the
+     * penalty is not notified when org.chromium.content code calls org.chromium.chrome code and the
+     * org.chromium.chrome code causes the strict mode violation. This occurs when
+     * org.chromium.chrome code registers an observer and the observer gets called.
+     */
+    @Test
+    @SmallTest
+    public void testOnlyDetectViolationsForPackageCalleeBlocklisted() {
+        CallbackHelper strictModeDetector = new CallbackHelper();
+        ThreadStrictModeInterceptor.Builder threadInterceptor =
+                new ThreadStrictModeInterceptor.Builder();
+        threadInterceptor.onlyDetectViolationsForPackage(
+                "org.chromium.components.strictmode.test.disk_write_proxy",
+                "org.chromium.components.strictmode.test.disk_write_helper");
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            installThreadInterceptor(threadInterceptor, strictModeDetector);
+            DiskWriteProxy.callDiskWriteHelper();
+        });
+
+        // Wait for any tasks posted to the main thread by android.os.StrictMode to complete.
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        assertEquals(0, strictModeDetector.getCallCount());
+    }
+
+    /**
+     * Test that when ThreadStrictModeInterceptor#onlyDetectViolationsForPackage() is used, that the
+     * penalty is notified when org.chromium.chrome code calls org.chromium.content code and the
+     * org.chromium.content code causes the strict mode violation.
+     */
+    @Test
+    @SmallTest
+    public void testOnlyDetectViolationsForPackageCallerBlocklisted() {
+        CallbackHelper strictModeDetector = new CallbackHelper();
+        ThreadStrictModeInterceptor.Builder threadInterceptor =
+                new ThreadStrictModeInterceptor.Builder();
+        // .test package names are used for onlyDetectViolationsForPackage() to prevent the
+        // package names from being obfuscated.
+        threadInterceptor.onlyDetectViolationsForPackage(
+                "org.chromium.components.strictmode.test.disk_write_helper",
+                "org.chromium.components.strictmode.test.disk_write_proxy");
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            installThreadInterceptor(threadInterceptor, strictModeDetector);
+            DiskWriteProxy.callDiskWriteHelper();
+        });
+
+        // Wait for any tasks posted to the main thread by android.os.StrictMode to complete.
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        assertTrue(strictModeDetector.getCallCount() >= 1);
+    }
+
+    /**
+     * Test that when ThreadStrictModeInterceptor#onlyDetectViolationsForPackage() is used, that the
+     * penalty is not notified when the strict mode violation occurs in an unrelated package.
+     */
+    @Test
+    @SmallTest
+    public void testOnlyDetectViolationForPackageViolationInUnrelatedPackage() {
+        CallbackHelper strictModeDetector = new CallbackHelper();
+        ThreadStrictModeInterceptor.Builder threadInterceptor =
+                new ThreadStrictModeInterceptor.Builder();
+        threadInterceptor.onlyDetectViolationsForPackage(
+                "org.chromium.components.strictmode.test.non_existent",
+                "org.chromium.components.strictmode.test.non_existent2");
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            installThreadInterceptor(threadInterceptor, strictModeDetector);
+            DiskWriteProxy.callDiskWriteHelper();
+        });
+
+        // Wait for any tasks posted to the main thread by android.os.StrictMode to complete.
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        assertEquals(0, strictModeDetector.getCallCount());
     }
 
     private void installThreadInterceptor(ThreadStrictModeInterceptor.Builder threadInterceptor,

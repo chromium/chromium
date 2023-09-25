@@ -47,14 +47,29 @@ public interface ThreadStrictModeInterceptor {
         private @Nullable Consumer<Violation> mCustomPenalty;
 
         /**
-         * Ignores all StrictMode violations for which the passed-in package is not part of the
+         * Ignores all StrictMode violations for which {@link filterPackageName} is not part of the
          * stack trace.
+         *
+         * Also ignores StrictMode violations where:
+         * 1) {@link filterPackageName} calls {@link blocklistCalleePackageName}
+         * AND
+         * 2) The violation is caused in code called by {@link blocklistCalleePackageName}.
+         *
+         * This scenario occurs when {@link blocklistCalleePackageName} registers an observer with
+         * {@link filterPackageName} and the strict mode violation is in the observer code.
          */
-        public Builder onlyDetectViolationsForPackage(final String filterPackageName) {
+        public Builder onlyDetectViolationsForPackage(
+                final String filterPackageName, final String blocklistCalleePackageName) {
             mWhitelistEntries.add(violation -> {
-                return doesStackTraceContainPackage(violation, filterPackageName)
-                        ? null
-                        : Violation.DETECT_ALL_KNOWN;
+                for (StackTraceElement frame : violation.stackTrace()) {
+                    if (frame.getClassName().startsWith(blocklistCalleePackageName)) {
+                        return Violation.DETECT_ALL_KNOWN;
+                    }
+                    if (frame.getClassName().startsWith(filterPackageName)) {
+                        return null;
+                    }
+                }
+                return Violation.DETECT_ALL_KNOWN;
             });
             return this;
         }
