@@ -481,7 +481,7 @@ TEST_F(AttributionStorageTest,
 }
 
 TEST_F(AttributionStorageTest,
-       ImpressionWithReportWindowsStartOverDefaultEnd_RegistrationFailure) {
+       ImpressionWithReportWindowsStartGTEDefaultEnd_RegistrationFailure) {
   auto source =
       SourceBuilder()
           .SetEventReportWindows(
@@ -489,6 +489,15 @@ TEST_F(AttributionStorageTest,
                   base::Days(2), {base::Days(5)}))
           .SetExpiry(base::Days(1))
           .Build();
+  EXPECT_EQ(storage()->StoreSource(source).status,
+            StorableSource::Result::kEventReportWindowsInvalidStartTime);
+
+  source = SourceBuilder()
+               .SetEventReportWindows(
+                   *attribution_reporting::EventReportWindows::CreateWindows(
+                       base::Days(1), {base::Days(5)}))
+               .SetExpiry(base::Days(1))
+               .Build();
   EXPECT_EQ(storage()->StoreSource(source).status,
             StorableSource::Result::kEventReportWindowsInvalidStartTime);
 }

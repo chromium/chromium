@@ -494,11 +494,10 @@ absl::optional<EventReportWindows> ValidateEventReportWindows(
   DCHECK(!registered_windows->OnlySingularWindow());
 
   base::TimeDelta default_end_duration = *default_windows.end_times().rbegin();
-  if (registered_windows->start_time() > default_end_duration) {
+  if (registered_windows->start_time() > default_end_duration ||
+      !registered_windows->MaybeTruncate(default_end_duration)) {
     return absl::nullopt;
   }
-
-  registered_windows->MaybeTruncate(default_end_duration);
   return registered_windows;
 }
 
