@@ -48,7 +48,8 @@ file_manager_private::DriveConfirmDialogType ConvertDialogReasonType(
 DriveFsEventRouter::DriveFsEventRouter(
     Profile* profile,
     SystemNotificationManager* notification_manager)
-    : notification_manager_(notification_manager), profile_(profile) {}
+    : profile_(profile), notification_manager_(notification_manager) {}
+
 DriveFsEventRouter::~DriveFsEventRouter() = default;
 
 DriveFsEventRouter::SyncingStatusState::SyncingStatusState() = default;
@@ -392,6 +393,29 @@ void DriveFsEventRouter::OnError(const drivefs::mojom::DriveError& error) {
                    file_manager_private::OnDriveSyncError::kEventName,
                    file_manager_private::OnDriveSyncError::Create(event));
   }
+}
+
+void DriveFsEventRouter::Observe(
+    drive::DriveIntegrationService* const service) {
+  DCHECK(service);
+  drive_observer_.Observe(service);
+  drivefs::DriveFsHost* const host = service->GetDriveFsHost();
+  drivefs_host_observer_.Observe(host);
+  host->set_dialog_handler(
+      base::BindRepeating(&DriveFsEventRouter::DisplayConfirmDialog,
+                          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void DriveFsEventRouter::Reset() {
+  if (drivefs::DriveFsHost* const host = drivefs_host_observer_.GetSource()) {
+    host->set_dialog_handler({});
+  }
+  drivefs_host_observer_.Reset();
+  drive_observer_.Reset();
+}
+
+void DriveFsEventRouter::OnDriveIntegrationServiceDestroyed() {
+  Reset();
 }
 
 void DriveFsEventRouter::OnBulkPinProgress(

@@ -21,10 +21,8 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
@@ -33,13 +31,11 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/arc/arc_util.h"
-#include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/extensions/file_manager/file_system_provider_metrics_util.h"
 #include "chrome/browser/ash/extensions/file_manager/private_api_util.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
@@ -87,7 +83,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
 
 using ::ash::disks::Disk;
@@ -658,14 +653,8 @@ void EventRouter::Shutdown() {
 
   extensions::ExtensionRegistry::Get(profile_)->RemoveObserver(this);
 
-  if (DriveIntegrationService* const service =
-          DriveIntegrationServiceFactory::FindForProfile(profile_)) {
-    drivefs::DriveFsHost* const host = service->GetDriveFsHost();
-    host->set_dialog_handler({});
-    host->RemoveObserver(drivefs_event_router_.get());
-  }
-  drive_observer2_.Reset();
-  drive_observer1_.Reset();
+  drivefs_event_router_->Reset();
+  drive_observer_.Reset();
 
   VolumeManager* const volume_manager = VolumeManager::Get(profile_);
   if (volume_manager) {
@@ -737,12 +726,8 @@ void EventRouter::ObserveEvents() {
 
   if (DriveIntegrationService* const service =
           DriveIntegrationServiceFactory::FindForProfile(profile_)) {
-    drive_observer1_.Observe(service);
-    drive_observer2_.Observe(service);
-    drivefs::DriveFsHost* const host = service->GetDriveFsHost();
-    host->AddObserver(drivefs_event_router_.get());
-    host->set_dialog_handler(base::BindRepeating(
-        &EventRouter::DisplayDriveConfirmDialog, weak_factory_.GetWeakPtr()));
+    drive_observer_.Observe(service);
+    drivefs_event_router_->Observe(service);
   }
 
   extensions::ExtensionRegistry::Get(profile_)->AddObserver(this);
@@ -1094,6 +1079,10 @@ void EventRouter::SetDispatchDirectoryChangeEventImplForTesting(
   dispatch_directory_change_event_impl_ = callback;
 }
 
+void EventRouter::OnDriveIntegrationServiceDestroyed() {
+  drive_observer_.Reset();
+}
+
 void EventRouter::OnFileSystemMountFailed() {
   OnFileManagerPrefsChanged();
 }
@@ -1250,12 +1239,6 @@ void EventRouter::DropFailedPluginVmDirectoryNotShared() {
                  extensions::events::FILE_MANAGER_PRIVATE_ON_CROSTINI_CHANGED,
                  file_manager_private::OnCrostiniChanged::kEventName,
                  file_manager_private::OnCrostiniChanged::Create(event));
-}
-
-void EventRouter::DisplayDriveConfirmDialog(
-    const drivefs::mojom::DialogReason& reason,
-    base::OnceCallback<void(drivefs::mojom::DialogResult)> callback) {
-  drivefs_event_router_->DisplayConfirmDialog(reason, std::move(callback));
 }
 
 void EventRouter::OnDriveDialogResult(drivefs::mojom::DialogResult result) {

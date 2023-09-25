@@ -11,11 +11,13 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/check.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/extensions/file_manager/system_notification_manager.h"
+#include "chromeos/ash/components/drivefs/drivefs_host.h"
 #include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
 #include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
@@ -45,14 +47,16 @@ using IndividualFileTransferStatus =
 
 // Files app's event router handling DriveFS-related events.
 class DriveFsEventRouter : public drivefs::DriveFsHostObserver,
-                           public drive::DriveIntegrationService::Observer {
+                           drive::DriveIntegrationService::Observer {
  public:
   DriveFsEventRouter(Profile* profile,
                      SystemNotificationManager* notification_manager);
-  DriveFsEventRouter(const DriveFsEventRouter&) = delete;
+
   ~DriveFsEventRouter() override;
 
-  DriveFsEventRouter& operator=(const DriveFsEventRouter&) = delete;
+  void Observe(drive::DriveIntegrationService* const service);
+
+  void Reset();
 
   // Triggers an event in the UI to display a confirmation dialog.
   void DisplayConfirmDialog(
@@ -103,7 +107,8 @@ class DriveFsEventRouter : public drivefs::DriveFsHostObserver,
   void OnError(const drivefs::mojom::DriveError& error) override;
   void OnItemProgress(const drivefs::mojom::ProgressEvent& event) override;
 
-  // DriveIntegrationServiceObserver:
+  // DriveIntegrationService::Observer implementation.
+  void OnDriveIntegrationServiceDestroyed() override;
   void OnBulkPinProgress(const drivefs::pinning::Progress& progress) override;
 
   virtual std::set<GURL> GetEventListenerURLs(
@@ -155,7 +160,9 @@ class DriveFsEventRouter : public drivefs::DriveFsHostObserver,
       const std::string& event_name);
 
   // This is owned by EventRouter and only shared with this class.
-  raw_ptr<SystemNotificationManager, ExperimentalAsh> notification_manager_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<SystemNotificationManager, ExperimentalAsh>
+      notification_manager_;
 
   SyncingStatusState sync_status_state_;
   SyncingStatusState pin_status_state_;
@@ -164,7 +171,13 @@ class DriveFsEventRouter : public drivefs::DriveFsHostObserver,
   base::OnceCallback<void(drivefs::mojom::DialogResult)> dialog_callback_;
 
   std::map<std::string, drivefs::SyncState> path_to_sync_state_;
-  raw_ptr<Profile> profile_;
+
+  base::ScopedObservation<drive::DriveIntegrationService,
+                          drive::DriveIntegrationService::Observer>
+      drive_observer_{this};
+
+  base::ScopedObservation<drivefs::DriveFsHost, drivefs::DriveFsHost::Observer>
+      drivefs_host_observer_{this};
 
   base::WeakPtrFactory<DriveFsEventRouter> weak_ptr_factory_{this};
 };
