@@ -80,6 +80,7 @@ const ComputedStyle* StyleHighlightData::CustomHighlight(
   if (highlight_name) {
     auto iter = custom_highlights_.find(highlight_name);
     if (iter != custom_highlights_.end()) {
+      CHECK(iter->value);
       return iter->value.Get();
     }
   }
@@ -105,7 +106,11 @@ void StyleHighlightData::SetGrammarError(const ComputedStyle* style) {
 void StyleHighlightData::SetCustomHighlight(const AtomicString& highlight_name,
                                             const ComputedStyle* style) {
   DCHECK(highlight_name);
-  custom_highlights_.Set(highlight_name, style);
+  if (style) {
+    custom_highlights_.Set(highlight_name, style);
+  } else {
+    custom_highlights_.erase(highlight_name);
+  }
 }
 
 bool StyleHighlightData::DependsOnSizeContainerQueries() const {
