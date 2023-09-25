@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/phonehub/app_stream_launcher_data_model.h"
 
+#include "base/containers/cxx20_erase.h"
 #include "base/i18n/case_conversion.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/phonehub/notification.h"
@@ -97,20 +98,15 @@ void AppStreamLauncherDataModel::AddAppToList(
 
 void AppStreamLauncherDataModel::RemoveAppFromList(
     const proto::App app_to_remove) {
-  apps_list_.erase(
-      std::remove_if(apps_list_.begin(), apps_list_.end(),
-                     [&app_to_remove](const Notification::AppMetadata& app) {
-                       return app.package_name == app_to_remove.package_name();
-                     }),
-      apps_list_.end());
+  base::EraseIf(apps_list_,
+                [&app_to_remove](const Notification::AppMetadata& app) {
+                  return app.package_name == app_to_remove.package_name();
+                });
 
-  apps_list_sorted_by_name_.erase(
-      std::remove_if(apps_list_sorted_by_name_.begin(),
-                     apps_list_sorted_by_name_.end(),
-                     [&app_to_remove](const Notification::AppMetadata& app) {
-                       return app.package_name == app_to_remove.package_name();
-                     }),
-      apps_list_sorted_by_name_.end());
+  base::EraseIf(apps_list_sorted_by_name_,
+                [&app_to_remove](const Notification::AppMetadata& app) {
+                  return app.package_name == app_to_remove.package_name();
+                });
 
   for (auto& observer : observer_list_) {
     observer.OnAppListChanged();
