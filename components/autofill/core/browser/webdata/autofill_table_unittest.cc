@@ -200,7 +200,10 @@ class AutofillTableProfileTest
     features_.InitWithFeatures(
         {features::kAutofillEnableSupportForLandmark,
          features::kAutofillEnableSupportForBetweenStreets,
-         features::kAutofillEnableSupportForAdminLevel2},
+         features::kAutofillEnableSupportForAdminLevel2,
+         features::kAutofillEnableSupportForAddressOverflow,
+         features::kAutofillEnableSupportForAddressOverflowAndLandmark,
+         features::kAutofillEnableSupportForBetweenStreetsOrLandmark},
         {});
   }
   AutofillProfile::Source profile_source() const { return GetParam(); }

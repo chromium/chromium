@@ -213,6 +213,13 @@ BASE_FEATURE(kAutofillEnableSupportForAddressOverflowAndLandmark,
              "AutofillEnableSupportForAddressOverflowAndLandmark",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls if Chrome support filling and importing address overflow and
+// landmark fields.
+// TODO(crbug.com/1441904) Remove once launched.
+BASE_FEATURE(kAutofillEnableSupportForBetweenStreetsOrLandmark,
+             "AutofillEnableSupportForBetweenStreetsOrLandmark",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls if Chrome support filling and importing landmarks.
 // TODO(crbug.com/1441904) Remove once launched.
 BASE_FEATURE(kAutofillEnableSupportForLandmark,

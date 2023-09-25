@@ -1042,6 +1042,12 @@ bool AddAutofillProfileToTable(sql::Database* db,
       continue;
     }
     if (!base::FeatureList::IsEnabled(
+            features::kAutofillEnableSupportForBetweenStreetsOrLandmark) &&
+        type == ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK) {
+      continue;
+    }
+
+    if (!base::FeatureList::IsEnabled(
             features::kAutofillEnableSupportForAddressOverflow) &&
         type == ADDRESS_HOME_OVERFLOW) {
       continue;
@@ -1053,7 +1059,9 @@ bool AddAutofillProfileToTable(sql::Database* db,
     }
     if (!base::FeatureList::IsEnabled(
             features::kAutofillEnableSupportForBetweenStreets) &&
-        type == ADDRESS_HOME_BETWEEN_STREETS) {
+        (type == ADDRESS_HOME_BETWEEN_STREETS ||
+         type == ADDRESS_HOME_BETWEEN_STREETS_1 ||
+         type == ADDRESS_HOME_BETWEEN_STREETS_2)) {
       continue;
     }
     if (!base::FeatureList::IsEnabled(
@@ -1160,7 +1168,10 @@ AutofillTable::GetStoredTypesForAutofillProfile() {
       ADDRESS_HOME_OVERFLOW,
       ADDRESS_HOME_LANDMARK,
       ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
+      ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK,
       ADDRESS_HOME_BETWEEN_STREETS,
+      ADDRESS_HOME_BETWEEN_STREETS_1,
+      ADDRESS_HOME_BETWEEN_STREETS_2,
       ADDRESS_HOME_ADMIN_LEVEL2,
       EMAIL_ADDRESS,
       PHONE_HOME_WHOLE_NUMBER,
@@ -1677,21 +1688,31 @@ std::unique_ptr<AutofillProfile> AutofillTable::GetAutofillProfile(
                     guid)) {
     return nullptr;
   }
-  auto profile = std::make_unique<AutofillProfile>(guid, profile_source);
+
   int index = 0;
-  profile->set_use_count(s.ColumnInt64(index++));
-  profile->set_use_date(base::Time::FromTimeT(s.ColumnInt64(index++)));
-  profile->set_modification_date(base::Time::FromTimeT(s.ColumnInt64(index++)));
-  profile->set_language_code(s.ColumnString(index++));
-  profile->set_profile_label(s.ColumnString(index++));
-  profile->set_initial_creator_id(s.ColumnInt(index++));
-  profile->set_last_modifier_id(s.ColumnInt(index++));
+  int64_t use_count = s.ColumnInt64(index++);
+  base::Time use_date = base::Time::FromTimeT(s.ColumnInt64(index++));
+  base::Time modification_date = base::Time::FromTimeT(s.ColumnInt64(index++));
+  std::string language_code = s.ColumnString(index++);
+  std::string profile_label = s.ColumnString(index++);
+  int creator_id = s.ColumnInt(index++);
+  int modifier_id = s.ColumnInt(index++);
 
   if (!SelectByGuid(db_, s, GetProfileTypeTokensTable(profile_source),
                     {kType, kValue, kVerificationStatus, kObservations},
                     guid)) {
     return nullptr;
   }
+
+  struct FieldTypeData {
+    ServerFieldType type;
+    std::u16string value;
+    int status;
+    std::vector<const uint8_t> serialized_data;
+  };
+
+  std::vector<FieldTypeData> field_type_values;
+  std::string country_code;
   // As `SelectByGuid()` already calls `s.Step()`, do-while is used here.
   do {
     ServerFieldType type = ToSafeServerFieldType(s.ColumnInt(0), UNKNOWN_TYPE);
@@ -1705,11 +1726,37 @@ std::unique_ptr<AutofillProfile> AutofillTable::GetAutofillProfile(
       //   next update, the data will be dropped.
       continue;
     }
-    profile->SetRawInfoWithVerificationStatusInt(type, s.ColumnString16(1),
-                                                 s.ColumnInt(2));
-    profile->token_quality().LoadSerializedObservationsForStoredType(
-        type, s.ColumnBlob(3));
+
+    base::span<const uint8_t> observations_data = s.ColumnBlob(3);
+    field_type_values.emplace_back(
+        FieldTypeData{type, s.ColumnString16(1), s.ColumnInt(2),
+                      std::vector<const uint8_t>(observations_data.begin(),
+                                                 observations_data.end())});
+
+    if (type == ADDRESS_HOME_COUNTRY) {
+      country_code = base::UTF16ToUTF8(s.ColumnString16(1));
+    }
+
   } while (s.Step());
+
+  // TODO(crbug.com/1464568): Define a proper migration strategy from stored
+  // legacy profiles into i18n ones.
+  auto profile = std::make_unique<AutofillProfile>(
+      guid, profile_source, AddressCountryCode(country_code));
+  profile->set_use_count(use_count);
+  profile->set_use_date(use_date);
+  profile->set_modification_date(modification_date);
+  profile->set_language_code(language_code);
+  profile->set_profile_label(profile_label);
+  profile->set_initial_creator_id(creator_id);
+  profile->set_last_modifier_id(modifier_id);
+
+  for (const auto& data : field_type_values) {
+    profile->SetRawInfoWithVerificationStatusInt(data.type, data.value,
+                                                 data.status);
+    profile->token_quality().LoadSerializedObservationsForStoredType(
+        data.type, data.serialized_data);
+  }
 
   profile->FinalizeAfterImport();
   return profile;
