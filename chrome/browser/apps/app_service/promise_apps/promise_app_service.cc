@@ -284,15 +284,27 @@ bool PromiseAppService::IsRegisteredInAppRegistryCache(
     return false;
   }
   bool is_registered = false;
-  app_registry_cache_->ForEachApp([&package_id,
-                                   &is_registered](const AppUpdate& update) {
-    absl::optional<PackageId> app_package_id =
-        apps_util::GetPackageIdForApp(update);
-    if (app_package_id.has_value() && app_package_id.value() == package_id) {
-      is_registered = true;
-      return;
-    }
-  });
+  app_registry_cache_->ForEachApp(
+      [&package_id, &is_registered](const AppUpdate& update) {
+        // TODO(b/297296711): Update check for TWAs, which can have differing
+        // package IDs.
+        if (update.AppType() != package_id.app_type()) {
+          return;
+        }
+        if (update.PublisherId() != package_id.identifier()) {
+          return;
+        }
+        if (update.Readiness() == Readiness::kUninstalledByUser ||
+            update.Readiness() == Readiness::kRemoved ||
+            update.Readiness() == Readiness::kUninstalledByNonUser) {
+          // It's possible for an app to be in the AppRegistryCache despite
+          // being uninstalled. Do not consider this as a registered
+          // installed app.
+          return;
+        }
+        is_registered = true;
+        return;
+      });
   return is_registered;
 }
 

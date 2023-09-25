@@ -313,4 +313,27 @@ TEST_F(PromiseAppServiceTest,
   EXPECT_FALSE(cache()->HasPromiseApp(package_id));
 }
 
+TEST_F(PromiseAppServiceTest, AllowPromiseAppsForReinstallingApps) {
+  AppType app_type = AppType::kArc;
+  std::string identifier = "test.com.example";
+  PackageId package_id(app_type, identifier);
+
+  // Register an app in AppRegistryCache, marked as uninstalled.
+  apps::AppPtr app = std::make_unique<apps::App>(app_type, "asdfghjkl");
+  app->publisher_id = identifier;
+  app->readiness = apps::Readiness::kUninstalledByUser;
+  std::vector<apps::AppPtr> apps;
+  apps.push_back(std::move(app));
+  app_cache()->OnApps(std::move(apps), app_type,
+                      /*should_notify_initialized=*/false);
+
+  // Register test promise app with a matching package ID.
+  PromiseAppPtr promise_app = std::make_unique<PromiseApp>(package_id);
+  promise_app->status = PromiseStatus::kPending;
+  service()->OnPromiseApp(std::move(promise_app));
+
+  // Confirm that the promise app does get created.
+  EXPECT_TRUE(cache()->HasPromiseApp(package_id));
+}
+
 }  // namespace apps
