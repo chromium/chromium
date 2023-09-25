@@ -19,6 +19,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
+#include "base/i18n/time_formatting.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -307,13 +308,9 @@ bool CacheDumper::HexDump(disk_cache::CacheAddr addr, std::string* out) {
 }
 
 std::string ToLocalTime(int64_t time_us) {
-  base::Time time =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(time_us));
-  base::Time::Exploded e;
-  time.LocalExplode(&e);
-  return base::StringPrintf("%d/%d/%d %d:%d:%d.%d", e.year, e.month,
-                            e.day_of_month, e.hour, e.minute, e.second,
-                            e.millisecond);
+  return base::UnlocalizedTimeFormatWithPattern(
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(time_us)),
+      "y/M/d H:m:s.S");
 }
 
 void DumpEntry(disk_cache::CacheAddr addr,
