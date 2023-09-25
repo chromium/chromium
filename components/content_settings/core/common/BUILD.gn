@@ -42,16 +42,13 @@ static_library("common") {
 
   deps = [
     "//build:blink_buildflags",
+    "//components/privacy_sandbox:features",
     "//ipc",
     "//mojo/public/cpp/base",
     "//mojo/public/cpp/bindings:struct_traits",
     "//net",
     "//url",
   ]
-
-  if (use_blink) {
-    deps += [ "//components/privacy_sandbox:features" ]
-  }
 }
 
 source_set("unit_tests") {

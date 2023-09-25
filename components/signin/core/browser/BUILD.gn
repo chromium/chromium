@@ -122,6 +122,7 @@ source_set("unit_tests") {
     "//components/content_settings/core/browser",
     "//components/prefs",
     "//components/prefs:test_support",
+    "//components/privacy_sandbox:privacy_sandbox_prefs",
     "//components/signin/public/base:signin_buildflags",
     "//components/signin/public/base:test_support",
     "//components/signin/public/identity_manager",

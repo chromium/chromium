@@ -23,6 +23,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
+#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/base/features.h"
@@ -184,6 +185,7 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
     ContentSettingsRegistry::GetInstance()->ResetForTest();
     CookieSettings::RegisterProfilePrefs(prefs_.registry());
     HostContentSettingsMap::RegisterProfilePrefs(prefs_.registry());
+    privacy_sandbox::RegisterProfilePrefs(prefs_.registry());
     settings_map_ = new HostContentSettingsMap(
         &prefs_, false /* is_off_the_record */, false /* store_last_modified */,
         false /* restore_session */, false /* should_record_metrics */);

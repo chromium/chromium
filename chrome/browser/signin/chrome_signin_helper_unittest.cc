@@ -12,6 +12,7 @@
 #include "build/buildflag.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -170,6 +171,7 @@ TEST_F(ChromeSigninHelperTest, FixAccountConsistencyRequestHeader) {
   sync_preferences::TestingPrefServiceSyncable prefs;
   content_settings::CookieSettings::RegisterProfilePrefs(prefs.registry());
   HostContentSettingsMap::RegisterProfilePrefs(prefs.registry());
+  privacy_sandbox::RegisterProfilePrefs(prefs.registry());
   scoped_refptr<HostContentSettingsMap> settings_map =
       new HostContentSettingsMap(&prefs, /*is_off_the_record=*/false,
                                  /*store_last_modified=*/false,

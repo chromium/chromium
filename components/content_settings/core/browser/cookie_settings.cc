@@ -21,6 +21,7 @@
 #include "components/permissions/features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
@@ -48,6 +49,10 @@ CookieSettings::CookieSettings(
   pref_change_registrar_.Init(prefs);
   pref_change_registrar_.Add(
       prefs::kCookieControlsMode,
+      base::BindRepeating(&CookieSettings::OnCookiePreferencesChanged,
+                          base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kTrackingProtection3pcdEnabled,
       base::BindRepeating(&CookieSettings::OnCookiePreferencesChanged,
                           base::Unretained(this)));
   OnCookiePreferencesChanged();
@@ -287,6 +292,16 @@ bool CookieSettings::ShouldBlockThirdPartyCookiesInternal() {
 #endif
 
   if (net::cookie_util::IsForceThirdPartyCookieBlockingEnabled()) {
+    return true;
+  }
+
+  // Cookies should always be blocked in 3PCD experiment or if debug flag is on.
+  // Note: TrackingProtectionSettings will set kTrackingProtection3pcd to false
+  // if kCookieControlsMode is enterprise controlled.
+  if (base::FeatureList::IsEnabled(
+          content_settings::features::kTrackingProtection3pcd) ||
+      pref_change_registrar_.prefs()->GetBoolean(
+          prefs::kTrackingProtection3pcdEnabled)) {
     return true;
   }
 

@@ -16,6 +16,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/prefs/pref_member.h"
+#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/signin/core/browser/chrome_connected_header_helper.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -73,6 +74,7 @@ class SigninHeaderHelperTest : public testing::Test {
   void SetUp() override {
     content_settings::CookieSettings::RegisterProfilePrefs(prefs_.registry());
     HostContentSettingsMap::RegisterProfilePrefs(prefs_.registry());
+    privacy_sandbox::RegisterProfilePrefs(prefs_.registry());
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     // TODO(crbug.com/1198528): remove this after the rollout.
