@@ -41,4 +41,5 @@ Local Modifications:
   it manually and out-of-band with the rest of androidx. Use the
   update_source.sh script to pull in changes from androidx-main.
   https://crbug.com/1414452
+* Added a no-op version of androidx.window
 * Pin androidx_recycleview_recycleview to avoid https://crbug.com/1421341.

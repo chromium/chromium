@@ -112,6 +112,13 @@ template("_androidx_prebuilt") {
       ]
     }
   }
+
+  # Arbitrarily use this target to add new top-level GN targets.
+  if (target_name == "androidx_annotation_annotation_jvm_java") {
+    java_group("androidx_window_stubs_java") {
+      deps = [ "//third_party/androidx/local_modifications/window:androidx_window_shims_java" ]
+    }
+  }
 }
 
 template("androidx_java_prebuilt") {
