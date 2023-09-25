@@ -146,6 +146,8 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
       allowEmojiSuggestion_: Boolean,
 
       allowOrca_: Boolean,
+
+      allowSuggestionSection_: Boolean,
     };
   }
 
@@ -183,6 +185,8 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   private readonly allowEmojiSuggestion_: boolean =
       loadTimeData.getBoolean('allowEmojiSuggestion');
   private readonly allowOrca_: boolean = loadTimeData.getBoolean('allowOrca');
+  private readonly allowSuggestionSection_: boolean =
+      this.allowOrca_ || this.allowEmojiSuggestion_;
 
   // Computed properties.
   private spellCheckLanguages_: SpellCheckLanguageState[]|undefined;
