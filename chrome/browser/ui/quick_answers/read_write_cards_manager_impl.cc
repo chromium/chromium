@@ -29,7 +29,7 @@ constexpr char kOrcaKeyHash[] =
     "\x7a\xf3\xa1\x57\x28\x48\xc4\x14\x27\x13\x53\x5a\x09\xf3\x0e\xfc\xee\xa6"
     "\xbb\xa4";
 
-void CheckOrcaKey() {
+bool CheckOrcaKey() {
   const std::string& debug_key_hash = base::SHA1HashString(
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           /*ash::switches::kOrcaKey=*/kOrcaKey));
@@ -37,8 +37,11 @@ void CheckOrcaKey() {
   // Commandline looks like:
   //  out/Default/chrome --user-data-dir=/tmp/auuf123 --orca-key="INSERT KEY
   //  HERE" --enable-features=Orca
-  CHECK_EQ(debug_key_hash, kOrcaKeyHash)
-      << "Provided debug key does not match with the expected one.";
+  bool orca_key_check = (debug_key_hash == kOrcaKeyHash);
+  if (!orca_key_check) {
+    LOG(ERROR) << "Provided debug key does not match with the expected one.";
+  }
+  return orca_key_check;
 }
 
 }  // namespace
@@ -71,8 +74,7 @@ ReadWriteCardController* ReadWriteCardsManagerImpl::GetController(
 
   if (chromeos::features::IsOrcaEnabled()) {
     if (params.is_editable) {
-      CheckOrcaKey();
-      return editor_menu_controller_.get();
+      return CheckOrcaKey() ? editor_menu_controller_.get() : nullptr;
     }
   }
 

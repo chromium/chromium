@@ -39,6 +39,8 @@ class EditorConsentStore {
 
   void OverrideUserPref(bool new_pref_value);
 
+  void InitializePrefChangeRegistrar(PrefService* pref_service);
+
   // Not owned by this class.
   raw_ptr<PrefService> pref_service_;
 

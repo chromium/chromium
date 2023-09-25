@@ -200,7 +200,9 @@ void EditorMediator::SetProfileByUser(user_manager::User* user) {
   profile_observation_.Observe(profile_);
   editor_switch_->SetProfile(profile_);
   consent_store_->SetPrefService(profile_->GetPrefs());
-  text_query_provider_->OnProfileChanged(profile_);
+  if (text_query_provider_ != nullptr) {
+    text_query_provider_->OnProfileChanged(profile_);
+  }
 }
 
 void EditorMediator::OnProfileWillBeDestroyed(Profile* profile) {

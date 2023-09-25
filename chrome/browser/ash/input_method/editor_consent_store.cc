@@ -10,13 +10,8 @@
 namespace ash::input_method {
 
 EditorConsentStore::EditorConsentStore(PrefService* pref_service)
-    : pref_service_(pref_service),
-      pref_change_registrar_(std::make_unique<PrefChangeRegistrar>()) {
-  pref_change_registrar_->Init(pref_service_);
-  pref_change_registrar_->Add(
-      ash::prefs::kOrcaEnabled,
-      base::BindRepeating(&EditorConsentStore::OnUserPrefChanged,
-                          weak_ptr_factory_.GetWeakPtr()));
+    : pref_service_(pref_service) {
+  InitializePrefChangeRegistrar(pref_service);
 }
 
 EditorConsentStore::~EditorConsentStore() = default;
@@ -74,8 +69,20 @@ void EditorConsentStore::OverrideUserPref(bool new_pref_value) {
   pref_service_->SetBoolean(prefs::kOrcaEnabled, new_pref_value);
 }
 
+void EditorConsentStore::InitializePrefChangeRegistrar(
+    PrefService* pref_service) {
+  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  pref_change_registrar_->Init(pref_service);
+  pref_change_registrar_->Add(
+      ash::prefs::kOrcaEnabled,
+      base::BindRepeating(&EditorConsentStore::OnUserPrefChanged,
+                          weak_ptr_factory_.GetWeakPtr()));
+}
+
 void EditorConsentStore::SetPrefService(PrefService* pref_service) {
   pref_service_ = pref_service;
+  pref_change_registrar_.reset();
+  InitializePrefChangeRegistrar(pref_service_);
 }
 
 }  // namespace ash::input_method

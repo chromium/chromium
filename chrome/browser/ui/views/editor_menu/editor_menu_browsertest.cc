@@ -54,6 +54,17 @@ class EditorMenuBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+class EditorMenuBrowserFeatureDisabledTest : public EditorMenuBrowserTest {
+ public:
+  EditorMenuBrowserFeatureDisabledTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{chromeos::features::kOrcaDogfood});
+  }
+
+  ~EditorMenuBrowserFeatureDisabledTest() override = default;
+};
+
 class EditorMenuBrowserFeatureEnabledTest : public EditorMenuBrowserTest {
  public:
   EditorMenuBrowserFeatureEnabledTest() {
@@ -63,7 +74,7 @@ class EditorMenuBrowserFeatureEnabledTest : public EditorMenuBrowserTest {
   ~EditorMenuBrowserFeatureEnabledTest() override = default;
 };
 
-IN_PROC_BROWSER_TEST_F(EditorMenuBrowserTest,
+IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureDisabledTest,
                        ShouldNotCreateWhenFeatureNotEnabled) {
   EXPECT_FALSE(chromeos::features::IsOrcaEnabled());
   EXPECT_EQ(nullptr, GetControllerImpl());
