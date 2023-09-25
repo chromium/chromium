@@ -131,14 +131,6 @@ void SyncEngineImpl::Initialize(InitParams params) {
   DCHECK(params.host);
   host_ = params.host;
 
-  // The gaia ID in sync prefs was introduced with M81, so having an empty value
-  // is legitimate and should be populated as a one-off migration.
-  // TODO(mastiz): Clean up this migration code after a grace period (e.g. 1
-  // year).
-  if (prefs_->GetGaiaId().empty()) {
-    prefs_->SetGaiaId(params.authenticated_account_info.gaia);
-  }
-
   const SyncTransportDataStartupState state =
       ValidateSyncTransportData(*prefs_, params.authenticated_account_info);
 
