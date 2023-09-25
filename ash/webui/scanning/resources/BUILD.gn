@@ -57,7 +57,7 @@ build_webui("build") {
     "mojo_interface_provider.ts",
     "scanning_app_types.js",
     "scanning_app_util.ts",
-    "scanning_browser_proxy.js",
+    "scanning_browser_proxy.ts",
     "select_mixin.ts",
   ]
 
@@ -72,6 +72,8 @@ build_webui("build") {
   ]
 
   ts_tsconfig_base = "tsconfig.json"
+
+  ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
 
   ts_deps = [
     "//ash/webui/common/resources:build_ts",

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
-import {ScanningBrowserProxy, SelectedPath} from 'chrome://scanning/scanning_browser_proxy.js';
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/chromeos/test_browser_proxy.js';
 
