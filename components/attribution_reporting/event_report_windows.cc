@@ -34,7 +34,6 @@ constexpr char kEventReportWindows[] = "event_report_windows";
 constexpr char kStartTime[] = "start_time";
 constexpr char kEndTimes[] = "end_times";
 
-constexpr base::TimeDelta kWindowDeadlineOffset = base::Hours(1);
 constexpr base::TimeDelta kMinReportWindow = base::Hours(1);
 
 bool EventReportWindowsValid(base::TimeDelta start_time,
@@ -61,7 +60,7 @@ base::Time ReportTimeFromDeadline(base::Time source_time,
                                   base::TimeDelta deadline) {
   // Valid conversion reports should always have a valid reporting deadline.
   DCHECK(deadline.is_positive());
-  return source_time + deadline + kWindowDeadlineOffset;
+  return source_time + deadline;
 }
 
 }  // namespace

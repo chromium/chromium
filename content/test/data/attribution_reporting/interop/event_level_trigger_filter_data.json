@@ -272,49 +272,49 @@
         "payload": {
           "attribution_destination": "https://destination.test",
           "randomized_trigger_rate": 0.0024263,
-          "scheduled_report_time": "176400",
+          "scheduled_report_time": "172800",
           "source_event_id": "123",
           "source_type": "navigation",
           "trigger_data": "3"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "176400000"
+        "report_time": "172800000"
       },
       {
         "payload": {
           "attribution_destination": "https://destination.test",
           "randomized_trigger_rate": 0.0024263,
-          "scheduled_report_time": "176400",
+          "scheduled_report_time": "172800",
           "source_event_id": "123",
           "source_type": "navigation",
           "trigger_data": "5"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "176400000"
+        "report_time": "172800000"
       },
       {
         "payload": {
           "attribution_destination": "https://destination.test",
           "randomized_trigger_rate": 0.0024263,
-          "scheduled_report_time": "176400",
+          "scheduled_report_time": "172800",
           "source_event_id": "123",
           "source_type": "navigation",
           "trigger_data": "6"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "176400000"
+        "report_time": "172800000"
       },
       {
         "payload": {
           "attribution_destination": "https://another-destination.test",
           "randomized_trigger_rate": 0.0000025,
-          "scheduled_report_time": "2595600",
+          "scheduled_report_time": "2592000",
           "source_event_id": "456",
           "source_type": "event",
           "trigger_data": "1"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "2595600001"
+        "report_time": "2592000001"
       }
     ],
     "verbose_debug_reports": [

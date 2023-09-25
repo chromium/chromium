@@ -21,8 +21,6 @@ namespace {
 using ::attribution_reporting::mojom::SourceRegistrationError;
 using WindowResult = EventReportWindows::WindowResult;
 
-constexpr base::TimeDelta kWindowDeadlineOffset = base::Hours(1);
-
 TEST(EventReportWindowsTest, CreateWindow) {
   const struct {
     base::TimeDelta window_time;
@@ -319,27 +317,27 @@ TEST(EventReportWindowsTest, ComputeReportTime) {
   } kTestCases[] = {
       {
           .trigger_time = source_time,
-          .expected = source_time + base::Hours(2) + kWindowDeadlineOffset,
+          .expected = source_time + base::Hours(2),
       },
       {
           .trigger_time = source_time + base::Hours(2) - base::Milliseconds(1),
-          .expected = source_time + base::Hours(2) + kWindowDeadlineOffset,
+          .expected = source_time + base::Hours(2),
       },
       {
           .trigger_time = source_time + base::Hours(2),
-          .expected = source_time + base::Days(1) + kWindowDeadlineOffset,
+          .expected = source_time + base::Days(1),
       },
       {
           .trigger_time = source_time + base::Days(1) - base::Milliseconds(1),
-          .expected = source_time + base::Days(1) + kWindowDeadlineOffset,
+          .expected = source_time + base::Days(1),
       },
       {
           .trigger_time = source_time + base::Days(1),
-          .expected = source_time + base::Days(7) + kWindowDeadlineOffset,
+          .expected = source_time + base::Days(7),
       },
       {
           .trigger_time = source_time + base::Days(7),
-          .expected = source_time + base::Days(7) + kWindowDeadlineOffset,
+          .expected = source_time + base::Days(7),
       }};
 
   for (const auto& test_case : kTestCases) {
@@ -357,19 +355,18 @@ TEST(EventReportWindowsTest, ReportTimeAtWindow) {
   const struct {
     int index;
     base::Time expected;
-  } kTestCases[] = {
-      {
-          .index = 0,
-          .expected = source_time + base::Hours(1) + kWindowDeadlineOffset,
-      },
-      {
-          .index = 1,
-          .expected = source_time + base::Days(3) + kWindowDeadlineOffset,
-      },
-      {
-          .index = 2,
-          .expected = source_time + base::Days(7) + kWindowDeadlineOffset,
-      }};
+  } kTestCases[] = {{
+                        .index = 0,
+                        .expected = source_time + base::Hours(1),
+                    },
+                    {
+                        .index = 1,
+                        .expected = source_time + base::Days(3),
+                    },
+                    {
+                        .index = 2,
+                        .expected = source_time + base::Days(7),
+                    }};
 
   for (const auto& test_case : kTestCases) {
     EXPECT_EQ(

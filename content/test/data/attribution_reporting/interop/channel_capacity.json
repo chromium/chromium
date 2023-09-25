@@ -231,25 +231,25 @@
         "payload": {
           "attribution_destination": "https://destination.test",
           "randomized_trigger_rate": 0.0007154,
-          "scheduled_report_time": "7204",
+          "scheduled_report_time": "3604",
           "source_event_id": "123",
           "source_type": "navigation",
           "trigger_data": "3"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "7204000"
+        "report_time": "3604000"
       },
       {
         "payload": {
           "attribution_destination": "https://destination2.test",
           "randomized_trigger_rate": 1.0,
-          "scheduled_report_time": "7206",
+          "scheduled_report_time": "3606",
           "source_event_id": "456",
           "source_type": "navigation",
           "trigger_data": "4"
         },
         "report_url": "https://reporter2.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "7206000"
+        "report_time": "3606000"
       }
     ]
   }

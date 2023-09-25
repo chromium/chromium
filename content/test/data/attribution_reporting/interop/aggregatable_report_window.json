@@ -201,12 +201,12 @@
            "randomized_trigger_rate": 0.0024263,
            // 176,400 s  = 2 days (default first event_report_window) + 1 hour
            // (base delay)
-           "scheduled_report_time": "176400",
+           "scheduled_report_time": "172800",
            "source_event_id": "123",
            "source_type": "navigation",
            "trigger_data": "1"
         },
-        "report_time": "176400000",
+        "report_time": "172800000",
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution"
      },
      {
@@ -215,12 +215,12 @@
          "randomized_trigger_rate": 0.0024263,
          // 176,400 s  = 2 day (default first event_report_window) + 1 hour
          // (base delay)
-         "scheduled_report_time": "176400",
+         "scheduled_report_time": "172800",
          "source_event_id": "123",
          "source_type": "navigation",
          "trigger_data": "2"
       },
-      "report_time": "176400000",
+      "report_time": "172800000",
       "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution"
    }
     ],

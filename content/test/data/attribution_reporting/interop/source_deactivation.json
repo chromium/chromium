@@ -157,12 +157,12 @@
         "payload": {
           "attribution_destination": "https://destination.test",
           "randomized_trigger_rate": 0.0001372,
-          "scheduled_report_time": "1643325574",
+          "scheduled_report_time": "1643321974",
           "source_event_id": "222",
           "source_type": "navigation",
           "trigger_data": "2"
        },
-       "report_time": "1643325574000",
+       "report_time": "1643321974000",
        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution"
       }
     ]

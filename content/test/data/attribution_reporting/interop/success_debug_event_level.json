@@ -175,7 +175,7 @@
         "payload": {
           "attribution_destination": "https://destination.test",
           "randomized_trigger_rate": 0.0024263,
-          "scheduled_report_time": "1643411973",
+          "scheduled_report_time": "1643408373",
           "source_event_id": "123",
           "source_type": "navigation",
           "trigger_data": "7",
@@ -183,59 +183,59 @@
           "trigger_debug_key": "333"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "1643411973000"
+        "report_time": "1643408373000"
       },
       {
         "payload": {
           "attribution_destination": "https://destination.test",
           "randomized_trigger_rate": 0.0024263,
-          "scheduled_report_time": "1643411973",
+          "scheduled_report_time": "1643408373",
           "source_event_id": "123",
           "source_type": "navigation",
           "trigger_data": "6",
           "source_debug_key": "111"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "1643411973000"
+        "report_time": "1643408373000"
       },
       {
         "payload": {
           "attribution_destination": "https://destination.test",
           "randomized_trigger_rate": 0.0024263,
-          "scheduled_report_time": "1643411973",
+          "scheduled_report_time": "1643408373",
           "source_event_id": "123",
           "source_type": "navigation",
           "trigger_data": "5",
           "source_debug_key": "111"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "1643411973000"
+        "report_time": "1643408373000"
       },
       {
         "payload": {
           "attribution_destination": "https://destination.test",
           "randomized_trigger_rate": 0.0024263,
-          "scheduled_report_time": "1643411973",
+          "scheduled_report_time": "1643408373",
           "source_event_id": "456",
           "source_type": "navigation",
           "trigger_data": "4",
           "trigger_debug_key": "555"
         },
         "report_url": "https://another-reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "1643411973001"
+        "report_time": "1643408373001"
       },
       {
         "payload": {
           "attribution_destination": "https://another-destination.test",
           "randomized_trigger_rate": 0.0024263,
-          "scheduled_report_time": "1643411973",
+          "scheduled_report_time": "1643408373",
           "source_event_id": "789",
           "source_type": "navigation",
           "trigger_data": "3",
           "trigger_debug_key": "666"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "1643411973002"
+        "report_time": "1643408373002"
       }
     ],
     "debug_event_level_results": [
@@ -243,7 +243,7 @@
         "payload": {
           "attribution_destination": "https://destination.test",
           "randomized_trigger_rate": 0.0024263,
-          "scheduled_report_time": "1643411973",
+          "scheduled_report_time": "1643408373",
           "source_event_id": "123",
           "source_type": "navigation",
           "trigger_data": "7",
