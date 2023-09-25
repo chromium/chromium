@@ -19,6 +19,7 @@
 #include "chrome/grit/search_engine_choice_resources.h"
 #include "chrome/grit/search_engine_choice_resources_map.h"
 #include "chrome/grit/signin_resources.h"
+#include "components/grit/components_scaled_resources.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -28,6 +29,68 @@
 #include "content/public/browser/web_ui_data_source.h"
 
 namespace {
+// Start of generated code.
+// This code is generated using `generate_search_engine_icons.py`. Don't modify
+// it manually.
+void AddGeneratedIconResources(content::WebUIDataSource* source) {
+  CHECK(source);
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  source->AddResourcePath("images/google_com.png", IDR_GOOGLE_COM_PNG);
+#endif
+  source->AddResourcePath("images/ask_com.png", IDR_ASK_COM_PNG);
+  source->AddResourcePath("images/baidu_com.png", IDR_BAIDU_COM_PNG);
+  source->AddResourcePath("images/bing_com.png", IDR_BING_COM_PNG);
+  source->AddResourcePath("images/coccoc_com.png", IDR_COCCOC_COM_PNG);
+  source->AddResourcePath("images/daum_net.png", IDR_DAUM_NET_PNG);
+  source->AddResourcePath("images/duckduckgo_com.png", IDR_DUCKDUCKGO_COM_PNG);
+  source->AddResourcePath("images/ecosia_org.png", IDR_ECOSIA_ORG_PNG);
+  source->AddResourcePath("images/mail_ru.png", IDR_MAIL_RU_PNG);
+  source->AddResourcePath("images/naver_com.png", IDR_NAVER_COM_PNG);
+  source->AddResourcePath("images/petalsearch_com.png",
+                          IDR_PETALSEARCH_COM_PNG);
+  source->AddResourcePath("images/qwant_com.png", IDR_QWANT_COM_PNG);
+  source->AddResourcePath("images/seznam_cz.png", IDR_SEZNAM_CZ_PNG);
+  source->AddResourcePath("images/so_com.png", IDR_SO_COM_PNG);
+  source->AddResourcePath("images/sogou_com.png", IDR_SOGOU_COM_PNG);
+  source->AddResourcePath("images/yahoo_com.png", IDR_YAHOO_COM_PNG);
+  source->AddResourcePath("images/ar_yahoo_com.png", IDR_AR_YAHOO_COM_PNG);
+  source->AddResourcePath("images/at_yahoo_com.png", IDR_AT_YAHOO_COM_PNG);
+  source->AddResourcePath("images/au_yahoo_com.png", IDR_AU_YAHOO_COM_PNG);
+  source->AddResourcePath("images/br_yahoo_com.png", IDR_BR_YAHOO_COM_PNG);
+  source->AddResourcePath("images/ca_yahoo_com.png", IDR_CA_YAHOO_COM_PNG);
+  source->AddResourcePath("images/ch_yahoo_com.png", IDR_CH_YAHOO_COM_PNG);
+  source->AddResourcePath("images/cl_yahoo_com.png", IDR_CL_YAHOO_COM_PNG);
+  source->AddResourcePath("images/co_yahoo_com.png", IDR_CO_YAHOO_COM_PNG);
+  source->AddResourcePath("images/de_yahoo_com.png", IDR_DE_YAHOO_COM_PNG);
+  source->AddResourcePath("images/dk_yahoo_com.png", IDR_DK_YAHOO_COM_PNG);
+  source->AddResourcePath("images/es_yahoo_com.png", IDR_ES_YAHOO_COM_PNG);
+  source->AddResourcePath("images/fi_yahoo_com.png", IDR_FI_YAHOO_COM_PNG);
+  source->AddResourcePath("images/fr_yahoo_com.png", IDR_FR_YAHOO_COM_PNG);
+  source->AddResourcePath("images/hk_yahoo_com.png", IDR_HK_YAHOO_COM_PNG);
+  source->AddResourcePath("images/id_yahoo_com.png", IDR_ID_YAHOO_COM_PNG);
+  source->AddResourcePath("images/in_yahoo_com.png", IDR_IN_YAHOO_COM_PNG);
+  source->AddResourcePath("images/yahoo_co_jp.png", IDR_YAHOO_CO_JP_PNG);
+  source->AddResourcePath("images/mx_yahoo_com.png", IDR_MX_YAHOO_COM_PNG);
+  source->AddResourcePath("images/malaysia_yahoo_com.png",
+                          IDR_MALAYSIA_YAHOO_COM_PNG);
+  source->AddResourcePath("images/nl_yahoo_com.png", IDR_NL_YAHOO_COM_PNG);
+  source->AddResourcePath("images/nz_yahoo_com.png", IDR_NZ_YAHOO_COM_PNG);
+  source->AddResourcePath("images/pe_yahoo_com.png", IDR_PE_YAHOO_COM_PNG);
+  source->AddResourcePath("images/ph_yahoo_com.png", IDR_PH_YAHOO_COM_PNG);
+  source->AddResourcePath("images/se_yahoo_com.png", IDR_SE_YAHOO_COM_PNG);
+  source->AddResourcePath("images/sg_yahoo_com.png", IDR_SG_YAHOO_COM_PNG);
+  source->AddResourcePath("images/th_yahoo_com.png", IDR_TH_YAHOO_COM_PNG);
+  source->AddResourcePath("images/tr_yahoo_com.png", IDR_TR_YAHOO_COM_PNG);
+  source->AddResourcePath("images/tw_yahoo_com.png", IDR_TW_YAHOO_COM_PNG);
+  source->AddResourcePath("images/uk_yahoo_com.png", IDR_UK_YAHOO_COM_PNG);
+  source->AddResourcePath("images/yandex_by.png", IDR_YANDEX_BY_PNG);
+  source->AddResourcePath("images/yandex_com.png", IDR_YANDEX_COM_PNG);
+  source->AddResourcePath("images/yandex_kz.png", IDR_YANDEX_KZ_PNG);
+  source->AddResourcePath("images/yandex_ru.png", IDR_YANDEX_RU_PNG);
+  source->AddResourcePath("images/yandex_com_tr.png", IDR_YANDEX_COM_TR_PNG);
+  source->AddResourcePath("images/info_com.png", IDR_INFO_COM_PNG);
+}
+// End of generated code.
 
 std::string GetChoiceListJSON(Profile& profile) {
   base::Value::List choice_value_list;
