@@ -29,8 +29,8 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/hit_test_cache.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
-#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_quote.h"
+#include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
@@ -59,7 +59,7 @@ class ViewFragmentationContext;
 // Because there is one LayoutView per rooted layout tree (or Frame), this class
 // is used to add members shared by this tree (e.g. m_layoutState or
 // m_layoutQuoteHead).
-class CORE_EXPORT LayoutView : public LayoutBlockFlow {
+class CORE_EXPORT LayoutView : public LayoutNGBlockFlow {
  public:
   explicit LayoutView(ContainerNode* document);
   ~LayoutView() override;
@@ -92,7 +92,7 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
 
   bool IsOfType(LayoutObjectType type) const override {
     NOT_DESTROYED();
-    return type == kLayoutObjectView || LayoutBlockFlow::IsOfType(type);
+    return type == kLayoutObjectView || LayoutNGBlockFlow::IsOfType(type);
   }
 
   PaintLayerType LayerTypeRequired() const override {
@@ -151,8 +151,6 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
       VisualRectFlags = kDefaultVisualRectFlags) const override;
 
   PhysicalOffset OffsetForFixedPosition() const;
-
-  void Paint(const PaintInfo&) const override;
 
   void CommitPendingSelection();
 
@@ -311,8 +309,6 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   // from DocumentMarkerController.
   Vector<gfx::Rect> GetTickmarks() const;
   bool HasTickmarks() const;
-
-  RecalcLayoutOverflowResult RecalcLayoutOverflow() override;
 
   // The visible background area, in the local coordinates. The view background
   // will be painted in this rect. It's also the positioning area of fixed-

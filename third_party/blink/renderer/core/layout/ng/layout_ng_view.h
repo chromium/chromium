@@ -7,15 +7,10 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow_mixin.h"
 
 namespace blink {
 
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    LayoutNGBlockFlowMixin<LayoutView>;
-extern template class CORE_EXTERN_TEMPLATE_EXPORT LayoutNGMixin<LayoutView>;
-
-class CORE_EXPORT LayoutNGView : public LayoutNGBlockFlowMixin<LayoutView> {
+class CORE_EXPORT LayoutNGView : public LayoutView {
  public:
   explicit LayoutNGView(ContainerNode*);
   ~LayoutNGView() override;

@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
-#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node_data.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
@@ -186,6 +185,5 @@ void LayoutNGBlockFlowMixin<Base>::Trace(Visitor* visitor) const {
 }
 
 template class CORE_TEMPLATE_EXPORT LayoutNGBlockFlowMixin<LayoutBlockFlow>;
-template class CORE_TEMPLATE_EXPORT LayoutNGBlockFlowMixin<LayoutView>;
 
 }  // namespace blink

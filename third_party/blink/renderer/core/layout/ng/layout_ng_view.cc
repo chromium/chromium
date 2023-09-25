@@ -21,8 +21,7 @@
 
 namespace blink {
 
-LayoutNGView::LayoutNGView(ContainerNode* document)
-    : LayoutNGBlockFlowMixin<LayoutView>(document) {
+LayoutNGView::LayoutNGView(ContainerNode* document) : LayoutView(document) {
   DCHECK(document->IsDocumentNode());
 
   // This flag is normally set when an object is inserted into the tree, but
@@ -33,8 +32,7 @@ LayoutNGView::LayoutNGView(ContainerNode* document)
 LayoutNGView::~LayoutNGView() = default;
 
 bool LayoutNGView::IsOfType(LayoutObjectType type) const {
-  return type == kLayoutObjectNGView ||
-         LayoutNGMixin<LayoutView>::IsOfType(type);
+  return type == kLayoutObjectNGView || LayoutView::IsOfType(type);
 }
 
 bool LayoutNGView::IsFragmentationContextRoot() const {

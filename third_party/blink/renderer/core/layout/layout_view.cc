@@ -101,7 +101,7 @@ class HitTestLatencyRecorder {
 }  // namespace
 
 LayoutView::LayoutView(ContainerNode* document)
-    : LayoutBlockFlow(document),
+    : LayoutNGBlockFlow(document),
       frame_view_(To<Document>(document)->View()),
       layout_counter_count_(0),
       hit_test_count_(0),
@@ -132,7 +132,7 @@ void LayoutView::Trace(Visitor* visitor) const {
   visitor->Trace(svg_text_descendants_);
   visitor->Trace(hit_test_cache_);
   visitor->Trace(initial_containing_block_resize_handled_list_);
-  LayoutBlockFlow::Trace(visitor);
+  LayoutNGBlockFlow::Trace(visitor);
 }
 
 bool LayoutView::HitTest(const HitTestLocation& location,
@@ -256,8 +256,8 @@ void LayoutView::AddChild(LayoutObject* new_child, LayoutObject* before_child) {
 
     LayoutViewTransitionRoot* snapshot_containing_block =
         MakeGarbageCollected<LayoutViewTransitionRoot>(GetDocument());
-    LayoutBlockFlow::AddChild(snapshot_containing_block,
-                              /*before_child=*/nullptr);
+    LayoutNGBlockFlow::AddChild(snapshot_containing_block,
+                                /*before_child=*/nullptr);
     snapshot_containing_block->AddChild(new_child);
 
     ViewTransition* transition =
@@ -267,7 +267,7 @@ void LayoutView::AddChild(LayoutObject* new_child, LayoutObject* before_child) {
     return;
   }
 
-  LayoutBlockFlow::AddChild(new_child, before_child);
+  LayoutNGBlockFlow::AddChild(new_child, before_child);
 }
 
 bool LayoutView::IsChildAllowed(LayoutObject* child,
@@ -393,11 +393,6 @@ TrackedDescendantsMap& LayoutView::SvgTextDescendantsMap() {
 LayoutViewTransitionRoot* LayoutView::GetViewTransitionRoot() const {
   // Returns nullptr if LastChild isn't a ViewTransitionRoot.
   return DynamicTo<LayoutViewTransitionRoot>(LastChild());
-}
-
-void LayoutView::Paint(const PaintInfo& paint_info) const {
-  NOT_DESTROYED();
-  NOTREACHED_NORETURN();
 }
 
 void LayoutView::InvalidatePaintForViewAndDescendants() {
@@ -775,7 +770,7 @@ void LayoutView::UpdateAfterLayout() {
       GetScrollableArea()->ClampScrollOffsetAfterOverflowChange();
     }
   }
-  LayoutBlockFlow::UpdateAfterLayout();
+  LayoutNGBlockFlow::UpdateAfterLayout();
 }
 
 void LayoutView::UpdateHitTestResult(HitTestResult& result,
@@ -838,12 +833,12 @@ void LayoutView::WillBeDestroyed() {
   // Should find and fix the root cause.
   if (PaintLayer* layer = Layer())
     layer->SetNeedsRepaint();
-  LayoutBlockFlow::WillBeDestroyed();
+  LayoutNGBlockFlow::WillBeDestroyed();
 }
 
 void LayoutView::UpdateFromStyle() {
   NOT_DESTROYED();
-  LayoutBlockFlow::UpdateFromStyle();
+  LayoutNGBlockFlow::UpdateFromStyle();
 
   // LayoutView of the main frame is responsible for painting base background.
   if (GetFrameView()->ShouldPaintBaseBackgroundColor())
@@ -853,7 +848,7 @@ void LayoutView::UpdateFromStyle() {
 void LayoutView::StyleDidChange(StyleDifference diff,
                                 const ComputedStyle* old_style) {
   NOT_DESTROYED();
-  LayoutBlockFlow::StyleDidChange(diff, old_style);
+  LayoutNGBlockFlow::StyleDidChange(diff, old_style);
 
   LocalFrame& frame = GetFrameView()->GetFrame();
   VisualViewport& visual_viewport = frame.GetPage()->GetVisualViewport();
@@ -865,23 +860,6 @@ void LayoutView::StyleDidChange(StyleDifference diff,
       visual_viewport.UsedColorSchemeChanged();
     }
   }
-}
-
-RecalcLayoutOverflowResult LayoutView::RecalcLayoutOverflow() {
-  NOT_DESTROYED();
-  if (!NeedsLayoutOverflowRecalc())
-    return RecalcLayoutOverflowResult();
-
-  auto result = LayoutBlockFlow::RecalcLayoutOverflow();
-  if (result.layout_overflow_changed) {
-    if (NeedsLayout())
-      return result;
-    if (GetFrameView()->VisualViewportSuppliesScrollbars())
-      SetShouldCheckForPaintInvalidation();
-    GetFrameView()->AdjustViewSize();
-    SetNeedsPaintPropertyUpdate();
-  }
-  return result;
 }
 
 PhysicalRect LayoutView::DebugRect() const {
