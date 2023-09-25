@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/accessibility/accessibility_extension_api_chromeos.h"
+#include "chrome/browser/accessibility/accessibility_extension_api_ash.h"
 
 #include <stddef.h>
 
@@ -394,14 +394,18 @@ AccessibilityPrivateSendSyntheticKeyEventFunction::Run() {
 
   int modifiers = 0;
   if (key_data->modifiers) {
-    if (key_data->modifiers->ctrl && *key_data->modifiers->ctrl)
+    if (key_data->modifiers->ctrl && *key_data->modifiers->ctrl) {
       modifiers |= ui::EF_CONTROL_DOWN;
-    if (key_data->modifiers->alt && *key_data->modifiers->alt)
+    }
+    if (key_data->modifiers->alt && *key_data->modifiers->alt) {
       modifiers |= ui::EF_ALT_DOWN;
-    if (key_data->modifiers->search && *key_data->modifiers->search)
+    }
+    if (key_data->modifiers->search && *key_data->modifiers->search) {
       modifiers |= ui::EF_COMMAND_DOWN;
-    if (key_data->modifiers->shift && *key_data->modifiers->shift)
+    }
+    if (key_data->modifiers->shift && *key_data->modifiers->shift) {
       modifiers |= ui::EF_SHIFT_DOWN;
+    }
   }
 
   ui::KeyboardCode keyboard_code =
@@ -491,20 +495,23 @@ AccessibilityPrivateSendSyntheticMouseEventFunction::Run() {
   int changed_button_flags = flags;
 
   flags |= ui::EF_IS_SYNTHESIZED;
-  if (mouse_data->touch_accessibility && *(mouse_data->touch_accessibility))
+  if (mouse_data->touch_accessibility && *(mouse_data->touch_accessibility)) {
     flags |= ui::EF_TOUCH_ACCESSIBILITY;
+  }
 
   // Locations are assumed to be in screen coordinates.
   gfx::Point location_in_screen(mouse_data->x, mouse_data->y);
   const display::Display& display =
       display::Screen::GetScreen()->GetDisplayNearestPoint(location_in_screen);
   auto* host = ash::GetWindowTreeHostForDisplay(display.id());
-  if (!host)
+  if (!host) {
     return RespondNow(NoArguments());
+  }
 
   aura::Window* root_window = host->window();
-  if (!root_window)
+  if (!root_window) {
     return RespondNow(NoArguments());
+  }
 
   aura::client::CursorClient* cursor_client =
       aura::client::GetCursorClient(root_window);
@@ -665,8 +672,9 @@ AccessibilityPrivateSetHighlightsFunction::Run() {
   }
 
   SkColor color;
-  if (!content::ParseHexColorString(params->color, &color))
+  if (!content::ParseHexColorString(params->color, &color)) {
     return RespondNow(Error("Could not parse hex color"));
+  }
 
   // Set the highlights to cover all of these rects.
   AccessibilityManager::Get()->SetHighlights(rects, color);
@@ -687,8 +695,9 @@ AccessibilityPrivateSetKeyboardListenerFunction::Run() {
   AccessibilityManager* manager = AccessibilityManager::Get();
 
   const std::string current_id = manager->keyboard_listener_extension_id();
-  if (!current_id.empty() && extension()->id() != current_id)
+  if (!current_id.empty() && extension()->id() != current_id) {
     return RespondNow(Error("Existing keyboard listener registered."));
+  }
 
   manager->SetKeyboardListenerExtensionId(
       enabled ? extension()->id() : std::string(),
@@ -864,14 +873,16 @@ AccessibilityPrivateSilenceSpokenFeedbackFunction::Run() {
 ExtensionFunction::ResponseAction
 AccessibilityPrivateToggleDictationFunction::Run() {
   ash::DictationToggleSource source = ash::DictationToggleSource::kChromevox;
-  if (extension()->id() == extension_misc::kSwitchAccessExtensionId)
+  if (extension()->id() == extension_misc::kSwitchAccessExtensionId) {
     source = ash::DictationToggleSource::kSwitchAccess;
-  else if (extension()->id() == extension_misc::kChromeVoxExtensionId)
+  } else if (extension()->id() == extension_misc::kChromeVoxExtensionId) {
     source = ash::DictationToggleSource::kChromevox;
-  else if (extension()->id() == extension_misc::kAccessibilityCommonExtensionId)
+  } else if (extension()->id() ==
+             extension_misc::kAccessibilityCommonExtensionId) {
     source = ash::DictationToggleSource::kAccessibilityCommon;
-  else
+  } else {
     NOTREACHED();
+  }
 
   ash::AccessibilityController::Get()->ToggleDictationFromSource(source);
 
@@ -913,8 +924,9 @@ AccessibilityPrivateUpdateDictationBubbleFunction::Run() {
 
   // Extract text.
   absl::optional<std::u16string> text;
-  if (properties.text)
+  if (properties.text) {
     text = base::UTF8ToUTF16(*properties.text);
+  }
 
   // Extract hints.
   absl::optional<std::vector<ash::DictationBubbleHintType>> hints;
@@ -927,8 +939,9 @@ AccessibilityPrivateUpdateDictationBubbleFunction::Run() {
     hints = std::move(converted_hints);
   }
 
-  if (hints.has_value() && hints.value().size() > 5)
+  if (hints.has_value() && hints.value().size() > 5) {
     return RespondNow(Error("Should not provide more than five hints."));
+  }
 
   ash::AccessibilityController::Get()->UpdateDictationBubble(properties.visible,
                                                              icon, text, hints);
@@ -947,8 +960,9 @@ AccessibilityPrivateUpdateSelectToSpeakPanelFunction::Run() {
     return RespondNow(NoArguments());
   }
 
-  if (!params->anchor || !params->is_paused || !params->speed)
+  if (!params->anchor || !params->is_paused || !params->speed) {
     return RespondNow(Error("Required parameters missing to show panel."));
+  }
 
   const gfx::Rect anchor =
       gfx::Rect(params->anchor->left, params->anchor->top,
@@ -968,15 +982,18 @@ AccessibilityPrivateUpdateSwitchAccessBubbleFunction::Run() {
 
   if (!params->show) {
     if (params->bubble ==
-        accessibility_private::SWITCH_ACCESS_BUBBLE_BACKBUTTON)
+        accessibility_private::SWITCH_ACCESS_BUBBLE_BACKBUTTON) {
       ash::AccessibilityController::Get()->HideSwitchAccessBackButton();
-    else if (params->bubble == accessibility_private::SWITCH_ACCESS_BUBBLE_MENU)
+    } else if (params->bubble ==
+               accessibility_private::SWITCH_ACCESS_BUBBLE_MENU) {
       ash::AccessibilityController::Get()->HideSwitchAccessMenu();
+    }
     return RespondNow(NoArguments());
   }
 
-  if (!params->anchor)
+  if (!params->anchor) {
     return RespondNow(Error("An anchor rect is required to show a bubble."));
+  }
 
   gfx::Rect anchor(params->anchor->left, params->anchor->top,
                    params->anchor->width, params->anchor->height);
@@ -987,8 +1004,9 @@ AccessibilityPrivateUpdateSwitchAccessBubbleFunction::Run() {
     return RespondNow(NoArguments());
   }
 
-  if (!params->actions)
+  if (!params->actions) {
     return RespondNow(Error("The menu cannot be shown without actions."));
+  }
 
   std::vector<std::string> actions_to_show;
   for (accessibility_private::SwitchAccessMenuAction extension_action :

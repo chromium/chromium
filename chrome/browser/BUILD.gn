@@ -7282,8 +7282,8 @@ static_library("browser") {
     ]
     if (is_chromeos_ash) {
       sources += [
-        "accessibility/accessibility_extension_api_chromeos.cc",
-        "accessibility/accessibility_extension_api_chromeos.h",
+        "accessibility/accessibility_extension_api_ash.cc",
+        "accessibility/accessibility_extension_api_ash.h",
         "accessibility/service/accessibility_service_router.cc",
         "accessibility/service/accessibility_service_router.h",
         "accessibility/service/accessibility_service_router_factory.cc",

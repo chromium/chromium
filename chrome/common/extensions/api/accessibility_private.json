@@ -6,7 +6,7 @@
   {
     "namespace": "accessibilityPrivate",
     "compiler_options": {
-      "implemented_in": "chrome/browser/accessibility/accessibility_extension_api_chromeos.h"
+      "implemented_in": "chrome/browser/accessibility/accessibility_extension_api_ash.h"
     },
     "description": "none",
     "platforms": ["chromeos"],
