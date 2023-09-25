@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
+#include "third_party/blink/renderer/core/css/robin_hood_map-inl.h"
 #include "third_party/blink/renderer/core/css/selector_checker-inl.h"
 #include "third_party/blink/renderer/core/css/selector_checker.h"
 #include "third_party/blink/renderer/core/css/selector_filter.h"
@@ -61,6 +62,8 @@ template <class T>
 static void AddRuleToIntervals(const T* value,
                                unsigned position,
                                HeapVector<RuleSet::Interval<T>>& intervals);
+
+static void UnmarkAsCoveredByBucketing(CSSSelector& selector);
 
 static inline ValidPropertyFilter DetermineValidPropertyFilter(
     const AddRuleFlags add_rule_flags,
@@ -183,7 +186,15 @@ void RuleSet::AddToRuleSet(const AtomicString& key,
     // see class comment on RuleMap.
     map.Uncompact();
   }
-  map.Add(key, rule_data);
+  if (!map.Add(key, rule_data)) {
+    // This should really only happen in case of an attack;
+    // we stick it in the universal bucket so that correctness
+    // is preserved, even though the performance will be suboptimal.
+    RuleData rule_data_copy = rule_data;
+    UnmarkAsCoveredByBucketing(rule_data_copy.MutableSelector());
+    AddToRuleSet(universal_rules_, rule_data_copy);
+    return;
+  }
   // Don't call ComputeBloomFilterHashes() here; RuleMap needs that space for
   // group information, and will call ComputeBloomFilterHashes() itself on
   // compaction.
@@ -334,6 +345,17 @@ static void MarkAsCoveredByBucketing(CSSSelector& selector,
     // We could also have taken universal selectors no matter what
     // should_mark_func() says, but again, we consider that not worth it.
 
+    if (s->IsLastInComplexSelector() ||
+        s->Relation() != CSSSelector::kSubSelector) {
+      break;
+    }
+  }
+}
+
+static void UnmarkAsCoveredByBucketing(CSSSelector& selector) {
+  for (CSSSelector* s = &selector;;
+       ++s) {  // Termination condition within loop.
+    s->SetCoveredByBucketing(false);
     if (s->IsLastInComplexSelector() ||
         s->Relation() != CSSSelector::kSubSelector) {
       break;
@@ -913,17 +935,33 @@ CascadeLayer* RuleSet::GetOrAddSubLayer(CascadeLayer* cascade_layer,
   return cascade_layer->GetOrAddSubLayer(name);
 }
 
-void RuleMap::Add(const AtomicString& key, const RuleData& rule_data) {
-  RuleMap::Extent& rules =
-      buckets.insert(key, RuleMap::Extent()).stored_value->value;
-  if (rules.length == 0) {
-    rules.bucket_number = num_buckets++;
+bool RuleMap::Add(const AtomicString& key, const RuleData& rule_data) {
+  RuleMap::Extent* rules = nullptr;
+  if (buckets.IsNull()) {
+    // First insert.
+    buckets = RobinHoodMap<AtomicString, Extent>(8);
+  } else {
+    // See if we can find an existing entry for this key.
+    RobinHoodMap<AtomicString, Extent>::Bucket* bucket = buckets.Find(key);
+    if (bucket != nullptr) {
+      rules = &bucket->value;
+    }
   }
+  if (rules == nullptr) {
+    RobinHoodMap<AtomicString, Extent>::Bucket* bucket = buckets.Insert(key);
+    if (bucket == nullptr) {
+      return false;
+    }
+    rules = &bucket->value;
+    rules->bucket_number = num_buckets++;
+  }
+
   RuleData rule_data_copy = rule_data;
   rule_data_copy.ComputeEntirelyCoveredByBucketing();
-  bucket_number_.push_back(rules.bucket_number);
-  ++rules.length;
+  bucket_number_.push_back(rules->bucket_number);
+  ++rules->length;
   backing.push_back(std::move(rule_data_copy));
+  return true;
 }
 
 void RuleMap::Compact() {

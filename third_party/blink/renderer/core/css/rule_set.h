@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/css/css_position_fallback_rule.h"
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/resolver/media_query_result.h"
+#include "third_party/blink/renderer/core/css/robin_hood_map.h"
 #include "third_party/blink/renderer/core/css/rule_feature_set.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/css/style_rule_counter_style.h"
@@ -232,17 +233,28 @@ class RuleMap {
   };
 
  public:
-  void Add(const AtomicString& key, const RuleData& rule_data);
+  // Returns false on failure (which should be very rare).
+  bool Add(const AtomicString& key, const RuleData& rule_data);
   void AddFilteredRulesFromOtherSet(
       const RuleMap& other,
       const HeapHashSet<Member<StyleRule>>& only_include);
   base::span<const RuleData> Find(const AtomicString& key) const {
-    DCHECK(buckets.empty() || compacted);
-    auto it = buckets.find(key);
-    if (it == buckets.end()) {
+    if (buckets.IsNull()) {
+      return {};
+    }
+
+    // Go through all the buckets and check for equality, brute force.
+    // Note that we don't check for IsNull() to get an early abort
+    // on empty buckets; the comparison of AtomicString is so cheap
+    // that it actually benchmarks negatively. This loop typically
+    // gets unrolled and inlined, resulting in a very tight lookup.
+    const RobinHoodMap<AtomicString, Extent>::Bucket* bucket =
+        buckets.Find(key);
+    if (bucket == nullptr) {
       return {};
     } else {
-      return GetRulesFromExtent(it->value);
+      return {backing.begin() + bucket->value.start_index,
+              bucket->value.length};
     }
   }
   bool IsEmpty() const { return backing.empty(); }
@@ -254,7 +266,7 @@ class RuleMap {
   void Trace(Visitor* visitor) const { visitor->Trace(backing); }
 
   struct ConstIterator {
-    HashMap<AtomicString, Extent>::const_iterator sub_it;
+    RobinHoodMap<AtomicString, Extent>::const_iterator sub_it;
     const RuleMap* rule_map;
 
     WTF::KeyValuePair<AtomicString, base::span<const RuleData>> operator*()
@@ -291,7 +303,7 @@ class RuleMap {
     return {bucket_number_.begin() + extent.start_index, extent.length};
   }
 
-  HashMap<AtomicString, Extent> buckets;
+  RobinHoodMap<AtomicString, Extent> buckets;
 
   // Contains all the rules from all the buckets; after compaction,
   // they will be contiguous in memory and you can do easily lookups
