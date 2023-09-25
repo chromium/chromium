@@ -70,8 +70,6 @@ FullscreenControllerImpl::~FullscreenControllerImpl() {
   [notification_observer_ disconnect];
   [broadcaster_ removeObserver:bridge_
                    forSelector:@selector(broadcastScrollViewContentSize:)];
-  [broadcaster_ removeObserver:bridge_
-                   forSelector:@selector(broadcastContentScrollOffset:)];
   if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
     [broadcaster_ removeObserver:bridge_
                      forSelector:@selector(broadcastScrollViewSize:)];
