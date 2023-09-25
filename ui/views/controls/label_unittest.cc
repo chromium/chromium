@@ -125,6 +125,11 @@ class LabelTest : public test::BaseControlTestWidget {
   LabelTest& operator=(const LabelTest&) = delete;
   ~LabelTest() override = default;
 
+  void TearDown() override {
+    label_ = nullptr;
+    test::BaseControlTestWidget::TearDown();
+  }
+
  protected:
   void CreateWidgetContent(View* container) override {
     label_ = container->AddChildView(std::make_unique<Label>());
@@ -133,7 +138,7 @@ class LabelTest : public test::BaseControlTestWidget {
   Label* label() { return label_; }
 
  private:
-  raw_ptr<Label, AcrossTasksDanglingUntriaged> label_ = nullptr;
+  raw_ptr<Label> label_ = nullptr;
 };
 
 // Test fixture for text selection related tests.
