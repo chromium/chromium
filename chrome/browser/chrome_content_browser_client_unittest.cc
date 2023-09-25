@@ -68,6 +68,7 @@
 #include "url/origin.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "base/test/test_future.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -614,6 +615,23 @@ TEST_F(ChromeContentBrowserClientTest, RedirectPrivacySandboxURL) {
 }
 
 #endif
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ChromeContentBrowserClientTest, BindVideoEffectsManager) {
+  TestChromeContentBrowserClient test_content_browser_client;
+  mojo::Remote<video_capture::mojom::VideoEffectsManager> video_effects_manager;
+  test_content_browser_client.BindVideoEffectsManager(
+      "test_device_id", &profile_,
+      video_effects_manager.BindNewPipeAndPassReceiver());
+
+  base::test::TestFuture<video_capture::mojom::VideoEffectsConfigurationPtr>
+      configuration_future;
+  video_effects_manager->GetConfiguration(configuration_future.GetCallback());
+  // The actual value isn't that important here. What matters is that getting a
+  // result means that the plumbing worked.
+  EXPECT_FALSE(configuration_future.Get().is_null());
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
 class ChromeContentSettingsRedirectTest

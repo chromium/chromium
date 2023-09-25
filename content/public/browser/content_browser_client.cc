@@ -1600,4 +1600,12 @@ bool ContentBrowserClient::
   return true;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+void ContentBrowserClient::BindVideoEffectsManager(
+    const std::string& device_id,
+    content::BrowserContext* browser_context,
+    mojo::PendingReceiver<video_capture::mojom::VideoEffectsManager>
+        video_effects_manager) {}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 }  // namespace content
