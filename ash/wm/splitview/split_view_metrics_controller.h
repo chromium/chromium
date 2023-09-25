@@ -28,6 +28,14 @@ class Window;
 namespace ash {
 class SplitViewController;
 
+// Public so it can be used by unit tests.
+constexpr char kSnapTwoWindowsDurationHistogramName[] =
+    "Ash.Window.SnapTwoWindowsDuration";
+constexpr base::TimeDelta kSnapTwoWindowsDurationHistogramMinCount =
+    base::Seconds(1);
+constexpr base::TimeDelta kSnapTwoWindowsDurationHistogramMaxCount =
+    base::Hours(50);
+
 // SplitViewMetricsController:
 // Manages split view related metrics. Tablet mode split view and clamshell
 // split view with overview next to a snapped window are managed by
@@ -163,6 +171,14 @@ class SplitViewMetricsController : public TabletModeObserver,
   // return false.
   bool MaybePauseRecordBothSnappedClamshellSplitView();
 
+  // Records and resets the duration between two windows getting snapped.
+  void RecordSnapTwoWindowsDuration(const base::TimeDelta& elapsed_time);
+
+  // Starts recording the time if `window_state` was the first snapped window,
+  // otherwise ends recording if either: 1. the second snapped window is found,
+  // or 2. the first snapped window was unsnapped.
+  void MaybeStartOrEndRecordSnapTwoWindowsDuration(WindowState* window_state);
+
   // Resets the variables related to time and counter metrics.
   void ResetTimeAndCounter();
 
@@ -242,6 +258,12 @@ class SplitViewMetricsController : public TabletModeObserver,
 
   // Counter of swapping windows in split view.
   int swap_count_ = 0;
+
+  // The first window that gets snapped and the time it's snapped at. Used by
+  // `Ash.Window.SnapTwoWindowsDuration` in
+  // tools/metrics/histograms/metadata/ash/histograms.xml.
+  raw_ptr<aura::Window> first_snapped_window_ = nullptr;
+  base::TimeTicks first_snapped_time_;
 };
 
 }  // namespace ash

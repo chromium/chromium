@@ -7578,6 +7578,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Window.SnapTwoWindowsDuration" units="seconds"
+    expires_after="2024-01-14">
+  <owner>sophiewen@chromium.org</owner>
+  <owner>michelefan@chromium.org</owner>
+  <summary>
+    The time it takes to snap two windows, i.e. between a first window getting
+    snapped and a second window getting snapped on the other side. Starts
+    recording when one window gets snapped. Ends recording when another window
+    is snapped on the other side of the screen, or if the first window is no
+    longer snapped on the same side, records the maximum value of 50 hours
+    (18000 seconds).
+  </summary>
+</histogram>
+
 <histogram name="Ash.WindowCycleController.DesksSwitchDistance" units="units"
     expires_after="2024-07-27">
   <owner>afakhry@chromium.org</owner>
