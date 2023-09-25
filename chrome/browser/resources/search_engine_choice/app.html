@@ -128,7 +128,6 @@
 
   .choice-icon {
     --choice-icon-height: 24px;
-    background-color: green;
     border-radius: calc(var(--choice-icon-height) / 2);
     height: var(--choice-icon-height);
     width: var(--choice-icon-height);
@@ -390,7 +389,8 @@
       <div class="hint-placeholder"></div>
     </div>
     <div id="searchEngineOmnibox">
-      <div class="choice-icon"></div>
+      <div class="choice-icon"
+          style$="background-image: [[fakeOmniboxIconPath_]];"></div>
       <div class="choice-title">[[fakeOmniboxText_]]</div>
     </div>
   </div>
@@ -404,7 +404,8 @@
     <template is="dom-repeat" items="[[choiceList_]]">
       <cr-radio-button class="label-first" name="[[item.prepopulate_id]]">
         <div class="choice">
-          <div class="choice-icon"></div>
+          <div class="choice-icon"
+              style$="background-image: [[item.icon_path]];"></div>
           <div class="choice-title">[[item.name]]</div>
         </div>
       </cr-radio-button>

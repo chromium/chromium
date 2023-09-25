@@ -12,6 +12,8 @@ import {PageHandlerFactory, PageHandlerInterface, PageHandlerRemote} from './sea
 export interface SearchEngineChoice {
   prepopulate_id: number;
   name: string;
+  icon_path: string;
+  url: string;
 }
 
 export class SearchEngineChoiceBrowserProxy {

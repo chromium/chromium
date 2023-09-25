@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.h"
 
 #include "base/check_deref.h"
+#include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -20,6 +21,7 @@
 #include "chrome/grit/search_engine_choice_resources_map.h"
 #include "chrome/grit/signin_resources.h"
 #include "components/grit/components_scaled_resources.h"
+#include "components/search_engines/search_engine_utils.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -101,11 +103,18 @@ std::string GetChoiceListJSON(Profile& profile) {
 
   for (const auto& choice : choices) {
     base::Value::Dict choice_value;
+    // The icon path that's generated in `AddGeneratedIconResources` is of the
+    // format 'keyword'.png while replacing all the '.' in 'keyword' by '_'.
+    std::u16string engine_keyword = choice->keyword();
+    std::replace(engine_keyword.begin(), engine_keyword.end(), '.', '_');
+    const std::u16string icon_path = u"images/" + engine_keyword + u".png";
+
     choice_value.Set("prepopulate_id", choice->prepopulate_id);
     choice_value.Set("name", choice->short_name());
+    choice_value.Set("icon_path", icon_path);
+    choice_value.Set("url", choice->url());
     choice_value_list.Append(std::move(choice_value));
   }
-
   std::string json_choice_list;
   base::JSONWriter::Write(choice_value_list, &json_choice_list);
   return json_choice_list;
@@ -150,6 +159,7 @@ SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
   source->AddLocalizedString("fakeOmniboxText",
                              IDS_SEARCH_ENGINE_CHOICE_FAKE_OMNIBOX_TEXT);
 
+  AddGeneratedIconResources(source);
   source->AddResourcePath("images/left_illustration.svg",
                           IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_SVG);
   source->AddResourcePath("images/left_illustration_dark.svg",

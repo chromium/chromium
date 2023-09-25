@@ -17,6 +17,7 @@ import './strings.m.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -75,15 +76,36 @@ export class SearchEngineChoiceAppElement extends
         type: String,
         value: '',
       },
+
+      fakeOmniboxIconPath_: {
+        type: String,
+        value: '',
+      },
     };
   }
 
   private choiceList_: SearchEngineChoice[];
   private selectedChoice_: string;
   private fakeOmniboxText_: string;
+  private fakeOmniboxIconPath_: string;
 
   override connectedCallback() {
     super.connectedCallback();
+
+    // Change the `icon_path` format so that we can use it with the
+    // `background-image` property in HTML. We need to use the
+    // `background-image` property because `getFaviconForPageURL` returns an
+    // `image-set` and not a url.
+    this.choiceList_.forEach((searchEngine: SearchEngineChoice) => {
+      if (searchEngine.prepopulate_id === 0) {
+        // We get the favicon from the Favicon Service for custom search
+        // engines.
+        searchEngine.icon_path =
+            getFaviconForPageURL(searchEngine?.url!, false, '', 24);
+      } else {
+        searchEngine.icon_path = 'url(' + searchEngine.icon_path + ')';
+      }
+    });
 
     afterNextRender(this, () => {
       SearchEngineChoiceBrowserProxy.getInstance().handler.displayDialog();
@@ -119,6 +141,8 @@ export class SearchEngineChoiceAppElement extends
         elem => elem.prepopulate_id === parseInt(selectedChoice));
     const searchEngineOmnibox = this.$.searchEngineOmnibox;
     const dummyOmnibox = this.$.dummyOmnibox;
+    const fakeOmniboxText = this.i18n('fakeOmniboxText', choice?.name!);
+    const fakeOmniboxIconPath = choice?.icon_path!;
 
     // We need to change the previous engine name to the new one and then start
     // the fade-in-animation when the fade-out-animation finishes running.
@@ -126,7 +150,8 @@ export class SearchEngineChoiceAppElement extends
       if (event.animationName === 'fade-out-animation') {
         searchEngineOmnibox.classList.remove('fade-out-animation');
 
-        this.fakeOmniboxText_ = this.i18n('fakeOmniboxText', choice?.name!);
+        this.fakeOmniboxText_ = fakeOmniboxText;
+        this.fakeOmniboxIconPath_ = fakeOmniboxIconPath;
         // We call `requestAnimationFrame` to make sure that the previous
         // animation is fully removed so that we can run the next one.
         window.requestAnimationFrame(function() {
@@ -159,7 +184,8 @@ export class SearchEngineChoiceAppElement extends
         searchEngineOmnibox.classList.add('fade-out-animation');
       });
     } else {
-      this.fakeOmniboxText_ = this.i18n('fakeOmniboxText', choice?.name!);
+      this.fakeOmniboxText_ = fakeOmniboxText;
+      this.fakeOmniboxIconPath_ = fakeOmniboxIconPath;
       searchEngineOmnibox.classList.add('fade-in-animation');
     }
   }
