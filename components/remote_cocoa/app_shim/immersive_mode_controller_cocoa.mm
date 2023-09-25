@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/remote_cocoa/app_shim/immersive_mode_controller.h"
+#include "components/remote_cocoa/app_shim/immersive_mode_controller_cocoa.h"
 
 #include "base/apple/foundation_util.h"
 #include "base/auto_reset.h"
@@ -29,7 +29,7 @@ NSView* GetNSTitlebarContainerViewFromWindow(NSWindow* window) {
 }  // namespace
 
 @interface ImmersiveModeTitlebarObserver () {
-  base::WeakPtr<remote_cocoa::ImmersiveModeController> _controller;
+  base::WeakPtr<remote_cocoa::ImmersiveModeControllerCocoa> _controller;
   NSView* __weak _titlebarContainerView;
 }
 @end
@@ -37,7 +37,7 @@ NSView* GetNSTitlebarContainerViewFromWindow(NSWindow* window) {
 @implementation ImmersiveModeTitlebarObserver
 
 - (instancetype)initWithController:
-                    (base::WeakPtr<remote_cocoa::ImmersiveModeController>)
+                    (base::WeakPtr<remote_cocoa::ImmersiveModeControllerCocoa>)
                         controller
              titlebarContainerView:(NSView*)titlebarContainerView {
   self = [super init];
@@ -92,7 +92,7 @@ NSView* GetNSTitlebarContainerViewFromWindow(NSWindow* window) {
 
 @implementation ImmersiveModeTitlebarViewController
 
-- (instancetype)init:(base::WeakPtr<remote_cocoa::ImmersiveModeController>)
+- (instancetype)init:(base::WeakPtr<remote_cocoa::ImmersiveModeControllerCocoa>)
                          immersiveModeController {
   if ((self = [super init])) {
     _blank_separator_view = [[NSView alloc] init];
@@ -161,15 +161,15 @@ NSView* GetNSTitlebarContainerViewFromWindow(NSWindow* window) {
 // NSTitlebarAccessoryViewController API.
 @interface ImmersiveModeView : NSView
 - (instancetype)initWithController:
-    (base::WeakPtr<remote_cocoa::ImmersiveModeController>)controller;
+    (base::WeakPtr<remote_cocoa::ImmersiveModeControllerCocoa>)controller;
 @end
 
 @implementation ImmersiveModeView {
-  base::WeakPtr<remote_cocoa::ImmersiveModeController> _controller;
+  base::WeakPtr<remote_cocoa::ImmersiveModeControllerCocoa> _controller;
 }
 
 - (instancetype)initWithController:
-    (base::WeakPtr<remote_cocoa::ImmersiveModeController>)controller {
+    (base::WeakPtr<remote_cocoa::ImmersiveModeControllerCocoa>)controller {
   self = [super init];
   if (self) {
     _controller = std::move(controller);
@@ -200,7 +200,7 @@ bool IsNSToolbarFullScreenWindow(NSWindow* window) {
   return [window isKindOfClass:NSClassFromString(@"NSToolbarFullScreenWindow")];
 }
 
-ImmersiveModeController::ImmersiveModeController(
+ImmersiveModeControllerCocoa::ImmersiveModeControllerCocoa(
     NativeWidgetMacNSWindow* browser_window,
     NativeWidgetMacNSWindow* overlay_window)
     : weak_ptr_factory_(this) {
@@ -256,7 +256,7 @@ ImmersiveModeController::ImmersiveModeController(
       NSLayoutAttributeBottom;
 }
 
-ImmersiveModeController::~ImmersiveModeController() {
+ImmersiveModeControllerCocoa::~ImmersiveModeControllerCocoa() {
   // Remove the titlebar observer before moving the view.
   immersive_mode_titlebar_observer_ = nil;
 
@@ -273,7 +273,7 @@ ImmersiveModeController::~ImmersiveModeController() {
   }
 }
 
-void ImmersiveModeController::Init() {
+void ImmersiveModeControllerCocoa::Init() {
   DCHECK(!initialized_);
   initialized_ = true;
   [browser_window_ addTitlebarAccessoryViewController:
@@ -295,7 +295,7 @@ void ImmersiveModeController::Init() {
       .active = YES;
 }
 
-void ImmersiveModeController::FullscreenTransitionCompleted() {
+void ImmersiveModeControllerCocoa::FullscreenTransitionCompleted() {
   fullscreen_transition_complete_ = true;
   UpdateToolbarVisibility(last_used_style_);
 
@@ -316,7 +316,8 @@ void ImmersiveModeController::FullscreenTransitionCompleted() {
   NotifyBrowserWindowAboutToolbarRevealChanged();
 }
 
-void ImmersiveModeController::OnTopViewBoundsChanged(const gfx::Rect& bounds) {
+void ImmersiveModeControllerCocoa::OnTopViewBoundsChanged(
+    const gfx::Rect& bounds) {
   // Set the height of the AppKit fullscreen view. The width will be
   // automatically handled by AppKit.
   NSRect frame = NSRectFromCGRect(bounds.ToCGRect());
@@ -340,7 +341,7 @@ void ImmersiveModeController::OnTopViewBoundsChanged(const gfx::Rect& bounds) {
   }
 }
 
-void ImmersiveModeController::UpdateToolbarVisibility(
+void ImmersiveModeControllerCocoa::UpdateToolbarVisibility(
     mojom::ToolbarVisibilityStyle style) {
   // Remember the last used style for internal use of UpdateToolbarVisibility.
   last_used_style_ = style;
@@ -389,7 +390,7 @@ void ImmersiveModeController::UpdateToolbarVisibility(
   }
 }
 
-void ImmersiveModeController::ObserveChildWindows(NSWindow* window) {
+void ImmersiveModeControllerCocoa::ObserveChildWindows(NSWindow* window) {
   // Watch the Widget for addition and removal of child Widgets.
   NativeWidgetMacNSWindow* widget_window =
       base::apple::ObjCCastStrict<NativeWidgetMacNSWindow>(window);
@@ -401,28 +402,28 @@ void ImmersiveModeController::ObserveChildWindows(NSWindow* window) {
   };
 }
 
-void ImmersiveModeController::StopObservingChildWindows(NSWindow* window) {
+void ImmersiveModeControllerCocoa::StopObservingChildWindows(NSWindow* window) {
   NativeWidgetMacNSWindow* widget_window =
       base::apple::ObjCCastStrict<NativeWidgetMacNSWindow>(window);
   widget_window.childWindowAddedHandler = nil;
   widget_window.childWindowRemovedHandler = nil;
 }
 
-bool ImmersiveModeController::ShouldObserveChildWindow(NSWindow* child) {
+bool ImmersiveModeControllerCocoa::ShouldObserveChildWindow(NSWindow* child) {
   return true;
 }
 
-NSWindow* ImmersiveModeController::browser_window() {
+NSWindow* ImmersiveModeControllerCocoa::browser_window() {
   return browser_window_;
 }
-NSWindow* ImmersiveModeController::overlay_window() {
+NSWindow* ImmersiveModeControllerCocoa::overlay_window() {
   return overlay_window_;
 }
-BridgedContentView* ImmersiveModeController::overlay_content_view() {
+BridgedContentView* ImmersiveModeControllerCocoa::overlay_content_view() {
   return overlay_content_view_;
 }
 
-void ImmersiveModeController::OnChildWindowAdded(NSWindow* child) {
+void ImmersiveModeControllerCocoa::OnChildWindowAdded(NSWindow* child) {
   // Skip applying the reveal lock if the window is in the process of being
   // re-ordered, as this may inadvertently trigger a recursive re-ordering.
   // This is because changing the titlebar visibility (which reveal lock does)
@@ -441,7 +442,7 @@ void ImmersiveModeController::OnChildWindowAdded(NSWindow* child) {
   // TODO(https://crbug.com/1350595): Handle a detached find bar.
 }
 
-void ImmersiveModeController::OnChildWindowRemoved(NSWindow* child) {
+void ImmersiveModeControllerCocoa::OnChildWindowRemoved(NSWindow* child) {
   // Skip applying the reveal lock if the window is in the process of being
   // re-ordered, as this may inadvertently trigger a recursive re-ordering.
   // This is because changing the titlebar visibility (which reveal lock does)
@@ -455,13 +456,13 @@ void ImmersiveModeController::OnChildWindowRemoved(NSWindow* child) {
   RevealUnlock();
 }
 
-void ImmersiveModeController::RevealLock() {
+void ImmersiveModeControllerCocoa::RevealLock() {
   reveal_lock_count_++;
   [immersive_mode_titlebar_view_controller_
       setVisibility:mojom::ToolbarVisibilityStyle::kAlways];
 }
 
-void ImmersiveModeController::RevealUnlock() {
+void ImmersiveModeControllerCocoa::RevealUnlock() {
   // Re-hide the toolbar if appropriate.
   if (--reveal_lock_count_ < 1 &&
       immersive_mode_titlebar_view_controller_.fullScreenMinHeight > 0 &&
@@ -477,7 +478,7 @@ void ImmersiveModeController::RevealUnlock() {
   DCHECK(reveal_lock_count_ >= 0);
 }
 
-bool ImmersiveModeController::IsToolbarRevealed() {
+bool ImmersiveModeControllerCocoa::IsToolbarRevealed() {
   // If `fullScreenMinHeight` is not `kMinHeight`, "Always Show Toolbar in Full
   // Screen" is enabled. If `revealAmount` > 0, the toolbar is revealed
   // because of mouse hovering. In both cases, the toolbar is visible.
@@ -486,7 +487,7 @@ bool ImmersiveModeController::IsToolbarRevealed() {
          immersive_mode_titlebar_view_controller_.revealAmount > 0;
 }
 
-void ImmersiveModeController::OnToolbarRevealMaybeChanged() {
+void ImmersiveModeControllerCocoa::OnToolbarRevealMaybeChanged() {
   bool is_toolbar_revealed = IsToolbarRevealed();
   if (is_toolbar_revealed_ != is_toolbar_revealed) {
     is_toolbar_revealed_ = is_toolbar_revealed;
@@ -494,7 +495,7 @@ void ImmersiveModeController::OnToolbarRevealMaybeChanged() {
   }
 }
 
-void ImmersiveModeController::OnMenuBarRevealChanged() {
+void ImmersiveModeControllerCocoa::OnMenuBarRevealChanged() {
   if (NativeWidgetNSWindowBridge* bridge =
           NativeWidgetNSWindowBridge::GetFromNativeWindow(browser_window_)) {
     bridge->OnImmersiveFullscreenMenuBarRevealChanged(
@@ -502,7 +503,7 @@ void ImmersiveModeController::OnMenuBarRevealChanged() {
   }
 }
 
-void ImmersiveModeController::ImmersiveModeViewWillMoveToWindow(
+void ImmersiveModeControllerCocoa::ImmersiveModeViewWillMoveToWindow(
     NSWindow* window) {
   // AppKit hands this view controller over to a fullscreen transition window
   // before we finally land at the NSToolbarFullScreenWindow. Add the frame
@@ -535,15 +536,15 @@ void ImmersiveModeController::ImmersiveModeViewWillMoveToWindow(
   }
 }
 
-void ImmersiveModeController::OnTitlebarFrameDidChange(NSRect frame) {
+void ImmersiveModeControllerCocoa::OnTitlebarFrameDidChange(NSRect frame) {
   LayoutWindowWithAnchorView(overlay_window_, overlay_content_view_);
 }
 
-bool ImmersiveModeController::IsTabbed() {
+bool ImmersiveModeControllerCocoa::IsTabbed() {
   return false;
 }
 
-double ImmersiveModeController::GetOffscreenYOrigin() {
+double ImmersiveModeControllerCocoa::GetOffscreenYOrigin() {
   // Get the height of the screen. Using this as the y origin will move a window
   // offscreen.
   double y = browser_window_.screen.frame.size.height;
@@ -557,15 +558,17 @@ double ImmersiveModeController::GetOffscreenYOrigin() {
   return y;
 }
 
-void ImmersiveModeController::NotifyBrowserWindowAboutToolbarRevealChanged() {
+void ImmersiveModeControllerCocoa::
+    NotifyBrowserWindowAboutToolbarRevealChanged() {
   if (NativeWidgetNSWindowBridge* bridge =
           NativeWidgetNSWindowBridge::GetFromNativeWindow(browser_window_)) {
     bridge->OnImmersiveFullscreenToolbarRevealChanged(IsToolbarRevealed());
   }
 }
 
-void ImmersiveModeController::LayoutWindowWithAnchorView(NSWindow* window,
-                                                         NSView* anchor_view) {
+void ImmersiveModeControllerCocoa::LayoutWindowWithAnchorView(
+    NSWindow* window,
+    NSView* anchor_view) {
   // Find the anchor view's point on screen (bottom left).
   NSPoint point_in_window = [anchor_view convertPoint:NSZeroPoint toView:nil];
   NSPoint point_on_screen =

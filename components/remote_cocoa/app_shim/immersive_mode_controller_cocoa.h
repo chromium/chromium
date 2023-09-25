@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_REMOTE_COCOA_APP_SHIM_IMMERSIVE_MODE_CONTROLLER_H_
-#define COMPONENTS_REMOTE_COCOA_APP_SHIM_IMMERSIVE_MODE_CONTROLLER_H_
+#ifndef COMPONENTS_REMOTE_COCOA_APP_SHIM_IMMERSIVE_MODE_CONTROLLER_COCOA_H_
+#define COMPONENTS_REMOTE_COCOA_APP_SHIM_IMMERSIVE_MODE_CONTROLLER_COCOA_H_
 
 #import <AppKit/AppKit.h>
 
@@ -17,14 +17,14 @@
 @class ImmersiveModeTitlebarObserver;
 
 namespace remote_cocoa {
-class ImmersiveModeController;
+class ImmersiveModeControllerCocoa;
 }  // namespace remote_cocoa
 
 // Host of the overlay view.
 @interface ImmersiveModeTitlebarViewController
     : NSTitlebarAccessoryViewController {
   NSView* __strong _blank_separator_view;
-  base::WeakPtr<remote_cocoa::ImmersiveModeController>
+  base::WeakPtr<remote_cocoa::ImmersiveModeControllerCocoa>
       _immersive_mode_controller;
 }
 @end
@@ -41,11 +41,12 @@ namespace remote_cocoa {
 REMOTE_COCOA_APP_SHIM_EXPORT bool IsNSToolbarFullScreenWindow(NSWindow* window);
 
 // Manages a single fullscreen session.
-class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
+class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeControllerCocoa {
  public:
-  explicit ImmersiveModeController(NativeWidgetMacNSWindow* browser_window,
-                                   NativeWidgetMacNSWindow* overlay_window);
-  virtual ~ImmersiveModeController();
+  explicit ImmersiveModeControllerCocoa(
+      NativeWidgetMacNSWindow* browser_window,
+      NativeWidgetMacNSWindow* overlay_window);
+  virtual ~ImmersiveModeControllerCocoa();
 
   // Must be called once and only once after construction. Prevents the side-
   // effects of adding a toolbar accessory from accessing partially constructed
@@ -167,7 +168,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
   // Keeps track of which windows have received titlebar and reveal locks.
   std::set<NSWindow*> window_lock_received_;
 
-  base::WeakPtrFactory<ImmersiveModeController> weak_ptr_factory_;
+  base::WeakPtrFactory<ImmersiveModeControllerCocoa> weak_ptr_factory_;
 };
 
 }  // namespace remote_cocoa
@@ -187,7 +188,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
 REMOTE_COCOA_APP_SHIM_EXPORT @interface ImmersiveModeTitlebarObserver : NSObject
 
 - (instancetype)initWithController:
-                    (base::WeakPtr<remote_cocoa::ImmersiveModeController>)
+                    (base::WeakPtr<remote_cocoa::ImmersiveModeControllerCocoa>)
                         controller
              titlebarContainerView:(NSView*)titlebarContainerView;
 
@@ -197,4 +198,4 @@ REMOTE_COCOA_APP_SHIM_EXPORT @interface ImmersiveModeTitlebarObserver : NSObject
 @interface OpaqueView : NSView
 @end
 
-#endif  // COMPONENTS_REMOTE_COCOA_APP_SHIM_IMMERSIVE_MODE_CONTROLLER_H_
+#endif  // COMPONENTS_REMOTE_COCOA_APP_SHIM_IMMERSIVE_MODE_CONTROLLER_COCOA_H_

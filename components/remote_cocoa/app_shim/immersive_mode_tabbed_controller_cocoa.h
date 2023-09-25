@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_REMOTE_COCOA_APP_SHIM_IMMERSIVE_MODE_TABBED_CONTROLLER_H_
-#define COMPONENTS_REMOTE_COCOA_APP_SHIM_IMMERSIVE_MODE_TABBED_CONTROLLER_H_
+#ifndef COMPONENTS_REMOTE_COCOA_APP_SHIM_IMMERSIVE_MODE_TABBED_CONTROLLER_COCOA_H_
+#define COMPONENTS_REMOTE_COCOA_APP_SHIM_IMMERSIVE_MODE_TABBED_CONTROLLER_COCOA_H_
 
-#include "components/remote_cocoa/app_shim/immersive_mode_controller.h"
+#include "components/remote_cocoa/app_shim/immersive_mode_controller_cocoa.h"
 
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
 
@@ -13,17 +13,18 @@
 
 namespace remote_cocoa {
 
-class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeTabbedController
-    : public ImmersiveModeController {
+class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeTabbedControllerCocoa
+    : public ImmersiveModeControllerCocoa {
  public:
-  explicit ImmersiveModeTabbedController(
+  explicit ImmersiveModeTabbedControllerCocoa(
       NativeWidgetMacNSWindow* browser_window,
       NativeWidgetMacNSWindow* overlay_window,
       NativeWidgetMacNSWindow* tab_window);
-  ImmersiveModeTabbedController(const ImmersiveModeTabbedController&) = delete;
-  ImmersiveModeTabbedController& operator=(
-      const ImmersiveModeTabbedController&) = delete;
-  ~ImmersiveModeTabbedController() override;
+  ImmersiveModeTabbedControllerCocoa(
+      const ImmersiveModeTabbedControllerCocoa&) = delete;
+  ImmersiveModeTabbedControllerCocoa& operator=(
+      const ImmersiveModeTabbedControllerCocoa&) = delete;
+  ~ImmersiveModeTabbedControllerCocoa() override;
 
   // ImmersiveModeController overrides
   // TODO(https://crbug.com/1426944): Init() does not add the controller. It
@@ -58,4 +59,4 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeTabbedController
 
 }  // namespace remote_cocoa
 
-#endif  // COMPONENTS_REMOTE_COCOA_APP_SHIM_IMMERSIVE_MODE_TABBED_CONTROLLER_H_
+#endif  // COMPONENTS_REMOTE_COCOA_APP_SHIM_IMMERSIVE_MODE_TABBED_CONTROLLER__COCOA_H_

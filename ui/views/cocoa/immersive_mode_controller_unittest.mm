@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/remote_cocoa/app_shim/immersive_mode_controller.h"
+#include "components/remote_cocoa/app_shim/immersive_mode_controller_cocoa.h"
 
 #import <Cocoa/Cocoa.h>
 
@@ -11,7 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "components/remote_cocoa/app_shim/bridged_content_view.h"
-#include "components/remote_cocoa/app_shim/immersive_mode_tabbed_controller.h"
+#include "components/remote_cocoa/app_shim/immersive_mode_tabbed_controller_cocoa.h"
 #include "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #import "ui/base/cocoa/window_size_constants.h"
@@ -114,7 +114,7 @@ class CocoaImmersiveModeControllerTest : public ui::CocoaTest {
 TEST_F(CocoaImmersiveModeControllerTest, ImmersiveModeController) {
   // Controller under test.
   auto immersive_mode_controller =
-      std::make_unique<ImmersiveModeController>(browser(), overlay());
+      std::make_unique<ImmersiveModeControllerCocoa>(browser(), overlay());
   immersive_mode_controller->Init();
   EXPECT_EQ(browser().titlebarAccessoryViewControllers.count, 1u);
 }
@@ -123,7 +123,7 @@ TEST_F(CocoaImmersiveModeControllerTest, ImmersiveModeController) {
 TEST_F(CocoaImmersiveModeControllerTest, RevealLock) {
   // Controller under test.
   auto immersive_mode_controller =
-      std::make_unique<ImmersiveModeController>(browser(), overlay());
+      std::make_unique<ImmersiveModeControllerCocoa>(browser(), overlay());
   immersive_mode_controller->Init();
 
   // Autohide top chrome.
@@ -181,8 +181,8 @@ TEST_F(CocoaImmersiveModeControllerTest, TitlebarContainerViewObserver) {
   [fullscreen_window orderBack:nil];
 
   auto immersive_mode_controller =
-      std::make_unique<ImmersiveModeController>(browser(), overlay());
-  base::WeakPtrFactory<ImmersiveModeController> weak_ptr_factory(
+      std::make_unique<ImmersiveModeControllerCocoa>(browser(), overlay());
+  base::WeakPtrFactory<ImmersiveModeControllerCocoa> weak_ptr_factory(
       immersive_mode_controller.get());
 
   // Grab the content view from the controller and add it to the test
@@ -259,8 +259,8 @@ TEST_F(CocoaImmersiveModeControllerTest, IsRevealed) {
   [fullscreen_window orderBack:nil];
 
   auto immersive_mode_controller =
-      std::make_unique<ImmersiveModeController>(browser(), overlay());
-  base::WeakPtrFactory<ImmersiveModeController> weak_ptr_factory(
+      std::make_unique<ImmersiveModeControllerCocoa>(browser(), overlay());
+  base::WeakPtrFactory<ImmersiveModeControllerCocoa> weak_ptr_factory(
       immersive_mode_controller.get());
 
   NSTitlebarAccessoryViewController* titlebar_view_controller =
@@ -293,8 +293,8 @@ TEST_F(CocoaImmersiveModeControllerTest, IsRevealed) {
 TEST_F(CocoaImmersiveModeControllerTest, ToolbarVisibility) {
   // Controller under test.
   auto immersive_mode_controller =
-      std::make_unique<ImmersiveModeTabbedController>(browser(), overlay(),
-                                                      tab_overlay());
+      std::make_unique<ImmersiveModeTabbedControllerCocoa>(browser(), overlay(),
+                                                           tab_overlay());
   immersive_mode_controller->Init();
 
   // NSWindowStyleMaskFullSizeContentView is set until the fullscreen transition
@@ -318,8 +318,8 @@ TEST_F(CocoaImmersiveModeControllerTest, ToolbarVisibility) {
 TEST_F(CocoaImmersiveModeControllerTest, Tabbed) {
   // Controller under test.
   auto immersive_mode_controller =
-      std::make_unique<ImmersiveModeTabbedController>(browser(), overlay(),
-                                                      tab_overlay());
+      std::make_unique<ImmersiveModeTabbedControllerCocoa>(browser(), overlay(),
+                                                           tab_overlay());
   immersive_mode_controller->Init();
 
   EXPECT_EQ(browser().titlebarAccessoryViewControllers.count, 2u);
@@ -332,8 +332,8 @@ TEST_F(CocoaImmersiveModeControllerTest, Tabbed) {
 TEST_F(CocoaImmersiveModeControllerTest, TabbedRevealLock) {
   // Controller under test.
   auto immersive_mode_controller =
-      std::make_unique<ImmersiveModeTabbedController>(browser(), overlay(),
-                                                      tab_overlay());
+      std::make_unique<ImmersiveModeTabbedControllerCocoa>(browser(), overlay(),
+                                                           tab_overlay());
   immersive_mode_controller->Init();
   immersive_mode_controller->FullscreenTransitionCompleted();
 
@@ -369,8 +369,8 @@ TEST_F(CocoaImmersiveModeControllerTest, TabbedRevealLock) {
 TEST_F(CocoaImmersiveModeControllerTest, TabbedChildWindow) {
   // Controller under test.
   auto immersive_mode_controller =
-      std::make_unique<ImmersiveModeTabbedController>(browser(), overlay(),
-                                                      tab_overlay());
+      std::make_unique<ImmersiveModeTabbedControllerCocoa>(browser(), overlay(),
+                                                           tab_overlay());
   immersive_mode_controller->Init();
   immersive_mode_controller->FullscreenTransitionCompleted();
 
@@ -396,8 +396,8 @@ TEST_F(CocoaImmersiveModeControllerTest, TabbedChildWindow) {
 TEST_F(CocoaImmersiveModeControllerTest, TabbedChildWindowZOrder) {
   // Controller under test.
   auto immersive_mode_controller =
-      std::make_unique<ImmersiveModeTabbedController>(browser(), overlay(),
-                                                      tab_overlay());
+      std::make_unique<ImmersiveModeTabbedControllerCocoa>(browser(), overlay(),
+                                                           tab_overlay());
   immersive_mode_controller->Init();
   immersive_mode_controller->FullscreenTransitionCompleted();
 
@@ -414,21 +414,23 @@ TEST_F(CocoaImmersiveModeControllerTest, TabbedChildWindowZOrder) {
   [popup close];
 }
 
-class MockImmersiveModeTabbedController : public ImmersiveModeTabbedController {
+class MockImmersiveModeTabbedControllerCocoa
+    : public ImmersiveModeTabbedControllerCocoa {
  public:
-  MockImmersiveModeTabbedController(NativeWidgetMacNSWindow* browser_window,
-                                    NativeWidgetMacNSWindow* overlay_window,
-                                    NativeWidgetMacNSWindow* tab_window)
-      : ImmersiveModeTabbedController(browser_window,
-                                      overlay_window,
-                                      tab_window) {}
+  MockImmersiveModeTabbedControllerCocoa(
+      NativeWidgetMacNSWindow* browser_window,
+      NativeWidgetMacNSWindow* overlay_window,
+      NativeWidgetMacNSWindow* tab_window)
+      : ImmersiveModeTabbedControllerCocoa(browser_window,
+                                           overlay_window,
+                                           tab_window) {}
   MOCK_METHOD(void, RevealLock, (), (override));
   MOCK_METHOD(void, RevealUnlock, (), (override));
 };
 
 TEST_F(CocoaImmersiveModeControllerTest, NoRevealUnlockDuringChildReordering) {
   // Controller under test.
-  testing::StrictMock<MockImmersiveModeTabbedController>
+  testing::StrictMock<MockImmersiveModeTabbedControllerCocoa>
       immersive_mode_controller(browser(), overlay(), tab_overlay());
   immersive_mode_controller.Init();
   immersive_mode_controller.FullscreenTransitionCompleted();

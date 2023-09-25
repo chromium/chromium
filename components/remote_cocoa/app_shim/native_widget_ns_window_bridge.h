@@ -12,8 +12,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/remote_cocoa/app_shim/immersive_mode_controller.h"
-#include "components/remote_cocoa/app_shim/immersive_mode_tabbed_controller.h"
+#include "components/remote_cocoa/app_shim/immersive_mode_controller_cocoa.h"
+#include "components/remote_cocoa/app_shim/immersive_mode_tabbed_controller_cocoa.h"
 #import "components/remote_cocoa/app_shim/mouse_capture_delegate.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_fullscreen_controller.h"
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
@@ -425,7 +425,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   std::vector<uint8_t> pending_restoration_data_;
 
   // Manages immersive mode when in fullscreen.
-  std::unique_ptr<ImmersiveModeController> immersive_mode_controller_;
+  std::unique_ptr<ImmersiveModeControllerCocoa> immersive_mode_controller_;
 
   // This tracks headless window visibility and fullscreen states.
   // In headless mode the platform window is never made visible or change its

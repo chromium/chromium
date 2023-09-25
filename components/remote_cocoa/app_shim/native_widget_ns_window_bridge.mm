@@ -972,11 +972,11 @@ void NativeWidgetNSWindowBridge::EnableImmersiveFullscreen(
   if (tab_widget_bridge) {
     NSWindow* tab_window = tab_widget_bridge->ns_window();
     immersive_mode_controller_ =
-        std::make_unique<ImmersiveModeTabbedController>(
+        std::make_unique<ImmersiveModeTabbedControllerCocoa>(
             ns_window(), GetFromId(fullscreen_overlay_widget_id)->ns_window(),
             tab_window);
   } else {
-    immersive_mode_controller_ = std::make_unique<ImmersiveModeController>(
+    immersive_mode_controller_ = std::make_unique<ImmersiveModeControllerCocoa>(
         ns_window(), GetFromId(fullscreen_overlay_widget_id)->ns_window());
   }
   immersive_mode_controller_->Init();
