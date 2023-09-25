@@ -5869,7 +5869,7 @@ TEST_P(WallpaperControllerTest,
   EXPECT_EQ(0, observer.daily_refresh_checkpoint_count());
   // User's wallpaper info should exist.
   pref_manager_->SetUserWallpaperInfo(kAccountId1,
-                                      InfoWithType(WallpaperType::kDaily));
+                                      InfoWithType(WallpaperType::kDefault));
   SimulateUserLogin(kAccountId1);
   // Clears signal on login.
   observer.ClearDailyRefreshCheckpointCount();
