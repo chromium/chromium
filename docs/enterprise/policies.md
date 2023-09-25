@@ -31,7 +31,7 @@ directories are treated as JSON files containing policies.
 
 On these systems it is also possible to set machine-wide cloud-based policies.
 
-** ChromeOS **
+**ChromeOS**
 
 ChromeOS devices can be either cloud-managed or Active Directory managed
 ([AdManagement](https://support.google.com/chrome/a?p=ad)).
@@ -111,14 +111,18 @@ See the [adding new policies guide](add_new_policy.md#adding-a-new-policy).
 
 ## Policy Ownership
 
+Policy owners can be individuals, references to OWNERS files, or Google Group
+aliases.
+
 Each policy has two or more owners to minimize the risk of becoming orphaned
 when the author moves away from it.
-
-Policy owners can either be individuals or references to OWNERS files. At least
-one of the owners listed for a policy needs to be an individual, preferably one
-with a chromium.org or google.com account. This is to ensure that some external
-organizations like the translators team can more easily reach out in case of
-questions.
+At least one of the owners listed for a policy needs to be an individual,
+preferably one with a chromium.org or google.com account. This is to ensure
+that some external organizations like the translators team can more easily
+reach out in case of questions.
+At least one of the owners should be a reference to an OWNERS file or a Google
+Group. OWNERS files are preferred to groups since groups can have restricted
+access rights.
 
 ### Responsibilities of the Policy Ownership
 
