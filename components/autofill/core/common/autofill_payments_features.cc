@@ -254,7 +254,7 @@ BASE_FEATURE(kAutofillUpstreamAllowAllEmailDomains,
 // features disabled but not client-side features.
 BASE_FEATURE(kAutofillUpstreamAuthenticatePreflightCall,
              "AutofillUpstreamAuthenticatePreflightCall",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, the secure data type for cards sent during credit card upload
 // save is updated to match newer server requirements.
