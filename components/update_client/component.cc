@@ -1207,11 +1207,9 @@ void Component::StateUpdatingDiff::InstallComplete(
 
   CHECK_EQ(ErrorCategory::kNone, component.diff_error_category_);
   CHECK_EQ(0, component.diff_error_code_);
-  CHECK_EQ(0, component.diff_extra_code1_);
 
   CHECK_EQ(ErrorCategory::kNone, component.error_category_);
   CHECK_EQ(0, component.error_code_);
-  CHECK_EQ(0, component.extra_code1_);
 
   if (component.action_run_.empty()) {
     TransitionState(std::make_unique<StateUpdated>(&component));
@@ -1291,7 +1289,6 @@ void Component::StateUpdating::InstallComplete(
 
   CHECK_EQ(ErrorCategory::kNone, component.error_category_);
   CHECK_EQ(0, component.error_code_);
-  CHECK_EQ(0, component.extra_code1_);
 
   if (component.action_run_.empty()) {
     TransitionState(std::make_unique<StateUpdated>(&component));
