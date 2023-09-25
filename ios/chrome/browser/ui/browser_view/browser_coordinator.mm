@@ -2061,6 +2061,7 @@ enum class ToolbarKind {
       initWithBaseViewController:self.viewController
                          browser:self.browser];
   pageInfoCoordinator.presentationProvider = self;
+  [self.pageInfoCoordinator stop];
   self.pageInfoCoordinator = pageInfoCoordinator;
   [self.pageInfoCoordinator start];
 }
