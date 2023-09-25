@@ -138,7 +138,7 @@ public class DeviceLockMediator {
             if (authSucceeded) {
                 onSuccess.run();
             }
-        }, false);
+        });
     }
 
     private void maybeTriggerAccountReauthenticationChallenge(Runnable onSuccess) {

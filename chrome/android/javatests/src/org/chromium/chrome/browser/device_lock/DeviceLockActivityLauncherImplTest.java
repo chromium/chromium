@@ -7,7 +7,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doAnswer;
@@ -125,7 +124,7 @@ public class DeviceLockActivityLauncherImplTest {
         DeviceLockActivityLauncherImpl.get().presentDeviceLockChallenge(
                 mContext, true, mWindowAndroid, () -> mCallbackCalled.set(true));
         verify(mWindowAndroid, times(1)).showIntent(any(Intent.class), any(), any());
-        verify(mReauthenticatorBridge, never()).reauthenticate(any(), anyBoolean());
+        verify(mReauthenticatorBridge, never()).reauthenticate(any());
         assertTrue("The callback should have been called if the activity ends with RESULT_OK.",
                 mCallbackCalled.get());
     }
@@ -151,7 +150,7 @@ public class DeviceLockActivityLauncherImplTest {
         DeviceLockActivityLauncherImpl.get().presentDeviceLockChallenge(
                 mContext, true, mWindowAndroid, () -> mCallbackCalled.set(true));
         verify(mWindowAndroid, times(1)).showIntent(any(Intent.class), any(), any());
-        verify(mReauthenticatorBridge, never()).reauthenticate(any(), anyBoolean());
+        verify(mReauthenticatorBridge, never()).reauthenticate(any());
         assertFalse("The callback should not have been called if the activity ends with "
                         + "RESULT_CANCELED.",
                 mCallbackCalled.get());
@@ -172,12 +171,12 @@ public class DeviceLockActivityLauncherImplTest {
             return null;
         })
                 .when(mReauthenticatorBridge)
-                .reauthenticate(any(), anyBoolean());
+                .reauthenticate(any());
 
         DeviceLockActivityLauncherImpl.get().presentDeviceLockChallenge(
                 mContext, true, mWindowAndroid, () -> mCallbackCalled.set(true));
         verify(mWindowAndroid, never()).showIntent(any(Intent.class), any(), any());
-        verify(mReauthenticatorBridge, times(1)).reauthenticate(any(), anyBoolean());
+        verify(mReauthenticatorBridge, times(1)).reauthenticate(any());
         assertTrue("The callback should be called after a successful reauthentication.",
                 mCallbackCalled.get());
     }
@@ -196,12 +195,12 @@ public class DeviceLockActivityLauncherImplTest {
             return null;
         })
                 .when(mReauthenticatorBridge)
-                .reauthenticate(any(), anyBoolean());
+                .reauthenticate(any());
 
         DeviceLockActivityLauncherImpl.get().presentDeviceLockChallenge(
                 mContext, true, mWindowAndroid, () -> mCallbackCalled.set(true));
         verify(mWindowAndroid, never()).showIntent(any(Intent.class), any(), any());
-        verify(mReauthenticatorBridge, times(1)).reauthenticate(any(), anyBoolean());
+        verify(mReauthenticatorBridge, times(1)).reauthenticate(any());
         assertFalse("The callback should be not called after a failed reauthentication.",
                 mCallbackCalled.get());
     }

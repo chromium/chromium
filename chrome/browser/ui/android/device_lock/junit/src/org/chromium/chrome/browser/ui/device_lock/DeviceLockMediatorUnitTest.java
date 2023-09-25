@@ -394,7 +394,7 @@ public class DeviceLockMediatorUnitTest {
         if (deviceLockChallengeResult != null) {
             doAnswer(deviceLockChallengeResult)
                     .when(deviceLockAuthenticatorBridge)
-                    .reauthenticate(any(), eq(false));
+                    .reauthenticate(any());
         }
         if (accountReauthenticationResult != null) {
             doAnswer(accountReauthenticationResult)
@@ -410,7 +410,7 @@ public class DeviceLockMediatorUnitTest {
         verify(mWindowAndroid, times(deviceLockCreationCalls))
                 .showIntent(any(Intent.class), any(WindowAndroid.IntentCallback.class), any());
         verify(mDeviceLockAuthenticatorBridge, times(deviceLockChallengesTriggered))
-                .reauthenticate(any(), eq(false));
+                .reauthenticate(any());
         verify(mAccountReauthenticationUtils, times(accountReauthenticationsTriggered))
                 .confirmCredentialsOrRecentAuthentication(any(), any(), any(), any(), anyLong());
         verify(mDelegate, times(onDeviceLockReadyCalls)).onDeviceLockReady();

@@ -76,12 +76,12 @@ public class DeviceLockActivityLauncherImpl implements DeviceLockActivityLaunche
                         }
                     });
         } else {
-            DeviceLockCoordinator.createDeviceLockAuthenticatorBridge()
-                    .reauthenticate((authSucceeded) -> {
+            DeviceLockCoordinator.createDeviceLockAuthenticatorBridge().reauthenticate(
+                    (authSucceeded) -> {
                         if (authSucceeded) {
                             callback.run();
                         }
-                    }, false);
+                    });
         }
     }
 

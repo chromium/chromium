@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.autofill.settings;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
@@ -395,7 +394,7 @@ public class AutofillPaymentMethodsFragmentTest {
         // authentication which should succeed.
         TestThreadUtils.runOnUiThreadBlocking(getMandatoryReauthPreference(activity)::performClick);
 
-        verify(mReauthenticatorMock).reauthenticate(notNull(), /*useLastValidReauth=*/eq(false));
+        verify(mReauthenticatorMock).reauthenticate(notNull());
         // Verify that the Reauth toggle is now checked.
         Assert.assertTrue(getMandatoryReauthPreference(activity).isChecked());
         optInHistogram.assertExpected();
@@ -429,7 +428,7 @@ public class AutofillPaymentMethodsFragmentTest {
         // authentication which should fail.
         TestThreadUtils.runOnUiThreadBlocking(getMandatoryReauthPreference(activity)::performClick);
 
-        verify(mReauthenticatorMock).reauthenticate(notNull(), /*useLastValidReauth=*/eq(false));
+        verify(mReauthenticatorMock).reauthenticate(notNull());
         // Verify that the Reauth toggle is still checked since authentication failed.
         Assert.assertTrue(getMandatoryReauthPreference(activity).isChecked());
         optOutHistogram.assertExpected();
@@ -481,7 +480,7 @@ public class AutofillPaymentMethodsFragmentTest {
         // afterwards. Wait for the new dialog to be rendered.
         rule.waitForFragmentToBeShown();
 
-        verify(mReauthenticatorMock).reauthenticate(notNull(), /*useLastValidReauth=*/eq(false));
+        verify(mReauthenticatorMock).reauthenticate(notNull());
         // Verify that the local card edit dialog was shown.
         Assert.assertTrue(rule.getLastestShownFragment() instanceof AutofillLocalCardEditor);
         editCardReauthHistogram.assertExpected();
@@ -520,7 +519,7 @@ public class AutofillPaymentMethodsFragmentTest {
         // which should fail and hence the payment methods page should still be open.
         TestThreadUtils.runOnUiThreadBlocking(cardPreference::performClick);
 
-        verify(mReauthenticatorMock).reauthenticate(notNull(), /*useLastValidReauth=*/eq(false));
+        verify(mReauthenticatorMock).reauthenticate(notNull());
         // Verify that the local card edit dialog was NOT shown.
         Assert.assertNull(rule.getLastestShownFragment());
         editCardReauthHistogram.assertExpected();
@@ -551,8 +550,7 @@ public class AutofillPaymentMethodsFragmentTest {
         // new dialog to be rendered.
         rule.waitForFragmentToBeShown();
 
-        verify(mReauthenticatorMock, never())
-                .reauthenticate(notNull(), /*useLastValidReauth=*/eq(false));
+        verify(mReauthenticatorMock, never()).reauthenticate(notNull());
         // Verify that the local card edit dialog was shown.
         Assert.assertTrue(rule.getLastestShownFragment() instanceof AutofillLocalCardEditor);
     }
@@ -583,8 +581,7 @@ public class AutofillPaymentMethodsFragmentTest {
         // dialog to be rendered.
         rule.waitForFragmentToBeShown();
 
-        verify(mReauthenticatorMock, never())
-                .reauthenticate(notNull(), /*useLastValidReauth=*/eq(false));
+        verify(mReauthenticatorMock, never()).reauthenticate(notNull());
         // Verify that the local card edit dialog was shown.
         Assert.assertTrue(rule.getLastestShownFragment() instanceof AutofillLocalCardEditor);
     }
@@ -623,8 +620,7 @@ public class AutofillPaymentMethodsFragmentTest {
 
         // Verify there were 2 biometric authentication attempts, once for enabling mandatory
         // reauth, and another time for opening the local card edit page.
-        verify(mReauthenticatorMock, times(2))
-                .reauthenticate(notNull(), /*useLastValidReauth=*/eq(false));
+        verify(mReauthenticatorMock, times(2)).reauthenticate(notNull());
         // Verify that the local card edit dialog was shown.
         Assert.assertTrue(rule.getLastestShownFragment() instanceof AutofillLocalCardEditor);
     }
@@ -665,8 +661,7 @@ public class AutofillPaymentMethodsFragmentTest {
         // Verify there was only 1 biometric authentication attempt, for disabling mandatory reauth.
         // After disabling, biometric authentication challenge should not be presented to open the
         // local card edit page.
-        verify(mReauthenticatorMock, times(1))
-                .reauthenticate(notNull(), /*useLastValidReauth=*/eq(false));
+        verify(mReauthenticatorMock, times(1)).reauthenticate(notNull());
         // Verify that the local card edit dialog was shown.
         Assert.assertTrue(rule.getLastestShownFragment() instanceof AutofillLocalCardEditor);
     }
@@ -749,7 +744,7 @@ public class AutofillPaymentMethodsFragmentTest {
             return true;
         })
                 .when(mReauthenticatorMock)
-                .reauthenticate(notNull(), /*useLastValidReauth=*/eq(false));
+                .reauthenticate(notNull());
     }
 
     private ChromeSwitchPreference getMandatoryReauthPreference(SettingsActivity activity) {

@@ -368,7 +368,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                         MandatoryReauthAuthenticationFlowEvent.FLOW_FAILED,
                         MandatoryReauthAuthenticationFlowEvent.MAX_VALUE + 1);
             }
-        }, /*useLastValidAuth=*/false);
+        });
         // Returning false here holds the toggle to still display the old value while
         // waiting for biometric auth. Once biometric is completed (either succeed or
         // fail), OnResume will reload the page with the pref value, which will switch
@@ -411,7 +411,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                         MandatoryReauthAuthenticationFlowEvent.FLOW_FAILED,
                         MandatoryReauthAuthenticationFlowEvent.MAX_VALUE + 1);
             }
-        }, /*useLastValidAuth=*/false);
+        });
         return true;
     }
 

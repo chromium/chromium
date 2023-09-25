@@ -44,17 +44,16 @@ public class ReauthenticatorBridge {
     }
 
     /**
-     * Starts reauthentication.
+     * Starts reauthentication. This method implies that the user will need to authenticate again if
+     * they want to perform an authenticated action (i.e. the user will be considered not
+     * authenticated immediately after the current action finishes).
      *
      * @param callback Callback that will be executed once request is done.
-     * @param useLastValidAuth A boolean value indicating whether to consider the last but "recent"
-     *         validated auth for passing the current authentication request.
      */
-    public void reauthenticate(Callback<Boolean> callback, boolean useLastValidAuth) {
+    public void reauthenticate(Callback<Boolean> callback) {
         if (mAuthResultCallback == null) {
             mAuthResultCallback = callback;
-            ReauthenticatorBridgeJni.get().reauthenticate(
-                    mNativeReauthenticatorBridge, useLastValidAuth);
+            ReauthenticatorBridgeJni.get().reauthenticate(mNativeReauthenticatorBridge);
         }
     }
 
@@ -87,6 +86,6 @@ public class ReauthenticatorBridge {
         long create(ReauthenticatorBridge reauthenticatorBridge, int source);
         boolean canUseAuthenticationWithBiometric(long nativeReauthenticatorBridge);
         boolean canUseAuthenticationWithBiometricOrScreenLock(long nativeReauthenticatorBridge);
-        void reauthenticate(long nativeReauthenticatorBridge, boolean useLastValidAuth);
+        void reauthenticate(long nativeReauthenticatorBridge);
     }
 }

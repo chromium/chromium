@@ -29,7 +29,7 @@ class ReauthenticatorBridge {
   bool CanUseAuthenticationWithBiometricOrScreenLock(JNIEnv* env);
 
   // Called by Java to start authentication.
-  void Reauthenticate(JNIEnv* env, bool use_last_valid_auth);
+  void Reauthenticate(JNIEnv* env);
 
   // Called when reauthentication is completed.
   void OnReauthenticationCompleted(bool auth_succeeded);

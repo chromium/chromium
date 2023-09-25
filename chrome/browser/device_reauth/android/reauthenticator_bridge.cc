@@ -50,8 +50,7 @@ bool ReauthenticatorBridge::CanUseAuthenticationWithBiometricOrScreenLock(
          authenticator_->CanAuthenticateWithBiometricOrScreenLock();
 }
 
-void ReauthenticatorBridge::Reauthenticate(JNIEnv* env,
-                                           bool use_last_valid_auth) {
+void ReauthenticatorBridge::Reauthenticate(JNIEnv* env) {
   if (!authenticator_) {
     return;
   }
@@ -62,7 +61,7 @@ void ReauthenticatorBridge::Reauthenticate(JNIEnv* env,
   authenticator_->Authenticate(
       base::BindOnce(&ReauthenticatorBridge::OnReauthenticationCompleted,
                      base::Unretained(this)),
-      use_last_valid_auth);
+      false);
 }
 
 void ReauthenticatorBridge::OnReauthenticationCompleted(bool auth_succeeded) {
