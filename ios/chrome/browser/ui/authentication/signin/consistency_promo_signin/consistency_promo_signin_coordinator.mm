@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_promo_signin_coordinator.h"
 
+#import <memory>
+
 #import "base/metrics/user_metrics.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
@@ -21,6 +23,7 @@
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/system_identity.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
+#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/account_cookie_waiter.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_default_account/consistency_default_account_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_layout_delegate.h"
@@ -134,7 +137,8 @@
   self.consistencyPromoSigninMediator = [[ConsistencyPromoSigninMediator alloc]
       initWithAccountManagerService:accountManagerService
               authenticationService:authenticationService
-                    identityManager:identityManager
+                accountCookieWaiter:std::make_unique<AccountCookieWaiter>(
+                                        identityManager)
                     userPrefService:browserState->GetPrefs()
                         accessPoint:self.accessPoint];
   self.consistencyPromoSigninMediator.delegate = self;
@@ -488,6 +492,7 @@
                             (ConsistencyPromoSigninMediatorError)error {
   NSString* errorTitle = l10n_util::GetNSString(IDS_IOS_WEBSIGN_ERROR_TITLE);
   NSString* errorMessage = nil;
+  NSLog(@"create error %@", errorTitle);
   switch (error) {
     case ConsistencyPromoSigninMediatorErrorGeneric:
     case ConsistencyPromoSigninMediatorErrorFailedToSignin:

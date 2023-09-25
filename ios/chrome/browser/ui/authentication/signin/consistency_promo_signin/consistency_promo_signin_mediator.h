@@ -6,10 +6,12 @@
 #define IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_CONSISTENCY_PROMO_SIGNIN_CONSISTENCY_PROMO_SIGNIN_MEDIATOR_H_
 
 #import <Foundation/Foundation.h>
+#import <memory>
 
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 
+class AccountCookieWaiter;
 @class AuthenticationFlow;
 class AuthenticationService;
 class ChromeAccountManagerService;
@@ -17,10 +19,6 @@ class ChromeAccountManagerService;
 class PrefService;
 @class SigninCompletionInfo;
 @protocol SystemIdentity;
-
-namespace signin {
-class IdentityManager;
-}  // signin
 
 namespace signin_metrics {
 enum class AccessPoint : int;
@@ -69,7 +67,8 @@ typedef NS_ENUM(NSInteger, ConsistencyPromoSigninMediatorError) {
     initWithAccountManagerService:
         (ChromeAccountManagerService*)accountManagerService
             authenticationService:(AuthenticationService*)authenticationService
-                  identityManager:(signin::IdentityManager*)identityManager
+              accountCookieWaiter:
+                  (std::unique_ptr<AccountCookieWaiter>)accountCookieWaiter
                   userPrefService:(PrefService*)userPrefService
                       accessPoint:(signin_metrics::AccessPoint)accessPoint;
 

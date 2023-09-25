@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/signin/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
+#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/account_cookie_waiter.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -78,13 +79,14 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
             browser_state_.get());
     AuthenticationService* auth_service =
         AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
-    signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForBrowserState(browser_state_.get());
+    auto cookie_waiter = std::make_unique<AccountCookieWaiter>(
+        IdentityManagerFactory::GetForBrowserState(browser_state_.get()));
+    cookie_waiter_ = cookie_waiter.get();
     ConsistencyPromoSigninMediator* mediator =
         [[ConsistencyPromoSigninMediator alloc]
             initWithAccountManagerService:chrome_account_manager_service
                     authenticationService:auth_service
-                          identityManager:identity_manager
+                      accountCookieWaiter:std::move(cookie_waiter)
                           userPrefService:GetPrefService()
                               accessPoint:access_point];
     mediator.delegate = mediator_delegate_mock_;
@@ -96,26 +98,22 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
     gaia::ListedAccount account;
     account.id =
         CoreAccountId::FromGaiaId(base::SysNSStringToUTF8(identity.gaiaID));
-    signin::AccountsInCookieJarInfo cookie_jar_info(
-        /*accounts_are_fresh_param=*/true,
-        /*signed_in_accounts_param=*/{account},
-        /*signed_out_accounts_param=*/{});
-    [(id<IdentityManagerObserverBridgeDelegate>)mediator
-        onAccountsInCookieUpdated:cookie_jar_info
-                            error:GoogleServiceAuthError(
-                                      GoogleServiceAuthError::State::NONE)];
+    cookie_waiter_->OnAccountsInCookieUpdated(
+        signin::AccountsInCookieJarInfo(
+            /*accounts_are_fresh_param=*/true,
+            /*signed_in_accounts_param=*/{account},
+            /*signed_out_accounts_param=*/{}),
+        GoogleServiceAuthError(GoogleServiceAuthError::State::NONE));
   }
 
   void SimulateCookieFetchError(ConsistencyPromoSigninMediator* mediator) {
-    signin::AccountsInCookieJarInfo cookie_jar_info(
-        /*accounts_are_fresh_param=*/false,
-        /*signed_in_accounts_param=*/{},
-        /*signed_out_accounts_param=*/{});
-    [(id<IdentityManagerObserverBridgeDelegate>)mediator
-        onAccountsInCookieUpdated:cookie_jar_info
-                            error:GoogleServiceAuthError(
-                                      GoogleServiceAuthError::State::
-                                          INVALID_GAIA_CREDENTIALS)];
+    cookie_waiter_->OnAccountsInCookieUpdated(
+        signin::AccountsInCookieJarInfo(
+            /*accounts_are_fresh_param=*/false,
+            /*signed_in_accounts_param=*/{},
+            /*signed_out_accounts_param=*/{}),
+        GoogleServiceAuthError(
+            GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
   }
 
   void SimulateCookieFetchTimeout() {
@@ -148,6 +146,9 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
       OCMStrictClassMock([AuthenticationFlow class]);
   id<ConsistencyPromoSigninMediatorDelegate> mediator_delegate_mock_ =
       OCMStrictProtocolMock(@protocol(ConsistencyPromoSigninMediatorDelegate));
+  // Owned by the mediator. This pointer must be reset before the mediator is
+  // disconnected, otherwise it will be dangling.
+  raw_ptr<AccountCookieWaiter> cookie_waiter_ = nullptr;
 
  private:
   // Needed for test browser state.
@@ -165,6 +166,7 @@ TEST_F(ConsistencyPromoSigninMediatorTest, StartAndStopForCancel) {
   ConsistencyPromoSigninMediator* mediator =
       BuildConsistencyPromoSigninMediator(
           signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
+  cookie_waiter_ = nullptr;
   [mediator disconnectWithResult:SigninCoordinatorResultCanceledByUser];
 
   histogram_tester.ExpectTotalCount(
@@ -186,6 +188,7 @@ TEST_F(ConsistencyPromoSigninMediatorTest, StartAndStopForInterrupt) {
   ConsistencyPromoSigninMediator* mediator =
       BuildConsistencyPromoSigninMediator(
           signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
+  cookie_waiter_ = nullptr;
   [mediator disconnectWithResult:SigninCoordinatorResultInterrupted];
 
   histogram_tester.ExpectTotalCount(
@@ -221,6 +224,7 @@ TEST_F(ConsistencyPromoSigninMediatorTest,
 
   SimulateCookieFetchSuccess(mediator, kDefaultIdentity);
 
+  cookie_waiter_ = nullptr;
   [mediator disconnectWithResult:SigninCoordinatorResultSuccess];
 
   EXPECT_EQ(0,
@@ -258,6 +262,7 @@ TEST_F(ConsistencyPromoSigninMediatorTest,
 
   SimulateCookieFetchSuccess(mediator, kNonDefaultIdentity);
 
+  cookie_waiter_ = nullptr;
   [mediator disconnectWithResult:SigninCoordinatorResultSuccess];
 
   histogram_tester.ExpectTotalCount(
@@ -298,6 +303,7 @@ TEST_F(ConsistencyPromoSigninMediatorTest,
 
   SimulateCookieFetchSuccess(mediator, new_identity);
 
+  cookie_waiter_ = nullptr;
   [mediator disconnectWithResult:SigninCoordinatorResultSuccess];
 
   histogram_tester.ExpectTotalCount(
@@ -343,6 +349,7 @@ TEST_F(ConsistencyPromoSigninMediatorTest, CookiesError) {
 
   error_wait_loop->Run();
 
+  cookie_waiter_ = nullptr;
   [mediator disconnectWithResult:SigninCoordinatorResultCanceledByUser];
 
   histogram_tester.ExpectTotalCount(
@@ -392,6 +399,7 @@ TEST_F(ConsistencyPromoSigninMediatorTest, CookiesTimeout) {
 
   error_wait_loop->Run();
 
+  cookie_waiter_ = nullptr;
   [mediator disconnectWithResult:SigninCoordinatorResultCanceledByUser];
 
   histogram_tester.ExpectTotalCount(
@@ -440,6 +448,7 @@ TEST_F(ConsistencyPromoSigninMediatorTest, AuthFlowError) {
 
   error_wait_loop->Run();
 
+  cookie_waiter_ = nullptr;
   [mediator disconnectWithResult:SigninCoordinatorResultCanceledByUser];
 
   histogram_tester.ExpectTotalCount(
@@ -477,6 +486,7 @@ TEST_F(ConsistencyPromoSigninMediatorTest, SigninWithoutCookies) {
                                   withIdentity:kDefaultIdentity]);
 
   [mediator signinWithAuthenticationFlow:authentication_flow_];
+  cookie_waiter_ = nullptr;
   [mediator disconnectWithResult:SigninCoordinatorResultSuccess];
 
   EXPECT_EQ(1,
