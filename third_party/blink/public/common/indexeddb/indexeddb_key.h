@@ -33,6 +33,7 @@ class BLINK_COMMON_EXPORT IndexedDBKey {
   IndexedDBKey(double number,
                mojom::IDBKeyType type);  // must be date or number
   IndexedDBKey(const IndexedDBKey& other);
+  IndexedDBKey(IndexedDBKey&& other);
   ~IndexedDBKey();
   IndexedDBKey& operator=(const IndexedDBKey& other);
 

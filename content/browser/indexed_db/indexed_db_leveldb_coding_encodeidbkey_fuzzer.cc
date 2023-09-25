@@ -46,10 +46,19 @@ IDBKeyType GetIDBKeyType(uint8_t data) {
 // Parse |fuzzed_data| to create an IndexedDBKey. This method takes uses the
 // first byte to determine the type of key to create. The remaining bytes in
 // |fuzzed_data| will be consumed differently depending on the type of key.
-IndexedDBKey CreateKey(FuzzedDataProvider* fuzzed_data) {
-  // If there is no more data to use, return a |None| type key.
-  if (fuzzed_data->remaining_bytes() < 1)
-    return IndexedDBKey(IDBKeyType::None);
+IndexedDBKey CreateKey(FuzzedDataProvider* fuzzed_data,
+                       size_t recursion_level = 0) {
+  // Avoid a stack overflow by enforcing this limit. The added buffer here is to
+  // allow this fuzzer to verify behavior for when the generated key is too
+  // deep.
+  if (recursion_level > IndexedDBKey::kMaximumDepth + 5) {
+    fuzzed_data->ConsumeRemainingBytes<uint8_t>();
+  }
+
+  // If there is no more data to use, return a made-up key.
+  if (fuzzed_data->remaining_bytes() < 1) {
+    return IndexedDBKey(1.0, IDBKeyType::Number);
+  }
 
   auto key_type = GetIDBKeyType(fuzzed_data->ConsumeIntegral<uint8_t>());
 
@@ -59,9 +68,9 @@ IndexedDBKey CreateKey(FuzzedDataProvider* fuzzed_data) {
       // bytes to consume. Then, create the final key to return with this array.
       IndexedDBKey::KeyArray key_array;
       while (fuzzed_data->remaining_bytes() > 0) {
-        key_array.push_back(CreateKey(fuzzed_data));
+        key_array.push_back(CreateKey(fuzzed_data, 1 + recursion_level));
       }
-      return IndexedDBKey(key_array);
+      return IndexedDBKey(std::move(key_array));
     }
     // For keys of type |Binary| and |String|, consume sizeof(size_t) bytes to
     // determine the maximum length of the string to create.
@@ -95,13 +104,12 @@ IndexedDBKey CreateKey(FuzzedDataProvider* fuzzed_data) {
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   FuzzedDataProvider fuzzed_data(data, size);
   auto key = CreateKey(&fuzzed_data);
-  // We try to catch invalid keys upstream of `EncodeIDBKey`. Should one slip
-  // through, `EncodeIDBKey` will CHECK.
-  if (!key.IsValid()) {
+  // Encoding fails if the key is invalid or if the recursion depth is too much.
+  // In prod, either of these cases will CHECK, but here we fail gracefully.
+  std::string result;
+  if (!content::MaybeEncodeIDBKey(key, &result)) {
     return 0;
   }
-  std::string result;
-  content::EncodeIDBKey(key, &result);
 
   // Ensure that |result| can be decoded back into the original key.
   auto decoded_key = std::make_unique<IndexedDBKey>();
