@@ -195,6 +195,14 @@ TEST_F(FileManagerOfficeFileTasksTest, SetOfficeFileHandlersToFilesSWA) {
   EXPECT_EQ(file_manager::file_tasks::GetDefaultTaskFromPrefs(
                 *profile()->GetPrefs(), docx_mime, ".docx"),
             task);
+  // Update with replace_existing=false should not change the default.
+  SetWordFileHandlerToFilesSWA(profile(), "b", false);
+  EXPECT_EQ(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+                *profile()->GetPrefs(), "application/msword", ".doc"),
+            task);
+  EXPECT_EQ(file_manager::file_tasks::GetDefaultTaskFromPrefs(
+                *profile()->GetPrefs(), docx_mime, ".docx"),
+            task);
   // Removing an action which is not set should not change the default.
   RemoveFilesSWAWordFileHandler(profile(), "b");
   EXPECT_EQ(file_manager::file_tasks::GetDefaultTaskFromPrefs(

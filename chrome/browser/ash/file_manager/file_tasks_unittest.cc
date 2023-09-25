@@ -786,4 +786,25 @@ TEST_F(FileManagerFileTaskPreferencesTest, RemoveDefaultTask) {
   EXPECT_EQ(nullptr, tasks_by_mime_type().FindString("mime2"));
 }
 
+TEST_F(FileManagerFileTaskPreferencesTest, UpdateDefaultTask_ReplaceExisting) {
+  TaskDescriptor app1("app1", TASK_TYPE_FILE_BROWSER_HANDLER, "view");
+  TaskDescriptor app2("app2", TASK_TYPE_FILE_BROWSER_HANDLER, "view");
+
+  // Replace-existing true or false both work when no existing task exists.
+  UpdateDefaultTask(profile(), app1, {"ext1"}, {"mime1"}, true);
+  UpdateDefaultTask(profile(), app2, {"ext2"}, {"mime2"}, false);
+  EXPECT_EQ("app1|file|view", *tasks_by_suffix().FindString("ext1"));
+  EXPECT_EQ("app2|file|view", *tasks_by_suffix().FindString("ext2"));
+  EXPECT_EQ("app1|file|view", *tasks_by_mime_type().FindString("mime1"));
+  EXPECT_EQ("app2|file|view", *tasks_by_mime_type().FindString("mime2"));
+
+  // Replace-existing true should overwrite, false should not.
+  UpdateDefaultTask(profile(), app2, {"ext1"}, {"mime1"}, true);
+  UpdateDefaultTask(profile(), app1, {"ext2"}, {"mime2"}, false);
+  EXPECT_EQ("app2|file|view", *tasks_by_suffix().FindString("ext1"));
+  EXPECT_EQ("app2|file|view", *tasks_by_suffix().FindString("ext2"));
+  EXPECT_EQ("app2|file|view", *tasks_by_mime_type().FindString("mime1"));
+  EXPECT_EQ("app2|file|view", *tasks_by_mime_type().FindString("mime2"));
+}
+
 }  // namespace file_manager::file_tasks

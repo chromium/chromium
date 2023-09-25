@@ -339,15 +339,19 @@ bool HasExplicitDefaultFileHandler(Profile* profile,
   return extension_task_prefs.contains(lower_extension);
 }
 
-void SetWordFileHandler(Profile* profile, const TaskDescriptor& task) {
-  UpdateDefaultTask(profile, task, WordGroupExtensions(), WordGroupMimeTypes());
+void SetWordFileHandler(Profile* profile,
+                        const TaskDescriptor& task,
+                        bool replace_existing) {
+  UpdateDefaultTask(profile, task, WordGroupExtensions(), WordGroupMimeTypes(),
+                    replace_existing);
 }
 
 void SetWordFileHandlerToFilesSWA(Profile* profile,
-                                  const std::string& action_id) {
+                                  const std::string& action_id,
+                                  bool replace_existing) {
   TaskDescriptor task(kFileManagerSwaAppId, TaskType::TASK_TYPE_WEB_APP,
                       ToSwaActionId(action_id));
-  SetWordFileHandler(profile, task);
+  SetWordFileHandler(profile, task, replace_existing);
 }
 
 std::set<std::string> ExcelGroupExtensions() {
@@ -366,16 +370,19 @@ std::set<std::string> ExcelGroupMimeTypes() {
   return *mime_types;
 }
 
-void SetExcelFileHandler(Profile* profile, const TaskDescriptor& task) {
+void SetExcelFileHandler(Profile* profile,
+                         const TaskDescriptor& task,
+                         bool replace_existing) {
   UpdateDefaultTask(profile, task, ExcelGroupExtensions(),
-                    ExcelGroupMimeTypes());
+                    ExcelGroupMimeTypes(), replace_existing);
 }
 
 void SetExcelFileHandlerToFilesSWA(Profile* profile,
-                                   const std::string& action_id) {
+                                   const std::string& action_id,
+                                   bool replace_existing) {
   TaskDescriptor task(kFileManagerSwaAppId, TaskType::TASK_TYPE_WEB_APP,
                       ToSwaActionId(action_id));
-  SetExcelFileHandler(profile, task);
+  SetExcelFileHandler(profile, task, replace_existing);
 }
 
 std::set<std::string> PowerPointGroupExtensions() {
@@ -393,18 +400,20 @@ std::set<std::string> PowerPointGroupMimeTypes() {
   return *mime_types;
 }
 
-void SetPowerPointFileHandler(Profile* profile, const TaskDescriptor& task) {
+void SetPowerPointFileHandler(Profile* profile,
+                              const TaskDescriptor& task,
+                              bool replace_existing) {
   UpdateDefaultTask(profile, task, PowerPointGroupExtensions(),
-                    PowerPointGroupMimeTypes());
+                    PowerPointGroupMimeTypes(), replace_existing);
 }
 
 void SetPowerPointFileHandlerToFilesSWA(Profile* profile,
-                                        const std::string& action_id) {
+                                        const std::string& action_id,
+                                        bool replace_existing) {
   TaskDescriptor task(kFileManagerSwaAppId, TaskType::TASK_TYPE_WEB_APP,
                       ToSwaActionId(action_id));
-  SetPowerPointFileHandler(profile, task);
+  SetPowerPointFileHandler(profile, task, replace_existing);
 }
-
 void SetAlwaysMoveOfficeFilesToDrive(Profile* profile, bool always_move) {
   profile->GetPrefs()->SetBoolean(prefs::kOfficeFilesAlwaysMoveToDrive,
                                   always_move);

@@ -197,9 +197,15 @@ std::set<std::string> ExcelGroupMimeTypes();
 std::set<std::string> PowerPointGroupMimeTypes();
 
 // Updates the default task for each of the office file types.
-void SetWordFileHandler(Profile* profile, const TaskDescriptor& task);
-void SetExcelFileHandler(Profile* profile, const TaskDescriptor& task);
-void SetPowerPointFileHandler(Profile* profile, const TaskDescriptor& task);
+void SetWordFileHandler(Profile* profile,
+                        const TaskDescriptor& task,
+                        bool replace_existing = true);
+void SetExcelFileHandler(Profile* profile,
+                         const TaskDescriptor& task,
+                         bool replace_existing = true);
+void SetPowerPointFileHandler(Profile* profile,
+                              const TaskDescriptor& task,
+                              bool replace_existing = true);
 
 // Whether we have an explicit user preference stored for the file handler for
 // this extension. |extension| should contain the leading '.'.
@@ -210,11 +216,14 @@ bool HasExplicitDefaultFileHandler(Profile* profile,
 // SWA with |action_id|. |action_id| must be a valid action registered with the
 // Files app SWA.
 void SetWordFileHandlerToFilesSWA(Profile* profile,
-                                  const std::string& action_id);
+                                  const std::string& action_id,
+                                  bool replace_existing = true);
 void SetExcelFileHandlerToFilesSWA(Profile* profile,
-                                   const std::string& action_id);
+                                   const std::string& action_id,
+                                   bool replace_existing = true);
 void SetPowerPointFileHandlerToFilesSWA(Profile* profile,
-                                        const std::string& action_id);
+                                        const std::string& action_id,
+                                        bool replace_existing = true);
 
 // Removes the specified default task for |action_id| for each of the office
 // file types.

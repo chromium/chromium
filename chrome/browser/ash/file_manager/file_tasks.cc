@@ -590,7 +590,8 @@ FullTaskDescriptor& FullTaskDescriptor::operator=(
 void UpdateDefaultTask(Profile* profile,
                        const TaskDescriptor& task_descriptor,
                        const std::set<std::string>& suffixes,
-                       const std::set<std::string>& mime_types) {
+                       const std::set<std::string>& mime_types,
+                       bool replace_existing) {
   PrefService* pref_service = profile->GetPrefs();
   if (!pref_service) {
     return;
@@ -646,6 +647,9 @@ void UpdateDefaultTask(Profile* profile,
     ScopedDictPrefUpdate mime_type_pref(pref_service,
                                         prefs::kDefaultTasksByMimeType);
     for (const std::string& mime_type : mime_types_to_set) {
+      if (!replace_existing && mime_type_pref->contains(mime_type)) {
+        continue;
+      }
       mime_type_pref->Set(mime_type, task_id);
     }
   }
@@ -654,6 +658,9 @@ void UpdateDefaultTask(Profile* profile,
     ScopedDictPrefUpdate suffix_pref(pref_service,
                                      prefs::kDefaultTasksBySuffix);
     for (const std::string& suffix : suffixes_to_set) {
+      if (!replace_existing && suffix_pref->contains(suffix)) {
+        continue;
+      }
       suffix_pref->Set(suffix, task_id);
     }
   }

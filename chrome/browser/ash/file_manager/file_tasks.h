@@ -242,11 +242,12 @@ struct ResultingTasks {
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable*);
 
 // Update the default file handler for the given sets of suffixes and MIME
-// types.
+// types. If |replace_existing| is false, does not rewrite existing prefs.
 void UpdateDefaultTask(Profile* profile,
                        const TaskDescriptor& task_descriptor,
                        const std::set<std::string>& suffixes,
-                       const std::set<std::string>& mime_types);
+                       const std::set<std::string>& mime_types,
+                       bool replace_existing = true);
 
 // Remove the specified file handler for the given sets of suffixes and MIME
 // types.
