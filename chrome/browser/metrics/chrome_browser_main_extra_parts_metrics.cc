@@ -20,7 +20,6 @@
 #include "base/metrics/sparse_histogram.h"
 #include "base/power_monitor/power_monitor_buildflags.h"
 #include "base/rand_util.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -1089,50 +1088,35 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
       IsBundleForMixedDeviceAccordingToVersionCode(
           base::android::BuildInfo::GetInstance()->package_version_code());
   if (is_device_of_interest) {
-    uint32_t gws_experiment_id = 0;
-    uint32_t milestone_gws_experiment_id = 0;
+    std::vector<std::string> gws_experiment_ids;
     std::string trial_group;
     base::Version product_version(PRODUCT_VERSION);
 #if defined(ARCH_CPU_64_BITS)
     trial_group = "64bit";
-    gws_experiment_id = 3368915;
+    gws_experiment_ids.push_back("3368915");
     if (product_version.IsValid()) {
-      // For now, we only plan to run the experiment in Chrome 116 and 117, so
+      // For now, we only plan to run the experiment in Chrome 117+ and 118+, so
       // only send GWS IDs for those versions.
-      switch (product_version.components()[0]) {
-        case 116:
-          milestone_gws_experiment_id = 3367343;
-          break;
-        case 117:
-          milestone_gws_experiment_id = 3367345;
-          break;
-        case 118:
-          milestone_gws_experiment_id = 3368917;
-          break;
-        default:
-            // Leave 0-initialized.
-            ;
+      auto milestone = product_version.components()[0];
+      if (milestone >= 117) {
+        gws_experiment_ids.push_back("3367345");
+      }
+      if (milestone >= 118) {
+        gws_experiment_ids.push_back("3368917");
       }
     }
 #else   // defined(ARCH_CPU_64_BITS)
-    gws_experiment_id = 3368914;
+    gws_experiment_ids.push_back("3368914");
     trial_group = "32bit";
     if (product_version.IsValid()) {
-      // For now, we only plan to run the experiment in Chrome 116 and 117, so
+      // For now, we only plan to run the experiment in Chrome 117+ and 118+, so
       // only send GWS IDs for those versions.
-      switch (product_version.components()[0]) {
-        case 116:
-          milestone_gws_experiment_id = 3367342;
-          break;
-        case 117:
-          milestone_gws_experiment_id = 3367344;
-          break;
-        case 118:
-          milestone_gws_experiment_id = 3368916;
-          break;
-        default:
-            // Leave 0-initialized.
-            ;
+      auto milestone = product_version.components()[0];
+      if (milestone >= 117) {
+        gws_experiment_ids.push_back("3367344");
+      }
+      if (milestone >= 118) {
+        gws_experiment_ids.push_back("3368916");
       }
     }
 #endif  // defined(ARCH_CPU_64_BITS)
@@ -1143,12 +1127,8 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
         "BitnessForMidRangeRAM_wVersion",
         std::string(PRODUCT_VERSION) + "_" + trial_group,
         variations::SyntheticTrialAnnotationMode::kCurrentLog);
-    std::vector<std::string> ids = {base::NumberToString(gws_experiment_id)};
-    if (milestone_gws_experiment_id) {
-      ids.push_back(base::NumberToString(milestone_gws_experiment_id));
-      variations::VariationsIdsProvider::GetInstance()->ForceVariationIds(ids,
-                                                                          "");
-    }
+    variations::VariationsIdsProvider::GetInstance()->ForceVariationIds(
+        gws_experiment_ids, "");
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 }
