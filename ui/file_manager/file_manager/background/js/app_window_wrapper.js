@@ -35,11 +35,9 @@ export class AppWindowWrapper {
    * Opens the window.
    *
    * @param {!FilesAppState} appState App state.
-   * @param {boolean} reopen True if the launching is triggered automatically.
-   *     False otherwise.
    * @return {Promise} Resolved when the window is launched.
    */
-  async launch(appState, reopen) {
+  async launch(appState) {
     // Check if the window is opened or not.
     if (this.openingOrOpened_) {
       console.warn('The window is already opened.');

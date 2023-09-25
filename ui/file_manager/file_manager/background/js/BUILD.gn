@@ -40,7 +40,6 @@ js_type_check("closure_compile_jsmodules") {
     ":file_operation_handler",
     ":file_operation_manager",
     ":file_operation_util",
-    ":launcher",
     ":mock_progress_center",
     ":progress_center",
     ":runtime_loaded_test_util",
@@ -97,7 +96,6 @@ js_library("file_manager_base") {
     ":file_operation_handler",
     ":file_operation_manager",
     ":file_operation_util",
-    ":launcher",
     ":progress_center",
     ":volume_manager_factory",
     "//ui/file_manager/file_manager/common/js:files_app_state",
@@ -181,15 +179,6 @@ js_library("file_operation_util") {
   deps = [ "//ui/file_manager/file_manager/common/js:util" ]
 }
 
-js_library("launcher") {
-  deps = [
-    ":app_window_wrapper",
-    "//ui/file_manager/file_manager/common/js:api",
-    "//ui/file_manager/file_manager/common/js:files_app_state",
-    "//ui/file_manager/file_manager/common/js:util",
-  ]
-}
-
 js_library("mock_volume_manager") {
   visibility += related_apps
   deps = [
@@ -253,7 +242,6 @@ js_library("test_util_base") {
 js_library("test_util") {
   deps = [
     ":file_manager_base",
-    ":launcher",
     ":test_util_base",
     "//ui/file_manager/file_manager/common/js:files_app_state",
     "//ui/file_manager/file_manager/common/js:progress_center_common",

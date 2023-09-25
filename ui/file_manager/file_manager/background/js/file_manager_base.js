@@ -7,7 +7,7 @@ import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {resolveIsolatedEntries} from '../../common/js/api.js';
 import {FilesAppState} from '../../common/js/files_app_state.js';
 import {recordInterval} from '../../common/js/metrics.js';
-import {str, util} from '../../common/js/util.js';
+import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {Crostini} from '../../externs/background/crostini.js';
 import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.js';
@@ -22,7 +22,7 @@ import {DriveSyncHandlerImpl} from './drive_sync_handler.js';
 import {FileOperationHandler} from './file_operation_handler.js';
 import {FileOperationManagerImpl} from './file_operation_manager.js';
 import {fileOperationUtil} from './file_operation_util.js';
-import {launcher} from './launcher.js';
+import {launchFileManager, setInitializationPromise} from './launcher.js';
 import {ProgressCenterImpl} from './progress_center.js';
 import {volumeManagerFactory} from './volume_manager_factory.js';
 
@@ -112,7 +112,7 @@ export class FileManagerBase {
     chrome.fileManagerPrivate.onMountCompleted.addListener(
         this.onMountCompleted_.bind(this));
 
-    launcher.setInitializationPromise(this.initializationPromise_);
+    setInitializationPromise(this.initializationPromise_);
   }
 
   /**
@@ -163,7 +163,7 @@ export class FileManagerBase {
    * @return {!Promise<void>} Resolved when the new window is opened.
    */
   async launchFileManager(appState = {}) {
-    return launcher.launchFileManager(appState);
+    return launchFileManager(appState);
   }
 
   /**
@@ -295,8 +295,7 @@ export class FileManagerBase {
              * @param {DirectoryEntry} directory
              */
             directory => {
-              launcher.launchFileManager(
-                  {currentDirectoryURL: directory.toURL()});
+              launchFileManager({currentDirectoryURL: directory.toURL()});
             });
   }
 
