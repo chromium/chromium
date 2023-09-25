@@ -1119,6 +1119,9 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
       shell()->web_contents()->GetController());
   ASSERT_FALSE(controller.NeedsReload());
   controller.SetNeedsReload();
+  // Set the restore type to `kRestored`, since `SetNeedsReload()` should only
+  // be used for session restore.
+  controller.GetLastCommittedEntry()->set_restore_type(RestoreType::kRestored);
   ASSERT_TRUE(controller.NeedsReload());
 
   // Set the controller as active, triggering the requested reload.
