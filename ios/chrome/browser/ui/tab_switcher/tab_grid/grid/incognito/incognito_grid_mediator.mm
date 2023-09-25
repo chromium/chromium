@@ -38,19 +38,19 @@
 - (instancetype)initWithPrefService:(PrefService*)prefService
                            consumer:(id<TabCollectionConsumer>)consumer {
   if (self = [super initWithConsumer:consumer]) {
-    // Register to observe any changes on supervised_user status.
-    if (base::FeatureList::IsEnabled(
-            supervised_user::
-                kFilterWebsitesForSupervisedUsersOnDesktopAndIOS)) {
       CHECK(prefService);
       _prefService = prefService;
       _prefChangeRegistrar.Init(_prefService);
-      _prefObserverBridge.reset(new PrefObserverBridge(self));
-      _prefObserverBridge->ObserveChangesForPreference(prefs::kSupervisedUserId,
-                                                       &_prefChangeRegistrar);
+      if (base::FeatureList::IsEnabled(
+              supervised_user::
+                  kFilterWebsitesForSupervisedUsersOnDesktopAndIOS)) {
+        _prefObserverBridge.reset(new PrefObserverBridge(self));
+        // Register to observe any changes on supervised_user status.
+        _prefObserverBridge->ObserveChangesForPreference(
+            prefs::kSupervisedUserId, &_prefChangeRegistrar);
+      }
       _incognitoDisabled = [self isIncognitoModeDisabled];
     }
-  }
   return self;
 }
 
@@ -138,8 +138,12 @@
 
 // Returns YES if incognito is disabled.
 - (BOOL)isIncognitoModeDisabled {
-  return supervised_user::IsSubjectToParentalControls(_prefService) ||
-         IsIncognitoModeDisabled(_prefService);
+  if (base::FeatureList::IsEnabled(
+          supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS)) {
+    return supervised_user::IsSubjectToParentalControls(_prefService) ||
+           IsIncognitoModeDisabled(_prefService);
+  }
+  return IsIncognitoModeDisabled(_prefService);
 }
 
 @end
