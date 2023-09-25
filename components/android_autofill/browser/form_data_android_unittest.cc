@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -125,6 +126,11 @@ TEST(FormDataAndroidTest, SimilarFormAs) {
   // If is_form_tag differs, they are not similar.
   f = af.form();
   f.is_form_tag = !f.is_form_tag;
+  EXPECT_FALSE(af.SimilarFormAs(f));
+
+  // If their global ids differ, they are not similar.
+  f = af.form();
+  f.unique_renderer_id = FormRendererId(f.unique_renderer_id.value() + 1);
   EXPECT_FALSE(af.SimilarFormAs(f));
 }
 

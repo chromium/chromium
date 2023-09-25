@@ -46,6 +46,10 @@ class FormDataAndroid {
   bool GetSimilarFieldIndex(const FormFieldData& field, size_t* index);
 
   // Returns true if this form is similar to the given form.
+  // `SimilarFormAs` checks `FormData` members that are unlikely to have been
+  // changed by direct user input. If they differ, the form has changed enough
+  // (e.g. by adding or removing fields) to warrant starting a new Autofill
+  // session.
   bool SimilarFormAs(const FormData& form) const;
 
   // Is invoked when the form field specified by `index` is changed to a new

@@ -11,6 +11,7 @@
 #include "components/android_autofill/browser/android_autofill_bridge_factory.h"
 #include "components/android_autofill/browser/mock_form_field_data_android_bridge.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -136,6 +137,11 @@ TEST(FormFieldDataAndroidTest, SimilarFieldsAs) {
   // If form control types differ, they are not similar.
   f2 = f1;
   f2.form_control_type = "password";
+  EXPECT_FALSE(af.SimilarFieldAs(f2));
+
+  // If global ids differ, they are not similar.
+  f2 = f1;
+  f2.unique_renderer_id = FieldRendererId(f1.unique_renderer_id.value() + 1);
   EXPECT_FALSE(af.SimilarFieldAs(f2));
 }
 
