@@ -2862,7 +2862,18 @@ void CSSAnimations::AnimationEventDelegate::MaybeDispatch(
         PseudoElement::PseudoElementNameForEvents(animation_target_);
     AnimationEvent* event = AnimationEvent::Create(
         event_name, name_, elapsed_time, pseudo_element_name);
-    event->SetTarget(GetEventTarget());
+
+    EventTarget* event_target = GetEventTarget();
+    if (!event_target) {
+      // TODO(crbug.com/1483390): Investigate why event target may be null.
+      // This condition only appears to be possible for a disposed pseudo-
+      // element. Though in this case, any attached CSS animations should be
+      // canceled. This workaround is safe since there is no originating
+      // element to listen to the event.
+      return;
+    }
+
+    event->SetTarget(event_target);
     GetDocument().EnqueueAnimationFrameEvent(event);
   }
 }
