@@ -877,6 +877,21 @@ chromium-metrics-reviews@google.com.
   <token key="Type" variants="InterestGroupRequestType"/>
 </histogram>
 
+<histogram
+    name="Ads.InterestGroup.NetHeaderResponse.HeaderDirectFromSellerSignals.ParseAndFindMatchTime"
+    units="ms" expires_after="2024-06-20">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    Time required to find a matching directFromSignalsSignalsHeaderAdSlot,
+    reported upon completion of the search.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.ReceivedDeprecatedBiddingSignalsFormat"
     enum="Boolean" expires_after="2024-06-20">
   <owner>mmenke@chromium.org</owner>

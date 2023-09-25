@@ -13,7 +13,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "url/gurl.h"
@@ -163,11 +165,16 @@ void OnJsonDecoded(
     std::string ad_slot,
     std::vector<std::string> errors,
     HeaderDirectFromSellerSignals::CompletionCallback callback,
+    base::TimeTicks start_time,
     data_decoder::DataDecoder::ValueOrError result) {
   std::unique_ptr<HeaderDirectFromSellerSignals> maybe_parsed =
       MaybeFindAdSlotSignalsInResponse(result, ad_slot, *it, errors);
   if (maybe_parsed) {
     // Found a match.
+    base::UmaHistogramTimes(
+        "Ads.InterestGroup.NetHeaderResponse.HeaderDirectFromSellerSignals."
+        "ParseAndFindMatchTime",
+        base::TimeTicks::Now() - start_time);
     std::move(callback).Run(std::move(maybe_parsed), std::move(errors));
     return;
   }
@@ -175,6 +182,10 @@ void OnJsonDecoded(
   ++it;
   if (it == responses->end()) {
     // No responses matched so add an error and return.
+    base::UmaHistogramTimes(
+        "Ads.InterestGroup.NetHeaderResponse.HeaderDirectFromSellerSignals."
+        "ParseAndFindMatchTime",
+        base::TimeTicks::Now() - start_time);
     errors.push_back(NoMatchError(ad_slot));
     std::move(callback).Run(std::make_unique<HeaderDirectFromSellerSignals>(),
                             std::move(errors));
@@ -190,7 +201,7 @@ void OnJsonDecoded(
   maybe_decoder->ParseJson(
       *it, base::BindOnce(&OnJsonDecoded, std::move(get_decoder),
                           std::move(responses), it, std::move(ad_slot),
-                          std::move(errors), std::move(callback)));
+                          std::move(errors), std::move(callback), start_time));
 }
 
 }  // namespace
@@ -199,7 +210,7 @@ HeaderDirectFromSellerSignals::HeaderDirectFromSellerSignals() = default;
 
 HeaderDirectFromSellerSignals::~HeaderDirectFromSellerSignals() = default;
 
-// TODO(crbug.com/1462720): Add UMA for response size and parsing time.
+// TODO(crbug.com/1462720): Add UMA for response size.
 /* static */
 void HeaderDirectFromSellerSignals::ParseAndFind(
     GetDecoderCallback get_decoder,
@@ -208,6 +219,10 @@ void HeaderDirectFromSellerSignals::ParseAndFind(
     CompletionCallback callback) {
   std::vector<std::string> errors;
   if (responses.empty()) {
+    base::UmaHistogramTimes(
+        "Ads.InterestGroup.NetHeaderResponse.HeaderDirectFromSellerSignals."
+        "ParseAndFindMatchTime",
+        base::Seconds(0));
     errors.push_back(NoMatchError(ad_slot));
     std::move(callback).Run(std::make_unique<HeaderDirectFromSellerSignals>(),
                             std::move(errors));
@@ -226,7 +241,7 @@ void HeaderDirectFromSellerSignals::ParseAndFind(
   maybe_decoder->ParseJson(
       *it, base::BindOnce(&OnJsonDecoded, get_decoder, std::move(my_responses),
                           it, std::move(ad_slot), std::move(errors),
-                          std::move(callback)));
+                          std::move(callback), base::TimeTicks::Now()));
 }
 
 HeaderDirectFromSellerSignals::HeaderDirectFromSellerSignals(
