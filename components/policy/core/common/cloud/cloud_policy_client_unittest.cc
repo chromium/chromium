@@ -668,6 +668,8 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         std::tuple(PolicyFetchReason::kUnspecified,
                    enterprise_management::DevicePolicyRequest::UNSPECIFIED),
+        std::tuple(PolicyFetchReason::kBrowserStart,
+                   enterprise_management::DevicePolicyRequest::BROWSER_START),
         std::tuple(
             PolicyFetchReason::kDeviceEnrollment,
             enterprise_management::DevicePolicyRequest::DEVICE_ENROLLMENT),

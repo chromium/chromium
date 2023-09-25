@@ -9,6 +9,7 @@
 #include "base/base64.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
+#include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
@@ -17,9 +18,19 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "services/network/test/test_network_connection_tracker.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace policy {
+
+namespace {
+MockCloudPolicyClient* AddMockClient(CloudPolicyCore* core) {
+  auto client = std::make_unique<MockCloudPolicyClient>();
+  auto* client_ptr = client.get();
+  core->Connect(std::move(client));
+  return client_ptr;
+}
+}  // namespace
 
 class CloudPolicyCoreTest : public testing::Test,
                             public CloudPolicyCore::Observer {
@@ -155,6 +166,54 @@ TEST_F(CloudPolicyCoreTest, RefreshScheduler) {
   EXPECT_EQ(1, refresh_scheduler_started_callback_count_);
   EXPECT_EQ(0, core_disconnecting_callback_count_);
   EXPECT_EQ(0, bad_callback_count_);
+}
+
+TEST_F(CloudPolicyCoreTest, RefreshSoonWithoutScheduler) {
+  // `RefreshSoon` requires a started `RefreshScheduler` with a connected
+  // `CloudPolicyClient` to do anything useful.
+  // This test verifies that the client is not called if there is no
+  // RefreshScheduler yet.
+  auto* client = AddMockClient(core_.get());
+  EXPECT_CALL(*client, FetchPolicy(testing::_)).Times(0);
+  EXPECT_FALSE(core_->refresh_scheduler());
+  core_->RefreshSoon(PolicyFetchReason::kTest);
+  base::RunLoop().RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(client);
+}
+
+TEST_F(CloudPolicyCoreTest, RefreshSoonWithoutConnectedClient) {
+  // `RefreshSoon` requires a started `RefreshScheduler` with a connected
+  // `CloudPolicyClient` to do anything useful.
+  // This test verifies that the client is not called if there is a
+  // RefreshScheduler, but the client is not connected yet.
+  auto* client = AddMockClient(core_.get());
+  EXPECT_CALL(*client, FetchPolicy(testing::_)).Times(0);
+  core_->StartRefreshScheduler();
+  EXPECT_TRUE(core_->refresh_scheduler());
+  core_->RefreshSoon(PolicyFetchReason::kTest);
+  base::RunLoop().RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(client);
+}
+
+TEST_F(CloudPolicyCoreTest, RefreshSoon) {
+  // In order to cleanly observe `RefreshSoon` triggering a `FetchPolicy` call
+  // in the client, we need to
+  //   a) start the scheduler and connect the client (`RefreshSoon` is a no-op
+  //      otherwise),
+  //   b) wait for the resulting initial fetch to be done.
+  auto* client = AddMockClient(core_.get());
+  EXPECT_CALL(*client, FetchPolicy(testing::_)).Times(1);
+  client->SetDMToken("new_token");
+  core_->StartRefreshScheduler();
+  base::RunLoop().RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(client);
+
+  // Now that the initialization phase is over, we can observe that
+  // `RefreshSoon` triggers the `FetchPolicy` call in the client.
+  EXPECT_CALL(*client, FetchPolicy(PolicyFetchReason::kTest)).Times(1);
+  core_->RefreshSoon(PolicyFetchReason::kTest);
+  base::RunLoop().RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(client);
 }
 
 TEST_F(CloudPolicyCoreTest, DmProtocolBase64Constants) {

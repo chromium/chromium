@@ -44,6 +44,7 @@
 #include "chromeos/ash/components/dbus/userdataauth/install_attributes_util.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
+#include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -699,7 +700,8 @@ void EnrollmentScreen::OnDeviceAttributeUploadCompleted(bool success) {
     // If the device attributes have been successfully uploaded, fetch policy.
     policy::BrowserPolicyConnectorAsh* connector =
         g_browser_process->platform_part()->browser_policy_connector_ash();
-    connector->GetDeviceCloudPolicyManager()->core()->RefreshSoon();
+    connector->GetDeviceCloudPolicyManager()->core()->RefreshSoon(
+        policy::PolicyFetchReason::kDeviceEnrollment);
     if (view_) {
       view_->ShowEnrollmentStatus(policy::EnrollmentStatus::ForStatus(
           policy::EnrollmentStatus::SUCCESS));

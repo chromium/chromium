@@ -49,6 +49,7 @@ struct DMServerJobResult;
 
 enum class PolicyFetchReason {
   kUnspecified,
+  kBrowserStart,
   kDeviceEnrollment,
   kInvalidation,
   kRegistrationChanged,

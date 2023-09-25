@@ -936,6 +936,8 @@ message DevicePolicyRequest {
     SIGNIN = 17;
     // A placeholder reason used for tests (should not occur in production).
     TEST = 18;
+    // Policy fetched at browser start, e.g. device policies at Ash start.
+    BROWSER_START = 19;
   }
   optional Reason reason = 4;
 }

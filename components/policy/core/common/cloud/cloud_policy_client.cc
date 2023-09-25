@@ -104,6 +104,8 @@ em::DevicePolicyRequest::Reason TranslateFetchReason(PolicyFetchReason reason) {
       return Request::SCHEDULED;
     case PolicyFetchReason::kSignin:
       return Request::SIGNIN;
+    case PolicyFetchReason::kBrowserStart:
+      return Request::BROWSER_START;
     case PolicyFetchReason::kTest:
       return Request::TEST;
   }

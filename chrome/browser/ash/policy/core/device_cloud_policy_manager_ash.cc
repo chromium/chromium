@@ -46,6 +46,7 @@
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
+#include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
@@ -217,7 +218,7 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
 
   core()->Connect(std::move(client_to_connect));
   core()->StartRefreshScheduler();
-  core()->RefreshSoon();
+  core()->RefreshSoon(PolicyFetchReason::kBrowserStart);
   core()->TrackRefreshDelayPref(local_state_,
                                 ::prefs::kDevicePolicyRefreshRate);
 

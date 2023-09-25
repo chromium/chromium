@@ -98,9 +98,12 @@ class POLICY_EXPORT CloudPolicyRefreshScheduler
   // For testing: get the value randomly assigned to refresh_delay_salt_ms_.
   int64_t GetSaltDelayForTesting() const { return refresh_delay_salt_ms_; }
 
-  // Schedules a refresh to be performed immediately.
-  // TODO(b/298336121) Make parameter non-optional.
-  void RefreshSoon(PolicyFetchReason reason = PolicyFetchReason::kUnspecified);
+  // Schedules a refresh to be performed immediately if the `client_` is
+  // registered. Otherwise, this is a no-op.
+  //
+  // The |reason| parameter will be used to tag the request to DMServer. This
+  // will allow for more targeted monitoring and alerting.
+  void RefreshSoon(PolicyFetchReason reason);
 
   // The refresh scheduler starts by assuming that invalidations are not
   // available. This call can be used to signal whether the invalidations
