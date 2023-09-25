@@ -21,9 +21,11 @@
 
 namespace blink {
 
-// This class coalesces browser side and enterprise policy state into a final
-// value which is then used to override the blink runtime feature state. It can
-// be queried with `Is*ForceEnabled()` or `Is*ForceDisabled()`.
+// This class coalesces browser side runtime feature state into a final value
+// which is then used to determine whether a given Blink runtime feature is
+// enabled.
+//
+// Use `Is*ForceEnabled()` or `Is*ForceDisabled()` to query the final value.
 class PLATFORM_EXPORT RuntimeFeatureStateOverrideContext
     : public GarbageCollected<RuntimeFeatureStateOverrideContext> {
  public:

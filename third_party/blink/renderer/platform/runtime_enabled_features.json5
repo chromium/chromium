@@ -195,23 +195,6 @@
       default: false,
       value_type: "bool",
     },
-
-    override_from_pref: {
-      valid_keys: [
-        // Chrome Prefs name (string) from which we will conditionally override
-        // the runtime feature value.
-        "name",
-        // If the preference equals the provided integral, string, or boolean
-        // value, the feature will be force enabled.
-        "force_enable_val",
-        // If the preference equals the provided integral, string, or
-        // boolean value, the feature will be force disabled.
-        "force_disable_val",
-        // Short-hand boolean flag. If true, will always override
-        // the feature. The specified Chrome Pref must be boolean.
-        "override_from_boolean_val",
-      ],
-    }
   },
 
   data: [
