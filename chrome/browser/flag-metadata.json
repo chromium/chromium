@@ -667,6 +667,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "autofill-enable-virtual-cards",
+    "owners": [ "siyua", "chbannon@google.com", "slobodan" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "autofill-highlight-only-changed-value-in-preview-mode",
     "owners": [ "koerber", "mamir" ],
     "expiry_milestone": 120

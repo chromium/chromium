@@ -1667,6 +1667,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          feature_engagement::kIPHiOSPromoPasswordManagerWidgetFeature)},
+    {"autofill-enable-virtual-cards",
+     flag_descriptions::kAutofillEnableVirtualCardsName,
+     flag_descriptions::kAutofillEnableVirtualCardsDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableVirtualCards)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

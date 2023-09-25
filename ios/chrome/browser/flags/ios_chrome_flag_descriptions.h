@@ -96,6 +96,11 @@ extern const char kAutofillEnableSupportForLandmarkDescription[];
 extern const char kAutofillEnableCardProductNameName[];
 extern const char kAutofillEnableCardProductNameDescription[];
 
+// Title and description for flag to enable virtual card enrollment and
+// retrieval.
+extern const char kAutofillEnableVirtualCardsName[];
+extern const char kAutofillEnableVirtualCardsDescription[];
+
 // Title and description for the flag to control the autofill delay.
 extern const char kAutofillIOSDelayBetweenFieldsName[];
 extern const char kAutofillIOSDelayBetweenFieldsDescription[];

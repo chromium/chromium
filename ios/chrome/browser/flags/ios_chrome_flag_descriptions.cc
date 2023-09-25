@@ -113,6 +113,12 @@ const char kAutofillEnableCardProductNameDescription[] =
     "When enabled, card product name (instead of issuer network) will be shown "
     "in Payments UI.";
 
+const char kAutofillEnableVirtualCardsName[] =
+    "Enable virtual card enrollment and retrieval";
+const char kAutofillEnableVirtualCardsDescription[] =
+    "When enabled, virtual card enrollment and retrieval will be available on "
+    "Bling.";
+
 const char kAutofillIOSDelayBetweenFieldsName[] = "Autofill delay";
 const char kAutofillIOSDelayBetweenFieldsDescription[] =
     "Delay between the different fields of a form being autofilled. In "

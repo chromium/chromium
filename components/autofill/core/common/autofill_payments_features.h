@@ -58,6 +58,7 @@ BASE_DECLARE_FEATURE(kAutofillUseEloRegexForBinMatching);
 #if BUILDFLAG(IS_IOS)
 BASE_DECLARE_FEATURE(kAutofillUseTwoDotsForLastFourDigits);
 BASE_DECLARE_FEATURE(kAutofillEnablePaymentsMandatoryReauthOnBling);
+BASE_DECLARE_FEATURE(kAutofillEnableVirtualCards);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

@@ -281,6 +281,12 @@ BASE_FEATURE(kAutofillUseTwoDotsForLastFourDigits,
 BASE_FEATURE(kAutofillEnablePaymentsMandatoryReauthOnBling,
              "AutofillEnablePaymentsMandatoryReauthOnBling",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When this is enabled, virtual card enrollment and retrieval will be enabled
+// on Bling.
+BASE_FEATURE(kAutofillEnableVirtualCards,
+             "AutofillEnableVirtualCards",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
