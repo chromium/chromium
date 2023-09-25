@@ -27,6 +27,8 @@ source_set("screen_ai") {
     "//skia",
     "//ui/accessibility:accessibility",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 if (is_linux || is_chromeos) {
@@ -45,6 +47,8 @@ if (is_linux || is_chromeos) {
     ]
 
     public_deps = [ "//sandbox/policy" ]
+
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
   }
 }
 

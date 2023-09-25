@@ -34,4 +34,6 @@ source_set("proto_convertors") {
     "//components/strings:components_strings_grit",
     "//ui/accessibility",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }

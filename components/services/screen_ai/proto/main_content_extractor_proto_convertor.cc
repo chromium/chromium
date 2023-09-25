@@ -5,7 +5,9 @@
 #include "components/services/screen_ai/proto/main_content_extractor_proto_convertor.h"
 
 #include "base/check_op.h"
-#include "base/containers/flat_set.h"
+#include "base/containers/contains.h"
+#include "base/containers/fixed_flat_map.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/services/screen_ai/proto/view_hierarchy.pb.h"
@@ -26,126 +28,129 @@ namespace {
 std::string GetMainContentExtractorRoleFromChromeRole(ax::mojom::Role role) {
   std::string role_name = ui::ToString(role);
 
-  static base::flat_set<ax::mojom::Role> roles_with_similar_name = {
-      ax::mojom::Role::kAlert,       ax::mojom::Role::kArticle,
-      ax::mojom::Role::kBanner,      ax::mojom::Role::kBlockquote,
-      ax::mojom::Role::kButton,      ax::mojom::Role::kCaption,
-      ax::mojom::Role::kCell,        ax::mojom::Role::kCode,
-      ax::mojom::Role::kComment,     ax::mojom::Role::kComplementary,
-      ax::mojom::Role::kDefinition,  ax::mojom::Role::kDialog,
-      ax::mojom::Role::kDirectory,   ax::mojom::Role::kDocument,
-      ax::mojom::Role::kEmphasis,    ax::mojom::Role::kFeed,
-      ax::mojom::Role::kFigure,      ax::mojom::Role::kForm,
-      ax::mojom::Role::kGrid,        ax::mojom::Role::kGroup,
-      ax::mojom::Role::kHeading,     ax::mojom::Role::kLink,
-      ax::mojom::Role::kList,        ax::mojom::Role::kLog,
-      ax::mojom::Role::kMain,        ax::mojom::Role::kMarquee,
-      ax::mojom::Role::kMath,        ax::mojom::Role::kMenu,
-      ax::mojom::Role::kMark,        ax::mojom::Role::kMeter,
-      ax::mojom::Role::kNavigation,  ax::mojom::Role::kNone,
-      ax::mojom::Role::kNote,        ax::mojom::Role::kParagraph,
-      ax::mojom::Role::kRegion,      ax::mojom::Role::kRow,
-      ax::mojom::Role::kSearch,      ax::mojom::Role::kSlider,
-      ax::mojom::Role::kStatus,      ax::mojom::Role::kStrong,
-      ax::mojom::Role::kSubscript,   ax::mojom::Role::kSuggestion,
-      ax::mojom::Role::kSuperscript, ax::mojom::Role::kSwitch,
-      ax::mojom::Role::kTab,         ax::mojom::Role::kTable,
-      ax::mojom::Role::kTerm,        ax::mojom::Role::kTime,
-      ax::mojom::Role::kTimer,       ax::mojom::Role::kToolbar,
-      ax::mojom::Role::kTooltip,     ax::mojom::Role::kTree,
-  };
-  if (roles_with_similar_name.find(role) != roles_with_similar_name.end())
+  constexpr auto kRolesWithSimilarName =
+      base::MakeFixedFlatSet<ax::mojom::Role>({
+          ax::mojom::Role::kAlert,       ax::mojom::Role::kArticle,
+          ax::mojom::Role::kBanner,      ax::mojom::Role::kBlockquote,
+          ax::mojom::Role::kButton,      ax::mojom::Role::kCaption,
+          ax::mojom::Role::kCell,        ax::mojom::Role::kCode,
+          ax::mojom::Role::kComment,     ax::mojom::Role::kComplementary,
+          ax::mojom::Role::kDefinition,  ax::mojom::Role::kDialog,
+          ax::mojom::Role::kDirectory,   ax::mojom::Role::kDocument,
+          ax::mojom::Role::kEmphasis,    ax::mojom::Role::kFeed,
+          ax::mojom::Role::kFigure,      ax::mojom::Role::kForm,
+          ax::mojom::Role::kGrid,        ax::mojom::Role::kGroup,
+          ax::mojom::Role::kHeading,     ax::mojom::Role::kLink,
+          ax::mojom::Role::kList,        ax::mojom::Role::kLog,
+          ax::mojom::Role::kMain,        ax::mojom::Role::kMarquee,
+          ax::mojom::Role::kMath,        ax::mojom::Role::kMenu,
+          ax::mojom::Role::kMark,        ax::mojom::Role::kMeter,
+          ax::mojom::Role::kNavigation,  ax::mojom::Role::kNone,
+          ax::mojom::Role::kNote,        ax::mojom::Role::kParagraph,
+          ax::mojom::Role::kRegion,      ax::mojom::Role::kRow,
+          ax::mojom::Role::kSearch,      ax::mojom::Role::kSlider,
+          ax::mojom::Role::kStatus,      ax::mojom::Role::kStrong,
+          ax::mojom::Role::kSubscript,   ax::mojom::Role::kSuggestion,
+          ax::mojom::Role::kSuperscript, ax::mojom::Role::kSwitch,
+          ax::mojom::Role::kTab,         ax::mojom::Role::kTable,
+          ax::mojom::Role::kTerm,        ax::mojom::Role::kTime,
+          ax::mojom::Role::kTimer,       ax::mojom::Role::kToolbar,
+          ax::mojom::Role::kTooltip,     ax::mojom::Role::kTree,
+      });
+  if (base::Contains(kRolesWithSimilarName, role)) {
     return role_name;
+  }
 
-  static base::flat_set<ax::mojom::Role> roles_with_all_lowercase_name = {
-      ax::mojom::Role::kAlertDialog,   ax::mojom::Role::kApplication,
-      ax::mojom::Role::kCheckBox,      ax::mojom::Role::kColumnHeader,
-      ax::mojom::Role::kContentInfo,   ax::mojom::Role::kListBox,
-      ax::mojom::Role::kListItem,      ax::mojom::Role::kMenuBar,
-      ax::mojom::Role::kMenuItem,      ax::mojom::Role::kMenuItemCheckBox,
-      ax::mojom::Role::kMenuItemRadio, ax::mojom::Role::kRadioGroup,
-      ax::mojom::Role::kRowGroup,      ax::mojom::Role::kRowHeader,
-      ax::mojom::Role::kScrollBar,     ax::mojom::Role::kSearchBox,
-      ax::mojom::Role::kSpinButton,    ax::mojom::Role::kTabList,
-      ax::mojom::Role::kTabPanel,      ax::mojom::Role::kTreeItem,
-  };
-  if (roles_with_all_lowercase_name.find(role) !=
-      roles_with_all_lowercase_name.end()) {
+  constexpr auto kRolesWithAllLowercaseName =
+      base::MakeFixedFlatSet<ax::mojom::Role>({
+          ax::mojom::Role::kAlertDialog,   ax::mojom::Role::kApplication,
+          ax::mojom::Role::kCheckBox,      ax::mojom::Role::kColumnHeader,
+          ax::mojom::Role::kContentInfo,   ax::mojom::Role::kListBox,
+          ax::mojom::Role::kListItem,      ax::mojom::Role::kMenuBar,
+          ax::mojom::Role::kMenuItem,      ax::mojom::Role::kMenuItemCheckBox,
+          ax::mojom::Role::kMenuItemRadio, ax::mojom::Role::kRadioGroup,
+          ax::mojom::Role::kRowGroup,      ax::mojom::Role::kRowHeader,
+          ax::mojom::Role::kScrollBar,     ax::mojom::Role::kSearchBox,
+          ax::mojom::Role::kSpinButton,    ax::mojom::Role::kTabList,
+          ax::mojom::Role::kTabPanel,      ax::mojom::Role::kTreeItem,
+      });
+  if (base::Contains(kRolesWithAllLowercaseName, role)) {
     return base::ToLowerASCII(role_name);
   }
 
-  static base::flat_map<ax::mojom::Role, std::string>
-      roles_with_different_name = {
-          // Aria Roles.
-          {ax::mojom::Role::kComboBoxGrouping, "combobox"},
-          {ax::mojom::Role::kComboBoxSelect, "combobox"},
-          {ax::mojom::Role::kContentDeletion, "deletion"},
-          {ax::mojom::Role::kDocAbstract, "doc-abstract"},
-          {ax::mojom::Role::kDocAcknowledgments, "doc-acknowledgments"},
-          {ax::mojom::Role::kDocAfterword, "doc-afterword"},
-          {ax::mojom::Role::kDocAppendix, "doc-appendix"},
-          {ax::mojom::Role::kDocBackLink, "doc-backlink"},
-          {ax::mojom::Role::kDocBiblioEntry, "doc-biblioentry"},
-          {ax::mojom::Role::kDocBibliography, "doc-bibliography"},
-          {ax::mojom::Role::kDocBiblioRef, "doc-biblioref"},
-          {ax::mojom::Role::kDocChapter, "doc-chapter"},
-          {ax::mojom::Role::kDocColophon, "doc-colophon"},
-          {ax::mojom::Role::kDocConclusion, "doc-conclusion"},
-          {ax::mojom::Role::kDocCover, "doc-cover"},
-          {ax::mojom::Role::kDocCredit, "doc-credit"},
-          {ax::mojom::Role::kDocCredits, "doc-credits"},
-          {ax::mojom::Role::kDocDedication, "doc-dedication"},
-          {ax::mojom::Role::kDocEndnote, "doc-endnote"},
-          {ax::mojom::Role::kDocEndnotes, "doc-endnotes"},
-          {ax::mojom::Role::kDocEpigraph, "doc-epigraph"},
-          {ax::mojom::Role::kDocEpilogue, "doc-epilogue"},
-          {ax::mojom::Role::kDocErrata, "doc-errata"},
-          {ax::mojom::Role::kDocExample, "doc-example"},
-          {ax::mojom::Role::kDocFootnote, "doc-footnote"},
-          {ax::mojom::Role::kDocForeword, "doc-foreword"},
-          {ax::mojom::Role::kDocGlossary, "doc-glossary"},
-          {ax::mojom::Role::kDocGlossRef, "doc-glossref"},
-          {ax::mojom::Role::kDocIndex, "doc-index"},
-          {ax::mojom::Role::kDocIntroduction, "doc-introduction"},
-          {ax::mojom::Role::kDocNoteRef, "doc-noteref"},
-          {ax::mojom::Role::kDocNotice, "doc-notice"},
-          {ax::mojom::Role::kDocPageBreak, "doc-pagebreak"},
-          {ax::mojom::Role::kDocPageFooter, "doc-pagefooter"},
-          {ax::mojom::Role::kDocPageHeader, "doc-pageheader"},
-          {ax::mojom::Role::kDocPageList, "doc-pagelist"},
-          {ax::mojom::Role::kDocPart, "doc-part"},
-          {ax::mojom::Role::kDocPreface, "doc-preface"},
-          {ax::mojom::Role::kDocPrologue, "doc-prologue"},
-          {ax::mojom::Role::kDocPullquote, "doc-pullquote"},
-          {ax::mojom::Role::kDocQna, "doc-qna"},
-          {ax::mojom::Role::kDocSubtitle, "doc-subtitle"},
-          {ax::mojom::Role::kDocTip, "doc-tip"},
-          {ax::mojom::Role::kDocToc, "doc-toc"},
-          {ax::mojom::Role::kGenericContainer, "generic"},
-          {ax::mojom::Role::kGraphicsDocument, "graphics-document"},
-          {ax::mojom::Role::kGraphicsObject, "graphics-object"},
-          {ax::mojom::Role::kGraphicsSymbol, "graphics-symbol"},
-          {ax::mojom::Role::kCell, "gridcell"},
-          {ax::mojom::Role::kImage, "img"},
-          {ax::mojom::Role::kContentInsertion, "insertion"},
-          {ax::mojom::Role::kListBoxOption, "option"},
-          {ax::mojom::Role::kProgressIndicator, "progressbar"},
-          {ax::mojom::Role::kRadioButton, "radio"},
-          {ax::mojom::Role::kSplitter, "separator"},
-          {ax::mojom::Role::kTextField, "textbox"},
-          {ax::mojom::Role::kTreeGrid, "treegrid"},
-          // Reverse Roles
-          {ax::mojom::Role::kHeader, "banner"},
-          {ax::mojom::Role::kToggleButton, "button"},
-          {ax::mojom::Role::kPopUpButton, "combobox"},
-          {ax::mojom::Role::kFooter, "contentinfo"},
-          {ax::mojom::Role::kMenuListOption, "menuitem"},
-          {ax::mojom::Role::kComboBoxMenuButton, "combobox"},
-          {ax::mojom::Role::kTextFieldWithComboBox, "combobox"}};
+  constexpr auto kRolesWithDifferentName =
+      base::MakeFixedFlatMap<ax::mojom::Role, std::string_view>(
+          {// Aria Roles.
+           {ax::mojom::Role::kComboBoxGrouping, "combobox"},
+           {ax::mojom::Role::kComboBoxSelect, "combobox"},
+           {ax::mojom::Role::kContentDeletion, "deletion"},
+           {ax::mojom::Role::kDocAbstract, "doc-abstract"},
+           {ax::mojom::Role::kDocAcknowledgments, "doc-acknowledgments"},
+           {ax::mojom::Role::kDocAfterword, "doc-afterword"},
+           {ax::mojom::Role::kDocAppendix, "doc-appendix"},
+           {ax::mojom::Role::kDocBackLink, "doc-backlink"},
+           {ax::mojom::Role::kDocBiblioEntry, "doc-biblioentry"},
+           {ax::mojom::Role::kDocBibliography, "doc-bibliography"},
+           {ax::mojom::Role::kDocBiblioRef, "doc-biblioref"},
+           {ax::mojom::Role::kDocChapter, "doc-chapter"},
+           {ax::mojom::Role::kDocColophon, "doc-colophon"},
+           {ax::mojom::Role::kDocConclusion, "doc-conclusion"},
+           {ax::mojom::Role::kDocCover, "doc-cover"},
+           {ax::mojom::Role::kDocCredit, "doc-credit"},
+           {ax::mojom::Role::kDocCredits, "doc-credits"},
+           {ax::mojom::Role::kDocDedication, "doc-dedication"},
+           {ax::mojom::Role::kDocEndnote, "doc-endnote"},
+           {ax::mojom::Role::kDocEndnotes, "doc-endnotes"},
+           {ax::mojom::Role::kDocEpigraph, "doc-epigraph"},
+           {ax::mojom::Role::kDocEpilogue, "doc-epilogue"},
+           {ax::mojom::Role::kDocErrata, "doc-errata"},
+           {ax::mojom::Role::kDocExample, "doc-example"},
+           {ax::mojom::Role::kDocFootnote, "doc-footnote"},
+           {ax::mojom::Role::kDocForeword, "doc-foreword"},
+           {ax::mojom::Role::kDocGlossary, "doc-glossary"},
+           {ax::mojom::Role::kDocGlossRef, "doc-glossref"},
+           {ax::mojom::Role::kDocIndex, "doc-index"},
+           {ax::mojom::Role::kDocIntroduction, "doc-introduction"},
+           {ax::mojom::Role::kDocNoteRef, "doc-noteref"},
+           {ax::mojom::Role::kDocNotice, "doc-notice"},
+           {ax::mojom::Role::kDocPageBreak, "doc-pagebreak"},
+           {ax::mojom::Role::kDocPageFooter, "doc-pagefooter"},
+           {ax::mojom::Role::kDocPageHeader, "doc-pageheader"},
+           {ax::mojom::Role::kDocPageList, "doc-pagelist"},
+           {ax::mojom::Role::kDocPart, "doc-part"},
+           {ax::mojom::Role::kDocPreface, "doc-preface"},
+           {ax::mojom::Role::kDocPrologue, "doc-prologue"},
+           {ax::mojom::Role::kDocPullquote, "doc-pullquote"},
+           {ax::mojom::Role::kDocQna, "doc-qna"},
+           {ax::mojom::Role::kDocSubtitle, "doc-subtitle"},
+           {ax::mojom::Role::kDocTip, "doc-tip"},
+           {ax::mojom::Role::kDocToc, "doc-toc"},
+           {ax::mojom::Role::kGenericContainer, "generic"},
+           {ax::mojom::Role::kGraphicsDocument, "graphics-document"},
+           {ax::mojom::Role::kGraphicsObject, "graphics-object"},
+           {ax::mojom::Role::kGraphicsSymbol, "graphics-symbol"},
+           {ax::mojom::Role::kCell, "gridcell"},
+           {ax::mojom::Role::kImage, "img"},
+           {ax::mojom::Role::kContentInsertion, "insertion"},
+           {ax::mojom::Role::kListBoxOption, "option"},
+           {ax::mojom::Role::kProgressIndicator, "progressbar"},
+           {ax::mojom::Role::kRadioButton, "radio"},
+           {ax::mojom::Role::kSplitter, "separator"},
+           {ax::mojom::Role::kTextField, "textbox"},
+           {ax::mojom::Role::kTreeGrid, "treegrid"},
+           // Reverse Roles
+           {ax::mojom::Role::kHeader, "banner"},
+           {ax::mojom::Role::kToggleButton, "button"},
+           {ax::mojom::Role::kPopUpButton, "combobox"},
+           {ax::mojom::Role::kFooter, "contentinfo"},
+           {ax::mojom::Role::kMenuListOption, "menuitem"},
+           {ax::mojom::Role::kComboBoxMenuButton, "combobox"},
+           {ax::mojom::Role::kTextFieldWithComboBox, "combobox"}});
 
-  const auto& item = roles_with_different_name.find(role);
-  if (item != roles_with_different_name.end())
-    return item->second;
+  const auto* it = kRolesWithDifferentName.find(role);
+  if (it != kRolesWithDifferentName.end()) {
+    return std::string(it->second);
+  }
 
   // Roles that are not in the above tree groups have uppercase first letter
   // names.
@@ -356,20 +361,16 @@ std::string SnapshotToViewHierarchy(const ui::AXTreeUpdate& snapshot) {
   return proto.SerializeAsString();
 }
 
-const std::map<std::string, ax::mojom::Role>&
+std::map<std::string, ax::mojom::Role>
 GetMainContentExtractorToChromeRoleConversionMapForTesting() {
-  static std::map<std::string, ax::mojom::Role> contentExtractionToChromeRoles;
-
-  if (contentExtractionToChromeRoles.empty()) {
-    for (int i = static_cast<int>(ax::mojom::Role::kMinValue);
-         i <= static_cast<int>(ax::mojom::Role::kMaxValue); i++) {
-      auto role = static_cast<ax::mojom::Role>(i);
-      contentExtractionToChromeRoles[GetMainContentExtractorRoleFromChromeRole(
-          role)] = role;
-    }
+  std::map<std::string, ax::mojom::Role> content_extraction_to_chrome_roles;
+  for (int i = static_cast<int>(ax::mojom::Role::kMinValue);
+       i <= static_cast<int>(ax::mojom::Role::kMaxValue); i++) {
+    auto role = static_cast<ax::mojom::Role>(i);
+    content_extraction_to_chrome_roles
+        [GetMainContentExtractorRoleFromChromeRole(role)] = role;
   }
-
-  return contentExtractionToChromeRoles;
+  return content_extraction_to_chrome_roles;
 }
 
 }  // namespace screen_ai

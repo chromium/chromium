@@ -12,4 +12,6 @@ source_set("utilities") {
     "//base",
     "//components/component_updater",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }

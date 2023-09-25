@@ -339,9 +339,11 @@ TEST_P(ProtoConvertorViewHierarchyTest, MAYBE_AxTreeJsonToProtoTest) {
   ASSERT_TRUE(json.has_value());
 
   // Convert JSON file to AX tree update.
+  const std::map<std::string, ax::mojom::Role>
+      content_extraction_to_chrome_roles =
+          GetMainContentExtractorToChromeRoleConversionMapForTesting();
   ui::AXTreeUpdate tree_update = ui::AXTreeUpdateFromJSON(
-      json.value(),
-      &GetMainContentExtractorToChromeRoleConversionMapForTesting());
+      json.value(), &content_extraction_to_chrome_roles);
   ASSERT_GT(tree_update.nodes.size(), 0u);
 
   // Convert AX Tree to Screen2x proto.
