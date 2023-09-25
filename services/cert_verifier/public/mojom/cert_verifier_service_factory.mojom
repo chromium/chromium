@@ -9,9 +9,6 @@ import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/read_only_buffer.mojom";
 import "services/network/public/mojom/cert_verifier_service.mojom";
 
-[EnableIf=is_trial_comparison_cert_verifier_supported]
-import "services/cert_verifier/public/mojom/trial_comparison_cert_verifier.mojom";
-
 // Parameters to specify how the net::CertVerifier and net::CertVerifyProc
 // objects should be instantiated.
 struct CertVerifierCreationParams {
@@ -29,12 +26,6 @@ struct CertVerifierCreationParams {
   // isn't opened multiple times for NetworkContexts in the same profie.
   [EnableIf=is_chromeos_ash]
   string username_hash;
-
-  // Parameters for the cert verifier comparison trial. This is a temporary
-  // interface and embedders should not use it.
-  // See https://crbug.com/649026
-  [EnableIf=is_trial_comparison_cert_verifier_supported]
-  TrialComparisonCertVerifierParams? trial_comparison_cert_verifier_params;
 };
 
 // Serialized copy of the Chrome Root store.
