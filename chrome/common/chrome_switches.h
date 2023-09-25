@@ -251,6 +251,7 @@ extern const char kEnableProfileShortcutManager[];
 extern const char kFromInstaller[];
 extern const char kHideIcons[];
 extern const char kNoNetworkProfileWarning[];
+extern const char kNoPreReadMainDll[];
 extern const char kNotificationInlineReply[];
 extern const char kNotificationLaunchId[];
 extern const char kPrefetchArgumentBrowserBackground[];

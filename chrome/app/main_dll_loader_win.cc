@@ -87,9 +87,12 @@ base::FilePath GetModulePath(base::WStringPiece module_name) {
 // Prefetches and loads |module| after setting the CWD to |module|'s
 // directory. Returns a handle to the loaded module on success, or nullptr on
 // failure.
-HMODULE LoadModuleWithDirectory(const base::FilePath& module) {
+HMODULE LoadModuleWithDirectory(const base::FilePath& module,
+                                const base::CommandLine& cmd_line) {
   ::SetCurrentDirectoryW(module.DirName().value().c_str());
-  base::PreReadFile(module, /*is_executable=*/true);
+  if (!cmd_line.HasSwitch(switches::kNoPreReadMainDll)) {
+    base::PreReadFile(module, /*is_executable=*/true);
+  }
   HMODULE handle = ::LoadLibraryExW(module.value().c_str(), nullptr,
                                     LOAD_WITH_ALTERED_SEARCH_PATH);
   return handle;
@@ -98,13 +101,13 @@ HMODULE LoadModuleWithDirectory(const base::FilePath& module) {
 // Prefetches and loads the appropriate DLL for the process type
 // |process_type_|. Populates |module| with the path of the loaded DLL.
 // Returns a handle to the loaded DLL, or nullptr on failure.
-HMODULE Load(base::FilePath* module) {
+HMODULE Load(base::FilePath* module, const base::CommandLine& cmd_line) {
   *module = GetModulePath(installer::kChromeDll);
   if (module->empty()) {
     PLOG(ERROR) << "Cannot find module " << installer::kChromeDll;
     return nullptr;
   }
-  HMODULE dll = LoadModuleWithDirectory(*module);
+  HMODULE dll = LoadModuleWithDirectory(*module, cmd_line);
   if (!dll)
     PLOG(ERROR) << "Failed to load Chrome DLL from " << module->value();
   return dll;
@@ -146,7 +149,7 @@ int MainDllLoader::Launch(HINSTANCE instance,
   }
 
   base::FilePath file;
-  dll_ = Load(&file);
+  dll_ = Load(&file, cmd_line);
   if (!dll_)
     return chrome::RESULT_CODE_MISSING_DATA;
 

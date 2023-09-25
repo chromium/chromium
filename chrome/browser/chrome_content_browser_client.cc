@@ -2998,6 +2998,12 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
   }
 #endif
 
+#if BUILDFLAG(IS_WIN)
+  if (base::FeatureList::IsEnabled(features::kNoPreReadMainDll)) {
+    command_line->AppendSwitch(switches::kNoPreReadMainDll);
+  }
+#endif
+
   ThreadProfilerConfiguration::Get()->AppendCommandLineSwitchForChildProcess(
       command_line);
 

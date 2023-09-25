@@ -797,6 +797,12 @@ const char kHideIcons[] = "hide-icons";
 // This flag is only relevant for Windows currently.
 const char kNoNetworkProfileWarning[] = "no-network-profile-warning";
 
+// Whether this process should PrefetchVirtualMemory on the contents of
+// Chrome.dll. This warms up the pages in memory to speed up startup but might
+// not be required in later renderers and/or GPU. For experiment info see
+// crbug.com/1350257.
+const char kNoPreReadMainDll[] = "no-pre-read-main-dll";
+
 // Used in combination with kNotificationLaunchId to specify the inline reply
 // entered in the toast in the Windows Action Center.
 const char kNotificationInlineReply[] = "notification-inline-reply";
