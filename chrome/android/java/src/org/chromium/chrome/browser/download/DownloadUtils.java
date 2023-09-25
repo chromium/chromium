@@ -248,7 +248,7 @@ public class DownloadUtils {
         int minSupportedVersion = sMinSdkVersionForUserInitiatedJobsForTesting == null
                 ? 34
                 : sMinSdkVersionForUserInitiatedJobsForTesting;
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOADS_MIGRATE_TO_JOBS_API)
+        return ChromeFeatureList.sDownloadsMigrateToJobsAPI.isEnabled()
                 && Build.VERSION.SDK_INT >= minSupportedVersion;
     }
 

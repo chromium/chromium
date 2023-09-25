@@ -539,6 +539,8 @@ public abstract class ChromeFeatureList {
             new CachedFlag(DELAY_TEMP_STRIP_REMOVAL, true);
     public static final CachedFlag sDragDropIntoOmnibox =
             new CachedFlag(DRAG_DROP_INTO_OMNIBOX, false);
+    public static final CachedFlag sDownloadsMigrateToJobsAPI =
+            new CachedFlag(DOWNLOADS_MIGRATE_TO_JOBS_API, false);
     public static final CachedFlag sEmptyStates = new CachedFlag(EMPTY_STATES, true);
     public static final CachedFlag sExperimentsForAgsa = new CachedFlag(EXPERIMENTS_FOR_AGSA, true);
     public static final CachedFlag sFeedLoadingPlaceholder =
@@ -644,6 +646,7 @@ public abstract class ChromeFeatureList {
         sCommandLineOnNonRooted,
         sDelayTempStripRemoval,
         sDragDropIntoOmnibox,
+        sDownloadsMigrateToJobsAPI,
         sEmptyStates,
         sFeedLoadingPlaceholder,
         sFriendlierSafeBrowsingSettingsEnhancedProtection,
