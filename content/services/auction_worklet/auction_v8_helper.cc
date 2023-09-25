@@ -14,6 +14,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -806,7 +807,7 @@ void AuctionV8Helper::ConnectDevToolsAgent(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!devtools_agent_) {
     devtools_agent_ = std::make_unique<AuctionV8DevToolsAgent>(
-        this, debug_command_queue_.get(), std::move(mojo_sequence));
+        this, debug_command_queue_, std::move(mojo_sequence));
     v8_inspector_ =
         v8_inspector::V8Inspector::create(isolate(), devtools_agent_.get());
   }

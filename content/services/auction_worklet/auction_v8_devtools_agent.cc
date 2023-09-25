@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
@@ -22,11 +23,11 @@ AuctionV8DevToolsAgent::ContextGroupInfo::~ContextGroupInfo() = default;
 
 AuctionV8DevToolsAgent::AuctionV8DevToolsAgent(
     AuctionV8Helper* v8_helper,
-    DebugCommandQueue* debug_command_queue,
+    scoped_refptr<DebugCommandQueue> debug_command_queue,
     scoped_refptr<base::SequencedTaskRunner> io_session_receiver_sequence)
     : v8_helper_(v8_helper),
       io_session_receiver_sequence_(std::move(io_session_receiver_sequence)),
-      debug_command_queue_(debug_command_queue) {}
+      debug_command_queue_(debug_command_queue.get()) {}
 
 AuctionV8DevToolsAgent::~AuctionV8DevToolsAgent() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
@@ -81,10 +82,11 @@ void AuctionV8DevToolsAgent::AttachDevToolsSession(
           // `sessions_` guarantees `session_impl` won't outlast `this`.
           base::Unretained(this));
   auto session_impl = std::make_unique<AuctionV8DevToolsSession>(
-      v8_helper_, debug_command_queue_, context_group_id, session_id,
-      client_expects_binary_responses, session_waits_for_debugger,
-      std::move(host), io_session_receiver_sequence_,
-      std::move(io_session_receiver), std::move(session_destroyed));
+      v8_helper_, scoped_refptr<DebugCommandQueue>(debug_command_queue_),
+      context_group_id, session_id, client_expects_binary_responses,
+      session_waits_for_debugger, std::move(host),
+      io_session_receiver_sequence_, std::move(io_session_receiver),
+      std::move(session_destroyed));
   context_group_info.sessions.insert(session_impl.get());
   sessions_.Add(std::move(session_impl), std::move(session_receiver));
 }

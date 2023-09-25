@@ -12,6 +12,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
@@ -105,10 +106,10 @@ class AuctionV8DevToolsSession::IOSession
   static void Create(
       mojo::PendingReceiver<blink::mojom::DevToolsSession> io_session_receiver,
       scoped_refptr<base::SequencedTaskRunner> io_session_receiver_sequence,
-      DebugCommandQueue* debug_command_queue,
+      scoped_refptr<DebugCommandQueue> debug_command_queue,
       RunDispatch v8_thread_dispatch) {
-    auto instance = base::WrapUnique(
-        new IOSession(debug_command_queue, std::move(v8_thread_dispatch)));
+    auto instance = base::WrapUnique(new IOSession(
+        std::move(debug_command_queue), std::move(v8_thread_dispatch)));
     io_session_receiver_sequence->PostTask(
         FROM_HERE,
         base::BindOnce(&IOSession::ConnectReceiver, std::move(instance),
@@ -129,9 +130,9 @@ class AuctionV8DevToolsSession::IOSession
   }
 
  private:
-  IOSession(DebugCommandQueue* debug_command_queue,
+  IOSession(scoped_refptr<DebugCommandQueue> debug_command_queue,
             RunDispatch v8_thread_dispatch)
-      : debug_command_queue_(debug_command_queue),
+      : debug_command_queue_(std::move(debug_command_queue)),
         v8_thread_dispatch_(v8_thread_dispatch) {
     DETACH_FROM_SEQUENCE(io_session_receiver_sequence_checker_);
   }
@@ -146,8 +147,7 @@ class AuctionV8DevToolsSession::IOSession
                                 std::move(io_session_receiver));
   }
 
-  const raw_ptr<DebugCommandQueue, AcrossTasksDanglingUntriaged>
-      debug_command_queue_;
+  const scoped_refptr<DebugCommandQueue> debug_command_queue_;
   RunDispatch v8_thread_dispatch_;
 
   SEQUENCE_CHECKER(io_session_receiver_sequence_checker_);
@@ -155,7 +155,7 @@ class AuctionV8DevToolsSession::IOSession
 
 AuctionV8DevToolsSession::AuctionV8DevToolsSession(
     AuctionV8Helper* v8_helper,
-    DebugCommandQueue* debug_command_queue,
+    scoped_refptr<DebugCommandQueue> debug_command_queue,
     int context_group_id,
     const std::string& session_id,
     bool client_expects_binary_responses,
@@ -165,7 +165,7 @@ AuctionV8DevToolsSession::AuctionV8DevToolsSession(
     mojo::PendingReceiver<blink::mojom::DevToolsSession> io_session_receiver,
     SessionDestroyedCallback on_delete_callback)
     : v8_helper_(v8_helper),
-      debug_command_queue_(debug_command_queue),
+      debug_command_queue_(debug_command_queue.get()),
       context_group_id_(context_group_id),
       session_id_(session_id),
       client_expects_binary_responses_(client_expects_binary_responses),
@@ -180,7 +180,7 @@ AuctionV8DevToolsSession::AuctionV8DevToolsSession(
           : v8_inspector::V8Inspector::kNotWaitingForDebugger);
   IOSession::Create(
       std::move(io_session_receiver), std::move(io_session_receiver_sequence),
-      debug_command_queue_,
+      std::move(debug_command_queue),
       base::BindRepeating(
           &AuctionV8DevToolsSession::DispatchProtocolCommandFromIO,
           weak_ptr_factory_.GetWeakPtr()));
