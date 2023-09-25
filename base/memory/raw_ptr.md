@@ -227,8 +227,13 @@ Therefore in the following cases raw C++ pointers may be used instead of
   TLS, etc.
 - `const char*` (and `const wchar_t*`) pointer fields, unless you’re convinced
   they can point to a heap-allocated object, not just a string literal
-- Pointer fields in Renderer-only code.  (This might change in the future
-  as we explore expanding `raw_ptr<T>` usage in https://crbug.com/1273204.)
+- Pointer fields in certain renderer code. Specifically, we disallow usage in
+
+``` none
+third_party/blink/renderer/core/
+third_party/blink/renderer/platform/heap/
+third_party/blink/renderer/platform/wtf/
+```
 
 ### Other perf optimizations
 

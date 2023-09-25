@@ -6732,13 +6732,16 @@ def CheckAssertAshOnlyCode(input_api, output_api):
     return errors
 
 
-def _IsRendererOnlyCppFile(input_api, affected_file):
+def _IsMiraclePtrDisallowed(input_api, affected_file):
     path = affected_file.LocalPath()
     if not _IsCPlusPlusFile(input_api, path):
         return False
 
-    # Any code under a "renderer" subdirectory is assumed to be Renderer-only.
-    if "/renderer/" in path and not "/image-decoders/" in path:
+    # Renderer code is generally allowed to use MiraclePtr.
+    # These directories, however, are specifically disallowed.
+    if ("third_party/blink/renderer/core/" in path
+            or "third_party/blink/renderer/platform/heap/" in path
+            or "third_party/blink/renderer/platform/wtf/" in path):
         return True
 
     # Blink's public/web API is only used/included by Renderer-only code.  Note
@@ -6759,13 +6762,13 @@ def CheckRawPtrUsage(input_api, output_api):
     # The regex below matches "raw_ptr<" following a word boundary, but not in a
     # C++ comment.
     raw_ptr_matcher = input_api.re.compile(r'^((?!//).)*\braw_ptr<')
-    file_filter = lambda f: _IsRendererOnlyCppFile(input_api, f)
+    file_filter = lambda f: _IsMiraclePtrDisallowed(input_api, f)
     for f, line_num, line in input_api.RightHandSideLines(file_filter):
         if raw_ptr_matcher.search(line):
             errors.append(
                 output_api.PresubmitError(
                     'Problem on {path}:{line} - '\
-                    'raw_ptr<T> should not be used in Renderer-only code '\
+                    'raw_ptr<T> should not be used in this renderer code '\
                     '(as documented in the "Pointers to unprotected memory" '\
                     'section in //base/memory/raw_ptr.md)'.format(
                         path=f.LocalPath(), line=line_num)))
