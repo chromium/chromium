@@ -399,10 +399,8 @@ __gCrWeb.fill.webFormElementToFormData = function(
  *
  * @param {FormControlElement} element The element to be processed.
  * @param {number} extractMask A bit field mask to extract data from |element|.
- *     See the document on variable __gCrWeb.fill.EXTRACT_MASK_NONE,
- *     __gCrWeb.fill.EXTRACT_MASK_VALUE,
- *     __gCrWeb.fill.EXTRACT_MASK_OPTION_TEXT and
- *     __gCrWeb.fill.EXTRACT_MASK_OPTIONS.
+ *     See the documentation on variable EXTRACT_MASK_VALUE,
+ *     EXTRACT_MASK_OPTION_TEXT and EXTRACT_MASK_OPTIONS.
  * @param {AutofillFormFieldData} field Field to fill in the element
  *     information.
  */
@@ -469,18 +467,18 @@ __gCrWeb.fill.webFormControlElementToFormField = function(
     field['is_checkable'] = __gCrWeb.fill.isCheckableElement(element);
   } else if (__gCrWeb.fill.isTextAreaElement(element)) {
     // Nothing more to do in this case.
-  } else if (extractMask & __gCrWeb.fill.EXTRACT_MASK_OPTIONS) {
+  } else if (extractMask & fillConstants.EXTRACT_MASK_OPTIONS) {
     __gCrWeb.fill.getOptionStringsFromElement(element, field);
   }
 
-  if (!(extractMask & __gCrWeb.fill.EXTRACT_MASK_VALUE)) {
+  if (!(extractMask & fillConstants.EXTRACT_MASK_VALUE)) {
     return;
   }
 
   let value = __gCrWeb.fill.value(element);
 
   if (__gCrWeb.fill.isSelectElement(element) &&
-      (extractMask & __gCrWeb.fill.EXTRACT_MASK_OPTION_TEXT)) {
+      (extractMask & fillConstants.EXTRACT_MASK_OPTION_TEXT)) {
     // Convert the |select_element| value to text if requested.
     const options = element.options;
     for (let index = 0; index < options.length; ++index) {
@@ -516,7 +514,7 @@ __gCrWeb.fill.webFormControlElementToFormField = function(
 __gCrWeb.fill.autofillSubmissionData = function(form) {
   const formData = new __gCrWeb['common'].JSONSafeObject();
   const extractMask =
-      __gCrWeb.fill.EXTRACT_MASK_VALUE | __gCrWeb.fill.EXTRACT_MASK_OPTIONS;
+      fillConstants.EXTRACT_MASK_VALUE | fillConstants.EXTRACT_MASK_OPTIONS;
   __gCrWeb['fill'].webFormElementToFormData(
       window, form, null, extractMask, formData, null);
   return __gCrWeb.stringify([formData]);

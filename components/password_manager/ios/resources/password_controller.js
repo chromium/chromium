@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {EXTRACT_MASK_VALUE} from '//components/autofill/ios/form_util/resources/fill_constants.js';
+
 /**
  * @fileoverview Installs Passwords management functions on the __gCrWeb object.
  *
@@ -299,7 +301,7 @@ const getPasswordFormDataList = function(formDataList) {
  * @return {Object} Object of data from formElement.
  */
 __gCrWeb.passwords.getPasswordFormDataFromUnownedElements = function() {
-  const extractMask = __gCrWeb.fill.EXTRACT_MASK_VALUE;
+  const extractMask = EXTRACT_MASK_VALUE;
   const fieldsets = [];
   const unownedControlElements =
       __gCrWeb.fill.getUnownedAutofillableFormFieldElements(
@@ -322,7 +324,7 @@ __gCrWeb.passwords.getPasswordFormDataFromUnownedElements = function() {
  * @return {Object} Object of data from formElement.
  */
 __gCrWeb.passwords.getPasswordFormData = function(formElement) {
-  const extractMask = __gCrWeb.fill.EXTRACT_MASK_VALUE;
+  const extractMask = EXTRACT_MASK_VALUE;
   const formData = {};
   const ok = __gCrWeb.fill.webFormElementToFormData(
       window, formElement, null /* formControlElement */, extractMask, formData,
