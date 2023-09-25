@@ -388,7 +388,7 @@ const base::FeatureParam<bool> kFirstPartySetsClearSiteDataOnChangedSets{
 // Controls how many sites are allowed to be in the Associated subset (ignoring
 // ccTLD aliases).
 const base::FeatureParam<int> kFirstPartySetsMaxAssociatedSites{
-    &kFirstPartySets, "FirstPartySetsMaxAssociatedSites", 3};
+    &kFirstPartySets, "FirstPartySetsMaxAssociatedSites", 5};
 
 // Controls the maximum time duration an outermost frame navigation should be
 // deferred by FPS initialization.
