@@ -8,8 +8,8 @@
 #include <stddef.h>
 #include <stdlib.h>
 
+#include "base/i18n/time_formatting.h"
 #include "base/logging.h"
-#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
 
@@ -75,13 +75,8 @@ DumpInfo::~DumpInfo() {}
 base::Value DumpInfo::GetAsValue() const {
   base::Value::Dict result;
 
-  // "%Y-%m-%d %H:%M:%S";
-  base::Time::Exploded ex;
-  dump_time_.LocalExplode(&ex);
-  result.Set(
-      kDumpTimeKey,
-      base::StringPrintf("%04d-%02d-%02d %02d:%02d:%02d", ex.year, ex.month,
-                         ex.day_of_month, ex.hour, ex.minute, ex.second));
+  result.Set(kDumpTimeKey, base::UnlocalizedTimeFormatWithPattern(
+                               dump_time_, "yyyy-MM-dd HH:mm:ss"));
 
   result.Set(kDumpKey, crashed_process_dump_);
   std::string uptime = std::to_string(params_.process_uptime);
