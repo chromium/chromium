@@ -171,7 +171,7 @@ TaskAttributionInfo* TaskAttributionTrackerImpl::CommitSameDocumentNavigation(
   while (!same_document_navigation_tasks_.empty()) {
     auto task = same_document_navigation_tasks_.front();
     same_document_navigation_tasks_.pop_front();
-    if (task->Id() == task_id) {
+    if (task && task->Id() == task_id) {
       return task;
     }
   }
