@@ -22,7 +22,8 @@ namespace performance_manager {
 class TabRevisitTracker : public GraphOwned,
                           public TabPageObserver,
                           public PageLiveStateObserverDefaultImpl,
-                          public TabConnectednessDecorator::Observer {
+                          public TabConnectednessDecorator::Observer,
+                          public PageNode::ObserverDefaultImpl {
  public:
   static constexpr char kTimeToRevisitHistogramName[] =
       "PerformanceManager.TabRevisitTracker.TimeToRevisit2";
@@ -32,8 +33,7 @@ class TabRevisitTracker : public GraphOwned,
   TabRevisitTracker();
   ~TabRevisitTracker() override;
 
- private:
-  friend class TabRevisitTrackerTest;
+  static int64_t ExponentiallyBucketedSeconds(base::TimeDelta time);
 
   enum class State {
     // The order of the leading elements must match the one in enums.xml
@@ -60,6 +60,11 @@ class TabRevisitTracker : public GraphOwned,
     absl::optional<int64_t> connectedness_to_last_switch_active_tab;
   };
 
+ private:
+  friend class TabRevisitTrackerTest;
+
+  class UkmSourceIdReadyRecorder;
+
   void RecordRevisitHistograms(const TabPageDecorator::TabHandle* tab_handle);
   void RecordCloseHistograms(const TabPageDecorator::TabHandle* tab_handle);
   void RecordStateChangeUkmAndUpdateStateBundle(
@@ -69,9 +74,6 @@ class TabRevisitTracker : public GraphOwned,
   StateBundle CreateUpdatedStateBundle(
       const TabPageDecorator::TabHandle* tab_handle,
       State new_state) const;
-
-  int64_t StateToSample(TabRevisitTracker::State state);
-  static int64_t ExponentiallyBucketedSeconds(base::TimeDelta time);
 
   // GraphOwned:
   void OnPassedToGraph(Graph* graph) override;
@@ -91,7 +93,13 @@ class TabRevisitTracker : public GraphOwned,
   void OnBeforeTabSwitch(TabPageDecorator::TabHandle* source,
                          TabPageDecorator::TabHandle* destination) override;
 
+  // PageNode::ObserverDefaultImpl:
+  void OnUkmSourceIdChanged(const PageNode* page_node) override;
+
   std::map<const TabPageDecorator::TabHandle*, StateBundle> tab_states_;
+  std::map<const TabPageDecorator::TabHandle*,
+           std::unique_ptr<UkmSourceIdReadyRecorder>>
+      pending_ukm_records_;
 };
 
 }  // namespace performance_manager
