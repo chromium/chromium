@@ -8,6 +8,7 @@ import android.app.PendingIntent;
 import android.app.RemoteAction;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -275,15 +276,18 @@ public class SelectActionMenuHelper {
         SelectionMenuGroup textProcessingItems =
                 new SelectionMenuGroup(R.id.select_action_menu_text_processing_items,
                         GroupItemOrder.TEXT_PROCESSING_ITEMS);
+        final PackageManager packageManager = context.getPackageManager();
         for (int i = 0; i < supportedActivities.size(); i++) {
             ResolveInfo resolveInfo = supportedActivities.get(i);
             if (resolveInfo.activityInfo == null || !resolveInfo.activityInfo.exported) continue;
-            CharSequence title = resolveInfo.loadLabel(context.getPackageManager());
+            CharSequence title = resolveInfo.loadLabel(packageManager);
+            Drawable icon = resolveInfo.loadIcon(packageManager);
             Intent intent = createProcessTextIntentForResolveInfo(resolveInfo, isSelectionReadOnly);
             View.OnClickListener listener = v -> intentHandler.handleIntent(intent);
             textProcessingItems.addItem(
                     new SelectionMenuItem.Builder(title)
                             .setId(Menu.NONE)
+                            .setIcon(icon)
                             .setOrderInCategory(i)
                             .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM)
                             .setClickListener(listener)
