@@ -324,6 +324,7 @@ class MediaVideoTaskWrapper {
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
   media::GpuVideoAcceleratorFactories* gpu_factories_;
+  std::unique_ptr<media::MediaLog> media_log_;
   mojo::Remote<media::mojom::InterfaceFactory> media_interface_factory_;
   std::unique_ptr<WebCodecsVideoDecoderSelector> selector_;
   std::unique_ptr<media::DecoderFactory> decoder_factory_;
@@ -336,8 +337,6 @@ class MediaVideoTaskWrapper {
   mojo::PendingRemote<media::mojom::FuchsiaMediaCodecProvider>
       fuchsia_media_codec_provider_;
 #endif
-
-  std::unique_ptr<media::MediaLog> media_log_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
