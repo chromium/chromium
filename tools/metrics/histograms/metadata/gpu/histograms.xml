@@ -1023,27 +1023,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Gpu.MetalProxy.NewLibraryTime" units="ms" expires_after="M82">
-  <owner>ccameron@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
-  <summary>
-    The time that it takes to create a new MTLLibrary, including all retries.
-    Recorded after every call to -[MTLDeviceProxy newLibraryWithSource:]
-    completes.
-  </summary>
-</histogram>
-
-<histogram name="Gpu.MetalProxy.NewRenderPipelineStateTime" units="ms"
-    expires_after="M82">
-  <owner>ccameron@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
-  <summary>
-    The time that it takes to create a new MTLRenderPipelineState, including all
-    retries. Recorded after every call to -[MTLDeviceProxy
-    newRenderPipelineStateWithDescriptor:] completes.
-  </summary>
-</histogram>
-
 <histogram name="Gpu.MetalShaderCache.LoadTime" units="microseconds"
     expires_after="2023-12-17">
   <owner>sky@chromium.org</owner>
