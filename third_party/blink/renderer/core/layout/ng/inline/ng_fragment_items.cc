@@ -279,6 +279,13 @@ bool NGFragmentItems::IsContainerForCulledInline(
       // This descendant starts in a later container. So this isn't the last
       // container for the culled inline.
       *is_last_container = false;
+      if (!found_item && descendant->IsFloating()) {
+        // Keep looking if we haven't found anything here. Even if this float
+        // starts in a later container, there may still be something to be found
+        // in this container. A float may be pushed to the next fragmentainer,
+        // while subsequent in-flow content may still fit in this container.
+        continue;
+      }
       return found_item;
     }
 
