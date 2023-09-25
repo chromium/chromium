@@ -58,7 +58,8 @@ CoreAccountId SystemIdentityToAccountID(
     signin::IdentityManager* identity_manager,
     id<SystemIdentity> identity) {
   std::string gaia_id = base::SysNSStringToUTF8([identity gaiaID]);
-  return identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id).account_id;
+  std::string email = base::SysNSStringToUTF8([identity userEmail]);
+  return identity_manager->PickAccountIdForAccount(gaia_id, email);
 }
 
 }  // namespace
@@ -239,7 +240,10 @@ void AuthenticationService::OnApplicationWillEnterForeground() {
     signin::DeviceAccountsSynchronizer* device_accounts_synchronizer =
         identity_manager_->GetDeviceAccountsSynchronizer();
     for (const auto& pair : cached_mdm_errors) {
-      device_accounts_synchronizer->ReloadAccountFromSystem(pair.first);
+      const CoreAccountId& account_id = pair.first;
+      if (identity_manager_->HasAccountWithRefreshToken(account_id)) {
+        device_accounts_synchronizer->ReloadAccountFromSystem(account_id);
+      }
     }
   }
 }
@@ -459,15 +463,15 @@ void AuthenticationService::SignOut(
 
 id<RefreshAccessTokenError> AuthenticationService::GetCachedMDMError(
     id<SystemIdentity> identity) {
-  auto it = cached_mdm_errors_.find(
-      SystemIdentityToAccountID(identity_manager_, identity));
-
+  CoreAccountId account_id =
+      SystemIdentityToAccountID(identity_manager_, identity);
+  auto it = cached_mdm_errors_.find(account_id);
   if (it == cached_mdm_errors_.end()) {
     return nil;
   }
 
   if (!identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
-          it->first)) {
+          account_id)) {
     // Account has no error, invalidate the cache.
     cached_mdm_errors_.erase(it);
     return nil;
@@ -556,9 +560,12 @@ bool AuthenticationService::HandleMDMError(id<SystemIdentity> identity,
           identity, error,
           base::BindOnce(&AuthenticationService::MDMErrorHandled,
                          weak_pointer_factory_.GetWeakPtr(), identity))) {
-    const CoreAccountId key =
+    CoreAccountId account_id =
         SystemIdentityToAccountID(identity_manager_, identity);
-    cached_mdm_errors_[key] = error;
+    DUMP_WILL_BE_CHECK(!account_id.empty())
+        << "Unexpected identity with empty account id: [gaiaID = "
+        << identity.gaiaID << "; userEmail = " << identity.userEmail << "]";
+    cached_mdm_errors_[account_id] = error;
     return true;
   }
 
@@ -584,6 +591,12 @@ void AuthenticationService::MDMErrorHandled(id<SystemIdentity> identity,
 void AuthenticationService::OnAccessTokenRefreshFailed(
     id<SystemIdentity> identity,
     id<RefreshAccessTokenError> error) {
+  if (!identity) {
+    DLOG(ERROR)
+        << "Unexpected call of OnAccessTokenRefreshFailed with null identity";
+    return;
+  }
+
   if (HandleMDMError(identity, error)) {
     return;
   }

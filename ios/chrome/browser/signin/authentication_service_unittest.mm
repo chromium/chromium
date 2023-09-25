@@ -575,6 +575,34 @@ TEST_F(AuthenticationServiceTest, SignedInManagedAccountSignOut) {
   EXPECT_EQ(ClearBrowsingDataCount(), 0);
 }
 
+// Tests that MDM errors do not lead to seeding empty account ids.
+//
+// Regression test for root cause of crbug/1482236
+TEST_F(AuthenticationServiceTest, MDMErrorsDontSeedEmptyAccountIds) {
+  SetExpectationsForSignIn();
+  authentication_service()->SignIn(
+      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2UL);
+
+  SetCachedMDMInfo(identity(0), CreateRefreshAccessTokenError(identity(0)));
+
+  // Fake an mdm error for an identity that is not loaded in IdentityManager.
+  fake_system_identity_manager()->AddIdentities(@[ @"foo3" ]);
+  SetCachedMDMInfo(identity(2), CreateRefreshAccessTokenError(identity(2)));
+
+  GoogleServiceAuthError error(
+      GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
+  signin::UpdatePersistentErrorOfRefreshTokenForAccount(
+      identity_manager(), GetAccountId(identity(0)), error);
+  FireApplicationWillEnterForeground();
+
+  ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2u);
+  EXPECT_FALSE(
+      identity_manager()->GetAccountsWithRefreshTokens()[0].account_id.empty());
+  EXPECT_FALSE(
+      identity_manager()->GetAccountsWithRefreshTokens()[1].account_id.empty());
+}
+
 // Tests that MDM errors are correctly cleared when signing out of a managed
 // account.
 TEST_F(AuthenticationServiceTest, ManagedAccountSignOut) {
