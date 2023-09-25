@@ -3126,6 +3126,12 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PASSWORD_SHARING_FETCHING_RECIPIENTS_LABEL" desc="Text describing what is happening at the beginning of the password sharing flow. [iOS only]">
         Checking your family members…
       </message>
+      <message name="IDS_IOS_PASSWORD_SHARING_FIRST_RUN_TITLE" desc="Title text describing the password sharing feature displayed in the first run experience view. [iOS only]">
+        Share a Copy of Your Password
+      </message>
+      <message name="IDS_IOS_PASSWORD_SHARING_FIRST_RUN_SUBTITLE" desc="Subtitle text describing the password sharing feature displayed in the first run experience view. [iOS only]">
+        You can securely share a copy of your password with someone in your family group. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
+      </message>
       <message name="IDS_IOS_PASSWORD_SHARING_PASSWORD_PICKER_NEXT_BUTTON" desc="Button text for the confirm action in the password picker view in the password sharing flow. [iOS only]">
         Next
       </message>

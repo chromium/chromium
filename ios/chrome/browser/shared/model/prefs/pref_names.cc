@@ -448,4 +448,9 @@ const char kAutofillBrandingKeyboardAccessoriesTapped[] =
 const char kPriceNotificationsHasBeenShown[] =
     "ios.price_notifications.has_been_shown";
 
+// A boolean used to determine if the user has entered the password sharing flow
+// from the first run experience screen.
+const char kPasswordSharingFlowHasBeenEntered[] =
+    "ios.password_sharing.flow_entered";
+
 }  // namespace prefs

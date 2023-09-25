@@ -532,6 +532,9 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(kPrivacySandboxManuallyControlled, false);
   // Register prefs used to skip too frequent History Sync Opt-In prompt.
   history_sync::RegisterBrowserStatePrefs(registry);
+
+  registry->RegisterBooleanPref(prefs::kPasswordSharingFlowHasBeenEntered,
+                                false);
 }
 
 // This method should be periodically pruned of year+ old migrations.

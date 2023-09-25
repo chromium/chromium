@@ -4,12 +4,14 @@
 
 #import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/common/password_manager_features.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_egtest_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_constants.h"
+#import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -113,8 +115,23 @@ void SignInAndEnableSync() {
   return config;
 }
 
+- (void)setUp {
+  [super setUp];
+
+  // Make sure the pref is in its non-default state (which should be the case
+  // for all tests that do not test the first run experience flow).
+  [ChromeEarlGrey setBoolValue:YES
+                   forUserPref:prefs::kPasswordSharingFlowHasBeenEntered];
+}
+
 - (void)tearDown {
   [PasswordSettingsAppInterface removeMockReauthenticationModule];
+
+  // Reset preference to its non-default state (which should be the case
+  // for all tests that do not test the first run experience flow).
+  [ChromeEarlGrey setBoolValue:YES
+                   forUserPref:prefs::kPasswordSharingFlowHasBeenEntered];
+
   [super tearDown];
 }
 
@@ -358,6 +375,76 @@ void SignInAndEnableSync() {
   GREYAssertEqual(std::string(kGoogleHelpCenterURL),
                   [ChromeEarlGrey webStateVisibleURL].host(),
                   @"Did not navigate to the help center article.");
+}
+
+- (void)testTappingCancelInFirstRunExperienceView {
+  [ChromeEarlGrey setBoolValue:NO
+                   forUserPref:prefs::kPasswordSharingFlowHasBeenEntered];
+
+  SignInAndEnableSync();
+  [self saveExamplePasswordAndOpenDetails];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      performAction:grey_tap()];
+
+  // Tap the cancel button.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kConfirmationAlertSecondaryActionAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // Check that the current view is the password details view.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kPasswordDetailsTableViewId)]
+      assertWithMatcher:grey_notNil()];
+
+  // Tap the share button again and verify that the first run view is still
+  // displayed since it was not acknowledged.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_PASSWORD_SHARING_FIRST_RUN_TITLE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+- (void)testTappingShareInFirstRunExperienceView {
+  [ChromeEarlGrey setBoolValue:NO
+                   forUserPref:prefs::kPasswordSharingFlowHasBeenEntered];
+
+  SignInAndEnableSync();
+  [self saveExamplePasswordAndOpenDetails];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      performAction:grey_tap()];
+
+  // Tap the share button in the first run experience view.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kConfirmationAlertPrimaryActionAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // Check that the current view is the family picker view.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kFamilyPickerTableViewId)]
+      assertWithMatcher:grey_notNil()];
+
+  // Tap the cancel button.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kFamilyPickerCancelButtonId)]
+      performAction:grey_tap()];
+
+  // Tap the share button in password details view and verify that the first run
+  // view will not be displayed anymore since it was acknowledged.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kFamilyPickerTableViewId)]
+      assertWithMatcher:grey_notNil()];
 }
 
 @end

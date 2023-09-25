@@ -125,6 +125,8 @@ extern const char kAutofillBrandingKeyboardAccessoriesTapped[];
 
 extern const char kPriceNotificationsHasBeenShown[];
 
+extern const char kPasswordSharingFlowHasBeenEntered[];
+
 }  // namespace prefs
 
 #endif  // IOS_CHROME_BROWSER_PREFS_PREF_NAMES_H_
