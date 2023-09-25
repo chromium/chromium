@@ -367,6 +367,7 @@ H265Parser::Result H265Parser::ParseVPS(int* vps_id) {
         int cpb_cnt_minus1_j = 0;
         if (!low_delay_hrd_flag_j) {
           READ_UE_OR_RETURN(&cpb_cnt_minus1_j);
+          IN_RANGE_OR_RETURN(cpb_cnt_minus1_j, 0, 31);
         }
         if (nal_hrd_parameters_present_flag) {
           // E.2.3 sub_layer_hrd_parameters()
