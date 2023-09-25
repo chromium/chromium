@@ -19,6 +19,7 @@
 #include "base/unguessable_token.h"
 #include "components/account_id/account_id.h"
 #include "components/session_manager/session_manager_types.h"
+#include "components/user_education/common/events.h"
 #include "components/user_education/common/help_bubble.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"

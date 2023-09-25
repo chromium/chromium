@@ -17,6 +17,7 @@ source_set("webui") {
   deps = [
     "//base",
     "//components/user_education/common",
+    "//components/user_education/common:events",
     "//components/user_education/views",
     "//components/vector_icons",
     "//content/public/browser",

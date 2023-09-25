@@ -270,14 +270,13 @@ class ClassPropertyCaster<ui::ElementIdentifier> {
 #define DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ExportName, IdentifierName) \
   ExportName extern const ui::internal::ElementIdentifierImpl                 \
       IdentifierName##Provider;                                               \
-  ExportName constexpr ui::ElementIdentifier IdentifierName(                  \
-      &IdentifierName##Provider)
+  ExportName extern const ui::ElementIdentifier IdentifierName
 
 // Use this code in the .cc file to define a new identifier.
-#define DEFINE_ELEMENT_IDENTIFIER_VALUE(IdentifierName)                    \
-  constexpr ui::internal::ElementIdentifierImpl IdentifierName##Provider { \
-#IdentifierName                                                        \
-  }
+#define DEFINE_ELEMENT_IDENTIFIER_VALUE(IdentifierName)                   \
+  constexpr ui::internal::ElementIdentifierImpl IdentifierName##Provider{ \
+      #IdentifierName};                                                   \
+  constexpr ui::ElementIdentifier IdentifierName(&IdentifierName##Provider)
 
 // Declaring identifiers in a class:
 

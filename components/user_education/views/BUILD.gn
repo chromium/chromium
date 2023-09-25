@@ -30,6 +30,7 @@ source_set("views") {
   deps = [
     "//base",
     "//components/strings",
+    "//components/user_education/common:events",
     "//components/variations",
     "//components/vector_icons",
     "//skia",
@@ -79,6 +80,7 @@ source_set("unit_tests") {
     "//components/feature_engagement/public",
     "//components/strings",
     "//components/user_education/common",
+    "//components/user_education/common:events",
     "//components/user_education/test",
     "//components/variations",
     "//skia",

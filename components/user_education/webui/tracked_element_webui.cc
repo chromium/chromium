@@ -5,6 +5,7 @@
 #include "components/user_education/webui/tracked_element_webui.h"
 
 #include "base/check.h"
+#include "components/user_education/common/events.h"
 #include "components/user_education/common/help_bubble.h"
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "content/public/browser/web_contents.h"

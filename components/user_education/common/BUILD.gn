@@ -46,6 +46,7 @@ source_set("common") {
   ]
 
   deps = [
+    ":events",
     "//base",
     "//components/feature_engagement/public",
     "//components/strings",
@@ -56,6 +57,19 @@ source_set("common") {
     "//ui/accessibility",
     "//ui/base",
   ]
+}
+
+component("events") {
+  output_name = "user_education_common_events"
+
+  defines = [ "IS_USER_EDUCATION_COMMON_EVENTS_IMPL" ]
+
+  sources = [
+    "events.cc",
+    "events.h",
+  ]
+
+  deps = [ "//ui/base" ]
 }
 
 source_set("unit_tests") {
@@ -72,6 +86,7 @@ source_set("unit_tests") {
 
   deps = [
     ":common",
+    ":events",
     "//base",
     "//base/test:test_support",
     "//components/feature_engagement/public",

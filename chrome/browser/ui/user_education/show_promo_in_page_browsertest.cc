@@ -31,8 +31,6 @@ namespace {
 constexpr char kPageWithAnchorURL[] = "chrome://internals/user-education";
 constexpr char kPageWithoutAnchorURL[] = "chrome://settings";
 constexpr char16_t kBubbleBodyText[] = u"bubble body";
-constexpr ui::ElementIdentifier kHelpBubbleAnchorId =
-    kWebUIIPHDemoElementIdentifier;
 
 // This should be short enough that tests that *expect* the operation to time
 // out should fail. Standard test timeout will be used for tests expected to
@@ -43,7 +41,7 @@ constexpr base::TimeDelta kTimeoutForTesting = base::Seconds(3);
 // need to specify `target_url` and `callback`.
 ShowPromoInPage::Params GetDefaultParams() {
   ShowPromoInPage::Params params;
-  params.bubble_anchor_id = kHelpBubbleAnchorId;
+  params.bubble_anchor_id = kWebUIIPHDemoElementIdentifier;
   params.bubble_arrow = user_education::HelpBubbleArrow::kBottomLeft;
   params.bubble_text = kBubbleBodyText;
   return params;

@@ -4,6 +4,7 @@
 
 #include "components/user_education/common/tutorial_description.h"
 
+#include "components/user_education/common/events.h"
 #include "components/user_education/common/help_bubble.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"

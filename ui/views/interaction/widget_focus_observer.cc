@@ -16,6 +16,6 @@ void WidgetFocusObserver::OnNativeFocusChanged(gfx::NativeView focused_now) {
   OnStateObserverStateChanged(focused_now);
 }
 
-DEFINE_STATE_IDENTIFIER_VALUE(kCurrentWidgetFocus);
+DEFINE_STATE_IDENTIFIER_VALUE(WidgetFocusObserver, kCurrentWidgetFocus);
 
 }  // namespace views::test
