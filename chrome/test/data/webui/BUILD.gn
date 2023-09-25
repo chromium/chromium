@@ -91,6 +91,10 @@ source_set("browser_tests") {
     sources += [ "print_preview/print_preview_browsertest.cc" ]
   }
 
+  if (enable_webui_certificate_viewer) {
+    sources += [ "certificate_viewer_dialog_browsertest.cc" ]
+  }
+
   if (is_chromeos_ash) {
     sources +=
         [ "chromeos/personalization_app/personalization_app_browsertest.cc" ]
@@ -206,33 +210,18 @@ if (include_js2gtest_tests) {
     }
   }
 
-  js2gtest("browser_tests_js_webui") {
-    test_type = "webui"
+  if (is_chromeos_ash) {
+    js2gtest("browser_tests_js_webui") {
+      test_type = "webui"
 
-    # Javascript sources. These are combined with the .cc files in the GYP build
-    # and are handled by a rule, but in the GN build they're in a separate
-    # action so need to be separated out.
-    sources = [
-      "assertions.js",
-      "async_gen.js",
-      "js2gtest_browsertest.js",
-    ]
-
-    gen_include_files = [ "polymer_browser_test_base.js" ]
-
-    deps = [
-      "//build:branding_buildflags",
-      "//build/config/coverage:buildflags",
-      "//chrome/browser/ui",
-      "//crypto:buildflags",
-      "//services/network/public/cpp",
-      "//skia",
-    ]
-
-    if (is_chromeos_ash) {
-      sources += [
+      # Javascript sources. These are combined with the .cc files in the GYP
+      # build and are handled by a rule, but in the GN build they're in a
+      # separate action so need to be separated out.
+      sources = [
         "../../../browser/resources/chromeos/login/security_token_pin_browsertest.js",
         "../../../browser/ui/webui/ash/certificate_manager_dialog_browsertest.js",
+        "assertions.js",
+        "async_gen.js",
         "chromeos/account_manager/account_manager_browsertest.js",
         "chromeos/arc_account_picker/arc_account_picker_browsertest.js",
         "chromeos/ash_common/ash_common_browsertest.js",
@@ -255,25 +244,32 @@ if (include_js2gtest_tests) {
         "chromeos/sys_internals/sys_internals_browsertest.js",
         "cr_components/chromeos/cr_components_chromeos_v3_browsertest.js",
         "js/i18n_process_test.js",
+        "js2gtest_browsertest.js",
         "settings/chromeos/os_settings_browsertest.js",
       ]
-    }
 
-    if (enable_webui_certificate_viewer) {
-      sources += [ "certificate_viewer_dialog_browsertest.js" ]
-    }
-    if (is_cfm) {
-      sources += [
-        "chromeos/chromebox_for_meetings/cfm_network_settings_browsertest.js",
+      gen_include_files = [ "polymer_browser_test_base.js" ]
+
+      deps = [
+        "//build:branding_buildflags",
+        "//build/config/coverage:buildflags",
+        "//chrome/browser/ui",
+        "//crypto:buildflags",
+        "//services/network/public/cpp",
+        "//skia",
       ]
+
+      if (is_cfm) {
+        sources += [
+          "chromeos/chromebox_for_meetings/cfm_network_settings_browsertest.js",
+        ]
+      }
+
+      data = [ "//ui/webui/resources/js/load_time_data_deprecated.js" ]
+
+      defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     }
 
-    data = [ "//ui/webui/resources/js/load_time_data_deprecated.js" ]
-
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  }
-
-  if (is_chromeos_ash) {
     js2gtest("browser_tests_js_mojo_lite_webui") {
       test_type = "mojo_lite_webui"
 
