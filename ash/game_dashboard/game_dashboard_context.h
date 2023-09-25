@@ -21,13 +21,15 @@ class Window;
 namespace ash {
 
 class GameDashboardButton;
+class GameDashboardButtonInputMonitor;
 class GameDashboardMainMenuView;
 class GameDashboardToolbarView;
 class GameDashboardWidget;
 
 // This class manages Game Dashboard related UI for a given `aura::Window`, and
 // its instance is managed by the `GameDashboardController`.
-class ASH_EXPORT GameDashboardContext : public views::ViewObserver {
+class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
+                                        public views::WidgetObserver {
  public:
   // Indicator for the 4 quadrants that the toolbar is able to be placed.
   enum class ToolbarSnapLocation {
@@ -43,6 +45,8 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver {
   ~GameDashboardContext() override;
 
   aura::Window* game_window() { return game_window_.get(); }
+
+  GameDashboardMainMenuView* main_menu_view() { return main_menu_view_; }
 
   GameDashboardWidget* game_dashboard_button_widget() {
     return game_dashboard_button_widget_.get();
@@ -72,8 +76,6 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver {
   // Closes the main menu. Clears `main_menu_widget_` and `main_menu_view_`.
   void CloseMainMenu();
 
-  bool IsMainMenuOpen() const { return main_menu_view_; }
-
   // Toggles the creation/deletion of the toolbar within the game window.
   // Returns the toolbar visibility state.
   bool ToggleToolbar();
@@ -98,6 +100,9 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver {
 
   // views::ViewObserver:
   void OnViewPreferredSizeChanged(views::View* observed_view) override;
+
+  // views::WidgetObserver:
+  void OnWidgetDestroying(views::Widget* widget) override;
 
  private:
   friend class GameDashboardContextTestApi;
@@ -143,6 +148,10 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver {
   // Owned by the views hierarchy.
   raw_ptr<GameDashboardButton, ExperimentalAsh> game_dashboard_button_ =
       nullptr;
+
+  // Monitors mouse and touch input for `game_dashboard_button_widget_`.
+  std::unique_ptr<GameDashboardButtonInputMonitor>
+      game_dashboard_button_input_monitor_;
 
   // The `GameDashboardMainMenuView` when the user presses the Game Dashboard
   // button.

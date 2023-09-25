@@ -73,12 +73,14 @@ class GameDashboardContextTestApi {
 
   // Opens the main menu.
   // Before opening the main menu, verifies that the main menu is closed.
-  // After opening the main menu, verifies it opened.
+  // After opening the main menu, verifies it opened and waits for the thread to
+  // become idle to ensure that all open `GameDashboardMainMenuView`s close.
   void OpenTheMainMenu();
 
   // Closes the main menu.
   // Before closing the main menu, verifies that the main menu is open.
-  // After closing the main menu, verifies is closed.
+  // After closing the main menu, verifies is closed and waits for the thread to
+  // become idle to ensure that all open `GameDashboardMainMenuView`s close.
   void CloseTheMainMenu();
 
   // Returns the toolbar widget and all its views.

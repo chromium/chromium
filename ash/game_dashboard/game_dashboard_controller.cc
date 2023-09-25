@@ -177,7 +177,7 @@ void GameDashboardController::OnOverviewModeWillStart() {
   // main menu.
   for (auto const& [_, context] : game_window_contexts_) {
     context->game_dashboard_button_widget()->Hide();
-    if (context->IsMainMenuOpen()) {
+    if (context->main_menu_view()) {
       context->CloseMainMenu();
     }
   }

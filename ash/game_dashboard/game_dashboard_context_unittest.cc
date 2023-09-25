@@ -285,6 +285,7 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     wm::ActivateWindow(recording_window);
 
     // Start recording recording_window.
+    recording_window_test_api->OpenTheMainMenu();
     LeftClickOn(recording_window_test_api->GetMainMenuRecordGameTile());
     ClickOnStartRecordingButtonInCaptureModeBarView();
 
@@ -302,33 +303,27 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     VerifyGameDashboardButtonState(other_window_test_api,
                                    /*is_recording=*/false);
 
-    // Retrieve the record game buttons from both windows.
-    auto* recording_window_record_game_tile =
-        recording_window_test_api->GetMainMenuRecordGameTile();
-    ASSERT_TRUE(recording_window_record_game_tile);
-    auto* recording_window_record_game_button =
-        recording_window_test_api->GetToolbarRecordGameButton();
-    ASSERT_TRUE(recording_window_record_game_button);
-    auto* other_window_record_game_tile =
-        other_window_test_api->GetMainMenuRecordGameTile();
-    ASSERT_TRUE(other_window_record_game_tile);
-    auto* other_window_record_game_button =
-        other_window_test_api->GetToolbarRecordGameButton();
-    ASSERT_TRUE(other_window_record_game_button);
+    // Retrieve the record game buttons for the `recording_window` and verify
+    // they're enabled and toggled on.
+    VerifyRecordGameStatus(
+        recording_window_test_api->GetMainMenuRecordGameTile(),
+        recording_window_test_api->GetToolbarRecordGameButton(),
+        /*enabled=*/true, /*toggled=*/true);
 
-    // Verify the recording_window's buttons are enabled and toggled on.
-    EXPECT_TRUE(recording_window_record_game_tile->GetEnabled());
-    EXPECT_TRUE(recording_window_record_game_tile->IsToggled());
-    EXPECT_TRUE(recording_window_record_game_button->GetEnabled());
-    EXPECT_TRUE(recording_window_record_game_button->toggled());
+    // Retrieve the record game buttons for the `other_window`.
+    auto* other_window = other_window_test_api->context()->game_window();
+    wm::ActivateWindow(other_window);
+    other_window_test_api->OpenTheMainMenu();
 
-    // Verify the other window's buttons are disabled and toggled off.
-    EXPECT_FALSE(other_window_record_game_tile->GetEnabled());
-    EXPECT_FALSE(other_window_record_game_tile->IsToggled());
-    EXPECT_FALSE(other_window_record_game_button->GetEnabled());
-    EXPECT_FALSE(other_window_record_game_button->toggled());
+    // Retrieve the record game buttons for the `other_window` and verify
+    // they're disabled and toggled off.
+    VerifyRecordGameStatus(other_window_test_api->GetMainMenuRecordGameTile(),
+                           other_window_test_api->GetToolbarRecordGameButton(),
+                           /*enabled=*/false, /*toggled=*/false);
 
     // Stop the video recording session.
+    wm::ActivateWindow(recording_window);
+    recording_window_test_api->OpenTheMainMenu();
     LeftClickOn(recording_window_test_api->GetMainMenuRecordGameTile());
     EXPECT_FALSE(CaptureModeController::Get()->is_recording_in_progress());
     WaitForCaptureFileToBeSaved();
@@ -336,17 +331,19 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     // TODO(b/286889161): Update the record game button pointers after the bug
     // has been addressed. The main menu will no longer remain open, which makes
     // button pointers invalid.
-    // Verify all the record game buttons are enabled and toggled off.
-    EXPECT_TRUE(recording_window_record_game_tile->GetEnabled());
-    EXPECT_TRUE(recording_window_record_game_button->GetEnabled());
-    EXPECT_TRUE(other_window_record_game_tile->GetEnabled());
-    EXPECT_TRUE(other_window_record_game_button->GetEnabled());
+    // Verify all the record game buttons for the `recording_window` are enabled
+    // and toggled off.
+    VerifyRecordGameStatus(
+        recording_window_test_api->GetMainMenuRecordGameTile(),
+        recording_window_test_api->GetToolbarRecordGameButton(),
+        /*enabled=*/true, /*toggled=*/false);
 
-    // Verify all the record game buttons are toggled off.
-    EXPECT_FALSE(recording_window_record_game_tile->IsToggled());
-    EXPECT_FALSE(recording_window_record_game_button->toggled());
-    EXPECT_FALSE(other_window_record_game_tile->IsToggled());
-    EXPECT_FALSE(other_window_record_game_button->toggled());
+    // Verify all the `other_window` buttons are enabled and toggled off.
+    wm::ActivateWindow(other_window);
+    other_window_test_api->OpenTheMainMenu();
+    VerifyRecordGameStatus(other_window_test_api->GetMainMenuRecordGameTile(),
+                           other_window_test_api->GetToolbarRecordGameButton(),
+                           /*enabled=*/true, /*toggled=*/false);
 
     // Verify the recording timer is not running in both windows.
     EXPECT_FALSE(recording_window_timer.IsRunning());
@@ -358,12 +355,29 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     VerifyGameDashboardButtonState(other_window_test_api,
                                    /*is_recording=*/false);
 
-    // Close the toolbar and main menu in both windows.
-    for (auto* test_api : {recording_window_test_api, other_window_test_api}) {
-      wm::ActivateWindow(test_api->context()->game_window());
-      test_api->CloseTheToolbar();
-      test_api->CloseTheMainMenu();
-    }
+    // Close the toolbar and main menu in the `other_window`, which is currently
+    // open.
+    other_window_test_api->CloseTheToolbar();
+    other_window_test_api->CloseTheMainMenu();
+
+    // Open the main menu of the recording window to close the toolbar and then
+    // the main menu.
+    wm::ActivateWindow(recording_window);
+    recording_window_test_api->OpenTheMainMenu();
+    recording_window_test_api->CloseTheToolbar();
+    recording_window_test_api->CloseTheMainMenu();
+  }
+
+  void VerifyRecordGameStatus(FeatureTile* game_tile,
+                              IconButton* game_button,
+                              bool enabled,
+                              bool toggled) {
+    ASSERT_TRUE(game_tile);
+    ASSERT_TRUE(game_button);
+    EXPECT_EQ(enabled, game_tile->GetEnabled());
+    EXPECT_EQ(enabled, game_button->GetEnabled());
+    EXPECT_EQ(toggled, game_tile->IsToggled());
+    EXPECT_EQ(toggled, game_button->toggled());
   }
 
   void PressKeyAndVerify(ui::KeyboardCode key,
@@ -406,6 +420,11 @@ class GameDashboardContextTest : public GameDashboardTestBase {
         }
         break;
     }
+
+    // Dragging the toolbar causes the main menu to close asynchronously. Run
+    // until idle to ensure that this posted task runs synchronously and
+    // completes before proceeding.
+    base::RunLoop().RunUntilIdle();
   }
 };
 
@@ -730,6 +749,32 @@ TEST_P(GameTypeGameDashboardContextTest, CloseGameDashboardButtonWidget) {
   test_api_->OpenTheMainMenu();
 
   // Close the main menu dialog and verify the main menu is closed.
+  test_api_->CloseTheMainMenu();
+}
+
+// Verifies clicking outside the main menu view will close the main menu
+// widget. Then, clicking on the main menu button will still toggle the main
+// menu widget visibility.
+TEST_P(GameTypeGameDashboardContextTest, CloseMainMenuOutsideButtonWidget) {
+  // Open the main menu widget and verify the main menu open.
+  test_api_->OpenTheMainMenu();
+
+  // Close the main menu dialog by clicking outside the main menu view bounds.
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  const gfx::Point& new_location = {kAppBounds.x() + kAppBounds.width(),
+                                    kAppBounds.y() + kAppBounds.height()};
+  event_generator->set_current_screen_location(new_location);
+  event_generator->ClickLeftButton();
+
+  // Clicking outside the main menu causes the main menu to close
+  // asynchronously. Run until idle to ensure that this posted task runs
+  // synchronously and completes before proceeding.
+  base::RunLoop().RunUntilIdle();
+
+  // Open the main menu widget via the main menu button.
+  test_api_->OpenTheMainMenu();
+
+  // Close the main menu widget via the main menu button.
   test_api_->CloseTheMainMenu();
 }
 
@@ -1148,6 +1193,7 @@ TEST_P(GameTypeGameDashboardContextTest, MoveAndHideToolbarWidget) {
 
   // Hide then show the toolbar and verify the toolbar was placed back into the
   // bottom left quadrant.
+  test_api_->OpenTheMainMenu();
   test_api_->CloseTheToolbar();
   test_api_->OpenTheToolbar();
   EXPECT_EQ(test_api_->GetToolbarSnapLocation(),

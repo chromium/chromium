@@ -21,6 +21,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view_utils.h"
+#include "ui/wm/core/window_util.h"
 
 namespace ash {
 
@@ -63,7 +64,7 @@ views::Widget* GameDashboardContextTestApi::GetMainMenuWidget() {
 }
 
 GameDashboardMainMenuView* GameDashboardContextTestApi::GetMainMenuView() {
-  return context_->main_menu_view_;
+  return context_->main_menu_view();
 }
 
 FeatureTile* GameDashboardContextTestApi::GetMainMenuGameControlsTile() {
@@ -134,6 +135,9 @@ void GameDashboardContextTestApi::OpenTheMainMenu() {
   auto* game_dashboard_button = GetGameDashboardButton();
   ASSERT_TRUE(game_dashboard_button);
   ClickOnView(game_dashboard_button, event_generator_);
+  // Pause to ensure any other open main menu views have had time to auto-close
+  // and notify the `GameDashboardContext` that it's been destroyed.
+  base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(GetMainMenuView());
   ASSERT_TRUE(GetMainMenuWidget());
 }
@@ -144,6 +148,9 @@ void GameDashboardContextTestApi::CloseTheMainMenu() {
   auto* game_dashboard_button = GetGameDashboardButton();
   ASSERT_TRUE(game_dashboard_button);
   ClickOnView(game_dashboard_button, event_generator_);
+  // Pause to ensure the main menu view has had time to auto-close itself and
+  // notify the `GameDashboardContext` that it's been destroyed.
+  base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(GetMainMenuView());
   ASSERT_FALSE(GetMainMenuWidget());
 }

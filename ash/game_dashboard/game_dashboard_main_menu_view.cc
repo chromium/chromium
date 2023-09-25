@@ -232,7 +232,7 @@ GameDashboardMainMenuView::GameDashboardMainMenuView(
   DCHECK(context_->game_dashboard_button_widget());
 
   set_corner_radius(kBubbleCornerRadius);
-  set_close_on_deactivate(false);
+  set_close_on_deactivate(true);
   set_internal_name("GameDashboardMainMenuView");
   set_margins(gfx::Insets());
   set_parent_window(
