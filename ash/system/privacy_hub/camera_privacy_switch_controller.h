@@ -61,6 +61,11 @@ class ASH_EXPORT CameraPrivacySwitchSynchronizer
   void SetCameraPrivacySwitchAPIForTest(
       std::unique_ptr<CameraPrivacySwitchAPI> switch_api);
 
+  // Disable camera access, and prevent the user from re-enabling it by graying
+  // out the switch in the UI.
+  void SetForceDisableCameraAccess(bool value);
+  bool IsCameraAccessForceDisabled() const;
+
  protected:
   // Sets the value of the global camera permission in the camera backend.
   void SetCameraSWPrivacySwitch(CameraSWPrivacySwitchSetting value);
@@ -71,9 +76,14 @@ class ASH_EXPORT CameraPrivacySwitchSynchronizer
  private:
   virtual void OnPreferenceChangedImpl() = 0;
 
+  PrefService& prefs();
+  void RestorePreviousPrefValueMaybe();
+  void StorePreviousPrefValue();
+
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   std::unique_ptr<CameraPrivacySwitchAPI> switch_api_;
   bool is_camera_observer_added_ = false;
+  bool force_disable_camera_access_ = false;
 };
 
 // A singleton class that acts as a bridge between Privacy Hub UI and backend.

@@ -20,6 +20,7 @@
 #include "ash/system/privacy_hub/sensor_disabled_notification_delegate.h"
 #include "ash/system/system_notification_controller.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/sequence_checker.h"
@@ -94,6 +95,15 @@ void CameraPrivacySwitchSynchronizer::OnActiveUserPrefServiceChanged(
     is_camera_observer_added_ = true;
   }
 
+  if (force_disable_camera_access_) {
+    StorePreviousPrefValue();
+    prefs().SetBoolean(prefs::kUserCameraAllowed, false);
+  } else {
+    // It's possible we crashed while force disable camera access was enabled,
+    // in which case we need to restore the previous pref value.
+    RestorePreviousPrefValueMaybe();
+  }
+
   // To ensure consistent values between the user pref and camera backend.
   OnPreferenceChanged(prefs::kUserCameraAllowed);
 }
@@ -120,6 +130,11 @@ void CameraPrivacySwitchSynchronizer::OnPreferenceChanged(
 
   OnPreferenceChangedImpl();
 
+  if (force_disable_camera_access_ &&
+      GetUserSwitchPreference() != CameraSWPrivacySwitchSetting::kDisabled) {
+    prefs().SetBoolean(prefs::kUserCameraAllowed, false);
+  }
+
   // This needs to be called after OnPreferenceChangedImpl() as that call can
   // change the pref value.
   const CameraSWPrivacySwitchSetting pref_val = GetUserSwitchPreference();
@@ -128,10 +143,7 @@ void CameraPrivacySwitchSynchronizer::OnPreferenceChanged(
 
 CameraSWPrivacySwitchSetting
 CameraPrivacySwitchSynchronizer::GetUserSwitchPreference() {
-  DCHECK(pref_change_registrar_);
-  DCHECK(pref_change_registrar_->prefs());
-  const bool allowed =
-      pref_change_registrar_->prefs()->GetBoolean(prefs::kUserCameraAllowed);
+  const bool allowed = prefs().GetBoolean(prefs::kUserCameraAllowed);
 
   return allowed ? CameraSWPrivacySwitchSetting::kEnabled
                  : CameraSWPrivacySwitchSetting::kDisabled;
@@ -150,11 +162,54 @@ void CameraPrivacySwitchSynchronizer::SetCameraSWPrivacySwitch(
 
 void CameraPrivacySwitchSynchronizer::SetUserSwitchPreference(
     CameraSWPrivacySwitchSetting value) {
+  prefs().SetBoolean(prefs::kUserCameraAllowed,
+                     value == CameraSWPrivacySwitchSetting::kEnabled);
+}
+
+void CameraPrivacySwitchSynchronizer::SetForceDisableCameraAccess(
+    bool new_value) {
+  force_disable_camera_access_ = new_value;
+  if (pref_change_registrar_) {
+    if (new_value) {
+      StorePreviousPrefValue();
+      prefs().SetBoolean(prefs::kUserCameraAllowed, false);
+    } else {
+      RestorePreviousPrefValueMaybe();
+    }
+  }
+}
+
+bool CameraPrivacySwitchSynchronizer::IsCameraAccessForceDisabled() const {
+  return force_disable_camera_access_;
+}
+
+void CameraPrivacySwitchSynchronizer::StorePreviousPrefValue() {
+  if (prefs().HasPrefPath(prefs::kUserCameraAllowedPreviousValue)) {
+    // Do not overwrite previous stored value, otherwise force disabling
+    // camera access twice in a row will not properly restore the previous
+    // value.
+    return;
+  }
+
+  prefs().SetBoolean(prefs::kUserCameraAllowedPreviousValue,
+                     prefs().GetBoolean(prefs::kUserCameraAllowed));
+}
+
+void CameraPrivacySwitchSynchronizer::RestorePreviousPrefValueMaybe() {
+  // If a previous value was stored, restore it and then clear the stored
+  // previous value so we do not keep restoring it.
+  if (prefs().HasPrefPath(prefs::kUserCameraAllowedPreviousValue)) {
+    prefs().SetBoolean(
+        prefs::kUserCameraAllowed,
+        prefs().GetBoolean(prefs::kUserCameraAllowedPreviousValue));
+
+    prefs().ClearPref(prefs::kUserCameraAllowedPreviousValue);
+  }
+}
+
+PrefService& CameraPrivacySwitchSynchronizer::prefs() {
   CHECK(pref_change_registrar_);
-  CHECK(pref_change_registrar_->prefs());
-  pref_change_registrar_->prefs()->SetBoolean(
-      prefs::kUserCameraAllowed,
-      value == CameraSWPrivacySwitchSetting::kEnabled);
+  return CHECK_DEREF(pref_change_registrar_->prefs());
 }
 
 CameraPrivacySwitchController::CameraPrivacySwitchController() = default;
@@ -237,7 +292,6 @@ bool CameraPrivacySwitchController::UsingCameraLEDFallback() {
   CHECK(privacy_hub_controller);
   return privacy_hub_controller->UsingCameraLEDFallback();
 }
-
 
 void CameraPrivacySwitchController::ShowNotification() {
   last_active_notification_update_time_ = base::Time::Now();

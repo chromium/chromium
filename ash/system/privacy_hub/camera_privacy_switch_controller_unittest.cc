@@ -727,6 +727,144 @@ TEST_P(PrivacyHubCameraControllerTest, MetricCollection) {
             1);
 }
 
+TEST_P(PrivacyHubCameraControllerTest,
+       ForceDisableAccessShouldDisableUserPref) {
+  SetUserPref(true);
+
+  auto& controller = *CameraPrivacySwitchController::Get();
+
+  controller.SetForceDisableCameraAccess(true);
+
+  EXPECT_FALSE(GetUserPref());
+}
+
+TEST_P(PrivacyHubCameraControllerTest,
+       ForceDisableAccessShouldAlsoWorkBeforeUserPrefIsRegistered) {
+  SetUserPref(true);
+
+  // Create a local version of the controller, so we can delay registration of
+  // the user pref service.
+  CameraPrivacySwitchController controller;
+
+  controller.SetForceDisableCameraAccess(true);
+
+  controller.OnActiveUserPrefServiceChanged(
+      Shell::Get()->session_controller()->GetActivePrefService());
+
+  EXPECT_FALSE(GetUserPref());
+}
+
+TEST_P(PrivacyHubCameraControllerTest,
+       ForceDisableAccessShouldPreventPrefChanges) {
+  auto& controller = *CameraPrivacySwitchController::Get();
+  controller.SetForceDisableCameraAccess(true);
+
+  SetUserPref(true);
+  EXPECT_FALSE(GetUserPref());
+}
+
+TEST_P(PrivacyHubCameraControllerTest, ShouldBeAbleToStopForceDisableAccess) {
+  auto& controller = *CameraPrivacySwitchController::Get();
+
+  controller.SetForceDisableCameraAccess(true);
+  ASSERT_TRUE(controller.IsCameraAccessForceDisabled());
+
+  controller.SetForceDisableCameraAccess(false);
+  ASSERT_FALSE(controller.IsCameraAccessForceDisabled());
+}
+
+TEST_P(PrivacyHubCameraControllerTest,
+       ShouldBeAbleToChangePrefAfterStoppingForceDisableAccess) {
+  auto& controller = *CameraPrivacySwitchController::Get();
+  controller.SetForceDisableCameraAccess(true);
+  controller.SetForceDisableCameraAccess(false);
+
+  SetUserPref(true);
+  EXPECT_TRUE(GetUserPref());
+}
+
+TEST_P(PrivacyHubCameraControllerTest,
+       StoppingForceDisableAccessShouldNotCrashEvenBeforeUserPrefIsRegistered) {
+  // Create a local version of the controller, so we can delay registration of
+  // the user pref service.
+  CameraPrivacySwitchController controller;
+
+  // Neither of these should crash (by trying to access the user pref).
+  controller.SetForceDisableCameraAccess(true);
+  controller.SetForceDisableCameraAccess(false);
+}
+
+TEST_P(PrivacyHubCameraControllerTest,
+       ShouldRestorePreviousPrefAfterForceDisableAccess) {
+  auto& controller = *CameraPrivacySwitchController::Get();
+
+  for (const bool previous_value : {true, false}) {
+    SetUserPref(previous_value);
+    controller.SetForceDisableCameraAccess(true);
+    controller.SetForceDisableCameraAccess(false);
+    EXPECT_EQ(GetUserPref(), previous_value);
+  }
+}
+
+TEST_P(PrivacyHubCameraControllerTest,
+       ShouldRestorePreviousPrefEvenAfterRecreatingTheController) {
+  // This test ensures that we restore the previous pref value, even if
+  // it was force disabled and then Chrome crashed.
+
+  for (const bool previous_value : {true, false}) {
+    SetUserPref(previous_value);
+
+    absl::optional<CameraPrivacySwitchController> controller;
+
+    // Create the controller.
+    controller.emplace();
+    controller->OnActiveUserPrefServiceChanged(
+        Shell::Get()->session_controller()->GetActivePrefService());
+
+    // Force disable camera access.
+    controller->SetForceDisableCameraAccess(true);
+
+    // Simulate crash and restart by destroying and recreating the controller.
+    controller.emplace();
+    controller->OnActiveUserPrefServiceChanged(
+        Shell::Get()->session_controller()->GetActivePrefService());
+
+    // The previous pref value should be restored.
+    EXPECT_EQ(GetUserPref(), previous_value);
+  }
+}
+
+TEST_P(PrivacyHubCameraControllerTest,
+       ShouldRestorePreviousPrefEvenAfterForceDisableAccessTwice) {
+  // This test ensures that force disabling camera access a second time will
+  // not overwrite the stored previous value (which should keep reflecting the
+  // state from before we force disabled camera access the first time).
+
+  for (const bool previous_value : {true, false}) {
+    SetUserPref(previous_value);
+
+    absl::optional<CameraPrivacySwitchController> controller;
+
+    // Create the controller.
+    controller.emplace();
+    controller->OnActiveUserPrefServiceChanged(
+        Shell::Get()->session_controller()->GetActivePrefService());
+
+    // Force disable camera access.
+    controller->SetForceDisableCameraAccess(true);
+    // Twice.
+    controller->SetForceDisableCameraAccess(true);
+
+    // Simulate crash and restart by destroying and recreating the controller.
+    controller.emplace();
+    controller->OnActiveUserPrefServiceChanged(
+        Shell::Get()->session_controller()->GetActivePrefService());
+
+    // The previous pref value should be restored.
+    EXPECT_EQ(GetUserPref(), previous_value);
+  }
+}
+
 class PrivacyIndicatorAndVideoConferenceCameraControllerTest
     : public NotificationTestBase {};
 

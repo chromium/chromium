@@ -1138,6 +1138,12 @@ inline constexpr char kSystemTrayExpanded[] = "ash.system_tray.expanded";
 // A boolean pref indicating whether the camera is allowed to be used.
 inline constexpr char kUserCameraAllowed[] = "ash.user.camera_allowed";
 
+// A boolean pref remembering the previous value of `kUserCameraAllowed`.
+// Set to ensure we can restore the previous value (even after a crash) when the
+// preference is temporary changed through the `ForceDisableCameraAccess` API.
+inline constexpr char kUserCameraAllowedPreviousValue[] =
+    "ash.user.camera_allowed_previous_value";
+
 // A boolean pref indicating whether the microphone is allowed to be used.
 inline constexpr char kUserMicrophoneAllowed[] = "ash.user.microphone_allowed";
 
