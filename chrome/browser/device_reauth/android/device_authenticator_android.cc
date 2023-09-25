@@ -67,7 +67,8 @@ void LogAuthResult(device_reauth::DeviceAuthSource source,
 }
 
 void LogAuthSource(device_reauth::DeviceAuthSource source) {
-  base::UmaHistogramEnumeration("Android.BiometricAuth.AuthSource", source);
+  base::UmaHistogramEnumeration("Android.DeviceAuthenticator.AuthSource",
+                                source);
 }
 
 void LogCanAuthenticate(BiometricsAvailability availability) {

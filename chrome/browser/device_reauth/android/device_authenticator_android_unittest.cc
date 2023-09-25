@@ -113,7 +113,7 @@ TEST_F(DeviceAuthenticatorAndroidTest, AuthenticateRecordsSource) {
                                 /*use_last_valid_auth=*/true);
 
   histogram_tester.ExpectUniqueSample(
-      "Android.BiometricAuth.AuthSource",
+      "Android.DeviceAuthenticator.AuthSource",
       device_reauth::DeviceAuthSource::kPasswordManager, 1);
 }
 

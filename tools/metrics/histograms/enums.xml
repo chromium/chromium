@@ -27030,6 +27030,7 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="0" label="Password Manager"/>
   <int value="1" label="Autofill"/>
   <int value="2" label="Icognito"/>
+  <int value="3" label="Device Lock Page"/>
 </enum>
 
 <enum name="DeviceEnumerationResult">

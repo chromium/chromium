@@ -580,18 +580,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.BiometricAuth.AuthSource" enum="DeviceAuthSource"
-    expires_after="2024-02-04">
-  <owner>ioanap@chromium.org</owner>
-  <owner>fhorschig@chromium.org</owner>
-  <owner>theocristea@google.com</owner>
-  <summary>
-    Recorded when a UI surface/flow in Chrome on Android chooses to re-auth the
-    user via biometrics. It records where the request comes from (Password
-    Manager, Autofill or Incognito).
-  </summary>
-</histogram>
-
 <histogram name="Android.ChildMismatch.AppInfoError" enum="ChildAppInfoError"
     expires_after="2022-11-01">
   <obsolete>
@@ -864,6 +852,19 @@ chromium-metrics-reviews@google.com.
   <summary>
     Entry that navigate the user into the Theme Settings. Recorded when the
     Theme settings is opened.
+  </summary>
+</histogram>
+
+<histogram name="Android.DeviceAuthenticator.AuthSource"
+    enum="DeviceAuthSource" expires_after="2024-02-04">
+  <owner>ioanap@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
+  <owner>theocristea@google.com</owner>
+  <owner>clhager@google.com</owner>
+  <summary>
+    Recorded when a UI surface/flow in Chrome on Android chooses to re-auth the
+    user. It records where the request comes from (Password Manager, Autofill,
+    Incognito or Device Lock Page).
   </summary>
 </histogram>
 

@@ -21,7 +21,8 @@ enum class DeviceAuthSource {
   kPasswordManager = 0,
   kAutofill = 1,
   kIncognito = 2,
-  kMaxValue = kIncognito,
+  kDeviceLockPage = 3,
+  kMaxValue = kDeviceLockPage,
 };
 
 // When creating a device authenticator, one should create a |DeviceAuthParam|
