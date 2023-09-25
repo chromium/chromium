@@ -67,5 +67,9 @@
     Search with <ph name="PRODUCT_NAME">$1<ex>Google</ex></ph>
   </message>
 
+  <message name="IDS_SEARCH_ENGINE_CHOICE_SETTINGS_SUBTITLE" desc="This is the body text of a dialog where the user can change their default search engine. This string explains that the list of search engines reflects the user’s region and are randomized (not in order of recommendation). We want users to understand that they can use any search engine with Chrome.">
+    These search engines are popular in your region and are shown in random order
+  </message>
+
 </if>
 </grit-part>

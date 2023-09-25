@@ -107,6 +107,11 @@ const base::flat_set<int> GetEeaChoiceCountries() {
 const char kSearchEngineChoiceScreenEventsHistogram[] =
     "Search.ChoiceScreenEvents";
 
+bool ShouldShowUpdatedSettings(PrefService& profile_prefs) {
+  return base::FeatureList::IsEnabled(switches::kSearchEngineChoice) &&
+         IsEeaChoiceCountry(GetSearchEngineChoiceCountryId(profile_prefs));
+}
+
 bool ShouldShowChoiceScreen(const policy::PolicyService& policy_service,
                             const ProfileProperties& profile_properties) {
   if (!base::FeatureList::IsEnabled(switches::kSearchEngineChoice)) {

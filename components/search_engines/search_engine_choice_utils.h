@@ -41,6 +41,10 @@ struct ProfileProperties {
   raw_ptr<PrefService> pref_service;
 };
 
+// Returns which version of the settings screen for the default search engine
+// setting should be shown.
+bool ShouldShowUpdatedSettings(PrefService& profile_prefs);
+
 // Returns whether the search engine choice screen can be displayed or not based
 // on device policies and profile properties.
 bool ShouldShowChoiceScreen(const policy::PolicyService& policy_service,

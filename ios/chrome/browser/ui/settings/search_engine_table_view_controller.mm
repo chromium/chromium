@@ -13,8 +13,11 @@
 #import "base/ranges/algorithm.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/common/password_manager_features.h"
+#import "components/prefs/pref_service.h"
+#import "components/search_engines/search_engine_choice_utils.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/search_engines/template_url_service_observer.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/search_engines/search_engine_observer_bridge.h"
@@ -76,6 +79,8 @@ const char kUmaSelectDefaultSearchEngine[] =
   // FaviconLoader is a keyed service that uses LargeIconService to retrieve
   // favicon images.
   FaviconLoader* _faviconLoader;
+  // Used to retrieve the user's prefs.
+  PrefService* _prefService;
 }
 
 #pragma mark - Initialization
@@ -92,6 +97,7 @@ const char kUmaSelectDefaultSearchEngine[] =
     _templateURLService->Load();
     _faviconLoader =
         IOSChromeFaviconLoaderFactory::GetForBrowserState(browserState);
+    _prefService = browserState->GetPrefs();
     [self setTitle:l10n_util::GetNSString(IDS_IOS_SEARCH_ENGINE_SETTING_TITLE)];
     self.shouldDisableDoneButtonOnEdit = YES;
     [self updateUIForEditState];
@@ -208,6 +214,15 @@ const char kUmaSelectDefaultSearchEngine[] =
   // Add prior search engines.
   if (_firstList.size() > 0) {
     [model addSectionWithIdentifier:SectionIdentifierFirstList];
+
+    if (search_engines::ShouldShowUpdatedSettings(*_prefService)) {
+      TableViewTextHeaderFooterItem* header =
+          [[TableViewTextHeaderFooterItem alloc] initWithType:ItemTypeHeader];
+      header.subtitle =
+          l10n_util::GetNSString(IDS_SEARCH_ENGINE_CHOICE_SETTINGS_SUBTITLE);
+      [model setHeader:header
+          forSectionWithIdentifier:SectionIdentifierFirstList];
+    }
 
     for (const TemplateURL* templateURL : _firstList) {
       [model addItem:[self createSearchEngineItemFromTemplateURL:templateURL]
@@ -453,6 +468,8 @@ const char kUmaSelectDefaultSearchEngine[] =
   if (_settingsAreDismissed)
     return;
 
+  // TODO(b/280753739): Fetch the list of URLs used for the search engine choice
+  // screen, when appropriate.
   std::vector<TemplateURL*> urls = _templateURLService->GetTemplateURLs();
   _firstList.clear();
   _firstList.reserve(urls.size());

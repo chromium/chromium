@@ -4,6 +4,7 @@
 
 #include "components/search_engines/search_engine_choice_utils.h"
 
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/country_codes/country_codes.h"
@@ -37,6 +38,33 @@ class SearchEngineChoiceUtilsTest : public ::testing::Test {
 
     InitMockPolicyService();
     CheckPoliciesInitialState();
+  }
+
+  void VerifyWillShowChoiceScreen(
+      const policy::PolicyService& policy_service,
+      const search_engines::ProfileProperties& profile_properties) {
+    PrefService& prefs = CHECK_DEREF(profile_properties.pref_service.get());
+    EXPECT_TRUE(search_engines::ShouldShowUpdatedSettings(prefs));
+    EXPECT_TRUE(search_engines::ShouldShowChoiceScreen(policy_service,
+                                                       profile_properties));
+  }
+
+  void VerifyEligibleButWillNotShowChoiceScreen(
+      const policy::PolicyService& policy_service,
+      const search_engines::ProfileProperties& profile_properties) {
+    PrefService& prefs = CHECK_DEREF(profile_properties.pref_service.get());
+    EXPECT_TRUE(search_engines::ShouldShowUpdatedSettings(prefs));
+    EXPECT_FALSE(search_engines::ShouldShowChoiceScreen(policy_service,
+                                                        profile_properties));
+  }
+
+  void VerifyNotEligibleAndWillNotShowChoiceScreen(
+      const policy::PolicyService& policy_service,
+      const search_engines::ProfileProperties& profile_properties) {
+    PrefService& prefs = CHECK_DEREF(profile_properties.pref_service.get());
+    EXPECT_FALSE(search_engines::ShouldShowUpdatedSettings(prefs));
+    EXPECT_FALSE(search_engines::ShouldShowChoiceScreen(policy_service,
+                                                        profile_properties));
   }
 
   policy::MockPolicyService& policy_service() { return policy_service_; }
@@ -75,18 +103,19 @@ class SearchEngineChoiceUtilsTest : public ::testing::Test {
 
 // Test that the choice screen doesn't get displayed if the profile is not
 // regular.
-TEST_F(SearchEngineChoiceUtilsTest, ShowChoiceScreenWithRegularProfile) {
-  EXPECT_FALSE(search_engines::ShouldShowChoiceScreen(
+TEST_F(SearchEngineChoiceUtilsTest,
+       DoNotShowChoiceScreenWithNotRegularProfile) {
+  VerifyEligibleButWillNotShowChoiceScreen(
       policy_service(), /*profile_properties=*/{
-          .is_regular_profile = false, .pref_service = pref_service()}));
+          .is_regular_profile = false, .pref_service = pref_service()});
 }
 
 // Test that the choice screen gets displayed if the
 // `DefaultSearchProviderEnabled` policy is not set.
 TEST_F(SearchEngineChoiceUtilsTest, ShowChoiceScreenIfPoliciesAreNotSet) {
-  EXPECT_TRUE(search_engines::ShouldShowChoiceScreen(
+  VerifyWillShowChoiceScreen(
       policy_service(), /*profile_properties=*/{
-          .is_regular_profile = true, .pref_service = pref_service()}));
+          .is_regular_profile = true, .pref_service = pref_service()});
 }
 
 // Test that the choice screen doesn't get displayed if the
@@ -95,9 +124,9 @@ TEST_F(SearchEngineChoiceUtilsTest, DoNotShowChoiceScreenIfPolicySetToFalse) {
   policy_map().Set(policy::key::kDefaultSearchProviderEnabled,
                    policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                    policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
-  EXPECT_FALSE(search_engines::ShouldShowChoiceScreen(
+  VerifyEligibleButWillNotShowChoiceScreen(
       policy_service(), /*profile_properties=*/{
-          .is_regular_profile = true, .pref_service = pref_service()}));
+          .is_regular_profile = true, .pref_service = pref_service()});
 }
 
 // Test that the choice screen gets displayed if the
@@ -108,9 +137,9 @@ TEST_F(SearchEngineChoiceUtilsTest,
   policy_map().Set(policy::key::kDefaultSearchProviderEnabled,
                    policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                    policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
-  EXPECT_TRUE(search_engines::ShouldShowChoiceScreen(
+  VerifyWillShowChoiceScreen(
       policy_service(), /*profile_properties=*/{
-          .is_regular_profile = true, .pref_service = pref_service()}));
+          .is_regular_profile = true, .pref_service = pref_service()});
 }
 
 // Test that the choice screen doesn't get displayed if the
@@ -124,9 +153,9 @@ TEST_F(SearchEngineChoiceUtilsTest,
   policy_map().Set(policy::key::kDefaultSearchProviderSearchURL,
                    policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                    policy::POLICY_SOURCE_CLOUD, base::Value("test"), nullptr);
-  EXPECT_FALSE(search_engines::ShouldShowChoiceScreen(
+  VerifyEligibleButWillNotShowChoiceScreen(
       policy_service(), /*profile_properties=*/{
-          .is_regular_profile = true, .pref_service = pref_service()}));
+          .is_regular_profile = true, .pref_service = pref_service()});
 }
 
 // Test that the choice screen gets displayed if the
@@ -135,18 +164,18 @@ TEST_F(SearchEngineChoiceUtilsTest,
 // screen.
 TEST_F(SearchEngineChoiceUtilsTest,
        ShowChoiceScreenIfTheTimestampPrefIsNotSet) {
-  EXPECT_TRUE(search_engines::ShouldShowChoiceScreen(
+  VerifyWillShowChoiceScreen(
       policy_service(),
       /*profile_properties=*/{.is_regular_profile = true,
-                              .pref_service = pref_service()}));
+                              .pref_service = pref_service()});
 
   pref_service()->SetInt64(
       prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
       base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds());
-  EXPECT_FALSE(search_engines::ShouldShowChoiceScreen(
+  VerifyEligibleButWillNotShowChoiceScreen(
       policy_service(),
       /*profile_properties=*/{.is_regular_profile = true,
-                              .pref_service = pref_service()}));
+                              .pref_service = pref_service()});
 }
 
 // Test that the choice screen does get displayed even if completed if the
@@ -158,18 +187,18 @@ TEST_F(SearchEngineChoiceUtilsTest, ShowChoiceScreenWithForceCommandLineFlag) {
       prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
       base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds());
 
-  EXPECT_TRUE(search_engines::ShouldShowChoiceScreen(
+  VerifyWillShowChoiceScreen(
       policy_service(), /*profile_properties=*/{
-          .is_regular_profile = true, .pref_service = pref_service()}));
+          .is_regular_profile = true, .pref_service = pref_service()});
 }
 
 // Ensure that the choice screen doesn't get displayed if the flag is disabled.
 TEST_F(SearchEngineChoiceUtilsTest, DoNotShowChoiceScreenIfFlagIsDisabled) {
   feature_list()->Reset();
   feature_list()->InitAndDisableFeature(switches::kSearchEngineChoice);
-  EXPECT_FALSE(search_engines::ShouldShowChoiceScreen(
+  VerifyNotEligibleAndWillNotShowChoiceScreen(
       policy_service(), /*profile_properties=*/{
-          .is_regular_profile = true, .pref_service = pref_service()}));
+          .is_regular_profile = true, .pref_service = pref_service()});
 }
 
 // Test that the choice screen does not get displayed if the command line
@@ -178,9 +207,9 @@ TEST_F(SearchEngineChoiceUtilsTest,
        DoNotShowChoiceScreenWithDisableCommandLineFlag) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kDisableSearchEngineChoiceScreen);
-  EXPECT_FALSE(search_engines::ShouldShowChoiceScreen(
+  VerifyEligibleButWillNotShowChoiceScreen(
       policy_service(), /*profile_properties=*/{
-          .is_regular_profile = true, .pref_service = pref_service()}));
+          .is_regular_profile = true, .pref_service = pref_service()});
 }
 
 TEST_F(SearchEngineChoiceUtilsTest, GetSearchEngineChoiceCountryId) {
