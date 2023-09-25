@@ -31,6 +31,8 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
+#include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_features.h"
@@ -501,6 +503,13 @@ class PageSpecificSiteDataDialogPrivacySandboxInteractiveUiTest
 IN_PROC_BROWSER_TEST_F(
     PageSpecificSiteDataDialogPrivacySandboxInteractiveUiTest,
     FirstPartyAllowed) {
+  privacy_sandbox::ScopedPrivacySandboxAttestations scoped_attestations(
+      privacy_sandbox::PrivacySandboxAttestations::CreateForTesting());
+  // Mark all Privacy Sandbox APIs as attested since the test case is testing
+  // behaviors not related to attestations.
+  privacy_sandbox::PrivacySandboxAttestations::GetInstance()
+      ->SetAllPrivacySandboxAttestedForTesting(true);
+
   RunTestSequenceInContext(
       context(),
       NavigateAndOpenDialog(kPageSpecificSiteDataDialogFirstPartySection),

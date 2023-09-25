@@ -108,6 +108,11 @@ PrivacySandboxSettingsImpl::Status PrivacySandboxAttestations::IsSiteAttested(
     return PrivacySandboxSettingsImpl::Status::kAllowed;
   }
 
+  // Test has marked all Privacy Sandbox APIs as attested for any given site.
+  if (is_all_apis_attested_for_testing_) {
+    return PrivacySandboxSettingsImpl::Status::kAllowed;
+  }
+
   // Pass the check if the site is in the list of devtools overrides.
   if (IsOverridden(site)) {
     return PrivacySandboxSettingsImpl::Status::kAllowed;
@@ -175,6 +180,11 @@ void PrivacySandboxAttestations::AddOverride(const net::SchemefulSite& site) {
 bool PrivacySandboxAttestations::IsOverridden(
     const net::SchemefulSite& site) const {
   return IsOverriddenByFlags(site) || base::Contains(overridden_sites_, site);
+}
+
+void PrivacySandboxAttestations::SetAllPrivacySandboxAttestedForTesting(
+    bool all_attested) {
+  is_all_apis_attested_for_testing_ = all_attested;
 }
 
 void PrivacySandboxAttestations::SetAttestationsForTesting(

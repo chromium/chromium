@@ -162,6 +162,10 @@ class PrivacySandboxSettingsTest : public testing::Test {
             base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         scoped_attestations_(
             privacy_sandbox::PrivacySandboxAttestations::CreateForTesting()) {
+    // Mark all Privacy Sandbox APIs as attested since the test cases are
+    // testing behaviors not related to attestations.
+    privacy_sandbox::PrivacySandboxAttestations::GetInstance()
+        ->SetAllPrivacySandboxAttestedForTesting(true);
     content_settings::CookieSettings::RegisterProfilePrefs(prefs()->registry());
     HostContentSettingsMap::RegisterProfilePrefs(prefs()->registry());
     privacy_sandbox::RegisterProfilePrefs(prefs()->registry());
@@ -1937,12 +1941,17 @@ TEST_F(PrivacySandboxSettingsM1RestrictedNotice,
 }
 
 class PrivacySandboxAttestationsTest : public PrivacySandboxSettingsM1Test {
+ public:
+  PrivacySandboxAttestationsTest() {
+    // This test suite tests Privacy Sandbox Attestations related behaviors,
+    // turn off the setting that makes all APIs considered attested.
+    privacy_sandbox::PrivacySandboxAttestations::GetInstance()
+        ->SetAllPrivacySandboxAttestedForTesting(false);
+  }
+
   void InitializeFeaturesBeforeStart() override {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{privacy_sandbox::kPrivacySandboxSettings4,
-                              privacy_sandbox::
-                                  kEnforcePrivacySandboxAttestations},
-        /*disabled_features=*/{});
+    feature_list_.InitAndEnableFeature(
+        privacy_sandbox::kPrivacySandboxSettings4);
   }
 };
 

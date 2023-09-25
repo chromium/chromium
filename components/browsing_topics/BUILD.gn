@@ -113,6 +113,8 @@ source_set("unit_tests") {
     "//components/privacy_sandbox:privacy_sandbox",
     "//components/privacy_sandbox:privacy_sandbox_prefs",
     "//components/privacy_sandbox:test_support",
+    "//components/privacy_sandbox/privacy_sandbox_attestations",
+    "//components/privacy_sandbox/privacy_sandbox_attestations:test_support",
     "//components/sync_preferences:test_support",
     "//components/ukm:test_support",
     "//content/test:test_support",

@@ -45,16 +45,16 @@ TEST_F(PrivacySandboxAttestationsTestBase, AddOverride) {
 }
 
 TEST_F(PrivacySandboxAttestationsTestBase,
-       SiteDefaultAttestedWithFeatureDefaultDisabled) {
-  // Enrollment feature should be disabled by default.
-  ASSERT_FALSE(base::FeatureList::IsEnabled(
+       SiteDefaultNotAttestedWithFeatureDefaultEnabled) {
+  // Enrollment feature should be enabled by default.
+  ASSERT_TRUE(base::FeatureList::IsEnabled(
       privacy_sandbox::kEnforcePrivacySandboxAttestations));
   net::SchemefulSite site(GURL("https://example.com"));
 
   Status attestation_status =
       PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
           site, PrivacySandboxAttestationsGatedAPI::kTopics);
-  EXPECT_EQ(attestation_status, Status::kAllowed);
+  EXPECT_EQ(attestation_status, Status::kAttestationsFileNotYetReady);
 }
 
 class PrivacySandboxAttestationsFeatureEnabledTest

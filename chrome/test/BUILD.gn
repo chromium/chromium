@@ -10604,6 +10604,8 @@ if (!is_android && !is_chromeos_device) {
         "//components/optimization_guide/proto:optimization_guide_proto",
         "//components/performance_manager:performance_manager",
         "//components/power_bookmarks/core:features",
+        "//components/privacy_sandbox/privacy_sandbox_attestations",
+        "//components/privacy_sandbox/privacy_sandbox_attestations:test_support",
         "//components/user_education/views",
         "//components/user_education/webui",
         "//components/user_notes:features",

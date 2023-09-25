@@ -80,8 +80,10 @@ class PrivacySandboxAttestations {
   PrivacySandboxAttestations& operator=(PrivacySandboxAttestations&&);
 
   // Returns whether `site` is enrolled and attested for `invoking_api`.
-  // (If the `kEnforcePrivacySandboxAttestations` flag is disabled, returns
-  // true unconditionally.)
+  // This function returns true unconditionally if
+  // 1. The `kEnforcePrivacySandboxAttestations` flag is disabled.
+  // 2. Or `is_all_apis_attested_for_testing_` is set to true by
+  // `SetAllPrivacySandboxAttestedForTesting()` for testing.
   PrivacySandboxSettingsImpl::Status IsSiteAttested(
       const net::SchemefulSite& site,
       PrivacySandboxAttestationsGatedAPI invoking_api) const;
@@ -99,6 +101,11 @@ class PrivacySandboxAttestations {
   // Sandbox APIs. The overriding is done using the devtools procotol.
   void AddOverride(const net::SchemefulSite& site);
   bool IsOverridden(const net::SchemefulSite& site) const;
+
+  // Tests can call this function to make all privacy sandbox APIS to be
+  // considered attested for any site. This is used to test APIs behaviors not
+  // related to attestations.
+  void SetAllPrivacySandboxAttestedForTesting(bool all_attested);
 
   // Tests can directly set the underlying `attestations_map_` through this test
   // only function. Note: tests should call `CreateAndSetForTesting()` before
@@ -180,6 +187,9 @@ class PrivacySandboxAttestations {
 
   // Overridden sites by DevTools are considered attested.
   std::vector<net::SchemefulSite> overridden_sites_;
+
+  // If true, all Privacy Sandbox APIs are considered attested for any site.
+  bool is_all_apis_attested_for_testing_ = false;
 };
 
 }  // namespace privacy_sandbox

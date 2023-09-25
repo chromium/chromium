@@ -47,6 +47,8 @@ class PrivacySandboxAttestationsInstallerFeatureDisabledTest
         privacy_sandbox::kEnforcePrivacySandboxAttestations);
   }
 
+  ~PrivacySandboxAttestationsInstallerFeatureDisabledTest() override = default;
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -94,13 +96,9 @@ TEST_F(PrivacySandboxAttestationsInstallerFeatureDisabledTest,
 class PrivacySandboxAttestationsInstallerFeatureEnabledTest
     : public PrivacySandboxAttestationsInstallerTest {
  public:
-  PrivacySandboxAttestationsInstallerFeatureEnabledTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        privacy_sandbox::kEnforcePrivacySandboxAttestations);
-  }
+  PrivacySandboxAttestationsInstallerFeatureEnabledTest() = default;
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  ~PrivacySandboxAttestationsInstallerFeatureEnabledTest() override = default;
 };
 
 TEST_F(PrivacySandboxAttestationsInstallerFeatureEnabledTest,
