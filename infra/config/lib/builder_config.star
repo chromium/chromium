@@ -8,6 +8,7 @@ load("@stdlib//internal/graph.star", "graph")
 load("@stdlib//internal/luci/common.star", "keys", "kinds", "triggerer")
 load("./args.star", "args")
 load("./builder_url.star", "linkify_builder")
+load("./sheriff_rotations.star", "get_sheriff_rotations")
 load("./chrome_settings.star", "per_builder_outputs_config")
 load("./nodes.star", "nodes")
 load("./structs.star", "structs")
@@ -735,6 +736,41 @@ def _set_builder_config_property(ctx):
             builder.properties = json.encode(builder_properties)
 
             builder.description_html = _get_builder_mirror_description(bucket_name, builder, bc_state)
+
+            rotations = get_sheriff_rotations(bucket_name, builder.name)
+            excluded_groups = [
+                # Most/all the clang bots build using clang built from HEAD.
+                # Failures on them hopefully/rarely lead to reverts of random
+                # CLs on the Chromium-side. So trybots for these aren't as
+                # critical.
+                "chromium.clang",
+            ]
+            excluded_builders = [
+                # TODO(crbug.com/1485734): Remove the Samsung builders.
+                "Android FYI Release (Samsung A13)",
+                "Android FYI Release (Samsung A23)",
+
+                # TODO(crbug.com/1486140): Remove when skylab bots are fixed.
+                "lacros-amd64-generic-rel-skylab",
+                "lacros-arm-generic-rel-skylab",
+                "lacros-arm64-generic-rel-skylab",
+
+                # TODO(crbug.com/1484233): Remove the following as trybots are
+                # created for them.
+                "android-arm64-archive-rel",
+                "lacros-arm-archive-rel",
+                "lacros64-archive-rel",
+                "linux-chromeos-archive-rel",
+                "mac-arm64-dbg",
+
+                # These might be permanent exclusions since they do some
+                # perf things. See discussion on crrev.com/c/4884490.
+                "GPU FYI XR Win x64 Builder",
+                "Win10 FYI x64 Release XR Perf (NVIDIA)",
+            ]
+            is_excluded = builder.name in excluded_builders or node.props.builder_group in excluded_groups
+            if rotations and not mirroring_builders and not is_excluded:
+                fail("{} is on a sheriff/gardener rotation, but lacks a matching trybot".format(builder.name))
 
 lucicfg.generator(_set_builder_config_property)
 

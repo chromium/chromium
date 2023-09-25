@@ -22,11 +22,21 @@ def register_sheriffed_builder(bucket, builder, sheriff_rotations):
         sheriff_rotations: A list of the names of sheriff rotations the builder
             is a part of.
     """
+    if sheriff_rotations and bucket != "ci":
+        # Note: if this restriction is relaxed, then the mirroring enforcements
+        # in builder_config.star may need updating.
+        fail("Builder must be in bucket 'ci' to be on a rotation:", builder)
     sheriffed_builder_key = _SHERIFFED_BUILDER.add(bucket, builder)
     for s in sheriff_rotations:
         sheriff_rotation_key = _SHERIFF_ROTATION.add(s, idempotent = True)
         graph.add_edge(sheriff_rotation_key, sheriffed_builder_key)
         graph.add_edge(keys.project(), sheriff_rotation_key)
+
+def get_sheriff_rotations(bucket, builder):
+    sheriffed_builder = _SHERIFFED_BUILDER.get(bucket, builder)
+    if sheriffed_builder:
+        return graph.parents(sheriffed_builder.key)
+    return []
 
 def _generate_sheriff_rotations_files(ctx):
     if not settings.is_main:
