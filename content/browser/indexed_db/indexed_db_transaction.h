@@ -60,7 +60,16 @@ class CONTENT_EXPORT IndexedDBTransaction {
     FINISHED,    // Either aborted or committed.
   };
 
-  virtual ~IndexedDBTransaction();
+  static void DisableInactivityTimeoutForTesting();
+
+  IndexedDBTransaction(
+      int64_t id,
+      IndexedDBConnection* connection,
+      const std::set<int64_t>& object_store_ids,
+      blink::mojom::IDBTransactionMode mode,
+      IndexedDBBucketContextHandle bucket_context,
+      IndexedDBBackingStore::Transaction* backing_store_transaction);
+  ~IndexedDBTransaction();
 
   // Signals the transaction for commit.
   void SetCommitFlag();
@@ -144,20 +153,6 @@ class CONTENT_EXPORT IndexedDBTransaction {
   // in_flight_memory() is used to keep track of all memory scheduled to be
   // written using ScheduleTask. This is reported to memory dumps.
   base::CheckedNumeric<size_t>& in_flight_memory() { return in_flight_memory_; }
-
- protected:
-  // Test classes may derive, but most creation should be done via
-  // IndexedDBClassFactory.
-  IndexedDBTransaction(
-      int64_t id,
-      IndexedDBConnection* connection,
-      const std::set<int64_t>& object_store_ids,
-      blink::mojom::IDBTransactionMode mode,
-      IndexedDBBucketContextHandle bucket_context,
-      IndexedDBBackingStore::Transaction* backing_store_transaction);
-
-  // May be overridden in tests.
-  virtual base::TimeDelta GetInactivityTimeout() const;
 
  private:
   friend class IndexedDBClassFactory;
@@ -279,6 +274,8 @@ class CONTENT_EXPORT IndexedDBTransaction {
   // This timer is started after requests have been processed. If no subsequent
   // requests are processed before the timer fires, assume the script is
   // unresponsive and abort to unblock the transaction queue.
+  // TODO(crbug.com/1474996): this will not be necessary when each backing store
+  // has its own task runner.
   base::OneShotTimer timeout_timer_;
 
   Diagnostics diagnostics_;

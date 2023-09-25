@@ -33,7 +33,6 @@
 #include "content/browser/indexed_db/indexed_db_bucket_context.h"
 #include "content/browser/indexed_db/indexed_db_bucket_context_handle.h"
 #include "content/browser/indexed_db/indexed_db_callback_helpers.h"
-#include "content/browser/indexed_db/indexed_db_class_factory.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "content/browser/indexed_db/indexed_db_cursor.h"
@@ -143,7 +142,6 @@ IndexedDBDatabase::OpenCursorOperationParams::~OpenCursorOperationParams() =
 
 IndexedDBDatabase::IndexedDBDatabase(const std::u16string& name,
                                      IndexedDBBucketContext& bucket_context,
-                                     IndexedDBClassFactory* class_factory,
                                      const Identifier& unique_identifier)
     : metadata_(name,
                 kInvalidId,
@@ -151,7 +149,6 @@ IndexedDBDatabase::IndexedDBDatabase(const std::u16string& name,
                 kInvalidId),
       identifier_(unique_identifier),
       bucket_context_(bucket_context),
-      class_factory_(class_factory),
       connection_coordinator_(this, bucket_context) {}
 
 IndexedDBDatabase::~IndexedDBDatabase() = default;
@@ -1505,11 +1502,6 @@ static_assert(
     blink::mojom::kIDBMaxMessageSize <= IPC::Channel::kMaximumMessageSize,
     "kIDBMaxMessageSize is bigger than IPC::Channel::kMaximumMessageSize");
 
-size_t IndexedDBDatabase::GetUsableMessageSizeInBytes() const {
-  return blink::mojom::kIDBMaxMessageSize -
-         blink::mojom::kIDBMaxMessageOverhead;
-}
-
 void IndexedDBDatabase::CallUpgradeTransactionStartedForTesting(
     int64_t old_version) {
   connection_coordinator_.OnUpgradeTransactionStarted(old_version);
@@ -1530,14 +1522,13 @@ Status IndexedDBDatabase::OpenInternal() {
 std::unique_ptr<IndexedDBConnection> IndexedDBDatabase::CreateConnection(
     scoped_refptr<IndexedDBDatabaseCallbacks> database_callbacks,
     scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker) {
-  std::unique_ptr<IndexedDBConnection> connection =
-      std::make_unique<IndexedDBConnection>(
-          *bucket_context_, class_factory_, weak_factory_.GetWeakPtr(),
-          base::BindRepeating(&IndexedDBDatabase::VersionChangeIgnored,
-                              weak_factory_.GetWeakPtr()),
-          base::BindOnce(&IndexedDBDatabase::ConnectionClosed,
-                         weak_factory_.GetWeakPtr()),
-          database_callbacks, std::move(client_state_checker));
+  auto connection = std::make_unique<IndexedDBConnection>(
+      *bucket_context_, weak_factory_.GetWeakPtr(),
+      base::BindRepeating(&IndexedDBDatabase::VersionChangeIgnored,
+                          weak_factory_.GetWeakPtr()),
+      base::BindOnce(&IndexedDBDatabase::ConnectionClosed,
+                     weak_factory_.GetWeakPtr()),
+      database_callbacks, std::move(client_state_checker));
   connections_.insert(connection.get());
   return connection;
 }

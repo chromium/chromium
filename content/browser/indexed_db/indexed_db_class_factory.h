@@ -5,29 +5,14 @@
 #ifndef CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_CLASS_FACTORY_H_
 #define CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_CLASS_FACTORY_H_
 
-#include <stdint.h>
-
-#include <memory>
-#include <set>
-#include <string>
-
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
-#include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
-#include "content/browser/indexed_db/indexed_db_backing_store.h"
-#include "content/browser/indexed_db/indexed_db_database.h"
-#include "content/browser/indexed_db/indexed_db_task_helper.h"
-#include "content/browser/indexed_db/indexed_db_transaction.h"
 #include "content/common/content_export.h"
-#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 
 namespace content {
-class IndexedDBBackingStore;
-class IndexedDBConnection;
-class IndexedDBTransaction;
 class LevelDBFactory;
 class TransactionalLevelDBFactory;
 
@@ -37,7 +22,8 @@ class TransactionalLevelDBFactory;
 // it really hard to iterate on the system.
 class CONTENT_EXPORT IndexedDBClassFactory {
  public:
-  typedef IndexedDBClassFactory* GetterCallback();
+  using GetterCallback = base::RepeatingCallback<IndexedDBClassFactory*(void)>;
+
   // Used to report irrecoverable backend errors. The second argument can be
   // null.
   using ErrorCallback =
@@ -45,28 +31,13 @@ class CONTENT_EXPORT IndexedDBClassFactory {
 
   static IndexedDBClassFactory* Get();
 
-  static void SetIndexedDBClassFactoryGetter(GetterCallback* cb);
+  static void SetIndexedDBClassFactoryGetter(GetterCallback cb);
 
   // Visible for testing.
   static leveldb_env::Options GetLevelDBOptions();
 
-  virtual LevelDBFactory& leveldb_factory();
+  LevelDBFactory& leveldb_factory();
   virtual TransactionalLevelDBFactory& transactional_leveldb_factory();
-
-  // Returns a database that is newly constructed, but which has uninitialized
-  // metadata.
-  virtual std::unique_ptr<IndexedDBDatabase> CreateIndexedDBDatabase(
-      const std::u16string& name,
-      IndexedDBBucketContext& bucket_context,
-      const IndexedDBDatabase::Identifier& unique_identifier);
-
-  virtual std::unique_ptr<IndexedDBTransaction> CreateIndexedDBTransaction(
-      int64_t id,
-      IndexedDBConnection* connection,
-      const std::set<int64_t>& scope,
-      blink::mojom::IDBTransactionMode mode,
-      IndexedDBBucketContextHandle bucket_context,
-      IndexedDBBackingStore::Transaction* backing_store_transaction);
 
   void SetLevelDBFactoryForTesting(LevelDBFactory* leveldb_factory);
 

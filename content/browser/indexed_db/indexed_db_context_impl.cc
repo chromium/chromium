@@ -74,10 +74,6 @@ static MockBrowserTestIndexedDBClassFactory* GetTestClassFactory() {
   return s_factory.Pointer();
 }
 
-static IndexedDBClassFactory* GetTestIDBClassFactory() {
-  return GetTestClassFactory();
-}
-
 bool IsAllowedPath(const std::vector<base::FilePath>& allowed_paths,
                    const base::FilePath& candidate_path) {
   for (const base::FilePath& allowed_path : allowed_paths) {
@@ -806,6 +802,7 @@ void IndexedDBContextImpl::CompactBackingStoreForTesting(
 
 void IndexedDBContextImpl::BindMockFailureSingletonForTesting(
     mojo::PendingReceiver<storage::mojom::MockFailureInjector> receiver) {
+  IndexedDBTransaction::DisableInactivityTimeoutForTesting();
   // Lazily instantiate the GetTestClassFactory.
   if (!mock_failure_injector_.has_value())
     mock_failure_injector_.emplace(GetTestClassFactory());
@@ -813,12 +810,12 @@ void IndexedDBContextImpl::BindMockFailureSingletonForTesting(
   // TODO(enne): this should really not be a static setter.
   CHECK(!mock_failure_injector_->is_bound());
   GetTestClassFactory()->Reset();
-  IndexedDBClassFactory::SetIndexedDBClassFactoryGetter(GetTestIDBClassFactory);
+  IndexedDBClassFactory::SetIndexedDBClassFactoryGetter(
+      base::BindRepeating([]() {
+        return static_cast<IndexedDBClassFactory*>(GetTestClassFactory());
+      }));
 
   mock_failure_injector_->Bind(std::move(receiver));
-  mock_failure_injector_->set_disconnect_handler(base::BindOnce([]() {
-    IndexedDBClassFactory::SetIndexedDBClassFactoryGetter(nullptr);
-  }));
 }
 
 void IndexedDBContextImpl::GetDatabaseKeysForTesting(

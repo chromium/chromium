@@ -5,24 +5,17 @@
 #ifndef CONTENT_BROWSER_INDEXED_DB_MOCK_BROWSERTEST_INDEXED_DB_CLASS_FACTORY_H_
 #define CONTENT_BROWSER_INDEXED_DB_MOCK_BROWSERTEST_INDEXED_DB_CLASS_FACTORY_H_
 
-#include <stdint.h>
-
 #include <map>
 #include <memory>
 #include <set>
 
 #include "base/task/sequenced_task_runner.h"
-#include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_factory.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control_test.mojom.h"
-#include "content/browser/indexed_db/indexed_db_backing_store.h"
 #include "content/browser/indexed_db/indexed_db_class_factory.h"
-#include "content/browser/indexed_db/indexed_db_database.h"
-#include "content/browser/indexed_db/indexed_db_task_helper.h"
 
 namespace content {
 
-class IndexedDBConnection;
 class LevelDBDirectTransaction;
 class LevelDBScope;
 class LevelDBScopes;
@@ -38,20 +31,12 @@ class MockBrowserTestIndexedDBClassFactory
   MockBrowserTestIndexedDBClassFactory();
   ~MockBrowserTestIndexedDBClassFactory() override;
 
+  void Reset();
+
+  // IndexedDBClassFactory:
   TransactionalLevelDBFactory& transactional_leveldb_factory() override;
 
-  std::unique_ptr<IndexedDBDatabase> CreateIndexedDBDatabase(
-      const std::u16string& name,
-      IndexedDBBucketContext& bucket_context,
-      const IndexedDBDatabase::Identifier& unique_identifier) override;
-  std::unique_ptr<IndexedDBTransaction> CreateIndexedDBTransaction(
-      int64_t id,
-      IndexedDBConnection* connection,
-      const std::set<int64_t>& scope,
-      blink::mojom::IDBTransactionMode mode,
-      IndexedDBBucketContextHandle bucket_context,
-      IndexedDBBackingStore::Transaction* backing_store_transaction) override;
-
+  // DefaultTransactionalLevelDBFactory:
   std::unique_ptr<TransactionalLevelDBDatabase> CreateLevelDBDatabase(
       scoped_refptr<LevelDBState> state,
       std::unique_ptr<LevelDBScopes> scopes,
@@ -68,12 +53,12 @@ class MockBrowserTestIndexedDBClassFactory
       base::WeakPtr<TransactionalLevelDBTransaction> txn,
       std::unique_ptr<LevelDBSnapshot> snapshot) override;
 
+  // storage::mojom::MockFailureInjector:
   void FailOperation(storage::mojom::FailClass failure_class,
                      storage::mojom::FailMethod failure_method,
                      int fail_on_instance_num,
                      int fail_on_call_num,
                      base::OnceClosure callback) override;
-  void Reset();
 
  private:
   storage::mojom::FailClass failure_class_;

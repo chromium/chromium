@@ -27,7 +27,6 @@
 #include "content/browser/indexed_db/file_stream_reader_to_data_pipe.h"
 #include "content/browser/indexed_db/indexed_db_active_blob_registry.h"
 #include "content/browser/indexed_db/indexed_db_backing_store.h"
-#include "content/browser/indexed_db/indexed_db_class_factory.h"
 #include "content/browser/indexed_db/indexed_db_compaction_task.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_database.h"

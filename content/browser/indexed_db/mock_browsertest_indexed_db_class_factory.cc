@@ -52,49 +52,6 @@ class FunctionTracer {
 
 namespace content {
 
-class IndexedDBTestDatabase : public IndexedDBDatabase {
- public:
-  IndexedDBTestDatabase(const std::u16string& name,
-                        IndexedDBBucketContext& bucket_context,
-                        IndexedDBClassFactory* class_factory,
-                        const Identifier& unique_identifier)
-      : IndexedDBDatabase(name,
-                          bucket_context,
-                          class_factory,
-                          unique_identifier) {}
-  ~IndexedDBTestDatabase() override = default;
-
- protected:
-  size_t GetUsableMessageSizeInBytes() const override {
-    return 10 * 1024 * 1024;  // 10MB
-  }
-};
-
-class IndexedDBTestTransaction : public IndexedDBTransaction {
- public:
-  IndexedDBTestTransaction(
-      int64_t id,
-      IndexedDBConnection* connection,
-      const std::set<int64_t>& scope,
-      blink::mojom::IDBTransactionMode mode,
-      IndexedDBBucketContextHandle bucket_context,
-      IndexedDBBackingStore::Transaction* backing_store_transaction)
-      : IndexedDBTransaction(id,
-                             connection,
-                             scope,
-                             mode,
-                             std::move(bucket_context),
-                             backing_store_transaction) {}
-  ~IndexedDBTestTransaction() override = default;
-
- protected:
-  // Browser tests run under memory/address sanitizers (etc) may trip the
-  // default 60s timeout, so relax it during tests.
-  base::TimeDelta GetInactivityTimeout() const override {
-    return base::Seconds(60 * 60);
-  }
-};
-
 class LevelDBTestDatabase : public TransactionalLevelDBDatabase {
  public:
   LevelDBTestDatabase(scoped_refptr<LevelDBState> level_db_state,
@@ -360,28 +317,6 @@ MockBrowserTestIndexedDBClassFactory::~MockBrowserTestIndexedDBClassFactory() =
 TransactionalLevelDBFactory&
 MockBrowserTestIndexedDBClassFactory::transactional_leveldb_factory() {
   return *this;
-}
-
-std::unique_ptr<IndexedDBDatabase>
-MockBrowserTestIndexedDBClassFactory::CreateIndexedDBDatabase(
-    const std::u16string& name,
-    IndexedDBBucketContext& bucket_context,
-    const IndexedDBDatabase::Identifier& unique_identifier) {
-  return std::make_unique<IndexedDBTestDatabase>(name, bucket_context, this,
-                                                 unique_identifier);
-}
-
-std::unique_ptr<IndexedDBTransaction>
-MockBrowserTestIndexedDBClassFactory::CreateIndexedDBTransaction(
-    int64_t id,
-    IndexedDBConnection* connection,
-    const std::set<int64_t>& scope,
-    blink::mojom::IDBTransactionMode mode,
-    IndexedDBBucketContextHandle bucket_context,
-    IndexedDBBackingStore::Transaction* backing_store_transaction) {
-  return std::make_unique<IndexedDBTestTransaction>(id, connection, scope, mode,
-                                                    std::move(bucket_context),
-                                                    backing_store_transaction);
 }
 
 std::unique_ptr<TransactionalLevelDBDatabase>

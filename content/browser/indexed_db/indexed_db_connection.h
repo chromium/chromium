@@ -29,7 +29,6 @@ class CONTENT_EXPORT IndexedDBConnection {
  public:
   IndexedDBConnection(
       IndexedDBBucketContext& bucket_context,
-      IndexedDBClassFactory* indexed_db_class_factory,
       base::WeakPtr<IndexedDBDatabase> database,
       base::RepeatingClosure on_version_change_ignored,
       base::OnceCallback<void(IndexedDBConnection*)> on_close,
@@ -108,7 +107,6 @@ class CONTENT_EXPORT IndexedDBConnection {
 
   // Keeps the factory for this bucket alive.
   IndexedDBBucketContextHandle bucket_context_handle_;
-  const raw_ptr<IndexedDBClassFactory> indexed_db_class_factory_;
 
   base::WeakPtr<IndexedDBDatabase> database_;
   base::RepeatingClosure on_version_change_ignored_;

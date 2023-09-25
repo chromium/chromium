@@ -50,6 +50,8 @@ std::string WriteBlobToFileResultToString(
 }
 
 const int64_t kInactivityTimeoutPeriodSeconds = 60;
+// Disabled in some tests.
+bool g_inactivity_timeout_enabled = true;
 
 // Used for UMA metrics - do not change values.
 enum UmaIDBException {
@@ -281,6 +283,11 @@ void IndexedDBTransaction::Start() {
   DCHECK(!locks_receiver_.locks.empty());
   diagnostics_.start_time = base::Time::Now();
   bucket_context_->delegate().on_tasks_available.Run();
+}
+
+// static
+void IndexedDBTransaction::DisableInactivityTimeoutForTesting() {
+  g_inactivity_timeout_enabled = false;
 }
 
 leveldb::Status IndexedDBTransaction::BlobWriteComplete(
@@ -532,17 +539,14 @@ IndexedDBTransaction::RunTasks() {
   // block other transactions, so don't time those out.
   if (!HasPendingTasks() &&
       mode_ != blink::mojom::IDBTransactionMode::ReadOnly &&
-      state_ == STARTED) {
-    timeout_timer_.Start(FROM_HERE, GetInactivityTimeout(),
+      state_ == STARTED && g_inactivity_timeout_enabled) {
+    timeout_timer_.Start(FROM_HERE,
+                         base::Seconds(kInactivityTimeoutPeriodSeconds),
                          base::BindOnce(&IndexedDBTransaction::Timeout,
                                         ptr_factory_.GetWeakPtr()));
   }
   processing_event_queue_ = false;
   return {RunTasksResult::kNotFinished, leveldb::Status::OK()};
-}
-
-base::TimeDelta IndexedDBTransaction::GetInactivityTimeout() const {
-  return base::Seconds(kInactivityTimeoutPeriodSeconds);
 }
 
 void IndexedDBTransaction::Timeout() {

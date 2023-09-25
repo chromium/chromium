@@ -55,6 +55,7 @@
 #include "content/browser/indexed_db/indexed_db_reporting.h"
 #include "content/browser/indexed_db/indexed_db_task_helper.h"
 #include "content/browser/indexed_db/indexed_db_tombstone_sweeper.h"
+#include "content/browser/indexed_db/indexed_db_transaction.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "third_party/leveldatabase/env_chromium.h"
 
@@ -270,18 +271,9 @@ void IndexedDBFactory::Open(
                                        std::move(client_state_checker));
     return;
   }
-  std::unique_ptr<IndexedDBDatabase> database =
-      class_factory_->CreateIndexedDBDatabase(
-          name, *bucket_context_handle.bucket_context(),
-          std::move(unique_identifier));
-  if (!database.get()) {
-    error = IndexedDBDatabaseError(
-        blink::mojom::IDBException::kUnknownError,
-        u"Internal error creating database backend for indexedDB.open.");
-    connection->factory_client->OnError(error);
-    return;
-  }
-
+  auto database = std::make_unique<IndexedDBDatabase>(
+      name, *bucket_context_handle.bucket_context(),
+      std::move(unique_identifier));
   // The database must be added before the schedule call, as the
   // CreateDatabaseDeleteClosure can be called synchronously.
   auto* database_ptr = database.get();
@@ -352,17 +344,9 @@ void IndexedDBFactory::DeleteDatabase(
     return;
   }
 
-  std::unique_ptr<IndexedDBDatabase> database =
-      class_factory_->CreateIndexedDBDatabase(
-          name, *bucket_context_handle.bucket_context(), unique_identifier);
-  if (!database.get()) {
-    error = IndexedDBDatabaseError(blink::mojom::IDBException::kUnknownError,
-                                   u"Internal error creating database backend "
-                                   u"for indexedDB.deleteDatabase.");
-    factory_client->OnError(error);
-    return;
-  }
-
+  auto database = std::make_unique<IndexedDBDatabase>(
+      name, *bucket_context_handle.bucket_context(),
+      std::move(unique_identifier));
   base::WeakPtr<IndexedDBDatabase> database_ptr =
       bucket_context_handle->AddDatabase(name, std::move(database))
           ->AsWeakPtr();

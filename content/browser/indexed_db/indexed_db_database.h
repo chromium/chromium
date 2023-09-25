@@ -46,7 +46,6 @@ struct IndexedDBObjectStoreMetadata;
 
 namespace content {
 class IndexedDBBucketContext;
-class IndexedDBClassFactory;
 class IndexedDBConnection;
 class IndexedDBDatabaseCallbacks;
 class IndexedDBTransaction;
@@ -63,6 +62,10 @@ class CONTENT_EXPORT IndexedDBDatabase {
 
   static const int64_t kInvalidId = 0;
   static const int64_t kMinimumIndexId = 30;
+
+  IndexedDBDatabase(const std::u16string& name,
+                    IndexedDBBucketContext& bucket_context,
+                    const Identifier& unique_identifier);
 
   IndexedDBDatabase(const IndexedDBDatabase&) = delete;
   IndexedDBDatabase& operator=(const IndexedDBDatabase&) = delete;
@@ -296,18 +299,7 @@ class CONTENT_EXPORT IndexedDBDatabase {
   friend class IndexedDBConnectionCoordinator::OpenRequest;
   friend class IndexedDBConnectionCoordinator::DeleteRequest;
 
-  IndexedDBDatabase(const std::u16string& name,
-                    IndexedDBBucketContext& bucket_context,
-                    IndexedDBClassFactory* class_factory,
-                    const Identifier& unique_identifier);
-
-  // May be overridden in tests.
-  virtual size_t GetUsableMessageSizeInBytes() const;
-
  private:
-  friend class MockBrowserTestIndexedDBClassFactory;
-  friend class IndexedDBClassFactory;
-
   FRIEND_TEST_ALL_PREFIXES(IndexedDBDatabaseTest, OpenDeleteClear);
 
   void CallUpgradeTransactionStartedForTesting(int64_t old_version);
@@ -365,8 +357,6 @@ class CONTENT_EXPORT IndexedDBDatabase {
 
   // The object that owns `this`.
   raw_ref<IndexedDBBucketContext> bucket_context_;
-
-  const raw_ptr<IndexedDBClassFactory> class_factory_;
 
   int64_t transaction_count_ = 0;
 

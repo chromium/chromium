@@ -12,7 +12,6 @@
 #include "base/trace_event/base_tracing.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom-forward.h"
 #include "content/browser/indexed_db/indexed_db_bucket_context.h"
-#include "content/browser/indexed_db/indexed_db_class_factory.h"
 #include "content/browser/indexed_db/indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
@@ -31,7 +30,6 @@ static int32_t g_next_indexed_db_connection_id;
 
 IndexedDBConnection::IndexedDBConnection(
     IndexedDBBucketContext& bucket_context,
-    IndexedDBClassFactory* indexed_db_class_factory,
     base::WeakPtr<IndexedDBDatabase> database,
     base::RepeatingClosure on_version_change_ignored,
     base::OnceCallback<void(IndexedDBConnection*)> on_close,
@@ -39,7 +37,6 @@ IndexedDBConnection::IndexedDBConnection(
     scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker)
     : id_(g_next_indexed_db_connection_id++),
       bucket_context_handle_(bucket_context),
-      indexed_db_class_factory_(indexed_db_class_factory),
       database_(std::move(database)),
       on_version_change_ignored_(std::move(on_version_change_ignored)),
       on_close_(std::move(on_close)),
@@ -121,10 +118,8 @@ IndexedDBTransaction* IndexedDBConnection::CreateTransaction(
     IndexedDBBackingStore::Transaction* backing_store_transaction) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(GetTransaction(id), nullptr) << "Duplicate transaction id." << id;
-  std::unique_ptr<IndexedDBTransaction> transaction =
-      indexed_db_class_factory_->CreateIndexedDBTransaction(
-          id, this, scope, mode, bucket_context_handle_,
-          backing_store_transaction);
+  auto transaction = std::make_unique<IndexedDBTransaction>(
+      id, this, scope, mode, bucket_context_handle_, backing_store_transaction);
   IndexedDBTransaction* transaction_ptr = transaction.get();
   transactions_[id] = std::move(transaction);
   return transaction_ptr;

@@ -32,20 +32,22 @@ DefaultTransactionalLevelDBFactory* GetDefaultTransactionalLevelDBFactory() {
   return transactional_leveldb_factory.get();
 }
 }  // namespace
-static IndexedDBClassFactory::GetterCallback* s_factory_getter;
+static ::base::LazyInstance<IndexedDBClassFactory::GetterCallback>::Leaky
+    s_factory_getter = LAZY_INSTANCE_INITIALIZER;
 static ::base::LazyInstance<IndexedDBClassFactory>::Leaky s_factory =
     LAZY_INSTANCE_INITIALIZER;
 
-void IndexedDBClassFactory::SetIndexedDBClassFactoryGetter(GetterCallback* cb) {
-  s_factory_getter = cb;
+void IndexedDBClassFactory::SetIndexedDBClassFactoryGetter(GetterCallback cb) {
+  s_factory_getter.Get() = cb;
 }
 
 // static
 IndexedDBClassFactory* IndexedDBClassFactory::Get() {
-  if (s_factory_getter)
-    return (*s_factory_getter)();
-  else
-    return s_factory.Pointer();
+  if (s_factory_getter.IsCreated()) {
+    return s_factory_getter.Get().Run();
+  }
+
+  return s_factory.Pointer();
 }
 
 // static
@@ -85,28 +87,6 @@ LevelDBFactory& IndexedDBClassFactory::leveldb_factory() {
 TransactionalLevelDBFactory&
 IndexedDBClassFactory::transactional_leveldb_factory() {
   return *transactional_leveldb_factory_;
-}
-
-std::unique_ptr<IndexedDBDatabase>
-IndexedDBClassFactory::CreateIndexedDBDatabase(
-    const std::u16string& name,
-    IndexedDBBucketContext& bucket_context,
-    const IndexedDBDatabase::Identifier& unique_identifier) {
-  return base::WrapUnique(
-      new IndexedDBDatabase(name, bucket_context, this, unique_identifier));
-}
-
-std::unique_ptr<IndexedDBTransaction>
-IndexedDBClassFactory::CreateIndexedDBTransaction(
-    int64_t id,
-    IndexedDBConnection* connection,
-    const std::set<int64_t>& scope,
-    blink::mojom::IDBTransactionMode mode,
-    IndexedDBBucketContextHandle bucket_context,
-    IndexedDBBackingStore::Transaction* backing_store_transaction) {
-  return base::WrapUnique(new IndexedDBTransaction(id, connection, scope, mode,
-                                                   std::move(bucket_context),
-                                                   backing_store_transaction));
 }
 
 void IndexedDBClassFactory::SetLevelDBFactoryForTesting(

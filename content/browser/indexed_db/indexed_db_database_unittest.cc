@@ -90,8 +90,8 @@ class IndexedDBDatabaseTest : public ::testing::Test {
         /*blob_storage_context=*/mojo::NullRemote(),
         /*file_system_access_context=*/mojo::NullRemote(), base::DoNothing());
 
-    db_ = IndexedDBClassFactory::Get()->CreateIndexedDBDatabase(
-        u"db", *bucket_context_, IndexedDBDatabase::Identifier());
+    db_ = std::make_unique<IndexedDBDatabase>(u"db", *bucket_context_,
+                                              IndexedDBDatabase::Identifier());
   }
 
   void RunTasksForDatabase(bool async) {
@@ -502,8 +502,8 @@ class IndexedDBDatabaseOperationTest : public testing::Test {
         /*blob_storage_context=*/mojo::NullRemote(),
         /*file_system_access_context=*/mojo::NullRemote(), base::DoNothing());
 
-    db_ = IndexedDBClassFactory::Get()->CreateIndexedDBDatabase(
-        u"db", *bucket_context_, IndexedDBDatabase::Identifier());
+    db_ = std::make_unique<IndexedDBDatabase>(u"db", *bucket_context_,
+                                              IndexedDBDatabase::Identifier());
 
     callbacks_ = base::MakeRefCounted<MockIndexedDBDatabaseCallbacks>();
     const int64_t transaction_id = 1;
