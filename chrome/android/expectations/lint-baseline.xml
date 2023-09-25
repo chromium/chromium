@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.3.0-alpha04" type="baseline" client="" dependencies="true" name="" variant="all" version="8.3.0-alpha04">
+<issues format="6" by="lint 8.3.0-alpha05" type="baseline" client="" dependencies="true" name="" variant="all" version="8.3.0-alpha05">
 
     <issue
         id="ResourceType"
@@ -69,6 +69,215 @@
 
     <issue
         id="NewApi"
+        message="Class requires API level 30 (current min is 24): `Natives`"
+        errorLine1="  private static AnrCollector.Natives testInstance;"
+        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/SRCJARS/gen/components/crash/android/anr_collector_jni_headers/org/chromium/components/crash/anr/AnrCollectorJni.java"
+            line="38"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 30 (current min is 24): `Natives`"
+        errorLine1="    public void setInstanceForTesting(AnrCollector.Natives instance) {"
+        errorLine2="                                      ~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/SRCJARS/gen/components/crash/android/anr_collector_jni_headers/org/chromium/components/crash/anr/AnrCollectorJni.java"
+            line="43"
+            column="39"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 26 (current min is 24): `Natives`"
+        errorLine1="  private static AutofillProvider.Natives testInstance;"
+        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/SRCJARS/gen/components/android_autofill/browser/jni_headers/org/chromium/components/autofill/AutofillProviderJni.java"
+            line="42"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 26 (current min is 24): `Natives`"
+        errorLine1="    public void setInstanceForTesting(AutofillProvider.Natives instance) {"
+        errorLine2="                                      ~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/SRCJARS/gen/components/android_autofill/browser/jni_headers/org/chromium/components/autofill/AutofillProviderJni.java"
+            line="47"
+            column="39"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 26 (current min is 24): `AutofillProvider`"
+        errorLine1="  public void init(AutofillProvider caller, WebContents webContents) {"
+        errorLine2="                   ~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/SRCJARS/gen/components/android_autofill/browser/jni_headers/org/chromium/components/autofill/AutofillProviderJni.java"
+            line="62"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 26 (current min is 24): `AutofillProvider`"
+        errorLine1="  public void onAcceptDataListSuggestion(long nativeAutofillProviderAndroidBridgeImpl, AutofillProvider caller, String value) {"
+        errorLine2="                                                                                       ~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/SRCJARS/gen/components/android_autofill/browser/jni_headers/org/chromium/components/autofill/AutofillProviderJni.java"
+            line="67"
+            column="88"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 26 (current min is 24): `AutofillProvider`"
+        errorLine1="  public void onAutofillAvailable(long nativeAutofillProviderAndroidBridgeImpl, AutofillProvider caller) {"
+        errorLine2="                                                                                ~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/SRCJARS/gen/components/android_autofill/browser/jni_headers/org/chromium/components/autofill/AutofillProviderJni.java"
+            line="72"
+            column="81"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 26 (current min is 24): `AutofillProvider`"
+        errorLine1="  public void setAnchorViewRect(long nativeAutofillProviderAndroidBridgeImpl, AutofillProvider caller, View anchorView, float x, float y, float width, float height) {"
+        errorLine2="                                                                              ~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/SRCJARS/gen/components/android_autofill/browser/jni_headers/org/chromium/components/autofill/AutofillProviderJni.java"
+            line="77"
+            column="79"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 26 (current min is 24): `AutofillProvider`"
+        errorLine1="    private final AutofillProvider mAutofillProvider;"
+        errorLine2="                  ~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/android_autofill/browser/java/src/org/chromium/components/autofill/AutofillSelectionMenuItemProvider.java"
+            line="23"
+            column="19"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 26 (current min is 24): `AutofillProvider`"
+        errorLine1="    public AutofillSelectionMenuItemProvider(Context context, AutofillProvider autofillProvider) {"
+        errorLine2="                                                              ~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/android_autofill/browser/java/src/org/chromium/components/autofill/AutofillSelectionMenuItemProvider.java"
+            line="28"
+            column="63"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 26 (current min is 24): `AutofillProvider`"
+        errorLine1="    private AutofillProvider mAutofillProvider;"
+        errorLine2="            ~~~~~~~~~~~~~~~~">
+        <location
+            file="../../android_webview/java/src/org/chromium/android_webview/AwContents.java"
+            line="501"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 28 (current min is 24): `AwDisplayCutoutController`"
+        errorLine1="    private AwDisplayCutoutController mDisplayCutoutController;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../android_webview/java/src/org/chromium/android_webview/AwContents.java"
+            line="520"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 28 (current min is 24): `Natives`"
+        errorLine1="  private static AwPacProcessor.Natives testInstance;"
+        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/SRCJARS/gen/android_webview/browser_jni_headers/org/chromium/android_webview/AwPacProcessorJni.java"
+            line="26"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 28 (current min is 24): `Natives`"
+        errorLine1="    public void setInstanceForTesting(AwPacProcessor.Natives instance) {"
+        errorLine2="                                      ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/SRCJARS/gen/android_webview/browser_jni_headers/org/chromium/android_webview/AwPacProcessorJni.java"
+            line="31"
+            column="39"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 28 (current min is 24): `AwPacProcessor`"
+        errorLine1="  public void destroyNative(long nativeAwPacProcessor, AwPacProcessor caller) {"
+        errorLine2="                                                       ~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/SRCJARS/gen/android_webview/browser_jni_headers/org/chromium/android_webview/AwPacProcessorJni.java"
+            line="46"
+            column="56"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 28 (current min is 24): `AwPacProcessor`"
+        errorLine1="  public String makeProxyRequest(long nativeAwPacProcessor, AwPacProcessor caller, String url) {"
+        errorLine2="                                                            ~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/SRCJARS/gen/android_webview/browser_jni_headers/org/chromium/android_webview/AwPacProcessorJni.java"
+            line="56"
+            column="61"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 28 (current min is 24): `AwPacProcessor`"
+        errorLine1="  public boolean setProxyScript(long nativeAwPacProcessor, AwPacProcessor caller, String script) {"
+        errorLine2="                                                           ~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/SRCJARS/gen/android_webview/browser_jni_headers/org/chromium/android_webview/AwPacProcessorJni.java"
+            line="66"
+            column="60"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 26 (current min is 24): `ChannelsInitializer`"
+        errorLine1="    private final ChannelsInitializer mChannelsInitializer;"
+        errorLine2="                  ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/browser/notifications/android/java/src/org/chromium/chrome/browser/notifications/channels/ChannelsUpdater.java"
+            line="23"
+            column="19"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 26 (current min is 24): `ChannelsInitializer`"
+        errorLine1="            ChannelsInitializer channelsInitializer, int channelsVersion) {"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/browser/notifications/android/java/src/org/chromium/chrome/browser/notifications/channels/ChannelsUpdater.java"
+            line="55"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="NewApi"
         message="Call requires API level 26 (current min is 24): `deleteLegacyChannels`"
         errorLine1="            mChannelsInitializer.deleteLegacyChannels();"
         errorLine2="                                 ~~~~~~~~~~~~~~~~~~~~">
@@ -98,6 +307,17 @@
             file="../../chrome/browser/notifications/android/java/src/org/chromium/chrome/browser/notifications/channels/ChannelsUpdater.java"
             line="83"
             column="34"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 26 (current min is 24): `FullscreenVideoPictureInPictureController`"
+        errorLine1="    private FullscreenVideoPictureInPictureController mFullscreenVideoPictureInPictureController;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
+            line="316"
+            column="13"/>
     </issue>
 
     <issue
@@ -157,6 +377,17 @@
 
     <issue
         id="NewApi"
+        message="Class requires API level 26 (current min is 24): `ChannelsInitializer`"
+        errorLine1="            ChannelsInitializer channelsInitializer, NotificationMetadata metadata) {"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/browser/notifications/android/java/src/org/chromium/chrome/browser/notifications/ChromeNotificationWrapperCompatBuilder.java"
+            line="24"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="NewApi"
         message="Call requires API level 26 (current min is 24): `getChannelIdForOrigin`"
         errorLine1="        return SiteChannelsManager.getInstance().getChannelIdForOrigin(origin);"
         errorLine2="                                                 ~~~~~~~~~~~~~~~~~~~~~">
@@ -184,7 +415,7 @@
         errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-            line="1600"
+            line="1601"
             column="21"/>
     </issue>
 
@@ -195,7 +426,7 @@
         errorLine2="                        ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-            line="1640"
+            line="1641"
             column="25"/>
     </issue>
 
@@ -206,7 +437,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-            line="2181"
+            line="2182"
             column="13"/>
     </issue>
 
@@ -217,8 +448,19 @@
         errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-            line="2196"
+            line="2197"
             column="17"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 29 (current min is 24): `PlatformContentCaptureController`"
+        errorLine1="        PlatformContentCaptureController contentCaptureController ="
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/content_capture/ContentCaptureHistoryDeletionObserver.java"
+            line="24"
+            column="9"/>
     </issue>
 
     <issue
@@ -245,6 +487,28 @@
 
     <issue
         id="NewApi"
+        message="Class requires API level 29 (current min is 24): `PlatformSession`"
+        errorLine1="            PlatformSession platformSession) {"
+        errorLine2="            ~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentCapturedTask.java"
+            line="16"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 29 (current min is 24): `PlatformSessionData`"
+        errorLine1="            PlatformSessionData parentPlatformSessionData, ContentCaptureDataBase data) {"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentCapturedTask.java"
+            line="22"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="NewApi"
         message="Call requires API level 29 (current min is 24): `notifyViewAppeared`"
         errorLine1="        return notifyViewAppeared(parentPlatformSessionData, data);"
         errorLine2="               ~~~~~~~~~~~~~~~~~~">
@@ -263,6 +527,17 @@
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentRemovedTask.java"
             line="12"
             column="34"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 29 (current min is 24): `PlatformSession`"
+        errorLine1="            FrameSession session, long[] removedIds, PlatformSession platformSession) {"
+        errorLine2="                                                     ~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentRemovedTask.java"
+            line="16"
+            column="54"/>
     </issue>
 
     <issue
@@ -296,6 +571,17 @@
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentRemovedTask.java"
             line="28"
             column="51"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 29 (current min is 24): `PlatformSessionData`"
+        errorLine1="        PlatformSessionData platformSessionData = buildCurrentSession();"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentRemovedTask.java"
+            line="28"
+            column="9"/>
     </issue>
 
     <issue
@@ -362,6 +648,39 @@
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentRemovedTask.java"
             line="32"
             column="17"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 29 (current min is 24): `PlatformSession`"
+        errorLine1="            PlatformSession platformSession) {"
+        errorLine2="            ~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentUpdateTask.java"
+            line="16"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 29 (current min is 24): `PlatformSessionData`"
+        errorLine1="            PlatformSessionData parentPlatformSessionData, ContentCaptureDataBase data) {"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentUpdateTask.java"
+            line="22"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 29 (current min is 24): `PlatformSessionData`"
+        errorLine1="            PlatformSessionData parentPlatformSessionData, ContentCaptureData data) {"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentUpdateTask.java"
+            line="27"
+            column="13"/>
     </issue>
 
     <issue
@@ -476,6 +795,17 @@
 
     <issue
         id="NewApi"
+        message="Class requires API level 29 (current min is 24): `DirectActionReporter`"
+        errorLine1="    void reportAvailableDirectActions(DirectActionReporter reporter);"
+        errorLine2="                                      ~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/directactions/DirectActionHandler.java"
+            line="19"
+            column="39"/>
+    </issue>
+
+    <issue
+        id="NewApi"
         message="Call requires API level 34 (current min is 24): `logGestureType`"
         errorLine1="                StylusGestureConverter.logGestureType("
         errorLine2="                                       ~~~~~~~~~~~~~~">
@@ -564,6 +894,17 @@
 
     <issue
         id="NewApi"
+        message="Class requires API level 29 (current min is 24): `PlatformSession`"
+        errorLine1="    public FaviconUpdateTask(FrameSession session, PlatformSession platformSession) {"
+        errorLine2="                                                   ~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/FaviconUpdateTask.java"
+            line="13"
+            column="52"/>
+    </issue>
+
+    <issue
+        id="NewApi"
         message="Call requires API level 29 (current min is 24): `NotificationTask`"
         errorLine1="        super(session, platformSession);"
         errorLine2="        ~~~~~">
@@ -593,6 +934,17 @@
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/FaviconUpdateTask.java"
             line="24"
             column="57"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 29 (current min is 24): `PlatformSessionData`"
+        errorLine1="        PlatformSessionData parentPlatformSessionData = buildCurrentSession();"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/FaviconUpdateTask.java"
+            line="24"
+            column="9"/>
     </issue>
 
     <issue
@@ -637,6 +989,17 @@
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/FaviconUpdateTask.java"
             line="27"
             column="66"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 29 (current min is 24): `DirectActionReporter`"
+        errorLine1="    public final void reportAvailableDirectActions(DirectActionReporter reporter) {"
+        errorLine2="                                                   ~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/directactions/FindInPageDirectActionHandler.java"
+            line="33"
+            column="52"/>
     </issue>
 
     <issue
@@ -696,6 +1059,39 @@
 
     <issue
         id="NewApi"
+        message="Class requires API level 33 (current min is 24): `Natives`"
+        errorLine1="  private static MagnifierSurfaceControl.Natives testInstance;"
+        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/SRCJARS/gen/content/public/android/content_jni_headers/org/chromium/content/browser/selection/MagnifierSurfaceControlJni.java"
+            line="23"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 33 (current min is 24): `Natives`"
+        errorLine1="    public void setInstanceForTesting(MagnifierSurfaceControl.Natives instance) {"
+        errorLine2="                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/monochrome_public_bundle__lint/SRCJARS/gen/content/public/android/content_jni_headers/org/chromium/content/browser/selection/MagnifierSurfaceControlJni.java"
+            line="28"
+            column="39"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 29 (current min is 24): `DirectActionReporter`"
+        errorLine1="    public void reportAvailableDirectActions(DirectActionReporter reporter) {"
+        errorLine2="                                             ~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/directactions/MenuDirectActionHandler.java"
+            line="79"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="NewApi"
         message="Call requires API level 29 (current min is 24): `addDirectAction`"
         errorLine1="                reporter.addDirectAction(entry.getKey());"
         errorLine2="                         ~~~~~~~~~~~~~~~">
@@ -714,6 +1110,28 @@
             file="../../chrome/android/java/src/org/chromium/chrome/browser/crash/MinidumpUploadServiceImpl.java"
             line="154"
             column="54"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 26 (current min is 24): `SiteChannelsManager`"
+        errorLine1="    private final SiteChannelsManager mSiteChannelsManager;"
+        errorLine2="                  ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/browserservices/permissiondelegation/NotificationChannelPreserver.java"
+            line="36"
+            column="19"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 26 (current min is 24): `SiteChannelsManager`"
+        errorLine1="            InstalledWebappPermissionStore store, SiteChannelsManager siteChannelsManager) {"
+        errorLine2="                                                  ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/browserservices/permissiondelegation/NotificationChannelPreserver.java"
+            line="40"
+            column="51"/>
     </issue>
 
     <issue
@@ -773,6 +1191,17 @@
 
     <issue
         id="NewApi"
+        message="Class requires API level 26 (current min is 24): `ChannelsInitializer`"
+        errorLine1="        ChannelsInitializer channelsInitializer = new ChannelsInitializer(notificationManagerProxy,"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/browser/notifications/android/java/src/org/chromium/chrome/browser/notifications/NotificationWrapperBuilderFactory.java"
+            line="46"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="NewApi"
         message="Call requires API level 26 (current min is 24): `getInstance`"
         errorLine1="                ChromeChannelDefinitions.getInstance(), context.getResources());"
         errorLine2="                                         ~~~~~~~~~~~">
@@ -780,6 +1209,28 @@
             file="../../chrome/browser/notifications/android/java/src/org/chromium/chrome/browser/notifications/NotificationWrapperBuilderFactory.java"
             line="47"
             column="42"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 26 (current min is 24): `ChannelsInitializer`"
+        errorLine1="            ChannelsInitializer channelsInitializer, NotificationMetadata metadata) {"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/browser_ui/notifications/android/java/src/org/chromium/components/browser_ui/notifications/NotificationWrapperCompatBuilder.java"
+            line="35"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 26 (current min is 24): `ChannelsInitializer`"
+        errorLine1="            ChannelsInitializer channelsInitializer, NotificationMetadata metadata) {"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/browser_ui/notifications/android/java/src/org/chromium/components/browser_ui/notifications/NotificationWrapperStandardBuilder.java"
+            line="36"
+            column="13"/>
     </issue>
 
     <issue
@@ -828,6 +1279,17 @@
 
     <issue
         id="NewApi"
+        message="Class requires API level 29 (current min is 24): `PlatformSession`"
+        errorLine1="            ContentCaptureFrame contentCaptureData, PlatformSession platformSession) {"
+        errorLine2="                                                    ~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ProcessContentCaptureDataTask.java"
+            line="24"
+            column="53"/>
+    </issue>
+
+    <issue
+        id="NewApi"
         message="Call requires API level 29 (current min is 24): `NotificationTask`"
         errorLine1="        super(session, platformSession);"
         errorLine2="        ~~~~~">
@@ -861,6 +1323,39 @@
 
     <issue
         id="NewApi"
+        message="Class requires API level 29 (current min is 24): `PlatformSessionData`"
+        errorLine1="        PlatformSessionData platformSessionData = buildCurrentSession();"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ProcessContentCaptureDataTask.java"
+            line="36"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 29 (current min is 24): `PlatformSessionData`"
+        errorLine1="            PlatformSessionData parentPlatformSessionData, ContentCaptureFrame data) {"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ProcessContentCaptureDataTask.java"
+            line="42"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 29 (current min is 24): `PlatformSessionData`"
+        errorLine1="        PlatformSessionData platformSessionData ="
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ProcessContentCaptureDataTask.java"
+            line="44"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="NewApi"
         message="Call requires API level 29 (current min is 24): `createOrGetSession`"
         errorLine1="                createOrGetSession(parentPlatformSessionData, data);"
         errorLine2="                ~~~~~~~~~~~~~~~~~~">
@@ -868,6 +1363,17 @@
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ProcessContentCaptureDataTask.java"
             line="45"
             column="17"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 29 (current min is 24): `PlatformSessionData`"
+        errorLine1="            PlatformSessionData parentPlatformSessionData, ContentCaptureData data) {"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ProcessContentCaptureDataTask.java"
+            line="55"
+            column="13"/>
     </issue>
 
     <issue
@@ -883,6 +1389,17 @@
 
     <issue
         id="NewApi"
+        message="Class requires API level 29 (current min is 24): `PlatformSessionData`"
+        errorLine1="            PlatformSessionData platformSessionData = new PlatformSessionData("
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ProcessContentCaptureDataTask.java"
+            line="64"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="NewApi"
         message="Field requires API level 29 (current min is 24): `contentCaptureSession`"
         errorLine1="                    parentPlatformSessionData.contentCaptureSession, autofillId);"
         errorLine2="                                              ~~~~~~~~~~~~~~~~~~~~~">
@@ -890,6 +1407,17 @@
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ProcessContentCaptureDataTask.java"
             line="65"
             column="47"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 29 (current min is 24): `PlatformSessionData`"
+        errorLine1="            PlatformSessionData parentPlatformSessionData, ContentCaptureDataBase data);"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ProcessContentCaptureDataTask.java"
+            line="81"
+            column="13"/>
     </issue>
 
     <issue
@@ -916,12 +1444,23 @@
 
     <issue
         id="NewApi"
+        message="Class requires API level 29 (current min is 24): `DirectActionInitializer`"
+        errorLine1="    private DirectActionInitializer mDirectActionInitializer;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/ui/RootUiCoordinator.java"
+            line="261"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="NewApi"
         message="Call requires API level 29 (current min is 24): `onPerformDirectAction`"
         errorLine1="        mDirectActionInitializer.onPerformDirectAction("
         errorLine2="                                 ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ui/RootUiCoordinator.java"
-            line="1081"
+            line="1090"
             column="34"/>
     </issue>
 
@@ -932,7 +1471,7 @@
         errorLine2="                                 ~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ui/RootUiCoordinator.java"
-            line="1096"
+            line="1105"
             column="34"/>
     </issue>
 
@@ -943,8 +1482,19 @@
         errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ui/RootUiCoordinator.java"
-            line="1634"
+            line="1643"
             column="36"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 28 (current min is 24): `SmartSelectionEventProcessor`"
+        errorLine1="    private SmartSelectionEventProcessor mSmartSelectionEventProcessor;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
+            line="226"
+            column="13"/>
     </issue>
 
     <issue
@@ -1015,6 +1565,17 @@
 
     <issue
         id="NewApi"
+        message="Class requires API level 29 (current min is 24): `PlatformSession`"
+        errorLine1="    public SessionRemovedTask(FrameSession session, PlatformSession platformSession) {"
+        errorLine2="                                                    ~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/SessionRemovedTask.java"
+            line="13"
+            column="53"/>
+    </issue>
+
+    <issue
+        id="NewApi"
         message="Call requires API level 29 (current min is 24): `NotificationTask`"
         errorLine1="        super(session, platformSession);"
         errorLine2="        ~~~~~">
@@ -1032,6 +1593,17 @@
         <location
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/SessionRemovedTask.java"
             line="23"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 29 (current min is 24): `PlatformSessionData`"
+        errorLine1="        PlatformSessionData removedPlatformSessionData ="
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/SessionRemovedTask.java"
+            line="24"
             column="9"/>
     </issue>
 
@@ -1099,6 +1671,17 @@
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/SessionRemovedTask.java"
             line="28"
             column="44"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 29 (current min is 24): `PlatformSessionData`"
+        errorLine1="        PlatformSessionData parentPlatformSessionData ="
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/SessionRemovedTask.java"
+            line="29"
+            column="9"/>
     </issue>
 
     <issue
@@ -1213,6 +1796,17 @@
 
     <issue
         id="NewApi"
+        message="Class requires API level 29 (current min is 24): `DirectActionReporter`"
+        errorLine1="    public final void reportAvailableDirectActions(DirectActionReporter reporter) {"
+        errorLine2="                                                   ~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/directactions/SimpleDirectActionHandler.java"
+            line="23"
+            column="52"/>
+    </issue>
+
+    <issue
+        id="NewApi"
         message="Call requires API level 29 (current min is 24): `addDirectAction`"
         errorLine1="        if (isAvailable()) reporter.addDirectAction(mActionId);"
         errorLine2="                                    ~~~~~~~~~~~~~~~">
@@ -1220,6 +1814,17 @@
             file="../../chrome/android/java/src/org/chromium/chrome/browser/directactions/SimpleDirectActionHandler.java"
             line="24"
             column="37"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 28 (current min is 24): `SmartSelectionEventProcessor`"
+        errorLine1="    private SmartSelectionEventProcessor mSmartSelectionEventProcessor;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../content/public/android/java/src/org/chromium/content/browser/selection/SmartSelectionClient.java"
+            line="56"
+            column="13"/>
     </issue>
 
     <issue
@@ -1246,6 +1851,39 @@
 
     <issue
         id="NewApi"
+        message="Class requires API level 26 (current min is 24): `ClassificationTask`"
+        errorLine1="    private ClassificationTask mClassificationTask;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../content/public/android/java/src/org/chromium/content/browser/selection/SmartSelectionProvider.java"
+            line="53"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 28 (current min is 24): `SmartSelectionEventProcessor`"
+        errorLine1="    private final SmartSelectionEventProcessor mSelectionEventProcessor;"
+        errorLine2="                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../content/public/android/java/src/org/chromium/content/browser/selection/SmartSelectionProvider.java"
+            line="59"
+            column="19"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 28 (current min is 24): `SmartSelectionEventProcessor`"
+        errorLine1="            @Nullable SmartSelectionEventProcessor selectionEventProcessor) {"
+        errorLine2="                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../content/public/android/java/src/org/chromium/content/browser/selection/SmartSelectionProvider.java"
+            line="62"
+            column="23"/>
+    </issue>
+
+    <issue
+        id="NewApi"
         message="Call requires API level 26 (current min is 24): `sendSmartSelectionRequest`"
         errorLine1="        sendSmartSelectionRequest(RequestType.SUGGEST_AND_CLASSIFY, text, start, end);"
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~">
@@ -1268,6 +1906,17 @@
 
     <issue
         id="NewApi"
+        message="Class requires API level 33 (current min is 24): `AndroidStylusWritingHandler`"
+        errorLine1="    private AndroidStylusWritingHandler mAndroidHandler;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/stylus_handwriting/android/java/src/org/chromium/components/stylus_handwriting/StylusWritingController.java"
+            line="28"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="NewApi"
         message="Call requires API level 29 (current min is 24): `android.view.SurfaceControl#writeToParcel`"
         errorLine1="            mSurfaceControl.writeToParcel(out, 0);"
         errorLine2="                            ~~~~~~~~~~~~~">
@@ -1279,6 +1928,17 @@
 
     <issue
         id="NewApi"
+        message="Class requires API level 27 (current min is 24): `TabbedNavigationBarColorController`"
+        errorLine1="                        TabbedNavigationBarColorController controller ="
+        errorLine2="                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/tabbed_mode/TabbedRootUiCoordinator.java"
+            line="628"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="NewApi"
         message="Call requires API level 27 (current min is 24): `setNavigationBarScrimFraction`"
         errorLine1="                        controller.setNavigationBarScrimFraction(scrimFraction);"
         errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
@@ -1286,6 +1946,17 @@
             file="../../chrome/android/java/src/org/chromium/chrome/browser/tabbed_mode/TabbedRootUiCoordinator.java"
             line="633"
             column="36"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 27 (current min is 24): `TabbedNavigationBarColorController`"
+        errorLine1="    private @Nullable TabbedNavigationBarColorController mNavigationBarColorController;"
+        errorLine2="                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/tabbed_mode/TabbedSystemUiCoordinator.java"
+            line="25"
+            column="23"/>
     </issue>
 
     <issue
@@ -1308,6 +1979,17 @@
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
             line="14"
             column="38"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 29 (current min is 24): `PlatformSession`"
+        errorLine1="    public TitleUpdateTask(ContentCaptureFrame mainFrame, PlatformSession platformSession) {"
+        errorLine2="                                                          ~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
+            line="16"
+            column="59"/>
     </issue>
 
     <issue
@@ -1341,6 +2023,17 @@
             file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
             line="30"
             column="57"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 29 (current min is 24): `PlatformSessionData`"
+        errorLine1="        PlatformSessionData parentPlatformSessionData = buildCurrentSession();"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
+            line="30"
+            column="9"/>
     </issue>
 
     <issue
@@ -1472,6 +2165,17 @@
         <location
             file="../../components/webapps/browser/android/java/src/org/chromium/components/webapps/WebappsUtils.java"
             line="70"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 32 (current min is 24): `OverlayTransformApiHelper`"
+        errorLine1="    private OverlayTransformApiHelper mOverlayTransformApiHelper;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/src/org/chromium/ui/base/WindowAndroid.java"
+            line="118"
             column="13"/>
     </issue>
 
