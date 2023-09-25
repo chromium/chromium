@@ -41,6 +41,18 @@ function sorted(s) {
   return Array.from(s).sort();
 }
 
+// Assert expected reasons and the reported reasons match.
+function matchReasons(expectedNotRestoredReasonsSet, notRestoredReasonsSet) {
+  const missing = setMinus(
+    expectedNotRestoredReasonsSet, notRestoredReasonsSet, 'Missing reasons');
+  const extra = setMinus(
+      notRestoredReasonsSet, expectedNotRestoredReasonsSet, 'Extra reasons');
+  assert_true(missing.size + extra.size == 0, `Expected: ${sorted(expectedNotRestoredReasonsSet)}\n` +
+    `Got: ${sorted(notRestoredReasonsSet)}\n` +
+    `Missing: ${sorted(missing)}\n` +
+    `Extra: ${sorted(extra)}\n`);
+}
+
 // A helper function to assert that the page is not restored from BFCache by
 // checking whether the `beforeBFCache` value from `window` is undefined
 // due to page reload.
@@ -91,14 +103,7 @@ async function assertNotRestoredFromBFCache(
     }
   };
   collectReason(result);
-  const missing = setMinus(
-      expectedNotRestoredReasonsSet, notRestoredReasonsSet, 'Missing reasons');
-  const extra = setMinus(
-      notRestoredReasonsSet, expectedNotRestoredReasonsSet, 'Extra reasons');
-  assert_true(missing.size + extra.size == 0, `Expected: ${sorted(expectedNotRestoredReasonsSet)}\n` +
-    `Got: ${sorted(notRestoredReasonsSet)}\n` +
-    `Missing: ${sorted(missing)}\n` +
-    `Extra: ${sorted(extra)}\n`);
+  matchReasons(expectedNotRestoredReasonsSet, notRestoredReasonsSet);
 }
 
 // A helper function that combines the steps of setting window property,

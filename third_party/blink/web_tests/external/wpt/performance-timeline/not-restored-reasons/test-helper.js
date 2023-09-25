@@ -1,3 +1,5 @@
+// META: script=../../html/browsers/browsing-the-web/back-forward-cache/resources/rc-helper.js
+
 async function assertNotRestoredReasonsEquals(
     remoteContextHelper, blocked, url, src, id, name, reasons, children) {
   let result = await remoteContextHelper.executeScript(() => {
@@ -15,14 +17,7 @@ function assertReasonsStructEquals(
   assert_equals(result.id, id);
   assert_equals(result.name, name);
   // Reasons should match.
-  if (reasons == null) {
-    assert_equals(result.reasons, reasons);
-  } else {
-    assert_equals(result.reasons.length, reasons.length);
-    for (let i = 0; i < reasons.length; i++) {
-      assert_equals(result.reasons[i], reasons[i]);
-    }
-  }
+  matchReasons(new Set(reasons), new Set(result.reasons));
 
   // Children should match.
   if (children == null) {
