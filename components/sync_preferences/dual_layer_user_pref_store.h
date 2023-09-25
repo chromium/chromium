@@ -157,8 +157,6 @@ class DualLayerUserPrefStore : public PersistentPrefStore,
   bool ShouldGetValueFromAccountStore(const std::string& key) const;
 
   // Returns whether the pref with the given `key` is mergeable.
-  // TODO(crbug.com/1416479): This does not cover prefs with custom merge logic
-  // yet.
   bool IsPrefKeyMergeable(const std::string& key) const;
 
   // Produces a "merged" view of `account_value` and `local_value`. In case
