@@ -4711,8 +4711,6 @@ if (enable_java_templates && is_android) {
             "--script",
             rebase_path(_rewriter_path, root_build_dir),
             "--classpath",
-            "@FileArg($_rebased_build_config:deps_info:javac_full_classpath)",
-            "--classpath",
             "@FileArg($_rebased_build_config:android:sdk_jars)",
             "--input-jars",
             "@FileArg($_rebased_build_config:deps_info:device_classpath)",

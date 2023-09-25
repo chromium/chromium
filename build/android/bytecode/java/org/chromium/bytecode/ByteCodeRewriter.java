@@ -120,8 +120,8 @@ public abstract class ByteCodeRewriter {
             byte[] classData = writer.toByteArray();
             outputStream.write(classData, 0, classData.length);
             return true;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (Throwable e) {
+            throw new RuntimeException("Failed when processing " + entry.getName(), e);
         }
     }
 }
