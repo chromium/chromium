@@ -1,0 +1,86 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/feed/core/proto/v2/wire/feed_entry_point_source.pb.h"
+#include "components/feed/core/proto/v2/wire/feed_query.pb.h"
+
+#include "components/feed/core/v2/api_test/feed_api_test.h"
+#include "components/feed/core/v2/feed_network.h"
+#include "components/feed/core/v2/public/stream_type.h"
+#include "components/feed/core/v2/public/types.h"
+#include "components/supervised_user/core/browser/child_account_service.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "components/supervised_user/core/common/features.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+// This file is for testing the Supervised Feed content.
+
+namespace feed::test {
+namespace {
+
+class FeedApiSupervisedUserTest : public FeedApiTest {
+ public:
+  void SetUp() override {
+    supervised_user::SupervisedUserService::RegisterProfilePrefs(
+        profile_prefs_.registry());
+    supervised_user::ChildAccountService::RegisterProfilePrefs(
+        profile_prefs_.registry());
+    supervised_user::EnableParentalControls(profile_prefs_);
+
+    feature_list_.InitAndEnableFeature(
+        supervised_user::kKidFriendlyContentFeed);
+    FeedApiTest::SetUp();
+  }
+
+ protected:
+  // Returns model state for `StreamKind::kSupervisedUser`.
+  std::unique_ptr<StreamModelUpdateRequest>
+  MakeTypicalInitialModelStateForSupervisedUser() {
+    return MakeTypicalInitialModelState(
+        0, kTestTimeEpoch, /*signed_in=*/true, /*logging_enabled=*/true,
+        /*privacy_notice_fulfilled=*/false,
+        feedstore::StreamKey(StreamType(StreamKind::kSupervisedUser)));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Shows feed content for supervised users.
+TEST_F(FeedApiSupervisedUserTest, LoadSupervisedFeed) {
+  response_translator_.InjectResponse(
+      MakeTypicalInitialModelStateForSupervisedUser());
+  TestSupervisedFeedSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  StreamType stream_type(StreamKind::kSupervisedUser);
+  // Verify the model is filled correctly.
+  ASSERT_EQ(stream_->GetModel(stream_type)->DumpStateForTesting(),
+            ModelStateFor(stream_type, store_.get()));
+  // Verify the data is written to the store.
+  EXPECT_STRINGS_EQUAL(
+      ModelStateFor(MakeTypicalInitialModelStateForSupervisedUser()),
+      ModelStateFor(stream_type, store_.get()));
+  EXPECT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
+}
+
+// Supervised feed is deleted after surface is detached.
+TEST_F(FeedApiSupervisedUserTest, DeleteSupervisedFeedOnDetachedSurface) {
+  response_translator_.InjectResponse(
+      MakeTypicalInitialModelStateForSupervisedUser());
+  TestSupervisedFeedSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  surface.Detach();
+
+  WaitForModelToAutoUnload();
+  WaitForIdleTaskQueue();
+
+  StreamType stream_type(StreamKind::kSupervisedUser);
+  EXPECT_FALSE(stream_->GetModel(stream_type));
+}
+
+}  // namespace
+}  // namespace feed::test

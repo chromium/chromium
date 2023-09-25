@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.ntp.NewTabPageLayout;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -65,6 +66,11 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.signin.Tribool;
+import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.third_party.android.swiperefresh.SwipeRefreshLayout;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
@@ -755,6 +761,29 @@ public class FeedSurfaceCoordinator
     /** Sets the {@link StreamTabId} of the feed given a {@link NewTabPageLaunchOrigin}. */
     public void setTabIdFromLaunchOrigin(@NewTabPageLaunchOrigin int launchOrigin) {
         mMediator.setTabId(getTabIdFromLaunchOrigin(launchOrigin));
+    }
+
+    /*
+     * Returns true if the primary signed-in account is subject to parental controls.
+     */
+    public boolean isPrimaryAccountSupervised() {
+        if (mProfile == null) {
+            return false;
+        }
+        final IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(mProfile);
+        final @Nullable CoreAccountInfo primaryAccount =
+                identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+
+        if (primaryAccount == null) {
+            return false;
+        }
+
+        final @Nullable AccountInfo primaryAccountInfo =
+                identityManager.findExtendedAccountInfoByEmailAddress(primaryAccount.getEmail());
+        return primaryAccountInfo != null
+                && primaryAccountInfo.getAccountCapabilities().isSubjectToParentalControls()
+                == Tribool.TRUE;
     }
 
     /**

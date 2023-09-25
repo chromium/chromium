@@ -1103,6 +1103,8 @@ LaunchResult FeedStream::ShouldMakeFeedQueryRequest(
     case StreamKind::kUnknown:
       DLOG(ERROR) << "Unknown stream kind";
       [[fallthrough]];
+    // TODO(b/300455747): Add network request type for kids content.
+    case StreamKind::kSupervisedUser:
     case StreamKind::kForYou:
       request_type = (load_type != LoadType::kLoadMore)
                          ? NetworkRequestType::kFeedQuery

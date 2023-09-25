@@ -1879,6 +1879,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Feed" summary="the For-You Feed"/>
     <variant name="Feed.AllFeeds" summary="all Feeds combined"/>
     <variant name="Feed.SingleWebFeed" summary="the single web feed"/>
+    <variant name="Feed.SupervisedFeed" summary="the supervised Feed"/>
     <variant name="Feed.WebFeed" summary="the Web Feed"/>
   </token>
 </histogram>
@@ -1897,6 +1898,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Feed.AllFeeds"
         summary="either the For-You or Following/Web feed"/>
     <variant name="Feed.SingleWebFeed" summary="Single Web Feed"/>
+    <variant name="Feed.SupervisedFeed" summary="the supervised Feed"/>
     <variant name="Feed.WebFeed" summary="the Following/Web Feed"/>
   </token>
 </histogram>
@@ -1913,6 +1915,7 @@ chromium-metrics-reviews@google.com.
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>
     <variant name="Feed.SingleWebFeed" summary="Single Web Feed"/>
+    <variant name="Feed.SupervisedFeed" summary="the supervised Feed"/>
     <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>
   <token key="Action">
@@ -1953,6 +1956,7 @@ chromium-metrics-reviews@google.com.
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>
     <variant name="Feed.SingleWebFeed" summary="Single Web Feed"/>
+    <variant name="Feed.SupervisedFeed" summary="the supervised Feed"/>
     <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>
 </histogram>
@@ -2003,6 +2007,7 @@ chromium-metrics-reviews@google.com.
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>
     <variant name="Feed.SingleWebFeed" summary="Single Web Feed"/>
+    <variant name="Feed.SupervisedFeed" summary="the supervised Feed"/>
     <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>
 </histogram>
@@ -2019,6 +2024,7 @@ chromium-metrics-reviews@google.com.
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>
     <variant name="Feed.SingleWebFeed" summary="Single Web Feed"/>
+    <variant name="Feed.SupervisedFeed" summary="the supervised Feed"/>
     <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>
 </histogram>
@@ -2038,6 +2044,7 @@ chromium-metrics-reviews@google.com.
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>
     <variant name="Feed.SingleWebFeed" summary="Single Web Feed"/>
+    <variant name="Feed.SupervisedFeed" summary="the supervised Feed"/>
     <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>
 </histogram>
@@ -2053,6 +2060,7 @@ chromium-metrics-reviews@google.com.
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>
     <variant name="Feed.SingleWebFeed" summary="Single Web Feed"/>
+    <variant name="Feed.SupervisedFeed" summary="the supervised Feed"/>
     <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>
 </histogram>
@@ -2134,6 +2142,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="FeedType">
     <variant name="Feed.SingleWebFeed" summary="the single Single Web feed"/>
+    <variant name="Feed.SupervisedFeed" summary="the supervised Feed"/>
     <variant name="Feed.WebFeed" summary="the Web Feed"/>
   </token>
 </histogram>
@@ -2153,6 +2162,7 @@ chromium-metrics-reviews@google.com.
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>
     <variant name="Feed.SingleWebFeed" summary="Single Web Feed"/>
+    <variant name="Feed.SupervisedFeed" summary="the supervised Feed"/>
     <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>
 </histogram>
@@ -2169,6 +2179,7 @@ chromium-metrics-reviews@google.com.
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>
     <variant name="Feed.SingleWebFeed" summary="Single Web Feed"/>
+    <variant name="Feed.SupervisedFeed" summary="the supervised Feed"/>
     <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>
 </histogram>
@@ -2192,6 +2203,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="FeedType">
     <variant name="Feed.SingleWebFeed" summary="Single Web Feed"/>
+    <variant name="Feed.SupervisedFeed" summary="Supervised Feed"/>
     <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>
 </histogram>
@@ -2209,6 +2221,7 @@ chromium-metrics-reviews@google.com.
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>
     <variant name="Feed.SingleWebFeed" summary="Single Web Feed"/>
+    <variant name="Feed.SupervisedFeed" summary="the supervised Feed"/>
     <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>
 </histogram>

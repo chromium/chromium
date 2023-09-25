@@ -44,6 +44,9 @@ class StreamType {
            (single_web_feed_entry_point_menu_ ==
             rhs.single_web_feed_entry_point_menu_);
   }
+  bool IsForSupervisedUser() const {
+    return kind_ == StreamKind::kSupervisedUser;
+  }
   bool IsForYou() const { return kind_ == StreamKind::kForYou; }
   bool IsWebFeed() const { return kind_ == StreamKind::kFollowing; }
   bool IsSingleWebFeed() const { return kind_ == StreamKind::kSingleWebFeed; }

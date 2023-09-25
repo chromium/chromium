@@ -39,7 +39,8 @@
 
 namespace feed {
 namespace {
-StreamKind kStreamKinds[] = {StreamKind::kForYou, StreamKind::kFollowing,
+StreamKind kStreamKinds[] = {StreamKind::kForYou, StreamKind::kSupervisedUser,
+                             StreamKind::kFollowing,
                              StreamKind::kSingleWebFeed};
 // TODO(crbug.com/1369777) Add kSingleWebFeed streams to metrics reporting below
 using feed::FeedEngagementType;
@@ -78,6 +79,8 @@ constexpr base::TimeDelta kMaxStableContentSliceVisibilityTime =
 
 base::StringPiece HistogramReplacement(const StreamType& stream_type) {
   switch (stream_type.GetKind()) {
+    case StreamKind::kSupervisedUser:
+      return "Feed.SupervisedFeed.";
     case StreamKind::kForYou:
       return "Feed.";
     case StreamKind::kFollowing:
@@ -117,6 +120,11 @@ void ReportContentSuggestionsOpened(const StreamType& stream_type,
     case StreamKind::kSingleWebFeed:
       base::UmaHistogramExactLinear(
           "ContentSuggestions.Feed.SingleWebFeed.Opened", index_in_stream,
+          kMaxSuggestionsTotal);
+      break;
+    case StreamKind::kSupervisedUser:
+      base::UmaHistogramExactLinear(
+          "ContentSuggestions.Feed.SupervisedFeed.Opened", index_in_stream,
           kMaxSuggestionsTotal);
       break;
     case StreamKind::kUnknown:
@@ -539,6 +547,11 @@ void MetricsReporter::ContentSliceViewed(const StreamType& stream_type,
     case StreamKind::kSingleWebFeed:
       base::UmaHistogramExactLinear(
           "ContentSuggestions.Feed.SingleWebFeed.Shown", index_in_stream,
+          kMaxSuggestionsTotal);
+      break;
+    case StreamKind::kSupervisedUser:
+      base::UmaHistogramExactLinear(
+          "ContentSuggestions.Feed.SupervisedFeed.Shown", index_in_stream,
           kMaxSuggestionsTotal);
       break;
     case StreamKind::kUnknown:
@@ -1137,6 +1150,8 @@ MetricsReporter::StreamStats& MetricsReporter::ForStream(
   switch (stream_type.GetKind()) {
     case StreamKind::kForYou:
       return for_you_stats_;
+    case StreamKind::kSupervisedUser:
+      return supervised_feed_stats_;
     case StreamKind::kFollowing:
     case StreamKind::kSingleWebFeed:
       return web_feed_stats_;

@@ -96,6 +96,10 @@ class MetricsReporterTest : public testing::Test, MetricsReporter::Delegate {
       case StreamKind::kSingleWebFeed:
         histogram_name = "ContentSuggestions.Feed.SingleWebFeed.EngagementType";
         break;
+      case StreamKind::kSupervisedUser:
+        histogram_name =
+            "ContentSuggestions.Feed.SupervisedFeed.EngagementType";
+        break;
     }
     for (const auto& bucket : histogram_.GetAllSamples(histogram_name)) {
       result[static_cast<FeedEngagementType>(bucket.min)] += bucket.count;

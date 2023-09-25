@@ -271,8 +271,10 @@ enum class StreamKind : int {
   kFollowing = 2,
   // Single Web Feed (Cormorant) stream.
   kSingleWebFeed = 3,
+  // Kid-friendly content stream.
+  kSupervisedUser = 4,
 
-  kMaxValue = kSingleWebFeed,
+  kMaxValue = kSupervisedUser,
 };
 
 // Singe Web entry points

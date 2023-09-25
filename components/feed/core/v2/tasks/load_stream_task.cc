@@ -329,7 +329,12 @@ void LoadStreamTask::SendFeedQueryRequest() {
 
   FeedNetwork& network = stream_->GetNetwork();
   const bool force_feed_query = GetFeedConfig().use_feed_query_requests;
-  if (!force_feed_query && options_.stream_type.IsWebFeed()) {
+  if (options_.stream_type.IsForSupervisedUser()) {
+    // TODO(b/295472540): Send request to GWS plugin for kids content.
+    network.SendApiRequest<QueryInteractiveFeedDiscoverApi>(
+        request, account_info, std::move(request_metadata),
+        base::BindOnce(&LoadStreamTask::QueryApiRequestComplete, GetWeakPtr()));
+  } else if (!force_feed_query && options_.stream_type.IsWebFeed()) {
     // Special case: web feed that is not using Feed Query requests go to
     // WebFeedListContentsDiscoverApi.
     network.SendApiRequest<WebFeedListContentsDiscoverApi>(

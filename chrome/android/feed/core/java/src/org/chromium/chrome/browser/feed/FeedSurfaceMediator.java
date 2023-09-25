@@ -485,8 +485,11 @@ public class FeedSurfaceMediator
 
         boolean suggestionsVisible = isSuggestionsVisible();
 
+        @StreamKind
+        int streamKind = mCoordinator.isPrimaryAccountSupervised() ? StreamKind.SUPERVISED_USER
+                                                                   : StreamKind.FOR_YOU;
         addHeaderAndStream(getInterestFeedHeaderText(suggestionsVisible),
-                mCoordinator.createFeedStream(StreamKind.FOR_YOU, new StreamsMediatorImpl()));
+                mCoordinator.createFeedStream(streamKind, new StreamsMediatorImpl()));
         setHeaderIndicatorState(suggestionsVisible);
 
         // Build menu after section enabled key is set.

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/supervised_user/buildflags.gni")
 import("//testing/test.gni")
 
 if (is_android) {
@@ -259,6 +260,7 @@ if (!is_ios) {
       "//components/signin/public/identity_manager",
       "//components/signin/public/identity_manager:test_support",
       "//components/sync/base",
+      "//components/sync_preferences:test_support",
       "//components/variations:test_support",
       "//components/version_info:channel",
       "//net:test_support",
@@ -268,6 +270,15 @@ if (!is_ios) {
       "//testing/gtest",
       "//third_party/zlib/google:compression_utils",
     ]
+
+    if (enable_supervised_users) {
+      sources += [ "api_test/feed_api_supervised_feed_unittest.cc" ]
+      deps += [
+        "//components/supervised_user/core/browser",
+        "//components/supervised_user/core/browser:supervised_user_preferences",
+        "//components/supervised_user/core/common:features",
+      ]
+    }
   }
 
   source_set("feed_core_stubs") {

@@ -23,6 +23,7 @@ class Metadata;
 
 const char kForYouStreamKey[] = "i";
 const char kFollowStreamKey[] = "w";
+const char kSupervisedUserStreamKey[] = "s";
 constexpr base::StringPiece kSingleWebFeedStreamKeyPrefix = "c";
 constexpr base::StringPiece kSingleWebFeedMenuStreamKeyPrefix = "m/";
 constexpr base::StringPiece kSingleWebFeedOtherStreamKeyPrefix = "o/";

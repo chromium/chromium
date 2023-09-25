@@ -41,6 +41,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "net/http/http_status_code.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -217,6 +218,10 @@ class TestSingleWebFeedSurface : public TestSurfaceBase {
       FeedStream* stream = nullptr,
       std::string = "",
       SingleWebFeedEntryPoint entry_point = SingleWebFeedEntryPoint::kOther);
+};
+class TestSupervisedFeedSurface : public TestSurfaceBase {
+ public:
+  explicit TestSupervisedFeedSurface(FeedStream* stream = nullptr);
 };
 
 class TestImageFetcher : public ImageFetcher {
@@ -550,7 +555,7 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  TestingPrefServiceSimple profile_prefs_;
+  sync_preferences::TestingPrefServiceSyncable profile_prefs_;
   std::unique_ptr<TestMetricsReporter> metrics_reporter_;
   TestFeedNetwork network_;
   TestWireResponseTranslator response_translator_;

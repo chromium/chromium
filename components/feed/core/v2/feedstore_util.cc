@@ -24,6 +24,9 @@ std::string StreamKey(const StreamType& stream_type) {
     return kForYouStreamKey;
   if (stream_type.IsWebFeed())
     return kFollowStreamKey;
+  if (stream_type.IsForSupervisedUser()) {
+    return kSupervisedUserStreamKey;
+  }
   DCHECK(stream_type.IsSingleWebFeed());
   std::string encoding;
   base::Base64UrlEncode(stream_type.GetWebFeedId(),
@@ -41,12 +44,19 @@ std::string StreamKey(const StreamType& stream_type) {
 }
 
 base::StringPiece StreamPrefix(feed::StreamKind stream_kind) {
-  if (stream_kind == feed::StreamKind::kForYou)
-    return kForYouStreamKey;
-  if (stream_kind == feed::StreamKind::kFollowing)
-    return kFollowStreamKey;
-  DCHECK(stream_kind == feed::StreamKind::kSingleWebFeed);
-  return kSingleWebFeedStreamKeyPrefix;
+  switch (stream_kind) {
+    case feed::StreamKind::kForYou:
+      return kForYouStreamKey;
+    case feed::StreamKind::kFollowing:
+      return kFollowStreamKey;
+    case feed::StreamKind::kSupervisedUser:
+      return kSupervisedUserStreamKey;
+    case feed::StreamKind::kSingleWebFeed:
+      return kSingleWebFeedStreamKeyPrefix;
+    case feed::StreamKind::kUnknown:
+      NOTREACHED();
+      return kSingleWebFeedStreamKeyPrefix;
+  }
 }
 
 StreamType DecodeSingleWebFeedKeySuffix(
@@ -71,6 +81,9 @@ StreamType StreamTypeFromKey(base::StringPiece id) {
     return StreamType(feed::StreamKind::kForYou);
   if (id == kFollowStreamKey)
     return StreamType(feed::StreamKind::kFollowing);
+  if (id == kSupervisedUserStreamKey) {
+    return StreamType(feed::StreamKind::kSupervisedUser);
+  }
   if (base::StartsWith(id, kSingleWebFeedStreamKeyPrefix,
                        base::CompareCase::SENSITIVE)) {
     if ((id.size() < (kSingleWebFeedStreamKeyPrefix.size() +
