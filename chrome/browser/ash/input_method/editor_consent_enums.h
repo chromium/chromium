@@ -40,11 +40,7 @@ enum class ConsentStatus : int {
   kUnset,
 };
 
-enum class EditorMode {
-  kBlocked,
-  kConsentNeeded,
-  kEditor,
-};
+enum class EditorMode { kBlocked, kConsentNeeded, kRewrite, kWrite };
 
 ConsentStatus GetConsentStatusFromInteger(int status_value);
 

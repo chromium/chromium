@@ -41,6 +41,8 @@ constexpr AppType kAppTypeAllowlist[] = {
     AppType::LACROS,
 };
 
+constexpr int kTextLengthMaxLimit = 8000;
+
 bool IsCountryAllowed(std::string_view country_code) {
   return base::Contains(kCountryAllowlist, country_code);
 }
@@ -91,7 +93,8 @@ bool EditorSwitch::CanBeTriggered() const {
          IsTriggerableFromConsentStatus(current_consent_status) &&
          !tablet_mode_enabled_ &&
          // user pref value
-         profile_->GetPrefs()->GetBoolean(prefs::kOrcaEnabled);
+         profile_->GetPrefs()->GetBoolean(prefs::kOrcaEnabled) &&
+         text_length_ <= kTextLengthMaxLimit;
 }
 
 EditorMode EditorSwitch::GetEditorMode() const {
@@ -105,8 +108,10 @@ EditorMode EditorSwitch::GetEditorMode() const {
   if (current_consent_status == ConsentStatus::kPending ||
       current_consent_status == ConsentStatus::kUnset) {
     return EditorMode::kConsentNeeded;
+  } else if (text_length_ > 0) {
+    return EditorMode::kRewrite;
   } else {
-    return EditorMode::kEditor;
+    return EditorMode::kWrite;
   }
 }
 
@@ -123,6 +128,10 @@ void EditorSwitch::OnActivateIme(std::string_view engine_id) {
 
 void EditorSwitch::OnTabletModeUpdated(bool is_enabled) {
   tablet_mode_enabled_ = is_enabled;
+}
+
+void EditorSwitch::OnTextSelectionLengthChanged(size_t text_length) {
+  text_length_ = text_length;
 }
 
 void EditorSwitch::SetProfile(Profile* profile) {

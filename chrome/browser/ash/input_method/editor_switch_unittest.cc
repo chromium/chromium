@@ -254,6 +254,31 @@ TEST_F(EditorSwitchTest, FeatureCanNotBeTriggeredOnTabletMode) {
   EXPECT_EQ(editor_switch.GetEditorMode(), EditorMode::kBlocked);
 }
 
+TEST_F(EditorSwitchTest, FeatureCanNotBeTriggeredWithTooLongTextSelection) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kOrca,
+                            features::kFeatureManagementOrca},
+      /*disabled_features=*/{});
+  TestingProfile profile_;
+  profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
+  EditorSwitch editor_switch(/*profile=*/&profile_,
+                             /*country_code=*/kAllowedTestCountry);
+
+  profile_.GetPrefs()->SetBoolean(prefs::kOrcaEnabled, true);
+  profile_.GetPrefs()->SetInteger(
+      prefs::kOrcaConsentStatus, base::to_underlying(ConsentStatus::kApproved));
+  editor_switch.OnTabletModeUpdated(true);
+  editor_switch.OnActivateIme("xkb:us::eng");
+  editor_switch.OnInputContextUpdated(
+      TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
+      CreateFakeTextFieldContextualInfo(AppType::BROWSER));
+  editor_switch.OnTextSelectionLengthChanged(10000);
+
+  EXPECT_TRUE(editor_switch.IsAllowedForUse());
+  EXPECT_EQ(editor_switch.GetEditorMode(), EditorMode::kBlocked);
+}
+
 TEST_F(
     EditorSwitchTest,
     FeatureCanBeTriggeredIfUserSwitchesOnSettingToggleAndHasNotGivenConsent) {
@@ -280,9 +305,7 @@ TEST_F(
   EXPECT_EQ(editor_switch.GetEditorMode(), EditorMode::kConsentNeeded);
 }
 
-TEST_F(
-    EditorSwitchTest,
-    FeatureCanBeTriggeredOnANormalTextFieldOnABrowserWindowAndWithEnglishInputMethod) {
+TEST_F(EditorSwitchTest, TriggersRewriteModeForNoTextSelection) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{chromeos::features::kOrca,
@@ -303,7 +326,32 @@ TEST_F(
       CreateFakeTextFieldContextualInfo(AppType::BROWSER));
 
   EXPECT_TRUE(editor_switch.IsAllowedForUse());
-  EXPECT_EQ(editor_switch.GetEditorMode(), EditorMode::kEditor);
+  EXPECT_EQ(editor_switch.GetEditorMode(), EditorMode::kWrite);
+}
+
+TEST_F(EditorSwitchTest, TriggersRewriteModeWhenSomeTextIsSelected) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kOrca,
+                            features::kFeatureManagementOrca},
+      /*disabled_features=*/{});
+  TestingProfile profile_;
+  profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
+  EditorSwitch editor_switch(/*profile=*/&profile_,
+                             /*country_code=*/kAllowedTestCountry);
+
+  profile_.GetPrefs()->SetBoolean(prefs::kOrcaEnabled, true);
+  profile_.GetPrefs()->SetInteger(
+      prefs::kOrcaConsentStatus, base::to_underlying(ConsentStatus::kApproved));
+  editor_switch.OnTabletModeUpdated(false);
+  editor_switch.OnActivateIme("xkb:us::eng");
+  editor_switch.OnInputContextUpdated(
+      TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
+      CreateFakeTextFieldContextualInfo(AppType::BROWSER));
+  editor_switch.OnTextSelectionLengthChanged(100);
+
+  EXPECT_TRUE(editor_switch.IsAllowedForUse());
+  EXPECT_EQ(editor_switch.GetEditorMode(), EditorMode::kRewrite);
 }
 
 }  // namespace

@@ -40,10 +40,10 @@ crosapi::mojom::EditorPanelMode GetEditorPanelMode(EditorMode editor_mode) {
       return crosapi::mojom::EditorPanelMode::kBlocked;
     case EditorMode::kConsentNeeded:
       return crosapi::mojom::EditorPanelMode::kPromoCard;
-    case EditorMode::kEditor:
-      // TODO: b:301525083 - Further splits this into either Rewrite or Write
-      // mode with regards to the current input context.
+    case EditorMode::kRewrite:
       return crosapi::mojom::EditorPanelMode::kRewrite;
+    case EditorMode::kWrite:
+      return crosapi::mojom::EditorPanelMode::kWrite;
   }
 }
 

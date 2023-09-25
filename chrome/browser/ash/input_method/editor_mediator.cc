@@ -142,6 +142,7 @@ void EditorMediator::OnSurroundingTextChanged(const std::u16string& text,
   if (editor_event_proxy_ != nullptr) {
     editor_event_proxy_->OnSurroundingTextChanged(text, selection_range);
   }
+  editor_switch_->OnTextSelectionLengthChanged(selection_range.length());
 }
 
 void EditorMediator::ProcessConsentAction(ConsentAction consent_action) {
@@ -155,8 +156,11 @@ void EditorMediator::OnPromoCardDeclined() {
 
 void EditorMediator::HandleTrigger() {
   switch (GetEditorMode()) {
-    case EditorMode::kEditor:
+    case EditorMode::kRewrite:
       mako_page_handler_.ShowRewriteUI(profile_);
+      break;
+    case EditorMode::kWrite:
+      mako_page_handler_.ShowWriteUI(profile_);
       break;
     case EditorMode::kConsentNeeded:
       mako_page_handler_.ShowConsentUI(profile_);
