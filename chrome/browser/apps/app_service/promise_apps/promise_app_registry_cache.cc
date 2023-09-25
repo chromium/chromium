@@ -1,11 +1,13 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 
 #include "chrome/browser/apps/app_service/package_id.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_update.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_utils.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_wrapper.h"
 
 namespace apps {
@@ -38,7 +40,8 @@ void PromiseAppRegistryCache::OnPromiseApp(PromiseAppPtr delta) {
   update_in_progress_ = true;
 
   // Hide any promise apps marked for deletion.
-  if (delta->status == PromiseStatus::kRemove) {
+  bool to_remove = IsPromiseAppCompleted(delta->status);
+  if (to_remove) {
     delta->should_show = false;
   }
 
@@ -50,8 +53,7 @@ void PromiseAppRegistryCache::OnPromiseApp(PromiseAppPtr delta) {
   PromiseAppPtr state_before_update = state ? state->Clone() : nullptr;
 
   // Apply changes to the registry cache.
-  if (delta->status == PromiseStatus::kRemove &&
-      promise_app_map_.contains(delta->package_id)) {
+  if (to_remove && promise_app_map_.contains(delta->package_id)) {
     promise_app_map_.erase(delta->package_id);
   } else if (state) {
     // Update the existing promise app if it exists.

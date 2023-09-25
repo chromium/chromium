@@ -17,6 +17,7 @@
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_almanac_connector.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_utils.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_wrapper.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/profiles/profile.h"
@@ -118,7 +119,7 @@ void PromiseAppService::OnPromiseApp(PromiseAppPtr delta) {
   }
 
   // Clear out the icons of any promise app marked for deletion.
-  if (delta->status == PromiseStatus::kRemove) {
+  if (IsPromiseAppCompleted(delta->status)) {
     promise_app_icon_cache_->RemoveIconsForPackageId(package_id);
   }
 
@@ -176,7 +177,9 @@ void PromiseAppService::OnAppUpdate(const apps::AppUpdate& update) {
     return;
   }
   // Delete the promise app.
-  RemovePromiseApp(package_id);
+  PromiseAppPtr promise_app = std::make_unique<PromiseApp>(package_id);
+  promise_app->status = PromiseStatus::kSuccess;
+  OnPromiseApp(std::move(promise_app));
 }
 
 void PromiseAppService::OnAppRegistryCacheWillBeDestroyed(
@@ -191,12 +194,6 @@ void PromiseAppService::SetSkipAlmanacForTesting(bool skip_almanac) {
 
 void PromiseAppService::SetSkipApiKeyCheckForTesting(bool skip_api_key_check) {
   skip_api_key_check_for_testing_ = skip_api_key_check;
-}
-
-void PromiseAppService::RemovePromiseApp(const PackageId& package_id) {
-  PromiseAppPtr promise_app = std::make_unique<PromiseApp>(package_id);
-  promise_app->status = PromiseStatus::kRemove;
-  OnPromiseApp(std::move(promise_app));
 }
 
 void PromiseAppService::OnGetPromiseAppInfoCompleted(

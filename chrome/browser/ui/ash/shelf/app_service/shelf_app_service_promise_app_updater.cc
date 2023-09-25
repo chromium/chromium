@@ -8,6 +8,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_update.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_utils.h"
 #include "chrome/browser/profiles/profile.h"
 
 ShelfPromiseAppUpdater::ShelfPromiseAppUpdater(Delegate* delegate,
@@ -24,7 +25,7 @@ ShelfPromiseAppUpdater::~ShelfPromiseAppUpdater() = default;
 void ShelfPromiseAppUpdater::OnPromiseAppUpdate(
     const apps::PromiseAppUpdate& update) {
   // Trigger the Shelf item replacement if the promise app has been deleted.
-  if (update.Status() == apps::PromiseStatus::kRemove) {
+  if (IsPromiseAppCompleted(update.Status())) {
     delegate()->OnPromiseAppRemoved(update.PackageId());
   }
 

@@ -18,6 +18,7 @@
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_service.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_update.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_utils.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_app_icon_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
@@ -80,7 +81,7 @@ void AppServicePromiseAppIconLoader::OnPromiseAppUpdate(
   if (!update.StatusChanged()) {
     return;
   }
-  if (update.Status() == apps::PromiseStatus::kRemove) {
+  if (IsPromiseAppCompleted(update.Status())) {
     return;
   }
   CallLoadIcon(update.PackageId(), apps::IconEffects::kCrOsStandardMask);

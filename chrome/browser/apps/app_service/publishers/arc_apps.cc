@@ -1530,7 +1530,7 @@ void ArcApps::OnInstallationFinished(const std::string& package_name,
       return;
     }
     PromiseAppPtr promise_app = AppPublisher::MakePromiseApp(package_id);
-    promise_app->status = PromiseStatus::kRemove;
+    promise_app->status = PromiseStatus::kCancelled;
     AppPublisher::PublishPromiseApp(std::move(promise_app));
   }
 }

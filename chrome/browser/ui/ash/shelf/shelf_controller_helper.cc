@@ -79,7 +79,8 @@ std::string ShelfControllerHelper::GetLabelForPromiseStatus(
     case apps::PromiseStatus::kPending:
       return kPendingString;
     case apps::PromiseStatus::kInstalling:
-    case apps::PromiseStatus::kRemove:
+    case apps::PromiseStatus::kSuccess:
+    case apps::PromiseStatus::kCancelled:
       return kInstallingString;
   }
 }
@@ -240,8 +241,8 @@ ash::AppStatus ShelfControllerHelper::ConvertPromiseStatusToAppStatus(
       return ash::AppStatus::kPending;
     case apps::PromiseStatus::kInstalling:
       return ash::AppStatus::kInstalling;
-    case apps::PromiseStatus::kRemove:
-      NOTREACHED();
+    case apps::PromiseStatus::kSuccess:
+    case apps::PromiseStatus::kCancelled:
       // Set to kInstalling, as that would've been the last valid status before
       // the promise app was removed.
       return ash::AppStatus::kInstalling;

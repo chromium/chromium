@@ -8,6 +8,7 @@
 #include "chrome/browser/apps/app_service/package_id.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_update.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -109,7 +110,7 @@ TEST_F(PromiseAppRegistryCacheTest, GetPromiseAppForStringPackageId) {
   EXPECT_EQ(promise_app_result->package_id, package_id);
 }
 
-TEST_F(PromiseAppRegistryCacheTest, RemovePromiseApp) {
+TEST_F(PromiseAppRegistryCacheTest, RemoveSuccessfullyInstalledPromiseApp) {
   // Register a promise app.
   auto promise_app = std::make_unique<PromiseApp>(kTestPackageId);
   cache()->OnPromiseApp(std::move(promise_app));
@@ -117,9 +118,26 @@ TEST_F(PromiseAppRegistryCacheTest, RemovePromiseApp) {
   // Confirm that the promise app is registered.
   EXPECT_TRUE(cache()->HasPromiseApp(kTestPackageId));
 
-  // Update the promise app with a kRemove status.
+  // Update the promise app with a kSuccess status.
   auto delta = std::make_unique<PromiseApp>(kTestPackageId);
-  delta->status = PromiseStatus::kRemove;
+  delta->status = PromiseStatus::kSuccess;
+  cache()->OnPromiseApp(std::move(delta));
+
+  // Confirm that the promise app was removed.
+  EXPECT_FALSE(cache()->HasPromiseApp(kTestPackageId));
+}
+
+TEST_F(PromiseAppRegistryCacheTest, RemoveCancelledPromiseApp) {
+  // Register a promise app.
+  auto promise_app = std::make_unique<PromiseApp>(kTestPackageId);
+  cache()->OnPromiseApp(std::move(promise_app));
+
+  // Confirm that the promise app is registered.
+  EXPECT_TRUE(cache()->HasPromiseApp(kTestPackageId));
+
+  // Update the promise app with a kCancelled status.
+  auto delta = std::make_unique<PromiseApp>(kTestPackageId);
+  delta->status = PromiseStatus::kCancelled;
   cache()->OnPromiseApp(std::move(delta));
 
   // Confirm that the promise app was removed.
@@ -139,7 +157,7 @@ class PromiseAppRegistryCacheObserverTest : public testing::Test,
     on_promise_app_updated_called_ = true;
 
     // Verify that the data in promise app registry cache is already updated.
-    if (update.Status() == PromiseStatus::kRemove) {
+    if (IsPromiseAppCompleted(update.Status())) {
       ASSERT_FALSE(cache()->HasPromiseApp(update.PackageId()));
     } else {
       ASSERT_TRUE(cache()->HasPromiseApp(update.PackageId()));

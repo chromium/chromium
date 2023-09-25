@@ -18,7 +18,8 @@ enum class PromiseStatus {
   kUnknown,
   kPending,     // Waiting for the installation process to start.
   kInstalling,  // Installing app package.
-  kRemove,      // Marking the promise app for deletion.
+  kSuccess,     // Installation successfully completed.
+  kCancelled,   // Installation failed or was cancelled.
 };
 
 std::string EnumToString(PromiseStatus);
