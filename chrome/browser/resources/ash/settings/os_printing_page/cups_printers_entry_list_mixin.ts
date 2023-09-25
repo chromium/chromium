@@ -135,10 +135,10 @@ export const CupsPrintersEntryListMixin = dedupingMixin(
         }
 
         // Override in the custom element implementation
-        onSavedPrintersAdded(_addedPrinters: PrinterListEntry[]) {}
+        onSavedPrintersAdded(_addedPrinters: PrinterListEntry[]): void {}
 
         // Override in the custom element implementation
-        onSavedPrintersRemoved(_removedPrinters: PrinterListEntry[]) {}
+        onSavedPrintersRemoved(_removedPrinters: PrinterListEntry[]): void {}
       }
 
       return CupsPrintersEntryListMixinInternal;

@@ -76,7 +76,7 @@ export enum PrinterSettingsUserAction {
 }
 
 export function recordPrinterSettingsUserAction(
-    userAction: PrinterSettingsUserAction) {
+    userAction: PrinterSettingsUserAction): void {
   chrome.metricsPrivate.recordEnumerationValue(
       'Printing.CUPS.SettingsUserAction', userAction,
       Object.keys(PrinterSettingsUserAction).length);

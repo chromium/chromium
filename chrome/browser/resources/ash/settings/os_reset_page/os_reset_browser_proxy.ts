@@ -21,15 +21,15 @@ export class OsResetBrowserProxyImpl implements OsResetBrowserProxy {
     return instance || (instance = new OsResetBrowserProxyImpl());
   }
 
-  static setInstanceForTesting(obj: OsResetBrowserProxy) {
+  static setInstanceForTesting(obj: OsResetBrowserProxy): void {
     instance = obj;
   }
 
-  onPowerwashDialogShow() {
+  onPowerwashDialogShow(): void {
     chrome.send('onPowerwashDialogShow');
   }
 
-  requestFactoryResetRestart() {
+  requestFactoryResetRestart(): void {
     chrome.send('requestFactoryResetRestart');
   }
 }

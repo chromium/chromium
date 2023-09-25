@@ -224,7 +224,7 @@ export class CupsPrintersEntryManager {
    */
   private notifyOnSavedPrintersChangedListeners_(
       savedPrinters: PrinterListEntry[], addedPrinter: PrinterListEntry[],
-      removedPrinter: PrinterListEntry[]) {
+      removedPrinter: PrinterListEntry[]): void {
     this.onSavedPrintersChangedListeners_.forEach(
         listener => listener(savedPrinters, addedPrinter, removedPrinter));
   }

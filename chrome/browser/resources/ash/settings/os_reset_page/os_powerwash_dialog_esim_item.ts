@@ -46,7 +46,7 @@ class OsSettingsPowerwashDialogEsimItemElement extends
   profile: ESimProfileRemote|null;
   private profileProperties_: ESimProfileProperties|null;
 
-  private onProfileChanged_() {
+  private onProfileChanged_(): void {
     if (!this.profile) {
       this.profileProperties_ = null;
       return;

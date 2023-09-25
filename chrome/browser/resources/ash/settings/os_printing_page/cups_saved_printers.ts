@@ -64,7 +64,7 @@ const MAX_PRINTER_QUERYING_TIME_IN_SECONDS: number = 300;
  * Move a printer's position in |printerArr| from |fromIndex| to |toIndex|.
  */
 function moveEntryInPrinters(
-    printerArr: PrinterListEntry[], fromIndex: number, toIndex: number) {
+    printerArr: PrinterListEntry[], fromIndex: number, toIndex: number): void {
   const element = printerArr[fromIndex];
   printerArr.splice(fromIndex, 1);
   printerArr.splice(toIndex, 0, element);
@@ -283,7 +283,7 @@ export class SettingsCupsSavedPrintersElement extends
   }
 
   private onOpenActionMenu_(
-      e: CustomEvent<{target: HTMLElement, item: PrinterListEntry}>) {
+      e: CustomEvent<{target: HTMLElement, item: PrinterListEntry}>): void {
     const item = e.detail.item;
     this.activePrinterListEntryIndex_ = this.savedPrinters.findIndex(
         (printer: PrinterListEntry) =>
@@ -364,7 +364,7 @@ export class SettingsCupsSavedPrintersElement extends
     return !!this.searchTerm && !this.filteredPrinters_.length;
   }
 
-  override onSavedPrintersAdded(addedPrinters: PrinterListEntry[]) {
+  override onSavedPrintersAdded(addedPrinters: PrinterListEntry[]): void {
     const currArr = this.newPrinters_.slice();
     for (const printer of addedPrinters) {
       this.visiblePrinterCounter_++;
@@ -374,7 +374,7 @@ export class SettingsCupsSavedPrintersElement extends
     this.set('newPrinters_', currArr);
   }
 
-  override onSavedPrintersRemoved(removedPrinters: PrinterListEntry[]) {
+  override onSavedPrintersRemoved(removedPrinters: PrinterListEntry[]): void {
     const currArr = this.newPrinters_.slice();
     for (const printer of removedPrinters) {
       const newPrinterRemovedIdx = currArr.findIndex(
@@ -425,7 +425,7 @@ export class SettingsCupsSavedPrintersElement extends
    * printer list.
    */
   private moveNewlyAddedPrinters_(
-      printerArr: PrinterListEntry[], toIndex: number) {
+      printerArr: PrinterListEntry[], toIndex: number): void {
     if (!this.newPrinters_.length) {
       return;
     }

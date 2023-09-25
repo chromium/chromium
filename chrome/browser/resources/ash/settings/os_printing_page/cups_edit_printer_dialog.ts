@@ -45,7 +45,6 @@ enum DialogActions {
   VIEW_PPD_CLICKED = 1,
 }
 
-
 /** Keyword used for recording metrics */
 const METRICS_KEYWORD = 'Printing.CUPS.EditDialog';
 
@@ -278,8 +277,8 @@ export class SettingsCupsEditPrinterDialogElement extends
   /**
    * Handler for update|reconfigureCupsPrinter failure.
    */
-  private onPrinterEditFailed_(result: PrinterSetupResult) {
-    this.errorText_ = getErrorText((result));
+  private onPrinterEditFailed_(result: PrinterSetupResult): void {
+    this.errorText_ = getErrorText(result);
   }
 
   private onSaveClick_(): void {
@@ -409,7 +408,7 @@ export class SettingsCupsEditPrinterDialogElement extends
     this.eulaUrl_ = eulaUrl;
   }
 
-  private onViewPpd_() {
+  private onViewPpd_(): void {
     chrome.metricsPrivate.recordEnumerationValue(
         METRICS_KEYWORD, DialogActions.VIEW_PPD_CLICKED,
         Object.keys(DialogActions).length);

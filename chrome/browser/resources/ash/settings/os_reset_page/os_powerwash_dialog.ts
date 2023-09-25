@@ -93,28 +93,28 @@ export class OsSettingsPowerwashDialogElement extends PolymerElement {
     this.lifetimeBrowserProxy_ = LifetimeBrowserProxyImpl.getInstance();
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.osResetBrowserProxy_.onPowerwashDialogShow();
     this.$.dialog.showModal();
   }
 
-  private onCancelClick_() {
+  private onCancelClick_(): void {
     this.$.dialog.close();
   }
 
-  private onRestartClick_() {
+  private onRestartClick_(): void {
     recordSettingChange();
     LifetimeBrowserProxyImpl.getInstance().factoryReset(
         this.requestTpmFirmwareUpdate);
   }
 
-  private onContinueClick_() {
+  private onContinueClick_(): void {
     this.hasContinueBeenTapped_ = true;
   }
 
-  private onMobileSettingsLinkClicked_(event: CustomEvent) {
+  private onMobileSettingsLinkClicked_(event: CustomEvent): void {
     event.detail.event.preventDefault();
 
     const params = new URLSearchParams();

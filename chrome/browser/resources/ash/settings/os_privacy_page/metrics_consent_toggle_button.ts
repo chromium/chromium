@@ -72,7 +72,7 @@ class SettingsMetricsConsentToggleButtonElement extends
     });
   }
 
-  override focus() {
+  override focus(): void {
     this.metricsToggle_.focus();
   }
 

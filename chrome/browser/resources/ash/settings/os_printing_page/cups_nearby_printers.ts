@@ -305,7 +305,7 @@ export class SettingsCupsNearbyPrintersElement extends
   /**
    * Forces the printer list to re-render all items.
    */
-  resizePrintersList() {
+  resizePrintersList(): void {
     this.shadowRoot!.querySelector<IronListElement>(
                         '#printerEntryList')!.notifyResize();
   }
