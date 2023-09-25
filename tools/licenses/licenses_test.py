@@ -149,8 +149,7 @@ class LicensesTest(unittest.TestCase):
 
   def test_generate_license_file_csv(self):
     # This is the same for all the links and prevents wildly long strings.
-    prefix = (
-        "https://chromium.googlesource.com/chromium/src.git/+/refs/heads/main/")
+    prefix = ("https://source.chromium.org/chromium/chromium/src/+/main:")
 
     csv_file = io.StringIO(licenses.GenerateLicenseFileCsv(
         self._get_metadata()))
@@ -159,7 +158,7 @@ class LicensesTest(unittest.TestCase):
     expected = [{
         'Library Name': 'Chromium',
         'Link to LICENSE file': f'{prefix}LICENSE',
-        'License Name': 'Chromium',
+        'License Name': 'BSD 3-Clause',
         'Binary which uses library': 'Chromium',
         'License text for library included?': 'Yes',
         'Source code for library includes the mirrored source?': 'No',

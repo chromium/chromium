@@ -1244,8 +1244,8 @@ def GenerateLicenseFileCsv(
   # Start with Chromium's LICENSE file
   csv_writer.writerow([
       "Chromium",
-      "https://chromium.googlesource.com/chromium/src.git/+/refs/heads/main/LICENSE",
-      "Chromium"
+      "https://source.chromium.org/chromium/chromium/src/+/main:LICENSE",
+      "BSD 3-Clause"
   ] + static_data)
 
   # Add necessary third_party.
@@ -1265,9 +1265,8 @@ def GenerateLicenseFileCsv(
         # which is included. We can achieve this by combining a static
         # Chromium googlesource URL with the relative path to the license
         # file from the top level Chromium src directory.
-        lic_url = (
-            "https://chromium.googlesource.com/chromium/src.git/+/refs/heads/main/"
-            + os.path.relpath(lic, repo_root))
+        lic_url = ("https://source.chromium.org/chromium/chromium/src/+/main:" +
+                   os.path.relpath(lic, repo_root))
 
         # Since these are URLs and not paths, replace any Windows path `\`
         # separators with a `/`
