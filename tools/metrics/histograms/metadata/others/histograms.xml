@@ -4240,7 +4240,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.TriggerRegistrationError6"
+<histogram name="Conversions.TriggerRegistrationError7"
     enum="ConversionTriggerRegistrationError" expires_after="M121">
   <owner>tquintanilla@chromium.org</owner>
   <owner>linnan@chromium.org</owner>

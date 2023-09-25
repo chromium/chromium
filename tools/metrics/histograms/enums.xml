@@ -19983,7 +19983,6 @@ Called by update_net_error_codes.py.-->
   <int value="5" label="Filters value has wrong type"/>
   <int value="7" label="Filters list value has wrong type"/>
   <int value="9" label="aggregatable_values has wrong type"/>
-  <int value="10" label="aggregatable_values has too many keys"/>
   <int value="11" label="aggregatable_values key too long"/>
   <int value="12" label="aggregatable_values value has wrong type"/>
   <int value="13" label="aggregatable_values value out of range"/>
@@ -19996,8 +19995,6 @@ Called by update_net_error_codes.py.-->
       label="aggregatable_trigger_data value key_piece has wrong format"/>
   <int value="20"
       label="aggregatable_trigger_data value source_keys has wrong type"/>
-  <int value="21"
-      label="aggregatable_trigger_data value source_keys has too many keys"/>
   <int value="22"
       label="aggregatable_trigger_data value source_keys key has wrong type"/>
   <int value="23"

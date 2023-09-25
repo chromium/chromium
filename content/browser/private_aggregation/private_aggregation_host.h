@@ -55,7 +55,7 @@ class CONTENT_EXPORT PrivateAggregationHost
   static constexpr char kApiReportVersion[] = "0.1";
 
   // The maximum number of contributions that can go in an `AggregatableReport`.
-  // Aligns with `attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger`.
+  // Aligns with `attribution_reporting::kMaxAggregationKeysPerSource`.
   static constexpr int kMaxNumberOfContributions = 20;
 
   // The maximum allowed context_id string length.
