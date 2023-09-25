@@ -1781,6 +1781,13 @@
                   '|chrome/browser/renderer_context_menu/quick_answers'\
                   '|chromeos/components/quick_answers/'
     },
+    'related_website_sets': {
+      'filepath': 'first_party_sets|' \
+                  'top_level_storage_access_api|' \
+                  'top-level-storage-access-api|' \
+                  'storage_access_api|' \
+                  'storage-access-api'
+    },
     'relaunch_notification': {
       'filepath': 'chrome/browser/ui/views/relaunch_notification'
     },
@@ -1942,6 +1949,10 @@
     },
     'startup': {
       'filepath': 'chrome/browser/ui/startup/',
+    },
+    'storage_access_api': {
+      'filepath': '/storage_access_api/|' \
+                  '/storage-access-api/'
     },
     'storage_service' : {
       'filepath': 'components/services/storage/',
@@ -3016,6 +3027,7 @@
     'psm_libs': ['amraboelkher+watch@chromium.org'],
     'push_messaging': ['peter@chromium.org'],
     'quick_answers': ['croissant-eng+reviews@chromium.org'],
+    'related_website_sets': ['cfredric+watch@chromium.org'],
     'relaunch_notification': ['grt+watch@chromium.org'],
     'remoteplayback': ['mfoltz+watch@chromium.org'],
     'remoting': ['chromoting-reviews@chromium.org'],
@@ -3088,6 +3100,7 @@
     'startup': ['cmfcmf+watch@chromium.org',
                 'nicolaso+watch@chromium.org',
                 'ydago+watch@chromium.org'],
+    'storage_access_api': ['cfredric+watch@chromium.org'],
     'storage_service': ['dmurph+watching-storageservice@chromium.org'],
     'structured_headers': ['iclelland+watch@chromium.org'],
     'styleguide': ['danakj+watch@chromium.org',
