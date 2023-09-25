@@ -1104,6 +1104,12 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
       if (milestone >= 118) {
         gws_experiment_ids.push_back("3368917");
       }
+      if (milestone >= 119) {
+        gws_experiment_ids.push_back("3369945");
+      }
+      if (milestone >= 120) {
+        gws_experiment_ids.push_back("3369947");
+      }
     }
 #else   // defined(ARCH_CPU_64_BITS)
     gws_experiment_ids.push_back("3368914");
@@ -1117,6 +1123,12 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
       }
       if (milestone >= 118) {
         gws_experiment_ids.push_back("3368916");
+      }
+      if (milestone >= 119) {
+        gws_experiment_ids.push_back("3369944");
+      }
+      if (milestone >= 120) {
+        gws_experiment_ids.push_back("3369946");
       }
     }
 #endif  // defined(ARCH_CPU_64_BITS)
