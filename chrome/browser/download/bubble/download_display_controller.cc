@@ -97,7 +97,7 @@ void DownloadDisplayController::OnNewItem(bool show_animation) {
     }
   } else {
     DownloadDisplay::IconUpdateInfo updates;
-    updates.show_animation = true;
+    updates.show_animation = show_animation;
     display_->UpdateDownloadIcon(updates);
   }
 }
