@@ -255,8 +255,8 @@ def CreateAddDepsCommand(gn_target: str, missing_deps: List[str]) -> List[str]:
 
   build_file_path = GnTargetToBuildFilePath(gn_target)
   return [
-      'tools/android/modularization/gn/dep_operations.py', 'add', '--quiet',
-      '--file', build_file_path, '--target', gn_target, '--deps'
+      'build/gn_editor', 'add', '--quiet', '--file', build_file_path,
+      '--target', gn_target, '--deps'
   ] + missing_deps
 
 

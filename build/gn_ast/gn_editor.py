@@ -18,14 +18,18 @@ from typing import List, Optional, Set
 import json_gn_editor
 import utils
 
-_TOOLS_ANDROID_PATH = pathlib.Path(__file__).resolve().parents[2]
-if str(_TOOLS_ANDROID_PATH) not in sys.path:
-    sys.path.append(str(_TOOLS_ANDROID_PATH))
-from python_utils import git_metadata_utils, subprocess_utils
+_SRC_PATH = pathlib.Path(__file__).resolve().parents[2]
 
-_SRC_PATH = git_metadata_utils.get_chromium_src_path()
-sys.path.append(str(_SRC_PATH / 'build' / 'android'))
+_BUILD_ANDROID_PATH = _SRC_PATH / 'build/android'
+if str(_BUILD_ANDROID_PATH) not in sys.path:
+    sys.path.append(str(_BUILD_ANDROID_PATH))
 from pylib import constants
+
+_BUILD_ANDROID_GYP_PATH = _SRC_PATH / 'build/android/gyp'
+if str(_BUILD_ANDROID_GYP_PATH) not in sys.path:
+    sys.path.append(str(_BUILD_ANDROID_GYP_PATH))
+
+from util import build_utils
 
 _GIT_IGNORE_STR = '(git ignored file) '
 
@@ -177,13 +181,13 @@ def _remove(args: argparse.Namespace, build_filepaths: List[str],
         # TODO: Ensure that the build server is not running.
 
     logging.info(f'Running "gn gen" in output directory: {out_dir}')
-    subprocess_utils.run_command(['gn', 'gen', '-C', out_dir, '--ide=json'])
+    build_utils.CheckOutput(['gn', 'gen', '-C', out_dir, '--ide=json'])
 
     if args.all_java_deps:
         assert not args.dep, '--all-java-target does not support passing deps.'
         assert args.file, '--all-java-target requires passing --file.'
         logging.info(f'Finding java deps under {out_dir}.')
-        all_java_deps = subprocess_utils.run_command([
+        all_java_deps = build_utils.CheckOutput([
             str(_SRC_PATH / 'build' / 'android' / 'list_java_targets.py'),
             '--gn-labels', '-C', out_dir
         ]).split('\n')
@@ -264,7 +268,7 @@ def _remove(args: argparse.Namespace, build_filepaths: List[str],
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Add or remove deps programatically.')
+        prog='gn_editor', description='Add or remove deps programatically.')
 
     common_args_parser = argparse.ArgumentParser(add_help=False)
     common_args_parser.add_argument(
@@ -287,7 +291,7 @@ def main():
         help='Skip files before this build file path (debugging).')
 
     subparsers = parser.add_subparsers(
-        help='Use subcommand -h to see full usage.')
+        required=True, help='Use subcommand -h to see full usage.')
 
     add_parser = subparsers.add_parser(
         'add',
@@ -375,7 +379,7 @@ def main():
     logging.basicConfig(
         level=level, format='%(levelname).1s %(relativeCreated)7d %(message)s')
 
-    root = git_metadata_utils.get_chromium_src_path()
+    root = _SRC_PATH
     if args.file:
         build_filepaths = [os.path.relpath(args.file, root)]
     else:

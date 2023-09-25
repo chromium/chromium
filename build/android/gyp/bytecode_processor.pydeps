@@ -9,13 +9,10 @@
 ../../../third_party/catapult/devil/devil/android/sdk/version_codes.py
 ../../../third_party/catapult/devil/devil/constants/__init__.py
 ../../../third_party/catapult/devil/devil/constants/exit_codes.py
-../../../tools/android/modularization/gn/dep_operations.py
-../../../tools/android/modularization/gn/json_gn_editor.py
-../../../tools/android/modularization/gn/utils.py
-../../../tools/android/python_utils/__init__.py
-../../../tools/android/python_utils/git_metadata_utils.py
-../../../tools/android/python_utils/subprocess_utils.py
 ../../action_helpers.py
+../../gn_ast/gn_editor.py
+../../gn_ast/json_gn_editor.py
+../../gn_ast/utils.py
 ../../gn_helpers.py
 ../list_java_targets.py
 ../pylib/__init__.py

@@ -20,12 +20,13 @@ import sys
 
 from typing import Dict, Iterator, List, Optional, Tuple
 
-_TOOLS_ANDROID_PATH = pathlib.Path(__file__).resolve().parents[2]
-if str(_TOOLS_ANDROID_PATH) not in sys.path:
-    sys.path.insert(0, str(_TOOLS_ANDROID_PATH))
-from python_utils import git_metadata_utils, subprocess_utils
+_SRC_PATH = pathlib.Path(__file__).resolve().parents[2]
 
-_SRC_PATH = git_metadata_utils.get_chromium_src_path()
+_BUILD_ANDROID_GYP_PATH = _SRC_PATH / 'build/android/gyp'
+if str(_BUILD_ANDROID_GYP_PATH) not in sys.path:
+    sys.path.append(str(_BUILD_ANDROID_GYP_PATH))
+
+from util import build_utils
 
 # Refer to parse_tree.cc for GN AST implementation details:
 # https://gn.googlesource.com/gn/+/refs/heads/main/src/gn/parse_tree.cc
@@ -52,10 +53,10 @@ def _backup_and_restore_file_contents(path: str):
             f.write(contents)
 
 
-def _build_targets_output(out_dir: str,
-                          targets: List[str],
-                          should_print: Optional[bool] = None
-                          ) -> Optional[str]:
+def _build_targets_output(
+        out_dir: str,
+        targets: List[str],
+        should_print: Optional[bool] = None) -> Optional[str]:
     env = os.environ.copy()
     if should_print is None:
         should_print = logging.getLogger().isEnabledFor(logging.DEBUG)
@@ -102,7 +103,7 @@ def _build_targets_output(out_dir: str,
 
 
 def _generate_project_json_content(out_dir: str) -> str:
-    subprocess_utils.run_command(['gn', 'gen', '--ide=json', out_dir])
+    build_utils.CheckOutput(['gn', 'gen', '--ide=json', out_dir])
     with open(os.path.join(out_dir, 'project.json')) as f:
         return f.read()
 
@@ -118,7 +119,6 @@ class DepList:
 
 class BuildFile:
     """Represents the contents of a BUILD.gn file."""
-
     def __init__(self,
                  build_gn_path: str,
                  root_gn_path: pathlib.Path,
@@ -131,7 +131,7 @@ class BuildFile:
         self._skip_write_content = dryrun
 
     def __enter__(self):
-        output = subprocess_utils.run_command(
+        output = build_utils.CheckOutput(
             ['gn', 'format', '--dump-tree=json', self._full_path])
         self._content = json.loads(output)
         self._original_content = json.dumps(self._content)
@@ -140,7 +140,6 @@ class BuildFile:
     def __exit__(self, exc, value, tb):
         if not self._skip_write_content:
             self.write_content_to_file()
-
 
     # See: https://gist.github.com/sgraham/bd9ffee312f307d5f417019a9c0f0777
     def _find_all(self, match_fn):
@@ -226,7 +225,6 @@ class BuildFile:
         return name
 
     def _find_all_list_assignments(self):
-
         def match_list_assignments(node):
             r"""Matches and returns the list being assigned.
 
@@ -558,6 +556,8 @@ class BuildFile:
     def write_content_to_file(self) -> None:
         current_content = json.dumps(self._content)
         if current_content != self._original_content:
-            subprocess_utils.run_command(
+            subprocess.run(
                 ['gn', 'format', '--read-tree=json', self._full_path],
-                cmd_input=current_content)
+                text=True,
+                check=True,
+                input=current_content)

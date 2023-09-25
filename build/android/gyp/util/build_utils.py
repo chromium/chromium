@@ -224,6 +224,7 @@ def CheckOutput(args,
   logging.info('CheckOutput: %s', ' '.join(args))
   child = subprocess.Popen(args,
       stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=cwd, env=env)
+
   stdout, stderr = child.communicate()
 
   # For Python3 only:

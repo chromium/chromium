@@ -21,8 +21,8 @@ from util import server_utils
 import action_helpers  # build_utils adds //build to sys.path.
 
 _SRC_PATH = pathlib.Path(build_utils.DIR_SOURCE_ROOT).resolve()
-sys.path.append(str(_SRC_PATH / 'tools/android/modularization/gn'))
-from dep_operations import NO_VALID_GN_STR
+sys.path.append(str(_SRC_PATH / 'build/gn_ast'))
+from gn_editor import NO_VALID_GN_STR
 
 
 def _ShouldIgnoreDep(dep_name: str):

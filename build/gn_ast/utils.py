@@ -6,12 +6,7 @@
 import logging
 import os
 import pathlib
-import sys
-
-_TOOLS_ANDROID_PATH = pathlib.Path(__file__).resolve().parents[2]
-if str(_TOOLS_ANDROID_PATH) not in sys.path:
-    sys.path.append(str(_TOOLS_ANDROID_PATH))
-from python_utils import subprocess_utils
+import subprocess
 
 # These paths should be relative to repository root.
 _BAD_FILES = [
@@ -35,6 +30,6 @@ def is_bad_gn_file(filepath: str, root: pathlib.Path) -> bool:
 def is_git_ignored(root: pathlib.Path, filepath: str) -> bool:
     # The command git check-ignore exits with 0 if the path is ignored, 1 if it
     # is not ignored.
-    exit_code = subprocess_utils.run_command(
-        ['git', 'check-ignore', '-q', filepath], cwd=root, exitcode_only=True)
+    exit_code = subprocess.run(['git', 'check-ignore', '-q', filepath],
+                               cwd=root).returncode
     return exit_code == 0
