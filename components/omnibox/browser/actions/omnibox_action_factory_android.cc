@@ -109,7 +109,6 @@ base::android::ScopedJavaLocalRef<jobjectArray> ToJavaOmniboxActionsList(
     return {};
   }
 
-  return base::android::ToTypedJavaArrayOfObjects(
-      env, jactions_vec,
-      base::android::ScopedJavaLocalRef<jclass>(g_java_omnibox_action.Get()));
+  return base::android::ToTypedJavaArrayOfObjects(env, jactions_vec,
+                                                  g_java_omnibox_action.Get());
 }

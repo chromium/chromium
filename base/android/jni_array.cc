@@ -174,7 +174,7 @@ BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfObjects(
 BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToTypedJavaArrayOfObjects(
     JNIEnv* env,
     base::span<const ScopedJavaLocalRef<jobject>> v,
-    ScopedJavaLocalRef<jclass> type) {
+    const JavaRef<jclass>& type) {
   jobjectArray joa =
       env->NewObjectArray(checked_cast<jsize>(v.size()), type.obj(), nullptr);
   CheckException(env);
@@ -188,7 +188,7 @@ BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToTypedJavaArrayOfObjects(
 BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToTypedJavaArrayOfObjects(
     JNIEnv* env,
     base::span<const ScopedJavaGlobalRef<jobject>> v,
-    ScopedJavaLocalRef<jclass> type) {
+    const JavaRef<jclass>& type) {
   jobjectArray joa =
       env->NewObjectArray(checked_cast<jsize>(v.size()), type.obj(), nullptr);
   CheckException(env);
