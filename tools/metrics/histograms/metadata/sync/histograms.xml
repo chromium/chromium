@@ -1396,17 +1396,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.Startup.DeferredInitTrigger"
-    enum="SyncDeferredInitTrigger" expires_after="2023-05-12">
-  <obsolete>
-    Removed 05/23.
-  </obsolete>
-  <owner>mastiz@chromium.org</owner>
-  <owner>treib@chromium.org</owner>
-  <component>Services&gt;Sync</component>
-  <summary>The type of event that triggered sync initialization.</summary>
-</histogram>
-
 <histogram name="Sync.Startup.SignedInWithoutAccountInfo2"
     enum="BooleanIsSignedIn" expires_after="2024-06-15">
   <owner>mastiz@chromium.org</owner>
@@ -1689,21 +1678,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the result of an attempt to download trusted vault keys from the
     server, specifically if the local device is known to have a V1 registration.
-  </summary>
-</histogram>
-
-<histogram name="Sync.TrustedVaultErrorShownOnFirstTimeSync" enum="Boolean"
-    expires_after="M114">
-  <obsolete>
-    Replaced in M114 by Sync.TrustedVaultErrorShownOnFirstTimeSync2.
-  </obsolete>
-  <owner>mmoskvitin@google.com</owner>
-  <owner>mastiz@chromium.org</owner>
-  <component>Services&gt;Sync</component>
-  <summary>
-    Records whether user action was required to fetch trusted vault keys upon
-    first sync (i.e. after signin). Recorded only if trusted vault passphrase
-    type is used and at most once per browser/profile lifetime.
   </summary>
 </histogram>
 
