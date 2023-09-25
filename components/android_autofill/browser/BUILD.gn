@@ -143,6 +143,7 @@ source_set("unit_tests") {
   deps = [
     ":android",
     ":browser",
+    ":features",
     ":test_support",
     "//components/autofill/content/browser:test_support",
     "//content/test:test_support",

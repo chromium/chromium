@@ -38,6 +38,7 @@ class AutofillProviderAndroidBridgeImpl : public AutofillProviderAndroidBridge {
   void HideDatalistPopup() override;
   void OnFocusChanged(const absl::optional<FieldInfo>& field) override;
   void OnFormFieldDidChange(const FieldInfo& field) override;
+  void OnFormFieldVisibilitiesDidChange(base::span<const int> indices) override;
   void OnTextFieldDidScroll(const FieldInfo& field) override;
   void OnFormSubmitted(mojom::SubmissionSource submission_source) override;
   void OnDidFillAutofillFormData() override;

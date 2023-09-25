@@ -80,6 +80,11 @@ class AutofillProviderAndroidBridge {
   // Informs the Java side that the `field` has changed.
   virtual void OnFormFieldDidChange(const FieldInfo& field) = 0;
 
+  // Informs the Java side that the visibility of the fields with `indices` has
+  // changed.
+  virtual void OnFormFieldVisibilitiesDidChange(
+      base::span<const int> indices) = 0;
+
   // Informs the Java side that `field` has new `bounds`.
   // TODO(crbug.com/1478934): Make naming consistent across events, e.g.,
   // `OnFormFieldDidScroll`.

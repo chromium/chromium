@@ -274,6 +274,7 @@ void AutofillProviderAndroid::OnFocusOnFormField(
   }
 
   field_info.bounds = ToClientAreaBound(bounding_box);
+  MaybeFireFormFieldVisibilitiesDidChange(manager, form);
   bridge_->OnFocusChanged(field_info);
 }
 
@@ -292,6 +293,23 @@ void AutofillProviderAndroid::MaybeFireFormFieldDidChange(
   form_->OnFormFieldDidChange(field_info.index, field.value);
   field_info.bounds = ToClientAreaBound(bounding_box);
   bridge_->OnFormFieldDidChange(field_info);
+}
+
+void AutofillProviderAndroid::MaybeFireFormFieldVisibilitiesDidChange(
+    AndroidAutofillManager* manager,
+    const FormData& form) {
+  if (!IsCurrentlyLinkedManager(manager) || !IsCurrentlyLinkedForm(form) ||
+      !base::FeatureList::IsEnabled(
+          features::kAndroidAutofillSupportVisibilityChanges)) {
+    return;
+  }
+
+  std::vector<int> field_indices_with_change =
+      form_->UpdateFieldVisibilities(form);
+  if (field_indices_with_change.empty()) {
+    return;
+  }
+  bridge_->OnFormFieldVisibilitiesDidChange(field_indices_with_change);
 }
 
 void AutofillProviderAndroid::OnDidFillAutofillFormData(

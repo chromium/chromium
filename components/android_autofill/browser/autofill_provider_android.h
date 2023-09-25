@@ -102,12 +102,18 @@ class AutofillProviderAndroid : public AutofillProvider,
   void OnVisibilityChanged(content::Visibility visibility) override;
 
   void FireSuccessfulSubmission(mojom::SubmissionSource source);
+
   // Calls `OnFormFieldDidChange` in the bridge if there is an ongoing Autofill
   // session for this `form`.
   void MaybeFireFormFieldDidChange(AndroidAutofillManager* manager,
                                    const FormData& form,
                                    const FormFieldData& field,
                                    const gfx::RectF& bounding_box);
+
+  // Propagates visibility changes for fields in `form` and notifies the bridge
+  // in case any of the fields had a visibility change.
+  void MaybeFireFormFieldVisibilitiesDidChange(AndroidAutofillManager* manager,
+                                             const FormData& form);
 
   bool IsCurrentlyLinkedManager(AndroidAutofillManager* manager);
 

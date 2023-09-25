@@ -6,9 +6,12 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/android_autofill/browser/android_autofill_bridge_factory.h"
+#include "components/android_autofill/browser/android_autofill_features.h"
 #include "components/android_autofill/browser/android_autofill_manager.h"
 #include "components/android_autofill/browser/autofill_provider_android.h"
 #include "components/android_autofill/browser/autofill_provider_android_bridge.h"
@@ -37,6 +40,7 @@ using ::testing::Mock;
 using ::testing::Optional;
 using ::testing::ResultOf;
 using ::testing::SaveArg;
+using ::testing::UnorderedElementsAre;
 using FieldInfo = AutofillProviderAndroidBridge::FieldInfo;
 using test::CreateFormDataForFrame;
 using test::CreateTestCreditCardFormData;
@@ -83,7 +87,7 @@ class TestAndroidAutofillManager : public AndroidAutofillManager {
 
   void SimulateOnFocusOnFormField(const FormData& form,
                                   const FormFieldData& field) {
-    OnFocusOnFormField(form, field, gfx::RectF());
+    OnFocusOnFormFieldImpl(form, field, gfx::RectF());
   }
 
   void SimulateOnFormSubmitted(const FormData& form,
@@ -130,6 +134,10 @@ class MockAutofillProviderAndroidBridge : public AutofillProviderAndroidBridge {
               (const absl::optional<FieldInfo>&),
               (override));
   MOCK_METHOD(void, OnFormFieldDidChange, (const FieldInfo&), (override));
+  MOCK_METHOD(void,
+              OnFormFieldVisibilitiesDidChange,
+              (base::span<const int>),
+              (override));
   MOCK_METHOD(void, OnTextFieldDidScroll, (const FieldInfo&), (override));
   MOCK_METHOD(void, OnFormSubmitted, (mojom::SubmissionSource), (override));
   MOCK_METHOD(void, OnDidFillAutofillFormData, (), (override));
@@ -247,6 +255,32 @@ TEST_F(AutofillProviderAndroidTest, OnFocusChangeInsideCurrentAutofillForm) {
   EXPECT_CALL(provider_bridge(), OnFocusChanged(Eq(absl::nullopt)));
   android_autofill_manager().OnFocusNoLongerOnFormImpl(
       /*had_interacted_form=*/true);
+}
+
+// Tests that Java is informed about visibility changes of form fields connected
+// to the current Autofill session if they are detected in focus change events.
+TEST_F(AutofillProviderAndroidTest, NotifyAboutVisibilityChangeOnFocus) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAndroidAutofillSupportVisibilityChanges);
+
+  FormData form = CreateFormDataForFrame(
+      CreateTestPersonalInformationFormData(), main_frame_token());
+  // For Android Autofill, focusability is the same as visibility.
+  form.fields[0].is_focusable = false;
+  form.fields[2].is_focusable = false;
+
+  // Start an Autofill session.
+  android_autofill_manager().SimulateOnAskForValuesToFill(form, form.fields[1]);
+
+  form.fields[0].is_focusable = true;
+  form.fields[2].is_focusable = true;
+
+  EXPECT_CALL(provider_bridge(), OnFormFieldVisibilitiesDidChange(
+                                     /*indices=*/UnorderedElementsAre(0, 2)));
+  EXPECT_CALL(provider_bridge(),
+              OnFocusChanged(Optional(EqualsFieldInfo(/*index=*/0))));
+  android_autofill_manager().SimulateOnFocusOnFormField(form, form.fields[0]);
 }
 
 // Tests that asking for values to fill for a different form than that of the

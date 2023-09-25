@@ -25,6 +25,7 @@ using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaArrayOfStrings;
+using base::android::ToJavaIntArray;
 
 void JNI_AutofillProvider_Init(JNIEnv* env,
                                const JavaParamRef<jobject>& jcaller,
@@ -154,6 +155,18 @@ void AutofillProviderAndroidBridgeImpl::OnFormFieldDidChange(
   Java_AutofillProvider_onFormFieldDidChange(
       env, obj, field.index, field.bounds.x(), field.bounds.y(),
       field.bounds.width(), field.bounds.height());
+}
+
+void AutofillProviderAndroidBridgeImpl::OnFormFieldVisibilitiesDidChange(
+    base::span<const int> indices) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (obj.is_null()) {
+    return;
+  }
+
+  Java_AutofillProvider_onFormFieldVisibilitiesDidChange(
+      env, obj, ToJavaIntArray(env, indices));
 }
 
 void AutofillProviderAndroidBridgeImpl::OnFormSubmitted(

@@ -279,7 +279,7 @@ public class AutofillProvider {
      *
      */
     @CalledByNative
-    private void onFormFieldVisibilityDidChange(int[] indices) {
+    private void onFormFieldVisibilitiesDidChange(int[] indices) {
         if (mRequest == null) return;
 
         for (int index : indices) {
