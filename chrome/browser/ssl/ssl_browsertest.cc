@@ -872,7 +872,7 @@ class SSLUITestBase : public InProcessBrowserTest,
 
     Profile* profile = browser()->profile();
 
-    web_app::AppId app_id =
+    webapps::AppId app_id =
         web_app::test::InstallWebApp(profile, std::move(web_app_info));
 
     Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
