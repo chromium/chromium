@@ -261,6 +261,18 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestResumeHeavyUserModel) {
       std::vector<std::string>(1, kLegacyNegativeLabel));
 }
 
+TEST_F(SegmentationPlatformServiceFactoryTest, TestLowUserEngagementModel) {
+  InitServiceAndCacheResults(kChromeLowUserEngagementSegmentationKey);
+
+  PredictionOptions prediction_options;
+
+  ExpectGetClassificationResult(
+      kChromeLowUserEngagementSegmentationKey, prediction_options, nullptr,
+      /*expected_status=*/PredictionStatus::kSucceeded,
+      /*expected_labels=*/
+      std::vector<std::string>(1, kChromeLowUserEngagementUmaName));
+}
+
 TEST_F(SegmentationPlatformServiceFactoryTest, TestDeviceSwitcherModel) {
   InitService();
 

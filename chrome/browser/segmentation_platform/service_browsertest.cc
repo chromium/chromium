@@ -95,36 +95,6 @@ class SegmentationPlatformTest : public PlatformBrowserTest {
     command_line->AppendSwitch("segmentation-platform-refresh-results");
   }
 
-  bool HasResultPref(base::StringPiece segmentation_key) {
-    const base::Value::Dict& dictionary =
-        chrome_test_utils::GetProfile(this)->GetPrefs()->GetDict(
-            kSegmentationResultPref);
-    return !!dictionary.FindByDottedPath(segmentation_key);
-  }
-
-  void OnResultPrefUpdated() {
-    if (!wait_for_pref_callback_.is_null() &&
-        HasResultPref(kChromeLowUserEngagementSegmentationKey)) {
-      std::move(wait_for_pref_callback_).Run();
-    }
-  }
-
-  void WaitForPrefUpdate() {
-    if (HasResultPref(kChromeLowUserEngagementSegmentationKey))
-      return;
-
-    base::RunLoop wait_for_pref;
-    wait_for_pref_callback_ = wait_for_pref.QuitClosure();
-    pref_registrar_.Init(chrome_test_utils::GetProfile(this)->GetPrefs());
-    pref_registrar_.Add(
-        kSegmentationResultPref,
-        base::BindRepeating(&SegmentationPlatformTest::OnResultPrefUpdated,
-                            weak_ptr_factory_.GetWeakPtr()));
-    wait_for_pref.Run();
-
-    pref_registrar_.RemoveAll();
-  }
-
   bool HasClientResultPref(const std::string& segmentation_key) {
     PrefService* pref_service = chrome_test_utils::GetProfile(this)->GetPrefs();
     std::unique_ptr<ClientResultPrefs> result_prefs_ =
@@ -179,23 +149,6 @@ class SegmentationPlatformTest : public PlatformBrowserTest {
     int success_count =
         histogram_tester.GetBucketCount(database_update_histogram, 1);
     ASSERT_GE(success_count, 1);
-  }
-
-  void ExpectSegmentSelectionResult(const std::string& segmentation_key,
-                                    bool result_expected) {
-    SegmentationPlatformService* service =
-        segmentation_platform::SegmentationPlatformServiceFactory::
-            GetForProfile(chrome_test_utils::GetProfile(this));
-    base::RunLoop wait_for_segment;
-    service->GetSelectedSegment(
-        segmentation_key, base::BindOnce(
-                              [](bool result_expected, base::OnceClosure quit,
-                                 const SegmentSelectionResult& result) {
-                                EXPECT_EQ(result_expected, result.is_ready);
-                                std::move(quit).Run();
-                              },
-                              result_expected, wait_for_segment.QuitClosure()));
-    wait_for_segment.Run();
   }
 
   void ExpectClassificationResult(const std::string& segmentation_key,
@@ -289,18 +242,6 @@ class SegmentationPlatformTest : public PlatformBrowserTest {
   base::OnceClosure wait_for_pref_callback_;
   base::WeakPtrFactory<SegmentationPlatformTest> weak_ptr_factory_{this};
 };
-
-IN_PROC_BROWSER_TEST_F(SegmentationPlatformTest, RunDefaultModel) {
-  WaitForPlatformInit();
-  WaitForPrefUpdate();
-
-  // Result is available from previous session's selection.
-  ExpectSegmentSelectionResult(kChromeLowUserEngagementSegmentationKey,
-                               /*result_expected=*/true);
-
-  // This session runs default model and updates again.
-  WaitForPrefUpdate();
-}
 
 // https://crbug.com/1257820 -- Tests using "PRE_" don't work on Android.
 #if BUILDFLAG(IS_ANDROID)
@@ -583,7 +524,7 @@ IN_PROC_BROWSER_TEST_F(SegmentationPlatformUkmModelTest,
   utils_.WaitForUkmObserverRegistration();
 
   // Wait for the default model to run and save results to prefs.
-  WaitForPrefUpdate();
+  WaitForClientResultPrefUpdate();
 
   // Record page load UKM that should be recorded in the database, persisted
   // across sessions.
@@ -609,11 +550,12 @@ IN_PROC_BROWSER_TEST_F(SegmentationPlatformUkmModelTest,
   EXPECT_TRUE(utils_.IsUrlInDatabase(kUrl1));
 
   // Result is available from previous session's selection.
-  ExpectSegmentSelectionResult(kChromeLowUserEngagementSegmentationKey,
-                               /*result_expected=*/true);
+  ExpectClassificationResult(
+      kChromeLowUserEngagementSegmentationKey,
+      /*expected_prediction_status=*/PredictionStatus::kSucceeded);
 
   utils_.WaitForUkmObserverRegistration();
-  WaitForPrefUpdate();
+  WaitForClientResultPrefUpdate();
 
   // There are 2 UKM metrics written to the database, count = 2.
   EXPECT_EQ(ModelProvider::Request({2}), input_feature_in_last_execution_);

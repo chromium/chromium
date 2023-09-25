@@ -12,6 +12,7 @@
 #include "components/segmentation_platform/internal/database/ukm_database.h"
 #include "components/segmentation_platform/internal/execution/mock_model_provider.h"
 #include "components/segmentation_platform/internal/execution/model_manager_impl.h"
+#include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/internal/segmentation_platform_service_impl.h"
 #include "components/segmentation_platform/internal/signals/ukm_observer.h"
 #include "components/segmentation_platform/internal/ukm_data_manager.h"
@@ -103,8 +104,14 @@ void UkmDataManagerTestUtils::WaitForUkmObserverRegistration() {
 proto::SegmentationModelMetadata
 UkmDataManagerTestUtils::GetSamplePageLoadMetadata(const std::string& query) {
   proto::SegmentationModelMetadata metadata;
+  MetadataWriter writer(&metadata);
+  writer.AddOutputConfigForBinaryClassifier(
+      /*threshold=*/0.5f,
+      /*positive_label=*/"Show",
+      /*negative_label=*/"NotShow");
   metadata.set_time_unit(proto::TimeUnit::DAY);
   metadata.set_bucket_duration(42u);
+
   auto* feature = metadata.add_input_features();
   auto* sql_feature = feature->mutable_sql_feature();
   sql_feature->set_sql(query);
