@@ -15,11 +15,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
 
-namespace {
-// `kBaseRetryDelayInSeconds` must be synced with `kBaseRetryDelayInSeconds` in
-// screen_ai_dlc_installer.cc.
-constexpr int kBaseRetryDelayInSeconds = 3;
-}  // namespace
 namespace ash {
 
 class ScreenAIDlcInstallerTest
@@ -29,6 +24,10 @@ class ScreenAIDlcInstallerTest
   void SetUp() override {
     DlcserviceClient::InitializeFake();
     install_state_ = screen_ai::ScreenAIInstallState::Create();
+    base_retry_delay_in_seconds =
+        screen_ai::dlc_installer::base_retry_delay_in_seconds_for_testing();
+    max_install_retries =
+        screen_ai::dlc_installer::max_install_retries_for_testing();
   }
 
   void TearDown() override { DlcserviceClient::Shutdown(); }
@@ -63,6 +62,9 @@ class ScreenAIDlcInstallerTest
         "Accessibility.ScreenAI.Component.Install", expected_total_count);
   }
 
+  int base_retry_delay_in_seconds;
+  int max_install_retries;
+
  private:
   FakeDlcserviceClient* fake_dlcservice_client() {
     return static_cast<FakeDlcserviceClient*>(DlcserviceClient::Get());
@@ -90,12 +92,13 @@ TEST_F(ScreenAIDlcInstallerTest, InstallFailureWithDlcErrorBusy) {
   InstallAndWait();
   ExpectFailureHistogramCount(/*expected_count=*/0, /*expected_total_count=*/0);
 
-  int delay_in_seconds = kBaseRetryDelayInSeconds;
-  WaitForDelay(delay_in_seconds);
-  delay_in_seconds *= delay_in_seconds;
-  WaitForDelay(delay_in_seconds);
-  delay_in_seconds *= delay_in_seconds;
-  WaitForDelay(delay_in_seconds);
+  int delay_in_seconds = base_retry_delay_in_seconds;
+  for (int i = 0; i < max_install_retries; ++i) {
+    WaitForDelay(delay_in_seconds);
+    delay_in_seconds =
+        screen_ai::dlc_installer::CalculateNextDelayInSecondsForTesting(
+            delay_in_seconds);
+  }
   ExpectFailureHistogramCount(/*expected_count=*/1, /*expected_total_count=*/1);
 }
 
@@ -103,12 +106,14 @@ TEST_F(ScreenAIDlcInstallerTest,
        InstallFailureWithDlcErrorBusyAndRetrySuccess) {
   SetInstallError(dlcservice::kErrorBusy);
   InstallAndWait();
-  int delay_in_seconds = kBaseRetryDelayInSeconds;
+  int delay_in_seconds = base_retry_delay_in_seconds;
   WaitForDelay(delay_in_seconds);
   ExpectFailureHistogramCount(/*expected_count=*/0, /*expected_total_count=*/0);
 
   SetInstallError(dlcservice::kErrorNone);
-  delay_in_seconds *= delay_in_seconds;
+  delay_in_seconds =
+      screen_ai::dlc_installer::CalculateNextDelayInSecondsForTesting(
+          delay_in_seconds);
   WaitForDelay(delay_in_seconds);
   ExpectSuccessHistogramCount(/*expected_count=*/1, /*expected_total_count=*/1);
 }
@@ -117,14 +122,24 @@ TEST_F(ScreenAIDlcInstallerTest, InstallFailuresRepeatedWithDlcErrorBusy) {
   SetInstallError(dlcservice::kErrorBusy);
   InstallAndWait();
   ExpectFailureHistogramCount(/*expected_count=*/0, /*expected_total_count=*/0);
-
-  int delay_in_seconds = kBaseRetryDelayInSeconds;
-  WaitForDelay(delay_in_seconds);
-  delay_in_seconds *= delay_in_seconds;
-  WaitForDelay(delay_in_seconds);
-  delay_in_seconds *= delay_in_seconds;
-  WaitForDelay(delay_in_seconds);
+  int delay_in_seconds = base_retry_delay_in_seconds;
+  for (int i = 0; i < max_install_retries; ++i) {
+    WaitForDelay(delay_in_seconds);
+    delay_in_seconds =
+        screen_ai::dlc_installer::CalculateNextDelayInSecondsForTesting(
+            delay_in_seconds);
+  }
   ExpectFailureHistogramCount(/*expected_count=*/1, /*expected_total_count=*/1);
+
+  InstallAndWait();
+  delay_in_seconds = base_retry_delay_in_seconds;
+  for (int i = 0; i < max_install_retries; ++i) {
+    WaitForDelay(delay_in_seconds);
+    delay_in_seconds =
+        screen_ai::dlc_installer::CalculateNextDelayInSecondsForTesting(
+            delay_in_seconds);
+  }
+  ExpectFailureHistogramCount(/*expected_count=*/2, /*expected_total_count=*/2);
 }
 
 }  // namespace ash

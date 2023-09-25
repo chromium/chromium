@@ -19,7 +19,8 @@ constexpr char kScreenAIDlcName[] = "screen-ai";
 
 // Retry delay will exponentially increase.
 constexpr int kBaseRetryDelayInSeconds = 3;
-constexpr int kMaxInstallRetries = 3;
+constexpr int kMaxRetryDelayInSeconds = 180;
+constexpr int kMaxInstallRetries = 5;
 
 struct InstallMetadata {
   bool dlc_available_from_before_this_session = false;
@@ -29,6 +30,10 @@ struct InstallMetadata {
 
 void InstallInternal(InstallMetadata metadata);
 
+int CalculateNextDelayInSeconds(int delay_in_seconds) {
+  return std::min(delay_in_seconds * delay_in_seconds, kMaxRetryDelayInSeconds);
+}
+
 void OnInstallCompleted(
     InstallMetadata metadata,
     const ash::DlcserviceClient::InstallResult& install_result) {
@@ -37,7 +42,9 @@ void OnInstallCompleted(
     VLOG(1) << "ScreenAI installation failed as DLC service is busy, retrying.";
     base::TimeDelta retry_delay =
         base::Seconds(metadata.retry_delay_in_seconds);
-    metadata.retry_delay_in_seconds *= metadata.retry_delay_in_seconds;
+
+    metadata.retry_delay_in_seconds =
+        CalculateNextDelayInSeconds(metadata.retry_delay_in_seconds);
     metadata.install_retries++;
 
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -137,6 +144,18 @@ void ManageInstallation(PrefService* local_state) {
           Uninstall();
         }
       }));
+}
+
+int CalculateNextDelayInSecondsForTesting(int delay_in_seconds) {
+  return CalculateNextDelayInSeconds(delay_in_seconds);
+}
+
+int base_retry_delay_in_seconds_for_testing() {
+  return kBaseRetryDelayInSeconds;
+}
+
+int max_install_retries_for_testing() {
+  return kMaxInstallRetries;
 }
 
 }  // namespace screen_ai::dlc_installer
