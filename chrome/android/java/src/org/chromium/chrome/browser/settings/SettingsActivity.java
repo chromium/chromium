@@ -63,6 +63,7 @@ import org.chromium.chrome.browser.password_entry_edit.CredentialEntryFragmentVi
 import org.chromium.chrome.browser.password_manager.settings.PasswordSettings;
 import org.chromium.chrome.browser.privacy_guide.PrivacyGuideFragment;
 import org.chromium.chrome.browser.privacy_sandbox.AdMeasurementFragment;
+import org.chromium.chrome.browser.privacy_sandbox.ChromeTrackingProtectionDelegate;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
@@ -93,6 +94,7 @@ import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.privacy_sandbox.TrackingProtectionSettings;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -603,6 +605,10 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         }
         if (fragment instanceof AutofillOptionsFragment) {
             AutofillOptionsCoordinator.createFor((AutofillOptionsFragment) fragment);
+        }
+        if (fragment instanceof TrackingProtectionSettings) {
+            ((TrackingProtectionSettings) fragment)
+                    .setTrackingProtectionDelegate(new ChromeTrackingProtectionDelegate(mProfile));
         }
     }
 

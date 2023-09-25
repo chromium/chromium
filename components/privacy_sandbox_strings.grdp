@@ -2163,6 +2163,9 @@
 
   <!-- Tracking Protection -->
   <!-- TODO(b/295926938: finalize the strings. -->
+  <message name="IDS_PRIVACY_SANDBOX_TRACKING_PROTECTION_TITLE" desc="" translateable="false" formatter_data="android_java">
+    Tracking Protection
+  </message>
   <message name="IDS_PRIVACY_SANDBOX_TRACKING_PROTECTION_DESCRIPTION" desc="" translateable="false" formatter_data="android_java">
     Chrome limits the amount of information sites can use to track you as you browse. You can change your settings to choose your own level of protection.
   </message>

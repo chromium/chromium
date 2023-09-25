@@ -48,6 +48,7 @@ include_rules = [
   "+components/permissions/android/nfc",
   "+components/policy",
   "+components/prefs/android",
+  "+components/privacy_sandbox/android",
   "+components/query_tiles",
   "+components/safe_browsing/android/java",
   "+components/security_interstitials/content/android",
