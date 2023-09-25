@@ -9,6 +9,7 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/root_window_controller.h"
 #include "ash/scoped_animation_disabler.h"
 #include "ash/screen_util.h"
 #include "ash/shelf/shelf.h"
@@ -24,6 +25,7 @@
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/scoped_overview_animation_settings.h"
 #include "ash/wm/splitview/split_view_controller.h"
+#include "ash/wm/splitview/split_view_overview_session.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
@@ -210,8 +212,25 @@ gfx::Rect GetGridBoundsInScreen(
   auto* split_view_controller = SplitViewController::Get(target_root);
   SplitViewController::State state = split_view_controller->state();
 
+  // `split_view_overview_session` may have started without updating
+  // `split_view_controller->state()`, i.e. from SnapGroupController. Convert
+  // the split view overview session window to a split view state.
+  // TODO(sophiewen): See if we can remove `state` and just check this.
+  if (auto* split_view_overview_session =
+          RootWindowController::ForWindow(target_root)
+              ->split_view_overview_session()) {
+    auto* window_state =
+        WindowState::Get(split_view_overview_session->window());
+    CHECK(window_state->IsSnapped());
+    chromeos::WindowStateType window_state_type = window_state->GetStateType();
+    state = window_state_type == chromeos::WindowStateType::kPrimarySnapped
+                ? SplitViewController::State::kPrimarySnapped
+                : SplitViewController::State::kSecondarySnapped;
+  }
+
   // If we are in splitview mode already just use the given state, otherwise
-  // convert |window_dragging_state| to a split view state.
+  // convert `window_dragging_state` to a split view state. Note this will
+  // override `state` from `split_view_overview_session` if there is any.
   if (!split_view_controller->InSplitViewMode() && window_dragging_state) {
     switch (*window_dragging_state) {
       case SplitViewDragIndicators::WindowDraggingState::kToSnapPrimary:
@@ -287,8 +306,9 @@ gfx::Rect GetGridBoundsInScreen(
     }
   }
 
-  if (!divider_changed)
+  if (!divider_changed) {
     return bounds;
+  }
 
   DCHECK(opposite_position);
   const bool horizontal = SplitViewController::IsLayoutHorizontal(target_root);

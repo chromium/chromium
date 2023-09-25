@@ -258,15 +258,15 @@ void MaybeRemoveSnapGroupContainingWindow(aura::Window* window) {
 void StartSplitViewOverviewSession(aura::Window* window,
                                    absl::optional<OverviewStartAction> action,
                                    absl::optional<OverviewEnterExitType> type) {
+  RootWindowController::ForWindow(window)->StartSplitViewOverviewSession(
+      window);
+
   if (!IsInOverviewSession()) {
     // Overview may already be in session, if a window was dragged to split view
     // from overview in clamshell mode.
     CHECK(action && type);
     Shell::Get()->overview_controller()->StartOverview(*action, *type);
   }
-
-  RootWindowController::ForWindow(window)->StartSplitViewOverviewSession(
-      window);
 }
 
 }  // namespace
@@ -1310,14 +1310,15 @@ void SplitViewController::OnOverviewButtonTrayLongPressed(
     return;
   }
 
+  SnapWindow(target_window, SnapPosition::kPrimary,
+             WindowSnapActionSource::kLongPressOverviewButtonToSnap,
+             /*activate_window=*/true);
+
   // Start overview mode if we aren't already in it.
   StartSplitViewOverviewSession(target_window,
                                 OverviewStartAction::kOverviewButtonLongPress,
                                 OverviewEnterExitType::kImmediateEnter);
 
-  SnapWindow(target_window, SnapPosition::kPrimary,
-             WindowSnapActionSource::kLongPressOverviewButtonToSnap,
-             /*activate_window=*/true);
   base::RecordAction(
       base::UserMetricsAction("Tablet_LongPressOverviewButtonEnterSplitView"));
 }
@@ -1402,7 +1403,6 @@ void SplitViewController::OpenPartialOverviewToUpdateSnapGroup(
     SnapGroupController::Get()->RemoveSnapGroupContainingWindow(
         primary_window_);
     split_view_divider_.reset();
-    in_snap_group_creation_session_ = true;
     StartSplitViewOverviewSession(
         snap_position == SnapPosition::kPrimary ? primary_window_
                                                 : secondary_window_,
@@ -1540,7 +1540,9 @@ void SplitViewController::OnOverviewModeStarting() {
   // While in clamshell split view mode without being in a snap group
   // creation session, a full overview session should be triggered. In this
   // case, split view should end.
-  if (InClamshellSplitViewMode() && !in_snap_group_creation_session_) {
+  if (InClamshellSplitViewMode() &&
+      !RootWindowController::ForWindow(root_window_)
+           ->split_view_overview_session()) {
     EndSplitView();
     return;
   }
@@ -1632,10 +1634,6 @@ void SplitViewController::OnOverviewModeEnded() {
       !IsSnapGroupEnabledInClamshellMode()) {
     EndSplitView();
   }
-
-  // Reset the value as we are guaranteed to be out of snap group creation
-  // session on overview ended.
-  in_snap_group_creation_session_ = false;
 }
 
 void SplitViewController::OnDisplayRemoved(
@@ -2379,7 +2377,6 @@ void SplitViewController::OnWindowSnapped(
   // mode when `CanEnterOverview()` returns true, the check will happen in
   // `OverviewController`.
   if (WillStartOverview()) {
-    in_snap_group_creation_session_ = snap_group_enabled_in_clamshell;
     // TODO(b/294580642): Move this to SnapGroupController.
     StartSplitViewOverviewSession(window, OverviewStartAction::kSplitView,
                                   OverviewEnterExitType::kNormal);

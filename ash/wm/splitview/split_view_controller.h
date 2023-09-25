@@ -203,9 +203,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   SnapPosition default_snap_position() const { return default_snap_position_; }
   SplitViewDivider* split_view_divider() { return split_view_divider_.get(); }
   EndReason end_reason() const { return end_reason_; }
-  bool in_snap_group_creation_session() const {
-    return in_snap_group_creation_session_;
-  }
   SplitViewMetricsController* split_view_metrics_controller() {
     return split_view_metrics_controller_.get();
   }
@@ -738,11 +735,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // The split view type. See SplitViewType for the differences between tablet
   // split view and clamshell split view.
   SplitViewType split_view_type_ = SplitViewType::kTabletType;
-
-  // True if we are currently in a snap group creation session which can either
-  // be active on one window snapped or when updating a window. Both use cases
-  // are behind the feature flag `kSnapGroup`.
-  bool in_snap_group_creation_session_ = false;
 
   // The time when splitview starts. Used for metric collection purpose.
   base::Time splitview_start_time_;

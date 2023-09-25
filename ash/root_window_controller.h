@@ -116,7 +116,7 @@ class ASH_EXPORT RootWindowController {
   SplitViewController* split_view_controller() {
     return split_view_controller_.get();
   }
-  const SplitViewOverviewSession* split_view_overview_session() const {
+  SplitViewOverviewSession* split_view_overview_session() {
     return split_view_overview_session_.get();
   }
 

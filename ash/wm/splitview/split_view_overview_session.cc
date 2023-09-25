@@ -45,13 +45,18 @@ bool InClamshellSplitViewMode(SplitViewController* controller) {
 
 }  // namespace
 
-SplitViewOverviewSession::SplitViewOverviewSession(aura::Window* window) {
-  CHECK(window && IsInOverviewSession());
+SplitViewOverviewSession::SplitViewOverviewSession(aura::Window* window)
+    : window_(window) {
+  CHECK(window);
   window_observation_.Observe(window);
-  // TODO(sophiewen): Update overview grid bounds.
+  auto* window_state = WindowState::Get(window);
+  CHECK(window_state && window_state->IsSnapped());
+  window_state->AddObserver(this);
 }
 
-SplitViewOverviewSession::~SplitViewOverviewSession() = default;
+SplitViewOverviewSession::~SplitViewOverviewSession() {
+  WindowState::Get(window_)->RemoveObserver(this);
+}
 
 void SplitViewOverviewSession::OnResizeLoopStarted(aura::Window* window) {
   auto* split_view_controller =
@@ -168,8 +173,20 @@ void SplitViewOverviewSession::OnWindowBoundsChanged(
 
 void SplitViewOverviewSession::OnWindowDestroying(aura::Window* window) {
   CHECK(window_observation_.IsObservingSource(window));
+  CHECK_EQ(window_, window);
   // Destroys `this`.
-  RootWindowController::ForWindow(window)->EndSplitViewOverviewSession();
+  RootWindowController::ForWindow(window_)->EndSplitViewOverviewSession();
+}
+
+void SplitViewOverviewSession::OnPreWindowStateTypeChange(
+    WindowState* window_state,
+    chromeos::WindowStateType old_type) {
+  CHECK_EQ(window_, window_state->window());
+  // Normally split view would have ended and destroy this, but the window can
+  // get unsnapped, e.g. during mid-drag or mid-resize, so bail out here.
+  if (!window_state->IsSnapped()) {
+    RootWindowController::ForWindow(window_)->EndSplitViewOverviewSession();
+  }
 }
 
 }  // namespace ash
