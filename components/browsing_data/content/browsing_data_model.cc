@@ -502,6 +502,44 @@ void OnDelegateDataLoaded(
   std::move(loaded_callback).Run();
 }
 
+// If `data_key` represents a non-1P partition, returns the site on which it
+// is partitioned, absl::nullopt otherwise.
+absl::optional<net::SchemefulSite> GetThirdPartyPartitioningSite(
+    const BrowsingDataModel::DataKey& data_key) {
+  absl::optional<net::SchemefulSite> top_level_site = absl::nullopt;
+  absl::visit(
+      base::Overloaded{
+          [&](const url::Origin&) {},
+          [&](const content::InterestGroupManager::InterestGroupDataKey) {},
+          [&](const content::AttributionDataModel::DataKey) {},
+          [&](const content::PrivateAggregationDataModel::DataKey) {},
+          [&](const blink::StorageKey& storage_key) {
+            if (storage_key.IsThirdPartyContext()) {
+              top_level_site = storage_key.top_level_site();
+            }
+          },
+          [&](const content::SessionStorageUsageInfo& info) {
+            if (info.storage_key.IsThirdPartyContext()) {
+              top_level_site = info.storage_key.top_level_site();
+            }
+          },
+          [&](const browsing_data::SharedWorkerInfo& info) {
+            if (info.storage_key.IsThirdPartyContext()) {
+              top_level_site = info.storage_key.top_level_site();
+            }
+          },
+          [&](const net::SharedDictionaryIsolationKey& key) {
+            if (net::SchemefulSite(key.frame_origin()) !=
+                key.top_frame_site()) {
+              top_level_site = key.top_frame_site();
+            }
+          },
+      },
+      data_key);
+
+  return top_level_site;
+}
+
 }  // namespace
 
 BrowsingDataModel::DataDetails::~DataDetails() = default;
@@ -537,6 +575,13 @@ bool BrowsingDataModel::BrowsingDataEntryView::Matches(
                                         return entry_origin == origin;
                                       }},
                      *data_owner);
+}
+
+absl::optional<net::SchemefulSite>
+BrowsingDataModel::BrowsingDataEntryView::GetThirdPartyPartitioningSite()
+    const {
+  // Partition information is only dependent on it's `data_key`.
+  return ::GetThirdPartyPartitioningSite(data_key.get());
 }
 
 BrowsingDataModel::Delegate::DelegateEntry::DelegateEntry(
@@ -721,17 +766,8 @@ void BrowsingDataModel::RemoveUnpartitionedBrowsingData(
   DataKeyEntries affected_data_key_entries;
 
   for (const auto& entry : browsing_data_entries_[data_owner]) {
-    // TODO(crbug/1455899): Consider other data keys that can be partitioned,
-    // probably making use of a visitor pattern.
-    auto* storage_key = absl::get_if<blink::StorageKey>(&entry.first);
-    if (!storage_key) {
+    if (!GetThirdPartyPartitioningSite(entry.first).has_value()) {
       affected_data_key_entries.insert(entry);
-      continue;
-    }
-
-    if (storage_key->IsFirstPartyContext()) {
-      affected_data_key_entries.insert(entry);
-      continue;
     }
   }
 
@@ -868,14 +904,7 @@ void BrowsingDataModel::
         const net::SchemefulSite& top_level_site,
         DataKeyEntries& affected_data_key_entries) {
   for (const auto& entry : browsing_data_entries_[data_owner]) {
-    // TODO(crbug/1455899): Consider other data keys that can be partitioned,
-    // probably making use of a visitor pattern.
-    auto* storage_key = absl::get_if<blink::StorageKey>(&entry.first);
-    if (!storage_key) {
-      continue;
-    }
-
-    if (storage_key->top_level_site() == top_level_site) {
+    if (GetThirdPartyPartitioningSite(entry.first) == top_level_site) {
       affected_data_key_entries.insert(entry);
     }
   }

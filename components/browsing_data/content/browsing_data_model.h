@@ -106,6 +106,10 @@ class BrowsingDataModel {
     // Returns true if |origin| is within this browsing data's  owning entity.
     bool Matches(const url::Origin& origin) const;
 
+    // Returns the non-1P SchemefulSite this data is partitioned on. Returns
+    // base::nullopt if the data is not partitioned, or is the 1P partition.
+    absl::optional<net::SchemefulSite> GetThirdPartyPartitioningSite() const;
+
     // The logical owner of this browsing data. This is the entity which this
     // information will be most strongly associated with in UX surfaces.
     const raw_ref<const DataOwner, DanglingUntriaged> data_owner;

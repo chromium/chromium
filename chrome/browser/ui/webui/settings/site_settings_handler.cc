@@ -2324,14 +2324,14 @@ void SiteSettingsHandler::GetOriginStorage(
                          [](const url::Origin& origin) { return origin; }},
         *entry.data_owner);
 
-    // If the storage is backed by a StorageKey we need to ensure the grouping
-    // key matches the top-site and doesn't default to the origin in the UI.
+    // If the storage is partitioned on a third party we need to ensure the
+    // grouping key matches the top-site and doesn't default to the origin
+    // in the UI.
     absl::optional<GroupingKey> partition_grouping_key = absl::nullopt;
-    const blink::StorageKey* storage_key =
-        absl::get_if<blink::StorageKey>(&entry.data_key.get());
-    if (storage_key != nullptr && storage_key->IsThirdPartyContext()) {
-      partition_grouping_key = GroupingKey::Create(
-          url::Origin::Create(GURL(storage_key->top_level_site().Serialize())));
+    auto third_party_partitioning_site = entry.GetThirdPartyPartitioningSite();
+    if (third_party_partitioning_site) {
+      partition_grouping_key = GroupingKey::Create(url::Origin::Create(
+          GURL(third_party_partitioning_site->Serialize())));
     }
     UpdateDataFromModel(all_sites_map, origin_size_map, origin,
                         entry.data_details->storage_size,

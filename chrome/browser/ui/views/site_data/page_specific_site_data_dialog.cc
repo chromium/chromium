@@ -395,13 +395,7 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
 
   bool IsBrowsingDataEntryViewFullyPartitioned(
       const BrowsingDataModel::BrowsingDataEntryView& entry) {
-    // We consider the browsing data entry view to be fully partitioned if the
-    // storage is backed by a StorageKey and the StorageKey is third-party.
-    // Unlike for cookies, we can be sure that given context is partitioned if
-    // its storage keys are as that determines the scope of access.
-    const blink::StorageKey* storage_key =
-        absl::get_if<blink::StorageKey>(&entry.data_key.get());
-    return storage_key != nullptr && storage_key->IsThirdPartyContext();
+    return entry.GetThirdPartyPartitioningSite().has_value();
   }
 
   bool IsCookieTreeNodeFullyPartitioned(CookieTreeNode* node) {
