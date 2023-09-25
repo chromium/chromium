@@ -37,7 +37,11 @@ std::vector<RasterTestConfig> const kTestCases = {
 #endif  // BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
 #if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
     {viz::RendererType::kSkiaVk, TestRasterType::kGpu},
+#if !BUILDFLAG(IS_FUCHSIA)
+    // TODO(crbug.com/1485883): Fix NativePixmap creation when running GPU
+    // service in process and re-enable these tests.
     {viz::RendererType::kSkiaVk, TestRasterType::kZeroCopy},
+#endif
 #endif  // BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
 };
 
@@ -875,9 +879,13 @@ MaskTestConfig const kTestConfigs[] = {
                    kUseAntialiasing | kForceShaders},
 #endif  // BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
 #if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
+#if !BUILDFLAG(IS_FUCHSIA)
+    // TODO(crbug.com/1485883): Fix NativePixmap creation when running GPU
+    // service in process and re-enable these tests.
     MaskTestConfig{{viz::RendererType::kSkiaVk, TestRasterType::kZeroCopy}, 0},
     MaskTestConfig{{viz::RendererType::kSkiaVk, TestRasterType::kZeroCopy},
                    kUseAntialiasing},
+#endif
 #endif  // BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
 };
 
