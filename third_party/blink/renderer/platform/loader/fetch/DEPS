@@ -14,5 +14,8 @@ include_rules = [
 specific_include_rules = {
   "resource_request.cc": [
     "+net/base/request_priority.h",
+  ],
+  "fetch_utils.h": [
+    "+net/traffic_annotation/network_traffic_annotation.h",
   ]
 }

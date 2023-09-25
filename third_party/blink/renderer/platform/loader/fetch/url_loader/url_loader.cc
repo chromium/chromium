@@ -78,6 +78,7 @@
 #include "third_party/blink/public/web/web_security_policy.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/loader/fetch/back_forward_cache_loader_helper.h"
+#include "third_party/blink/renderer/platform/loader/fetch/fetch_utils.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/resource_request_client.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/resource_request_sender.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/sync_load_response.h"
@@ -153,9 +154,6 @@ class URLLoader::Context : public ResourceRequestClient {
 
  private:
   ~Context() override;
-
-  static net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag(
-      network::ResourceRequest* request);
 
   URLLoader* loader_;
 
@@ -317,7 +315,7 @@ void URLLoader::Context::Start(
           download_to_blob_registry.InitWithNewPipeAndPassReceiver());
     }
     net::NetworkTrafficAnnotationTag tag =
-        GetTrafficAnnotationTag(request.get());
+        FetchUtils::GetTrafficAnnotationTag(*request);
     resource_request_sender_->SendSync(
         std::move(request), tag, loader_options, sync_load_response,
         url_loader_factory_, std::move(throttles), timeout_interval,
@@ -329,7 +327,8 @@ void URLLoader::Context::Start(
 
   TRACE_EVENT_WITH_FLOW0("loading", "URLLoader::Context::Start", this,
                          TRACE_EVENT_FLAG_FLOW_OUT);
-  net::NetworkTrafficAnnotationTag tag = GetTrafficAnnotationTag(request.get());
+  net::NetworkTrafficAnnotationTag tag =
+      FetchUtils::GetTrafficAnnotationTag(*request);
   request_id_ = resource_request_sender_->SendAsync(
       std::move(request), GetMaybeUnfreezableTaskRunner(), tag, loader_options,
       cors_exempt_header_list_, base::WrapRefCounted(this), url_loader_factory_,
@@ -616,114 +615,6 @@ void URLLoader::SetResourceRequestSenderForTesting(
     std::unique_ptr<ResourceRequestSender> resource_request_sender) {
   context_->SetResourceRequestSenderForTesting(  // IN-TEST
       std::move(resource_request_sender));
-}
-
-// static
-// We have this function at the bottom of this file because it confuses
-// syntax highliting.
-// TODO(kinuko): Deprecate this, we basically need to know the destination
-// and if it's for favicon or not.
-net::NetworkTrafficAnnotationTag URLLoader::Context::GetTrafficAnnotationTag(
-    network::ResourceRequest* request) {
-  if (request->is_favicon) {
-    return net::DefineNetworkTrafficAnnotation("favicon_loader", R"(
-      semantics {
-        sender: "Blink Resource Loader"
-        description:
-          "Chrome sends a request to download favicon for a URL."
-        trigger:
-          "Navigating to a URL."
-        data: "None."
-        destination: WEBSITE
-      }
-      policy {
-        cookies_allowed: YES
-        cookies_store: "user"
-        setting: "These requests cannot be disabled in settings."
-        policy_exception_justification:
-          "Not implemented."
-      })");
-  }
-  switch (request->destination) {
-    case network::mojom::RequestDestination::kDocument:
-    case network::mojom::RequestDestination::kIframe:
-    case network::mojom::RequestDestination::kFrame:
-    case network::mojom::RequestDestination::kFencedframe:
-    case network::mojom::RequestDestination::kWebIdentity:
-      NOTREACHED();
-      [[fallthrough]];
-
-    case network::mojom::RequestDestination::kEmpty:
-    case network::mojom::RequestDestination::kAudio:
-    case network::mojom::RequestDestination::kAudioWorklet:
-    case network::mojom::RequestDestination::kFont:
-    case network::mojom::RequestDestination::kImage:
-    case network::mojom::RequestDestination::kManifest:
-    case network::mojom::RequestDestination::kPaintWorklet:
-    case network::mojom::RequestDestination::kReport:
-    case network::mojom::RequestDestination::kScript:
-    case network::mojom::RequestDestination::kServiceWorker:
-    case network::mojom::RequestDestination::kSharedWorker:
-    case network::mojom::RequestDestination::kStyle:
-    case network::mojom::RequestDestination::kTrack:
-    case network::mojom::RequestDestination::kVideo:
-    case network::mojom::RequestDestination::kWebBundle:
-    case network::mojom::RequestDestination::kWorker:
-    case network::mojom::RequestDestination::kXslt:
-    case network::mojom::RequestDestination::kDictionary:
-      return net::DefineNetworkTrafficAnnotation("blink_resource_loader", R"(
-      semantics {
-        sender: "Blink Resource Loader"
-        description:
-          "Blink-initiated request, which includes all resources for "
-          "normal page loads, chrome URLs, and downloads."
-        trigger:
-          "The user navigates to a URL or downloads a file. Also when a "
-          "webpage, ServiceWorker, or chrome:// uses any network communication."
-        data: "Anything the initiator wants to send."
-        destination: OTHER
-      }
-      policy {
-        cookies_allowed: YES
-        cookies_store: "user"
-        setting: "These requests cannot be disabled in settings."
-        policy_exception_justification:
-          "Not implemented. Without these requests, Chrome will be unable "
-          "to load any webpage."
-      })");
-
-    case network::mojom::RequestDestination::kEmbed:
-    case network::mojom::RequestDestination::kObject:
-      return net::DefineNetworkTrafficAnnotation(
-          "blink_extension_resource_loader", R"(
-        semantics {
-          sender: "Blink Resource Loader"
-          description:
-            "Blink-initiated request for resources required for NaCl instances "
-            "tagged with <embed> or <object>, or installed extensions."
-          trigger:
-            "An extension or NaCl instance may initiate a request at any time, "
-            "even in the background."
-          data: "Anything the initiator wants to send."
-          destination: OTHER
-        }
-        policy {
-          cookies_allowed: YES
-          cookies_store: "user"
-          setting:
-            "These requests cannot be disabled in settings, but they are "
-            "sent only if user installs extensions."
-          chrome_policy {
-            ExtensionInstallBlocklist {
-              ExtensionInstallBlocklist: {
-                entries: '*'
-              }
-            }
-          }
-        })");
-  }
-
-  return net::NetworkTrafficAnnotationTag::NotReached();
 }
 
 void URLLoader::Context::SetResourceRequestSenderForTesting(
