@@ -396,9 +396,10 @@ TEST(NativeUnwinderAndroidTest, JavaFunction) {
 
   NativeUnwinderAndroidMapDelegateForTesting map_delegate(
       CreateMemoryRegionsMap());
-  auto unwinder = std::make_unique<NativeUnwinderAndroid>(0, &map_delegate);
 
   ModuleCache module_cache;
+  auto unwinder = std::make_unique<NativeUnwinderAndroid>(0, &map_delegate);
+
   unwinder->Initialize(&module_cache);
   std::vector<Frame> sample =
       CaptureScenario(&scenario, &module_cache,
