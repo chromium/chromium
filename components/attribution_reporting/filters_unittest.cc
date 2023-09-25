@@ -880,5 +880,20 @@ TEST(FilterDataTest, AttributionFilterDataMatch_LookbackWindow) {
   }
 }
 
+// TODO(https://crbug.com/1486496): remove this test once CHECK is used in the
+// implementation.
+TEST(FilterDataTest,
+     AttributionFilterDataMatch_SourceTimeGreaterThanTriggerTime) {
+  const auto one_filter = FilterValues({{"filter1", {"value1"}}});
+  const auto filter_data = *FilterData::Create(one_filter);
+  const auto filters = FiltersDisjunction({*FilterConfig::Create(
+      {one_filter}, /*lookback_window=*/kTriggerTime - kSourceTime)});
+  EXPECT_TRUE(FilterData(filter_data)
+                  .MatchesForTesting(
+                      SourceType::kEvent, kSourceTime,
+                      /*trigger_time=*/kSourceTime - base::Microseconds(1),
+                      filters, /*negated=*/false));
+}
+
 }  // namespace
 }  // namespace attribution_reporting
