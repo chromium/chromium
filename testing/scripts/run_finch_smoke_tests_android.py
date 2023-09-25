@@ -606,8 +606,7 @@ class FinchTestCase(common.BaseIsolatedScriptArgsAdapter):
     # of the scoped storage feature.
     tests_root_dir = posixpath.join(self._device.GetExternalStoragePath(),
                                     'chromium_tests_root')
-    local_device_environment.place_nomedia_on_device(self._device,
-                                                     tests_root_dir)
+    self._device.PlaceNomediaFile(tests_root_dir)
 
     # Store screenshot tests on the device's external storage.
     for test_file in self.pixel_tests:
