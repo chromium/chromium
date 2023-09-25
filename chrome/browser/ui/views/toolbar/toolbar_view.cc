@@ -932,6 +932,10 @@ void ToolbarView::InitLayout() {
             kToolbarForwardButtonElementId, kToolbarAvatarButtonElementId,
             kToolbarHomeButtonElementId, kToolbarChromeLabsButtonElementId},
         kToolbarFlexOrderStart, container_view_, overflow_button_);
+
+    overflow_button_->set_create_menu_model_callback(
+        base::BindRepeating(&ToolbarController::CreateOverflowMenuModel,
+                            base::Unretained(toolbar_controller_.get())));
   }
 
   LayoutCommon();

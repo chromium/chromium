@@ -6,9 +6,39 @@
 
 #include "chrome/browser/ui/views/toolbar/overflow_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
+#include "ui/base/models/simple_menu_model.h"
+#include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/view_class_properties.h"
+
+namespace {
+
+std::u16string GenerateMenuText(const views::View* element) {
+  // TODO(crbug.com/1481273): Menu items might deserve their own text
+  // instead of using accessible name.
+  std::u16string accessible_name = element->GetAccessibleName();
+  if (!accessible_name.empty()) {
+    return accessible_name;
+  }
+
+  ui::ElementIdentifier id = element->GetProperty(views::kElementIdentifierKey);
+  CHECK(id);
+
+  // Containers have no accessible names. Hard code their texts here.
+  // TODO(crbug.com/1481273): Explore a more maintainable way to map container
+  // id to text.
+  if (id == kToolbarExtensionsContainerElementId) {
+    return u"Extensions";
+  } else if (id == kToolbarSidePanelContainerElementId) {
+    return u"Side panel";
+  }
+
+  // Buttons with an empty accessible name should raise an error.
+  NOTREACHED_NORETURN();
+}
+
+}  // namespace
 
 ToolbarController::ToolbarController(
     std::vector<ui::ElementIdentifier> element_ids,
@@ -41,18 +71,7 @@ ToolbarController::ToolbarController(
 bool ToolbarController::ShouldShowOverflowButton() {
   // Once at least one button has been dropped by layout manager show overflow
   // button.
-  const views::FlexLayout* flex_layout = static_cast<views::FlexLayout*>(
-      toolbar_container_view_->GetLayoutManager());
-  bool show_button = false;
-  for (ui::ElementIdentifier id : element_ids_) {
-    const views::View* toolbar_element = FindToolbarElementWithId(id);
-    if (flex_layout->CanBeVisible(toolbar_element) &&
-        !toolbar_element->GetVisible()) {
-      show_button = true;
-      break;
-    }
-  }
-  return show_button;
+  return GetOverflowedElements().size() > 0;
 }
 
 const views::View* ToolbarController::FindToolbarElementWithId(
@@ -66,5 +85,32 @@ const views::View* ToolbarController::FindToolbarElementWithId(
   }
   return nullptr;
 }
+
+std::vector<const views::View*> ToolbarController::GetOverflowedElements() {
+  std::vector<const views::View*> overflowed_buttons;
+  const views::FlexLayout* flex_layout = static_cast<views::FlexLayout*>(
+      toolbar_container_view_->GetLayoutManager());
+  for (ui::ElementIdentifier id : element_ids_) {
+    const views::View* toolbar_element = FindToolbarElementWithId(id);
+    if (flex_layout->CanBeVisible(toolbar_element) &&
+        !toolbar_element->GetVisible()) {
+      overflowed_buttons.push_back(toolbar_element);
+    }
+  }
+  return overflowed_buttons;
+}
+
+std::unique_ptr<ui::SimpleMenuModel>
+ToolbarController::CreateOverflowMenuModel() {
+  CHECK(overflow_button_->GetVisible());
+  auto menu_model = std::make_unique<ui::SimpleMenuModel>(this);
+  int menu_id_start = 0;
+  for (auto* toolbar_element : GetOverflowedElements()) {
+    menu_model->AddItem(menu_id_start++, GenerateMenuText(toolbar_element));
+  }
+  return menu_model;
+}
+
+void ToolbarController::ExecuteCommand(int command_id, int event_flags) {}
 
 ToolbarController::~ToolbarController() = default;

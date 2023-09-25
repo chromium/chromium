@@ -14,7 +14,7 @@
 #include "ui/views/view.h"
 
 // Manages toolbar elements' visibility using flex rules.
-class ToolbarController {
+class ToolbarController : public ui::SimpleMenuModel::Delegate {
  public:
   ToolbarController(std::vector<ui::ElementIdentifier> element_ids,
                     int element_flex_order_start,
@@ -22,7 +22,7 @@ class ToolbarController {
                     views::View* overflow_button);
   ToolbarController(const ToolbarController&) = delete;
   ToolbarController& operator=(const ToolbarController&) = delete;
-  ~ToolbarController();
+  ~ToolbarController() override;
 
   // Returns true if layout manager of `toolbar_container_view_` hides any
   // toolbar elements.
@@ -32,8 +32,12 @@ class ToolbarController {
     overflow_button_->SetVisible(should_show);
   }
 
+  // Create the overflow menu model for hidden buttons.
+  std::unique_ptr<ui::SimpleMenuModel> CreateOverflowMenuModel();
+
  private:
-  friend class ToolbarControllerTest;
+  friend class ToolbarControllerInteractiveTest;
+  friend class ToolbarControllerUnitTest;
 
   // Searches for a toolbar element from `toolbar_container_view_` with `id`.
   views::View* FindToolbarElementWithId(ui::ElementIdentifier id) {
@@ -41,6 +45,12 @@ class ToolbarController {
         std::as_const(*this).FindToolbarElementWithId(id));
   }
   const views::View* FindToolbarElementWithId(ui::ElementIdentifier id) const;
+
+  // Returns currently hidden elements.
+  std::vector<const views::View*> GetOverflowedElements();
+
+  // ui::SimpleMenuModel::Delegate:
+  void ExecuteCommand(int command_id, int event_flags) override;
 
   // The toolbar elements managed by this controller.
   // Order matters as each will be assigned with a flex order that increments by

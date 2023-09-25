@@ -7,72 +7,158 @@
 #include <gtest/gtest.h>
 
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/test/views/chrome_views_test_base.h"
+#include "ui/base/models/simple_menu_model.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_utils.h"
 
-TEST(ToolbarControllerUnitTest, OverflowButtonVisibility) {
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDummyButton1);
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDummyButton2);
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDummyButton3);
+namespace {
+// Toolbar button size is ~34dp.
+constexpr gfx::Size kButtonSize(34, 34);
 
-  std::unique_ptr<views::LayoutProvider> layout_provider =
-      ChromeLayoutProvider::CreateLayoutProvider();
+constexpr int kElementFlexOrderStart = 1;
+}  // namespace
 
-  views::View toolbar_container_view;
-  toolbar_container_view
-      .SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kHorizontal)
-      .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
-      .SetDefault(views::kFlexBehaviorKey,
-                  views::FlexSpecification(
-                      views::LayoutOrientation::kHorizontal,
-                      views::MinimumFlexSizeRule::kPreferredSnapToZero,
-                      views::MaximumFlexSizeRule::kPreferred));
+class ToolbarControllerUnitTest : public ChromeViewsTestBase {
+ public:
+  ToolbarControllerUnitTest() = default;
+  ToolbarControllerUnitTest(const ToolbarControllerUnitTest&) = delete;
+  ToolbarControllerUnitTest& operator=(const ToolbarControllerUnitTest&) =
+      delete;
+  ~ToolbarControllerUnitTest() override = default;
 
-  gfx::Size button_preferred_size(10, 10);
+  void SetUp() override {
+    ChromeViewsTestBase::SetUp();
+    widget_ = CreateTestWidget();
+    widget_->Show();
 
-  views::View button1;
-  button1.SetProperty(views::kElementIdentifierKey, kDummyButton1);
-  toolbar_container_view.AddChildView(&button1);
-  button1.SetPreferredSize(button_preferred_size);
+    std::unique_ptr<views::View> toolbar_container_view =
+        std::make_unique<views::View>();
+    toolbar_container_view
+        ->SetLayoutManager(std::make_unique<views::FlexLayout>())
+        ->SetOrientation(views::LayoutOrientation::kHorizontal)
+        .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
+        .SetDefault(views::kFlexBehaviorKey,
+                    views::FlexSpecification(
+                        views::LayoutOrientation::kHorizontal,
+                        views::MinimumFlexSizeRule::kPreferredSnapToZero,
+                        views::MaximumFlexSizeRule::kPreferred));
+    toolbar_container_view_ =
+        widget_->SetContentsView(std::move(toolbar_container_view));
 
-  views::View button2;
-  button2.SetProperty(views::kElementIdentifierKey, kDummyButton2);
-  toolbar_container_view.AddChildView(&button2);
-  button2.SetPreferredSize(button_preferred_size);
+    DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDummyButton1);
+    DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDummyButton2);
+    DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kDummyButton3);
+    std::vector<ui::ElementIdentifier> element_ids = {
+        kDummyButton1, kDummyButton2, kDummyButton3};
+    InitToolbarContainerViewWithTestButtons(element_ids);
 
-  views::View button3;
-  button3.SetProperty(views::kElementIdentifierKey, kDummyButton3);
-  toolbar_container_view.AddChildView(&button3);
-  button3.SetPreferredSize(button_preferred_size);
+    auto overflow_button = std::make_unique<OverflowButton>();
+    overflow_button_ =
+        toolbar_container_view_->AddChildView(std::move(overflow_button));
+    overflow_button_->SetVisible(false);
+    toolbar_controller_ = std::make_unique<ToolbarController>(
+        element_ids, kElementFlexOrderStart, toolbar_container_view_,
+        overflow_button_);
+    overflow_button_->set_create_menu_model_callback(
+        base::BindRepeating(&ToolbarController::CreateOverflowMenuModel,
+                            base::Unretained(toolbar_controller_.get())));
 
-  OverflowButton overflow_button;
-  toolbar_container_view.AddChildView(&overflow_button);
+    event_generator_ = std::make_unique<ui::test::EventGenerator>(
+        views::GetRootWindow(widget_.get()));
+  }
 
-  std::vector<ui::ElementIdentifier> element_ids = {
-      kDummyButton1, kDummyButton2, kDummyButton3};
-  int element_flex_order_start = 1;
-  ToolbarController controller(element_ids, element_flex_order_start,
-                               &toolbar_container_view, &overflow_button);
+  // Add test buttons with `ids` to `toolbar_container_view_`.
+  void InitToolbarContainerViewWithTestButtons(
+      std::vector<ui::ElementIdentifier> ids) {
+    for (size_t i = 0; i < ids.size(); ++i) {
+      auto button = std::make_unique<views::View>();
+      button->SetProperty(views::kElementIdentifierKey, ids[i]);
+      button->SetPreferredSize(kButtonSize);
+      button->SetAccessibleName(
+          base::StrCat({u"DummyButton", base::NumberToString16(i)}));
+      button->SetVisible(true);
+      test_buttons_.emplace_back(
+          toolbar_container_view_->AddChildView(std::move(button)));
+    }
+  }
 
-  // Enough space to accommodate 3 buttons; overflow button does not show.
-  toolbar_container_view.SetSize(gfx::Size(30, 10));
-  EXPECT_TRUE(button1.GetVisible());
-  EXPECT_TRUE(button2.GetVisible());
-  EXPECT_TRUE(button3.GetVisible());
-  controller.SetOverflowButtonVisible(controller.ShouldShowOverflowButton());
-  EXPECT_FALSE(overflow_button.GetVisible());
+  void TearDown() override {
+    overflow_button_ = nullptr;
+    toolbar_container_view_ = nullptr;
+    event_generator_.reset();
+    toolbar_controller_.reset();
+    widget_.reset();
+    ChromeViewsTestBase::TearDown();
+  }
 
-  // One button overflows.
-  toolbar_container_view.SetSize(gfx::Size(25, 10));
-  EXPECT_TRUE(button1.GetVisible());
-  EXPECT_TRUE(button2.GetVisible());
-  EXPECT_FALSE(button3.GetVisible());
+  views::Widget* widget() { return widget_.get(); }
+  ToolbarController* toolbar_controller() { return toolbar_controller_.get(); }
+  ui::test::EventGenerator* event_generator() { return event_generator_.get(); }
+  const views::View* overflow_button() { return overflow_button_; }
+  const std::vector<views::View*>& test_buttons() { return test_buttons_; }
+  const ui::SimpleMenuModel* overflow_menu() {
+    return overflow_button_->menu_model_for_testing();
+  }
+  std::vector<const views::View*> GetOverflowedElements() {
+    return toolbar_controller()->GetOverflowedElements();
+  }
 
-  // Overflow button appears.
-  controller.SetOverflowButtonVisible(controller.ShouldShowOverflowButton());
-  EXPECT_TRUE(overflow_button.GetVisible());
+ private:
+  std::unique_ptr<views::Widget> widget_;
+  std::unique_ptr<ToolbarController> toolbar_controller_;
+  std::unique_ptr<ui::test::EventGenerator> event_generator_;
+  raw_ptr<views::View> toolbar_container_view_;
+  raw_ptr<OverflowButton> overflow_button_;
+
+  // Buttons being tested.
+  std::vector<views::View*> test_buttons_;
+};
+
+TEST_F(ToolbarControllerUnitTest, OverflowButtonVisibility) {
+  // Initialize widget width with total width of all test buttons.
+  // Should not see overflowed buttons.
+  widget()->SetSize(gfx::Size(kButtonSize.width() * test_buttons().size(),
+                              kButtonSize.height()));
+  EXPECT_EQ(GetOverflowedElements().size(), size_t(0));
+  toolbar_controller()->SetOverflowButtonVisible(
+      toolbar_controller()->ShouldShowOverflowButton());
+  EXPECT_FALSE(overflow_button()->GetVisible());
+
+  // Shrink widget width with one button width smaller.
+  widget()->SetSize(gfx::Size(kButtonSize.width() * (test_buttons().size() - 1),
+                              kButtonSize.height()));
+  EXPECT_EQ(GetOverflowedElements().size(), size_t(1));
+  toolbar_controller()->SetOverflowButtonVisible(
+      toolbar_controller()->ShouldShowOverflowButton());
+  EXPECT_TRUE(overflow_button()->GetVisible());
+}
+
+TEST_F(ToolbarControllerUnitTest, OverflowedButtonsMatchMenu) {
+  widget()->SetSize(gfx::Size(kButtonSize.width() * (test_buttons().size() - 1),
+                              kButtonSize.height()));
+  toolbar_controller()->SetOverflowButtonVisible(
+      toolbar_controller()->ShouldShowOverflowButton());
+  EXPECT_TRUE(overflow_button()->GetVisible());
+
+  widget()->LayoutRootViewIfNecessary();
+  event_generator()->MoveMouseTo(
+      overflow_button()->GetBoundsInScreen().CenterPoint());
+  event_generator()->PressLeftButton();
+
+  const ui::SimpleMenuModel* menu = overflow_menu();
+  std::vector<const views::View*> overflowed_buttons = GetOverflowedElements();
+
+  // Overflowed buttons should match overflow menu.
+  EXPECT_TRUE(menu);
+  EXPECT_EQ(overflowed_buttons.size(), menu->GetItemCount());
+  for (size_t i = 0; i < overflowed_buttons.size(); ++i) {
+    EXPECT_EQ(overflowed_buttons[i]->GetAccessibleName(), menu->GetLabelAt(i));
+  }
 }
