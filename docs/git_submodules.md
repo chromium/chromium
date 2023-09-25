@@ -149,6 +149,60 @@ dependencies](dependencies.md).
 NOTE: setdep for chromium/src is always prefixed with src/. For example, if you
 are updating v8, the command would be `gclient setdep -r src/v8@<hash>.
 
+## Workflows with submodules
+
+### Submodules during `git status` and `git commit`
+Submodules that show up under `Changes not staged for commit` when you run
+`git status` can be hidden with `git -c diff.ignoreSubmodules=all status`
+
+You can also `git commit -a` your changes while excluding all submodules with
+`git -c diff.ignoreSubmodules=all commit -a`.
+
+To make these commands shorter, you can create git aliases for them by adding
+the following to your src/.git/commit file:
+```
+[alias]
+        # 's', 'c', or whatever alias you want for each command
+        s = -c diff.ignoreSubmodules=all status
+        c = -c diff.ignoreSubmodules=all commit -a
+        d = -c diff.ignoreSubmodules=all difftool --dir-diff
+```
+With the above, you can execute these commands by running `git s` and `git c`
+
+NOTE: `diff.ignoreSubmodules` is not supported with `git add`. If you are hiding
+subodules from your view with something like `git s`, running
+`git add .|--all|-A` will still stage any submodules you do not see for commit.
+Then running `git c` will still include these submodules in your commit.
+
+We recommend you use the pre-commit git hook detailed below.
+
+### Submodules during a `git rebase-update`
+While resolving merge conflicts during a `git rebase-update` you may see
+submodules show up in unexpected places.
+
+#### Submodules under "Changes not staged for commit"
+Submodules under this section can be safely ignored. This simply shows that the
+local commits of these submodules do not match the latest pinned commits fetched
+from remote. In other words, these submodules have been rolled since your last
+`git rebase-update`.
+
+If you use a diff tool like meld you can run:
+`git -c diff.ignoreSubmodules=all difftool --dir-diff`
+to prevent these submodules from showing up in your diff tool.
+
+#### Submodules under "Unmerged paths"
+If Submodules show up under this section it means that new revisions were
+committed for those submodules (either intentional or unintentionally) and these
+submodules were also rolled at remote. So now there is a conflict.
+
+If you DID NOT intentionally make any submdoules changes, you should run:
+`gclient gitmodules`. This will update the submdoules for you, to match whatever
+commits are listed in DEPS (which you have just pulled from remote).
+
+If you DID intentionally roll submodules, you can resolve this conflict just by
+resetting it:
+`gclient setdep -r {path}@{hash}`
+
 ## BETA: Install a hook to help detect unintentional submodule commits
 
 depot_tools provides an opt-in pre-commit hook to detect unintentional submodule
