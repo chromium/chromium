@@ -47,7 +47,15 @@ enum SyncProtocolErrorType {
   ENCRYPTION_OBSOLETE,
 
   // The default value.
-  UNKNOWN_ERROR
+  UNKNOWN_ERROR,
+
+  // Below are commit specific values (corresponds to
+  // CommitResponse::ResponseType).
+  // At least one of the entities had conflict.
+  CONFLICT,
+
+  // Server reports that the request was malformed.
+  INVALID_MESSAGE
 };
 
 enum ClientAction {

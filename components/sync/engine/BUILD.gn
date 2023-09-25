@@ -156,6 +156,8 @@ static_library("engine") {
     "sync_string_conversions.h",
     "syncer.cc",
     "syncer.h",
+    "syncer_error.cc",
+    "syncer_error.h",
     "syncer_proto_util.cc",
     "syncer_proto_util.h",
     "traffic_logger.cc",

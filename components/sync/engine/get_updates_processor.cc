@@ -22,6 +22,7 @@
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
+#include "net/http/http_status_code.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
 
 namespace syncer {
@@ -248,7 +249,7 @@ SyncerError GetUpdatesProcessor::ExecuteDownloadUpdates(
     request_types->RemoveAll(partial_failure_data_types);
   }
 
-  if (result.value() != SyncerError::SYNCER_OK) {
+  if (result.type() != SyncerError::Type::kSuccess) {
     GetUpdatesResponseEvent response_event(base::Time::Now(), update_response,
                                            result);
     cycle->SendProtocolEvent(response_event);
@@ -257,10 +258,11 @@ SyncerError GetUpdatesProcessor::ExecuteDownloadUpdates(
     // appear every 60 minutes, and then sync services will refresh the
     // authorization. Therefore SYNC_AUTH_ERROR is excluded here to reduce the
     // ERROR messages in the log.
-    if (result.value() != SyncerError::SYNC_AUTH_ERROR) {
+    if (result.type() != SyncerError::Type::kHttpError ||
+        result.GetHttpErrorOrDie() != net::HTTP_UNAUTHORIZED) {
       LOG(ERROR) << "PostClientToServerMessage() failed during GetUpdates "
                     "with error "
-                 << result.value();
+                 << result.ToString();
     }
 
     return result;
@@ -303,7 +305,7 @@ SyncerError GetUpdatesProcessor::ProcessResponse(
   // The changes remaining field is used to prevent the client from looping.  If
   // that field is being set incorrectly, we're in big trouble.
   if (!gu_response.has_changes_remaining()) {
-    return SyncerError(SyncerError::SERVER_RESPONSE_VALIDATION_FAILED);
+    return SyncerError::ProtocolViolationError();
   }
 
   TypeSyncEntityMap updates_by_type;
@@ -315,7 +317,7 @@ SyncerError GetUpdatesProcessor::ProcessResponse(
                                  &progress_index_by_type);
   if (gu_types.Size() != progress_index_by_type.size()) {
     NOTREACHED() << "Missing progress markers in GetUpdates response.";
-    return SyncerError(SyncerError::SERVER_RESPONSE_VALIDATION_FAILED);
+    return SyncerError::ProtocolViolationError();
   }
 
   TypeToIndexMap context_by_type;
@@ -351,7 +353,7 @@ SyncerError GetUpdatesProcessor::ProcessResponse(
          updates_iter == updates_by_type.end());
 
   has_more_updates_to_download_ = gu_response.changes_remaining() != 0;
-  return SyncerError(SyncerError::SYNCER_OK);
+  return SyncerError::Success();
 }
 
 void GetUpdatesProcessor::ApplyUpdates(const ModelTypeSet& gu_types,

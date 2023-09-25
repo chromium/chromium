@@ -11,12 +11,12 @@
 #include "base/logging.h"
 #include "base/uuid.h"
 #include "components/sync/base/data_type_histogram.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/time.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
+#include "components/sync/engine/sync_protocol_error.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync/protocol/sync.pb.h"
@@ -133,7 +133,7 @@ SyncerError CommitContributionImpl::ProcessCommitResponse(
     StatusController* status) {
   CommitResponseDataList success_response_list;
   FailedCommitResponseDataList error_response_list;
-  bool has_unknown_error = false;
+  bool has_invalid_messages = false;
   bool has_conflicting_commits = false;
   bool has_transient_error_commits = false;
 
@@ -160,7 +160,7 @@ SyncerError CommitContributionImpl::ProcessCommitResponse(
         break;
       case sync_pb::CommitResponse::INVALID_MESSAGE:
         DLOG(ERROR) << "Server reports commit message is invalid.";
-        has_unknown_error = true;
+        has_invalid_messages = true;
         break;
       case sync_pb::CommitResponse::CONFLICT:
         DVLOG(1) << "Server reports conflict for commit message.";
@@ -187,16 +187,16 @@ SyncerError CommitContributionImpl::ProcessCommitResponse(
   on_full_commit_failure_callback_.Reset();
 
   // Let the scheduler know about the failures.
-  if (has_unknown_error) {
-    return SyncerError(SyncerError::SERVER_RETURN_UNKNOWN_ERROR);
+  if (has_invalid_messages) {
+    return SyncerError::ProtocolError(SyncProtocolErrorType::INVALID_MESSAGE);
   }
   if (has_transient_error_commits) {
-    return SyncerError(SyncerError::SERVER_RETURN_TRANSIENT_ERROR);
+    return SyncerError::ProtocolError(SyncProtocolErrorType::TRANSIENT_ERROR);
   }
   if (has_conflicting_commits) {
-    return SyncerError(SyncerError::SERVER_RETURN_CONFLICT);
+    return SyncerError::ProtocolError(SyncProtocolErrorType::CONFLICT);
   }
-  return SyncerError(SyncerError::SYNCER_OK);
+  return SyncerError::Success();
 }
 
 void CommitContributionImpl::ProcessCommitFailure(

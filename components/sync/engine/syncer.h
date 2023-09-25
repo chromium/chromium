@@ -10,7 +10,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/base/syncer_error.h"
+#include "components/sync/engine/syncer_error.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 
 namespace syncer {
@@ -19,6 +19,44 @@ class CancelationSignal;
 class GetUpdatesDelegate;
 class NudgeTracker;
 class SyncCycle;
+
+// This enum should be in sync with SyncerErrorValues in enums.xml. These
+// values are persisted to logs. Entries should not be renumbered and numeric
+// values should never be reused. Exposed for tests.
+// TODO(crbug.com/1363089): this enum no longer corresponds to SyncerError,
+// modernize it.
+enum class SyncerErrorValueForUma {
+  // Deprecated: kUnset = 0,  // Default value.
+  // Deprecated: CANNOT_DO_WORK = 1,
+
+  kNetworkConnectionUnavailable = 2,  // Connectivity failure.
+  // Deprecated: NETWORK_IO_ERROR = 3,
+  kSyncServerError = 4,  // Non auth HTTP error.
+  kSyncAuthError = 5,    // HTTP auth error.
+
+  // Based on values returned by server.  Most are defined in sync.proto.
+  // Deprecated: SERVER_RETURN_INVALID_CREDENTIAL = 6,
+  kServerReturnUnknownError = 7,
+  kServerReturnThrottled = 8,
+  kServerReturnTransientError = 9,
+  kServerReturnMigrationDone = 10,
+  kServerReturnClearPending = 11,
+  kServerReturnNotMyBirthday = 12,
+  kServerReturnConflict = 13,
+  kServerResponseValidationFailed = 14,
+  kServerReturnDisabledByAdmin = 15,
+  // Deprecated: SERVER_RETURN_USER_ROLLBACK = 16,
+  // Deprecated: SERVER_RETURN_PARTIAL_FAILURE = 17,
+  kServerReturnClientDataObsolete = 18,
+  kServerReturnEncryptionObsolete = 19,
+
+  // Deprecated: DATATYPE_TRIGGERED_RETRY = 20,
+  // Deprecated: SERVER_MORE_TO_DOWNLOAD = 21,
+
+  kSyncerOk = 22,
+
+  kMaxValue = kSyncerOk,
+};
 
 // A Syncer provides a control interface for driving the sync cycle.  These
 // cycles consist of downloading updates, parsing the response (aka. process

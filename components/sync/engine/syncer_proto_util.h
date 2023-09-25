@@ -10,8 +10,8 @@
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/base/syncer_error.h"
 #include "components/sync/engine/cycle/sync_cycle.h"
+#include "components/sync/engine/syncer_error.h"
 
 namespace sync_pb {
 class ClientToServerMessage;

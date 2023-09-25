@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "components/sync/base/sync_invalidation.h"
-#include "components/sync/base/syncer_error.h"
+#include "components/sync/engine/syncer_error.h"
 
 namespace sync_pb {
 class DataTypeContext;

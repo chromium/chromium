@@ -281,7 +281,7 @@ TEST_F(SyncerProtoUtilTest, ShouldHandleGetUpdatesRetryDelay) {
   SyncerError error = SyncerProtoUtil::PostClientToServerMessage(
       DefaultGetUpdatesRequest(), &response, &cycle,
       &partial_failure_data_types);
-  EXPECT_EQ(error.value(), SyncerError::SYNCER_OK);
+  EXPECT_EQ(error.type(), SyncerError::Type::kSuccess);
 }
 
 TEST_F(SyncerProtoUtilTest, ShouldIgnoreGetUpdatesRetryDelay) {
@@ -312,7 +312,7 @@ TEST_F(SyncerProtoUtilTest, ShouldIgnoreGetUpdatesRetryDelay) {
   SyncerError error = SyncerProtoUtil::PostClientToServerMessage(
       DefaultGetUpdatesRequest(), &response, &cycle,
       &partial_failure_data_types);
-  EXPECT_EQ(error.value(), SyncerError::SYNCER_OK);
+  EXPECT_EQ(error.type(), SyncerError::Type::kSuccess);
 }
 
 }  // namespace syncer

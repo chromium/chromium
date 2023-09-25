@@ -371,7 +371,7 @@ TEST_F(GetUpdatesProcessorTest, InvalidResponse) {
       BuildGetUpdatesProcessor(normal_delegate));
   SyncerError error =
       processor->ProcessResponse(gu_response, enabled_types(), &status);
-  EXPECT_EQ(error.value(), SyncerError::SERVER_RESPONSE_VALIDATION_FAILED);
+  EXPECT_EQ(error.type(), SyncerError::Type::kProtocolViolationError);
 }
 
 // Verify that we correctly detect when there's more work to be done.
@@ -402,7 +402,7 @@ TEST_F(GetUpdatesProcessorTest, NormalResponseTest) {
       BuildGetUpdatesProcessor(normal_delegate));
   SyncerError error =
       processor->ProcessResponse(gu_response, enabled_types(), &status);
-  EXPECT_EQ(error.value(), SyncerError::SYNCER_OK);
+  EXPECT_EQ(error.type(), SyncerError::Type::kSuccess);
 }
 
 // Variant of GetUpdatesProcessor test designed to test update application.

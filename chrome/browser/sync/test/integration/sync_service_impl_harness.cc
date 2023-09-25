@@ -595,8 +595,8 @@ std::string SyncServiceImplHarness::GetClientInfoString(
     os << ", has_unsynced_items: " << snap.has_remaining_local_changes()
        << ", did_commit: "
        << (snap.model_neutral_state().num_successful_commits == 0 &&
-           snap.model_neutral_state().commit_result.value() ==
-               syncer::SyncerError::SYNCER_OK)
+           snap.model_neutral_state().commit_result.type() ==
+               syncer::SyncerError::Type::kSuccess)
        << ", server conflicts: " << snap.num_server_conflicts()
        << ", num_updates_downloaded : "
        << snap.model_neutral_state().num_updates_downloaded_total

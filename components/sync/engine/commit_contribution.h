@@ -7,9 +7,9 @@
 
 #include <stddef.h>
 
-#include "components/sync/base/syncer_error.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/cycle/status_controller.h"
+#include "components/sync/engine/syncer_error.h"
 
 namespace sync_pb {
 class ClientToServerMessage;

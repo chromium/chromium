@@ -19,6 +19,7 @@
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/backoff_delay_provider.h"
+#include "components/sync/engine/sync_protocol_error.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 
 using base::TimeTicks;
@@ -67,11 +68,13 @@ bool ShouldRequestEarlyExit(const SyncProtocolError& error) {
       // waiting forever. So assert we would send something.
       DCHECK_NE(error.action, UNKNOWN_ACTION);
       return true;
-    // Make UNKNOWN_ERROR a NOTREACHED. All the other error should be explicitly
-    // handled.
     case UNKNOWN_ERROR:
       // TODO(crbug.com/1081266): This NOTREACHED is questionable because the
       // sync server can cause it.
+      NOTREACHED();
+      return false;
+    case CONFLICT:
+    case INVALID_MESSAGE:
       NOTREACHED();
       return false;
   }

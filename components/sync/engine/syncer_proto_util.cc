@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "components/sync/base/features.h"
@@ -23,6 +24,7 @@
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "google_apis/google_api_keys.h"
+#include "net/http/http_status_code.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 using std::string;
@@ -42,17 +44,16 @@ SyncerError ServerConnectionErrorAsSyncerError(
     int http_status_code) {
   switch (server_status) {
     case HttpResponse::CONNECTION_UNAVAILABLE:
-      return SyncerError::NetworkConnectionUnavailable(net_error_code);
+      return SyncerError::NetworkError(net_error_code);
     case HttpResponse::SYNC_SERVER_ERROR:
-      // This means the server returned a non-401 HTTP error.
-      return SyncerError::HttpError(http_status_code);
     case HttpResponse::SYNC_AUTH_ERROR:
-      // This means the server returned an HTTP 401 (unauthorized) error.
-      return SyncerError::HttpError(http_status_code);
+      // This means the server returned an HTTP error.
+      return SyncerError::HttpError(
+          static_cast<net::HttpStatusCode>(http_status_code));
     case HttpResponse::SERVER_CONNECTION_OK:
     case HttpResponse::NONE:
       NOTREACHED();
-      return SyncerError();
+      return SyncerError::Success();
   }
 }
 
@@ -298,13 +299,17 @@ SyncerError SyncerProtoUtil::HandleClientToServerMessageResponse(
 
   // Now do any special handling for the error type and decide on the return
   // value.
+  // Partial failures (e.g. specific datatypes throttled or server returned
+  // PARTIAL_FAILURE) are reported as success.
+  bool should_report_success = false;
   switch (sync_protocol_error.error_type) {
     case UNKNOWN_ERROR:
       LOG(WARNING) << "Sync protocol out-of-date. The server is using a more "
                    << "recent version.";
-      return SyncerError(SyncerError::SERVER_RETURN_UNKNOWN_ERROR);
+      break;
     case SYNC_SUCCESS:
-      return SyncerError(SyncerError::SYNCER_OK);
+      should_report_success = true;
+      break;
     case THROTTLED:
       if (sync_protocol_error.error_data_types.Empty()) {
         DLOG(WARNING) << "Client fully throttled by syncer.";
@@ -318,23 +323,15 @@ SyncerError SyncerProtoUtil::HandleClientToServerMessageResponse(
         if (partial_failure_data_types != nullptr) {
           *partial_failure_data_types = sync_protocol_error.error_data_types;
         }
-        return SyncerError(SyncerError::SYNCER_OK);
+        should_report_success = true;
       }
-      return SyncerError(SyncerError::SERVER_RETURN_THROTTLED);
-    case TRANSIENT_ERROR:
-      return SyncerError(SyncerError::SERVER_RETURN_TRANSIENT_ERROR);
+      break;
     case MIGRATION_DONE:
       LOG_IF(ERROR, 0 >= response.migrated_data_type_id_size())
           << "MIGRATION_DONE but no types specified.";
       cycle->delegate()->OnReceivedMigrationRequest(
           GetTypesToMigrate(response));
-      return SyncerError(SyncerError::SERVER_RETURN_MIGRATION_DONE);
-    case CLEAR_PENDING:
-      return SyncerError(SyncerError::SERVER_RETURN_CLEAR_PENDING);
-    case NOT_MY_BIRTHDAY:
-      return SyncerError(SyncerError::SERVER_RETURN_NOT_MY_BIRTHDAY);
-    case DISABLED_BY_ADMIN:
-      return SyncerError(SyncerError::SERVER_RETURN_DISABLED_BY_ADMIN);
+      break;
     case PARTIAL_FAILURE:
       // This only happens when partial backoff during GetUpdates.
       if (!sync_protocol_error.error_data_types.Empty()) {
@@ -346,15 +343,25 @@ SyncerError SyncerProtoUtil::HandleClientToServerMessageResponse(
       if (partial_failure_data_types != nullptr) {
         *partial_failure_data_types = sync_protocol_error.error_data_types;
       }
-      return SyncerError(SyncerError::SYNCER_OK);
+      should_report_success = true;
+      break;
+    case TRANSIENT_ERROR:
+    case CLEAR_PENDING:
+    case NOT_MY_BIRTHDAY:
+    case DISABLED_BY_ADMIN:
     case CLIENT_DATA_OBSOLETE:
-      return SyncerError(SyncerError::SERVER_RETURN_CLIENT_DATA_OBSOLETE);
     case ENCRYPTION_OBSOLETE:
-      return SyncerError(SyncerError::SERVER_RETURN_ENCRYPTION_OBSOLETE);
+      break;
+    case CONFLICT:
+    case INVALID_MESSAGE:
+      // These error types should not be used at this stage.
+      NOTREACHED();
   }
 
-  NOTREACHED();
-  return SyncerError();
+  if (should_report_success) {
+    return SyncerError::Success();
+  }
+  return SyncerError::ProtocolError(sync_protocol_error.error_type);
 }
 
 // static
@@ -521,7 +528,7 @@ SyncerError SyncerProtoUtil::PostClientToServerMessage(
     if (server_status == HttpResponse::SERVER_CONNECTION_OK) {
       // The server returned a response but there was a failure in processing
       // it.
-      return SyncerError(SyncerError::SERVER_RESPONSE_VALIDATION_FAILED);
+      return SyncerError::ProtocolViolationError();
     }
 
     return ServerConnectionErrorAsSyncerError(

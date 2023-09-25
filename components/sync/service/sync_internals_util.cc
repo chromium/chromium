@@ -567,12 +567,14 @@ base::Value::Dict ConstructAboutInformation(
                         /*is_good=*/!get_key_failed_state);
     SyncerError download_result_err =
         snapshot.model_neutral_state().last_download_updates_result;
-    download_result->Set(download_result_err.ToString(),
-                         /*is_good=*/!download_result_err.IsActualError());
+    download_result->Set(
+        download_result_err.ToString(),
+        /*is_good=*/download_result_err.type() == SyncerError::Type::kSuccess);
     SyncerError commit_result_err =
         snapshot.model_neutral_state().commit_result;
-    commit_result->Set(commit_result_err.ToString(),
-                       /*is_good=*/!commit_result_err.IsActualError());
+    commit_result->Set(
+        commit_result_err.ToString(),
+        /*is_good=*/commit_result_err.type() == SyncerError::Type::kSuccess);
   }
 
   // Running Totals.

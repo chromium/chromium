@@ -53,8 +53,6 @@ static_library("base") {
     "sync_stop_metadata_fate.h",
     "sync_util.cc",
     "sync_util.h",
-    "syncer_error.cc",
-    "syncer_error.h",
     "time.cc",
     "time.h",
     "unique_position.cc",

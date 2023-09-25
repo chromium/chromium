@@ -27,9 +27,10 @@ const char* GetSyncErrorTypeString(SyncProtocolErrorType type) {
     ENUM_CASE(CLIENT_DATA_OBSOLETE);
     ENUM_CASE(ENCRYPTION_OBSOLETE);
     ENUM_CASE(UNKNOWN_ERROR);
+    ENUM_CASE(CONFLICT);
+    ENUM_CASE(INVALID_MESSAGE);
   }
-  NOTREACHED();
-  return "";
+  NOTREACHED_NORETURN();
 }
 
 const char* GetClientActionString(ClientAction action) {
