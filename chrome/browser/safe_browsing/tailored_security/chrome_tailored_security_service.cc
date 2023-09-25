@@ -296,11 +296,17 @@ bool ChromeTailoredSecurityService::ShouldRetryForSyncUsers() {
     return false;
   }
   if (prefs->GetInteger(prefs::kTailoredSecuritySyncFlowRetryState) ==
-      safe_browsing::UNSET) {
+          safe_browsing::UNSET &&
+      !prefs->GetBoolean(
+          prefs::kEnhancedProtectionEnabledViaTailoredSecurity)) {
     // The stateful version of `ChromeTailoredSecurityService` has not run yet,
     // and we don't know if a previous version of the service showed the dialog
-    // to the user in the past, so we need to ensure that we wait long enough
-    // before retrying.
+    // to the user in the past (pre-M106), so we need to wait long enough before
+    // retrying.
+    //
+    // Chrome M106+ sets kEnhancedProtectionEnabledViaTailoredSecurity on
+    // successfully showing a notification to the user, so we can guard this
+    // logic based on that.
     if (prefs->GetTime(prefs::kTailoredSecurityNextSyncFlowTimestamp) ==
         base::Time()) {
       prefs->SetTime(prefs::kTailoredSecurityNextSyncFlowTimestamp,

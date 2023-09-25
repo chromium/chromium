@@ -728,6 +728,34 @@ TEST_F(
 
 TEST_F(
     ChromeTailoredSecurityServiceTest,
+    WhenRetryNotSetAndEnhancedProtectionEnabledViaTailoredSecurityDoesNotSetNextSyncFlowTimestamp) {
+  const GURL google_url("https://www.google.com");
+  AddTab(google_url);
+  SetAccountTailoredSecurityTimestamp(base::Time::Now());
+  tailored_security_service()->SetTailoredSecurityServiceValue(true);
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
+
+  prefs()->SetTime(prefs::kTailoredSecurityNextSyncFlowTimestamp, base::Time());
+  prefs()->SetInteger(prefs::kTailoredSecuritySyncFlowRetryState,
+                      safe_browsing::UNSET);
+  prefs()->SetBoolean(prefs::kEnhancedProtectionEnabledViaTailoredSecurity,
+                      true);
+
+  base::HistogramTester tester;
+  task_environment_.FastForwardBy(
+      ChromeTailoredSecurityService::kRetryAttemptStartupDelay);
+  EXPECT_EQ(prefs()->GetTime(prefs::kTailoredSecurityNextSyncFlowTimestamp),
+            base::Time());
+
+  tester.ExpectBucketCount(
+      "SafeBrowsing.TailoredSecurity.ShouldRetryOutcome",
+      ChromeTailoredSecurityService::TailoredSecurityShouldRetryOutcome::
+          kUnsetInitializeWaitingPeriod,
+      0);
+}
+
+TEST_F(
+    ChromeTailoredSecurityServiceTest,
     WhenRetryNotSetAndNextSyncFlowNotSetSetsNextSyncFlowToWaitingIntervalFromNow) {
   const GURL google_url("https://www.google.com");
   AddTab(google_url);

@@ -79,6 +79,9 @@ class ChromeTailoredSecurityService : public TailoredSecurityService,
       WhenRetryNeededButNotEnoughTimeHasPassedDoesNotRetry);
   FRIEND_TEST_ALL_PREFIXES(
       ChromeTailoredSecurityServiceTest,
+      WhenRetryNotSetAndEnhancedProtectionEnabledViaTailoredSecurityDoesNotSetNextSyncFlowTimestamp);
+  FRIEND_TEST_ALL_PREFIXES(
+      ChromeTailoredSecurityServiceTest,
       WhenRetryNotSetAndNextSyncFlowHasNotPassedDoesNotRunRetryLogic);
   FRIEND_TEST_ALL_PREFIXES(
       ChromeTailoredSecurityServiceTest,
