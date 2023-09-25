@@ -5411,6 +5411,12 @@ class DesksAcceleratorsTest : public DesksTest,
       ui::mojom::SixPackShortcutModifier active_modifier,
       int device_id) override {}
 
+  absl::optional<ui::mojom::ExtendedFkeysModifier> GetExtendedFkeySetting(
+      int device_id,
+      ui::KeyboardCode key_code) override {
+    return absl::nullopt;
+  }
+
   void SendAccelerator(ui::KeyboardCode key_code, int flags) {
     ui::test::EventGenerator* generator = GetEventGenerator();
     generator->PressKey(key_code, flags);

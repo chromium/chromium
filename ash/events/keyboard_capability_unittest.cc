@@ -219,6 +219,7 @@ class KeyboardCapabilityTest : public NoSessionAshTestBase {
   }
 
   void TearDown() override {
+    fake_keyboard_devices_.clear();
     keyboard_capability_.reset();
     AshTestBase::TearDown();
   }
@@ -234,6 +235,8 @@ class KeyboardCapabilityTest : public NoSessionAshTestBase {
 
     keyboard_capability_->SetKeyboardInfoForTesting(fake_keyboard,
                                                     std::move(keyboard_info));
+    fake_keyboard_devices_.push_back(fake_keyboard);
+    ui::DeviceDataManagerTestApi().SetKeyboardDevices(fake_keyboard_devices_);
 
     return fake_keyboard;
   }
@@ -241,6 +244,7 @@ class KeyboardCapabilityTest : public NoSessionAshTestBase {
  protected:
   std::unique_ptr<ui::KeyboardCapability> keyboard_capability_;
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_;
+  std::vector<ui::KeyboardDevice> fake_keyboard_devices_;
 };
 
 TEST_F(KeyboardCapabilityTest, TestIsSixPackKey) {

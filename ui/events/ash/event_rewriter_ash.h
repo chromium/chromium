@@ -15,6 +15,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "ui/events/ash/keyboard_capability.h"
+#include "ui/events/ash/mojom/extended_fkeys_modifier.mojom-shared.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/ash/mojom/simulate_right_click_modifier.mojom-shared.h"
 #include "ui/events/ash/mojom/six_pack_shortcut_modifier.mojom-shared.h"
@@ -187,6 +188,16 @@ class EventRewriterAsh : public EventRewriter {
         ui::mojom::SixPackShortcutModifier blocked_modifier,
         ui::mojom::SixPackShortcutModifier active_modifier,
         int device_id) = 0;
+
+    // Returns the modifier for rewriting key events to F11/F12 for ChromeOS
+    // keyboards with less than 12 top row keys. `key_code` must be either
+    // `ui::KeyboardCode::VKEY_F11` or `ui::KeyboardCode::VKEY_F12` and is used
+    // used to determine if the setting for F11 or F12 should be retrieved for
+    // the keyboard with the given `device_id`. The key event will not be
+    // rewritten if the return value is either absl::nullopt (settings for
+    // `device_id` weren't found) or if an invalid `key_code` was passed in.
+    virtual absl::optional<ui::mojom::ExtendedFkeysModifier>
+    GetExtendedFkeySetting(int device_id, ui::KeyboardCode key_code) = 0;
   };
 
   // Enum used to record the usage of the modifier keys on all devices. Do not

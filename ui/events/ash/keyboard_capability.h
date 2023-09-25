@@ -339,6 +339,10 @@ class KeyboardCapability : public InputDeviceEventObserver {
   // Check if the CapsLock key exists on the given keyboard.
   bool HasCapsLockKey(const KeyboardDevice& keyboard) const;
 
+  // Finds the keyboard with the corresponding  `device_id` and checks its
+  // `DeviceType` to determine if it's a ChromeOS keyboard.
+  bool IsChromeOSKeyboard(int device_id) const;
+
   // Gets the corresponding function key for the given `action_key` on the
   // given `keyboard`.
   absl::optional<KeyboardCode> GetCorrespondingFunctionKey(
@@ -361,8 +365,6 @@ class KeyboardCapability : public InputDeviceEventObserver {
  private:
   const KeyboardInfo* GetKeyboardInfo(const KeyboardDevice& keyboard) const;
   void TrimKeyboardInfoMap();
-
-  bool IsChromeOSKeyboard(const ui::KeyboardDevice& keyboard) const;
 
   ScanCodeToEvdevKeyConverter scan_code_to_evdev_key_converter_;
 

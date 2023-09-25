@@ -43,6 +43,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/events/ash/event_rewriter_ash.h"
 #include "ui/events/ash/keyboard_capability.h"
+#include "ui/events/ash/mojom/extended_fkeys_modifier.mojom-shared.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/ash/mojom/modifier_key.mojom.h"
 #include "ui/events/ash/mojom/simulate_right_click_modifier.mojom-shared.h"
@@ -5445,6 +5446,12 @@ class ExtensionRewriterInputTest : public EventRewriterAshTest,
       ui::mojom::SixPackShortcutModifier active_modifier,
       int device_id) override {}
 
+  absl::optional<ui::mojom::ExtendedFkeysModifier> GetExtendedFkeySetting(
+      int device_id,
+      ui::KeyboardCode key_code) override {
+    return absl::nullopt;
+  }
+
   std::map<std::string, ui::mojom::ModifierKey> modifier_remapping_;
   base::flat_set<ui::Accelerator> registered_extension_shortcuts_;
 };
@@ -6000,6 +6007,115 @@ TEST_F(EventRewriterSixPackKeysTest, TestRewriteSixPackKeysBlockedBySetting) {
   });
 }
 
+class EventRewriterExtendedFkeysTest : public EventRewriterTest {
+ public:
+  void SetUp() override {
+    EventRewriterTest::SetUp();
+    scoped_feature_list_.InitWithFeatures(
+        {ash::features::kInputDeviceSettingsSplit,
+         ::features::kSupportF11AndF12KeyShortcuts},
+        {});
+  }
+};
+
+TEST_F(EventRewriterExtendedFkeysTest, TestRewriteExtendedFkeys) {
+  Preferences::RegisterProfilePrefs(prefs()->registry());
+  mojom::KeyboardSettings settings;
+  settings.f11 = ui::mojom::ExtendedFkeysModifier::kAlt;
+  settings.f12 = ui::mojom::ExtendedFkeysModifier::kShift;
+  settings.top_row_are_fkeys = true;
+
+  EXPECT_CALL(*input_device_settings_controller_mock_,
+              GetKeyboardSettings(kKeyboardDeviceId))
+      .WillRepeatedly(testing::Return(&settings));
+  TestInternalChromeKeyboard({
+      // Alt+F1 -> F11
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_ALT_DOWN, ui::DomKey::F1},
+       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_NONE, ui::DomKey::F11}},
+      // Shift+F2 -> F12
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_SHIFT_DOWN, ui::DomKey::F2},
+       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_NONE, ui::DomKey::F12}},
+  });
+
+  settings.f11 = ui::mojom::ExtendedFkeysModifier::kCtrlShift;
+  settings.f12 = ui::mojom::ExtendedFkeysModifier::kAlt;
+
+  TestInternalChromeKeyboard({
+      // Ctrl+Shift+F1 -> F11
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,
+        ui::DomKey::F1},
+       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_NONE, ui::DomKey::F11}},
+      // Alt+F2 -> F12
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_ALT_DOWN, ui::DomKey::F2},
+       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_NONE, ui::DomKey::F12}},
+  });
+}
+
+TEST_F(EventRewriterExtendedFkeysTest,
+       TestRewriteExtendedFkeysBlockedBySetting) {
+  Preferences::RegisterProfilePrefs(prefs()->registry());
+  mojom::KeyboardSettings settings;
+  settings.f11 = ui::mojom::ExtendedFkeysModifier::kDisabled;
+  settings.f12 = ui::mojom::ExtendedFkeysModifier::kDisabled;
+  settings.top_row_are_fkeys = true;
+
+  EXPECT_CALL(*input_device_settings_controller_mock_,
+              GetKeyboardSettings(kKeyboardDeviceId))
+      .WillRepeatedly(testing::Return(&settings));
+  TestInternalChromeKeyboard({{
+      ui::ET_KEY_PRESSED,
+      {ui::VKEY_F1, ui::DomCode::F1, ui::EF_ALT_DOWN, ui::DomKey::F1},
+      {ui::VKEY_F1, ui::DomCode::F1, ui::EF_ALT_DOWN, ui::DomKey::F1},
+  }});
+}
+
+TEST_F(EventRewriterExtendedFkeysTest, TestRewriteExtendedFkeysTopRowAreFkeys) {
+  Preferences::RegisterProfilePrefs(prefs()->registry());
+  mojom::KeyboardSettings settings;
+  settings.f11 = ui::mojom::ExtendedFkeysModifier::kAlt;
+  settings.f12 = ui::mojom::ExtendedFkeysModifier::kShift;
+  settings.top_row_are_fkeys = true;
+
+  EXPECT_CALL(*input_device_settings_controller_mock_,
+              GetKeyboardSettings(kKeyboardDeviceId))
+      .WillRepeatedly(testing::Return(&settings));
+  TestInternalChromeKeyboard({
+      // Alt+F1 -> F11
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_ALT_DOWN, ui::DomKey::F1},
+       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_NONE, ui::DomKey::F11}},
+      // Ctrl+Alt+Shift+F1 -> Ctrl+Shift+F11
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_F1, ui::DomCode::F1,
+        ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN,
+        ui::DomKey::F1},
+       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,
+        ui::DomKey::F11}},
+      // Shift+F2 -> F12
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_SHIFT_DOWN, ui::DomKey::F2},
+       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_NONE, ui::DomKey::F12}},
+  });
+
+  settings.top_row_are_fkeys = false;
+  TestInternalChromeKeyboard({
+      // Search+Alt+F1 -> F11
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_F1, ui::DomCode::F1, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN,
+        ui::DomKey::F1},
+       {ui::VKEY_F11, ui::DomCode::F11, ui::EF_NONE, ui::DomKey::F11}},
+      // Search+Shift+F2 -> F12
+      {ui::ET_KEY_PRESSED,
+       {ui::VKEY_F2, ui::DomCode::F2, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
+        ui::DomKey::F2},
+       {ui::VKEY_F12, ui::DomCode::F12, ui::EF_NONE, ui::DomKey::F12}},
+  });
+}
+
 class EventRewriterSettingsSplitTest : public EventRewriterTest {
  public:
   void SetUp() override {
@@ -6243,6 +6359,12 @@ class EventRewriterRemapToRightClickTest
       ui::mojom::SixPackShortcutModifier blocked_modifier,
       ui::mojom::SixPackShortcutModifier active_modifier,
       int device_id) override {}
+
+  absl::optional<ui::mojom::ExtendedFkeysModifier> GetExtendedFkeySetting(
+      int device_id,
+      ui::KeyboardCode key_code) override {
+    return absl::nullopt;
+  }
 };
 
 TEST_F(EventRewriterRemapToRightClickTest, AltClickRemappedToRightClick) {

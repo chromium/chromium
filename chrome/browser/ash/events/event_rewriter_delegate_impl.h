@@ -8,6 +8,7 @@
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/events/ash/event_rewriter_ash.h"
+#include "ui/events/ash/mojom/extended_fkeys_modifier.mojom-shared.h"
 #include "ui/events/ash/mojom/simulate_right_click_modifier.mojom-shared.h"
 #include "ui/events/ash/mojom/six_pack_shortcut_modifier.mojom-shared.h"
 #include "ui/wm/public/activation_client.h"
@@ -71,6 +72,10 @@ class EventRewriterDelegateImpl : public ui::EventRewriterAsh::Delegate {
       ui::mojom::SixPackShortcutModifier blocked_modifier,
       ui::mojom::SixPackShortcutModifier active_modifier,
       int device_id) override;
+
+  absl::optional<ui::mojom::ExtendedFkeysModifier> GetExtendedFkeySetting(
+      int device_id,
+      ui::KeyboardCode key_code) override;
 
  private:
   PrefService* GetPrefService() const;

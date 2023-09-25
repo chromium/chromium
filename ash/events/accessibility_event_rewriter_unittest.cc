@@ -21,6 +21,7 @@
 #include "ui/base/ime/ash/fake_ime_keyboard.h"
 #include "ui/events/ash/event_rewriter_ash.h"
 #include "ui/events/ash/keyboard_capability.h"
+#include "ui/events/ash/mojom/extended_fkeys_modifier.mojom-shared.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/ash/mojom/six_pack_shortcut_modifier.mojom-shared.h"
 #include "ui/events/ash/pref_names.h"
@@ -234,6 +235,12 @@ class ChromeVoxAccessibilityEventRewriterTest
       ui::mojom::SixPackShortcutModifier blocked_modifier,
       ui::mojom::SixPackShortcutModifier active_modifier,
       int device_id) override {}
+
+  absl::optional<ui::mojom::ExtendedFkeysModifier> GetExtendedFkeySetting(
+      int device_id,
+      ui::KeyboardCode key_code) override {
+    return absl::nullopt;
+  }
 
   std::map<std::string, ui::mojom::ModifierKey> modifier_remapping_;
 };
@@ -658,6 +665,12 @@ class SwitchAccessAccessibilityEventRewriterTest
       ui::mojom::SixPackShortcutModifier blocked_modifier,
       ui::mojom::SixPackShortcutModifier active_modifier,
       int device_id) override {}
+
+  absl::optional<ui::mojom::ExtendedFkeysModifier> GetExtendedFkeySetting(
+      int device_id,
+      ui::KeyboardCode key_code) override {
+    return absl::nullopt;
+  }
 
   std::map<std::string, ui::mojom::ModifierKey> modifier_remapping_;
 

@@ -26,6 +26,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/ash/keyboard_device_id_event_rewriter.h"
+#include "ui/events/ash/mojom/extended_fkeys_modifier.mojom-shared.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/ash/mojom/simulate_right_click_modifier.mojom-shared.h"
 #include "ui/events/ash/mojom/six_pack_shortcut_modifier.mojom-shared.h"
@@ -838,6 +839,64 @@ void MaybeRewriteKeyEventToSixPackKeyAction(
   }
 }
 
+bool ExtendedFkeyModifiersMatch(
+    int flags,
+    ui::mojom::ExtendedFkeysModifier modifier_flag) {
+  switch (modifier_flag) {
+    case ui::mojom::ExtendedFkeysModifier::kDisabled:
+      return false;
+    case ui::mojom::ExtendedFkeysModifier::kAlt:
+      return (flags & EF_ALT_DOWN) == EF_ALT_DOWN;
+    case ui::mojom::ExtendedFkeysModifier::kShift:
+      return (flags & EF_SHIFT_DOWN) == EF_SHIFT_DOWN;
+    case ui::mojom::ExtendedFkeysModifier::kCtrlShift:
+      return (flags & (EF_SHIFT_DOWN | EF_CONTROL_DOWN)) ==
+             (EF_SHIFT_DOWN | EF_CONTROL_DOWN);
+  }
+}
+
+void RewriteExtendedFunctionKeys(EventRewriterAsh::Delegate* delegate,
+                                 const KeyEvent& event,
+                                 int device_id,
+                                 EventRewriterAsh::MutableKeyState* state) {
+  EventRewriterAsh::MutableKeyState incoming = *state;
+  static const KeyboardRemapping kExtendedFkeysRemappings[] = {
+      {// Shift+F1 -> F11.
+       {EF_SHIFT_DOWN, VKEY_F1},
+       {EF_NONE, DomCode::F11, DomKey::F11, VKEY_F11}},
+      {// Alt+F1 -> F11.
+       {EF_ALT_DOWN, VKEY_F1},
+       {EF_NONE, DomCode::F11, DomKey::F11, VKEY_F11}},
+      {// Ctrl+Shift+F1 -> F11.
+       {EF_SHIFT_DOWN | EF_CONTROL_DOWN, VKEY_F1},
+       {EF_NONE, DomCode::F11, DomKey::F11, VKEY_F11}},
+      {// Shift+F2 -> F11.
+       {EF_SHIFT_DOWN, VKEY_F2},
+       {EF_NONE, DomCode::F12, DomKey::F12, VKEY_F12}},
+      {// Alt+F2 -> F12.
+       {EF_ALT_DOWN, VKEY_F2},
+       {EF_NONE, DomCode::F12, DomKey::F12, VKEY_F12}},
+      {// Ctrl+Shift+F2 -> F12.
+       {EF_SHIFT_DOWN | EF_CONTROL_DOWN, VKEY_F2},
+       {EF_NONE, DomCode::F12, DomKey::F12, VKEY_F12}},
+  };
+
+  for (const auto& remapping : kExtendedFkeysRemappings) {
+    if (!MatchKeyboardRemapping(incoming, remapping.condition)) {
+      continue;
+    }
+    const auto shortcut =
+        delegate->GetExtendedFkeySetting(device_id, remapping.result.key_code);
+    if (!shortcut || !ExtendedFkeyModifiersMatch(remapping.condition.flags,
+                                                 shortcut.value())) {
+      continue;
+    }
+    state->flags = (incoming.flags & ~remapping.condition.flags);
+    ApplyRemapping(remapping.result, state);
+    return;
+  }
+}
+
 }  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1494,6 +1553,11 @@ EventRewriteStatus EventRewriterAsh::RewriteKeyEvent(
   if (!is_sticky_key_extension_command && !(key_event.flags() & EF_FINAL)) {
     RewriteExtendedKeys(key_event, &state);
     RewriteFunctionKeys(key_event, device_id, &state);
+    if (features::AreF11AndF12ShortcutsEnabled() &&
+        keyboard_capability_->IsChromeOSKeyboard(last_keyboard_device_id_)) {
+      RewriteExtendedFunctionKeys(delegate_, key_event,
+                                  last_keyboard_device_id_, &state);
+    }
   }
   if ((key_event.flags() == state.flags) &&
       (key_event.key_code() == state.key_code) &&

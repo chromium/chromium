@@ -303,4 +303,24 @@ void EventRewriterDelegateImpl::NotifySixPackRewriteBlockedBySetting(
                                              active_modifier, device_id);
 }
 
+absl::optional<ui::mojom::ExtendedFkeysModifier>
+EventRewriterDelegateImpl::GetExtendedFkeySetting(int device_id,
+                                                  ui::KeyboardCode key_code) {
+  CHECK(key_code == ui::KeyboardCode::VKEY_F11 ||
+        key_code == ui::KeyboardCode::VKEY_F12);
+
+  const mojom::KeyboardSettings* settings =
+      input_device_settings_controller_->GetKeyboardSettings(device_id);
+
+  if (!settings) {
+    return absl::nullopt;
+  }
+
+  CHECK(settings->f11.has_value() && settings->f12.has_value());
+  if (key_code == ui::KeyboardCode::VKEY_F11) {
+    return settings->f11;
+  }
+  return settings->f12;
+}
+
 }  // namespace ash

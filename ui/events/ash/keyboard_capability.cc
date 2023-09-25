@@ -884,7 +884,7 @@ const std::vector<TopRowActionKey>* KeyboardCapability::GetTopRowActionKeys(
 bool KeyboardCapability::HasAssistantKey(const KeyboardDevice& keyboard) const {
   // Some external keyboards falsely claim to have assistant keys. However, this
   // can be trusted for internal + ChromeOS external keyboards.
-  return keyboard.has_assistant_key && IsChromeOSKeyboard(keyboard);
+  return keyboard.has_assistant_key && IsChromeOSKeyboard(keyboard.id);
 }
 
 bool KeyboardCapability::HasAssistantKeyOnAnyKeyboard() const {
@@ -898,7 +898,7 @@ bool KeyboardCapability::HasAssistantKeyOnAnyKeyboard() const {
 }
 
 bool KeyboardCapability::HasCapsLockKey(const KeyboardDevice& keyboard) const {
-  return !IsChromeOSKeyboard(keyboard) ||
+  return !IsChromeOSKeyboard(keyboard.id) ||
          kChromeOSKeyboardsWithCapsLock.contains(
              {keyboard.vendor_id, keyboard.product_id});
 }
@@ -1010,9 +1010,8 @@ bool KeyboardCapability::HasTopRowActionKeyOnAnyKeyboard(
   return false;
 }
 
-bool KeyboardCapability::IsChromeOSKeyboard(
-    const ui::KeyboardDevice& keyboard) const {
-  const auto device_type = GetDeviceType(keyboard);
+bool KeyboardCapability::IsChromeOSKeyboard(int device_id) const {
+  const auto device_type = GetDeviceType(device_id);
   return device_type == DeviceType::kDeviceInternalKeyboard ||
          device_type == DeviceType::kDeviceExternalChromeOsKeyboard;
 }

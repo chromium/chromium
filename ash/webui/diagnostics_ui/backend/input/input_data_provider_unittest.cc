@@ -658,6 +658,12 @@ class TestEventRewriterAshDelegate : public ui::EventRewriterAsh::Delegate {
       ui::mojom::SixPackShortcutModifier active_modifier,
       int device_id) override {}
 
+  absl::optional<ui::mojom::ExtendedFkeysModifier> GetExtendedFkeySetting(
+      int device_id,
+      ui::KeyboardCode key_code) override {
+    return absl::nullopt;
+  }
+
  protected:
   bool suppress_modifier_key_rewrites_ = false;
 };
