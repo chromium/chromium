@@ -2043,6 +2043,7 @@ source_set("blink_platform_unittests_sources") {
     "fonts/palette_interpolation_test.cc",
     "fonts/script_run_iterator_test.cc",
     "fonts/shaping/caching_word_shaper_test.cc",
+    "fonts/shaping/east_asian_spacing_test.cc",
     "fonts/shaping/font_features_test.cc",
     "fonts/shaping/harfbuzz_shaper_test.cc",
     "fonts/shaping/ng_shape_cache_test.cc",

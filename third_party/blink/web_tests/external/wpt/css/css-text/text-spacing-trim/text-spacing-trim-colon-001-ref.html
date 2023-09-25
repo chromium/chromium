@@ -8,21 +8,62 @@
 #container {
   font-family: halt-font;
   font-size: 20px;
+  position: relative;
   text-spacing-trim: space-all;
+}
+#container > div {
+  position: absolute;
+  top: 0;
+}
+.col1 {
+  left: 6em;
+}
+.col2 {
+  left: 12em;
 }
 halt {
   font-feature-settings: 'halt' 1;
 }
 </style>
 <div id="container">
-  <!-- Colon + Open/Close/Middle -->
-  <div>国：<halt>（</halt>国</div>
-  <div>国：）国</div>
-  <div>国：・国</div>
-  <div>国：　国</div>
-  <!-- Open/Close/Middle + Colon -->
-  <div>国（：国</div>
-  <div>国<halt>）</halt>：国</div>
-  <div>国・：国</div>
-  <div>国　：国</div>
+  <div lang="ja">
+    <!-- Colon + Open/Close/Middle -->
+    <div>国：<halt>（</halt>国</div>
+    <div>国：）国</div>
+    <div>国：・国</div>
+    <div>国：　国</div>
+    <!-- Open/Close/Middle + Colon -->
+    <div>国（：国</div>
+    <div>国<halt>）</halt>：国</div>
+    <div>国・：国</div>
+    <div>国　：国</div>
+  </div>
+
+  <!-- The same content with "zh-hans". -->
+  <div lang="zh-hans" class="col1">
+    <!-- Colon + Open/Close/Middle -->
+    <div>国：<halt>（</halt>国</div>
+    <div>国<halt>：</halt>）国</div>
+    <div>国<halt>：</halt>・国</div>
+    <div>国<halt>：</halt>　国</div>
+    <!-- Open/Close/Middle + Colon -->
+    <div>国（：国</div>
+    <div>国<halt>）</halt>：国</div>
+    <div>国・：国</div>
+    <div>国　：国</div>
+  </div>
+
+  <!-- The same content with "zh-hant". -->
+  <div lang="zh-hant" class="col2">
+    <!-- Colon + Open/Close/Middle -->
+    <div>国：<halt>（</halt>国</div>
+    <div>国：）国</div>
+    <div>国：・国</div>
+    <div>国：　国</div>
+    <!-- Open/Close/Middle + Colon -->
+    <div>国（：国</div>
+    <div>国<halt>）</halt>：国</div>
+    <div>国・：国</div>
+    <div>国　：国</div>
+  </div>
 </div>

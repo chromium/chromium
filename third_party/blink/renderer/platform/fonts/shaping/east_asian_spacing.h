@@ -12,6 +12,7 @@
 namespace blink {
 
 class FontFeatures;
+class LayoutLocale;
 class SimpleFontData;
 
 //
@@ -28,7 +29,7 @@ class SimpleFontData;
 // [2]:
 // https://learn.microsoft.com/en-us/typography/opentype/spec/features_ae#tag-chws
 //
-class EastAsianSpacing {
+class PLATFORM_EXPORT EastAsianSpacing {
   STACK_ALLOCATED();
 
  public:
@@ -36,13 +37,15 @@ class EastAsianSpacing {
                    wtf_size_t start,
                    wtf_size_t end,
                    const SimpleFontData& font_data,
+                   const LayoutLocale& locale,
                    bool is_horizontal,
                    FontFeatures& features) {
     if (!RuntimeEnabledFeatures::CSSTextSpacingTrimEnabled()) {
       return;
     }
     // TODO(crbug.com/1463890): Add more conditions to fail fast.
-    ComputeKerning(text, start, end, font_data, is_horizontal, features);
+    ComputeKerning(text, start, end, font_data, locale, is_horizontal,
+                   features);
   }
 
   enum class CharType : uint8_t {
@@ -53,8 +56,10 @@ class EastAsianSpacing {
   };
 
   // Data retrieved from fonts for `EastAsianSpacing`.
-  struct FontData {
-    FontData(const SimpleFontData& font, bool is_horizontal);
+  struct PLATFORM_EXPORT FontData {
+    FontData(const SimpleFontData& font,
+             const LayoutLocale& locale,
+             bool is_horizontal);
 
     // True if this font has `halt` (or `vhal` in vertical.)
     // https://learn.microsoft.com/en-us/typography/opentype/spec/features_fj#tag-halt
@@ -80,6 +85,7 @@ class EastAsianSpacing {
                              wtf_size_t start,
                              wtf_size_t end,
                              const SimpleFontData& font_data,
+                             const LayoutLocale& locale,
                              bool is_horizontal,
                              FontFeatures& features);
 };

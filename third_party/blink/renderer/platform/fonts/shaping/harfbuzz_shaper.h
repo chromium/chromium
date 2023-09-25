@@ -101,6 +101,27 @@ class PLATFORM_EXPORT HarfBuzzShaper final {
   const String& GetText() const { return text_; }
   unsigned TextLength() const { return text_.length(); }
 
+  // This function is between `Shape` and `SimpleFontData::GlyphForCharacter`.
+  //
+  // Unlike `Shape`, it works only for one `SimpleFontData`, not `Font`, without
+  // cascading nor fallback. Missing glyphs are reported as `.notdef` (0). Also
+  // it's a lot less expensive than `Shape`.
+  //
+  // Unlike `SimpleFontData::GlyphForCharacter`, it shapes, taking locale,
+  // script, and OpenType features into account.
+  struct GlyphData {
+    unsigned cluster;
+    Glyph glyph;
+    gfx::PointF advance;
+    gfx::PointF offset;
+  };
+  using GlyphDataList = Vector<GlyphData, 16>;
+  void GetGlyphData(const SimpleFontData& font_data,
+                    const LayoutLocale& locale,
+                    UScriptCode script,
+                    bool is_horizontal,
+                    GlyphDataList& glyphs);
+
   ~HarfBuzzShaper() = default;
 
  private:
