@@ -17,6 +17,7 @@
 #include "content/browser/file_system_access/file_system_access_watch_scope.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
 
 namespace content {
 
@@ -46,11 +47,13 @@ class CONTENT_EXPORT FileSystemAccessChangeSource {
 
   // Ensures that this change source is ready to watch for changes within its
   // `scope_`. This may fail if the scope cannot be watched.
-  // `on_source_initialized` is run with a bool indicating whether setting up
-  // this source succeeds.
+  // `on_source_initialized` is run with a error status indicating whether
+  // setting up this source succeeds.
   // TODO(https://crbug.com/1019297): Assert that this is called before
   // notifying of changes.
-  void EnsureInitialized(base::OnceCallback<void(bool)> on_source_initialized);
+  void EnsureInitialized(
+      base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
+          on_source_initialized);
 
   base::WeakPtr<FileSystemAccessChangeSource> AsWeakPtr();
 
@@ -58,7 +61,8 @@ class CONTENT_EXPORT FileSystemAccessChangeSource {
 
  protected:
   virtual void Initialize(
-      base::OnceCallback<void(bool)> on_source_initialized) = 0;
+      base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
+          on_source_initialized) = 0;
 
   // Called by subclasses to record changes to watched paths.
   void NotifyOfChange(const base::FilePath& relative_path, bool error);
@@ -66,13 +70,13 @@ class CONTENT_EXPORT FileSystemAccessChangeSource {
   SEQUENCE_CHECKER(sequence_checker_);
 
  private:
-  void DidInitialize(bool result);
+  void DidInitialize(blink::mojom::FileSystemAccessErrorPtr result);
 
   const FileSystemAccessWatchScope scope_;
 
-  absl::optional<bool> initialization_result_;
-  std::list<base::OnceCallback<void(bool)>> initialization_callbacks_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  absl::optional<blink::mojom::FileSystemAccessErrorPtr> initialization_result_;
+  std::list<base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>>
+      initialization_callbacks_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::ObserverList<RawChangeObserver> observers_
       GUARDED_BY_CONTEXT(sequence_checker_);

@@ -17,6 +17,7 @@
 #include "build/buildflag.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/file_system_access/file_system_access_change_source.h"
+#include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/file_system_access/file_system_access_observer_host.h"
 #include "content/browser/file_system_access/file_system_access_observer_observation.h"
@@ -24,6 +25,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_types.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-shared.h"
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 #include "content/browser/file_system_access/file_system_access_local_path_watcher.h"
@@ -202,7 +204,8 @@ void FileSystemAccessWatcherManager::RemoveObserver(Observation* observation) {
 
 void FileSystemAccessWatcherManager::EnsureSourceIsInitializedForScope(
     FileSystemAccessWatchScope scope,
-    base::OnceCallback<void(bool)> on_source_initialized) {
+    base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
+        on_source_initialized) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // TODO(https://crbug.com/1019297): Handle overlapping scopes and initializing
@@ -219,7 +222,9 @@ void FileSystemAccessWatcherManager::EnsureSourceIsInitializedForScope(
     auto owned_change_source = CreateOwnedSourceForScope(scope);
     if (!owned_change_source) {
       // TODO(https://crbug.com/1019297): Watching `scope` is not supported.
-      std::move(on_source_initialized).Run(false);
+      std::move(on_source_initialized)
+          .Run(file_system_access_error::FromStatus(
+              blink::mojom::FileSystemAccessStatus::kNotSupportedError));
       return;
     }
     raw_change_source = owned_change_source.get();
@@ -235,16 +240,20 @@ void FileSystemAccessWatcherManager::EnsureSourceIsInitializedForScope(
 
 void FileSystemAccessWatcherManager::DidInitializeSource(
     base::WeakPtr<FileSystemAccessChangeSource> source,
-    base::OnceCallback<void(bool)> on_source_initialized,
-    bool success) {
+    base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
+        on_source_initialized,
+    blink::mojom::FileSystemAccessErrorPtr result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!source) {
-    std::move(on_source_initialized).Run(false);
+    // `source` was destroyed as we tried to initialize it. Abort.
+    std::move(on_source_initialized)
+        .Run(file_system_access_error::FromStatus(
+            blink::mojom::FileSystemAccessStatus::kOperationFailed));
     return;
   }
 
-  if (!success) {
+  if (result->status != blink::mojom::FileSystemAccessStatus::kOk) {
     // If we owned this source, remove it. A source which is not initialized
     // will not notify of changes, so there's no use keeping it around.
     //
@@ -258,17 +267,19 @@ void FileSystemAccessWatcherManager::DidInitializeSource(
         });
   }
 
-  std::move(on_source_initialized).Run(success);
+  std::move(on_source_initialized).Run(std::move(result));
 }
 
 void FileSystemAccessWatcherManager::PrepareObservationForScope(
     FileSystemAccessWatchScope scope,
     GetObservationCallback get_observation_callback,
-    bool success) {
+    blink::mojom::FileSystemAccessErrorPtr source_initialization_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!success) {
-    std::move(get_observation_callback).Run(nullptr);
+  if (source_initialization_result->status !=
+      blink::mojom::FileSystemAccessStatus::kOk) {
+    std::move(get_observation_callback)
+        .Run(base::unexpected(std::move(source_initialization_result)));
     return;
   }
 

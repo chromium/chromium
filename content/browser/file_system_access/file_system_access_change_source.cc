@@ -28,12 +28,13 @@ void FileSystemAccessChangeSource::RemoveObserver(RawChangeObserver* observer) {
 }
 
 void FileSystemAccessChangeSource::EnsureInitialized(
-    base::OnceCallback<void(bool)> on_source_initialized) {
+    base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
+        on_source_initialized) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (initialization_result_.has_value()) {
     CHECK(initialization_callbacks_.empty());
-    std::move(on_source_initialized).Run(*initialization_result_);
+    std::move(on_source_initialized).Run(initialization_result_->Clone());
     return;
   }
 
@@ -46,18 +47,19 @@ void FileSystemAccessChangeSource::EnsureInitialized(
                             weak_factory_.GetWeakPtr()));
 }
 
-void FileSystemAccessChangeSource::DidInitialize(bool result) {
+void FileSystemAccessChangeSource::DidInitialize(
+    blink::mojom::FileSystemAccessErrorPtr result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!initialization_result_.has_value());
   CHECK(!initialization_callbacks_.empty());
 
-  initialization_result_ = result;
+  initialization_result_ = std::move(result);
 
   // Move the callbacks to the stack since they may cause |this| to be deleted.
   auto initialization_callbacks = std::move(initialization_callbacks_);
   initialization_callbacks_.clear();
   for (auto& callback : initialization_callbacks) {
-    std::move(callback).Run(result);
+    std::move(callback).Run(initialization_result_->Clone());
   }
 }
 

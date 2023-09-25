@@ -8,8 +8,10 @@
 #include "base/files/file_path_watcher.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
+#include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/browser/file_system_access/file_system_access_watcher_manager.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-shared.h"
 
 namespace content {
 
@@ -40,12 +42,15 @@ FileSystemAccessLocalPathWatcher::FileSystemAccessLocalPathWatcher(
 FileSystemAccessLocalPathWatcher::~FileSystemAccessLocalPathWatcher() = default;
 
 void FileSystemAccessLocalPathWatcher::Initialize(
-    base::OnceCallback<void(bool)> on_source_initialized) {
+    base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
+        on_source_initialized) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (scope().IsRecursive() &&
       !base::FilePathWatcher::RecursiveWatchAvailable()) {
-    std::move(on_source_initialized).Run(false);
+    std::move(on_source_initialized)
+        .Run(file_system_access_error::FromStatus(
+            blink::mojom::FileSystemAccessStatus::kNotSupportedError));
     return;
   }
 
@@ -71,7 +76,17 @@ void FileSystemAccessLocalPathWatcher::Initialize(
       .WithArgs(
           scope().root_url().path(), std::move(watch_options),
           base::BindPostTaskToCurrentDefault(std::move(on_change_callback)))
-      .Then(std::move(on_source_initialized));
+      .Then(base::BindOnce(
+          [](base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
+                 callback,
+             bool result) {
+            std::move(callback).Run(
+                result ? file_system_access_error::Ok()
+                       : file_system_access_error::FromStatus(
+                             blink::mojom::FileSystemAccessStatus::
+                                 kOperationFailed));
+          },
+          std::move(on_source_initialized)));
 }
 
 void FileSystemAccessLocalPathWatcher::OnFilePathChanged(

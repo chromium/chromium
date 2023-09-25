@@ -14,6 +14,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
+#include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "content/browser/file_system_access/file_system_access_change_source.h"
 #include "content/browser/file_system_access/file_system_access_watch_scope.h"
@@ -22,6 +23,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_observer_host.mojom.h"
 
 namespace content {
@@ -85,8 +87,9 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
   };
 
   using BindingContext = FileSystemAccessEntryFactory::BindingContext;
-  using GetObservationCallback =
-      base::OnceCallback<void(std::unique_ptr<Observation>)>;
+  using GetObservationCallback = base::OnceCallback<void(
+      base::expected<std::unique_ptr<Observation>,
+                     blink::mojom::FileSystemAccessErrorPtr>)>;
 
   FileSystemAccessWatcherManager(
       FileSystemAccessManagerImpl* manager,
@@ -108,8 +111,8 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
   // `FileSystemAccessChangeSource` if one does not already cover the scope of
   // the requested observation.
   //
-  // `get_observation_callback` returns an `Observation`, or nullptr if the
-  // given file or directory cannot be watched as requested.
+  // `get_observation_callback` returns an `Observation`, or an appropriate
+  // error if the given file or directory cannot be watched as requested.
   void GetFileObservation(const storage::FileSystemURL& file_url,
                           GetObservationCallback get_observation_callback);
   void GetDirectoryObservation(const storage::FileSystemURL& directory_url,
@@ -153,15 +156,21 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
   // Attempts to create a change source for `scope` if it does not exist.
   void EnsureSourceIsInitializedForScope(
       FileSystemAccessWatchScope scope,
-      base::OnceCallback<void(bool)> on_source_initialized);
-  void DidInitializeSource(base::WeakPtr<FileSystemAccessChangeSource> source,
-                           base::OnceCallback<void(bool)> on_source_initialized,
-                           bool success);
+      base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
+          on_source_initialized);
+  void DidInitializeSource(
+      base::WeakPtr<FileSystemAccessChangeSource> source,
+      base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
+          on_source_initialized,
+      blink::mojom::FileSystemAccessErrorPtr result);
 
-  void PrepareObservationForScope(FileSystemAccessWatchScope scope,
-                                  GetObservationCallback callback,
-                                  bool success);
+  void PrepareObservationForScope(
+      FileSystemAccessWatchScope scope,
+      GetObservationCallback callback,
+      blink::mojom::FileSystemAccessErrorPtr source_initialization_result);
 
+  // Creates and returns a new (uninitialized) change source for the given
+  // scope, or nullptr if watching this scope is not supported.
   std::unique_ptr<FileSystemAccessChangeSource> CreateOwnedSourceForScope(
       FileSystemAccessWatchScope scope);
 
