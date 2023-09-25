@@ -23,16 +23,6 @@
    "display": "block",
    "font-family": "ahem",
    "font-style": "normal",
-   "margin-bottom": "21.4375px",
-   "margin-left": "0px",
-   "margin-right": "0px",
-   "margin-top": "21.4375px"
-}
-{
-   "color": "rgb(255, 0, 0)",
-   "display": "block",
-   "font-family": "ahem",
-   "font-style": "normal",
    "margin-bottom": "21.44px",
    "margin-left": "0px",
    "margin-right": "0px",
@@ -67,16 +57,6 @@
    "margin-left": "8px",
    "margin-right": "8px",
    "margin-top": "8px"
-}
-{
-   "color": "rgb(0, 0, 0)",
-   "display": "block",
-   "font-family": "SlightHintedTimesNewRoman, \"Times New Roman\"",
-   "font-style": "normal",
-   "margin-bottom": "21.4375px",
-   "margin-left": "0px",
-   "margin-right": "0px",
-   "margin-top": "21.4375px"
 }
 {
    "color": "rgb(0, 0, 0)",
