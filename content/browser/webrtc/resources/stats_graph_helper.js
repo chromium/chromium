@@ -60,19 +60,14 @@ function readReportStat(report, stat) {
 }
 
 function isStandardStatBlocklisted(report, statName) {
-  // The datachannelid is an identifier, but because it is a number it shows up
-  // as a graph if we don't blocklist it.
-  if (report.type === 'data-channel' && statName === 'datachannelid') {
-    return true;
-  }
   // The priority does not change over time on its own; plotting uninteresting.
   if (report.type === 'candidate-pair' && statName === 'priority') {
     return true;
   }
-  // The mid/rid associated with a sender/receiver does not change over time;
-  // plotting uninteresting.
+  // The mid/rid and ssrcs associated with a sender/receiver do not change
+  // over time; plotting uninteresting.
   if (['inbound-rtp', 'outbound-rtp'].includes(report.type) &&
-      ['mid', 'rid'].includes(statName)) {
+      ['mid', 'rid', 'ssrc', 'rtxSsrc', 'fecSsrc'].includes(statName)) {
     return true;
   }
   return false;
