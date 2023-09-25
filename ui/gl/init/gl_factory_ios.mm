@@ -16,7 +16,7 @@ namespace gl::init {
 
 std::vector<GLImplementationParts> GetAllowedGLImplementations() {
   std::vector<GLImplementationParts> impls;
-  impls.emplace_back(kGLImplementationEGLANGLE);
+  impls.emplace_back(gl::ANGLEImplementation::kMetal);
   return impls;
 }
 
