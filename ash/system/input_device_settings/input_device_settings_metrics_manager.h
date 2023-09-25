@@ -50,7 +50,6 @@ class ASH_EXPORT InputDeviceSettingsMetricsManager {
                                             const mojom::Mouse& mouse);
 
  private:
-  void RecordKeyboardNumberOfKeysRemapped(const mojom::Keyboard& keyboard);
   base::flat_map<AccountId, base::flat_set<std::string>> recorded_keyboards_;
   base::flat_map<AccountId, base::flat_set<std::string>> recorded_mice_;
   base::flat_map<AccountId, base::flat_set<std::string>>

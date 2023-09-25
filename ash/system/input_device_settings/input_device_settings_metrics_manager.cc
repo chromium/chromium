@@ -208,6 +208,23 @@ std::string GetSixPackKeyMetricName(const std::string& prefix,
                        is_initial_value ? ".Initial" : ".Changed"});
 }
 
+void RecordKeyboardNumberOfKeysRemapped(const mojom::Keyboard& keyboard) {
+  base::flat_map<ui::mojom::ModifierKey, ui::mojom::ModifierKey>
+      default_remappings;
+  if (keyboard.meta_key == mojom::MetaKey::kCommand) {
+    default_remappings[ui::mojom::ModifierKey::kControl] =
+        ui::mojom::ModifierKey::kMeta;
+    default_remappings[ui::mojom::ModifierKey::kMeta] =
+        ui::mojom::ModifierKey::kControl;
+  }
+  const int num_keys_remapped = GetNumberOfNonDefaultRemappings(
+      *keyboard.settings, std::move(default_remappings));
+  const std::string keyboard_metrics =
+      base::StrCat({GetKeyboardMetricsPrefix(keyboard),
+                    "Modifiers.NumberOfRemappedKeysOnStart"});
+  base::UmaHistogramCounts100(keyboard_metrics, num_keys_remapped);
+}
+
 }  // namespace
 
 InputDeviceSettingsMetricsManager::InputDeviceSettingsMetricsManager() =
@@ -264,24 +281,6 @@ void InputDeviceSettingsMetricsManager::RecordKeyboardInitialMetrics(
     RecordSixPackKeyInfo(keyboard, ui::VKEY_PRIOR, /*is_initial_value=*/true);
     RecordSixPackKeyInfo(keyboard, ui::VKEY_NEXT, /*is_initial_value=*/true);
   }
-}
-
-void InputDeviceSettingsMetricsManager::RecordKeyboardNumberOfKeysRemapped(
-    const mojom::Keyboard& keyboard) {
-  base::flat_map<ui::mojom::ModifierKey, ui::mojom::ModifierKey>
-      default_remappings;
-  if (keyboard.meta_key == mojom::MetaKey::kCommand) {
-    default_remappings[ui::mojom::ModifierKey::kControl] =
-        ui::mojom::ModifierKey::kMeta;
-    default_remappings[ui::mojom::ModifierKey::kMeta] =
-        ui::mojom::ModifierKey::kControl;
-  }
-  const int num_keys_remapped = GetNumberOfNonDefaultRemappings(
-      *keyboard.settings, std::move(default_remappings));
-  const std::string keyboard_metrics =
-      base::StrCat({GetKeyboardMetricsPrefix(keyboard),
-                    "Modifiers.NumberOfRemappedKeysOnStart"});
-  base::UmaHistogramCounts100(keyboard_metrics, num_keys_remapped);
 }
 
 void InputDeviceSettingsMetricsManager::RecordKeyboardChangedMetrics(
