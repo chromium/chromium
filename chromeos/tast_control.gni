@@ -35,9 +35,6 @@ tast_disabled_tests_from_chrome_all = [
   "inputs.VirtualKeyboardGlideTyping.tablet_floating",
   "inputs.VirtualKeyboardHandwriting.floating",
 
-  # crbug.com/1259127
-  "ui.TabletOperations",
-
   # crbug.com/1263233
   "security.SharedFilesystemState",
 
@@ -45,8 +42,6 @@ tast_disabled_tests_from_chrome_all = [
   "ui.ChromeCrashReporterMetrics.success_crashpad",
 
   # https://crbug.com/1276549: Flaky.
-  "ui.ChromeCrashLoop.breakpad",
-  "ui.ChromeCrashLoop.breakpad_mock_consent",
   "ui.ChromeCrashReporterMetrics.success_breakpad",
   "ui.ChromeCrashReporterMetrics.miss_breakpad",
 
@@ -71,18 +66,11 @@ tast_disabled_tests_from_chrome_all = [
   "security.GPUSandboxed",
 
   # https://crbug.com/1282481
-  "quicksettings.OpenSettings",
   "quicksettings.OpenSettings.qs_revamp_disabled",
   "quicksettings.OpenSettings.qs_revamp_enabled",
 
   # http://b/212644512
   "security.SELinuxFilesDataDir",
-
-  # https://crbug.com/1260046
-  "wmp.WindowCycle",
-
-  # crbug.com/1364513
-  "policy.ArcEnabled.vm",
 
   # https://crbug.com/1309331
   "policy.CookiesAllowedForUrls",
@@ -122,12 +110,6 @@ tast_disabled_tests_from_chrome_all = [
   # http://crbug.com/1363667
   "apps.CalculatorSmoke",
 
-  # https://crbug.com/1341074
-  "launcher.BubbleLaunchApp.enable_launcher_app_sort",
-
-  # https://crbug.com/1341076
-  "launcher.BubbleLaunchApp.disable_launcher_app_sort",
-
   # b/241122961
   "policy.BlockThirdPartyCookies",
 
@@ -137,14 +119,8 @@ tast_disabled_tests_from_chrome_all = [
   # https://crbug.com/1350880
   "arc.PIPRoundedCornersUnderlay",
 
-  # https://crbug.com/1352525
-  "apps.ContentPreview",
-
   # https://crbug.com/1362182
   "feedback.AttachFile",
-
-  # https://crbug.com/1360969
-  "launcher.SearchBuiltInApps.productivity_launcher_tablet_mode",
 
   # https://crbug.com/1365284
   "crostini.RestartApp.clamshell_stable",
@@ -163,8 +139,6 @@ tast_disabled_tests_from_chrome_all = [
   "crostini.RestartApp.bullseye_clamshell_stable",
 
   # https://crbug.com/1368586
-  "u2fd.WebauthnUsingPassword.tpm1",
-  "u2fd.WebauthnUsingPassword.tpm1_lacros",
   "u2fd.WebauthnUsingPassword.gsc",
   "u2fd.WebauthnUsingPassword.gsc_lacros",
 
@@ -172,22 +146,11 @@ tast_disabled_tests_from_chrome_all = [
   "arc.Drivefs",
   "arc.Drivefs.vm",
 
-  # https://crbug.com/1374943
-  "hwsec.CrossVersionLogin",
-
-  # https://crbug.com/1375191
-  "login.ChangePassword.auth_factor_experiment_on",
-  "login.ChangePassword.auth_factor_experiment_off",
-
   # https://crbug.com/1361163
   "lacros.AudioPinnedStream.play",
 
   # https://crbug.com/1392911
   "login.RestrictSignin",
-
-  # https://crbug.com/1401605
-  "hwsec.CrossVersionLogin.small",
-  "hwsec.CrossVersionLogin.tpm_dynamic_small",
 
   # https://crbug.com/1402224
   "audio.PlaybackAudioControls",
