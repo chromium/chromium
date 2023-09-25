@@ -14,7 +14,8 @@
 
 namespace web_app {
 
-WebAppIconDiagnostic::WebAppIconDiagnostic(Profile* profile, AppId app_id)
+WebAppIconDiagnostic::WebAppIconDiagnostic(Profile* profile,
+                                           webapps::AppId app_id)
     : profile_(profile),
       app_id_(std::move(app_id)),
       provider_(WebAppProvider::GetForLocalAppsUnchecked(profile_.get())),

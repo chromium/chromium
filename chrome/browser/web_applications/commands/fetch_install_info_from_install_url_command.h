@@ -37,7 +37,7 @@ class FetchInstallInfoFromInstallUrlCommand
     : public WebAppCommandTemplate<SharedWebContentsLock> {
  public:
   FetchInstallInfoFromInstallUrlCommand(
-      ManifestId manifest_id,
+      webapps::ManifestId manifest_id,
       GURL install_url,
       base::OnceCallback<void(std::unique_ptr<WebAppInstallInfo>)> callback);
   ~FetchInstallInfoFromInstallUrlCommand() override;
@@ -75,7 +75,7 @@ class FetchInstallInfoFromInstallUrlCommand
   std::unique_ptr<SharedWebContentsLockDescription> lock_description_;
   std::unique_ptr<SharedWebContentsLock> lock_;
 
-  ManifestId manifest_id_;
+  webapps::ManifestId manifest_id_;
   GURL install_url_;
   base::OnceCallback<void(std::unique_ptr<WebAppInstallInfo>)>
       web_app_install_info_callback_;

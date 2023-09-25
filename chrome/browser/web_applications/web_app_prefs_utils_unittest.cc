@@ -12,10 +12,10 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
@@ -24,8 +24,8 @@
 namespace web_app {
 
 namespace {
-const AppId app_id = "test_app";
-const AppId app_id_2 = "test_app_2";
+const webapps::AppId app_id = "test_app";
+const webapps::AppId app_id_2 = "test_app_2";
 const base::Time time_before_app_mute =
     base::Time::Now() - base::Days(kIphAppSpecificMuteTimeSpanDays) -
     base::Hours(1);
@@ -152,7 +152,7 @@ TEST_F(WebAppPrefsUtilsTest, TestTakeAllWebAppInstallSources) {
   EXPECT_TRUE(GetWebAppInstallSourceDeprecated(prefs(), "app2"));
   EXPECT_TRUE(GetWebAppInstallSourceDeprecated(prefs(), "app3"));
 
-  std::map<AppId, int> values = TakeAllWebAppInstallSources(prefs());
+  std::map<webapps::AppId, int> values = TakeAllWebAppInstallSources(prefs());
 
   // Verify the returned map.
   ASSERT_EQ(2u, values.size());
@@ -324,11 +324,11 @@ TEST_F(WebAppPrefsUtilsTest, MLGuardrailAppSpecificDismissForDays) {
 }
 
 TEST_F(WebAppPrefsUtilsTest, MLGuardrailConsecutiveAppAgnosticIgnores) {
-  const AppId& app_id1 = "app1";
-  const AppId& app_id2 = "app2";
-  const AppId& app_id3 = "app3";
-  const AppId& app_id4 = "app4";
-  const AppId& app_id5 = "app5";
+  const webapps::AppId& app_id1 = "app1";
+  const webapps::AppId& app_id2 = "app2";
+  const webapps::AppId& app_id3 = "app3";
+  const webapps::AppId& app_id4 = "app4";
+  const webapps::AppId& app_id5 = "app5";
   RecordMlInstallIgnored(prefs(), app_id1, base::Time::Now());
   {
     const auto& dict = prefs()->GetDict(prefs::kWebAppsAppAgnosticMlState);
@@ -368,7 +368,7 @@ TEST_F(WebAppPrefsUtilsTest, MLGuardrailConsecutiveAppAgnosticIgnores) {
 }
 
 TEST_F(WebAppPrefsUtilsTest, MLGuardrailConsecutiveAppAgnosticIgnoreDays) {
-  const AppId& app_id1 = "app1";
+  const webapps::AppId& app_id1 = "app1";
   RecordMlInstallIgnored(prefs(), app_id1, base::Time::Now());
   auto last_ignored_time =
       GetTimeWebAppPref(prefs(), app_id1, kLastTimeMlInstallIgnored);
@@ -387,7 +387,7 @@ TEST_F(WebAppPrefsUtilsTest, MLGuardrailConsecutiveAppAgnosticIgnoreDays) {
 }
 
 TEST_F(WebAppPrefsUtilsTest, MLGuardrailConsecutiveAppAgnosticDismissDays) {
-  const AppId& app_id1 = "app1";
+  const webapps::AppId& app_id1 = "app1";
 
   // Dismissing any app within the last 7 days should trigger the app agnostic
   // dismiss guardrail response.

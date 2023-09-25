@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_process.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -26,6 +25,7 @@
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/window_open_disposition.h"
@@ -41,7 +41,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsBrowserTest, LaunchWithIntent) {
   const GURL app_url(
       embedded_test_server()->GetURL("/web_share_target/charts.html"));
   Profile* const profile = browser()->profile();
-  const AppId app_id = InstallWebAppFromManifest(browser(), app_url);
+  const webapps::AppId app_id = InstallWebAppFromManifest(browser(), app_url);
 
   base::RunLoop run_loop;
   WebAppLaunchProcess::SetOpenApplicationCallbackForTesting(
@@ -75,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsBrowserTest, IntentWithoutFiles) {
   const GURL app_url(
       embedded_test_server()->GetURL("/web_share_target/poster.html"));
   Profile* const profile = browser()->profile();
-  const AppId app_id = InstallWebAppFromManifest(browser(), app_url);
+  const webapps::AppId app_id = InstallWebAppFromManifest(browser(), app_url);
 
   base::RunLoop run_loop;
   WebAppLaunchProcess::SetOpenApplicationCallbackForTesting(
@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsBrowserTest, ExposeAppServicePublisherId) {
   const GURL app_url(embedded_test_server()->GetURL("/web_apps/basic.html"));
 
   // Install file handling web app.
-  const AppId app_id = InstallWebAppFromManifest(browser(), app_url);
+  const webapps::AppId app_id = InstallWebAppFromManifest(browser(), app_url);
   const WebAppRegistrar& registrar =
       WebAppProvider::GetForTest(browser()->profile())->registrar_unsafe();
   const WebApp* web_app = registrar.GetAppById(app_id);
@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsBrowserTest, ExposeAppServicePublisherId) {
 IN_PROC_BROWSER_TEST_F(WebAppsBrowserTest, LaunchAppIconKeyUnchanged) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url(embedded_test_server()->GetURL("/web_apps/basic.html"));
-  const AppId app_id = InstallWebAppFromManifest(browser(), app_url);
+  const webapps::AppId app_id = InstallWebAppFromManifest(browser(), app_url);
   auto* proxy =
       apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
 

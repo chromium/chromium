@@ -63,7 +63,7 @@ void UninstallAllUserInstalledWebAppsCommand::ProcessNextUninstallOrComplete() {
   }
 
   // Prepare pending jobs for next app ID.
-  AppId app_id = ids_to_uninstall_.back();
+  webapps::AppId app_id = ids_to_uninstall_.back();
   ids_to_uninstall_.pop_back();
 
   for (auto install_source : kUserDrivenInstallSources) {

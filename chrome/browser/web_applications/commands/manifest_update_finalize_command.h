@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace webapps {
 enum class InstallResultCode;
@@ -31,12 +32,14 @@ class LockDescription;
 // steps of writing the data to the DB.
 class ManifestUpdateFinalizeCommand : public WebAppCommandTemplate<AppLock> {
  public:
-  using ManifestWriteCallback = base::OnceCallback<
-      void(const GURL& url, const AppId& app_id, ManifestUpdateResult result)>;
+  using ManifestWriteCallback =
+      base::OnceCallback<void(const GURL& url,
+                              const webapps::AppId& app_id,
+                              ManifestUpdateResult result)>;
 
   ManifestUpdateFinalizeCommand(
       const GURL& url,
-      const AppId& app_id,
+      const webapps::AppId& app_id,
       WebAppInstallInfo install_info,
       ManifestWriteCallback write_callback,
       std::unique_ptr<ScopedKeepAlive> keep_alive,
@@ -55,7 +58,7 @@ class ManifestUpdateFinalizeCommand : public WebAppCommandTemplate<AppLock> {
   }
 
  private:
-  void OnInstallationComplete(const AppId& app_id,
+  void OnInstallationComplete(const webapps::AppId& app_id,
                               webapps::InstallResultCode code,
                               OsHooksErrors os_hooks_errors);
   void CompleteCommand(webapps::InstallResultCode code,
@@ -65,7 +68,7 @@ class ManifestUpdateFinalizeCommand : public WebAppCommandTemplate<AppLock> {
   std::unique_ptr<AppLock> lock_;
 
   const GURL url_;
-  const AppId app_id_;
+  const webapps::AppId app_id_;
   WebAppInstallInfo install_info_;
   ManifestWriteCallback write_callback_;
   // Two KeepAlive objects, to make sure that manifest update writes

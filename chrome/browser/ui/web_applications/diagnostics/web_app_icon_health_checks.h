@@ -13,6 +13,7 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "components/webapps/common/web_app_id.h"
 
 class Profile;
 
@@ -31,13 +32,13 @@ class WebAppIconHealthChecks : public WebAppInstallManagerObserver {
   base::WeakPtr<WebAppIconHealthChecks> GetWeakPtr();
 
   // WebAppInstallManagerObserver:
-  void OnWebAppWillBeUninstalled(const AppId& app_id) override;
+  void OnWebAppWillBeUninstalled(const webapps::AppId& app_id) override;
   void OnWebAppInstallManagerDestroyed() override;
 
  private:
   void RunDiagnostics();
   void SaveDiagnosticForApp(
-      AppId app_id,
+      webapps::AppId app_id,
       absl::optional<WebAppIconDiagnostic::Result> result);
   void RecordDiagnosticResults();
 
@@ -45,7 +46,7 @@ class WebAppIconHealthChecks : public WebAppInstallManagerObserver {
   apps::AppType app_type_;
   AppTypeInitializedEvent web_apps_published_event_;
 
-  base::flat_map<AppId, std::unique_ptr<WebAppIconDiagnostic>>
+  base::flat_map<webapps::AppId, std::unique_ptr<WebAppIconDiagnostic>>
       running_diagnostics_;
   base::RepeatingClosure run_complete_callback_;
   std::vector<WebAppIconDiagnostic::Result> results_;

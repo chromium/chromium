@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace web_app {
 
@@ -30,7 +31,7 @@ struct RegistryUpdateData {
   Apps apps_to_create;
   Apps apps_to_update;
 
-  std::vector<AppId> apps_to_delete;
+  std::vector<webapps::AppId> apps_to_delete;
 
   bool IsEmpty() const;
 
@@ -50,9 +51,9 @@ class WebAppRegistryUpdate {
   // Register a new app.
   void CreateApp(std::unique_ptr<WebApp> web_app);
   // Delete registered app.
-  void DeleteApp(const AppId& app_id);
+  void DeleteApp(const webapps::AppId& app_id);
   // Acquire a mutable existing app to set new field values.
-  WebApp* UpdateApp(const AppId& app_id);
+  WebApp* UpdateApp(const webapps::AppId& app_id);
 
   std::unique_ptr<RegistryUpdateData> TakeUpdateData(
       base::PassKey<WebAppSyncBridge> pass_key);

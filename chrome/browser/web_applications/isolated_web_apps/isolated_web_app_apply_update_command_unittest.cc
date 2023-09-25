@@ -347,7 +347,7 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfIconDownloadFails) {
 TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfInstallFinalizerFails) {
   class FailingUpdateFinalizer : public WebAppInstallFinalizer {
    public:
-    explicit FailingUpdateFinalizer(AppId app_id)
+    explicit FailingUpdateFinalizer(webapps::AppId app_id)
         : WebAppInstallFinalizer(nullptr), app_id_(std::move(app_id)) {}
 
     void FinalizeUpdate(const WebAppInstallInfo& web_app_info,
@@ -357,7 +357,7 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfInstallFinalizerFails) {
     }
 
    private:
-    AppId app_id_;
+    webapps::AppId app_id_;
   };
 
   fake_provider().SetInstallFinalizer(

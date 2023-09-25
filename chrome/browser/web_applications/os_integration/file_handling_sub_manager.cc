@@ -92,7 +92,7 @@ FileHandlingSubManager::FileHandlingSubManager(
 FileHandlingSubManager::~FileHandlingSubManager() = default;
 
 void FileHandlingSubManager::Configure(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     proto::WebAppOsIntegrationState& desired_state,
     base::OnceClosure configure_done) {
   DCHECK(!desired_state.has_file_handling());
@@ -131,7 +131,7 @@ void FileHandlingSubManager::Configure(
 }
 
 void FileHandlingSubManager::Execute(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     const absl::optional<SynchronizeOsOptions>& synchronize_options,
     const proto::WebAppOsIntegrationState& desired_state,
     const proto::WebAppOsIntegrationState& current_state,
@@ -156,7 +156,7 @@ void FileHandlingSubManager::Execute(
                             desired_state, std::move(callback)));
 }
 
-void FileHandlingSubManager::ForceUnregister(const AppId& app_id,
+void FileHandlingSubManager::ForceUnregister(const webapps::AppId& app_id,
                                              base::OnceClosure callback) {
   if (!ShouldRegisterFileHandlersWithOs()) {
     std::move(callback).Run();
@@ -174,7 +174,7 @@ void FileHandlingSubManager::ForceUnregister(const AppId& app_id,
 }
 
 void FileHandlingSubManager::Unregister(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     const proto::WebAppOsIntegrationState& desired_state,
     const proto::WebAppOsIntegrationState& current_state,
     base::OnceClosure callback) {
@@ -202,7 +202,7 @@ void FileHandlingSubManager::Unregister(
 }
 
 void FileHandlingSubManager::Register(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     const proto::WebAppOsIntegrationState& desired_state,
     base::OnceClosure callback) {
   if (!HasFileHandling(desired_state)) {

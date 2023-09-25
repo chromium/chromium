@@ -13,11 +13,11 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace web_app {
 
@@ -111,7 +111,7 @@ void InstallFromInfoJob::Abort(webapps::InstallResultCode code) {
   SignalCompletionAndSelfDestruct(code, OsHooksErrors());
 }
 
-void InstallFromInfoJob::OnInstallCompleted(const AppId& app_id,
+void InstallFromInfoJob::OnInstallCompleted(const webapps::AppId& app_id,
                                             webapps::InstallResultCode code,
                                             OsHooksErrors os_hook_errors) {
   debug_value_.Set("result_code", base::ToString(code));

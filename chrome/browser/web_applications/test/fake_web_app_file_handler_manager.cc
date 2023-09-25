@@ -17,7 +17,7 @@ FakeWebAppFileHandlerManager::FakeWebAppFileHandlerManager(Profile* profile)
 FakeWebAppFileHandlerManager::~FakeWebAppFileHandlerManager() = default;
 
 const apps::FileHandlers* FakeWebAppFileHandlerManager::GetAllFileHandlers(
-    const AppId& app_id) const {
+    const webapps::AppId& app_id) const {
   if (base::Contains(file_handlers_, app_id))
     return &file_handlers_.at(app_id);
 
@@ -29,7 +29,7 @@ bool FakeWebAppFileHandlerManager::IsDisabledForTesting() {
 }
 
 void FakeWebAppFileHandlerManager::InstallFileHandler(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     const GURL& action,
     const AcceptMap& accept,
     absl::optional<apps::FileHandler::LaunchType> launch_type,

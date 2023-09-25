@@ -26,6 +26,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -89,13 +90,13 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
   void Shutdown();
 
   void MaybeUpdate(const GURL& url,
-                   const absl::optional<AppId>& app_id,
+                   const absl::optional<webapps::AppId>& app_id,
                    content::WebContents* web_contents);
-  bool IsUpdateConsumed(const AppId& app_id, base::Time check_time);
-  bool IsUpdateCommandPending(const AppId& app_id);
+  bool IsUpdateConsumed(const webapps::AppId& app_id, base::Time check_time);
+  bool IsUpdateCommandPending(const webapps::AppId& app_id);
 
   // WebAppInstallManagerObserver:
-  void OnWebAppWillBeUninstalled(const AppId& app_id) override;
+  void OnWebAppWillBeUninstalled(const webapps::AppId& app_id) override;
   void OnWebAppInstallManagerDestroyed() override;
 
   void set_time_override_for_testing(base::Time time_override) {
@@ -106,7 +107,7 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
     hang_update_checks_for_testing_ = true;
   }
 
-  void ResetManifestThrottleForTesting(const AppId& app_id);
+  void ResetManifestThrottleForTesting(const webapps::AppId& app_id);
   // Return whether there are pending updates waiting for the page load to
   // finish.
   bool HasUpdatesPendingLoadFinishForTesting();
@@ -116,9 +117,10 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
   // happen. These includes app with windows open, ready to be closed as well as
   // apps with no windows and an already scheduled command to finalize the
   // manifest update.
-  base::flat_set<AppId> GetAppsPendingWindowsClosingForTesting();
+  base::flat_set<webapps::AppId> GetAppsPendingWindowsClosingForTesting();
 
-  bool IsAppPendingPageAndManifestUrlLoadForTesting(const AppId& app_id);
+  bool IsAppPendingPageAndManifestUrlLoadForTesting(
+      const webapps::AppId& app_id);
 
  private:
   // This class is used to either observe the url loading or web_contents
@@ -152,36 +154,37 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
   };
 
   void StartCheckAfterPageAndManifestUrlLoad(
-      const AppId& app_id,
+      const webapps::AppId& app_id,
       base::Time check_time,
       base::WeakPtr<content::WebContents> web_contents);
 
   void OnManifestCheckAwaitAppWindowClose(
       base::WeakPtr<content::WebContents> contents,
       const GURL& url,
-      const AppId& app_id,
+      const webapps::AppId& app_id,
       ManifestUpdateCheckResult check_result,
       absl::optional<WebAppInstallInfo> install_info);
 
   void StartManifestWriteAfterWindowsClosed(
       const GURL& url,
-      const AppId& app_id,
+      const webapps::AppId& app_id,
       std::unique_ptr<ScopedKeepAlive> keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
       WebAppInstallInfo install_info);
 
   bool MaybeConsumeUpdateCheck(const GURL& origin,
-                               const AppId& app_id,
+                               const webapps::AppId& app_id,
                                base::Time check_time);
-  absl::optional<base::Time> GetLastUpdateCheckTime(const AppId& app_id) const;
+  absl::optional<base::Time> GetLastUpdateCheckTime(
+      const webapps::AppId& app_id) const;
   void SetLastUpdateCheckTime(const GURL& origin,
-                              const AppId& app_id,
+                              const webapps::AppId& app_id,
                               base::Time time);
   void OnUpdateStopped(const GURL& url,
-                       const AppId& app_id,
+                       const webapps::AppId& app_id,
                        ManifestUpdateResult result);
   void NotifyResult(const GURL& url,
-                    const absl::optional<AppId>& app_id,
+                    const absl::optional<webapps::AppId>& app_id,
                     ManifestUpdateResult result);
 
   static bool& BypassWindowCloseWaitingForTesting();
@@ -195,8 +198,8 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
   base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
       install_manager_observation_{this};
 
-  std::map<AppId, UpdateStage> update_stages_;
-  base::flat_map<AppId, base::Time> last_update_check_;
+  std::map<webapps::AppId, UpdateStage> update_stages_;
+  base::flat_map<webapps::AppId, base::Time> last_update_check_;
 
   absl::optional<base::Time> time_override_for_testing_;
 

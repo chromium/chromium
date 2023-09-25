@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace web_app {
 
@@ -43,11 +44,11 @@ enum class RunOnOsLoginCommandCompletionState {
 class RunOnOsLoginCommand : public WebAppCommandTemplate<AppLock> {
  public:
   static std::unique_ptr<RunOnOsLoginCommand> CreateForSetLoginMode(
-      const AppId& app_id,
+      const webapps::AppId& app_id,
       RunOnOsLoginMode login_mode,
       base::OnceClosure callback);
   static std::unique_ptr<RunOnOsLoginCommand> CreateForSyncLoginMode(
-      const AppId& app_id,
+      const webapps::AppId& app_id,
       base::OnceClosure callback);
   ~RunOnOsLoginCommand() override;
 
@@ -58,7 +59,7 @@ class RunOnOsLoginCommand : public WebAppCommandTemplate<AppLock> {
   base::Value ToDebugValue() const override;
 
  private:
-  RunOnOsLoginCommand(AppId app_id,
+  RunOnOsLoginCommand(webapps::AppId app_id,
                       absl::optional<RunOnOsLoginMode> login_mode,
                       RunOnOsLoginAction set_or_sync_mode,
                       base::OnceClosure callback_);
@@ -81,7 +82,7 @@ class RunOnOsLoginCommand : public WebAppCommandTemplate<AppLock> {
   std::unique_ptr<AppLockDescription> lock_description_;
   std::unique_ptr<AppLock> lock_;
 
-  AppId app_id_;
+  webapps::AppId app_id_;
   absl::optional<RunOnOsLoginMode> login_mode_;
   RunOnOsLoginAction set_or_sync_mode_;
   std::string stop_reason_;

@@ -51,7 +51,7 @@ class IsolatedWebAppBrowserTestHarness : public WebAppControllerBrowserTest {
       const base::FilePath::StringPieceType& chrome_test_data_relative_root);
   IsolatedWebAppUrlInfo InstallDevModeProxyIsolatedWebApp(
       const url::Origin& origin);
-  content::RenderFrameHost* OpenApp(const AppId& app_id,
+  content::RenderFrameHost* OpenApp(const webapps::AppId& app_id,
                                     base::StringPiece path = "");
   content::RenderFrameHost* NavigateToURLInNewTab(
       Browser* window,
@@ -72,7 +72,7 @@ IsolatedWebAppUrlInfo InstallDevModeProxyIsolatedWebApp(
     const url::Origin& proxy_origin);
 
 content::RenderFrameHost* OpenIsolatedWebApp(Profile* profile,
-                                             const AppId& app_id,
+                                             const webapps::AppId& app_id,
                                              base::StringPiece path = "");
 
 void CreateIframe(content::RenderFrameHost* parent_frame,
@@ -82,7 +82,7 @@ void CreateIframe(content::RenderFrameHost* parent_frame,
 
 // Adds an Isolated Web App to the WebAppRegistrar. The IWA will have an empty
 // filepath for |IsolatedWebAppLocation|.
-AppId AddDummyIsolatedAppToRegistry(
+webapps::AppId AddDummyIsolatedAppToRegistry(
     Profile* profile,
     const GURL& start_url,
     const std::string& name,

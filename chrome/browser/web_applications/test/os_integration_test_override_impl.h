@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -57,7 +58,7 @@ struct LinuxFileRegistration {
 class OsIntegrationTestOverrideImpl : public OsIntegrationTestOverride {
  public:
   using AppProtocolList =
-      std::vector<std::tuple<AppId, std::vector<std::string>>>;
+      std::vector<std::tuple<webapps::AppId, std::vector<std::string>>>;
 #if BUILDFLAG(IS_WIN)
   using JumpListEntryMap =
       base::flat_map<std::wstring, std::vector<scoped_refptr<ShellLinkItem>>>;
@@ -100,7 +101,7 @@ class OsIntegrationTestOverrideImpl : public OsIntegrationTestOverride {
   // Delete shortcuts stored in the test override for a specific app. This
   // should only be run on Windows, Mac and Linux.
   bool SimulateDeleteShortcutsByUser(Profile* profile,
-                                     const AppId& app_id,
+                                     const webapps::AppId& app_id,
                                      const std::string& app_name);
 
 #if BUILDFLAG(IS_MAC)
@@ -124,7 +125,7 @@ class OsIntegrationTestOverrideImpl : public OsIntegrationTestOverride {
   // login mode is enabled based on the location. This should only be run on
   // Windows, Mac and Linux.
   bool IsRunOnOsLoginEnabled(Profile* profile,
-                             const AppId& app_id,
+                             const webapps::AppId& app_id,
                              const std::string& app_name);
 
   // -------------------------------
@@ -132,7 +133,7 @@ class OsIntegrationTestOverrideImpl : public OsIntegrationTestOverride {
   // -------------------------------
 
   bool IsFileExtensionHandled(Profile* profile,
-                              const AppId& app_id,
+                              const webapps::AppId& app_id,
                               std::string app_name,
                               std::string file_extension);
 
@@ -151,7 +152,7 @@ class OsIntegrationTestOverrideImpl : public OsIntegrationTestOverride {
   absl::optional<SkColor> GetShortcutIconTopLeftColor(
       Profile* profile,
       base::FilePath shortcut_dir,
-      const AppId& app_id,
+      const webapps::AppId& app_id,
       const std::string& app_name,
       SquareSizePx size_px = icon_size::k128);
 
@@ -159,14 +160,14 @@ class OsIntegrationTestOverrideImpl : public OsIntegrationTestOverride {
   // app_name. This should only be run on Windows, Mac and Linux.
   base::FilePath GetShortcutPath(Profile* profile,
                                  base::FilePath shortcut_dir,
-                                 const AppId& app_id,
+                                 const webapps::AppId& app_id,
                                  const std::string& app_name);
 
   // Looks into the current shortcut paths to determine if a shortcut has
   // been created or not. This should only be run on Windows, Mac and Linux.
   // TODO(crbug.com/1425967): Add PList parsing logic for Mac shortcut checking.
   bool IsShortcutCreated(Profile* profile,
-                         const AppId& app_id,
+                         const webapps::AppId& app_id,
                          const std::string& app_name);
 
   // ---------------------------------
@@ -191,7 +192,7 @@ class OsIntegrationTestOverrideImpl : public OsIntegrationTestOverride {
   // the uninstall menu, and false if it isn't. The unexpected value is a string
   // description of the error.
   base::expected<bool, std::string> IsUninstallRegisteredWithOs(
-      const AppId& app_id,
+      const webapps::AppId& app_id,
       const std::string& app_name,
       Profile* profile);
 #endif  // BUILDFLAG(IS_WIN)
@@ -240,7 +241,7 @@ class OsIntegrationTestOverrideImpl : public OsIntegrationTestOverride {
   // Creates a tuple of app_id to protocols and adds it to the vector
   // of registered protocols. There can be multiple entries for the same
   // app_id.
-  void RegisterProtocolSchemes(const AppId& app_id,
+  void RegisterProtocolSchemes(const webapps::AppId& app_id,
                                std::vector<std::string> protocols) override;
 
  private:

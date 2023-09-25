@@ -66,7 +66,7 @@ bool CanUninstallAllManagementSources(
 RemoveWebAppJob::RemoveWebAppJob(
     webapps::WebappUninstallSource uninstall_source,
     Profile& profile,
-    AppId app_id,
+    webapps::AppId app_id,
     bool is_initial_request)
     : uninstall_source_(uninstall_source),
       profile_(profile),
@@ -214,7 +214,7 @@ base::Value RemoveWebAppJob::ToDebugValue() const {
                : base::Value());
   {
     base::Value::List list;
-    for (const AppId& sub_app_id : sub_apps_pending_removal_) {
+    for (const webapps::AppId& sub_app_id : sub_apps_pending_removal_) {
       list.Append(sub_app_id);
     }
     dict.Set("sub_apps_pending_removal", std::move(list));
@@ -311,7 +311,7 @@ void RemoveWebAppJob::ProcessSubAppsPendingRemovalOrComplete() {
     return;
   }
 
-  AppId sub_app_id = std::move(sub_apps_pending_removal_.back());
+  webapps::AppId sub_app_id = std::move(sub_apps_pending_removal_.back());
   sub_apps_pending_removal_.pop_back();
 
   sub_job_ = std::make_unique<RemoveInstallSourceJob>(

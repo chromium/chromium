@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_app_icon_downloader.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -58,7 +59,7 @@ class ManifestUpdateCheckCommand : public WebAppCommandTemplate<AppLock>,
 
   ManifestUpdateCheckCommand(
       const GURL& url,
-      const AppId& app_id,
+      const webapps::AppId& app_id,
       base::Time check_time,
       base::WeakPtr<content::WebContents> web_contents,
       CompletedCallback callback,
@@ -144,7 +145,7 @@ class ManifestUpdateCheckCommand : public WebAppCommandTemplate<AppLock>,
 
   // Manifest update check request parameters.
   const GURL url_;
-  const AppId app_id_;
+  const webapps::AppId app_id_;
   base::Time check_time_;
   CompletedCallback completed_callback_;
 

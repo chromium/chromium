@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
@@ -58,7 +59,7 @@ class WebAppDatabase {
   // Exposed for testing.
   static std::unique_ptr<WebAppProto> CreateWebAppProto(const WebApp& web_app);
   // Exposed for testing.
-  static std::unique_ptr<WebApp> ParseWebApp(const AppId& app_id,
+  static std::unique_ptr<WebApp> ParseWebApp(const webapps::AppId& app_id,
                                              const std::string& value);
   // Exposed for testing.
   static std::unique_ptr<WebApp> CreateWebApp(const WebAppProto& local_data);

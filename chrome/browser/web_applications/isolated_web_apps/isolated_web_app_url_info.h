@@ -12,6 +12,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/webapps/common/web_app_id.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -52,9 +53,9 @@ class IsolatedWebAppUrlInfo {
   // Returns the origin of the IWA that this URL refers to.
   const url::Origin& origin() const;
 
-  // Returns the AppId that should be used when installing the app hosted at
-  // this URL.
-  const AppId& app_id() const;
+  // Returns the webapps::AppId that should be used when installing the app
+  // hosted at this URL.
+  const webapps::AppId& app_id() const;
 
   // Returns the Web Bundle ID of the IWA that this URL refers to.
   const web_package::SignedWebBundleId& web_bundle_id() const;
@@ -78,7 +79,7 @@ class IsolatedWebAppUrlInfo {
   std::string partition_domain() const;
 
   url::Origin origin_;
-  AppId app_id_;
+  webapps::AppId app_id_;
   web_package::SignedWebBundleId web_bundle_id_;
 };
 

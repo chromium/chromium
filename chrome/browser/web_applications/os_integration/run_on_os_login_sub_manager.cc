@@ -20,7 +20,6 @@
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -28,6 +27,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -80,7 +80,7 @@ RunOnOsLoginSubManager::RunOnOsLoginSubManager(Profile& profile,
 RunOnOsLoginSubManager::~RunOnOsLoginSubManager() = default;
 
 void RunOnOsLoginSubManager::Configure(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     proto::WebAppOsIntegrationState& desired_state,
     base::OnceClosure configure_done) {
   DCHECK(!desired_state.has_run_on_os_login());
@@ -102,7 +102,7 @@ void RunOnOsLoginSubManager::Configure(
 }
 
 void RunOnOsLoginSubManager::Execute(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     const absl::optional<SynchronizeOsOptions>& synchronize_options,
     const proto::WebAppOsIntegrationState& desired_state,
     const proto::WebAppOsIntegrationState& current_state,
@@ -134,7 +134,7 @@ void RunOnOsLoginSubManager::Execute(
                      std::move(execute_done)));
 }
 
-void RunOnOsLoginSubManager::ForceUnregister(const AppId& app_id,
+void RunOnOsLoginSubManager::ForceUnregister(const webapps::AppId& app_id,
                                              base::OnceClosure callback) {
   if (!DoesRunOnOsLoginRequireExecution()) {
     std::move(callback).Run();
@@ -157,7 +157,7 @@ void RunOnOsLoginSubManager::ForceUnregister(const AppId& app_id,
 }
 
 void RunOnOsLoginSubManager::StartUnregistration(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     const proto::WebAppOsIntegrationState& current_state,
     const proto::WebAppOsIntegrationState& desired_state,
     base::OnceClosure registration_callback) {
@@ -190,7 +190,7 @@ void RunOnOsLoginSubManager::StartUnregistration(
 }
 
 void RunOnOsLoginSubManager::CreateShortcutInfoWithFavicons(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     const proto::WebAppOsIntegrationState& desired_state,
     base::OnceClosure execute_done) {
   if (!ShouldTriggerRunOnOsLoginRegistration(desired_state)) {
@@ -213,7 +213,7 @@ void RunOnOsLoginSubManager::CreateShortcutInfoWithFavicons(
 }
 
 void RunOnOsLoginSubManager::OnShortcutInfoCreatedStartRegistration(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     const proto::WebAppOsIntegrationState& desired_state,
     base::OnceClosure execute_done,
     std::unique_ptr<ShortcutInfo> shortcut_info) {

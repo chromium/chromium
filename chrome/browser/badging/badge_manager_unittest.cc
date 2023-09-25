@@ -17,11 +17,11 @@
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -39,7 +39,7 @@ namespace {
 typedef std::pair<GURL, absl::optional<int>> SetBadgeAction;
 
 constexpr uint64_t kBadgeContents = 1;
-const web_app::AppId kAppId = "1";
+const webapps::AppId kAppId = "1";
 
 class TestBadgeManager : public BadgeManager {
  public:
@@ -134,14 +134,14 @@ TEST_F(BadgeManagerUnittest, SetBadgeForApp) {
 }
 
 TEST_F(BadgeManagerUnittest, SetBadgeForMultipleApps) {
-  const web_app::AppId kOtherAppId = "2";
+  const webapps::AppId kOtherAppId = "2";
   constexpr uint64_t kOtherContents = 2;
 
-  std::vector<web_app::AppId> updated_apps;
+  std::vector<webapps::AppId> updated_apps;
   web_app::WebAppTestRegistryObserverAdapter observer(
       &provider().registrar_unsafe());
   observer.SetWebAppLastBadgingTimeChangedDelegate(base::BindLambdaForTesting(
-      [&updated_apps](const web_app::AppId& app_id, const base::Time& time) {
+      [&updated_apps](const webapps::AppId& app_id, const base::Time& time) {
         updated_apps.push_back(app_id);
       }));
 
@@ -210,20 +210,20 @@ TEST_F(BadgeManagerUnittest, BadgingMultipleProfiles) {
   auto* other_delegate = owned_other_delegate.get();
   other_badge_manager->SetDelegate(std::move(owned_other_delegate));
 
-  std::vector<web_app::AppId> updated_apps;
-  std::vector<web_app::AppId> other_updated_apps;
+  std::vector<webapps::AppId> updated_apps;
+  std::vector<webapps::AppId> other_updated_apps;
   web_app::WebAppTestRegistryObserverAdapter other_observer(
       &new_provider->registrar_unsafe());
   other_observer.SetWebAppLastBadgingTimeChangedDelegate(
       base::BindLambdaForTesting(
-          [&other_updated_apps](const web_app::AppId& app_id,
+          [&other_updated_apps](const webapps::AppId& app_id,
                                 const base::Time& time) {
             other_updated_apps.push_back(app_id);
           }));
   web_app::WebAppTestRegistryObserverAdapter observer(
       &provider().registrar_unsafe());
   observer.SetWebAppLastBadgingTimeChangedDelegate(base::BindLambdaForTesting(
-      [&updated_apps](const web_app::AppId& app_id, const base::Time& time) {
+      [&updated_apps](const webapps::AppId& app_id, const base::Time& time) {
         updated_apps.push_back(app_id);
       }));
 

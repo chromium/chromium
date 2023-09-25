@@ -10,6 +10,7 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-forward.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/common/chrome_features.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
@@ -71,19 +72,20 @@ bool DetermineEligibility(Profile* profile, WebAppRegistrar& registrar);
 
 // Returns whether the given preinstalled app was launched before the
 // experiment began.
-bool HasLaunchedAppBeforeExperiment(const AppId& preinstalled_app_id,
+bool HasLaunchedAppBeforeExperiment(const webapps::AppId& preinstalled_app_id,
                                     PrefService* pref_service);
 
-void SetHasLaunchedAppsBeforePref(PrefService* pref_service,
-                                  const base::flat_set<AppId>& app_ids);
+void SetHasLaunchedAppsBeforePref(
+    PrefService* pref_service,
+    const base::flat_set<webapps::AppId>& app_ids);
 
 // Display mode:
 
-base::flat_set<AppId> GetAppIdsWithUserOverridenDisplayModePref(
+base::flat_set<webapps::AppId> GetAppIdsWithUserOverridenDisplayModePref(
     PrefService* pref_service);
 
 void SetUserOverridenDisplayModePref(PrefService* pref_service,
-                                     const AppId& app_id);
+                                     const webapps::AppId& app_id);
 
 // Histograms:
 

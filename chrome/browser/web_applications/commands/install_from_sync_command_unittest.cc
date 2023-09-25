@@ -25,7 +25,6 @@
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -35,6 +34,7 @@
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_manager.h"
+#include "components/webapps/common/web_app_id.h"
 #include "components/webapps/common/web_page_metadata.mojom-forward.h"
 #include "components/webapps/common/web_page_metadata.mojom.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -71,12 +71,12 @@ class InstallFromSyncTest : public WebAppTest {
  public:
   const int kIconSize = 96;
   const GURL kWebAppStartUrl = GURL("https://example.com/path/index.html");
-  const ManifestId kWebAppManifestId =
+  const webapps::ManifestId kWebAppManifestId =
       GURL("https://example.com/path/index.html");
 
   const GURL kOtherWebAppStartUrl =
       GURL("https://example.com/path2/index.html");
-  const ManifestId kOtherWebAppManifestId =
+  const webapps::ManifestId kOtherWebAppManifestId =
       GURL("https://example.com/path2/index.html");
 
   const std::u16string kManifestName = u"Manifest Name";
@@ -112,13 +112,13 @@ class InstallFromSyncTest : public WebAppTest {
  protected:
   struct InstallResult {
     bool callback_triggered = false;
-    AppId installed_app_id;
+    webapps::AppId installed_app_id;
     webapps::InstallResultCode install_code;
     absl::optional<webapps::InstallResultCode> install_code_before_fallback;
   };
 
-  InstallFromSyncCommand::Params CreateParams(AppId app_id,
-                                              ManifestId manifest_id,
+  InstallFromSyncCommand::Params CreateParams(webapps::AppId app_id,
+                                              webapps::ManifestId manifest_id,
                                               GURL start_url) {
     return InstallFromSyncCommand::Params(
         app_id, manifest_id, start_url, kFallbackTitle,
@@ -127,10 +127,12 @@ class InstallFromSyncTest : public WebAppTest {
         {apps::IconInfo(kFallbackIconUrl, kIconSize)});
   }
 
-  InstallResult InstallFromSyncAndWait(GURL start_url, ManifestId manifest_id) {
-    const AppId app_id = GenerateAppIdFromManifestId(manifest_id);
+  InstallResult InstallFromSyncAndWait(GURL start_url,
+                                       webapps::ManifestId manifest_id) {
+    const webapps::AppId app_id = GenerateAppIdFromManifestId(manifest_id);
     InstallResult result;
-    base::test::TestFuture<const AppId&, webapps::InstallResultCode> future;
+    base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+        future;
     std::unique_ptr<InstallFromSyncCommand> command =
         std::make_unique<InstallFromSyncCommand>(
             profile(), CreateParams(app_id, manifest_id, start_url),
@@ -144,7 +146,7 @@ class InstallFromSyncTest : public WebAppTest {
     if (!result.callback_triggered) {
       return result;
     }
-    result.installed_app_id = future.Get<AppId>();
+    result.installed_app_id = future.Get<webapps::AppId>();
     result.install_code = future.Get<webapps::InstallResultCode>();
     return result;
   }
@@ -163,7 +165,7 @@ class InstallFromSyncTest : public WebAppTest {
   }
 
   blink::mojom::ManifestPtr CreateManifest(GURL start_url,
-                                           ManifestId manifest_id,
+                                           webapps::ManifestId manifest_id,
                                            bool icons) {
     blink::mojom::ManifestPtr manifest = blink::mojom::Manifest::New();
     manifest->name = kManifestName;
@@ -181,13 +183,13 @@ class InstallFromSyncTest : public WebAppTest {
     return manifest;
   }
 
-  std::u16string GetAppName(const AppId& app_id) {
+  std::u16string GetAppName(const webapps::AppId& app_id) {
     return base::UTF8ToUTF16(registrar().GetAppShortName(app_id));
   }
 };
 
 TEST_F(InstallFromSyncTest, SuccessWithManifest) {
-  const AppId app_id = GenerateAppIdFromManifestId(kWebAppManifestId);
+  const webapps::AppId app_id = GenerateAppIdFromManifestId(kWebAppManifestId);
 
   // Page with manifest.
   auto& fake_page_state =
@@ -223,7 +225,7 @@ TEST_F(InstallFromSyncTest, SuccessWithManifest) {
 }
 
 TEST_F(InstallFromSyncTest, SuccessWithoutManifest) {
-  const AppId app_id = GenerateAppIdFromManifestId(kWebAppManifestId);
+  const webapps::AppId app_id = GenerateAppIdFromManifestId(kWebAppManifestId);
 
   // Page without manifest.
   auto& fake_page_state =
@@ -257,7 +259,7 @@ TEST_F(InstallFromSyncTest, SuccessWithoutManifest) {
 }
 
 TEST_F(InstallFromSyncTest, SuccessManifestNoIcons) {
-  const AppId app_id = GenerateAppIdFromManifestId(kWebAppManifestId);
+  const webapps::AppId app_id = GenerateAppIdFromManifestId(kWebAppManifestId);
 
   // Page with manifest, no icons.
   auto& fake_page_state =
@@ -293,7 +295,7 @@ TEST_F(InstallFromSyncTest, SuccessManifestNoIcons) {
 }
 
 TEST_F(InstallFromSyncTest, UrlRedirectUseFallback) {
-  const AppId app_id = GenerateAppIdFromManifestId(kWebAppManifestId);
+  const webapps::AppId app_id = GenerateAppIdFromManifestId(kWebAppManifestId);
 
   // Page redirects.
   auto& fake_page_state =
@@ -327,7 +329,7 @@ TEST_F(InstallFromSyncTest, UrlRedirectUseFallback) {
 }
 
 TEST_F(InstallFromSyncTest, FallbackWebAppInstallInfo) {
-  const AppId app_id = GenerateAppIdFromManifestId(kWebAppManifestId);
+  const webapps::AppId app_id = GenerateAppIdFromManifestId(kWebAppManifestId);
 
   // Page redirects.
   auto& fake_page_state =
@@ -362,7 +364,7 @@ TEST_F(InstallFromSyncTest, FallbackWebAppInstallInfo) {
 }
 
 TEST_F(InstallFromSyncTest, FallbackManifestIdMismatch) {
-  const AppId app_id = GenerateAppIdFromManifestId(kWebAppManifestId);
+  const webapps::AppId app_id = GenerateAppIdFromManifestId(kWebAppManifestId);
 
   // Page with manifest.
   auto& fake_page_state =
@@ -402,8 +404,9 @@ TEST_F(InstallFromSyncTest, FallbackManifestIdMismatch) {
 }
 
 TEST_F(InstallFromSyncTest, TwoInstalls) {
-  const AppId app_id1 = GenerateAppIdFromManifestId(kWebAppManifestId);
-  const AppId app_id2 = GenerateAppIdFromManifestId(kOtherWebAppManifestId);
+  const webapps::AppId app_id1 = GenerateAppIdFromManifestId(kWebAppManifestId);
+  const webapps::AppId app_id2 =
+      GenerateAppIdFromManifestId(kOtherWebAppManifestId);
 
   // No need to set up our FakeWebContentsManager state, as the sync
   // installation will succeed even if the network is down.
@@ -423,7 +426,7 @@ TEST_F(InstallFromSyncTest, TwoInstalls) {
   std::vector<webapps::InstallResultCode> codes;
   WebAppInstallManagerObserverAdapter observer(&provider()->install_manager());
   observer.SetWebAppInstalledDelegate(
-      base::BindLambdaForTesting([&](const AppId& app_id) {
+      base::BindLambdaForTesting([&](const webapps::AppId& app_id) {
         if (app_id == app_id1) {
           events.push_back(Event::kNotifyApp1Installed);
         } else {
@@ -432,7 +435,7 @@ TEST_F(InstallFromSyncTest, TwoInstalls) {
         }
       }));
   observer.SetWebAppInstalledWithOsHooksDelegate(
-      base::BindLambdaForTesting([&](const AppId& app_id) {
+      base::BindLambdaForTesting([&](const webapps::AppId& app_id) {
         if (app_id == app_id1) {
           events.push_back(Event::kNotifyApp1InstalledWithHooks);
         } else {
@@ -445,7 +448,7 @@ TEST_F(InstallFromSyncTest, TwoInstalls) {
       std::make_unique<InstallFromSyncCommand>(
           profile(), CreateParams(app_id1, kWebAppManifestId, kWebAppStartUrl),
           base::BindLambdaForTesting(
-              [&](const AppId& id, webapps::InstallResultCode code) {
+              [&](const webapps::AppId& id, webapps::InstallResultCode code) {
                 events.push_back(Event::kApp1Installed);
                 codes.push_back(code);
                 loop1.Quit();
@@ -455,7 +458,7 @@ TEST_F(InstallFromSyncTest, TwoInstalls) {
       profile(),
       CreateParams(app_id2, kOtherWebAppManifestId, kOtherWebAppStartUrl),
       base::BindLambdaForTesting(
-          [&](const AppId& id, webapps::InstallResultCode code) {
+          [&](const webapps::AppId& id, webapps::InstallResultCode code) {
             events.push_back(Event::kApp2Installed);
             codes.push_back(code);
             loop2.Quit();
@@ -492,7 +495,7 @@ TEST_F(InstallFromSyncTest, TwoInstalls) {
 }
 
 TEST_F(InstallFromSyncTest, Shutdown) {
-  const AppId app_id = GenerateAppIdFromManifestId(kWebAppManifestId);
+  const webapps::AppId app_id = GenerateAppIdFromManifestId(kWebAppManifestId);
 
   // Page with manifest, but have the manifest fetch cause the system to shut
   // down.
@@ -507,7 +510,8 @@ TEST_F(InstallFromSyncTest, Shutdown) {
   fake_page_state.on_manifest_fetch =
       base::BindLambdaForTesting([&]() { command_manager().Shutdown(); });
 
-  base::test::TestFuture<const AppId&, webapps::InstallResultCode> future;
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+      future;
   std::unique_ptr<InstallFromSyncCommand> command =
       std::make_unique<InstallFromSyncCommand>(
           profile(), CreateParams(app_id, kWebAppManifestId, kWebAppStartUrl),

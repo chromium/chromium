@@ -82,13 +82,13 @@ bool AppBrowserController::IsWebApp(const Browser* browser) {
 
 // static
 bool AppBrowserController::IsForWebApp(const Browser* browser,
-                                       const AppId& app_id) {
+                                       const webapps::AppId& app_id) {
   return IsWebApp(browser) && browser->app_controller()->app_id() == app_id;
 }
 
 // static
 Browser* AppBrowserController::FindForWebApp(const Profile& profile,
-                                             const AppId& app_id) {
+                                             const webapps::AppId& app_id) {
   const BrowserList* browser_list = BrowserList::GetInstance();
   for (auto it = browser_list->begin_browsers_ordered_by_activation();
        it != browser_list->end_browsers_ordered_by_activation(); ++it) {
@@ -118,10 +118,9 @@ const ui::ThemeProvider* AppBrowserController::GetThemeProvider() const {
   return theme_provider_.get();
 }
 
-AppBrowserController::AppBrowserController(
-    Browser* browser,
-    AppId app_id,
-    bool has_tab_strip)
+AppBrowserController::AppBrowserController(Browser* browser,
+                                           webapps::AppId app_id,
+                                           bool has_tab_strip)
     : content::WebContentsObserver(nullptr),
       browser_(browser),
       app_id_(std::move(app_id)),
@@ -131,7 +130,8 @@ AppBrowserController::AppBrowserController(
   browser->tab_strip_model()->AddObserver(this);
 }
 
-AppBrowserController::AppBrowserController(Browser* browser, AppId app_id)
+AppBrowserController::AppBrowserController(Browser* browser,
+                                           webapps::AppId app_id)
     : AppBrowserController(browser, std::move(app_id), false) {}
 
 void AppBrowserController::Init() {

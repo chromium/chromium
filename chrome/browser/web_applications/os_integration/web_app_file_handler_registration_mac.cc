@@ -8,8 +8,8 @@
 #include "chrome/browser/web_applications/app_shim_registry_mac.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace web_app {
 
@@ -22,7 +22,7 @@ bool FileHandlingIconsSupportedByOs() {
   return false;
 }
 
-void RegisterFileHandlersWithOs(const AppId& app_id,
+void RegisterFileHandlersWithOs(const webapps::AppId& app_id,
                                 const std::string& app_name,
                                 const base::FilePath& profile_path,
                                 const apps::FileHandlers& file_handlers,
@@ -38,7 +38,7 @@ void RegisterFileHandlersWithOs(const AppId& app_id,
   std::move(callback).Run(Result::kOk);
 }
 
-void UnregisterFileHandlersWithOs(const AppId& app_id,
+void UnregisterFileHandlersWithOs(const webapps::AppId& app_id,
                                   const base::FilePath& profile_path,
                                   ResultCallback callback) {
   // File handler information is embedded in the app shims. When those are

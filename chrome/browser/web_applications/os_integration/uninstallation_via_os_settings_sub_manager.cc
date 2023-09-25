@@ -46,7 +46,7 @@ UninstallationViaOsSettingsSubManager::
     ~UninstallationViaOsSettingsSubManager() = default;
 
 void UninstallationViaOsSettingsSubManager::Configure(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     proto::WebAppOsIntegrationState& desired_state,
     base::OnceClosure configure_done) {
   DCHECK(!desired_state.has_uninstall_registration());
@@ -72,7 +72,7 @@ void UninstallationViaOsSettingsSubManager::Configure(
 }
 
 void UninstallationViaOsSettingsSubManager::Execute(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     const absl::optional<SynchronizeOsOptions>& synchronize_options,
     const proto::WebAppOsIntegrationState& desired_state,
     const proto::WebAppOsIntegrationState& current_state,
@@ -107,7 +107,7 @@ void UninstallationViaOsSettingsSubManager::Execute(
 }
 
 void UninstallationViaOsSettingsSubManager::ForceUnregister(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     base::OnceClosure callback) {
   if (IsOsUninstallationSupported()) {
     CompleteUnregistration(app_id);
@@ -116,7 +116,7 @@ void UninstallationViaOsSettingsSubManager::ForceUnregister(
 }
 
 void UninstallationViaOsSettingsSubManager::CompleteUnregistration(
-    const AppId& app_id) {
+    const webapps::AppId& app_id) {
   bool result =
       UnregisterUninstallationViaOsSettingsWithOs(app_id, profile_path_);
   base::UmaHistogramBoolean("WebApp.OsSettingsUninstallUnregistration.Result",

@@ -82,10 +82,10 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
 
   using CommitCallback = base::OnceCallback<void(bool success)>;
   using RepeatingInstallCallback =
-      base::RepeatingCallback<void(const AppId& app_id,
+      base::RepeatingCallback<void(const webapps::AppId& app_id,
                                    webapps::InstallResultCode code)>;
   using RepeatingUninstallCallback =
-      base::RepeatingCallback<void(const AppId& app_id,
+      base::RepeatingCallback<void(const webapps::AppId& app_id,
                                    webapps::UninstallResultCode code)>;
   // This is the writable API for the registry. Any updates will be written to
   // LevelDb and sync service. There can be only 1 update at a time. The
@@ -107,37 +107,45 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
 
   void Init(base::OnceClosure callback);
 
-  void SetAppUserDisplayMode(const AppId& app_id,
+  void SetAppUserDisplayMode(const webapps::AppId& app_id,
                              mojom::UserDisplayMode user_display_mode,
                              bool is_user_action);
 
-  void SetAppIsDisabled(AppLock& lock, const AppId& app_id, bool is_disabled);
+  void SetAppIsDisabled(AppLock& lock,
+                        const webapps::AppId& app_id,
+                        bool is_disabled);
 
   void UpdateAppsDisableMode();
 
-  void SetAppLastBadgingTime(const AppId& app_id, const base::Time& time);
+  void SetAppLastBadgingTime(const webapps::AppId& app_id,
+                             const base::Time& time);
 
-  void SetAppLastLaunchTime(const AppId& app_id, const base::Time& time);
+  void SetAppLastLaunchTime(const webapps::AppId& app_id,
+                            const base::Time& time);
 
-  void SetAppFirstInstallTime(const AppId& app_id, const base::Time& time);
+  void SetAppFirstInstallTime(const webapps::AppId& app_id,
+                              const base::Time& time);
 
-  void SetAppManifestUpdateTime(const AppId& app_id, const base::Time& time);
+  void SetAppManifestUpdateTime(const webapps::AppId& app_id,
+                                const base::Time& time);
 
-  void SetAppWindowControlsOverlayEnabled(const AppId& app_id, bool enabled);
+  void SetAppWindowControlsOverlayEnabled(const webapps::AppId& app_id,
+                                          bool enabled);
 
   // These methods are used by extensions::AppSorting, which manages the sorting
   // of web apps on chrome://apps.
-  void SetUserPageOrdinal(const AppId& app_id,
+  void SetUserPageOrdinal(const webapps::AppId& app_id,
                           syncer::StringOrdinal user_page_ordinal);
-  void SetUserLaunchOrdinal(const AppId& app_id,
+  void SetUserLaunchOrdinal(const webapps::AppId& app_id,
                             syncer::StringOrdinal user_launch_ordinal);
 
   // Stores the user's preference for the app's use of the File Handling API.
-  void SetAppFileHandlerApprovalState(const AppId& app_id,
+  void SetAppFileHandlerApprovalState(const webapps::AppId& app_id,
                                       ApiApprovalState state);
 
 #if BUILDFLAG(IS_MAC)
-  void SetAlwaysShowToolbarInFullscreen(const AppId& app_id, bool show);
+  void SetAlwaysShowToolbarInFullscreen(const webapps::AppId& app_id,
+                                        bool show);
 #endif
 
   // An access to read-only registry. Does an upcast to read-only type.
@@ -170,7 +178,7 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
   }
 
   using RetryIncompleteUninstallsCallback = base::RepeatingCallback<void(
-      const base::flat_set<AppId>& apps_to_uninstall)>;
+      const base::flat_set<webapps::AppId>& apps_to_uninstall)>;
   void SetRetryIncompleteUninstallsCallbackForTesting(
       RetryIncompleteUninstallsCallback callback);
   using InstallWebAppsAfterSyncCallback =
@@ -179,12 +187,12 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
   void SetInstallWebAppsAfterSyncCallbackForTesting(
       InstallWebAppsAfterSyncCallback callback);
   using UninstallFromSyncCallback =
-      base::RepeatingCallback<void(const std::vector<AppId>& web_apps,
+      base::RepeatingCallback<void(const std::vector<webapps::AppId>& web_apps,
                                    RepeatingUninstallCallback callback)>;
   void SetUninstallFromSyncCallbackForTesting(
       UninstallFromSyncCallback callback);
   WebAppDatabase* GetDatabaseForTesting() const { return database_.get(); }
-  void SetAppIsLocallyInstalledForTesting(const AppId& app_id,
+  void SetAppIsLocallyInstalledForTesting(const webapps::AppId& app_id,
                                           bool is_locally_installed);
 
  private:
@@ -204,7 +212,7 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
                         Registry registry,
                         std::unique_ptr<syncer::MetadataBatch> metadata_batch);
   void OnDataWritten(CommitCallback callback, bool success);
-  void OnWebAppUninstallComplete(const AppId& app,
+  void OnWebAppUninstallComplete(const webapps::AppId& app,
                                  webapps::UninstallResultCode code);
 
   void ReportErrorToChangeProcessor(const syncer::ModelError& error);
@@ -216,12 +224,12 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
   void PrepareLocalUpdateFromSyncChange(
       const syncer::EntityChange& change,
       RegistryUpdateData* update_local_data,
-      std::vector<AppId>& apps_display_mode_changed);
+      std::vector<webapps::AppId>& apps_display_mode_changed);
 
   // Update registrar and Install/Uninstall missing/excessive local apps.
   void ApplyIncrementalSyncChangesToRegistrar(
       std::unique_ptr<RegistryUpdateData> update_local_data,
-      const std::vector<AppId>& apps_display_mode_changed);
+      const std::vector<webapps::AppId>& apps_display_mode_changed);
 
   void MaybeUninstallAppsPendingUninstall();
   void MaybeInstallAppsFromSyncAndPendingInstallation();

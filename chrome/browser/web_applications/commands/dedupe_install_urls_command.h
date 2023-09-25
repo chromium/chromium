@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/webapps/browser/uninstall_result_code.h"
+#include "components/webapps/common/web_app_id.h"
 
 class Profile;
 
@@ -50,8 +51,8 @@ class DedupeInstallUrlsCommand : public WebAppCommandTemplate<AllAppsLock> {
   const AllAppsLockDescription lock_description_;
   std::unique_ptr<AllAppsLock> lock_;
 
-  base::flat_map<GURL, base::flat_set<AppId>> install_url_to_apps_;
-  base::flat_map<GURL, AppId> dedupe_choices_;
+  base::flat_map<GURL, base::flat_set<webapps::AppId>> install_url_to_apps_;
+  base::flat_map<GURL, webapps::AppId> dedupe_choices_;
   base::Value::List completed_job_debug_values_;
 
   std::vector<std::unique_ptr<RemoveInstallUrlJob>> pending_jobs_;

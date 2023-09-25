@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace web_app {
 
@@ -33,7 +34,7 @@ class GeneratedIconFixCommand
     : public WebAppCommandTemplate<SharedWebContentsWithAppLock> {
  public:
   explicit GeneratedIconFixCommand(
-      AppId app_id,
+      webapps::AppId app_id,
       base::OnceCallback<void(GeneratedIconFixResult)> callback);
   ~GeneratedIconFixCommand() override;
 
@@ -51,7 +52,7 @@ class GeneratedIconFixCommand
   void OnIconsWritten(bool success);
   void Stop(GeneratedIconFixResult result, base::Location location);
 
-  AppId app_id_;
+  webapps::AppId app_id_;
   base::OnceCallback<void(GeneratedIconFixResult)> callback_;
   SharedWebContentsWithAppLockDescription lock_description_;
   std::unique_ptr<SharedWebContentsWithAppLock> lock_;

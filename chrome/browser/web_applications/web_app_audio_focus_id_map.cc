@@ -13,7 +13,7 @@ WebAppAudioFocusIdMap::WebAppAudioFocusIdMap() = default;
 WebAppAudioFocusIdMap::~WebAppAudioFocusIdMap() = default;
 
 const base::UnguessableToken& WebAppAudioFocusIdMap::CreateOrGetIdForApp(
-    const AppId& app_id) {
+    const webapps::AppId& app_id) {
   auto it = ids_.find(app_id);
 
   if (it == ids_.end())

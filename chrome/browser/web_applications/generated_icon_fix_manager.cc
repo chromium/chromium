@@ -50,7 +50,8 @@ void GeneratedIconFixManager::Start() {
             if (!manager) {
               return;
             }
-            for (const AppId& app_id : all_apps_lock.registrar().GetAppIds()) {
+            for (const webapps::AppId& app_id :
+                 all_apps_lock.registrar().GetAppIds()) {
               manager->MaybeScheduleFix(all_apps_lock, app_id);
             }
             // TODO(crbug.com/1216965): Record the count of how many fixes were
@@ -61,7 +62,7 @@ void GeneratedIconFixManager::Start() {
 
 GeneratedIconFixScheduleDecision GeneratedIconFixManager::MaybeScheduleFix(
     WithAppResources& resources,
-    const AppId& app_id) {
+    const webapps::AppId& app_id) {
   CHECK(IsEnabled());
 
   GeneratedIconFixScheduleDecision decision =
@@ -84,7 +85,7 @@ GeneratedIconFixScheduleDecision GeneratedIconFixManager::MaybeScheduleFix(
 
 GeneratedIconFixScheduleDecision GeneratedIconFixManager::MakeScheduleDecision(
     const WebAppRegistrar& registrar,
-    const AppId& app_id) {
+    const webapps::AppId& app_id) {
   const WebApp* app = registrar.GetAppById(app_id);
   if (!app || !app->IsSynced()) {
     return GeneratedIconFixScheduleDecision::kNoApp;
@@ -112,7 +113,7 @@ GeneratedIconFixScheduleDecision GeneratedIconFixManager::MakeScheduleDecision(
              : GeneratedIconFixScheduleDecision::kSchedule;
 }
 
-void GeneratedIconFixManager::FixCompleted(const AppId& app_id,
+void GeneratedIconFixManager::FixCompleted(const webapps::AppId& app_id,
                                            GeneratedIconFixResult result) {
   CHECK_EQ(scheduled_fixes_.erase(app_id), 1u);
 

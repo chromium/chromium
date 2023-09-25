@@ -53,7 +53,7 @@ struct InstallMetrics {
 
 absl::optional<InstallMetrics> ParseInstallMetricsFromPrefs(
     const PrefService* pref_service,
-    const web_app::AppId& app_id) {
+    const webapps::AppId& app_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   const base::Value::Dict& ids_to_metrics =
@@ -78,7 +78,7 @@ absl::optional<InstallMetrics> ParseInstallMetricsFromPrefs(
 
 void WriteInstallMetricsToPrefs(const InstallMetrics& install_metrics,
                                 PrefService* pref_service,
-                                const web_app::AppId& app_id) {
+                                const webapps::AppId& app_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   base::Value::Dict dict;
   dict.Set(kInstallTimestamp, SerializeTime(install_metrics.timestamp));
@@ -102,14 +102,14 @@ void RegisterInstallBounceMetricProfilePrefs(PrefRegistrySimple* registry) {
 
 void RecordWebAppInstallationTimestamp(
     PrefService* pref_service,
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     webapps::WebappInstallSource install_source) {
   WriteInstallMetricsToPrefs(InstallMetrics{GetTime(), install_source},
                              pref_service, app_id);
 }
 
 void RecordWebAppUninstallation(PrefService* pref_service,
-                                const AppId& app_id) {
+                                const webapps::AppId& app_id) {
   absl::optional<InstallMetrics> metrics =
       ParseInstallMetricsFromPrefs(pref_service, app_id);
   if (!metrics)

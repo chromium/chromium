@@ -43,16 +43,16 @@ class InstallFromSyncCommand
     Params() = delete;
     ~Params();
     Params(const Params&);
-    Params(const AppId& app_id,
-           const ManifestId& manifest_id,
+    Params(const webapps::AppId& app_id,
+           const webapps::ManifestId& manifest_id,
            const GURL& start_url,
            const std::string& title,
            const GURL& scope,
            const absl::optional<SkColor>& theme_color,
            const absl::optional<mojom::UserDisplayMode>& user_display_mode,
            const std::vector<apps::IconInfo>& icons);
-    const AppId app_id;
-    const ManifestId manifest_id;
+    const webapps::AppId app_id;
+    const webapps::ManifestId manifest_id;
     const GURL start_url;
     const std::string title;
     const GURL scope;
@@ -97,13 +97,13 @@ class InstallFromSyncCommand
       DownloadedIconsHttpResults icons_http_results);
 
   void OnInstallFinalized(FinalizeMode mode,
-                          const AppId& app_id,
+                          const webapps::AppId& app_id,
                           webapps::InstallResultCode code,
                           OsHooksErrors os_hooks_errors);
 
   void InstallFallback(webapps::InstallResultCode error_code);
 
-  void ReportResultAndDestroy(const AppId& app_id,
+  void ReportResultAndDestroy(const webapps::AppId& app_id,
                               webapps::InstallResultCode code);
 
   std::unique_ptr<SharedWebContentsWithAppLockDescription> lock_description_;

@@ -20,10 +20,10 @@
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 #include "net/http/http_status_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -77,7 +77,7 @@ TEST_F(InstallPlaceholderCommandTest, InstallPlaceholder) {
 
   ExternallyManagedAppManager::InstallResult result = future.Take();
   EXPECT_EQ(result.code, webapps::InstallResultCode::kSuccessNewInstall);
-  const AppId app_id = *result.app_id;
+  const webapps::AppId app_id = *result.app_id;
   EXPECT_TRUE(provider()->registrar_unsafe().IsPlaceholderApp(
       app_id, WebAppManagement::kPolicy));
   EXPECT_EQ(fake_os_integration_manager().num_create_shortcuts_calls(), 1u);
@@ -129,7 +129,7 @@ TEST_F(InstallPlaceholderCommandTest, InstallPlaceholderWithOverrideIconUrl) {
 
   ExternallyManagedAppManager::InstallResult result = future.Take();
   EXPECT_EQ(result.code, webapps::InstallResultCode::kSuccessNewInstall);
-  const AppId app_id = *result.app_id;
+  const webapps::AppId app_id = *result.app_id;
   EXPECT_TRUE(provider()->registrar_unsafe().IsPlaceholderApp(
       app_id, WebAppManagement::kPolicy));
   EXPECT_EQ(fake_os_integration_manager().num_create_shortcuts_calls(), 1u);
@@ -145,7 +145,7 @@ TEST_F(InstallPlaceholderCommandTest, InstallPlaceholderWithOverrideIconUrl) {
 TEST_F(InstallPlaceholderCommandTest,
        InstallPlaceholderWithUninstallAndReplace) {
   GURL old_app_url("http://old-app.com");
-  const AppId old_app =
+  const webapps::AppId old_app =
       test::InstallDummyWebApp(profile(), "old_app", old_app_url);
   auto shortcut_info = std::make_unique<ShortcutInfo>();
   shortcut_info->url = old_app_url;
@@ -166,7 +166,7 @@ TEST_F(InstallPlaceholderCommandTest,
   ExternallyManagedAppManager::InstallResult result = future.Take();
   EXPECT_EQ(result.code, webapps::InstallResultCode::kSuccessNewInstall);
   EXPECT_TRUE(result.did_uninstall_and_replace);
-  const AppId app_id = *result.app_id;
+  const webapps::AppId app_id = *result.app_id;
   EXPECT_TRUE(provider()->registrar_unsafe().IsPlaceholderApp(
       app_id, WebAppManagement::kPolicy));
 

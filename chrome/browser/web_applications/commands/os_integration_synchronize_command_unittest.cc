@@ -81,31 +81,33 @@ class OsIntegrationSynchronizeCommandTest
     WebAppTest::TearDown();
   }
 
-  AppId InstallWebApp(std::unique_ptr<WebAppInstallInfo> install_info,
-                      webapps::WebappInstallSource source =
-                          webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON) {
-    base::test::TestFuture<const AppId&, webapps::InstallResultCode> result;
+  webapps::AppId InstallWebApp(
+      std::unique_ptr<WebAppInstallInfo> install_info,
+      webapps::WebappInstallSource source =
+          webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON) {
+    base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+        result;
     provider()->scheduler().InstallFromInfo(
         std::move(install_info), /*overwrite_existing_manifest_fields=*/true,
         source, result.GetCallback());
     bool success = result.Wait();
     EXPECT_TRUE(success);
     if (!success) {
-      return AppId();
+      return webapps::AppId();
     }
     EXPECT_EQ(result.Get<webapps::InstallResultCode>(),
               webapps::InstallResultCode::kSuccessNewInstall);
-    return result.Get<AppId>();
+    return result.Get<webapps::AppId>();
   }
 
-  void RunSynchronizeCommand(const AppId& app_id) {
+  void RunSynchronizeCommand(const webapps::AppId& app_id) {
     base::test::TestFuture<void> synchronize_future;
     provider()->scheduler().SynchronizeOsIntegration(
         app_id, synchronize_future.GetCallback());
     EXPECT_TRUE(synchronize_future.Wait());
   }
 
-  bool EnableRunOnOsLoginMode(const AppId& app_id) {
+  bool EnableRunOnOsLoginMode(const webapps::AppId& app_id) {
     base::test::TestFuture<void> future;
     provider()->scheduler().SetRunOnOsLoginMode(
         app_id, RunOnOsLoginMode::kWindowed, future.GetCallback());
@@ -209,7 +211,7 @@ TEST_P(OsIntegrationSynchronizeCommandTest, ProtocolHandlersDBWrite) {
   protocol_handler.protocol = "web+test";
 
   install_info->protocol_handlers = {protocol_handler};
-  const AppId& app_id = InstallWebApp(std::move(install_info));
+  const webapps::AppId& app_id = InstallWebApp(std::move(install_info));
 
   absl::optional<proto::WebAppOsIntegrationState> current_states =
       provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
@@ -258,7 +260,7 @@ TEST_P(OsIntegrationSynchronizeCommandTest, FileHandlersDBWrite) {
   file_handlers.push_back(file_handler);
 
   install_info->file_handlers = file_handlers;
-  const AppId& app_id = InstallWebApp(std::move(install_info));
+  const webapps::AppId& app_id = InstallWebApp(std::move(install_info));
 
   absl::optional<proto::WebAppOsIntegrationState> current_states =
       provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
@@ -298,7 +300,7 @@ TEST_P(OsIntegrationSynchronizeCommandTest, RunOnOsLoginDBWrite) {
   install_info->title = u"Test App";
   install_info->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
-  const AppId& app_id = InstallWebApp(std::move(install_info));
+  const webapps::AppId& app_id = InstallWebApp(std::move(install_info));
 
   absl::optional<proto::WebAppOsIntegrationState> current_states =
       provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
@@ -339,7 +341,7 @@ TEST_P(OsIntegrationSynchronizeCommandTest, ShortcutsMenuDBWrite) {
   install_info->shortcuts_menu_icon_bitmaps = shortcuts_menu_icons;
   install_info->shortcuts_menu_item_infos =
       CreateShortcutMenuItemInfoFromBitmaps(shortcuts_menu_icons);
-  const AppId& app_id = InstallWebApp(std::move(install_info));
+  const webapps::AppId& app_id = InstallWebApp(std::move(install_info));
 
   absl::optional<proto::WebAppOsIntegrationState> current_states =
       provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
@@ -400,7 +402,7 @@ TEST_P(OsIntegrationSynchronizeCommandTest, ShortcutsDBWrite) {
   icon_map[icon_size::k24] = CreateSolidColorIcon(icon_size::k24, SK_ColorRED);
   install_info->icon_bitmaps.any = std::move(icon_map);
 
-  const AppId& app_id = InstallWebApp(std::move(install_info));
+  const webapps::AppId& app_id = InstallWebApp(std::move(install_info));
 
   absl::optional<proto::WebAppOsIntegrationState> current_states =
       provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
@@ -437,7 +439,7 @@ TEST_P(OsIntegrationSynchronizeCommandTest, UninstallRegistrationDBWrite) {
   install_info->title = u"Test App";
   install_info->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
-  const AppId& app_id = InstallWebApp(std::move(install_info));
+  const webapps::AppId& app_id = InstallWebApp(std::move(install_info));
 
   absl::optional<proto::WebAppOsIntegrationState> current_states =
       provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);

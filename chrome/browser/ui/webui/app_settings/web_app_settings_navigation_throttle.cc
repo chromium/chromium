@@ -50,7 +50,7 @@ WebAppSettingsNavigationThrottle::WillStartRequest() {
     return content::NavigationThrottle::PROCEED;
   }
 
-  const web_app::AppId app_id =
+  const webapps::AppId app_id =
       web_app::GetAppIdFromAppSettingsUrl(navigation_handle()->GetURL());
   if (app_id.empty()) {
     return content::NavigationThrottle::BLOCK_REQUEST;
@@ -84,7 +84,7 @@ const char* WebAppSettingsNavigationThrottle::GetNameForLogging() {
 }
 
 void WebAppSettingsNavigationThrottle::ContinueCheckForApp(
-    const web_app::AppId& app_id) {
+    const webapps::AppId& app_id) {
   content::WebContents* web_contents = navigation_handle()->GetWebContents();
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());

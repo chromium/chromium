@@ -52,7 +52,7 @@ TEST_F(IsolatedWebAppUpdateApplyWaiterTest, AwaitsWindowsClosed) {
                                          fake_provider().ui_manager());
   EXPECT_EQ(CountProfileKeepAlives(profile()), 1ul);
 
-  base::MockRepeatingCallback<void(AppId)> callback;
+  base::MockRepeatingCallback<void(webapps::AppId)> callback;
   EXPECT_CALL(callback, Run(url_info_.app_id()))
       .WillOnce(::testing::Invoke(
           [&]() { ui_manager().SetNumWindowsForApp(url_info_.app_id(), 0); }));
@@ -79,7 +79,7 @@ TEST_F(IsolatedWebAppUpdateApplyWaiterTest, NeverSynchronouslyCallsCallback) {
   IsolatedWebAppUpdateApplyWaiter waiter(url_info_,
                                          fake_provider().ui_manager());
 
-  base::MockRepeatingCallback<void(AppId)> callback;
+  base::MockRepeatingCallback<void(webapps::AppId)> callback;
   EXPECT_CALL(callback, Run(url_info_.app_id()));
   ui_manager().SetOnNotifyOnAllAppWindowsClosedCallback(callback.Get());
 

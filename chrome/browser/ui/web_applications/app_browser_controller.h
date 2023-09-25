@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/url_formatter/url_formatter.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -66,10 +67,11 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   // Returns whether |browser| is a web app window/pop-up.
   static bool IsWebApp(const Browser* browser);
   // Returns whether |browser| is a web app window/pop-up for |app_id|.
-  static bool IsForWebApp(const Browser* browser, const AppId& app_id);
+  static bool IsForWebApp(const Browser* browser, const webapps::AppId& app_id);
   // Returns a Browser* that is for |app_id| and |profile| if any, searches in
   // order of last browser activation. Ignores pop-up Browsers.
-  static Browser* FindForWebApp(const Profile& profile, const AppId& app_id);
+  static Browser* FindForWebApp(const Profile& profile,
+                                const webapps::AppId& app_id);
 
   // Renders |url|'s origin as Unicode.
   static std::u16string FormatUrlOrigin(
@@ -229,7 +231,7 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   // animated.
   void UpdateCustomTabBarVisibility(bool animate) const;
 
-  const AppId& app_id() const { return app_id_; }
+  const webapps::AppId& app_id() const { return app_id_; }
 
   Browser* browser() const { return browser_; }
 
@@ -275,9 +277,9 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
 
  protected:
   AppBrowserController(Browser* browser,
-                       AppId app_id,
+                       webapps::AppId app_id,
                        bool has_tab_strip);
-  AppBrowserController(Browser* browser, AppId app_id);
+  AppBrowserController(Browser* browser, webapps::AppId app_id);
 
   // Called once the app browser controller has determined its initial url.
   virtual void OnReceivedInitialURL();
@@ -296,7 +298,7 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   void SetInitialURL(const GURL& initial_url);
 
   const raw_ptr<Browser> browser_;
-  const AppId app_id_;
+  const webapps::AppId app_id_;
   const bool has_tab_strip_;
   GURL initial_url_;
 

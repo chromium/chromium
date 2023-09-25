@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/commands/generated_icon_fix_command.h"
 #include "chrome/browser/web_applications/locks/with_app_resources.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
@@ -39,16 +40,17 @@ class GeneratedIconFixManager {
   // TODO(crbug.com/1216965): Schedule fixes ten minutes after sync install.
   // TODO(crbug.com/1216965): Schedule fixes on network reconnection.
 
-  const base::flat_set<AppId>& scheduled_fixes_for_testing() const {
+  const base::flat_set<webapps::AppId>& scheduled_fixes_for_testing() const {
     return scheduled_fixes_;
   }
 
-  base::OnceCallback<void(const AppId&, GeneratedIconFixScheduleDecision)>&
+  base::OnceCallback<void(const webapps::AppId&,
+                          GeneratedIconFixScheduleDecision)>&
   maybe_schedule_callback_for_testing() {
     return maybe_schedule_callback_for_testing_;
   }
 
-  base::OnceCallback<void(const AppId&, GeneratedIconFixResult)>&
+  base::OnceCallback<void(const webapps::AppId&, GeneratedIconFixResult)>&
   fix_completed_callback_for_testing() {
     return fix_completed_callback_for_testing_;
   }
@@ -56,20 +58,23 @@ class GeneratedIconFixManager {
   absl::optional<base::Time>& time_for_testing() { return time_for_testing_; }
 
  private:
-  GeneratedIconFixScheduleDecision MaybeScheduleFix(WithAppResources& resources,
-                                                    const AppId& app_id);
+  GeneratedIconFixScheduleDecision MaybeScheduleFix(
+      WithAppResources& resources,
+      const webapps::AppId& app_id);
   GeneratedIconFixScheduleDecision MakeScheduleDecision(
       const WebAppRegistrar& registrar,
-      const AppId& app_id);
-  void FixCompleted(const AppId& app_id, GeneratedIconFixResult result);
+      const webapps::AppId& app_id);
+  void FixCompleted(const webapps::AppId& app_id,
+                    GeneratedIconFixResult result);
 
   raw_ptr<WebAppProvider> provider_ = nullptr;
 
-  base::flat_set<AppId> scheduled_fixes_;
+  base::flat_set<webapps::AppId> scheduled_fixes_;
 
-  base::OnceCallback<void(const AppId&, GeneratedIconFixScheduleDecision)>
+  base::OnceCallback<void(const webapps::AppId&,
+                          GeneratedIconFixScheduleDecision)>
       maybe_schedule_callback_for_testing_;
-  base::OnceCallback<void(const AppId&, GeneratedIconFixResult)>
+  base::OnceCallback<void(const webapps::AppId&, GeneratedIconFixResult)>
       fix_completed_callback_for_testing_;
   absl::optional<base::Time> time_for_testing_;
 

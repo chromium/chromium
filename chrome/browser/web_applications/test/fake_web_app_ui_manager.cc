@@ -27,7 +27,7 @@ void FakeWebAppUiManager::Start() {}
 
 void FakeWebAppUiManager::Shutdown() {}
 
-void FakeWebAppUiManager::SetNumWindowsForApp(const AppId& app_id,
+void FakeWebAppUiManager::SetNumWindowsForApp(const webapps::AppId& app_id,
                                               size_t num_windows_for_app) {
   app_id_to_num_windows_map_[app_id] = num_windows_for_app;
 
@@ -47,7 +47,7 @@ void FakeWebAppUiManager::SetNumWindowsForApp(const AppId& app_id,
 }
 
 void FakeWebAppUiManager::SetOnNotifyOnAllAppWindowsClosedCallback(
-    base::RepeatingCallback<void(AppId)> callback) {
+    base::RepeatingCallback<void(webapps::AppId)> callback) {
   notify_on_all_app_windows_closed_callback_ = std::move(callback);
 }
 
@@ -60,7 +60,7 @@ WebAppUiManagerImpl* FakeWebAppUiManager::AsImpl() {
   return nullptr;
 }
 
-size_t FakeWebAppUiManager::GetNumWindowsForApp(const AppId& app_id) {
+size_t FakeWebAppUiManager::GetNumWindowsForApp(const webapps::AppId& app_id) {
   if (!app_id_to_num_windows_map_.contains(app_id)) {
     return 0;
   }
@@ -68,7 +68,7 @@ size_t FakeWebAppUiManager::GetNumWindowsForApp(const AppId& app_id) {
 }
 
 void FakeWebAppUiManager::NotifyOnAllAppWindowsClosed(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     base::OnceClosure callback) {
   notify_on_all_app_windows_closed_callback_.Run(app_id);
 
@@ -85,25 +85,27 @@ bool FakeWebAppUiManager::CanAddAppToQuickLaunchBar() const {
   return false;
 }
 
-void FakeWebAppUiManager::AddAppToQuickLaunchBar(const AppId& app_id) {}
+void FakeWebAppUiManager::AddAppToQuickLaunchBar(const webapps::AppId& app_id) {
+}
 
-bool FakeWebAppUiManager::IsAppInQuickLaunchBar(const AppId& app_id) const {
+bool FakeWebAppUiManager::IsAppInQuickLaunchBar(
+    const webapps::AppId& app_id) const {
   return false;
 }
 
 bool FakeWebAppUiManager::IsInAppWindow(content::WebContents* web_contents,
-                                        const AppId* app_id) const {
+                                        const webapps::AppId* app_id) const {
   return false;
 }
 
 bool FakeWebAppUiManager::CanReparentAppTabToWindow(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     bool shortcut_created) const {
   return true;
 }
 
 void FakeWebAppUiManager::ReparentAppTabToWindow(content::WebContents* contents,
-                                                 const AppId& app_id,
+                                                 const webapps::AppId& app_id,
                                                  bool shortcut_created) {
   ++num_reparent_tab_calls_;
 }
@@ -148,9 +150,10 @@ base::Value FakeWebAppUiManager::LaunchWebApp(
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-void FakeWebAppUiManager::MigrateLauncherState(const AppId& from_app_id,
-                                               const AppId& to_app_id,
-                                               base::OnceClosure callback) {
+void FakeWebAppUiManager::MigrateLauncherState(
+    const webapps::AppId& from_app_id,
+    const webapps::AppId& to_app_id,
+    base::OnceClosure callback) {
   std::move(callback).Run();
 }
 
@@ -172,7 +175,7 @@ void FakeWebAppUiManager::TriggerInstallDialog(
     content::WebContents* web_contents) {}
 
 void FakeWebAppUiManager::PresentUserUninstallDialog(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     webapps::WebappUninstallSource uninstall_source,
     BrowserWindow* parent_window,
     UninstallCompleteCallback callback) {
@@ -180,7 +183,7 @@ void FakeWebAppUiManager::PresentUserUninstallDialog(
 }
 
 void FakeWebAppUiManager::PresentUserUninstallDialog(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     webapps::WebappUninstallSource uninstall_source,
     gfx::NativeWindow parent_window,
     UninstallCompleteCallback callback) {
@@ -188,7 +191,7 @@ void FakeWebAppUiManager::PresentUserUninstallDialog(
 }
 
 void FakeWebAppUiManager::PresentUserUninstallDialog(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     webapps::WebappUninstallSource uninstall_source,
     gfx::NativeWindow parent_window,
     UninstallCompleteCallback callback,

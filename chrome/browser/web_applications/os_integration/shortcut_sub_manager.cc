@@ -51,7 +51,7 @@ ShortcutSubManager::ShortcutSubManager(Profile& profile,
 ShortcutSubManager::~ShortcutSubManager() = default;
 
 void ShortcutSubManager::Configure(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     proto::WebAppOsIntegrationState& desired_state,
     base::OnceClosure configure_done) {
   DCHECK(!desired_state.has_shortcut());
@@ -74,7 +74,7 @@ void ShortcutSubManager::Configure(
 }
 
 void ShortcutSubManager::Execute(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     const absl::optional<SynchronizeOsOptions>& synchronize_options,
     const proto::WebAppOsIntegrationState& desired_state,
     const proto::WebAppOsIntegrationState& current_state,
@@ -224,7 +224,7 @@ void ShortcutSubManager::Execute(
   std::move(callback_for_no_update).Run();
 }
 
-void ShortcutSubManager::ForceUnregister(const AppId& app_id,
+void ShortcutSubManager::ForceUnregister(const webapps::AppId& app_id,
                                          base::OnceClosure callback) {
   base::FilePath shortcut_data_dir = GetOsIntegrationResourcesDirectoryForApp(
       profile_->GetPath(), app_id,
@@ -244,7 +244,7 @@ void ShortcutSubManager::ForceUnregister(const AppId& app_id,
 }
 
 void ShortcutSubManager::CreateShortcut(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     absl::optional<SynchronizeOsOptions> synchronize_options,
     base::OnceClosure on_complete,
     std::unique_ptr<ShortcutInfo> shortcut_info) {
@@ -269,7 +269,7 @@ void ShortcutSubManager::CreateShortcut(
 }
 
 void ShortcutSubManager::UpdateShortcut(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     absl::optional<SynchronizeOsOptions> synchronize_options,
     const std::u16string& old_app_title,
     base::OnceClosure on_complete,
@@ -297,7 +297,7 @@ void ShortcutSubManager::UpdateShortcut(
       }).Then(std::move(on_complete)));
 }
 
-void ShortcutSubManager::OnShortcutsDeleted(const AppId& app_id,
+void ShortcutSubManager::OnShortcutsDeleted(const webapps::AppId& app_id,
                                             base::OnceClosure final_callback,
                                             bool success) {
   ResultCallback final_result_callback =

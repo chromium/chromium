@@ -39,7 +39,8 @@ const base::FilePath::CharType kFakeProfilePath[] =
 const char kFakeAppUrl[] = "https://fake.com";
 const std::u16string kFakeAppTitle(u"fake title");
 
-std::unique_ptr<ShortcutInfo> CreateTestShorcutInfo(const AppId& app_id) {
+std::unique_ptr<ShortcutInfo> CreateTestShorcutInfo(
+    const webapps::AppId& app_id) {
   auto shortcut_info = std::make_unique<ShortcutInfo>();
   shortcut_info->profile_path = base::FilePath(kFakeProfilePath);
   shortcut_info->app_id = app_id;
@@ -80,7 +81,7 @@ TEST_F(OsIntegrationManagerTest, InstallOsHooksOnlyShortcuts) {
         run_loop.Quit();
       });
 
-  const AppId app_id = "test";
+  const webapps::AppId app_id = "test";
 
   testing::StrictMock<MockOsIntegrationManager> manager;
   EXPECT_CALL(manager, MacAppShimOnAppInstalledForProfile(app_id)).Times(1);
@@ -106,7 +107,7 @@ TEST_F(OsIntegrationManagerTest, InstallOsHooksEverything) {
         run_loop.Quit();
       });
 
-  const AppId app_id = "test";
+  const webapps::AppId app_id = "test";
 
   // Note - when features are enabled by default, more calls will needed to be
   // added here.
@@ -156,7 +157,7 @@ TEST_F(OsIntegrationManagerTest, UninstallOsHooksEverything) {
         run_loop.Quit();
       });
 
-  const AppId app_id = "test";
+  const webapps::AppId app_id = "test";
 
   const base::FilePath kExpectedShortcutPath =
       base::FilePath(kFakeProfilePath)
@@ -179,11 +180,11 @@ TEST_F(OsIntegrationManagerTest, UninstallOsHooksEverything) {
   EXPECT_CALL(manager, UnregisterRunOnOsLogin(app_id, testing::_)).Times(1);
 
   EXPECT_CALL(manager, UninstallAllOsHooks(testing::_, testing::_))
-      .WillOnce(
-          [&manager](const AppId& app_id, UninstallOsHooksCallback callback) {
-            return manager.OsIntegrationManager::UninstallAllOsHooks(
-                app_id, std::move(callback));
-          });
+      .WillOnce([&manager](const webapps::AppId& app_id,
+                           UninstallOsHooksCallback callback) {
+        return manager.OsIntegrationManager::UninstallAllOsHooks(
+            app_id, std::move(callback));
+      });
 
   manager.UninstallAllOsHooks(app_id, std::move(callback));
   run_loop.Run();
@@ -197,30 +198,30 @@ TEST_F(OsIntegrationManagerTest, UninstallOsHooksEverything) {
 }
 
 TEST_F(OsIntegrationManagerTest, UpdateProtocolHandlers) {
-  const AppId app_id = "test";
+  const webapps::AppId app_id = "test";
   testing::StrictMock<MockOsIntegrationManager> manager(
       std::make_unique<WebAppProtocolHandlerManager>(nullptr));
   base::RunLoop run_loop;
 
 #if !BUILDFLAG(IS_WIN)
   EXPECT_CALL(manager, UpdateShortcuts(app_id, base::StringPiece(), testing::_))
-      .WillOnce([](const AppId& app_id, base::StringPiece old_name,
+      .WillOnce([](const webapps::AppId& app_id, base::StringPiece old_name,
                    ResultCallback update_finished_callback) {
         std::move(update_finished_callback).Run(Result::kOk);
       });
 #endif
 
   EXPECT_CALL(manager, UnregisterProtocolHandlers(app_id, testing::_))
-      .WillOnce(
-          [](const AppId& app_id, ResultCallback update_finished_callback) {
-            std::move(update_finished_callback).Run(Result::kOk);
-          });
+      .WillOnce([](const webapps::AppId& app_id,
+                   ResultCallback update_finished_callback) {
+        std::move(update_finished_callback).Run(Result::kOk);
+      });
 
   EXPECT_CALL(manager, RegisterProtocolHandlers(app_id, testing::_))
-      .WillOnce(
-          [](const AppId& app_id, ResultCallback update_finished_callback) {
-            std::move(update_finished_callback).Run(Result::kOk);
-          });
+      .WillOnce([](const webapps::AppId& app_id,
+                   ResultCallback update_finished_callback) {
+        std::move(update_finished_callback).Run(Result::kOk);
+      });
 
   auto update_finished_callback =
       base::BindLambdaForTesting([&]() { run_loop.Quit(); });

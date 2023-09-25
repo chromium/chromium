@@ -58,12 +58,12 @@ void UpdateApps(WebAppSyncBridge& sync_bridge,
 }
 
 void DeleteApps(WebAppSyncBridge& sync_bridge,
-                const std::vector<AppId>& app_ids_to_delete) {
+                const std::vector<webapps::AppId>& app_ids_to_delete) {
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
       sync_bridge.CreateMetadataChangeList();
   syncer::EntityChangeList entity_changes;
 
-  for (const AppId& app_id : app_ids_to_delete) {
+  for (const webapps::AppId& app_id : app_ids_to_delete) {
     auto entity_change = syncer::EntityChange::CreateDelete(app_id);
     entity_changes.push_back(std::move(entity_change));
   }

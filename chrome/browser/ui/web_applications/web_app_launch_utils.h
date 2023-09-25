@@ -11,6 +11,7 @@
 
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -28,7 +29,7 @@ namespace web_app {
 
 class AppBrowserController;
 
-absl::optional<AppId> GetWebAppForActiveTab(const Browser* browser);
+absl::optional<webapps::AppId> GetWebAppForActiveTab(const Browser* browser);
 
 // Clears navigation history prior to user entering app scope.
 void PrunePreScopeNavigationHistory(const GURL& scope,
@@ -48,13 +49,13 @@ Browser* ReparentWebAppForActiveTab(Browser* browser);
 // - Otherwise a new browser window is created for |contents| to be reparented
 // into.
 Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
-                                           const AppId& app_id);
+                                           const webapps::AppId& app_id);
 
 // Tags `contents` with the given app id and marks it as an app. This
 // differentiates it from a `WebContents` which happens to be hosting a page
 // that is part of an app.
 void SetWebContentsActingAsApp(content::WebContents* contents,
-                               const AppId& app_id);
+                               const webapps::AppId& app_id);
 
 // Marks the web contents as being the pinned home tab of a tabbed web app.
 void SetWebContentsIsPinnedHomeTab(content::WebContents* contents);
@@ -92,7 +93,7 @@ content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
 
 // RecordLaunchMetrics methods report UMA metrics. It shouldn't have other
 // side-effects (e.g. updating app launch time).
-void RecordLaunchMetrics(const AppId& app_id,
+void RecordLaunchMetrics(const webapps::AppId& app_id,
                          apps::LaunchContainer container,
                          apps::LaunchSource launch_source,
                          const GURL& launch_url,
@@ -101,7 +102,7 @@ void RecordLaunchMetrics(const AppId& app_id,
 // Updates statistics about web app launch. For example, app's last launch time
 // (populates recently launched app list) and site engagement stats.
 void UpdateLaunchStats(content::WebContents* web_contents,
-                       const AppId& app_id,
+                       const webapps::AppId& app_id,
                        const GURL& launch_url);
 
 }  // namespace web_app

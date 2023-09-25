@@ -27,10 +27,10 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/win/jumplist_updater.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/icon_util.h"
 #include "ui/gfx/image/image.h"
@@ -157,7 +157,7 @@ void SetUpdateJumpListForTesting(
 }
 
 std::wstring GenerateAppUserModelId(const base::FilePath& profile_path,
-                                    const AppId& app_id) {
+                                    const webapps::AppId& app_id) {
   std::wstring app_name =
       base::UTF8ToWide(GenerateApplicationNameFromAppId(app_id));
   return shell_integration::win::GetAppUserModelIdForApp(app_name,
@@ -169,7 +169,7 @@ bool ShouldRegisterShortcutsMenuWithOs() {
 }
 
 bool RegisterShortcutsMenuWithOsTask(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     const base::FilePath& profile_path,
     const base::FilePath& shortcut_data_dir,
     const std::vector<WebAppShortcutsMenuItemInfo>& shortcuts_menu_item_infos,
@@ -230,7 +230,7 @@ void OnShortcutsMenuRegistrationComplete(RegisterShortcutsMenuCallback callback,
 }
 
 void RegisterShortcutsMenuWithOs(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     const base::FilePath& profile_path,
     const base::FilePath& shortcut_data_dir,
     const std::vector<WebAppShortcutsMenuItemInfo>& shortcuts_menu_item_infos,
@@ -245,7 +245,7 @@ void RegisterShortcutsMenuWithOs(
                      std::move(callback)));
 }
 
-bool UnregisterShortcutsMenuWithOs(const AppId& app_id,
+bool UnregisterShortcutsMenuWithOs(const webapps::AppId& app_id,
                                    const base::FilePath& profile_path,
                                    RegisterShortcutsMenuCallback callback) {
   scoped_refptr<OsIntegrationTestOverride> test_override =

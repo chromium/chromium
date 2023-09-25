@@ -11,6 +11,7 @@
 #include "chrome/browser/badging/badge_manager.h"
 #include "chrome/browser/badging/badge_manager_delegate.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "components/webapps/common/web_app_id.h"
 
 class Profile;
 
@@ -18,7 +19,7 @@ namespace badging {
 
 class BadgeManager;
 
-using AppBadge = std::pair<web_app::AppId, BadgeManager::BadgeValue>;
+using AppBadge = std::pair<webapps::AppId, BadgeManager::BadgeValue>;
 using ScopeBadge = std::pair<GURL, BadgeManager::BadgeValue>;
 
 // Testing delegate that records badge changes for apps.
@@ -33,18 +34,18 @@ class TestBadgeManagerDelegate : public BadgeManagerDelegate {
   // Resets the lists of cleared and set badges.
   void ResetBadges();
 
-  std::vector<web_app::AppId> cleared_badges() { return cleared_badges_; }
+  std::vector<webapps::AppId> cleared_badges() { return cleared_badges_; }
   std::vector<AppBadge> set_badges() { return set_badges_; }
 
   // BadgeManagerDelegate:
-  void OnAppBadgeUpdated(const web_app::AppId& app_badge) override;
+  void OnAppBadgeUpdated(const webapps::AppId& app_badge) override;
 
  protected:
 
  private:
   base::RepeatingCallback<void()> on_badge_changed_;
 
-  std::vector<web_app::AppId> cleared_badges_;
+  std::vector<webapps::AppId> cleared_badges_;
   std::vector<AppBadge> set_badges_;
 };
 

@@ -26,7 +26,7 @@ namespace {
 const char kLatestWebAppInstallSource[] = "latest_web_app_install_source";
 
 const base::Value::Dict* GetWebAppDictionary(const PrefService* pref_service,
-                                             const AppId& app_id) {
+                                             const webapps::AppId& app_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   const base::Value::Dict& web_apps_prefs =
       pref_service->GetDict(prefs::kWebAppsPreferences);
@@ -36,7 +36,7 @@ const base::Value::Dict* GetWebAppDictionary(const PrefService* pref_service,
 
 base::Value::Dict& UpdateWebAppDictionary(
     ScopedDictPrefUpdate& web_apps_prefs_update,
-    const AppId& app_id) {
+    const webapps::AppId& app_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   return *web_apps_prefs_update->EnsureDict(app_id);
 }
@@ -62,14 +62,15 @@ bool TimeOccurredWithinDays(absl::optional<base::Time> time, int days) {
 void RemoveEmptyWebAppPrefs(PrefService* pref_service) {
   ScopedDictPrefUpdate update(pref_service, prefs::kWebAppsPreferences);
 
-  std::vector<AppId> apps_to_remove;
+  std::vector<webapps::AppId> apps_to_remove;
   for (const auto [app_id, dict] : *update) {
     if (dict.is_dict() && dict.GetDict().empty())
       apps_to_remove.push_back(app_id);
   }
 
-  for (const AppId& app_id : apps_to_remove)
+  for (const webapps::AppId& app_id : apps_to_remove) {
     update->Remove(app_id);
+  }
 }
 
 }  // namespace
@@ -131,7 +132,7 @@ void WebAppPrefsUtilsRegisterProfilePrefs(
 }
 
 absl::optional<int> GetIntWebAppPref(const PrefService* pref_service,
-                                     const AppId& app_id,
+                                     const webapps::AppId& app_id,
                                      base::StringPiece path) {
   const base::Value::Dict* web_app_prefs =
       GetWebAppDictionary(pref_service, app_id);
@@ -141,7 +142,7 @@ absl::optional<int> GetIntWebAppPref(const PrefService* pref_service,
 }
 
 void UpdateIntWebAppPref(PrefService* pref_service,
-                         const AppId& app_id,
+                         const webapps::AppId& app_id,
                          base::StringPiece path,
                          int value) {
   ScopedDictPrefUpdate update(pref_service, prefs::kWebAppsPreferences);
@@ -151,7 +152,7 @@ void UpdateIntWebAppPref(PrefService* pref_service,
 }
 
 absl::optional<base::Time> GetTimeWebAppPref(const PrefService* pref_service,
-                                             const AppId& app_id,
+                                             const webapps::AppId& app_id,
                                              base::StringPiece path) {
   if (const auto* web_app_prefs = GetWebAppDictionary(pref_service, app_id)) {
     if (auto* value = web_app_prefs->FindByDottedPath(path))
@@ -162,7 +163,7 @@ absl::optional<base::Time> GetTimeWebAppPref(const PrefService* pref_service,
 }
 
 void UpdateTimeWebAppPref(PrefService* pref_service,
-                          const AppId& app_id,
+                          const webapps::AppId& app_id,
                           base::StringPiece path,
                           base::Time value) {
   ScopedDictPrefUpdate update(pref_service, prefs::kWebAppsPreferences);
@@ -172,7 +173,7 @@ void UpdateTimeWebAppPref(PrefService* pref_service,
 }
 
 void RemoveWebAppPref(PrefService* pref_service,
-                      const AppId& app_id,
+                      const webapps::AppId& app_id,
                       base::StringPiece path) {
   ScopedDictPrefUpdate update(pref_service, prefs::kWebAppsPreferences);
 
@@ -180,23 +181,25 @@ void RemoveWebAppPref(PrefService* pref_service,
   web_app_prefs.RemoveByDottedPath(path);
 }
 
-absl::optional<int> GetWebAppInstallSourceDeprecated(PrefService* prefs,
-                                                     const AppId& app_id) {
+absl::optional<int> GetWebAppInstallSourceDeprecated(
+    PrefService* prefs,
+    const webapps::AppId& app_id) {
   absl::optional<int> value =
       GetIntWebAppPref(prefs, app_id, kLatestWebAppInstallSource);
   return value;
 }
 
-std::map<AppId, int> TakeAllWebAppInstallSources(PrefService* pref_service) {
+std::map<webapps::AppId, int> TakeAllWebAppInstallSources(
+    PrefService* pref_service) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   const base::Value* web_apps_prefs =
       pref_service->GetUserPrefValue(prefs::kWebAppsPreferences);
   if (!web_apps_prefs || !web_apps_prefs->is_dict())
     return {};
 
-  std::map<AppId, int> return_value;
+  std::map<webapps::AppId, int> return_value;
   for (auto item : web_apps_prefs->GetDict()) {
-    const AppId& app_id = item.first;
+    const webapps::AppId& app_id = item.first;
     absl::optional<int> install_source =
         item.second.GetDict().FindInt(kLatestWebAppInstallSource);
     if (install_source)
@@ -212,7 +215,7 @@ std::map<AppId, int> TakeAllWebAppInstallSources(PrefService* pref_service) {
 }
 
 void RecordInstallIphIgnored(PrefService* pref_service,
-                             const AppId& app_id,
+                             const webapps::AppId& app_id,
                              base::Time time) {
   absl::optional<int> ignored_count =
       GetIntWebAppPref(pref_service, app_id, kIphIgnoreCount);
@@ -227,7 +230,8 @@ void RecordInstallIphIgnored(PrefService* pref_service,
   update->Set(kIphLastIgnoreTime, base::TimeToValue(time));
 }
 
-void RecordInstallIphInstalled(PrefService* pref_service, const AppId& app_id) {
+void RecordInstallIphInstalled(PrefService* pref_service,
+                               const webapps::AppId& app_id) {
   // The ignored count is meant to track consecutive occurrences of the user
   // ignoring IPH, to help determine when IPH should be muted. Therefore
   // resetting ignored count on successful install.
@@ -237,7 +241,7 @@ void RecordInstallIphInstalled(PrefService* pref_service, const AppId& app_id) {
   update->Set(kIphIgnoreCount, 0);
 }
 
-bool ShouldShowIph(PrefService* pref_service, const AppId& app_id) {
+bool ShouldShowIph(PrefService* pref_service, const webapps::AppId& app_id) {
   // Do not show IPH if the user ignored the last N+ promos for this app.
   int app_ignored_count =
       GetIntWebAppPref(pref_service, app_id, kIphIgnoreCount).value_or(0);
@@ -274,7 +278,7 @@ const char kConsecutiveMlInstallNotAcceptedCount[] =
 const char kMLPromotionGuardrailBlockReason[] = "ML_guardrail_blocked";
 
 void RecordMlInstallIgnored(PrefService* pref_service,
-                            const AppId& app_id,
+                            const webapps::AppId& app_id,
                             base::Time time) {
   CHECK(pref_service);
 
@@ -295,7 +299,7 @@ void RecordMlInstallIgnored(PrefService* pref_service,
 }
 
 void RecordMlInstallDismissed(PrefService* pref_service,
-                              const AppId& app_id,
+                              const webapps::AppId& app_id,
                               base::Time time) {
   CHECK(pref_service);
 
@@ -316,7 +320,7 @@ void RecordMlInstallDismissed(PrefService* pref_service,
 }
 
 void RecordMlInstallAccepted(PrefService* pref_service,
-                             const AppId& app_id,
+                             const webapps::AppId& app_id,
                              base::Time time) {
   // The ignored count is meant to track consecutive occurrences of the user
   // ignoring ML install, to help determine when ML install should be muted.
@@ -329,7 +333,7 @@ void RecordMlInstallAccepted(PrefService* pref_service,
 }
 
 bool IsMlPromotionBlockedByHistoryGuardrail(PrefService* pref_service,
-                                            const AppId& app_id) {
+                                            const webapps::AppId& app_id) {
   constexpr int kMuteMlInstallAfterConsecutiveAppSpecificNotAcceptedCount = 3;
   constexpr int kMuteMlInstallAfterIgnoreForDays = 2;
   constexpr int kMuteMlInstallAfterDismissForDays = 14;

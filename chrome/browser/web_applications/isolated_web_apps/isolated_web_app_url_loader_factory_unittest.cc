@@ -29,7 +29,6 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
@@ -37,6 +36,7 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "components/web_package/web_bundle_builder.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -87,7 +87,7 @@ MATCHER_P(IsHttpStatusCode, err, net::GetHttpReasonPhrase(err)) {
 }
 
 std::unique_ptr<WebApp> CreateWebApp(const GURL& start_url) {
-  AppId app_id = GenerateAppId(/*manifest_id=*/"", start_url);
+  webapps::AppId app_id = GenerateAppId(/*manifest_id=*/"", start_url);
   auto web_app = std::make_unique<WebApp>(app_id);
   web_app->SetName("iwa name");
   web_app->SetStartUrl(start_url);
@@ -286,7 +286,7 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest,
   RegisterWebApp(CreateWebApp(kDevAppStartUrl));
 
   // Verify that a PWA is installed at kAppStartUrl's origin.
-  absl::optional<AppId> installed_app =
+  absl::optional<webapps::AppId> installed_app =
       fake_provider().registrar_unsafe().FindInstalledAppWithUrlInScope(
           kDevAppStartUrl);
   EXPECT_THAT(installed_app.has_value(), IsTrue());
@@ -310,7 +310,7 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest,
   RegisterWebApp(std::move(iwa));
 
   // Verify that a PWA is installed at kAppStartUrl's origin.
-  absl::optional<AppId> installed_app =
+  absl::optional<webapps::AppId> installed_app =
       fake_provider().registrar_unsafe().FindAppWithUrlInScope(kDevAppStartUrl);
   EXPECT_THAT(installed_app.has_value(), IsTrue());
 

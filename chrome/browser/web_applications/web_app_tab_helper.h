@@ -12,6 +12,7 @@
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -34,14 +35,14 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
 
   // Retrieves the WebAppTabHelper's app ID off |web_contents|, returns nullptr
   // if there is no tab helper or app ID.
-  static const AppId* GetAppId(content::WebContents* web_contents);
+  static const webapps::AppId* GetAppId(content::WebContents* web_contents);
 
   explicit WebAppTabHelper(content::WebContents* web_contents);
   WebAppTabHelper(const WebAppTabHelper&) = delete;
   WebAppTabHelper& operator=(const WebAppTabHelper&) = delete;
   ~WebAppTabHelper() override;
 
-  void SetAppId(absl::optional<AppId> app_id);
+  void SetAppId(absl::optional<webapps::AppId> app_id);
   const base::UnguessableToken& GetAudioFocusGroupIdForTesting() const;
 
   bool acting_as_app() const { return acting_as_app_; }
@@ -70,15 +71,17 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   bool IsInAppWindow() const;
 
   // WebAppInstallManagerObserver:
-  void OnWebAppInstalled(const AppId& installed_app_id) override;
-  void OnWebAppWillBeUninstalled(const AppId& uninstalled_app_id) override;
+  void OnWebAppInstalled(const webapps::AppId& installed_app_id) override;
+  void OnWebAppWillBeUninstalled(
+      const webapps::AppId& uninstalled_app_id) override;
   void OnWebAppInstallManagerDestroyed() override;
 
   void ResetAppId();
 
   // Runs any logic when the associated app is added, changed or removed.
-  void OnAssociatedAppChanged(const absl::optional<AppId>& previous_app_id,
-                              const absl::optional<AppId>& new_app_id);
+  void OnAssociatedAppChanged(
+      const absl::optional<webapps::AppId>& previous_app_id,
+      const absl::optional<webapps::AppId>& new_app_id);
 
   // Updates the audio focus group id based on the current web app.
   void UpdateAudioFocusGroupId();
@@ -86,10 +89,10 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   // Triggers a reinstall of a placeholder app for |url|.
   void ReinstallPlaceholderAppIfNecessary(const GURL& url);
 
-  absl::optional<AppId> FindAppWithUrlInScope(const GURL& url) const;
+  absl::optional<webapps::AppId> FindAppWithUrlInScope(const GURL& url) const;
 
   // WebApp associated with this tab.
-  absl::optional<AppId> app_id_;
+  absl::optional<webapps::AppId> app_id_;
 
   // True when the associated `WebContents` is acting as an app. Specifically,
   // this should only be true if `app_id_` is non empty, and the WebContents was

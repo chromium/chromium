@@ -240,7 +240,7 @@ web_app::WebAppRegistrar& AppBannerManagerDesktop::registrar() {
 
 bool AppBannerManagerDesktop::ShouldAllowWebAppReplacementInstall() {
   // Only allow replacement install if this specific app is already installed.
-  web_app::AppId app_id = web_app::GenerateAppIdFromManifest(manifest());
+  webapps::AppId app_id = web_app::GenerateAppIdFromManifest(manifest());
   if (!registrar().IsLocallyInstalled(app_id))
     return false;
 
@@ -265,8 +265,8 @@ void AppBannerManagerDesktop::ShowBannerUi(WebappInstallSource install_source) {
 }
 
 void AppBannerManagerDesktop::OnWebAppInstalled(
-    const web_app::AppId& installed_app_id) {
-  absl::optional<web_app::AppId> app_id =
+    const webapps::AppId& installed_app_id) {
+  absl::optional<webapps::AppId> app_id =
       registrar().FindAppWithUrlInScope(validated_url_);
   if (app_id.has_value() && *app_id == installed_app_id &&
       registrar().GetAppUserDisplayMode(*app_id) ==
@@ -277,7 +277,7 @@ void AppBannerManagerDesktop::OnWebAppInstalled(
 }
 
 void AppBannerManagerDesktop::OnWebAppWillBeUninstalled(
-    const web_app::AppId& app_id) {
+    const webapps::AppId& app_id) {
   // WebAppTabHelper has a app_id but it is reset during
   // OnWebAppWillBeUninstalled so use IsUrlInAppScope() instead.
   if (registrar().IsUrlInAppScope(validated_url(), app_id))
@@ -285,7 +285,7 @@ void AppBannerManagerDesktop::OnWebAppWillBeUninstalled(
 }
 
 void AppBannerManagerDesktop::OnWebAppUninstalled(
-    const web_app::AppId& app_id,
+    const webapps::AppId& app_id,
     webapps::WebappUninstallSource uninstall_source) {
   if (uninstalling_app_id_ == app_id) {
     RecheckInstallabilityForLoadedPage();
@@ -308,7 +308,7 @@ void AppBannerManagerDesktop::CreateWebApp(
 }
 
 void AppBannerManagerDesktop::DidFinishCreatingWebApp(
-    const web_app::AppId& app_id,
+    const webapps::AppId& app_id,
     webapps::InstallResultCode code) {
   content::WebContents* contents = web_contents();
   if (!contents)
@@ -330,7 +330,7 @@ void AppBannerManagerDesktop::DidFinishCreatingWebApp(
 }
 
 void AppBannerManagerDesktop::DidCreateWebAppFromMLDialog(
-    const web_app::AppId& app_id,
+    const webapps::AppId& app_id,
     webapps::InstallResultCode code) {
   if (code == webapps::InstallResultCode::kSuccessNewInstall) {
     TrackUserResponse(USER_RESPONSE_WEB_APP_ACCEPTED);

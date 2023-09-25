@@ -9,18 +9,19 @@
 #include "base/run_loop.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "components/webapps/common/web_app_id.h"
 
 class Profile;
 
 class WebAppIconWaiter {
  public:
-  explicit WebAppIconWaiter(Profile* profile, const web_app::AppId& app_id);
+  explicit WebAppIconWaiter(Profile* profile, const webapps::AppId& app_id);
 
   void Wait();
 
  private:
-  void OnFaviconRead(const web_app::AppId& app_id);
-  const raw_ref<const web_app::AppId> app_id_;
+  void OnFaviconRead(const webapps::AppId& app_id);
+  const raw_ref<const webapps::AppId> app_id_;
   base::RunLoop run_loop_;
 };
 

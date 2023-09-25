@@ -37,7 +37,6 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -46,6 +45,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/uninstall_result_code.h"
+#include "components/webapps/common/web_app_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -296,7 +296,7 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManager {
       auto result =
           externally_managed_app_manager_impl_->GetNextInstallationTaskResult(
               install_url);
-      absl::optional<AppId> app_id;
+      absl::optional<webapps::AppId> app_id;
       if (result.code == webapps::InstallResultCode::kSuccessNewInstall) {
         app_id = GenerateAppIdFromManifestId(
             GenerateManifestIdFromStartUrlOnly(install_url));
@@ -430,7 +430,7 @@ class TestWebAppCommandScheduler : public WebAppCommandScheduler {
   }
 
   // WebAppCommandScheduler:
-  void RemoveInstallUrl(absl::optional<AppId> app_id,
+  void RemoveInstallUrl(absl::optional<webapps::AppId> app_id,
                         WebAppManagement::Type install_source,
                         const GURL& install_url,
                         webapps::WebappUninstallSource uninstall_source,
@@ -454,7 +454,7 @@ class TestWebAppCommandScheduler : public WebAppCommandScheduler {
             }));
   }
   void RemoveInstallSource(
-      const AppId& app_id,
+      const webapps::AppId& app_id,
       WebAppManagement::Type install_source,
       webapps::WebappUninstallSource uninstall_source,
       UninstallJob::Callback callback,
@@ -466,7 +466,7 @@ class TestWebAppCommandScheduler : public WebAppCommandScheduler {
   }
 
  private:
-  void UnregisterApp(const AppId& app_id) {
+  void UnregisterApp(const webapps::AppId& app_id) {
     auto it = registrar_->registry().find(app_id);
     DCHECK(it != registrar_->registry().end());
     registrar_->registry().erase(it);
@@ -476,7 +476,7 @@ class TestWebAppCommandScheduler : public WebAppCommandScheduler {
   std::vector<GURL> uninstall_external_web_app_urls_;
   // Maps app URLs to the id of the app that would have been uninstalled for
   // that url and the result of trying to uninstall it.
-  std::map<GURL, std::pair<AppId, webapps::UninstallResultCode>>
+  std::map<GURL, std::pair<webapps::AppId, webapps::UninstallResultCode>>
       next_uninstall_external_web_app_results_;
 };
 
@@ -1507,7 +1507,8 @@ TEST_F(ExternallyManagedAppManagerImplTest, AppUninstalled) {
     EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
   }
 
-  absl::optional<AppId> app_id = registrar().LookupExternalAppId(kFooWebAppUrl);
+  absl::optional<webapps::AppId> app_id =
+      registrar().LookupExternalAppId(kFooWebAppUrl);
   if (app_id.has_value()) {
     ScopedRegistryUpdate update = sync_bridge().BeginUpdate();
     update->DeleteApp(app_id.value());
@@ -1741,7 +1742,7 @@ TEST_F(ExternallyManagedAppManagerImplTest,
 
   // Reinstall placeholder
   {
-    AppId app_id = GenerateAppIdFromManifestId(
+    webapps::AppId app_id = GenerateAppIdFromManifestId(
         GenerateManifestIdFromStartUrlOnly(kFooWebAppUrl));
     install_options.wait_for_windows_closed = true;
     externally_managed_app_manager_impl().SetNextInstallationTaskResult(
@@ -1749,7 +1750,7 @@ TEST_F(ExternallyManagedAppManagerImplTest,
         /*did_install_placeholder=*/false);
     ui_manager().SetNumWindowsForApp(app_id, 1);
 
-    base::MockRepeatingCallback<void(AppId)> callback;
+    base::MockRepeatingCallback<void(webapps::AppId)> callback;
     EXPECT_CALL(callback, Run(app_id)).WillOnce(::testing::Invoke([&]() {
       ui_manager().SetNumWindowsForApp(app_id, 0);
     }));

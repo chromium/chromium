@@ -31,6 +31,7 @@
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "components/sync/model/string_ordinal.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
@@ -51,7 +52,7 @@ namespace web_app {
 
 class WebApp {
  public:
-  explicit WebApp(const AppId& app_id);
+  explicit WebApp(const webapps::AppId& app_id);
   ~WebApp();
 
   // Copyable and move-assignable to support Copy-on-Write with Commit.
@@ -62,7 +63,7 @@ class WebApp {
   WebApp(WebApp&&) = delete;
   WebApp& operator=(const WebApp&) = delete;
 
-  const AppId& app_id() const { return app_id_; }
+  const webapps::AppId& app_id() const { return app_id_; }
 
   // UTF8 encoded application name. This name is not translated, use
   // WebAppRegistrar.GetAppShortName to get the translated name.
@@ -265,13 +266,15 @@ class WebApp {
 
   const GURL& manifest_url() const { return manifest_url_; }
 
-  ManifestId manifest_id() const;
+  webapps::ManifestId manifest_id() const;
 
   const absl::optional<LaunchHandler>& launch_handler() const {
     return launch_handler_;
   }
 
-  const absl::optional<AppId>& parent_app_id() const { return parent_app_id_; }
+  const absl::optional<webapps::AppId>& parent_app_id() const {
+    return parent_app_id_;
+  }
 
   const blink::ParsedPermissionsPolicy& permissions_policy() const {
     return permissions_policy_;
@@ -487,10 +490,10 @@ class WebApp {
   void SetSyncFallbackData(SyncFallbackData sync_fallback_data);
   void SetCaptureLinks(blink::mojom::CaptureLinks capture_links);
   void SetManifestUrl(const GURL& manifest_url);
-  void SetManifestId(const ManifestId& manifest_id);
+  void SetManifestId(const webapps::ManifestId& manifest_id);
   void SetWindowControlsOverlayEnabled(bool enabled);
   void SetLaunchHandler(absl::optional<LaunchHandler> launch_handler);
-  void SetParentAppId(const absl::optional<AppId>& parent_app_id);
+  void SetParentAppId(const absl::optional<webapps::AppId>& parent_app_id);
   void SetPermissionsPolicy(blink::ParsedPermissionsPolicy permissions_policy);
   void SetLatestInstallSource(
       absl::optional<webapps::WebappInstallSource> latest_install_source);
@@ -547,7 +550,7 @@ class WebApp {
   friend class WebAppDatabase;
   friend std::ostream& operator<<(std::ostream&, const WebApp&);
 
-  AppId app_id_;
+  webapps::AppId app_id_;
 
   // This set always contains at least one source.
   WebAppManagementTypes sources_{};
@@ -608,7 +611,7 @@ class WebApp {
       blink::mojom::CaptureLinks::kUndefined;
   ClientData client_data_;
   GURL manifest_url_;
-  ManifestId manifest_id_;
+  webapps::ManifestId manifest_id_;
   // The state of the user's approval of the app's use of the File Handler API.
   ApiApprovalState file_handler_approval_state_ =
       ApiApprovalState::kRequiresPrompt;
@@ -619,7 +622,7 @@ class WebApp {
       OsIntegrationState::kDisabled;
   bool window_controls_overlay_enabled_ = false;
   absl::optional<LaunchHandler> launch_handler_;
-  absl::optional<AppId> parent_app_id_;
+  absl::optional<webapps::AppId> parent_app_id_;
   blink::ParsedPermissionsPolicy permissions_policy_;
   // The source of the latest install. WebAppRegistrar provides range
   // validation. Optional only to support legacy installations, since this used

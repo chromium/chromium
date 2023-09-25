@@ -535,7 +535,8 @@ std::string GetOsIntegrationSubManagersTestName(
 
 std::unique_ptr<WebApp> CreateWebApp(const GURL& start_url,
                                      WebAppManagement::Type source_type) {
-  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
+  const webapps::AppId app_id =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
 
   auto web_app = std::make_unique<WebApp>(app_id);
   web_app->SetStartUrl(start_url);
@@ -564,7 +565,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
   }
   const GURL scope = params.base_url.Resolve("scope" + seed_str + "/");
   const GURL start_url = scope.Resolve("start" + seed_str);
-  const AppId app_id = GenerateAppId(relative_manifest_id, start_url);
+  const webapps::AppId app_id = GenerateAppId(relative_manifest_id, start_url);
 
   const std::string name = "Name" + seed_str;
   const std::string description = "Description" + seed_str;
@@ -955,14 +956,14 @@ void TestDeclineDialogCallback(
                                 false /*accept*/, std::move(web_app_info)));
 }
 
-AppId InstallPwaForCurrentUrl(Browser* browser) {
+webapps::AppId InstallPwaForCurrentUrl(Browser* browser) {
   // Depending on the installability criteria, different dialogs can be used.
   chrome::SetAutoAcceptWebAppDialogForTesting(true, true);
   chrome::SetAutoAcceptPWAInstallConfirmationForTesting(true);
   WebAppTestInstallWithOsHooksObserver observer(browser->profile());
   observer.BeginListening();
   CHECK(chrome::ExecuteCommand(browser, IDC_INSTALL_PWA));
-  AppId app_id = observer.Wait();
+  webapps::AppId app_id = observer.Wait();
   chrome::SetAutoAcceptPWAInstallConfirmationForTesting(false);
   chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
   return app_id;
@@ -994,7 +995,7 @@ void SetWebAppSettingsListPref(Profile* profile, const base::StringPiece pref) {
 
 void AddInstallUrlData(PrefService* pref_service,
                        WebAppSyncBridge* sync_bridge,
-                       const AppId& app_id,
+                       const webapps::AppId& app_id,
                        const GURL& url,
                        const ExternalInstallSource& source) {
   ScopedRegistryUpdate update = sync_bridge->BeginUpdate();
@@ -1008,7 +1009,7 @@ void AddInstallUrlData(PrefService* pref_service,
 
 void AddInstallUrlAndPlaceholderData(PrefService* pref_service,
                                      WebAppSyncBridge* sync_bridge,
-                                     const AppId& app_id,
+                                     const webapps::AppId& app_id,
                                      const GURL& url,
                                      const ExternalInstallSource& source,
                                      bool is_placeholder) {
@@ -1022,7 +1023,7 @@ void AddInstallUrlAndPlaceholderData(PrefService* pref_service,
 }
 
 void SynchronizeOsIntegration(Profile* profile,
-                              const AppId& app_id,
+                              const webapps::AppId& app_id,
                               absl::optional<SynchronizeOsOptions> options) {
   base::test::TestFuture<void> sync_future;
   WebAppProvider::GetForTest(profile)->scheduler().SynchronizeOsIntegration(

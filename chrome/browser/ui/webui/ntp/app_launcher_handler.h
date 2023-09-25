@@ -28,6 +28,7 @@
 #include "components/favicon/core/favicon_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sync/model/string_ordinal.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -75,7 +76,7 @@ class AppLauncherHandler
 
   ~AppLauncherHandler() override;
 
-  base::Value::Dict CreateWebAppInfo(const web_app::AppId& app_id);
+  base::Value::Dict CreateWebAppInfo(const webapps::AppId& app_id);
 
   base::Value::Dict CreateExtensionInfo(const extensions::Extension* extension);
 
@@ -105,19 +106,19 @@ class AppLauncherHandler
                               extensions::UninstallReason reason) override;
 
   // web_app::OnWebAppInstallManagerObserver:
-  void OnWebAppInstalled(const web_app::AppId& app_id) override;
-  void OnWebAppWillBeUninstalled(const web_app::AppId& app_id) override;
+  void OnWebAppInstalled(const webapps::AppId& app_id) override;
+  void OnWebAppWillBeUninstalled(const webapps::AppId& app_id) override;
   void OnWebAppUninstalled(
-      const web_app::AppId& app_id,
+      const webapps::AppId& app_id,
       webapps::WebappUninstallSource uninstall_source) override;
   void OnWebAppInstallManagerDestroyed() override;
 
   // web_app::WebAppRegistrarObserver:
-  void OnWebAppFirstInstallTimeChanged(const web_app::AppId& app_id,
+  void OnWebAppFirstInstallTimeChanged(const webapps::AppId& app_id,
                                        const base::Time& time) override;
   void OnAppRegistrarDestroyed() override;
   void OnWebAppRunOnOsLoginModeChanged(
-      const web_app::AppId& app_id,
+      const webapps::AppId& app_id,
       web_app::RunOnOsLoginMode run_on_os_login_mode) override;
   void OnWebAppSettingsPolicyChanged() override;
 
@@ -128,7 +129,7 @@ class AppLauncherHandler
   base::Value::Dict GetExtensionInfo(const extensions::Extension* extension);
 
   // Create a dictionary value for the given web app.
-  base::Value::Dict GetWebAppInfo(const web_app::AppId& app_id);
+  base::Value::Dict GetWebAppInfo(const webapps::AppId& app_id);
 
   // Handles the "launchApp" message with unused |args|.
   void HandleGetApps(const base::Value::List& args);

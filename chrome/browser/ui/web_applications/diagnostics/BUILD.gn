@@ -20,6 +20,7 @@ source_set("app_service_browser_tests") {
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//components/services/app_service",
+    "//components/webapps/common",
   ]
 
   if (is_chromeos_lacros) {

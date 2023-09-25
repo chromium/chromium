@@ -38,7 +38,7 @@ class WebUIWebAppBrowserTest : public WebAppControllerBrowserTest {
   }
 
   struct App {
-    AppId id;
+    webapps::AppId id;
     std::string start_url;
     raw_ptr<Browser> browser;
     raw_ptr<BrowserView> browser_view;
@@ -53,7 +53,8 @@ class WebUIWebAppBrowserTest : public WebAppControllerBrowserTest {
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = GURL(start_url);
     web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
-    AppId app_id = test::InstallWebApp(profile, std::move(web_app_info));
+    webapps::AppId app_id =
+        test::InstallWebApp(profile, std::move(web_app_info));
 
     Browser* app_browser = ::web_app::LaunchWebAppBrowser(profile, app_id);
     return App{app_id, start_url, app_browser,

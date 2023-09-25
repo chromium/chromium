@@ -43,7 +43,7 @@ class WebAppNotificationsBrowserTest : public WebAppControllerBrowserTest {
     return *display_service_tester_;
   }
 
-  void SetAppBrowserForAppId(const AppId& app_id) {
+  void SetAppBrowserForAppId(const webapps::AppId& app_id) {
     Browser* app_browser = FindWebAppBrowser(profile(), app_id);
     ASSERT_TRUE(app_browser);
     app_browser_ = app_browser;
@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(WebAppNotificationsBrowserTest_IconAndTitleEnabled,
   const GURL app_url =
       https_server()->GetURL("/web_app_notifications/index.html");
 
-  const AppId app_id = InstallWebAppFromPage(browser(), app_url);
+  const webapps::AppId app_id = InstallWebAppFromPage(browser(), app_url);
   // The installation opens a new Browser window: |user_display_mode| is
   // kStandalone.
   SetAppBrowserForAppId(app_id);
@@ -191,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(WebAppNotificationsBrowserTest_IconAndTitleDisabled,
   const GURL app_url =
       https_server()->GetURL("/web_app_notifications/index.html");
 
-  const AppId app_id = InstallWebAppFromPage(browser(), app_url);
+  const webapps::AppId app_id = InstallWebAppFromPage(browser(), app_url);
   // The installation opens a new Browser window: |user_display_mode| is
   // kStandalone.
   SetAppBrowserForAppId(app_id);

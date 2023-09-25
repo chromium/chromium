@@ -248,7 +248,7 @@ void WebAppNavigationBrowserTest::TearDownOnMainThread() {
 #if BUILDFLAG(IS_CHROMEOS)
   auto* const provider = WebAppProvider::GetForWebApps(profile());
   const WebAppRegistrar& registrar = provider->registrar_unsafe();
-  std::vector<AppId> app_ids = registrar.GetAppIds();
+  std::vector<webapps::AppId> app_ids = registrar.GetAppIds();
   for (const auto& app_id : app_ids) {
     if (!registrar.IsInstalled(app_id)) {
       continue;
@@ -280,7 +280,7 @@ void WebAppNavigationBrowserTest::InstallTestWebApp() {
   test_web_app_ = InstallTestWebApp(GetAppUrlHost(), GetAppScopePath());
 }
 
-AppId WebAppNavigationBrowserTest::InstallTestWebApp(
+webapps::AppId WebAppNavigationBrowserTest::InstallTestWebApp(
     const std::string& app_host,
     const std::string& app_scope) {
   if (!https_server_.Started()) {
@@ -295,7 +295,8 @@ AppId WebAppNavigationBrowserTest::InstallTestWebApp(
   web_app_info->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
 
-  AppId app_id = test::InstallWebApp(profile(), std::move(web_app_info));
+  webapps::AppId app_id =
+      test::InstallWebApp(profile(), std::move(web_app_info));
   DCHECK(!app_id.empty());
   apps::AppReadinessWaiter(profile(), app_id).Await();
   return app_id;

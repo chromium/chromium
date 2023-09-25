@@ -84,7 +84,7 @@ void LaunchAppWithParams(
 
 // Cancels the launch of the app for the given `app_id`, potentially resulting
 // in the app shim exiting.
-void CancelAppLaunch(Profile* profile, const web_app::AppId& app_id) {
+void CancelAppLaunch(Profile* profile, const webapps::AppId& app_id) {
   apps::AppShimManager::Get()->OnAppLaunchCancelled(profile, app_id);
 }
 
@@ -116,7 +116,7 @@ void UserChoiceDialogCompleted(
     bool remember_user_choice) {
   absl::optional<GURL> protocol_url = params.protocol_handler_launch_url;
   const bool is_file_launch = !file_launches.empty();
-  web_app::AppId app_id = params.app_id;
+  webapps::AppId app_id = params.app_id;
 
   auto persist_done = base::BindOnce(
       &OnPersistUserChoiceCompleted, std::move(params), file_launches, profile,
@@ -154,7 +154,7 @@ WebAppShimManagerDelegate::WebAppShimManagerDelegate(
 WebAppShimManagerDelegate::~WebAppShimManagerDelegate() = default;
 
 bool WebAppShimManagerDelegate::ShowAppWindows(Profile* profile,
-                                               const AppId& app_id) {
+                                               const webapps::AppId& app_id) {
   if (UseFallback(profile, app_id))
     return fallback_delegate_->ShowAppWindows(profile, app_id);
   // Non-legacy app windows are handled in AppShimManager.
@@ -162,7 +162,7 @@ bool WebAppShimManagerDelegate::ShowAppWindows(Profile* profile,
 }
 
 void WebAppShimManagerDelegate::CloseAppWindows(Profile* profile,
-                                                const AppId& app_id) {
+                                                const webapps::AppId& app_id) {
   if (UseFallback(profile, app_id)) {
     fallback_delegate_->CloseAppWindows(profile, app_id);
     return;
@@ -175,7 +175,7 @@ void WebAppShimManagerDelegate::CloseAppWindows(Profile* profile,
 }
 
 bool WebAppShimManagerDelegate::AppIsInstalled(Profile* profile,
-                                               const AppId& app_id) {
+                                               const webapps::AppId& app_id) {
   if (UseFallback(profile, app_id)) {
     return fallback_delegate_->AppIsInstalled(profile, app_id);
   }
@@ -185,15 +185,16 @@ bool WebAppShimManagerDelegate::AppIsInstalled(Profile* profile,
 }
 
 bool WebAppShimManagerDelegate::AppCanCreateHost(Profile* profile,
-                                                 const AppId& app_id) {
+                                                 const webapps::AppId& app_id) {
   if (UseFallback(profile, app_id))
     return fallback_delegate_->AppCanCreateHost(profile, app_id);
   // A host is only created for use with RemoteCocoa.
   return AppUsesRemoteCocoa(profile, app_id);
 }
 
-bool WebAppShimManagerDelegate::AppUsesRemoteCocoa(Profile* profile,
-                                                   const AppId& app_id) {
+bool WebAppShimManagerDelegate::AppUsesRemoteCocoa(
+    Profile* profile,
+    const webapps::AppId& app_id) {
   if (UseFallback(profile, app_id))
     return fallback_delegate_->AppUsesRemoteCocoa(profile, app_id);
   // All PWAs, and bookmark apps that open in their own window (not in a browser
@@ -206,8 +207,9 @@ bool WebAppShimManagerDelegate::AppUsesRemoteCocoa(Profile* profile,
              web_app::DisplayMode::kBrowser;
 }
 
-bool WebAppShimManagerDelegate::AppIsMultiProfile(Profile* profile,
-                                                  const AppId& app_id) {
+bool WebAppShimManagerDelegate::AppIsMultiProfile(
+    Profile* profile,
+    const webapps::AppId& app_id) {
   if (UseFallback(profile, app_id))
     return fallback_delegate_->AppIsMultiProfile(profile, app_id);
   // All PWAs and bookmark apps are multi-profile.
@@ -228,7 +230,7 @@ void WebAppShimManagerDelegate::EnableExtension(
 
 void WebAppShimManagerDelegate::LaunchApp(
     Profile* profile,
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     const std::vector<base::FilePath>& files,
     const std::vector<GURL>& urls,
     const GURL& override_url,
@@ -362,7 +364,7 @@ void WebAppShimManagerDelegate::LaunchApp(
 
 void WebAppShimManagerDelegate::LaunchShim(
     Profile* profile,
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     web_app::LaunchShimUpdateBehavior update_behavior,
     web_app::ShimLaunchMode launch_mode,
     apps::ShimLaunchedCallback launched_callback,
@@ -389,8 +391,9 @@ bool WebAppShimManagerDelegate::HasNonBookmarkAppWindowsOpen() {
   return false;
 }
 
-bool WebAppShimManagerDelegate::UseFallback(Profile* profile,
-                                            const AppId& app_id) const {
+bool WebAppShimManagerDelegate::UseFallback(
+    Profile* profile,
+    const webapps::AppId& app_id) const {
   if (!profile)
     return false;
 
@@ -406,8 +409,9 @@ bool WebAppShimManagerDelegate::UseFallback(Profile* profile,
 }
 
 std::vector<chrome::mojom::ApplicationDockMenuItemPtr>
-WebAppShimManagerDelegate::GetAppShortcutsMenuItemInfos(Profile* profile,
-                                                        const AppId& app_id) {
+WebAppShimManagerDelegate::GetAppShortcutsMenuItemInfos(
+    Profile* profile,
+    const webapps::AppId& app_id) {
   if (UseFallback(profile, app_id))
     return fallback_delegate_->GetAppShortcutsMenuItemInfos(profile, app_id);
 

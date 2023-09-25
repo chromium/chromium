@@ -43,7 +43,7 @@ class ManifestUpdateFinalizeCommandTest : public WebAppTest {
  protected:
   std::unique_ptr<ManifestUpdateFinalizeCommand> CreateCommand(
       const GURL& url,
-      const AppId& app_id,
+      const webapps::AppId& app_id,
       WebAppInstallInfo install_info,
       ManifestUpdateFinalizeCommand::ManifestWriteCallback callback) {
     auto keep_alive = std::make_unique<ScopedKeepAlive>(
@@ -56,14 +56,14 @@ class ManifestUpdateFinalizeCommandTest : public WebAppTest {
   }
 
   ManifestUpdateResult RunCommandAndGetResult(const GURL& url,
-                                              const AppId& app_id,
+                                              const webapps::AppId& app_id,
                                               WebAppInstallInfo install_info) {
     ManifestUpdateResult output_result;
     base::RunLoop loop;
     provider().command_manager().ScheduleCommand(CreateCommand(
         url, app_id, std::move(install_info),
         base::BindLambdaForTesting([&](const GURL& url,
-                                       const AppId& output_app_id,
+                                       const webapps::AppId& output_app_id,
                                        ManifestUpdateResult result) {
           EXPECT_EQ(output_app_id, app_id);
           output_result = result;
@@ -73,7 +73,7 @@ class ManifestUpdateFinalizeCommandTest : public WebAppTest {
     return output_result;
   }
 
-  AppId InstallWebApp() {
+  webapps::AppId InstallWebApp() {
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = app_url();
     web_app_info->manifest_id = GenerateManifestIdFromStartUrlOnly(app_url());
@@ -103,7 +103,7 @@ class ManifestUpdateFinalizeCommandTest : public WebAppTest {
 };
 
 TEST_F(ManifestUpdateFinalizeCommandTest, NameUpdate) {
-  AppId app_id = InstallWebApp();
+  webapps::AppId app_id = InstallWebApp();
   ManifestUpdateResult expected_result = RunCommandAndGetResult(
       app_url(), app_id, GetNewInstallInfoWithTitle(u"New Name"));
   EXPECT_EQ(expected_result, ManifestUpdateResult::kAppUpdated);

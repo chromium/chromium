@@ -16,7 +16,7 @@ bool ShouldRegisterShortcutsMenuWithOs() {
 }
 
 void RegisterShortcutsMenuWithOs(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     const base::FilePath& profile_path,
     const base::FilePath& shortcut_data_dir,
     const std::vector<WebAppShortcutsMenuItemInfo>& shortcuts_menu_item_infos,
@@ -27,7 +27,7 @@ void RegisterShortcutsMenuWithOs(
   std::move(callback).Run(Result::kOk);
 }
 
-bool UnregisterShortcutsMenuWithOs(const AppId& app_id,
+bool UnregisterShortcutsMenuWithOs(const webapps::AppId& app_id,
                                    const base::FilePath& profile_path,
                                    RegisterShortcutsMenuCallback callback) {
   NOTIMPLEMENTED();

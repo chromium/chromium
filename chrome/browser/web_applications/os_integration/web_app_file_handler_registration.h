@@ -13,6 +13,7 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace web_app {
 
@@ -31,7 +32,7 @@ bool FileHandlingIconsSupportedByOs();
 // This may also involve creating a shim app to launch Chrome from.
 // Note: Some operating systems (such as Chrome OS) may not need to do any work
 // here.
-void RegisterFileHandlersWithOs(const AppId& app_id,
+void RegisterFileHandlersWithOs(const webapps::AppId& app_id,
                                 const std::string& app_name,
                                 const base::FilePath& profile_path,
                                 const apps::FileHandlers& file_handlers,
@@ -39,7 +40,7 @@ void RegisterFileHandlersWithOs(const AppId& app_id,
 
 // Undo the file extensions registration for the PWA with specified |app_id|.
 // If a shim app was required, also removes the shim app.
-void UnregisterFileHandlersWithOs(const AppId& app_id,
+void UnregisterFileHandlersWithOs(const webapps::AppId& app_id,
                                   const base::FilePath& profile_path,
                                   ResultCallback callback);
 
@@ -54,7 +55,7 @@ void UnregisterFileHandlersWithOs(const AppId& app_id,
 // specified in the manifest are only .csv and .md, .txt files are also
 // registered as file handlers, and the file is launched.
 // TODO(crbug.com/1431463): Implement stricter handling w.r.t file extensions.
-void InstallMimeInfoOnLinux(const AppId& app_id,
+void InstallMimeInfoOnLinux(const webapps::AppId& app_id,
                             const base::FilePath& profile_path,
                             const apps::FileHandlers& file_handlers,
                             ResultCallback done_callback);

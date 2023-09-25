@@ -21,11 +21,11 @@
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -128,9 +128,9 @@ IN_PROC_BROWSER_TEST_F(
   InstallApp(install_options);
 
   loop.Run();
-  absl::optional<AppId> app_id = WebAppProvider::GetForTest(profile())
-                                     ->registrar_unsafe()
-                                     .LookupExternalAppId(url);
+  absl::optional<webapps::AppId> app_id = WebAppProvider::GetForTest(profile())
+                                              ->registrar_unsafe()
+                                              .LookupExternalAppId(url);
   EXPECT_TRUE(app_id.has_value());
 
   base::FilePath expected_filename =

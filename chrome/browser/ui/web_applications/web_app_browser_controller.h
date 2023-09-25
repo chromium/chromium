@@ -23,6 +23,7 @@
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/liburlpattern/options.h"
 #include "third_party/liburlpattern/pattern.h"
@@ -67,7 +68,7 @@ class WebAppBrowserController : public AppBrowserController,
  public:
   WebAppBrowserController(WebAppProvider& provider,
                           Browser* browser,
-                          AppId app_id,
+                          webapps::AppId app_id,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
                           const ash::SystemWebAppDelegate* system_app,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -129,9 +130,9 @@ class WebAppBrowserController : public AppBrowserController,
 
   // WebAppInstallManagerObserver:
   void OnWebAppUninstalled(
-      const AppId& app_id,
+      const webapps::AppId& app_id,
       webapps::WebappUninstallSource uninstall_source) override;
-  void OnWebAppManifestUpdated(const AppId& app_id) override;
+  void OnWebAppManifestUpdated(const webapps::AppId& app_id) override;
   void OnWebAppInstallManagerDestroyed() override;
 
   base::CallbackListSubscription AddHomeTabIconLoadCallbackForTesting(

@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_uninstall_dialog_user_options.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/image/image_skia.h"
@@ -46,7 +47,7 @@ class WebAppUninstallDialogDelegateView
   // Constructor for view component of dialog.
   WebAppUninstallDialogDelegateView(
       Profile* profile,
-      web_app::AppId app_id,
+      webapps::AppId app_id,
       webapps::WebappUninstallSource uninstall_source,
       std::map<SquareSizePx, SkBitmap> icon_bitmaps,
       web_app::UninstallDialogCallback uninstall_choice_callback);
@@ -69,14 +70,14 @@ class WebAppUninstallDialogDelegateView
   void OnDialogCanceled();
 
   // web_app::WebAppInstallManagerObserver:
-  void OnWebAppWillBeUninstalled(const web_app::AppId& app_id) override;
+  void OnWebAppWillBeUninstalled(const webapps::AppId& app_id) override;
   void OnWebAppInstallManagerDestroyed() override;
 
   raw_ptr<views::Checkbox> checkbox_ = nullptr;
   gfx::ImageSkia image_;
 
   // The web app we are showing the dialog for.
-  const web_app::AppId app_id_;
+  const webapps::AppId app_id_;
 
   const raw_ptr<Profile, AcrossTasksDanglingUntriaged> profile_;
   base::WeakPtr<web_app::WebAppProvider> provider_;

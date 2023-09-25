@@ -36,7 +36,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -46,6 +45,7 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/prefs/pref_service.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -175,13 +175,13 @@ base::Value IsolatedWebAppUpdateManager::AsDebugValue() const {
 
 bool IsolatedWebAppUpdateManager::IsUpdateBeingApplied(
     base::PassKey<IsolatedWebAppURLLoaderFactory>,
-    const AppId app_id) const {
+    const webapps::AppId app_id) const {
   return task_queue_.IsUpdateApplyTaskQueued(app_id);
 }
 
 void IsolatedWebAppUpdateManager::PrioritizeUpdateAndWait(
     base::PassKey<IsolatedWebAppURLLoaderFactory>,
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     base::OnceClosure callback) {
   bool task_has_started =
       task_queue_.EnsureQueuedUpdateApplyTaskHasStarted(app_id);
@@ -201,12 +201,13 @@ void IsolatedWebAppUpdateManager::SetEnableAutomaticUpdatesForTesting(
   automatic_updates_enabled_ = automatic_updates_enabled;
 }
 
-void IsolatedWebAppUpdateManager::OnWebAppInstalled(const AppId& app_id) {
+void IsolatedWebAppUpdateManager::OnWebAppInstalled(
+    const webapps::AppId& app_id) {
   MaybeStartUpdateDiscoveryTimer();
 }
 
 void IsolatedWebAppUpdateManager::OnWebAppUninstalled(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     webapps::WebappUninstallSource uninstall_source) {
   update_apply_waiters_.erase(app_id);
   task_queue_.ClearNonStartedTasksOfApp(app_id);
@@ -306,7 +307,7 @@ void IsolatedWebAppUpdateManager::MaybeStopUpdateDiscoveryTimer() {
 
 void IsolatedWebAppUpdateManager::CreateUpdateApplyWaiter(
     const IsolatedWebAppUrlInfo& url_info) {
-  const AppId& app_id = url_info.app_id();
+  const webapps::AppId& app_id = url_info.app_id();
   if (update_apply_waiters_.contains(app_id)) {
     return;
   }
@@ -405,7 +406,7 @@ void IsolatedWebAppUpdateManager::TaskQueue::Clear() {
 }
 
 bool IsolatedWebAppUpdateManager::TaskQueue::
-    EnsureQueuedUpdateApplyTaskHasStarted(const AppId& app_id) {
+    EnsureQueuedUpdateApplyTaskHasStarted(const webapps::AppId& app_id) {
   auto task_it =
       base::ranges::find_if(update_apply_tasks_, [&app_id](const auto& task) {
         return task->url_info().app_id() == app_id;
@@ -421,7 +422,7 @@ bool IsolatedWebAppUpdateManager::TaskQueue::
 }
 
 void IsolatedWebAppUpdateManager::TaskQueue::ClearNonStartedTasksOfApp(
-    const AppId& app_id) {
+    const webapps::AppId& app_id) {
   base::EraseIf(update_discovery_tasks_, [&app_id](const auto& task) {
     return !task->has_started() && task->url_info().app_id() == app_id;
   });
@@ -449,7 +450,7 @@ void IsolatedWebAppUpdateManager::TaskQueue::MaybeStartNextTask() {
 }
 
 bool IsolatedWebAppUpdateManager::TaskQueue::IsUpdateApplyTaskQueued(
-    const AppId& app_id) const {
+    const webapps::AppId& app_id) const {
   return base::ranges::any_of(update_apply_tasks_, [&app_id](const auto& task) {
     return task->url_info().app_id() == app_id;
   });

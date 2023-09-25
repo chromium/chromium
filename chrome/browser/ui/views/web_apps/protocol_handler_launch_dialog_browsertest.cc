@@ -27,7 +27,7 @@ namespace web_app {
 
 namespace {
 
-AppId InstallTestWebApp(Profile* profile) {
+webapps::AppId InstallTestWebApp(Profile* profile) {
   const GURL example_url = GURL("http://example.org/");
   auto app_info = std::make_unique<WebAppInstallInfo>();
   app_info->title = u"Test app";
@@ -51,7 +51,7 @@ class ProtocolHandlerLaunchDialogBrowserTest
     views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                          "ProtocolHandlerLaunchDialogView");
     GURL protocol_url("web+test://test");
-    AppId test_app_id = InstallTestWebApp(browser()->profile());
+    webapps::AppId test_app_id = InstallTestWebApp(browser()->profile());
 
     base::RunLoop run_loop;
     auto dialog_finished = base::BindLambdaForTesting(
@@ -122,7 +122,7 @@ class WebAppProtocolHandlerIntentPickerDialogInteractiveBrowserTest
     views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                          "ProtocolHandlerLaunchDialogView");
     GURL protocol_url("web+test://test");
-    AppId test_app_id = InstallTestWebApp(browser()->profile());
+    webapps::AppId test_app_id = InstallTestWebApp(browser()->profile());
     chrome::ShowWebAppProtocolLaunchDialog(protocol_url, browser()->profile(),
                                            test_app_id, base::DoNothing());
     waiter.WaitIfNeededAndGet()->CloseWithReason(

@@ -152,7 +152,7 @@ class ShortcutMenuHandlingSubManagerTestBase : public WebAppTest {
     return item_infos;
   }
 
-  web_app::AppId InstallWebAppWithShortcutMenuIcons(
+  webapps::AppId InstallWebAppWithShortcutMenuIcons(
       ShortcutsMenuIconBitmaps shortcuts_menu_icons) {
     std::unique_ptr<WebAppInstallInfo> info =
         std::make_unique<WebAppInstallInfo>();
@@ -162,7 +162,8 @@ class ShortcutMenuHandlingSubManagerTestBase : public WebAppTest {
     info->shortcuts_menu_icon_bitmaps = shortcuts_menu_icons;
     info->shortcuts_menu_item_infos =
         CreateShortcutMenuItemInfoFromBitmaps(shortcuts_menu_icons);
-    base::test::TestFuture<const AppId&, webapps::InstallResultCode> result;
+    base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+        result;
     // InstallFromInfoWithParams is used instead of InstallFromInfo, because
     // InstallFromInfo doesn't register OS integration.
     provider().scheduler().InstallFromInfoWithParams(
@@ -172,11 +173,11 @@ class ShortcutMenuHandlingSubManagerTestBase : public WebAppTest {
     bool success = result.Wait();
     EXPECT_TRUE(success);
     if (!success) {
-      return AppId();
+      return webapps::AppId();
     }
     EXPECT_EQ(result.Get<webapps::InstallResultCode>(),
               webapps::InstallResultCode::kSuccessNewInstall);
-    return result.Get<AppId>();
+    return result.Get<webapps::AppId>();
   }
 
  protected:
@@ -214,7 +215,7 @@ TEST_P(ShortcutMenuHandlingSubManagerConfigureTest, TestConfigure) {
 
   const std::vector<int> sizes = {icon_size::k64, icon_size::k128};
   const std::vector<SkColor> colors = {SK_ColorRED, SK_ColorRED};
-  const AppId& app_id = InstallWebAppWithShortcutMenuIcons(
+  const webapps::AppId& app_id = InstallWebAppWithShortcutMenuIcons(
       MakeIconBitmaps({{IconPurpose::ANY, sizes, colors},
                        {IconPurpose::MASKABLE, sizes, colors},
                        {IconPurpose::MONOCHROME, sizes, colors}},
@@ -295,7 +296,7 @@ TEST_P(ShortcutMenuHandlingSubManagerConfigureTest, IconsButNoShortcutInfo) {
 
   const std::vector<int> sizes = {icon_size::k64, icon_size::k128};
   const std::vector<SkColor> colors = {SK_ColorRED, SK_ColorRED};
-  const AppId& app_id = InstallWebAppWithShortcutMenuIcons(
+  const webapps::AppId& app_id = InstallWebAppWithShortcutMenuIcons(
       MakeIconBitmaps({{IconPurpose::ANY, sizes, colors},
                        {IconPurpose::MASKABLE, sizes, colors},
                        {IconPurpose::MONOCHROME, sizes, colors}},
@@ -330,7 +331,8 @@ TEST_P(ShortcutMenuHandlingSubManagerConfigureTest,
                        {IconPurpose::MASKABLE, sizes, colors},
                        {IconPurpose::MONOCHROME, sizes, colors}},
                       num_menu_items);
-  const AppId& app_id = InstallWebAppWithShortcutMenuIcons(icon_bitmaps);
+  const webapps::AppId& app_id =
+      InstallWebAppWithShortcutMenuIcons(icon_bitmaps);
 
   // Create a single WebAppShortcutsMenuItemInfo.
   WebAppShortcutsMenuItemInfo shortcut_info;
@@ -403,7 +405,7 @@ TEST_P(ShortcutMenuHandlingSubManagerConfigureTest, NoDownloadedIcons_1427444) {
 
   const std::vector<int> sizes = {icon_size::k64, icon_size::k128};
   const std::vector<SkColor> colors = {SK_ColorRED, SK_ColorRED};
-  const AppId& app_id = InstallWebAppWithShortcutMenuIcons(
+  const webapps::AppId& app_id = InstallWebAppWithShortcutMenuIcons(
       MakeIconBitmaps({{IconPurpose::ANY, sizes, colors},
                        {IconPurpose::MASKABLE, sizes, colors},
                        {IconPurpose::MONOCHROME, sizes, colors}},
@@ -463,7 +465,7 @@ TEST_P(ShortcutMenuHandlingSubManagerExecuteTest, InstallWritesCorrectData) {
 
   const std::vector<int> sizes = {icon_size::k64, icon_size::k128};
   const std::vector<SkColor> colors = {SK_ColorRED, SK_ColorRED};
-  const AppId& app_id = InstallWebAppWithShortcutMenuIcons(
+  const webapps::AppId& app_id = InstallWebAppWithShortcutMenuIcons(
       MakeIconBitmaps({{IconPurpose::ANY, sizes, colors},
                        {IconPurpose::MASKABLE, sizes, colors},
                        {IconPurpose::MONOCHROME, sizes, colors}},
@@ -500,7 +502,7 @@ TEST_P(ShortcutMenuHandlingSubManagerExecuteTest, InstallWritesCorrectData) {
 
 TEST_P(ShortcutMenuHandlingSubManagerExecuteTest,
        EmptyDataDoesNotRegisterShortcutsMenu) {
-  const AppId& app_id =
+  const webapps::AppId& app_id =
       InstallWebAppWithShortcutMenuIcons(ShortcutsMenuIconBitmaps());
 
   auto state =
@@ -532,7 +534,7 @@ TEST_P(ShortcutMenuHandlingSubManagerExecuteTest,
                                   icon_size::k256};
   const std::vector<SkColor> colors = {SK_ColorBLUE, SK_ColorBLUE,
                                        SK_ColorBLUE};
-  const AppId& app_id = InstallWebAppWithShortcutMenuIcons(
+  const webapps::AppId& app_id = InstallWebAppWithShortcutMenuIcons(
       MakeIconBitmaps({{IconPurpose::ANY, sizes, colors},
                        {IconPurpose::MASKABLE, sizes, colors},
                        {IconPurpose::MONOCHROME, sizes, colors}},
@@ -589,7 +591,7 @@ TEST_P(ShortcutMenuHandlingSubManagerExecuteTest, UpdateShortcutMenuItems) {
   const int num_menu_items = 2;
   const std::vector<int> sizes = {icon_size::k32, icon_size::k48};
   const std::vector<SkColor> colors = {SK_ColorCYAN, SK_ColorCYAN};
-  const AppId& app_id = InstallWebAppWithShortcutMenuIcons(
+  const webapps::AppId& app_id = InstallWebAppWithShortcutMenuIcons(
       MakeIconBitmaps({{IconPurpose::ANY, sizes, colors},
                        {IconPurpose::MASKABLE, sizes, colors},
                        {IconPurpose::MONOCHROME, sizes, colors}},
@@ -628,7 +630,7 @@ TEST_P(ShortcutMenuHandlingSubManagerExecuteTest, UpdateShortcutMenuItems) {
                                           icon_size::k256};
   const std::vector<SkColor> updated_colors = {SK_ColorYELLOW, SK_ColorYELLOW,
                                                SK_ColorYELLOW};
-  const AppId& updated_app_id =
+  const webapps::AppId& updated_app_id =
       InstallWebAppWithShortcutMenuIcons(MakeIconBitmaps(
           {{IconPurpose::ANY, updated_sizes, updated_colors},
            {IconPurpose::MASKABLE, updated_sizes, updated_colors},
@@ -676,7 +678,7 @@ TEST_P(ShortcutMenuHandlingSubManagerExecuteTest,
 
   const std::vector<int> sizes = {icon_size::k64, icon_size::k128};
   const std::vector<SkColor> colors = {SK_ColorRED, SK_ColorRED};
-  const AppId& app_id = InstallWebAppWithShortcutMenuIcons(
+  const webapps::AppId& app_id = InstallWebAppWithShortcutMenuIcons(
       MakeIconBitmaps({{IconPurpose::ANY, sizes, colors},
                        {IconPurpose::MASKABLE, sizes, colors},
                        {IconPurpose::MONOCHROME, sizes, colors}},
@@ -722,7 +724,7 @@ TEST_P(ShortcutMenuHandlingSubManagerExecuteTest,
 
   const std::vector<int> sizes = {icon_size::k64, icon_size::k128};
   const std::vector<SkColor> colors = {SK_ColorRED, SK_ColorRED};
-  const AppId& app_id = InstallWebAppWithShortcutMenuIcons(
+  const webapps::AppId& app_id = InstallWebAppWithShortcutMenuIcons(
       MakeIconBitmaps({{IconPurpose::ANY, sizes, colors},
                        {IconPurpose::MASKABLE, sizes, colors},
                        {IconPurpose::MONOCHROME, sizes, colors}},

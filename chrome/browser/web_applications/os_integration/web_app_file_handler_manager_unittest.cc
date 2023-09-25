@@ -191,12 +191,12 @@ class WebAppFileHandlerManagerTest : public WebAppTest {
     return *file_handler_manager_;
   }
 
-  const AppId& app_id() const { return app_id_; }
+  const webapps::AppId& app_id() const { return app_id_; }
 
  private:
   raw_ptr<FakeWebAppFileHandlerManager> file_handler_manager_ = nullptr;
 
-  AppId app_id_;
+  webapps::AppId app_id_;
 };
 
 TEST_F(WebAppFileHandlerManagerTest, FileHandlersAreNotAvailableUnlessEnabled) {

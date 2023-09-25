@@ -17,16 +17,16 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace web_app {
 
 InstallAppLocallyCommand::InstallAppLocallyCommand(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     base::OnceClosure install_callback)
     : WebAppCommandTemplate<AppLock>("InstallAppLocallyCommand"),
       app_lock_description_(std::make_unique<AppLockDescription>(app_id)),

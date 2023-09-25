@@ -79,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
 
   const ExternallyManagedAppManager::InstallResult& result =
       future.Get<ExternallyManagedAppManager::InstallResult>();
-  const AppId& app_id = *result.app_id;
+  const webapps::AppId& app_id = *result.app_id;
   webapps::InstallResultCode install_code = result.code;
   EXPECT_EQ(install_code, webapps::InstallResultCode::kSuccessNewInstall);
   EXPECT_TRUE(provider().registrar_unsafe().IsLocallyInstalled(app_id));
@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
 
   const ExternallyManagedAppManager::InstallResult& result =
       future.Get<ExternallyManagedAppManager::InstallResult>();
-  const AppId& app_id = *result.app_id;
+  const webapps::AppId& app_id = *result.app_id;
   webapps::InstallResultCode install_code = result.code;
   EXPECT_EQ(install_code, webapps::InstallResultCode::kSuccessNewInstall);
   EXPECT_TRUE(provider().registrar_unsafe().IsLocallyInstalled(app_id));
@@ -129,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
 
   const ExternallyManagedAppManager::InstallResult& result =
       future.Get<ExternallyManagedAppManager::InstallResult>();
-  const AppId& app_id = *result.app_id;
+  const webapps::AppId& app_id = *result.app_id;
   webapps::InstallResultCode install_code = result.code;
   EXPECT_EQ(install_code, webapps::InstallResultCode::kSuccessNewInstall);
   EXPECT_TRUE(provider().registrar_unsafe().IsLocallyInstalled(app_id));
@@ -155,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
 
   const ExternallyManagedAppManager::InstallResult& result =
       future.Get<ExternallyManagedAppManager::InstallResult>();
-  const AppId& app_id = *result.app_id;
+  const webapps::AppId& app_id = *result.app_id;
   webapps::InstallResultCode install_code = result.code;
   EXPECT_EQ(install_code, webapps::InstallResultCode::kSuccessNewInstall);
   EXPECT_TRUE(provider().registrar_unsafe().IsLocallyInstalled(app_id));
@@ -183,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
 
   const ExternallyManagedAppManager::InstallResult& result =
       future.Get<ExternallyManagedAppManager::InstallResult>();
-  const AppId& app_id = GenerateAppId(absl::nullopt, kWebAppUrl);
+  const webapps::AppId& app_id = GenerateAppId(absl::nullopt, kWebAppUrl);
   webapps::InstallResultCode install_code = result.code;
   EXPECT_EQ(install_code,
             webapps::InstallResultCode::kNotValidManifestForWebApp);
@@ -210,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(
 
   const ExternallyManagedAppManager::InstallResult& first_result =
       future_first_install.Get<0>();
-  const AppId& first_app_id = *first_result.app_id;
+  const webapps::AppId& first_app_id = *first_result.app_id;
   webapps::InstallResultCode first_install_code = first_result.code;
   EXPECT_EQ(first_install_code, webapps::InstallResultCode::kSuccessNewInstall);
   EXPECT_TRUE(provider().registrar_unsafe().IsLocallyInstalled(first_app_id));
@@ -241,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(
 
   const ExternallyManagedAppManager::InstallResult& second_result =
       future_second_install.Get<0>();
-  const AppId& second_app_id = *second_result.app_id;
+  const webapps::AppId& second_app_id = *second_result.app_id;
   webapps::InstallResultCode second_install_code = second_result.code;
   EXPECT_EQ(first_app_id, second_app_id);
   EXPECT_EQ(second_install_code,
@@ -282,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
   EXPECT_TRUE(NavigateAndAwaitInstallabilityCheck(browser(), kWebAppUrl));
 
   // Mock an user installing an app by clicking on the omnibox.
-  base::test::TestFuture<const AppId&, webapps::InstallResultCode>
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
       future_first_install;
   provider().scheduler().FetchManifestAndInstall(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
@@ -292,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
       future_first_install.GetCallback(),
       /*use_fallback=*/false);
 
-  const AppId& first_app_id = future_first_install.Get<0>();
+  const webapps::AppId& first_app_id = future_first_install.Get<0>();
   webapps::InstallResultCode first_install_code = future_first_install.Get<1>();
   EXPECT_EQ(first_install_code, webapps::InstallResultCode::kSuccessNewInstall);
   EXPECT_TRUE(provider().registrar_unsafe().IsLocallyInstalled(first_app_id));
@@ -318,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
 
   const ExternallyManagedAppManager::InstallResult& second_result =
       future_second_install.Get<0>();
-  const AppId& second_app_id = *second_result.app_id;
+  const webapps::AppId& second_app_id = *second_result.app_id;
   webapps::InstallResultCode second_install_code = second_result.code;
   EXPECT_EQ(first_app_id, second_app_id);
   EXPECT_EQ(second_install_code,

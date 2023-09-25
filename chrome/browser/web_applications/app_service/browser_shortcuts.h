@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "components/webapps/common/web_app_id.h"
 
 static_assert(BUILDFLAG(IS_CHROMEOS_ASH), "For ash only");
 
@@ -46,13 +47,13 @@ class BrowserShortcuts : public apps::ShortcutPublisher,
 
   void InitBrowserShortcuts();
 
-  bool IsShortcut(const AppId& app_id);
+  bool IsShortcut(const webapps::AppId& app_id);
 
   // Publish web app identified by `app_id` as browser shortcut to the
   // AppService if the web app is considered as shortcut in ChromeOS.
   // `raw_icon_updated` should be set when the manifest raw icon has
   // changed to allow AppService icon directory to clear the old icons.
-  void MaybePublishBrowserShortcut(const AppId& app_id,
+  void MaybePublishBrowserShortcut(const webapps::AppId& app_id,
                                    bool raw_icon_updated = false);
 
   // apps::ShortcutPublisher:
@@ -68,11 +69,11 @@ class BrowserShortcuts : public apps::ShortcutPublisher,
                              apps::LoadIconCallback callback) override;
 
   // WebAppInstallManagerObserver:
-  void OnWebAppInstalled(const AppId& app_id) override;
-  void OnWebAppInstalledWithOsHooks(const AppId& app_id) override;
+  void OnWebAppInstalled(const webapps::AppId& app_id) override;
+  void OnWebAppInstalledWithOsHooks(const webapps::AppId& app_id) override;
   void OnWebAppInstallManagerDestroyed() override;
   void OnWebAppUninstalled(
-      const AppId& app_id,
+      const webapps::AppId& app_id,
       webapps::WebappUninstallSource uninstall_source) override;
 
   const raw_ptr<Profile> profile_;

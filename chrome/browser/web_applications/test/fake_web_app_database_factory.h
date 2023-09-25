@@ -12,6 +12,7 @@
 #include "chrome/browser/web_applications/web_app_database_factory.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace syncer {
 class ModelTypeStore;
@@ -36,7 +37,7 @@ class FakeWebAppDatabaseFactory : public AbstractWebAppDatabaseFactory {
 
   Registry ReadRegistry();
 
-  std::set<AppId> ReadAllAppIds();
+  std::set<webapps::AppId> ReadAllAppIds();
 
   void WriteProtos(const std::vector<std::unique_ptr<WebAppProto>>& protos);
   void WriteRegistry(const Registry& registry);

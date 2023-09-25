@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
@@ -45,23 +46,24 @@ class WebAppControllerBrowserTest : public InProcessBrowserTest {
 
   Profile* profile();
 
-  AppId InstallPWA(const GURL& app_url);
+  webapps::AppId InstallPWA(const GURL& app_url);
 
-  AppId InstallWebApp(std::unique_ptr<WebAppInstallInfo> web_app_info);
+  webapps::AppId InstallWebApp(std::unique_ptr<WebAppInstallInfo> web_app_info);
 
-  void UninstallWebApp(const AppId& app_id);
+  void UninstallWebApp(const webapps::AppId& app_id);
 
   // Launches the app as a window and returns the browser.
-  Browser* LaunchWebAppBrowser(const AppId&);
+  Browser* LaunchWebAppBrowser(const webapps::AppId&);
 
   // Launches the app, waits for the app url to load.
-  Browser* LaunchWebAppBrowserAndWait(const AppId&);
+  Browser* LaunchWebAppBrowserAndWait(const webapps::AppId&);
 
   // Launches the app, waits for it to load and finish the installability check.
-  Browser* LaunchWebAppBrowserAndAwaitInstallabilityCheck(const AppId&);
+  Browser* LaunchWebAppBrowserAndAwaitInstallabilityCheck(
+      const webapps::AppId&);
 
   // Launches the app as a tab and returns the browser.
-  Browser* LaunchBrowserForWebAppInTab(const AppId&);
+  Browser* LaunchBrowserForWebAppInTab(const webapps::AppId&);
 
   // Simulates a page calling window.open on an URL and waits for the
   // navigation.
@@ -79,7 +81,7 @@ class WebAppControllerBrowserTest : public InProcessBrowserTest {
 
   Browser* NavigateInNewWindowAndAwaitInstallabilityCheck(const GURL&);
 
-  absl::optional<AppId> FindAppWithUrlInScope(const GURL& url);
+  absl::optional<webapps::AppId> FindAppWithUrlInScope(const GURL& url);
 
   // Opens |url| in a new popup window with the dimensions |popup_size|.
   Browser* OpenPopupAndWait(Browser* browser,
@@ -94,7 +96,7 @@ class WebAppControllerBrowserTest : public InProcessBrowserTest {
   absl::optional<OsIntegrationManager::ScopedSuppressForTesting>
       os_hooks_suppress_;
 
-  content::WebContents* OpenApplication(const AppId&);
+  content::WebContents* OpenApplication(const webapps::AppId&);
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
 

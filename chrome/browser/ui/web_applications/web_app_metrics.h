@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/site_engagement/content/site_engagement_observer.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -74,11 +75,12 @@ class WebAppMetrics : public KeyedService,
   // base::PowerSuspendObserver:
   void OnSuspend() override;
 
-  // Called when a web contents changes associated AppId (may be empty).
+  // Called when a web contents changes associated webapps::AppId (may be
+  // empty).
   void NotifyOnAssociatedAppChanged(
       content::WebContents* web_contents,
-      const absl::optional<AppId>& previous_app_id,
-      const absl::optional<AppId>& new_app_id);
+      const absl::optional<webapps::AppId>& previous_app_id,
+      const absl::optional<webapps::AppId>& new_app_id);
 
   // Notify WebAppMetrics that an installability check has been completed for
   // a WebContents (see AppBannerManager::OnInstallableWebAppStatusUpdated).
@@ -109,7 +111,7 @@ class WebAppMetrics : public KeyedService,
   static constexpr int kNumUserInstalledAppsNotCounted = -1;
   int num_user_installed_apps_ = kNumUserInstalledAppsNotCounted;
 
-  base::flat_map<web_app::AppId, base::Time> app_last_interacted_time_{};
+  base::flat_map<webapps::AppId, base::Time> app_last_interacted_time_{};
   // DanglingUntriaged because it is assigned a DanglingUntriaged pointer.
   raw_ptr<content::WebContents, DanglingUntriaged> foreground_web_contents_ =
       nullptr;

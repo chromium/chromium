@@ -128,7 +128,7 @@ class WebAppFileHandlingTestBase : public WebAppControllerBrowserTest {
         WebAppControllerBrowserTest::InstallWebApp(std::move(web_app_info));
   }
 
-  AppId InstallAnotherFileHandlingPwa(const GURL& start_url) {
+  webapps::AppId InstallAnotherFileHandlingPwa(const GURL& start_url) {
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url.GetWithoutFilename();
@@ -146,10 +146,10 @@ class WebAppFileHandlingTestBase : public WebAppControllerBrowserTest {
   }
 
  protected:
-  const AppId& app_id() { return app_id_; }
+  const webapps::AppId& app_id() { return app_id_; }
 
  private:
-  AppId app_id_;
+  webapps::AppId app_id_;
 };
 
 namespace {
@@ -205,8 +205,8 @@ class WebAppFileHandlingBrowserTest : public WebAppFileHandlingTestBase {
     }
   }
 
-  AppId InstallFileHandlingWebApp(const std::u16string& title,
-                                  const GURL& handler_url) {
+  webapps::AppId InstallFileHandlingWebApp(const std::u16string& title,
+                                           const GURL& handler_url) {
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url =
         https_server()->GetURL("app.com", "/web_app_file_handling/index.html");
@@ -326,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        LaunchQueueSetOnRedirect) {
   GURL handler_url = https_server()->GetURL(
       "app.com", "/web_app_file_handling/handle_files_with_redirect.html");
-  AppId app_id =
+  webapps::AppId app_id =
       InstallFileHandlingWebApp(u"An app that will be reloaded", handler_url);
 
   base::FilePath file = CreateTestFileWithExtension("txt");
@@ -349,7 +349,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest, LaunchQueueSetOnReload) {
   GURL handler_url = https_server()->GetURL(
       "app.com", "/web_app_file_handling/handle_files.html");
-  AppId app_id =
+  webapps::AppId app_id =
       InstallFileHandlingWebApp(u"An app that will be reloaded", handler_url);
 
   base::FilePath file = CreateTestFileWithExtension("txt");
@@ -371,7 +371,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        LaunchQueueSetOnReloadAfterPushState) {
   GURL handler_url = https_server()->GetURL(
       "app.com", "/web_app_file_handling/handle_files.html");
-  AppId app_id =
+  webapps::AppId app_id =
       InstallFileHandlingWebApp(u"An app that will be reloaded", handler_url);
 
   base::FilePath file = CreateTestFileWithExtension("txt");
@@ -406,7 +406,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   GURL handler_url = https_server()->GetURL(
       "app.com",
       "/web_app_file_handling/handle_files_with_redirect_to_other_origin.html");
-  AppId app_id =
+  webapps::AppId app_id =
       InstallFileHandlingWebApp(u"An app that will be reloaded", handler_url);
   base::FilePath file = CreateTestFileWithExtension("txt");
 
@@ -431,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
       "app.com", "/web_app_file_handling/handle_files.html");
   GURL start_url =
       https_server()->GetURL("app.com", "/web_app_file_handling/index.html");
-  AppId app_id =
+  webapps::AppId app_id =
       InstallFileHandlingWebApp(u"An app that will be navigated", handler_url);
 
   base::FilePath file = CreateTestFileWithExtension("txt");
@@ -526,7 +526,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingIconBrowserTest, Basic) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url(
       embedded_test_server()->GetURL("/web_app_file_handling/icons_app.html"));
-  const AppId app_id = InstallWebAppFromManifest(browser(), app_url);
+  const webapps::AppId app_id = InstallWebAppFromManifest(browser(), app_url);
   auto* provider = WebAppProvider::GetForTest(browser()->profile());
   const WebApp* web_app = provider->registrar_unsafe().GetAppById(app_id);
   ASSERT_TRUE(web_app);

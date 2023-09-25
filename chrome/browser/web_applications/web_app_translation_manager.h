@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "chrome/browser/web_applications/proto/web_app_translations.pb.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 
 namespace web_app {
@@ -29,7 +30,7 @@ using Locale = std::string;
 class WebAppTranslationManager {
  public:
   using ReadCallback = base::OnceCallback<void(
-      const std::map<AppId, blink::Manifest::TranslationItem>& cache)>;
+      const std::map<webapps::AppId, blink::Manifest::TranslationItem>& cache)>;
   using WriteCallback = base::OnceCallback<void(bool success)>;
 
   explicit WebAppTranslationManager(Profile* profile);
@@ -41,20 +42,20 @@ class WebAppTranslationManager {
   void Start();
 
   void WriteTranslations(
-      const AppId& app_id,
+      const webapps::AppId& app_id,
       const base::flat_map<Locale, blink::Manifest::TranslationItem>&
           translations,
       WriteCallback callback);
-  void DeleteTranslations(const AppId& app_id, WriteCallback callback);
+  void DeleteTranslations(const webapps::AppId& app_id, WriteCallback callback);
   void ReadTranslations(ReadCallback callback);
 
   // Returns the translated web app name, if available in the browser's locale,
   // otherwise returns an empty string.
-  std::string GetTranslatedName(const AppId& app_id);
+  std::string GetTranslatedName(const webapps::AppId& app_id);
 
   // Returns the translated web app description, if available in the browser's
   // locale, otherwise returns an empty string.
-  std::string GetTranslatedDescription(const AppId& app_id);
+  std::string GetTranslatedDescription(const webapps::AppId& app_id);
 
   // TODO(crbug.com/1212519): Add a method to get the short_name.
 
@@ -64,7 +65,7 @@ class WebAppTranslationManager {
   raw_ptr<WebAppProvider> provider_ = nullptr;
   base::FilePath web_apps_directory_;
   // Cache of the translations on disk for the current device language.
-  std::map<AppId, blink::Manifest::TranslationItem> translation_cache_;
+  std::map<webapps::AppId, blink::Manifest::TranslationItem> translation_cache_;
 
   base::WeakPtrFactory<WebAppTranslationManager> weak_ptr_factory_{this};
 };

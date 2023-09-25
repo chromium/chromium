@@ -13,7 +13,7 @@
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
-#include "chrome/browser/web_applications/web_app_id.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace web_app {
 
@@ -37,7 +37,7 @@ base::Value SynchronizeOptionsDebugValue(const SynchronizeOsOptions& options) {
 }  // namespace
 
 OsIntegrationSynchronizeCommand::OsIntegrationSynchronizeCommand(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     absl::optional<SynchronizeOsOptions> synchronize_options,
     base::OnceClosure synchronize_callback)
     : WebAppCommandTemplate<AppLock>("OsIntegrationSynchronizeCommand"),

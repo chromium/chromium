@@ -581,8 +581,8 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
   // Uninstall the other IWA whose update discovery task has not yet started.
   GURL pending_url =
       profile_url_loader_factory().GetPendingRequest(0)->request.url;
-  AppId iwa_to_keep;
-  AppId iwa_to_uninstall;
+  webapps::AppId iwa_to_keep;
+  webapps::AppId iwa_to_uninstall;
   if (pending_url == iwa_info1_->update_manifest_url) {
     iwa_to_keep = iwa_info1_->url_info.app_id();
     iwa_to_uninstall = iwa_info2_->url_info.app_id();
@@ -678,13 +678,13 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
           &future, &base::test::TestFuture<IsolatedWebAppUrlInfo>::SetValue)));
   fake_ui_manager().SetNumWindowsForApp(iwa_info1_->url_info.app_id(), 0);
   fake_ui_manager().SetNumWindowsForApp(iwa_info2_->url_info.app_id(), 0);
-  AppId iwa_to_keep = future.Take().app_id();
+  webapps::AppId iwa_to_keep = future.Take().app_id();
 
   EXPECT_THAT(UpdateApplyTasks(), SizeIs(2));  // two tasks should be queued
   EXPECT_THAT(UpdateApplyLog(), IsEmpty());    // no task should have finished
 
   // Uninstall the other IWA whose update apply task has not yet started.
-  AppId iwa_to_uninstall;
+  webapps::AppId iwa_to_uninstall;
   if (iwa_to_keep == iwa_info1_->url_info.app_id()) {
     iwa_to_uninstall = iwa_info2_->url_info.app_id();
   } else if (iwa_to_keep == iwa_info2_->url_info.app_id()) {
@@ -737,17 +737,17 @@ TEST_F(IsolatedWebAppUpdateManagerDiscoveryTimerTest,
   EXPECT_THAT(update_manager().GetUpdateDiscoveryTimerForTesting().IsRunning(),
               IsFalse());
 
-  AppId non_iwa_id =
+  webapps::AppId non_iwa_id =
       test::InstallDummyWebApp(profile(), "non-iwa", GURL("https://a"));
   EXPECT_THAT(update_manager().GetUpdateDiscoveryTimerForTesting().IsRunning(),
               IsFalse());
 
-  AppId iwa_app_id1 = AddDummyIsolatedAppToRegistry(
+  webapps::AppId iwa_app_id1 = AddDummyIsolatedAppToRegistry(
       profile(), GURL("isolated-app://a"), "iwa1");
   EXPECT_THAT(update_manager().GetUpdateDiscoveryTimerForTesting().IsRunning(),
               IsTrue());
 
-  AppId iwa_app_id2 = AddDummyIsolatedAppToRegistry(
+  webapps::AppId iwa_app_id2 = AddDummyIsolatedAppToRegistry(
       profile(), GURL("isolated-app://b"), "iwa2");
   EXPECT_THAT(update_manager().GetUpdateDiscoveryTimerForTesting().IsRunning(),
               IsTrue());

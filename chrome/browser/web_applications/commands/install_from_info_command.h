@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
@@ -46,7 +47,7 @@ class WebAppUninstallAndReplaceJob;
 class InstallFromInfoCommand : public WebAppCommandTemplate<AppLock> {
  public:
   using InstallAndReplaceCallback =
-      base::OnceCallback<void(const AppId& app_id,
+      base::OnceCallback<void(const webapps::AppId& app_id,
                               webapps::InstallResultCode code,
                               bool did_uninstall_and_replace)>;
 
@@ -73,7 +74,7 @@ class InstallFromInfoCommand : public WebAppCommandTemplate<AppLock> {
       webapps::WebappInstallSource install_surface,
       InstallAndReplaceCallback install_callback,
       const WebAppInstallParams& install_params,
-      const std::vector<AppId>& apps_or_extensions_to_uninstall);
+      const std::vector<webapps::AppId>& apps_or_extensions_to_uninstall);
 
   ~InstallFromInfoCommand() override;
 
@@ -83,7 +84,7 @@ class InstallFromInfoCommand : public WebAppCommandTemplate<AppLock> {
   void OnShutdown() override;
   base::Value ToDebugValue() const override;
 
-  void OnInstallFromInfoJobCompleted(const AppId& app_id,
+  void OnInstallFromInfoJobCompleted(const webapps::AppId& app_id,
                                      webapps::InstallResultCode code,
                                      OsHooksErrors os_hook_errors);
   void OnUninstallAndReplaced(webapps::InstallResultCode code,
@@ -94,10 +95,10 @@ class InstallFromInfoCommand : public WebAppCommandTemplate<AppLock> {
 
   raw_ref<Profile> profile_;
 
-  ManifestId manifest_id_;
-  AppId app_id_;
+  webapps::ManifestId manifest_id_;
+  webapps::AppId app_id_;
   InstallAndReplaceCallback install_callback_;
-  std::vector<AppId> apps_or_extensions_to_uninstall_;
+  std::vector<webapps::AppId> apps_or_extensions_to_uninstall_;
 
   std::unique_ptr<AppLockDescription> lock_description_;
   std::unique_ptr<AppLock> lock_;

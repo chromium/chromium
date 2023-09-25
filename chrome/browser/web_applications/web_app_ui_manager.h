@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/webapps/browser/uninstall_result_code.h"
+#include "components/webapps/common/web_app_id.h"
 #include "ui/gfx/native_widget_types.h"
 
 class Browser;
@@ -58,7 +59,7 @@ class WebAppUiManagerObserver : public base::CheckedObserver {
   // navigation is about to commit in a web app identified by `app_id`
   // (including navigations in sub frames).
   virtual void OnReadyToCommitNavigation(
-      const AppId& app_id,
+      const webapps::AppId& app_id,
       content::NavigationHandle* navigation_handle) {}
 
   // Called when the WebAppUiManager is about to be destroyed.
@@ -91,7 +92,7 @@ class WebAppUiManager {
   // which is expected to be populated later when using `LaunchWebApp`
   // with `kOverrideWithWebAppConfig`.
   static apps::AppLaunchParams CreateAppLaunchParamsWithoutWindowConfig(
-      const AppId& app_id,
+      const webapps::AppId& app_id,
       const base::CommandLine& command_line,
       const base::FilePath& current_directory,
       const absl::optional<GURL>& url_handler_launch_url,
@@ -110,44 +111,44 @@ class WebAppUiManager {
   // A safe downcast.
   virtual WebAppUiManagerImpl* AsImpl() = 0;
 
-  virtual size_t GetNumWindowsForApp(const AppId& app_id) = 0;
+  virtual size_t GetNumWindowsForApp(const webapps::AppId& app_id) = 0;
 
   // Close app windows. Does not affect tabs in a non-app browser.
-  virtual void CloseAppWindows(const AppId& app_id) = 0;
+  virtual void CloseAppWindows(const webapps::AppId& app_id) = 0;
 
-  virtual void NotifyOnAllAppWindowsClosed(const AppId& app_id,
+  virtual void NotifyOnAllAppWindowsClosed(const webapps::AppId& app_id,
                                            base::OnceClosure callback) = 0;
 
   void AddObserver(WebAppUiManagerObserver* observer);
   void RemoveObserver(WebAppUiManagerObserver* observer);
   void NotifyReadyToCommitNavigation(
-      const AppId& app_id,
+      const webapps::AppId& app_id,
       content::NavigationHandle* navigation_handle);
 
   virtual bool CanAddAppToQuickLaunchBar() const = 0;
-  virtual void AddAppToQuickLaunchBar(const AppId& app_id) = 0;
-  virtual bool IsAppInQuickLaunchBar(const AppId& app_id) const = 0;
+  virtual void AddAppToQuickLaunchBar(const webapps::AppId& app_id) = 0;
+  virtual bool IsAppInQuickLaunchBar(const webapps::AppId& app_id) const = 0;
 
   // Returns whether |web_contents| is in a web app window belonging to
   // |app_id|, or any web app window if |app_id| is nullptr.
   virtual bool IsInAppWindow(content::WebContents* web_contents,
-                             const AppId* app_id = nullptr) const = 0;
+                             const webapps::AppId* app_id = nullptr) const = 0;
   virtual void NotifyOnAssociatedAppChanged(
       content::WebContents* web_contents,
-      const absl::optional<AppId>& previous_app_id,
-      const absl::optional<AppId>& new_app_id) const = 0;
+      const absl::optional<webapps::AppId>& previous_app_id,
+      const absl::optional<webapps::AppId>& new_app_id) const = 0;
 
-  virtual bool CanReparentAppTabToWindow(const AppId& app_id,
+  virtual bool CanReparentAppTabToWindow(const webapps::AppId& app_id,
                                          bool shortcut_created) const = 0;
   virtual void ReparentAppTabToWindow(content::WebContents* contents,
-                                      const AppId& app_id,
+                                      const webapps::AppId& app_id,
                                       bool shortcut_created) = 0;
 
   // Shows the pre-launch dialog for a file handling web app launch. The user
   // can allow or block the launch.
   virtual void ShowWebAppFileLaunchDialog(
       const std::vector<base::FilePath>& file_paths,
-      const web_app::AppId& app_id,
+      const webapps::AppId& app_id,
       WebAppLaunchAcceptanceCallback launch_callback) = 0;
 
   virtual void ShowWebAppIdentityUpdateDialog(
@@ -162,7 +163,7 @@ class WebAppUiManager {
       AppIdentityDialogCallback callback) = 0;
 
   // Show the settings UI for the given app.
-  virtual void ShowWebAppSettings(const AppId& app_id) = 0;
+  virtual void ShowWebAppSettings(const webapps::AppId& app_id) = 0;
 
   // This launches the web app in the appropriate configuration, the behavior of
   // which depends on the given configuration here and the configuration of the
@@ -180,8 +181,8 @@ class WebAppUiManager {
   // Migrates launcher state, such as parent folder id, position in App Launcher
   // and pin position on the shelf from one app to another app.
   // Avoids migrating if the to_app_id is already pinned.
-  virtual void MigrateLauncherState(const AppId& from_app_id,
-                                    const AppId& to_app_id,
+  virtual void MigrateLauncherState(const webapps::AppId& from_app_id,
+                                    const webapps::AppId& to_app_id,
                                     base::OnceClosure callback) = 0;
 
   // Displays a notification for web apps launched on login via the RunOnOsLogin
@@ -204,7 +205,7 @@ class WebAppUiManager {
   // |parent_window| is nullptr. Use this API if a Browser window needs to be
   // passed in along with an UninstallCompleteCallback.
   virtual void PresentUserUninstallDialog(
-      const AppId& app_id,
+      const webapps::AppId& app_id,
       webapps::WebappUninstallSource uninstall_source,
       BrowserWindow* parent_window,
       UninstallCompleteCallback callback) = 0;
@@ -212,7 +213,7 @@ class WebAppUiManager {
   // Use this API if a gfx::NativeWindow needs to be passed in along with an
   // UninstallCompleteCallback.
   virtual void PresentUserUninstallDialog(
-      const AppId& app_id,
+      const webapps::AppId& app_id,
       webapps::WebappUninstallSource uninstall_source,
       gfx::NativeWindow parent_window,
       UninstallCompleteCallback callback) = 0;
@@ -220,7 +221,7 @@ class WebAppUiManager {
   // Use this API if a gfx::NativeWindow needs to be passed in along with a
   // UninstallCompleteCallback and an UninstallScheduledCallback.
   virtual void PresentUserUninstallDialog(
-      const AppId& app_id,
+      const webapps::AppId& app_id,
       webapps::WebappUninstallSource uninstall_source,
       gfx::NativeWindow parent_window,
       UninstallCompleteCallback callback,

@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
@@ -29,33 +30,33 @@ class ShortcutMenuHandlingSubManager : public OsIntegrationSubManager {
                                  WebAppProvider& provider);
   ~ShortcutMenuHandlingSubManager() override;
 
-  void Configure(const AppId& app_id,
+  void Configure(const webapps::AppId& app_id,
                  proto::WebAppOsIntegrationState& desired_state,
                  base::OnceClosure configure_done) override;
-  void Execute(const AppId& app_id,
+  void Execute(const webapps::AppId& app_id,
                const absl::optional<SynchronizeOsOptions>& synchronize_options,
                const proto::WebAppOsIntegrationState& desired_state,
                const proto::WebAppOsIntegrationState& current_state,
                base::OnceClosure execute_complete) override;
-  void ForceUnregister(const AppId& app_id,
+  void ForceUnregister(const webapps::AppId& app_id,
                        base::OnceClosure callback) override;
 
  private:
   void StoreShortcutMenuData(
-      const AppId& app_id,
+      const webapps::AppId& app_id,
       std::vector<WebAppShortcutsMenuItemInfo> shortcut_menu_item_info,
       proto::ShortcutMenus* shortcut_menus,
       WebAppIconManager::ShortcutIconDataVector data);
   void StartShortcutsMenuUnregistration(
-      const AppId& app_id,
+      const webapps::AppId& app_id,
       const proto::WebAppOsIntegrationState& current_state,
       base::OnceClosure registration_callback);
   void ReadIconDataForShortcutsMenu(
-      const AppId& app_id,
+      const webapps::AppId& app_id,
       const proto::WebAppOsIntegrationState& desired_state,
       base::OnceClosure execute_complete);
   void OnIconDataLoadedRegisterShortcutsMenu(
-      const AppId& app_id,
+      const webapps::AppId& app_id,
       const proto::WebAppOsIntegrationState& desired_state,
       base::OnceClosure execute_complete,
       ShortcutsMenuIconBitmaps shortcut_menu_icon_bitmaps);

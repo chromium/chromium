@@ -93,7 +93,7 @@ base::FilePath StoreSharedFile(const base::FilePath& directory,
 }
 
 content::WebContents* LaunchWebAppWithIntent(Profile* profile,
-                                             const web_app::AppId& app_id,
+                                             const webapps::AppId& app_id,
                                              apps::IntentPtr&& intent) {
   apps::AppLaunchParams params = apps::CreateAppLaunchParamsForIntent(
       app_id,
@@ -126,7 +126,7 @@ class FakeSharesheet : public crosapi::mojom::Sharesheet {
 
   void set_profile(Profile* profile) { profile_ = profile; }
 
-  void set_selected_app_id(const web_app::AppId& app_id) {
+  void set_selected_app_id(const webapps::AppId& app_id) {
     selected_app_id_ = app_id;
   }
 
@@ -150,7 +150,7 @@ class FakeSharesheet : public crosapi::mojom::Sharesheet {
   void CloseBubble(const std::string& window_id) override {}
 
   raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
-  web_app::AppId selected_app_id_;
+  webapps::AppId selected_app_id_;
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -164,7 +164,7 @@ class WebShareTargetBrowserTest : public WebAppControllerBrowserTest {
     return embedded_test_server()->GetURL("/web_share_target/share.html");
   }
 
-  content::WebContents* LaunchAppWithIntent(const AppId& app_id,
+  content::WebContents* LaunchAppWithIntent(const webapps::AppId& app_id,
                                             apps::IntentPtr&& intent,
                                             const GURL& expected_url) {
     DCHECK(intent);
@@ -224,7 +224,8 @@ IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareUsingFileURL) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url =
       embedded_test_server()->GetURL("/web_share_target/charts.html");
-  const AppId app_id = web_app::InstallWebAppFromManifest(browser(), app_url);
+  const webapps::AppId app_id =
+      web_app::InstallWebAppFromManifest(browser(), app_url);
 
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir scoped_temp_dir;
@@ -263,7 +264,8 @@ IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareImageWithText) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url =
       embedded_test_server()->GetURL("/web_share_target/charts.html");
-  const AppId app_id = web_app::InstallWebAppFromManifest(browser(), app_url);
+  const webapps::AppId app_id =
+      web_app::InstallWebAppFromManifest(browser(), app_url);
   const base::FilePath directory = PrepareWebShareDirectory(profile());
 
   apps::IntentPtr intent;
@@ -295,7 +297,8 @@ IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, ShareAudio) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url =
       embedded_test_server()->GetURL("/web_share_target/charts.html");
-  const AppId app_id = web_app::InstallWebAppFromManifest(browser(), app_url);
+  const webapps::AppId app_id =
+      web_app::InstallWebAppFromManifest(browser(), app_url);
   const base::FilePath directory = PrepareWebShareDirectory(profile());
 
   apps::IntentPtr intent;
@@ -329,7 +332,8 @@ IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, PostBlank) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url =
       embedded_test_server()->GetURL("/web_share_target/poster.html");
-  const AppId app_id = web_app::InstallWebAppFromManifest(browser(), app_url);
+  const webapps::AppId app_id =
+      web_app::InstallWebAppFromManifest(browser(), app_url);
 
   apps::IntentPtr intent = apps_util::MakeShareIntent(
       /*text=*/std::string(),
@@ -347,7 +351,8 @@ IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, PostLink) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url =
       embedded_test_server()->GetURL("/web_share_target/poster.html");
-  const AppId app_id = web_app::InstallWebAppFromManifest(browser(), app_url);
+  const webapps::AppId app_id =
+      web_app::InstallWebAppFromManifest(browser(), app_url);
   const apps::ShareTarget* share_target =
       WebAppProvider::GetForTest(browser()->profile())
           ->registrar_unsafe()
@@ -378,7 +383,8 @@ IN_PROC_BROWSER_TEST_F(WebShareTargetBrowserTest, GetLink) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url =
       embedded_test_server()->GetURL("/web_share_target/gatherer.html");
-  const AppId app_id = web_app::InstallWebAppFromManifest(browser(), app_url);
+  const webapps::AppId app_id =
+      web_app::InstallWebAppFromManifest(browser(), app_url);
   const apps::ShareTarget* share_target =
       WebAppProvider::GetForTest(browser()->profile())
           ->registrar_unsafe()

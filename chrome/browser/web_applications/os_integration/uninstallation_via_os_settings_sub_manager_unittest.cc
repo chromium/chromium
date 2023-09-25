@@ -89,14 +89,15 @@ class UninstallationViaOsSettingsSubManagerTest
     WebAppTest::TearDown();
   }
 
-  web_app::AppId InstallWebApp(webapps::WebappInstallSource install_source) {
+  webapps::AppId InstallWebApp(webapps::WebappInstallSource install_source) {
     std::unique_ptr<WebAppInstallInfo> info =
         std::make_unique<WebAppInstallInfo>();
     info->start_url = kWebAppUrl;
     info->title = u"Test App";
     info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
     auto source = install_source;
-    base::test::TestFuture<const AppId&, webapps::InstallResultCode> result;
+    base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+        result;
     // InstallFromInfoWithParams is used instead of InstallFromInfo, because
     // InstallFromInfo doesn't register OS integration.
     provider().scheduler().InstallFromInfoWithParams(
@@ -105,11 +106,11 @@ class UninstallationViaOsSettingsSubManagerTest
     bool success = result.Wait();
     EXPECT_TRUE(success);
     if (!success) {
-      return AppId();
+      return webapps::AppId();
     }
     EXPECT_EQ(result.Get<webapps::InstallResultCode>(),
               webapps::InstallResultCode::kSuccessNewInstall);
-    return result.Get<AppId>();
+    return result.Get<webapps::AppId>();
   }
 
   OsIntegrationTestOverrideImpl& test_override() const {
@@ -135,7 +136,7 @@ bool IsOsUninstallationSupported() {
 }
 
 TEST_P(UninstallationViaOsSettingsSubManagerTest, TestUserUninstallable) {
-  const AppId& app_id =
+  const webapps::AppId& app_id =
       InstallWebApp(webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
 
   auto state =
@@ -160,7 +161,7 @@ TEST_P(UninstallationViaOsSettingsSubManagerTest, TestUserUninstallable) {
 }
 
 TEST_P(UninstallationViaOsSettingsSubManagerTest, TestNotUserUninstallable) {
-  const AppId& app_id =
+  const webapps::AppId& app_id =
       InstallWebApp(webapps::WebappInstallSource::EXTERNAL_POLICY);
 
   auto state =
@@ -188,7 +189,7 @@ TEST_P(UninstallationViaOsSettingsSubManagerTest, TestNotUserUninstallable) {
 }
 
 TEST_P(UninstallationViaOsSettingsSubManagerTest, UninstallApp) {
-  const AppId& app_id =
+  const webapps::AppId& app_id =
       InstallWebApp(webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
   test::UninstallAllWebApps(profile());
   auto state =
@@ -200,7 +201,7 @@ TEST_P(UninstallationViaOsSettingsSubManagerTest, UninstallApp) {
 // the app has been uninstalled.
 TEST_P(UninstallationViaOsSettingsSubManagerTest,
        OsStatesCleanupAfterAppUninstallation) {
-  const AppId& app_id =
+  const webapps::AppId& app_id =
       InstallWebApp(webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
 
   auto state =

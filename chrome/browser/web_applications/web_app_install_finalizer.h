@@ -23,6 +23,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -47,13 +48,13 @@ class WebAppProvider;
 class WebAppInstallFinalizer {
  public:
   using InstallFinalizedCallback =
-      base::OnceCallback<void(const AppId& app_id,
+      base::OnceCallback<void(const webapps::AppId& app_id,
                               webapps::InstallResultCode code,
                               OsHooksErrors os_hooks_errors)>;
   using UninstallWebAppCallback =
       base::OnceCallback<void(webapps::UninstallResultCode code)>;
   using RepeatingUninstallCallback =
-      base::RepeatingCallback<void(const AppId& app_id,
+      base::RepeatingCallback<void(const webapps::AppId& app_id,
                                    webapps::UninstallResultCode code)>;
 
   struct FinalizeOptions {
@@ -111,8 +112,9 @@ class WebAppInstallFinalizer {
   virtual void FinalizeUpdate(const WebAppInstallInfo& web_app_info,
                               InstallFinalizedCallback callback);
 
-  bool CanReparentTab(const AppId& app_id, bool shortcut_created) const;
-  void ReparentTab(const AppId& app_id,
+  bool CanReparentTab(const webapps::AppId& app_id,
+                      bool shortcut_created) const;
+  void ReparentTab(const webapps::AppId& app_id,
                    bool shortcut_created,
                    content::WebContents* web_contents);
 
@@ -133,7 +135,7 @@ class WebAppInstallFinalizer {
  private:
   using CommitCallback = base::OnceCallback<void(bool success)>;
 
-  void OnMaybeRegisterOsUninstall(const AppId& app_id,
+  void OnMaybeRegisterOsUninstall(const webapps::AppId& app_id,
                                   WebAppManagement::Type source,
                                   UninstallWebAppCallback callback,
                                   OsHooksErrors os_hooks_errors);
@@ -150,7 +152,7 @@ class WebAppInstallFinalizer {
       bool skip_icon_writes_on_download_failure);
 
   void WriteTranslations(
-      const AppId& app_id,
+      const webapps::AppId& app_id,
       const base::flat_map<std::string, blink::Manifest::TranslationItem>&
           translations,
       CommitCallback commit_callback,
@@ -163,31 +165,31 @@ class WebAppInstallFinalizer {
   void OnOriginAssociationValidated(WebAppInstallInfo web_app_info,
                                     FinalizeOptions options,
                                     InstallFinalizedCallback callback,
-                                    AppId app_id,
+                                    webapps::AppId app_id,
                                     ScopeExtensions validated_scope_extensions);
 
   void OnDatabaseCommitCompletedForInstall(InstallFinalizedCallback callback,
-                                           AppId app_id,
+                                           webapps::AppId app_id,
                                            FinalizeOptions finalize_options,
                                            bool success);
 
   void OnInstallHooksFinished(InstallFinalizedCallback callback,
-                              AppId app_id,
+                              webapps::AppId app_id,
                               OsHooksErrors os_hooks_errors);
-  void NotifyWebAppInstalledWithOsHooks(AppId app_id);
+  void NotifyWebAppInstalledWithOsHooks(webapps::AppId app_id);
 
-  bool ShouldUpdateOsHooks(const AppId& app_id);
+  bool ShouldUpdateOsHooks(const webapps::AppId& app_id);
 
   void OnDatabaseCommitCompletedForUpdate(
       InstallFinalizedCallback callback,
-      AppId app_id,
+      webapps::AppId app_id,
       std::string old_name,
       FileHandlerUpdateAction file_handlers_need_os_update,
       const WebAppInstallInfo& web_app_info,
       bool success);
 
   void OnUpdateHooksFinished(InstallFinalizedCallback callback,
-                             AppId app_id,
+                             webapps::AppId app_id,
                              OsHooksErrors os_hooks_errors);
 
   // Returns a value indicating whether the file handlers registered with the OS
@@ -195,7 +197,7 @@ class WebAppInstallFinalizer {
   // does this optimization exist when other OS hooks don't have similar
   // optimizations?
   FileHandlerUpdateAction GetFileHandlerUpdateAction(
-      const AppId& app_id,
+      const webapps::AppId& app_id,
       const WebAppInstallInfo& new_web_app_info);
 
   const raw_ptr<Profile> profile_;

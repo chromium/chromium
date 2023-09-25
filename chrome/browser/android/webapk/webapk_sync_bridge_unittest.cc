@@ -12,9 +12,9 @@
 #include "chrome/browser/android/webapk/fake_webapk_database_factory.h"
 #include "chrome/browser/android/webapk/webapk_database_factory.h"
 #include "chrome/browser/android/webapk/webapk_helpers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/webapps/common/web_app_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -74,7 +74,7 @@ std::unique_ptr<WebApkProto> CreateWebApkProto(const std::string& url) {
 
 void InsertAppIntoRegistry(Registry* registry,
                            std::unique_ptr<WebApkProto> app) {
-  web_app::AppId app_id =
+  webapps::AppId app_id =
       GenerateAppIdFromManifestId(GURL(app->sync_data().manifest_id()));
   ASSERT_FALSE(base::Contains(*registry, app_id));
   registry->emplace(std::move(app_id), std::move(app));

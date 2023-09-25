@@ -218,7 +218,7 @@ bool PwaInstallView::ShouldShowIph(content::WebContents* web_contents,
       !manager->manifest().id.is_valid()) {
     return false;
   }
-  web_app::AppId app_id =
+  webapps::AppId app_id =
       web_app::GenerateAppIdFromManifest(manager->manifest());
 
   Profile* profile =

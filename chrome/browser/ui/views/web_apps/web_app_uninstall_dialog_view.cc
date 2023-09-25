@@ -54,7 +54,7 @@ enum HistogramCloseAction {
 
 WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
     Profile* profile,
-    web_app::AppId app_id,
+    webapps::AppId app_id,
     webapps::WebappUninstallSource uninstall_source,
     std::map<SquareSizePx, SkBitmap> icon_bitmaps,
     web_app::UninstallDialogCallback uninstall_choice_callback)
@@ -167,7 +167,7 @@ ui::ImageModel WebAppUninstallDialogDelegateView::GetWindowIcon() {
 }
 
 void WebAppUninstallDialogDelegateView::OnWebAppWillBeUninstalled(
-    const web_app::AppId& app_id) {
+    const webapps::AppId& app_id) {
   // Handle the case when web app was uninstalled externally and we have to
   // cancel current dialog.
   if (app_id == app_id_) {
@@ -208,7 +208,7 @@ namespace chrome {
 
 void ShowWebAppUninstallDialog(
     Profile* profile,
-    const web_app::AppId& app_id,
+    const webapps::AppId& app_id,
     webapps::WebappUninstallSource uninstall_source,
     gfx::NativeWindow parent,
     std::map<SquareSizePx, SkBitmap> icon_bitmaps,

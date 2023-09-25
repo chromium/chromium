@@ -38,7 +38,6 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
@@ -54,6 +53,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/webapps/browser/uninstall_result_code.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/origin.h"
@@ -133,13 +133,13 @@ void WebAppInstallFinalizer::FinalizeInstall(
   // WebAppInstallManager and replace this runtime error in
   // WebAppInstallFinalizer with DCHECK(started_).
   if (!started_) {
-    std::move(callback).Run(AppId(),
+    std::move(callback).Run(webapps::AppId(),
                             webapps::InstallResultCode::kWebAppProviderNotReady,
                             OsHooksErrors());
     return;
   }
 
-  ManifestId manifest_id = web_app_info.manifest_id;
+  webapps::ManifestId manifest_id = web_app_info.manifest_id;
   if (manifest_id.is_valid()) {
     CHECK(url::Origin::Create(manifest_id)
               .IsSameOriginWith(url::Origin::Create(web_app_info.start_url)));
@@ -149,7 +149,7 @@ void WebAppInstallFinalizer::FinalizeInstall(
     manifest_id = GenerateManifestIdFromStartUrlOnly(web_app_info.start_url);
   }
 
-  AppId app_id = GenerateAppIdFromManifestId(manifest_id);
+  webapps::AppId app_id = GenerateAppIdFromManifestId(manifest_id);
   OnDidGetWebAppOriginAssociations origin_association_validated_callback =
       base::BindOnce(&WebAppInstallFinalizer::OnOriginAssociationValidated,
                      weak_ptr_factory_.GetWeakPtr(), web_app_info.Clone(),
@@ -171,7 +171,7 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
     WebAppInstallInfo web_app_info,
     FinalizeOptions options,
     InstallFinalizedCallback callback,
-    AppId app_id,
+    webapps::AppId app_id,
     ScopeExtensions validated_scope_extensions) {
   const WebApp* existing_web_app =
       provider_->registrar_unsafe().GetAppById(app_id);
@@ -286,7 +286,7 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
   }
 }
 
-bool WebAppInstallFinalizer::CanReparentTab(const AppId& app_id,
+bool WebAppInstallFinalizer::CanReparentTab(const webapps::AppId& app_id,
                                             bool shortcut_created) const {
   // Reparent the web contents into its own window only if that is the
   // app's launch type.
@@ -300,7 +300,7 @@ bool WebAppInstallFinalizer::CanReparentTab(const AppId& app_id,
                                                            shortcut_created);
 }
 
-void WebAppInstallFinalizer::ReparentTab(const AppId& app_id,
+void WebAppInstallFinalizer::ReparentTab(const webapps::AppId& app_id,
                                          bool shortcut_created,
                                          content::WebContents* web_contents) {
   DCHECK(web_contents);
@@ -313,7 +313,7 @@ void WebAppInstallFinalizer::FinalizeUpdate(
     InstallFinalizedCallback callback) {
   CHECK(started_);
   CHECK(web_app_info.start_url.is_valid());
-  ManifestId manifest_id = web_app_info.manifest_id;
+  webapps::ManifestId manifest_id = web_app_info.manifest_id;
   if (manifest_id.is_valid()) {
     CHECK(url::Origin::Create(manifest_id)
               .IsSameOriginWith(url::Origin::Create(web_app_info.start_url)));
@@ -325,7 +325,7 @@ void WebAppInstallFinalizer::FinalizeUpdate(
   }
   CHECK(manifest_id.is_valid());
 
-  const AppId app_id = GenerateAppIdFromManifestId(manifest_id);
+  const webapps::AppId app_id = GenerateAppIdFromManifestId(manifest_id);
   const WebApp* existing_web_app =
       provider_->registrar_unsafe().GetAppById(app_id);
 
@@ -333,7 +333,7 @@ void WebAppInstallFinalizer::FinalizeUpdate(
       existing_web_app->is_from_sync_and_pending_installation() ||
       app_id != existing_web_app->app_id()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), AppId(),
+        FROM_HERE, base::BindOnce(std::move(callback), webapps::AppId(),
                                   webapps::InstallResultCode::kWebAppDisabled,
                                   OsHooksErrors()));
     return;
@@ -410,7 +410,7 @@ void WebAppInstallFinalizer::SetWebAppManifestFieldsAndWriteData(
   SetWebAppManifestFields(web_app_info, *web_app,
                           skip_icon_writes_on_download_failure);
 
-  AppId app_id = web_app->app_id();
+  webapps::AppId app_id = web_app->app_id();
   auto write_translations_callback = base::BindOnce(
       &WebAppInstallFinalizer::WriteTranslations,
       weak_ptr_factory_.GetWeakPtr(), app_id, web_app_info.translations);
@@ -441,7 +441,7 @@ void WebAppInstallFinalizer::SetWebAppManifestFieldsAndWriteData(
 }
 
 void WebAppInstallFinalizer::WriteTranslations(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     const base::flat_map<std::string, blink::Manifest::TranslationItem>&
         translations,
     CommitCallback commit_callback,
@@ -464,7 +464,7 @@ void WebAppInstallFinalizer::CommitToSyncBridge(std::unique_ptr<WebApp> web_app,
     return;
   }
 
-  AppId app_id = web_app->app_id();
+  webapps::AppId app_id = web_app->app_id();
 
   ScopedRegistryUpdate update =
       provider_->sync_bridge_unsafe().BeginUpdate(std::move(commit_callback));
@@ -479,13 +479,14 @@ void WebAppInstallFinalizer::CommitToSyncBridge(std::unique_ptr<WebApp> web_app,
 
 void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
     InstallFinalizedCallback callback,
-    AppId app_id,
+    webapps::AppId app_id,
     FinalizeOptions finalize_options,
     bool success) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!success) {
-    std::move(callback).Run(
-        AppId(), webapps::InstallResultCode::kWriteDataFailed, OsHooksErrors());
+    std::move(callback).Run(webapps::AppId(),
+                            webapps::InstallResultCode::kWriteDataFailed,
+                            OsHooksErrors());
     return;
   }
 
@@ -496,7 +497,8 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
   // isolation work is done. https://crbug.com/1298130
   if (!web_app) {
     std::move(callback).Run(
-        AppId(), webapps::InstallResultCode::kAppNotInRegistrarAfterCommit,
+        webapps::AppId(),
+        webapps::InstallResultCode::kAppNotInRegistrarAfterCommit,
         OsHooksErrors());
     return;
   }
@@ -588,7 +590,7 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
 
 void WebAppInstallFinalizer::OnInstallHooksFinished(
     InstallFinalizedCallback callback,
-    AppId app_id,
+    webapps::AppId app_id,
     OsHooksErrors os_hooks_errors) {
   auto joined = std::move(callback).Then(
       base::BindOnce(&WebAppInstallFinalizer::NotifyWebAppInstalledWithOsHooks,
@@ -598,11 +600,12 @@ void WebAppInstallFinalizer::OnInstallHooksFinished(
                         os_hooks_errors);
 }
 
-void WebAppInstallFinalizer::NotifyWebAppInstalledWithOsHooks(AppId app_id) {
+void WebAppInstallFinalizer::NotifyWebAppInstalledWithOsHooks(
+    webapps::AppId app_id) {
   provider_->install_manager().NotifyWebAppInstalledWithOsHooks(app_id);
 }
 
-bool WebAppInstallFinalizer::ShouldUpdateOsHooks(const AppId& app_id) {
+bool WebAppInstallFinalizer::ShouldUpdateOsHooks(const webapps::AppId& app_id) {
 #if BUILDFLAG(IS_CHROMEOS)
   // OS integration should always be enabled on ChromeOS.
   return true;
@@ -615,15 +618,16 @@ bool WebAppInstallFinalizer::ShouldUpdateOsHooks(const AppId& app_id) {
 
 void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
     InstallFinalizedCallback callback,
-    AppId app_id,
+    webapps::AppId app_id,
     std::string old_name,
     FileHandlerUpdateAction file_handlers_need_os_update,
     const WebAppInstallInfo& web_app_info,
     bool success) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!success) {
-    std::move(callback).Run(
-        AppId(), webapps::InstallResultCode::kWriteDataFailed, OsHooksErrors());
+    std::move(callback).Run(webapps::AppId(),
+                            webapps::InstallResultCode::kWriteDataFailed,
+                            OsHooksErrors());
     return;
   }
 
@@ -651,7 +655,7 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
 
 void WebAppInstallFinalizer::OnUpdateHooksFinished(
     InstallFinalizedCallback callback,
-    AppId app_id,
+    webapps::AppId app_id,
     OsHooksErrors os_hooks_errors) {
   provider_->install_manager().NotifyWebAppManifestUpdated(app_id);
   std::move(callback).Run(
@@ -684,7 +688,7 @@ void WebAppInstallFinalizer::WriteExternalConfigMapInfo(
 }
 
 FileHandlerUpdateAction WebAppInstallFinalizer::GetFileHandlerUpdateAction(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     const WebAppInstallInfo& new_web_app_info) {
   if (provider_->registrar_unsafe().GetAppFileHandlerApprovalState(app_id) ==
       ApiApprovalState::kDisallowed) {

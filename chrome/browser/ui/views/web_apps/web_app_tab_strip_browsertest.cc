@@ -87,7 +87,7 @@ class WebAppTabStripBrowserTest : public WebAppControllerBrowserTest {
   }
 
   struct App {
-    AppId id;
+    webapps::AppId id;
     raw_ptr<Browser> browser;
     raw_ptr<BrowserView> browser_view;
     // This field is not a raw_ptr<> because of missing |.get()| in
@@ -105,7 +105,8 @@ class WebAppTabStripBrowserTest : public WebAppControllerBrowserTest {
     web_app_info->title = u"Test app";
     web_app_info->background_color = kAppBackgroundColor;
     web_app_info->user_display_mode = mojom::UserDisplayMode::kTabbed;
-    AppId app_id = test::InstallWebApp(profile, std::move(web_app_info));
+    webapps::AppId app_id =
+        test::InstallWebApp(profile, std::move(web_app_info));
 
     Browser* app_browser = ::web_app::LaunchWebAppBrowser(profile, app_id);
     return App{app_id, app_browser,
@@ -113,14 +114,14 @@ class WebAppTabStripBrowserTest : public WebAppControllerBrowserTest {
                app_browser->tab_strip_model()->GetActiveWebContents()};
   }
 
-  AppId InstallTestWebApp(GURL start_url, bool await_metric = true) {
+  webapps::AppId InstallTestWebApp(GURL start_url, bool await_metric = true) {
     page_load_metrics::PageLoadMetricsTestWaiter metrics_waiter(
         browser()->tab_strip_model()->GetActiveWebContents());
     if (await_metric) {
       metrics_waiter.AddWebFeatureExpectation(
           blink::mojom::WebFeature::kWebAppTabbed);
     }
-    AppId app_id = InstallWebAppFromPage(browser(), start_url);
+    webapps::AppId app_id = InstallWebAppFromPage(browser(), start_url);
     if (await_metric) {
       metrics_waiter.Wait();
     }
@@ -197,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, PopOutTabOnInstall) {
   NavigateToURLAndWait(browser(), start_url);
 
   // Install the site with the user display mode set to kTabbed.
-  AppId app_id;
+  webapps::AppId app_id;
   {
     base::RunLoop run_loop;
     auto* provider = WebAppProvider::GetForTest(browser()->profile());
@@ -216,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, PopOutTabOnInstall) {
                   .Run(/*user_accepted=*/true, std::move(web_app_info));
             }),
         base::BindLambdaForTesting(
-            [&run_loop, &app_id](const AppId& installed_app_id,
+            [&run_loop, &app_id](const webapps::AppId& installed_app_id,
                                  webapps::InstallResultCode code) {
               DCHECK_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
               app_id = installed_app_id;
@@ -298,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, AutoNewTabUrl) {
   GURL start_url = embedded_test_server()->GetURL(
       "/banners/"
       "manifest_test_page.html?manifest=manifest_tabbed_display_override.json");
-  AppId app_id = InstallTestWebApp(start_url);
+  webapps::AppId app_id = InstallTestWebApp(start_url);
   Browser* app_browser = LaunchWebAppBrowser(app_id);
 
   EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
@@ -312,7 +313,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, AutoNewTabUrl) {
 IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, NewTabUrl) {
   GURL start_url =
       embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
-  AppId app_id = InstallTestWebApp(start_url);
+  webapps::AppId app_id = InstallTestWebApp(start_url);
   Browser* app_browser = LaunchWebAppBrowser(app_id);
 
   EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
@@ -326,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, NewTabUrl) {
 IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, InstallingPinsHomeTab) {
   GURL start_url = embedded_test_server()->GetURL(
       "/web_apps/tab_strip_customizations.html?some_query#blah");
-  AppId app_id = InstallTestWebApp(start_url);
+  webapps::AppId app_id = InstallTestWebApp(start_url);
   Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
   TabStripModel* tab_strip = app_browser->tab_strip_model();
 
@@ -357,9 +358,10 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, MonochromeAppIconOnHomeTab) {
   WebAppProvider::GetForTest(browser()->profile())
       ->icon_manager()
       .SetFaviconMonochromeReadCallbackForTesting(base::BindLambdaForTesting(
-          [&](const AppId& cached_app_id) { run_loop.Quit(); }));
+          [&](const webapps::AppId& cached_app_id) { run_loop.Quit(); }));
 
-  AppId app_id = InstallWebAppFromPageAndCloseAppBrowser(browser(), start_url);
+  webapps::AppId app_id =
+      InstallWebAppFromPageAndCloseAppBrowser(browser(), start_url);
   run_loop.Run();
 
   Browser* app_browser = LaunchWebAppBrowser(app_id);
@@ -399,7 +401,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, MonochromeAppIconOnHomeTab) {
 IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, InstallFromNonHomeTabUrl) {
   GURL start_url = embedded_test_server()->GetURL(
       "/web_apps/get_manifest.html?tab_strip_customizations.json");
-  AppId app_id = InstallTestWebApp(start_url);
+  webapps::AppId app_id = InstallTestWebApp(start_url);
   Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
   TabStripModel* tab_strip = app_browser->tab_strip_model();
 
@@ -417,7 +419,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, OpeningPinsHomeTab) {
   GURL start_url =
       embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
   // Install and close app.
-  AppId app_id = InstallTestWebApp(start_url);
+  webapps::AppId app_id = InstallTestWebApp(start_url);
   Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
   CloseAndWait(app_browser);
 
@@ -451,7 +453,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, ReparentingPinsHomeTab) {
   GURL start_url =
       embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
   // Install and close app.
-  AppId app_id = InstallTestWebApp(start_url);
+  webapps::AppId app_id = InstallTestWebApp(start_url);
   Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
   CloseAndWait(app_browser);
 
@@ -496,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, ReparentingPinsHomeTab) {
 IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, DISABLED_NavigationThrottle) {
   GURL start_url =
       embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
-  AppId app_id = InstallTestWebApp(start_url);
+  webapps::AppId app_id = InstallTestWebApp(start_url);
   Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
   TabStripModel* tab_strip = app_browser->tab_strip_model();
 
@@ -588,7 +590,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, DISABLED_NavigationThrottle) {
 IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, OpenInChrome) {
   GURL start_url =
       embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
-  AppId app_id = InstallTestWebApp(start_url);
+  webapps::AppId app_id = InstallTestWebApp(start_url);
   Browser* app_browser = LaunchWebAppBrowser(app_id);
 
   EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
@@ -606,7 +608,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, OpenInChrome) {
 IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, WebAppMenuModelTabbedApp) {
   GURL start_url =
       embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
-  AppId app_id = InstallTestWebApp(start_url);
+  webapps::AppId app_id = InstallTestWebApp(start_url);
   Browser* app_browser = LaunchWebAppBrowser(app_id);
 
   WebAppMenuModel model(nullptr, app_browser);
@@ -617,7 +619,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, WebAppMenuModelTabbedApp) {
 
 IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, WebAppMenuModelNonTabbedApp) {
   GURL start_url = embedded_test_server()->GetURL("/web_apps/basic.html");
-  AppId app_id = InstallTestWebApp(start_url, /*await_metric=*/false);
+  webapps::AppId app_id = InstallTestWebApp(start_url, /*await_metric=*/false);
   Browser* app_browser = LaunchWebAppBrowser(app_id);
 
   WebAppMenuModel model(nullptr, app_browser);
@@ -629,7 +631,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, WebAppMenuModelNonTabbedApp) {
 IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, MoveTabsToNewWindow) {
   GURL start_url =
       embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
-  AppId app_id = InstallTestWebApp(start_url);
+  webapps::AppId app_id = InstallTestWebApp(start_url);
   Browser* app_browser = LaunchWebAppBrowser(app_id);
 
   chrome::NewTab(app_browser);
@@ -658,7 +660,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, MoveTabsToNewWindow) {
 IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, MoveTabsToExistingWindow) {
   GURL start_url =
       embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
-  AppId app_id = InstallTestWebApp(start_url);
+  webapps::AppId app_id = InstallTestWebApp(start_url);
   Browser* app_browser = LaunchWebAppBrowser(app_id);
   chrome::NewTab(app_browser);
 
@@ -695,7 +697,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest,
                        OnlyNavigateHomeTabIfDifferentUrl) {
   GURL start_url =
       embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
-  AppId app_id = InstallTestWebApp(start_url);
+  webapps::AppId app_id = InstallTestWebApp(start_url);
   Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
   TabStripModel* tab_strip = app_browser->tab_strip_model();
 
@@ -738,7 +740,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, NoFavicons) {
   GURL start_url =
       embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
-  AppId app_id = InstallTestWebApp(start_url);
+  webapps::AppId app_id = InstallTestWebApp(start_url);
   Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
   TabStripModel* tab_strip = app_browser->tab_strip_model();
 
@@ -753,7 +755,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest,
                        OnlyThrottlePrimaryMainFrame) {
   GURL start_url =
       embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
-  AppId app_id = InstallTestWebApp(start_url);
+  webapps::AppId app_id = InstallTestWebApp(start_url);
   Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
   TabStripModel* tab_strip = app_browser->tab_strip_model();
   content::WebContents* web_contents = tab_strip->GetActiveWebContents();
@@ -778,7 +780,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, DontCreateThrottleForReload) {
   GURL start_url =
       embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
-  AppId app_id = InstallTestWebApp(start_url);
+  webapps::AppId app_id = InstallTestWebApp(start_url);
   Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
   TabStripModel* tab_strip = app_browser->tab_strip_model();
   EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
@@ -797,7 +799,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, DontCreateThrottleForReload) {
 IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, QueryParamsInStartUrl) {
   GURL start_url = embedded_test_server()->GetURL(
       "/web_apps/get_manifest.html?tab_strip_query_params_in_start_url.json");
-  AppId app_id = InstallTestWebApp(start_url);
+  webapps::AppId app_id = InstallTestWebApp(start_url);
   Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
   TabStripModel* tab_strip = app_browser->tab_strip_model();
 
@@ -822,7 +824,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest,
                        OutOfScopeNavigationFromHomeTab) {
   GURL start_url =
       embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
-  AppId app_id = InstallTestWebApp(start_url);
+  webapps::AppId app_id = InstallTestWebApp(start_url);
   Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
   TabStripModel* tab_strip = app_browser->tab_strip_model();
 
@@ -850,7 +852,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, TabbedModeMediaCSS) {
   GURL start_url = embedded_test_server()->GetURL(
       "/banners/"
       "manifest_test_page.html?manifest=manifest_tabbed_display_override.json");
-  AppId app_id = InstallTestWebApp(start_url);
+  webapps::AppId app_id = InstallTestWebApp(start_url);
 
   Browser* app_browser = LaunchWebAppBrowser(app_id);
   content::WebContents* web_contents =
@@ -869,7 +871,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest,
                        CloseTabCommandDisabledForHomeTab) {
   GURL start_url =
       embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
-  AppId app_id = InstallTestWebApp(start_url);
+  webapps::AppId app_id = InstallTestWebApp(start_url);
   Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
   TabStripModel* tab_strip = app_browser->tab_strip_model();
 
@@ -905,7 +907,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest,
                        MiddleClickDoesntCloseHomeTab) {
   GURL start_url =
       embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
-  AppId app_id = InstallTestWebApp(start_url);
+  webapps::AppId app_id = InstallTestWebApp(start_url);
   Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
   TabStripModel* tab_strip_model = app_browser->tab_strip_model();
 
@@ -942,7 +944,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, HomeTabCantBeClosedUsingJS) {
   GURL start_url =
       embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
-  AppId app_id = InstallTestWebApp(start_url);
+  webapps::AppId app_id = InstallTestWebApp(start_url);
   Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
   TabStripModel* tab_strip = app_browser->tab_strip_model();
 
@@ -978,7 +980,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, HomeTabCantBeClosedUsingJS) {
 IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, HomeTabScopeSegmentWildcard) {
   GURL start_url =
       embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
-  AppId app_id = InstallTestWebApp(start_url);
+  webapps::AppId app_id = InstallTestWebApp(start_url);
   Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
   TabStripModel* tab_strip = app_browser->tab_strip_model();
 
@@ -1017,7 +1019,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, HomeTabScopeSegmentWildcard) {
 IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, HomeTabScopeFixedString) {
   GURL start_url = embedded_test_server()->GetURL(
       "/web_apps/get_manifest.html?tab_strip_fixed_home_scope.json");
-  AppId app_id = InstallTestWebApp(start_url);
+  webapps::AppId app_id = InstallTestWebApp(start_url);
   Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
   TabStripModel* tab_strip = app_browser->tab_strip_model();
 
@@ -1067,7 +1069,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, HomeTabScopeFixedString) {
 IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, HomeTabScopeWildcardString) {
   GURL start_url = embedded_test_server()->GetURL(
       "/web_apps/get_manifest.html?tab_strip_wildcard_home_scope.json");
-  AppId app_id = InstallTestWebApp(start_url);
+  webapps::AppId app_id = InstallTestWebApp(start_url);
   Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
   TabStripModel* tab_strip = app_browser->tab_strip_model();
 
@@ -1116,7 +1118,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, HomeTabScopeWildcardString) {
 IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, CloseAllTabsCommand) {
   GURL start_url =
       embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
-  AppId app_id = InstallTestWebApp(start_url);
+  webapps::AppId app_id = InstallTestWebApp(start_url);
   Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
   TabStripModel* tab_strip = app_browser->tab_strip_model();
 
@@ -1148,7 +1150,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest,
                        NewTabButtonUrlInHomeTabScope) {
   GURL start_url = embedded_test_server()->GetURL(
       "/web_apps/get_manifest.html?tab_strip_wildcard_home_scope.json");
-  AppId app_id = InstallTestWebApp(start_url);
+  webapps::AppId app_id = InstallTestWebApp(start_url);
   Browser* app_browser = LaunchWebAppBrowser(app_id);
 
   EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
@@ -1166,7 +1168,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, MiddleClickHomeTabLink) {
   GURL start_url =
       embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
-  AppId app_id = InstallWebAppFromPage(browser(), start_url);
+  webapps::AppId app_id = InstallWebAppFromPage(browser(), start_url);
   Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
   TabStripModel* tab_strip = app_browser->tab_strip_model();
 
@@ -1207,7 +1209,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, MiddleClickHomeTabLink) {
 IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, PageTitle) {
   GURL start_url =
       embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
-  AppId app_id = InstallWebAppFromPage(browser(), start_url);
+  webapps::AppId app_id = InstallWebAppFromPage(browser(), start_url);
   Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
   TabStripModel* tab_strip = app_browser->tab_strip_model();
 
@@ -1341,7 +1343,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripOriginTrialBrowserTest, OriginTrial) {
       }));
 
   // Install web app with origin trial token.
-  AppId app_id =
+  webapps::AppId app_id =
       web_app::InstallWebAppFromPage(browser(), GURL(kTestWebAppUrl));
 
   WebAppProvider& provider = *WebAppProvider::GetForTest(browser()->profile());

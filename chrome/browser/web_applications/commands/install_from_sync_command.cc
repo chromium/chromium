@@ -56,8 +56,8 @@ WebAppInstallFinalizer::FinalizeOptions GetFinalizerOptionForSyncInstall() {
 InstallFromSyncCommand::Params::~Params() = default;
 
 InstallFromSyncCommand::Params::Params(
-    const AppId& app_id,
-    const ManifestId& manifest_id,
+    const webapps::AppId& app_id,
+    const webapps::ManifestId& manifest_id,
     const GURL& start_url,
     const std::string& title,
     const GURL& scope,
@@ -87,7 +87,7 @@ InstallFromSyncCommand::InstallFromSyncCommand(
           "InstallFromSyncCommand"),
       lock_description_(
           std::make_unique<SharedWebContentsWithAppLockDescription,
-                           base::flat_set<AppId>>({params.app_id})),
+                           base::flat_set<webapps::AppId>>({params.app_id})),
       profile_(profile),
       params_(params),
       install_callback_(std::move(install_callback)),
@@ -223,7 +223,7 @@ void InstallFromSyncCommand::OnDidPerformInstallableCheck(
   }
 
   // Ensure that the manifest linked is the right one.
-  AppId generated_app_id =
+  webapps::AppId generated_app_id =
       GenerateAppIdFromManifestId(install_info_->manifest_id);
   if (params_.app_id != generated_app_id) {
     // Add the error to the log.
@@ -280,7 +280,7 @@ void InstallFromSyncCommand::OnIconsRetrievedFinalizeInstall(
 }
 
 void InstallFromSyncCommand::OnInstallFinalized(FinalizeMode mode,
-                                                const AppId& app_id,
+                                                const webapps::AppId& app_id,
                                                 webapps::InstallResultCode code,
                                                 OsHooksErrors os_hooks_errors) {
   if (mode == FinalizeMode::kNormalWebAppInfo && !IsSuccess(code)) {
@@ -319,7 +319,7 @@ void InstallFromSyncCommand::InstallFallback(webapps::InstallResultCode code) {
 }
 
 void InstallFromSyncCommand::ReportResultAndDestroy(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     webapps::InstallResultCode code) {
   bool success = IsSuccess(code);
   debug_value_.Set("result_code", base::ToString(code));

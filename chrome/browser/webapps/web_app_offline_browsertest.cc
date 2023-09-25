@@ -69,11 +69,11 @@ class WebAppOfflineTest : public InProcessBrowserTest {
   }
 
   // Start a web app without a service worker and disconnect.
-  web_app::AppId StartWebAppAndDisconnect(content::WebContents* web_contents,
+  webapps::AppId StartWebAppAndDisconnect(content::WebContents* web_contents,
                                           base::StringPiece relative_url) {
     GURL target_url(embedded_test_server()->GetURL(relative_url));
     web_app::NavigateToURLAndWait(browser(), target_url);
-    web_app::AppId app_id = web_app::test::InstallPwaForCurrentUrl(browser());
+    webapps::AppId app_id = web_app::test::InstallPwaForCurrentUrl(browser());
     WebAppIconWaiter(browser()->profile(), app_id).Wait();
     std::unique_ptr<content::URLLoaderInterceptor> interceptor =
         content::URLLoaderInterceptor::SetupRequestFailForURL(
@@ -93,7 +93,7 @@ class WebAppOfflineTest : public InProcessBrowserTest {
         browser()->profile(), target_url);
     web_app::NavigateToURLAndWait(browser(), target_url);
     registration_waiter.AwaitRegistration();
-    web_app::AppId app_id = web_app::test::InstallPwaForCurrentUrl(browser());
+    webapps::AppId app_id = web_app::test::InstallPwaForCurrentUrl(browser());
     WebAppIconWaiter(browser()->profile(), app_id).Wait();
     std::unique_ptr<content::URLLoaderInterceptor> interceptor =
         content::URLLoaderInterceptor::SetupRequestFailForURL(
@@ -464,7 +464,7 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflineMetricsPwaClosing) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 0);
-  web_app::AppId app_id =
+  webapps::AppId app_id =
       StartWebAppAndDisconnect(web_contents, "/banners/no-sw-with-colors.html");
 
   SyncHistograms();

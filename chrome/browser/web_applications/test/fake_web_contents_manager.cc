@@ -380,7 +380,7 @@ void FakeWebContentsManager::DeleteIconState(const GURL& icon_url) {
   icon_state_.erase(icon_url);
 }
 
-AppId FakeWebContentsManager::CreateBasicInstallPageState(
+webapps::AppId FakeWebContentsManager::CreateBasicInstallPageState(
     const GURL& install_url,
     const GURL& manifest_url,
     const GURL& start_url,

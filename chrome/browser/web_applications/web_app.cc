@@ -302,7 +302,7 @@ base::Value OptTabStripToDebugValue(
 
 }  // namespace
 
-WebApp::WebApp(const AppId& app_id)
+WebApp::WebApp(const webapps::AppId& app_id)
     : app_id_(app_id),
       chromeos_data_(IsChromeOsDataMandatory()
                          ? absl::make_optional<WebAppChromeOsData>()
@@ -325,7 +325,7 @@ const SortedSizesPx& WebApp::downloaded_icon_sizes(IconPurpose purpose) const {
   }
 }
 
-ManifestId WebApp::manifest_id() const {
+webapps::ManifestId WebApp::manifest_id() const {
   // Almost all production use-cases should have the manifest_id set, but in
   // some test it is not. If the manifest id is not set, then fall back to the
   // start_url, as per the algorithm in
@@ -625,7 +625,7 @@ void WebApp::SetManifestUrl(const GURL& manifest_url) {
   manifest_url_ = manifest_url;
 }
 
-void WebApp::SetManifestId(const ManifestId& manifest_id) {
+void WebApp::SetManifestId(const webapps::ManifestId& manifest_id) {
   CHECK(manifest_id.is_valid());
   CHECK(start_url_.is_empty() ||
         url::Origin::Create(start_url_)
@@ -642,7 +642,8 @@ void WebApp::SetLaunchHandler(absl::optional<LaunchHandler> launch_handler) {
   launch_handler_ = std::move(launch_handler);
 }
 
-void WebApp::SetParentAppId(const absl::optional<AppId>& parent_app_id) {
+void WebApp::SetParentAppId(
+    const absl::optional<webapps::AppId>& parent_app_id) {
   parent_app_id_ = parent_app_id;
 }
 

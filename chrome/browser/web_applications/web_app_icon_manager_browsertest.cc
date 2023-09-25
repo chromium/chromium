@@ -72,7 +72,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIconManagerBrowserTest, SingleIcon) {
   const GURL start_url =
       https_server()->GetURL("/banners/manifest_test_page.html");
 
-  AppId app_id;
+  webapps::AppId app_id;
   {
     std::unique_ptr<WebAppInstallInfo> install_info =
         std::make_unique<WebAppInstallInfo>();
@@ -96,7 +96,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIconManagerBrowserTest, SingleIcon) {
         /*overwrite_existing_manifest_fields=*/false,
         webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
         base::BindLambdaForTesting(
-            [&app_id, &run_loop](const AppId& installed_app_id,
+            [&app_id, &run_loop](const webapps::AppId& installed_app_id,
                                  webapps::InstallResultCode code) {
               EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, code);
               app_id = installed_app_id;

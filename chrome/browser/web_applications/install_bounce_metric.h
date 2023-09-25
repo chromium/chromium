@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
@@ -21,10 +22,11 @@ void RegisterInstallBounceMetricProfilePrefs(PrefRegistrySimple* registry);
 
 void RecordWebAppInstallationTimestamp(
     PrefService* pref_service,
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     webapps::WebappInstallSource install_source);
 
-void RecordWebAppUninstallation(PrefService* pref_service, const AppId& app_id);
+void RecordWebAppUninstallation(PrefService* pref_service,
+                                const webapps::AppId& app_id);
 
 }  // namespace web_app
 

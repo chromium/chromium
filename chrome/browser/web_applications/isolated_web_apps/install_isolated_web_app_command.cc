@@ -31,7 +31,6 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
@@ -42,6 +41,7 @@
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -209,7 +209,7 @@ void InstallIsolatedWebAppCommand::FinalizeInstall(WebAppInstallInfo info) {
 }
 
 void InstallIsolatedWebAppCommand::OnFinalizeInstall(
-    const AppId& unused_app_id,
+    const webapps::AppId& unused_app_id,
     webapps::InstallResultCode install_result_code,
     OsHooksErrors unused_os_hooks_errors) {
   if (install_result_code == webapps::InstallResultCode::kSuccessNewInstall) {

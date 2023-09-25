@@ -57,7 +57,7 @@ TEST_F(UninstallAllUserInstalledWebAppsCommandTest, NoUserInstalledWebApps) {
                                 prefs::kWebAppInstallForceList);
     update->Append(std::move(app_policy));
   }
-  AppId app_id = observer.Wait();
+  webapps::AppId app_id = observer.Wait();
 
   base::test::TestFuture<const absl::optional<std::string>&> future;
   provider()->command_manager().ScheduleCommand(
@@ -79,9 +79,9 @@ TEST_F(UninstallAllUserInstalledWebAppsCommandTest, RemovesUserInstallSources) {
                                 prefs::kWebAppInstallForceList);
     update->Append(std::move(app_policy));
   }
-  AppId app_id = observer.Wait();
+  webapps::AppId app_id = observer.Wait();
 
-  AppId sync_app_id = test::InstallDummyWebApp(
+  webapps::AppId sync_app_id = test::InstallDummyWebApp(
       profile(), "app from sync", GURL("https://example.com/install"),
       webapps::WebappInstallSource::SYNC);
   EXPECT_EQ(app_id, sync_app_id);
@@ -104,13 +104,13 @@ TEST_F(UninstallAllUserInstalledWebAppsCommandTest, RemovesUserInstallSources) {
 
 TEST_F(UninstallAllUserInstalledWebAppsCommandTest,
        UninstallsUserInstalledWebApps) {
-  AppId app_id1 = test::InstallDummyWebApp(
+  webapps::AppId app_id1 = test::InstallDummyWebApp(
       profile(), "app from browser", GURL("https://example1.com"),
       webapps::WebappInstallSource::AUTOMATIC_PROMPT_BROWSER_TAB);
 
-  AppId app_id2 = test::InstallDummyWebApp(profile(), "app from sync",
-                                           GURL("https://example2.com"),
-                                           webapps::WebappInstallSource::SYNC);
+  webapps::AppId app_id2 = test::InstallDummyWebApp(
+      profile(), "app from sync", GURL("https://example2.com"),
+      webapps::WebappInstallSource::SYNC);
 
   base::test::TestFuture<const absl::optional<std::string>&> future;
   provider()->command_manager().ScheduleCommand(
@@ -149,9 +149,9 @@ TEST_F(UninstallAllUserInstalledWebAppsCommandWithIconManagerTest,
   EXPECT_CALL(*file_utils_wrapper_, WriteFile)
       .WillRepeatedly(testing::ReturnArg<2>());
 
-  AppId app_id = test::InstallDummyWebApp(profile(), "app from sync",
-                                          GURL("https://example.com"),
-                                          webapps::WebappInstallSource::SYNC);
+  webapps::AppId app_id = test::InstallDummyWebApp(
+      profile(), "app from sync", GURL("https://example.com"),
+      webapps::WebappInstallSource::SYNC);
 
   EXPECT_CALL(*file_utils_wrapper_, DeleteFileRecursively)
       .WillOnce(testing::Return(false));

@@ -22,7 +22,7 @@ class AppBrowserControllerBrowserTest : public WebAppControllerBrowserTest {
 IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest,
                        HighContrastThemeColor) {
   const GURL start_url("https://app.site.test/example/index");
-  const AppId app_id = InstallPWA(start_url);
+  const webapps::AppId app_id = InstallPWA(start_url);
 
   Browser* browser = web_app::LaunchWebAppBrowser(profile(), app_id);
 

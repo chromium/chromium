@@ -94,7 +94,7 @@ class ShareToTargetBrowserTest : public WebAppControllerBrowserTest {
     app_id_ = web_app::InstallWebAppFromManifest(browser(), app_url);
   }
 
-  const AppId& app_id() const { return app_id_; }
+  const webapps::AppId& app_id() const { return app_id_; }
 
  private:
   // WebAppControllerBrowserTest:
@@ -104,7 +104,7 @@ class ShareToTargetBrowserTest : public WebAppControllerBrowserTest {
     WebAppControllerBrowserTest::TearDownOnMainThread();
   }
 
-  static void CloseAppWindows(const AppId& app_id) {
+  static void CloseAppWindows(const webapps::AppId& app_id) {
     for (auto* browser : *BrowserList::GetInstance()) {
       const AppBrowserController* app_controller = browser->app_controller();
       if (app_controller && app_controller->app_id() == app_id)
@@ -117,7 +117,7 @@ class ShareToTargetBrowserTest : public WebAppControllerBrowserTest {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
-  AppId app_id_;
+  webapps::AppId app_id_;
 };
 
 IN_PROC_BROWSER_TEST_F(ShareToTargetBrowserTest, ShareToPosterWebApp) {

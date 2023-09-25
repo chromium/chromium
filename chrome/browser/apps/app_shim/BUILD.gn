@@ -39,6 +39,7 @@ source_set("app_shim") {
     "//components/crx_file",
     "//components/remote_cocoa/browser",
     "//components/version_info",
+    "//components/webapps/common",
     "//content/public/browser",
     "//content/public/common",
     "//services/preferences/public/cpp:cpp",

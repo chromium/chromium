@@ -16,11 +16,11 @@
 #include "chrome/browser/ui/web_applications/web_app_metrics.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
 
 namespace web_app {
@@ -82,8 +82,8 @@ class WebAppIconHealthChecksBrowserTest : public WebAppControllerBrowserTest {
                     expected_result.has_missing_icon_file);
   }
 
-  AppId InstallWebAppAndAwaitAppService(const char* path) {
-    AppId app_id =
+  webapps::AppId InstallWebAppAndAwaitAppService(const char* path) {
+    webapps::AppId app_id =
         InstallWebAppFromPage(browser(), embedded_test_server()->GetURL(path));
     apps::AppReadinessWaiter(profile(), app_id, apps::Readiness::kReady)
         .Await();
@@ -97,7 +97,8 @@ IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest, HealthyIcons) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest, EmptyAppName) {
-  AppId app_id = InstallWebAppAndAwaitAppService("/web_apps/basic.html");
+  webapps::AppId app_id =
+      InstallWebAppAndAwaitAppService("/web_apps/basic.html");
 
   // Delete the app name (some users may have corrupt web app databases with
   // missing app names).
@@ -116,7 +117,8 @@ IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest, EmptyAppName) {
 
 IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest,
                        MissingDownloadedIconSizes) {
-  AppId app_id = InstallWebAppAndAwaitAppService("/web_apps/basic.html");
+  webapps::AppId app_id =
+      InstallWebAppAndAwaitAppService("/web_apps/basic.html");
   CreateUpdateScope()->UpdateApp(app_id)->SetDownloadedIconSizes(
       IconPurpose::ANY, {});
   RunIconChecksWithMetricExpectations(
@@ -131,7 +133,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest, GeneratedIcon) {
 
 IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest,
                        GeneratedIconFlagFalseNegative) {
-  AppId app_id = InstallWebAppAndAwaitAppService(
+  webapps::AppId app_id = InstallWebAppAndAwaitAppService(
       "/web_apps/get_manifest.html?no_icons.json");
   // In https://crbug.com/1317922 manifest update erroneously set
   // is_generated_icon to false.
@@ -143,7 +145,8 @@ IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest,
                        PRE_DeletedIconFiles) {
-  AppId app_id = InstallWebAppAndAwaitAppService("/web_apps/basic.html");
+  webapps::AppId app_id =
+      InstallWebAppAndAwaitAppService("/web_apps/basic.html");
   RunIconChecksWithMetricExpectations({});
 
   // Delete the icons.
@@ -161,7 +164,8 @@ IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest, DeletedIconFiles) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest, PRE_EmptyIconFile) {
-  AppId app_id = InstallWebAppAndAwaitAppService("/web_apps/basic.html");
+  webapps::AppId app_id =
+      InstallWebAppAndAwaitAppService("/web_apps/basic.html");
   RunIconChecksWithMetricExpectations({});
 
   // Empty the contents of one of the icon files.
@@ -187,7 +191,8 @@ IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest, EmptyIconFile) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest, PRE_CorruptIconFile) {
-  AppId app_id = InstallWebAppAndAwaitAppService("/web_apps/basic.html");
+  webapps::AppId app_id =
+      InstallWebAppAndAwaitAppService("/web_apps/basic.html");
   RunIconChecksWithMetricExpectations({});
 
   // Corrupt the contents of one of the icon files.

@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/document_service.h"
 #include "third_party/blink/public/mojom/subapps/sub_apps_service.mojom.h"
 
@@ -64,24 +65,25 @@ class SubAppsServiceImpl
 
   void CollectInstallData(
       int add_call_id,
-      std::vector<std::pair<ManifestId, GURL>> requested_installs);
+      std::vector<std::pair<webapps::ManifestId, GURL>> requested_installs);
   void ProcessInstallData(
       int add_call_id,
-      std::vector<std::pair<ManifestId, std::unique_ptr<WebAppInstallInfo>>>
-          install_data);
+      std::vector<std::pair<webapps::ManifestId,
+                            std::unique_ptr<WebAppInstallInfo>>> install_data);
   void ScheduleSubAppInstalls(int add_call_id);
   void ProcessDialogResponse(int add_call_id, bool dialog_accepted);
   void FinishAddCallOrShowInstallDialog(int add_call_id);
   void FinishAddCall(
       int add_call_id,
-      std::vector<std::tuple<ManifestId, AppId, webapps::InstallResultCode>>
-          install_results);
+      std::vector<std::tuple<webapps::ManifestId,
+                             webapps::AppId,
+                             webapps::InstallResultCode>> install_results);
 
   void RemoveSubApp(
       const std::string& manifest_id_path,
       base::OnceCallback<void(blink::mojom::SubAppsServiceRemoveResultPtr)>
           remove_barrier_callback,
-      const AppId* calling_app_id);
+      const webapps::AppId* calling_app_id);
   void NotifyUninstall(
       RemoveCallback result_callback,
       std::vector<blink::mojom::SubAppsServiceRemoveResultPtr> remove_results);

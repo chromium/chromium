@@ -1255,7 +1255,7 @@ void SetWebAppProductIconFields(const WebAppInstallInfo& web_app_info,
 }
 
 void MaybeDisableOsIntegration(const WebAppRegistrar* app_registrar,
-                               const AppId& app_id,
+                               const webapps::AppId& app_id,
                                InstallOsHooksOptions* options) {
 #if !BUILDFLAG(IS_CHROMEOS)  // Deeper OS integration is expected on ChromeOS.
   DCHECK(app_registrar);

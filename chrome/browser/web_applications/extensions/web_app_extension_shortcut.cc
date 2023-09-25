@@ -24,12 +24,12 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_registry.h"
@@ -82,14 +82,15 @@ void UpdateAllShortcutsForShortcutInfo(
       std::move(shortcut_info), std::move(callback));
 }
 
-using AppCallbackMap = base::flat_map<AppId, std::vector<base::OnceClosure>>;
+using AppCallbackMap =
+    base::flat_map<webapps::AppId, std::vector<base::OnceClosure>>;
 AppCallbackMap& GetShortcutsDeletedCallbackMap() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   static base::NoDestructor<AppCallbackMap> map;
   return *map;
 }
 
-void ShortcutsDeleted(const AppId& app_id, bool /*shortcut_deleted*/) {
+void ShortcutsDeleted(const webapps::AppId& app_id, bool /*shortcut_deleted*/) {
   auto& map = GetShortcutsDeletedCallbackMap();
   auto it = map.find(app_id);
   if (it == map.end())
@@ -284,7 +285,7 @@ void DeleteAllShortcuts(Profile* profile, const extensions::Extension* app) {
       base::BindOnce(ShortcutsDeleted, app->id()));
 }
 
-void WaitForExtensionShortcutsDeleted(const AppId& app_id,
+void WaitForExtensionShortcutsDeleted(const webapps::AppId& app_id,
                                       base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   GetShortcutsDeletedCallbackMap()[app_id].push_back(std::move(callback));

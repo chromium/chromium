@@ -62,7 +62,7 @@ void WebApps::Shutdown() {
   }
 }
 
-const WebApp* WebApps::GetWebApp(const AppId& app_id) const {
+const WebApp* WebApps::GetWebApp(const webapps::AppId& app_id) const {
   DCHECK(provider_);
   return provider_->registrar_unsafe().GetAppById(app_id);
 }
@@ -342,7 +342,7 @@ void WebApps::InitWebApps() {
                               /*should_notify_initialized=*/true);
 }
 
-void WebApps::OnGetAppSize(AppId app_id,
+void WebApps::OnGetAppSize(webapps::AppId app_id,
                            absl::optional<ComputeAppSizeCommand::Size> size) {
   auto app = std::make_unique<apps::App>(app_type(), app_id);
   if (!size.has_value()) {

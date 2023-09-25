@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "components/webapps/common/web_app_id.h"
 
 #if BUILDFLAG(IS_WIN)
 class ShellLinkItem;
@@ -101,7 +102,7 @@ class OsIntegrationTestOverride
   // Creates a tuple of app_id to protocols and adds it to the vector
   // of registered protocols. There can be multiple entries for the same
   // app_id.
-  virtual void RegisterProtocolSchemes(const AppId& app_id,
+  virtual void RegisterProtocolSchemes(const webapps::AppId& app_id,
                                        std::vector<std::string> protocols) = 0;
 
  protected:

@@ -306,7 +306,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL start_url = embedded_test_server()->GetURL("/web_apps/basic.html");
-  AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
+  webapps::AppId app_id =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
   EXPECT_FALSE(registrar().IsInstalled(app_id));
 
   constexpr char kAppConfigTemplate[] =
@@ -344,7 +345,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
       "/web_apps/query_params_in_start_url.html");
   GURL start_url = embedded_test_server()->GetURL(
       "/web_apps/query_params_in_start_url.html?query_params=in&start=url");
-  AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
+  webapps::AppId app_id =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
   EXPECT_FALSE(registrar().IsInstalled(app_id));
 
   constexpr char kAppConfigTemplate[] =
@@ -380,7 +382,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   GURL start_url = embedded_test_server()->GetURL("/web_apps/basic.html");
   GURL launch_url = embedded_test_server()->GetURL(
       "/web_apps/basic.html?more=than&one=query&param");
-  AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
+  webapps::AppId app_id =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
   EXPECT_FALSE(registrar().IsInstalled(app_id));
 
   constexpr char kAppConfigTemplate[] =
@@ -415,7 +418,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
       "/web_apps/query_params_in_start_url.html");
   GURL start_url = embedded_test_server()->GetURL(
       "/web_apps/query_params_in_start_url.html?query_params=in&start=url");
-  AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
+  webapps::AppId app_id =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
   EXPECT_FALSE(registrar().IsInstalled(app_id));
 
   constexpr char kAppConfigTemplate[] =
@@ -572,8 +576,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
       SyncPreinstalledAppConfig(GURL{kSimpleManifestStartUrl}, prev_app_config),
       webapps::InstallResultCode::kSuccessNewInstall);
 
-  AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt,
-                               GURL{kSimpleManifestStartUrl});
+  webapps::AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt,
+                                        GURL{kSimpleManifestStartUrl});
   EXPECT_TRUE(registrar().IsInstalled(app_id));
 }
 
@@ -592,8 +596,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
       SyncPreinstalledAppConfig(GURL{kSimpleManifestStartUrl}, next_app_config),
       webapps::InstallResultCode::kSuccessAlreadyInstalled);
 
-  AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt,
-                               GURL{kSimpleManifestStartUrl});
+  webapps::AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt,
+                                        GURL{kSimpleManifestStartUrl});
   EXPECT_TRUE(registrar().IsInstalled(app_id));
 }
 
@@ -611,8 +615,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                                       prev_app_config),
             webapps::InstallResultCode::kNotValidManifestForWebApp);
 
-  AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt,
-                               GURL{kNoManifestTestPageStartUrl});
+  webapps::AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt,
+                                        GURL{kNoManifestTestPageStartUrl});
   EXPECT_FALSE(registrar().IsInstalled(app_id));
 }
 
@@ -631,8 +635,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                                       next_app_config),
             absl::nullopt);
 
-  AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt,
-                               GURL{kNoManifestTestPageStartUrl});
+  webapps::AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt,
+                                        GURL{kNoManifestTestPageStartUrl});
   EXPECT_FALSE(registrar().IsInstalled(app_id));
 }
 
@@ -660,7 +664,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), app_config),
             webapps::InstallResultCode::kSuccessNewInstall);
 
-  AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, GetAppUrl());
+  webapps::AppId app_id =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, GetAppUrl());
   EXPECT_TRUE(registrar().IsInstalled(app_id));
 }
 
@@ -677,7 +682,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
 
   EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), app_config), absl::nullopt);
 
-  AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, GetAppUrl());
+  webapps::AppId app_id =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, GetAppUrl());
   EXPECT_FALSE(registrar().IsInstalled(app_id));
 }
 
@@ -691,7 +697,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
 
   std::string app_config = base::ReplaceStringPlaceholders(
       kFeatureNameOrInstalledConfig, {GetAppUrl().spec()}, nullptr);
-  AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, GetAppUrl());
+  webapps::AppId app_id =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, GetAppUrl());
 
   {
     base::AutoReset<bool> enable_feature =
@@ -723,7 +730,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
         "user_type": ["unmanaged"]
       })",
       {GetAppUrl().spec()}, nullptr);
-  AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, GetAppUrl());
+  webapps::AppId app_id =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, GetAppUrl());
 
   // Preinstall web app.
   {
@@ -793,7 +801,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
         "user_type": ["unmanaged"]
       })",
       {GetAppUrl().spec()}, nullptr);
-  AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, GetAppUrl());
+  webapps::AppId app_id =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, GetAppUrl());
   ASSERT_FALSE(registrar().IsInstalled(app_id));
   UserUninstalledPreinstalledWebAppPrefs prefs(profile()->GetPrefs());
   prefs.Add(app_id, {GetAppUrl()});
@@ -828,7 +837,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), app_config),
             webapps::InstallResultCode::kSuccessNewInstall);
 
-  AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, GetAppUrl());
+  webapps::AppId app_id =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, GetAppUrl());
   EXPECT_TRUE(registrar().IsInstalledByDefaultManagement(app_id));
 
   // Simulate the effects of https://crbug.com/1359205 by adding an installed
@@ -856,7 +866,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   constexpr char kAppStartUrl[] = "https://offline-site.com/start.html";
   constexpr char kAppScope[] = "https://offline-site.com/";
 
-  AppId app_id =
+  webapps::AppId app_id =
       GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(kAppStartUrl));
   EXPECT_FALSE(registrar().IsInstalled(app_id));
 
@@ -908,7 +918,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
       "/web_apps/offline-only-start-url-that-does-not-exist.html");
   GURL scope = embedded_test_server()->GetURL("/web_apps/");
 
-  AppId offline_app_id =
+  webapps::AppId offline_app_id =
       GenerateAppId(/*manifest_id=*/absl::nullopt, offline_start_url);
   EXPECT_FALSE(registrar().IsInstalled(offline_app_id));
 
@@ -935,7 +945,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   EXPECT_FALSE(registrar().IsInstalled(offline_app_id));
 
   // basic.html's manifest start_url is basic.html.
-  AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, install_url);
+  webapps::AppId app_id =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, install_url);
   EXPECT_TRUE(registrar().IsInstalled(app_id));
   EXPECT_EQ(registrar().GetAppShortName(app_id), "Basic web app");
   EXPECT_EQ(registrar().GetAppStartUrl(app_id).spec(), install_url);
@@ -953,7 +964,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   constexpr char kAppStartUrl[] = "https://offline-site.com/start.html";
   constexpr char kAppScope[] = "https://offline-site.com/";
 
-  AppId app_id =
+  webapps::AppId app_id =
       GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(kAppStartUrl));
   EXPECT_FALSE(registrar().IsInstalled(app_id));
 
@@ -1006,7 +1017,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
       "/web_apps/offline-only-start-url-that-does-not-exist.html");
   GURL scope = embedded_test_server()->GetURL("/web_apps/");
 
-  AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
+  webapps::AppId app_id =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
   EXPECT_FALSE(registrar().IsInstalled(app_id));
 
   constexpr char kAppConfigTemplate[] =
@@ -1124,7 +1136,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest, OemInstalled) {
                                           {GetAppUrl().spec()}, nullptr)),
             webapps::InstallResultCode::kSuccessNewInstall);
 
-  AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, GetAppUrl());
+  webapps::AppId app_id =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, GetAppUrl());
   EXPECT_TRUE(registrar().WasInstalledByOem(app_id));
 
   // Wait for app service to see the newly installed app.
@@ -1176,7 +1189,8 @@ IN_PROC_BROWSER_TEST_F(
         "user_type": ["unmanaged"]
       })",
       {GetAppUrl().spec()}, nullptr);
-  AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, GetAppUrl());
+  webapps::AppId app_id =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, GetAppUrl());
   const auto& ignore_configs = manager().debug_info()->ignore_configs;
   constexpr char kErrorMessage[] =
       " ignore because the device does not have a built-in touchscreen with "
@@ -1214,7 +1228,8 @@ IN_PROC_BROWSER_TEST_F(
         "user_type": ["unmanaged"]
       })",
       {GetAppUrl().spec()}, nullptr);
-  AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, GetAppUrl());
+  webapps::AppId app_id =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, GetAppUrl());
 
   EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), manifest),
             webapps::InstallResultCode::kSuccessNewInstall);
@@ -1244,7 +1259,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
         "user_type": ["unmanaged"]
       })",
       {GetAppUrl().spec()}, nullptr);
-  AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, GetAppUrl());
+  webapps::AppId app_id =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, GetAppUrl());
 
   // Clear out the device list and re-initialize it after a delay. Web app
   // installation should wait for this to be ready.
@@ -1300,14 +1316,14 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
       kAppConfigTemplate, {preinstalled_app_start_url.spec()}, nullptr);
   EXPECT_EQ(SyncPreinstalledAppConfig(preinstalled_app_start_url, app_config),
             webapps::InstallResultCode::kSuccessOfflineOnlyInstall);
-  AppId preinstalled_app_id =
+  webapps::AppId preinstalled_app_id =
       GenerateAppId(/*manifest_id=*/absl::nullopt, preinstalled_app_start_url);
 
   // Install user app.
   auto install_info = std::make_unique<WebAppInstallInfo>();
   install_info->start_url = user_app_start_url;
   install_info->title = u"Test user app";
-  AppId user_app_id =
+  webapps::AppId user_app_id =
       web_app::test::InstallWebApp(profile(), std::move(install_info));
 
   // Put apps in app list folder.
@@ -1345,7 +1361,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   GURL start_url = install_url;
   GURL scope = embedded_test_server()->GetURL("/web_apps/");
 
-  const AppId app_id = InstallWebAppFromPage(browser(), install_url);
+  const webapps::AppId app_id = InstallWebAppFromPage(browser(), install_url);
 
   const WebApp* web_app = registrar().GetAppById(app_id);
   ASSERT_TRUE(web_app);

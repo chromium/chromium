@@ -174,9 +174,9 @@ class WebAppEngagementBrowserTest : public WebAppControllerBrowserTest {
     web_app_metrics->CountUserInstalledAppsForTesting();
   }
 
-  AppId InstallWebAppAndCountApps(
+  webapps::AppId InstallWebAppAndCountApps(
       std::unique_ptr<WebAppInstallInfo> web_app_info) {
-    AppId app_id = InstallWebApp(std::move(web_app_info));
+    webapps::AppId app_id = InstallWebApp(std::move(web_app_info));
     CountUserInstalledApps();
     return app_id;
   }
@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, AppInWindow) {
   web_app_info->start_url = example_url;
   web_app_info->scope = example_url;
   web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
-  AppId app_id = InstallWebAppAndCountApps(std::move(web_app_info));
+  webapps::AppId app_id = InstallWebAppAndCountApps(std::move(web_app_info));
 
   Browser* app_browser = LaunchWebAppBrowserAndWait(app_id);
   NavigateToURLAndWait(app_browser, example_url);
@@ -235,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, AppInTab) {
   web_app_info->start_url = example_url;
   web_app_info->scope = example_url;
   web_app_info->user_display_mode = mojom::UserDisplayMode::kBrowser;
-  AppId app_id = InstallWebAppAndCountApps(std::move(web_app_info));
+  webapps::AppId app_id = InstallWebAppAndCountApps(std::move(web_app_info));
 
   Browser* browser = LaunchBrowserForWebAppInTab(app_id);
   EXPECT_FALSE(browser->app_controller());
@@ -271,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, AppWithoutScope) {
   // the app is counted as installed via the Create Shortcut button.
   web_app_info->scope = GURL();
   web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
-  AppId app_id = InstallWebAppAndCountApps(std::move(web_app_info));
+  webapps::AppId app_id = InstallWebAppAndCountApps(std::move(web_app_info));
 
   Browser* browser = LaunchWebAppBrowserAndWait(app_id);
 
@@ -302,7 +302,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, TwoApps) {
   const GURL example_url2 =
       embedded_test_server()->GetURL("/banners/scope_a/page_1.html");
 
-  AppId app_id1, app_id2;
+  webapps::AppId app_id1, app_id2;
 
   // Install two apps.
   {
@@ -352,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, ManyUserApps) {
   // A small number of launches, to avoid timeouts.
   const int num_launches = 2;
 
-  std::vector<AppId> app_ids;
+  std::vector<webapps::AppId> app_ids;
 
   // Install apps.
   const std::string base_url =
@@ -363,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, ManyUserApps) {
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = url;
     web_app_info->scope = url;
-    AppId app_id = InstallWebAppAndCountApps(std::move(web_app_info));
+    webapps::AppId app_id = InstallWebAppAndCountApps(std::move(web_app_info));
     app_ids.push_back(app_id);
   }
 
@@ -408,7 +408,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, MAYBE_DefaultApp) {
   ASSERT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
             result_code_.value());
 
-  absl::optional<AppId> app_id = FindAppWithUrlInScope(example_url);
+  absl::optional<webapps::AppId> app_id = FindAppWithUrlInScope(example_url);
   ASSERT_TRUE(app_id);
   // TODO(ericwilligers): Assert app_id was installed by default.
 
@@ -443,7 +443,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, NavigateAwayFromAppTab) {
   web_app_info->start_url = start_url;
   web_app_info->scope = start_url;
   web_app_info->user_display_mode = mojom::UserDisplayMode::kBrowser;
-  AppId app_id = InstallWebAppAndCountApps(std::move(web_app_info));
+  webapps::AppId app_id = InstallWebAppAndCountApps(std::move(web_app_info));
 
   Browser* browser = LaunchBrowserForWebAppInTab(app_id);
   EXPECT_FALSE(browser->app_controller());
@@ -507,7 +507,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, CommandLineWindowByUrl) {
   auto result = ExternallyManagedAppManagerInstall(
       browser()->profile(), CreateInstallOptions(example_url));
   ASSERT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
-  absl::optional<AppId> app_id = FindAppWithUrlInScope(example_url);
+  absl::optional<webapps::AppId> app_id = FindAppWithUrlInScope(example_url);
   ASSERT_TRUE(app_id);
   content::CreateAndLoadWebContentsObserver app_loaded_observer;
 
@@ -563,7 +563,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest,
   auto result = ExternallyManagedAppManagerInstall(
       browser()->profile(), CreateInstallOptions(example_url));
   ASSERT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
-  absl::optional<AppId> app_id = FindAppWithUrlInScope(example_url);
+  absl::optional<webapps::AppId> app_id = FindAppWithUrlInScope(example_url);
   ASSERT_TRUE(app_id);
   content::CreateAndLoadWebContentsObserver app_loaded_observer;
 
@@ -616,7 +616,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, CommandLineTab) {
   auto result =
       ExternallyManagedAppManagerInstall(browser()->profile(), install_options);
   ASSERT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
-  absl::optional<AppId> app_id = FindAppWithUrlInScope(example_url);
+  absl::optional<webapps::AppId> app_id = FindAppWithUrlInScope(example_url);
   ASSERT_TRUE(app_id);
   content::CreateAndLoadWebContentsObserver app_loaded_observer;
 

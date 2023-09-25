@@ -50,7 +50,7 @@ ExternallyManagedAppManager::InstallResult::InstallResult() = default;
 
 ExternallyManagedAppManager::InstallResult::InstallResult(
     webapps::InstallResultCode code,
-    absl::optional<AppId> app_id,
+    absl::optional<webapps::AppId> app_id,
     bool did_uninstall_and_replace)
     : code(code),
       app_id(std::move(app_id)),
@@ -314,7 +314,7 @@ void ExternallyManagedAppManager::MaybeStartNextOnLockAcquired(
     const ExternalInstallOptions& install_options =
         front->task->install_options();
 
-    absl::optional<AppId> app_id =
+    absl::optional<webapps::AppId> app_id =
         lock.registrar().LookupExternalAppId(install_options.install_url);
     const bool is_placeholder_installed =
         app_id.has_value()

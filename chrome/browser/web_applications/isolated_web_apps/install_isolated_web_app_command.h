@@ -29,6 +29,7 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_logging.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
@@ -169,7 +170,7 @@ class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
       WebAppInstallInfo install_info);
 
   void FinalizeInstall(WebAppInstallInfo info);
-  void OnFinalizeInstall(const AppId& unused_app_id,
+  void OnFinalizeInstall(const webapps::AppId& unused_app_id,
                          webapps::InstallResultCode install_result_code,
                          OsHooksErrors unused_os_hooks_errors);
 

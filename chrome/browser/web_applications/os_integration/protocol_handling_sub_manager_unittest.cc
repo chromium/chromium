@@ -90,7 +90,7 @@ class ProtocolHandlingSubManagerTestBase : public WebAppTest {
     WebAppTest::TearDown();
   }
 
-  web_app::AppId InstallWebAppWithProtocolHandlers(
+  webapps::AppId InstallWebAppWithProtocolHandlers(
       const std::vector<apps::ProtocolHandlerInfo>& protocol_handlers) {
     std::unique_ptr<WebAppInstallInfo> info =
         std::make_unique<WebAppInstallInfo>();
@@ -98,7 +98,8 @@ class ProtocolHandlingSubManagerTestBase : public WebAppTest {
     info->title = u"Test App";
     info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
     info->protocol_handlers = protocol_handlers;
-    base::test::TestFuture<const AppId&, webapps::InstallResultCode> result;
+    base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+        result;
     // InstallFromInfoWithParams is used instead of InstallFromInfo, because
     // InstallFromInfo doesn't register OS integration.
     provider().scheduler().InstallFromInfoWithParams(
@@ -108,10 +109,10 @@ class ProtocolHandlingSubManagerTestBase : public WebAppTest {
     bool success = result.Wait();
     EXPECT_TRUE(success);
     if (!success)
-      return AppId();
+      return webapps::AppId();
     EXPECT_EQ(result.Get<webapps::InstallResultCode>(),
               webapps::InstallResultCode::kSuccessNewInstall);
-    return result.Get<AppId>();
+    return result.Get<webapps::AppId>();
   }
 
  protected:
@@ -154,7 +155,8 @@ TEST_P(ProtocolHandlingConfigureTest, ConfigureOnlyProtocolHandler) {
   protocol_handler.url = GURL(handler_url);
   protocol_handler.protocol = "web+test";
 
-  const AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
+  const webapps::AppId app_id =
+      InstallWebAppWithProtocolHandlers({protocol_handler});
 
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
@@ -182,7 +184,8 @@ TEST_P(ProtocolHandlingConfigureTest, UninstalledAppDoesNotConfigure) {
   protocol_handler.url = GURL(handler_url);
   protocol_handler.protocol = "web+test";
 
-  const AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
+  const webapps::AppId app_id =
+      InstallWebAppWithProtocolHandlers({protocol_handler});
   test::UninstallAllWebApps(profile());
 
   auto state =
@@ -203,7 +206,7 @@ TEST_P(ProtocolHandlingConfigureTest, ConfigureProtocolHandlerDisallowed) {
   protocol_handler2.url = GURL(handler_url2);
   protocol_handler2.protocol = "web+test+protocol";
 
-  const AppId app_id =
+  const webapps::AppId app_id =
       InstallWebAppWithProtocolHandlers({protocol_handler1, protocol_handler2});
   {
     base::test::TestFuture<void> disallowed_future;
@@ -263,7 +266,7 @@ class ProtocolHandlingExecuteTest
 
 #if BUILDFLAG(IS_MAC)
   std::vector<std::string> GetAppShimRegisteredProtocolHandlers(
-      const AppId& app_id) {
+      const webapps::AppId& app_id) {
     std::vector<std::string> protocol_schemes;
     for (const auto& [file_path, handler] :
          AppShimRegistry::Get()->GetHandlersForApp(app_id)) {
@@ -293,7 +296,8 @@ TEST_P(ProtocolHandlingExecuteTest, Register) {
       std::string(kWebAppUrl.spec()) + "/testing=%s";
   protocol_handler.url = GURL(handler_url);
   protocol_handler.protocol = "web+test";
-  const AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
+  const webapps::AppId app_id =
+      InstallWebAppWithProtocolHandlers({protocol_handler});
 
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
@@ -333,7 +337,8 @@ TEST_P(ProtocolHandlingExecuteTest, Unregister) {
       std::string(kWebAppUrl.spec()) + "/testing=%s";
   protocol_handler.url = GURL(handler_url);
   protocol_handler.protocol = "web+test";
-  const AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
+  const webapps::AppId app_id =
+      InstallWebAppWithProtocolHandlers({protocol_handler});
   test::UninstallAllWebApps(profile());
 
   auto state =
@@ -369,7 +374,7 @@ TEST_P(ProtocolHandlingExecuteTest, UpdateHandlers) {
   protocol_handler_disapproved.url = GURL(handler_url2);
   protocol_handler_disapproved.protocol = "web+test+protocol";
 
-  const AppId app_id = InstallWebAppWithProtocolHandlers(
+  const webapps::AppId app_id = InstallWebAppWithProtocolHandlers(
       {protocol_handler_approved, protocol_handler_disapproved});
   {
     base::test::TestFuture<void> disallowed_future;
@@ -433,7 +438,8 @@ TEST_P(ProtocolHandlingExecuteTest, DataEqualNoOp) {
   protocol_handler.url = GURL(handler_url);
   protocol_handler.protocol = "web+test";
 
-  const AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
+  const webapps::AppId app_id =
+      InstallWebAppWithProtocolHandlers({protocol_handler});
   {
     base::test::TestFuture<void> future;
     provider().scheduler().UpdateProtocolHandlerUserApproval(
@@ -474,9 +480,9 @@ TEST_P(ProtocolHandlingExecuteTest, DataEqualNoOp) {
 }
 
 TEST_P(ProtocolHandlingExecuteTest, MultipleSynchronizeEmptyData) {
-  const AppId app_id1 = InstallWebAppWithProtocolHandlers(
+  const webapps::AppId app_id1 = InstallWebAppWithProtocolHandlers(
       std::vector<apps::ProtocolHandlerInfo>());
-  const AppId app_id2 = InstallWebAppWithProtocolHandlers(
+  const webapps::AppId app_id2 = InstallWebAppWithProtocolHandlers(
       std::vector<apps::ProtocolHandlerInfo>());
   ASSERT_THAT(app_id1, testing::Eq(app_id2));
 
@@ -512,7 +518,8 @@ TEST_P(ProtocolHandlingExecuteTest, ForceUnregisterAppInRegistry) {
       std::string(kWebAppUrl.spec()) + "/testing=%s";
   protocol_handler.url = GURL(handler_url);
   protocol_handler.protocol = "web+test";
-  const AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
+  const webapps::AppId app_id =
+      InstallWebAppWithProtocolHandlers({protocol_handler});
 
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
@@ -555,7 +562,8 @@ TEST_P(ProtocolHandlingExecuteTest, ForceUnregisterAppNotInRegistry) {
       std::string(kWebAppUrl.spec()) + "/testing=%s";
   protocol_handler.url = GURL(handler_url);
   protocol_handler.protocol = "web+test";
-  const AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
+  const webapps::AppId app_id =
+      InstallWebAppWithProtocolHandlers({protocol_handler});
 
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);

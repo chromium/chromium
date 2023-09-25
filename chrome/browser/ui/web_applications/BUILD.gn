@@ -91,6 +91,7 @@ source_set("browser_tests") {
     "//components/services/app_service",
     "//components/site_engagement/content",
     "//components/webapps/browser",
+    "//components/webapps/common",
   ]
 
   if (is_chromeos_ash) {

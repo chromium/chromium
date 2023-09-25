@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace web_app {
 
@@ -24,7 +25,7 @@ void UpdateApps(WebAppSyncBridge& sync_bridge,
                 const std::vector<std::unique_ptr<WebApp>>& apps_server_state);
 
 void DeleteApps(WebAppSyncBridge& sync_bridge,
-                const std::vector<AppId>& app_ids_to_delete);
+                const std::vector<webapps::AppId>& app_ids_to_delete);
 
 }  // namespace sync_bridge_test_utils
 

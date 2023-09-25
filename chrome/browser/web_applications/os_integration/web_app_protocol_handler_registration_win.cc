@@ -41,7 +41,7 @@ namespace web_app {
 namespace {
 
 void RegisterProtocolHandlersWithOSInBackground(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     const std::wstring& app_name,
     const base::FilePath profile_path,
     std::vector<apps::ProtocolHandlerInfo> protocol_handlers,
@@ -98,7 +98,7 @@ void RegisterProtocolHandlersWithOSInBackground(
 }
 
 void UnregisterProtocolHandlersWithOsInBackground(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     const base::FilePath& profile_path) {
   base::AssertLongCPUWorkAllowed();
 
@@ -133,7 +133,7 @@ void UnregisterProtocolHandlersWithOsInBackground(
 }  // namespace
 
 void RegisterProtocolHandlersWithOs(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     const std::string& app_name,
     const base::FilePath profile_path,
     std::vector<apps::ProtocolHandlerInfo> protocol_handlers,
@@ -158,7 +158,7 @@ void RegisterProtocolHandlersWithOs(
                      std::move(callback)));
 }
 
-void UnregisterProtocolHandlersWithOs(const AppId& app_id,
+void UnregisterProtocolHandlersWithOs(const webapps::AppId& app_id,
                                       const base::FilePath profile_path,
                                       ResultCallback callback) {
   scoped_refptr<OsIntegrationTestOverride> os_override =

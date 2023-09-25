@@ -34,6 +34,7 @@
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/permission.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -168,7 +169,7 @@ class WebAppPublisherHelper : public WebAppRegistrarObserver,
   // Constructs an App with only the information required to identify an
   // uninstallation.
   apps::AppPtr ConvertUninstalledWebApp(
-      const AppId& app_id,
+      const webapps::AppId& app_id,
       webapps::WebappUninstallSource uninstall_source);
 
   // Constructs an App with only the information required to update
@@ -300,7 +301,7 @@ class WebAppPublisherHelper : public WebAppRegistrarObserver,
 
     ~BadgeManagerDelegate() override;
 
-    void OnAppBadgeUpdated(const AppId& app_id) override;
+    void OnAppBadgeUpdated(const webapps::AppId& app_id) override;
 
    private:
     base::WeakPtr<WebAppPublisherHelper> publisher_helper_;
@@ -308,30 +309,31 @@ class WebAppPublisherHelper : public WebAppRegistrarObserver,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // WebAppInstallManagerObserver:
-  void OnWebAppInstalled(const AppId& app_id) override;
-  void OnWebAppInstalledWithOsHooks(const AppId& app_id) override;
-  void OnWebAppManifestUpdated(const AppId& app_id) override;
+  void OnWebAppInstalled(const webapps::AppId& app_id) override;
+  void OnWebAppInstalledWithOsHooks(const webapps::AppId& app_id) override;
+  void OnWebAppManifestUpdated(const webapps::AppId& app_id) override;
   void OnWebAppUninstalled(
-      const AppId& app_id,
+      const webapps::AppId& app_id,
       webapps::WebappUninstallSource uninstall_source) override;
   void OnWebAppInstallManagerDestroyed() override;
 
   // WebAppRegistrarObserver:
   void OnAppRegistrarDestroyed() override;
-  void OnWebAppFileHandlerApprovalStateChanged(const AppId& app_id) override;
+  void OnWebAppFileHandlerApprovalStateChanged(
+      const webapps::AppId& app_id) override;
   void OnWebAppLastLaunchTimeChanged(
       const std::string& app_id,
       const base::Time& last_launch_time) override;
   void OnWebAppUserDisplayModeChanged(
-      const AppId& app_id,
+      const webapps::AppId& app_id,
       mojom::UserDisplayMode user_display_mode) override;
   void OnWebAppRunOnOsLoginModeChanged(
-      const AppId& app_id,
+      const webapps::AppId& app_id,
       RunOnOsLoginMode run_on_os_login_mode) override;
   void OnWebAppSettingsPolicyChanged() override;
 
 #if BUILDFLAG(IS_CHROMEOS)
-  void OnWebAppDisabledStateChanged(const AppId& app_id,
+  void OnWebAppDisabledStateChanged(const webapps::AppId& app_id,
                                     bool is_disabled) override;
   void OnWebAppsDisabledModeChanged() override;
 
@@ -364,7 +366,7 @@ class WebAppPublisherHelper : public WebAppRegistrarObserver,
 
   apps::IconEffects GetIconEffects(const WebApp* web_app);
 
-  const WebApp* GetWebApp(const AppId& app_id) const;
+  const WebApp* GetWebApp(const webapps::AppId& app_id) const;
 
   // Returns all the WebContents instances launched via `callback`. This value
   // may be empty if the launch fails. There may be more than one `WebContents`

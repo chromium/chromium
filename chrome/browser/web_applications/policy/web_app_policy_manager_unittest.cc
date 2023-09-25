@@ -381,7 +381,7 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
         base::BindLambdaForTesting(
             [this](const ExternalInstallOptions& install_options) {
               const GURL& install_url = install_options.install_url;
-              const AppId app_id = GenerateAppId(
+              const webapps::AppId app_id = GenerateAppId(
                   /*manifest_id=*/absl::nullopt, install_url);
               if (app_registrar().GetAppById(app_id) &&
                   install_options.force_reinstall) {
@@ -406,7 +406,7 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
         base::BindLambdaForTesting(
             [this](const GURL& app_url,
                    ExternalInstallSource install_source) -> bool {
-              absl::optional<AppId> app_id =
+              absl::optional<webapps::AppId> app_id =
                   app_registrar().LookupExternalAppId(app_url);
               if (app_id) {
                 UnregisterApp(*app_id);
@@ -527,7 +527,7 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
     update->CreateApp(std::move(web_app));
   }
 
-  void UnregisterApp(const AppId& app_id) {
+  void UnregisterApp(const webapps::AppId& app_id) {
     ScopedRegistryUpdate update = sync_bridge().BeginUpdate();
     update->DeleteApp(app_id);
   }
@@ -934,7 +934,7 @@ TEST_P(WebAppPolicyManagerTest, ForceInstallAppWithCustomAppNameRefresh) {
 
   EXPECT_EQ(install_requests, expected_install_options_list);
 
-  base::flat_map<AppId, base::flat_set<GURL>> apps =
+  base::flat_map<webapps::AppId, base::flat_set<GURL>> apps =
       app_registrar().GetExternallyInstalledApps(
           ExternalInstallSource::kExternalPolicy);
   EXPECT_EQ(1u, apps.size());
@@ -1217,7 +1217,7 @@ TEST_P(WebAppPolicyManagerTest, SayRefreshTwoTimesQuickly) {
             externally_managed_app_manager().uninstall_requests());
 
   // There should be exactly 1 app remaining.
-  base::flat_map<AppId, base::flat_set<GURL>> apps =
+  base::flat_map<webapps::AppId, base::flat_set<GURL>> apps =
       app_registrar().GetExternallyInstalledApps(
           ExternalInstallSource::kExternalPolicy);
   EXPECT_EQ(1u, apps.size());
@@ -1571,7 +1571,7 @@ class WebAppPolicyForceUnregistrationTest : public WebAppTest {
     return bitmap;
   }
 
-  web_app::AppId InstallWebAppWithShortcuts(
+  webapps::AppId InstallWebAppWithShortcuts(
       std::map<SquareSizePx, SkBitmap> icon_map,
       const GURL manifest_id) {
     std::unique_ptr<WebAppInstallInfo> info =
@@ -1583,7 +1583,8 @@ class WebAppPolicyForceUnregistrationTest : public WebAppTest {
     info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
     info->icon_bitmaps.any = std::move(icon_map);
     info->manifest_id = manifest_id;
-    base::test::TestFuture<const AppId&, webapps::InstallResultCode> result;
+    base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+        result;
     provider().scheduler().InstallFromInfoWithParams(
         std::move(info), /*overwrite_existing_manifest_fields=*/true,
         webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
@@ -1591,11 +1592,11 @@ class WebAppPolicyForceUnregistrationTest : public WebAppTest {
     bool success = result.Wait();
     EXPECT_TRUE(success);
     if (!success) {
-      return AppId();
+      return webapps::AppId();
     }
     EXPECT_EQ(result.Get<webapps::InstallResultCode>(),
               webapps::InstallResultCode::kSuccessNewInstall);
-    return result.Get<AppId>();
+    return result.Get<webapps::AppId>();
   }
 
   bool IsOsIntegrationAllowed() {
@@ -1625,7 +1626,7 @@ TEST_F(WebAppPolicyForceUnregistrationTest,
   icon_map[icon_size::k24] = CreateSolidColorIcon(icon_size::k24, SK_ColorRED);
   icon_map[icon_size::k128] =
       CreateSolidColorIcon(icon_size::k128, SK_ColorGREEN);
-  const AppId& app_id =
+  const webapps::AppId& app_id =
       InstallWebAppWithShortcuts(std::move(icon_map), kWebAppUrl);
   const std::string& app_name =
       provider().registrar_unsafe().GetAppShortName(app_id);
@@ -1661,7 +1662,7 @@ TEST_F(WebAppPolicyForceUnregistrationTest,
   icon_map[icon_size::k24] = CreateSolidColorIcon(icon_size::k24, SK_ColorRED);
   icon_map[icon_size::k128] =
       CreateSolidColorIcon(icon_size::k128, SK_ColorGREEN);
-  const AppId& app_id =
+  const webapps::AppId& app_id =
       InstallWebAppWithShortcuts(std::move(icon_map), kWebAppUrl);
   const std::string& app_name =
       provider().registrar_unsafe().GetAppShortName(app_id);
@@ -1697,7 +1698,7 @@ TEST_F(WebAppPolicyForceUnregistrationTest,
   icon_map[icon_size::k24] = CreateSolidColorIcon(icon_size::k24, SK_ColorRED);
   icon_map[icon_size::k128] =
       CreateSolidColorIcon(icon_size::k128, SK_ColorGREEN);
-  const AppId& app_id =
+  const webapps::AppId& app_id =
       InstallWebAppWithShortcuts(std::move(icon_map), kWebAppUrl);
   const std::string& app_name =
       provider().registrar_unsafe().GetAppShortName(app_id);
@@ -1733,7 +1734,7 @@ TEST_F(WebAppPolicyForceUnregistrationTest,
   icon_map[icon_size::k24] = CreateSolidColorIcon(icon_size::k24, SK_ColorRED);
   icon_map[icon_size::k128] =
       CreateSolidColorIcon(icon_size::k128, SK_ColorGREEN);
-  const AppId& app_id =
+  const webapps::AppId& app_id =
       InstallWebAppWithShortcuts(std::move(icon_map), kWebAppUrl);
   const std::string& app_name =
       provider().registrar_unsafe().GetAppShortName(app_id);
@@ -1790,7 +1791,7 @@ TEST_F(WebAppPolicyForceUnregistrationTest,
   icon_map1[icon_size::k24] = CreateSolidColorIcon(icon_size::k24, SK_ColorRED);
   icon_map1[icon_size::k128] =
       CreateSolidColorIcon(icon_size::k128, SK_ColorGREEN);
-  const AppId& app_id1 =
+  const webapps::AppId& app_id1 =
       InstallWebAppWithShortcuts(std::move(icon_map1), kWebAppUrl);
   const std::string& app_name1 =
       provider().registrar_unsafe().GetAppShortName(app_id1);
@@ -1804,7 +1805,7 @@ TEST_F(WebAppPolicyForceUnregistrationTest,
       CreateSolidColorIcon(icon_size::k24, SK_ColorGREEN);
   icon_map2[icon_size::k128] =
       CreateSolidColorIcon(icon_size::k128, SK_ColorCYAN);
-  const AppId& app_id2 =
+  const webapps::AppId& app_id2 =
       InstallWebAppWithShortcuts(std::move(icon_map2), manifest_id2);
   const std::string& app_name2 =
       provider().registrar_unsafe().GetAppShortName(app_id2);
@@ -1846,7 +1847,7 @@ TEST_F(WebAppPolicyForceUnregistrationTest,
   icon_map1[icon_size::k24] = CreateSolidColorIcon(icon_size::k24, SK_ColorRED);
   icon_map1[icon_size::k128] =
       CreateSolidColorIcon(icon_size::k128, SK_ColorGREEN);
-  const AppId& app_id1 =
+  const webapps::AppId& app_id1 =
       InstallWebAppWithShortcuts(std::move(icon_map1), kWebAppUrl);
   const std::string& app_name1 =
       provider().registrar_unsafe().GetAppShortName(app_id1);
@@ -1860,7 +1861,7 @@ TEST_F(WebAppPolicyForceUnregistrationTest,
       CreateSolidColorIcon(icon_size::k24, SK_ColorGREEN);
   icon_map2[icon_size::k128] =
       CreateSolidColorIcon(icon_size::k128, SK_ColorCYAN);
-  const AppId& app_id2 =
+  const webapps::AppId& app_id2 =
       InstallWebAppWithShortcuts(std::move(icon_map2), manifest_id2);
   const std::string& app_name2 =
       provider().registrar_unsafe().GetAppShortName(app_id2);

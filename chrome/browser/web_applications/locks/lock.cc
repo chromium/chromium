@@ -28,7 +28,7 @@ std::string LockTypeToString(LockDescription::Type type) {
   }
 }
 
-LockDescription::LockDescription(base::flat_set<AppId> app_ids,
+LockDescription::LockDescription(base::flat_set<webapps::AppId> app_ids,
                                  LockDescription::Type type)
     : app_ids_(std::move(app_ids)), type_(type) {}
 LockDescription::~LockDescription() = default;

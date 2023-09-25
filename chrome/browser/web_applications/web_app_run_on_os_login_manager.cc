@@ -54,7 +54,7 @@ void WebAppRunOnOsLoginManager::Start() {
 void WebAppRunOnOsLoginManager::RunAppsOnOsLogin(AllAppsLock& lock) {
   std::vector<std::string> app_names;
 
-  for (const AppId& app_id : lock.registrar().GetAppIds()) {
+  for (const webapps::AppId& app_id : lock.registrar().GetAppIds()) {
     if (!IsRunOnOsLoginModeEnabledForAutostart(
             lock.registrar().GetAppRunOnOsLoginMode(app_id).value)) {
       continue;

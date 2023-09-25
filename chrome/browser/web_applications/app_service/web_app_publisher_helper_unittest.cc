@@ -103,7 +103,7 @@ TEST_F(WebAppPublisherHelperTest, CreateWebApp_Minimal) {
   info->title = base::UTF8ToUTF16(name);
   info->start_url = start_url;
 
-  AppId app_id = test::InstallWebApp(profile(), std::move(info));
+  webapps::AppId app_id = test::InstallWebApp(profile(), std::move(info));
   const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
   apps::AppPtr app = publisher_->CreateWebApp(web_app);
 
@@ -127,7 +127,7 @@ TEST_F(WebAppPublisherHelperTest, CreateWebApp_Random) {
 
     // Unable to install a randomly generated web app struct, so just copy
     // necessary fields into the installation flow.
-    AppId app_id = test::InstallWebApp(profile(), std::move(info));
+    webapps::AppId app_id = test::InstallWebApp(profile(), std::move(info));
     EXPECT_EQ(app_id, random_app->app_id());
     apps::AppPtr app = publisher_->CreateWebApp(random_app.get());
 
@@ -147,7 +147,7 @@ TEST_F(WebAppPublisherHelperTest, CreateWebApp_NoteTaking) {
   info->start_url = start_url;
   info->note_taking_new_note_url = new_note_url;
 
-  AppId app_id = test::InstallWebApp(profile(), std::move(info));
+  webapps::AppId app_id = test::InstallWebApp(profile(), std::move(info));
   const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
   apps::AppPtr app = publisher_->CreateWebApp(web_app);
 
@@ -164,7 +164,7 @@ TEST_F(WebAppPublisherHelperTest, CreateWebApp_LockScreen_DisabledByFlag) {
   info->start_url = start_url;
   info->lock_screen_start_url = lock_screen_url;
 
-  AppId app_id = test::InstallWebApp(profile(), std::move(info));
+  webapps::AppId app_id = test::InstallWebApp(profile(), std::move(info));
   const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
   apps::AppPtr app = publisher_->CreateWebApp(web_app);
 
@@ -346,7 +346,7 @@ TEST_F(WebAppPublisherHelperTest_WebLockScreenApi, CreateWebApp_LockScreen) {
   info->start_url = start_url;
   info->lock_screen_start_url = lock_screen_url;
 
-  AppId app_id = test::InstallWebApp(profile(), std::move(info));
+  webapps::AppId app_id = test::InstallWebApp(profile(), std::move(info));
   const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
   apps::AppPtr app = publisher_->CreateWebApp(web_app);
 

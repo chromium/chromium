@@ -16,8 +16,8 @@ namespace web_app {
 namespace {
 
 #if DCHECK_IS_ON()
-bool IsAnyIdEmpty(const std::set<AppId>& app_ids) {
-  for (const AppId& id : app_ids) {
+bool IsAnyIdEmpty(const std::set<webapps::AppId>& app_ids) {
+  for (const webapps::AppId& id : app_ids) {
     if (id.empty())
       return true;
   }
@@ -71,31 +71,31 @@ void WebAppInstallManagerObserverAdapter::SetWebAppSourceRemovedDelegate(
 }
 
 void WebAppInstallManagerObserverAdapter::OnWebAppInstalled(
-    const AppId& app_id) {
+    const webapps::AppId& app_id) {
   if (app_installed_delegate_)
     app_installed_delegate_.Run(app_id);
 }
 
 void WebAppInstallManagerObserverAdapter::OnWebAppInstalledWithOsHooks(
-    const AppId& app_id) {
+    const webapps::AppId& app_id) {
   if (app_installed_with_os_hooks_delegate_)
     app_installed_with_os_hooks_delegate_.Run(app_id);
 }
 
 void WebAppInstallManagerObserverAdapter::OnWebAppManifestUpdated(
-    const AppId& app_id) {
+    const webapps::AppId& app_id) {
   if (app_manifest_updated_delegate_)
     app_manifest_updated_delegate_.Run(app_id);
 }
 
 void WebAppInstallManagerObserverAdapter::OnWebAppWillBeUninstalled(
-    const AppId& app_id) {
+    const webapps::AppId& app_id) {
   if (app_will_be_uninstalled_delegate_)
     app_will_be_uninstalled_delegate_.Run(app_id);
 }
 
 void WebAppInstallManagerObserverAdapter::OnWebAppUninstalled(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     webapps::WebappUninstallSource uninstall_source) {
   if (app_uninstalled_delegate_)
     app_uninstalled_delegate_.Run(app_id);
@@ -106,14 +106,14 @@ void WebAppInstallManagerObserverAdapter::OnWebAppInstallManagerDestroyed() {
 }
 
 void WebAppInstallManagerObserverAdapter::OnWebAppSourceRemoved(
-    const AppId& app_id) {
+    const webapps::AppId& app_id) {
   if (app_source_removed_delegate_) {
     app_source_removed_delegate_.Run(app_id);
   }
 }
 
 void WebAppInstallManagerObserverAdapter::SignalRunLoopAndStoreAppId(
-    const AppId& app_id) {
+    const webapps::AppId& app_id) {
   if (!is_listening_)
     return;
   optional_app_ids_.erase(app_id);
@@ -166,13 +166,13 @@ void WebAppTestRegistryObserverAdapter::OnWebAppsWillBeUpdatedFromSync(
 }
 
 void WebAppTestRegistryObserverAdapter::OnWebAppProfileWillBeDeleted(
-    const AppId& app_id) {
+    const webapps::AppId& app_id) {
   if (app_profile_will_be_deleted_delegate_)
     app_profile_will_be_deleted_delegate_.Run(app_id);
 }
 
 void WebAppTestRegistryObserverAdapter::OnWebAppLastBadgingTimeChanged(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     const base::Time& time) {
   if (app_last_badging_time_changed_delegate_)
     app_last_badging_time_changed_delegate_.Run(app_id, time);
@@ -188,7 +188,7 @@ void WebAppTestRegistryObserverAdapter::OnAppRegistrarDestroyed() {
 }
 
 void WebAppTestRegistryObserverAdapter::SignalRunLoopAndStoreAppId(
-    const AppId& app_id) {
+    const webapps::AppId& app_id) {
   if (!is_listening_)
     return;
   optional_app_ids_.erase(app_id);
@@ -205,7 +205,7 @@ WebAppTestInstallObserver::WebAppTestInstallObserver(Profile* profile)
 WebAppTestInstallObserver::~WebAppTestInstallObserver() = default;
 
 void WebAppTestInstallObserver::BeginListening(
-    const std::set<AppId>& optional_app_ids) {
+    const std::set<webapps::AppId>& optional_app_ids) {
   optional_app_ids_ = optional_app_ids;
 #if DCHECK_IS_ON()
   DCHECK(!IsAnyIdEmpty(optional_app_ids_)) << "Cannot listen for empty ids.";
@@ -216,15 +216,15 @@ void WebAppTestInstallObserver::BeginListening(
       weak_factory_.GetWeakPtr());
 }
 
-AppId WebAppTestInstallObserver::Wait() {
+webapps::AppId WebAppTestInstallObserver::Wait() {
   wait_loop_.Run();
   return last_app_id_;
 }
 
-AppId WebAppTestInstallObserver::BeginListeningAndWait(
-    const std::set<AppId>& optional_app_ids) {
+webapps::AppId WebAppTestInstallObserver::BeginListeningAndWait(
+    const std::set<webapps::AppId>& optional_app_ids) {
   BeginListening(optional_app_ids);
-  AppId id = Wait();
+  webapps::AppId id = Wait();
   return id;
 }
 
@@ -235,7 +235,7 @@ WebAppTestInstallWithOsHooksObserver::~WebAppTestInstallWithOsHooksObserver() =
     default;
 
 void WebAppTestInstallWithOsHooksObserver::BeginListening(
-    const std::set<AppId>& optional_app_ids) {
+    const std::set<webapps::AppId>& optional_app_ids) {
   optional_app_ids_ = optional_app_ids;
 #if DCHECK_IS_ON()
   DCHECK(!IsAnyIdEmpty(optional_app_ids_)) << "Cannot listen for empty ids.";
@@ -246,15 +246,15 @@ void WebAppTestInstallWithOsHooksObserver::BeginListening(
       weak_factory_.GetWeakPtr());
 }
 
-AppId WebAppTestInstallWithOsHooksObserver::Wait() {
+webapps::AppId WebAppTestInstallWithOsHooksObserver::Wait() {
   wait_loop_.Run();
   return last_app_id_;
 }
 
-AppId WebAppTestInstallWithOsHooksObserver::BeginListeningAndWait(
-    const std::set<AppId>& optional_app_ids) {
+webapps::AppId WebAppTestInstallWithOsHooksObserver::BeginListeningAndWait(
+    const std::set<webapps::AppId>& optional_app_ids) {
   BeginListening(optional_app_ids);
-  AppId id = Wait();
+  webapps::AppId id = Wait();
   return id;
 }
 
@@ -265,7 +265,7 @@ WebAppTestManifestUpdatedObserver::~WebAppTestManifestUpdatedObserver() =
     default;
 
 void WebAppTestManifestUpdatedObserver::BeginListening(
-    const std::set<AppId>& optional_app_ids) {
+    const std::set<webapps::AppId>& optional_app_ids) {
   optional_app_ids_ = optional_app_ids;
 #if DCHECK_IS_ON()
   DCHECK(!IsAnyIdEmpty(optional_app_ids_)) << "Cannot listen for empty ids.";
@@ -276,15 +276,15 @@ void WebAppTestManifestUpdatedObserver::BeginListening(
       weak_factory_.GetWeakPtr());
 }
 
-AppId WebAppTestManifestUpdatedObserver::Wait() {
+webapps::AppId WebAppTestManifestUpdatedObserver::Wait() {
   wait_loop_.Run();
   return last_app_id_;
 }
 
-AppId WebAppTestManifestUpdatedObserver::BeginListeningAndWait(
-    const std::set<AppId>& optional_app_ids) {
+webapps::AppId WebAppTestManifestUpdatedObserver::BeginListeningAndWait(
+    const std::set<webapps::AppId>& optional_app_ids) {
   BeginListening(optional_app_ids);
-  AppId id = Wait();
+  webapps::AppId id = Wait();
   return id;
 }
 
@@ -294,7 +294,7 @@ WebAppTestUninstallObserver::WebAppTestUninstallObserver(Profile* profile)
 WebAppTestUninstallObserver::~WebAppTestUninstallObserver() = default;
 
 void WebAppTestUninstallObserver::BeginListening(
-    const std::set<AppId>& optional_app_ids) {
+    const std::set<webapps::AppId>& optional_app_ids) {
   optional_app_ids_ = optional_app_ids;
 #if DCHECK_IS_ON()
   DCHECK(!IsAnyIdEmpty(optional_app_ids_)) << "Cannot listen for empty ids.";
@@ -305,15 +305,15 @@ void WebAppTestUninstallObserver::BeginListening(
       weak_factory_.GetWeakPtr());
 }
 
-AppId WebAppTestUninstallObserver::Wait() {
+webapps::AppId WebAppTestUninstallObserver::Wait() {
   wait_loop_.Run();
   return last_app_id_;
 }
 
-AppId WebAppTestUninstallObserver::BeginListeningAndWait(
-    const std::set<AppId>& optional_app_ids) {
+webapps::AppId WebAppTestUninstallObserver::BeginListeningAndWait(
+    const std::set<webapps::AppId>& optional_app_ids) {
   BeginListening(optional_app_ids);
-  AppId id = Wait();
+  webapps::AppId id = Wait();
   return id;
 }
 

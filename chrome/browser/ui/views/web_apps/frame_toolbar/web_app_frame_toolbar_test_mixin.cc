@@ -34,7 +34,7 @@ void WebAppFrameToolbarTestMixin::InstallAndLaunchWebApp(
   web_app_info->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
 
-  web_app::AppId app_id =
+  webapps::AppId app_id =
       web_app::test::InstallWebApp(browser->profile(), std::move(web_app_info));
   content::TestNavigationObserver navigation_observer(start_url);
   navigation_observer.StartWatchingNewWebContents();

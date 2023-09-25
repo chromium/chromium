@@ -14,6 +14,7 @@
 #include "base/sequence_checker.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -28,10 +29,10 @@ class WebAppLockManager;
 
 enum class CommandResult { kSuccess, kFailure, kShutdown };
 
-// Each command has a queue id, which is either an `AppId` corresponding to a
-// specific web app, or `absl::nullopt` for the global queue. The global queue
-// is independent (does not block) of other queues.
-using WebAppCommandQueueId = absl::optional<AppId>;
+// Each command has a queue id, which is either an `webapps::AppId`
+// corresponding to a specific web app, or `absl::nullopt` for the global queue.
+// The global queue is independent (does not block) of other queues.
+using WebAppCommandQueueId = absl::optional<webapps::AppId>;
 
 // Encapsulates code that reads or modifies the WebAppProvider system. All
 // reading or writing to the system should occur in a WebAppCommand to ensure

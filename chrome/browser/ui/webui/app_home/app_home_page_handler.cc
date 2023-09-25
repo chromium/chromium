@@ -87,12 +87,12 @@ bool IsYoutubeExtension(const std::string& extension_id) {
 void AcquireAppLockAndScheduleCallback(
     const std::string& operation_name,
     web_app::WebAppProvider& provider,
-    const web_app::AppId& app_id,
+    const webapps::AppId& app_id,
     base::OnceCallback<void(web_app::AppLock& lock)> callback) {
   provider.scheduler().ScheduleCallbackWithLock<web_app::AppLock>(
       operation_name,
       std::make_unique<web_app::AppLockDescription,
-                       base::flat_set<web_app::AppId>>({app_id}),
+                       base::flat_set<webapps::AppId>>({app_id}),
       std::move(callback));
 }
 
@@ -304,7 +304,7 @@ void AppHomePageHandler::SetUserDisplayMode(
   AcquireAppLockAndScheduleCallback(
       "AppHomePageHandler::SetWebAppDisplayMode", *web_app_provider_, app_id,
       base::BindOnce(
-          [](const web_app::AppId& app_id,
+          [](const webapps::AppId& app_id,
              web_app::mojom::UserDisplayMode user_display_mode,
              web_app::AppLock& lock) {
             if (lock.registrar().IsLocallyInstalled(app_id)) {
@@ -317,7 +317,7 @@ void AppHomePageHandler::SetUserDisplayMode(
 }
 
 app_home::mojom::AppInfoPtr AppHomePageHandler::GetApp(
-    const web_app::AppId& app_id) {
+    const webapps::AppId& app_id) {
   std::vector<app_home::mojom::AppInfoPtr> all_apps;
   FillWebAppInfoList(&all_apps);
   FillExtensionInfoList(&all_apps);
@@ -367,7 +367,7 @@ void AppHomePageHandler::CreateExtensionAppShortcut(
 }
 
 app_home::mojom::AppInfoPtr AppHomePageHandler::CreateAppInfoPtrFromWebApp(
-    const web_app::AppId& app_id) {
+    const webapps::AppId& app_id) {
   auto& registrar = web_app_provider_->registrar_unsafe();
 
   auto app_info = app_home::mojom::AppInfo::New();
@@ -457,7 +457,7 @@ void AppHomePageHandler::FillWebAppInfoList(
     std::vector<app_home::mojom::AppInfoPtr>* result) {
   web_app::WebAppRegistrar& registrar = web_app_provider_->registrar_unsafe();
 
-  for (const web_app::AppId& web_app_id : registrar.GetAppIds()) {
+  for (const webapps::AppId& web_app_id : registrar.GetAppIds()) {
     if (IsYoutubeExtension(web_app_id))
       continue;
     result->emplace_back(CreateAppInfoPtrFromWebApp(web_app_id));
@@ -572,13 +572,13 @@ void AppHomePageHandler::ExtensionRemoved(const Extension* extension) {
 }
 
 void AppHomePageHandler::OnWebAppWillBeUninstalled(
-    const web_app::AppId& app_id) {
+    const webapps::AppId& app_id) {
   auto app_info = app_home::mojom::AppInfo::New();
   app_info->id = app_id;
   page_->RemoveApp(std::move(app_info));
 }
 
-void AppHomePageHandler::OnWebAppInstalled(const web_app::AppId& app_id) {
+void AppHomePageHandler::OnWebAppInstalled(const webapps::AppId& app_id) {
   page_->AddApp(CreateAppInfoPtrFromWebApp(app_id));
 }
 
@@ -662,19 +662,19 @@ void AppHomePageHandler::GetDeprecationLinkString(
 }
 
 void AppHomePageHandler::OnWebAppRunOnOsLoginModeChanged(
-    const web_app::AppId& app_id,
+    const webapps::AppId& app_id,
     web_app::RunOnOsLoginMode run_on_os_login_mode) {
   page_->AddApp(CreateAppInfoPtrFromWebApp(app_id));
 }
 
 void AppHomePageHandler::OnWebAppUserDisplayModeChanged(
-    const web_app::AppId& app_id,
+    const webapps::AppId& app_id,
     web_app::mojom::UserDisplayMode user_display_mode) {
   page_->AddApp(CreateAppInfoPtrFromWebApp(app_id));
 }
 
 void AppHomePageHandler::OnWebAppInstalledWithOsHooks(
-    const web_app::AppId& app_id) {
+    const webapps::AppId& app_id) {
   page_->AddApp(CreateAppInfoPtrFromWebApp(app_id));
 }
 

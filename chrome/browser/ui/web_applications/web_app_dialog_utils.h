@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "components/webapps/common/web_app_id.h"
 
 class Browser;
 class Profile;
@@ -34,7 +35,7 @@ bool CanCreateWebApp(const Browser* browser);
 bool CanPopOutWebApp(Profile* profile);
 
 using WebAppInstalledCallback =
-    base::OnceCallback<void(const AppId& app_id,
+    base::OnceCallback<void(const webapps::AppId& app_id,
                             webapps::InstallResultCode code)>;
 
 // Initiates user install of a WebApp for the current page.

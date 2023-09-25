@@ -25,7 +25,7 @@ namespace web_app {
 
 // static
 std::unique_ptr<RunOnOsLoginCommand> RunOnOsLoginCommand::CreateForSetLoginMode(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     RunOnOsLoginMode login_mode,
     base::OnceClosure callback) {
   return base::WrapUnique(new RunOnOsLoginCommand(
@@ -35,7 +35,7 @@ std::unique_ptr<RunOnOsLoginCommand> RunOnOsLoginCommand::CreateForSetLoginMode(
 
 // static
 std::unique_ptr<RunOnOsLoginCommand>
-RunOnOsLoginCommand::CreateForSyncLoginMode(const AppId& app_id,
+RunOnOsLoginCommand::CreateForSyncLoginMode(const webapps::AppId& app_id,
                                             base::OnceClosure callback) {
   return base::WrapUnique(new RunOnOsLoginCommand(
       app_id,
@@ -44,7 +44,7 @@ RunOnOsLoginCommand::CreateForSyncLoginMode(const AppId& app_id,
 }
 
 RunOnOsLoginCommand::RunOnOsLoginCommand(
-    AppId app_id,
+    webapps::AppId app_id,
     absl::optional<RunOnOsLoginMode> login_mode,
     RunOnOsLoginAction set_or_sync_mode,
     base::OnceClosure callback)

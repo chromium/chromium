@@ -20,7 +20,6 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
@@ -28,6 +27,7 @@
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/url_util.h"
@@ -67,7 +67,7 @@ InstallPreloadedVerifiedAppCommand::InstallPreloadedVerifiedAppCommand(
     GURL document_url,
     GURL manifest_url,
     std::string manifest_contents,
-    AppId expected_id,
+    webapps::AppId expected_id,
     OnceInstallCallback callback)
     : WebAppCommandTemplate<SharedWebContentsLock>(
           "InstallPreloadedVerifiedAppCommand"),
@@ -208,7 +208,8 @@ void InstallPreloadedVerifiedAppCommand::OnIconsRetrieved(
 
   PopulateOtherIcons(web_app_info_.get(), icons_map);
 
-  AppId app_id = GenerateAppIdFromManifestId(web_app_info_->manifest_id);
+  webapps::AppId app_id =
+      GenerateAppIdFromManifestId(web_app_info_->manifest_id);
 
   if (app_id != expected_id_) {
     Abort(CommandResult::kFailure,
@@ -240,7 +241,7 @@ void InstallPreloadedVerifiedAppCommand::OnAppLockAcquired(
 }
 
 void InstallPreloadedVerifiedAppCommand::OnInstallFinalized(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     webapps::InstallResultCode code,
     OsHooksErrors os_hooks_errors) {
   SignalCompletionAndSelfDestruct(
@@ -254,7 +255,8 @@ void InstallPreloadedVerifiedAppCommand::Abort(
     webapps::InstallResultCode code) {
   debug_value_.Set("error_code", base::ToString(code));
   SignalCompletionAndSelfDestruct(
-      result, base::BindOnce(std::move(install_callback_), AppId(), code));
+      result,
+      base::BindOnce(std::move(install_callback_), webapps::AppId(), code));
 }
 
 }  // namespace web_app

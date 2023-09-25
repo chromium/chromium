@@ -11,6 +11,7 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
@@ -27,7 +28,7 @@ class RemoveWebAppJob : public UninstallJob {
   // will be treated as a user uninstall.
   RemoveWebAppJob(webapps::WebappUninstallSource uninstall_source,
                   Profile& profile,
-                  AppId app_id,
+                  webapps::AppId app_id,
                   bool is_initial_request = true);
   ~RemoveWebAppJob() override;
 
@@ -49,7 +50,7 @@ class RemoveWebAppJob : public UninstallJob {
   webapps::WebappUninstallSource uninstall_source_;
   // `this` must be owned by `profile_`.
   raw_ref<Profile> profile_;
-  AppId app_id_;
+  webapps::AppId app_id_;
   bool is_initial_request_;
 
   // `this` must be started and run within the scope of a WebAppCommand's
@@ -66,7 +67,7 @@ class RemoveWebAppJob : public UninstallJob {
   bool has_isolated_storage_ = false;
   absl::optional<webapps::UninstallResultCode> primary_removal_result_;
 
-  std::vector<AppId> sub_apps_pending_removal_;
+  std::vector<webapps::AppId> sub_apps_pending_removal_;
   std::unique_ptr<RemoveInstallSourceJob> sub_job_;
   base::Value::Dict completed_sub_job_debug_dict_;
 

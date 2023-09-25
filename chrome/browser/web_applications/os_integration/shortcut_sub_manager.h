@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
@@ -31,28 +32,28 @@ class ShortcutSubManager : public OsIntegrationSubManager {
  public:
   ShortcutSubManager(Profile& profile, WebAppProvider& provider);
   ~ShortcutSubManager() override;
-  void Configure(const AppId& app_id,
+  void Configure(const webapps::AppId& app_id,
                  proto::WebAppOsIntegrationState& desired_state,
                  base::OnceClosure configure_done) override;
-  void Execute(const AppId& app_id,
+  void Execute(const webapps::AppId& app_id,
                const absl::optional<SynchronizeOsOptions>& synchronize_options,
                const proto::WebAppOsIntegrationState& desired_state,
                const proto::WebAppOsIntegrationState& current_state,
                base::OnceClosure callback) override;
-  void ForceUnregister(const AppId& app_id,
+  void ForceUnregister(const webapps::AppId& app_id,
                        base::OnceClosure callback) override;
 
  private:
-  void CreateShortcut(const AppId& app_id,
+  void CreateShortcut(const webapps::AppId& app_id,
                       absl::optional<SynchronizeOsOptions> synchronize_options,
                       base::OnceClosure on_complete,
                       std::unique_ptr<ShortcutInfo> shortcut_info);
-  void UpdateShortcut(const AppId& app_id,
+  void UpdateShortcut(const webapps::AppId& app_id,
                       absl::optional<SynchronizeOsOptions> synchronize_options,
                       const std::u16string& old_app_title,
                       base::OnceClosure on_complete,
                       std::unique_ptr<ShortcutInfo> shortcut_info);
-  void OnShortcutsDeleted(const AppId& app_id,
+  void OnShortcutsDeleted(const webapps::AppId& app_id,
                           base::OnceClosure final_callback,
                           bool success);
   void StoreIconDataFromDisk(proto::ShortcutDescription* shortcut,

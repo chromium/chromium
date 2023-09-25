@@ -38,7 +38,7 @@ GetIdentityUpdateDialogActionForTesting() {  // IN-TEST
 
 // static
 apps::AppLaunchParams WebAppUiManager::CreateAppLaunchParamsWithoutWindowConfig(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     const base::CommandLine& command_line,
     const base::FilePath& current_directory,
     const absl::optional<GURL>& url_handler_launch_url,
@@ -104,7 +104,7 @@ void WebAppUiManager::RemoveObserver(WebAppUiManagerObserver* observer) {
 }
 
 void WebAppUiManager::NotifyReadyToCommitNavigation(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     content::NavigationHandle* navigation_handle) {
   for (WebAppUiManagerObserver& observer : observers_)
     observer.OnReadyToCommitNavigation(app_id, navigation_handle);

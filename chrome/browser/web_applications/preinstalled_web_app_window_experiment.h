@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registrar_observer.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
+#include "components/webapps/common/web_app_id.h"
 
 class Profile;
 
@@ -76,7 +77,7 @@ class PreinstalledWebAppWindowExperiment
   // WebAppRegistrarObserver:
   void OnAppRegistrarDestroyed() override;
   void OnWebAppUserDisplayModeChanged(
-      const AppId& app_id,
+      const webapps::AppId& app_id,
       mojom::UserDisplayMode user_display_mode) override;
 
   // PreferredAppsListHandle::Observer:
@@ -89,7 +90,8 @@ class PreinstalledWebAppWindowExperiment
 
   // Set of apps for which the experiment called `SetSupportedLinksPreference`
   // and hasn't yet observed a resulting `OnPreferredAppChanged`.
-  base::flat_set<AppId> apps_that_experiment_setup_set_supported_links_;
+  base::flat_set<webapps::AppId>
+      apps_that_experiment_setup_set_supported_links_;
 
   const raw_ptr<Profile> profile_;
   base::OneShotEvent preinstalled_apps_installed_;

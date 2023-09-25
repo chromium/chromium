@@ -80,7 +80,7 @@ class FileHandlingSubManagerConfigureTest
     WebAppTest::TearDown();
   }
 
-  web_app::AppId InstallWebAppWithFileHandlers(
+  webapps::AppId InstallWebAppWithFileHandlers(
       apps::FileHandlers file_handlers) {
     std::unique_ptr<WebAppInstallInfo> info =
         std::make_unique<WebAppInstallInfo>();
@@ -88,7 +88,8 @@ class FileHandlingSubManagerConfigureTest
     info->title = u"Test App";
     info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
     info->file_handlers = file_handlers;
-    base::test::TestFuture<const AppId&, webapps::InstallResultCode> result;
+    base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+        result;
     // InstallFromInfoWithParams is used instead of InstallFromInfo, because
     // InstallFromInfo doesn't register OS integration.
     provider().scheduler().InstallFromInfoWithParams(
@@ -98,11 +99,11 @@ class FileHandlingSubManagerConfigureTest
     bool success = result.Wait();
     EXPECT_TRUE(success);
     if (!success) {
-      return AppId();
+      return webapps::AppId();
     }
     EXPECT_EQ(result.Get<webapps::InstallResultCode>(),
               webapps::InstallResultCode::kSuccessNewInstall);
-    return result.Get<AppId>();
+    return result.Get<webapps::AppId>();
   }
 
  protected:
@@ -166,7 +167,7 @@ TEST_P(FileHandlingSubManagerConfigureTest, InstallWithFilehandlers) {
     file_handlers.push_back(file_handler);
   }
 
-  const AppId& app_id = InstallWebAppWithFileHandlers(file_handlers);
+  const webapps::AppId& app_id = InstallWebAppWithFileHandlers(file_handlers);
 
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
@@ -229,7 +230,7 @@ TEST_P(FileHandlingSubManagerConfigureTest, UpdateUserChoiceDisallowed) {
     file_handlers.push_back(file_handler);
   }
 
-  const AppId& app_id = InstallWebAppWithFileHandlers(file_handlers);
+  const webapps::AppId& app_id = InstallWebAppWithFileHandlers(file_handlers);
 
   base::test::TestFuture<void> future;
   provider().scheduler().PersistFileHandlersUserChoice(
@@ -260,7 +261,7 @@ TEST_P(FileHandlingSubManagerConfigureTest, Uninstall) {
     file_handlers.push_back(file_handler);
   }
 
-  const AppId& app_id = InstallWebAppWithFileHandlers(file_handlers);
+  const webapps::AppId& app_id = InstallWebAppWithFileHandlers(file_handlers);
 
   test::UninstallAllWebApps(profile());
   auto state =
@@ -332,7 +333,7 @@ TEST_P(FileHandlingSubManagerConfigureAndExecuteTest, InstallWithFilehandlers) {
     file_handlers.push_back(file_handler);
   }
 
-  const AppId& app_id = InstallWebAppWithFileHandlers(file_handlers);
+  const webapps::AppId& app_id = InstallWebAppWithFileHandlers(file_handlers);
 
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
@@ -363,7 +364,7 @@ TEST_P(FileHandlingSubManagerConfigureAndExecuteTest,
     file_handlers.push_back(file_handler);
   }
 
-  const AppId& app_id = InstallWebAppWithFileHandlers(file_handlers);
+  const webapps::AppId& app_id = InstallWebAppWithFileHandlers(file_handlers);
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
@@ -413,7 +414,7 @@ TEST_P(FileHandlingSubManagerConfigureAndExecuteTest, Uninstall) {
     file_handlers.push_back(file_handler);
   }
 
-  const AppId& app_id = InstallWebAppWithFileHandlers(file_handlers);
+  const webapps::AppId& app_id = InstallWebAppWithFileHandlers(file_handlers);
 
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
@@ -458,7 +459,7 @@ TEST_P(FileHandlingSubManagerConfigureAndExecuteTest,
     file_handlers.push_back(file_handler);
   }
 
-  const AppId& app_id = InstallWebAppWithFileHandlers(file_handlers);
+  const webapps::AppId& app_id = InstallWebAppWithFileHandlers(file_handlers);
   const std::string& app_name =
       provider().registrar_unsafe().GetAppShortName(app_id);
 
@@ -504,7 +505,7 @@ TEST_P(FileHandlingSubManagerConfigureAndExecuteTest,
     file_handlers.push_back(file_handler);
   }
 
-  const AppId& app_id = InstallWebAppWithFileHandlers(file_handlers);
+  const webapps::AppId& app_id = InstallWebAppWithFileHandlers(file_handlers);
   const std::string& app_name =
       provider().registrar_unsafe().GetAppShortName(app_id);
 

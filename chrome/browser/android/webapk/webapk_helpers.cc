@@ -4,15 +4,15 @@
 
 #include "chrome/browser/android/webapk/webapk_helpers.h"
 
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/crx_file/id_util.h"
+#include "components/webapps/common/web_app_id.h"
 #include "crypto/sha2.h"
 #include "url/gurl.h"
 
 namespace webapk {
 
-web_app::AppId GenerateAppIdFromManifestId(
-    const web_app::ManifestId& manifest_id) {
+webapps::AppId GenerateAppIdFromManifestId(
+    const webapps::ManifestId& manifest_id) {
   // The app ID is hashed twice: here and in GenerateId.
   // The double-hashing is for historical reasons and it needs to stay
   // this way for backwards compatibility.

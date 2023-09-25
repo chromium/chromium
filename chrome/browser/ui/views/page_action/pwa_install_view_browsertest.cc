@@ -233,13 +233,13 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
     app_banner_manager_->WaitForInstallableCheckTearDown();
   }
 
-  web_app::AppId ExecutePwaInstallIcon() {
+  webapps::AppId ExecutePwaInstallIcon() {
     chrome::SetAutoAcceptPWAInstallConfirmationForTesting(true);
 
-    web_app::AppId app_id;
+    webapps::AppId app_id;
     base::RunLoop run_loop;
     web_app::SetInstalledCallbackForTesting(base::BindLambdaForTesting(
-        [&app_id, &run_loop](const web_app::AppId& installed_app_id,
+        [&app_id, &run_loop](const webapps::AppId& installed_app_id,
                              webapps::InstallResultCode code) {
           app_id = installed_app_id;
           run_loop.Quit();
@@ -254,7 +254,7 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
     return app_id;
   }
 
-  void UninstallWebApp(const web_app::AppId& app_id) {
+  void UninstallWebApp(const webapps::AppId& app_id) {
     base::RunLoop run_loop;
     web_app::WebAppProvider::GetForTest(browser()->profile())
         ->scheduler()
@@ -279,7 +279,7 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
 
     web_app::SetInstallBounceMetricTimeForTesting(test_time);
 
-    const web_app::AppId app_id = ExecutePwaInstallIcon();
+    const webapps::AppId app_id = ExecutePwaInstallIcon();
 
     web_app::SetInstallBounceMetricTimeForTesting(test_time + install_duration);
 
@@ -382,7 +382,7 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
                        PwaSetToOpenInTabIsInstallable) {
   bool installable = OpenTab(GetInstallableAppURL()).installable;
   ASSERT_TRUE(installable);
-  web_app::AppId app_id = ExecutePwaInstallIcon();
+  webapps::AppId app_id = ExecutePwaInstallIcon();
 
   // Change launch container to open in tab.
   web_app::WebAppProvider::GetForTest(browser()->profile())
@@ -588,7 +588,7 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
   GURL app_url = GetInstallableAppURL();
   bool installable = OpenTab(app_url).installable;
   ASSERT_TRUE(installable);
-  const web_app::AppId app_id = ExecutePwaInstallIcon();
+  const webapps::AppId app_id = ExecutePwaInstallIcon();
 
   // Use a new tab because installed app may have opened in new window.
   OpenTabResult result = OpenTab(app_url);

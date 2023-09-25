@@ -359,7 +359,8 @@ class ManifestUpdateCheckCommandTest : public WebAppTest {
     absl::optional<WebAppInstallInfo> new_install_info;
   };
 
-  RunResult RunCommandAndGetResult(const GURL& url, const AppId& app_id) {
+  RunResult RunCommandAndGetResult(const GURL& url,
+                                   const webapps::AppId& app_id) {
     base::test::TestFuture<ManifestUpdateCheckResult,
                            absl::optional<WebAppInstallInfo>>
         manifest_update_check_future;
@@ -375,7 +376,7 @@ class ManifestUpdateCheckCommandTest : public WebAppTest {
     return output_result;
   }
 
-  AppId InstallAppFromInfo(std::unique_ptr<WebAppInstallInfo> info) {
+  webapps::AppId InstallAppFromInfo(std::unique_ptr<WebAppInstallInfo> info) {
     return test::InstallWebApp(profile(), std::move(info));
   }
 
@@ -422,7 +423,7 @@ TEST_F(ManifestUpdateCheckCommandTest, Verify) {
   install_info->scope = app_url().GetWithoutFilename();
   install_info->display_mode = DisplayMode::kStandalone;
   install_info->title = u"Foo App";
-  AppId app_id = InstallAppFromInfo(std::move(install_info));
+  webapps::AppId app_id = InstallAppFromInfo(std::move(install_info));
 
   // Verify name changes are properly propagated.
   WebAppInstallInfo new_info;
@@ -444,7 +445,7 @@ TEST_F(ManifestUpdateCheckCommandTest, VerifySuccessfulScopeUpdate) {
   install_info->scope = app_url().GetWithoutFilename();
   install_info->display_mode = DisplayMode::kStandalone;
   install_info->title = u"Foo App";
-  AppId app_id = InstallAppFromInfo(std::move(install_info));
+  webapps::AppId app_id = InstallAppFromInfo(std::move(install_info));
 
   // Verify scope changes are properly propagated.
   WebAppInstallInfo new_info;
@@ -467,7 +468,7 @@ TEST_F(ManifestUpdateCheckCommandTest, VerifySuccessfulDisplayModeUpdate) {
   install_info->scope = app_url().GetWithoutFilename();
   install_info->display_mode = DisplayMode::kStandalone;
   install_info->title = u"Foo App";
-  AppId app_id = InstallAppFromInfo(std::move(install_info));
+  webapps::AppId app_id = InstallAppFromInfo(std::move(install_info));
 
   // Verify display mode changes are properly propagated.
   WebAppInstallInfo new_info;
@@ -490,7 +491,7 @@ TEST_F(ManifestUpdateCheckCommandTest, MultiDataUpdate) {
   install_info->scope = app_url().GetWithoutFilename();
   install_info->display_mode = DisplayMode::kStandalone;
   install_info->title = u"Foo App";
-  AppId app_id = InstallAppFromInfo(std::move(install_info));
+  webapps::AppId app_id = InstallAppFromInfo(std::move(install_info));
 
   // Verify display mode changes are properly propagated.
   WebAppInstallInfo new_info;
@@ -516,7 +517,7 @@ TEST_F(ManifestUpdateCheckCommandTest, NoAppUpdateNeeded) {
   install_info->scope = app_url().GetWithoutFilename();
   install_info->display_mode = DisplayMode::kStandalone;
   install_info->title = u"Foo App";
-  AppId app_id = InstallAppFromInfo(std::move(install_info));
+  webapps::AppId app_id = InstallAppFromInfo(std::move(install_info));
 
   // No fields are changed, so no updates should be needed.
   WebAppInstallInfo new_info;
@@ -537,7 +538,7 @@ TEST_F(ManifestUpdateCheckCommandTest, AppNotEligibleNoManifest) {
   install_info->scope = app_url().GetWithoutFilename();
   install_info->display_mode = DisplayMode::kStandalone;
   install_info->title = u"Foo App";
-  AppId app_id = InstallAppFromInfo(std::move(install_info));
+  webapps::AppId app_id = InstallAppFromInfo(std::move(install_info));
 
   WebAppInstallInfo new_info;
   new_info.start_url = app_url();
@@ -558,7 +559,7 @@ TEST_F(ManifestUpdateCheckCommandTest, AppIdMismatch) {
   install_info->scope = app_url().GetWithoutFilename();
   install_info->display_mode = DisplayMode::kStandalone;
   install_info->title = u"Foo App";
-  AppId app_id = InstallAppFromInfo(std::move(install_info));
+  webapps::AppId app_id = InstallAppFromInfo(std::move(install_info));
 
   // start_url changing should not move ahead with a manifest update as the
   // generated app_id is different.
@@ -581,7 +582,7 @@ TEST_F(ManifestUpdateCheckCommandTest, AppNameReverted) {
   install_info->display_mode = DisplayMode::kStandalone;
   install_info->theme_color = SK_ColorRED;
   install_info->title = u"Foo App";
-  AppId app_id = InstallAppFromInfo(
+  webapps::AppId app_id = InstallAppFromInfo(
       std::make_unique<WebAppInstallInfo>(install_info->Clone()));
 
   WebAppInstallInfo new_info = install_info->Clone();
@@ -606,7 +607,7 @@ TEST_F(ManifestUpdateCheckCommandTest, IconReadFromDiskFailed) {
   install_info->scope = app_url().GetWithoutFilename();
   install_info->display_mode = DisplayMode::kStandalone;
   install_info->title = u"Foo App";
-  AppId app_id = InstallAppFromInfo(std::move(install_info));
+  webapps::AppId app_id = InstallAppFromInfo(std::move(install_info));
 
   WebAppInstallInfo new_info;
   new_info.start_url = app_url();
@@ -636,7 +637,7 @@ TEST_F(ManifestUpdateCheckCommandTest, DoNotAcceptAppUpdateDialog) {
   install_info->scope = app_url().GetWithoutFilename();
   install_info->display_mode = DisplayMode::kStandalone;
   install_info->title = u"Foo App";
-  AppId app_id = InstallAppFromInfo(std::move(install_info));
+  webapps::AppId app_id = InstallAppFromInfo(std::move(install_info));
 
   WebAppInstallInfo new_info;
   new_info.start_url = app_url();
@@ -657,7 +658,7 @@ TEST_F(ManifestUpdateCheckCommandTest,
   install_info->scope = app_url().GetWithoutFilename();
   install_info->display_mode = DisplayMode::kStandalone;
   install_info->title = u"Foo App";
-  AppId app_id = InstallAppFromInfo(std::move(install_info));
+  webapps::AppId app_id = InstallAppFromInfo(std::move(install_info));
 
   WebAppInstallInfo new_info;
   new_info.start_url = app_url();
@@ -700,7 +701,7 @@ TEST_F(ManifestUpdateCheckCommandTest,
   install_info->scope = app_url().GetWithoutFilename();
   install_info->display_mode = DisplayMode::kStandalone;
   install_info->title = u"Foo App";
-  AppId app_id = InstallAppFromInfo(std::move(install_info));
+  webapps::AppId app_id = InstallAppFromInfo(std::move(install_info));
 
   WebAppInstallInfo new_info;
   new_info.start_url = app_url();

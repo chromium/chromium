@@ -15,6 +15,7 @@
 #include "base/values.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "components/webapps/common/web_app_id.h"
 
 class Profile;
 
@@ -36,14 +37,14 @@ class WebAppInstallManager {
   virtual void AddObserver(WebAppInstallManagerObserver* observer);
   virtual void RemoveObserver(WebAppInstallManagerObserver* observer);
 
-  virtual void NotifyWebAppInstalled(const AppId& app_id);
-  virtual void NotifyWebAppInstalledWithOsHooks(const AppId& app_id);
-  virtual void NotifyWebAppSourceRemoved(const AppId& app_id);
+  virtual void NotifyWebAppInstalled(const webapps::AppId& app_id);
+  virtual void NotifyWebAppInstalledWithOsHooks(const webapps::AppId& app_id);
+  virtual void NotifyWebAppSourceRemoved(const webapps::AppId& app_id);
   virtual void NotifyWebAppUninstalled(
-      const AppId& app_id,
+      const webapps::AppId& app_id,
       webapps::WebappUninstallSource uninstall_source);
-  virtual void NotifyWebAppManifestUpdated(const AppId& app_id);
-  virtual void NotifyWebAppWillBeUninstalled(const AppId& app_id);
+  virtual void NotifyWebAppManifestUpdated(const webapps::AppId& app_id);
+  virtual void NotifyWebAppWillBeUninstalled(const webapps::AppId& app_id);
   virtual void NotifyWebAppInstallManagerDestroyed();
 
   // Collects icon read/write errors (unbounded) if the |kRecordWebAppDebugInfo|

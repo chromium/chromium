@@ -11,7 +11,6 @@
 #include "chrome/browser/android/webapk/webapk_database.h"
 #include "chrome/browser/android/webapk/webapk_database_factory.h"
 #include "chrome/browser/android/webapk/webapk_helpers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/common/channel_info.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/report_unrecoverable_error.h"
@@ -21,6 +20,7 @@
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -41,7 +41,7 @@ std::unique_ptr<syncer::EntityData> CreateSyncEntityData(
 namespace {
 
 const WebApkProto* GetAppById(const Registry& registry,
-                              const web_app::AppId& app_id) {
+                              const webapps::AppId& app_id) {
   auto it = registry.find(app_id);
   if (it != registry.end()) {
     return it->second.get();
@@ -125,7 +125,7 @@ void WebApkSyncBridge::GetData(StorageKeyList storage_keys,
                                DataCallback callback) {
   auto data_batch = std::make_unique<syncer::MutableDataBatch>();
 
-  for (const web_app::AppId& app_id : storage_keys) {
+  for (const webapps::AppId& app_id : storage_keys) {
     const WebApkProto* app = GetAppById(registry_, app_id);
     if (app) {
       data_batch->Put(app_id, CreateSyncEntityData(*app));
@@ -139,7 +139,7 @@ void WebApkSyncBridge::GetAllDataForDebugging(DataCallback callback) {
   auto data_batch = std::make_unique<syncer::MutableDataBatch>();
 
   for (const auto& appListing : registry_) {
-    const web_app::AppId app_id = appListing.first;
+    const webapps::AppId app_id = appListing.first;
     const WebApkProto& app = *appListing.second;
     data_batch->Put(app_id, CreateSyncEntityData(app));
   }

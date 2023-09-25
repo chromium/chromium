@@ -11,13 +11,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -44,9 +44,9 @@ class WebAppPrefMigrationBrowserTest : public WebAppControllerBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppPrefMigrationBrowserTest, PRE_Migration) {
-  AppId app_id = test::InstallDummyWebApp(browser()->profile(), "Test app 1",
-                                          GURL("https://example.com/app_1"),
-                                          webapps::WebappInstallSource::ARC);
+  webapps::AppId app_id = test::InstallDummyWebApp(
+      browser()->profile(), "Test app 1", GURL("https://example.com/app_1"),
+      webapps::WebappInstallSource::ARC);
   // New installs should no longer write into prefs.
   EXPECT_FALSE(GetWebAppInstallSourceDeprecated(
       browser()->profile()->GetPrefs(), app_id));
@@ -74,7 +74,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPrefMigrationBrowserTest, PRE_Migration) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppPrefMigrationBrowserTest, Migration) {
-  AppId app_id = registrar().GetAppIds()[0];
+  webapps::AppId app_id = registrar().GetAppIds()[0];
   absl::optional<int> install_source = GetWebAppInstallSourceDeprecated(
       browser()->profile()->GetPrefs(), app_id);
   ASSERT_FALSE(install_source);

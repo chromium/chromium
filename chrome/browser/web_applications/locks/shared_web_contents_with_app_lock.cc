@@ -14,7 +14,8 @@
 namespace web_app {
 
 SharedWebContentsWithAppLockDescription::
-    SharedWebContentsWithAppLockDescription(base::flat_set<AppId> app_ids)
+    SharedWebContentsWithAppLockDescription(
+        base::flat_set<webapps::AppId> app_ids)
     : LockDescription(std::move(app_ids),
                       LockDescription::Type::kAppAndWebContents) {}
 SharedWebContentsWithAppLockDescription::

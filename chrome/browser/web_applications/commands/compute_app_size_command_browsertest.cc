@@ -21,7 +21,7 @@ IN_PROC_BROWSER_TEST_F(ComputeAppSizeCommandBrowserTest, RetrieveWebAppSize) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL app_url = embedded_test_server()->GetURL("/web_apps/basic.html");
-  AppId app_id = InstallWebAppFromPage(browser(), app_url);
+  webapps::AppId app_id = InstallWebAppFromPage(browser(), app_url);
   NavigateToURLAndWait(browser(), app_url);
 
   const char* script = R"(

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/web_apps/launch_app_user_choice_dialog_view.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "components/webapps/common/web_app_id.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "url/gurl.h"
 
@@ -29,7 +30,7 @@ class ProtocolHandlerLaunchDialogView : public LaunchAppUserChoiceDialogView {
   ProtocolHandlerLaunchDialogView(
       GURL url,
       Profile* profile,
-      const AppId& app_id,
+      const webapps::AppId& app_id,
       chrome::WebAppLaunchAcceptanceCallback close_callback);
 
   ProtocolHandlerLaunchDialogView(const ProtocolHandlerLaunchDialogView&) =

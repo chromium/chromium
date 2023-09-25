@@ -94,7 +94,7 @@ ui::WindowShowState DetermineWindowShowState(bool is_system_web_app) {
 
 Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
                                            Browser* target_browser,
-                                           const AppId& app_id,
+                                           const webapps::AppId& app_id,
                                            bool as_pinned_home_tab) {
   DCHECK(target_browser->is_type_app());
   Browser* source_browser = chrome::FindBrowserWithWebContents(contents);
@@ -153,8 +153,9 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-const ash::SystemWebAppDelegate* GetSystemWebAppDelegate(Browser* browser,
-                                                         const AppId& app_id) {
+const ash::SystemWebAppDelegate* GetSystemWebAppDelegate(
+    Browser* browser,
+    const webapps::AppId& app_id) {
   auto system_app_type =
       ash::GetSystemWebAppTypeForAppId(browser->profile(), app_id);
   if (system_app_type) {
@@ -169,7 +170,7 @@ const ash::SystemWebAppDelegate* GetSystemWebAppDelegate(Browser* browser,
 std::unique_ptr<AppBrowserController> CreateWebKioskBrowserController(
     Browser* browser,
     WebAppProvider* provider,
-    const AppId& app_id) {
+    const webapps::AppId& app_id) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const ash::SystemWebAppDelegate* system_app =
       GetSystemWebAppDelegate(browser, app_id);
@@ -185,7 +186,7 @@ std::unique_ptr<AppBrowserController> CreateWebKioskBrowserController(
 std::unique_ptr<AppBrowserController> CreateWebAppBrowserController(
     Browser* browser,
     WebAppProvider* provider,
-    const AppId& app_id) {
+    const webapps::AppId& app_id) {
   bool should_have_tab_strip_for_swa = false;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const ash::SystemWebAppDelegate* system_app =
@@ -206,7 +207,7 @@ std::unique_ptr<AppBrowserController> CreateWebAppBrowserController(
 
 std::unique_ptr<AppBrowserController> MaybeCreateHostedAppBrowserController(
     Browser* browser,
-    const AppId& app_id) {
+    const webapps::AppId& app_id) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   const extensions::Extension* extension =
       extensions::ExtensionRegistry::Get(browser->profile())
@@ -220,7 +221,7 @@ std::unique_ptr<AppBrowserController> MaybeCreateHostedAppBrowserController(
 
 }  // namespace
 
-absl::optional<AppId> GetWebAppForActiveTab(const Browser* browser) {
+absl::optional<webapps::AppId> GetWebAppForActiveTab(const Browser* browser) {
   const WebAppProvider* const provider =
       WebAppProvider::GetForWebApps(browser->profile());
   if (!provider)
@@ -256,7 +257,7 @@ void PrunePreScopeNavigationHistory(const GURL& scope,
 }
 
 Browser* ReparentWebAppForActiveTab(Browser* browser) {
-  absl::optional<AppId> app_id = GetWebAppForActiveTab(browser);
+  absl::optional<webapps::AppId> app_id = GetWebAppForActiveTab(browser);
   if (!app_id)
     return nullptr;
   return ReparentWebContentsIntoAppBrowser(
@@ -264,7 +265,7 @@ Browser* ReparentWebAppForActiveTab(Browser* browser) {
 }
 
 Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
-                                           const AppId& app_id) {
+                                           const webapps::AppId& app_id) {
   Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
   // Incognito tabs reparent correctly, but remain incognito without any
   // indication to the user, so disallow it.
@@ -339,7 +340,7 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
 }
 
 void SetWebContentsActingAsApp(content::WebContents* contents,
-                               const AppId& app_id) {
+                               const webapps::AppId& app_id) {
   auto* helper = WebAppTabHelper::FromWebContents(contents);
   helper->SetAppId(app_id);
   helper->set_acting_as_app(true);
@@ -367,7 +368,8 @@ void ClearAppPrefsForWebContents(content::WebContents* web_contents) {
 std::unique_ptr<AppBrowserController> MaybeCreateAppBrowserController(
     Browser* browser) {
   std::unique_ptr<AppBrowserController> controller;
-  const AppId app_id = GetAppIdFromApplicationName(browser->app_name());
+  const webapps::AppId app_id =
+      GetAppIdFromApplicationName(browser->app_name());
   auto* const provider =
       WebAppProvider::GetForLocalAppsUnchecked(browser->profile());
   if (provider && provider->registrar_unsafe().IsInstalled(app_id)) {
@@ -608,7 +610,7 @@ void RecordAppTabLaunchMetric(Profile* profile,
   }
 }
 
-void RecordLaunchMetrics(const AppId& app_id,
+void RecordLaunchMetrics(const webapps::AppId& app_id,
                          apps::LaunchContainer container,
                          apps::LaunchSource launch_source,
                          const GURL& launch_url,
@@ -636,7 +638,7 @@ void RecordLaunchMetrics(const AppId& app_id,
 }
 
 void UpdateLaunchStats(content::WebContents* web_contents,
-                       const AppId& app_id,
+                       const webapps::AppId& app_id,
                        const GURL& launch_url) {
   CHECK(web_contents != nullptr);
   Profile* profile =

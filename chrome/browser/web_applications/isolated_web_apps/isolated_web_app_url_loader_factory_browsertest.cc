@@ -25,7 +25,6 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -33,6 +32,7 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "components/web_package/web_bundle_builder.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -63,7 +63,7 @@ std::u16string MessagesAsString(
 }
 
 std::unique_ptr<WebApp> CreateWebApp(const GURL& start_url) {
-  AppId app_id = GenerateAppId(/*manifest_id=*/"", start_url);
+  webapps::AppId app_id = GenerateAppId(/*manifest_id=*/"", start_url);
   auto web_app = std::make_unique<WebApp>(app_id);
   web_app->SetStartUrl(start_url);
   web_app->SetName("Isolated Web App Example");
@@ -155,7 +155,7 @@ class IsolatedWebAppURLLoaderFactoryBrowserTest
   }
 
   Browser* CreateAppWindow() {
-    AppId app_id = GenerateAppId(/*manifest_id=*/"", kUrl);
+    webapps::AppId app_id = GenerateAppId(/*manifest_id=*/"", kUrl);
 
     return Browser::Create(Browser::CreateParams::CreateForApp(
         GenerateApplicationNameFromAppId(app_id),

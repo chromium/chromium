@@ -54,9 +54,9 @@ class FakeWebContentsManager : public WebContentsManager {
     FakePageState(FakePageState&&);
     FakePageState& operator=(FakePageState&&);
 
-    AppId PopulateWithBasicManifest(GURL install_url,
-                                    GURL manifest_url,
-                                    GURL start_url);
+    webapps::AppId PopulateWithBasicManifest(GURL install_url,
+                                             GURL manifest_url,
+                                             GURL start_url);
 
     // `WebAppUrlLoader::LoadUrl`:
     // If this is populated, then a redirection is always assumed. If the
@@ -116,7 +116,7 @@ class FakeWebContentsManager : public WebContentsManager {
   // Set the behavior for calls to `LoadUrl`, `GetWebAppInstallInfo`, and
   // `CheckInstallabilityAndRetrieveManifest` from wrappers returned by this
   // fake class.
-  AppId CreateBasicInstallPageState(
+  webapps::AppId CreateBasicInstallPageState(
       const GURL& install_url,
       const GURL& manifest_url,
       const GURL& start_url,

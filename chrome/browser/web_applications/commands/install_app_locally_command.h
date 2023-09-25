@@ -13,6 +13,7 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace web_app {
 
@@ -22,7 +23,7 @@ class AppLockDescription;
 
 class InstallAppLocallyCommand : public WebAppCommandTemplate<AppLock> {
  public:
-  InstallAppLocallyCommand(const AppId& app_id,
+  InstallAppLocallyCommand(const webapps::AppId& app_id,
                            base::OnceClosure install_callback);
   ~InstallAppLocallyCommand() override;
 
@@ -41,7 +42,7 @@ class InstallAppLocallyCommand : public WebAppCommandTemplate<AppLock> {
   std::unique_ptr<AppLockDescription> app_lock_description_;
   std::unique_ptr<AppLock> app_lock_;
 
-  AppId app_id_;
+  webapps::AppId app_id_;
   base::OnceClosure install_callback_;
   base::Value::Dict debug_log_;
 

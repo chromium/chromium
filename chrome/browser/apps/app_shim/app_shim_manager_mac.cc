@@ -313,7 +313,7 @@ struct AppShimManager::ProfileState {
 // The state for an individual app. This includes the state for all
 // profiles that are using the app.
 struct AppShimManager::AppState {
-  AppState(const web_app::AppId& app_id,
+  AppState(const webapps::AppId& app_id,
            std::unique_ptr<AppShimHost> multi_profile_host)
       : app_id(app_id), multi_profile_host(std::move(multi_profile_host)) {}
   AppState(const AppState&) = delete;
@@ -430,7 +430,7 @@ void AppShimManager::OnProfileManagerDestroying() {
 }
 
 AppShimHost* AppShimManager::FindHost(Profile* profile,
-                                      const web_app::AppId& app_id) {
+                                      const webapps::AppId& app_id) {
   auto found_app = apps_.find(app_id);
   if (found_app == apps_.end())
     return nullptr;
@@ -448,7 +448,7 @@ bool AppShimManager::HasNonBookmarkAppWindowsOpen() {
 
 void AppShimManager::UpdateAppBadge(
     Profile* profile,
-    const web_app::AppId& app_id,
+    const webapps::AppId& app_id,
     const absl::optional<badging::BadgeManager::BadgeValue>& badge) {
   // TODO(https://crbug.com/1199624): Support updating the app badge for apps
   // that aren't currently running.
@@ -470,7 +470,7 @@ void AppShimManager::UpdateAppBadge(
 }
 
 mojo::Remote<mac_notifications::mojom::MacNotificationProvider>
-AppShimManager::LaunchNotificationProvider(const web_app::AppId& app_id) {
+AppShimManager::LaunchNotificationProvider(const webapps::AppId& app_id) {
   CHECK(
       base::FeatureList::IsEnabled(features::kAppShimNotificationAttribution));
 
@@ -510,7 +510,7 @@ AppShimManager::LaunchNotificationProvider(const web_app::AppId& app_id) {
 }
 
 Profile* AppShimManager::ProfileForBackgroundShimLaunch(
-    const web_app::AppId& app_id) {
+    const webapps::AppId& app_id) {
   if (profile_manager_) {
     for (Profile* p : profile_manager_->GetLoadedProfiles()) {
       if (!p->IsRegularProfile()) {
@@ -525,7 +525,7 @@ Profile* AppShimManager::ProfileForBackgroundShimLaunch(
 }
 
 void AppShimManager::LaunchShimInBackgroundMode(
-    const web_app::AppId& app_id,
+    const webapps::AppId& app_id,
     base::OnceCallback<void(AppShimHost*)> callback) {
   // A shim can only be launched through an active profile, so find a profile
   // through which to do the launch. This method should only be called for
@@ -673,7 +673,7 @@ void AppShimManager::OnShimProcessConnected(
 
 void AppShimManager::OnShimProcessConnectedForRegisterOnly(
     std::unique_ptr<AppShimHostBootstrap> bootstrap) {
-  const web_app::AppId& app_id = bootstrap->GetAppId();
+  const webapps::AppId& app_id = bootstrap->GetAppId();
   DCHECK_EQ(bootstrap->GetLaunchType(),
             chrome::mojom::AppShimLaunchType::kRegisterOnly);
 
@@ -1049,7 +1049,7 @@ AppShimManager* AppShimManager::Get() {
 }
 
 void AppShimManager::LoadProfileAndApp(const base::FilePath& profile_path,
-                                       const web_app::AppId& app_id,
+                                       const webapps::AppId& app_id,
                                        LoadProfileAndAppCallback callback) {
   // Run |profile_loaded_callback| when the profile is loaded (be that now, or
   // after having to asynchronously load the profile).
@@ -1064,7 +1064,7 @@ void AppShimManager::LoadProfileAndApp(const base::FilePath& profile_path,
 
 void AppShimManager::LoadProfileAndApp_OnProfileLoaded(
     const base::FilePath& profile_path,
-    const web_app::AppId& app_id,
+    const webapps::AppId& app_id,
     LoadProfileAndAppCallback callback,
     Profile* profile) {
   // It may be that the profile fails to load.
@@ -1086,7 +1086,7 @@ void AppShimManager::LoadProfileAndApp_OnProfileLoaded(
 
 void AppShimManager::LoadProfileAndApp_OnProfileAppRegistryReady(
     const base::FilePath& profile_path,
-    const web_app::AppId& app_id,
+    const webapps::AppId& app_id,
     LoadProfileAndAppCallback callback) {
   // It may be that the profile was destroyed while waiting for the callback to
   // be issued.
@@ -1110,7 +1110,7 @@ void AppShimManager::LoadProfileAndApp_OnProfileAppRegistryReady(
 
 void AppShimManager::LoadProfileAndApp_OnAppEnabled(
     const base::FilePath& profile_path,
-    const web_app::AppId& app_id,
+    const webapps::AppId& app_id,
     LoadProfileAndAppCallback callback) {
   std::move(callback).Run(ProfileForPath(profile_path));
 }
@@ -1153,7 +1153,7 @@ bool AppShimManager::IsProfileLockedForPath(const base::FilePath& full_path) {
 std::unique_ptr<AppShimHost> AppShimManager::CreateHost(
     AppShimHost::Client* client,
     const base::FilePath& profile_path,
-    const web_app::AppId& app_id,
+    const webapps::AppId& app_id,
     bool use_remote_cocoa) {
   return std::make_unique<AppShimHost>(client, app_id, profile_path,
                                        use_remote_cocoa);
@@ -1298,7 +1298,7 @@ void AppShimManager::OnShimOpenedAppSettings(AppShimHost* host) {
   LoadProfileAsync(
       *last_active_profile_paths.begin(),
       base::BindOnce(
-          [](const web_app::AppId& app_id, Profile* profile) {
+          [](const webapps::AppId& app_id, Profile* profile) {
             if (profile) {
               chrome::ShowWebAppSettings(
                   profile, app_id,
@@ -1609,7 +1609,7 @@ void AppShimManager::UpdateApplicationDockMenu(Profile* profile,
 
 AppShimManager::ProfileState* AppShimManager::GetOrCreateProfileState(
     Profile* profile,
-    const web_app::AppId& app_id) {
+    const webapps::AppId& app_id) {
   if (web_app::AppShimCreationAndLaunchDisabledForTest()) {
     return nullptr;
   }

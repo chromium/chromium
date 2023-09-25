@@ -57,7 +57,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, SuccessInstall) {
       browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
       /*bypass_service_worker_check=*/false, CreateDialogCallback(),
       base::BindLambdaForTesting(
-          [&](const AppId& app_id, webapps::InstallResultCode code) {
+          [&](const webapps::AppId& app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
             EXPECT_TRUE(
                 provider().registrar_unsafe().IsLocallyInstalled(app_id));
@@ -80,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, MultipleInstalls) {
       browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
       /*bypass_service_worker_check=*/false, CreateDialogCallback(),
       base::BindLambdaForTesting(
-          [&](const AppId& app_id, webapps::InstallResultCode code) {
+          [&](const webapps::AppId& app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
             EXPECT_TRUE(
                 provider().registrar_unsafe().IsLocallyInstalled(app_id));
@@ -92,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, MultipleInstalls) {
       browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
       /*bypass_service_worker_check=*/false, CreateDialogCallback(),
       base::BindLambdaForTesting(
-          [&](const AppId& app_id, webapps::InstallResultCode code) {
+          [&](const webapps::AppId& app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
             EXPECT_TRUE(
                 provider().registrar_unsafe().IsLocallyInstalled(app_id));
@@ -114,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, InvalidManifest) {
       browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
       /*bypass_service_worker_check=*/false, CreateDialogCallback(),
       base::BindLambdaForTesting(
-          [&](const AppId& app_id, webapps::InstallResultCode code) {
+          [&](const webapps::AppId& app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(code,
                       webapps::InstallResultCode::kNotValidManifestForWebApp);
             EXPECT_FALSE(
@@ -138,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, UserDeclineInstall) {
       /*bypass_service_worker_check=*/false,
       CreateDialogCallback(/*accept=*/false),
       base::BindLambdaForTesting(
-          [&](const AppId& app_id, webapps::InstallResultCode code) {
+          [&](const webapps::AppId& app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(code, webapps::InstallResultCode::kUserInstallDeclined);
             EXPECT_FALSE(
                 provider().registrar_unsafe().IsLocallyInstalled(app_id));
@@ -163,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
       web_contents->GetWeakPtr(),
       /*bypass_service_worker_check=*/false, CreateDialogCallback(),
       base::BindLambdaForTesting(
-          [&](const AppId& app_id, webapps::InstallResultCode code) {
+          [&](const webapps::AppId& app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(code, webapps::InstallResultCode::kWebContentsDestroyed);
             EXPECT_FALSE(
                 provider().registrar_unsafe().IsLocallyInstalled(app_id));
@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
       web_contents->GetWeakPtr(),
       /*bypass_service_worker_check=*/false, CreateDialogCallback(),
       base::BindLambdaForTesting(
-          [&](const AppId& app_id, webapps::InstallResultCode code) {
+          [&](const webapps::AppId& app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
             EXPECT_TRUE(
                 provider().registrar_unsafe().IsLocallyInstalled(app_id));
@@ -210,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
       "/banners/"
       "no_manifest_test_page.html");
   auto web_app = test::CreateWebApp(test_url);
-  const AppId app_id = web_app->app_id();
+  const webapps::AppId app_id = web_app->app_id();
 
   {
     ScopedRegistryUpdate update = provider().sync_bridge_unsafe().BeginUpdate();
@@ -237,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
           /*accept=*/true,
           /*user_display_mode=*/mojom::UserDisplayMode::kStandalone),
       base::BindLambdaForTesting(
-          [&](const AppId& app_id, webapps::InstallResultCode code) {
+          [&](const webapps::AppId& app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
             loop.Quit();
           }),
@@ -254,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
   GURL test_url = https_server()->GetURL("/banners/app_with_nested/index.html");
   EXPECT_TRUE(NavigateAndAwaitInstallabilityCheck(browser(), test_url));
 
-  base::test::TestFuture<const AppId&, webapps::InstallResultCode>
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
       install_future;
   provider().scheduler().FetchManifestAndInstall(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
@@ -265,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
   ASSERT_TRUE(install_future.Wait());
   EXPECT_EQ(install_future.Get<webapps::InstallResultCode>(),
             webapps::InstallResultCode::kSuccessNewInstall);
-  AppId app_id = install_future.Get<AppId>();
+  webapps::AppId app_id = install_future.Get<webapps::AppId>();
   EXPECT_TRUE(provider().registrar_unsafe().IsLocallyInstalled(app_id));
   EXPECT_EQ(provider().registrar_unsafe().GetAppUserDisplayMode(app_id),
             mojom::UserDisplayMode::kStandalone);

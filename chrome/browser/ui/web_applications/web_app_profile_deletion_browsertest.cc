@@ -20,9 +20,9 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
 #include "url/gurl.h"
 
@@ -53,7 +53,7 @@ class WebAppProfileDeletionBrowserTest : public WebAppControllerBrowserTest {
             ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
   }
 
-  web_app::AppId InstallAppToProfile(Profile* profile, const GURL& start_url) {
+  webapps::AppId InstallAppToProfile(Profile* profile, const GURL& start_url) {
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url.GetWithoutFilename();
@@ -117,12 +117,12 @@ class NoOpWebAppPublisherDelegate : public WebAppPublisherHelper::Delegate {
 IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionBrowserTest,
                        MAYBE_AppRegistrarNotifiesProfileDeletion) {
   GURL app_url(GetInstallableAppURL());
-  const AppId app_id = InstallPWA(app_url);
+  const webapps::AppId app_id = InstallPWA(app_url);
 
   base::RunLoop run_loop;
   WebAppTestRegistryObserverAdapter observer(&registrar());
-  observer.SetWebAppProfileWillBeDeletedDelegate(
-      base::BindLambdaForTesting([&](const AppId& app_to_be_uninstalled) {
+  observer.SetWebAppProfileWillBeDeletedDelegate(base::BindLambdaForTesting(
+      [&](const webapps::AppId& app_to_be_uninstalled) {
         EXPECT_EQ(app_to_be_uninstalled, app_id);
         EXPECT_TRUE(registrar().IsInstalled(app_id));
         EXPECT_TRUE(registrar().GetAppById(app_id));
@@ -164,12 +164,13 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionBrowserTest, OsIntegrationRemoved) {
       profile_manager, profile_path_to_delete);
 #endif
   Browser::Create(Browser::CreateParams(&profile_to_delete, true));
-  const AppId app_id = InstallAppToProfile(&profile_to_delete, app_url);
+  const webapps::AppId app_id =
+      InstallAppToProfile(&profile_to_delete, app_url);
   auto* provider = WebAppProvider::GetForTest(&profile_to_delete);
   auto* web_app = provider->registrar_unsafe().GetAppById(app_id);
   ASSERT_TRUE(web_app);
 
-  base::test::TestFuture<const AppId&> app_id_future;
+  base::test::TestFuture<const webapps::AppId&> app_id_future;
   provider->os_integration_manager().SetForceUnregisterCalledForTesting(
       app_id_future.GetRepeatingCallback());
 
@@ -201,12 +202,13 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionBrowserTest_WebAppPublisher,
       profile_manager, profile_path_to_delete);
 #endif
   Browser::Create(Browser::CreateParams(&profile_to_delete, true));
-  const AppId app_id = InstallAppToProfile(&profile_to_delete, app_url);
+  const webapps::AppId app_id =
+      InstallAppToProfile(&profile_to_delete, app_url);
   auto* provider = WebAppProvider::GetForTest(&profile_to_delete);
   auto* web_app = provider->registrar_unsafe().GetAppById(app_id);
   ASSERT_TRUE(web_app);
 
-  base::test::TestFuture<const AppId&> app_id_future;
+  base::test::TestFuture<const webapps::AppId&> app_id_future;
   provider->os_integration_manager().SetForceUnregisterCalledForTesting(
       app_id_future.GetRepeatingCallback());
 

@@ -6,13 +6,14 @@
 #define CHROME_BROWSER_ANDROID_WEBAPK_WEBAPK_HELPERS_H_
 
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace webapk {
 
 // Generates the chrome-specific `AppId` from the spec-defined manifest id. See
 // the `AppId` type for more information.
-web_app::AppId GenerateAppIdFromManifestId(
-    const web_app::ManifestId& manifest_id);
+webapps::AppId GenerateAppIdFromManifestId(
+    const webapps::ManifestId& manifest_id);
 
 }  // namespace webapk
 

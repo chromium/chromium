@@ -25,6 +25,7 @@
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/menu.h"
 #include "components/services/app_service/public/cpp/permission.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "url/gurl.h"
@@ -62,7 +63,7 @@ class WebApps : public apps::AppPublisher,
   virtual void Shutdown();
 
  protected:
-  const WebApp* GetWebApp(const AppId& app_id) const;
+  const WebApp* GetWebApp(const webapps::AppId& app_id) const;
 
   Profile* profile() const { return profile_; }
   WebAppProvider* provider() const { return provider_; }
@@ -137,7 +138,7 @@ class WebApps : public apps::AppPublisher,
 
   std::vector<apps::AppPtr> CreateWebApps();
   void InitWebApps();
-  void OnGetAppSize(AppId app_id,
+  void OnGetAppSize(webapps::AppId app_id,
                     absl::optional<ComputeAppSizeCommand::Size> size);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

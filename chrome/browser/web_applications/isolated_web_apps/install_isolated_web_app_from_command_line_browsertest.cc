@@ -19,12 +19,12 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -89,7 +89,7 @@ class InstallIsolatedWebAppFromCommandLineFromUrlBrowserTest
 IN_PROC_BROWSER_TEST_F(InstallIsolatedWebAppFromCommandLineFromUrlBrowserTest,
                        AppFromCommandLineIsInstalled) {
   WebAppTestInstallObserver observer(browser()->profile());
-  AppId id = observer.BeginListeningAndWait();
+  webapps::AppId id = observer.BeginListeningAndWait();
 
   EXPECT_THAT(GetWebAppRegistrar().IsInstalled(id), IsTrue());
   EXPECT_THAT(GetWebAppRegistrar().GetAppById(id),
@@ -140,7 +140,7 @@ class InstallIsolatedWebAppFromCommandLineFromFileBrowserTest
 IN_PROC_BROWSER_TEST_F(InstallIsolatedWebAppFromCommandLineFromFileBrowserTest,
                        AppFromCommandLineIsInstalled) {
   WebAppTestInstallObserver observer(browser()->profile());
-  AppId id = observer.BeginListeningAndWait();
+  webapps::AppId id = observer.BeginListeningAndWait();
 
   ASSERT_TRUE(bundle_id_);
   ASSERT_EQ(

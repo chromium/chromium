@@ -36,7 +36,7 @@ class TestWebAppMenuModelCR2023 : public WebAppControllerBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(TestWebAppMenuModelCR2023, ModelHasIcons) {
   const GURL app_url = GetInstallableAppURL();
-  const AppId app_id = InstallPWA(app_url);
+  const webapps::AppId app_id = InstallPWA(app_url);
   Browser* const browser = LaunchWebAppBrowser(app_id);
 
   const auto check_for_icons = [](std::u16string menu_name,
@@ -79,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(TestWebAppMenuModelCR2023, ModelHasIcons) {
 
 IN_PROC_BROWSER_TEST_F(TestWebAppMenuModelCR2023, CommandStatusTest) {
   const GURL app_url = GetInstallableAppURL();
-  const AppId app_id = InstallPWA(app_url);
+  const webapps::AppId app_id = InstallPWA(app_url);
   Browser* const browser = LaunchWebAppBrowser(app_id);
 
   {

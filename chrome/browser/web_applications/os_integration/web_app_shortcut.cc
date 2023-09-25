@@ -189,7 +189,7 @@ ShortcutInfo::~ShortcutInfo() {
 }
 
 std::unique_ptr<ShortcutInfo> BuildShortcutInfoWithoutFavicon(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     const GURL& start_url,
     const base::FilePath& profile_path,
     const std::string& profile_name,

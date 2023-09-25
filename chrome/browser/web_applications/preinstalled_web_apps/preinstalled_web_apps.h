@@ -27,8 +27,8 @@ struct PreinstalledWebAppMigration {
   ~PreinstalledWebAppMigration();
 
   GURL install_url;
-  AppId expected_web_app_id;
-  AppId old_chrome_app_id;
+  webapps::AppId expected_web_app_id;
+  webapps::AppId old_chrome_app_id;
 };
 
 // Returns the list of preinstalled web apps that are migrations away from their

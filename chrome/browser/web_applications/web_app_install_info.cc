@@ -288,12 +288,12 @@ WebAppInstallInfo::CreateWithStartUrlForTesting(const GURL& start_url) {
 
 WebAppInstallInfo::WebAppInstallInfo() = default;
 
-WebAppInstallInfo::WebAppInstallInfo(const web_app::ManifestId& manifest_id)
+WebAppInstallInfo::WebAppInstallInfo(const webapps::ManifestId& manifest_id)
     : manifest_id(manifest_id) {
   CHECK(manifest_id.is_valid());
 }
 
-WebAppInstallInfo::WebAppInstallInfo(const web_app::ManifestId& manifest_id,
+WebAppInstallInfo::WebAppInstallInfo(const webapps::ManifestId& manifest_id,
                                      const GURL& start_url)
     : manifest_id(manifest_id), start_url(start_url) {
   CHECK(manifest_id.is_valid());

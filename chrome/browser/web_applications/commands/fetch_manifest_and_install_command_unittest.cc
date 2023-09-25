@@ -61,7 +61,7 @@ namespace {
 class FetchManifestAndInstallCommandTest : public WebAppTest {
  public:
   const GURL kWebAppUrl = GURL("https://example.com/path/index.html");
-  const AppId kWebAppId =
+  const webapps::AppId kWebAppId =
       GenerateAppId(/*manifest_id=*/absl::nullopt, kWebAppUrl);
   const GURL kWebAppManifestUrl =
       GURL("https://example.com/path/manifest.json");
@@ -173,11 +173,11 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
   }
 
   webapps::InstallResultCode InstallAndWait(
-      const AppId& app_id,
+      const webapps::AppId& app_id,
       webapps::WebappInstallSource install_surface,
       WebAppInstallDialogCallback dialog_callback,
       bool use_fallback = false) {
-    base::test::TestFuture<const AppId&, webapps::InstallResultCode>
+    base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
         install_future;
     provider()->scheduler().FetchManifestAndInstall(
         install_surface, web_contents()->GetWeakPtr(),
@@ -312,7 +312,7 @@ TEST_F(FetchManifestAndInstallCommandTest, Shutdown) {
       web_contents()->GetWeakPtr(),
       /*bypass_service_worker_check=*/false, std::move(dialog_callback),
       base::BindLambdaForTesting(
-          [&](const AppId& id, webapps::InstallResultCode code) {
+          [&](const webapps::AppId& id, webapps::InstallResultCode code) {
             result_populated = true;
             result = code;
           }),
@@ -329,7 +329,7 @@ TEST_F(FetchManifestAndInstallCommandTest, Shutdown) {
 TEST_F(FetchManifestAndInstallCommandTest, WebContentsDestroyed) {
   SetupPageState();
 
-  base::test::TestFuture<const AppId&, webapps::InstallResultCode>
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
       install_future;
   provider()->scheduler().FetchManifestAndInstall(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
@@ -349,7 +349,7 @@ TEST_F(FetchManifestAndInstallCommandTest,
   SetupPageState();
 
   base::test::TestFuture<void> manifest_fetch_future;
-  base::test::TestFuture<const AppId&, webapps::InstallResultCode>
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
       install_future;
 
   auto& page_state = web_contents_manager().GetOrCreatePageState(kWebAppUrl);
@@ -381,7 +381,7 @@ TEST_F(FetchManifestAndInstallCommandTest,
 
   SetupPageState();
   base::test::TestFuture<void> manifest_fetch_future;
-  base::test::TestFuture<const AppId&, webapps::InstallResultCode>
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
       install_future;
 
   auto& page_state = web_contents_manager().GetOrCreatePageState(kWebAppUrl);

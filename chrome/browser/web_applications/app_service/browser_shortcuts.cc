@@ -70,7 +70,8 @@ void BrowserShortcuts::InitBrowserShortcuts() {
   // Register publisher for shortcuts created from browser.
   RegisterShortcutPublisher(apps::AppType::kChromeApp);
 
-  for (const AppId& web_app_id : provider_->registrar_unsafe().GetAppIds()) {
+  for (const webapps::AppId& web_app_id :
+       provider_->registrar_unsafe().GetAppIds()) {
     MaybePublishBrowserShortcut(web_app_id);
   }
 
@@ -81,7 +82,7 @@ void BrowserShortcuts::InitBrowserShortcuts() {
   }
 }
 
-bool BrowserShortcuts::IsShortcut(const AppId& app_id) {
+bool BrowserShortcuts::IsShortcut(const webapps::AppId& app_id) {
   if (base::FeatureList::IsEnabled(features::kCrosWebAppShortcutUiUpdate)) {
     return provider_->registrar_unsafe().IsShortcutApp(app_id);
   } else {
@@ -89,7 +90,7 @@ bool BrowserShortcuts::IsShortcut(const AppId& app_id) {
   }
 }
 
-void BrowserShortcuts::MaybePublishBrowserShortcut(const AppId& app_id,
+void BrowserShortcuts::MaybePublishBrowserShortcut(const webapps::AppId& app_id,
                                                    bool raw_icon_updated) {
   if (!IsShortcut(app_id)) {
     return;
@@ -155,11 +156,12 @@ void BrowserShortcuts::GetCompressedIconData(
                                     scale_factor, std::move(callback));
 }
 
-void BrowserShortcuts::OnWebAppInstalled(const AppId& app_id) {
+void BrowserShortcuts::OnWebAppInstalled(const webapps::AppId& app_id) {
   MaybePublishBrowserShortcut(app_id);
 }
 
-void BrowserShortcuts::OnWebAppInstalledWithOsHooks(const AppId& app_id) {
+void BrowserShortcuts::OnWebAppInstalledWithOsHooks(
+    const webapps::AppId& app_id) {
   MaybePublishBrowserShortcut(app_id);
 }
 
@@ -168,7 +170,7 @@ void BrowserShortcuts::OnWebAppInstallManagerDestroyed() {
 }
 
 void BrowserShortcuts::OnWebAppUninstalled(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     webapps::WebappUninstallSource uninstall_source) {
   if (!IsShortcut(app_id)) {
     return;

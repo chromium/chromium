@@ -10,6 +10,7 @@
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_launch_params.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents_observer.h"
 
 class GURL;
@@ -51,7 +52,7 @@ class WebAppLaunchQueue : public content::WebContentsObserver {
 
   void Enqueue(WebAppLaunchParams launch_params);
 
-  const AppId* GetPendingLaunchAppId() const;
+  const webapps::AppId* GetPendingLaunchAppId() const;
 
  private:
   bool IsInScope(const WebAppLaunchParams& launch_params,

@@ -31,7 +31,7 @@ namespace web_app {
 
 namespace {
 
-bool IsAppInstalled(Profile* profile, const AppId& app_id) {
+bool IsAppInstalled(Profile* profile, const webapps::AppId& app_id) {
   bool installed = false;
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
   proxy->AppRegistryCache().ForOneApp(
@@ -66,8 +66,8 @@ mojom::UserDisplayMode GetExtensionUserDisplayMode(
 WebAppUninstallAndReplaceJob::WebAppUninstallAndReplaceJob(
     Profile* profile,
     WithAppResources& to_app_lock,
-    const std::vector<AppId>& from_apps_or_extensions,
-    const AppId& to_app,
+    const std::vector<webapps::AppId>& from_apps_or_extensions,
+    const webapps::AppId& to_app,
     base::OnceCallback<void(bool uninstall_triggered)> on_complete)
     : profile_(*profile),
       to_app_lock_(to_app_lock),
@@ -79,8 +79,8 @@ WebAppUninstallAndReplaceJob::~WebAppUninstallAndReplaceJob() = default;
 void WebAppUninstallAndReplaceJob::Start() {
   DCHECK(to_app_lock_->registrar().IsInstalled(to_app_));
 
-  std::vector<AppId> apps_to_replace;
-  for (const AppId& from_app : from_apps_or_extensions_) {
+  std::vector<webapps::AppId> apps_to_replace;
+  for (const webapps::AppId& from_app : from_apps_or_extensions_) {
     if (IsAppInstalled(&profile_.get(), from_app)) {
       apps_to_replace.emplace_back(from_app);
     }
@@ -109,7 +109,7 @@ base::Value WebAppUninstallAndReplaceJob::ToDebugValue() const {
 }
 
 void WebAppUninstallAndReplaceJob::MigrateUiAndUninstallApp(
-    const AppId& from_app,
+    const webapps::AppId& from_app,
     base::OnceClosure on_complete) {
 #if BUILDFLAG(IS_CHROMEOS)
   to_app_lock_->ui_manager().MigrateLauncherState(
@@ -123,7 +123,7 @@ void WebAppUninstallAndReplaceJob::MigrateUiAndUninstallApp(
 }
 
 void WebAppUninstallAndReplaceJob::OnMigrateLauncherState(
-    const AppId& from_app,
+    const webapps::AppId& from_app,
     base::OnceClosure on_complete) {
   // If migration of user/UI data is required for other app types consider
   // generalising this operation to be part of app service.
@@ -163,7 +163,7 @@ void WebAppUninstallAndReplaceJob::OnMigrateLauncherState(
 
 void WebAppUninstallAndReplaceJob::
     OnShortcutInfoReceivedSearchShortcutLocations(
-        const AppId& from_app,
+        const webapps::AppId& from_app,
         base::OnceClosure on_complete,
         std::unique_ptr<ShortcutInfo> shortcut_info) {
   if (!shortcut_info) {
@@ -182,7 +182,7 @@ void WebAppUninstallAndReplaceJob::
 }
 
 void WebAppUninstallAndReplaceJob::OnShortcutLocationGathered(
-    const AppId& from_app,
+    const webapps::AppId& from_app,
     base::OnceClosure on_complete,
     ShortcutLocations locations) {
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(&profile_.get());

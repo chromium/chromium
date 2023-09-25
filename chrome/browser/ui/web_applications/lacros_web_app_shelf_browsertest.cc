@@ -83,12 +83,12 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, Activation) {
 
   const GURL app1_url =
       https_server().GetURL(kFirstAppUrlHost, "/web_apps/basic.html");
-  const AppId app1_id =
+  const webapps::AppId app1_id =
       InstallWebAppFromPageAndCloseAppBrowser(browser(), app1_url);
 
   const GURL app2_url = https_server().GetURL(
       kSecondAppUrlHost, "/web_apps/standalone/basic.html");
-  const AppId app2_id =
+  const webapps::AppId app2_id =
       InstallWebAppFromPageAndCloseAppBrowser(browser(), app2_url);
 
   apps::AppReadinessWaiter(profile(), app1_id).Await();
@@ -130,12 +130,12 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, Navigation) {
 
   const GURL app1_url =
       https_server().GetURL(kFirstAppUrlHost, "/web_apps/basic.html");
-  const AppId app1_id =
+  const webapps::AppId app1_id =
       InstallWebAppFromPageAndCloseAppBrowser(browser(), app1_url);
 
   const GURL app2_url = https_server().GetURL(
       kSecondAppUrlHost, "/web_app_shortcuts/shortcuts.html");
-  const AppId app2_id =
+  const webapps::AppId app2_id =
       InstallWebAppFromPageAndCloseAppBrowser(browser(), app2_url);
 
   GURL out_of_scope_url = https_server().GetURL("/empty.html");
@@ -180,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, BadgeShown) {
 
   const GURL app_url = https_server().GetURL(kFirstAppUrlHost,
                                              "/web_apps/minimal_ui/basic.html");
-  const AppId app_id =
+  const webapps::AppId app_id =
       InstallWebAppFromPageAndCloseAppBrowser(browser(), app_url);
 
   apps::AppReadinessWaiter(profile(), app_id).Await();
@@ -215,12 +215,12 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, RunningInTab) {
                               ->GetRemote<crosapi::mojom::TestController>();
   const GURL app1_url = https_server().GetURL(
       kFirstAppUrlHost, "/web_apps/standalone/basic.html");
-  const AppId app1_id =
+  const webapps::AppId app1_id =
       InstallWebAppFromPageAndCloseAppBrowser(browser(), app1_url);
 
   const GURL app2_url =
       https_server().GetURL(kSecondAppUrlHost, "/web_apps/basic.html");
-  const AppId app2_id =
+  const webapps::AppId app2_id =
       InstallWebAppFromPageAndCloseAppBrowser(browser(), app2_url);
 
   {
@@ -334,7 +334,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, CreateShortcut) {
       embedded_test_server()->GetURL("/banners/scope_a/no_manifest.html"));
   GURL app2_url(
       embedded_test_server()->GetURL("/banners/scope_b/scope_b.html"));
-  AppId app1_id;
+  webapps::AppId app1_id;
   Browser* app1_browser;
   {
     web_app::ServiceWorkerRegistrationWaiter registration_waiter(profile(),
@@ -395,7 +395,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, CreateShortcut) {
   }
 
   // Install app2 PWA.
-  AppId app2_id;
+  webapps::AppId app2_id;
   Browser* app2_browser;
   {
     browser()->tab_strip_model()->ActivateTabAt(/*index=*/1);

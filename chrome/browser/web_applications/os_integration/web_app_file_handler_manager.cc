@@ -65,7 +65,7 @@ void WebAppFileHandlerManager::SetIconsSupportedByOsForTesting(bool value) {
 }
 
 void WebAppFileHandlerManager::EnableAndRegisterOsFileHandlers(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     ResultCallback callback) {
   SetOsIntegrationState(app_id, OsIntegrationState::kEnabled);
 
@@ -91,7 +91,7 @@ void WebAppFileHandlerManager::EnableAndRegisterOsFileHandlers(
 }
 
 void WebAppFileHandlerManager::DisableAndUnregisterOsFileHandlers(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     ResultCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -120,7 +120,7 @@ void WebAppFileHandlerManager::DisableAndUnregisterOsFileHandlers(
 }
 
 const apps::FileHandlers* WebAppFileHandlerManager::GetEnabledFileHandlers(
-    const AppId& app_id) const {
+    const webapps::AppId& app_id) const {
   if (ShouldOsIntegrationBeEnabled(app_id) &&
       !provider_->registrar_unsafe().IsAppFileHandlerPermissionBlocked(
           app_id)) {
@@ -138,7 +138,7 @@ bool WebAppFileHandlerManager::IconsEnabled() {
 }
 
 const apps::FileHandlers* WebAppFileHandlerManager::GetAllFileHandlers(
-    const AppId& app_id) const {
+    const webapps::AppId& app_id) const {
   const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
   return web_app && !web_app->file_handlers().empty()
              ? &web_app->file_handlers()
@@ -151,7 +151,7 @@ bool WebAppFileHandlerManager::IsDisabledForTesting() {
 
 WebAppFileHandlerManager::LaunchInfos
 WebAppFileHandlerManager::GetMatchingFileHandlerUrls(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     const std::vector<base::FilePath>& launch_files) {
   LaunchInfos launch_infos;
   if (launch_files.empty() ||
@@ -200,14 +200,14 @@ WebAppFileHandlerManager::GetMatchingFileHandlerUrls(
 }
 
 void WebAppFileHandlerManager::SetOsIntegrationState(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     OsIntegrationState os_state) {
   ScopedRegistryUpdate update = provider_->sync_bridge_unsafe().BeginUpdate();
   update->UpdateApp(app_id)->SetFileHandlerOsIntegrationState(os_state);
 }
 
 bool WebAppFileHandlerManager::ShouldOsIntegrationBeEnabled(
-    const AppId& app_id) const {
+    const webapps::AppId& app_id) const {
   return !ShouldRegisterFileHandlersWithOs() ||
          (provider_ && provider_->registrar_unsafe()
                            .ExpectThatFileHandlersAreRegisteredWithOs(app_id));

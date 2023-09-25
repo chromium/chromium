@@ -9,9 +9,9 @@
 
 namespace web_app {
 
-AppLockDescription::AppLockDescription(const AppId& app_id)
+AppLockDescription::AppLockDescription(const webapps::AppId& app_id)
     : LockDescription({app_id}, LockDescription::Type::kApp) {}
-AppLockDescription::AppLockDescription(base::flat_set<AppId> app_ids)
+AppLockDescription::AppLockDescription(base::flat_set<webapps::AppId> app_ids)
     : LockDescription(std::move(app_ids), LockDescription::Type::kApp) {}
 AppLockDescription::~AppLockDescription() = default;
 

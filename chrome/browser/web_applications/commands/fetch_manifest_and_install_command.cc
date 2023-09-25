@@ -22,7 +22,6 @@
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -31,6 +30,7 @@
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -246,7 +246,7 @@ void FetchManifestAndInstallCommand::Abort(webapps::InstallResultCode code) {
   Observe(nullptr);
   SignalCompletionAndSelfDestruct(
       CommandResult::kFailure,
-      base::BindOnce(std::move(install_callback_), AppId(), code));
+      base::BindOnce(std::move(install_callback_), webapps::AppId(), code));
 }
 
 bool FetchManifestAndInstallCommand::IsWebContentsDestroyed() {
@@ -530,7 +530,7 @@ void FetchManifestAndInstallCommand::OnDialogCompleted(
 }
 
 void FetchManifestAndInstallCommand::OnInstallFinalizedMaybeReparentTab(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     webapps::InstallResultCode code,
     OsHooksErrors os_hooks_errors) {
   if (IsWebContentsDestroyed()) {
@@ -563,7 +563,7 @@ void FetchManifestAndInstallCommand::OnInstallFinalizedMaybeReparentTab(
 }
 
 void FetchManifestAndInstallCommand::OnInstallCompleted(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     webapps::InstallResultCode code) {
   if (base::FeatureList::IsEnabled(features::kRecordWebAppDebugInfo)) {
     if (install_error_log_entry_.HasErrorDict()) {

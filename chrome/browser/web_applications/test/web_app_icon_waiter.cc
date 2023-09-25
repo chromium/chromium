@@ -11,7 +11,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 
 WebAppIconWaiter::WebAppIconWaiter(Profile* profile,
-                                   const web_app::AppId& app_id)
+                                   const webapps::AppId& app_id)
     : app_id_(app_id) {
   web_app::WebAppProvider* web_app_provider =
       web_app::WebAppProvider::GetForTest(profile);
@@ -26,7 +26,7 @@ WebAppIconWaiter::WebAppIconWaiter(Profile* profile,
 void WebAppIconWaiter::Wait() {
   run_loop_.Run();
 }
-void WebAppIconWaiter::OnFaviconRead(const web_app::AppId& app_id) {
+void WebAppIconWaiter::OnFaviconRead(const webapps::AppId& app_id) {
   if (app_id == *app_id_) {
     run_loop_.Quit();
   }

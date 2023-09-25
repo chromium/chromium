@@ -78,13 +78,14 @@ class RunOnOsLoginSubManagerTestBase : public WebAppTest {
     WebAppTest::TearDown();
   }
 
-  AppId InstallWebApp() {
+  webapps::AppId InstallWebApp() {
     std::unique_ptr<WebAppInstallInfo> info =
         std::make_unique<WebAppInstallInfo>();
     info->start_url = kWebAppUrl;
     info->title = u"Test App";
     info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
-    base::test::TestFuture<const AppId&, webapps::InstallResultCode> result;
+    base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+        result;
     // InstallFromInfoWithParams is used instead of InstallFromInfo, because
     // InstallFromInfo doesn't register OS integration.
     provider().scheduler().InstallFromInfoWithParams(
@@ -94,11 +95,11 @@ class RunOnOsLoginSubManagerTestBase : public WebAppTest {
     bool success = result.Wait();
     EXPECT_TRUE(success);
     if (!success) {
-      return AppId();
+      return webapps::AppId();
     }
     EXPECT_EQ(result.Get<webapps::InstallResultCode>(),
               webapps::InstallResultCode::kSuccessNewInstall);
-    return result.Get<AppId>();
+    return result.Get<webapps::AppId>();
   }
 
   void SetWebAppSettingsListPref(const base::StringPiece pref) {
@@ -148,7 +149,7 @@ class RunOnOsLoginSubManagerConfigureTest
 
 TEST_P(RunOnOsLoginSubManagerConfigureTest,
        VerifyRunOnOsLoginSetProperlyOnInstall) {
-  const AppId& app_id = InstallWebApp();
+  const webapps::AppId& app_id = InstallWebApp();
 
   auto state = registrar().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
@@ -166,7 +167,7 @@ TEST_P(RunOnOsLoginSubManagerConfigureTest,
 }
 
 TEST_P(RunOnOsLoginSubManagerConfigureTest, VerifyRunOnOsLoginSetFromCommand) {
-  const AppId& app_id = InstallWebApp();
+  const webapps::AppId& app_id = InstallWebApp();
 
   base::test::TestFuture<void> future;
   provider().scheduler().SetRunOnOsLoginMode(
@@ -188,7 +189,7 @@ TEST_P(RunOnOsLoginSubManagerConfigureTest, VerifyRunOnOsLoginSetFromCommand) {
 }
 
 TEST_P(RunOnOsLoginSubManagerConfigureTest, VerifyPolicySettingBlocked) {
-  const AppId& app_id = InstallWebApp();
+  const webapps::AppId& app_id = InstallWebApp();
 
   const char kWebAppSettingPolicyBlockedConfig[] = R"([{
     "manifest_id" : "https://example.com/path/index.html",
@@ -220,7 +221,7 @@ TEST_P(RunOnOsLoginSubManagerConfigureTest, VerifyPolicySettingBlocked) {
 }
 
 TEST_P(RunOnOsLoginSubManagerConfigureTest, VerifyPolicySettingWindowedMode) {
-  const AppId& app_id = InstallWebApp();
+  const webapps::AppId& app_id = InstallWebApp();
 
   const char kWebAppSettingPolicyWindowedConfig[] = R"([{
     "manifest_id" : "https://example.com/path/index.html",
@@ -252,7 +253,7 @@ TEST_P(RunOnOsLoginSubManagerConfigureTest, VerifyPolicySettingWindowedMode) {
 }
 
 TEST_P(RunOnOsLoginSubManagerConfigureTest, VerifyPolicySettingAllowedMode) {
-  const AppId& app_id = InstallWebApp();
+  const webapps::AppId& app_id = InstallWebApp();
 
   const char kWebAppSettingPolicyAllowedConfig[] = R"([{
     "manifest_id" : "https://example.com/path/index.html",
@@ -284,7 +285,7 @@ TEST_P(RunOnOsLoginSubManagerConfigureTest, VerifyPolicySettingAllowedMode) {
 }
 
 TEST_P(RunOnOsLoginSubManagerConfigureTest, StatesEmptyOnUninstall) {
-  const AppId& app_id = InstallWebApp();
+  const webapps::AppId& app_id = InstallWebApp();
   test::UninstallAllWebApps(profile());
   auto state = registrar().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_FALSE(state.has_value());
@@ -333,7 +334,7 @@ class RunOnOsLoginSubManagerExecuteTest
 };
 
 TEST_P(RunOnOsLoginSubManagerExecuteTest, InstallRunOnOsLoginNotRun) {
-  const AppId& app_id = InstallWebApp();
+  const webapps::AppId& app_id = InstallWebApp();
   const std::string& app_name = registrar().GetAppShortName(app_id);
 
   auto state = registrar().GetAppCurrentOsIntegrationState(app_id);
@@ -354,7 +355,7 @@ TEST_P(RunOnOsLoginSubManagerExecuteTest, InstallRunOnOsLoginNotRun) {
 
 TEST_P(RunOnOsLoginSubManagerExecuteTest,
        InstallAndExecuteWindowedRunOnOsLogin) {
-  const AppId& app_id = InstallWebApp();
+  const webapps::AppId& app_id = InstallWebApp();
   const std::string& app_name = registrar().GetAppShortName(app_id);
 
   base::test::TestFuture<void> future;
@@ -376,7 +377,7 @@ TEST_P(RunOnOsLoginSubManagerExecuteTest,
 }
 
 TEST_P(RunOnOsLoginSubManagerExecuteTest, BlockedPolicySettingNoOsIntegration) {
-  const AppId& app_id = InstallWebApp();
+  const webapps::AppId& app_id = InstallWebApp();
   const std::string& app_name = registrar().GetAppShortName(app_id);
 
   const char kWebAppSettingPolicyBlockedConfig[] = R"([{
@@ -409,7 +410,7 @@ TEST_P(RunOnOsLoginSubManagerExecuteTest, BlockedPolicySettingNoOsIntegration) {
 
 TEST_P(RunOnOsLoginSubManagerExecuteTest,
        WindowedPolicySettingAllowsOsIntegration) {
-  const AppId& app_id = InstallWebApp();
+  const webapps::AppId& app_id = InstallWebApp();
   const std::string& app_name = registrar().GetAppShortName(app_id);
 
   const char kWebAppSettingPolicyBlockedConfig[] = R"([{
@@ -441,7 +442,7 @@ TEST_P(RunOnOsLoginSubManagerExecuteTest,
 }
 
 TEST_P(RunOnOsLoginSubManagerExecuteTest, UpdateRunOnOsLoginMode) {
-  const AppId& app_id = InstallWebApp();
+  const webapps::AppId& app_id = InstallWebApp();
   const std::string& app_name = registrar().GetAppShortName(app_id);
 
   base::test::TestFuture<void> future_windowed;
@@ -482,7 +483,7 @@ TEST_P(RunOnOsLoginSubManagerExecuteTest, UpdateRunOnOsLoginMode) {
 }
 
 TEST_P(RunOnOsLoginSubManagerExecuteTest, UnregisterRunOnOsLogin) {
-  const AppId& app_id = InstallWebApp();
+  const webapps::AppId& app_id = InstallWebApp();
   const std::string& app_name = registrar().GetAppShortName(app_id);
 
   base::test::TestFuture<void> future;
@@ -516,7 +517,7 @@ TEST_P(RunOnOsLoginSubManagerExecuteTest, ForceUnregisterAppInRegistry) {
     GTEST_SKIP()
         << "Force unregistration is only for sub managers that are enabled";
   }
-  const AppId& app_id = InstallWebApp();
+  const webapps::AppId& app_id = InstallWebApp();
   const std::string& app_name = registrar().GetAppShortName(app_id);
 
   base::test::TestFuture<void> future;
@@ -546,7 +547,7 @@ TEST_P(RunOnOsLoginSubManagerExecuteTest, ForceUnregisterAppNotInRegistry) {
     GTEST_SKIP()
         << "Force unregistration is only for sub managers that are enabled";
   }
-  const AppId& app_id = InstallWebApp();
+  const webapps::AppId& app_id = InstallWebApp();
   const std::string& app_name = registrar().GetAppShortName(app_id);
 
   base::test::TestFuture<void> future;

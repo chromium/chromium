@@ -7,12 +7,12 @@
 #include <string>
 
 #include "base/feature_list.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/common/web_app_id.h"
 #include "net/http/http_status_code.h"
 
 namespace web_app {
@@ -70,10 +70,11 @@ void InstallErrorLogEntry::LogUrlLoaderError(const char* stage,
   LogErrorObject(stage, url, std::move(url_loader_error));
 }
 
-void InstallErrorLogEntry::LogExpectedAppIdError(const char* stage,
-                                                 const std::string& url,
-                                                 const AppId& app_id,
-                                                 const AppId& expected_app_id) {
+void InstallErrorLogEntry::LogExpectedAppIdError(
+    const char* stage,
+    const std::string& url,
+    const webapps::AppId& app_id,
+    const webapps::AppId& expected_app_id) {
   if (!error_dict_)
     return;
 

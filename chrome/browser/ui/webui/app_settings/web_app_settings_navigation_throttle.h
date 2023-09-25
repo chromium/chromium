@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/navigation_throttle.h"
 
 namespace content {
@@ -33,7 +34,7 @@ class WebAppSettingsNavigationThrottle : public content::NavigationThrottle {
   const char* GetNameForLogging() override;
 
  private:
-  void ContinueCheckForApp(const web_app::AppId& app_id);
+  void ContinueCheckForApp(const webapps::AppId& app_id);
 
   base::WeakPtrFactory<WebAppSettingsNavigationThrottle> weak_factory_{this};
 };

@@ -163,7 +163,7 @@ class WebAppBadgingBrowserTest : public WebAppControllerBrowserTest {
         set_badge_change.was_flagged_ =
             set_badge_change.last_badge_content_ == absl::nullopt;
 
-        const AppId& set_app_id = set_app_badge.first;
+        const webapps::AppId& set_app_id = set_app_badge.first;
         ASSERT_TRUE(badge_change_map_.find(set_app_id) ==
                     badge_change_map_.end())
             << "ERROR: Cannot record badge set.  App with ID: '" << set_app_id
@@ -236,9 +236,9 @@ class WebAppBadgingBrowserTest : public WebAppControllerBrowserTest {
         main_frame_, expected_badge_change_count);
   }
 
-  const AppId& main_app_id() { return main_app_id_; }
-  const AppId& sub_app_id() { return sub_app_id_; }
-  const AppId& cross_site_app_id() { return cross_site_app_id_; }
+  const webapps::AppId& main_app_id() { return main_app_id_; }
+  const webapps::AppId& sub_app_id() { return sub_app_id_; }
+  const webapps::AppId& cross_site_app_id() { return cross_site_app_id_; }
 
   raw_ptr<RenderFrameHost, AcrossTasksDanglingUntriaged> main_frame_ = nullptr;
   raw_ptr<RenderFrameHost, AcrossTasksDanglingUntriaged> sub_app_frame_ =
@@ -271,12 +271,12 @@ class WebAppBadgingBrowserTest : public WebAppControllerBrowserTest {
   };
 
   // Records a single badge update for multiple apps.
-  std::unordered_map<AppId, BadgeChange> badge_change_map_;
+  std::unordered_map<webapps::AppId, BadgeChange> badge_change_map_;
 
   // Gets the recorded badge update for |app_id| from |badge_change_map_|.
   // Asserts when no recorded badge update exists for |app_id|.  Calls should be
   // wrapped in the ASSERT_NO_FATAL_FAILURE() macro.
-  void GetBadgeChange(const AppId& app_id, BadgeChange* result) {
+  void GetBadgeChange(const webapps::AppId& app_id, BadgeChange* result) {
     auto it = badge_change_map_.find(app_id);
 
     ASSERT_NE(it, badge_change_map_.end())
@@ -286,9 +286,9 @@ class WebAppBadgingBrowserTest : public WebAppControllerBrowserTest {
   }
 
  private:
-  AppId main_app_id_;
-  AppId sub_app_id_;
-  AppId cross_site_app_id_;
+  webapps::AppId main_app_id_;
+  webapps::AppId sub_app_id_;
+  webapps::AppId cross_site_app_id_;
   std::unique_ptr<base::RunLoop> awaiter_;
   raw_ptr<badging::TestBadgeManagerDelegate, AcrossTasksDanglingUntriaged>
       delegate_ = nullptr;

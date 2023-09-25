@@ -82,13 +82,14 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
   }
 
   // Returns [app_id, in_scope_1, in_scope_2, scope]
-  std::tuple<AppId, GURL, GURL, GURL> InstallTestApp(const char* path) {
+  std::tuple<webapps::AppId, GURL, GURL, GURL> InstallTestApp(
+      const char* path) {
     GURL start_url = embedded_test_server()->GetURL(path);
     GURL in_scope_1 = start_url.Resolve("page1.html");
     GURL in_scope_2 = start_url.Resolve("page2.html");
     GURL scope = start_url.GetWithoutFilename();
 
-    AppId app_id =
+    webapps::AppId app_id =
         InstallWebAppFromPageAndCloseAppBrowser(browser(), start_url);
     apps::AppReadinessWaiter(profile(), app_id).Await();
     return std::make_tuple(app_id, in_scope_1, in_scope_2, scope);
@@ -103,17 +104,17 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
     return embedded_test_server()->GetURL("/web_apps/nesting/index.html");
   }
 
-  AppId InstallParentApp() {
+  webapps::AppId InstallParentApp() {
     GURL start_url = GetParentAppUrl();
-    AppId app_id =
+    webapps::AppId app_id =
         InstallWebAppFromPageAndCloseAppBrowser(browser(), start_url);
     apps::AppReadinessWaiter(profile(), app_id).Await();
     return app_id;
   }
 
-  AppId InstallNestedApp() {
+  webapps::AppId InstallNestedApp() {
     GURL start_url = GetNestedAppUrl();
-    AppId app_id =
+    webapps::AppId app_id =
         InstallWebAppFromPageAndCloseAppBrowser(browser(), start_url);
     apps::AppReadinessWaiter(profile(), app_id).Await();
     return app_id;
@@ -194,7 +195,7 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
     }
   }
 
-  void TurnOnLinkCapturing(AppId app_id) {
+  void TurnOnLinkCapturing(webapps::AppId app_id) {
 #if BUILDFLAG(IS_CHROMEOS)
     apps_util::SetSupportedLinksPreferenceAndWait(profile(), app_id);
 #else
@@ -205,7 +206,7 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
-  absl::optional<LaunchHandler> GetLaunchHandler(const AppId& app_id) {
+  absl::optional<LaunchHandler> GetLaunchHandler(const webapps::AppId& app_id) {
     return provider().registrar_unsafe().GetAppById(app_id)->launch_handler();
   }
 
@@ -368,8 +369,8 @@ IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingBrowserTest,
                        ParentAppWithChildLinks) {
-  AppId parent_app_id = InstallParentApp();
-  AppId nested_app_id = InstallNestedApp();
+  webapps::AppId parent_app_id = InstallParentApp();
+  webapps::AppId nested_app_id = InstallNestedApp();
 
   TurnOnLinkCapturing(parent_app_id);
   AddTab(browser(), about_blank_);
@@ -400,8 +401,8 @@ IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingBrowserTest,
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingBrowserTest,
                        ParentAppAndChildAppCapture) {
-  AppId parent_app_id = InstallParentApp();
-  AppId nested_app_id = InstallNestedApp();
+  webapps::AppId parent_app_id = InstallParentApp();
+  webapps::AppId nested_app_id = InstallNestedApp();
 
   TurnOnLinkCapturing(parent_app_id);
   TurnOnLinkCapturing(nested_app_id);
@@ -443,8 +444,8 @@ IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingBrowserTest,
 // Tests that link capturing works while inside a web app window.
 IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingBrowserTest,
                        LinkCaptureInWebAppWindow) {
-  AppId parent_app_id = InstallParentApp();
-  AppId nested_app_id = InstallNestedApp();
+  webapps::AppId parent_app_id = InstallParentApp();
+  webapps::AppId nested_app_id = InstallNestedApp();
 
   TurnOnLinkCapturing(nested_app_id);
 
@@ -504,7 +505,7 @@ class WebAppTabStripLinkCapturingBrowserTest
   }
 
   // Returns [app_id, in_scope_1, in_scope_2, scope]
-  std::tuple<AppId, GURL, GURL, GURL> InstallTestTabbedApp() {
+  std::tuple<webapps::AppId, GURL, GURL, GURL> InstallTestTabbedApp() {
     const auto [app_id, in_scope_1, in_scope_2, scope] =
         WebAppLinkCapturingBrowserTest::InstallTestApp("/web_apps/basic.html");
     provider().sync_bridge_unsafe().SetAppUserDisplayMode(

@@ -32,7 +32,6 @@
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
@@ -43,6 +42,7 @@
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -241,7 +241,7 @@ void IsolatedWebAppApplyUpdateCommand::Finalize(WebAppInstallInfo info) {
 }
 
 void IsolatedWebAppApplyUpdateCommand::OnFinalized(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     webapps::InstallResultCode update_result_code,
     OsHooksErrors unused_os_hooks_errors) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

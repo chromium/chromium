@@ -223,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPolicyManagerAshBrowserTest,
 
   // Wait for the IWA to be installed.
   WebAppTestInstallObserver observer(profile);
-  const AppId id = observer.BeginListeningAndWait();
+  const webapps::AppId id = observer.BeginListeningAndWait();
   ASSERT_EQ(id,
             IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(iwa_bundle_.id)
                 .app_id());

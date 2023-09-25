@@ -65,7 +65,7 @@ void OnWebAppInstallShowInstallDialog(
       if (base::FeatureList::IsEnabled(
               metrics::structured::kAppDiscoveryLogging) &&
           install_source == webapps::WebappInstallSource::MENU_BROWSER_TAB) {
-        web_app::AppId app_id =
+        webapps::AppId app_id =
             web_app::GenerateAppIdFromManifestId(web_app_info->manifest_id);
         cros_events::AppDiscovery_Browser_ClickInstallAppFromMenu()
             .SetAppId(app_id)
@@ -93,7 +93,7 @@ void OnWebAppInstallShowInstallDialog(
 #if BUILDFLAG(IS_CHROMEOS)
       if (base::FeatureList::IsEnabled(
               metrics::structured::kAppDiscoveryLogging)) {
-        web_app::AppId app_id =
+        webapps::AppId app_id =
             web_app::GenerateAppIdFromManifestId(web_app_info->manifest_id);
         cros_events::AppDiscovery_Browser_CreateShortcut()
             .SetAppId(app_id)
@@ -117,7 +117,7 @@ WebAppInstalledCallback& GetInstalledCallbackForTesting() {
 }
 
 void OnWebAppInstalled(WebAppInstalledCallback callback,
-                       const AppId& installed_app_id,
+                       const webapps::AppId& installed_app_id,
                        webapps::InstallResultCode code) {
   if (GetInstalledCallbackForTesting())
     std::move(GetInstalledCallbackForTesting()).Run(installed_app_id, code);

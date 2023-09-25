@@ -63,8 +63,8 @@ class WebAppLaunchHandlerBrowserTest : public WebAppControllerBrowserTest {
  protected:
   Profile* profile() { return browser()->profile(); }
 
-  AppId InstallTestWebApp(const char* test_file_path,
-                          bool await_metric = true) {
+  webapps::AppId InstallTestWebApp(const char* test_file_path,
+                                   bool await_metric = true) {
     BrowserWaiter browser_waiter;
 
     page_load_metrics::PageLoadMetricsTestWaiter metrics_waiter(
@@ -74,7 +74,7 @@ class WebAppLaunchHandlerBrowserTest : public WebAppControllerBrowserTest {
           blink::mojom::WebFeature::kWebAppManifestLaunchHandler);
     }
 
-    AppId app_id = InstallWebAppFromPage(
+    webapps::AppId app_id = InstallWebAppFromPage(
         browser(), embedded_test_server()->GetURL(test_file_path));
 
     if (await_metric)
@@ -89,16 +89,16 @@ class WebAppLaunchHandlerBrowserTest : public WebAppControllerBrowserTest {
     return app_id;
   }
 
-  const WebApp* GetWebApp(const AppId& app_id) {
+  const WebApp* GetWebApp(const webapps::AppId& app_id) {
     return WebAppProvider::GetForTest(profile())->registrar_unsafe().GetAppById(
         app_id);
   }
 
-  absl::optional<LaunchHandler> GetLaunchHandler(const AppId& app_id) {
+  absl::optional<LaunchHandler> GetLaunchHandler(const webapps::AppId& app_id) {
     return GetWebApp(app_id)->launch_handler();
   }
 
-  void ExpectNavigateNewBehavior(const AppId& app_id) {
+  void ExpectNavigateNewBehavior(const webapps::AppId& app_id) {
     std::string start_url = GetWebApp(app_id)->start_url().spec();
 
     Browser* browser_1 = LaunchWebAppBrowserAndWait(app_id);
@@ -144,7 +144,7 @@ class WebAppLaunchHandlerBrowserTest : public WebAppControllerBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest, ClientModeEmpty) {
   base::HistogramTester histogram_tester;
-  AppId app_id =
+  webapps::AppId app_id =
       InstallTestWebApp("/web_apps/basic.html", /*await_metric=*/false);
   EXPECT_EQ(GetLaunchHandler(app_id), absl::nullopt);
 
@@ -156,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest, ClientModeEmpty) {
 
 IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest, ClientModeAuto) {
   base::HistogramTester histogram_tester;
-  AppId app_id = InstallTestWebApp(
+  webapps::AppId app_id = InstallTestWebApp(
       "/web_apps/get_manifest.html?launch_handler_client_mode_auto.json");
   EXPECT_EQ(GetLaunchHandler(app_id), (LaunchHandler{ClientMode::kAuto}));
 
@@ -168,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest, ClientModeAuto) {
 
 IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest, ClientModeNavigateNew) {
   base::HistogramTester histogram_tester;
-  AppId app_id = InstallTestWebApp(
+  webapps::AppId app_id = InstallTestWebApp(
       "/web_apps/get_manifest.html?"
       "launch_handler_client_mode_navigate_new.json");
   EXPECT_EQ(GetLaunchHandler(app_id),
@@ -182,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest, ClientModeNavigateNew) {
 
 IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
                        ClientModeNavigateExisting) {
-  AppId app_id = InstallTestWebApp(
+  webapps::AppId app_id = InstallTestWebApp(
       "/web_apps/get_manifest.html?"
       "launch_handler_client_mode_navigate_existing.json");
 
@@ -237,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
 // TODO(crbug.com/1308334): Fix flakiness.
 IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
                        DISABLED_ClientModeExistingClientRetain) {
-  AppId app_id = InstallTestWebApp(
+  webapps::AppId app_id = InstallTestWebApp(
       "/web_apps/get_manifest.html?"
       "launch_handler_client_mode_focus_existing.json");
 
@@ -314,7 +314,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
                        ClientModeFocusExistingMultipleLaunches) {
   base::HistogramTester histogram_tester;
-  AppId app_id = InstallTestWebApp(
+  webapps::AppId app_id = InstallTestWebApp(
       "/web_apps/get_manifest.html?"
       "launch_handler_client_mode_focus_existing.json");
   EXPECT_EQ(GetLaunchHandler(app_id),
@@ -366,7 +366,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
                        ClientModeNavigateExistingMultipleLaunches) {
   base::HistogramTester histogram_tester;
-  AppId app_id = InstallTestWebApp(
+  webapps::AppId app_id = InstallTestWebApp(
       "/web_apps/get_manifest.html?"
       "launch_handler_client_mode_navigate_existing.json");
   EXPECT_EQ(GetLaunchHandler(app_id),
@@ -405,7 +405,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
                        LaunchNavigationInterruptedByOutOfScopeNavigation) {
   base::HistogramTester histogram_tester;
-  AppId app_id = InstallTestWebApp(
+  webapps::AppId app_id = InstallTestWebApp(
       "/web_apps/get_manifest.html?"
       "launch_handler_client_mode_navigate_new.json");
   EXPECT_EQ(GetLaunchHandler(app_id),
@@ -441,7 +441,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest, GlobalLaunchQueue) {
   base::HistogramTester histogram_tester;
-  AppId app_id =
+  webapps::AppId app_id =
       InstallTestWebApp("/web_apps/basic.html", /*await_metric=*/false);
 
   Browser* app_browser = LaunchWebAppBrowserAndWait(app_id);
@@ -465,7 +465,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest, GlobalLaunchQueue) {
 #endif
 IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
                        MAYBE_SelectActiveBrowser) {
-  AppId app_id =
+  webapps::AppId app_id =
       InstallTestWebApp("/web_apps/basic.html", /*await_metric=*/false);
   EXPECT_EQ(GetLaunchHandler(app_id), absl::nullopt);
 
@@ -512,7 +512,7 @@ class WebAppLaunchHandlerDisabledBrowserTest
 IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerDisabledBrowserTest,
                        LaunchQueueNoLaunchHandlers) {
   base::HistogramTester histogram_tester;
-  AppId app_id = InstallWebAppFromPage(
+  webapps::AppId app_id = InstallWebAppFromPage(
       browser(), embedded_test_server()->GetURL("/web_apps/basic.html"));
 
   Browser* app_browser = LaunchWebAppBrowserAndWait(app_id);
@@ -629,7 +629,8 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerOriginTrialBrowserTest, OriginTrial) {
       }));
 
   // Install web app with origin trial token.
-  AppId app_id = InstallWebAppFromPage(browser(), GURL(kTestWebAppUrl));
+  webapps::AppId app_id =
+      InstallWebAppFromPage(browser(), GURL(kTestWebAppUrl));
 
   // Origin trial should grant the app access.
   WebAppProvider& provider = *WebAppProvider::GetForTest(browser()->profile());

@@ -81,7 +81,7 @@ class WebAppUninstallCommandTest : public WebAppTest {
 TEST_F(WebAppUninstallCommandTest, SimpleUninstallInternal) {
   auto web_app = test::CreateWebApp(GURL("https://www.example.com"),
                                     WebAppManagement::kSync);
-  AppId app_id = web_app->app_id();
+  webapps::AppId app_id = web_app->app_id();
   {
     ScopedRegistryUpdate update =
         provider()->sync_bridge_unsafe().BeginUpdate();
@@ -118,7 +118,7 @@ TEST_F(WebAppUninstallCommandTest, SimpleUninstallInternal) {
 TEST_F(WebAppUninstallCommandTest, SimpleUninstallExternal) {
   auto web_app = test::CreateWebApp(GURL("https://www.example.com"),
                                     WebAppManagement::kDefault);
-  AppId app_id = web_app->app_id();
+  webapps::AppId app_id = web_app->app_id();
   {
     ScopedRegistryUpdate update =
         provider()->sync_bridge_unsafe().BeginUpdate();
@@ -156,7 +156,7 @@ TEST_F(WebAppUninstallCommandTest, SimpleUninstallExternal) {
 TEST_F(WebAppUninstallCommandTest, FailedDataDeletion) {
   auto web_app = test::CreateWebApp(GURL("https://www.example.com"),
                                     WebAppManagement::kSync);
-  AppId app_id = web_app->app_id();
+  webapps::AppId app_id = web_app->app_id();
   {
     ScopedRegistryUpdate update =
         provider()->sync_bridge_unsafe().BeginUpdate();
@@ -193,7 +193,7 @@ TEST_F(WebAppUninstallCommandTest, FailedDataDeletion) {
 TEST_F(WebAppUninstallCommandTest, FailedOsHooksSetting) {
   auto web_app = test::CreateWebApp(GURL("https://www.example.com"),
                                     WebAppManagement::kSync);
-  AppId app_id = web_app->app_id();
+  webapps::AppId app_id = web_app->app_id();
   {
     ScopedRegistryUpdate update =
         provider()->sync_bridge_unsafe().BeginUpdate();
@@ -231,7 +231,7 @@ TEST_F(WebAppUninstallCommandTest, FailedOsHooksSetting) {
 TEST_F(WebAppUninstallCommandTest, TryToUninstallNonExistentApp) {
   auto web_app = test::CreateWebApp(GURL("https://www.example.com"),
                                     WebAppManagement::kSync);
-  AppId app_id = web_app->app_id();
+  webapps::AppId app_id = web_app->app_id();
 
   EXPECT_CALL(*os_integration_manager_,
               Synchronize(app_id, testing::_, testing::_))
@@ -262,7 +262,7 @@ TEST_F(WebAppUninstallCommandTest, TryToUninstallNonExistentApp) {
 TEST_F(WebAppUninstallCommandTest, CommandManagerShutdownThrowsError) {
   auto web_app = test::CreateWebApp(GURL("https://www.example.com"),
                                     WebAppManagement::kSync);
-  AppId app_id = web_app->app_id();
+  webapps::AppId app_id = web_app->app_id();
   {
     ScopedRegistryUpdate update =
         provider()->sync_bridge_unsafe().BeginUpdate();
@@ -297,7 +297,7 @@ TEST_F(WebAppUninstallCommandTest, CommandManagerShutdownThrowsError) {
 TEST_F(WebAppUninstallCommandTest, UserUninstalledPrefsFilled) {
   auto web_app = test::CreateWebApp(GURL("https://www.example.com"),
                                     WebAppManagement::kDefault);
-  AppId app_id = web_app->app_id();
+  webapps::AppId app_id = web_app->app_id();
   web_app->AddInstallURLToManagementExternalConfigMap(
       WebAppManagement::kDefault, GURL("https://www.example.com/install"));
   {
@@ -340,7 +340,7 @@ TEST_F(WebAppUninstallCommandTest, UserUninstalledPrefsFilled) {
 TEST_F(WebAppUninstallCommandTest, ExternalConfigMapMissing) {
   auto web_app = test::CreateWebApp(GURL("https://www.example.com"),
                                     WebAppManagement::kDefault);
-  AppId app_id = web_app->app_id();
+  webapps::AppId app_id = web_app->app_id();
   {
     ScopedRegistryUpdate update =
         provider()->sync_bridge_unsafe().BeginUpdate();
@@ -385,7 +385,7 @@ TEST_F(WebAppUninstallCommandTest, RemoveSourceAndTriggerOSUninstallation) {
   web_app->AddInstallURLToManagementExternalConfigMap(
       WebAppManagement::kDefault, GURL("https://example.com/install"));
   EXPECT_FALSE(web_app->CanUserUninstallWebApp());
-  AppId app_id = web_app->app_id();
+  webapps::AppId app_id = web_app->app_id();
   {
     ScopedRegistryUpdate update =
         provider()->sync_bridge_unsafe().BeginUpdate();
@@ -437,7 +437,7 @@ TEST_F(WebAppUninstallCommandTest, RemoveSourceAndTriggerOSUninstallation) {
 
   WebAppInstallManagerObserverAdapter observer(profile());
   observer.SetWebAppSourceRemovedDelegate(
-      base::BindLambdaForTesting([&](const AppId& app_id) {
+      base::BindLambdaForTesting([&](const webapps::AppId& app_id) {
         // The policy source will be removed and WebAppOsUninstallation is
         // registered.
         EXPECT_FALSE(provider()
@@ -467,7 +467,7 @@ class WebAppUninstallCommandSourceTest
 TEST_P(WebAppUninstallCommandSourceTest, RunTestForUninstallSource) {
   auto web_app = test::CreateWebApp(GURL("https://www.example.com"),
                                     WebAppManagement::kSync);
-  AppId app_id = web_app->app_id();
+  webapps::AppId app_id = web_app->app_id();
   {
     ScopedRegistryUpdate update =
         provider()->sync_bridge_unsafe().BeginUpdate();

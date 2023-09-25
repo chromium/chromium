@@ -46,7 +46,8 @@ using testing::_;
 
 using AppsList = std::vector<std::unique_ptr<WebApp>>;
 
-void RemoveWebAppFromAppsList(AppsList* apps_list, const AppId& app_id) {
+void RemoveWebAppFromAppsList(AppsList* apps_list,
+                              const webapps::AppId& app_id) {
   base::EraseIf(*apps_list, [app_id](const std::unique_ptr<WebApp>& app) {
     return app->app_id() == app_id;
   });
@@ -99,7 +100,8 @@ bool RegistryContainsSyncDataBatchChanges(
 
 std::unique_ptr<WebApp> CreateWebAppWithSyncOnlyFields(const std::string& url) {
   const GURL start_url(url);
-  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
+  const webapps::AppId app_id =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
 
   auto web_app = std::make_unique<WebApp>(app_id);
   web_app->AddSource(WebAppManagement::kSync);
@@ -121,7 +123,7 @@ AppsList CreateAppsList(const std::string& base_url, int num_apps) {
 }
 
 void InsertAppIntoRegistry(Registry* registry, std::unique_ptr<WebApp> app) {
-  AppId app_id = app->app_id();
+  webapps::AppId app_id = app->app_id();
   ASSERT_FALSE(base::Contains(*registry, app_id));
   registry->emplace(std::move(app_id), std::move(app));
 }
@@ -254,7 +256,7 @@ class WebAppSyncBridgeTest : public WebAppTest {
 
     sync_bridge().SetUninstallFromSyncCallbackForTesting(
         base::BindLambdaForTesting(
-            [&](const std::vector<AppId>& apps_to_uninstall,
+            [&](const std::vector<webapps::AppId>& apps_to_uninstall,
                 WebAppSyncBridge::RepeatingUninstallCallback callback) {
               ADD_FAILURE();
             }));
@@ -609,10 +611,10 @@ TEST_F(WebAppSyncBridgeTest, ApplyIncrementalSyncChanges_AddUpdateDelete) {
 
   sync_bridge().SetUninstallFromSyncCallbackForTesting(
       base::BindLambdaForTesting(
-          [&](const std::vector<AppId>& apps_to_uninstall,
+          [&](const std::vector<webapps::AppId>& apps_to_uninstall,
               WebAppSyncBridge::RepeatingUninstallCallback callback) {
             EXPECT_EQ(5ul, apps_to_uninstall.size());
-            for (const AppId& app_to_uninstall : apps_to_uninstall) {
+            for (const webapps::AppId& app_to_uninstall : apps_to_uninstall) {
               // The app must be registered.
               const WebApp* app = registrar().GetAppById(app_to_uninstall);
               // Sync expects that the apps are deleted by the delegate.
@@ -665,12 +667,12 @@ TEST_F(WebAppSyncBridgeTest,
   EXPECT_CALL(processor(), Delete(_, _)).Times(0);
 
   base::RunLoop run_loop;
-  std::vector<AppId> to_uninstall;
+  std::vector<webapps::AppId> to_uninstall;
   WebAppSyncBridge::RepeatingUninstallCallback uninstall_complete_callback;
 
   sync_bridge().SetUninstallFromSyncCallbackForTesting(
       base::BindLambdaForTesting(
-          [&](const std::vector<AppId>& apps_to_uninstall,
+          [&](const std::vector<webapps::AppId>& apps_to_uninstall,
               WebAppSyncBridge::RepeatingUninstallCallback callback) {
             to_uninstall = apps_to_uninstall;
             uninstall_complete_callback = callback;
@@ -684,7 +686,7 @@ TEST_F(WebAppSyncBridgeTest,
   EXPECT_EQ(5ul, to_uninstall.size());
 
   EXPECT_TRUE(IsDatabaseRegistryEqualToRegistrar());
-  for (const AppId& app_to_uninstall : to_uninstall) {
+  for (const webapps::AppId& app_to_uninstall : to_uninstall) {
     const WebApp* app = registrar().GetAppById(app_to_uninstall);
     EXPECT_TRUE(app);
     EXPECT_TRUE(app->is_uninstalling());
@@ -1262,7 +1264,7 @@ TEST_F(WebAppSyncBridgeTest,
 
 TEST_F(WebAppSyncBridgeTest, RetryIncompleteUninstalls) {
   AppsList initial_registry_apps = CreateAppsList("https://example.com/", 5);
-  std::vector<AppId> initial_app_ids;
+  std::vector<webapps::AppId> initial_app_ids;
   for (std::unique_ptr<WebApp>& app : initial_registry_apps) {
     app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
     app->SetIsUninstalling(true);
@@ -1274,7 +1276,7 @@ TEST_F(WebAppSyncBridgeTest, RetryIncompleteUninstalls) {
   base::RunLoop run_loop;
   sync_bridge().SetRetryIncompleteUninstallsCallbackForTesting(
       base::BindLambdaForTesting(
-          [&](const base::flat_set<AppId>& apps_to_uninstall) {
+          [&](const base::flat_set<webapps::AppId>& apps_to_uninstall) {
             EXPECT_EQ(apps_to_uninstall.size(), 5ul);
             EXPECT_THAT(apps_to_uninstall, ::testing::UnorderedElementsAreArray(
                                                apps_to_uninstall));

@@ -19,7 +19,7 @@ class BadgeManagerDelegateMac : public BadgeManagerDelegate {
   explicit BadgeManagerDelegateMac(Profile* profile,
                                    BadgeManager* badge_manager);
 
-  void OnAppBadgeUpdated(const web_app::AppId& app_id) override;
+  void OnAppBadgeUpdated(const webapps::AppId& app_id) override;
 };
 
 }  // namespace badging

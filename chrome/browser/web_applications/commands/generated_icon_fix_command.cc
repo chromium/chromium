@@ -25,7 +25,7 @@
 namespace web_app {
 
 GeneratedIconFixCommand::GeneratedIconFixCommand(
-    AppId app_id,
+    webapps::AppId app_id,
     base::OnceCallback<void(GeneratedIconFixResult)> callback)
     : WebAppCommandTemplate<SharedWebContentsWithAppLock>(
           "GeneratedIconFixCommand"),

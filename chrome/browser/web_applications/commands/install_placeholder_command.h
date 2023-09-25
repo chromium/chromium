@@ -54,12 +54,13 @@ class InstallPlaceholderCommand
 
  private:
   void Abort(webapps::InstallResultCode code);
-  void OnPlaceholderInstalled(webapps::InstallResultCode code, AppId app_id);
+  void OnPlaceholderInstalled(webapps::InstallResultCode code,
+                              webapps::AppId app_id);
   void OnUninstallAndReplaced(webapps::InstallResultCode code,
                               bool did_uninstall_and_replace);
 
   const raw_ptr<Profile> profile_;
-  const AppId app_id_;
+  const webapps::AppId app_id_;
   std::unique_ptr<SharedWebContentsWithAppLockDescription> lock_description_;
   std::unique_ptr<SharedWebContentsWithAppLock> lock_;
 

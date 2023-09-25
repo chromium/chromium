@@ -29,12 +29,12 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/common/web_app_id.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/views/test/dialog_test.h"
 #include "ui/views/test/widget_test.h"
@@ -84,7 +84,7 @@ bool MLPromotionBrowserTestBase::InstallAppForCurrentWebContents(
 #else
   web_app::WebAppProvider* provider =
       web_app::WebAppProvider::GetForTest(browser()->profile());
-  base::test::TestFuture<const web_app::AppId&, InstallResultCode>
+  base::test::TestFuture<const webapps::AppId&, InstallResultCode>
       install_future;
 
   provider->scheduler().FetchManifestAndInstall(
@@ -98,7 +98,7 @@ bool MLPromotionBrowserTestBase::InstallAppForCurrentWebContents(
     return success;
   }
 
-  const web_app::AppId& app_id = install_future.Get<web_app::AppId>();
+  const webapps::AppId& app_id = install_future.Get<webapps::AppId>();
   provider->sync_bridge_unsafe().SetAppIsLocallyInstalledForTesting(
       app_id, /*is_locally_installed=*/install_locally);
   return success;
@@ -112,7 +112,7 @@ bool MLPromotionBrowserTestBase::InstallAppFromUserInitiation(
   // TODO(b/287255120) : Build functionalities for Android.
   return false;
 #else
-  base::test::TestFuture<const web_app::AppId&, InstallResultCode>
+  base::test::TestFuture<const webapps::AppId&, InstallResultCode>
       install_future;
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        dialog_name);

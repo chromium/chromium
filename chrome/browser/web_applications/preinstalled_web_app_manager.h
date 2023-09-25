@@ -149,7 +149,8 @@ class PreinstalledWebAppManager {
                    std::vector<ExternalInstallOptions>);
   void OnExternalWebAppsSynchronized(
       ExternallyManagedAppManager::SynchronizeCallback callback,
-      std::map<InstallUrl, std::vector<AppId>> desired_uninstall_and_replaces,
+      std::map<InstallUrl, std::vector<webapps::AppId>>
+          desired_uninstall_and_replaces,
       std::map<InstallUrl, ExternallyManagedAppManager::InstallResult>
           install_results,
       std::map<InstallUrl, bool> uninstall_results);

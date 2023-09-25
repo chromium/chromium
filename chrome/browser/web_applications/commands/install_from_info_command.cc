@@ -15,11 +15,11 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace web_app {
 
@@ -38,7 +38,7 @@ InstallFromInfoCommand::InstallFromInfoCommand(
       app_id_(GenerateAppIdFromManifestId(manifest_id_)),
       install_callback_(base::BindOnce(
           [](OnceInstallCallback install_callback,
-             const AppId& app_id,
+             const webapps::AppId& app_id,
              webapps::InstallResultCode code,
              bool _) { std::move(install_callback).Run(app_id, code); },
           std::move(install_callback))),
@@ -66,7 +66,7 @@ InstallFromInfoCommand::InstallFromInfoCommand(
       app_id_(GenerateAppIdFromManifestId(manifest_id_)),
       install_callback_(base::BindOnce(
           [](OnceInstallCallback install_callback,
-             const AppId& app_id,
+             const webapps::AppId& app_id,
              webapps::InstallResultCode code,
              bool _) { std::move(install_callback).Run(app_id, code); },
           std::move(install_callback))),
@@ -85,7 +85,7 @@ InstallFromInfoCommand::InstallFromInfoCommand(
     webapps::WebappInstallSource install_surface,
     InstallAndReplaceCallback install_callback,
     const WebAppInstallParams& install_params,
-    const std::vector<AppId>& apps_or_extensions_to_uninstall)
+    const std::vector<webapps::AppId>& apps_or_extensions_to_uninstall)
     : WebAppCommandTemplate<AppLock>("InstallFromInfoCommand"),
       profile_(*profile),
       manifest_id_(
@@ -131,7 +131,7 @@ base::Value InstallFromInfoCommand::ToDebugValue() const {
 }
 
 void InstallFromInfoCommand::OnInstallFromInfoJobCompleted(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     webapps::InstallResultCode code,
     OsHooksErrors os_hook_errors) {
   webapps::InstallableMetrics::TrackInstallResult(webapps::IsSuccess(code));

@@ -31,7 +31,7 @@ bool FileHandlingIconsSupportedByOs() {
   return false;
 }
 
-void RegisterFileHandlersWithOsTask(const AppId& app_id,
+void RegisterFileHandlersWithOsTask(const webapps::AppId& app_id,
                                     const std::wstring& app_name,
                                     const base::FilePath& profile_path,
                                     const apps::FileHandlers& file_handlers,
@@ -94,7 +94,7 @@ void RegisterFileHandlersWithOsTask(const AppId& app_id,
       GetProgIdForApp(profile_path, app_id), file_handler_progids);
 }
 
-void RegisterFileHandlersWithOs(const AppId& app_id,
+void RegisterFileHandlersWithOs(const webapps::AppId& app_id,
                                 const std::string& app_name,
                                 const base::FilePath& profile_path,
                                 const apps::FileHandlers& file_handlers,
@@ -120,7 +120,7 @@ void DeleteAppLauncher(const base::FilePath& launcher_path) {
   base::DeleteFile(launcher_path);
 }
 
-void UnregisterFileHandlersWithOs(const AppId& app_id,
+void UnregisterFileHandlersWithOs(const webapps::AppId& app_id,
                                   const base::FilePath& profile_path,
                                   ResultCallback callback) {
   // The app-specific-launcher file name must be calculated before cleaning up

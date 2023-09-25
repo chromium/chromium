@@ -144,7 +144,7 @@ class TestingAppShimManager : public AppShimManager {
 
   MOCK_METHOD1(ProfileForPath, Profile*(const base::FilePath&));
   MOCK_METHOD1(ProfileForBackgroundShimLaunch,
-               Profile*(const web_app::AppId& app_id));
+               Profile*(const webapps::AppId& app_id));
   void LoadProfileAsync(const base::FilePath& path,
                         base::OnceCallback<void(Profile*)> callback) override {
     CaptureLoadProfileCallback(path, std::move(callback));

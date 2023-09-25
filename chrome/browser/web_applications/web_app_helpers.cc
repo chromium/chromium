@@ -39,20 +39,21 @@ std::string GenerateApplicationNameFromURL(const GURL& url) {
   return base::StrCat({url.host_piece(), "_", url.path_piece()});
 }
 
-std::string GenerateApplicationNameFromAppId(const AppId& app_id) {
+std::string GenerateApplicationNameFromAppId(const webapps::AppId& app_id) {
   std::string t(kCrxAppPrefix);
   t.append(app_id);
   return t;
 }
 
-AppId GetAppIdFromApplicationName(const std::string& app_name) {
+webapps::AppId GetAppIdFromApplicationName(const std::string& app_name) {
   std::string prefix(kCrxAppPrefix);
   if (app_name.substr(0, prefix.length()) != prefix)
     return std::string();
   return app_name.substr(prefix.length());
 }
 
-AppId GenerateAppIdFromManifestId(const ManifestId& manifest_id) {
+webapps::AppId GenerateAppIdFromManifestId(
+    const webapps::ManifestId& manifest_id) {
   // The app ID is hashed twice: here and in GenerateId.
   // The double-hashing is for historical reasons and it needs to stay
   // this way for backwards compatibility. (Back then, a web app's input to the
@@ -61,8 +62,9 @@ AppId GenerateAppIdFromManifestId(const ManifestId& manifest_id) {
       crypto::SHA256HashString(manifest_id.spec()));
 }
 
-AppId GenerateAppId(const absl::optional<std::string>& manifest_id_path,
-                    const GURL& start_url) {
+webapps::AppId GenerateAppId(
+    const absl::optional<std::string>& manifest_id_path,
+    const GURL& start_url) {
   if (!manifest_id_path) {
     return GenerateAppIdFromManifestId(
         GenerateManifestIdFromStartUrlOnly(start_url));
@@ -71,8 +73,8 @@ AppId GenerateAppId(const absl::optional<std::string>& manifest_id_path,
       GenerateManifestId(manifest_id_path.value(), start_url));
 }
 
-ManifestId GenerateManifestId(const std::string& manifest_id_path,
-                              const GURL& start_url) {
+webapps::ManifestId GenerateManifestId(const std::string& manifest_id_path,
+                                       const GURL& start_url) {
   // When manifest_id is specified, the app id is generated from
   // <start_url_origin>/<manifest_id_path>.
   // Note: start_url.DeprecatedGetOriginAsURL().spec() returns the origin ending
@@ -83,12 +85,13 @@ ManifestId GenerateManifestId(const std::string& manifest_id_path,
   return app_id.GetWithoutRef();
 }
 
-AppId GenerateAppIdFromManifest(const blink::mojom::Manifest& manifest) {
+webapps::AppId GenerateAppIdFromManifest(
+    const blink::mojom::Manifest& manifest) {
   CHECK(manifest.id.is_valid());
   return GenerateAppIdFromManifestId(manifest.id);
 }
 
-ManifestId GenerateManifestIdFromStartUrlOnly(const GURL& start_url) {
+webapps::ManifestId GenerateManifestIdFromStartUrlOnly(const GURL& start_url) {
   CHECK(start_url.is_valid()) << start_url.spec();
   return start_url.GetWithoutRef();
 }
@@ -105,9 +108,10 @@ bool IsValidWebAppUrl(const GURL& app_url) {
           (app_url.host() == password_manager::kChromeUIPasswordManagerHost));
 }
 
-absl::optional<AppId> FindInstalledAppWithUrlInScope(Profile* profile,
-                                                     const GURL& url,
-                                                     bool window_only) {
+absl::optional<webapps::AppId> FindInstalledAppWithUrlInScope(
+    Profile* profile,
+    const GURL& url,
+    bool window_only) {
   auto* provider = WebAppProvider::GetForLocalAppsUnchecked(profile);
   return provider ? provider->registrar_unsafe().FindInstalledAppWithUrlInScope(
                         url, window_only)

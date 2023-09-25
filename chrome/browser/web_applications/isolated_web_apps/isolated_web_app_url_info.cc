@@ -132,7 +132,7 @@ const url::Origin& IsolatedWebAppUrlInfo::origin() const {
   return origin_;
 }
 
-const AppId& IsolatedWebAppUrlInfo::app_id() const {
+const webapps::AppId& IsolatedWebAppUrlInfo::app_id() const {
   return app_id_;
 }
 

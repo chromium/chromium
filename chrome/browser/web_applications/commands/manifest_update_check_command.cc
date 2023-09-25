@@ -27,7 +27,7 @@ namespace web_app {
 
 ManifestUpdateCheckCommand::ManifestUpdateCheckCommand(
     const GURL& url,
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     base::Time check_time,
     base::WeakPtr<content::WebContents> web_contents,
     CompletedCallback callback,

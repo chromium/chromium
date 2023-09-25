@@ -26,11 +26,11 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/common/web_app_id.h"
 #include "net/http/http_status_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -54,7 +54,7 @@ class InstallPlaceholderJobWrapperCommand
         data_retriever_(std::move(data_retriever)),
         lock_description_(
             std::make_unique<SharedWebContentsWithAppLockDescription>(
-                base::flat_set<AppId>{
+                base::flat_set<webapps::AppId>{
                     GenerateAppId(/*manifest_id_path=*/absl::nullopt,
                                   install_options.install_url)})) {}
 
@@ -76,7 +76,8 @@ class InstallPlaceholderJobWrapperCommand
     install_placeholder_job_->Start();
   }
 
-  void OnPlaceholderInstalled(webapps::InstallResultCode code, AppId app_id) {
+  void OnPlaceholderInstalled(webapps::InstallResultCode code,
+                              webapps::AppId app_id) {
     SignalCompletionAndSelfDestruct(
         webapps::IsSuccess(code) ? CommandResult::kSuccess
                                  : CommandResult::kFailure,
@@ -143,14 +144,14 @@ class InstallPlaceholderJobTest : public WebAppTest {
 TEST_F(InstallPlaceholderJobTest, InstallPlaceholder) {
   ExternalInstallOptions options(kInstallUrl, mojom::UserDisplayMode::kBrowser,
                                  ExternalInstallSource::kExternalPolicy);
-  base::test::TestFuture<webapps::InstallResultCode, AppId> future;
+  base::test::TestFuture<webapps::InstallResultCode, webapps::AppId> future;
 
   provider()->command_manager().ScheduleCommand(
       std::make_unique<InstallPlaceholderJobWrapperCommand>(
           profile(), options, future.GetCallback()));
 
   EXPECT_EQ(future.Get<0>(), webapps::InstallResultCode::kSuccessNewInstall);
-  const AppId app_id = future.Get<1>();
+  const webapps::AppId app_id = future.Get<1>();
   EXPECT_TRUE(provider()->registrar_unsafe().IsPlaceholderApp(
       app_id, WebAppManagement::kPolicy));
   EXPECT_EQ(fake_os_integration_manager().num_create_shortcuts_calls(), 1u);
@@ -174,7 +175,7 @@ TEST_F(InstallPlaceholderJobTest, InstallPlaceholderWithOverrideIconUrl) {
                                  ExternalInstallSource::kExternalPolicy);
   const GURL icon_url("https://example.com/test.png");
   options.override_icon_url = icon_url;
-  base::test::TestFuture<webapps::InstallResultCode, AppId> future;
+  base::test::TestFuture<webapps::InstallResultCode, webapps::AppId> future;
 
   auto data_retriever =
       std::make_unique<testing::StrictMock<MockDataRetriever>>();
@@ -200,7 +201,7 @@ TEST_F(InstallPlaceholderJobTest, InstallPlaceholderWithOverrideIconUrl) {
   provider()->command_manager().ScheduleCommand(std::move(command));
 
   EXPECT_EQ(future.Get<0>(), webapps::InstallResultCode::kSuccessNewInstall);
-  const AppId app_id = future.Get<1>();
+  const webapps::AppId app_id = future.Get<1>();
   EXPECT_TRUE(provider()->registrar_unsafe().IsPlaceholderApp(
       app_id, WebAppManagement::kPolicy));
   EXPECT_EQ(fake_os_integration_manager().num_create_shortcuts_calls(), 1u);

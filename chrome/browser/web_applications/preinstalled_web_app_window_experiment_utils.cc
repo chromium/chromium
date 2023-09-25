@@ -244,7 +244,7 @@ bool DetermineEligibility(Profile* profile, WebAppRegistrar& registrar) {
 // Apps launched before experiment:
 ///////////////////////////////////////////////////////////////////////////////
 
-bool HasLaunchedAppBeforeExperiment(const AppId& app_id,
+bool HasLaunchedAppBeforeExperiment(const webapps::AppId& app_id,
                                     PrefService* pref_service) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -256,12 +256,12 @@ bool HasLaunchedAppBeforeExperiment(const AppId& app_id,
 
 void SetHasLaunchedAppsBeforePref(
     PrefService* pref_service,
-    const base::flat_set<AppId>& preinstalled_apps_launched_before) {
+    const base::flat_set<webapps::AppId>& preinstalled_apps_launched_before) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   ScopedListPrefUpdate update(pref_service, kAppIdsLaunchedBeforePrefKey);
   update->clear();
-  for (const AppId& app_id : preinstalled_apps_launched_before) {
+  for (const webapps::AppId& app_id : preinstalled_apps_launched_before) {
     update->Append(app_id);
   }
 }
@@ -270,14 +270,14 @@ void SetHasLaunchedAppsBeforePref(
 // Display mode:
 ///////////////////////////////////////////////////////////////////////////////
 
-base::flat_set<AppId> GetAppIdsWithUserOverridenDisplayModePref(
+base::flat_set<webapps::AppId> GetAppIdsWithUserOverridenDisplayModePref(
     PrefService* pref_service) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   const base::Value::List& user_overridden_app_ids =
       pref_service->GetList(kAppIdsWithUserOverriddenDisplayModePrefKey);
 
-  std::vector<AppId> app_ids;
+  std::vector<webapps::AppId> app_ids;
   for (auto& app_id_value : user_overridden_app_ids) {
     if (app_id_value.is_string()) {
       app_ids.push_back(app_id_value.GetString());
@@ -288,7 +288,7 @@ base::flat_set<AppId> GetAppIdsWithUserOverridenDisplayModePref(
 
 // Add `app_id` to list of apps with user-overridden display mode.
 void SetUserOverridenDisplayModePref(PrefService* pref_service,
-                                     const AppId& app_id) {
+                                     const webapps::AppId& app_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   ScopedListPrefUpdate update(pref_service,

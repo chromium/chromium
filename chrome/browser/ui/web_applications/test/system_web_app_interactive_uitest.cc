@@ -558,8 +558,8 @@ class SystemWebAppManagerMultiDesktopLaunchBrowserTest
     run_loop.Run();
   }
 
-  AppId GetAppId(Profile* profile) {
-    absl::optional<AppId> app_id =
+  webapps::AppId GetAppId(Profile* profile) {
+    absl::optional<webapps::AppId> app_id =
         ash::SystemWebAppManager::Get(profile)->GetAppIdForSystemApp(
             installation_->GetType());
     CHECK(app_id.has_value());
@@ -567,7 +567,7 @@ class SystemWebAppManagerMultiDesktopLaunchBrowserTest
   }
 
   Browser* LaunchAppOnProfile(Profile* profile) {
-    AppId app_id = GetAppId(profile);
+    webapps::AppId app_id = GetAppId(profile);
 
     auto launch_params = apps::AppLaunchParams(
         app_id, apps::LaunchContainer::kLaunchContainerWindow,
@@ -678,8 +678,8 @@ IN_PROC_BROWSER_TEST_F(SystemWebAppManagerMultiDesktopLaunchBrowserTest,
   Profile* profile2 = ash::ProfileHelper::Get()->GetProfileByUser(
       user_manager->FindUser(account_id2_));
   WaitForSystemWebAppInstall(profile2);
-  const AppId& app_id1 = GetAppId(profile1);
-  const AppId& app_id2 = GetAppId(profile2);
+  const webapps::AppId& app_id1 = GetAppId(profile1);
+  const webapps::AppId& app_id2 = GetAppId(profile2);
 
   g_browser_process->profile_manager()
       ->GetDeleteProfileHelper()
@@ -820,7 +820,8 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchOmniboxNavigateBrowsertest,
   EXPECT_EQ(web_contents->GetLastCommittedURL(), GetStartUrl());
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
-  // Verifies the tab has an associated tab helper for System App's AppId.
+  // Verifies the tab has an associated tab helper for System App's
+  // webapps::AppId.
   EXPECT_EQ(*web_app::WebAppTabHelper::GetAppId(web_contents),
             *ash::GetAppIdForSystemWebApp(browser()->profile(), GetAppType()));
 }

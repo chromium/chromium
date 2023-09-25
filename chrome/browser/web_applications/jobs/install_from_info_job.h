@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
@@ -40,7 +41,7 @@ namespace web_app {
 class InstallFromInfoJob {
  public:
   using ResultCallback =
-      base::OnceCallback<void(const AppId& app_id,
+      base::OnceCallback<void(const webapps::AppId& app_id,
                               webapps::InstallResultCode code,
                               OsHooksErrors os_hook_errors)>;
 
@@ -60,7 +61,7 @@ class InstallFromInfoJob {
  private:
   void Abort(webapps::InstallResultCode code);
 
-  void OnInstallCompleted(const AppId& app_id,
+  void OnInstallCompleted(const webapps::AppId& app_id,
                           webapps::InstallResultCode code,
                           OsHooksErrors os_hooks_errors);
 
@@ -68,8 +69,8 @@ class InstallFromInfoJob {
                                        OsHooksErrors os_hook_errors);
 
   const raw_ref<Profile> profile_;
-  const ManifestId manifest_id_;
-  const AppId app_id_;
+  const webapps::ManifestId manifest_id_;
+  const webapps::AppId app_id_;
   const bool overwrite_existing_manifest_fields_;
   const webapps::WebappInstallSource install_surface_;
   absl::optional<WebAppInstallParams> install_params_;

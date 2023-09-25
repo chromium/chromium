@@ -88,7 +88,7 @@ bool WriteProtoBlocking(scoped_refptr<FileUtilsWrapper> utils,
 
 bool DeleteTranslationsBlocking(scoped_refptr<FileUtilsWrapper> utils,
                                 const base::FilePath& web_apps_directory,
-                                const AppId& app_id) {
+                                const webapps::AppId& app_id) {
   if (!utils->CreateDirectory(web_apps_directory)) {
     return false;
   }
@@ -102,7 +102,7 @@ bool DeleteTranslationsBlocking(scoped_refptr<FileUtilsWrapper> utils,
 bool WriteTranslationsBlocking(
     scoped_refptr<FileUtilsWrapper> utils,
     const base::FilePath& web_apps_directory,
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     base::flat_map<Locale, blink::Manifest::TranslationItem> translations) {
   if (!utils->CreateDirectory(web_apps_directory)) {
     return false;
@@ -146,7 +146,7 @@ void WebAppTranslationManager::Start() {
 }
 
 void WebAppTranslationManager::WriteTranslations(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     const base::flat_map<Locale, blink::Manifest::TranslationItem>&
         translations,
     WriteCallback callback) {
@@ -171,7 +171,7 @@ void WebAppTranslationManager::WriteTranslations(
       std::move(callback));
 }
 
-void WebAppTranslationManager::DeleteTranslations(const AppId& app_id,
+void WebAppTranslationManager::DeleteTranslations(const webapps::AppId& app_id,
                                                   WriteCallback callback) {
   if (!base::FeatureList::IsEnabled(
           blink::features::kWebAppEnableTranslations)) {
@@ -203,7 +203,7 @@ void WebAppTranslationManager::OnTranslationsRead(
   const std::string& locale = g_browser_process->GetApplicationLocale();
 
   for (const auto& id_to_translations : proto.id_to_translations_map()) {
-    const AppId& app_id = id_to_translations.first;
+    const webapps::AppId& app_id = id_to_translations.first;
 
     for (const auto& locale_to_overrides :
          id_to_translations.second.locale_to_overrides_map()) {
@@ -218,7 +218,8 @@ void WebAppTranslationManager::OnTranslationsRead(
   std::move(callback).Run(translation_cache_);
 }
 
-std::string WebAppTranslationManager::GetTranslatedName(const AppId& app_id) {
+std::string WebAppTranslationManager::GetTranslatedName(
+    const webapps::AppId& app_id) {
   auto it = translation_cache_.find(app_id);
   if (it != translation_cache_.end() && it->second.name) {
     return it->second.name.value();
@@ -227,7 +228,7 @@ std::string WebAppTranslationManager::GetTranslatedName(const AppId& app_id) {
 }
 
 std::string WebAppTranslationManager::GetTranslatedDescription(
-    const AppId& app_id) {
+    const webapps::AppId& app_id) {
   auto it = translation_cache_.find(app_id);
   if (it != translation_cache_.end() && it->second.description) {
     return it->second.description.value();

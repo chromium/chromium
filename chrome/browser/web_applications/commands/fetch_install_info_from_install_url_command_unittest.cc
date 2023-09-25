@@ -38,7 +38,7 @@ class FetchInstallInfoFromInstallUrlCommandTest : public WebAppTest {
  protected:
   std::unique_ptr<WebAppInstallInfo> CreateAndRunCommand(
       GURL install_url,
-      ManifestId manifest_id,
+      webapps::ManifestId manifest_id,
       bool disable_web_app_info = false,
       bool valid_manifest = true,
       WebAppUrlLoader::Result url_load_result =

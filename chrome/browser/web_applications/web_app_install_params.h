@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -31,10 +32,10 @@ struct WebAppInstallInfo;
 
 // |app_id| may be empty on failure.
 using OnceInstallCallback =
-    base::OnceCallback<void(const AppId& app_id,
+    base::OnceCallback<void(const webapps::AppId& app_id,
                             webapps::InstallResultCode code)>;
 using OnceUninstallCallback =
-    base::OnceCallback<void(const AppId& app_id, bool uninstalled)>;
+    base::OnceCallback<void(const webapps::AppId& app_id, bool uninstalled)>;
 
 // Callback used to indicate whether a user has accepted the installation of a
 // web app.

@@ -180,10 +180,10 @@ class WebAppShimManagerDelegateTest : public WebAppTest {
               expected_results.protocol_handler_launch_url);
   }
 
-  const AppId& AppId() const { return app_id_; }
+  const webapps::AppId& AppId() const { return app_id_; }
 
  private:
-  web_app::AppId app_id_;
+  webapps::AppId app_id_;
 };
 
 TEST_F(WebAppShimManagerDelegateTest, LaunchApp) {
@@ -486,7 +486,7 @@ TEST_F(WebAppShimManagerDelegateTest, GetAppShortcutsMenuItemInfos) {
     shortcut_info3.url = GURL("https://anothersite.com");
     web_app_info->shortcuts_menu_item_infos.push_back(shortcut_info3);
 
-    web_app::AppId shortcut_app_id =
+    webapps::AppId shortcut_app_id =
         web_app::test::InstallWebApp(profile(), std::move(web_app_info));
     auto shortcut_menu_items =
         shim_manager.GetAppShortcutsMenuItemInfos(profile(), shortcut_app_id);

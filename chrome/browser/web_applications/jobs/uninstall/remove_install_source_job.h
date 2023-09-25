@@ -12,6 +12,7 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace web_app {
 
@@ -22,11 +23,11 @@ class RemoveInstallSourceJob : public UninstallJob {
  public:
   RemoveInstallSourceJob(webapps::WebappUninstallSource uninstall_source,
                          Profile& profile,
-                         AppId app_id,
+                         webapps::AppId app_id,
                          WebAppManagement::Type install_source);
   ~RemoveInstallSourceJob() override;
 
-  const AppId& app_id() const { return app_id_; }
+  const webapps::AppId& app_id() const { return app_id_; }
 
   // UninstallJob:
   void Start(AllAppsLock& lock, Callback callback) override;
@@ -40,7 +41,7 @@ class RemoveInstallSourceJob : public UninstallJob {
   webapps::WebappUninstallSource uninstall_source_;
   // `this` must be owned by `profile_`.
   raw_ref<Profile> profile_;
-  AppId app_id_;
+  webapps::AppId app_id_;
   WebAppManagement::Type install_source_;
 
   // `this` must be started and run within the scope of a WebAppCommand's

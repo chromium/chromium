@@ -9,6 +9,7 @@
 
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
@@ -29,16 +30,16 @@ class FakeOsIntegrationManager : public OsIntegrationManager {
   ~FakeOsIntegrationManager() override;
 
   // OsIntegrationManager:
-  void InstallOsHooks(const AppId& app_id,
+  void InstallOsHooks(const webapps::AppId& app_id,
                       InstallOsHooksCallback callback,
                       std::unique_ptr<WebAppInstallInfo> web_app_info,
                       InstallOsHooksOptions options) override;
-  void UninstallOsHooks(const AppId& app_id,
+  void UninstallOsHooks(const webapps::AppId& app_id,
                         const OsHooksOptions& os_hooks,
                         UninstallOsHooksCallback callback) override;
-  void UninstallAllOsHooks(const AppId& app_id,
+  void UninstallAllOsHooks(const webapps::AppId& app_id,
                            UninstallOsHooksCallback callback) override;
-  void UpdateOsHooks(const AppId& app_id,
+  void UpdateOsHooks(const webapps::AppId& app_id,
                      base::StringPiece old_name,
                      FileHandlerUpdateAction file_handlers_need_os_update,
                      const WebAppInstallInfo& web_app_info,
@@ -51,7 +52,7 @@ class FakeOsIntegrationManager : public OsIntegrationManager {
   //
   // See OsIntegrationSynchronizeCommandTest as an example of using this
   // function.
-  void Synchronize(const AppId& app_id,
+  void Synchronize(const webapps::AppId& app_id,
                    base::OnceClosure callback,
                    absl::optional<SynchronizeOsOptions> options) override;
 
@@ -95,7 +96,7 @@ class FakeOsIntegrationManager : public OsIntegrationManager {
     return last_options_;
   }
 
-  void SetNextCreateShortcutsResult(const AppId& app_id, bool success);
+  void SetNextCreateShortcutsResult(const webapps::AppId& app_id, bool success);
 
   void SetFileHandlerManager(
       std::unique_ptr<WebAppFileHandlerManager> file_handler_manager);
@@ -120,7 +121,7 @@ class FakeOsIntegrationManager : public OsIntegrationManager {
   absl::optional<InstallOsHooksOptions> last_options_;
 
   bool can_create_shortcuts_ = true;
-  std::map<AppId, bool> next_create_shortcut_results_;
+  std::map<webapps::AppId, bool> next_create_shortcut_results_;
 };
 
 // Stub test shortcut manager.
@@ -128,10 +129,11 @@ class TestShortcutManager : public WebAppShortcutManager {
  public:
   explicit TestShortcutManager(Profile* profile);
   ~TestShortcutManager() override;
-  std::unique_ptr<ShortcutInfo> BuildShortcutInfo(const AppId& app_id) override;
-  void SetShortcutInfoForApp(const AppId& app_id,
+  std::unique_ptr<ShortcutInfo> BuildShortcutInfo(
+      const webapps::AppId& app_id) override;
+  void SetShortcutInfoForApp(const webapps::AppId& app_id,
                              std::unique_ptr<ShortcutInfo> shortcut_info);
-  void GetShortcutInfoForApp(const AppId& app_id,
+  void GetShortcutInfoForApp(const webapps::AppId& app_id,
                              GetShortcutInfoCallback callback) override;
   void GetAppExistingShortCutLocation(
       ShortcutLocationCallback callback,
@@ -141,7 +143,7 @@ class TestShortcutManager : public WebAppShortcutManager {
     existing_shortcut_locations_[app_url] = locations;
   }
 
-  std::map<AppId, std::unique_ptr<ShortcutInfo>> shortcut_info_map_;
+  std::map<webapps::AppId, std::unique_ptr<ShortcutInfo>> shortcut_info_map_;
   std::map<GURL, ShortcutLocations> existing_shortcut_locations_;
 };
 }  // namespace web_app

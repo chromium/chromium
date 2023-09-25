@@ -54,7 +54,7 @@ class UninstallAllUserInstalledWebAppsCommand
   const raw_ref<Profile> profile_;
   Callback callback_;
 
-  std::vector<AppId> ids_to_uninstall_;
+  std::vector<webapps::AppId> ids_to_uninstall_;
   std::vector<std::pair<std::unique_ptr<RemoveInstallSourceJob>,
                         WebAppManagement::Type>>
       pending_jobs_;

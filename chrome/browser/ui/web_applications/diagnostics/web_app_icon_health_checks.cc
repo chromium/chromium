@@ -35,7 +35,8 @@ base::WeakPtr<WebAppIconHealthChecks> WebAppIconHealthChecks::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void WebAppIconHealthChecks::OnWebAppWillBeUninstalled(const AppId& app_id) {
+void WebAppIconHealthChecks::OnWebAppWillBeUninstalled(
+    const webapps::AppId& app_id) {
   if (running_diagnostics_.erase(app_id) > 0)
     run_complete_callback_.Run();
 }
@@ -48,13 +49,14 @@ void WebAppIconHealthChecks::RunDiagnostics() {
 
   install_manager_observation_.Observe(&provider->install_manager());
 
-  std::vector<AppId> app_ids = provider->registrar_unsafe().GetAppIds();
+  std::vector<webapps::AppId> app_ids =
+      provider->registrar_unsafe().GetAppIds();
   run_complete_callback_ = base::BarrierClosure(
       app_ids.size(),
       base::BindOnce(&WebAppIconHealthChecks::RecordDiagnosticResults,
                      GetWeakPtr()));
 
-  for (const AppId& app_id : app_ids) {
+  for (const webapps::AppId& app_id : app_ids) {
     WebAppIconDiagnostic* diagnostic =
         running_diagnostics_
             .insert_or_assign(app_id, std::make_unique<WebAppIconDiagnostic>(
@@ -66,7 +68,7 @@ void WebAppIconHealthChecks::RunDiagnostics() {
 }
 
 void WebAppIconHealthChecks::SaveDiagnosticForApp(
-    AppId app_id,
+    webapps::AppId app_id,
     absl::optional<WebAppIconDiagnostic::Result> result) {
   running_diagnostics_.erase(app_id);
   if (result)

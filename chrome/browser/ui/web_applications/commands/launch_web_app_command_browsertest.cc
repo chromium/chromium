@@ -92,7 +92,7 @@ class LaunchWebAppCommandTest : public WebAppControllerBrowserTest {
     return params;
   }
 
-  AppId app_id_;
+  webapps::AppId app_id_;
 };
 
 IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, TabbedLaunchCurrentBrowser) {

@@ -9,10 +9,10 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
@@ -52,7 +52,7 @@ TabbedWebAppNavigationThrottle::MaybeCreateThrottleFor(
   if (!provider)
     return nullptr;
 
-  const AppId& app_id = browser->app_controller()->app_id();
+  const webapps::AppId& app_id = browser->app_controller()->app_id();
 
   absl::optional<GURL> home_tab_url =
       provider->registrar_unsafe().GetAppPinnedHomeTabUrl(app_id);
@@ -81,7 +81,7 @@ TabbedWebAppNavigationThrottle::WillStartRequest() {
   web_app::AppBrowserController* app_controller = browser->app_controller();
   DCHECK(app_controller);
 
-  const AppId& app_id = app_controller->app_id();
+  const webapps::AppId& app_id = app_controller->app_id();
 
   absl::optional<GURL> home_tab_url =
       provider->registrar_unsafe().GetAppPinnedHomeTabUrl(app_id);

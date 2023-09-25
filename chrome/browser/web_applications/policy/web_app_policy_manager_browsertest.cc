@@ -22,7 +22,6 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -31,6 +30,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
@@ -205,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest, AppIdWhenNoManifestId) {
   future.Get();
 
   const GURL start_url = https_server()->GetURL("/web_apps/basic.html");
-  const AppId app_id = GenerateAppIdFromManifestId(
+  const webapps::AppId app_id = GenerateAppIdFromManifestId(
       GenerateManifestIdFromStartUrlOnly(start_url));
   const WebApp* app = provider.registrar_unsafe().GetAppById(app_id);
 
@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest, AppIdWhenNoManifestId) {
 // Scenario: App with install_url kInstallUrl has a start_url kStartUrl
 // specified in manifest. Next time we navigate to kStartUrl, but we still
 // need to override the manifest even though the policy key is kInstallUrl.
-// This is done by matching the AppId.
+// This is done by matching the webapps::AppId.
 // TODO(crbug.com/1415979): Flaky on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_MismatchedInstallAndStartUrl DISABLED_MismatchedInstallAndStartUrl
@@ -301,7 +301,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest,
   web_app_info_default->title = u"Example Default App";
   web_app_info_default->user_display_mode = mojom::UserDisplayMode::kStandalone;
   web_app_info_default->install_url = default_install_url;
-  const AppId& app_id_default =
+  const webapps::AppId& app_id_default =
       test::InstallWebApp(profile(), std::move(web_app_info_default), true,
                           webapps::WebappInstallSource::EXTERNAL_DEFAULT);
 
@@ -314,7 +314,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest,
   web_app_info_policy->user_display_mode = mojom::UserDisplayMode::kStandalone;
   web_app_info_policy->install_url = policy_install_url;
 
-  const AppId& app_id_policy =
+  const webapps::AppId& app_id_policy =
       test::InstallWebApp(profile(), std::move(web_app_info_policy), true,
                           webapps::WebappInstallSource::EXTERNAL_POLICY);
   EXPECT_NE(app_id_default, app_id_policy);
@@ -363,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest,
   web_app_info_default->title = u"Example Default App";
   web_app_info_default->user_display_mode = mojom::UserDisplayMode::kStandalone;
   web_app_info_default->install_url = default_install_url;
-  const AppId& app_id_default =
+  const webapps::AppId& app_id_default =
       test::InstallWebApp(profile(), std::move(web_app_info_default), true,
                           webapps::WebappInstallSource::EXTERNAL_DEFAULT);
 
@@ -374,7 +374,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest,
   web_app_info_policy->user_display_mode = mojom::UserDisplayMode::kStandalone;
   web_app_info_policy->install_url = policy_install_url;
 
-  const AppId& app_id_policy =
+  const webapps::AppId& app_id_policy =
       test::InstallWebApp(profile(), std::move(web_app_info_policy), true,
                           webapps::WebappInstallSource::EXTERNAL_POLICY);
   EXPECT_NE(app_id_default, app_id_policy);
@@ -412,7 +412,8 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest, MigratingPolicyApp) {
   auto install_info = std::make_unique<WebAppInstallInfo>();
   install_info->start_url = GURL("https://some.app.com");
   install_info->title = u"some app";
-  AppId old_app_id = test::InstallWebApp(profile(), std::move(install_info));
+  webapps::AppId old_app_id =
+      test::InstallWebApp(profile(), std::move(install_info));
 
   WebAppTestUninstallObserver uninstall_observer(profile());
   uninstall_observer.BeginListening({old_app_id});
@@ -470,7 +471,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerGuestModeTest,
                                     std::move(app_list));
   EXPECT_TRUE(future.Wait());
 
-  const AppId& app_id =
+  const webapps::AppId& app_id =
       GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(kInstallUrl));
 
   // This test should pass on all platforms, including on a ChromeOS

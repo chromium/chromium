@@ -487,7 +487,7 @@ WebAppPublisherHelper::BadgeManagerDelegate::BadgeManagerDelegate(
 WebAppPublisherHelper::BadgeManagerDelegate::~BadgeManagerDelegate() = default;
 
 void WebAppPublisherHelper::BadgeManagerDelegate::OnAppBadgeUpdated(
-    const AppId& app_id) {
+    const webapps::AppId& app_id) {
   if (!publisher_helper_) {
     return;
   }
@@ -787,7 +787,7 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
 }
 
 apps::AppPtr WebAppPublisherHelper::ConvertUninstalledWebApp(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     webapps::WebappUninstallSource uninstall_source) {
   auto app = std::make_unique<apps::App>(app_type(), app_id);
   app->readiness = ConvertWebappUninstallSourceToReadiness(uninstall_source);
@@ -1246,7 +1246,7 @@ void WebAppPublisherHelper::SetWindowMode(const std::string& app_id,
       "WebAppPublisherHelper::SetWindowMode",
       std::make_unique<AppLockDescription>(app_id),
       base::BindOnce(
-          [](AppId app_id, mojom::UserDisplayMode user_display_mode,
+          [](webapps::AppId app_id, mojom::UserDisplayMode user_display_mode,
              AppLock& lock) {
             lock.sync_bridge().SetAppUserDisplayMode(app_id, user_display_mode,
                                                      /*is_user_action=*/true);
@@ -1363,28 +1363,30 @@ bool WebAppPublisherHelper::IsShuttingDown() const {
 }
 
 void WebAppPublisherHelper::OnWebAppFileHandlerApprovalStateChanged(
-    const AppId& app_id) {
+    const webapps::AppId& app_id) {
   const WebApp* web_app = GetWebApp(app_id);
   if (web_app) {
     delegate_->PublishWebApp(CreateWebApp(web_app));
   }
 }
 
-void WebAppPublisherHelper::OnWebAppInstalled(const AppId& app_id) {
+void WebAppPublisherHelper::OnWebAppInstalled(const webapps::AppId& app_id) {
   const WebApp* web_app = GetWebApp(app_id);
   if (web_app) {
     delegate_->PublishWebApp(CreateWebApp(web_app));
   }
 }
 
-void WebAppPublisherHelper::OnWebAppInstalledWithOsHooks(const AppId& app_id) {
+void WebAppPublisherHelper::OnWebAppInstalledWithOsHooks(
+    const webapps::AppId& app_id) {
   const WebApp* web_app = GetWebApp(app_id);
   if (web_app) {
     delegate_->PublishWebApp(CreateWebApp(web_app));
   }
 }
 
-void WebAppPublisherHelper::OnWebAppManifestUpdated(const AppId& app_id) {
+void WebAppPublisherHelper::OnWebAppManifestUpdated(
+    const webapps::AppId& app_id) {
   const WebApp* web_app = GetWebApp(app_id);
   if (web_app) {
     auto app = CreateWebApp(web_app);
@@ -1398,9 +1400,8 @@ void WebAppPublisherHelper::OnWebAppManifestUpdated(const AppId& app_id) {
 }
 
 void WebAppPublisherHelper::OnWebAppUninstalled(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     webapps::WebappUninstallSource uninstall_source) {
-
 #if BUILDFLAG(IS_CHROMEOS)
   paused_apps_.MaybeRemoveApp(app_id);
 
@@ -1434,14 +1435,14 @@ void WebAppPublisherHelper::OnWebAppLastLaunchTimeChanged(
 }
 
 void WebAppPublisherHelper::OnWebAppUserDisplayModeChanged(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     mojom::UserDisplayMode user_display_mode) {
   PublishWindowModeUpdate(app_id,
                           registrar().GetAppEffectiveDisplayMode(app_id));
 }
 
 void WebAppPublisherHelper::OnWebAppRunOnOsLoginModeChanged(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     RunOnOsLoginMode run_on_os_login_mode) {
   PublishRunOnOsLoginModeUpdate(app_id, run_on_os_login_mode);
 }
@@ -1449,8 +1450,9 @@ void WebAppPublisherHelper::OnWebAppRunOnOsLoginModeChanged(
 #if BUILDFLAG(IS_CHROMEOS)
 // If is_disabled is set, the app backed by |app_id| is published with readiness
 // kDisabledByPolicy, otherwise it's published with readiness kReady.
-void WebAppPublisherHelper::OnWebAppDisabledStateChanged(const AppId& app_id,
-                                                         bool is_disabled) {
+void WebAppPublisherHelper::OnWebAppDisabledStateChanged(
+    const webapps::AppId& app_id,
+    bool is_disabled) {
   const WebApp* web_app = GetWebApp(app_id);
   if (!web_app) {
     return;
@@ -1473,7 +1475,7 @@ void WebAppPublisherHelper::OnWebAppDisabledStateChanged(const AppId& app_id,
 
 void WebAppPublisherHelper::OnWebAppsDisabledModeChanged() {
   std::vector<apps::AppPtr> apps;
-  std::vector<AppId> app_ids = registrar().GetAppIds();
+  std::vector<webapps::AppId> app_ids = registrar().GetAppIds();
   for (const auto& id : app_ids) {
     // We only update visibility of disabled apps in this method. When enabling
     // previously disabled app, OnWebAppDisabledStateChanged() method will be
@@ -1531,7 +1533,7 @@ void WebAppPublisherHelper::OnNotificationDisplayServiceDestroyed(
 void WebAppPublisherHelper::OnIsCapturingVideoChanged(
     content::WebContents* web_contents,
     bool is_capturing_video) {
-  const AppId* app_id = WebAppTabHelper::GetAppId(web_contents);
+  const webapps::AppId* app_id = WebAppTabHelper::GetAppId(web_contents);
   if (!app_id) {
     return;
   }
@@ -1545,7 +1547,7 @@ void WebAppPublisherHelper::OnIsCapturingVideoChanged(
 void WebAppPublisherHelper::OnIsCapturingAudioChanged(
     content::WebContents* web_contents,
     bool is_capturing_audio) {
-  const AppId* app_id = WebAppTabHelper::GetAppId(web_contents);
+  const webapps::AppId* app_id = WebAppTabHelper::GetAppId(web_contents);
   if (!app_id) {
     return;
   }
@@ -1656,7 +1658,8 @@ IconEffects WebAppPublisherHelper::GetIconEffects(const WebApp* web_app) {
   return icon_effects;
 }
 
-const WebApp* WebAppPublisherHelper::GetWebApp(const AppId& app_id) const {
+const WebApp* WebAppPublisherHelper::GetWebApp(
+    const webapps::AppId& app_id) const {
   return registrar().GetAppById(app_id);
 }
 
@@ -1735,7 +1738,7 @@ std::vector<std::string> WebAppPublisherHelper::GetPolicyIds(
     return policy_ids;
   }
 
-  base::flat_map<AppId, base::flat_set<GURL>> installed_apps =
+  base::flat_map<webapps::AppId, base::flat_set<GURL>> installed_apps =
       registrar().GetExternallyInstalledApps(
           ExternalInstallSource::kExternalPolicy);
   if (auto it = installed_apps.find(app_id); it != installed_apps.end()) {
@@ -1804,7 +1807,7 @@ void WebAppPublisherHelper::MaybeAddWebPageNotifications(
 
   if (persistent_metadata) {
     // For persistent notifications, find the web app with the SW scope url.
-    absl::optional<AppId> app_id = FindInstalledAppWithUrlInScope(
+    absl::optional<webapps::AppId> app_id = FindInstalledAppWithUrlInScope(
         profile(), persistent_metadata->service_worker_scope,
         /*window_only=*/false);
     if (app_id.has_value()) {

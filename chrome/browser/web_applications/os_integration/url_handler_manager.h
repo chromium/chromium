@@ -12,6 +12,7 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_origin_association_manager.h"
+#include "components/webapps/common/web_app_id.h"
 
 class Profile;
 
@@ -30,13 +31,13 @@ class UrlHandlerManager {
   UrlHandlerManager& operator=(const UrlHandlerManager&) = delete;
 
   // Returns Result::kOk if registration succeeds, Result::kError otherwise.
-  virtual void RegisterUrlHandlers(const AppId& app_id,
+  virtual void RegisterUrlHandlers(const webapps::AppId& app_id,
                                    ResultCallback callback) = 0;
   // Returns true if unregistration succeeds, false otherwise.
-  virtual bool UnregisterUrlHandlers(const AppId& app_id) = 0;
+  virtual bool UnregisterUrlHandlers(const webapps::AppId& app_id) = 0;
   // Returns true if update succeeds, false otherwise.
   virtual void UpdateUrlHandlers(
-      const AppId& app_id,
+      const webapps::AppId& app_id,
       base::OnceCallback<void(bool success)> callback) = 0;
 
   void SetAssociationManagerForTesting(

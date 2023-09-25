@@ -31,7 +31,7 @@ const char kOneDriveBusinessDomain[] = "sharepoint.com";
 
 bool g_always_enabled_for_testing = false;
 
-bool IsExperimentEnabled(const AppId& app_id) {
+bool IsExperimentEnabled(const webapps::AppId& app_id) {
   return g_always_enabled_for_testing || app_id == kMicrosoft365AppId;
 }
 
@@ -45,7 +45,7 @@ GetScopeExtensionsOverrideForTesting() {
 }  // namespace
 
 base::span<const char* const> ChromeOsWebAppExperiments::GetScopeExtensions(
-    const AppId& app_id) {
+    const webapps::AppId& app_id) {
   DCHECK(chromeos::features::IsUploadOfficeToCloudEnabled());
 
   if (!IsExperimentEnabled(app_id))
@@ -58,7 +58,7 @@ base::span<const char* const> ChromeOsWebAppExperiments::GetScopeExtensions(
 }
 
 size_t ChromeOsWebAppExperiments::GetExtendedScopeScore(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     base::StringPiece url_spec) {
   DCHECK(chromeos::features::IsUploadOfficeToCloudEnabled());
 
@@ -80,7 +80,8 @@ size_t ChromeOsWebAppExperiments::GetExtendedScopeScore(
   return best_score;
 }
 
-bool ChromeOsWebAppExperiments::IgnoreManifestColor(const AppId& app_id) {
+bool ChromeOsWebAppExperiments::IgnoreManifestColor(
+    const webapps::AppId& app_id) {
   DCHECK(chromeos::features::IsUploadOfficeToCloudEnabled());
   return IsExperimentEnabled(app_id);
 }

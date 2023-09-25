@@ -13,6 +13,7 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "components/webapps/common/web_app_id.h"
 
 class Profile;
 
@@ -77,7 +78,7 @@ void DeleteAllShortcuts(Profile* profile, const extensions::Extension* app);
 
 // Register a callback that will be run once |app_id|'s shortcuts have been
 // deleted.
-void WaitForExtensionShortcutsDeleted(const AppId& app_id,
+void WaitForExtensionShortcutsDeleted(const webapps::AppId& app_id,
                                       base::OnceClosure callback);
 
 // Updates shortcuts for |app|, but does not create new ones if shortcuts are

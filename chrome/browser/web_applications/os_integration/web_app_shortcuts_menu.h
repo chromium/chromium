@@ -10,6 +10,7 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace base {
 class FilePath;
@@ -25,7 +26,7 @@ bool ShouldRegisterShortcutsMenuWithOs();
 
 // Does an OS specific registration of a Shortcuts Menu for the web app's icon.
 void RegisterShortcutsMenuWithOs(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     const base::FilePath& profile_path,
     const base::FilePath& shortcut_data_dir,
     const std::vector<WebAppShortcutsMenuItemInfo>& shortcuts_menu_item_infos,
@@ -34,7 +35,7 @@ void RegisterShortcutsMenuWithOs(
 
 // Deletes the ShortcutsMenu from the OS. This should be called during the
 // uninstallation process. Returns true if there were no errors.
-bool UnregisterShortcutsMenuWithOs(const AppId& app_id,
+bool UnregisterShortcutsMenuWithOs(const webapps::AppId& app_id,
                                    const base::FilePath& profile_path,
                                    RegisterShortcutsMenuCallback callback);
 

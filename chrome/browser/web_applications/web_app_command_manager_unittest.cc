@@ -445,10 +445,11 @@ TEST_F(WebAppCommandManagerTest, MultipleCallbackCommands) {
         loop.Quit();
       }));
   for (auto* app_id : {kTestAppId, kTestAppId2}) {
-    base::OnceCallback<void(AppLock&)> callback = base::BindOnce(
-        [](AppId app_id, base::RepeatingCallback<void(std::string)> barrier,
-           AppLock&) { barrier.Run(app_id); },
-        app_id, barrier);
+    base::OnceCallback<void(AppLock&)> callback =
+        base::BindOnce([](webapps::AppId app_id,
+                          base::RepeatingCallback<void(std::string)> barrier,
+                          AppLock&) { barrier.Run(app_id); },
+                       app_id, barrier);
     manager().ScheduleCommand(std::make_unique<CallbackCommand<AppLock>>(
         "", std::make_unique<AppLockDescription>(app_id), std::move(callback)));
   }
@@ -458,7 +459,7 @@ TEST_F(WebAppCommandManagerTest, MultipleCallbackCommands) {
 TEST_F(WebAppCommandManagerTest, AppWithSharedWebContents) {
   auto command1 = std::make_unique<MockCommand<SharedWebContentsWithAppLock>>(
       std::make_unique<SharedWebContentsWithAppLockDescription,
-                       base::flat_set<AppId>>({kTestAppId}));
+                       base::flat_set<webapps::AppId>>({kTestAppId}));
   auto command2 = std::make_unique<MockCommand<AppLock>>(
       std::make_unique<AppLockDescription>(kTestAppId));
   auto command3 = std::make_unique<MockCommand<SharedWebContentsLock>>(

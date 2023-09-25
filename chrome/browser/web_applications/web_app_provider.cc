@@ -41,7 +41,6 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_database_factory.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_origin_association_manager.h"
@@ -54,6 +53,7 @@
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -480,7 +480,7 @@ void WebAppProvider::CheckIsConnected() const {
 }
 
 void WebAppProvider::DoMigrateProfilePrefs(Profile* profile) {
-  std::map<AppId, int> sources =
+  std::map<webapps::AppId, int> sources =
       TakeAllWebAppInstallSources(profile->GetPrefs());
   ScopedRegistryUpdate update = sync_bridge_->BeginUpdate();
   for (const auto& iter : sources) {

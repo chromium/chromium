@@ -19,7 +19,7 @@
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
-#include "chrome/browser/web_applications/web_app_id.h"
+#include "components/webapps/common/web_app_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -30,8 +30,8 @@ class TestUninstallAndReplaceJobCommand
  public:
   TestUninstallAndReplaceJobCommand(
       Profile* profile,
-      const std::vector<AppId>& from_apps,
-      const AppId& to_app,
+      const std::vector<webapps::AppId>& from_apps,
+      const webapps::AppId& to_app,
       base::OnceCallback<void(bool uninstall_triggered)> on_complete)
       : WebAppCommandTemplate<AppLock>("TestUninstallAndReplaceJobCommand"),
         profile_(profile),
@@ -70,8 +70,8 @@ class TestUninstallAndReplaceJobCommand
   std::unique_ptr<AppLockDescription> lock_description_;
   std::unique_ptr<AppLock> lock_;
 
-  const std::vector<AppId> from_apps_;
-  const AppId to_app_;
+  const std::vector<webapps::AppId> from_apps_;
+  const webapps::AppId to_app_;
   base::OnceCallback<void(bool uninstall_triggered)> on_complete_;
 
   absl::optional<WebAppUninstallAndReplaceJob> uninstall_and_replace_job_;
@@ -88,8 +88,8 @@ class WebAppUninstallAndReplaceJobTest : public WebAppTest {
   }
 
   void ScheduleUninstallAndReplaceJob(
-      const std::vector<AppId>& from_apps,
-      const AppId& to_app,
+      const std::vector<webapps::AppId>& from_apps,
+      const webapps::AppId& to_app,
       base::OnceCallback<void(bool uninstall_triggered)> on_complete) {
     WebAppProvider::GetForTest(profile())->command_manager().ScheduleCommand(
         std::make_unique<TestUninstallAndReplaceJobCommand>(
@@ -118,11 +118,12 @@ TEST_F(WebAppUninstallAndReplaceJobTest,
        WebAppMigrationPreservesShortcutStates) {
   const GURL kOldAppUrl("https://old.app.com");
   // Install an old app to be replaced.
-  AppId old_app_id = test::InstallDummyWebApp(profile(), "old_app", kOldAppUrl);
+  webapps::AppId old_app_id =
+      test::InstallDummyWebApp(profile(), "old_app", kOldAppUrl);
 
   // Install a new app to migrate the old one to.
-  AppId new_app_id = test::InstallDummyWebApp(profile(), "new_app",
-                                              GURL("https://new.app.com"));
+  webapps::AppId new_app_id = test::InstallDummyWebApp(
+      profile(), "new_app", GURL("https://new.app.com"));
   if (AreOsIntegrationSubManagersEnabled()) {
     absl::optional<proto::WebAppOsIntegrationState> os_state =
         provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(
@@ -164,11 +165,11 @@ TEST_F(WebAppUninstallAndReplaceJobTest,
 
 TEST_F(WebAppUninstallAndReplaceJobTest, DoubleMigration) {
   // Install an old app to be replaced.
-  AppId old_app_id = test::InstallDummyWebApp(profile(), "old_app",
-                                              GURL("https://old.app.com"));
+  webapps::AppId old_app_id = test::InstallDummyWebApp(
+      profile(), "old_app", GURL("https://old.app.com"));
   // Install a new app to migrate the old one to.
-  AppId new_app_id = test::InstallDummyWebApp(profile(), "new_app",
-                                              GURL("https://new.app.com"));
+  webapps::AppId new_app_id = test::InstallDummyWebApp(
+      profile(), "new_app", GURL("https://new.app.com"));
   {
     WebAppTestUninstallObserver waiter(profile());
     waiter.BeginListening({old_app_id});

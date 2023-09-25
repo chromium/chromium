@@ -64,7 +64,7 @@ class InstallPreloadedVerifiedAppCommand
       GURL document_url,
       GURL manifest_url,
       std::string manifest_contents,
-      AppId expected_id,
+      webapps::AppId expected_id,
       OnceInstallCallback callback);
 
   ~InstallPreloadedVerifiedAppCommand() override;
@@ -83,7 +83,7 @@ class InstallPreloadedVerifiedAppCommand
                         DownloadedIconsHttpResults icons_http_results);
   void OnAppLockAcquired(
       std::unique_ptr<SharedWebContentsWithAppLock> app_lock);
-  void OnInstallFinalized(const AppId& app_id,
+  void OnInstallFinalized(const webapps::AppId& app_id,
                           webapps::InstallResultCode code,
                           OsHooksErrors os_hooks_errors);
 
@@ -93,7 +93,7 @@ class InstallPreloadedVerifiedAppCommand
   GURL document_url_;
   GURL manifest_url_;
   std::string manifest_contents_;
-  AppId expected_id_;
+  webapps::AppId expected_id_;
   OnceInstallCallback install_callback_;
 
   // SharedWebContentsLock is held while parsing the manifest.

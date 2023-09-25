@@ -30,9 +30,9 @@ namespace {
 
 bool g_suppress_for_testing = false;
 
-base::flat_map<GURL, base::flat_set<AppId>> BuildInstallUrlToAppIdsMap(
+base::flat_map<GURL, base::flat_set<webapps::AppId>> BuildInstallUrlToAppIdsMap(
     const WebAppRegistrar& registrar) {
-  base::flat_map<GURL, base::flat_set<AppId>> result;
+  base::flat_map<GURL, base::flat_set<webapps::AppId>> result;
 
   for (const WebApp& app : registrar.GetApps()) {
     for (const auto& [install_source, config] :
@@ -46,16 +46,16 @@ base::flat_map<GURL, base::flat_set<AppId>> BuildInstallUrlToAppIdsMap(
   return result;
 }
 
-const AppId& SelectWebAppToDedupeInto(
+const webapps::AppId& SelectWebAppToDedupeInto(
     const WebAppRegistrar& registrar,
-    const base::flat_set<AppId>& app_ids_with_common_install_url) {
+    const base::flat_set<webapps::AppId>& app_ids_with_common_install_url) {
   CHECK(app_ids_with_common_install_url.size() > 1);
 
-  const AppId* best = nullptr;
+  const webapps::AppId* best = nullptr;
   bool best_looks_like_placeholder = false;
   base::Time best_install_time;
 
-  for (const AppId& app_id : app_ids_with_common_install_url) {
+  for (const webapps::AppId& app_id : app_ids_with_common_install_url) {
     const WebApp& candidate = *registrar.GetAppById(app_id);
     bool candidate_looks_like_placeholder = LooksLikePlaceholder(candidate);
 
@@ -83,13 +83,14 @@ BuildOperationsToDedupeInstallUrlConfigsIntoSelectedApp(
     const WebAppRegistrar& registrar,
     ScopedRegistryUpdate& update,
     const GURL& install_url,
-    const base::flat_set<AppId>& app_ids_with_common_install_url,
-    const AppId& id_to_dedupe_into) {
+    const base::flat_set<webapps::AppId>& app_ids_with_common_install_url,
+    const webapps::AppId& id_to_dedupe_into) {
   std::vector<std::unique_ptr<RemoveInstallUrlJob>> result;
 
   WebApp& app_to_dedupe_into = *update->UpdateApp(id_to_dedupe_into);
 
-  for (const AppId& id_to_dedupe_out_of : app_ids_with_common_install_url) {
+  for (const webapps::AppId& id_to_dedupe_out_of :
+       app_ids_with_common_install_url) {
     if (id_to_dedupe_out_of == id_to_dedupe_into) {
       continue;
     }
@@ -124,14 +125,14 @@ BuildOperationsToDedupeInstallUrlConfigsIntoSelectedApp(
 
 struct DedupeOperations {
   std::vector<std::unique_ptr<RemoveInstallUrlJob>> remove_install_url_jobs;
-  base::flat_map<GURL, AppId> dedupe_choices;
+  base::flat_map<GURL, webapps::AppId> dedupe_choices;
 };
 
 DedupeOperations BuildOperationsToHaveOneAppPerInstallUrl(
     Profile& profile,
     const WebAppRegistrar& registrar,
     ScopedRegistryUpdate& update,
-    base::flat_map<GURL, base::flat_set<AppId>> install_url_to_apps) {
+    base::flat_map<GURL, base::flat_set<webapps::AppId>> install_url_to_apps) {
   DedupeOperations result;
 
   for (const auto& [install_url, app_ids] : install_url_to_apps) {
@@ -139,7 +140,7 @@ DedupeOperations BuildOperationsToHaveOneAppPerInstallUrl(
       continue;
     }
 
-    const AppId& id_to_dedupe_into =
+    const webapps::AppId& id_to_dedupe_into =
         SelectWebAppToDedupeInto(registrar, app_ids);
     result.dedupe_choices[install_url] = id_to_dedupe_into;
 
@@ -209,7 +210,7 @@ base::Value DedupeInstallUrlsCommand::ToDebugValue() const {
       dict.EnsureDict("duplicate_install_urls");
   for (const auto& [install_url, app_ids] : install_url_to_apps_) {
     base::Value::List* list = duplicates_dict->EnsureList(install_url.spec());
-    for (const AppId& app_id : app_ids) {
+    for (const webapps::AppId& app_id : app_ids) {
       list->Append(app_id);
     }
   }

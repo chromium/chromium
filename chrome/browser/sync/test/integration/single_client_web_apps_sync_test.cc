@@ -177,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   info.start_url = url;
   info.scope = url;
   info.manifest_id = GenerateManifestId(relative_manifest_id, url);
-  const AppId installed_app_id =
+  const webapps::AppId installed_app_id =
       apps_helper::InstallWebApp(GetProfile(0), info);
 
   const std::string expected_app_id = GenerateAppId(
@@ -207,7 +207,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   info.start_url = url;
   info.scope = url;
   info.manifest_id = GenerateManifestId(relative_manifest_id, url);
-  const AppId installed_app_id =
+  const webapps::AppId installed_app_id =
       apps_helper::InstallWebApp(GetProfile(0), info);
 
   const std::string expected_app_id = GenerateAppId(

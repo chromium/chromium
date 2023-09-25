@@ -33,7 +33,7 @@ void WebAppProtocolHandlerManager::Start() {
 }
 
 absl::optional<GURL> WebAppProtocolHandlerManager::TranslateProtocolUrl(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     const GURL& protocol_url) const {
   std::vector<ProtocolHandler> handlers = GetAppProtocolHandlers(app_id);
 
@@ -67,7 +67,7 @@ WebAppProtocolHandlerManager::GetAppProtocolHandlerInfos(
 
 std::vector<ProtocolHandler>
 WebAppProtocolHandlerManager::GetAppProtocolHandlers(
-    const AppId& app_id) const {
+    const webapps::AppId& app_id) const {
   std::vector<apps::ProtocolHandlerInfo> infos =
       GetAppProtocolHandlerInfos(app_id);
 
@@ -87,7 +87,7 @@ WebAppProtocolHandlerManager::GetAllowedHandlersForProtocol(
   std::vector<ProtocolHandler> protocol_handlers;
 
   for (const WebApp& web_app : provider_->registrar_unsafe().GetApps()) {
-    AppId app_id = web_app.app_id();
+    webapps::AppId app_id = web_app.app_id();
 
     if (!provider_->registrar_unsafe().IsAllowedLaunchProtocol(app_id,
                                                                protocol)) {
@@ -113,7 +113,7 @@ WebAppProtocolHandlerManager::GetDisallowedHandlersForProtocol(
   std::vector<ProtocolHandler> protocol_handlers;
 
   for (const WebApp& web_app : provider_->registrar_unsafe().GetApps()) {
-    AppId app_id = web_app.app_id();
+    webapps::AppId app_id = web_app.app_id();
 
     if (!provider_->registrar_unsafe().IsDisallowedLaunchProtocol(app_id,
                                                                   protocol)) {
@@ -134,7 +134,7 @@ WebAppProtocolHandlerManager::GetDisallowedHandlersForProtocol(
 }
 
 void WebAppProtocolHandlerManager::RegisterOsProtocolHandlers(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     ResultCallback callback) {
   if (!provider_->registrar_unsafe().IsLocallyInstalled(app_id)) {
     std::move(callback).Run(Result::kOk);
@@ -149,7 +149,7 @@ void WebAppProtocolHandlerManager::RegisterOsProtocolHandlers(
 }
 
 void WebAppProtocolHandlerManager::UnregisterOsProtocolHandlers(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     base::OnceCallback<void(Result)> callback) {
   UnregisterProtocolHandlersWithOs(app_id, profile_->GetPath(),
                                    std::move(callback));

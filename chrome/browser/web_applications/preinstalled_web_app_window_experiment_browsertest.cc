@@ -38,7 +38,6 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_database_factory.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -54,6 +53,7 @@
 #include "components/sync/test/mock_model_type_change_processor.h"
 #include "components/user_manager/user_names.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -127,7 +127,7 @@ class PreinstalledWebAppWindowExperimentBrowserTest
 
   // WebAppRegistrarObserver:
   void OnWebAppUserDisplayModeChanged(
-      const AppId& app_id,
+      const webapps::AppId& app_id,
       UserDisplayMode user_display_mode) override {
     recorded_display_mode_changes_[app_id] = user_display_mode;
   }
@@ -216,8 +216,8 @@ class PreinstalledWebAppWindowExperimentBrowserTest
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
-  std::map<AppId, UserDisplayMode> recorded_display_mode_changes_;
-  std::map<AppId, bool> recorded_link_capturing_changes_;
+  std::map<webapps::AppId, UserDisplayMode> recorded_display_mode_changes_;
+  std::map<webapps::AppId, bool> recorded_link_capturing_changes_;
 
  private:
   std::unique_ptr<KeyedService> CreateFakeWebAppProvider(Profile* profile) {
@@ -353,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppWindowExperimentBrowserTestWindowGuest,
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppWindowExperimentBrowserTestWindow,
                        IneligibleDueToNonRecentApp) {
   // Install an app and set install time as if installed a long time ago.
-  AppId app_id = test::InstallDummyWebApp(
+  webapps::AppId app_id = test::InstallDummyWebApp(
       browser()->profile(), "non-recent app", GURL("https://example.com"));
   auto& fake_provider = static_cast<FakeWebAppProvider&>(provider());
   WebApp* app = fake_provider.GetRegistrarMutable().GetAppByIdMutable(app_id);
@@ -373,9 +373,9 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppWindowExperimentBrowserTestWindow,
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppWindowExperimentBrowserTestWindow,
                        IneligibleDueToSyncInstalledApp) {
   // Install an app as if it came from sync.
-  AppId app_id = test::InstallDummyWebApp(browser()->profile(), "app from sync",
-                                          GURL("https://example.com"),
-                                          webapps::WebappInstallSource::SYNC);
+  webapps::AppId app_id = test::InstallDummyWebApp(
+      browser()->profile(), "app from sync", GURL("https://example.com"),
+      webapps::WebappInstallSource::SYNC);
 
   // Allow eligibility check to happen.
   SimulateSyncReady();
@@ -390,7 +390,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppWindowExperimentBrowserTestWindow,
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppWindowExperimentBrowserTestWindow,
                        IneligibleDueToPendingSyncInstalledApp) {
   // Install an app and set as if just received from sync.
-  AppId app_id = test::InstallDummyWebApp(
+  webapps::AppId app_id = test::InstallDummyWebApp(
       browser()->profile(), "non-recent app", GURL("https://example.com"));
   auto& fake_provider = static_cast<FakeWebAppProvider&>(provider());
   WebApp* app = fake_provider.GetRegistrarMutable().GetAppByIdMutable(app_id);
@@ -413,13 +413,13 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppWindowExperimentBrowserTestWindow,
   AwaitPreinstalledAppsInstalled();
 
   // Install an app and set launch time as if recently launched.
-  AppId launched_app_id = test::InstallDummyWebApp(
+  webapps::AppId launched_app_id = test::InstallDummyWebApp(
       browser()->profile(), "launched app", GURL("https://example1.com"),
       webapps::WebappInstallSource::INTERNAL_DEFAULT);
   provider().sync_bridge_unsafe().SetAppLastLaunchTime(launched_app_id,
                                                        base::Time::Now());
 
-  AppId unlaunched_app_id = test::InstallDummyWebApp(
+  webapps::AppId unlaunched_app_id = test::InstallDummyWebApp(
       browser()->profile(), "unlaunched app", GURL("https://example2.com"),
       webapps::WebappInstallSource::INTERNAL_DEFAULT);
 
@@ -448,11 +448,12 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppWindowExperimentBrowserTestWindow,
   AwaitPreinstalledAppsInstalled();
 
   // Use a real preinstalled app if available, otherwise install a fake one.
-  // AppId must match a known preinstalled app for metrics to be recorded.
+  // webapps::AppId must match a known preinstalled app for metrics to be
+  // recorded.
   if (!provider().registrar_unsafe().IsInstalled(kGoogleDriveAppId)) {
     // Install an app and set supported links preference so experiment setting
     // it won't cause any observations.
-    AppId app_id = test::InstallDummyWebApp(
+    webapps::AppId app_id = test::InstallDummyWebApp(
         browser()->profile(), "launched app",
         GURL("https://drive.google.com/?lfhs=2"),
         webapps::WebappInstallSource::INTERNAL_DEFAULT);
@@ -497,11 +498,12 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppWindowExperimentBrowserTestWindow,
   AwaitPreinstalledAppsInstalled();
 
   // Use a real preinstalled app if available, otherwise install a fake one.
-  // AppId must match a known preinstalled app for metrics to be recorded.
+  // webapps::AppId must match a known preinstalled app for metrics to be
+  // recorded.
   if (!provider().registrar_unsafe().IsInstalled(kGoogleDriveAppId)) {
     // Install an app and set supported links preference so experiment setting
     // it won't cause any observations.
-    AppId app_id = test::InstallDummyWebApp(
+    webapps::AppId app_id = test::InstallDummyWebApp(
         browser()->profile(), "launched app",
         GURL("https://drive.google.com/?lfhs=2"),
         webapps::WebappInstallSource::INTERNAL_DEFAULT);
@@ -578,7 +580,7 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppWindowExperimentBrowserTestAll,
     EXPECT_THAT(recorded_display_mode_changes_, IsEmpty());
     EXPECT_THAT(recorded_link_capturing_changes_, IsEmpty());
     // No apps expected to be installed/installing.
-    std::vector<AppId> app_ids;
+    std::vector<webapps::AppId> app_ids;
     for (const WebApp& app : registrar.GetAppsIncludingStubs()) {
       app_ids.emplace_back(app.app_id());
     }
@@ -671,14 +673,14 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppWindowExperimentBrowserTestAll,
 
   // User-overridden apps should be recorded.
   PrefService* pref_service = browser()->profile()->GetPrefs();
-  base::flat_set<AppId> overridden_apps =
+  base::flat_set<webapps::AppId> overridden_apps =
       preinstalled_web_app_window_experiment_utils::
           GetAppIdsWithUserOverridenDisplayModePref(pref_service);
   if (GetUserGroupTestParam() == UserGroup::kUnknown) {
     EXPECT_THAT(overridden_apps, IsEmpty());
   } else {
     EXPECT_EQ(overridden_apps,
-              base::flat_set<AppId>(
+              base::flat_set<webapps::AppId>(
                   {kGoogleDriveAppId, kYoutubeAppId, kGoogleCalendarAppId}));
   }
 

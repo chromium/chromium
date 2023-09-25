@@ -31,7 +31,7 @@ namespace web_app {
 FileHandlerLaunchDialogView::FileHandlerLaunchDialogView(
     const std::vector<base::FilePath>& file_paths,
     Profile* profile,
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     chrome::WebAppLaunchAcceptanceCallback close_callback)
     : LaunchAppUserChoiceDialogView(profile, app_id, std::move(close_callback)),
       file_paths_(file_paths) {
@@ -169,7 +169,7 @@ namespace chrome {
 
 void ShowWebAppFileLaunchDialog(const std::vector<base::FilePath>& file_paths,
                                 Profile* profile,
-                                const web_app::AppId& app_id,
+                                const webapps::AppId& app_id,
                                 WebAppLaunchAcceptanceCallback close_callback) {
   auto view = std::make_unique<web_app::FileHandlerLaunchDialogView>(
       file_paths, profile, app_id, std::move(close_callback));

@@ -26,6 +26,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_discovery_task.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
+#include "components/webapps/common/web_app_id.h"
 
 class GURL;
 class Profile;
@@ -80,7 +81,7 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
   // `IsolatedWebAppURLLoaderFactory`. If you have a different use case, please
   // talk to iwa-dev@chromium.org first.
   bool IsUpdateBeingApplied(base::PassKey<IsolatedWebAppURLLoaderFactory>,
-                            const AppId app_id) const;
+                            const webapps::AppId app_id) const;
 
   // Starts an already scheduled update apply task for the provided `app_id`, if
   // it is queued but not already running. This happens regardless of whether
@@ -94,15 +95,15 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
   // `IsolatedWebAppURLLoaderFactory`. If you have a different use case, please
   // talk to iwa-dev@chromium.org first.
   void PrioritizeUpdateAndWait(base::PassKey<IsolatedWebAppURLLoaderFactory>,
-                               const AppId& app_id,
+                               const webapps::AppId& app_id,
                                base::OnceClosure callback);
 
   void SetEnableAutomaticUpdatesForTesting(bool automatic_updates_enabled);
 
   // `WebAppInstallManagerObserver`:
-  void OnWebAppInstalled(const AppId& app_id) override;
+  void OnWebAppInstalled(const webapps::AppId& app_id) override;
   void OnWebAppUninstalled(
-      const AppId& app_id,
+      const webapps::AppId& app_id,
       webapps::WebappUninstallSource uninstall_source) override;
 
   const base::RepeatingTimer& GetUpdateDiscoveryTimerForTesting() const {
@@ -141,7 +142,7 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
     // it immediately, even if other tasks are currently running. Returns
     // `false` if a task for this `app_id` is neither queued nor running,
     // returns `true` otherwise.
-    bool EnsureQueuedUpdateApplyTaskHasStarted(const AppId& app_id);
+    bool EnsureQueuedUpdateApplyTaskHasStarted(const webapps::AppId& app_id);
 
     // Removes all tasks for the provided `app_id` that haven't yet started from
     // the queue.
@@ -149,13 +150,13 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
     // TODO(crbug.com/1444407): Ideally, we'd also cancel tasks that have
     // already started, especially update discovery tasks, but the task
     // implementation currently does not support cancellation of ongoing tasks.
-    void ClearNonStartedTasksOfApp(const AppId& app_id);
+    void ClearNonStartedTasksOfApp(const webapps::AppId& app_id);
 
     // Starts the next task if no task is currently running. Will prioritize
     // update apply over update discovery tasks.
     void MaybeStartNextTask();
 
-    bool IsUpdateApplyTaskQueued(const AppId& app_id) const;
+    bool IsUpdateApplyTaskQueued(const webapps::AppId& app_id) const;
 
    private:
     void StartUpdateDiscoveryTask(IsolatedWebAppUpdateDiscoveryTask* task_ptr);
@@ -226,12 +227,14 @@ class IsolatedWebAppUpdateManager : public WebAppInstallManagerObserver {
 
   TaskQueue task_queue_;
 
-  base::flat_map<AppId, std::unique_ptr<IsolatedWebAppUpdateApplyWaiter>>
+  base::flat_map<webapps::AppId,
+                 std::unique_ptr<IsolatedWebAppUpdateApplyWaiter>>
       update_apply_waiters_;
 
   // Callbacks that are run once an update apply task for a given app id has
   // finished (successfully or unsuccessfully).
-  base::flat_map<AppId, std::unique_ptr<base::OnceCallbackList<void()>>>
+  base::flat_map<webapps::AppId,
+                 std::unique_ptr<base::OnceCallbackList<void()>>>
       on_update_finished_callbacks_;
 
   base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>

@@ -69,7 +69,7 @@ class ChromeOsWebAppExperimentsBrowserTest
   }
 
  protected:
-  AppId app_id_;
+  webapps::AppId app_id_;
   GURL extended_scope_;
   GURL extended_scope_page_;
   std::vector<const char* const> extended_scopes_;

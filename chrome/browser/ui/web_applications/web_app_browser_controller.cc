@@ -29,7 +29,6 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -41,6 +40,7 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -118,7 +118,7 @@ namespace web_app {
 WebAppBrowserController::WebAppBrowserController(
     WebAppProvider& provider,
     Browser* browser,
-    AppId app_id,
+    webapps::AppId app_id,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     const ash::SystemWebAppDelegate* system_app,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -178,7 +178,7 @@ void WebAppBrowserController::ToggleWindowControlsOverlayEnabled(
       "WebAppBrowserController::ToggleWindowControlsOverlayEnabled",
       std::make_unique<AppLockDescription>(app_id()),
       base::BindOnce(
-          [](base::OnceClosure on_complete, const AppId& app_id,
+          [](base::OnceClosure on_complete, const webapps::AppId& app_id,
              AppLock& lock) {
             lock.sync_bridge().SetAppWindowControlsOverlayEnabled(
                 app_id,
@@ -250,7 +250,7 @@ void WebAppBrowserController::ToggleAlwaysShowToolbarInFullscreen() {
       "WebAppBrowserController::ToggleAlwaysShowToolbarInFullscreen",
       std::make_unique<AppLockDescription>(app_id()),
       base::BindOnce(
-          [](const AppId& app_id, AppLock& lock) {
+          [](const webapps::AppId& app_id, AppLock& lock) {
             lock.sync_bridge().SetAlwaysShowToolbarInFullscreen(
                 app_id,
                 !lock.registrar().AlwaysShowToolbarInFullscreen(app_id));
@@ -313,14 +313,14 @@ void WebAppBrowserController::OnGetAssociatedAndroidPackage(
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void WebAppBrowserController::OnWebAppUninstalled(
-    const AppId& uninstalled_app_id,
+    const webapps::AppId& uninstalled_app_id,
     webapps::WebappUninstallSource uninstall_source) {
   if (uninstalled_app_id == app_id())
     chrome::CloseWindow(browser());
 }
 
 void WebAppBrowserController::OnWebAppManifestUpdated(
-    const AppId& updated_app_id) {
+    const webapps::AppId& updated_app_id) {
   if (updated_app_id == app_id()) {
     UpdateThemePack();
     app_icon_.reset();

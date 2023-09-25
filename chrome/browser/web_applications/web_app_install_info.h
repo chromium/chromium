@@ -23,6 +23,7 @@
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
@@ -205,11 +206,11 @@ struct WebAppInstallInfo {
   // TODO(b/280862254): Remove this constructor to force users to use specify
   // both the manifest_id and start_url (or call
   // `CreateWithStartUrlForTesting`).
-  explicit WebAppInstallInfo(const web_app::ManifestId& manifest_id);
+  explicit WebAppInstallInfo(const webapps::ManifestId& manifest_id);
 
   // The `manifest_id` and the `start_url` MUST be valid. The `manifest_id` MUST
   // be created properly, and cannot contain refs (e.g. '#refs').
-  WebAppInstallInfo(const web_app::ManifestId& manifest_id,
+  WebAppInstallInfo(const webapps::ManifestId& manifest_id,
                     const GURL& start_url);
 
   // Deleted to prevent accidental copying. Use Clone() to deep copy explicitly.
@@ -226,7 +227,7 @@ struct WebAppInstallInfo {
   // TODO(b/280862254): After the manifest id constructor is required, this can
   // be guaranteed to be valid & non-empty.
   // https://www.w3.org/TR/appmanifest/#id-member
-  web_app::ManifestId manifest_id;
+  webapps::ManifestId manifest_id;
 
   // Title of the application.
   std::u16string title;
@@ -380,7 +381,7 @@ struct WebAppInstallInfo {
   // Id of the app that called the SUB_APP API to install this app. This field
   // is only used when the app is installed as a sub app through the SUB_APP
   // API.
-  absl::optional<web_app::AppId> parent_app_id;
+  absl::optional<webapps::AppId> parent_app_id;
 
   // A list of additional terms to use when matching this app against
   // identifiers in admin policies (for shelf pinning, default file handlers,

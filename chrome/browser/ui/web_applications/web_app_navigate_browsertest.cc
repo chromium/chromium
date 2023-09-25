@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/web_applications/web_app_id.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -91,7 +91,7 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigateBrowserTest, NewPopup) {
     Navigate(&params);
   }
   Browser* const app_browser = browser_list->GetLastActive();
-  const AppId app_id = app_browser->app_controller()->app_id();
+  const webapps::AppId app_id = app_browser->app_controller()->app_id();
 
   {
     NavigateParams params(MakeNavigateParams());

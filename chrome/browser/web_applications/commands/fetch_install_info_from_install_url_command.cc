@@ -57,7 +57,7 @@ const LockDescription& FetchInstallInfoFromInstallUrlCommand::lock_description()
 }
 
 FetchInstallInfoFromInstallUrlCommand::FetchInstallInfoFromInstallUrlCommand(
-    ManifestId manifest_id,
+    webapps::ManifestId manifest_id,
     GURL install_url,
     base::OnceCallback<void(std::unique_ptr<WebAppInstallInfo>)> callback)
     : WebAppCommandTemplate<SharedWebContentsLock>(
@@ -170,8 +170,10 @@ void FetchInstallInfoFromInstallUrlCommand::OnManifestRetrieved(
                                  web_app_info.get());
   }
 
-  AppId app_id = GenerateAppIdFromManifestId(web_app_info->manifest_id);
-  const AppId expected_app_id = GenerateAppIdFromManifestId(manifest_id_);
+  webapps::AppId app_id =
+      GenerateAppIdFromManifestId(web_app_info->manifest_id);
+  const webapps::AppId expected_app_id =
+      GenerateAppIdFromManifestId(manifest_id_);
   if (app_id != expected_app_id) {
     install_error_log_entry_.LogExpectedAppIdError(
         "OnManifestRetrieved", web_app_info->start_url.spec(), app_id,

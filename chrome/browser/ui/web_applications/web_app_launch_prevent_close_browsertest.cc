@@ -53,7 +53,7 @@ IN_PROC_BROWSER_TEST_F(PreventCloseControllerBrowserTest,
 
   const GURL url(kTestApp);
   ApplyPolicySettings(url, /*prevent_close=*/true);
-  const AppId& app_id = InstallPWA(GURL(kTestApp));
+  const webapps::AppId& app_id = InstallPWA(GURL(kTestApp));
 
   Browser* browser = LaunchWebAppBrowser(app_id);
   ++expected_browser_count;
@@ -88,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(PreventCloseControllerBrowserTest,
   size_t expected_browser_count = chrome::GetBrowserCount(profile());
 
   const GURL url(kTestApp);
-  const AppId& app_id = InstallPWA(url);
+  const webapps::AppId& app_id = InstallPWA(url);
   ApplyPolicySettings(url, /*prevent_close=*/false);
   Browser* browser = LaunchWebAppBrowser(app_id);
   ++expected_browser_count;

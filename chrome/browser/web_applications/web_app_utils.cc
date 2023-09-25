@@ -121,7 +121,7 @@ class AppIconFetcherTask : public content::WebContentsObserver {
   // the `web_app_provider` and supplies the icon to the web_page via jscript.
   static void FetchAndPopulateIcon(content::WebContents* web_contents,
                                    WebAppProvider* web_app_provider,
-                                   const AppId& app_id) {
+                                   const webapps::AppId& app_id) {
     new AppIconFetcherTask(web_contents, web_app_provider, app_id);
   }
 
@@ -130,7 +130,7 @@ class AppIconFetcherTask : public content::WebContentsObserver {
  private:
   AppIconFetcherTask(content::WebContents* web_contents,
                      WebAppProvider* web_app_provider,
-                     const AppId& app_id)
+                     const webapps::AppId& app_id)
       : WebContentsObserver(web_contents) {
     DCHECK(web_contents);
     // For best results, this should be of equal (or slightly higher) value than
@@ -401,7 +401,7 @@ base::FilePath GetManifestResourcesDirectory(Profile* profile) {
 
 base::FilePath GetManifestResourcesDirectoryForApp(
     const base::FilePath& web_apps_root_directory,
-    const AppId& app_id) {
+    const webapps::AppId& app_id) {
   return GetManifestResourcesDirectory(web_apps_root_directory)
       .AppendASCII(app_id);
 }
@@ -480,7 +480,7 @@ bool AreNewFileHandlersASubsetOfOld(const apps::FileHandlers& old_handlers,
 
 std::tuple<std::u16string, size_t>
 GetFileTypeAssociationsHandledByWebAppForDisplay(Profile* profile,
-                                                 const AppId& app_id) {
+                                                 const webapps::AppId& app_id) {
   auto* provider = WebAppProvider::GetForLocalAppsUnchecked(profile);
   if (!provider)
     return {};
@@ -602,12 +602,12 @@ bool CanUserUninstallWebApp(WebAppManagementTypes sources) {
                                                  kUserUninstallableSources);
 }
 
-AppId GetAppIdFromAppSettingsUrl(const GURL& url) {
+webapps::AppId GetAppIdFromAppSettingsUrl(const GURL& url) {
   // App Settings page is served under chrome://app-settings/<app-id>.
   // url.path() returns "/<app-id>" with a leading slash.
   std::string path = url.path();
   if (path.size() <= 1)
-    return AppId();
+    return webapps::AppId();
   return path.substr(1);
 }
 
@@ -686,7 +686,7 @@ content::mojom::AlternativeErrorPageOverrideInfoPtr ConstructWebAppErrorPage(
   }
 
   WebAppRegistrar& web_app_registrar = web_app_provider->registrar_unsafe();
-  const absl::optional<AppId> app_id =
+  const absl::optional<webapps::AppId> app_id =
       web_app_registrar.FindAppWithUrlInScope(url);
   if (!app_id.has_value()) {
     return nullptr;

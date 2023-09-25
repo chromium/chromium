@@ -163,7 +163,7 @@ void TestAppBannerManagerDesktop::OnInstall(blink::mojom::DisplayMode display) {
 }
 
 void TestAppBannerManagerDesktop::DidFinishCreatingWebApp(
-    const web_app::AppId& app_id,
+    const webapps::AppId& app_id,
     webapps::InstallResultCode code) {
   AppBannerManagerDesktop::DidFinishCreatingWebApp(app_id, code);
   OnFinished();

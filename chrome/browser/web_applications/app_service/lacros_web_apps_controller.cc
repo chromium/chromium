@@ -381,7 +381,8 @@ void LacrosWebAppsController::OnShortcutsMenuIconsRead(
   std::move(callback).Run(std::move(menu_items));
 }
 
-const WebApp* LacrosWebAppsController::GetWebApp(const AppId& app_id) const {
+const WebApp* LacrosWebAppsController::GetWebApp(
+    const webapps::AppId& app_id) const {
   return registrar().GetAppById(app_id);
 }
 

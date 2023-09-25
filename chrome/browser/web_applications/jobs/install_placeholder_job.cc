@@ -180,7 +180,7 @@ void InstallPlaceholderJob::FinalizeInstall(
                      weak_factory_.GetWeakPtr()));
 }
 
-void InstallPlaceholderJob::OnInstallFinalized(const AppId& app_id,
+void InstallPlaceholderJob::OnInstallFinalized(const webapps::AppId& app_id,
                                                webapps::InstallResultCode code,
                                                OsHooksErrors os_hooks_errors) {
   debug_value_.Set("result_code", base::ToString(code));

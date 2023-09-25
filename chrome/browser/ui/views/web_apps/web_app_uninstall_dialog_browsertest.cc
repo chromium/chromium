@@ -38,11 +38,11 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/any_widget_observer.h"
 
-using web_app::AppId;
+using webapps::AppId;
 
 namespace {
 
-AppId InstallTestWebApp(Profile* profile) {
+webapps::AppId InstallTestWebApp(Profile* profile) {
   const GURL example_url = GURL("http://example.org/");
 
   auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
@@ -68,7 +68,7 @@ class WebAppUninstallDialogViewBrowserTest
 
 IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
                        TrackParentWindowDestructionAfterViewCreation) {
-  AppId app_id = InstallTestWebApp(browser()->profile());
+  webapps::AppId app_id = InstallTestWebApp(browser()->profile());
 
   base::test::TestFuture<webapps::UninstallResultCode> test_future;
   provider()->ui_manager().PresentUserUninstallDialog(
@@ -96,7 +96,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
                        TrackParentWindowDestructionBeforeViewCreation) {
   extensions::ScopedTestDialogAutoConfirm auto_confirm(
       extensions::ScopedTestDialogAutoConfirm::ACCEPT);
-  AppId app_id = InstallTestWebApp(browser()->profile());
+  webapps::AppId app_id = InstallTestWebApp(browser()->profile());
   Browser* app_browser =
       web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
   chrome::CloseWindow(browser());
@@ -115,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
                        TestDialogUserFlow_Cancel) {
   extensions::ScopedTestDialogAutoConfirm auto_confirm(
       extensions::ScopedTestDialogAutoConfirm::CANCEL);
-  AppId app_id = InstallTestWebApp(browser()->profile());
+  webapps::AppId app_id = InstallTestWebApp(browser()->profile());
 
   base::test::TestFuture<webapps::UninstallResultCode> test_future;
   provider()->ui_manager().PresentUserUninstallDialog(
@@ -131,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
                        TestDialogUserFlow_Accept) {
   extensions::ScopedTestDialogAutoConfirm auto_confirm(
       extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_OPTION);
-  AppId app_id = InstallTestWebApp(browser()->profile());
+  webapps::AppId app_id = InstallTestWebApp(browser()->profile());
 
   base::test::TestFuture<webapps::UninstallResultCode> test_future;
   provider()->ui_manager().PresentUserUninstallDialog(

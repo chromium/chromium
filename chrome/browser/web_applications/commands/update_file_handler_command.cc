@@ -14,9 +14,9 @@
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace web_app {
 
@@ -44,14 +44,14 @@ base::RepeatingCallback<void(Result)> CreateBarrierForSynchronizeWithResult(
 // static
 std::unique_ptr<UpdateFileHandlerCommand>
 UpdateFileHandlerCommand::CreateForPersistUserChoice(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     bool allowed,
     base::OnceClosure callback) {
   return base::WrapUnique(
       new UpdateFileHandlerCommand(app_id, allowed, std::move(callback)));
 }
 
-UpdateFileHandlerCommand::UpdateFileHandlerCommand(const AppId& app_id,
+UpdateFileHandlerCommand::UpdateFileHandlerCommand(const webapps::AppId& app_id,
                                                    bool user_choice_to_remember,
                                                    base::OnceClosure callback)
     : WebAppCommandTemplate<AppLock>("UpdateFileHandlerCommand"),

@@ -35,6 +35,7 @@ source_set("webapk_sources") {
     "//components/crx_file:crx_file",
     "//components/sync",
     "//components/webapps/browser",
+    "//components/webapps/common",
     "//content/public/browser",
     "//services/metrics/public/cpp:ukm_builders",
     "//third_party/smhasher:murmurhash2",

@@ -18,9 +18,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/browsing_data/content/browsing_data_model.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "ui/base/models/tree_model.h"
 #include "url/origin.h"
@@ -163,7 +163,7 @@ void GetIsolatedWebAppBrowsingDataCommand::StartWithLock(
   pending_task_count_++;
   const WebAppRegistrar& web_app_registrar = lock_->registrar();
   for (const WebApp& web_app : web_app_registrar.GetApps()) {
-    const AppId& app_id = web_app.app_id();
+    const webapps::AppId& app_id = web_app.app_id();
     if (!web_app_registrar.IsIsolated(app_id)) {
       continue;
     }

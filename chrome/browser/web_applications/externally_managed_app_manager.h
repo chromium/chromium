@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "components/webapps/common/web_app_id.h"
 #include "url/gurl.h"
 
 class GURL;
@@ -68,16 +69,17 @@ class ExternallyManagedAppManager {
  public:
   struct InstallResult {
     InstallResult();
-    explicit InstallResult(webapps::InstallResultCode code,
-                           absl::optional<AppId> app_id = absl::nullopt,
-                           bool did_uninstall_and_replace = false);
+    explicit InstallResult(
+        webapps::InstallResultCode code,
+        absl::optional<webapps::AppId> app_id = absl::nullopt,
+        bool did_uninstall_and_replace = false);
     InstallResult(const InstallResult&);
     ~InstallResult();
 
     bool operator==(const InstallResult& other) const;
 
     webapps::InstallResultCode code;
-    absl::optional<AppId> app_id;
+    absl::optional<webapps::AppId> app_id;
     bool did_uninstall_and_replace = false;
     // When adding fields, please update the `==` and `<<` operators to include
     // the new field.

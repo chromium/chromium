@@ -434,7 +434,7 @@ WebAppDetailedInstallDialogDelegate::~WebAppDetailedInstallDialogDelegate() {
 void WebAppDetailedInstallDialogDelegate::OnAccept() {
   base::RecordAction(base::UserMetricsAction("WebAppDetailedInstallAccepted"));
   if (iph_state_ == chrome::PwaInProductHelpState::kShown) {
-    web_app::AppId app_id =
+    webapps::AppId app_id =
         web_app::GenerateAppIdFromManifestId(install_info_->manifest_id);
     web_app::RecordInstallIphInstalled(prefs_, app_id);
     tracker_->NotifyEvent(feature_engagement::events::kDesktopPwaInstalled);
@@ -500,7 +500,7 @@ void WebAppDetailedInstallDialogDelegate::MeasureIphOnDialogClose() {
   base::RecordAction(base::UserMetricsAction("WebAppDetailedInstallCancelled"));
 
   if (iph_state_ == chrome::PwaInProductHelpState::kShown && install_info_) {
-    web_app::AppId app_id =
+    webapps::AppId app_id =
         web_app::GenerateAppIdFromManifestId(install_info_->manifest_id);
     web_app::RecordInstallIphIgnored(prefs_, app_id, base::Time::Now());
   }

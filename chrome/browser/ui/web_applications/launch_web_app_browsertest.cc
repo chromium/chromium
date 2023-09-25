@@ -30,7 +30,7 @@ class LaunchWebAppBrowserTest : public WebAppControllerBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(LaunchWebAppBrowserTest, OpenLinkInWebApp) {
   const GURL start_url("https://app.site.test/example/index");
-  const AppId app_id = InstallPWA(start_url);
+  const webapps::AppId app_id = InstallPWA(start_url);
   apps::AppReadinessWaiter(profile(), app_id).Await();
 
   size_t num_browsers = chrome::GetBrowserCount(browser()->profile());

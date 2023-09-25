@@ -844,7 +844,7 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
     WebAppFrameToolbarBrowserTest::SetUp();
   }
 
-  web_app::AppId InstallAndLaunchWCOWebApp(GURL start_url,
+  webapps::AppId InstallAndLaunchWCOWebApp(GURL start_url,
                                            std::u16string app_title) {
     std::vector<blink::mojom::DisplayMode> display_overrides;
     display_overrides.push_back(web_app::DisplayMode::kWindowControlsOverlay);
@@ -861,7 +861,7 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
         browser(), std::move(web_app_info), start_url);
   }
 
-  web_app::AppId InstallAndLaunchWebApp() {
+  webapps::AppId InstallAndLaunchWebApp() {
     EXPECT_TRUE(https_server()->Start());
     return InstallAndLaunchWCOWebApp(
         helper()->LoadWindowControlsOverlayTestPageWithDataAndGetURL(
@@ -869,7 +869,7 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
         u"A window-controls-overlay app");
   }
 
-  web_app::AppId InstallAndLaunchFullyDraggableWebApp() {
+  webapps::AppId InstallAndLaunchFullyDraggableWebApp() {
     EXPECT_TRUE(https_server()->Start());
     return InstallAndLaunchWCOWebApp(
         helper()->LoadWholeAppIsDraggableTestPageWithDataAndGetURL(
@@ -1448,7 +1448,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
 // Regression test for https://crbug.com/1239443.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
                        OpenWithOverlayEnabled) {
-  web_app::AppId app_id = InstallAndLaunchWebApp();
+  webapps::AppId app_id = InstallAndLaunchWebApp();
   base::test::TestFuture<void> future;
   helper()
       ->browser_view()
@@ -1531,7 +1531,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
 // Regression test for https://crbug.com/1351566.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
                        ExtensionsIconVisibility) {
-  web_app::AppId app_id = InstallAndLaunchWebApp();
+  webapps::AppId app_id = InstallAndLaunchWebApp();
   ToggleWindowControlsOverlayAndWait();
 
   // There should be no visible Extensions icon.
@@ -1567,7 +1567,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
 // app's window.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
                        DownloadIconVisibilityForAppDownload) {
-  web_app::AppId app_id = InstallAndLaunchWebApp();
+  webapps::AppId app_id = InstallAndLaunchWebApp();
   ToggleWindowControlsOverlayAndWait();
 
   Browser* non_app_browser = CreateBrowser(profile());
@@ -1605,7 +1605,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
 // app's window.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
                        DownloadIconVisibilityForRegularDownload) {
-  web_app::AppId app_id = InstallAndLaunchWebApp();
+  webapps::AppId app_id = InstallAndLaunchWebApp();
   ToggleWindowControlsOverlayAndWait();
 
   Browser* non_app_browser = CreateBrowser(profile());

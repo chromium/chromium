@@ -23,7 +23,6 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -32,6 +31,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -83,17 +83,17 @@ base::expected<GURL, std::string> ConvertPathToUrl(const std::string& path,
   return base::ok(resolved);
 }
 
-std::string ConvertUrlToPath(const ManifestId& manifest_id) {
+std::string ConvertUrlToPath(const webapps::ManifestId& manifest_id) {
   return manifest_id.PathForRequest();
 }
 
-base::expected<std::vector<std::pair<ManifestId, GURL>>, std::string>
+base::expected<std::vector<std::pair<webapps::ManifestId, GURL>>, std::string>
 AddOptionsFromMojo(
     const url::Origin& origin,
     const std::vector<SubAppsServiceAddParametersPtr>& sub_apps_to_add_mojo) {
-  std::vector<std::pair<ManifestId, GURL>> sub_apps;
+  std::vector<std::pair<webapps::ManifestId, GURL>> sub_apps;
   for (const auto& sub_app : sub_apps_to_add_mojo) {
-    ASSIGN_OR_RETURN(ManifestId manifest_id,
+    ASSIGN_OR_RETURN(webapps::ManifestId manifest_id,
                      ConvertPathToUrl(sub_app->manifest_id_path, origin));
     ASSIGN_OR_RETURN(GURL install_url,
                      ConvertPathToUrl(sub_app->install_url_path, origin));
@@ -114,7 +114,7 @@ WebAppProvider* GetWebAppProvider(content::RenderFrameHost& render_frame_host) {
   return provider;
 }
 
-const AppId* GetAppId(content::RenderFrameHost& render_frame_host) {
+const webapps::AppId* GetAppId(content::RenderFrameHost& render_frame_host) {
   auto* const initiator_web_contents =
       content::WebContents::FromRenderFrameHost(&render_frame_host);
   return WebAppTabHelper::GetAppId(initiator_web_contents);
@@ -224,7 +224,7 @@ void SubAppsServiceImpl::Add(
   }
 
   ASSIGN_OR_RETURN(
-      (std::vector<std::pair<ManifestId, GURL>> add_options),
+      (std::vector<std::pair<webapps::ManifestId, GURL>> add_options),
       AddOptionsFromMojo(render_frame_host().GetLastCommittedOrigin(),
                          sub_apps_to_add),
       // Compromised renderer, bail immediately (this call deletes *this).
@@ -243,9 +243,9 @@ void SubAppsServiceImpl::Add(
 
 void SubAppsServiceImpl::CollectInstallData(
     int add_call_id,
-    std::vector<std::pair<ManifestId, GURL>> requested_installs) {
+    std::vector<std::pair<webapps::ManifestId, GURL>> requested_installs) {
   const auto install_info_collector = base::BarrierCallback<
-      std::pair<ManifestId, std::unique_ptr<WebAppInstallInfo>>>(
+      std::pair<webapps::ManifestId, std::unique_ptr<WebAppInstallInfo>>>(
       requested_installs.size(),
       base::BindOnce(&SubAppsServiceImpl::ProcessInstallData,
                      weak_ptr_factory_.GetWeakPtr(), add_call_id));
@@ -267,7 +267,7 @@ void SubAppsServiceImpl::CollectInstallData(
     provider->scheduler().FetchInstallInfoFromInstallUrl(
         manifest_id, url_to_load,
         base::BindOnce(
-            [](ManifestId manifest_app_id,
+            [](webapps::ManifestId manifest_app_id,
                std::unique_ptr<WebAppInstallInfo> install_info) {
               return std::pair(manifest_app_id, std::move(install_info));
             },
@@ -278,10 +278,10 @@ void SubAppsServiceImpl::CollectInstallData(
 
 void SubAppsServiceImpl::ProcessInstallData(
     int add_call_id,
-    std::vector<std::pair<ManifestId, std::unique_ptr<WebAppInstallInfo>>>
-        install_data) {
+    std::vector<std::pair<webapps::ManifestId,
+                          std::unique_ptr<WebAppInstallInfo>>> install_data) {
   AddCallInfo& add_call_info = add_call_info_.at(add_call_id);
-  const AppId* parent_app_id = GetAppId(render_frame_host());
+  const webapps::AppId* parent_app_id = GetAppId(render_frame_host());
 
   for (auto& [manifest_id, install_info] : install_data) {
     // If manifest_id is empty, the app was already installed and no install
@@ -316,7 +316,7 @@ void SubAppsServiceImpl::FinishAddCallOrShowInstallDialog(int add_call_id) {
 
   WebAppRegistrar& registrar =
       GetWebAppProvider(render_frame_host())->registrar_unsafe();
-  const AppId* parent_app_id = GetAppId(render_frame_host());
+  const webapps::AppId* parent_app_id = GetAppId(render_frame_host());
 
   add_call_info.install_dialog =
       std::make_unique<SubAppsInstallDialogController>();
@@ -353,21 +353,22 @@ void SubAppsServiceImpl::ProcessDialogResponse(int add_call_id,
 void SubAppsServiceImpl::ScheduleSubAppInstalls(int add_call_id) {
   AddCallInfo& add_call_info = add_call_info_.at(add_call_id);
 
-  const auto install_results_collector = base::BarrierCallback<
-      std::tuple<ManifestId, AppId, webapps::InstallResultCode>>(
-      add_call_info.install_infos.size(),
-      base::BindOnce(&SubAppsServiceImpl::FinishAddCall,
-                     weak_ptr_factory_.GetWeakPtr(), add_call_id));
+  const auto install_results_collector =
+      base::BarrierCallback<std::tuple<webapps::ManifestId, webapps::AppId,
+                                       webapps::InstallResultCode>>(
+          add_call_info.install_infos.size(),
+          base::BindOnce(&SubAppsServiceImpl::FinishAddCall,
+                         weak_ptr_factory_.GetWeakPtr(), add_call_id));
 
   // Schedule install for each install_info that was collected
   WebAppProvider* provider = GetWebAppProvider(render_frame_host());
   for (auto& install_info : add_call_info.install_infos) {
-    ManifestId manifest_id = install_info->manifest_id;
+    webapps::ManifestId manifest_id = install_info->manifest_id;
     provider->scheduler().InstallFromInfo(
         std::move(install_info), /*overwrite_existing_manifest_fields=*/false,
         webapps::WebappInstallSource::SUB_APP,
         base::BindOnce(
-            [](ManifestId manifest_id, const AppId& app_id,
+            [](webapps::ManifestId manifest_id, const webapps::AppId& app_id,
                webapps::InstallResultCode result_code) {
               return std::tuple(manifest_id, app_id, result_code);
             },
@@ -378,8 +379,9 @@ void SubAppsServiceImpl::ScheduleSubAppInstalls(int add_call_id) {
 
 void SubAppsServiceImpl::FinishAddCall(
     int add_call_id,
-    std::vector<std::tuple<ManifestId, AppId, webapps::InstallResultCode>>
-        install_results) {
+    std::vector<std::tuple<webapps::ManifestId,
+                           webapps::AppId,
+                           webapps::InstallResultCode>> install_results) {
   AddCallInfo& add_call_info = add_call_info_.at(add_call_id);
 
   for (const auto& [manifest_id, app_id, result_code] : install_results) {
@@ -411,10 +413,10 @@ void SubAppsServiceImpl::List(ListCallback result_callback) {
 
   const WebAppRegistrar& registrar = provider->registrar_unsafe();
   std::vector<SubAppsServiceListResultEntryPtr> sub_apps_list;
-  for (const AppId& sub_app_id :
+  for (const webapps::AppId& sub_app_id :
        registrar.GetAllSubAppIds(*GetAppId(render_frame_host()))) {
     const WebApp* sub_app = registrar.GetAppById(sub_app_id);
-    ManifestId manifest_id = sub_app->manifest_id();
+    webapps::ManifestId manifest_id = sub_app->manifest_id();
     sub_apps_list.push_back(SubAppsServiceListResultEntry::New(
         ConvertUrlToPath(manifest_id), sub_app->untranslated_name()));
   }
@@ -463,16 +465,16 @@ void SubAppsServiceImpl::Remove(
 void SubAppsServiceImpl::RemoveSubApp(
     const std::string& manifest_id_path,
     base::OnceCallback<void(SubAppsServiceRemoveResultPtr)> callback,
-    const AppId* calling_app_id) {
+    const webapps::AppId* calling_app_id) {
   // Convert `manifest_id_path` from path form to full URL form.
   ASSIGN_OR_RETURN(
-      const ManifestId manifest_id,
+      const webapps::ManifestId manifest_id,
       ConvertPathToUrl(manifest_id_path,
                        render_frame_host().GetLastCommittedOrigin()),
       // Compromised renderer, bail immediately (this call deletes *this).
       &SubAppsServiceImpl::ReportBadMessageAndDeleteThis, this);
 
-  AppId sub_app_id = GenerateAppIdFromManifestId(manifest_id);
+  webapps::AppId sub_app_id = GenerateAppIdFromManifestId(manifest_id);
   WebAppProvider* provider = GetWebAppProvider(render_frame_host());
   const WebApp* app = provider->registrar_unsafe().GetAppById(sub_app_id);
 
@@ -512,7 +514,7 @@ void SubAppsServiceImpl::NotifyUninstall(
   if (num_successful_uninstalls > 0) {
     WebAppRegistrar& registrar =
         GetWebAppProvider(render_frame_host())->registrar_unsafe();
-    const AppId* parent_app_id = GetAppId(render_frame_host());
+    const webapps::AppId* parent_app_id = GetAppId(render_frame_host());
     const std::u16string parent_app_name =
         base::ASCIIToUTF16(registrar.GetAppShortName(*parent_app_id));
     const GURL start_url = registrar.GetAppStartUrl(*parent_app_id);

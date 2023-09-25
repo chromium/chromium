@@ -152,7 +152,7 @@ void WebAppLaunchQueue::Reset() {
   last_sent_queued_launch_params_.reset();
 }
 
-const AppId* WebAppLaunchQueue::GetPendingLaunchAppId() const {
+const webapps::AppId* WebAppLaunchQueue::GetPendingLaunchAppId() const {
   if (queue_.empty())
     return nullptr;
   return &(queue_.front().app_id);

@@ -32,7 +32,8 @@ class WebAppDataRetriever;
 class InstallPlaceholderJob {
  public:
   using InstallAndReplaceCallback =
-      base::OnceCallback<void(webapps::InstallResultCode code, AppId app_id)>;
+      base::OnceCallback<void(webapps::InstallResultCode code,
+                              webapps::AppId app_id)>;
   InstallPlaceholderJob(Profile* profile,
                         const ExternalInstallOptions& install_options,
                         InstallAndReplaceCallback callback,
@@ -61,12 +62,12 @@ class InstallPlaceholderJob {
       absl::optional<std::reference_wrapper<const std::vector<SkBitmap>>>
           bitmaps);
 
-  void OnInstallFinalized(const AppId& app_id,
+  void OnInstallFinalized(const webapps::AppId& app_id,
                           webapps::InstallResultCode code,
                           OsHooksErrors os_hooks_errors);
 
   const raw_ref<Profile> profile_;
-  const AppId app_id_;
+  const webapps::AppId app_id_;
 
   // `this` must exist within the scope of a WebCommand's
   // SharedWebContentsWithAppLock.

@@ -23,9 +23,10 @@ namespace web_app {
 namespace {
 
 struct GeneratedIconFixFutures {
-  base::test::TestFuture<const AppId&, GeneratedIconFixScheduleDecision>
+  base::test::TestFuture<const webapps::AppId&,
+                         GeneratedIconFixScheduleDecision>
       schedule;
-  base::test::TestFuture<const AppId&, GeneratedIconFixResult> fix;
+  base::test::TestFuture<const webapps::AppId&, GeneratedIconFixResult> fix;
 
   explicit GeneratedIconFixFutures(FakeWebAppProvider& provider) {
     GeneratedIconFixManager& generated_icon_fix_manager =
@@ -55,7 +56,7 @@ class TwoClientGeneratedIconFixSyncTest : public WebAppsSyncTestBase {
     WebAppsSyncTestBase::TearDownOnMainThread();
   }
 
-  AppId SyncBrokenIcon(Profile* source, Profile* destination) {
+  webapps::AppId SyncBrokenIcon(Profile* source, Profile* destination) {
     WebAppTestInstallObserver install_observer{destination};
 
     // Install on source profile.
@@ -65,7 +66,7 @@ class TwoClientGeneratedIconFixSyncTest : public WebAppsSyncTestBase {
     info->start_url = GURL("https://example.com");
     info->manifest_icons.emplace_back(
         apps::IconInfo(GURL("https://example.com/icon.png"), 256));
-    AppId app_id = test::InstallWebApp(source, std::move(info));
+    webapps::AppId app_id = test::InstallWebApp(source, std::move(info));
 
     // Wait for sync install on destination profile.
     install_observer.BeginListening({app_id});
@@ -90,7 +91,7 @@ class TwoClientGeneratedIconFixSyncTest : public WebAppsSyncTestBase {
              is_correct_color == other.is_correct_color;
     }
   };
-  IconState CheckIconState(Profile* profile, const AppId& app_id) {
+  IconState CheckIconState(Profile* profile, const webapps::AppId& app_id) {
     base::test::TestFuture<std::map<SquareSizePx, SkBitmap>> icons_future;
     fake_providers_[profile]->icon_manager().ReadIcons(
         app_id, IconPurpose::ANY, {256}, icons_future.GetCallback());
@@ -139,7 +140,7 @@ class TwoClientGeneratedIconFixSyncTest : public WebAppsSyncTestBase {
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, Fix) {
-  AppId app_id = SyncBrokenIcon(GetProfile(0), GetProfile(1));
+  webapps::AppId app_id = SyncBrokenIcon(GetProfile(0), GetProfile(1));
 
   EXPECT_EQ(CheckIconState(GetProfile(1), app_id),
             (IconState{.is_generated = true, .is_correct_color = false}));
@@ -153,10 +154,10 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, Fix) {
   // time for a real restart).
   provider1.generated_icon_fix_manager().Start();
 
-  EXPECT_EQ(futures.schedule.Get<AppId>(), app_id);
+  EXPECT_EQ(futures.schedule.Get<webapps::AppId>(), app_id);
   EXPECT_EQ(futures.schedule.Get<GeneratedIconFixScheduleDecision>(),
             GeneratedIconFixScheduleDecision::kSchedule);
-  EXPECT_EQ(futures.fix.Get<AppId>(), app_id);
+  EXPECT_EQ(futures.fix.Get<webapps::AppId>(), app_id);
   EXPECT_EQ(futures.fix.Get<GeneratedIconFixResult>(),
             GeneratedIconFixResult::kSuccess);
 
@@ -165,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, Fix) {
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, TimeWindowExpired) {
-  AppId app_id = SyncBrokenIcon(GetProfile(0), GetProfile(1));
+  webapps::AppId app_id = SyncBrokenIcon(GetProfile(0), GetProfile(1));
 
   EXPECT_EQ(CheckIconState(GetProfile(1), app_id),
             (IconState{.is_generated = true, .is_correct_color = false}));
@@ -182,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, TimeWindowExpired) {
   // time for a real restart).
   provider1.generated_icon_fix_manager().Start();
 
-  EXPECT_EQ(futures.schedule.Get<AppId>(), app_id);
+  EXPECT_EQ(futures.schedule.Get<webapps::AppId>(), app_id);
   EXPECT_EQ(futures.schedule.Get<GeneratedIconFixScheduleDecision>(),
             GeneratedIconFixScheduleDecision::kTimeWindowExpired);
   EXPECT_FALSE(provider1.generated_icon_fix_manager()
@@ -196,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, TimeWindowExpired) {
 IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, NotRequired) {
   EnableIconServing(GetProfile(1));
 
-  AppId app_id = SyncBrokenIcon(GetProfile(0), GetProfile(1));
+  webapps::AppId app_id = SyncBrokenIcon(GetProfile(0), GetProfile(1));
 
   EXPECT_EQ(CheckIconState(GetProfile(1), app_id),
             (IconState{.is_generated = false, .is_correct_color = true}));
@@ -208,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, NotRequired) {
   // time for a real restart).
   provider1.generated_icon_fix_manager().Start();
 
-  EXPECT_EQ(futures.schedule.Get<AppId>(), app_id);
+  EXPECT_EQ(futures.schedule.Get<webapps::AppId>(), app_id);
   EXPECT_EQ(futures.schedule.Get<GeneratedIconFixScheduleDecision>(),
             GeneratedIconFixScheduleDecision::kNotRequired);
   EXPECT_FALSE(provider1.generated_icon_fix_manager()
@@ -217,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, NotRequired) {
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, AppUninstalled) {
-  AppId app_id = SyncBrokenIcon(GetProfile(0), GetProfile(1));
+  webapps::AppId app_id = SyncBrokenIcon(GetProfile(0), GetProfile(1));
 
   EXPECT_EQ(CheckIconState(GetProfile(1), app_id),
             (IconState{.is_generated = true, .is_correct_color = false}));
@@ -229,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, AppUninstalled) {
   // for a real restart).
   provider1.generated_icon_fix_manager().Start();
 
-  EXPECT_EQ(futures.schedule.Get<AppId>(), app_id);
+  EXPECT_EQ(futures.schedule.Get<webapps::AppId>(), app_id);
   EXPECT_EQ(futures.schedule.Get<GeneratedIconFixScheduleDecision>(),
             GeneratedIconFixScheduleDecision::kSchedule);
 
@@ -238,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientGeneratedIconFixSyncTest, AppUninstalled) {
   // command queue is difficult.
   provider1.sync_bridge_unsafe().BeginUpdate()->DeleteApp(app_id);
 
-  EXPECT_EQ(futures.fix.Get<AppId>(), app_id);
+  EXPECT_EQ(futures.fix.Get<webapps::AppId>(), app_id);
   EXPECT_EQ(futures.fix.Get<GeneratedIconFixResult>(),
             GeneratedIconFixResult::kAppUninstalled);
 }

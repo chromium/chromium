@@ -13,6 +13,7 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/webapps/browser/installable/installable_logging.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "url/gurl.h"
 
@@ -38,10 +39,10 @@ enum class InstallableCheckResult {
 };
 using FetchInstallabilityForChromeManagementCallback =
     base::OnceCallback<void(InstallableCheckResult result,
-                            absl::optional<AppId> app_id)>;
+                            absl::optional<webapps::AppId> app_id)>;
 
 // Given a url and web contents, this command determines if the given url is
-// installable, what the AppId is, and if it is already installed.
+// installable, what the webapps::AppId is, and if it is already installed.
 class FetchInstallabilityForChromeManagement
     : public WebAppCommandTemplate<NoopLock> {
  public:
@@ -77,7 +78,7 @@ class FetchInstallabilityForChromeManagement
   std::unique_ptr<NoopLock> noop_lock_;
 
   const GURL url_;
-  AppId app_id_;
+  webapps::AppId app_id_;
 
   base::WeakPtr<content::WebContents> web_contents_;
   const std::unique_ptr<WebAppUrlLoader> url_loader_;

@@ -301,7 +301,7 @@ SynchronizeDecision GetSynchronizeDecision(
 
   // Remove if any apps to replace are blocked or force installed by admin
   // policy.
-  for (const AppId& app_id : options.uninstall_and_replace) {
+  for (const webapps::AppId& app_id : options.uninstall_and_replace) {
     if (extensions::IsExtensionBlockedByPolicy(profile, app_id)) {
       return {.type = SynchronizeDecision::kUninstall,
               .reason = DisabledReason::kUninstallReplacingAppBlockedByPolicy,
@@ -326,7 +326,7 @@ SynchronizeDecision GetSynchronizeDecision(
   // default extension apps are not performing new installation.
   if (options.gate_on_feature && !options.uninstall_and_replace.empty() &&
       !extensions::DidPreinstalledAppsPerformNewInstallation(profile)) {
-    for (const AppId& app_id : options.uninstall_and_replace) {
+    for (const webapps::AppId& app_id : options.uninstall_and_replace) {
       // First time migration and the app to replace is uninstalled as it passed
       // the last code block. Save the information that the app was
       // uninstalled by user.
@@ -378,7 +378,7 @@ SynchronizeDecision GetSynchronizeDecision(
 
   // Ensure install if any apps to replace are installed as installation
   // includes uninstall_and_replace-ing the specified apps.
-  for (const AppId& app_id : options.uninstall_and_replace) {
+  for (const webapps::AppId& app_id : options.uninstall_and_replace) {
     if (extensions::IsExtensionInstalled(profile, app_id)) {
       return {
           .type = SynchronizeDecision::kInstall,
@@ -447,7 +447,7 @@ SynchronizeDecision GetSynchronizeDecision(
   }
 
   // Ignore if any apps to replace were previously uninstalled.
-  for (const AppId& app_id : options.uninstall_and_replace) {
+  for (const webapps::AppId& app_id : options.uninstall_and_replace) {
     if (extensions::IsExternalExtensionUninstalled(profile, app_id)) {
       return {.type = SynchronizeDecision::kIgnore,
               .reason = DisabledReason::kIgnoreReplacingAppUninstalledByUser,
@@ -932,7 +932,7 @@ void PreinstalledWebAppManager::Synchronize(
     std::vector<ExternalInstallOptions> desired_apps_install_options) {
   DCHECK(provider_);
 
-  std::map<InstallUrl, std::vector<AppId>> desired_uninstalls;
+  std::map<InstallUrl, std::vector<webapps::AppId>> desired_uninstalls;
   for (const auto& entry : desired_apps_install_options) {
     if (!entry.uninstall_and_replace.empty()) {
       desired_uninstalls.emplace(entry.install_url,
@@ -949,7 +949,7 @@ void PreinstalledWebAppManager::Synchronize(
 
 void PreinstalledWebAppManager::OnExternalWebAppsSynchronized(
     ExternallyManagedAppManager::SynchronizeCallback callback,
-    std::map<InstallUrl, std::vector<AppId>> desired_uninstalls,
+    std::map<InstallUrl, std::vector<webapps::AppId>> desired_uninstalls,
     std::map<InstallUrl, ExternallyManagedAppManager::InstallResult>
         install_results,
     std::map<InstallUrl, bool> uninstall_results) {
@@ -987,7 +987,7 @@ void PreinstalledWebAppManager::OnExternalWebAppsSynchronized(
       continue;
     }
 
-    for (const AppId& replace_id : iter->second) {
+    for (const webapps::AppId& replace_id : iter->second) {
       // We mark the app as migrated to a web app as long as the
       // installation was successful, even if the previous app was not
       // installed. This ensures we properly re-install apps if the

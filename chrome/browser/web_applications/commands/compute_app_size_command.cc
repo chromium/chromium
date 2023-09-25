@@ -19,11 +19,11 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/dom_storage_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -32,7 +32,7 @@
 namespace web_app {
 
 ComputeAppSizeCommand::ComputeAppSizeCommand(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     Profile* profile,
     base::OnceCallback<void(absl::optional<Size>)> callback)
     : WebAppCommandTemplate<AppLock>("ComputeAppSizeCommand"),

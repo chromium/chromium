@@ -31,7 +31,7 @@ InstallPlaceholderCommand::InstallPlaceholderCommand(
           GenerateManifestIdFromStartUrlOnly(install_options.install_url))),
       lock_description_(
           std::make_unique<SharedWebContentsWithAppLockDescription>(
-              base::flat_set<AppId>{app_id_})),
+              base::flat_set<webapps::AppId>{app_id_})),
       install_options_(install_options),
       callback_(std::move(callback)) {}
 
@@ -96,7 +96,7 @@ void InstallPlaceholderCommand::Abort(webapps::InstallResultCode code) {
 
 void InstallPlaceholderCommand::OnPlaceholderInstalled(
     webapps::InstallResultCode code,
-    AppId app_id) {
+    webapps::AppId app_id) {
   webapps::InstallableMetrics::TrackInstallResult(webapps::IsSuccess(code));
 
   if (!callback_) {

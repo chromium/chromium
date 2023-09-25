@@ -77,7 +77,7 @@ class WebAppRunOnOsLoginManagerBrowserTest
     if (!web_app) {
       return nullptr;
     }
-    AppId app_id = web_app.value();
+    webapps::AppId app_id = web_app.value();
 
     return AppBrowserController::FindForWebApp(*profile(), app_id);
   }

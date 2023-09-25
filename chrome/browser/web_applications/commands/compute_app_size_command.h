@@ -18,6 +18,7 @@
 #include "components/browsing_data/content/browsing_data_quota_helper.h"
 #include "components/browsing_data/content/local_storage_helper.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/storage_usage_info.h"
 
 namespace web_app {
@@ -36,7 +37,7 @@ class ComputeAppSizeCommand : public WebAppCommandTemplate<AppLock> {
   };
 
   ComputeAppSizeCommand(
-      const AppId& app_id,
+      const webapps::AppId& app_id,
       Profile* profile,
       base::OnceCallback<void(absl::optional<Size>)> callback);
 
@@ -66,7 +67,7 @@ class ComputeAppSizeCommand : public WebAppCommandTemplate<AppLock> {
   AppLockDescription lock_description_;
   std::unique_ptr<AppLock> lock_;
 
-  const AppId app_id_;
+  const webapps::AppId app_id_;
   const raw_ptr<Profile> profile_;
   base::OnceCallback<void(absl::optional<Size>)> callback_;
   url::Origin origin_;

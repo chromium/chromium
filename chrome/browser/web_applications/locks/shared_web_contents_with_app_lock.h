@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/locks/with_app_resources.h"
 #include "chrome/browser/web_applications/locks/with_shared_web_contents_resources.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace content {
 class WebContents;
@@ -34,7 +35,7 @@ class WebAppLockManager;
 class SharedWebContentsWithAppLockDescription : public LockDescription {
  public:
   explicit SharedWebContentsWithAppLockDescription(
-      base::flat_set<AppId> app_ids);
+      base::flat_set<webapps::AppId> app_ids);
   ~SharedWebContentsWithAppLockDescription();
 };
 

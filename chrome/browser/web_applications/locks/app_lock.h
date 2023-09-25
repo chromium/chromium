@@ -12,6 +12,7 @@
 #include "chrome/browser/web_applications/locks/lock.h"
 #include "chrome/browser/web_applications/locks/with_app_resources.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace content {
 struct PartitionedLockHolder;
@@ -26,8 +27,8 @@ class WebAppLockManager;
 // Locks can be acquired by using the `WebAppLockManager`.
 class AppLockDescription : public LockDescription {
  public:
-  explicit AppLockDescription(const AppId& app_id);
-  explicit AppLockDescription(base::flat_set<AppId> app_ids);
+  explicit AppLockDescription(const webapps::AppId& app_id);
+  explicit AppLockDescription(base::flat_set<webapps::AppId> app_ids);
   ~AppLockDescription();
 };
 

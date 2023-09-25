@@ -15,19 +15,19 @@
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/manifest_update_utils.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace web_app {
 
 ManifestUpdateFinalizeCommand::ManifestUpdateFinalizeCommand(
     const GURL& url,
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     WebAppInstallInfo install_info,
     ManifestWriteCallback write_callback,
     std::unique_ptr<ScopedKeepAlive> keep_alive,
@@ -82,7 +82,7 @@ void ManifestUpdateFinalizeCommand::StartWithLock(
 }
 
 void ManifestUpdateFinalizeCommand::OnInstallationComplete(
-    const AppId& app_id,
+    const webapps::AppId& app_id,
     webapps::InstallResultCode code,
     OsHooksErrors os_hooks_errors) {
   if (!IsSuccess(code)) {

@@ -86,22 +86,22 @@ class WebAppInternalsBrowserTest : public WebAppControllerBrowserTest {
     WebAppControllerBrowserTest::SetUpOnMainThread();
   }
 
-  AppId InstallWebApp(const GURL& app_url) {
+  webapps::AppId InstallWebApp(const GURL& app_url) {
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), app_url));
 
-    AppId app_id;
+    webapps::AppId app_id;
     base::RunLoop run_loop;
     GetProvider().scheduler().FetchManifestAndInstall(
         webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
         browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
         /*bypass_service_worker_check=*/false,
         base::BindOnce(test::TestAcceptDialogCallback),
-        base::BindLambdaForTesting(
-            [&](const AppId& new_app_id, webapps::InstallResultCode code) {
-              EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
-              app_id = new_app_id;
-              run_loop.Quit();
-            }),
+        base::BindLambdaForTesting([&](const webapps::AppId& new_app_id,
+                                       webapps::InstallResultCode code) {
+          EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
+          app_id = new_app_id;
+          run_loop.Quit();
+        }),
         /*use_fallback=*/true);
 
     run_loop.Run();
@@ -145,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsBrowserTest,
   OverrideHttpRequest(embedded_test_server()->GetURL("/banners/bad_icon.png"),
                       net::HTTP_NOT_FOUND);
 
-  AppId app_id = InstallWebApp(embedded_test_server()->GetURL(
+  webapps::AppId app_id = InstallWebApp(embedded_test_server()->GetURL(
       "/banners/manifest_test_page.html?manifest=manifest_bad_icon.json"));
 
   const WebApp* web_app = GetProvider().registrar_unsafe().GetAppById(app_id);

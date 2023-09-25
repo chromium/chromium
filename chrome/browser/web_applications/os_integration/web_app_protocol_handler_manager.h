@@ -11,6 +11,7 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include <vector>
@@ -38,7 +39,7 @@ class WebAppProtocolHandlerManager {
   // for the app indicated by |app_id|, this method will translate the protocol
   // to a full app URL.
   // If no matching handler is installed, no URL is returned.
-  absl::optional<GURL> TranslateProtocolUrl(const AppId& app_id,
+  absl::optional<GURL> TranslateProtocolUrl(const webapps::AppId& app_id,
                                             const GURL& protocol_url) const;
 
   // Gets the list of handlers with launch permissions for a given protocol.
@@ -57,14 +58,15 @@ class WebAppProtocolHandlerManager {
 
   // Gets all protocol handlers for |app_id| as custom handler objects.
   std::vector<custom_handlers::ProtocolHandler> GetAppProtocolHandlers(
-      const AppId& app_id) const;
+      const webapps::AppId& app_id) const;
 
   // Registers OS specific protocol handlers for OSs that need them, using the
   // protocol handler information supplied in the app manifest.
-  void RegisterOsProtocolHandlers(const AppId& app_id, ResultCallback callback);
+  void RegisterOsProtocolHandlers(const webapps::AppId& app_id,
+                                  ResultCallback callback);
 
   // Unregisters OS specific protocol handlers for an app.
-  void UnregisterOsProtocolHandlers(const AppId& app_id,
+  void UnregisterOsProtocolHandlers(const webapps::AppId& app_id,
                                     ResultCallback callback);
 
  private:

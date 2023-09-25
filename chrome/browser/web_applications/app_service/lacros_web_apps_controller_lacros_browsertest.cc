@@ -33,7 +33,7 @@ using LacrosWebAppsControllerBrowserTest = WebAppNavigationBrowserTest;
 // Test that the default context menu for a web app has the correct items.
 IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, DefaultContextMenu) {
   InstallTestWebApp();
-  const AppId app_id = test_web_app_id();
+  const webapps::AppId app_id = test_web_app_id();
 
   // No item should exist in the shelf before the web app is launched.
   ASSERT_TRUE(browser_test_util::WaitForShelfItem(app_id, /*exists=*/false));
@@ -70,7 +70,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, DefaultContextMenu) {
 // Test that ShowSiteSettings() launches the Settings SWA.
 IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, AppManagement) {
   InstallTestWebApp();
-  const AppId app_id = test_web_app_id();
+  const webapps::AppId app_id = test_web_app_id();
   apps::AppReadinessWaiter(profile(), kOsSettingsAppId).Await();
 
   Browser* browser = OpenTestWebApp();
@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, AppList) {
   }
 
   InstallTestWebApp();
-  const AppId app_id = test_web_app_id();
+  const webapps::AppId app_id = test_web_app_id();
 
   // No item should exist in the shelf before the web app is launched.
   ASSERT_TRUE(browser_test_util::WaitForShelfItem(app_id, /*exists=*/false));

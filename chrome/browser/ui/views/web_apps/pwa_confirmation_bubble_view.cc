@@ -236,7 +236,7 @@ void PWAConfirmationBubbleView::WindowClosing() {
     base::RecordAction(base::UserMetricsAction("WebAppInstallCancelled"));
 
     if (iph_state_ == chrome::PwaInProductHelpState::kShown) {
-      web_app::AppId app_id =
+      webapps::AppId app_id =
           web_app::GenerateAppIdFromManifestId(web_app_info_->manifest_id);
       web_app::RecordInstallIphIgnored(prefs_, app_id, base::Time::Now());
 
@@ -268,7 +268,7 @@ bool PWAConfirmationBubbleView::Accept() {
           ? web_app::mojom::UserDisplayMode::kTabbed
           : web_app::mojom::UserDisplayMode::kStandalone;
 
-  web_app::AppId app_id =
+  webapps::AppId app_id =
       web_app::GenerateAppIdFromManifestId(web_app_info_->manifest_id);
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -339,7 +339,7 @@ void ShowPWAInstallBubble(
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(metrics::structured::kAppDiscoveryLogging)) {
-    web_app::AppId app_id =
+    webapps::AppId app_id =
         web_app::GenerateAppIdFromManifestId(web_app_info->manifest_id);
     cros_events::AppDiscovery_Browser_AppInstallDialogShown()
         .SetAppId(app_id)
