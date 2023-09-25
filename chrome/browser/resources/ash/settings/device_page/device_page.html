@@ -10,6 +10,7 @@
     margin-inline-end: 8px;
   }
 </style>
+
 <os-settings-animated-pages id="pages" section="[[section_]]">
   <div id="main" route-path="default">
     <settings-card header-text="$i18n{devicePageTitle}">
@@ -219,6 +220,7 @@
       </settings-customize-mouse-buttons-subpage>
     </os-settings-subpage>
   </template>
+
   <template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
     <template is="dom-if" route-path="/storage">
       <os-settings-subpage page-title="$i18n{storageTitle}">
@@ -241,8 +243,41 @@
     </template>
   </template>
 
-  <!-- Printing cups printers subpage -->
   <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
+    <!-- Input subpages -->
+    <template is="dom-if" route-path="/osLanguages/input">
+      <os-settings-subpage page-title="$i18n{inputPageTitle}">
+        <os-settings-input-page prefs="{{prefs}}"
+            languages="[[languages]]"
+            language-helper="[[languageHelper]]">
+        </os-settings-input-page>
+      </os-settings-subpage>
+    </template>
+
+    <template is="dom-if" route-path="/osLanguages/inputMethodOptions">
+      <os-settings-subpage>
+        <settings-input-method-options-page prefs="{{prefs}}"
+            language-helper="[[languageHelper]]">
+        </settings-input-method-options-page>
+      </os-settings-subpage>
+    </template>
+
+    <template is="dom-if" route-path="/osLanguages/editDictionary">
+      <os-settings-subpage page-title="$i18n{editDictionaryLabel}">
+        <os-settings-edit-dictionary-page></os-settings-edit-dictionary-page>
+      </os-settings-subpage>
+    </template>
+
+    <template is="dom-if"
+        route-path="/osLanguages/japaneseManageUserDictionary">
+      <os-settings-subpage
+          page-title="$i18n{japaneseManageUserDictionaryLabel}">
+        <os-settings-japanese-manage-user-dictionary-page>
+        </os-settings-japanese-manage-user-dictionary-page>
+      </os-settings-subpage>
+    </template>
+
+    <!-- Printing cups printers subpage -->
     <template is="dom-if" route-path="/cupsPrinters">
       <os-settings-subpage
           page-title="$i18n{cupsPrintTitle}"

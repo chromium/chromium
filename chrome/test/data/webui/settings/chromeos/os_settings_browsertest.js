@@ -373,6 +373,15 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'os_printing_page/printing_settings_card_test.js',
    {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
  ],
+ [
+   'DevicePageRevamp',
+   'device_page/device_page_revamp_test.js',
+   {
+     enabled: [
+       'ash::features::kOsSettingsRevampWayfinding',
+     ],
+   },
+ ],
  ['EsimRemoveProfileDialog', 'esim_remove_profile_dialog_test.js'],
  ['GuestOsSharedPaths', 'guest_os/guest_os_shared_paths_test.js'],
  ['GuestOsSharedUsbDevices', 'guest_os/guest_os_shared_usb_devices_test.js'],

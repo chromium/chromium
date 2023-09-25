@@ -19,6 +19,7 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {isInputDeviceSettingsSplitEnabled} from '../common/load_time_booleans.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {RouteOriginMixin} from '../route_origin_mixin.js';
@@ -136,7 +137,7 @@ class SettingsKeyboardElement extends SettingsKeyboardElementBase {
       isDeviceSettingsSplitEnabled_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('enableInputDeviceSettingsSplit');
+          return isInputDeviceSettingsSplitEnabled();
         },
         readOnly: true,
       },
@@ -171,7 +172,7 @@ class SettingsKeyboardElement extends SettingsKeyboardElementBase {
     this.browserProxy_.initializeKeyboard();
     this.setUpKeyMapTargets_();
 
-    this.addFocusConfig(routes.OS_LANGUAGES_INPUT, '#showLanguagesInput');
+    this.addFocusConfig(routes.OS_LANGUAGES_INPUT, '#inputRow');
   }
 
   override currentRouteChanged(newRoute: Route, oldRoute?: Route) {

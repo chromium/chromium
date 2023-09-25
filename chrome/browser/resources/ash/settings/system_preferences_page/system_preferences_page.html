@@ -70,43 +70,13 @@
     </template>
   </template>
 
-  <!-- Languages and Input subpages -->
+  <!-- Languages subpages -->
   <template is="dom-if" route-path="/osLanguages/languages">
     <os-settings-subpage page-title="$i18n{languagesPageTitle}">
       <os-settings-languages-page-v2 prefs="{{prefs}}"
           languages="[[languages]]"
           language-helper="[[languageHelper]]">
       </os-settings-languages-page-v2>
-    </os-settings-subpage>
-  </template>
-
-  <template is="dom-if" route-path="/osLanguages/input">
-    <os-settings-subpage page-title="$i18n{inputPageTitle}">
-      <os-settings-input-page prefs="{{prefs}}"
-          languages="[[languages]]"
-          language-helper="[[languageHelper]]">
-      </os-settings-input-page>
-    </os-settings-subpage>
-  </template>
-
-  <template is="dom-if" route-path="/osLanguages/inputMethodOptions">
-    <os-settings-subpage>
-      <settings-input-method-options-page prefs="{{prefs}}"
-          language-helper="[[languageHelper]]">
-      </settings-input-method-options-page>
-    </os-settings-subpage>
-  </template>
-
-  <template is="dom-if" route-path="/osLanguages/editDictionary">
-    <os-settings-subpage page-title="$i18n{editDictionaryLabel}">
-      <os-settings-edit-dictionary-page></os-settings-edit-dictionary-page>
-    </os-settings-subpage>
-  </template>
-
-  <template is="dom-if" route-path="/osLanguages/japaneseManageUserDictionary">
-    <os-settings-subpage page-title="$i18n{japaneseManageUserDictionaryLabel}">
-      <os-settings-japanese-manage-user-dictionary-page>
-      </os-settings-japanese-manage-user-dictionary-page>
     </os-settings-subpage>
   </template>
 

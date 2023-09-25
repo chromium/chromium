@@ -641,57 +641,60 @@ void LanguagesSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::Subpage::kLanguages, mojom::SearchResultIcon::kGlobe,
       mojom::SearchResultDefaultRank::kMedium, mojom::kLanguagesSubpagePath);
   static constexpr mojom::Setting kLanguagesPageSettings[] = {
+      mojom::Setting::kAddLanguage,
       mojom::Setting::kChangeDeviceLanguage,
       mojom::Setting::kOfferTranslation,
   };
   RegisterNestedSettingBulk(mojom::Subpage::kLanguages, kLanguagesPageSettings,
                             generator);
 
-  // Input.
-  generator->RegisterTopLevelSubpage(
-      ash::features::IsOsSettingsRevampWayfindingEnabled()
-          ? IDS_OS_SETTINGS_LANGUAGES_INPUT_PAGE_TITLE
-          : IDS_OS_SETTINGS_LANGUAGES_INPUT_PAGE_TITLE_V2,
-      mojom::Subpage::kInput, mojom::SearchResultIcon::kGlobe,
-      mojom::SearchResultDefaultRank::kMedium, mojom::kInputSubpagePath);
-  static constexpr mojom::Setting kInputPageSettings[] = {
-      mojom::Setting::kAddInputMethod,
-      mojom::Setting::kShowEmojiSuggestions,
-      mojom::Setting::kSpellCheck,
-  };
-  RegisterNestedSettingBulk(mojom::Subpage::kInput, kInputPageSettings,
-                            generator);
+  // Input settings subpages are associated with the Device section when
+  // OsSettingsRevampWayfinding is enabled.
+  if (!ash::features::IsOsSettingsRevampWayfindingEnabled()) {
+    // Input subpage
+    generator->RegisterTopLevelSubpage(
+        IDS_OS_SETTINGS_LANGUAGES_INPUT_PAGE_TITLE_V2, mojom::Subpage::kInput,
+        mojom::SearchResultIcon::kGlobe,
+        mojom::SearchResultDefaultRank::kMedium, mojom::kInputSubpagePath);
+    static constexpr mojom::Setting kInputSubpageSettings[] = {
+        mojom::Setting::kAddInputMethod,
+        mojom::Setting::kShowEmojiSuggestions,
+        mojom::Setting::kShowInputOptionsInShelf,
+        mojom::Setting::kSpellCheck,
+    };
+    RegisterNestedSettingBulk(mojom::Subpage::kInput, kInputSubpageSettings,
+                              generator);
 
-  // Edit dictionary.
-  generator->RegisterNestedSubpage(
-      IDS_OS_SETTINGS_LANGUAGES_EDIT_DICTIONARY_LABEL,
-      mojom::Subpage::kEditDictionary, mojom::Subpage::kInput,
-      mojom::SearchResultIcon::kGlobe, mojom::SearchResultDefaultRank::kMedium,
-      mojom::kEditDictionarySubpagePath);
+    // Edit dictionary subpage
+    generator->RegisterNestedSubpage(
+        IDS_OS_SETTINGS_LANGUAGES_EDIT_DICTIONARY_LABEL,
+        mojom::Subpage::kEditDictionary, mojom::Subpage::kInput,
+        mojom::SearchResultIcon::kGlobe,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::kEditDictionarySubpagePath);
 
-  // Japanese Manage User Dictionary
-  generator->RegisterNestedSubpage(
-      IDS_OS_SETTINGS_LANGUAGES_JAPANESE_MANAGE_USER_DICTIONARY_LABEL,
-      mojom::Subpage::kJapaneseManageUserDictionary, mojom::Subpage::kInput,
-      mojom::SearchResultIcon::kGlobe, mojom::SearchResultDefaultRank::kMedium,
-      mojom::kJapaneseManageUserDictionarySubpagePath);
+    // Japanese Manage User Dictionary subpage
+    generator->RegisterNestedSubpage(
+        IDS_OS_SETTINGS_LANGUAGES_JAPANESE_MANAGE_USER_DICTIONARY_LABEL,
+        mojom::Subpage::kJapaneseManageUserDictionary, mojom::Subpage::kInput,
+        mojom::SearchResultIcon::kGlobe,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::kJapaneseManageUserDictionarySubpagePath);
 
-  generator->RegisterNestedSetting(mojom::Setting::kAddLanguage,
-                                   mojom::Subpage::kLanguages);
-  generator->RegisterNestedSetting(mojom::Setting::kShowInputOptionsInShelf,
-                                   mojom::Subpage::kInput);
-
-  // Input method options.
-  generator->RegisterNestedSubpage(
-      IDS_SETTINGS_LANGUAGES_INPUT_METHOD_OPTIONS_TITLE,
-      mojom::Subpage::kInputMethodOptions, mojom::Subpage::kInput,
-      mojom::SearchResultIcon::kGlobe, mojom::SearchResultDefaultRank::kMedium,
-      mojom::kInputMethodOptionsSubpagePath);
-
-  generator->RegisterNestedSetting(mojom::Setting::kShowPKAutoCorrection,
-                                   mojom::Subpage::kInputMethodOptions);
-  generator->RegisterNestedSetting(mojom::Setting::kShowVKAutoCorrection,
-                                   mojom::Subpage::kInputMethodOptions);
+    // Input method options subpage
+    generator->RegisterNestedSubpage(
+        IDS_SETTINGS_LANGUAGES_INPUT_METHOD_OPTIONS_TITLE,
+        mojom::Subpage::kInputMethodOptions, mojom::Subpage::kInput,
+        mojom::SearchResultIcon::kGlobe,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::kInputMethodOptionsSubpagePath);
+    static constexpr mojom::Setting kInputMethodOptionsSubpageSettings[] = {
+        mojom::Setting::kShowPKAutoCorrection,
+        mojom::Setting::kShowVKAutoCorrection,
+    };
+    RegisterNestedSettingBulk(mojom::Subpage::kInputMethodOptions,
+                              kInputMethodOptionsSubpageSettings, generator);
+  }
 }
 
 bool LanguagesSection::IsEmojiSuggestionAllowed() const {

@@ -87,6 +87,7 @@ build_webui_tests("build") {
     "device_page/customize_tablet_buttons_subpage_test.ts",
     "device_page/customize_pen_buttons_subpage_test.ts",
     "device_page/drag_and_drop_manager_test.ts",
+    "device_page/device_page_revamp_test.ts",
     "device_page/device_page_tests.js",
     "device_page/fake_cros_audio_config_test.ts",
     "device_page/fake_input_device_settings_provider_test.ts",

@@ -173,7 +173,7 @@ suite('<settings-per-device-keyboard>', () => {
 
   test('Navigate to input tab', async () => {
     perDeviceKeyboardPage.shadowRoot!
-        .querySelector<CrLinkRowElement>('#showLanguagesInput')!.click();
+        .querySelector<CrLinkRowElement>('#inputRow')!.click();
     assertEquals(routes.OS_LANGUAGES_INPUT, Router.getInstance().currentRoute);
   });
 

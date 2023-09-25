@@ -26,6 +26,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {AudioOutputCapability, BluetoothSystemProperties, DeviceConnectionState, DeviceType, PairedBluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {isInputDeviceSettingsSplitEnabled} from '../common/load_time_booleans.js';
 import {OsSettingsSubpageElement} from '../os_settings_page/os_settings_subpage.js';
 import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router, routes} from '../router.js';
@@ -129,7 +130,7 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
     this.addEventListener(
         'forget-bluetooth-device', this.forgetDeviceConfirmed_);
 
-    if (loadTimeData.getBoolean('enableInputDeviceSettingsSplit')) {
+    if (isInputDeviceSettingsSplitEnabled()) {
       this.addFocusConfig(routes.PER_DEVICE_MOUSE, '#changeMouseSettings');
       this.addFocusConfig(
           routes.PER_DEVICE_KEYBOARD, '#changeKeyboardSettings');
@@ -513,7 +514,7 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
   }
 
   private onMouseRowClick_(): void {
-    if (loadTimeData.getBoolean('enableInputDeviceSettingsSplit')) {
+    if (isInputDeviceSettingsSplitEnabled()) {
       Router.getInstance().navigateTo(routes.PER_DEVICE_MOUSE);
     } else {
       Router.getInstance().navigateTo(routes.POINTERS);
@@ -521,7 +522,7 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
   }
 
   private onKeyboardRowClick_(): void {
-    if (loadTimeData.getBoolean('enableInputDeviceSettingsSplit')) {
+    if (isInputDeviceSettingsSplitEnabled()) {
       Router.getInstance().navigateTo(routes.PER_DEVICE_KEYBOARD);
     } else {
       Router.getInstance().navigateTo(routes.KEYBOARD);

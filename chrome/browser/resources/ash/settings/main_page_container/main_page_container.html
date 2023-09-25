@@ -187,7 +187,9 @@
         if="[[shouldStampPage_(pageAvailability, Section.kDevice)]]"
         restamp>
       <page-displayer section="[[Section.kDevice]]">
-        <settings-device-page prefs="{{prefs}}">
+        <settings-device-page prefs="{{prefs}}"
+            languages="[[languages_]]"
+            language-helper="[[languageHelper_]]">
         </settings-device-page>
       </page-displayer>
     </template>

@@ -49,7 +49,11 @@ using ::chromeos::settings::mojom::kCustomizePenButtonsSubpagePath;
 using ::chromeos::settings::mojom::kCustomizeTabletButtonsSubpagePath;
 using ::chromeos::settings::mojom::kDeviceSectionPath;
 using ::chromeos::settings::mojom::kDisplaySubpagePath;
+using ::chromeos::settings::mojom::kEditDictionarySubpagePath;
 using ::chromeos::settings::mojom::kGraphicsTabletSubpagePath;
+using ::chromeos::settings::mojom::kInputMethodOptionsSubpagePath;
+using ::chromeos::settings::mojom::kInputSubpagePath;
+using ::chromeos::settings::mojom::kJapaneseManageUserDictionarySubpagePath;
 using ::chromeos::settings::mojom::kKeyboardSubpagePath;
 using ::chromeos::settings::mojom::kPerDeviceKeyboardRemapKeysSubpagePath;
 using ::chromeos::settings::mojom::kPerDeviceKeyboardSubpagePath;
@@ -1158,6 +1162,9 @@ bool DeviceSection::LogMetric(mojom::Setting setting,
 }
 
 void DeviceSection::RegisterHierarchy(HierarchyGenerator* generator) const {
+  const bool kIsRevampEnabled =
+      ash::features::IsOsSettingsRevampWayfindingEnabled();
+
   // Pointers.
   generator->RegisterTopLevelSubpage(
       IDS_SETTINGS_MOUSE_AND_TOUCHPAD_TITLE, mojom::Subpage::kPointers,
@@ -1185,9 +1192,8 @@ void DeviceSection::RegisterHierarchy(HierarchyGenerator* generator) const {
                             generator);
 
   const int kKeyboardTitleStringID =
-      ash::features::IsOsSettingsRevampWayfindingEnabled()
-          ? IDS_OS_SETTINGS_REVAMP_KEYBOARD_AND_INPUTS_TITLE
-          : IDS_SETTINGS_KEYBOARD_TITLE;
+      kIsRevampEnabled ? IDS_OS_SETTINGS_REVAMP_KEYBOARD_AND_INPUTS_TITLE
+                       : IDS_SETTINGS_KEYBOARD_TITLE;
   if (base::FeatureList::IsEnabled(ash::features::kInputDeviceSettingsSplit)) {
     // Per-device Keyboard.
     generator->RegisterTopLevelSubpage(kKeyboardTitleStringID,
@@ -1280,6 +1286,52 @@ void DeviceSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   };
   RegisterNestedSettingBulk(mojom::Subpage::kKeyboard, kKeyboardSettings,
                             generator);
+
+  if (kIsRevampEnabled) {
+    // Input subpage
+    generator->RegisterTopLevelSubpage(
+        IDS_OS_SETTINGS_LANGUAGES_INPUT_PAGE_TITLE_V2, mojom::Subpage::kInput,
+        mojom::SearchResultIcon::kGlobe,
+        mojom::SearchResultDefaultRank::kMedium, mojom::kInputSubpagePath);
+    static constexpr mojom::Setting kInputSubpageSettings[] = {
+        mojom::Setting::kAddInputMethod,
+        mojom::Setting::kShowEmojiSuggestions,
+        mojom::Setting::kShowInputOptionsInShelf,
+        mojom::Setting::kSpellCheck,
+    };
+    RegisterNestedSettingBulk(mojom::Subpage::kInput, kInputSubpageSettings,
+                              generator);
+
+    // Edit dictionary subpage
+    generator->RegisterNestedSubpage(
+        IDS_OS_SETTINGS_LANGUAGES_EDIT_DICTIONARY_LABEL,
+        mojom::Subpage::kEditDictionary, mojom::Subpage::kInput,
+        mojom::SearchResultIcon::kGlobe,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::kEditDictionarySubpagePath);
+
+    // Japanese Manage User Dictionary subpage
+    generator->RegisterNestedSubpage(
+        IDS_OS_SETTINGS_LANGUAGES_JAPANESE_MANAGE_USER_DICTIONARY_LABEL,
+        mojom::Subpage::kJapaneseManageUserDictionary, mojom::Subpage::kInput,
+        mojom::SearchResultIcon::kGlobe,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::kJapaneseManageUserDictionarySubpagePath);
+
+    // Input method options subpage
+    generator->RegisterNestedSubpage(
+        IDS_SETTINGS_LANGUAGES_INPUT_METHOD_OPTIONS_TITLE,
+        mojom::Subpage::kInputMethodOptions, mojom::Subpage::kInput,
+        mojom::SearchResultIcon::kGlobe,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::kInputMethodOptionsSubpagePath);
+    static constexpr mojom::Setting kInputMethodOptionsSubpageSettings[] = {
+        mojom::Setting::kShowPKAutoCorrection,
+        mojom::Setting::kShowVKAutoCorrection,
+    };
+    RegisterNestedSettingBulk(mojom::Subpage::kInputMethodOptions,
+                              kInputMethodOptionsSubpageSettings, generator);
+  }
 
   // Stylus.
   generator->RegisterTopLevelSubpage(

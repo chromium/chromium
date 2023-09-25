@@ -13,7 +13,7 @@
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {androidAppsVisible, isArcVmEnabled, isCrostiniSupported, isGuest, isKerberosEnabled, isPluginVmAvailable, isPowerwashAllowed, isRevampWayfindingEnabled} from './common/load_time_booleans.js';
+import {androidAppsVisible, isArcVmEnabled, isCrostiniSupported, isGuest, isInputDeviceSettingsSplitEnabled, isKerberosEnabled, isPluginVmAvailable, isPowerwashAllowed, isRevampWayfindingEnabled} from './common/load_time_booleans.js';
 import * as routesMojom from './mojom-webui/routes.mojom-webui.js';
 
 /**
@@ -344,7 +344,7 @@ export function createRoutes(): OsSettingsRoutes {
       r.DEVICE, routesMojom.DISPLAY_SUBPAGE_PATH, Subpage.kDisplay);
   r.AUDIO =
       createSubpage(r.DEVICE, routesMojom.AUDIO_SUBPAGE_PATH, Subpage.kAudio);
-  if (loadTimeData.getBoolean('enableInputDeviceSettingsSplit')) {
+  if (isInputDeviceSettingsSplitEnabled()) {
     r.PER_DEVICE_KEYBOARD = createSubpage(
         r.DEVICE, routesMojom.PER_DEVICE_KEYBOARD_SUBPAGE_PATH,
         Subpage.kPerDeviceKeyboard);
@@ -489,6 +489,24 @@ export function createRoutes(): OsSettingsRoutes {
       Subpage.kDetailedBuildInfo);
 
   if (isRevampWayfindingEnabled()) {
+    // Device section, Input subpages.
+    const inputParentRoute = isInputDeviceSettingsSplitEnabled() ?
+        r.PER_DEVICE_KEYBOARD :
+        r.KEYBOARD;
+    assert(inputParentRoute);
+    r.OS_LANGUAGES_INPUT = createSubpage(
+        inputParentRoute, routesMojom.INPUT_SUBPAGE_PATH, Subpage.kInput);
+    r.OS_LANGUAGES_INPUT_METHOD_OPTIONS = createSubpage(
+        r.OS_LANGUAGES_INPUT, routesMojom.INPUT_METHOD_OPTIONS_SUBPAGE_PATH,
+        Subpage.kInputMethodOptions);
+    r.OS_LANGUAGES_EDIT_DICTIONARY = createSubpage(
+        r.OS_LANGUAGES_INPUT, routesMojom.EDIT_DICTIONARY_SUBPAGE_PATH,
+        Subpage.kEditDictionary);
+    r.OS_LANGUAGES_JAPANESE_MANAGE_USER_DICTIONARY = createSubpage(
+        r.OS_LANGUAGES_INPUT,
+        routesMojom.JAPANESE_MANAGE_USER_DICTIONARY_SUBPAGE_PATH,
+        Subpage.kJapaneseManageUserDictionary);
+
     // System Preferences section.
     r.SYSTEM_PREFERENCES = createSection(
         r.BASIC, routesMojom.SYSTEM_PREFERENCES_SECTION_PATH,
@@ -520,22 +538,10 @@ export function createRoutes(): OsSettingsRoutes {
           Subpage.kNetworkFileShares);
     }
 
-    // Languages and Input subpages.
+    // Language subpages.
     r.OS_LANGUAGES_LANGUAGES = createSubpage(
         r.SYSTEM_PREFERENCES, routesMojom.LANGUAGES_SUBPAGE_PATH,
         Subpage.kLanguages);
-    r.OS_LANGUAGES_INPUT = createSubpage(
-        r.SYSTEM_PREFERENCES, routesMojom.INPUT_SUBPAGE_PATH, Subpage.kInput);
-    r.OS_LANGUAGES_INPUT_METHOD_OPTIONS = createSubpage(
-        r.OS_LANGUAGES_INPUT, routesMojom.INPUT_METHOD_OPTIONS_SUBPAGE_PATH,
-        Subpage.kInputMethodOptions);
-    r.OS_LANGUAGES_EDIT_DICTIONARY = createSubpage(
-        r.OS_LANGUAGES_INPUT, routesMojom.EDIT_DICTIONARY_SUBPAGE_PATH,
-        Subpage.kEditDictionary);
-    r.OS_LANGUAGES_JAPANESE_MANAGE_USER_DICTIONARY = createSubpage(
-        r.OS_LANGUAGES_INPUT,
-        routesMojom.JAPANESE_MANAGE_USER_DICTIONARY_SUBPAGE_PATH,
-        Subpage.kJapaneseManageUserDictionary);
 
     // Search and Assistant subpages.
     r.SEARCH_SUBPAGE = createSubpage(
