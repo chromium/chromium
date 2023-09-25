@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
@@ -22,6 +23,7 @@
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/disk_cache.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace pnacl {
 
@@ -420,15 +422,8 @@ std::string PnaclTranslationCache::GetKey(const nacl::PnaclCacheInfo& info) {
   replacements.ClearRef();
   const GURL key_url = info.pexe_url.ReplaceComponents(replacements);
 
-  base::Time::Exploded exploded;
-  info.last_modified.UTCExplode(&exploded);
-  if (info.last_modified.is_null() || !exploded.HasValidValues()) {
-    memset(&exploded, 0, sizeof(exploded));
-  }
-  const std::string timestamp = base::StringPrintf(
-      "%d:%d:%d:%d:%d:%d:%d:UTC", exploded.year, exploded.month,
-      exploded.day_of_month, exploded.hour, exploded.minute, exploded.second,
-      exploded.millisecond);
+  const std::string timestamp = base::UnlocalizedTimeFormatWithPattern(
+      info.last_modified, "y:M:d:H:m:s:S:'UTC'", icu::TimeZone::getGMT());
 
   return base::StringPrintf(
       "ABI:%d;opt:%d%s;URL:%s;modified:%s;etag:%s;sandbox:%s;extra_flags:%s;",

@@ -198,10 +198,11 @@ TEST(PnaclTranslationCacheKeyTest, CacheKeyTest) {
 
   // Check for all the time components, and null time
   info.last_modified = base::Time();
-  EXPECT_EQ("ABI:2;opt:2;URL:http://www.google.com/;"
-            "modified:0:0:0:0:0:0:0:UTC;etag:etag;"
-            "sandbox:x86-32;extra_flags:-mavx-neon;",
-            PnaclTranslationCache::GetKey(info));
+  EXPECT_EQ(
+      "ABI:2;opt:2;URL:http://www.google.com/;"
+      "modified:1970:1:1:0:0:0:0:UTC;etag:etag;"
+      "sandbox:x86-32;extra_flags:-mavx-neon;",
+      PnaclTranslationCache::GetKey(info));
   test_time.assign("Fri, 29 Feb 2008 13:04:12 GMT");
   EXPECT_TRUE(base::Time::FromString(test_time.c_str(), &info.last_modified));
   EXPECT_EQ("ABI:2;opt:2;URL:http://www.google.com/;"
