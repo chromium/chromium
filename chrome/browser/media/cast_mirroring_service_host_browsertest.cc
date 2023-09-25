@@ -96,6 +96,8 @@ class MockVideoCaptureObserver final
   MOCK_METHOD1(OnBufferDestroyedCall, void(int buffer_id));
   MOCK_METHOD1(OnStateChangedCall, void(media::mojom::VideoCaptureState state));
   MOCK_METHOD1(OnVideoCaptureErrorCall, void(media::VideoCaptureError error));
+  MOCK_METHOD1(OnFrameDroppedEarly,
+               void(media::VideoCaptureFrameDropReason reason));
 
   // media::mojom::VideoCaptureObserver implementation.
   void OnNewBuffer(int32_t buffer_id,

@@ -191,6 +191,17 @@ void VideoCaptureHost::OnBufferReady(
       std::move(mojom_buffer), std::move(mojom_scaled_buffers));
 }
 
+void VideoCaptureHost::OnFrameDroppedEarly(
+    const VideoCaptureControllerID& controller_id,
+    media::VideoCaptureFrameDropReason reason) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  if (controllers_.find(controller_id) == controllers_.end() ||
+      !base::Contains(device_id_to_observer_map_, controller_id)) {
+    return;
+  }
+  device_id_to_observer_map_[controller_id]->OnFrameDroppedEarly(reason);
+}
+
 void VideoCaptureHost::OnFrameWithEmptyRegionCapture(
     const VideoCaptureControllerID& controller_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -405,8 +416,11 @@ void VideoCaptureHost::OnFrameDropped(
     return;
 
   const base::WeakPtr<VideoCaptureController>& controller = it->second;
-  if (controller)
-    controller->OnFrameDropped(reason);
+  if (controller) {
+    // TODO(https://crbug.com/1481448): Delete this callback when
+    // MediaStreamTrackImpl handles the logging and UMAs related to frame drops.
+    controller->OnFrameDroppedByRenderer(reason);
+  }
 }
 
 void VideoCaptureHost::OnNewCropVersion(const base::UnguessableToken& device_id,

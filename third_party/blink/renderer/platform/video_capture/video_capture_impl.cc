@@ -1167,6 +1167,13 @@ void VideoCaptureImpl::OnBufferDestroyed(int32_t buffer_id) {
   }
 }
 
+void VideoCaptureImpl::OnFrameDroppedEarly(
+    media::VideoCaptureFrameDropReason reason) {
+  DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
+  // TODO(https://crbug.com/1472978): Forward this signal to `clients_` so that
+  // it ultimately ends up in MediaStreamTrackImpl and the Track Stats API.
+}
+
 void VideoCaptureImpl::OnNewCropVersion(uint32_t crop_version) {
   DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
 

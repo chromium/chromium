@@ -126,6 +126,7 @@ class PLATFORM_EXPORT VideoCaptureImpl
       media::mojom::blink::ReadyBufferPtr buffer,
       Vector<media::mojom::blink::ReadyBufferPtr> scaled_buffers) override;
   void OnBufferDestroyed(int32_t buffer_id) override;
+  void OnFrameDroppedEarly(media::VideoCaptureFrameDropReason reason) override;
   void OnNewCropVersion(uint32_t crop_version) override;
 
   void ProcessFeedback(const media::VideoCaptureFeedback& feedback);

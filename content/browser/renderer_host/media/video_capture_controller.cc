@@ -666,9 +666,37 @@ void VideoCaptureController::OnError(media::VideoCaptureError error) {
 
 void VideoCaptureController::OnFrameDropped(
     media::VideoCaptureFrameDropReason reason) {
+  OnFrameDroppedLogging(reason);
+  // This method implements media::VideoFrameReceiver, which implements signals
+  // between the capture process and browser process. Therefore we'll want to
+  // forward the frame drop signal to the renderer process.
+  for (const auto& client : controller_clients_) {
+    if (client->session_closed) {
+      continue;
+    }
+    client->event_handler->OnFrameDroppedEarly(client->controller_id, reason);
+  }
+}
+
+void VideoCaptureController::OnFrameDroppedByRenderer(
+    media::VideoCaptureFrameDropReason reason) {
+  OnFrameDroppedLogging(reason);
+}
+
+void VideoCaptureController::OnFrameDroppedLogging(
+    media::VideoCaptureFrameDropReason reason) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "VideoCaptureController::OnFrameDropped");
 
+  // Logging and UMA reporting. This includes both frame drops that happened in
+  // the capture process (early) and frame drops that happened in the renderer
+  // process (late).
+  // TODO(https://crbug.com/1481448): When the MediaStreamTrackImpl in the
+  // renderer process is aware of all frame drops, including capture process
+  // frame drops, consider moving this logic there. This would allow deleting
+  // all frame drop callbacks that go in the direction renderer -> browser.
+  // Having frame drop signals only go in one direction would make the code less
+  // confusing.
   MaybeEmitFrameDropLogMessage(reason);
 
   if (reason == frame_drop_log_state_.drop_reason) {

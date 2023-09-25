@@ -81,6 +81,10 @@ interface VideoCaptureObserver {
   // is no longer going to be used by the Browser/Host.
   OnBufferDestroyed(int32 buffer_id);
 
+  // A frame was dropped early such as by the capture process, i.e.
+  // OnBufferReady() was never called for this frame.
+  OnFrameDroppedEarly(media.mojom.VideoCaptureFrameDropReason reason);
+
   // All subsequent buffers are guaranteed to have this crop-version or higher.
   OnNewCropVersion(uint32 crop_version);
 };
