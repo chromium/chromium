@@ -256,7 +256,7 @@ object-view-box: none
 offset-anchor: auto
 offset-distance: 0px
 offset-path: none
-offset-position: auto
+offset-position: normal
 offset-rotate: auto 0deg
 opacity: 1
 order: 0

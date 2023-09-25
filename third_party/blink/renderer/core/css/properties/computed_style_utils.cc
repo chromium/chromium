@@ -203,10 +203,11 @@ CSSValue* ComputedStyleUtils::ValueForOffset(const ComputedStyle& style,
   if (RuntimeEnabledFeatures::CSSOffsetPositionAnchorEnabled()) {
     CSSValue* position = ValueForPosition(style.OffsetPosition(), style);
     auto* position_identifier_value = DynamicTo<CSSIdentifierValue>(position);
-    if (!position_identifier_value) {
+    if (!position_identifier_value ||
+        position_identifier_value->GetValueID() == CSSValueID::kAuto) {
       list->Append(*position);
     } else {
-      DCHECK(position_identifier_value->GetValueID() == CSSValueID::kAuto);
+      DCHECK(position_identifier_value->GetValueID() == CSSValueID::kNormal);
     }
   }
 

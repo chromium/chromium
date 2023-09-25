@@ -1402,8 +1402,8 @@ String StylePropertySerializer::OffsetValue() const {
       path && (use_rotate || use_distance ||
                !is_initial_identifier_value(path, CSSValueID::kNone));
   bool use_position =
-      position &&
-      (!use_path || !is_initial_identifier_value(position, CSSValueID::kAuto));
+      position && (!use_path ||
+                   !is_initial_identifier_value(position, CSSValueID::kNormal));
   bool use_anchor =
       anchor && (!is_initial_identifier_value(anchor, CSSValueID::kAuto));
 

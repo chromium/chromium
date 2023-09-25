@@ -30,8 +30,8 @@ body {
 test(function() {
     var element = document.createElement('div');
     document.body.appendChild(element);
-    assert_equals(getComputedStyle(element, null).offsetPosition, 'auto');
-}, 'offset-position default is auto');
+    assert_equals(getComputedStyle(element, null).offsetPosition, 'normal');
+}, 'offset-position default is normal');
 
 test(function() {
     assert_equals(getComputedStyle(container, null).offsetPosition, '30% 40%');
@@ -42,11 +42,11 @@ test(function() {
 }, 'offset-position can explicitly inherited');
 
 test(function() {
-    assert_equals(getComputedStyle(child2, null).offsetPosition, 'auto');
+    assert_equals(getComputedStyle(child2, null).offsetPosition, 'normal');
 }, 'offset-position is not inherited by default');
 
 test(function() {
-    assert_equals(getComputedStyle(child3, null).offsetPosition, 'auto');
+    assert_equals(getComputedStyle(child3, null).offsetPosition, 'normal');
 }, 'offset-position may not use three values');
 
 test(function() {
