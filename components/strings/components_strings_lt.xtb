@@ -125,7 +125,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1243027604378859286">Autorius:</translation>
 <translation id="1246424317317450637">Pusjuodis</translation>
 <translation id="1247030632403369975">Aliuminis</translation>
-<translation id="1250759482327835220">Kad kitą kartą galėtumėte greičiau atlikti mokėjimą, išsaugokite kortelę, vardą bei pavardę ir atsiskaitymo adresą „Google“ paskyroje.</translation>
 <translation id="1252209483516427155">Viršutiniai drabužiai</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sinchronizuota)</translation>
 <translation id="1255086252236620440">Maisto maišytuvai</translation>
@@ -158,7 +157,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1294154142200295408">Komandos eilutės kintamieji</translation>
 <translation id="129553762522093515">Neseniai uždarytas</translation>
 <translation id="1296930489679394997">Išpardavimas</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />Pabandykite išvalyti slapukus<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">Patikrinkite saugios DNS nustatymus</translation>
 <translation id="1307966114820526988">Nebenaudojamos funkcijos</translation>
@@ -1352,7 +1350,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3767485424735936570">Vadovaujantis administratoriaus politika nerekomenduojama kopijuoti ir įklijuoti šio turinio sistemoje „<ph name="VM_NAME" />“</translation>
 <translation id="3772211998634047851">Popierius (standusis)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, paspauskite tabuliavimo klavišą, tada – klavišą „Enter“, jei norite greitai sukurti naują „Google Keep“ užrašą</translation>
-<translation id="3778403066972421603">Ar norite išsaugoti šią kortelę „Google“ paskyroje ir šiame įrenginyje?</translation>
 <translation id="378026377453746707">„Chrome“ integruotos saugos funkcijos, skirtos apsaugoti jus naršant, pvz., „Google“ saugus naršymas. Naudojant Saugaus naršymo funkciją neseniai <ph name="BEGIN_LINK" />rasta žalinga programinė įranga svetainėje <ph name="SITE" /><ph name="END_LINK" />, kuri įterpiama svetainėje, jei bandote apsilankyti.</translation>
 <translation id="3780694243617746492">Išvesties dėklas</translation>
 <translation id="3781428340399460090">Ryškiai rausva</translation>
@@ -1958,7 +1955,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5020776957610079374">Pasaulinė muzika</translation>
 <translation id="5021557570875267742">Kainų stebėjimas naudojant „Chrome“</translation>
 <translation id="5023310440958281426">Patikrinkite savo administratoriaus politiką</translation>
-<translation id="5029568752722684782">Išvalyti kopiją</translation>
 <translation id="5030338702439866405">Išdavė</translation>
 <translation id="503069730517007720">Reikalingas „<ph name="SOFTWARE_NAME" />“ šakninis sertifikatas, bet jis nėra įdiegtas. Jūsų IT administratorius turėtų peržiūrėti „<ph name="SOFTWARE_NAME" />“ konfigūravimo instrukcijas, kad išspręstų šią problemą. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Apie „Google“ vertėją</translation>
@@ -2541,7 +2537,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6270066318535733958">Valčių sportas</translation>
 <translation id="6272088941196661550">Tęsti veiksmus, norint matyti atitinkamą veiklą „Chrome“ istorijoje</translation>
 <translation id="6272383483618007430">„Google“ naujinys</translation>
-<translation id="627746635834430766">Kad kitą kartą galėtumėte greičiau atlikti mokėjimą, išsaugokite kortelę ir atsiskaitymo adresą „Google“ paskyroje.</translation>
 <translation id="6279183038361895380">Paspauskite |<ph name="ACCELERATOR" />|, kad būtų rodomas žymeklis</translation>
 <translation id="6280223929691119688">Negalima pristatyti šiuo adresu. Pasirinkite kitą adresą.</translation>
 <translation id="6284292079994426700">26 x 38 col.</translation>
@@ -3853,7 +3848,6 @@ Papildoma išsami informacija:
 <translation id="8922013791253848639">Visada leisti skelbimus šioje svetainėje</translation>
 <translation id="892588693504540538">Skylė viršuje dešinėje</translation>
 <translation id="8930330541574156305">Nekilnojamasis turtas</translation>
-<translation id="8931333241327730545">Ar norite išsaugoti šios kortelės informaciją „Google“ paskyroje?</translation>
 <translation id="8932102934695377596">Jūsų laikrodis atsilieka</translation>
 <translation id="893332455753468063">Vardo ir pavardės pridėjimas</translation>
 <translation id="8942355029279167844">Administratorius leido programai „<ph name="APP_NAME" />“ rinkti diagnostikos duomenis, kad būtų galima tobulinti produkto funkcijas. Daugiau informacijos žr. <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>

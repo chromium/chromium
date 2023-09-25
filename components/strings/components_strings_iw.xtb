@@ -125,7 +125,6 @@
 <translation id="1243027604378859286">מחבר:</translation>
 <translation id="1246424317317450637">מודגש</translation>
 <translation id="1247030632403369975">Aluminum</translation>
-<translation id="1250759482327835220">‏כדי לשלם מהר יותר בפעם הבאה, אפשר לשמור בחשבון Google את פרטי הכרטיס, השם והכתובת לחיוב.</translation>
 <translation id="1252209483516427155">ביגוד עליון</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (מסונכרנים)</translation>
 <translation id="1255086252236620440">מיקסרים</translation>
@@ -158,7 +157,6 @@
 <translation id="1294154142200295408">וריאציות של שורת פקודה</translation>
 <translation id="129553762522093515">נסגרו לאחרונה</translation>
 <translation id="1296930489679394997">מכירות</translation>
-<translation id="129863573139666797">‏<ph name="BEGIN_LINK" />יש לנסות לנקות את קובצי ה-Cookie<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">‏9.5x15 אינץ' (Legal Extra)</translation>
 <translation id="1301324364792935241">‏בדיקת הגדרות ה-DNS המאובטח</translation>
 <translation id="1307966114820526988">תכונות שהוצאו משימוש</translation>
@@ -1351,7 +1349,6 @@
 <translation id="3767485424735936570">לפי המדיניות של מנהל המערכת, לא מומלץ להעתיק את התוכן ולהדביק אותו ב-<ph name="VM_NAME" /></translation>
 <translation id="3772211998634047851">Paper (Bond)</translation>
 <translation id="377451872037045164">‏<ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי ליצור הערה חדשה במהירות ב-Google Keep</translation>
-<translation id="3778403066972421603">‏ברצונך לשמור את הכרטיס בחשבון Google שלך ובמכשיר הזה?</translation>
 <translation id="378026377453746707">‏ב-Chrome יש תכונות בטיחות מובנות שנועדו להגן עליך בזמן הגלישה, כמו הגלישה הבטוחה של Google. התכונה 'גלישה בטוחה' <ph name="BEGIN_LINK" />מצאה לאחרונה תוכנה מזיקה באתר <ph name="SITE" /><ph name="END_LINK" />, שמוטמעת באתר שאליו ניסית להיכנס.</translation>
 <translation id="3780694243617746492">סל פלט</translation>
 <translation id="3781428340399460090">ורוד בוהק</translation>
@@ -1961,7 +1958,6 @@ Del</translation>
 <translation id="5020776957610079374">מוזיקת עולם</translation>
 <translation id="5021557570875267742">‏מעקב אחר מחירים באמצעות Chrome</translation>
 <translation id="5023310440958281426">יש לבדוק את תקנון מנהל המערכת שלך</translation>
-<translation id="5029568752722684782">מחיקת העותק</translation>
 <translation id="5030338702439866405">הונפק על ידי</translation>
 <translation id="503069730517007720">‏יש צורך באישור שורש בשביל "<ph name="SOFTWARE_NAME" />", אבל לא מותקן אישור כזה. על מנהל ה-IT לבדוק את הוראות התצורה של "<ph name="SOFTWARE_NAME" />" כדי לפתור את הבעיה. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">‏מידע על Google Translate</translation>
@@ -2545,7 +2541,6 @@ Del</translation>
 <translation id="6270066318535733958">חתירה בסירה</translation>
 <translation id="6272088941196661550">‏חזרה לתהליך כדי להציג את הפעילות הרלוונטית בהיסטוריה ב-Chrome</translation>
 <translation id="6272383483618007430">‏עדכוני Google</translation>
-<translation id="627746635834430766">‏כדי לשלם מהר יותר בפעם הבאה, אפשר לשמור בחשבון Google את פרטי הכרטיס ואת הכתובת לחיוב.</translation>
 <translation id="6279183038361895380">יש להקיש על |<ph name="ACCELERATOR" />| כדי להציג את הסמן</translation>
 <translation id="6280223929691119688">לא ניתן לבצע מסירה בכתובת זו. עליך לבחור כתובת אחרת.</translation>
 <translation id="6284292079994426700">‏26x38 אינץ'</translation>
@@ -3856,7 +3851,6 @@ Del</translation>
 <translation id="8922013791253848639">תמיד לאפשר מודעות באתר הזה</translation>
 <translation id="892588693504540538">ניקוב בפינה הימנית העליונה</translation>
 <translation id="8930330541574156305">נדל"ן</translation>
-<translation id="8931333241327730545">‏האם ברצונך לשמור את הכרטיס הזה בחשבון Google שלך?</translation>
 <translation id="8932102934695377596">השעון שלך מאחר</translation>
 <translation id="893332455753468063">הוספת שם</translation>
 <translation id="8942355029279167844">‏מנהל המערכת שלך אפשר לאפליקציה <ph name="APP_NAME" /> לאסוף נתוני אבחון כדי לשפר את חוויית השימוש במוצר. מידע נוסף זמין בכתובת <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>

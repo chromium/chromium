@@ -125,7 +125,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1243027604378859286">Autor:</translation>
 <translation id="1246424317317450637">Negrita</translation>
 <translation id="1247030632403369975">Aluminio</translation>
-<translation id="1250759482327835220">Para pagar más rápido la próxima vez, guarda tu tarjeta, tu nombre y tu dirección de facturación en tu cuenta de Google.</translation>
 <translation id="1252209483516427155">Abrigos</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sincronizados)</translation>
 <translation id="1255086252236620440">Batidoras</translation>
@@ -158,7 +157,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1294154142200295408">Variaciones de la línea de comandos</translation>
 <translation id="129553762522093515">Cerrado recientemente</translation>
 <translation id="1296930489679394997">Ventas</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />Borrar las cookies<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Legal extra</translation>
 <translation id="1301324364792935241">Revisa tu configuración de DNS seguro</translation>
 <translation id="1307966114820526988">Funciones obsoletas</translation>
@@ -1351,7 +1349,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3767485424735936570">Según la política del administrador, no se recomienda copiar y pegar este contenido en <ph name="VM_NAME" /></translation>
 <translation id="3772211998634047851">Papel (bond)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y luego Intro para crear una nueva nota en Google Keep rápidamente</translation>
-<translation id="3778403066972421603">¿Quieres guardar esta tarjeta en tu cuenta de Google y en este dispositivo?</translation>
 <translation id="378026377453746707">Chrome tiene funciones de seguridad integradas para protegerte mientras navegas, como Navegación segura de Google. Hace poco, Navegación segura <ph name="BEGIN_LINK" />detectó software dañino en <ph name="SITE" /><ph name="END_LINK" />, que está insertado en el sitio al que intentas acceder.</translation>
 <translation id="3780694243617746492">Bandeja de salida</translation>
 <translation id="3781428340399460090">Rosa fucsia</translation>
@@ -1957,7 +1954,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5020776957610079374">Música del mundo</translation>
 <translation id="5021557570875267742">Hacer un seguimiento de los precios con Chrome</translation>
 <translation id="5023310440958281426">Consulta las políticas del administrador</translation>
-<translation id="5029568752722684782">Borrar copia</translation>
 <translation id="5030338702439866405">Emitido por</translation>
 <translation id="503069730517007720">Se necesita un certificado raíz para "<ph name="SOFTWARE_NAME" />", pero no está instalado. El administrador de TI debe comprobar las instrucciones de configuración de "<ph name="SOFTWARE_NAME" />" para solucionar este problema. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Informacion del Traductor de Google</translation>
@@ -2540,7 +2536,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6270066318535733958">Actividades náuticas</translation>
 <translation id="6272088941196661550">Reanuda tu recorrido para ver la actividad relevante de tu historial de Chrome</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="627746635834430766">Para pagar más rápido la próxima vez, guarda tu tarjeta y tu dirección de facturación en tu cuenta de Google.</translation>
 <translation id="6279183038361895380">Pulsa |<ph name="ACCELERATOR" />| para mostrar el cursor</translation>
 <translation id="6280223929691119688">Los pedidos no se pueden entregar en esta dirección. Selecciona otra.</translation>
 <translation id="6284292079994426700">26x38 pulgadas</translation>
@@ -3851,7 +3846,6 @@ Más información:
 <translation id="8922013791253848639">Permite los anuncios siempre en este sitio web</translation>
 <translation id="892588693504540538">Perforado en la parte superior derecha</translation>
 <translation id="8930330541574156305">Inmobiliaria</translation>
-<translation id="8931333241327730545">¿Quieres guardar esta tarjeta en tu cuenta de Google?</translation>
 <translation id="8932102934695377596">Tu reloj está atrasado</translation>
 <translation id="893332455753468063">Añade un nombre</translation>
 <translation id="8942355029279167844">Tu administrador ha permitido a <ph name="APP_NAME" /> recoger datos de diagnóstico para mejorar la experiencia de los usuarios con el producto. Visita <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> para consultar más información.</translation>

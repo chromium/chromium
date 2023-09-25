@@ -125,7 +125,6 @@
 <translation id="1243027604378859286">Автор:</translation>
 <translation id="1246424317317450637">Удебелен текст</translation>
 <translation id="1247030632403369975">Алуминий</translation>
-<translation id="1250759482327835220">За да платите по-бързо следващия път, запазете картата, името и адреса си за фактуриране в профила си в Google.</translation>
 <translation id="1252209483516427155">Горни дрехи</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (синхронизирани)</translation>
 <translation id="1255086252236620440">Миксери за храна</translation>
@@ -158,7 +157,6 @@
 <translation id="1294154142200295408">Варианти във формат за командния ред</translation>
 <translation id="129553762522093515">Наскоро затворени</translation>
 <translation id="1296930489679394997">Продажби</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />Опитайте да изчистите „бисквитките“ си<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">Проверете настройките си за защитен DNS</translation>
 <translation id="1307966114820526988">Оттеглени функции</translation>
@@ -1351,7 +1349,6 @@
 <translation id="3767485424735936570">Според администраторско правило копирането и поставянето на съдържание в(ъв) „<ph name="VM_NAME" />“ не се препоръчва</translation>
 <translation id="3772211998634047851">Хартия (облигационна)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да създадете бързо бележка в Google Keep</translation>
-<translation id="3778403066972421603">Искате ли тази карта да се запази на устройството и в профила ви в Google?</translation>
 <translation id="378026377453746707">Chrome има вградени функции за безопасност, които ви защитават, докато сърфирате, като например Google Безопасно сърфиране. Безопасно сърфиране наскоро <ph name="BEGIN_LINK" />откри опасен софтуер на <ph name="SITE" /><ph name="END_LINK" />, който е вграден в сайта, който се опитвате да посетите.</translation>
 <translation id="3780694243617746492">Изходен контейнер</translation>
 <translation id="3781428340399460090">ярко розово</translation>
@@ -1957,7 +1954,6 @@
 <translation id="5020776957610079374">Световна музика</translation>
 <translation id="5021557570875267742">Проследяване на цените с Chrome</translation>
 <translation id="5023310440958281426">Проверете правилата на администратора</translation>
-<translation id="5029568752722684782">Изчистване на копието</translation>
 <translation id="5030338702439866405">Издаден от</translation>
 <translation id="503069730517007720">За <ph name="SOFTWARE_NAME" /> се изисква основен сертификат, но такъв не е инсталиран. Системният ви администратор трябва да прегледа инструкциите за конфигуриране на <ph name="SOFTWARE_NAME" />, за да отстрани проблема. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Всичко за Google Преводач</translation>
@@ -2540,7 +2536,6 @@
 <translation id="6270066318535733958">Каране на лодка</translation>
 <translation id="6272088941196661550">Възобновете пътешествието си, за да прегледате съответната активност в историята си в Chrome</translation>
 <translation id="6272383483618007430">Google Актуализиране</translation>
-<translation id="627746635834430766">За да платите по-бързо следващия път, запазете картата и адреса си за фактуриране в профила си в Google.</translation>
 <translation id="6279183038361895380">Натиснете |<ph name="ACCELERATOR" />|, за да се покаже курсорът</translation>
 <translation id="6280223929691119688">Този адрес за бърза доставка не се поддържа. Изберете друг.</translation>
 <translation id="6284292079994426700">26 x 38 инча</translation>
@@ -3851,7 +3846,6 @@
 <translation id="8922013791253848639">Рекламите на този сайт да са разрешени винаги</translation>
 <translation id="892588693504540538">Перфориране горе вдясно</translation>
 <translation id="8930330541574156305">Недвижими имоти</translation>
-<translation id="8931333241327730545">Искате ли да запазите тази карта в профила си в Google?</translation>
 <translation id="8932102934695377596">Часовникът ви е назад</translation>
 <translation id="893332455753468063">Добавяне на име</translation>
 <translation id="8942355029279167844">Администраторът ви е разрешил на <ph name="APP_NAME" /> да събира диагностични данни с цел подобряване на практическата работа с продукта. За повече информация вижте <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>

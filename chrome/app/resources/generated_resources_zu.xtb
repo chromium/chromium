@@ -5040,7 +5040,6 @@ Sebenzisa u-Ctrl + Alt + Brightness down ukuze uhlehlise isithombe.</translation
 <translation id="5027550639139316293">Isitifiketi se-imeyili</translation>
 <translation id="5027562294707732951">Engeza isandiso</translation>
 <translation id="5028445315206872221">Izandiso zivinjelwe kuleli sayithi</translation>
-<translation id="5029568752722684782">Sula ikhophi</translation>
 <translation id="5029873138381728058">Yehlulekile ukuhlola i-VMs</translation>
 <translation id="503155457707535043">Izinhlelo zokusebenza ziyalandwa</translation>
 <translation id="5032430150487044192">Ayikwazi ukudala ikhodi ye-QR</translation>
@@ -5736,7 +5735,6 @@ Izimvume ozinikezile kakade amawebhusayithi nama-app zingase zisebenze kule akha
 <translation id="5601823921345337195">Ayivumelekile ukuxhuma kumadivayisi e-MIDI</translation>
 <translation id="5601833336918638013">Ungavumeli amasayithi ukuthi abheke amadivayisi e-Bluetooth</translation>
 <translation id="5602586420788540146">Vula eqenjini lethebhu entsha</translation>
-<translation id="5602765853043467355">Sula amabhukhimakhi, umlando, amaphasiwedi, nokuningi kusuka kule divayisi</translation>
 <translation id="5605758115928394442">Isaziso siye sathunyelwa kufoni yakho ukuze kuqinisekiswe ukuthi unguwe.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Lesi sandiso sivinjelwe}one{Lezi zandiso zivinjelwe}other{Lezi zandiso zivinjelwe}}</translation>
 <translation id="560834977503641186">Ukuxhumana ne-Wi-Fi, Funda kabanzi</translation>
@@ -5789,7 +5787,6 @@ Qiniseka ukuthi awuvezi noma yiluphi ulwazi olubucayi.</translation>
 <translation id="5641648607875312660">Umhleli Wesithombe-skrini Somfanekiso</translation>
 <translation id="5642508497713047">Isisayini se-CRL</translation>
 <translation id="5643321261065707929">Inethiwekhi eyenziwe imitha</translation>
-<translation id="5643620609347735571">Sula futhi uqhubeke</translation>
 <translation id="5646376287012673985">Indawo</translation>
 <translation id="5646558797914161501">Usomabhizinisi</translation>
 <translation id="5648021990716966815">Umgodi we-earphone</translation>
@@ -7708,7 +7705,6 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="7241389281993241388">Sicela ungene ngemvume ku-<ph name="TOKEN_NAME" /> ukuze ungenise isitifiketi seklayenti.</translation>
 <translation id="7241763419756062043">Khetha ikhwalithi yakho yosesho nokubhrawuza</translation>
 <translation id="7243092385765551741">Sula ukhiye wokudlula?</translation>
-<translation id="7243632151880336635">Sula uphinde uphume ngemvume</translation>
 <translation id="7245162963905242662">Sesha leli Khasi nge-Google...</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Okuhamba phambili)</translation>
 <translation id="7246230585855757313">Faka kabusha ukhiye wakho wokuqinisekisa ubunikazi bes uyazama futhi</translation>
@@ -8585,7 +8581,6 @@ I-<ph name="EXTENSION_NAME" /></translation>
 <translation id="7925285046818567682">Ilindele i-<ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">Lo kwakungemina.</translation>
 <translation id="7926975587469166629">Igama lesidlaliso lekhadi</translation>
-<translation id="7927610604078150317">Usayizi: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Usuyishintshile kakade le phasiwedi?</translation>
 <translation id="7929962904089429003">Vula imenyu</translation>
 <translation id="7930294771522048157">Izindlela zokukhokha ezilondoloziwe zizovela lapha</translation>
@@ -9234,6 +9229,7 @@ Gcina ifayela lakho elingukhiye endaweni evikelekile. Uzolidinga ukuze udale izi
 <translation id="8448729345478502352">Yenza izinto kusikrini sakho zibe zincane noma zibe zinkulu</translation>
 <translation id="8449008133205184768">Namathisela uphinde ufanise isitayela</translation>
 <translation id="8449036207308062757">Phatha isitoreji</translation>
+<translation id="8449347986464073209">Susa Bese Uyaphuma</translation>
 <translation id="8449836157089738489">Vula konke kwiqembu lethebhu entsha</translation>
 <translation id="8449869326050867919">Iphasiwedi edluliselwe kwabanye</translation>
 <translation id="8451512073679317615">umsizi</translation>

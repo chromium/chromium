@@ -125,7 +125,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1243027604378859286">Auteur :</translation>
 <translation id="1246424317317450637">Gras</translation>
 <translation id="1247030632403369975">Aluminium</translation>
-<translation id="1250759482327835220">Pour régler vos achats plus rapidement la prochaine fois, enregistrez votre carte, votre nom et votre adresse de facturation dans votre compte Google.</translation>
 <translation id="1252209483516427155">Vêtements d'extérieur</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (synchronisés)</translation>
 <translation id="1255086252236620440">Batteurs mixeurs</translation>
@@ -158,7 +157,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1294154142200295408">Variations de ligne de commande</translation>
 <translation id="129553762522093515">Récemment fermés</translation>
 <translation id="1296930489679394997">Métiers de la vente</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />Essayez de supprimer les cookies.<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">Vérifier les paramètres du DNS sécurisé</translation>
 <translation id="1307966114820526988">Fonctionnalités obsolètes</translation>
@@ -1351,7 +1349,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3767485424735936570">La règle définie par l'administrateur déconseille de copier et de coller ce contenu vers <ph name="VM_NAME" /></translation>
 <translation id="3772211998634047851">Papier (bond)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour créer rapidement une note dans Google Keep</translation>
-<translation id="3778403066972421603">Voulez-vous enregistrer cette carte dans votre compte Google et sur cet appareil ?</translation>
 <translation id="378026377453746707">Chrome dispose de fonctionnalités de sécurité intégrées pour vous protéger sur Internet, comme la navigation sécurisée Google. La navigation sécurisée <ph name="BEGIN_LINK" />a récemment détecté un logiciel malveillant sur le site <ph name="SITE" /><ph name="END_LINK" />, qui est intégré au site que vous essayez de consulter.</translation>
 <translation id="3780694243617746492">Bac de sortie</translation>
 <translation id="3781428340399460090">Rose foncé</translation>
@@ -1957,7 +1954,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5020776957610079374">Musiques du monde</translation>
 <translation id="5021557570875267742">Suivre les prix avec Chrome</translation>
 <translation id="5023310440958281426">Vérifiez les règles définies par votre administrateur</translation>
-<translation id="5029568752722684782">Effacer la copie</translation>
 <translation id="5030338702439866405">Émis par</translation>
 <translation id="503069730517007720">Veuillez installer un certificat racine pour "<ph name="SOFTWARE_NAME" />". Nous recommandons à votre administrateur informatique de lire les instructions de configuration du logiciel "<ph name="SOFTWARE_NAME" />" afin de remédier à la situation. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">À propos de Google Traduction</translation>
@@ -2540,7 +2536,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6270066318535733958">Nautisme</translation>
 <translation id="6272088941196661550">Reprenez votre parcours pour voir les activités pertinentes dans votre historique Chrome</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="627746635834430766">Pour régler vos achats plus rapidement la prochaine fois, enregistrez votre carte et votre adresse de facturation dans votre compte Google.</translation>
 <translation id="6279183038361895380">Appuyez sur |<ph name="ACCELERATOR" />| pour afficher le curseur.</translation>
 <translation id="6280223929691119688">Impossible de livrer à cette adresse. Sélectionnez-en une autre.</translation>
 <translation id="6284292079994426700">26 x 38 pouces</translation>
@@ -3852,7 +3847,6 @@ Informations supplémentaires :
 <translation id="8922013791253848639">Toujours autoriser les annonces sur ce site</translation>
 <translation id="892588693504540538">Perforation en haut à droite</translation>
 <translation id="8930330541574156305">Immobilier</translation>
-<translation id="8931333241327730545">Voulez-vous enregistrer cette carte dans votre compte Google ?</translation>
 <translation id="8932102934695377596">Votre horloge est en retard</translation>
 <translation id="893332455753468063">Ajouter un nom</translation>
 <translation id="8942355029279167844">Votre administrateur a autorisé <ph name="APP_NAME" /> à recueillir des données de diagnostic pour améliorer votre expérience avec le produit. Pour en savoir plus, consultez la page <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>

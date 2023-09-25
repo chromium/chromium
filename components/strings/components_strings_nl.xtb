@@ -125,7 +125,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1243027604378859286">Auteur:</translation>
 <translation id="1246424317317450637">Vet</translation>
 <translation id="1247030632403369975">Aluminium</translation>
-<translation id="1250759482327835220">Sla je pas, naam en factuuradres op in je Google-account zodat je de volgende keer sneller kunt betalen.</translation>
 <translation id="1252209483516427155">Bovenkleding</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (gesynchroniseerd)</translation>
 <translation id="1255086252236620440">Mixers</translation>
@@ -158,7 +157,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1294154142200295408">Opdrachtregelvarianten</translation>
 <translation id="129553762522093515">Recent gesloten</translation>
 <translation id="1296930489679394997">Sales</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />Probeer je cookies te wissen<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">Controleer je instellingen voor beveiligde DNS</translation>
 <translation id="1307966114820526988">Verouderde functies</translation>
@@ -1346,7 +1344,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3767485424735936570">Deze content kopiëren en plakken in <ph name="VM_NAME" /> wordt afgeraden op basis van het beheerdersbeleid</translation>
 <translation id="3772211998634047851">Papier (gebonden)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om snel een nieuwe notitie in Google Keep te maken</translation>
-<translation id="3778403066972421603">Wil je deze pas opslaan in je Google-account en op dit apparaat?</translation>
 <translation id="378026377453746707">Chrome bevat ingebouwde veiligheidsfuncties, zoals Google Safe Browsing, die je beschermen terwijl je browst. Safe Browsing heeft recent <ph name="BEGIN_LINK" />schadelijke software gevonden op <ph name="SITE" /><ph name="END_LINK" />, die is ingesloten in de site die je wilt bezoeken.</translation>
 <translation id="3780694243617746492">Uitvoerbak</translation>
 <translation id="3781428340399460090">Felroze</translation>
@@ -1952,7 +1949,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5020776957610079374">Wereldmuziek</translation>
 <translation id="5021557570875267742">Prijzen volgen met Chrome</translation>
 <translation id="5023310440958281426">Neem het beleid van je beheerder door</translation>
-<translation id="5029568752722684782">Kopie wissen</translation>
 <translation id="5030338702439866405">Verleend door</translation>
 <translation id="503069730517007720">Er is een rootcertificaat voor '<ph name="SOFTWARE_NAME" />' vereist, maar niet geïnstalleerd. Je IT-beheerder moet de configuratie-instructies voor '<ph name="SOFTWARE_NAME" />' raadplegen om dit probleem op te lossen. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Over Google Translate</translation>
@@ -2534,7 +2530,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6270066318535733958">Roeien en zeilen</translation>
 <translation id="6272088941196661550">Hervat je traject om relevante activiteit in je Chrome-geschiedenis te bekijken</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="627746635834430766">Sla je pas en factuuradres op in je Google-account zodat je de volgende keer sneller kunt betalen.</translation>
 <translation id="6279183038361895380">Druk op |<ph name="ACCELERATOR" />| om je cursor te bekijken</translation>
 <translation id="6280223929691119688">Kan niet bezorgen op dit adres. Selecteer een ander adres.</translation>
 <translation id="6284292079994426700">26 x 38 inch</translation>
@@ -3845,7 +3840,6 @@ Aanvullende informatie:
 <translation id="8922013791253848639">Altijd advertenties op deze site toestaan</translation>
 <translation id="892588693504540538">Perforatie rechtsboven</translation>
 <translation id="8930330541574156305">Vastgoed</translation>
-<translation id="8931333241327730545">Wil je deze pas opslaan in je Google-account?</translation>
 <translation id="8932102934695377596">Je klok loopt achter</translation>
 <translation id="893332455753468063">Naam toevoegen</translation>
 <translation id="8942355029279167844">Je beheerder heeft toegestaan dat <ph name="APP_NAME" /> diagnostische gegevens verzamelt om de productfunctionaliteit te verbeteren. Zie <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> voor meer informatie.</translation>

@@ -5008,7 +5008,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5027550639139316293">Certyfikat poczty e-mail</translation>
 <translation id="5027562294707732951">Dodaj rozszerzenie</translation>
 <translation id="5028445315206872221">Rozszerzenia są zablokowane w tej witrynie</translation>
-<translation id="5029568752722684782">Usuń kopię</translation>
 <translation id="5029873138381728058">Nie udało się sprawdzić maszyn wirtualnych</translation>
 <translation id="503155457707535043">Pobieram aplikacje</translation>
 <translation id="5032430150487044192">Nie udało się utworzyć kodu QR</translation>
@@ -5701,7 +5700,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5601823921345337195">Nie zezwolono na łączenie się z urządzeniami MIDI</translation>
 <translation id="5601833336918638013">Nie zezwalaj witrynom na wyszukiwanie urządzeń Bluetooth</translation>
 <translation id="5602586420788540146">Otwórz w nowej grupie kart</translation>
-<translation id="5602765853043467355">Usuń z tego urządzenia zakładki, historię, hasła i inne informacje</translation>
 <translation id="5605758115928394442">Wysłaliśmy powiadomienie na Twój telefon, by potwierdzić, że to Ty.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{To rozszerzenie jest zablokowane}few{Te rozszerzenia są zablokowane}many{Te rozszerzenia są zablokowane}other{Te rozszerzenia są zablokowane}}</translation>
 <translation id="560834977503641186">Synchronizacja Wi-Fi, więcej informacji</translation>
@@ -5753,7 +5751,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5641648607875312660">Edytor obrazów zrzutu ekranu</translation>
 <translation id="5642508497713047">Podmiot podpisujący listę CRL</translation>
 <translation id="5643321261065707929">Sieć z pomiarem użycia danych</translation>
-<translation id="5643620609347735571">Usuń i kontynuuj</translation>
 <translation id="5646376287012673985">Lokalizacja</translation>
 <translation id="5646558797914161501">Biznesmen</translation>
 <translation id="5648021990716966815">Gniazdo mikrofonu</translation>
@@ -7673,7 +7670,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7241389281993241388">Zaloguj się do urządzenia <ph name="TOKEN_NAME" />, aby zaimportować certyfikat klienta.</translation>
 <translation id="7241763419756062043">Wybierz jakość wyszukiwania i przeglądania</translation>
 <translation id="7243092385765551741">Usunąć klucz dostępu?</translation>
-<translation id="7243632151880336635">Wyczyść i wyloguj</translation>
 <translation id="7245162963905242662">Prze&amp;szukaj tę stronę za pomocą Google…</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (najlepsza)</translation>
 <translation id="7246230585855757313">Ponownie włóż klucz bezpieczeństwa i spróbuj jeszcze raz</translation>
@@ -8550,7 +8546,6 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7925285046818567682">Czekam na <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">To nie ja.</translation>
 <translation id="7926975587469166629">Nazwa karty</translation>
-<translation id="7927610604078150317">Rozmiar: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Hasło zostało już zmienione?</translation>
 <translation id="7929962904089429003">Otwórz menu</translation>
 <translation id="7930294771522048157">Tutaj pojawią się zapisane formy płatności</translation>
@@ -9200,6 +9195,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8448729345478502352">Powiększ lub pomniejsz elementy na ekranie</translation>
 <translation id="8449008133205184768">Wklej i dopasuj do stylu</translation>
 <translation id="8449036207308062757">Zarządzaj miejscem na dane</translation>
+<translation id="8449347986464073209">Usuń i wyloguj się</translation>
 <translation id="8449836157089738489">Otwórz wszystko w nowej grupie kart</translation>
 <translation id="8449869326050867919">Hasło udostępnione</translation>
 <translation id="8451512073679317615">Asystent</translation>

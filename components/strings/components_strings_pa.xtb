@@ -125,7 +125,6 @@
 <translation id="1243027604378859286">ਲੇਖਕ:</translation>
 <translation id="1246424317317450637">ਗੂੜ੍ਹਾ</translation>
 <translation id="1247030632403369975">ਐਲਮੀਨੀਅਮ</translation>
-<translation id="1250759482327835220">ਅਗਲੀ ਵਾਰ ਵਧੇਰੇ ਤੇਜ਼ੀ ਨਾਲ ਭੁਗਤਾਨ ਕਰਨ ਲਈ, ਆਪਣੇ 'Google ਖਾਤੇ' ਵਿੱਚ ਆਪਣਾ ਕਾਰਡ, ਨਾਮ ਅਤੇ ਬਿਲਿੰਗ ਪਤਾ ਰੱਖਿਅਤ ਕਰੋ।</translation>
 <translation id="1252209483516427155">ਬਾਹਰੀ ਕੱਪੜੇ</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (ਸਿੰਕ ਕੀਤੇ ਗਏ)</translation>
 <translation id="1255086252236620440">ਭੋਜਨ ਮਿਕਸਰ</translation>
@@ -158,7 +157,6 @@
 <translation id="1294154142200295408">ਆਦੇਸ਼-ਰੇਖਾ ਵਖਰੇਂਵੇ</translation>
 <translation id="129553762522093515">ਹਾਲ ਵਿੱਚ ਹੀ ਬੰਦ ਕੀਤੇ</translation>
 <translation id="1296930489679394997">ਸੇਲਾਂ</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />ਆਪਣੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਸਾਫ਼ ਕਰਨ ਨੂੰ ਅਜ਼ਮਾਓ<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">ਲੀਗਲ ਐਕਸਟਰਾ</translation>
 <translation id="1301324364792935241">ਆਪਣੀਆਂ ਸੁਰੱਖਿਅਤ DNS ਸੈਟਿੰਗਾਂ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="1307966114820526988">ਨਾਪਸੰਦ ਕੀਤੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ</translation>
@@ -1348,7 +1346,6 @@
 <translation id="3767485424735936570">ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਵੱਲੋਂ <ph name="VM_NAME" /> 'ਤੇ ਇਸ ਸਮੱਗਰੀ ਨੂੰ ਕਾਪੀ ਅਤੇ ਪੇਸਟ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਨਹੀਂ ਕੀਤੀ ਜਾਂਦੀ</translation>
 <translation id="3772211998634047851">ਪੇਪਰ (ਬੌਂਡ)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Keep ਵਿੱਚ ਤੇਜ਼ੀ ਨਾਲ ਨਵਾਂ ਨੋਟ-ਕਥਨ ਬਣਾਉਣ ਲਈ Tab ਦਬਾ ਕੇ ਫਿਰ Enter ਦਬਾਓ</translation>
-<translation id="3778403066972421603">ਕੀ ਤੁਸੀਂ ਇਸ ਕਾਰਡ ਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਅਤੇ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="378026377453746707">ਤੁਹਾਡੇ ਵੱਲੋਂ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਦੌਰਾਨ ਤੁਹਾਡੀ ਸੁਰੱਖਿਆ ਕਰਨ ਲਈ Chrome ਵਿੱਚ ਤੁਹਾਡੀ ਸੁਰੱਖਿਆ ਲਈ ਬਿਲਟ-ਇਨ ਸੁਰੱਖਿਆ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਹਨ — ਜਿਵੇਂ ਕਿ Google ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ। ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਹਾਲ ਹੀ ਵਿੱਚ <ph name="BEGIN_LINK" /><ph name="SITE" /> 'ਤੇ ਹਾਨੀਕਾਰਕ ਸਾਫ਼ਟਵੇਅਰ ਦਾ ਪਤਾ ਲੱਗਿਆ ਹੈ<ph name="END_LINK" />, ਜਿਸਨੂੰ ਉਸ ਸਾਈਟ ਵਿੱਚ ਜੋੜਿਆ ਗਿਆ ਹੈ ਜਿਸ 'ਤੇ ਤੁਸੀਂ ਜਾਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਹੇ ਹੋ।</translation>
 <translation id="3780694243617746492">ਆਊਟਪੁੱਟ ਬਿਨ</translation>
 <translation id="3781428340399460090">ਗੂੜ੍ਹਾ ਗੁਲਾਬੀ</translation>
@@ -1954,7 +1951,6 @@
 <translation id="5020776957610079374">ਵਿਸ਼ਵ ਸੰਗੀਤ</translation>
 <translation id="5021557570875267742">Chrome ਨਾਲ ਕੀਮਤਾਂ ਟਰੈਕ ਕਰੋ</translation>
 <translation id="5023310440958281426">ਆਪਣੇ ਪ੍ਰਬੰਧਕ ਦੀਆਂ ਨੀਤੀਆਂ ਦੇਖੋ</translation>
-<translation id="5029568752722684782">ਕਾਪੀ ਹਟਾਓ</translation>
 <translation id="5030338702439866405">ਵੱਲੋਂ ਜਾਰੀ ਕੀਤਾ</translation>
 <translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />" ਲਈ 'ਰੂਟ ਪ੍ਰਮਾਣ-ਪੱਤਰ' ਲੋੜੀਂਦਾ ਹੈ ਪਰ ਸਥਾਪਤ ਨਹੀਂ ਹੈ। ਇਸ ਸਮੱਸਿਆ ਨੂੰ ਠੀਕ ਕਰਨ ਲਈ ਤੁਹਾਡੇ ਆਈ.ਟੀ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ "<ph name="SOFTWARE_NAME" />" ਲਈ ਰੂਪ-ਰੇਖਾ ਹਿਦਾਇਤਾਂ ਨੂੰ ਦੇਖਣਾ ਚਾਹੀਦਾ ਹੈ। <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Google Translate ਬਾਰੇ</translation>
@@ -2536,7 +2532,6 @@
 <translation id="6270066318535733958">ਕਿਸ਼ਤੀ ਦੀ ਸਵਾਰੀ</translation>
 <translation id="6272088941196661550">ਆਪਣੇ Chrome ਇਤਿਹਾਸ ਵਿੱਚ ਢੁਕਵੀਂ ਸਰਗਰਮੀ ਦੇਖਣ ਲਈ ਆਪਣੇ ਖੋਜ ਸਫ਼ਰ ਨੂੰ ਮੁੜ-ਚਾਲੂ ਕਰੋ</translation>
 <translation id="6272383483618007430">Google ਅੱਪਡੇਟ</translation>
-<translation id="627746635834430766">ਅਗਲੀ ਵਾਰ ਵਧੇਰੇ ਤੇਜ਼ੀ ਨਾਲ ਭੁਗਤਾਨ ਕਰਨ ਲਈ, ਆਪਣੇ ਕਾਰਡ ਅਤੇ ਬਿਲਿੰਗ ਪਤੇ ਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ।</translation>
 <translation id="6279183038361895380">ਆਪਣਾ ਕਰਸਰ ਵਿਖਾਉਣ ਲਈ |<ph name="ACCELERATOR" />| ਦਬਾਓ</translation>
 <translation id="6280223929691119688">ਇਸ ਪਤੇ 'ਤੇ ਅਦਾਇਗੀ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ। ਕੋਈ ਵੱਖਰਾ ਪਤਾ ਚੁਣੋ।</translation>
 <translation id="6284292079994426700">26 x 38 ਇੰਚ</translation>
@@ -3847,7 +3842,6 @@
 <translation id="8922013791253848639">ਇਸ ਸਾਈਟ 'ਤੇ ਹਮੇਸ਼ਾ ਵਿਗਿਆਪਨਾਂ ਨੂੰ ਇਜਾਜ਼ਤ ਦਿਓ</translation>
 <translation id="892588693504540538">ਉੱਪਰ ਸੱਜੇ ਪਾਸੇ ਮੋਰੀ</translation>
 <translation id="8930330541574156305">ਅਚੱਲ ਸੰਪਤੀ</translation>
-<translation id="8931333241327730545">ਕੀ ਤੁਸੀਂ ਇਸ ਕਾਰਡ ਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="8932102934695377596">ਤੁਹਾਡੀ ਘੜੀ ਪਿੱਛੇ ਹੈ</translation>
 <translation id="893332455753468063">ਨਾਮ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="8942355029279167844">ਉਤਪਾਦ ਅਨੁਭਵ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ <ph name="APP_NAME" /> ਨੂੰ ਤਸ਼ਖੀਸੀ ਡਾਟਾ ਇਕੱਤਰ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦੇ ਦਿੱਤੀ ਹੈ। ਹੋਰ ਜਾਣਕਾਰੀ ਲਈ <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> ਨੂੰ ਦੇਖੋ।</translation>

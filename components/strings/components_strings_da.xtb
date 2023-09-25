@@ -125,7 +125,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1243027604378859286">Forfatter:</translation>
 <translation id="1246424317317450637">Fed</translation>
 <translation id="1247030632403369975">Aluminium</translation>
-<translation id="1250759482327835220">Gem dit kort, dit navn og din faktureringsadresse på din Google-konto for at betale hurtigere næste gang.</translation>
 <translation id="1252209483516427155">Overtøj</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (synkroniseret)</translation>
 <translation id="1255086252236620440">Foodprocessorer</translation>
@@ -158,7 +157,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1294154142200295408">Variationer i kommandolinjer</translation>
 <translation id="129553762522093515">Senest lukkede</translation>
 <translation id="1296930489679394997">Salg</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />Prøv at rydde dine cookies<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">Tjek indstillingerne for din sikre DNS</translation>
 <translation id="1307966114820526988">Udfasede funktioner</translation>
@@ -1351,7 +1349,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3767485424735936570">Administratorpolitikken fraråder at kopiere og indsætte dette indhold i <ph name="VM_NAME" /></translation>
 <translation id="3772211998634047851">Papir (bankpost)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Tab-tasten efterfulgt af Enter for hurtigt at oprette en ny note i Google Keep</translation>
-<translation id="3778403066972421603">Vil du gemme dette kort på din Google-konto og på denne enhed?</translation>
 <translation id="378026377453746707">Chrome har indbyggede sikkerhedsfunktioner, der beskytter dig, når du er på nettet, f.eks. Google Beskyttet browsing. Beskyttet browsing har for nylig <ph name="BEGIN_LINK" />fundet skadelig software på <ph name="SITE" /><ph name="END_LINK" />, og dette website er indlejret på det website, du forsøger at besøge.</translation>
 <translation id="3780694243617746492">Outputbakke</translation>
 <translation id="3781428340399460090">Varm lyserød</translation>
@@ -1957,7 +1954,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5020776957610079374">Verdensmusik</translation>
 <translation id="5021557570875267742">Hold øje med priser ved hjælp af Chrome</translation>
 <translation id="5023310440958281426">Læs din administrators politikker</translation>
-<translation id="5029568752722684782">Slet kopi</translation>
 <translation id="5030338702439866405">Udstedt af</translation>
 <translation id="503069730517007720">Et rodcertifikat for "<ph name="SOFTWARE_NAME" />" er påkrævet, men ikke installeret. Din IT-administrator bør kigge på konfigurationsvejledningen til "<ph name="SOFTWARE_NAME" />" for at løse dette problem. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Om Google Oversæt</translation>
@@ -2540,7 +2536,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6270066318535733958">Med båd</translation>
 <translation id="6272088941196661550">Genoptag din søgning for at se relevant aktivitet i din Chrome-historik</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="627746635834430766">Gem dit kort og din faktureringsadresse på din Google-konto for at betale hurtigere næste gang.</translation>
 <translation id="6279183038361895380">Tryk på |<ph name="ACCELERATOR" />| at se markøren</translation>
 <translation id="6280223929691119688">Der kan ikke leveres til denne adresse. Vælg en anden adresse.</translation>
 <translation id="6284292079994426700">26 x 38 tommer</translation>
@@ -3852,7 +3847,6 @@ Yderligere oplysninger:
 <translation id="8922013791253848639">Tillad altid annoncer på dette website</translation>
 <translation id="892588693504540538">Hul øverst til højre</translation>
 <translation id="8930330541574156305">Fast ejendom</translation>
-<translation id="8931333241327730545">Vil du gemme dette kort på din Google-konto?</translation>
 <translation id="8932102934695377596">Dit ur er bagud</translation>
 <translation id="893332455753468063">Tilføj navn</translation>
 <translation id="8942355029279167844">Din administrator har givet <ph name="APP_NAME" /> tilladelse til at indsamle diagnostikdata med henblik på at forbedre brugeroplevelsen i produktet. Du kan få flere oplysninger på <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>

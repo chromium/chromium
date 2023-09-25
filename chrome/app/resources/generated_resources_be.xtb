@@ -5023,7 +5023,6 @@
 <translation id="5027550639139316293">Сертыфікат электроннай пошты</translation>
 <translation id="5027562294707732951">Дадаць пашырэнне</translation>
 <translation id="5028445315206872221">Пашырэнні на гэтым сайце заблакіраваны</translation>
-<translation id="5029568752722684782">Выдаліць копію</translation>
 <translation id="5029873138381728058">Не ўдалося праверыць віртуальныя машыны</translation>
 <translation id="503155457707535043">Ідзе спампоўванне праграм</translation>
 <translation id="5032430150487044192">Не ўдалося стварыць QR-код</translation>
@@ -5717,7 +5716,6 @@
 <translation id="5601823921345337195">Не дазволена падключацца да прылад MIDI</translation>
 <translation id="5601833336918638013">Сайтам забаронена шукаць прылады з Bluetooth</translation>
 <translation id="5602586420788540146">Адкрыць у новай групе ўкладак</translation>
-<translation id="5602765853043467355">Выдаліць закладкі, гісторыю, паролі і іншае з гэтай прылады</translation>
 <translation id="5605758115928394442">Вам на тэлефон для пацвярджэння вашай асобы адпраўлена апавяшчэнне.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Гэта пашырэнне заблакіравана}one{Гэтыя пашырэнні заблакіраваны}few{Гэтыя пашырэнні заблакіраваны}many{Гэтыя пашырэнні заблакіраваны}other{Гэтыя пашырэнні заблакіраваны}}</translation>
 <translation id="560834977503641186">Сінхранізацыя параметраў Wi-Fi, даведацца больш</translation>
@@ -5769,7 +5767,6 @@
 <translation id="5641648607875312660">Рэдактар здымкаў экрана</translation>
 <translation id="5642508497713047">Сродак подпісу CRL</translation>
 <translation id="5643321261065707929">Сетка з падлікам трафіка</translation>
-<translation id="5643620609347735571">Выдаліць і працягнуць</translation>
 <translation id="5646376287012673985">Месцазнаходжанне</translation>
 <translation id="5646558797914161501">Бізнесмен</translation>
 <translation id="5648021990716966815">Раздым для мікрафона</translation>
@@ -7692,7 +7689,6 @@
 <translation id="7241389281993241388">Увайдзіце ў <ph name="TOKEN_NAME" />, каб імпартаваць кліенцкі сертыфікат.</translation>
 <translation id="7241763419756062043">Задайце параметры пошуку і прагляду сайтаў</translation>
 <translation id="7243092385765551741">Выдаліць ключ доступу?</translation>
-<translation id="7243632151880336635">Выдаліць і выйсці</translation>
 <translation id="7245162963905242662">П&amp;ошук на старонцы з дапамогай Google...</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (найлепшая)</translation>
 <translation id="7246230585855757313">Устаўце ключ бяспекі яшчэ раз і паўтарыце спробу</translation>
@@ -8570,7 +8566,6 @@
 <translation id="7925285046818567682">Чакаецца <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">Гэта быў не мой профіль.</translation>
 <translation id="7926975587469166629">Псеўданім карткі</translation>
-<translation id="7927610604078150317">Памер: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Вы ўжо змянілі гэты пароль?</translation>
 <translation id="7929962904089429003">Адкрыць меню</translation>
 <translation id="7930294771522048157">Захаваныя спосабы аплаты з'явяцца тут</translation>
@@ -9219,6 +9214,7 @@
 <translation id="8448729345478502352">Павелічэнне або памяншэнне элементаў на экране</translation>
 <translation id="8449008133205184768">Уставіць з улікам стылю</translation>
 <translation id="8449036207308062757">Кіраванне сховішчам</translation>
+<translation id="8449347986464073209">Выдаліць і выйсці</translation>
 <translation id="8449836157089738489">Адкрыць усе ў новай групе ўкладак</translation>
 <translation id="8449869326050867919">Пароль абагулены</translation>
 <translation id="8451512073679317615">памочнік</translation>

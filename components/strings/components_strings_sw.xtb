@@ -125,7 +125,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="1243027604378859286">Mwandishi:</translation>
 <translation id="1246424317317450637">Herufi nzito</translation>
 <translation id="1247030632403369975">Alumini</translation>
-<translation id="1250759482327835220">Ili ulipe kwa haraka wakati ujao, hifadhi anwani ya kutuma bili, jina na maelezo ya kadi yako kwenye Akaunti yako ya Google.</translation>
 <translation id="1252209483516427155">Mavazi ya Nje</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (zimesawazishwa)</translation>
 <translation id="1255086252236620440">Mashine za Kuchanganya Chakula</translation>
@@ -158,7 +157,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="1294154142200295408">Tofauti za miundo ya amri</translation>
 <translation id="129553762522093515">Vilivyofungwa hivi karibuni</translation>
 <translation id="1296930489679394997">Mauzo</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />Jaribu kufuta vidakuzi kwenye kivinjari chako<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Ukubwa wa Legal Extra</translation>
 <translation id="1301324364792935241">Angalia mipangilio yako ya DNS Salama</translation>
 <translation id="1307966114820526988">Vipengele Vilivyoacha Kutumiwa</translation>
@@ -1351,7 +1349,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3767485424735936570">Sera ya msimamizi haipendekezi kunakili na kubandika maudhui haya kwenye <ph name="VM_NAME" /></translation>
 <translation id="3772211998634047851">Karatasi (Bondi)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, bonyeza 'Tab' kisha 'Enter' ili uunde dokezo jipya katika Google Keep kwa haraka</translation>
-<translation id="3778403066972421603">Je, ungependa kuhifadhi kadi hii kwenye Akaunti yako ya Google na kwenye kifaa hiki?</translation>
 <translation id="378026377453746707">Chrome ina vipengele vya usalama vilivyojumuishwa ili kukulinda unapovinjari, kama vile Kipengele cha Kuvinjari Salama na Google. Kipengele cha Kuvinjari Salama hivi karibuni <ph name="BEGIN_LINK" />kilipata programu hatari kwenye <ph name="SITE" /><ph name="END_LINK" />, ambayo imepachikwa kwenye tovuti unayojaribu kutembelea.</translation>
 <translation id="3780694243617746492">Tupio la kutoa</translation>
 <translation id="3781428340399460090">Waridi Inayong'aa</translation>
@@ -1957,7 +1954,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="5020776957610079374">Muziki wa kimataifa</translation>
 <translation id="5021557570875267742">Fuatilia bei ukitumia Chrome</translation>
 <translation id="5023310440958281426">Angalia sera za msimamizi wako</translation>
-<translation id="5029568752722684782">Futa nakala</translation>
 <translation id="5030338702439866405">Kimetolewa Na</translation>
 <translation id="503069730517007720">Cheti cha msingi cha "<ph name="SOFTWARE_NAME" />" kinahitajika lakini hakijasakinishwa. Ni lazima msimamizi wako wa TEHAMA asome mipangilio ya "<ph name="SOFTWARE_NAME" />" ili atatue tatizo hili. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Kuhusu Google Tafsiri</translation>
@@ -2540,7 +2536,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="6270066318535733958">Kusafiri kwa Kutumia Boti</translation>
 <translation id="6272088941196661550">Endelea na ziara yako ili uone shughuli muhimu katika historia yako kwenye Chrome</translation>
 <translation id="6272383483618007430">Sasisho kwa Google</translation>
-<translation id="627746635834430766">Ili ulipe kwa haraka wakati ujao, hifadhi anwani ya kutuma bili na maelezo ya kadi yako kwenye Akaunti yako ya Google.</translation>
 <translation id="6279183038361895380">Bonyeza |<ph name="ACCELERATOR" />| ili kiteuzi kionekane</translation>
 <translation id="6280223929691119688">Haiwezi kuwasilisha kwenye anwani hii. Chagua anwani tofauti.</translation>
 <translation id="6284292079994426700">Inchi 26 x 38</translation>
@@ -3848,7 +3843,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="8922013791253848639">Ruhusu matangazo kwenye tovuti hii wakati wote</translation>
 <translation id="892588693504540538">Toboa juu kulia</translation>
 <translation id="8930330541574156305">Mali isiyohamishika</translation>
-<translation id="8931333241327730545">Je, ungependa kuhifadhi kadi hii katika Akaunti yako ya Google?</translation>
 <translation id="8932102934695377596">Saa yako iko nyuma</translation>
 <translation id="893332455753468063">Ongeza Jina</translation>
 <translation id="8942355029279167844">Msimamizi wako ameruhusu <ph name="APP_NAME" /> kukusanya data ya uchunguzi ili kuboresha hali ya utumiaji wa bidhaa. Angalia <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> ili upate maelezo zaidi.</translation>

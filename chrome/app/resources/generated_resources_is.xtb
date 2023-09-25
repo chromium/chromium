@@ -5041,7 +5041,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5027550639139316293">Vottorð tölvupósts</translation>
 <translation id="5027562294707732951">Bæta viðbót við</translation>
 <translation id="5028445315206872221">Lokað er fyrir viðbætur á þessari síðu</translation>
-<translation id="5029568752722684782">Hreinsa eintak</translation>
 <translation id="5029873138381728058">Ekki tókst að leita að sýndarvélum</translation>
 <translation id="503155457707535043">Sækir forrit</translation>
 <translation id="5032430150487044192">Ekki hægt að búa til QR-kóða</translation>
@@ -5735,7 +5734,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5601823921345337195">Mega ekki tengjast MIDI-tækjum</translation>
 <translation id="5601833336918638013">Ekki leyfa vefsvæðum að leita að Bluetooth-tækjum</translation>
 <translation id="5602586420788540146">Opna í nýjum flipahóp</translation>
-<translation id="5602765853043467355">Hreinsa bókamerki, feril, aðgangsorð og fleira úr þessu tæki</translation>
 <translation id="5605758115928394442">Tilkynning var send í símann þinn til að staðfesta að þetta sért þú.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Þessi viðbót er á bannlista}one{Þessar viðbætur eru á bannlista}other{Þessar viðbætur eru á bannlista}}</translation>
 <translation id="560834977503641186">Wi-Fi-samstilling, Frekari upplýsingar</translation>
@@ -5787,7 +5785,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5641648607875312660">Myndvinnsla skjámynda</translation>
 <translation id="5642508497713047">CRL-undirritun</translation>
 <translation id="5643321261065707929">Net með mældri notkun</translation>
-<translation id="5643620609347735571">Hreinsa og halda áfram</translation>
 <translation id="5646376287012673985">Staðsetning</translation>
 <translation id="5646558797914161501">Viðskiptamaður</translation>
 <translation id="5648021990716966815">Hljóðnematengi</translation>
@@ -7706,7 +7703,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7241389281993241388">Skráðu þig inn á <ph name="TOKEN_NAME" /> til að flytja inn biðlaravottorðið.</translation>
 <translation id="7241763419756062043">Veldu gæði leitar og vefskoðunar</translation>
 <translation id="7243092385765551741">Eyða aðgangslykli?</translation>
-<translation id="7243632151880336635">Hreinsa og skrá út</translation>
 <translation id="7245162963905242662">Leita á þessari síðu með Google...</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (best)</translation>
 <translation id="7246230585855757313">Settu öryggislykilinn aftur inn og reyndu aftur</translation>
@@ -8584,7 +8580,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7925285046818567682">Bíður eftir <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">Þetta var ekki ég.</translation>
 <translation id="7926975587469166629">Gælunafn spjalds</translation>
-<translation id="7927610604078150317">Stærð: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Hefurðu þegar breytt þessu aðgangsorði?</translation>
 <translation id="7929962904089429003">Opna valmyndina</translation>
 <translation id="7930294771522048157">Vistaðir greiðslumátar birtast hér</translation>
@@ -9233,6 +9228,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8448729345478502352">Stækka eða minnka hluti á skjánum</translation>
 <translation id="8449008133205184768">Líma og para við stíl</translation>
 <translation id="8449036207308062757">Hafa umsjón með geymslu</translation>
+<translation id="8449347986464073209">Eyða og skrá út</translation>
 <translation id="8449836157089738489">Opna allt í nýjum flipahóp</translation>
 <translation id="8449869326050867919">Aðgangsorði deilt</translation>
 <translation id="8451512073679317615">aðstoðarmaður</translation>

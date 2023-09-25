@@ -125,7 +125,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1243027604378859286">Egilea:</translation>
 <translation id="1246424317317450637">Lodia</translation>
 <translation id="1247030632403369975">Aluminioa</translation>
-<translation id="1250759482327835220">Hurrengoan bizkorrago ordaintzeko, gorde txartela, izena eta fakturazio-helbidea Google-ko kontuan.</translation>
 <translation id="1252209483516427155">Berokiak</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sinkronizatuta)</translation>
 <translation id="1255086252236620440">Janari-nahasgailuak</translation>
@@ -158,7 +157,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1294154142200295408">Agindu-lerroaren aldaerak</translation>
 <translation id="129553762522093515">Itxitako azkenak</translation>
 <translation id="1296930489679394997">Salmentak</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />Saiatu cookieak garbituta<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Lege-kontuetarako (handiagoa)</translation>
 <translation id="1301324364792935241">Egiaztatu DNS ezarpen seguruak</translation>
 <translation id="1307966114820526988">Eginbide zaharkituak</translation>
@@ -1345,7 +1343,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3767485424735936570">Administratzailearen gidalerroek ez dute gomendatzen edukia kopiatu eta <ph name="VM_NAME" /> makina birtualean itsastea</translation>
 <translation id="3772211998634047851">Papera (bonu-papera)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, "Sartu", Google Keep-en ohar bat bizkor sortzeko</translation>
-<translation id="3778403066972421603">Google-ko kontuan eta gailu honetan gorde nahi duzu txartela?</translation>
 <translation id="378026377453746707">Chrome-k segurtasun-eginbide integratuak ditu, arakatzen duzun bitartean babesten zaituztenak. Google-ren Arakatze segurua eginbide horietako bat da. Duela gutxi, arakatze seguruak <ph name="BEGIN_LINK" />software kaltegarria aurkitu du <ph name="SITE" /> webgunean<ph name="END_LINK" />, bisitatu nahi duzun webgunean kapsulatuta dagoena.</translation>
 <translation id="3780694243617746492">Papera irteteko erretilua</translation>
 <translation id="3781428340399460090">Arrosa bizia</translation>
@@ -1951,7 +1948,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5020776957610079374">Munduko musika</translation>
 <translation id="5021557570875267742">Egin prezioen jarraipena Chrome-ren bidez</translation>
 <translation id="5023310440958281426">Egiaztatu administratzailearen gidalerroak</translation>
-<translation id="5029568752722684782">Garbitu kopia</translation>
 <translation id="5030338702439866405">Jaulkitzailea:</translation>
 <translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />" softwareak instalatuta ez dagoen erroko ziurtagiri bat behar du. Arazoa konpontzeko, IKT saileko administratzaileak "<ph name="SOFTWARE_NAME" />" bilatu behar du konfigurazio-argibideetan. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Google Translate zerbitzuari buruz</translation>
@@ -2533,7 +2529,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6270066318535733958">Txalupan ibiltzea</translation>
 <translation id="6272088941196661550">Berrekin bilaketa-ibilbideari Chrome-ko historian dauden erlazionatutako jarduerak ikusteko</translation>
 <translation id="6272383483618007430">Google-ren eguneratzea</translation>
-<translation id="627746635834430766">Hurrengoan bizkorrago ordaintzeko, gorde txartela eta fakturazio-helbidea Google-ko kontuan.</translation>
 <translation id="6279183038361895380">Kurtsorea ikusteko, sakatu |<ph name="ACCELERATOR" />|</translation>
 <translation id="6280223929691119688">Ezin da entregatu helbide horretan. Hautatu beste helbide bat.</translation>
 <translation id="6284292079994426700">66,04 × 96,52 cm (26 × 38 in)</translation>
@@ -3843,7 +3838,6 @@ Xehetasun gehiago:
 <translation id="8922013791253848639">Eman beti iragarkiak webgune honetan erakusteko baimena</translation>
 <translation id="892588693504540538">Zulo bat goian, eskuinetara</translation>
 <translation id="8930330541574156305">Higiezinak</translation>
-<translation id="8931333241327730545">Txartela Google-ko kontuan gorde nahi duzu?</translation>
 <translation id="8932102934695377596">Erlojua atzeratuta duzu</translation>
 <translation id="893332455753468063">Gehitu izena</translation>
 <translation id="8942355029279167844">Administratzaileak diagnostiko-datuak biltzeko baimena eman dio <ph name="APP_NAME" /> aplikazioari, produktuaren esperientzia hobetzeko helburuarekin. Informazio gehiago lortzeko, joan <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> helbidera.</translation>

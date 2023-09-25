@@ -5041,7 +5041,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5027550639139316293">Certificado de e-mail</translation>
 <translation id="5027562294707732951">Adicionar extensão</translation>
 <translation id="5028445315206872221">As extensões estão bloqueadas neste site</translation>
-<translation id="5029568752722684782">Limpar cópia</translation>
 <translation id="5029873138381728058">Falha ao verificar as VMs</translation>
 <translation id="503155457707535043">Fazendo o download dos apps</translation>
 <translation id="5032430150487044192">Não é possível criar o código QR</translation>
@@ -5735,7 +5734,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="5601823921345337195">Bloquear a conexão a dispositivos MIDI</translation>
 <translation id="5601833336918638013">Não permitir que os sites procurem dispositivos Bluetooth</translation>
 <translation id="5602586420788540146">Abrir em um novo grupo de guias</translation>
-<translation id="5602765853043467355">Limpar favoritos, histórico, senhas e mais deste dispositivo.</translation>
 <translation id="5605758115928394442">Uma notificação foi enviada ao seu smartphone para confirmar sua identidade.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{A extensão está bloqueada}one{A extensão está bloqueada}other{As extensões estão bloqueadas}}</translation>
 <translation id="560834977503641186">Saiba mais sobre o Sincronizar Wi-Fi</translation>
@@ -5788,7 +5786,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5641648607875312660">Editor de imagem da captura de tela</translation>
 <translation id="5642508497713047">Signatário de lista de certificados revogados</translation>
 <translation id="5643321261065707929">Rede limitada</translation>
-<translation id="5643620609347735571">Limpar e continuar</translation>
 <translation id="5646376287012673985">Local</translation>
 <translation id="5646558797914161501">Empresário</translation>
 <translation id="5648021990716966815">Entrada para microfone</translation>
@@ -7708,7 +7705,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7241389281993241388">Faça login no <ph name="TOKEN_NAME" /> para importar o certificado do cliente.</translation>
 <translation id="7241763419756062043">Escolha a qualidade da navegação e da pesquisa</translation>
 <translation id="7243092385765551741">Excluir a chave de acesso?</translation>
-<translation id="7243632151880336635">Limpar e sair</translation>
 <translation id="7245162963905242662">Procurar nesta página com o Google...</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Melhor)</translation>
 <translation id="7246230585855757313">Reinsira sua chave de segurança e tente novamente</translation>
@@ -8586,7 +8582,6 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7925285046818567682">Aguardando <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">Não fui eu.</translation>
 <translation id="7926975587469166629">Apelido do cartão</translation>
-<translation id="7927610604078150317">Tamanho: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Já mudou essa senha?</translation>
 <translation id="7929962904089429003">Abrir o menu</translation>
 <translation id="7930294771522048157">As formas de pagamento salvas serão exibidas aqui</translation>
@@ -9236,6 +9231,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8448729345478502352">Torne os itens na tela menores ou maiores</translation>
 <translation id="8449008133205184768">Colar com o Mesmo Estilo</translation>
 <translation id="8449036207308062757">Gerenciar armazenamento</translation>
+<translation id="8449347986464073209">Excluir e sair</translation>
 <translation id="8449836157089738489">Abrir tudo em um novo grupo de guias</translation>
 <translation id="8449869326050867919">Senha compartilhada</translation>
 <translation id="8451512073679317615">assistente</translation>

@@ -5037,7 +5037,6 @@
 <translation id="5027550639139316293">گواهی ایمیل</translation>
 <translation id="5027562294707732951">افزودن افزونه</translation>
 <translation id="5028445315206872221">افزونه‌های این سایت مسدود شده است</translation>
-<translation id="5029568752722684782">پاک کردن نسخه کپی</translation>
 <translation id="5029873138381728058">‏بررسی ماشین‌های مجازی (VMs) انجام نشد</translation>
 <translation id="503155457707535043">درحال بارگیری برنامه‌ها</translation>
 <translation id="5032430150487044192">رمزینه پاسخ‌سریع ایجاد نمی‌شود</translation>
@@ -5731,7 +5730,6 @@
 <translation id="5601823921345337195">‏اجازه ندارد به دستگاه‌های MIDI مرتبط شود</translation>
 <translation id="5601833336918638013">به سایت‌ها اجازه داده نشود دستگاه‌های بلوتوث را جستجو کنند</translation>
 <translation id="5602586420788540146">باز کردن در گروه برگه جدید</translation>
-<translation id="5602765853043467355">نشانک‌ها، سابقه، گذرواژه‌ها و موارد دیگر از این دستگاه پاک شود</translation>
 <translation id="5605758115928394442">برای تأیید اینکه خودتان هستید، اعلانی به تلفنتان ارسال شد.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{این افزونه مسدود شده است}one{این افزونه‌ها مسدود شده‌اند}other{این افزونه‌ها مسدود شده‌اند}}</translation>
 <translation id="560834977503641186">‏«همگام‌سازی Wi-Fi»، بیشتر بدانید</translation>
@@ -5783,7 +5781,6 @@
 <translation id="5641648607875312660">ویرایشگر تصویر نماگرفت</translation>
 <translation id="5642508497713047">‏امضاکننده CRL</translation>
 <translation id="5643321261065707929">شبکه محدود</translation>
-<translation id="5643620609347735571">پاک کردن و ادامه دادن</translation>
 <translation id="5646376287012673985">مکان</translation>
 <translation id="5646558797914161501">تاجر</translation>
 <translation id="5648021990716966815">فیش میکروفون</translation>
@@ -7703,7 +7700,6 @@
 <translation id="7241389281993241388">لطفاً جهت ورود به مجوز سرویس گیرنده، به <ph name="TOKEN_NAME" /> وارد شوید.</translation>
 <translation id="7241763419756062043">کیفیت مرور و جستجو را انتخاب کنید</translation>
 <translation id="7243092385765551741">گذرکلید حذف شود؟</translation>
-<translation id="7243632151880336635">پاک کردن و خروج از سیستم</translation>
 <translation id="7245162963905242662">‏جستجوی این صفحه با Google…</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (بهترین)</translation>
 <translation id="7246230585855757313">کلید امنیتی را مجدداً وارد کنید و دوباره امتحان کنید</translation>
@@ -8580,7 +8576,6 @@
 <translation id="7925285046818567682">منتظر <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">من نبودم.</translation>
 <translation id="7926975587469166629">نام مستعار کارت</translation>
-<translation id="7927610604078150317">حجم: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">قبلاً این گذرواژه را تغییر داده‌اید؟</translation>
 <translation id="7929962904089429003">باز کردن منو</translation>
 <translation id="7930294771522048157">روش‌های پرداخت ذخیره‌شده در اینجا نشان داده می‌شود</translation>
@@ -9230,6 +9225,7 @@
 <translation id="8448729345478502352">بزرگ‌تر با کوچک‌تر کردن موارد روی صفحه</translation>
 <translation id="8449008133205184768">شیوه انطباق و جاگذاری</translation>
 <translation id="8449036207308062757">مدیریت فضای ذخیره‌سازی</translation>
+<translation id="8449347986464073209">حذف و خروج از سیستم</translation>
 <translation id="8449836157089738489">باز کردن همه در گروه برگه جدید</translation>
 <translation id="8449869326050867919">گذرواژه هم‌رسانی شد</translation>
 <translation id="8451512073679317615">دستیار</translation>

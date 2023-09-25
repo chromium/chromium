@@ -125,7 +125,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1243027604378859286">Autor:</translation>
 <translation id="1246424317317450637">Podebljano</translation>
 <translation id="1247030632403369975">Aluminij</translation>
-<translation id="1250759482327835220">Da biste sljedeći put platili brže, spremite karticu, ime i adresu za naplatu na svoj Google račun.</translation>
 <translation id="1252209483516427155">Odjeća za van</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sinkronizirano)</translation>
 <translation id="1255086252236620440">Mikseri za hranu</translation>
@@ -158,7 +157,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1294154142200295408">Varijacije naredbenog retka</translation>
 <translation id="129553762522093515">Nedavno zatvoreno</translation>
 <translation id="1296930489679394997">Prodaja</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />Izbrišite kolačiće<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">Provjerite postavke sigurnog DNS-a</translation>
 <translation id="1307966114820526988">Ukinute značajke</translation>
@@ -1350,7 +1348,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3767485424735936570">Kopiranje i lijepljenje tog sadržaja u <ph name="VM_NAME" /> ne preporučuje se u skladu s administratorskim pravilima</translation>
 <translation id="3772211998634047851">Papir (bond)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste brzo izradili novu bilješku u Google Keepu</translation>
-<translation id="3778403066972421603">Želite li spremiti ovu karticu na svoj Google račun i na ovaj uređaj?</translation>
 <translation id="378026377453746707">Chrome ima integrirane sigurnosne značajke koje vas štite dok pregledavate, na primjer Google sigurno pregledavanje. Sigurno pregledavanje nedavno je<ph name="BEGIN_LINK" />pronašlo štetan softver na web-lokaciji <ph name="SITE" /><ph name="END_LINK" /> koji je ugrađen u web-lokaciju koju pokušavate posjetiti.</translation>
 <translation id="3780694243617746492">Izlazni pretinac</translation>
 <translation id="3781428340399460090">Jarko ružičasta</translation>
@@ -1956,7 +1953,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5020776957610079374">Svjetska glazba</translation>
 <translation id="5021557570875267742">Praćenje cijena pomoću Chromea</translation>
 <translation id="5023310440958281426">Provjerite pravila svojeg administratora</translation>
-<translation id="5029568752722684782">Izbriši kopiju</translation>
 <translation id="5030338702439866405">Izdaje</translation>
 <translation id="503069730517007720">Potreban je korijenski certifikat za "<ph name="SOFTWARE_NAME" />", ali nije instaliran. Vaš IT administrator trebao bi pogledati upute za konfiguraciju softvera "<ph name="SOFTWARE_NAME" />" kako bi riješio taj problem. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">O Google Prevoditelju</translation>
@@ -2539,7 +2535,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6270066318535733958">Vožnja čamcem</translation>
 <translation id="6272088941196661550">Nastavite putovanje da biste vidjeli relevantne aktivnosti u svojoj povijesti na Chromeu</translation>
 <translation id="6272383483618007430">Google ažuriranje</translation>
-<translation id="627746635834430766">Da biste sljedeći put platili brže, karticu i adresu za naplatu spremite na svoj Google račun.</translation>
 <translation id="6279183038361895380">Pritisnite |<ph name="ACCELERATOR" />| da bi se prikazao pokazivač</translation>
 <translation id="6280223929691119688">Dostava na tu adresu nije moguća. Odaberite drugu adresu.</translation>
 <translation id="6284292079994426700">26 x 38 inča</translation>
@@ -3851,7 +3846,6 @@ Dodatne pojedinosti:
 <translation id="8922013791253848639">Uvijek dopusti oglase na ovoj web-lokaciji</translation>
 <translation id="892588693504540538">Bušenje pri vrhu desno</translation>
 <translation id="8930330541574156305">Nekretnine</translation>
-<translation id="8931333241327730545">Želite li spremiti tu karticu na Google račun?</translation>
 <translation id="8932102934695377596">Sat kasni</translation>
 <translation id="893332455753468063">Dodajte ime</translation>
 <translation id="8942355029279167844">Administrator je dopustio da <ph name="APP_NAME" /> prikuplja dijagnostičke podatke radi poboljšanja doživljaja proizvoda. Dodatne informacije potražite na <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>

@@ -5022,7 +5022,6 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5027550639139316293">E-posta Sertifikası</translation>
 <translation id="5027562294707732951">Uzantı ekle</translation>
 <translation id="5028445315206872221">Bu sitede uzantılar engellendi</translation>
-<translation id="5029568752722684782">Kopyayı temizle</translation>
 <translation id="5029873138381728058">Sanal makineler kontrol edilemedi</translation>
 <translation id="503155457707535043">Uygulamalar indiriliyor</translation>
 <translation id="5032430150487044192">QR Kodu oluşturulamıyor</translation>
@@ -5716,7 +5715,6 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="5601823921345337195">MIDI cihazlarına bağlanmasına izin verilmeyen siteler</translation>
 <translation id="5601833336918638013">Sitelerin, Bluetooth cihazları aramasına izin verme</translation>
 <translation id="5602586420788540146">Yeni sekme grubunda aç</translation>
-<translation id="5602765853043467355">Yer işaretleri, geçmiş, şifreler ve diğer bilgileri bu cihazdan temizle</translation>
 <translation id="5605758115928394442">Telefonunuza kimliğinizi doğrulamak için bir bildirim gönderildi.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Bu uzantı engellendi}other{Bu uzantılar engellendi}}</translation>
 <translation id="560834977503641186">Wi-Fi Senkronizasyonu, Daha Fazla Bilgi</translation>
@@ -5769,7 +5767,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5641648607875312660">Ekran Görüntüsü Resmi Düzenleyici</translation>
 <translation id="5642508497713047">CRL İmza Sahibi</translation>
 <translation id="5643321261065707929">Sayaçlı ağ</translation>
-<translation id="5643620609347735571">Temizle ve devam et</translation>
 <translation id="5646376287012673985">Konum</translation>
 <translation id="5646558797914161501">İş adamı</translation>
 <translation id="5648021990716966815">Mikrofon jakı</translation>
@@ -7687,7 +7684,6 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="7241389281993241388">Lütfen istemci sertifikasını içe aktarmak için <ph name="TOKEN_NAME" /> cihazında oturum açın.</translation>
 <translation id="7241763419756062043">Arama ve tarama kalitenizi seçin</translation>
 <translation id="7243092385765551741">Geçiş anahtarı silinsin mi?</translation>
-<translation id="7243632151880336635">Temizle ve Oturumu Kapat</translation>
 <translation id="7245162963905242662">Bu Sayfayı Google'da A&amp;ra...</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (En iyi)</translation>
 <translation id="7246230585855757313">Güvenlik anahtarınızı yeniden takıp tekrar deneyin</translation>
@@ -8564,7 +8560,6 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7925285046818567682"><ph name="HOST_NAME" /> bekleniyor...</translation>
 <translation id="7926423016278357561">Bu kişi ben değildim.</translation>
 <translation id="7926975587469166629">Kart için takma ad</translation>
-<translation id="7927610604078150317">Boyut: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Bu şifreyi zaten değiştirdiniz mi?</translation>
 <translation id="7929962904089429003">Menüyü açar</translation>
 <translation id="7930294771522048157">Kaydedilen ödeme yöntemleri burada görünecek</translation>
@@ -9214,6 +9209,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8448729345478502352">Ekranınızdaki öğeleri küçültün veya büyütün</translation>
 <translation id="8449008133205184768">Stili Yapıştır ve Eşleştir</translation>
 <translation id="8449036207308062757">Depolama alanını yönet</translation>
+<translation id="8449347986464073209">Sil ve Oturumu Kapat</translation>
 <translation id="8449836157089738489">Tümünü yeni sekme grubunda aç</translation>
 <translation id="8449869326050867919">Şifre paylaşıldı</translation>
 <translation id="8451512073679317615">asistan</translation>

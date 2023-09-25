@@ -5032,7 +5032,6 @@
 <translation id="5027550639139316293">ഇമെയില്‍‌ സര്‍‌ട്ടിഫിക്കറ്റ്</translation>
 <translation id="5027562294707732951">വിപുലീകരണം ചേർക്കുക</translation>
 <translation id="5028445315206872221">ഈ സൈറ്റിൽ വിപുലീകരണങ്ങൾ ബ്ലോക്ക് ചെയ്‌തിരിക്കുന്നു</translation>
-<translation id="5029568752722684782">പകർപ്പ് മായ്‌ക്കുക</translation>
 <translation id="5029873138381728058">VM-കൾ പരിശോധിക്കാനായില്ല</translation>
 <translation id="503155457707535043">ആപ്പുകൾ ഡൗൺലോഡ് ചെയ്യുന്നു</translation>
 <translation id="5032430150487044192">QR കോഡ് സൃഷ്‌ടിക്കാനാകില്ല</translation>
@@ -5726,7 +5725,6 @@
 <translation id="5601823921345337195">MIDI ഉപകരണങ്ങളിലേക്ക് കണക്‌റ്റ് ചെയ്യാൻ അനുവാദമില്ല</translation>
 <translation id="5601833336918638013">Bluetooth ഉപകരണങ്ങൾ തിരയാൻ സൈറ്റുകളെ അനുവദിക്കരുത്</translation>
 <translation id="5602586420788540146">പുതിയ ടാബ് ഗ്രൂപ്പിൽ തുറക്കുക</translation>
-<translation id="5602765853043467355">ഈ ഉപകരണത്തിൽ നിന്ന് ബുക്ക്‌മാർക്കുകൾ, ചരിത്രം, പാസ്‌വേഡുകൾ എന്നിവയും മറ്റും മായ്ക്കുക</translation>
 <translation id="5605758115928394442">ഇത് നിങ്ങൾ തന്നെയാണെന്ന് സ്ഥിരീകരിക്കാൻ ഫോണിലേക്ക് ഒരു അറിയിപ്പ് അയച്ചിട്ടുണ്ട്.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{ഈ വിപുലീകരണം ബ്ലോക്ക് ചെയ്‌തു}other{ഈ വിപുലീകരണങ്ങൾ ബ്ലോക്ക് ചെയ്‌തു}}</translation>
 <translation id="560834977503641186">വൈഫൈ സമന്വയം, കൂടുതലറിയുക</translation>
@@ -5778,7 +5776,6 @@
 <translation id="5641648607875312660">സ്ക്രീൻഷോട്ട് ഇമേജ് എഡിറ്റർ</translation>
 <translation id="5642508497713047">CRL സൈനര്‍‌</translation>
 <translation id="5643321261065707929">മീറ്റർ ചെയ്‌ത നെറ്റ്‌വർക്ക്</translation>
-<translation id="5643620609347735571">മായ്ച്ചതിന് ശേഷം തുടരുക</translation>
 <translation id="5646376287012673985">സ്ഥാനം</translation>
 <translation id="5646558797914161501">ബിസിനസ്‌മാൻ</translation>
 <translation id="5648021990716966815">Mic jack</translation>
@@ -7700,7 +7697,6 @@
 <translation id="7241389281993241388">ക്ലയന്‍റ് സര്‍ട്ടിഫിക്കറ്റ് ഇമ്പോർട്ട് ചെയ്യുന്നതിന് <ph name="TOKEN_NAME" /> എന്നതിലേക്ക് ദയവായി പ്രവേശിക്കുക.</translation>
 <translation id="7241763419756062043">നിങ്ങളുടെ തിരയൽ, ബ്രൗസിംഗ് നിലവാരം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7243092385765551741">പാസ്‌കീ ഇല്ലാതാക്കണോ?</translation>
-<translation id="7243632151880336635">മായ്‌ച്ച്, സൈൻ ഔട്ട് ചെയ്യുക</translation>
 <translation id="7245162963905242662">ഈ പേജ് Google ഉപയോഗിച്ച് തിരയുക...</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (മികച്ചത്)</translation>
 <translation id="7246230585855757313">സുരക്ഷാ കീ വീണ്ടും ബന്ധിപ്പിച്ച് വീണ്ടും ശ്രമിക്കുക</translation>
@@ -8579,7 +8575,6 @@
 <translation id="7925285046818567682"><ph name="HOST_NAME" /> നായി കാത്തിരിക്കുന്നു...</translation>
 <translation id="7926423016278357561">ഇത് ഞാൻ അല്ല.</translation>
 <translation id="7926975587469166629">കാർഡിന്റെ വിളിപ്പേര്</translation>
-<translation id="7927610604078150317">വലുപ്പം: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">മുമ്പേ തന്നെ ഈ പാസ്‌വേഡ് മാറ്റിയിട്ടുണ്ടോ?</translation>
 <translation id="7929962904089429003">മെനു തുറക്കുക</translation>
 <translation id="7930294771522048157">സംരക്ഷിച്ച പേയ്മെന്റ് രീതികൾ ഇവിടെ ദൃശ്യമാകും</translation>
@@ -9229,6 +9224,7 @@
 <translation id="8448729345478502352">സ്ക്രീനിലെ ഇനങ്ങൾ കൂടുതൽ ചെറുതോ വലുതോ ആക്കുക</translation>
 <translation id="8449008133205184768">ശൈലി ഒട്ടിക്കുകയും പൊരുത്തപ്പെടുത്തുകയും ചെയ്യുക</translation>
 <translation id="8449036207308062757">സ്റ്റോറേജ് മാനേജ് ചെയ്യുക</translation>
+<translation id="8449347986464073209">ഇല്ലാതാക്കിയ ശേഷം സൈൻ ഔട്ട് ചെയ്യുക</translation>
 <translation id="8449836157089738489">എല്ലാം പുതിയ ടാബ് ഗ്രൂപ്പിൽ തുറക്കുക</translation>
 <translation id="8449869326050867919">പാസ്‌വേഡ് പങ്കിട്ടു</translation>
 <translation id="8451512073679317615">അസിസ്‌റ്റന്‍റ്</translation>

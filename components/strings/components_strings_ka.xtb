@@ -125,7 +125,6 @@
 <translation id="1243027604378859286">ავტორი:</translation>
 <translation id="1246424317317450637">მუქი</translation>
 <translation id="1247030632403369975">ალუმინი</translation>
-<translation id="1250759482327835220">შემდგომი გადახდების დასაჩქარებლად შეგიძლიათ შეინახოთ თქვენი ბარათის მონაცემები, სახელი და ბილინგის მისამართი თქვენს Google ანგარიშში.</translation>
 <translation id="1252209483516427155">გარე ტანსაცმელი</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (სინქრონიზებული)</translation>
 <translation id="1255086252236620440">საჭმლის მიქსერები</translation>
@@ -158,7 +157,6 @@
 <translation id="1294154142200295408">ბრძანებათა სტრიქონის ვარიანტები</translation>
 <translation id="129553762522093515">ბოლოს დახურული</translation>
 <translation id="1296930489679394997">გაყიდვები</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />ცადეთ თქვენი ქუქი-ჩანაწერების გასუფთავება<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">შეამოწმეთ თქვენი დაცული DNS-ის პარამეტრები</translation>
 <translation id="1307966114820526988">მოძველებული ფუნქციები</translation>
@@ -1351,7 +1349,6 @@
 <translation id="3767485424735936570">ამ კონტენტის კოპირება და <ph name="VM_NAME" />-ში ჩასმა არ არის რეკომენდებული ადმინისტრატორის წესების მიხედვით</translation>
 <translation id="3772211998634047851">ქაღალდი (გადაბმული)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Keep-ში ახალი ჩანიშვნის სწრაფად შესაქმნელად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
-<translation id="3778403066972421603">გსურთ, შეინახოთ ეს ბარათი თქვენს Google ანგარიშში და ამ მოწყობილობაზე?</translation>
 <translation id="378026377453746707">Chrome-ში ჩაშენებულია უსაფრთხოების ფუნქციები, მაგალითად, Google Safe Browsing, რომლებიც დაგიცავთ ვების დათვალიერებისას. Safe Browsing-მა ახლახან <ph name="BEGIN_LINK" /><ph name="SITE" />-ზე აღმოაჩინა საზიანო პროგრამული უზრუნველყოფა<ph name="END_LINK" />, რომელიც ჩაშენებულია იმ საიტში, რომლის მონახულებასაც ცდილობთ.</translation>
 <translation id="3780694243617746492">გამოსასვლელი</translation>
 <translation id="3781428340399460090">მკვეთრი ვარდისფერი</translation>
@@ -1957,7 +1954,6 @@
 <translation id="5020776957610079374">მსოფლიო მუსიკა</translation>
 <translation id="5021557570875267742">გააკონტროლეთ ფასები Chrome-ის მეშვეობით</translation>
 <translation id="5023310440958281426">შეამოწმეთ ადმინისტრატორის წესები</translation>
-<translation id="5029568752722684782">ასლის გასუფთავება</translation>
 <translation id="5030338702439866405">გამცემი:</translation>
 <translation id="503069730517007720">საჭიროა „<ph name="SOFTWARE_NAME" />“-ის ძირეული სერტიფიკატი, რომელიც არ არის დაინსტალირებული. ამ პრობლემის მოსაგვარებლად თქვენმა IT ადმინისტრატორმა უნდა გადახედოს „<ph name="SOFTWARE_NAME" />“-ის კონფიგურაციის ინსტრუქციას. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Google Translate-ის შესახებ</translation>
@@ -2540,7 +2536,6 @@
 <translation id="6270066318535733958">ნაოსნობა</translation>
 <translation id="6272088941196661550">გააგრძელეთ თქვენი პროცესი, თქვენს Chrome-ის ისტორიაში შესაბამისი აქტივობა რომ იხილოთ</translation>
 <translation id="6272383483618007430">Google განახლება</translation>
-<translation id="627746635834430766">შემდგომი გადახდების დასაჩქარებლად შეგიძლიათ შეინახოთ თქვენი ბარათის მონაცემები და ბილინგის მისამართი თქვენს Google ანგარიშში.</translation>
 <translation id="6279183038361895380">კურსორის საჩვენებლად, დააჭირეთ კლავიშზე |<ph name="ACCELERATOR" />|</translation>
 <translation id="6280223929691119688">ამ მისამართზე მიწოდება ვერ მოხერხდება. აირჩიეთ სხვა მისამართი.</translation>
 <translation id="6284292079994426700">26 x 38 დუიმი</translation>
@@ -3851,7 +3846,6 @@
 <translation id="8922013791253848639">ამ საიტზე რეკლამის ყოველთვის დაშვება</translation>
 <translation id="892588693504540538">ზედა მარჯვენა ნაწილის გახვრეტა</translation>
 <translation id="8930330541574156305">უძრავი ქონება</translation>
-<translation id="8931333241327730545">გსურთ ამ ბარათის თქვენს Google ანგარიშში შენახვა?</translation>
 <translation id="8932102934695377596">თქვენი საათი უკანაა</translation>
 <translation id="893332455753468063">დაამატეთ სახელი</translation>
 <translation id="8942355029279167844">თქვენმა ადმინისტრატორმა <ph name="APP_NAME" />-ს ნება დართო, შეაგროვოს დიაგნოსტიკური მონაცემები, პროდუქტით სარგებლობის გასაუმჯობესებლად. დამატებითი ინფორმაციისთვის იხილეთ <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>

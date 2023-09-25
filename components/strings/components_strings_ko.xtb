@@ -125,7 +125,6 @@
 <translation id="1243027604378859286">작성자:</translation>
 <translation id="1246424317317450637">굵게</translation>
 <translation id="1247030632403369975">알루미늄</translation>
-<translation id="1250759482327835220">다음번에 더 빠르게 결제할 수 있도록 Google 계정에 카드, 이름, 청구서 수신 주소를 저장하세요.</translation>
 <translation id="1252209483516427155">외투</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" />(동기화됨)</translation>
 <translation id="1255086252236620440">조리용 믹서</translation>
@@ -158,7 +157,6 @@
 <translation id="1294154142200295408">명령줄 변형</translation>
 <translation id="129553762522093515">최근에 닫은 탭</translation>
 <translation id="1296930489679394997">판매</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />쿠키 삭제해 보기<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">보안 DNS 설정 확인</translation>
 <translation id="1307966114820526988">지원 중단 기능</translation>
@@ -1351,7 +1349,6 @@
 <translation id="3767485424735936570">이 콘텐츠를 복사하여 <ph name="VM_NAME" />에 붙여넣는 작업은 관리자 정책에 따라 권장되지 않습니다.</translation>
 <translation id="3772211998634047851">용지(본드)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Google Keep에서 빠르게 새 메모 만들기</translation>
-<translation id="3778403066972421603">이 카드를 Google 계정과 이 기기에 저장하시겠습니까?</translation>
 <translation id="378026377453746707">Chrome에는 Google 세이프 브라우징과 같이 인터넷을 사용하는 동안 사용자를 보호해 주는 안전 기능이 내장되어 있습니다. 최근 세이프 브라우징에서 사용자님이 방문하고자 한 <ph name="BEGIN_LINK" /><ph name="SITE" /> 사이트에 위험한 소프트웨어가 삽입되어 있음을 발견<ph name="END_LINK" />했습니다</translation>
 <translation id="3780694243617746492">출력함</translation>
 <translation id="3781428340399460090">진한 분홍색</translation>
@@ -1957,7 +1954,6 @@
 <translation id="5020776957610079374">제3세계 음악</translation>
 <translation id="5021557570875267742">Chrome으로 가격 추적</translation>
 <translation id="5023310440958281426">관리자 정책을 확인하세요.</translation>
-<translation id="5029568752722684782">사본 지우기</translation>
 <translation id="5030338702439866405">발급 기관</translation>
 <translation id="503069730517007720">'<ph name="SOFTWARE_NAME" />'의 루트 인증서가 필요하지만 설치되어 있지 않습니다. IT 관리자가 '<ph name="SOFTWARE_NAME" />'의 설정 안내에 따라 이 문제를 해결해야 합니다. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Google 번역 정보</translation>
@@ -2540,7 +2536,6 @@
 <translation id="6270066318535733958">보트 타기</translation>
 <translation id="6272088941196661550">Chrome 방문 기록에서 관련 활동을 보려면 탐색 여정을 재개하세요.</translation>
 <translation id="6272383483618007430">Google 업데이트</translation>
-<translation id="627746635834430766">다음번에 더 빠르게 결제할 수 있도록 Google 계정에 카드와 청구서 수신 주소를 저장하세요.</translation>
 <translation id="6279183038361895380">|<ph name="ACCELERATOR" />|을(를) 눌러 커서 표시</translation>
 <translation id="6280223929691119688">이 주소로 배달할 수 없습니다. 다른 주소를 선택하세요.</translation>
 <translation id="6284292079994426700">26x38인치</translation>
@@ -3850,7 +3845,6 @@
 <translation id="8922013791253848639">이 사이트의 광고 항상 허용</translation>
 <translation id="892588693504540538">오른쪽 상단 펀칭</translation>
 <translation id="8930330541574156305">부동산</translation>
-<translation id="8931333241327730545">이 카드를 Google 계정에 저장하시겠습니까?</translation>
 <translation id="8932102934695377596">시간이 너무 먼 과거로 설정되어 있습니다.</translation>
 <translation id="893332455753468063">이름 추가</translation>
 <translation id="8942355029279167844">관리자가 <ph name="APP_NAME" /> 앱에서 제품 환경 개선을 위한 진단 데이터를 수집하도록 허용했습니다. 자세한 내용은 <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />를 참고하세요.</translation>

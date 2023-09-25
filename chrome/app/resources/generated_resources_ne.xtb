@@ -5031,7 +5031,6 @@
 <translation id="5027550639139316293">इमेल प्रमाणपत्र</translation>
 <translation id="5027562294707732951">विस्तार थप्नुहोस्</translation>
 <translation id="5028445315206872221">यो साइटमा एक्स्टेन्सनहरू ब्लक गरिएका छन्</translation>
-<translation id="5029568752722684782">प्रतिलिपि हटाउनुहोस्</translation>
 <translation id="5029873138381728058">VM हरू जाँच गर्न सकिएन</translation>
 <translation id="503155457707535043">एपहरू डाउनलोड गर्दै</translation>
 <translation id="5032430150487044192">QR कोड सिर्जना गर्न सकिएन</translation>
@@ -5725,7 +5724,6 @@
 <translation id="5601823921345337195">MIDI यन्त्रहरूमा कनेक्ट गर्न अनुमति नदिइएका साइटहरू</translation>
 <translation id="5601833336918638013">साइटहरूलाई ब्लुटुथ डिभाइसहरू खोज्ने अनुमति नदिइयोस्</translation>
 <translation id="5602586420788540146">नयाँ ट्याब समूहमा खोल्नुहोस्</translation>
-<translation id="5602765853043467355">यो यन्त्रबाट पुस्तक चिन्ह, इतिहास, पासवर्ड र थप कुराहरू खाली गर्नुहोस्</translation>
 <translation id="5605758115928394442">यो व्यक्ति तपाईं नै हो भन्ने सुनिश्चित गर्न तपाईंको फोनमा एउटा सूचना पठाइयो।</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{यो एक्स्टेन्सन ब्लक गरिएको छ}other{यी एक्स्टेन्सन ब्लक गरिएका छन्}}</translation>
 <translation id="560834977503641186">Wi-Fi सिंकका बारेमा थप जान्नुहोस्</translation>
@@ -5777,7 +5775,6 @@
 <translation id="5641648607875312660">स्क्रिनसट इमेज एडिटर</translation>
 <translation id="5642508497713047">CRL हस्ताक्षरकर्ता</translation>
 <translation id="5643321261065707929">सीमा तोकिएको नेटवर्क</translation>
-<translation id="5643620609347735571">खाली गरी जारी राख्नुहोस्</translation>
 <translation id="5646376287012673985">लोकेसन</translation>
 <translation id="5646558797914161501">व्यापारी</translation>
 <translation id="5648021990716966815">माइकको ज्याक</translation>
@@ -7695,7 +7692,6 @@
 <translation id="7241389281993241388">ग्राहक प्रमाणपत्र आयात गर्न कृपया <ph name="TOKEN_NAME" /> मा साइन इन गर्नुहोस्।</translation>
 <translation id="7241763419756062043">खोज्ने र ब्राउज गर्ने सुविधाको गुणस्तर छनौट गर्नुहोस्</translation>
 <translation id="7243092385765551741">पासकी मेटाउने हो?</translation>
-<translation id="7243632151880336635">खाली गरी साइन आउट गर्नुहोस्</translation>
 <translation id="7245162963905242662">Google मा यो पेज खोज्नुहोस्...</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> गुणा <ph name="HEIGHT" /> (उत्कृष्ट)</translation>
 <translation id="7246230585855757313">आफ्नो सुरक्षा साँचो पुनः प्रविष्टि गरी फेरि प्रयास गर्नुहोस्</translation>
@@ -8575,7 +8571,6 @@
 <translation id="7925285046818567682"><ph name="HOST_NAME" /> को लागि प्रतिक्षा गर्दै...</translation>
 <translation id="7926423016278357561">यो म थिइन।</translation>
 <translation id="7926975587469166629">कार्डको उपनाम</translation>
-<translation id="7927610604078150317">आकार: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">यो पासवर्ड परिवर्तन गरिसक्नुभयो?</translation>
 <translation id="7929962904089429003">मेनु खोल्नुहोस्</translation>
 <translation id="7930294771522048157">सुरक्षित गरिएका भुक्तानी विधिहरू यहाँ देखिने छन्</translation>
@@ -9224,6 +9219,7 @@
 <translation id="8448729345478502352">तपाईंको स्क्रिनमा भएका वस्तुहरूलाई अझ ठुलो वा सानो पार्नुहोस्</translation>
 <translation id="8449008133205184768">टाँस्नुहोस् र शैली मिलाउनुहोस्</translation>
 <translation id="8449036207308062757">भण्डारणको व्यवस्थापन गर्नुहोस्</translation>
+<translation id="8449347986464073209">मेटाउनुहोस् र साइन आउट गर्नुहोस्</translation>
 <translation id="8449836157089738489">सबै URL नयाँ ट्याब समूहमा खोल्नुहोस्</translation>
 <translation id="8449869326050867919">पासवर्ड सेयर गरिएको छ</translation>
 <translation id="8451512073679317615">सहायक</translation>

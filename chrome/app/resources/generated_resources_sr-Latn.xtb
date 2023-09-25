@@ -5032,7 +5032,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5027550639139316293">Sertifikat za e-poštu</translation>
 <translation id="5027562294707732951">Dodaj dodatak</translation>
 <translation id="5028445315206872221">Dodaci su blokirani na ovom sajtu</translation>
-<translation id="5029568752722684782">Obriši kopiju</translation>
 <translation id="5029873138381728058">Provera virtuelnih mašina nije uspela</translation>
 <translation id="503155457707535043">Preuzimanje aplikacija</translation>
 <translation id="5032430150487044192">Pravljenje QR koda nije uspelo</translation>
@@ -5725,7 +5724,6 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="5601823921345337195">Nije im dozvoljeno da se povezuju sa MIDI uređajima</translation>
 <translation id="5601833336918638013">Ne dozvoljavaj sajtovima da traže Bluetooth uređaje</translation>
 <translation id="5602586420788540146">Otvori u novoj grupi kartica</translation>
-<translation id="5602765853043467355">Obriši obeleživače, istoriju, lozinke i drugo sa ovog uređaja</translation>
 <translation id="5605758115928394442">Poslali smo vam obaveštenje na telefon da biste potvrdili da ste to vi.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Ovaj dodatak je blokiran}one{Ovi dodaci su blokirani}few{Ovi dodaci su blokirani}other{Ovi dodaci su blokirani}}</translation>
 <translation id="560834977503641186">WiFi sinhronizacija, saznajte više</translation>
@@ -5778,7 +5776,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5641648607875312660">Uređivač za snimke ekrana</translation>
 <translation id="5642508497713047">CRL potpisnik</translation>
 <translation id="5643321261065707929">Mreža sa ograničenjem</translation>
-<translation id="5643620609347735571">Obriši i nastavi</translation>
 <translation id="5646376287012673985">Lokacija</translation>
 <translation id="5646558797914161501">Biznismen</translation>
 <translation id="5648021990716966815">Utikač za mikrofon</translation>
@@ -7702,7 +7699,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7241389281993241388">Prijavite se na <ph name="TOKEN_NAME" /> da biste uvezli sertifikat klijenta.</translation>
 <translation id="7241763419756062043">Odaberite kvalitet pretrage i pregledanja</translation>
 <translation id="7243092385765551741">Želite da izbrišete pristupni ključ?</translation>
-<translation id="7243632151880336635">Obriši i odjavi me</translation>
 <translation id="7245162963905242662">Pretraži ovu stranicu pomoću Google-a...</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Najbolje)</translation>
 <translation id="7246230585855757313">Ponovo umetnite bezbednosni ključ i probajte ponovo</translation>
@@ -8582,7 +8578,6 @@ Pritisnite dodeljeni prekidač ili taster da biste uklonili dodelu.</translation
 <translation id="7925285046818567682">Čeka se <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">To nisam ja.</translation>
 <translation id="7926975587469166629">Nadimak kartice</translation>
-<translation id="7927610604078150317">Veličina: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Već ste promenili ovu lozinku?</translation>
 <translation id="7929962904089429003">Otvorite meni</translation>
 <translation id="7930294771522048157">Sačuvani načini plaćanja će se prikazivati ovde</translation>
@@ -9232,6 +9227,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8448729345478502352">Uvećajte ili umanjite stavke na ekranu</translation>
 <translation id="8449008133205184768">Nalepi sa podudaranjem stila</translation>
 <translation id="8449036207308062757">Upravljaj memorijskim prostorom</translation>
+<translation id="8449347986464073209">Izbriši i odjavi me</translation>
 <translation id="8449836157089738489">Otvori sve u novoj grupi kartica</translation>
 <translation id="8449869326050867919">Lozinka se deli</translation>
 <translation id="8451512073679317615">Pomoćnik</translation>

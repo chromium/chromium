@@ -5026,7 +5026,6 @@
 <translation id="5027550639139316293">Сертификат электронной почты</translation>
 <translation id="5027562294707732951">Установить расширение</translation>
 <translation id="5028445315206872221">Расширения заблокированы на этом сайте</translation>
-<translation id="5029568752722684782">Удалить данные</translation>
 <translation id="5029873138381728058">Не удалось проверить виртуальные машины.</translation>
 <translation id="503155457707535043">Скачивание приложений</translation>
 <translation id="5032430150487044192">Не удалось создать QR-код.</translation>
@@ -5720,7 +5719,6 @@
 <translation id="5601823921345337195">Запретить сайтам подключаться к MIDI-устройствам</translation>
 <translation id="5601833336918638013">Запретить сайтам поиск устройств Bluetooth</translation>
 <translation id="5602586420788540146">Открыть в новой группе вкладок</translation>
-<translation id="5602765853043467355">Удалить с устройства закладки, пароли, данные о работе в браузере и т. д.</translation>
 <translation id="5605758115928394442">На ваш телефон отправлено уведомление для подтверждения личности.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Это расширение заблокировано}one{Эти расширения заблокированы}few{Эти расширения заблокированы}many{Эти расширения заблокированы}other{Эти расширения заблокированы}}</translation>
 <translation id="560834977503641186">Узнать больше о функции "Синхронизация Wi-Fi"</translation>
@@ -5772,7 +5770,6 @@
 <translation id="5641648607875312660">Редактор скриншотов</translation>
 <translation id="5642508497713047">Сторона, подписавшая список отзыва сертификатов</translation>
 <translation id="5643321261065707929">Сеть с тарификацией</translation>
-<translation id="5643620609347735571">Удалить и продолжить</translation>
 <translation id="5646376287012673985">Местоположение</translation>
 <translation id="5646558797914161501">Бизнесмен</translation>
 <translation id="5648021990716966815">Микрофонный разъем</translation>
@@ -7696,7 +7693,6 @@
 <translation id="7241389281993241388">Войдите в <ph name="TOKEN_NAME" />, чтобы импортировать сертификат клиента.</translation>
 <translation id="7241763419756062043">Настройте поиск и просмотр</translation>
 <translation id="7243092385765551741">Удалить ключ доступа?</translation>
-<translation id="7243632151880336635">Стереть данные и выйти</translation>
 <translation id="7245162963905242662">Найт&amp;и эту страницу в Google</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (оптимальное)</translation>
 <translation id="7246230585855757313">Вставьте электронный ключ ещё раз и повторите попытку.</translation>
@@ -8573,7 +8569,6 @@
 <translation id="7925285046818567682">Ожидание <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">Это не я</translation>
 <translation id="7926975587469166629">Название карты</translation>
-<translation id="7927610604078150317">Размер: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Уже сменили пароль?</translation>
 <translation id="7929962904089429003">Открыть меню</translation>
 <translation id="7930294771522048157">Здесь появятся сохраненные способы оплаты.</translation>
@@ -9223,6 +9218,7 @@
 <translation id="8448729345478502352">Уменьшить или увеличить объекты на экране</translation>
 <translation id="8449008133205184768">Вставить с соблюдением стиля</translation>
 <translation id="8449036207308062757">Управление хранилищем</translation>
+<translation id="8449347986464073209">Удалить и выйти</translation>
 <translation id="8449836157089738489">Открыть все URL в новой группе вкладок</translation>
 <translation id="8449869326050867919">Доступ к паролю предоставлен</translation>
 <translation id="8451512073679317615">Ассистент</translation>

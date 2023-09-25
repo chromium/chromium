@@ -5024,7 +5024,6 @@
 <translation id="5027550639139316293">ელფოსტის სერტიფიკატი</translation>
 <translation id="5027562294707732951">გაფართოების დამატება</translation>
 <translation id="5028445315206872221">გაფართოებები დაბლოკილია ამ საიტზე</translation>
-<translation id="5029568752722684782">ასლის გასუფთავება</translation>
 <translation id="5029873138381728058">ვირტუალური მოწყობილობების შემოწმება ვერ მოხერხდა</translation>
 <translation id="503155457707535043">მიმდინარეობს აპების ჩამოტვირთვა</translation>
 <translation id="5032430150487044192">QR კოდის შექმნა ვერ მოხერხდა</translation>
@@ -5718,7 +5717,6 @@
 <translation id="5601823921345337195">MIDI-მოწყობილობებთან დაკავშირება დაუშვებელია</translation>
 <translation id="5601833336918638013">Bluetooth მოწყობილობების მოძიების აკრძალვა საიტებისთვის</translation>
 <translation id="5602586420788540146">ჩანართების ახალ ჯგუფში გახსნა</translation>
-<translation id="5602765853043467355">ამ მოწყობილობაზე სანიშნეების, ისტორიის, პაროლებისა და სხვა კონტენტის გასუფთავება</translation>
 <translation id="5605758115928394442">თქვენს ტელეფონზე გაიგზავნა შეტყობინება თქვენი ვინაობის დასადასტურებლად.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{ეს გაფართოება დაბლოკილია}other{ეს გაფართოებები დაბლოკილია}}</translation>
 <translation id="560834977503641186">Wi-Fi სინქრონიზაცია, შეიტყვეთ მეტი</translation>
@@ -5770,7 +5768,6 @@
 <translation id="5641648607875312660">ეკრანის ანაბეჭდების რედაქტორი</translation>
 <translation id="5642508497713047">CRL ხელმომწერი</translation>
 <translation id="5643321261065707929">ლიმიტირებული ქსელი</translation>
-<translation id="5643620609347735571">გასუფთავება და გაგრძელება</translation>
 <translation id="5646376287012673985">მდებარეობა</translation>
 <translation id="5646558797914161501">ბიზნესმენი</translation>
 <translation id="5648021990716966815">მიკროფონის ჯეკი</translation>
@@ -7687,7 +7684,6 @@
 <translation id="7241389281993241388">შედით <ph name="TOKEN_NAME" />-ში, კლიენტის სერტიფიკატის იმპორტისთვის.</translation>
 <translation id="7241763419756062043">აირჩიეთ ძიებისა და ვების დათვალიერების ხარისხი</translation>
 <translation id="7243092385765551741">გსურთ წვდომის გასაღების წაშლა?</translation>
-<translation id="7243632151880336635">გასუფთავება და გამოსვლა</translation>
 <translation id="7245162963905242662">ამ გვერდზე ძიებ&amp;ა Google-ით...</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (საუკეთესო)</translation>
 <translation id="7246230585855757313">ხელახლა მიაერთეთ უსაფრთხოების გასაღები და ცადეთ ხელახლა</translation>
@@ -8564,7 +8560,6 @@
 <translation id="7925285046818567682"><ph name="HOST_NAME" />-ის მოლოდინში…</translation>
 <translation id="7926423016278357561">ეს მე არ ვყოფილვარ.</translation>
 <translation id="7926975587469166629">ბარათის მეტსახელი</translation>
-<translation id="7927610604078150317">ზომა: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">ეს პაროლი უკვე შეცვალეთ?</translation>
 <translation id="7929962904089429003">მენიუს გახსნა</translation>
 <translation id="7930294771522048157">აქ გამოჩნდება გადახდის შენახული მეთოდები</translation>
@@ -9213,6 +9208,7 @@
 <translation id="8448729345478502352">ეკრანზე ერთეულების დაპატარავება ან გადიდება</translation>
 <translation id="8449008133205184768">ჩასმა და შედარების სტილი</translation>
 <translation id="8449036207308062757">მეხსიერების მართვა</translation>
+<translation id="8449347986464073209">წაშლა და გასვლა</translation>
 <translation id="8449836157089738489">ყველას გახსნა ჩანართების ახალ ჯგუფში</translation>
 <translation id="8449869326050867919">პაროლი გაზიარებულია</translation>
 <translation id="8451512073679317615">ასისტენტი</translation>

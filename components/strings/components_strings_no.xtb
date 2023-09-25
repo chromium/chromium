@@ -125,7 +125,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1243027604378859286">Forfatter:</translation>
 <translation id="1246424317317450637">Fet</translation>
 <translation id="1247030632403369975">Aluminium</translation>
-<translation id="1250759482327835220">For å betale raskere neste gang, lagre kortet og faktureringsadressen i Google-kontoen din.</translation>
 <translation id="1252209483516427155">Ytterklær</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" /> og <ph name="TYPE_2" /> (synkronisert)</translation>
 <translation id="1255086252236620440">Kjøkkenmiksere</translation>
@@ -158,7 +157,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1294154142200295408">Variasjoner i kommandolinjen</translation>
 <translation id="129553762522093515">Nylig lukket</translation>
 <translation id="1296930489679394997">Salg</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />Prøv å slette informasjonskapslene dine<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">Kontroller innstillingene for sikker DNS</translation>
 <translation id="1307966114820526988">Avviklede funksjoner</translation>
@@ -1351,7 +1349,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3767485424735936570">Kopiering og innliming av dette innholdet i <ph name="VM_NAME" /> frarådes av en administratorregel</translation>
 <translation id="3772211998634047851">Papir (obligasjon)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å opprette et nytt notat i Google Keep raskt</translation>
-<translation id="3778403066972421603">Vil du lagre dette kortet i Google-kontoen din og på denne enheten?</translation>
 <translation id="378026377453746707">Chrome har innebygde sikkerhetsfunksjoner som beskytter deg mens du surfer, for eksempel Google Safe Browsing. Safe Browsing har nylig <ph name="BEGIN_LINK" />funnet skadelig programvare på <ph name="SITE" /><ph name="END_LINK" />, som er innebygd i nettstedet du prøver å besøke.</translation>
 <translation id="3780694243617746492">Ut-skuff</translation>
 <translation id="3781428340399460090">Knallrosa</translation>
@@ -1957,7 +1954,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5020776957610079374">Verdensmusikk</translation>
 <translation id="5021557570875267742">Spor priser med Chrome</translation>
 <translation id="5023310440958281426">Kontroller retningslinjene til administratoren din</translation>
-<translation id="5029568752722684782">Slett kopi</translation>
 <translation id="5030338702439866405">Utstedt av</translation>
 <translation id="503069730517007720">Et rotsertifikat for «<ph name="SOFTWARE_NAME" />» kreves, men er ikke installert. IT-administratoren din bør se på konfigurasjonsveiledningen for «<ph name="SOFTWARE_NAME" />» for å løse dette problemet. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Om Google Oversett</translation>
@@ -2540,7 +2536,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6270066318535733958">Båtsport</translation>
 <translation id="6272088941196661550">Fortsett reisen for å se relevant aktivitet i Chrome-loggen</translation>
 <translation id="6272383483618007430">Google Oppdatering</translation>
-<translation id="627746635834430766">For å betale raskere neste gang, lagre kortet ditt og faktureringsadressen i Google-kontoen din.</translation>
 <translation id="6279183038361895380">Trykk på |<ph name="ACCELERATOR" />| for å se markøren</translation>
 <translation id="6280223929691119688">Kan ikke levere til denne adressen. Velg en annen adresse.</translation>
 <translation id="6284292079994426700">26 x 38 tommer</translation>
@@ -3850,7 +3845,6 @@ Mer informasjon:
 <translation id="8922013791253848639">Tillat alltid annonser på dette nettstedet</translation>
 <translation id="892588693504540538">Hull oppe til høyre</translation>
 <translation id="8930330541574156305">Eiendom</translation>
-<translation id="8931333241327730545">Vil du lagre dette kortet i Google-kontoen din?</translation>
 <translation id="8932102934695377596">Klokken går for sent</translation>
 <translation id="893332455753468063">Legg til navn</translation>
 <translation id="8942355029279167844">Administratoren din har gitt <ph name="APP_NAME" /> tillatelse til å samle inn diagnostikkdata for å gi deg en bedre produktopplevelse. Se <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> for mer informasjon.</translation>

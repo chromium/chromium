@@ -125,7 +125,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1243027604378859286">Autor:</translation>
 <translation id="1246424317317450637">Paks</translation>
 <translation id="1247030632403369975">Alumiinium</translation>
-<translation id="1250759482327835220">Kui soovite järgmisel korral kiiremini maksta, salvestage kaart, nimi ja arveldusaadress oma Google'i kontole.</translation>
 <translation id="1252209483516427155">Välisrõivad</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sünkroonitud)</translation>
 <translation id="1255086252236620440">Mikserid</translation>
@@ -158,7 +157,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1294154142200295408">Käsurea variatsioonid</translation>
 <translation id="129553762522093515">Viimati suletud</translation>
 <translation id="1296930489679394997">Müük</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />Kustutage küpsisefailid<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">Kontrollige turvalise DNS-i seadeid</translation>
 <translation id="1307966114820526988">Katkestatud toega funktsioonid</translation>
@@ -1351,7 +1349,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3767485424735936570">Selle sisu kopeerimine ja kleepimine virtuaalmasinasse <ph name="VM_NAME" /> pole administraatori reegliga soovitatav</translation>
 <translation id="3772211998634047851">Paber (võlakirjapaber)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, rakenduses Google Keep kiirelt uue märkuse loomiseks vajutage tabulaatorit ja seejärel sisestusklahvi</translation>
-<translation id="3778403066972421603">Kas soovite selle kaardi salvestada oma Google'i kontole ja sellesse seadmesse?</translation>
 <translation id="378026377453746707">Chrome'il on sisseehitatud ohutusfunktsioonid, mis kaitsevad teid sirvimise ajal, näiteks Google'i ohutu sirvimine. Google'i ohutu sirvimine <ph name="BEGIN_LINK" />leidis hiljuti saidilt <ph name="SITE" /> kahjulikku tarkvara<ph name="END_LINK" />, mis manustatakse saidile, kui proovite seda külastada.</translation>
 <translation id="3780694243617746492">Väljundsalv</translation>
 <translation id="3781428340399460090">Erkroosa</translation>
@@ -1957,7 +1954,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5020776957610079374">Maailmamuusika</translation>
 <translation id="5021557570875267742">Hindade jälgimine Chrome'iga</translation>
 <translation id="5023310440958281426">Tutvuge administraatori reeglitega</translation>
-<translation id="5029568752722684782">Kustuta koopia</translation>
 <translation id="5030338702439866405">Väljaandja</translation>
 <translation id="503069730517007720">Vaja on tarkvara „<ph name="SOFTWARE_NAME" />” juursertifikaati, kuid see pole installitud. Teie IT-administraator peaks probleemi lahendamiseks tarkvara „<ph name="SOFTWARE_NAME" />” seadistamisjuhised üle vaatama. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Teave Google'i tõlke kohta</translation>
@@ -2540,7 +2536,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6270066318535733958">Paadi- ja laevasõit</translation>
 <translation id="6272088941196661550">Jätkake oma teekonda, et näha Chrome'i ajaloos asjakohaseid tegevusi</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="627746635834430766">Kui soovite järgmisel korral kiiremini maksta, salvestage kaart ja arveldusaadress oma Google'i kontole.</translation>
 <translation id="6279183038361895380">Kursori kuvamiseks vajutage klahvi |<ph name="ACCELERATOR" />|</translation>
 <translation id="6280223929691119688">Sellele aadressile ei saa kaupa kohale toimetada. Valige mõni teine aadress.</translation>
 <translation id="6284292079994426700">26 × 38 tolli</translation>
@@ -3851,7 +3846,6 @@ Lisateave:
 <translation id="8922013791253848639">Luba sellel saidil alati reklaamid</translation>
 <translation id="892588693504540538">Auk ülal paremal</translation>
 <translation id="8930330541574156305">Kinnisvara</translation>
-<translation id="8931333241327730545">Kas soovite selle kaardi salvestada oma Google'i kontole?</translation>
 <translation id="8932102934695377596">Teie kell on taga</translation>
 <translation id="893332455753468063">Nime lisamine</translation>
 <translation id="8942355029279167844">Teie administraator on lubanud rakendusel <ph name="APP_NAME" /> diagnostikaandmeid koguda, et toote kasutuskogemust täiustada. Lisateavet vaadake saidilt <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>

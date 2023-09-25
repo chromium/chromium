@@ -125,7 +125,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1243027604378859286">Autor:</translation>
 <translation id="1246424317317450637">Negrito</translation>
 <translation id="1247030632403369975">Alumínio</translation>
-<translation id="1250759482327835220">Para pagar mais rapidamente da próxima vez, guarde o cartão, o nome e o endereço de faturação na sua Conta Google.</translation>
 <translation id="1252209483516427155">Vestuário para exterior</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sincronizados)</translation>
 <translation id="1255086252236620440">Misturadoras</translation>
@@ -158,7 +157,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1294154142200295408">Variações da linha de comandos</translation>
 <translation id="129553762522093515">Fechados recentemente</translation>
 <translation id="1296930489679394997">Vendas</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />Experimente limpar os cookies<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">Verifique as definições seguras do DNS</translation>
 <translation id="1307966114820526988">Funcionalidades descontinuadas</translation>
@@ -1351,7 +1349,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3767485424735936570">A ação de copiar e colar este conteúdo para <ph name="VM_NAME" /> não é recomendada pela política do administrador.</translation>
 <translation id="3772211998634047851">Papel (bond)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para criar rapidamente uma nova nota no Google Keep</translation>
-<translation id="3778403066972421603">Quer guardar este cartão na sua Conta Google e neste dispositivo?</translation>
 <translation id="378026377453746707">O Chrome tem funcionalidades de segurança incorporadas para proteger o utilizador enquanto navega, como a Navegação Segura do Google. A Navegação Segura <ph name="BEGIN_LINK" />encontrou recentemente software prejudicial em <ph name="SITE" /><ph name="END_LINK" />, que está incorporado no site que está a tentar visitar.</translation>
 <translation id="3780694243617746492">Tabuleiro de saída</translation>
 <translation id="3781428340399460090">Rosa choque</translation>
@@ -1957,7 +1954,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5020776957610079374">Música do mundo</translation>
 <translation id="5021557570875267742">Acompanhe os preços com o Chrome</translation>
 <translation id="5023310440958281426">Rever as políticas do gestor</translation>
-<translation id="5029568752722684782">Limpar cópia</translation>
 <translation id="5030338702439866405">Emitido por</translation>
 <translation id="503069730517007720">É necessário um certificado de raiz para o "<ph name="SOFTWARE_NAME" />", que não está instalado. O gestor de TI deve consultar as instruções de configuração do "<ph name="SOFTWARE_NAME" />" para corrigir este problema. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Acerca do Google Tradutor</translation>
@@ -2540,7 +2536,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6270066318535733958">Passeios de barco</translation>
 <translation id="6272088941196661550">Retome o percurso para ver atividade relevante no seu Histórico do Chrome</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="627746635834430766">Para pagar mais rapidamente da próxima vez, guarde o cartão e o endereço de faturação na sua Conta Google.</translation>
 <translation id="6279183038361895380">Premir |<ph name="ACCELERATOR" />| para mostrar o cursor</translation>
 <translation id="6280223929691119688">Não é possível entregar neste endereço. Selecione um diferente.</translation>
 <translation id="6284292079994426700">26 x 38 pol.</translation>
@@ -3851,7 +3846,6 @@ Detalhes adicionais:
 <translation id="8922013791253848639">Permitir sempre anúncios neste site</translation>
 <translation id="892588693504540538">Perfurar na parte superior direita</translation>
 <translation id="8930330541574156305">Imobiliário</translation>
-<translation id="8931333241327730545">Quer guardar este cartão na sua Conta Google?</translation>
 <translation id="8932102934695377596">O seu relógio está atrasado</translation>
 <translation id="893332455753468063">Adicionar nome</translation>
 <translation id="8942355029279167844">O seu administrador autorizou a app <ph name="APP_NAME" /> a recolher dados de diagnóstico para melhorar a experiência do produto. Veja <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> para obter mais informações.</translation>

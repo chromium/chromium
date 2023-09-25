@@ -125,7 +125,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1243027604378859286">Tekijä:</translation>
 <translation id="1246424317317450637">Lihavoitu</translation>
 <translation id="1247030632403369975">Alumiini</translation>
-<translation id="1250759482327835220">Jos haluat maksaa nopeammin ensi kerralla, tallenna kortti, nimi ja laskutusosoite Google-tilillesi.</translation>
 <translation id="1252209483516427155">Ulkoiluvaatteet</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (synkronoitu)</translation>
 <translation id="1255086252236620440">Sähkövatkaimet</translation>
@@ -158,7 +157,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1294154142200295408">Komentorivin muunnelmat</translation>
 <translation id="129553762522093515">Hiljattain suljetut välilehdet</translation>
 <translation id="1296930489679394997">Myynti</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />Tyhjennä evästeet.<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">Tarkista suojatun DNS:n asetukset</translation>
 <translation id="1307966114820526988">Käytöstä poistetut ominaisuudet</translation>
@@ -1352,7 +1350,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3767485424735936570">Järjestelmänvalvojan käytännössä ei suositella tämän sisällön kopioimista ja liittämistä tänne: <ph name="VM_NAME" /></translation>
 <translation id="3772211998634047851">Paperi (kirjepaperi)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, luo uusi muistiinpano nopeasti Google Keepissa painamalla sarkainta ja sitten Enter</translation>
-<translation id="3778403066972421603">Haluatko tallentaa tämän kortin Google-tilille ja tälle laitteelle?</translation>
 <translation id="378026377453746707">Chromessa on sisäänrakennettuja turvallisuusominaisuuksia, jotka suojaavat sinua selaamisen aikana. Yksi niistä on Googlen selaussuoja. Selaussuoja <ph name="BEGIN_LINK" />löysi äskettäin haittaohjelmia osoitteesta <ph name="SITE" /><ph name="END_LINK" />. Se on upotettu sivustolle, jolle yrität siirtyä.</translation>
 <translation id="3780694243617746492">Tulostuslokero</translation>
 <translation id="3781428340399460090">Pinkki</translation>
@@ -1958,7 +1955,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5020776957610079374">Maailmanmusiikki</translation>
 <translation id="5021557570875267742">Seuraa hintoja Chromen avulla</translation>
 <translation id="5023310440958281426">Tarkista järjestelmänvalvojan käytännöt</translation>
-<translation id="5029568752722684782">Poista kopio</translation>
 <translation id="5030338702439866405">Myöntänyt</translation>
 <translation id="503069730517007720">Ohjelmiston <ph name="SOFTWARE_NAME" /> juurivarmennetta edellytetään, mutta sitä ei ole asennettu. IT-järjestelmänvalvojan on tutustuttava ohjelmiston <ph name="SOFTWARE_NAME" /> määritysohjeisiin, jotta hän voi korjata tämän ongelman. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Tietoja Google-kääntäjästä</translation>
@@ -2541,7 +2537,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6270066318535733958">Veneily</translation>
 <translation id="6272088941196661550">Jatka toimintoa, niin näet oleelliset tapahtumat Chrome-historiassasi</translation>
 <translation id="6272383483618007430">Google-päivitys</translation>
-<translation id="627746635834430766">Jos haluat maksaa nopeammin ensi kerralla, tallenna kortti ja laskutusosoite Google-tilillesi.</translation>
 <translation id="6279183038361895380">Näytä kursori painamalla |<ph name="ACCELERATOR" />|.</translation>
 <translation id="6280223929691119688">Toimitus ei onnistu tähän osoitteeseen. Valitse eri osoite.</translation>
 <translation id="6284292079994426700">26 x 38 tuumaa</translation>
@@ -3853,7 +3848,6 @@ Lisätietoja:
 <translation id="8922013791253848639">Salli aina mainokset tällä sivustolla.</translation>
 <translation id="892588693504540538">Reikä oikeassa yläkulmassa</translation>
 <translation id="8930330541574156305">Kiinteistöala</translation>
-<translation id="8931333241327730545">Haluatko tallentaa tämän kortin Google-tilillesi?</translation>
 <translation id="8932102934695377596">Kellosi jätättää</translation>
 <translation id="893332455753468063">Lisää nimi</translation>
 <translation id="8942355029279167844"><ph name="APP_NAME" /> kerää järjestelmänvalvojan luvalla diagnostiikkadataa tuotteen käyttökokemuksen parantamiseksi. Katso lisätietoja osoitteesta <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>

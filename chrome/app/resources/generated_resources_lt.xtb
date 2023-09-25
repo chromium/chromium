@@ -5043,7 +5043,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5027550639139316293">El. pašto sertifikatas</translation>
 <translation id="5027562294707732951">Pridėti plėtinį</translation>
 <translation id="5028445315206872221">Šioje svetainėje plėtiniai blokuojami</translation>
-<translation id="5029568752722684782">Išvalyti kopiją</translation>
 <translation id="5029873138381728058">Nepavyko patikrinti virtualaus įrenginio</translation>
 <translation id="503155457707535043">Programos atsisiunčiamos</translation>
 <translation id="5032430150487044192">Nepavyko sukurti QR kodo</translation>
@@ -5737,7 +5736,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="5601823921345337195">Neleidžiama prijungti MIDI įrenginių</translation>
 <translation id="5601833336918638013">Neleisti svetainėms ieškoti „Bluetooth“ įrenginių</translation>
 <translation id="5602586420788540146">Atidaryti naujoje skirtukų grupėje</translation>
-<translation id="5602765853043467355">Išvalyti žymes, istoriją, slaptažodžius ir kt. iš šio įrenginio</translation>
 <translation id="5605758115928394442">Pranešimas išsiųstas į jūsų telefoną norint patvirtinti, kad tai jūs.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Šis plėtinys užblokuotas}one{Šie plėtiniai užblokuoti}few{Šie plėtiniai užblokuoti}many{Šie plėtiniai užblokuoti}other{Šie plėtiniai užblokuoti}}</translation>
 <translation id="560834977503641186">„Wi-Fi“ sinchronizavimas, sužinokite daugiau</translation>
@@ -5790,7 +5788,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="5641648607875312660">Ekrano kopijos vaizdo redagavimo priemonė</translation>
 <translation id="5642508497713047">CRL pasirašantis asmuo</translation>
 <translation id="5643321261065707929">Matuojamas tinklas</translation>
-<translation id="5643620609347735571">Išvalyti ir tęsti</translation>
 <translation id="5646376287012673985">Vietovė</translation>
 <translation id="5646558797914161501">Verslininkas</translation>
 <translation id="5648021990716966815">Mikrofono jungtis</translation>
@@ -7714,7 +7711,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7241389281993241388">Jei norite importuoti programos sertifikatą, prisijunkite prie „<ph name="TOKEN_NAME" />“.</translation>
 <translation id="7241763419756062043">Paieškos ir naršymo kokybės pasirinkimas</translation>
 <translation id="7243092385765551741">Ištrinti prieigos raktą?</translation>
-<translation id="7243632151880336635">Išvalyti ir atsijungti</translation>
 <translation id="7245162963905242662">Ieš&amp;koti šiame puslapyje naudojant „Google“...</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (geriausia)</translation>
 <translation id="7246230585855757313">Įdėkite saugos raktą iš naujo ir bandykite dar kartą</translation>
@@ -8592,7 +8588,6 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7925285046818567682">Laukiama <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">Tai buvau ne aš.</translation>
 <translation id="7926975587469166629">Kortelės slapyvardis</translation>
-<translation id="7927610604078150317">Dydis: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Jau pakeitėte šį slaptažodį?</translation>
 <translation id="7929962904089429003">Atidaryti meniu</translation>
 <translation id="7930294771522048157">Čia bus rodomi išsaugoti mokėjimo metodai</translation>
@@ -9242,6 +9237,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8448729345478502352">Padidinkite arba sumažinkite elementus ekrane</translation>
 <translation id="8449008133205184768">Įklijuoti ir atitikti stilių</translation>
 <translation id="8449036207308062757">Tvarkyti saugyklą</translation>
+<translation id="8449347986464073209">Ištrinti ir atsijungti</translation>
 <translation id="8449836157089738489">Atidaryti viską naujoje skirtukų grupėje</translation>
 <translation id="8449869326050867919">Slaptažodis bendrinamas</translation>
 <translation id="8451512073679317615">Padėjėjas</translation>

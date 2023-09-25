@@ -125,7 +125,6 @@
 <translation id="1243027604378859286">લેખક:</translation>
 <translation id="1246424317317450637">ઘાટું</translation>
 <translation id="1247030632403369975">એલ્યુમિનિયમ</translation>
-<translation id="1250759482327835220">આગલી વખતે વધુ ઝડપથી ચુકવણી કરવા માટે, તમારા કાર્ડ, નામ અને બિલિંગ સરનામાને તમારા Google એકાઉન્ટમાં સાચવો.</translation>
 <translation id="1252209483516427155">બહાર પહેરવાનો પોશાક</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (સમન્વયિત)</translation>
 <translation id="1255086252236620440">ભોજન મિક્સર</translation>
@@ -158,7 +157,6 @@
 <translation id="1294154142200295408">આદેશ વાક્યમાં વિવિધતા</translation>
 <translation id="129553762522093515">તાજેતરમાં બંધ કરેલા</translation>
 <translation id="1296930489679394997">વેચાણ</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />તમારી કૂકીઝને સાફ કરવાનો પ્રયાસ કરો<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">લીગલ એક્સ્ટ્રા</translation>
 <translation id="1301324364792935241">તમારા સુરક્ષિત DNS સેટિંગ ચેક કરો</translation>
 <translation id="1307966114820526988">નાપસંદ કરેલી સુવિધાઓ</translation>
@@ -1351,7 +1349,6 @@
 <translation id="3767485424735936570">વ્યવસ્થાપક પૉલિસી અંતર્ગત આ કન્ટેન્ટને <ph name="VM_NAME" />માં કૉપિ કરીને પેસ્ટ કરવાનો સુઝાવ આપવામાં આવતો નથી</translation>
 <translation id="3772211998634047851">પેપર (બોન્ડ)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Keepમાં ઝડપથી કોઈ નવી નોંધ બનાવવા માટે, પહેલાં Tab અને પછી Enter કી દબાવો</translation>
-<translation id="3778403066972421603">શું તમે આ કાર્ડને તમારા Google એકાઉન્ટ અને આ ડિવાઇસ પર સાચવવા માગો છો?</translation>
 <translation id="378026377453746707">તમે બ્રાઉઝ કરી રહ્યાં હો એ દરમિયાન તમને સુરક્ષિત રાખવા માટે Chrome બિલ્ટ ઇન સલામતી સંબંધી સુવિધાઓ ધરાવે છે — જેમ કે Google Safe Browsing. તાજેતરમાં Safe Browsing દ્વારા <ph name="BEGIN_LINK" /><ph name="SITE" /> પર હાનિકારક સૉફ્ટવેર શોધવા<ph name="END_LINK" />માં આવ્યું હતું, જો તમે એની મુલાકાત લેવાનો પ્રયાસ કરી રહ્યાં હો, તો તે સાઇટમાં શામેલ હતું એ ધ્યાનમાં રાખો.</translation>
 <translation id="3780694243617746492">આઉટપુટ બિન</translation>
 <translation id="3781428340399460090">ચળકતો ગુલાબી</translation>
@@ -1957,7 +1954,6 @@
 <translation id="5020776957610079374">વર્લ્ડ મ્યુઝિક</translation>
 <translation id="5021557570875267742">Chrome વડે કિંમતો ટ્રૅક કરો</translation>
 <translation id="5023310440958281426">તમારા વ્યવસ્થાપકની પૉલિસીઓ તપાસો</translation>
-<translation id="5029568752722684782">કૉપિ સાફ કરો</translation>
 <translation id="5030338702439866405">આના દ્વારા રજૂ કરાયું</translation>
 <translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />" માટેનું રૂટ પ્રમાણપત્ર આવશ્યક છે પરંતુ તે ઇન્સ્ટૉલ કરેલું નથી. આ સમસ્યાના નિવારણ માટે તમારા IT વ્યવસ્થાપકે "<ph name="SOFTWARE_NAME" />" ની ગોઠવણી માટેની સૂચના જોવી જરૂરી છે. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Google Translate વિશે</translation>
@@ -2540,7 +2536,6 @@
 <translation id="6270066318535733958">નૌકાવિહાર</translation>
 <translation id="6272088941196661550">તમારા Chrome ઇતિહાસમાં સંબંધિત પ્રવૃત્તિ જોવા માટે, તમારો પ્રવાસ ફરી શરૂ કરો</translation>
 <translation id="6272383483618007430">Google અપડેટ</translation>
-<translation id="627746635834430766">આગલી વખતે વધુ ઝડપથી ચુકવણી કરવા માટે, તમારા કાર્ડ અને બિલિંગ સરનામાંને તમારા Google એકાઉન્ટમાં સાચવો.</translation>
 <translation id="6279183038361895380">તમારા કર્સરને બતાવવા માટે |<ph name="ACCELERATOR" />| દબાવો</translation>
 <translation id="6280223929691119688">આ સરનામે વિતરણ કરી શકતા નથી. કોઈ ભિન્ન સરનામું પસંદ કરો.</translation>
 <translation id="6284292079994426700">26 x 38 ઇંચ</translation>
@@ -3852,7 +3847,6 @@
 <translation id="8922013791253848639">આ સાઇટ પર જાહેરાતો માટે હંમેશાં પરવાનગી આપે છે</translation>
 <translation id="892588693504540538">ઉપર જમણી બાજુએ કાણું પાડો</translation>
 <translation id="8930330541574156305">રિઅલ એસ્ટેટ</translation>
-<translation id="8931333241327730545">શું તમે આ કાર્ડને તમારા Google એકાઉન્ટમાં સાચવવા માગો છો?</translation>
 <translation id="8932102934695377596">તમારી ઘડિયાળ પાછળ છે</translation>
 <translation id="893332455753468063">નામ ઉમેરો</translation>
 <translation id="8942355029279167844">પ્રોડક્ટના અનુભવને બહેતર બનાવવા માટે તમારા વ્યવસ્થાપક દ્વારા <ph name="APP_NAME" />ને નિદાનનો ડેટા એકત્ર કરવાની મંજૂરી આપી છે. વધુ માહિતી માટે <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> જુઓ.</translation>

@@ -1945,6 +1945,15 @@ profil <ph name="PRODUCT_NAME" />.</translation>
 <translation id="2697717608663878828">Aktifkan eksperimen Encrypted ClientHello TLS</translation>
 <translation id="2699836109975228367">Aktifkan audio mono di layar login</translation>
 <translation id="2702023190395322609">Mengaktifkan Rekomendasi Media</translation>
+<translation id="2703733412051211941">Memicu tindakan saat komputer sedang tidak ada aktivitas.
+
+      Jika disetel, kebijakan ini akan menentukan durasi waktu tanpa input pengguna (dalam menit) sebelum browser menjalankan tindakan yang dikonfigurasi melalui kebijakan <ph name="IDLE_TIMEOUT_ACTIONS_POLICY_NAME" />.
+
+      Jika kebijakan ini tidak disetel, tidak ada tindakan yang akan dijalankan.
+
+      Nilai minimumnya adalah 1 menit.
+
+      "Input pengguna" ditentukan oleh Operating System API, dan menyertakan hal-hal seperti menggerakkan mouse atau mengetik di keyboard.</translation>
 <translation id="270582584528242502">Jangan tampilkan dialog peringatan saat pengguna mencoba menutup browser</translation>
 <translation id="2706708761587205154">Hanya izinkan pencetakan dengan PIN</translation>
 <translation id="2707733461906745082">Pemisahan Profil</translation>
@@ -6254,6 +6263,25 @@ Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang di
       Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, sandi SAML tidak akan dapat diubah di chrome://password-change dan tidak akan ada notifikasi saat masa berlaku sandi SAML hampir habis.</translation>
 <translation id="6457477291648119596">Type42</translation>
 <translation id="6458361632497500815">Jika kebijakan disetel ke Aktif atau tidak disetel, semua pengguna dapat menggunakan <ph name="PRODUCT_CROSTINI_NAME" />, selama ketiga kebijakan, <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" />, <ph name="CROSTINI_ALLOWED_POLICY_NAME" />, dan <ph name="DEVICE_UNAFFILIATED_CROSTINI_ALLOWED_POLICY_NAME" />, disetel ke Aktif. Jika kebijakan disetel ke Nonaktif, pengguna yang tidak terafiliasi tidak dapat menggunakan <ph name="PRODUCT_CROSTINI_NAME" />. Jika setelan diubah ke Nonaktif, kebijakan mulai diterapkan ke penampung <ph name="PRODUCT_CROSTINI_NAME" /> baru yang akan dijalankan, bukan yang sudah berjalan.</translation>
+<translation id="6458848208090676955">Daftar tindakan yang akan dijalankan saat waktu tunggu dari kebijakan <ph name="IDLE_TIMEOUT_POLICY_NAME" /> tercapai.
+
+      Jika kebijakan <ph name="IDLE_TIMEOUT_POLICY_NAME" /> tidak disetel, kebijakan ini tidak akan berpengaruh.
+
+      Saat waktu tunggu dari kebijakan <ph name="IDLE_TIMEOUT_POLICY_NAME" /> tercapai, browser akan menjalankan tindakan yang dikonfigurasi di kebijakan ini.
+
+      Jika kebijakan ini disetel ke kosong atau tidak disetel, kebijakan <ph name="IDLE_TIMEOUT_POLICY_NAME" /> tidak akan berpengaruh.
+
+      Tindakan yang didukung adalah:
+
+      '<ph name="CLOSE_BROWSERS_ACTION" />': menutup semua jendela browser dan PWA untuk profil ini. Tidak didukung di Android.
+
+      '<ph name="SHOW_PROFILE_PICKER_ACTION" />': menampilkan jendela Pemilih Profil. Tidak didukung di Android.
+
+      '<ph name="CLEAR_BROWSING_HISTORY_ACTION" />', '<ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />', '<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />', '<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />', '<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />', '<ph name="CLEAR_AUTOFILL_ACTION" />', '<ph name="CLEAR_SITE_SETTINGS_ACTION" />', '<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />': menghapus data penjelajahan yang sesuai. Lihat kebijakan <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> untuk detail selengkapnya.
+
+      '<ph name="RELOAD_PAGES_ACTION" />': memuat ulang semua halaman web. Untuk beberapa halaman, pengguna mungkin diminta untuk mengonfirmasi terlebih dahulu.
+
+      Menyetel '<ph name="CLEAR_BROWSING_HISTORY_ACTION" />', '<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />', '<ph name="CLEAR_AUTOFILL_ACTION" />', dan '<ph name="CLEAR_SITE_SETTINGS_ACTION" />' akan menonaktifkan sinkronisasi untuk setiap jenis data jika `<ph name="CHROME_SYNC_NAME" />` tidak dinonaktifkan dengan menyetel kebijakan <ph name="SYNC_DISABLED_POLICY_NAME" /> atau <ph name="BROWSER_SIGNIN_POLICY_NAME" /> tidak dinonaktifkan.</translation>
 <translation id="6462604655173570082">Jika kebijakan tidak disetel atau disetel ke Aktif, pengguna akan diizinkan melihat dan menggunakan tombol <ph name="GOOGLE_LENS_PRODUCT_NAME" /> di kotak penelusuran pada halaman Tab Baru. Jika kebijakan disetel ke Nonaktif, pengguna tidak akan melihat tombol <ph name="GOOGLE_LENS_PRODUCT_NAME" /> di kotak penelusuran pada halaman Tab Baru.</translation>
 <translation id="6464074037294098618">Mengaktifkan IsiOtomatis untuk alamat</translation>
 <translation id="6467613372414922590">Mengizinkan host Native Messaging level pengguna (diinstal tanpa izin admin)</translation>

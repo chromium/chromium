@@ -125,7 +125,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1243027604378859286">May-akda:</translation>
 <translation id="1246424317317450637">Bold</translation>
 <translation id="1247030632403369975">Aluminum</translation>
-<translation id="1250759482327835220">Para mas mabilis na makapagbayad sa susunod, i-save ang iyong card, pangalan, at billing address sa Google Account mo.</translation>
 <translation id="1252209483516427155">Panlabas na Kasuotan</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (naka-sync)</translation>
 <translation id="1255086252236620440">Mga Food Mixer</translation>
@@ -158,7 +157,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1294154142200295408">Mga variation ng command-line</translation>
 <translation id="129553762522093515">Kamakailang isinara</translation>
 <translation id="1296930489679394997">Sales</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />Subukang i-clear ang iyong cookies<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">Suriin ang iyong mga setting ng Secure na DNS</translation>
 <translation id="1307966114820526988">Mga Hindi na Ginagamit na Feature</translation>
@@ -1351,7 +1349,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3767485424735936570">Hindi inirerekomenda ng patakaran ng administrator ang pagkopya at pag-paste ng content na ito sa <ph name="VM_NAME" /></translation>
 <translation id="3772211998634047851">Papel (Bond)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay ang Enter para gumawa ng bagong tala sa Google Keep nang mabilis</translation>
-<translation id="3778403066972421603">Gusto mo bang i-save ang card na ito sa iyong Google Account at sa device na ito?</translation>
 <translation id="378026377453746707">May mga built-in na feature na pangkaligtasan ang Chrome para maprotektahan ka habang nagba-browse ka, tulad ng Ligtas na Pag-browse sa Google. Kamakailang <ph name="BEGIN_LINK" />nakakita ng mapanganib na software sa <ph name="SITE" /><ph name="END_LINK" /> ang Ligtas na Pag-browse, na naka-embed sa site na sinusubukan mong bisitahin.</translation>
 <translation id="3780694243617746492">Output bin</translation>
 <translation id="3781428340399460090">Hot Pink</translation>
@@ -1957,7 +1954,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5020776957610079374">Musika ng mundo</translation>
 <translation id="5021557570875267742">I-track ang mga presyo gamit ang Chrome</translation>
 <translation id="5023310440958281426">Suriin ang mga patakaran ng iyong administrator</translation>
-<translation id="5029568752722684782">I-clear ang kopya</translation>
 <translation id="5030338702439866405">Ibinigay Ni</translation>
 <translation id="503069730517007720">Kinakailangan ang root certificate para sa "<ph name="SOFTWARE_NAME" />" ngunit hindi ito naka-install. Dapat tingnan ng IT administrator ang mga tagubilin sa pag-configure para sa "<ph name="SOFTWARE_NAME" />" upang maayos ang problemang ito. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Tungkol sa Google Translate</translation>
@@ -2540,7 +2536,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6270066318535733958">Pamamangka</translation>
 <translation id="6272088941196661550">Ipagpatuloy ang iyong journey para makakita ng nauugnay na aktibidad sa history mo sa Chrome</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="627746635834430766">Para mas mabilis na makapagbayad sa susunod, i-save ang iyong card at billing address sa Google Account mo.</translation>
 <translation id="6279183038361895380">Pindutin ang |<ph name="ACCELERATOR" />| upang ipakita ang iyong cursor</translation>
 <translation id="6280223929691119688">Hindi maaaring maghatid sa address na ito. Pumili ng ibang address.</translation>
 <translation id="6284292079994426700">26 x 38 in</translation>
@@ -3851,7 +3846,6 @@ Mga karagdagang detalye:
 <translation id="8922013791253848639">Palaging payagan ang mga ad sa site na ito</translation>
 <translation id="892588693504540538">Punch top right</translation>
 <translation id="8930330541574156305">Real estate</translation>
-<translation id="8931333241327730545">Gusto mo bang i-save ang card na ito sa iyong Google Account?</translation>
 <translation id="8932102934695377596">Nahuhuli ang iyong orasan</translation>
 <translation id="893332455753468063">Magdagdag ng Pangalan</translation>
 <translation id="8942355029279167844">Pinayagan ng iyong administrator ang <ph name="APP_NAME" /> na mangolekta ng data ng mga diagnostic para mapahusay ang karanasan sa produkto. Tingnan ang <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> para sa higit pang impormasyon.</translation>

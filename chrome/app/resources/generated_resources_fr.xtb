@@ -5025,7 +5025,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5027550639139316293">Certificat de courrier électronique</translation>
 <translation id="5027562294707732951">Ajouter l'extension</translation>
 <translation id="5028445315206872221">Les extensions sont bloquées sur ce site</translation>
-<translation id="5029568752722684782">Effacer la copie</translation>
 <translation id="5029873138381728058">Échec de la vérification des VM</translation>
 <translation id="503155457707535043">Téléchargement des applications</translation>
 <translation id="5032430150487044192">Impossible de créer le code QR</translation>
@@ -5719,7 +5718,6 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="5601823921345337195">Non autorisé à se connecter à des appareils MIDI</translation>
 <translation id="5601833336918638013">Ne pas autoriser les sites à rechercher des appareils Bluetooth</translation>
 <translation id="5602586420788540146">Ouvrir dans un nouveau groupe d'onglets</translation>
-<translation id="5602765853043467355">Effacer les favoris, l'historique, les mots de passe et autres paramètres de cet appareil</translation>
 <translation id="5605758115928394442">Une notification a été envoyée à votre téléphone pour que vous puissiez confirmer votre identité.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Cette extension est bloquée}one{Cette extension est bloquée}other{Ces extensions sont bloquées}}</translation>
 <translation id="560834977503641186">Sync Wi-Fi (en savoir plus)</translation>
@@ -5772,7 +5770,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5641648607875312660">Éditeur de captures d'écran</translation>
 <translation id="5642508497713047">Signataire de la liste de révocation de certificats</translation>
 <translation id="5643321261065707929">Réseau facturé à l'usage</translation>
-<translation id="5643620609347735571">Effacer et continuer</translation>
 <translation id="5646376287012673985">Localisation</translation>
 <translation id="5646558797914161501">Homme d'affaires</translation>
 <translation id="5648021990716966815">Connecteur micro</translation>
@@ -7692,7 +7689,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7241389281993241388">Connectez-vous à <ph name="TOKEN_NAME" /> pour importer le certificat client.</translation>
 <translation id="7241763419756062043">Choisissez la qualité de vos recherches et de votre navigation</translation>
 <translation id="7243092385765551741">Supprimer la clé d'accès ?</translation>
-<translation id="7243632151880336635">Effacer et se déconnecter</translation>
 <translation id="7245162963905242662">Rechercher cette page sur Google</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (résolution optimale)</translation>
 <translation id="7246230585855757313">Réinsérez votre clé de sécurité et réessayez</translation>
@@ -8570,7 +8566,6 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7925285046818567682">En attente de <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">Ce n'était pas moi</translation>
 <translation id="7926975587469166629">Pseudo associé à la carte</translation>
-<translation id="7927610604078150317">Taille : <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Vous avez déjà modifié ce mot de passe ?</translation>
 <translation id="7929962904089429003">Ouvrir le menu</translation>
 <translation id="7930294771522048157">Les modes de paiement enregistrés s'afficheront ici</translation>
@@ -9220,6 +9215,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8448729345478502352">Agrandissez ou réduisez la taille des éléments à l'écran</translation>
 <translation id="8449008133205184768">Coller en adaptant le style</translation>
 <translation id="8449036207308062757">Gérer l'espace de stockage</translation>
+<translation id="8449347986464073209">Supprimer et se déconnecter</translation>
 <translation id="8449836157089738489">Tout ouvrir dans un nouveau groupe d'onglets</translation>
 <translation id="8449869326050867919">Mot de passe partagé</translation>
 <translation id="8451512073679317615">assistant</translation>

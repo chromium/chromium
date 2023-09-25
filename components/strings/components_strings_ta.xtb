@@ -125,7 +125,6 @@
 <translation id="1243027604378859286">உருவாக்கியவர்:</translation>
 <translation id="1246424317317450637">தடித்த</translation>
 <translation id="1247030632403369975">அலுமினியம்</translation>
-<translation id="1250759482327835220">அடுத்த முறை விரைவாகப் பணம் செலுத்த, உங்கள் கார்டின் பெயரையும் பில்லிங் முகவரியையும் உங்கள் Google கணக்கில் சேமிக்கவும்.</translation>
 <translation id="1252209483516427155">மேலாடை</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (ஒத்திசைக்கப்பட்டன)</translation>
 <translation id="1255086252236620440">உணவு மிக்ஸர்கள்</translation>
@@ -158,7 +157,6 @@
 <translation id="1294154142200295408">கட்டளை வரி மாற்று வடிவங்கள்</translation>
 <translation id="129553762522093515">சமீபத்தில் மூடியவை</translation>
 <translation id="1296930489679394997">விற்பனை</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />குக்கீகளை அழிக்கவும்<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">லீகல் எக்ஸ்ட்ரா</translation>
 <translation id="1301324364792935241">உங்கள் பாதுகாப்பான DNS அமைப்புகளைச் சரிபாருங்கள்</translation>
 <translation id="1307966114820526988">நிறுத்தப்பட்ட அம்சங்கள்</translation>
@@ -1347,7 +1345,6 @@
 <translation id="3767485424735936570">இந்த உள்ளடக்கத்தை நகலெடுத்து <ph name="VM_NAME" /> இல் ஒட்டுவது நிர்வாகக் கொள்கையின்படி பரிந்துரைக்கப்படவில்லை</translation>
 <translation id="3772211998634047851">பாண்டு காகிதம்</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Keepபில் புதிய குறிப்பை விரைவாக உருவாக்க Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
-<translation id="3778403066972421603">கார்டை உங்கள் Google கணக்கிலும் இந்தச் சாதனத்திலும் சேமிக்க விரும்புகிறீர்களா?</translation>
 <translation id="378026377453746707">நீங்கள் உலாவும்போது உங்களைப் பாதுகாக்க ‘Google பாதுகாப்பு உலாவல்’ போன்ற உள்ளமைந்த பாதுகாப்பு அம்சங்கள் Chromeமில் உள்ளன. இந்த அம்சம் நீங்கள் பார்க்க முயலும் <ph name="BEGIN_LINK" /><ph name="SITE" /> தளத்தில் தீங்கிழைக்கும் மென்பொருள் இருப்பதைச் சமீபத்தில் கண்டறிந்தது<ph name="END_LINK" />.</translation>
 <translation id="3780694243617746492">அவுட்புட் பின்</translation>
 <translation id="3781428340399460090">ஹாட் பிங்க்</translation>
@@ -1953,7 +1950,6 @@
 <translation id="5020776957610079374">சர்வதேச இசை</translation>
 <translation id="5021557570875267742">Chrome மூலம் விலைகளைக் கண்காணித்தல்</translation>
 <translation id="5023310440958281426">உங்கள் நிர்வாகியின் கொள்கைகளைச் சரிபார்க்கவும்</translation>
-<translation id="5029568752722684782">நகலை அழி</translation>
 <translation id="5030338702439866405">வழங்கியது</translation>
 <translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />" மென்பொருளுக்கு மூலச் சான்றிதழ் தேவை, ஆனால் நிறுவப்படவில்லை. இந்தச் சிக்கலைச் சரிசெய்ய, "<ph name="SOFTWARE_NAME" />" மென்பொருளின் உள்ளமைவு வழிமுறைகளை ஐடி நிர்வாகி பின்பற்ற வேண்டும். <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Google மொழியாக்கம் ஓர் அறிமுகம்</translation>
@@ -2535,7 +2531,6 @@
 <translation id="6270066318535733958">படகுச்சவாரி</translation>
 <translation id="6272088941196661550">Chrome செயல்பாடுகளில் இருக்கும் தொடர்புடைய செயல்பாடுகளைப் பார்க்க, உலாவலைத் தொடரலாம்</translation>
 <translation id="6272383483618007430">Google புதுப்பிப்பு</translation>
-<translation id="627746635834430766">அடுத்த முறை விரைவாகப் பணம் அனுப்ப, உங்கள் கார்டையும் பில்லிங் முகவரியையும் Google கணக்கில் சேமிக்கவும்.</translation>
 <translation id="6279183038361895380">உங்கள் சுட்டியைக் காட்ட |<ph name="ACCELERATOR" />| என்பதை அழுத்தவும்</translation>
 <translation id="6280223929691119688">இந்த முகவரிக்கு டெலிவரி செய்ய முடியாது. வேறு முகவரியைத் தேர்ந்தெடுக்கவும்.</translation>
 <translation id="6284292079994426700">26 x 38 இன்ச்</translation>
@@ -3846,7 +3841,6 @@
 <translation id="8922013791253848639">இந்தத் தளத்தில் எப்போதும் விளம்பரங்களை அனுமதி</translation>
 <translation id="892588693504540538">பஞ்ச் டாப் ரைட்</translation>
 <translation id="8930330541574156305">ரியல் எஸ்டேட்</translation>
-<translation id="8931333241327730545">இந்தக் கார்டை உங்கள் Google கணக்கில் சேமிக்க வேண்டுமா?</translation>
 <translation id="8932102934695377596">உங்கள் கடிகாரம் மிகவும் பின்தங்கி இருக்கிறது</translation>
 <translation id="893332455753468063">பெயரைச் சேர்க்கவும்</translation>
 <translation id="8942355029279167844">தயாரிப்பு அனுபவத்தை மேம்படுத்துவதற்காகப் பகுப்பாய்வுத் தரவைச் சேகரிக்க, <ph name="APP_NAME" /> ஆப்ஸுக்கு உங்கள் நிர்வாகி அனுமதி வழங்கியுள்ளார். கூடுதல் தகவல்களுக்கு <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> என்ற தளத்திற்குச் செல்லவும்.</translation>

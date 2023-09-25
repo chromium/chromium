@@ -5040,7 +5040,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5027550639139316293">이메일 인증서</translation>
 <translation id="5027562294707732951">확장 프로그램 추가</translation>
 <translation id="5028445315206872221">이 사이트에서 확장 프로그램이 차단되었습니다.</translation>
-<translation id="5029568752722684782">사본 지우기</translation>
 <translation id="5029873138381728058">VM 확인에 실패했습니다.</translation>
 <translation id="503155457707535043">앱 다운로드 중</translation>
 <translation id="5032430150487044192">QR 코드를 만들 수 없음</translation>
@@ -5734,7 +5733,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5601823921345337195">MIDI 기기 연결이 허용되지 않음</translation>
 <translation id="5601833336918638013">사이트의 블루투스 기기 검색 허용 안함</translation>
 <translation id="5602586420788540146">새 탭 그룹에서 열기</translation>
-<translation id="5602765853043467355">기기에서 북마크, 방문 기록, 비밀번호 등을 삭제합니다.</translation>
 <translation id="5605758115928394442">휴대전화로 본인 인증을 위한 알림이 전송되었습니다.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{확장 프로그램이 차단됨}other{확장 프로그램이 차단됨}}</translation>
 <translation id="560834977503641186">Wi-Fi 동기화, 자세히 알아보기</translation>
@@ -5786,7 +5784,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5641648607875312660">스크린샷 이미지 편집기</translation>
 <translation id="5642508497713047">CRL 서명자</translation>
 <translation id="5643321261065707929">종량제 네트워크</translation>
-<translation id="5643620609347735571">삭제하고 계속</translation>
 <translation id="5646376287012673985">위치</translation>
 <translation id="5646558797914161501">사업가</translation>
 <translation id="5648021990716966815">마이크 잭</translation>
@@ -7704,7 +7701,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7241389281993241388"><ph name="TOKEN_NAME" />에 로그인하여 클라이언트 인증서를 가져오세요.</translation>
 <translation id="7241763419756062043">검색 및 탐색 품질 선택</translation>
 <translation id="7243092385765551741">패스키를 삭제하시겠습니까?</translation>
-<translation id="7243632151880336635">지우기 및 로그아웃</translation>
 <translation id="7245162963905242662">Google에서 이 페이지 검색...</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" />x<ph name="HEIGHT" />(최고)</translation>
 <translation id="7246230585855757313">보안 키를 다시 삽입하고 한번 더 시도해 보세요.</translation>
@@ -8582,7 +8578,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7925285046818567682"><ph name="HOST_NAME" />의 응답을 기다리는 중...</translation>
 <translation id="7926423016278357561">본인이 아닙니다.</translation>
 <translation id="7926975587469166629">카드 닉네임</translation>
-<translation id="7927610604078150317">크기: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">이 비밀번호를 이미 변경하셨나요?</translation>
 <translation id="7929962904089429003">메뉴 열기</translation>
 <translation id="7930294771522048157">저장한 결제 수단이 여기에 표시됩니다.</translation>
@@ -9232,6 +9227,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8448729345478502352">화면에 표시되는 항목을 축소 또는 확대합니다.</translation>
 <translation id="8449008133205184768">붙여넣고 스타일 일치시킴</translation>
 <translation id="8449036207308062757">저장용량 관리</translation>
+<translation id="8449347986464073209">삭제 및 로그아웃</translation>
 <translation id="8449836157089738489">새로운 탭 그룹에서 모두 열기</translation>
 <translation id="8449869326050867919">비밀번호 공유됨</translation>
 <translation id="8451512073679317615">어시스턴트</translation>

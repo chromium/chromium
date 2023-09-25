@@ -5040,7 +5040,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5027550639139316293">E-postcertifikat</translation>
 <translation id="5027562294707732951">Lägg till tillägg</translation>
 <translation id="5028445315206872221">Tillägg är blockerade på den här webbplatsen</translation>
-<translation id="5029568752722684782">Ta bort kopia</translation>
 <translation id="5029873138381728058">Kontrollen av virtuella maskiner misslyckades</translation>
 <translation id="503155457707535043">Appar laddas ned</translation>
 <translation id="5032430150487044192">Det gick inte att skapa QR-koden</translation>
@@ -5734,7 +5733,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5601823921345337195">Får inte ansluta till MIDI-enheter</translation>
 <translation id="5601833336918638013">Tillåt inte att webbplatser söker efter Bluetooth-enheter</translation>
 <translation id="5602586420788540146">Öppna i en ny flikgrupp</translation>
-<translation id="5602765853043467355">Rensa bokmärken, historik , lösenord med mera från den här enheten</translation>
 <translation id="5605758115928394442">En avisering har skickats till din mobil för att bekräfta att det är du.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Detta tillägg har blockerats}other{Dessa tillägg har blockerats}}</translation>
 <translation id="560834977503641186">wifi-synkronisering, läs mer</translation>
@@ -5786,7 +5784,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5641648607875312660">Redigeringsprogram för skärmbilder</translation>
 <translation id="5642508497713047">CRL-signerare</translation>
 <translation id="5643321261065707929">Nätverk med datapriser</translation>
-<translation id="5643620609347735571">Rensa och fortsätt</translation>
 <translation id="5646376287012673985">Plats</translation>
 <translation id="5646558797914161501">Affärsman</translation>
 <translation id="5648021990716966815">Mikrofonuttag</translation>
@@ -7704,7 +7701,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7241389281993241388">Logga in på <ph name="TOKEN_NAME" /> om du vill importera klientcertifikatet.</translation>
 <translation id="7241763419756062043">Välj kvalitet för sökning och surfning</translation>
 <translation id="7243092385765551741">Vill du radera nyckeln?</translation>
-<translation id="7243632151880336635">Rensa och logga ut</translation>
 <translation id="7245162963905242662">Sö&amp;k på den här sidan med Google …</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (bäst)</translation>
 <translation id="7246230585855757313">Sätt i säkerhetsnyckeln en gång till och försök igen</translation>
@@ -8582,7 +8578,6 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7925285046818567682">Väntar på <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">Det var inte jag.</translation>
 <translation id="7926975587469166629">Kortets namn</translation>
-<translation id="7927610604078150317">Storlek: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Har du redan ändrat det här lösenordet?</translation>
 <translation id="7929962904089429003">Öppna menyn</translation>
 <translation id="7930294771522048157">Sparade betalningsmetoder visas här</translation>
@@ -9232,6 +9227,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8448729345478502352">Gör objekt på skärmen mindre eller större</translation>
 <translation id="8449008133205184768">Klistra in och matcha stilen</translation>
 <translation id="8449036207308062757">Hantera lagringsutrymme</translation>
+<translation id="8449347986464073209">Radera och logga ut</translation>
 <translation id="8449836157089738489">Öppna alla i en ny flikgrupp</translation>
 <translation id="8449869326050867919">Lösenordet har delats</translation>
 <translation id="8451512073679317615">assistent</translation>

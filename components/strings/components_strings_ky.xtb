@@ -125,7 +125,6 @@
 <translation id="1243027604378859286">Автор:</translation>
 <translation id="1246424317317450637">Жоон</translation>
 <translation id="1247030632403369975">Алюминий</translation>
-<translation id="1250759482327835220">Кийинки жолу тезирээк төлөө үчүн картаңызды, аты-жөнүңүздү жана эсептешүү дарегин Google аккаунтуңузга сактап коюңуз.</translation>
 <translation id="1252209483516427155">Сырт кийим</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (шайкештирилген)</translation>
 <translation id="1255086252236620440">Тамак-аш чалгычы</translation>
@@ -158,7 +157,6 @@
 <translation id="1294154142200295408">Буйрук сабынын варианттары</translation>
 <translation id="129553762522093515">Жакында жабылган</translation>
 <translation id="1296930489679394997">Арзандатуулар</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />Кукилериңизди тазалап көрүңүз<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">Коопсуз DNS параметрлериңизди текшериңиз</translation>
 <translation id="1307966114820526988">Жоюлган функциялар</translation>
@@ -1350,7 +1348,6 @@
 <translation id="3767485424735936570">Администраторуңуз бул мазмунду <ph name="VM_NAME" /> көчүрүп, чаптоону сунуштабайт</translation>
 <translation id="3772211998634047851">Кагаз (жогорку сапаттуу)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Keep'те эскертмени тез жазуу үчүн Tab, андан кийин Enter баскычтарын басыңыз</translation>
-<translation id="3778403066972421603">Бул карточка Google аккаунтуңузда жана ушул түзмөктө сакталсынбы?</translation>
 <translation id="378026377453746707">Chrome'дун Google Коопсуз серептөө сыяктуу алдын ала орнотулган коопсуздук функциялары серептөө учурунда сизди коргойт. Коопсуз серептөө аркылуу жакында сиз кирүүгө аракет кылып жаткан сайтка жалгаштырылган <ph name="BEGIN_LINK" /><ph name="SITE" /> сайтында зыяндуу программа табылды<ph name="END_LINK" />.</translation>
 <translation id="3780694243617746492">Чыгаруу түпкүчү</translation>
 <translation id="3781428340399460090">Ачык кызгылтым</translation>
@@ -1956,7 +1953,6 @@
 <translation id="5020776957610079374">Дүйнөлүк музыка</translation>
 <translation id="5021557570875267742">Бааларга Chrome менен көз салуу</translation>
 <translation id="5023310440958281426">Администраторуңуздун эрежелерин текшериңиз</translation>
-<translation id="5029568752722684782">Көчүрмөнү тазалоо</translation>
 <translation id="5030338702439866405">Ким берген</translation>
 <translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />" программасынын түпкү тастыктамасы талап кылынат, бирок ал орнотулган эмес. Көйгөйдү чечүү үчүн IT администраторуңуз "<ph name="SOFTWARE_NAME" />" программасынын конфигурациясында берилген нускамаларды карап чыгышы керек. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Google Котормо жөнүндө</translation>
@@ -2539,7 +2535,6 @@
 <translation id="6270066318535733958">Кайыкта</translation>
 <translation id="6272088941196661550">Chrome´до көрүлгөн вебсайттарыңыздын арасынан ылайыктууларын көрүү үчүн саякатты улантыңыз</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="627746635834430766">Кийинки жолу тезирээк төлөө үчүн картаңыз менен эсептешүү дарегин Google аккаунтуңузга сактап коюңуз.</translation>
 <translation id="6279183038361895380">Курсоруңузду көрсөтүү үчүн |<ph name="ACCELERATOR" />| дегенди басыңыз</translation>
 <translation id="6280223929691119688">Бул дарекке жеткирүү мүмкүн эмес. Башка дарек тандаңыз.</translation>
 <translation id="6284292079994426700">26 x 38 дюйм</translation>
@@ -3850,7 +3845,6 @@
 <translation id="8922013791253848639">Бул сайттагы жарнамалар дайыма көрүнсүн</translation>
 <translation id="892588693504540538">Жогорку оң жагын тешүү</translation>
 <translation id="8930330541574156305">Кыймылсыз мүлк</translation>
-<translation id="8931333241327730545">Бул карточканы Google аккаунтуңузга сактап коесузбу?</translation>
 <translation id="8932102934695377596">Саатыңыз артта</translation>
 <translation id="893332455753468063">Атын кошуу</translation>
 <translation id="8942355029279167844">Кызматты жакшыртуу максатында администраторуңуз <ph name="APP_NAME" /> колдонмосуна мүчүлүштүктөрдү оңдоо дайындарын топтоого уруксат берди. Толук маалымат алуу үчүн <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> дарегине өтүңүз.</translation>

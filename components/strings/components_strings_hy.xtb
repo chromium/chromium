@@ -129,7 +129,6 @@
 <translation id="1243027604378859286">Հեղինակ՝</translation>
 <translation id="1246424317317450637">Թավ</translation>
 <translation id="1247030632403369975">Ալյումին</translation>
-<translation id="1250759482327835220">Հաջորդ անգամ ավելի արագ վճարելու համար պահեք ձեր քարտը, անունն ու վճարային հասցեն Google հաշվում:</translation>
 <translation id="1252209483516427155">Վերնահագուստ</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (համաժամացված)</translation>
 <translation id="1255086252236620440">Խոհանոցային միքսերներ</translation>
@@ -162,7 +161,6 @@
 <translation id="1294154142200295408">Հրամանատողի տարբերակներ</translation>
 <translation id="129553762522093515">Վերջերս փակված</translation>
 <translation id="1296930489679394997">Զեղչեր</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />Մաքրեք ձեր քուքիները<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">Ստուգեք ձեր ապահով DNS-ի կարգավորումները</translation>
 <translation id="1307966114820526988">Հնացած գործառույթներ</translation>
@@ -1357,7 +1355,6 @@
 <translation id="3767485424735936570">Ադմինիստրատորը խորհուրդ չի տալիս պատճենել և տեղադրել այս բովանդակությունը <ph name="VM_NAME" /> վիրտուալ մեքենայում։</translation>
 <translation id="3772211998634047851">Թուղթ (բոնդ)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Google Keep-ում արագ նշում ստեղծելու համար սեղմեք Tab, ապա՝ Enter։</translation>
-<translation id="3778403066972421603">Ուզո՞ւմ եք պահել այս քարտի տվյալները ձեր Google հաշվում և այս սարքում</translation>
 <translation id="378026377453746707">Chrome-ում կան անվտանգության ներկառուցված գործառույթներ, որոնք պաշտպանում են ձեզ դիտարկման ընթացքում։ Դրանցից է, օրինակ, Google Ապահով դիտարկումը։ Այն վերջերս <ph name="BEGIN_LINK" />վնասաբեր ծրագիր է հայտնաբերել <ph name="SITE" /> կայքում<ph name="END_LINK" />, որը զետեղված է այն կայքում, որը փորձում եք այցելել։</translation>
 <translation id="3780694243617746492">Արտածման արկղ</translation>
 <translation id="3781428340399460090">Վառ վարդագույն</translation>
@@ -1966,7 +1963,6 @@
 <translation id="5020776957610079374">Աշխարհի ժողովուրդների երաժշտություն</translation>
 <translation id="5021557570875267742">Հետագծեք գները Chrome-ի միջոցով</translation>
 <translation id="5023310440958281426">Կարդացեք ադմինիստրատորի սահմանած կանոնները</translation>
-<translation id="5029568752722684782">Մաքրել պատճենը</translation>
 <translation id="5030338702439866405">Թողարկող`</translation>
 <translation id="503069730517007720">Անհրաժեշտ է «<ph name="SOFTWARE_NAME" />» ծրագրի արմատային հավաստագիրը, որը տեղադրված չէ: Խնդիրը լուծելու համար ՏՏ ադմինիստրատորը պետք է հետևի «<ph name="SOFTWARE_NAME" />» ծրագրի կազմաձևման ցուցումներին։ <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Google Translate-ի մասին</translation>
@@ -2551,7 +2547,6 @@
 <translation id="6270066318535733958">Թիավարում</translation>
 <translation id="6272088941196661550">Շարունակել որոնումը՝ Chrome-ի պատմության մեջ նման հարցումները դիտելու համար</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="627746635834430766">Հաջորդ անգամ ավելի արագ վճարելու համար պահեք ձեր քարտը և վճարային հասցեն Google հաշվում:</translation>
 <translation id="6279183038361895380">Նշորդը ցուցադրելու համար սեղմեք |<ph name="ACCELERATOR" />|</translation>
 <translation id="6280223929691119688">Այս հասցեով հնարավոր չէ առաքել: Ընտրեք այլ հասցե:</translation>
 <translation id="6284292079994426700">26 x 38 դյույմ</translation>
@@ -3862,7 +3857,6 @@
 <translation id="8922013791253848639">Միշտ թույլատրել գովազդն այս կայքում</translation>
 <translation id="892588693504540538">Անցք վերևի աջ կողմում</translation>
 <translation id="8930330541574156305">Անշարժ գույք</translation>
-<translation id="8931333241327730545">Ուզո՞ւմ եք պահել այս քարտը ձեր Google հաշվում:</translation>
 <translation id="8932102934695377596">Ձեր ժամացույցը հետ է ընկել</translation>
 <translation id="893332455753468063">Ավելացրեք անունը</translation>
 <translation id="8942355029279167844">Ձեր ադմինիստրատորը թույլատրել է <ph name="APP_NAME" /> հավելվածին հավաքել դիագնոստիկ տվյալներ՝ ծառայության որակը բարելավելու նպատակով։ Լրացուցիչ տեղեկությունների համար անցեք <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> էջ։</translation>

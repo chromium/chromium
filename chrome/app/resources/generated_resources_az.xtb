@@ -5031,7 +5031,6 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5027550639139316293">E-poçt Sertifikatı</translation>
 <translation id="5027562294707732951">Artırma əlavə edin</translation>
 <translation id="5028445315206872221">Bu saytda artırmalar bloklanıb</translation>
-<translation id="5029568752722684782">Kopyanı təmizləyin</translation>
 <translation id="5029873138381728058">VM'ləri yoxlamaq alınmadı</translation>
 <translation id="503155457707535043">Tətbiqlər endirilir</translation>
 <translation id="5032430150487044192">QR kod yaratmaq olmur</translation>
@@ -5725,7 +5724,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5601823921345337195">MIDI cihazlarına qoşulmağa icazə verilməyib</translation>
 <translation id="5601833336918638013">Saytlara Bluetooth cihazlarını axtarmağa icazə verməyin</translation>
 <translation id="5602586420788540146">Yeni tab qrupunda açın</translation>
-<translation id="5602765853043467355">Bu cihazda əlfəcin, tarixçə, parollar və daha çoxunu silin</translation>
 <translation id="5605758115928394442">Kimliyinizi doğrulamaq üçün telefona bildiriş göndərildi.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Bu artırma bloklanıb}other{Bu artırmalar bloklanıb}}</translation>
 <translation id="560834977503641186">Wi-Fi Sinxronlaşdırması, Ətraflı Məlumat</translation>
@@ -5777,7 +5775,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5641648607875312660">Skrinşot Şəkil Redaktoru</translation>
 <translation id="5642508497713047">CRL İmzalayıcısı</translation>
 <translation id="5643321261065707929">Limitli şəbəkə</translation>
-<translation id="5643620609347735571">Silin və davam edin</translation>
 <translation id="5646376287012673985">Məkan</translation>
 <translation id="5646558797914161501">Biznesmen</translation>
 <translation id="5648021990716966815">Mikrofon yuvası</translation>
@@ -7694,7 +7691,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7241389281993241388">Klient sertifikatını import etmək üçün <ph name="TOKEN_NAME" /> üzərinə daxil olun.</translation>
 <translation id="7241763419756062043">Axtarış və baxış keyfiyyətinizi seçin</translation>
 <translation id="7243092385765551741">Giriş açarı silinsin?</translation>
-<translation id="7243632151880336635">Silin və çıxış edin</translation>
 <translation id="7245162963905242662">Google ilə bu Səhifəni axtarın...</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Ən yaxşı)</translation>
 <translation id="7246230585855757313">Güvənlik açarını yenidən daxil edib cəhd edin</translation>
@@ -8574,7 +8570,6 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7925285046818567682"><ph name="HOST_NAME" /> gözlənilir...</translation>
 <translation id="7926423016278357561">Mən deyildim.</translation>
 <translation id="7926975587469166629">Kart ləqəbi</translation>
-<translation id="7927610604078150317">Ölçü: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Artıq bu parolu dəyişmisiniz?</translation>
 <translation id="7929962904089429003">Menyunu açın</translation>
 <translation id="7930294771522048157">Yadda saxlanmış ödəniş üsulları burada görünəcək</translation>
@@ -9223,6 +9218,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8448729345478502352">Elementləri ekranda balacalaşdırın və ya böyüdün</translation>
 <translation id="8449008133205184768">Üslubu Yerləşdirin və Uyğunlaşdırın</translation>
 <translation id="8449036207308062757">Yaddaş idarəetməsi</translation>
+<translation id="8449347986464073209">Silin və çıxın</translation>
 <translation id="8449836157089738489">Hamısını yeni tab qrupunda açın</translation>
 <translation id="8449869326050867919">Parol paylaşıldı</translation>
 <translation id="8451512073679317615">assistent</translation>

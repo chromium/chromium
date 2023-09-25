@@ -5025,7 +5025,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5027550639139316293">Certificado de email</translation>
 <translation id="5027562294707732951">Adicionar extensão</translation>
 <translation id="5028445315206872221">As extensões estão bloqueadas neste site</translation>
-<translation id="5029568752722684782">Limpar cópia</translation>
 <translation id="5029873138381728058">Falha ao verificar VMs</translation>
 <translation id="503155457707535043">A transferir aplicações…</translation>
 <translation id="5032430150487044192">Não é possível criar o código QR</translation>
@@ -5719,7 +5718,6 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="5601823921345337195">Sem autorização para estabelecer ligação a dispositivos MIDI</translation>
 <translation id="5601833336918638013">Não permitir que os sites procurem dispositivos Bluetooth</translation>
 <translation id="5602586420788540146">Abra num novo grupo de separadores</translation>
-<translation id="5602765853043467355">Limpar os marcadores, o histórico, as palavras-passe e mais dados deste dispositivo</translation>
 <translation id="5605758115928394442">Foi enviada uma notificação para o seu telemóvel para confirmar a sua identidade.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Esta extensão está bloqueada}other{Estas extensões estão bloqueadas}}</translation>
 <translation id="560834977503641186">Sync Wi-Fi, saiba mais</translation>
@@ -5772,7 +5770,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5641648607875312660">Editor de imagens de capturas de ecrã</translation>
 <translation id="5642508497713047">Signatário CRL</translation>
 <translation id="5643321261065707929">Rede com acesso limitado</translation>
-<translation id="5643620609347735571">Limpar e continuar</translation>
 <translation id="5646376287012673985">Localização</translation>
 <translation id="5646558797914161501">Homem de negócios</translation>
 <translation id="5648021990716966815">Entrada para microfone</translation>
@@ -7690,7 +7687,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7241389281993241388">Inicie sessão no <ph name="TOKEN_NAME" /> para importar o certificado de cliente.</translation>
 <translation id="7241763419756062043">Escolha a qualidade da pesquisa e navegação</translation>
 <translation id="7243092385765551741">Eliminar a chave de acesso?</translation>
-<translation id="7243632151880336635">Limpar e terminar sessão</translation>
 <translation id="7245162963905242662">Pesq&amp;uisar esta página com o Google…</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (a melhor)</translation>
 <translation id="7246230585855757313">Volte a inserir a chave de segurança e tente novamente.</translation>
@@ -8568,7 +8564,6 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7925285046818567682">A aguardar por <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">Não fui eu.</translation>
 <translation id="7926975587469166629">Alcunha do cartão</translation>
-<translation id="7927610604078150317">Tamanho: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Já alterou esta palavra-passe?</translation>
 <translation id="7929962904089429003">Abrir o menu</translation>
 <translation id="7930294771522048157">Os métodos de pagamento guardados são apresentados aqui.</translation>
@@ -9218,6 +9213,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8448729345478502352">Diminuir ou aumentar os elementos no ecrã</translation>
 <translation id="8449008133205184768">Colar e fazer corresponder estilo</translation>
 <translation id="8449036207308062757">Gerir armazenamento</translation>
+<translation id="8449347986464073209">Eliminar e terminar sessão</translation>
 <translation id="8449836157089738489">Abrir tudo num novo grupo de separadores</translation>
 <translation id="8449869326050867919">Palavra-passe partilhada</translation>
 <translation id="8451512073679317615">assistente</translation>

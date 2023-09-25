@@ -125,7 +125,6 @@
 <translation id="1243027604378859286">Автор:</translation>
 <translation id="1246424317317450637">Жирний</translation>
 <translation id="1247030632403369975">Алюміній</translation>
-<translation id="1250759482327835220">Щоб наступного разу платити швидше, збережіть дані картки, ім’я та платіжну адресу в обліковому записі Google.</translation>
 <translation id="1252209483516427155">Верхній одяг</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (синхронізовано)</translation>
 <translation id="1255086252236620440">Кухонні міксери</translation>
@@ -158,7 +157,6 @@
 <translation id="1294154142200295408">Варіанти командного рядка</translation>
 <translation id="129553762522093515">Нещодавно закриті</translation>
 <translation id="1296930489679394997">Продажі</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />Спробуйте видалити файли cookie<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">Перевірте налаштування безпеки DNS</translation>
 <translation id="1307966114820526988">Функції не підтримуються</translation>
@@ -1351,7 +1349,6 @@
 <translation id="3767485424735936570">Адміністратор не радить копіювати й вставляти цей контент на віртуальну машину <ph name="VM_NAME" /></translation>
 <translation id="3772211998634047851">Папір (для документів)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб швидко створити нову нотатку в Google Keep</translation>
-<translation id="3778403066972421603">Зберегти дані картки у вашому обліковому записі Google і на цьому пристрої?</translation>
 <translation id="378026377453746707">Chrome має вбудовані функції безпеки, що захищають вас під час веб-перегляду, як-от Безпечний перегляд Google. Зокрема, ця функція нещодавно <ph name="BEGIN_LINK" />виявила шкідливе програмне забезпечення на сайті <ph name="SITE" /><ph name="END_LINK" />, який ви намагалися відвідати.</translation>
 <translation id="3780694243617746492">Вихідний контейнер</translation>
 <translation id="3781428340399460090">Яскраво-рожевий</translation>
@@ -1957,7 +1954,6 @@
 <translation id="5020776957610079374">Музика народів світу</translation>
 <translation id="5021557570875267742">Відстежуйте ціни за допомогою Chrome</translation>
 <translation id="5023310440958281426">Перегляньте правила свого адміністратора</translation>
-<translation id="5029568752722684782">Видалити копію</translation>
 <translation id="5030338702439866405">Ким видано:</translation>
 <translation id="503069730517007720">Для програмного забезпечення <ph name="SOFTWARE_NAME" /> потрібен кореневий сертифікат, однак його не встановлено. Вашому IT-адміністратору потрібно переглянути вказівки з налаштування <ph name="SOFTWARE_NAME" />, щоб вирішити цю проблему. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Про Google Перекладач</translation>
@@ -2540,7 +2536,6 @@
 <translation id="6270066318535733958">Веслувальний спорт</translation>
 <translation id="6272088941196661550">Щоб бачити релевантні дії в історії Chrome, відновіть сеанс</translation>
 <translation id="6272383483618007430">Оновлення Google</translation>
-<translation id="627746635834430766">Щоб наступного разу платити швидше, збережіть дані картки та платіжну адресу в обліковому записі Google.</translation>
 <translation id="6279183038361895380">Натисніть |<ph name="ACCELERATOR" />|, щоб побачити курсор</translation>
 <translation id="6280223929691119688">Неможливо доставити замовлення за цією адресою. Укажіть іншу адресу.</translation>
 <translation id="6284292079994426700">26 x 38 дюйм.</translation>
@@ -3852,7 +3847,6 @@
 <translation id="8922013791253848639">Завжди дозволяти показ реклами на цьому сайті</translation>
 <translation id="892588693504540538">Пробити отвір угорі праворуч</translation>
 <translation id="8930330541574156305">Нерухомість</translation>
-<translation id="8931333241327730545">Зберегти цю картку у вашому обліковому записі Google?</translation>
 <translation id="8932102934695377596">Ваш годинник запізнюється</translation>
 <translation id="893332455753468063">Додайте ім’я</translation>
 <translation id="8942355029279167844">Адміністратор надав додатку <ph name="APP_NAME" /> дозвіл збирати дані діагностики, щоб покращувати роботу продукту. Докладніше читайте на сторінці <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>

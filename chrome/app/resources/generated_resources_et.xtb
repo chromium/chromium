@@ -5030,7 +5030,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5027550639139316293">Meili sertifikaat</translation>
 <translation id="5027562294707732951">Lisa laiendus</translation>
 <translation id="5028445315206872221">Laiendused on sellel saidil blokeeritud</translation>
-<translation id="5029568752722684782">Kustuta koopia</translation>
 <translation id="5029873138381728058">Virtuaalmasinate kontrollimine ebaõnnestus</translation>
 <translation id="503155457707535043">Rakendusi laaditakse alla</translation>
 <translation id="5032430150487044192">QR-koodi ei saa luua</translation>
@@ -5724,7 +5723,6 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5601823921345337195">Pole lubatud MIDI-seadmetega ühendada</translation>
 <translation id="5601833336918638013">Saitidel ei lubata Bluetooth-seadmeid otsida</translation>
 <translation id="5602586420788540146">Ava uues vahelehegrupis</translation>
-<translation id="5602765853043467355">Kustuta sellest seadmest järjehoidjad, ajalugu, paroolid ja muu</translation>
 <translation id="5605758115928394442">Teie telefoni saadeti märguanne, et teie isik kinnitada.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{See laiendus on blokeeritud}other{Need laiendused on blokeeritud}}</translation>
 <translation id="560834977503641186">WiFi sünkroonimine, lisateave</translation>
@@ -5776,7 +5774,6 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5641648607875312660">Ekraanipildi redaktor</translation>
 <translation id="5642508497713047">CRL-i allkirjastaja</translation>
 <translation id="5643321261065707929">Mahupõhine võrk</translation>
-<translation id="5643620609347735571">Kustuta ja jätka</translation>
 <translation id="5646376287012673985">Asukoht</translation>
 <translation id="5646558797914161501">Ärimees</translation>
 <translation id="5648021990716966815">Mikrofoni pistikupesa</translation>
@@ -7694,7 +7691,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7241389281993241388">Logige sisse rakendusse <ph name="TOKEN_NAME" /> kliendi sertifikaadi importimiseks.</translation>
 <translation id="7241763419756062043">Valige oma otsingu ja sirvimise kvaliteet</translation>
 <translation id="7243092385765551741">Kas soovite pääsukoodi kustutada?</translation>
-<translation id="7243632151880336635">Kustuta ja logi välja</translation>
 <translation id="7245162963905242662">Sellelt lehelt otsimine Google'iga …</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (parim)</translation>
 <translation id="7246230585855757313">Sisestage oma turvavõti uuesti ja proovige veel kord</translation>
@@ -8572,7 +8568,6 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7925285046818567682"><ph name="HOST_NAME" /> vastuse ootel...</translation>
 <translation id="7926423016278357561">See ei olnud mina.</translation>
 <translation id="7926975587469166629">Kaardi hüüdnimi</translation>
-<translation id="7927610604078150317">Suurus: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Kas muutsite juba seda parooli?</translation>
 <translation id="7929962904089429003">Menüü avamine</translation>
 <translation id="7930294771522048157">Salvestatud makseviisid kuvatakse siin</translation>
@@ -9222,6 +9217,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8448729345478502352">Muutke ekraanil kuvatud üksused väiksemaks või suuremaks</translation>
 <translation id="8449008133205184768">Kleebi ja ühita laad</translation>
 <translation id="8449036207308062757">Halda salvestusruumi</translation>
+<translation id="8449347986464073209">Kustuta ja logi välja</translation>
 <translation id="8449836157089738489">Ava kõik uues vahelehegrupis</translation>
 <translation id="8449869326050867919">Parool on jagatud</translation>
 <translation id="8451512073679317615">assistent</translation>

@@ -5044,7 +5044,6 @@
 <translation id="5027550639139316293">ಇಮೇಲ್ ಪ್ರಮಾಣಪತ್ರ</translation>
 <translation id="5027562294707732951">ವಿಸ್ತರಣೆ ಸೇರಿಸು</translation>
 <translation id="5028445315206872221">ಈ ಸೈಟ್‌ನಲ್ಲಿ ವಿಸ್ತರಣೆಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
-<translation id="5029568752722684782">ನಕಲು ತೆರವುಗೊಳಿಸು</translation>
 <translation id="5029873138381728058">VM ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="503155457707535043">ಆ್ಯಪ್‌ಗಳು ಡೌನ್‌ಲೋಡ್ ಆಗುತ್ತಿವೆ</translation>
 <translation id="5032430150487044192">QR ಕೋಡ್‌ ಅನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
@@ -5738,7 +5737,6 @@
 <translation id="5601823921345337195">MIDI ಸಾಧನಗಳಿಗೆ ಸಂಪರ್ಕಿಸಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="5601833336918638013">ಸೈಟ್‌ಗಳಿಗೆ ಬ್ಲೂಟೂತ್ ಸಾಧನಗಳನ್ನು ಹುಡುಕುವ ಅನುಮತಿ ನೀಡಬೇಡಿ</translation>
 <translation id="5602586420788540146">ಹೊಸ ಟ್ಯಾಬ್ ಗುಂಪಿನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
-<translation id="5602765853043467355">ಈ ಸಾಧನದಿಂದ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಇತಿಹಾಸ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇನ್ನಷ್ಟನ್ನು ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="5605758115928394442">ಇದು ನೀವೇ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಲು ನಿಮ್ಮ ಫೋನ್‌ಗೆ ಒಂದು ಅಧಿಸೂಚನೆಯನ್ನು ಕಳುಹಿಸಲಾಗಿದೆ.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{ಈ ವಿಸ್ತರಣೆಯನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}one{ಈ ವಿಸ್ತರಣೆಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}other{ಈ ವಿಸ್ತರಣೆಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}}</translation>
 <translation id="560834977503641186">Wi-Fi ಸಿಂಕ್, ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
@@ -5791,7 +5789,6 @@
 <translation id="5641648607875312660">ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಚಿತ್ರದ ಎಡಿಟರ್</translation>
 <translation id="5642508497713047">CRL ಸೈನರ್</translation>
 <translation id="5643321261065707929">ಮಾಪನ ಮಾಡಿದ ನೆಟ್‌ವರ್ಕ್</translation>
-<translation id="5643620609347735571">ತೆರವುಗೊಳಿಸಿ ಮತ್ತು ಮುಂದುವರಿಸಿ</translation>
 <translation id="5646376287012673985">ಸ್ಥಳ</translation>
 <translation id="5646558797914161501">ವ್ಯಾಪಾರಿ</translation>
 <translation id="5648021990716966815">ಮೈಕ್ ಜ್ಯಾಕ್</translation>
@@ -7714,7 +7711,6 @@
 <translation id="7241389281993241388">ಕ್ಲೈಂಟ್ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಆಮದು ಮಾಡಿಕೊಳ್ಳಲು <ph name="TOKEN_NAME" /> ಗೆ ದಯವಿಟ್ಟು ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
 <translation id="7241763419756062043">ನಿಮ್ಮ ಹುಡುಕಾಟ ಮತ್ತು ಬ್ರೌಸಿಂಗ್ ಗುಣಮಟ್ಟವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="7243092385765551741">ಪಾಸ್‌ಕೀಯನ್ನು ಅಳಿಸಬೇಕೇ?</translation>
-<translation id="7243632151880336635">ತೆರವುಗೊಳಿಸು ಮತ್ತು ಸೈನ್ ಔಟ್ ಮಾಡು</translation>
 <translation id="7245162963905242662">Google ಮೂಲಕ ಈ ಪುಟವನ್ನು ಹುಡುಕಿ...</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (ಅತ್ಯುತ್ತಮ)</translation>
 <translation id="7246230585855757313">ನಿಮ್ಮ ಭದ್ರತೆ ಕೀ ಅನ್ನು ಮರುಸೇರ್ಪಡಿಸಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
@@ -8592,7 +8588,6 @@
 <translation id="7925285046818567682"><ph name="HOST_NAME" /> ಗಾಗಿ ಕಾಯುತ್ತಿದೆ...</translation>
 <translation id="7926423016278357561">ಇದು ನಾನಲ್ಲ.</translation>
 <translation id="7926975587469166629">ಕಾರ್ಡ್ ಅಡ್ಡ ಹೆಸರು</translation>
-<translation id="7927610604078150317">ಗಾತ್ರ: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">ಈಗಾಗಲೇ ಈ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬದಲಾಯಿಸಲಾಗಿದೆಯೇ?</translation>
 <translation id="7929962904089429003">ಮೆನು ತೆರೆಯಿರಿ</translation>
 <translation id="7930294771522048157">ಉಳಿಸಲಾದ ಪಾವತಿ ವಿಧಾನಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತವೆ</translation>
@@ -9239,6 +9234,7 @@
 <translation id="8448729345478502352">ನಿಮ್ಮ ಪರದೆಯ ಮೇಲೆ ಐಟಂಗಳನ್ನು ಸಣ್ಣದು ಅಥವಾ ದೊಡ್ಡದು ಮಾಡಿ</translation>
 <translation id="8449008133205184768">ಅಂಟಿಸು  ಮತ್ತು  ಶೈಲಿ ಹೊಂದಿಸು</translation>
 <translation id="8449036207308062757">ಸಂಗ್ರಹಣೆಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
+<translation id="8449347986464073209">ಅಳಿಸಿ ಮತ್ತು ಸೈನ್ ಔಟ್ ಆಗಿ</translation>
 <translation id="8449836157089738489">ಹೊಸ ಟ್ಯಾಬ್ ಗುಂಪಿನಲ್ಲಿ ಎಲ್ಲವನ್ನೂ ತೆರೆಯಿರಿ</translation>
 <translation id="8449869326050867919">ಪಾಸ್‌ವರ್ಡ್ ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
 <translation id="8451512073679317615">ಸಹಾಯಕ</translation>

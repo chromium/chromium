@@ -125,7 +125,6 @@
 <translation id="1243027604378859286">लेखक:</translation>
 <translation id="1246424317317450637">ठळक</translation>
 <translation id="1247030632403369975">अ‍ॅल्युमिनिअम</translation>
-<translation id="1250759482327835220">पुढील वेळेस जलद पेमेंट करण्यासाठी, तुमच्या Google खात्यावर तुमचे कार्ड आणि बिलिंग पत्ता सेव्ह करा.</translation>
 <translation id="1252209483516427155">बाहेर घालायचे कपडे</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (सिंक केलेले)</translation>
 <translation id="1255086252236620440">फूड मिक्सर</translation>
@@ -158,7 +157,6 @@
 <translation id="1294154142200295408">विविध कमांड लाइन</translation>
 <translation id="129553762522093515">अलीकडे बंद केलेले</translation>
 <translation id="1296930489679394997">विक्री</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />आपल्या कुकीज साफ करून पहा<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">तुमची सुरक्षित DNS सेटिंग्ज तपासा</translation>
 <translation id="1307966114820526988">कालबाह्य झालेली वैशिष्‍ट्ये</translation>
@@ -1350,7 +1348,6 @@
 <translation id="3767485424735936570">अ‍ॅडमिनिस्ट्रेटर धोरण हा आशय <ph name="VM_NAME" /> मध्ये कॉपी आणि पेस्ट करण्याची शिफारस करत नाही</translation>
 <translation id="3772211998634047851">पेपर (बाँड)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Keep मध्ये नवीन टीप झटपट तयार करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
-<translation id="3778403066972421603">तुम्हाला हे कार्ड तुमच्या Google खात्यामध्ये आणि या डिव्हाइसवर सेव्ह करायचे आहे का?</translation>
 <translation id="378026377453746707">तुम्ही ब्राउझ करत असताना तुमचे संरक्षण करण्यासाठी Chrome मध्ये बिल्ट-इन सुरक्षा वैशिष्ट्ये आहेत, जसे की Google सुरक्षित ब्राउझिंग. सुरक्षित ब्राउझिंग ला अलीकडे <ph name="BEGIN_LINK" /><ph name="SITE" /> वर हानिकारक सॉफ्टवेअर आढळले<ph name="END_LINK" />, जी तुम्ही भेट देण्याचा प्रयत्न करत असलेल्या साइटमध्ये एंबेड केलेली आहे.</translation>
 <translation id="3780694243617746492">आउटपुट बिन</translation>
 <translation id="3781428340399460090">गडद गुलाबी</translation>
@@ -1956,7 +1953,6 @@
 <translation id="5020776957610079374">जागतिक संगीत</translation>
 <translation id="5021557570875267742">Chrome वापरून किमतीचा माग ठेवा</translation>
 <translation id="5023310440958281426">तुमच्या ॲडमिनिस्ट्रेटरची धोरणे तपासा</translation>
-<translation id="5029568752722684782">कॉपी साफ करा</translation>
 <translation id="5030338702439866405">द्वारा जारी</translation>
 <translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />" साठी मूळ सर्टिफिकेट आवश्यक आहे परंतु ते इंस्टॉल केलेले नाही. तुमच्या IT अ‍ॅडमिनिस्ट्रेटरने ही समस्या सोडण्यासाठी "<ph name="SOFTWARE_NAME" />" साठीच्या कॉंफिगरेशन सूचना पहाव्यात. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Google भाषांतर बद्दल</translation>
@@ -2540,7 +2536,6 @@
 <translation id="6270066318535733958">नौकाविहार</translation>
 <translation id="6272088941196661550">तुमच्या Chrome इतिहासामध्ये संबंधित अ‍ॅक्टिव्हिटी पाहण्यासाठी तुमचा प्रवास पुन्हा सुरू करा</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="627746635834430766">पुढील वेळी जलद पेमेंट देण्यासाठी, तुमच्या Google खात्यावर तुमचे कार्ड आणि बिलिंग पत्ता सेव्ह करा.</translation>
 <translation id="6279183038361895380">तुमचा कर्सर दर्शविण्‍यासाठी |<ph name="ACCELERATOR" />| प्रेस करा</translation>
 <translation id="6280223929691119688">या पत्त्यावर देऊ शकत नाही. वेगळा पत्ता निवडा.</translation>
 <translation id="6284292079994426700">26 x 38 in</translation>
@@ -3851,7 +3846,6 @@
 <translation id="8922013791253848639">या साइटवर कायम जाहिरातींना परवानगी द्या</translation>
 <translation id="892588693504540538">पंच टॉप राइट</translation>
 <translation id="8930330541574156305">स्थावर मालमत्ता</translation>
-<translation id="8931333241327730545">तुम्ही तुमच्या Google खात्यात हे कार्ड सेव्ह करू इच्छिता?</translation>
 <translation id="8932102934695377596">तुमचे घड्याळ मागे आहे</translation>
 <translation id="893332455753468063">नाव जोडा</translation>
 <translation id="8942355029279167844">तुमच्या अ‍ॅडमिनिस्ट्रेटरने <ph name="APP_NAME" /> ला उत्पादन वापरण्याचा अनुभव सुधारित करण्यासाठी निदान डेटा गोळा करण्याची अनुमती दिली आहे. अधिक माहितीसाठी <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> पहा.</translation>

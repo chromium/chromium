@@ -5036,7 +5036,6 @@
 <translation id="5027550639139316293">ای میل سرٹیفکیٹ</translation>
 <translation id="5027562294707732951">ایکسٹینشن شامل کریں</translation>
 <translation id="5028445315206872221">اس سائٹ پر ایکسٹینشنز مسدود ہیں</translation>
-<translation id="5029568752722684782">کاپی صاف کریں</translation>
 <translation id="5029873138381728058">‏VMs چیک کرنے میں ناکام</translation>
 <translation id="503155457707535043">ایپس ڈاؤن لوڈ ہو رہی ہیں</translation>
 <translation id="5032430150487044192">‏QR کوڈ تخلیق نہیں کیا جا سکتا</translation>
@@ -5729,7 +5728,6 @@
 <translation id="5601823921345337195">‏MIDI آلات سے منسلک ہونے کی اجازت نہیں ہے</translation>
 <translation id="5601833336918638013">سائٹس کو بلوٹوتھ آلات تلاش کرنے کی اجازت نہ دیں</translation>
 <translation id="5602586420788540146">نئے ٹیب گروپ میں کھولیں</translation>
-<translation id="5602765853043467355">بُک مارکس، سرگزشت، پاس ورڈز وغیرہ اس آلہ سے صاف کريں</translation>
 <translation id="5605758115928394442">اس بات کی تصدیق کرنے کیلئے کہ یہ آپ ہی ہیں، آپ کے فون پر ایک اطلاع بھیجی گئی۔</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{یہ ایکسٹینشن مسدود ہے}other{یہ ایکسٹینشنز مسدود ہیں}}</translation>
 <translation id="560834977503641186">‏Wi-Fi سِنک، مزید جانیں</translation>
@@ -5781,7 +5779,6 @@
 <translation id="5641648607875312660">اسکرین شاٹ امیج ایڈیٹر</translation>
 <translation id="5642508497713047">‏CRL سائنر</translation>
 <translation id="5643321261065707929">میٹرڈ نیٹ ورک</translation>
-<translation id="5643620609347735571">صاف کریں اور جاری رکھیں</translation>
 <translation id="5646376287012673985">مقام</translation>
 <translation id="5646558797914161501">تاجر</translation>
 <translation id="5648021990716966815">مائیک جیک</translation>
@@ -7700,7 +7697,6 @@
 <translation id="7241389281993241388">براہ کرم کلائنٹ سرٹیفکیٹ درآمد کرنے کیلئے <ph name="TOKEN_NAME" /> میں سائن ان کریں۔</translation>
 <translation id="7241763419756062043">اپنی تلاش اور براؤنگ کا معیار منتخب کریں</translation>
 <translation id="7243092385765551741">پاس کی حذف کریں؟</translation>
-<translation id="7243632151880336635">صاف کریں اور سائن آؤٹ کریں</translation>
 <translation id="7245162963905242662">‏Google کے ساتھ یہ صفحہ تلاش کریں...</translation>
 <translation id="7245628041916450754">‏<ph name="WIDTH" /> x <ph name="HEIGHT" /> (بہترین)</translation>
 <translation id="7246230585855757313">اپنی سیکیورٹی کلید دوبارہ داخل کریں اور دوبارہ کوشش کریں</translation>
@@ -8580,7 +8576,6 @@
 <translation id="7925285046818567682"><ph name="HOST_NAME" /> کا منتظر…</translation>
 <translation id="7926423016278357561">یہ میں نہیں تھا۔</translation>
 <translation id="7926975587469166629">کارڈ کا عرفی نام</translation>
-<translation id="7927610604078150317">سائز: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">پہلے ہی یہ پاس ورڈ تبدیل کیا ہے؟</translation>
 <translation id="7929962904089429003">مینیو کھولیں</translation>
 <translation id="7930294771522048157">ادائیگی کے محفوظ کردہ طریقے یہاں ظاہر ہوں گے</translation>
@@ -9229,6 +9224,7 @@
 <translation id="8448729345478502352">اپنی اسکرین پر موجود آئٹمز کو اور چھوٹا یا بڑا کریں</translation>
 <translation id="8449008133205184768">طرز پیسٹ کریں اور مماثل بنائیں</translation>
 <translation id="8449036207308062757">اسٹوریج کا نظم کریں</translation>
+<translation id="8449347986464073209">حذف کریں اور سائن آؤٹ کریں</translation>
 <translation id="8449836157089738489">سبھی کو نئے ٹیب گروپ میں کھولیں</translation>
 <translation id="8449869326050867919">پاس ورڈ کا اشتراک کر دیا گیا</translation>
 <translation id="8451512073679317615">اسسٹنٹ</translation>

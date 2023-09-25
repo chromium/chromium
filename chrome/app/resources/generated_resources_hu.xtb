@@ -5048,7 +5048,6 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5027550639139316293">E-mail tanúsítvány</translation>
 <translation id="5027562294707732951">Bővítmény hozzáadása</translation>
 <translation id="5028445315206872221">A bővítmények le vannak tiltva ezen a webhelyen</translation>
-<translation id="5029568752722684782">Példány törlése</translation>
 <translation id="5029873138381728058">Nem sikerült a VM-ek ellenőrzése</translation>
 <translation id="503155457707535043">Alkalmazások letöltése folyamatban</translation>
 <translation id="5032430150487044192">Nem lehet létrehozni a QR-kódot.</translation>
@@ -5743,7 +5742,6 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="5601823921345337195">Nem csatlakozhatnak a MIDI-eszközökhöz</translation>
 <translation id="5601833336918638013">A webhelyek nem kereshetnek Bluetooth-eszközöket</translation>
 <translation id="5602586420788540146">Megnyitás új lapcsoportban</translation>
-<translation id="5602765853043467355">Könyvjelzők, előzmények, jelszavak és egyebek törlése erről az eszközről</translation>
 <translation id="5605758115928394442">A rendszer értesítést küldött az Ön telefonjára, hogy segítségével igazolhassa személyazonosságát.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Ez a bővítmény le van tiltva}other{Ezek a bővítmények le vannak tiltva}}</translation>
 <translation id="560834977503641186">Wi-Fi szinkronizálása, további információ</translation>
@@ -5796,7 +5794,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5641648607875312660">Képernyőkép-szerkesztő</translation>
 <translation id="5642508497713047">Tanúsítvány-visszavonási lista aláírója</translation>
 <translation id="5643321261065707929">Forgalomkorlátos hálózat</translation>
-<translation id="5643620609347735571">Törlés és folytatás</translation>
 <translation id="5646376287012673985">Tartózkodási hely</translation>
 <translation id="5646558797914161501">Üzletember</translation>
 <translation id="5648021990716966815">Mikrofon jack csatlakozója</translation>
@@ -7716,7 +7713,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7241389281993241388">Kérjük, jelentkezzen be a(z) <ph name="TOKEN_NAME" /> szolgáltatásba az ügyféltanúsítvány importálásához.</translation>
 <translation id="7241763419756062043">A keresés és a böngészés minőségének beállítása</translation>
 <translation id="7243092385765551741">Törli az azonosítókulcsot?</translation>
-<translation id="7243632151880336635">Törlés és kijelentkezés</translation>
 <translation id="7245162963905242662">Keresés az oldalon a Google-lal…</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> képpont (a legjobb)</translation>
 <translation id="7246230585855757313">Helyezze be újra a biztonsági hardverkulcsot, és próbálja újra</translation>
@@ -8595,7 +8591,6 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="7925285046818567682">Várakozás a szerverre: <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">Nem én voltam.</translation>
 <translation id="7926975587469166629">Egyéni kártyanév</translation>
-<translation id="7927610604078150317">Méret: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Módosította már ezt a jelszót?</translation>
 <translation id="7929962904089429003">A menü megnyitása</translation>
 <translation id="7930294771522048157">Az elmentett fizetési módok itt jelennek meg</translation>
@@ -9245,6 +9240,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8448729345478502352">Nagyíthatja és kicsinyítheti a képernyőn megjelenő elemeket</translation>
 <translation id="8449008133205184768">Beillesztés és stílus egyeztetése</translation>
 <translation id="8449036207308062757">Tárhely kezelése</translation>
+<translation id="8449347986464073209">Törlés és kijelentkezés</translation>
 <translation id="8449836157089738489">Az összes megnyitása új lapcsoportban</translation>
 <translation id="8449869326050867919">Jelszó megosztva</translation>
 <translation id="8451512073679317615">segéd</translation>

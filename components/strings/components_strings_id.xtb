@@ -125,7 +125,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1243027604378859286">Pengarang:</translation>
 <translation id="1246424317317450637">Tebal</translation>
 <translation id="1247030632403369975">Aluminium</translation>
-<translation id="1250759482327835220">Untuk membayar lebih cepat di pembelian berikutnya, simpan kartu, nama, dan alamat penagihan ke Akun Google Anda.</translation>
 <translation id="1252209483516427155">Pakaian Luar</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (disinkronkan)</translation>
 <translation id="1255086252236620440">Pengaduk Makanan</translation>
@@ -158,7 +157,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1294154142200295408">Variasi baris perintah</translation>
 <translation id="129553762522093515">Baru saja ditutup</translation>
 <translation id="1296930489679394997">Penjualan</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />Coba hapus cookie Anda<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Legal Ekstra</translation>
 <translation id="1301324364792935241">Periksa setelan DNS Aman Anda</translation>
 <translation id="1307966114820526988">Fitur yang Tidak Digunakan Lagi</translation>
@@ -1351,7 +1349,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3767485424735936570">Menyalin dan menempelkan konten ini ke <ph name="VM_NAME" /> tidak direkomendasikan oleh kebijakan administrator</translation>
 <translation id="3772211998634047851">Kertas (Bond)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk membuat catatan baru di Google Keep dengan cepat</translation>
-<translation id="3778403066972421603">Ingin menyimpan kartu ini di Akun Google dan perangkat ini?</translation>
 <translation id="378026377453746707">Chrome memiliki fitur keamanan bawaan untuk melindungi Anda saat menjelajah, seperti Google Safe Browsing. Safe Browsing baru-baru ini <ph name="BEGIN_LINK" />menemukan software berbahaya di <ph name="SITE" /><ph name="END_LINK" />, yang disematkan di situs jika Anda mencoba membukanya.</translation>
 <translation id="3780694243617746492">Tampungan keluaran</translation>
 <translation id="3781428340399460090">Merah Muda Terang</translation>
@@ -1957,7 +1954,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5020776957610079374">Musik dunia</translation>
 <translation id="5021557570875267742">Pantau harga dengan Chrome</translation>
 <translation id="5023310440958281426">Periksa kebijakan administrator Anda</translation>
-<translation id="5029568752722684782">Hapus salinan</translation>
 <translation id="5030338702439866405">Diterbitkan Oleh</translation>
 <translation id="503069730517007720">Sertifikat root wajib untuk "<ph name="SOFTWARE_NAME" />" tidak diinstal. Administrator IT Anda harus melihat petunjuk konfigurasi untuk "<ph name="SOFTWARE_NAME" />" agar dapat menyelesaikan masalah ini. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Tentang Google Terjemahan</translation>
@@ -2540,7 +2536,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6270066318535733958">Berperahu</translation>
 <translation id="6272088941196661550">Lanjutkan perjalanan Anda untuk melihat aktivitas yang relevan di histori Chrome Anda</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="627746635834430766">Untuk membayar lebih cepat di pembelian selanjutnya, simpan kartu dan alamat penagihan ke Akun Google Anda.</translation>
 <translation id="6279183038361895380">Tekan |<ph name="ACCELERATOR" />| untuk menampilkan kursor</translation>
 <translation id="6280223929691119688">Tidak dapat mengirim ke alamat ini. Pilih alamat lain.</translation>
 <translation id="6284292079994426700">26 x 38 inci (66 x 96 cm)</translation>
@@ -3847,7 +3842,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="8922013791253848639">Selalu izinkan iklan di situs ini</translation>
 <translation id="892588693504540538">Lubang di kanan atas</translation>
 <translation id="8930330541574156305">Properti real estat</translation>
-<translation id="8931333241327730545">Ingin menyimpan kartu ini ke Akun Google Anda?</translation>
 <translation id="8932102934695377596">Setelan waktu Anda terlalu lambat</translation>
 <translation id="893332455753468063">Tambahkan Nama</translation>
 <translation id="8942355029279167844">Administrator Anda telah mengizinkan <ph name="APP_NAME" /> untuk mengumpulkan data diagnostik guna menyempurnakan pengalaman produk. Buka <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> untuk informasi selengkapnya.</translation>

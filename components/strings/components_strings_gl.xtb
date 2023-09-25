@@ -125,7 +125,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1243027604378859286">Autor:</translation>
 <translation id="1246424317317450637">Negra</translation>
 <translation id="1247030632403369975">Aluminio</translation>
-<translation id="1250759482327835220">Para pagar máis rápido a próxima vez, garda a túa tarxeta, o nome e o enderezo de facturación na túa Conta de Google.</translation>
 <translation id="1252209483516427155">Roupa exterior</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" /> e <ph name="TYPE_2" /> (sincronizado)</translation>
 <translation id="1255086252236620440">Batedores</translation>
@@ -158,7 +157,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1294154142200295408">Variacións da liña de comandos</translation>
 <translation id="129553762522093515">Pechado recentemente</translation>
 <translation id="1296930489679394997">Vendas</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />Proba a borrar as cookies<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Legal extra</translation>
 <translation id="1301324364792935241">Comproba a configuración do teu DNS seguro</translation>
 <translation id="1307966114820526988">Funcións obsoletas</translation>
@@ -1351,7 +1349,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3767485424735936570">A política do administrador non recomenda copiar e pegar este contido en <ph name="VM_NAME" /></translation>
 <translation id="3772211998634047851">Papel (carta)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tabulador e, a continuación, Introducir para crear rapidamente unha nota nova en Google Keep</translation>
-<translation id="3778403066972421603">Queres gardar esta tarxeta na túa conta de Google e neste dispositivo?</translation>
 <translation id="378026377453746707">Chrome inclúe funcións de seguranza para protexerte cando navegas, como, por exemplo, Navegación segura de Google. Esta función <ph name="BEGIN_LINK" />detectou hai pouco software daniño en <ph name="SITE" /><ph name="END_LINK" />, que está integrado no sitio ao que tentas acceder.</translation>
 <translation id="3780694243617746492">Bandexa de saída</translation>
 <translation id="3781428340399460090">Rosa fucsia</translation>
@@ -1957,7 +1954,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5020776957610079374">Música do mundo</translation>
 <translation id="5021557570875267742">Facer un seguimento dos prezos con Chrome</translation>
 <translation id="5023310440958281426">Comproba as túas políticas de administrador</translation>
-<translation id="5029568752722684782">Borrar copia</translation>
 <translation id="5030338702439866405">Emitido por</translation>
 <translation id="503069730517007720">Precísase un certificado raíz para <ph name="SOFTWARE_NAME" />, pero non está instalado. O teu administrador de TI debe comprobar as instrucións de configuración de <ph name="SOFTWARE_NAME" /> para solucionar este problema. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Acerca do Tradutor de Google</translation>
@@ -2540,7 +2536,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6270066318535733958">Actividades en barco</translation>
 <translation id="6272088941196661550">Retomar o percorrido para ver a actividade relevante do teu historial de Chrome</translation>
 <translation id="6272383483618007430">Actualización de Google</translation>
-<translation id="627746635834430766">Para pagar máis rápido a próxima vez, garda a túa tarxeta e o enderezo de facturación na conta de Google.</translation>
 <translation id="6279183038361895380">Preme |<ph name="ACCELERATOR" />| para mostrar o cursor</translation>
 <translation id="6280223929691119688">Non se pode realizar a entrega neste enderezo. Selecciona un diferente.</translation>
 <translation id="6284292079994426700">26 × 38 in</translation>
@@ -3851,7 +3846,6 @@ Detalles adicionais:
 <translation id="8922013791253848639">Permitir sempre os anuncios neste sitio</translation>
 <translation id="892588693504540538">Perforación na parte superior dereita</translation>
 <translation id="8930330541574156305">Propiedades inmobiliarias</translation>
-<translation id="8931333241327730545">Queres gardar esta tarxeta na túa conta de Google?</translation>
 <translation id="8932102934695377596">O reloxo está atrasado</translation>
 <translation id="893332455753468063">Engade un nome</translation>
 <translation id="8942355029279167844">O teu administrador permitiu que a aplicación <ph name="APP_NAME" /> recompile datos de diagnóstico para mellorar a experiencia do produto. Consulta <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> para obter máis información.</translation>

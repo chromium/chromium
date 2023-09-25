@@ -5033,7 +5033,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5027550639139316293">Certificat de correu electrònic</translation>
 <translation id="5027562294707732951">Afegeix l'extensió</translation>
 <translation id="5028445315206872221">Les extensions estan bloquejades en aquest lloc web</translation>
-<translation id="5029568752722684782">Esborra la còpia</translation>
 <translation id="5029873138381728058">No s'han pogut comprovar les màquines virtuals</translation>
 <translation id="503155457707535043">S'estan baixant les aplicacions</translation>
 <translation id="5032430150487044192">No es pot crear el codi QR</translation>
@@ -5728,7 +5727,6 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5601823921345337195">Sense permís per connectar-se a dispositius MIDI</translation>
 <translation id="5601833336918638013">No permetis que els llocs web cerquin dispositius Bluetooth</translation>
 <translation id="5602586420788540146">Obre en un grup de pestanyes nou</translation>
-<translation id="5602765853043467355">Esborra les adreces d'interès, l'historial, les contrasenyes i altres dades d'aquest dispositiu</translation>
 <translation id="5605758115928394442">S'ha enviat una notificació al teu telèfon per confirmar la teva identitat.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Aquesta extensió està bloquejada}other{Aquestes extensions estan bloquejades}}</translation>
 <translation id="560834977503641186">Sincronització Wi‑Fi, més informació</translation>
@@ -5779,7 +5777,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5641648607875312660">Editor d'imatges de captura de pantalla</translation>
 <translation id="5642508497713047">Signant de CRL</translation>
 <translation id="5643321261065707929">Xarxa d'ús mesurat</translation>
-<translation id="5643620609347735571">Esborra i continua</translation>
 <translation id="5646376287012673985">Ubicació</translation>
 <translation id="5646558797914161501">Home de negocis</translation>
 <translation id="5648021990716966815">Connector per al micròfon</translation>
@@ -7698,7 +7695,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7241389281993241388">Inicieu la sessió a <ph name="TOKEN_NAME" /> per importar el certificat de client.</translation>
 <translation id="7241763419756062043">Tria la qualitat de cerca i navegació</translation>
 <translation id="7243092385765551741">Vols suprimir la clau d'accés?</translation>
-<translation id="7243632151880336635">Esborra i tanca la sessió</translation>
 <translation id="7245162963905242662">Cerc&amp;a aquesta pàgina amb Google...</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (millor resolució)</translation>
 <translation id="7246230585855757313">Torna a inserir la clau de seguretat i torna-ho a provar</translation>
@@ -8578,7 +8574,6 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7925285046818567682">Esperant <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">No era jo.</translation>
 <translation id="7926975587469166629">Àlies de la targeta</translation>
-<translation id="7927610604078150317">Mida: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Ja has canviat aquesta contrasenya?</translation>
 <translation id="7929962904089429003">Obre el menú</translation>
 <translation id="7930294771522048157">Les formes de pagament desades es mostraran aquí</translation>
@@ -9229,6 +9224,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8448729345478502352">Amplia o redueix els elements de la pantalla</translation>
 <translation id="8449008133205184768">Enganxa i ajusta l'estil</translation>
 <translation id="8449036207308062757">Gestiona l'emmagatzematge</translation>
+<translation id="8449347986464073209">Suprimeix i tanca la sessió</translation>
 <translation id="8449836157089738489">Obre'ls tots en un grup de pestanyes nou</translation>
 <translation id="8449869326050867919">S'ha compartit la contrasenya</translation>
 <translation id="8451512073679317615">Assistent</translation>

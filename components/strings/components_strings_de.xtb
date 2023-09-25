@@ -124,7 +124,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1243027604378859286">Autor:</translation>
 <translation id="1246424317317450637">Fett</translation>
 <translation id="1247030632403369975">Aluminium</translation>
-<translation id="1250759482327835220">Damit Zahlungen zukünftig schneller abgewickelt werden können, speichere deine Kreditkartendaten, deinen Namen und deine Rechnungsadresse in deinem Google-Konto.</translation>
 <translation id="1252209483516427155">Oberbekleidung</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (synchronisiert)</translation>
 <translation id="1255086252236620440">Handrührgeräte</translation>
@@ -157,7 +156,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1294154142200295408">Befehlszeilen-Varianten</translation>
 <translation id="129553762522093515">Kürzlich geschlossen</translation>
 <translation id="1296930489679394997">Verkauf</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />Lösche deine Cookies<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">Prüfe die Einstellungen für sichere DNS-Abfragen</translation>
 <translation id="1307966114820526988">Eingestellte Funktionen</translation>
@@ -1342,7 +1340,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3767485424735936570">Die Administratorrichtlinie empfiehlt, keine Inhalte zu kopieren und an dieser Stelle (<ph name="VM_NAME" />) einzufügen</translation>
 <translation id="3772211998634047851">Papier (Hartpost)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um schnell eine neue Notiz in Google Notizen zu erstellen</translation>
-<translation id="3778403066972421603">Möchtest du diese Karte in deinem Google-Konto und auf diesem Gerät speichern?</translation>
 <translation id="378026377453746707">Chrome verfügt über integrierte Sicherheitsfunktionen wie Google Safe Browsing, die dich beim Surfen schützen. Safe Browsing hat kürzlich <ph name="BEGIN_LINK" />Schadsoftware auf <ph name="SITE" /> gefunden<ph name="END_LINK" />, eingebettet in die Website, die du besuchen möchtest.</translation>
 <translation id="3780694243617746492">Ausgabefach</translation>
 <translation id="3781428340399460090">Dunkelrosa</translation>
@@ -1946,7 +1943,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5020776957610079374">Weltmusik</translation>
 <translation id="5021557570875267742">Preise mit Chrome beobachten</translation>
 <translation id="5023310440958281426">Informiere dich über die von deinem Administrator festgelegten Richtlinien.</translation>
-<translation id="5029568752722684782">Kopie löschen</translation>
 <translation id="5030338702439866405">Ausgestellt von</translation>
 <translation id="503069730517007720">Für „<ph name="SOFTWARE_NAME" />“ ist ein Stammzertifikat erforderlich, das nicht installiert ist. Dein IT-Administrator sollte die Konfigurationsanweisungen für „<ph name="SOFTWARE_NAME" />“ lesen, um das Problem zu beheben. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Über Google Übersetzer</translation>
@@ -2527,7 +2523,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6270066318535733958">Bootsfahrten</translation>
 <translation id="6272088941196661550">Du kannst weiter stöbern, um relevante Aktivitäten in deinem Chrome-Verlauf zu sehen</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="627746635834430766">Damit Zahlungen zukünftig schneller abgewickelt werden können, speichere deine Kreditkartendaten und deine Rechnungsadresse in deinem Google-Konto.</translation>
 <translation id="6279183038361895380">Zum Einblenden des Cursors |<ph name="ACCELERATOR" />| drücken</translation>
 <translation id="6280223929691119688">Die Lieferadresse wird nicht unterstützt. Bitte wähle eine andere Adresse aus.</translation>
 <translation id="6284292079994426700">26 x 38 Zoll</translation>
@@ -3832,7 +3827,6 @@ Weitere Details:
 <translation id="8922013791253848639">Werbung auf dieser Website immer zulassen</translation>
 <translation id="892588693504540538">Lochung oben rechts</translation>
 <translation id="8930330541574156305">Immobilien</translation>
-<translation id="8931333241327730545">Möchtest du diese Karte in deinem Google-Konto speichern?</translation>
 <translation id="8932102934695377596">Deine Uhr geht nach</translation>
 <translation id="893332455753468063">Namen hinzufügen</translation>
 <translation id="8942355029279167844">Dein Administrator hat der App "<ph name="APP_NAME" />" erlaubt, Diagnosedaten zu erheben, um die Produktqualität zu verbessern. Weitere Informationen erhältst du unter <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>

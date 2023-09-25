@@ -5024,7 +5024,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5027550639139316293">Certificado de correo electrónico</translation>
 <translation id="5027562294707732951">Añadir extensión</translation>
 <translation id="5028445315206872221">Las extensiones están bloqueadas en este sitio</translation>
-<translation id="5029568752722684782">Borrar copia</translation>
 <translation id="5029873138381728058">No se han podido comprobar las máquinas virtuales</translation>
 <translation id="503155457707535043">Se están descargando las aplicaciones</translation>
 <translation id="5032430150487044192">No se puede crear el código QR</translation>
@@ -5718,7 +5717,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5601823921345337195">No puede conectarse a dispositivos MIDI</translation>
 <translation id="5601833336918638013">No permitir que los sitios busquen dispositivos Bluetooth</translation>
 <translation id="5602586420788540146">Abrir en un nuevo grupo de pestañas</translation>
-<translation id="5602765853043467355">Borrar marcadores, historial, contraseñas, etc. de este dispositivo</translation>
 <translation id="5605758115928394442">Se ha enviado una notificación a tu teléfono para confirmar que eres tú.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Esta extensión está bloqueada}other{Estas extensiones están bloqueadas}}</translation>
 <translation id="560834977503641186">Más información sobre Sincronización Wi‑Fi</translation>
@@ -5770,7 +5768,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5641648607875312660">Editor de imágenes de capturas de pantalla</translation>
 <translation id="5642508497713047">Firmante de la lista de revocación de certificados</translation>
 <translation id="5643321261065707929">Red de uso medido</translation>
-<translation id="5643620609347735571">Borrar y continuar</translation>
 <translation id="5646376287012673985">Ubicación</translation>
 <translation id="5646558797914161501">Hombre de negocios</translation>
 <translation id="5648021990716966815">Conector jack para micrófono</translation>
@@ -7688,7 +7685,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7241389281993241388">Inicia sesión en <ph name="TOKEN_NAME" /> para importar el certificado de cliente.</translation>
 <translation id="7241763419756062043">Elegir la calidad de búsqueda y navegación</translation>
 <translation id="7243092385765551741">¿Eliminar llave de acceso?</translation>
-<translation id="7243632151880336635">Borrar y cerrar sesión</translation>
 <translation id="7245162963905242662">Bus&amp;car esta página en Google...</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (recomendado)</translation>
 <translation id="7246230585855757313">Vuelve a introducir la llave de seguridad e inténtalo de nuevo.</translation>
@@ -8566,7 +8562,6 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7925285046818567682">Esperando a <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">No es mi perfil</translation>
 <translation id="7926975587469166629">Nombre de la tarjeta</translation>
-<translation id="7927610604078150317">Tamaño: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">¿Has cambiado esta contraseña?</translation>
 <translation id="7929962904089429003">Abre el menú</translation>
 <translation id="7930294771522048157">Los métodos de pago guardados aparecerán aquí</translation>
@@ -9216,6 +9211,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8448729345478502352">Reducir o aumentar el tamaño de los elementos de la pantalla</translation>
 <translation id="8449008133205184768">Pegar adaptando el estilo</translation>
 <translation id="8449036207308062757">Gestionar almacenamiento</translation>
+<translation id="8449347986464073209">Eliminar y cerrar sesión</translation>
 <translation id="8449836157089738489">Abrir todas en un grupo de pestañas</translation>
 <translation id="8449869326050867919">Contraseña compartida</translation>
 <translation id="8451512073679317615">asistente</translation>

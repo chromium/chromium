@@ -125,7 +125,6 @@
 <translation id="1243027604378859286">ደራሲ፦</translation>
 <translation id="1246424317317450637">ደማቅ</translation>
 <translation id="1247030632403369975">አሉሚንየም</translation>
-<translation id="1250759482327835220">በሚቀጥለው ጊዜ በበለጠ ፍጥነት ለመክፈል ካርድዎን እና የማስከፈያ አድራሻዎን በGoogle መለያዎ ላይ ያስቀምጡ።</translation>
 <translation id="1252209483516427155">ውጭ የሚለበስ</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />፣ <ph name="TYPE_2" /> (ሰምሯል)</translation>
 <translation id="1255086252236620440">ምግብ ማደባለቂያዎች</translation>
@@ -158,7 +157,6 @@
 <translation id="1294154142200295408">የትእዛዝ መስመር ልዩነቶች</translation>
 <translation id="129553762522093515">በቅርብ ጊዜ የተዘጉ</translation>
 <translation id="1296930489679394997">ሽያጭ</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />ኩኪዎችዎን ማጽዳት ይሞክሩ<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">የህግ ተጨማሪ</translation>
 <translation id="1301324364792935241">ደህንነታቸው የተጠበቁ የዲኤንኤስ ቅንብሮችዎን ይፈትሹ።</translation>
 <translation id="1307966114820526988">የተቋረጡ ባህሪያት</translation>
@@ -1350,7 +1348,6 @@
 <translation id="3767485424735936570">ይህንን ይዘት ወደ <ph name="VM_NAME" /> መቅዳት እና መለጠፍ በአስተዳዳሪው መመሪያ የሚመከር አይደለም</translation>
 <translation id="3772211998634047851">ወረቀት (ቦንድ)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ በGoogle Keep ውስጥ በፍጥነት አዲስ ማስታወሻ ለመፍጠር ትርን ከዚያ አስገባን ይጫኑ</translation>
-<translation id="3778403066972421603">ይህን ካርድ በእርስዎ የGoogle መለያ እና በዚህ መሣሪያ ላይ ማስቀመጥ ይፈልጋሉ?</translation>
 <translation id="378026377453746707">Chrome እንደ የGoogle ጥንቃቄ አሰሳ ያሉ በሚያስሱበት ጊዜ እርስዎን የሚጠብቁ ደህንነታቸው የተጠበቀ አብሮገነብ ባህሪያት አለው። ደህንነቱ የተጠበቀ አሰሳ ለመጎብኘት በሚሞክሩበት ጣቢያው ውስጥ የተካተተ <ph name="BEGIN_LINK" />በቅርብ ጊዜ <ph name="SITE" /> ላይ አደገኛ ሶፍትዌር ተገኝቷል<ph name="END_LINK" />።</translation>
 <translation id="3780694243617746492">የውጽዓት መጣያ</translation>
 <translation id="3781428340399460090">ደመቅ ያለ ሮዝ</translation>
@@ -1956,7 +1953,6 @@
 <translation id="5020776957610079374">የዓለም ሙዚቃ</translation>
 <translation id="5021557570875267742">በChrome አማካኝነት ዋጋዎችን ይከታተሉ</translation>
 <translation id="5023310440958281426">የአስተዳዳሪዎ መመሪያዎችን ያረጋግጡ</translation>
-<translation id="5029568752722684782">ቅጂን አጽዳ</translation>
 <translation id="5030338702439866405">የቀረበው</translation>
 <translation id="503069730517007720">ለ«<ph name="SOFTWARE_NAME" />» ስር እውቅና ማረጋገጫ ያስፈልጋል፣ ነገር ግን አልተጫነም። የእርስዎ አይቲ አስተዳዳሪ ይህን ችግር ለመፍታት የ«<ph name="SOFTWARE_NAME" />» ውቅረት መመሪያዎችን መመልከት አለበት። <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">ስለ Google ትርጉም</translation>
@@ -2539,7 +2535,6 @@
 <translation id="6270066318535733958">ጀልባ ቀዘፋ</translation>
 <translation id="6272088941196661550">በእርስዎ የChrome ታሪክ ውስጥ አግባብነት ያለው እንቅስቃሴን ለማየት ጉዞዎን ከቆመበት ይቀጥሉ</translation>
 <translation id="6272383483618007430">የGoogle ዝማኔ</translation>
-<translation id="627746635834430766">በሚቀጥለው ጊዜ በበለጠ ፍጥነት ለመክፈል ካርድዎን እና የማስከፈያ አድራሻዎን በGoogle መለያዎ ላይ ያስቀምጡ።</translation>
 <translation id="6279183038361895380">የእርስዎን ጠቋሚ ለማሳየት |<ph name="ACCELERATOR" />| ይጫኑ</translation>
 <translation id="6280223929691119688">ወደዚህ አድራሻ ማድረስ አይቻልም። የተለየ አድራሻ ይምረጡ።</translation>
 <translation id="6284292079994426700">26 x 38 ኢንች</translation>
@@ -3851,7 +3846,6 @@
 <translation id="8922013791253848639">ሁልጊዜ በዚህ ጣቢያ ላይ ማስታወቂያዎችን አሳይ</translation>
 <translation id="892588693504540538">ከላይ ቀኝ በኩል ብሳ</translation>
 <translation id="8930330541574156305">ሪል እስቴት</translation>
-<translation id="8931333241327730545">ይህን ካርድ በእርስዎ የGoogle መለያ ላይ ማስቀመጥ ይፈልጋሉ?</translation>
 <translation id="8932102934695377596">የእርስዎ ሰዓት ወደ ኋላ ቀርቷል</translation>
 <translation id="893332455753468063">ስም ያክሉ</translation>
 <translation id="8942355029279167844">የእርስዎ አስተዳዳሪ <ph name="APP_NAME" /> የምርቱን ተሞክሮ ለማሻሻል የምርመራዎች ውሂብ እንዲሰበስብ ፈቅዷል። ተጨማሪ መረጃ ለማግኘት <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />ን ይመልከቱ።</translation>

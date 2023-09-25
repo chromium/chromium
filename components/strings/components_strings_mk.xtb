@@ -125,7 +125,6 @@
 <translation id="1243027604378859286">Автор:</translation>
 <translation id="1246424317317450637">Болд</translation>
 <translation id="1247030632403369975">Алуминиум</translation>
-<translation id="1250759482327835220">За да платите побрзо следниот пат, зачувајте ја картичката, името и адресата за наплата на вашата сметка на Google.</translation>
 <translation id="1252209483516427155">Горна облека</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" /> и <ph name="TYPE_2" /> (синхронизирани)</translation>
 <translation id="1255086252236620440">Миксери за храна</translation>
@@ -158,7 +157,6 @@
 <translation id="1294154142200295408">Варијации на линијата за наредби</translation>
 <translation id="129553762522093515">Неодамна затворено</translation>
 <translation id="1296930489679394997">Распродажби</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />Обидете се да ги исчистите колачињата<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Правно екстра</translation>
 <translation id="1301324364792935241">Проверете ги поставките за безбеден DNS</translation>
 <translation id="1307966114820526988">Неподдржани функции</translation>
@@ -1351,7 +1349,6 @@
 <translation id="3767485424735936570">Правилото на администраторот не препорачува копирање и залепување на содржиниве на <ph name="VM_NAME" /></translation>
 <translation id="3772211998634047851">Хартија (цврста)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете го копчето Tab, а потоа копчето Enter за да набрзина создадете нова белешка во Google Keep</translation>
-<translation id="3778403066972421603">Сакате ли да ја зачувате картичкава на сметката на Google и на уредов?</translation>
 <translation id="378026377453746707">Chrome има вградени безбедносни функции за да ве штитат додека прелистувате, како што е „Безбедно прелистување со Google“. „Безбедното прелистување“ неодамна <ph name="BEGIN_LINK" />најде штетен софтвер на <ph name="SITE" /><ph name="END_LINK" />, којшто е вметнат во сајтот што се обидувате да го отворите.</translation>
 <translation id="3780694243617746492">Излезна фиока</translation>
 <translation id="3781428340399460090">Впечатливо розова</translation>
@@ -1957,7 +1954,6 @@
 <translation id="5020776957610079374">Светска музика</translation>
 <translation id="5021557570875267742">Следете ги цените со Chrome</translation>
 <translation id="5023310440958281426">Проверете ги правилата на вашиот администратор</translation>
-<translation id="5029568752722684782">Исчисти копија</translation>
 <translation id="5030338702439866405">Издадено од</translation>
 <translation id="503069730517007720">Потребен е основен сертификат за „<ph name="SOFTWARE_NAME" />“, но не е инсталиран. Вашиот IT-администратор треба да погледне во упатствата за конфигурација за „<ph name="SOFTWARE_NAME" />“ за да го реши проблемот. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">За Google Translate</translation>
@@ -2540,7 +2536,6 @@
 <translation id="6270066318535733958">Пловење со брод</translation>
 <translation id="6272088941196661550">Продолжете со патувањето за да ја прегледате релевантната активност во вашата „Историја на Chrome“</translation>
 <translation id="6272383483618007430">Ажурирање од Google</translation>
-<translation id="627746635834430766">За да платите побрзо следниот пат, зачувајте ја картичката и адресата за наплата на вашата сметка на Google.</translation>
 <translation id="6279183038361895380">Притиснете |<ph name="ACCELERATOR" />| за да се покаже покажувачот</translation>
 <translation id="6280223929691119688">Не може да се достави на оваа адреса. Изберете друга.</translation>
 <translation id="6284292079994426700">26 x 38 инчи</translation>
@@ -3851,7 +3846,6 @@
 <translation id="8922013791253848639">Секогаш дозволувај реклами на сајтов</translation>
 <translation id="892588693504540538">Дупка горе десно</translation>
 <translation id="8930330541574156305">Недвижности</translation>
-<translation id="8931333241327730545">Дали сакате да ја зачувате картичкава на сметката на Google?</translation>
 <translation id="8932102934695377596">Вашиот часовник доцни</translation>
 <translation id="893332455753468063">Додајте име</translation>
 <translation id="8942355029279167844">Администраторот дозволил <ph name="APP_NAME" /> да собира дијагностички податоци за да го подобри доживувањето со производот. Видете <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> за повеќе информации.</translation>

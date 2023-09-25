@@ -125,7 +125,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1243027604378859286">Autor:</translation>
 <translation id="1246424317317450637">Podebljano</translation>
 <translation id="1247030632403369975">Aluminijum</translation>
-<translation id="1250759482327835220">Da biste sledeći put platili brže, sačuvajte karticu, ime i adresu za obračun na Google nalogu.</translation>
 <translation id="1252209483516427155">Kaputi i jakne</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sinhronizovano)</translation>
 <translation id="1255086252236620440">Mikseri za hranu</translation>
@@ -158,7 +157,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1294154142200295408">Varijacije komandne linije</translation>
 <translation id="129553762522093515">Nedavno zatvoreno</translation>
 <translation id="1296930489679394997">Rasprodaja</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />Pokušajte da obrišete kolačiće<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">Proverite podešavanja za bezbedan DNS</translation>
 <translation id="1307966114820526988">Zastarele funkcije</translation>
@@ -1351,7 +1349,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3767485424735936570">Smernice administratora ne preporučuju kopiranje i lepljenje ovog sadržaja u <ph name="VM_NAME" /></translation>
 <translation id="3772211998634047851">Papir (izdržljiv)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste brzo napravili novu belešku u Google Keep-u</translation>
-<translation id="3778403066972421603">Da li želite da sačuvate ovu karticu na Google nalogu i na ovom uređaju?</translation>
 <translation id="378026377453746707">Chrome ima ugrađene bezbednosne funkcije koje vas štite tokom pregledanja, kao što je Google bezbedno pregledanje. Bezbedno pregledanje je nedavno <ph name="BEGIN_LINK" />otkrilo štetan softver na sajtu <ph name="SITE" /><ph name="END_LINK" />, koji je ugrađen u sajt koji pokušavate da posetite.</translation>
 <translation id="3780694243617746492">Izlazna pregrada</translation>
 <translation id="3781428340399460090">Jarkoroze</translation>
@@ -1957,7 +1954,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5020776957610079374">Etno muzika</translation>
 <translation id="5021557570875267742">Pratite cene pomoću Chrome-a</translation>
 <translation id="5023310440958281426">Proverite smernice administratora</translation>
-<translation id="5029568752722684782">Obriši kopiju</translation>
 <translation id="5030338702439866405">Izdao/la</translation>
 <translation id="503069730517007720">Osnovni sertifikat za softver „<ph name="SOFTWARE_NAME" />“ je obavezan, ali nije instaliran. IT administrator treba da pregleda uputstva za konfiguraciju softvera „<ph name="SOFTWARE_NAME" />“ da bi rešio ovaj problem. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">O Google prevodiocu</translation>
@@ -2539,7 +2535,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6270066318535733958">Vožnja čamcem</translation>
 <translation id="6272088941196661550">Nastavite put da biste videli relevantne aktivnosti u istoriji Chrome-a</translation>
 <translation id="6272383483618007430">Google ažuriranje</translation>
-<translation id="627746635834430766">Da biste sledeći put platili brže, sačuvajte karticu i adresu za obračun na Google nalogu.</translation>
 <translation id="6279183038361895380">Pritisnite |<ph name="ACCELERATOR" />| da biste prikazali pokazivač</translation>
 <translation id="6280223929691119688">Isporuka na ovu adresu nije moguća. Izaberite drugu adresu.</translation>
 <translation id="6284292079994426700">26×38 in</translation>
@@ -3852,7 +3847,6 @@ Dodatni detalji:
 <translation id="8922013791253848639">Uvek dozvoljavaj oglase na ovom sajtu</translation>
 <translation id="892588693504540538">Bušenje u gornjem desnom uglu</translation>
 <translation id="8930330541574156305">Nekretnine</translation>
-<translation id="8931333241327730545">Da li želite da sačuvate ovu karticu na Google nalog?</translation>
 <translation id="8932102934695377596">Sat vam kasni</translation>
 <translation id="893332455753468063">Dodajte ime</translation>
 <translation id="8942355029279167844">Administrator je dozvolio da <ph name="APP_NAME" /> prikuplja dijagnostičke podatke radi poboljšanja doživljaja proizvoda. Više informacija potražite na <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>

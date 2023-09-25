@@ -125,7 +125,6 @@
 <translation id="1243027604378859286">ଲେଖକ:</translation>
 <translation id="1246424317317450637">ବୋଲ୍ଡ</translation>
 <translation id="1247030632403369975">ଆଲୁମିନିୟମ</translation>
-<translation id="1250759482327835220">ପରବର୍ତ୍ତୀ ସମୟରେ, ପୈଠ କରିବାର ପ୍ରକ୍ରିୟାକୁ ଦ୍ରୁତତର କରିବା ପାଇଁ ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟରେ ଆପଣଙ୍କ କାର୍ଡ ଓ ବିଲିଂ ଠିକଣା ସେଭ୍ କରନ୍ତୁ।</translation>
 <translation id="1252209483516427155">ଆଉଟୱେର</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (ସିଙ୍କ୍ କରାଯାଇଛି)</translation>
 <translation id="1255086252236620440">ଖାଦ୍ୟ ମିକ୍ସର</translation>
@@ -158,7 +157,6 @@
 <translation id="1294154142200295408">କମାଣ୍ଡ-ଲାଇନ୍‍ ଭିନ୍ନତା</translation>
 <translation id="129553762522093515">ବର୍ତ୍ତମାନ ବନ୍ଦ ହୋଇଛି</translation>
 <translation id="1296930489679394997">ସେଲ୍ସ</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />ଆପଣଙ୍କର କୁକୀଗୁଡିକୁ ଖାଲି କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">ଲିଗାଲ ଏକ୍ସଟ୍ରା</translation>
 <translation id="1301324364792935241">ଆପଣଙ୍କର ସୁରକ୍ଷିତ DNS ସେଟିଂସ୍ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="1307966114820526988">ଅଗ୍ରାହ୍ୟ କରାଯାଇଥିବା ଫିଚର୍‍ଗୁଡ଼ିକ</translation>
@@ -1348,7 +1346,6 @@
 <translation id="3767485424735936570">ଏହି ବିଷୟବସ୍ତୁକୁ <ph name="VM_NAME" />ରେ କପି ଏବଂ ପେଷ୍ଟ କରିବା ଆଡମିନିଷ୍ଟ୍ରେଟର୍ ନୀତି ଦ୍ୱାରା ସୁପାରିଶ କରାଯାଇନାହିଁ</translation>
 <translation id="3772211998634047851">କାଗଜ (ବଣ୍ଡ)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Keepରେ ଶୀଘ୍ର ଏକ ନୂଆ ନୋଟ୍ ତିଆରି କରିବାକୁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
-<translation id="3778403066972421603">ଆପଣ ଏହି କାର୍ଡକୁ ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟ ଏବଂ ଏହି ଡିଭାଇସ୍‍‍ରେ ସେଭ୍ କରିବାକୁ ଚାହୁଁଛନ୍ତି କି?</translation>
 <translation id="378026377453746707">ଆପଣ ବ୍ରାଉଜ କରିବା ସମୟରେ ଆପଣଙ୍କୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ Chromeରେ Google ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂ ପରି ବିଲ୍ଟ-ଇନ ସୁରକ୍ଷା ଫିଚରଗୁଡ଼ିକ ଅଛି। ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂ ବର୍ତ୍ତମାନ <ph name="BEGIN_LINK" /><ph name="SITE" />ରେ କ୍ଷତିକାରକ ସଫ୍ଟୱେର ପାଇଛି<ph name="END_LINK" />, ଯାହାକୁ ଆପଣ ଭିଜିଟ କରିବାକୁ ଚେଷ୍ଟା କରୁଥିବା ସାଇଟରେ ଏମ୍ବେଡ କରାଯାଇଛି।</translation>
 <translation id="3780694243617746492">ଆଉଟପୁଟ୍ ବିନ୍</translation>
 <translation id="3781428340399460090">ଅତ୍ୟଧିକ ଗୋଲାପି</translation>
@@ -1955,7 +1952,6 @@
 <translation id="5020776957610079374">ୱାର୍ଲ୍ଡ ମ୍ୟୁଜିକ</translation>
 <translation id="5021557570875267742">Chrome ମାଧ୍ୟମରେ ମୂଲ୍ୟଗୁଡ଼ିକୁ ଟ୍ରାକ କରନ୍ତୁ</translation>
 <translation id="5023310440958281426">ଆପଣଙ୍କର ବ୍ଯବସ୍ଥାପକଙ୍କ ନୀତି ଯାଞ୍ଚ କରନ୍ତୁ</translation>
-<translation id="5029568752722684782">କପି ଖାଲି କରନ୍ତୁ</translation>
 <translation id="5030338702439866405">ଏହାଙ୍କ ଦ୍ୱାରା ଜାରି କରାଯାଇଛି</translation>
 <translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />" ପାଇଁ ଏକ ମୂଳ ସାର୍ଟିଫିକେଟ୍ ଆବଶ୍ୟକ କିନ୍ତୁ ଇନ୍‍ଷ୍ଟଲ୍ କରାଯାଇ ନାହିଁ। ଆପଣଙ୍କର IT ବ୍ୟବସ୍ଥାପକ ଏହି ସମସ୍ୟାକୁ ଠିକ୍ କରିବା ପାଇଁ "<ph name="SOFTWARE_NAME" />"ର କନଫିଗ୍‍‍ରେସନ୍ ନିର୍ଦ୍ଦେଶାବଳୀ ଦେଖିବା ଉଚିତ। <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Google ଅନୁବାଦ ବିଷୟରେ</translation>
@@ -2537,7 +2533,6 @@
 <translation id="6270066318535733958">ନୌକା ଚାଳନା</translation>
 <translation id="6272088941196661550">ଆପଣଙ୍କ Chrome ଇତିହାସରେ ପ୍ରାସଙ୍ଗିକ କାର୍ଯ୍ୟକଳାପ ଦେଖିବାକୁ ଆପଣଙ୍କ ସନ୍ଧାନ ପୁଣି ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="6272383483618007430">Google ଅପଡେଟ୍</translation>
-<translation id="627746635834430766">ପରବର୍ତ୍ତୀ ସମୟରେ ପୈଠ ପ୍ରକ୍ରିୟାକୁ ଦ୍ରୁତତର କରିବା ପାଇଁ ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟରେ ଆପଣଙ୍କ କାର୍ଡ ଓ ବିଲିଂ ଠିକଣା ସେଭ୍ କରନ୍ତୁ।</translation>
 <translation id="6279183038361895380">ଆପଣଙ୍କର କର୍ସର୍‌ ଦେଖାଇବାକୁ |<ph name="ACCELERATOR" />| ଦବାନ୍ତୁ</translation>
 <translation id="6280223929691119688">ଏହି ଠିକଣାକୁ ପହଞ୍ଚାଇପାରିବ ନାହିଁ। ଏକ ଭିନ୍ନ ଠିକଣା ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="6284292079994426700">26 x 38 ଇଞ୍ଚ</translation>
@@ -3848,7 +3843,6 @@
 <translation id="8922013791253848639">ଏହି ସାଇଟ୍‌ରେ ସର୍ବଦା ବିଜ୍ଞାପନକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="892588693504540538">ଉପର ଡାହାଣ ପଟରେ ପଞ୍ଚ୍</translation>
 <translation id="8930330541574156305">ରିଅଲ ଇଷ୍ଟେଟ</translation>
-<translation id="8931333241327730545">ଆପଣ ନିଜର Google ଆକାଉଣ୍ଟରେ ଏହି କାର୍ଡକୁ ସେଭ୍ କରିବାକୁ ଚାହୁଁଛନ୍ତି କି?</translation>
 <translation id="8932102934695377596">ଆପଣଙ୍କର ଘଣ୍ଟାର ସମୟ ପଛରେ ଅଛି</translation>
 <translation id="893332455753468063">ନାମ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="8942355029279167844">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର <ph name="APP_NAME" />କୁ ପ୍ରଡକ୍ଟ ବ୍ୟବହାରର ଅନୁଭୂତିକୁ ଉନ୍ନତ କରିବା ପାଇଁ ଡାଏଗ୍ନୋଷ୍ଟିକ୍ସ ଡାଟା ସଂଗ୍ରହ କରିବାକୁ ଅନୁମତି ଦେଇଛନ୍ତି। ଅଧିକ ସୂଚନା ପାଇଁ <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> ଦେଖନ୍ତୁ।</translation>

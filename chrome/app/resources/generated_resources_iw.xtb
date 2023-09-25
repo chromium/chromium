@@ -5040,7 +5040,6 @@
 <translation id="5027550639139316293">אישור אימייל</translation>
 <translation id="5027562294707732951">התקנת התוסף</translation>
 <translation id="5028445315206872221">התוספים חסומים באתר הזה</translation>
-<translation id="5029568752722684782">מחיקת העותק</translation>
 <translation id="5029873138381728058">‏נכשל הניסיון לבדיקת מכונות VM</translation>
 <translation id="503155457707535043">הורדת האפליקציות מתבצעת</translation>
 <translation id="5032430150487044192">‏לא ניתן ליצור קוד QR</translation>
@@ -5734,7 +5733,6 @@
 <translation id="5601823921345337195">‏לא מורשים להתחבר אל מכשירי MIDI</translation>
 <translation id="5601833336918638013">‏לא לאפשר לאתרים לאתר מכשירי Bluetooth</translation>
 <translation id="5602586420788540146">פתיחה בקבוצת כרטיסיות חדשה</translation>
-<translation id="5602765853043467355">ניקוי הסימניות, ההיסטוריה, הסיסמאות ונתונים נוספים מהמכשיר הזה</translation>
 <translation id="5605758115928394442">הודעה נשלחה לטלפון שלך כדי לאשר את זהותך.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{התוסף הזה נחסם}one{התוספים האלה נחסמו}two{התוספים האלה נחסמו}other{התוספים האלה נחסמו}}</translation>
 <translation id="560834977503641186">‏מידע נוסף על סנכרון Wi-Fi</translation>
@@ -5786,7 +5784,6 @@
 <translation id="5641648607875312660">עורך התמונות של צילומי מסך</translation>
 <translation id="5642508497713047">‏חותם CRL</translation>
 <translation id="5643321261065707929">רשת עם חיוב לפי שימוש בנתונים</translation>
-<translation id="5643620609347735571">ניקוי והמשך</translation>
 <translation id="5646376287012673985">מיקום</translation>
 <translation id="5646558797914161501">איש עסקים</translation>
 <translation id="5648021990716966815">שקע מיקרופון</translation>
@@ -7708,7 +7705,6 @@
 <translation id="7241389281993241388">יש להיכנס אל <ph name="TOKEN_NAME" /> כדי לייבא את אישור הלקוח.</translation>
 <translation id="7241763419756062043">בחירת איכות החיפוש והגלישה</translation>
 <translation id="7243092385765551741">למחוק את מפתח הגישה?</translation>
-<translation id="7243632151880336635">זה מספיק, ברצוני לצאת</translation>
 <translation id="7245162963905242662">‏חיפוש בדף הזה באמצעות Google…</translation>
 <translation id="7245628041916450754">‏<ph name="WIDTH" /> ‏x ‏<ph name="HEIGHT" /> (הטובה ביותר)</translation>
 <translation id="7246230585855757313">יש להכניס מחדש את מפתח האבטחה ולנסות שוב</translation>
@@ -8585,7 +8581,6 @@
 <translation id="7925285046818567682">בהמתנה ל-<ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">זה לא הייתי אני.</translation>
 <translation id="7926975587469166629">כינוי הכרטיס</translation>
-<translation id="7927610604078150317">גודל: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">כבר שינית את הסיסמה הזו?</translation>
 <translation id="7929962904089429003">פתיחת התפריט</translation>
 <translation id="7930294771522048157">אמצעי תשלום שנשמרו יופיעו כאן</translation>
@@ -9237,6 +9232,7 @@
 <translation id="8448729345478502352">הגדלה או הקטנה של פריטים במסך</translation>
 <translation id="8449008133205184768">הדבקה והתאמה של סגנון</translation>
 <translation id="8449036207308062757">ניהול האחסון</translation>
+<translation id="8449347986464073209">מחיקה ויציאה מהחשבון</translation>
 <translation id="8449836157089738489">פתיחת הכול בקבוצת כרטיסיות חדשה</translation>
 <translation id="8449869326050867919">הסיסמה שותפה</translation>
 <translation id="8451512073679317615">אסיסטנט</translation>

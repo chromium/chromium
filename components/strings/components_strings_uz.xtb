@@ -125,7 +125,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1243027604378859286">Muallif:</translation>
 <translation id="1246424317317450637">Qalin</translation>
 <translation id="1247030632403369975">Alyuminiy</translation>
-<translation id="1250759482327835220">Keyingi safar tezroq to‘lash uchun kartangizni Google hisobingizga saqlang.</translation>
 <translation id="1252209483516427155">Ustki kiyimlar</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sinxronlandi)</translation>
 <translation id="1255086252236620440">Oshxona mikserlari</translation>
@@ -158,7 +157,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1294154142200295408">Buyruqlar qatori variantlari</translation>
 <translation id="129553762522093515">Yaqinda yopilganlar</translation>
 <translation id="1296930489679394997">Chegirmali sotuvlar</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />Cookie-fayllarni tozalab ko‘ring<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Huquqiy ekstra</translation>
 <translation id="1301324364792935241">DNS sozlamalar himoyasini tekshiring</translation>
 <translation id="1307966114820526988">Eskirgan funksiyalar</translation>
@@ -1346,7 +1344,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3767485424735936570">Bu kontentdan <ph name="VM_NAME" /> tizimiga nusxa olish va joylash administrator tomonidan tavsiya etilmaydi</translation>
 <translation id="3772211998634047851">Qogʻoz (oliy sifatli)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Keepda yangi qaydni tez yaratish uchun avval Tab, keyin Enter tugmasini bosing</translation>
-<translation id="3778403066972421603">Bu kartani Google hisobi va ushbu qurilmaga saqlashni xohlaysizmi?</translation>
 <translation id="378026377453746707">Chrome tarkibida Google Saytlarni xavfsiz kezish kabi himoya funksiyalari mavjud. Saytlarni xavfsiz kezish funksiyasi siz ochayotgan saytga joylangan <ph name="BEGIN_LINK" /><ph name="SITE" /> saytida zararli dasturni aniqladi<ph name="END_LINK" />.</translation>
 <translation id="3780694243617746492">Chiqarish tarnovi</translation>
 <translation id="3781428340399460090">Och pushti</translation>
@@ -1952,7 +1949,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5020776957610079374">Etnik musiqa</translation>
 <translation id="5021557570875267742">Chrome bilan narxlarni kuzatish</translation>
 <translation id="5023310440958281426">Administrator tomonidan o‘rnatilgan qoidalarni tekshiring</translation>
-<translation id="5029568752722684782">Nusxani o‘chirib tashlash</translation>
 <translation id="5030338702439866405">Berilgan vaqt:</translation>
 <translation id="503069730517007720">“<ph name="SOFTWARE_NAME" />” uchun negiz sertifikati zarur, lekin o‘rnatilmagan. Tarmoq administratori bu muammoning yechimini “<ph name="SOFTWARE_NAME" />” konfiguratsiyasi ko‘rsatmalaridan izlashi zarur. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Google Tarjima haqida</translation>
@@ -2534,7 +2530,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6270066318535733958">Qayiqda suzish</translation>
 <translation id="6272088941196661550">Chrome tarixidagi tegishli faollikni koʻrish uchun tarixni qaytaring</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="627746635834430766">Keyingi safar tezroq to‘lash uchun kartangizni Google hisobingizga saqlang.</translation>
 <translation id="6279183038361895380">Kursorni ko‘rish uchun |<ph name="ACCELERATOR" />| tugmasini bosing</translation>
 <translation id="6280223929691119688">Bu manzilga yetkazib bera olmaymiz. Boshqa manzilni tanlang.</translation>
 <translation id="6284292079994426700">26 x 38 in</translation>
@@ -3845,7 +3840,6 @@ Batafsil axborot:
 <translation id="8922013791253848639">Bu saytda har doim reklama ko‘rsatilsin</translation>
 <translation id="892588693504540538">Yuqori oʻngdan teshik ochish</translation>
 <translation id="8930330541574156305">Koʻchmas mulk</translation>
-<translation id="8931333241327730545">Ushbu karta Google hisobingizda saqlansinmi?</translation>
 <translation id="8932102934695377596">Soatingiz orqada</translation>
 <translation id="893332455753468063">Ism qo‘shing</translation>
 <translation id="8942355029279167844">Mahsulot sifatini yaxshilash maqsadida <ph name="APP_NAME" /> diagnostika maʼlumotlarini jamlashiga Administrator tomonidan ruxsat berildi. Batafsil: <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>

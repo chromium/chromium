@@ -5035,7 +5035,6 @@
 <translation id="5027550639139316293">И-мэйлийн гэрчилгээ</translation>
 <translation id="5027562294707732951">Өргөтгөл нэмэх</translation>
 <translation id="5028445315206872221">Энэ сайтад өргөтгөлүүдийг блоклосон</translation>
-<translation id="5029568752722684782">Хуулбарыг арилгах</translation>
 <translation id="5029873138381728058">VM-г шалгаж чадсангүй</translation>
 <translation id="503155457707535043">Аппуyдыг татаж байна</translation>
 <translation id="5032430150487044192">QR код үүсгэх боломжгүй байна</translation>
@@ -5729,7 +5728,6 @@
 <translation id="5601823921345337195">MIDI төхөөрөмжүүдэд холбогдохыг зөвшөөрөөгүй</translation>
 <translation id="5601833336918638013">Сайтуудад Bluetooth төхөөрөмж хайхыг бүү зөвшөөр</translation>
 <translation id="5602586420788540146">Шинэ табын бүлэгт нээх</translation>
-<translation id="5602765853043467355">Энэ төхөөрөмжөөс хавчуурга, түүх, нууц үг болон бусад зүйлийг устгах</translation>
 <translation id="5605758115928394442">Таныг мөн эсэхийг баталгаажуулах зорилгоор таны утсанд мэдэгдэл илгээсэн болно.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Энэ өргөтгөлийг блоклосон байна}other{Эдгээр өргөтгөлийг блоклосон байна}}</translation>
 <translation id="560834977503641186">Wi-Fi синк, Нэмэлт мэдээлэл авах</translation>
@@ -5782,7 +5780,6 @@
 <translation id="5641648607875312660">Дэлгэцийн агшин зургийг засварлагч</translation>
 <translation id="5642508497713047">CRL гарын үсэг зурагч</translation>
 <translation id="5643321261065707929">Хязгаартай сүлжээ</translation>
-<translation id="5643620609347735571">Устгаад үргэлжлүүлэх</translation>
 <translation id="5646376287012673985">Байршил</translation>
 <translation id="5646558797914161501">Ажил хэрэгч хүн</translation>
 <translation id="5648021990716966815">Микрофоны чихэвчний оролт</translation>
@@ -7698,7 +7695,6 @@
 <translation id="7241389281993241388">Хэрэглэгчийн гэрчилгээг оруулах зорилгоор <ph name="TOKEN_NAME" />-д нэвтрэнэ үү.</translation>
 <translation id="7241763419756062043">Хайлт болон хайлтын чанараа сонгоно уу</translation>
 <translation id="7243092385765551741">Нэвтрэх түлхүүрийг устгах уу?</translation>
-<translation id="7243632151880336635">Цэвэрлээд гарах</translation>
 <translation id="7245162963905242662">Энэ хуудсыг Google-р хайх...</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Шилдэг)</translation>
 <translation id="7246230585855757313">Аюулгүй байдлын түлхүүрээ дахин залгаад дахин оролдоно уу</translation>
@@ -8575,7 +8571,6 @@
 <translation id="7925285046818567682"><ph name="HOST_NAME" />-ийг хүлээж байна...</translation>
 <translation id="7926423016278357561">Би байгаагүй.</translation>
 <translation id="7926975587469166629">Картын хоч</translation>
-<translation id="7927610604078150317">Хэмжээ: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Энэ нууц үгийг аль хэдийн өөрчилсөн үү?</translation>
 <translation id="7929962904089429003">Цэс нээх</translation>
 <translation id="7930294771522048157">Хадгалсан төлбөрийн хэрэгсэл энд харагдана</translation>
@@ -9223,6 +9218,7 @@
 <translation id="8448729345478502352">Дэлгэц дээрх зүйлсийг жижигрүүлэх эсвэл томруулах</translation>
 <translation id="8449008133205184768">Зөөж тавиад, хэлбэршүүлэлттэй нийцүүл</translation>
 <translation id="8449036207308062757">Хадгалах санг удирдах</translation>
+<translation id="8449347986464073209">Устгаад, гарах</translation>
 <translation id="8449836157089738489">Бүгдийг шинэ табын бүлэгт нээх</translation>
 <translation id="8449869326050867919">Нууц үгийг хуваалцсан</translation>
 <translation id="8451512073679317615">туслах</translation>

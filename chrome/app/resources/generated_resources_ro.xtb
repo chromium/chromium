@@ -5025,7 +5025,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5027550639139316293">Certificat pentru e-mail</translation>
 <translation id="5027562294707732951">Adaugă extensia</translation>
 <translation id="5028445315206872221">Extensiile sunt blocate pe acest site</translation>
-<translation id="5029568752722684782">Șterge copia</translation>
 <translation id="5029873138381728058">Nu s-au putut verifica mașinile virtuale</translation>
 <translation id="503155457707535043">Aplicațiile se descarcă</translation>
 <translation id="5032430150487044192">Nu s-a putut crea codul QR</translation>
@@ -5719,7 +5718,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5601823921345337195">Nu au permisiunea de a se conecta la dispozitive MIDI</translation>
 <translation id="5601833336918638013">Nu permite site-urilor să caute dispozitive Bluetooth</translation>
 <translation id="5602586420788540146">Deschide într-un nou grup de file</translation>
-<translation id="5602765853043467355">Șterge marcajele, istoricul, parolele și altele de pe acest dispozitiv</translation>
 <translation id="5605758115928394442">Ți s-a trimis o notificare pe telefon pentru a-ți confirma identitatea.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Extensia este blocată}few{Extensiile sunt blocate}other{Extensiile sunt blocate}}</translation>
 <translation id="560834977503641186">Sincronizare Wi-Fi, află mai multe</translation>
@@ -5771,7 +5769,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5641648607875312660">Editor de capturi de ecran</translation>
 <translation id="5642508497713047">Semnatar CRL</translation>
 <translation id="5643321261065707929">Rețea contorizată</translation>
-<translation id="5643620609347735571">Șterge și continuă</translation>
 <translation id="5646376287012673985">Locație</translation>
 <translation id="5646558797914161501">Om de afaceri</translation>
 <translation id="5648021990716966815">Mufă pentru microfon</translation>
@@ -7691,7 +7688,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7241389281993241388">Conectează-te la <ph name="TOKEN_NAME" /> pentru a importa certificatul client.</translation>
 <translation id="7241763419756062043">Îmbunătățește calitatea căutării și a navigării</translation>
 <translation id="7243092385765551741">Ștergi cheia de acces?</translation>
-<translation id="7243632151880336635">Șterge și deconectează-te</translation>
 <translation id="7245162963905242662">Caut&amp;ă această pagină pe Google...</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (optimă)</translation>
 <translation id="7246230585855757313">Reintrodu cheia de securitate și încearcă din nou</translation>
@@ -8569,7 +8565,6 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7925285046818567682">Se așteaptă <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">Nu am fost eu.</translation>
 <translation id="7926975587469166629">Pseudonimul cardului</translation>
-<translation id="7927610604078150317">Dimensiune: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Ai schimbat deja parola?</translation>
 <translation id="7929962904089429003">Deschide meniul</translation>
 <translation id="7930294771522048157">Metodele de plată salvate vor fi afișate aici</translation>
@@ -9219,6 +9214,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8448729345478502352">Micșorează sau mărește elementele de pe ecran</translation>
 <translation id="8449008133205184768">Inserează și potrivește stilul</translation>
 <translation id="8449036207308062757">Gestionează stocarea</translation>
+<translation id="8449347986464073209">Șterge și deconectează-te</translation>
 <translation id="8449836157089738489">Deschideți-le pe toate într-un nou grup de file</translation>
 <translation id="8449869326050867919">S-a permis accesul la parolă</translation>
 <translation id="8451512073679317615">asistent</translation>

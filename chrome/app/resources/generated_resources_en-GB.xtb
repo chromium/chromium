@@ -5040,7 +5040,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5027550639139316293">Email Certificate</translation>
 <translation id="5027562294707732951">Add extension</translation>
 <translation id="5028445315206872221">Extensions are blocked on this site</translation>
-<translation id="5029568752722684782">Clear copy</translation>
 <translation id="5029873138381728058">Failed to check VMs</translation>
 <translation id="503155457707535043">Apps downloading</translation>
 <translation id="5032430150487044192">Can't create QR code</translation>
@@ -5734,7 +5733,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5601823921345337195">Not allowed to connect to MIDI devices</translation>
 <translation id="5601833336918638013">Don't allow sites to look for Bluetooth devices</translation>
 <translation id="5602586420788540146">Open in new tab group</translation>
-<translation id="5602765853043467355">Clear bookmarks, history, passwords and more from this device</translation>
 <translation id="5605758115928394442">A notification was sent to your phone to confirm that it's you.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{This extension is blocked}other{These extensions are blocked}}</translation>
 <translation id="560834977503641186">Wi-Fi Sync, learn more</translation>
@@ -5786,7 +5784,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5641648607875312660">Screenshot image editor</translation>
 <translation id="5642508497713047">CRL Signer</translation>
 <translation id="5643321261065707929">Metered network</translation>
-<translation id="5643620609347735571">Clear and continue</translation>
 <translation id="5646376287012673985">Location</translation>
 <translation id="5646558797914161501">Businessman</translation>
 <translation id="5648021990716966815">Mic jack</translation>
@@ -7704,7 +7701,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7241389281993241388">Please sign in to <ph name="TOKEN_NAME" /> to import the client certificate.</translation>
 <translation id="7241763419756062043">Choose your search and browsing quality</translation>
 <translation id="7243092385765551741">Delete passkey?</translation>
-<translation id="7243632151880336635">Clear and Sign Out</translation>
 <translation id="7245162963905242662">Search this page with Google...</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Best)</translation>
 <translation id="7246230585855757313">Reinsert your security key and try again</translation>
@@ -8582,7 +8578,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7925285046818567682">Waiting for <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">This wasn't me.</translation>
 <translation id="7926975587469166629">Card nickname</translation>
-<translation id="7927610604078150317">Size: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Already changed this password?</translation>
 <translation id="7929962904089429003">Opening the menu</translation>
 <translation id="7930294771522048157">Saved payment methods will appear here</translation>
@@ -9232,6 +9227,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8448729345478502352">Make items on your screen smaller or larger</translation>
 <translation id="8449008133205184768">Paste and Match Style</translation>
 <translation id="8449036207308062757">Manage storage</translation>
+<translation id="8449347986464073209">Delete and sign out</translation>
 <translation id="8449836157089738489">Open all in new tab group</translation>
 <translation id="8449869326050867919">Password shared</translation>
 <translation id="8451512073679317615">assistant</translation>

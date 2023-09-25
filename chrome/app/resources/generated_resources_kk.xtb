@@ -5021,7 +5021,6 @@
 <translation id="5027550639139316293">Электрондық пошта сертификаты</translation>
 <translation id="5027562294707732951">Кеңейтім қосу</translation>
 <translation id="5028445315206872221">Бұл сайтта кеңейтімдер блокталған</translation>
-<translation id="5029568752722684782">Көшірмені өшіру</translation>
 <translation id="5029873138381728058">Виртуалдық машиналар тексерілмеді.</translation>
 <translation id="503155457707535043">Қолданбалар жүктеп алынуда</translation>
 <translation id="5032430150487044192">QR кодын жасау мүмкін емес.</translation>
@@ -5715,7 +5714,6 @@
 <translation id="5601823921345337195">MIDI құрылғыларына қосылуға рұқсаты жоқтар</translation>
 <translation id="5601833336918638013">Сайттардың Bluetooth құрылғыларын іздеуіне рұқсат берілмесін.</translation>
 <translation id="5602586420788540146">Жаңа қойындылар тобында ашу</translation>
-<translation id="5602765853043467355">Осы құрылғыдан алынған бетбелгілерді, тарихты, құпия сөздерді, т.б. өшіру</translation>
 <translation id="5605758115928394442">Жеке басыңызды растау үшін телефоныңызға хабарландыру жіберілді.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Бұл кеңейтім бөгелді}other{Бұл кеңейтімдер бөгелді}}</translation>
 <translation id="560834977503641186">Wi-Fi деректерін синхрондау, толығырақ</translation>
@@ -5765,7 +5763,6 @@
 <translation id="5641648607875312660">Скриншот кескіні редакторы</translation>
 <translation id="5642508497713047">CRL қол қоюшы</translation>
 <translation id="5643321261065707929">Шектелген желі</translation>
-<translation id="5643620609347735571">Өшіру және жалғастыру</translation>
 <translation id="5646376287012673985">Орын</translation>
 <translation id="5646558797914161501">Бизнесмен</translation>
 <translation id="5648021990716966815">Микрофон ұяшығы</translation>
@@ -7681,7 +7678,6 @@
 <translation id="7241389281993241388">Клиент сертификатын импорттау үшін <ph name="TOKEN_NAME" /> жүйсіне кіріңіз.</translation>
 <translation id="7241763419756062043">Іздеу және шолу сапасын таңдаңыз</translation>
 <translation id="7243092385765551741">Кіру кілтін жою керек пе?</translation>
-<translation id="7243632151880336635">Өшіру және шығу</translation>
 <translation id="7245162963905242662">Бұл бетті Google арқылы із&amp;деу...</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (оңтайлы)</translation>
 <translation id="7246230585855757313">Қауіпсіздік кілтін қайта енгізіп, қайталап көріңіз.</translation>
@@ -8558,7 +8554,6 @@
 <translation id="7925285046818567682"><ph name="HOST_NAME" /> хосты күтілуде…</translation>
 <translation id="7926423016278357561">Бұл мен емес едім.</translation>
 <translation id="7926975587469166629">Картаның қысқа аты</translation>
-<translation id="7927610604078150317">Өлшемі: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Бұл құпия сөзді әлдеқашан өзгертіп қойдыңыз ба?</translation>
 <translation id="7929962904089429003">Мәзірді ашу</translation>
 <translation id="7930294771522048157">Сақталған төлеу әдістері осы жерде көрсетіледі</translation>
@@ -9207,6 +9202,7 @@
 <translation id="8448729345478502352">Экрандағы элементтерді кішірейту немесе ұлғайту</translation>
 <translation id="8449008133205184768">Қою және сәйкестендіру стилі</translation>
 <translation id="8449036207308062757">Жадты басқару</translation>
+<translation id="8449347986464073209">Жою және шығу</translation>
 <translation id="8449836157089738489">Барлығын жаңа қойындылар тобында ашу</translation>
 <translation id="8449869326050867919">Құпия сөз жіберілді</translation>
 <translation id="8451512073679317615">assistant</translation>

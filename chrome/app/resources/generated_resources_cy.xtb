@@ -5043,7 +5043,6 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5027550639139316293">Tystysgrif E-bost</translation>
 <translation id="5027562294707732951">Ychwanegu estyniad</translation>
 <translation id="5028445315206872221">Mae estyniadau wedi'u rhwystro ar y wefan hon</translation>
-<translation id="5029568752722684782">Clirio'r copi</translation>
 <translation id="5029873138381728058">Wedi methu â gwirio VM</translation>
 <translation id="503155457707535043">Wrthi'n lawrlwytho apiau</translation>
 <translation id="5032430150487044192">Methu â chreu Cod QR</translation>
@@ -5737,7 +5736,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="5601823921345337195">Ni chaniateir cysylltu â dyfeisiau MIDI</translation>
 <translation id="5601833336918638013">Peidio â chaniatáu i wefannau chwilio am ddyfeisiau Bluetooth</translation>
 <translation id="5602586420788540146">Agor mewn grŵp tabiau newydd</translation>
-<translation id="5602765853043467355">Clirio nodau tudalen, hanes, cyfrineiriau a rhagor o'r ddyfais hon</translation>
 <translation id="5605758115928394442">Anfonwyd hysbysiad i'ch ffôn i gadarnhau mai chi sydd yno.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Mae'r estyniad hwn wedi'i rwystro}zero{Mae'r estyniadau hyn wedi'u rhwystro}two{Mae'r estyniadau hyn wedi'u rhwystro}few{Mae'r estyniadau hyn wedi'u rhwystro}many{Mae'r estyniadau hyn wedi'u rhwystro}other{Mae'r estyniadau hyn wedi'u rhwystro}}</translation>
 <translation id="560834977503641186">Cysoni Wi-Fi, Dysgu Rhagor</translation>
@@ -5789,7 +5787,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="5641648607875312660">Golygydd Llun Sgrinlun</translation>
 <translation id="5642508497713047">Llofnodwr SRL</translation>
 <translation id="5643321261065707929">Rhwydwaith ar fesurydd</translation>
-<translation id="5643620609347735571">Clirio a pharhau</translation>
 <translation id="5646376287012673985">Lleoliad</translation>
 <translation id="5646558797914161501">Dyn busnes</translation>
 <translation id="5648021990716966815">Cysylltydd meic</translation>
@@ -7714,7 +7711,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7241389281993241388">Mewngofnodwch i <ph name="TOKEN_NAME" /> i fewnforio'r dystysgrif cleient.</translation>
 <translation id="7241763419756062043">Dewiswch eich ansawdd chwilio a phori</translation>
 <translation id="7243092385765551741">Dileu cod pas?</translation>
-<translation id="7243632151880336635">Clirio ac Allgofnodi</translation>
 <translation id="7245162963905242662">Chwilio'r Dudalen hon gyda Google...</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Gorau)</translation>
 <translation id="7246230585855757313">Ailfewnosodwch eich allwedd ddiogelwch a rhowch gynnig arall arni</translation>
@@ -8592,7 +8588,6 @@ Pwyswch switsh neu fysell a aseiniwyd i dynnu aseiniad.</translation>
 <translation id="7925285046818567682">Wrthi'n aros am <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">Nid fi oedd hwn.</translation>
 <translation id="7926975587469166629">Llysenw cerdyn</translation>
-<translation id="7927610604078150317">Maint: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Wedi newid y cyfrinair hwn eisoes?</translation>
 <translation id="7929962904089429003">Agorwch y ddewislen</translation>
 <translation id="7930294771522048157">Bydd dulliau talu sydd wedi'u cadw yn ymddangos yma</translation>
@@ -9241,6 +9236,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8448729345478502352">Gwneud eitemau ar eich sgrîn yn llai neu'n fwy</translation>
 <translation id="8449008133205184768">Gludo a Chopïo Arddull</translation>
 <translation id="8449036207308062757">Rheoli'r storfa</translation>
+<translation id="8449347986464073209">Dileu ac Allgofnodi</translation>
 <translation id="8449836157089738489">Agor pob un mewn grŵp tabiau newydd</translation>
 <translation id="8449869326050867919">Wedi rhannu cyfrinair</translation>
 <translation id="8451512073679317615">cynorthwyydd</translation>

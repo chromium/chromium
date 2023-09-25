@@ -124,7 +124,6 @@
 <translation id="1243027604378859286">作者：</translation>
 <translation id="1246424317317450637">粗体</translation>
 <translation id="1247030632403369975">铝</translation>
-<translation id="1250759482327835220">若想在下次购物时更快捷地付款，请将您的付款卡信息、姓名和账单邮寄地址保存到您的 Google 账号名下。</translation>
 <translation id="1252209483516427155">外套</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />、<ph name="TYPE_2" />（已同步）</translation>
 <translation id="1255086252236620440">食物搅拌机</translation>
@@ -157,7 +156,6 @@
 <translation id="1294154142200295408">命令行变体</translation>
 <translation id="129553762522093515">最近关闭的标签页</translation>
 <translation id="1296930489679394997">销售</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />尝试清除 Cookie<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">请检查您的安全 DNS 设置</translation>
 <translation id="1307966114820526988">已被弃用的功能</translation>
@@ -1343,7 +1341,6 @@
 <translation id="3767485424735936570">管理员政策不建议将此内容复制并粘贴到 <ph name="VM_NAME" /></translation>
 <translation id="3772211998634047851">纸（证券纸）</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Google Keep 中快速创建新记事</translation>
-<translation id="3778403066972421603">要将此卡的信息保存到您的 Google 账号中和此设备上吗？</translation>
 <translation id="378026377453746707">Chrome 内置的安全功能可在您浏览网页时为您提供保护，例如 Google 安全浏览功能。安全浏览功能近期<ph name="BEGIN_LINK" />在您尝试访问的网站 <ph name="SITE" /> 上发现了内嵌的有害软件<ph name="END_LINK" />。</translation>
 <translation id="3780694243617746492">出纸槽</translation>
 <translation id="3781428340399460090">艳粉色</translation>
@@ -1948,7 +1945,6 @@
 <translation id="5020776957610079374">世界音乐</translation>
 <translation id="5021557570875267742">使用 Chrome 跟踪价格</translation>
 <translation id="5023310440958281426">请查看管理员制定的政策</translation>
-<translation id="5029568752722684782">清除副本</translation>
 <translation id="5030338702439866405">颁发者</translation>
 <translation id="503069730517007720">必须为“<ph name="SOFTWARE_NAME" />”安装根证书，但您尚未安装该证书。您的 IT 管理员应仔细查看“<ph name="SOFTWARE_NAME" />”的配置说明，以解决此问题。<ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">关于 Google 翻译</translation>
@@ -2529,7 +2525,6 @@
 <translation id="6270066318535733958">划船</translation>
 <translation id="6272088941196661550">继续您的历程，以查看您的 Chrome 历史记录中的相关活动记录</translation>
 <translation id="6272383483618007430">Google 更新</translation>
-<translation id="627746635834430766">若想在下次购物时更快捷地付款，请将您的付款卡信息和账单邮寄地址保存到您的 Google 账号中。</translation>
 <translation id="6279183038361895380">按 |<ph name="ACCELERATOR" />| 可显示鼠标光标</translation>
 <translation id="6280223929691119688">无法递送到此地址。请另选一个地址。</translation>
 <translation id="6284292079994426700">26 x 38 英寸</translation>
@@ -3839,7 +3834,6 @@
 <translation id="8922013791253848639">在此网站上始终允许显示广告</translation>
 <translation id="892588693504540538">打孔（右上角）</translation>
 <translation id="8930330541574156305">房地产</translation>
-<translation id="8931333241327730545">要将此卡的信息保存到您的 Google 账号吗？</translation>
 <translation id="8932102934695377596">您的时钟慢了</translation>
 <translation id="893332455753468063">添加名称</translation>
 <translation id="8942355029279167844">您的管理员已允许 <ph name="APP_NAME" /> 收集诊断数据以提升产品使用体验。有关详情，请参阅 <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />。</translation>

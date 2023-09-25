@@ -5040,7 +5040,6 @@
 <translation id="5027550639139316293">Πιστοποιητικό ηλεκτρονικού ταχυδρομείου</translation>
 <translation id="5027562294707732951">Προσθήκη επέκτασης</translation>
 <translation id="5028445315206872221">Οι επεκτάσεις αποκλείονται από αυτόν τον ιστότοπο</translation>
-<translation id="5029568752722684782">Διαγραφή αντιγράφου</translation>
 <translation id="5029873138381728058">Απέτυχε ο έλεγχος των VM</translation>
 <translation id="503155457707535043">Λήψη εφαρμογών</translation>
 <translation id="5032430150487044192">Δεν είναι δυνατή η δημιουργία κωδικού QR</translation>
@@ -5734,7 +5733,6 @@
 <translation id="5601823921345337195">Δεν επιτρέπεται να συνδέονται σε συσκευές MIDI</translation>
 <translation id="5601833336918638013">Να μην επιτρέπεται στους ιστοτόπους να κάνουν αναζήτηση για συσκευές Bluetooth</translation>
 <translation id="5602586420788540146">Άνοιγμα σε νέα ομάδα καρτελών</translation>
-<translation id="5602765853043467355">Διαγραφή σελιδοδεικτών, ιστορικού, κωδικών πρόσβασης κ.ά. από αυτή τη συσκευή</translation>
 <translation id="5605758115928394442">Στάλθηκε μια ειδοποίηση στο τηλέφωνό σας για την επιβεβαίωση της ταυτότητάς σας.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Αυτή η επέκταση έχει αποκλειστεί}other{Αυτές οι επεκτάσεις έχουν αποκλειστεί}}</translation>
 <translation id="560834977503641186">Συγχρονισμός Wi-Fi, Μάθετε περισσότερα</translation>
@@ -5787,7 +5785,6 @@
 <translation id="5641648607875312660">Πρόγραμμα επεξεργασίας εικόνας στιγμιότυπου οθόνης</translation>
 <translation id="5642508497713047">Υπηρεσία υπογραφής CRL</translation>
 <translation id="5643321261065707929">Δίκτυο με ογκοχρέωση</translation>
-<translation id="5643620609347735571">Διαγραφή και συνέχεια</translation>
 <translation id="5646376287012673985">Τοποθεσία</translation>
 <translation id="5646558797914161501">Επιχειρηματίας</translation>
 <translation id="5648021990716966815">Υποδοχή μικροφώνου</translation>
@@ -7705,7 +7702,6 @@
 <translation id="7241389281993241388">Συνδεθείτε στο <ph name="TOKEN_NAME" /> για εισαγωγή του πιστοποιητικού πελάτη.</translation>
 <translation id="7241763419756062043">Επιλέξτε την ποιότητα αναζήτησης και περιήγησης</translation>
 <translation id="7243092385765551741">Διαγραφή κλειδιού πρόσβασης;</translation>
-<translation id="7243632151880336635">Διαγραφή και αποσύνδεση</translation>
 <translation id="7245162963905242662">Αναζ&amp;ήτηση αυτής της σελίδας με το Google…</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (βέλτιστη)</translation>
 <translation id="7246230585855757313">Επανατοποθετήστε το κλειδί ασφαλείας και δοκιμάστε ξανά</translation>
@@ -8583,7 +8579,6 @@
 <translation id="7925285046818567682">Αναμονή για κεντρικό υπολογιστή <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">Δεν ήμουν εγώ.</translation>
 <translation id="7926975587469166629">Ψευδώνυμο κάρτας</translation>
-<translation id="7927610604078150317">Μέγεθος: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Έχετε αλλάξει ήδη αυτόν τον κωδικό πρόσβασης;</translation>
 <translation id="7929962904089429003">Άνοιγμα μενού</translation>
 <translation id="7930294771522048157">Οι αποθηκευμένοι τρόποι πληρωμής θα εμφανίζονται εδώ</translation>
@@ -9233,6 +9228,7 @@
 <translation id="8448729345478502352">Κάντε τα στοιχεία στην οθόνη μικρότερα ή μεγαλύτερα</translation>
 <translation id="8449008133205184768">Επικόλληση και αντιστοίχιση στιλ</translation>
 <translation id="8449036207308062757">Διαχείριση αποθηκευτικού χώρου</translation>
+<translation id="8449347986464073209">Διαγραφή και αποσύνδεση</translation>
 <translation id="8449836157089738489">Άνοιγμα όλων σε νέα ομάδα καρτελών</translation>
 <translation id="8449869326050867919">Ο κωδικός πρόσβασης κοινοποιήθηκε</translation>
 <translation id="8451512073679317615">βοηθός</translation>

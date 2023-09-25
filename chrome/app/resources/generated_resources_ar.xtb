@@ -5026,7 +5026,6 @@
 <translation id="5027550639139316293">شهادة البريد الإلكتروني</translation>
 <translation id="5027562294707732951">تثبيت إضافة</translation>
 <translation id="5028445315206872221">الإضافات محظورة على هذا الموقع الإلكتروني.</translation>
-<translation id="5029568752722684782">محو النسخة</translation>
 <translation id="5029873138381728058">‏تعذّر التحقّق من الأجهزة الافتراضية (VM).</translation>
 <translation id="503155457707535043">تنزيل التطبيقات</translation>
 <translation id="5032430150487044192">يتعذّر إنشاء رمز الاستجابة السريعة.</translation>
@@ -5720,7 +5719,6 @@
 <translation id="5601823921345337195">‏المواقع الإلكترونية التي لا يُسمح لها بالاتصال بأجهزة MIDI</translation>
 <translation id="5601833336918638013">عدم السماح للمواقع الإلكترونية بالبحث عن أجهزة تتضمّن بلوتوث</translation>
 <translation id="5602586420788540146">فتح في مجموعة علامات تبويب جديدة</translation>
-<translation id="5602765853043467355">محو الإشارات المرجعية والسجلّ وكلمات المرور وغيرها من البيانات على هذا الجهاز</translation>
 <translation id="5605758115928394442">تم إرسال إشعار إلى هاتفك لتأكيد هويتك.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{تم حظر هذه الإضافة}zero{تم حظر هذه الإضافات}two{تم حظر هاتين الإضافتين}few{تم حظر هذه الإضافات}many{تم حظر هذه الإضافات}other{تم حظر هذه الإضافات}}</translation>
 <translation id="560834977503641186">مزيد من المعلومات عن ميزة "مزامنة الواي فاي"</translation>
@@ -5772,7 +5770,6 @@
 <translation id="5641648607875312660">محرِّر صور لقطات الشاشة</translation>
 <translation id="5642508497713047">‏التوقيع على قوائم إبطال الشهادات (CRL)</translation>
 <translation id="5643321261065707929">شبكة تفرض تكلفة استخدام</translation>
-<translation id="5643620609347735571">محو ومتابعة</translation>
 <translation id="5646376287012673985">الموقع الجغرافي</translation>
 <translation id="5646558797914161501">رجل أعمال</translation>
 <translation id="5648021990716966815">مقبس الميكروفون</translation>
@@ -7699,7 +7696,6 @@
 <translation id="7241389281993241388">يُرجى تسجيل الدخول إلى <ph name="TOKEN_NAME" /> لاستيراد شهادة العميل.</translation>
 <translation id="7241763419756062043">اختيار جودة البحث والتصفّح</translation>
 <translation id="7243092385765551741">هل تريد حذف مفتاح المرور؟</translation>
-<translation id="7243632151880336635">المحو والخروج</translation>
 <translation id="7245162963905242662">‏البحث في هذه الصفحة باستخدام Google…</translation>
 <translation id="7245628041916450754">‏<ph name="WIDTH" /> x <ph name="HEIGHT" /> (الأفضل)</translation>
 <translation id="7246230585855757313">أعِد إدخال مفتاح الأمان وحاول مجددًا</translation>
@@ -8576,7 +8572,6 @@
 <translation id="7925285046818567682">في انتظار <ph name="HOST_NAME" />‏ ...</translation>
 <translation id="7926423016278357561">لم يكن هذا أنا.</translation>
 <translation id="7926975587469166629">لقب البطاقة</translation>
-<translation id="7927610604078150317">الحجم: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">هل سبق وغيرت كلمة المرور هذه؟</translation>
 <translation id="7929962904089429003">فتح القائمة</translation>
 <translation id="7930294771522048157">ستظهر هنا طرق الدفع المحفوظة</translation>
@@ -9227,6 +9222,7 @@
 <translation id="8448729345478502352">تصغير العناصر المعروضة على شاشتك أو تكبيرها</translation>
 <translation id="8449008133205184768">لصق النمط ومطابقته</translation>
 <translation id="8449036207308062757">إدارة مساحة التخزين</translation>
+<translation id="8449347986464073209">الحذف وتسجيل الخروج</translation>
 <translation id="8449836157089738489">فتح الكل في مجموعة علامات تبويب جديدة</translation>
 <translation id="8449869326050867919">تمت مشاركة كلمة المرور</translation>
 <translation id="8451512073679317615">المساعد</translation>

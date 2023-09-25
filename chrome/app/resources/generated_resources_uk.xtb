@@ -5043,7 +5043,6 @@
 <translation id="5027550639139316293">Сертифікат електронної пошти</translation>
 <translation id="5027562294707732951">Додати розширення</translation>
 <translation id="5028445315206872221">На цьому сайті заблоковано розширення</translation>
-<translation id="5029568752722684782">Видалити копію</translation>
 <translation id="5029873138381728058">Не вдалося перевірити віртуальні машини</translation>
 <translation id="503155457707535043">Завантаження додатків</translation>
 <translation id="5032430150487044192">Не вдається створити QR-код</translation>
@@ -5737,7 +5736,6 @@
 <translation id="5601823921345337195">Заборонено підключатися до пристроїв MIDI</translation>
 <translation id="5601833336918638013">Заборонити сайтам шукати пристрої з Bluetooth</translation>
 <translation id="5602586420788540146">Відкрити в новій групі вкладок</translation>
-<translation id="5602765853043467355">Видалити закладки, історію, паролі тощо з цього пристрою</translation>
 <translation id="5605758115928394442">Ми надіслали сповіщення на ваш телефон, щоб підтвердити вашу особу.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Це розширення заблоковано}one{Ці розширення заблоковано}few{Ці розширення заблоковано}many{Ці розширення заблоковано}other{Ці розширення заблоковано}}</translation>
 <translation id="560834977503641186">Докладніше про синхронізацію Wi-Fi</translation>
@@ -5787,7 +5785,6 @@
 <translation id="5641648607875312660">Редактор знімків екрана</translation>
 <translation id="5642508497713047">Сторона, що підписала CRL</translation>
 <translation id="5643321261065707929">Мережа з тарифікацією трафіку</translation>
-<translation id="5643620609347735571">Видалити та продовжити</translation>
 <translation id="5646376287012673985">Місцезнаходження</translation>
 <translation id="5646558797914161501">Бізнесмен</translation>
 <translation id="5648021990716966815">Гніздо для мікрофона</translation>
@@ -7710,7 +7707,6 @@
 <translation id="7241389281993241388">Увійдіть у <ph name="TOKEN_NAME" />, щоб імпортувати сертифікат клієнта.</translation>
 <translation id="7241763419756062043">Виберіть якість пошуку та веб-перегляду</translation>
 <translation id="7243092385765551741">Видалити ключ доступу?</translation>
-<translation id="7243632151880336635">Очистити та вийти з облікового запису</translation>
 <translation id="7245162963905242662">Шука&amp;ти цю сторінку в Google…</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" />x<ph name="HEIGHT" /> (найвища)</translation>
 <translation id="7246230585855757313">Знову вставте ключ безпеки та повторіть спробу</translation>
@@ -8587,7 +8583,6 @@
 <translation id="7925285046818567682"><ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">Це не я.</translation>
 <translation id="7926975587469166629">Псевдонім картки</translation>
-<translation id="7927610604078150317">Розмір: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Уже змінили цей пароль?</translation>
 <translation id="7929962904089429003">Відкрити меню</translation>
 <translation id="7930294771522048157">Тут відображатимуться збережені способи оплати</translation>
@@ -9237,6 +9232,7 @@
 <translation id="8448729345478502352">Зменшуйте або збільшуйте елементи на екрані</translation>
 <translation id="8449008133205184768">Вставити та застосувати стиль</translation>
 <translation id="8449036207308062757">Керувати пам’яттю</translation>
+<translation id="8449347986464073209">Видалити й вийти</translation>
 <translation id="8449836157089738489">Відкрити всі в новій групі вкладок</translation>
 <translation id="8449869326050867919">Пароль надіслано</translation>
 <translation id="8451512073679317615">асистент</translation>

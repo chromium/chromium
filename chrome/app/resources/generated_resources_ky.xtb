@@ -5040,7 +5040,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5027550639139316293">Электрондук почта тастыктамасы</translation>
 <translation id="5027562294707732951">Кеңейтүү кошуу</translation>
 <translation id="5028445315206872221">Бул сайтта кеңейтүүлөр бөгөттөлдү</translation>
-<translation id="5029568752722684782">Көчүрмөнү тазалоо</translation>
 <translation id="5029873138381728058">Виртуалдык машиналар текшерилбей койду</translation>
 <translation id="503155457707535043">Колдонмолор жүктөлүп алынууда</translation>
 <translation id="5032430150487044192">QR код түзүлгөн жок</translation>
@@ -5734,7 +5733,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5601823921345337195">MIDI түзмөктөрүнө туташа албайт</translation>
 <translation id="5601833336918638013">Сайттарга Bluetooth түзмөктөрүн издөөгө тыюу салуу</translation>
 <translation id="5602586420788540146">Жаңы өтмөктөр тобунда ачуу</translation>
-<translation id="5602765853043467355">Бул түзмөктөгү кыстармаларды, таржымалды, сырсөздөрдү жана башкаларды тазалоо</translation>
 <translation id="5605758115928394442">Сиз экениңизди ырастоо үчүн телефонуңузга билдирме жөнөтүлдү.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Бул кеңейтүү бөгөттөлгөн}other{Бул кеңейтүүлөр бөгөттөлгөн}}</translation>
 <translation id="560834977503641186">Wi-Fi Sync тууралуу кеңири маалымат</translation>
@@ -5786,7 +5784,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5641648607875312660">Скриншот сүрөтүн түзөткүч</translation>
 <translation id="5642508497713047">CRL кол койгуч</translation>
 <translation id="5643321261065707929">Тарифтелген тармак</translation>
-<translation id="5643620609347735571">Тазалоо жана улантуу</translation>
 <translation id="5646376287012673985">Жайгашкан жер</translation>
 <translation id="5646558797914161501">Ишкер мырза</translation>
 <translation id="5648021990716966815">Микрофондун оюкчасы</translation>
@@ -7703,7 +7700,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7241389281993241388">Кардар тастыктамасын импорттоо үчүн <ph name="TOKEN_NAME" /> ичине кириңиз.</translation>
 <translation id="7241763419756062043">Издөө жана карап чыгуу сапатын тандаңыз</translation>
 <translation id="7243092385765551741">Киргизүүчү ачкычы өчүрүлсүнбү?</translation>
-<translation id="7243632151880336635">Тазалоо жана Чыгуу</translation>
 <translation id="7245162963905242662">Бул баракты Google менен издеңиз…</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> х <ph name="HEIGHT" /> (Эң мыкты)</translation>
 <translation id="7246230585855757313">Коопсуздук ачкычын кайра киргизип туруп, кайра аракет кылып көрүңүз</translation>
@@ -8581,7 +8577,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7925285046818567682">Төмөнкүнү күтүүдө <ph name="HOST_NAME" />…</translation>
 <translation id="7926423016278357561">Ал мен эмес болчумун.</translation>
 <translation id="7926975587469166629">Картанын ылакап аты</translation>
-<translation id="7927610604078150317">Өлчөмү: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Бул сырсөздү өзгөрттүңүз беле?</translation>
 <translation id="7929962904089429003">Менюну ачуу</translation>
 <translation id="7930294771522048157">Сакталган төлөм ыкмалары бул жерде көрүнөт</translation>
@@ -9230,6 +9225,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8448729345478502352">Экраныңыздагы элементтерди кичирейтип же чоңойтот</translation>
 <translation id="8449008133205184768">Чаптоо жана далдаштыруу стили</translation>
 <translation id="8449036207308062757">Сактагычты башкаруу</translation>
+<translation id="8449347986464073209">Өчүрүү жана аккаунттан чыгуу</translation>
 <translation id="8449836157089738489">Баарын жаңы өтмөктөр тобунда ачуу</translation>
 <translation id="8449869326050867919">Сырсөз бөлүшүлдү</translation>
 <translation id="8451512073679317615">жардамчы</translation>

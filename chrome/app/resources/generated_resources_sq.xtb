@@ -5022,7 +5022,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5027550639139316293">Dërgo certifikatën me mail</translation>
 <translation id="5027562294707732951">Shto një shtesë</translation>
 <translation id="5028445315206872221">Shtesat bllokohen në këtë sajt</translation>
-<translation id="5029568752722684782">Pastro kopjen</translation>
 <translation id="5029873138381728058">Nuk mund të kontrolloheshin VM-të</translation>
 <translation id="503155457707535043">Po shkarkon aplikacionet</translation>
 <translation id="5032430150487044192">Kodi QR nuk mund të krijohet</translation>
@@ -5716,7 +5715,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5601823921345337195">Nuk lejohen të lidhen me pajisjet MIDI</translation>
 <translation id="5601833336918638013">Mos lejo që sajtet të kërkojnë për pajisjet me Bluetooth</translation>
 <translation id="5602586420788540146">Hape në një grup të ri skedash</translation>
-<translation id="5602765853043467355">Pastro faqeshënuesit, historikun, fjalëkalimet dhe më shumë nga kjo pajisje</translation>
 <translation id="5605758115928394442">Një njoftim është dërguar te telefoni yt për të konfirmuar që je ti.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Kjo shtesë është bllokuar}other{Këto shtesa janë bllokuar}}</translation>
 <translation id="560834977503641186">"Sinkronizimi i Wi-Fi", Mëso më shumë</translation>
@@ -5768,7 +5766,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5641648607875312660">Modifikuesi i imazhit të pamjes së ekranit</translation>
 <translation id="5642508497713047">Nënshkrues CRL</translation>
 <translation id="5643321261065707929">Rrjet me matje</translation>
-<translation id="5643620609347735571">Pastro dhe vazhdo</translation>
 <translation id="5646376287012673985">Vendndodhja</translation>
 <translation id="5646558797914161501">Biznesmen</translation>
 <translation id="5648021990716966815">Fisha e mikrofonit</translation>
@@ -7685,7 +7682,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7241389281993241388">Identifikohu te <ph name="TOKEN_NAME" /> për të importuar certifikatën e klientit.</translation>
 <translation id="7241763419756062043">Zgjidh cilësinë e kërkimit dhe shfletimit</translation>
 <translation id="7243092385765551741">Të fshihet çelësi i kalimit?</translation>
-<translation id="7243632151880336635">Pastro dhe dil</translation>
 <translation id="7245162963905242662">&amp;Kërko në këtë faqe me Google...</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (më i miri)</translation>
 <translation id="7246230585855757313">Rifut çelësin e sigurisë dhe provo përsëri</translation>
@@ -8562,7 +8558,6 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7925285046818567682">Po pret për <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">Nuk isha unë.</translation>
 <translation id="7926975587469166629">Pseudonimi i kartës</translation>
-<translation id="7927610604078150317">Madhësia: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">E ke ndryshuar tashmë këtë fjalëkalim?</translation>
 <translation id="7929962904089429003">Hap menynë</translation>
 <translation id="7930294771522048157">Mënyrat e ruajtura të pagesës do të shfaqen këtu</translation>
@@ -9211,6 +9206,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8448729345478502352">Bëji artikujt në ekran më të vegjël ose më të mëdhenj</translation>
 <translation id="8449008133205184768">Stili i ngjitjes dhe përputhjes</translation>
 <translation id="8449036207308062757">Menaxho hapësirën ruajtëse</translation>
+<translation id="8449347986464073209">Fshi dhe dil</translation>
 <translation id="8449836157089738489">Hapi të gjitha në një grup të ri skedash</translation>
 <translation id="8449869326050867919">Fjalëkalimi u nda</translation>
 <translation id="8451512073679317615">asistenti</translation>

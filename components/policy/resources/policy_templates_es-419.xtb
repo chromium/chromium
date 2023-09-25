@@ -1915,7 +1915,7 @@ perfil de <ph name="PRODUCT_NAME" /> hace poco.</translation>
 <translation id="2666177084759967497">
       Determina si <ph name="PRODUCT_OS_NAME" /> conserva los datos locales de la cuenta después de salir. Si se configura como verdadera, <ph name="PRODUCT_OS_NAME" /> no conservará ningún dato de la cuenta de forma permanente y todos los datos de la sesión del usuario se descartarán al salir. Si esta política no se configura o se configura como falsa, el dispositivo conservará datos locales del usuario (encriptados).
 
-      Nota: A partir de la versión M114, determinadas aplicaciones de kiosco pueden anular el comportamiento de esta política en sus aplicaciones para casos de uso especiales, como evaluaciones de alumnos.</translation>
+      Nota: A partir de la versión M114, determinadas aplicaciones de kiosco pueden anular el comportamiento de esta política en sus aplicaciones para casos de uso especiales, como evaluaciones de estudiantes.</translation>
 <translation id="2667894101494585925">Habilitar la recuperación de la guía de optimización</translation>
 <translation id="2669157090883237118">No cambiar la configuración recomendada de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="2672012807430078509">Controlar el uso de NTLM como protocolo de autenticación para las activaciones de archivos compartidos SMB</translation>

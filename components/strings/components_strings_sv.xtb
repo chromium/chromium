@@ -125,7 +125,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1243027604378859286">Författare:</translation>
 <translation id="1246424317317450637">Fet</translation>
 <translation id="1247030632403369975">Aluminium</translation>
-<translation id="1250759482327835220">Spara kortet, faktureringsadressen och ditt namn i Google-kontot så går det snabbare att betala nästa gång.</translation>
 <translation id="1252209483516427155">Ytterkläder</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (synkroniserade)</translation>
 <translation id="1255086252236620440">Matmixers</translation>
@@ -158,7 +157,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1294154142200295408">Varianter på kommandoraden</translation>
 <translation id="129553762522093515">Nyligen stängda</translation>
 <translation id="1296930489679394997">Försäljning</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />Testa att rensa cookies<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">Kontrollera inställningarna för den säkra DNS-konfigurationen</translation>
 <translation id="1307966114820526988">Utfasade funktioner</translation>
@@ -1351,7 +1349,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3767485424735936570">Att kopiera och klistra in i <ph name="VM_NAME" /> rekommenderas inte enligt en administratörspolicy</translation>
 <translation id="3772211998634047851">Papper (bond)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du snabbt vill skapa en ny anteckning i Google Keep</translation>
-<translation id="3778403066972421603">Vill du spara det här kortet i Google-kontot och på den här enheten?</translation>
 <translation id="378026377453746707">Chrome har inbyggda säkerhetsfunktioner som skyddar dig när du surfar, till exempel Google Säker webbsökning. Säker webbsökning <ph name="BEGIN_LINK" />hittade nyligen skadlig programvara på <ph name="SITE" /><ph name="END_LINK" />, som är inbäddad på webbplatsen som du försöker besöka.</translation>
 <translation id="3780694243617746492">Utmatningsfack</translation>
 <translation id="3781428340399460090">Cerise</translation>
@@ -1957,7 +1954,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5020776957610079374">Världsmusik</translation>
 <translation id="5021557570875267742">Bevaka priser med Chrome</translation>
 <translation id="5023310440958281426">Kontrollera administratörsprinciperna</translation>
-<translation id="5029568752722684782">Ta bort kopia</translation>
 <translation id="5030338702439866405">Utfärdat av</translation>
 <translation id="503069730517007720">Ett rotcertifikat för <ph name="SOFTWARE_NAME" /> krävs men har inte installerats. IT-administratören bör granska konfigurationsanvisningarna för <ph name="SOFTWARE_NAME" /> och åtgärda problemet. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Om Google Översätt</translation>
@@ -2540,7 +2536,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6270066318535733958">Båt</translation>
 <translation id="6272088941196661550">Återuppta sökningen för att se relevant aktivitet i Chrome-historiken</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="627746635834430766">Spara kortet och faktureringsadressen i Google-kontot så går det snabbare att betala nästa gång.</translation>
 <translation id="6279183038361895380">Tryck på |<ph name="ACCELERATOR" />| om du vill visa markören</translation>
 <translation id="6280223929691119688">Det går inte att leverera till den här adressen. Välj en annan adress.</translation>
 <translation id="6284292079994426700">26 x 38 tum</translation>
@@ -3852,7 +3847,6 @@ Mer information:
 <translation id="8922013791253848639">Tillåt alltid annonser på den här webbplatsen</translation>
 <translation id="892588693504540538">Hål uppe till höger</translation>
 <translation id="8930330541574156305">Fastigheter</translation>
-<translation id="8931333241327730545">Vill du spara det här kortet i ditt Google-konto?</translation>
 <translation id="8932102934695377596">Klockan går efter</translation>
 <translation id="893332455753468063">Lägg till namn</translation>
 <translation id="8942355029279167844">Administratören har tillåtit <ph name="APP_NAME" /> att samla in diagnostikdata i syfte att förbättra produktupplevelsen. Du hittar mer information på <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>

@@ -5031,7 +5031,6 @@
 <translation id="5027550639139316293">የኢሜይል ሰርቲፊኬት</translation>
 <translation id="5027562294707732951">ቅጥያ ያክሉ</translation>
 <translation id="5028445315206872221">በዚህ ጣቢያ ላይ ቅጥያዎች ታግደዋል</translation>
-<translation id="5029568752722684782">ቅጂን አጽዳ</translation>
 <translation id="5029873138381728058">VMsን መፈተሽ አልተሳካም</translation>
 <translation id="503155457707535043">መተግበሪያዎች በመውረድ ላይ</translation>
 <translation id="5032430150487044192">የQR ኮድ መፍጠር አልተቻለም</translation>
@@ -5725,7 +5724,6 @@
 <translation id="5601823921345337195">ከMIDI መሣሪያዎች ጋር እንዲገናኝ አልተፈቀደም</translation>
 <translation id="5601833336918638013">ጣቢያዎች የብሉቱዝ መሣሪያዎችን እንዲፈልጉ አይፍቀዱ</translation>
 <translation id="5602586420788540146">በአዲስ ትር ቡድን ውስጥ ይክፈቱ</translation>
-<translation id="5602765853043467355">ዕልባቶችን፣ ታሪክ፣ የይለፍ ቃላት እና ተጨማሪ ነገሮችን ከዚህ መሣሪያ ላይ አጽዳ</translation>
 <translation id="5605758115928394442">እርስዎ መሆንዎን ለማረጋገጥ አንድ ማሳወቂያ ወደ ስልክዎ ተልኳል።</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{ይህ ቅጥያ ታግዷል}one{እነዚህ ቅጥያዎች ታግደዋል}other{እነዚህ ቅጥያዎች ታግደዋል}}</translation>
 <translation id="560834977503641186">የWi-Fi ስምረት፣ የበለጠ ለመረዳት</translation>
@@ -5777,7 +5775,6 @@
 <translation id="5641648607875312660">የቅጽበታዊ ገፅ ዕይታ ምስል አርታዒ</translation>
 <translation id="5642508497713047">CRL ፈራሚ</translation>
 <translation id="5643321261065707929">የሚለካ አውታረ መረብ</translation>
-<translation id="5643620609347735571">አጽዳ እና ቀጥል</translation>
 <translation id="5646376287012673985">አካባቢ</translation>
 <translation id="5646558797914161501">ነጋዴ</translation>
 <translation id="5648021990716966815">የማይክሮፎን መሰኪያ</translation>
@@ -7697,7 +7694,6 @@
 <translation id="7241389281993241388">የደንበኛ እውቅና ማረጋገጫውን ለማስመጣት እባክዎ ወደ <ph name="TOKEN_NAME" /> ይግቡ።</translation>
 <translation id="7241763419756062043">የእርስዎን ፍለጋ እና የአሰሳ ጥራት ይምረጡ</translation>
 <translation id="7243092385765551741">የይለፍ ቁልፍ ይሰረዝ?</translation>
-<translation id="7243632151880336635">አጽዳና ዘግተህ ውጣ</translation>
 <translation id="7245162963905242662">ይህን ገጽ Google ላይ ፈልግ...</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (ምርጥ)</translation>
 <translation id="7246230585855757313">የእርስዎን የደህንነት ቁልፍ እንደገና ያስገቡ እና ደግመው ይሞክሩ</translation>
@@ -8575,7 +8571,6 @@
 <translation id="7925285046818567682"><ph name="HOST_NAME" /> በመጠበቅ ላይ…</translation>
 <translation id="7926423016278357561">ይህ እኔ አልነበርኩም።</translation>
 <translation id="7926975587469166629">የካርድ ቅጽል ስም</translation>
-<translation id="7927610604078150317">መጠን፦ <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">ይህን የይለፍ ቃለ አስቀድመው ለውጠዋል?</translation>
 <translation id="7929962904089429003">ምናሌውን ክፈት</translation>
 <translation id="7930294771522048157">የተቀመጡ የመክፈያ ዘዴዎች እዚህ ላይ ብቅ ይላሉ</translation>
@@ -9230,6 +9225,7 @@ nil</translation>
 <translation id="8448729345478502352">በማያ ገጽዎ ላይ ያሉ ንጥሎችን ያሳንሱ ወይም ያተልቁ</translation>
 <translation id="8449008133205184768">ለጥፍና ቅጥ አዛምድ</translation>
 <translation id="8449036207308062757">የማከማቻ ያቀናብሩ</translation>
+<translation id="8449347986464073209">ሰርዝ እና ዘግተህ ውጣ</translation>
 <translation id="8449836157089738489">ሁሉንም በአዲስ ትር ቡድን ውስጥ ይክፈቱ</translation>
 <translation id="8449869326050867919">የይለፍ ቃል ተጋርቷል</translation>
 <translation id="8451512073679317615">ረዳት</translation>

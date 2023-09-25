@@ -5036,7 +5036,6 @@
 <translation id="5027550639139316293">電郵憑證</translation>
 <translation id="5027562294707732951">新增擴充程式</translation>
 <translation id="5028445315206872221">系統已封鎖此網站上的擴充程式</translation>
-<translation id="5029568752722684782">清除副本</translation>
 <translation id="5029873138381728058">無法檢查虛擬機器</translation>
 <translation id="503155457707535043">正在下載應用程式</translation>
 <translation id="5032430150487044192">無法建立 QR 碼</translation>
@@ -5730,7 +5729,6 @@
 <translation id="5601823921345337195">不允許連接 MIDI 裝置</translation>
 <translation id="5601833336918638013">不允許網站尋找藍牙裝置</translation>
 <translation id="5602586420788540146">在新分頁中開啟</translation>
-<translation id="5602765853043467355">清除此裝置上的書籤、記錄和密碼等資料。</translation>
 <translation id="5605758115928394442">已將通知傳送至您的手機，以確認您的身分。</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{已封鎖這個擴充程式}other{已封鎖這些擴充程式}}</translation>
 <translation id="560834977503641186">Wi-Fi Sync，了解詳情</translation>
@@ -5780,7 +5778,6 @@
 <translation id="5641648607875312660">螢幕截圖編輯器</translation>
 <translation id="5642508497713047">CRL 簽署者</translation>
 <translation id="5643321261065707929">按用量收費的網絡</translation>
-<translation id="5643620609347735571">清除並繼續</translation>
 <translation id="5646376287012673985">位置</translation>
 <translation id="5646558797914161501">商人</translation>
 <translation id="5648021990716966815">麥克風插孔</translation>
@@ -7698,7 +7695,6 @@
 <translation id="7241389281993241388">請登入 <ph name="TOKEN_NAME" /> 以匯入用戶端憑證。</translation>
 <translation id="7241763419756062043">選擇搜尋和瀏覽品質</translation>
 <translation id="7243092385765551741">要刪除密鑰嗎？</translation>
-<translation id="7243632151880336635">清除並登出</translation>
 <translation id="7245162963905242662">使用 Google 搜尋此網頁…(&amp;C)</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (最佳)</translation>
 <translation id="7246230585855757313">請重新插入安全密鑰，然後再試一次</translation>
@@ -8575,7 +8571,6 @@
 <translation id="7925285046818567682">正在等候 <ph name="HOST_NAME" />…</translation>
 <translation id="7926423016278357561">這不是我本人。</translation>
 <translation id="7926975587469166629">信用卡暱稱</translation>
-<translation id="7927610604078150317">大小：<ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">已變更此密碼？</translation>
 <translation id="7929962904089429003">開啟選單</translation>
 <translation id="7930294771522048157">已儲存的付款方法會在這裡顯示</translation>
@@ -9225,6 +9220,7 @@
 <translation id="8448729345478502352">縮小或放大畫面上的項目</translation>
 <translation id="8449008133205184768">貼上並配對樣式</translation>
 <translation id="8449036207308062757">管理儲存空間</translation>
+<translation id="8449347986464073209">刪除並登出</translation>
 <translation id="8449836157089738489">在新分頁群組中開啟所有網址</translation>
 <translation id="8449869326050867919">已分享密碼</translation>
 <translation id="8451512073679317615">助理</translation>

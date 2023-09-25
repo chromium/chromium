@@ -125,7 +125,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1243027604378859286">Autors:</translation>
 <translation id="1246424317317450637">Treknraksts</translation>
 <translation id="1247030632403369975">Alumīnijs</translation>
-<translation id="1250759482327835220">Lai nākamreiz veiktu maksājumu ātrāk, saglabājiet kartes datus, vārdu un norēķinu adresi savā Google kontā.</translation>
 <translation id="1252209483516427155">Āra apģērbs</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (veikta sinhronizācija)</translation>
 <translation id="1255086252236620440">Mikseri</translation>
@@ -158,7 +157,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1294154142200295408">Komandrindu varianti</translation>
 <translation id="129553762522093515">Nesen aizvērtas</translation>
 <translation id="1296930489679394997">Pārdošana</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />Dzēsiet sīkfailus<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">Pārbaudiet drošā DNS servera iestatījumus</translation>
 <translation id="1307966114820526988">Funkcijas, kuru darbība ir pārtraukta</translation>
@@ -1350,7 +1348,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3767485424735936570">Saskaņā ar administratora iestatīto politiku nav ieteicams kopēt un ielīmēt šo saturu šeit: <ph name="VM_NAME" />.</translation>
 <translation id="3772211998634047851">Papīrs (biroja)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai ātri izveidotu jaunu piezīmi lietotnē Google Keep, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
-<translation id="3778403066972421603">Vai vēlaties saglabāt šo karti savā Google kontā un šajā ierīcē?</translation>
 <translation id="378026377453746707">Pārlūkā Chrome ir iebūvētas drošības funkcijas, piemēram, Google droša pārlūkošana, lai aizsargātu jūs pārlūkošanas laikā. Droša pārlūkošana nesen <ph name="BEGIN_LINK" />konstatēja kaitīgu programmatūru vietnē <ph name="SITE" /><ph name="END_LINK" />, kas ir iegulta vietnē, kuru mēģināt apmeklēt.</translation>
 <translation id="3780694243617746492">Izvades nodalījums</translation>
 <translation id="3781428340399460090">Spilgti rozā</translation>
@@ -1956,7 +1953,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5020776957610079374">Pasaules mūzika</translation>
 <translation id="5021557570875267742">Cenu izsekošana, izmantojot pārlūku Chrome</translation>
 <translation id="5023310440958281426">Administratora politiku pārbaude</translation>
-<translation id="5029568752722684782">Dzēst kopiju</translation>
 <translation id="5030338702439866405">Izsniedzis</translation>
 <translation id="503069730517007720">Programmatūrai <ph name="SOFTWARE_NAME" /> ir nepieciešams saknes sertifikāts, taču tas nav instalēts. Lai novērstu šo problēmu, tīkla administratoram ir jāapskata <ph name="SOFTWARE_NAME" /> konfigurācijas norādījumi. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Par Google tulkotāju</translation>
@@ -2539,7 +2535,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6270066318535733958">Laivošana</translation>
 <translation id="6272088941196661550">Atsāciet meklēšanas ceļu, lai skatītu atbilstošās darbības savā Chrome vēsturē</translation>
 <translation id="6272383483618007430">Google atjauninājums</translation>
-<translation id="627746635834430766">Lai nākamreiz veiktu maksājumu ātrāk, saglabājiet kartes datus un norēķinu adresi savā Google kontā.</translation>
 <translation id="6279183038361895380">Lai tiktu parādīts kursors, nospiediet |<ph name="ACCELERATOR" />|</translation>
 <translation id="6280223929691119688">Nevar piegādāt uz šo adresi. Atlasiet citu adresi.</translation>
 <translation id="6284292079994426700">26 x 38 collas</translation>
@@ -3851,7 +3846,6 @@ Papildu informācija:
 <translation id="8922013791253848639">Vienmēr atļaut reklāmu rādīšanu šajā vietnē</translation>
 <translation id="892588693504540538">Caurums augšējā labajā malā</translation>
 <translation id="8930330541574156305">Nekustamais īpašums</translation>
-<translation id="8931333241327730545">Vai vēlaties saglabāt šo karti savā Google kontā?</translation>
 <translation id="8932102934695377596">Norādītais laiks ir pārāk tālu pagātnē</translation>
 <translation id="893332455753468063">Vārda pievienošana</translation>
 <translation id="8942355029279167844">Jūsu administrators atļāva lietotnei <ph name="APP_NAME" /> vākt diagnostikas datus, lai uzlabotu produkta lietošanas iespējas. Plašāku informāciju skatiet vietnē <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>

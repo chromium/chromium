@@ -5037,7 +5037,6 @@
 <translation id="5027550639139316293">ইমেইলৰ প্ৰমাণপত্ৰ</translation>
 <translation id="5027562294707732951">এক্সটেনশ্বন যোগ কৰক</translation>
 <translation id="5028445315206872221">এই ছাইটটোত এক্সটেনশ্বন অৱৰোধ কৰা হৈছে</translation>
-<translation id="5029568752722684782">প্ৰতিলিপিটো মচক</translation>
 <translation id="5029873138381728058">VM পৰীক্ষা কৰিব পৰা নগ’ল</translation>
 <translation id="503155457707535043">এপ্‌ ডাউনল’ড হৈ আছে</translation>
 <translation id="5032430150487044192">কিউআৰ ক’ড সৃষ্টি কৰিব নোৱাৰি</translation>
@@ -5731,7 +5730,6 @@
 <translation id="5601823921345337195">MIDI ডিভাইচৰ সৈতে সংযোগ কৰাৰ অনুমতি নাই</translation>
 <translation id="5601833336918638013">ছাইটক ব্লুটুথ ডিভাইচ বিচাৰিবলৈ নিদিব</translation>
 <translation id="5602586420788540146">নতুন টেবৰ গোটত খোলক</translation>
-<translation id="5602765853043467355">এই ডিভাইচৰ পৰা বুকমার্ক, ইতিহাস, পাছৱর্ড আৰু অধিক তথ্য মচক</translation>
 <translation id="5605758115928394442">এইগৰাকী আপুনিয়েই হয় বুলি নিশ্চিত কৰিবলৈ আপোনাৰ ফ'নলৈ এটা জাননী পঠিওৱা হৈছে।</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{এই এক্সটেনশ্বনটো অৱৰোধ কৰা হৈছে}one{এই এক্সটেনশ্বনসমূহ অৱৰোধ কৰা হৈছে}other{এই এক্সটেনশ্বনসমূহ অৱৰোধ কৰা হৈছে}}</translation>
 <translation id="560834977503641186">ৱাই-ফাই ছিংক, অধিক জানক</translation>
@@ -5783,7 +5781,6 @@
 <translation id="5641648607875312660">স্ক্ৰীনশ্বট প্ৰতিচ্ছবিৰ সম্পাদক</translation>
 <translation id="5642508497713047">CRL ছাইন কৰোঁতা</translation>
 <translation id="5643321261065707929">নিৰিখ-নিৰ্দিষ্ট নেটৱৰ্ক</translation>
-<translation id="5643620609347735571">মচক আৰু অব্যাহত ৰাখক</translation>
 <translation id="5646376287012673985">অৱস্থান</translation>
 <translation id="5646558797914161501">ব্যৱসায়ী</translation>
 <translation id="5648021990716966815">মাইকৰ জেক</translation>
@@ -7702,7 +7699,6 @@
 <translation id="7241389281993241388">ক্লাইণ্টৰ প্ৰমাণপত্ৰ আমদানি কৰিবলৈ <ph name="TOKEN_NAME" />ত ছাইন ইন কৰক।</translation>
 <translation id="7241763419756062043">আপোনাৰ চোৱা আৰু ব্ৰাউজ কৰাৰ গুণগত মান বাছনি কৰক</translation>
 <translation id="7243092385765551741">পাছকী মচিবনে?</translation>
-<translation id="7243632151880336635">মচক আৰু ছাইন আউট কৰক</translation>
 <translation id="7245162963905242662">Googleৰ জৰিয়তে এই পৃষ্ঠাখন সন্ধান কৰক...</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (উত্তম)</translation>
 <translation id="7246230585855757313">আপোনাৰ সুৰক্ষা চাবিটো পুনৰাই দি চেষ্টা কৰক</translation>
@@ -8580,7 +8576,6 @@
 <translation id="7925285046818567682"><ph name="HOST_NAME" />ৰ বাবে অপেক্ষাৰত...</translation>
 <translation id="7926423016278357561">এয়া মই নহয়।</translation>
 <translation id="7926975587469166629">কার্ডৰ উপনাম</translation>
-<translation id="7927610604078150317">আকাৰ: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">ইতিমধ্যে এই পাছৱৰ্ডটো সলনি কৰিছে নেকি?</translation>
 <translation id="7929962904089429003">মেনু খোলক</translation>
 <translation id="7930294771522048157">ছেভ কৰি থোৱা পৰিশোধ পদ্ধতিসমূহ ইয়াত দেখা পোৱা যাব</translation>
@@ -9229,6 +9224,7 @@
 <translation id="8448729345478502352">আপোনাৰ স্ক্ৰীনত থকা বস্তুবোৰ সৰু বা ডাঙৰ কৰক</translation>
 <translation id="8449008133205184768">ইয়াত থকা ষ্টাইলৰ সৈতে মিলাকৈ পে’ষ্ট কৰক</translation>
 <translation id="8449036207308062757">ষ্ট’ৰেজ পৰিচালনা কৰক</translation>
+<translation id="8449347986464073209">মচক আৰু ছাইন আউট কৰক</translation>
 <translation id="8449836157089738489">নতুন টেবৰ গোটত আটাইবোৰ খোলক</translation>
 <translation id="8449869326050867919">পাছৱৰ্ড শ্বেয়াৰ কৰা হ'ল</translation>
 <translation id="8451512073679317615">Assistant</translation>

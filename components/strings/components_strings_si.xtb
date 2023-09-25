@@ -125,7 +125,6 @@
 <translation id="1243027604378859286">කර්තෘ:</translation>
 <translation id="1246424317317450637">තද</translation>
 <translation id="1247030632403369975">ඇලුමිනියම්</translation>
-<translation id="1250759482327835220">ඊළඟ වතාවේ ඉක්මනින් ගෙවීමට, ඔබගේ Google ගිණුමට ඔබගේ කාඩ්පත, නම සහ බිල්පත් ලිපිනය සුරකින්න.</translation>
 <translation id="1252209483516427155">පිටත ඇඳුම්</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (සමමුහුර්තයි)</translation>
 <translation id="1255086252236620440">ආහාර මිශ්‍ර යන්ත්‍ර</translation>
@@ -158,7 +157,6 @@
 <translation id="1294154142200295408">විධාන-පේළි ප්‍රභේදනයන්</translation>
 <translation id="129553762522093515">මෑත දී වැසිණි</translation>
 <translation id="1296930489679394997">විකුණුම්</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />ඔබේ කුකි හිස් කරමින්<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">නීතිමය අමතර</translation>
 <translation id="1301324364792935241">ඔබේ සුරක්‍ෂිත DNS සැකසුම් පරීක්‍ෂා කරන්න</translation>
 <translation id="1307966114820526988">අත් හරින ලද විශේෂාංග</translation>
@@ -1351,7 +1349,6 @@
 <translation id="3767485424735936570">මෙම අන්තර්ගතය <ph name="VM_NAME" /> වෙත පිටපත් කිරීම සහ ඇලවීම සඳහා පරිපාලක ප්‍රතිපත්තිය මගින් නිර්දේශ නොකෙරේ</translation>
 <translation id="3772211998634047851">කඩදාසි (බැඳුණු)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Keep හි නව සටහනක් ඉක්මනින් තැනීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
-<translation id="3778403066972421603">ඔබට මෙම උපාංගයේ ඔබේ Google ගිණුමට මෙම කාඩ්පත සුරැකීමට අවශ්‍යයි ද?</translation>
 <translation id="378026377453746707">ඔබ බ්‍රවුස් කරන අතරේ ඔබව ආරක්ෂා කිරීම සඳහා Google ආරක්ෂිත බ්‍රවුස් කිරීම වැනි, Chrome හි එක්ව තැනූ සුරක්ෂිතතා විශේෂාංග ඇත. ආරක්ෂිත බ්‍රවුස් කිරීම විසින් මෑතක දී ඔබ පිවිසීමට උත්සාහ කරන අඩවියේ කාවැදී ඇති <ph name="BEGIN_LINK" /><ph name="SITE" /> මත හානිකර මෘදුකාංග සොයා ගන්නා ලදි<ph name="END_LINK" />.</translation>
 <translation id="3780694243617746492">නිමැවුම් කූඩය</translation>
 <translation id="3781428340399460090">උණුසුම් රෝස</translation>
@@ -1957,7 +1954,6 @@
 <translation id="5020776957610079374">ලෝක සංගීතය</translation>
 <translation id="5021557570875267742">Chrome සමග මිල ගණන් නිරීක්ෂණය කරන්න</translation>
 <translation id="5023310440958281426">ඔබේ පරිපාලකගේ ප්‍රතිපත්ති විමසන්න</translation>
-<translation id="5029568752722684782">පැහැදිලි පිටපත</translation>
 <translation id="5030338702439866405">නිකුත් කළේ</translation>
 <translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />" සඳහා මූල සහතිකයක් අවශ්‍ය වන නමුත්, එය ස්ථාපිත කර නොමැත. ඔබේ තොරතුරු තාක්ෂණ පරිපාලකයා විසින් මෙම ගැටලුව විසඳීමට "<ph name="SOFTWARE_NAME" />" සඳහා වින්‍යාස කිරීමේ උපදෙස් බැලිය යුතුය. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Google Translate පිළිබඳ</translation>
@@ -2540,7 +2536,6 @@
 <translation id="6270066318535733958">බෝට්ටු පැදීම</translation>
 <translation id="6272088941196661550">ඔබගේ Chrome ඉතිහාසය තුළ අදාළ ක්‍රියාකාරකම් බැලීමට ඔබගේ සංචාරය නැවත පටන් ගන්න</translation>
 <translation id="6272383483618007430">Google යාවත්කාලීන</translation>
-<translation id="627746635834430766">මීළඟ වතාවේ දී වේගවත්ව ගෙවීමට, ඔබේ Google ගිණුමට ඔබේ කාඩ්පත සහ බිල්පත් ලිපිනය සුරකින්න.</translation>
 <translation id="6279183038361895380">ඔබේ කර්සරය පෙන්වීමට |<ph name="ACCELERATOR" />| ඔබන්න</translation>
 <translation id="6280223929691119688">මෙම ලිපිනයට බෙදා හැරීමට නොහැකිය. වෙනත් ලිපිනයක් තෝරන්න.</translation>
 <translation id="6284292079994426700">අඟ 26 x 38</translation>
@@ -3852,7 +3847,6 @@
 <translation id="8922013791253848639">මෙම අඩවිය මත වෙළඳ දැන්වීම්වලට සැම විටම ඉඩ දෙන්න</translation>
 <translation id="892588693504540538">ඉහළ දකුණ අනින්න</translation>
 <translation id="8930330541574156305">දේපළ වෙළදාම්</translation>
-<translation id="8931333241327730545">ඔබට ඔබේ Google ගිණුම වෙත මෙම කාඩ්පත සුරැකීමට අවශ්‍යද?</translation>
 <translation id="8932102934695377596">ඔබගේ ඔරලෝසුව ඇත්තේ පිටුපසින් ය</translation>
 <translation id="893332455753468063">නම එක් කරන්න</translation>
 <translation id="8942355029279167844">ඔබගේ පරිපාලක <ph name="APP_NAME" /> හට නිෂ්පාදන අත්දැකීම වැඩිදියුණු කිරීම සඳහා දෝෂ නිර්ණ දත්ත රැස් කිරීමට ඉඩ දී ඇත. වැඩි විස්තර සඳහා <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> බලන්න.</translation>

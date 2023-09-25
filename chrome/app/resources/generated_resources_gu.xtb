@@ -5032,7 +5032,6 @@
 <translation id="5027550639139316293">ઇમેઇલ પ્રમાણપત્ર</translation>
 <translation id="5027562294707732951">એક્સ્ટેન્શન ઉમેરો</translation>
 <translation id="5028445315206872221">આ સાઇટ પર એક્સ્ટેન્શન બ્લૉક કરવામાં આવ્યા છે</translation>
-<translation id="5029568752722684782">કૉપિ સાફ કરો</translation>
 <translation id="5029873138381728058">VMs ચેક કરવામાં નિષ્ફળ રહ્યાં</translation>
 <translation id="503155457707535043">ઍપ ડાઉનલોડ થઈ રહી છે</translation>
 <translation id="5032430150487044192">QR કોડ બનાવી શકતા નથી</translation>
@@ -5726,7 +5725,6 @@
 <translation id="5601823921345337195">MIDI ડિવાઇસ સાથે કનેક્ટ કરવાની મંજૂરી આપેલી નથી</translation>
 <translation id="5601833336918638013">બ્લૂટૂથ ડિવાઇસ શોધવા માટે સાઇટને મંજૂરી આપશો નહીં</translation>
 <translation id="5602586420788540146">નવા ટૅબના ગ્રૂપમાં ખોલો</translation>
-<translation id="5602765853043467355">આ ડિવાઇસમાંથી બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને વધુ સાફ કરો</translation>
 <translation id="5605758115928394442">તમે જ છો તે કન્ફર્મ કરવા માટે તમારા ફોન પર નોટિફિકેશન મોકલવામાં આવ્યું હતું.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{આ એક્સ્ટેન્શનને બ્લૉક કરવામાં આવ્યું છે}one{આ એક્સ્ટેન્શનને બ્લૉક કરવામાં આવ્યું છે}other{આ એક્સ્ટેન્શનને બ્લૉક કરવામાં આવ્યા છે}}</translation>
 <translation id="560834977503641186">વાઇ-ફાઇ સિંક, વધુ જાણો</translation>
@@ -5779,7 +5777,6 @@
 <translation id="5641648607875312660">સ્ક્રીનશૉટ છબી એડિટર</translation>
 <translation id="5642508497713047">CRL હસ્તાક્ષરકર્તા</translation>
 <translation id="5643321261065707929">મીટર્ડ (ડેટા નિયંત્રણ) નેટવર્ક</translation>
-<translation id="5643620609347735571">સાફ કરો અને ચાલુ રાખો</translation>
 <translation id="5646376287012673985">સ્થાન</translation>
 <translation id="5646558797914161501">ઉદ્યોગપતિ</translation>
 <translation id="5648021990716966815">માઇક જેક</translation>
@@ -7702,7 +7699,6 @@ USB ડિવાઇસ</translation>
 <translation id="7241389281993241388">ક્લાયંટ પ્રમાણપત્ર આયાત કરવા માટે કૃપા કરીને <ph name="TOKEN_NAME" /> પર સાઇન ઇન કરો.</translation>
 <translation id="7241763419756062043">તમારી શોધ અને બ્રાઉઝિંગ ક્વૉલિટી પસંદ કરો</translation>
 <translation id="7243092385765551741">પાસકી ડિલીટ કરીએ?</translation>
-<translation id="7243632151880336635">સાફ કરો અને સાઇન આઉટ કરો</translation>
 <translation id="7245162963905242662">Google વડે આ પેજ શોધો...</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (શ્રેષ્ઠ)</translation>
 <translation id="7246230585855757313">તમારો સુરક્ષા કોડ ફરી શામેલ કરીને ફરી પ્રયાસ કરો</translation>
@@ -8581,7 +8577,6 @@ USB ડિવાઇસ</translation>
 <translation id="7925285046818567682"><ph name="HOST_NAME" /> ની પ્રતીક્ષા કરે છે...</translation>
 <translation id="7926423016278357561">આ હું ન હતો/હતી.</translation>
 <translation id="7926975587469166629">કાર્ડનું ઉપનામ</translation>
-<translation id="7927610604078150317">કદ: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">આ પાસવર્ડ પહેલેથી બદલી નાખ્યો છે?</translation>
 <translation id="7929962904089429003">મેનૂ ખોલો</translation>
 <translation id="7930294771522048157">સાચવેલ ચુકવણી પદ્ધતિઓ અહીં દેખાશે</translation>
@@ -9226,6 +9221,7 @@ USB ડિવાઇસ</translation>
 <translation id="8448729345478502352">તમારી સ્ક્રીન પરની આઇટમને નાની અથવા મોટી કરો</translation>
 <translation id="8449008133205184768">શૈલી પેસ્ટ કરો અને મેળ બેસાડો</translation>
 <translation id="8449036207308062757">સ્ટોરેજ મેનેજ કરો</translation>
+<translation id="8449347986464073209">ડિલીટ કરો અને સાઇન આઉટ કરો</translation>
 <translation id="8449836157089738489">બધા નવી ટૅબના ગ્રૂપમાં ખોલો</translation>
 <translation id="8449869326050867919">પાસવર્ડ શેર કરવામાં આવ્યો</translation>
 <translation id="8451512073679317615">સહાયક</translation>

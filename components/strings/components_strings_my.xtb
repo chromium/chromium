@@ -125,7 +125,6 @@
 <translation id="1243027604378859286">စာရေးသူ-</translation>
 <translation id="1246424317317450637">စာလုံးထူ</translation>
 <translation id="1247030632403369975">အလူမီနီယံ</translation>
-<translation id="1250759482327835220">နောင်တွင် မြန်ဆန်စွာပေးချေနိုင်ရန် သင်၏ကတ်၊ အမည်နှင့် ငွေတောင်းခံလွှာပို့ရန် လိပ်စာကို သင့် Google အကောင့်တွင် သိမ်းပါ။</translation>
 <translation id="1252209483516427155">အပေါ်ရုံ</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />၊ <ph name="TYPE_2" /> (စင့်ခ်လုပ်ထားသည်)</translation>
 <translation id="1255086252236620440">အစားအသောက် မွှေစက်</translation>
@@ -158,7 +157,6 @@
 <translation id="1294154142200295408">ကွန်မန်းလိုင်းစနစ် ကွဲပြားမှုများ</translation>
 <translation id="129553762522093515">မကြာသေးခင်က ပိတ်ထားခဲ့သည်</translation>
 <translation id="1296930489679394997">လျှော့ဈေး</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />သင့်ကွတ်ကီးများကို ရှင်းလင်းကြည့်ပါ<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">လီဂယ်ဆိုဒ်ကြီး</translation>
 <translation id="1301324364792935241">သင်၏ 'လုံခြုံသော DNS' ဆက်တင်များကို စစ်ဆေးပါ</translation>
 <translation id="1307966114820526988">ရပ်ဆိုင်းထားသော ဝန်ဆောင်မှုများ</translation>
@@ -1351,7 +1349,6 @@
 <translation id="3767485424735936570">ဤအကြောင်းအရာကို <ph name="VM_NAME" /> တွင် မိတ္တူကူးပြီး ထည့်ခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက အကြံမပြုပါ</translation>
 <translation id="3772211998634047851">စာရွက် (ငွေချေးစာချုပ်)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Google Keep တွင် မှတ်စုအသစ် အမြန်ပြုလုပ်ရန် ‘တဘ်’ နှိပ်ပြီးနောက် Enter ခလုတ် နှိပ်ပါ</translation>
-<translation id="3778403066972421603">ဤကတ်ကို သင်၏ Google အကောင့်နှင့် ဤစက်ပစ္စည်းတွင် သိမ်းဆည်းလိုပါသလား။</translation>
 <translation id="378026377453746707">သင်ဘရောက်စ်လုပ်နေစဉ် ကာကွယ်ရန်အတွက် Chrome တွင် ‘Google လုံခြုံစွာ ကြည့်ရှုခြင်း’ ကဲ့သို့ လုံခြုံရေးတူးလ်များ အသင့်ထည့်သွင်းထားသည်။ ‘လုံခြုံစွာ ကြည့်ရှုခြင်း’ သည် မကြာသေးမီက <ph name="BEGIN_LINK" /><ph name="SITE" /> တွင် အန္တရာယ်ရှိသည့် ဆော့ဖ်ဝဲကို တွေ့ရှိထားသည်<ph name="END_LINK" />။ ၎င်းကို သင်ဝင်ကြည့်ရန် ကြိုးနေသည့် ဝဘ်ဆိုက်တွင် မြှုပ်သွင်းထားသည်။</translation>
 <translation id="3780694243617746492">ထုတ်ယူမည့်ပုံး</translation>
 <translation id="3781428340399460090">ပန်းရင့်ရောင်</translation>
@@ -1958,7 +1955,6 @@
 <translation id="5020776957610079374">ကမ္ဘာ့ တေးဂီတ</translation>
 <translation id="5021557570875267742">Chrome ဖြင့် ဈေးနှုန်းစောင့်ကြည့်ခြင်း</translation>
 <translation id="5023310440958281426">သင့် စီမံအုပ်ချုပ်သူ၏ မူဝါဒများကို စစ်ဆေးကြည့်ရန်</translation>
-<translation id="5029568752722684782">ကြည်လင်ပြတ်သား မိတ္ထူ</translation>
 <translation id="5030338702439866405">ထုတ်ပေးခဲ့သူ</translation>
 <translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />" အတွက် ပင်မအသိအမှတ်ပြုလက်မှတ် လိုအပ်သော်လည်း ထည့်သွင်းမထားပါ။ ဤပြဿနာကို ဖြေရှင်းရန် IT စီမံခန့်ခွဲသူသည် "<ph name="SOFTWARE_NAME" />" အတွက် စီစဉ်သတ်မှတ်ခြင်း လမ်းညွှန်ချက်များကို ကြည့်သင့်ပါသည်။ <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Google ဘာသာပြန် အကြောင်း</translation>
@@ -2540,7 +2536,6 @@
 <translation id="6270066318535733958">လှေစီးခြင်း</translation>
 <translation id="6272088941196661550">သင်၏ Chrome မှတ်တမ်းရှိ သက်ဆိုင်ရာလုပ်ဆောင်ချက်ကို ကြည့်ရန် သင့်ခရီးစဉ်ကို ဆက်လုပ်ပါ</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="627746635834430766">နောင်တွင် မြန်ဆန်စွာပေးချေနိုင်ရန် သင်၏ကတ်နှင့် ငွေတောင်းခံလွှာပို့သော လိပ်စာကို သင့် Google အကောင့်တွင် သိမ်းပါ။</translation>
 <translation id="6279183038361895380">သင်၏ ညွှန်းမြားကို ပြပေးရန် |<ph name="ACCELERATOR" />ကို နှိပ်ပါ</translation>
 <translation id="6280223929691119688">ဤလိပ်စာသို့ ပို့၍မရပါ။ အခြားလိပ်စာတစ်ခုကို ရွေးပါ။</translation>
 <translation id="6284292079994426700">၂၆ x ၃၈ လက်မ</translation>
@@ -3854,7 +3849,6 @@
 <translation id="8922013791253848639">ဤဝဘ်ဆိုက်တွင် ကြော်ငြာများကို အမြဲတမ်း ခွင့်ပြုရန်</translation>
 <translation id="892588693504540538">ညာဘက်ထိပ်တွင် ဖောက်ရန်</translation>
 <translation id="8930330541574156305">အိမ်၊ ခြံ၊ မြေ ဝန်ဆောင်မှု</translation>
-<translation id="8931333241327730545">သင့် Google အကောင့်သို့ ဤကဒ်ကိုသိမ်းလိုပါသလား။</translation>
 <translation id="8932102934695377596">သင်၏ နာရီ နောက်ကျနေ</translation>
 <translation id="893332455753468063">အမည် ထည့်သွင်းခြင်း</translation>
 <translation id="8942355029279167844">သင်၏ စီမံခန့်ခွဲသူသည် ထုတ်ကုန်အသုံးပြုမှု ပိုမိုကောင်းမွန်စေရန်အတွက် အမှားရှာပြင်ခြင်းဒေတာများကို စုဆောင်းရန် <ph name="APP_NAME" /> ကို ခွင့်ပြုထားသည်။ နောက်ထပ်အချက်အလက်များအတွက် <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> တွင် ကြည့်ပါ။</translation>

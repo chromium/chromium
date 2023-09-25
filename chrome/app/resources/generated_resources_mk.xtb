@@ -5041,7 +5041,6 @@
 <translation id="5027550639139316293">Сертификат за е-пошта</translation>
 <translation id="5027562294707732951">Инсталирај екстензија</translation>
 <translation id="5028445315206872221">Екстензиите се блокирани на овој сајт</translation>
-<translation id="5029568752722684782">Исчисти копија</translation>
 <translation id="5029873138381728058">Не успеаја да се проверат виртуелните машини</translation>
 <translation id="503155457707535043">Апликациите се преземаат</translation>
 <translation id="5032430150487044192">Не може да се создаде QR-код</translation>
@@ -5735,7 +5734,6 @@
 <translation id="5601823921345337195">Не им е дозволено да се поврзуваат со MIDI-уредите</translation>
 <translation id="5601833336918638013">Не им дозволувај на сајтовите да бараат уреди со Bluetooth</translation>
 <translation id="5602586420788540146">Отвори во нова група картички</translation>
-<translation id="5602765853043467355">Исчисти обележувачи, историја, лозинки и друго од уредов</translation>
 <translation id="5605758115928394442">Испратено ви е известување на телефонот за потврда на вашиот идентитет.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Екстензијава е блокирана}one{Екстензииве се блокирани}other{Екстензииве се блокирани}}</translation>
 <translation id="560834977503641186">Синхронизирање на Wi-Fi, дознајте повеќе</translation>
@@ -5787,7 +5785,6 @@
 <translation id="5641648607875312660">Уредувач на слика од екранот</translation>
 <translation id="5642508497713047">CRL-пријавувач</translation>
 <translation id="5643321261065707929">Мрежа со мерен сообраќај</translation>
-<translation id="5643620609347735571">Исчисти и продолжи</translation>
 <translation id="5646376287012673985">Локација</translation>
 <translation id="5646558797914161501">Бизнисмен</translation>
 <translation id="5648021990716966815">Приклучок за микрофон</translation>
@@ -7706,7 +7703,6 @@
 <translation id="7241389281993241388">Најавете се на <ph name="TOKEN_NAME" /> за да го увезете клиентскиот сертификат.</translation>
 <translation id="7241763419756062043">Изберете го квалитетот на пребарувањето и прелистувањето</translation>
 <translation id="7243092385765551741">Да се избрише криптографскиот клуч?</translation>
-<translation id="7243632151880336635">Исчисти и одјави се</translation>
 <translation id="7245162963905242662">Пребарајте ја страницава со Google…</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (најдобра)</translation>
 <translation id="7246230585855757313">Вметнете го безбедносниот клуч пак и обидете се повторно</translation>
@@ -8584,7 +8580,6 @@
 <translation id="7925285046818567682">Се чека <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">Не бев јас.</translation>
 <translation id="7926975587469166629">Прекар на картичката</translation>
-<translation id="7927610604078150317">Големина: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Веќе ја променивте лозинкава?</translation>
 <translation id="7929962904089429003">Отворете го менито</translation>
 <translation id="7930294771522048157">Зачуваните начини за плаќање ќе се појават тука</translation>
@@ -9236,6 +9231,7 @@
 <translation id="8448729345478502352">Намалете ги или зголемете ги ставките на екранот</translation>
 <translation id="8449008133205184768">Залепи и усогласи стил</translation>
 <translation id="8449036207308062757">Управувајте со капацитетот</translation>
+<translation id="8449347986464073209">Избриши и одјави се</translation>
 <translation id="8449836157089738489">Отвори ги сите во нова група картички</translation>
 <translation id="8449869326050867919">Лозинката е споделена</translation>
 <translation id="8451512073679317615">помошник</translation>

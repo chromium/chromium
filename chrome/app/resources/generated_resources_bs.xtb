@@ -5049,7 +5049,6 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5027550639139316293">Potvrda za e-poštu</translation>
 <translation id="5027562294707732951">Dodaj ekstenziju</translation>
 <translation id="5028445315206872221">Ekstenzije su blokirane na ovoj web lokaciji</translation>
-<translation id="5029568752722684782">Obriši kopiju</translation>
 <translation id="5029873138381728058">Provjera VM-ova nije uspjela</translation>
 <translation id="503155457707535043">Preuzimanje aplikacija</translation>
 <translation id="5032430150487044192">Nije moguće kreirati QR kôd</translation>
@@ -5743,7 +5742,6 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="5601823921345337195">Nije dozvoljeno povezivanje na MIDI uređaje</translation>
 <translation id="5601833336918638013">Nemoj dozvoliti web lokacijama da pretraže Bluetooth uređaje</translation>
 <translation id="5602586420788540146">Otvori u novoj grupi kartica</translation>
-<translation id="5602765853043467355">Obriši oznake, historiju, lozinke i drugo s ovog uređaja</translation>
 <translation id="5605758115928394442">Na vaš telefon je poslano obavještenje da potvrdimo vaš identitet.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Ova ekstenzija je blokirana}one{Ove ekstenzije su blokirane}few{Ove ekstenzije su blokirane}other{Ove ekstenzije su blokirane}}</translation>
 <translation id="560834977503641186">WiFi sinhronizacija, saznajte više</translation>
@@ -5795,7 +5793,6 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="5641648607875312660">Uređivač slika snimaka ekrana</translation>
 <translation id="5642508497713047">Potpisnik CRL-a</translation>
 <translation id="5643321261065707929">Mreža s naplatom</translation>
-<translation id="5643620609347735571">Obriši i nastavi</translation>
 <translation id="5646376287012673985">Lokacija</translation>
 <translation id="5646558797914161501">Biznismen</translation>
 <translation id="5648021990716966815">Priključak za mikrofon</translation>
@@ -7719,7 +7716,6 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7241389281993241388">Prijavite se na <ph name="TOKEN_NAME" /> da uvezete potvrdu klijenta.</translation>
 <translation id="7241763419756062043">Odaberite kvalitet pretraživanja i pregledanja</translation>
 <translation id="7243092385765551741">Izbrisati pristupni ključ?</translation>
-<translation id="7243632151880336635">Obriši i odjavi me</translation>
 <translation id="7245162963905242662">Pretraživa&amp;nje ove stranice putem Googlea…</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Najbolje)</translation>
 <translation id="7246230585855757313">Ponovo umetnite sigurnosni ključ i pokušajte ponovo</translation>
@@ -8599,7 +8595,6 @@ Pritisnite dodijeljeni prekidač ili tipku da uklonite dodjeljivanje.</translati
 <translation id="7925285046818567682">Čeka se <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">To nisam bio/la ja</translation>
 <translation id="7926975587469166629">Nadimak kartice</translation>
-<translation id="7927610604078150317">Veličina: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Već ste promijenili ovu lozinku?</translation>
 <translation id="7929962904089429003">Otvorite meni</translation>
 <translation id="7930294771522048157">Ovdje će se prikazati vaši sačuvani načini plaćanja</translation>
@@ -9249,6 +9244,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8448729345478502352">Smanjite ili povećajte stavke na ekranu</translation>
 <translation id="8449008133205184768">Stil lijepljenja i podudaranja</translation>
 <translation id="8449036207308062757">Upravljaj prostorom za pohranu</translation>
+<translation id="8449347986464073209">Izbriši i odjavi</translation>
 <translation id="8449836157089738489">Otvori sve u novoj grupi kartica</translation>
 <translation id="8449869326050867919">Lozinka je podijeljena</translation>
 <translation id="8451512073679317615">asistent</translation>

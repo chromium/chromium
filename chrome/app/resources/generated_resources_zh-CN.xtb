@@ -5002,7 +5002,6 @@
 <translation id="5027550639139316293">电子邮件证书</translation>
 <translation id="5027562294707732951">添加扩展程序</translation>
 <translation id="5028445315206872221">已阻止在此网站上使用扩展程序</translation>
-<translation id="5029568752722684782">清除副本</translation>
 <translation id="5029873138381728058">未能检查虚拟机</translation>
 <translation id="503155457707535043">正在下载所选应用</translation>
 <translation id="5032430150487044192">无法创建二维码</translation>
@@ -5695,7 +5694,6 @@
 <translation id="5601823921345337195">不允许连接到 MIDI 设备</translation>
 <translation id="5601833336918638013">不允许网站寻找蓝牙设备</translation>
 <translation id="5602586420788540146">在新标签页分组中打开</translation>
-<translation id="5602765853043467355">清除此设备上的书签、历史记录、密码等信息</translation>
 <translation id="5605758115928394442">系统向您的手机发送了一条通知，以确认您的身份。</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{这个扩展程序已被屏蔽}other{这些扩展程序已被屏蔽}}</translation>
 <translation id="560834977503641186">Wi-Fi 同步，了解详情</translation>
@@ -5745,7 +5743,6 @@
 <translation id="5641648607875312660">屏幕截图编辑器</translation>
 <translation id="5642508497713047">CRL 签名人</translation>
 <translation id="5643321261065707929">按流量计费的网络</translation>
-<translation id="5643620609347735571">清除并继续</translation>
 <translation id="5646376287012673985">位置信息</translation>
 <translation id="5646558797914161501">商务人士</translation>
 <translation id="5648021990716966815">麦克风耳机插孔</translation>
@@ -7661,7 +7658,6 @@
 <translation id="7241389281993241388">请登录“<ph name="TOKEN_NAME" />”，导入客户端证书。</translation>
 <translation id="7241763419756062043">选择您所需的搜索和浏览质量</translation>
 <translation id="7243092385765551741">要删除通行密钥吗？</translation>
-<translation id="7243632151880336635">清除并退出</translation>
 <translation id="7245162963905242662">使用 Google 搜索此页面(&amp;C)…</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" />（最佳）</translation>
 <translation id="7246230585855757313">请重新插入您的安全密钥，然后再试一次</translation>
@@ -8535,7 +8531,6 @@
 <translation id="7925285046818567682">正在等待 <ph name="HOST_NAME" /> 的响应...</translation>
 <translation id="7926423016278357561">不是我本人。</translation>
 <translation id="7926975587469166629">卡的昵称</translation>
-<translation id="7927610604078150317">大小：<ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">已经更改了此密码？</translation>
 <translation id="7929962904089429003">打开菜单</translation>
 <translation id="7930294771522048157">已保存的付款方式会显示在这里</translation>
@@ -9184,6 +9179,7 @@
 <translation id="8448729345478502352">缩小或放大屏幕上的内容</translation>
 <translation id="8449008133205184768">粘贴并匹配样式</translation>
 <translation id="8449036207308062757">管理存储空间</translation>
+<translation id="8449347986464073209">删除数据并退出账号</translation>
 <translation id="8449836157089738489">在新标签页分组中打开全部网址</translation>
 <translation id="8449869326050867919">已分享密码</translation>
 <translation id="8451512073679317615">智能助理</translation>

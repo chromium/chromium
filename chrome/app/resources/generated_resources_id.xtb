@@ -5040,7 +5040,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5027550639139316293">Sertifikat Email</translation>
 <translation id="5027562294707732951">Tambahkan ekstensi</translation>
 <translation id="5028445315206872221">Ekstensi diblokir di situs ini</translation>
-<translation id="5029568752722684782">Hapus salinan</translation>
 <translation id="5029873138381728058">Gagal memeriksa VM</translation>
 <translation id="503155457707535043">Aplikasi sedang didownload</translation>
 <translation id="5032430150487044192">Tidak dapat membuat Kode QR</translation>
@@ -5734,7 +5733,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5601823921345337195">Tidak diizinkan terhubung ke perangkat MIDI</translation>
 <translation id="5601833336918638013">Jangan izinkan situs mencari perangkat Bluetooth</translation>
 <translation id="5602586420788540146">Buka di grup tab baru</translation>
-<translation id="5602765853043467355">Hapus bookmark, histori, sandi, dan lainnya dari perangkat ini.</translation>
 <translation id="5605758115928394442">Notifikasi telah dikirim ke ponsel Anda untuk mengonfirmasi bahwa ini memang Anda.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Ekstensi ini diblokir}other{Ekstensi ini diblokir}}</translation>
 <translation id="560834977503641186">Wi-Fi Sync, Pelajari Lebih Lanjut</translation>
@@ -5786,7 +5784,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5641648607875312660">Editor Gambar Screenshot</translation>
 <translation id="5642508497713047">Penandatangan CRL</translation>
 <translation id="5643321261065707929">Jaringan berbayar</translation>
-<translation id="5643620609347735571">Hapus dan lanjutkan</translation>
 <translation id="5646376287012673985">Lokasi</translation>
 <translation id="5646558797914161501">Pengusaha</translation>
 <translation id="5648021990716966815">Colokan mikrofon</translation>
@@ -7704,7 +7701,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7241389281993241388">Masuklah ke <ph name="TOKEN_NAME" /> untuk mengimpor sertifikat klien.</translation>
 <translation id="7241763419756062043">Pilih kualitas penelusuran dan penjelajahan Anda</translation>
 <translation id="7243092385765551741">Hapus kunci sandi?</translation>
-<translation id="7243632151880336635">Hapus dan Keluar</translation>
 <translation id="7245162963905242662">Telusur&amp;i Halaman ini dengan Google...</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Terbaik)</translation>
 <translation id="7246230585855757313">Masukkan kembali kunci keamanan, lalu coba lagi</translation>
@@ -8581,7 +8577,6 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7925285046818567682">Menunggu <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">Ini bukan saya.</translation>
 <translation id="7926975587469166629">Nama panggilan kartu</translation>
-<translation id="7927610604078150317">Ukuran: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Telah mengubah sandi ini?</translation>
 <translation id="7929962904089429003">Membuka menu</translation>
 <translation id="7930294771522048157">Metode pembayaran yang tersimpan akan muncul di sini</translation>
@@ -9231,6 +9226,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8448729345478502352">Membuat item di layar menjadi lebih kecil atau lebih besar</translation>
 <translation id="8449008133205184768">Tempel dan Cocokkan Gaya</translation>
 <translation id="8449036207308062757">Kelola penyimpanan</translation>
+<translation id="8449347986464073209">Hapus dan Logout</translation>
 <translation id="8449836157089738489">Buka semua di grup tab baru</translation>
 <translation id="8449869326050867919">Sandi dibagikan</translation>
 <translation id="8451512073679317615">asisten</translation>

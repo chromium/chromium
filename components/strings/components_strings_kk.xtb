@@ -125,7 +125,6 @@
 <translation id="1243027604378859286">Авторы:</translation>
 <translation id="1246424317317450637">Қалың</translation>
 <translation id="1247030632403369975">Алюминий</translation>
-<translation id="1250759482327835220">Келесіде жылдамырақ төлеу үшін картаңызды, аты-жөніңізді және төлем мекенжайын Google аккаунтыңызға сақтап қойыңыз.</translation>
 <translation id="1252209483516427155">Сырт киім</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (синхрондалған)</translation>
 <translation id="1255086252236620440">Тамақ өнімдерін араластырғыштар</translation>
@@ -158,7 +157,6 @@
 <translation id="1294154142200295408">Пәрмендер жолының нұсқалары</translation>
 <translation id="129553762522093515">Жақында жабылған</translation>
 <translation id="1296930489679394997">Сауда</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />Сookie файлдарын жоюға тырысыңыз<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">Қауіпсіз DNS параметрлерін тексеріңіз.</translation>
 <translation id="1307966114820526988">Ескі функциялар</translation>
@@ -1350,7 +1348,6 @@
 <translation id="3767485424735936570">Әкімші саясаты бойынша бұл контентті <ph name="VM_NAME" /> құрылғысына көшіру және қою әрекеттерін орындамаған дұрыс.</translation>
 <translation id="3772211998634047851">Қағаз (бонд)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Keep-те жылдам жаңа ескертпе жасау үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
-<translation id="3778403066972421603">Бұл карта осы құрылғыдағы Google аккаунтына сақталсын ба?</translation>
 <translation id="378026377453746707">Chrome-ның браузерді пайдалану кезінде қорғайтын Google Safe Browsing сияқты ендірілген қауіпсіздік мүмкіндіктері бар. Safe Browsing жақында <ph name="BEGIN_LINK" /><ph name="SITE" /> сайтында зиянды бағдарламалық құралды анықтады<ph name="END_LINK" />, ол сіз кіргелі жатқан сайтқа ендірілген.</translation>
 <translation id="3780694243617746492">Шығу деректері</translation>
 <translation id="3781428340399460090">Қою алқызыл</translation>
@@ -1956,7 +1953,6 @@
 <translation id="5020776957610079374">Әлемдік музыка</translation>
 <translation id="5021557570875267742">Chrome браузерімен бағаларды қадағалау</translation>
 <translation id="5023310440958281426">Әкімші саясаттарын тексеріңіз</translation>
-<translation id="5029568752722684782">Көшірмені өшіру</translation>
 <translation id="5030338702439866405">Берген</translation>
 <translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />" түбірлік сертификаты қажет, бірақ ол орнатылмаған. АТ әкімшіңіз мәселені шешу үшін "<ph name="SOFTWARE_NAME" />" конфигурациялық нұсқауларын қарауы керек. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Google Translate туралы</translation>
@@ -2539,7 +2535,6 @@
 <translation id="6270066318535733958">Қайықпен серуендеу</translation>
 <translation id="6272088941196661550">Chrome тарихынан сәйкес сұрауларды көру үшін шарлауды жалғастыру</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="627746635834430766">Келесіде жылдамырақ төлеу үшін картаны және төлем мекенжайын Google аккаунтына сақтаңыз.</translation>
 <translation id="6279183038361895380">Курсорды көрсету үшін |<ph name="ACCELERATOR" />| басыңыз</translation>
 <translation id="6280223929691119688">Бұл мекенжайға жеткізілмейді. Басқа мекенжайды таңдаңыз.</translation>
 <translation id="6284292079994426700">26 x 38 дюйм</translation>
@@ -3850,7 +3845,6 @@
 <translation id="8922013791253848639">Осы сайтта жарнамаларға әрқашан рұқсат ету</translation>
 <translation id="892588693504540538">Жоғарғы оң жағын тесу</translation>
 <translation id="8930330541574156305">Жылжымайтын мүлік</translation>
-<translation id="8931333241327730545">Бұл картаны Google аккаунтына сақтағыңыз келе ме?</translation>
 <translation id="8932102934695377596">Сағатыңыз артта қалған</translation>
 <translation id="893332455753468063">Ат қосу</translation>
 <translation id="8942355029279167844">Әкімші <ph name="APP_NAME" /> қолданбасына өнімді пайдалануды жақсарту үшін диагностикалық деректерді жинауға рұқсат етті. Толығырақ ақпарат алу үшін <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> бетін қараңыз.</translation>

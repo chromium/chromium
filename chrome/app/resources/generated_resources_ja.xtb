@@ -5016,7 +5016,6 @@
 <translation id="5027550639139316293">メール証明書</translation>
 <translation id="5027562294707732951">拡張機能を追加</translation>
 <translation id="5028445315206872221">このサイトでは拡張機能がブロックされています</translation>
-<translation id="5029568752722684782">コピーを消去</translation>
 <translation id="5029873138381728058">VM を確認できませんでした</translation>
 <translation id="503155457707535043">アプリをダウンロード中</translation>
 <translation id="5032430150487044192">QR コードを作成できません</translation>
@@ -5708,7 +5707,6 @@
 <translation id="5601823921345337195">MIDI デバイスへの接続を許可しないサイト</translation>
 <translation id="5601833336918638013">サイトが Bluetooth デバイスを検出することを許可しない</translation>
 <translation id="5602586420788540146">新しいタブグループで開く</translation>
-<translation id="5602765853043467355">ブックマーク、履歴、パスワード、その他の設定情報をこのデバイスから削除する</translation>
 <translation id="5605758115928394442">本人確認の通知をご使用のスマートフォンに送信しました。</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{この拡張機能はブロックされています}other{これらの拡張機能はブロックされています}}</translation>
 <translation id="560834977503641186">Wi-Fi 同期の詳細</translation>
@@ -5760,7 +5758,6 @@
 <translation id="5641648607875312660">スクリーンショット画像エディタ</translation>
 <translation id="5642508497713047">CRL の署名者</translation>
 <translation id="5643321261065707929">従量制ネットワーク</translation>
-<translation id="5643620609347735571">削除して続行</translation>
 <translation id="5646376287012673985">保存先</translation>
 <translation id="5646558797914161501">ビジネスマン</translation>
 <translation id="5648021990716966815">マイク差込口</translation>
@@ -7676,7 +7673,6 @@
 <translation id="7241389281993241388">クライアント証明書をインポートするには <ph name="TOKEN_NAME" /> にログインしてください。</translation>
 <translation id="7241763419756062043">検索とブラウジングの品質を選択する</translation>
 <translation id="7243092385765551741">パスキーを削除しますか？</translation>
-<translation id="7243632151880336635">削除してログアウト</translation>
 <translation id="7245162963905242662">Google でこのページを検索(&amp;C)...</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" />x<ph name="HEIGHT" />（最適）</translation>
 <translation id="7246230585855757313">セキュリティ キーを挿入し直して、もう一度お試しください</translation>
@@ -8552,7 +8548,6 @@
 <translation id="7925285046818567682"><ph name="HOST_NAME" /> を待機しています...</translation>
 <translation id="7926423016278357561">これは私ではありません。</translation>
 <translation id="7926975587469166629">カードのニックネーム</translation>
-<translation id="7927610604078150317">サイズ: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">このパスワードをすでに変更した場合</translation>
 <translation id="7929962904089429003">メニューを開く</translation>
 <translation id="7930294771522048157">保存したお支払い方法がここに表示されます</translation>
@@ -9202,6 +9197,7 @@
 <translation id="8448729345478502352">アイテムの表示サイズを変更します</translation>
 <translation id="8449008133205184768">ペーストしてスタイルを合わせる</translation>
 <translation id="8449036207308062757">ストレージを管理</translation>
+<translation id="8449347986464073209">削除してログアウト</translation>
 <translation id="8449836157089738489">すべてを新しいタブグループで開く</translation>
 <translation id="8449869326050867919">パスワードを共有しました</translation>
 <translation id="8451512073679317615">アシスタント</translation>

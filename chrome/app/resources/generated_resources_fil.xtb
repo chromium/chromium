@@ -5041,7 +5041,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5027550639139316293">Email Certificate</translation>
 <translation id="5027562294707732951">Idagdag ang extension</translation>
 <translation id="5028445315206872221">Naka-block ang mga extension sa site na ito</translation>
-<translation id="5029568752722684782">I-clear ang kopya</translation>
 <translation id="5029873138381728058">Hindi nasuri ang mga VM</translation>
 <translation id="503155457707535043">Dina-download ang mga app</translation>
 <translation id="5032430150487044192">Hindi magawa ang QR Code</translation>
@@ -5735,7 +5734,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5601823921345337195">Hindi pinapayagang kumonekta sa mga MIDI device</translation>
 <translation id="5601833336918638013">Huwag payagan ang mga site na maghanap ng mga Bluetooth device</translation>
 <translation id="5602586420788540146">Buksan sa bagong grupo ng tab</translation>
-<translation id="5602765853043467355">I-clear ang mga bookmark, history, mga password, at higit pa sa device na ito</translation>
 <translation id="5605758115928394442">Nagpadala ng notification sa iyong telepono para kumpirmahing ikaw nga ito.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Naka-block ang extension na ito}one{Naka-block ang mga extension na ito}other{Naka-block ang mga extension na ito}}</translation>
 <translation id="560834977503641186">Wi-Fi Sync, Matuto Pa</translation>
@@ -5787,7 +5785,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5641648607875312660">Editor ng Screenshot na Larawan</translation>
 <translation id="5642508497713047">Tagapaglagda ng CRL</translation>
 <translation id="5643321261065707929">Nakametrong network</translation>
-<translation id="5643620609347735571">I-clear at magpatuloy</translation>
 <translation id="5646376287012673985">Lokasyon</translation>
 <translation id="5646558797914161501">Negosyante</translation>
 <translation id="5648021990716966815">Jack ng mikropono</translation>
@@ -7707,7 +7704,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7241389281993241388">Mangyaring mag-sign in sa <ph name="TOKEN_NAME" /> upang i-import ang certificate ng client.</translation>
 <translation id="7241763419756062043">Piliin ang iyong kalidad ng paghahanap at pag-browse</translation>
 <translation id="7243092385765551741">I-delete ang passkey?</translation>
-<translation id="7243632151880336635">I-clear at Mag-sign Out</translation>
 <translation id="7245162963905242662">Maghan&amp;ap sa page na ito gamit ang Google...</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Pinakamainam)</translation>
 <translation id="7246230585855757313">Muling ipasok ang iyong security key at subukan ulit</translation>
@@ -8585,7 +8581,6 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7925285046818567682">Naghihintay para sa <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">Hindi ako ito.</translation>
 <translation id="7926975587469166629">Nickname ng card</translation>
-<translation id="7927610604078150317">Sukat: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Napalitan mo na ang password na ito?</translation>
 <translation id="7929962904089429003">Buksan ang menu</translation>
 <translation id="7930294771522048157">Lalabas dito ang mga naka-save na paraan ng pagbabayad</translation>
@@ -9236,6 +9231,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8448729345478502352">Paliitin o palakihin ang mga item sa iyong screen</translation>
 <translation id="8449008133205184768">I-paste at Itugma ang Estilo</translation>
 <translation id="8449036207308062757">Pamahalaan ang storage</translation>
+<translation id="8449347986464073209">I-delete at Mag-sign Out</translation>
 <translation id="8449836157089738489">Buksan lahat sa bagong grupo ng tab</translation>
 <translation id="8449869326050867919">Na-share ang password</translation>
 <translation id="8451512073679317615">assistant</translation>

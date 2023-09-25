@@ -5040,7 +5040,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5027550639139316293">E-possertifikaat</translation>
 <translation id="5027562294707732951">Voeg uitbreiding by</translation>
 <translation id="5028445315206872221">Uitbreidings word op hierdie werf geblokkeer</translation>
-<translation id="5029568752722684782">Vee kopie uit</translation>
 <translation id="5029873138381728058">Kon nie VM'e nagaan nie</translation>
 <translation id="503155457707535043">Programme laai nou af</translation>
 <translation id="5032430150487044192">Kan nie QR-kode skep nie</translation>
@@ -5734,7 +5733,6 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="5601823921345337195">Mag nie aan MIDI-toestelle koppel nie</translation>
 <translation id="5601833336918638013">Moenie werwe toelaat om Bluetooth-toestelle te soek nie</translation>
 <translation id="5602586420788540146">Maak in nuwe oortjiegroep oop</translation>
-<translation id="5602765853043467355">Vee boekmerke, geskiedenis, wagwoorde en meer van hierdie toestel af uit</translation>
 <translation id="5605758115928394442">'n Kennisgewing is na jou foon toe gestuur om te bevestig dat dit jy is.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Hierdie uitbreiding is geblokkeer}other{Hierdie uitbreidings is geblokkeer}}</translation>
 <translation id="560834977503641186">Wi-fi-sinkronisering, kom meer te wete</translation>
@@ -5787,7 +5785,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5641648607875312660">Skermskootprentredigeerder</translation>
 <translation id="5642508497713047">CRL-ondertekenaar</translation>
 <translation id="5643321261065707929">Beperkte netwerk</translation>
-<translation id="5643620609347735571">Vee uit en gaan voort</translation>
 <translation id="5646376287012673985">Ligging</translation>
 <translation id="5646558797914161501">Sakeman</translation>
 <translation id="5648021990716966815">Mikrofoonsok</translation>
@@ -7704,7 +7701,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7241389281993241388">Meld asseblief by <ph name="TOKEN_NAME" /> aan om die kliëntsertifikaat in te voer.</translation>
 <translation id="7241763419756062043">Kies jou soek- en blaaigehalte</translation>
 <translation id="7243092385765551741">Vee toegangsleutel uit?</translation>
-<translation id="7243632151880336635">Vee uit en meld af</translation>
 <translation id="7245162963905242662">Soek hierdie bladsy met Google …</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (beste)</translation>
 <translation id="7246230585855757313">Sit jou sekuriteitsleutel weer in en probeer weer</translation>
@@ -8582,7 +8578,6 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7925285046818567682">Wag tans vir <ph name="HOST_NAME" /> …</translation>
 <translation id="7926423016278357561">Dit was nie ek nie.</translation>
 <translation id="7926975587469166629">Kaart se bynaam</translation>
-<translation id="7927610604078150317">Grootte: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Het jy hierdie wagwoord reeds verander?</translation>
 <translation id="7929962904089429003">Maak die kieslys oop</translation>
 <translation id="7930294771522048157">Gestoorde betaalmetodes sal hier verskyn</translation>
@@ -9231,6 +9226,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8448729345478502352">Maak items op jou skerm kleiner of groter</translation>
 <translation id="8449008133205184768">Plak en pas by styl</translation>
 <translation id="8449036207308062757">Bestuur berging</translation>
+<translation id="8449347986464073209">Vee uit en meld af</translation>
 <translation id="8449836157089738489">Maak almal in nuwe oortjiegroep oop</translation>
 <translation id="8449869326050867919">Wagwoord is gedeel</translation>
 <translation id="8451512073679317615">assistent</translation>

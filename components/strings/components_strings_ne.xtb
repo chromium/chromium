@@ -125,7 +125,6 @@
 <translation id="1243027604378859286">लेखक:</translation>
 <translation id="1246424317317450637">बोल्ड</translation>
 <translation id="1247030632403369975">एल्युमिनम</translation>
-<translation id="1250759482327835220">अर्को पटक अझ छिटो भुक्तानी गर्न आफ्नो Google खातामा आफ्नो कार्ड, नाम र बिलिङ ठेगाना सेभ गर्नुहोस्।</translation>
 <translation id="1252209483516427155">बाहिरी वस्त्र</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (सिंक गरिएका)</translation>
 <translation id="1255086252236620440">खाना मिक्स गर्ने मेसिन</translation>
@@ -158,7 +157,6 @@
 <translation id="1294154142200295408">कमान्ड लाइनसम्बन्धी विविधताहरू</translation>
 <translation id="129553762522093515">हालैमा बन्द गरिएको</translation>
 <translation id="1296930489679394997">बिक्री</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />कुकीहरूलाई खाली गर्ने प्रयास गर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">DNS सेटिङ</translation>
 <translation id="1307966114820526988">चल्तीबाट हटाइएका सुविधाहरू</translation>
@@ -1348,7 +1346,6 @@
 <translation id="3767485424735936570">एड्मिनले तोक्नुभएको नीतिअनुसार यो सामग्री <ph name="VM_NAME" /> मा कपी र पेस्ट गर्न सिफारिस गरिँदैन</translation>
 <translation id="3772211998634047851">पेपर (बन्ड)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Keep प्रयोग गरी तुरुन्तै नयाँ टिपोट बनाउन Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
-<translation id="3778403066972421603">तपाईं यो कार्डलाई आफ्नो Google खाता र यस डिभाइसमा सेभ गर्न चाहनुहुन्छ?</translation>
 <translation id="378026377453746707">तपाईंले ब्राउज गर्दै गर्दा तपाईंलाई सुरक्षित राख्न Chrome मा Google सुरक्षित ब्राउजिङ जस्ता सुरक्षासम्बन्धी अन्तर्निर्मित सुविधाहरू उपलब्ध छन्। Safe Browsing ले भर्खरै <ph name="BEGIN_LINK" /><ph name="SITE" /> मा हानिकारक सफ्टवेयर भेट्टाएको छ<ph name="END_LINK" /> र यो तपाईंले खोल्न प्रयास गरिरहनुभएको साइटमा इम्बेड गरिएको छ।</translation>
 <translation id="3780694243617746492">आउटपुट बिन</translation>
 <translation id="3781428340399460090">गाढा गुलाबी</translation>
@@ -1955,7 +1952,6 @@
 <translation id="5020776957610079374">विश्व सङ्गीत</translation>
 <translation id="5021557570875267742">Chrome मार्फत मूल्य ट्र्याक गर्नुहोस्</translation>
 <translation id="5023310440958281426">तपाईंको व्यवस्थापकको नीतिहरु जाँच्नुहोस्</translation>
-<translation id="5029568752722684782">प्रतिलिपि हटाउनुहोस्</translation>
 <translation id="5030338702439866405">द्वारा जारी गरिएको</translation>
 <translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />" को मूल प्रमाणपत्र आवश्यक छ तर स्थापना गरिएको छैन। यो समस्या समाधान गर्न तपाईंको IT एडमिनले "<ph name="SOFTWARE_NAME" />" को कन्फिगरेसनसम्बन्धी निर्देशनहरू हेर्नुपर्छ। <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Google अनुवादको बारेमा</translation>
@@ -2538,7 +2534,6 @@
 <translation id="6270066318535733958">बोटिङ</translation>
 <translation id="6272088941196661550">तपाईं Chrome को ब्राउजिङ इतिहासमा सान्दर्भिक गतिविधि हेर्न चाहनुहुन्छ भने खोज्ने क्रम सुचारु गर्नुहोस्</translation>
 <translation id="6272383483618007430">Google अपडेट</translation>
-<translation id="627746635834430766">अर्को पटक अझ छिटो भुक्तानी गर्न आफ्नो Google खातामा आफ्नो कार्ड र बिलिङ ठेगाना सेभ गर्नुहोस्।</translation>
 <translation id="6279183038361895380">तपाईंको कर्सर देखाउन |<ph name="ACCELERATOR" />| लाई थिच्नुहोस्</translation>
 <translation id="6280223929691119688">यो ठेगानामा डेलिभर गर्न सकिँदैन। कुनै अर्को ठेगाना चयन गर्नुहोस्।</translation>
 <translation id="6284292079994426700">२६ x ३८ इन्च</translation>
@@ -3850,7 +3845,6 @@
 <translation id="8922013791253848639">यो साइटमा सधैँ विज्ञापनहरू राख्ने अनुमति दिनुहोस्</translation>
 <translation id="892588693504540538">सिरानको दायाँपट्टि प्वाल</translation>
 <translation id="8930330541574156305">घर जग्गा</translation>
-<translation id="8931333241327730545">तपाईं आफ्नो Google खातामा यो कार्ड सुरक्षित गर्न चाहनुहुन्छ?</translation>
 <translation id="8932102934695377596">तपाईंको घडी ढिला छ</translation>
 <translation id="893332455753468063">नाम थप्नुहोस्</translation>
 <translation id="8942355029279167844">तपाईंका एड्मिनले <ph name="APP_NAME" /> एप सुधार्ने प्रयोजनका लागि यो एपलाई निदानसम्बन्धी डेटा सङ्कलन गर्ने अनुमति दिनुभएको छ। थप जानकारीका लागि <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> मा जानुहोस्।</translation>

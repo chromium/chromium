@@ -5026,7 +5026,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5027550639139316293">E-pasta sertifikāts</translation>
 <translation id="5027562294707732951">Pievienot paplašinājumu</translation>
 <translation id="5028445315206872221">Paplašinājumi ir bloķēti šajā vietnē</translation>
-<translation id="5029568752722684782">Dzēst kopiju</translation>
 <translation id="5029873138381728058">Neizdevās pārbaudīt virtuālās mašīnas</translation>
 <translation id="503155457707535043">Pašlaik lejupielādētās lietotnes</translation>
 <translation id="5032430150487044192">Nevar izveidot kvadrātkodu</translation>
@@ -5720,7 +5719,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="5601823921345337195">Nedrīkst izveidot savienojumu ar MIDI ierīcēm</translation>
 <translation id="5601833336918638013">Neatļaut vietnēm meklēt Bluetooth ierīces</translation>
 <translation id="5602586420788540146">Atveriet jaunā ciļņu grupā</translation>
-<translation id="5602765853043467355">Notīrīt grāmatzīmes, vēsturi, paroles un citu saturu šajā ierīcē</translation>
 <translation id="5605758115928394442">Uz jūsu tālruni tika nosūtīts paziņojums, lai apstiprinātu, ka tas esat jūs.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Šis paplašinājums ir bloķēts}zero{Šie paplašinājumi ir bloķēti}one{Šie paplašinājumi ir bloķēti}other{Šie paplašinājumi ir bloķēti}}</translation>
 <translation id="560834977503641186">Wi-Fi sinhronizācija, uzzināt vairāk</translation>
@@ -5770,7 +5768,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="5641648607875312660">Ekrānuzņēmuma attēla redaktors</translation>
 <translation id="5642508497713047">CRL parakstītājs</translation>
 <translation id="5643321261065707929">Maksas tīkls</translation>
-<translation id="5643620609347735571">Notīrīt un turpināt</translation>
 <translation id="5646376287012673985">Atrašanās vieta</translation>
 <translation id="5646558797914161501">Uzņēmējs</translation>
 <translation id="5648021990716966815">Mikrofona ligzda</translation>
@@ -7691,7 +7688,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7241389281993241388">Pierakstieties ierīcē <ph name="TOKEN_NAME" />, lai importētu klienta sertifikātu.</translation>
 <translation id="7241763419756062043">Iespēja izvēlēties meklēšanas un pārlūkošanas kvalitāti</translation>
 <translation id="7243092385765551741">Vai dzēst piekļuves atslēgu?</translation>
-<translation id="7243632151880336635">Dzēst un izrakstīties</translation>
 <translation id="7245162963905242662">Meklēt šajā lapā, izmantojot Google…</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (labākā)</translation>
 <translation id="7246230585855757313">Atkārtoti ievietojiet drošības atslēgu un mēģiniet vēlreiz</translation>
@@ -8568,7 +8564,6 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7925285046818567682">Gaida <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">Tas nebiju es.</translation>
 <translation id="7926975587469166629">Kredītkartes apzīmējums</translation>
-<translation id="7927610604078150317">Lielums: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Vai jūs jau nomainījāt šo paroli?</translation>
 <translation id="7929962904089429003">Atvērt izvēlni</translation>
 <translation id="7930294771522048157">Šeit tiks parādīti saglabātie maksājumu veidi.</translation>
@@ -9218,6 +9213,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8448729345478502352">Palieliniet vai samaziniet ekrānā redzamos vienumus.</translation>
 <translation id="8449008133205184768">Ielīmēt un pielāgot stilam</translation>
 <translation id="8449036207308062757">Pārvaldīt krātuvi</translation>
+<translation id="8449347986464073209">Dzēst un izrakstīties</translation>
 <translation id="8449836157089738489">Atvērt visu jaunā ciļņu grupā</translation>
 <translation id="8449869326050867919">Parole ir kopīgota</translation>
 <translation id="8451512073679317615">asistents</translation>

@@ -5027,7 +5027,6 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5027550639139316293">Email sertifikati</translation>
 <translation id="5027562294707732951">Kengaytmani o‘rnatish</translation>
 <translation id="5028445315206872221">Bu saytda kengaytmalar taqiqlangan</translation>
-<translation id="5029568752722684782">Nusxani o‘chirib tashlash</translation>
 <translation id="5029873138381728058">VM tekshirilmadi</translation>
 <translation id="503155457707535043">Ilovalar yuklab olinishi</translation>
 <translation id="5032430150487044192">QR kod yaratilmadi</translation>
@@ -5721,7 +5720,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5601823921345337195">MIDI qurilmalarga ulanishga ruxsat berilmagan</translation>
 <translation id="5601833336918638013">Saytlar Bluetooth qurilmalarni qidirishi mumkin emas</translation>
 <translation id="5602586420788540146">Yangi varaqlar guruhida ochish</translation>
-<translation id="5602765853043467355">Qurilmadagi xatcho‘plar, tarix, parollar va boshqa ma’lumotlarni tozalash</translation>
 <translation id="5605758115928394442">Telefoningizga bildirishnoma yuborildi. Shaxsingizni tasdiqlang.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Bu kengaytma bloklandi}other{Bu kengaytmalar bloklandi}}</translation>
 <translation id="560834977503641186">Wi-Fi Sync, Batafsil</translation>
@@ -5773,7 +5771,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5641648607875312660">Skrinshot rasmlari muharriri</translation>
 <translation id="5642508497713047">CRL imzolovchisi</translation>
 <translation id="5643321261065707929">Trafik hisoblanadigan tarmoq</translation>
-<translation id="5643620609347735571">Tozalash va davom etish</translation>
 <translation id="5646376287012673985">Joylashuv</translation>
 <translation id="5646558797914161501">Biznesmen</translation>
 <translation id="5648021990716966815">Mikrofon teshigi</translation>
@@ -7690,7 +7687,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7241389281993241388">Mijoz sertifikatini import qilish uchun, <ph name="TOKEN_NAME" />’ga kiring.</translation>
 <translation id="7241763419756062043">Qidiruv va kezish sifatini tanlang</translation>
 <translation id="7243092385765551741">Kalit oʻchirilsinmi?</translation>
-<translation id="7243632151880336635">Tozalash va sinxronizatsiyadan chiqish</translation>
 <translation id="7245162963905242662">&amp;Bu sahifada Google bilan qidirish...</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (eng yaxshi)</translation>
 <translation id="7246230585855757313">Elektron kalitni yana suqing va qaytadan urining</translation>
@@ -8567,7 +8563,6 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="7925285046818567682"><ph name="HOST_NAME" /> kutilmoqda...</translation>
 <translation id="7926423016278357561">Men emasdim.</translation>
 <translation id="7926975587469166629">Karta nomi</translation>
-<translation id="7927610604078150317">Hajmi: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Bu parol allaqachon oʻzgartirilganmi?</translation>
 <translation id="7929962904089429003">Menyuni ochish</translation>
 <translation id="7930294771522048157">Saqlangan to‘lov usullari shu yerda turadi</translation>
@@ -9216,6 +9211,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8448729345478502352">Ekrandagi elementlarni kichiklashtirish yoki kattalashtirish</translation>
 <translation id="8449008133205184768">Uslubni solishtirib joylash</translation>
 <translation id="8449036207308062757">Xotirani boshqarish</translation>
+<translation id="8449347986464073209">Oʻchirish va hisobdan chiqish</translation>
 <translation id="8449836157089738489">Barchasini yangi varaqlar guruhida ochish</translation>
 <translation id="8449869326050867919">Parol ulashilgan</translation>
 <translation id="8451512073679317615">assistent</translation>

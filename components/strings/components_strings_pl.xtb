@@ -125,7 +125,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1243027604378859286">Autor:</translation>
 <translation id="1246424317317450637">Pogrubienie</translation>
 <translation id="1247030632403369975">Aluminium</translation>
-<translation id="1250759482327835220">Aby następnym razem zapłacić szybciej, zapisz kartę oraz imię, nazwisko i adres rozliczeniowy na swoim koncie Google.</translation>
 <translation id="1252209483516427155">Odzież wierzchnia</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (zsynchronizowane)</translation>
 <translation id="1255086252236620440">Miksery</translation>
@@ -158,7 +157,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1294154142200295408">Odmiany w wierszu poleceń</translation>
 <translation id="129553762522093515">Ostatnio zamknięte</translation>
 <translation id="1296930489679394997">Sprzedaż</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />Usuń pliki cookie<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">Sprawdź ustawienia bezpiecznego DNS</translation>
 <translation id="1307966114820526988">Funkcje wycofane</translation>
@@ -1351,7 +1349,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3767485424735936570">Kopiowanie i wklejanie tej zawartości do systemu <ph name="VM_NAME" /> nie jest zalecane przez zasady administratora</translation>
 <translation id="3772211998634047851">Papier (Bond)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />; naciśnij Tab, a potem Enter, aby szybko utworzyć nową notatkę w Google Keep</translation>
-<translation id="3778403066972421603">Czy chcesz zapisać tę kartę na swoim koncie Google i na tym urządzeniu?</translation>
 <translation id="378026377453746707">Chrome ma wbudowane zabezpieczenia takie jak Bezpieczne przeglądanie Google, które chronią Cię podczas korzystania z internetu. Niedawno Bezpieczne przeglądanie <ph name="BEGIN_LINK" />znalazło szkodliwe oprogramowanie na stronie<ph name="SITE" /><ph name="END_LINK" /> umieszczonej w witrynie, którą chcesz odwiedzić.</translation>
 <translation id="3780694243617746492">Pojemnik wyjściowy</translation>
 <translation id="3781428340399460090">Ciepłoróżowy</translation>
@@ -1957,7 +1954,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5020776957610079374">Muzyka świata</translation>
 <translation id="5021557570875267742">Monitorowanie cen w Chrome</translation>
 <translation id="5023310440958281426">Sprawdź zasady administratora</translation>
-<translation id="5029568752722684782">Usuń kopię</translation>
 <translation id="5030338702439866405">Wystawiony przez</translation>
 <translation id="503069730517007720">Certyfikat główny oprogramowania „<ph name="SOFTWARE_NAME" />” jest wymagany, ale nie został zainstalowany. Aby rozwiązać ten problem, administrator powinien przeczytać instrukcje dotyczące konfiguracji oprogramowania „<ph name="SOFTWARE_NAME" />”. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Tłumacz Google – informacje</translation>
@@ -2540,7 +2536,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6270066318535733958">Wioślarstwo</translation>
 <translation id="6272088941196661550">Wznów swoją serię czynności, aby zobaczyć odpowiednią aktywność w historii Chrome</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="627746635834430766">Aby następnym razem zapłacić szybciej, zapisz kartę i adres rozliczeniowy na swoim koncie Google.</translation>
 <translation id="6279183038361895380">Naciśnij |<ph name="ACCELERATOR" />|, by wyświetlić kursor</translation>
 <translation id="6280223929691119688">Nie można dostarczyć pod ten adres. Wybierz inny.</translation>
 <translation id="6284292079994426700">26 x 38 cali</translation>
@@ -3851,7 +3846,6 @@ Dodatkowe informacje:
 <translation id="8922013791253848639">Zawsze zezwalaj na wyświetlanie reklam na tej stronie</translation>
 <translation id="892588693504540538">Otwór w prawym górnym rogu</translation>
 <translation id="8930330541574156305">Nieruchomości</translation>
-<translation id="8931333241327730545">Chcesz zapisać tę kartę na swoim koncie Google?</translation>
 <translation id="8932102934695377596">Twój zegar się spóźnia</translation>
 <translation id="893332455753468063">Dodaj imię i nazwisko lub nazwę firmy</translation>
 <translation id="8942355029279167844">Administrator zezwolił aplikacji <ph name="APP_NAME" /> na zbieranie danych diagnostycznych, z których korzystamy, by ulepszać działanie usługi. Więcej informacji znajdziesz na <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>

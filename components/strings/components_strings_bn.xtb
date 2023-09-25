@@ -125,7 +125,6 @@
 <translation id="1243027604378859286">লেখক:</translation>
 <translation id="1246424317317450637">বোল্ড</translation>
 <translation id="1247030632403369975">অ্যালুমিনিয়াম</translation>
-<translation id="1250759482327835220">পরেরবার আরও দ্রুত পেমেন্ট করা জন্য আপনার কার্ড, নাম এবং বিলিং ঠিকানাটি Google অ্যাকাউন্টে সেভ করে রাখুন।</translation>
 <translation id="1252209483516427155">বাইরের পোশাক</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (সিঙ্ক হয়েছে)</translation>
 <translation id="1255086252236620440">ফুড মিক্সার</translation>
@@ -158,7 +157,6 @@
 <translation id="1294154142200295408">কম্যান্ড-লাইন ভেরিয়েশন</translation>
 <translation id="129553762522093515">সম্প্রতি বন্ধ হয়েছে</translation>
 <translation id="1296930489679394997">বিক্রয়</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />আপনার কুকিজ সাফ করে দেখুন<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">আপনার সুরক্ষিত DNS সেটিংস চেক করে দেখুন</translation>
 <translation id="1307966114820526988">শীঘ্রই বন্ধ করা হবে এমন ফিচার</translation>
@@ -1352,7 +1350,6 @@
 <translation id="3767485424735936570">অ্যাডমিনিস্ট্রেটর নীতি অনুযায়ী <ph name="VM_NAME" />-এ এই কন্টেন্ট কপি ও পেস্ট না করার সাজেস্ট করা হচ্ছে</translation>
 <translation id="3772211998634047851">পেপার (বন্ড)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Keep-এ চটপট নতুন নোট তৈরি করতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
-<translation id="3778403066972421603">আপনি কি এই কার্ডটি আপনার Google অ্যাকাউন্টে ও এই ডিভাইসে সেভ করতে চান?</translation>
 <translation id="378026377453746707">আপনি ব্রাউজ করার সময় আপনাকে সুরক্ষিত রাখতে, Chrome-এ বিল্ট-ইন নিরাপত্তা সম্পর্কিত ফিচার আছে, যেমন Google Safe Browsing। Safe Browsing <ph name="BEGIN_LINK" />সম্প্রতি <ph name="SITE" />-এ ক্ষতিকর সফ্টওয়্যার খুঁজে পেয়েছে<ph name="END_LINK" />, যেটি আপনি দেখার চেষ্টা করছেন যে সাইট, তার মধ্যে এম্বেড করা আছে।</translation>
 <translation id="3780694243617746492">আউটপুট বিন</translation>
 <translation id="3781428340399460090">হট গোলাপী</translation>
@@ -1958,7 +1955,6 @@
 <translation id="5020776957610079374">ওয়ার্ল্ড মিউজিক</translation>
 <translation id="5021557570875267742">Chrome ব্যবহার করে দাম ট্র্যাক করুন</translation>
 <translation id="5023310440958281426">আপনার প্রশাসকের নীতিগুলি দেখুন</translation>
-<translation id="5029568752722684782">কপি সাফ করুন</translation>
 <translation id="5030338702439866405">দ্বারা ইস্যু করা</translation>
 <translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />" এর জন্য একটি রুট সার্টিফিকেট প্রয়োজন কিন্তু সেটি ইনস্টল করা নেই। এই সমস্যাটি সমাধান করতে আপনার IT প্রশাসককে "<ph name="SOFTWARE_NAME" />" এর কনফিগারেশন নির্দেশ ভাল করে দেখে নিতে হবে। <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Google অনুবাদ সম্বন্ধে</translation>
@@ -2540,7 +2536,6 @@
 <translation id="6270066318535733958">বোটিং</translation>
 <translation id="6272088941196661550">Chrome ইতিহাসে প্রাসঙ্গিক অ্যাক্টিভিটি দেখতে সার্চ করা আবার চালু করুন</translation>
 <translation id="6272383483618007430">Google আপডেট</translation>
-<translation id="627746635834430766">পরের বার আরও দ্রুত পেমেন্ট করা জন্য আপনার এই কার্ড এবং বিলিং ঠিকানাটি Google অ্যাকাউন্টে সেভ করে রাখুন।</translation>
 <translation id="6279183038361895380">আপনার কার্সার দেখাতে |<ph name="ACCELERATOR" />| চাপুন</translation>
 <translation id="6280223929691119688">এই ঠিকানায় ডেলিভারি করা যাবে না। অন্য ঠিকানা বেছে নিন।</translation>
 <translation id="6284292079994426700">২৬ x ৩৮ ইঞ্চি</translation>
@@ -3851,7 +3846,6 @@
 <translation id="8922013791253848639">এই সাইটে সবসময় বিজ্ঞাপন দেখানোর অনুমতি দিন</translation>
 <translation id="892588693504540538">উপরের ডানদিকে পাঞ্চ</translation>
 <translation id="8930330541574156305">রিয়েল এস্টেট</translation>
-<translation id="8931333241327730545">আপনি কি আপনার Google অ্যাকাউন্টে এই কার্ড সেভ করতে চান?</translation>
 <translation id="8932102934695377596">আপনার ঘড়ির সময় পিছিয়ে রয়েছে</translation>
 <translation id="893332455753468063">নাম যোগ করুন</translation>
 <translation id="8942355029279167844">আপনার অ্যাডমিন প্রোডাক্ট ব্যবহারের অভিজ্ঞতাকে আরও উন্নত করার লক্ষ্যে <ph name="APP_NAME" />-কে ডায়াগনস্টিক ডেটা সংগ্রহ করার অনুমতি দিয়েছে। আরও তথ্যের জন্য, <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> লিঙ্কে গিয়ে দেখুন।</translation>

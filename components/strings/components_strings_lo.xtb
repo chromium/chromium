@@ -125,7 +125,6 @@
 <translation id="1243027604378859286">ຜູ້ຂຽນ:</translation>
 <translation id="1246424317317450637">ໂຕເຂັ້ມ</translation>
 <translation id="1247030632403369975">ອະລູມິນຽມ</translation>
-<translation id="1250759482327835220">ເພື່ອຈ່າຍໄດ້ໄວກວ່າໃນຄັ້ງຕໍ່ໄປ, ກະລຸນາບັນທຶກບັດ ແລະ ທີ່ຢູ່ຮຽກເກັບເງິນຂອງທ່ານໄວ້ໃນບັນຊີ Google ຂອງທ່ານ.</translation>
 <translation id="1252209483516427155">ເຄື່ອງນຸ່ງຊັ້ນນອກ</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (ຊິ້ງຂໍ້ມູນແລ້ວ)</translation>
 <translation id="1255086252236620440">ເຄື່ອງປະສົມອາຫານ</translation>
@@ -158,7 +157,6 @@
 <translation id="1294154142200295408">ການປ່ຽນແປງແຖວຄຳສັ່ງ</translation>
 <translation id="129553762522093515">ປິດ​ບໍ່​ດົນ​ມາ​ນີ້</translation>
 <translation id="1296930489679394997">ຫຼຸດລາຄາ</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />ລອງລຶບລ້າງຄຸກກີ້ຂອງທ່ານ<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">ກວດເບິ່ງການຕັ້ງຄ່າ DNS ທີ່ປອດໄພຂອງທ່ານ</translation>
 <translation id="1307966114820526988">ຄຸນສົມບັດທີ່ເຊົາຮອງຮັບແລ້ວ</translation>
@@ -1351,7 +1349,6 @@
 <translation id="3767485424735936570">ນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບບບໍ່ແນະນຳການສຳເນົາ ແລະ ວາງເນື້ອຫານີ້ໃສ່ <ph name="VM_NAME" /></translation>
 <translation id="3772211998634047851">ເຈ້ຍ (ບອນດ໌)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພື່ອສ້າງບັນທຶກໃໝ່ໃນ Google Keep ໄດ້ຢ່າງວ່ອງໄວ</translation>
-<translation id="3778403066972421603">ທ່ານຕ້ອງການບັນທຶກບັດນີ້ໃສ່ບັນຊີ Google ຂອງທ່ານ ແລະ ໃນອຸປະກອນນີ້ບໍ?</translation>
 <translation id="378026377453746707">Chrome ມີຄຸນສົມບັດຄວາມປອດໄພໃນຕົວເພື່ອປົກປ້ອງທ່ານໃນລະຫວ່າງທີ່ທ່ານທ່ອງເວັບ ເຊັ່ນ: Google Safe Browsing. ເມື່ອບໍ່ດົນມານີ້ Safe Browsing <ph name="BEGIN_LINK" />ໄດ້ພົບຊອບແວທີ່ເປັນອັນຕະລາຍຢູ່ <ph name="SITE" /><ph name="END_LINK" />, ເຊິ່ງຖືກຝັງຢູ່ໃນເວັບໄຊຫາກທ່ານພະຍາຍາມເຂົ້າເບິ່ງ.</translation>
 <translation id="3780694243617746492">ຖາດເຈ້ຍອອກ</translation>
 <translation id="3781428340399460090">ສີ​ບົວ​ເຂັ້ມ</translation>
@@ -1957,7 +1954,6 @@
 <translation id="5020776957610079374">ເພງທົ່ວໂລກ</translation>
 <translation id="5021557570875267742">ຕິດຕາມລາຄາດ້ວຍ Chrome</translation>
 <translation id="5023310440958281426">ກວດ​ເບິ່ງ​ນະ​ໂຍ​ບາຍ​ຂອງຜູ້ຄຸ້ມຄອງ​ຂອງ​ທ່ານ</translation>
-<translation id="5029568752722684782">ລ້າງ​ສຳ​ເນົາ</translation>
 <translation id="5030338702439866405">ອອກໃຫ້ໂດຍ</translation>
 <translation id="503069730517007720">ຈຳເປັນຕ້ອງມີໃບຮັບຮອງພື້ນຖານສຳລັບ <ph name="SOFTWARE_NAME" /> ແຕ່ຍັງບໍ່ໄດ້ຕິດຕັ້ງເທື່ອ. ຜູ້ເບິ່ງແຍງລະບົບເຄືອຂ່າຍຂອງທ່ານຄວນກວດເບິ່ງຄຳແນະນຳການກຳນົດຄ່າສຳລັບ <ph name="SOFTWARE_NAME" /> ເພື່ອແກ້ໄຂບັນຫານີ້. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">ກ່ຽວກັບ Google ແປພາສາ</translation>
@@ -2540,7 +2536,6 @@
 <translation id="6270066318535733958">ຂີ່ເຮືອ</translation>
 <translation id="6272088941196661550">ສືບຕໍ່ບັນທຶກຂອງທ່ານເພື່ອເບິ່ງການເຄື່ອນໄຫວທີ່ກ່ຽວຂ້ອງໃນປະຫວັດ Chrome ຂອງທ່ານ</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="627746635834430766">ເພື່ອຈ່າຍໄດ້ໄວກວ່າໃນຄັ້ງຕໍ່ໄປ, ກະລຸນາບັນທຶກບັດ ແລະ ທີ່ຢູ່ຮຽກເກັບເງິນຂອງທ່ານໄວ້ໃນບັນຊີ Google ຂອງທ່ານ.</translation>
 <translation id="6279183038361895380">ກົດ |<ph name="ACCELERATOR" />| ເພື່ອສະແດງເຄີເຊີຂອງທ່ານ</translation>
 <translation id="6280223929691119688">ບໍ່ສາມາດສົ່ງຫາທີ່ຢູ່ນີ້ໄດ້. ກະລຸນາເລືອກທີ່ຢູ່ອື່ນ.</translation>
 <translation id="6284292079994426700">26 x 38 ນິ້ວ</translation>
@@ -3852,7 +3847,6 @@
 <translation id="8922013791253848639">ອະນຸຍາດໂຄສະນາໃນເວັບໄຊນີ້ທຸກເທື່ອ</translation>
 <translation id="892588693504540538">ເຈາະຮູເທິງສຸດເບື້ອງຊ້າຍ</translation>
 <translation id="8930330541574156305">ອະສັງຫາລິມະຊັບ</translation>
-<translation id="8931333241327730545">ທ່ານຕ້ອງການບັນທຶກບັດນີ້ໃສ່ບັນຊີ Google ຂອງທ່ານບໍ?</translation>
 <translation id="8932102934695377596">ໂມງ​ຂອງ​ທ່ານ​ຊ້າ</translation>
 <translation id="893332455753468063">ເພີ່ມຊື່</translation>
 <translation id="8942355029279167844">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ອະນຸຍາດໃຫ້ <ph name="APP_NAME" /> ເກັບເອົາຂໍ້ມູນການວິເຄາະບັນຫາເພື່ອປັບປຸງປະສົບການຜະລິດຕະພັນແລ້ວ. ເບິ່ງ <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> ສຳລັບຂໍ້ມູນເພີ່ມເຕີມ.</translation>

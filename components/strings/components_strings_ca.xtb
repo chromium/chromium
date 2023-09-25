@@ -125,7 +125,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1243027604378859286">Autor:</translation>
 <translation id="1246424317317450637">Negreta</translation>
 <translation id="1247030632403369975">Alumini</translation>
-<translation id="1250759482327835220">Perquè la propera vegada puguis pagar més ràpidament, desa la targeta, el nom i l'adreça de facturació al Compte de Google.</translation>
 <translation id="1252209483516427155">Moda d'abric</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (informació sincronitzada)</translation>
 <translation id="1255086252236620440">Mescladores</translation>
@@ -158,7 +157,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1294154142200295408">Variacions de la línia d'ordres</translation>
 <translation id="129553762522093515">Tancades recentment</translation>
 <translation id="1296930489679394997">Vendes</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />Esborreu les galetes<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">Revisa la configuració de DNS segur</translation>
 <translation id="1307966114820526988">Funcions obsoletes</translation>
@@ -1351,7 +1349,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3767485424735936570">La política de l'administrador no recomana copiar i enganxar aquest contingut a <ph name="VM_NAME" /></translation>
 <translation id="3772211998634047851">Paper (valors)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per crear una nota ràpidament a Google Keep</translation>
-<translation id="3778403066972421603">Vols desar aquesta targeta al teu compte de Google i en aquest dispositiu?</translation>
 <translation id="378026377453746707">Chrome té funcions de seguretat integrades que et protegeixen mentre navegues, com ara Navegació segura de Google. Recentment, Navegació segura <ph name="BEGIN_LINK" />ha trobat programari nociu a <ph name="SITE" /><ph name="END_LINK" />, que està inserit al lloc web que proves de visitar.</translation>
 <translation id="3780694243617746492">Safata de sortida</translation>
 <translation id="3781428340399460090">Rosa fúcsia</translation>
@@ -1957,7 +1954,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5020776957610079374">Música del món</translation>
 <translation id="5021557570875267742">Fes un seguiment dels preus amb Chrome</translation>
 <translation id="5023310440958281426">Consulteu les polítiques de l'administrador</translation>
-<translation id="5029568752722684782">Esborra la còpia</translation>
 <translation id="5030338702439866405">Emès per</translation>
 <translation id="503069730517007720"><ph name="SOFTWARE_NAME" /> requereix un certificat arrel, però no està instal·lat. Per resoldre aquest problema, l'administrador de TI ha de consultar les instruccions per configurar <ph name="SOFTWARE_NAME" />. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Sobre el Traductor de Google</translation>
@@ -2540,7 +2536,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6270066318535733958">Navegació</translation>
 <translation id="6272088941196661550">Reprèn el recorregut per veure activitat rellevant a l'historial de Chrome</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="627746635834430766">Perquè la propera vegada puguis pagar més ràpidament, desa la targeta i l'adreça de facturació al compte de Google.</translation>
 <translation id="6279183038361895380">Premeu |<ph name="ACCELERATOR" />| per veure el cursor</translation>
 <translation id="6280223929691119688">No es pot entregar a aquesta adreça. Selecciona'n una altra.</translation>
 <translation id="6284292079994426700">26 x 38 polzades</translation>
@@ -3852,7 +3847,6 @@ Detalls addicionals:
 <translation id="8922013791253848639">Permet sempre els anuncis en aquest lloc web</translation>
 <translation id="892588693504540538">Encunyació a la part superior dreta</translation>
 <translation id="8930330541574156305">Béns immobles</translation>
-<translation id="8931333241327730545">Voleu desar aquesta targeta al vostre compte de Google?</translation>
 <translation id="8932102934695377596">El rellotge està endarrerit</translation>
 <translation id="893332455753468063">Afegeix un nom</translation>
 <translation id="8942355029279167844">L'administrador ha permès que <ph name="APP_NAME" /> reculli dades de diagnòstic per millorar l'experiència amb el producte. Consulta <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> per obtenir més informació.</translation>

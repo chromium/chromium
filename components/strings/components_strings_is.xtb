@@ -125,7 +125,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1243027604378859286">Höfundur:</translation>
 <translation id="1246424317317450637">Feitletur</translation>
 <translation id="1247030632403369975">Ál</translation>
-<translation id="1250759482327835220">Til að greiða hraðar næst geturðu vistað kortið og nafn og heimilisfang greiðanda á Google reikningnum.</translation>
 <translation id="1252209483516427155">Útiföt</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (samstillt)</translation>
 <translation id="1255086252236620440">Matvinnsluvélar</translation>
@@ -158,7 +157,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1294154142200295408">Tilbrigði fyrir skipanalínu</translation>
 <translation id="129553762522093515">Nýlega lokað</translation>
 <translation id="1296930489679394997">Sala</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />Prófaðu að hreinsa fótsporin þín<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">Athugaðu stillingar fyrir öruggan DNS-þjón</translation>
 <translation id="1307966114820526988">Úreldir eiginleikar</translation>
@@ -1351,7 +1349,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3767485424735936570">Reglur stjórnanda mæla ekki með að þetta efni sé afritað og límt í <ph name="VM_NAME" /></translation>
 <translation id="3772211998634047851">Pappír (teikningapappír)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á Tab og svo Enter til að búa til nýja glósu í Google Keep á skjótan hátt</translation>
-<translation id="3778403066972421603">Viltu vista þetta kort á Google reikningnum þínum og í þessu tæki?</translation>
 <translation id="378026377453746707">Chrome er með innbyggða öryggiseiginleika sem vernda þig þegar þú vafrar, s.s. örugga vefskoðun Google. Örugg vefskoðun <ph name="BEGIN_LINK" />fann nýlega skaðlegan hugbúnað á <ph name="SITE" /><ph name="END_LINK" />, sem er innfellt á vefsvæðið sem þú ert að reyna að opna.</translation>
 <translation id="3780694243617746492">Útbakki</translation>
 <translation id="3781428340399460090">Dökkbleikur</translation>
@@ -1957,7 +1954,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5020776957610079374">Heimstónlist</translation>
 <translation id="5021557570875267742">Vaktaðu verð með Chrome</translation>
 <translation id="5023310440958281426">Athugaðu stjórnandastefnurnar</translation>
-<translation id="5029568752722684782">Hreinsa eintak</translation>
 <translation id="5030338702439866405">Gefið út af</translation>
 <translation id="503069730517007720">Rótarvottorðs er krafist fyrir „<ph name="SOFTWARE_NAME" />“ en það er ekki sett upp. Kerfisstjóri ætti að athuga leiðbeiningar fyrir stillingu á „<ph name="SOFTWARE_NAME" />“ til að lagfæra vandamálið. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Um Google Translate</translation>
@@ -2540,7 +2536,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6270066318535733958">Siglingar</translation>
 <translation id="6272088941196661550">Haltu ferðinni áfram til að sjá viðkomandi virkni í Chrome ferlinum</translation>
 <translation id="6272383483618007430">Google uppfærslur</translation>
-<translation id="627746635834430766">Til að greiða hraðar næst geturðu vistað kortið og heimilisfang greiðanda á Google reikningnum.</translation>
 <translation id="6279183038361895380">Ýttu á |<ph name="ACCELERATOR" />| til að sýna bendilinn</translation>
 <translation id="6280223929691119688">Ekki er hægt að senda á þetta heimilisfang. Veldu annað heimilisfang.</translation>
 <translation id="6284292079994426700">26 x 38 to.</translation>
@@ -3851,7 +3846,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8922013791253848639">Leyfa alltaf auglýsingar á þessu vefsvæði</translation>
 <translation id="892588693504540538">Gatað efst til hægri</translation>
 <translation id="8930330541574156305">Fasteignir</translation>
-<translation id="8931333241327730545">Viltu vista þetta kort á Google reikningnum þínum?</translation>
 <translation id="8932102934695377596">Klukkan er á eftir</translation>
 <translation id="893332455753468063">Bæta við nafni</translation>
 <translation id="8942355029279167844">Kerfisstjórinn þinn hefur gefið <ph name="APP_NAME" /> heimild til að safna greiningargögnum til að bæta vöruna. Frekari upplýsingar eru á <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>

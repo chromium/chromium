@@ -5040,7 +5040,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5027550639139316293">Sijil E-mel</translation>
 <translation id="5027562294707732951">Tambahkan sambungan</translation>
 <translation id="5028445315206872221">Sambungan disekat pada laman ini</translation>
-<translation id="5029568752722684782">Hapuskan salinan</translation>
 <translation id="5029873138381728058">Gagal menyemak VM</translation>
 <translation id="503155457707535043">Apl sedang dimuat turun</translation>
 <translation id="5032430150487044192">Tidak dapat membuat Kod QR</translation>
@@ -5734,7 +5733,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5601823921345337195">Tidak dibenarkan untuk menyambung kepada peranti MIDI</translation>
 <translation id="5601833336918638013">Jangan benarkan laman mencari peranti Bluetooth</translation>
 <translation id="5602586420788540146">Buka dalam kumpulan tab baharu</translation>
-<translation id="5602765853043467355">Kosongkan penanda halaman, sejarah, kata laluan dan pelbagai lagi daripada peranti ini</translation>
 <translation id="5605758115928394442">Pemberitahuan telah dihantar ke telefon anda untuk mengesahkan orang itu ialah anda.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Sambungan ini disekat}other{Sambungan ini disekat}}</translation>
 <translation id="560834977503641186">Penyegerakan Wi-Fi, Ketahui Lebih Lanjut</translation>
@@ -5786,7 +5784,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5641648607875312660">Editor Imej Tangkapan Skrin</translation>
 <translation id="5642508497713047">Penandatangan CRL</translation>
 <translation id="5643321261065707929">Rangkaian bermeter</translation>
-<translation id="5643620609347735571">Kosongkan dan teruskan</translation>
 <translation id="5646376287012673985">Lokasi</translation>
 <translation id="5646558797914161501">Ahli perniagaan</translation>
 <translation id="5648021990716966815">Bicu mikrofon</translation>
@@ -7704,7 +7701,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7241389281993241388">Sila log masuk ke <ph name="TOKEN_NAME" /> untuk mengimport sijil klien.</translation>
 <translation id="7241763419756062043">Pilih kualiti carian dan penyemakan imbas anda</translation>
 <translation id="7243092385765551741">Padamkan kunci laluan?</translation>
-<translation id="7243632151880336635">Kosongkan dan Log Keluar</translation>
 <translation id="7245162963905242662">Cari Halaman ini dengan Google...</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Terbaik)</translation>
 <translation id="7246230585855757313">Masukkan semula kunci keselamatan anda dan cuba lagi</translation>
@@ -8582,7 +8578,6 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7925285046818567682">Menunggu untuk <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">Ini bukan saya.</translation>
 <translation id="7926975587469166629">Nama panggilan kad</translation>
-<translation id="7927610604078150317">Saiz: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Sudah menukar kata laluan ini?</translation>
 <translation id="7929962904089429003">Buka menu</translation>
 <translation id="7930294771522048157">Kaedah pembayaran yang disimpan akan dipaparkan di sini</translation>
@@ -9233,6 +9228,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8448729345478502352">Kecilkan atau besarkan item pada skrin anda</translation>
 <translation id="8449008133205184768">Gaya Tampal dan Padan</translation>
 <translation id="8449036207308062757">Urus storan</translation>
+<translation id="8449347986464073209">Padam dan Log Keluar</translation>
 <translation id="8449836157089738489">Buka semua dalam kumpulan tab baharu</translation>
 <translation id="8449869326050867919">Kata laluan dikongsi</translation>
 <translation id="8451512073679317615">assistant</translation>

@@ -125,7 +125,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1243027604378859286">Autori:</translation>
 <translation id="1246424317317450637">Të trashësuara</translation>
 <translation id="1247030632403369975">Alumin</translation>
-<translation id="1250759482327835220">Për të paguar më shpejt herën tjetër, ruaje kartën, emrin dhe adresën tënde të faturimit në "Llogarinë tënde të Google".</translation>
 <translation id="1252209483516427155">Xhaketa</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sinkronizuar)</translation>
 <translation id="1255086252236620440">Mikserë</translation>
@@ -158,7 +157,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1294154142200295408">Variantet e rreshtit të komandës</translation>
 <translation id="129553762522093515">Të mbyllura së fundi</translation>
 <translation id="1296930489679394997">Shitjet</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />Provo të pastrosh kukit<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Ligjore shtesë</translation>
 <translation id="1301324364792935241">Kontrollo cilësimet e DNS-së së sigurt</translation>
 <translation id="1307966114820526988">Veçori të vjetruara</translation>
@@ -1351,7 +1349,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3767485424735936570">Kopjimi dhe ngjitja e kësaj përmbajtjeje në <ph name="VM_NAME" /> nuk rekomandohet nga politika e administratorit</translation>
 <translation id="3772211998634047851">Letër (me ngjitje)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp Tab pastaj Enter për të krijuar shpejt një shënim të ri në Google Keep</translation>
-<translation id="3778403066972421603">Dëshiron që ta ruash këtë kartë te llogaria jote e Google dhe në këtë pajisje?</translation>
 <translation id="378026377453746707">Chrome ka veçori sigurie të integruara për të të mbrojtur ndërsa shfleton, si p.sh. "Shfletimi i sigurt i Google". "Shfletimi i sigurt" së fundi <ph name="BEGIN_LINK" />gjeti softuer të dëmshëm në <ph name="SITE" /><ph name="END_LINK" />, i cili është i integruar në sajtin që po përpiqesh të vizitosh.</translation>
 <translation id="3780694243617746492">Koshi i daljes</translation>
 <translation id="3781428340399460090">Rozë e ndezur</translation>
@@ -1957,7 +1954,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5020776957610079374">Muzika botërore</translation>
 <translation id="5021557570875267742">Monitoro çmimet me Chrome</translation>
 <translation id="5023310440958281426">Kontrollo politikat e administratorit tënd</translation>
-<translation id="5029568752722684782">Pastro kopjen</translation>
 <translation id="5030338702439866405">Lëshuar nga</translation>
 <translation id="503069730517007720">Për "<ph name="SOFTWARE_NAME" />" kërkohet një certifikatë rrënjë, por ajo nuk është instaluar. Administratori i TI-së duhet të shikojë udhëzimet e konfigurimit për "<ph name="SOFTWARE_NAME" />" për të rregulluar këtë problem. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Rreth "Përkthe me Google"</translation>
@@ -2539,7 +2535,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6270066318535733958">Lundrim me barkë</translation>
 <translation id="6272088941196661550">Vazhdo udhëtimin për të parë aktivitetin përkatës në historikun tënd të Chrome</translation>
 <translation id="6272383483618007430">Përditësimi i Google</translation>
-<translation id="627746635834430766">Për të paguar më shpejt herën tjetër, ruaje kartën dhe adresën tënde të faturimit në llogarinë tënde të Google.</translation>
 <translation id="6279183038361895380">Shtyp |<ph name="ACCELERATOR" />| për të shfaqur kursorin</translation>
 <translation id="6280223929691119688">Nuk mund të dorëzohet në këtë adresë. Zgjidh një adresë tjetër.</translation>
 <translation id="6284292079994426700">26 x 38 inç</translation>
@@ -3850,7 +3845,6 @@ Detaje shtesë:
 <translation id="8922013791253848639">Lejo gjithmonë reklamat në këtë sajt</translation>
 <translation id="892588693504540538">Shpim lart djathtas</translation>
 <translation id="8930330541574156305">Pasuritë e patundshme</translation>
-<translation id="8931333241327730545">Dëshiron që ta ruash këtë kartë te llogaria jote e Google?</translation>
 <translation id="8932102934695377596">Ora ka mbetur prapa</translation>
 <translation id="893332455753468063">Shto emër</translation>
 <translation id="8942355029279167844">Administratori yt ka lejuar që <ph name="APP_NAME" /> të grumbullojë të dhënat e diagnostikimit për të përmirësuar përvojën e produktit. Shiko <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> për më shumë informacion.</translation>

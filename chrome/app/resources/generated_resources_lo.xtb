@@ -5049,7 +5049,6 @@
 <translation id="5027550639139316293">ໃບ​ຢັ້ງ​ຢືນອີເມວ</translation>
 <translation id="5027562294707732951">ເພີ່ມ​ສ່ວນ​ຂະ​ຫຍາຍ</translation>
 <translation id="5028445315206872221">ສ່ວນຂະຫຍາຍຖືກບລັອກຢູ່ເວັບໄຊນີ້</translation>
-<translation id="5029568752722684782">ລ້າງ​ສຳ​ເນົາ</translation>
 <translation id="5029873138381728058">ກວດສອບ VM ບໍ່ສຳເລັດ</translation>
 <translation id="503155457707535043">ກຳລັງດາວໂຫຼດແອັບ</translation>
 <translation id="5032430150487044192">ບໍ່ສາມາດສ້າງລະຫັດ QR ໄດ້</translation>
@@ -5742,7 +5741,6 @@
 <translation id="5601823921345337195">ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ເຊື່ອມຕໍ່ກັບອຸປະກອນ MIDI</translation>
 <translation id="5601833336918638013">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊຕ່າງໆຊອກຫາອຸປະກອນ Bluetooth</translation>
 <translation id="5602586420788540146">ເປີດໃນກຸ່ມແຖບໃໝ່</translation>
-<translation id="5602765853043467355">ລຶບລ້າງບຸກມາກ, ປະຫວັດ, ລະຫັດຜ່ານ ແລະ ອື່ນໆອີກຈາກອຸປະກອນນີ້</translation>
 <translation id="5605758115928394442">ລະບົບໄດ້ສົ່ງການແຈ້ງເຕືອນຫາໂທລະສັບຂອງທ່ານແລ້ວເພື່ອຢືນຢັນວ່າແມ່ນທ່ານ.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{ສ່ວນຂະຫຍາຍນີ້ຖືກບລັອກໄວ້}other{ສ່ວນຂະຫຍາຍເຫຼົ່ານີ້ຖືກບລັອກໄວ້}}</translation>
 <translation id="560834977503641186">Wi-Fi Sync, ສຶກສາເພີ່ມເຕີມ</translation>
@@ -5794,7 +5792,6 @@
 <translation id="5641648607875312660">ຕົວແກ້ໄຂຮູບໜ້າຈໍ</translation>
 <translation id="5642508497713047">ຜູ້ເຊັນ CRL</translation>
 <translation id="5643321261065707929">ເຄືອຂ່າຍມີການວັດແທກປະລິມານອິນເຕີເນັດ</translation>
-<translation id="5643620609347735571">ລຶບລ້າງ ແລະ ສືບຕໍ່</translation>
 <translation id="5646376287012673985">ສະ​ຖານ​ທີ່</translation>
 <translation id="5646558797914161501">ນັກທຸລະກິດ</translation>
 <translation id="5648021990716966815">ແຈັກໄມໂຄຣໂຟນ</translation>
@@ -7713,7 +7710,6 @@
 <translation id="7241389281993241388">ກະ​ລຸ​ນາ​ລົງຊື່ເຂົ້າ​ໃຊ້<ph name="TOKEN_NAME" /> ເພື່ອນໍາໃບຢັ້ງຢືນລູກຂ່າຍເຂົ້າມາ.</translation>
 <translation id="7241763419756062043">ເລືອກຄຸນນະພາບການຊອກຫາ ແລະ ການທ່ອງເວັບຂອງທ່ານ</translation>
 <translation id="7243092385765551741">ລຶບກະແຈຜ່ານບໍ?</translation>
-<translation id="7243632151880336635">ລຶບລ້າງ ແລະ ອອກຈາກລະບົບ</translation>
 <translation id="7245162963905242662">ຊອກຫາໜ້ານີ້ດ້ວຍ Google...</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (ດີທີ່ສຸດ)</translation>
 <translation id="7246230585855757313">ສຽບກະແຈຄວາມປອດໄພຂອງທ່ານຄືນໃໝ່ ແລ້ວລອງອີກຄັ້ງ</translation>
@@ -8591,7 +8587,6 @@
 <translation id="7925285046818567682">ກໍາລັງລໍຖ້າ <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">ນີ້ບໍ່ແມ່ນຂ້ອຍ.</translation>
 <translation id="7926975587469166629">ຊື່ຫຼິ້ນບັດ</translation>
-<translation id="7927610604078150317">ຂະໜາດ: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">ປ່ຽນລະຫັດຜ່ານນີ້ແລ້ວບໍ?</translation>
 <translation id="7929962904089429003">ເປີດເມນູ</translation>
 <translation id="7930294771522048157">ວິທີການຈ່າຍເງິນທີ່ບັນທຶກໄວ້ຈະປາກົດຢູ່ບ່ອນນີ້</translation>
@@ -9240,6 +9235,7 @@
 <translation id="8448729345478502352">ເຮັດໃຫ້ລາຍການຕ່າງໆໃນໜ້າຈໍຂອງທ່ານນ້ອຍລົງ ຫຼື ໃຫຍ່ຂຶ້ນ</translation>
 <translation id="8449008133205184768">ແປະໃສ່ ແລະຈັບຄູ່ຮູບແບບ</translation>
 <translation id="8449036207308062757">ຈັດການບ່ອນເກັບຂໍ້ມູນ</translation>
+<translation id="8449347986464073209">ລຶບ ແລະ ອອກຈາກລະບົບ</translation>
 <translation id="8449836157089738489">ເປີດທັງໝົດໃນກຸ່ມແຖບໃໝ່</translation>
 <translation id="8449869326050867919">ແບ່ງປັນລະຫັດຜ່ານແລ້ວ</translation>
 <translation id="8451512073679317615">ຜູ້ຊ່ວຍ</translation>

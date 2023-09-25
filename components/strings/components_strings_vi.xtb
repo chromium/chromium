@@ -125,7 +125,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1243027604378859286">Tác giả:</translation>
 <translation id="1246424317317450637">In đậm</translation>
 <translation id="1247030632403369975">Nhôm</translation>
-<translation id="1250759482327835220">Để thanh toán nhanh hơn vào lần tới, hãy lưu địa chỉ thanh toán, tên và thẻ vào Tài khoản Google của bạn.</translation>
 <translation id="1252209483516427155">Áo khoác ngoài</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (được đồng bộ hóa)</translation>
 <translation id="1255086252236620440">Máy trộn thức ăn</translation>
@@ -158,7 +157,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1294154142200295408">Các biến thể của dòng lệnh</translation>
 <translation id="129553762522093515">Các thẻ đã đóng gần đây</translation>
 <translation id="1296930489679394997">Bán hàng</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />Thử xóa các cookie của bạn<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">Kiểm tra tùy chọn cài đặt của DNS bảo mật</translation>
 <translation id="1307966114820526988">Tính năng sắp ngừng hoạt động</translation>
@@ -1351,7 +1349,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3767485424735936570">Theo chính sách của quản trị viên, bạn không nên sao chép và dán nội dung này vào <ph name="VM_NAME" /></translation>
 <translation id="3772211998634047851">Giấy (Giấy bông)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn phím Tab rồi nhấn phím Enter để tạo nhanh ghi chú mới trong Google Keep</translation>
-<translation id="3778403066972421603">Bạn có muốn lưu thẻ này vào Tài khoản Google của bạn và trên thiết bị này không?</translation>
 <translation id="378026377453746707">Chrome tích hợp sẵn các tính năng an toàn nhằm bảo vệ bạn khi bạn duyệt web, chẳng hạn như Duyệt web An toàn của Google. Tính năng Duyệt web An toàn vừa <ph name="BEGIN_LINK" />phát hiện thấy phần mềm độc hại được nhúng trên trang web <ph name="SITE" /><ph name="END_LINK" /> mà bạn đang cố gắng truy cập.</translation>
 <translation id="3780694243617746492">Khay giấy ra</translation>
 <translation id="3781428340399460090">Hồng đậm</translation>
@@ -1957,7 +1954,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5020776957610079374">Âm nhạc thế giới</translation>
 <translation id="5021557570875267742">Theo dõi giá bằng Chrome</translation>
 <translation id="5023310440958281426">Kiểm tra chính sách của quản trị viên của bạn</translation>
-<translation id="5029568752722684782">Xóa bản sao</translation>
 <translation id="5030338702439866405">Cấp bởi</translation>
 <translation id="503069730517007720">Cần có chứng chỉ gốc cho "<ph name="SOFTWARE_NAME" />" nhưng chứng chỉ này chưa được cài đặt. Hãy yêu cầu quản trị viên CNTT của bạn xem hướng dẫn cấu hình cho "<ph name="SOFTWARE_NAME" />" để khắc phục sự cố này. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Giới thiệu về Google Dịch</translation>
@@ -2540,7 +2536,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6270066318535733958">Đi thuyền</translation>
 <translation id="6272088941196661550">Tiếp tục hành trình của bạn để xem hoạt động liên quan trong nhật ký duyệt web trên Chrome</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="627746635834430766">Để thanh toán nhanh hơn vào lần tiếp theo, hãy lưu địa chỉ thanh toán và thẻ vào Tài khoản Google của bạn.</translation>
 <translation id="6279183038361895380">Nhấn |<ph name="ACCELERATOR" />| để hiển thị con trỏ của bạn</translation>
 <translation id="6280223929691119688">Không thể phân phối đến địa chỉ này. Chọn một địa chỉ khác.</translation>
 <translation id="6284292079994426700">26 x 38 inch</translation>
@@ -3852,7 +3847,6 @@ Thông tin chi tiết bổ sung:
 <translation id="8922013791253848639">Luôn cho phép quảng cáo trên trang web này</translation>
 <translation id="892588693504540538">Đục lỗ trên cùng bên phải</translation>
 <translation id="8930330541574156305">Bất động sản</translation>
-<translation id="8931333241327730545">Bạn có muốn lưu thẻ này vào Tài khoản Google của mình không?</translation>
 <translation id="8932102934695377596">Đồng hồ của bạn chạy chậm</translation>
 <translation id="893332455753468063">Thêm tên</translation>
 <translation id="8942355029279167844">Quản trị viên đã cho phép <ph name="APP_NAME" /> thu thập dữ liệu chẩn đoán để nâng cao trải nghiệm sử dụng sản phẩm. Hãy truy cập vào <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> để biết thêm thông tin.</translation>

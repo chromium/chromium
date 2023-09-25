@@ -125,7 +125,6 @@
 <translation id="1243027604378859286">ผู้เขียน:</translation>
 <translation id="1246424317317450637">ตัวหนา</translation>
 <translation id="1247030632403369975">อะลูมิเนียม</translation>
-<translation id="1250759482327835220">เพื่อความรวดเร็วในการชำระเงินครั้งถัดไป โปรดบันทึกบัตร ชื่อ และที่อยู่สำหรับการเรียกเก็บเงินไว้ในบัญชี Google</translation>
 <translation id="1252209483516427155">เสื้อผ้าชั้นนอก</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" /> <ph name="TYPE_2" /> (ซิงค์แล้ว)</translation>
 <translation id="1255086252236620440">เครื่องผสมอาหาร</translation>
@@ -158,7 +157,6 @@
 <translation id="1294154142200295408">บรรทัดคำสั่งรูปแบบต่างๆ</translation>
 <translation id="129553762522093515">เพิ่งปิด</translation>
 <translation id="1296930489679394997">การขาย</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />ลองล้างคุกกี้<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">ตรวจสอบการตั้งค่า DNS ที่ปลอดภัย</translation>
 <translation id="1307966114820526988">ฟีเจอร์ที่เลิกใช้งานแล้ว</translation>
@@ -1350,7 +1348,6 @@
 <translation id="3767485424735936570">นโยบายของผู้ดูแลระบบไม่แนะนำให้คัดลอกและวางเนื้อหานี้ใน <ph name="VM_NAME" /></translation>
 <translation id="3772211998634047851">กระดาษ (ผนึก)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อสร้างโน้ตใหม่ใน Google Keep อย่างรวดเร็ว</translation>
-<translation id="3778403066972421603">คุณต้องการบันทึกบัตรนี้ลงในบัญชี Google และในอุปกรณ์นี้ไหม</translation>
 <translation id="378026377453746707">Chrome มีฟีเจอร์ความปลอดภัยในตัวเพื่อปกป้องคุณขณะท่องเว็บ เช่น Google Safe Browsing เมื่อเร็วๆ นี้ Google Safe Browsing <ph name="BEGIN_LINK" />พบซอฟต์แวร์ที่เป็นอันตรายใน <ph name="SITE" /><ph name="END_LINK" /> ซึ่งฝังอยู่ในเว็บไซต์ที่คุณพยายามเข้าชม</translation>
 <translation id="3780694243617746492">ถาดกระดาษออก</translation>
 <translation id="3781428340399460090">ชมพูเจิดจ้า</translation>
@@ -1956,7 +1953,6 @@
 <translation id="5020776957610079374">เวิลด์มิวสิก</translation>
 <translation id="5021557570875267742">ติดตามราคาด้วย Chrome</translation>
 <translation id="5023310440958281426">ตรวจสอบนโยบายของผู้ดูแลระบบของคุณ</translation>
-<translation id="5029568752722684782">ล้างสำเนา</translation>
 <translation id="5030338702439866405">ออกโดย</translation>
 <translation id="503069730517007720">ไม่ได้ติดตั้งใบรับรองรากที่จำเป็นของ "<ph name="SOFTWARE_NAME" />" ผู้ดูแลระบบ IT ควรดูวิธีการกำหนดค่าของ "<ph name="SOFTWARE_NAME" />" เพื่อแก้ไขปัญหานี้ <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">เกี่ยวกับ Google แปลภาษา</translation>
@@ -2539,7 +2535,6 @@
 <translation id="6270066318535733958">การแล่นเรือ</translation>
 <translation id="6272088941196661550">สำรวจต่อเพื่อดูกิจกรรมที่เกี่ยวข้องในประวัติการเข้าชมใน Chrome</translation>
 <translation id="6272383483618007430">Google อัปเดต</translation>
-<translation id="627746635834430766">เพื่อให้ชำระเงินได้เร็วขึ้นในครั้งถัดไป โปรดบันทึกบัตรและที่อยู่สำหรับการเรียกเก็บเงินไว้ในบัญชี Google</translation>
 <translation id="6279183038361895380">กด |<ph name="ACCELERATOR" />| เพื่อแสดงเคอร์เซอร์ของคุณ</translation>
 <translation id="6280223929691119688">ไม่สามารถนำส่งสินค้าไปยังที่อยู่นี้ โปรดเลือกที่อยู่อื่น</translation>
 <translation id="6284292079994426700">26 x 38 นิ้ว</translation>
@@ -3851,7 +3846,6 @@
 <translation id="8922013791253848639">อนุญาตโฆษณาในไซต์นี้เสมอ</translation>
 <translation id="892588693504540538">เจาะรูด้านขวาบน</translation>
 <translation id="8930330541574156305">อสังหาริมทรัพย์</translation>
-<translation id="8931333241327730545">คุณต้องการบันทึกบัตรนี้ในบัญชี Google ไหม</translation>
 <translation id="8932102934695377596">นาฬิกาช้าเกินไป</translation>
 <translation id="893332455753468063">เพิ่มชื่อ</translation>
 <translation id="8942355029279167844">ผู้ดูแลระบบของคุณอนุญาตให้ <ph name="APP_NAME" /> รวบรวมข้อมูลการวิเคราะห์เพื่อปรับปรุงประสบการณ์การใช้ผลิตภัณฑ์ ดูข้อมูลเพิ่มเติมได้ที่ <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /></translation>

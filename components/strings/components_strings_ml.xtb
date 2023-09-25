@@ -125,7 +125,6 @@
 <translation id="1243027604378859286">രചയിതാവ്:</translation>
 <translation id="1246424317317450637">ബോള്‍ഡ്</translation>
 <translation id="1247030632403369975">അലുമിനിയം</translation>
-<translation id="1250759482327835220">അടുത്ത പ്രാവശ്യം കൂടുതൽ വേഗത്തിൽ പണമടയ്ക്കാൻ, നിങ്ങളുടെ Google അക്കൗണ്ടിൽ കാർഡ്, പേര്, ബില്ലിംഗ് വിലാസം എന്നിവ സംരക്ഷിക്കുക.</translation>
 <translation id="1252209483516427155">ഔട്ടർവെയർ</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (സമന്വയിപ്പിച്ചു)</translation>
 <translation id="1255086252236620440">ഫുഡ് മിക്‌സറുകൾ</translation>
@@ -158,7 +157,6 @@
 <translation id="1294154142200295408">കമാൻഡ്-ലൈൻ വ്യതിയാനങ്ങൾ</translation>
 <translation id="129553762522093515">സമീപകാലത്ത് അടച്ചവ</translation>
 <translation id="1296930489679394997">വിൽപ്പനകൾ</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />നിങ്ങളുടെ കുക്കികൾ മായ്‌ക്കുന്നത് പരീക്ഷിക്കുക<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">ലീഗൽ എക്‌സ്‌ട്രാ</translation>
 <translation id="1301324364792935241">നിങ്ങളുടെ സുരക്ഷിത DNS ക്രമീകരണം പരിശോധിക്കുക</translation>
 <translation id="1307966114820526988">അവസാനിപ്പിച്ച ഫീച്ചറുകൾ</translation>
@@ -1350,7 +1348,6 @@
 <translation id="3767485424735936570">ഈ ഉള്ളടക്കം പകർത്തി <ph name="VM_NAME" />-ലേക്ക് ഒട്ടിക്കുന്നത് അഡ്‌മിൻ നയം ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="3772211998634047851">പേപ്പർ (ബോണ്ട്)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Keep-ൽ പുതിയൊരു കുറിപ്പ് വേഗത്തിൽ സൃഷ്ടിക്കാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
-<translation id="3778403066972421603">ഈ കാർഡ് നിങ്ങളുടെ Google അക്കൗണ്ടിലും ഈ ഉപകരണത്തിലും സംരക്ഷിക്കണോ?</translation>
 <translation id="378026377453746707">ബ്രൗസ് ചെയ്യുമ്പോൾ നിങ്ങളെ പരിരക്ഷിക്കുന്നതിന് Chrome-ൽ Google സുരക്ഷിത ബ്രൗസിംഗ് പോലുള്ള ബിൽറ്റ്-ഇൻ സുരക്ഷാ ഫീച്ചറുകൾ ഉണ്ട്. നിങ്ങൾ സന്ദർശിക്കാൻ ശ്രമിക്കുന്ന സൈറ്റിൽ ഉൾച്ചേർത്തിട്ടുള്ള <ph name="BEGIN_LINK" /><ph name="SITE" /> എന്നതിൽ, സുരക്ഷിത ബ്രൗസിംഗ് അടുത്തിടെ ഹാനികരമായ സോഫ്റ്റ്‌വെയർ കണ്ടെത്തി<ph name="END_LINK" />.</translation>
 <translation id="3780694243617746492">ഔട്ട്പുട്ട് ബിൻ</translation>
 <translation id="3781428340399460090">ഹോട്ട് പിങ്ക്</translation>
@@ -1956,7 +1953,6 @@
 <translation id="5020776957610079374">ആഗോള സംഗീതം</translation>
 <translation id="5021557570875267742">Chrome ഉപയോഗിച്ച് നിരക്കുകൾ ട്രാക്ക് ചെയ്യുക</translation>
 <translation id="5023310440958281426">നിങ്ങളുടെ അഡ്‌മിനിസ്ട്രേറ്ററുടെ നയങ്ങൾ പരിശോധിക്കുക.</translation>
-<translation id="5029568752722684782">പകർപ്പ് മായ്‌ക്കുക</translation>
 <translation id="5030338702439866405">ഇനിപ്പറയുന്നത് നല്‍‌കിയത്</translation>
 <translation id="503069730517007720">"<ph name="SOFTWARE_NAME" />" സോഫ്റ്റ്‌വെയറിന് ഒരു റൂട്ട് സർട്ടിഫിക്കറ്റ് ആവശ്യമാണ്, എന്നാൽ അത് ഇൻസ്‌റ്റാൾ ചെയ്‌‌തിട്ടില്ല. ഈ പ്രശ്‌നം പരിഹരിക്കാൻ, "<ph name="SOFTWARE_NAME" />" സോഫ്റ്റ്‌വെയറിനുള്ള കോൺഫിഗറേഷൻ നിർദ്ദേശങ്ങൾ ഐടി അഡ്‌മിൻ പരിശോധിക്കേണ്ടതുണ്ട്. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Google വിവര്‍ത്തനത്തെക്കുറിച്ച്</translation>
@@ -2539,7 +2535,6 @@
 <translation id="6270066318535733958">ബോട്ടിംഗ്</translation>
 <translation id="6272088941196661550">നിങ്ങളുടെ Chrome ചരിത്രത്തിൽ പ്രസക്തമായ ആക്റ്റിവിറ്റി കാണാൻ ജേർണി പുനരാരംഭിക്കുക</translation>
 <translation id="6272383483618007430">Google അപ്ഡേറ്റ്</translation>
-<translation id="627746635834430766">അടുത്ത പ്രാവശ്യം വേഗത്തിൽ പണമടയ്ക്കാൻ, നിങ്ങളുടെ Google അക്കൗണ്ടിൽ ഈ കാർഡും ബില്ലിംഗ് വിലാസവും സംരക്ഷിക്കുക.</translation>
 <translation id="6279183038361895380">നിങ്ങളുടെ കഴ്‌സർ കാണിക്കാൻ |<ph name="ACCELERATOR" />| അമർത്തുക</translation>
 <translation id="6280223929691119688">ഈ വിലാസത്തിലേക്ക് ഡെലിവറി ചെയ്യാൻ കഴിയില്ല. മറ്റൊരു വിലാസം തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="6284292079994426700">26 x 38 ഇഞ്ച്</translation>
@@ -3849,7 +3844,6 @@
 <translation id="8922013791253848639">ഈ സൈറ്റിൽ എല്ലായ്‌പ്പോഴും പരസ്യങ്ങൾ അനുവദിക്കുക</translation>
 <translation id="892588693504540538">മുകളിൽ വലതുവശത്ത് പഞ്ച് ചെയ്യുക</translation>
 <translation id="8930330541574156305">റിയൽ എസ്റ്റേറ്റ്</translation>
-<translation id="8931333241327730545">ഈ കാർഡ് നിങ്ങളുടെ Google അക്കൗണ്ടിൽ സംരക്ഷിക്കണോ?</translation>
 <translation id="8932102934695377596">നിങ്ങളുടെ ക്ലോക്ക് വളരെ പിന്നിലാണ്</translation>
 <translation id="893332455753468063">പേര് ചേർക്കുക</translation>
 <translation id="8942355029279167844">ഉൽപ്പന്ന അനുഭവം മെച്ചപ്പെടുത്തുന്നതിന്, പ്രശ്‍നനിർണ്ണയ ഡാറ്റ ശേഖരിക്കാൻ നിങ്ങളുടെ അഡ്‌മിൻ <ph name="APP_NAME" /> ആപ്പിനെ അനുവദിച്ചു. കൂടുതൽ വിവരങ്ങൾക്ക്, <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> കാണുക.</translation>

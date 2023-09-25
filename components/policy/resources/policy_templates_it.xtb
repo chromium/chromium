@@ -1925,6 +1925,15 @@ Se questo criterio non viene configurato, l'impostazione predefinita dipende da 
 <translation id="2697717608663878828">Attiva l'esperimento TLS Encrypted ClientHello</translation>
 <translation id="2699836109975228367">Attiva l'audio in formato mono sulla schermata di accesso</translation>
 <translation id="2702023190395322609">Attiva consigli di contenuti multimediali</translation>
+<translation id="2703733412051211941">Consente di attivare un'azione quando il computer è inattivo.
+
+      Se questo criterio viene configurato, consente di specificare il periodo di tempo senza input utente (in minuti) prima che il browser esegua le azioni configurate tramite il criterio <ph name="IDLE_TIMEOUT_ACTIONS_POLICY_NAME" />.
+
+      Se il criterio non viene configurato, non verrà eseguita alcuna azione.
+
+      La soglia minima è di 1 minuto.
+
+      "L'input utente" è definito dalle API del sistema operativo e include, ad esempio, lo spostamento del mouse o la digitazione tramite tastiera.</translation>
 <translation id="270582584528242502">Non mostrare una finestra di dialogo di avviso quando l'utente sta tentando di uscire</translation>
 <translation id="2706708761587205154">Consenti la stampa solo con PIN</translation>
 <translation id="2707733461906745082">Separazione profilo</translation>
@@ -6183,6 +6192,25 @@ Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le ist
       Se questo criterio viene impostato su Disattivato o se non viene configurato, non è possibile modificare le password SAML all'indirizzo chrome://password-change e non verranno mostrate notifiche quando tali password stanno per scadere.</translation>
 <translation id="6457477291648119596">Type42</translation>
 <translation id="6458361632497500815">Se il criterio viene impostato su Attivato o se non viene configurato, tutti gli utenti possono utilizzare <ph name="PRODUCT_CROSTINI_NAME" /> finché tutti e tre i criteri, <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" />, <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> e <ph name="DEVICE_UNAFFILIATED_CROSTINI_ALLOWED_POLICY_NAME" /> sono impostati su Attivato. Se il criterio viene impostato su Disattivato, gli utenti non affiliati non possono utilizzare <ph name="PRODUCT_CROSTINI_NAME" />. Impostando il criterio su Disattivato, questo viene applicato all'avvio di nuovi container <ph name="PRODUCT_CROSTINI_NAME" />, non a quelli già in esecuzione.</translation>
+<translation id="6458848208090676955">Elenco di azioni da eseguire quando viene raggiunto il timeout del criterio <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
+
+      Se il criterio <ph name="IDLE_TIMEOUT_POLICY_NAME" /> non viene configurato, questo criterio non ha alcun effetto.
+
+      Quando viene raggiunto il timeout del criterio <ph name="IDLE_TIMEOUT_POLICY_NAME" />, il browser esegue le azioni configurate in questo criterio.
+
+      Se questo criterio è vuoto o se non viene configurato, il criterio <ph name="IDLE_TIMEOUT_POLICY_NAME" /> non ha alcun effetto.
+
+      Le azioni supportate sono:
+
+      "<ph name="CLOSE_BROWSERS_ACTION" />": vengono chiuse tutte le finestre del browser e le PWA di questo profilo. Azione non supportata su Android.
+
+      "<ph name="SHOW_PROFILE_PICKER_ACTION" />": viene mostrata la finestra Selettore profilo. Azione non supportata su Android.
+
+      "<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />", "<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />", "<ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />", "<ph name="CLEAR_AUTOFILL_ACTION" />", "<ph name="CLEAR_SITE_SETTINGS_ACTION" />", "<ph name="CLEAR_HOSTED_APP_DATA_ACTION" />": vengono cancellati i dati di navigazione corrispondenti. Per maggiori informazioni, vedi il criterio <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" />.
+
+      "<ph name="RELOAD_PAGES_ACTION" />": vengono ricaricate tutte le pagine web. Per alcune pagine, all'utente potrebbe essere chiesto di confermare prima.
+
+      La configurazione dei criteri "<ph name="CLEAR_BROWSING_HISTORY_ACTION" />", "<ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />", "<ph name="CLEAR_AUTOFILL_ACTION" />" e "<ph name="CLEAR_SITE_SETTINGS_ACTION" />" comporta la disattivazione della sincronizzazione per i rispettivi tipi di dati se né il criterio "<ph name="CHROME_SYNC_NAME" />" viene disattivato impostando il criterio <ph name="SYNC_DISABLED_POLICY_NAME" /> né il criterio <ph name="BROWSER_SIGNIN_POLICY_NAME" /> viene disattivato.</translation>
 <translation id="6462604655173570082">Se il criterio non viene configurato o se viene impostato su Attivato, gli utenti possono visualizzare e usare il pulsante <ph name="GOOGLE_LENS_PRODUCT_NAME" /> nella casella di ricerca della pagina Nuova scheda. Se il criterio viene impostato su Disattivato, gli utenti non vedranno il pulsante <ph name="GOOGLE_LENS_PRODUCT_NAME" /> nella casella di ricerca della pagina Nuova scheda.</translation>
 <translation id="6464074037294098618">Attiva la Compilazione automatica per gli indirizzi</translation>
 <translation id="6467613372414922590">Consenti host di messaggistica nativi a livello di utente (installati senza privilegi di amministratore)</translation>

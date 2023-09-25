@@ -5025,7 +5025,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5027550639139316293">E-mailový certifikát</translation>
 <translation id="5027562294707732951">Přidat rozšíření</translation>
 <translation id="5028445315206872221">Rozšíření jsou na tomto webu blokována</translation>
-<translation id="5029568752722684782">Vymazat kopii</translation>
 <translation id="5029873138381728058">Virtuální počítače se nepodařilo zkontrolovat</translation>
 <translation id="503155457707535043">Aplikace se stahují</translation>
 <translation id="5032430150487044192">QR kód nelze vytvořit</translation>
@@ -5719,7 +5718,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5601823921345337195">Zákaz připojovat se k zařízením MIDI</translation>
 <translation id="5601833336918638013">Nepovolovat webům vyhledávat zařízení Bluetooth</translation>
 <translation id="5602586420788540146">Otevřít v nové skupině karet</translation>
-<translation id="5602765853043467355">Vymazat z tohoto zařízení záložky, historii, hesla a další údaje</translation>
 <translation id="5605758115928394442">Odeslali jsme vám na telefon oznámení, abychom si ověřili, zda jste to skutečně vy.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Toto rozšíření je blokováno}few{Tato rozšíření jsou blokována}many{Tato rozšíření jsou blokována}other{Tato rozšíření jsou blokována}}</translation>
 <translation id="560834977503641186">Synchronizace Wi-Fi, další informace</translation>
@@ -5769,7 +5767,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5641648607875312660">Editor obrázků snímků obrazovek</translation>
 <translation id="5642508497713047">Autor podpisu CRL</translation>
 <translation id="5643321261065707929">Měřená síť</translation>
-<translation id="5643620609347735571">Vymazat a pokračovat</translation>
 <translation id="5646376287012673985">Poloha</translation>
 <translation id="5646558797914161501">Businessman</translation>
 <translation id="5648021990716966815">Konektor mikrofonu</translation>
@@ -7690,7 +7687,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7241389281993241388">Chcete-li importovat certifikát klienta, přihlaste se prosím do zařízení <ph name="TOKEN_NAME" />.</translation>
 <translation id="7241763419756062043">Vyberte si kvalitu vyhledávání a procházení</translation>
 <translation id="7243092385765551741">Smazat přístupový klíč?</translation>
-<translation id="7243632151880336635">Vymazat a odhlásit se</translation>
 <translation id="7245162963905242662">Pro&amp;hledat tuto stránku Googlem…</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (nejlepší)</translation>
 <translation id="7246230585855757313">Opět bezpečností klíč vložte a zkuste to znovu</translation>
@@ -8567,7 +8563,6 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7925285046818567682">Čekání na <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">To jsem nebyl(a) já.</translation>
 <translation id="7926975587469166629">Přezdívka karty</translation>
-<translation id="7927610604078150317">Velikost: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Už jste toto heslo změnili?</translation>
 <translation id="7929962904089429003">Otevřít nabídku</translation>
 <translation id="7930294771522048157">Zde se budou zobrazovat uložené platební metody</translation>
@@ -9217,6 +9212,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8448729345478502352">Umožňuje zvětšit nebo zmenšit položky na obrazovce</translation>
 <translation id="8449008133205184768">Vložit a použít odpovídající styl</translation>
 <translation id="8449036207308062757">Správa úložiště</translation>
+<translation id="8449347986464073209">Vymazat a odhlásit se</translation>
 <translation id="8449836157089738489">Otevřít vše v nové skupině karet</translation>
 <translation id="8449869326050867919">Heslo bylo sdíleno</translation>
 <translation id="8451512073679317615">asistent</translation>

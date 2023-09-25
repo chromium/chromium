@@ -125,7 +125,6 @@
 <translation id="1243027604378859286">作成者:</translation>
 <translation id="1246424317317450637">太字</translation>
 <translation id="1247030632403369975">アルミニウム</translation>
-<translation id="1250759482327835220">カード、お名前、請求先住所を Google アカウントに保存すると、次回のお支払いが簡単になります。</translation>
 <translation id="1252209483516427155">アウター</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />、<ph name="TYPE_2" />（同期済み）</translation>
 <translation id="1255086252236620440">フードミキサー</translation>
@@ -158,7 +157,6 @@
 <translation id="1294154142200295408">コマンドラインのバリエーション</translation>
 <translation id="129553762522093515">最近閉じたタブ</translation>
 <translation id="1296930489679394997">セールス</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />Cookie を消去してみてください<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">リーガル エクストラ</translation>
 <translation id="1301324364792935241">セキュア DNS の設定を確認してください</translation>
 <translation id="1307966114820526988">サポート終了の機能</translation>
@@ -1351,7 +1349,6 @@
 <translation id="3767485424735936570">このコンテンツの <ph name="VM_NAME" /> へのコピーと貼り付けは、管理者のポリシーで推奨されていません</translation>
 <translation id="3772211998634047851">紙（ボンド）</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Google Keep で新しいメモをすばやく作成します</translation>
-<translation id="3778403066972421603">このカードを Google アカウントとこのデバイスに保存しますか？</translation>
 <translation id="378026377453746707">Chrome には、ブラウジング中のユーザーを保護する安全機能が組み込まれています。その一部である Google セーフ ブラウジングにより、最近 <ph name="BEGIN_LINK" /><ph name="SITE" /> で検出された有害なソフトウェア<ph name="END_LINK" />が、アクセスしようとしているサイトに埋め込まれています。</translation>
 <translation id="3780694243617746492">排紙トレイ</translation>
 <translation id="3781428340399460090">ホットピンク</translation>
@@ -1957,7 +1954,6 @@
 <translation id="5020776957610079374">ワールド ミュージック</translation>
 <translation id="5021557570875267742">Chrome で価格をトラッキング</translation>
 <translation id="5023310440958281426">管理者のポリシーを確認してください</translation>
-<translation id="5029568752722684782">コピーを消去</translation>
 <translation id="5030338702439866405">発行元</translation>
 <translation id="503069730517007720">「<ph name="SOFTWARE_NAME" />」のルート証明書が必要ですが、インストールされていません。IT 管理者に、「<ph name="SOFTWARE_NAME" />」の設定手順を確認したうえでこの問題を修正するよう依頼してください。<ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Google 翻訳について</translation>
@@ -2540,7 +2536,6 @@
 <translation id="6270066318535733958">ボート</translation>
 <translation id="6272088941196661550">ジャーニーを再開して、Chrome 履歴で関連するアクティビティを確認します</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="627746635834430766">カードと請求先住所を Google アカウントに保存すると、次回のお支払いが簡単になります。</translation>
 <translation id="6279183038361895380">カーソルを表示するには |<ph name="ACCELERATOR" />| を押します</translation>
 <translation id="6280223929691119688">この住所には配達できません。別の住所を選択してください。</translation>
 <translation id="6284292079994426700">26x38 インチ</translation>
@@ -3853,7 +3848,6 @@
 <translation id="8922013791253848639">このサイトで常に広告を許可します</translation>
 <translation id="892588693504540538">パンチ（右上）</translation>
 <translation id="8930330541574156305">不動産</translation>
-<translation id="8931333241327730545">このカードを Google アカウントに保存しますか？</translation>
 <translation id="8932102934695377596">時計が遅れています</translation>
 <translation id="893332455753468063">名前の追加</translation>
 <translation id="8942355029279167844">管理者は、<ph name="APP_NAME" /> がサービス改善のために診断データを収集することを許可しています。詳しくは、<ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> をご覧ください。</translation>

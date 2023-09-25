@@ -125,7 +125,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1243027604378859286">Autor:</translation>
 <translation id="1246424317317450637">Negrito</translation>
 <translation id="1247030632403369975">Alumínio</translation>
-<translation id="1250759482327835220">Para agilizar o pagamento na próxima vez, salve o cartão, seu nome e o endereço de faturamento na sua Conta do Google.</translation>
 <translation id="1252209483516427155">Roupas</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sincronizados)</translation>
 <translation id="1255086252236620440">Centrífugas de alimentos</translation>
@@ -158,7 +157,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1294154142200295408">Variações de linha de comando</translation>
 <translation id="129553762522093515">Fechadas recentemente</translation>
 <translation id="1296930489679394997">Vendas</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />Tente limpar os cookies<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">Verifique suas configurações de DNS seguro</translation>
 <translation id="1307966114820526988">Recursos obsoletos</translation>
@@ -1351,7 +1349,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3767485424735936570">De acordo com a política do administrador, não é recomendado copiar e colar esse conteúdo no <ph name="VM_NAME" />.</translation>
 <translation id="3772211998634047851">Papel sulfite</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para criar rapidamente uma nova nota no Google Keep</translation>
-<translation id="3778403066972421603">Quer salvar este cartão na sua Conta do Google e neste dispositivo?</translation>
 <translation id="378026377453746707">O Chrome tem medidas de segurança integradas para proteger você, como o recurso Navegação segura do Google. Recentemente, esse <ph name="BEGIN_LINK" />encontrou software nocivo em <ph name="SITE" /><ph name="END_LINK" />, que é incorporado ao site quando você tenta acessá-lo.</translation>
 <translation id="3780694243617746492">Bandeja de saída</translation>
 <translation id="3781428340399460090">Rosa-escuro</translation>
@@ -1957,7 +1954,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5020776957610079374">Música mundial</translation>
 <translation id="5021557570875267742">Monitore preços com o Chrome</translation>
 <translation id="5023310440958281426">Verifique as políticas do administrador</translation>
-<translation id="5029568752722684782">Limpar cópia</translation>
 <translation id="5030338702439866405">Emitido por</translation>
 <translation id="503069730517007720">Um certificado raiz para "<ph name="SOFTWARE_NAME" />" é necessário, mas não está instalado. O administrador de TI deve revisar as instruções de configuração do "<ph name="SOFTWARE_NAME" />" para corrigir esse problema. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">Sobre o Google Tradutor</translation>
@@ -2540,7 +2536,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6270066318535733958">Atividades em barcos</translation>
 <translation id="6272088941196661550">Retomar a jornada para ver as atividades relevantes no seu histórico do Chrome</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="627746635834430766">Para agilizar o pagamento na próxima vez, salve o cartão e o endereço de faturamento na sua Conta do Google.</translation>
 <translation id="6279183038361895380">Pressione |<ph name="ACCELERATOR" />| para exibir seu cursor</translation>
 <translation id="6280223929691119688">Não é possível entregar nesse endereço. Selecione um endereço diferente.</translation>
 <translation id="6284292079994426700">26 x 38 pol.</translation>
@@ -3852,7 +3847,6 @@ Mais detalhes:
 <translation id="8922013791253848639">Sempre permitir anúncios neste site</translation>
 <translation id="892588693504540538">Perfuração na parte superior direita</translation>
 <translation id="8930330541574156305">Imóveis</translation>
-<translation id="8931333241327730545">Quer salvar este cartão na sua Conta do Google?</translation>
 <translation id="8932102934695377596">Seu relógio está atrasado</translation>
 <translation id="893332455753468063">Adicione um Nome</translation>
 <translation id="8942355029279167844">Seu administrador permitiu que <ph name="APP_NAME" /> coletasse dados de diagnósticos para melhorar a experiência com o produto. Veja mais informações em <ph name="BEGIN_LINK" />https://www.parallels.com/br/pcep<ph name="END_LINK" />.</translation>

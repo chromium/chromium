@@ -5026,7 +5026,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5027550639139316293">Certificado de correo electrónico</translation>
 <translation id="5027562294707732951">Engadir extensión</translation>
 <translation id="5028445315206872221">Bloqueáronse as extensións neste sitio</translation>
-<translation id="5029568752722684782">Borrar copia</translation>
 <translation id="5029873138381728058">Produciuse un erro ao comprobar as máquinas virtuais</translation>
 <translation id="503155457707535043">Descargando aplicacións</translation>
 <translation id="5032430150487044192">Non se puido crear o código QR</translation>
@@ -5720,7 +5719,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5601823921345337195">Sitios que non poden conectarse a dispositivos MIDI</translation>
 <translation id="5601833336918638013">Non permitir que os sitios busquen dispositivos Bluetooth</translation>
 <translation id="5602586420788540146">Abrir nun grupo de pestanas novo</translation>
-<translation id="5602765853043467355">Borrar marcadores, historial, contrasinais etc., deste dispositivo</translation>
 <translation id="5605758115928394442">Enviouse unha notificación ao teu teléfono para confirmar a túa identidade.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Esta extensión está bloqueada}other{Estas extensións están bloqueadas}}</translation>
 <translation id="560834977503641186">Sincronización wifi; máis información</translation>
@@ -5770,7 +5768,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5641648607875312660">Editor de imaxes de captura de pantalla</translation>
 <translation id="5642508497713047">Asinante de CRL</translation>
 <translation id="5643321261065707929">Rede de pago por consumo</translation>
-<translation id="5643620609347735571">Borrar e continuar</translation>
 <translation id="5646376287012673985">Localización</translation>
 <translation id="5646558797914161501">Home de negocios</translation>
 <translation id="5648021990716966815">Conector do micrófono</translation>
@@ -7686,7 +7683,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7241389281993241388">Inicia sesión en <ph name="TOKEN_NAME" /> para importar o certificado de cliente.</translation>
 <translation id="7241763419756062043">Escolle a calidade de navegación e de busca</translation>
 <translation id="7243092385765551741">Queres eliminar a clave de acceso?</translation>
-<translation id="7243632151880336635">Borrar e pechar sesión</translation>
 <translation id="7245162963905242662">Bus&amp;car esta páxina con Google...</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (a mellor)</translation>
 <translation id="7246230585855757313">Volve introducir a túa chave de seguranza e téntao de novo</translation>
@@ -8564,7 +8560,6 @@ Podes xestionar a configuración desta tarxeta desde o menú correspondente ou v
 <translation id="7925285046818567682">Esperando por <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">Non era eu.</translation>
 <translation id="7926975587469166629">Alcume da tarxeta</translation>
-<translation id="7927610604078150317">Tamaño: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Xa cambiaches este contrasinal?</translation>
 <translation id="7929962904089429003">Abrir o menú</translation>
 <translation id="7930294771522048157">Os métodos de pago gardados aparecerán aquí</translation>
@@ -9213,6 +9208,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8448729345478502352">Reduce ou amplía os elementos da pantalla</translation>
 <translation id="8449008133205184768">Pegar co mesmo estilo</translation>
 <translation id="8449036207308062757">Xestionar almacenamento</translation>
+<translation id="8449347986464073209">Eliminar e pechar sesión</translation>
 <translation id="8449836157089738489">Abrir todo nun grupo de pestanas novo</translation>
 <translation id="8449869326050867919">Compartiuse o contrasinal</translation>
 <translation id="8451512073679317615">asistente</translation>

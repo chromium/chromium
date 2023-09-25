@@ -5032,7 +5032,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5027550639139316293">E-postsertifikat</translation>
 <translation id="5027562294707732951">Legg til utvidelsen</translation>
 <translation id="5028445315206872221">Utvidelser er blokkert på dette nettstedet</translation>
-<translation id="5029568752722684782">Slett kopi</translation>
 <translation id="5029873138381728058">Kunne ikke kontrollere VM-er</translation>
 <translation id="503155457707535043">Apper lastes ned</translation>
 <translation id="5032430150487044192">Kan ikke opprette QR-kode</translation>
@@ -5725,7 +5724,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5601823921345337195">Nettsteder som ikke har lov til å koble til MIDI-enheter</translation>
 <translation id="5601833336918638013">Ikke la nettsteder se etter Bluetooth-enheter</translation>
 <translation id="5602586420788540146">Åpne i ny fanegruppe</translation>
-<translation id="5602765853043467355">Slett bokmerker, logger, passord og annet fra denne enheten</translation>
 <translation id="5605758115928394442">Vi har sendt et varsel til telefonen din for å bekrefte at det er deg.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Denne utvidelsen er blokkert}other{Disse utvidelsene er blokkert}}</translation>
 <translation id="560834977503641186">Wifi-synkronisering – finn ut mer</translation>
@@ -5777,7 +5775,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5641648607875312660">Redigering av skjermdump</translation>
 <translation id="5642508497713047">Signatar for sertifikatopphevelsesliste</translation>
 <translation id="5643321261065707929">Nettverk med datamåling</translation>
-<translation id="5643620609347735571">Slett og fortsett</translation>
 <translation id="5646376287012673985">Posisjon</translation>
 <translation id="5646558797914161501">Forretningsmann</translation>
 <translation id="5648021990716966815">Mikrofonkontakt</translation>
@@ -7695,7 +7692,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7241389281993241388">Logg på <ph name="TOKEN_NAME" /> for å importere klientsertifikat.</translation>
 <translation id="7241763419756062043">Velg søke- og nettlesingskvalitet</translation>
 <translation id="7243092385765551741">Vil du slette passnøkkelen?</translation>
-<translation id="7243632151880336635">Slett og logg av</translation>
 <translation id="7245162963905242662">Sø&amp;k på denne siden med Google…</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (best)</translation>
 <translation id="7246230585855757313">Sett inn sikkerhetsnøkkelen på nytt, og prøv igjen</translation>
@@ -8573,7 +8569,6 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7925285046818567682">Venter på <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">Dette var ikke meg.</translation>
 <translation id="7926975587469166629">Kallenavn på kortet</translation>
-<translation id="7927610604078150317">Størrelse: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Har du allerede endret dette passordet?</translation>
 <translation id="7929962904089429003">Åpne menyen</translation>
 <translation id="7930294771522048157">Lagrede betalingsmåter vises her</translation>
@@ -9223,6 +9218,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8448729345478502352">Gjør elementer på skjermen mindre eller større.</translation>
 <translation id="8449008133205184768">Lim inn og tilpass til stil</translation>
 <translation id="8449036207308062757">Administrer lagring</translation>
+<translation id="8449347986464073209">Slett og logg av</translation>
 <translation id="8449836157089738489">Åpne alle i en ny fanegruppe</translation>
 <translation id="8449869326050867919">Passordet er delt</translation>
 <translation id="8451512073679317615">assistent</translation>

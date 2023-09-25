@@ -124,7 +124,6 @@
 <translation id="1243027604378859286">Auteur :</translation>
 <translation id="1246424317317450637">Gras</translation>
 <translation id="1247030632403369975">Aluminium</translation>
-<translation id="1250759482327835220">Pour accélérer le paiement la prochaine fois, enregistrez votre carte, votre nom et votre adresse de facturation dans votre compte Google.</translation>
 <translation id="1252209483516427155">Vêtements d'extérieur</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (synchronisés)</translation>
 <translation id="1255086252236620440">Batteurs</translation>
@@ -157,7 +156,6 @@
 <translation id="1294154142200295408">Variantes de ligne de commande</translation>
 <translation id="129553762522093515">Récemment fermés</translation>
 <translation id="1296930489679394997">Ventes</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />Essayez d'effacer vos témoins<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">Légal extra</translation>
 <translation id="1301324364792935241">Vérifiez les paramètres de DNS sécurisés</translation>
 <translation id="1307966114820526988">Fonctionnalités obsolètes</translation>
@@ -1347,7 +1345,6 @@
 <translation id="3767485424735936570">La politique de l'administrateur ne recommande pas de copier-coller ce contenu dans <ph name="VM_NAME" /></translation>
 <translation id="3772211998634047851">Papier (bond)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour rapidement créer une note dans Google Keep</translation>
-<translation id="3778403066972421603">Voulez-vous enregistrer cette carte dans votre compte Google et sur cet appareil?</translation>
 <translation id="378026377453746707">Chrome est doté de fonctionnalités de sécurité intégrées pour vous protéger pendant votre navigation, comme la Navigation sécurisée Google. La Navigation sécurisée a récemment <ph name="BEGIN_LINK" />détecté un logiciel malveillant sur <ph name="SITE" /><ph name="END_LINK" />, qui est intégré au site si vous essayez de le visiter.</translation>
 <translation id="3780694243617746492">Bac de sortie</translation>
 <translation id="3781428340399460090">Rose indien</translation>
@@ -1952,7 +1949,6 @@
 <translation id="5020776957610079374">Musique du monde</translation>
 <translation id="5021557570875267742">Suivre les prix avec Chrome</translation>
 <translation id="5023310440958281426">Vérifiez les règles définies par votre administrateur</translation>
-<translation id="5029568752722684782">Effacer la copie</translation>
 <translation id="5030338702439866405">Délivré par</translation>
 <translation id="503069730517007720">Un certificat racine pour « <ph name="SOFTWARE_NAME" /> » est requis, mais n'est pas installé. Votre administrateur informatique devrait consulter les instructions de configuration de « <ph name="SOFTWARE_NAME" /> » pour corriger ce problème. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">À propos de Google Traduction</translation>
@@ -2534,7 +2530,6 @@
 <translation id="6270066318535733958">Navigation de plaisance</translation>
 <translation id="6272088941196661550">Reprenez votre exploration pour consulter l'activité pertinente dans votre historique de Chrome</translation>
 <translation id="6272383483618007430">Mise à jour Google</translation>
-<translation id="627746635834430766">Pour accélérer le paiement la prochaine fois, enregistrez votre carte et votre adresse de facturation dans votre compte Google.</translation>
 <translation id="6279183038361895380">Appuyez sur |<ph name="ACCELERATOR" />| pour afficher votre curseur</translation>
 <translation id="6280223929691119688">Impossible d'effectuer une livraison à cette adresse. Sélectionnez une autre adresse.</translation>
 <translation id="6284292079994426700">26 po x 38 po</translation>
@@ -3843,7 +3838,6 @@ Détails supplémentaires :
 <translation id="8922013791253848639">Toujours autoriser les annonces sur ce site</translation>
 <translation id="892588693504540538">Perforation en haut à droite</translation>
 <translation id="8930330541574156305">Immobilier</translation>
-<translation id="8931333241327730545">Voulez-vous enregistrer cette carte sur votre compte Google?</translation>
 <translation id="8932102934695377596">Votre horloge retarde</translation>
 <translation id="893332455753468063">Ajouter un nom</translation>
 <translation id="8942355029279167844">Votre administrateur a autorisé <ph name="APP_NAME" /> à collecter des données de diagnostic afin d'améliorer l'expérience du produit. Pour en savoir plus, consultez la page <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>

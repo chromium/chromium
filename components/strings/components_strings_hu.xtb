@@ -125,7 +125,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1243027604378859286">Szerző:</translation>
 <translation id="1246424317317450637">Félkövér</translation>
 <translation id="1247030632403369975">Alumínium</translation>
-<translation id="1250759482327835220">A következő alkalommal gyorsabban fizethet, ha elmenti kártyáját, nevét és számlázási címét a Google-fiókjába.</translation>
 <translation id="1252209483516427155">Kinti viselet</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (szinkronizálva)</translation>
 <translation id="1255086252236620440">Robotgépek</translation>
@@ -158,7 +157,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1294154142200295408">Parancssorváltozatok</translation>
 <translation id="129553762522093515">Mostanában bezárt</translation>
 <translation id="1296930489679394997">Értékesítés</translation>
-<translation id="129863573139666797"><ph name="BEGIN_LINK" />Próbálkozzon a cookie-k törlésével<ph name="END_LINK" /></translation>
 <translation id="1301227606947843452">„Legal Extra” méret</translation>
 <translation id="1301324364792935241">Ellenőrizze a biztonságos DNS beállításait</translation>
 <translation id="1307966114820526988">Elavult funkciók</translation>
@@ -1349,7 +1347,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3767485424735936570">A rendszergazda által beállított házirend nem javasolja, hogy ezt a tartalmat másolja vagy beillessze ide: <ph name="VM_NAME" /></translation>
 <translation id="3772211998634047851">Papír (bankpostai)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, tartsa lenyomva a Tab billentyűt, majd nyomja meg az Enter billentyűt új jegyzet gyors létrehozásához a Google Keep szolgáltatással</translation>
-<translation id="3778403066972421603">Szeretné menteni a kártyát Google-fiókjába és az eszközre?</translation>
 <translation id="378026377453746707">A Chrome beépített biztonsági funkciókkal védi Önt böngészés közben (ilyen például a Google Biztonságos Böngészés). A Biztonságos Böngészés nemrég <ph name="BEGIN_LINK" />kártékony szoftvert talált a(z) <ph name="SITE" /> webhelyen<ph name="END_LINK" />, amely az Ön által felkeresni kívánt webhelybe van beágyazva.</translation>
 <translation id="3780694243617746492">Kimeneti tálca</translation>
 <translation id="3781428340399460090">Élénk rózsaszín</translation>
@@ -1955,7 +1952,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5020776957610079374">Világzene</translation>
 <translation id="5021557570875267742">Árak nyomon követése a Chrome segítségével</translation>
 <translation id="5023310440958281426">Ellenőrizze rendszergazdai házirendjeit</translation>
-<translation id="5029568752722684782">Példány törlése</translation>
 <translation id="5030338702439866405">Kiállította:</translation>
 <translation id="503069730517007720">A(z) „<ph name="SOFTWARE_NAME" />” szoftverhez főtanúsítványra van szükség, amely azonban nincs telepítve. A rendszergazda a(z) „<ph name="SOFTWARE_NAME" />” beállítási útmutatójában találhat segítséget a probléma megoldásához. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="5031870354684148875">A Google Fordító leírása</translation>
@@ -2538,7 +2534,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6270066318535733958">Csónakázás</translation>
 <translation id="6272088941196661550">Utazás folytatása a Chrome-előzmények között található releváns tevékenységek megtekintéséhez</translation>
 <translation id="6272383483618007430">Google Frissítés</translation>
-<translation id="627746635834430766">A következő alkalommal gyorsabban fizethet, ha Google-fiókjába menti kártyáját és számlázási címét.</translation>
 <translation id="6279183038361895380">Az egérmutató megjelenítéséhez nyomja meg a következő billentyűt: |<ph name="ACCELERATOR" />|</translation>
 <translation id="6280223929691119688">Erre a címre nem lehetséges a kézbesítés. Válasszon másik címet.</translation>
 <translation id="6284292079994426700">26 × 38 hüvelyk</translation>
@@ -3851,7 +3846,6 @@ További részletek:
 <translation id="8922013791253848639">Mindig engedélyezi a hirdetéseket ezen a webhelyen</translation>
 <translation id="892588693504540538">Lyuk jobbra fent</translation>
 <translation id="8930330541574156305">Ingatlan</translation>
-<translation id="8931333241327730545">Menti ezt a kártyát a Google-fiókjába?</translation>
 <translation id="8932102934695377596">Késik az órája</translation>
 <translation id="893332455753468063">Név hozzáadása</translation>
 <translation id="8942355029279167844">Rendszergazdája engedélyezte, hogy a(z) <ph name="APP_NAME" /> diagnosztikai adatokat gyűjtsön a felhasználói élmény javítása érdekében. További információt a következő oldalon találhat: <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>

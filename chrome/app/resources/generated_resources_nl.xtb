@@ -5022,7 +5022,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5027550639139316293">Certificaat voor e-mail</translation>
 <translation id="5027562294707732951">Extensie toevoegen</translation>
 <translation id="5028445315206872221">Extensies worden geblokkeerd op deze site</translation>
-<translation id="5029568752722684782">Kopie wissen</translation>
 <translation id="5029873138381728058">Kan VM's niet checken</translation>
 <translation id="503155457707535043">Apps downloaden</translation>
 <translation id="5032430150487044192">Kan geen QR-code maken</translation>
@@ -5716,7 +5715,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5601823921345337195">Geen toestemming om verbinding te maken met MIDI-apparaten</translation>
 <translation id="5601833336918638013">Niet toestaan dat sites naar bluetooth-apparaten zoeken</translation>
 <translation id="5602586420788540146">Openen in nieuwe tabbladgroep</translation>
-<translation id="5602765853043467355">Bookmarks, geschiedenis, wachtwoorden en meer wissen van dit apparaat</translation>
 <translation id="5605758115928394442">Er is een melding naar je telefoon verstuurd om te bevestigen dat jij het bent.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Deze extensie is geblokkeerd}other{Deze extensies zijn geblokkeerd}}</translation>
 <translation id="560834977503641186">Wifi-synchronisatie, meer informatie</translation>
@@ -5766,7 +5764,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5641648607875312660">Afbeeldingseditor voor screenshots</translation>
 <translation id="5642508497713047">CRL-ondertekenaar</translation>
 <translation id="5643321261065707929">Netwerk met datalimiet</translation>
-<translation id="5643620609347735571">Wissen en doorgaan</translation>
 <translation id="5646376287012673985">Locatie</translation>
 <translation id="5646558797914161501">Zakenman</translation>
 <translation id="5648021990716966815">Microfoonaansluiting</translation>
@@ -7681,7 +7678,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7241389281993241388">Log in bij <ph name="TOKEN_NAME" /> om het klantcertificaat te importeren.</translation>
 <translation id="7241763419756062043">Kies je zoek- en browsekwaliteit</translation>
 <translation id="7243092385765551741">Toegangssleutel verwijderen?</translation>
-<translation id="7243632151880336635">Wissen en uitloggen</translation>
 <translation id="7245162963905242662">Zoe&amp;ken op deze pagina met Google...</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (beste)</translation>
 <translation id="7246230585855757313">Plaats de beveiligingssleutel opnieuw en probeer het opnieuw.</translation>
@@ -8556,7 +8552,6 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="7925285046818567682">Wachten op <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">Dit was ik niet.</translation>
 <translation id="7926975587469166629">Bijnaam kaart</translation>
-<translation id="7927610604078150317">Grootte: <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Heb je dit wachtwoord al gewijzigd?</translation>
 <translation id="7929962904089429003">Het menu openen</translation>
 <translation id="7930294771522048157">Opgeslagen betaalmethoden zie je hier</translation>
@@ -9206,6 +9201,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8448729345478502352">Items op het scherm kleiner of groter maken</translation>
 <translation id="8449008133205184768">Plakken en stijl aanpassen</translation>
 <translation id="8449036207308062757">Opslag beheren</translation>
+<translation id="8449347986464073209">Verwijderen en uitloggen</translation>
 <translation id="8449836157089738489">Alles openen in nieuwe tabbladgroep</translation>
 <translation id="8449869326050867919">Wachtwoord gedeeld</translation>
 <translation id="8451512073679317615">assistent</translation>

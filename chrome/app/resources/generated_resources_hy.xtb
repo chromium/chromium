@@ -5025,7 +5025,6 @@
 <translation id="5027550639139316293">Էլփոստի վկայագիր</translation>
 <translation id="5027562294707732951">Ավելացնել ընդլայնում</translation>
 <translation id="5028445315206872221">Ընդլայնումներն արգելափակված են այս կայքում</translation>
-<translation id="5029568752722684782">Մաքրել պատճենը</translation>
 <translation id="5029873138381728058">Չհաջողվեց ստուգել վիրտուալ մեքենաները</translation>
 <translation id="503155457707535043">Հավելվածները ներբեռնվում են</translation>
 <translation id="5032430150487044192">Չհաջողվեց ստեղծել QR կոդը</translation>
@@ -5721,7 +5720,6 @@
 <translation id="5601823921345337195">Չի թույլատրվում միանալ MIDI սարքերին</translation>
 <translation id="5601833336918638013">Թույլ չտալ կայքերին որոնել Bluetooth սարքեր</translation>
 <translation id="5602586420788540146">Բացել ներդիրների նոր խմբում</translation>
-<translation id="5602765853043467355">Մաքրել այս սարքի էջանիշները, պատմությունը, գաղտնաբառերն ու մյուս տվյալները</translation>
 <translation id="5605758115928394442">Ձեր ինքնությունը հաստատելու համար ձեր հեռախոսին ծանուցում է ուղարկվել:</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{Այս ընդլայնումն արգելափակված է}one{Այս ընդլայնումն արգելափակված է}other{Այս ընդլայնումներն արգելափակված են}}</translation>
 <translation id="560834977503641186">Մանրամասն Wi-Fi համաժամացման մասին</translation>
@@ -5771,7 +5769,6 @@
 <translation id="5641648607875312660">Սքրինշոթների խմբագրիչ</translation>
 <translation id="5642508497713047">CRL-ի ստորագրող</translation>
 <translation id="5643321261065707929">Վճարովի ինտերնետ</translation>
-<translation id="5643620609347735571">Մաքրել և շարունակել</translation>
 <translation id="5646376287012673985">Տեղադրություն</translation>
 <translation id="5646558797914161501">Բիզնեսմեն</translation>
 <translation id="5648021990716966815">Խոսափողի հարակցիչ</translation>
@@ -7689,7 +7686,6 @@
 <translation id="7241389281993241388">Սպասառուի վկայագիրը ներմուծելու համար մուտք գործեք <ph name="TOKEN_NAME" />:</translation>
 <translation id="7241763419756062043">Կարգավորեք որոնումն ու դիտարկումը</translation>
 <translation id="7243092385765551741">Ջնջե՞լ անցաբառը</translation>
-<translation id="7243632151880336635">Մաքրել և դուրս գալ</translation>
 <translation id="7245162963905242662">Որոնել այս էջում Google-ի միջոցով…</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (լավագույն)</translation>
 <translation id="7246230585855757313">Նորից տեղադրեք անվտանգության բանալին ու կրկնեք փորձը։</translation>
@@ -8566,7 +8562,6 @@
 <translation id="7925285046818567682">Սպասում ենք <ph name="HOST_NAME" />-ին…</translation>
 <translation id="7926423016278357561">Սա ես չեմ։</translation>
 <translation id="7926975587469166629">Քարտի այլանունը</translation>
-<translation id="7927610604078150317">Չափսը՝ <ph name="CHROME_APP_SIZE" /></translation>
 <translation id="7928175190925744466">Արդեն փոխե՞լ եք այս գաղտնաբառը</translation>
 <translation id="7929962904089429003">Բացել ընտրացանկը</translation>
 <translation id="7930294771522048157">Վճարման պահված եղանակները կհայտնվեն այստեղ</translation>
@@ -9215,6 +9210,7 @@
 <translation id="8448729345478502352">Փոփոխեք էկրանի տարրերի չափը</translation>
 <translation id="8449008133205184768">Տեղադրել՝ ոճի համապատասխանությամբ</translation>
 <translation id="8449036207308062757">Կառավարել հիշողությունը</translation>
+<translation id="8449347986464073209">Ջնջել և դուրս գալ</translation>
 <translation id="8449836157089738489">Բացել բոլորը նոր ներդիրների խմբում</translation>
 <translation id="8449869326050867919">Գաղտնաբառը փոխանցվեց</translation>
 <translation id="8451512073679317615">օգնական</translation>
