@@ -68,6 +68,11 @@ namespace net {
 
 namespace {
 
+base::OnceClosure& MidMigrationCallbackForTesting() {
+  static base::NoDestructor<base::OnceClosure> callback;
+  return *callback;
+}
+
 // IPv6 packets have an additional 20 bytes of overhead than IPv4 packets.
 const size_t kAdditionalOverheadForIPv6 = 20;
 
@@ -348,6 +353,12 @@ void LogProbeResultToHistogram(MigrationCause cause, bool success) {
 }
 
 }  // namespace
+
+// static
+void QuicChromiumClientSession::SetMidMigrationCallbackForTesting(
+    base::OnceClosure callback) {
+  MidMigrationCallbackForTesting() = std::move(callback);  // IN-TEST
+}
 
 QuicChromiumClientSession::Handle::Handle(
     const base::WeakPtr<QuicChromiumClientSession>& session,
@@ -3609,6 +3620,11 @@ void QuicChromiumClientSession::Migrate(handles::NetworkHandle network,
       &QuicChromiumClientSession::FinishMigrate, weak_factory_.GetWeakPtr(),
       std::move(socket), peer_address, close_session_on_error,
       std::move(migration_callback));
+
+  if (!MidMigrationCallbackForTesting().is_null()) {
+    std::move(MidMigrationCallbackForTesting()).Run();  // IN-TEST
+  }
+
   stream_factory_->ConnectAndConfigureSocket(std::move(connect_callback),
                                              socket_ptr, peer_address, network,
                                              session_key_.socket_tag());

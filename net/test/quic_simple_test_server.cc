@@ -239,6 +239,14 @@ bool QuicSimpleTestServer::Start() {
   return true;
 }
 
+void QuicSimpleTestServer::AddResponse(const std::string& path,
+                                       spdy::Http2HeaderBlock response_headers,
+                                       const std::string& response_body) {
+  g_quic_cache_backend->AddResponse(
+      base::StringPrintf("%s:%d", kTestServerHost, GetPort()), path,
+      std::move(response_headers), response_body);
+}
+
 void QuicSimpleTestServer::AddResponseWithEarlyHints(
     const std::string& path,
     const spdy::Http2HeaderBlock& response_headers,
@@ -247,6 +255,13 @@ void QuicSimpleTestServer::AddResponseWithEarlyHints(
   g_quic_cache_backend->AddResponseWithEarlyHints(kTestServerHost, path,
                                                   response_headers.Clone(),
                                                   response_body, early_hints);
+}
+
+void QuicSimpleTestServer::SetResponseDelay(const std::string& path,
+                                            base::TimeDelta delay) {
+  g_quic_cache_backend->SetResponseDelay(
+      base::StringPrintf("%s:%d", kTestServerHost, GetPort()), path,
+      quic::QuicTime::Delta::FromMicroseconds(delay.InMicroseconds()));
 }
 
 // Shut down the server dispatcher, and the stream should error out.

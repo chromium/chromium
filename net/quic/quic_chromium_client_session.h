@@ -150,6 +150,10 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       public QuicChromiumPacketReader::Visitor,
       public QuicChromiumPacketWriter::Delegate {
  public:
+  // Sets a callback that is called in the middle of a connection migration.
+  // Only for testing.
+  static void SetMidMigrationCallbackForTesting(base::OnceClosure callback);
+
   class StreamRequest;
 
   // An interface that when implemented and added via

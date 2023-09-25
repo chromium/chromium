@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/time/time.h"
 #include "net/base/host_port_pair.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
 #include "url/gurl.h"
@@ -23,12 +24,20 @@ class QuicSimpleTestServer {
   // frames to all connected clients.
   static void ShutdownDispatcherForTesting();
 
+  // Add a response to `path`.
+  static void AddResponse(const std::string& path,
+                          spdy::Http2HeaderBlock response_headers,
+                          const std::string& response_body);
+
   // Add a response to `path` with Early Hints.
   static void AddResponseWithEarlyHints(
       const std::string& path,
       const spdy::Http2HeaderBlock& response_headers,
       const std::string& response_body,
       const std::vector<spdy::Http2HeaderBlock>& early_hints);
+
+  // Set a delay to `path`.
+  static void SetResponseDelay(const std::string& path, base::TimeDelta delay);
 
   // Returns example.com
   static std::string const GetDomain();
