@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
@@ -344,6 +345,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
                        MAYBE_EmitAccessibilityEvents) {
   // Creation and population of the popup should not result in a text/name
   // change accessibility event.
+  base::HistogramTester histogram_tester;
   TestAXEventObserver observer;
   CreatePopupForTestQuery();
   ACMatches matches;
@@ -411,6 +413,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   EXPECT_EQ(ax_node_data_omnibox.GetIntAttribute(
                 ax::mojom::IntAttribute::kActivedescendantId),
             selected_result_view->GetViewAccessibility().GetUniqueId().Get());
+  histogram_tester.ExpectUniqueSample("Omnibox.Views.PopupFirstPaint", 1, 0);
 }
 
 // Flaky on Mac: https://crbug.com/1146627.
@@ -423,6 +426,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
 #endif
 IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
                        MAYBE_EmitAccessibilityEventsOnButtonFocusHint) {
+  base::HistogramTester histogram_tester;
   TestAXEventObserver observer;
   CreatePopupForTestQuery();
   ACMatches matches;
@@ -476,6 +480,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   EXPECT_TRUE(
       contains(observer.selected_option_name(), "press Tab then Enter"));
   EXPECT_FALSE(contains(observer.selected_option_name(), "2 of 2"));
+  histogram_tester.ExpectUniqueSample("Omnibox.Views.PopupFirstPaint", 1, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,

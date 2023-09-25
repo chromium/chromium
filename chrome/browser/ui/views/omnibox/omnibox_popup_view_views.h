@@ -79,6 +79,7 @@ class OmniboxPopupViewViews : public views::View,
   // views::WidgetObserver:
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override;
+  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 
   void FireAXEventsForNewActiveDescendant(View* descendant_view);
 
@@ -117,6 +118,9 @@ class OmniboxPopupViewViews : public views::View,
   // the OS to destroy the window and thus delete this object before we're
   // deleted, or without our knowledge.
   base::WeakPtr<AutocompletePopupWidget> popup_;
+
+  // Timestamp for when the current omnibox popup creation started.
+  absl::optional<base::TimeTicks> popup_create_start_time_;
 
   // The edit view that invokes us. May be nullptr in tests.
   raw_ptr<OmniboxViewViews> omnibox_view_;
