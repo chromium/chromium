@@ -260,6 +260,7 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
         slot_span_alignment - PartitionPageSize();
     const size_t reservation_size = PartitionRoot::GetDirectMapReservationSize(
         raw_size + padding_for_alignment);
+    PA_DCHECK(reservation_size >= raw_size);
 #if BUILDFLAG(PA_DCHECK_IS_ON)
     const size_t available_reservation_size =
         reservation_size - padding_for_alignment -
@@ -336,15 +337,17 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
     // so no other thread can update the same offset table entries at the
     // same time. Furthermore, nobody will be ready these offsets until this
     // function returns.
-    uintptr_t address_start = reservation_start;
-    uintptr_t address_end = address_start + reservation_size;
-    auto* offset_ptr = ReservationOffsetPointer(address_start);
-    uint16_t offset = 0;
-    while (address_start < address_end) {
-      PA_DCHECK(offset_ptr < GetReservationOffsetTableEnd(address_start));
+    auto* offset_ptr = ReservationOffsetPointer(reservation_start);
+    [[maybe_unused]] const auto* offset_ptr_end =
+        GetReservationOffsetTableEnd(reservation_start + reservation_size);
+
+    // |raw_size| > MaxBucketed(). So |reservation_size| > 0.
+    PA_DCHECK(reservation_size > 0);
+    const uint16_t offset_end = (reservation_size - 1) >> kSuperPageShift;
+    for (uint16_t offset = 0; offset <= offset_end; ++offset) {
       PA_DCHECK(offset < kOffsetTagNormalBuckets);
-      *offset_ptr++ = offset++;
-      address_start += kSuperPageSize;
+      PA_DCHECK(offset_ptr < offset_ptr_end);
+      *offset_ptr++ = offset;
     }
 
     auto* super_page_extent = PartitionSuperPageToExtent(reservation_start);
