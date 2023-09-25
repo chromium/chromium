@@ -355,17 +355,13 @@ def _RunLint(create_cache,
                                 stderr_filter=stderr_filter,
                                 fail_on_output=warnings_as_errors,
                                 fail_func=fail_func))
+  except build_utils.CalledProcessError as e:
+    # Do not output the python stacktrace because it is lengthy and is not
+    # relevant to the actual lint error.
+    sys.stderr.write(e.output)
   finally:
     # When not treating warnings as errors, display the extra footer.
     is_debug = os.environ.get('LINT_DEBUG', '0') != '0'
-
-    if failed:
-      print('- For more help with lint in Chrome:', _LINT_MD_URL)
-      if is_debug:
-        print('- DEBUG MODE: Here is the project.xml: {}'.format(
-            _SrcRelative(project_xml_path)))
-      else:
-        print('- Run with LINT_DEBUG=1 to enable lint configuration debugging')
 
     end = time.time() - start
     logging.info('Lint command took %ss', end)
@@ -374,6 +370,15 @@ def _RunLint(create_cache,
       shutil.rmtree(resource_root_dir, ignore_errors=True)
       shutil.rmtree(srcjar_root_dir, ignore_errors=True)
       os.unlink(project_xml_path)
+
+    if failed:
+      print('- For more help with lint in Chrome:', _LINT_MD_URL)
+      if is_debug:
+        print('- DEBUG MODE: Here is the project.xml: {}'.format(
+            _SrcRelative(project_xml_path)))
+      else:
+        print('- Run with LINT_DEBUG=1 to enable lint configuration debugging')
+      sys.exit(1)
 
   logging.info('Lint completed')
 

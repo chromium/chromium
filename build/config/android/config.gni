@@ -95,12 +95,6 @@ if (is_android || is_chromeos) {
   assert(android_static_analysis == "on" || android_static_analysis == "off" ||
          android_static_analysis == "build_server")
 
-  # Build server modifies stamp files independently of builds.
-  # Siso is not well-suited for this use case.
-  assert(
-      !(android_static_analysis == "build_server" && use_siso),
-      "Siso doesn't support android_static_analysis=\"build_server\". Please set android_static_analysis=\"on\"")
-
   # This configuration has not bot coverage and has broken multiple times.
   # Warn against it.
   assert(!(enable_chrome_android_internal && skip_secondary_abi_for_cq))
