@@ -442,6 +442,7 @@
 #include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_service_factory.h"
 #include "chrome/browser/new_tab_page/promos/promo_service_factory.h"
 #include "chrome/browser/payments/payment_request_display_manager_factory.h"
+#include "chrome/browser/privacy_sandbox/tracking_protection_notice_factory.h"
 #include "chrome/browser/search/background/ntp_background_service_factory.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
@@ -1118,6 +1119,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   TopSitesFactory::GetInstance();
   tpcd::experiment::EligibilityServiceFactory::GetInstance();
   tpcd::metadata::UpdaterServiceFactory::GetInstance();
+#if !BUILDFLAG(IS_ANDROID)
+  TrackingProtectionNoticeFactory::GetInstance();
+#endif
   TrackingProtectionOnboardingFactory::GetInstance();
   TrackingProtectionSettingsFactory::GetInstance();
   translate::TranslateRankerFactory::GetInstance();
