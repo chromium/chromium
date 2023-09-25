@@ -8,6 +8,7 @@ import {sendTestMessage} from '../../test_util.js';
 
 
 const FAKE_ENTRY_PATH_PREFIX = 'fake-entry:';
+const ENTRY_LIST_PATH_PREFIX = 'entry-list:';
 const REAL_ENTRY_PATH_PREFIX = 'filesystem:chrome://file-manager/external';
 
 /**
@@ -17,9 +18,9 @@ const REAL_ENTRY_PATH_PREFIX = 'filesystem:chrome://file-manager/external';
  *   expanded: (?boolean|undefined),
  *   selected: (?boolean|undefined),
  *   focused: (?boolean|undefined),
+ *   shortcut: (?boolean|undefined),
  *   renaming: (?boolean|undefined),
  *   acceptDrop: (?boolean|undefined),
- *   denyDrop: (?boolean|undefined),
  *   hasChildren: (?boolean|undefined),
  *   mayHaveChildren: (?boolean|undefined),
  *   currentDirectory: (?boolean|undefined),
@@ -89,7 +90,7 @@ export class DirectoryTreePageObject {
    * Wait for the selected(aka "active" in the old tree implementation) tree
    * item with the label.
    *
-   * @param {string} label Label of the tree item
+   * @param {string} label Label of the tree item.
    * @return {!Promise<!ElementObject>}
    */
   async waitForSelectedItemByLabel(label) {
@@ -98,8 +99,8 @@ export class DirectoryTreePageObject {
   }
 
   /**
-   * Wait for the tree item with the label to have focused(aka "selected" in the
-   * old tree implementation) state.
+   * Wait for the tree item with the label to have focused (aka "selected" in
+   * the old tree implementation) state.
    *
    * @param {string} label Label of the tree item
    * @return {!Promise<!ElementObject>}
@@ -107,6 +108,20 @@ export class DirectoryTreePageObject {
   async waitForFocusedItemByLabel(label) {
     return this.remoteCall_.waitForElement(
         this.appId_, this.selectors_.itemByLabel(label, {focused: true}));
+  }
+
+  /**
+   * Wait for the tree item with the type to have focused (aka "selected" in the
+   * old tree implementation) state.
+   *
+   * @param {string} type Type of the tree item.
+   * @return {!Promise<!ElementObject>}
+   */
+  async waitForFocusedItemByType(type) {
+    return this.remoteCall_.waitForElement(
+        this.appId_,
+        this.selectors_.itemByType(
+            type, /* isPlaceholder= */ false, {focused: true}));
   }
 
   /**
@@ -123,25 +138,57 @@ export class DirectoryTreePageObject {
   }
 
   /**
-   * Wait for the child items of the specific item
+   * Wait for the child items of the specific parent item to match the count.
    *
-   * @param {string} label Label of the tree item
-   * @param {number} count Expected number of the child items
-   * @param {boolean=} excludeEmptyChild child items without any children
-   * @return {Promise}
+   * @param {string} parentLabel Label of the parent tree item.
+   * @param {number} count Expected number of the child items.
+   * @param {boolean=} excludeEmptyChild Set true to only return child items
+   *     with nested children.
+   * @return {!Promise}
    */
-  async waitForChildItemsCountByLabel(label, count, excludeEmptyChild) {
-    const itemSelector = this.selectors_.itemByLabel(label);
+  async waitForChildItemsCountByLabel(parentLabel, count, excludeEmptyChild) {
+    const itemSelector = this.selectors_.itemByLabel(parentLabel);
     const childItemsSelector = excludeEmptyChild ?
-        this.selectors_.childItemsWithNestedChildren(itemSelector) :
+        this.selectors_.nonEmptyChildItems(itemSelector) :
         this.selectors_.childItems(itemSelector);
     return this.remoteCall_.waitForElementsCount(
         this.appId_, [childItemsSelector], count);
   }
 
   /**
+   * Wait for the placeholder tree items specified by type to match the count.
+   *
+   * @param {string} type Type of the placeholder tree item.
+   * @param {number} count Expected number of the child items.
+   * @return {!Promise}
+   */
+  async waitForPlaceholderItemsCountByType(type, count) {
+    const itemSelector =
+        this.selectors_.itemByType(type, /* isPlaceholder= */ true);
+    return this.remoteCall_.waitForElementsCount(
+        this.appId_, [itemSelector], count);
+  }
+
+  /**
+   * Get the currently focused tree item.
+   *
+   * @return {!Promise<?ElementObject>}
+   */
+  async getFocusedItem() {
+    const focusedItemSelector = this.selectors_.attachModifier(
+        `${this.selectors_.root} ${this.selectors_.item}`, {focused: true});
+    const elements = await this.remoteCall_.callRemoteTestUtil(
+        'deepQueryAllElements', this.appId_, [focusedItemSelector]);
+    if (elements && elements.length > 0) {
+      return elements[0];
+    }
+    return null;
+  }
+
+  /**
    * Get the label of the tree item.
-   * @param {?ElementObject} item the tree item.
+   *
+   * @param {?ElementObject} item The tree item.
    * @returns {string}
    */
   getItemLabel(item) {
@@ -154,29 +201,97 @@ export class DirectoryTreePageObject {
   }
 
   /**
+   * Get the icon type of the tree item.
+   *
+   * @param {?ElementObject} item The tree item.
+   * @returns {string}
+   */
+  getItemIconType(item) {
+    if (!item) {
+      chrome.test.fail('Item is not a valid tree item.');
+      return '';
+    }
+    return this.useNewTree_ ? item.attributes['icon'] :
+                              item.attributes['volume-type-for-testing'];
+  }
+
+  /**
+   * Check if the tree item is disabled or not.
+   *
+   * @param {?ElementObject} item The tree item.
+   */
+  assertItemDisabled(item) {
+    if (!item) {
+      chrome.test.fail('Item is not a valid tree item.');
+      return;
+    }
+    // Empty value for "disabled" means it's disabled.
+    chrome.test.assertEq('', item.attributes['disabled']);
+  }
+
+  /**
    * Wait for the item with the label to get the `has-children` attribute with
    * the specified value.
    *
-   * @param {string} label the label of the tree item.
-   * @param {boolean} hasChildren should hte tree item has children or not.
+   * @param {string} label Label of the tree item.
+   * @param {boolean} hasChildren should the tree item have children or not.
    * @return {!Promise<!ElementObject>}
    */
-  async waitForItemToHaveChildren(label, hasChildren) {
+  async waitForItemToHaveChildrenByLabel(label, hasChildren) {
     return this.remoteCall_.waitForElement(
         this.appId_,
         this.selectors_.itemByLabel(label, {hasChildren: hasChildren}));
   }
 
   /**
-   * Wait for the item with the label to get the `may-have-children` attribute.
+   * Wait for the item with the type to get the `has-children` attribute with
+   * the specified value.
    *
-   * @param {string} label the tree item.
+   * @param {string} type Type of the tree item.
+   * @param {boolean} hasChildren should the tree item have children or not.
    * @return {!Promise<!ElementObject>}
    */
-  async waitForItemToMayHaveChildren(label) {
+  async waitForItemToHaveChildrenByType(type, hasChildren) {
+    return this.remoteCall_.waitForElement(
+        this.appId_,
+        this.selectors_.itemByType(
+            type, /* isPlaceholder= */ false, {hasChildren: hasChildren}));
+  }
+
+  /**
+   * Wait for the item with the label to get the `may-have-children` attribute.
+   *
+   * @param {string} label Label of the tree item.
+   * @return {!Promise<!ElementObject>}
+   */
+  async waitForItemToMayHaveChildrenByLabel(label) {
     return this.remoteCall_.waitForElement(
         this.appId_,
         this.selectors_.itemByLabel(label, {mayHaveChildren: true}));
+  }
+
+  /**
+   * Wait for the item with the label to be expanded.
+   *
+   * @param {string} label Label of the tree item.
+   * @return {!Promise<void>}
+   */
+  async waitForItemToExpandByLabel(label) {
+    const expandedItemSelector =
+        this.selectors_.itemByLabel(label, {expanded: true});
+    await this.remoteCall_.waitForElement(this.appId_, expandedItemSelector);
+  }
+
+  /**
+   * Wait for the item with the label to be collapsed.
+   *
+   * @param {string} label Label of the tree item.
+   * @return {!Promise<void>}
+   */
+  async waitForItemToCollapseByLabel(label) {
+    const collapsedItemSelector =
+        this.selectors_.itemByLabel(label, {expanded: false});
+    await this.remoteCall_.waitForElement(this.appId_, collapsedItemSelector);
   }
 
   /**
@@ -192,10 +307,30 @@ export class DirectoryTreePageObject {
   }
 
   /**
+   * Expands a single tree item with the specified full path by clicking on its
+   * expand icon.
+   * @param {string} path Path of the tree item we want to expand on.
+   * @return {!Promise<void>}
+   */
+  async expandTreeItemByPath(path) {
+    await this.expandTreeItem_(this.selectors_.itemByPath(path));
+  }
+
+  /**
+   * Collapses a single tree item with the specified label by clicking on its
+   * expand icon.
+   * @param {string} label Label of the tree item we want to collapse on.
+   * @return {!Promise<void>}
+   */
+  async collapseTreeItemByLabel(label) {
+    await this.collapseTreeItem_(this.selectors_.itemByLabel(label));
+  }
+
+  /**
    * Expands each directory in the breadcrumbs path.
    *
    * @param {string} breadcrumbsPath Path based in the entry labels like:
-   *     /My files/Downloads/photos
+   *     /My files/Downloads/photos.
    * @return {!Promise<string>} Promise fulfilled on success with the selector
    *    query of the last directory expanded.
    */
@@ -233,8 +368,7 @@ export class DirectoryTreePageObject {
    */
   async navigateToPath(breadcrumbsPath, shortcutToPath) {
     // Focus the directory tree.
-    await this.remoteCall_.callRemoteTestUtil(
-        'focus', this.appId_, [this.selectors_.root]);
+    await this.focusTree();
 
     const paths = breadcrumbsPath.split('/');
     // For "/My Drive", expand the "Google Drive" first.
@@ -263,8 +397,7 @@ export class DirectoryTreePageObject {
         this.appId_, (shortcutToPath || breadcrumbsPath));
 
     // Focus the directory tree.
-    await this.remoteCall_.callRemoteTestUtil(
-        'focus', this.appId_, [this.selectors_.root]);
+    await this.focusTree();
 
     return query;
   }
@@ -277,11 +410,26 @@ export class DirectoryTreePageObject {
    */
   async focusPreviousItem() {
     // Focus the tree first before keyboard event.
-    await this.remoteCall_.callRemoteTestUtil(
-        'focus', this.appId_, [this.selectors_.root]);
+    await this.focusTree();
 
     const arrowUp =
         [this.selectors_.keyboardRecipient, 'ArrowUp', false, false, false];
+    await this.remoteCall_.callRemoteTestUtil(
+        'fakeKeyDown', this.appId_, arrowUp);
+  }
+
+  /**
+   * Trigger a keydown event with ArrowDown key to move the focus to the next
+   * tree item.
+   *
+   * @return {!Promise<void>}
+   */
+  async focusNextItem() {
+    // Focus the tree first before keyboard event.
+    await this.focusTree();
+
+    const arrowUp =
+        [this.selectors_.keyboardRecipient, 'ArrowDown', false, false, false];
     await this.remoteCall_.callRemoteTestUtil(
         'fakeKeyDown', this.appId_, arrowUp);
   }
@@ -293,8 +441,7 @@ export class DirectoryTreePageObject {
    */
   async selectFocusedItem() {
     // Focus the tree first before keyboard event.
-    await this.remoteCall_.callRemoteTestUtil(
-        'focus', this.appId_, [this.selectors_.root]);
+    await this.focusTree();
 
     const enter =
         [this.selectors_.keyboardRecipient, 'Enter', false, false, false];
@@ -314,19 +461,54 @@ export class DirectoryTreePageObject {
   }
 
   /**
+   * Wait for the tree item by its label to be lost.
+   *
+   * @param {string} label Label of the tree item.
+   * @return {!Promise<void>}
+   */
+  async waitForItemLostByLabel(label) {
+    await this.remoteCall_.waitForElementLost(
+        this.appId_, this.selectors_.itemByLabel(label));
+  }
+
+  /**
+   * Wait for the tree item by its full path.
+   *
+   * @param {string} path Path of the tree item.
+   * @return {!Promise<!ElementObject>}
+   */
+  async waitForItemByPath(path) {
+    return this.remoteCall_.waitForElement(
+        this.appId_, this.selectors_.itemByPath(path));
+  }
+
+  /**
+   * Wait for the tree item by its full path to be lost.
+   *
+   * @param {string} path Path of the tree item.
+   * @return {!Promise<void>}
+   */
+  async waitForItemLostByPath(path) {
+    await this.remoteCall_.waitForElementLost(
+        this.appId_, this.selectors_.itemByPath(path));
+  }
+
+  /**
    * Returns the labels for all visible tree items.
    *
    * @return {!Promise<!Array<string>>}
    */
   async getVisibleItemLabels() {
-    const rootItems = await this.remoteCall_.callRemoteTestUtil(
-        'queryAllElements', this.appId_,
-        [`${this.selectors_.root} > ${this.selectors_.item}`]);
-    const expandedChildItems = await this.remoteCall_.callRemoteTestUtil(
-        'queryAllElements', this.appId_,
-        [this.selectors_.childItems(this.selectors_.expandedItems())]);
-    return [...rootItems, ...expandedChildItems].map(
-        item => this.getItemLabel(item));
+    const allItems =
+        /** @type {!Array<!ElementObject>} */ (
+            await this.remoteCall_.callRemoteTestUtil(
+                'queryAllElements', this.appId_, [
+                  `${this.selectors_.root} ${this.selectors_.item}`,
+                  ['visibility'],
+                ]));
+    return allItems
+        .filter(item => !item.hidden && item.styles['visibility'] !== 'hidden')
+        .map(item => this.getItemLabel(item));
   }
 
   /**
@@ -342,15 +524,61 @@ export class DirectoryTreePageObject {
   }
 
   /**
+   * Wait for the tree item by its type to be lost.
+   *
+   * @param {string} type Type of the tree item.
+   * @return {!Promise<void>}
+   */
+  async waitForItemLostByType(type) {
+    await this.remoteCall_.waitForElementLost(
+        this.appId_,
+        this.selectors_.itemByType(type, /* isPlaceholder= */ false));
+  }
+
+  /**
    * Wait for the placeholder tree item by its type.
    *
    * @param {string} type Type of the tree item.
    * @return {!Promise<!ElementObject>}
    */
-  async waitForPlaceholderItem(type) {
+  async waitForPlaceholderItemByType(type) {
     return this.remoteCall_.waitForElement(
         this.appId_,
         this.selectors_.itemByType(type, /* isPlaceholder= */ true));
+  }
+
+  /**
+   * Wait for the placeholder tree item by its type to be lost.
+   *
+   * @param {string} type Type of the tree item.
+   * @return {!Promise<void>}
+   */
+  async waitForPlaceholderItemLostByType(type) {
+    await this.remoteCall_.waitForElementLost(
+        this.appId_,
+        this.selectors_.itemByType(type, /* isPlaceholder= */ true));
+  }
+
+  /**
+   * Wait for the shortcut tree item by its label.
+   *
+   * @param {string} label Label of the tree item.
+   * @return {!Promise<!ElementObject>}
+   */
+  async waitForShortcutItemByLabel(label) {
+    return this.remoteCall_.waitForElement(
+        this.appId_, this.selectors_.itemByLabel(label, {shortcut: true}));
+  }
+
+  /**
+   * Wait for the shortcut tree item by its label to be lost.
+   *
+   * @param {string} label Label of the tree item.
+   * @return {!Promise<void>}
+   */
+  async waitForShortcutItemLostByLabel(label) {
+    await this.remoteCall_.waitForElementLost(
+        this.appId_, this.selectors_.itemByLabel(label, {shortcut: true}));
   }
 
   /**
@@ -369,14 +597,282 @@ export class DirectoryTreePageObject {
   }
 
   /**
-   * Select the tree item by its label.
+   * Wait for the child tree item to be lost under a specified parent item by
+   * its label.
+   *
+   * @param {string} parentLabel Label of the parent item.
+   * @param {string} childLabel Label of the child item.
+   * @return {!Promise<void>}
+   */
+  async waitForChildItemLostByLabel(parentLabel, childLabel) {
+    await this.remoteCall_.waitForElementLost(
+        this.appId_,
+        this.selectors_.childItem(
+            this.selectors_.itemByLabel(parentLabel),
+            this.selectors_.itemItselfByLabel(childLabel)));
+  }
+
+  /**
+   * Wait for the group root tree item (e.g. entry list) by its type.
+   *
+   * @param {string} type Type of the tree item.
+   * @return {!Promise<!ElementObject>}
+   */
+  async waitForGroupRootItemByType(type) {
+    return this.remoteCall_.waitForElement(
+        this.appId_, this.selectors_.groupRootItemByType(type));
+  }
+
+  /**
+   * Returns the child items of a parent item specified by its label.
+   *
+   * @param {string} parentLabel Label of the parent item.
+   * @return {!Promise<!Array<!ElementObject>>}
+   */
+  async getChildItemsByParentLabel(parentLabel) {
+    const parentItemSelector = this.selectors_.itemByLabel(parentLabel);
+    const childItemsSelector = this.selectors_.childItems(parentItemSelector);
+    return this.remoteCall_.callRemoteTestUtil(
+        'queryAllElements', this.appId_, [childItemsSelector]);
+  }
+
+  /**
+   * Wait for the eject button under the tree item by its type.
+   *
+   * @param {string} type Type of the tree item.
+   * @return {!Promise<!ElementObject>}
+   */
+  async waitForItemEjectButtonByType(type) {
+    return this.remoteCall_.waitForElement(
+        this.appId_,
+        this.selectors_.ejectButton(this.selectors_.itemByType(type)));
+  }
+
+  /**
+   * Wait for the eject button to be lost under the tree item by its type.
+   *
+   * @param {string} type Type of the tree item.
+   * @return {!Promise<void>}
+   */
+  async waitForItemEjectButtonLostByType(type) {
+    await this.remoteCall_.waitForElementLost(
+        this.appId_,
+        this.selectors_.ejectButton(this.selectors_.itemByType(type)));
+  }
+
+  /**
+   * Click the eject button under the tree item by its type.
+   *
+   * @param {string} type Type of the tree item.
+   * @return {!Promise<!ElementObject>}
+   */
+  async ejectItemByType(type) {
+    return this.remoteCall_.waitAndClickElement(
+        this.appId_,
+        this.selectors_.ejectButton(this.selectors_.itemByType(type)));
+  }
+
+  /**
+   * Click the eject button under the tree item by its label.
    *
    * @param {string} label Label of the tree item.
    * @return {!Promise<!ElementObject>}
    */
-  async selectItemByLabel(label) {
+  async ejectItemByLabel(label) {
     return this.remoteCall_.waitAndClickElement(
-        this.appId_, this.selectors_.itemByLabel(label));
+        this.appId_,
+        this.selectors_.ejectButton(this.selectors_.itemByLabel(label)));
+  }
+
+  /**
+   * Wait for the expand icon under the tree item to hide by its label.
+   *
+   * @param {string} label Label of the tree item.
+   * @return {!Promise<void>}
+   */
+  async waitForItemExpandIconToHideByLabel(label) {
+    const expandIcon =
+        this.selectors_.expandIcon(this.selectors_.itemByLabel(label));
+    const element = await this.remoteCall_.waitForElementStyles(
+        this.appId_,
+        expandIcon,
+        ['visibility'],
+    );
+    chrome.test.assertEq('hidden', element.styles['visibility']);
+  }
+
+  /**
+   * Wait for the tree item specified by label to accept drag/drop.
+   *
+   * @param {string} label Label of the tree item.
+   * @return {!Promise<void>}
+   */
+  async waitForItemToAcceptDropByLabel(label) {
+    const itemAcceptDrop =
+        this.selectors_.itemByLabel(label, {acceptDrop: true});
+    const itemDenyDrop =
+        this.selectors_.itemByLabel(label, {acceptDrop: false});
+    await this.remoteCall_.waitForElement(this.appId_, itemAcceptDrop);
+    await this.remoteCall_.waitForElementLost(this.appId_, itemDenyDrop);
+  }
+
+  /**
+   * Wait for the tree item specified by label to deny drag/drop.
+   *
+   * @param {string} label Label of the tree item.
+   * @return {!Promise<void>}
+   */
+  async waitForItemToDenyDropByLabel(label) {
+    const itemAcceptDrop =
+        this.selectors_.itemByLabel(label, {acceptDrop: true});
+    const itemDenyDrop =
+        this.selectors_.itemByLabel(label, {acceptDrop: false});
+    await this.remoteCall_.waitForElement(this.appId_, itemDenyDrop);
+    await this.remoteCall_.waitForElementLost(this.appId_, itemAcceptDrop);
+  }
+
+  /**
+   * Drag files specified by `sourceQuery` to the target tree item specified by
+   * the `targetLabel`.
+   *
+   * @param {string} sourceQuery Query to specify the source element.
+   * @param {string} targetLabel The drop target tree item label.
+   * @param {boolean} skipDrop Set true to drag over (hover) the target
+   *    only, and not send target drop or source dragend events.
+   * @return {!Promise<!function(string, boolean):Promise<void>>}
+   */
+  async dragFilesToItemByLabel(sourceQuery, targetLabel, skipDrop) {
+    const target = this.selectors_.itemByLabel(targetLabel);
+    chrome.test.assertTrue(
+        await this.remoteCall_.callRemoteTestUtil(
+            'fakeDragAndDrop', this.appId_, [sourceQuery, target, skipDrop]),
+        'fakeDragAndDrop failed');
+    // A function is being returned to let the caller finish drop if drop
+    // is skipped above.
+    if (skipDrop) {
+      return this.finishDrop_.bind(this, target);
+    }
+    return async () => {};
+  }
+
+  /**
+   *
+   * @param {string} targetQuery Query to specify the drop target.
+   * @param {string} dragEndQuery Query to specify which element to trigger
+   *     the dragend event.
+   * @param {boolean} dragLeave Set true to send a dragleave event to
+   *    the target instead of a drop event.
+   * @return {!Promise<void>}
+   */
+  async finishDrop_(targetQuery, dragEndQuery, dragLeave) {
+    chrome.test.assertTrue(
+        await this.remoteCall_.callRemoteTestUtil(
+            'fakeDragLeaveOrDrop', this.appId_,
+            [dragEndQuery, targetQuery, dragLeave]),
+        'fakeDragLeaveOrDrop failed');
+  }
+
+  /**
+   * Use keyboard shortcut to trigger rename for a tree item.
+   *
+   * @param {string} label Label of the tree item to trigger rename.
+   * @return {!Promise<void>}
+   */
+  async triggerRenameWithKeyboardByLabel(label) {
+    const itemSelector = this.selectors_.itemByLabel(label, {focused: true});
+
+    // Press rename <Ctrl>-Enter keyboard shortcut on the tree item.
+    const renameKey = [
+      itemSelector,
+      'Enter',
+      true,
+      false,
+      false,
+    ];
+    await this.remoteCall_.callRemoteTestUtil(
+        'fakeKeyDown', this.appId_, renameKey);
+  }
+
+  /**
+   * Waits for the rename input to show inside the tree item.
+   *
+   * @param {string} label Label of the tree item.
+   * @return {!Promise<!ElementObject>}
+   */
+  async waitForRenameInputByLabel(label) {
+    const itemSelector = this.selectors_.itemByLabel(label);
+    const textInput = this.selectors_.renameInput(itemSelector);
+    return this.remoteCall_.waitForElement(this.appId_, textInput);
+  }
+
+  /**
+   * Input the new name to the tree item specified by its label without pressing
+   * Enter to commit.
+   *
+   * @param {string} label Label of the tree item.
+   * @param {string} newName The new name.
+   * @return {!Promise<void>}
+   */
+  async inputNewNameForItemByLabel(label, newName) {
+    const itemSelector = this.selectors_.itemByLabel(label);
+    // Check: the renaming text input element should appear.
+    const textInputSelector = this.selectors_.renameInput(itemSelector);
+    await this.remoteCall_.waitForElement(this.appId_, textInputSelector);
+
+    // Enter the new name for the tree item.
+    await this.remoteCall_.inputText(this.appId_, textInputSelector, newName);
+  }
+
+  /**
+   * Renames the tree item specified by the label to the new name.
+   *
+   * @param {string} label Label of the tree item.
+   * @param {string} newName The new name.
+   * @return {!Promise<void>}
+   */
+  async renameItemByLabel(label, newName) {
+    const itemSelector = this.selectors_.itemByLabel(label);
+    const textInputSelector = this.selectors_.renameInput(itemSelector);
+    await this.inputNewNameForItemByLabel(label, newName);
+
+    // Press Enter key to end text input.
+    const enterKey = [textInputSelector, 'Enter', false, false, false];
+    await this.remoteCall_.callRemoteTestUtil(
+        'fakeKeyDown', this.appId_, enterKey);
+
+    // Wait for the renaming input element to disappear.
+    await this.remoteCall_.waitForElementLost(this.appId_, textInputSelector);
+
+    // Wait until renaming is complete.
+    const renamingItemSelector = this.selectors_.attachModifier(
+        `${this.selectors_.root} ${this.selectors_.item}`, {renaming: true});
+    await this.remoteCall_.waitForElementLost(
+        this.appId_, renamingItemSelector);
+  }
+
+  /**
+   * Wait for the tree item specified by label to finish drag/drop.
+   *
+   * @param {string} label Label of the tree item.
+   * @return {!Promise<void>}
+   */
+  async waitForItemToFinishDropByLabel(label) {
+    const itemAcceptDrop =
+        this.selectors_.itemByLabel(label, {acceptDrop: true});
+    const itemDenyDrop =
+        this.selectors_.itemByLabel(label, {acceptDrop: false});
+    await this.remoteCall_.waitForElementLost(this.appId_, itemDenyDrop);
+    await this.remoteCall_.waitForElementLost(this.appId_, itemAcceptDrop);
+  }
+
+  /**
+   * Select the tree item by its label.
+   *
+   * @param {string} label Label of the tree item.
+   * @return {!Promise<void>}
+   */
+  async selectItemByLabel(label) {
+    await this.selectItem_(this.selectors_.itemByLabel(label));
   }
 
   /**
@@ -394,14 +890,137 @@ export class DirectoryTreePageObject {
   }
 
   /**
+   * Select the group root tree item (e.g. entry list) by its type.
+   *
+   * @param {string} type Type of the tree item.
+   * @return {!Promise<void>}
+   */
+  async selectGroupRootItemByType(type) {
+    await this.selectItem_(this.selectors_.groupRootItemByType(type));
+  }
+
+  /**
    * Select the placeholder tree item by its type.
    *
    * @param {string} type Type of the placeholder tree item.
    * @return {!Promise<void>}
    */
-  async selectPlaceholderItem(type) {
+  async selectPlaceholderItemByType(type) {
     await this.selectItem_(
         this.selectors_.itemByType(type, /* isPlaceholder= */ true));
+  }
+
+  /**
+   * Select the shortcut tree item by its label.
+   *
+   * @param {string} label Label of the tree item.
+   * @return {!Promise<void>}
+   */
+  async selectShortcutItemByLabel(label) {
+    await this.selectItem_(
+        this.selectors_.itemByLabel(label, {shortcut: true}));
+  }
+
+  /**
+   * Show context menu for the tree item by its label.
+   *
+   * @param {string} label Label of the tree item.
+   * @return {!Promise<void>}
+   */
+  async showContextMenuForItemByLabel(label) {
+    await this.showItemContextMenu_(this.selectors_.itemByLabel(label));
+  }
+
+  /**
+   * Show context menu for the tree item by its full path.
+   *
+   * @param {string} path Path of the tree item.
+   * @return {!Promise<void>}
+   */
+  async showContextMenuForItemByPath(path) {
+    await this.showItemContextMenu_(this.selectors_.itemByPath(path));
+  }
+
+  /**
+   * Show context menu for the shortcut item by its label.
+   *
+   * @param {string} label Label of the shortcut tree item.
+   * @return {!Promise<void>}
+   */
+  async showContextMenuForShortcutItemByLabel(label) {
+    await this.showItemContextMenu_(
+        this.selectors_.itemByLabel(label, {shortcut: true}));
+  }
+
+  /**
+   * Show context menu for the eject button inside the tree item.
+   *
+   * @param {string} label Label of the tree item.
+   * @return {!Promise<void>}
+   */
+  async showContextMenuForEjectButtonByLabel(label) {
+    const itemSelector = this.selectors_.itemByLabel(label);
+    const ejectButton = this.selectors_.ejectButton(itemSelector);
+    await this.remoteCall_.waitForElement(this.appId_, ejectButton);
+    // Focus on the eject button.
+    chrome.test.assertTrue(
+        !!await this.remoteCall_.callRemoteTestUtil(
+            'focus', this.appId_, [ejectButton]),
+        'focus failed: eject button');
+
+    // Right click the eject button.
+    await this.remoteCall_.waitAndRightClick(this.appId_, ejectButton);
+  }
+
+  /**
+   * Show context menu for the rename input inside the tree item.
+   *
+   * @param {string} label Label of the tree item.
+   * @return {!Promise<void>}
+   */
+  async showContextMenuForRenameInputByLabel(label) {
+    const itemSelector = this.selectors_.itemByLabel(label);
+    const renameInput = this.selectors_.renameInput(itemSelector);
+    await this.remoteCall_.waitAndRightClick(this.appId_, renameInput);
+  }
+
+  /**
+   * Focus the tree.
+   *
+   * @return {!Promise<void>}
+   */
+  async focusTree() {
+    await this.remoteCall_.callRemoteTestUtil(
+        'focus', this.appId_, [this.selectors_.root]);
+  }
+
+  /**
+   * Send a blur even to the tree item specified by its label.
+   *
+   * @param {string} label Label of the tree item.
+   * @return {!Promise<void>}
+   */
+  async blurItemByLabel(label) {
+    const itemSelector = this.selectors_.itemByLabel(label);
+    const iconSelector = this.useNewTree_ ?
+        [
+          itemSelector,
+          '.tree-item > .tree-row-wrapper > .tree-row > .tree-label-icon',
+        ] :
+        `${itemSelector} > .tree-row .item-icon`;
+    await this.remoteCall_.callRemoteTestUtil(
+        'fakeEvent', this.appId_, [iconSelector, 'blur']);
+  }
+
+  /**
+   * Show the context menu for a tree item by right clicking it.
+   *
+   * @private
+   * @param {string} itemSelector
+   * @return {!Promise<void>}
+   */
+  async showItemContextMenu_(itemSelector) {
+    await this.remoteCall_.waitAndRightClick(this.appId_, itemSelector);
   }
 
   /**
@@ -433,8 +1052,7 @@ export class DirectoryTreePageObject {
     // If it's already expanded just set the focus on directory tree.
     if (elements.length > 0) {
       if (!this.useNewTree_) {
-        return this.remoteCall_.callRemoteTestUtil(
-            'focus', this.appId_, [this.selectors_.root]);
+        return this.focusTree();
       }
       return;
     }
@@ -466,8 +1084,51 @@ export class DirectoryTreePageObject {
     }
     if (!this.useNewTree_) {
       // Force the focus on directory tree.
-      await this.remoteCall_.callRemoteTestUtil(
-          'focus', this.appId_, [this.selectors_.root]);
+      await this.focusTree();
+    }
+  }
+
+  /**
+   * Collapses a single tree item by clicking on its expand icon.
+   *
+   * @private
+   * @param {string} itemSelector Selector to the tree item that should be
+   *     expanded.
+   * @return {!Promise<void>}
+   */
+  async collapseTreeItem_(itemSelector) {
+    await this.remoteCall_.waitForElement(this.appId_, itemSelector);
+    const elements = await this.remoteCall_.callRemoteTestUtil(
+        'queryAllElements', this.appId_,
+        [this.selectors_.attachModifier(itemSelector, {expanded: false})]);
+    // If it's already collapsed just set the focus on directory tree.
+    if (elements.length > 0) {
+      if (!this.useNewTree_) {
+        return this.focusTree();
+      }
+      return;
+    }
+
+    let expandIcon;
+    if (this.useNewTree_) {
+      // Use array here because they are inside shadow DOM.
+      expandIcon = [
+        this.selectors_.attachModifier(itemSelector, {expanded: true}),
+        '.tree-item > .tree-row-wrapper > .tree-row > .expand-icon',
+      ];
+    } else {
+      expandIcon = `${this.selectors_.attachModifier(itemSelector, {
+        expanded: true,
+      })} > .tree-row:is([has-children=true], [may-have-children]) .expand-icon`;
+    }
+
+    await this.remoteCall_.waitAndClickElement(this.appId_, expandIcon);
+    await this.remoteCall_.waitForElement(
+        this.appId_,
+        this.selectors_.attachModifier(itemSelector, {expanded: false}));
+    if (!this.useNewTree_) {
+      // Force the focus on directory tree.
+      await this.focusTree();
     }
   }
 }
@@ -525,6 +1186,18 @@ class DirectoryTreeSelectors_ {
   }
 
   /**
+   * Get tree item by the full path of the item.
+   *
+   * @param {string} path
+   * @param {ModifierOptions=} modifiers
+   * @return {string}
+   */
+  itemByPath(path, modifiers) {
+    const itemSelector = `${this.root} ${this.itemItselfByPath(path)}`;
+    return this.attachModifier(itemSelector, modifiers);
+  }
+
+  /**
    * Get tree item by the type of the item.
    *
    * @param {string} type
@@ -539,6 +1212,18 @@ class DirectoryTreeSelectors_ {
   }
 
   /**
+   * Get the group root tree item (e.g. entry list) by the type of the item.
+   *
+   * @param {string} type
+   * @param {ModifierOptions=} modifiers
+   * @return {string}
+   */
+  groupRootItemByType(type, modifiers) {
+    const itemSelector = `${this.root} ${this.groupRootItemItselfByType(type)}`;
+    return this.attachModifier(itemSelector, modifiers);
+  }
+
+  /**
    * Get all expanded tree items.
    *
    * @return {string}
@@ -548,7 +1233,7 @@ class DirectoryTreeSelectors_ {
   }
 
   /**
-   * Get all the child items of the specific item.
+   * Get all the direct child items of the specific item.
    *
    * @param {string} parentSelector
    * @return {string}
@@ -560,7 +1245,7 @@ class DirectoryTreeSelectors_ {
   }
 
   /**
-   * Get the child item under a specific parent item.
+   * Get the direct child item under a specific parent item.
    *
    * @param {string} parentSelector The parent item selector.
    * @param {string} childSelector The child item selector.
@@ -573,13 +1258,13 @@ class DirectoryTreeSelectors_ {
   }
 
   /**
-   * Get all the child items of the specific item, which have the nested
-   * children.
+   * Get all direct child items of the specific item, which are not empty (have
+   * nested children inside).
    *
    * @param {string} itemSelector
    * @return {string}
    */
-  childItemsWithNestedChildren(itemSelector) {
+  nonEmptyChildItems(itemSelector) {
     const nestedItemSelector = this.useNewTree ?
         `${this.item}:has(${this.item})` :
         `.tree-children > ${this.item} > .tree-row`;
@@ -588,6 +1273,40 @@ class DirectoryTreeSelectors_ {
   }
 
   /**
+   * Get the eject button of the specific tree item.
+   *
+   * @param {string} itemSelector
+   * @return {string}
+   */
+  ejectButton(itemSelector) {
+    return `${itemSelector} .root-eject`;
+  }
+
+  /**
+   * Get the expand icon of the specific tree item.
+   *
+   * @param {string} itemSelector
+   * @return {string|!Array<string>}
+   */
+  expandIcon(itemSelector) {
+    // Use array here because they are inside shadow DOM.
+    return this.useNewTree ? [itemSelector, '.expand-icon'] :
+                             `${itemSelector} > .tree-row .expand-icon`;
+  }
+
+  /**
+   * Get the rename input of the specific tree item.
+   *
+   * @param {string} itemSelector
+   * @return {string}
+   */
+  renameInput(itemSelector) {
+    return this.useNewTree ? `${itemSelector} > input` :
+                             `${itemSelector} > .tree-row input`;
+  }
+
+  /**
+   * Get the tree item itself (without the parent tree selector) by its type.
    *
    * @param {string} type
    * @param {boolean} isPlaceholder Is the tree item a placeholder or not.
@@ -600,11 +1319,27 @@ class DirectoryTreeSelectors_ {
                              `${this.item}[data-navigation-key^="${
                                  REAL_ENTRY_PATH_PREFIX}"][icon="${type}"]`;
     }
-    return isPlaceholder ? `[root-type-icon="${type}"]` :
-                           `[volume-type-icon="${type}"]`;
+    return isPlaceholder ?
+        `${this.item}:has(> .tree-row [root-type-icon="${type}"])` :
+        `${this.item}:has(> .tree-row [volume-type-icon="${type}"])`;
   }
 
   /**
+   * Get the group root tree item (e.g. entry list) itself (without the parent
+   * tree selector) by its type.
+   *
+   * @param {string} type
+   * @return {string}
+   */
+  groupRootItemItselfByType(type) {
+    return this.useNewTree ?
+        `${this.item}[data-navigation-key^="${ENTRY_LIST_PATH_PREFIX}"][icon="${
+            type}"]` :
+        `${this.item}:has(> .tree-row [root-type-icon="${type}"])`;
+  }
+
+  /**
+   * Get the tree item itself (without the parent tree selector) by its label.
    *
    * @param {string} label The label of the tree item.
    * @return {string}
@@ -615,6 +1350,17 @@ class DirectoryTreeSelectors_ {
   }
 
   /**
+   * Get the tree item itself (without the parent tree selector) by its path.
+   *
+   * @param {string} path The full path of the tree item.
+   * @return {string}
+   */
+  itemItselfByPath(path) {
+    return `${this.item}[full-path-for-testing="${path}"]`;
+  }
+
+  /**
+   * Check if the volume type is inside the Google Drive volume or not.
    *
    * @param {string} type The volume type of the tree item.
    * @return {boolean}
@@ -650,20 +1396,22 @@ class DirectoryTreeSelectors_ {
     if (modifiers.renaming) {
       appendedSelectors.push('[renaming]');
     }
-    if (modifiers.acceptDrop) {
-      appendedSelectors.push('.accepts');
-    }
-    if (modifiers.denyDrop) {
-      appendedSelectors.push('.denies');
+    if (typeof modifiers.acceptDrop !== 'undefined') {
+      appendedSelectors.push(modifiers.acceptDrop ? '.accepts' : '.denies');
     }
     if (typeof modifiers.hasChildren != 'undefined') {
-      appendedSelectors.push(`[has-children=${String(modifiers.hasChildren)}`);
+      appendedSelectors.push(
+          `[has-children="${String(modifiers.hasChildren)}"]`);
     }
     if (modifiers.mayHaveChildren) {
       appendedSelectors.push('[may-have-children]');
     }
     if (modifiers.currentDirectory) {
       appendedSelectors.push('[aria-description="Current directory"]');
+    }
+    if (modifiers.shortcut) {
+      appendedSelectors.push(
+          this.useNewTree ? '[icon="shortcut"]' : '[dir-type="ShortcutItem"]');
     }
     // ":focus" is a pseudo-class selector, should be put at the end.
     if (modifiers.focused) {

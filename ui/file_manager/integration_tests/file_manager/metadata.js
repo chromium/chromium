@@ -263,8 +263,6 @@ testcase.metadataTeamDrives = async () => {
   // on Drive/Shared drives.
   const downloadsEntries = entries.slice(0, 7);
 
-  const sharedDrivesTreeItem = '#directory-tree [entry-label="Shared drives"]';
-
   // Open Files app on Drive.
   const appId = await setupAndWaitUntilReady(
       RootPath.DRIVE, downloadsEntries, entries.concat(driveEntries));
@@ -274,25 +272,10 @@ testcase.metadataTeamDrives = async () => {
   await directoryTree.navigateToPath('/Shared drives');
 
   // Expand Shared Drives, because expanding might need metadata.
-  const expandIcon = sharedDrivesTreeItem + ' > .tree-row .expand-icon';
-  await remoteCall.waitForElement(appId, expandIcon);
+  await directoryTree.expandTreeItemByLabel('Shared drives');
 
-  // Click expand icon.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId, [expandIcon]));
-
-  // Wait for the subtree to expand and display its children.
-  const expandedSubItems =
-      sharedDrivesTreeItem + ' > .tree-children[expanded] > .tree-item';
-  await remoteCall.waitForElement(appId, expandedSubItems);
-
-  // Get all Shared Drives' children.
-  const elements = await remoteCall.callRemoteTestUtil(
-      'queryAllElements', appId,
-      [sharedDrivesTreeItem + ' > .tree-children[expanded] > .tree-item']);
-
-  // Check that we have 50 team drives.
-  chrome.test.assertEq(50, elements.length);
+  // Get all Shared Drives' children and check that we have 50 team drives.
+  await directoryTree.waitForChildItemsCountByLabel('Shared drives', 50);
 
   // Fetch the metadata stats.
   const metadataStats =
@@ -327,23 +310,16 @@ testcase.metadataTeamDrives = async () => {
  *  Tests that fetching content metadata from a DocumentsProvider completes.
  */
 testcase.metadataDocumentsProvider = async () => {
-  const documentsProviderVolumeQuery =
-      '[has-children="true"] [volume-type-icon="documents_provider"]';
-
   // Add files to the DocumentsProvider volume.
   await addEntries(['documents_provider'], BASIC_LOCAL_ENTRY_SET);
 
   // Open Files app.
   const appId = await openNewWindow(RootPath.DOWNLOADS);
 
-  // Wait for the DocumentsProvider volume to mount.
-  await remoteCall.waitForElement(appId, documentsProviderVolumeQuery);
-
-  // Click to open the DocumentsProvider volume.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil(
-          'fakeMouseClick', appId, [documentsProviderVolumeQuery]),
-      'fakeMouseClick failed');
+  // Wait for the DocumentsProvider volume to mount and click to open the
+  // DocumentsProvider volume.
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectItemByType('documents_provider');
 
   // Check: the DocumentsProvider files should appear in the file list.
   const files = TestEntryInfo.getExpectedRows(BASIC_LOCAL_ENTRY_SET);

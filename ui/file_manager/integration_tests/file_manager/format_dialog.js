@@ -32,18 +32,11 @@ async function openFormatDialog(appId, usbLabel) {
   }
 
   // Focus the directory tree.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil(
-          'focus', appId, ['#directory-tree']),
-      'focus failed: #directory-tree');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.focusTree();
 
   // Right click on the USB's directory tree entry.
-  const treeQuery = `#directory-tree [entry-label="${usbLabel}"]`;
-  await remoteCall.waitForElement(appId, treeQuery);
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil(
-          'fakeMouseRightClick', appId, [treeQuery]),
-      'fakeMouseRightClick failed');
+  await directoryTree.showContextMenuForItemByLabel(usbLabel);
 
   // Click on the format menu item.
   const formatItemQuery = '#roots-context-menu:not([hidden])' +
@@ -66,22 +59,14 @@ async function openFormatDialog(appId, usbLabel) {
 async function openFormatDialogWithSinglePartitionFormat(
     appId, usbLabel, deviceLabel) {
   // Focus the directory tree.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil(
-          'focus', appId, ['#directory-tree']),
-      'focus failed: #directory-tree');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.focusTree();
 
   // Expand device tree entry to access partition entry.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
   await directoryTree.expandTreeItemByLabel(deviceLabel);
 
   // Right click on the USB's directory tree entry.
-  const treeQuery = `#directory-tree [entry-label="${usbLabel}"]`;
-  await remoteCall.waitForElement(appId, treeQuery);
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil(
-          'fakeMouseRightClick', appId, [treeQuery]),
-      'fakeMouseRightClick failed');
+  await directoryTree.showContextMenuForItemByLabel(usbLabel);
 
   // Click on the format menu item.
   const formatItemQuery = '#directory-tree-context-menu:not([hidden])' +
@@ -325,17 +310,14 @@ testcase.formatDialogGearMenu = async () => {
   const appId = await setupFormatDialogTest();
 
   // Focus the directory tree.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil(
-          'focus', appId, ['#directory-tree']),
-      'focus failed: #directory-tree');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.focusTree();
 
   let usbNavigationPath = '/fake-usb';
   if (await isSinglePartitionFormat(appId)) {
     usbNavigationPath = '/FAKEUSB/fake-usb';
   }
   // Navigate to the USB via the directory tree.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
   await directoryTree.navigateToPath(usbNavigationPath);
 
   // Click on the gear menu button.

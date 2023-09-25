@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ENTRIES, getCaller, pending, repeatUntil, RootPath, sendTestMessage, wait} from '../test_util.js';
+import {ENTRIES, getCaller, pending, repeatUntil, RootPath, wait} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
 import {remoteCall, setupAndWaitUntilReady} from './background.js';
+import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 
 const tooltipQuery = 'files-tooltip';
 const tooltipQueryHidden = 'files-tooltip:not([visible])';
@@ -216,8 +217,8 @@ testcase.filesCardTooltipClickHides = async () => {
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Click the 'Android files' volume tab in the directory tree.
-  await remoteCall.simulateUiClick(
-      appId, ['[volume-type-for-testing=android_files]']);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectItemByType('android_files');
 
   // Wait for the read-only bubble to appear in the files app tool bar.
   const readonlyBubbleShown = '#read-only-indicator:not([hidden])';

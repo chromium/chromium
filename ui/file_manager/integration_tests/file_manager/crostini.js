@@ -6,12 +6,11 @@ import {ENTRIES, RootPath, sendTestMessage} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
 import {mountCrostini, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 
-const FAKE_LINUX_FILES = '#directory-tree [root-type-icon="crostini"]';
-const REAL_LINUX_FILES = '#directory-tree [volume-type-icon="crostini"]';
+const LINUX_FILES_TYPE = 'crostini';
 
 testcase.mountCrostini = async () => {
-
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
@@ -19,7 +18,8 @@ testcase.mountCrostini = async () => {
 
   // Unmount and ensure fake root is shown.
   remoteCall.callRemoteTestUtil('unmount', null, ['crostini']);
-  await remoteCall.waitForElement(appId, FAKE_LINUX_FILES);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.waitForPlaceholderItemByType(LINUX_FILES_TYPE);
 };
 
 testcase.enableDisableCrostini = async () => {
@@ -27,19 +27,19 @@ testcase.enableDisableCrostini = async () => {
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
   // Ensure fake Linux files root is shown.
-  await remoteCall.waitForElement(appId, FAKE_LINUX_FILES);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.waitForPlaceholderItemByType(LINUX_FILES_TYPE);
 
   // Disable Crostini, then ensure fake Linux files is removed.
   await sendTestMessage({name: 'setCrostiniEnabled', enabled: false});
-  await remoteCall.waitForElementLost(appId, FAKE_LINUX_FILES);
+  await directoryTree.waitForPlaceholderItemLostByType(LINUX_FILES_TYPE);
 
   // Re-enable Crostini, then ensure fake Linux files is shown again.
   await sendTestMessage({name: 'setCrostiniEnabled', enabled: true});
-  await remoteCall.waitForElement(appId, FAKE_LINUX_FILES);
+  await directoryTree.waitForPlaceholderItemByType(LINUX_FILES_TYPE);
 };
 
 testcase.sharePathWithCrostini = async () => {
-  const downloads = '#directory-tree [volume-type-icon="downloads"]';
   const photos = '#file-list [file-name="photos"]';
   const menuShareWithLinux = '#file-context-menu:not([hidden]) ' +
       '[command="#share-with-linux"]:not([hidden]):not([disabled])';
@@ -55,14 +55,15 @@ testcase.sharePathWithCrostini = async () => {
       appId, 'shared-with-crostini-pluginvm-banner');
 
   // Ensure fake Linux files root is shown.
-  await remoteCall.waitForElement(appId, FAKE_LINUX_FILES);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.waitForPlaceholderItemByType(LINUX_FILES_TYPE);
 
   // Mount crostini, and ensure real root is shown.
-  remoteCall.callRemoteTestUtil('fakeMouseClick', appId, [FAKE_LINUX_FILES]);
-  await remoteCall.waitForElement(appId, REAL_LINUX_FILES);
+  await directoryTree.selectPlaceholderItemByType(LINUX_FILES_TYPE);
+  await directoryTree.waitForItemByType(LINUX_FILES_TYPE);
 
   // Go back to downloads, wait for photos dir to be shown.
-  remoteCall.callRemoteTestUtil('fakeMouseClick', appId, [downloads]);
+  await directoryTree.selectItemByLabel('Downloads');
   await remoteCall.waitForElement(appId, photos);
 
   // Right-click 'photos' directory, ensure 'Share with Linux' is shown.

@@ -125,8 +125,6 @@ testcase.zipFileOpenUsb = async () => {
     openType: 'launch',
   });
 
-  const USB_VOLUME_QUERY = '#directory-tree [volume-type-icon="removable"]';
-
   // Open Files app on Drive.
   const appId =
       await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.beautiful]);
@@ -134,12 +132,9 @@ testcase.zipFileOpenUsb = async () => {
   // Mount empty USB volume in the Drive window.
   await sendTestMessage({name: 'mountFakeUsbEmpty'});
 
-  // Wait for the USB mount.
-  await remoteCall.waitForElement(appId, USB_VOLUME_QUERY);
-
-  // Click to open the USB volume.
-  await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId, [USB_VOLUME_QUERY]);
+  // Wait for the USB mount and click to open the USB volume.
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectItemByType('removable');
 
   // Add zip file to the USB volume.
   await addEntries(['usb'], [ENTRIES.zipArchive]);
@@ -311,8 +306,6 @@ testcase.zipDoesntCreateFileEncrypted = async () => {
  * Tests creating a ZIP file on a removable USB volume.
  */
 testcase.zipCreateFileUsb = async () => {
-  const USB_VOLUME_QUERY = '#directory-tree [volume-type-icon="removable"]';
-
   // Open Files app on Drive.
   const appId =
       await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.beautiful]);
@@ -320,12 +313,9 @@ testcase.zipCreateFileUsb = async () => {
   // Mount empty USB volume in the Drive window.
   await sendTestMessage({name: 'mountFakeUsbEmpty'});
 
-  // Wait for the USB mount.
-  await remoteCall.waitForElement(appId, USB_VOLUME_QUERY);
-
-  // Click to open the USB volume.
-  await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId, [USB_VOLUME_QUERY]);
+  // Wait for the USB mount and click to open the USB volume.
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectItemByType('removable');
 
   // Add ENTRIES.photos to the USB volume.
   await addEntries(['usb'], [ENTRIES.photos]);
@@ -879,8 +869,8 @@ testcase.zipExtractFromReadOnly = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE, [], [entry]);
 
   // Navigate to Shared with me.
-  await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId, ['[volume-type-icon=\'drive_shared_with_me\']']);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectItemByType('drive_shared_with_me');
 
   // Wait for the navigation to complete.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/Shared with me');
@@ -910,7 +900,6 @@ testcase.zipExtractFromReadOnly = async () => {
       'fakeMouseClick failed');
 
   // Navigate to My Files.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
   await directoryTree.navigateToPath('/My files');
 
   const directoryQuery = '#file-list [file-name="' + targetDirectoryName + '"]';

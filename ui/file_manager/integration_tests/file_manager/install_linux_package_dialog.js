@@ -6,11 +6,9 @@ import {addEntries, ENTRIES, getCaller, pending, repeatUntil, RootPath, TestEntr
 import {testcase} from '../testcase.js';
 
 import {remoteCall, setupAndWaitUntilReady} from './background.js';
+import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 
 testcase.installLinuxPackageDialog = async () => {
-  const fake = '#directory-tree .tree-item [root-type-icon="crostini"]';
-  const real = '#directory-tree .tree-item [volume-type-icon="crostini"]';
-
   // The dialog has an INSTALL and OK button, both as .cr-dialog-ok, but only
   // one is visible at a time.
   const dialog = '#install-linux-package-dialog';
@@ -22,11 +20,12 @@ testcase.installLinuxPackageDialog = async () => {
   await addEntries(['crostini'], [ENTRIES.debPackage]);
 
   // Linux files fake root is shown.
-  await remoteCall.waitForElement(appId, fake);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.waitForPlaceholderItemByType('crostini');
 
   // Mount crostini, and ensure real root and files are shown.
-  remoteCall.callRemoteTestUtil('fakeMouseClick', appId, [fake]);
-  await remoteCall.waitForElement(appId, real);
+  await directoryTree.selectPlaceholderItemByType('crostini');
+  await directoryTree.waitForItemByType('crostini');
   const files = TestEntryInfo.getExpectedRows([ENTRIES.debPackage]);
   await remoteCall.waitForFiles(appId, files);
 

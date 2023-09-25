@@ -599,38 +599,26 @@ testcase.trashDragDropRootAcceptsEntries = async () => {
   await remoteCall.waitAndClickElement(appId, source);
 
   // Wait for the directory tree target.
-  const target = '#directory-tree [entry-label="Trash"]';
-  await remoteCall.waitForElement(appId, target);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.waitForItemByLabel('Trash');
 
   // Drag the source and hover it over the target.
-  const skipDrop = true;
-  chrome.test.assertTrue(
-      await remoteCall.callRemoteTestUtil(
-          'fakeDragAndDrop', appId, [source, target, skipDrop]),
-      'fakeDragAndDrop failed');
+  const finishDrop = await directoryTree.dragFilesToItemByLabel(
+      source, 'Trash', /* skipDrop= */ true);
 
   // Check: drag hovering should navigate the file list.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/Trash');
 
-  // Check: the target should have accepts class.
-  const willAcceptDrop = '#directory-tree [entry-label="Trash"].accepts';
-  await remoteCall.waitForElement(appId, willAcceptDrop);
-
-  // Check: the target should not have denies class.
-  const willDenyDrop = '#directory-tree [entry-label="Trash"].denies';
-  await remoteCall.waitForElementLost(appId, willDenyDrop);
+  // Check: the target should have accepts class and should not have denies
+  // class.
+  await directoryTree.waitForItemToAcceptDropByLabel('Trash');
 
   // Send a dragdrop event to the target to start a trash operation.
-  const dragLeave = false;
-  chrome.test.assertTrue(
-      await remoteCall.callRemoteTestUtil(
-          'fakeDragLeaveOrDrop', appId, ['#file-list', target, dragLeave]),
-      'fakeDragLeaveOrDrop failed');
+  await finishDrop('#file-list', /* dragLeave= */ false);
 
   // The Trash root should not have either accepts nor denies after stopping the
   // dragdrop event.
-  await remoteCall.waitForElementLost(appId, willAcceptDrop);
-  await remoteCall.waitForElementLost(appId, willDenyDrop);
+  await directoryTree.waitForItemToFinishDropByLabel('Trash');
 };
 
 /**
@@ -653,38 +641,26 @@ testcase.trashDragDropFromDisallowedRootsFails = async () => {
   await remoteCall.waitAndClickElement(appId, source);
 
   // Wait for the directory tree target to be visible.
-  const target = '#directory-tree [entry-label="Trash"]';
-  await remoteCall.waitForElement(appId, target);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.waitForItemByLabel('Trash');
 
   // Drag the source and hover it over the target.
-  const skipDrop = true;
-  chrome.test.assertTrue(
-      await remoteCall.callRemoteTestUtil(
-          'fakeDragAndDrop', appId, [source, target, skipDrop]),
-      'fakeDragAndDrop failed');
+  const finishDrop = await directoryTree.dragFilesToItemByLabel(
+      source, 'Trash', /* skipDrop= */ true);
 
   // Wait for the directory to change to the Trash root.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/Trash');
 
-  // The Trash root in the directory tree shouldn't have the accepts class.
-  const willAcceptDrop = '#directory-tree [entry-label="Trash"].accepts';
-  await remoteCall.waitForElementLost(appId, willAcceptDrop);
-
-  // The Trash root should have a denies class.
-  const willDenyDrop = '#directory-tree [entry-label="Trash"].denies';
-  await remoteCall.waitForElement(appId, willDenyDrop);
+  // The Trash root in the directory tree shouldn't have the accepts class and
+  // should have a denies class.
+  await directoryTree.waitForItemToDenyDropByLabel('Trash');
 
   // Send a dragleave event to the target to stop the drag event.
-  const dragLeave = true;
-  chrome.test.assertTrue(
-      await remoteCall.callRemoteTestUtil(
-          'fakeDragLeaveOrDrop', appId, ['#file-list', target, dragLeave]),
-      'fakeDragLeaveOrDrop failed');
+  await finishDrop('#file-list', /* dropLeave= */ true);
 
   // The Trash root should not have either accepts nor denies after stopping the
   // dragdrop event.
-  await remoteCall.waitForElementLost(appId, willAcceptDrop);
-  await remoteCall.waitForElementLost(appId, willDenyDrop);
+  await directoryTree.waitForItemToFinishDropByLabel('Trash');
 };
 
 /**
@@ -703,22 +679,18 @@ testcase.trashDragDropRootPerformsTrashAction = async () => {
   await remoteCall.waitAndClickElement(appId, source);
 
   // Wait for the directory tree target.
-  const target = '#directory-tree [entry-label="Trash"]';
-  await remoteCall.waitForElement(appId, target);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  directoryTree.waitForItemByLabel('Trash');
 
   // Send a dragdrop event to the target to start a trash operation.
-  const skipDrop = false;
-  chrome.test.assertTrue(
-      await remoteCall.callRemoteTestUtil(
-          'fakeDragAndDrop', appId, [source, target, skipDrop]),
-      'fakeDragLeaveOrDrop failed');
+  await directoryTree.dragFilesToItemByLabel(
+      source, 'Trash', /* skipDrop= */ false);
 
   // Wait for element to disappear from the "Downloads" view, this indicates it
   // should be in trash.
   await remoteCall.waitForElementLost(appId, source);
 
   // Navigate to the Trash root.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
   await directoryTree.navigateToPath('/Trash');
 
   // Wait for the element to appear in the Trash.
@@ -747,15 +719,11 @@ testcase.trashDragDropNonModifiableEntriesCantBeTrashed = async () => {
   await remoteCall.waitAndClickElement(appId, source);
 
   // Wait for the directory tree target.
-  const target = '#directory-tree [entry-label="Trash"]';
-  await remoteCall.waitForElement(appId, target);
+  directoryTree.waitForItemByLabel('Trash');
 
   // Send a dragdrop event to the target to try Trash the downloads folder.
-  const skipDrop = false;
-  chrome.test.assertTrue(
-      await remoteCall.callRemoteTestUtil(
-          'fakeDragAndDrop', appId, [source, target, skipDrop]),
-      'fakeDragLeaveOrDrop failed');
+  await directoryTree.dragFilesToItemByLabel(
+      source, 'Trash', /* skipDrop= */ false);
 
   // Navigate to Trash to ensure Downloads wasn't sent there.
   await directoryTree.navigateToPath('/Trash');
@@ -782,8 +750,7 @@ testcase.trashDontShowTrashRootOnSelectFileDialog = async () => {
   await remoteCall.waitForElement(appId, `[scan-completed="My files"]`);
 
   // Ensure the Trash root entry is not visible on the page.
-  await remoteCall.waitForElementLost(
-      appId, '#directory-tree [entry-label="Trash"]');
+  await directoryTree.waitForItemLostByLabel('Trash');
 };
 
 /**
@@ -803,8 +770,7 @@ testcase.trashDontShowTrashRootWhenOpeningAsAndroidFilePicker = async () => {
   await remoteCall.waitForElement(appId, `[scan-completed="My files"]`);
 
   // Ensure the Trash root entry is not visible on the page.
-  await remoteCall.waitForElementLost(
-      appId, '#directory-tree [entry-label="Trash"]');
+  await directoryTree.waitForItemLostByLabel('Trash');
 };
 
 /**
@@ -875,16 +841,9 @@ testcase.trashDragDropOutOfTrashPerformsRestoration = async () => {
 
   // Send a dragdrop event that emulates dragging the hello.txt onto the "My
   // files" root in the directory tree.
-  const skipDrop = false;
-  chrome.test.assertTrue(
-      await remoteCall.callRemoteTestUtil(
-          'fakeDragAndDrop', appId,
-          [
-            '#file-list [file-name="hello.txt"] .entry-name',
-            '#directory-tree [entry-label="My files"]',
-            skipDrop,
-          ]),
-      'fakeDragLeaveOrDrop failed');
+  await directoryTree.dragFilesToItemByLabel(
+      '#file-list [file-name="hello.txt"] .entry-name', 'My files',
+      /* skipDrop= */ false);
 
   // Wait for the element to disappear from the file list.
   await remoteCall.waitForElementLost(
@@ -946,15 +905,14 @@ testcase.trashTogglingTrashEnabledPrefUpdatesDirectoryTree = async () => {
       appId, '#file-list [file-name="hello.txt"]');
 
   // Wait for Trash root to be visible.
-  await remoteCall.waitForElement(
-      appId, '#directory-tree [entry-label="Trash"]');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.waitForItemByLabel('Trash');
 
   // Disable trash.
   await sendTestMessage({name: 'setTrashEnabled', enabled: false});
 
   // Wait for the Trash root to disappear.
-  await remoteCall.waitForElementLost(
-      appId, '#directory-tree [entry-label="Trash"]');
+  await directoryTree.waitForItemLostByLabel('Trash');
 
   // Ensure the delete button shows up instead of the move to trash button.
   await remoteCall.waitUntilSelected(appId, 'world.ogv');
@@ -968,11 +926,9 @@ testcase.trashTogglingTrashEnabledPrefUpdatesDirectoryTree = async () => {
   await sendTestMessage({name: 'setTrashEnabled', enabled: true});
 
   // Wait for the Trash root to appear again.
-  await remoteCall.waitForElement(
-      appId, '#directory-tree [entry-label="Trash"]');
+  await directoryTree.waitForItemByLabel('Trash');
 
   // Navigate to the "Trash" root and ensure the file exists there now.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
   await directoryTree.navigateToPath('/Trash');
   await remoteCall.waitForElement(appId, '#file-list [file-name="hello.txt"]');
 };
@@ -994,8 +950,7 @@ testcase.trashTogglingTrashEnabledNavigatesAwayFromTrashRoot = async () => {
   await sendTestMessage({name: 'setTrashEnabled', enabled: false});
 
   // Wait for the Trash root to disappear.
-  await remoteCall.waitForElementLost(
-      appId, '#directory-tree [entry-label="Trash"]');
+  await directoryTree.waitForItemLostByLabel('Trash');
 
   // Ensure the new root is now at My files.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/My files');
@@ -1267,8 +1222,8 @@ testcase.trashNudgeShownOnFirstTrashOperation = async () => {
   // The nudge is dismissed through keyboard and mouse events which are "faked"
   // in the integration test harness. So send a blur event to the anchor to
   // ensure the nudge gets removed instead.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'fakeEvent', appId, ['span[root-type-icon="trash"]', 'blur']));
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.blurItemByLabel('Trash');
   await repeatUntil(async () => {
     const nudgeDot = await remoteCall.waitForElementStyles(
         appId, ['xf-nudge', '#dot'], ['left']);

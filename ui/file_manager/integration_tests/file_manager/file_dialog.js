@@ -999,7 +999,7 @@ testcase.openMultiFileDialogSelectAllEnabled = async () => {
  */
 testcase.openFileDialogGuestOs = async () => {
   // Register a fake GuestOs guest.
-  const _ = await sendTestMessage({
+  await sendTestMessage({
     name: 'registerMountableGuest',
     displayName: 'Bluejohn',
     canMount: true,
@@ -1015,12 +1015,11 @@ testcase.openFileDialogGuestOs = async () => {
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
 
   // Click the Guest OS placeholder.
-  await remoteCall.waitAndClickElement(
-      appId, `#directory-tree [root-type-icon="bruschetta"]`);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectPlaceholderItemByType('bruschetta');
 
   // Wait for the actual volume to appear.
-  await remoteCall.waitForElement(
-      appId, '#directory-tree [volume-type-icon=bruschetta]');
+  await directoryTree.waitForItemByType('bruschetta');
 };
 
 /**
@@ -1031,7 +1030,7 @@ testcase.openFileDialogGuestOs = async () => {
  */
 testcase.saveFileDialogGuestOs = async () => {
   // Register a fake GuestOs guest.
-  const _ = await sendTestMessage({
+  await sendTestMessage({
     name: 'registerMountableGuest',
     displayName: 'Bluejohn',
     canMount: true,
@@ -1047,10 +1046,9 @@ testcase.saveFileDialogGuestOs = async () => {
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
 
   // Click the Guest OS placeholder.
-  await remoteCall.waitAndClickElement(
-      appId, `#directory-tree [root-type-icon="bruschetta"]`);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectPlaceholderItemByType('bruschetta');
 
   // Wait for the actual volume to appear.
-  await remoteCall.waitForElement(
-      appId, '#directory-tree [volume-type-icon=bruschetta]');
+  await directoryTree.waitForItemByType('bruschetta');
 };

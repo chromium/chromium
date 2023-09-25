@@ -6,6 +6,7 @@ import {addEntries, ENTRIES, RootPath} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
 import {openNewWindow, remoteCall} from './background.js';
+import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 
 testcase.androidPhotosBanner = async () => {
   // Add test files.
@@ -56,22 +57,23 @@ testcase.androidPhotosBanner = async () => {
   await waitForElementLost(photosBannerTextQuery);
 
   // Wait for the DocumentsProvider volume to mount and navigate to Photos.
-  const photosVolumeQuery =
-      '[has-children="true"] [volume-type-icon="documents_provider"]';
-  await waitForElement(photosVolumeQuery);
-  await click(photosVolumeQuery);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const photosVolumeType = 'documents_provider';
+  await directoryTree.waitForItemToHaveChildrenByType(
+      photosVolumeType, /* hasChildren= */ true);
+  await directoryTree.selectItemByType(photosVolumeType);
   // Banner should be created and made visible.
   await waitForElement(photosBannerShownQuery);
   await waitForElement(photosBannerTextQuery);
 
   // Banner should disappear when navigating away (child elements are still in
   // DOM).
-  await click('[volume-type-icon="downloads"]');
+  await directoryTree.selectItemByType('downloads');
   await waitForElement(photosBannerHiddenQuery);
   await waitForElement(photosBannerTextQuery);
 
   // Banner should re-appear when navigating to Photos again.
-  await click(photosVolumeQuery);
+  await directoryTree.selectItemByType(photosVolumeType);
   await waitForElement(photosBannerShownQuery);
 
   // Dismiss the banner (created banner still in DOM).
@@ -80,9 +82,9 @@ testcase.androidPhotosBanner = async () => {
   await waitForElement(photosBannerHiddenQuery);
 
   // Navigate away and then back, it should not re-appear.
-  await click('[volume-type-icon="downloads"]');
+  await directoryTree.selectItemByType('downloads');
   await waitForFile('hello.txt');
-  await click(photosVolumeQuery);
+  await directoryTree.selectItemByType(photosVolumeType);
   await waitForFile('image2.png');
   await waitForElement(photosBannerHiddenQuery);
 };

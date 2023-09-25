@@ -6,6 +6,7 @@ import {getCaller, pending, repeatUntil, RootPath} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
 import {remoteCall, setupAndWaitUntilReady} from './background.js';
+import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {FILE_MANAGER_EXTENSIONS_ID} from './test_data.js';
 
 /**
@@ -407,9 +408,9 @@ testcase.executeViaDblClick = async () => {
   await remoteCall.callRemoteTestUtil(
       'overrideTasks', appId, [DOWNLOADS_FAKE_TASKS]);
 
-  // Click on the currently selected tree item to reset the file list selection.
-  await remoteCall.waitAndClickElement(
-      appId, '#directory-tree .tree-item[selected]');
+  // Click on the currently focused tree item to reset the file list selection.
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectFocusedItem();
 
   // Double click on a different file.
   chrome.test.assertTrue(!!await remoteCall.callRemoteTestUtil(

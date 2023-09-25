@@ -667,7 +667,8 @@ testcase.driveAvailableOfflineActionBar = async () => {
           '#pinned-toggle[checked]:not([disabled])');
 
   // Focus on the directory tree.
-  await remoteCall.focus(appId, ['#directory-tree']);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.focusTree();
 
   // Check the "Available Offline" toggle is still available in the action bar.
   await remoteCall.waitForElementJelly(
@@ -789,9 +790,9 @@ testcase.driveWelcomeBanner = async () => {
     await getDismissButtonId(appId),
   ];
 
-  // Open the Drive volume in the files-list.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId, ['.drive-volume']));
+  // Open the Drive volume in the directory tree.
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectItemByLabel('Google Drive');
 
   // Check: the Drive welcome banner should appear.
   await remoteCall.waitForElement(appId, driveWelcomeBannerQuery);

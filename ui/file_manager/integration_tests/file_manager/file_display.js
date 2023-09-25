@@ -107,8 +107,8 @@ testcase.fileDisplayLaunchOnDrive = async () => {
   const appId = await remoteCall.waitForWindow();
 
   // Check: the app should be open on My Drive.
-  await remoteCall.waitForElement(
-      appId, '#directory-tree .tree-item[selected] [volume-type-icon="drive"]');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.waitForSelectedItemByLabel('My Drive');
 
   // The API used to launch the Files app does not set the IN_TEST flag to true:
   // error when attempting to retrieve Web Store access token.
@@ -239,7 +239,7 @@ testcase.fileDisplayComputers = async () => {
  * Tests files display in an MTP volume.
  */
 testcase.fileDisplayMtp = async () => {
-  const MTP_VOLUME_QUERY = '#directory-tree [volume-type-icon="mtp"]';
+  const MTP_VOLUME_TYPE = 'mtp';
 
   // Open Files app on local downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
@@ -247,12 +247,9 @@ testcase.fileDisplayMtp = async () => {
   // Mount MTP volume in the Downloads window.
   await sendTestMessage({name: 'mountFakeMtp'});
 
-  // Wait for the MTP mount.
-  await remoteCall.waitForElement(appId, MTP_VOLUME_QUERY);
-
-  // Click to open the MTP volume.
-  await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId, [MTP_VOLUME_QUERY]);
+  // Wait for the MTP mount and click to open the MTP volume.
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectItemByType(MTP_VOLUME_TYPE);
 
   // Verify the MTP file list.
   const files = TestEntryInfo.getExpectedRows(BASIC_FAKE_ENTRY_SET);
@@ -263,7 +260,7 @@ testcase.fileDisplayMtp = async () => {
  * Tests files display in a removable USB volume.
  */
 testcase.fileDisplayUsb = async () => {
-  const USB_VOLUME_QUERY = '#directory-tree [volume-type-icon="removable"]';
+  const USB_VOLUME_TYPE = 'removable';
 
   // Open Files app on local downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
@@ -271,12 +268,9 @@ testcase.fileDisplayUsb = async () => {
   // Mount USB volume in the Downloads window.
   await sendTestMessage({name: 'mountFakeUsb'});
 
-  // Wait for the USB mount.
-  await remoteCall.waitForElement(appId, USB_VOLUME_QUERY);
-
-  // Click to open the USB volume.
-  await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId, [USB_VOLUME_QUERY]);
+  // Wait for the USB mount and click to open the USB volume.
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectItemByType(USB_VOLUME_TYPE);
 
   // Verify the USB file list.
   const files = TestEntryInfo.getExpectedRows(BASIC_FAKE_ENTRY_SET);
@@ -296,56 +290,44 @@ testcase.fileDisplayUsbPartition = async () => {
   await sendTestMessage({name: 'mountFakeUsb'});
 
   // Wait for removable root to appear in the directory tree.
-  const removableRoot = await remoteCall.waitForElement(
-      appId, '#directory-tree [entry-label="Drive Label"]');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.waitForItemByLabel('Drive Label');
 
   // Wait for removable partition-1 to appear in the directory tree.
-  const partitionOne = await remoteCall.waitForElement(
-      appId, '#directory-tree [entry-label="partition-1"]');
+  const partitionOne = await directoryTree.waitForItemByLabel('partition-1');
   chrome.test.assertEq(
-      'removable', partitionOne.attributes['volume-type-for-testing']);
+      'removable', directoryTree.getItemIconType(partitionOne));
 
   // Wait for removable partition-2 to appear in the directory tree.
-  const partitionTwo = await remoteCall.waitForElement(
-      appId, '#directory-tree [entry-label="partition-2"]');
+  const partitionTwo = await directoryTree.waitForItemByLabel('partition-2');
   chrome.test.assertEq(
-      'removable', partitionTwo.attributes['volume-type-for-testing']);
+      'removable', directoryTree.getItemIconType(partitionTwo));
 
   // Check partitions are children of the root label.
-  const childEntriesQuery =
-      ['[entry-label="Drive Label"] .tree-children .tree-item'];
-  const childEntries = await remoteCall.callRemoteTestUtil(
-      'queryAllElements', appId, childEntriesQuery);
+  const childEntries =
+      await directoryTree.getChildItemsByParentLabel('Drive Label');
   const childEntryLabels =
-      childEntries.map(child => child.attributes['entry-label']);
+      childEntries.map(child => directoryTree.getItemLabel(child));
   chrome.test.assertEq(['partition-1', 'partition-2'], childEntryLabels);
 
   // Wait for USB to appear in the directory tree.
-  const fakeUsb = await remoteCall.waitForElement(
-      appId, '#directory-tree [entry-label="fake-usb"]');
-  chrome.test.assertEq(
-      'removable', fakeUsb.attributes['volume-type-for-testing']);
+  const fakeUsb = await directoryTree.waitForItemByLabel('fake-usb');
+  chrome.test.assertEq('removable', directoryTree.getItemIconType(fakeUsb));
 
   if (await isSinglePartitionFormat(appId)) {
     // Check unpartitioned USB has single partition as tree child.
-    const itemEntriesQuery =
-        ['[entry-label="FAKEUSB"] .tree-children .tree-item'];
-    const itemEntries = await remoteCall.callRemoteTestUtil(
-        'queryAllElements', appId, itemEntriesQuery);
+    const itemEntries =
+        await directoryTree.getChildItemsByParentLabel('FAKEUSB');
     chrome.test.assertEq(1, itemEntries.length);
-    const childVolumeType =
-        itemEntries[0].attributes['volume-type-for-testing'];
+    const childVolumeType = directoryTree.getItemIconType(itemEntries[0]);
 
     chrome.test.assertTrue('removable' == childVolumeType);
   } else {
     // Check unpartitioned USB does not have partitions as tree children.
-    const itemEntriesQuery =
-        ['[entry-label="fake-usb"] .tree-children .tree-item'];
-    const itemEntries = await remoteCall.callRemoteTestUtil(
-        'queryAllElements', appId, itemEntriesQuery);
+    const itemEntries =
+        await directoryTree.getChildItemsByParentLabel('fake-usb');
     chrome.test.assertEq(1, itemEntries.length);
-    const childVolumeType =
-        itemEntries[0].attributes['volume-type-for-testing'];
+    const childVolumeType = directoryTree.getItemIconType(itemEntries[0]);
     chrome.test.assertTrue('removable' !== childVolumeType);
   }
 };
@@ -356,8 +338,6 @@ testcase.fileDisplayUsbPartition = async () => {
  * crbug.com/973743
  */
 testcase.fileDisplayUsbPartitionSort = async () => {
-  const removableGroup = '#directory-tree [root-type-icon="removable"]';
-
   // Open Files app on local downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
@@ -365,7 +345,8 @@ testcase.fileDisplayUsbPartitionSort = async () => {
   await sendTestMessage({name: 'mountUsbWithMultiplePartitionTypes'});
 
   // Wait and select the removable group by clicking the label.
-  await remoteCall.waitAndClickElement(appId, removableGroup);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectGroupRootItemByType('removable');
 
   // Wait for partitions to appear in the file table list.
   let expectedRows = [
@@ -414,20 +395,16 @@ testcase.fileDisplayUsbPartitionSort = async () => {
  * volume.
  */
 testcase.fileDisplayPartitionFileTable = async () => {
-  const removableGroup = '#directory-tree [root-type-icon="removable"]';
-
   // Open Files app on local downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Mount removable partitions.
   await sendTestMessage({name: 'mountUsbWithPartitions'});
 
-  // Wait for removable group to appear in the directory tree.
-  await remoteCall.waitForElement(appId, removableGroup);
-
-  // Select the first removable group by clicking the label.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId, [removableGroup]));
+  // Wait for removable group to appear in the directory tree and select the
+  // first removable group by clicking the label.
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectGroupRootItemByType('removable');
 
   // Wait for removable partitions to appear in the file table.
   const partitionOne = await remoteCall.waitForElement(
@@ -563,7 +540,8 @@ testcase.fileDisplayWithoutVolumesThenMountDownloads = async () => {
   await remoteCall.waitFor('getVolumesCount', null, (count) => count === 1, []);
 
   // Downloads should appear in My files in the directory tree.
-  await remoteCall.waitForElement(appId, '[volume-type-icon="downloads"]');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.waitForItemByType('downloads');
   const expectedRows =
       [['Downloads', '--', 'Folder'], ['Linux files', '--', 'Folder']];
   await remoteCall.waitForFiles(
@@ -588,8 +566,8 @@ testcase.fileDisplayWithoutVolumesThenMountDrive = async () => {
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
 
   // Navigate to the Drive FakeItem.
-  await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId, ['[root-type-icon=\'drive\']']);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.waitForGroupRootItemByType('drive');
 
   // The fake Google Drive should be empty.
   await remoteCall.waitForFiles(appId, []);
@@ -630,8 +608,8 @@ testcase.fileDisplayWithoutDrive = async () => {
       appId, '#list-container .loading-indicator[hidden]');
 
   // Navigate to the fake Google Drive.
-  await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId, ['[root-type-icon=\'drive\']']);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectGroupRootItemByType('drive');
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/Google Drive');
 
   // Check: the fake Google Drive should be empty.
@@ -675,8 +653,8 @@ testcase.fileDisplayWithoutDriveThenDisable = async () => {
       appId, expectedRows, {ignoreLastModifiedTime: true});
 
   // Navigate to Drive.
-  await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId, ['[root-type-icon=\'drive\']']);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectGroupRootItemByType('drive');
 
   // The fake Google Drive should be empty.
   await remoteCall.waitForFiles(appId, []);
@@ -695,7 +673,7 @@ testcase.fileDisplayWithoutDriveThenDisable = async () => {
   await sendTestMessage({name: 'setDriveEnabled', enabled: true});
 
   // Wait for the fake drive to reappear.
-  await remoteCall.waitForElement(appId, ['[root-type-icon=\'drive\']']);
+  await directoryTree.waitForGroupRootItemByType('drive');
 };
 
 /**
@@ -709,19 +687,13 @@ testcase.fileDisplayWithHiddenVolume = async () => {
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Get the directory tree elements.
-  const dirTreeQuery = ['#directory-tree [dir-type]'];
-  const elementsBefore = await remoteCall.callRemoteTestUtil(
-      'queryAllElements', appId, dirTreeQuery);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const visibleLabelsBefore = await directoryTree.getVisibleItemLabels();
 
   // Mount a hidden volume.
   await sendTestMessage({name: 'mountHidden'});
 
-  const elementsAfter = await remoteCall.callRemoteTestUtil(
-      'queryAllElements', appId, dirTreeQuery);
-  const visibleLabelsBefore = elementsBefore.filter(e => !e.hidden)
-                                  .map(e => e.attributes['entry-label']);
-  const visibleLabelsAfter = elementsAfter.filter(e => !e.hidden)
-                                 .map(e => e.attributes['entry-label']);
+  const visibleLabelsAfter = await directoryTree.getVisibleItemLabels();
 
   // The directory tree should NOT display the hidden volume.
   chrome.test.assertEq(visibleLabelsBefore, visibleLabelsAfter);
@@ -744,8 +716,8 @@ testcase.fileDisplayMountWithFakeItemSelected = async () => {
   await remoteCall.waitForFiles(appId, [ENTRIES.newlyAdded.getExpectedRow()]);
 
   // Navigate to My files.
-  await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId, ['[root-type-icon=\'my_files\']']);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectGroupRootItemByType('my_files');
 
   // Wait for the navigation to complete.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/My files');
@@ -754,8 +726,7 @@ testcase.fileDisplayMountWithFakeItemSelected = async () => {
   await sendTestMessage({name: 'mountFakeUsbEmpty'});
 
   // Wait for the mount to appear.
-  await remoteCall.waitForElement(
-      appId, ['#directory-tree [volume-type-icon="removable"]']);
+  await directoryTree.waitForItemByType('removable');
   chrome.test.assertEq(
       '/My files',
       await remoteCall.callRemoteTestUtil('getBreadcrumbPath', appId, []));
@@ -772,8 +743,8 @@ testcase.fileDisplayUnmountDriveWithSharedWithMeSelected = async () => {
       [ENTRIES.testSharedDocument, ENTRIES.hello]);
 
   // Navigate to Shared with me.
-  await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId, ['[volume-type-icon=\'drive_shared_with_me\']']);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectItemByType('drive_shared_with_me');
 
   // Wait for the navigation to complete.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/Shared with me');
@@ -806,8 +777,6 @@ testcase.fileDisplayUnmountDriveWithSharedWithMeSelected = async () => {
  *    before unmounting the USB.
  */
 async function unmountRemovableVolume(removableDirectory) {
-  const removableRootQuery = '#directory-tree [root-type-icon="removable"]';
-
   // Open Files app on Downloads containing ENTRIES.photos.
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
@@ -815,12 +784,10 @@ async function unmountRemovableVolume(removableDirectory) {
   // Mount a device containing two partitions.
   await sendTestMessage({name: 'mountUsbWithPartitions'});
 
-  // Wait for the removable root to appear in the directory tree.
-  await remoteCall.waitForElement(appId, removableRootQuery);
-
-  // Navigate to the removable root directory.
-  await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId, [removableRootQuery]);
+  // Wait for the removable root to appear in the directory tree and navigate to
+  // the removable root directory.
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectGroupRootItemByType('removable');
 
   // Wait for the navigation to complete.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/Drive Label');
@@ -924,8 +891,8 @@ testcase.fileDisplayCheckReadOnlyIconOnFakeDirectory = async () => {
       [ENTRIES.testSharedDocument, ENTRIES.hello]);
 
   // Navigate to Shared with me.
-  await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId, ['[volume-type-icon=\'drive_shared_with_me\']']);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectItemByType('drive_shared_with_me');
 
   // Wait for the navigation to complete.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/Shared with me');
@@ -952,8 +919,6 @@ testcase.fileDisplayCheckNoReadOnlyIconOnDownloads = async () => {
  * directory is the "Linux files" fake root.
  */
 testcase.fileDisplayCheckNoReadOnlyIconOnLinuxFiles = async () => {
-  const fakeRoot = '#directory-tree [root-type-icon="crostini"]';
-
   // Block mounts from progressing. This should cause the file manager to always
   // show the loading bar for linux files.
   await sendTestMessage({name: 'blockMounts'});
@@ -963,7 +928,8 @@ testcase.fileDisplayCheckNoReadOnlyIconOnLinuxFiles = async () => {
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
   // Click on Linux files.
-  remoteCall.waitAndClickElement(appId, fakeRoot);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectPlaceholderItemByType('crostini');
 
   // Check: the loading indicator should be visible.
   await remoteCall.waitForElement(
@@ -978,10 +944,8 @@ testcase.fileDisplayCheckNoReadOnlyIconOnLinuxFiles = async () => {
  * directory is a "GuestOs" fake root.
  */
 testcase.fileDisplayCheckNoReadOnlyIconOnGuestOs = async () => {
-  const fakeRoot = '#directory-tree [root-type-icon="bruschetta"]';
-
   // Create a Bruschetta guest for this test.
-  const guestId = await sendTestMessage({
+  await sendTestMessage({
     name: 'registerMountableGuest',
     displayName: 'mogsaur',
     canMount: true,
@@ -997,7 +961,8 @@ testcase.fileDisplayCheckNoReadOnlyIconOnGuestOs = async () => {
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
   // Click on the placeholder.
-  remoteCall.waitAndClickElement(appId, fakeRoot);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectPlaceholderItemByType('bruschetta');
 
   // Check: the loading indicator should be visible.
   await remoteCall.waitForElement(

@@ -6,6 +6,7 @@ import {getHistogramCount, RootPath, sendTestMessage} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
 import {IGNORE_APP_ERRORS, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 
 /**
  * Returns provider name of the given testing provider manifest viz., the
@@ -67,22 +68,14 @@ async function showProvidersMenu(appId) {
  * Confirms that a provided volume is mounted.
  */
 async function confirmVolume(appId, ejectExpected) {
-  await remoteCall.waitForElement(
-      appId, '.tree-row .icon[volume-type-icon="provided"]');
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil(
-          'fakeMouseClick', appId,
-          ['.tree-row .icon[volume-type-icon="provided"]']),
-      'fakeMouseClick failed');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectItemByType('provided');
 
-
-  await remoteCall.waitForElement(
-      appId, '.tree-row[selected] .icon[volume-type-icon="provided"]');
+  await directoryTree.waitForFocusedItemByType('provided');
   if (ejectExpected) {
-    await remoteCall.waitForElement(appId, '.tree-row[selected] .root-eject');
+    await directoryTree.waitForItemEjectButtonByType('provided');
   } else {
-    await remoteCall.waitForElementLost(
-        appId, '.tree-row[selected] .root-eject');
+    await directoryTree.waitForItemEjectButtonLostByType('provided');
   }
 }
 
@@ -226,11 +219,8 @@ testcase.providerEject = async () => {
   const appId = await setUpProvider(manifest);
 
   // Click to eject Test (1) provider/volume.
-  const ejectQuery =
-      ['#directory-tree [volume-type-for-testing="provided"] .root-eject'];
-  chrome.test.assertTrue(
-      await remoteCall.callRemoteTestUtil('fakeMouseClick', appId, ejectQuery),
-      'click eject failed');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  directoryTree.ejectItemByType('provided');
 
   // Wait a11y-msg to have some text.
   await remoteCall.waitForElement(appId, '#a11y-msg:not(:empty)');

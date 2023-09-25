@@ -6,6 +6,7 @@ import {addEntries, ENTRIES, getCaller, pending, repeatUntil, RootPath, TestEntr
 import {testcase} from '../testcase.js';
 
 import {openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {BASIC_DRIVE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET} from './test_data.js';
 
 /**
@@ -134,15 +135,13 @@ testcase.showGridViewDocumentsProvider = async () => {
   const appId = await openNewWindow(RootPath.DOWNLOADS);
 
   // Wait for the DocumentsProvider volume to mount.
-  const documentsProviderVolumeQuery =
-      '[has-children="true"] [volume-type-icon="documents_provider"]';
-  await remoteCall.waitForElement(appId, documentsProviderVolumeQuery);
+  const documentsProviderVolumeType = 'documents_provider';
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.waitForItemToHaveChildrenByType(
+      documentsProviderVolumeType, /* hasChildren= */ true);
 
   // Click to open the DocumentsProvider volume.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil(
-          'fakeMouseClick', appId, [documentsProviderVolumeQuery]),
-      'fakeMouseClick failed');
+  await directoryTree.selectItemByType(documentsProviderVolumeType);
 
   // Click the grid view button.
   await remoteCall.waitForElement(appId, '#view-button');

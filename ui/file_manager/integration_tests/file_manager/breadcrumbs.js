@@ -667,8 +667,8 @@ testcase.breadcrumbNavigateBackToSharedWithMe = async () => {
       RootPath.DRIVE, [], [ENTRIES.sharedWithMeDirectory, ENTRIES.hello]);
 
   // Navigate to Shared with me.
-  await remoteCall.waitAndClickElement(
-      appId, '#directory-tree [entry-label="Shared with me"]');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectItemByLabel('Shared with me');
 
   // Wait until the breadcrumb path is updated.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/Shared with me');

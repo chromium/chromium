@@ -88,7 +88,8 @@ async function navigateToRecent(appId, type = RecentFilterType.ALL) {
     [RecentFilterType.DOCUMENT]: '/Documents',
   };
 
-  await remoteCall.waitAndClickElement(appId, ['[root-type-icon="recent"]']);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectItemByLabel('Recent');
   // "All" button is activated by default, no need to click.
   if (type !== RecentFilterType.ALL) {
     await remoteCall.waitAndClickElement(
@@ -506,10 +507,9 @@ testcase.recentsNested = async () => {
   await verifyBreadcrumbsPath(appId, '/My files/Downloads/A/B/C');
 
   // Check: The directory should be highlighted in the directory tree.
-  await remoteCall.waitForElement(
-      appId,
-      '.tree-item[full-path-for-testing="/Downloads/A/B/C"] > ' +
-          '.tree-row[selected][active]');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.waitForSelectedItemByLabel('C');
+  await directoryTree.waitForFocusedItemByLabel('C');
 };
 
 /**

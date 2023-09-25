@@ -177,19 +177,12 @@ async function openQuickViewMultipleSelection(appId, names) {
  * @param {string} appId Files app windowId.
  */
 async function mountAndSelectUsb(appId) {
-  const USB_VOLUME_QUERY = '#directory-tree [volume-type-icon="removable"]';
-
   // Mount a USB volume.
   await sendTestMessage({name: 'mountFakeUsb'});
 
-  // Wait for the USB volume to mount.
-  await remoteCall.waitForElement(appId, USB_VOLUME_QUERY);
-
-  // Click to open the USB volume.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil(
-          'fakeMouseClick', appId, [USB_VOLUME_QUERY]),
-      'fakeMouseClick failed');
+  // Wait for the USB volume to mount and click to open the USB volume.
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectItemByType('removable');
 
   // Check: the USB files should appear in the file list.
   const files = TestEntryInfo.getExpectedRows(BASIC_FAKE_ENTRY_SET);
@@ -409,8 +402,6 @@ testcase.openQuickViewDrive = async () => {
  * Tests opening Quick View on a Smbfs file.
  */
 testcase.openQuickViewSmbfs = async () => {
-  const SMBFS_VOLUME_QUERY = '#directory-tree [volume-type-icon="smb"]';
-
   // Open Files app on Downloads containing ENTRIES.photos.
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
@@ -421,14 +412,9 @@ testcase.openQuickViewSmbfs = async () => {
   // Mount Smbfs volume.
   await sendTestMessage({name: 'mountSmbfs'});
 
-  // Wait for the Smbfs volume to mount.
-  await remoteCall.waitForElement(appId, SMBFS_VOLUME_QUERY);
-
-  // Click to open the Smbfs volume.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil(
-          'fakeMouseClick', appId, [SMBFS_VOLUME_QUERY]),
-      'fakeMouseClick failed');
+  // Wait for the Smbfs volume to mount and click to open the Smbfs volume.
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectItemByType('smb');
 
   const files = TestEntryInfo.getExpectedRows(BASIC_LOCAL_ENTRY_SET);
   await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
@@ -454,10 +440,6 @@ testcase.openQuickViewUsb = async () => {
  * Tests opening Quick View on a removable partition.
  */
 testcase.openQuickViewRemovablePartitions = async () => {
-  const PARTITION_QUERY =
-      '#directory-tree .tree-children [volume-type-icon="removable"]';
-  const caller = getCaller();
-
   // Open Files app on Downloads containing ENTRIES.photos.
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
@@ -466,28 +448,15 @@ testcase.openQuickViewRemovablePartitions = async () => {
   await sendTestMessage({name: 'mountUsbWithPartitions'});
 
   // Wait for the USB root to be available.
-  await remoteCall.waitForElement(
-      appId, '#directory-tree [entry-label="Drive Label"]');
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.waitForItemByLabel('Drive Label');
   await directoryTree.navigateToPath('/Drive Label');
 
   // Wait for 2 removable partitions to appear in the directory tree.
-  await repeatUntil(async () => {
-    const partitions = await remoteCall.callRemoteTestUtil(
-        'queryAllElements', appId, [PARTITION_QUERY]);
-
-    if (partitions.length == 2) {
-      return true;
-    }
-    return pending(
-        caller, 'Found %d partitions, waiting for 2.', partitions.length);
-  });
+  await directoryTree.waitForChildItemsCountByLabel('Drive Label', 2);
 
   // Click to open the first partition.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil(
-          'fakeMouseClick', appId, [PARTITION_QUERY]),
-      'fakeMouseClick failed');
+  await directoryTree.selectItemByType('removable');
 
   // Check: the USB files should appear in the file list.
   const files = TestEntryInfo.getExpectedRows(BASIC_FAKE_ENTRY_SET);
@@ -534,8 +503,7 @@ testcase.openQuickViewTrash = async () => {
  * Tests seeing dashes for an empty last_modified for DocumentsProvider.
  */
 testcase.openQuickViewLastModifiedMetaData = async () => {
-  const documentsProviderVolumeQuery =
-      '[has-children="true"] [volume-type-icon="documents_provider"]';
+  const documentsProviderVolumeType = 'documents_provider';
 
   // Add files to the DocumentsProvider volume.
   await addEntries(['documents_provider'], MODIFIED_ENTRY_SET);
@@ -545,7 +513,10 @@ testcase.openQuickViewLastModifiedMetaData = async () => {
 
   // Wait for the DocumentsProvider volume to mount and then click to open
   // DocumentsProvider Volume.
-  await remoteCall.waitAndClickElement(appId, documentsProviderVolumeQuery);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.waitForItemToHaveChildrenByType(
+      documentsProviderVolumeType, /* hasChildren= */ true);
+  await directoryTree.selectItemByType(documentsProviderVolumeType);
 
   // Check: the DocumentsProvider files should appear in the file list.
   const files = TestEntryInfo.getExpectedRows(MODIFIED_ENTRY_SET);
@@ -573,8 +544,6 @@ testcase.openQuickViewLastModifiedMetaData = async () => {
  * Tests opening Quick View on an MTP file.
  */
 testcase.openQuickViewMtp = async () => {
-  const MTP_VOLUME_QUERY = '#directory-tree [volume-type-icon="mtp"]';
-
   // Open Files app on Downloads containing ENTRIES.photos.
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
@@ -582,14 +551,9 @@ testcase.openQuickViewMtp = async () => {
   // Mount a non-empty MTP volume.
   await sendTestMessage({name: 'mountFakeMtp'});
 
-  // Wait for the MTP volume to mount.
-  await remoteCall.waitForElement(appId, MTP_VOLUME_QUERY);
-
-  // Click to open the MTP volume.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil(
-          'fakeMouseClick', appId, [MTP_VOLUME_QUERY]),
-      'fakeMouseClick failed');
+  // Wait for the MTP volume to mount and click to open the MTP volume.
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectItemByType('mtp');
 
   // Check: the MTP files should appear in the file list.
   const files = TestEntryInfo.getExpectedRows(BASIC_FAKE_ENTRY_SET);
@@ -691,8 +655,7 @@ testcase.openQuickViewAndroidGuestOs = async () => {
  * Tests opening Quick View on a DocumentsProvider root.
  */
 testcase.openQuickViewDocumentsProvider = async () => {
-  const DOCUMENTS_PROVIDER_VOLUME_QUERY =
-      '[has-children="true"] [volume-type-icon="documents_provider"]';
+  const DOCUMENTS_PROVIDER_VOLUME_TYPE = 'documents_provider';
 
   // Add files to the DocumentsProvider volume.
   await addEntries(['documents_provider'], BASIC_LOCAL_ENTRY_SET);
@@ -701,13 +664,12 @@ testcase.openQuickViewDocumentsProvider = async () => {
   const appId = await openNewWindow(RootPath.DOWNLOADS);
 
   // Wait for the DocumentsProvider volume to mount.
-  await remoteCall.waitForElement(appId, DOCUMENTS_PROVIDER_VOLUME_QUERY);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.waitForItemToHaveChildrenByType(
+      DOCUMENTS_PROVIDER_VOLUME_TYPE, /* hasChildren= */ true);
 
   // Click to open the DocumentsProvider volume.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil(
-          'fakeMouseClick', appId, [DOCUMENTS_PROVIDER_VOLUME_QUERY]),
-      'fakeMouseClick failed');
+  await directoryTree.selectItemByType(DOCUMENTS_PROVIDER_VOLUME_TYPE);
 
   // Check: the DocumentsProvider files should appear in the file list.
   const files = TestEntryInfo.getExpectedRows(BASIC_LOCAL_ENTRY_SET);
@@ -2682,10 +2644,11 @@ testcase.openQuickViewFromDirectoryTree = async () => {
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
   // Focus Directory Tree.
-  await remoteCall.focus(appId, ['#directory-tree']);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.focusTree();
 
   // Ctrl+A to select the only file.
-  const ctrlA = ['#directory-tree', 'a', true, false, false];
+  const ctrlA = [directoryTree.rootSelector, 'a', true, false, false];
   await remoteCall.fakeKeyDown(appId, ...ctrlA);
 
   // Use selection menu button to open Quick View.

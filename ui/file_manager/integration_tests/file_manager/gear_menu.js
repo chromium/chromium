@@ -151,8 +151,8 @@ testcase.showToggleHiddenAndroidFoldersGearMenuItemsInMyFiles = async () => {
   await remoteCall.waitForElement(appId, '#gear-menu[hidden]');
 
   // Navigate to Recent.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId, ['span[root-type-icon=\'recent\']']));
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectItemByLabel('Recent');
 
   // Click the gear menu button.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
@@ -394,7 +394,8 @@ testcase.newFolderInDownloads = async () => {
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
   // Focus the directory tree.
-  await remoteCall.callRemoteTestUtil('focus', appId, ['#directory-tree']);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.focusTree();
 
   // Open the gear menu.
   await remoteCall.waitForElement(appId, '#gear-button');
@@ -560,8 +561,8 @@ testcase.enableDisableStorageSettingsLink = async () => {
   await remoteCall.waitForElement(appId, '#volume-space-info[disabled]');
 
   // Navigate to Android files.
-  await remoteCall.waitAndClickElement(
-      appId, '#directory-tree [entry-label="Play files"]');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectItemByLabel('Play files');
 
   // Click the gear menu button.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
@@ -574,8 +575,7 @@ testcase.enableDisableStorageSettingsLink = async () => {
   await sendTestMessage({name: 'mountFakeUsbEmpty'});
 
   // Wait for the USB mount.
-  await remoteCall.waitAndClickElement(
-      appId, '#directory-tree [volume-type-icon="removable"]');
+  await directoryTree.selectItemByType('removable');
 
   // Click the gear menu button.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
@@ -680,8 +680,7 @@ testcase.showAvailableStorageSmbfs = async () => {
  * the DocumentsProvider volume.
  */
 testcase.showAvailableStorageDocProvider = async () => {
-  const documentsProviderVolumeQuery =
-      '[has-children="true"] [volume-type-icon="documents_provider"]';
+  const documentsProviderVolumeType = 'documents_provider';
 
   // Add files to the DocumentsProvider volume.
   await addEntries(
@@ -691,13 +690,12 @@ testcase.showAvailableStorageDocProvider = async () => {
   const appId = await openNewWindow(RootPath.DOWNLOADS);
 
   // Wait for the DocumentsProvider volume to mount.
-  await remoteCall.waitForElement(appId, documentsProviderVolumeQuery);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.waitForItemToHaveChildrenByType(
+      documentsProviderVolumeType, /* hasChildren= */ true);
 
   // Click to open the DocumentsProvider volume.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil(
-          'fakeMouseClick', appId, [documentsProviderVolumeQuery]),
-      'fakeMouseClick failed');
+  await directoryTree.selectItemByType(documentsProviderVolumeType);
 
   // Check: the DocumentsProvider files should appear in the file list.
   const files =

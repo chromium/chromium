@@ -89,6 +89,9 @@ js_library("android_photos") {
   testonly = true
   deps = [
     ":background",
+    "page_objects:directory_tree",
+    "//ui/file_manager/integration_tests:remote_call",
+    "//ui/file_manager/integration_tests:test_util",
     "//ui/file_manager/integration_tests:testcase",
   ]
 }
@@ -117,7 +120,12 @@ js_library("context_menu") {
 
 js_library("copy_between_windows") {
   testonly = true
-  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+  deps = [
+    ":background",
+    "page_objects:directory_tree",
+    "//ui/file_manager/integration_tests:test_util",
+    "//ui/file_manager/integration_tests:testcase",
+  ]
 }
 
 js_library("create_new_folder") {
@@ -133,7 +141,12 @@ js_library("create_new_folder") {
 
 js_library("crostini") {
   testonly = true
-  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+  deps = [
+    ":background",
+    "page_objects:directory_tree",
+    "//ui/file_manager/integration_tests:test_util",
+    "//ui/file_manager/integration_tests:testcase",
+  ]
 }
 
 js_library("directory_tree") {
@@ -224,7 +237,12 @@ js_library("file_transfer_connector") {
 
 js_library("files_tooltip") {
   testonly = true
-  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+  deps = [
+    ":background",
+    "page_objects:directory_tree",
+    "//ui/file_manager/integration_tests:test_util",
+    "//ui/file_manager/integration_tests:testcase",
+  ]
 }
 
 js_library("folder_shortcuts") {
@@ -261,13 +279,21 @@ js_library("gear_menu") {
 
 js_library("guest_os") {
   testonly = true
-  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+  deps = [
+    ":background",
+    "page_objects:directory_tree",
+    "//ui/file_manager/integration_tests:test_util",
+    "//ui/file_manager/integration_tests:testcase",
+  ]
 }
 
 js_library("grid_view") {
   testonly = true
   deps = [
+    ":background",
     ":test_data",
+    "page_objects:directory_tree",
+    "//ui/file_manager/integration_tests:test_util",
     "//ui/file_manager/integration_tests:testcase",
   ]
 }
@@ -284,7 +310,12 @@ js_library("holding_space") {
 
 js_library("install_linux_package_dialog") {
   testonly = true
-  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+  deps = [
+    ":background",
+    "page_objects:directory_tree",
+    "//ui/file_manager/integration_tests:test_util",
+    "//ui/file_manager/integration_tests:testcase",
+  ]
 }
 
 js_library("keyboard_operations") {
@@ -376,7 +407,12 @@ js_library("open_video_media_app") {
 
 js_library("providers") {
   testonly = true
-  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+  deps = [
+    ":background",
+    "page_objects:directory_tree",
+    "//ui/file_manager/integration_tests:test_util",
+    "//ui/file_manager/integration_tests:testcase",
+  ]
 }
 
 js_library("quick_view") {
@@ -457,7 +493,10 @@ js_library("tab_index") {
 js_library("tasks") {
   testonly = true
   deps = [
+    ":background",
     ":test_data",
+    "page_objects:directory_tree",
+    "//ui/file_manager/integration_tests:test_util",
     "//ui/file_manager/integration_tests:testcase",
   ]
 }
@@ -465,8 +504,11 @@ js_library("tasks") {
 js_library("toolbar") {
   testonly = true
   deps = [
+    ":background",
     ":tasks",
     ":test_data",
+    "page_objects:directory_tree",
+    "//ui/file_manager/integration_tests:test_util",
     "//ui/file_manager/integration_tests:testcase",
   ]
 }

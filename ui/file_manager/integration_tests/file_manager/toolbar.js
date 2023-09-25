@@ -6,6 +6,7 @@ import {addEntries, ENTRIES, getCaller, pending, repeatUntil, RootPath, sendTest
 import {testcase} from '../testcase.js';
 
 import {openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 import {DOWNLOADS_FAKE_TASKS} from './tasks.js';
 import {BASIC_DRIVE_ENTRY_SET, BASIC_FAKE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET} from './test_data.js';
 
@@ -65,19 +66,13 @@ testcase.toolbarDeleteButtonKeepFocus = async () => {
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
   // USB delete never uses trash and always shows the delete dialog.
-  const USB_VOLUME_QUERY = '#directory-tree [volume-type-icon="removable"]';
 
   // Mount a USB volume.
   await sendTestMessage({name: 'mountFakeUsb'});
 
-  // Wait for the USB volume to mount.
-  await remoteCall.waitForElement(appId, USB_VOLUME_QUERY);
-
-  // Click to open the USB volume.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil(
-          'fakeMouseClick', appId, [USB_VOLUME_QUERY]),
-      'fakeMouseClick failed');
+  // Wait for the USB volume to mount and click to open the USB volume.
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectItemByType('removable');
 
   // Check: the USB files should appear in the file list.
   const files = TestEntryInfo.getExpectedRows(BASIC_FAKE_ENTRY_SET);
@@ -161,9 +156,8 @@ testcase.toolbarRefreshButtonWithSelection = async () => {
   await addEntries(['documents_provider'], BASIC_LOCAL_ENTRY_SET);
 
   // Wait for the DocumentsProvider volume to mount.
-  const documentsProviderVolumeQuery =
-      '[volume-type-icon="documents_provider"]';
-  await remoteCall.waitAndClickElement(appId, documentsProviderVolumeQuery);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectItemByType('documents_provider');
   await remoteCall.waitUntilCurrentDirectoryIsChanged(
       appId, '/DocumentsProvider');
 
@@ -187,8 +181,8 @@ testcase.toolbarRefreshButtonHiddenInRecents = async () => {
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Navigate to Recent.
-  await remoteCall.waitAndClickElement(
-      appId, '#directory-tree [entry-label="Recent"]');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectItemByLabel('Recent');
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/Recent');
 
   // Check that the button should be hidden.
@@ -206,9 +200,8 @@ testcase.toolbarRefreshButtonShownForNonWatchableVolume = async () => {
   await addEntries(['documents_provider'], BASIC_LOCAL_ENTRY_SET);
 
   // Wait for the DocumentsProvider volume to mount.
-  const documentsProviderVolumeQuery =
-      '[volume-type-icon="documents_provider"]';
-  await remoteCall.waitAndClickElement(appId, documentsProviderVolumeQuery);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectItemByType('documents_provider');
   await remoteCall.waitUntilCurrentDirectoryIsChanged(
       appId, '/DocumentsProvider');
 

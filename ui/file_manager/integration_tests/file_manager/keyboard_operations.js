@@ -30,51 +30,6 @@ export async function waitAndAcceptDialog(appId) {
 }
 
 /**
- * Returns the visible directory tree item names.
- *
- * @param {string} appId The Files app windowId.
- * @return {!Promise<!Array<string>>} List of visible item names.
- */
-async function getVisibleDirectoryTreeItemNames(appId) {
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
-  return directoryTree.getVisibleItemLabels();
-}
-
-/**
- * Waits until the directory tree item |name| appears.
- *
- * @param {string} appId The Files app windowId.
- * @param {string} name Directory tree item name.
- * @return {!Promise}
- */
-function waitForDirectoryTreeItem(appId, name) {
-  const caller = getCaller();
-  return repeatUntil(async () => {
-    if ((await getVisibleDirectoryTreeItemNames(appId)).indexOf(name) !== -1) {
-      return true;
-    }
-    return pending(caller, 'Directory tree item %s not found.', name);
-  });
-}
-
-/**
- * Waits until the directory tree item |name| disappears.
- *
- * @param {string} appId The Files app windowId.
- * @param {string} name Directory tree item name.
- * @return {!Promise}
- */
-function waitForDirectoryTreeItemLost(appId, name) {
-  const caller = getCaller();
-  return repeatUntil(async () => {
-    if ((await getVisibleDirectoryTreeItemNames(appId)).indexOf(name) === -1) {
-      return true;
-    }
-    return pending(caller, 'Directory tree item %s still exists.', name);
-  });
-}
-
-/**
  * Tests copying a file to the same file list.
  *
  * @param {string} path The path to be tested, Downloads or Drive.
@@ -131,20 +86,21 @@ async function keyboardDelete(path, confirmDeletion = false) {
  * Files app directory tree, and should not be shown there when deleted.
  *
  * @param {string} path The path to be tested, Downloads or Drive.
- * @param {string} treeItem The directory tree item label.
+ * @param {string} parentLabel The directory tree item label.
  * @param {boolean=} confirmDeletion If the file system doesn't support trash,
  *     need to confirm the deletion.
  */
-async function keyboardDeleteFolder(path, treeItem, confirmDeletion = false) {
+async function keyboardDeleteFolder(
+    path, parentLabel, confirmDeletion = false) {
   const appId =
       await setupAndWaitUntilReady(path, [ENTRIES.photos], [ENTRIES.photos]);
 
   // Expand the directory tree |treeItem|.
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
-  await directoryTree.expandTreeItemByLabel(treeItem);
+  await directoryTree.expandTreeItemByLabel(parentLabel);
 
   // Check: the folder should be shown in the directory tree.
-  await waitForDirectoryTreeItem(appId, 'photos');
+  await directoryTree.waitForChildItemByLabel(parentLabel, 'photos');
 
   // Delete the folder entry from the file list.
   chrome.test.assertTrue(
@@ -159,7 +115,7 @@ async function keyboardDeleteFolder(path, treeItem, confirmDeletion = false) {
   await remoteCall.waitForFiles(appId, []);
 
   // Check: the folder should not be shown in the directory tree.
-  await waitForDirectoryTreeItemLost(appId, 'photos');
+  await directoryTree.waitForChildItemLostByLabel(parentLabel, 'photos');
 }
 
 /**
@@ -198,20 +154,20 @@ async function renameFile(appId, oldName, newName) {
  * renaming to check the folder cannot be entered while it is being renamed.
  *
  * @param {string} path Initial path (Downloads or Drive).
- * @param {string} treeItem The directory tree item label.
+ * @param {string} parentLabel The directory tree item label.
  * @return {Promise} Promise to be fulfilled on success.
  */
-async function testRenameFolder(path, treeItem) {
+async function testRenameFolder(path, parentLabel) {
   const textInput = '#file-list .table-row[renaming] input.rename';
   const appId =
       await setupAndWaitUntilReady(path, [ENTRIES.photos], [ENTRIES.photos]);
 
   // Expand the directory tree |treeItem|.
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
-  await directoryTree.expandTreeItemByLabel(treeItem);
+  await directoryTree.expandTreeItemByLabel(parentLabel);
 
   // Check: the photos folder should be shown in the directory tree.
-  await waitForDirectoryTreeItem(appId, 'photos');
+  await directoryTree.waitForChildItemByLabel(parentLabel, 'photos');
   chrome.test.assertTrue(
       await remoteCall.callRemoteTestUtil('focus', appId, ['#file-list']));
 
@@ -255,7 +211,7 @@ async function testRenameFolder(path, treeItem) {
       appId, expectedRows, {ignoreLastModifiedTime: true});
 
   // Check: the renamed folder should be shown in the directory tree.
-  await waitForDirectoryTreeItem(appId, 'bbq photos');
+  await directoryTree.waitForChildItemByLabel(parentLabel, 'bbq photos');
 }
 
 /**
@@ -342,8 +298,8 @@ testcase.renameRemovableWithKeyboardOnFileList = async () => {
   await sendTestMessage({name: 'mountUsbWithMultiplePartitionTypes'});
 
   // Wait and select the removable group by clicking the label.
-  const removableGroup = '#directory-tree [root-type-icon="removable"]';
-  await remoteCall.waitAndClickElement(appId, removableGroup);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectGroupRootItemByType('removable');
 
   // Focus on the file list.
   await remoteCall.callRemoteTestUtil('focus', appId, ['#file-list']);
@@ -499,41 +455,37 @@ testcase.keyboardSelectDriveDirectoryTree = async () => {
       RootPath.DOWNLOADS, [ENTRIES.world], [ENTRIES.hello]);
 
   // Focus the directory tree.
-  await remoteCall.callRemoteTestUtil('focus', appId, ['#directory-tree']);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.focusTree();
 
   // Wait for Google Drive root to be available.
-  await remoteCall.waitForElement(appId, '.drive-volume');
+  await directoryTree.waitForItemByLabel('Google Drive');
 
   // The directory tree is the first element focused, so pressing down whilst
   // focused should move through all the volumes until it reaches the drive
   // volume.
-  const driveVolumeSelector = '.drive-volume [selected]';
   const caller = getCaller();
   await repeatUntil(async () => {
-    await remoteCall.fakeKeyDown(
-        appId, '#directory-tree', 'ArrowDown', false, false, false);
-    const elements = await remoteCall.callRemoteTestUtil(
-        'deepQueryAllElements', appId, [driveVolumeSelector]);
-    if (elements && elements.length > 0) {
+    await directoryTree.focusNextItem();
+    const focusedItem = await directoryTree.getFocusedItem();
+    if (focusedItem &&
+        directoryTree.getItemLabel(focusedItem) === 'Google Drive') {
       return true;
     }
     return pending(caller, 'Moving down until drive volume selected');
   });
 
-  // Ensure it's selected.
-  await remoteCall.waitForElement(appId, [driveVolumeSelector]);
+  // Ensure it's focused.
+  await directoryTree.waitForFocusedItemByLabel('Google Drive');
 
   // Activate it.
-  await remoteCall.fakeKeyDown(
-      appId, '#directory-tree .drive-volume', 'Enter', false, false, false);
+  await directoryTree.selectFocusedItem();
 
   // It should have expanded.
-  await remoteCall.waitForElement(
-      appId, ['.drive-volume .tree-children[expanded]']);
+  await directoryTree.waitForItemToExpandByLabel('Google Drive');
 
   // My Drive should be selected.
-  await remoteCall.waitForElement(
-      appId, ['[full-path-for-testing="/root"] [selected]']);
+  await directoryTree.waitForSelectedItemByLabel('My Drive');
 };
 
 /**

@@ -386,10 +386,10 @@ export async function mountCrostini(
   await addEntries(['crostini'], initialEntries);
 
   // Linux files fake root is shown.
-  await directoryTree.waitForPlaceholderItem('crostini');
+  await directoryTree.waitForPlaceholderItemByType('crostini');
 
   // Mount crostini, and ensure real root and files are shown.
-  await directoryTree.selectPlaceholderItem('crostini');
+  await directoryTree.selectPlaceholderItemByType('crostini');
   await directoryTree.waitForItemByType('crostini');
   const files = TestEntryInfo.getExpectedRows(BASIC_CROSTINI_ENTRY_SET);
   await remoteCall.waitForFiles(appId, files);
@@ -412,7 +412,7 @@ export async function mountGuestOs(appId, initialEntries) {
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
 
   // Wait for the GuestOS fake root then click it.
-  await directoryTree.selectPlaceholderItem('bruschetta');
+  await directoryTree.selectPlaceholderItemByType('bruschetta');
 
   // Wait for the volume to get mounted.
   await directoryTree.waitForItemByType('bruschetta');

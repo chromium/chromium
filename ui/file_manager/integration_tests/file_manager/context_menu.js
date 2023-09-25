@@ -689,8 +689,7 @@ testcase.checkLinuxFilesContextMenu = () => {
  */
 async function checkDocumentsProviderContextMenu(
     commandId, path, expectedEnabledState) {
-  const documentsProviderVolumeQuery =
-      '[has-children="true"] [volume-type-icon="documents_provider"]';
+  const documentsProviderVolumeType = 'documents_provider';
 
   // Add files to the DocumentsProvider volume.
   await addEntries(
@@ -700,13 +699,12 @@ async function checkDocumentsProviderContextMenu(
   const appId = await openNewWindow(RootPath.DOWNLOADS);
 
   // Wait for the DocumentsProvider volume to mount.
-  await remoteCall.waitForElement(appId, documentsProviderVolumeQuery);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.waitForItemToHaveChildrenByType(
+      documentsProviderVolumeType, /* hasChildren= */ true);
 
   // Click to open the DocumentsProvider volume.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil(
-          'fakeMouseClick', appId, [documentsProviderVolumeQuery]),
-      'fakeMouseClick failed');
+  await directoryTree.selectItemByType(documentsProviderVolumeType);
 
   // Check: the DocumentsProvider files should appear in the file list.
   const files =

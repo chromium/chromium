@@ -285,9 +285,9 @@ testcase.searchQueryLaunchParam = async () => {
 
   // Check: "My Drive" directory should be selected because it is the sole
   //        directory that contains query-matched files (*.gdoc).
-  const selectedTreeRow = await remoteCall.waitForElement(
-      appId, '#directory-tree .tree-row[selected][active]');
-  chrome.test.assertTrue(selectedTreeRow.text.includes('My Drive'));
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.waitForSelectedItemByLabel('My Drive');
+  await directoryTree.waitForFocusedItemByLabel('My Drive');
 
   // Check: Query-matched files should be shown in the files list.
   await repeatUntil(async () => {
@@ -505,8 +505,7 @@ testcase.searchDriveWithTypeOptions = async () => {
  * @return {string} The label that can be used to query for elements.
  */
 function getUsbVolumeQuery(withPartitions) {
-  return `#directory-tree [entry-label=${
-      withPartitions ? '"Drive Label"' : '"fake-usb"'}]`;
+  return withPartitions ? 'Drive Label' : 'fake-usb';
 }
 
 /**
@@ -516,7 +515,8 @@ function getUsbVolumeQuery(withPartitions) {
 async function mountUsb(appId, withPartitions) {
   const nameSuffix = withPartitions ? 'UsbWithPartitions' : 'FakeUsb';
   await sendTestMessage({name: `mount${nameSuffix}`});
-  await remoteCall.waitForElement(appId, getUsbVolumeQuery(withPartitions));
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.waitForItemByLabel(getUsbVolumeQuery(withPartitions));
 }
 
 /**
@@ -528,8 +528,8 @@ testcase.searchRemovableDevice = async () => {
   await mountUsb(appId, false);
 
   // Navigate to the root of the USB.
-  await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId, [getUsbVolumeQuery(false)]);
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.selectItemByLabel(getUsbVolumeQuery(false));
 
   await remoteCall.typeSearchText(appId, 'hello');
   await remoteCall.waitForFiles(
@@ -548,20 +548,18 @@ testcase.searchPartitionedRemovableDevice = async () => {
   await mountUsb(appId, true);
 
   // Wait for removable partition-1 to appear in the directory tree.
-  const partitionOne = await remoteCall.waitForElement(
-      appId, '#directory-tree [entry-label="partition-1"]');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  const partitionOne = await directoryTree.waitForItemByLabel('partition-1');
   chrome.test.assertEq(
-      'removable', partitionOne.attributes['volume-type-for-testing']);
+      'removable', directoryTree.getItemIconType(partitionOne));
 
   // Wait for removable partition-2 to appear in the directory tree.
-  const partitionTwo = await remoteCall.waitForElement(
-      appId, '#directory-tree [entry-label="partition-2"]');
+  const partitionTwo = await directoryTree.waitForItemByLabel('partition-2');
   chrome.test.assertEq(
-      'removable', partitionTwo.attributes['volume-type-for-testing']);
+      'removable', directoryTree.getItemIconType(partitionTwo));
 
   // Navigate to the root of the USB.
-  await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId, [getUsbVolumeQuery(true)]);
+  await directoryTree.selectItemByLabel(getUsbVolumeQuery(true));
 
   // Search for the 'hello' and expect two files; ignore the modified time
   // as these were copied when mounting the USB.
@@ -967,11 +965,11 @@ testcase.searchDocumentsProvider = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Wait for DocumentsProvider to mount and Verify that the files are visible.
-  await remoteCall.waitForElement(
-      appId, '[has-children="true"] [volume-type-icon="documents_provider"]');
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.waitForItemToHaveChildrenByType(
+      'documents_provider', /* hasChildren= */ true);
 
   // Search for all files with "nam" in their name.
-  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
   await directoryTree.navigateToPath('/DocumentsProvider');
   await remoteCall.typeSearchText(appId, 'nam');
   await remoteCall.waitForFiles(
@@ -989,9 +987,9 @@ testcase.searchDocumentsProviderWithTypeOptions = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Wait for DocumentsProvider to mount and Verify that the files are visible.
-  await remoteCall.waitForElement(
-      appId, '[has-children="true"] [volume-type-icon="documents_provider"]');
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.waitForItemToHaveChildrenByType(
+      'documents_provider', /* hasChildren= */ true);
   await directoryTree.navigateToPath('/DocumentsProvider');
 
   // Search the DocumentsProvider folder for files with "File" in their name.
@@ -1033,9 +1031,9 @@ testcase.searchDocumentsProviderWithRecencyOptions = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Wait for DocumentsProvider to mount and Verify that the files are visible.
-  await remoteCall.waitForElement(
-      appId, '[has-children="true"] [volume-type-icon="documents_provider"]');
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.waitForItemToHaveChildrenByType(
+      'documents_provider', /* hasChildren= */ true);
   await directoryTree.navigateToPath('/DocumentsProvider');
 
   // Search the DocumentsProvider for files with "hello" in their name.
@@ -1065,12 +1063,10 @@ testcase.searchFileSystemProvider = async () => {
     name: 'launchProviderExtension',
     manifest: 'manifest_source_device.json',
   });
-  await remoteCall.waitForElement(
-      appId, '.tree-row .icon[volume-type-icon="provided"]');
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.waitForItemByType('provided');
   await directoryTree.navigateToPath('/Test (1)');
-  await remoteCall.waitForElement(
-      appId, '.tree-row[selected] .icon[volume-type-icon="provided"]');
+  await directoryTree.waitForFocusedItemByType('provided');
   await remoteCall.typeSearchText(appId, 'folder');
   const expectedFolder = new TestEntryInfo({
     type: EntryType.DIRECTORY,
