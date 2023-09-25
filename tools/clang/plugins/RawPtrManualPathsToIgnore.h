@@ -96,9 +96,9 @@ constexpr const char* const kRawPtrManualPathsToIgnore[] = {
     // RewriteRawPtrFields.cpp explicitly includes third_party/blink
     // (because it is in the same git repository as the rest of Chromium),
     // but we go ahead and exclude most of it below (as Renderer-only code).
-    "/renderer/",                     // (e.g. //content/renderer/ or
-                                      // //components/visitedlink/renderer/
-                                      //  or //third_party/blink/renderer)",
+    "third_party/blink/renderer/core/",
+    "third_party/blink/renderer/platform/heap/",
+    "third_party/blink/renderer/platform/wtf/",
     "third_party/blink/public/web/",  // TODO: Consider renaming this directory
                                       // to",
                                       // public/renderer?",
