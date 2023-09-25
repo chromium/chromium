@@ -3679,7 +3679,6 @@ source_set("ash") {
     "//chromeos/components/onc",
     "//chromeos/components/print_management/mojom",
     "//chromeos/components/remote_apps/mojom",
-    "//chromeos/components/sensors:buildflags",
     "//chromeos/components/sensors/mojom",
     "//chromeos/components/sharesheet:constants",
     "//chromeos/crosapi/mojom",

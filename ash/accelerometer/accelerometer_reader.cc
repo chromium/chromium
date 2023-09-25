@@ -9,7 +9,6 @@
 #include "base/no_destructor.h"
 #include "base/task/current_thread.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chromeos/components/sensors/buildflags.h"
 #include "ash/accelerometer/accelerometer_provider_mojo.h"
 
 namespace ash {

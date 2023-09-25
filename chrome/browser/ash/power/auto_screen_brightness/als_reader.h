@@ -12,7 +12,6 @@
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chromeos/components/sensors/buildflags.h"
 
 namespace ash {
 namespace power {

@@ -14,7 +14,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
-#include "chromeos/components/sensors/buildflags.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/light_provider_mojo.h"
 #include "content/public/browser/browser_thread.h"
 
