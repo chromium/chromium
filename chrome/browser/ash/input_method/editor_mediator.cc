@@ -154,7 +154,7 @@ void EditorMediator::OnPromoCardDeclined() {
 }
 
 void EditorMediator::HandleTrigger() {
-  switch (editor_switch_->GetEditorMode()) {
+  switch (GetEditorMode()) {
     case EditorMode::kEditor:
       mako_page_handler_.ShowRewriteUI(profile_);
       break;
@@ -182,8 +182,8 @@ bool EditorMediator::IsAllowedForUse() {
   return editor_switch_->IsAllowedForUse();
 }
 
-ConsentStatus EditorMediator::GetConsentStatus() {
-  return consent_store_->GetConsentStatus();
+EditorMode EditorMediator::GetEditorMode() const {
+  return editor_switch_->GetEditorMode();
 }
 
 void EditorMediator::ActiveUserChanged(user_manager::User* user) {

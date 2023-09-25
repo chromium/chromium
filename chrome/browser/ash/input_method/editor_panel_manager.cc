@@ -34,6 +34,19 @@ crosapi::mojom::EditorPanelPresetQueryCategory ToEditorPanelQueryCategory(
   }
 }
 
+crosapi::mojom::EditorPanelMode GetEditorPanelMode(EditorMode editor_mode) {
+  switch (editor_mode) {
+    case EditorMode::kBlocked:
+      return crosapi::mojom::EditorPanelMode::kBlocked;
+    case EditorMode::kConsentNeeded:
+      return crosapi::mojom::EditorPanelMode::kPromoCard;
+    case EditorMode::kEditor:
+      // TODO: b:301525083 - Further splits this into either Rewrite or Write
+      // mode with regards to the current input context.
+      return crosapi::mojom::EditorPanelMode::kRewrite;
+  }
+}
+
 crosapi::mojom::EditorPanelPresetTextQueryPtr ToEditorPanelQuery(
     const orca::mojom::PresetTextQueryPtr& orca_query) {
   auto editor_panel_query = crosapi::mojom::EditorPanelPresetTextQuery::New();
@@ -69,7 +82,7 @@ void EditorPanelManager::BindEditorClient() {
 void EditorPanelManager::GetEditorPanelContext(
     GetEditorPanelContextCallback callback) {
   // TODO(b/295059934): Get the panel mode from the editor mediator.
-  const auto editor_panel_mode = crosapi::mojom::EditorPanelMode::kPromoCard;
+  const auto editor_panel_mode = GetEditorPanelMode(delegate_->GetEditorMode());
 
   // TODO(b/295059934): Bind the editor client before getting the preset text
   // queries.

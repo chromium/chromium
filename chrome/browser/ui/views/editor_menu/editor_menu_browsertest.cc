@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/editor_menu/editor_menu_promo_card_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/crosapi/mojom/editor_panel.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/screen.h"
@@ -18,6 +19,13 @@
 #include "ui/views/view_utils.h"
 
 namespace {
+
+crosapi::mojom::EditorPanelContextPtr CreateTestEditorPanelContext() {
+  auto context = crosapi::mojom::EditorPanelContext::New();
+  context->editor_panel_mode = crosapi::mojom::EditorPanelMode::kPromoCard;
+
+  return context;
+}
 
 constexpr int kMarginDip = 8;
 constexpr gfx::Rect kAnchorBounds =
@@ -91,8 +99,8 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
   EXPECT_TRUE(chromeos::features::IsOrcaEnabled());
   EXPECT_NE(nullptr, GetControllerImpl());
 
-  GetControllerImpl()->OnTextAvailable(kAnchorBounds, /*selected_text=*/"",
-                                       /*surrounding_text=*/"");
+  GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
+      kAnchorBounds, CreateTestEditorPanelContext());
   const gfx::Rect& bounds = GetEditorMenuView()->GetBoundsInScreen();
 
   // View is vertically left aligned with anchor.
@@ -108,8 +116,9 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
   EXPECT_TRUE(chromeos::features::IsOrcaEnabled());
   EXPECT_NE(nullptr, GetControllerImpl());
 
-  GetControllerImpl()->OnTextAvailable(kAnchorBoundsTop, /*selected_text=*/"",
-                                       /*surrounding_text=*/"");
+  GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
+      kAnchorBoundsTop, CreateTestEditorPanelContext());
+
   const gfx::Rect& bounds = GetEditorMenuView()->GetBoundsInScreen();
 
   // View is vertically left aligned with anchor.
@@ -128,8 +137,9 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
   const int screen_right =
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area().right();
   const gfx::Rect anchor_bounds = gfx::Rect(screen_right - 80, 250, 70, 160);
-  GetControllerImpl()->OnTextAvailable(anchor_bounds, /*selected_text=*/"",
-                                       /*surrounding_text=*/"");
+
+  GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
+      anchor_bounds, CreateTestEditorPanelContext());
 
   // Editor menu should be right aligned with anchor.
   EXPECT_EQ(GetEditorMenuView()->GetBoundsInScreen().right(),
@@ -142,8 +152,8 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
                        InitiallyShowsPromoCard) {
   EXPECT_NE(nullptr, GetControllerImpl());
 
-  GetControllerImpl()->OnTextAvailable(kAnchorBounds, /*selected_text=*/"",
-                                       /*surrounding_text=*/"");
+  GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
+      kAnchorBounds, CreateTestEditorPanelContext());
 
   EXPECT_TRUE(views::IsViewClass<EditorMenuPromoCardView>(GetEditorMenuView()));
 
@@ -154,8 +164,9 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
                        PressingEscClosesEditorMenuWidget) {
   ASSERT_NE(GetControllerImpl(), nullptr);
 
-  GetControllerImpl()->OnTextAvailable(kAnchorBounds, /*selected_text=*/"",
-                                       /*surrounding_text=*/"");
+  GetControllerImpl()->OnGetEditorPanelContextResultForTesting(
+      kAnchorBounds, CreateTestEditorPanelContext());
+
   ASSERT_NE(GetEditorMenuView()->GetWidget(), nullptr);
   GetEditorMenuView()->GetWidget()->GetFocusManager()->ProcessAccelerator(
       ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));

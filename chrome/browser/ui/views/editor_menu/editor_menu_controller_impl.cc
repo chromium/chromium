@@ -133,6 +133,12 @@ void EditorMenuControllerImpl::OnPromoCardWidgetClosed(
   }
 }
 
+void EditorMenuControllerImpl::OnGetEditorPanelContextResultForTesting(
+    const gfx::Rect& anchor_bounds,
+    crosapi::mojom::EditorPanelContextPtr context) {
+  OnGetEditorPanelContextResult(anchor_bounds, std::move(context));
+}
+
 void EditorMenuControllerImpl::OnGetEditorPanelContextResult(
     const gfx::Rect& anchor_bounds,
     crosapi::mojom::EditorPanelContextPtr context) {

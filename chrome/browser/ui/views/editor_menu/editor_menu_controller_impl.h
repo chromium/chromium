@@ -47,6 +47,10 @@ class EditorMenuControllerImpl : public chromeos::ReadWriteCardController,
     return editor_menu_widget_.get();
   }
 
+  void OnGetEditorPanelContextResultForTesting(
+      const gfx::Rect& anchor_bounds,
+      crosapi::mojom::EditorPanelContextPtr context);
+
  private:
   void OnGetEditorPanelContextResult(
       const gfx::Rect& anchor_bounds,

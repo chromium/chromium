@@ -75,6 +75,7 @@ class EditorMediator
   // EditorPanelManager::Delegate
   void OnPromoCardDeclined() override;
   void HandleTrigger() override;
+  EditorMode GetEditorMode() const override;
 
   // TabletModeObserver:
   void OnTabletModeStarting() override;
@@ -87,11 +88,6 @@ class EditorMediator
 
   // Checks if the feature should be visible.
   bool IsAllowedForUse();
-
-  // Checks if the feature can be triggered.
-  bool CanBeTriggered();
-
-  ConsentStatus GetConsentStatus();
 
   // ProfileObserver overrides:
   void OnProfileWillBeDestroyed(Profile* profile) override;
