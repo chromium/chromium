@@ -108,6 +108,7 @@ class ScopedMockPrerenderer {
   }
 
   ~ScopedMockPrerenderer() {
+    prerenderer_ = nullptr;
     preloading_decider_->SetPrerendererForTesting(std::move(old_prerenderer_));
   }
 
@@ -115,7 +116,7 @@ class ScopedMockPrerenderer {
 
  private:
   raw_ptr<PreloadingDecider> preloading_decider_;
-  raw_ptr<MockPrerenderer, DanglingUntriaged> prerenderer_;
+  raw_ptr<MockPrerenderer> prerenderer_;
   std::unique_ptr<Prerenderer> old_prerenderer_;
 };
 
