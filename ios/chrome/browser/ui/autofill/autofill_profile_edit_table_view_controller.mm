@@ -258,7 +258,8 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
       [self.delegate willSelectCountryWithCurrentlySelectedCountry:
                          self.homeAddressCountry];
     } else if (itemType != AutofillProfileDetailsItemTypeFooter &&
-               itemType != AutofillProfileDetailsItemTypeError) {
+               itemType != AutofillProfileDetailsItemTypeError &&
+               [self isItemTypeTextEditCell:itemType]) {
       UITableViewCell* cell =
           [self.controller.tableView cellForRowAtIndexPath:indexPath];
       TableViewTextEditCell* textFieldCell =
