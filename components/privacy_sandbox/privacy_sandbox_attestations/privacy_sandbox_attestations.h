@@ -23,12 +23,6 @@
 
 namespace privacy_sandbox {
 
-constexpr char kAttestationsFileParsingUMA[] =
-    "PrivacySandbox.Attestations.InitializationDuration.Parsing";
-
-constexpr char kAttestationsMapMemoryUsageUMA[] =
-    "PrivacySandbox.Attestations.EstimateMemoryUsage.AttestationsMap";
-
 const base::FilePath::CharType kSentinelFileName[] =
     FILE_PATH_LITERAL("attestations_sentinel");
 

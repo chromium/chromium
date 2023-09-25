@@ -6,6 +6,7 @@ source_set("privacy_sandbox_attestations") {
   sources = [
     "privacy_sandbox_attestations.cc",
     "privacy_sandbox_attestations.h",
+    "privacy_sandbox_attestations_histograms.h",
     "privacy_sandbox_attestations_parser.cc",
     "privacy_sandbox_attestations_parser.h",
   ]

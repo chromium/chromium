@@ -270,8 +270,11 @@ void BrowserStartupMetricRecorder::ResetSessionForTesting() {
   GetCommon().ResetSessionForTesting();
   // Reset global ticks that will be recorded multiple times when multiple
   // tests run in the same process.
+  main_window_startup_interrupted_ = false;
   message_loop_start_ticks_ = base::TimeTicks();
   browser_window_display_ticks_ = base::TimeTicks();
+  browser_window_first_paint_ticks_ = base::TimeTicks();
+  is_privacy_sandbox_attestations_histogram_recorded_ = false;
 }
 
 bool BrowserStartupMetricRecorder::WasMainWindowStartupInterrupted() const {
@@ -377,6 +380,17 @@ void BrowserStartupMetricRecorder::RecordBrowserWindowDisplay(
   browser_window_display_ticks_ = ticks;
 }
 
+void BrowserStartupMetricRecorder::RecordBrowserWindowFirstPaintTicks(
+    base::TimeTicks ticks) {
+  DCHECK(!ticks.is_null());
+
+  if (!browser_window_first_paint_ticks_.is_null()) {
+    return;
+  }
+
+  browser_window_first_paint_ticks_ = ticks;
+}
+
 void BrowserStartupMetricRecorder::RecordFirstWebContentsNonEmptyPaint(
     base::TimeTicks now,
     base::TimeTicks render_process_host_init_time) {
@@ -437,6 +451,7 @@ void BrowserStartupMetricRecorder::RecordBrowserWindowFirstPaint(
     return;
   }
   is_first_call = false;
+  RecordBrowserWindowFirstPaintTicks(ticks);
   if (!ShouldLogStartupHistogram()) {
     return;
   }
@@ -507,6 +522,71 @@ void BrowserStartupMetricRecorder::RecordExternalStartupMetric(
 
   if (set_non_browser_ui_displayed) {
     SetNonBrowserUIDisplayed();
+  }
+}
+
+// There are two possible callers of `ComponentReady()`:
+// a) Component registration, when there is existing component file on disk.
+// b) Component installation, when the component is downloaded.
+//
+// There are several factors that affect the timing of `ComponentReady()`:
+// 1. Feature `kPrivacySandboxAttestationsHigherComponentRegistrationPriority`
+// controls whether a higher task priority is used for component registration.
+// - When feature on, registration takes place almost immediately after opening
+// the browser.
+// - When feature off, registration takes place in a few seconds after opening
+// the browser.
+// 2. Non-browser UI during startup, for example, profile picker.
+// - When the above feature is off, and the user stays at the profile picker
+// indefinitely. The registration takes place in around 4 minutes after opening
+// the browser.
+//
+// The purpose of this metric is to understand the time gap between the time
+// users are able to navigate and the time the Privacy Sandbox attestations map
+// is ready. If navigation to sites that use Privacy Sandbox APIs takes place
+// during this gap, the API calls may be rejected because the attestations map
+// has not been ready yet.
+//
+// To reduce the noise introduced by non-browser UI, we measure from the first
+// browser window paint if it has been recorded. If it is not recorded, the
+// measurement is taken from application start.
+void BrowserStartupMetricRecorder::RecordPrivacySandboxAttestationsFirstReady(
+    base::TimeTicks ticks) {
+  DCHECK(!ticks.is_null());
+
+  // This metric should be recorded at most once for each Chrome session.
+  if (is_privacy_sandbox_attestations_histogram_recorded_) {
+    return;
+  }
+
+  // The first browser window paint has been recorded.
+  if (!browser_window_first_paint_ticks_.is_null()) {
+    is_privacy_sandbox_attestations_histogram_recorded_ = true;
+    UmaHistogramWithTraceAndTemperature(
+        &base::UmaHistogramMediumTimes,
+        "PrivacySandbox.Attestations.InitializationDuration."
+        "ComponentReadyFromBrowserWindowFirstPaint",
+        browser_window_first_paint_ticks_, ticks);
+    return;
+  }
+
+  // Otherwise, this implies the component is installed before first browser
+  // window paint.
+  is_privacy_sandbox_attestations_histogram_recorded_ = true;
+  if (WasMainWindowStartupInterrupted()) {
+    // The durations should be a few minutes.
+    UmaHistogramWithTraceAndTemperature(
+        &base::UmaHistogramMediumTimes,
+        "PrivacySandbox.Attestations.InitializationDuration."
+        "ComponentReadyFromApplicationStartWithInterruption",
+        GetCommon().application_start_ticks_, ticks);
+  } else {
+    // The durations should be a few milliseconds.
+    UmaHistogramWithTraceAndTemperature(
+        &base::UmaHistogramTimes,
+        "PrivacySandbox.Attestations.InitializationDuration."
+        "ComponentReadyFromApplicationStart",
+        GetCommon().application_start_ticks_, ticks);
   }
 }
 

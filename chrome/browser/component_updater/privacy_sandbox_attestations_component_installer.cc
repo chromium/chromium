@@ -18,12 +18,14 @@
 #include "base/path_service.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/component_updater/component_installer.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/update_client/update_client.h"
 
 namespace {
@@ -124,6 +126,10 @@ void PrivacySandboxAttestationsComponentInstallerPolicy::ComponentReady(
   if (install_dir.empty() || !version.IsValid()) {
     return;
   }
+
+  // Record the time taken for the downloaded attestations file to be detected.
+  startup_metric_utils::GetBrowser().RecordPrivacySandboxAttestationsFirstReady(
+      base::TimeTicks::Now());
 
   VLOG(1) << "Privacy Sandbox Attestations Component ready, version "
           << version.GetString() << " in " << install_dir.value();

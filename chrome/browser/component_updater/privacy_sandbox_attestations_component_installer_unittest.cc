@@ -12,17 +12,23 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
+#include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/component_updater/privacy_sandbox_attestations_component_installer_test_util.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/component_updater/mock_component_updater_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_histograms.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace component_updater {
@@ -252,5 +258,113 @@ TEST_F(PrivacySandboxAttestationsInstallerFeatureEnabledTest,
   EXPECT_EQ(loaded_version_3, version_1);
   EXPECT_EQ(loaded_path_v3, Installer::GetInstalledFilePath(dir_v1.GetPath()));
 }
+
+class PrivacySandboxAttestationsHistogramsTest
+    : public PrivacySandboxAttestationsInstallerFeatureEnabledTest,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  std::string GetHistogram() const {
+    if (BrowserWindowFirstPaintRecorded()) {
+      return privacy_sandbox::kComponentReadyFromBrowserWindowFirstPaintUMA;
+    }
+
+    if (NonBrowserUIDisplayed()) {
+      return privacy_sandbox::
+          kComponentReadyFromApplicationStartWithInterruptionUMA;
+    }
+
+    return privacy_sandbox::kComponentReadyFromApplicationStartUMA;
+  }
+
+  bool NonBrowserUIDisplayed() const { return std::get<0>(GetParam()); }
+  bool BrowserWindowFirstPaintRecorded() const {
+    return std::get<1>(GetParam());
+  }
+
+ protected:
+  void SetUp() override {
+    // Reset the singleton recorder to avoid interference across test cases.
+    startup_metric_utils::GetBrowser().ResetSessionForTesting();
+
+    if (NonBrowserUIDisplayed()) {
+      // Simulate a non browser UI, e.g, profile picker has been displayed.
+      startup_metric_utils::GetBrowser().SetNonBrowserUIDisplayed();
+    }
+
+    if (BrowserWindowFirstPaintRecorded()) {
+      // Simulate that the browser window paint has shown and been recorded.
+      startup_metric_utils::GetBrowser().RecordBrowserWindowFirstPaintTicks(
+          base::TimeTicks::Now());
+    }
+  }
+
+  base::HistogramTester histogram_tester_;
+};
+
+TEST_P(PrivacySandboxAttestationsHistogramsTest,
+       RecordHistogramWhenComponentReady) {
+  PrivacySandboxAttestationsComponentInstallerPolicy policy(base::DoNothing());
+
+  base::ScopedTempDir dir_v1;
+  ASSERT_TRUE(
+      dir_v1.CreateUniqueTempDirUnderPath(component_install_dir_.GetPath()));
+  const base::Version version_1 = base::Version("0.0.1");
+  policy.ComponentReadyForTesting(version_1, dir_v1.GetPath(),
+                                  base::Value::Dict());
+
+  histogram_tester_.ExpectTotalCount(GetHistogram(), 1);
+}
+
+TEST_P(PrivacySandboxAttestationsHistogramsTest,
+       HistogramShouldOnlyRecordedOnce) {
+  PrivacySandboxAttestationsComponentInstallerPolicy policy(base::DoNothing());
+
+  // Load the initial version.
+  base::ScopedTempDir dir_v1;
+  ASSERT_TRUE(
+      dir_v1.CreateUniqueTempDirUnderPath(component_install_dir_.GetPath()));
+  const base::Version version_1 = base::Version("0.0.1");
+  policy.ComponentReadyForTesting(version_1, dir_v1.GetPath(),
+                                  base::Value::Dict());
+
+  histogram_tester_.ExpectTotalCount(GetHistogram(), 1);
+
+  // Load the newer version.
+  base::ScopedTempDir dir_v2;
+  ASSERT_TRUE(
+      dir_v2.CreateUniqueTempDirUnderPath(component_install_dir_.GetPath()));
+  const base::Version version_2 = base::Version("0.0.2");
+  policy.ComponentReadyForTesting(version_2, dir_v2.GetPath(),
+                                  base::Value::Dict());
+
+  histogram_tester_.ExpectTotalCount(GetHistogram(), 1);
+}
+
+TEST_P(PrivacySandboxAttestationsHistogramsTest,
+       HistogramNotRecordedIfInvalidInput) {
+  PrivacySandboxAttestationsComponentInstallerPolicy policy(base::DoNothing());
+
+  // Try loading with an empty path.
+  policy.ComponentReadyForTesting(base::Version("0.0.1"), base::FilePath(),
+                                  base::Value::Dict());
+  histogram_tester_.ExpectTotalCount(GetHistogram(), 0);
+
+  // Try loading with an invalid version.
+  policy.ComponentReadyForTesting(
+      base::Version(), component_install_dir_.GetPath(), base::Value::Dict());
+  histogram_tester_.ExpectTotalCount(GetHistogram(), 0);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    PrivacySandboxAttestationsHistograms,
+    PrivacySandboxAttestationsHistogramsTest,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    [](const testing::TestParamInfo<std::tuple<bool, bool>>& info) {
+      return base::StringPrintf(
+          "%s_%s",
+          std::get<0>(info.param) ? "NonBrowserUIDisplayed" : "NormalStart",
+          std::get<1>(info.param) ? "BrowserWindowFirstPaintRecorded"
+                                  : "NoBrowserWindowFirstPaint");
+    });
 
 }  // namespace component_updater

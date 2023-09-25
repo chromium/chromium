@@ -689,6 +689,45 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram
+    name="PrivacySandbox.Attestations.InitializationDuration.ComponentReadyFromApplicationStart"
+    units="ms" expires_after="M122">
+  <owner>shivanisha@chromium.org</owner>
+  <owner>xiaochenzh@chromium.org</owner>
+  <summary>
+    Records the amount of time taken for the downloaded attestations file to be
+    detected from application starts. The measurement ends when `ComponentReady`
+    is invoked with valid inputs.
+  </summary>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.Attestations.InitializationDuration.ComponentReadyFromApplicationStartWithInterruption"
+    units="ms" expires_after="M122">
+  <owner>shivanisha@chromium.org</owner>
+  <owner>xiaochenzh@chromium.org</owner>
+  <summary>
+    Records the amount of time taken for the downloaded attestations file to be
+    detected from application starts with interruption during startup. For
+    example, if the user has multiple profiles, a profile picker will appear
+    during the startup. This is a non-browser UI that interrupts the startup
+    process. The measurement ends when `ComponentReady` is invoked with valid
+    inputs.
+  </summary>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.Attestations.InitializationDuration.ComponentReadyFromBrowserWindowFirstPaint"
+    units="ms" expires_after="M122">
+  <owner>shivanisha@chromium.org</owner>
+  <owner>xiaochenzh@chromium.org</owner>
+  <summary>
+    Records the amount of time taken for the downloaded attestations file to be
+    detected from first browser window paint. The measurement ends when
+    `ComponentReady` is invoked with valid inputs.
+  </summary>
+</histogram>
+
 <histogram name="PrivacySandbox.Attestations.InitializationDuration.Parsing"
     units="ms" expires_after="M122">
   <owner>shivanisha@chromium.org</owner>

@@ -72,6 +72,14 @@ class COMPONENT_EXPORT(STARTUP_METRIC_UTILS)
   // Call this with the time when the first browser window became visible.
   void RecordBrowserWindowDisplay(base::TimeTicks ticks);
 
+  // Call this with the time when the browser window paints its children for the
+  // first time.
+  void RecordBrowserWindowFirstPaintTicks(base::TimeTicks ticks);
+
+  // Call this with the time when the Privacy Sandbox Attestations component
+  // becomes ready for the first time.
+  void RecordPrivacySandboxAttestationsFirstReady(base::TimeTicks ticks);
+
   // Call this with the time when the first web contents had a non-empty paint,
   // only if the first web contents was unimpeded in its attempt to do so. Must
   // be called after RecordApplicationStartTime(), because it computes time
@@ -143,6 +151,10 @@ class COMPONENT_EXPORT(STARTUP_METRIC_UTILS)
   base::TimeTicks message_loop_start_ticks_;
 
   base::TimeTicks browser_window_display_ticks_;
+
+  base::TimeTicks browser_window_first_paint_ticks_;
+
+  bool is_privacy_sandbox_attestations_histogram_recorded_ = false;
 };
 
 COMPONENT_EXPORT(STARTUP_METRIC_UTILS)
