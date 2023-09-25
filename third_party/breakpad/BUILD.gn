@@ -77,6 +77,11 @@ if (use_fuzzing_engine) {
   default_breakpad_configs += [ ":default_logging_severity_config" ]
 }
 
+config("no_fortify_source") {
+  # TODO(crbug.com/1476401): Fix libdisasm/x86_format.c
+  cflags = [ "-Wno-fortify-source" ]
+}
+
 # {micro,mini}dump_stackwalk and minidump_dump are tool-type executables
 # that do not build on Windows.
 if (!is_win) {
@@ -173,12 +178,10 @@ if (!is_win) {
         ]
       }
 
-      # TODO(crbug.com/1476401): Fix libdisasm/x86_format.c
-      cflags = [ "-Wno-fortify-source" ]
-
       configs -= [ "//build/config/compiler:chromium_code" ]
       configs += [ "//build/config/compiler:no_chromium_code" ]
       configs += default_breakpad_configs
+      configs += [ ":no_fortify_source" ]
     }
 
     fuzzer_test("minidump_fuzzer") {
