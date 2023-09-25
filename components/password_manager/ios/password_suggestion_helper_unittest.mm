@@ -118,8 +118,8 @@ TEST_F(PasswordSuggestionHelperTest,
                                isMainFrame:main_frame_->IsMainFrame()
                          forSecurityOrigin:main_frame_->GetSecurityOrigin()];
 
-  __block BOOL retrieved_suggestions;
-  __block BOOL completion_called;
+  __block BOOL retrieved_suggestions = NO;
+  __block BOOL completion_called = NO;
   SuggestionsAvailableCompletion completion = ^(BOOL suggestionsAvailable) {
     retrieved_suggestions = suggestionsAvailable;
     completion_called = YES;
@@ -163,8 +163,8 @@ TEST_F(PasswordSuggestionHelperTest,
                                isMainFrame:main_frame_->IsMainFrame()
                          forSecurityOrigin:main_frame_->GetSecurityOrigin()];
 
-  __block BOOL retrieved_suggestions;
-  __block BOOL completion_called;
+  __block BOOL retrieved_suggestions = NO;
+  __block BOOL completion_called = NO;
   SuggestionsAvailableCompletion completion = ^(BOOL suggestionsAvailable) {
     retrieved_suggestions = suggestionsAvailable;
     completion_called = YES;
@@ -198,8 +198,8 @@ TEST_F(PasswordSuggestionHelperTest,
   FormRendererId form1_renderer_id = autofill::test::MakeFormRendererId();
   FieldRendererId password1_renderer_id = autofill::test::MakeFieldRendererId();
 
-  __block BOOL retrieved_suggestions;
-  __block BOOL completion_called;
+  __block BOOL retrieved_suggestions = NO;
+  __block BOOL completion_called = NO;
   SuggestionsAvailableCompletion completion = ^(BOOL suggestionsAvailable) {
     retrieved_suggestions = suggestionsAvailable;
     completion_called = YES;
@@ -247,8 +247,8 @@ TEST_F(PasswordSuggestionHelperTest,
   FieldRendererId username1_renderer_id = autofill::test::MakeFieldRendererId();
   FieldRendererId password1_renderer_id = autofill::test::MakeFieldRendererId();
 
-  __block BOOL retrieved_suggestions;
-  __block BOOL completion_called;
+  __block BOOL retrieved_suggestions = NO;
+  __block BOOL completion_called = NO;
   SuggestionsAvailableCompletion completion = ^(BOOL suggestionsAvailable) {
     retrieved_suggestions = suggestionsAvailable;
     completion_called = YES;
@@ -310,8 +310,8 @@ TEST_F(PasswordSuggestionHelperTest,
                                           inFrame:main_frame_]);
 
   // First query.
-  __block BOOL retrieved_suggestions1;
-  __block BOOL completion1_called;
+  __block BOOL retrieved_suggestions1 = NO;
+  __block BOOL completion1_called = NO;
   SuggestionsAvailableCompletion completion1 = ^(BOOL suggestionsAvailable) {
     retrieved_suggestions1 = suggestionsAvailable;
     completion1_called = YES;
@@ -329,8 +329,8 @@ TEST_F(PasswordSuggestionHelperTest,
                             completionHandler:completion1];
 
   // Second query for the same focused field as query 1.
-  __block BOOL retrieved_suggestions2;
-  __block BOOL completion2_called;
+  __block BOOL retrieved_suggestions2 = NO;
+  __block BOOL completion2_called = NO;
   SuggestionsAvailableCompletion completion2 = ^(BOOL suggestionsAvailable) {
     retrieved_suggestions2 = suggestionsAvailable;
     completion2_called = YES;
@@ -348,8 +348,8 @@ TEST_F(PasswordSuggestionHelperTest,
                             completionHandler:completion2];
 
   // Third query for a field in a different form.
-  __block BOOL retrieved_suggestions3;
-  __block BOOL completion3_called;
+  __block BOOL retrieved_suggestions3 = NO;
+  __block BOOL completion3_called = NO;
   SuggestionsAvailableCompletion completion3 = ^(BOOL suggestionsAvailable) {
     retrieved_suggestions3 = suggestionsAvailable;
     completion3_called = YES;
@@ -428,8 +428,8 @@ TEST_F(PasswordSuggestionHelperTest,
                                                            inFrame:frame2_ptr]);
 
   // First query for form in main frame.
-  __block BOOL retrieved_suggestions1;
-  __block BOOL completion1_called;
+  __block BOOL retrieved_suggestions1 = NO;
+  __block BOOL completion1_called = NO;
   SuggestionsAvailableCompletion completion1 = ^(BOOL suggestionsAvailable) {
     retrieved_suggestions1 = suggestionsAvailable;
     completion1_called = YES;
@@ -449,8 +449,8 @@ TEST_F(PasswordSuggestionHelperTest,
   }
 
   // Second query for other form in main frame.
-  __block BOOL retrieved_suggestions2;
-  __block BOOL completion2_called;
+  __block BOOL retrieved_suggestions2 = NO;
+  __block BOOL completion2_called = NO;
   SuggestionsAvailableCompletion completion2 = ^(BOOL suggestionsAvailable) {
     retrieved_suggestions2 = suggestionsAvailable;
     completion2_called = YES;
@@ -470,8 +470,8 @@ TEST_F(PasswordSuggestionHelperTest,
   }
 
   // Third query for form in subframe.
-  __block BOOL retrieved_suggestions3;
-  __block BOOL completion3_called;
+  __block BOOL retrieved_suggestions3 = NO;
+  __block BOOL completion3_called = NO;
   SuggestionsAvailableCompletion completion3 = ^(BOOL suggestionsAvailable) {
     retrieved_suggestions3 = suggestionsAvailable;
     completion3_called = YES;
@@ -491,8 +491,8 @@ TEST_F(PasswordSuggestionHelperTest,
   }
 
   // Fourth query for form in other subframe.
-  __block BOOL retrieved_suggestions4;
-  __block BOOL completion4_called;
+  __block BOOL retrieved_suggestions4 = NO;
+  __block BOOL completion4_called = NO;
   SuggestionsAvailableCompletion completion4 = ^(BOOL suggestionsAvailable) {
     retrieved_suggestions4 = suggestionsAvailable;
     completion4_called = YES;
@@ -862,7 +862,7 @@ TEST_F(PasswordSuggestionHelperTest, ResetForNewPage) {
   AddWebFrame(std::move(frame1));
 
   // Queue check query for subframe.
-  __block BOOL completion_called;
+  __block BOOL completion_called = NO;
   SuggestionsAvailableCompletion completion = ^(BOOL suggestionsAvailable) {
     completion_called = YES;
   };
