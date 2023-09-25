@@ -1072,8 +1072,12 @@ AttributionStorageSql::MaybeReplaceLowerPriorityEventLevelReport(
   // Prioritization is scoped within report windows.
   // This is reasonably optimized as is because we only store a ~small number
   // of reports per source_id. Selects the report with lowest priority,
-  // and uses the greatest trigger_time to break ties. This favors sending
-  // reports for report closer to the source time.
+  // and uses the greatest rowid to break ties. This favors sending
+  // reports for report closer to the source time. report_id is used instead of
+  // trigger time because the former is strictly increasing while the latter is
+  // subject to clock adjustments. This property is only guaranteed because of
+  // the use of AUTOINCREMENT on the report_id column, which prevents reuse upon
+  // row deletion.
   sql::Statement min_priority_statement(db_.GetCachedStatement(
       SQL_FROM_HERE, attribution_queries::kMinPrioritySql));
   min_priority_statement.BindInt64(0, *source.source_id());
@@ -1081,7 +1085,6 @@ AttributionStorageSql::MaybeReplaceLowerPriorityEventLevelReport(
 
   absl::optional<AttributionReport::Id> conversion_id_with_min_priority;
   int64_t min_priority;
-  base::Time max_trigger_time;
 
   while (min_priority_statement.Step()) {
     std::string metadata;
@@ -1094,15 +1097,15 @@ AttributionStorageSql::MaybeReplaceLowerPriorityEventLevelReport(
     if (!DeserializeReportMetadata(metadata, trigger_data, priority)) {
       continue;
     }
-    base::Time trigger_time = min_priority_statement.ColumnTime(1);
+
+    AttributionReport::Id report_id(min_priority_statement.ColumnInt64(1));
 
     if (!conversion_id_with_min_priority.has_value() ||
         priority < min_priority ||
-        (priority == min_priority && trigger_time > max_trigger_time)) {
-      conversion_id_with_min_priority.emplace(
-          min_priority_statement.ColumnInt64(2));
+        (priority == min_priority &&
+         report_id > *conversion_id_with_min_priority)) {
+      conversion_id_with_min_priority = report_id;
       min_priority = priority;
-      max_trigger_time = trigger_time;
     }
   }
 

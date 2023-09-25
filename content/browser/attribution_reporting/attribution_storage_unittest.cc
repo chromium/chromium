@@ -1837,10 +1837,11 @@ TEST_F(AttributionStorageTest,
        MultipleImpressionsPerConversion_MostRecentAttributesForSamePriority) {
   storage()->StoreSource(SourceBuilder().SetSourceEventId(3).Build());
 
-  task_environment_.FastForwardBy(base::Milliseconds(1));
+  // Note: Fast-forwards aren't necessary here because source order for the
+  // purposes of prioritization is based on rowid, not source time.
+
   storage()->StoreSource(SourceBuilder().SetSourceEventId(7).Build());
 
-  task_environment_.FastForwardBy(base::Milliseconds(1));
   storage()->StoreSource(SourceBuilder().SetSourceEventId(5).Build());
 
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(3));
@@ -2114,21 +2115,23 @@ TEST_F(AttributionStorageTest, TriggerPriority_SamePriorityDeletesMostRecent) {
             MaybeCreateAndStoreEventLevelReport(
                 TriggerBuilder().SetPriority(1).SetTriggerData(3).Build()));
 
-  task_environment_.FastForwardBy(base::Milliseconds(1));
+  // Note: Fast-forwards aren't necessary here because trigger order for the
+  // purposes of prioritization is based on rowid, not trigger time.
+
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(
                 TriggerBuilder().SetPriority(1).SetTriggerData(2).Build()));
 
   // This report should not be stored, as even though it has the same priority
   // as the previous two, it is the most recent.
-  task_environment_.FastForwardBy(base::Milliseconds(1));
+
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kPriorityTooLow,
             MaybeCreateAndStoreEventLevelReport(
                 TriggerBuilder().SetPriority(1).SetTriggerData(8).Build()));
 
   // This report should be stored by replacing the one with `trigger_data ==
   // 2`, which is the most recent of the two with `priority == 1`.
-  task_environment_.FastForwardBy(base::Milliseconds(1));
+
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccessDroppedLowerPriority,
             MaybeCreateAndStoreEventLevelReport(
                 TriggerBuilder().SetPriority(2).SetTriggerData(5).Build()));
