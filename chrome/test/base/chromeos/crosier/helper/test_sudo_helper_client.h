@@ -19,6 +19,14 @@ class FilePath;
 // daemon.
 class TestSudoHelperClient {
  public:
+  struct Result {
+    Result() = default;
+    Result(int rc, std::string out) : return_code(rc), output(std::move(out)) {}
+
+    int return_code = -1;
+    std::string output;  // stdout and stderr combined.
+  };
+
   explicit TestSudoHelperClient(const std::string_view server_path);
   TestSudoHelperClient(const TestSudoHelperClient&) = delete;
   TestSudoHelperClient& operator=(const TestSudoHelperClient&) = delete;
@@ -26,7 +34,11 @@ class TestSudoHelperClient {
 
   // Runs the given command line via `test_sudo_helper`. Returns true if the
   // command exit with 0. Otherwise, returns false.
-  bool RunCommand(const std::string_view command);
+  Result RunCommand(const std::string_view command);
+
+  // Connects using the server path on the default switch, runs one command, and
+  // disconnects. Fails if the server path switch is not found.
+  static Result ConnectAndRunCommand(const std::string_view command);
 
  private:
   base::ScopedFD ConnectToServer(const base::FilePath& client_path);

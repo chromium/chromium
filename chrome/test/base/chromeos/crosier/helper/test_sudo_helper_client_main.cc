@@ -28,7 +28,7 @@ void Usage() {
 bool RunCommand(const std::string_view server_path,
                 const std::string_view command) {
   LOG(INFO) << "Run: " << command;
-  return TestSudoHelperClient(server_path).RunCommand(command);
+  return TestSudoHelperClient(server_path).RunCommand(command).return_code == 0;
 }
 
 }  // namespace

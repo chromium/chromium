@@ -11,6 +11,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "chrome/test/base/chromeos/crosier/helper/test_sudo_helper_client.h"
 
 namespace upstart {
 
@@ -37,6 +38,29 @@ const StateMapping kAllStates[] = {
 
 // Special-cased in StopJob due to its respawning behavior.
 const char kUiJob[] = "ui";
+
+// Runs the given command vector as sudo using the test_sudo_helper that should
+// be set up on the system.
+//
+// test_sudo_helper runs the string through the shell so it should be escaped
+// accordingly. Currently we have no need for escaping so just assert for some
+// simple cases to catch if somebody starts doing this. If things like spaces
+// and quotes are needed in the future, we should update the test sudo helper to
+// take an array rather than trying to escape here.
+TestSudoHelperClient::Result RunSudoHelper(
+    const std::vector<std::string>& args) {
+  std::string cmd;
+  for (const std::string& cur : args) {
+    // The string should not need escaping (see above).
+    CHECK(cur.find_first_of(" \\*\"?$&();<>[]^`") == std::string::npos);
+    if (!cmd.empty()) {
+      cmd.push_back(' ');
+    }
+    cmd.append(cur);
+  }
+
+  return TestSudoHelperClient::ConnectAndRunCommand(cmd);
+}
 
 }  // namespace
 
@@ -205,33 +229,37 @@ std::string_view StateFromString(State s) {
 
 bool DumpJobs() {
   std::vector<std::string> args{"initctl", "list"};
-  std::string output;
-  if (!base::GetAppOutput(args, &output)) {
+  TestSudoHelperClient::Result result = RunSudoHelper(args);
+  if (result.return_code != 0) {
     return false;
   }
 
-  printf("%s", output.c_str());
+  printf("%s", result.output.c_str());
   return true;
 }
 
 JobStatus GetJobStatus(const std::string& job,
                        const std::vector<std::string>& extra_args) {
+  // This does not need to use the sudo helper because it's read-only.
   std::vector<std::string> args{"initctl", "status", job};
   args.insert(args.end(), extra_args.begin(), extra_args.end());
 
-  std::string output;
-  if (!base::GetAppOutputAndError(args, &output)) {
-    return JobStatus();
-  }
+  TestSudoHelperClient::Result result = RunSudoHelper(args);
 
   // Tolerates an error if stderr starts with "initctl: Unknown instance". This
   // happens when the job is multiple-instance and the specific instance is
   // treated as stop/waiting.
-  if (base::StartsWith(output, "initctl: Unknown instance")) {
+  if (base::StartsWith(result.output, "initctl: Unknown instance")) {
     return JobStatus{true, Goal::kStop, State::kWaiting, 0};
   }
 
-  return internal::ParseStatus(job, output);
+  // Any other error is a failure.
+  if (result.return_code != 0) {
+    LOG(ERROR) << "Running initctl failed: " << result.output;
+    return JobStatus();
+  }
+
+  return internal::ParseStatus(job, result.output);
 }
 
 bool JobExists(const std::string& job) {
@@ -242,12 +270,7 @@ bool StartJob(const std::string& job,
               const std::vector<std::string>& extra_args) {
   std::vector<std::string> args{"initctl", "start", job};
   args.insert(args.end(), extra_args.begin(), extra_args.end());
-
-  std::string output;
-  int exit_code = 0;
-  return base::GetAppOutputWithExitCode(base::CommandLine(args), &output,
-                                        &exit_code) &&
-         exit_code == 0;
+  return RunSudoHelper(args).return_code == 0;
 }
 
 bool RestartJob(const std::string& job,
@@ -276,17 +299,12 @@ bool StopJob(const std::string& job,
   args.insert(args.end(), extra_args.begin(), extra_args.end());
 
   // Issue the stop request, ignoring errors from initctl (these will be thrown
-  // if the job is already stopped) but not errors actually starting it.
-  std::string output;
-  int exit_code = 0;
-  if (!base::GetAppOutputWithExitCode(base::CommandLine(args), &output,
-                                      &exit_code)) {
-    return false;
-  }
+  // if the job is already stopped).
+  RunSudoHelper(args);
 
   // Check the actual status.
   return WaitForJobStatus(job, Goal::kStop, State::kWaiting,
-                          WrongGoalPolicy::kReject);
+                          WrongGoalPolicy::kReject, extra_args);
 }
 
 bool WaitForJobStatus(const std::string& job,

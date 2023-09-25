@@ -261,6 +261,7 @@ static_library("test_support") {
       "base/chromeos/crosier/upstart.cc",
       "base/chromeos/crosier/upstart.h",
     ]
+    deps += [ "base/chromeos/crosier/helper:common" ]
   }
 
   if (enable_extensions) {

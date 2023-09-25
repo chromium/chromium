@@ -14,7 +14,7 @@ such test cases.
 
 Simple protocol:
   Client requests are JSON strings with null terminators at the end.
-    |<arbitrary command>|0x00|
+    |<arbitrary command encoded as JSON>|0x00|
 
   Server responses are composed of 1 byte return code of the command and
   the output of the command with a null terminator at the end.
@@ -73,7 +73,8 @@ def _run_cmd(sock: socket.socket, cmd: str):
     logging.info("Running : %s", cmd)
     try:
         process = subprocess.run(cmd,
-                                 capture_output=True,
+                                 stdout=subprocess.PIPE,
+                                 stderr=subprocess.STDOUT,
                                  shell=True,
                                  check=False)
 
