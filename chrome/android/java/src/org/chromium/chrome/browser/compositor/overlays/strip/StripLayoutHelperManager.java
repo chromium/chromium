@@ -408,9 +408,10 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
                 mModelSelectorButton, multiInstanceManager, toolbarContainerView);
 
         tabHoverCardViewStub.setOnInflateListener((viewStub, view) -> {
-            mNormalHelper.setTabHoverCardView(view);
-            mIncognitoHelper.setTabHoverCardView(view);
-            getActiveStripLayoutHelper().updateHoverCardColors();
+            var hoverCardView = (StripTabHoverCardView) view;
+            hoverCardView.initialize(mTabModelSelector);
+            mNormalHelper.setTabHoverCardView(hoverCardView);
+            mIncognitoHelper.setTabHoverCardView(hoverCardView);
         });
 
         if (tabModelStartupInfoSupplier != null) {
@@ -907,11 +908,6 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         mNormalHelper.tabModelSelected(!mIsIncognito);
 
         updateModelSwitcherButton();
-        // Update the tab hover card background and text colors for the active tab model when it is
-        // selected (provided that the hover card view that is shared across the tab models is
-        // already inflated), since the colors will be the same for a given tab model, but different
-        // across tab models.
-        getActiveStripLayoutHelper().updateHoverCardColors();
 
         mUpdateHost.requestUpdate();
     }
@@ -970,9 +966,5 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
 
     ViewStub getTabHoverCardViewStubForTesting() {
         return mTabHoverCardViewStub;
-    }
-
-    TabModelSelectorObserver getTabModelSelectorObserverForTesting() {
-        return mTabModelSelectorObserver;
     }
 }

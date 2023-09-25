@@ -899,8 +899,8 @@ public class TabStripTest {
                                 MotionEvent.ACTION_HOVER_ENTER, xEnter, yEnter));
 
         // Verify that the card view is inflated as expected.
-        View hoverCardView = stripLayoutHelperManager.getActiveStripLayoutHelper()
-                                     .getTabHoverCardViewForTesting();
+        var hoverCardView = stripLayoutHelperManager.getActiveStripLayoutHelper()
+                                    .getTabHoverCardViewForTesting();
         Assert.assertNotNull("Hover card view should be set in normal StripLayoutHelper instance.",
                 stripLayoutHelperManager.getStripLayoutHelper(false)
                         .getTabHoverCardViewForTesting());
@@ -978,8 +978,8 @@ public class TabStripTest {
                                 MotionEvent.ACTION_HOVER_ENTER, standardXEnter, standardYEnter));
 
         // Verify that the card view background color is correctly set.
-        View hoverCardView = stripLayoutHelperManager.getActiveStripLayoutHelper()
-                                     .getTabHoverCardViewForTesting();
+        var hoverCardView = stripLayoutHelperManager.getActiveStripLayoutHelper()
+                                    .getTabHoverCardViewForTesting();
         Assert.assertNotNull("Hover card view should be set in normal StripLayoutHelper instance.",
                 stripLayoutHelperManager.getStripLayoutHelper(false)
                         .getTabHoverCardViewForTesting());
@@ -1044,8 +1044,8 @@ public class TabStripTest {
                                 MotionEvent.ACTION_HOVER_ENTER, xEnter, yEnter));
 
         // Verify that the card is visible.
-        View hoverCardView = stripLayoutHelperManager.getActiveStripLayoutHelper()
-                                     .getTabHoverCardViewForTesting();
+        var hoverCardView = stripLayoutHelperManager.getActiveStripLayoutHelper()
+                                    .getTabHoverCardViewForTesting();
         Assert.assertEquals(
                 "Hover card should be visible.", View.VISIBLE, hoverCardView.getVisibility());
 

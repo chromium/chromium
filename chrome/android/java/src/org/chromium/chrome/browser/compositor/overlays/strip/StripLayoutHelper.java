@@ -19,7 +19,6 @@ import android.os.Message;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
-import android.util.DisplayMetrics;
 import android.util.FloatProperty;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
@@ -28,13 +27,10 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListPopupWindow;
-import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
-import androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams;
-import androidx.core.view.ViewCompat;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -67,7 +63,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.util.ColorUtils;
@@ -289,7 +284,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private StripLayoutTab mLastHoveredTab;
     private TabDropTarget mTabDropTarget;
 
-    private View mTabHoverCardView;
+    private StripTabHoverCardView mTabHoverCardView;
 
     /**
      * Creates an instance of the {@link StripLayoutHelper}.
@@ -457,6 +452,10 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     public void destroy() {
         mStripTabEventHandler.removeCallbacksAndMessages(null);
         mTabDropTarget = null;
+        if (mTabHoverCardView != null) {
+            mTabHoverCardView.destroy();
+            mTabHoverCardView = null;
+        }
     }
 
     /**
@@ -1506,11 +1505,11 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     }
 
     @VisibleForTesting
-    void setTabHoverCardView(View tabHoverCardView) {
+    void setTabHoverCardView(StripTabHoverCardView tabHoverCardView) {
         mTabHoverCardView = tabHoverCardView;
     }
 
-    View getTabHoverCardViewForTesting() {
+    StripTabHoverCardView getTabHoverCardViewForTesting() {
         return mTabHoverCardView;
     }
 
@@ -1527,7 +1526,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         assert mTabHoverCardView != null : "Hover card view should not be null.";
         // Remove the highlight from the last hovered tab.
         updateHoveredFolioTabState(mLastHoveredTab, false);
-        mTabHoverCardView.setVisibility(View.GONE);
+        mTabHoverCardView.hide();
         mLastHoveredTab = null;
     }
 
@@ -1541,116 +1540,9 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         updateHoveredFolioTabState(mLastHoveredTab, true);
 
         // Show the tab hover card.
-        // TODO(crbug.com/1485258): Create a TabHoverCardView class to manage view logic.
         int hoveredTabIndex = findIndexForTab(mLastHoveredTab.getId());
-        Tab tab = mModel.getTabAt(hoveredTabIndex);
-        if (tab == null) return;
-        var titleView = (TextView) mTabHoverCardView.findViewById(R.id.title);
-        var urlView = (TextView) mTabHoverCardView.findViewById(R.id.url);
-        titleView.setText(tab.getTitle());
-        String url = tab.getUrl().getHost();
-        // If the URL is a Chrome scheme, display the GURL spec instead of the host. For e.g., use
-        // chrome://newtab instead of just newtab on the hover card.
-        if (UrlUtilities.isInternalScheme(tab.getUrl())) {
-            url = tab.getUrl().getSpec();
-            // GURL#getSpec() returns a string with a trailing "/", remove this.
-            url = url.replaceFirst("/$", "");
-        }
-        urlView.setText(url);
-
-        float[] position = getHoverCardPosition(hoveredTab, hoveredTabIndex == mModel.index());
-        mTabHoverCardView.setX(position[0]);
-        mTabHoverCardView.setY(position[1]);
-
-        mTabHoverCardView.setVisibility(View.VISIBLE);
-    }
-
-    /**
-     * Update the hover card background and text colors based on the theme and incognito mode.
-     */
-    public void updateHoverCardColors() {
-        if (!isPeripheralsSupportForTabStripEnabled()) return;
-        if (mTabHoverCardView == null) return;
-
-        var titleView = (TextView) mTabHoverCardView.findViewById(R.id.title);
-        var urlView = (TextView) mTabHoverCardView.findViewById(R.id.url);
-        titleView.setTextColor(
-                TabUiThemeProvider.getStripTabHoverCardTextColorPrimary(mContext, mIncognito));
-        urlView.setTextColor(
-                TabUiThemeProvider.getStripTabHoverCardTextColorSecondary(mContext, mIncognito));
-
-        ViewCompat.setBackgroundTintList(mTabHoverCardView,
-                TabUiThemeProvider.getStripTabHoverCardBackgroundTintList(mContext, mIncognito));
-    }
-
-    /**
-     * Get the x and y coordinates of the position of the hover card, in px.
-     *
-     * @param hoveredTab The {@link StripLayoutTab} that is hovered on.
-     * @param isSelectedTab Whether the tab is the selected tab, {@code true} if the hovered tab is
-     *         also the selected tab, {@code false} otherwise.
-     * @return A float array specifying the x (array[0]) and y (array[1]) coordinates of the
-     *         position of the hover card, in px.
-     */
-    @VisibleForTesting
-    float[] getHoverCardPosition(StripLayoutTab hoveredTab, boolean isSelectedTab) {
-        boolean isFolioEnabled = TabManagementFieldTrial.isTabStripFolioEnabled();
-        boolean isDetachedEnabled = TabManagementFieldTrial.isTabStripDetachedEnabled();
-
-        // 1. Determine the window width.
-        DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
-        float displayDensity = displayMetrics.density;
-        float windowWidthPx = displayMetrics.widthPixels;
-        float windowWidthDp = windowWidthPx / displayDensity;
-
-        // 2. Determine the hover card width, making adjustments relative to the window width if
-        // applicable.
-        float hoverCardWidthPx = mContext.getResources().getDimension(R.dimen.tab_hover_card_width);
-        // Hover card width should be a maximum of 90% of the window width.
-        hoverCardWidthPx = Math.min(hoverCardWidthPx, HOVER_CARD_MAX_WIDTH_PERCENT * windowWidthPx);
-        float hoverCardWidthDp = hoverCardWidthPx / displayDensity;
-        // Update the card LayoutParams if an adjustment on the original width is required.
-        if (hoverCardWidthPx
-                != mContext.getResources().getDimension(R.dimen.tab_hover_card_width)) {
-            var layoutParams = mTabHoverCardView.getLayoutParams();
-            mTabHoverCardView.setLayoutParams(
-                    new LayoutParams(Math.round(hoverCardWidthPx), layoutParams.height));
-        }
-
-        // 3. Determine the horizontal position of the hover card.
-        float hoverCardXDp = LocalizationUtils.isLayoutRtl()
-                ? (hoveredTab.getDrawX() - (hoverCardWidthDp - hoveredTab.getWidth()))
-                : hoveredTab.getDrawX();
-        // Adjust the TSR detached and inactive folio tab hover card to align with the tab container
-        // edge.
-        if (isDetachedEnabled || (isFolioEnabled && !isSelectedTab)) {
-            hoverCardXDp +=
-                    MathUtils.flipSignIf(mContext.getResources().getDimension(
-                                                 R.dimen.tsr_no_feet_tab_hover_card_x_offset)
-                                    / displayDensity,
-                            LocalizationUtils.isLayoutRtl());
-        }
-
-        float windowHorizontalMarginDp = mContext.getResources().getDimension(
-                                                 R.dimen.tab_hover_card_window_horizontal_margin)
-                / displayDensity;
-        // Align the hover card at a minimum horizontal margin of 8dp from the window left edge.
-        if (hoverCardXDp < windowHorizontalMarginDp) {
-            hoverCardXDp = windowHorizontalMarginDp;
-        }
-        // Align the hover card at a minimum horizontal margin of 8dp from the window right edge.
-        if (hoverCardXDp + hoverCardWidthDp > windowWidthDp - windowHorizontalMarginDp) {
-            hoverCardXDp = windowWidthDp - hoverCardWidthDp - windowHorizontalMarginDp;
-        }
-
-        // 4. Determine the vertical position of the hover card.
-        float hoverCardYDp = mHeight;
-        // Adjust the TSR detached tab hover card to be at a fixed distance from the tab container.
-        if (isDetachedEnabled) {
-            hoverCardYDp += FOLIO_DETACHED_BOTTOM_MARGIN_DP;
-        }
-
-        return new float[] {hoverCardXDp * displayDensity, hoverCardYDp * displayDensity};
+        mTabHoverCardView.show(mModel.getTabAt(hoveredTabIndex), mLastHoveredTab,
+                hoveredTabIndex == mModel.index(), mHeight);
     }
 
     private void updateHoveredFolioTabState(StripLayoutTab tab, boolean hovered) {

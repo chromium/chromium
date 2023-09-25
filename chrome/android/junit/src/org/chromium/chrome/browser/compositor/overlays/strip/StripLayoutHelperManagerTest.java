@@ -5,21 +5,16 @@
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.RectF;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.ViewStub;
-import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.ContextCompat;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
@@ -61,7 +56,6 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.styles.ChromeColors;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.LocalizationUtils;
 
 /** Tests for {@link StripLayoutHelperManager}. */
@@ -437,44 +431,5 @@ public class StripLayoutHelperManagerTest {
                         mRenderHost.getResourceManager(),
                         activeLayoutHelper.getStripLayoutTabsToRender(), 0f, selectedTabId,
                         hoveredTabId);
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP)
-    public void testUpdateHoverCardColorsOnTabModelSelected() {
-        when(mStandardTabModel.isIncognito()).thenReturn(false);
-        when(mIncognitoTabModel.isIncognito()).thenReturn(true);
-        when(mTabModelSelector.getModel(false)).thenReturn(mStandardTabModel);
-        when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
-
-        var tabHoverCardView = mock(View.class);
-        var titleView = mock(TextView.class);
-        var urlView = mock(TextView.class);
-        when(tabHoverCardView.findViewById(R.id.title)).thenReturn(titleView);
-        when(tabHoverCardView.findViewById(R.id.url)).thenReturn(urlView);
-
-        mStripLayoutHelperManager.getStripLayoutHelper(false).setTabHoverCardView(tabHoverCardView);
-        mStripLayoutHelperManager.getStripLayoutHelper(true).setTabHoverCardView(tabHoverCardView);
-        var tabModelSelectorObserver =
-                mStripLayoutHelperManager.getTabModelSelectorObserverForTesting();
-
-        // Standard tab model is currently considered active as
-        // StripLayoutHelperManager#mIsIncognito is false by default. Switch to the incognito tab
-        // model.
-        tabModelSelectorObserver.onTabModelSelected(mIncognitoTabModel, mStandardTabModel);
-        verify(tabHoverCardView)
-                .setBackgroundTintList(eq(ColorStateList.valueOf(ContextCompat.getColor(
-                        mContext, R.color.default_bg_color_dark_elev_5_baseline))));
-        verify(titleView).setTextColor(eq(mContext.getColor(R.color.default_text_color_light)));
-        verify(urlView).setTextColor(
-                eq(mContext.getColor(R.color.default_text_color_secondary_light)));
-
-        // Switch to the regular tab model.
-        tabModelSelectorObserver.onTabModelSelected(mStandardTabModel, mIncognitoTabModel);
-        verify(tabHoverCardView)
-                .setBackgroundTintList(eq(ColorStateList.valueOf(ChromeColors.getSurfaceColor(
-                        mContext, R.dimen.tab_hover_card_bg_color_elev))));
-        verify(titleView).setTextColor(eq(SemanticColorUtils.getDefaultTextColor(mContext)));
-        verify(urlView).setTextColor(eq(SemanticColorUtils.getDefaultTextColorSecondary(mContext)));
     }
 }
