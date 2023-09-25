@@ -191,6 +191,7 @@ class VideoCaptureImplTest : public ::testing::Test {
                void(scoped_refptr<media::VideoFrame>,
                     std::vector<scoped_refptr<media::VideoFrame>>,
                     base::TimeTicks));
+  MOCK_METHOD1(OnFrameDroppedEarly, void(media::VideoCaptureFrameDropReason));
   MOCK_METHOD1(OnStateUpdate, void(VideoCaptureState));
   MOCK_METHOD1(OnDeviceFormatsInUse,
                void(const Vector<media::VideoCaptureFormat>&));
@@ -202,10 +203,12 @@ class VideoCaptureImplTest : public ::testing::Test {
         &VideoCaptureImplTest::OnStateUpdate, base::Unretained(this));
     const auto frame_ready_callback = WTF::BindRepeating(
         &VideoCaptureImplTest::OnFrameReady, base::Unretained(this));
+    const auto frame_dropped_callback = WTF::BindRepeating(
+        &VideoCaptureImplTest::OnFrameDroppedEarly, base::Unretained(this));
 
-    video_capture_impl_->StartCapture(client_id, params, state_update_callback,
-                                      frame_ready_callback,
-                                      /*crop_version_cb=*/base::DoNothing());
+    video_capture_impl_->StartCapture(
+        client_id, params, state_update_callback, frame_ready_callback,
+        /*crop_version_cb=*/base::DoNothing(), frame_dropped_callback);
   }
 
   void StopCapture(int client_id) {
@@ -623,6 +626,17 @@ TEST_F(VideoCaptureImplTest, ScaledBufferReceived_SoftwareAndHardware) {
   testing_io_thread.task_runner()->PostTask(
       FROM_HERE, base::BindLambdaForTesting(stop_and_destroy_buffers));
   testing_io_thread.Stop();
+}
+
+TEST_F(VideoCaptureImplTest, OnFrameDroppedEarly) {
+  EXPECT_CALL(mock_video_capture_host_, DoStart(_, session_id_, params_small_));
+  EXPECT_CALL(*this, OnFrameDroppedEarly(_));
+  EXPECT_CALL(mock_video_capture_host_, Stop(_));
+
+  StartCapture(0, params_small_);
+  video_capture_impl_->OnFrameDroppedEarly(
+      media::VideoCaptureFrameDropReason::kBufferPoolMaxBufferCountExceeded);
+  StopCapture(0);
 }
 
 TEST_F(VideoCaptureImplTest, BufferReceivedAfterStop) {

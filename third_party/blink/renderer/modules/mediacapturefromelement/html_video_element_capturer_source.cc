@@ -74,6 +74,8 @@ void HtmlVideoElementCapturerSource::StartCapture(
     const media::VideoCaptureParams& params,
     const VideoCaptureDeliverFrameCB& new_frame_callback,
     const VideoCaptureCropVersionCB& crop_version_callback,
+    // The HTML element does not report frame drops.
+    const VideoCaptureNotifyFrameDroppedCB&,
     const RunningCallback& running_callback) {
   DVLOG(2) << __func__ << " requested "
            << media::VideoCaptureFormat::ToString(params.requested_format);

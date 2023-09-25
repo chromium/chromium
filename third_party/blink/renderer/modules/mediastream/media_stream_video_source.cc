@@ -93,6 +93,11 @@ void MediaStreamVideoSource::AddTrack(
           ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
               &VideoTrackAdapter::NewCropVersionOnVideoTaskRunner,
               GetTrackAdapter()));
+      // TODO(https://crbug.com/1472978): Wire this up to VideoTrackAdapter in
+      // order to notify MediaStreamTrackImpl of frame drops that happened by
+      // the source, such as in the capture process.
+      VideoCaptureNotifyFrameDroppedCB frame_dropped_callback =
+          base::DoNothing();
       // Callbacks are invoked from the IO thread. With
       // UseThreadPoolForMediaStreamVideoTaskRunner disabled, the video task
       // runner is the same as the IO thread and there is no need to post frames
@@ -106,11 +111,14 @@ void MediaStreamVideoSource::AddTrack(
                 video_task_runner(),
                 std::move(deliver_encoded_frame_on_video_callback)),
             base::BindPostTask(video_task_runner(),
-                               std::move(new_crop_version_on_video_callback)));
+                               std::move(new_crop_version_on_video_callback)),
+            base::BindPostTask(video_task_runner(),
+                               std::move(frame_dropped_callback)));
       } else {
         StartSourceImpl(std::move(deliver_frame_on_video_callback),
                         std::move(deliver_encoded_frame_on_video_callback),
-                        std::move(new_crop_version_on_video_callback));
+                        std::move(new_crop_version_on_video_callback),
+                        std::move(frame_dropped_callback));
       }
       break;
     }

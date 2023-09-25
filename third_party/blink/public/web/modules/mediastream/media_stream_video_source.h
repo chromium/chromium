@@ -266,10 +266,13 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   // * |crop_version_callback| whenever it is guaranteed that all subsequent
   //   frames that |frame_callback| will be called for, will have either
   //   the given crop version or higher.
+  // * |frame_dropped_callback| will be called when a frame was dropped prior to
+  //   delivery (i.e. |frame_callback| was not called for this frame).
   virtual void StartSourceImpl(
       VideoCaptureDeliverFrameCB frame_callback,
       EncodedVideoFrameCB encoded_frame_callback,
-      VideoCaptureCropVersionCB crop_version_callback) = 0;
+      VideoCaptureCropVersionCB crop_version_callback,
+      VideoCaptureNotifyFrameDroppedCB frame_dropped_callback) = 0;
   void OnStartDone(mojom::MediaStreamRequestResult result);
 
   // A subclass that supports restart must override this method such that it

@@ -54,7 +54,8 @@ void PepperPlatformVideoCapture::StartCapture(
       base::BindPostTaskToCurrentDefault(
           base::BindRepeating(&PepperPlatformVideoCapture::OnFrameReady,
                               weak_factory_.GetWeakPtr())),
-      /*crop_version_cb=*/base::DoNothing());
+      /*crop_version_cb=*/base::DoNothing(),
+      /*frame_dropped_cb=*/base::DoNothing());
 }
 
 void PepperPlatformVideoCapture::StopCapture() {

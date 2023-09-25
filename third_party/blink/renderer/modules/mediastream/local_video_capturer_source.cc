@@ -47,6 +47,7 @@ void LocalVideoCapturerSource::StartCapture(
     const media::VideoCaptureParams& params,
     const VideoCaptureDeliverFrameCB& new_frame_callback,
     const VideoCaptureCropVersionCB& crop_version_callback,
+    const VideoCaptureNotifyFrameDroppedCB& frame_dropped_callback,
     const RunningCallback& running_callback) {
   DCHECK(params.requested_format.IsValid());
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -58,7 +59,7 @@ void LocalVideoCapturerSource::StartCapture(
           task_runner_, ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
                             &LocalVideoCapturerSource::OnStateUpdate,
                             weak_factory_.GetWeakPtr()))),
-      new_frame_callback, crop_version_callback);
+      new_frame_callback, crop_version_callback, frame_dropped_callback);
 }
 
 media::VideoCaptureFeedbackCB LocalVideoCapturerSource::GetFeedbackCallback()

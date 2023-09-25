@@ -52,10 +52,12 @@ class MODULES_EXPORT LocalVideoCapturerSource : public VideoCapturerSource {
 
   // VideoCaptureSource Implementation.
   media::VideoCaptureFormats GetPreferredFormats() override;
-  void StartCapture(const media::VideoCaptureParams& params,
-                    const VideoCaptureDeliverFrameCB& new_frame_callback,
-                    const VideoCaptureCropVersionCB& crop_version_callback,
-                    const RunningCallback& running_callback) override;
+  void StartCapture(
+      const media::VideoCaptureParams& params,
+      const VideoCaptureDeliverFrameCB& new_frame_callback,
+      const VideoCaptureCropVersionCB& crop_version_callback,
+      const VideoCaptureNotifyFrameDroppedCB& frame_dropped_callback,
+      const RunningCallback& running_callback) override;
   void RequestRefreshFrame() override;
   void MaybeSuspend() override;
   void Resume() override;

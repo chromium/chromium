@@ -100,7 +100,8 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
   void StartSourceImpl(
       VideoCaptureDeliverFrameCB frame_callback,
       EncodedVideoFrameCB encoded_frame_callback,
-      VideoCaptureCropVersionCB crop_version_callback) override;
+      VideoCaptureCropVersionCB crop_version_callback,
+      VideoCaptureNotifyFrameDroppedCB frame_dropped_callback) override;
   void StopSourceImpl() override;
   absl::optional<media::VideoCaptureFormat> GetCurrentFormat() const override;
   void StopSourceForRestartImpl() override;
@@ -118,6 +119,7 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
   blink::VideoCaptureDeliverFrameCB frame_callback_;
   EncodedVideoFrameCB encoded_frame_callback_;
   VideoCaptureCropVersionCB crop_version_callback_;
+  VideoCaptureNotifyFrameDroppedCB frame_dropped_callback_;
 
   base::WeakPtrFactory<MediaStreamVideoSource> weak_factory_{this};
 };

@@ -25,10 +25,12 @@ class MockVideoCapturerSource : public VideoCapturerSource {
                         const VideoCaptureDeliverFrameCB& new_frame_callback,
                         const RunningCallback& running_callback));
   MOCK_METHOD0(MockStopCapture, void());
-  void StartCapture(const media::VideoCaptureParams& params,
-                    const VideoCaptureDeliverFrameCB& new_frame_callback,
-                    const VideoCaptureCropVersionCB& crop_version_callback,
-                    const RunningCallback& running_callback) override {
+  void StartCapture(
+      const media::VideoCaptureParams& params,
+      const VideoCaptureDeliverFrameCB& new_frame_callback,
+      const VideoCaptureCropVersionCB& crop_version_callback,
+      const VideoCaptureNotifyFrameDroppedCB& frame_dropped_callback,
+      const RunningCallback& running_callback) override {
     running_cb_ = running_callback;
     capture_params_ = params;
 

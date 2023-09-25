@@ -322,7 +322,9 @@ void MediaStreamRemoteVideoSource::OnSourceTerminated() {
 void MediaStreamRemoteVideoSource::StartSourceImpl(
     VideoCaptureDeliverFrameCB frame_callback,
     EncodedVideoFrameCB encoded_frame_callback,
-    VideoCaptureCropVersionCB crop_version_callback) {
+    VideoCaptureCropVersionCB crop_version_callback,
+    // The remote track does not not report frame drops.
+    VideoCaptureNotifyFrameDroppedCB) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!delegate_.get());
   delegate_ = base::MakeRefCounted<RemoteVideoSourceDelegate>(

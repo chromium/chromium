@@ -238,7 +238,7 @@ class VideoCaptureImplManagerTest : public ::testing::Test,
         ConvertToBaseRepeatingCallback(
             CrossThreadBindRepeating(&VideoCaptureImplManagerTest::OnFrameReady,
                                      CrossThreadUnretained(this))),
-        base::DoNothing());
+        base::DoNothing(), base::DoNothing());
   }
 
   base::test::TaskEnvironment task_environment_;

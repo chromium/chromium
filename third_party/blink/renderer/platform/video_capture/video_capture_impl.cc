@@ -689,18 +689,14 @@ void VideoCaptureImpl::VideoFrameBufferPreparer::Finalize() {
 // Information about a video capture client of ours.
 struct VideoCaptureImpl::ClientInfo {
   ClientInfo() = default;
-
   ClientInfo(const ClientInfo& other) = default;
-
   ~ClientInfo() = default;
 
   media::VideoCaptureParams params;
-
   VideoCaptureStateUpdateCB state_update_cb;
-
   VideoCaptureDeliverFrameCB deliver_frame_cb;
-
   VideoCaptureCropVersionCB crop_version_cb;
+  VideoCaptureNotifyFrameDroppedCB frame_dropped_cb;
 };
 
 VideoCaptureImpl::VideoCaptureImpl(
@@ -768,7 +764,8 @@ void VideoCaptureImpl::StartCapture(
     const media::VideoCaptureParams& params,
     const VideoCaptureStateUpdateCB& state_update_cb,
     const VideoCaptureDeliverFrameCB& deliver_frame_cb,
-    const VideoCaptureCropVersionCB& crop_version_cb) {
+    const VideoCaptureCropVersionCB& crop_version_cb,
+    const VideoCaptureNotifyFrameDroppedCB& frame_dropped_cb) {
   DVLOG(1) << __func__ << " |device_id_| = " << device_id_;
   DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
   OnLog("VideoCaptureImpl got request to start capture.");
@@ -778,6 +775,7 @@ void VideoCaptureImpl::StartCapture(
   client_info.state_update_cb = state_update_cb;
   client_info.deliver_frame_cb = deliver_frame_cb;
   client_info.crop_version_cb = crop_version_cb;
+  client_info.frame_dropped_cb = frame_dropped_cb;
 
   switch (state_) {
     case VIDEO_CAPTURE_STATE_STARTING:
@@ -1170,8 +1168,9 @@ void VideoCaptureImpl::OnBufferDestroyed(int32_t buffer_id) {
 void VideoCaptureImpl::OnFrameDroppedEarly(
     media::VideoCaptureFrameDropReason reason) {
   DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
-  // TODO(https://crbug.com/1472978): Forward this signal to `clients_` so that
-  // it ultimately ends up in MediaStreamTrackImpl and the Track Stats API.
+  for (const auto& client : clients_) {
+    client.second.frame_dropped_cb.Run(reason);
+  }
 }
 
 void VideoCaptureImpl::OnNewCropVersion(uint32_t crop_version) {
