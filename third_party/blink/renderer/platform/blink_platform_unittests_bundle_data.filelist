@@ -106,6 +106,13 @@
 ../../web_tests/external/wpt/fonts/math/underover-accentbaseheight4000-underbarverticalgap7000.woff
 ../../web_tests/external/wpt/fonts/math/xheight500.woff
 ../../web_tests/external/wpt/fonts/mplus-1p-regular.woff
+../../web_tests/external/wpt/fonts/noto/NotoSansAdlam-hinted/NotoSansAdlam-Regular.ttf
+../../web_tests/external/wpt/fonts/noto/NotoSansCypriot-hinted/NotoSansCypriot-Regular.ttf
+../../web_tests/external/wpt/fonts/noto/NotoSansDeseret-Regular.ttf
+../../web_tests/external/wpt/fonts/noto/NotoSansDevanagari-Regular.ttf
+../../web_tests/external/wpt/fonts/noto/cjk/NotoSansCJKjp-Regular-subset-chws.otf
+../../web_tests/external/wpt/fonts/noto/cjk/NotoSansCJKjp-Regular-subset-halt.otf
+../../web_tests/external/wpt/fonts/noto/noto-sans-v8-latin-regular.woff
 ../../web_tests/external/wpt/fonts/pass.woff
 ../../web_tests/external/wpt/fonts/sileot-webfont.woff
 ../../web_tests/external/wpt/fonts/tcu-font.woff
