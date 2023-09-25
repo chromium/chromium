@@ -89,10 +89,9 @@ void BrowsingDataLifetimePolicyHandler::ApplyPolicySettings(
   SimpleSchemaValidatingPolicyHandler::ApplyPolicySettings(policies, prefs);
 
   if (browsing_data::IsPolicyDependencyEnabled()) {
-    std::string log_message;
-    browsing_data::DisableSyncTypes(forced_disabled_sync_types_, prefs,
-                                    policy_name(), log_message);
-    if (log_message != std::string()) {
+    std::string log_message = browsing_data::DisableSyncTypes(
+        forced_disabled_sync_types_, prefs, policy_name());
+    if (!log_message.empty()) {
       LOG_POLICY(INFO, POLICY_PROCESSING) << log_message;
     }
   }

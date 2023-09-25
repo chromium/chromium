@@ -114,18 +114,17 @@ syncer::UserSelectableTypeSet GetSyncTypesForBrowsingDataLifetime(
   return sync_types;
 }
 
-void DisableSyncTypes(const syncer::UserSelectableTypeSet& types_set,
-                      PrefValueMap* prefs,
-                      const std::string& policy_name,
-                      std::string& log_message) {
+std::string DisableSyncTypes(const syncer::UserSelectableTypeSet& types_set,
+                             PrefValueMap* prefs,
+                             const std::string& policy_name) {
   for (const syncer::UserSelectableType type : types_set) {
     syncer::SyncPrefs::SetTypeDisabledByPolicy(prefs, type);
   }
-  log_message =
-      types_set.Size() > 0
-          ? base::StringPrintf(kDisabledSyncTypesLogFormat, policy_name.c_str(),
-                               UserSelectableTypeSetToString(types_set).c_str())
-          : std::string();
+  if (types_set.Size() > 0) {
+    return base::StringPrintf(kDisabledSyncTypesLogFormat, policy_name.c_str(),
+                              UserSelectableTypeSetToString(types_set).c_str());
+  }
+  return std::string();
 }
 
 absl::optional<PolicyDataType> NameToPolicyDataType(
