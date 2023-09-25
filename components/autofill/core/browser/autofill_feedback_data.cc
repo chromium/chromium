@@ -45,8 +45,8 @@ base::Value::Dict BuildFieldDataLogs(AutofillField* field) {
   field_data.Set("placeholderAttribute", field->placeholder);
   field_data.Set("fieldType", field->Type().ToString());
   field_data.Set("heuristicType",
-                 AutofillType(field->heuristic_type()).ToString());
-  field_data.Set("serverType", AutofillType(field->server_type()).ToString());
+                 FieldTypeToStringPiece(field->heuristic_type()));
+  field_data.Set("serverType", FieldTypeToStringPiece(field->server_type()));
   field_data.Set("serverTypeIsOverride",
                  field->server_type_prediction_is_override());
   field_data.Set("htmlType", FieldTypeToStringPiece(field->html_type()));

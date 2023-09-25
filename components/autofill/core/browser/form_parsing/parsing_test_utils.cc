@@ -118,10 +118,9 @@ void FormFieldTestBase::TestClassificationExpectations() {
             ? field_candidates_map_[field_id].BestHeuristicType()
             : UNKNOWN_TYPE;
     SCOPED_TRACE(testing::Message()
-                 << "Found type "
-                 << AutofillType::ServerFieldTypeToString(actual_field_type)
+                 << "Found type " << FieldTypeToStringPiece(actual_field_type)
                  << ", expected type "
-                 << AutofillType::ServerFieldTypeToString(expected_field_type));
+                 << FieldTypeToStringPiece(expected_field_type));
     EXPECT_EQ(expected_field_type, actual_field_type);
     num_classifications += expected_field_type != UNKNOWN_TYPE;
   }

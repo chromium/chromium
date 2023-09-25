@@ -97,7 +97,7 @@ std::string SerializeProfiles(const std::vector<AutofillProfile*>& profiles) {
     result += "\n";
     for (const ServerFieldType& type : kProfileFieldTypes) {
       std::u16string value = profile->GetRawInfo(type);
-      result += AutofillType::ServerFieldTypeToString(type);
+      result += FieldTypeToStringPiece(type);
       result += kFieldSeparator;
       if (!value.empty()) {
         base::ReplaceFirstSubstringAfterOffset(&value, 0, u"\\n", u"\n");
@@ -140,28 +140,14 @@ class AutofillMergeTest : public testing::DataDrivenTest,
   // sequentially, and fills |merged_profiles| with the serialized result.
   void MergeProfiles(const std::string& profiles, std::string* merged_profiles);
 
-  // Deserializes |str| into a field type.
-  ServerFieldType StringToFieldType(const std::string& str);
-
   base::test::TaskEnvironment task_environment_;
   TestAutofillClient autofill_client_;
   TestPersonalDataManager personal_data_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
-
- private:
-  std::map<std::string, ServerFieldType> string_to_field_type_map_;
 };
 
 AutofillMergeTest::AutofillMergeTest()
-    : testing::DataDrivenTest(GetTestDataDir(), kFeatureName, kTestName) {
-  for (size_t i = NO_SERVER_DATA; i < MAX_VALID_FIELD_TYPE; ++i) {
-    ServerFieldType field_type = ToSafeServerFieldType(i, MAX_VALID_FIELD_TYPE);
-    if (field_type == MAX_VALID_FIELD_TYPE)
-      continue;
-    string_to_field_type_map_[AutofillType::ServerFieldTypeToString(
-        field_type)] = field_type;
-  }
-}
+    : testing::DataDrivenTest(GetTestDataDir(), kFeatureName, kTestName) {}
 
 AutofillMergeTest::~AutofillMergeTest() = default;
 
@@ -231,7 +217,7 @@ void AutofillMergeTest::MergeProfiles(const std::string& profiles,
         AutofillField* field =
             const_cast<AutofillField*>(form_structure.field(j));
         ServerFieldType type =
-            StringToFieldType(base::UTF16ToUTF8(field->name));
+            TypeNameToFieldType(base::UTF16ToUTF8(field->name));
         field->set_heuristic_type(GetActiveHeuristicSource(), type);
       }
 
@@ -260,10 +246,6 @@ void AutofillMergeTest::MergeProfiles(const std::string& profiles,
                        return a->modification_date() < b->modification_date();
                      });
   *merged_profiles = SerializeProfiles(imported_profiles);
-}
-
-ServerFieldType AutofillMergeTest::StringToFieldType(const std::string& str) {
-  return string_to_field_type_map_[str];
 }
 
 TEST_P(AutofillMergeTest, DataDrivenMergeProfiles) {

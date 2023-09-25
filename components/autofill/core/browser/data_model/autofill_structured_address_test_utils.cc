@@ -62,7 +62,7 @@ void VerifyTestValues(AddressComponent* component,
   for (const auto& test_value : test_values) {
     SCOPED_TRACE(base::StringPrintf(
         "Failed type=%s, value=%s, status=%d",
-        AutofillType(test_value.type).ToString().c_str(),
+        std::string(FieldTypeToStringPiece(test_value.type)).c_str(),
         test_value.value.c_str(), static_cast<int>(test_value.status)));
 
     EXPECT_EQ(base::UTF16ToUTF8(component->GetValueForType(test_value.type)),

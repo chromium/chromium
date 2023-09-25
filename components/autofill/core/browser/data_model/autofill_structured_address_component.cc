@@ -99,7 +99,7 @@ ServerFieldType AddressComponent::GetStorageType() const {
 }
 
 std::string AddressComponent::GetStorageTypeName() const {
-  return AutofillType::ServerFieldTypeToString(storage_type_);
+  return std::string(FieldTypeToStringPiece(storage_type_));
 }
 
 void AddressComponent::CopyFrom(const AddressComponent& other) {
@@ -271,7 +271,7 @@ std::u16string AddressComponent::GetFormatString() const {
   std::vector<std::string> format_pieces;
   for (const auto& subcomponent : subcomponents_) {
     std::string format_piece = GetPlaceholderToken(
-        AutofillType(subcomponent->GetStorageType()).ToString());
+        FieldTypeToStringPiece(subcomponent->GetStorageType()));
     format_pieces.emplace_back(std::move(format_piece));
   }
   return base::ASCIIToUTF16(base::JoinString(format_pieces, " "));

@@ -213,7 +213,7 @@ std::vector<std::string> ExtractAllPlaceholders(const std::string& value) {
   return GetAllPartialMatches(value, "\\${([\\w]+)}");
 }
 
-std::string GetPlaceholderToken(const std::string& value) {
+std::string GetPlaceholderToken(std::string_view value) {
   return base::StrCat({"${", value, "}"});
 }
 
@@ -278,9 +278,9 @@ std::string CaptureTypeWithAffixedPattern(const ServerFieldType& type,
 
   // By adding an "i" in the first group, the capturing is case insensitive.
   // Allow multiple separators to support the ", " case.
-  return base::StrCat(
-      {"(?i:", prefix, "(?P<", AutofillType::ServerFieldTypeToString(type), ">",
-       pattern, ")", suffix, "(?:", options.separator, ")+)", quantifier});
+  return base::StrCat({"(?i:", prefix, "(?P<", FieldTypeToStringPiece(type),
+                       ">", pattern, ")", suffix, "(?:", options.separator,
+                       ")+)", quantifier});
 }
 
 std::string CaptureTypeWithSuffixedPattern(const ServerFieldType& type,

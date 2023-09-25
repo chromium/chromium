@@ -1209,9 +1209,8 @@ std::ostream& operator<<(std::ostream& os, const AutofillProfile& profile) {
 
   // Lambda to print the value and verification status for |type|.
   auto print_values_lambda = [&os, &profile](ServerFieldType type) {
-    os << AutofillType::ServerFieldTypeToString(type) << ": "
-       << profile.GetRawInfo(type) << "(" << profile.GetVerificationStatus(type)
-       << ")" << std::endl;
+    os << FieldTypeToStringPiece(type) << ": " << profile.GetRawInfo(type)
+       << "(" << profile.GetVerificationStatus(type) << ")" << std::endl;
   };
 
   // Use a helper function to print the values of the stored types.

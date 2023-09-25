@@ -96,9 +96,8 @@ void VerifyFormGroupValues(const FormGroup& form_group,
                            bool ignore_status) {
   for (const auto& value : values) {
     SCOPED_TRACE(testing::Message()
-                 << "Expected for type "
-                 << AutofillType::ServerFieldTypeToString(value.type) << "\n\t"
-                 << value.value << " with status "
+                 << "Expected for type " << FieldTypeToStringPiece(value.type)
+                 << "\n\t" << value.value << " with status "
                  << (ignore_status ? "(ignored)" : "")
                  << value.verification_status << "\nFound:"
                  << "\n\t" << form_group.GetRawInfo(value.type)

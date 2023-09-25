@@ -495,8 +495,7 @@ ServerFieldType GetActualFieldType(const ServerFieldTypeSet& possible_types,
   if (collapsed_field_types.size() == 1)
     actual_type = *collapsed_field_types.begin();
 
-  DVLOG(2) << "Inferred Type: "
-           << AutofillType::ServerFieldTypeToString(actual_type);
+  DVLOG(2) << "Inferred Type: " << FieldTypeToStringPiece(actual_type);
   return actual_type;
 }
 
@@ -702,9 +701,8 @@ void LogPredictionQualityMetrics(
   ServerFieldType actual_type =
       GetActualFieldType(possible_types, predicted_type);
 
-  DVLOG(2) << "Predicted: "
-           << AutofillType::ServerFieldTypeToString(predicted_type) << "; "
-           << "Actual: " << AutofillType::ServerFieldTypeToString(actual_type);
+  DVLOG(2) << "Predicted: " << FieldTypeToStringPiece(predicted_type) << "; "
+           << "Actual: " << FieldTypeToStringPiece(actual_type);
 
   DCHECK_LE(predicted_type, UINT16_MAX);
   DCHECK_LE(actual_type, UINT16_MAX);

@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -187,7 +188,7 @@ std::vector<std::string> GetAllPartialMatches(const std::string& value,
 std::vector<std::string> ExtractAllPlaceholders(const std::string& value);
 
 // Returns |value| as a placeholder token: ${value}.
-std::string GetPlaceholderToken(const std::string& value);
+std::string GetPlaceholderToken(std::string_view value);
 
 // Returns a named capture group created by the concatenation of the
 // StringPieces in |pattern_span_initializer_list|. The group is named by the

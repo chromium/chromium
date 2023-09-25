@@ -80,11 +80,7 @@ class AutofillType {
   // map to ADDRESS_HOME_COUNTRY.
   ServerFieldType GetStorableType() const;
 
-  // Serializes `this` type to a string.
   std::string ToString() const;
-
-  // Translates the ServerFieldType values into the corresponding strings.
-  static std::string ServerFieldTypeToString(ServerFieldType type);
 
  private:
   // The server-native field type, or UNKNOWN_TYPE if unset.

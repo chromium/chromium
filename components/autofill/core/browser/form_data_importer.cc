@@ -78,8 +78,8 @@ bool IsValidFieldTypeAndValue(const ServerFieldTypeSet types_seen,
        field_type_group != FieldTypeGroup::kPhone)) {
     LOG_AF(import_log_buffer)
         << LogMessage::kImportAddressProfileFromFormFailed
-        << "Multiple fields of type "
-        << AutofillType::ServerFieldTypeToString(field_type) << "." << CTag{};
+        << "Multiple fields of type " << FieldTypeToStringPiece(field_type)
+        << "." << CTag{};
     return false;
   }
   // Abandon the import if an email address value shows up in a field that is
@@ -88,7 +88,7 @@ bool IsValidFieldTypeAndValue(const ServerFieldTypeSet types_seen,
     LOG_AF(import_log_buffer)
         << LogMessage::kImportAddressProfileFromFormFailed
         << "Email address found in field of different type: "
-        << AutofillType::ServerFieldTypeToString(field_type) << CTag{};
+        << FieldTypeToStringPiece(field_type) << CTag{};
     return false;
   }
 

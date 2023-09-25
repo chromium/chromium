@@ -251,8 +251,7 @@ void FormField::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
 
       LogBuffer description;
       LOG_AF(description) << "BestHeuristicType: "
-                          << AutofillType::ServerFieldTypeToString(
-                                 f.best_heuristic_type)
+                          << FieldTypeToStringPiece(f.best_heuristic_type)
                           << ", is fillable: "
                           << IsFillableFieldType(f.best_heuristic_type);
 
