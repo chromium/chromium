@@ -2874,6 +2874,11 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
     MaybeAppendBlinkSettingsSwitchForFieldTrial(browser_command_line,
                                                 command_line);
 
+#if BUILDFLAG(IS_ANDROID)
+    // If the platform is Android, force the distillability service on.
+    command_line->AppendSwitch(switches::kEnableDistillabilityService);
+#endif
+
 #if BUILDFLAG(ENABLE_NACL)
     AppendDisableNaclSwitchIfNecessary(command_line);
 #endif
