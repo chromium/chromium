@@ -163,15 +163,17 @@
         [weakSelf mapDismissedRequestingURL:url];
       });
   [self.miniMapController
-      configureFooterWithText:l10n_util::GetNSString(
-                                  IDS_IOS_MINI_MAP_FOOTER_STRING)
-      leadingButtonText:l10n_util::GetNSString(IDS_IOS_CONTENT_SETTINGS_TITLE)
-      trailingButtonText:l10n_util::GetNSString(IDS_IOS_OPTIONS_REPORT_AN_ISSUE)
-      leadingButtonAction:^{
-        [weakSelf showContentSettingsFromMiniMap];
+      configureFooterWithTitle:l10n_util::GetNSString(
+                                   IDS_IOS_MINI_MAP_FOOTER_STRING)
+      leadingButtonTitle:l10n_util::GetNSString(IDS_IOS_CONTENT_SETTINGS_TITLE)
+      trailingButtonTitle:l10n_util::GetNSString(
+                              IDS_IOS_OPTIONS_REPORT_AN_ISSUE)
+      leadingButtonAction:^(UIViewController* viewController) {
+        [weakSelf
+            showContentSettingsFromMiniMapInViewController:viewController];
       }
-      trailingButtonAction:^{
-        [weakSelf reportAnIssueFromMiniMap];
+      trailingButtonAction:^(UIViewController* viewController) {
+        [weakSelf reportAnIssueFromMiniMapInViewController:viewController];
       }];
 
   if (showIPH) {
@@ -186,12 +188,16 @@
     NSAttributedString* attrSubtitle =
         AttributedStringFromStringWithLink(iphSubtitle, nil, linkAttributes);
 
-    [self.miniMapController configureIPHWithTitle:[[NSAttributedString alloc]
-                                                      initWithString:iphTitle]
-                                         subtitle:attrSubtitle
-                                    actionHandler:^(NSURL*) {
-                                      [weakSelf showContentSettingsFromMiniMap];
-                                    }];
+    [self.miniMapController
+        configureDisclaimerWithTitle:[[NSAttributedString alloc]
+                                         initWithString:iphTitle]
+                            subtitle:attrSubtitle
+                       actionHandler:^(NSURL*,
+                                       UIViewController* viewController) {
+                         [weakSelf
+                             showContentSettingsFromMiniMapInViewController:
+                                 viewController];
+                       }];
   }
   if (self.mode == MiniMapMode::kDirections) {
     [self.miniMapController
@@ -211,32 +217,22 @@
   }
 }
 
-- (void)showContentSettingsFromMiniMap {
+- (void)showContentSettingsFromMiniMapInViewController:
+    (UIViewController*)viewController {
   [self.mediator userOpenedSettingsFromMiniMap];
-  // The command is comming from the minimap which is currently presented.
-  // The contents settings screen must be presented on top of it.
-  UIViewController* presentingViewController = self.baseViewController;
-  while (presentingViewController.presentedViewController) {
-    presentingViewController = presentingViewController.presentedViewController;
-  }
   id<ApplicationSettingsCommands> settingsCommandHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationSettingsCommands);
   [settingsCommandHandler
-      showContentsSettingsFromViewController:presentingViewController];
+      showContentsSettingsFromViewController:viewController];
 }
 
-- (void)reportAnIssueFromMiniMap {
+- (void)reportAnIssueFromMiniMapInViewController:
+    (UIViewController*)viewController {
   [self.mediator userReportedAnIssueFromMiniMap];
-  // The command is comming from the minimap which is currently presented.
-  // The contents settings screen must be presented on top of it.
-  UIViewController* presentingViewController = self.baseViewController;
-  while (presentingViewController.presentedViewController) {
-    presentingViewController = presentingViewController.presentedViewController;
-  }
   id<ApplicationCommands> applicationCommandHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   [applicationCommandHandler
-      showReportAnIssueFromViewController:presentingViewController
+      showReportAnIssueFromViewController:viewController
                                    sender:UserFeedbackSender::MiniMap];
 }
 

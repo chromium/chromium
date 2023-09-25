@@ -138,11 +138,11 @@ TEST_F(MiniMapCoordinatorTest, TestNoConsentNeededMap) {
   id mini_map_controller = OCMStrictProtocolMock(@protocol(MiniMapController));
   factory_.controller = mini_map_controller;
 
-  OCMExpect([mini_map_controller configureFooterWithText:[OCMArg any]
-                                       leadingButtonText:[OCMArg any]
-                                      trailingButtonText:[OCMArg any]
-                                     leadingButtonAction:[OCMArg any]
-                                    trailingButtonAction:[OCMArg any]]);
+  OCMExpect([mini_map_controller configureFooterWithTitle:[OCMArg any]
+                                       leadingButtonTitle:[OCMArg any]
+                                      trailingButtonTitle:[OCMArg any]
+                                      leadingButtonAction:[OCMArg any]
+                                     trailingButtonAction:[OCMArg any]]);
 
   OCMExpect([mini_map_controller
       presentMapsWithPresentingViewController:[OCMArg any]]);
@@ -155,11 +155,11 @@ TEST_F(MiniMapCoordinatorTest, TestNoConsentNeededDirections) {
   id mini_map_controller = OCMStrictProtocolMock(@protocol(MiniMapController));
   factory_.controller = mini_map_controller;
 
-  OCMExpect([mini_map_controller configureFooterWithText:[OCMArg any]
-                                       leadingButtonText:[OCMArg any]
-                                      trailingButtonText:[OCMArg any]
-                                     leadingButtonAction:[OCMArg any]
-                                    trailingButtonAction:[OCMArg any]]);
+  OCMExpect([mini_map_controller configureFooterWithTitle:[OCMArg any]
+                                       leadingButtonTitle:[OCMArg any]
+                                      trailingButtonTitle:[OCMArg any]
+                                      leadingButtonAction:[OCMArg any]
+                                     trailingButtonAction:[OCMArg any]]);
 
   OCMExpect([mini_map_controller
       presentDirectionsWithPresentingViewController:[OCMArg any]]);
@@ -178,11 +178,11 @@ TEST_F(MiniMapCoordinatorTest, TestShowMapAfterConsent) {
   factory_.controller = mini_map_controller;
   SetupCoordinator(YES, MiniMapMode::kMap);
 
-  OCMExpect([mini_map_controller configureFooterWithText:[OCMArg any]
-                                       leadingButtonText:[OCMArg any]
-                                      trailingButtonText:[OCMArg any]
-                                     leadingButtonAction:[OCMArg any]
-                                    trailingButtonAction:[OCMArg any]]);
+  OCMExpect([mini_map_controller configureFooterWithTitle:[OCMArg any]
+                                       leadingButtonTitle:[OCMArg any]
+                                      trailingButtonTitle:[OCMArg any]
+                                      leadingButtonAction:[OCMArg any]
+                                     trailingButtonAction:[OCMArg any]]);
 
   __block BOOL called = NO;
   OCMExpect([mini_map_controller
@@ -210,11 +210,11 @@ TEST_F(MiniMapCoordinatorTest, TestShowMapAfterConsentGiven) {
   id mini_map_controller = OCMStrictProtocolMock(@protocol(MiniMapController));
   factory_.controller = mini_map_controller;
 
-  OCMExpect([mini_map_controller configureFooterWithText:[OCMArg any]
-                                       leadingButtonText:[OCMArg any]
-                                      trailingButtonText:[OCMArg any]
-                                     leadingButtonAction:[OCMArg any]
-                                    trailingButtonAction:[OCMArg any]]);
+  OCMExpect([mini_map_controller configureFooterWithTitle:[OCMArg any]
+                                       leadingButtonTitle:[OCMArg any]
+                                      trailingButtonTitle:[OCMArg any]
+                                      leadingButtonAction:[OCMArg any]
+                                     trailingButtonAction:[OCMArg any]]);
 
   OCMExpect([mini_map_controller
       presentMapsWithPresentingViewController:[OCMArg any]]);
@@ -236,15 +236,15 @@ TEST_F(MiniMapCoordinatorTest, TestIPH) {
   id mini_map_controller = OCMStrictProtocolMock(@protocol(MiniMapController));
   factory_.controller = mini_map_controller;
 
-  OCMExpect([mini_map_controller configureFooterWithText:[OCMArg any]
-                                       leadingButtonText:[OCMArg any]
-                                      trailingButtonText:[OCMArg any]
-                                     leadingButtonAction:[OCMArg any]
-                                    trailingButtonAction:[OCMArg any]]);
+  OCMExpect([mini_map_controller configureFooterWithTitle:[OCMArg any]
+                                       leadingButtonTitle:[OCMArg any]
+                                      trailingButtonTitle:[OCMArg any]
+                                      leadingButtonAction:[OCMArg any]
+                                     trailingButtonAction:[OCMArg any]]);
 
-  OCMExpect([mini_map_controller configureIPHWithTitle:[OCMArg any]
-                                              subtitle:[OCMArg any]
-                                         actionHandler:[OCMArg any]]);
+  OCMExpect([mini_map_controller configureDisclaimerWithTitle:[OCMArg any]
+                                                     subtitle:[OCMArg any]
+                                                actionHandler:[OCMArg any]]);
 
   OCMExpect([mini_map_controller
       presentMapsWithPresentingViewController:[OCMArg any]]);
@@ -268,11 +268,11 @@ TEST_F(MiniMapCoordinatorTest, TestIPHSecondLaunch) {
   id mini_map_controller = OCMStrictProtocolMock(@protocol(MiniMapController));
   factory_.controller = mini_map_controller;
 
-  OCMExpect([mini_map_controller configureFooterWithText:[OCMArg any]
-                                       leadingButtonText:[OCMArg any]
-                                      trailingButtonText:[OCMArg any]
-                                     leadingButtonAction:[OCMArg any]
-                                    trailingButtonAction:[OCMArg any]]);
+  OCMExpect([mini_map_controller configureFooterWithTitle:[OCMArg any]
+                                       leadingButtonTitle:[OCMArg any]
+                                      trailingButtonTitle:[OCMArg any]
+                                      leadingButtonAction:[OCMArg any]
+                                     trailingButtonAction:[OCMArg any]]);
 
   OCMExpect([mini_map_controller
       presentMapsWithPresentingViewController:[OCMArg any]]);
@@ -291,11 +291,11 @@ TEST_F(MiniMapCoordinatorTest, TestDismissMap) {
   id mini_map_controller = OCMStrictProtocolMock(@protocol(MiniMapController));
   factory_.controller = mini_map_controller;
 
-  OCMExpect([mini_map_controller configureFooterWithText:[OCMArg any]
-                                       leadingButtonText:[OCMArg any]
-                                      trailingButtonText:[OCMArg any]
-                                     leadingButtonAction:[OCMArg any]
-                                    trailingButtonAction:[OCMArg any]]);
+  OCMExpect([mini_map_controller configureFooterWithTitle:[OCMArg any]
+                                       leadingButtonTitle:[OCMArg any]
+                                      trailingButtonTitle:[OCMArg any]
+                                      leadingButtonAction:[OCMArg any]
+                                     trailingButtonAction:[OCMArg any]]);
 
   OCMExpect([mini_map_controller
       presentMapsWithPresentingViewController:[OCMArg any]]);
@@ -319,11 +319,11 @@ TEST_F(MiniMapCoordinatorTest, TestOpenURL) {
   id mini_map_controller = OCMStrictProtocolMock(@protocol(MiniMapController));
   factory_.controller = mini_map_controller;
 
-  OCMExpect([mini_map_controller configureFooterWithText:[OCMArg any]
-                                       leadingButtonText:[OCMArg any]
-                                      trailingButtonText:[OCMArg any]
-                                     leadingButtonAction:[OCMArg any]
-                                    trailingButtonAction:[OCMArg any]]);
+  OCMExpect([mini_map_controller configureFooterWithTitle:[OCMArg any]
+                                       leadingButtonTitle:[OCMArg any]
+                                      trailingButtonTitle:[OCMArg any]
+                                      leadingButtonAction:[OCMArg any]
+                                     trailingButtonAction:[OCMArg any]]);
 
   OCMExpect([mini_map_controller
       presentMapsWithPresentingViewController:[OCMArg any]]);
@@ -352,19 +352,19 @@ TEST_F(MiniMapCoordinatorTest, TestFooterButtons) {
   __block ProceduralBlock right_button_block;
 
   OCMExpect([mini_map_controller
-      configureFooterWithText:[OCMArg any]
-            leadingButtonText:[OCMArg any]
-           trailingButtonText:[OCMArg any]
-          leadingButtonAction:[OCMArg
-                                  checkWithBlock:^BOOL(ProceduralBlock block) {
-                                    left_button_block = block;
-                                    return YES;
-                                  }]
-         trailingButtonAction:[OCMArg
-                                  checkWithBlock:^BOOL(ProceduralBlock block) {
-                                    right_button_block = block;
-                                    return YES;
-                                  }]]);
+      configureFooterWithTitle:[OCMArg any]
+            leadingButtonTitle:[OCMArg any]
+           trailingButtonTitle:[OCMArg any]
+           leadingButtonAction:[OCMArg
+                                   checkWithBlock:^BOOL(ProceduralBlock block) {
+                                     left_button_block = block;
+                                     return YES;
+                                   }]
+          trailingButtonAction:[OCMArg
+                                   checkWithBlock:^BOOL(ProceduralBlock block) {
+                                     right_button_block = block;
+                                     return YES;
+                                   }]]);
 
   OCMExpect([mini_map_controller
       presentMapsWithPresentingViewController:[OCMArg any]]);
