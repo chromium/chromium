@@ -153,6 +153,10 @@ BASE_FEATURE(kCacheControlNoStoreEnterBackForwardCache,
              "CacheControlNoStoreEnterBackForwardCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kCdmStorageDatabase,
+             "CdmStorageDatabase",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Clear the window.name property for the top-level cross-site navigations that
 // swap BrowsingContextGroups(BrowsingInstances).
 BASE_FEATURE(kClearCrossSiteCrossBrowsingContextGroupWindowName,

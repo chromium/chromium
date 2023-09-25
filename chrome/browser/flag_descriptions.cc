@@ -125,6 +125,10 @@ const char kBrokerFileOperationsOnDiskCacheInNetworkServiceDescription[] =
     "Broker file operations on disk cache running in the Network Service. This "
     "is no-op when the Network Service is running in the browser process.";
 
+const char kCdmStorageDatabaseName[] = "Cdm Storage Database";
+const char kCdmStorageDatabaseDescription[] =
+    "Use the Cdm Storage Database over the MediaLicenseDatabase";
+
 const char kClickToCallName[] = "Click-To-Call";
 const char kClickToCallDescription[] = "Enable the click-to-call feature.";
 

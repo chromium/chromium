@@ -62988,6 +62988,7 @@ from previous Chrome versions.
   <int value="-943304570" label="PaintHolding:enabled"/>
   <int value="-943223021"
       label="FeatureNotificationGuideSkipCheckForLowEngagedUsers:disabled"/>
+  <int value="-941056354" label="CdmStorageDatabase:enabled"/>
   <int value="-940931658" label="UseDMSAAForTilesAndroidGL:disabled"/>
   <int value="-940915510" label="IgnoreCSPInWebPaymentAPI:disabled"/>
   <int value="-940390151" label="RoundedDisplay:disabled"/>
@@ -65786,6 +65787,7 @@ from previous Chrome versions.
   <int value="442561299" label="FeatureNotificationGuide:disabled"/>
   <int value="444411390" label="enable-incognito-shortcut-on-desktop"/>
   <int value="444754854" label="LegacyTLSWarnings:disabled"/>
+  <int value="445240121" label="CdmStorageDatabase:disabled"/>
   <int value="445851683" label="LauncherFuzzyMatchAcrossProviders:disabled"/>
   <int value="446316019" label="enable-threaded-compositing"/>
   <int value="447286624"

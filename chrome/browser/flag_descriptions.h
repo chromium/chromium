@@ -107,6 +107,9 @@ extern const char kBrokerFileOperationsOnDiskCacheInNetworkServiceDescription[];
 
 extern const char kCOLRV1FontsDescription[];
 
+extern const char kCdmStorageDatabaseName[];
+extern const char kCdmStorageDatabaseDescription[];
+
 extern const char kChromeRootStoreEnabledName[];
 extern const char kChromeRootStoreEnabledDescription[];
 

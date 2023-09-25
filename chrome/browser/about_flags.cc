@@ -11082,6 +11082,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kGridTabSwitcherAndroidAnimations)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+    {"cdm-storage-database", flag_descriptions::kCdmStorageDatabaseName,
+     flag_descriptions::kCdmStorageDatabaseDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kCdmStorageDatabase)},
+#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
