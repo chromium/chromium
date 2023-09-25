@@ -49,7 +49,8 @@ public class PageZoomUtils {
     // The max value for the seek bar to help with rounding effects (not shown to user).
     public static final int PAGE_ZOOM_MAXIMUM_SEEKBAR_VALUE = 250;
 
-    public static final int TEXT_SIZE_CONTRAST_MAX_LEVEL = 50;
+    // The max value for the text size contrast seek bar, used in Smart Zoom feature.
+    public static final int TEXT_SIZE_CONTRAST_MAX_LEVEL = 100;
 
     // The minimum and maximum zoom values as a percentage (e.g. 50% = 0.50, 300% = 3.0).
     protected static final float PAGE_ZOOM_MINIMUM_ZOOM_LEVEL = 0.50f;

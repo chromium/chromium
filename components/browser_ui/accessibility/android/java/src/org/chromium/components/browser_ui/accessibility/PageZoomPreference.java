@@ -43,6 +43,7 @@ public class PageZoomPreference extends Preference implements SeekBar.OnSeekBarC
     private ChromeImageButton mTextSizeContrastDecreaseButton;
     private ChromeImageButton mTextSizeContrastIncreaseButton;
     private TextView mTextSizeContrastCurrentLevelText;
+    private static final int TEXT_SIZE_CONTRAST_BUTTON_INCREMENT = 10;
 
     // Values taken from dimens of text_size_* in //ui/android/java/res/values/dimens.xml
     private static final float DEFAULT_LARGE_TEXT_SIZE_SP = 16.0f;
@@ -113,6 +114,9 @@ public class PageZoomPreference extends Preference implements SeekBar.OnSeekBarC
 
         // Set up text size contrast slider.
         if (ContentFeatureMap.isEnabled(ContentFeatureList.SMART_ZOOM)) {
+            holder.findViewById(R.id.text_size_contrast_title).setVisibility(View.VISIBLE);
+            holder.findViewById(R.id.text_size_contrast_summary).setVisibility(View.VISIBLE);
+
             mTextSizeContrastCurrentLevelText =
                     (TextView) holder.findViewById(R.id.text_size_contrast_current_value_text);
             mTextSizeContrastCurrentLevelText.setText(
@@ -217,10 +221,9 @@ public class PageZoomPreference extends Preference implements SeekBar.OnSeekBarC
             mIncreaseButton.setEnabled(
                     newZoomFactor < AVAILABLE_ZOOM_FACTORS[AVAILABLE_ZOOM_FACTORS.length - 1]);
         } else if (seekBar.getId() == R.id.text_size_contrast_slider) {
-            double newContrastLevel = progress;
-            mTextSizeContrastDecreaseButton.setEnabled(newContrastLevel > 0);
+            mTextSizeContrastDecreaseButton.setEnabled(progress > 0);
             mTextSizeContrastIncreaseButton.setEnabled(
-                    newContrastLevel < PageZoomUtils.TEXT_SIZE_CONTRAST_MAX_LEVEL);
+                    progress < PageZoomUtils.TEXT_SIZE_CONTRAST_MAX_LEVEL);
         }
     }
 
@@ -240,10 +243,7 @@ public class PageZoomPreference extends Preference implements SeekBar.OnSeekBarC
             // When a user stops changing the slider value, record the new value in prefs.
             callChangeListener(seekBar.getProgress());
         } else if (seekBar.getId() == R.id.text_size_contrast_slider) {
-            UserPrefs.get(mBrowserContextHandle)
-                    .setInteger(
-                            Pref.ACCESSIBILITY_TEXT_SIZE_CONTRAST_FACTOR, seekBar.getProgress());
-            // TODO(crbug.com/1459631): Add page refresh functionality
+            saveTextSizeContrastValueToPreferences();
         }
     }
 
@@ -276,20 +276,22 @@ public class PageZoomPreference extends Preference implements SeekBar.OnSeekBarC
     }
 
     private void onHandleContrastDecreaseClicked() {
-        // Decrease the contrast slider in increments of 10.
-        // TODO(crbug.com/1459631): determine how we want to control contrast levels (range and
-        // decrement increments).
-        mTextSizeContrastSeekBar.setProgress(mTextSizeContrastSeekBar.getProgress() - 10);
-        // TODO(crbug.com/1459631): add functionality to save the new progress variable to a profile
-        // setting, which can access on c++ side.
+        // Decrease the contrast slider by defined increment.
+        mTextSizeContrastSeekBar.setProgress(
+                mTextSizeContrastSeekBar.getProgress() - TEXT_SIZE_CONTRAST_BUTTON_INCREMENT);
+        saveTextSizeContrastValueToPreferences();
     }
 
     private void onHandleContrastIncreaseClicked() {
-        // Increase the contrast slider in increments of 10.
-        // TODO(crbug.com/1459631): determine how we want to control contrast levels (range and
-        // decrement increments).
-        mTextSizeContrastSeekBar.setProgress(mTextSizeContrastSeekBar.getProgress() + 10);
-        // TODO(crbug.com/1459631): add functionality to save the new progress variable to a profile
-        // setting, which can access on c++ side.
+        // Increase the contrast slider by defined increment.
+        mTextSizeContrastSeekBar.setProgress(
+                mTextSizeContrastSeekBar.getProgress() + TEXT_SIZE_CONTRAST_BUTTON_INCREMENT);
+        saveTextSizeContrastValueToPreferences();
+    }
+
+    private void saveTextSizeContrastValueToPreferences() {
+        UserPrefs.get(mBrowserContextHandle)
+                .setInteger(Pref.ACCESSIBILITY_TEXT_SIZE_CONTRAST_FACTOR,
+                        mTextSizeContrastSeekBar.getProgress());
     }
 }
