@@ -914,10 +914,6 @@ extern const char kSyncSandboxDescription[];
 extern const char kSyncSegmentsDataName[];
 extern const char kSyncSegmentsDataDescription[];
 
-// Title and description for the flag to synthesize native restore web states.
-extern const char kSynthesizedRestoreSessionName[];
-extern const char kSynthesizedRestoreSessionDescription[];
-
 // Title and description for the flag to enable TFLite for language detection.
 extern const char kTFLiteLanguageDetectionName[];
 extern const char kTFLiteLanguageDetectionDescription[];

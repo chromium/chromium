@@ -274,20 +274,10 @@ class PausableResponseProvider : public HtmlResponseProvider {
     [self setServerPaused:NO];
   }
 
-  if (![ChromeEarlGrey isSynthesizedRestoreSessionEnabled] ||
-      !base::ios::IsRunningOnIOS15OrLater()) {
-    // In this case, legacy restore will commit page1 with the pushState
-    // empty page (see restore_session.html). With legacy restore check that
-    // page1 was reloaded, not page2.
-    [ChromeEarlGrey waitForWebStateContainingText:kTestPage1];
-    [[EarlGrey selectElementWithMatcher:OmniboxText(_testURL1.GetContent())]
-        assertWithMatcher:grey_notNil()];
-  } else {
-    // Verifies that page2 was reloaded.
-    [ChromeEarlGrey waitForWebStateContainingText:kTestPage2];
-    [[EarlGrey selectElementWithMatcher:OmniboxText(_testURL2.GetContent())]
-        assertWithMatcher:grey_notNil()];
-  }
+  // Verifies that page2 was reloaded.
+  [ChromeEarlGrey waitForWebStateContainingText:kTestPage2];
+  [[EarlGrey selectElementWithMatcher:OmniboxText(_testURL2.GetContent())]
+      assertWithMatcher:grey_notNil()];
 }
 
 // Tests that visible URL is always the same as last pending URL during

@@ -501,9 +501,6 @@
 // Returns YES if UKM feature is enabled.
 + (BOOL)isUKMEnabled [[nodiscard]];
 
-// Returns YES if kSynthesizedRestoreSessionEnabled feature is enabled.
-+ (BOOL)isSynthesizedRestoreSessionEnabled [[nodiscard]];
-
 // Returns YES if kTestFeature is enabled.
 + (BOOL)isTestFeatureEnabled;
 

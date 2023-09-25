@@ -1333,10 +1333,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface isUKMEnabled];
 }
 
-- (BOOL)isSynthesizedRestoreSessionEnabled {
-  return [ChromeEarlGreyAppInterface isSynthesizedRestoreSessionEnabled];
-}
-
 - (BOOL)isTestFeatureEnabled {
   return [ChromeEarlGreyAppInterface isTestFeatureEnabled];
 }

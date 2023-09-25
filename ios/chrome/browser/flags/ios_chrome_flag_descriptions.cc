@@ -1040,12 +1040,6 @@ const char kSyncSegmentsDataDescription[] =
     "Enables history's segments to include foreign visits from syncing "
     "devices.";
 
-const char kSynthesizedRestoreSessionName[] =
-    "Use a synthesized native WKWebView sesion restoration (iOS15 only).";
-const char kSynthesizedRestoreSessionDescription[] =
-    "Enable instant session restoration by synthesizing WKWebView session "
-    "restoration data (iOS15 only).";
-
 const char kStartSurfaceName[] = "Start Surface";
 const char kStartSurfaceDescription[] =
     "Enable showing the Start Surface when launching Chrome via clicking the "
