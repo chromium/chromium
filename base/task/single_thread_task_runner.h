@@ -115,8 +115,8 @@ class BASE_EXPORT SingleThreadTaskRunner : public SequencedTaskRunner {
     // We expect SingleThreadTaskRunner::CurrentHandleOverride to be only needed
     // under special circumstances. Require them to be enumerated as friends to
     // require //base/OWNERS review. Use
-    // SingleTaskRunner::CurrentHandleOverrideForTesting in unit tests to avoid
-    // the friend requirement.
+    // SingleThreadTaskRunner::CurrentHandleOverrideForTesting in unit tests to
+    // avoid the friend requirement.
 
     friend class blink::scheduler::MainThreadSchedulerImpl;
 

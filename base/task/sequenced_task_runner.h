@@ -276,7 +276,7 @@ class BASE_EXPORT SequencedTaskRunner : public TaskRunner {
   //   the current thread.
   virtual bool RunsTasksInCurrentSequence() const = 0;
 
-  // Returns the default SequencedThreadTaskRunner for the current task. It
+  // Returns the default SequencedTaskRunner for the current task. It
   // should only be called if HasCurrentDefault() returns true (see the comment
   // there for the requirements).
   //

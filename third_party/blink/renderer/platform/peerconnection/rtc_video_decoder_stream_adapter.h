@@ -33,10 +33,6 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace base {
-class SequencedThreadTaskRunner;
-}  // namespace base
-
 namespace media {
 class DecoderBuffer;
 class DecoderFactory;

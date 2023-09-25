@@ -24,7 +24,7 @@ class GetTest(unittest.TestCase):
     self.assertEqual(1, len(errors))
 
   def testNewUsageSequencedTaskRunnerHandleGet(self):
-    diff = ['scoped_refptr<SequencedThreadTaskRunner> task_runner =',
+    diff = ['scoped_refptr<SequencedTaskRunner> task_runner =',
              '    base::SequencedTaskRunner::GetCurrentDefault()']
     input_api = MockInputApi()
     input_api.files = [MockAffectedFile('content/renderer/foo.cc', diff)]
