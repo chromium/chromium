@@ -4,8 +4,12 @@
 
 #include "chromeos/ash/components/osauth/impl/auth_session_storage_impl.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/test/test_future.h"
 #include "chromeos/ash/components/dbus/userdataauth/mock_userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -74,6 +78,84 @@ TEST_F(AuthSessionStorageImplTest, InvalidateOnReturn) {
   // Return context, trigger invalidation.
   storage_->Return(token, std::move(context));
   ASSERT_FALSE(storage_->IsValid(token));
+}
+
+TEST_F(AuthSessionStorageImplTest, AsyncBorrow) {
+  std::unique_ptr<UserContext> context = std::make_unique<UserContext>();
+  context->SetAuthSessionIds("some-id", "broadcast");
+
+  // Unknown token, callback should
+  // be called with nullptr immediately.
+  {
+    base::test::TestFuture<std::unique_ptr<UserContext>> borrow_future;
+    storage_->BorrowAsync(FROM_HERE, "unknown-token",
+                          borrow_future.GetCallback());
+
+    ASSERT_TRUE(borrow_future.IsReady());
+    ASSERT_EQ(borrow_future.Get().get(), nullptr);
+  }
+
+  // Store UserContext;
+  AuthProofToken token = storage_->Store(std::move(context));
+  ASSERT_TRUE(storage_->IsValid(token));
+
+  base::test::TestFuture<std::unique_ptr<UserContext>> borrow_future_1;
+  storage_->BorrowAsync(FROM_HERE, token, borrow_future_1.GetCallback());
+  // Borrow context, token is still valid.
+  ASSERT_TRUE(storage_->IsValid(token));
+
+  ASSERT_TRUE(borrow_future_1.IsReady());
+  ASSERT_NE(borrow_future_1.Get().get(), nullptr);
+
+  base::test::TestFuture<std::unique_ptr<UserContext>> borrow_future_2;
+  base::test::TestFuture<std::unique_ptr<UserContext>> borrow_future_3;
+
+  storage_->BorrowAsync(FROM_HERE, token, borrow_future_2.GetCallback());
+  storage_->BorrowAsync(FROM_HERE, token, borrow_future_3.GetCallback());
+
+  ASSERT_TRUE(storage_->IsValid(token));
+  ASSERT_FALSE(borrow_future_2.IsReady());
+  ASSERT_FALSE(borrow_future_3.IsReady());
+
+  // Return context, first in queue should get it
+  storage_->Return(token, borrow_future_1.Take());
+
+  ASSERT_TRUE(storage_->IsValid(token));
+
+  ASSERT_TRUE(borrow_future_2.IsReady());
+  ASSERT_NE(borrow_future_2.Get().get(), nullptr);
+
+  ASSERT_FALSE(borrow_future_3.IsReady());
+
+  // Pending borrow request should be invalidated.
+  storage_->Invalidate(token, base::DoNothing());
+
+  ASSERT_FALSE(storage_->IsValid(token));
+  ASSERT_TRUE(borrow_future_3.IsReady());
+  ASSERT_EQ(borrow_future_3.Get().get(), nullptr);
+
+  // Token is considered invalid, callback should
+  // be called with nullptr immediately.
+  {
+    base::test::TestFuture<std::unique_ptr<UserContext>> borrow_future;
+    storage_->BorrowAsync(FROM_HERE, token, borrow_future.GetCallback());
+
+    ASSERT_TRUE(borrow_future.IsReady());
+    ASSERT_EQ(borrow_future.Get().get(), nullptr);
+  }
+
+  storage_->Return(token, borrow_future_2.Take());
+  ASSERT_FALSE(storage_->IsValid(token));
+
+  // Context should be deleted by now, callback should
+  // be called with nullptr immediately.
+  {
+    base::test::TestFuture<std::unique_ptr<UserContext>> borrow_future;
+    storage_->BorrowAsync(FROM_HERE, token, borrow_future.GetCallback());
+
+    ASSERT_TRUE(borrow_future.IsReady());
+    ASSERT_EQ(borrow_future.Get().get(), nullptr);
+  }
 }
 
 }  // namespace ash

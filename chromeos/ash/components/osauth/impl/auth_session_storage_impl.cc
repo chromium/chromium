@@ -73,6 +73,28 @@ std::unique_ptr<UserContext> AuthSessionStorageImpl::Borrow(
   return std::move(data_it->second->context);
 }
 
+void AuthSessionStorageImpl::BorrowAsync(const base::Location& location,
+                                         const AuthProofToken& token,
+                                         BorrowCallback callback) {
+  auto data_it = tokens_.find(token);
+  if (data_it == std::end(tokens_)) {
+    LOG(ERROR) << "Accessing expired token";
+    std::move(callback).Run(nullptr);
+    return;
+  }
+  if (data_it->second->state == TokenState::kOwned) {
+    auto context = Borrow(location, token);
+    std::move(callback).Run(std::move(context));
+    return;
+  }
+  if (data_it->second->state == TokenState::kInvalidating ||
+      data_it->second->invalidate_on_return) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+  data_it->second->borrow_queue.emplace(location, std::move(callback));
+}
+
 const UserContext* AuthSessionStorageImpl::Peek(const AuthProofToken& token) {
   auto data_it = tokens_.find(token);
   CHECK(data_it != std::end(tokens_));
@@ -98,6 +120,13 @@ void AuthSessionStorageImpl::Return(const AuthProofToken& token,
   if (data_it->second->invalidate_on_return) {
     data_it->second->invalidate_on_return = false;
     Invalidate(token, std::move(data_it->second->invalidation_closure));
+    return;
+  }
+  if (!data_it->second->borrow_queue.empty()) {
+    std::pair<base::Location, BorrowCallback> pending_borrow =
+        std::move(data_it->second->borrow_queue.front());
+    data_it->second->borrow_queue.pop();
+    BorrowAsync(pending_borrow.first, token, std::move(pending_borrow.second));
   }
 }
 
@@ -108,6 +137,12 @@ void AuthSessionStorageImpl::Invalidate(const AuthProofToken& token,
   if (data_it->second->state == TokenState::kBorrowed) {
     data_it->second->invalidate_on_return = true;
     data_it->second->invalidation_closure = std::move(on_invalidated);
+    while (!data_it->second->borrow_queue.empty()) {
+      std::pair<base::Location, BorrowCallback> pending_borrow =
+          std::move(data_it->second->borrow_queue.front());
+      data_it->second->borrow_queue.pop();
+      std::move(pending_borrow.second).Run(nullptr);
+    }
     return;
   }
   CHECK(data_it->second->state == TokenState::kOwned);

@@ -36,6 +36,8 @@ class UserContext;
 // returned to storage as soon as operation completes.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthSessionStorage {
  public:
+  using BorrowCallback = base::OnceCallback<void(std::unique_ptr<UserContext>)>;
+
   // TODO (b/271249180): Define an observer for notifications about token
   // expiration/borrowing.
 
@@ -62,6 +64,17 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthSessionStorage {
   // be borrowed.
   virtual std::unique_ptr<UserContext> Borrow(const base::Location& location,
                                               const AuthProofToken& token) = 0;
+
+  // Borrows UserContext to perform some authenticated operation. Borrowing
+  // a context does not make it invalid.
+  // If context is borrowed at the moment of the call, the callback
+  // would be called once the context is returned to the storage.
+  // Note that callback might be called with `null` value, if
+  // the context would become invalid before it is returned.
+  virtual void BorrowAsync(const base::Location& location,
+                           const AuthProofToken& token,
+                           BorrowCallback callback) = 0;
+
   // Allows to inspect stored UserContext. The reference is only valid within
   // same UI event, and should not be stored by caller.
   virtual const UserContext* Peek(const AuthProofToken& token) = 0;

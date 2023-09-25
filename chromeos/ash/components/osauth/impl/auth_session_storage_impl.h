@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_OSAUTH_IMPL_AUTH_SESSION_STORAGE_IMPL_H_
 
 #include <memory>
+#include <queue>
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
@@ -47,6 +48,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthSessionStorageImpl
   bool IsValid(const AuthProofToken& token) override;
   std::unique_ptr<UserContext> Borrow(const base::Location& location,
                                       const AuthProofToken& token) override;
+  void BorrowAsync(const base::Location& location,
+                   const AuthProofToken& token,
+                   BorrowCallback callback) override;
   const UserContext* Peek(const AuthProofToken& token) override;
   void Return(const AuthProofToken& token,
               std::unique_ptr<UserContext> context) override;
@@ -75,6 +79,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthSessionStorageImpl
     // requested while context is borrowed.
     bool invalidate_on_return = false;
     base::OnceClosure invalidation_closure;
+    std::queue<std::pair<base::Location, BorrowCallback>> borrow_queue;
   };
 
   void OnSessionInvalidated(const AuthProofToken& token,
