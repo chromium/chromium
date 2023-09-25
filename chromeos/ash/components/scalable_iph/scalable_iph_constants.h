@@ -116,6 +116,8 @@ inline constexpr char kEventNameShelfItemActivationGooglePlay[] =
 // Recorded when the personalization hub app is opened.
 inline constexpr char kEventNameOpenPersonalizationApp[] =
     "ScalableIphOpenPersonalizationApp";
+// Recorded when a print job is created.
+constexpr char kEventNamePrintJobCreated[] = "ScalableIphPrintJobCreated";
 
 // `FiveMinTick` event is recorded every five minutes after OOBE completion.
 inline constexpr char kEventNameFiveMinTick[] = "ScalableIphFiveMinTick";

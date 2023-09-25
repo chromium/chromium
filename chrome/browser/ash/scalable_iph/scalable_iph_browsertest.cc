@@ -20,6 +20,9 @@
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/printing/cups_print_job.h"
+#include "chrome/browser/ash/printing/cups_print_job_manager.h"
+#include "chrome/browser/ash/printing/cups_print_job_manager_factory.h"
 #include "chrome/browser/ash/printing/synced_printers_manager.h"
 #include "chrome/browser/ash/printing/synced_printers_manager_factory.h"
 #include "chrome/browser/ash/scalable_iph/customizable_test_env_browser_test_base.h"
@@ -157,6 +160,35 @@ class AppListItemWaiter : public AppListModelUpdaterObserver {
   base::RunLoop run_loop_;
   base::ScopedObservation<AppListModelUpdater, AppListModelUpdaterObserver>
       app_list_model_updater_observation_{this};
+};
+
+class CupsPrintJobManagerWaiter : public ash::CupsPrintJobManager::Observer {
+ public:
+  CupsPrintJobManagerWaiter(ash::CupsPrintJobManager* print_job_manager,
+                            int job_id)
+      : print_job_manager_(print_job_manager), job_id_(job_id) {
+    CHECK(print_job_manager_);
+    print_job_manager_observation_.Observe(print_job_manager_);
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+  void OnPrintJobCreated(base::WeakPtr<ash::CupsPrintJob> job) override {
+    if (job->job_id() == job_id_) {
+      CHECK(run_loop_.IsRunningOnCurrentThread())
+          << "Observed expected print job id before run_loop_ is running: "
+          << job_id_;
+      run_loop_.Quit();
+    }
+  }
+
+ private:
+  base::ScopedObservation<ash::CupsPrintJobManager,
+                          ash::CupsPrintJobManager::Observer>
+      print_job_manager_observation_{this};
+  raw_ptr<ash::CupsPrintJobManager> print_job_manager_;
+  base::RunLoop run_loop_;
+  int job_id_;
 };
 
 class ScalableIphBrowserTestDebugOff : public ScalableIphBrowserTest {
@@ -723,6 +755,23 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, OpenPersonalizationApp) {
 
   ash::LaunchSystemWebAppAsync(browser()->profile(),
                                ash::SystemWebAppType::PERSONALIZATION);
+}
+
+// TODO(b/301006258): Migrate to use observer pattern, then enable the test.
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, DISABLED_PrintJobCreated) {
+  EXPECT_CALL(*mock_tracker(),
+              NotifyEvent(scalable_iph::kEventNamePrintJobCreated));
+
+  ash::CupsPrintJobManager* print_job_manager =
+      ash::CupsPrintJobManagerFactory::GetForBrowserContext(
+          browser()->profile());
+  CupsPrintJobManagerWaiter print_job_manager_waiter(print_job_manager,
+                                                     /*job_id=*/0);
+  print_job_manager->CreatePrintJob(
+      "test-printer-id", "title", /*job_id=*/0, /*total_page_number=*/1,
+      ::printing::PrintJob::Source::kPrintPreview, /*source_id=*/"",
+      ash::printing::proto::PrintSettings());
+  print_job_manager_waiter.Wait();
 }
 
 // Logging feature is on by default in `ScalableIphBrowserTest`.
