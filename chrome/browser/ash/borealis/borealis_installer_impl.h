@@ -12,6 +12,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/ash/borealis/borealis_installer.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
+#include "chrome/browser/ash/borealis/borealis_types.mojom-forward.h"
 #include "chrome/browser/ash/borealis/infra/described.h"
 
 class Profile;
@@ -61,7 +62,7 @@ class BorealisInstallerImpl : public BorealisInstaller {
 
   void OnInstallComplete(
       base::expected<std::unique_ptr<InstallInfo>,
-                     Described<BorealisInstallResult>> result_or_error);
+                     Described<mojom::InstallResult>> result_or_error);
   void OnUninstallComplete(
       base::OnceCallback<void(BorealisUninstallResult)> on_uninstall_callback,
       base::expected<std::unique_ptr<InstallInfo>, BorealisUninstallResult>

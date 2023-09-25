@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/observer_list_types.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
+#include "chrome/browser/ash/borealis/borealis_types.mojom-forward.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace borealis {
@@ -36,7 +37,7 @@ class BorealisInstaller : public KeyedService {
     // Called when installation succeeds/fails, per |result|. If it fails,
     // |error_description| contains a string useful for debugging/understanding
     // the cause of the failure, not for end-users.
-    virtual void OnInstallationEnded(BorealisInstallResult result,
+    virtual void OnInstallationEnded(mojom::InstallResult result,
                                      const std::string& error_description) = 0;
     virtual void OnCancelInitiated() = 0;
   };

@@ -20,8 +20,8 @@
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_installer.h"
-#include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/borealis/borealis_types.mojom.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -54,6 +54,8 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
+
+using borealis::mojom::InstallResult;
 
 namespace {
 
@@ -315,12 +317,12 @@ void BorealisInstallerView::OnProgressUpdated(double fraction_complete) {
 }
 
 void BorealisInstallerView::OnInstallationEnded(
-    borealis::BorealisInstallResult result,
+    InstallResult result,
     const std::string& error_description) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (result == borealis::BorealisInstallResult::kSuccess) {
+  if (result == InstallResult::kSuccess) {
     state_ = State::kCompleted;
-  } else if (result != borealis::BorealisInstallResult::kCancelled) {
+  } else if (result != InstallResult::kCancelled) {
     result_ = result;
     LOG(ERROR) << "Borealis Installation Error: " << error_description;
     views::borealis::ShowInstallerErrorDialog(

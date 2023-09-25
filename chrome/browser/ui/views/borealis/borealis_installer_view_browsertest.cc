@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_service_fake.h"
 #include "chrome/browser/ash/borealis/borealis_task.h"
+#include "chrome/browser/ash/borealis/borealis_types.mojom.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -37,7 +38,7 @@
 #include "ui/strings/grit/ui_strings.h"
 
 using ::testing::_;
-using InstallationResult = borealis::BorealisInstallResult;
+using InstallationResult = borealis::mojom::InstallResult;
 
 namespace borealis {
 namespace {

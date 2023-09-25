@@ -8,6 +8,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/borealis/borealis_installer.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
+#include "chrome/browser/ash/borealis/borealis_types.mojom-forward.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/borealis/borealis_installer_error_dialog.h"
 #include "chrome/browser/ui/webui/ash/borealis_installer/borealis_installer.mojom.h"
@@ -40,7 +41,7 @@ class BorealisInstallerPageHandler
   void OnStateUpdated(
       borealis::BorealisInstaller::InstallingState new_state) override {}
   void OnProgressUpdated(double fraction_complete) override;
-  void OnInstallationEnded(borealis::BorealisInstallResult result,
+  void OnInstallationEnded(borealis::mojom::InstallResult result,
                            const std::string& error_description) override;
   void OnCancelInitiated() override {}
 

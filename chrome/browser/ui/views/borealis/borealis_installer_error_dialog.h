@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_BOREALIS_BOREALIS_INSTALLER_ERROR_DIALOG_H_
 
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/ash/borealis/borealis_metrics.h"
+#include "chrome/browser/ash/borealis/borealis_types.mojom-forward.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace views::borealis {
@@ -27,7 +27,7 @@ using DialogCallback = base::OnceCallback<void(ErrorDialogChoice)>;
 // closes the dialog, |callback| will be invoked with their choice of how to
 // proceed.
 void ShowInstallerErrorDialog(gfx::NativeView parent,
-                              ::borealis::BorealisInstallResult result,
+                              ::borealis::mojom::InstallResult result,
                               DialogCallback callback);
 
 }  // namespace views::borealis

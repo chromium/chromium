@@ -6,8 +6,11 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/borealis/borealis_installer.h"
+#include "chrome/browser/ash/borealis/borealis_types.mojom.h"
 
 namespace borealis {
+
+using borealis::mojom::InstallResult;
 
 const char kBorealisInstallNumAttemptsHistogram[] =
     "Borealis.Install.NumAttempts";
@@ -37,8 +40,7 @@ void RecordBorealisInstallNumAttemptsHistogram() {
   base::UmaHistogramBoolean(kBorealisInstallNumAttemptsHistogram, true);
 }
 
-void RecordBorealisInstallResultHistogram(
-    BorealisInstallResult install_result) {
+void RecordBorealisInstallResultHistogram(InstallResult install_result) {
   base::UmaHistogramEnumeration(kBorealisInstallResultHistogram,
                                 install_result);
 }
