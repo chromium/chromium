@@ -82,11 +82,7 @@ IN_PROC_BROWSER_TEST_F(UpdaterServiceBrowserTest,
   const GURL kEmbedded = GURL("http://www.bar.com");
   const GURL kEmbedder = GURL("http://www.foo.com");
 
-  ASSERT_EQ(GetCookieSettings()
-                ->GetContentSettingsForOneTypeForTesting(
-                    ContentSettingsType::TPCD_METADATA_GRANTS)
-                .size(),
-            0u);
+  ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrantsForTesting().size(), 0u);
   EXPECT_EQ(
       ContentSetting::CONTENT_SETTING_BLOCK,
       GetCookieSettings()->GetContentSettingForTesting(
@@ -102,11 +98,7 @@ IN_PROC_BROWSER_TEST_F(UpdaterServiceBrowserTest,
 
   MockComponentInstallation(metadata);
 
-  ASSERT_EQ(GetCookieSettings()
-                ->GetContentSettingsForOneTypeForTesting(
-                    ContentSettingsType::TPCD_METADATA_GRANTS)
-                .size(),
-            1u);
+  ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrantsForTesting().size(), 1u);
   EXPECT_EQ(
       ContentSetting::CONTENT_SETTING_ALLOW,
       GetCookieSettings()->GetContentSettingForTesting(
@@ -131,10 +123,7 @@ IN_PROC_BROWSER_TEST_F(UpdaterServiceBrowserTest,
     Metadata metadata = MakeMetadataProtoFromVectorOfPair(metadata_pairs);
     ASSERT_EQ(metadata.metadata_entries_size(), 1);
 
-    ASSERT_EQ(GetCookieSettings()
-                  ->GetContentSettingsForOneTypeForTesting(
-                      ContentSettingsType::TPCD_METADATA_GRANTS)
-                  .size(),
+    ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrantsForTesting().size(),
               0u);
     EXPECT_EQ(
 
@@ -144,10 +133,7 @@ IN_PROC_BROWSER_TEST_F(UpdaterServiceBrowserTest,
 
     MockComponentInstallation(metadata);
 
-    ASSERT_EQ(GetCookieSettings()
-                  ->GetContentSettingsForOneTypeForTesting(
-                      ContentSettingsType::TPCD_METADATA_GRANTS)
-                  .size(),
+    ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrantsForTesting().size(),
               1u);
     EXPECT_EQ(
         GetCookieSettings()->GetContentSettingForTesting(
@@ -164,10 +150,7 @@ IN_PROC_BROWSER_TEST_F(UpdaterServiceBrowserTest,
     Metadata metadata = MakeMetadataProtoFromVectorOfPair(metadata_pairs);
     ASSERT_EQ(metadata.metadata_entries_size(), 1);
 
-    ASSERT_EQ(GetCookieSettings()
-                  ->GetContentSettingsForOneTypeForTesting(
-                      ContentSettingsType::TPCD_METADATA_GRANTS)
-                  .size(),
+    ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrantsForTesting().size(),
               1u);
     EXPECT_EQ(
         GetCookieSettings()->GetContentSettingForTesting(
@@ -180,10 +163,7 @@ IN_PROC_BROWSER_TEST_F(UpdaterServiceBrowserTest,
 
     MockComponentInstallation(metadata);
 
-    ASSERT_EQ(GetCookieSettings()
-                  ->GetContentSettingsForOneTypeForTesting(
-                      ContentSettingsType::TPCD_METADATA_GRANTS)
-                  .size(),
+    ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrantsForTesting().size(),
               1u);
     EXPECT_EQ(
         GetCookieSettings()->GetContentSettingForTesting(

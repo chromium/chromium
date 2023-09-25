@@ -244,19 +244,6 @@ void Update3pcdSettings(Profile* profile) {
       settings));
 }
 
-void Update3pcdMetadataGrantsSettings(Profile* profile) {
-  ContentSettingsForOneType settings =
-      HostContentSettingsMapFactory::GetForProfile(profile)
-          ->GetSettingsForOneType(ContentSettingsType::TPCD_METADATA_GRANTS);
-  profile->ForEachLoadedStoragePartition(base::BindRepeating(
-      [](ContentSettingsForOneType settings,
-         content::StoragePartition* storage_partition) {
-        storage_partition->GetCookieManagerForBrowserProcess()
-            ->SetContentSettingsFor3pcdMetadataGrants(settings);
-      },
-      settings));
-}
-
 // `kPermissionStorageAccessAPI` enables feature: Storage Access API with
 // Prompts (https://chromestatus.com/feature/5085655327047680). StorageAccessAPI
 // is considered enabled when either feature is enabled (by different field
@@ -645,9 +632,7 @@ ProfileNetworkContextService::CreateCookieManagerParams(
   out->settings_for_3pcd = host_content_settings_map->GetSettingsForOneType(
       ContentSettingsType::TPCD_SUPPORT);
 
-  out->settings_for_3pcd_metadata_grants =
-      host_content_settings_map->GetSettingsForOneType(
-          ContentSettingsType::TPCD_METADATA_GRANTS);
+  out->settings_for_3pcd_metadata_grants = ContentSettingsForOneType();
 
   if (StorageAccessAPIEnabled()) {
     out->settings_for_storage_access =
@@ -1115,9 +1100,6 @@ void ProfileNetworkContextService::OnContentSettingChanged(
     case ContentSettingsType::TPCD_SUPPORT:
       Update3pcdSettings(profile_);
       break;
-    case ContentSettingsType::TPCD_METADATA_GRANTS:
-      Update3pcdMetadataGrantsSettings(profile_);
-      break;
     case ContentSettingsType::STORAGE_ACCESS:
       UpdateStorageAccessSettings(profile_);
       break;
@@ -1129,7 +1111,6 @@ void ProfileNetworkContextService::OnContentSettingChanged(
       UpdateCookieSettings(profile_);
       UpdateLegacyCookieSettings(profile_);
       Update3pcdSettings(profile_);
-      Update3pcdMetadataGrantsSettings(profile_);
       UpdateAllStorageAccessSettings(profile_);
       break;
     default:

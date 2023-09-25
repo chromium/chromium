@@ -130,14 +130,8 @@ class CookieSettings : public CookieSettingsBase,
     return GetContentSetting(primary_url, secondary_url, content_type);
   }
 
-  ContentSettingsForOneType GetContentSettingsForOneTypeForTesting(
-      ContentSettingsType content_type) {
-    switch (content_type) {
-      case ContentSettingsType::TPCD_METADATA_GRANTS:
-        return settings_for_3pcd_metadata_grants_;
-      default:
-        NOTREACHED_NORETURN() << static_cast<int>(content_type);
-    }
+  ContentSettingsForOneType GetTpcdMetadataGrantsForTesting() {
+    return settings_for_3pcd_metadata_grants_;
   }
 
   // Resets the cookie setting for the given url.
@@ -235,6 +229,10 @@ class CookieSettings : public CookieSettingsBase,
   // Used to represent content settings for 3PC accesses granted via the
   // component updater service. This type will only be populated when
   // `net::features::kTpcdMetadataGrants` is enabled.
+  //
+  // TODO(http://b/290039145): There's a chance for the list to get considerably
+  // big. Look into optimizing memory by querying straight from a global
+  // service.
   ContentSettingsForOneType settings_for_3pcd_metadata_grants_;
 
   mutable base::Lock lock_;
