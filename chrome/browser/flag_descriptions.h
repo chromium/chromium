@@ -789,6 +789,9 @@ extern const char kEnableManagedConfigurationWebApiDescription[];
 extern const char kEnableNewDownloadBackendName[];
 extern const char kEnableNewDownloadBackendDescription[];
 
+extern const char kDownloadsMigrateToJobsAPIName[];
+extern const char kDownloadsMigrateToJobsAPIDescription[];
+
 extern const char kEnablePenetratingImageSelectionName[];
 extern const char kEnablePenetratingImageSelectionDescription[];
 

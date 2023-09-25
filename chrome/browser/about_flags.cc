@@ -6914,6 +6914,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          download::features::kUseDownloadOfflineContentProvider)},
 
+    {"downloads-migrate-to-jobs-api",
+     flag_descriptions::kDownloadsMigrateToJobsAPIName,
+     flag_descriptions::kDownloadsMigrateToJobsAPIDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(download::features::kDownloadsMigrateToJobsAPI)},
+
     {"download-range", flag_descriptions::kDownloadRangeName,
      flag_descriptions::kDownloadRangeDescription, kOsAll,
      FEATURE_VALUE_TYPE(download::features::kDownloadRange)},

@@ -1291,6 +1291,11 @@ const char kEnableNewDownloadBackendName[] = "Enable new download backend";
 const char kEnableNewDownloadBackendDescription[] =
     "Enables the new download backend that uses offline content provider";
 
+const char kDownloadsMigrateToJobsAPIName[] = "Migrate downloads use jobs API";
+const char kDownloadsMigrateToJobsAPIDescription[] =
+    "Migrate downloads to use user-initiated jobs instead of foreground "
+    "service on Android 14";
+
 const char kEnablePerfettoSystemTracingName[] =
     "Enable Perfetto system tracing";
 const char kEnablePerfettoSystemTracingDescription[] =

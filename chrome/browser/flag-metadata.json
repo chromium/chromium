@@ -1880,6 +1880,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "downloads-migrate-to-jobs-api",
+    "owners": ["shaktisahu", "qinmin"],
+    "expiry_milestone": 125
+  },
+  {
     "name": "drag-drop-into-omnibox",
     "owners": ["jtanaristy", "wenyufu"],
     "expiry_milestone": 120
