@@ -65,11 +65,7 @@ void WebSelectionTabHelper::OnSelectionRetrieved(
     // The selection comes from a different web_state. Ignore.
     return;
   }
-  if (final_callback_) {
-    std::move(final_callback_).Run(response);
-    time_out_callback_.Reset();
-    WebSelectionJavaScriptFeature::GetInstance()->RemoveObserver(this);
-  }
+  SendResponse(response);
 }
 
 bool WebSelectionTabHelper::CanRetrieveSelectedText() {
@@ -86,20 +82,23 @@ bool WebSelectionTabHelper::CanRetrieveSelectedText() {
 
 void WebSelectionTabHelper::WebStateDestroyed(web::WebState* web_state) {
   DCHECK_EQ(web_state_, web_state);
-  if (final_callback_) {
-    std::move(final_callback_).Run([WebSelectionResponse invalidResponse]);
-    WebSelectionJavaScriptFeature::GetInstance()->RemoveObserver(this);
-    time_out_callback_.Reset();
-  }
+  SendResponse([WebSelectionResponse invalidResponse]);
   web_state_->RemoveObserver(this);
   web_state_ = nil;
 }
 
 void WebSelectionTabHelper::Timeout() {
-  if (final_callback_) {
-    std::move(final_callback_).Run([WebSelectionResponse invalidResponse]);
-    WebSelectionJavaScriptFeature::GetInstance()->RemoveObserver(this);
+  SendResponse([WebSelectionResponse invalidResponse]);
+}
+
+void WebSelectionTabHelper::SendResponse(WebSelectionResponse* response) {
+  if (!final_callback_) {
+    return;
   }
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(final_callback_), response));
+  WebSelectionJavaScriptFeature::GetInstance()->RemoveObserver(this);
+  time_out_callback_.Stop();
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(WebSelectionTabHelper)

@@ -270,7 +270,8 @@ TEST_F(PartialTranslateMediatorTest, IncognitoSupportedSuccess) {
   EXPECT_TRUE([mediator canHandlePartialTranslateSelection]);
   [mediator handlePartialTranslateSelection];
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForJSCompletionTimeout, ^{
+      base::test::ios::kWaitForJSCompletionTimeout, /*run_message_loop=*/true,
+      ^{
         return factory.latestController != nil;
       }));
   EXPECT_NSEQ(@"AAAAAAAAAA", factory.latestController.sourceText);
@@ -305,8 +306,10 @@ TEST_F(PartialTranslateMediatorTest, SupportedSuccess) {
   EXPECT_TRUE([mediator_ shouldInstallPartialTranslate]);
   EXPECT_TRUE([mediator_ canHandlePartialTranslateSelection]);
   [mediator_ handlePartialTranslateSelection];
+
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForJSCompletionTimeout, ^{
+      base::test::ios::kWaitForJSCompletionTimeout, /*run_message_loop=*/true,
+      ^{
         return factory.latestController != nil;
       }));
   EXPECT_NSEQ(@"AAAAAAAAAA", factory.latestController.sourceText);
@@ -328,7 +331,8 @@ TEST_F(PartialTranslateMediatorTest, StringTooLongCancel) {
   EXPECT_TRUE([mediator_ canHandlePartialTranslateSelection]);
   [mediator_ handlePartialTranslateSelection];
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForJSCompletionTimeout, ^{
+      base::test::ios::kWaitForJSCompletionTimeout, /*run_message_loop=*/true,
+      ^{
         return fake_alert_controller_.called;
       }));
   EXPECT_NSEQ(nil, factory.latestController.sourceText);
@@ -352,7 +356,8 @@ TEST_F(PartialTranslateMediatorTest, StringTooLongFullTranslate) {
   ExpectShowTranslate();
   [mediator_ handlePartialTranslateSelection];
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForJSCompletionTimeout, ^{
+      base::test::ios::kWaitForJSCompletionTimeout, /*run_message_loop=*/true,
+      ^{
         return fake_alert_controller_.called;
       }));
   EXPECT_NSEQ(nil, factory.latestController.sourceText);
@@ -374,7 +379,8 @@ TEST_F(PartialTranslateMediatorTest, StringEmptyCancel) {
   EXPECT_TRUE([mediator_ canHandlePartialTranslateSelection]);
   [mediator_ handlePartialTranslateSelection];
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForJSCompletionTimeout, ^{
+      base::test::ios::kWaitForJSCompletionTimeout, /*run_message_loop=*/true,
+      ^{
         return fake_alert_controller_.called;
       }));
   EXPECT_NSEQ(nil, factory.latestController.sourceText);
@@ -396,7 +402,8 @@ TEST_F(PartialTranslateMediatorTest, StringSpacesCancel) {
   EXPECT_TRUE([mediator_ canHandlePartialTranslateSelection]);
   [mediator_ handlePartialTranslateSelection];
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForJSCompletionTimeout, ^{
+      base::test::ios::kWaitForJSCompletionTimeout, /*run_message_loop=*/true,
+      ^{
         return fake_alert_controller_.called;
       }));
   EXPECT_NSEQ(nil, factory.latestController.sourceText);
@@ -420,7 +427,8 @@ TEST_F(PartialTranslateMediatorTest, StringEmptyFullTranslate) {
   ExpectShowTranslate();
   [mediator_ handlePartialTranslateSelection];
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForJSCompletionTimeout, ^{
+      base::test::ios::kWaitForJSCompletionTimeout, /*run_message_loop=*/true,
+      ^{
         return fake_alert_controller_.called;
       }));
   EXPECT_NSEQ(nil, factory.latestController.sourceText);
@@ -442,7 +450,8 @@ TEST_F(PartialTranslateMediatorTest, InternalErrorCancel) {
   EXPECT_TRUE([mediator_ canHandlePartialTranslateSelection]);
   [mediator_ handlePartialTranslateSelection];
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForJSCompletionTimeout, ^{
+      base::test::ios::kWaitForJSCompletionTimeout, /*run_message_loop=*/true,
+      ^{
         return fake_alert_controller_.called;
       }));
   EXPECT_NSEQ(@"AAAAAAAAAA", factory.latestController.sourceText);
@@ -466,7 +475,8 @@ TEST_F(PartialTranslateMediatorTest, InternalErrorFullTranslate) {
   ExpectShowTranslate();
   [mediator_ handlePartialTranslateSelection];
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForJSCompletionTimeout, ^{
+      base::test::ios::kWaitForJSCompletionTimeout, /*run_message_loop=*/true,
+      ^{
         return fake_alert_controller_.called;
       }));
   EXPECT_NSEQ(@"AAAAAAAAAA", factory.latestController.sourceText);
