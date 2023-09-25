@@ -81,7 +81,7 @@ void PaintedScrollbarLayerImpl::PushPropertiesTo(LayerImpl* layer) {
 }
 
 float PaintedScrollbarLayerImpl::OverlayScrollbarOpacity() const {
-  return painted_opacity_;
+  return IsFluentOverlayScrollbarEnabled() ? Opacity() : painted_opacity_;
 }
 
 bool PaintedScrollbarLayerImpl::WillDraw(
