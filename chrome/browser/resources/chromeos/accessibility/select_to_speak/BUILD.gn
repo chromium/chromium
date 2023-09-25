@@ -30,10 +30,16 @@ select_to_speak_tsc_out_dir = "$tsc_out_dir/select_to_speak"
 # Add typescript files to compile here.
 ts_modules = [ "select_to_speak/select_to_speak_main.ts" ]
 
+# JS files required for ts build.
+js_files = [
+  "common/instance_checker.js",
+  "select_to_speak/select_to_speak.js",
+]
+
 # Root dir must be the parent directory so it can reach common.
 ts_library("ts_build") {
   root_dir = "../"
-  in_files = ts_modules
+  in_files = js_files + ts_modules
   out_dir = tsc_out_dir
 
   definitions = []
