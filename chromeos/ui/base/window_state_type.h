@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_UI_BASE_WINDOW_STATE_TYPE_H_
 #define CHROMEOS_UI_BASE_WINDOW_STATE_TYPE_H_
 
-#include <cstdint>
 #include <ostream>
 
 #include "base/component_export.h"
@@ -68,6 +67,10 @@ bool IsFullscreenOrPinnedWindowStateType(WindowStateType type);
 // Returns true if |type| is MAXIMIZED, FULLSCREEN, PINNED, or TRUSTED_PINNED.
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 bool IsMaximizedOrFullscreenOrPinnedWindowStateType(WindowStateType type);
+
+// Returns true if `type` is MAXIMIZED or FULLSCREEN.
+COMPONENT_EXPORT(CHROMEOS_UI_BASE)
+bool IsMaximizedOrFullscreenWindowStateType(WindowStateType type);
 
 // Returns true if |type| is MINIMIZED.
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)

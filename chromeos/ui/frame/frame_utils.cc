@@ -127,23 +127,26 @@ int GetFrameCornerRadius(const aura::Window* native_window) {
   const WindowStateType window_state =
       native_window->GetProperty(kWindowStateTypeKey);
 
+  if (!ShouldHaveRoundedWindow(window_state)) {
+    return 0;
+  }
+
   if (window_state == WindowStateType::kPip) {
     return kPipRoundedCornerRadius;
   }
 
-  if (IsNormalWindowStateType(window_state) ||
-      window_state == WindowStateType::kFloated) {
-    return features::IsRoundedWindowsEnabled()
-               ? features::RoundedWindowsRadius()
-               : kTopCornerRadiusWhenRestored;
-  }
-
-  return 0;
+  return features::IsRoundedWindowsEnabled() ? features::RoundedWindowsRadius()
+                                             : kTopCornerRadiusWhenRestored;
 }
 
 bool CanPropertyEffectFrameRadius(const void* class_property_key) {
   return class_property_key == kIsShowingInOverviewKey ||
          class_property_key == kWindowStateTypeKey;
+}
+
+bool ShouldHaveRoundedWindow(WindowStateType type) {
+  return IsNormalWindowStateType(type) || type == WindowStateType::kFloated ||
+         type == WindowStateType::kPip;
 }
 
 }  // namespace chromeos

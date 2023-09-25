@@ -6,6 +6,7 @@
 #define CHROMEOS_UI_FRAME_FRAME_UTILS_H_
 
 #include "base/component_export.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "ui/views/widget/widget.h"
 
@@ -45,6 +46,11 @@ int GetFrameCornerRadius(const aura::Window* native_window);
 // can effect the radius of the frame.
 COMPONENT_EXPORT(CHROMEOS_UI_FRAME)
 bool CanPropertyEffectFrameRadius(const void* class_property_key);
+
+// Returns true if window should have rounded corners for a given
+// `window_state`.
+COMPONENT_EXPORT(CHROMEOS_UI_FRAME)
+bool ShouldHaveRoundedWindow(WindowStateType window_state);
 
 }  // namespace chromeos
 

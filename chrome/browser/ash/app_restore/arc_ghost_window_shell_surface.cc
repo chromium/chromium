@@ -6,6 +6,7 @@
 
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/wm/desks/desks_util.h"
+#include "base/check_op.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_restore/arc_ghost_window_delegate.h"
 #include "chrome/browser/ash/app_restore/arc_ghost_window_view.h"
@@ -13,6 +14,8 @@
 #include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/ui/base/window_state_type.h"
+#include "chromeos/ui/frame/frame_utils.h"
 #include "components/app_restore/app_restore_data.h"
 #include "components/app_restore/window_properties.h"
 #include "components/exo/buffer.h"
@@ -25,31 +28,6 @@
 #include "ui/wm/core/shadow_controller.h"
 
 namespace ash::full_restore {
-
-namespace {
-
-bool IsMaximizedState(
-    const absl::optional<chromeos::WindowStateType>& window_state) {
-  return window_state.has_value() &&
-         (window_state.value() == chromeos::WindowStateType::kMaximized ||
-          window_state.value() == chromeos::WindowStateType::kFullscreen);
-}
-
-bool IsMinimizedState(
-    const absl::optional<chromeos::WindowStateType>& window_state) {
-  return window_state.has_value() &&
-         window_state.value() == chromeos::WindowStateType::kMinimized;
-}
-
-bool ShouldHaveRoundedWindow(
-    const absl::optional<chromeos::WindowStateType>& window_state) {
-  return window_state.has_value() &&
-         (window_state.value() == chromeos::WindowStateType::kNormal ||
-          window_state.value() == chromeos::WindowStateType::kDefault ||
-          window_state.value() == chromeos::WindowStateType::kFloated);
-}
-
-}  // namespace
 
 // Explicitly identifies ARC ghost surface.
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kArcGhostSurface, false)
@@ -94,13 +72,17 @@ std::unique_ptr<ArcGhostWindowShellSurface> ArcGhostWindowShellSurface::Create(
   int64_t display_id_value =
       restore_data->display_id.value_or(display::kInvalidDisplayId);
 
-  const auto& window_state = restore_data->window_state_type;
+  const chromeos::WindowStateType window_state =
+      restore_data->window_state_type.value_or(
+          chromeos::WindowStateType::kDefault);
+
   gfx::Rect local_bounds = bounds;
   // If the window is maximize / minimized, the initial bounds will be
   // unnecessary. Here set it as display size to ensure the content render is
   // correct.
   if (local_bounds.IsEmpty()) {
-    DCHECK(IsMaximizedState(window_state) || IsMinimizedState(window_state));
+    DCHECK(chromeos::IsMaximizedOrFullscreenWindowStateType(window_state) ||
+           chromeos::IsMinimizedWindowStateType(window_state));
     display::Display disp;
     display::Screen::GetScreen()->GetDisplayWithDisplayId(display_id_value,
                                                           &disp);
@@ -126,7 +108,7 @@ std::unique_ptr<ArcGhostWindowShellSurface> ArcGhostWindowShellSurface::Create(
   // TODO(sstan): Add set_surface_destroyed_callback.
   shell_surface->set_delegate(std::make_unique<ArcGhostWindowDelegate>(
       shell_surface.get(), window_id, app_id, display_id_value, local_bounds,
-      window_state.value_or(chromeos::WindowStateType::kDefault)));
+      window_state));
   shell_surface->set_close_callback(std::move(close_callback));
 
   shell_surface->SetAppId(app_id);
@@ -152,8 +134,10 @@ std::unique_ptr<ArcGhostWindowShellSurface> ArcGhostWindowShellSurface::Create(
 
   absl::optional<gfx::RoundedCornersF> overlay_corners_radii;
   if (chromeos::features::IsRoundedWindowsEnabled()) {
+    DCHECK_NE(window_state, chromeos::WindowStateType::kPip);
+
     const int window_corner_radius =
-        ShouldHaveRoundedWindow(window_state)
+        chromeos::ShouldHaveRoundedWindow(window_state)
             ? chromeos::features::RoundedWindowsRadius()
             : 0;
     shell_surface->SetWindowCornerRadii(
@@ -176,10 +160,10 @@ std::unique_ptr<ArcGhostWindowShellSurface> ArcGhostWindowShellSurface::Create(
 
   // Change the window state at the last operation, since we need create the
   // window entity first.
-  if (IsMaximizedState(window_state)) {
+  if (chromeos::IsMaximizedOrFullscreenWindowStateType(window_state)) {
     shell_surface->SetMaximized();
     shell_surface->controller_surface()->Commit();
-  } else if (IsMinimizedState(window_state)) {
+  } else if (chromeos::IsMinimizedWindowStateType(window_state)) {
     shell_surface->SetMinimized();
     shell_surface->controller_surface()->Commit();
   } else {
