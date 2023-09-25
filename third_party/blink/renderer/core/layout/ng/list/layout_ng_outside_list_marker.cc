@@ -13,11 +13,11 @@ class HTMLUListElement;
 class HTMLOListElement;
 
 LayoutNGOutsideListMarker::LayoutNGOutsideListMarker(Element* element)
-    : LayoutNGBlockFlowMixin<LayoutBlockFlow>(element) {}
+    : LayoutNGBlockFlow(element) {}
 
 bool LayoutNGOutsideListMarker::IsOfType(LayoutObjectType type) const {
   return type == kLayoutObjectNGOutsideListMarker ||
-         LayoutNGMixin<LayoutBlockFlow>::IsOfType(type);
+         LayoutNGBlockFlow::IsOfType(type);
 }
 
 void LayoutNGOutsideListMarker::WillCollectInlines() {

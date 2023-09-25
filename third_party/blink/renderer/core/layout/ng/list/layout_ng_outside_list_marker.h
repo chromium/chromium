@@ -6,20 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_LIST_LAYOUT_NG_OUTSIDE_LIST_MARKER_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/list_marker.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow_mixin.h"
+#include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 
 namespace blink {
 
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    LayoutNGBlockFlowMixin<LayoutBlockFlow>;
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    LayoutNGMixin<LayoutBlockFlow>;
-
 // A LayoutObject subclass for outside-positioned list markers in LayoutNG.
-class CORE_EXPORT LayoutNGOutsideListMarker final
-    : public LayoutNGBlockFlowMixin<LayoutBlockFlow> {
+class CORE_EXPORT LayoutNGOutsideListMarker final : public LayoutNGBlockFlow {
  public:
   explicit LayoutNGOutsideListMarker(Element*);
 
