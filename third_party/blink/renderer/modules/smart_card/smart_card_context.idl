@@ -2,26 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://wicg.github.io/web-smart-card/#smartcardcontext-interface
 
+// https://wicg.github.io/web-smart-card/#dom-smartcardreaderstatein
 dictionary SmartCardReaderStateIn {
   required DOMString readerName;
-  required SmartCardReaderStateFlags currentState;
+  required SmartCardReaderStateFlagsIn currentState;
   unsigned long currentCount;
 };
 
+// https://wicg.github.io/web-smart-card/#dom-smartcardreaderstateout
 dictionary SmartCardReaderStateOut {
   required DOMString readerName;
-  required SmartCardReaderStateFlags eventState;
+  required SmartCardReaderStateFlagsOut eventState;
   required unsigned long eventCount;
   required ArrayBuffer answerToReset;
 };
 
 dictionary SmartCardReaderStateFlags {
-  boolean unaware = false;
   boolean ignore = false;
-  boolean changed = false;
-  boolean unknown = false;
   boolean unavailable = false;
   boolean empty = false;
   boolean present = false;
@@ -31,32 +29,49 @@ dictionary SmartCardReaderStateFlags {
   boolean unpowered = false;
 };
 
+// https://wicg.github.io/web-smart-card/#smartcardreaderstateflagsin-dictionary
+dictionary SmartCardReaderStateFlagsIn : SmartCardReaderStateFlags {
+  boolean unaware = false;
+};
+
+// https://wicg.github.io/web-smart-card/#smartcardreaderstateflagsout-dictionary
+dictionary SmartCardReaderStateFlagsOut : SmartCardReaderStateFlags {
+  boolean changed = false;
+  boolean unknown = false;
+};
+
+// https://wicg.github.io/web-smart-card/#smartcardprotocol-enum
 enum SmartCardProtocol {
   "raw",
   "t0",
   "t1"
 };
 
+// https://wicg.github.io/web-smart-card/#dom-smartcardconnectresult
 dictionary SmartCardConnectResult {
   required SmartCardConnection connection;
   SmartCardProtocol activeProtocol;
 };
 
+// https://wicg.github.io/web-smart-card/#smartcardaccessmode-enum
 enum SmartCardAccessMode {
   "shared",
   "exclusive",
   "direct"
 };
 
+// https://wicg.github.io/web-smart-card/#smartcardgetstatuschangeoptions-dictionary
 dictionary SmartCardGetStatusChangeOptions {
   DOMHighResTimeStamp timeout;
   AbortSignal signal;
 };
 
+// https://wicg.github.io/web-smart-card/#smartcardconnectoptions-dictionary
 dictionary SmartCardConnectOptions {
   sequence<SmartCardProtocol> preferredProtocols;
 };
 
+// https://wicg.github.io/web-smart-card/#smartcardcontext-interface
 [
   Exposed=Window,
   RuntimeEnabled=SmartCard,

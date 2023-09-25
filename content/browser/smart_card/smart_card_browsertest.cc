@@ -823,7 +823,7 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, GetStatusChange) {
   ASSERT_TRUE(NavigateToURL(shell(), GetIsolatedContextUrl()));
 
   EXPECT_EQ(
-      "Fake Reader, {unaware=false, ignore=false, changed=false, "
+      "Fake Reader, {ignore=false, changed=false, "
       "unknown=false, unavailable=false, empty=false, present=true, "
       "exclusive=false, inuse=true, mute=false, unpowered=false}, 7, {1,2,3,4}",
       EvalJs(shell(), R"((async () => {
@@ -842,8 +842,7 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, GetStatusChange) {
        let atrString = new Uint8Array(statesOut[0].answerToReset).toString();
 
        let flags = statesOut[0].eventState;
-       let eventStateString = `unaware=${flags.unaware}`
-           + `, ignore=${flags.ignore}`
+       let eventStateString = `ignore=${flags.ignore}`
            + `, changed=${flags.changed}`
            + `, unknown=${flags.unknown}`
            + `, unavailable=${flags.unavailable}`
