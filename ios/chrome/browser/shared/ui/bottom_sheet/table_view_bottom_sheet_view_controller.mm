@@ -158,22 +158,25 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   [super traitCollectionDidChange:previousTraitCollection];
   // Update the custom detent with the correct initial height when trait
   // collection changed (for example when the user uses large font).
-  UISheetPresentationController* presentationController =
-      self.sheetPresentationController;
-  if (@available(iOS 16, *)) {
-    CGFloat bottomSheetHeight = [self preferredHeightForContent];
-    auto resolver = ^CGFloat(
-        id<UISheetPresentationControllerDetentResolutionContext> context) {
-      return bottomSheetHeight;
-    };
+  if (self.traitCollection.preferredContentSizeCategory !=
+      previousTraitCollection.preferredContentSizeCategory) {
+    UISheetPresentationController* presentationController =
+        self.sheetPresentationController;
+    if (@available(iOS 16, *)) {
+      CGFloat bottomSheetHeight = [self preferredHeightForContent];
+      auto resolver = ^CGFloat(
+          id<UISheetPresentationControllerDetentResolutionContext> context) {
+        return bottomSheetHeight;
+      };
 
-    UISheetPresentationControllerDetent* customDetent =
-        [UISheetPresentationControllerDetent
-            customDetentWithIdentifier:kCustomMinimizedDetentIdentifier
-                              resolver:resolver];
-    presentationController.detents = @[ customDetent ];
-    presentationController.selectedDetentIdentifier =
-        kCustomMinimizedDetentIdentifier;
+      UISheetPresentationControllerDetent* customDetent =
+          [UISheetPresentationControllerDetent
+              customDetentWithIdentifier:kCustomMinimizedDetentIdentifier
+                                resolver:resolver];
+      presentationController.detents = @[ customDetent ];
+      presentationController.selectedDetentIdentifier =
+          kCustomMinimizedDetentIdentifier;
+    }
   }
 }
 
