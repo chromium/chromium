@@ -427,6 +427,32 @@ TEST_F(InteractiveTestTest, CheckResultFails) {
   });
 }
 
+TEST_F(InteractiveTestTest, CheckVariable) {
+  int x = 0;
+  const int y = 0;
+  const char* text = "foo";
+  constexpr char kNewValue[] = "bar";
+
+  RunTestSequenceInContext(kTestContext1, CheckVariable(y, 0), Do([&]() {
+                             x = 1;
+                             text = kNewValue;
+                           }),
+                           CheckVariable(x, testing::Gt(0)),
+                           CheckVariable(text, kNewValue));
+}
+
+TEST_F(InteractiveTestTest, CheckVariableFails) {
+  int x = 0;
+
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  private_test_impl().set_aborted_callback_for_testing(aborted.Get());
+
+  EXPECT_CALL_IN_SCOPE(aborted, Run, {
+    EXPECT_FALSE(RunTestSequenceInContext(kTestContext1, Do([&]() { x = 1; }),
+                                          CheckVariable(x, 0)));
+  });
+}
+
 TEST_F(InteractiveTestTest, CheckElement) {
   TestElement e1(kTestId1, kTestContext1);
   TestElement e2(kTestId2, kTestContext1);

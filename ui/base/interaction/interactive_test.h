@@ -150,13 +150,28 @@ class InteractiveTestApi {
   // Calls `function` and applies `matcher` to the result. If the matcher does
   // not match, an appropriate error message is printed and the test fails.
   //
-  // `matcher` should resolve of convert to a `Matcher<R>`.
+  // `matcher` should resolve or convert to a `Matcher<R>`.
   template <typename C,
             typename M,
             typename R = internal::ReturnTypeOf<C>,
             typename = internal::RequireSignature<C, R()>>
   [[nodiscard]] static StepBuilder CheckResult(
       C&& function,
+      M&& matcher,
+      std::string check_description = internal::kNoCheckDescriptionSpecified);
+
+  // Checks the value of `variable` against `matcher`. The variable can be any
+  // local or class member that is guaranteed to still exist when the step is
+  // executed; if its value at the time the step is executed does not match,
+  // an appropriate error message is printed and the test fails.
+  //
+  // There is no need to wrap `variable` in e.g. `std::ref`; it is always
+  // captured by reference.
+  //
+  // `matcher` should resolve or convert to a `Matcher<T>`.
+  template <typename V, typename M, typename T = internal::MatcherTypeFor<V>>
+  [[nodiscard]] static StepBuilder CheckVariable(
+      V& variable,
       M&& matcher,
       std::string check_description = internal::kNoCheckDescriptionSpecified);
 
@@ -940,6 +955,24 @@ InteractionSequence::StepBuilder InteractiveTestApi::CheckResult(
                              testing::Matcher<R>(std::forward<M>(matcher))))
                        .SetDescription(base::StringPrintf(
                            "CheckResult(\"%s\")", check_description.c_str())));
+}
+
+// static
+template <typename V, typename M, typename T>
+InteractionSequence::StepBuilder InteractiveTestApi::CheckVariable(
+    V& variable,
+    M&& matcher,
+    std::string check_description) {
+  return std::move(
+      Check(base::BindOnce(
+                [](std::reference_wrapper<V> ref, testing::Matcher<T> matcher) {
+                  return internal::MatchAndExplain("CheckVariable()", matcher,
+                                                   ref.get());
+                },
+                std::ref(variable),
+                testing::Matcher<T>(std::forward<M>(matcher))))
+          .SetDescription(base::StringPrintf("CheckVariable(\"%s\")",
+                                             check_description.c_str())));
 }
 
 // static
