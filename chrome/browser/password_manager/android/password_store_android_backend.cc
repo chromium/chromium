@@ -44,7 +44,6 @@
 #include "components/password_manager/core/browser/password_store_util.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/browser/psl_matching_helper.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
@@ -262,10 +261,6 @@ SuccessStatus GetSuccessStatusFromError(
 }
 
 void LogUPMActiveStatus(syncer::SyncService* sync_service, PrefService* prefs) {
-  // This is called from `PasswordStoreAndroidBackend` which is only
-  // created when feature is enabled.
-  DCHECK(base::FeatureList::IsEnabled(
-      password_manager::features::kUnifiedPasswordManagerAndroid));
   if (!sync_util::IsPasswordSyncEnabled(sync_service)) {
     base::UmaHistogramEnumeration(
         kUPMActiveHistogram,
@@ -552,8 +547,6 @@ PasswordStoreAndroidBackend::JobReturnHandler::GetOperation() {
 PasswordStoreAndroidBackend::PasswordStoreAndroidBackend(PrefService* prefs)
     : lifecycle_helper_(std::make_unique<PasswordManagerLifecycleHelperImpl>()),
       bridge_helper_(PasswordStoreAndroidBackendBridgeHelper::Create()) {
-  DCHECK(base::FeatureList::IsEnabled(
-      password_manager::features::kUnifiedPasswordManagerAndroid));
   DCHECK(bridge_helper_);
   prefs_ = prefs;
   DCHECK(prefs_);

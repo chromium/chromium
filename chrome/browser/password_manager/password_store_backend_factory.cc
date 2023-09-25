@@ -16,10 +16,8 @@
 #include "components/prefs/pref_service.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/feature_list.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend.h"
 #include "components/password_manager/core/browser/password_store_backend_migration_decorator.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace password_manager {
@@ -33,9 +31,7 @@ std::unique_ptr<PasswordStoreBackend> PasswordStoreBackend::Create(
       CreateLoginDatabaseForProfileStorage(login_db_path),
       syncer::WipeModelUponSyncDisabledBehavior::kNever);
 #else  // BUILDFLAG(IS_ANDROID) && !USE_LEGACY_PASSWORD_STORE_BACKEND
-  if (PasswordStoreAndroidBackendBridgeHelper::CanCreateBackend() &&
-      base::FeatureList::IsEnabled(
-          password_manager::features::kUnifiedPasswordManagerAndroid)) {
+  if (PasswordStoreAndroidBackendBridgeHelper::CanCreateBackend()) {
     base::UmaHistogramBoolean(
         "PasswordManager.PasswordStore.WasEnrolledInUPMWhenBackendWasCreated",
         !prefs->GetBoolean(password_manager::prefs::
