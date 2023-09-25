@@ -4,7 +4,17 @@
 
 #include "chrome/browser/ash/input_method/editor_text_actuator.h"
 
+#include "ash/public/cpp/new_window_delegate.h"
+#include "url/url_constants.h"
+
 namespace ash::input_method {
+namespace {
+
+bool IsUrlAllowed(const GURL& url) {
+  return url.SchemeIs(url::kHttpsScheme);
+}
+
+}  // namespace
 
 EditorTextActuator::EditorTextActuator(
     mojo::PendingAssociatedReceiver<orca::mojom::TextActuator> receiver,
@@ -26,6 +36,16 @@ void EditorTextActuator::ApproveConsent() {
 
 void EditorTextActuator::DeclineConsent() {
   delegate_->ProcessConsentAction(ConsentAction::kDeclined);
+}
+
+void EditorTextActuator::OpenUrlInNewWindow(const GURL& url) {
+  if (!IsUrlAllowed(url)) {
+    mojo::ReportBadMessage("Invalid URL scheme. Only HTTPS is allowed.");
+    return;
+  }
+  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+      url, ash::NewWindowDelegate::OpenUrlFrom::kUnspecified,
+      ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
 void EditorTextActuator::OnFocus(int context_id) {

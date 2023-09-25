@@ -12,6 +12,7 @@
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "url/gurl.h"
 
 namespace ash::input_method {
 
@@ -33,6 +34,7 @@ class EditorTextActuator : public orca::mojom::TextActuator {
   void InsertText(const std::string& text) override;
   void ApproveConsent() override;
   void DeclineConsent() override;
+  void OpenUrlInNewWindow(const GURL& url) override;
 
   void OnFocus(int context_id);
   void OnBlur();

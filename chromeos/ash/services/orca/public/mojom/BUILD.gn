@@ -14,5 +14,6 @@ mojom("mojom") {
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
     "//ui/gfx/range/mojom",
+    "//url/mojom:url_mojom_gurl",
   ]
 }

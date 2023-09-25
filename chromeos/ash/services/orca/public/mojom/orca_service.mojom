@@ -6,12 +6,13 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 4
+// Next MinVersion: 5
 
 module ash.orca.mojom;
 
 import "sandbox/policy/mojom/sandbox.mojom";
 import "ui/gfx/range/mojom/range.mojom";
+import "url/mojom/url.mojom";
 
 [Stable, Extensible]
 enum PresetTextQueryType {
@@ -137,6 +138,9 @@ interface EditorClient {
 
   // Sends a consent dismissal to the service.
   [MinVersion=2] DismissConsent@7();
+
+  // Open a URL in a new browser window.
+  [MinVersion=4] OpenUrlInNewWindow@8(url.mojom.Url url);
 };
 
 // Used by the UI to bootstrap the connection with the service.
@@ -165,6 +169,9 @@ interface TextActuator {
 
   // Processes the consent declinal.
   [MinVersion=2] DeclineConsent@2();
+
+  // Open a URL in a new browser window.
+  [MinVersion=4] OpenUrlInNewWindow@3(url.mojom.Url url);
 };
 
 // An interface that can respond to text query requests with responses.
