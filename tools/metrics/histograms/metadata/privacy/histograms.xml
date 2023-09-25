@@ -214,7 +214,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.DIPS.BounceCategory{DIPSRedirectType}{DIPSCookieMode}"
-    enum="DIPSRedirectCategory" expires_after="2023-11-01">
+    enum="DIPSRedirectCategory" expires_after="2024-05-01">
   <owner>rtarpine@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>
