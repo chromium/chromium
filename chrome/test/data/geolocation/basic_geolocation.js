@@ -11,6 +11,13 @@ var position_updated = false;
 const callbackStatuses = new ResultQueue();
 const geopositionUpdates = new ResultQueue();
 
+function resetState() {
+  last_position = 0;
+  last_error = 0;
+  watch_id = 0;
+  position_initialized = false;
+  position_updated = false;
+}
 function geoSuccessCallback(position) {
   last_position = position;
 }
@@ -36,18 +43,21 @@ function geoErrorCallbackWithResponse(error) {
   callbackStatuses.push('request-callback-error');
 }
 function geoStart() {
+  resetState();
   watch_id = navigator.geolocation.watchPosition(
       geoSuccessCallback, geoErrorCallback,
       {maximumAge:600000, timeout:100000, enableHighAccuracy:true});
   return watch_id;
 }
 function geoStartWithAsyncResponse() {
+  resetState();
   navigator.geolocation.watchPosition(
     geoSuccessCallbackWithResponse, geoErrorCallbackWithResponse,
       {maximumAge:600000, timeout:100000, enableHighAccuracy:true});
   return callbackStatuses.pop();
 }
 function geoStartWithSyncResponse() {
+  resetState();
   navigator.geolocation.watchPosition(
             geoSuccessCallback, geoErrorCallback,
             {maximumAge:600000, timeout:100000, enableHighAccuracy:true});

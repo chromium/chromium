@@ -45,6 +45,7 @@ mojom("mojom") {
     "//services/network/public/mojom:url_loader_base",
     "//ui/gfx/geometry/mojom",
     "//url/mojom:url_mojom_gurl",
+    "//url/mojom:url_mojom_origin",
   ]
 
   if (is_chromeos_ash) {

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "content/browser/permissions/permission_controller_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_request_description.h"
@@ -14,6 +15,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
+#include "services/device/public/mojom/geoposition.mojom.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
@@ -115,9 +117,33 @@ void GeolocationServiceImpl::CreateGeolocationWithPermissionStatus(
   if (permission_status != blink::mojom::PermissionStatus::GRANTED)
     return;
 
-  const auto& requesting_url =
+  requesting_origin_ =
+      render_frame_host_->GetMainFrame()->GetLastCommittedOrigin();
+  auto requesting_url =
       render_frame_host_->GetMainFrame()->GetLastCommittedURL();
+
   geolocation_context_->BindGeolocation(std::move(receiver), requesting_url);
+  subscription_id_ =
+      PermissionControllerImpl::FromBrowserContext(
+          render_frame_host_->GetBrowserContext())
+          ->SubscribePermissionStatusChange(
+              blink::PermissionType::GEOLOCATION,
+              /*render_process_host=*/nullptr, render_frame_host_,
+              requesting_url,
+              base::BindRepeating(
+                  &GeolocationServiceImpl::HandlePermissionStatusChange,
+                  weak_factory_.GetWeakPtr()));
+}
+
+void GeolocationServiceImpl::HandlePermissionStatusChange(
+    blink::mojom::PermissionStatus permission_status) {
+  if (permission_status != blink::mojom::PermissionStatus::GRANTED &&
+      subscription_id_.value()) {
+    PermissionControllerImpl::FromBrowserContext(
+        render_frame_host_->GetBrowserContext())
+        ->UnsubscribePermissionStatusChange(subscription_id_);
+    geolocation_context_->OnPermissionRevoked(requesting_origin_);
+  }
 }
 
 }  // namespace content
