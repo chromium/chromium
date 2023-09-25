@@ -31,7 +31,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 
 import java.util.ArrayList;
@@ -56,9 +55,7 @@ public class QuickDeleteTabsFilterTest {
         // Create tabs.
         for (int id = 0; id < countOfTabs; id++) {
             MockTab mockTab = new MockTab(id, /*incognito=*/false);
-            CriticalPersistedTabData mockTabData = new CriticalPersistedTabData(mockTab);
             mockTab.setRootId(id);
-            mockTab.getUserDataHost().setUserData(CriticalPersistedTabData.class, mockTabData);
             mMockTabList.add(mockTab);
         }
         // Update the tab model.

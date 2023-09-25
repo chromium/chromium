@@ -293,7 +293,6 @@ public class TabPersistentStoreUnitTest {
     @Test
     @SmallTest
     @Feature("TabPersistentStore")
-    // TODO(crbug.com/1119583) Add similar test for CriticalPersistedTabData
     public void testNtpWithStateNotIgnoredDuringRestore() {
         mPersistentStore =
                 new TabPersistentStore(mPersistencePolicy, mTabModelSelector, mTabCreatorManager);

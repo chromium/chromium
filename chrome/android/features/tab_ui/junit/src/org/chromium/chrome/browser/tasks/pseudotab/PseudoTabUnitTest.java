@@ -297,7 +297,7 @@ public class PseudoTabUnitTest {
         doReturn(timestamp).when(mTab1).getTimestampMillis();
 
         PseudoTab tab = PseudoTab.fromTabId(TAB1_ID);
-        Assert.assertEquals(TabImpl.INVALID_TIMESTAMP, tab.getTimestampMillis());
+        Assert.assertEquals(Tab.INVALID_TIMESTAMP, tab.getTimestampMillis());
 
         PseudoTab realTab = PseudoTab.fromTab(mTab1);
         Assert.assertNotEquals(tab, realTab);
@@ -454,6 +454,6 @@ public class PseudoTabUnitTest {
         // Timestamp was not set. Without the isInitialized() check,
         // pseudoTab.getTimestampMillis() would crash here with
         // UnsupportedOperationException
-        Assert.assertEquals(TabImpl.INVALID_TIMESTAMP, pseudoTab.getTimestampMillis());
+        Assert.assertEquals(Tab.INVALID_TIMESTAMP, pseudoTab.getTimestampMillis());
     }
 }

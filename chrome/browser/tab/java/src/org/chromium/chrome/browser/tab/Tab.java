@@ -28,6 +28,7 @@ import java.lang.annotation.RetentionPolicy;
  */
 public interface Tab extends TabLifecycle {
     public static final int INVALID_TAB_ID = -1;
+    public static final long INVALID_TIMESTAMP = -1;
 
     @IntDef({TabLoadStatus.PAGE_LOAD_FAILED, TabLoadStatus.DEFAULT_PAGE_LOAD})
     @Retention(RetentionPolicy.SOURCE)
@@ -277,13 +278,6 @@ public interface Tab extends TabLifecycle {
      * Goes to the navigation entry after the current one.
      */
     void goForward();
-
-    /**
-     * Set whether {@link Tab} metadata (specifically all {@link PersistedTabData})
-     * will be saved. Not all Tabs need to be persisted across restarts.
-     * The default value when a Tab is initialized is false.
-     */
-    void setIsTabSaveEnabled(boolean isSaveEnabled);
 
     /**
      * @return true if the {@link Tab} is a custom tab.

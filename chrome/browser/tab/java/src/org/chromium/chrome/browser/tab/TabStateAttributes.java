@@ -13,7 +13,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -213,9 +212,6 @@ public class TabStateAttributes extends TabWebContentsUserData {
             return;
         }
         mDirtinessState = dirtiness;
-        if (mDirtinessState == DirtinessState.DIRTY) {
-            CriticalPersistedTabData.from(mTab).setShouldSave();
-        }
         for (Observer observer : mObservers) {
             observer.onTabStateDirtinessChanged(mTab, mDirtinessState);
         }

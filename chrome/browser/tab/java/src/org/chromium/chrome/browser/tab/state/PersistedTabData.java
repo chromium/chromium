@@ -406,7 +406,6 @@ public abstract class PersistedTabData implements UserData {
      * Delete all {@link PersistedTabData} when a {@link Tab} is closed.
      */
     public static void onTabClose(Tab tab) {
-        tab.setIsTabSaveEnabled(false);
         // TODO(crbug.com/1223965) ensure we cleanup ShoppingPersistedTabData on startup
         ShoppingPersistedTabData shoppingPersistedTabData =
                 tab.getUserDataHost().getUserData(ShoppingPersistedTabData.class);
@@ -453,16 +452,6 @@ public abstract class PersistedTabData implements UserData {
      */
     public static void onDeferredStartup() {
         PersistedTabDataJni.get().onDeferredStartup();
-    }
-
-    /**
-     * Signal to {@link PersistedTabData} that the system is shutting down and to finish
-     * any pending saves.
-     * TODO(b/298057345) deprecate PersistedTabData.onShutdown()
-     */
-    public static void onShutdown() {
-        PersistedTabDataConfiguration.getFilePersistedTabDataStorage().onShutdown();
-        PersistedTabDataConfiguration.getEncryptedFilePersistedTabDataStorage().onShutdown();
     }
 
     @VisibleForTesting

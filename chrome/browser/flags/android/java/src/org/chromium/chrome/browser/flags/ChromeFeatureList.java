@@ -241,7 +241,6 @@ public abstract class ChromeFeatureList {
     public static final String CORMORANT = "Cormorant";
     public static final String CREATE_NEW_TAB_INITIALIZE_RENDERER =
             "CreateNewTabInitializeRenderer";
-    public static final String CRITICAL_PERSISTED_TAB_DATA = "CriticalPersistedTabData";
     public static final String DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING =
             "DarkenWebsitesCheckboxInThemesSetting";
     public static final String DEFER_KEEP_SCREEN_ON_DURING_GESTURE =

@@ -14,7 +14,6 @@ import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.Au
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchTabGroup;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.url.GURL;
@@ -105,7 +104,7 @@ public class AuxiliarySearchProvider {
 
         var tabBuilder = AuxiliarySearchEntry.newBuilder().setTitle(title).setUrl(url.getSpec());
         final long lastAccessTime = tab.getTimestampMillis();
-        if (lastAccessTime != CriticalPersistedTabData.INVALID_TIMESTAMP) {
+        if (lastAccessTime != Tab.INVALID_TIMESTAMP) {
             tabBuilder.setLastAccessTimestamp(lastAccessTime);
         }
 

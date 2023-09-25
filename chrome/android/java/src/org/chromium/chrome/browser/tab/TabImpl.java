@@ -29,7 +29,6 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityUtils;
@@ -50,7 +49,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.tab.TabUtils.LoadIfNeededCaller;
 import org.chromium.chrome.browser.tab.TabUtils.UseDesktopUserAgentCaller;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.ui.native_page.FrozenNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
@@ -81,9 +79,6 @@ import java.nio.ByteBuffer;
  * This class is not intended to be extended.
  */
 public class TabImpl implements Tab {
-    @VisibleForTesting
-    public static final long INVALID_TIMESTAMP = -1;
-
     /** Used for logging. */
     private static final String TAG = "Tab";
 
@@ -205,8 +200,6 @@ public class TabImpl implements Tab {
     private final UserDataHost mUserDataHost = new UserDataHost();
 
     private boolean mIsDestroyed;
-    private ObservableSupplierImpl<Boolean> mIsTabSaveEnabledSupplier =
-            new ObservableSupplierImpl<>();
 
     private final TabThemeColorHelper mThemeColorHelper;
     private int mThemeColor;
@@ -256,7 +249,6 @@ public class TabImpl implements Tab {
      */
     @SuppressLint("HandlerLeak")
     TabImpl(int id, boolean incognito, @Nullable @TabLaunchType Integer launchType) {
-        mIsTabSaveEnabledSupplier.set(false);
         mId = TabIdManager.getInstance().generateValidId(id);
         mIncognito = incognito;
         mRootId = mId;
@@ -397,7 +389,6 @@ public class TabImpl implements Tab {
 
     @CalledByNative
     @Override
-    // TODO(crbug.com/1113249) move getUrl() to CriticalPersistedTabData
     public GURL getUrl() {
         if (!isInitialized()) {
             return GURL.emptyGURL();
@@ -856,15 +847,6 @@ public class TabImpl implements Tab {
         return null;
     }
 
-    @Override
-    public void setIsTabSaveEnabled(boolean isTabSaveEnabled) {
-        mIsTabSaveEnabledSupplier.set(isTabSaveEnabled);
-    }
-
-    public ObservableSupplierImpl<Boolean> getIsTabSaveEnabledSupplierForTesting() {
-        return mIsTabSaveEnabledSupplier;
-    }
-
     protected void updateWebContentObscured(boolean obscureWebContent) {
         // Update whether or not the current native tab and/or web contents are
         // currently visible (from an accessibility perspective), or whether
@@ -980,7 +962,6 @@ public class TabImpl implements Tab {
             if (mTimestampMillis == INVALID_TIMESTAMP) {
                 setTimestampMillis(System.currentTimeMillis());
             }
-            registerTabSaving();
             String appId = null;
             Boolean hasThemeColor = null;
             int themeColor = 0;
@@ -996,12 +977,6 @@ public class TabImpl implements Tab {
             for (TabObserver observer : mObservers) observer.onInitialized(this, appId);
             TraceEvent.end("Tab.initialize");
         }
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public void registerTabSaving() {
-        CriticalPersistedTabData.from(this).registerIsTabSaveEnabledSupplier(
-                mIsTabSaveEnabledSupplier);
     }
 
     @Nullable

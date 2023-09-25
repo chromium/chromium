@@ -593,8 +593,8 @@ public class TabPersistentStore {
         // enforce the detection of unbuffered input/output operations, which results in
         // https://crbug.com/1276907. After evaluating the performance impact, here we disabled the
         // detection of unbuffered input/output operations.
-        // TabState is on a deprecation path and the intention is to replace with
-        // CriticalPersistedTabData. So this workaround should be temporary.
+        // This will no longer be necessary when the TabState schema is replaced with
+        // a FlatBuffer approach - go/tabstate-flatbuffer-decision.
         try (StrictModeContext ignored = StrictModeContext.allowUnbufferedIo()) {
             int restoredTabId = SharedPreferencesManager.getInstance().readInt(
                     ChromePreferenceKeys.TABMODEL_ACTIVE_TAB_ID, Tab.INVALID_TAB_ID);
@@ -1282,8 +1282,6 @@ public class TabPersistentStore {
             if (mDestroyed || isCancelled()) return;
             if (mStateSaved) {
                 if (!mTab.isDestroyed()) TabStateAttributes.from(mTab).clearTabStateDirtiness();
-                // TODO(b/298056319) Remove CriticalPersitsedTabData relevant code in TabImpl.
-                mTab.setIsTabSaveEnabled(false);
             }
             mSaveTabTask = null;
             saveNextTab();
@@ -1438,8 +1436,7 @@ public class TabPersistentStore {
     }
 
     /**
-     * Manages loading of {@link TabState} and {@link CriticalPersistedTabData} (TabState
-     * replacement) stored tab metadata. Also used to track if a load is in progress and the tab
+     * Manages loading of {@link TabState}. Also used to track if a load is in progress and the tab
      * details of that load.
      * TODO(b/298058408) deprecate TabLoader
      */

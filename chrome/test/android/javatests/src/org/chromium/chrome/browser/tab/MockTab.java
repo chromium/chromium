@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tab;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
@@ -41,13 +40,6 @@ public class MockTab extends TabImpl {
     public static Tab createAndInitialize(
             int id, boolean incognito, @TabLaunchType int tabLaunchType) {
         TabImpl tab = new MockTab(id, incognito, tabLaunchType);
-        tab.initialize(null, null, null, null, null, false, null, false);
-        return tab;
-    }
-
-    public static TabImpl initializeWithCriticalPersistedTabData(
-            TabImpl tab, CriticalPersistedTabData criticalPersistedTabData) {
-        tab.getUserDataHost().setUserData(CriticalPersistedTabData.class, criticalPersistedTabData);
         tab.initialize(null, null, null, null, null, false, null, false);
         return tab;
     }

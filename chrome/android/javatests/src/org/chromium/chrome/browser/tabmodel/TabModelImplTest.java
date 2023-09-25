@@ -64,15 +64,12 @@ public class TabModelImplTest {
         mActivity = sActivityTestRule.getActivity();
         final Tab tab = mActivity.getActivityTab();
         ChromeTabUtils.waitForInteractable(tab);
-        TestThreadUtils.runOnUiThreadBlocking(() -> tab.setIsTabSaveEnabled(false));
     }
 
     private void createTabs(int tabsCount, boolean isIncognito, String url) {
         for (int i = 0; i < tabsCount; i++) {
             Tab tab = ChromeTabUtils.fullyLoadUrlInNewTab(
                     InstrumentationRegistry.getInstrumentation(), mActivity, url, isIncognito);
-
-            TestThreadUtils.runOnUiThreadBlocking(() -> tab.setIsTabSaveEnabled(false));
         }
     }
 

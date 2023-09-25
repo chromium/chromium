@@ -30,7 +30,6 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -114,34 +113,6 @@ public class TabStateAttributesTest {
         Assert.assertEquals(TabStateAttributes.DirtinessState.UNTIDY,
                 TabStateAttributes.from(mTab).getDirtinessState());
         mTab.getUserDataHost().removeUserData(TabStateAttributes.class);
-    }
-
-    @Test
-    public void testDefaultShouldSave() {
-        TabStateAttributes.createForTab(mTab, null);
-        Assert.assertTrue(CriticalPersistedTabData.from(mTab).getShouldSaveForTesting());
-        mTab.getUserDataHost().removeUserData(TabStateAttributes.class);
-        mTab.getUserDataHost().removeUserData(CriticalPersistedTabData.class);
-
-        TabStateAttributes.createForTab(mTab, TabCreationState.FROZEN_FOR_LAZY_LOAD);
-        Assert.assertTrue(CriticalPersistedTabData.from(mTab).getShouldSaveForTesting());
-        mTab.getUserDataHost().removeUserData(TabStateAttributes.class);
-        mTab.getUserDataHost().removeUserData(CriticalPersistedTabData.class);
-
-        TabStateAttributes.createForTab(mTab, TabCreationState.FROZEN_ON_RESTORE);
-        Assert.assertFalse(CriticalPersistedTabData.from(mTab).getShouldSaveForTesting());
-        mTab.getUserDataHost().removeUserData(TabStateAttributes.class);
-        mTab.getUserDataHost().removeUserData(CriticalPersistedTabData.class);
-
-        TabStateAttributes.createForTab(mTab, TabCreationState.LIVE_IN_BACKGROUND);
-        Assert.assertFalse(CriticalPersistedTabData.from(mTab).getShouldSaveForTesting());
-        mTab.getUserDataHost().removeUserData(TabStateAttributes.class);
-        mTab.getUserDataHost().removeUserData(CriticalPersistedTabData.class);
-
-        TabStateAttributes.createForTab(mTab, TabCreationState.LIVE_IN_FOREGROUND);
-        Assert.assertFalse(CriticalPersistedTabData.from(mTab).getShouldSaveForTesting());
-        mTab.getUserDataHost().removeUserData(TabStateAttributes.class);
-        mTab.getUserDataHost().removeUserData(CriticalPersistedTabData.class);
     }
 
     @Test

@@ -156,7 +156,7 @@ public class TabUtilsUnitTest {
         verify(mNavigationController)
                 .setUseDesktopUserAgent(true, false, UseDesktopUserAgentCaller.OTHER);
 
-        // CriticalPersistedTabData#setUserAgent should not be used when it is not forcedByUser.
+        // Tab#setUserAgent should not be used when it is not forcedByUser.
         verify(mTab, never()).setUserAgent(anyInt());
     }
 

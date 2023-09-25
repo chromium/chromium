@@ -16,7 +16,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -242,8 +241,7 @@ public class TabAttributeCache {
      * @return The timestamp
      */
     public static long getTimestampMillis(int id) {
-        return getSharedPreferences().getLong(
-                getTimestampMillisKey(id), CriticalPersistedTabData.INVALID_TIMESTAMP);
+        return getSharedPreferences().getLong(getTimestampMillisKey(id), Tab.INVALID_TIMESTAMP);
     }
 
     private static void cacheTimestampMillis(int id, long timestampMillis) {
