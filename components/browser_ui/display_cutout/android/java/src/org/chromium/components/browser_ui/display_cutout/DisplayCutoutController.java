@@ -147,9 +147,10 @@ public class DisplayCutoutController implements InsetObserverView.WindowInsetObs
      * @param value The new viewport fit value.
      */
     public void setViewportFit(@WebContentsObserver.ViewportFitType int value) {
-        if (value != ViewportFit.AUTO) {
-            assert mDelegate.getWebContents().isFullscreenForCurrentTab()
-                    || mDelegate.isInBrowserFullscreen();
+        // TODO(crbug.com/1480477): Investigate whether if() can be turned into assert.
+        if (!mDelegate.getWebContents().isFullscreenForCurrentTab()
+                && !mDelegate.isInBrowserFullscreen()) {
+            value = ViewportFit.AUTO;
         }
 
         if (value == mViewportFit) return;
