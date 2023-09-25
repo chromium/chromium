@@ -149,6 +149,7 @@ class TRIVIAL_ABI OnceCallback<R(Args...)> {
     internal::BindStateHolder holder = std::move(holder_);
     PolymorphicInvoke f =
         reinterpret_cast<PolymorphicInvoke>(holder.polymorphic_invoke());
+    CHECK(f);
     return f(holder.bind_state().get(), std::forward<Args>(args)...);
   }
 
@@ -330,6 +331,7 @@ class TRIVIAL_ABI RepeatingCallback<R(Args...)> {
 
     PolymorphicInvoke f =
         reinterpret_cast<PolymorphicInvoke>(holder_.polymorphic_invoke());
+    CHECK(f);
     return f(bind_state.get(), std::forward<Args>(args)...);
   }
 
@@ -345,6 +347,7 @@ class TRIVIAL_ABI RepeatingCallback<R(Args...)> {
     internal::BindStateHolder holder = std::move(holder_);
     PolymorphicInvoke f =
         reinterpret_cast<PolymorphicInvoke>(holder.polymorphic_invoke());
+    CHECK(f);
     return f(holder.bind_state().get(), std::forward<Args>(args)...);
   }
 
