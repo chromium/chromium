@@ -7,10 +7,12 @@
 #include <memory>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/check_is_test.h"
 #include "base/containers/cxx20_erase_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
@@ -55,6 +57,8 @@ bool AreTestAppsEnabled() {
   return base::FeatureList::IsEnabled(apps::kAppPreloadServiceEnableTestApps);
 }
 
+bool g_disable_preloads_on_startup_for_testing_ = false;
+
 }  // namespace
 
 namespace apps {
@@ -77,6 +81,10 @@ AppPreloadService::AppPreloadService(Profile* profile)
       server_connector_(std::make_unique<AppPreloadServerConnector>()),
       device_info_manager_(std::make_unique<DeviceInfoManager>(profile)),
       web_app_installer_(std::make_unique<WebAppPreloadInstaller>(profile)) {
+  if (g_disable_preloads_on_startup_for_testing_) {
+    return;
+  }
+
   StartFirstLoginFlow();
 }
 
@@ -94,9 +102,15 @@ void AppPreloadService::RegisterProfilePrefs(
 }
 
 void AppPreloadService::StartFirstLoginFlowForTesting(
-    base::OnceCallback<void(bool)> callback) {
-  SetInstallationCompleteCallbackForTesting(std::move(callback));  // IN-TEST
+    PreloadStatusCallback callback) {
+  installation_complete_callback_ = std::move(callback);
   StartFirstLoginFlow();
+}
+
+// static
+base::AutoReset<bool> AppPreloadService::DisablePreloadsOnStartupForTesting() {
+  return base::AutoReset<bool>(&g_disable_preloads_on_startup_for_testing_,
+                               true);
 }
 
 void AppPreloadService::StartFirstLoginFlow() {

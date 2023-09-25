@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -54,16 +55,17 @@ class AppPreloadService : public KeyedService {
   // Registers prefs used for state management of the App Preload Service.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  // Starts the process of installing apps for first login, exposed for tests
-  // which can't use the flow triggered on startup, or which need to trigger
-  // that flow multiple times. `callback` is once installation is complete with
-  // whether app installation was successful.
-  void StartFirstLoginFlowForTesting(base::OnceCallback<void(bool)> callback);
+  using PreloadStatusCallback = base::OnceCallback<void(bool)>;
 
-  void SetInstallationCompleteCallbackForTesting(
-      base::OnceCallback<void(bool)> callback) {
-    installation_complete_callback_ = std::move(callback);
-  }
+  // Starts the process of installing apps for first login, exposed for tests
+  // to be able to control the timing of the flow. `callback` is called once
+  // installation is complete with whether app installation was successful.
+  void StartFirstLoginFlowForTesting(PreloadStatusCallback callback);
+
+  // Disable the automatic preload flow which runs on AppPreloadService startup,
+  // to allow tests to control the timing of preloads. Must be called before
+  // AppPreloadService is created.
+  static base::AutoReset<bool> DisablePreloadsOnStartupForTesting();
 
  private:
   // Starts the process of installing apps for first login. This method checks
@@ -95,7 +97,7 @@ class AppPreloadService : public KeyedService {
   std::unique_ptr<WebAppPreloadInstaller> web_app_installer_;
 
   // For testing
-  base::OnceCallback<void(bool)> installation_complete_callback_;
+  PreloadStatusCallback installation_complete_callback_;
 
   // `weak_ptr_factory_` must be the last member of this class.
   base::WeakPtrFactory<AppPreloadService> weak_ptr_factory_{this};

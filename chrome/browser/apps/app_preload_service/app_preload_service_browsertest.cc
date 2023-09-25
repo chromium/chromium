@@ -38,15 +38,11 @@ static constexpr char kFirstLoginFlowHistogramFailureName[] =
     "AppPreloadService.FirstLoginFlowTime.Failure";
 }  // namespace
 
-// TODO(crbug.com/1482028): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_AppPreloadServiceBrowserTest DISABLED_AppPreloadServiceBrowserTest
-#else
-#define MAYBE_AppPreloadServiceBrowserTest AppPreloadServiceBrowserTest
-#endif
-class MAYBE_AppPreloadServiceBrowserTest : public InProcessBrowserTest {
+class AppPreloadServiceBrowserTest : public InProcessBrowserTest {
  public:
-  MAYBE_AppPreloadServiceBrowserTest() {
+  AppPreloadServiceBrowserTest()
+      : startup_check_resetter_(
+            AppPreloadService::DisablePreloadsOnStartupForTesting()) {
     feature_list_.InitWithFeatures(
         {/*enabled_features=*/features::kAppPreloadService},
         /*disabled_features=*/{});
@@ -54,15 +50,10 @@ class MAYBE_AppPreloadServiceBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    // Note that App Preload Service runs as part of browser startup, so the
-    // browser test SetUp() method will trigger a call to APS before any test
-    // code runs. This call will fail as the EmbeddedTestServer will not be
-    // started.
     InProcessBrowserTest::SetUpOnMainThread();
 
-    https_server_.RegisterRequestHandler(
-        base::BindRepeating(&MAYBE_AppPreloadServiceBrowserTest::HandleRequest,
-                            base::Unretained(this)));
+    https_server_.RegisterRequestHandler(base::BindRepeating(
+        &AppPreloadServiceBrowserTest::HandleRequest, base::Unretained(this)));
     https_server_.AddDefaultHandlers(GetChromeTestDataDir());
     ASSERT_TRUE(https_server_.Start());
 
@@ -137,9 +128,10 @@ class MAYBE_AppPreloadServiceBrowserTest : public InProcessBrowserTest {
   net::EmbeddedTestServer https_server_;
   std::map<std::string, std::string> manifest_responses_;
   absl::optional<proto::AppPreloadListResponse> apps_proto_;
+  base::AutoReset<bool> startup_check_resetter_;
 };
 
-IN_PROC_BROWSER_TEST_F(MAYBE_AppPreloadServiceBrowserTest, OemWebAppInstall) {
+IN_PROC_BROWSER_TEST_F(AppPreloadServiceBrowserTest, OemWebAppInstall) {
   base::HistogramTester histograms;
   proto::AppPreloadListResponse response;
   auto* app = response.add_apps_to_install();
@@ -181,8 +173,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AppPreloadServiceBrowserTest, OemWebAppInstall) {
   histograms.ExpectTotalCount(kFirstLoginFlowHistogramFailureName, 0);
 }
 
-IN_PROC_BROWSER_TEST_F(MAYBE_AppPreloadServiceBrowserTest,
-                       IgnoreDefaultAppInstall) {
+IN_PROC_BROWSER_TEST_F(AppPreloadServiceBrowserTest, IgnoreDefaultAppInstall) {
   proto::AppPreloadListResponse response;
   auto* app = response.add_apps_to_install();
   app->set_name("Peanut Types");
@@ -210,8 +201,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AppPreloadServiceBrowserTest,
   ASSERT_FALSE(found);
 }
 
-IN_PROC_BROWSER_TEST_F(MAYBE_AppPreloadServiceBrowserTest,
-                       IgnoreTestAppInstall) {
+IN_PROC_BROWSER_TEST_F(AppPreloadServiceBrowserTest, IgnoreTestAppInstall) {
   proto::AppPreloadListResponse response;
   auto* app = response.add_apps_to_install();
   app->set_name("Peanut Types");
@@ -235,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AppPreloadServiceBrowserTest,
 
 // Verifies that user-installed apps are not skipped, and are marked as OEM
 // installed.
-IN_PROC_BROWSER_TEST_F(MAYBE_AppPreloadServiceBrowserTest, InstallOverUserApp) {
+IN_PROC_BROWSER_TEST_F(AppPreloadServiceBrowserTest, InstallOverUserApp) {
   constexpr char kResolvedManifestId[] = "https://www.example.com/manifest_id";
   constexpr char kOriginalManifestUrl[] =
       "https://www.example.com/manifest.json";
@@ -277,8 +267,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AppPreloadServiceBrowserTest, InstallOverUserApp) {
 }
 
 // Verifies that multiple OEM apps can be installed at once.
-IN_PROC_BROWSER_TEST_F(MAYBE_AppPreloadServiceBrowserTest,
-                       InstallMultipleOemApps) {
+IN_PROC_BROWSER_TEST_F(AppPreloadServiceBrowserTest, InstallMultipleOemApps) {
   constexpr char kOriginalManifestUrl1[] = "https://www.foo.com/manifest.json";
   constexpr char kOriginalManifestUrl2[] = "https://www.bar.com/manifest.json";
 
@@ -344,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AppPreloadServiceBrowserTest,
 
 // Verifies that failed installations are retried on the next login flow, and
 // already installed apps are ignored.
-IN_PROC_BROWSER_TEST_F(MAYBE_AppPreloadServiceBrowserTest, RetryFailedApps) {
+IN_PROC_BROWSER_TEST_F(AppPreloadServiceBrowserTest, RetryFailedApps) {
   base::HistogramTester histograms;
   constexpr char kOriginalManifestUrl1[] = "https://www.foo.com/manifest.json";
   constexpr char kOriginalManifestUrl2[] = "https://www.bar.com/manifest.json";
@@ -418,7 +407,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AppPreloadServiceBrowserTest, RetryFailedApps) {
   histograms.ExpectTotalCount(kFirstLoginFlowHistogramFailureName, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(MAYBE_AppPreloadServiceBrowserTest, InstallNoApp) {
+IN_PROC_BROWSER_TEST_F(AppPreloadServiceBrowserTest, InstallNoApp) {
   proto::AppPreloadListResponse response;
   SetAppProvisioningResponse(response);
   base::test::TestFuture<bool> result;
@@ -428,7 +417,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AppPreloadServiceBrowserTest, InstallNoApp) {
 }
 
 class AppPreloadServiceWithTestAppsBrowserTest
-    : public MAYBE_AppPreloadServiceBrowserTest {
+    : public AppPreloadServiceBrowserTest {
  private:
   base::test::ScopedFeatureList feature_list_{kAppPreloadServiceEnableTestApps};
 };
