@@ -34,6 +34,8 @@ static_library("autofill") {
     "strike_database_factory.h",
     "subkey_requester_factory.cc",
     "subkey_requester_factory.h",
+    "ui/ui_util.cc",
+    "ui/ui_util.h",
     "validation_rules_storage_factory.cc",
     "validation_rules_storage_factory.h",
   ]
@@ -52,6 +54,7 @@ static_library("autofill") {
     "//components/autofill/core/common",
     "//components/keyed_service/content",
     "//components/keyed_service/core",
+    "//components/signin/public/identity_manager:identity_manager",
     "//content/public/browser",
     "//services/network/public/cpp",
     "//ui/gfx",

@@ -25,6 +25,7 @@
 #include "chrome/browser/autofill/merchant_promo_code_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/strike_database_factory.h"
+#include "chrome/browser/autofill/ui/ui_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "chrome/browser/fast_checkout/fast_checkout_client_impl.h"
@@ -852,9 +853,17 @@ void ChromeAutofillClient::ShowEditAddressProfileDialog(
   EditAddressProfileDialogControllerImpl* controller =
       EditAddressProfileDialogControllerImpl::FromWebContents(web_contents());
   CHECK(controller);
+
+  absl::optional<AccountInfo> account = GetPrimaryAccountInfoFromBrowserContext(
+      web_contents()->GetBrowserContext());
+  CHECK(account);
   controller->OfferEdit(
-      profile, /*original_profile=*/nullptr,
-      /*footer_message=*/u"",
+      /*profile=*/profile,
+      /*original_profile=*/nullptr,
+      /*footer_message=*/
+      l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_UPDATE_PROMPT_ACCOUNT_ADDRESS_SOURCE_NOTICE,
+          base::ASCIIToUTF16(account->email)),
       /*on_user_decision_callback=*/std::move(on_user_decision_callback),
       /*is_migration_to_account=*/false);
 #else
