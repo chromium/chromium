@@ -615,4 +615,9 @@ const char kDevicePrintingClientNameTemplate[] =
 const char kDeviceHindiInscriptLayoutEnabled[] =
     "cros.device.hindi_inscript_layout_enabled";
 
+// A list of strings representing DLC identifiers to be pre downloaded on the
+// device.
+const char kDeviceDlcPredownloadList[] =
+    "cros.device.device_dlc_predownload_list";
+
 }  // namespace ash
