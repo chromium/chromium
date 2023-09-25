@@ -11594,13 +11594,30 @@
     "PartitionAllocLargeThreadCacheSizeAndroid": [
         {
             "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview"
+                "android"
             ],
             "experiments": [
                 {
-                    "name": "Disabled",
+                    "name": "Control_20230925",
+                    "disable_features": [
+                        "PartitionAllocLargeThreadCacheSize"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PartitionAllocLargeThreadCacheSizeDesktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Control_20230925",
                     "disable_features": [
                         "PartitionAllocLargeThreadCacheSize"
                     ]
