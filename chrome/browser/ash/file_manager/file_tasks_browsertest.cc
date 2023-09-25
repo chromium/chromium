@@ -766,12 +766,14 @@ IN_PROC_BROWSER_TEST_P(FileTasksPolicyBrowserTest, TasksMarkedAsBlocked) {
                           base::Unretained(this)));
   ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
 
+  auto files_controller =
+      std::make_unique<policy::DlpFilesControllerAsh>(*rules_manager_, profile);
+
+  ON_CALL(*rules_manager_, GetDlpFilesController)
+      .WillByDefault(testing::Return(files_controller.get()));
+
   ON_CALL(*rules_manager_, IsFilesPolicyEnabled)
       .WillByDefault(testing::Return(true));
-  std::unique_ptr<policy::DlpFilesControllerAsh> files_controller_ =
-      std::make_unique<policy::DlpFilesControllerAsh>(*rules_manager_);
-  ON_CALL(*rules_manager_, GetDlpFilesController)
-      .WillByDefault(testing::Return(files_controller_.get()));
 
   EXPECT_CALL(*rules_manager_, IsRestrictedDestination)
       .Times(testing::AtLeast(1))

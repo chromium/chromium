@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_impl.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -23,6 +24,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -66,8 +68,8 @@ constexpr char kRuleName2[] = "rule #2";
 constexpr char kRuleName3[] = "rule #3";
 class MockDlpRulesManager : public DlpRulesManagerImpl {
  public:
-  explicit MockDlpRulesManager(PrefService* local_state)
-      : DlpRulesManagerImpl(local_state) {}
+  explicit MockDlpRulesManager(PrefService* local_state, Profile* profile)
+      : DlpRulesManagerImpl(local_state, profile) {}
 
   ~MockDlpRulesManager() override { Shutdown(); }
 };
@@ -77,8 +79,23 @@ class MockDlpRulesManager : public DlpRulesManagerImpl {
 class DlpRulesManagerImplTest : public testing::Test {
  protected:
   DlpRulesManagerImplTest()
-      : testing_local_state_(TestingBrowserProcess::GetGlobal()),
-        dlp_rules_manager_(testing_local_state_.Get()) {}
+      : testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
+
+  void SetUp() override {
+    TestingProfile::Builder builder;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    builder.SetIsMainProfile(true);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+    profile_ = builder.Build();
+
+    dlp_rules_manager_ = std::make_unique<MockDlpRulesManager>(
+        testing_local_state_.Get(), profile_.get());
+
+    // THe histogram tester should be created after the rules manager, since the
+    // rules manager constructor call OnPolicyUpdate, and we would then record
+    // that additional call.
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
+  }
 
   void UpdatePolicyPref(const std::vector<dlp_test_util::DlpRule>& rules) {
     base::Value::List policy_rules;
@@ -98,7 +115,7 @@ class DlpRulesManagerImplTest : public testing::Test {
       const DlpRulesManager::RuleMetadata& expected_rule_metadata) {
     std::string src_pattern;
     DlpRulesManager::RuleMetadata rule_metadata;
-    EXPECT_EQ(expected_level, dlp_rules_manager_.IsRestrictedComponent(
+    EXPECT_EQ(expected_level, dlp_rules_manager_->IsRestrictedComponent(
                                   GURL(src_url), dst_component, restriction,
                                   &src_pattern, &rule_metadata));
     EXPECT_EQ(src_pattern, expected_src_pattern);
@@ -118,7 +135,7 @@ class DlpRulesManagerImplTest : public testing::Test {
     std::string src_pattern;
     std::string dst_pattern;
     DlpRulesManager::RuleMetadata rule_metadata;
-    EXPECT_EQ(expected_level, dlp_rules_manager_.IsRestrictedDestination(
+    EXPECT_EQ(expected_level, dlp_rules_manager_->IsRestrictedDestination(
                                   GURL(src_url), GURL(dst_url), restriction,
                                   &src_pattern, &dst_pattern, &rule_metadata));
     EXPECT_EQ(src_pattern, expected_src_pattern);
@@ -137,7 +154,7 @@ class DlpRulesManagerImplTest : public testing::Test {
     std::string src_pattern;
     DlpRulesManager::RuleMetadata rule_metadata;
     EXPECT_EQ(expected_level,
-              dlp_rules_manager_.IsRestrictedByAnyRule(
+              dlp_rules_manager_->IsRestrictedByAnyRule(
                   GURL(src_url), restriction, &src_pattern, &rule_metadata));
     EXPECT_EQ(src_pattern, expected_src_pattern);
     EXPECT_EQ(rule_metadata.name, expected_rule_metadata.name);
@@ -153,8 +170,8 @@ class DlpRulesManagerImplTest : public testing::Test {
       const DlpRulesManager::RuleMetadata& expected_rule_metadata) {
     DlpRulesManager::RuleMetadata rule_metadata;
     EXPECT_EQ(expected_pattern,
-              dlp_rules_manager_.GetSourceUrlPattern(GURL(src_url), restriction,
-                                                     level, &rule_metadata));
+              dlp_rules_manager_->GetSourceUrlPattern(
+                  GURL(src_url), restriction, level, &rule_metadata));
     EXPECT_EQ(rule_metadata.name, expected_rule_metadata.name);
     EXPECT_EQ(rule_metadata.obfuscated_id,
               expected_rule_metadata.obfuscated_id);
@@ -162,8 +179,9 @@ class DlpRulesManagerImplTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   ScopedTestingLocalState testing_local_state_;
-  MockDlpRulesManager dlp_rules_manager_;
-  base::HistogramTester histogram_tester_;
+  std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<MockDlpRulesManager> dlp_rules_manager_;
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
   base::RunLoop run_loop_;
 };
 
@@ -171,7 +189,7 @@ TEST_F(DlpRulesManagerImplTest, EmptyPref) {
   UpdatePolicyPref({});
 
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
-            dlp_rules_manager_.IsRestricted(
+            dlp_rules_manager_->IsRestricted(
                 GURL(kExampleUrl), DlpRulesManager::Restriction::kPrinting));
 
   CheckIsRestrictedDestination(
@@ -180,7 +198,7 @@ TEST_F(DlpRulesManagerImplTest, EmptyPref) {
       /*expected_dst_pattern=*/"",
       DlpRulesManager::RuleMetadata(/*name=*/"", /*obfuscated_id=*/""));
 
-  histogram_tester_.ExpectUniqueSample(
+  histogram_tester_->ExpectUniqueSample(
       GetDlpHistogramPrefix() + dlp::kDlpPolicyPresentUMA, false, 1);
 }
 
@@ -192,7 +210,7 @@ TEST_F(DlpRulesManagerImplTest, UnknownRestriction) {
 
   UpdatePolicyPref({rule});
 
-  histogram_tester_.ExpectBucketCount(
+  histogram_tester_->ExpectBucketCount(
       "Enterprise.Dlp.RestrictionConfigured",
       DlpRulesManager::Restriction::kUnknownRestriction, 0);
 }
@@ -206,9 +224,9 @@ TEST_F(DlpRulesManagerImplTest, UnknownComponent) {
 
   UpdatePolicyPref({rule});
 
-  histogram_tester_.ExpectBucketCount("Enterprise.Dlp.RestrictionConfigured",
-                                      DlpRulesManager::Restriction::kClipboard,
-                                      1);
+  histogram_tester_->ExpectBucketCount("Enterprise.Dlp.RestrictionConfigured",
+                                       DlpRulesManager::Restriction::kClipboard,
+                                       1);
 
   CheckIsRestrictedComponent(
       kExampleUrl, data_controls::Component::kUnknownComponent,
@@ -225,9 +243,9 @@ TEST_F(DlpRulesManagerImplTest, UnknownLevel) {
 
   UpdatePolicyPref({rule});
 
-  histogram_tester_.ExpectBucketCount("Enterprise.Dlp.RestrictionConfigured",
-                                      DlpRulesManager::Restriction::kClipboard,
-                                      0);
+  histogram_tester_->ExpectBucketCount("Enterprise.Dlp.RestrictionConfigured",
+                                       DlpRulesManager::Restriction::kClipboard,
+                                       0);
 }
 
 TEST_F(DlpRulesManagerImplTest, BlockPriority) {
@@ -255,7 +273,7 @@ TEST_F(DlpRulesManagerImplTest, BlockPriority) {
       DlpRulesManager::RuleMetadata(kRuleName1, kRuleId1));
 
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
-            dlp_rules_manager_.IsRestricted(
+            dlp_rules_manager_->IsRestricted(
                 GURL(kExampleUrl), DlpRulesManager::Restriction::kScreenshot));
 
   CheckIsRestrictedByAnyRule(
@@ -263,14 +281,14 @@ TEST_F(DlpRulesManagerImplTest, BlockPriority) {
       DlpRulesManager::Level::kBlock, kExampleUrl,
       DlpRulesManager::RuleMetadata(kRuleName1, kRuleId1));
 
-  histogram_tester_.ExpectUniqueSample(
+  histogram_tester_->ExpectUniqueSample(
       GetDlpHistogramPrefix() + dlp::kDlpPolicyPresentUMA, true, 1);
-  histogram_tester_.ExpectBucketCount("Enterprise.Dlp.RestrictionConfigured",
-                                      DlpRulesManager::Restriction::kClipboard,
-                                      2);
-  histogram_tester_.ExpectBucketCount("Enterprise.Dlp.RestrictionConfigured",
-                                      DlpRulesManager::Restriction::kScreenshot,
-                                      1);
+  histogram_tester_->ExpectBucketCount("Enterprise.Dlp.RestrictionConfigured",
+                                       DlpRulesManager::Restriction::kClipboard,
+                                       2);
+  histogram_tester_->ExpectBucketCount(
+      "Enterprise.Dlp.RestrictionConfigured",
+      DlpRulesManager::Restriction::kScreenshot, 1);
 
   // Clear pref
   UpdatePolicyPref({});
@@ -288,7 +306,7 @@ TEST_F(DlpRulesManagerImplTest, BlockPriority) {
       DlpRulesManager::RuleMetadata(/*name=*/"", /*obfuscated_id=*/""));
 
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
-            dlp_rules_manager_.IsRestricted(
+            dlp_rules_manager_->IsRestricted(
                 GURL(kExampleUrl), DlpRulesManager::Restriction::kScreenshot));
 }
 
@@ -300,7 +318,7 @@ TEST_F(DlpRulesManagerImplTest, UpdatePref) {
   UpdatePolicyPref({rule1});
 
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
-            dlp_rules_manager_.IsRestricted(
+            dlp_rules_manager_->IsRestricted(
                 GURL(kExampleUrl), DlpRulesManager::Restriction::kScreenshot));
 
   dlp_test_util::DlpRule rule2(kRuleName2, "Exceptional allow", kRuleId2);
@@ -310,10 +328,10 @@ TEST_F(DlpRulesManagerImplTest, UpdatePref) {
   UpdatePolicyPref({rule2});
 
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
-            dlp_rules_manager_.IsRestricted(
+            dlp_rules_manager_->IsRestricted(
                 GURL(kExampleUrl), DlpRulesManager::Restriction::kScreenshot));
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
-            dlp_rules_manager_.IsRestricted(
+            dlp_rules_manager_->IsRestricted(
                 GURL(kGoogleUrl), DlpRulesManager::Restriction::kScreenshot));
 }
 
@@ -511,7 +529,7 @@ TEST_F(DlpRulesManagerImplTest, DisabledByFeature) {
       DlpRulesManager::RuleMetadata(kRuleName1, kRuleId1));
 
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
-            dlp_rules_manager_.IsRestricted(
+            dlp_rules_manager_->IsRestricted(
                 GURL(kExampleUrl), DlpRulesManager::Restriction::kScreenshot));
 
   // Disable feature
@@ -605,9 +623,9 @@ TEST_F(DlpRulesManagerImplTest, FilesRestriction_DlpClientNotified) {
   EXPECT_EQ(1, chromeos::DlpClient::Get()
                    ->GetTestInterface()
                    ->GetSetDlpFilesPolicyCount());
-  EXPECT_TRUE(dlp_rules_manager_.IsFilesPolicyEnabled());
+  EXPECT_TRUE(dlp_rules_manager_->IsFilesPolicyEnabled());
 
-  dlp_rules_manager_.DlpDaemonRestarted();
+  dlp_rules_manager_->DlpDaemonRestarted();
 
   // The above call to DlpRulesManagerImpl::DlpDaemonRestarted posts a task to
   // the same task runner as the one used here. Doing this ensures that the call
@@ -646,7 +664,7 @@ TEST_F(DlpRulesManagerImplTest, FilesRestriction_FeatureNotEnabled) {
   EXPECT_EQ(0, chromeos::DlpClient::Get()
                    ->GetTestInterface()
                    ->GetSetDlpFilesPolicyCount());
-  EXPECT_FALSE(dlp_rules_manager_.IsFilesPolicyEnabled());
+  EXPECT_FALSE(dlp_rules_manager_->IsFilesPolicyEnabled());
   chromeos::DlpClient::Shutdown();
 }
 
@@ -721,35 +739,35 @@ TEST_F(DlpRulesManagerImplTest, ReportPriority) {
 
   // Screensharing from chat.google should be allowed.
   EXPECT_EQ(DlpRulesManager::Level::kAllow,
-            dlp_rules_manager_.IsRestricted(
+            dlp_rules_manager_->IsRestricted(
                 GURL(base::StrCat({kHttpsPrefix, kChatPattern})),
                 DlpRulesManager::Restriction::kScreenShare));
 
   // Screensharing from docs/drive urls should be blocked.
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
-            dlp_rules_manager_.IsRestricted(
+            dlp_rules_manager_->IsRestricted(
                 GURL(base::StrCat({kHttpsPrefix, kDocsPattern})),
                 DlpRulesManager::Restriction::kScreenShare));
   EXPECT_EQ(DlpRulesManager::Level::kBlock,
-            dlp_rules_manager_.IsRestricted(
+            dlp_rules_manager_->IsRestricted(
                 GURL(base::StrCat({kHttpsPrefix, kDrivePattern})),
                 DlpRulesManager::Restriction::kScreenShare));
 
   // Screensharing from gmail/example/Salesforce urls should be reported.
   EXPECT_EQ(DlpRulesManager::Level::kReport,
-            dlp_rules_manager_.IsRestricted(
+            dlp_rules_manager_->IsRestricted(
                 GURL(kGmailUrl), DlpRulesManager::Restriction::kScreenShare));
   EXPECT_EQ(DlpRulesManager::Level::kReport,
-            dlp_rules_manager_.IsRestricted(
+            dlp_rules_manager_->IsRestricted(
                 GURL(kExampleUrl), DlpRulesManager::Restriction::kScreenShare));
   EXPECT_EQ(DlpRulesManager::Level::kReport,
-            dlp_rules_manager_.IsRestricted(
+            dlp_rules_manager_->IsRestricted(
                 GURL(base::StrCat({kHttpsPrefix, kSalesforcePattern})),
                 DlpRulesManager::Restriction::kScreenShare));
 }
 
 TEST_F(DlpRulesManagerImplTest, GetAggregatedDestinations_NoMatch) {
-  auto result = dlp_rules_manager_.GetAggregatedDestinations(
+  auto result = dlp_rules_manager_->GetAggregatedDestinations(
       GURL(kExampleUrl), DlpRulesManager::Restriction::kClipboard);
 
   EXPECT_TRUE(result.empty());
@@ -782,9 +800,9 @@ TEST_F(DlpRulesManagerImplTest, FilesRestriction_GetAggregatedDestinations) {
       FROM_HERE, run_loop_.QuitClosure());
   run_loop_.Run();
 
-  EXPECT_TRUE(dlp_rules_manager_.IsFilesPolicyEnabled());
+  EXPECT_TRUE(dlp_rules_manager_->IsFilesPolicyEnabled());
 
-  auto result = dlp_rules_manager_.GetAggregatedDestinations(
+  auto result = dlp_rules_manager_->GetAggregatedDestinations(
       GURL(kExampleUrl), DlpRulesManager::Restriction::kFiles);
   std::map<DlpRulesManager::Level, std::set<std::string>> expected;
   expected[DlpRulesManager::Level::kBlock].insert(kGoogleUrl);
@@ -818,9 +836,9 @@ TEST_F(DlpRulesManagerImplTest,
       FROM_HERE, run_loop_.QuitClosure());
   run_loop_.Run();
 
-  EXPECT_TRUE(dlp_rules_manager_.IsFilesPolicyEnabled());
+  EXPECT_TRUE(dlp_rules_manager_->IsFilesPolicyEnabled());
 
-  auto result = dlp_rules_manager_.GetAggregatedDestinations(
+  auto result = dlp_rules_manager_->GetAggregatedDestinations(
       GURL(kExampleUrl), DlpRulesManager::Restriction::kFiles);
   std::map<DlpRulesManager::Level, std::set<std::string>> expected;
   expected[DlpRulesManager::Level::kBlock].insert(kWildCardMatching);
@@ -850,7 +868,7 @@ TEST_F(DlpRulesManagerImplTest, GetAggregatedDestinations_MixedLevels) {
 
   UpdatePolicyPref({rule1, rule2, rule3});
 
-  auto result = dlp_rules_manager_.GetAggregatedDestinations(
+  auto result = dlp_rules_manager_->GetAggregatedDestinations(
       GURL(kExampleUrl), DlpRulesManager::Restriction::kClipboard);
   std::map<DlpRulesManager::Level, std::set<std::string>> expected;
   expected[DlpRulesManager::Level::kBlock].insert(kCompanyUrl);
@@ -879,7 +897,7 @@ TEST_F(DlpRulesManagerImplTest, GetAggregatedDestinations_MixedWithWildcard) {
 
   UpdatePolicyPref({rule1, rule2, rule3});
 
-  auto result = dlp_rules_manager_.GetAggregatedDestinations(
+  auto result = dlp_rules_manager_->GetAggregatedDestinations(
       GURL(kExampleUrl), DlpRulesManager::Restriction::kClipboard);
   std::map<DlpRulesManager::Level, std::set<std::string>> expected;
   expected[DlpRulesManager::Level::kBlock].insert(kCompanyUrl);
@@ -889,7 +907,7 @@ TEST_F(DlpRulesManagerImplTest, GetAggregatedDestinations_MixedWithWildcard) {
 }
 
 TEST_F(DlpRulesManagerImplTest, GetAggregatedComponents_NoMatch) {
-  auto result = dlp_rules_manager_.GetAggregatedComponents(
+  auto result = dlp_rules_manager_->GetAggregatedComponents(
       GURL(kExampleUrl), DlpRulesManager::Restriction::kClipboard);
   std::map<DlpRulesManager::Level, std::set<data_controls::Component>> expected;
   for (auto component : data_controls::kAllComponents) {
@@ -918,9 +936,9 @@ TEST_F(DlpRulesManagerImplTest, FilesRestriction_GetAggregatedComponents) {
       FROM_HERE, run_loop_.QuitClosure());
   run_loop_.Run();
 
-  EXPECT_TRUE(dlp_rules_manager_.IsFilesPolicyEnabled());
+  EXPECT_TRUE(dlp_rules_manager_->IsFilesPolicyEnabled());
 
-  auto result = dlp_rules_manager_.GetAggregatedComponents(
+  auto result = dlp_rules_manager_->GetAggregatedComponents(
       GURL(kExampleUrl), DlpRulesManager::Restriction::kFiles);
   std::map<DlpRulesManager::Level, std::set<data_controls::Component>> expected;
   expected[DlpRulesManager::Level::kBlock].insert(
@@ -962,7 +980,7 @@ TEST_F(DlpRulesManagerImplTest, SetFilesPolicyWithOnlyComponents) {
       FROM_HERE, run_loop_.QuitClosure());
   run_loop_.Run();
 
-  EXPECT_TRUE(dlp_rules_manager_.IsFilesPolicyEnabled());
+  EXPECT_TRUE(dlp_rules_manager_->IsFilesPolicyEnabled());
   EXPECT_EQ(chromeos::DlpClient::Get()
                 ->GetTestInterface()
                 ->GetSetDlpFilesPolicyCount(),

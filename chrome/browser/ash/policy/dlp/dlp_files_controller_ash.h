@@ -111,7 +111,7 @@ class DlpFilesControllerAsh : public DlpFilesController,
   using IsFilesTransferRestrictedCallback = base::OnceCallback<void(
       const std::vector<std::pair<FileDaemonInfo, ::dlp::RestrictionLevel>>&)>;
 
-  explicit DlpFilesControllerAsh(const DlpRulesManager& rules_manager);
+  DlpFilesControllerAsh(const DlpRulesManager& rules_manager, Profile* profile);
   DlpFilesControllerAsh(const DlpFilesControllerAsh& other) = delete;
   DlpFilesControllerAsh& operator=(const DlpFilesControllerAsh& other) = delete;
 
@@ -283,6 +283,10 @@ class DlpFilesControllerAsh : public DlpFilesController,
       const DlpFileDestination& destination,
       CheckIfDlpAllowedCallback result_callback,
       std::vector<storage::FileSystemURL> dropped_files);
+
+  // The profile with which we are associated. Not owned. It's currently always
+  // the main/primary profile.
+  const raw_ptr<Profile> profile_;
 
   // Keeps track of events and detects duplicate ones using time based
   // approach.

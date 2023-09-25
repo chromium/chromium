@@ -268,6 +268,7 @@ class RestoreToDestinationIOTaskWithDLPTest
   }
 
   void TearDown() override {
+    files_controller_.reset();
     io_task_controller_ = nullptr;
     mock_rules_manager_ = nullptr;
     RestoreToDestinationIOTaskTest::TearDown();
@@ -288,7 +289,7 @@ class RestoreToDestinationIOTaskWithDLPTest
         .WillRepeatedly(testing::Return(true));
 
     files_controller_ = std::make_unique<policy::MockDlpFilesControllerAsh>(
-        *mock_rules_manager_);
+        *mock_rules_manager_, Profile::FromBrowserContext(context));
     EXPECT_CALL(*mock_rules_manager_, GetDlpFilesController())
         .WillRepeatedly(::testing::Return(files_controller_.get()));
 

@@ -110,6 +110,6 @@ KeyedService* DlpRulesManagerFactory::BuildServiceInstanceFor(
   if (!local_state)
     return nullptr;
 
-  return new DlpRulesManagerImpl(local_state);
+  return new DlpRulesManagerImpl(local_state, profile);
 }
 }  // namespace policy

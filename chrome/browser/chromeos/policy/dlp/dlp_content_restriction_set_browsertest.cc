@@ -23,8 +23,8 @@ namespace {
 
 class FakeDlpRulesManager : public DlpRulesManagerImpl {
  public:
-  explicit FakeDlpRulesManager(PrefService* local_state)
-      : DlpRulesManagerImpl(local_state) {}
+  explicit FakeDlpRulesManager(PrefService* local_state, Profile* profile)
+      : DlpRulesManagerImpl(local_state, profile) {}
   ~FakeDlpRulesManager() override = default;
 };
 
@@ -66,7 +66,7 @@ class DlpContentRestrictionSetBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<KeyedService> SetDlpRulesManager(
       content::BrowserContext* context) {
     return std::make_unique<FakeDlpRulesManager>(
-        g_browser_process->local_state());
+        g_browser_process->local_state(), Profile::FromBrowserContext(context));
   }
 };
 

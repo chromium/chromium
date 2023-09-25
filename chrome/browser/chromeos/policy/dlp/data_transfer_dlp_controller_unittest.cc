@@ -315,8 +315,9 @@ TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_CancelDst) {
 
 class MockFilesController : public policy::DlpFilesControllerAsh {
  public:
-  explicit MockFilesController(const policy::DlpRulesManager& rules_manager)
-      : DlpFilesControllerAsh(rules_manager) {}
+  explicit MockFilesController(const policy::DlpRulesManager& rules_manager,
+                               Profile* profile)
+      : DlpFilesControllerAsh(rules_manager, profile) {}
   ~MockFilesController() override = default;
 
   MOCK_METHOD(void,
@@ -335,7 +336,10 @@ TEST_F(DataTransferDlpControllerTest, DropFile_Blocked) {
                          extension_misc::kFilesManagerAppId}))));
   ui::DataTransferEndpoint data_dst((GURL(kExample1Url)));
 
-  MockFilesController files_controller(rules_manager_);
+  std::unique_ptr<TestingProfile> testing_profile =
+      TestingProfile::Builder().Build();
+
+  MockFilesController files_controller(rules_manager_, testing_profile.get());
   std::vector<ui::FileInfo> file_names;
   ASSERT_TRUE(drag_data.GetFilenames(&file_names));
 
@@ -362,7 +366,10 @@ TEST_F(DataTransferDlpControllerTest, DropFile_Allowed) {
                          extension_misc::kFilesManagerAppId}))));
   ui::DataTransferEndpoint data_dst((GURL(kExample1Url)));
 
-  MockFilesController files_controller(rules_manager_);
+  std::unique_ptr<TestingProfile> testing_profile =
+      TestingProfile::Builder().Build();
+
+  MockFilesController files_controller(rules_manager_, testing_profile.get());
   std::vector<ui::FileInfo> file_names;
   ASSERT_TRUE(drag_data.GetFilenames(&file_names));
 
