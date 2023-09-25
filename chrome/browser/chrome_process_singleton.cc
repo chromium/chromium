@@ -48,7 +48,9 @@ void ChromeProcessSingleton::StartWatching() {
 }
 
 void ChromeProcessSingleton::Cleanup() {
-  process_singleton_.Cleanup();
+  if (is_singleton_instance_) {
+    process_singleton_.Cleanup();
+  }
 }
 
 void ChromeProcessSingleton::SetModalDialogNotificationHandler(

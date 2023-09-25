@@ -19,10 +19,6 @@
 #include "content/public/browser/browser_main_parts.h"
 #include "content/public/common/result_codes.h"
 
-#if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
-#include "chrome/browser/process_singleton.h"
-#endif
-
 #if BUILDFLAG(ENABLE_DOWNGRADE_PROCESSING)
 #include "chrome/browser/downgrade/downgrade_manager.h"
 #endif
@@ -187,11 +183,6 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
   // Browser creation happens on the Java side in Android.
   std::unique_ptr<StartupBrowserCreator> browser_creator_;
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
-  ProcessSingleton::NotifyResult notify_result_ =
-      ProcessSingleton::PROCESS_NONE;
-#endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 
 #if !BUILDFLAG(IS_ANDROID)
   // Members needed across shutdown methods.

@@ -488,6 +488,16 @@ void ProcessSingletonNotificationCallbackImpl(
     return;
   }
 
+#if BUILDFLAG(IS_WIN)
+  // The uninstall command-line switch is handled by the origin process; see
+  // ChromeMainDelegate::PostEarlyInitialization(...). The other process won't
+  // be able to become the singleton process and will display a window asking
+  // the user to close running Chrome instances.
+  if (command_line.HasSwitch(switches::kUninstall)) {
+    return;
+  }
+#endif
+
   g_browser_process->platform_part()->PlatformSpecificCommandLineProcessing(
       command_line);
 
@@ -1463,27 +1473,27 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
     // new one. NotifyOtherProcess will currently give the other process up to
     // 20 seconds to respond. Note that this needs to be done before we attempt
     // to read the profile.
-    notify_result_ =
+    const ProcessSingleton::NotifyResult notify_result =
         ChromeProcessSingleton::GetInstance()->NotifyOtherProcessOrCreate();
     UMA_HISTOGRAM_ENUMERATION("Chrome.ProcessSingleton.NotifyResult",
-                              notify_result_,
+                              notify_result,
                               ProcessSingleton::kNumNotifyResults);
 
-    // If `notify_result_` is not PROCESS_NONE, this process will exit.
+    // If `notify_result` is not PROCESS_NONE, this process will exit.
     // Conditionally defer browser metrics (which is how metrics are reported
     // when the early singleton feature is enabled) to verify whether the
     // metrics reporting mechanism has an impact on the metrics. If
     // ShouldMergeMetrics() returns false, the metrics will instead be sent in
     // an independent log in some future session.
     if (ChromeProcessSingleton::ShouldMergeMetrics() &&
-        notify_result_ != ProcessSingleton::PROCESS_NONE) {
+        notify_result != ProcessSingleton::PROCESS_NONE) {
       base::FilePath user_data_dir;
       if (base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
         DeferBrowserMetrics(user_data_dir);
       }
     }
 
-    switch (notify_result_) {
+    switch (notify_result) {
       case ProcessSingleton::PROCESS_NONE:
         // No process already running, fall through to starting a new one.
         ChromeProcessSingleton::GetInstance()->StartWatching();
@@ -1964,8 +1974,7 @@ void ChromeBrowserMainParts::PostMainMessageLoopRun() {
   TranslateService::Shutdown();
 
 #if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
-  if (notify_result_ == ProcessSingleton::PROCESS_NONE)
-    ChromeProcessSingleton::GetInstance()->Cleanup();
+  ChromeProcessSingleton::GetInstance()->Cleanup();
 #endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 
   browser_process_->metrics_service()->Stop();
