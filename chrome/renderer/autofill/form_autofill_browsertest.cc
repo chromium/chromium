@@ -2345,6 +2345,8 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormField) {
   ASSERT_NE(nullptr, frame);
 
   WebFormControlElement element = GetFormControlElementById("element");
+  element.SetSelectionRange(1, 4);
+
   FormFieldData result1;
   WebFormControlElementToFormField(WebFormElement(), element, nullptr,
                                    EXTRACT_NONE, &result1);
@@ -2352,20 +2354,24 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormField) {
   FormFieldData expected;
   expected.form_control_type = "text";
   expected.max_length = WebInputElement::DefaultMaxLength();
-
   expected.id_attribute = u"element";
   expected.name = expected.id_attribute;
+
   expected.value.clear();
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, result1);
+  EXPECT_EQ(0u, result1.selection_start);
+  EXPECT_EQ(0u, result1.selection_end);
 
   FormFieldData result2;
   WebFormControlElementToFormField(WebFormElement(), element, nullptr,
                                    EXTRACT_VALUE, &result2);
 
-  expected.id_attribute = u"element";
-  expected.name = expected.id_attribute;
   expected.value = u"value";
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, result2);
+  EXPECT_EQ(1u, result2.selection_start);
+  EXPECT_EQ(4u, result2.selection_end);
+  EXPECT_EQ(u"alu", result2.GetSelection());
+  EXPECT_EQ(u"alu", result2.GetSelectionAsStringView());
 }
 
 // We should be able to extract a text field with autocomplete="off".

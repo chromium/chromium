@@ -2174,6 +2174,9 @@ void WebFormControlElementToFormField(
   // Constrain the maximum data length to prevent a malicious site from DOS'ing
   // the browser: http://crbug.com/49332
   field->value = std::move(value).substr(0, kMaxStringLength);
+  constexpr auto kMaxLength = static_cast<unsigned>(kMaxStringLength);
+  field->selection_start = std::min(element.SelectionStart(), kMaxLength);
+  field->selection_end = std::min(element.SelectionEnd(), kMaxLength);
 
   // If the field was autofilled or the user typed into it, check the value
   // stored in |field_data_manager| against the value property of the DOM

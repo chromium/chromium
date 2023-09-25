@@ -182,6 +182,8 @@ void ExpectFormFieldData(const FormFieldData& expected,
   EXPECT_TRUE(FormFieldData::DeepEqual(test::WithoutUnserializedData(expected),
                                        passed));
   EXPECT_EQ(expected.value, passed.value);
+  EXPECT_EQ(expected.selection_start, passed.selection_start);
+  EXPECT_EQ(expected.selection_end, passed.selection_end);
   EXPECT_EQ(expected.user_input, passed.user_input);
   std::move(closure).Run();
 }
@@ -292,9 +294,13 @@ TEST_F(AutofillTypeTraitsTestImpl, PassFormFieldData) {
       "TestLabel", "TestName", "TestValue", kOptions, kOptions);
   // Set other attributes to check if they are passed correctly.
   input.host_frame = test::MakeLocalFrameToken();
-  input.unique_renderer_id = FieldRendererId(1234);
+  input.name = u"name";
   input.id_attribute = u"id";
   input.name_attribute = u"name";
+  input.value = u"value";
+  input.selection_start = 1;
+  input.selection_end = 2;
+  input.form_control_type = "text";
   input.autocomplete_attribute = "on";
   input.parsed_autocomplete =
       AutocompleteParsingResult{.section = "autocomplete_section",
@@ -304,6 +310,8 @@ TEST_F(AutofillTypeTraitsTestImpl, PassFormFieldData) {
   input.css_classes = u"class1";
   input.aria_label = u"aria label";
   input.aria_description = u"aria description";
+  input.unique_renderer_id = FieldRendererId(1234);
+  input.host_form_id = FormRendererId(123);
   input.max_length = 12345;
   input.is_autofilled = true;
   input.check_status = FormFieldData::CheckStatus::kChecked;

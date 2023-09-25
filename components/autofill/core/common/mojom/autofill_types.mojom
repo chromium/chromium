@@ -328,6 +328,8 @@ struct FormFieldData {
   mojo_base.mojom.String16 id_attribute;
   mojo_base.mojom.String16 name_attribute;
   mojo_base.mojom.String16 value;
+  uint32 selection_start;
+  uint32 selection_end;
   string form_control_type;
   string autocomplete_attribute;
   AutocompleteParsingResult? parsed_autocomplete;
