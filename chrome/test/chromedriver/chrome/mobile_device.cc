@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/json/json_reader.h"
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -213,6 +214,7 @@ Status MobileDevice::FindMobileDevice(std::string device_name,
   tmp_mobile_device.device_metrics = std::move(device_metrics);
 
   // Parsing the client hints
+  ClientHints client_hints;
   if (device->Find("clientHints")) {
     const base::Value::Dict* maybe_client_hints_dict =
         device->FindDict("clientHints");
@@ -220,13 +222,38 @@ Status MobileDevice::FindMobileDevice(std::string device_name,
       return Status(kUnknownError,
                     "malformed clientHints: should be a dictionary");
     }
-    ClientHints client_hints;
     status = ParsePresetClientHints(*maybe_client_hints_dict, &client_hints);
     if (status.IsError()) {
       return status;
     }
-    tmp_mobile_device.client_hints = std::move(client_hints);
+  } else {
+    // Client Hints have to be initialized with some default values.
+    // Otherwise the browser will use its own Client Hints that will most likely
+    // contradict the information in the User Agent.
+    // If device type is "phone" then it is mobile, otherwise it is not.
+    // However if there is no information about device type then we assume that
+    // most likely it is mobile.
+    client_hints.mobile = true;
+    const std::string* maybe_type = device->FindString("type");
+    if (maybe_type && *maybe_type != "phone") {
+      client_hints.mobile = false;
+    }
+    client_hints.brands = std::vector<BrandVersion>();
+    client_hints.full_version_list = std::vector<BrandVersion>();
+    VLOG(logging::LOGGING_INFO)
+        << "No 'clientHints' found. Emulation might be inadequate. "
+        << "Inferring clientHints as: "
+        << "{architecture='" << client_hints.architecture << "'"
+        << ", bitness='" << client_hints.bitness << "'"
+        << ", brands=[]"
+        << ", fullVersionList=[]"
+        << ", mobile=" << std::boolalpha << client_hints.mobile << ", model='"
+        << client_hints.model << "'"
+        << ", platform='" << client_hints.platform << "'"
+        << ", platformVersion='" << client_hints.platform_version << "'"
+        << ", wow64=" << std::boolalpha << client_hints.wow64 << "}";
   }
+  tmp_mobile_device.client_hints = std::move(client_hints);
 
   *mobile_device = std::move(tmp_mobile_device);
   return Status(kOk);

@@ -5660,7 +5660,7 @@ class MobileEmulationCapabilityTest(ChromeDriverBaseTestWithWebServer):
     self.assertEqual('12', hints['platformVersion'])
     self.assertEqual(False, hints['wow64'])
 
-  def testClientHintsDeviceName(self):
+  def testClientHintsDeviceNameNexus5(self):
     driver = self.CreateDriver(
         mobile_emulation = {'deviceName': 'Nexus 5'})
     driver.Load(self._http_server.GetUrl() + '/userAgent')
@@ -5680,6 +5680,49 @@ class MobileEmulationCapabilityTest(ChromeDriverBaseTestWithWebServer):
                            'AppleWebKit/537.36 (KHTML, like Gecko) ',
                            f'Chrome/{major_version}.0.0.0 ',
                            'Mobile Safari/537.36'))
+    actual_ua = driver.ExecuteScript('return navigator.userAgent')
+    self.assertEqual(expected_ua, actual_ua)
+
+  def testClientHintsDeviceNameIPhoneX(self):
+    driver = self.CreateDriver(
+        mobile_emulation = {'deviceName': 'iPhone X'})
+    driver.Load(self._http_server.GetUrl() + '/userAgent')
+    self.assertEqual('', driver.ExecuteScript(
+        'return navigator.userAgentData.platform'))
+    self.assertEqual(True, driver.ExecuteScript(
+        'return navigator.userAgentData.mobile'))
+    hints = self.getHighEntropyClientHints(driver)
+    self.assertEqual('', hints['architecture'])
+    self.assertEqual('', hints['bitness'])
+    self.assertEqual('', hints['model'])
+    self.assertEqual('', hints['platformVersion'])
+    self.assertEqual(False, hints['wow64'])
+    expected_ua = ''.join(('Mozilla/5.0 ',
+                           '(iPhone; CPU iPhone OS 13_2_3 like Mac OS X) ',
+                           'AppleWebKit/605.1.15 (KHTML, like Gecko) ',
+                           'Version/13.0.3 ',
+                           'Mobile/15E148 Safari/604.1'))
+    actual_ua = driver.ExecuteScript('return navigator.userAgent')
+    self.assertEqual(expected_ua, actual_ua)
+
+  def testClientHintsDeviceNameIPad(self):
+    driver = self.CreateDriver(
+        mobile_emulation = {'deviceName': 'iPad'})
+    driver.Load(self._http_server.GetUrl() + '/userAgent')
+    self.assertEqual('', driver.ExecuteScript(
+        'return navigator.userAgentData.platform'))
+    self.assertEqual(False, driver.ExecuteScript(
+        'return navigator.userAgentData.mobile'))
+    hints = self.getHighEntropyClientHints(driver)
+    self.assertEqual('', hints['architecture'])
+    self.assertEqual('', hints['bitness'])
+    self.assertEqual('', hints['model'])
+    self.assertEqual('', hints['platformVersion'])
+    self.assertEqual(False, hints['wow64'])
+    expected_ua = ''.join(('Mozilla/5.0 (iPad; CPU OS 11_0 like Mac OS X) ',
+                           'AppleWebKit/604.1.34 (KHTML, like Gecko) ',
+                           'Version/11.0 Mobile/15A5341f Safari/604.1'
+                           ))
     actual_ua = driver.ExecuteScript('return navigator.userAgent')
     self.assertEqual(expected_ua, actual_ua)
 
