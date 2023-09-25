@@ -1035,6 +1035,8 @@ ContainerOsVersion VersionFromOsRelease(
       return ContainerOsVersion::kDebianBuster;
     } else if (os_release.version_id() == "11") {
       return ContainerOsVersion::kDebianBullseye;
+    } else if (os_release.version_id() == "12") {
+      return ContainerOsVersion::kDebianBookworm;
     } else {
       return ContainerOsVersion::kDebianOther;
     }

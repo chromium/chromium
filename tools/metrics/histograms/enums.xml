@@ -23305,6 +23305,7 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="3" label="Other Debian Version"/>
   <int value="4" label="Non-Debian OS"/>
   <int value="5" label="Debian Bullseye"/>
+  <int value="6" label="Debian Bookworm"/>
 </enum>
 
 <enum name="CrostiniDiskImageStatus">
