@@ -47,6 +47,8 @@ static_library("core") {
     "//components/webdata/common",
     "//ui/base",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 if (is_android) {
