@@ -42,7 +42,6 @@ constexpr char kCustomTracePrefix[] = "customTrace";
 
 constexpr char kUnknownActivity[] = "unknown";
 
-constexpr char kArgumentAppId[] = "app_id";
 constexpr char kArgumentBufferId[] = "buffer_id";
 
 constexpr char kKeyActivity[] = "activity";
@@ -59,12 +58,6 @@ constexpr char kKeyTaskId[] = "task_id";
 constexpr char kKeyTimestamp[] = "timestamp";
 constexpr char kKeyTitle[] = "title";
 
-constexpr char kAcquireBufferQuery[] =
-    "android:onMessageReceived/android:handleMessageInvalidate/"
-    "android:latchBuffer/android:updateTexImage/android:acquireBuffer";
-constexpr char kReleaseBufferQuery[] =
-    "android:onMessageReceived/android:handleMessageRefresh/"
-    "android:postComposition/android:releaseBuffer";
 constexpr char kDequeueBufferQuery[] = "android:dequeueBuffer";
 constexpr char kQueueBufferQuery[] = "android:queueBuffer";
 
@@ -304,100 +297,12 @@ std::string GetActivityFromBufferName(const std::string& android_buffer_name) {
   return android_buffer_name.substr(0, position);
 }
 
-// Processes surface flinger events. It selects events using |query| from the
-// model. Buffer id is extracted for the each returned event and new events are
-// grouped by its buffer id. If |surface_flinger_pid| is set to the positive
-// value than this activates filtering events by process id to avoid the case
-// when android:queueBuffer/dequeueBuffer events may appear in context of child
-// process and could be processed as surface flinger event. Returns positive
-// process id in case surface flinger events are found and belong to the same
-// process. In case of error -1 is returned.
-int ProcessSurfaceFlingerEvents(const ArcTracingModel& common_model,
-                                const std::string& query,
-                                BufferToEvents* buffer_to_events,
-                                int surface_flinger_pid) {
-  int detected_pid = -1;
-  const ArcTracingModel::TracingEventPtrs surface_flinger_events =
-      common_model.Select(query);
-  std::string buffer_id;
-  for (const ArcTracingEvent* event : surface_flinger_events) {
-    if (surface_flinger_pid > 0 && event->GetPid() != surface_flinger_pid)
-      continue;
-    if (!ExtractBufferIdFromSurfaceFlingerEvent(*event, &buffer_id)) {
-      LOG(ERROR) << "Failed to get buffer id from surface flinger event";
-      continue;
-    }
-    if (detected_pid < 0) {
-      DCHECK_GE(event->GetPid(), 0);
-      detected_pid = event->GetPid();
-    } else if (detected_pid != event->GetPid()) {
-      LOG(ERROR) << "Found multiple surface flinger process ids "
-                 << detected_pid << "/" << event->GetPid();
-      return -1;
-    }
-    ArcTracingGraphicsModel::BufferEvents& graphics_events =
-        (*buffer_to_events)[buffer_id];
-    GetEventMapper().Produce(*event, &graphics_events);
-  }
-  return detected_pid;
-}
-
-// Processes Android events acquireBuffer, releaseBuffer, dequeueBuffer and
-// queueBuffer. It returns map buffer id to the list of sorted by timestamp
-// events.
-bool GetSurfaceFlingerEvents(const ArcTracingModel& common_model,
-                             BufferToEvents* out_events) {
-  // Detect surface_flinger_pid using |kAcquireBufferQuery| that has unique
-  // hierarchy.
-  const int surface_flinger_pid =
-      ProcessSurfaceFlingerEvents(common_model, kAcquireBufferQuery, out_events,
-                                  -1 /* surface_flinger_pid */);
-  if (surface_flinger_pid <= 0) {
-    LOG(ERROR) << "Failed to detect acquireBuffer events.";
-    return false;
-  }
-
-  const int surface_flinger_release_buffer_pid =
-      ProcessSurfaceFlingerEvents(common_model, kReleaseBufferQuery, out_events,
-                                  -1 /* surface_flinger_pid */);
-  if (surface_flinger_release_buffer_pid <= 0) {
-    LOG(ERROR) << "Failed to detect releaseBuffer events.";
-    return false;
-  }
-
-  if (surface_flinger_pid != surface_flinger_release_buffer_pid) {
-    LOG(ERROR) << "Detected acquireBuffer and releaseBuffer from"
-                  " different processes.";
-    return false;
-  }
-
-  // queueBuffer and dequeueBuffer may appear in context of client task.
-  // Use detected |surface_flinger_pid| to filter out such events.
-  if (ProcessSurfaceFlingerEvents(common_model, kQueueBufferQuery, out_events,
-                                  surface_flinger_pid) < 0) {
-    LOG(ERROR) << "Failed to detect queueBuffer events.";
-    return false;
-  }
-
-  if (ProcessSurfaceFlingerEvents(common_model, kDequeueBufferQuery, out_events,
-                                  surface_flinger_pid) < 0) {
-    LOG(ERROR) << "Failed to detect dequeueBuffer events.";
-    return false;
-  }
-
-  for (auto& buffer : *out_events)
-    SortBufferEventsByTimestamp(&buffer.second);
-  return true;
-}
-
 // Processes exo events Surface::Attach and Buffer::ReleaseContents. Each event
 // has argument buffer_id that identifies graphics buffer on Chrome side.
-// buffer_id is just row pointer to internal class. If |buffer_id_to_task_id| is
-// set then it is updated to map buffer id to task id.
+// buffer_id is just row pointer to internal class.
 void ProcessChromeEvents(const ArcTracingModel& common_model,
                          const std::string& query,
-                         BufferToEvents* buffer_to_events,
-                         std::map<std::string, int>* buffer_id_to_task_id) {
+                         BufferToEvents* buffer_to_events) {
   const ArcTracingModel::TracingEventPtrs chrome_events =
       common_model.Select(query);
   for (const ArcTracingEvent* event : chrome_events) {
@@ -407,30 +312,13 @@ void ProcessChromeEvents(const ArcTracingModel& common_model,
       LOG(ERROR) << "Failed to get buffer id from event: " << event->ToString();
       continue;
     }
-    if (buffer_id_to_task_id) {
-      const std::string app_id = event->GetArgAsString(
-          kArgumentAppId, std::string() /* default_value */);
-      if (app_id.empty()) {
-        LOG(ERROR) << "Failed to get app id from event: " << event->ToString();
-        continue;
-      }
-      auto task_id = GetTaskIdFromWindowAppId(app_id);
-      if (!task_id.has_value()) {
-        LOG(ERROR) << "Failed to parse app id from event: "
-                   << event->ToString();
-        continue;
-      }
-      (*buffer_id_to_task_id)[buffer_id] = *task_id;
-    }
     ArcTracingGraphicsModel::BufferEvents& graphics_events =
         (*buffer_to_events)[buffer_id];
     GetEventMapper().Produce(*event, &graphics_events);
   }
 }
 
-BufferToEvents GetChromeEvents(
-    const ArcTracingModel& common_model,
-    std::map<std::string, int>* buffer_id_to_task_id) {
+BufferToEvents GetChromeEvents(const ArcTracingModel& common_model) {
   // The tracing hierarchy may be easy changed any time in Chrome. This makes
   // using static queries fragile and dependent of many external components. To
   // provide the reliable way of requesting the needed information, let scan
@@ -454,7 +342,7 @@ BufferToEvents GetChromeEvents(
   BufferToEvents per_buffer_chrome_events;
   // Only exo:Surface::Attach has app id argument.
   ProcessChromeEvents(common_model, attach_surface_query,
-                      &per_buffer_chrome_events, buffer_id_to_task_id);
+                      &per_buffer_chrome_events);
 
   for (auto& buffer : per_buffer_chrome_events)
     SortBufferEventsByTimestamp(&buffer.second);
@@ -499,33 +387,6 @@ ssize_t FindEvent(const ArcTracingGraphicsModel::BufferEvents& events,
   return kInvalidBufferIndex;
 }
 
-// Helper that finds valid pair of events for acquire/release buffer.
-// |kBufferQueueReleased| should go immediately after |kBufferQueueAcquire|
-// event with one exception of |kBufferQueueDequeueStart| that is allowed due to
-// asynchronous flow of requesting buffers in Android. Returns
-// |kInvalidBufferIndex| if such pair cannot be found.
-ssize_t FindAcquireReleasePair(
-    const ArcTracingGraphicsModel::BufferEvents& events,
-    size_t start_index) {
-  const ssize_t index_acquire =
-      FindEvent(events, BufferEventType::kBufferQueueAcquire, start_index);
-  if (index_acquire == kInvalidBufferIndex)
-    return kInvalidBufferIndex;
-
-  // kBufferQueueDequeueStart is allowed between kBufferQueueAcquire and
-  // kBufferQueueReleased.
-  for (size_t i = index_acquire + 1; i < events.size(); ++i) {
-    if (events[i].type == BufferEventType::kBufferQueueDequeueStart) {
-      continue;
-    }
-    if (events[i].type == BufferEventType::kBufferQueueReleased) {
-      return index_acquire;
-    }
-    break;
-  }
-  return kInvalidBufferIndex;
-}
-
 // Helper that performs bisection search of event of type |type| in the ordered
 // list of events |events|. Found event should have timestamp not later than
 // |timestamp|. Returns |kInvalidBufferIndex| in case event is not found.
@@ -549,60 +410,6 @@ ssize_t FindNotLaterThan(const ArcTracingGraphicsModel::BufferEvents& events,
       return i;
   }
   return kInvalidBufferIndex;
-}
-
-// Tries to match Android graphics buffer events and Chrome graphics buffer
-// events. There is no direct id usable to say if the same buffer is used or
-// not. This tests if two set of events potentially belong the same buffer and
-// return the maximum number of matching sequences. In case impossible
-// combination is found then it returns 0 score. Impossible combination for
-// example when we detect Chrome buffer was attached while it was not held by
-// Android between |kBufferQueueAcquire| and |kBufferQueueRelease.
-// The process of merging buffers continues while we can merge something. At
-// each iteration buffers with maximum merge score get merged. Practically,
-// having 20+ cycles (assuming 4 buffers in use) is enough to exactly identify
-// the same buffer in Chrome and Android. If needed more similar checks can be
-// added.
-size_t GetMergeScore(
-    const ArcTracingGraphicsModel::BufferEvents& surface_flinger_events,
-    const ArcTracingGraphicsModel::BufferEvents& chrome_events) {
-  ssize_t attach_index = -1;
-  ssize_t acquire_index = -1;
-  while (true) {
-    acquire_index =
-        FindAcquireReleasePair(surface_flinger_events, acquire_index + 1);
-    if (acquire_index == kInvalidBufferIndex)
-      return 0;
-    attach_index =
-        FindNotLaterThan(chrome_events, BufferEventType::kExoSurfaceAttach,
-                         surface_flinger_events[acquire_index + 1].timestamp);
-    if (attach_index >= 0)
-      break;
-  }
-  // From here buffers must be in sync. Attach should happen between acquire and
-  // release.
-  size_t score = 0;
-  while (true) {
-    const int64_t timestamp_from =
-        surface_flinger_events[acquire_index].timestamp;
-    const int64_t timestamp_to =
-        surface_flinger_events[acquire_index + 1].timestamp;
-    const int64_t timestamp = chrome_events[attach_index].timestamp;
-    if (timestamp < timestamp_from || timestamp > timestamp_to) {
-      return 0;
-    }
-    acquire_index =
-        FindAcquireReleasePair(surface_flinger_events, acquire_index + 2);
-    attach_index = FindEvent(chrome_events, BufferEventType::kExoSurfaceAttach,
-                             attach_index + 1);
-    if (acquire_index == kInvalidBufferIndex ||
-        attach_index == kInvalidBufferIndex) {
-      break;
-    }
-    ++score;
-  }
-
-  return score;
 }
 
 // Adds jank events into |ArcTracingGraphicsModel::EventsContainer|.
@@ -882,64 +689,17 @@ void ArcTracingGraphicsModel::TrimEventsContainer(
 bool ArcTracingGraphicsModel::Build(const ArcTracingModel& common_model) {
   Reset();
 
-  BufferToEvents per_buffer_surface_flinger_events;
-  if (!GetSurfaceFlingerEvents(common_model,
-                               &per_buffer_surface_flinger_events)) {
-    if (!skip_structure_validation_)
-      return false;
-  }
-  BufferToEvents per_buffer_chrome_events =
-      GetChromeEvents(common_model, &chrome_buffer_id_to_task_id_);
-
-  // Try to merge surface flinger events and Chrome events. See |GetMergeScore|
-  // for more details.
-  while (true) {
-    size_t max_merge_score = 0;
-    std::string surface_flinger_buffer_id;
-    std::string chrome_buffer_id;
-    for (const auto& surface_flinger_buffer :
-         per_buffer_surface_flinger_events) {
-      for (const auto& chrome_buffer : per_buffer_chrome_events) {
-        const size_t merge_score =
-            GetMergeScore(surface_flinger_buffer.second, chrome_buffer.second);
-        if (merge_score > max_merge_score) {
-          max_merge_score = merge_score;
-          surface_flinger_buffer_id = surface_flinger_buffer.first;
-          chrome_buffer_id = chrome_buffer.first;
-        }
-      }
-    }
-    if (!max_merge_score)
-      break;  // No more merge candidates.
-
-    const ViewId view_id(GetTaskIdFromBufferName(chrome_buffer_id),
-                         GetActivityFromBufferName(surface_flinger_buffer_id));
-
-    std::vector<BufferEvents>& view_buffers =
-        view_buffers_[view_id].buffer_events();
-    view_buffers.push_back(std::move(
-        per_buffer_surface_flinger_events[surface_flinger_buffer_id]));
-    per_buffer_surface_flinger_events.erase(surface_flinger_buffer_id);
-    view_buffers.back().insert(
-        view_buffers.back().end(),
-        per_buffer_chrome_events[chrome_buffer_id].begin(),
-        per_buffer_chrome_events[chrome_buffer_id].end());
-    per_buffer_chrome_events.erase(chrome_buffer_id);
-    SortBufferEventsByTimestamp(&view_buffers.back());
-  }
-
-  for (auto& buffer : per_buffer_surface_flinger_events) {
-    LOG(WARNING) << "Failed to merge events for buffer: " << buffer.first;
-    view_buffers_[ViewId(-1 /* task_id */,
-                         GetActivityFromBufferName(buffer.first))]
-        .buffer_events()
-        .emplace_back(std::move(buffer.second));
-  }
+  BufferToEvents per_buffer_chrome_events = GetChromeEvents(common_model);
 
   for (auto& buffer : per_buffer_chrome_events) {
-    LOG(WARNING) << "Failed to merge events for buffer: " << buffer.first;
-    view_buffers_[ViewId(GetTaskIdFromBufferName(buffer.first),
-                         kUnknownActivity)]
+    // TODO(b/296595454): Remove the mapping mechanism as it was only needed for
+    // arc-graphics-tracing, and use callbacks to only get buffer updates for
+    // a single task.
+    // Note that JS code for arc-overview-tracing conflates the buffers for all
+    // view IDs when calculating app commit time and FPS (see
+    // getAppCommitEvents), so we don't gain anything by generating unique view
+    // IDs here.
+    view_buffers_[ViewId(1 /* task_id */, kUnknownActivity)]
         .buffer_events()
         .emplace_back(std::move(buffer.second));
   }
@@ -1036,7 +796,6 @@ void ArcTracingGraphicsModel::NormalizeTimestamps() {
 void ArcTracingGraphicsModel::Reset() {
   chrome_top_level_.Reset();
   view_buffers_.clear();
-  chrome_buffer_id_to_task_id_.clear();
   system_model_.Reset();
   duration_ = 0;
   app_title_ = std::string();
@@ -1061,14 +820,6 @@ void ArcTracingGraphicsModel::VsyncTrim() {
                          BufferEventType::kExoSurfaceAttach});
   }
   system_model_.Trim(trim_timestamp);
-}
-
-int ArcTracingGraphicsModel::GetTaskIdFromBufferName(
-    const std::string& chrome_buffer_name) const {
-  const auto it = chrome_buffer_id_to_task_id_.find(chrome_buffer_name);
-  if (it == chrome_buffer_id_to_task_id_.end())
-    return -1;
-  return it->second;
 }
 
 base::Value::Dict ArcTracingGraphicsModel::Serialize() const {

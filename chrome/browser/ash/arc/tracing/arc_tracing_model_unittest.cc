@@ -213,15 +213,7 @@ TEST_F(ArcTracingModelTest, TopLevel) {
     EXPECT_FALSE(view.second.buffer_events().empty());
     for (const auto& buffer : view.second.buffer_events()) {
       EXPECT_TRUE(ValidateGrahpicsEvents(
-          buffer, {
-                      GraphicsEventType::kBufferQueueDequeueStart,
-                      GraphicsEventType::kBufferQueueDequeueDone,
-                      GraphicsEventType::kBufferQueueQueueStart,
-                      GraphicsEventType::kBufferQueueQueueDone,
-                      GraphicsEventType::kBufferQueueAcquire,
-                      GraphicsEventType::kBufferQueueReleased,
-                      GraphicsEventType::kExoSurfaceAttach,
-                  }));
+          buffer, {GraphicsEventType::kExoSurfaceAttach}));
     }
   }
 

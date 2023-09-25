@@ -217,10 +217,6 @@ class ArcTracingGraphicsModel {
   // graphics buffer confusing.
   void VsyncTrim();
 
-  // Extracts task id from the Chrome buffer name. Returns -1 if task id cannot
-  // be extracted.
-  int GetTaskIdFromBufferName(const std::string& chrome_buffer_name) const;
-
   ViewMap view_buffers_;
   // To avoid overlapping events are stored interlaced.
   EventsContainer chrome_top_level_;
@@ -235,8 +231,6 @@ class ArcTracingGraphicsModel {
   // Timestamp of tracing.
   base::Time timestamp_;
 
-  // Map Chrome buffer id to task id.
-  std::map<std::string, int> chrome_buffer_id_to_task_id_;
   // CPU event model.
   ArcSystemModel system_model_;
   // Allows to have model incomplete, used in overview and in tests.
