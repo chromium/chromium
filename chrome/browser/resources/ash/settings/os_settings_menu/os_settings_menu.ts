@@ -34,6 +34,9 @@ interface MenuItemData {
   path: string;
   icon: string;
   label: string;
+
+  // Sublabels should only exist when OsSettingsRevampWayfinding is enabled.
+  sublabel?: string;
 }
 
 export interface OsSettingsMenuElement {
@@ -196,6 +199,7 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
           path: `/${routesMojom.PERSONALIZATION_SECTION_PATH}`,
           icon: 'os-settings:personalization',
           label: this.i18n('personalizationPageTitle'),
+          sublabel: this.i18n('personalizationMenuItemDescription'),
         },
         {
           section: Section.kPrivacyAndSecurity,

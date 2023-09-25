@@ -36,6 +36,8 @@ void PersonalizationSection::AddLoadTimeData(
       {"personalizationPageTitle", isRevampEnabled_
                                        ? IDS_OS_SETTINGS_REVAMP_PERSONALIZATION
                                        : IDS_OS_SETTINGS_PERSONALIZATION},
+      {"personalizationMenuItemDescription",
+       IDS_OS_SETTINGS_PERSONALIZATION_MENU_ITEM_DESCRIPTION},
       {"personalizationHubTitle",
        isRevampEnabled_ ? IDS_OS_SETTINGS_REVAMP_OPEN_PERSONALIZATION_HUB
                         : IDS_OS_SETTINGS_OPEN_PERSONALIZATION_HUB},

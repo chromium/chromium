@@ -89,7 +89,9 @@
     on-iron-select="onItemSelected_"
     on-iron-deselect="onItemDeselected_">
   <template id="topMenuRepeat" is="dom-repeat" items="[[basicMenuItems_]]">
-    <os-settings-menu-item path="[[item.path]]" icon="[[item.icon]]">
+    <os-settings-menu-item path="[[item.path]]"
+        icon="[[item.icon]]"
+        sublabel="[[item.sublabel]]">
       [[item.label]]
     </os-settings-menu-item>
   </template>
@@ -109,7 +111,9 @@
           attr-for-selected="path"
           selected="[[selectedItemPath_]]">
         <template is="dom-repeat" items="[[advancedMenuItems_]]">
-          <os-settings-menu-item path="[[item.path]]" icon="[[item.icon]]">
+          <os-settings-menu-item path="[[item.path]]"
+              icon="[[item.icon]]"
+              sublabel="[[item.sublabel]]">
             [[item.label]]
           </os-settings-menu-item>
         </template>

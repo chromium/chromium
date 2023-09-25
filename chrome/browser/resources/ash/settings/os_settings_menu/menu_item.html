@@ -18,6 +18,7 @@
     border-style: solid;
     color: var(--cros-text-color-primary);
     display: flex;
+    flex-direction: row;
     margin-bottom: 8px;
     margin-inline-end: 2px;
     min-height: 32px;
@@ -68,7 +69,6 @@
   iron-icon {
     margin-inline-end: 16px;
     pointer-events: none;
-    vertical-align: top;
   }
 
   :host-context(body:not(.jelly-enabled)):host(.iron-selected) > iron-icon {
@@ -78,7 +78,20 @@
   :host-context(body.jelly-enabled):host(.iron-selected) > iron-icon {
     fill: var(--cros-sys-on_primary);
   }
+
+  /* Label & sublabel styles */
+  #sublabel {
+    color: var(--cros-sys-on_surface_variant);
+    font: var(--cros-body-2-font);
+  }
+
+  :host(.iron-selected) #sublabel {
+    color: var(--cros-sys-surface_variant);
+  }
 </style>
 
 <iron-icon icon="[[icon]]" hidden="[[!icon]]"></iron-icon>
-<slot></slot>
+<div id="labelWrapper">
+  <slot></slot>
+  <div id="sublabel">[[sublabel]]</div>
+</div>

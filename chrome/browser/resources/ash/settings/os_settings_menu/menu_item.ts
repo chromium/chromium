@@ -40,11 +40,17 @@ export class OsSettingsMenuItemElement extends PolymerElement {
         type: String,
         value: '',
       },
+
+      sublabel: {
+        type: String,
+        value: '',
+      },
     };
   }
 
   icon: string;
   path: string;
+  sublabel: string;
 
   override ready(): void {
     super.ready();
