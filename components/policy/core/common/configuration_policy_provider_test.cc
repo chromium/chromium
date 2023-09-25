@@ -11,6 +11,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
+#include "components/policy/core/common/chrome_schema.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -149,6 +150,10 @@ bool PolicyTestBase::RegisterSchema(const PolicyNamespace& ns,
   }
   ADD_FAILURE() << error;
   return false;
+}
+
+void PolicyTestBase::RegisterChromeSchema(const PolicyNamespace& ns) {
+  schema_registry_.RegisterComponent(ns, policy::GetChromeSchema());
 }
 
 PolicyProviderTestHarness::PolicyProviderTestHarness(PolicyLevel level,
