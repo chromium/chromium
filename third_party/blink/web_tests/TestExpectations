@@ -6748,3 +6748,6 @@ crbug.com/1485427 [ Win ] external/wpt/performance-timeline/not-restored-reasons
 
 # Gardener 2023-09-21
 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/initial-empty-document/window-open-204-fragment.html [ Failure ]
+
+# Gardener 2023-09-25
+crbug.com/1486580 virtual/view-transition/external/wpt/css/css-view-transitions/snapshot-containing-block-absolute.html [ Failure Pass ]
