@@ -261,6 +261,7 @@ suite('<settings-internet-detail-menu>', () => {
       simInfos: [],
       simAbsent: false,
       managedNetworkAvailable: false,
+      serial: '',
     };
     assertTrue(tripleDot.disabled);
 

@@ -41,6 +41,7 @@
 #include "chromeos/ash/components/network/proxy/ui_proxy_config_service.h"
 #include "chromeos/ash/components/network/system_token_cert_db_storage.h"
 #include "chromeos/ash/components/network/technology_state_controller.h"
+#include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_observer.h"
 #include "chromeos/ash/services/network_config/test_apn_data.h"
 #include "chromeos/ash/services/network_config/test_network_configuration_observer.h"
@@ -74,6 +75,7 @@ constexpr char kCellularGuid[] = "cellular_guid";
 constexpr char kCellularDevicePath[] = "/device/stub_cellular_device";
 constexpr char kCellularTestIccid[] = "1234567890";
 constexpr char kCellularTestImei[] = "1234567890";
+constexpr char kCellularTestSerial[] = "ABCD";
 
 constexpr char kCellularTestApn1[] = "TEST.APN1";
 constexpr char kCellularTestApnName1[] = "Test Apn 1";
@@ -268,8 +270,26 @@ class CrosNetworkConfigTest : public testing::Test {
     PrefProxyConfigTrackerImpl::RegisterPrefs(local_state_.registry());
 
     helper_->InitializePrefs(&user_prefs_, &local_state_);
-
     NetworkHandler* network_handler = NetworkHandler::Get();
+    cros_network_config_test_helper_ =
+        std::make_unique<CrosNetworkConfigTestHelper>(true);
+    SetupNetworkConfig(network_handler);
+  }
+
+  CrosNetworkConfigTest(const CrosNetworkConfigTest&) = delete;
+  CrosNetworkConfigTest& operator=(const CrosNetworkConfigTest&) = delete;
+
+  ~CrosNetworkConfigTest() override {
+    cros_network_config_test_helper_.reset();
+    cros_network_config_.reset();
+    helper_.reset();
+    NetworkCertLoader::Shutdown();
+    scoped_user_manager_.reset();
+    SystemTokenCertDbStorage::Shutdown();
+    LoginState::Shutdown();
+  }
+
+  void SetupNetworkConfig(NetworkHandler* network_handler) {
     cros_network_config_ = std::make_unique<CrosNetworkConfig>(
         network_handler->network_state_handler(),
         network_handler->network_device_handler(),
@@ -282,18 +302,6 @@ class CrosNetworkConfigTest : public testing::Test {
         network_handler->technology_state_controller());
     SetupPolicy();
     SetupNetworks();
-  }
-
-  CrosNetworkConfigTest(const CrosNetworkConfigTest&) = delete;
-  CrosNetworkConfigTest& operator=(const CrosNetworkConfigTest&) = delete;
-
-  ~CrosNetworkConfigTest() override {
-    cros_network_config_.reset();
-    helper_.reset();
-    NetworkCertLoader::Shutdown();
-    scoped_user_manager_.reset();
-    SystemTokenCertDbStorage::Shutdown();
-    LoginState::Shutdown();
   }
 
   void SetupPolicy() {
@@ -1098,6 +1106,10 @@ class CrosNetworkConfigTest : public testing::Test {
     }
   }
 
+  void SetSerialNumber(const std::string& serial_number) {
+    cros_network_config_test_helper_->SetSerialNumber(serial_number);
+  }
+
   NetworkHandlerTestHelper* helper() { return helper_.get(); }
   CrosNetworkConfigTestObserver* observer() { return observer_.get(); }
   CrosNetworkConfig* cros_network_config() {
@@ -1120,6 +1132,7 @@ class CrosNetworkConfigTest : public testing::Test {
 
  protected:
   sync_preferences::TestingPrefServiceSyncable user_prefs_;
+  base::test::ScopedFeatureList feature_list;
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -1128,6 +1141,7 @@ class CrosNetworkConfigTest : public testing::Test {
   TestingPrefServiceSimple local_state_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<CrosNetworkConfig> cros_network_config_;
+  std::unique_ptr<CrosNetworkConfigTestHelper> cros_network_config_test_helper_;
   std::unique_ptr<CrosNetworkConfigTestObserver> observer_;
   std::string wifi1_path_;
   std::string vpn_path_;
@@ -1455,6 +1469,7 @@ TEST_F(CrosNetworkConfigTest, GetDeviceStateList) {
   EXPECT_EQ(shill::kSIMLockPin, cellular->sim_lock_status->lock_type);
   EXPECT_EQ(3, cellular->sim_lock_status->retries_left);
   EXPECT_EQ(kCellularTestImei, cellular->imei);
+  EXPECT_EQ(absl::nullopt, cellular->serial);
 
   mojom::DeviceStateProperties* vpn = devices[3].get();
   EXPECT_EQ(mojom::NetworkType::kVPN, vpn->type);
@@ -1468,6 +1483,46 @@ TEST_F(CrosNetworkConfigTest, GetDeviceStateList) {
   ASSERT_EQ(4u, devices.size());
   EXPECT_EQ(mojom::NetworkType::kWiFi, devices[0]->type);
   EXPECT_EQ(mojom::DeviceStateType::kDisabled, devices[0]->device_state);
+}
+
+TEST_F(CrosNetworkConfigTest, GetDeviceStateListSerial) {
+  feature_list.InitAndEnableFeature(features::kCellularCarrierLock);
+  SetSerialNumber(kCellularTestSerial);
+  NetworkHandler* network_handler = NetworkHandler::Get();
+  SetupNetworkConfig(network_handler);
+
+  std::vector<mojom::DeviceStatePropertiesPtr> devices = GetDeviceStateList();
+  ASSERT_EQ(4u, devices.size());
+  mojom::DeviceStateProperties* cellular = devices[2].get();
+  EXPECT_EQ(mojom::NetworkType::kCellular, cellular->type);
+  EXPECT_EQ(mojom::DeviceStateType::kEnabled, cellular->device_state);
+  EXPECT_FALSE(cellular->sim_absent);
+  ASSERT_TRUE(cellular->sim_lock_status);
+  EXPECT_TRUE(cellular->sim_lock_status->lock_enabled);
+  EXPECT_EQ(shill::kSIMLockPin, cellular->sim_lock_status->lock_type);
+  EXPECT_EQ(3, cellular->sim_lock_status->retries_left);
+  EXPECT_EQ(kCellularTestImei, cellular->imei);
+  EXPECT_EQ(kCellularTestSerial, cellular->serial);
+}
+
+TEST_F(CrosNetworkConfigTest, GetDeviceStateListSerialFeatureDisable) {
+  feature_list.InitAndDisableFeature(features::kCellularCarrierLock);
+  SetSerialNumber(kCellularTestSerial);
+  NetworkHandler* network_handler = NetworkHandler::Get();
+  SetupNetworkConfig(network_handler);
+
+  std::vector<mojom::DeviceStatePropertiesPtr> devices = GetDeviceStateList();
+  ASSERT_EQ(4u, devices.size());
+  mojom::DeviceStateProperties* cellular = devices[2].get();
+  EXPECT_EQ(mojom::NetworkType::kCellular, cellular->type);
+  EXPECT_EQ(mojom::DeviceStateType::kEnabled, cellular->device_state);
+  EXPECT_FALSE(cellular->sim_absent);
+  ASSERT_TRUE(cellular->sim_lock_status);
+  EXPECT_TRUE(cellular->sim_lock_status->lock_enabled);
+  EXPECT_EQ(shill::kSIMLockPin, cellular->sim_lock_status->lock_type);
+  EXPECT_EQ(3, cellular->sim_lock_status->retries_left);
+  EXPECT_EQ(kCellularTestImei, cellular->imei);
+  EXPECT_EQ(absl::nullopt, cellular->serial);
 }
 
 // Tests that no VPN device state is returned by GetDeviceStateList if no VPN

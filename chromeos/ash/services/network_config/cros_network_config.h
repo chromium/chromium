@@ -237,6 +237,8 @@ class CrosNetworkConfig
   mojo::ReceiverSet<chromeos::network_config::mojom::CrosNetworkConfig>
       receivers_;
 
+  absl::optional<base::StringPiece> serial_number_;
+
   int callback_id_ = 1;
   base::flat_map<int, SetPropertiesCallback> set_properties_callbacks_;
   base::flat_map<int, ConfigureNetworkCallback> configure_network_callbacks_;

@@ -7,6 +7,7 @@
 #include "chromeos/ash/components/network/cellular_inhibitor.h"
 #include "chromeos/ash/components/network/network_device_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/services/network_config/cros_network_config.h"
 #include "chromeos/ash/services/network_config/in_process_instance.h"
 
@@ -89,6 +90,7 @@ CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
 
 void CrosNetworkConfigTestHelper::Initialize(
     ManagedNetworkConfigurationHandler* network_configuration_handler) {
+  system::StatisticsProvider::SetTestProvider(&statistics_provider_);
   if (NetworkHandler::IsInitialized()) {
     cros_network_config_impl_ = std::make_unique<CrosNetworkConfig>();
   } else {
@@ -107,6 +109,11 @@ void CrosNetworkConfigTestHelper::Initialize(
         network_state_helper_.technology_state_controller());
   }
   OverrideInProcessInstanceForTesting(cros_network_config_impl_.get());
+}
+
+void CrosNetworkConfigTestHelper::SetSerialNumber(
+    const std::string& serial_number) {
+  statistics_provider_.SetMachineStatistic("serial_number", serial_number);
 }
 
 }  // namespace ash::network_config

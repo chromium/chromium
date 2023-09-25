@@ -336,6 +336,10 @@ struct DeviceStateProperties {
   NetworkType type;
   // Whether or not any managed networks are available.
   bool managed_network_available = false;
+  // Serial number of the device, reported for cellular devices
+  // to start with. Displayed along with IMEI/EID to help user
+  // unlock carrier locked device.
+  string? serial;
 };
 
 const int32 kNoLimit = 0;
