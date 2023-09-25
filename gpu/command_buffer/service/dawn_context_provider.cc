@@ -246,8 +246,6 @@ bool DawnContextProvider::Initialize(wgpu::BackendType backend_type,
 #if BUILDFLAG(IS_WIN)
   if (adapter_options.backendType == wgpu::BackendType::D3D11) {
     features.push_back(wgpu::FeatureName::D3D11MultithreadProtected);
-    features.push_back(wgpu::FeatureName::Norm16TextureFormats);
-    features.push_back(wgpu::FeatureName::MultiPlanarFormatP010);
   }
 
   // Request the GPU that ANGLE is using if possible.
@@ -272,6 +270,14 @@ bool DawnContextProvider::Initialize(wgpu::BackendType backend_type,
     if (adapter.HasFeature(wgpu::FeatureName::MSAARenderToSingleSampled)) {
       features.push_back(wgpu::FeatureName::MSAARenderToSingleSampled);
     }
+  }
+
+  if (adapter.HasFeature(wgpu::FeatureName::Norm16TextureFormats)) {
+    features.push_back(wgpu::FeatureName::Norm16TextureFormats);
+  }
+
+  if (adapter.HasFeature(wgpu::FeatureName::MultiPlanarFormatP010)) {
+    features.push_back(wgpu::FeatureName::MultiPlanarFormatP010);
   }
 
   if (adapter.HasFeature(wgpu::FeatureName::MultiPlanarFormatExtendedUsages)) {

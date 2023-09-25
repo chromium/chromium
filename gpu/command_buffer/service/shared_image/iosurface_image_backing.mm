@@ -736,6 +736,7 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
       io_surface_size_(IOSurfaceGetWidth(io_surface_),
                        IOSurfaceGetHeight(io_surface_)),
       io_surface_format_(IOSurfaceGetPixelFormat(io_surface_)),
+      io_surface_num_planes_(IOSurfaceGetPlaneCount(io_surface_)),
       io_surface_id_(io_surface_id),
       gl_target_(gl_target),
       framebuffer_attachment_angle_(framebuffer_attachment_angle),
@@ -1029,10 +1030,13 @@ std::unique_ptr<DawnImageRepresentation> IOSurfaceImageBacking::ProduceDawn(
   if (io_surface_format_ == 'BGRA') {
     wgpu_format = wgpu::TextureFormat::BGRA8Unorm;
   }
-  // TODO(crbug.com/1293514): Remove this if condition after using single
+  // TODO(crbug.com/1293514): Remove these if conditions after using single
   // multiplanar mailbox for which wgpu_format should already be correct.
   if (io_surface_format_ == '420v') {
     wgpu_format = wgpu::TextureFormat::R8BG8Biplanar420Unorm;
+  }
+  if (io_surface_format_ == 'x420') {
+    wgpu_format = wgpu::TextureFormat::R10X6BG10X6Biplanar420Unorm;
   }
   if (wgpu_format == wgpu::TextureFormat::Undefined) {
     LOG(ERROR) << "Unsupported format for Dawn: " << format().ToString();
@@ -1110,7 +1114,7 @@ IOSurfaceImageBacking::ProduceSkiaGraphite(
       LOG(ERROR) << "Could not create Dawn Representation";
       return nullptr;
     }
-    const bool is_yuv_plane = io_surface_format_ == '420v';
+    const bool is_yuv_plane = io_surface_num_planes_ > 1;
     // Use GPU main recorder since this should only be called for
     // fulfilling Graphite promise images on GPU main thread.
     return SkiaGraphiteDawnImageRepresentation::Create(
