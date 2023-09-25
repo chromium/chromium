@@ -115,7 +115,7 @@ class ImagePaintTimingDetectorTest : public testing::Test,
   ImageRecord* LargestPaintedImage() {
     return GetPaintTimingDetector()
         .GetImagePaintTimingDetector()
-        .records_manager_.largest_painted_image_.get();
+        .records_manager_.largest_painted_image_.Get();
   }
 
   ImageRecord* ChildFrameLargestImage() {
@@ -132,21 +132,20 @@ class ImagePaintTimingDetectorTest : public testing::Test,
   }
 
   size_t ContainerTotalSize() {
-    return GetPaintTimingDetector()
-               .GetImagePaintTimingDetector()
-               .records_manager_.recorded_images_.size() +
-           GetPaintTimingDetector()
-               .GetImagePaintTimingDetector()
-               .records_manager_.pending_images_.size() +
-           GetPaintTimingDetector()
-               .GetImagePaintTimingDetector()
-               .records_manager_.size_ordered_set_.size() +
-           GetPaintTimingDetector()
-               .GetImagePaintTimingDetector()
-               .records_manager_.images_queued_for_paint_time_.size() +
-           GetPaintTimingDetector()
-               .GetImagePaintTimingDetector()
-               .records_manager_.image_finished_times_.size();
+    size_t result = GetPaintTimingDetector()
+                        .GetImagePaintTimingDetector()
+                        .records_manager_.recorded_images_.size() +
+                    GetPaintTimingDetector()
+                        .GetImagePaintTimingDetector()
+                        .records_manager_.pending_images_.size() +
+                    GetPaintTimingDetector()
+                        .GetImagePaintTimingDetector()
+                        .records_manager_.images_queued_for_paint_time_.size() +
+                    GetPaintTimingDetector()
+                        .GetImagePaintTimingDetector()
+                        .records_manager_.image_finished_times_.size();
+
+    return result;
   }
 
   size_t CountChildFrameRecords() {
@@ -766,7 +765,7 @@ TEST_P(ImagePaintTimingDetectorTest,
   )HTML");
   SetImageAndPaint("target", 5, 5);
   UpdateAllLifecyclePhases();
-  EXPECT_EQ(ContainerTotalSize(), 5u);
+  EXPECT_EQ(ContainerTotalSize(), 4u);
 
   GetDocument()
       .getElementById(AtomicString("parent"))

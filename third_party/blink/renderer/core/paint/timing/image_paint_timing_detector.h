@@ -19,6 +19,9 @@
 #include "third_party/blink/renderer/core/paint/timing/media_record_id.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/media_timing.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -34,22 +37,20 @@ class Image;
 
 // TODO(crbug/960502): we should limit the access of these properties.
 // TODO(yoav): Rename all mentions of "image" to "media"
-class ImageRecord : public base::SupportsWeakPtr<ImageRecord> {
-  USING_FAST_MALLOC(ImageRecord);
-
+class ImageRecord : public GarbageCollected<ImageRecord> {
  public:
   ImageRecord(DOMNodeId new_node_id,
               const MediaTiming* new_media_timing,
               uint64_t new_recorded_size,
               const gfx::Rect& frame_visual_rect,
               const gfx::RectF& root_visual_rect,
-              bool is_loaded_after_mouseover_input)
+              bool is_loaded_after_mouseover_input,
+              MediaRecordIdHash hash)
       : node_id(new_node_id),
         media_timing(new_media_timing),
+        hash(hash),
         recorded_size(new_recorded_size),
         is_loaded_after_mouseover(is_loaded_after_mouseover_input) {
-    static unsigned next_insertion_index_ = 1;
-    insertion_index = next_insertion_index_++;
     if (PaintTimingVisualizer::IsTracingEnabled()) {
       lcp_rect_info_ = std::make_unique<LCPRectInfo>(
           frame_visual_rect, gfx::ToRoundedRect(root_visual_rect));
@@ -67,13 +68,15 @@ class ImageRecord : public base::SupportsWeakPtr<ImageRecord> {
   // is no `media_timing`.
   absl::optional<WebURLRequest::Priority> RequestPriority() const;
 
+  void Trace(Visitor* visitor) const;
+
   DOMNodeId node_id = kInvalidDOMNodeId;
-  WeakPersistent<const MediaTiming> media_timing;
-  // Mind that |recorded_size| has to be assigned before pusing to
-  // |size_ordered_set_| since it's the sorting key.
+  WeakMember<const MediaTiming> media_timing;
+  MediaRecordIdHash hash;
+  // Mind that |recorded_size| has to be assigned before any size comparisons
+  // (to determine largest image) are performed.
   uint64_t recorded_size = 0;
   unsigned frame_index = 0;
-  unsigned insertion_index;
   // The time of the first paint after fully loaded. 0 means not painted yet.
   base::TimeTicks paint_time = base::TimeTicks();
   base::TimeTicks load_time = base::TimeTicks();
@@ -99,17 +102,15 @@ class ImageRecord : public base::SupportsWeakPtr<ImageRecord> {
 // providing interface for the external world to handle it in the language of
 // Node, LayoutObject, etc.
 class CORE_EXPORT ImageRecordsManager {
+  DISALLOW_NEW();
+  friend class ImagePaintTimingDetector;
   friend class ImagePaintTimingDetectorTest;
   FRIEND_TEST_ALL_PREFIXES(ImagePaintTimingDetectorTest,
                            LargestImagePaint_Detached_Frame);
-  DISALLOW_NEW();
 
-  using NodesQueueComparator = bool (*)(const base::WeakPtr<ImageRecord>&,
-                                        const base::WeakPtr<ImageRecord>&);
-  using ImageRecordSet ALLOW_DISCOURAGED_TYPE("TODO(crbug.com/1404327") =
-      std::set<base::WeakPtr<ImageRecord>, NodesQueueComparator>;
+  void Trace(Visitor* visitor) const;
 
- public:
+ private:
   explicit ImageRecordsManager(LocalFrameView*);
   ImageRecordsManager(const ImageRecordsManager&) = delete;
   ImageRecordsManager& operator=(const ImageRecordsManager&) = delete;
@@ -120,7 +121,9 @@ class CORE_EXPORT ImageRecordsManager {
     image_finished_times_.erase(record_id_hash);
     auto it = pending_images_.find(record_id_hash);
     if (it != pending_images_.end()) {
-      size_ordered_set_.erase(it->value->AsWeakPtr());
+      if (largest_pending_image_ && (largest_pending_image_ == it->value)) {
+        largest_pending_image_ = nullptr;
+      }
       pending_images_.erase(it);
       // Leave out |images_queued_for_paint_time_| intentionally because the
       // null record can be removed in
@@ -149,10 +152,9 @@ class CORE_EXPORT ImageRecordsManager {
     }
   }
 
-  inline base::WeakPtr<ImageRecord> GetPendingImage(
-      MediaRecordIdHash record_id_hash) {
+  inline ImageRecord* GetPendingImage(MediaRecordIdHash record_id_hash) {
     auto it = pending_images_.find(record_id_hash);
-    return it == pending_images_.end() ? nullptr : it->value->AsWeakPtr();
+    return it == pending_images_.end() ? nullptr : it->value;
   }
   bool OnFirstAnimatedFramePainted(MediaRecordIdHash,
                                    unsigned current_frame_index);
@@ -174,51 +176,36 @@ class CORE_EXPORT ImageRecordsManager {
       const base::TimeTicks&,
       unsigned last_queued_frame_index);
 
+  void AddPendingImage(ImageRecord* record);
   void ClearImagesQueuedForPaintTime();
   void Clear();
 
-  void Trace(Visitor* visitor) const;
-
- private:
-  std::unique_ptr<ImageRecord> CreateImageRecord(
-      const LayoutObject& object,
-      const MediaTiming* media_timing,
-      const uint64_t& visual_size,
-      const gfx::Rect& frame_visual_rect,
-      const gfx::RectF& root_visual_rect,
-      bool is_loaded_after_mouseover);
-  inline void QueueToMeasurePaintTime(MediaRecordIdHash record_id_hash,
-                                      base::WeakPtr<ImageRecord>& record,
+  ImageRecord* CreateImageRecord(const LayoutObject& object,
+                                 const MediaTiming* media_timing,
+                                 const uint64_t& visual_size,
+                                 const gfx::Rect& frame_visual_rect,
+                                 const gfx::RectF& root_visual_rect,
+                                 bool is_loaded_after_mouseover,
+                                 MediaRecordIdHash hash);
+  inline void QueueToMeasurePaintTime(ImageRecord* record,
                                       unsigned current_frame_index) {
+    CHECK(record);
     record->frame_index = current_frame_index;
-    images_queued_for_paint_time_.push_back(
-        ImageRecordAndHashPair(record, record_id_hash));
+    images_queued_for_paint_time_.push_back(record);
   }
-  inline void SetLoaded(base::WeakPtr<ImageRecord>& record) {
+  inline void SetLoaded(ImageRecord* record) {
+    CHECK(record);
     record->loaded = true;
   }
-  void OnImageLoadedInternal(MediaRecordIdHash,
-                             base::WeakPtr<ImageRecord>&,
-                             unsigned current_frame_index);
-
-  struct ImageRecordAndHashPair {
-    ImageRecordAndHashPair(base::WeakPtr<ImageRecord>& record,
-                           MediaRecordIdHash id_hash) {
-      image_record = record;
-      record_id_hash = id_hash;
-    }
-
-    base::WeakPtr<ImageRecord> image_record;
-    MediaRecordIdHash record_id_hash;
-  };
+  void OnImageLoadedInternal(ImageRecord*, unsigned current_frame_index);
 
   // The ImageRecord corresponding to the largest image that has been loaded and
   // painted.
-  std::unique_ptr<ImageRecord> largest_painted_image_;
+  Member<ImageRecord> largest_painted_image_;
 
-  // This stores the image records which are pending to load and receive a paint
-  // timestamp, ordered by size.
-  ImageRecordSet size_ordered_set_;
+  // The ImageRecord corresponding to the largest image that has been loaded,
+  // but not necessarily painted.
+  Member<ImageRecord> largest_pending_image_;
 
   // MediaRecordId for images for which we have seen a first paint. A
   // MediaRecordId is added to this set regardless of whether the image could be
@@ -228,11 +215,11 @@ class CORE_EXPORT ImageRecordsManager {
   // Map of MediaRecordId to ImageRecord for images for which the first paint
   // has been seen but which do not have the paint time set yet. This may
   // contain only images which are potential LCP candidates.
-  HashMap<MediaRecordIdHash, std::unique_ptr<ImageRecord>> pending_images_;
+  HeapHashMap<MediaRecordIdHash, Member<ImageRecord>> pending_images_;
 
   // |ImageRecord|s waiting for paint time are stored in this map
   // until they get a presentation time.
-  Deque<ImageRecordAndHashPair> images_queued_for_paint_time_;
+  HeapDeque<Member<ImageRecord>> images_queued_for_paint_time_;
 
   // Map containing timestamps of when LayoutObject::ImageNotifyFinished is
   // first called.
@@ -246,7 +233,7 @@ class CORE_EXPORT ImageRecordsManager {
   // storing a record for the largest ignored image without nested opacity. We
   // consider this an LCP candidate when the documentElement's opacity changes
   // from zero to nonzero.
-  std::unique_ptr<ImageRecord> largest_ignored_image_;
+  Member<ImageRecord> largest_ignored_image_;
 };
 
 // ImagePaintTimingDetector contains Largest Image Paint.
