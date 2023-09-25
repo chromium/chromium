@@ -30,6 +30,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.jank_tracker.PlaceholderJankTracker;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Restriction;
@@ -82,6 +83,7 @@ public class ExploreSurfaceViewBinderTest {
                             mActivityTestRule.getActivity().getSnackbarManager(),
                             mActivityTestRule.getActivity().getShareDelegateSupplier(),
                             mActivityTestRule.getActivity().getWindowAndroid(),
+                            new PlaceholderJankTracker(),
                             mActivityTestRule.getActivity().getTabModelSelector(),
                             () -> { return null; }, 0L, null);
             mExploreSurfaceCoordinator = mExploreSurfaceCoordinatorFactory.create(

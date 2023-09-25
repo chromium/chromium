@@ -10,6 +10,7 @@
 
 #include "base/android/feature_map.h"
 #include "base/feature_list.h"
+#include "base/features.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/feature_guide/notifications/feature_notification_guide_service.h"
@@ -108,6 +109,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &download::features::kSmartSuggestionForLargeDownloads,
     &download::features::kUseDownloadOfflineContentProvider,
     &download::features::kDownloadsMigrateToJobsAPI,
+    &base::features::kCollectAndroidFrameTimelineMetrics,
     &features::kPWAsDefaultOfflinePage,
     &features::kGenericSensorExtraClasses,
     &features::kBackForwardCache,

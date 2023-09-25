@@ -12,19 +12,18 @@ import org.chromium.base.annotations.NativeMethods;
  */
 @JNINamespace("base::android")
 public class JankMetricUMARecorder {
-    public static void recordJankMetricsToUMA(
-            JankMetrics metric, long reportingIntervalStartTime, long reportingIntervalDuration) {
+    public static void recordJankMetricsToUMA(JankMetrics metric, long reportingIntervalStartTime,
+            long reportingIntervalDuration, @JankScenario int scenario) {
         if (metric == null) {
             return;
         }
-
         JankMetricUMARecorderJni.get().recordJankMetrics(metric.durationsNs, metric.isJanky,
-                metric.isScrolling, reportingIntervalStartTime, reportingIntervalDuration);
+                reportingIntervalStartTime, reportingIntervalDuration, scenario);
     }
 
     @NativeMethods
     public interface Natives {
-        void recordJankMetrics(long[] durationsNs, boolean[] jankStatus, boolean[] scrollingStatus,
-                long reportingIntervalStartTime, long reportingIntervalDuration);
+        void recordJankMetrics(long[] durationsNs, boolean[] jankStatus,
+                long reportingIntervalStartTime, long reportingIntervalDuration, int scenario);
     }
 }

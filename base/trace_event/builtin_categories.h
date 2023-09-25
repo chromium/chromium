@@ -32,6 +32,7 @@
   /* The rest of the list is in alphabetical order */                    \
   X("accessibility")                                                     \
   X("AccountFetcherService")                                             \
+  X("android.ui.jank")                                                   \
   X("android_webview")                                                   \
   X("android_webview.timeline")                                          \
   /* Actions on Google Hardware, used in Google-internal code. */        \
@@ -298,6 +299,7 @@
 
 #define INTERNAL_TRACE_LIST_BUILTIN_CATEGORY_GROUPS(X)                        \
   X("android_webview,toplevel")                                               \
+  X("android_webview.timeline,android.ui.jank")                               \
   X("base,toplevel")                                                          \
   X("benchmark,drm")                                                          \
   X("benchmark,latencyInfo,rail")                                             \

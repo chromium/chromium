@@ -26,6 +26,7 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureListJni;
+import org.chromium.base.jank_tracker.PlaceholderJankTracker;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -251,9 +252,9 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
 
         mCoordinator = new StartSurfaceCoordinator(mActivity, scrimCoordinator,
                 Mockito.mock(BottomSheetController.class), new OneshotSupplierImpl<>(),
-                new ObservableSupplierImpl<>(), false, windowAndroid, mContainerView,
-                new ObservableSupplierImpl<>(), mTabModelSelector, browserControlsManager,
-                snackbarManager, new ObservableSupplierImpl<>(),
+                new ObservableSupplierImpl<>(), false, windowAndroid, new PlaceholderJankTracker(),
+                mContainerView, new ObservableSupplierImpl<>(), mTabModelSelector,
+                browserControlsManager, snackbarManager, new ObservableSupplierImpl<>(),
                 ()
                         -> omniboxStub,
                 tabContentManager, new FakeModalDialogManager(ModalDialogType.APP),

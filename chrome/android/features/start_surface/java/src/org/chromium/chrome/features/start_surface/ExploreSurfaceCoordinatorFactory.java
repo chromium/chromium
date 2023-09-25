@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.feed.FeedSwipeRefreshLayout;
 import org.chromium.chrome.browser.feed.ScrollableContainerDelegate;
@@ -33,6 +34,7 @@ class ExploreSurfaceCoordinatorFactory {
     private final SnackbarManager mSnackbarManager;
     private final Supplier<ShareDelegate> mShareDelegateSupplier;
     private final WindowAndroid mWindowAndroid;
+    private final JankTracker mJankTracker;
     private final TabModelSelector mTabModelSelector;
     private final BottomSheetController mBottomSheetController;
     private final ScrollableContainerDelegate mScrollableContainerDelegate;
@@ -54,6 +56,7 @@ class ExploreSurfaceCoordinatorFactory {
      * @param snackbarManager Manages the snackbar.
      * @param shareDelegateSupplier Supplies the {@link ShareDelegate}.
      * @param windowAndroid The current {@link WindowAndroid}.
+     * @param jankTracker tracks jank.
      * @param tabModelSelector The current {@link TabModelSelector}.
      * @param toolbarSupplier Supplies the {@link Toolbar}.
      * @param embeddingSurfaceConstructedTimeNs Timestamp taken when the caller was constructed.
@@ -66,8 +69,9 @@ class ExploreSurfaceCoordinatorFactory {
             @NonNull ScrollableContainerDelegate scrollableContainerDelegate,
             @NonNull SnackbarManager snackbarManager,
             @NonNull Supplier<ShareDelegate> shareDelegateSupplier,
-            @NonNull WindowAndroid windowAndroid, @NonNull TabModelSelector tabModelSelector,
-            @NonNull Supplier<Toolbar> toolbarSupplier, long embeddingSurfaceConstructedTimeNs,
+            @NonNull WindowAndroid windowAndroid, @NonNull JankTracker jankTracker,
+            @NonNull TabModelSelector tabModelSelector, @NonNull Supplier<Toolbar> toolbarSupplier,
+            long embeddingSurfaceConstructedTimeNs,
             @Nullable FeedSwipeRefreshLayout swipeRefreshLayout) {
         mActivity = activity;
         mParentView = parentView;
@@ -75,6 +79,7 @@ class ExploreSurfaceCoordinatorFactory {
         mSnackbarManager = snackbarManager;
         mShareDelegateSupplier = shareDelegateSupplier;
         mWindowAndroid = windowAndroid;
+        mJankTracker = jankTracker;
         mTabModelSelector = tabModelSelector;
         mBottomSheetController = bottomSheetController;
         mScrollableContainerDelegate = scrollableContainerDelegate;
@@ -99,6 +104,6 @@ class ExploreSurfaceCoordinatorFactory {
                 mBottomSheetController, mScrollableContainerDelegate, launchOrigin,
                 mToolbarSupplier, mEmbeddingSurfaceConstructedTimeNs, mSwipeRefreshLayout,
                 mParentView, mParentTabSupplier, mSnackbarManager, mShareDelegateSupplier,
-                mWindowAndroid, mTabModelSelector);
+                mWindowAndroid, mJankTracker, mTabModelSelector);
     }
 }

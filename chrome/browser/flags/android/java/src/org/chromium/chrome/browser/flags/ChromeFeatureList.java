@@ -210,6 +210,8 @@ public abstract class ChromeFeatureList {
             "ClearOmniboxFocusAfterNavigation";
     public static final String CLOSE_TAB_SUGGESTIONS = "CloseTabSuggestions";
     public static final String CLOSE_TAB_SAVE_TAB_LIST = "CloseTabSaveTabList";
+    public static final String COLLECT_ANDROID_FRAME_TIMELINE_METRICS =
+            "CollectAndroidFrameTimelineMetrics";
     public static final String COMMAND_LINE_ON_NON_ROOTED = "CommandLineOnNonRooted";
     public static final String COMMERCE_MERCHANT_VIEWER = "CommerceMerchantViewer";
     public static final String COMMERCE_PRICE_TRACKING = "CommercePriceTracking";
@@ -532,6 +534,8 @@ public abstract class ChromeFeatureList {
             new CachedFlag(CLOSE_TAB_SUGGESTIONS, false);
     public static final CachedFlag sCloseTabSaveTabList =
             new CachedFlag(CLOSE_TAB_SAVE_TAB_LIST, true);
+    public static final CachedFlag sCollectAndroidFrameTimelineMetrics =
+            new CachedFlag(COLLECT_ANDROID_FRAME_TIMELINE_METRICS, true);
     public static final CachedFlag sCommandLineOnNonRooted =
             new CachedFlag(COMMAND_LINE_ON_NON_ROOTED,
                     ChromePreferenceKeys.FLAGS_CACHED_COMMAND_LINE_ON_NON_ROOTED_ENABLED, false);
@@ -643,6 +647,7 @@ public abstract class ChromeFeatureList {
         sCctToolbarCustomizations,
         sCloseTabSuggestions,
         sCloseTabSaveTabList,
+        sCollectAndroidFrameTimelineMetrics,
         sCommandLineOnNonRooted,
         sDelayTempStripRemoval,
         sDragDropIntoOmnibox,

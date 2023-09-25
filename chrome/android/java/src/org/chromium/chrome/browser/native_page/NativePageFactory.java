@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.DestroyableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -61,6 +62,7 @@ public class NativePageFactory {
     private final TabModelSelector mTabModelSelector;
     private final Supplier<ShareDelegate> mShareDelegateSupplier;
     private final WindowAndroid mWindowAndroid;
+    private final JankTracker mJankTracker;
     private final Supplier<Toolbar> mToolbarSupplier;
     private final HomeSurfaceTracker mHomeSurfaceTracker;
     private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
@@ -76,7 +78,8 @@ public class NativePageFactory {
             @NonNull ActivityLifecycleDispatcher lifecycleDispatcher,
             @NonNull TabModelSelector tabModelSelector,
             @NonNull Supplier<ShareDelegate> shareDelegateSupplier,
-            @NonNull WindowAndroid windowAndroid, @NonNull Supplier<Toolbar> toolbarSupplier,
+            @NonNull WindowAndroid windowAndroid, @NonNull JankTracker jankTracker,
+            @NonNull Supplier<Toolbar> toolbarSupplier,
             @Nullable HomeSurfaceTracker homeSurfaceTracker,
             @Nullable ObservableSupplier<TabContentManager> tabContentManagerSupplier) {
         mActivity = activity;
@@ -88,6 +91,7 @@ public class NativePageFactory {
         mTabModelSelector = tabModelSelector;
         mShareDelegateSupplier = shareDelegateSupplier;
         mWindowAndroid = windowAndroid;
+        mJankTracker = jankTracker;
         mToolbarSupplier = toolbarSupplier;
         mHomeSurfaceTracker = homeSurfaceTracker;
         mTabContentManagerSupplier = tabContentManagerSupplier;
@@ -98,8 +102,8 @@ public class NativePageFactory {
             mNativePageBuilder = new NativePageBuilder(mActivity, this::getNewTabPageUma,
                     mBottomSheetController, mBrowserControlsManager, mCurrentTabSupplier,
                     mSnackbarManagerSupplier, mLifecycleDispatcher, mTabModelSelector,
-                    mShareDelegateSupplier, mWindowAndroid, mToolbarSupplier, mHomeSurfaceTracker,
-                    mTabContentManagerSupplier);
+                    mShareDelegateSupplier, mWindowAndroid, mJankTracker, mToolbarSupplier,
+                    mHomeSurfaceTracker, mTabContentManagerSupplier);
         }
         return mNativePageBuilder;
     }
@@ -124,6 +128,7 @@ public class NativePageFactory {
         private final TabModelSelector mTabModelSelector;
         private final Supplier<ShareDelegate> mShareDelegateSupplier;
         private final WindowAndroid mWindowAndroid;
+        private final JankTracker mJankTracker;
         private final Supplier<Toolbar> mToolbarSupplier;
         private final HomeSurfaceTracker mHomeSurfaceTracker;
         private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
@@ -134,7 +139,8 @@ public class NativePageFactory {
                 Supplier<SnackbarManager> snackbarManagerSupplier,
                 ActivityLifecycleDispatcher lifecycleDispatcher, TabModelSelector tabModelSelector,
                 Supplier<ShareDelegate> shareDelegateSupplier, WindowAndroid windowAndroid,
-                Supplier<Toolbar> toolbarSupplier, HomeSurfaceTracker homeSurfaceTracker,
+                JankTracker jankTracker, Supplier<Toolbar> toolbarSupplier,
+                HomeSurfaceTracker homeSurfaceTracker,
                 ObservableSupplier<TabContentManager> tabContentManagerSupplier) {
             mActivity = activity;
             mUma = uma;
@@ -146,6 +152,7 @@ public class NativePageFactory {
             mTabModelSelector = tabModelSelector;
             mShareDelegateSupplier = shareDelegateSupplier;
             mWindowAndroid = windowAndroid;
+            mJankTracker = jankTracker;
             mToolbarSupplier = toolbarSupplier;
             mHomeSurfaceTracker = homeSurfaceTracker;
             mTabContentManagerSupplier = tabContentManagerSupplier;
@@ -160,7 +167,7 @@ public class NativePageFactory {
                     mSnackbarManagerSupplier.get(), mLifecycleDispatcher, mTabModelSelector,
                     DeviceFormFactor.isWindowOnTablet(mWindowAndroid), mUma.get(),
                     ColorUtils.inNightMode(mActivity), nativePageHost, tab, url,
-                    mBottomSheetController, mShareDelegateSupplier, mWindowAndroid,
+                    mBottomSheetController, mShareDelegateSupplier, mWindowAndroid, mJankTracker,
                     mToolbarSupplier, new SettingsLauncherImpl(), mHomeSurfaceTracker,
                     mTabContentManagerSupplier);
         }

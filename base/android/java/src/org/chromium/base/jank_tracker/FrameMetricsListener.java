@@ -5,15 +5,15 @@
 package org.chromium.base.jank_tracker;
 
 import android.os.Build.VERSION_CODES;
-import android.os.SystemClock;
 import android.view.FrameMetrics;
 import android.view.Window;
 import android.view.Window.OnFrameMetricsAvailableListener;
 
 import androidx.annotation.RequiresApi;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * This class receives OnFrameMetricsAvailableListener.onFrameMetricsAvailable() callbacks and
@@ -22,14 +22,7 @@ import org.chromium.base.TraceEvent;
 @RequiresApi(api = VERSION_CODES.N)
 public class FrameMetricsListener implements OnFrameMetricsAvailableListener {
     private final FrameMetricsStore mFrameMetricsStore;
-    private boolean mIsRecording;
-
-    // The reporting interval start and duration are passed to the reporting code and used in the
-    // 'JankMetricsReportingInterval' trace event.
-    private long mReportingIntervalStartTime;
-    private long mReportingIntervalDurationMillis;
-
-    private final ThreadUtils.ThreadChecker mThreadChecker = new ThreadUtils.ThreadChecker();
+    private AtomicBoolean mIsRecording = new AtomicBoolean(false);
 
     public FrameMetricsListener(FrameMetricsStore frameMetricsStore) {
         mFrameMetricsStore = frameMetricsStore;
@@ -41,25 +34,14 @@ public class FrameMetricsListener implements OnFrameMetricsAvailableListener {
      * @param isRecording
      */
     public void setIsListenerRecording(boolean isRecording) {
-        mThreadChecker.assertOnValidThread();
-        mIsRecording = isRecording;
-        if (isRecording && mReportingIntervalStartTime == 0) {
-            mReportingIntervalStartTime = SystemClock.uptimeMillis();
-        } else if (!isRecording) {
-            if (mReportingIntervalStartTime != 0) {
-                mReportingIntervalDurationMillis =
-                        SystemClock.uptimeMillis() - mReportingIntervalStartTime;
-            }
-            reportMetrics();
-        }
+        mIsRecording.set(isRecording);
     }
 
     @RequiresApi(api = VERSION_CODES.N)
     @Override
     public void onFrameMetricsAvailable(
             Window window, FrameMetrics frameMetrics, int dropCountSinceLastInvocation) {
-        mThreadChecker.assertOnValidThread();
-        if (!mIsRecording) {
+        if (!mIsRecording.get()) {
             return;
         }
 
@@ -73,16 +55,5 @@ public class FrameMetricsListener implements OnFrameMetricsAvailableListener {
             mFrameMetricsStore.addFrameMeasurement(
                     frameTotalDurationNs, isJanky, frame_start_vsync_ts);
         }
-    }
-
-    private void reportMetrics() {
-        JankMetricUMARecorder.recordJankMetricsToUMA(mFrameMetricsStore.takeMetrics(),
-                mReportingIntervalStartTime, mReportingIntervalDurationMillis);
-        mReportingIntervalStartTime = 0;
-        mReportingIntervalDurationMillis = 0;
-    }
-
-    public void onWebContentsScrollStateUpdate(boolean isScrolling) {
-        mFrameMetricsStore.onWebContentsScrollStateUpdate(isScrolling);
     }
 }

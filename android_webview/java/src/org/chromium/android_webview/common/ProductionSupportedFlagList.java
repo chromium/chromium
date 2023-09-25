@@ -507,7 +507,7 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(VizFeatures.ON_BEGIN_FRAME_THROTTLE_VIDEO,
                     "Enables throttling OnBeginFrame for video frame sinks"
                             + "with a preferred framerate defined."),
-            Flag.baseFeature(AwFeatures.WEBVIEW_REPORT_FRAME_METRICS,
+            Flag.baseFeature(BaseFeatures.COLLECT_ANDROID_FRAME_TIMELINE_METRICS,
                     "Report frame metrics to Google, if metrics reporting has been enabled."),
             Flag.baseFeature(AwFeatures.WEBVIEW_CLEAR_FUNCTOR_IN_BACKGROUND,
                     "Clear the draw functor after some time in background."),

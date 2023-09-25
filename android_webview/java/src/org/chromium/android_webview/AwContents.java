@@ -66,6 +66,7 @@ import org.chromium.android_webview.metrics.AwSiteVisitLogger;
 import org.chromium.android_webview.permission.AwGeolocationCallback;
 import org.chromium.android_webview.permission.AwPermissionRequest;
 import org.chromium.android_webview.renderer_priority.RendererPriority;
+import org.chromium.base.BaseFeatures;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
@@ -81,6 +82,11 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.jank_tracker.FrameMetricsListener;
 import org.chromium.base.jank_tracker.FrameMetricsStore;
+import org.chromium.base.jank_tracker.JankReportingScheduler;
+import org.chromium.base.jank_tracker.JankScenario;
+import org.chromium.base.jank_tracker.JankTracker;
+import org.chromium.base.jank_tracker.JankTrackerImpl;
+import org.chromium.base.jank_tracker.JankTrackerStateController;
 import org.chromium.base.memory.MemoryInfoBridge;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
@@ -1052,37 +1058,54 @@ public class AwContents implements SmartClipProvider {
         }
     }
 
+    // A Webview class that implements the listener part of the JankTracker requirement. It mirrors
+    // JankActivityTracker in starting and stopping the listener and collection.
     private class AwFrameMetricsListener {
-        private FrameMetricsListener mFrameMetricsListener;
         private boolean mAttached;
+        private JankTrackerStateController mController;
+        private JankTracker mJankTracker;
         private WeakReference<Window> mWindow;
 
         public AwFrameMetricsListener() {
             FrameMetricsStore metricsStore = new FrameMetricsStore();
-            mFrameMetricsListener = new FrameMetricsListener(metricsStore);
+            mController = new JankTrackerStateController(new FrameMetricsListener(metricsStore),
+                    new JankReportingScheduler(metricsStore));
+            mJankTracker = new JankTrackerImpl(mController);
             mAttached = false;
         }
 
         public void attachListener(Window window) {
             if (mAttached) return;
             mWindow = new WeakReference<Window>(window);
-            final Handler handler = new Handler();
-            window.addOnFrameMetricsAvailableListener(mFrameMetricsListener, handler);
+            mController.startMetricCollection(window);
             mAttached = true;
         }
 
         public void detachListener(Window window) {
             if (!mAttached || window != mWindow.get()) return;
-            window.removeOnFrameMetricsAvailableListener(mFrameMetricsListener);
+            mController.stopMetricCollection(window);
             mAttached = false;
         }
 
-        public FrameMetricsListener getFrameMetricsListener() {
-            return mFrameMetricsListener;
+        public void startListening() {
+            if (!mAttached) return;
+            mController.startPeriodicReporting();
+            mController.startMetricCollection(null);
+        }
+
+        public void stopListening() {
+            if (!mAttached) return;
+            mController.stopMetricCollection(null);
+            mController.stopPeriodicReporting();
         }
 
         public void onWebContentsScrollStateUpdate(boolean isScrolling) {
-            mFrameMetricsListener.onWebContentsScrollStateUpdate(isScrolling);
+            if (isScrolling) {
+                mJankTracker.startTrackingScenario(JankScenario.WEBVIEW_SCROLLING);
+            } else {
+                mJankTracker.finishTrackingScenario(JankScenario.WEBVIEW_SCROLLING,
+                        TimeUtils.uptimeMillis() * TimeUtils.NANOSECONDS_PER_MILLISECOND);
+            }
         }
     }
 
@@ -1216,7 +1239,7 @@ public class AwContents implements SmartClipProvider {
             onContainerViewChanged();
         }
 
-        if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_REPORT_FRAME_METRICS)) {
+        if (AwFeatureMap.isEnabled(BaseFeatures.COLLECT_ANDROID_FRAME_TIMELINE_METRICS)) {
             mAwFrameMetricsListener = new AwFrameMetricsListener();
         }
     }
@@ -3524,9 +3547,9 @@ public class AwContents implements SmartClipProvider {
 
             if (mAwFrameMetricsListener != null) {
                 if (mIsWindowVisible) {
-                    mAwFrameMetricsListener.getFrameMetricsListener().setIsListenerRecording(true);
+                    mAwFrameMetricsListener.startListening();
                 } else {
-                    mAwFrameMetricsListener.getFrameMetricsListener().setIsListenerRecording(false);
+                    mAwFrameMetricsListener.stopListening();
                 }
             }
         }

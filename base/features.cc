@@ -52,6 +52,10 @@ BASE_FEATURE(kPartialLowEndModeOnMidRangeDevices,
              "PartialLowEndModeOnMidRangeDevices",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Whether to report frame metrics to the Android.FrameTimeline.* histograms.
+BASE_FEATURE(kCollectAndroidFrameTimelineMetrics,
+             "CollectAndroidFrameTimelineMetrics",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace base::features

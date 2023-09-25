@@ -31,6 +31,8 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kJsonNegativeZero);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartialLowEndModeOnMidRangeDevices);
 extern const BASE_EXPORT FeatureParam<bool>
     kPartialLowEndModeExcludeLowEndBackgroundCleanup;
+
+BASE_EXPORT BASE_DECLARE_FEATURE(kCollectAndroidFrameTimelineMetrics);
 #endif
 
 }  // namespace base::features

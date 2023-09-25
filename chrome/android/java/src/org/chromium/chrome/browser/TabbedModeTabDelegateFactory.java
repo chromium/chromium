@@ -8,6 +8,7 @@ import android.app.Activity;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.tab_activity_glue.ActivityTabWebContentsDelegateAndroid;
@@ -69,6 +70,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
     private final Supplier<Tab> mCurrentTabSupplier;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final WindowAndroid mWindowAndroid;
+    private final JankTracker mJankTracker;
     private final Supplier<Toolbar> mToolbarSupplier;
     private final HomeSurfaceTracker mHomeSurfaceTracker;
 
@@ -88,7 +90,8 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
             Supplier<SnackbarManager> snackbarManagerSupplier,
             BrowserControlsManager browserControlsManager, Supplier<Tab> currentTabSupplier,
             ActivityLifecycleDispatcher lifecycleDispatcher, WindowAndroid windowAndroid,
-            Supplier<Toolbar> toolbarSupplier, @Nullable HomeSurfaceTracker homeSurfaceTracker,
+            JankTracker jankTracker, Supplier<Toolbar> toolbarSupplier,
+            @Nullable HomeSurfaceTracker homeSurfaceTracker,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier) {
         mActivity = activity;
         mAppBrowserControlsVisibilityDelegate = appBrowserControlsVisibilityDelegate;
@@ -109,6 +112,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
         mCurrentTabSupplier = currentTabSupplier;
         mLifecycleDispatcher = lifecycleDispatcher;
         mWindowAndroid = windowAndroid;
+        mJankTracker = jankTracker;
         mToolbarSupplier = toolbarSupplier;
         mHomeSurfaceTracker = homeSurfaceTracker;
         mTabContentManagerSupplier = tabContentManagerSupplier;
@@ -151,7 +155,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
             mNativePageFactory = new NativePageFactory(mActivity, mBottomSheetController,
                     mBrowserControlsManager, mCurrentTabSupplier, mSnackbarManagerSupplier,
                     mLifecycleDispatcher, mTabModelSelectorSupplier.get(), mShareDelegateSupplier,
-                    mWindowAndroid, mToolbarSupplier, mHomeSurfaceTracker,
+                    mWindowAndroid, mJankTracker, mToolbarSupplier, mHomeSurfaceTracker,
                     mTabContentManagerSupplier);
         }
         return mNativePageFactory.createNativePage(url, candidatePage, tab);

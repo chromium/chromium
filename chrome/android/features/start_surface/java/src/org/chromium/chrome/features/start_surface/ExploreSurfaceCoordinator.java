@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.feed.FeedActionDelegateImpl;
@@ -50,6 +51,7 @@ public class ExploreSurfaceCoordinator {
     public static final String FEED_CONTENT_FIRST_LOADED_TIME_MS_UMA = "FeedContentFirstLoadedTime";
 
     private final Activity mActivity;
+    private final JankTracker mJankTracker;
     private final FeedSurfaceCoordinator mFeedSurfaceCoordinator;
     private final ExploreSurfaceNavigationDelegate mExploreSurfaceNavigationDelegate;
     private final boolean mIsPlaceholderShownInitially;
@@ -69,13 +71,14 @@ public class ExploreSurfaceCoordinator {
             long embeddingSurfaceConstructedTimeNs, FeedSwipeRefreshLayout swipeRefreshLayout,
             ViewGroup parentView, Supplier<Tab> parentTabSupplier, SnackbarManager snackbarManager,
             Supplier<ShareDelegate> shareDelegateSupplier, WindowAndroid windowAndroid,
-            TabModelSelector tabModelSelector) {
+            JankTracker jankTracker, TabModelSelector tabModelSelector) {
         mActivity = activity;
+        mJankTracker = jankTracker;
         mExploreSurfaceNavigationDelegate = new ExploreSurfaceNavigationDelegate(parentTabSupplier);
         mIsPlaceholderShownInitially = isPlaceholderShown;
 
         mFeedSurfaceCoordinator = new FeedSurfaceCoordinator(mActivity, snackbarManager,
-                windowAndroid, /*snapScrollHelper=*/null, /*ntpHeader=*/null,
+                windowAndroid, mJankTracker, /*snapScrollHelper=*/null, /*ntpHeader=*/null,
                 mActivity.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow),
                 isInNightMode, /*delegate=*/new ExploreFeedSurfaceDelegate(), profile,
                 isPlaceholderShown, bottomSheetController, shareDelegateSupplier,

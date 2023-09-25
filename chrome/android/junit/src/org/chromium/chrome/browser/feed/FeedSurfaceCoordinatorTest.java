@@ -41,6 +41,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 
+import org.chromium.base.jank_tracker.PlaceholderJankTracker;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
@@ -550,9 +551,10 @@ public class FeedSurfaceCoordinatorTest {
     }
 
     private FeedSurfaceCoordinator createCoordinator() {
-        return new FeedSurfaceCoordinator(mActivity, mSnackbarManager, mWindowAndroid, mSnapHelper,
-                null, 0, false, new TestSurfaceDelegate(), mProfileMock, false,
-                mBottomSheetController, mShareDelegateSupplier, mScrollableContainerDelegate,
+        return new FeedSurfaceCoordinator(mActivity, mSnackbarManager, mWindowAndroid,
+                new PlaceholderJankTracker(), mSnapHelper, null, 0, false,
+                new TestSurfaceDelegate(), mProfileMock, false, mBottomSheetController,
+                mShareDelegateSupplier, mScrollableContainerDelegate,
                 NewTabPageLaunchOrigin.UNKNOWN, mPrivacyPreferencesManager,
                 ()
                         -> { return null; },

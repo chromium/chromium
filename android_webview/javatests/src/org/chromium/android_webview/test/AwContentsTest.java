@@ -47,6 +47,7 @@ import org.chromium.android_webview.renderer_priority.RendererPriority;
 import org.chromium.android_webview.test.TestAwContentsClient.OnDownloadStartHelper;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.android_webview.test.util.GraphicsTestUtils;
+import org.chromium.base.BaseFeatures;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.Log;
@@ -1766,7 +1767,7 @@ public class AwContentsTest {
     @DisableHardwareAcceleration
     @SmallTest
     @Feature({"AndroidWebView"})
-    @Features.EnableFeatures({AwFeatures.WEBVIEW_REPORT_FRAME_METRICS})
+    @Features.EnableFeatures({BaseFeatures.COLLECT_ANDROID_FRAME_TIMELINE_METRICS})
     public void testNoCrashWithoutHardwareAcceleration() throws Throwable {
         mActivityTestRule.startBrowserProcess();
         AwContents.resetRecordMemoryForTesting();

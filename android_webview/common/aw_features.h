@@ -34,7 +34,6 @@ BASE_DECLARE_FEATURE(kWebViewMetricsFiltering);
 BASE_DECLARE_FEATURE(kWebViewMixedContentAutoupgrades);
 BASE_DECLARE_FEATURE(kWebViewOriginTrials);
 BASE_DECLARE_FEATURE(kWebViewRecordAppDataDirectorySize);
-BASE_DECLARE_FEATURE(kWebViewReportFrameMetrics);
 BASE_DECLARE_FEATURE(kWebViewRestrictSensitiveContent);
 BASE_DECLARE_FEATURE(kWebViewSupervisedUserSiteDetection);
 BASE_DECLARE_FEATURE(kWebViewSupervisedUserSiteBlock);

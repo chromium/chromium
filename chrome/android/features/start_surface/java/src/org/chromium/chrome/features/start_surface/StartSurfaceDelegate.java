@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -118,7 +119,8 @@ public class StartSurfaceDelegate {
             @NonNull BottomSheetController sheetController,
             @NonNull OneshotSupplierImpl<StartSurface> startSurfaceOneshotSupplier,
             @NonNull Supplier<Tab> parentTabSupplier, boolean hadWarmStart,
-            @NonNull WindowAndroid windowAndroid, @NonNull ViewGroup containerView,
+            @NonNull WindowAndroid windowAndroid, @NonNull JankTracker jankTracker,
+            @NonNull ViewGroup containerView,
             @NonNull Supplier<DynamicResourceLoader> dynamicResourceLoaderSupplier,
             @NonNull TabModelSelector tabModelSelector,
             @NonNull BrowserControlsManager browserControlsManager,
@@ -138,7 +140,7 @@ public class StartSurfaceDelegate {
             @NonNull ObservableSupplier<Profile> profileSupplier) {
         return new StartSurfaceCoordinator(activity, scrimCoordinator, sheetController,
                 startSurfaceOneshotSupplier, parentTabSupplier, hadWarmStart, windowAndroid,
-                containerView, dynamicResourceLoaderSupplier, tabModelSelector,
+                jankTracker, containerView, dynamicResourceLoaderSupplier, tabModelSelector,
                 browserControlsManager, snackbarManager, shareDelegateSupplier, omniboxStubSupplier,
                 tabContentManager, modalDialogManager, chromeActivityNativeDelegate,
                 activityLifecycleDispatcher, tabCreatorManager, menuOrKeyboardActionController,

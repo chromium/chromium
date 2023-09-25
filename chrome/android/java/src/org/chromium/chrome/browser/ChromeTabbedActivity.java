@@ -45,6 +45,9 @@ import org.chromium.base.Log;
 import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.jank_tracker.JankTracker;
+import org.chromium.base.jank_tracker.JankTrackerImpl;
+import org.chromium.base.jank_tracker.PlaceholderJankTracker;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -334,6 +337,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     // This is the cached value of IntentHandler#shouldIgnoreIntent and shouldn't be read directly.
     // Use #shouldIgnoreIntent instead.
     private Boolean mShouldIgnoreIntent;
+
+    // Listens to FrameMetrics and records janks.
+    private JankTracker mJankTracker;
 
     // Supplier for a dependency to inform about the type of intent used to launch Chrome.
     private OneshotSupplierImpl<ToolbarIntentMetadata> mIntentMetadataOneshotSupplier =
@@ -704,7 +710,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             CompositorViewHolder compositorViewHolder, ViewGroup tabSwitcherContainer) {
         StartSurfaceDelegate.createStartSurface(this, mRootUiCoordinator.getScrimCoordinator(),
                 mRootUiCoordinator.getBottomSheetController(), mStartSurfaceSupplier,
-                mStartSurfaceParentTabSupplier, hadWarmStart(), getWindowAndroid(),
+                mStartSurfaceParentTabSupplier, hadWarmStart(), getWindowAndroid(), mJankTracker,
                 tabSwitcherContainer, compositorViewHolder::getDynamicResourceLoader,
                 getTabModelSelector(), getBrowserControlsManager(), getSnackbarManager(),
                 getShareDelegateSupplier(), getToolbarManager()::getOmniboxStub,
@@ -1705,6 +1711,14 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     public void performPreInflationStartup() {
         super.performPreInflationStartup();
 
+        // Android FrameMetrics allow tracking of java views and their deadline misses (frame
+        // drops/janks).
+        if (ChromeFeatureList.sCollectAndroidFrameTimelineMetrics.isEnabled()) {
+            mJankTracker = new JankTrackerImpl(this);
+        } else {
+            mJankTracker = new PlaceholderJankTracker();
+        }
+
         // Decide whether to record startup UMA histograms. This is done  early in the main
         // Activity.onCreate() to avoid recording navigation delays when they require user input to
         // proceed. For example, FRE (First Run Experience) happens before the activity is created,
@@ -2012,8 +2026,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     /* TabCreatorManager */ this, getTabModelSelectorSupplier(),
                     getCompositorViewHolderSupplier(), getModalDialogManagerSupplier(),
                     this::getSnackbarManager, getBrowserControlsManager(), getActivityTabProvider(),
-                    getLifecycleDispatcher(), getWindowAndroid(), getToolbarManager()::getToolbar,
-                    mHomeSurfaceTracker, getTabContentManagerSupplier());
+                    getLifecycleDispatcher(), getWindowAndroid(), mJankTracker,
+                    getToolbarManager()::getToolbar, mHomeSurfaceTracker,
+                    getTabContentManagerSupplier());
         }
         return mTabDelegateFactory;
     }
@@ -2794,6 +2809,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         if (mCallbackController != null) {
             mCallbackController.destroy();
             mCallbackController = null;
+        }
+
+        if (mJankTracker != null) {
+            mJankTracker.destroy();
+            mJankTracker = null;
         }
 
         if (mTabModelSelectorTabObserver != null) {

@@ -26,30 +26,37 @@ public class FrameMetricsListenerTest {
     @Test
     public void testMetricRecording_OffByDefault() {
         FrameMetricsStore store = new FrameMetricsStore();
+        store.initialize();
+
         FrameMetricsListener metricsListener = new FrameMetricsListener(store);
         FrameMetrics frameMetrics = mock(FrameMetrics.class);
 
         when(frameMetrics.getMetric(FrameMetrics.TOTAL_DURATION)).thenReturn(10_000_000L);
+        store.startTrackingScenario(JankScenario.NEW_TAB_PAGE);
 
         metricsListener.onFrameMetricsAvailable(null, frameMetrics, 0);
 
         // By default metrics shouldn't be logged.
-        Assert.assertEquals(0, store.takeMetrics().durationsNs.length);
+        Assert.assertEquals(
+                0, store.stopTrackingScenario(JankScenario.NEW_TAB_PAGE).durationsNs.length);
         verifyNoMoreInteractions(frameMetrics);
     }
 
     @Test
     public void testMetricRecording_EnableRecording() {
         FrameMetricsStore store = new FrameMetricsStore();
+        store.initialize();
 
         FrameMetricsListener metricsListener = new FrameMetricsListener(store);
         FrameMetrics frameMetrics = mock(FrameMetrics.class);
 
         when(frameMetrics.getMetric(FrameMetrics.TOTAL_DURATION)).thenReturn(10_000_000L);
 
+        store.startTrackingScenario(JankScenario.NEW_TAB_PAGE);
         metricsListener.setIsListenerRecording(true);
         metricsListener.onFrameMetricsAvailable(null, frameMetrics, 0);
 
-        Assert.assertArrayEquals(new long[] {10_000_000L}, store.takeMetrics().durationsNs);
+        Assert.assertArrayEquals(new long[] {10_000_000L},
+                store.stopTrackingScenario(JankScenario.NEW_TAB_PAGE).durationsNs);
     }
 }
