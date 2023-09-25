@@ -319,8 +319,7 @@ bool DecoderStream<StreamType>::CanDecodeMore() const {
 template <DemuxerStream::Type StreamType>
 base::TimeDelta DecoderStream<StreamType>::AverageDuration() const {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  return duration_tracker_.count() ? duration_tracker_.Average()
-                                   : base::TimeDelta();
+  return duration_tracker_.Mean();
 }
 
 template <DemuxerStream::Type StreamType>

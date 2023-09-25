@@ -8,7 +8,7 @@
 #include <queue>
 
 #include "base/containers/queue.h"
-#include "media/base/moving_average.h"
+#include "base/moving_window.h"
 #include "media/filters/hls_rendition.h"
 
 namespace media {
@@ -89,7 +89,7 @@ class MEDIA_EXPORT HlsLiveRendition : public HlsRendition {
   std::unique_ptr<HlsDataSourceStream> partial_stream_;
 
   // Record the time it takes to download content.
-  MovingAverage fetch_time_{32};
+  base::MovingAverage<base::TimeDelta, base::TimeDelta> fetch_time_{32};
 
   bool has_ever_played_ = false;
   bool require_seek_after_unpause_ = false;

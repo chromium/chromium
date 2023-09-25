@@ -123,10 +123,10 @@ int SpeedLimitObserverWin::GetCurrentSpeedLimit() {
   // output after ensuring that the filter is full. We do this to avoid initial
   // false alarms at startup and after calling Reset() on the filter.
   moving_average_.AddSample(speed_limit);
-  if (moving_average_.Size() < kMovingAverageWindowSize) {
+  if (moving_average_.Count() < kMovingAverageWindowSize) {
     return kSpeedLimitMax;
   }
-  return moving_average_.GetAverageRoundedDown();
+  return moving_average_.Mean();
 }
 
 void SpeedLimitObserverWin::OnTimerTick() {

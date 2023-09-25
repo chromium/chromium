@@ -4,6 +4,7 @@
 
 #include "base/moving_window.h"
 
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -80,8 +81,8 @@ TEST(MovingMax, Counts) {
   EXPECT_EQ(window.Count(), 5u);
 }
 
-TEST(MovingMean, Unrounded) {
-  MovingMean<int, int64_t> window(4u);
+TEST(MovingAverage, Unrounded) {
+  MovingAverage<int, int64_t> window(4u);
   window.AddSample(1);
   EXPECT_EQ(window.Mean<double>(), 1.0);
   window.AddSample(2);
@@ -117,16 +118,16 @@ TEST_P(MovingMinTest, BlanketTest) {
   }
 }
 
-class MovingMeanTest : public testing::TestWithParam<unsigned int> {};
+class MovingAverageTest : public testing::TestWithParam<unsigned int> {};
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         MovingMeanTest,
+                         MovingAverageTest,
                          testing::ValuesIn({1u, 2u, 3u, 4u, 5u, 6u, 7u, 8u, 9u,
                                             10u, 17u, 20u, 100u}));
 
-TEST_P(MovingMeanTest, BlanketTest) {
+TEST_P(MovingAverageTest, BlanketTest) {
   const size_t window_size = GetParam();
-  MovingMean<int, int64_t> window(window_size);
+  MovingAverage<int, int64_t> window(window_size);
   for (int repeats = 0; repeats < 2; ++repeats) {
     for (size_t i = 0; i < std::size(kTestValues); ++i) {
       window.AddSample(kTestValues[i]);
@@ -141,30 +142,28 @@ TEST_P(MovingMeanTest, BlanketTest) {
   }
 }
 
-class MovingVarianceTest : public testing::TestWithParam<unsigned int> {};
+class MovingDeviationTest : public testing::TestWithParam<unsigned int> {};
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         MovingVarianceTest,
+                         MovingDeviationTest,
                          testing::ValuesIn({1u, 2u, 3u, 4u, 5u, 6u, 7u, 8u, 9u,
                                             10u, 17u, 20u, 100u}));
 
-TEST_P(MovingVarianceTest, BlanketTest) {
+TEST_P(MovingDeviationTest, BlanketTest) {
   const size_t window_size = GetParam();
-  MovingMeanVariance<double, double, double> window(window_size);
+  MovingAverageDeviation<double> window(window_size);
   for (int repeats = 0; repeats < 2; ++repeats) {
     for (size_t i = 0; i < std::size(kTestValues); ++i) {
       window.AddSample(kTestValues[i]);
-      double slow_variance = 0;
+      double slow_deviation = 0;
       double mean = window.Mean();
       for (size_t j = 0; j < window_size && j <= i; ++j) {
-        slow_variance +=
+        slow_deviation +=
             (kTestValues[i - j] - mean) * (kTestValues[i - j] - mean);
       }
-      slow_variance /= std::min(window_size, i + 1);
-      double slow_deviation = sqrt(slow_variance);
-      double fast_variance = window.Variance();
+      slow_deviation /= std::min(window_size, i + 1);
+      slow_deviation = sqrt(slow_deviation);
       double fast_deviation = window.Deviation();
-      EXPECT_TRUE(std::abs(fast_variance - slow_variance) < 1e-9);
       EXPECT_TRUE(std::abs(fast_deviation - slow_deviation) < 1e-9);
     }
     window.Reset();
@@ -188,6 +187,18 @@ TEST(MovingWindowTest, Iteration) {
     }
     window.Reset();
   }
+}
+
+TEST(MovingMeanDeviation, WorksWithTimeDelta) {
+  MovingAverageDeviation<base::TimeDelta> window(2);
+  window.AddSample(base::Milliseconds(400));
+  window.AddSample(base::Milliseconds(200));
+  EXPECT_EQ(window.Mean(), base::Milliseconds(300));
+  EXPECT_EQ(window.Deviation(), base::Milliseconds(100));
+  window.AddSample(base::Seconds(40));
+  window.AddSample(base::Seconds(20));
+  EXPECT_EQ(window.Mean(), base::Seconds(30));
+  EXPECT_EQ(window.Deviation(), base::Seconds(10));
 }
 
 }  // namespace base

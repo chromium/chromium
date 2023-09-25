@@ -13,7 +13,6 @@
 #include "base/json/values_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/power_monitor/moving_average.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -432,7 +431,7 @@ void MediaFoundationServiceMonitor::AddSample(const GURL& site,
 
   // When the max average failure score is reached, update the Pref with
   // the new disabled time.
-  if (moving_average.GetUnroundedAverage() >= kMaxAverageFailureScore) {
+  if (moving_average.Mean<double>() >= kMaxAverageFailureScore) {
     AddDisabledTimePerSite(site, time);
   }
 }
@@ -444,7 +443,7 @@ void MediaFoundationServiceMonitor::AddGlobalSample(int failure_score,
   // When the max average failure score is reached, always update the local
   // state with the new disabled time, but only actually disable hardware secure
   // decryption globally when fallback is allowed (by the feature).
-  if (global_samples_.GetUnroundedAverage() >= kMaxAverageFailureScore) {
+  if (global_samples_.Mean<double>() >= kMaxAverageFailureScore) {
     AddDisabledTimeGlobal(time);
     if (base::FeatureList::IsEnabled(
             media::kHardwareSecureDecryptionFallback) &&

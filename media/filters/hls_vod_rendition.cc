@@ -44,7 +44,7 @@ HlsVodRendition::HlsVodRendition(ManifestDemuxerEngineHost* engine_host,
       role_(role),
       segment_duration_upper_limit_(playlist->GetTargetDuration()),
       duration_(duration),
-      fetch_time_(MovingAverage(kMovingAverageSampleSize)) {
+      fetch_time_(kMovingAverageSampleSize) {
   base::TimeDelta time;
   for (const auto& segment : playlist->GetSegments()) {
     SegmentInfo info;
@@ -118,12 +118,12 @@ void HlsVodRendition::CheckState(
   // speed panel. The delay is then calculated such that roughly half the buffer
   // has been rendered by the time another state check happens.
   if (time_until_underflow > kBufferDuration &&
-      time_until_underflow > fetch_time_.Average() * 6) {
+      time_until_underflow > fetch_time_.Mean() * 6) {
     // We have buffered enough to have time to clear old segments and delay.
     base::TimeDelta time_to_clear = ClearOldSegments(media_time);
     auto delay_time = kNoTimestamp;
     if (playback_rate) {
-      delay_time = time_until_underflow - (fetch_time_.Average() * 10) -
+      delay_time = time_until_underflow - (fetch_time_.Mean() * 10) -
                    time_to_clear - base::Seconds(5);
       if (delay_time < base::TimeDelta()) {
         delay_time = base::TimeDelta();

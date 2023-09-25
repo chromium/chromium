@@ -165,10 +165,10 @@ base::TimeDelta HlsLiveRendition::GetForwardBufferSize() const {
   // Try to keep a buffer of at least 5x fetch time, or 3 seconds, whichever
   // is longer. These numbers were picked based on trial and error to get a
   // smooth stream.
-  if (fetch_time_.count() == 0) {
+  if (fetch_time_.Count() == 0) {
     return base::Seconds(10);
   }
-  return std::max(base::Seconds(10), fetch_time_.Average() * 5);
+  return std::max(base::Seconds(10), fetch_time_.Mean() * 5);
 }
 
 void HlsLiveRendition::LoadSegment(const hls::MediaSegment& segment,

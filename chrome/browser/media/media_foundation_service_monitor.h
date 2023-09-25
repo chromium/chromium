@@ -7,7 +7,7 @@
 
 #include <map>
 
-#include "base/power_monitor/moving_average.h"
+#include "base/moving_window.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/time/time.h"
 #include "content/public/browser/service_process_host.h"
@@ -97,12 +97,12 @@ class MediaFoundationServiceMonitor final
   // Keep track the last fixed length reported samples (scores) per site. The
   // average score is used to decide whether to disable hardware secure
   // decryption for a particular site.
-  std::map<GURL, base::MovingAverage> samples_;
+  std::map<GURL, base::MovingAverage<int, int64_t>> samples_;
 
   // Keep track the last fixed length reported samples (scores) globally. The
   // average score is used to decide whether to disable hardware secure
   // decryption globally.
-  base::MovingAverage global_samples_;
+  base::MovingAverage<int, int64_t> global_samples_;
 };
 
 #endif  // CHROME_BROWSER_MEDIA_MEDIA_FOUNDATION_SERVICE_MONITOR_H_

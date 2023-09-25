@@ -8,18 +8,20 @@
 #include <math.h>
 #include <stddef.h>
 
+#include <cmath>
 #include <functional>
 #include <limits>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/memory/raw_ref.h"
+#include "base/time/time.h"
 
 namespace base {
 
 // Class to efficiently calculate statistics in a sliding window.
 // This class isn't thread safe.
-// Supported statistics are Min/Max/Mean/Variance/Deviation.
+// Supported statistics are Min/Max/Mean/Deviation.
 // You can also iterate through the items in the window.
 // The class is modular: required features must be specified in the template
 // arguments.
@@ -32,7 +34,8 @@ namespace base {
 //                    moving_window(window_size);
 //
 // Following convenience shortcuts are provided with predefined sets of
-// features: MovingMax/MovingMin/MovingMean/MovingMeanVariance/MovingMinMax.
+// features:
+// MovingMax/MovingMin/MovingAverage/MovingAverageDeviation/MovingMinMax.
 //
 // Methods:
 // Constructor:
@@ -52,9 +55,8 @@ namespace base {
 // Available for MovingWindowFeatures::Mean:
 //    U Mean<U>() const;
 //
-// Available for MovingWindowFeatures::Variance:
-//    T Variance() const;
-//    double Deviation() const;
+// Available for MovingWindowFeatures::Deviation:
+//    U Deviation<U>() const;
 //
 // Available for MovingWindowFeatures::Iteration. Iterating through the window:
 //    iterator begin() const;
@@ -81,8 +83,8 @@ struct MovingWindowFeatures {
   // Need to specify a type capable of holding a sum of squares of all elements
   // in the window.
   template <typename SumType>
-  struct Variance {
-    static SumType has_variance;
+  struct Deviation {
+    static SumType has_deviation;
   };
 
   struct Iteration {
@@ -105,16 +107,14 @@ template <typename T>
 using MovingMinMax =
     MovingWindow<T, MovingWindowFeatures::Min, MovingWindowFeatures::Max>;
 
-// TODO(crbug.com/1475160): Rename to MovingAverage once the old MovingAverage
-// is removed.
 template <typename T, typename SumType>
-using MovingMean = MovingWindow<T, MovingWindowFeatures::Mean<SumType>>;
+using MovingAverage = MovingWindow<T, MovingWindowFeatures::Mean<SumType>>;
 
-template <typename T, typename SumType, typename SumSquareType>
-using MovingMeanVariance =
+template <typename T>
+using MovingAverageDeviation =
     MovingWindow<T,
-                 MovingWindowFeatures::Mean<SumType>,
-                 MovingWindowFeatures::Variance<SumSquareType>>;
+                 MovingWindowFeatures::Mean<T>,
+                 MovingWindowFeatures::Deviation<double>>;
 
 namespace internal {
 
@@ -132,7 +132,7 @@ class MovingExtremumBase {
   ~MovingExtremumBase() = default;
 
   // Add new sample to the stream.
-  void AddSample(const T& value, size_t& total_added) {
+  void AddSample(const T& value, size_t total_added) {
     // Remove old elements from the back of the window;
     while (size_ > 0 && added_at_[begin_idx_] + window_size_ <= total_added) {
       ++begin_idx_;
@@ -197,12 +197,12 @@ template <typename T>
 struct NullExtremumImpl {
   explicit NullExtremumImpl(size_t) {}
   ~NullExtremumImpl() = default;
-  void AddSample(const T&, size_t&) {}
+  void AddSample(const T&, size_t) {}
   void Reset() {}
 };
 
 // Class to hold the moving window.
-// It's used to calculate replaced element for Mean/Variance calculations.
+// It's used to calculate replaced element for Mean/Deviation calculations.
 template <typename T>
 class MovingWindowBase {
  public:
@@ -253,6 +253,15 @@ struct NullWindowImpl {
   T GetValue() const { return T(); }
 };
 
+// Performs division allowing the class to work with more types.
+// General template.
+template <typename SumType, typename ReturnType>
+struct DivideInternal {
+  static ReturnType Compute(const SumType& sum, const size_t count) {
+    return static_cast<ReturnType>(sum) / static_cast<ReturnType>(count);
+  }
+};
+
 // Class to calculate moving mean.
 template <typename T, typename SumType, bool IsFloating>
 class MovingMeanBase {
@@ -266,11 +275,11 @@ class MovingMeanBase {
   }
 
   template <typename ReturnType = SumType>
-  ReturnType Mean(const size_t& count) const {
+  ReturnType Mean(const size_t count) const {
     if (count == 0) {
       return ReturnType();
     }
-    return static_cast<ReturnType>(sum_) / static_cast<ReturnType>(count);
+    return DivideInternal<SumType, ReturnType>::Compute(sum_, count);
   }
   void Reset() { sum_ = SumType(); }
 
@@ -302,11 +311,11 @@ class MovingMeanBase<T, SumType, true> {
   }
 
   template <typename ReturnType = SumType>
-  ReturnType Mean(const size_t& count) const {
+  ReturnType Mean(const size_t count) const {
     if (count == 0) {
       return ReturnType();
     }
-    return static_cast<ReturnType>(sum_) / static_cast<ReturnType>(count);
+    return DivideInternal<SumType, ReturnType>::Compute(sum_, count);
   }
 
   void Reset() { sum_ = running_sum_ = SumType(); }
@@ -329,25 +338,48 @@ struct NullMeanImpl {
   void Reset() {}
 };
 
-// Class to calculate moving variance.
+// Computs main Deviation fromula, allowing the class to work with more types.
+// Deviation is equal to mean of squared values minus squared mean value.
+// General template.
+template <typename SumType, typename ReturnType>
+struct DeivationInternal {
+  static ReturnType Compute(const SumType& sum_squares,
+                            const SumType& square_of_sum,
+                            const size_t count) {
+    return static_cast<ReturnType>(
+        std::sqrt((static_cast<double>(sum_squares) -
+                   static_cast<double>(square_of_sum) / count) /
+                  count));
+  }
+};
+
+// Class to compute square of the number.
+// General template
+template <typename T, typename SquareType>
+struct SquareInternal {
+  static SquareType Compute(const T& sample) {
+    return static_cast<SquareType>(sample) * sample;
+  }
+};
+
+// Class to calculate moving deviation.
 template <typename T, typename SumType, bool IsFloating>
-class MovingVarianceBase {
+class MovingDeviationBase {
  public:
-  explicit MovingVarianceBase(size_t window_size) : sum_sq_() {}
-  ~MovingVarianceBase() = default;
+  explicit MovingDeviationBase(size_t window_size) : sum_sq_() {}
+  ~MovingDeviationBase() = default;
   void AddSample(const T& sample, const T& replaced_value, bool is_last_idx) {
-    sum_sq_ += sample * static_cast<T>(sample) -
-               replaced_value * static_cast<T>(replaced_value);
+    sum_sq_ += SquareInternal<T, SumType>::Compute(sample) -
+               SquareInternal<T, SumType>::Compute(replaced_value);
   }
 
-  T Variance(const size_t& count, const SumType& sum) const {
+  template <typename ReturnType, typename U>
+  ReturnType Deviation(const size_t count, const U& sum) const {
     if (count == 0) {
-      return SumType();
+      return ReturnType();
     }
-    // Variance is equal to mean of squared values minus squared mean value.
-    SumType squared_sum = sum * sum;
-    return (sum_sq_ - squared_sum / static_cast<SumType>(count)) /
-           static_cast<SumType>(count);
+    return DeivationInternal<SumType, ReturnType>::Compute(
+        sum_sq_, SquareInternal<U, SumType>::Compute(sum), count);
   }
   void Reset() { sum_sq_ = SumType(); }
 
@@ -355,33 +387,34 @@ class MovingVarianceBase {
   SumType sum_sq_;
 };
 
-// Class to calculate moving variance.
+// Class to calculate moving deviation.
 // Variant for float types with running sum to avoid rounding errors
 // accumulation.
 template <typename T, typename SumType>
-class MovingVarianceBase<T, SumType, true> {
+class MovingDeviationBase<T, SumType, true> {
  public:
-  explicit MovingVarianceBase(size_t window_size) : sum_sq_(), running_sum_() {}
-  ~MovingVarianceBase() = default;
+  explicit MovingDeviationBase(size_t window_size)
+      : sum_sq_(), running_sum_() {}
+  ~MovingDeviationBase() = default;
   void AddSample(const T& sample, const T& replaced_value, bool is_last_idx) {
-    SumType square = sample * static_cast<T>(sample);
+    SumType square = SquareInternal<T, SumType>::Compute(sample);
     running_sum_ += square;
     if (is_last_idx) {
       // Replace sum with running sum to avoid rounding errors accumulation.
       sum_sq_ = running_sum_;
       running_sum_ = SumType();
     } else {
-      sum_sq_ += square - replaced_value * static_cast<T>(replaced_value);
+      sum_sq_ += square - SquareInternal<T, SumType>::Compute(replaced_value);
     }
   }
-  T Variance(const size_t& count, const SumType& sum) const {
+
+  template <typename ReturnType, typename U>
+  ReturnType Deviation(const size_t count, const U& sum) const {
     if (count == 0) {
-      return SumType();
+      return ReturnType();
     }
-    // Variance is equal to mean of squared values minus squared mean value.
-    SumType squared_sum = sum * sum;
-    return (sum_sq_ - squared_sum / static_cast<SumType>(count)) /
-           static_cast<SumType>(count);
+    return DeivationInternal<SumType, ReturnType>::Compute(
+        sum_sq_, SquareInternal<U, SumType>::Compute(sum), count);
   }
   void Reset() { running_sum_ = sum_sq_ = SumType(); }
 
@@ -392,10 +425,10 @@ class MovingVarianceBase<T, SumType, true> {
 
 // Null implementation of the above class to be used when feature is disabled.
 template <typename T>
-struct NullVarianceImpl {
+struct NullDeviationImpl {
  public:
-  explicit NullVarianceImpl(size_t window_size) {}
-  ~NullVarianceImpl() = default;
+  explicit NullDeviationImpl(size_t window_size) {}
+  ~NullDeviationImpl() = default;
   void AddSample(const T&, const T&, bool) {}
   void Reset() {}
 };
@@ -426,9 +459,9 @@ struct has_member_mean<T, decltype((void)T::has_mean, void())>
     : std::true_type {};
 
 template <typename T, typename = void>
-struct has_memeber_variance : std::false_type {};
+struct has_memeber_deviation : std::false_type {};
 template <typename T>
-struct has_memeber_variance<T, decltype((void)T::has_variance, void())>
+struct has_memeber_deviation<T, decltype((void)T::has_deviation, void())>
     : std::true_type {};
 
 template <typename T, typename = void>
@@ -449,13 +482,44 @@ struct get_type_mean<T, decltype((void)T::has_mean, void())> {
 };
 
 template <typename T, typename = void>
-struct get_type_variance {
+struct get_type_deviation {
   typedef void type;
 };
 template <typename T>
-struct get_type_variance<T, decltype((void)T::has_variance, void())> {
-  typedef decltype(T::has_variance) type;
+struct get_type_deviation<T, decltype((void)T::has_deviation, void())> {
+  typedef decltype(T::has_deviation) type;
 };
+
+// Performs division allowing the class to work with more types.
+// Specific template for TimeDelta.
+template <>
+struct DivideInternal<TimeDelta, TimeDelta> {
+  static TimeDelta Compute(const TimeDelta& sum, const size_t count) {
+    return sum / count;
+  }
+};
+
+// Computs main Deviation fromula, allowing the class to work with more types.
+// Deviation is equal to mean of squared values minus squared mean value.
+// Specific template for TimeDelta.
+template <>
+struct DeivationInternal<double, TimeDelta> {
+  static TimeDelta Compute(const double sum_squares,
+                           const double square_of_sum,
+                           const size_t count) {
+    return Seconds(std::sqrt((sum_squares - square_of_sum / count) / count));
+  }
+};
+
+// Class to compute square of the number.
+// Specific template for TimeDelta.
+template <>
+struct SquareInternal<TimeDelta, double> {
+  static double Compute(const TimeDelta& sample) {
+    return sample.InSecondsF() * sample.InSecondsF();
+  }
+};
+
 }  // namespace internal
 
 // Implementation of the main class.
@@ -469,18 +533,18 @@ class MovingWindow {
       : min_impl_(window_size),
         max_impl_(window_size),
         mean_impl_(window_size),
-        variance_impl_(window_size),
+        deviation_impl_(window_size),
         window_impl_(window_size) {}
 
   // Adds sample to the window.
-  void AddSample(T sample) {
+  void AddSample(const T& sample) {
     ++total_added_;
     min_impl_.AddSample(sample, total_added_);
     max_impl_.AddSample(sample, total_added_);
     mean_impl_.AddSample(sample, window_impl_.GetValue(),
                          window_impl_.IsLastIdx());
-    variance_impl_.AddSample(sample, window_impl_.GetValue(),
-                             window_impl_.IsLastIdx());
+    deviation_impl_.AddSample(sample, window_impl_.GetValue(),
+                              window_impl_.IsLastIdx());
     window_impl_.AddSample(sample);
   }
 
@@ -517,25 +581,16 @@ class MovingWindow {
         std::min(total_added_, window_impl_.Size()));
   }
 
-  // Calculates variance in the window. Template to disable when feature isn't
+  // Calculates deviation in the window. Template to disable when feature isn't
   // requested.
-  template <typename U = EnabledFeatures,
-            typename std::enable_if<internal::has_memeber_variance<U>::value,
+  template <typename ReturnType = T,
+            typename U = EnabledFeatures,
+            typename std::enable_if<internal::has_memeber_deviation<U>::value,
                                     int>::type = 0>
-  T Variance() const {
+  ReturnType Deviation() const {
     const size_t count = std::min(total_added_, window_impl_.Size());
-    return variance_impl_.Variance(count, mean_impl_.Sum());
-  }
-
-  // Calculates standard deviation in the window. Template to disable when
-  // Variance feature isn't requested.
-  template <typename U = EnabledFeatures,
-            typename std::enable_if<internal::has_memeber_variance<U>::value,
-                                    int>::type = 0>
-  double Deviation() const {
-    const size_t count = std::min(total_added_, window_impl_.Size());
-    return sqrt(
-        static_cast<double>(variance_impl_.Variance(count, mean_impl_.Sum())));
+    return deviation_impl_.template Deviation<ReturnType>(count,
+                                                          mean_impl_.Sum());
   }
 
   // Resets the state to an empty window.
@@ -543,7 +598,7 @@ class MovingWindow {
     min_impl_.Reset();
     max_impl_.Reset();
     mean_impl_.Reset();
-    variance_impl_.Reset();
+    deviation_impl_.Reset();
     window_impl_.Reset();
     total_added_ = 0;
   }
@@ -631,42 +686,42 @@ class MovingWindow {
                             internal::MovingExtremumBase<T, std::less<T>>,
                             internal::NullExtremumImpl<T>>::type max_impl_;
 
-  // Type for sum value in Mean implementation. Might need to reuse variance sum
-  // type, because enabling only variance feature will also enable mean member
-  // (because variance calculation depends on mean calculation).
+  // Type for sum value in Mean implementation. Might need to reuse deviation
+  // sum type, because enabling only deviation feature will also enable mean
+  // member (because deviation calculation depends on mean calculation).
   using MeanSumType = typename std::conditional<
       internal::has_member_mean<EnabledFeatures>::value,
       typename internal::get_type_mean<EnabledFeatures>::type,
-      typename internal::get_type_variance<EnabledFeatures>::type>::type;
+      typename internal::get_type_deviation<EnabledFeatures>::type>::type;
   // Member for calculating mean.
-  // Conditionally enabled on Mean or Variance feature (because variance
+  // Conditionally enabled on Mean or Deviation feature (because deviation
   // calculation depends on mean calculation).
   typename std::conditional<
       internal::has_member_mean<EnabledFeatures>::value ||
-          internal::has_memeber_variance<EnabledFeatures>::value,
+          internal::has_memeber_deviation<EnabledFeatures>::value,
       internal::MovingMeanBase<T,
                                MeanSumType,
                                std::is_floating_point<MeanSumType>::value>,
       internal::NullMeanImpl<T>>::type mean_impl_;
 
-  // Member for calculating variance.
-  // Conditionally enabled on Variance feature.
+  // Member for calculating deviation.
+  // Conditionally enabled on Deviation feature.
   typename std::conditional<
-      internal::has_memeber_variance<EnabledFeatures>::value,
-      internal::MovingVarianceBase<
+      internal::has_memeber_deviation<EnabledFeatures>::value,
+      internal::MovingDeviationBase<
           T,
-          typename internal::get_type_variance<EnabledFeatures>::type,
-          std::is_floating_point<typename internal::get_type_variance<
+          typename internal::get_type_deviation<EnabledFeatures>::type,
+          std::is_floating_point<typename internal::get_type_deviation<
               EnabledFeatures>::type>::value>,
-      internal::NullVarianceImpl<T>>::type variance_impl_;
+      internal::NullDeviationImpl<T>>::type deviation_impl_;
 
   // Member for storing the moving window.
-  // Conditionally enabled on Mean, Variance or Iteration feature since
+  // Conditionally enabled on Mean, Deviation or Iteration feature since
   // they need the elements in the window.
   // Min and Max features store elements internally so they don't need this.
   typename std::conditional<
       internal::has_member_mean<EnabledFeatures>::value ||
-          internal::has_memeber_variance<EnabledFeatures>::value ||
+          internal::has_memeber_deviation<EnabledFeatures>::value ||
           internal::has_member_iteration<EnabledFeatures>::value,
       internal::MovingWindowBase<T>,
       internal::NullWindowImpl<T>>::type window_impl_;
