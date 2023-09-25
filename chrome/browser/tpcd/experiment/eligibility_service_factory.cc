@@ -4,10 +4,12 @@
 
 #include "chrome/browser/tpcd/experiment/eligibility_service_factory.h"
 
+#include "base/feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_onboarding_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tpcd/experiment/eligibility_service.h"
+#include "content/public/common/content_features.h"
 
 namespace tpcd::experiment {
 
@@ -32,9 +34,17 @@ EligibilityServiceFactory::EligibilityServiceFactory()
   DependsOn(TrackingProtectionOnboardingFactory::GetInstance());
 }
 
+bool EligibilityServiceFactory::ServiceIsCreatedWithBrowserContext() const {
+  return true;
+}
+
 std::unique_ptr<KeyedService>
 EligibilityServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  if (!base::FeatureList::IsEnabled(
+          features::kCookieDeprecationFacilitatedTesting)) {
+    return nullptr;
+  }
   return std::make_unique<EligibilityService>(
       Profile::FromBrowserContext(context));
 }

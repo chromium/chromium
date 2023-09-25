@@ -28,6 +28,8 @@ class EligibilityServiceFactory : public ProfileKeyedServiceFactory {
   EligibilityServiceFactory();
 
   // BrowserContextKeyedServiceFactory:
+  bool ServiceIsCreatedWithBrowserContext() const override;
+
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
