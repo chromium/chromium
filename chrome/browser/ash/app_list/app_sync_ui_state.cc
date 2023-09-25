@@ -13,7 +13,6 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/service/sync_service.h"
-#include "components/sync/service/sync_user_settings.h"
 #include "components/user_manager/user_manager.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -119,8 +118,7 @@ void AppSyncUIState::SetStatus(Status status) {
 }
 
 void AppSyncUIState::CheckAppSync() {
-  if (!sync_service_ ||
-      !sync_service_->GetUserSettings()->IsInitialSyncFeatureSetupComplete()) {
+  if (!sync_service_ || !sync_service_->IsSyncFeatureEnabled()) {
     return;
   }
 
