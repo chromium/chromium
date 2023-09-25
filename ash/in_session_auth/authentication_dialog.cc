@@ -161,12 +161,15 @@ void AuthenticationDialog::ValidateAuthFactor() {
 
   SetUIDisabled(true);
 
-  cryptohome::KeyLabel key_label;
+  const auto* password_factor =
+      user_context_->GetAuthFactorsData().FindAnyPasswordFactor();
+  if (!password_factor) {
+    LOG(ERROR) << "Could not find password key";
+    ShowAuthError();
+    return;
+  }
 
-  key_label = user_context_->GetAuthFactorsData()
-                  .FindOnlinePasswordFactor()
-                  ->ref()
-                  .label();
+  cryptohome::KeyLabel key_label = password_factor->ref().label();
 
   // Create a copy of `user_context_` so that we don't lose it to std::move
   // for future auth attempts
@@ -197,11 +200,7 @@ void AuthenticationDialog::OnAuthFactorValidityChecked(
     LOG(ERROR) << "An error happened during the attempt to validate"
                   "the password: "
                << authentication_error.value().get_cryptohome_code();
-    password_field_->SetInvalid(true);
-    password_field_->SelectAll(false);
-    invalid_password_label_->SetText(
-        l10n_util::GetStringUTF16(IDS_ASH_LOGIN_ERROR_AUTHENTICATING));
-    SetUIDisabled(false);
+    ShowAuthError();
     return;
   }
 
@@ -215,6 +214,14 @@ void AuthenticationDialog::OnAuthFactorValidityChecked(
   SetUIDisabled(false);
   CancelDialog();
   return;
+}
+
+void AuthenticationDialog::ShowAuthError() {
+  password_field_->SetInvalid(true);
+  password_field_->SelectAll(false);
+  invalid_password_label_->SetText(
+      l10n_util::GetStringUTF16(IDS_ASH_LOGIN_ERROR_AUTHENTICATING));
+  SetUIDisabled(false);
 }
 
 void AuthenticationDialog::CancelAuthAttempt() {

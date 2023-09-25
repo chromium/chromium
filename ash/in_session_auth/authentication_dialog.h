@@ -89,6 +89,9 @@ class AuthenticationDialog : public views::DialogDelegateView {
       std::unique_ptr<UserContext> user_context,
       absl::optional<AuthenticationError> cryptohome_error);
 
+  // Show an auth error in the UI and mark the password field as invalid.
+  void ShowAuthError();
+
   // Registered as a callback to the Cancel and Close buttons. Calls
   // `NotifyResult` with `success` == false.
   void CancelAuthAttempt();
