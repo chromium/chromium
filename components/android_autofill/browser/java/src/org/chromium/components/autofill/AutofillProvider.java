@@ -280,7 +280,9 @@ public class AutofillProvider {
      */
     @CalledByNative
     private void onFormFieldVisibilitiesDidChange(int[] indices) {
-        if (mRequest == null) return;
+        if (mRequest == null || indices.length == 0) return;
+
+        mAutofillUMA.onFieldChangedVisibility();
 
         for (int index : indices) {
             notifyVirtualViewVisibilityChanged(
