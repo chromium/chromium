@@ -138,6 +138,9 @@ enum class SignInHistorySyncStep {
   SigninCoordinatorResult result;
   if (previousResult == SigninCoordinatorResultInterrupted) {
     result = SigninCoordinatorResultInterrupted;
+    // If a SigninCoordinator is interrupted, the completion info should not
+    // contain a identity even if a sign-in has been completed successfully.
+    identity = nil;
   } else if (identity) {
     result = SigninCoordinatorResultSuccess;
   } else {

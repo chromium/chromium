@@ -27,6 +27,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
 
 using chrome_test_util::GoogleSyncSettingsButton;
@@ -64,7 +65,8 @@ using chrome_test_util::SettingsSignInRowMatcher;
       [self isRunningTest:@selector(testSignInAndDeclineHistorySync)] ||
       [self isRunningTest:@selector
             (testHistorySyncSkippedIfDeclinedJustBefore)] ||
-      [self isRunningTest:@selector(testHistorySyncSkippedIfDeclinedTwice)]) {
+      [self isRunningTest:@selector(testHistorySyncSkippedIfDeclinedTwice)] ||
+      [self isRunningTest:@selector(testInterruptWhenHistoryOptInShown)]) {
     config.features_enabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
   }
@@ -437,6 +439,39 @@ using chrome_test_util::SettingsSignInRowMatcher;
                   @"Tabs sync should be disabled.");
   // Verify that the identity is still signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+}
+
+// Tests that if an external app opens an URL when
+// SigninAndHistorySyncCoordinator is shown, the coordinator is interrupted
+// correctly without triggering DCHECK.
+// See https://crbug.com/1485570.
+- (void)testInterruptWhenHistoryOptInShown {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  // Tap on the sign-in cell in settings.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [[EarlGrey selectElementWithMatcher:SettingsSignInRowMatcher()]
+      performAction:grey_tap()];
+
+  // Confirm sign-in.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(grey_accessibilityID(
+                                kWebSigninPrimaryButtonAccessibilityIdentifier),
+                            grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+
+  // Verify that the History Sync Opt-In screen is shown.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kHistorySyncViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Open the URL as if it was opened from another app.
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL expectedURL = self.testServer->GetURL("/echo");
+  [ChromeEarlGrey
+      simulateExternalAppURLOpeningAndWaitUntilOpenedWithGURL:expectedURL];
 }
 
 @end
