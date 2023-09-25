@@ -98,6 +98,9 @@ COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::FeatureParam<base::TimeDelta> kOneTimePermissionTimeout;
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const base::FeatureParam<base::TimeDelta> kOneTimePermissionLongTimeout;
+
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::FeatureParam<std::string>
     kPermissionPredictionServiceUrlOverride;
 

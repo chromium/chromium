@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker.h"
+#include "chrome/browser/permissions/one_time_permissions_tracker_observer.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
@@ -152,7 +153,8 @@ TEST_F(OneTimePermissionProviderTest,
       one_time_constraints());
 
   one_time_permission_provider_->OnAllTabsInBackgroundTimerExpired(
-      url::Origin::Create(primary_url));
+      url::Origin::Create(primary_url),
+      OneTimePermissionsTrackerObserver::BackgroundExpiryType::kTimeout);
 
   EXPECT_EQ(CONTENT_SETTING_DEFAULT,
             TestUtils::GetContentSetting(
@@ -264,7 +266,8 @@ TEST_F(OneTimePermissionProviderTest,
       one_time_constraints());
 
   one_time_permission_provider_->OnAllTabsInBackgroundTimerExpired(
-      url::Origin::Create(primary_url));
+      url::Origin::Create(primary_url),
+      OneTimePermissionsTrackerObserver::BackgroundExpiryType::kTimeout);
 
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             TestUtils::GetContentSetting(
@@ -275,6 +278,29 @@ TEST_F(OneTimePermissionProviderTest,
             TestUtils::GetContentSetting(
                 one_time_permission_provider_.get(), primary_url, secondary_url,
                 ContentSettingsType::MEDIASTREAM_MIC, false));
+}
+
+TEST_F(
+    OneTimePermissionProviderTest,
+    AllTabsInBackgroundExpiryRevokesEphemeralFileSystemAccessPermissions_LongTimeout) {
+  EXPECT_EQ(CONTENT_SETTING_DEFAULT,
+            TestUtils::GetContentSetting(
+                one_time_permission_provider_.get(), primary_url, secondary_url,
+                ContentSettingsType::FILE_SYSTEM_WRITE_GUARD, false));
+
+  one_time_permission_provider_->SetWebsiteSetting(
+      primary_pattern, ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
+      base::Value(CONTENT_SETTING_ALLOW), one_time_constraints());
+
+  one_time_permission_provider_->OnAllTabsInBackgroundTimerExpired(
+      url::Origin::Create(primary_url),
+      OneTimePermissionsTrackerObserver::BackgroundExpiryType::kLongTimeout);
+
+  EXPECT_EQ(CONTENT_SETTING_DEFAULT,
+            TestUtils::GetContentSetting(
+                one_time_permission_provider_.get(), primary_url, secondary_url,
+                ContentSettingsType::FILE_SYSTEM_WRITE_GUARD, false));
 }
 
 TEST_F(OneTimePermissionProviderTest, ManualRevocationUmaTest) {

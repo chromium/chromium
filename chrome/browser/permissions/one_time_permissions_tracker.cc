@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/features.h"
+#include "components/permissions/permission_context_base.h"
 #include "content/public/browser/visibility.h"
 #include "url/gurl.h"
 
@@ -50,18 +51,30 @@ void OneTimePermissionsTracker::WebContentsBackgrounded(
 
     if (AreAllTabsToOriginBackgroundedOrDiscarded(origin)) {
       // When all undiscarded tabs which point to the origin are in the
-      // background, the timer should be reset.
+      // background, the timers should be reset.
       origin_tracker_[origin].background_expiration_timer->Start(
           FROM_HERE,
           permissions::feature_params::kOneTimePermissionTimeout.Get(),
           base::BindOnce(
               &OneTimePermissionsTracker::NotifyBackgroundTimerExpired,
-              weak_factory_.GetWeakPtr(), origin));
+              weak_factory_.GetWeakPtr(), origin,
+              OneTimePermissionsTrackerObserver::BackgroundExpiryType::
+                  kTimeout));
+
+      origin_tracker_[origin].background_expiration_long_timer->Start(
+          FROM_HERE,
+          permissions::feature_params::kOneTimePermissionLongTimeout.Get(),
+          base::BindOnce(
+              &OneTimePermissionsTracker::NotifyBackgroundTimerExpired,
+              weak_factory_.GetWeakPtr(), origin,
+              OneTimePermissionsTrackerObserver::BackgroundExpiryType::
+                  kLongTimeout));
 
       HandleUserMediaState(origin, ContentSettingsType::MEDIASTREAM_CAMERA);
       HandleUserMediaState(origin, ContentSettingsType::MEDIASTREAM_MIC);
     } else {
       origin_tracker_[origin].background_expiration_timer->Stop();
+      origin_tracker_[origin].background_expiration_long_timer->Stop();
     }
   }
 }
@@ -70,8 +83,9 @@ void OneTimePermissionsTracker::WebContentsUnbackgrounded(
     const url::Origin& origin) {
   if (!ShouldIgnoreOrigin(origin)) {
     origin_tracker_[origin].background_tab_counter--;
-    // Since the tab has been unbackgrounded, the timer should be reset
+    // Since the tab has been unbackgrounded, the timers should be reset
     origin_tracker_[origin].background_expiration_timer->Stop();
+    origin_tracker_[origin].background_expiration_long_timer->Stop();
   }
 }
 
@@ -80,6 +94,7 @@ void OneTimePermissionsTracker::WebContentsLoadedOrigin(
   if (!ShouldIgnoreOrigin(origin)) {
     origin_tracker_[origin].undiscarded_tab_counter++;
     origin_tracker_[origin].background_expiration_timer->Stop();
+    origin_tracker_[origin].background_expiration_long_timer->Stop();
   }
 }
 
@@ -250,11 +265,20 @@ bool OneTimePermissionsTracker::ShouldIgnoreOrigin(const url::Origin& origin) {
 }
 
 void OneTimePermissionsTracker::NotifyBackgroundTimerExpired(
-    const url::Origin& origin) {
+    const url::Origin& origin,
+    const OneTimePermissionsTrackerObserver::BackgroundExpiryType&
+        expiry_type) {
   for (auto& observer : observer_list_) {
-    observer.OnAllTabsInBackgroundTimerExpired(origin);
+    observer.OnAllTabsInBackgroundTimerExpired(origin, expiry_type);
   }
-  origin_tracker_[origin].background_expiration_timer->Stop();
+  switch (expiry_type) {
+    case OneTimePermissionsTrackerObserver::BackgroundExpiryType::kTimeout:
+      origin_tracker_[origin].background_expiration_timer->Stop();
+      return;
+    case OneTimePermissionsTrackerObserver::BackgroundExpiryType::kLongTimeout:
+      origin_tracker_[origin].background_expiration_long_timer->Stop();
+      return;
+  }
 }
 
 void OneTimePermissionsTracker::NotifyCapturingVideoExpired(

@@ -11,15 +11,23 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "components/permissions/object_permission_context_base.h"
-#include "components/permissions/permission_decision_auto_blocker.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-forward.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/permissions/one_time_permissions_tracker.h"
+#include "chrome/browser/permissions/one_time_permissions_tracker_observer.h"
+#endif
+
 class HostContentSettingsMap;
+#if !BUILDFLAG(IS_ANDROID)
+class OneTimePermissionsTracker;
+#endif
 enum ContentSetting;
 
 namespace content {
@@ -55,7 +63,12 @@ BASE_DECLARE_FEATURE(kFileSystemAccessLocalUNCPathBlock);
 // All methods must be called on the UI thread.
 class ChromeFileSystemAccessPermissionContext
     : public content::FileSystemAccessPermissionContext,
-      public permissions::ObjectPermissionContextBase {
+      public permissions::ObjectPermissionContextBase
+#if !BUILDFLAG(IS_ANDROID)
+    ,
+      public OneTimePermissionsTrackerObserver
+#endif
+{
  public:
   // Represents the origin-scoped state for a given origin's permission grants.
   // The associated `grant_status` value is stored on the `OriginState`, for
@@ -92,6 +105,18 @@ class ChromeFileSystemAccessPermissionContext
   bool IsValidObject(const base::Value::Dict& object) override;
   std::u16string GetObjectDisplayName(const base::Value::Dict& object) override;
   std::set<url::Origin> GetOriginsWithGrants() override;
+
+#if !BUILDFLAG(IS_ANDROID)
+  // OneTimePermissionsTrackerObserver:
+  base::ScopedObservation<OneTimePermissionsTracker,
+                          OneTimePermissionsTrackerObserver>
+      one_time_permissions_tracker_{this};
+  void OnAllTabsInBackgroundTimerExpired(
+      const url::Origin& origin,
+      const OneTimePermissionsTrackerObserver::BackgroundExpiryType&
+          expiry_type) override;
+  void OnShutdown() override;
+#endif
 
   // content::FileSystemAccessPermissionContext:
   scoped_refptr<content::FileSystemAccessPermissionGrant>

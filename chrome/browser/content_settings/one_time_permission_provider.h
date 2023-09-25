@@ -81,7 +81,9 @@ class OneTimePermissionProvider
 
   // OneTimePermissionsTrackerObserver:
   void OnLastPageFromOriginClosed(const url::Origin&) override;
-  void OnAllTabsInBackgroundTimerExpired(const url::Origin&) override;
+  void OnAllTabsInBackgroundTimerExpired(
+      const url::Origin& origin,
+      const BackgroundExpiryType& expiry_type) override;
   void OnCapturingVideoExpired(const url::Origin&) override;
   void OnCapturingAudioExpired(const url::Origin&) override;
 

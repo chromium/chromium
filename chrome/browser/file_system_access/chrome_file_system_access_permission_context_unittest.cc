@@ -32,6 +32,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_util.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -45,6 +46,10 @@
 #include "ui/webui/webui_allowlist.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/permissions/one_time_permissions_tracker_observer.h"
+#endif
 
 using content::BrowserContext;
 using content::WebContents;
@@ -80,8 +85,10 @@ class TestFileSystemAccessPermissionContext
 class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
  public:
   ChromeFileSystemAccessPermissionContextTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kFileSystemAccessPersistentPermissions);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kFileSystemAccessPersistentPermissions,
+         permissions::features::kOneTimePermission},
+        {});
   }
   void SetUp() override {
     // Create a scoped directory under %TEMP% instead of using
@@ -1538,6 +1545,32 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest, OnIgnoreRestorePrompt) {
           ->IsEmbargoed(kTestOrigin.GetURL(),
                         ContentSettingsType::FILE_SYSTEM_WRITE_GUARD);
   EXPECT_TRUE(origin_is_embargoed_after_ignore_limit);
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       ShowRestorePrompt_RequestPermissionAfterTabsBackgrounded) {
+  auto grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
+  EXPECT_EQ(PermissionStatus::GRANTED, grant->GetStatus());
+  base::test::TestFuture<PermissionRequestOutcome> future;
+  grant->RequestPermission(frame_id(), UserActivationState::kNotRequired,
+                           future.GetCallback());
+  auto permisison_request_outcome = future.Get();
+  EXPECT_FALSE(PermissionRequestOutcome::kGrantedByRestorePrompt ==
+               permisison_request_outcome);
+  EXPECT_EQ(PermissionStatus::GRANTED, grant->GetStatus());
+
+  // Active grants are set to `ASK` state, as a result of tab backgrounding.
+  permission_context()->OnAllTabsInBackgroundTimerExpired(
+      kTestOrigin,
+      OneTimePermissionsTrackerObserver::BackgroundExpiryType::kLongTimeout);
+  EXPECT_EQ(PermissionStatus::ASK, grant->GetStatus());
+
+  // The origin is now eligible to show the restore prompt.
+  base::test::TestFuture<PermissionRequestOutcome> future2;
+  grant->RequestPermission(frame_id(), UserActivationState::kNotRequired,
+                           future2.GetCallback());
+  EXPECT_EQ(PermissionRequestOutcome::kGrantedByRestorePrompt, future2.Get());
 }
 
 TEST_F(

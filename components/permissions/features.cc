@@ -176,6 +176,10 @@ const base::FeatureParam<base::TimeDelta> kOneTimePermissionTimeout{
     &features::kOneTimePermission, "one_time_permission_timeout",
     base::Minutes(5)};
 
+const base::FeatureParam<base::TimeDelta> kOneTimePermissionLongTimeout{
+    &features::kOneTimePermission, "one_time_permission_long_timeout",
+    base::Hours(16)};
+
 const base::FeatureParam<std::string> kPermissionPredictionServiceUrlOverride{
     &permissions::features::kPermissionPredictionServiceUseUrlOverride,
     "service_url", ""};

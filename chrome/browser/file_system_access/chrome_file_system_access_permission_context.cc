@@ -41,6 +41,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_util.h"
 #include "components/safe_browsing/buildflags.h"
@@ -57,6 +58,8 @@
 #include "url/origin.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/permissions/one_time_permissions_tracker_factory.h"
+#include "chrome/browser/permissions/one_time_permissions_tracker_observer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -987,6 +990,13 @@ ChromeFileSystemAccessPermissionContext::
   // feature flag checks before launch.
   if (base::FeatureList::IsEnabled(
           features::kFileSystemAccessPersistentPermissions)) {
+#if !BUILDFLAG(IS_ANDROID)
+    if (base::FeatureList::IsEnabled(
+            permissions::features::kOneTimePermission)) {
+      one_time_permissions_tracker_.Observe(
+          OneTimePermissionsTrackerFactory::GetForBrowserContext(context));
+    }
+#endif
     // Deprecated persisted permission objects contains a timestamp key, used
     // in old implementation. Revoke them so that the state is reset for the new
     // persisted permission implementation.
@@ -1032,11 +1042,10 @@ bool ChromeFileSystemAccessPermissionContext::RevokeActiveGrants(
         grant_revoked = true;
       }
     }
-    // TODO(crbug.com/1011533): Update `grant_status` value depending on
-    // whether the permissions have been revoked due to tab backgrounding,
-    // once the One Time Permissions tab backgrounding listener has been
-    // implemented.
-    if (file_path.empty()) {
+    // Only update `grant_status` if the state has not already been set via
+    // tab backgrounding.
+    if (file_path.empty() &&
+        origin_state.grant_status != GrantStatus::kBackgrounded) {
       origin_state.grant_status = GrantStatus::kLoaded;
     }
   }
@@ -1858,6 +1867,38 @@ bool ChromeFileSystemAccessPermissionContext::OriginHasWriteAccess(
   });
 }
 
+// All tabs for a given origin have been backgrounded or cleared in the past
+// 16 hours. When this happens, we update the given origin's `OriginState` to
+// note that all tabs were recently backgrounded.
+#if !BUILDFLAG(IS_ANDROID)
+void ChromeFileSystemAccessPermissionContext::OnAllTabsInBackgroundTimerExpired(
+    const url::Origin& origin,
+    const OneTimePermissionsTrackerObserver::BackgroundExpiryType&
+        expiry_type) {
+  if (!base::FeatureList::IsEnabled(
+          features::kFileSystemAccessPersistentPermissions) ||
+      !base::FeatureList::IsEnabled(
+          permissions::features::kOneTimePermission)) {
+    return;
+  }
+  auto origin_it = active_permissions_map_.find(origin);
+  if (origin_it != active_permissions_map_.end()) {
+    OriginState& origin_state = origin_it->second;
+    origin_state.grant_status = GrantStatus::kBackgrounded;
+    if (RevokeActiveGrants(origin)) {
+      // TODO(crbug.com/1011533): Add `RecordOneTimePermissionEvent` UMA
+      // histogram logging when active grants are revoked as a result of tab
+      // backgrounding.
+      ScheduleUsageIconUpdate();
+    }
+  }
+}
+
+void ChromeFileSystemAccessPermissionContext::OnShutdown() {
+  one_time_permissions_tracker_.Reset();
+}
+#endif
+
 void ChromeFileSystemAccessPermissionContext::NavigatedAwayFromOrigin(
     const url::Origin& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -2075,10 +2116,16 @@ bool ChromeFileSystemAccessPermissionContext::
     return false;
   }
 
-  // TODO(crbug.com/1011533): Implement logic to check if permissions have
-  // been revoked as a result of tab(s) being backgrounded, and allow the
-  // possibility of the Restore Prompt to be shown even if the handle was not
-  // retrieved from IndexedDB.
+  // While this method is called from `RequestPermission`, which implies that
+  // a `PermissionGrantImpl` exists - we want to insert the origin into the
+  // permissions map if it does not exist, in order to cover cases of shutdown
+  // or page navigation.
+  auto& origin_state = active_permissions_map_[origin];
+
+  if (origin_state.grant_status == GrantStatus::kBackgrounded) {
+    return HasDormantPermission(origin, file_path, handle_type, grant_type);
+  }
+
   if (user_action != UserAction::kLoadFromStorage) {
     return false;
   }

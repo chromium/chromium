@@ -15,6 +15,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_factory.h"
+#include "chrome/browser/permissions/one_time_permissions_tracker_observer.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/browser/user_modifiable_provider.h"
@@ -255,10 +256,18 @@ void OneTimePermissionProvider::OnLastPageFromOriginClosed(
 // expires geolocation. We remove the geolocation permission associated with
 // the origin.
 void OneTimePermissionProvider::OnAllTabsInBackgroundTimerExpired(
-    const url::Origin& origin) {
-  DeleteEntriesMatchingGURL(
-      ContentSettingsType::GEOLOCATION, origin.GetURL(),
-      permissions::OneTimePermissionEvent::EXPIRED_IN_BACKGROUND);
+    const url::Origin& origin,
+    const OneTimePermissionsTrackerObserver::BackgroundExpiryType&
+        expiry_type) {
+  switch (expiry_type) {
+    case BackgroundExpiryType::kTimeout:
+      DeleteEntriesMatchingGURL(
+          ContentSettingsType::GEOLOCATION, origin.GetURL(),
+          permissions::OneTimePermissionEvent::EXPIRED_IN_BACKGROUND);
+      return;
+    case BackgroundExpiryType::kLongTimeout:
+      return;
+  }
 }
 
 // All tabs to the origin have not shown a tab indicator for video for a
