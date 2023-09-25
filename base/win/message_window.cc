@@ -13,9 +13,13 @@
 #include "base/check_op.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
+#include "base/thread_annotations.h"
+#include "base/threading/thread_checker.h"
+#include "base/threading/thread_local.h"
 #include "base/win/current_module.h"
 #include "base/win/resource_exhaustion.h"
 #include "base/win/wrapped_window_proc.h"
@@ -27,11 +31,17 @@ const wchar_t kMessageWindowClassName[] = L"Chrome_MessageWindow";
 
 namespace {
 
+// This class can be accessed from multiple threads,
+// this is handled by each thread having a different instance.
 class MessageWindowMap {
  public:
-  static MessageWindowMap& GetInstance() {
-    static base::NoDestructor<MessageWindowMap> message_window_map;
-    return *message_window_map;
+  static MessageWindowMap& GetInstanceForCurrentThread() {
+    static base::NoDestructor<base::ThreadLocalOwnedPointer<MessageWindowMap>>
+        instance;
+    if (!instance->Get()) {
+      instance->Set(base::WrapUnique(new MessageWindowMap));
+    }
+    return *(instance->Get());
   }
 
   MessageWindowMap(const MessageWindowMap&) = delete;
@@ -39,17 +49,20 @@ class MessageWindowMap {
 
   // Each key should only be inserted once.
   void Insert(HWND hwnd, base::win::MessageWindow& message_window) {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     CHECK(map_.emplace(hwnd, message_window).second);
   }
 
   // Erase should only be called on an existing key.
   void Erase(HWND hwnd) {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     // Check that exactly one element is erased from the map.
     CHECK_EQ(map_.erase(hwnd), 1u);
   }
 
   // Will return nullptr if `hwnd` is not in the map.
   base::win::MessageWindow* Get(HWND hwnd) const {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     if (auto search = map_.find(hwnd); search != map_.end()) {
       return &(search->second.get());
     }
@@ -57,9 +70,10 @@ class MessageWindowMap {
   }
 
  private:
-  friend class base::NoDestructor<MessageWindowMap>;
   MessageWindowMap() = default;
-  std::map<HWND, const raw_ref<base::win::MessageWindow>> map_;
+  THREAD_CHECKER(thread_checker_);
+  std::map<HWND, const raw_ref<base::win::MessageWindow>> map_
+      GUARDED_BY_CONTEXT(thread_checker_);
 };
 
 }  // namespace
@@ -173,7 +187,9 @@ LRESULT CALLBACK MessageWindow::WindowProc(HWND hwnd,
                                            UINT message,
                                            WPARAM wparam,
                                            LPARAM lparam) {
-  auto& message_window_map = MessageWindowMap::GetInstance();
+  // This can be called from different threads for different windows,
+  // each thread has its own MessageWindowMap instance.
+  auto& message_window_map = MessageWindowMap::GetInstanceForCurrentThread();
   MessageWindow* self = message_window_map.Get(hwnd);
 
   switch (message) {
