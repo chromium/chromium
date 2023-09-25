@@ -97,7 +97,6 @@ void WebSelectionTabHelper::SendResponse(WebSelectionResponse* response) {
   }
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(final_callback_), response));
-  final_callback_.Reset();
   WebSelectionJavaScriptFeature::GetInstance()->RemoveObserver(this);
   time_out_callback_.Stop();
 }
