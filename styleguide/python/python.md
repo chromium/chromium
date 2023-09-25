@@ -62,7 +62,7 @@ making changes to files that follow them.
 ## Making Style Guide Changes
 
 You can propose changes to this style guide by sending an email to
-`python@chromium.org`. Ideally, the list will arrive at some consensus and you
+[`python@chromium.org`]. Ideally, the list will arrive at some consensus and you
 can request review for a change to this file. If there's no consensus,
 [`//styleguide/python/OWNERS`](https://chromium.googlesource.com/chromium/src/+/main/styleguide/python/OWNERS)
 get to decide.
@@ -123,9 +123,10 @@ YAPF has gotchas. You should review its changes before submitting. Notably:
 
 #### Bugs
 * Are tracked here: https://github.com/google/yapf/issues.
-* For Chromium-specific bugs, please discuss on `python@chromium.org`.
+* For Chromium-specific bugs, please discuss on [`python@chromium.org`].
 
 #### Editor Integration
 See: https://github.com/google/yapf/tree/main/plugins
 
 [vpython]: https://chromium.googlesource.com/infra/infra/+/refs/heads/main/doc/users/vpython.md
+[`python@chromium.org`]: https://groups.google.com/a/chromium.org/g/python
