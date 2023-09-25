@@ -1,4 +1,4 @@
 This page contains the following errors:
-error on line 9 at column 12: Extra content at the end of the document
+error on line 10 at column 1: Premature end of data in tag style line 9
 
 Below is a rendering of the page up to the first error.

@@ -21,8 +21,6 @@
 #include <stdlib.h>
 
 #include <libxml/tree.h>
-#include <libxml/globals.h>
-#include <libxml/tree.h>
 #include <libxml/parserInternals.h> /* for XML_MAX_TEXT_LENGTH */
 
 #include "private/buf.h"
@@ -225,10 +223,6 @@ xmlBufDetach(xmlBufPtr buf) {
 int
 xmlBufGetAllocationScheme(xmlBufPtr buf) {
     if (buf == NULL) {
-#ifdef DEBUG_BUFFER
-        xmlGenericError(xmlGenericErrorContext,
-		"xmlBufGetAllocationScheme: buf == NULL\n");
-#endif
         return(-1);
     }
     return(buf->alloc);
@@ -247,10 +241,6 @@ int
 xmlBufSetAllocationScheme(xmlBufPtr buf,
                           xmlBufferAllocationScheme scheme) {
     if ((buf == NULL) || (buf->error != 0)) {
-#ifdef DEBUG_BUFFER
-        xmlGenericError(xmlGenericErrorContext,
-		"xmlBufSetAllocationScheme: buf == NULL or in error\n");
-#endif
         return(-1);
     }
     if (buf->alloc == XML_BUFFER_ALLOC_IO)
@@ -285,10 +275,6 @@ xmlBufSetAllocationScheme(xmlBufPtr buf,
 void
 xmlBufFree(xmlBufPtr buf) {
     if (buf == NULL) {
-#ifdef DEBUG_BUFFER
-        xmlGenericError(xmlGenericErrorContext,
-		"xmlBufFree: buf == NULL\n");
-#endif
 	return;
     }
 
@@ -479,17 +465,9 @@ xmlBufDump(FILE *file, xmlBufPtr buf) {
     size_t ret;
 
     if ((buf == NULL) || (buf->error != 0)) {
-#ifdef DEBUG_BUFFER
-        xmlGenericError(xmlGenericErrorContext,
-		"xmlBufDump: buf == NULL or in error\n");
-#endif
 	return(0);
     }
     if (buf->content == NULL) {
-#ifdef DEBUG_BUFFER
-        xmlGenericError(xmlGenericErrorContext,
-		"xmlBufDump: buf->content == NULL\n");
-#endif
 	return(0);
     }
     CHECK_COMPAT(buf)
@@ -785,10 +763,6 @@ xmlBufAdd(xmlBufPtr buf, const xmlChar *str, int len) {
     CHECK_COMPAT(buf)
 
     if (len < -1) {
-#ifdef DEBUG_BUFFER
-        xmlGenericError(xmlGenericErrorContext,
-		"xmlBufAdd: len < 0\n");
-#endif
 	return -1;
     }
     if (len == 0) return 0;
@@ -882,10 +856,6 @@ xmlBufWriteQuotedString(xmlBufPtr buf, const xmlChar *string) {
     CHECK_COMPAT(buf)
     if (xmlStrchr(string, '\"')) {
         if (xmlStrchr(string, '\'')) {
-#ifdef DEBUG_BUFFER
-	    xmlGenericError(xmlGenericErrorContext,
- "xmlBufWriteQuotedString: string contains quote and double-quotes !\n");
-#endif
 	    xmlBufCCat(buf, "\"");
             base = cur = string;
             while(*cur != 0){
@@ -1056,39 +1026,10 @@ xmlBufResetInput(xmlBufPtr buf, xmlParserInputPtr input) {
 }
 
 /**
- * xmlBufGetInputBase:
+ * xmlBufUpdateInput:
  * @buf: an xmlBufPtr
  * @input: an xmlParserInputPtr
- *
- * Get the base of the @input relative to the beginning of the buffer
- *
- * Returns the size_t corresponding to the displacement
- */
-size_t
-xmlBufGetInputBase(xmlBufPtr buf, xmlParserInputPtr input) {
-    size_t base;
-
-    if ((input == NULL) || (buf == NULL) || (buf->error))
-        return(0);
-    CHECK_COMPAT(buf)
-    base = input->base - buf->content;
-    /*
-     * We could do some pointer arithmetic checks but that's probably
-     * sufficient.
-     */
-    if (base > buf->size) {
-        xmlBufOverflowError(buf, "Input reference outside of the buffer");
-        base = 0;
-    }
-    return(base);
-}
-
-/**
- * xmlBufSetInputBaseCur:
- * @buf: an xmlBufPtr
- * @input: an xmlParserInputPtr
- * @base: the base value relative to the beginning of the buffer
- * @cur: the cur value relative to the beginning of the buffer
+ * @pos: the cur value relative to the beginning of the buffer
  *
  * Update the input to use the base and cur relative to the buffer
  * after a possible reallocation of its content
@@ -1096,8 +1037,7 @@ xmlBufGetInputBase(xmlBufPtr buf, xmlParserInputPtr input) {
  * Returns -1 in case of error, 0 otherwise
  */
 int
-xmlBufSetInputBaseCur(xmlBufPtr buf, xmlParserInputPtr input,
-                      size_t base, size_t cur) {
+xmlBufUpdateInput(xmlBufPtr buf, xmlParserInputPtr input, size_t pos) {
     if (input == NULL)
         return(-1);
     /*
@@ -1109,8 +1049,8 @@ xmlBufSetInputBaseCur(xmlBufPtr buf, xmlParserInputPtr input,
         return(-1);
     }
     CHECK_COMPAT(buf)
-    input->base = &buf->content[base];
-    input->cur = input->base + cur;
+    input->base = buf->content;
+    input->cur = input->base + pos;
     input->end = &buf->content[buf->use];
     return(0);
 }

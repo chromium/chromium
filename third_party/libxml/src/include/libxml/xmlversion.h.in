@@ -524,6 +524,19 @@ XMLPUBFUN void xmlCheckVersion(int version);
 #endif
 #endif /* __GNUC__ */
 
+/** DOC_DISABLE */
+#define XML_EMPTY
+
+#ifdef LIBXML_THREAD_ENABLED
+  #define XML_DECLARE_GLOBAL(name, type, attrs) \
+    attrs XMLPUBFUN type *__##name(void);
+  #define XML_GLOBAL_MACRO(name) (*__##name())
+#else
+  #define XML_DECLARE_GLOBAL(name, type, attrs) \
+    attrs XMLPUBVAR type name;
+#endif
+/** DOC_ENABLE */
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

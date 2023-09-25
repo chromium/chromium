@@ -14,7 +14,6 @@
 #include <libxml/parser.h>
 #include <libxml/xmlerror.h>
 #include <libxml/xmlmemory.h>
-#include <libxml/globals.h>
 
 #include "private/error.h"
 

@@ -77,9 +77,6 @@
   #endif
 #endif
 
-/* #define DEBUG_CALLBACKS */
-/* #define DEBUG_READER */
-
 /**
  * TODO:
  *
@@ -89,12 +86,6 @@
     xmlGenericError(xmlGenericErrorContext,				\
 	    "Unimplemented block at %s:%d\n",				\
             __FILE__, __LINE__);
-
-#ifdef DEBUG_READER
-#define DUMP_READER xmlTextReaderDebug(reader);
-#else
-#define DUMP_READER
-#endif
 
 #define CHUNK_SIZE 512
 /************************************************************************
@@ -505,33 +496,6 @@ xmlTextReaderFreeDoc(xmlTextReaderPtr reader, xmlDocPtr cur) {
  *			The reader core parser				*
  *									*
  ************************************************************************/
-#ifdef DEBUG_READER
-static void
-xmlTextReaderDebug(xmlTextReaderPtr reader) {
-    if ((reader == NULL) || (reader->ctxt == NULL)) {
-	fprintf(stderr, "xmlTextReader NULL\n");
-	return;
-    }
-    fprintf(stderr, "xmlTextReader: state %d depth %d ",
-	    reader->state, reader->depth);
-    if (reader->node == NULL) {
-	fprintf(stderr, "node = NULL\n");
-    } else {
-	fprintf(stderr, "node %s\n", reader->node->name);
-    }
-    fprintf(stderr, "  input: base %d, cur %d, depth %d: ",
-	    reader->base, reader->cur, reader->ctxt->nodeNr);
-    if (reader->input->buffer == NULL) {
-	fprintf(stderr, "buffer is NULL\n");
-    } else {
-#ifdef LIBXML_DEBUG_ENABLED
-	xmlDebugDumpString(stderr,
-		&reader->input->buffer->content[reader->cur]);
-#endif
-	fprintf(stderr, "\n");
-    }
-}
-#endif
 
 /**
  * xmlTextReaderEntPush:
@@ -602,9 +566,6 @@ xmlTextReaderStartElement(void *ctx, const xmlChar *fullname,
     xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
     xmlTextReaderPtr reader = ctxt->_private;
 
-#ifdef DEBUG_CALLBACKS
-    printf("xmlTextReaderStartElement(%s)\n", fullname);
-#endif
     if ((reader != NULL) && (reader->startElement != NULL)) {
 	reader->startElement(ctx, fullname, atts);
 	if ((ctxt->node != NULL) && (ctxt->input != NULL) &&
@@ -628,9 +589,6 @@ xmlTextReaderEndElement(void *ctx, const xmlChar *fullname) {
     xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
     xmlTextReaderPtr reader = ctxt->_private;
 
-#ifdef DEBUG_CALLBACKS
-    printf("xmlTextReaderEndElement(%s)\n", fullname);
-#endif
     if ((reader != NULL) && (reader->endElement != NULL)) {
 	reader->endElement(ctx, fullname);
     }
@@ -665,9 +623,6 @@ xmlTextReaderStartElementNs(void *ctx,
     xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
     xmlTextReaderPtr reader = ctxt->_private;
 
-#ifdef DEBUG_CALLBACKS
-    printf("xmlTextReaderStartElementNs(%s)\n", localname);
-#endif
     if ((reader != NULL) && (reader->startElementNs != NULL)) {
 	reader->startElementNs(ctx, localname, prefix, URI, nb_namespaces,
 	                       namespaces, nb_attributes, nb_defaulted,
@@ -699,9 +654,6 @@ xmlTextReaderEndElementNs(void *ctx,
     xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
     xmlTextReaderPtr reader = ctxt->_private;
 
-#ifdef DEBUG_CALLBACKS
-    printf("xmlTextReaderEndElementNs(%s)\n", localname);
-#endif
     if ((reader != NULL) && (reader->endElementNs != NULL)) {
 	reader->endElementNs(ctx, localname, prefix, URI);
     }
@@ -722,9 +674,6 @@ xmlTextReaderCharacters(void *ctx, const xmlChar *ch, int len)
     xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
     xmlTextReaderPtr reader = ctxt->_private;
 
-#ifdef DEBUG_CALLBACKS
-    printf("xmlTextReaderCharacters()\n");
-#endif
     if ((reader != NULL) && (reader->characters != NULL)) {
 	reader->characters(ctx, ch, len);
     }
@@ -744,9 +693,6 @@ xmlTextReaderCDataBlock(void *ctx, const xmlChar *ch, int len)
     xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
     xmlTextReaderPtr reader = ctxt->_private;
 
-#ifdef DEBUG_CALLBACKS
-    printf("xmlTextReaderCDataBlock()\n");
-#endif
     if ((reader != NULL) && (reader->cdataBlock != NULL)) {
 	reader->cdataBlock(ctx, ch, len);
     }
@@ -781,24 +727,17 @@ xmlTextReaderPushData(xmlTextReaderPtr reader) {
 	     */
 	    if (reader->mode != XML_TEXTREADER_MODE_EOF) {
 		val = xmlParserInputBufferRead(reader->input, 4096);
-		if ((val == 0) &&
-		    (reader->input->readcallback == NULL)) {
+		if (val == 0) {
 		    if (xmlBufUse(inbuf) == reader->cur) {
 			reader->mode = XML_TEXTREADER_MODE_EOF;
-			reader->state = oldstate;
+                        break;
 		    }
 		} else if (val < 0) {
                     xmlGenericError(xmlGenericErrorContext,
                                     "xmlParserInputBufferRead failed\n");
 		    reader->mode = XML_TEXTREADER_MODE_EOF;
 		    reader->state = oldstate;
-		    if ((oldstate != XML_TEXTREADER_START) ||
-			(reader->ctxt->myDoc != NULL))
-			return(val);
-		} else if (val == 0) {
-		    /* mark the end of the stream and process the remains */
-		    reader->mode = XML_TEXTREADER_MODE_EOF;
-		    break;
+		    return(val);
 		}
 
 	    } else
@@ -828,6 +767,7 @@ xmlTextReaderPushData(xmlTextReaderPtr reader) {
 	    break;
 	}
     }
+    reader->state = oldstate;
 
     /*
      * Discard the consumed input when needed and possible
@@ -864,7 +804,6 @@ xmlTextReaderPushData(xmlTextReaderPtr reader) {
 	    }
 	}
     }
-    reader->state = oldstate;
     if (reader->ctxt->wellFormed == 0) {
 	reader->mode = XML_TEXTREADER_MODE_EOF;
         return(-1);
@@ -1232,10 +1171,6 @@ xmlTextReaderRead(xmlTextReaderPtr reader) {
     if (reader->ctxt == NULL)
 	return(-1);
 
-#ifdef DEBUG_READER
-    fprintf(stderr, "\nREAD ");
-    DUMP_READER
-#endif
     if (reader->mode == XML_TEXTREADER_MODE_INITIAL) {
 	reader->mode = XML_TEXTREADER_MODE_INTERACTIVE;
 	/*
@@ -1427,8 +1362,6 @@ get_next_node:
     reader->state = XML_TEXTREADER_BACKTRACK;
 
 node_found:
-    DUMP_READER
-
     /*
      * If we are in the middle of a piece of CDATA make sure it's finished
      */
@@ -5235,6 +5168,19 @@ xmlTextReaderSetup(xmlTextReaderPtr reader,
     reader->doc = NULL;
 
     return (0);
+}
+
+/**
+ * xmlTextReaderSetMaxAmplification:
+ * @reader: an XML reader
+ * @maxAmpl:  maximum amplification factor
+ *
+ * Set the maximum amplification factor. See xmlCtxtSetMaxAmplification.
+ */
+void
+xmlTextReaderSetMaxAmplification(xmlTextReaderPtr reader, unsigned maxAmpl)
+{
+    xmlCtxtSetMaxAmplification(reader->ctxt, maxAmpl);
 }
 
 /**

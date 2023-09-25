@@ -20,7 +20,6 @@
 #include <libxml/xmlversion.h>
 
 #ifdef LIBXML_C14N_ENABLED
-#ifdef LIBXML_OUTPUT_ENABLED
 
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
@@ -122,7 +121,6 @@ XMLPUBFUN int
 }
 #endif /* __cplusplus */
 
-#endif /* LIBXML_OUTPUT_ENABLED */
 #endif /* LIBXML_C14N_ENABLED */
 #endif /* __XML_C14N_H__ */
 

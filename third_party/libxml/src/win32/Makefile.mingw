@@ -45,11 +45,8 @@ CFLAGS += -I$(XML_SRCDIR) -I$(XML_SRCDIR)/include -I$(INCPREFIX) $(INCLUDE)
 ifneq ($(WITH_THREADS),no)
 CFLAGS += -D_REENTRANT
 endif
-ifeq ($(WITH_THREADS),yes) 
-CFLAGS += -DHAVE_COMPILER_TLS
-endif
 ifeq ($(WITH_THREADS),ctls)
-CFLAGS += -DHAVE_COMPILER_TLS
+CFLAGS += "-DXML_THREAD_LOCAL=__declspec(thread)"
 endif
 ifeq ($(WITH_THREADS),posix)
 CFLAGS += -DHAVE_PTHREAD_H

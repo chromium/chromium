@@ -271,11 +271,11 @@ static int testCharRangeByte1(xmlParserCtxtPtr ctxt) {
     data[3] = 0;
     for (i = 0;i <= 0xFF;i++) {
         data[0] = (char) i;
-	ctxt->charset = XML_CHAR_ENCODING_UTF8;
         ctxt->nbErrors = 0;
 
 	lastError = 0;
         c = xmlCurrentChar(ctxt, &len);
+        ctxt->input->flags = 0;
 	if ((i == 0) || (i >= 0x80)) {
 	    /* we must see an error there */
 	    if (lastError != XML_ERR_INVALID_CHAR) {
@@ -307,11 +307,11 @@ static int testCharRangeByte2(xmlParserCtxtPtr ctxt) {
 	for (j = 0;j <= 0xFF;j++) {
 	    data[0] = (char) i;
 	    data[1] = (char) j;
-	    ctxt->charset = XML_CHAR_ENCODING_UTF8;
             ctxt->nbErrors = 0;
 
 	    lastError = 0;
 	    c = xmlCurrentChar(ctxt, &len);
+            ctxt->input->flags = 0;
 
 	    /* if first bit of first char is set, then second bit must too */
 	    if ((i & 0x80) && ((i & 0x40) == 0)) {
@@ -401,11 +401,11 @@ static int testCharRangeByte3(xmlParserCtxtPtr ctxt) {
 	K = lows[k];
 	data[2] = (char) K;
 	value = (K & 0x3F) + ((j & 0x3F) << 6) + ((i & 0xF) << 12);
-	ctxt->charset = XML_CHAR_ENCODING_UTF8;
         ctxt->nbErrors = 0;
 
 	lastError = 0;
 	c = xmlCurrentChar(ctxt, &len);
+        ctxt->input->flags = 0;
 
 	/*
 	 * if fourth bit of first char is set, then the sequence would need
@@ -504,11 +504,11 @@ static int testCharRangeByte4(xmlParserCtxtPtr ctxt) {
 	data[3] = (char) L;
 	value = (L & 0x3F) + ((K & 0x3F) << 6) + ((j & 0x3F) << 12) +
 	        ((i & 0x7) << 18);
-	ctxt->charset = XML_CHAR_ENCODING_UTF8;
         ctxt->nbErrors = 0;
 
 	lastError = 0;
 	c = xmlCurrentChar(ctxt, &len);
+        ctxt->input->flags = 0;
 
 	/*
 	 * if fifth bit of first char is set, then the sequence would need
@@ -713,9 +713,65 @@ error:
     return ret;
 }
 
+#if defined(LIBXML_PUSH_ENABLED) && defined(LIBXML_OUTPUT_ENABLED)
+
+static char *
+convert(xmlCharEncodingHandlerPtr handler, const char *utf8, int size,
+        int *outSize) {
+    char *ret;
+    int inlen;
+    int res;
+
+    inlen = size;
+    *outSize = size * 2;
+    ret = xmlMalloc(*outSize);
+    if (ret == NULL)
+        return(NULL);
+    res = handler->output(BAD_CAST ret, outSize, BAD_CAST utf8, &inlen);
+    if ((res < 0) || (inlen != size)) {
+        xmlFree(ret);
+        return(NULL);
+    }
+
+    return(ret);
+}
+
+static int
+testUserEncodingPush(void) {
+    xmlCharEncodingHandlerPtr handler;
+    xmlParserCtxtPtr ctxt;
+    xmlDocPtr doc;
+    char buf[] =
+        "\xEF\xBB\xBF"
+        "<?xml version='1.0' encoding='ISO-8859-1'?>\n"
+        "<d>text</d>\n";
+    char *utf16;
+    int utf16Size;
+    int ret = 1;
+
+    handler = xmlGetCharEncodingHandler(XML_CHAR_ENCODING_UTF16LE);
+    utf16 = convert(handler, buf, sizeof(buf) - 1, &utf16Size);
+    ctxt = xmlCreatePushParserCtxt(NULL, NULL, NULL, 0, NULL);
+    xmlSwitchEncoding(ctxt, XML_CHAR_ENCODING_UTF16LE);
+    xmlParseChunk(ctxt, utf16, utf16Size, 0);
+    xmlParseChunk(ctxt, NULL, 0, 1);
+    doc = ctxt->myDoc;
+
+    if ((doc != NULL) &&
+        (doc->children != NULL) &&
+        (doc->children->children != NULL) &&
+        (xmlStrcmp(doc->children->children->content, BAD_CAST "text") == 0))
+        ret = 0;
+
+    xmlFreeDoc(doc);
+    xmlFreeParserCtxt(ctxt);
+    xmlFree(utf16);
+
+    return(ret);
+}
+
 static int
 testUTF8Chunks(void) {
-#if defined(LIBXML_PUSH_ENABLED) && defined(LIBXML_OUTPUT_ENABLED)
     xmlParserCtxtPtr ctxt;
     xmlChar *out;
     int outSize;
@@ -786,10 +842,10 @@ error:
     xmlFreeParserCtxt(ctxt);
 
     return(ret);
-#else
     return(0);
-#endif
 }
+
+#endif
 
 int main(void) {
 
@@ -814,7 +870,10 @@ int main(void) {
     ret += testCharRanges();
     ret += testDocumentRanges();
     ret += testUserEncoding();
+#if defined(LIBXML_PUSH_ENABLED) && defined(LIBXML_OUTPUT_ENABLED)
+    ret += testUserEncodingPush();
     ret += testUTF8Chunks();
+#endif
 
     /*
      * Cleanup function for the XML library.

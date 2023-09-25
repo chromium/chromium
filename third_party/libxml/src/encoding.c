@@ -34,10 +34,10 @@
 
 #include <libxml/encoding.h>
 #include <libxml/xmlmemory.h>
+#include <libxml/parser.h>
 #ifdef LIBXML_HTML_ENABLED
 #include <libxml/HTMLparser.h>
 #endif
-#include <libxml/globals.h>
 #include <libxml/xmlerror.h>
 
 #include "private/buf.h"
@@ -68,13 +68,6 @@ struct _xmlCharEncodingAlias {
 static xmlCharEncodingAliasPtr xmlCharEncodingAliases = NULL;
 static int xmlCharEncodingAliasesNb = 0;
 static int xmlCharEncodingAliasesMax = 0;
-
-#if defined(LIBXML_ICONV_ENABLED) || defined(LIBXML_ICU_ENABLED)
-#if 0
-#define DEBUG_ENCODING  /* Define this to get encoding traces */
-#endif
-#else
-#endif
 
 static int xmlLittleEndian = 1;
 
@@ -691,10 +684,6 @@ UTF8ToUTF16(unsigned char* outb, int *outlen,
 	    outb[1] = 0xFE;
 	    *outlen = 2;
 	    *inlen = 0;
-#ifdef DEBUG_ENCODING
-            xmlGenericError(xmlGenericErrorContext,
-		    "Added FFFE Byte Order Mark\n");
-#endif
 	    return(2);
 	}
 	*outlen = 0;
@@ -1222,9 +1211,6 @@ xmlParseCharEncoding(const char* name)
     if (!strcmp(upper, "SHIFT_JIS")) return(XML_CHAR_ENCODING_SHIFT_JIS);
     if (!strcmp(upper, "EUC-JP")) return(XML_CHAR_ENCODING_EUC_JP);
 
-#ifdef DEBUG_ENCODING
-    xmlGenericError(xmlGenericErrorContext, "Unknown encoding %s\n", name);
-#endif
     return(XML_CHAR_ENCODING_ERROR);
 }
 
@@ -1462,10 +1448,6 @@ xmlNewCharEncodingHandler(const char *name,
      * registers and returns the handler.
      */
     xmlRegisterCharEncodingHandler(handler);
-#ifdef DEBUG_ENCODING
-    xmlGenericError(xmlGenericErrorContext,
-	    "Registered encoding handler for %s\n", name);
-#endif
     return(handler);
 }
 
@@ -1679,10 +1661,6 @@ xmlGetCharEncodingHandler(xmlCharEncoding enc) {
 	    break;
     }
 
-#ifdef DEBUG_ENCODING
-    xmlGenericError(xmlGenericErrorContext,
-	    "No handler found for encoding %d\n", enc);
-#endif
     return(NULL);
 }
 
@@ -1739,10 +1717,6 @@ xmlFindCharEncodingHandler(const char *name) {
     if (handlers != NULL) {
         for (i = 0;i < nbCharEncodingHandler; i++) {
             if (!strcmp(upper, handlers[i]->name)) {
-#ifdef DEBUG_ENCODING
-                xmlGenericError(xmlGenericErrorContext,
-                        "Found registered handler for encoding %s\n", name);
-#endif
                 return(handlers[i]);
             }
         }
@@ -1778,10 +1752,6 @@ xmlFindCharEncodingHandler(const char *name) {
 	    enc->output = NULL;
 	    enc->iconv_in = icv_in;
 	    enc->iconv_out = icv_out;
-#ifdef DEBUG_ENCODING
-            xmlGenericError(xmlGenericErrorContext,
-		    "Found iconv handler for encoding %s\n", name);
-#endif
 	    return enc;
     } else if ((icv_in != (iconv_t) -1) || icv_out != (iconv_t) -1) {
 	    if (icv_in != (iconv_t) -1)
@@ -1814,21 +1784,12 @@ xmlFindCharEncodingHandler(const char *name) {
 	    encu->output = NULL;
 	    encu->uconv_in = ucv_in;
 	    encu->uconv_out = ucv_out;
-#ifdef DEBUG_ENCODING
-            xmlGenericError(xmlGenericErrorContext,
-		    "Found ICU converter handler for encoding %s\n", name);
-#endif
 	    return encu;
     } else if (ucv_in != NULL || ucv_out != NULL) {
             closeIcuConverter(ucv_in);
             closeIcuConverter(ucv_out);
     }
 #endif /* LIBXML_ICU_ENABLED */
-
-#ifdef DEBUG_ENCODING
-    xmlGenericError(xmlGenericErrorContext,
-	    "No handler found for encoding %s\n", name);
-#endif
 
     /*
      * Fallback using the canonical names
@@ -1915,7 +1876,6 @@ xmlIconvWrapper(iconv_t cd, unsigned char *out, int *outlen,
  * @outlen:  the length of @out
  * @in:  a pointer to an array of input bytes
  * @inlen:  the length of @in
- * @flush: if true, indicates end of input
  *
  * Returns an XML_ENC_ERR code.
  *
@@ -1925,7 +1885,7 @@ xmlIconvWrapper(iconv_t cd, unsigned char *out, int *outlen,
  */
 static int
 xmlUconvWrapper(uconv_t *cd, int toUnicode, unsigned char *out, int *outlen,
-                const unsigned char *in, int *inlen, int flush) {
+                const unsigned char *in, int *inlen) {
     const char *ucv_in = (const char *) in;
     char *ucv_out = (char *) out;
     UErrorCode err = U_ZERO_ERROR;
@@ -1935,25 +1895,36 @@ xmlUconvWrapper(uconv_t *cd, int toUnicode, unsigned char *out, int *outlen,
         return(XML_ENC_ERR_INTERNAL);
     }
 
+    /*
+     * Note that the ICU API is stateful. It can always consume a certain
+     * amount of input even if the output buffer would overflow. The
+     * remaining input must be processed by calling ucnv_convertEx with a
+     * possibly empty input buffer.
+     *
+     * ucnv_convertEx is always called with reset and flush set to 0,
+     * so we don't mess up the state. This should never generate
+     * U_TRUNCATED_CHAR_FOUND errors.
+     *
+     * This also means that ICU xmlCharEncodingHandlers should never be
+     * reused. It would be a lot nicer if there was a way to emulate the
+     * stateless iconv API.
+     */
     if (toUnicode) {
         /* encoding => UTF-16 => UTF-8 */
         ucnv_convertEx(cd->utf8, cd->uconv, &ucv_out, ucv_out + *outlen,
                        &ucv_in, ucv_in + *inlen, cd->pivot_buf,
                        &cd->pivot_source, &cd->pivot_target,
-                       cd->pivot_buf + ICU_PIVOT_BUF_SIZE, 0, flush, &err);
+                       cd->pivot_buf + ICU_PIVOT_BUF_SIZE, 0, 0, &err);
     } else {
         /* UTF-8 => UTF-16 => encoding */
         ucnv_convertEx(cd->uconv, cd->utf8, &ucv_out, ucv_out + *outlen,
                        &ucv_in, ucv_in + *inlen, cd->pivot_buf,
                        &cd->pivot_source, &cd->pivot_target,
-                       cd->pivot_buf + ICU_PIVOT_BUF_SIZE, 0, flush, &err);
+                       cd->pivot_buf + ICU_PIVOT_BUF_SIZE, 0, 0, &err);
     }
     *inlen = ucv_in - (const char*) in;
     *outlen = ucv_out - (char *) out;
     if (U_SUCCESS(err)) {
-        /* reset pivot buf if this is the last call for input (flush==TRUE) */
-        if (flush)
-            cd->pivot_source = cd->pivot_target = cd->pivot_buf;
         return(XML_ENC_ERR_SUCCESS);
     }
     if (err == U_BUFFER_OVERFLOW_ERROR)
@@ -2005,19 +1976,17 @@ xmlEncConvertError(int code) {
  * @outlen:  the length of @out
  * @in:  a pointer to an array of input bytes
  * @inlen:  the length of @in
- * @flush:  flush (ICU-related)
- *
- * Returns an XML_ENC_ERR code.
  *
  * The value of @inlen after return is the number of octets consumed
  *     as the return value is 0, else unpredictable.
  * The value of @outlen after return is the number of octets produced.
+ *
+ * Returns an XML_ENC_ERR code.
  */
 int
 xmlEncInputChunk(xmlCharEncodingHandler *handler, unsigned char *out,
-                 int *outlen, const unsigned char *in, int *inlen, int flush) {
+                 int *outlen, const unsigned char *in, int *inlen) {
     int ret;
-    (void)flush;
 
     if (handler->input != NULL) {
         ret = handler->input(out, outlen, in, inlen);
@@ -2031,8 +2000,7 @@ xmlEncInputChunk(xmlCharEncodingHandler *handler, unsigned char *out,
 #endif /* LIBXML_ICONV_ENABLED */
 #ifdef LIBXML_ICU_ENABLED
     else if (handler->uconv_in != NULL) {
-        ret = xmlUconvWrapper(handler->uconv_in, 1, out, outlen, in, inlen,
-                              flush);
+        ret = xmlUconvWrapper(handler->uconv_in, 1, out, outlen, in, inlen);
     }
 #endif /* LIBXML_ICU_ENABLED */
     else {
@@ -2041,8 +2009,8 @@ xmlEncInputChunk(xmlCharEncodingHandler *handler, unsigned char *out,
         ret = XML_ENC_ERR_INTERNAL;
     }
 
-    /* Ignore space and partial errors when reading. */
-    if ((ret == XML_ENC_ERR_SPACE) || (ret == XML_ENC_ERR_PARTIAL))
+    /* Ignore partial errors when reading. */
+    if (ret == XML_ENC_ERR_PARTIAL)
         ret = XML_ENC_ERR_SUCCESS;
 
     return(ret);
@@ -2079,8 +2047,7 @@ xmlEncOutputChunk(xmlCharEncodingHandler *handler, unsigned char *out,
 #endif /* LIBXML_ICONV_ENABLED */
 #ifdef LIBXML_ICU_ENABLED
     else if (handler->uconv_out != NULL) {
-        ret = xmlUconvWrapper(handler->uconv_out, 0, out, outlen, in, inlen,
-                              1);
+        ret = xmlUconvWrapper(handler->uconv_out, 0, out, outlen, in, inlen);
     }
 #endif /* LIBXML_ICU_ENABLED */
     else {
@@ -2103,6 +2070,8 @@ xmlEncOutputChunk(xmlCharEncodingHandler *handler, unsigned char *out,
  * @in:  an xmlBuffer for the input
  *
  * DEPERECATED: Don't use.
+ *
+ * Returns the number of bytes written or an XML_ENC_ERR code.
  */
 int
 xmlCharEncFirstLine(xmlCharEncodingHandler *handler, xmlBufferPtr out,
@@ -2113,22 +2082,23 @@ xmlCharEncFirstLine(xmlCharEncodingHandler *handler, xmlBufferPtr out,
 /**
  * xmlCharEncInput:
  * @input: a parser input buffer
- * @flush: try to flush all the raw buffer
  *
  * Generic front-end for the encoding handler on parser input
  *
  * Returns the number of bytes written or an XML_ENC_ERR code.
  */
 int
-xmlCharEncInput(xmlParserInputBufferPtr input, int flush)
+xmlCharEncInput(xmlParserInputBufferPtr input)
 {
     int ret;
-    size_t written;
+    size_t avail;
     size_t toconv;
     int c_in;
     int c_out;
     xmlBufPtr in;
     xmlBufPtr out;
+    const xmlChar *inData;
+    size_t inTotal = 0;
 
     if ((input == NULL) || (input->encoder == NULL) ||
         (input->buffer == NULL) || (input->raw == NULL))
@@ -2139,25 +2109,39 @@ xmlCharEncInput(xmlParserInputBufferPtr input, int flush)
     toconv = xmlBufUse(in);
     if (toconv == 0)
         return (0);
-    if ((toconv > 64 * 1024) && (flush == 0))
-        toconv = 64 * 1024;
-    written = xmlBufAvail(out);
-    if (toconv * 2 >= written) {
-        if (xmlBufGrow(out, toconv * 2) < 0) {
-            input->error = XML_ERR_NO_MEMORY;
-            return(XML_ENC_ERR_MEMORY);
-        }
-        written = xmlBufAvail(out);
-    }
-    if ((written > 128 * 1024) && (flush == 0))
-        written = 128 * 1024;
+    inData = xmlBufContent(in);
+    inTotal = 0;
 
-    c_in = toconv;
-    c_out = written;
-    ret = xmlEncInputChunk(input->encoder, xmlBufEnd(out), &c_out,
-                           xmlBufContent(in), &c_in, flush);
-    xmlBufShrink(in, c_in);
-    xmlBufAddLen(out, c_out);
+    do {
+        c_in = toconv > INT_MAX / 2 ? INT_MAX / 2 : toconv;
+
+        avail = xmlBufAvail(out);
+        if (avail > INT_MAX)
+            avail = INT_MAX;
+        if (avail < toconv * 2) {
+            if (xmlBufGrow(out, toconv * 2) < 0) {
+                input->error = XML_ERR_NO_MEMORY;
+                return(XML_ENC_ERR_MEMORY);
+            }
+            avail = xmlBufAvail(out);
+        }
+
+        c_in = toconv;
+        c_out = avail;
+        ret = xmlEncInputChunk(input->encoder, xmlBufEnd(out), &c_out,
+                               inData, &c_in);
+        inTotal += c_in;
+        inData += c_in;
+        toconv -= c_in;
+        xmlBufAddLen(out, c_out);
+    } while (ret == XML_ENC_ERR_SPACE);
+
+    xmlBufShrink(in, inTotal);
+
+    if (input->rawconsumed > ULONG_MAX - (unsigned long)c_in)
+        input->rawconsumed = ULONG_MAX;
+    else
+        input->rawconsumed += c_in;
 
     if ((c_out == 0) && (ret != 0)) {
         if (input->error == 0)
@@ -2202,7 +2186,7 @@ xmlCharEncInFunc(xmlCharEncodingHandler * handler, xmlBufferPtr out,
         written = out->size - out->use - 1;
     }
     ret = xmlEncInputChunk(handler, &out->content[out->use], &written,
-                           in->content, &toconv, 1);
+                           in->content, &toconv);
     xmlBufferShrink(in, toconv);
     out->use += written;
     out->content[out->use] = 0;
@@ -2257,10 +2241,6 @@ retry:
         xmlEncOutputChunk(output->encoder, xmlBufEnd(out), &c_out,
                           NULL, &c_in);
         xmlBufAddLen(out, c_out);
-#ifdef DEBUG_ENCODING
-	xmlGenericError(xmlGenericErrorContext,
-		"initialized encoder\n");
-#endif
         return(c_out);
     }
 
@@ -2268,8 +2248,6 @@ retry:
      * Conversion itself.
      */
     toconv = xmlBufUse(in);
-    if (toconv == 0)
-        return (writtentot);
     if (toconv > 64 * 1024)
         toconv = 64 * 1024;
     if (toconv * 4 >= written) {
@@ -2303,14 +2281,6 @@ retry:
         if (cur <= 0)
             goto error;
 
-#ifdef DEBUG_ENCODING
-        xmlGenericError(xmlGenericErrorContext,
-                "handling output conversion error\n");
-        xmlGenericError(xmlGenericErrorContext,
-                "Bytes: 0x%02X 0x%02X 0x%02X 0x%02X\n",
-                content[0], content[1],
-                content[2], content[3]);
-#endif
         /*
          * Removes the UTF8 sequence, and replace it by a charref
          * and continue the transcoding phase, hoping the error
@@ -2388,10 +2358,6 @@ retry:
                           NULL, &toconv);
         out->use += written;
         out->content[out->use] = 0;
-#ifdef DEBUG_ENCODING
-	xmlGenericError(xmlGenericErrorContext,
-		"initialized encoder\n");
-#endif
         return(0);
     }
 
@@ -2399,8 +2365,6 @@ retry:
      * Conversion itself.
      */
     toconv = in->use;
-    if (toconv == 0)
-	return(0);
     if (toconv * 4 >= written) {
         xmlBufferGrow(out, toconv * 4);
 	written = out->size - out->use - 1;
@@ -2428,14 +2392,6 @@ retry:
         if (cur <= 0)
             return(ret);
 
-#ifdef DEBUG_ENCODING
-        xmlGenericError(xmlGenericErrorContext,
-                "handling output conversion error\n");
-        xmlGenericError(xmlGenericErrorContext,
-                "Bytes: 0x%02X 0x%02X 0x%02X 0x%02X\n",
-                in->content[0], in->content[1],
-                in->content[2], in->content[3]);
-#endif
         /*
          * Removes the UTF8 sequence, and replace it by a charref
          * and continue the transcoding phase, hoping the error
@@ -2526,14 +2482,6 @@ xmlCharEncCloseFunc(xmlCharEncodingHandler *handler) {
         handler->name = NULL;
         xmlFree(handler);
     }
-#ifdef DEBUG_ENCODING
-    if (ret)
-        xmlGenericError(xmlGenericErrorContext,
-		"failed to close the encoding handler\n");
-    else
-        xmlGenericError(xmlGenericErrorContext,
-		"closed the encoding handler\n");
-#endif
 
     return(ret);
 }

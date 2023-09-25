@@ -11,8 +11,9 @@
 #ifndef __XML_DICT_H__
 #define __XML_DICT_H__
 
-#include <stddef.h>
+#include <libxml/xmlstring.h>
 #include <libxml/xmlversion.h>
+#include <stddef.h>
 
 #ifdef __cplusplus
 extern "C" {

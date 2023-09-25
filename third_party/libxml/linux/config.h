@@ -69,9 +69,6 @@
 /* Define to 1 if you have the <pthread.h> header file. */
 #define HAVE_PTHREAD_H /**/
 
-/* Define to 1 if you have the `rand_r' function. */
-
-
 /* Have shl_load based dso */
 /* #undef HAVE_SHLLOAD */
 
@@ -172,6 +169,9 @@
 
 /* Determine what socket length (socklen_t) data type is */
 /* #undef XML_SOCKLEN_T */
+
+/* TLS specifier */
+#define XML_THREAD_LOCAL _Thread_local
 
 /* Define for Solaris 2.5.1 so the uint32_t typedef from <sys/synch.h>,
    <pthread.h>, or <semaphore.h> is not used. If the typedef were allowed, the
