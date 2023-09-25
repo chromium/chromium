@@ -352,9 +352,6 @@ file_manager::VolumeManager* GetVolumeManager(
 DlpFilesControllerAsh* DlpFilesControllerAsh::GetForPrimaryProfile() {
   DlpRulesManager* rules_manager =
       DlpRulesManagerFactory::GetForPrimaryProfile();
-  if (!rules_manager) {
-    return nullptr;
-  }
   return static_cast<DlpFilesControllerAsh*>(
       rules_manager ? rules_manager->GetDlpFilesController() : nullptr);
 }
