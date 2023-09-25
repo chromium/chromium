@@ -2427,6 +2427,10 @@ void SiteSettingsHandler::HandleGetNumCookiesString(
 
 void SiteSettingsHandler::RemoveNonTreeModelData(
     const std::vector<url::Origin>& origins) {
+  if (origins.empty()) {
+    return;
+  }
+
   // TODO(crbug.com/1268626): Remove client hint information, which cannot be
   // associated with Cookie node information as the scheme in the cookie node
   // may not match due to HTTP / HTTPS distinction issues.
