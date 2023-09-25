@@ -4,6 +4,7 @@
       "cros_board": "brya",
       "cros_chrome_version": "119.0.6018.0",
       "cros_img": "brya-release/R119-15622.0.0",
+      "dut_pool": "chrome",
       "autotest_name": "tast.chrome-from-gcs"
     },
     "identifier": "BRYA_RELEASE_LKGM"
@@ -457,6 +458,7 @@
       "cros_board": "volteer",
       "cros_chrome_version": "119.0.6020.0",
       "cros_img": "volteer-release/R119-15623.0.0",
+      "dut_pool": "chrome",
       "autotest_name": "tast.chrome-from-gcs"
     },
     "identifier": "VOLTEER_RELEASE_LKGM"

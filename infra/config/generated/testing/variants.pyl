@@ -434,6 +434,7 @@
       'cros_board': 'brya',
       'cros_img': 'brya-release/R119-15622.0.0',
       'autotest_name': 'tast.chrome-from-gcs',
+      'dut_pool': 'chrome',
     },
   },
   'CROS_BRYA_RELEASE_LKGM': {
@@ -799,6 +800,7 @@
       'cros_board': 'volteer',
       'cros_img': 'volteer-release/R119-15623.0.0',
       'autotest_name': 'tast.chrome-from-gcs',
+      'dut_pool': 'chrome',
     },
   },
   'LACROS_AMD64_GENERIC': {
