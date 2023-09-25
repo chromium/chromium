@@ -21,6 +21,8 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerHost;
@@ -116,6 +118,8 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     static final float FADE_MEDIUM_TSR_WIDTH_DP = 72;
     static final float FADE_LONG_TSR_WIDTH_DP = 136;
 
+    private static final int HOVER_EXIT_ON_DOWN_DELAY_MS = 150;
+
     // Caching Variables
     private final RectF mStripFilterArea = new RectF();
 
@@ -173,8 +177,12 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     private class TabStripEventHandler implements MotionEventHandler {
         @Override
         public void onDown(float x, float y, boolean fromMouse, int buttons) {
-            // Clear any persisting tab strip hover state on a down event on the strip.
-            getActiveStripLayoutHelper().onHoverExit();
+            // Clear any persisting tab strip hover state on a down event on the strip. Clearance is
+            // posted at a delay, as a best effort for the clearance to take effect after any
+            // animations triggered by the down event have ended.
+            // TODO (crbug.com/1483487): Monitor correctness of delay duration.
+            PostTask.postDelayedTask(
+                    TaskTraits.UI_DEFAULT, this::onHoverExit, HOVER_EXIT_ON_DOWN_DELAY_MS);
             if (mModelSelectorButton.onDown(x, y)) return;
             getActiveStripLayoutHelper().onDown(time(), x, y, fromMouse, buttons);
         }
@@ -950,6 +958,10 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         } else if (event == MotionEvent.ACTION_HOVER_EXIT) {
             mTabStripEventHandler.onHoverExit();
         }
+    }
+
+    void simulateOnDownForTesting(float x, float y, boolean fromMouse, int buttons) {
+        mTabStripEventHandler.onDown(x, y, fromMouse, buttons);
     }
 
     void setTabStripTreeProviderForTesting(TabStripSceneLayer tabStripTreeProvider) {
