@@ -4,7 +4,7 @@ setup(() =>
     'Long animation frames are not supported.'));
 
 const very_long_frame_duration = 360;
-const no_long_frame_timeout = very_long_frame_duration * 3;
+const no_long_frame_timeout = very_long_frame_duration * 2;
 const waiting_for_long_frame_timeout = very_long_frame_duration * 10;
 
 function loaf_promise(t) {
