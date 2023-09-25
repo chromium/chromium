@@ -125,6 +125,11 @@ class ScopedObservation {
     return source_ == source;
   }
 
+  // Gets a pointer to the observed source, or nullptr if no source is being
+  // observed.
+  Source* GetSource() { return source_; }
+  const Source* GetSource() const { return source_; }
+
  private:
   using Traits = ScopedObservationTraits<Source, Observer>;
 

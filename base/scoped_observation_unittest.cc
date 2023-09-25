@@ -7,7 +7,6 @@
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
 #include "base/scoped_observation_traits.h"
-#include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -54,12 +53,18 @@ TEST(ScopedObservationTest, RemovesObservationOnDestruction) {
   {
     TestSourceObserver o1;
     TestScopedObservation obs(&o1);
+    const TestScopedObservation& cobs = obs;
     EXPECT_EQ(0u, s1.num_observers());
     EXPECT_FALSE(s1.HasObserver(&o1));
+    EXPECT_EQ(obs.GetSource(), nullptr);
+    EXPECT_EQ(cobs.GetSource(), nullptr);
 
     obs.Observe(&s1);
     EXPECT_EQ(1u, s1.num_observers());
     EXPECT_TRUE(s1.HasObserver(&o1));
+    TestSource* const got_source = obs.GetSource();
+    EXPECT_EQ(got_source, &s1);
+    EXPECT_EQ(cobs.GetSource(), &s1);
   }
 
   // Test that the observation is removed when it goes out of scope.
@@ -70,32 +75,50 @@ TEST(ScopedObservationTest, Reset) {
   TestSource s1;
   TestSourceObserver o1;
   TestScopedObservation obs(&o1);
+  const TestScopedObservation& cobs = obs;
   EXPECT_EQ(0u, s1.num_observers());
+  EXPECT_EQ(obs.GetSource(), nullptr);
+  EXPECT_EQ(cobs.GetSource(), nullptr);
   obs.Reset();
+  EXPECT_EQ(obs.GetSource(), nullptr);
+  EXPECT_EQ(cobs.GetSource(), nullptr);
 
   obs.Observe(&s1);
   EXPECT_EQ(1u, s1.num_observers());
   EXPECT_TRUE(s1.HasObserver(&o1));
+  EXPECT_EQ(obs.GetSource(), &s1);
+  EXPECT_EQ(cobs.GetSource(), &s1);
 
   obs.Reset();
   EXPECT_EQ(0u, s1.num_observers());
+  EXPECT_EQ(obs.GetSource(), nullptr);
+  EXPECT_EQ(cobs.GetSource(), nullptr);
 
   // Safe to call with no observation.
   obs.Reset();
   EXPECT_EQ(0u, s1.num_observers());
+  EXPECT_EQ(obs.GetSource(), nullptr);
+  EXPECT_EQ(cobs.GetSource(), nullptr);
 }
 
 TEST(ScopedObservationTest, IsObserving) {
   TestSource s1;
   TestSourceObserver o1;
   TestScopedObservation obs(&o1);
-  EXPECT_FALSE(obs.IsObserving());
+  const TestScopedObservation& cobs = obs;
+  EXPECT_FALSE(cobs.IsObserving());
+  EXPECT_EQ(obs.GetSource(), nullptr);
+  EXPECT_EQ(cobs.GetSource(), nullptr);
 
   obs.Observe(&s1);
-  EXPECT_TRUE(obs.IsObserving());
+  EXPECT_TRUE(cobs.IsObserving());
+  EXPECT_EQ(obs.GetSource(), &s1);
+  EXPECT_EQ(cobs.GetSource(), &s1);
 
   obs.Reset();
-  EXPECT_FALSE(obs.IsObserving());
+  EXPECT_FALSE(cobs.IsObserving());
+  EXPECT_EQ(obs.GetSource(), nullptr);
+  EXPECT_EQ(cobs.GetSource(), nullptr);
 }
 
 TEST(ScopedObservationTest, IsObservingSource) {
@@ -103,16 +126,23 @@ TEST(ScopedObservationTest, IsObservingSource) {
   TestSource s2;
   TestSourceObserver o1;
   TestScopedObservation obs(&o1);
-  EXPECT_FALSE(obs.IsObservingSource(&s1));
-  EXPECT_FALSE(obs.IsObservingSource(&s2));
+  const TestScopedObservation& cobs = obs;
+  EXPECT_FALSE(cobs.IsObservingSource(&s1));
+  EXPECT_FALSE(cobs.IsObservingSource(&s2));
+  EXPECT_EQ(obs.GetSource(), nullptr);
+  EXPECT_EQ(cobs.GetSource(), nullptr);
 
   obs.Observe(&s1);
-  EXPECT_TRUE(obs.IsObservingSource(&s1));
-  EXPECT_FALSE(obs.IsObservingSource(&s2));
+  EXPECT_TRUE(cobs.IsObservingSource(&s1));
+  EXPECT_FALSE(cobs.IsObservingSource(&s2));
+  EXPECT_EQ(obs.GetSource(), &s1);
+  EXPECT_EQ(cobs.GetSource(), &s1);
 
   obs.Reset();
-  EXPECT_FALSE(obs.IsObservingSource(&s1));
-  EXPECT_FALSE(obs.IsObservingSource(&s2));
+  EXPECT_FALSE(cobs.IsObservingSource(&s1));
+  EXPECT_FALSE(cobs.IsObservingSource(&s2));
+  EXPECT_EQ(obs.GetSource(), nullptr);
+  EXPECT_EQ(cobs.GetSource(), nullptr);
 }
 
 namespace {
