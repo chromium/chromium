@@ -168,7 +168,7 @@ TEST_P(TrustStoreWinTest, GetTrustInitializationError) {
       TrustStoreWin::CreateForTesting(
           TrustStoreWin::CertStores::CreateNullStoresForTesting());
   ASSERT_TRUE(trust_store_win);
-  CertificateTrust trust = trust_store_win->GetTrust(d_by_d_.get(), nullptr);
+  CertificateTrust trust = trust_store_win->GetTrust(d_by_d_.get());
   EXPECT_EQ(CertificateTrust::ForUnspecified().ToDebugString(),
             trust.ToDebugString());
 }
@@ -183,23 +183,23 @@ TEST_P(TrustStoreWinTest, GetTrust) {
 
   // Explicitly trusted root should be trusted.
   EXPECT_EQ(ExpectedTrustForAnchor().ToDebugString(),
-            trust_store_win->GetTrust(d_by_d_.get(), nullptr).ToDebugString());
+            trust_store_win->GetTrust(d_by_d_.get()).ToDebugString());
 
   // Explicitly trusted peer should be trusted.
   // (Although it wouldn't actually verify since it's not self-signed but has
   // require_leaf_selfsigned set. That doesn't matter for the purposes of these
   // tests.)
   EXPECT_EQ(ExpectedTrustForPeer().ToDebugString(),
-            trust_store_win->GetTrust(a_by_b_.get(), nullptr).ToDebugString());
+            trust_store_win->GetTrust(a_by_b_.get()).ToDebugString());
 
   // Intermediate for path building should not be trusted.
   EXPECT_EQ(CertificateTrust::ForUnspecified().ToDebugString(),
-            trust_store_win->GetTrust(c_by_d_.get(), nullptr).ToDebugString());
+            trust_store_win->GetTrust(c_by_d_.get()).ToDebugString());
 
   // Unknown roots should not be trusted (e.g. just because they're
   // self-signed doesn't make them a root)
   EXPECT_EQ(CertificateTrust::ForUnspecified().ToDebugString(),
-            trust_store_win->GetTrust(e_by_e_.get(), nullptr).ToDebugString());
+            trust_store_win->GetTrust(e_by_e_.get()).ToDebugString());
 }
 
 // This test has a special TrustStoreWin setup with restricted EKU usages.
@@ -226,25 +226,25 @@ TEST_P(TrustStoreWinTest, GetTrustRestrictedEKU) {
   // Root cert with EKU szOID_PKIX_KP_SERVER_AUTH usage set should be
   // trusted.
   EXPECT_EQ(ExpectedTrustForAnchor().ToDebugString(),
-            trust_store_win->GetTrust(d_by_d_.get(), nullptr).ToDebugString());
+            trust_store_win->GetTrust(d_by_d_.get()).ToDebugString());
 
   // Root cert with EKU szOID_ANY_ENHANCED_KEY_USAGE usage set should be
   // trusted.
   EXPECT_EQ(ExpectedTrustForAnchor().ToDebugString(),
-            trust_store_win->GetTrust(c_by_e_.get(), nullptr).ToDebugString());
+            trust_store_win->GetTrust(c_by_e_.get()).ToDebugString());
 
   // Root cert with EKU szOID_PKIX_KP_CLIENT_AUTH does not allow usage of
   // cert for server auth, return UNSPECIFIED.
   EXPECT_EQ(CertificateTrust::ForUnspecified().ToDebugString(),
-            trust_store_win->GetTrust(e_by_e_.get(), nullptr).ToDebugString());
+            trust_store_win->GetTrust(e_by_e_.get()).ToDebugString());
 
   // Root cert with no EKU usages, return UNSPECIFIED.
   EXPECT_EQ(CertificateTrust::ForUnspecified().ToDebugString(),
-            trust_store_win->GetTrust(c_by_d_.get(), nullptr).ToDebugString());
+            trust_store_win->GetTrust(c_by_d_.get()).ToDebugString());
 
   // Unknown cert has unspecified trust.
   EXPECT_EQ(CertificateTrust::ForUnspecified().ToDebugString(),
-            trust_store_win->GetTrust(f_by_e_.get(), nullptr).ToDebugString());
+            trust_store_win->GetTrust(f_by_e_.get()).ToDebugString());
 }
 
 // Same as GetTrustRestrictedEKU but for the Trusted People store.
@@ -264,25 +264,25 @@ TEST_P(TrustStoreWinTest, GetTrustTrustedPeopleRestrictedEKU) {
   // TrustedPeople cert with EKU szOID_PKIX_KP_SERVER_AUTH usage set should be
   // trusted.
   EXPECT_EQ(ExpectedTrustForPeer().ToDebugString(),
-            trust_store_win->GetTrust(d_by_d_.get(), nullptr).ToDebugString());
+            trust_store_win->GetTrust(d_by_d_.get()).ToDebugString());
 
   // TrustedPeople cert with EKU szOID_ANY_ENHANCED_KEY_USAGE usage set should
   // be trusted.
   EXPECT_EQ(ExpectedTrustForPeer().ToDebugString(),
-            trust_store_win->GetTrust(c_by_e_.get(), nullptr).ToDebugString());
+            trust_store_win->GetTrust(c_by_e_.get()).ToDebugString());
 
   // TrustedPeople cert with EKU szOID_PKIX_KP_CLIENT_AUTH does not allow usage
   // of cert for server auth, return UNSPECIFIED.
   EXPECT_EQ(CertificateTrust::ForUnspecified().ToDebugString(),
-            trust_store_win->GetTrust(e_by_e_.get(), nullptr).ToDebugString());
+            trust_store_win->GetTrust(e_by_e_.get()).ToDebugString());
 
   // TrustedPeople cert with no EKU usages, return UNSPECIFIED.
   EXPECT_EQ(CertificateTrust::ForUnspecified().ToDebugString(),
-            trust_store_win->GetTrust(c_by_d_.get(), nullptr).ToDebugString());
+            trust_store_win->GetTrust(c_by_d_.get()).ToDebugString());
 
   // Unknown cert has unspecified trust.
   EXPECT_EQ(CertificateTrust::ForUnspecified().ToDebugString(),
-            trust_store_win->GetTrust(f_by_e_.get(), nullptr).ToDebugString());
+            trust_store_win->GetTrust(f_by_e_.get()).ToDebugString());
 }
 
 // If duplicate certs are added to the root store with different EKU usages,
@@ -305,7 +305,7 @@ TEST_P(TrustStoreWinTest, GetTrustRestrictedEKUDuplicateCerts) {
 
   // One copy of the Root cert is trusted for TLS Server Auth.
   EXPECT_EQ(ExpectedTrustForAnchor().ToDebugString(),
-            trust_store_win->GetTrust(d_by_d_.get(), nullptr).ToDebugString());
+            trust_store_win->GetTrust(d_by_d_.get()).ToDebugString());
 }
 
 // Test that disallowed certs will be distrusted regardless of EKU settings.
@@ -324,18 +324,18 @@ TEST_P(TrustStoreWinTest, GetTrustDisallowedCerts) {
 
   // E-by-E is in both root and distrusted store. Distrust takes precedence.
   EXPECT_EQ(CertificateTrust::ForDistrusted().ToDebugString(),
-            trust_store_win->GetTrust(e_by_e_.get(), nullptr).ToDebugString());
+            trust_store_win->GetTrust(e_by_e_.get()).ToDebugString());
 
   // F-by-E is in both trusted people and distrusted store. Distrust takes
   // precedence.
   EXPECT_EQ(CertificateTrust::ForDistrusted().ToDebugString(),
-            trust_store_win->GetTrust(f_by_e_.get(), nullptr).ToDebugString());
+            trust_store_win->GetTrust(f_by_e_.get()).ToDebugString());
 
   // D-by-D is in root and in distrusted but without szOID_PKIX_KP_SERVER_AUTH
   // set. It should still be distrusted since the EKU settings aren't checked
   // on distrust.
   EXPECT_EQ(CertificateTrust::ForDistrusted().ToDebugString(),
-            trust_store_win->GetTrust(d_by_d_.get(), nullptr).ToDebugString());
+            trust_store_win->GetTrust(d_by_d_.get()).ToDebugString());
 }
 
 MATCHER_P(ParsedCertEq, expected_cert, "") {

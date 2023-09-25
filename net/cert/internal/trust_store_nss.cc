@@ -37,21 +37,6 @@ namespace net {
 
 namespace {
 
-const void* kResultDebugDataKey = &kResultDebugDataKey;
-
-TrustStoreNSS::ResultDebugData::SlotFilterType GetSlotFilterType(
-    const TrustStoreNSS::UserSlotTrustSetting& user_slot_trust_setting) {
-  if (absl::holds_alternative<TrustStoreNSS::UseTrustFromAllUserSlots>(
-          user_slot_trust_setting)) {
-    return TrustStoreNSS::ResultDebugData::SlotFilterType::kDontFilter;
-  }
-  if (absl::get<crypto::ScopedPK11Slot>(user_slot_trust_setting) == nullptr) {
-    return TrustStoreNSS::ResultDebugData::SlotFilterType::kDoNotAllowUserSlots;
-  }
-  return TrustStoreNSS::ResultDebugData::SlotFilterType::
-      kAllowSpecifiedUserSlot;
-}
-
 struct FreePK11GenericObjects {
   void operator()(PK11GenericObject* x) const {
     if (x) {
@@ -124,34 +109,6 @@ bool IsCertOnlyInNSSRoots(CERTCertificate* cert) {
 
 }  // namespace
 
-TrustStoreNSS::ResultDebugData::ResultDebugData(
-    bool ignore_system_trust_settings,
-    SlotFilterType slot_filter_type)
-    : ignore_system_trust_settings_(ignore_system_trust_settings),
-      slot_filter_type_(slot_filter_type) {}
-
-// static
-const TrustStoreNSS::ResultDebugData* TrustStoreNSS::ResultDebugData::Get(
-    const base::SupportsUserData* debug_data) {
-  return static_cast<ResultDebugData*>(
-      debug_data->GetUserData(kResultDebugDataKey));
-}
-
-// static
-void TrustStoreNSS::ResultDebugData::Create(
-    bool ignore_system_trust_settings,
-    SlotFilterType slot_filter_type,
-    base::SupportsUserData* debug_data) {
-  debug_data->SetUserData(kResultDebugDataKey,
-                          std::make_unique<ResultDebugData>(
-                              ignore_system_trust_settings, slot_filter_type));
-}
-
-std::unique_ptr<base::SupportsUserData::Data>
-TrustStoreNSS::ResultDebugData::Clone() {
-  return std::make_unique<ResultDebugData>(*this);
-}
-
 TrustStoreNSS::ListCertsResult::ListCertsResult(ScopedCERTCertificate cert,
                                                 CertificateTrust trust)
     : cert(std::move(cert)), trust(trust) {}
@@ -209,14 +166,8 @@ void TrustStoreNSS::SyncGetIssuersOf(const ParsedCertificate* cert,
   }
 }
 
-CertificateTrust TrustStoreNSS::GetTrust(const ParsedCertificate* cert,
-                                         base::SupportsUserData* debug_data) {
+CertificateTrust TrustStoreNSS::GetTrust(const ParsedCertificate* cert) {
   crypto::EnsureNSSInit();
-  if (debug_data) {
-    ResultDebugData::Create(ignore_system_trust_settings_,
-                            GetSlotFilterType(user_slot_trust_setting_),
-                            debug_data);
-  }
   // In theory we could also do better multi-profile slot filtering using a
   // similar approach as GetTrustIgnoringSystemTrust, however it makes the
   // logic more complicated and isn't really worth doing since we'll be
@@ -224,9 +175,9 @@ CertificateTrust TrustStoreNSS::GetTrust(const ParsedCertificate* cert,
   // better for ensuring that the temporary fallback policy actually falls back
   // to the same old behavior.
   if (ignore_system_trust_settings_) {
-    return GetTrustIgnoringSystemTrust(cert, debug_data);
+    return GetTrustIgnoringSystemTrust(cert);
   } else {
-    return GetTrustWithSystemTrust(cert, debug_data);
+    return GetTrustWithSystemTrust(cert);
   }
 }
 
@@ -264,7 +215,7 @@ TrustStoreNSS::ListCertsIgnoringNSSRoots() {
       continue;
     }
     results.emplace_back(x509_util::DupCERTCertificate(node->cert),
-                         GetTrustIgnoringSystemTrust(node->cert, nullptr));
+                         GetTrustIgnoringSystemTrust(node->cert));
   }
 
   return results;
@@ -279,8 +230,7 @@ TrustStoreNSS::ListCertsIgnoringNSSRoots() {
 // https://searchfox.org/nss/source/lib/pk11wrap/pk11cert.c#357)
 
 CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
-    const ParsedCertificate* cert,
-    base::SupportsUserData* debug_data) const {
+    const ParsedCertificate* cert) const {
   // If trust settings are only being used from a specified slot, and that slot
   // is nullptr, there's nothing to do. This corresponds to the case where we
   // wanted to get the builtin roots from NSS still but not user-added roots.
@@ -320,12 +270,11 @@ CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
     return CertificateTrust::ForUnspecified();
   }
 
-  return GetTrustIgnoringSystemTrust(nss_cert.get(), debug_data);
+  return GetTrustIgnoringSystemTrust(nss_cert.get());
 }
 
 CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
-    CERTCertificate* nss_cert,
-    base::SupportsUserData* debug_data) const {
+    CERTCertificate* nss_cert) const {
   // See if NSS has any trust settings for the certificate at all. If not,
   // there is no point in doing further work.
   CERTCertTrust nss_cert_trust;
@@ -515,8 +464,7 @@ CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
 }
 
 CertificateTrust TrustStoreNSS::GetTrustWithSystemTrust(
-    const ParsedCertificate* cert,
-    base::SupportsUserData* debug_data) const {
+    const ParsedCertificate* cert) const {
   // TODO(eroman): Inefficient -- path building will convert between
   // CERTCertificate and ParsedCertificate representations multiple times
   // (when getting the issuers, and again here).

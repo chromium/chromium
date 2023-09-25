@@ -85,8 +85,7 @@ class AsyncCertIssuerSourceStatic : public CertIssuerSource {
 
     ~StaticAsyncRequest() override = default;
 
-    void GetNext(ParsedCertificateList* out_certs,
-                 base::SupportsUserData* debug_data) override {
+    void GetNext(ParsedCertificateList* out_certs) override {
       if (issuers_iter_ != issuers_.end())
         out_certs->push_back(std::move(*issuers_iter_++));
     }
@@ -156,49 +155,6 @@ class AsyncCertIssuerSourceStatic : public CertIssuerSource {
            << errors.ToDebugString();
   }
   return ::testing::AssertionSuccess();
-}
-
-const void* kKey = &kKey;
-class TrustStoreThatStoresUserData : public TrustStore {
- public:
-  class Data : public base::SupportsUserData::Data {
-   public:
-    explicit Data(int value) : value(value) {}
-
-    int value = 0;
-  };
-
-  // TrustStore implementation:
-  void SyncGetIssuersOf(const ParsedCertificate* cert,
-                        ParsedCertificateList* issuers) override {}
-  CertificateTrust GetTrust(const ParsedCertificate* cert,
-                            base::SupportsUserData* debug_data) override {
-    debug_data->SetUserData(kKey, std::make_unique<Data>(1234));
-    return CertificateTrust::ForUnspecified();
-  }
-};
-
-TEST(PathBuilderResultUserDataTest, ModifyUserDataInConstructor) {
-  std::shared_ptr<const ParsedCertificate> a_by_b;
-  ASSERT_TRUE(ReadTestCert("multi-root-A-by-B.pem", &a_by_b));
-  SimplePathBuilderDelegate delegate(
-      1024, SimplePathBuilderDelegate::DigestPolicy::kWeakAllowSha1);
-  der::GeneralizedTime verify_time = {2017, 3, 1, 0, 0, 0};
-  TrustStoreThatStoresUserData trust_store;
-
-  // |trust_store| will unconditionally store user data in the
-  // CertPathBuilder::Result. This ensures that the Result object has been
-  // initialized before the first GetTrust call occurs (otherwise the test will
-  // crash or fail on ASAN bots).
-  CertPathBuilder path_builder(
-      a_by_b, &trust_store, &delegate, verify_time, KeyPurpose::ANY_EKU,
-      InitialExplicitPolicy::kFalse, {der::Input(kAnyPolicyOid)},
-      InitialPolicyMappingInhibit::kFalse, InitialAnyPolicyInhibit::kFalse);
-  CertPathBuilder::Result result = path_builder.Run();
-  auto* data = static_cast<TrustStoreThatStoresUserData::Data*>(
-      result.GetUserData(kKey));
-  ASSERT_TRUE(data);
-  EXPECT_EQ(1234, data->value);
 }
 
 class PathBuilderMultiRootTest : public ::testing::Test {
@@ -1566,7 +1522,7 @@ TEST_F(PathBuilderKeyRolloverTest, TestDuplicateIntermediateAndRoot) {
 
 class MockCertIssuerSourceRequest : public CertIssuerSource::Request {
  public:
-  MOCK_METHOD2(GetNext, void(ParsedCertificateList*, base::SupportsUserData*));
+  MOCK_METHOD1(GetNext, void(ParsedCertificateList*));
 };
 
 class MockCertIssuerSource : public CertIssuerSource {
@@ -1602,10 +1558,7 @@ class AppendCertToList {
       const std::shared_ptr<const ParsedCertificate>& cert)
       : cert_(cert) {}
 
-  void operator()(ParsedCertificateList* out,
-                  base::SupportsUserData* debug_data) {
-    out->push_back(cert_);
-  }
+  void operator()(ParsedCertificateList* out) { out->push_back(cert_); }
 
  private:
   std::shared_ptr<const ParsedCertificate> cert_;
@@ -1643,7 +1596,7 @@ TEST_F(PathBuilderKeyRolloverTest, TestMultipleAsyncIssuersFromSingleSource) {
         .WillOnce(Invoke(&req_mover, &CertIssuerSourceRequestMover::MoveIt));
   }
 
-  EXPECT_CALL(*target_issuers_req, GetNext(_, _))
+  EXPECT_CALL(*target_issuers_req, GetNext(_))
       // First async batch: return oldintermediate_.
       .WillOnce(Invoke(AppendCertToList(oldintermediate_)))
       // Second async batch: return newintermediate_.
@@ -1730,7 +1683,7 @@ TEST_F(PathBuilderKeyRolloverTest, TestDuplicateAsyncIntermediates) {
               oldintermediate_->der_cert().Length(), nullptr)),
           {}, nullptr));
 
-  EXPECT_CALL(*target_issuers_req, GetNext(_, _))
+  EXPECT_CALL(*target_issuers_req, GetNext(_))
       // First async batch: return oldintermediate_.
       .WillOnce(Invoke(AppendCertToList(oldintermediate_)))
       // Second async batch: return a different copy of oldintermediate_ again.

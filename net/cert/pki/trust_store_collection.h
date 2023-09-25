@@ -31,8 +31,7 @@ class NET_EXPORT TrustStoreCollection : public TrustStore {
   // TrustStore implementation:
   void SyncGetIssuersOf(const ParsedCertificate* cert,
                         ParsedCertificateList* issuers) override;
-  CertificateTrust GetTrust(const ParsedCertificate* cert,
-                            base::SupportsUserData* debug_data) override;
+  CertificateTrust GetTrust(const ParsedCertificate* cert) override;
 
  private:
   std::vector<TrustStore*> stores_;

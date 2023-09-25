@@ -68,8 +68,7 @@ class NET_EXPORT TrustStoreChrome : public TrustStore {
   // TrustStore implementation:
   void SyncGetIssuersOf(const ParsedCertificate* cert,
                         ParsedCertificateList* issuers) override;
-  CertificateTrust GetTrust(const ParsedCertificate* cert,
-                            base::SupportsUserData* debug_data) override;
+  CertificateTrust GetTrust(const ParsedCertificate* cert) override;
 
   // Returns true if the trust store contains the given ParsedCertificate
   // (matches by DER).

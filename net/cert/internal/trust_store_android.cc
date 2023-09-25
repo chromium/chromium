@@ -46,9 +46,8 @@ class TrustStoreAndroid::Impl
   }
 
   // TODO(hchao): see if we can get GetTrust marked const again
-  CertificateTrust GetTrust(const ParsedCertificate* cert,
-                            base::SupportsUserData* debug_data) {
-    return trust_store_.GetTrust(cert, debug_data);
+  CertificateTrust GetTrust(const ParsedCertificate* cert) {
+    return trust_store_.GetTrust(cert);
   }
 
   int generation() { return generation_; }
@@ -115,10 +114,8 @@ void TrustStoreAndroid::SyncGetIssuersOf(const ParsedCertificate* cert,
   MaybeInitializeAndGetImpl()->SyncGetIssuersOf(cert, issuers);
 }
 
-CertificateTrust TrustStoreAndroid::GetTrust(
-    const ParsedCertificate* cert,
-    base::SupportsUserData* debug_data) {
-  return MaybeInitializeAndGetImpl()->GetTrust(cert, debug_data);
+CertificateTrust TrustStoreAndroid::GetTrust(const ParsedCertificate* cert) {
+  return MaybeInitializeAndGetImpl()->GetTrust(cert);
 }
 
 }  // namespace net

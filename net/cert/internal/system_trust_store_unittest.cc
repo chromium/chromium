@@ -49,14 +49,14 @@ TEST(SystemTrustStoreChrome, SystemDistrustOverridesChromeTrust) {
   // With no trust settings in the fake system trust store, the cert is trusted
   // by the test chrome root store.
   EXPECT_TRUE(system_trust_store_chrome->GetTrustStore()
-                  ->GetTrust(root.get(), /*debug_data=*/nullptr)
+                  ->GetTrust(root.get())
                   .IsTrustAnchor());
 
   // Adding a distrust entry in the fake system trust store should override the
   // trust in the chrome root store.
   test_system_trust_store_ptr->AddDistrustedCertificateForTest(root);
   EXPECT_TRUE(system_trust_store_chrome->GetTrustStore()
-                  ->GetTrust(root.get(), /*debug_data=*/nullptr)
+                  ->GetTrust(root.get())
                   .IsDistrusted());
 }
 
@@ -87,7 +87,7 @@ TEST(SystemTrustStoreChrome, SystemLeafTrustDoesNotOverrideChromeTrust) {
   // With no trust settings in the fake system trust store, the cert is trusted
   // by the test chrome root store.
   EXPECT_TRUE(system_trust_store_chrome->GetTrustStore()
-                  ->GetTrust(root.get(), /*debug_data=*/nullptr)
+                  ->GetTrust(root.get())
                   .IsTrustAnchor());
 
   // Adding the certificate to the fake system store as a trusted leaf doesn't
@@ -95,10 +95,10 @@ TEST(SystemTrustStoreChrome, SystemLeafTrustDoesNotOverrideChromeTrust) {
   test_system_trust_store_ptr->AddCertificate(
       root, CertificateTrust::ForTrustedLeaf());
   EXPECT_TRUE(system_trust_store_chrome->GetTrustStore()
-                  ->GetTrust(root.get(), /*debug_data=*/nullptr)
+                  ->GetTrust(root.get())
                   .IsTrustAnchor());
   EXPECT_FALSE(system_trust_store_chrome->GetTrustStore()
-                   ->GetTrust(root.get(), /*debug_data=*/nullptr)
+                   ->GetTrust(root.get())
                    .IsTrustLeaf());
 }
 #endif  // CHROME_ROOT_STORE_SUPPORTED

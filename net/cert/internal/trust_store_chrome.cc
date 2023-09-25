@@ -109,10 +109,8 @@ void TrustStoreChrome::SyncGetIssuersOf(const ParsedCertificate* cert,
   trust_store_.SyncGetIssuersOf(cert, issuers);
 }
 
-CertificateTrust TrustStoreChrome::GetTrust(
-    const ParsedCertificate* cert,
-    base::SupportsUserData* debug_data) {
-  return trust_store_.GetTrust(cert, debug_data);
+CertificateTrust TrustStoreChrome::GetTrust(const ParsedCertificate* cert) {
+  return trust_store_.GetTrust(cert);
 }
 
 bool TrustStoreChrome::Contains(const ParsedCertificate* cert) const {

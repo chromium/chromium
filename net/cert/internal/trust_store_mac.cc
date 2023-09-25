@@ -56,51 +56,17 @@ enum class TrustStatus {
   DISTRUSTED
 };
 
-const void* kResultDebugDataKey = &kResultDebugDataKey;
-
 // Returns trust status of usage constraints dictionary |trust_dict| for a
 // certificate that |is_self_issued|.
 TrustStatus IsTrustDictionaryTrustedForPolicy(
     CFDictionaryRef trust_dict,
     bool is_self_issued,
-    const CFStringRef target_policy_oid,
-    int* debug_info) {
+    const CFStringRef target_policy_oid) {
   crypto::GetMacSecurityServicesLock().AssertAcquired();
 
   // An empty trust dict should be interpreted as
   // kSecTrustSettingsResultTrustRoot. This is handled by falling through all
   // the conditions below with the default value of |trust_settings_result|.
-  CFIndex dict_size = CFDictionaryGetCount(trust_dict);
-  if (dict_size == 0)
-    *debug_info |= TrustStoreMac::TRUST_SETTINGS_DICT_EMPTY;
-
-  CFIndex known_elements = 0;
-  if (CFDictionaryContainsKey(trust_dict, kSecTrustSettingsPolicy)) {
-    *debug_info |= TrustStoreMac::TRUST_SETTINGS_DICT_CONTAINS_POLICY;
-    known_elements++;
-  }
-  if (CFDictionaryContainsKey(trust_dict, kSecTrustSettingsApplication)) {
-    *debug_info |= TrustStoreMac::TRUST_SETTINGS_DICT_CONTAINS_APPLICATION;
-    known_elements++;
-  }
-  if (CFDictionaryContainsKey(trust_dict, kSecTrustSettingsPolicyString)) {
-    *debug_info |= TrustStoreMac::TRUST_SETTINGS_DICT_CONTAINS_POLICY_STRING;
-    known_elements++;
-  }
-  if (CFDictionaryContainsKey(trust_dict, kSecTrustSettingsKeyUsage)) {
-    *debug_info |= TrustStoreMac::TRUST_SETTINGS_DICT_CONTAINS_KEY_USAGE;
-    known_elements++;
-  }
-  if (CFDictionaryContainsKey(trust_dict, kSecTrustSettingsResult)) {
-    *debug_info |= TrustStoreMac::TRUST_SETTINGS_DICT_CONTAINS_RESULT;
-    known_elements++;
-  }
-  if (CFDictionaryContainsKey(trust_dict, kSecTrustSettingsAllowedError)) {
-    *debug_info |= TrustStoreMac::TRUST_SETTINGS_DICT_CONTAINS_ALLOWED_ERROR;
-    known_elements++;
-  }
-  if (known_elements != dict_size)
-    *debug_info |= TrustStoreMac::TRUST_SETTINGS_DICT_UNKNOWN_KEY;
 
   // Trust settings may be scoped to a single application, by checking that the
   // code signing identity of the current application matches the serialized
@@ -129,7 +95,6 @@ TrustStatus IsTrustDictionaryTrustedForPolicy(
     SecPolicyRef policy_ref = base::apple::GetValueFromDictionary<SecPolicyRef>(
         trust_dict, kSecTrustSettingsPolicy);
     if (!policy_ref) {
-      *debug_info |= TrustStoreMac::TRUST_SETTINGS_DICT_INVALID_POLICY_TYPE;
       return TrustStatus::UNSPECIFIED;
     }
     base::apple::ScopedCFTypeRef<CFDictionaryRef> policy_dict(
@@ -153,7 +118,6 @@ TrustStatus IsTrustDictionaryTrustedForPolicy(
     if (!trust_settings_result_ref ||
         !CFNumberGetValue(trust_settings_result_ref, kCFNumberIntType,
                           &trust_settings_result)) {
-      *debug_info |= TrustStoreMac::TRUST_SETTINGS_DICT_INVALID_RESULT_TYPE;
       return TrustStatus::UNSPECIFIED;
     }
   }
@@ -188,14 +152,12 @@ TrustStatus IsTrustDictionaryTrustedForPolicy(
 // that |is_self_issued| should be treated as a trust anchor.
 TrustStatus IsTrustSettingsTrustedForPolicy(CFArrayRef trust_settings,
                                             bool is_self_issued,
-                                            const CFStringRef policy_oid,
-                                            int* debug_info) {
+                                            const CFStringRef policy_oid) {
   // An empty trust settings array (that is, the trust_settings parameter
   // returns a valid but empty CFArray) means "always trust this certificate"
   // with an overall trust setting for the certificate of
   // kSecTrustSettingsResultTrustRoot.
   if (CFArrayGetCount(trust_settings) == 0) {
-    *debug_info |= TrustStoreMac::TRUST_SETTINGS_ARRAY_EMPTY;
     return is_self_issued ? TrustStatus::TRUSTED : TrustStatus::UNSPECIFIED;
   }
 
@@ -204,7 +166,7 @@ TrustStatus IsTrustSettingsTrustedForPolicy(CFArrayRef trust_settings,
     CFDictionaryRef trust_dict = reinterpret_cast<CFDictionaryRef>(
         const_cast<void*>(CFArrayGetValueAtIndex(trust_settings, i)));
     TrustStatus trust = IsTrustDictionaryTrustedForPolicy(
-        trust_dict, is_self_issued, policy_oid, debug_info);
+        trust_dict, is_self_issued, policy_oid);
     if (trust != TrustStatus::UNSPECIFIED)
       return trust;
   }
@@ -217,8 +179,7 @@ TrustStatus IsSecCertificateTrustedForPolicyInDomain(
     SecCertificateRef cert_handle,
     const bool is_self_issued,
     const CFStringRef policy_oid,
-    SecTrustSettingsDomain trust_domain,
-    int* debug_info) {
+    SecTrustSettingsDomain trust_domain) {
   crypto::GetMacSecurityServicesLock().AssertAcquired();
 
   base::apple::ScopedCFTypeRef<CFArrayRef> trust_settings;
@@ -231,19 +192,17 @@ TrustStatus IsSecCertificateTrustedForPolicyInDomain(
   }
   if (err) {
     OSSTATUS_LOG(ERROR, err) << "SecTrustSettingsCopyTrustSettings error";
-    *debug_info |= TrustStoreMac::COPY_TRUST_SETTINGS_ERROR;
     return TrustStatus::UNSPECIFIED;
   }
   TrustStatus trust = IsTrustSettingsTrustedForPolicy(
-      trust_settings, is_self_issued, policy_oid, debug_info);
+      trust_settings, is_self_issued, policy_oid);
   return trust;
 }
 
 TrustStatus IsCertificateTrustedForPolicyInDomain(
     const ParsedCertificate* cert,
     const CFStringRef policy_oid,
-    SecTrustSettingsDomain trust_domain,
-    int* debug_info) {
+    SecTrustSettingsDomain trust_domain) {
   // TODO(eroman): Inefficient -- path building will convert between
   // SecCertificateRef and ParsedCertificate representations multiple times
   // (when getting the issuers, and again here).
@@ -263,14 +222,13 @@ TrustStatus IsCertificateTrustedForPolicyInDomain(
   const bool is_self_issued =
       cert->normalized_subject() == cert->normalized_issuer();
 
-  return IsSecCertificateTrustedForPolicyInDomain(
-      cert_handle, is_self_issued, policy_oid, trust_domain, debug_info);
+  return IsSecCertificateTrustedForPolicyInDomain(cert_handle, is_self_issued,
+                                                  policy_oid, trust_domain);
 }
 
 TrustStatus IsCertificateTrustedForPolicy(const ParsedCertificate* cert,
                                           SecCertificateRef cert_handle,
-                                          const CFStringRef policy_oid,
-                                          int* debug_info) {
+                                          const CFStringRef policy_oid) {
   crypto::GetMacSecurityServicesLock().AssertAcquired();
 
   const bool is_self_issued =
@@ -290,11 +248,10 @@ TrustStatus IsCertificateTrustedForPolicy(const ParsedCertificate* cert,
         continue;
       }
       OSSTATUS_LOG(ERROR, err) << "SecTrustSettingsCopyTrustSettings error";
-      *debug_info |= TrustStoreMac::COPY_TRUST_SETTINGS_ERROR;
       continue;
     }
     TrustStatus trust = IsTrustSettingsTrustedForPolicy(
-        trust_settings, is_self_issued, policy_oid, debug_info);
+        trust_settings, is_self_issued, policy_oid);
     if (trust != TrustStatus::UNSPECIFIED)
       return trust;
   }
@@ -305,8 +262,7 @@ TrustStatus IsCertificateTrustedForPolicy(const ParsedCertificate* cert,
 }
 
 TrustStatus IsCertificateTrustedForPolicy(const ParsedCertificate* cert,
-                                          const CFStringRef policy_oid,
-                                          int* debug_info) {
+                                          const CFStringRef policy_oid) {
   base::apple::ScopedCFTypeRef<SecCertificateRef> cert_handle =
       x509_util::CreateSecCertificateFromBytes(cert->der_cert().UnsafeData(),
                                                cert->der_cert().Length());
@@ -314,18 +270,7 @@ TrustStatus IsCertificateTrustedForPolicy(const ParsedCertificate* cert,
   if (!cert_handle)
     return TrustStatus::UNSPECIFIED;
 
-  return IsCertificateTrustedForPolicy(cert, cert_handle, policy_oid,
-                                       debug_info);
-}
-
-void UpdateUserData(int debug_info,
-                    base::SupportsUserData* user_data,
-                    TrustStoreMac::TrustImplType impl_type) {
-  if (!user_data)
-    return;
-  TrustStoreMac::ResultDebugData* result_debug_data =
-      TrustStoreMac::ResultDebugData::GetOrCreate(user_data);
-  result_debug_data->UpdateTrustDebugInfo(debug_info, impl_type);
+  return IsCertificateTrustedForPolicy(cert, cert_handle, policy_oid);
 }
 
 // Returns true if |cert| would never be a valid intermediate. (A return
@@ -359,7 +304,6 @@ class TrustDomainCacheFullCerts {
  public:
   struct TrustStatusDetails {
     TrustStatus trust_status = TrustStatus::UNKNOWN;
-    int debug_info = 0;
   };
 
   TrustDomainCacheFullCerts(SecTrustSettingsDomain domain,
@@ -425,21 +369,16 @@ class TrustDomainCacheFullCerts {
 
   // Returns the trust status for |cert| in |domain_|.
   TrustStatus IsCertTrusted(const ParsedCertificate* cert,
-                            const SHA256HashValue& cert_hash,
-                            base::SupportsUserData* debug_data) {
+                            const SHA256HashValue& cert_hash) {
     auto cache_iter = trust_status_cache_.find(cert_hash);
     if (cache_iter == trust_status_cache_.end()) {
       // Cert does not have trust settings in this domain, return UNSPECIFIED.
-      UpdateUserData(0, debug_data,
-                     TrustStoreMac::TrustImplType::kDomainCacheFullCerts);
       return TrustStatus::UNSPECIFIED;
     }
 
     if (cache_iter->second.trust_status != TrustStatus::UNKNOWN) {
       // Cert has trust settings and trust has already been calculated, return
       // the cached value.
-      UpdateUserData(cache_iter->second.debug_info, debug_data,
-                     TrustStoreMac::TrustImplType::kDomainCacheFullCerts);
       return cache_iter->second.trust_status;
     }
 
@@ -447,11 +386,9 @@ class TrustDomainCacheFullCerts {
 
     // Cert has trust settings but trust has not been calculated yet.
     // Calculate it now, insert into cache, and return.
-    TrustStatus cert_trust = IsCertificateTrustedForPolicyInDomain(
-        cert, policy_oid_, domain_, &cache_iter->second.debug_info);
+    TrustStatus cert_trust =
+        IsCertificateTrustedForPolicyInDomain(cert, policy_oid_, domain_);
     cache_iter->second.trust_status = cert_trust;
-    UpdateUserData(cache_iter->second.debug_info, debug_data,
-                   TrustStoreMac::TrustImplType::kDomainCacheFullCerts);
     return cert_trust;
   }
 
@@ -619,38 +556,6 @@ using KeychainTrustOrCertsObserver =
 
 }  // namespace
 
-// static
-const TrustStoreMac::ResultDebugData* TrustStoreMac::ResultDebugData::Get(
-    const base::SupportsUserData* debug_data) {
-  return static_cast<ResultDebugData*>(
-      debug_data->GetUserData(kResultDebugDataKey));
-}
-
-// static
-TrustStoreMac::ResultDebugData* TrustStoreMac::ResultDebugData::GetOrCreate(
-    base::SupportsUserData* debug_data) {
-  ResultDebugData* data = static_cast<ResultDebugData*>(
-      debug_data->GetUserData(kResultDebugDataKey));
-  if (!data) {
-    std::unique_ptr<ResultDebugData> new_data =
-        std::make_unique<ResultDebugData>();
-    data = new_data.get();
-    debug_data->SetUserData(kResultDebugDataKey, std::move(new_data));
-  }
-  return data;
-}
-
-void TrustStoreMac::ResultDebugData::UpdateTrustDebugInfo(
-    int trust_debug_info,
-    TrustImplType impl_type) {
-  combined_trust_debug_info_ |= trust_debug_info;
-  trust_impl_ = impl_type;
-}
-
-std::unique_ptr<base::SupportsUserData::Data>
-TrustStoreMac::ResultDebugData::Clone() {
-  return std::make_unique<ResultDebugData>(*this);
-}
 
 // Interface for different implementations of getting trust settings from the
 // Mac APIs. This abstraction can be removed once a single implementation has
@@ -659,8 +564,7 @@ class TrustStoreMac::TrustImpl {
  public:
   virtual ~TrustImpl() = default;
 
-  virtual TrustStatus IsCertTrusted(const ParsedCertificate* cert,
-                                    base::SupportsUserData* debug_data) = 0;
+  virtual TrustStatus IsCertTrusted(const ParsedCertificate* cert) = 0;
   virtual bool ImplementsSyncGetIssuersOf() const { return false; }
   virtual void SyncGetIssuersOf(const ParsedCertificate* cert,
                                 ParsedCertificateList* issuers) {}
@@ -693,8 +597,7 @@ class TrustStoreMac::TrustImplDomainCacheFullCerts
       const TrustImplDomainCacheFullCerts&) = delete;
 
   // Returns the trust status for |cert|.
-  TrustStatus IsCertTrusted(const ParsedCertificate* cert,
-                            base::SupportsUserData* debug_data) override {
+  TrustStatus IsCertTrusted(const ParsedCertificate* cert) override {
     SHA256HashValue cert_hash = CalculateFingerprint256(cert->der_cert());
 
     base::AutoLock lock(cache_lock_);
@@ -704,8 +607,7 @@ class TrustStoreMac::TrustImplDomainCacheFullCerts
     // admin (and both override the system domain, but we don't check that).
     for (TrustDomainCacheFullCerts* trust_domain_cache :
          {&user_domain_cache_, &admin_domain_cache_}) {
-      TrustStatus ts =
-          trust_domain_cache->IsCertTrusted(cert, cert_hash, debug_data);
+      TrustStatus ts = trust_domain_cache->IsCertTrusted(cert, cert_hash);
       if (ts != TrustStatus::UNSPECIFIED)
         return ts;
     }
@@ -907,15 +809,8 @@ class TrustStoreMac::TrustImplKeychainCacheFullCerts
   TrustImplKeychainCacheFullCerts& operator=(
       const TrustImplKeychainCacheFullCerts&) = delete;
 
-  TrustStatus IsCertTrusted(const ParsedCertificate* cert,
-                            base::SupportsUserData* debug_data) override {
+  TrustStatus IsCertTrusted(const ParsedCertificate* cert) override {
     SHA256HashValue cert_hash = CalculateFingerprint256(cert->der_cert());
-
-    // This impl doesn't bother to set the debug_info field since we're not
-    // using that anymore, but the related code hasn't been cleaned up yet.
-    // TODO(https://crbug.com/1379461): delete the debug user data code.
-    UpdateUserData(0, debug_data,
-                   TrustStoreMac::TrustImplType::kKeychainCacheFullCerts);
 
     base::AutoLock lock(cache_lock_);
     MaybeInitializeCache();
@@ -1021,9 +916,8 @@ class TrustStoreMac::TrustImplKeychainCacheFullCerts
         continue;
       }
 
-      int debug_info = 0;
       TrustStatus trust_status = IsCertificateTrustedForPolicy(
-          parsed_cert.get(), sec_cert, policy_oid_, &debug_info);
+          parsed_cert.get(), sec_cert, policy_oid_);
 
       if (trust_status == TrustStatus::TRUSTED ||
           trust_status == TrustStatus::DISTRUSTED) {
@@ -1084,14 +978,9 @@ class TrustStoreMac::TrustImplNoCache : public TrustStoreMac::TrustImpl {
   ~TrustImplNoCache() override = default;
 
   // Returns the trust status for |cert|.
-  TrustStatus IsCertTrusted(const ParsedCertificate* cert,
-                            base::SupportsUserData* debug_data) override {
-    int debug_info = 0;
+  TrustStatus IsCertTrusted(const ParsedCertificate* cert) override {
     base::AutoLock lock(crypto::GetMacSecurityServicesLock());
-    TrustStatus result =
-        IsCertificateTrustedForPolicy(cert, policy_oid_, &debug_info);
-    UpdateUserData(debug_info, debug_data,
-                   TrustStoreMac::TrustImplType::kSimple);
+    TrustStatus result = IsCertificateTrustedForPolicy(cert, policy_oid_);
     return result;
   }
 
@@ -1161,9 +1050,8 @@ void TrustStoreMac::SyncGetIssuersOf(const ParsedCertificate* cert,
   }
 }
 
-CertificateTrust TrustStoreMac::GetTrust(const ParsedCertificate* cert,
-                                         base::SupportsUserData* debug_data) {
-  TrustStatus trust_status = trust_cache_->IsCertTrusted(cert, debug_data);
+CertificateTrust TrustStoreMac::GetTrust(const ParsedCertificate* cert) {
+  TrustStatus trust_status = trust_cache_->IsCertTrusted(cert);
   switch (trust_status) {
     case TrustStatus::TRUSTED: {
       CertificateTrust trust;

@@ -110,8 +110,7 @@ TEST_F(SystemTrustStoreNSSTest, UserSlotRestrictionAllows) {
   ASSERT_NO_FATAL_FAILURE(ImportRootCertAsTrusted(test_nssdb_.slot()));
 
   CertificateTrust trust =
-      system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get(),
-                                                    /*debug_data=*/nullptr);
+      system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get());
   EXPECT_EQ(CertificateTrust::ForTrustAnchor()
                 .WithEnforceAnchorConstraints()
                 .WithEnforceAnchorExpiry()
@@ -130,8 +129,7 @@ TEST_F(SystemTrustStoreNSSTest,
   ASSERT_NO_FATAL_FAILURE(ImportRootCertAsTrusted(test_nssdb_.slot()));
 
   CertificateTrust trust =
-      system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get(),
-                                                    /*debug_data=*/nullptr);
+      system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get());
   EXPECT_EQ(CertificateTrust::ForTrustAnchor().ToDebugString(),
             trust.ToDebugString());
 }
@@ -147,8 +145,7 @@ TEST_F(SystemTrustStoreNSSTest, UserSlotRestrictionDisallows) {
   ASSERT_NO_FATAL_FAILURE(ImportRootCertAsTrusted(other_test_nssdb_.slot()));
 
   CertificateTrust trust =
-      system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get(),
-                                                    /*debug_data=*/nullptr);
+      system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get());
   EXPECT_EQ(CertificateTrust::ForUnspecified().ToDebugString(),
             trust.ToDebugString());
 }
@@ -162,8 +159,7 @@ TEST_F(SystemTrustStoreNSSTest, NoUserSlots) {
   ASSERT_NO_FATAL_FAILURE(ImportRootCertAsTrusted(test_nssdb_.slot()));
 
   CertificateTrust trust =
-      system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get(),
-                                                    /*debug_data=*/nullptr);
+      system_trust_store->GetTrustStore()->GetTrust(parsed_root_cert_.get());
   EXPECT_EQ(CertificateTrust::ForUnspecified().ToDebugString(),
             trust.ToDebugString());
 }

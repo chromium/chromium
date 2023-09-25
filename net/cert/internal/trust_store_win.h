@@ -76,8 +76,7 @@ class NET_EXPORT TrustStoreWin : public TrustStore {
   void SyncGetIssuersOf(const ParsedCertificate* cert,
                         ParsedCertificateList* issuers) override;
 
-  CertificateTrust GetTrust(const ParsedCertificate* cert,
-                            base::SupportsUserData* debug_data) override;
+  CertificateTrust GetTrust(const ParsedCertificate* cert) override;
 
  private:
   // Inner Impl class for use in initializing stores.

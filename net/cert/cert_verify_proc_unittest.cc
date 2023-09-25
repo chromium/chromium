@@ -35,7 +35,6 @@
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/crl_set.h"
 #include "net/cert/ev_root_ca_metadata.h"
-#include "net/cert/internal/cert_issuer_source_aia.h"
 #include "net/cert/internal/system_trust_store.h"
 #include "net/cert/ocsp_revocation_status.h"
 #include "net/cert/pem.h"
@@ -77,7 +76,6 @@
 #include "net/cert/cert_verify_proc_ios.h"
 #elif BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
-#include "net/cert/internal/trust_store_mac.h"
 #endif
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
@@ -1495,17 +1493,6 @@ TEST_P(CertVerifyProcInternalTest, MAYBE_TestKnownRoot) {
       << "that date, please disable and file a bug "
       << "against mattm. Current time: " << base::Time::Now();
   EXPECT_TRUE(verify_result.is_issued_by_known_root);
-#if BUILDFLAG(IS_MAC)
-  if (verify_proc_type() == CERT_VERIFY_PROC_BUILTIN) {
-    auto* mac_trust_debug_info =
-        net::TrustStoreMac::ResultDebugData::Get(&verify_result);
-    ASSERT_TRUE(mac_trust_debug_info);
-    // Since this test queries the real trust store, can't know exactly
-    // what bits should be set in the trust debug info, but it should at
-    // least have something set.
-    EXPECT_NE(0, mac_trust_debug_info->combined_trust_debug_info());
-  }
-#endif
 }
 
 // This tests that on successful certificate verification,
@@ -3003,13 +2990,6 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
   EXPECT_NE(OK, error);
 
   EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
-  if (VerifyProcTypeIsBuiltin()) {
-    const net::CertIssuerSourceAia::AiaDebugData* aia_debug_data =
-        net::CertIssuerSourceAia::AiaDebugData::Get(&verify_result);
-    ASSERT_TRUE(aia_debug_data);
-    EXPECT_EQ(0, aia_debug_data->aia_fetch_success());
-    EXPECT_EQ(1, aia_debug_data->aia_fetch_fail());
-  }
 }
 #undef MAYBE_IntermediateFromAia404
 
@@ -3065,13 +3045,6 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
     int error = Verify(leaf.get(), kHostname, /*flags=*/0, CertificateList(),
                        &verify_result);
     EXPECT_THAT(error, IsOk());
-    if (VerifyProcTypeIsBuiltin()) {
-      const net::CertIssuerSourceAia::AiaDebugData* aia_debug_data =
-          net::CertIssuerSourceAia::AiaDebugData::Get(&verify_result);
-      ASSERT_TRUE(aia_debug_data);
-      EXPECT_EQ(1, aia_debug_data->aia_fetch_success());
-      EXPECT_EQ(0, aia_debug_data->aia_fetch_fail());
-    }
   }
 }
 
@@ -3129,13 +3102,6 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
     EXPECT_THAT(error, IsOk());
   }
 
-  if (VerifyProcTypeIsBuiltin()) {
-    const net::CertIssuerSourceAia::AiaDebugData* aia_debug_data =
-        net::CertIssuerSourceAia::AiaDebugData::Get(&verify_result);
-    ASSERT_TRUE(aia_debug_data);
-    EXPECT_EQ(1, aia_debug_data->aia_fetch_success());
-    EXPECT_EQ(0, aia_debug_data->aia_fetch_fail());
-  }
 }
 
 // This test is the same as IntermediateFromAia200Pem, but with a different
@@ -3188,13 +3154,6 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
     EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
   } else {
     EXPECT_THAT(error, IsOk());
-  }
-  if (VerifyProcTypeIsBuiltin()) {
-    const net::CertIssuerSourceAia::AiaDebugData* aia_debug_data =
-        net::CertIssuerSourceAia::AiaDebugData::Get(&verify_result);
-    ASSERT_TRUE(aia_debug_data);
-    EXPECT_EQ(1, aia_debug_data->aia_fetch_success());
-    EXPECT_EQ(0, aia_debug_data->aia_fetch_fail());
   }
 }
 
@@ -3262,11 +3221,6 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
 
     EXPECT_FALSE(verify_result.has_sha1);
     EXPECT_THAT(error, IsOk());
-    const net::CertIssuerSourceAia::AiaDebugData* aia_debug_data =
-        net::CertIssuerSourceAia::AiaDebugData::Get(&verify_result);
-    ASSERT_TRUE(aia_debug_data);
-    EXPECT_EQ(1, aia_debug_data->aia_fetch_success());
-    EXPECT_EQ(0, aia_debug_data->aia_fetch_fail());
   } else {
     EXPECT_NE(OK, error);
     if (verify_proc_type() == CERT_VERIFY_PROC_ANDROID &&

@@ -23,56 +23,6 @@ namespace net {
 // TrustStoreMac object outlives any threads accessing it.
 class NET_EXPORT TrustStoreMac : public TrustStore {
  public:
-  // Bits representing different conditions encountered while evaluating
-  // the trustSettings returned by SecTrustSettingsCopyTrustSettings.
-  enum TrustDebugInfo {
-    // The trustSettings array was empty.
-    TRUST_SETTINGS_ARRAY_EMPTY = 1 << 0,
-
-    // One of the trustSettings dictionaries was empty.
-    TRUST_SETTINGS_DICT_EMPTY = 1 << 1,
-
-    // One of the trustSettings dictionaries contained an unknown key.
-    TRUST_SETTINGS_DICT_UNKNOWN_KEY = 1 << 2,
-
-    // One of the trustSettings dictionaries contained a
-    // kSecTrustSettingsPolicy key.
-    TRUST_SETTINGS_DICT_CONTAINS_POLICY = 1 << 3,
-
-    // One of the trustSettings dictionaries contained a
-    // kSecTrustSettingsPolicy key with a value that was not a SecPolicyRef.
-    TRUST_SETTINGS_DICT_INVALID_POLICY_TYPE = 1 << 4,
-
-    // One of the trustSettings dictionaries contained a
-    // kSecTrustSettingsApplication key.
-    TRUST_SETTINGS_DICT_CONTAINS_APPLICATION = 1 << 5,
-
-    // One of the trustSettings dictionaries contained a
-    // kSecTrustSettingsPolicyString key.
-    TRUST_SETTINGS_DICT_CONTAINS_POLICY_STRING = 1 << 6,
-
-    // One of the trustSettings dictionaries contained a
-    // kSecTrustSettingsKeyUsage key.
-    TRUST_SETTINGS_DICT_CONTAINS_KEY_USAGE = 1 << 7,
-
-    // One of the trustSettings dictionaries contained a
-    // kSecTrustSettingsResult key.
-    TRUST_SETTINGS_DICT_CONTAINS_RESULT = 1 << 8,
-
-    // One of the trustSettings dictionaries contained a
-    // kSecTrustSettingsResult key with a value that was not a CFNumber or
-    // could not be represented by a signed int.
-    TRUST_SETTINGS_DICT_INVALID_RESULT_TYPE = 1 << 9,
-
-    // One of the trustSettings dictionaries contained a
-    // kSecTrustSettingsAllowedError key.
-    TRUST_SETTINGS_DICT_CONTAINS_ALLOWED_ERROR = 1 << 10,
-
-    // SecTrustSettingsCopyTrustSettings returned a value other than
-    // errSecSuccess or errSecItemNotFound.
-    COPY_TRUST_SETTINGS_ERROR = 1 << 11,
-  };
-
   // NOTE: When updating this enum, also update ParamToTrustImplType in
   // system_trust_store.cc
   enum class TrustImplType {
@@ -82,30 +32,6 @@ class NET_EXPORT TrustStoreMac : public TrustStore {
     kSimple = 2,
     kDomainCacheFullCerts = 4,
     kKeychainCacheFullCerts = 5,
-  };
-
-  class ResultDebugData : public base::SupportsUserData::Data {
-   public:
-    static const ResultDebugData* Get(const base::SupportsUserData* debug_data);
-    static ResultDebugData* GetOrCreate(base::SupportsUserData* debug_data);
-
-    void UpdateTrustDebugInfo(int trust_debug_info, TrustImplType impl_type);
-
-    // base::SupportsUserData::Data implementation:
-    std::unique_ptr<Data> Clone() override;
-
-    // Returns a bitfield of TrustDebugInfo flags. If multiple GetTrust calls
-    // were done with the same SupportsUserData object, this will return the
-    // union of all the TrustDebugInfo flags.
-    int combined_trust_debug_info() const { return combined_trust_debug_info_; }
-
-    // Returns an enum representing which trust implementation was used.
-    TrustImplType trust_impl() const { return trust_impl_; }
-
-   private:
-    int combined_trust_debug_info_ = 0;
-
-    TrustImplType trust_impl_ = TrustImplType::kUnknown;
   };
 
   // Creates a TrustStoreMac which will find anchors that are trusted for
@@ -126,8 +52,7 @@ class NET_EXPORT TrustStoreMac : public TrustStore {
   // TrustStore implementation:
   void SyncGetIssuersOf(const ParsedCertificate* cert,
                         ParsedCertificateList* issuers) override;
-  CertificateTrust GetTrust(const ParsedCertificate* cert,
-                            base::SupportsUserData* debug_data) override;
+  CertificateTrust GetTrust(const ParsedCertificate* cert) override;
 
  private:
   class TrustImpl;

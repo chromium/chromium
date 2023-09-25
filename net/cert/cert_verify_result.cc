@@ -25,26 +25,6 @@ CertVerifyResult::CertVerifyResult(const CertVerifyResult& other) {
 
 CertVerifyResult::~CertVerifyResult() = default;
 
-CertVerifyResult& CertVerifyResult::operator=(const CertVerifyResult& other) {
-  verified_cert = other.verified_cert;
-  cert_status = other.cert_status;
-  has_sha1 = other.has_sha1;
-  is_issued_by_known_root = other.is_issued_by_known_root;
-  is_issued_by_additional_trust_anchor =
-      other.is_issued_by_additional_trust_anchor;
-
-  public_key_hashes = other.public_key_hashes;
-  ocsp_result = other.ocsp_result;
-
-  scts = other.scts;
-  policy_compliance = other.policy_compliance;
-
-  ClearAllUserData();
-  CloneDataFrom(other);
-
-  return *this;
-}
-
 void CertVerifyResult::Reset() {
   verified_cert = nullptr;
   cert_status = 0;
@@ -58,8 +38,6 @@ void CertVerifyResult::Reset() {
   scts.clear();
   policy_compliance =
       ct::CTPolicyCompliance::CT_POLICY_COMPLIANCE_DETAILS_NOT_AVAILABLE;
-
-  ClearAllUserData();
 }
 
 base::Value::Dict CertVerifyResult::NetLogParams(int net_error) const {

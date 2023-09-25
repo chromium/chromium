@@ -15,10 +15,6 @@
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "net/cert/internal/trust_store_mac.h"
-#endif
-
 namespace {
 
 // The PEM block header used for PEM-encoded DER certificates.
@@ -121,18 +117,6 @@ void PrintCertError(const std::string& error, const CertInput& cert) {
   if (!cert.source_details.empty())
     std::cerr << " (" << cert.source_details << ")";
   std::cerr << "\n";
-}
-
-void PrintDebugData(const base::SupportsUserData* debug_data) {
-#if BUILDFLAG(IS_MAC)
-  auto* mac_trust_debug_info =
-      net::TrustStoreMac::ResultDebugData::Get(debug_data);
-  if (mac_trust_debug_info) {
-    std::cout << base::StringPrintf(
-        "TrustStoreMac::ResultDebugData::combined_trust_debug_info: 0x%x\n",
-        mac_trust_debug_info->combined_trust_debug_info());
-  }
-#endif
 }
 
 std::string FingerPrintCryptoBuffer(const CRYPTO_BUFFER* cert_handle) {

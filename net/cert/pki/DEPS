@@ -7,5 +7,4 @@ include_rules = [
   "+base/files/file_util.h",
   "+base/numerics/clamped_math.h",
   "+base/path_service.h",
-  "+base/supports_user_data.h",
 ]

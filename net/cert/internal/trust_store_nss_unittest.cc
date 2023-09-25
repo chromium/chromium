@@ -13,7 +13,6 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/supports_user_data.h"
 #include "base/test/scoped_feature_list.h"
 #include "crypto/scoped_test_nss_db.h"
 #include "net/base/features.h"
@@ -363,8 +362,7 @@ class TrustStoreNSSTestBase : public ::testing::Test {
                 CertificateTrust expected_trust) {
     bool success = true;
     for (const std::shared_ptr<const ParsedCertificate>& cert : certs) {
-      CertificateTrust trust =
-          trust_store_nss_->GetTrust(cert.get(), /*debug_data=*/nullptr);
+      CertificateTrust trust = trust_store_nss_->GetTrust(cert.get());
       std::string trust_string = trust.ToDebugString();
       std::string expected_trust_string = expected_trust.ToDebugString();
       if (trust_string != expected_trust_string) {
@@ -398,11 +396,11 @@ class TrustStoreNSSTestBase : public ::testing::Test {
 
 // Specifies which kind of per-slot filtering the TrustStoreNSS is supposed to
 // perform in the parametrized TrustStoreNSSTestWithSlotFilterType.
-// TODO(https://crbug.com/1412591): The SlotFilterType enum is shared with
-// TrustStoreNSS::ResultDebugData::SlotFilterType for convenience. Once the old
-// code path and trial code is cleaned up, the type definition can be moved
-// back to here.
-using SlotFilterType = TrustStoreNSS::ResultDebugData::SlotFilterType;
+enum class SlotFilterType {
+  kDontFilter,
+  kDoNotAllowUserSlots,
+  kAllowSpecifiedUserSlot
+};
 
 std::string SlotFilterTypeToString(SlotFilterType slot_filter_type) {
   switch (slot_filter_type) {
@@ -447,23 +445,6 @@ class TrustStoreNSSTestWithSlotFilterType
     }
   }
 };
-
-class DebugData : public base::SupportsUserData {
- public:
-  ~DebugData() override = default;
-};
-
-TEST_P(TrustStoreNSSTestWithSlotFilterType, DebugData) {
-  DebugData debug_data;
-  trust_store_nss_->GetTrust(target_.get(), &debug_data);
-  const TrustStoreNSS::ResultDebugData* trust_debug_data =
-      TrustStoreNSS::ResultDebugData::Get(&debug_data);
-  ASSERT_TRUE(trust_debug_data);
-  EXPECT_EQ(system_trust_setting() ==
-                TrustStoreNSS::SystemTrustSetting::kIgnoreSystemTrust,
-            trust_debug_data->ignore_system_trust_settings());
-  EXPECT_EQ(slot_filter_type(), trust_debug_data->slot_filter_type());
-}
 
 // Without adding any certs to the NSS DB, should get no anchor results for
 // any of the test certs.

@@ -44,8 +44,7 @@ TEST(TrustStoreChromeTestNoFixture, ContainsCert) {
     std::shared_ptr<const ParsedCertificate> parsed =
         ToParsedCertificate(*cert);
     ASSERT_TRUE(trust_store_chrome->Contains(parsed.get()));
-    CertificateTrust trust =
-        trust_store_chrome->GetTrust(parsed.get(), /*debug_data=*/nullptr);
+    CertificateTrust trust = trust_store_chrome->GetTrust(parsed.get());
     EXPECT_EQ(CertificateTrust::ForTrustAnchor().ToDebugString(),
               trust.ToDebugString());
   }
@@ -59,8 +58,7 @@ TEST(TrustStoreChromeTestNoFixture, ContainsCert) {
   std::shared_ptr<const ParsedCertificate> other_parsed =
       ToParsedCertificate(*other_cert);
   ASSERT_FALSE(trust_store_chrome->Contains(other_parsed.get()));
-  CertificateTrust trust = trust_store_chrome->GetTrust(other_parsed.get(),
-                                                        /*debug_data=*/nullptr);
+  CertificateTrust trust = trust_store_chrome->GetTrust(other_parsed.get());
   EXPECT_EQ(CertificateTrust::ForUnspecified().ToDebugString(),
             trust.ToDebugString());
 }

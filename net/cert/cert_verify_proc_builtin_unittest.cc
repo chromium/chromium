@@ -107,7 +107,6 @@ int VerifyOnWorkerThread(const scoped_refptr<CertVerifyProc>& verify_proc,
                           /*ocsp_response=*/std::string(),
                           /*sct_list=*/std::string(), flags,
                           additional_trust_anchors, verify_result, net_log);
-  verify_result->DetachFromSequence();
   *out_source = net_log.source();
   return error;
 }
@@ -139,9 +138,8 @@ class MockSystemTrustStore : public SystemTrustStore {
 
 class BlockingTrustStore : public TrustStore {
  public:
-  CertificateTrust GetTrust(const ParsedCertificate* cert,
-                            base::SupportsUserData* debug_data) override {
-    return backing_trust_store_.GetTrust(cert, debug_data);
+  CertificateTrust GetTrust(const ParsedCertificate* cert) override {
+    return backing_trust_store_.GetTrust(cert);
   }
 
   void SyncGetIssuersOf(const ParsedCertificate* cert,
@@ -185,7 +183,6 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
               CertVerifyResult* verify_result,
               NetLogSource* out_source,
               CompletionOnceCallback callback) {
-    verify_result->DetachFromSequence();
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE,
         {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
@@ -578,39 +575,6 @@ TEST_F(CertVerifyProcBuiltinTest, DeadlineExceededDuringSyncGetIssuers) {
   ASSERT_EQ(1u, verify_result.verified_cert->intermediate_buffers().size());
   EXPECT_EQ(intermediate->GetCertBuffer(),
             verify_result.verified_cert->intermediate_buffers()[0].get());
-}
-
-TEST_F(CertVerifyProcBuiltinTest, DebugData) {
-  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
-
-  scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
-  ASSERT_TRUE(chain.get());
-
-  base::Time time = base::Time::Now();
-
-  CertVerifyResult verify_result;
-  NetLogSource verify_net_log_source;
-  TestCompletionCallback callback;
-  Verify(chain.get(), "www.example.com", /*flags=*/0,
-         /*additional_trust_anchors=*/{root->GetX509Certificate()},
-         &verify_result, &verify_net_log_source, callback.callback());
-
-  int error = callback.WaitForResult();
-  EXPECT_THAT(error, IsOk());
-
-  auto* debug_data = CertVerifyProcBuiltinResultDebugData::Get(&verify_result);
-  ASSERT_TRUE(debug_data);
-  // No delayed tasks involved, so the mock time should not have advanced.
-  EXPECT_EQ(time, debug_data->verification_time());
-
-  base::Time der_verification_time_converted_back_to_base_time;
-  EXPECT_TRUE(net::GeneralizedTimeToTime(
-      debug_data->der_verification_time(),
-      &der_verification_time_converted_back_to_base_time));
-  // GeneralizedTime only has seconds precision.
-  EXPECT_EQ(
-      0,
-      (time - der_verification_time_converted_back_to_base_time).InSeconds());
 }
 
 namespace {

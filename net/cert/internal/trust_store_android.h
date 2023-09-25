@@ -34,8 +34,7 @@ class NET_EXPORT TrustStoreAndroid : public TrustStore,
   // TrustStore:
   void SyncGetIssuersOf(const ParsedCertificate* cert,
                         ParsedCertificateList* issuers) override;
-  CertificateTrust GetTrust(const ParsedCertificate* cert,
-                            base::SupportsUserData* debug_data) override;
+  CertificateTrust GetTrust(const ParsedCertificate* cert) override;
 
   // CertDatabase::Observer:
   void OnTrustStoreChanged() override;

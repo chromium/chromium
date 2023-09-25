@@ -206,8 +206,6 @@ bool VerifyUsingPathBuilder(
   std::cout << "CertPathBuilder result: "
             << (result.HasValidPath() ? "SUCCESS" : "FAILURE") << "\n";
 
-  PrintDebugData(&result);
-
   for (size_t i = 0; i < result.paths.size(); ++i) {
     PrintResultPath(result.paths[i].get(), i, i == result.best_result_index);
   }

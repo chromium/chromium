@@ -77,8 +77,7 @@ class AsyncCertIssuerSourceStatic : public CertIssuerSource {
 
     ~StaticAsyncRequest() override = default;
 
-    void GetNext(ParsedCertificateList* out_certs,
-                 base::SupportsUserData* debug_data) override {
+    void GetNext(ParsedCertificateList* out_certs) override {
       if (issuers_iter_ != issuers_.end())
         out_certs->push_back(std::move(*issuers_iter_++));
     }
@@ -148,26 +147,6 @@ class AsyncCertIssuerSourceStatic : public CertIssuerSource {
   }
   return ::testing::AssertionSuccess();
 }
-
-const void* kKey = &kKey;
-class TrustStoreThatStoresUserData : public TrustStore {
- public:
-  class Data : public base::SupportsUserData::Data {
-   public:
-    explicit Data(int value) : value(value) {}
-
-    int value = 0;
-  };
-
-  // TrustStore implementation:
-  void SyncGetIssuersOf(const ParsedCertificate* cert,
-                        ParsedCertificateList* issuers) override {}
-  CertificateTrust GetTrust(const ParsedCertificate* cert,
-                            base::SupportsUserData* debug_data) override {
-    debug_data->SetUserData(kKey, std::make_unique<Data>(1234));
-    return CertificateTrust::ForUnspecified();
-  }
-};
 
 class PathBuilderMultiRootWindowsTest : public ::testing::Test {
  public:

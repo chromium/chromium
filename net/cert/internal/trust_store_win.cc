@@ -284,8 +284,7 @@ class TrustStoreWin::Impl {
     }
   }
 
-  CertificateTrust GetTrust(const ParsedCertificate* cert,
-                            base::SupportsUserData* debug_data) {
+  CertificateTrust GetTrust(const ParsedCertificate* cert) {
     if (!root_cert_store_.get() || !intermediate_cert_store_.get() ||
         !trusted_people_cert_store_.get() || !all_certs_store_.get() ||
         !disallowed_cert_store_.get()) {
@@ -455,9 +454,8 @@ void TrustStoreWin::SyncGetIssuersOf(const ParsedCertificate* cert,
 // If a certificate is found multiple times in the ROOT store, it is trusted
 // for TLS server auth if any instance of the certificate found
 // is usable for TLS server auth.
-CertificateTrust TrustStoreWin::GetTrust(const ParsedCertificate* cert,
-                                         base::SupportsUserData* debug_data) {
-  return MaybeInitializeAndGetImpl()->GetTrust(cert, debug_data);
+CertificateTrust TrustStoreWin::GetTrust(const ParsedCertificate* cert) {
+  return MaybeInitializeAndGetImpl()->GetTrust(cert);
 }
 
 }  // namespace net

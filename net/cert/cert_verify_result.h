@@ -6,7 +6,6 @@
 #define NET_CERT_CERT_VERIFY_RESULT_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "base/supports_user_data.h"
 #include "base/values.h"
 #include "net/base/hash_value.h"
 #include "net/base/net_export.h"
@@ -24,20 +23,11 @@ namespace net {
 class X509Certificate;
 
 // The result of certificate verification.
-//
-// Additional debugging or purely informational data may be added through
-// SupportsUserData, but such data must not be used for anything that changes
-// how the results are interpreted or acted upon: any data that changes the
-// meaning of the result must be added as a member in this class, not through
-// SupportsUserData.
-// Any Data added through SupportsUserData must implement Clone().
-class NET_EXPORT CertVerifyResult : public base::SupportsUserData {
+class NET_EXPORT CertVerifyResult {
  public:
   CertVerifyResult();
   CertVerifyResult(const CertVerifyResult& other);
-  ~CertVerifyResult() override;
-
-  CertVerifyResult& operator=(const CertVerifyResult& other);
+  ~CertVerifyResult();
 
   void Reset();
 
