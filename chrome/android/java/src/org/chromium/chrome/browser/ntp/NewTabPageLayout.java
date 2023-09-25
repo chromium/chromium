@@ -153,6 +153,9 @@ public class NewTabPageLayout extends LinearLayout {
     private Boolean mIsMvtAllFilledPortrait;
     private final int mTileViewIntervalPaddingTabletForPolish;
     private final int mTileViewEdgePaddingTabletForPolish;
+    // This offset is added to the transition length when the surface polish flag is enabled in
+    // order to make sure the animation is completed.
+    private float mTransitionLengthOffset;
 
     /**
      * Constructor for inflating from XML.
@@ -236,6 +239,11 @@ public class NewTabPageLayout extends LinearLayout {
             mSearchBoxBoundsVerticalInset = getResources().getDimensionPixelSize(
                     R.dimen.ntp_search_box_bounds_vertical_inset_modern);
         }
+        mTransitionLengthOffset = mIsSurfacePolishEnabled
+                        && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)
+                ? getResources().getDimensionPixelSize(
+                        R.dimen.ntp_search_box_transition_length_polish_offset)
+                : 0;
 
         if (mIsNtpAsHomeSurfaceEnabled && !mIsSurfacePolishEnabled) {
             // We add extra side margins to the fake search box when multiple column Feeds are
@@ -476,15 +484,17 @@ public class NewTabPageLayout extends LinearLayout {
         final int scrollY = mScrollDelegate.getVerticalScrollOffset();
         // Use int pixel size instead of float dimension to avoid precision error on the percentage.
         final float transitionLength =
-                getResources().getDimensionPixelSize(R.dimen.ntp_search_box_transition_length);
+                getResources().getDimensionPixelSize(R.dimen.ntp_search_box_transition_length)
+                + mTransitionLengthOffset;
         // Tab strip height is zero on phones, nonzero on tablets.
         int tabStripHeight = getResources().getDimensionPixelSize(R.dimen.tab_strip_height);
 
         // |scrollY - searchBoxTop + tabStripHeight| gives the distance the search bar is from the
         // top of the tab.
-        return MathUtils.clamp(
-                (scrollY - searchBoxTop + tabStripHeight + transitionLength) / transitionLength, 0f,
-                1f);
+        return MathUtils.clamp((scrollY - (searchBoxTop + mTransitionLengthOffset) + tabStripHeight
+                                       + transitionLength)
+                        / transitionLength,
+                0f, 1f);
     }
 
     private void insertSiteSectionView() {
@@ -843,7 +853,8 @@ public class NewTabPageLayout extends LinearLayout {
      */
     private boolean isSearchBoxOffscreen() {
         return !mScrollDelegate.isChildVisibleAtPosition(0)
-                || mScrollDelegate.getVerticalScrollOffset() > getSearchBoxView().getTop();
+                || mScrollDelegate.getVerticalScrollOffset()
+                > getSearchBoxView().getTop() + mTransitionLengthOffset;
     }
 
     /**

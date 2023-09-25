@@ -14,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feed.SnapScrollHelper;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /**
  * This class handles snap scroll for the search box on a {@link NewTabPage}.
@@ -27,6 +28,7 @@ public class SnapScrollHelperImpl implements SnapScrollHelper {
     private final Runnable mUpdateSearchBoxOnScrollRunnable;
     private final int mToolbarHeight;
     private final int mSearchBoxTransitionLength;
+    private final int mSearchBoxTransitionLengthOffset;
 
     private View mView;
     private boolean mPendingSnapScroll;
@@ -48,6 +50,9 @@ public class SnapScrollHelperImpl implements SnapScrollHelper {
                 + res.getDimensionPixelSize(R.dimen.toolbar_progress_bar_height);
         mSearchBoxTransitionLength =
                 res.getDimensionPixelSize(R.dimen.ntp_search_box_transition_length);
+        mSearchBoxTransitionLengthOffset = ChromeFeatureList.sSurfacePolish.isEnabled()
+                ? res.getDimensionPixelSize(R.dimen.ntp_search_box_transition_length_polish_offset)
+                : 0;
     }
 
     /** @param view The view on which this class needs to handle snap scroll. */
@@ -120,7 +125,8 @@ public class SnapScrollHelperImpl implements SnapScrollHelper {
             View fakeBox = mNewTabPageLayout.getSearchBoxView();
             int fakeBoxUpperBound = fakeBox.getTop() + fakeBox.getPaddingTop();
             scrollPosition = calculateSnapPositionForRegion(scrollPosition,
-                    fakeBoxUpperBound - mSearchBoxTransitionLength, fakeBoxUpperBound);
+                    fakeBoxUpperBound - mSearchBoxTransitionLength,
+                    fakeBoxUpperBound + mSearchBoxTransitionLengthOffset);
         }
 
         return scrollPosition;
