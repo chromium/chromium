@@ -370,6 +370,15 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
   field.host_frame = form_data.host_frame;
   field.host_form_id = form_data.unique_renderer_id;
   field.unique_renderer_id = test::MakeFieldRendererId();
+  if (const base::Value::List* options =
+          field_dict.FindList("select_options")) {
+    for (const base::Value& option : *options) {
+      const base::Value::Dict& option_dict = option.GetDict();
+      field.options.push_back(SelectOption{
+          .value = base::UTF8ToUTF16(*option_dict.FindString("value")),
+          .content = base::UTF8ToUTF16(*option_dict.FindString("label"))});
+    }
+  }
   return field;
 }
 
