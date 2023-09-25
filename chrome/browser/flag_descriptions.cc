@@ -3398,6 +3398,11 @@ const char kTrackingProtection3pcdDescription[] =
     "Enables the tracking protection UI + prefs that will be used for the 3PCD "
     "1%. ";
 
+const char kTrackingProtectionOnboardingForceEligibilityName[] =
+    "Tracking Protection Onboarding Flow";
+const char kTrackingProtectionOnboardingForceEligibilityDescription[] =
+    "Enables the onboarding flow for Tracking Protections";
+
 const char kUserBypassUIName[] = "User Bypass UI";
 const char kUserBypassUIDescription[] = "Enables the User Bypass UI. ";
 

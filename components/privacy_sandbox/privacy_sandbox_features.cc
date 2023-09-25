@@ -116,4 +116,9 @@ BASE_FEATURE(kPrivacySandboxProactiveTopicsBlocking,
              "PrivacySandboxProactiveTopicsBlocking",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Show the Tracking Protection onboarding flow if not already onboarded.
+BASE_FEATURE(kTrackingProtectionOnboardingForceEligibility,
+             "TrackingProtectionOnboardingForceEligibility",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace privacy_sandbox

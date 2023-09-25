@@ -1959,6 +1959,9 @@ extern const char kTailoredSecurityRetryForSyncUsersDescription[];
 extern const char kTrackingProtection3pcdName[];
 extern const char kTrackingProtection3pcdDescription[];
 
+extern const char kTrackingProtectionOnboardingForceEligibilityName[];
+extern const char kTrackingProtectionOnboardingForceEligibilityDescription[];
+
 extern const char kUnifiedPasswordManagerAndroidName[];
 extern const char kUnifiedPasswordManagerAndroidDescription[];
 
