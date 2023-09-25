@@ -41,8 +41,9 @@ void ContainerAppKiller::OnMemoryPressure(
   DCHECK(!arc::IsArcVmEnabled());
 
   arc::ArcProcessService* arc_process_service = arc::ArcProcessService::Get();
-
-  CHECK(arc_process_service);
+  if (!arc_process_service) {
+    return;
+  }
 
   // RequestAppProcessList() must be called in UI thread.
   arc_process_service->RequestAppProcessList(

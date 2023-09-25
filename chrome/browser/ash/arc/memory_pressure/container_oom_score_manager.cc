@@ -77,7 +77,9 @@ ContainerOomScoreManager::~ContainerOomScoreManager() = default;
 
 void ContainerOomScoreManager::OnTimer() {
   arc::ArcProcessService* arc_process_service = arc::ArcProcessService::Get();
-  CHECK(arc_process_service);
+  if (!arc_process_service) {
+    return;
+  }
 
   arc_process_service->RequestAppProcessList(
       base::BindOnce(&ContainerOomScoreManager::AssignOomScoreAdjs,
