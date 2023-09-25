@@ -111,9 +111,8 @@ export class BackgroundKeyboardHandler {
       evt.preventDefault();
       evt.stopPropagation();
       this.eatenKeyDowns_.add(evt.keyCode);
-    } else {
-      ChromeVox.earcons.playEarcon(EarconId.INVALID_KEYPRESS);
     }
+
     return false;
   }
 
