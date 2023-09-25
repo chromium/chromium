@@ -81,7 +81,8 @@ import java.nio.ByteBuffer;
  * This class is not intended to be extended.
  */
 public class TabImpl implements Tab {
-    private static final long INVALID_TIMESTAMP = -1;
+    @VisibleForTesting
+    public static final long INVALID_TIMESTAMP = -1;
 
     /** Used for logging. */
     private static final String TAG = "Tab";

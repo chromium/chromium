@@ -23,7 +23,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.FeatureList;
-import org.chromium.base.UserDataHost;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -34,7 +33,6 @@ import org.chromium.chrome.browser.search_resumption.SearchResumptionUserData.Su
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
@@ -65,8 +63,6 @@ public class SearchResumptionModuleUtilsUnitTest {
     private GURL mGurl1;
     @Mock
     private GURL mGurl2;
-    @Mock
-    private CriticalPersistedTabData mCriticalPersistedTabData;
 
     private FeatureList.TestValues mFeatureListValues;
 
@@ -79,11 +75,6 @@ public class SearchResumptionModuleUtilsUnitTest {
                 ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID, true);
         mFeatureListValues.addFeatureFlagOverride(
                 ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID, true);
-
-        UserDataHost tabDataHost = new UserDataHost();
-        when(mTab.getUserDataHost()).thenReturn(tabDataHost);
-        when(mTabToTrack.getUserDataHost()).thenReturn(tabDataHost);
-        tabDataHost.setUserData(CriticalPersistedTabData.class, mCriticalPersistedTabData);
 
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);

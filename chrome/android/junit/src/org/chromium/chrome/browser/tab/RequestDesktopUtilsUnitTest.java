@@ -50,7 +50,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.SysUtils;
-import org.chromium.base.UserDataHost;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -69,7 +68,6 @@ import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowSysUtil
 import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowTabUtils;
 import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowUmaSessionStats;
 import org.chromium.chrome.browser.tab.TabUtilsUnitTest.ShadowProfile;
-import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings.SiteLayout;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettingsConstants;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
@@ -242,8 +240,6 @@ public class RequestDesktopUtilsUnitTest {
     private ModalDialogManager mModalDialogManager;
     @Mock
     private Tracker mTracker;
-    @Mock
-    private CriticalPersistedTabData mCriticalPersistedTabData;
     @Mock
     private ObservableSupplier<Tab> mCurrentTabSupplier;
     @Mock
@@ -1601,11 +1597,7 @@ public class RequestDesktopUtilsUnitTest {
     }
 
     private Tab createTab() {
-        Tab tab = mock(Tab.class);
-        UserDataHost tabDataHost = new UserDataHost();
-        when(tab.getUserDataHost()).thenReturn(tabDataHost);
-        tabDataHost.setUserData(CriticalPersistedTabData.class, mCriticalPersistedTabData);
-        return tab;
+        return mock(Tab.class);
     }
 
     private void enableFeature(String featureName, boolean enable) {
