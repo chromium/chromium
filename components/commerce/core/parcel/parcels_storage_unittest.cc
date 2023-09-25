@@ -214,22 +214,17 @@ TEST_F(ParcelsStorageTest, TestDeleteAllParcelStatus) {
 }
 
 TEST_F(ParcelsStorageTest, TestDeleteParcelStatus) {
-  EXPECT_CALL(*proto_db_, DeleteOneEntry(_, _)).Times(2);
+  EXPECT_CALL(*proto_db_, DeleteOneEntry(_, _)).Times(1);
 
-  // Delete an invalid parcel identifier
-  ParcelIdentifier identifier;
-  identifier.set_carrier(commerce::ParcelIdentifier::FEDEX);
-  identifier.set_tracking_id("xyz");
-  storage_->DeleteParcelStatus(identifier, base::BindOnce(&DoNothing));
+  // Delete an invalid parcel tracking id.
+  storage_->DeleteParcelStatus("xyz", base::BindOnce(&DoNothing));
   task_environment_.RunUntilIdle();
 
   auto all_parcels = storage_->GetAllParcelStatus();
   ASSERT_EQ(1u, all_parcels->size());
 
-  // Delete the parcel identifier in storage.
-  identifier.set_carrier(kCarrier1);
-  identifier.set_tracking_id(kTrackingId1);
-  storage_->DeleteParcelStatus(identifier, base::BindOnce(&DoNothing));
+  // Delete the tracking id in storage.
+  storage_->DeleteParcelStatus(kTrackingId1, base::BindOnce(&DoNothing));
   task_environment_.RunUntilIdle();
 
   all_parcels = storage_->GetAllParcelStatus();

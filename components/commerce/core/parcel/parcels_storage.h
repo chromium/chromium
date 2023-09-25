@@ -34,21 +34,22 @@ class ParcelsStorage {
   virtual ~ParcelsStorage();
 
   // Initialize the storage, populate the cache entries.
-  void Init(OnInitializedCallback callback);
+  virtual void Init(OnInitializedCallback callback);
 
   // Gets all parcel status.
-  std::unique_ptr<std::vector<ParcelStatus>> GetAllParcelStatus();
+  virtual std::unique_ptr<std::vector<ParcelStatus>> GetAllParcelStatus();
 
   // Updates the status for a list of parcels.
-  void UpdateParcelStatus(const std::vector<ParcelStatus>& parcel_status,
-                          StorageUpdateCallback callback);
+  virtual void UpdateParcelStatus(
+      const std::vector<ParcelStatus>& parcel_status,
+      StorageUpdateCallback callback);
 
   // Deletes a parcel status from db.
-  void DeleteParcelStatus(const ParcelIdentifier& parcel_identifier,
-                          StorageUpdateCallback callback);
+  virtual void DeleteParcelStatus(const std::string& tracking_id,
+                                  StorageUpdateCallback callback);
 
   // Deletes all the parcel status from db.
-  void DeleteAllParcelStatus(StorageUpdateCallback callback);
+  virtual void DeleteAllParcelStatus(StorageUpdateCallback callback);
 
  private:
   void OnAllParcelsLoaded(OnInitializedCallback callback,

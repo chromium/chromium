@@ -49,10 +49,9 @@ enum class ParcelRequestStatus {
 class ParcelsServerProxy {
  public:
   using GetParcelStatusCallback =
-      base::OnceCallback<void(ParcelRequestStatus,
+      base::OnceCallback<void(bool /*success*/,
                               std::unique_ptr<std::vector<ParcelStatus>>)>;
-  using StopParcelTrackingCallback =
-      base::OnceCallback<void(ParcelRequestStatus)>;
+  using StopParcelTrackingCallback = base::OnceCallback<void(bool /*success*/)>;
 
   ParcelsServerProxy(
       signin::IdentityManager* identity_manager,
@@ -62,21 +61,22 @@ class ParcelsServerProxy {
   ParcelsServerProxy& operator=(const ParcelsServerProxy& other) = delete;
 
   // Get parcel status.
-  void GetParcelStatus(const std::vector<ParcelIdentifier>& parcel_identifiers,
-                       GetParcelStatusCallback callback);
+  virtual void GetParcelStatus(
+      const std::vector<ParcelIdentifier>& parcel_identifiers,
+      GetParcelStatusCallback callback);
 
   // Start tracking parcel status.
-  void StartTrackingParcels(
+  virtual void StartTrackingParcels(
       const std::vector<ParcelIdentifier>& parcel_identifiers,
       const std::string& source_page_domain,
       GetParcelStatusCallback callback);
 
   // Called to stop tracking a given parcel.
-  void StopTrackingParcel(const std::string& tracking_id,
-                          StopParcelTrackingCallback callback);
+  virtual void StopTrackingParcel(const std::string& tracking_id,
+                                  StopParcelTrackingCallback callback);
 
   // Called to stop tracking all parcels.
-  void StopTrackingAllParcels(StopParcelTrackingCallback callback);
+  virtual void StopTrackingAllParcels(StopParcelTrackingCallback callback);
 
  protected:
   // This method could be overridden in tests.

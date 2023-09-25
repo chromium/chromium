@@ -115,11 +115,11 @@ ParcelTrackingStatus& ParcelTrackingStatus::operator=(
     const ParcelTrackingStatus&) = default;
 ParcelTrackingStatus::~ParcelTrackingStatus() = default;
 ParcelTrackingStatus::ParcelTrackingStatus(const ParcelStatus& parcel_status) {
-  ParcelTrackingStatus status;
-  status.carrier = parcel_status.parcel_identifier().carrier();
-  status.tracking_id = parcel_status.parcel_identifier().tracking_id();
-  status.tracking_url = GURL(parcel_status.tracking_url());
-  status.estimated_delivery_time = base::Time::FromDeltaSinceWindowsEpoch(
+  carrier = parcel_status.parcel_identifier().carrier();
+  tracking_id = parcel_status.parcel_identifier().tracking_id();
+  state = parcel_status.parcel_state();
+  tracking_url = GURL(parcel_status.tracking_url());
+  estimated_delivery_time = base::Time::FromDeltaSinceWindowsEpoch(
       base::Microseconds(parcel_status.estimated_delivery_time_usec()));
 }
 

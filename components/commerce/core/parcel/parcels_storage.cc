@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "components/session_proto_db/session_proto_storage.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace commerce {
 
@@ -62,13 +63,23 @@ void ParcelsStorage::UpdateParcelStatus(
   proto_db_->UpdateEntries(std::move(content_to_insert), std::move(callback));
 }
 
-void ParcelsStorage::DeleteParcelStatus(
-    const ParcelIdentifier& parcel_identifier,
-    StorageUpdateCallback callback) {
+void ParcelsStorage::DeleteParcelStatus(const std::string& tracking_id,
+                                        StorageUpdateCallback callback) {
   DCHECK(is_initialized_);
-  std::string key = GetDbKeyFromParcelStatus(parcel_identifier);
-  parcels_cache_.erase(key);
-  proto_db_->DeleteOneEntry(key, base::BindOnce(std::move(callback)));
+
+  absl::optional<ParcelIdentifier> parcel_identifier;
+  for (auto& kv : parcels_cache_) {
+    auto& identifier = kv.second.parcel_identifier();
+    if (identifier.tracking_id() == tracking_id) {
+      parcel_identifier = identifier;
+      break;
+    }
+  }
+  if (parcel_identifier.has_value()) {
+    std::string key = GetDbKeyFromParcelStatus(parcel_identifier.value());
+    parcels_cache_.erase(key);
+    proto_db_->DeleteOneEntry(key, base::BindOnce(std::move(callback)));
+  }
 }
 
 void ParcelsStorage::DeleteAllParcelStatus(StorageUpdateCallback callback) {

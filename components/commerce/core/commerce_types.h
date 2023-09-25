@@ -138,6 +138,7 @@ struct ParcelTrackingStatus {
 
   ParcelIdentifier::Carrier carrier;
   std::string tracking_id;
+  ParcelStatus::ParcelState state;
   GURL tracking_url;
   base::Time estimated_delivery_time;
 };

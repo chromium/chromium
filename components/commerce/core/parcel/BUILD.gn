@@ -34,6 +34,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "parcels_manager_unittest.cc",
     "parcels_server_proxy_unittest.cc",
     "parcels_storage_unittest.cc",
   ]
@@ -43,6 +44,7 @@ source_set("unit_tests") {
     ":parcel",
     "//base/test:test_support",
     "//components/commerce/core:commerce_constants",
+    "//components/commerce/core:commerce_types",
     "//components/commerce/core:parcel_tracking_db_content_proto",
     "//components/commerce/core:proto",
     "//components/endpoint_fetcher:test_support",
