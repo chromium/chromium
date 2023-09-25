@@ -7008,9 +7008,10 @@ interface SVGCircleElement : SVGGeometryElement
     getter cy
     getter r
     method constructor
-interface SVGClipPathElement : SVGGraphicsElement
+interface SVGClipPathElement : SVGElement
     attribute @@toStringTag
     getter clipPathUnits
+    getter transform
     method constructor
 interface SVGComponentTransferFunctionElement : SVGElement
     attribute @@toStringTag

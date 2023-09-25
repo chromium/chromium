@@ -26,11 +26,9 @@
 
 // https://drafts.fxtf.org/css-masking/#InterfaceSVGClipPathElement
 
-// TODO(foolip): SVGClipPathElement should inherit from SVGElement and
-// implement SVGUnitTypes. The transform attribute (which is on
-// SVGGraphicsElement) should also be on SVGClipPathElement.
 [
     Exposed=Window
-] interface SVGClipPathElement : SVGGraphicsElement {
+] interface SVGClipPathElement : SVGElement {
     [Measure] readonly attribute SVGAnimatedEnumeration clipPathUnits;
+    readonly attribute SVGAnimatedTransformList transform;
 };

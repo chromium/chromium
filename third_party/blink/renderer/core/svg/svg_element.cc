@@ -301,8 +301,8 @@ bool SVGElement::HasNonCSSPropertyAnimations() const {
 }
 
 AffineTransform SVGElement::LocalCoordinateSpaceTransform(CTMScope) const {
-  // To be overriden by SVGGraphicsElement (or as special case SVGTextElement
-  // and SVGPatternElement)
+  // To be overridden by SVGTransformableElement (or as special case
+  // SVGTextElement and SVGPatternElement)
   return AffineTransform();
 }
 

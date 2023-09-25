@@ -27,7 +27,7 @@
 namespace blink {
 
 SVGClipPathElement::SVGClipPathElement(Document& document)
-    : SVGGraphicsElement(svg_names::kClipPathTag, document),
+    : SVGTransformableElement(svg_names::kClipPathTag, document),
       clip_path_units_(MakeGarbageCollected<
                        SVGAnimatedEnumeration<SVGUnitTypes::SVGUnitType>>(
           this,
@@ -36,26 +36,24 @@ SVGClipPathElement::SVGClipPathElement(Document& document)
 
 void SVGClipPathElement::Trace(Visitor* visitor) const {
   visitor->Trace(clip_path_units_);
-  SVGGraphicsElement::Trace(visitor);
+  SVGTransformableElement::Trace(visitor);
 }
 
 void SVGClipPathElement::SvgAttributeChanged(
     const SvgAttributeChangedParams& params) {
   if (params.name == svg_names::kClipPathUnitsAttr) {
     SVGElement::InvalidationGuard invalidation_guard(this);
-
     auto* layout_object = To<LayoutSVGResourceContainer>(GetLayoutObject());
     if (layout_object) {
       layout_object->InvalidateCache();
     }
     return;
   }
-
-  SVGGraphicsElement::SvgAttributeChanged(params);
+  SVGTransformableElement::SvgAttributeChanged(params);
 }
 
 void SVGClipPathElement::ChildrenChanged(const ChildrenChange& change) {
-  SVGGraphicsElement::ChildrenChanged(change);
+  SVGTransformableElement::ChildrenChanged(change);
 
   if (change.ByParser())
     return;
@@ -74,15 +72,14 @@ SVGAnimatedPropertyBase* SVGClipPathElement::PropertyFromAttribute(
     const QualifiedName& attribute_name) const {
   if (attribute_name == svg_names::kClipPathUnitsAttr) {
     return clip_path_units_.Get();
-  } else {
-    return SVGGraphicsElement::PropertyFromAttribute(attribute_name);
   }
+  return SVGTransformableElement::PropertyFromAttribute(attribute_name);
 }
 
 void SVGClipPathElement::SynchronizeAllSVGAttributes() const {
   SVGAnimatedPropertyBase* attrs[]{clip_path_units_.Get()};
   SynchronizeListOfSVGAttributes(attrs);
-  SVGGraphicsElement::SynchronizeAllSVGAttributes();
+  SVGTransformableElement::SynchronizeAllSVGAttributes();
 }
 
 }  // namespace blink

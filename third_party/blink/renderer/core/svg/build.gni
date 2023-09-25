@@ -320,6 +320,8 @@ blink_core_sources_svg = [
   "svg_title_element.h",
   "svg_transform.cc",
   "svg_transform.h",
+  "svg_transformable_element.cc",
+  "svg_transformable_element.h",
   "svg_transform_distance.cc",
   "svg_transform_distance.h",
   "svg_transform_list.cc",
