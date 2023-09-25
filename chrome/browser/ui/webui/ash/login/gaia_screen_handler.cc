@@ -575,12 +575,6 @@ void GaiaScreenHandler::DeclareLocalizedValues(
   builder->Add("guestSignin", IDS_BROWSE_WITHOUT_SIGNING_IN_HTML);
   builder->Add("backButton", IDS_ACCNAME_BACK);
   builder->Add("closeButton", IDS_CLOSE);
-  builder->Add("allowlistErrorConsumer", IDS_LOGIN_ERROR_ALLOWLIST);
-  builder->Add("allowlistErrorEnterprise",
-               IDS_ENTERPRISE_LOGIN_ERROR_ALLOWLIST);
-  builder->Add("allowlistErrorEnterpriseAndFamilyLink",
-               IDS_ENTERPRISE_AND_FAMILY_LINK_LOGIN_ERROR_ALLOWLIST);
-  builder->Add("tryAgainButton", IDS_ALLOWLIST_ERROR_TRY_AGAIN_BUTTON);
   builder->Add("learnMoreButton", IDS_LEARN_MORE);
   builder->Add("gaiaLoading", IDS_LOGIN_GAIA_LOADING_MESSAGE);
 
@@ -1348,17 +1342,9 @@ void GaiaScreenHandler::ShowGaiaScreenIfReady() {
 }
 
 void GaiaScreenHandler::ShowAllowlistCheckFailedError() {
-  base::Value::Dict params;
-  params.Set("enterpriseManaged", g_browser_process->platform_part()
-                                      ->browser_policy_connector_ash()
-                                      ->IsDeviceEnterpriseManaged());
-
-  bool family_link_allowed = false;
-  CrosSettings::Get()->GetBoolean(kAccountsPrefFamilyLinkAccountsAllowed,
-                                  &family_link_allowed);
-  params.Set("familyLinkAllowed", family_link_allowed);
-
-  CallExternalAPI("showAllowlistCheckFailedError", std::move(params));
+  // TODO(b/292242156) - Replace with exit code flow.
+  Reset();
+  LoginDisplayHost::default_host()->ShowAllowlistCheckFailedError();
 }
 
 void GaiaScreenHandler::ReloadGaiaAuthenticator() {

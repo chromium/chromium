@@ -34,7 +34,6 @@ constexpr char kUserActionBack[] = "back";
 constexpr char kUserActionCancel[] = "cancel";
 constexpr char kUserActionStartEnrollment[] = "startEnrollment";
 constexpr char kUserActionReloadDefault[] = "reloadDefault";
-constexpr char kUserActionRetry[] = "retry";
 constexpr char kUserActionEnterIdentifier[] = "identifierEntered";
 constexpr char kUserActionQuickStartButtonClicked[] = "activateQuickStart";
 
@@ -169,12 +168,6 @@ void GaiaScreen::LoadDefaultOnlineGaia(const AccountId& account) {
   }
 }
 
-void GaiaScreen::ShowAllowlistCheckFailedError() {
-  if (!view_)
-    return;
-  view_->ShowAllowlistCheckFailedError();
-}
-
 void GaiaScreen::Reset() {
   if (!view_)
     return;
@@ -256,8 +249,6 @@ void GaiaScreen::OnUserAction(const base::Value::List& args) {
     exit_callback_.Run(Result::ENTERPRISE_ENROLL);
   } else if (action_id == kUserActionReloadDefault) {
     Reset();
-    LoadDefaultOnlineGaia(EmptyAccountId());
-  } else if (action_id == kUserActionRetry) {
     LoadDefaultOnlineGaia(EmptyAccountId());
   } else if (action_id == kUserActionEnterIdentifier) {
     CHECK_EQ(2u, args.size());

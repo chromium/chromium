@@ -807,6 +807,7 @@ html_to_js("web_components") {
     "theme_selection.js",
     "touchpad_scroll.js",
     "tpm_error.js",
+    "user_allowlist_check_screen.js",
     "user_creation.js",
     "wrong_hwid.js",
   ]

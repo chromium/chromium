@@ -9,7 +9,6 @@
 import '//resources/cr_elements/icons.html.js';
 import '//resources/js/action_link.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '../../components/notification_card.js';
 import '../../components/security_token_pin.js';
 import '../../components/gaia_dialog.js';
 import '../../components/oobe_icons.html.js';
@@ -43,9 +42,6 @@ const GAIA_ANIMATION_GUARD_MILLISEC = 300;
 // Maximum Gaia loading time in seconds.
 const MAX_GAIA_LOADING_TIME_SEC = 60;
 
-// The help topic regarding user not being in the allowlist.
-const HELP_CANT_ACCESS_ACCOUNT = 188036;
-
 // Amount of time allowed for video based SAML logins, to prevent a site from
 // keeping the camera on indefinitely.  This is a hard deadline and it will
 // not be extended by user activity.
@@ -68,7 +64,6 @@ const DialogMode = {
   GAIA: 'online-gaia',
   LOADING: 'loading',
   PIN_DIALOG: 'pin',
-  GAIA_ALLOWLIST_ERROR: 'allowlist-error',
 };
 
 /**
@@ -141,16 +136,7 @@ class GaiaSigninElement extends GaiaSigninElementBase {
       isLoadingUiShown_: {
         type: Boolean,
         computed: 'computeIsLoadingUiShown_(loadingFrameContents_, ' +
-            'isAllowlistErrorShown_, authCompleted_)',
-      },
-
-      /**
-       * Whether the loading allowlist error UI is shown.
-       * @private
-       */
-      isAllowlistErrorShown_: {
-        type: Boolean,
-        value: false,
+            'authCompleted_)',
       },
 
       /**
@@ -297,14 +283,6 @@ class GaiaSigninElement extends GaiaSigninElementBase {
       },
 
       /**
-       * @private {string}
-       */
-      allowlistError_: {
-        type: String,
-        value: 'allowlistErrorConsumer',
-      },
-
-      /**
        * Domain extracted from user's email.
        * @private
        */
@@ -380,7 +358,6 @@ class GaiaSigninElement extends GaiaSigninElementBase {
     return [
       'loadAuthExtension',
       'doReload',
-      'showAllowlistCheckFailedError',
       'showEnrollmentNudge',
       'showPinDialog',
       'closePinDialog',
@@ -395,7 +372,7 @@ class GaiaSigninElement extends GaiaSigninElementBase {
   static get observers() {
     return [
       'refreshDialogStep_(isShown_, pinDialogParameters_,' +
-          'isLoadingUiShown_, isAllowlistErrorShown_)',
+          'isLoadingUiShown_)',
     ];
   }
 
@@ -474,7 +451,6 @@ class GaiaSigninElement extends GaiaSigninElementBase {
    */
   loadAuthenticator_(doSamlRedirect) {
     this.loadingFrameContents_ = true;
-    this.isAllowlistErrorShown_ = false;
     this.isDefaultSsoProvider_ = doSamlRedirect;
     this.startLoadingTimer_();
 
@@ -685,7 +661,6 @@ class GaiaSigninElement extends GaiaSigninElementBase {
   reset() {
     this.clearLoadingTimer_();
     this.clearVideoTimer_();
-    this.isAllowlistErrorShown_ = false;
     this.authCompleted_ = false;
     // Reset webview to prevent calls from authenticator.
     this.authenticator_.resetWebview();
@@ -895,7 +870,6 @@ class GaiaSigninElement extends GaiaSigninElementBase {
   doReload() {
     this.authenticator_.reload();
     this.loadingFrameContents_ = true;
-    this.isAllowlistErrorShown_ = false;
     this.startLoadingTimer_();
     this.authCompleted_ = false;
   }
@@ -910,7 +884,7 @@ class GaiaSigninElement extends GaiaSigninElementBase {
 
     // TODO(crbug.com/470893): Figure out whether/which of these exit conditions
     // are useful.
-    if (this.isAllowlistErrorShown_ || this.authCompleted_) {
+    if (this.authCompleted_) {
       return;
     }
 
@@ -923,31 +897,6 @@ class GaiaSigninElement extends GaiaSigninElementBase {
     }
     this.userActed(isBackClicked ? 'back' : 'cancel');
   }
-
-  /**
-   * Show/Hide error when user is not in allowlist. When UI is hidden GAIA is
-   * reloaded.
-   * @param {!Object=} opt_data Optional additional information.
-   */
-  showAllowlistCheckFailedError(opt_data) {
-    const isManaged = opt_data && opt_data.enterpriseManaged;
-    const isFamilyLinkAllowed = opt_data && opt_data.familyLinkAllowed;
-    if (isManaged && isFamilyLinkAllowed) {
-      this.allowlistError_ = 'allowlistErrorEnterpriseAndFamilyLink';
-    } else if (isManaged) {
-      this.allowlistError_ = 'allowlistErrorEnterprise';
-    } else {
-      this.allowlistError_ = 'allowlistErrorConsumer';
-    }
-
-    // Reset the state when allowlist error is shown to prevent any loading
-    // glitches during the retry.
-    this.reset();
-
-    this.$['gaia-allowlist-error'].submitButton.focus();
-    this.isAllowlistErrorShown_ = true;
-  }
-
 
   /**
    * Show enrollment nudge pop-up.
@@ -1087,10 +1036,9 @@ class GaiaSigninElement extends GaiaSigninElementBase {
    * @param {boolean} isScreenShown
    * @param {OobeTypes.SecurityTokenPinDialogParameters} pinParams
    * @param {boolean} isLoading
-   * @param {boolean} isAllowlistError
    * @private
    */
-  refreshDialogStep_(isScreenShown, pinParams, isLoading, isAllowlistError) {
+  refreshDialogStep_(isScreenShown, pinParams, isLoading) {
     if (!isScreenShown) {
       return;
     }
@@ -1100,10 +1048,6 @@ class GaiaSigninElement extends GaiaSigninElementBase {
     }
     if (isLoading) {
       this.setUIStep(DialogMode.LOADING);
-      return;
-    }
-    if (isAllowlistError) {
-      this.setUIStep(DialogMode.GAIA_ALLOWLIST_ERROR);
       return;
     }
     this.setUIStep(DialogMode.GAIA);
@@ -1125,14 +1069,12 @@ class GaiaSigninElement extends GaiaSigninElementBase {
   /**
    * Computes the value of the isLoadingUiShown_ property.
    * @param {boolean} loadingFrameContents
-   * @param {boolean} isAllowlistErrorShown
    * @param {boolean} authCompleted
    * @return {boolean}
    * @private
    */
-  computeIsLoadingUiShown_(
-      loadingFrameContents, isAllowlistErrorShown, authCompleted) {
-    return (loadingFrameContents || authCompleted) && !isAllowlistErrorShown;
+  computeIsLoadingUiShown_(loadingFrameContents, authCompleted) {
+    return (loadingFrameContents || authCompleted);
   }
 
   /**
@@ -1152,7 +1094,6 @@ class GaiaSigninElement extends GaiaSigninElementBase {
     // TODO(https://crbug.com/1317991): Investigate why the call is making Gaia
     // loading slowly.
     // this.loadingFrameContents_ = true;
-    // this.isAllowlistErrorShown_ = false;
   }
 
   /**
@@ -1168,14 +1109,6 @@ class GaiaSigninElement extends GaiaSigninElementBase {
       return this.i18n('samlNoticeWithVideo', authDomain);
     }
     return '';
-  }
-
-  onAllowlistErrorTryAgainClick_() {
-    this.userActed('retry');
-  }
-
-  onAllowlistErrorLinkClick_() {
-    chrome.send('launchHelpApp', [HELP_CANT_ACCESS_ACCOUNT]);
   }
 
   /**

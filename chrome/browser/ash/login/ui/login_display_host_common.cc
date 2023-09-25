@@ -59,6 +59,7 @@
 #include "chrome/browser/ui/webui/ash/login/saml_confirm_password_handler.h"
 #include "chrome/browser/ui/webui/ash/login/signin_fatal_error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/terms_of_service_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/user_allowlist_check_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -415,10 +416,7 @@ void LoginDisplayHostCommon::SetDisplayEmail(const std::string& email) {
 }
 
 void LoginDisplayHostCommon::ShowAllowlistCheckFailedError() {
-  StartWizard(GaiaView::kScreenId);
-
-  GaiaScreen* gaia_screen = GetWizardController()->GetScreen<GaiaScreen>();
-  gaia_screen->ShowAllowlistCheckFailedError();
+  StartWizard(UserAllowlistCheckScreenView::kScreenId);
 }
 
 void LoginDisplayHostCommon::UpdateWallpaper(

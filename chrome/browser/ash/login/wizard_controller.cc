@@ -112,6 +112,7 @@
 #include "chrome/browser/ash/login/screens/tpm_error_screen.h"
 #include "chrome/browser/ash/login/screens/update_required_screen.h"
 #include "chrome/browser/ash/login/screens/update_screen.h"
+#include "chrome/browser/ash/login/screens/user_allowlist_check_screen.h"
 #include "chrome/browser/ash/login/screens/user_creation_screen.h"
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
 #include "chrome/browser/ash/login/screens/wrong_hwid_screen.h"
@@ -201,6 +202,7 @@
 #include "chrome/browser/ui/webui/ash/login/tpm_error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/update_required_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/update_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/user_allowlist_check_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/wrong_hwid_screen_handler.h"
@@ -752,6 +754,11 @@ WizardController::CreateScreens() {
   append(std::make_unique<GaiaScreen>(
       oobe_ui->GetView<GaiaScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnGaiaScreenExit,
+                          weak_factory_.GetWeakPtr())));
+
+  append(std::make_unique<UserAllowlistCheckScreen>(
+      oobe_ui->GetView<UserAllowlistCheckScreenHandler>()->AsWeakPtr(),
+      base::BindRepeating(&WizardController::OnUserAllowlistCheckScreenExit,
                           weak_factory_.GetWeakPtr())));
 
   append(std::make_unique<SamlConfirmPasswordScreen>(
@@ -1404,6 +1411,14 @@ void WizardController::OnGaiaScreenExit(GaiaScreen::Result result) {
       ShowQuickStartScreen();
       break;
   }
+}
+
+void WizardController::OnUserAllowlistCheckScreenExit(
+    UserAllowlistCheckScreen::Result result) {
+  CHECK(result == UserAllowlistCheckScreen::Result::RETRY);
+  OnScreenExit(UserAllowlistCheckScreenView::kScreenId,
+               UserAllowlistCheckScreen::GetResultString(result));
+  AdvanceToScreen(GaiaView::kScreenId);
 }
 
 void WizardController::OnGaiaInfoScreenExit(GaiaInfoScreen::Result result) {
@@ -2731,6 +2746,7 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
              screen_id == GaiaView::kScreenId ||
              screen_id == UserCreationView::kScreenId ||
              screen_id == SignInFatalErrorView::kScreenId ||
+             screen_id == UserAllowlistCheckScreenView::kScreenId ||
              screen_id == LocaleSwitchView::kScreenId ||
              screen_id == RecoveryEligibilityView::kScreenId ||
              screen_id == OfflineLoginView::kScreenId ||

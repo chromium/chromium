@@ -85,8 +85,6 @@ class GaiaView : public base::SupportsWeakPtr<GaiaView> {
   // Shows Gaia screen.
   virtual void Show() = 0;
   virtual void Hide() = 0;
-  // Show error UI at the end of Gaia flow when user is not allowlisted.
-  virtual void ShowAllowlistCheckFailedError() = 0;
   // Reloads authenticator.
   virtual void ReloadGaiaAuthenticator() = 0;
   // Sets reauth request token in the URL, in order to get reauth proof token
@@ -155,7 +153,6 @@ class GaiaScreenHandler
   void LoadGaiaAsync(const AccountId& account_id) override;
   void Show() override;
   void Hide() override;
-  void ShowAllowlistCheckFailedError() override;
   void ReloadGaiaAuthenticator() override;
   void SetReauthRequestToken(const std::string& reauth_request_token) override;
   void ShowEnrollmentNudge(const std::string& email_domain) override;
@@ -211,6 +208,9 @@ class GaiaScreenHandler
 
  private:
   void LoadGaia(const login::GaiaContext& context);
+
+  // Resets the internal state and invokes the UserAllowListCheckScreen
+  void ShowAllowlistCheckFailedError();
 
   // Callback that loads GAIA after version and stat consent information has
   // been retrieved.

@@ -663,7 +663,7 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
     {
       id: 'gaia-signin',
       kind: ScreenKind.NORMAL,
-      handledSteps: 'online-gaia,allowlist-error,enrollment-nudge',
+      handledSteps: 'online-gaia,enrollment-nudge',
       states: [
         {
           id: 'online-gaia',
@@ -675,14 +675,6 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
               gaiaPath: 'embedded/setup/v2/chromeos',
               gaiaUrl: 'https://accounts.google.com/',
               hl: loadTimeData.getString('app_locale'),
-            });
-          },
-        },
-        {
-          id: 'allowlist-error',
-          trigger: (screen) => {
-            screen.showAllowlistCheckFailedError({
-              enterpriseManaged: false,
             });
           },
         },
@@ -1806,6 +1798,10 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
           },
         },
       ],
+    },
+    {
+      id: 'user-allowlist-check-screen',
+      kind: ScreenKind.NORMAL,
     },
   ];
 

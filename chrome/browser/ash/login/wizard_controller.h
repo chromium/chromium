@@ -73,11 +73,13 @@
 #include "chrome/browser/ash/login/screens/touchpad_scroll_screen.h"
 #include "chrome/browser/ash/login/screens/tpm_error_screen.h"
 #include "chrome/browser/ash/login/screens/update_screen.h"
+#include "chrome/browser/ash/login/screens/user_allowlist_check_screen.h"
 #include "chrome/browser/ash/login/screens/user_creation_screen.h"
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
+#include "chrome/browser/ui/webui/ash/login/user_allowlist_check_screen_handler.h"
 #include "components/account_id/account_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -410,6 +412,7 @@ class WizardController : public OobeUI::Observer {
   void OnOobeFlowFinished();
   void OnPackagedLicenseScreenExit(PackagedLicenseScreen::Result result);
   void OnFamilyLinkNoticeScreenExit(FamilyLinkNoticeScreen::Result result);
+  void OnUserAllowlistCheckScreenExit(UserAllowlistCheckScreen::Result);
   void OnTpmErrorScreenExit(TpmErrorScreen::Result result);
   void OnPasswordChangeLegacyScreenExit(
       GaiaPasswordChangedScreenLegacy::Result result);

@@ -47,6 +47,7 @@ import './screens/common/sync_consent.js';
 import './screens/common/theme_selection.js';
 import './screens/common/touchpad_scroll.js';
 import './screens/common/tpm_error.js';
+import './screens/common/user_allowlist_check_screen.js';
 import './screens/common/wrong_hwid.js';
 // SCREENS USED DURING THE LOGIN FLOW
 import './screens/login/arc_vm_data_migration.js';
@@ -153,6 +154,10 @@ export const commonScreensList = [
     condition: 'isTouchpadScrollEnabled',
   },
   {tag: 'tpm-error-message-element', id: 'tpm-error-message'},
+  {
+    tag: 'user-allowlist-check-screen-element',
+    id: 'user-allowlist-check-screen',
+  },
   {tag: 'wrong-hwid-element', id: 'wrong-hwid'},
 ];
 

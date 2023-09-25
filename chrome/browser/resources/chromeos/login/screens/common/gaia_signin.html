@@ -64,14 +64,6 @@ found in the LICENSE file.
     id="step-loading" for-step="loading">
   <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
 </oobe-loading-dialog>
-<notification-card id="gaia-allowlist-error" class="fit"
-    for-step="allowlist-error"
-    on-buttonclick="onAllowlistErrorTryAgainClick_"
-    on-linkclick="onAllowlistErrorLinkClick_"
-    button-label="[[i18nDynamic(locale, 'tryAgainButton')]]"
-    link-label="[[i18nDynamic(locale, 'learnMoreButton')]]">
-  [[i18nDynamic(locale, allowlistError_)]]
-</notification-card>
 <oobe-modal-dialog id="enrollmentNudge">
   <div slot="title">
     [[i18nDynamic(locale, 'enrollmentNudgeTitle')]]

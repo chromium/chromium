@@ -63,7 +63,6 @@ class GaiaScreen : public BaseScreen, public ScreenBacklightObserver {
 
   // Loads online GAIA into the webview.
   void LoadOnlineGaia();
-  void ShowAllowlistCheckFailedError();
   // Reset authenticator.
   void Reset();
   // Calls authenticator reload on JS side.

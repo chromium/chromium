@@ -1934,6 +1934,8 @@ source_set("ash") {
     "login/screens/update_required_screen.h",
     "login/screens/update_screen.cc",
     "login/screens/update_screen.h",
+    "login/screens/user_allowlist_check_screen.cc",
+    "login/screens/user_allowlist_check_screen.h",
     "login/screens/user_creation_screen.cc",
     "login/screens/user_creation_screen.h",
     "login/screens/user_selection_screen.cc",

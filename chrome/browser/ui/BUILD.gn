@@ -3119,6 +3119,8 @@ static_library("ui") {
       "webui/ash/login/update_required_screen_handler.h",
       "webui/ash/login/update_screen_handler.cc",
       "webui/ash/login/update_screen_handler.h",
+      "webui/ash/login/user_allowlist_check_screen_handler.cc",
+      "webui/ash/login/user_allowlist_check_screen_handler.h",
       "webui/ash/login/user_creation_screen_handler.cc",
       "webui/ash/login/user_creation_screen_handler.h",
       "webui/ash/login/welcome_screen_handler.cc",
