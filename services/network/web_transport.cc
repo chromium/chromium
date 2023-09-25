@@ -37,6 +37,10 @@ net::WebTransportParameters CreateParameters(
   return params;
 }
 
+base::TimeDelta ToTimeDelta(absl::Duration duration) {
+  return base::Microseconds(absl::ToInt64Microseconds(duration));
+}
+
 }  // namespace
 
 class WebTransport::Stream final {
@@ -727,6 +731,26 @@ void WebTransport::OnDatagramProcessed(
   std::move(datagram_callbacks_.front())
       .Run(status == quic::MESSAGE_STATUS_SUCCESS);
   datagram_callbacks_.pop();
+}
+
+void WebTransport::GetStats(GetStatsCallback callback) {
+  webtransport::Session* const session = transport_->session();
+
+  if (torn_down_ || session == nullptr) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  webtransport::SessionStats stats = session->GetSessionStats();
+  mojom::WebTransportStatsPtr result = mojom::WebTransportStats::New();
+  result->timestamp = base::Time::Now();
+  result->min_rtt = ToTimeDelta(stats.min_rtt);
+  result->smoothed_rtt = ToTimeDelta(stats.smoothed_rtt);
+  result->rtt_variation = ToTimeDelta(stats.rtt_variation);
+  result->estimated_send_rate_bps = stats.estimated_send_rate_bps;
+  result->datagrams_expired_outgoing = stats.datagram_stats.expired_outgoing;
+  result->datagrams_lost_outgoing = stats.datagram_stats.lost_outgoing;
+  std::move(callback).Run(std::move(result));
 }
 
 void WebTransport::TearDown() {

@@ -82,6 +82,10 @@ class StubWebTransport final : public network::mojom::blink::WebTransport {
     outgoing_datagram_expiration_duration_value_ = value;
   }
 
+  void GetStats(GetStatsCallback callback) override {
+    std::move(callback).Run(nullptr);
+  }
+
   void Close(network::mojom::blink::WebTransportCloseInfoPtr) override {}
 
  private:

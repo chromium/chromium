@@ -160,6 +160,10 @@ class StubWebTransport : public network::mojom::blink::WebTransport {
 
   void SetOutgoingDatagramExpirationDuration(base::TimeDelta) override {}
 
+  void GetStats(GetStatsCallback callback) override {
+    std::move(callback).Run(nullptr);
+  }
+
   void Close(network::mojom::blink::WebTransportCloseInfoPtr) override {}
 
  private:

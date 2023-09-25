@@ -44,6 +44,21 @@ struct WebTransportCloseInfo {
   string reason;
 };
 
+// Stats for a WebTransport session.
+// https://w3c.github.io/webtransport/#web-transport-stats
+struct WebTransportStats {
+  mojo_base.mojom.Time timestamp;
+  mojo_base.mojom.TimeDelta min_rtt;
+  mojo_base.mojom.TimeDelta smoothed_rtt;
+  mojo_base.mojom.TimeDelta rtt_variation;
+  uint64 estimated_send_rate_bps;
+
+  // We only ever return WebTransportDatagramStats as a part of
+  // WebTransportStats; thus those two structs are merged here.
+  uint64 datagrams_expired_outgoing;
+  uint64 datagrams_lost_outgoing;
+};
+
 // A mojo interface for https://w3c.github.io/web-transport/#web-transport.
 // This is typically implemented in the network service, and used by renderer.
 // WebTransport represents a WebTransport over HTTP/3 session, which has
@@ -111,6 +126,9 @@ interface WebTransport {
   // discarded due to being in the queue for too long. A duration of 0 means to
   // use an implementation-defined default.
   SetOutgoingDatagramExpirationDuration(mojo_base.mojom.TimeDelta duration);
+
+  // Provides the latest stats for the session.
+  GetStats() => (WebTransportStats? stats);
 
   // https://w3c.github.io/webtransport/#session-terminate
   // This is the last message and it is not allowed to call methods after

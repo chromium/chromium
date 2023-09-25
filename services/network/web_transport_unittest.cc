@@ -14,6 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/cert/pem.h"
 #include "net/dns/mock_host_resolver.h"
@@ -715,6 +716,30 @@ TEST_F(WebTransportTest, DISABLED_EchoOnBidirectionalStream) {
   EXPECT_FALSE(client.has_seen_mojo_connection_error());
   EXPECT_TRUE(client.has_received_fin_for(stream_id));
   EXPECT_TRUE(client.stream_is_closed_as_incoming_stream(stream_id));
+}
+
+TEST_F(WebTransportTest, Stats) {
+  base::RunLoop run_loop_for_handshake;
+  mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client;
+  TestHandshakeClient test_handshake_client(
+      handshake_client.InitWithNewPipeAndPassReceiver(),
+      run_loop_for_handshake.QuitClosure());
+
+  CreateWebTransport(GetURL("/echo"), origin(), std::move(handshake_client));
+
+  run_loop_for_handshake.Run();
+  ASSERT_TRUE(test_handshake_client.has_seen_connection_establishment());
+
+  TestClient client(test_handshake_client.PassClientReceiver());
+  mojo::Remote<mojom::WebTransport> transport_remote(
+      test_handshake_client.PassTransport());
+
+  base::test::TestFuture<mojom::WebTransportStatsPtr> future;
+  transport_remote->GetStats(future.GetCallback());
+  mojom::WebTransportStatsPtr stats = future.Take();
+  ASSERT_FALSE(stats.is_null());
+  EXPECT_GT(stats->min_rtt, base::Microseconds(0));
+  EXPECT_LT(stats->min_rtt, base::Seconds(5));
 }
 
 class WebTransportWithCustomCertificateTest : public WebTransportTest {

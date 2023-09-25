@@ -137,6 +137,7 @@ class MockWebTransport : public network::mojom::blink::WebTransport {
                     void(uint32_t, mojo::ScopedDataPipeConsumerHandle)>));
 
   MOCK_METHOD1(SetOutgoingDatagramExpirationDuration, void(base::TimeDelta));
+  MOCK_METHOD1(GetStats, void(GetStatsCallback));
   MOCK_METHOD0(Close, void());
   MOCK_METHOD2(Close, void(uint32_t, String));
 
