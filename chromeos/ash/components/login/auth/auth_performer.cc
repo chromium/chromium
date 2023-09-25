@@ -186,12 +186,12 @@ void AuthPerformer::AuthenticateUsingKnowledgeKey(
 
   // The login code might speculatively set the "gaia" label in the user
   // context, however at the cryptohome level the existing user key's label can
-  // be either "gaia" or "legacy-N" - which is what we need to use when talking
-  // to cryptohome. If in cryptohome, "gaia" is indeed the label, then at the
-  // end of this operation, gaia would be returned. This case applies to only
-  // "gaia" labels only because they are created at oobe.
+  // be either "gaia", "local-password" or "legacy-N" - which is what we need to
+  // use when talking to cryptohome. If in cryptohome, "gaia" is indeed the
+  // label, then at the end of this operation, gaia would be returned. This case
+  // applies to only "gaia" labels only because they are created at oobe.
   if (key->GetLabel() == kCryptohomeGaiaKeyLabel || key->GetLabel().empty()) {
-    auto* factor = auth_factors.FindOnlinePasswordFactor();
+    const auto* factor = auth_factors.FindAnyPasswordFactor();
     if (factor == nullptr) {
       LOGIN_LOG(ERROR) << "Could not find Password key";
       std::move(callback).Run(
