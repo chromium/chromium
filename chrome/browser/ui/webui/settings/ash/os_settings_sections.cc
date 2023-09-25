@@ -82,10 +82,6 @@ OsSettingsSections::OsSettingsSections(
                                         arc_app_list_prefs, app_service_proxy));
 
   AddSection(
-      mojom::Section::kCrostini,
-      std::make_unique<CrostiniSection>(profile, search_tag_registry, prefs));
-
-  AddSection(
       mojom::Section::kPrivacyAndSecurity,
       std::make_unique<PrivacySection>(profile, search_tag_registry, prefs));
 
@@ -93,13 +89,9 @@ OsSettingsSections::OsSettingsSections(
              std::make_unique<AccessibilitySection>(
                  profile, search_tag_registry, prefs));
 
-  AddSection(mojom::Section::kAboutChromeOs,
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-             std::make_unique<AboutSection>(profile, search_tag_registry, prefs)
-#else
-             std::make_unique<AboutSection>(profile, search_tag_registry)
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  );
+  AddSection(
+      mojom::Section::kAboutChromeOs,
+      std::make_unique<AboutSection>(profile, search_tag_registry, prefs));
 
   AddSection(mojom::Section::kKerberos,
              std::make_unique<KerberosSection>(profile, search_tag_registry,
@@ -110,6 +102,10 @@ OsSettingsSections::OsSettingsSections(
                std::make_unique<SystemPreferencesSection>(
                    profile, search_tag_registry, prefs));
   } else {
+    AddSection(
+        mojom::Section::kCrostini,
+        std::make_unique<CrostiniSection>(profile, search_tag_registry, prefs));
+
     AddSection(mojom::Section::kDateAndTime,
                std::make_unique<DateTimeSection>(profile, search_tag_registry));
 

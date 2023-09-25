@@ -39,6 +39,7 @@
 namespace ash::settings {
 
 namespace mojom {
+using ::chromeos::settings::mojom::kAboutChromeOsSectionPath;
 using ::chromeos::settings::mojom::kBruschettaDetailsSubpagePath;
 using ::chromeos::settings::mojom::kBruschettaManageSharedFoldersSubpagePath;
 using ::chromeos::settings::mojom::kBruschettaUsbPreferencesSubpagePath;
@@ -110,18 +111,20 @@ const std::vector<SearchConcept>& GetCrostiniOptedInSearchConcepts() {
   return *tags;
 }
 
-const std::vector<SearchConcept>& GetCrostiniOptedOutSearchConcepts() {
+const std::vector<SearchConcept>& GetCrostiniOptedOutSearchConcepts(
+    mojom::Section section,
+    const char* section_path) {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_CROSTINI,
-       mojom::kCrostiniSectionPath,
+       section_path,
        mojom::SearchResultIcon::kDeveloperTags,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSection,
-       {.section = mojom::Section::kCrostini},
+       {.section = section},
        {IDS_OS_SETTINGS_TAG_CROSTINI_ALT1, IDS_OS_SETTINGS_TAG_CROSTINI_ALT2,
         SearchConcept::kAltTagEnd}},
       {IDS_OS_SETTINGS_TAG_CROSTINI_SETUP,
-       mojom::kCrostiniSectionPath,
+       section_path,
        mojom::SearchResultIcon::kDeveloperTags,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
@@ -575,7 +578,9 @@ int CrostiniSection::GetSectionNameMessageId() const {
 }
 
 mojom::Section CrostiniSection::GetSection() const {
-  return mojom::Section::kCrostini;
+  return ash::features::IsOsSettingsRevampWayfindingEnabled()
+             ? mojom::Section::kAboutChromeOs
+             : mojom::Section::kCrostini;
 }
 
 mojom::SearchResultIcon CrostiniSection::GetSectionIcon() const {
@@ -583,7 +588,9 @@ mojom::SearchResultIcon CrostiniSection::GetSectionIcon() const {
 }
 
 const char* CrostiniSection::GetSectionPath() const {
-  return mojom::kCrostiniSectionPath;
+  return ash::features::IsOsSettingsRevampWayfindingEnabled()
+             ? mojom::kAboutChromeOsSectionPath
+             : mojom::kCrostiniSectionPath;
 }
 
 bool CrostiniSection::LogMetric(mojom::Setting setting,
@@ -710,7 +717,8 @@ void CrostiniSection::UpdateSearchTags() {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
 
   updater.RemoveSearchTags(GetCrostiniOptedInSearchConcepts());
-  updater.RemoveSearchTags(GetCrostiniOptedOutSearchConcepts());
+  updater.RemoveSearchTags(
+      GetCrostiniOptedOutSearchConcepts(GetSection(), GetSectionPath()));
   updater.RemoveSearchTags(GetCrostiniExportImportSearchConcepts());
   updater.RemoveSearchTags(GetCrostiniAdbSideloadingSearchConcepts());
   updater.RemoveSearchTags(GetCrostiniPortForwardingSearchConcepts());
@@ -719,7 +727,8 @@ void CrostiniSection::UpdateSearchTags() {
 
   if (!crostini::CrostiniFeatures::Get()->IsAllowedNow(profile_) ||
       !pref_service_->GetBoolean(crostini::prefs::kCrostiniEnabled)) {
-    updater.AddSearchTags(GetCrostiniOptedOutSearchConcepts());
+    updater.AddSearchTags(
+        GetCrostiniOptedOutSearchConcepts(GetSection(), GetSectionPath()));
     return;
   }
 

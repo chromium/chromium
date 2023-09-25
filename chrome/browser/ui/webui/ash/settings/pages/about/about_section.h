@@ -8,9 +8,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/crostini/crostini_section.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/user_manager/user_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class WebUIDataSource;
@@ -23,12 +25,9 @@ class SearchTagRegistry;
 // Provides UI strings and search tags for the settings "About Chrome OS" page.
 class AboutSection : public OsSettingsSection {
  public:
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   AboutSection(Profile* profile,
                SearchTagRegistry* search_tag_registry,
                PrefService* pref_service);
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  AboutSection(Profile* profile, SearchTagRegistry* search_tag_registry);
   ~AboutSection() override;
 
   // OsSettingsSection:
@@ -46,10 +45,12 @@ class AboutSection : public OsSettingsSection {
   // Returns if the auto update toggle should be shown for the active user.
   bool ShouldShowAUToggle(user_manager::User* active_user);
 
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  absl::optional<CrostiniSection> crostini_subsection_;
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   void UpdateReportIssueSearchTags();
 
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 };

@@ -205,14 +205,29 @@ std::string GetDeviceManager() {
 
 }  // namespace
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 AboutSection::AboutSection(Profile* profile,
                            SearchTagRegistry* search_tag_registry,
                            PrefService* pref_service)
-    : AboutSection(profile, search_tag_registry) {
-  pref_service_ = pref_service;
-
+    : OsSettingsSection(profile, search_tag_registry),
+      pref_service_(pref_service),
+      crostini_subsection_(
+          ash::features::IsOsSettingsRevampWayfindingEnabled()
+              ? absl::make_optional<CrostiniSection>(profile,
+                                                     search_tag_registry,
+                                                     pref_service)
+              : absl::nullopt) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
+  updater.AddSearchTags(GetAboutSearchConcepts());
+
+  updater.AddSearchTags(GetDiagnosticsAppSearchConcepts());
+
+  updater.AddSearchTags(GetFirmwareUpdatesAppSearchConcepts());
+
+  if (base::FeatureList::IsEnabled(features::kEnableHostnameSetting)) {
+    updater.AddSearchTags(GetDeviceNameSearchConcepts());
+  }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   updater.AddSearchTags(GetAboutTermsOfServiceSearchConcepts());
 
   pref_change_registrar_.Init(pref_service_);
@@ -224,22 +239,7 @@ AboutSection::AboutSection(Profile* profile,
 
   pref_change_registrar_.Add(prefs::kConsumerAutoUpdateToggle,
                              base::DoNothingAs<void()>());
-}
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
-AboutSection::AboutSection(Profile* profile,
-                           SearchTagRegistry* search_tag_registry)
-    : OsSettingsSection(profile, search_tag_registry) {
-  SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
-  updater.AddSearchTags(GetAboutSearchConcepts());
-
-  updater.AddSearchTags(GetDiagnosticsAppSearchConcepts());
-
-  updater.AddSearchTags(GetFirmwareUpdatesAppSearchConcepts());
-
-  if (base::FeatureList::IsEnabled(features::kEnableHostnameSetting)) {
-    updater.AddSearchTags(GetDeviceNameSearchConcepts());
-  }
 }
 
 AboutSection::~AboutSection() = default;
@@ -497,6 +497,10 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddString("aboutProductSafetyURL",
                          base::UTF8ToUTF16(safetyInfoLink));
 #endif
+
+  if (kIsRevampEnabled) {
+    crostini_subsection_->AddLoadTimeData(html_source);
+  }
 }
 
 void AboutSection::AddHandlers(content::WebUI* web_ui) {
@@ -504,6 +508,10 @@ void AboutSection::AddHandlers(content::WebUI* web_ui) {
       std::make_unique<::settings::AboutHandler>(profile()));
   if (features::IsHostnameSettingEnabled()) {
     web_ui->AddMessageHandler(std::make_unique<DeviceNameHandler>());
+  }
+
+  if (ash::features::IsOsSettingsRevampWayfindingEnabled()) {
+    crostini_subsection_->AddHandlers(web_ui);
   }
 }
 
@@ -537,6 +545,10 @@ void AboutSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   generator->RegisterTopLevelSetting(mojom::Setting::kTermsOfService);
   generator->RegisterTopLevelSetting(mojom::Setting::kDiagnostics);
   generator->RegisterTopLevelSetting(mojom::Setting::kFirmwareUpdates);
+
+  if (ash::features::IsOsSettingsRevampWayfindingEnabled()) {
+    crostini_subsection_->RegisterHierarchy(generator);
+  }
 
   // Detailed build info.
   generator->RegisterTopLevelSubpage(
