@@ -61,7 +61,6 @@ public class ToolbarButtonInProductHelpController
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final AppMenuPropertiesDelegate mAppMenuPropertiesDelegate;
     private final ScreenshotMonitor mScreenshotMonitor;
-    private final Handler mHandler = new Handler();
     private final View mMenuButtonAnchorView;
     private final View mSecurityIconAnchorView;
     private final AppMenuHandler mAppMenuHandler;
@@ -93,7 +92,7 @@ public class ToolbarButtonInProductHelpController
         mMenuButtonAnchorView = menuButtonAnchorView;
         mSecurityIconAnchorView = securityIconAnchorView;
         mIsInOverviewModeSupplier = isInOverviewModeSupplier;
-        mUserEducationHelper = new UserEducationHelper(mActivity, mHandler);
+        mUserEducationHelper = new UserEducationHelper(mActivity, new Handler());
         mScreenshotMonitor = new ScreenshotMonitorImpl(this, mActivity);
         mLifecycleDispatcher = lifecycleDispatcher;
         mLifecycleDispatcher.register(this);
