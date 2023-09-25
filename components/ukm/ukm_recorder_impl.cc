@@ -285,11 +285,9 @@ void UkmRecorderImpl::PurgeSourcesAndEventsBySourceIds(
 
   std::vector<mojom::UkmEntryPtr>& events = recordings_.entries;
 
-  events.erase(std::remove_if(events.begin(), events.end(),
-                              [&](const auto& event) {
-                                return source_ids.count(event->source_id);
-                              }),
-               events.end());
+  base::EraseIf(events, [&](const auto& event) {
+    return source_ids.count(event->source_id);
+  });
 }
 
 void UkmRecorderImpl::MarkSourceForDeletion(SourceId source_id) {
