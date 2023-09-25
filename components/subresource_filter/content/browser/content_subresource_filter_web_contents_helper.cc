@@ -245,6 +245,14 @@ void ContentSubresourceFilterWebContentsHelper::DidFinishNavigation(
     ContentSubresourceFilterThrottleManager* throttle_manager =
         GetThrottleManager(navigation_handle->GetRenderFrameHost()->GetPage());
 
+    // TODO(https://crbug.com/1234233): This shouldn't be possible but, from
+    // the investigation in https://crbug.com/1264667, this is likely a symptom
+    // of navigating a detached WebContents so (very rarely) was causing
+    // crashes.
+    if (!throttle_manager) {
+      return;
+    }
+
     throttle_manager->DidBecomePrimaryPage();
 
     return;
@@ -264,11 +272,12 @@ void ContentSubresourceFilterWebContentsHelper::DidFinishNavigation(
         ThrottleManagerInUserDataContainer::GetForNavigationHandle(
             *navigation_handle);
 
-    // It is theoretically possible to start a navigation in an unattached
-    // WebContents (so the WebContents doesn't yet have any WebContentsHelpers
-    // such as this class) but attach it before a navigation completes. If that
-    // happened we won't have a throttle manager for the navigation. Not sure
-    // this would ever happen in real usage but it does happen in some tests.
+    // TODO(https://crbug.com/1234233): It is theoretically possible to start a
+    // navigation in an unattached WebContents (so the WebContents doesn't yet
+    // have any WebContentsHelpers such as this class) but attach it before a
+    // navigation completes. If that happened we won't have a throttle manager
+    // for the navigation. Not sure this would ever happen in real usage but it
+    // does happen in some tests.
     if (!container) {
       return;
     }
@@ -286,10 +295,10 @@ void ContentSubresourceFilterWebContentsHelper::DidFinishNavigation(
     } else if (is_initial_navigation) {
       if (auto* rfh = content::RenderFrameHost::FromID(
               navigation_handle->GetPreviousRenderFrameHostId())) {
-        // TODO(bokan): Ideally this should only happen on the first navigation
-        // in a frame, however, in some cases we actually attach this TabHelper
-        // after a navigation has occurred (possibly before it has finished).
-        // See
+        // TODO(https://crbug.com/1234233): Ideally this should only happen on
+        // the first navigation in a frame, however, in some cases we actually
+        // attach this TabHelper after a navigation has occurred (possibly
+        // before it has finished). See
         // https://groups.google.com/a/chromium.org/g/navigation-dev/c/cY5V-w-xPRM/m/uC1Nsg_KAwAJ.
         // DCHECK(rfh->GetLastCommittedURL().is_empty() ||
         //        rfh->GetLastCommittedURL().IsAboutBlank());
