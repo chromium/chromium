@@ -113,11 +113,14 @@ InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::MoveMouseTo(
       [](InteractiveViewsTestApi* test, RelativePositionCallback pos_callback,
          ui::InteractionSequence* seq, ui::TrackedElement* el) {
         test->test_impl().mouse_error_message_.clear();
+        const auto weak_seq = seq->AsWeakPtr();
         if (!test->mouse_util().PerformGestures(
                 test->test_impl().GetWindowHintFor(el),
                 InteractionTestUtilMouse::MoveTo(
                     std::move(pos_callback).Run(el)))) {
-          seq->FailForTesting();
+          if (weak_seq) {
+            weak_seq->FailForTesting();
+          }
         }
       },
       base::Unretained(this), GetPositionCallback(std::move(position))));
@@ -140,12 +143,15 @@ InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::ClickMouse(
       [](InteractiveViewsTestApi* test, ui_controls::MouseButton button,
          bool release, ui::InteractionSequence* seq, ui::TrackedElement* el) {
         test->test_impl().mouse_error_message_.clear();
+        const auto weak_seq = seq->AsWeakPtr();
         if (!test->mouse_util().PerformGestures(
                 test->test_impl().GetWindowHintFor(el),
                 release ? InteractionTestUtilMouse::Click(button)
                         : InteractionTestUtilMouse::MouseGestures{
                               InteractionTestUtilMouse::MouseDown(button)})) {
-          seq->FailForTesting();
+          if (weak_seq) {
+            weak_seq->FailForTesting();
+          }
         }
       },
       base::Unretained(this), button, release));
@@ -165,11 +171,14 @@ InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::DragMouseTo(
          bool release, ui::InteractionSequence* seq, ui::TrackedElement* el) {
         test->test_impl().mouse_error_message_.clear();
         const gfx::Point target = std::move(pos_callback).Run(el);
+        const auto weak_seq = seq->AsWeakPtr();
         if (!test->mouse_util().PerformGestures(
                 test->test_impl().GetWindowHintFor(el),
                 release ? InteractionTestUtilMouse::DragAndRelease(target)
                         : InteractionTestUtilMouse::DragAndHold(target))) {
-          seq->FailForTesting();
+          if (weak_seq) {
+            weak_seq->FailForTesting();
+          }
         }
       },
       base::Unretained(this), GetPositionCallback(std::move(position)),
@@ -193,10 +202,13 @@ InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::ReleaseMouse(
       [](InteractiveViewsTestApi* test, ui_controls::MouseButton button,
          ui::InteractionSequence* seq, ui::TrackedElement* el) {
         test->test_impl().mouse_error_message_.clear();
+        const auto weak_seq = seq->AsWeakPtr();
         if (!test->mouse_util().PerformGestures(
                 test->test_impl().GetWindowHintFor(el),
                 InteractionTestUtilMouse::MouseUp(button))) {
-          return seq->FailForTesting();
+          if (weak_seq) {
+            weak_seq->FailForTesting();
+          }
         }
       },
       base::Unretained(this), button));
