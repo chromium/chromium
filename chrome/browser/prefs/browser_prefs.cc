@@ -927,6 +927,11 @@ inline constexpr char kDownloadBubbleEnabled[] = "download_bubble_enabled";
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kGestureEducationNotificationShown[] =
     "ash.gesture_education.notification_shown";
+
+// Note that this very name is used outside ChromeOS Ash, where it isn't
+// deprecated.
+constexpr char kSyncInitialSyncFeatureSetupCompleteOnAsh[] =
+    "sync.has_setup_completed";
 #endif
 
 // Deprecated 09/2023.
@@ -1312,6 +1317,10 @@ void RegisterProfilePrefsForMigration(
 #endif
   registry->RegisterBooleanPref(kDownloadBubbleEnabled, true);
   registry->RegisterBooleanPref(kPrivacySandboxManuallyControlled, false);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterBooleanPref(kSyncInitialSyncFeatureSetupCompleteOnAsh,
+                                false);
+#endif
 }
 
 }  // namespace
@@ -2474,6 +2483,9 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 #endif
   profile_prefs->ClearPref(kDownloadBubbleEnabled);
   profile_prefs->ClearPref(kPrivacySandboxManuallyControlled);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  profile_prefs->ClearPref(kSyncInitialSyncFeatureSetupCompleteOnAsh);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

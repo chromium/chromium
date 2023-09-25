@@ -972,12 +972,15 @@ void SyncServiceImpl::OnEngineInitialized(bool success,
 
   crypto_.SetSyncEngine(GetAccountInfo(), engine_.get());
 
-  // Auto-start means IsInitialSyncFeatureSetupComplete gets set automatically.
-  if (ShouldAutoStartSyncFeature() &&
+  // TODO(crbug.com/1445931): Reconsider if local-sync actually needs
+  // IsInitialSyncFeatureSetupComplete() returning true.
+  if (IsLocalSyncEnabled() &&
       !user_settings_->IsInitialSyncFeatureSetupComplete()) {
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     // This will trigger a configure if it completes setup.
     user_settings_->SetInitialSyncFeatureSetupComplete(
         SyncFirstSetupCompleteSource::ENGINE_INITIALIZED_WITH_AUTO_START);
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
   } else if (CanConfigureDataTypes(/*bypass_setup_in_progress_check=*/false)) {
     // Datatype downloads on restart are generally due to newly supported
     // datatypes (although it's also possible we're picking up where a failed
@@ -1808,6 +1811,7 @@ void SyncServiceImpl::OnSyncManagedPrefChange(bool is_sync_managed) {
   }
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void SyncServiceImpl::OnFirstSetupCompletePrefChange(
     bool is_initial_sync_feature_setup_complete) {
   if (engine_ && engine_->IsInitialized()) {
@@ -1817,6 +1821,7 @@ void SyncServiceImpl::OnFirstSetupCompletePrefChange(
     MaybeRecordTrustedVaultHistograms();
   }
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 void SyncServiceImpl::OnAccountsInCookieUpdated(
     const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
@@ -2105,7 +2110,9 @@ void SyncServiceImpl::StopAndClear() {
   // that if the user ever chooses to enable Sync again, they start off with
   // their previous settings by default. We do however require going through
   // first-time setup again and set SyncRequested to false.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   sync_prefs_.ClearInitialSyncFeatureSetupComplete();
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
   sync_prefs_.ClearPassphrasePromptMutedProductVersion();
   // The passphrase type is now undefined again.
   sync_prefs_.ClearCachedPassphraseType();

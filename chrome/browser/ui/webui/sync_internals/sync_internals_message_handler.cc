@@ -274,11 +274,14 @@ void SyncInternalsMessageHandler::HandleRequestStart(
   }
 
   service->SetSyncFeatureRequested();
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // If the service was previously stopped via StopAndClear(), then the
   // "first-setup-complete" bit was also cleared, and now the service wouldn't
   // fully start up. So set that too.
   service->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void SyncInternalsMessageHandler::HandleRequestStopClearData(

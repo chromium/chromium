@@ -4,18 +4,27 @@
 
 #include "chrome/browser/sync/test/integration/sync_disabled_checker.h"
 
+#include "build/build_config.h"
+
 SyncDisabledChecker::SyncDisabledChecker(syncer::SyncServiceImpl* service)
     : SingleClientStatusChangeChecker(service) {}
 
 SyncDisabledChecker::~SyncDisabledChecker() = default;
 
 bool SyncDisabledChecker::IsExitConditionSatisfied(std::ostream* os) {
+  // TODO(crbug.com/1445931): Revisit condition below to simplify and/or unify
+  // across platforms.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  *os << "Waiting until sync is disabled via dashboard.";
+  return service()->IsSyncFeatureDisabledViaDashboard();
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
   *os << "Waiting until sync is disabled."
       << " IsSetupInProgress:" << service()->IsSetupInProgress()
       << " IsInitialSyncFeatureSetupComplete:"
       << service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete();
   return !service()->IsSetupInProgress() &&
          !service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void SyncDisabledChecker::WaitDone() {

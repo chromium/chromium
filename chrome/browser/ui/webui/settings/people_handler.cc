@@ -1057,6 +1057,7 @@ void PeopleHandler::MarkFirstSetupComplete() {
   // gets set automatically.
   service->SetSyncFeatureRequested();
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // If the first-time setup is already complete, there's nothing else to do.
   if (service->GetUserSettings()->IsInitialSyncFeatureSetupComplete()) {
     return;
@@ -1070,6 +1071,7 @@ void PeopleHandler::MarkFirstSetupComplete() {
   service->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       syncer::SyncFirstSetupCompleteSource::ADVANCED_FLOW_CONFIRM);
   FireWebUIListener("sync-settings-saved");
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void PeopleHandler::MaybeMarkSyncConfiguring() {

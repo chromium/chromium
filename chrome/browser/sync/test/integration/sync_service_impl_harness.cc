@@ -323,8 +323,10 @@ bool SyncServiceImplHarness::SetupSyncNoWaitForCompletion(
 
 void SyncServiceImplHarness::FinishSyncSetup() {
   sync_blocker_.reset();
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void SyncServiceImplHarness::StopSyncServiceAndClearData() {
@@ -345,8 +347,11 @@ bool SyncServiceImplHarness::EnableSyncFeature() {
   DVLOG(1) << "Engine Initialized successfully.";
 
   blocker.reset();
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   if (!AwaitSyncSetupCompletion()) {
     LOG(FATAL) << "AwaitSyncSetupCompletion failed.";

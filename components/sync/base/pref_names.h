@@ -24,9 +24,13 @@ inline constexpr char kLocalSyncBackendDir[] = "sync.local_sync_backend_dir";
 // TODO(crbug.com/1435427): Clean up/replace any existing references to these
 // prefs from outside components/sync/.
 namespace internal {
+
 // Boolean specifying whether the user finished setting up sync at least once.
+// On ChromeOS-Ash, the concept of initial-sync-setup doesn't exist.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 inline constexpr char kSyncInitialSyncFeatureSetupComplete[] =
     "sync.has_setup_completed";
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Boolean specifying whether to automatically sync all data types (including
 // future ones, as they're added).  If this is true, the following preferences

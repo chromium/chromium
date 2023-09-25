@@ -139,7 +139,10 @@ class SyncServiceImplStartupTest : public testing::Test {
     CHECK(!sync_service_);
 
     sync_prefs_.SetSyncRequested(true);
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     sync_prefs_.SetInitialSyncFeatureSetupComplete();
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
   SyncPrefs* sync_prefs() { return &sync_prefs_; }
@@ -396,7 +399,7 @@ TEST_F(SyncServiceImplStartupTest, StartInvalidCredentials) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(SyncServiceImplStartupTest, StartAshNoCredentials) {
   // We've never completed startup.
-  ASSERT_FALSE(sync_prefs()->IsInitialSyncFeatureSetupComplete());
+  ASSERT_FALSE(component_factory()->HasTransportDataIncludingFirstSync());
 
   // On ChromeOS, the user is always immediately signed in, but a refresh token
   // isn't necessarily available yet.
@@ -421,7 +424,7 @@ TEST_F(SyncServiceImplStartupTest, StartAshNoCredentials) {
 
 TEST_F(SyncServiceImplStartupTest, StartAshFirstTime) {
   // We've never completed Sync startup.
-  ASSERT_FALSE(sync_prefs()->IsInitialSyncFeatureSetupComplete());
+  ASSERT_FALSE(component_factory()->HasTransportDataIncludingFirstSync());
 
   // There is already a signed-in user.
   SignInWithSyncConsent();
@@ -578,7 +581,11 @@ TEST_F(SyncServiceImplStartupTest, StartDownloadFailed) {
   sync_prefs()->SetSyncRequested(true);
   CreateSyncService();
   SignInWithSyncConsent();
+  ASSERT_FALSE(component_factory()->HasTransportDataIncludingFirstSync());
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   ASSERT_FALSE(sync_prefs()->IsInitialSyncFeatureSetupComplete());
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Prevent automatic (and successful) completion of engine initialization.
   component_factory()->AllowFakeEngineInitCompletion(false);
@@ -603,6 +610,7 @@ TEST_F(SyncServiceImplStartupTest, StartDownloadFailed) {
 TEST_F(SyncServiceImplStartupTest, FullStartupSequenceFirstTime) {
   // We've never completed startup.
   ASSERT_FALSE(sync_prefs()->IsInitialSyncFeatureSetupComplete());
+  ASSERT_FALSE(component_factory()->HasTransportDataIncludingFirstSync());
 
   CreateSyncService({SESSIONS});
   sync_service()->Initialize();

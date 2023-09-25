@@ -71,7 +71,9 @@ TEST_F(SyncPrefsTest, CachedPassphraseType) {
 class MockSyncPrefObserver : public SyncPrefObserver {
  public:
   MOCK_METHOD(void, OnSyncManagedPrefChange, (bool), (override));
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   MOCK_METHOD(void, OnFirstSetupCompletePrefChange, (bool), (override));
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
   MOCK_METHOD(void, OnPreferredDataTypesPrefChange, (bool), (override));
 };
 
@@ -80,11 +82,8 @@ TEST_F(SyncPrefsTest, ObservedPrefs) {
   InSequence dummy;
   EXPECT_CALL(mock_sync_pref_observer, OnSyncManagedPrefChange(true));
   EXPECT_CALL(mock_sync_pref_observer, OnSyncManagedPrefChange(false));
-  EXPECT_CALL(mock_sync_pref_observer, OnFirstSetupCompletePrefChange(true));
-  EXPECT_CALL(mock_sync_pref_observer, OnFirstSetupCompletePrefChange(false));
 
   ASSERT_FALSE(sync_prefs_->IsSyncClientDisabledByPolicy());
-  ASSERT_FALSE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
   ASSERT_FALSE(sync_prefs_->IsSyncRequested());
 
   sync_prefs_->AddObserver(&mock_sync_pref_observer);
@@ -94,11 +93,6 @@ TEST_F(SyncPrefsTest, ObservedPrefs) {
   pref_service_.SetBoolean(prefs::internal::kSyncManaged, false);
   EXPECT_FALSE(sync_prefs_->IsSyncClientDisabledByPolicy());
 
-  sync_prefs_->SetInitialSyncFeatureSetupComplete();
-  EXPECT_TRUE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
-  sync_prefs_->ClearInitialSyncFeatureSetupComplete();
-  EXPECT_FALSE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
-
   sync_prefs_->SetSyncRequested(true);
   EXPECT_TRUE(sync_prefs_->IsSyncRequested());
   sync_prefs_->SetSyncRequested(false);
@@ -106,6 +100,27 @@ TEST_F(SyncPrefsTest, ObservedPrefs) {
 
   sync_prefs_->RemoveObserver(&mock_sync_pref_observer);
 }
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(SyncPrefsTest, FirstSetupCompletePrefChange) {
+  StrictMock<MockSyncPrefObserver> mock_sync_pref_observer;
+  InSequence dummy;
+
+  EXPECT_CALL(mock_sync_pref_observer, OnFirstSetupCompletePrefChange(true));
+  EXPECT_CALL(mock_sync_pref_observer, OnFirstSetupCompletePrefChange(false));
+
+  ASSERT_FALSE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
+
+  sync_prefs_->AddObserver(&mock_sync_pref_observer);
+
+  sync_prefs_->SetInitialSyncFeatureSetupComplete();
+  EXPECT_TRUE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
+  sync_prefs_->ClearInitialSyncFeatureSetupComplete();
+  EXPECT_FALSE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
+
+  sync_prefs_->RemoveObserver(&mock_sync_pref_observer);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(SyncPrefsTest, SetSelectedOsTypesTriggersPreferredDataTypesPrefChange) {
@@ -123,8 +138,11 @@ TEST_F(SyncPrefsTest, SetSelectedOsTypesTriggersPreferredDataTypesPrefChange) {
 #endif
 
 TEST_F(SyncPrefsTest, Basic) {
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_FALSE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
   sync_prefs_->SetInitialSyncFeatureSetupComplete();
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
   EXPECT_TRUE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
 
   EXPECT_FALSE(sync_prefs_->IsSyncRequested());

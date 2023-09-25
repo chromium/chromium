@@ -34,8 +34,10 @@ namespace syncer {
 class SyncPrefObserver {
  public:
   virtual void OnSyncManagedPrefChange(bool is_sync_managed) = 0;
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   virtual void OnFirstSetupCompletePrefChange(
       bool is_initial_sync_feature_setup_complete) = 0;
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
   virtual void OnPreferredDataTypesPrefChange(
       bool payments_integration_enabled_changed) = 0;
 
@@ -72,8 +74,12 @@ class SyncPrefs {
   // First-Setup-Complete is conceptually similar to the user's consent to
   // enable sync-the-feature.
   bool IsInitialSyncFeatureSetupComplete() const;
+
+  // ChromeOS Ash, IsInitialSyncFeatureSetupComplete() always returns true.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   void SetInitialSyncFeatureSetupComplete();
   void ClearInitialSyncFeatureSetupComplete();
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Whether the user wants Sync to run. This is false by default, but gets set
   // to true early in the Sync setup flow, after the user has pressed "turn on
@@ -251,7 +257,10 @@ class SyncPrefs {
   static bool IsTypeSupportedInTransportMode(UserSelectableType type);
 
   void OnSyncManagedPrefChanged();
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   void OnFirstSetupCompletePrefChange();
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Never null.
   const raw_ptr<PrefService> pref_service_;
@@ -262,7 +271,9 @@ class SyncPrefs {
   // configuration management.
   BooleanPrefMember pref_sync_managed_;
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   BooleanPrefMember pref_initial_sync_feature_setup_complete_;
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   bool local_sync_enabled_;
 

@@ -80,6 +80,7 @@ bool SyncUserSettingsImpl::IsInitialSyncFeatureSetupComplete() const {
   return prefs_->IsInitialSyncFeatureSetupComplete();
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void SyncUserSettingsImpl::SetInitialSyncFeatureSetupComplete(
     SyncFirstSetupCompleteSource source) {
   if (IsInitialSyncFeatureSetupComplete()) {
@@ -88,6 +89,7 @@ void SyncUserSettingsImpl::SetInitialSyncFeatureSetupComplete(
   UMA_HISTOGRAM_ENUMERATION("Signin.SyncFirstSetupCompleteSource", source);
   prefs_->SetInitialSyncFeatureSetupComplete();
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 bool SyncUserSettingsImpl::IsSyncEverythingEnabled() const {
   return prefs_->HasKeepEverythingSynced();

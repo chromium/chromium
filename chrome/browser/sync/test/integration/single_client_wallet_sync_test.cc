@@ -89,8 +89,6 @@ MATCHER(AddressHasConverted, "") {
 const char kLocalGuidA[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44A";
 const char kDifferentBillingAddressId[] = "another address entity ID";
 const base::Time kArbitraryDefaultTime = base::Time::FromDoubleT(25);
-const syncer::SyncFirstSetupCompleteSource kSetSourceFromTest =
-    syncer::SyncFirstSetupCompleteSource::BASIC_FLOW;
 
 template <class T>
 class AutofillWebDataServiceConsumer : public WebDataServiceConsumer {
@@ -412,10 +410,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, ClearOnDisableSync) {
 
   // Turn sync on again, the data should come back.
   GetSyncService(0)->SetSyncFeatureRequested();
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // StopAndClear() also clears the "first setup complete" flag, so set it
   // again.
   GetSyncService(0)->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
-      kSetSourceFromTest);
+      syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
   // Wait until Sync restores the card and it arrives at PDM.
   WaitForNumberOfCards(1, pdm);
 
@@ -1247,8 +1249,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSecondaryAccountSyncTest,
   // complete.
   secondary_account_helper::GrantSyncConsent(profile(), "user@email.com");
   GetSyncService(0)->SetSyncFeatureRequested();
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   GetSyncService(0)->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
-      kSetSourceFromTest);
+      syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Wait for Sync to get reconfigured into feature mode.
   ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
@@ -1333,8 +1337,10 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(syncer::SyncService::TransportState::CONFIGURING,
             GetSyncService(0)->GetTransportState());
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   GetSyncService(0)->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
-      kSetSourceFromTest);
+      syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Wait for Sync to get reconfigured into feature mode.
   ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());

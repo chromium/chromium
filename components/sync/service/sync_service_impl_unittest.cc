@@ -192,7 +192,11 @@ class SyncServiceImplTest : public ::testing::Test {
         /*keep_everything_synced=*/true,
         /*registered_types=*/UserSelectableTypeSet::All(),
         /*selected_types=*/UserSelectableTypeSet::All());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    ASSERT_TRUE(sync_prefs.IsInitialSyncFeatureSetupComplete());
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
     sync_prefs.SetInitialSyncFeatureSetupComplete();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
   void SetInvalidationsEnabled() {

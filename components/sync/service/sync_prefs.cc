@@ -66,10 +66,13 @@ SyncPrefs::SyncPrefs(PrefService* pref_service) : pref_service_(pref_service) {
       prefs::internal::kSyncManaged, pref_service_,
       base::BindRepeating(&SyncPrefs::OnSyncManagedPrefChanged,
                           base::Unretained(this)));
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   pref_initial_sync_feature_setup_complete_.Init(
       prefs::internal::kSyncInitialSyncFeatureSetupComplete, pref_service_,
       base::BindRepeating(&SyncPrefs::OnFirstSetupCompletePrefChange,
                           base::Unretained(this)));
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Cache the value of the kEnableLocalSyncBackend pref to avoid it flipping
   // during the lifetime of the service.
@@ -84,8 +87,6 @@ SyncPrefs::~SyncPrefs() {
 // static
 void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   // Actual user-controlled preferences.
-  registry->RegisterBooleanPref(
-      prefs::internal::kSyncInitialSyncFeatureSetupComplete, false);
   registry->RegisterBooleanPref(prefs::internal::kSyncRequested, false);
   registry->RegisterBooleanPref(prefs::internal::kSyncKeepEverythingSynced,
                                 true);
@@ -103,7 +104,10 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::internal::kSyncOsPreferences, false);
   registry->RegisterBooleanPref(prefs::internal::kSyncWifiConfigurations,
                                 false);
-#endif
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterBooleanPref(
+      prefs::internal::kSyncInitialSyncFeatureSetupComplete, false);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   registry->RegisterBooleanPref(prefs::internal::kSyncAppsEnabledByOs, false);
@@ -143,10 +147,15 @@ void SyncPrefs::RemoveObserver(SyncPrefObserver* sync_pref_observer) {
 
 bool SyncPrefs::IsInitialSyncFeatureSetupComplete() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return true;
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
   return pref_service_->GetBoolean(
       prefs::internal::kSyncInitialSyncFeatureSetupComplete);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void SyncPrefs::SetInitialSyncFeatureSetupComplete() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pref_service_->SetBoolean(
@@ -158,6 +167,7 @@ void SyncPrefs::ClearInitialSyncFeatureSetupComplete() {
   pref_service_->ClearPref(
       prefs::internal::kSyncInitialSyncFeatureSetupComplete);
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 bool SyncPrefs::IsSyncRequested() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -621,6 +631,7 @@ void SyncPrefs::OnSyncManagedPrefChanged() {
   }
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void SyncPrefs::OnFirstSetupCompletePrefChange() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (SyncPrefObserver& observer : sync_pref_observers_) {
@@ -628,6 +639,7 @@ void SyncPrefs::OnFirstSetupCompletePrefChange() {
         *pref_initial_sync_feature_setup_complete_);
   }
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // static
 void SyncPrefs::RegisterTypeSelectedPref(PrefRegistrySimple* registry,

@@ -34,9 +34,6 @@ ACTION_P(QuitMessageLoop, loop) {
   loop->Quit();
 }
 
-const syncer::SyncFirstSetupCompleteSource kSetSourceFromTest =
-    syncer::SyncFirstSetupCompleteSource::BASIC_FLOW;
-
 }  // namespace
 
 class SingleClientOfferSyncTest : public SyncTest {
@@ -102,10 +99,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ClearOnDisableSync) {
 
   // Turn sync on again, the data should come back.
   GetSyncService(0)->SetSyncFeatureRequested();
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // StopAndClear() also clears the "first setup complete" flag, so set it
   // again.
   GetSyncService(0)->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
-      kSetSourceFromTest);
+      syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
   // Wait until Sync restores the card and it arrives at PDM.
   WaitForNumberOfOffers(1, pdm);
   EXPECT_EQ(1uL, pdm->GetAutofillOffers().size());

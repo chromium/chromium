@@ -40,8 +40,10 @@ class SyncUserSettingsImpl : public SyncUserSettings {
 
   // SyncUserSettings implementation.
   bool IsInitialSyncFeatureSetupComplete() const override;
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   void SetInitialSyncFeatureSetupComplete(
       SyncFirstSetupCompleteSource source) override;
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
   bool IsSyncEverythingEnabled() const override;
   UserSelectableTypeSet GetSelectedTypes() const override;
   bool IsTypeManagedByPolicy(UserSelectableType type) const override;

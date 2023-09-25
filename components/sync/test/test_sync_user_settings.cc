@@ -49,10 +49,12 @@ bool TestSyncUserSettings::IsInitialSyncFeatureSetupComplete() const {
   return initial_sync_feature_setup_complete_;
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void TestSyncUserSettings::SetInitialSyncFeatureSetupComplete(
     SyncFirstSetupCompleteSource source) {
   SetInitialSyncFeatureSetupComplete();
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 bool TestSyncUserSettings::IsSyncEverythingEnabled() const {
   return sync_everything_enabled_;

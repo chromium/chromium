@@ -89,6 +89,10 @@ IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldStart) {
   EXPECT_FALSE(service->IsSyncFeatureEnabled());
   EXPECT_FALSE(service->IsSyncFeatureActive());
 
+  // It is not clear if IsInitialSyncFeatureSetupComplete() should be returning
+  // true, but let's document the current behavior.
+  EXPECT_TRUE(service->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
+
   // Verify that the expected set of data types successfully started up.
   // If this test fails after adding a new data type, carefully consider whether
   // the type should be enabled in Local Sync mode, i.e. for roaming profiles on
