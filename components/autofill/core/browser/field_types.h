@@ -124,7 +124,6 @@ namespace autofill {
 //
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill
-//
 enum ServerFieldType {
   // Server indication that it has no data for the requested field.
   NO_SERVER_DATA = 0,
@@ -447,6 +446,34 @@ using ServerFieldTypeSet = DenseSet<ServerFieldType>;
 
 std::ostream& operator<<(std::ostream& o, ServerFieldTypeSet field_type_set);
 
+// Returns whether the field can be filled with data.
+bool IsFillableFieldType(ServerFieldType field_type);
+
+// Returns a StringPiece describing |type|. As the StringPiece points to a
+// static string, you don't need to worry about dangling pointers.
+std::string_view FieldTypeToStringPiece(ServerFieldType type);
+
+// Inverse FieldTypeToStringPiece(). Checks that only valid ServerFieldType
+// string representations are being passed.
+ServerFieldType TypeNameToFieldType(std::string_view type_name);
+
+// Returns a StringPiece describing `type`. The devtools UI uses this string to
+// give developers feedback about autofill's filling decision. Note that
+// different field types can map to the same string representation for
+// simplicity of the feedback. Returns an empty string if the type is not
+// supported.
+std::string_view FieldTypeToDeveloperRepresentationString(ServerFieldType type);
+
+// There's a one-to-many relationship between FieldTypeGroup and
+// ServerFieldType as well as HtmlFieldType.
+ServerFieldTypeSet GetServerFieldTypesOfGroup(FieldTypeGroup group);
+FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type);
+FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type);
+
+// Not all HtmlFieldTypes have a corresponding ServerFieldType.
+ServerFieldType HtmlFieldTypeToBestCorrespondingServerFieldType(
+    HtmlFieldType field_type);
+
 // Returns |raw_value| if it corresponds to a non-deprecated enumeration
 // constant of ServerFieldType other than MAX_VALID_FIELD_TYPE. Otherwise,
 // returns |fallback_value|.
@@ -463,8 +490,7 @@ constexpr ServerFieldType ToSafeServerFieldType(
            !(44 <= t && t <= 50) &&
            // Probably-account creation password (value 94) is deprecated.
            t != 94 &&
-           // Billing addresses (values [37,43], 78, 80, 82, 84) are
-           // deprecated.
+           // Billing addresses (values [37,43], 78, 80, 82, 84) are deprecated.
            !(37 <= t && t <= 43) && t != 78 && t != 80 && t != 82 && t != 84 &&
            // Billing phone numbers (values [62,66]) are deprecated.
            !(62 <= t && t <= 66) &&
@@ -492,25 +518,6 @@ constexpr ServerFieldTypeSet kAllServerFieldTypes = [] {
   }
   return fields;
 }();
-
-// Returns whether the field can be filled with data.
-bool IsFillableFieldType(ServerFieldType field_type);
-
-// Returns a StringPiece describing |type|. As the StringPiece points to a
-// static string, you don't need to worry about memory deallocation.
-base::StringPiece FieldTypeToStringPiece(ServerFieldType type);
-
-// Returns a StringPiece describing `type`. The devtools UI uses this string to
-// give developers feedback about autofill's filling decision. Note that
-// different field types can map to the same string representation for
-// simplicity of the feedback. Returns an empty string if the type is not
-// supported.
-base::StringPiece FieldTypeToDeveloperRepresentationString(
-    ServerFieldType type);
-
-// Inverse map of FieldTypeToStringPiece. Checks that only valid ServerFieldType
-// string representations are being passed.
-ServerFieldType TypeNameToFieldType(base::StringPiece type_name);
 
 }  // namespace autofill
 

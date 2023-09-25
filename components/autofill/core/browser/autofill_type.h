@@ -17,19 +17,6 @@ namespace autofill {
 
 class AutofillField;
 
-// Helper method that takes a `ServerFieldType` and returns its corresponding
-// `FieldTypeGroup` value.
-FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type);
-
-// Helper method that takes a `HtmlFieldType` and `HtmlFieldMode`, then returns
-// their corresponding `FieldTypeGroup` value.
-FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type);
-
-// Helper method that takes a `FieldTypeGroup` and returns a
-// `ServerFieldTypeSet` containing all `ServerFieldType`(s) that matches the
-// target group.
-ServerFieldTypeSet GetServerFieldTypesOfGroup(FieldTypeGroup group);
-
 // The high-level description of Autofill types, used to categorize form fields
 // and for associating form fields with form values in the Web Database.
 class AutofillType {
