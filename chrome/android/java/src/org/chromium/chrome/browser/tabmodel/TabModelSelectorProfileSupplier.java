@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -97,14 +95,15 @@ public class TabModelSelectorProfileSupplier
         super.set(profile);
     }
 
-    @Nullable
     @Override
     public Profile get() {
         Profile profile = super.get();
-        // TODO(crbug.com/1353138): Convert to an IllegalStateException if no bug reports are filed.
-        assert profile
-                != null : ("Attempting to read a null profile from the supplier. Use "
-                                  + "hasValue() instead and add an observer.");
+        if (profile == null) {
+            // Prevent unintentional access to a null profile early during app initialization. If a
+            // client wants to read this when it could be null, use hasValue() and add an observer
+            // to be notified when the profile becomes available.
+            throw new IllegalStateException("Attempting to read a null profile from the supplier");
+        }
         return profile;
     }
 
