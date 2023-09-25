@@ -42,7 +42,7 @@ class SettingsLockScreenPasswordPromptDialogElement extends
     return {};
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     recordLockScreenProgress(LockScreenProgress.START_SCREEN_LOCK);

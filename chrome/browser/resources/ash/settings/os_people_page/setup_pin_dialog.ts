@@ -71,7 +71,7 @@ class SettingsSetupPinDialogElement extends SettingsSetupPinDialogElementBase {
   private isConfirmStep_: boolean;
   private quickUnlockPrivate: Object;
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.$.dialog.showModal();

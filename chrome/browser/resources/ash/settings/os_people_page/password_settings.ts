@@ -155,7 +155,7 @@ export class SettingsPasswordSettingsElement extends PolymerElement {
     return el;
   }
 
-  private openSetLocalPasswordDialog_() {
+  private openSetLocalPasswordDialog_(): void {
     this.setLocalPasswordDialog().showModal();
   }
 }

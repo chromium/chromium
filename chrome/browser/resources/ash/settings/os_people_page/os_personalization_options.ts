@@ -68,7 +68,7 @@ export class OsSettingsPersonalizationOptionsElement extends
   }
 
   // <if expr="_google_chrome">
-  private onUseSpellingServiceToggle_(event: Event) {
+  private onUseSpellingServiceToggle_(event: Event): void {
     // If turning on using the spelling service, automatically turn on
     // spellcheck so that the spelling service can run.
     if ((event.target as SettingsToggleButtonElement).checked) {

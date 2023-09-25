@@ -47,7 +47,7 @@ export class SettingsSetLocalPasswordDialogElement extends PolymerElement {
   public authToken: string|null;
   private showError_: boolean;
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     // Dynamic checks to make sure that our static type declaration about named

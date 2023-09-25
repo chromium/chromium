@@ -168,8 +168,8 @@ export class OsSyncControlsSubpageElement extends
   /**
    * Called when the sync data radio button selection changes.
    */
-  private onSyncDataRadioSelectionChanged_(event:
-                                               CustomEvent<{value: string}>) {
+  private onSyncDataRadioSelectionChanged_(event: CustomEvent<{value: string}>):
+      void {
     assertExists(this.osSyncPrefs);
     const syncAllDataTypes =
         event.detail.value === RadioButtonNames.SYNC_EVERYTHING;
@@ -195,7 +195,8 @@ export class OsSyncControlsSubpageElement extends
   /**
    * Called when the link to the browser's sync settings is clicked.
    */
-  private onBrowserSyncSettingsClicked_(event: CustomEvent<{event: Event}>) {
+  private onBrowserSyncSettingsClicked_(event: CustomEvent<{event: Event}>):
+      void {
     // Prevent the default link click behavior.
     event.detail.event.preventDefault();
 

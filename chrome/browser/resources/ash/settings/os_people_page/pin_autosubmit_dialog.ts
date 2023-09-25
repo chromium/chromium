@@ -118,7 +118,7 @@ class SettingsPinAutosubmitDialogElement extends
     ];
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.resetState();

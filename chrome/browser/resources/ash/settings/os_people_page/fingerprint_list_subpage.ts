@@ -114,7 +114,7 @@ export class SettingsFingerprintListSubpageElement extends
     return false;
   }
 
-  override currentRouteChanged(newRoute: Route) {
+  override currentRouteChanged(newRoute: Route): void {
     if (newRoute !== routes.FINGERPRINT) {
       this.showSetupFingerprintDialog_ = false;
       return;

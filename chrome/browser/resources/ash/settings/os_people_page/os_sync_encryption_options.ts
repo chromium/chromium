@@ -129,7 +129,7 @@ export class OsSettingsSyncEncryptionOptionsElement extends PolymerElement {
         (this.syncStatus && this.syncStatus.supervisedUser));
   }
 
-  private disableEncryptionOptionsChanged_() {
+  private disableEncryptionOptionsChanged_(): void {
     if (this.disableEncryptionOptions_) {
       this.creatingNewPassphrase_ = false;
     }
@@ -145,21 +145,21 @@ export class OsSettingsSyncEncryptionOptionsElement extends PolymerElement {
     return passphrase !== '' && confirmation !== '';
   }
 
-  private onNewPassphraseInputKeypress_(e: KeyboardEvent) {
+  private onNewPassphraseInputKeypress_(e: KeyboardEvent): void {
     if (e.type === 'keypress' && e.key !== 'Enter') {
       return;
     }
     this.saveNewPassphrase_();
   }
 
-  private onSaveNewPassphraseClick_() {
+  private onSaveNewPassphraseClick_(): void {
     this.saveNewPassphrase_();
   }
 
   /**
    * Sends the newly created custom sync passphrase to the browser.
    */
-  private saveNewPassphrase_() {
+  private saveNewPassphrase_(): void {
     assert(this.creatingNewPassphrase_);
     chrome.metricsPrivate.recordUserAction('Sync_SaveNewPassphraseClicked');
 
@@ -189,8 +189,8 @@ export class OsSettingsSyncEncryptionOptionsElement extends PolymerElement {
         });
   }
 
-  private onEncryptionRadioSelectionChanged_(event:
-                                                 CustomEvent<{value: string}>) {
+  private onEncryptionRadioSelectionChanged_(
+      event: CustomEvent<{value: string}>): void {
     this.creatingNewPassphrase_ =
         event.detail.value === RadioButtonNames.ENCRYPT_WITH_PASSPHRASE;
   }
@@ -198,7 +198,7 @@ export class OsSettingsSyncEncryptionOptionsElement extends PolymerElement {
   /**
    * Computed binding returning the selected encryption radio button.
    */
-  private selectedEncryptionRadio_() {
+  private selectedEncryptionRadio_(): RadioButtonNames {
     return this.syncPrefs!.encryptAllData || this.creatingNewPassphrase_ ?
         RadioButtonNames.ENCRYPT_WITH_PASSPHRASE :
         RadioButtonNames.ENCRYPT_WITH_GOOGLE;
@@ -224,7 +224,7 @@ export class OsSettingsSyncEncryptionOptionsElement extends PolymerElement {
     return !emptyPassphrase && !mismatchedPassphrase;
   }
 
-  private onLearnMoreClick_(event: Event) {
+  private onLearnMoreClick_(event: Event): void {
     if ((event.target as HTMLElement).tagName === 'A') {
       // Stop the propagation of events, so that clicking on links inside
       // checkboxes or radio buttons won't change the value.
