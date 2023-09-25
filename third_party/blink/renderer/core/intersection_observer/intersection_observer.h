@@ -121,9 +121,10 @@ class CORE_EXPORT IntersectionObserver final
       bool needs_initial_observation_with_detached_target = true,
       ExceptionState& = ASSERT_NO_EXCEPTION);
 
-  explicit IntersectionObserver(IntersectionObserverDelegate&,
-                                Node*,
+  explicit IntersectionObserver(IntersectionObserverDelegate& delegate,
+                                Node* root,
                                 const Vector<Length>& margin,
+                                const Vector<Length>& scroll_margin,
                                 const Vector<float>& thresholds,
                                 ThresholdInterpretation semantics,
                                 DOMHighResTimeStamp delay,
@@ -142,6 +143,7 @@ class CORE_EXPORT IntersectionObserver final
   // API attributes.
   Node* root() const { return root_.Get(); }
   String rootMargin() const;
+  String scrollMargin() const;
   const Vector<float>& thresholds() const { return thresholds_; }
   DOMHighResTimeStamp delay() const { return delay_; }
   bool trackVisibility() const { return track_visibility_; }
@@ -162,13 +164,17 @@ class CORE_EXPORT IntersectionObserver final
 
   DOMHighResTimeStamp GetTimeStamp(base::TimeTicks monotonic_time) const;
   DOMHighResTimeStamp GetEffectiveDelay() const;
+
   Vector<Length> RootMargin() const {
     return margin_target_ == kApplyMarginToRoot ? margin_ : Vector<Length>();
   }
+
   Vector<Length> TargetMargin() const {
     return margin_target_ == kApplyMarginToTarget ? margin_ : Vector<Length>();
   }
   bool HasRootMargin() const;
+
+  Vector<Length> ScrollMargin() const { return scroll_margin_; }
 
   // Returns the number of IntersectionObservations that recomputed geometry.
   int64_t ComputeIntersections(unsigned flags,
@@ -217,6 +223,7 @@ class CORE_EXPORT IntersectionObserver final
   Vector<float> thresholds_;
   DOMHighResTimeStamp delay_;
   Vector<Length> margin_;
+  Vector<Length> scroll_margin_;
   MarginTarget margin_target_;
   unsigned root_is_implicit_ : 1;
   unsigned track_visibility_ : 1;

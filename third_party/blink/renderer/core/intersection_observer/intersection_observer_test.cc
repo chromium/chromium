@@ -39,6 +39,128 @@ class IntersectionObserverTest : public SimTest,
  public:
   IntersectionObserverTest()
       : ScopedIntersectionOptimizationForTest(GetParam()) {}
+
+ protected:
+  void TestScrollMargin(int scroll_margin,
+                        bool is_intersecting,
+                        double intersectionRatio) {
+    WebView().MainFrameViewWidget()->Resize(gfx::Size(200, 200));
+
+    SimRequest main_resource("https://example.com/", "text/html");
+    LoadURL("https://example.com/");
+    main_resource.Complete(R"HTML(
+    <style>
+    #scroller { width: 100px; height: 100px; overflow: scroll; }
+    #spacer { width: 50px; height: 110px; }
+    #target { width: 50px; height: 50px; }
+    </style>
+
+    <div id=scroller>
+      <div id=spacer></div>
+      <div id=target></div>
+    </div>
+  )HTML");
+
+    Compositor().BeginFrame();
+
+    Element* target = GetDocument().getElementById(AtomicString("target"));
+    ASSERT_TRUE(target);
+
+    TestIntersectionObserverDelegate* scroll_margin_delegate =
+        MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
+
+    IntersectionObserver* scroll_margin_observer =
+        MakeGarbageCollected<IntersectionObserver>(
+            /* delegate */ *scroll_margin_delegate,
+            /* root */ nullptr,
+            /* margin */ Vector<Length>{Length::Fixed(10)},
+            /* scroll_margin */ Vector<Length>{Length::Fixed(scroll_margin)},
+            /* thresholds */ Vector<float>{std::numeric_limits<float>::min()},
+            /* semantics */ IntersectionObserver::kFractionOfTarget,
+            /* delay */ 0,
+            /* track_visibility */ false,
+            /* always_report_root_bounds */ false,
+            /* margin_target */ IntersectionObserver::kApplyMarginToRoot,
+            /* use_overflow_clip_edge */ false);
+
+    DummyExceptionStateForTesting exception_state;
+    scroll_margin_observer->observe(target, exception_state);
+    ASSERT_FALSE(exception_state.HadException());
+
+    Compositor().BeginFrame();
+    test::RunPendingTasks();
+    ASSERT_FALSE(Compositor().NeedsBeginFrame());
+
+    EXPECT_EQ(scroll_margin_delegate->CallCount(), 1);
+    EXPECT_EQ(scroll_margin_delegate->EntryCount(), 1);
+    EXPECT_EQ(is_intersecting,
+              scroll_margin_delegate->LastEntry()->isIntersecting());
+    EXPECT_NEAR(intersectionRatio,
+                scroll_margin_delegate->LastEntry()->intersectionRatio(),
+                0.001);
+  }
+
+  void TestScrollMarginNested(int scroll_margin,
+                              bool is_intersecting,
+                              double intersectionRatio) {
+    WebView().MainFrameViewWidget()->Resize(gfx::Size(200, 200));
+
+    SimRequest main_resource("https://example.com/", "text/html");
+    LoadURL("https://example.com/");
+    main_resource.Complete(R"HTML(
+    <style>
+    #scroller { width: 100px; height: 100px; overflow: scroll; }
+    #scroller2 { width: 130px; height: 130px; overflow: scroll; }
+    #spacer { width: 10px; height: 110px; }
+    #target { width: 50px; height: 50px; }
+    </style>
+
+    <div id=scroller2>
+      <div id=scroller>
+        <div id=spacer></div>
+        <div id=target></div>
+      </div>
+    </div>
+  )HTML");
+
+    Compositor().BeginFrame();
+
+    Element* target = GetDocument().getElementById(AtomicString("target"));
+    ASSERT_TRUE(target);
+
+    TestIntersectionObserverDelegate* scroll_margin_delegate =
+        MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
+
+    IntersectionObserver* scroll_margin_observer =
+        MakeGarbageCollected<IntersectionObserver>(
+            /* delegate */ *scroll_margin_delegate,
+            /* root */ nullptr,
+            /* margin */ Vector<Length>{Length::Fixed(10)},
+            /* scroll_margin */ Vector<Length>{Length::Fixed(scroll_margin)},
+            /* thresholds */ Vector<float>{std::numeric_limits<float>::min()},
+            /* semantics */ IntersectionObserver::kFractionOfTarget,
+            /* delay */ 0,
+            /* track_visibility */ false,
+            /* always_report_root_bounds */ false,
+            /* margin_target */ IntersectionObserver::kApplyMarginToRoot,
+            /* use_overflow_clip_edge */ false);
+
+    DummyExceptionStateForTesting exception_state;
+    scroll_margin_observer->observe(target, exception_state);
+    ASSERT_FALSE(exception_state.HadException());
+
+    Compositor().BeginFrame();
+    test::RunPendingTasks();
+    ASSERT_FALSE(Compositor().NeedsBeginFrame());
+
+    EXPECT_EQ(scroll_margin_delegate->CallCount(), 1);
+    EXPECT_EQ(scroll_margin_delegate->EntryCount(), 1);
+    EXPECT_EQ(is_intersecting,
+              scroll_margin_delegate->LastEntry()->isIntersecting());
+    EXPECT_NEAR(intersectionRatio,
+                scroll_margin_delegate->LastEntry()->intersectionRatio(),
+                0.001);
+  }
 };
 
 class IntersectionObserverV2Test : public IntersectionObserverTest {
@@ -198,26 +320,42 @@ TEST_P(IntersectionObserverTest, ReportsFractionOfTargetOrRoot) {
 
   TestIntersectionObserverDelegate* target_observer_delegate =
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
+
   IntersectionObserver* target_observer =
       MakeGarbageCollected<IntersectionObserver>(
-          *target_observer_delegate, nullptr, Vector<Length>(),
-          Vector<float>{kExpectedFractionOfTarget / 2},
-          IntersectionObserver::kFractionOfTarget, 0, false, false,
-          IntersectionObserver::kApplyMarginToRoot,
+          /* delegate */ *target_observer_delegate,
+          /* root */ nullptr,
+          /* margin */ Vector<Length>(),
+          /* scroll_margin */ Vector<Length>{},
+          /* thresholds */ Vector<float>{kExpectedFractionOfTarget / 2},
+          /* semantics */ IntersectionObserver::kFractionOfTarget,
+          /* delay */ 0,
+          /* track_visibility */ false,
+          /* always_report_root_bounds */ false,
+          /* margin_target */ IntersectionObserver::kApplyMarginToRoot,
           /* use_overflow_clip_edge */ false);
+
   DummyExceptionStateForTesting exception_state;
   target_observer->observe(target, exception_state);
   ASSERT_FALSE(exception_state.HadException());
 
   TestIntersectionObserverDelegate* root_observer_delegate =
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
+
   IntersectionObserver* root_observer =
       MakeGarbageCollected<IntersectionObserver>(
-          *root_observer_delegate, nullptr, Vector<Length>(),
-          Vector<float>{kExpectedFractionOfRoot / 2},
-          IntersectionObserver::kFractionOfRoot, 0, false, false,
-          IntersectionObserver::kApplyMarginToRoot,
+          /* delegate */ *root_observer_delegate,
+          /* root */ nullptr,
+          /* margin */ Vector<Length>(),
+          /* scroll_margin */ Vector<Length>{},
+          /* thresholds */ Vector<float>{kExpectedFractionOfRoot / 2},
+          /* semantics */ IntersectionObserver::kFractionOfRoot,
+          /* delay */ 0,
+          /* track_visibility */ false,
+          /* always_report_root_bounds */ false,
+          /* margin_target */ IntersectionObserver::kApplyMarginToRoot,
           /* use_overflow_clip_edge */ false);
+
   root_observer->observe(target, exception_state);
   ASSERT_FALSE(exception_state.HadException());
 
@@ -269,13 +407,21 @@ TEST_P(IntersectionObserverTest, TargetRectIsEmptyAfterMapping) {
 
   TestIntersectionObserverDelegate* target_observer_delegate =
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
+
   IntersectionObserver* target_observer =
       MakeGarbageCollected<IntersectionObserver>(
-          *target_observer_delegate, nullptr, Vector<Length>(),
-          Vector<float>{std::numeric_limits<float>::min()},
-          IntersectionObserver::kFractionOfTarget, 0, false, false,
-          IntersectionObserver::kApplyMarginToRoot,
+          /* delegate */ *target_observer_delegate,
+          /* root */ nullptr,
+          /* margin */ Vector<Length>(),
+          /* scroll_margin */ Vector<Length>{},
+          /* thresholds */ Vector<float>{std::numeric_limits<float>::min()},
+          /* semantics */ IntersectionObserver::kFractionOfTarget,
+          /* delay */ 0,
+          /* track_visibility */ false,
+          /* always_report_root_bounds */ false,
+          /* margin_target */ IntersectionObserver::kApplyMarginToRoot,
           /* use_overflow_clip_edge */ false);
+
   DummyExceptionStateForTesting exception_state;
   target_observer->observe(target, exception_state);
   ASSERT_FALSE(exception_state.HadException());
@@ -1838,10 +1984,20 @@ TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateThresholdOneOfRoot) {
 
   TestIntersectionObserverDelegate* observer_delegate =
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
+
   IntersectionObserver* observer = MakeGarbageCollected<IntersectionObserver>(
-      *observer_delegate, root, Vector<Length>{}, Vector<float>{1},
-      IntersectionObserver::kFractionOfRoot, 0, false, false,
-      IntersectionObserver::kApplyMarginToRoot, false);
+      /* delegate */ *observer_delegate,
+      /* root */ root,
+      /* margin */ Vector<Length>(),
+      /* scroll_margin */ Vector<Length>{},
+      /* thresholds */ Vector<float>{1},
+      /* semantics */ IntersectionObserver::kFractionOfRoot,
+      /* delay */ 0,
+      /* track_visibility */ false,
+      /* always_report_root_bounds */ false,
+      /* margin_target */ IntersectionObserver::kApplyMarginToRoot,
+      /* use_overflow_clip_edge */ false);
+
   DummyExceptionStateForTesting exception_state;
   observer->observe(target, exception_state);
   ASSERT_FALSE(exception_state.HadException());
@@ -2306,10 +2462,16 @@ TEST_P(IntersectionObserverTest, ApplyMarginToTarget) {
       MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
   IntersectionObserver* root_margin_observer =
       MakeGarbageCollected<IntersectionObserver>(
-          *root_margin_delegate, nullptr, Vector<Length>{Length::Fixed(10)},
-          Vector<float>{std::numeric_limits<float>::min()},
-          IntersectionObserver::kFractionOfTarget, 0, false, false,
-          IntersectionObserver::kApplyMarginToRoot,
+          /* delegate */ *root_margin_delegate,
+          /* root */ nullptr,
+          /* margin */ Vector<Length>{Length::Fixed(10)},
+          /* scroll_margin */ Vector<Length>{},
+          /* thresholds */ Vector<float>{std::numeric_limits<float>::min()},
+          /* semantics */ IntersectionObserver::kFractionOfTarget,
+          /* delay */ 0,
+          /* track_visibility */ false,
+          /* always_report_root_bounds */ false,
+          /* margin_target */ IntersectionObserver::kApplyMarginToRoot,
           /* use_overflow_clip_edge */ false);
 
   DummyExceptionStateForTesting exception_state;
@@ -2321,10 +2483,16 @@ TEST_P(IntersectionObserverTest, ApplyMarginToTarget) {
   // Same parameters as above except that margin is applied to target.
   IntersectionObserver* target_margin_observer =
       MakeGarbageCollected<IntersectionObserver>(
-          *target_margin_delegate, nullptr, Vector<Length>{Length::Fixed(10)},
-          Vector<float>{std::numeric_limits<float>::min()},
-          IntersectionObserver::kFractionOfTarget, 0, false, false,
-          IntersectionObserver::kApplyMarginToTarget,
+          /* delegate */ *target_margin_delegate,
+          /* root */ nullptr,
+          /* margin */ Vector<Length>{Length::Fixed(10)},
+          /* scroll_margin */ Vector<Length>{},
+          /* thresholds */ Vector<float>{std::numeric_limits<float>::min()},
+          /* semantics */ IntersectionObserver::kFractionOfTarget,
+          /* delay */ 0,
+          /* track_visibility */ false,
+          /* always_report_root_bounds */ false,
+          /* margin_target */ IntersectionObserver::kApplyMarginToTarget,
           /* use_overflow_clip_edge */ false);
 
   target_margin_observer->observe(target, exception_state);
@@ -2376,10 +2544,16 @@ TEST_P(IntersectionObserverTest, TargetMarginPercentResolvesAgainstRoot) {
   // resolved against root, which would make it intersecting.
   IntersectionObserver* target_margin_observer =
       MakeGarbageCollected<IntersectionObserver>(
-          *target_margin_delegate, nullptr, Vector<Length>{Length::Percent(10)},
-          Vector<float>{std::numeric_limits<float>::min()},
-          IntersectionObserver::kFractionOfTarget, 0, false, false,
-          IntersectionObserver::kApplyMarginToTarget,
+          /* delegate */ *target_margin_delegate,
+          /* root */ nullptr,
+          /* margin */ Vector<Length>{Length::Percent(10)},
+          /* scroll_margin */ Vector<Length>{},
+          /* thresholds */ Vector<float>{std::numeric_limits<float>::min()},
+          /* semantics */ IntersectionObserver::kFractionOfTarget,
+          /* delay */ 0,
+          /* track_visibility */ false,
+          /* always_report_root_bounds */ false,
+          /* margin_target */ IntersectionObserver::kApplyMarginToTarget,
           /* use_overflow_clip_edge */ false);
 
   DummyExceptionStateForTesting exception_state;
@@ -2393,6 +2567,111 @@ TEST_P(IntersectionObserverTest, TargetMarginPercentResolvesAgainstRoot) {
   EXPECT_EQ(target_margin_delegate->CallCount(), 1);
   EXPECT_EQ(target_margin_delegate->EntryCount(), 1);
   EXPECT_TRUE(target_margin_delegate->LastEntry()->isIntersecting());
+}
+
+TEST_P(IntersectionObserverTest, ScrollMarginIntersecting) {
+  // The scroller should not clip the content because the scroll margin is
+  // larger than the spacer and target should intersect.
+  TestScrollMargin(/* scroll_margin */ 20, /* is_intersecting */ true,
+                   /* intersectionRatio */ 0.2);
+}
+
+TEST_P(IntersectionObserverTest, ScrollMarginNotIntersecting) {
+  // The scroller should clip the content because the scroll margin is smaller
+  // than the spacer and target should not intersect.
+  TestScrollMargin(/* scroll_margin */ 9, /* is_intersecting */ false,
+                   /* intersectionRatio */ 0.0);
+}
+
+TEST_P(IntersectionObserverTest, NoScrollMargin) {
+  // The scroller should clip the content because the scroll margin is zero
+  // and target should not intersect.
+  TestScrollMargin(/* scroll_margin */ 0, /* is_intersecting */ false,
+                   /* intersectionRatio */ 0.0);
+}
+
+TEST_P(IntersectionObserverTest, ScrollMarginNestedIntersecting) {
+  // The scroller should not clip the content because the scroll margin is
+  // larger than the spacer and target should intersect.
+  TestScrollMarginNested(/* scroll_margin */ 20, /* is_intersecting */ true,
+                         /* intersectionRatio */ 0.2);
+}
+
+TEST_P(IntersectionObserverTest, ScrollMarginNestedNotIntersecting) {
+  // The scroller should clip the content because the scroll margin is smaller
+  // than the spacer and target should not intersect.
+  TestScrollMarginNested(/* scroll_margin */ 9, /* is_intersecting */ false,
+                         /* intersectionRatio */ 0.0);
+}
+
+TEST_P(IntersectionObserverTest, NoScrollMarginNested) {
+  // The scroller should clip the content because the scroll margin is zero
+  // and target should not intersect.
+  TestScrollMarginNested(/* scroll_margin */ 0, /* is_intersecting */ false,
+                         /* intersectionRatio */ 0.0);
+}
+
+TEST_P(IntersectionObserverTest, ScrollMarginIntersectingNonScrollingRoot) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(200, 200));
+
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <style>
+    #scroller { width: 100px; height: 100px; overflow: scroll; }
+    #spacer { width: 50px; height: 110px; }
+    #root { height: 75; width: 75; }
+    #target { width: 50px; height: 50px; }
+    #spacer2 { width: 10px; height: 10px; }
+    </style>
+
+    <div id=scroller>
+      <div id=spacer></div>
+      <div id="root">
+        <div class=spacer2></div>
+        <div id=target></div>
+      </div>
+    </div>
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  ASSERT_TRUE(target);
+
+  Element* root = GetDocument().getElementById(AtomicString("root"));
+  ASSERT_TRUE(root);
+
+  TestIntersectionObserverDelegate* scroll_margin_delegate =
+      MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
+
+  IntersectionObserver* scroll_margin_observer =
+      MakeGarbageCollected<IntersectionObserver>(
+          /* delegate */ *scroll_margin_delegate,
+          /* root */ root,
+          /* margin */ Vector<Length>{Length::Fixed(10)},
+          /* scroll_margin */ Vector<Length>{Length::Fixed(10)},
+          /* thresholds */ Vector<float>{std::numeric_limits<float>::min()},
+          /* semantics */ IntersectionObserver::kFractionOfTarget,
+          /* delay */ 0,
+          /* track_visibility */ false,
+          /* always_report_root_bounds */ false,
+          /* margin_target */ IntersectionObserver::kApplyMarginToRoot,
+          /* use_overflow_clip_edge */ false);
+
+  DummyExceptionStateForTesting exception_state;
+  scroll_margin_observer->observe(target, exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  ASSERT_FALSE(Compositor().NeedsBeginFrame());
+
+  EXPECT_EQ(scroll_margin_delegate->CallCount(), 1);
+  EXPECT_EQ(scroll_margin_delegate->EntryCount(), 1);
+  EXPECT_TRUE(scroll_margin_delegate->LastEntry()->isIntersecting());
+  EXPECT_NEAR(1.0, scroll_margin_delegate->LastEntry()->intersectionRatio(),
+              0.001);
 }
 
 TEST_P(IntersectionObserverTest, InlineRoot) {
@@ -2425,6 +2704,99 @@ TEST_P(IntersectionObserverTest, InlineRoot) {
   EXPECT_EQ(observer_delegate->EntryCount(), 1);
   // TODO(crbug.com/1456208): Support inline root.
   EXPECT_FALSE(observer_delegate->LastEntry()->isIntersecting());
+}
+
+TEST_P(IntersectionObserverTest, ParseMarginExtraText) {
+  IntersectionObserverInit* observer_init = IntersectionObserverInit::Create();
+  observer_init->setRootMargin("1px 2px 3px 4px ExtraText");
+
+  DummyExceptionStateForTesting exception_state;
+
+  TestIntersectionObserverDelegate* observer_delegate =
+      MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
+
+  IntersectionObserver::Create(observer_init, *observer_delegate,
+                               exception_state);
+  ASSERT_TRUE(exception_state.HadException());
+  EXPECT_EQ(exception_state.Message(),
+            "Extra text found at the end of rootMargin.");
+}
+
+TEST_P(IntersectionObserverTest, ParseMarginUnsupportedUnitType) {
+  IntersectionObserverInit* observer_init = IntersectionObserverInit::Create();
+  observer_init->setRootMargin("7x");
+
+  DummyExceptionStateForTesting exception_state;
+
+  TestIntersectionObserverDelegate* observer_delegate =
+      MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
+
+  IntersectionObserver::Create(observer_init, *observer_delegate,
+                               exception_state);
+  ASSERT_TRUE(exception_state.HadException());
+  EXPECT_EQ(exception_state.Message(),
+            "rootMargin must be specified in pixels or percent.");
+}
+
+TEST_P(IntersectionObserverTest, ParseMarginUnsupportedUnit) {
+  IntersectionObserverInit* observer_init = IntersectionObserverInit::Create();
+  observer_init->setRootMargin("7");
+
+  DummyExceptionStateForTesting exception_state;
+
+  TestIntersectionObserverDelegate* observer_delegate =
+      MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
+
+  IntersectionObserver::Create(observer_init, *observer_delegate,
+                               exception_state);
+  ASSERT_TRUE(exception_state.HadException());
+  EXPECT_EQ(exception_state.Message(),
+            "rootMargin must be specified in pixels or percent.");
+}
+
+TEST_P(IntersectionObserverTest, RootMarginString) {
+  IntersectionObserverInit* observer_init = IntersectionObserverInit::Create();
+  observer_init->setRootMargin("7px");
+
+  DummyExceptionStateForTesting exception_state;
+
+  TestIntersectionObserverDelegate* observer_delegate =
+      MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
+
+  IntersectionObserver* observer = IntersectionObserver::Create(
+      observer_init, *observer_delegate, exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+  EXPECT_EQ(observer->rootMargin(), "7px 7px 7px 7px");
+}
+
+TEST_P(IntersectionObserverTest, RootMarginPercentString) {
+  IntersectionObserverInit* observer_init = IntersectionObserverInit::Create();
+  observer_init->setRootMargin("7%");
+
+  DummyExceptionStateForTesting exception_state;
+
+  TestIntersectionObserverDelegate* observer_delegate =
+      MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
+
+  IntersectionObserver* observer = IntersectionObserver::Create(
+      observer_init, *observer_delegate, exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+  EXPECT_EQ(observer->rootMargin(), "7% 7% 7% 7%");
+}
+
+TEST_P(IntersectionObserverTest, ScrollMarginEmptyString) {
+  IntersectionObserverInit* observer_init = IntersectionObserverInit::Create();
+  observer_init->setScrollMargin("");
+
+  DummyExceptionStateForTesting exception_state;
+
+  TestIntersectionObserverDelegate* observer_delegate =
+      MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
+
+  IntersectionObserver* observer = IntersectionObserver::Create(
+      observer_init, *observer_delegate, exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+  EXPECT_EQ(observer->scrollMargin(), "0px 0px 0px 0px");
 }
 
 }  // namespace blink

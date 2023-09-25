@@ -107,9 +107,15 @@ gfx::Vector2dF FrameView::UpdateViewportIntersection(
     if (should_compute_occlusion)
       geometry_flags |= IntersectionGeometry::kShouldComputeVisibility;
 
-    IntersectionGeometry geometry(nullptr, *owner_element, {} /* root_margin */,
-                                  {IntersectionObserver::kMinimumThreshold},
-                                  {} /* target_margin */, geometry_flags);
+    IntersectionGeometry geometry(
+        /* root */ nullptr,
+        /* target */ *owner_element,
+        /* root_margin */ {},
+        /* thresholds */ {IntersectionObserver::kMinimumThreshold},
+        /* target_margin */ {},
+        /* scroll_margin */ {},
+        /* flags */ geometry_flags);
+
     PhysicalRect new_rect_in_parent = geometry.IntersectionRect();
     min_scroll_delta_to_update_viewport_intersection_ =
         geometry.MinScrollDeltaToUpdate();

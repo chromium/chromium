@@ -52,10 +52,10 @@ int64_t IntersectionObservation::ComputeIntersection(
     absl::optional<base::TimeTicks>& monotonic_time) {
   return ComputeIntersectionInternal(
       [this, &root_geometry](unsigned geometry_flags) {
-        return IntersectionGeometry(root_geometry, *observer_->root(),
-                                    *Target(), observer_->thresholds(),
-                                    observer_->TargetMargin(), geometry_flags,
-                                    cached_rects_.get());
+        return IntersectionGeometry(
+            root_geometry, *observer_->root(), *Target(),
+            observer_->thresholds(), observer_->TargetMargin(),
+            observer_->ScrollMargin(), geometry_flags, cached_rects_.get());
       },
       compute_flags, monotonic_time);
 }
@@ -67,8 +67,8 @@ int64_t IntersectionObservation::ComputeIntersection(
       [this](unsigned geometry_flags) {
         return IntersectionGeometry(
             observer_->root(), *Target(), observer_->RootMargin(),
-            observer_->thresholds(), observer_->TargetMargin(), geometry_flags,
-            cached_rects_.get());
+            observer_->thresholds(), observer_->TargetMargin(),
+            observer_->ScrollMargin(), geometry_flags, cached_rects_.get());
       },
       compute_flags, monotonic_time);
 }
@@ -147,8 +147,17 @@ bool IntersectionObservation::CanUseCachedRectsForTesting() const {
   if (cached_rects_) {
     cached_rects_copy = *cached_rects_;
   }
-  IntersectionGeometry geometry(observer_->root(), *target_, {}, {0}, {}, 0,
-                                cached_rects_ ? &cached_rects_copy : nullptr);
+
+  IntersectionGeometry geometry(
+      /* root */ observer_->root(),
+      /* target */ *target_,
+      /* root_margin */ {},
+      /* thresholds */ {0},
+      /* target_margin */ {},
+      /* scroll_margin */ {},
+      /* flags */ 0,
+      /* cached_rects */ cached_rects_ ? &cached_rects_copy : nullptr);
+
   return geometry.CanUseCachedRectsForTesting();
 }
 

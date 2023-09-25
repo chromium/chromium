@@ -98,6 +98,7 @@ enum VisualRectFlags {
   // When mapping to absolute coordinates and the main frame is remote, don't
   // apply the main frame root scroller's overflow clip.
   kDontApplyMainFrameOverflowClip = 1 << 2,
+  kIgnoreLocalClipPath = 1 << 3,
 };
 
 enum CursorDirective { kSetCursorBasedOnStyle, kSetCursor, kDoNotSetCursor };
@@ -2652,7 +2653,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // from the coordinate system of the property container.
   const LayoutObject* GetPropertyContainer(
       AncestorSkipInfo*,
-      PropertyTreeStateOrAlias* = nullptr) const;
+      PropertyTreeStateOrAlias* = nullptr,
+      VisualRectFlags = kDefaultVisualRectFlags) const;
 
   // Do a rect-based hit test with this object as the stop node.
   HitTestResult HitTestForOcclusion(const PhysicalRect&) const;
