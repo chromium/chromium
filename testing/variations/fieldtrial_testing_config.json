@@ -6663,15 +6663,6 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithWait_20230705",
-                    "enable_features": [
-                        "FirstPartySets",
-                        "PrivacySandboxFirstPartySetsUI",
-                        "StorageAccessAPI",
-                        "StorageAccessAPIForOriginExtension"
-                    ]
-                },
-                {
                     "name": "EnabledWithoutWait_20230705",
                     "params": {
                         "FirstPartySetsNavigationThrottleTimeout": "0s"
