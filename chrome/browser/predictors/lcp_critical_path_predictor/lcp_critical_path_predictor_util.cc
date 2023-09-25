@@ -9,11 +9,32 @@ namespace predictors {
 
 namespace {
 
+// Convert `LcppStringFrequencyStatData` a vector of frequency and std::string.
+// The result is sorted with frequency (from high to low).
+std::vector<std::pair<double, std::string>> ConvertToFrequencyStringPair(
+    const LcppStringFrequencyStatData& data) {
+  const auto& buckets = data.main_buckets();
+  std::vector<std::pair<double, std::string>> frequency_and_string;
+  frequency_and_string.reserve(buckets.size());
+  for (const auto& [script_url, frequency] : buckets) {
+    frequency_and_string.emplace_back(frequency, script_url);
+  }
+
+  // Reverse sort `frequency_and_string`. i.e. higher frequency goes first.
+  // That is why `rbegin` and `rend` instead of `begin` and `end`.
+  std::sort(frequency_and_string.rbegin(), frequency_and_string.rend());
+  return frequency_and_string;
+}
+
 // Returns LCP element locators in the past loads for a given `data`.  The
 // returned LCP element locators are ordered by descending frequency (the
 // most frequent one comes first). If there is no data, it returns an empty
 // vector.
 std::vector<std::string> PredictLcpElementLocators(const LcppData& data) {
+  // We do not use `ConvertToFrequencyStringPair` for the following code
+  // because the core part of the code is converting `std::map` to
+  // `std::vector<std::pair<double, std::string>>`, which we need the different
+  // logic due to the `bytes` protobuf type.
   const auto& buckets =
       data.lcpp_stat().lcp_element_locator_stat().lcp_element_locator_buckets();
   std::vector<std::pair<double, std::string>>
@@ -24,6 +45,7 @@ std::vector<std::string> PredictLcpElementLocators(const LcppData& data) {
         bucket.frequency(), bucket.lcp_element_locator());
   }
 
+  // Makes higher frequency goes first by `rbegin` and `rend`.
   std::sort(lcp_element_locators_with_frequency.rbegin(),
             lcp_element_locators_with_frequency.rend());
 
@@ -40,25 +62,16 @@ std::vector<std::string> PredictLcpElementLocators(const LcppData& data) {
 // frequent one comes first). If there is no data, it returns an empty
 // vector.
 std::vector<GURL> PredictLcpInfluencerScripts(const LcppData& data) {
-  const auto& buckets = data.lcpp_stat().lcp_script_url_stat().main_buckets();
-  std::vector<std::pair<double, std::string>> lcp_script_urls_with_frequency;
-  lcp_script_urls_with_frequency.reserve(buckets.size());
-  for (const auto& [script_url, frequency] : buckets) {
-    lcp_script_urls_with_frequency.emplace_back(frequency, script_url);
-  }
-
-  std::sort(lcp_script_urls_with_frequency.rbegin(),
-            lcp_script_urls_with_frequency.rend());
+  std::vector<std::pair<double, std::string>> lcp_script_urls_with_frequency =
+      ConvertToFrequencyStringPair(data.lcpp_stat().lcp_script_url_stat());
 
   std::vector<GURL> lcp_script_urls;
   lcp_script_urls.reserve(lcp_script_urls_with_frequency.size());
   for (const auto& [frequency, script_url] : lcp_script_urls_with_frequency) {
     GURL parsed_url(script_url);
-    if (parsed_url.is_empty() || !parsed_url.is_valid() ||
-        !parsed_url.SchemeIsHTTPOrHTTPS()) {
+    if (!parsed_url.is_valid() || !parsed_url.SchemeIsHTTPOrHTTPS()) {
       continue;
     }
-
     lcp_script_urls.push_back(std::move(parsed_url));
   }
   return lcp_script_urls;
