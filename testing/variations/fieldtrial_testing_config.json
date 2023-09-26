@@ -7340,6 +7340,31 @@
             ]
         }
     ],
+    "GrCacheLimits": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "cache_96_256_8_default_20230911",
+                    "params": {
+                        "MaxDefaultGlyphCacheTextureBytes": "8388608",
+                        "MaxGaneshResourceCacheBytes": "100663296",
+                        "MaxHighEndGaneshResourceCacheBytes": "268435456"
+                    },
+                    "enable_features": [
+                        "GrCacheLimitsFeature"
+                    ]
+                }
+            ]
+        }
+    ],
     "GridTabSwitcherAndroidAnimations": [
         {
             "platforms": [
