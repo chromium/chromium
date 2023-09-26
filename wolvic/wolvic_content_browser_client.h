@@ -33,6 +33,13 @@ class WolvicContentBrowserClient : public ContentBrowserClient {
   // ContentBrowserClient overrides.
   std::string GetUserAgent() override;
   blink::UserAgentMetadata GetUserAgentMetadata() override;
+  void ConfigureNetworkContextParams(
+      BrowserContext* context,
+      bool in_memory,
+      const base::FilePath& relative_partition_path,
+      network::mojom::NetworkContextParams* network_context_params,
+      cert_verifier::mojom::CertVerifierCreationParams*
+          cert_verifier_creation_params) override;
   std::unique_ptr<BrowserMainParts> CreateBrowserMainParts(
       bool is_integration_test) override;
   std::unique_ptr<content::DevToolsManagerDelegate>

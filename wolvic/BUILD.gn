@@ -70,6 +70,7 @@ shared_library("libcontent_native") {
     "//components/crash/content/browser",
     "//device/vr:vr_util",
     "//media",
+    "//services/network/public/mojom",
     "//skia",
   ]
 
