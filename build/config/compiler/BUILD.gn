@@ -14,6 +14,7 @@ import("//build/config/coverage/coverage.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/gclient_args.gni")
 import("//build/config/host_byteorder.gni")
+import("//build/config/pch.gni")
 import("//build/config/rust.gni")
 import("//build/config/ui.gni")
 import("//build/config/unwind.gni")
@@ -1812,6 +1813,14 @@ config("default_warnings") {
         # TODO(thakis): Only for no_chromium_code? http://crbug.com/912662
         "-Wno-ignored-pragma-optimize",
       ]
+
+      if (llvm_force_head_revision && !is_nacl && enable_precompiled_headers &&
+          !is_win) {
+        cflags += [
+          # TODO(crbug.com/1486799) Find a long-term solution.
+          "-Wno-deprecated-include-gch",
+        ]
+      }
 
       if (!is_nacl) {
         cflags += [
