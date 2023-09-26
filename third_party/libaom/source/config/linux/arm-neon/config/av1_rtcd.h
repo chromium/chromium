@@ -154,7 +154,15 @@ int64_t av1_block_error_lp_neon(const int16_t *coeff, const int16_t *dqcoeff, in
 #define av1_block_error_lp av1_block_error_lp_neon
 
 void av1_build_compound_diffwtd_mask_c(uint8_t *mask, DIFFWTD_MASK_TYPE mask_type, const uint8_t *src0, int src0_stride, const uint8_t *src1, int src1_stride, int h, int w);
-#define av1_build_compound_diffwtd_mask av1_build_compound_diffwtd_mask_c
+void av1_build_compound_diffwtd_mask_neon(uint8_t* mask,
+                                          DIFFWTD_MASK_TYPE mask_type,
+                                          const uint8_t* src0,
+                                          int src0_stride,
+                                          const uint8_t* src1,
+                                          int src1_stride,
+                                          int h,
+                                          int w);
+#define av1_build_compound_diffwtd_mask av1_build_compound_diffwtd_mask_neon
 
 void av1_build_compound_diffwtd_mask_d16_c(uint8_t *mask, DIFFWTD_MASK_TYPE mask_type, const CONV_BUF_TYPE *src0, int src0_stride, const CONV_BUF_TYPE *src1, int src1_stride, int h, int w, ConvolveParams *conv_params, int bd);
 void av1_build_compound_diffwtd_mask_d16_neon(uint8_t *mask, DIFFWTD_MASK_TYPE mask_type, const CONV_BUF_TYPE *src0, int src0_stride, const CONV_BUF_TYPE *src1, int src1_stride, int h, int w, ConvolveParams *conv_params, int bd);
@@ -229,10 +237,8 @@ void av1_dr_prediction_z3_neon(uint8_t *dst, ptrdiff_t stride, int bw, int bh, c
 #define av1_dr_prediction_z3 av1_dr_prediction_z3_neon
 
 void av1_filter_intra_edge_c(uint8_t *p, int sz, int strength);
-#define av1_filter_intra_edge av1_filter_intra_edge_c
-
-void av1_filter_intra_edge_high_c(uint16_t *p, int sz, int strength);
-#define av1_filter_intra_edge_high av1_filter_intra_edge_high_c
+void av1_filter_intra_edge_neon(uint8_t* p, int sz, int strength);
+#define av1_filter_intra_edge av1_filter_intra_edge_neon
 
 void av1_filter_intra_predictor_c(uint8_t *dst, ptrdiff_t stride, TX_SIZE tx_size, const uint8_t *above, const uint8_t *left, int mode);
 void av1_filter_intra_predictor_neon(uint8_t *dst, ptrdiff_t stride, TX_SIZE tx_size, const uint8_t *above, const uint8_t *left, int mode);
@@ -517,10 +523,8 @@ void av1_txb_init_levels_neon(const tran_low_t *const coeff, const int width, co
 #define av1_txb_init_levels av1_txb_init_levels_neon
 
 void av1_upsample_intra_edge_c(uint8_t *p, int sz);
-#define av1_upsample_intra_edge av1_upsample_intra_edge_c
-
-void av1_upsample_intra_edge_high_c(uint16_t *p, int sz, int bd);
-#define av1_upsample_intra_edge_high av1_upsample_intra_edge_high_c
+void av1_upsample_intra_edge_neon(uint8_t* p, int sz);
+#define av1_upsample_intra_edge av1_upsample_intra_edge_neon
 
 void av1_warp_affine_c(const int32_t *mat, const uint8_t *ref, int width, int height, int stride, uint8_t *pred, int p_col, int p_row, int p_width, int p_height, int p_stride, int subsampling_x, int subsampling_y, ConvolveParams *conv_params, int16_t alpha, int16_t beta, int16_t gamma, int16_t delta);
 void av1_warp_affine_neon(const int32_t *mat, const uint8_t *ref, int width, int height, int stride, uint8_t *pred, int p_col, int p_row, int p_width, int p_height, int p_stride, int subsampling_x, int subsampling_y, ConvolveParams *conv_params, int16_t alpha, int16_t beta, int16_t gamma, int16_t delta);

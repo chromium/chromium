@@ -2625,7 +2625,16 @@ unsigned int aom_mse8x8_neon(const uint8_t *src_ptr, int  source_stride, const u
 RTCD_EXTERN unsigned int (*aom_mse8x8)(const uint8_t *src_ptr, int  source_stride, const uint8_t *ref_ptr, int  recon_stride, unsigned int *sse);
 
 uint64_t aom_mse_16xh_16bit_c(uint8_t *dst, int dstride,uint16_t *src, int w, int h);
-#define aom_mse_16xh_16bit aom_mse_16xh_16bit_c
+uint64_t aom_mse_16xh_16bit_neon(uint8_t* dst,
+                                 int dstride,
+                                 uint16_t* src,
+                                 int w,
+                                 int h);
+RTCD_EXTERN uint64_t (*aom_mse_16xh_16bit)(uint8_t* dst,
+                                           int dstride,
+                                           uint16_t* src,
+                                           int w,
+                                           int h);
 
 uint64_t aom_mse_wxh_16bit_c(uint8_t *dst, int dstride,uint16_t *src, int sstride, int w, int h);
 uint64_t aom_mse_wxh_16bit_neon(uint8_t *dst, int dstride,uint16_t *src, int sstride, int w, int h);
@@ -4723,6 +4732,10 @@ static void setup_rtcd_internal(void)
     if (flags & HAS_NEON) aom_mse8x16 = aom_mse8x16_neon;
     aom_mse8x8 = aom_mse8x8_c;
     if (flags & HAS_NEON) aom_mse8x8 = aom_mse8x8_neon;
+    aom_mse_16xh_16bit = aom_mse_16xh_16bit_c;
+    if (flags & HAS_NEON) {
+      aom_mse_16xh_16bit = aom_mse_16xh_16bit_neon;
+    }
     aom_mse_wxh_16bit = aom_mse_wxh_16bit_c;
     if (flags & HAS_NEON) aom_mse_wxh_16bit = aom_mse_wxh_16bit_neon;
     aom_paeth_predictor_16x16 = aom_paeth_predictor_16x16_c;

@@ -212,10 +212,6 @@ void av1_filter_intra_edge_c(uint8_t *p, int sz, int strength);
 void av1_filter_intra_edge_sse4_1(uint8_t *p, int sz, int strength);
 RTCD_EXTERN void (*av1_filter_intra_edge)(uint8_t *p, int sz, int strength);
 
-void av1_filter_intra_edge_high_c(uint16_t *p, int sz, int strength);
-void av1_filter_intra_edge_high_sse4_1(uint16_t *p, int sz, int strength);
-RTCD_EXTERN void (*av1_filter_intra_edge_high)(uint16_t *p, int sz, int strength);
-
 void av1_filter_intra_predictor_c(uint8_t *dst, ptrdiff_t stride, TX_SIZE tx_size, const uint8_t *above, const uint8_t *left, int mode);
 void av1_filter_intra_predictor_sse4_1(uint8_t *dst, ptrdiff_t stride, TX_SIZE tx_size, const uint8_t *above, const uint8_t *left, int mode);
 RTCD_EXTERN void (*av1_filter_intra_predictor)(uint8_t *dst, ptrdiff_t stride, TX_SIZE tx_size, const uint8_t *above, const uint8_t *left, int mode);
@@ -504,10 +500,6 @@ void av1_upsample_intra_edge_c(uint8_t *p, int sz);
 void av1_upsample_intra_edge_sse4_1(uint8_t *p, int sz);
 RTCD_EXTERN void (*av1_upsample_intra_edge)(uint8_t *p, int sz);
 
-void av1_upsample_intra_edge_high_c(uint16_t *p, int sz, int bd);
-void av1_upsample_intra_edge_high_sse4_1(uint16_t *p, int sz, int bd);
-RTCD_EXTERN void (*av1_upsample_intra_edge_high)(uint16_t *p, int sz, int bd);
-
 void av1_warp_affine_c(const int32_t *mat, const uint8_t *ref, int width, int height, int stride, uint8_t *pred, int p_col, int p_row, int p_width, int p_height, int p_stride, int subsampling_x, int subsampling_y, ConvolveParams *conv_params, int16_t alpha, int16_t beta, int16_t gamma, int16_t delta);
 void av1_warp_affine_sse4_1(const int32_t *mat, const uint8_t *ref, int width, int height, int stride, uint8_t *pred, int p_col, int p_row, int p_width, int p_height, int p_stride, int subsampling_x, int subsampling_y, ConvolveParams *conv_params, int16_t alpha, int16_t beta, int16_t gamma, int16_t delta);
 void av1_warp_affine_avx2(const int32_t *mat, const uint8_t *ref, int width, int height, int stride, uint8_t *pred, int p_col, int p_row, int p_width, int p_height, int p_stride, int subsampling_x, int subsampling_y, ConvolveParams *conv_params, int16_t alpha, int16_t beta, int16_t gamma, int16_t delta);
@@ -704,8 +696,6 @@ static void setup_rtcd_internal(void)
     if (flags & HAS_AVX2) av1_dr_prediction_z3 = av1_dr_prediction_z3_avx2;
     av1_filter_intra_edge = av1_filter_intra_edge_c;
     if (flags & HAS_SSE4_1) av1_filter_intra_edge = av1_filter_intra_edge_sse4_1;
-    av1_filter_intra_edge_high = av1_filter_intra_edge_high_c;
-    if (flags & HAS_SSE4_1) av1_filter_intra_edge_high = av1_filter_intra_edge_high_sse4_1;
     av1_filter_intra_predictor = av1_filter_intra_predictor_c;
     if (flags & HAS_SSE4_1) av1_filter_intra_predictor = av1_filter_intra_predictor_sse4_1;
     av1_fwd_txfm2d_16x16 = av1_fwd_txfm2d_16x16_c;
@@ -803,8 +793,6 @@ static void setup_rtcd_internal(void)
     if (flags & HAS_AVX2) av1_txb_init_levels = av1_txb_init_levels_avx2;
     av1_upsample_intra_edge = av1_upsample_intra_edge_c;
     if (flags & HAS_SSE4_1) av1_upsample_intra_edge = av1_upsample_intra_edge_sse4_1;
-    av1_upsample_intra_edge_high = av1_upsample_intra_edge_high_c;
-    if (flags & HAS_SSE4_1) av1_upsample_intra_edge_high = av1_upsample_intra_edge_high_sse4_1;
     av1_warp_affine = av1_warp_affine_c;
     if (flags & HAS_SSE4_1) av1_warp_affine = av1_warp_affine_sse4_1;
     if (flags & HAS_AVX2) av1_warp_affine = av1_warp_affine_avx2;

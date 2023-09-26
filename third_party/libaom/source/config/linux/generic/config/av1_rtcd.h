@@ -159,9 +159,6 @@ void av1_dr_prediction_z3_c(uint8_t *dst, ptrdiff_t stride, int bw, int bh, cons
 void av1_filter_intra_edge_c(uint8_t *p, int sz, int strength);
 #define av1_filter_intra_edge av1_filter_intra_edge_c
 
-void av1_filter_intra_edge_high_c(uint16_t *p, int sz, int strength);
-#define av1_filter_intra_edge_high av1_filter_intra_edge_high_c
-
 void av1_filter_intra_predictor_c(uint8_t *dst, ptrdiff_t stride, TX_SIZE tx_size, const uint8_t *above, const uint8_t *left, int mode);
 #define av1_filter_intra_predictor av1_filter_intra_predictor_c
 
@@ -382,9 +379,6 @@ void av1_txb_init_levels_c(const tran_low_t *const coeff, const int width, const
 
 void av1_upsample_intra_edge_c(uint8_t *p, int sz);
 #define av1_upsample_intra_edge av1_upsample_intra_edge_c
-
-void av1_upsample_intra_edge_high_c(uint16_t *p, int sz, int bd);
-#define av1_upsample_intra_edge_high av1_upsample_intra_edge_high_c
 
 void av1_warp_affine_c(const int32_t *mat, const uint8_t *ref, int width, int height, int stride, uint8_t *pred, int p_col, int p_row, int p_width, int p_height, int p_stride, int subsampling_x, int subsampling_y, ConvolveParams *conv_params, int16_t alpha, int16_t beta, int16_t gamma, int16_t delta);
 #define av1_warp_affine av1_warp_affine_c

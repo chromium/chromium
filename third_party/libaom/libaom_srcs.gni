@@ -191,8 +191,9 @@ aom_av1_encoder_asm_sse2 = [
 
 aom_av1_encoder_asm_ssse3_x86_64 = [ "//third_party/libaom/source/libaom/av1/encoder/x86/av1_quantize_ssse3_x86_64.asm" ]
 
-aom_av1_encoder_intrin_arm_crc32 =
-    [ "//third_party/libaom/source/libaom/av1/encoder/arm/crc32/hash_crc32.c" ]
+aom_av1_encoder_intrin_arm_crc32 = [
+  "//third_party/libaom/source/libaom/av1/encoder/arm/crc32/hash_arm_crc32.c",
+]
 
 aom_av1_encoder_intrin_avx2 = [
   "//third_party/libaom/source/libaom/av1/encoder/x86/av1_quantize_avx2.c",

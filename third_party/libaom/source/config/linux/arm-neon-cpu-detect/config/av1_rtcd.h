@@ -194,7 +194,22 @@ int64_t av1_block_error_lp_neon(const int16_t *coeff, const int16_t *dqcoeff, in
 RTCD_EXTERN int64_t (*av1_block_error_lp)(const int16_t *coeff, const int16_t *dqcoeff, intptr_t block_size);
 
 void av1_build_compound_diffwtd_mask_c(uint8_t *mask, DIFFWTD_MASK_TYPE mask_type, const uint8_t *src0, int src0_stride, const uint8_t *src1, int src1_stride, int h, int w);
-#define av1_build_compound_diffwtd_mask av1_build_compound_diffwtd_mask_c
+void av1_build_compound_diffwtd_mask_neon(uint8_t* mask,
+                                          DIFFWTD_MASK_TYPE mask_type,
+                                          const uint8_t* src0,
+                                          int src0_stride,
+                                          const uint8_t* src1,
+                                          int src1_stride,
+                                          int h,
+                                          int w);
+RTCD_EXTERN void (*av1_build_compound_diffwtd_mask)(uint8_t* mask,
+                                                    DIFFWTD_MASK_TYPE mask_type,
+                                                    const uint8_t* src0,
+                                                    int src0_stride,
+                                                    const uint8_t* src1,
+                                                    int src1_stride,
+                                                    int h,
+                                                    int w);
 
 void av1_build_compound_diffwtd_mask_d16_c(uint8_t *mask, DIFFWTD_MASK_TYPE mask_type, const CONV_BUF_TYPE *src0, int src0_stride, const CONV_BUF_TYPE *src1, int src1_stride, int h, int w, ConvolveParams *conv_params, int bd);
 void av1_build_compound_diffwtd_mask_d16_neon(uint8_t *mask, DIFFWTD_MASK_TYPE mask_type, const CONV_BUF_TYPE *src0, int src0_stride, const CONV_BUF_TYPE *src1, int src1_stride, int h, int w, ConvolveParams *conv_params, int bd);
@@ -279,10 +294,8 @@ void av1_dr_prediction_z3_neon(uint8_t *dst, ptrdiff_t stride, int bw, int bh, c
 RTCD_EXTERN void (*av1_dr_prediction_z3)(uint8_t *dst, ptrdiff_t stride, int bw, int bh, const uint8_t *above, const uint8_t *left, int upsample_left, int dx, int dy);
 
 void av1_filter_intra_edge_c(uint8_t *p, int sz, int strength);
-#define av1_filter_intra_edge av1_filter_intra_edge_c
-
-void av1_filter_intra_edge_high_c(uint16_t *p, int sz, int strength);
-#define av1_filter_intra_edge_high av1_filter_intra_edge_high_c
+void av1_filter_intra_edge_neon(uint8_t* p, int sz, int strength);
+RTCD_EXTERN void (*av1_filter_intra_edge)(uint8_t* p, int sz, int strength);
 
 void av1_filter_intra_predictor_c(uint8_t *dst, ptrdiff_t stride, TX_SIZE tx_size, const uint8_t *above, const uint8_t *left, int mode);
 void av1_filter_intra_predictor_neon(uint8_t *dst, ptrdiff_t stride, TX_SIZE tx_size, const uint8_t *above, const uint8_t *left, int mode);
@@ -569,10 +582,8 @@ void av1_txb_init_levels_neon(const tran_low_t *const coeff, const int width, co
 RTCD_EXTERN void (*av1_txb_init_levels)(const tran_low_t *const coeff, const int width, const int height, uint8_t *const levels);
 
 void av1_upsample_intra_edge_c(uint8_t *p, int sz);
-#define av1_upsample_intra_edge av1_upsample_intra_edge_c
-
-void av1_upsample_intra_edge_high_c(uint16_t *p, int sz, int bd);
-#define av1_upsample_intra_edge_high av1_upsample_intra_edge_high_c
+void av1_upsample_intra_edge_neon(uint8_t* p, int sz);
+RTCD_EXTERN void (*av1_upsample_intra_edge)(uint8_t* p, int sz);
 
 void av1_warp_affine_c(const int32_t *mat, const uint8_t *ref, int width, int height, int stride, uint8_t *pred, int p_col, int p_row, int p_width, int p_height, int p_stride, int subsampling_x, int subsampling_y, ConvolveParams *conv_params, int16_t alpha, int16_t beta, int16_t gamma, int16_t delta);
 void av1_warp_affine_neon(const int32_t *mat, const uint8_t *ref, int width, int height, int stride, uint8_t *pred, int p_col, int p_row, int p_width, int p_height, int p_stride, int subsampling_x, int subsampling_y, ConvolveParams *conv_params, int16_t alpha, int16_t beta, int16_t gamma, int16_t delta);
@@ -694,6 +705,10 @@ static void setup_rtcd_internal(void)
     if (flags & HAS_NEON) av1_block_error = av1_block_error_neon;
     av1_block_error_lp = av1_block_error_lp_c;
     if (flags & HAS_NEON) av1_block_error_lp = av1_block_error_lp_neon;
+    av1_build_compound_diffwtd_mask = av1_build_compound_diffwtd_mask_c;
+    if (flags & HAS_NEON) {
+      av1_build_compound_diffwtd_mask = av1_build_compound_diffwtd_mask_neon;
+    }
     av1_build_compound_diffwtd_mask_d16 = av1_build_compound_diffwtd_mask_d16_c;
     if (flags & HAS_NEON) av1_build_compound_diffwtd_mask_d16 = av1_build_compound_diffwtd_mask_d16_neon;
     av1_calc_indices_dim1 = av1_calc_indices_dim1_c;
@@ -726,6 +741,10 @@ static void setup_rtcd_internal(void)
     if (flags & HAS_NEON) av1_dr_prediction_z2 = av1_dr_prediction_z2_neon;
     av1_dr_prediction_z3 = av1_dr_prediction_z3_c;
     if (flags & HAS_NEON) av1_dr_prediction_z3 = av1_dr_prediction_z3_neon;
+    av1_filter_intra_edge = av1_filter_intra_edge_c;
+    if (flags & HAS_NEON) {
+      av1_filter_intra_edge = av1_filter_intra_edge_neon;
+    }
     av1_filter_intra_predictor = av1_filter_intra_predictor_c;
     if (flags & HAS_NEON) av1_filter_intra_predictor = av1_filter_intra_predictor_neon;
     av1_fwd_txfm2d_16x16 = av1_fwd_txfm2d_16x16_c;
@@ -850,6 +869,10 @@ static void setup_rtcd_internal(void)
     if (flags & HAS_NEON) av1_selfguided_restoration = av1_selfguided_restoration_neon;
     av1_txb_init_levels = av1_txb_init_levels_c;
     if (flags & HAS_NEON) av1_txb_init_levels = av1_txb_init_levels_neon;
+    av1_upsample_intra_edge = av1_upsample_intra_edge_c;
+    if (flags & HAS_NEON) {
+      av1_upsample_intra_edge = av1_upsample_intra_edge_neon;
+    }
     av1_warp_affine = av1_warp_affine_c;
     if (flags & HAS_NEON) av1_warp_affine = av1_warp_affine_neon;
     av1_wedge_sse_from_residuals = av1_wedge_sse_from_residuals_c;

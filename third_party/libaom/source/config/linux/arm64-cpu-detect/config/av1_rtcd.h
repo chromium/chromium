@@ -257,7 +257,15 @@ void av1_build_compound_diffwtd_mask_c(uint8_t* mask,
                                        int src1_stride,
                                        int h,
                                        int w);
-#define av1_build_compound_diffwtd_mask av1_build_compound_diffwtd_mask_c
+void av1_build_compound_diffwtd_mask_neon(uint8_t* mask,
+                                          DIFFWTD_MASK_TYPE mask_type,
+                                          const uint8_t* src0,
+                                          int src0_stride,
+                                          const uint8_t* src1,
+                                          int src1_stride,
+                                          int h,
+                                          int w);
+#define av1_build_compound_diffwtd_mask av1_build_compound_diffwtd_mask_neon
 
 void av1_build_compound_diffwtd_mask_d16_c(uint8_t* mask,
                                            DIFFWTD_MASK_TYPE mask_type,
@@ -684,10 +692,8 @@ void av1_dr_prediction_z3_neon(uint8_t* dst,
 #define av1_dr_prediction_z3 av1_dr_prediction_z3_neon
 
 void av1_filter_intra_edge_c(uint8_t* p, int sz, int strength);
-#define av1_filter_intra_edge av1_filter_intra_edge_c
-
-void av1_filter_intra_edge_high_c(uint16_t* p, int sz, int strength);
-#define av1_filter_intra_edge_high av1_filter_intra_edge_high_c
+void av1_filter_intra_edge_neon(uint8_t* p, int sz, int strength);
+#define av1_filter_intra_edge av1_filter_intra_edge_neon
 
 void av1_filter_intra_predictor_c(uint8_t* dst,
                                   ptrdiff_t stride,
@@ -1521,10 +1527,8 @@ void av1_txb_init_levels_neon(const tran_low_t* const coeff,
 #define av1_txb_init_levels av1_txb_init_levels_neon
 
 void av1_upsample_intra_edge_c(uint8_t* p, int sz);
-#define av1_upsample_intra_edge av1_upsample_intra_edge_c
-
-void av1_upsample_intra_edge_high_c(uint16_t* p, int sz, int bd);
-#define av1_upsample_intra_edge_high av1_upsample_intra_edge_high_c
+void av1_upsample_intra_edge_neon(uint8_t* p, int sz);
+#define av1_upsample_intra_edge av1_upsample_intra_edge_neon
 
 void av1_warp_affine_c(const int32_t* mat,
                        const uint8_t* ref,
