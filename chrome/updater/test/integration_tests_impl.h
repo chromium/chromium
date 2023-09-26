@@ -50,6 +50,7 @@ struct AppUpdateExpectation {
                        bool should_update,
                        bool allow_rollback,
                        const std::string& target_version_prefix,
+                       const std::string& target_channel,
                        const base::FilePath& crx_relative_path,
                        bool always_serve_crx = false,
                        const UpdateService::ErrorCategory error_category =
@@ -68,6 +69,7 @@ struct AppUpdateExpectation {
   const bool should_update;
   const bool allow_rollback;
   const std::string target_version_prefix;
+  const std::string target_channel;
   const base::FilePath crx_relative_path;
   const bool always_serve_crx;
   const UpdateService::ErrorCategory error_category;
@@ -338,6 +340,7 @@ void ExpectInstallSequence(UpdaterScope scope,
 
 void ExpectAppsUpdateSequence(UpdaterScope scope,
                               ScopedServer* test_server,
+                              const base::Value::Dict& request_attributes,
                               const std::vector<AppUpdateExpectation>& apps);
 
 void StressUpdateService(UpdaterScope scope);

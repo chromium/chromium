@@ -330,6 +330,7 @@ AppUpdateExpectation::AppUpdateExpectation(
     bool should_update,
     bool allow_rollback,
     const std::string& target_version_prefix,
+    const std::string& target_channel,
     const base::FilePath& crx_relative_path,
     bool always_serve_crx,
     const UpdateService::ErrorCategory error_category,
@@ -343,6 +344,7 @@ AppUpdateExpectation::AppUpdateExpectation(
       should_update(should_update),
       allow_rollback(allow_rollback),
       target_version_prefix(target_version_prefix),
+      target_channel(target_channel),
       crx_relative_path(crx_relative_path),
       always_serve_crx(always_serve_crx),
       error_category(error_category),
@@ -524,6 +526,7 @@ void ExpectNoCrashes(UpdaterScope scope) {
 
 void ExpectAppsUpdateSequence(UpdaterScope scope,
                               ScopedServer* test_server,
+                              const base::Value::Dict& request_attributes,
                               const std::vector<AppUpdateExpectation>& apps) {
 #if BUILDFLAG(IS_WIN)
   const base::FilePath::StringType kExeExtension = FILE_PATH_LITERAL(".exe");
@@ -535,12 +538,21 @@ void ExpectAppsUpdateSequence(UpdaterScope scope,
   ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
 
   // First request: update check.
+  std::vector<std::string> attributes;
+  for (const auto [key, value] : request_attributes) {
+    attributes.push_back(base::StringPrintf(R"("%s":"%s")", key.c_str(),
+                                            value.GetString().c_str()));
+  }
   std::vector<std::string> app_requests;
   std::vector<std::string> app_responses;
   for (const AppUpdateExpectation& app : apps) {
-    const base::FilePath crx_path = exe_path.Append(app.crx_relative_path);
     app_requests.push_back(
         base::StringPrintf(R"("appid":"%s")", app.app_id.c_str()));
+    if (!app.target_channel.empty()) {
+      app_requests.push_back(base::StringPrintf(R"("release_channel":"%s",)",
+                                                app.target_channel.c_str()));
+    }
+    const base::FilePath crx_path = exe_path.Append(app.crx_relative_path);
     const base::FilePath base_name = crx_path.BaseName().RemoveExtension();
     const base::FilePath run_action =
         base_name.Extension().empty() ? base_name.AddExtension(kExeExtension)
@@ -551,6 +563,7 @@ void ExpectAppsUpdateSequence(UpdaterScope scope,
   }
   test_server->ExpectOnce({request::GetPathMatcher(test_server->update_path()),
                            request::GetUpdaterUserAgentMatcher(),
+                           request::GetContentMatcher(attributes),
                            request::GetContentMatcher(app_requests),
                            request::GetScopeMatcher(scope)},
                           GetUpdateResponse(app_responses));

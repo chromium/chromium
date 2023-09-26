@@ -1822,12 +1822,13 @@ TEST_F(IntegrationTestDeviceManagement, AppInstall) {
   const base::FilePath crx_path = GetInstallerPath(kAppCRX);
   ExpectAppsUpdateSequence(
       UpdaterScope::kSystem, test_server_.get(),
+      /*request_attributes=*/{},
       {
           AppUpdateExpectation(
               BuildCommandLineArgs(GetTestScope(), kAppId1, kApp1Version),
               kAppId1, base::Version({0, 0, 0, 0}), kApp1Version,
               /*is_install=*/true,
-              /*should_update=*/true, false, "", crx_path),
+              /*should_update=*/true, false, "", "", crx_path),
       });
 
   ASSERT_NO_FATAL_FAILURE(InstallAppViaService(kAppId1));
@@ -1866,12 +1867,13 @@ TEST_F(IntegrationTestDeviceManagement, ForceInstall) {
   const base::FilePath crx_path = GetInstallerPath(kAppCRX);
   ExpectAppsUpdateSequence(
       UpdaterScope::kSystem, test_server_.get(),
+      /*request_attributes=*/{},
       {
           AppUpdateExpectation(
               BuildCommandLineArgs(GetTestScope(), kAppId1, kApp1Version),
               kAppId1, base::Version({0, 0, 0, 0}), kApp1Version,
               /*is_install=*/true,
-              /*should_update=*/true, false, "", crx_path),
+              /*should_update=*/true, false, "", "", crx_path),
       });
   ExpectUpdateCheckRequest(test_server_.get());
 
@@ -1923,25 +1925,26 @@ TEST_F(IntegrationTestDeviceManagement, AppUpdateConflictPolicies) {
   const base::FilePath crx_path = GetInstallerPath(kAppCRX);
   ExpectAppsUpdateSequence(
       UpdaterScope::kSystem, test_server_.get(),
+      /*request_attributes=*/{},
       {
           AppUpdateExpectation(BuildCommandLineArgs(GetTestScope(), kAppId1,
                                                     kApp1UpdatedVersion),
                                kAppId1, kApp1InitialVersion,
                                kApp1UpdatedVersion,
                                /*is_install=*/false,
-                               /*should_update=*/true, false, "", crx_path),
+                               /*should_update=*/true, false, "", "", crx_path),
           AppUpdateExpectation(BuildCommandLineArgs(GetTestScope(), kAppId2,
                                                     kApp2UpdatedVersion),
                                kAppId2, kApp2InitialVersion,
                                kApp2UpdatedVersion,
                                /*is_install=*/false,
-                               /*should_update=*/true, false, "", crx_path),
-          AppUpdateExpectation(BuildCommandLineArgs(GetTestScope(), kAppId3,
-                                                    kApp3UpdatedVersion),
-                               kAppId3, kApp3InitialVersion,
-                               kApp3UpdatedVersion,
-                               /*is_install=*/false,
-                               /*should_update=*/false, false, "", crx_path),
+                               /*should_update=*/true, false, "", "", crx_path),
+          AppUpdateExpectation(
+              BuildCommandLineArgs(GetTestScope(), kAppId3,
+                                   kApp3UpdatedVersion),
+              kAppId3, kApp3InitialVersion, kApp3UpdatedVersion,
+              /*is_install=*/false,
+              /*should_update=*/false, false, "", "", crx_path),
       });
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
@@ -1969,10 +1972,16 @@ TEST_F(IntegrationTestDeviceManagement, CloudPolicyOverridesPlatformPolicy) {
   ASSERT_NO_FATAL_FAILURE(InstallAppWithVersion(kAppId3, kApp3InitialVersion));
 
   base::Value::Dict policies;
-  policies.Set("Default", base::Value::Dict().Set("Update", kPolicyDisabled));
-  policies.Set(kAppId1, base::Value::Dict().Set("Update", kPolicyDisabled));
+  policies.Set("", base::Value::Dict()
+                       .Set("UpdateDefault", kPolicyDisabled)
+                       .Set("DownloadPreference", "cacheable"));
+  policies.Set(kAppId1, base::Value::Dict()
+                            .Set("Update", kPolicyDisabled)
+                            .Set("TargetChannel", "beta"));
   policies.Set(kAppId2, base::Value::Dict().Set("Update", kPolicyEnabled));
-  policies.Set(kAppId3, base::Value::Dict().Set("Update", kPolicyEnabled));
+  policies.Set(kAppId3, base::Value::Dict()
+                            .Set("Update", kPolicyEnabled)
+                            .Set("TargetChannel", "canary"));
   ASSERT_NO_FATAL_FAILURE(SetPlatformPolicies(policies));
 
   // Overrides app1 to auto-update, app2 to manual-update with cloud policy.
@@ -1983,6 +1992,7 @@ TEST_F(IntegrationTestDeviceManagement, CloudPolicyOverridesPlatformPolicy) {
   ApplicationSettings app1;
   app1.set_app_guid(kAppId1);
   app1.set_update(enterprise_management::AUTOMATIC_UPDATES_ONLY);
+  app1.set_target_channel("beta_canary");
   omaha_settings.mutable_application_settings()->Add(std::move(app1));
   ApplicationSettings app2;
   app2.set_app_guid(kAppId2);
@@ -1994,25 +2004,26 @@ TEST_F(IntegrationTestDeviceManagement, CloudPolicyOverridesPlatformPolicy) {
   const base::FilePath crx_path = GetInstallerPath(kAppCRX);
   ExpectAppsUpdateSequence(
       UpdaterScope::kSystem, test_server_.get(),
+      /*request_attributes=*/base::Value::Dict().Set("dlpref", "cacheable"),
       {
-          AppUpdateExpectation(BuildCommandLineArgs(GetTestScope(), kAppId1,
-                                                    kApp1UpdatedVersion),
-                               kAppId1, kApp1InitialVersion,
-                               kApp1UpdatedVersion,
-                               /*is_install=*/false,
-                               /*should_update=*/true, false, "", crx_path),
-          AppUpdateExpectation(BuildCommandLineArgs(GetTestScope(), kAppId2,
-                                                    kApp2UpdatedVersion),
-                               kAppId2, kApp2InitialVersion,
-                               kApp2InitialVersion,
-                               /*is_install=*/false,
-                               /*should_update=*/false, false, "", crx_path),
-          AppUpdateExpectation(BuildCommandLineArgs(GetTestScope(), kAppId3,
-                                                    kApp3UpdatedVersion),
-                               kAppId3, kApp3InitialVersion,
-                               kApp3UpdatedVersion,
-                               /*is_install=*/false,
-                               /*should_update=*/true, false, "", crx_path),
+          AppUpdateExpectation(
+              BuildCommandLineArgs(GetTestScope(), kAppId1,
+                                   kApp1UpdatedVersion),
+              kAppId1, kApp1InitialVersion, kApp1UpdatedVersion,
+              /*is_install=*/false,
+              /*should_update=*/true, false, "", "beta_canary", crx_path),
+          AppUpdateExpectation(
+              BuildCommandLineArgs(GetTestScope(), kAppId2,
+                                   kApp2UpdatedVersion),
+              kAppId2, kApp2InitialVersion, kApp2InitialVersion,
+              /*is_install=*/false,
+              /*should_update=*/false, false, "", "", crx_path),
+          AppUpdateExpectation(
+              BuildCommandLineArgs(GetTestScope(), kAppId3,
+                                   kApp3UpdatedVersion),
+              kAppId3, kApp3InitialVersion, kApp3UpdatedVersion,
+              /*is_install=*/false,
+              /*should_update=*/true, false, "", "canary", crx_path),
       });
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
@@ -2049,12 +2060,13 @@ TEST_F(IntegrationTestDeviceManagement, RollbackToTargetVersion) {
 
   ExpectAppsUpdateSequence(
       UpdaterScope::kSystem, test_server_.get(),
+      /*request_attributes=*/{},
       {AppUpdateExpectation(
           BuildCommandLineArgs(GetTestScope(), kAppId1, kAppRollbackVersion),
           kAppId1, kAppInitialVersion, kAppRollbackVersion,
           /*is_install=*/false,
           /*should_update=*/true, /*allow_rollback=*/true, kTargetVersionPrefix,
-          GetInstallerPath(kAppCRX))});
+          "", GetInstallerPath(kAppCRX))});
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kAppId1, kAppRollbackVersion));
@@ -2143,11 +2155,12 @@ TEST_F(IntegrationTestMsi, Install) {
   const base::FilePath crx_path = GetInstallerPath(kMsiCrx);
   ExpectAppsUpdateSequence(
       UpdaterScope::kSystem, test_server_.get(),
+      /*request_attributes=*/{},
       {
           AppUpdateExpectation({}, kMsiAppId, base::Version({0, 0, 0, 0}),
                                kMsiUpdatedVersion,
                                /*is_install=*/true,
-                               /*should_update=*/true, false, "", crx_path),
+                               /*should_update=*/true, false, "", "", crx_path),
       });
 
   ASSERT_NO_FATAL_FAILURE(InstallAppViaService(kMsiAppId));
@@ -2160,11 +2173,12 @@ TEST_F(IntegrationTestMsi, InstallViaCommandLine) {
   const base::FilePath crx_path = GetInstallerPath(kMsiCrx);
   ExpectAppsUpdateSequence(
       UpdaterScope::kSystem, test_server_.get(),
+      /*request_attributes=*/{},
       {
           AppUpdateExpectation({}, kMsiAppId, base::Version({0, 0, 0, 0}),
                                kMsiUpdatedVersion,
                                /*is_install=*/true,
-                               /*should_update=*/true, false, "", crx_path),
+                               /*should_update=*/true, false, "", "", crx_path),
       });
 
   ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
@@ -2185,11 +2199,12 @@ TEST_F(IntegrationTestMsi, Upgrade) {
   const base::FilePath crx_path = GetInstallerPath(kMsiCrx);
   ExpectAppsUpdateSequence(
       UpdaterScope::kSystem, test_server_.get(),
+      /*request_attributes=*/{},
       {
           AppUpdateExpectation({}, kMsiAppId, kMsiInitialVersion,
                                kMsiUpdatedVersion,
                                /*is_install=*/false,
-                               /*should_update=*/true, false, "", crx_path),
+                               /*should_update=*/true, false, "", "", crx_path),
       });
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
@@ -2286,11 +2301,12 @@ TEST_P(IntegrationInstallerResultsTest, TestCases) {
 
   ExpectAppsUpdateSequence(
       UpdaterScope::kSystem, test_server_.get(),
+      /*request_attributes=*/{},
       {
           AppUpdateExpectation(
               GetParam().command_line_args, kMsiAppId,
               base::Version({0, 0, 0, 0}), kMsiUpdatedVersion,
-              /*is_install=*/true, should_install_successfully, false, "",
+              /*is_install=*/true, should_install_successfully, false, "", "",
               crx_relative_path,
               /*always_serve_crx=*/true, UpdateService::ErrorCategory::kInstall,
               GetParam().error_code, /*EVENT_INSTALL_COMPLETE=*/2),
