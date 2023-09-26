@@ -12398,30 +12398,6 @@
             ]
         }
     ],
-    "PrefetchEnableBlockUntilHeadEagerPrefetch": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithOneSecondTimeout",
-                    "params": {
-                        "block_until_head_eager_prefetch": "true",
-                        "block_until_head_timeout_eager_prefetch": "1000"
-                    },
-                    "enable_features": [
-                        "PrefetchUseContentRefactor"
-                    ]
-                }
-            ]
-        }
-    ],
     "PrefetchNewLimits": [
         {
             "platforms": [

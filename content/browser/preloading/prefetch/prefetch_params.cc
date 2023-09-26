@@ -226,7 +226,7 @@ bool PrefetchShouldBlockUntilHead(
     case blink::mojom::SpeculationEagerness::kEager:
       return base::GetFieldTrialParamByFeatureAsBool(
           features::kPrefetchUseContentRefactor,
-          "block_until_head_eager_prefetch", false);
+          "block_until_head_eager_prefetch", true);
     case blink::mojom::SpeculationEagerness::kModerate:
       return base::GetFieldTrialParamByFeatureAsBool(
           features::kPrefetchUseContentRefactor,
@@ -245,7 +245,7 @@ base::TimeDelta PrefetchBlockUntilHeadTimeout(
     case blink::mojom::SpeculationEagerness::kEager:
       timeout_in_milliseconds = base::GetFieldTrialParamByFeatureAsInt(
           features::kPrefetchUseContentRefactor,
-          "block_until_head_timeout_eager_prefetch", 0);
+          "block_until_head_timeout_eager_prefetch", 1000);
       break;
     case blink::mojom::SpeculationEagerness::kModerate:
       timeout_in_milliseconds = base::GetFieldTrialParamByFeatureAsInt(
