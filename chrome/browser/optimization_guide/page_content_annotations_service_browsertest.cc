@@ -586,7 +586,10 @@ class PageContentAnnotationsServiceRemoteMetadataBrowserTest
     // enabled.
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kOptimizationHints, {}},
-         {features::kRemotePageMetadata, {{"min_page_category_score", "80"}}}},
+         {features::kRemotePageMetadata,
+          {{"min_page_category_score", "80"},
+           {"supported_countries", "*"},
+           {"supported_locales", "*"}}}},
         /*disabled_features=*/{{features::kPageContentAnnotations}});
     set_load_model_on_startup(false);
   }
@@ -722,7 +725,8 @@ class PageContentAnnotationsServiceSalientImageMetadataBrowserTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kOptimizationHints, {}},
          {features::kPageContentAnnotations, {}},
-         {features::kPageContentAnnotationsPersistSalientImageMetadata, {}}},
+         {features::kPageContentAnnotationsPersistSalientImageMetadata,
+          {{"supported_countries", "*"}, {"supported_locales", "*"}}}},
         /*disabled_features=*/{});
     set_load_model_on_startup(false);
   }

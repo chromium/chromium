@@ -287,7 +287,8 @@ bool ShouldExecuteTextEmbeddingModelOnPageContent(const std::string& locale);
 
 // Returns whether page metadata should be retrieved from the remote
 // Optimization Guide service.
-bool RemotePageMetadataEnabled();
+bool RemotePageMetadataEnabled(const std::string& locale,
+                               const std::string& country_code);
 
 // Returns the minimum score associated with a category for it to be persisted.
 // Will be a value from 0 to 100, inclusive.
@@ -350,7 +351,8 @@ bool ShouldCheckFailedComponentVersionPref();
 bool IsInstallWideModelStoreEnabled();
 
 // Whether to persist salient image metadata for each visit.
-bool ShouldPersistSalientImageMetadata();
+bool ShouldPersistSalientImageMetadata(const std::string& locale,
+                                       const std::string& country_code);
 
 // Whether to drop fragments for the URL-keyed hint cache key.
 bool ShouldDropFragmentsForURLKeyedHintCacheKey();

@@ -127,6 +127,7 @@ class FakePageContentAnnotationsService : public PageContentAnnotationsService {
       : PageContentAnnotationsService(
             std::make_unique<FakeAutocompleteProviderClient>(),
             "en-US",
+            "us",
             optimization_guide_model_provider,
             history_service,
             template_url_service,

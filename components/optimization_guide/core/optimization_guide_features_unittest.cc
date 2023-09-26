@@ -152,6 +152,35 @@ TEST(OptimizationGuideFeaturesTest,
       features::ShouldExecutePageVisibilityModelOnPageContent("zh-CN"));
 }
 
+TEST(OptimizationGuideFeaturesTest, RemotePageMetadataEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kRemotePageMetadata,
+      {{"supported_locales", "en-US,en-CA"}, {"supported_countries", "US,CA"}});
+
+  EXPECT_TRUE(features::RemotePageMetadataEnabled("en-US", "CA"));
+  EXPECT_FALSE(features::RemotePageMetadataEnabled("", ""));
+  EXPECT_FALSE(features::RemotePageMetadataEnabled("en-US", "badcountry"));
+  EXPECT_FALSE(features::RemotePageMetadataEnabled("badlocale", "US"));
+}
+
+TEST(OptimizationGuideFeaturesTest, ShouldPersistSalientImageMetadata) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kPageContentAnnotationsPersistSalientImageMetadata,
+      {{"supported_locales", "en-US,en-CA"}, {"supported_countries", "US,CA"}});
+
+  EXPECT_TRUE(features::ShouldPersistSalientImageMetadata("en-US", "CA"));
+  // Tests case-insensitivity.
+  EXPECT_TRUE(features::ShouldPersistSalientImageMetadata("en-US", "cA"));
+  EXPECT_FALSE(features::ShouldPersistSalientImageMetadata("", ""));
+  EXPECT_FALSE(
+      features::ShouldPersistSalientImageMetadata("en-US", "badcountry"));
+  EXPECT_FALSE(features::ShouldPersistSalientImageMetadata("badlocale", "US"));
+}
+
 TEST(OptimizationGuideFeaturesTest,
      OptimizationGuidePersonalizedFetchingScopes) {
   {

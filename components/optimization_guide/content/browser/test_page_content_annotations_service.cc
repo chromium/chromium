@@ -68,6 +68,7 @@ TestPageContentAnnotationsService::TestPageContentAnnotationsService(
     history::HistoryService* history_service)
     : PageContentAnnotationsService(/*autocomplete_provider_client=*/nullptr,
                                     /*application_locale=*/"en-US",
+                                    /*country_code=*/"US",
                                     optimization_guide_model_provider,
                                     history_service,
                                     /*template_url_service=*/nullptr,

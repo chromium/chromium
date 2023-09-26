@@ -130,6 +130,7 @@ class PageContentAnnotationsService : public KeyedService,
   PageContentAnnotationsService(
       std::unique_ptr<AutocompleteProviderClient> autocomplete_provider_client,
       const std::string& application_locale,
+      const std::string& country_code,
       OptimizationGuideModelProvider* optimization_guide_model_provider,
       history::HistoryService* history_service,
       TemplateURLService* template_url_service,
@@ -434,6 +435,12 @@ class PageContentAnnotationsService : public KeyedService,
   std::unique_ptr<PageContentAnnotationsValidator> validator_;
 
   raw_ptr<OptimizationGuideLogger> optimization_guide_logger_ = nullptr;
+
+  // Whether fetching for remote page metadata enabled.
+  bool is_remote_page_metadata_fetching_enabled_ = false;
+
+  // Whether fetching for salient image metadata is enabled.
+  bool is_salient_image_metadata_fetching_enabled_ = false;
 
   // Not owned and must outlive |this|.
   raw_ptr<OptimizationGuideDecider> optimization_guide_decider_;
