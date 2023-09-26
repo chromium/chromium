@@ -165,6 +165,9 @@ def main():
     parser.add_argument('--cipd_prefix',
                         help='cipd package name prefix',
                         default='infra_internal/rbe/reclient_cfgs')
+    parser.add_argument('--skip_remoteexec_cfg_fetch',
+                        help='skip downloading reclient cfgs from CIPD server',
+                        action='store_true')
     parser.add_argument(
         '--quiet',
         help='Suppresses info logs',
@@ -193,6 +196,9 @@ def main():
         if not GenerateReproxyCfg(
           args.reproxy_cfg_template, args.rbe_instance, rbe_project):
            return 1
+
+    if args.skip_remoteexec_cfg_fetch:
+        return 0
 
     logging.info('fetch reclient_cfgs for RBE project %s...' % rbe_project)
 
