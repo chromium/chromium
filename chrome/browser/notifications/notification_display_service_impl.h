@@ -83,6 +83,8 @@ class NotificationDisplayServiceImpl : public NotificationDisplayService {
   void Close(NotificationHandler::Type notification_type,
              const std::string& notification_id) override;
   void GetDisplayed(DisplayedNotificationsCallback callback) override;
+  void GetDisplayedForOrigin(const GURL& origin,
+                             DisplayedNotificationsCallback callback) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 
@@ -115,8 +117,10 @@ class NotificationDisplayServiceImpl : public NotificationDisplayService {
   void OnNotificationPlatformBridgeReady();
 
   // Called after getting displayed notifications from the bridge so we can add
-  // any currently queued notification ids.
-  void OnGetDisplayed(DisplayedNotificationsCallback callback,
+  // any currently queued notification ids. If `origin` is set, we only want to
+  // get the notifications associated with that origin.
+  void OnGetDisplayed(absl::optional<GURL> origin,
+                      DisplayedNotificationsCallback callback,
                       std::set<std::string> notification_ids,
                       bool supports_synchronization);
 

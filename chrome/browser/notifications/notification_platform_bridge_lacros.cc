@@ -244,6 +244,14 @@ void NotificationPlatformBridgeLacros::GetDisplayed(
   std::move(callback).Run(/*notification_ids=*/{}, /*supports_sync=*/false);
 }
 
+void NotificationPlatformBridgeLacros::GetDisplayedForOrigin(
+    Profile* profile,
+    const GURL& origin,
+    GetDisplayedNotificationsCallback callback) const {
+  NOTIMPLEMENTED();
+  std::move(callback).Run(/*notification_ids=*/{}, /*supports_sync=*/false);
+}
+
 void NotificationPlatformBridgeLacros::SetReadyCallback(
     NotificationBridgeReadyCallback callback) {
   // Always return success even if |message_center_remote_| is not valid as we

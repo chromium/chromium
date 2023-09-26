@@ -114,11 +114,12 @@ interface MacNotificationService {
   DisplayNotification(Notification notification);
 
   // Gets a list of notification ids that are currently shown in the system
-  // notification center. If a |profile| is passed, the list is filtered to only
+  // notification center. If a `profile` is passed, the list is filtered to only
   // include notification ids for that profile. Otherwise this will return all
-  // displayed notification ids for all profiles.
-  GetDisplayedNotifications(ProfileIdentifier? profile) =>
-      (array<NotificationIdentifier> notifications);
+  // displayed notification ids for all profiles. If an `origin` is passed, the
+  // list is also filtered to only include notifications for that origin.
+  GetDisplayedNotifications(ProfileIdentifier? profile, url.mojom.Url? origin)
+      => (array<NotificationIdentifier> notifications);
 
   // Closes the notification identified by |identifier|.
   CloseNotification(NotificationIdentifier identifier);

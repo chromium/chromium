@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_features.h"
@@ -77,27 +78,43 @@ class TestNotificationPlatformBridgeDelegator
       const message_center::Notification& notification,
       std::unique_ptr<NotificationCommon::Metadata> metadata) override {
     notification_ids_.insert(notification.id());
+    notification_origins_[notification.id()] = notification.origin_url();
   }
 
   void Close(NotificationHandler::Type notification_type,
              const std::string& notification_id) override {
     notification_ids_.erase(notification_id);
+    notification_origins_.erase(notification_id);
   }
 
   void GetDisplayed(GetDisplayedNotificationsCallback callback) const override {
     std::move(callback).Run(notification_ids_, /*supports_sync=*/true);
   }
 
+  void GetDisplayedForOrigin(
+      const GURL& origin,
+      GetDisplayedNotificationsCallback callback) const override {
+    std::set<std::string> result;
+    for (const auto& id : notification_ids_) {
+      auto origin_it = notification_origins_.find(id);
+      if (url::IsSameOriginWith(origin_it->second, origin)) {
+        result.insert(id);
+      }
+    }
+    std::move(callback).Run(result, /*supports_sync=*/true);
+  }
+
  private:
   std::set<std::string> notification_ids_;
+  std::map<std::string, GURL> notification_origins_;
 };
 
-message_center::Notification CreateNotification(const std::string& id) {
+message_center::Notification CreateNotification(const std::string& id,
+                                                const GURL& origin = {}) {
   return message_center::Notification(
       message_center::NOTIFICATION_TYPE_SIMPLE, id, /*title=*/std::u16string(),
       /*message=*/std::u16string(), /*icon=*/ui::ImageModel(),
-      /*display_source=*/std::u16string(),
-      /*origin_url=*/GURL(), message_center::NotifierId(),
+      /*display_source=*/std::u16string(), origin, message_center::NotifierId(),
       message_center::RichNotificationData(), /*delegate=*/nullptr);
 }
 
@@ -126,34 +143,33 @@ class BaseNotificationDisplayServiceImplTest : public testing::Test {
 
  protected:
   std::set<std::string> GetDisplayedServiceSync() {
-    std::set<std::string> displayed_ids;
-    base::RunLoop run_loop;
-    service_->GetDisplayed(
-        base::BindLambdaForTesting([&](std::set<std::string> notification_ids,
-                                       bool supports_synchronization) {
-          displayed_ids = std::move(notification_ids);
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-    return displayed_ids;
+    base::test::TestFuture<std::set<std::string>, bool> displayed;
+    service_->GetDisplayed(displayed.GetCallback());
+    return displayed.Get<0>();
+  }
+
+  std::set<std::string> GetDisplayedForOriginServiceSync(const GURL& origin) {
+    base::test::TestFuture<std::set<std::string>, bool> displayed;
+    service_->GetDisplayedForOrigin(origin, displayed.GetCallback());
+    return displayed.Get<0>();
   }
 
   std::set<std::string> GetDisplayedPlatformSync() {
-    std::set<std::string> displayed_ids;
-    base::RunLoop run_loop;
-    notification_delegator_->GetDisplayed(
-        base::BindLambdaForTesting([&](std::set<std::string> notification_ids,
-                                       bool supports_synchronization) {
-          displayed_ids = std::move(notification_ids);
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-    return displayed_ids;
+    base::test::TestFuture<std::set<std::string>, bool> displayed;
+    notification_delegator_->GetDisplayed(displayed.GetCallback());
+    return displayed.Get<0>();
   }
 
-  void DisplayNotification(const std::string id) {
+  std::set<std::string> GetDisplayedForOriginPlatformSync(const GURL& origin) {
+    base::test::TestFuture<std::set<std::string>, bool> displayed;
+    notification_delegator_->GetDisplayedForOrigin(origin,
+                                                   displayed.GetCallback());
+    return displayed.Get<0>();
+  }
+
+  void DisplayNotification(const std::string id, const GURL& origin = {}) {
     service_->Display(NotificationHandler::Type::WEB_PERSISTENT,
-                      CreateNotification(id), /*metadata=*/nullptr);
+                      CreateNotification(id, origin), /*metadata=*/nullptr);
   }
 
   void CloseNotification(const std::string id) {
@@ -199,12 +215,19 @@ class NotificationDisplayServiceImplTest
 TEST_F(NotificationDisplayServiceImplTest, DisplayWithoutBlockers) {
   service().SetBlockersForTesting({});
   std::string notification_id = "id";
-  DisplayNotification(notification_id);
+  GURL origin("https://example.com/");
+  DisplayNotification(notification_id, origin);
 
   std::set<std::string> displayed = GetDisplayedServiceSync();
   EXPECT_EQ(1u, displayed.size());
   EXPECT_EQ(1u, displayed.count(notification_id));
   EXPECT_EQ(displayed, GetDisplayedPlatformSync());
+  EXPECT_EQ(displayed, GetDisplayedForOriginServiceSync(origin));
+  EXPECT_EQ(displayed, GetDisplayedForOriginPlatformSync(origin));
+  EXPECT_TRUE(
+      GetDisplayedForOriginServiceSync(GURL("https://foo.bar")).empty());
+  EXPECT_TRUE(
+      GetDisplayedForOriginPlatformSync(GURL("https://foo.bar")).empty());
 }
 
 TEST_F(NotificationDisplayServiceImplTest, DisplayWithAllowingBlocker) {
@@ -220,12 +243,15 @@ TEST_F(NotificationDisplayServiceImplTest, DisplayWithAllowingBlocker) {
 TEST_F(NotificationDisplayServiceImplTest, DisplayWithBlockingBlocker) {
   notification_blocker().SetShouldBlockNotifications(true);
   std::string notification_id = "id";
-  DisplayNotification(notification_id);
+  GURL origin("https://example.com/");
+  DisplayNotification(notification_id, origin);
 
   std::set<std::string> displayed = GetDisplayedServiceSync();
   EXPECT_EQ(1u, displayed.size());
   EXPECT_EQ(1u, displayed.count(notification_id));
   EXPECT_TRUE(GetDisplayedPlatformSync().empty());
+  EXPECT_EQ(displayed, GetDisplayedForOriginServiceSync(origin));
+  EXPECT_TRUE(GetDisplayedForOriginPlatformSync(origin).empty());
 }
 
 TEST_F(NotificationDisplayServiceImplTest, UnblockQueuedNotification) {

@@ -28,6 +28,15 @@ void StubNotificationPlatformBridge::GetDisplayed(
                           false /* supports_synchronization */);
 }
 
+void StubNotificationPlatformBridge::GetDisplayedForOrigin(
+    Profile* profile,
+    const GURL& origin,
+    GetDisplayedNotificationsCallback callback) const {
+  std::set<std::string> displayed_notifications;
+  std::move(callback).Run(std::move(displayed_notifications),
+                          false /* supports_synchronization */);
+}
+
 void StubNotificationPlatformBridge::SetReadyCallback(
     NotificationBridgeReadyCallback callback) {
   std::move(callback).Run(true /* ready */);

@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/profiles/profile.h"
+#include "url/origin.h"
 
 // static
 std::unique_ptr<KeyedService> StubNotificationDisplayService::FactoryForTests(
@@ -215,8 +216,25 @@ void StubNotificationDisplayService::GetDisplayed(
     DisplayedNotificationsCallback callback) {
   std::set<std::string> notifications;
 
-  for (const auto& notification_data : notifications_)
+  for (const auto& notification_data : notifications_) {
     notifications.insert(notification_data.notification.id());
+  }
+
+  std::move(callback).Run(std::move(notifications),
+                          true /* supports_synchronization */);
+}
+
+void StubNotificationDisplayService::GetDisplayedForOrigin(
+    const GURL& origin,
+    DisplayedNotificationsCallback callback) {
+  std::set<std::string> notifications;
+
+  for (const auto& notification_data : notifications_) {
+    if (url::IsSameOriginWith(notification_data.notification.origin_url(),
+                              origin)) {
+      notifications.insert(notification_data.notification.id());
+    }
+  }
 
   std::move(callback).Run(std::move(notifications),
                           true /* supports_synchronization */);

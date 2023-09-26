@@ -101,6 +101,9 @@ class FakeNotificationDisplayService : public NotificationDisplayService {
   }
 
   void GetDisplayed(DisplayedNotificationsCallback callback) override {}
+  void GetDisplayedForOrigin(const GURL& origin,
+                             DisplayedNotificationsCallback callback) override {
+  }
 
   void AddObserver(NotificationDisplayService::Observer* observer) override {}
   void RemoveObserver(NotificationDisplayService::Observer* observer) override {

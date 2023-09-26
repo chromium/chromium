@@ -45,6 +45,7 @@ class MockNotificationService
   MOCK_METHOD(void,
               GetDisplayedNotifications,
               (mac_notifications::mojom::ProfileIdentifierPtr,
+               const absl::optional<GURL>& origin,
                GetDisplayedNotificationsCallback),
               (override));
   MOCK_METHOD(void,

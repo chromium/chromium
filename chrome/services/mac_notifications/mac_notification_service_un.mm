@@ -25,6 +25,7 @@
 #include "chrome/services/mac_notifications/unnotification_metrics.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
+#include "url/origin.h"
 
 @interface AlertUNNotificationCenterDelegate
     : NSObject <UNUserNotificationCenterDelegate>
@@ -233,6 +234,7 @@ void MacNotificationServiceUN::DoDisplayNotification(
 
 void MacNotificationServiceUN::GetDisplayedNotifications(
     mojom::ProfileIdentifierPtr profile,
+    const absl::optional<GURL>& origin,
     GetDisplayedNotificationsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Move |callback| into block storage so we can use it from the block below.
@@ -242,6 +244,7 @@ void MacNotificationServiceUN::GetDisplayedNotifications(
   // Note: |profile| might be null if we want all notifications.
   NSString* profile_id = profile ? base::SysUTF8ToNSString(profile->id) : nil;
   bool incognito = profile && profile->incognito;
+  __block absl::optional<GURL> block_origin = origin;
 
   // We need to call |callback| on the same sequence as this method is called.
   scoped_refptr<base::SequencedTaskRunner> task_runner =
@@ -261,10 +264,17 @@ void MacNotificationServiceUN::GetDisplayedNotifications(
 
       if (!profile_id || ([profile_id isEqualToString:toast_profile_id] &&
                           incognito == toast_incognito)) {
-        auto profile_identifier = mojom::ProfileIdentifier::New(
-            base::SysNSStringToUTF8(toast_profile_id), toast_incognito);
-        notifications.push_back(mojom::NotificationIdentifier::New(
-            base::SysNSStringToUTF8(toast_id), std::move(profile_identifier)));
+        NSString* toast_origin_url =
+            [user_info objectForKey:kNotificationOrigin];
+        GURL toast_origin = GURL(base::SysNSStringToUTF8(toast_origin_url));
+        if (!origin.has_value() ||
+            url::IsSameOriginWith(toast_origin, *origin)) {
+          auto profile_identifier = mojom::ProfileIdentifier::New(
+              base::SysNSStringToUTF8(toast_profile_id), toast_incognito);
+          notifications.push_back(mojom::NotificationIdentifier::New(
+              base::SysNSStringToUTF8(toast_id),
+              std::move(profile_identifier)));
+        }
       }
     }
 
@@ -334,10 +344,11 @@ void MacNotificationServiceUN::OkayToTerminateService(
   }
 
   GetDisplayedNotifications(
-      nullptr, base::BindOnce([](std::vector<mojom::NotificationIdentifierPtr>
-                                     notifications) {
-                 return notifications.empty();
-               }).Then(std::move(callback)));
+      /*profile=*/nullptr, /*origin=*/absl::nullopt,
+      base::BindOnce([](std::vector<mojom::NotificationIdentifierPtr>
+                            notifications) {
+        return notifications.empty();
+      }).Then(std::move(callback)));
 }
 
 void MacNotificationServiceUN::RequestPermission() {
@@ -428,7 +439,7 @@ void MacNotificationServiceUN::SynchronizeNotifications(
   }
   is_synchronizing_notifications_ = true;
   GetDisplayedNotifications(
-      /*profile=*/nullptr,
+      /*profile=*/nullptr, /*origin=*/absl::nullopt,
       base::BindOnce(&MacNotificationServiceUN::DoSynchronizeNotifications,
                      weak_factory_.GetWeakPtr()));
 }

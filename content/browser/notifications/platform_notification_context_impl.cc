@@ -701,6 +701,7 @@ void PlatformNotificationContextImpl::OnGetDisplayedNotifications(
 }
 
 void PlatformNotificationContextImpl::TryGetDisplayedNotifications(
+    const GURL& origin,
     InitializeGetDisplayedCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -716,9 +717,10 @@ void PlatformNotificationContextImpl::TryGetDisplayedNotifications(
     return;
   }
 
-  service->GetDisplayedNotifications(base::BindOnce(
-      &PlatformNotificationContextImpl::OnGetDisplayedNotifications, this,
-      std::move(callback)));
+  service->GetDisplayedNotificationsForOrigin(
+      origin, base::BindOnce(
+                  &PlatformNotificationContextImpl::OnGetDisplayedNotifications,
+                  this, std::move(callback)));
 }
 
 void PlatformNotificationContextImpl::
@@ -729,6 +731,7 @@ void PlatformNotificationContextImpl::
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   TryGetDisplayedNotifications(
+      origin,
       base::BindOnce(&PlatformNotificationContextImpl::
                          DoReadAllNotificationDataForServiceWorkerRegistration,
                      this, base::Time::Now(), origin,
@@ -742,11 +745,12 @@ void PlatformNotificationContextImpl::
         CountResultCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  TryGetDisplayedNotifications(base::BindOnce(
-      &PlatformNotificationContextImpl::
-          DoCountVisibleNotificationsForServiceWorkerRegistration,
-      this, base::Time::Now(), origin, service_worker_registration_id,
-      std::move(callback)));
+  TryGetDisplayedNotifications(
+      origin, base::BindOnce(
+                  &PlatformNotificationContextImpl::
+                      DoCountVisibleNotificationsForServiceWorkerRegistration,
+                  this, base::Time::Now(), origin,
+                  service_worker_registration_id, std::move(callback)));
 }
 
 void PlatformNotificationContextImpl::

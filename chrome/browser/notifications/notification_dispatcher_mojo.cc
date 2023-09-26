@@ -103,6 +103,26 @@ void NotificationDispatcherMojo::GetDisplayedNotificationsForProfileId(
   no_notifications_checker_.Cancel();
   GetOrCreateService()->GetDisplayedNotifications(
       mac_notifications::mojom::ProfileIdentifier::New(profile_id, incognito),
+      /*origin=*/absl::nullopt,
+      base::BindOnce(&NotificationDispatcherMojo::DispatchGetNotificationsReply,
+                     base::Unretained(this), std::move(callback)));
+}
+
+void NotificationDispatcherMojo::GetDisplayedNotificationsForProfileIdAndOrigin(
+    const std::string& profile_id,
+    bool incognito,
+    const GURL& origin,
+    GetDisplayedNotificationsCallback callback) {
+  if (HasNoDisplayedNotifications()) {
+    std::move(callback).Run(/*notification_ids=*/{},
+                            /*supports_synchronization=*/true);
+    return;
+  }
+
+  no_notifications_checker_.Cancel();
+  GetOrCreateService()->GetDisplayedNotifications(
+      mac_notifications::mojom::ProfileIdentifier::New(profile_id, incognito),
+      origin,
       base::BindOnce(&NotificationDispatcherMojo::DispatchGetNotificationsReply,
                      base::Unretained(this), std::move(callback)));
 }
@@ -116,7 +136,7 @@ void NotificationDispatcherMojo::GetAllDisplayedNotifications(
 
   no_notifications_checker_.Cancel();
   GetOrCreateService()->GetDisplayedNotifications(
-      /*profile=*/nullptr,
+      /*profile=*/nullptr, /*origin=*/absl::nullopt,
       base::BindOnce(
           &NotificationDispatcherMojo::DispatchGetAllNotificationsReply,
           base::Unretained(this), std::move(callback)));

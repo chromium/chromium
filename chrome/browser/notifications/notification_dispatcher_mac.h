@@ -67,6 +67,14 @@ class NotificationDispatcherMac {
       bool incognito,
       GetDisplayedNotificationsCallback callback) = 0;
 
+  // Same as `GetDisplayedNotificationsForProfileId`, but additionally filters
+  // the returned ids to only those associated with `origin`.
+  virtual void GetDisplayedNotificationsForProfileIdAndOrigin(
+      const std::string& profile_id,
+      bool incognito,
+      const GURL& origin,
+      GetDisplayedNotificationsCallback callback) = 0;
+
   // Get all currently displayed notifications for all profiles.
   virtual void GetAllDisplayedNotifications(
       GetAllDisplayedNotificationsCallback callback) = 0;

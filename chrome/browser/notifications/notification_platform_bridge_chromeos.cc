@@ -87,6 +87,16 @@ void NotificationPlatformBridgeChromeOs::GetDisplayed(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void NotificationPlatformBridgeChromeOs::GetDisplayedForOrigin(
+    Profile* profile,
+    const GURL& origin,
+    GetDisplayedNotificationsCallback callback) const {
+  impl_->GetDisplayedForOrigin(
+      profile, origin,
+      base::BindOnce(&NotificationPlatformBridgeChromeOs::OnGetDisplayed,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
 void NotificationPlatformBridgeChromeOs::SetReadyCallback(
     NotificationBridgeReadyCallback callback) {
   impl_->SetReadyCallback(std::move(callback));

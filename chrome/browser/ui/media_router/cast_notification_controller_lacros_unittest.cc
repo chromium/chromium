@@ -57,6 +57,9 @@ class MockNotificationDisplayService : public NotificationDisplayService {
               (NotificationHandler::Type notification_type,
                const std::string& notification_id));
   MOCK_METHOD(void, GetDisplayed, (DisplayedNotificationsCallback callback));
+  MOCK_METHOD(void,
+              GetDisplayedForOrigin,
+              (const GURL& origin, DisplayedNotificationsCallback callback));
   MOCK_METHOD(void, AddObserver, (Observer * observer));
   MOCK_METHOD(void, RemoveObserver, (Observer * observer));
 };

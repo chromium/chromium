@@ -329,6 +329,25 @@ void PlatformNotificationServiceImpl::GetDisplayedNotifications(
       std::move(callback));
 }
 
+void PlatformNotificationServiceImpl::GetDisplayedNotificationsForOrigin(
+    const GURL& origin,
+    DisplayedNotificationsCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (g_browser_process->IsShuttingDown() || !profile_) {
+    return;
+  }
+
+  // Tests will not have a message center.
+  if (profile_->AsTestingProfile()) {
+    std::set<std::string> displayed_notifications;
+    std::move(callback).Run(std::move(displayed_notifications),
+                            false /* supports_synchronization */);
+    return;
+  }
+  NotificationDisplayServiceFactory::GetForProfile(profile_)
+      ->GetDisplayedForOrigin(origin, std::move(callback));
+}
+
 void PlatformNotificationServiceImpl::ScheduleTrigger(base::Time timestamp) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (g_browser_process->IsShuttingDown() || !profile_)

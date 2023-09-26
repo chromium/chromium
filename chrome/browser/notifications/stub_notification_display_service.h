@@ -103,6 +103,8 @@ class StubNotificationDisplayService : public NotificationDisplayServiceImpl {
   void Close(NotificationHandler::Type notification_type,
              const std::string& notification_id) override;
   void GetDisplayed(DisplayedNotificationsCallback callback) override;
+  void GetDisplayedForOrigin(const GURL& origin,
+                             DisplayedNotificationsCallback callback) override;
   void ProcessNotificationOperation(
       NotificationOperation operation,
       NotificationHandler::Type notification_type,

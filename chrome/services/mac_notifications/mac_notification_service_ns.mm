@@ -20,6 +20,7 @@
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/gfx/image/image.h"
+#include "url/origin.h"
 
 // This class implements the Chromium interface to a deprecated API. It is in
 // the process of being replaced, and warnings about its deprecation are not
@@ -210,6 +211,7 @@ void MacNotificationServiceNS::DisplayNotification(
 
 void MacNotificationServiceNS::GetDisplayedNotifications(
     mojom::ProfileIdentifierPtr profile,
+    const absl::optional<GURL>& origin,
     GetDisplayedNotificationsCallback callback) {
   std::vector<mojom::NotificationIdentifierPtr> notifications;
   // Note: |profile| might be null if we want all notifications.
@@ -226,10 +228,15 @@ void MacNotificationServiceNS::GetDisplayedNotifications(
 
     if (!profile_id || ([profile_id isEqualToString:toast_profile_id] &&
                         incognito == toast_incognito)) {
-      auto profile_identifier = mojom::ProfileIdentifier::New(
-          base::SysNSStringToUTF8(toast_profile_id), toast_incognito);
-      notifications.push_back(mojom::NotificationIdentifier::New(
-          base::SysNSStringToUTF8(toast_id), std::move(profile_identifier)));
+      NSString* toast_origin_url =
+          [toast.userInfo objectForKey:kNotificationOrigin];
+      GURL toast_origin = GURL(base::SysNSStringToUTF8(toast_origin_url));
+      if (!origin.has_value() || url::IsSameOriginWith(toast_origin, *origin)) {
+        auto profile_identifier = mojom::ProfileIdentifier::New(
+            base::SysNSStringToUTF8(toast_profile_id), toast_incognito);
+        notifications.push_back(mojom::NotificationIdentifier::New(
+            base::SysNSStringToUTF8(toast_id), std::move(profile_identifier)));
+      }
     }
   }
 
@@ -285,10 +292,11 @@ void MacNotificationServiceNS::CloseAllNotifications() {
 void MacNotificationServiceNS::OkayToTerminateService(
     OkayToTerminateServiceCallback callback) {
   GetDisplayedNotifications(
-      nullptr, base::BindOnce([](std::vector<mojom::NotificationIdentifierPtr>
-                                     notifications) {
-                 return notifications.empty();
-               }).Then(std::move(callback)));
+      /*profile=*/nullptr, /*origin=*/absl::nullopt,
+      base::BindOnce([](std::vector<mojom::NotificationIdentifierPtr>
+                            notifications) {
+        return notifications.empty();
+      }).Then(std::move(callback)));
 }
 
 }  // namespace mac_notifications

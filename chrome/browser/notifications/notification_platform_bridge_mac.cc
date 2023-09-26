@@ -18,6 +18,8 @@
 #include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "third_party/blink/public/common/notifications/notification_constants.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -74,13 +76,8 @@ void NotificationPlatformBridgeMac::Display(
 
   if (base::FeatureList::IsEnabled(features::kAppShimNotificationAttribution) &&
       notification.notifier_id().web_app_id.has_value()) {
-    auto& owned_dispatcher =
-        app_specific_dispatchers_[*notification.notifier_id().web_app_id];
-    if (!owned_dispatcher) {
-      owned_dispatcher = web_app_dispatcher_factory_.Run(
-          *notification.notifier_id().web_app_id);
-    }
-    dispatcher = owned_dispatcher.get();
+    dispatcher =
+        GetOrCreateDispatcherForWebApp(*notification.notifier_id().web_app_id);
   }
 
   if (!dispatcher) {
@@ -123,6 +120,20 @@ void NotificationPlatformBridgeMac::CloseImpl(
 void NotificationPlatformBridgeMac::GetDisplayed(
     Profile* profile,
     GetDisplayedNotificationsCallback callback) const {
+  if (base::FeatureList::IsEnabled(features::kAppShimNotificationAttribution)) {
+    // We can't get all displayed notifications for all origins, since that
+    // would involve starting up any app shim that might currently show
+    // notifications. Fortunately we don't really need to implement this method
+    // as this is only used for an initial state sync on Chrome start up. Before
+    // for example a list of displayed notifications is returned via the web
+    // API, additional calls to get displayed notifications for specific origins
+    // happen.
+    // TODO(https://crbug.com/1486910): Figure out how we can refactor the
+    // various APIs to make this not be an issue.
+    std::move(callback).Run({}, /*supports_synchronization=*/false);
+    return;
+  }
+
   std::string profile_id = GetProfileId(profile);
   bool incognito = profile->IsOffTheRecord();
 
@@ -149,9 +160,69 @@ void NotificationPlatformBridgeMac::GetDisplayed(
       profile_id, incognito, get_notifications_callback);
   alert_dispatcher_->GetDisplayedNotificationsForProfileId(
       profile_id, incognito, get_notifications_callback);
+}
 
-  // TODO(https://crbug.com/938661): Add support for notifications in app-shim
-  // processes.
+void NotificationPlatformBridgeMac::GetDisplayedForOrigin(
+    Profile* profile,
+    const GURL& origin,
+    GetDisplayedNotificationsCallback callback) const {
+  std::string profile_id = GetProfileId(profile);
+  bool incognito = profile->IsOffTheRecord();
+
+  std::vector<webapps::AppId> web_app_ids;
+  if (base::FeatureList::IsEnabled(features::kAppShimNotificationAttribution)) {
+    web_app::WebAppProvider* web_app_provider =
+        web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);
+    if (web_app_provider) {
+      web_app::WebAppRegistrar& registrar =
+          web_app_provider->registrar_unsafe();
+      for (const webapps::AppId& app_id : registrar.GetAppIds()) {
+        if (!registrar.IsLocallyInstalled(app_id)) {
+          continue;
+        }
+        if (!url::IsSameOriginWith(registrar.GetAppScope(app_id), origin)) {
+          continue;
+        }
+        web_app_ids.push_back(app_id);
+      }
+    }
+    // TODO(mek): filter by web_app_ids that actually could be displaying
+    // notifications rather than all for the origin.
+  }
+
+  auto notifications = std::make_unique<std::set<std::string>>();
+  std::set<std::string>* notifications_ptr = notifications.get();
+  auto barrier_closure = base::BarrierClosure(
+      2 + web_app_ids.size(),
+      base::BindOnce(
+          [](std::unique_ptr<std::set<std::string>> notifications,
+             GetDisplayedNotificationsCallback callback) {
+            std::move(callback).Run(std::move(*notifications),
+                                    /*supports_synchronization=*/true);
+          },
+          std::move(notifications), std::move(callback)));
+
+  auto get_notifications_callback =
+      base::BindRepeating(
+          [](std::set<std::string>* notifications_ptr,
+             std::set<std::string> notifications,
+             bool supports_synchronization) {
+            notifications_ptr->insert(notifications.begin(),
+                                      notifications.end());
+          },
+          notifications_ptr)
+          .Then(barrier_closure);
+
+  banner_dispatcher_->GetDisplayedNotificationsForProfileIdAndOrigin(
+      profile_id, incognito, origin, get_notifications_callback);
+  alert_dispatcher_->GetDisplayedNotificationsForProfileIdAndOrigin(
+      profile_id, incognito, origin, get_notifications_callback);
+
+  for (const webapps::AppId& web_app_id : web_app_ids) {
+    auto* dispatcher = GetOrCreateDispatcherForWebApp(web_app_id);
+    dispatcher->GetDisplayedNotificationsForProfileIdAndOrigin(
+        profile_id, incognito, origin, get_notifications_callback);
+  }
 }
 
 void NotificationPlatformBridgeMac::SetReadyCallback(
@@ -177,4 +248,14 @@ void NotificationPlatformBridgeMac::CloseAllNotificationsForProfile(
 
   banner_dispatcher_->CloseNotificationsWithProfileId(profile_id, incognito);
   alert_dispatcher_->CloseNotificationsWithProfileId(profile_id, incognito);
+}
+
+NotificationDispatcherMac*
+NotificationPlatformBridgeMac::GetOrCreateDispatcherForWebApp(
+    const webapps::AppId& web_app_id) const {
+  auto& owned_dispatcher = app_specific_dispatchers_[web_app_id];
+  if (!owned_dispatcher) {
+    owned_dispatcher = web_app_dispatcher_factory_.Run(web_app_id);
+  }
+  return owned_dispatcher.get();
 }

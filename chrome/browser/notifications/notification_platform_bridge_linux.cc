@@ -59,6 +59,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/message_center/public/cpp/notification.h"
+#include "url/origin.h"
 
 namespace {
 
@@ -402,6 +403,19 @@ class NotificationPlatformBridgeLinuxImpl
             &NotificationPlatformBridgeLinuxImpl::GetDisplayedOnTaskRunner,
             this, GetProfileId(profile), profile->IsOffTheRecord(),
             std::move(callback)));
+  }
+
+  void GetDisplayedForOrigin(
+      Profile* profile,
+      const GURL& origin,
+      GetDisplayedNotificationsCallback callback) const override {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&NotificationPlatformBridgeLinuxImpl::
+                           GetDisplayedForOriginOnTaskRunner,
+                       this, GetProfileId(profile), profile->IsOffTheRecord(),
+                       origin, std::move(callback)));
   }
 
   void SetReadyCallback(NotificationBridgeReadyCallback callback) override {
@@ -886,8 +900,28 @@ class NotificationPlatformBridgeLinuxImpl
     std::set<std::string> displayed;
     for (const auto& pair : notifications_) {
       NotificationData* data = pair.first;
-      if (data->profile_id == profile_id && data->is_incognito == incognito)
+      if (data->profile_id == profile_id && data->is_incognito == incognito) {
         displayed.insert(data->notification_id);
+      }
+    }
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), std::move(displayed), true));
+  }
+
+  void GetDisplayedForOriginOnTaskRunner(
+      const std::string& profile_id,
+      bool incognito,
+      const GURL& origin,
+      GetDisplayedNotificationsCallback callback) const {
+    DCHECK(task_runner_->RunsTasksInCurrentSequence());
+    std::set<std::string> displayed;
+    for (const auto& pair : notifications_) {
+      NotificationData* data = pair.first;
+      if (data->profile_id == profile_id && data->is_incognito == incognito &&
+          url::IsSameOriginWith(data->origin_url, origin)) {
+        displayed.insert(data->notification_id);
+      }
     }
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
@@ -1184,6 +1218,13 @@ void NotificationPlatformBridgeLinux::GetDisplayed(
     Profile* profile,
     GetDisplayedNotificationsCallback callback) const {
   impl_->GetDisplayed(profile, std::move(callback));
+}
+
+void NotificationPlatformBridgeLinux::GetDisplayedForOrigin(
+    Profile* profile,
+    const GURL& origin,
+    GetDisplayedNotificationsCallback callback) const {
+  impl_->GetDisplayedForOrigin(profile, origin, std::move(callback));
 }
 
 void NotificationPlatformBridgeLinux::SetReadyCallback(

@@ -67,6 +67,9 @@ class MockPlatformNotificationService : public PlatformNotificationService {
   void ClosePersistentNotification(const std::string& notification_id) override;
   void GetDisplayedNotifications(
       DisplayedNotificationsCallback callback) override;
+  void GetDisplayedNotificationsForOrigin(
+      const GURL& origin,
+      DisplayedNotificationsCallback callback) override;
   void ScheduleTrigger(base::Time timestamp) override;
   base::Time ReadNextTriggerTimestamp() override;
   int64_t ReadNextPersistentNotificationId() override;

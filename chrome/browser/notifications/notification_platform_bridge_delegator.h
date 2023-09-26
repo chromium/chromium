@@ -43,6 +43,9 @@ class NotificationPlatformBridgeDelegator {
                      const std::string& notification_id);
 
   virtual void GetDisplayed(GetDisplayedNotificationsCallback callback) const;
+  virtual void GetDisplayedForOrigin(
+      const GURL& origin,
+      GetDisplayedNotificationsCallback callback) const;
 
   virtual void DisplayServiceShutDown();
 

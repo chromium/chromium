@@ -14,6 +14,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "chrome/common/notifications/notification_constants.h"
 #include "chrome/common/notifications/notification_operation.h"
 #import "chrome/services/mac_notifications/mac_notification_service_un.h"
@@ -125,7 +126,8 @@ class MacNotificationServiceUNTest : public testing::Test {
                                          const std::string& profile_id,
                                          bool incognito,
                                          bool display = true,
-                                         const std::string& category_id = "") {
+                                         const std::string& category_id = "",
+                                         const GURL& origin = {}) {
     NSString* identifier = base::SysUTF8ToNSString(
         DeriveMacNotificationId(mojom::NotificationIdentifier::New(
             notification_id,
@@ -137,6 +139,7 @@ class MacNotificationServiceUNTest : public testing::Test {
       kNotificationId : base::SysUTF8ToNSString(notification_id),
       kNotificationProfileId : base::SysUTF8ToNSString(profile_id),
       kNotificationIncognito : [NSNumber numberWithBool:incognito],
+      kNotificationOrigin : base::SysUTF8ToNSString(origin.spec()),
     };
     if (!category_id.empty())
       content.categoryIdentifier = base::SysUTF8ToNSString(category_id);
@@ -159,10 +162,18 @@ class MacNotificationServiceUNTest : public testing::Test {
 
   std::vector<FakeUNNotification*> SetupNotifications() {
     std::vector<FakeUNNotification*> notifications = {
-        CreateNotification("notificationId", "profileId", /*incognito=*/false),
-        CreateNotification("notificationId", "profileId2", /*incognito=*/true),
-        CreateNotification("notificationId2", "profileId", /*incognito=*/true),
-        CreateNotification("notificationId", "profileId", /*incognito=*/true),
+        CreateNotification("notificationId", "profileId", /*incognito=*/false,
+                           /*display=*/true, /*category_id=*/"",
+                           GURL("https://example.com")),
+        CreateNotification("notificationId", "profileId2", /*incognito=*/true,
+                           /*display=*/true, /*category_id=*/"",
+                           GURL("https://example.com")),
+        CreateNotification("notificationId2", "profileId", /*incognito=*/true,
+                           /*display=*/true, /*category_id=*/"",
+                           GURL("https://example.com")),
+        CreateNotification("notificationId", "profileId", /*incognito=*/true,
+                           /*display=*/true, /*category_id=*/"",
+                           GURL("https://gmail.com")),
     };
 
     NSMutableArray* notifications_ns =
@@ -179,24 +190,20 @@ class MacNotificationServiceUNTest : public testing::Test {
 
   static std::vector<mojom::NotificationIdentifierPtr>
   GetDisplayedNotificationsSync(mojom::MacNotificationService* service,
-                                mojom::ProfileIdentifierPtr profile) {
-    base::RunLoop run_loop;
-    std::vector<mojom::NotificationIdentifierPtr> displayed;
-    service->GetDisplayedNotifications(
-        std::move(profile),
-        base::BindLambdaForTesting(
-            [&](std::vector<mojom::NotificationIdentifierPtr> notifications) {
-              displayed = std::move(notifications);
-              run_loop.Quit();
-            }));
-    run_loop.Run();
-    return displayed;
+                                mojom::ProfileIdentifierPtr profile,
+                                absl::optional<GURL> origin = absl::nullopt) {
+    base::test::TestFuture<std::vector<mojom::NotificationIdentifierPtr>>
+        displayed;
+    service->GetDisplayedNotifications(std::move(profile), origin,
+                                       displayed.GetCallback());
+    return displayed.Take();
   }
 
   std::vector<mojom::NotificationIdentifierPtr> GetDisplayedNotificationsSync(
-      mojom::ProfileIdentifierPtr profile) {
+      mojom::ProfileIdentifierPtr profile,
+      absl::optional<GURL> origin = absl::nullopt) {
     return GetDisplayedNotificationsSync(service_remote_.get(),
-                                         std::move(profile));
+                                         std::move(profile), std::move(origin));
   }
 
   void DisplayNotificationSync(const std::string& notification_id,
@@ -465,7 +472,6 @@ TEST_F(MacNotificationServiceUNTest, RedisplayNotification) {
 
 TEST_F(MacNotificationServiceUNTest, GetDisplayedNotificationsForProfile) {
   auto notifications = SetupNotifications();
-  base::RunLoop run_loop;
   auto profile = mojom::ProfileIdentifier::New("profileId", /*incognito=*/true);
   auto displayed = GetDisplayedNotificationsSync(std::move(profile));
   ASSERT_EQ(2u, displayed.size());
@@ -481,6 +487,20 @@ TEST_F(MacNotificationServiceUNTest, GetDisplayedNotificationsForProfile) {
   ASSERT_EQ(2u, notification_ids.size());
   EXPECT_EQ(1u, notification_ids.count("notificationId"));
   EXPECT_EQ(1u, notification_ids.count("notificationId2"));
+}
+
+TEST_F(MacNotificationServiceUNTest,
+       GetDisplayedNotificationsForProfileAndOrigin) {
+  auto notifications = SetupNotifications();
+  auto profile = mojom::ProfileIdentifier::New("profileId", /*incognito=*/true);
+  auto displayed = GetDisplayedNotificationsSync(std::move(profile),
+                                                 GURL("https://example.com"));
+  ASSERT_EQ(1u, displayed.size());
+  const auto& notification = *displayed.begin();
+  ASSERT_TRUE(notification->profile);
+  EXPECT_EQ("profileId", notification->profile->id);
+  EXPECT_TRUE(notification->profile->incognito);
+  EXPECT_EQ("notificationId2", notification->id);
 }
 
 TEST_F(MacNotificationServiceUNTest, GetAllDisplayedNotifications) {

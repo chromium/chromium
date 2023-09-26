@@ -96,6 +96,12 @@ void MockPlatformNotificationService::GetDisplayedNotifications(
                                 true /* supports_synchronization */));
 }
 
+void MockPlatformNotificationService::GetDisplayedNotificationsForOrigin(
+    const GURL& origin,
+    DisplayedNotificationsCallback callback) {
+  GetDisplayedNotifications(std::move(callback));
+}
+
 void MockPlatformNotificationService::ScheduleTrigger(base::Time timestamp) {
   if (timestamp > base::Time::Now())
     return;

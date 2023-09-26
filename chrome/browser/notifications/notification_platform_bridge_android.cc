@@ -370,6 +370,17 @@ void NotificationPlatformBridgeAndroid::GetDisplayed(
                      false /* supports_synchronization */));
 }
 
+void NotificationPlatformBridgeAndroid::GetDisplayedForOrigin(
+    Profile* profile,
+    const GURL& origin,
+    GetDisplayedNotificationsCallback callback) const {
+  std::set<std::string> displayed_notifications;
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), std::move(displayed_notifications),
+                     false /* supports_synchronization */));
+}
+
 void NotificationPlatformBridgeAndroid::SetReadyCallback(
     NotificationBridgeReadyCallback callback) {
   std::move(callback).Run(true);

@@ -82,7 +82,16 @@ class NotificationDisplayService : public KeyedService {
 
   // Gets the IDs of currently displaying notifications and invokes |callback|
   // once available. Not all backends support retrieving this information.
+  // TODO(https://crbug.com/1486910): Consider refactoring this API and its
+  // usage to something that can get implemented by more backends.
   virtual void GetDisplayed(DisplayedNotificationsCallback callback) = 0;
+
+  // Gets the IDs of currently displaying notifications associated with `origin`
+  // and invokes `callback` once available. Not all backends support retrieving
+  // this information.
+  virtual void GetDisplayedForOrigin(
+      const GURL& origin,
+      DisplayedNotificationsCallback callback) = 0;
 
   // Adds and removes an observer.
   virtual void AddObserver(Observer* observer) = 0;

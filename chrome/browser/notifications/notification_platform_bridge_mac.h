@@ -44,6 +44,10 @@ class NotificationPlatformBridgeMac : public NotificationPlatformBridge {
   void Close(Profile* profile, const std::string& notification_id) override;
   void GetDisplayed(Profile* profile,
                     GetDisplayedNotificationsCallback callback) const override;
+  void GetDisplayedForOrigin(
+      Profile* profile,
+      const GURL& origin,
+      GetDisplayedNotificationsCallback callback) const override;
   void SetReadyCallback(NotificationBridgeReadyCallback callback) override;
   void DisplayServiceShutDown(Profile* profile) override;
 
@@ -58,6 +62,9 @@ class NotificationPlatformBridgeMac : public NotificationPlatformBridge {
   // Closes all notifications for the given |profile|.
   void CloseAllNotificationsForProfile(Profile* profile);
 
+  NotificationDispatcherMac* GetOrCreateDispatcherForWebApp(
+      const webapps::AppId& web_app_id) const;
+
   // The object in charge of dispatching banner notifications.
   std::unique_ptr<NotificationDispatcherMac> banner_dispatcher_;
 
@@ -67,7 +74,7 @@ class NotificationPlatformBridgeMac : public NotificationPlatformBridge {
   // The objects in charge of dispatching per-app notifications.
   // TODO(https://crbug.com/938661): Implement some logic for cleaning up no
   // longer needed dispatchers.
-  std::map<webapps::AppId, std::unique_ptr<NotificationDispatcherMac>>
+  mutable std::map<webapps::AppId, std::unique_ptr<NotificationDispatcherMac>>
       app_specific_dispatchers_;
   WebAppDispatcherFactory web_app_dispatcher_factory_;
 };

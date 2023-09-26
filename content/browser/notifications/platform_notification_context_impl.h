@@ -210,10 +210,11 @@ class CONTENT_EXPORT PlatformNotificationContextImpl
       std::set<std::string>* close_notification_ids,
       const NotificationDatabaseData& data);
 
-  // Tries to get a list of displayed notification ids if the platform supports
-  // synchronizing them. Calls |callback| with the result after initializing the
-  // database on the |task_runner_| thread.
-  void TryGetDisplayedNotifications(InitializeGetDisplayedCallback callback);
+  // Tries to get a list of displayed notification ids for `origin` if the
+  // platform supports synchronizing them. Calls `callback` with the result
+  // after initializing the database on the `task_runner_` thread.
+  void TryGetDisplayedNotifications(const GURL& origin,
+                                    InitializeGetDisplayedCallback callback);
 
   // Called after getting a list of |displayed_notifications| on the UI thread.
   // Calls |callback| after initializing the database on the |task_runner_|

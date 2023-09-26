@@ -21,6 +21,7 @@
 #include "components/user_manager/user_manager.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
+#include "url/origin.h"
 
 using message_center::MessageCenter;
 using message_center::NotifierId;
@@ -170,8 +171,26 @@ void ChromeAshMessageCenterClient::GetDisplayed(
       MessageCenter::Get()->GetNotifications();
 
   std::set<std::string> notification_ids;
-  for (message_center::Notification* notification : notifications)
+  for (message_center::Notification* notification : notifications) {
     notification_ids.insert(notification->id());
+  }
+
+  std::move(callback).Run(std::move(notification_ids), /*supports_sync=*/true);
+}
+
+void ChromeAshMessageCenterClient::GetDisplayedForOrigin(
+    Profile* profile,
+    const GURL& origin,
+    GetDisplayedNotificationsCallback callback) const {
+  message_center::NotificationList::Notifications notifications =
+      MessageCenter::Get()->GetNotifications();
+
+  std::set<std::string> notification_ids;
+  for (message_center::Notification* notification : notifications) {
+    if (url::IsSameOriginWith(notification->origin_url(), origin)) {
+      notification_ids.insert(notification->id());
+    }
+  }
 
   std::move(callback).Run(std::move(notification_ids), /*supports_sync=*/true);
 }

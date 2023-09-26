@@ -82,6 +82,8 @@ class NotificationDisplayServiceMock : public NotificationDisplayService {
 
   MOCK_METHOD2(Close, void(NotificationHandler::Type, const std::string&));
   MOCK_METHOD1(GetDisplayed, void(DisplayedNotificationsCallback));
+  MOCK_METHOD2(GetDisplayedForOrigin,
+               void(const GURL& origin, DisplayedNotificationsCallback));
   MOCK_METHOD1(AddObserver, void(Observer* observer));
   MOCK_METHOD1(RemoveObserver, void(Observer* observer));
 };
@@ -162,12 +164,17 @@ TEST_F(NotificationDisplayQueueTest, ShouldEnqueueForNonWebNotification) {
 
 TEST_F(NotificationDisplayQueueTest, EnqueueNotification) {
   std::string notification_id = "id";
+  GURL origin("https://example.com");
   queue().EnqueueNotification(NotificationHandler::Type::TRANSIENT,
-                              CreateNotification(notification_id),
+                              CreateNotification(notification_id, origin),
                               /*metadata=*/nullptr);
-  std::set<std::string> queued = queue().GetQueuedNotificationIds();
-  EXPECT_EQ(1u, queued.size());
-  EXPECT_EQ(1u, queued.count(notification_id));
+  EXPECT_THAT(queue().GetQueuedNotificationIds(),
+              testing::ElementsAre(notification_id));
+  EXPECT_THAT(queue().GetQueuedNotificationIdsForOrigin(origin),
+              testing::ElementsAre(notification_id));
+  EXPECT_TRUE(queue()
+                  .GetQueuedNotificationIdsForOrigin(GURL("https://foo.bar"))
+                  .empty());
 }
 
 TEST_F(NotificationDisplayQueueTest, RemoveQueuedNotification) {

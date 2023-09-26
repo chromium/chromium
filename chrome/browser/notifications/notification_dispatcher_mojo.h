@@ -47,6 +47,11 @@ class NotificationDispatcherMojo
       const std::string& profile_id,
       bool incognito,
       GetDisplayedNotificationsCallback callback) override;
+  void GetDisplayedNotificationsForProfileIdAndOrigin(
+      const std::string& profile_id,
+      bool incognito,
+      const GURL& origin,
+      GetDisplayedNotificationsCallback callback) override;
   void GetAllDisplayedNotifications(
       GetAllDisplayedNotificationsCallback callback) override;
 
