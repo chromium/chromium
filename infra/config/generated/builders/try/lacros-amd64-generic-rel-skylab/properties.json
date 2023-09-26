@@ -5,13 +5,13 @@
         "entries": [
           {
             "builder_id": {
-              "bucket": "try",
+              "bucket": "ci",
               "builder": "lacros-amd64-generic-rel-skylab",
               "project": "chromium"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-chromiumos-archive",
-              "builder_group": "tryserver.chromium.chromiumos",
+              "builder_group": "chromium.chromiumos",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
@@ -34,7 +34,7 @@
                 "config": "chromium"
               },
               "skylab_upload_location": {
-                "gs_bucket": "chromium-try-skylab"
+                "gs_bucket": "chromium-ci-skylab"
               }
             }
           }
@@ -42,7 +42,7 @@
       },
       "builder_ids": [
         {
-          "bucket": "try",
+          "bucket": "ci",
           "builder": "lacros-amd64-generic-rel-skylab",
           "project": "chromium"
         }

@@ -150,34 +150,9 @@ try_.builder(
 try_.builder(
     name = "lacros-amd64-generic-rel-skylab",
     branch_selector = branches.selector.CROS_BRANCHES,
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "checkout_lacros_sdk",
-                "chromeos",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_arch = builder_config.target_arch.INTEL,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.CHROMEOS,
-            target_cros_boards = [
-                "amd64-generic",
-            ],
-        ),
-        build_gs_bucket = "chromium-chromiumos-archive",
-        # TODO(https://crbug.com/1399919): change skylab_upload_location
-        # as a property. Change try builder as CI mirrors
-        skylab_upload_location = builder_config.skylab_upload_location(
-            gs_bucket = "chromium-try-skylab",
-        ),
-    ),
+    mirrors = [
+        "ci/lacros-amd64-generic-rel-skylab",
+    ],
 )
 
 try_.builder(
