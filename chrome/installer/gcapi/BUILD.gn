@@ -21,6 +21,10 @@ shared_library("gcapi") {
     ":lib",
     "//base",
   ]
+
+  # GCAPI should not depend on ICU, since third-party users may not have
+  # initialized it.
+  assert_no_deps = [ "//base:i18n" ]
 }
 
 copy("copy_gcapi_header") {
@@ -47,7 +51,6 @@ source_set("lib") {
 
   deps = [
     "//base",
-    "//base:i18n",
     "//chrome/installer/launcher_support",
     "//chrome/installer/util:constants",
     "//google_update",

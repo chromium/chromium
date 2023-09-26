@@ -1,4 +1,8 @@
 include_rules = [
+  # GCAPI should not depend on ICU, since third-party users may not have
+  # initialized it.
+  "-base/i18n",
+
   # By and large, GCAPI should not depend on Chrome.
   "-chrome",
   "+chrome/installer/gcapi",

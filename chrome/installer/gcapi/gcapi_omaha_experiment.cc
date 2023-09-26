@@ -5,17 +5,16 @@
 #include "chrome/installer/gcapi/gcapi_omaha_experiment.h"
 
 #include "base/check.h"
-#include "base/i18n/time_formatting.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions_win.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/installer/gcapi/gcapi.h"
 #include "chrome/installer/gcapi/google_update_util.h"
 #include "chrome/installer/util/google_update_constants.h"
-#include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace {
 
@@ -108,6 +107,29 @@ std::wstring BuildExperimentDateString(base::Time current_time) {
   // It's not critical that we deal with leap years etc.; approximating one year
   // as 365 days is fine.
   current_time += base::Days(365);
-  return base::ASCIIToWide(base::UnlocalizedTimeFormatWithPattern(
-      current_time, "E, dd MMM y HH:mm:ss z", icu::TimeZone::getGMT()));
+
+  // The Google Update experiment_labels timestamp format is:
+  // "DAY, DD0 MON YYYY HH0:MI0:SE0 TZ"
+  //  DAY = 3 character day of week,
+  //  DD0 = 2 digit day of month,
+  //  MON = 3 character month of year,
+  //  YYYY = 4 digit year,
+  //  HH0 = 2 digit hour,
+  //  MI0 = 2 digit minute,
+  //  SE0 = 2 digit second,
+  //  TZ = 3 character timezone
+  // Note that this cannot use base/i18n/time_formatting.h, since it is part of
+  // a standalone DLL that third parties may use without necessarily
+  // initializing ICU.
+  static constexpr char kDays[7][4] = {"Sun", "Mon", "Tue", "Wed",
+                                       "Thu", "Fri", "Sat"};
+  static constexpr char kMonths[12][4] = {"Jan", "Feb", "Mar", "Apr",
+                                          "May", "Jun", "Jul", "Aug",
+                                          "Sep", "Oct", "Nov", "Dec"};
+  base::Time::Exploded then;
+  current_time.UTCExplode(&then);
+  return base::ASCIIToWide(base::StringPrintf(
+      "%s, %02d %s %d %02d:%02d:%02d GMT", kDays[then.day_of_week],
+      then.day_of_month, kMonths[then.month - 1], then.year, then.hour,
+      then.minute, then.second));
 }
