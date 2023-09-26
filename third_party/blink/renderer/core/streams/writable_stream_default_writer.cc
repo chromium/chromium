@@ -271,8 +271,8 @@ ScriptPromise WritableStreamDefaultWriter::write(
   }
 
   //  3. Return ! WritableStreamDefaultWriterWrite(this, chunk).
-  return ScriptPromise(script_state,
-                       Write(script_state, this, chunk.V8Value()));
+  return ScriptPromise(script_state, Write(script_state, this, chunk.V8Value(),
+                                           exception_state));
 }
 
 void WritableStreamDefaultWriter::EnsureReadyPromiseRejected(
@@ -369,7 +369,8 @@ void WritableStreamDefaultWriter::Release(ScriptState* script_state,
 v8::Local<v8::Promise> WritableStreamDefaultWriter::Write(
     ScriptState* script_state,
     WritableStreamDefaultWriter* writer,
-    v8::Local<v8::Value> chunk) {
+    v8::Local<v8::Value> chunk,
+    ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#writable-stream-default-writer-write
   //  1. Let stream be writer.[[ownerWritableStream]].
   WritableStream* stream = writer->owner_writable_stream_;
@@ -384,7 +385,7 @@ v8::Local<v8::Promise> WritableStreamDefaultWriter::Write(
   //  4. Let chunkSize be !
   //     WritableStreamDefaultControllerGetChunkSize(controller, chunk).
   double chunk_size = WritableStreamDefaultController::GetChunkSize(
-      script_state, controller, chunk);
+      script_state, controller, chunk, exception_state);
 
   //  5. If stream is not equal to writer.[[ownerWritableStream]], return a
   //     promise rejected with a TypeError exception.
@@ -433,7 +434,7 @@ v8::Local<v8::Promise> WritableStreamDefaultWriter::Write(
   // 12. Perform ! WritableStreamDefaultControllerWrite(controller, chunk,
   //     chunkSize).
   WritableStreamDefaultController::Write(script_state, controller, chunk,
-                                         chunk_size);
+                                         chunk_size, exception_state);
 
   // 13. Return promise.
   return promise;

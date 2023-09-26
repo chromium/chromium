@@ -226,7 +226,8 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
   static ScriptPromise PipeTo(ScriptState*,
                               ReadableStream*,
                               WritableStream*,
-                              PipeOptions*);
+                              PipeOptions*,
+                              ExceptionState&);
 
   // https://streams.spec.whatwg.org/#acquire-readable-stream-reader
   static ReadableStreamDefaultReader* AcquireDefaultReader(ScriptState*,

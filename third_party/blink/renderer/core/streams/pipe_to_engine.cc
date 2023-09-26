@@ -104,7 +104,8 @@ class PipeToEngine::WrappedPromiseReaction final
 };
 
 ScriptPromise PipeToEngine::Start(ReadableStream* readable,
-                                  WritableStream* destination) {
+                                  WritableStream* destination,
+                                  ExceptionState& exception_state) {
   // 1. Assert: source implements ReadableStream.
   DCHECK(readable);
 
@@ -126,8 +127,6 @@ ScriptPromise PipeToEngine::Start(ReadableStream* readable,
   DCHECK(!WritableStream::IsLocked(destination));
 
   auto* isolate = script_state_->GetIsolate();
-  ExceptionState exception_state(isolate, ExceptionContextType::kUnknown, "",
-                                 "");
 
   // 8. If source.[[controller]] implements ReadableByteStreamController, let
   //    reader be ! AcquireReadableStreamBYOBReader(source) or !
@@ -322,9 +321,12 @@ void PipeToEngine::ReadRequestChunkStepsBody(ScriptState* script_state,
   // This is needed because this method runs as an enqueued microtask, so the
   // isolate needs a current context.
   ScriptState::Scope scope(script_state);
+  ExceptionState exception_state(script_state->GetIsolate(),
+                                 ExceptionContextType::kUnknown, "", "");
   is_reading_ = false;
   const auto write = WritableStreamDefaultWriter::Write(
-      script_state, writer_, chunk.Get(script_state->GetIsolate()));
+      script_state, writer_, chunk.Get(script_state->GetIsolate()),
+      exception_state);
   last_write_.Reset(script_state->GetIsolate(), write);
   ThenPromise(write, nullptr, &PipeToEngine::WritableError);
   HandleNextEvent(Undefined());

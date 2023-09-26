@@ -493,8 +493,8 @@ ReadableStream* ReadableStream::pipeThrough(ScriptState* script_state,
   // 4. Let promise be ! ReadableStreamPipeTo(this, transform["writable"],
   //    options["preventClose"], options["preventAbort"],
   //    options["preventCancel"], signal).
-  ScriptPromise promise =
-      PipeTo(script_state, this, writable_stream, pipe_options);
+  ScriptPromise promise = PipeTo(script_state, this, writable_stream,
+                                 pipe_options, exception_state);
 
   // 5. Set promise.[[PromiseIsHandled]] to true.
   promise.MarkAsHandled();
@@ -535,7 +535,7 @@ ScriptPromise ReadableStream::pipeTo(ScriptState* script_state,
   // 4. Return ! ReadableStreamPipeTo(this, destination,
   //    options["preventClose"], options["preventAbort"],
   //    options["preventCancel"], signal).
-  return PipeTo(script_state, this, destination, pipe_options);
+  return PipeTo(script_state, this, destination, pipe_options, exception_state);
 }
 
 HeapVector<Member<ReadableStream>> ReadableStream::tee(
@@ -826,8 +826,8 @@ void ReadableStream::Serialize(ScriptState* script_state,
 
   // 7. Let promise be ! ReadableStreamPipeTo(value, writable, false, false,
   //    false).
-  auto promise =
-      PipeTo(script_state, this, writable, MakeGarbageCollected<PipeOptions>());
+  auto promise = PipeTo(script_state, this, writable,
+                        MakeGarbageCollected<PipeOptions>(), exception_state);
 
   // 8. Set promise.[[PromiseIsHandled]] to true.
   promise.MarkAsHandled();
@@ -868,9 +868,10 @@ ReadableStream* ReadableStream::Deserialize(
 ScriptPromise ReadableStream::PipeTo(ScriptState* script_state,
                                      ReadableStream* readable,
                                      WritableStream* destination,
-                                     PipeOptions* pipe_options) {
+                                     PipeOptions* pipe_options,
+                                     ExceptionState& exception_state) {
   auto* engine = MakeGarbageCollected<PipeToEngine>(script_state, pipe_options);
-  return engine->Start(readable, destination);
+  return engine->Start(readable, destination, exception_state);
 }
 
 v8::Local<v8::Value> ReadableStream::GetStoredError(
