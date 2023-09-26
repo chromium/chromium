@@ -5846,6 +5846,7 @@ data/gpu/pixel_webgl_aa_noalpha.html
 data/gpu/pixel_webgl_context_restored.html
 data/gpu/pixel_webgl_copy_image.html
 data/gpu/pixel_webgl_display_p3.html
+data/gpu/pixel_webgl_drawingbuffer_srgb.html
 data/gpu/pixel_webgl_float.html
 data/gpu/pixel_webgl_fullscreen_quad.js
 data/gpu/pixel_webgl_high_to_low_power.html
