@@ -880,7 +880,6 @@ proto_library("blind_sign_auth_proto") {
     "src/quiche/blind_sign_auth/proto/key_services.proto",
     "src/quiche/blind_sign_auth/proto/public_metadata.proto",
     "src/quiche/blind_sign_auth/proto/spend_token_data.proto",
-    "src/quiche/blind_sign_auth/proto/timestamp.proto",
   ]
   cc_generator_options = "lite=true,dllexport_decl=COMPONENT_EXPORT(QUICHE):"
   cc_include = "base/component_export.h"
