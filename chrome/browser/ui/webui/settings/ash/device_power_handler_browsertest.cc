@@ -6,10 +6,12 @@
 #include <set>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/containers/adapters.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/settings/ash/device_power_handler.h"
@@ -78,7 +80,7 @@ class PowerHandlerTest : public InProcessBrowserTest {
     bool has_lid = true;
     bool adaptive_charging = true;
     bool adaptive_charging_managed = false;
-    bool battery_saver_feature_enabled = false;
+    bool battery_saver_feature_enabled = true;
   };
 
   PowerHandlerTest() = default;
@@ -94,6 +96,11 @@ class PowerHandlerTest : public InProcessBrowserTest {
     provider_.SetDefaultReturns(/*is_initialization_complete_return=*/true,
                                 /*is_first_policy_load_complete_return=*/true);
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
+  }
+
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(ash::features::kBatterySaver);
+    InProcessBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
@@ -192,6 +199,8 @@ class PowerHandlerTest : public InProcessBrowserTest {
                     std::move(value), nullptr);
     UpdateChromePolicy(policy_map);
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   std::unique_ptr<TestPowerHandler> handler_;
   std::unique_ptr<TestPowerHandler::TestAPI> test_api_;
