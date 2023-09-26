@@ -7,9 +7,12 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/shell.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/switch.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
+#include "ash/system/focus_mode/focus_mode_util.h"
+#include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/fake_detailed_view_delegate.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/test/ash_test_base.h"
@@ -146,23 +149,35 @@ TEST_F(FocusModeDetailedViewTest, ToggleRow) {
     EXPECT_EQ(active, focus_mode_controller->in_focus_session());
     EXPECT_EQ(active ? u"Focusing" : u"Focus", label->GetText());
 
+    const base::Time now = base::Time::Now();
     const base::TimeDelta session_duration =
         focus_mode_controller->session_duration();
     const int remaining_minutes =
-        active ? (focus_mode_controller->end_time() - base::Time::Now())
-                     .InMinutes()
+        active ? (focus_mode_controller->end_time() - now).InMinutes()
                : session_duration.InMinutes();
 
     EXPECT_EQ(base::UTF8ToUTF16(base::StringPrintf(
                   "%d min ⋅ Until %s", remaining_minutes,
-                  base::UTF16ToUTF8(base::TimeFormatTimeOfDay(
-                                        base::Time::Now() + session_duration))
+                  base::UTF16ToUTF8(focus_mode_util::GetFormattedClockString(
+                                        now + session_duration))
                       .c_str())),
               sub_label->GetText());
     EXPECT_EQ(active ? u"End" : u"Start", toggle_button->GetText());
   };
 
   validate_labels(/*active=*/false);
+
+  LeftClickOn(toggle_button);
+  // Wait a second to avoid the time remaining being either 1500 seconds or
+  // 1499.99 seconds.
+  task_environment()->FastForwardBy(base::Seconds(1));
+  validate_labels(/*active=*/true);
+
+  LeftClickOn(toggle_button);
+  validate_labels(/*active=*/false);
+
+  // Verify that the time displays correctly in the 24-hour clock format.
+  Shell::Get()->system_tray_model()->SetUse24HourClock(true);
 
   LeftClickOn(toggle_button);
   // Wait a second to avoid the time remaining being either 1500 seconds or

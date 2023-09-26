@@ -92,13 +92,16 @@ bool TimeDurationFormatShortWidthWithNonzeroUnits(
   return U_SUCCESS(status);
 }
 
-std::u16string GetNotificationTitleForFocusSession(const base::Time& end_time) {
-  const std::u16string time_str = base::TimeFormatTimeOfDayWithHourClockType(
+std::u16string GetFormattedClockString(const base::Time end_time) {
+  return base::TimeFormatTimeOfDayWithHourClockType(
       end_time, Shell::Get()->system_tray_model()->clock()->hour_clock_type(),
       base::kKeepAmPm);
+}
 
+std::u16string GetNotificationTitleForFocusSession(const base::Time end_time) {
   return l10n_util::GetStringFUTF16(
-      IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_IN_FOCUS_MODE_TITLE, time_str);
+      IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_IN_FOCUS_MODE_TITLE,
+      GetFormattedClockString(end_time));
 }
 
 }  // namespace ash::focus_mode_util

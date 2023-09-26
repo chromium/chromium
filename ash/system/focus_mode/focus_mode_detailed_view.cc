@@ -75,7 +75,7 @@ std::u16string CreateTimeRemainingString() {
     const base::Time end_time = now + session_duration_remaining;
     return l10n_util::GetStringFUTF16(
         IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_TIME_SUBLABEL, time_string,
-        base::TimeFormatTimeOfDay(end_time));
+        focus_mode_util::GetFormattedClockString(end_time));
   }
 
   return base::NumberToString16(

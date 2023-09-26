@@ -48,10 +48,14 @@ ASH_EXPORT bool TimeDurationFormatShortWidthWithNonzeroUnits(
     TimeFormatType format_type,
     std::u16string& out_duration_string);
 
+// Returns a string of `end_time` formatted with the correct clock type. For
+// example: "5:10 PM" for 12-hour clock, "17:10" for 24-hour clock.
+ASH_EXPORT std::u16string GetFormattedClockString(const base::Time end_time);
+
 // Returns a string indicating that do not disturb will be turned off when the
 // focus session ends at `end_time`.
 ASH_EXPORT std::u16string GetNotificationTitleForFocusSession(
-    const base::Time& end_time);
+    const base::Time end_time);
 
 }  // namespace ash::focus_mode_util
 
