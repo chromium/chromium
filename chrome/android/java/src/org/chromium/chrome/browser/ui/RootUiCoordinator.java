@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -146,6 +147,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinatorFactory;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuObserver;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.fold_transitions.FoldTransitionController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -337,6 +339,7 @@ public class RootUiCoordinator
     private FoldTransitionController mFoldTransitionController;
     private RestoreTabsFeatureHelper mRestoreTabsFeatureHelper;
     private ComposedBrowserControlsVisibilityDelegate mAppBrowserControlsVisibilityDelegate;
+    private @Nullable EdgeToEdgeController mE2eController;
 
     /**
      * Create a new {@link RootUiCoordinator} for the given activity.
@@ -696,6 +699,12 @@ public class RootUiCoordinator
             mReadAloudControllerSupplier.get().destroy();
             mReadAloudControllerSupplier.set(null);
         }
+
+        if (mE2eController != null) {
+            mE2eController.destroy();
+            mE2eController = null;
+        }
+
         mActivity = null;
     }
 
@@ -820,7 +829,7 @@ public class RootUiCoordinator
 
         initMerchantTrustSignals();
         initScrollCapture();
-        initializeEdgeToEdgeController();
+        initializeEdgeToEdgeController(mActivity, mActivityTabProvider);
 
         new OneShotCallback<>(mProfileSupplier, this::initHistoryClustersCoordinator);
 
@@ -1572,9 +1581,11 @@ public class RootUiCoordinator
     }
 
     /** Setup drawing using Android Edge-to-Edge. */
-    private void initializeEdgeToEdgeController() {
+    @VisibleForTesting
+    void initializeEdgeToEdgeController(
+            Activity activity, ActivityTabProvider activityTabProvider) {
         if (EdgeToEdgeControllerFactory.isEnabled()) {
-            EdgeToEdgeControllerFactory.create(mActivity).drawUnderSystemBars();
+            mE2eController = EdgeToEdgeControllerFactory.create(activity, activityTabProvider);
         }
     }
 

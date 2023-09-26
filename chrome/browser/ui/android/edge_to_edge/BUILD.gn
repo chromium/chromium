@@ -7,13 +7,20 @@ import("//chrome/android/features/android_library_factory_tmpl.gni")
 
 android_library("java") {
   sources = [ "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeController.java" ]
-  deps = [ "//chrome/browser/android/lifecycle:java" ]
+  deps = [
+    "//base:base_java",
+    "//chrome/browser/android/lifecycle:java",
+    "//chrome/browser/tab:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
 }
 
 android_library_factory("factory_java") {
   # These deps will be inherited by the resulting android_library target.
   deps = [
     ":java",
+    "//base:base_java",
+    "//chrome/browser/tab:java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
   ]
 

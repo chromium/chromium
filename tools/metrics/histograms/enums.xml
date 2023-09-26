@@ -65217,6 +65217,7 @@ from previous Chrome versions.
   <int value="161706692" label="ContextualPageActionPriceTracking:disabled"/>
   <int value="164236433"
       label="TrackingProtectionOnboardingForceEligibility:enabled"/>
+  <int value="165429419" label="DrawNativeEdgeToEdge:disabled"/>
   <int value="165962668" label="EnablePreferencesAccountStorage:enabled"/>
   <int value="168025622" label="EnableInputEventLogging:enabled"/>
   <int value="168429629" label="ContentIndexingNTP:enabled"/>
@@ -65534,6 +65535,7 @@ from previous Chrome versions.
   <int value="319683583" label="ContentSuggestionsDebugLog:enabled"/>
   <int value="320121752" label="DelegateOverscrollSwipes:disabled"/>
   <int value="321366101" label="WebXRARDOMOverlay:enabled"/>
+  <int value="321616293" label="DrawWebEdgeToEdge:disabled"/>
   <int value="322118950" label="SyncPollImmediatelyOnEveryStartup:disabled"/>
   <int value="322249981" label="CrostiniMultiContainer:enabled"/>
   <int value="322768805" label="DesktopPWAsPreventClose:disabled"/>
@@ -67229,6 +67231,7 @@ from previous Chrome versions.
   <int value="1168226627" label="OmniboxMaxZeroSuggestMatches:enabled"/>
   <int value="1169418814" label="ManualFallbacksFilling:enabled"/>
   <int value="1170030686" label="BookmarkBottomSheet:enabled"/>
+  <int value="1170632919" label="DrawNativeEdgeToEdge:enabled"/>
   <int value="1172226600" label="BorealisStorageBallooning:disabled"/>
   <int value="1173244409" label="AutofillUseMobileLabelDisambiguation:enabled"/>
   <int value="1174088940" label="enable-wasm"/>
@@ -68095,6 +68098,7 @@ from previous Chrome versions.
   <int value="1597516564" label="kDiagnosticsAppJelly:enabled"/>
   <int value="1597880096" label="FocusMode:disabled"/>
   <int value="1599431665" label="WebRtcApmDownmixCaptureAudioMethod:enabled"/>
+  <int value="1599757259" label="DrawWebEdgeToEdge:enabled"/>
   <int value="1600850069" label="MobileIdentityConsistency:disabled"/>
   <int value="1600926040" label="TranslateCompactUI:enabled"/>
   <int value="1601003561" label="FeedPositionAndroid:enabled"/>

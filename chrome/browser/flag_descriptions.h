@@ -2309,6 +2309,12 @@ extern const char kDragDropIntoOmniboxDescription[];
 extern const char kDrawEdgeToEdgeName[];
 extern const char kDrawEdgeToEdgeDescription[];
 
+extern const char kDrawNativeEdgeToEdgeName[];
+extern const char kDrawNativeEdgeToEdgeDescription[];
+
+extern const char kDrawWebEdgeToEdgeName[];
+extern const char kDrawWebEdgeToEdgeDescription[];
+
 extern const char kEnableAndroidGamepadVibrationName[];
 extern const char kEnableAndroidGamepadVibrationDescription[];
 

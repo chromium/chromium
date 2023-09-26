@@ -244,6 +244,8 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kDelayTransitionsForAnimation,
     &kDragDropIntoOmnibox,
     &kDrawEdgeToEdge,
+    &kDrawNativeEdgeToEdge,
+    &kDrawWebEdgeToEdge,
     &kEmptyStates,
     &kExperimentsForAgsa,
     &kExploreSites,
@@ -766,6 +768,14 @@ BASE_FEATURE(kDragDropIntoOmnibox,
 
 BASE_FEATURE(kDrawEdgeToEdge,
              "DrawEdgeToEdge",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDrawNativeEdgeToEdge,
+             "DrawNativeEdgeToEdge",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDrawWebEdgeToEdge,
+             "DrawWebEdgeToEdge",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEmptyStates, "EmptyStates", base::FEATURE_ENABLED_BY_DEFAULT);

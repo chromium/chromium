@@ -1901,7 +1901,7 @@
   {
     "name": "draw-edge-to-edge",
     "owners": ["donnd", "twellington", "edge-to-edge@chromium.org"],
-    "expiry_milestone": 120
+    "expiry_milestone": 125
   },
   {
     "name": "draw-immediately-when-interactive",
@@ -1909,9 +1909,19 @@
     "expiry_milestone": 125
   },
   {
+    "name": "draw-native-edge-to-edge",
+    "owners": ["donnd", "twellington", "edge-to-edge@chromium.org"],
+    "expiry_milestone": 125
+  },
+  {
     "name": "draw-predicted-ink-point",
     "owners": [ "joalmei@microsoft.com" ],
     "expiry_milestone": 98
+  },
+  {
+    "name": "draw-web-edge-to-edge",
+    "owners": ["donnd", "twellington", "edge-to-edge@chromium.org"],
+    "expiry_milestone": 125
   },
   {
     "name": "drive-fs-chrome-networking",

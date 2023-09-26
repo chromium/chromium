@@ -102,6 +102,8 @@ BASE_DECLARE_FEATURE(kDontPrefetchLibraries);
 BASE_DECLARE_FEATURE(kDownloadAutoResumptionThrottling);
 BASE_DECLARE_FEATURE(kDownloadHomeForExternalApp);
 BASE_DECLARE_FEATURE(kDrawEdgeToEdge);
+BASE_DECLARE_FEATURE(kDrawNativeEdgeToEdge);
+BASE_DECLARE_FEATURE(kDrawWebEdgeToEdge);
 BASE_DECLARE_FEATURE(kDragDropIntoOmnibox);
 BASE_DECLARE_FEATURE(kEmptyStates);
 BASE_DECLARE_FEATURE(kExperimentsForAgsa);

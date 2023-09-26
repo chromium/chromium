@@ -18,6 +18,7 @@ android_library("java") {
     "//base:base_java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/edge_to_edge:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
@@ -29,9 +30,13 @@ robolectric_library("junit") {
   sources = [ "java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeControllerTest.java" ]
   deps = [
     ":java",
+    "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/tab:java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/junit",
+    "//third_party/mockito:mockito_java",
   ]
 }

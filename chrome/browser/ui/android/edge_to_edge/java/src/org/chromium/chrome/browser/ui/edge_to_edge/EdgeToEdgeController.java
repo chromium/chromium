@@ -4,13 +4,21 @@
 
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
+import androidx.annotation.Nullable;
+
+import org.chromium.base.lifetime.Destroyable;
+import org.chromium.chrome.browser.tab.Tab;
+
 /**
  * Control drawing using the Android Edge to Edge Feature.
  * This allows drawing under Android System Bars.
  */
-public interface EdgeToEdgeController {
+public interface EdgeToEdgeController extends Destroyable {
     /**
-     * Enables drawing underneath one or more of the Android System Bars, e.g. the Navigation Bar.
+     * Notifies the controller that a different tab is under observation.<br>
+     * This can be called a first time with the {@code hint} parameter set to {@code true},
+     * indicating that a new tab is going to be selected.
+     * @param tab The tab that the observer is now observing. This can be {@code null}.
      */
-    void drawUnderSystemBars();
+    void onTabSwitched(@Nullable Tab tab);
 }

@@ -3959,6 +3959,16 @@ const char kDrawEdgeToEdgeName[] = "DrawEdgeToEdge";
 const char kDrawEdgeToEdgeDescription[] =
     "Enables the Android feature Edge-to-Edge to draw below the Nav Bar.";
 
+const char kDrawNativeEdgeToEdgeName[] = "DrawNativeEdgeToEdge";
+const char kDrawNativeEdgeToEdgeDescription[] =
+    "Enables the Android feature Edge-to-Edge and forces a draw ToEdge on all "
+    "native pages.";
+
+const char kDrawWebEdgeToEdgeName[] = "DrawWebEdgeToEdge";
+const char kDrawWebEdgeToEdgeDescription[] =
+    "Enables the Android feature Edge-to-Edge and forces a draw ToEdge on most "
+    "web pages.";
+
 const char kEnableCommandLineOnNonRootedName[] =
     "Enable command line on non-rooted devices";
 const char kEnableCommandLineOnNoRootedDescription[] =
