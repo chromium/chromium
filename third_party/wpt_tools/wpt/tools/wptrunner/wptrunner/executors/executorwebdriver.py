@@ -91,7 +91,9 @@ addEventListener("__test_restart", e => {e.preventDefault(); callback(true)})"""
             except (socket.timeout, error.NoSuchWindowException, error.UnknownErrorException, OSError):
                 break
             except Exception:
-                self.logger.error(traceback.format_exc())
+                message = "Uncaught exception in WebDriverBaseProtocolPart.wait:\n"
+                message += traceback.format_exc()
+                self.logger.error(message)
                 break
         return False
 

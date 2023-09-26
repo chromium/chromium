@@ -26,6 +26,7 @@ from .. import localpaths
 from ..ci.tc.github_checks_output import get_gh_checks_outputter, GitHubChecksOutputter
 from ..gitignore.gitignore import PathFilter
 from ..wpt import testfiles
+from ..manifest.mputil import max_parallelism
 from ..manifest.vcs import walk
 
 from ..manifest.sourcefile import SourceFile, js_meta_re, python_meta_re, space_chars, get_any_variants
@@ -351,7 +352,8 @@ regexps = [item() for item in  # type: ignore
             rules.SpecialPowersRegexp,
             rules.AssertThrowsRegexp,
             rules.PromiseRejectsRegexp,
-            rules.AssertPreconditionRegexp]]
+            rules.AssertPreconditionRegexp,
+            rules.HTMLInvalidSyntaxRegexp]]
 
 
 def check_regexp_line(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Error]:
@@ -877,12 +879,7 @@ def lint(repo_root: Text,
     last = None
 
     if jobs == 0:
-        jobs = multiprocessing.cpu_count()
-        if sys.platform == 'win32':
-            # Using too many child processes in Python 3 hits either hangs or a
-            # ValueError exception, and, has diminishing returns. Clamp to 56 to
-            # give margin for error.
-            jobs = min(jobs, 56)
+        jobs = max_parallelism()
 
     with open(os.path.join(repo_root, "lint.ignore")) as f:
         ignorelist, skipped_files = parse_ignorelist(f)

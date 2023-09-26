@@ -11,6 +11,7 @@ from . import config
 from . import products
 from . import wpttest
 from .formatters import chromium, wptreport, wptscreenshot
+from manifest import mputil  # type: ignore
 
 def abs_path(path):
     return os.path.abspath(os.path.expanduser(path))
@@ -61,6 +62,8 @@ scheme host and port.""")
                         help="Split run into groups by directories. With a parameter,"
                         "limit the depth of splits e.g. --run-by-dir=1 to split by top-level"
                         "directory")
+    parser.add_argument("-f", "--fully-parallel", action='store_true',
+                        help='Run every test in a separate group for fully parallelism.')
     parser.add_argument("--processes", action="store", type=int, default=None,
                         help="Number of simultaneous processes to use")
     parser.add_argument("--max-restarts", action="store", type=int, default=5,
@@ -585,13 +588,18 @@ def check_args(kwargs):
         else:
             kwargs["chunk_type"] = "none"
 
-    if kwargs["test_groups_file"] is not None:
-        if kwargs["run_by_dir"] is not False:
-            print("Can't pass --test-groups and --run-by-dir")
-            sys.exit(1)
-        if not os.path.exists(kwargs["test_groups_file"]):
-            print("--test-groups file %s not found" % kwargs["test_groups_file"])
-            sys.exit(1)
+    if sum([
+        kwargs["test_groups_file"] is not None,
+        kwargs["run_by_dir"] is not False,
+        kwargs["fully_parallel"],
+    ]) > 1:
+        print('Must pass up to one of: --test-groups, --run-by-dir, --fully-parallel')
+        sys.exit(1)
+
+    if (kwargs["test_groups_file"] is not None and
+        not os.path.exists(kwargs["test_groups_file"])):
+        print("--test-groups file %s not found" % kwargs["test_groups_file"])
+        sys.exit(1)
 
     # When running on Android, the number of workers is decided by the number of
     # emulators. Each worker will use one emulator to run the Android browser.
@@ -606,7 +614,7 @@ def check_args(kwargs):
             sys.exit(1)
 
     if kwargs["processes"] is None:
-        kwargs["processes"] = 1
+        kwargs["processes"] = mputil.max_parallelism() if kwargs["fully_parallel"] else 1
 
     if kwargs["debugger"] is not None:
         import mozdebug

@@ -33,8 +33,8 @@ def _read_line(io_queue, deadline=None, encoding=None, errors="strict", raise_cr
             raise CrashError()
         if raise_crash_leak and line.startswith(b"#LEAK"):
             raise LeakError()
-    except Empty:
-        raise TimeoutError()
+    except Empty as e:
+        raise TimeoutError() from e
 
     return line.decode(encoding, errors) if encoding else line
 
