@@ -50,12 +50,15 @@ class Session {
   class ScopedAudioOutputMuter;
   // Helper class to mute the audio input during the session.
   class ScopedAudioInputMuter;
+  // Helper class to disable camera access during the session.
+  class ScopedCameraDisabler;
 
   raw_ref<Shell> shell_;
   SecurityCurtainController::InitParams init_params_;
   std::unique_ptr<RootWindowsObserver> root_windows_observer_;
   std::unique_ptr<ScopedAudioOutputMuter> scoped_audio_output_muter_;
   std::unique_ptr<ScopedAudioInputMuter> scoped_audio_input_muter_;
+  std::unique_ptr<ScopedCameraDisabler> scoped_camera_disabler_;
 };
 
 }  // namespace ash::curtain

@@ -4,6 +4,8 @@
 
 #include "ash/curtain/security_curtain_controller.h"
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/curtain/security_curtain_widget_controller.h"
 #include "ash/display/cursor_window_controller.h"
 #include "ash/display/window_tree_host_manager.h"
@@ -13,8 +15,10 @@
 #include "ash/system/power/power_button_controller_test_api.h"
 #include "ash/system/power/power_button_menu_view.h"
 #include "ash/system/power/power_button_test_base.h"
+#include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/check_deref.h"
+#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -123,10 +127,18 @@ class SecurityCurtainControllerImplTest : public PowerButtonTestBase {
         Shell::Get()->power_button_controller());
   }
 
-  void TearDown() override { PowerButtonTestBase::TearDown(); }
+  void TearDown() override {
+    power_button_test_api_.reset();
+    ResetPowerButtonController();
+    PowerButtonTestBase::TearDown();
+  }
 
   SecurityCurtainController& security_curtain_controller() {
     return ash::Shell::Get()->security_curtain_controller();
+  }
+
+  CameraPrivacySwitchController& camera_controller() {
+    return CHECK_DEREF(CameraPrivacySwitchController::Get());
   }
 
   PowerButtonControllerTestApi& power_button_test_api() {
@@ -263,6 +275,9 @@ class SecurityCurtainControllerImplTest : public PowerButtonTestBase {
 
  private:
   std::unique_ptr<PowerButtonControllerTestApi> power_button_test_api_;
+
+  // Security curtain requires privacy hub to force disable the camera access.
+  base::test::ScopedFeatureList features_{features::kCrosPrivacyHubV0};
 };
 
 TEST_F(SecurityCurtainControllerImplTest,
@@ -650,6 +665,32 @@ TEST_F(SecurityCurtainControllerImplTest,
   security_curtain_controller().Disable();
 
   EXPECT_FALSE(power_button_test_api().IsMenuOpened());
+}
+
+TEST_F(SecurityCurtainControllerImplTest,
+       ShouldForceDisableCameraAccessWhenCurtainModeIsEnabled) {
+  auto params = init_params();
+  params.disable_camera_access = true;
+  security_curtain_controller().Enable(params);
+  EXPECT_TRUE(camera_controller().IsCameraAccessForceDisabled());
+}
+
+TEST_F(SecurityCurtainControllerImplTest,
+       ShouldStopForceDisablingCameraAccessWhenCurtainModeIsDisabled) {
+  auto params = init_params();
+  params.disable_camera_access = true;
+  security_curtain_controller().Enable(params);
+  security_curtain_controller().Disable();
+
+  EXPECT_FALSE(camera_controller().IsCameraAccessForceDisabled());
+}
+
+TEST_F(SecurityCurtainControllerImplTest,
+       ShouldNotForceDisableCameraAccessWhenNotRequested) {
+  auto params = init_params();
+  params.disable_camera_access = false;
+  security_curtain_controller().Enable(params);
+  EXPECT_FALSE(camera_controller().IsCameraAccessForceDisabled());
 }
 
 }  // namespace ash::curtain

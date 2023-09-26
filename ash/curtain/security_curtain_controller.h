@@ -55,6 +55,7 @@ class ASH_EXPORT SecurityCurtainController {
 
     bool mute_audio_output = true;
     bool mute_audio_input = true;
+    bool disable_camera_access = true;
   };
 
   virtual ~SecurityCurtainController() = default;

@@ -66,6 +66,7 @@ void CurtainModeChromeOs::Core::Activate() {
   };
   params.mute_audio_input = true;
   params.mute_audio_output = true;
+  params.disable_camera_access = true;
 
   security_curtain_controller().Enable(params);
 }

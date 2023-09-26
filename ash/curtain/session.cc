@@ -11,6 +11,8 @@
 #include "ash/shell.h"
 #include "ash/shell_observer.h"
 #include "ash/system/power/power_button_controller.h"
+#include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
+#include "base/check_deref.h"
 #include "base/logging.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
@@ -80,6 +82,27 @@ class Session::ScopedAudioInputMuter {
 };
 
 ////////////////////////////////////////////////////////////////////////////////
+//  ScopedCameraDisabler
+////////////////////////////////////////////////////////////////////////////////
+class Session::ScopedCameraDisabler {
+ public:
+  ScopedCameraDisabler() {
+    CHECK_DEREF(CameraPrivacySwitchController::Get())
+        .SetForceDisableCameraAccess(true);
+  }
+
+  ~ScopedCameraDisabler() {
+    // Skip cleanup if the shell has been destroyed (so when Chrome is
+    // shutting down). This prevents us from using a half-destroyed `shell_`
+    // object.
+    if (ash::Shell::HasInstance()) {
+      CHECK_DEREF(CameraPrivacySwitchController::Get())
+          .SetForceDisableCameraAccess(false);
+    }
+  }
+};
+
+////////////////////////////////////////////////////////////////////////////////
 //  Session
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -95,6 +118,10 @@ Session::Session(Shell* shell,
   if (init_params.mute_audio_input) {
     scoped_audio_input_muter_ = std::make_unique<ScopedAudioInputMuter>();
   }
+  if (init_params.disable_camera_access) {
+    scoped_camera_disabler_ = std::make_unique<ScopedCameraDisabler>();
+  }
+
   CurtainOffAllRootWindows();
   shell_->power_button_controller()->OnSecurityCurtainEnabled();
 }
