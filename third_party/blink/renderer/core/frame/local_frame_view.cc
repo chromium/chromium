@@ -3306,9 +3306,10 @@ void LocalFrameView::ForceLayoutForPagination(float maximum_shrink_factor) {
 
   const auto& first_page = To<NGPhysicalBoxFragment>(
       *layout_view->GetPhysicalFragment(0)->Children()[0]);
-  if (const AtomicString& page_name = first_page.PageName()) {
+  const AtomicString& first_page_name = first_page.PageName();
+  if (first_page_name) {
     PhysicalSize new_size =
-        layout_view->PageAreaSize(/* page_index */ 0u, page_name);
+        layout_view->PageAreaSize(/* page_index */ 0u, first_page_name);
     if (new_size != initial_containing_block_size) {
       // If the first page was named (this isn't something we can detect without
       // laying out first), and the size of the first page is different from
@@ -3359,12 +3360,12 @@ void LocalFrameView::ForceLayoutForPagination(float maximum_shrink_factor) {
     // Re-layout and apply the same scale factor to all pages. PageScaleFactor()
     // has already been set to honor any scale factor from print settings. That
     // has to be included as well.
-    //
-    // Note that we deliberately don't set a new initial containing block size
-    // here. But should we? EdgeHTML does it. Gecko doesn't. WebKit is buggy
-    // (uses the initial block based on the browser frame size).
     layout_view->SetPageScaleFactor(layout_view->PageScaleFactor() *
                                     overall_scale_factor);
+    PhysicalSize new_size =
+        layout_view->PageAreaSize(/* page_index */ 0u, first_page_name);
+    layout_view->SetInitialContainingBlockSizeForPagination(new_size);
+    frame_->GetDocument()->LayoutViewportWasResized();
     layout_view->SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
         layout_invalidation_reason::kPrintingChanged);
     frame_->GetDocument()->UpdateStyleAndLayout(
