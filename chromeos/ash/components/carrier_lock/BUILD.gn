@@ -1,0 +1,62 @@
+# Copyright 2023 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
+
+component("carrier_lock") {
+  output_name = "ash_carrier_lock"
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_CARRIER_LOCK_IMPL" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/system",
+    "//components/gcm_driver",
+    "//components/prefs:prefs",
+    "//components/session_manager/core",
+    "//dbus",
+    "//google_apis",
+    "//services/network/public/cpp",
+    "//third_party/private_membership:private_membership",
+    "//third_party/private_membership:private_membership_proto",
+    "//url",
+  ]
+
+  sources = [
+    "common.h",
+    "fake_psm_claim_verifier.cc",
+    "fake_psm_claim_verifier.h",
+    "psm_claim_verifier.h",
+    "psm_claim_verifier_impl.cc",
+    "psm_claim_verifier_impl.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "psm_claim_verifier_unittest.cc",
+    "psm_claim_verifier_unittest.h",
+  ]
+
+  deps = [
+    ":carrier_lock",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/network:test_support",
+    "//chromeos/ash/services/network_config/public/cpp:test_support",
+    "//components/prefs:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/private_membership:private_membership",
+    "//third_party/private_membership:private_membership_proto",
+  ]
+}

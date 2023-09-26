@@ -1,0 +1,4 @@
+include_rules = [
+  "+google_apis",
+  "+third_party/private_membership",
+]
