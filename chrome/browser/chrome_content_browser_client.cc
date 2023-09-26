@@ -787,7 +787,7 @@ BASE_FEATURE(kAllowGaiaOriginIsolationOnAndroid,
 
 BASE_FEATURE(kPrivateNetworkAccessRestrictionsForAutomotive,
              "PrivateNetworkAccessRestrictionsForAutomotive",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // A small ChromeBrowserMainExtraParts that invokes a callback when threads are
