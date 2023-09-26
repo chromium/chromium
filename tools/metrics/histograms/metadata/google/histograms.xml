@@ -65,7 +65,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GoogleUpdate.UpdateErrorCode" enum="GoogleUpdateErrorCode"
-    expires_after="2024-01-21">
+    expires_after="2024-03-24">
   <owner>sorin@chromium.org</owner>
   <owner>waffles@chromium.org</owner>
   <summary>The error code for a failed on-demand update check.</summary>
