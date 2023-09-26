@@ -137,7 +137,7 @@ void PrintTo(const RunnerType type, std::ostream* os) {
 }
 
 TaskQueueImpl* GetTaskQueueImpl(TaskQueue* task_queue) {
-  return task_queue->GetTaskQueueImplForTest();
+  return static_cast<TaskQueueImpl*>(task_queue);
 }
 
 constexpr TimeDelta kLeeway = kDefaultLeeway;

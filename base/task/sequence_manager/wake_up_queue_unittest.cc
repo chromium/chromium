@@ -31,7 +31,7 @@ class TaskQueueImplForTest : public internal::TaskQueueImpl {
                        WakeUpQueue* wake_up_queue,
                        const TaskQueue::Spec& spec)
       : TaskQueueImpl(sequence_manager, wake_up_queue, spec) {}
-  ~TaskQueueImplForTest() = default;
+  ~TaskQueueImplForTest() override = default;
 
   using TaskQueueImpl::SetNextWakeUp;
 };

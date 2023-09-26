@@ -22,6 +22,7 @@
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/sequence_manager/enqueue_order.h"
+#include "base/task/sequence_manager/task_queue_impl.h"
 #include "base/task/sequence_manager/task_time_observer.h"
 #include "base/task/sequence_manager/thread_controller_impl.h"
 #include "base/task/sequence_manager/thread_controller_with_message_pump_impl.h"
@@ -1132,8 +1133,7 @@ size_t SequenceManagerImpl::GetPendingTaskCountForTesting() const {
 
 TaskQueue::Handle SequenceManagerImpl::CreateTaskQueue(
     const TaskQueue::Spec& spec) {
-  return TaskQueue::Handle(
-      std::make_unique<TaskQueue>(CreateTaskQueueImpl(spec), spec));
+  return TaskQueue::Handle(CreateTaskQueueImpl(spec));
 }
 
 std::string SequenceManagerImpl::DescribeAllPendingTasks() const {

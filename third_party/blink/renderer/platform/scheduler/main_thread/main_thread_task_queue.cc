@@ -139,7 +139,6 @@ MainThreadTaskQueue::MainThreadTaskQueue(
             web_scheduling_queue_type_.has_value());
   DCHECK_EQ(web_scheduling_priority_.has_value(),
             queue_type_ == QueueType::kWebScheduling);
-  CHECK(task_queue_->HasImpl());
   if (spec.should_notify_observers) {
     if (params.queue_traits.can_be_throttled) {
       throttler_.emplace(task_queue_.get(),

@@ -409,7 +409,7 @@ class BASE_EXPORT SequenceManagerImpl
   void ReloadEmptyWorkQueues() const;
 
   std::unique_ptr<internal::TaskQueueImpl> CreateTaskQueueImpl(
-      const TaskQueue::Spec& spec) override;
+      const TaskQueue::Spec& spec);
 
   // Periodically reclaims memory by sweeping away canceled tasks and shrinking
   // buffers.

@@ -39,7 +39,7 @@ NonMainThreadTaskQueue::NonMainThreadTaskQueue(
   // Throttling needs |should_notify_observers| to get task timing.
   DCHECK(!params.can_be_throttled || spec.should_notify_observers)
       << "Throttled queue is not supported with |!should_notify_observers|";
-  if (task_queue_->HasImpl() && spec.should_notify_observers) {
+  if (spec.should_notify_observers) {
     if (params.can_be_throttled) {
       throttler_.emplace(task_queue_.get(),
                          non_main_thread_scheduler->GetTickClock());
