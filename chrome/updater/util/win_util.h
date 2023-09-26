@@ -433,6 +433,9 @@ template <typename T, typename I, typename... TArgs>
 [[nodiscard]] absl::optional<base::FilePath> GetInstallDirectoryX86(
     UpdaterScope scope);
 
+// Gets the contents under a given registry key.
+absl::optional<std::wstring> GetRegKeyContents(const std::wstring& reg_key);
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_UTIL_WIN_UTIL_H_

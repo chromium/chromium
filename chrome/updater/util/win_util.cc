@@ -35,6 +35,7 @@
 #include "base/memory/free_deleter.h"
 #include "base/path_service.h"
 #include "base/process/kill.h"
+#include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/process/process_iterator.h"
 #include "base/ranges/algorithm.h"
@@ -1051,6 +1052,23 @@ absl::optional<base::FilePath> GetInstallDirectoryX86(UpdaterScope scope) {
   }
   return install_dir.AppendASCII(COMPANY_SHORTNAME_STRING)
       .AppendASCII(PRODUCT_FULLNAME_STRING);
+}
+
+absl::optional<std::wstring> GetRegKeyContents(const std::wstring& reg_key) {
+  base::FilePath system_path;
+  if (!base::PathService::Get(base::DIR_SYSTEM, &system_path)) {
+    return {};
+  }
+
+  std::string output;
+  if (!base::GetAppOutput(
+          base::StrCat({system_path.Append(L"reg.exe").value(), L" query ",
+                        base::CommandLine::QuoteForCommandLineToArgvW(reg_key),
+                        L" /s"}),
+          &output)) {
+    return {};
+  }
+  return base::ASCIIToWide(output);
 }
 
 }  // namespace updater

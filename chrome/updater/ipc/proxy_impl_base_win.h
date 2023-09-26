@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/debug/alias.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -101,6 +102,58 @@ class ProxyImplBase {
     if (FAILED(hr)) {
       VLOG(2) << "Failed to query the interface: "
               << base::win::WStringFromGUID(iid) << ": " << std::hex << hr;
+      [&]() {
+        if (hr != E_NOINTERFACE) {
+          return;
+        }
+        static bool dumped_once = false;
+        if (dumped_once) {
+          return;
+        }
+
+        base::ThreadPool::PostTask(
+            FROM_HERE, {base::MayBlock(), base::WithBaseSyncPrimitives()},
+            base::BindOnce(
+                [](std::wstring hkey_root, std::wstring interface_iid) {
+                  std::wstring log_string;
+                  for (const auto& reg_key : {
+                           base::StrCat({hkey_root,
+                                         L"\\SOFTWARE\\Classes\\Interface\\",
+                                         interface_iid}),
+                           base::StrCat({hkey_root,
+                                         L"\\SOFTWARE\\Classes\\TypeLib\\",
+                                         interface_iid}),
+                           base::StrCat({hkey_root,
+                                         L"\\SOFTWARE\\WOW6432Node\\Classes"
+                                         L"\\Interface\\",
+                                         interface_iid}),
+                           base::StrCat({hkey_root,
+                                         L"\\SOFTWARE\\WOW6432Node\\Classes"
+                                         L"\\TypeLib\\",
+                                         interface_iid}),
+                           base::StrCat({L"HKCR\\Interface\\", interface_iid}),
+                           base::StrCat({L"HKCR\\TypeLib\\", interface_iid}),
+                           base::StrCat({L"HKCR\\WOW6432Node\\Interface\\",
+                                         interface_iid}),
+                           base::StrCat({L"HKCR\\WOW6432Node\\TypeLib\\",
+                                         interface_iid}),
+                       }) {
+                    absl::optional<std::wstring> contents =
+                        GetRegKeyContents(reg_key);
+                    log_string +=
+                        base::StrCat({L"Contents of *", reg_key, L"* = ",
+                                      contents ? *contents : L"", L"\n"});
+                  }
+                  std::wstring local_log_string = log_string;
+                  base::debug::Alias(&local_log_string);
+                  DUMP_WILL_BE_CHECK(false);
+                },
+                IsSystemInstall(scope_) ? L"HKLM" : L"HKCU",
+                base::win::WStringFromGUID(iid)));
+
+        base::PlatformThread::Sleep(base::Seconds(5));
+        dumped_once = true;
+      }();
       return base::unexpected(hr);
     }
 
