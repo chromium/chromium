@@ -21,6 +21,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/test_utils.h"
+#include "components/search/ntp_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/test/test_sync_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -45,6 +46,11 @@ const char kTestUrl[] = "http://www.example.com/";
 const char kTestUrlWithParam[] =
     "http://www.example.com/en/payments?name=checkout";
 const char kOfferDetailsUrl[] = "http://pay.google.com";
+
+// Free-listing offer data
+constexpr char kDetail[] = "Discount description details";
+constexpr char kDiscountCode[] = "discount-code";
+constexpr int64_t kDiscountId = 123;
 
 }  // namespace
 
@@ -317,18 +323,16 @@ TEST_F(AutofillOfferManagerTest, GetOfferForUrl_ReturnOfferFromCouponDelegate) {
   EXPECT_EQ(offer2, *result);
 }
 
-TEST_F(AutofillOfferManagerTest, GetShoppingServiceOfferForUrl_ReturnOffer) {
-  const GURL url("http://www.example.com");
-  const std::string detail = "Discount description detail";
-  const std::string discount_code = "discount-code";
-  const int64_t discount_id = 123;
+TEST_F(AutofillOfferManagerTest,
+       GetShoppingServiceOfferForUrl_ReturnNonMerchantWideOffer) {
+  const GURL url(kTestUrl);
   const double expiry_time_sec =
       (AutofillClock::Now() + base::Days(2)).ToDoubleT();
 
-  const AutofillOfferData expected_autofill_offer_data =
+  const AutofillOfferData expected_autofill_non_merchant_wide_offer_data =
       AutofillOfferData::FreeListingCouponOffer(
-          discount_id, base::Time::FromDoubleT(expiry_time_sec), {url}, url,
-          DisplayStrings{detail}, discount_code);
+          kDiscountId, base::Time::FromDoubleT(expiry_time_sec), {url}, url,
+          DisplayStrings{kDetail}, kDiscountCode, false);
 
   ON_CALL(*mock_shopping_service_delegate_, GetDiscountInfoForUrls)
       .WillByDefault([&](const std::vector<GURL>& urls,
@@ -336,8 +340,8 @@ TEST_F(AutofillOfferManagerTest, GetShoppingServiceOfferForUrl_ReturnOffer) {
         const commerce::DiscountsMap discounts_map{
             {url,
              {commerce::CreateValidDiscountInfo(
-                 detail, /*terms_and_conditions=*/"",
-                 /*value_in_text=*/"$10 off", discount_code, discount_id,
+                 kDetail, /*terms_and_conditions=*/"",
+                 /*value_in_text=*/"$10 off", kDiscountCode, kDiscountId,
                  /*is_merchant_wide=*/false, expiry_time_sec)}}};
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(std::move(callback), discounts_map));
@@ -348,7 +352,43 @@ TEST_F(AutofillOfferManagerTest, GetShoppingServiceOfferForUrl_ReturnOffer) {
   EXPECT_CALL(*mock_shopping_service_delegate_, GetDiscountInfoForUrls);
 
   base::MockCallback<AutofillOfferManager::AsyncOfferCallback> callback;
-  EXPECT_CALL(callback, Run(url, expected_autofill_offer_data));
+  EXPECT_CALL(callback,
+              Run(url, expected_autofill_non_merchant_wide_offer_data));
+
+  autofill_offer_manager_->GetShoppingServiceOfferForUrl(url, callback.Get());
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(AutofillOfferManagerTest,
+       GetShoppingServiceOfferForUrl_ReturnMerchantWideOffer) {
+  const GURL url(kTestUrl);
+  const double expiry_time_sec =
+      (AutofillClock::Now() + base::Days(2)).ToDoubleT();
+
+  const AutofillOfferData expected_autofill_merchant_wide_offer_data =
+      AutofillOfferData::FreeListingCouponOffer(
+          kDiscountId, base::Time::FromDoubleT(expiry_time_sec), {url}, url,
+          DisplayStrings{kDetail}, kDiscountCode, true);
+
+  ON_CALL(*mock_shopping_service_delegate_, GetDiscountInfoForUrls)
+      .WillByDefault([&](const std::vector<GURL>& urls,
+                         commerce::DiscountInfoCallback callback) {
+        const commerce::DiscountsMap discounts_map{
+            {url,
+             {commerce::CreateValidDiscountInfo(
+                 kDetail, /*terms_and_conditions=*/"",
+                 /*value_in_text=*/"$10 off", kDiscountCode, kDiscountId,
+                 /*is_merchant_wide=*/true, expiry_time_sec)}}};
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(callback), discounts_map));
+      });
+  EXPECT_CALL(*mock_shopping_service_delegate_,
+              IsDiscountEligibleToShowOnNavigation())
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*mock_shopping_service_delegate_, GetDiscountInfoForUrls);
+
+  base::MockCallback<AutofillOfferManager::AsyncOfferCallback> callback;
+  EXPECT_CALL(callback, Run(url, expected_autofill_merchant_wide_offer_data));
 
   autofill_offer_manager_->GetShoppingServiceOfferForUrl(url, callback.Get());
   task_environment_.RunUntilIdle();
@@ -356,7 +396,7 @@ TEST_F(AutofillOfferManagerTest, GetShoppingServiceOfferForUrl_ReturnOffer) {
 
 TEST_F(AutofillOfferManagerTest,
        GetShoppingServiceOfferForUrl_ReturnEmptyResult) {
-  const GURL url("http://www.example.com");
+  const GURL url(kTestUrl);
   ON_CALL(*mock_shopping_service_delegate_, GetDiscountInfoForUrls)
       .WillByDefault([](const std::vector<GURL>& urls,
                         commerce::DiscountInfoCallback callback) {

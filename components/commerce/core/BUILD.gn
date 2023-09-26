@@ -408,3 +408,11 @@ source_set("commerce_types") {
 
   deps = [ "//url" ]
 }
+
+source_set("utils") {
+  sources = [
+    "commerce_utils.cc",
+    "commerce_utils.h",
+  ]
+  deps = [ "//net:net" ]
+}

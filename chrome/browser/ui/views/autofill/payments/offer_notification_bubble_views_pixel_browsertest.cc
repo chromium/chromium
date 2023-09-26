@@ -80,8 +80,7 @@ class OfferNotificationBubbleViewPixelBrowserTest
         views::test::AnyWidgetTestPasskey{},
         OfferNotificationBubbleViews::kViewClassName);
 
-    autofill_client->UpdateOfferNotification(
-        &offer, {.notification_has_been_shown = true});
+    autofill_client->UpdateOfferNotification(&offer, {});
     OfferNotificationBubbleControllerImpl* controller = GetController();
     EXPECT_TRUE(controller);
     // Ensure the window is active before reshowing the bubble.
