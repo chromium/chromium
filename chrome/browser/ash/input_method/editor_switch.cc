@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "net/base/network_change_notifier.h"
 #include "ui/base/ime/text_input_type.h"
 
 namespace ash::input_method {
@@ -91,7 +92,7 @@ bool EditorSwitch::CanBeTriggered() const {
   return IsAllowedForUse() && IsInputMethodEngineAllowed(active_engine_id_) &&
          IsInputTypeAllowed(input_type_) && IsAppTypeAllowed(app_type_) &&
          IsTriggerableFromConsentStatus(current_consent_status) &&
-         !tablet_mode_enabled_ &&
+         !net::NetworkChangeNotifier::IsOffline() && !tablet_mode_enabled_ &&
          // user pref value
          profile_->GetPrefs()->GetBoolean(prefs::kOrcaEnabled) &&
          text_length_ <= kTextLengthMaxLimit;

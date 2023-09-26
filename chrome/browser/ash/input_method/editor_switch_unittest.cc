@@ -16,6 +16,7 @@
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/test/browser_task_environment.h"
+#include "net/base/mock_network_change_notifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/text_input_type.h"
 
@@ -115,6 +116,9 @@ TEST_F(EditorSwitchTest, FeatureCannotBeTriggeredIfConsentDeclined) {
       /*disabled_features=*/{});
   TestingProfile profile_;
   profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
+  auto mock_notifier = net::test::MockNetworkChangeNotifier::Create();
+  mock_notifier->SetConnectionType(
+      net::NetworkChangeNotifier::CONNECTION_UNKNOWN);
   EditorSwitch editor_switch(/*profile=*/&profile_,
                              /*country_code=*/kAllowedTestCountry);
 
@@ -139,6 +143,9 @@ TEST_F(EditorSwitchTest, FeatureCannotBeTriggeredOnAPasswordField) {
       /*disabled_features=*/{});
   TestingProfile profile_;
   profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
+  auto mock_notifier = net::test::MockNetworkChangeNotifier::Create();
+  mock_notifier->SetConnectionType(
+      net::NetworkChangeNotifier::CONNECTION_UNKNOWN);
   EditorSwitch editor_switch(/*profile=*/&profile_,
                              /*country_code=*/kAllowedTestCountry);
 
@@ -165,6 +172,9 @@ TEST_F(EditorSwitchTest, FeatureCannotBeTriggeredWithNonEnglishInputMethod) {
       /*disabled_features=*/{});
   TestingProfile profile_;
   profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
+  auto mock_notifier = net::test::MockNetworkChangeNotifier::Create();
+  mock_notifier->SetConnectionType(
+      net::NetworkChangeNotifier::CONNECTION_UNKNOWN);
   EditorSwitch editor_switch(/*profile=*/&profile_,
                              /*country_code=*/kAllowedTestCountry);
 
@@ -189,6 +199,9 @@ TEST_F(EditorSwitchTest, FeatureCanNotBeTriggeredOnArcApps) {
       /*disabled_features=*/{});
   TestingProfile profile_;
   profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
+  auto mock_notifier = net::test::MockNetworkChangeNotifier::Create();
+  mock_notifier->SetConnectionType(
+      net::NetworkChangeNotifier::CONNECTION_UNKNOWN);
   EditorSwitch editor_switch(/*profile=*/&profile_,
                              /*country_code=*/kAllowedTestCountry);
 
@@ -214,6 +227,9 @@ TEST_F(EditorSwitchTest,
       /*disabled_features=*/{});
   TestingProfile profile_;
   profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
+  auto mock_notifier = net::test::MockNetworkChangeNotifier::Create();
+  mock_notifier->SetConnectionType(
+      net::NetworkChangeNotifier::CONNECTION_UNKNOWN);
   EditorSwitch editor_switch(/*profile=*/&profile_,
                              /*country_code=*/kAllowedTestCountry);
 
@@ -238,6 +254,9 @@ TEST_F(EditorSwitchTest, FeatureCanNotBeTriggeredOnTabletMode) {
       /*disabled_features=*/{});
   TestingProfile profile_;
   profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
+  auto mock_notifier = net::test::MockNetworkChangeNotifier::Create();
+  mock_notifier->SetConnectionType(
+      net::NetworkChangeNotifier::CONNECTION_UNKNOWN);
   EditorSwitch editor_switch(/*profile=*/&profile_,
                              /*country_code=*/kAllowedTestCountry);
 
@@ -245,6 +264,32 @@ TEST_F(EditorSwitchTest, FeatureCanNotBeTriggeredOnTabletMode) {
   profile_.GetPrefs()->SetInteger(
       prefs::kOrcaConsentStatus, base::to_underlying(ConsentStatus::kApproved));
   editor_switch.OnTabletModeUpdated(true);
+  editor_switch.OnActivateIme("xkb:us::eng");
+  editor_switch.OnInputContextUpdated(
+      TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
+      CreateFakeTextFieldContextualInfo(AppType::BROWSER));
+
+  EXPECT_TRUE(editor_switch.IsAllowedForUse());
+  EXPECT_EQ(editor_switch.GetEditorMode(), EditorMode::kBlocked);
+}
+
+TEST_F(EditorSwitchTest, FeatureCannotBeTriggeredWhenOffline) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kOrca,
+                            features::kFeatureManagementOrca},
+      /*disabled_features=*/{});
+  TestingProfile profile_;
+  profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
+  auto mock_notifier = net::test::MockNetworkChangeNotifier::Create();
+  mock_notifier->SetConnectionType(net::NetworkChangeNotifier::CONNECTION_NONE);
+  EditorSwitch editor_switch(/*profile=*/&profile_,
+                             /*country_code=*/kAllowedTestCountry);
+
+  profile_.GetPrefs()->SetBoolean(prefs::kOrcaEnabled, true);
+  profile_.GetPrefs()->SetInteger(
+      prefs::kOrcaConsentStatus, base::to_underlying(ConsentStatus::kApproved));
+  editor_switch.OnTabletModeUpdated(false);
   editor_switch.OnActivateIme("xkb:us::eng");
   editor_switch.OnInputContextUpdated(
       TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
@@ -262,6 +307,9 @@ TEST_F(EditorSwitchTest, FeatureCanNotBeTriggeredWithTooLongTextSelection) {
       /*disabled_features=*/{});
   TestingProfile profile_;
   profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
+  auto mock_notifier = net::test::MockNetworkChangeNotifier::Create();
+  mock_notifier->SetConnectionType(
+      net::NetworkChangeNotifier::CONNECTION_UNKNOWN);
   EditorSwitch editor_switch(/*profile=*/&profile_,
                              /*country_code=*/kAllowedTestCountry);
 
@@ -289,6 +337,9 @@ TEST_F(
       /*disabled_features=*/{});
   TestingProfile profile_;
   profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
+  auto mock_notifier = net::test::MockNetworkChangeNotifier::Create();
+  mock_notifier->SetConnectionType(
+      net::NetworkChangeNotifier::CONNECTION_UNKNOWN);
   EditorSwitch editor_switch(/*profile=*/&profile_,
                              /*country_code=*/kAllowedTestCountry);
 
@@ -313,6 +364,9 @@ TEST_F(EditorSwitchTest, TriggersRewriteModeForNoTextSelection) {
       /*disabled_features=*/{});
   TestingProfile profile_;
   profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
+  auto mock_notifier = net::test::MockNetworkChangeNotifier::Create();
+  mock_notifier->SetConnectionType(
+      net::NetworkChangeNotifier::CONNECTION_UNKNOWN);
   EditorSwitch editor_switch(/*profile=*/&profile_,
                              /*country_code=*/kAllowedTestCountry);
 
@@ -337,6 +391,9 @@ TEST_F(EditorSwitchTest, TriggersRewriteModeWhenSomeTextIsSelected) {
       /*disabled_features=*/{});
   TestingProfile profile_;
   profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(false);
+  auto mock_notifier = net::test::MockNetworkChangeNotifier::Create();
+  mock_notifier->SetConnectionType(
+      net::NetworkChangeNotifier::CONNECTION_UNKNOWN);
   EditorSwitch editor_switch(/*profile=*/&profile_,
                              /*country_code=*/kAllowedTestCountry);
 
