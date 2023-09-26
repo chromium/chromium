@@ -1925,6 +1925,15 @@ void DocumentLoader::DidInstallNewDocument(Document* document) {
   WarnIfSandboxIneffective(document->domWindow());
 
   StartViewTransitionIfNeeded(*document);
+
+  // This also enqueues the event for a Document that's loading while
+  // prerendered; however, the event still fires at the correct time (first
+  // render opportunity after activation) since the event is fired as part of
+  // updating the rendering which is suppressed until the prerender is
+  // activated.
+  if (RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled()) {
+    document->EnqueueReadyToRenderEvent();
+  }
 }
 
 void DocumentLoader::WillCommitNavigation() {

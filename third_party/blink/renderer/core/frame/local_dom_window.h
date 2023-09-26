@@ -373,6 +373,8 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(orientationchange, kOrientationchange)
 
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(readytorender, kReadytorender)
+
   void RegisterEventListenerObserver(EventListenerObserver*);
 
   void FrameDestroyed();

@@ -1273,6 +1273,8 @@ generated_interface_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_readable_stream_default_controller.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_readable_stream_default_reader.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_readable_stream_default_reader.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_ready_to_render_event.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_ready_to_render_event.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_report.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_report.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_report_body.cc",

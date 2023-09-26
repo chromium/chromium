@@ -2559,12 +2559,18 @@ void WebViewImpl::UpdateViewTransitionState(
   LocalFrame* local_frame = To<LocalFrame>(GetPage()->MainFrame());
   DCHECK(local_frame);
 
-  // When restoring from BFCache, start a transition if we have a view
-  // transition state.
-  if (restoring_from_bfcache && page_restore_params->view_transition_state) {
-    if (auto* document = local_frame->GetDocument()) {
-      ViewTransitionSupplement::CreateFromSnapshotForNavigation(
-          *document, std::move(*page_restore_params->view_transition_state));
+  if (restoring_from_bfcache) {
+    // When restoring from BFCache, start a transition if we have a view
+    // transition state.
+    if (page_restore_params->view_transition_state) {
+      if (auto* document = local_frame->GetDocument()) {
+        ViewTransitionSupplement::CreateFromSnapshotForNavigation(
+            *document, std::move(*page_restore_params->view_transition_state));
+      }
+    }
+
+    if (RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled()) {
+      local_frame->GetDocument()->EnqueueReadyToRenderEvent();
     }
   }
 

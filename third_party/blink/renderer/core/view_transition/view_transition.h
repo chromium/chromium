@@ -211,9 +211,11 @@ class CORE_EXPORT ViewTransition : public ScriptWrappable,
     return creation_type_ == CreationType::kFromSnapshot;
   }
 
-  // Notifies before the compositor associated with this frame will initiate a
-  // lifecycle update.
-  void NotifyRenderingHasBegun();
+  // Notifies the transition that frames are being produced and that the
+  // transition can start the animation phase (starting by capturing the
+  // incoming elements). No-op unless the transition is created from a
+  // snapshot.
+  void ActivateFromSnapshot();
 
   // Returns true if lifecycle updates should be throttled for the Document
   // associated with this transition.

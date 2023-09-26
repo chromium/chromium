@@ -214,17 +214,6 @@ void ViewTransitionSupplement::StartTransition(
   DCHECK(!transition_) << "Existing transition on new Document";
   transition_ = ViewTransition::CreateFromSnapshotForNavigation(
       &document, std::move(transition_state), this);
-
-  // We may already be past the render blocking if this page is coming back from
-  // a BFCache or has been pre-rendered. In that case, let the transition know
-  // to advance the state. Note that this has to be done outside of
-  // `CreateFromSnapshotForNavigation`, because future phases will cause parts
-  // of the code (layout & paint specifically) to try and access the transition
-  // object, which wouldn't have been set yet if the following code is done in
-  // the constructor.
-  if (document.RenderingHasBegun()) {
-    transition_->NotifyRenderingHasBegun();
-  }
 }
 
 void ViewTransitionSupplement::OnTransitionFinished(

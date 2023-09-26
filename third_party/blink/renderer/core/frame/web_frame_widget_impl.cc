@@ -1470,26 +1470,6 @@ void WebFrameWidgetImpl::WillBeginMainFrame() {
   if (animation_frame_timing_monitor_) {
     animation_frame_timing_monitor_->WillBeginMainFrame();
   }
-
-  NotifyViewTransitionRenderingHasBegun();
-}
-
-void WebFrameWidgetImpl::NotifyViewTransitionRenderingHasBegun() {
-  if (!RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled()) {
-    return;
-  }
-
-  ForEachLocalFrameControlledByWidget(
-      local_root_->GetFrame(), [](WebLocalFrameImpl* local_frame) {
-        // A frame in the frame tree is fully attached and must always have a
-        // document.
-        auto* document = local_frame->GetFrame()->GetDocument();
-        DCHECK(document);
-
-        if (auto* transition = ViewTransitionUtils::GetTransition(*document)) {
-          transition->NotifyRenderingHasBegun();
-        }
-      });
 }
 
 bool WebFrameWidgetImpl::ShouldIgnoreInputEvents() {
@@ -4694,8 +4674,6 @@ WebFrameWidgetImpl::GetFrameWidgetTestHelperForTesting() {
 }
 
 void WebFrameWidgetImpl::PrepareForFinalLifecyclUpdateForTesting() {
-  NotifyViewTransitionRenderingHasBegun();
-
   ForEachLocalFrameControlledByWidget(
       LocalRootImpl()->GetFrame(), [](WebLocalFrameImpl* local_frame) {
         LocalFrame* core_frame = local_frame->GetFrame();
@@ -4705,6 +4683,16 @@ void WebFrameWidgetImpl::PrepareForFinalLifecyclUpdateForTesting() {
         Document* document = core_frame->GetDocument();
         // Similarly, a fully attached frame must always have a document.
         DCHECK(document);
+
+        // In a web test, a rendering update may not have occurred before the
+        // test finishes so ensure the transition moves out of rendering
+        // blocked state.
+        if (RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled()) {
+          if (auto* transition =
+                  ViewTransitionUtils::GetTransition(*document)) {
+            transition->ActivateFromSnapshot();
+          }
+        }
       });
 }
 

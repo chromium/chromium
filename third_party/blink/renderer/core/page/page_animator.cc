@@ -22,6 +22,8 @@
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
@@ -140,6 +142,23 @@ void PageAnimator::ServiceScriptedAnimations(
       };
 
   // https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model
+
+  // TODO(bokan): Requires an update to "update the rendering" steps in HTML.
+  if (RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled()) {
+    run_for_all_active_controllers_with_timing([&](wtf_size_t i) {
+      active_controllers[i]->DispatchEvents([](const Event* event) {
+        return event->type() == event_type_names::kReadytorender;
+      });
+
+      if (const LocalDOMWindow* window = active_controllers[i]->GetWindow()) {
+        CHECK(window->document());
+        if (ViewTransition* transition =
+                ViewTransitionUtils::GetTransition(*window->document())) {
+          transition->ActivateFromSnapshot();
+        }
+      }
+    });
+  }
 
   // 6. For each fully active Document in docs, flush autofocus
   // candidates for that Document if its browsing context is a top-level
