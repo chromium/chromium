@@ -5,13 +5,12 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_AUTOFILL_RESOURCE_UTILS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_AUTOFILL_RESOURCE_UTILS_H_
 
-#include <string>
-#include <utility>
+#include <string_view>
 
 namespace autofill {
 
 // Returns the icon resource id corresponding to the |resource_name|.
-int GetIconResourceID(const std::string& resource_name);
+int GetIconResourceID(std::string_view resource_name);
 
 }  // namespace autofill
 

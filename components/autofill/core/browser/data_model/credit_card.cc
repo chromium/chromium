@@ -1340,16 +1340,4 @@ void CreditCard::SetNameOnCardFromSeparateParts() {
   name_on_card_ = temp_card_first_name_ + u" " + temp_card_last_name_;
 }
 
-const char kAmericanExpressCard[] = "americanExpressCC";
-const char kDinersCard[] = "dinersCC";
-const char kDiscoverCard[] = "discoverCC";
-const char kEloCard[] = "eloCC";
-const char kGenericCard[] = "genericCC";
-const char kJCBCard[] = "jcbCC";
-const char kMasterCard[] = "masterCardCC";
-const char kMirCard[] = "mirCC";
-const char kTroyCard[] = "troyCC";
-const char kUnionPay[] = "unionPayCC";
-const char kVisaCard[] = "visaCC";
-
 }  // namespace autofill
