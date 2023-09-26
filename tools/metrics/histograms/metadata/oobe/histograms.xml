@@ -815,8 +815,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Whether the sync consent screen was shown, skipped with sync disabled, or
     skipped with sync enabled. Recorded when the screen is closed. Metrics
-    Sync.InitialState and OOBE.SyncConsentScreen.SyncEnabled provide more detail
-    on the state of the sync engine.
+    Sync.InitialState2 and OOBE.SyncConsentScreen.SyncEnabled provide more
+    detail on the state of the sync engine.
   </summary>
 </histogram>
 
