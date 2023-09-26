@@ -212,6 +212,42 @@ bool IsSecureIppPrinter(const chromeos::Printer& printer) {
          printer.GetProtocol() == chromeos::Printer::PrinterProtocol::kIppUsb;
 }
 
+std::vector<chromeos::Printer> GetLocalPrinters(Profile* profile) {
+  CHECK(profile);
+  std::vector<chromeos::PrinterClass> printer_classes_to_fetch = {
+      chromeos::PrinterClass::kSaved, chromeos::PrinterClass::kEnterprise,
+      chromeos::PrinterClass::kAutomatic};
+  // TODO(b/278621575): Add chromeos::PrinterClass::kDiscovered to
+  // `printer_classes_to_fetch` once the feature flag is removed.
+  if (ash::features::IsPrintPreviewDiscoveredPrintersEnabled()) {
+    printer_classes_to_fetch.push_back(chromeos::PrinterClass::kDiscovered);
+  }
+
+  // Printing is not allowed during OOBE.
+  DCHECK(!ash::ProfileHelper::IsSigninProfile(profile));
+  ash::CupsPrintersManager* printers_manager =
+      ash::CupsPrintersManagerFactory::GetForBrowserContext(profile);
+  std::vector<chromeos::Printer> printers;
+  for (chromeos::PrinterClass pc : printer_classes_to_fetch) {
+    for (const chromeos::Printer& p : printers_manager->GetPrinters(pc)) {
+      VLOG(1) << "Found printer " << p.display_name() << " with device name "
+              << p.id();
+      printers.push_back(p);
+    }
+  }
+
+  return printers;
+}
+
+std::vector<mojom::LocalDestinationInfoPtr> ConvertPrintersToMojom(
+    const std::vector<chromeos::Printer>& printers) {
+  std::vector<mojom::LocalDestinationInfoPtr> mojom_printers;
+  for (const auto& printer : printers) {
+    mojom_printers.push_back(LocalPrinterAsh::PrinterToMojom(printer));
+  }
+  return mojom_printers;
+}
+
 }  // namespace
 
 LocalPrinterAsh::LocalPrinterAsh() {
@@ -366,34 +402,8 @@ void LocalPrinterAsh::OnServerPrintersChanged(
 }
 
 void LocalPrinterAsh::GetPrinters(GetPrintersCallback callback) {
-  Profile* profile = GetProfile();
-  DCHECK(profile);
-  // Printing is not allowed during OOBE.
-  DCHECK(!ash::ProfileHelper::IsSigninProfile(profile));
-  ash::CupsPrintersManager* printers_manager =
-      ash::CupsPrintersManagerFactory::GetForBrowserContext(profile);
-  std::vector<mojom::LocalDestinationInfoPtr> printers;
-  for (chromeos::PrinterClass pc :
-       {chromeos::PrinterClass::kSaved, chromeos::PrinterClass::kEnterprise,
-        chromeos::PrinterClass::kAutomatic}) {
-    for (const chromeos::Printer& p : printers_manager->GetPrinters(pc)) {
-      VLOG(1) << "Found printer " << p.display_name() << " with device name "
-              << p.id();
-      printers.push_back(PrinterToMojom(p));
-    }
-  }
-
-  // TODO(b/278621575): Add chromeos::PrinterClass::kDiscovered as a printer
-  // class to the main for loop once the feature flag is removed.
-  if (ash::features::IsPrintPreviewDiscoveredPrintersEnabled()) {
-    for (const chromeos::Printer& p :
-         printers_manager->GetPrinters(chromeos::PrinterClass::kDiscovered)) {
-      VLOG(1) << "Found printer " << p.display_name() << " with device name "
-              << p.id();
-      printers.push_back(PrinterToMojom(p));
-    }
-  }
-  std::move(callback).Run(std::move(printers));
+  std::move(callback).Run(
+      ConvertPrintersToMojom(GetLocalPrinters(GetProfile())));
 }
 
 void LocalPrinterAsh::GetCapability(const std::string& printer_id,
