@@ -144,6 +144,7 @@ class ProxyImplBase {
                         base::StrCat({L"Contents of *", reg_key, L"* = ",
                                       contents ? *contents : L"", L"\n"});
                   }
+                  LOG(ERROR) << "log_string: " << log_string;
                   std::wstring local_log_string = log_string;
                   base::debug::Alias(&local_log_string);
                   DUMP_WILL_BE_CHECK(false);
