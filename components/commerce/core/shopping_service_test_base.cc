@@ -40,7 +40,7 @@ using optimization_guide::proto::RequestContext;
 
 namespace commerce {
 
-const int64_t kInvalidDiscountId = 0;
+const uint64_t kInvalidDiscountId = 0;
 
 MockOptGuideDecider::MockOptGuideDecider() = default;
 MockOptGuideDecider::~MockOptGuideDecider() = default;

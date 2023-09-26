@@ -32,10 +32,10 @@ const char kDiscountTerms[] = "terms";
 const char kDiscountValueText[] = "10% off";
 const double kDiscountExpiryTime = 1000000;
 const char kDiscountCode[] = "discount code";
-const int64_t kDiscountIdFromServer = 111;
-const int64_t kDiscountIdInDb1 = 333;
-const int64_t kDiscountIdInDb2 = 444;
-const int64_t kDiscountOfferId = 123456;
+const uint64_t kDiscountIdFromServer = 111;
+const uint64_t kDiscountIdInDb1 = 333;
+const uint64_t kDiscountIdInDb2 = 444;
+const uint64_t kDiscountOfferId = 123456;
 const char kDeleteUrl1[] = "http://example.com/delete1";
 const char kDeleteUrl2[] = "http://example.com/delete2";
 
@@ -298,7 +298,7 @@ TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_AllDiscountsUnexpired) {
             ASSERT_EQ(kDiscountValueText, discounts[0].value_in_text);
             ASSERT_EQ(kDiscountCode, discounts[0].discount_code);
             ASSERT_EQ(true, discounts[0].is_merchant_wide);
-            ASSERT_EQ(kDiscountOfferId, (int)discounts[0].offer_id);
+            ASSERT_EQ(kDiscountOfferId, discounts[0].offer_id);
 
             ASSERT_EQ(kDiscountIdInDb2, discounts[1].id);
             ASSERT_EQ(absl::nullopt, discounts[1].terms_and_conditions);
@@ -369,7 +369,7 @@ TEST_F(DiscountsStorageTest, TestHandleServerDiscounts_PartDiscountsExpired) {
             ASSERT_EQ(kDiscountValueText, discounts[0].value_in_text);
             ASSERT_EQ(kDiscountCode, discounts[0].discount_code);
             ASSERT_EQ(true, discounts[0].is_merchant_wide);
-            ASSERT_EQ(kDiscountOfferId, (int)discounts[0].offer_id);
+            ASSERT_EQ(kDiscountOfferId, discounts[0].offer_id);
 
             run_loop->Quit();
           },

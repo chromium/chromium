@@ -43,10 +43,10 @@ struct DiscountInfo {
   absl::optional<std::string> terms_and_conditions;
   std::string value_in_text;
   absl::optional<std::string> discount_code;
-  int64_t id;
+  uint64_t id = 0;
   bool is_merchant_wide;
   double expiry_time_sec;
-  int64_t offer_id;
+  uint64_t offer_id = 0;
 };
 
 // Information returned by the merchant info APIs.

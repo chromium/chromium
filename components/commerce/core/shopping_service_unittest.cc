@@ -76,9 +76,9 @@ const char kDiscountTerms[] = "terms";
 const char kDiscountValueText[] = "10% off";
 const double kDiscountExpiryTime = 1000000;
 const char kDiscountCode[] = "discount code";
-const int64_t kDiscountId1 = 111;
-const int64_t kDiscountId2 = 222;
-const int64_t kDiscountOfferId = 123456;
+const uint64_t kDiscountId1 = 111;
+const uint64_t kDiscountId2 = 222;
+const uint64_t kDiscountOfferId = 123456;
 
 }  // namespace
 
@@ -1155,7 +1155,7 @@ TEST_F(ShoppingServiceTest, TestDiscountInfoResponse) {
             ASSERT_EQ(kDiscountId1, discounts[0].id);
             ASSERT_EQ(true, discounts[0].is_merchant_wide);
             ASSERT_EQ(kDiscountExpiryTime, discounts[0].expiry_time_sec);
-            ASSERT_EQ(kDiscountOfferId, (int)discounts[0].offer_id);
+            ASSERT_EQ(kDiscountOfferId, discounts[0].offer_id);
 
             ASSERT_EQ(kDiscountId2, discounts[1].id);
             ASSERT_EQ(DiscountClusterType::kUnspecified,
