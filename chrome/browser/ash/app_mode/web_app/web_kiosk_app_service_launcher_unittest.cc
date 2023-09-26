@@ -41,6 +41,7 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_page_metadata.mojom.h"
 #include "content/public/browser/web_contents.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -218,6 +219,10 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
         install_options, install_result.GetCallback());
     ASSERT_TRUE(webapps::IsSuccess(install_result.Get<1>().code));
   }
+
+  // To ensure data_decoder instance is available. Removing this will make the
+  // unittest flaky (b/300670172).
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 
   AccountId account_id_;
 
