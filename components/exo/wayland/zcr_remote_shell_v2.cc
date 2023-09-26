@@ -132,6 +132,7 @@ const struct zcr_toast_surface_v2_interface toast_surface_implementation_v2 = {
       wl_resource_destroy(resource);
     },
     zcr_remote_shell::toast_surface_set_bounds_in_output,
+    zcr_remote_shell::toast_surface_set_scale_factor,
 };
 
 const struct zcr_remote_output_v2_interface remote_output_implementation_v2 = {

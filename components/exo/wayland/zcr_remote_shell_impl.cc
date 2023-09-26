@@ -1570,6 +1570,15 @@ void toast_surface_set_bounds_in_output(wl_client* client,
       display_handler->id(), gfx::Rect(x, y, width, height));
 }
 
+void toast_surface_set_scale_factor(wl_client* client,
+                                    wl_resource* resource,
+                                    uint scale_factor_as_uint) {
+  static_assert(sizeof(uint32_t) == sizeof(float),
+                "Sizes must match for reinterpret cast to be meaningful");
+  float scale_factor = *reinterpret_cast<float*>(&scale_factor_as_uint);
+  GetUserDataAs<ToastSurface>(resource)->SetScaleFactor(scale_factor);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // remote_shell_interface:
 

@@ -473,6 +473,10 @@ void toast_surface_set_bounds_in_output(wl_client* client,
                                         int32_t width,
                                         int32_t height);
 
+void toast_surface_set_scale_factor(wl_client* client,
+                                    wl_resource* resource,
+                                    uint scale_factor_as_uint);
+
 ////////////////////////////////////////////////////////////////////////////////
 // remote_shell_interface:
 
