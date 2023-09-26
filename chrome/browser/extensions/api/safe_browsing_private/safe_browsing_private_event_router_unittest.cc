@@ -81,6 +81,7 @@ constexpr char kConnectorsPrefValue[] = R"([
 ])";
 
 constexpr char kUrl[] = "https://evil.com/sensitive_data.txt";
+constexpr char kTabUrl[] = "https://evil.site.com/";
 constexpr char kSource[] = "exampleSource";
 constexpr char kDestination[] = "exampleDestination";
 
@@ -151,8 +152,8 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
   void TriggerOnDangerousDownloadOpenedEvent() {
     SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
         ->OnDangerousDownloadOpened(
-            GURL("https://evil.com/malware.exe"), "/path/to/malware.exe",
-            "sha256_of_malware_exe", "exe", "scan_id",
+            GURL("https://evil.com/malware.exe"), GURL("https://evil.site.com"),
+            "/path/to/malware.exe", "sha256_of_malware_exe", "exe", "scan_id",
             download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
             1234);
   }
@@ -172,7 +173,8 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
   void TriggerOnDangerousDownloadEvent() {
     SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
         ->OnDangerousDownloadEvent(
-            GURL("https://maybevil.com/warning.exe"), "/path/to/warning.exe",
+            GURL("https://maybevil.com/warning.exe"),
+            GURL("https://maybe.evil/"), "/path/to/warning.exe",
             "sha256_of_warning_exe", "POTENTIALLY_UNWANTED", "exe", "scan_id",
             567, safe_browsing::EventResult::WARNED);
   }
@@ -180,7 +182,8 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
   void TriggerOnDangerousDownloadEventBypass() {
     SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
         ->OnDangerousDownloadWarningBypassed(
-            GURL("https://bypassevil.com/bypass.exe"), "/path/to/bypass.exe",
+            GURL("https://bypassevil.com/bypass.exe"),
+            GURL("https://bypass.evil"), "/path/to/bypass.exe",
             "sha256_of_bypass_exe", "BYPASSED_WARNING", "exe", "scan_id", 890);
   }
 
@@ -197,8 +200,8 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
 
     SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
         ->OnAnalysisConnectorResult(
-            GURL(kUrl), kSource, kDestination, "sensitive_data.txt",
-            "sha256_of_data", "text/plain",
+            GURL(kUrl), GURL(kTabUrl), kSource, kDestination,
+            "sensitive_data.txt", "sha256_of_data", "text/plain",
             SafeBrowsingPrivateEventRouter::kTriggerFileUpload, "scan_id",
             safe_browsing::DeepScanAccessPoint::UPLOAD, result, 12345,
             event_result);
@@ -229,8 +232,8 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
   void TriggerOnUnscannedFileEvent(safe_browsing::EventResult result) {
     SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
         ->OnUnscannedFileEvent(
-            GURL(kUrl), kSource, kDestination, "sensitive_data.txt",
-            "sha256_of_data", "text/plain",
+            GURL(kUrl), GURL(kTabUrl), kSource, kDestination,
+            "sensitive_data.txt", "sha256_of_data", "text/plain",
             SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
             safe_browsing::DeepScanAccessPoint::DOWNLOAD,
             "filePasswordProtected", 12345, result);
@@ -1004,6 +1007,8 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSensitiveDataEvent_Allowed) {
   ASSERT_NE(nullptr, event);
 
   EXPECT_EQ(kUrl, *event->FindString(SafeBrowsingPrivateEventRouter::kKeyUrl));
+  EXPECT_EQ(kTabUrl,
+            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyTabUrl));
   EXPECT_EQ(kSource,
             *event->FindString(SafeBrowsingPrivateEventRouter::kKeySource));
   EXPECT_EQ(kDestination, *event->FindString(
@@ -1059,6 +1064,8 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSensitiveDataEvent_Blocked) {
   ASSERT_NE(nullptr, event);
 
   EXPECT_EQ(kUrl, *event->FindString(SafeBrowsingPrivateEventRouter::kKeyUrl));
+  EXPECT_EQ(kTabUrl,
+            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyTabUrl));
   EXPECT_EQ(kSource,
             *event->FindString(SafeBrowsingPrivateEventRouter::kKeySource));
   EXPECT_EQ(kDestination, *event->FindString(
@@ -1231,6 +1238,8 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnUnscannedFileEvent_Allowed) {
   ASSERT_NE(nullptr, event);
 
   EXPECT_EQ(kUrl, *event->FindString(SafeBrowsingPrivateEventRouter::kKeyUrl));
+  EXPECT_EQ(kTabUrl,
+            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyTabUrl));
   EXPECT_EQ(kSource,
             *event->FindString(SafeBrowsingPrivateEventRouter::kKeySource));
   EXPECT_EQ(kDestination, *event->FindString(
@@ -1275,6 +1284,8 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnUnscannedFileEvent_Blocked) {
   ASSERT_NE(nullptr, event);
 
   EXPECT_EQ(kUrl, *event->FindString(SafeBrowsingPrivateEventRouter::kKeyUrl));
+  EXPECT_EQ(kTabUrl,
+            *event->FindString(SafeBrowsingPrivateEventRouter::kKeyTabUrl));
   EXPECT_EQ(kSource,
             *event->FindString(SafeBrowsingPrivateEventRouter::kKeySource));
   EXPECT_EQ(kDestination, *event->FindString(

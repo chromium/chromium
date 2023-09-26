@@ -409,7 +409,7 @@ void MaybeReportDangerousDownloadBlocked(
       raw_digest_sha256 = download->GetHash();
     }
     router->OnDangerousDownloadEvent(
-        download->GetURL(), download_path,
+        download->GetURL(), download->GetTabUrl(), download_path,
         base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size()),
         danger_type, download->GetMimeType(), /*scan_id*/ "",
         download->GetTotalBytes(), safe_browsing::EventResult::BLOCKED);

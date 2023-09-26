@@ -152,10 +152,11 @@ void FilesRequestHandler::ReportWarningBypass(
     size_t index = warning.first;
 
     ReportAnalysisConnectorWarningBypass(
-        profile_, url_, source_, destination_, paths_[index].AsUTF8Unsafe(),
-        file_info_[index].sha256, file_info_[index].mime_type,
-        AccessPointToTriggerString(access_point_), access_point_,
-        file_info_[index].size, warning.second, user_justification);
+        profile_, url_, url_, source_, destination_,
+        paths_[index].AsUTF8Unsafe(), file_info_[index].sha256,
+        file_info_[index].mime_type, AccessPointToTriggerString(access_point_),
+        access_point_, file_info_[index].size, warning.second,
+        user_justification);
   }
 }
 
@@ -330,7 +331,7 @@ void FilesRequestHandler::FileRequestCallback(
   }
 
   MaybeReportDeepScanningVerdict(
-      profile_, url_, source_, destination_, path.AsUTF8Unsafe(),
+      profile_, url_, url_, source_, destination_, path.AsUTF8Unsafe(),
       file_info_[index].sha256, file_info_[index].mime_type,
       AccessPointToTriggerString(access_point_), access_point_,
       file_info_[index].size, upload_result, response,

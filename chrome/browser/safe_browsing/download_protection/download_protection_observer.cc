@@ -64,7 +64,8 @@ void MaybeReportDangerousDownloadWarning(download::DownloadItem* download) {
 
   std::string raw_digest_sha256 = download->GetHash();
   router->OnDangerousDownloadEvent(
-      download->GetURL(), download->GetTargetFilePath().AsUTF8Unsafe(),
+      download->GetURL(), download->GetTabUrl(),
+      download->GetTargetFilePath().AsUTF8Unsafe(),
       base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size()),
       download->GetDangerType(), download->GetMimeType(), /*scan_id*/ "",
       download->GetTotalBytes(), EventResult::WARNED);
@@ -90,14 +91,15 @@ void ReportDangerousDownloadWarningBypassed(
   if (stored_result) {
     for (const auto& metadata : stored_result->file_metadata) {
       router->OnDangerousDownloadWarningBypassed(
-          download->GetURL(), metadata.filename, metadata.sha256,
-          original_danger_type, metadata.mime_type,
+          download->GetURL(), download->GetTabUrl(), metadata.filename,
+          metadata.sha256, original_danger_type, metadata.mime_type,
           metadata.scan_response.request_token(), metadata.size);
     }
   } else {
     std::string raw_digest_sha256 = download->GetHash();
     router->OnDangerousDownloadWarningBypassed(
-        download->GetURL(), download->GetTargetFilePath().AsUTF8Unsafe(),
+        download->GetURL(), download->GetTabUrl(),
+        download->GetTargetFilePath().AsUTF8Unsafe(),
         base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size()),
         original_danger_type, download->GetMimeType(),
         /*scan_id*/ "", download->GetTotalBytes());
@@ -118,8 +120,8 @@ void ReportAnalysisConnectorWarningBypassed(download::DownloadItem* download) {
   if (stored_result) {
     for (const auto& metadata : stored_result->file_metadata) {
       ReportAnalysisConnectorWarningBypass(
-          profile, download->GetURL(), "", "", metadata.filename,
-          metadata.sha256, metadata.mime_type,
+          profile, download->GetURL(), download->GetTabUrl(), "", "",
+          metadata.filename, metadata.sha256, metadata.mime_type,
           extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
           DeepScanAccessPoint::DOWNLOAD, metadata.size, metadata.scan_response,
           stored_result->user_justification);
@@ -127,7 +129,7 @@ void ReportAnalysisConnectorWarningBypassed(download::DownloadItem* download) {
   } else {
     std::string raw_digest_sha256 = download->GetHash();
     ReportAnalysisConnectorWarningBypass(
-        profile, download->GetURL(), "", "",
+        profile, download->GetURL(), download->GetTabUrl(), "", "",
         download->GetTargetFilePath().AsUTF8Unsafe(),
         base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size()),
         download->GetMimeType(),

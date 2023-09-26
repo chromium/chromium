@@ -84,6 +84,7 @@ enum class EventResult {
 void MaybeReportDeepScanningVerdict(
     Profile* profile,
     const GURL& url,
+    const GURL& tab_url,
     const std::string& source,
     const std::string& destination,
     const std::string& file_name,
@@ -103,6 +104,7 @@ void MaybeReportDeepScanningVerdict(
 void ReportAnalysisConnectorWarningBypass(
     Profile* profile,
     const GURL& url,
+    const GURL& tab_url,
     const std::string& source,
     const std::string& destination,
     const std::string& file_name,

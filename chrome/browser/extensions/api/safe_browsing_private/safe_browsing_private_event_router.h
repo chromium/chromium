@@ -78,6 +78,7 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
   static const char kKeyUserJustification[];
   static const char kKeyUrlCategory[];
   static const char kKeyAction[];
+  static const char kKeyTabUrl[];
 
   // All new event names should be added to the array
   // `enterprise_connectors::ReportingServiceSettings::kAllReportingEvents` in
@@ -127,7 +128,8 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
   void OnPolicySpecifiedPasswordChanged(const std::string& user_name);
 
   // Notifies listeners that the user just opened a dangerous download.
-  void OnDangerousDownloadOpened(const GURL& url,
+  void OnDangerousDownloadOpened(const GURL& download_url,
+                                 const GURL& tab_url,
                                  const std::string& file_name,
                                  const std::string& download_digest_sha256,
                                  const std::string& mime_type,
@@ -148,6 +150,7 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
   // Notifies listeners that the analysis connector detected a violation.
   void OnAnalysisConnectorResult(
       const GURL& url,
+      const GURL& tab_url,
       const std::string& source,
       const std::string& destination,
       const std::string& file_name,
@@ -163,6 +166,7 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
   // Notifies listeners that an analysis connector violation was bypassed.
   void OnAnalysisConnectorWarningBypassed(
       const GURL& url,
+      const GURL& tab_url,
       const std::string& source,
       const std::string& destination,
       const std::string& file_name,
@@ -177,6 +181,7 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
 
   // Notifies listeners that deep scanning failed, for the given |reason|.
   void OnUnscannedFileEvent(const GURL& url,
+                            const GURL& tab_url,
                             const std::string& source,
                             const std::string& destination,
                             const std::string& file_name,
@@ -194,6 +199,7 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
   // - |download_digest_sha256| is the hex-encoded SHA256
   // - |threat_type| is the danger type of the download.
   void OnDangerousDownloadEvent(const GURL& url,
+                                const GURL& tab_url,
                                 const std::string& file_name,
                                 const std::string& download_digest_sha256,
                                 const std::string& threat_type,
@@ -202,6 +208,7 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
                                 const int64_t content_size,
                                 safe_browsing::EventResult event_result);
   void OnDangerousDownloadEvent(const GURL& url,
+                                const GURL& tab_url,
                                 const std::string& file_name,
                                 const std::string& download_digest_sha256,
                                 const download::DownloadDangerType danger_type,
@@ -217,6 +224,7 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
   // - |threat_type| is the danger type of the download.
   void OnDangerousDownloadWarningBypassed(
       const GURL& url,
+      const GURL& tab_url,
       const std::string& file_name,
       const std::string& download_digest_sha256,
       const std::string& threat_type,
@@ -225,6 +233,7 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
       const int64_t content_size);
   void OnDangerousDownloadWarningBypassed(
       const GURL& url,
+      const GURL& tab_url,
       const std::string& file_name,
       const std::string& download_digest_sha256,
       const download::DownloadDangerType danger_type,
@@ -258,7 +267,8 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
 
   // Notifies listeners that deep scanning detected a dangerous download.
   void OnDangerousDeepScanningResult(
-      const GURL& url,
+      const GURL& download_url,
+      const GURL& tab_url,
       const std::string& source,
       const std::string& destination,
       const std::string& file_name,
@@ -276,6 +286,7 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
   // Notifies listeners that the analysis connector detected a violation.
   void OnSensitiveDataEvent(
       const GURL& url,
+      const GURL& tab_url,
       const std::string& source,
       const std::string& destination,
       const std::string& file_name,

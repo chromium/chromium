@@ -137,7 +137,7 @@ void ContentAnalysisDelegate::BypassWarnings(
       content_size += entry.size();
 
     ReportAnalysisConnectorWarningBypass(
-        profile_, url_, "", "", "Text data", std::string(), "text/plain",
+        profile_, url_, url_, "", "", "Text data", std::string(), "text/plain",
         extensions::SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
         access_point_, content_size, text_response_, user_justification);
   }
@@ -147,7 +147,7 @@ void ContentAnalysisDelegate::BypassWarnings(
     result_.image_result = true;
 
     ReportAnalysisConnectorWarningBypass(
-        profile_, url_, "", "", "Image data", std::string(),
+        profile_, url_, url_, "", "", "Image data", std::string(),
         /*mime_type*/ std::string(),
         extensions::SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
         access_point_, data_.image.size(), image_response_, user_justification);
@@ -166,7 +166,7 @@ void ContentAnalysisDelegate::BypassWarnings(
     result_.page_result = true;
 
     ReportAnalysisConnectorWarningBypass(
-        profile_, url_, "", /*destination*/ data_.printer_name, title_,
+        profile_, url_, url_, "", /*destination*/ data_.printer_name, title_,
         /*sha256*/ std::string(),
         /*mime_type*/ std::string(),
         extensions::SafeBrowsingPrivateEventRouter::kTriggerPagePrint,
@@ -414,7 +414,7 @@ void ContentAnalysisDelegate::StringRequestCallback(
             text_complies);
 
   MaybeReportDeepScanningVerdict(
-      profile_, url_, "", "", "Text data", std::string(), "text/plain",
+      profile_, url_, url_, "", "", "Text data", std::string(), "text/plain",
       extensions::SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
       access_point_, content_size, result, response,
       CalculateEventResult(data_.settings, text_complies, should_warn));
@@ -455,7 +455,7 @@ void ContentAnalysisDelegate::ImageRequestCallback(
   result_.image_result = image_complies;
 
   MaybeReportDeepScanningVerdict(
-      profile_, url_, "", "", "Image data", std::string(),
+      profile_, url_, url_, "", "", "Image data", std::string(),
       /*mime_type*/ std::string(),
       extensions::SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
       access_point_, data_.image.size(), result, response,
@@ -536,7 +536,7 @@ void ContentAnalysisDelegate::PageRequestCallback(
                      FinalContentAnalysisResult::WARNING;
 
   MaybeReportDeepScanningVerdict(
-      profile_, url_, "", /*destination*/ data_.printer_name, title_,
+      profile_, url_, url_, "", /*destination*/ data_.printer_name, title_,
       /*sha256*/ std::string(),
       /*mime_type*/ std::string(),
       extensions::SafeBrowsingPrivateEventRouter::kTriggerPagePrint,

@@ -264,9 +264,9 @@ const char SafeBrowsingPrivateEventRouter::kKeyUserJustification[] =
     "userJustification";
 const char SafeBrowsingPrivateEventRouter::kKeyUrlCategory[] = "urlCategory";
 const char SafeBrowsingPrivateEventRouter::kKeyAction[] = "action";
-
 const char SafeBrowsingPrivateEventRouter::kKeyUnscannedReason[] =
     "unscannedReason";
+const char SafeBrowsingPrivateEventRouter::kKeyTabUrl[] = "tabUrl";
 
 const char SafeBrowsingPrivateEventRouter::kTriggerFileDownload[] =
     "FILE_DOWNLOAD";
@@ -374,6 +374,7 @@ void SafeBrowsingPrivateEventRouter::OnPolicySpecifiedPasswordChanged(
 
 void SafeBrowsingPrivateEventRouter::OnDangerousDownloadOpened(
     const GURL& url,
+    const GURL& tab_url,
     const std::string& file_name,
     const std::string& download_digest_sha256,
     const std::string& mime_type,
@@ -407,6 +408,7 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadOpened(
 
   base::Value::Dict event;
   event.Set(kKeyUrl, params.url);
+  event.Set(kKeyTabUrl, tab_url.spec());
   event.Set(kKeyFileName, GetBaseName(params.file_name));
   event.Set(kKeyDownloadDigestSha256, params.download_digest_sha256);
   event.Set(kKeyContentType, mime_type);
@@ -523,6 +525,7 @@ void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialProceeded(
 
 void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorResult(
     const GURL& url,
+    const GURL& tab_url,
     const std::string& source,
     const std::string& destination,
     const std::string& file_name,
@@ -537,12 +540,12 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorResult(
   if (result.tag() == "malware") {
     DCHECK_EQ(1, result.triggered_rules().size());
     OnDangerousDeepScanningResult(
-        url, source, destination, file_name, download_digest_sha256,
+        url, tab_url, source, destination, file_name, download_digest_sha256,
         MalwareRuleToThreatType(result.triggered_rules(0).rule_name()),
         mime_type, trigger, content_size, event_result, result.malware_family(),
         result.malware_category(), result.evidence_locker_filepath(), scan_id);
   } else if (result.tag() == "dlp") {
-    OnSensitiveDataEvent(url, source, destination, file_name,
+    OnSensitiveDataEvent(url, tab_url, source, destination, file_name,
                          download_digest_sha256, mime_type, trigger, scan_id,
                          result, content_size, event_result);
   }
@@ -550,6 +553,7 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorResult(
 
 void SafeBrowsingPrivateEventRouter::OnDangerousDeepScanningResult(
     const GURL& url,
+    const GURL& tab_url,
     const std::string& source,
     const std::string& destination,
     const std::string& file_name,
@@ -572,6 +576,7 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDeepScanningResult(
 
   base::Value::Dict event;
   event.Set(kKeyUrl, url.spec());
+  event.Set(kKeyTabUrl, tab_url.spec());
   event.Set(kKeySource, source);
   event.Set(kKeyDestination, destination);
   event.Set(kKeyFileName, GetBaseName(file_name));
@@ -609,6 +614,7 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDeepScanningResult(
 
 void SafeBrowsingPrivateEventRouter::OnSensitiveDataEvent(
     const GURL& url,
+    const GURL& tab_url,
     const std::string& source,
     const std::string& destination,
     const std::string& file_name,
@@ -628,6 +634,7 @@ void SafeBrowsingPrivateEventRouter::OnSensitiveDataEvent(
 
   base::Value::Dict event;
   event.Set(kKeyUrl, url.spec());
+  event.Set(kKeyTabUrl, tab_url.spec());
   event.Set(kKeySource, source);
   event.Set(kKeyDestination, destination);
   event.Set(kKeyFileName, GetBaseName(file_name));
@@ -655,6 +662,7 @@ void SafeBrowsingPrivateEventRouter::OnSensitiveDataEvent(
 
 void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorWarningBypassed(
     const GURL& url,
+    const GURL& tab_url,
     const std::string& source,
     const std::string& destination,
     const std::string& file_name,
@@ -675,6 +683,7 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorWarningBypassed(
 
   base::Value::Dict event;
   event.Set(kKeyUrl, url.spec());
+  event.Set(kKeyTabUrl, tab_url.spec());
   event.Set(kKeySource, source);
   event.Set(kKeyDestination, destination);
   event.Set(kKeyFileName, GetBaseName(file_name));
@@ -705,6 +714,7 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorWarningBypassed(
 
 void SafeBrowsingPrivateEventRouter::OnUnscannedFileEvent(
     const GURL& url,
+    const GURL& tab_url,
     const std::string& source,
     const std::string& destination,
     const std::string& file_name,
@@ -724,6 +734,7 @@ void SafeBrowsingPrivateEventRouter::OnUnscannedFileEvent(
 
   base::Value::Dict event;
   event.Set(kKeyUrl, url.spec());
+  event.Set(kKeyTabUrl, tab_url.spec());
   event.Set(kKeySource, source);
   event.Set(kKeyDestination, destination);
   event.Set(kKeyFileName, GetBaseName(file_name));
@@ -746,6 +757,7 @@ void SafeBrowsingPrivateEventRouter::OnUnscannedFileEvent(
 
 void SafeBrowsingPrivateEventRouter::OnDangerousDownloadEvent(
     const GURL& url,
+    const GURL& tab_url,
     const std::string& file_name,
     const std::string& download_digest_sha256,
     const download::DownloadDangerType danger_type,
@@ -753,13 +765,14 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadEvent(
     const std::string& scan_id,
     const int64_t content_size,
     safe_browsing::EventResult event_result) {
-  OnDangerousDownloadEvent(url, file_name, download_digest_sha256,
+  OnDangerousDownloadEvent(url, tab_url, file_name, download_digest_sha256,
                            DangerTypeToThreatType(danger_type), mime_type,
                            scan_id, content_size, event_result);
 }
 
 void SafeBrowsingPrivateEventRouter::OnDangerousDownloadEvent(
     const GURL& url,
+    const GURL& tab_url,
     const std::string& file_name,
     const std::string& download_digest_sha256,
     const std::string& threat_type,
@@ -776,6 +789,7 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadEvent(
 
   base::Value::Dict event;
   event.Set(kKeyUrl, url.spec());
+  event.Set(kKeyTabUrl, tab_url.spec());
   event.Set(kKeyFileName, GetBaseName(file_name));
   event.Set(kKeyDownloadDigestSha256, download_digest_sha256);
   event.Set(kKeyThreatType, threat_type);
@@ -802,19 +816,21 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadEvent(
 
 void SafeBrowsingPrivateEventRouter::OnDangerousDownloadWarningBypassed(
     const GURL& url,
+    const GURL& tab_url,
     const std::string& file_name,
     const std::string& download_digest_sha256,
     const download::DownloadDangerType danger_type,
     const std::string& mime_type,
     const std::string& scan_id,
     const int64_t content_size) {
-  OnDangerousDownloadWarningBypassed(url, file_name, download_digest_sha256,
-                                     DangerTypeToThreatType(danger_type),
-                                     mime_type, scan_id, content_size);
+  OnDangerousDownloadWarningBypassed(
+      url, tab_url, file_name, download_digest_sha256,
+      DangerTypeToThreatType(danger_type), mime_type, scan_id, content_size);
 }
 
 void SafeBrowsingPrivateEventRouter::OnDangerousDownloadWarningBypassed(
     const GURL& url,
+    const GURL& tab_url,
     const std::string& file_name,
     const std::string& download_digest_sha256,
     const std::string& threat_type,
@@ -830,6 +846,7 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadWarningBypassed(
 
   base::Value::Dict event;
   event.Set(kKeyUrl, url.spec());
+  event.Set(kKeyTabUrl, tab_url.spec());
   event.Set(kKeyFileName, GetBaseName(file_name));
   event.Set(kKeyDownloadDigestSha256, download_digest_sha256);
   event.Set(kKeyThreatType, threat_type);
