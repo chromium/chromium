@@ -403,7 +403,7 @@ void ProfileMenuView::OnOtherProfileSelected(
 #if !BUILDFLAG(IS_CHROMEOS)
     // Open the same web app for another profile.
     // So far the only allowlisted case is PasswordManager WebApp.
-    const web_app::AppId& app_id = browser()->app_controller()->app_id();
+    const webapps::AppId& app_id = browser()->app_controller()->app_id();
     CHECK_EQ(app_id, web_app::kPasswordManagerAppId);
 
     app_profile_switcher_.emplace(

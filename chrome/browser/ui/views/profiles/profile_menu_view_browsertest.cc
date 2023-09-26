@@ -1312,7 +1312,7 @@ PROFILE_MENU_CLICK_TEST(kActionableItems_PasswordManagerWebApp,
 
   // Install and launch an application for the first profile.
   WebAppFrameToolbarTestHelper toolbar_helper;
-  web_app::AppId app_id = toolbar_helper.InstallAndLaunchCustomWebApp(
+  webapps::AppId app_id = toolbar_helper.InstallAndLaunchCustomWebApp(
       browser(), CreatePasswordManagerWebAppInfo(),
       GURL(kPasswordManagerPWAUrl));
   SetTargetBrowser(toolbar_helper.app_browser());
@@ -1340,7 +1340,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebAppTest, SelectingOtherProfile) {
   ASSERT_FALSE(chrome::FindBrowserWithProfile(second_profile));
 
   // Install and launch an application for the first profile.
-  web_app::AppId app_id = toolbar_helper()->InstallAndLaunchCustomWebApp(
+  webapps::AppId app_id = toolbar_helper()->InstallAndLaunchCustomWebApp(
       browser(), CreatePasswordManagerWebAppInfo(),
       GURL(kPasswordManagerPWAUrl));
   SetTargetBrowser(toolbar_helper()->app_browser());
