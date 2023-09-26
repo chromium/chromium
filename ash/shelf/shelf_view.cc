@@ -43,7 +43,6 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/user_education/user_education_class_properties.h"
-#include "ash/user_education/user_education_util.h"
 #include "ash/utility/haptics_util.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/mru_window_tracker.h"
@@ -67,6 +66,7 @@
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/user_education/common/events.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/window.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
@@ -1476,7 +1476,7 @@ void ShelfView::LayoutToIdealBounds() {
   // Notify user education features that anchor bounds have changed.
   if (features::IsUserEducationEnabled()) {
     views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
-        user_education_util::GetHelpBubbleAnchorBoundsChangedEventType(), this);
+        user_education::kHelpBubbleAnchorBoundsChangedEvent, this);
   }
 }
 
@@ -2619,7 +2619,7 @@ void ShelfView::OnBoundsAnimatorProgressed(views::BoundsAnimator* animator) {
   // Notify user education features that anchor bounds have changed.
   if (features::IsUserEducationEnabled()) {
     views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
-        user_education_util::GetHelpBubbleAnchorBoundsChangedEventType(), this);
+        user_education::kHelpBubbleAnchorBoundsChangedEvent, this);
   }
 
   // Do not call PreferredSizeChanged() so that container does not re-layout

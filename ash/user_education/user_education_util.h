@@ -78,12 +78,6 @@ CreateExtendedProperties(Properties&&... properties) {
 // `user_session` is `nullptr`, `EmptyAccountId()` is returned.
 ASH_EXPORT const AccountId& GetAccountId(const UserSession* user_session);
 
-// Returns the custom event type for help bubble anchor bounds changed events.
-// TODO(http://b/287129131): Remove this utility after exporting
-//  `user_education::kHelpBubbleAnchorBoundsChangedEvent`.
-ASH_EXPORT ui::CustomElementEventType
-GetHelpBubbleAnchorBoundsChangedEventType();
-
 // Returns help bubble body icon from the specified `external_properties`. If
 // the specified `external_properties` does not contain a help bubble body icon,
 // an absent value is returned.

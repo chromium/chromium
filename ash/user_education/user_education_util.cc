@@ -121,10 +121,6 @@ const AccountId& GetAccountId(const UserSession* user_session) {
   return user_session ? user_session->user_info.account_id : EmptyAccountId();
 }
 
-ui::CustomElementEventType GetHelpBubbleAnchorBoundsChangedEventType() {
-  return user_education::kHelpBubbleAnchorBoundsChangedEvent;
-}
-
 absl::optional<std::reference_wrapper<const gfx::VectorIcon>>
 GetHelpBubbleBodyIcon(
     const user_education::HelpBubbleParams::ExtendedProperties&

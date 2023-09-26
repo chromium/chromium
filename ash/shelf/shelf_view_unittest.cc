@@ -48,7 +48,6 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
-#include "ash/user_education/user_education_util.h"
 #include "ash/utility/haptics_tracking_test_input_controller.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wallpaper/wallpaper_controller_test_api.h"
@@ -72,6 +71,7 @@
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_education/common/events.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/test/aura_test_base.h"
@@ -488,7 +488,7 @@ class ShelfViewTest : public AshTestBase {
 
     auto subscription =
         ui::ElementTracker::GetElementTracker()->AddCustomEventCallback(
-            user_education_util::GetHelpBubbleAnchorBoundsChangedEventType(),
+            user_education::kHelpBubbleAnchorBoundsChangedEvent,
             views::ElementTrackerViews::GetContextForView(shelf_view_),
             base::BindLambdaForTesting(
                 [&](ui::TrackedElement* tracked_element) {
