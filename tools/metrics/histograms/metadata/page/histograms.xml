@@ -1972,6 +1972,7 @@ chromium-metrics-reviews@google.com.
         summary="all page visits, recorded in UkmPageLoadMetricsObserver"/>
     <variant name=".AllVisit"
         summary="all page visits, recorded in PreviewPageLoadMetricsObserver"/>
+    <variant name=".HistoryVisit" summary="history page visits"/>
     <variant name=".IndependentVisit" summary="independent page visits"/>
     <variant name=".OriginVisit" summary="origin page visits"/>
     <variant name=".PassingVisit" summary="passing page visits"/>

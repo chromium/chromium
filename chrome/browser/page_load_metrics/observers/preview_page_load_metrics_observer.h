@@ -17,6 +17,19 @@
 class PreviewPageLoadMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // As we don't identify client redirect cases, kPassingVisit may be
+  // overestimated a little.
+  enum class PageVisitType {
+    kIndependentVisit = 0,
+    kOriginVisit = 1,
+    kPassingVisit = 2,
+    kTerminalVisit = 3,
+    kHistoryVisit = 4,
+    kMaxValue = kHistoryVisit,
+  };
+
   PreviewPageLoadMetricsObserver() = default;
   PreviewPageLoadMetricsObserver(const PreviewPageLoadMetricsObserver&) =
       delete;
@@ -42,9 +55,11 @@ class PreviewPageLoadMetricsObserver
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
 
  private:
+  PageVisitType RecordPageVisitType();
   void RecordMetrics();
 
   bool currently_in_foreground_ = false;
+  bool is_history_navigation_ = false;
   base::TimeTicks last_time_shown_;
   base::TimeDelta total_foreground_duration_;
 };

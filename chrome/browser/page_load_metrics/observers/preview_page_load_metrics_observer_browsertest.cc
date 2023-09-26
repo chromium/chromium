@@ -6,8 +6,10 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -38,12 +40,15 @@ class PreviewPageLoadMetricsObserverBrowserTest : public InProcessBrowserTest {
   }
 
   void NavigateToOriginPathFromRenderer(const std::string& path) {
-    ASSERT_TRUE(content::NavigateToURLFromRenderer(browser()
-                                                       ->tab_strip_model()
-                                                       ->GetActiveWebContents()
-                                                       ->GetPrimaryMainFrame(),
-                                                   GetOriginURL(path)));
+    ASSERT_TRUE(content::NavigateToURLFromRenderer(
+        GetWebContents()->GetPrimaryMainFrame(), GetOriginURL(path)));
     base::RunLoop().RunUntilIdle();
+  }
+
+  void NavigateBack() {
+    content::WebContents* web_contents = GetWebContents();
+    web_contents->GetController().GoBack();
+    content::WaitForLoadStop(web_contents);
   }
 
   void NavigateAway() {
@@ -56,51 +61,173 @@ class PreviewPageLoadMetricsObserverBrowserTest : public InProcessBrowserTest {
     return embedded_test_server()->GetURL("origin.com", path);
   }
 
+  void DisableBackForwardCache() {
+    GetWebContents()->GetController().GetBackForwardCache().DisableForTesting(
+        content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+  }
+
   base::HistogramTester& histogram_tester() { return *histogram_tester_; }
 
  private:
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
   absl::optional<base::HistogramTester> histogram_tester_;
 };
 
 IN_PROC_BROWSER_TEST_F(PreviewPageLoadMetricsObserverBrowserTest,
-                       PageVisitType) {
-  // Constants defined in ukm_page_load_metrics_observer.cc.
-  const int kIndependentPageVisitType = 0;
-  const int kOriginPageVisitType = 1;
-  const int kPassingPageVisitType = 2;
-  const int kTerminalPageVisitType = 3;
-
+                       IndependentVisit) {
   // Disables BFCache to make the page lifecycle management easy in testing.
-  browser()
-      ->tab_strip_model()
-      ->GetActiveWebContents()
-      ->GetController()
-      .GetBackForwardCache()
-      .DisableForTesting(content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+  DisableBackForwardCache();
 
   // Runs a single browser initiated navigation.
   NavigateToOriginPath("/title1.html");
   NavigateAway();
 
-  histogram_tester().ExpectUniqueSample("PageLoad.Experimental.PageVisitType",
-                                        kIndependentPageVisitType, 1);
+  histogram_tester().ExpectUniqueSample(
+      "PageLoad.Experimental.PageVisitType",
+      PreviewPageLoadMetricsObserver::PageVisitType::kIndependentVisit, 1);
+  histogram_tester().ExpectTotalCount(
+      "PageLoad.Experimental.TotalForegroundDuration.IndependentVisit", 1);
+  histogram_tester().ExpectTotalCount(
+      "PageLoad.Experimental.TotalForegroundDuration.AllVisit", 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PreviewPageLoadMetricsObserverBrowserTest,
+                       SequentialVisits) {
+  // Disables BFCache to make the page lifecycle management easy in testing.
+  DisableBackForwardCache();
 
   // Runs a series of navigation.
   NavigateToOriginPath("/title1.html");
   NavigateToOriginPathFromRenderer("/title2.html");
 
-  histogram_tester().ExpectBucketCount("PageLoad.Experimental.PageVisitType",
-                                       kOriginPageVisitType, 1);
+  histogram_tester().ExpectBucketCount(
+      "PageLoad.Experimental.PageVisitType",
+      PreviewPageLoadMetricsObserver::PageVisitType::kOriginVisit, 1);
+  histogram_tester().ExpectTotalCount(
+      "PageLoad.Experimental.TotalForegroundDuration.OriginVisit", 1);
+  histogram_tester().ExpectTotalCount(
+      "PageLoad.Experimental.TotalForegroundDuration.AllVisit", 1);
 
   NavigateToOriginPathFromRenderer("/title3.html");
-  histogram_tester().ExpectBucketCount("PageLoad.Experimental.PageVisitType",
-                                       kPassingPageVisitType, 1);
+  histogram_tester().ExpectBucketCount(
+      "PageLoad.Experimental.PageVisitType",
+      PreviewPageLoadMetricsObserver::PageVisitType::kPassingVisit, 1);
+  histogram_tester().ExpectTotalCount(
+      "PageLoad.Experimental.TotalForegroundDuration.PassingVisit", 1);
+  histogram_tester().ExpectTotalCount(
+      "PageLoad.Experimental.TotalForegroundDuration.AllVisit", 2);
 
   NavigateAway();
-  histogram_tester().ExpectBucketCount("PageLoad.Experimental.PageVisitType",
-                                       kTerminalPageVisitType, 1);
+  histogram_tester().ExpectBucketCount(
+      "PageLoad.Experimental.PageVisitType",
+      PreviewPageLoadMetricsObserver::PageVisitType::kTerminalVisit, 1);
+  histogram_tester().ExpectTotalCount(
+      "PageLoad.Experimental.TotalForegroundDuration.TerminalVisit", 1);
+  histogram_tester().ExpectTotalCount(
+      "PageLoad.Experimental.TotalForegroundDuration.AllVisit", 3);
 }
 
-// TODO(b:299566150): Add more cases that have back navigation and branching.
+IN_PROC_BROWSER_TEST_F(PreviewPageLoadMetricsObserverBrowserTest,
+                       ComplexNavigationWithoutBFCache) {
+  // Disables BFCache to make the page lifecycle management easy in testing.
+  DisableBackForwardCache();
+
+  // Runs a series of navigation.
+  NavigateToOriginPath("/title1.html");
+  NavigateToOriginPathFromRenderer("/title2.html");
+
+  histogram_tester().ExpectBucketCount(
+      "PageLoad.Experimental.PageVisitType",
+      PreviewPageLoadMetricsObserver::PageVisitType::kOriginVisit, 1);
+  histogram_tester().ExpectTotalCount(
+      "PageLoad.Experimental.TotalForegroundDuration.OriginVisit", 1);
+  histogram_tester().ExpectTotalCount(
+      "PageLoad.Experimental.TotalForegroundDuration.AllVisit", 1);
+
+  // Back navigation.
+  // It marks title2.html as a terminal visit, and goes back to the title1.html.
+  NavigateBack();
+
+  histogram_tester().ExpectBucketCount(
+      "PageLoad.Experimental.PageVisitType",
+      PreviewPageLoadMetricsObserver::PageVisitType::kTerminalVisit, 1);
+  histogram_tester().ExpectTotalCount(
+      "PageLoad.Experimental.TotalForegroundDuration.TerminalVisit", 1);
+  histogram_tester().ExpectTotalCount(
+      "PageLoad.Experimental.TotalForegroundDuration.AllVisit", 2);
+
+  // Make another navigation that makes a history branch.
+  NavigateToOriginPathFromRenderer("/title3.html");
+
+  histogram_tester().ExpectBucketCount(
+      "PageLoad.Experimental.PageVisitType",
+      PreviewPageLoadMetricsObserver::PageVisitType::kHistoryVisit, 1);
+  histogram_tester().ExpectTotalCount(
+      "PageLoad.Experimental.TotalForegroundDuration.HistoryVisit", 1);
+  histogram_tester().ExpectTotalCount(
+      "PageLoad.Experimental.TotalForegroundDuration.AllVisit", 3);
+
+  // Wrap up.
+  NavigateAway();
+
+  histogram_tester().ExpectBucketCount(
+      "PageLoad.Experimental.PageVisitType",
+      PreviewPageLoadMetricsObserver::PageVisitType::kTerminalVisit, 2);
+  histogram_tester().ExpectTotalCount(
+      "PageLoad.Experimental.TotalForegroundDuration.TerminalVisit", 2);
+  histogram_tester().ExpectTotalCount(
+      "PageLoad.Experimental.TotalForegroundDuration.AllVisit", 4);
+}
+
+IN_PROC_BROWSER_TEST_F(PreviewPageLoadMetricsObserverBrowserTest,
+                       ComplexNavigationWithBFCache) {
+  if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
+    // Disabled on low-end bots or linux-bfcache-rel.
+    return;
+  }
+
+  // Runs a series of navigation.
+  NavigateToOriginPath("/title1.html");
+  NavigateToOriginPathFromRenderer("/title2.html");
+
+  histogram_tester().ExpectBucketCount(
+      "PageLoad.Experimental.PageVisitType",
+      PreviewPageLoadMetricsObserver::PageVisitType::kOriginVisit, 1);
+  histogram_tester().ExpectTotalCount(
+      "PageLoad.Experimental.TotalForegroundDuration.OriginVisit", 1);
+  histogram_tester().ExpectTotalCount(
+      "PageLoad.Experimental.TotalForegroundDuration.AllVisit", 1);
+
+  // Back navigation.
+  // title1.html is restored from BFCache, and doesn't create a new observer.
+  NavigateBack();
+  histogram_tester().ExpectBucketCount(
+      "PageLoad.Experimental.PageVisitType",
+      PreviewPageLoadMetricsObserver::PageVisitType::kTerminalVisit, 1);
+  histogram_tester().ExpectTotalCount(
+      "PageLoad.Experimental.TotalForegroundDuration.TerminalVisit", 1);
+  histogram_tester().ExpectTotalCount(
+      "PageLoad.Experimental.TotalForegroundDuration.AllVisit", 2);
+
+  // Make another navigation that makes a history branch.
+  NavigateToOriginPathFromRenderer("/title3.html");
+
+  histogram_tester().ExpectTotalCount(
+      "PageLoad.Experimental.TotalForegroundDuration.AllVisit", 2);
+
+  // Wrap up.
+  // No new metrics are recorded because of the BFCache restoration.
+  NavigateAway();
+  histogram_tester().ExpectBucketCount(
+      "PageLoad.Experimental.PageVisitType",
+      PreviewPageLoadMetricsObserver::PageVisitType::kTerminalVisit, 2);
+  histogram_tester().ExpectTotalCount(
+      "PageLoad.Experimental.TotalForegroundDuration.TerminalVisit", 2);
+  histogram_tester().ExpectTotalCount(
+      "PageLoad.Experimental.TotalForegroundDuration.AllVisit", 3);
+}
 
 }  // namespace
