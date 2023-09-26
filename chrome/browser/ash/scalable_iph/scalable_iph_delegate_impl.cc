@@ -97,7 +97,7 @@ constexpr char kScalableIphNotificationType[] =
 constexpr char kWallpaperNotificationType[] = "wallpaper_notification_type";
 constexpr char kNotifierId[] = "scalable_iph";
 constexpr char kButtonIndex = 0;
-constexpr gfx::Size kBubbleIconSizeDip = gfx::Size(64, 64);
+constexpr gfx::Size kBubbleIconSizeDip = gfx::Size(60, 60);
 
 const base::flat_map<ActionType, std::string>& GetActionTypeURLs() {
   static const base::NoDestructor<base::flat_map<ActionType, std::string>>
@@ -210,15 +210,15 @@ int GetResourceId(BubbleIcon icon) {
     case BubbleIcon::kChromeIcon:
       return IDR_PRODUCT_LOGO_128;
     case BubbleIcon::kGoogleDocsIcon:
-      return IDR_PREINSTALLED_WEB_APPS_GOOGLE_DOCS_ICON_192_PNG;
+      return IDR_SCALABLE_IPH_GOOGLE_DOCS_ICON_120_PNG;
     case BubbleIcon::kPrintJobsIcon:
       return IDR_ASH_PRINT_MANAGEMENT_PRINT_MANAGEMENT_192_PNG;
     case BubbleIcon::kYouTubeIcon:
-      return IDR_PREINSTALLED_WEB_APPS_YOUTUBE_ICON_192_PNG;
+      return IDR_SCALABLE_IPH_YOUTUBE_ICON_120_PNG;
     case BubbleIcon::kPlayStoreIcon:
-      return IDR_SCALABLE_IPH_GOOGLE_PLAY_ICON_128_PNG;
+      return IDR_SCALABLE_IPH_GOOGLE_PLAY_ICON_120_PNG;
     case BubbleIcon::kGooglePhotosIcon:
-      return IDR_SCALABLE_IPH_GOOGLE_PHOTOS_ICON_128_PNG;
+      return IDR_SCALABLE_IPH_GOOGLE_PHOTOS_ICON_120_PNG;
     case BubbleIcon::kNoIcon:
       NOTREACHED_NORETURN();
   }

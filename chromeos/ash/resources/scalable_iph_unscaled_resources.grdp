@@ -5,6 +5,8 @@
   <include name="IDR_SCALABLE_IPH_NOTIFICATION_WALLPAPER_2_PNG" file="../../assistant/internal/resources/scalable_iph/wallpaper2.png" type="BINDATA" />
   <include name="IDR_SCALABLE_IPH_NOTIFICATION_WALLPAPER_3_PNG" file="../../assistant/internal/resources/scalable_iph/wallpaper3.png" type="BINDATA" />
   <include name="IDR_SCALABLE_IPH_NOTIFICATION_WALLPAPER_4_PNG" file="../../assistant/internal/resources/scalable_iph/wallpaper4.png" type="BINDATA" />
-  <include name="IDR_SCALABLE_IPH_GOOGLE_PLAY_ICON_128_PNG" file="../../assistant/internal/resources/scalable_iph/google_play_icon_128.png" type="BINDATA" />
-  <include name="IDR_SCALABLE_IPH_GOOGLE_PHOTOS_ICON_128_PNG" file="../../assistant/internal/resources/scalable_iph/google_photos_icon_128.png" type="BINDATA" />
+  <include name="IDR_SCALABLE_IPH_GOOGLE_PLAY_ICON_120_PNG" file="../../assistant/internal/resources/scalable_iph/google_play_icon_120.png" type="BINDATA" />
+  <include name="IDR_SCALABLE_IPH_GOOGLE_PHOTOS_ICON_120_PNG" file="../../assistant/internal/resources/scalable_iph/google_photos_icon_120.png" type="BINDATA" />
+  <include name="IDR_SCALABLE_IPH_GOOGLE_DOCS_ICON_120_PNG" file="../../assistant/internal/resources/scalable_iph/google_docs_icon_120.png" type="BINDATA" />
+  <include name="IDR_SCALABLE_IPH_YOUTUBE_ICON_120_PNG" file="../../assistant/internal/resources/scalable_iph/youtube_icon_120.png" type="BINDATA" />
 </grit-part>
