@@ -393,6 +393,10 @@ const char* kJSONCustomAttributes = R"()]}'
    ]
   }})";
 
+const char* kBadJSONBadAppIdNoNewlinesBadUCKey =
+    R"()]}'{"response":{"app":[{"appid":";","updatecheck":{"":1}}],)"
+    R"("protocol":"3.1"}})";
+
 TEST(UpdateClientProtocolParserJSONTest, Parse) {
   const auto parser = std::make_unique<ProtocolParserJSON>();
 
@@ -608,6 +612,11 @@ TEST(UpdateClientProtocolParserJSONTest, ParseAttrs) {
     EXPECT_EQ("example_value1", result.custom_attributes.at("_example1"));
     EXPECT_EQ("example_value2", result.custom_attributes.at("_example2"));
   }
+}
+
+TEST(UpdateClientProtocolParserJSONTest, ParseBadJSONNoCrash) {
+  const auto parser = std::make_unique<ProtocolParserJSON>();
+  EXPECT_TRUE(parser->Parse(kBadJSONBadAppIdNoNewlinesBadUCKey));
 }
 
 }  // namespace update_client
