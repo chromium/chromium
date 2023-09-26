@@ -8,7 +8,6 @@ import {ElementsTestRunner} from 'elements_test_runner';
 (async function() {
   TestRunner.addResult(`Tests that shorthand is marked as overloaded if all its longhands are overloaded.\n`);
 
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
 
   await TestRunner.loadHTML(`

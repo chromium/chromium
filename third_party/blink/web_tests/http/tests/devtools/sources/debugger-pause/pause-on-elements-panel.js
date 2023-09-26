@@ -9,7 +9,6 @@ import {SourcesTestRunner} from 'sources_test_runner';
 (async function() {
   TestRunner.addResult(
       `Tests that debugger pause button works on Elements panel after a DOM node highlighting. Chromium bug 433366\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML(`

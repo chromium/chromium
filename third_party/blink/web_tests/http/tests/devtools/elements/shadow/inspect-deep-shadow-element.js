@@ -11,7 +11,6 @@ import * as ElementsModule from 'devtools/panels/elements/elements.js';
 (async function() {
   TestRunner.addResult(`Tests that inspect element action works for deep shadow elements.\n`);
   await TestRunner.loadLegacyModule('console');
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div>

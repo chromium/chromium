@@ -10,7 +10,6 @@ import {ElementsTestRunner} from 'elements_test_runner';
   TestRunner.addResult(
       `Test that web inspector can select element in an iframe even if the element was created via createElement of document other than iframe's document. Bug 60031\n`);
   await TestRunner.loadLegacyModule('console');
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <iframe style="width:400px"></iframe>

@@ -9,7 +9,6 @@ import * as ElementsModule from 'devtools/panels/elements/elements.js';
 
 (async function() {
   TestRunner.addResult(`Tests elements drag and drop operation internals, verifies post-move selection.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="container">

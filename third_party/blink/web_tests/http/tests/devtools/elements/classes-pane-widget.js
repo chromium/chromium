@@ -10,7 +10,6 @@ import * as ElementsModule from 'devtools/panels/elements/elements.js';
 (async function() {
   TestRunner.addResult(`Tests that classes pane widget shows correct suggestions.\n`);
 
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
 
   await TestRunner.loadHTML(`

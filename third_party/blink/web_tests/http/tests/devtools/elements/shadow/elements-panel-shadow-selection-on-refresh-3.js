@@ -10,7 +10,6 @@ import * as Common from 'devtools/core/common/common.js';
 
 (async function() {
   TestRunner.addResult(`Tests that elements panel preserves selected shadow DOM node on page refresh.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.navigatePromise('../resources/elements-panel-shadow-selection-on-refresh.html');
 

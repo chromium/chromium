@@ -7,7 +7,6 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
 (async function() {
     TestRunner.addResult(`This test verifies the names, positions and sizes of the highlight rectangles overlayed on CSS Grid areas.\n`);
-    await TestRunner.loadLegacyModule('elements');
     await TestRunner.showPanel('elements');
     await TestRunner.loadHTML(`
         <style>

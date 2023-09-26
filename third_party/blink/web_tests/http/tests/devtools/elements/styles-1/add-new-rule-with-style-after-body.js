@@ -8,7 +8,6 @@ import {ElementsTestRunner} from 'elements_test_runner';
 (async function() {
   TestRunner.addResult(
       `Tests that adding a new rule works when there is a STYLE element after BODY. TIMEOUT SHOULD NOT OCCUR! Bug 111299 https://bugs.webkit.org/show_bug.cgi?id=111299\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="inspected" style="font-size: 12px">Text</div>

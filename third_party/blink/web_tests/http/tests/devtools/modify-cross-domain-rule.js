@@ -9,7 +9,6 @@ import {ElementsTestRunner} from 'elements_test_runner';
   'use strict';
   TestRunner.addResult(
       `Tests that modifying a rule in a stylesheet loaded from a different domain does not crash the renderer.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.loadHTML(`
       <div id="inspected">Text</div>
     `);

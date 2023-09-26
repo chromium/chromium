@@ -12,7 +12,6 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
   TestRunner.addResult('Tests that styles sidebar can be navigated with arrow keys.\n');
 
   await TestRunner.showPanel('elements');
-  await TestRunner.loadLegacyModule('elements');
 
   await TestRunner.loadHTML(`
     <style>

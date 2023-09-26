@@ -4,7 +4,7 @@ Tests framework event listeners output in the Elements sidebar panel.
 
 ======== click ========
 == Framework
-[expanded] button#inspectedNodeRemoveevent-listener-sidebar-custom-framework.js:36
+[expanded] button#inspectedNodeRemoveevent-listener-sidebar-custom-framework.js:35
     useCapture: false
     passive: false
     once: false
@@ -19,7 +19,7 @@ Tests framework event listeners output in the Elements sidebar panel.
 
 ======== customFirst ========
 == FrameworkUser
-[expanded] button#inspectedNodeevent-listener-sidebar-custom-framework.js:26
+[expanded] button#inspectedNodeevent-listener-sidebar-custom-framework.js:25
     useCapture: true
     passive: false
     once: false
@@ -30,7 +30,7 @@ Tests framework event listeners output in the Elements sidebar panel.
 
 ======== customSecond ========
 == FrameworkUser
-[expanded] button#inspectedNodeevent-listener-sidebar-custom-framework.js:31
+[expanded] button#inspectedNodeevent-listener-sidebar-custom-framework.js:30
     useCapture: false
     passive: false
     once: false
@@ -42,7 +42,7 @@ Tests framework event listeners output in the Elements sidebar panel.
 
 ======== click ========
 == Raw
-[expanded] button#inspectedNodeRemoveevent-listener-sidebar-custom-framework.js:36
+[expanded] button#inspectedNodeRemoveevent-listener-sidebar-custom-framework.js:35
     useCapture: false
     passive: false
     once: false

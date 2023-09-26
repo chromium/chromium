@@ -7,7 +7,6 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
 (async function() {
   TestRunner.addResult(`This test verifies that persistent grid in iframe are positioned correctly.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
     <!DOCTYPE html>

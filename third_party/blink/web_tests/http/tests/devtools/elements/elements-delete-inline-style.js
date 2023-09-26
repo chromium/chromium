@@ -8,7 +8,6 @@ import {ElementsTestRunner} from 'elements_test_runner';
 (async function() {
   TestRunner.addResult(
       `Tests that the "style" attribute removal results in the Styles sidebar pane update (not a crash). Bug 51478\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="inspected" style="color: red"></div>

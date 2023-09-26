@@ -8,7 +8,6 @@ import {ElementsTestRunner} from 'elements_test_runner';
 (async function() {
   TestRunner.addResult(
       `Tests that !important modifier is shown for CSSOM-generated properties.`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
     <style id="mycss"></style>

@@ -7,7 +7,6 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
 (async function() {
   TestRunner.addResult(`This test verifies that similarly-sized grids with different writing-modes share the same grid information but have a different writingMode value.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>

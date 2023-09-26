@@ -8,7 +8,6 @@ import {AccessibilityTestRunner} from 'accessibility_test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests that writing an ARIA attribute causes the accessibility node to be updated.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.loadLegacyModule('panels/accessibility');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`

@@ -7,7 +7,6 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
 (async function() {
   TestRunner.addResult(`Verifies that invalid css still parses into properties.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>

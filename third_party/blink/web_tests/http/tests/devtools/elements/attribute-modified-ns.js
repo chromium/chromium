@@ -8,7 +8,6 @@ import {ElementsTestRunner} from 'elements_test_runner';
 (async function() {
   TestRunner.addResult(
       `Tests that elements panel updates dom tree structure upon changing the attribute with namespace.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <svg>

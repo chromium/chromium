@@ -8,7 +8,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
 
 (async function() {
   TestRunner.addResult(`This test verifies that template's content DocumentFragment is accessible from DevTools.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`

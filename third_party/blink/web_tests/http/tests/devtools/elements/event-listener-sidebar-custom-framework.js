@@ -10,7 +10,6 @@ import * as Common from 'devtools/core/common/common.js';
 
 (async function() {
   TestRunner.addResult(`Tests framework event listeners output in the Elements sidebar panel.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`

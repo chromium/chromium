@@ -10,7 +10,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
 (async function() {
   TestRunner.addResult(
       `Tests that 'skip all pauses' mode blocks breakpoint and gets cancelled right at page reload.`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.loadLegacyModule('sources'); await TestRunner.loadLegacyModule('panels/browser_debugger');
   await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('sources');

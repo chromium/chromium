@@ -7,7 +7,6 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
 (async function() {
   TestRunner.addResult(`Verifies that large rules are truncated and can be fully expanded.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   var ruleText = '\n';
   for (var i = 0; i < 200; i++)

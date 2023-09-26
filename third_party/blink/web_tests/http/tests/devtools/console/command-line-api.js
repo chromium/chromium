@@ -12,7 +12,6 @@ import * as Common from 'devtools/core/common/common.js';
   TestRunner.addResult('Tests that command line api works.\n');
 
   await TestRunner.loadLegacyModule('console');
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('console');
   await TestRunner.loadHTML(`
     <p id='foo'>

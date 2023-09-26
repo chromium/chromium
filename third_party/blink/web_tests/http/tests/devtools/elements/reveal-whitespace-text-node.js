@@ -11,7 +11,6 @@ import * as ElementsModule from 'devtools/panels/elements/elements.js';
 (async function() {
   TestRunner.addResult(
       `This test verifies that revealing a whitespace text node RemoteObject reveals its parentElement DIV.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <p id="description"></p>

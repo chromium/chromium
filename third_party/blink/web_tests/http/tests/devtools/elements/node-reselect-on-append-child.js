@@ -10,7 +10,6 @@ import * as ElementsModule from 'devtools/panels/elements/elements.js';
 (async function() {
   TestRunner.addResult(
       `The test verifies that SelectedNodeChanged event is not fired whenever a child gets added to the node.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div>

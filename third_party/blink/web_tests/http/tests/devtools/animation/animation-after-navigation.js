@@ -11,7 +11,6 @@ import {ElementsTestRunner} from 'elements_test_runner';
   // This loads the animations view on the existing page, which is
   // somewhere below http://127.0.0.1:8000/. By loading the animations view,
   // we'll start the InspectorAnimationAgent.
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await UI.viewManager.showView('animations');
 

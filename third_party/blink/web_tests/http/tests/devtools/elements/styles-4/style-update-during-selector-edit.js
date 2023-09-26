@@ -10,7 +10,6 @@ import * as ElementsModule from 'devtools/panels/elements/elements.js';
 (async function() {
   TestRunner.addResult(
       `Tests that modification of element styles while editing a selector does not commit the editor.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>

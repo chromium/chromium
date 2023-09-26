@@ -10,7 +10,6 @@ import * as Host from 'devtools/core/host/host.js';
 (async function() {
   TestRunner.addResult(
       `Tests that adopted portal is rendered inline correctly.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
 
   // Save time on style updates.

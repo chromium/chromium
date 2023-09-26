@@ -8,7 +8,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
 
 (async function() {
   TestRunner.addResult(`\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`

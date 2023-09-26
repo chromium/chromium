@@ -11,7 +11,6 @@ import * as Common from 'devtools/core/common/common.js';
 (async function() {
   TestRunner.addResult(`Tests that $0 works with shadow dom.\n`);
   await TestRunner.loadLegacyModule('console');
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('console');
   await TestRunner.loadHTML(`
       <div><div><div id="host"></div></div></div>

@@ -9,7 +9,6 @@ import * as ProtocolClient from 'devtools/core/protocol_client/protocol_client.j
 
 (async function() {
   TestRunner.addResult(`Tests that computed styles are cached across synchronous requests.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>

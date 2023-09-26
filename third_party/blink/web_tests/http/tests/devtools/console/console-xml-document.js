@@ -18,9 +18,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
   await TestRunner.showPanel('elements');
 
   // Warm up elements renderer.
-  TestRunner.loadLegacyModule('elements').then(function() {
-    ConsoleTestRunner.expandConsoleMessages(callback);
-  });
+  ConsoleTestRunner.expandConsoleMessages(callback);
 
   async function callback() {
     await ConsoleTestRunner.dumpConsoleMessages();

@@ -8,7 +8,6 @@ import {ElementsTestRunner} from 'elements_test_runner';
 (async function() {
     TestRunner.addResult(
         `This test verifies a11y attributes for a node.\n`);
-    await TestRunner.loadLegacyModule('elements');
     await TestRunner.showPanel('elements');
     await TestRunner.loadHTML(`
         <!DOCTYPE html>

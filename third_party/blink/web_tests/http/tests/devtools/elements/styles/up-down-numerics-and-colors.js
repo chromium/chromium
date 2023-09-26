@@ -9,7 +9,6 @@ import * as Host from 'devtools/core/host/host.js';
 
 (async function() {
   TestRunner.addResult(`Tests that numeric and color values are incremented/decremented correctly.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>

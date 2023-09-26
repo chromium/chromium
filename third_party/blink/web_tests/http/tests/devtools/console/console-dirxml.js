@@ -26,9 +26,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
   `);
   await TestRunner.showPanel('elements');
 
-  TestRunner.loadLegacyModule('elements').then(function() {
-    TestRunner.evaluateInPage('logToConsole()', onLoggedToConsole);
-  });
+  TestRunner.evaluateInPage('logToConsole()', onLoggedToConsole);
 
   function onLoggedToConsole() {
     ConsoleTestRunner.waitForRemoteObjectsConsoleMessages(onRemoteObjectsLoaded);

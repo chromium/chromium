@@ -8,7 +8,6 @@ import {AccessibilityTestRunner} from 'accessibility_test_runner';
 
 (async function() {
   TestRunner.addResult(`Tests that autocompletions are computed correctly when editing the ARIA pane.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <span id="inspected" aria-checked="true" role="checkbox"></span>

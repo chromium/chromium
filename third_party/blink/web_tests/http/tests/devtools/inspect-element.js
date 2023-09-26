@@ -12,7 +12,6 @@ import * as ElementsModule from 'devtools/panels/elements/elements.js';
   TestRunner.addResult(
       `Tests that inspect element action works for iframe children (https://bugs.webkit.org/show_bug.cgi?id=76808).\n`);
   await TestRunner.loadLegacyModule('console');
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
 
   await TestRunner.addIframe('resources/inspect-element-iframe.html');

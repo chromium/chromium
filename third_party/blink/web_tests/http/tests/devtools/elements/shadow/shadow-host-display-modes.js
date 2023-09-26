@@ -10,7 +10,6 @@ import * as ElementsModule from 'devtools/panels/elements/elements.js';
 (async function() {
   TestRunner.addResult(
       `Tests that distributed nodes and their updates are correctly shown in different shadow host display modes.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
 <template id="youngestShadowRootTemplate">

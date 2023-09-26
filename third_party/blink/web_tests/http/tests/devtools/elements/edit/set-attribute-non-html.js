@@ -8,7 +8,6 @@ import {ElementsTestRunner} from 'elements_test_runner';
 (async function() {
   TestRunner.addResult(
       `Tests that elements panel updates dom tree structure upon setting attribute on non HTML elements. PASSes if there is no crash.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
 
   await TestRunner.navigatePromise('resources/set-attribute-non-html.svg');

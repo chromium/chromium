@@ -9,7 +9,6 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(`Tests that highlighting a detached node does not crash. crbug.com/958958\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
 
   const remoteObject = await TestRunner.evaluateInPageRemoteObject(`

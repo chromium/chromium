@@ -10,7 +10,6 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 (async function() {
   TestRunner.addResult(
       `Verifies that CSSStyleSheetHeader.originalContentProvider() indeed returns original content.\n`);
-  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
 <style>
