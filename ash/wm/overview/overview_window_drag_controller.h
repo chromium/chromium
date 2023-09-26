@@ -199,7 +199,7 @@ class ASH_EXPORT OverviewWindowDragController {
 
   raw_ptr<OverviewSession, ExperimentalAsh> overview_session_;
 
-  // The drag target window in the overview mode.
+  // The drag target item in the overview mode.
   raw_ptr<OverviewItemBase, DanglingUntriaged | ExperimentalAsh> item_ =
       nullptr;
 

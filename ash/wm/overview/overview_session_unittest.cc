@@ -77,22 +77,19 @@
 #include "ash/wm/wm_event.h"
 #include "ash/wm/workspace/workspace_window_resizer.h"
 #include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/to_vector.h"
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/wm/features.h"
 #include "ui/aura/client/aura_constants.h"
-#include "ui/aura/client/window_types.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
@@ -112,7 +109,6 @@
 #include "ui/events/event_utils.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/test/event_generator.h"
-#include "ui/gfx/geometry/insets_f.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
@@ -6600,6 +6596,34 @@ TEST_F(TabletModeOverviewSessionTest, MinimizedRoundedCorners) {
   EXPECT_FALSE(GetOverviewController()->InOverviewSession());
   EXPECT_TRUE(WindowState::Get(window.get())->IsMinimized());
   EXPECT_EQ(gfx::RoundedCornersF(), window->layer()->rounded_corner_radii());
+}
+
+// Tests the UAF issue reported in b/301368132 has been fixed. The overview
+// item in `OverviewWindowDragController::CompleteDrag()` may be reset in
+// `OverviewGrid::RemoveItem()` and is accessed again when getting the
+// window for `ScopedFloatContainerStacker::OnDragFinished()`.
+TEST_F(TabletModeOverviewSessionTest, AvoidUaFOnCompleteDrag) {
+  std::unique_ptr<aura::Window> window = CreateAppWindow(gfx::Rect(100, 100));
+  WindowState* window_state = WindowState::Get(window.get());
+  const WindowSnapWMEvent snap_type(WM_EVENT_SNAP_PRIMARY);
+  window_state->OnWMEvent(&snap_type);
+  EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
+            window_state->GetStateType());
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+
+  window_state->Minimize();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  auto* overview_item = GetOverviewItemForWindow(window.get());
+
+  // Trigger `OverviewWindowDragController::CompleteDrag()` and verify that
+  // there will be no crash.
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(gfx::ToRoundedPoint(
+      overview_item->GetTargetBoundsInScreen().CenterPoint()));
+  event_generator->ClickLeftButton();
+  EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
+            window_state->GetStateType());
 }
 
 // Test the split view and overview functionalities in tablet mode.
