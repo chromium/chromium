@@ -4,11 +4,6 @@
 <head>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
-  <script>
-    if (window.testRunner) {
-      testRunner.waitUntilDone();
-    }
-  </script>
 </head>
 
 <body />
@@ -23,24 +18,29 @@
     return new Promise((resolve, reject) => {
       const observer = new PerformanceObserver(list => {
         const entries = list.getEntries();
-
-        // wait until IMG becomes LCP to remove flakiness.
+        // find LCP image candidate
         const lcp = entries.find(entry => entry.element.nodeName === 'IMG');
-        if (lcp) resolve(lcp);
+        if (!lcp) {
+          reject();
+        }
+
+        // ensure we received a valid LCP candidate
+        assert_true(Boolean(lcp));
+
+        // ensure LCP element is an image.
+        assert_equals(lcp.element.nodeName, 'IMG');
+
+        // assert LCP image knows its creator scripts.
+        const creators = internals.getCreatorScripts(lcp.element)
+          .map(url => new URL(url).pathname);
+        assert_array_equals(creators, [
+          '/lcp-script-observer/resources/lcp-img-insert.js',
+          '/lcp-script-observer/resources/lcp-img-create.js',
+        ]);
+        resolve(lcp);
       });
-      observer.observe({type: "largest-contentful-paint", buffered: true});
 
-    }).then(lcp => {
-      // ensure LCP is an image.
-      assert_equals(lcp.element.nodeName, 'IMG');
-
-      // assert LCP image knows its creator scripts.
-      const creators = internals.getCreatorScripts(lcp.element)
-        .map(url => new URL(url).pathname);
-      assert_array_equals(creators, [
-        '/lcp-script-observer/resources/lcp-img-insert.js',
-        '/lcp-script-observer/resources/lcp-img-create.js',
-      ]);
+      observer.observe({type: 'largest-contentful-paint', buffered: true});
     });
   }, 'LCP element knows its dependencies, including creation and insertion scripts');
 
