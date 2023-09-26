@@ -29,7 +29,8 @@ void PrintUsage() {
       "  -c  Specifies command line flags to pass to application.\n"
       "  -p  Print the device's home directory, does not run a test.\n"
       "  -s  Specifies the SDK version to use (e.g '9.3'). Will use system "
-      "default if not specified.\n");
+      "default if not specified.\n"
+      "  -v  Be more verbose, showing all the xcrun commands we call\n");
 }
 
 // Exit status codes.
@@ -59,7 +60,8 @@ void LogError(NSString* format, ...) {
 // Wrap boiler plate calls to xcrun NSTasks.
 @interface XCRunTask : NSObject
 - (instancetype)initWithArguments:(NSArray*)arguments;
-- (void)run;
+- (void)run:(bool)verbose;
+- (void)launch:(bool)verbose;
 - (void)setStandardOutput:(id)output;
 - (void)setStandardError:(id)error;
 - (int)terminationStatus;
@@ -92,12 +94,18 @@ void LogError(NSString* format, ...) {
   return _task.terminationStatus;
 }
 
-- (void)run {
+- (void)run:(bool)verbose {
+  if (verbose) {
+    NSLog(@"Running xcrun %@", [_task.arguments componentsJoinedByString:@" "]);
+  }
   [_task launch];
   [_task waitUntilExit];
 }
 
-- (void)launch {
+- (void)launch:(bool)verbose {
+  if (verbose) {
+    NSLog(@"Running xcrun %@", [_task.arguments componentsJoinedByString:@" "]);
+  }
   [_task launch];
 }
 
@@ -140,7 +148,7 @@ NSArray* Devices(NSDictionary* simctl_list) {
 }
 
 // Get list of devices, runtimes, etc from sim_ctl.
-NSDictionary* GetSimulatorList() {
+NSDictionary* GetSimulatorList(bool verbose) {
   XCRunTask* task =
       [[XCRunTask alloc] initWithArguments:@[ @"simctl", @"list", @"-j" ]];
   NSPipe* out = [NSPipe pipe];
@@ -151,7 +159,7 @@ NSDictionary* GetSimulatorList() {
   // on some swarming slaves this led to a hang on simctl's pipe.  Since the
   // output of simctl is so instant, reading it before exit seems to work, and
   // seems to avoid the hang.
-  [task launch];
+  [task launch:verbose];
   NSData* data = [out.fileHandleForReading readDataToEndOfFile];
   [task waitUntilExit];
 
@@ -228,13 +236,15 @@ NSString* GetDeviceBySDKAndName(NSDictionary* simctl_list,
 }
 
 // Create and return a device udid of |device| and |sdk_version|.
-NSString* CreateDeviceBySDKAndName(NSString* device, NSString* sdk_version) {
+NSString* CreateDeviceBySDKAndName(NSString* device,
+                                   NSString* sdk_version,
+                                   bool verbose) {
   NSString* sdk = [@"iOS" stringByAppendingString:sdk_version];
   XCRunTask* create = [[XCRunTask alloc]
       initWithArguments:@[ @"simctl", @"create", device, device, sdk ]];
-  [create run];
+  [create run:verbose];
 
-  NSDictionary* simctl_list = GetSimulatorList();
+  NSDictionary* simctl_list = GetSimulatorList(verbose);
   return GetDeviceBySDKAndName(simctl_list, device, sdk_version);
 }
 
@@ -253,31 +263,31 @@ bool FindDeviceByUDID(NSDictionary* simctl_list, NSString* udid) {
 
 // Prints the HOME environment variable for a device.  Used by the bots to
 // package up all the test data.
-void PrintDeviceHome(NSString* udid) {
+void PrintDeviceHome(NSString* udid, bool verbose) {
   XCRunTask* task = [[XCRunTask alloc]
       initWithArguments:@[ @"simctl", @"getenv", udid, @"HOME" ]];
-  [task run];
+  [task run:verbose];
 }
 
 // Erase a device, used by the bots before a clean test run.
-void WipeDevice(NSString* udid) {
+void WipeDevice(NSString* udid, bool verbose) {
   XCRunTask* shutdown =
       [[XCRunTask alloc] initWithArguments:@[ @"simctl", @"shutdown", udid ]];
   shutdown.standardOutput = nil;
   shutdown.standardError = nil;
-  [shutdown run];
+  [shutdown run:verbose];
 
   XCRunTask* erase =
       [[XCRunTask alloc] initWithArguments:@[ @"simctl", @"erase", udid ]];
-  [erase run];
+  [erase run:verbose];
 }
 
-void KillSimulator() {
+void KillSimulator(bool verbose) {
   XCRunTask* task =
       [[XCRunTask alloc] initWithArguments:@[ @"killall", @"Simulator" ]];
   task.standardOutput = nil;
   task.standardError = nil;
-  [task run];
+  [task run:verbose];
 }
 
 NSString* GetBundleIdentifierFromPath(NSString* app_path) {
@@ -294,18 +304,21 @@ NSString* GetBundleIdentifierFromPath(NSString* app_path) {
   return bundle_identifier;
 }
 
-void PrepareWebTests(NSString* udid, NSString* app_path) {
+void PrepareWebTests(NSString* udid, NSString* app_path, bool verbose) {
   NSString* bundle_identifier = GetBundleIdentifierFromPath(app_path);
   XCRunTask* uninstall_task = [[XCRunTask alloc]
       initWithArguments:@[ @"simctl", @"uninstall", udid, bundle_identifier ]];
-  [uninstall_task run];
+  [uninstall_task run:verbose];
 
   XCRunTask* install_task = [[XCRunTask alloc]
       initWithArguments:@[ @"simctl", @"install", udid, app_path ]];
-  [install_task run];
+  [install_task run:verbose];
 }
 
-int RunWebTest(NSString* app_path, NSString* udid, NSMutableArray* cmd_args) {
+int RunWebTest(NSString* app_path,
+               NSString* udid,
+               NSMutableArray* cmd_args,
+               bool verbose) {
   NSMutableArray* arguments = [NSMutableArray array];
   [arguments addObject:@"simctl"];
   [arguments addObject:@"launch"];
@@ -338,7 +351,7 @@ int RunWebTest(NSString* app_path, NSString* udid, NSMutableArray* cmd_args) {
       };
   task.standardError = stderr_pipe;
 
-  [task run];
+  [task run:verbose];
   return [task terminationStatus];
 }
 
@@ -347,7 +360,8 @@ int RunApplication(NSString* app_path,
                    NSString* udid,
                    NSMutableDictionary* app_env,
                    NSMutableArray* cmd_args,
-                   NSMutableArray* tests_filter) {
+                   NSMutableArray* tests_filter,
+                   bool verbose) {
   NSString* tempFilePath = [NSTemporaryDirectory()
       stringByAppendingPathComponent:NSUUID.UUID.UUIDString];
   [NSFileManager.defaultManager createFileAtPath:tempFilePath
@@ -431,7 +445,7 @@ int RunApplication(NSString* app_path,
         };
     task.standardError = stderr_pipe;
   }
-  [task run];
+  [task run:verbose];
   return [task terminationStatus];
 }
 
@@ -449,9 +463,10 @@ int main(int argc, char* const argv[]) {
   NSMutableDictionary* app_env = [NSMutableDictionary dictionary];
   NSMutableArray* cmd_args = [NSMutableArray array];
   NSMutableArray* tests_filter = [NSMutableArray array];
+  bool verbose_commands = false;
 
   int c;
-  while ((c = getopt(argc, argv, "hs:d:u:t:e:c:pwl")) != -1) {
+  while ((c = getopt(argc, argv, "hs:d:u:t:e:c:pwlv")) != -1) {
     switch (c) {
       case 's':
         sdk_version = @(optarg);
@@ -491,6 +506,9 @@ int main(int argc, char* const argv[]) {
       case 'l':
         wants_print_supported_devices = true;
         break;
+      case 'v':
+        verbose_commands = true;
+        break;
       case 'h':
         PrintUsage();
         exit(kExitSuccess);
@@ -500,7 +518,7 @@ int main(int argc, char* const argv[]) {
     }
   }
 
-  NSDictionary* simctl_list = GetSimulatorList();
+  NSDictionary* simctl_list = GetSimulatorList(verbose_commands);
 
   if (wants_print_supported_devices) {
     PrintSupportedDevices(simctl_list);
@@ -535,7 +553,8 @@ int main(int argc, char* const argv[]) {
   if (udid == nil) {
     udid = GetDeviceBySDKAndName(simctl_list, device_name, sdk_version);
     if (udid == nil) {
-      udid = CreateDeviceBySDKAndName(device_name, sdk_version);
+      udid =
+          CreateDeviceBySDKAndName(device_name, sdk_version, verbose_commands);
       if (udid == nil) {
         LogError(@"Unable to find a device %@ with SDK %@.", device_name,
                  sdk_version);
@@ -554,18 +573,18 @@ int main(int argc, char* const argv[]) {
   }
 
   if (wants_print_home) {
-    PrintDeviceHome(udid);
+    PrintDeviceHome(udid, verbose_commands);
     exit(kExitSuccess);
   }
 
   // To run the web test, the simulator should work. So we do not kill the
   // simulator when running the web tests.
   if (!run_web_test && !prepare_web_test) {
-    KillSimulator();
+    KillSimulator(verbose_commands);
   }
 
   if (wants_wipe) {
-    WipeDevice(udid);
+    WipeDevice(udid, verbose_commands);
     printf("Device wiped.\n");
     exit(kExitSuccess);
   }
@@ -599,20 +618,20 @@ int main(int argc, char* const argv[]) {
   }
 
   if (prepare_web_test) {
-    PrepareWebTests(udid, app_path);
+    PrepareWebTests(udid, app_path, verbose_commands);
     exit(kExitSuccess);
   }
 
   int return_code = -1;
   if (run_web_test) {
-    return_code = RunWebTest(app_path, udid, cmd_args);
+    return_code = RunWebTest(app_path, udid, cmd_args, verbose_commands);
   } else {
     return_code = RunApplication(app_path, xctest_path, udid, app_env, cmd_args,
-                                 tests_filter);
+                                 tests_filter, verbose_commands);
   }
 
   if (!run_web_test) {
-    KillSimulator();
+    KillSimulator(verbose_commands);
   }
 
   return return_code;
