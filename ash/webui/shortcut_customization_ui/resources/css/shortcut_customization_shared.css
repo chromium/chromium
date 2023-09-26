@@ -52,7 +52,6 @@ iron-icon[icon='shortcut-customization:lock'] {
   align-items: center;
   display: flex;
   margin-inline-start: 8px;
-  padding-inline-end: 10px;
 }
 
 .lock-icon-container[hidden] {
@@ -63,7 +62,6 @@ iron-icon[icon='shortcut-customization:lock'] {
   align-items: center;
   display: flex;
   margin-inline-start: 8px;
-  padding-inline-end: 10px;
 }
 
 .edit-icon-container[hidden] {
