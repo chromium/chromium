@@ -1234,10 +1234,12 @@ void Window::NotifyWindowVisibilityChangedUp(aura::Window* target,
 }
 
 bool Window::CleanupGestureState() {
-  // If it's in the process already, nothing has to be done. Reentrant can
+  // If it's in the process already, clean up the consumer state. Reentrant can
   // happen through some event handlers for CancelActiveTouches().
-  if (cleaning_up_gesture_state_)
-    return false;
+  Env* env = Env::GetInstance();
+  if (cleaning_up_gesture_state_) {
+    return env->gesture_recognizer()->CleanupStateForConsumer(this);
+  }
   cleaning_up_gesture_state_ = true;
 
   // Cancelling active touches may end up destroying this window. We use a
@@ -1245,11 +1247,11 @@ bool Window::CleanupGestureState() {
   WindowTracker tracking_this({this});
 
   bool state_modified = false;
-  Env* env = Env::GetInstance();
   state_modified |= env->gesture_recognizer()->CancelActiveTouches(this);
-  state_modified |= env->gesture_recognizer()->CleanupStateForConsumer(this);
   if (!tracking_this.Contains(this))
     return state_modified;
+
+  state_modified |= env->gesture_recognizer()->CleanupStateForConsumer(this);
   // Potentially event handlers for CancelActiveTouches() within
   // CleanupGestureState may change the window hierarchy (or reorder the
   // |children_|), and therefore iterating over |children_| is not safe. Use
