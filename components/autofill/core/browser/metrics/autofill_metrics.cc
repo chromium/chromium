@@ -2354,7 +2354,7 @@ void AutofillMetrics::FormInteractionsUkmLogger::
 
   OptionalBoolean was_autofilled = OptionalBoolean::kUndefined;
   OptionalBoolean had_value_before_filling = OptionalBoolean::kUndefined;
-  DenseSet<SkipStatus> autofill_skipped_status;
+  DenseSet<FieldFillingSkipReason> autofill_skipped_status;
   size_t autofill_count = 0;
 
   OptionalBoolean user_typed_into_field = OptionalBoolean::kFalse;

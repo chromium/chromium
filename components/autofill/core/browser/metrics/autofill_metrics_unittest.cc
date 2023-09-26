@@ -8291,8 +8291,9 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
       using UFIT = UkmFieldInfoType;
       const auto* const entry = field_entries[i];
 
-      SkipStatus status =
-          i == 2 ? SkipStatus::kNoFillableGroup : SkipStatus::kNotSkipped;
+      FieldFillingSkipReason status =
+          i == 2 ? FieldFillingSkipReason::kNoFillableGroup
+                 : FieldFillingSkipReason::kNotSkipped;
       DenseSet<AutofillStatus> autofill_status_vector;
       if (i == 0) {
         autofill_status_vector = {
@@ -8324,7 +8325,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
           {UFIT::kFieldSignatureName,
            Collapse(CalculateFieldSignatureForField(form.fields[i])).value()},
           {UFIT::kAutofillSkippedStatusName,
-           DenseSet<SkipStatus>{status}.data()[0]},
+           DenseSet<FieldFillingSkipReason>{status}.data()[0]},
           {UFIT::kFormControlTypeName,
            base::to_underlying(FormControlType::kText)},
           {UFIT::kAutocompleteStateName,

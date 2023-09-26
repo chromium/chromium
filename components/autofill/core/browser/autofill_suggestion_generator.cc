@@ -223,12 +223,12 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
     const FormFieldData& field,
     absl::optional<ServerFieldTypeSet> last_targeted_fields,
     AutofillType field_type,
-    base::span<SkipStatus> skip_statuses,
+    base::span<FieldFillingSkipReason> skip_statuses,
     const std::string& app_locale) {
   ServerFieldTypeSet field_types;
   CHECK_EQ(skip_statuses.size(), form.field_count());
   for (size_t i = 0; i < form.field_count(); ++i) {
-    if (skip_statuses[i] == SkipStatus::kNotSkipped) {
+    if (skip_statuses[i] == FieldFillingSkipReason::kNotSkipped) {
       field_types.insert(form.field(i)->Type().GetStorableType());
     }
   }

@@ -3439,7 +3439,7 @@ be describing additional metrics about the same event.
     <summary>
       Whether filling the field was skipped during autofill, and if it was
       skipped, what the skipping reasons were. Recorded as a DenseSet of
-      |SkipStatus|.
+      |FieldFillingSkipReason|.
     </summary>
   </metric>
   <metric name="AutofillStatusVector">

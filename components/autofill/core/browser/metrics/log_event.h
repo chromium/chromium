@@ -31,7 +31,7 @@ OptionalBoolean ToOptionalBoolean(bool value);
 bool OptionalBooleanToBool(OptionalBoolean value);
 
 // Whether and why filling for a field was skipped during autofill.
-enum class SkipStatus {
+enum class FieldFillingSkipReason {
   // Values are recorded as metrics and must not change or be reused.
   kUnknown = 0,
   kNotSkipped = 1,
@@ -104,7 +104,7 @@ struct FillFieldLogEventImpl {
   // This refers to `TriggleFillFieldLogEvent::fill_event_id`.
   FillEventId fill_event_id = IsRequired();
   OptionalBoolean had_value_before_filling = IsRequired();
-  SkipStatus autofill_skipped_status = IsRequired();
+  FieldFillingSkipReason autofill_skipped_status = IsRequired();
   // The two attributes below are only valid if |autofill_skipped_status| has a
   // value of "kNotSkipped".
   // Whether the field was autofilled during this fill operation. If a fill

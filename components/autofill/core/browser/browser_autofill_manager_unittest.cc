@@ -5672,7 +5672,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtFormSubmitted) {
     expected_events.push_back(FillFieldLogEvent{
         .fill_event_id = trigger_fill_field_log_event->fill_event_id,
         .had_value_before_filling = OptionalBoolean::kFalse,
-        .autofill_skipped_status = SkipStatus::kNotSkipped,
+        .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
         .was_autofilled = OptionalBoolean::kTrue,
         .had_value_after_filling = OptionalBoolean::kTrue,
     });
@@ -5748,7 +5748,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
       expected_events.push_back(FillFieldLogEvent{
           .fill_event_id = fill_event_id,
           .had_value_before_filling = OptionalBoolean::kTrue,
-          .autofill_skipped_status = SkipStatus::kNotSkipped,
+          .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
           .was_autofilled = OptionalBoolean::kTrue,
           .had_value_after_filling = OptionalBoolean::kTrue,
       });
@@ -5758,7 +5758,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
       expected_events.push_back(FillFieldLogEvent{
           .fill_event_id = fill_event_id,
           .had_value_before_filling = OptionalBoolean::kFalse,
-          .autofill_skipped_status = SkipStatus::kNotSkipped,
+          .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
           .was_autofilled = OptionalBoolean::kFalse,
           .had_value_after_filling = OptionalBoolean::kFalse,
       });
@@ -5767,7 +5767,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
       expected_events.push_back(FillFieldLogEvent{
           .fill_event_id = fill_event_id,
           .had_value_before_filling = OptionalBoolean::kTrue,
-          .autofill_skipped_status = SkipStatus::kUserFilledFields,
+          .autofill_skipped_status = FieldFillingSkipReason::kUserFilledFields,
           .was_autofilled = OptionalBoolean::kFalse,
           .had_value_after_filling = OptionalBoolean::kTrue,
       });
@@ -5775,7 +5775,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
       expected_events.push_back(FillFieldLogEvent{
           .fill_event_id = fill_event_id,
           .had_value_before_filling = OptionalBoolean::kFalse,
-          .autofill_skipped_status = SkipStatus::kNotSkipped,
+          .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
           .was_autofilled = OptionalBoolean::kTrue,
           .had_value_after_filling = OptionalBoolean::kTrue,
       });
@@ -5841,14 +5841,14 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtRefillForm) {
   FillFieldLogEvent expected_fill_field_log_event1{
       .fill_event_id = trigger_fill_field_log_event1->fill_event_id,
       .had_value_before_filling = OptionalBoolean::kFalse,
-      .autofill_skipped_status = SkipStatus::kNotSkipped,
+      .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
       .was_autofilled = OptionalBoolean::kTrue,
       .had_value_after_filling = OptionalBoolean::kTrue,
   };
   FillFieldLogEvent expected_fill_field_log_event2{
       .fill_event_id = trigger_fill_field_log_event2->fill_event_id,
       .had_value_before_filling = OptionalBoolean::kTrue,
-      .autofill_skipped_status = SkipStatus::kNotSkipped,
+      .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
       .was_autofilled = OptionalBoolean::kTrue,
       .had_value_after_filling = OptionalBoolean::kTrue,
   };
@@ -5889,7 +5889,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtRefillForm) {
 
       FillFieldLogEvent expected_event2 = expected_fill_field_log_event2;
       expected_event2.autofill_skipped_status =
-          SkipStatus::kAutofilledFieldsNotRefill;
+          FieldFillingSkipReason::kAutofilledFieldsNotRefill;
       expected_event2.was_autofilled = OptionalBoolean::kFalse;
       expected_events.push_back(expected_event2);
     }
@@ -5939,7 +5939,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtUserTypingInField) {
   FillFieldLogEvent expected_fill_field_log_event{
       .fill_event_id = trigger_fill_field_log_event->fill_event_id,
       .had_value_before_filling = OptionalBoolean::kFalse,
-      .autofill_skipped_status = SkipStatus::kNotSkipped,
+      .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
       .was_autofilled = OptionalBoolean::kTrue,
       .had_value_after_filling = OptionalBoolean::kTrue,
   };
@@ -6014,7 +6014,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   FillFieldLogEvent expected_fill_field_log_event{
       .fill_event_id = trigger_fill_field_log_event->fill_event_id,
       .had_value_before_filling = OptionalBoolean::kFalse,
-      .autofill_skipped_status = SkipStatus::kNotSkipped,
+      .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
       .was_autofilled = OptionalBoolean::kTrue,
       .had_value_after_filling = OptionalBoolean::kTrue,
   };
@@ -6045,7 +6045,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
       expected_events.push_back(FillFieldLogEvent{
           .fill_event_id = trigger_fill_field_log_event->fill_event_id,
           .had_value_before_filling = OptionalBoolean::kFalse,
-          .autofill_skipped_status = SkipStatus::kNotSkipped,
+          .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
           .was_autofilled = OptionalBoolean::kFalse,
           .had_value_after_filling = OptionalBoolean::kFalse,
       });

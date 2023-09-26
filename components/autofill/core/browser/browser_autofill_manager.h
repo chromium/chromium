@@ -447,7 +447,7 @@ class BrowserAutofillManager : public AutofillManager,
   };
 
   // Given a `form` (and corresponding `form_structure`) to fill, return a list
-  // of skip statuses for the fields.
+  // of skip reasons for the fields.
   // `optional_credit_card` is the credit card to be filled or nullopt if we're
   // filling an AutofillProfile.
   // `type_group_originally_filled` denotes, in case of a refill, what groups
@@ -463,7 +463,7 @@ class BrowserAutofillManager : public AutofillManager,
   // experiment resumes.
   // TODO(crbug.com/1481035): Make `optional_type_groups_originally_filled` also
   // a ServerFieldTypeSet.
-  std::vector<SkipStatus> GetSkipStatuses(
+  std::vector<FieldFillingSkipReason> GetFieldFillingSkipReasons(
       const FormData& form,
       const FormStructure& form_structure,
       const FormFieldData& trigger_field,

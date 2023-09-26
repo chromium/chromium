@@ -65,7 +65,7 @@ class AutofillSuggestionGenerator {
       const FormFieldData& field,
       absl::optional<ServerFieldTypeSet> last_targeted_fields,
       AutofillType field_type,
-      base::span<SkipStatus> skip_statuses,
+      base::span<FieldFillingSkipReason> skip_statuses,
       const std::string& app_locale);
 
   // Returns a list of profiles that will be displayed as suggestions to the
