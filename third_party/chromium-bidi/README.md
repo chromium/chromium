@@ -174,6 +174,12 @@ Use the `DEBUG` environment variable to see debug info:
 DEBUG=* npm run server
 ```
 
+Use the `DEBUG_DEPTH` (default: `10`) environment variable to see debug deeply nested objects:
+
+```sh
+DEBUG_DEPTH=100 DEBUG=* npm run server
+```
+
 Use the CLI argument `--headless=false` to run browser in headful mode:
 
 ```sh

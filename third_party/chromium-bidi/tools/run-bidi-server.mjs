@@ -62,6 +62,7 @@ if (CHANNEL === 'local') {
 // DEBUG = (empty string) is allowed.
 const DEBUG = process.env.DEBUG ?? 'bidi:*';
 const DEBUG_COLORS = process.env.DEBUG_COLORS || 'yes';
+const DEBUG_DEPTH = process.env.DEBUG_DEPTH || '10';
 const LOG_DIR = process.env.LOG_DIR || 'logs';
 const LOG_FILE =
   process.env.LOG_FILE ||
@@ -92,6 +93,7 @@ const subprocess = spawn(
       BROWSER_BIN,
       DEBUG,
       DEBUG_COLORS,
+      DEBUG_DEPTH,
       NODE_OPTIONS,
       PORT,
       // keep-sorted end
