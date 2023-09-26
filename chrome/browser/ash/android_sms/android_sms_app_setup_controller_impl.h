@@ -12,7 +12,7 @@
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/android_sms/android_sms_app_setup_controller.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
-#include "chrome/browser/web_applications/web_app_id.h"
+#include "components/webapps/common/web_app_id.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_result.h"
 #include "url/gurl.h"
@@ -58,10 +58,10 @@ class AndroidSmsAppSetupControllerImpl : public AndroidSmsAppSetupController {
     PwaDelegate();
     virtual ~PwaDelegate();
 
-    virtual absl::optional<web_app::AppId> GetPwaForUrl(const GURL& install_url,
+    virtual absl::optional<webapps::AppId> GetPwaForUrl(const GURL& install_url,
                                                         Profile* profile);
     virtual network::mojom::CookieManager* GetCookieManager(Profile* profile);
-    virtual void RemovePwa(const web_app::AppId& app_id,
+    virtual void RemovePwa(const webapps::AppId& app_id,
                            Profile* profile,
                            SuccessCallback callback);
   };
@@ -70,7 +70,7 @@ class AndroidSmsAppSetupControllerImpl : public AndroidSmsAppSetupController {
   void SetUpApp(const GURL& app_url,
                 const GURL& install_url,
                 SuccessCallback callback) override;
-  absl::optional<web_app::AppId> GetPwa(const GURL& install_url) override;
+  absl::optional<webapps::AppId> GetPwa(const GURL& install_url) override;
   void DeleteRememberDeviceByDefaultCookie(const GURL& app_url,
                                            SuccessCallback callback) override;
   void RemoveApp(const GURL& app_url,

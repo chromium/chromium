@@ -54,7 +54,7 @@ AndroidSmsAppSetupControllerImpl::PwaDelegate::PwaDelegate() = default;
 
 AndroidSmsAppSetupControllerImpl::PwaDelegate::~PwaDelegate() = default;
 
-absl::optional<web_app::AppId>
+absl::optional<webapps::AppId>
 AndroidSmsAppSetupControllerImpl::PwaDelegate::GetPwaForUrl(
     const GURL& install_url,
     Profile* profile) {
@@ -69,7 +69,7 @@ AndroidSmsAppSetupControllerImpl::PwaDelegate::GetCookieManager(
 }
 
 void AndroidSmsAppSetupControllerImpl::PwaDelegate::RemovePwa(
-    const web_app::AppId& app_id,
+    const webapps::AppId& app_id,
     Profile* profile,
     SuccessCallback callback) {
   // |provider| will be nullptr if Lacros web apps are enabled.
@@ -128,7 +128,7 @@ void AndroidSmsAppSetupControllerImpl::SetUpApp(const GURL& app_url,
                      std::move(callback)));
 }
 
-absl::optional<web_app::AppId> AndroidSmsAppSetupControllerImpl::GetPwa(
+absl::optional<webapps::AppId> AndroidSmsAppSetupControllerImpl::GetPwa(
     const GURL& install_url) {
   return pwa_delegate_->GetPwaForUrl(install_url, profile_);
 }
@@ -156,7 +156,7 @@ void AndroidSmsAppSetupControllerImpl::RemoveApp(
     const GURL& install_url,
     const GURL& migrated_to_app_url,
     SuccessCallback callback) {
-  absl::optional<web_app::AppId> app_id =
+  absl::optional<webapps::AppId> app_id =
       pwa_delegate_->GetPwaForUrl(install_url, profile_);
 
   // If there is no app installed at |url|, there is nothing more to do.

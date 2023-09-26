@@ -156,7 +156,7 @@ class AndroidSmsAppSetupControllerImplTest : public testing::Test {
     }
 
     // AndroidSmsAppSetupControllerImpl::PwaDelegate:
-    absl::optional<web_app::AppId> GetPwaForUrl(const GURL& install_url,
+    absl::optional<webapps::AppId> GetPwaForUrl(const GURL& install_url,
                                                 Profile* profile) override {
       if (!base::Contains(url_to_pwa_map_, install_url))
         return absl::nullopt;
@@ -169,7 +169,7 @@ class AndroidSmsAppSetupControllerImplTest : public testing::Test {
     }
 
     void RemovePwa(
-        const web_app::AppId& app_id,
+        const webapps::AppId& app_id,
         Profile* profile,
         AndroidSmsAppSetupController::SuccessCallback callback) override {
       for (const auto& url_pwa_pair : url_to_pwa_map_) {
@@ -185,7 +185,7 @@ class AndroidSmsAppSetupControllerImplTest : public testing::Test {
 
    private:
     raw_ptr<FakeCookieManager, ExperimentalAsh> fake_cookie_manager_;
-    base::flat_map<GURL, web_app::AppId> url_to_pwa_map_;
+    base::flat_map<GURL, webapps::AppId> url_to_pwa_map_;
   };
 
   AndroidSmsAppSetupControllerImplTest()
