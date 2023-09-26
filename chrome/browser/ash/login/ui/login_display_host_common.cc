@@ -23,6 +23,8 @@
 #include "chrome/browser/ash/login/choobe_flow_controller.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/lock_screen_utils.h"
+#include "chrome/browser/ash/login/login_pref_names.h"
+#include "chrome/browser/ash/login/oobe_metrics_helper.h"
 #include "chrome/browser/ash/login/oobe_quick_start/second_device_auth_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/login/screens/encryption_migration_screen.h"
@@ -222,7 +224,8 @@ LoginDisplayHostCommon::LoginDisplayHostCommon()
     : keep_alive_(KeepAliveOrigin::LOGIN_DISPLAY_HOST_WEBUI,
                   KeepAliveRestartOption::DISABLED),
       login_ui_pref_controller_(std::make_unique<LoginUIPrefController>()),
-      wizard_context_(std::make_unique<WizardContext>()) {
+      wizard_context_(std::make_unique<WizardContext>()),
+      oobe_metrics_helper_(std::make_unique<OobeMetricsHelper>()) {
   // Close the login screen on app termination (for the case where shutdown
   // occurs before login completes).
   app_terminating_subscription_ =
@@ -529,13 +532,15 @@ void LoginDisplayHostCommon::OnPowerwashAllowedCallback(
   if (tpm_firmware_update_mode.has_value()) {
     // Force the TPM firmware update option to be enabled.
     g_browser_process->local_state()->SetInteger(
-        prefs::kFactoryResetTPMFirmwareUpdateMode,
+        ::prefs::kFactoryResetTPMFirmwareUpdateMode,
         static_cast<int>(tpm_firmware_update_mode.value()));
   }
   StartWizard(ResetView::kScreenId);
 }
 
 void LoginDisplayHostCommon::StartUserOnboarding() {
+  oobe_metrics_helper_->OnOnboardingFlowStarted(
+      g_browser_process->local_state()->GetTime(prefs::kOobeStartTime));
   StartWizard(LocaleSwitchView::kScreenId);
 }
 
@@ -699,6 +704,10 @@ void LoginDisplayHostCommon::OnBrowserAdded(Browser* browser) {
 
 WizardContext* LoginDisplayHostCommon::GetWizardContext() {
   return wizard_context_.get();
+}
+
+OobeMetricsHelper* LoginDisplayHostCommon::GetOobeMetricsHelper() {
+  return oobe_metrics_helper_.get();
 }
 
 void LoginDisplayHostCommon::OnCancelPasswordChangedFlow() {

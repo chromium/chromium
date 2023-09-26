@@ -84,6 +84,7 @@ class FakeLoginDisplayHost : public LoginDisplayHost {
 
   void SetOobeUI(OobeUI* oobe_ui);
   void SetWizardController(std::unique_ptr<WizardController> wizard_controller);
+  OobeMetricsHelper* GetOobeMetricsHelper() override;
 
  private:
   class FakeBaseScreen;
@@ -95,6 +96,7 @@ class FakeLoginDisplayHost : public LoginDisplayHost {
   std::unique_ptr<FakeBaseScreen> fake_screen_;
   std::unique_ptr<WizardContext> wizard_context_;
   std::unique_ptr<WizardController> wizard_controller_;
+  std::unique_ptr<OobeMetricsHelper> oobe_metrics_helper_;
 };
 
 }  // namespace ash

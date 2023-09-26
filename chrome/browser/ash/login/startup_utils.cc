@@ -99,6 +99,7 @@ void CreateOobeCompleteFlagFile() {
 void StartupUtils::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kOobeComplete, false);
   registry->RegisterStringPref(prefs::kOobeScreenPending, "");
+  registry->RegisterTimePref(prefs::kOobeStartTime, base::Time());
   registry->RegisterIntegerPref(::prefs::kDeviceRegistered, -1);
   registry->RegisterBooleanPref(::prefs::kEnrollmentRecoveryRequired, false);
   registry->RegisterStringPref(::prefs::kInitialLocale, "en-US");

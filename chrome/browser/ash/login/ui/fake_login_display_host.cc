@@ -28,7 +28,8 @@ class FakeLoginDisplayHost::FakeBaseScreen : public BaseScreen {
 };
 
 FakeLoginDisplayHost::FakeLoginDisplayHost()
-    : wizard_context_(std::make_unique<WizardContext>()) {
+    : wizard_context_(std::make_unique<WizardContext>()),
+      oobe_metrics_helper_(std::make_unique<OobeMetricsHelper>()) {
   // Only one SessionManager can be instantiated at a time. Check to see if one
   // has already been instantiated before creating one.
   if (!session_manager::SessionManager::Get())
@@ -202,6 +203,10 @@ void FakeLoginDisplayHost::SetOobeUI(OobeUI* oobe_ui) {
 void FakeLoginDisplayHost::SetWizardController(
     std::unique_ptr<WizardController> wizard_controller) {
   wizard_controller_ = std::move(wizard_controller);
+}
+
+OobeMetricsHelper* FakeLoginDisplayHost::GetOobeMetricsHelper() {
+  return oobe_metrics_helper_.get();
 }
 
 }  // namespace ash

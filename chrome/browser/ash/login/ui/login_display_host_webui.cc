@@ -40,6 +40,7 @@
 #include "chrome/browser/ash/language_preferences.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/helper.h"
+#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/startup_utils.h"
@@ -257,7 +258,7 @@ void ShowLoginWizardFinish(
   std::string timezone;
   if (system::PerUserTimezoneEnabled()) {
     timezone = g_browser_process->local_state()->GetString(
-        prefs::kSigninScreenTimezone);
+        ::prefs::kSigninScreenTimezone);
   }
 
   // TODO(crbug.com/1105387): Part of initial screen logic.
@@ -532,6 +533,14 @@ void LoginDisplayHostWebUI::OnOobeConfigurationChanged() {
 
 void LoginDisplayHostWebUI::StartWizard(OobeScreenId first_screen) {
   if (!StartupUtils::IsOobeCompleted()) {
+    // If `prefs::kOobeStartTime` is not yet stored, then this is the first
+    // time OOBE has started.
+    if (GetLocalState() &&
+        GetLocalState()->GetTime(prefs::kOobeStartTime).is_null()) {
+      GetLocalState()->SetTime(prefs::kOobeStartTime, base::Time::Now());
+      GetOobeMetricsHelper()->OnPreLoginOobeFirstStart();
+    }
+
     CHECK(OobeConfiguration::Get());
     if (waiting_for_configuration_)
       return;

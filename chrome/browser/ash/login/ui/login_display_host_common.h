@@ -28,6 +28,7 @@ namespace ash {
 
 class KioskLaunchController;
 class LoginFeedback;
+class OobeMetricsHelper;
 
 // LoginDisplayHostCommon contains code which is not specific to a particular UI
 // implementation - the goal is to reduce code duplication between
@@ -94,6 +95,8 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   void OnBrowserAdded(Browser* browser) override;
 
   WizardContext* GetWizardContext() override;
+
+  OobeMetricsHelper* GetOobeMetricsHelper() override;
 
  protected:
   virtual void OnStartSignInScreen() = 0;
@@ -163,6 +166,8 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
       bootstrap_controller_;
 
   base::CallbackListSubscription app_terminating_subscription_;
+
+  std::unique_ptr<OobeMetricsHelper> oobe_metrics_helper_;
 
   base::WeakPtrFactory<LoginDisplayHostCommon> weak_factory_{this};
 };

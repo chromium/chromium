@@ -704,6 +704,78 @@ chromium-metrics-reviews@google.com.
       variants="OOBEScreenShownBeforeNetworkError"/>
 </histogram>
 
+<histogram name="OOBE.OnboardingFlowDuration.{OnboardingType}" units="ms"
+    expires_after="2024-03-18">
+  <owner>osamafathy@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Records the total time it took the user to complete the onboarding flow,
+    starting from after the login of the new user (before the first onboarding
+    screen is shown). and ending after the completion of the last onboarding
+    screen (before the start of the session). The time recorded includes the
+    time while the device is turned off.
+  </summary>
+  <token key="OnboardingType">
+    <variant name="FirstOnboarding"/>
+    <variant name="SubsequentOnboarding"/>
+  </token>
+</histogram>
+
+<histogram name="OOBE.OnboardingFlowStatus.{OnboardingType}"
+    enum="BooleanStartedCompleted" expires_after="2024-03-18">
+  <owner>osamafathy@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Records &quot;Started&quot; and &quot;Completed&quot; events for the entire
+    onboarding flow of a new user. &quot;Started&quot; is recorded after a new
+    user logs-in (before the first onboarding screen is shown).
+    &quot;Completed&quot; is recorded after the completion of the last screen in
+    the onboarding flow (before the start of the session).
+  </summary>
+  <token key="OnboardingType">
+    <variant name="FirstOnboarding"/>
+    <variant name="SubsequentOnboarding"/>
+  </token>
+</histogram>
+
+<histogram name="OOBE.OobeFlowDuration" units="ms" expires_after="2024-03-18">
+  <owner>osamafathy@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Records the total time it took the user to complete OOBE, starting from the
+    first start of OOBE (before the first OOBE screen is shown) and ending after
+    the completion of the last onboarding screen for the first user (before the
+    start of the first session). The time recorded includes the time while the
+    device is turned off.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.OobeFlowStatus" enum="BooleanStartedCompleted"
+    expires_after="2024-03-18">
+  <owner>osamafathy@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Records &quot;Started&quot; and &quot;Completed&quot; events for the entire
+    OOBE flow. &quot;Started&quot; is recorded at the first start of OOBE before
+    the first OOBE screen is shown. &quot;Completed&quot; is recorded after the
+    completion of the last screen in the onboarding flow of the first user and
+    before sign-in is completed.
+  </summary>
+</histogram>
+
+<histogram name="OOBE.OobeStartToOnboardingStartTime" units="ms"
+    expires_after="2024-03-18">
+  <owner>osamafathy@google.com</owner>
+  <owner>cros-oobe@google.com</owner>
+  <summary>
+    Records the total time it took the user to complete OOBE, starting from the
+    first start of OOBE (before the first OOBE screen is shown) and ending after
+    the completion of the last onboarding screen for the first user (before the
+    start of the first session). The time recorded includes the time while the
+    device is turned off.
+  </summary>
+</histogram>
+
 <histogram name="OOBE.PinSetupScreen.UserActions"
     enum="PinSetupScreenUserAction" expires_after="2024-03-03">
   <owner>dkuzmin@google.com</owner>

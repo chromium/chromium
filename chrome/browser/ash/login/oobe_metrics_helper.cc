@@ -32,6 +32,16 @@ constexpr char kUmaStepCompletionTimeByExitReasonName[] =
     "OOBE.StepCompletionTimeByExitReason.";
 constexpr char kUmaBootToOobeCompleted[] = "OOBE.BootToOOBECompleted.";
 
+constexpr char kUmaOobeFlowStatus[] = "OOBE.OobeFlowStatus";
+constexpr char kUmaOobeFlowDuration[] = "OOBE.OobeFlowDuration";
+constexpr char kUmaOnboardingFlowStatus[] = "OOBE.OnboardingFlowStatus.";
+constexpr char kUmaOnboardingFlowDuration[] = "OOBE.OnboardingFlowDuration.";
+constexpr char kUmaOobeStartToOnboardingStart[] =
+    "OOBE.OobeStartToOnboardingStartTime";
+
+constexpr char kUmaFirstOnboardingSuffix[] = "FirstOnboarding";
+constexpr char kUmaSubsequentOnboardingSuffix[] = "SubsequentOnboarding";
+
 struct LegacyScreenNameEntry {
   StaticOobeScreenId screen;
   const char* uma_name;
@@ -97,6 +107,11 @@ void OobeMetricsHelper::OnScreenExited(OobeScreenId screen,
                                 base::Milliseconds(10), base::Minutes(10), 100);
 }
 
+void OobeMetricsHelper::OnPreLoginOobeFirstStart() {
+  // Record `False` to report the `Started` bucket.
+  base::UmaHistogramBoolean(kUmaOobeFlowStatus, false);
+}
+
 void OobeMetricsHelper::OnPreLoginOobeCompleted(
     CompletedPreLoginOobeFlowType flow_type) {
   base::TimeTicks startup_time =
@@ -121,6 +136,45 @@ void OobeMetricsHelper::OnPreLoginOobeCompleted(
   std::string histogram_name = kUmaBootToOobeCompleted + type_string;
   base::UmaHistogramCustomTimes(histogram_name, delta, base::Milliseconds(10),
                                 base::Minutes(10), 100);
+}
+
+void OobeMetricsHelper::OnOnboardingFlowStarted(base::Time oobe_start_time) {
+  std::string onboarding_type;
+  if (oobe_start_time.is_null()) {
+    onboarding_type = kUmaSubsequentOnboardingSuffix;
+  } else {
+    base::UmaHistogramCustomTimes(
+        kUmaOobeStartToOnboardingStart, base::Time::Now() - oobe_start_time,
+        base::Milliseconds(10), base::Minutes(30), 100);
+    onboarding_type = kUmaFirstOnboardingSuffix;
+  }
+
+  // Record `False` to report the `Started` bucket.
+  base::UmaHistogramBoolean(kUmaOnboardingFlowStatus + onboarding_type, false);
+}
+
+void OobeMetricsHelper::OnOnboadingFlowCompleted(
+    base::Time oobe_start_time,
+    base::Time onboarding_start_time) {
+  if (!oobe_start_time.is_null()) {
+    // Record `True` to report the `Completed` bucket.
+    base::UmaHistogramBoolean(kUmaOobeFlowStatus, true);
+    base::UmaHistogramLongTimes(kUmaOobeFlowDuration,
+                                base::Time::Now() - oobe_start_time);
+  }
+
+  if (!onboarding_start_time.is_null()) {
+    std::string type = oobe_start_time.is_null()
+                           ? kUmaSubsequentOnboardingSuffix
+                           : kUmaFirstOnboardingSuffix;
+
+    // Record `True` to report the `Completed` bucket.
+    base::UmaHistogramBoolean(kUmaOnboardingFlowStatus + type, true);
+    base::UmaHistogramCustomTimes(kUmaOnboardingFlowDuration + type,
+                                  base::Time::Now() - onboarding_start_time,
+                                  base::Milliseconds(1), base::Minutes(30),
+                                  100);
+  }
 }
 
 void OobeMetricsHelper::OnEnrollmentScreenShown() {

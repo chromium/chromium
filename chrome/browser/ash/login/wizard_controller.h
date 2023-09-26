@@ -610,8 +610,6 @@ class WizardController : public OobeUI::Observer {
   // Shared factory for outgoing network requests.
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
 
-  OobeMetricsHelper oobe_metrics_helper_;
-
   base::WeakPtrFactory<WizardController> weak_factory_{this};
 };
 

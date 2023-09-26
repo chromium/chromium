@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
@@ -643,7 +644,9 @@ class OobeInteractiveUITest : public OobeBaseTest,
   OobeInteractiveUITest(const OobeInteractiveUITest&) = delete;
   OobeInteractiveUITest& operator=(const OobeInteractiveUITest&) = delete;
 
-  OobeInteractiveUITest() = default;
+  OobeInteractiveUITest() {
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
+  }
   ~OobeInteractiveUITest() override = default;
 
   // OobeBaseTest:
@@ -676,6 +679,8 @@ class OobeInteractiveUITest : public OobeBaseTest,
 
   const OobeEndToEndTestSetupMixin* test_setup() const { return &setup_; }
 
+  base::HistogramTester* histogram_tester() { return histogram_tester_.get(); }
+
  private:
   void ForceBrandedBuild() const;
   FakeGaiaMixin fake_gaia_{&mixin_host_};
@@ -683,6 +688,7 @@ class OobeInteractiveUITest : public OobeBaseTest,
   FakeArcTosMixin fake_arc_tos_{&mixin_host_, embedded_test_server()};
 
   OobeEndToEndTestSetupMixin setup_{&mixin_host_, GetParam()};
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
 void OobeInteractiveUITest::ForceBrandedBuild() const {
@@ -690,6 +696,8 @@ void OobeInteractiveUITest::ForceBrandedBuild() const {
 }
 
 void OobeInteractiveUITest::PerformStepsBeforeEnrollmentCheck() {
+  histogram_tester()->ExpectUniqueSample("OOBE.OobeFlowStatus", 0 /*Started*/,
+                                         1);
   ForceBrandedBuild();
   test::WaitForWelcomeScreen();
   RunWelcomeScreenChecks();
@@ -725,6 +733,11 @@ void OobeInteractiveUITest::PerformSessionSignInSteps() {
   LogInAsRegularUser();
 
   test::WaitForConsolidatedConsentScreen();
+  histogram_tester()->ExpectUniqueSample(
+      "OOBE.OnboardingFlowStatus.FirstOnboarding", 0 /*Started*/, 1);
+  histogram_tester()->ExpectTotalCount("OOBE.OobeStartToOnboardingStartTime",
+                                       1);
+
   RunConsolidatedConsentScreenChecks();
   test::TapConsolidatedConsentAccept();
 
@@ -765,6 +778,13 @@ void OobeInteractiveUITest::PerformSessionSignInSteps() {
   }
 
   HandleMarketingOptInScreen();
+  histogram_tester()->ExpectBucketCount("OOBE.OobeFlowStatus", 1 /*Completed*/,
+                                        1);
+  histogram_tester()->ExpectBucketCount(
+      "OOBE.OnboardingFlowStatus.FirstOnboarding", 1 /*Completed*/, 1);
+  histogram_tester()->ExpectTotalCount("OOBE.OobeFlowDuration", 1);
+  histogram_tester()->ExpectTotalCount(
+      "OOBE.OnboardingFlowDuration.FirstOnboarding", 1);
 }
 
 void OobeInteractiveUITest::SimpleEndToEnd() {

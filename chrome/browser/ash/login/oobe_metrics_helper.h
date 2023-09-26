@@ -42,8 +42,25 @@ class OobeMetricsHelper {
   // `OnScreenShownStatusDetermined()`.
   void OnScreenExited(OobeScreenId screen, const std::string& exit_reason);
 
+  // Called the first time pre-login OOBE has started. This method will not be
+  // called again if the device restarts into the pre-login flow.
+  void OnPreLoginOobeFirstStart();
+
   // Called upon marking pre-login OOBE as completed.
   void OnPreLoginOobeCompleted(CompletedPreLoginOobeFlowType screen);
+
+  // Called after the log-in of a new user is completed and before the showing
+  // of the first onboarding screen. If this is the first onboarding after OOBE
+  // completion, the start time of OOBE should be passed to the method,
+  // otherwise, the NULL time should be passed.
+  void OnOnboardingFlowStarted(base::Time oobe_start_time);
+
+  // Called after the last screen of the onboarding flow is exited and before
+  // the session starts.
+  // A NULL time in either `oobe_start_time` or `onboarding_start_time` means
+  // that the start time is not available.
+  void OnOnboadingFlowCompleted(base::Time oobe_start_time,
+                                base::Time onboarding_start_time);
 
   // Called when `ShowEnrollmentScreen()` is called.
   void OnEnrollmentScreenShown();

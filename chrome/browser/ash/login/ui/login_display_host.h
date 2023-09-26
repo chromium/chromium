@@ -40,6 +40,7 @@ class OobeUI;
 class WebUILoginView;
 class WizardContext;
 class WizardController;
+class OobeMetricsHelper;
 enum class OobeDialogState;
 
 // An interface that defines an out-of-box-experience (OOBE) or login screen
@@ -127,6 +128,8 @@ class LoginDisplayHost {
   virtual WizardController* GetWizardController() = 0;
 
   virtual WizardContext* GetWizardContext() = 0;
+
+  virtual OobeMetricsHelper* GetOobeMetricsHelper() = 0;
 
   // Returns current KioskLaunchController, if it exists.
   // Result should not be stored.

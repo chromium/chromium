@@ -455,7 +455,7 @@ void WizardController::Init(OobeScreenId first_screen) {
         GetLocalState()->GetBoolean(prefs::kOobeConsumerUpdateCompleted) ||
         GetLocalState()->GetBoolean(prefs::kOobeCriticalUpdateCompleted);
     if (!updated) {
-      oobe_metrics_helper_.RecordChromeVersion();
+      GetLoginDisplayHost()->GetOobeMetricsHelper()->RecordChromeVersion();
     }
   }
 
@@ -1023,7 +1023,7 @@ void WizardController::ShowLocalPasswordSetupScreen() {
 
 void WizardController::ShowEnrollmentScreen() {
   // Update the enrollment configuration and start the screen.
-  oobe_metrics_helper_.OnEnrollmentScreenShown();
+  GetLoginDisplayHost()->GetOobeMetricsHelper()->OnEnrollmentScreenShown();
   prescribed_enrollment_config_ =
       policy::EnrollmentConfig::GetPrescribedEnrollmentConfig();
   StartEnrollmentScreen(false);
@@ -1797,7 +1797,8 @@ void WizardController::OnScreenExit(OobeScreenId screen,
   }
   DCHECK(current_screen_->screen_id() == screen);
 
-  oobe_metrics_helper_.OnScreenExited(screen, exit_reason);
+  GetLoginDisplayHost()->GetOobeMetricsHelper()->OnScreenExited(screen,
+                                                                exit_reason);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2386,13 +2387,19 @@ void WizardController::OnOobeFlowFinished() {
                                            version_info::GetVersion());
   known_user.RemovePendingOnboardingScreen(account_id);
 
+  PrefService* active_user_prefs =
+      ProfileManager::GetActiveUserProfile()->GetPrefs();
   if (features::IsOobeChoobeEnabled()) {
     // Additional cleanup of CHOOBE prefs in case it was not already cleared.
-    ProfileManager::GetActiveUserProfile()->GetPrefs()->ClearPref(
-        prefs::kChoobeSelectedScreens);
-    ProfileManager::GetActiveUserProfile()->GetPrefs()->ClearPref(
-        prefs::kChoobeCompletedScreens);
+    active_user_prefs->ClearPref(prefs::kChoobeSelectedScreens);
+    active_user_prefs->ClearPref(prefs::kChoobeCompletedScreens);
   }
+
+  GetLoginDisplayHost()->GetOobeMetricsHelper()->OnOnboadingFlowCompleted(
+      GetLocalState()->GetTime(prefs::kOobeStartTime),
+      active_user_prefs->GetTime(prefs::kOobeOnboardingTime));
+
+  GetLocalState()->ClearPref(prefs::kOobeStartTime);
 
   // Launch browser and delete login host controller.
   content::GetUIThreadTaskRunner({})->PostTask(
@@ -2500,7 +2507,8 @@ void WizardController::PerformOOBECompletedActions(
   }
 
   StartupUtils::MarkOobeCompleted();
-  oobe_metrics_helper_.OnPreLoginOobeCompleted(flow_type);
+  GetLoginDisplayHost()->GetOobeMetricsHelper()->OnPreLoginOobeCompleted(
+      flow_type);
 
   // Triggers DLC installation once OOBE is complete.
   cros_healthd::internal::TriggerDlcInstall();
@@ -2521,9 +2529,11 @@ void WizardController::SetCurrentScreen(BaseScreen* new_current) {
       }
     }
 
-    oobe_metrics_helper_.OnScreenShownStatusDetermined(
-        new_current->screen_id(),
-        OobeMetricsHelper::ScreenShownStatus::kSkipped);
+    GetLoginDisplayHost()
+        ->GetOobeMetricsHelper()
+        ->OnScreenShownStatusDetermined(
+            new_current->screen_id(),
+            OobeMetricsHelper::ScreenShownStatus::kSkipped);
     return;
   }
 
@@ -2569,7 +2579,7 @@ void WizardController::SetCurrentScreen(BaseScreen* new_current) {
   }
 
   UpdateStatusAreaVisibilityForScreen(current_screen_->screen_id());
-  oobe_metrics_helper_.OnScreenShownStatusDetermined(
+  GetLoginDisplayHost()->GetOobeMetricsHelper()->OnScreenShownStatusDetermined(
       current_screen_->screen_id(),
       OobeMetricsHelper::ScreenShownStatus::kShown);
   current_screen_->Show(wizard_context_);
