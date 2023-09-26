@@ -24,7 +24,7 @@ class GoogleDriveBrowserProxy {
     return instance || (instance = new GoogleDriveBrowserProxy());
   }
 
-  static setInstance(proxy: GoogleDriveBrowserProxy) {
+  static setInstance(proxy: GoogleDriveBrowserProxy): void {
     instance = proxy;
   }
 }

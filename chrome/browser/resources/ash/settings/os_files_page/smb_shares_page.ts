@@ -50,18 +50,18 @@ export class SettingsSmbSharesPageElement extends
   /**
    * Overridden from RouteObserverMixin.
    */
-  override currentRouteChanged(route: Route) {
+  override currentRouteChanged(route: Route): void {
     if (route === routes.SMB_SHARES) {
       this.showAddSmbDialog_ = Router.getInstance().getQueryParameters().get(
                                    'showAddShare') === 'true';
     }
   }
 
-  private onAddShareClick_() {
+  private onAddShareClick_(): void {
     this.showAddSmbDialog_ = true;
   }
 
-  private onAddSmbDialogClosed_() {
+  private onAddSmbDialogClosed_(): void {
     this.showAddSmbDialog_ = false;
   }
 }

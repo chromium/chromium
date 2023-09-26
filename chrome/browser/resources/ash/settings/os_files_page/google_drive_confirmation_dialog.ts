@@ -52,21 +52,21 @@ class SettingsDriveConfirmationDialogElement extends PolymerElement {
   /**
    * When the cancel button is pressed, cancel the dialog.
    */
-  private onCancelClick_() {
+  private onCancelClick_(): void {
     this.$.dialog.cancel();
   }
 
   /**
    * When the action button is pressed, close the dialog.
    */
-  private onActionClick_() {
+  private onActionClick_(): void {
     this.$.dialog.close();
   }
 
   /**
    * When the dialog is cancelled ensure the `accept_` is false.
    */
-  private onDialogCancel_() {
+  private onDialogCancel_(): void {
     this.accept_ = false;
   }
 
@@ -74,7 +74,7 @@ class SettingsDriveConfirmationDialogElement extends PolymerElement {
    * When the dialog is closed (either through cancellation or acceptance) send
    * a custom event to the enclosing container.
    */
-  private onDialogClose_(e: Event) {
+  private onDialogClose_(e: Event): void {
     e.stopPropagation();
 
     const closeEvent = new CustomEvent(

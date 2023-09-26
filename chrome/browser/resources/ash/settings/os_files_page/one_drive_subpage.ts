@@ -58,17 +58,17 @@ export class SettingsOneDriveSubpageElement extends
   private userEmailAddress_: string|null;
   private oneDriveProxy_: OneDriveBrowserProxy;
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
     this.oneDriveProxy_.observer.onODFSMountOrUnmount.addListener(
         this.updateUserEmailAddress_.bind(this));
   }
 
-  updateConnectionStateForTesting(connectionState: string) {
+  updateConnectionStateForTesting(connectionState: string): void {
     this.connectionState_ = connectionState;
   }
 
-  private async updateUserEmailAddress_() {
+  private async updateUserEmailAddress_(): Promise<void> {
     this.connectionState_ = OneDriveConnectionState.LOADING;
     const {email} = await this.oneDriveProxy_.handler.getUserEmailAddress();
     this.userEmailAddress_ = email;
@@ -77,11 +77,11 @@ export class SettingsOneDriveSubpageElement extends
         OneDriveConnectionState.CONNECTED;
   }
 
-  private isConnected_(connectionState: string) {
+  private isConnected_(connectionState: string): boolean {
     return connectionState === OneDriveConnectionState.CONNECTED;
   }
 
-  private isLoading_(connectionState: string) {
+  private isLoading_(connectionState: string): boolean {
     return connectionState === OneDriveConnectionState.LOADING;
   }
 
@@ -99,7 +99,7 @@ export class SettingsOneDriveSubpageElement extends
     }
   }
 
-  private connectDisconnectButtonLabel_(connectionState: string) {
+  private connectDisconnectButtonLabel_(connectionState: string): string {
     return this.i18n(
         connectionState === OneDriveConnectionState.CONNECTED ?
             'oneDriveDisconnect' :
