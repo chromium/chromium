@@ -862,6 +862,16 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'os_privacy_page/manage_users_subpage_test.js'
  ],
  [
+   'OsPrivacyPagePrivacyHubMicrophoneSubpage',
+   'os_privacy_page/privacy_hub_microphone_subpage_test.js',
+   {
+     enabled: [
+       'ash::features::kCrosPrivacyHubV0',
+       'ash::features::kCrosPrivacyHubAppPermissions'
+     ]
+   },
+ ],
+ [
    'OsPrivacyPagePrivacyHubSubpage',
    'os_privacy_page/privacy_hub_subpage_test.js',
    {enabled: ['ash::features::kCrosPrivacyHub']},

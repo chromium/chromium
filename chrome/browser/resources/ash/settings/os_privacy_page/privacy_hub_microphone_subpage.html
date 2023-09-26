@@ -1,1 +1,51 @@
-<div>Microphone subpage</div>
+<style include="settings-shared">
+  .list-item:not(:last-of-type) {
+    border-bottom: var(--cr-separator-line);
+  }
+
+  #onOffText[on] {
+    color: var(--cros-text-color-prominent);
+  }
+</style>
+<div class="settings-box first">
+  <div class="start settings-box-text" aria-hidden="true">
+    <div id="onOffText" on$="[[prefs.ash.user.microphone_allowed.value]]">
+      [[computeOnOffText_(prefs.ash.user.microphone_allowed.value)]]
+    </div>
+    <div id="onOffSubtext" class="secondary">
+      [[computeOnOffSubtext_(prefs.ash.user.microphone_allowed.value)]]
+    </div>
+  </div>
+  <div id="microphoneToggleWrapper">
+    <cr-toggle
+        id="microphoneToggle"
+        checked="{{prefs.ash.user.microphone_allowed.value}}"
+        disabled="[[shouldDisableMicrophoneToggle_]]">
+    </cr-toggle>
+  </div>
+  <paper-tooltip
+      id="microphoneToggleTooltip"
+      hidden="[[!microphoneHardwareToggleActive_]]"
+      aria-hidden="true"
+      for="microphoneToggleWrapper"
+      fit-to-visible-bounds>
+    $i18n{microphoneHwToggleTooltip}
+  </paper-tooltip>
+</div>
+<template is="dom-if" if="[[prefs.ash.user.microphone_allowed.value]]" restamp>
+  <div id="microphoneListSection" class="list-frame">
+    <template is="dom-if" if="[[isMicListEmpty_]]" restamp>
+      <div id="noMicrophoneText" class="list-item">
+        $i18n{noMicrophoneConnectedText}
+      </div>
+    </template>
+    <template is="dom-if" if="[[!isMicListEmpty_]]" restamp>
+      <template id="microphoneList" is="dom-repeat"
+          items="[[connectedMicrophones_]]">
+        <div class="list-item">
+          [[item]]
+        </div>
+      </template>
+    </template>
+  </div>
+</template>
