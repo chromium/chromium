@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_DOWNLOAD_DOWNLOAD_ITEM_WEB_APP_DATA_H_
 
 #include "base/supports_user_data.h"
-#include "chrome/browser/web_applications/web_app_id.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace download {
 class DownloadItem;
@@ -19,7 +19,7 @@ class DownloadItemWebAppData : public base::SupportsUserData::Data {
   // Creates an instance with the given `web_app_id` and attaches it to the
   // item. Overwrites any existing DownloadItemWebAppData on the item.
   static void CreateAndAttachToItem(download::DownloadItem* item,
-                                    const web_app::AppId& web_app_id);
+                                    const webapps::AppId& web_app_id);
 
   // Returns nullptr if no DownloadItemWebAppData is present, which will be the
   // case for most downloads (i.e. those not initiated by web apps).
@@ -28,14 +28,14 @@ class DownloadItemWebAppData : public base::SupportsUserData::Data {
   DownloadItemWebAppData(const DownloadItemWebAppData&) = delete;
   DownloadItemWebAppData& operator=(const DownloadItemWebAppData&) = delete;
 
-  const web_app::AppId& id() const { return web_app_id_; }
+  const webapps::AppId& id() const { return web_app_id_; }
 
  private:
   static const char kKey[];
 
-  explicit DownloadItemWebAppData(const web_app::AppId& web_app_id);
+  explicit DownloadItemWebAppData(const webapps::AppId& web_app_id);
 
-  web_app::AppId web_app_id_;
+  webapps::AppId web_app_id_;
 };
 
 #endif  // __CHROMIUM_SRC_CHROME_BROWSER_DOWNLOAD_DOWNLOAD_ITEM_WEB_APP_DATA_H_

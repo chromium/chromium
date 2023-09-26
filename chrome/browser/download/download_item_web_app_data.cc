@@ -6,8 +6,8 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/supports_user_data.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/download/public/common/download_item.h"
+#include "components/webapps/common/web_app_id.h"
 
 const char DownloadItemWebAppData::kKey[] =
     "DownloadItem DownloadItemWebAppData";
@@ -22,10 +22,10 @@ DownloadItemWebAppData* DownloadItemWebAppData::Get(
 // static
 void DownloadItemWebAppData::CreateAndAttachToItem(
     download::DownloadItem* item,
-    const web_app::AppId& web_app_id) {
+    const webapps::AppId& web_app_id) {
   auto* data = new DownloadItemWebAppData(web_app_id);
   item->SetUserData(kKey, base::WrapUnique(data));
 }
 
-DownloadItemWebAppData::DownloadItemWebAppData(const web_app::AppId& web_app_id)
+DownloadItemWebAppData::DownloadItemWebAppData(const webapps::AppId& web_app_id)
     : web_app_id_(web_app_id) {}

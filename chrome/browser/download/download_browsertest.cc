@@ -5147,7 +5147,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, WebAppDownloadOnlyShowsUiInWebAppWindow) {
   GURL url = embedded_test_server()->GetURL("/downloads/a_zip_file.zip");
 
   // Load an app.
-  web_app::AppId app_id = web_app::test::InstallDummyWebApp(
+  webapps::AppId app_id = web_app::test::InstallDummyWebApp(
       browser()->profile(), "testapp", embedded_test_server()->GetURL("/"));
   Browser* app_browser =
       web_app::LaunchWebAppBrowserAndWait(browser()->profile(), app_id);
@@ -5167,7 +5167,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest,
   GURL url = embedded_test_server()->GetURL("/downloads/a_zip_file.zip");
 
   // Load an app.
-  web_app::AppId app_id = web_app::test::InstallDummyWebApp(
+  webapps::AppId app_id = web_app::test::InstallDummyWebApp(
       browser()->profile(), "testapp", embedded_test_server()->GetURL("/"));
   Browser* app_browser =
       web_app::LaunchWebAppBrowserAndWait(browser()->profile(), app_id);
@@ -5186,7 +5186,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadFromWebApp) {
   GURL url = embedded_test_server()->GetURL("/downloads/a_zip_file.zip");
 
   // Load an app.
-  web_app::AppId app_id = web_app::test::InstallDummyWebApp(
+  webapps::AppId app_id = web_app::test::InstallDummyWebApp(
       browser()->profile(), "testapp", embedded_test_server()->GetURL("/"));
   Browser* app_browser =
       web_app::LaunchWebAppBrowserAndWait(browser()->profile(), app_id);
