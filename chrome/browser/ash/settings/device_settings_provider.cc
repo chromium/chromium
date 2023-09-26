@@ -82,6 +82,7 @@ const char* const kKnownSettings[] = {
     kDeviceDisabled,
     kDeviceDisabledMessage,
     kDeviceDisplayResolution,
+    kDeviceDlcPredownloadList,
     kDeviceDockMacAddressSource,
     kDeviceEncryptedReportingPipelineEnabled,
     kDeviceHindiInscriptLayoutEnabled,
@@ -187,7 +188,7 @@ const char* const kKnownSettings[] = {
 constexpr char InvalidCombinationsOfAllowedUsersPoliciesHistogram[] =
     "Login.InvalidCombinationsOfAllowedUsersPolicies";
 
-// Re-use the DecodeJsonStringAndNormalize from device_policy_decoder.h
+// Re-use the DecodeJsonStringAndNormalize() from device_policy_decoder.h
 // here to decode the json string and validate it against |policy_name|'s
 // schema. If the json string is valid, the decoded base::Value will be stored
 // as |setting_name| in |pref_value_map|. The error can be ignored here since it
@@ -201,6 +202,22 @@ void SetJsonDeviceSetting(const std::string& setting_name,
       policy::DecodeJsonStringAndNormalize(json_string, policy_name, &error);
   if (decoded_json.has_value()) {
     pref_value_map->SetValue(setting_name, std::move(decoded_json.value()));
+  }
+}
+
+// Re-use the DecodeDeviceDlcPredownloadListPolicy() from
+// device_policy_decoder.h here to decode the list of DLCs that should be pre
+// downloaded to the device. The error can be ignored here since it is already
+// reported during decoding in device_policy_decoder.cc.
+void SetDeviceDlcPredownloadListSetting(
+    const RepeatedPtrField<std::string>& raw_policy_value,
+    PrefValueMap* pref_value_map) {
+  std::string error;
+  absl::optional<base::Value::List> decoded_dlc_list =
+      policy::DecodeDeviceDlcPredownloadListPolicy(raw_policy_value, &error);
+  if (decoded_dlc_list.has_value()) {
+    pref_value_map->SetValue(kDeviceDlcPredownloadList,
+                             base::Value(std::move(decoded_dlc_list.value())));
   }
 }
 
@@ -1306,6 +1323,12 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
       new_values_cache->SetValue(kDeviceHindiInscriptLayoutEnabled,
                                  base::Value(container.enabled()));
     }
+  }
+
+  if (policy.has_device_dlc_predownload_list()) {
+    SetDeviceDlcPredownloadListSetting(
+        policy.device_dlc_predownload_list().value().entries(),
+        new_values_cache);
   }
 }
 
