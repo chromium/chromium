@@ -134,6 +134,11 @@ public abstract class UrlBar extends AutocompleteEditText {
     private boolean mIsTextTruncated;
     private boolean mDidJustTruncate;
 
+    // TODO (https://crbug.com/1480708) Speculating that something is wrong with the url that was
+    // passed to the previous call to scrollToTLD. Remove after crash is fixed.
+    Editable mScrollToTLDPrevUrl;
+    int mScrollToTLDPrevEndIndex;
+
     @ScrollType
     private int mScrollType;
 
@@ -827,10 +832,28 @@ public abstract class UrlBar extends AutocompleteEditText {
         assert getLayout().getLineCount() == 1;
         final int originEndIndex = Math.min(mOriginEndIndex, urlTextLength);
         if (mOriginEndIndex > urlTextLength) {
+            String errorMessage = "Attempting to scroll past the end of the URL.";
+            if (mScrollToTLDPrevUrl != null) {
+                boolean hadBlobScheme = mScrollToTLDPrevUrl.toString().startsWith("blob");
+                int prevLength = mScrollToTLDPrevUrl.length();
+                errorMessage += " Previous url was blob: " + String.valueOf(hadBlobScheme)
+                        + " previous url length: " + String.valueOf(prevLength)
+                        + " prev end index: " + String.valueOf(mScrollToTLDPrevEndIndex);
+            } else {
+                boolean isBlobScheme = url.toString().startsWith("blob");
+                errorMessage += " First time. Url is blob: " + String.valueOf(isBlobScheme);
+            }
+
+            errorMessage += " url length: " + String.valueOf(urlTextLength)
+                    + " mOriginEndIndex: " + String.valueOf(mOriginEndIndex);
+
             // If discovered locally, please update crbug.com/859219 with the steps to reproduce.
-            assert false : "Attempting to scroll past the end of the URL: " + url + ", end index: "
-                           + mOriginEndIndex;
+            assert false : errorMessage;
         }
+
+        mScrollToTLDPrevUrl = url;
+        mScrollToTLDPrevEndIndex = mOriginEndIndex;
+
         float endPointX = textLayout.getPrimaryHorizontal(originEndIndex);
         // Compare the position offset of the last character and the character prior to determine
         // the LTR-ness of the final component of the URL.
