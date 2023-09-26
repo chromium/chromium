@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+FAIL Property text-spacing-trim value 'auto' assert_true: 'auto' is a supported value for text-spacing-trim. expected true got false
+PASS Property text-spacing-trim value 'space-all'
+FAIL Property text-spacing-trim value 'trim-auto' assert_true: 'trim-auto' is a supported value for text-spacing-trim. expected true got false
+FAIL Property text-spacing-trim value 'allow-end' assert_true: 'allow-end' is a supported value for text-spacing-trim. expected true got false
+PASS Property text-spacing-trim value 'space-first'
+FAIL Property text-spacing-trim value 'allow-end space-first' assert_true: 'allow-end space-first' is a supported value for text-spacing-trim. expected true got false
+FAIL Property text-spacing-trim value 'space-first allow-end' assert_true: 'space-first allow-end' is a supported value for text-spacing-trim. expected true got false
+Harness: the test ran to completion.
+

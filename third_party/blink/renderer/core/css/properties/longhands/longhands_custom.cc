@@ -8163,6 +8163,13 @@ const CSSValue* TextSizeAdjust::CSSValueFromComputedStyleInternal(
       CSSPrimitiveValue::UnitType::kPercentage);
 }
 
+const CSSValue* TextSpacingTrim::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  return CSSIdentifierValue::Create(style.TextSpacingTrim());
+}
+
 const CSSValue* TextTransform::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,

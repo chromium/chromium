@@ -1561,6 +1561,10 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
       DCHECK(RuntimeEnabledFeatures::CSSTextAutoSpaceEnabled());
       return value_id == CSSValueID::kNormal ||
              value_id == CSSValueID::kNoAutospace;
+    case CSSPropertyID::kTextSpacingTrim:
+      DCHECK(RuntimeEnabledFeatures::CSSTextSpacingTrimEnabled());
+      return value_id == CSSValueID::kSpaceFirst ||
+             value_id == CSSValueID::kSpaceAll;
     case CSSPropertyID::kWebkitTextCombine:
       return value_id == CSSValueID::kNone ||
              value_id == CSSValueID::kHorizontal;
@@ -1730,6 +1734,7 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kWebkitTextOrientation,
     CSSPropertyID::kTextOverflow,
     CSSPropertyID::kTextRendering,
+    CSSPropertyID::kTextSpacingTrim,
     CSSPropertyID::kTextTransform,
     CSSPropertyID::kUnicodeBidi,
     CSSPropertyID::kVectorEffect,

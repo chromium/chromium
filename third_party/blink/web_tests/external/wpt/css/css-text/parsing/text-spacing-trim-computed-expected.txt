@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+FAIL Property text-spacing-trim value 'auto' assert_true: text-spacing-trim doesn't seem to be supported in the computed style expected true got false
+FAIL Property text-spacing-trim value 'space-all' assert_true: text-spacing-trim doesn't seem to be supported in the computed style expected true got false
+FAIL Property text-spacing-trim value 'trim-auto' assert_true: text-spacing-trim doesn't seem to be supported in the computed style expected true got false
+FAIL Property text-spacing-trim value 'allow-end' assert_true: text-spacing-trim doesn't seem to be supported in the computed style expected true got false
+FAIL Property text-spacing-trim value 'space-first' assert_true: text-spacing-trim doesn't seem to be supported in the computed style expected true got false
+FAIL Property text-spacing-trim value 'allow-end space-first' assert_true: text-spacing-trim doesn't seem to be supported in the computed style expected true got false
+FAIL Property text-spacing-trim value 'space-first allow-end' assert_true: text-spacing-trim doesn't seem to be supported in the computed style expected true got false
+Harness: the test ran to completion.
+

@@ -787,6 +787,12 @@
     // auto
     "from-font",
 
+    //
+    // text-spacing-trim
+    //
+    "space-all",
+    "space-first",
+
     // text-underline-position
     // auto
     // "from-font",

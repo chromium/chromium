@@ -945,6 +945,9 @@
       "Linux"
     ],
     "bases": [
+      "external/wpt/css/css-text/parsing/text-spacing-trim-computed.html",
+      "external/wpt/css/css-text/parsing/text-spacing-trim-invalid.html",
+      "external/wpt/css/css-text/parsing/text-spacing-trim-valid.html",
       "external/wpt/css/css-text/text-spacing-trim/"
     ],
     "args": [

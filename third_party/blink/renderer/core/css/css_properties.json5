@@ -5101,6 +5101,17 @@
       typedom_types: ["Keyword", "Percentage"],
     },
     {
+      name: "text-spacing-trim",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      inherited: true,
+      field_group: "*",
+      field_template: "keyword",
+      keywords: ["space-first", "space-all"],
+      default_value: "space-first",
+      typedom_types: ["Keyword"],
+      runtime_flag: "CSSTextSpacingTrim",
+    },
+    {
       name: "text-transform",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       independent: true,
