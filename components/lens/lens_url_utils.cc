@@ -7,6 +7,7 @@
 #include <map>
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -205,6 +206,8 @@ GURL AppendOrReplaceViewportSizeForRequest(const GURL& url,
         modified_url, kViewportHeightQueryParameter,
         base::NumberToString(viewport_height));
   }
+  base::UmaHistogramBoolean("Search.Lens.ViewportDimensionsSent.Success",
+                            viewport_width != 0 && viewport_height != 0);
   return modified_url;
 }
 
