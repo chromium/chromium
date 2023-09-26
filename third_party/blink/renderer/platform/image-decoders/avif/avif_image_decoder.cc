@@ -483,30 +483,7 @@ base::TimeDelta AVIFImageDecoder::FrameDurationAtIndex(wtf_size_t index) const {
 bool AVIFImageDecoder::ImageHasBothStillAndAnimatedSubImages() const {
   // Per MIAF, all animated AVIF files must have a still image, even if it's
   // just a pointer to the first frame of the animation.
-  if (decoded_frame_count_ > 1) {
-    return true;
-  }
-
-  constexpr wtf_size_t kMajorBrandOffset = 8;
-  constexpr wtf_size_t kMajorBrandSize = 4;
-  if (data_->size() < kMajorBrandOffset + kMajorBrandSize) {
-    return false;
-  }
-
-  // TODO(wtc): We should rely on libavif to tell us if the file has both an
-  // image and an animation track instead of just checking the major brand.
-  //
-  // An AVIF image begins with a file‐type box 'ftyp':
-  //   unsigned int(32) size;
-  //   unsigned int(32) type = boxtype;  // boxtype is 'ftyp'
-  //   unsigned int(32) major_brand;
-  //   ...
-  FastSharedBufferReader fast_reader(data_);
-  char buf[kMajorBrandSize];
-  const char* major_brand =
-      fast_reader.GetConsecutiveData(kMajorBrandOffset, kMajorBrandSize, buf);
-  // The brand 'avis' is an AVIF image sequence (animation) brand.
-  return memcmp(major_brand, "avis", kMajorBrandSize) == 0;
+  return decoder_ && decoder_->imageSequenceTrackPresent;
 }
 
 // static
