@@ -329,7 +329,7 @@ IN_PROC_BROWSER_TEST_P(CrashReportPrivateCalledFromSwaTest,
   GURL start_url = embedded_test_server()->GetURL("/test_app.html");
   auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
   web_app_info->start_url = start_url;
-  web_app::AppId app_id =
+  webapps::AppId app_id =
       web_app::test::InstallWebApp(profile(), std::move(web_app_info));
   Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile(), app_id);
 

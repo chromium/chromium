@@ -261,7 +261,7 @@ class CrosWindowManagementBrowserTest : public SystemExtensionsApiBrowserTest {
     auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->user_display_mode = web_app::mojom::UserDisplayMode::kBrowser;
-    const web_app::AppId app_id = web_app::test::InstallWebApp(
+    const webapps::AppId app_id = web_app::test::InstallWebApp(
         browser()->profile(), std::move(web_app_info));
     apps::AppReadinessWaiter(browser()->profile(), app_id).Await();
 
