@@ -2529,6 +2529,52 @@
             ]
         }
     ],
+    "BrowserThreadPoolAdjustmentForAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "thread_pool_default_20230920",
+                    "params": {
+                        "BrowserThreadPoolCoresMultiplier": "0.6",
+                        "BrowserThreadPoolMax": "8",
+                        "BrowserThreadPoolMin": "6",
+                        "BrowserThreadPoolOffset": "0"
+                    },
+                    "enable_features": [
+                        "BrowserThreadPoolAdjustment"
+                    ]
+                }
+            ]
+        }
+    ],
+    "BrowserThreadPoolAdjustmentForDesktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "thread_pool_default_20230920",
+                    "params": {
+                        "BrowserThreadPoolCoresMultiplier": "0.6",
+                        "BrowserThreadPoolMax": "32",
+                        "BrowserThreadPoolMin": "16",
+                        "BrowserThreadPoolOffset": "0"
+                    },
+                    "enable_features": [
+                        "BrowserThreadPoolAdjustment"
+                    ]
+                }
+            ]
+        }
+    ],
     "BrowsingTopicsParameters": [
         {
             "platforms": [
