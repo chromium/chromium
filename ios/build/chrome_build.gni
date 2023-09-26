@@ -19,6 +19,9 @@ declare_args() {
   # Enable share extension.
   ios_enable_share_extension = true
 
+  # Enable open in extension.
+  ios_enable_open_extension = false
+
   # Enable credential provider extension.
   ios_enable_credential_provider_extension = true
 
@@ -87,6 +90,7 @@ if (target_environment == "catalyst") {
   ios_enable_credential_provider_extension = false
   ios_enable_widget_kit_extension = false
   ios_enable_prebuilt_widget_kit_extension = false
+  ios_enable_open_extension = false
 
   # ScreenTime framework is not available in the iOS support libraries provided
   # by "catalyst" environment.

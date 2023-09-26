@@ -685,6 +685,9 @@ chrome_app("chrome") {
     if (ios_enable_share_extension) {
       deps += [ ":share_extension_bundle" ]
     }
+    if (ios_enable_open_extension) {
+      deps += [ ":open_extension_bundle" ]
+    }
     if (ios_enable_credential_provider_extension) {
       deps += [ ":credential_provider_extension_bundle" ]
     }
@@ -762,6 +765,14 @@ if (current_toolchain == default_toolchain) {
       extension_name = "share_extension.appex"
       extension_target =
           "//ios/chrome/share_extension/appex(${_extension_toolchain})"
+    }
+  }
+
+  if (ios_enable_open_extension) {
+    extension_bundle_data("open_extension_bundle") {
+      extension_name = "open_extension.appex"
+      extension_target =
+          "//ios/chrome/open_extension/appex(${_extension_toolchain})"
     }
   }
 

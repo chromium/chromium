@@ -1,0 +1,16 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/locales.gni")
+import("//tools/grit/grit_rule.gni")
+
+grit("strings") {
+  source = "ios_open_extension_${branding_path_product}_strings.grd"
+  output_dir = "$root_gen_dir/ios/open_extension"
+  outputs = [ "grit/ios_open_extension_branded_strings.h" ]
+  foreach(locale, all_chrome_locales) {
+    outputs +=
+        [ "ios_open_extension_${branding_path_product}_strings_$locale.pak" ]
+  }
+}

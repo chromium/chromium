@@ -971,7 +971,14 @@
   "ios/chrome/share_extension/strings/ios_share_extension_strings.grd": {
     "messages": [1120],
   },
+  "ios/chrome/open_extension/strings/ios_open_extension_chromium_strings.grd": {
+    "messages": [1140],
+  },
+  "ios/chrome/open_extension/strings/ios_open_extension_google_chrome_strings.grd": {
+    "messages": [1140],
+  },
   "ios/chrome/search_widget_extension/strings/ios_search_widget_extension_chromium_strings.grd": {
+    "META": {"join": 2},
     "messages": [1160],
   },
   "ios/chrome/search_widget_extension/strings/ios_search_widget_extension_google_chrome_strings.grd": {
