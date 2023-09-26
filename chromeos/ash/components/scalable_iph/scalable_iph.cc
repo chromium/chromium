@@ -72,6 +72,7 @@ const base::flat_map<ScalableIph::Event, std::string>& GetEventNamesMap() {
            kEventNameShelfItemActivationGooglePhotosAndroid},
           {ScalableIph::Event::kShelfItemActivationGooglePlay,
            kEventNameShelfItemActivationGooglePlay},
+          {ScalableIph::Event::kPrintJobCreated, kEventNamePrintJobCreated},
       });
   return *event_names_map;
 }
@@ -1007,6 +1008,8 @@ std::ostream& operator<<(std::ostream& out, ScalableIph::Event event) {
       return out << "ShelfItemActivationGooglePhotosAndroid";
     case ScalableIph::Event::kShelfItemActivationGooglePlay:
       return out << "ShelfItemActivationGooglePlay";
+    case ScalableIph::Event::kPrintJobCreated:
+      return out << "PrintJobCreated";
   }
 }
 
