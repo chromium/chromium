@@ -34,6 +34,10 @@ ASAN_MULTIPLIER = 2
 SLOW_MULTIPLIER = 4
 WEBENGINE_MULTIPLIER = 4
 
+# Thresholds for how slow parts of the test have to be for the test to be
+# considered slow overall.
+SLOW_HEARTBEAT_THRESHOLD = 0.5
+
 # Non-standard timeouts that can't be handled by a Slow expectation, likely due
 # to being particularly long or not specific to a configuration. Try to use
 # expectations first.
@@ -84,6 +88,10 @@ class WebGLConformanceIntegrationTestBase(
   _extension_harness_additional_script: Optional[str] = None
 
   websocket_server: Optional[wss.WebsocketServer] = None
+
+  def __init__(self, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+    self._longest_time_between_heartbeats = 0
 
   @classmethod
   def _SuiteSupportsParallelTests(cls) -> bool:
@@ -216,6 +224,13 @@ class WebGLConformanceIntegrationTestBase(
     # See crbug.com/1079244.
     return 'chromeos-board-amd64-generic' in self.GetPlatformTags(self.browser)
 
+  def _TestWasSlow(self) -> bool:
+    # Consider the test slow if it had a relatively long time between
+    # heartbeats.
+    heartbeat_fraction = (self._longest_time_between_heartbeats /
+                          self._GetNonSlowHeartbeatTimeout())
+    return heartbeat_fraction > SLOW_HEARTBEAT_THRESHOLD
+
   def RunActualGpuTest(self, test_path: str, args: ct.TestArgs) -> None:
     # This indirection allows these tests to trampoline through
     # _RunGpuTest.
@@ -312,8 +327,12 @@ class WebGLConformanceIntegrationTestBase(
     start_time = time.time()
     try:
       while True:
+        response_start_time = time.time()
         response = self.__class__.websocket_server.Receive(
             self._GetHeartbeatTimeout())
+        self._longest_time_between_heartbeats = max(
+            self._longest_time_between_heartbeats,
+            time.time() - response_start_time)
         response = json.loads(response)
         response_type = response['type']
 
@@ -356,22 +375,28 @@ class WebGLConformanceIntegrationTestBase(
           'caused by a renderer crash' % (time.time() - start_time)) from e
 
   def _GetHeartbeatTimeout(self) -> int:
-    return int(
-        NON_STANDARD_HEARTBEAT_TIMEOUTS.get(self.shortName(),
-                                            HEARTBEAT_TIMEOUT_S) *
-        self._GetTimeoutMultiplier())
+    return int(self._GetNonSlowHeartbeatTimeout() * self._GetSlowMultiplier())
 
-  def _GetTimeoutMultiplier(self) -> float:
+  def _GetNonSlowHeartbeatTimeout(self) -> float:
+    return (NON_STANDARD_HEARTBEAT_TIMEOUTS.get(self.shortName(),
+                                                HEARTBEAT_TIMEOUT_S) *
+            self._GetBrowserTimeoutMultiplier())
+
+  def _GetBrowserTimeoutMultiplier(self) -> float:
+    """Compute the multiplier to account for overall browser slowness."""
     # Parallel jobs increase load and can slow down test execution, so scale
     # based on the number of jobs. Target 2x increase with 4 jobs.
     multiplier = 1 + (self.child.jobs - 1) / 3.0
     if self.is_asan:
       multiplier *= ASAN_MULTIPLIER
-    if self._IsSlowTest():
-      multiplier *= SLOW_MULTIPLIER
     if self._finder_options.browser_type == 'web-engine-shell':
       multiplier *= WEBENGINE_MULTIPLIER
     return multiplier
+
+  def _GetSlowMultiplier(self) -> float:
+    if self._IsSlowTest():
+      return SLOW_MULTIPLIER
+    return 1
 
   def _IsSlowTest(self) -> bool:
     # We access the expectations directly instead of using

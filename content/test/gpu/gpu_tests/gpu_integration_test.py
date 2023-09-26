@@ -8,9 +8,10 @@ import collections
 import fnmatch
 import importlib
 import inspect
-import pkgutil
+import json
 import logging
 import os
+import pkgutil
 import re
 import sys
 import types
@@ -31,6 +32,8 @@ import gpu_path_util
 from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_helper
+
+TEST_WAS_SLOW = 'test_was_slow'
 
 _START_BROWSER_RETRIES = 3
 _MAX_TEST_TRIES = 3
@@ -586,6 +589,8 @@ class GpuIntegrationTest(
       (expected_results,
        should_retry_on_failure) = _GetExpectedResultsAndShouldRetry()
       self._HandlePass(test_name, expected_crashes, expected_results)
+    finally:
+      self.additionalTags[TEST_WAS_SLOW] = json.dumps(self._TestWasSlow())
 
   def _HandleExpectedFailureOrFlake(self, test_name: str,
                                     expected_crashes: Dict[str, int],
@@ -636,6 +641,9 @@ class GpuIntegrationTest(
     # propagate to the next test iteration.
     if self._ShouldRestartBrowserAfterFailure():
       self._RestartBrowser('unexpected test failure')
+
+  def _TestWasSlow(self) -> bool:  # pylint: disable=no-self-use
+    return False
 
   def _ShouldRestartBrowserAfterFailure(self) -> bool:
     return not self._skip_post_failure_browser_restart

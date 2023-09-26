@@ -48,6 +48,11 @@ MESSAGE_TIMEOUT_TEST_STARTED = 10
 MESSAGE_TIMEOUT_HEARTBEAT = 5
 MESSAGE_TIMEOUT_TEST_LOG = 1
 
+# Thresholds for how slow parts of the test have to be for the test to be
+# considered slow overall.
+SLOW_HEARTBEAT_THRESHOLD = 0.5
+SLOW_GLOBAL_TIMEOUT_THRESHOLD = 0.8
+
 HTML_FILENAME = os.path.join('webgpu-cts', 'test_page.html')
 
 JAVASCRIPT_DURATION = 'javascript_duration'
@@ -98,6 +103,10 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     super().__init__(*args, **kwargs)
     self._query: Optional[str] = None
     self._run_in_worker = False
+    self._longest_time_between_heartbeats = 0
+    self._heartbeat_timeout = 0
+    self._test_duration = 0
+    self._global_timeout_without_slow_multiplier = 1
 
   # Only perform the pre/post test cleanup every X tests instead of every test
   # to reduce overhead.
@@ -382,6 +391,19 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # Retry in case the timeout was a flake.
     return True
 
+  def _TestWasSlow(self) -> bool:
+    # Consider the test slow if it either had a relatively long time between
+    # heartbeats or took up a significant chunk of the global timeout.
+    heartbeat_fraction = (self._longest_time_between_heartbeats /
+                          self._heartbeat_timeout)
+    heartbeat_was_slow = heartbeat_fraction > SLOW_HEARTBEAT_THRESHOLD
+
+    global_fraction = (self._test_duration /
+                       self._global_timeout_without_slow_multiplier)
+    global_was_slow = global_fraction > SLOW_GLOBAL_TIMEOUT_THRESHOLD
+
+    return heartbeat_was_slow or global_was_slow
+
   def RunActualGpuTest(self, test_path: str, args: ct.TestArgs) -> None:
     self._query, self._run_in_worker = args
     # Only a single instance is used to run tests despite a number of instances
@@ -444,15 +466,19 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     Returns:
       A float.
     """
-    # Scale the test timeout if test execution is expected to be slow: the test
-    # is explicitly marked as slow, or we're running with backend validation.
+    return (self._GetTestExecutionTimeoutMultiplierWithoutSlowMultiplier() *
+            self._GetSlowTestMultiplier())
+
+  def _GetTestExecutionTimeoutMultiplierWithoutSlowMultiplier(self) -> float:
     test_execution_timeout_multiplier = 1
-    if self._IsSlowTest():
-      test_execution_timeout_multiplier *= SLOW_MULTIPLIER
     if self._enable_dawn_backend_validation:
       test_execution_timeout_multiplier *= BACKEND_VALIDATION_MULTIPLIER
-
     return test_execution_timeout_multiplier
+
+  def _GetSlowTestMultiplier(self) -> float:
+    if self._IsSlowTest():
+      return SLOW_MULTIPLIER
+    return 1
 
   def HandleMessageLoop(self, first_load) -> WebGpuTestResult:
     """Helper function to handle the loop for the message protocol.
@@ -482,6 +508,10 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
     global_timeout = (self._test_timeout * test_execution_timeout_multiplier *
                       browser_timeout_multiplier)
+    self._global_timeout_without_slow_multiplier = (
+        self._test_timeout *
+        self._GetTestExecutionTimeoutMultiplierWithoutSlowMultiplier() *
+        browser_timeout_multiplier)
     start_time = time.time()
 
     # Loop until one of the following happens:
@@ -495,8 +525,13 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     #     which case we report a message protocol error.
     while True:
       timeout = step_timeout * browser_timeout_multiplier
+      self._heartbeat_timeout = timeout
       try:
+        response_start_time = time.time()
         response = WebGpuCtsIntegrationTest.websocket_server.Receive(timeout)
+        self._longest_time_between_heartbeats = max(
+            self._longest_time_between_heartbeats,
+            time.time() - response_start_time)
         response = json.loads(response)
         response_type = response['type']
 
@@ -544,6 +579,8 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         raise WebGpuMessageTimeoutError(
             'Timed out waiting %.3f seconds for a message. Message state: %s' %
             (timeout, message_state)) from e
+      finally:
+        self._test_duration = time.time() - start_time
     return result
 
   def HandleDurationTagOnFailure(self, message_state: Dict[str, bool],
