@@ -7,17 +7,17 @@
 #include "base/functional/bind.h"
 #include "base/memory/values_equivalent.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 namespace {
 void LaunchApp(base::WeakPtr<Profile> profile,
-               const AppId& app_id,
+               const webapps::AppId& app_id,
                const GURL& url,
                base::OnceClosure callback) {
   if (!profile) {
@@ -56,14 +56,14 @@ WebAppLinkCapturingDelegate::CreateLinkCaptureLaunchClosure(
   // This operation must be synchronous, so unfortunately we must use unsafe
   // access to the registrar.
   WebAppRegistrar& registrar = provider->registrar_unsafe();
-  absl::optional<AppId> possible_app_id =
+  absl::optional<webapps::AppId> possible_app_id =
       registrar.FindAppThatCapturesLinksInScope(url);
 
   if (!possible_app_id) {
     return absl::nullopt;
   }
 
-  AppId app_id = possible_app_id.value();
+  webapps::AppId app_id = possible_app_id.value();
   // Don't capture links for apps that open in a tab.
   if (registrar.GetAppEffectiveDisplayMode(app_id) == DisplayMode::kBrowser) {
     return absl::nullopt;

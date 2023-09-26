@@ -16,6 +16,7 @@ source_set("link_capturing") {
     "//chrome/browser/web_applications",
     "//components/keep_alive_registry",
     "//components/page_load_metrics/browser",
+    "//components/webapps/common:common",
     "//content/public/browser",
     "//extensions/common",
     "//third_party/abseil-cpp:absl",

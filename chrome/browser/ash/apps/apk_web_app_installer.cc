@@ -69,7 +69,7 @@ void ApkWebAppInstaller::Start(const std::string& package_name,
                                arc::mojom::RawIconPngDataPtr icon) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!weak_owner_.get()) {
-    CompleteInstallation(web_app::AppId(),
+    CompleteInstallation(webapps::AppId(),
                          webapps::InstallResultCode::kApkWebAppInstallFailed);
     return;
   }
@@ -79,7 +79,7 @@ void ApkWebAppInstaller::Start(const std::string& package_name,
   if (web_app_info.is_null() || !icon || !icon->icon_png_data ||
       !icon->icon_png_data.has_value() || icon->icon_png_data->empty()) {
     LOG(ERROR) << "Insufficient data to install a web app";
-    CompleteInstallation(web_app::AppId(),
+    CompleteInstallation(webapps::AppId(),
                          webapps::InstallResultCode::kApkWebAppInstallFailed);
     return;
   }
@@ -125,20 +125,20 @@ void ApkWebAppInstaller::Start(const std::string& package_name,
                      base::Unretained(this)));
 }
 
-void ApkWebAppInstaller::CompleteInstallation(const web_app::AppId& id,
+void ApkWebAppInstaller::CompleteInstallation(const webapps::AppId& id,
                                               webapps::InstallResultCode code) {
   std::move(callback_).Run(id, is_web_only_twa_, sha256_fingerprint_, code);
   delete this;
 }
 
 void ApkWebAppInstaller::OnWebAppCreated(const GURL& start_url,
-                                         const web_app::AppId& app_id,
+                                         const webapps::AppId& app_id,
                                          webapps::InstallResultCode code) {
   // It is assumed that if |weak_owner_| is gone, |profile_| is gone too. The
   // web app will be automatically cleaned up by provider.
   if (!weak_owner_.get()) {
     CompleteInstallation(
-        web_app::AppId(),
+        webapps::AppId(),
         webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown);
     return;
   }
@@ -162,7 +162,7 @@ void ApkWebAppInstaller::OnImageDecoded(const SkBitmap& decoded_image) {
     // Assume |profile_| is no longer valid - destroy this object and
     // terminate.
     CompleteInstallation(
-        web_app::AppId(),
+        webapps::AppId(),
         webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown);
     return;
   }
@@ -195,7 +195,7 @@ void ApkWebAppInstaller::DoInstall() {
             ->web_app_service_ash()
             ->GetWebAppProviderBridge();
     if (!web_app_provider_bridge) {
-      CompleteInstallation(web_app::AppId(),
+      CompleteInstallation(webapps::AppId(),
                            webapps::InstallResultCode::kWebAppProviderNotReady);
       return;
     }

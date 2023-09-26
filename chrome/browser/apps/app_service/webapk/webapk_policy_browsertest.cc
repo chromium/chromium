@@ -97,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(WebApkPolicyBrowserTest, DefaultInstallWebApk) {
   pref_registrar.Add(apps::webapk_prefs::kGeneratedWebApksPref,
                      run_loop.QuitClosure());
 
-  const web_app::AppId app_id =
+  const webapps::AppId app_id =
       web_app::InstallWebAppFromManifest(browser(), app_url);
   run_loop.Run();
 
@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(WebApkPolicyBrowserTest, DisabledByPolicy) {
 
   const GURL app_url =
       embedded_test_server()->GetURL("/web_share_target/charts.html");
-  const web_app::AppId app_id =
+  const webapps::AppId app_id =
       web_app::InstallWebAppFromManifest(browser(), app_url);
 
   // Given that we are testing the absence of any WebAPK, we can't wait for

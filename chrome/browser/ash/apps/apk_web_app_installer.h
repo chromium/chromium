@@ -12,8 +12,8 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
@@ -30,7 +30,7 @@ namespace ash {
 class ApkWebAppInstaller {
  public:
   using InstallFinishCallback = base::OnceCallback<void(
-      const web_app::AppId&,
+      const webapps::AppId&,
       const bool is_web_only_twa,
       const absl::optional<std::string> sha256_fingerprint,
       webapps::InstallResultCode)>;
@@ -67,12 +67,12 @@ class ApkWebAppInstaller {
              arc::mojom::RawIconPngDataPtr icon);
 
   // Calls |callback_| with |id|, and deletes this object. Virtual for testing.
-  virtual void CompleteInstallation(const web_app::AppId& id,
+  virtual void CompleteInstallation(const webapps::AppId& id,
                                     webapps::InstallResultCode code);
 
   // Callback method for installation completed response.
   void OnWebAppCreated(const GURL& start_url,
-                       const web_app::AppId& app_id,
+                       const webapps::AppId& app_id,
                        webapps::InstallResultCode code);
 
   // Callback method for data_decoder::DecodeImage.
