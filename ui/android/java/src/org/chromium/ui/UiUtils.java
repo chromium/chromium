@@ -288,7 +288,7 @@ public class UiUtils {
      * will be terrible since it measures every single item.
      *
      * @param adapter The ListAdapter whose widest item's width will be returned.
-     * @param parentView The parent view.
+     * @param parentView The parent view. This can be null.
      * @return The measured width (in pixels) of the widest item in the passed-in ListAdapter.
      */
     public static int computeMaxWidthOfListAdapterItems(ListAdapter adapter, ViewGroup parentView) {
@@ -317,21 +317,6 @@ public class UiUtils {
         }
 
         return maxWidth;
-    }
-
-    /**
-     * Iterates through all items in the specified ListAdapter (including header and footer views)
-     * and returns the width of the widest item (when laid out with height and width set to
-     * WRAP_CONTENT).
-     *
-     * WARNING: do not call this on a ListAdapter with more than a handful of items, the performance
-     * will be terrible since it measures every single item.
-     *
-     * @param adapter The ListAdapter whose widest item's width will be returned.
-     * @return The measured width (in pixels) of the widest item in the passed-in ListAdapter.
-     */
-    public static int computeMaxWidthOfListAdapterItems(ListAdapter adapter) {
-        return computeMaxWidthOfListAdapterItems(adapter, null);
     }
 
     /**
