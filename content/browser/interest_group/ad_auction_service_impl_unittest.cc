@@ -9300,8 +9300,8 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionNoBids) {
 }
 
 TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionWithCustomMediaType) {
-  const std::string kCustomRequestType = "message/ba-request";
-  const std::string kCustomResponseType = "message/ba-response";
+  const std::string kCustomRequestType = "message/ba request";
+  const std::string kCustomResponseType = "message/ba response";
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       content::kBiddingAndAuctionEncryptionMediaType,
@@ -9344,8 +9344,9 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionWithCustomMediaType) {
           key_config)
           .value();
 
+  EXPECT_EQ(0x00, auction_data->request[0]);
   auto request = ohttp_gateway.DecryptObliviousHttpRequest(
-      auction_data->request, kCustomRequestType);
+      auction_data->request.substr(1), kCustomRequestType);
   EXPECT_TRUE(request.ok()) << request.status();
   auto plaintext_data = request->GetPlaintextData();
 

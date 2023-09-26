@@ -873,7 +873,6 @@ void AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey(
   }
 
   std::string data = maybe_request->EncapsulateAndSerialize();
-  const auto* bytes = reinterpret_cast<const uint8_t*>(data.data());
 
   AdAuctionPageData* ad_auction_page_data =
       PageUserData<AdAuctionPageData>::GetOrCreateForPage(
@@ -885,10 +884,23 @@ void AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey(
   ad_auction_page_data->RegisterAdAuctionRequestContext(state.request_id,
                                                         std::move(context));
 
-  std::move(state.callback)
-      .Run(mojo_base::BigBuffer(
-               base::make_span(bytes, data.size() * sizeof(char))),
-           state.request_id);
+  size_t start_offset = 0;
+  if (base::FeatureList::IsEnabled(kBiddingAndAuctionEncryptionMediaType)) {
+    // For the modified request format we need to prepend a version number byte
+    // to the request.
+    start_offset = 1;
+  }
+  mojo_base::BigBuffer buf(data.size() + start_offset);
+
+  // Write the version byte. If we are not using a modified request this will
+  // be immediately overwritten.
+  buf.data()[0] = 0;
+
+  // Write the request starting at `start_offset`
+  CHECK_EQ(data.size() + start_offset, buf.size());
+  std::memcpy(&buf.data()[start_offset], data.data(), data.size());
+
+  std::move(state.callback).Run(std::move(buf), state.request_id);
   // Request sizes only increase by factors of two so we only need to sample
   // the powers of two. The maximum of 1 GB size is much larger than it should
   // ever be.

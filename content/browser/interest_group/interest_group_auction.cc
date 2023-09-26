@@ -82,20 +82,25 @@
 
 namespace content {
 
+// The BiddingAndAuctionEncryptionMediaType feature controls the format we use
+// for the request to the Bidding and Auction Service. anything. When enabled
+// we add an extra byte to the request.
 CONTENT_EXPORT BASE_FEATURE(kBiddingAndAuctionEncryptionMediaType,
                             "BiddingAndAuctionEncryptionMediaType",
-                            base::FEATURE_ENABLED_BY_DEFAULT);
-
+                            base::FEATURE_DISABLED_BY_DEFAULT);
+// While we would prefer to reference the constants from quiche for the defaults
+// here, they are only available as absl::string_view objects which are not
+// easily convertible to null-terminated strings. Previously we used the .data()
+// accessor which worked due to undefined behavior.
 const base::FeatureParam<std::string>
     kBiddingAndAuctionEncryptionRequestMediaType{
         &kBiddingAndAuctionEncryptionMediaType,
-        "BiddingAndAuctionEncryptionRequestMediaType",
-        quiche::ObliviousHttpHeaderKeyConfig::kOhttpRequestLabel.data()};
+        "BiddingAndAuctionEncryptionRequestMediaType", "message/bhttp request"};
 const base::FeatureParam<std::string>
     kBiddingAndAuctionEncryptionResponseMediaType{
         &kBiddingAndAuctionEncryptionMediaType,
         "BiddingAndAuctionEncryptionResponseMediaType",
-        quiche::ObliviousHttpHeaderKeyConfig::kOhttpResponseLabel.data()};
+        "message/bhttp response"};
 
 namespace {
 
