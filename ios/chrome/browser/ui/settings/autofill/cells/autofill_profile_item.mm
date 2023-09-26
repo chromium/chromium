@@ -10,6 +10,8 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 @implementation AutofillProfileItem
 
@@ -38,6 +40,7 @@
 
   cell.textLabel.text = self.title;
   cell.detailTextLabel.text = self.detailText;
+  cell.localProfileIconShown = self.localProfileIconShown;
 }
 
 @end
@@ -128,16 +131,24 @@
   [super prepareForReuse];
   self.textLabel.text = nil;
   self.detailTextLabel.text = nil;
+  self.localProfileIconShown = NO;
 }
 
 #pragma mark - UIAccessibility
 
 - (NSString*)accessibilityLabel {
+  NSString* label = self.textLabel.text;
   if (self.detailTextLabel.text) {
-    return [NSString stringWithFormat:@"%@, %@", self.textLabel.text,
-                                      self.detailTextLabel.text];
+    label =
+        [NSString stringWithFormat:@"%@, %@", label, self.detailTextLabel.text];
   }
-  return self.textLabel.text;
+  if (self.localProfileIconShown) {
+    label = [NSString
+        stringWithFormat:@"%@, %@", label,
+                         l10n_util::GetNSString(
+                             IDS_IOS_LOCAL_ADDRESS_ACCESSIBILITY_LABEL)];
+  }
+  return label;
 }
 
 @end

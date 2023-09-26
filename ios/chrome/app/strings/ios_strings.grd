@@ -3078,6 +3078,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_LOCAL_PASSWORD_ACCESSIBILITY_LABEL" desc="Screenreader label when a password is saved only locally and not backed up to any account.">
         Password saved only on this device
       </message>
+      <message name="IDS_IOS_LOCAL_ADDRESS_ACCESSIBILITY_LABEL" desc="Screenreader label when an address is saved only locally">
+        Address saved only on this device
+      </message>
       <message name="IDS_IOS_PASSWORD_SETTINGS_SAVE_BUTTON" desc="Save button text for adding a new credential manually via settings [Length: 10em]">
         Save
       </message>

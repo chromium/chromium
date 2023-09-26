@@ -250,6 +250,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   item.accessibilityIdentifier = title;
   item.GUID = guid;
   item.showMigrateToAccountButton = NO;
+  item.localProfileIconShown = NO;
   if (autofillProfile.source() == autofill::AutofillProfile::Source::kAccount) {
     item.autofillProfileSource =
         AutofillAddressProfileSource::AutofillAccountProfile;
@@ -262,6 +263,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       item.showMigrateToAccountButton = YES;
       item.image = CustomSymbolTemplateWithPointSize(
           kCloudSlashSymbol, kCloudSlashSymbolPointSize);
+      item.localProfileIconShown = YES;
     }
   }
   return item;

@@ -646,7 +646,12 @@ id<GREYMatcher> MigrateToAccountButton() {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                                 enableSync:NO];
   [AutofillAppInterface saveExampleProfile];
-  [self openEditProfile:kProfileLabel];
+  [self
+      openEditProfile:
+          [NSString
+              stringWithFormat:@"%@, %@", kProfileLabel,
+                               l10n_util::GetNSString(
+                                   IDS_IOS_LOCAL_ADDRESS_ACCESSIBILITY_LABEL)]];
 
   if ([ChromeEarlGrey isIPadIdiom]) {
     // Scroll to the bottom for ipad.
@@ -710,7 +715,12 @@ id<GREYMatcher> MigrateToAccountButton() {
                                 enableSync:NO];
   [AutofillAppInterface saveExampleProfile];
 
-  [self openEditProfile:kProfileLabel];
+  [self
+      openEditProfile:
+          [NSString
+              stringWithFormat:@"%@, %@", kProfileLabel,
+                               l10n_util::GetNSString(
+                                   IDS_IOS_LOCAL_ADDRESS_ACCESSIBILITY_LABEL)]];
   // Switch on edit mode.
   [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
       performAction:grey_tap()];
