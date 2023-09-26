@@ -62,7 +62,7 @@ found in the LICENSE file.
         android:textAlignment="center" />
 
     <include
-        android:id="@+id/text_size_contrast_seekbar"
+        android:id="@+id/text_size_contrast_layout_container"
         layout="@layout/text_size_contrast_slider"
         android:visibility="gone" />
 
