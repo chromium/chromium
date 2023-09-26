@@ -510,10 +510,7 @@ if (is_ios) {
 
   source_set("google_test_runner") {
     sources = [ "ios/google_test_runner.mm" ]
-    deps = [
-      ":google_test_runner_shared_headers",
-      "//base",
-    ]
+    deps = [ ":google_test_runner_shared_headers" ]
     frameworks = [ "UIKit.framework" ]
     configs += [ "//build/config/ios:xctest_config" ]
   }
