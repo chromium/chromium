@@ -330,7 +330,7 @@ void CreateNetworkContextInternal(
   // This might recreate g_client if the network service needed to be restarted.
   auto* network_service = GetNetworkService();
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(USE_SOCKET_BROKER)
   // If the browser has started shutting down, it is possible that either a)
   // `g_client` was never created if shutdown started before the network service
   // was created, or b) the network service might have crashed meaning
@@ -343,7 +343,7 @@ void CreateNetworkContextInternal(
       !params->socket_broker) {
     params->socket_broker = g_client->BindSocketBroker();
   }
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(USE_SOCKET_BROKER)
 
   network_service->CreateNetworkContext(std::move(context), std::move(params));
 }

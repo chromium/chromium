@@ -15,6 +15,7 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "content/browser/browsing_data/clear_site_data_handler.h"
+#include "content/browser/buildflags.h"
 #include "content/browser/ssl/ssl_manager.h"
 #include "content/browser/webrtc/webrtc_connections_observer.h"
 #include "content/public/browser/browser_context.h"
@@ -211,12 +212,12 @@ void NetworkServiceClient::OnIPAddressChanged() {
 }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(USE_SOCKET_BROKER)
 mojo::PendingRemote<network::mojom::SocketBroker>
 NetworkServiceClient::BindSocketBroker() {
   return socket_broker_.BindNewRemote();
 }
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(USE_SOCKET_BROKER)
 
 mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
 NetworkServiceClient::BindURLLoaderNetworkServiceObserver() {
