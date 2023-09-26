@@ -148,13 +148,21 @@ class IsolatedWebAppUrlInfoFromIsolatedWebAppLocationTest
 
 TEST_F(IsolatedWebAppUrlInfoFromIsolatedWebAppLocationTest,
        GetIsolatedWebAppUrlInfoWhenInstalledBundleSucceeds) {
-  IsolatedWebAppLocation location = InstalledBundle{};
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath path =
+      temp_dir.GetPath().Append(base::FilePath::FromASCII("test-0.swbn"));
+  TestSignedWebBundle bundle = TestSignedWebBundleBuilder::BuildDefault();
+  ASSERT_TRUE(base::WriteFile(path, bundle.data));
+
+  IsolatedWebAppLocation location = InstalledBundle{.path = path};
   base::test::TestFuture<base::expected<IsolatedWebAppUrlInfo, std::string>>
       test_future;
-
   IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppLocation(
       location, test_future.GetCallback());
-  EXPECT_THAT(test_future.Get(), ErrorIs(HasSubstr("is not implemented")));
+  EXPECT_THAT(
+      test_future.Get(),
+      ValueIs(Property(&IsolatedWebAppUrlInfo::web_bundle_id, bundle.id)));
 }
 
 TEST_F(IsolatedWebAppUrlInfoFromIsolatedWebAppLocationTest,
