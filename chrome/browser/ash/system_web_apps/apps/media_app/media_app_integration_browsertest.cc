@@ -1222,7 +1222,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationPhotosIntegrationTest,
 
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
                        HasCorrectThemeAndBackgroundColor) {
-  web_app::AppId app_id = MediaAppAppId();
+  webapps::AppId app_id = MediaAppAppId();
 
   web_app::WebAppRegistrar& registrar =
       web_app::WebAppProvider::GetForTest(profile())->registrar_unsafe();
