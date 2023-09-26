@@ -29,6 +29,7 @@
 #include "components/version_info/channel.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
+#include "ui/actions/actions.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
@@ -100,6 +101,13 @@ TEST_F(BrowserViewTest, BrowserView) {
   EXPECT_FALSE(browser_view()->IsFullscreen());
   EXPECT_FALSE(browser_view()->IsBookmarkBarVisible());
   EXPECT_FALSE(browser_view()->IsBookmarkBarAnimating());
+
+  // Test ActionItem creation
+  auto& manager = actions::ActionManager::GetForTesting();
+  manager.IndexActions();
+  ASSERT_NE(browser_view()->root_action_item(), nullptr);
+  EXPECT_GE(browser_view()->root_action_item()->GetChildren().children().size(),
+            1UL);
 }
 
 // Test layout of the top-of-window UI.

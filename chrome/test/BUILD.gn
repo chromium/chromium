@@ -9487,6 +9487,8 @@ test("unit_tests") {
 
   if (toolkit_views) {
     deps += [
+      "//chrome/browser/ui/actions:actions",
+      "//chrome/browser/ui/actions:actions_headers",
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/ui/views",
       "//components/app_constants",
