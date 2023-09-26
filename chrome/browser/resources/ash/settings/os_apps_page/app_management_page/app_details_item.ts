@@ -178,7 +178,7 @@ export class AppManagementAppDetailsItem extends
     }
   }
 
-  private onStoreLinkClicked_(e: CustomEvent<{event: Event}>) {
+  private onStoreLinkClicked_(e: CustomEvent<{event: Event}>): void {
     // A place holder href with the value "#" is used to have a compliant link.
     // This prevents the browser from navigating the window to "#"
     if (e.detail.event) {  // When the store link is clicked

@@ -42,7 +42,7 @@ export class AppManagementBorealisDetailViewElement extends
 
   private app_: App;
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     // When the state is changed, get the new selected app and assign it to

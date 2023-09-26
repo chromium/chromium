@@ -17,7 +17,7 @@ import {AppManagementPageState, AppMap} from './store';
 
 function addApp(apps: AppMap, action: AddAppAction): AppMap {
   if (apps[action.app.id]) {
-    const stringifyApp = (app: App) => {
+    const stringifyApp = (app: App): string => {
       return `id: ${app.id}, type: ${app.type}, install source: ${
           app.installReason} title: ${app.title}`;
     };

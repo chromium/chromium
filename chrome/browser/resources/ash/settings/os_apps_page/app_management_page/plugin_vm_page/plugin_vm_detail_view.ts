@@ -64,7 +64,7 @@ export class AppManagementPluginVmDetailViewElement extends
     this.pluginVmBrowserProxy_ = PluginVmBrowserProxyImpl.getInstance();
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     // When the state is changed, get the new selected app and assign it to

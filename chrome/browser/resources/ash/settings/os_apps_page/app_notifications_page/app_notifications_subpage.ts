@@ -114,7 +114,7 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
     this.appNotificationsObserverReceiver_ = null;
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
     this.startObservingAppNotifications_();
     this.mojoInterfaceProvider_.getQuietMode().then((result) => {
@@ -125,12 +125,12 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
     });
   }
 
-  override disconnectedCallback() {
+  override disconnectedCallback(): void {
     super.disconnectedCallback();
     this.appNotificationsObserverReceiver_!.$.close();
   }
 
-  override currentRouteChanged(route: Route) {
+  override currentRouteChanged(route: Route): void {
     // Does not apply to this page.
     if (route !== routes.APP_NOTIFICATIONS) {
       return;

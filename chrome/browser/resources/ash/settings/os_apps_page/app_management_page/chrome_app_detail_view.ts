@@ -61,7 +61,7 @@ export class AppManagementChromeAppDetailViewElement extends
     this.updateFromStore();
   }
 
-  private async onAppChanged_() {
+  private async onAppChanged_(): Promise<void> {
     try {
       const {messages: messages} =
           await AppManagementBrowserProxy.getInstance()

@@ -12,7 +12,7 @@ import {AppManagementStore} from './store.js';
 
 let initialized = false;
 
-async function init() {
+async function init(): Promise<void> {
   assert(!initialized);
 
   // Call two async functions and wait for both of them.

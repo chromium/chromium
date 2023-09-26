@@ -252,7 +252,7 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
     });
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     this.addFocusConfig(routes.APP_MANAGEMENT, '#appManagementRow');
@@ -307,7 +307,7 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
     return pref.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED;
   }
 
-  private onAndroidAppsSubpageClick_() {
+  private onAndroidAppsSubpageClick_(): void {
     if (this.androidAppsInfo.playStoreEnabled) {
       Router.getInstance().navigateTo(routes.ANDROID_APPS_DETAILS);
     }
@@ -321,7 +321,7 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
   }
 
   /** Override ash.settings.appNotification.onNotificationAppChanged */
-  onNotificationAppChanged(updatedApp: AppWithNotifications) {
+  onNotificationAppChanged(updatedApp: AppWithNotifications): void {
     const foundIdx = this.appsWithNotifications_.findIndex(app => {
       return app.id === updatedApp.id;
     });
@@ -341,7 +341,7 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
   }
 
   /** Override ash.settings.appNotification.onQuietModeChanged */
-  onQuietModeChanged(enabled: boolean) {
+  onQuietModeChanged(enabled: boolean): void {
     this.isDndEnabled_ = enabled;
   }
 
