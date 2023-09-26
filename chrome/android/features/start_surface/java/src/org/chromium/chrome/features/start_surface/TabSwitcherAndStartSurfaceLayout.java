@@ -273,10 +273,10 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
 
     // Layout implementation.
     @Override
-    public void setTabModelSelector(TabModelSelector modelSelector, TabContentManager manager) {
-        super.setTabModelSelector(modelSelector, manager);
+    public void setTabModelSelector(TabModelSelector modelSelector) {
+        super.setTabModelSelector(modelSelector);
         if (mSceneLayer != null) {
-            mSceneLayer.setTabModelSelector(modelSelector);
+            mSceneLayer.setTabModelSelector(mTabModelSelector);
         }
     }
 

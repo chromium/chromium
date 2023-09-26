@@ -344,12 +344,18 @@ public class TabSwitcherLayout extends Layout {
 
     // Layout implementation.
     @Override
-    public void setTabModelSelector(TabModelSelector modelSelector, TabContentManager manager) {
-        super.setTabModelSelector(modelSelector, manager);
+    public void setTabModelSelector(TabModelSelector modelSelector) {
+        super.setTabModelSelector(modelSelector);
         if (mTabListSceneLayer != null) {
             mTabListSceneLayer.setTabModelSelector(modelSelector);
-        } else if (mTabSceneLayer != null) {
-            mTabSceneLayer.setTabContentManager(manager);
+        }
+    }
+
+    @Override
+    public void setTabContentManager(TabContentManager tabContentManager) {
+        super.setTabContentManager(tabContentManager);
+        if (mTabSceneLayer != null && mTabContentManager != null) {
+            mTabSceneLayer.setTabContentManager(mTabContentManager);
         }
     }
 

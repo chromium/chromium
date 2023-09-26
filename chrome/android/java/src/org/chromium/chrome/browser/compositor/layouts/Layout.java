@@ -351,20 +351,15 @@ public abstract class Layout {
     protected void notifySizeChanged(float width, float height, @Orientation int orientation) {}
 
     /**
-     * Sets the managers needed to for the layout to get information from outside. The managers
-     * are tailored to be called from the GL thread.
-     *
+     * Sets the the {@link TabModelSelector} for the layout.
      * @param modelSelector The {@link TabModelSelector} to be set on the layout.
-     * @param manager       The {@link TabContentManager} to get tab display content.
      */
-    public void setTabModelSelector(TabModelSelector modelSelector, TabContentManager manager) {
+    public void setTabModelSelector(TabModelSelector modelSelector) {
         mTabModelSelector = modelSelector;
-        setTabContentManager(manager);
     }
 
     /**
-     * Sets the manager needed for the layout to get thumbnails.
-     *
+     * Sets the {@link TabContentManager} needed for the layout to get thumbnails.
      * @param manager The {@link TabContentManager} to get tab display content.
      */
     protected void setTabContentManager(TabContentManager manager) {

@@ -75,7 +75,8 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
         // Initialize Layouts
         TabContentManager tabContentManager = mTabContentManagerSupplier.get();
         assert tabContentManager != null;
-        mSimpleAnimationLayout.setTabModelSelector(selector, tabContentManager);
+        mSimpleAnimationLayout.setTabModelSelector(selector);
+        mSimpleAnimationLayout.setTabContentManager(tabContentManager);
     }
 
     @Override

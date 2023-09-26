@@ -242,8 +242,7 @@ public class LayoutManagerChrome
             mTabSwitcherLayout.setTabContentManager(mTabContentManagerSupplier.get());
         }
         if (getTabModelSelector() != null) {
-            mTabSwitcherLayout.setTabModelSelector(
-                    getTabModelSelector(), mTabContentManagerSupplier.get());
+            mTabSwitcherLayout.setTabModelSelector(getTabModelSelector());
         }
         if (mFinishNativeInitialization) {
             mTabSwitcherLayout.onFinishNativeInitialization();
@@ -271,8 +270,7 @@ public class LayoutManagerChrome
             mStartSurfaceHomeLayout.setTabContentManager(mTabContentManagerSupplier.get());
         }
         if (getTabModelSelector() != null) {
-            mStartSurfaceHomeLayout.setTabModelSelector(
-                    getTabModelSelector(), mTabContentManagerSupplier.get());
+            mStartSurfaceHomeLayout.setTabModelSelector(getTabModelSelector());
         }
         if (mFinishNativeInitialization) {
             mStartSurfaceHomeLayout.onFinishNativeInitialization();
@@ -320,8 +318,7 @@ public class LayoutManagerChrome
         }
 
         if (getTabModelSelector() != null) {
-            mOverviewLayout.setTabModelSelector(
-                    getTabModelSelector(), mTabContentManagerSupplier.get());
+            mOverviewLayout.setTabModelSelector(getTabModelSelector());
         }
         if (mFinishNativeInitialization) {
             mOverviewLayout.onFinishNativeInitialization();
@@ -370,17 +367,21 @@ public class LayoutManagerChrome
 
         // Initialize Layouts
         TabContentManager content = mTabContentManagerSupplier.get();
-        mToolbarSwipeLayout.setTabModelSelector(selector, content);
+        mToolbarSwipeLayout.setTabModelSelector(selector);
+        mToolbarSwipeLayout.setTabContentManager(content);
         if (mOverviewLayout != null) {
-            mOverviewLayout.setTabModelSelector(selector, content);
+            mOverviewLayout.setTabModelSelector(selector);
+            mOverviewLayout.setTabContentManager(content);
             mOverviewLayout.onFinishNativeInitialization();
         }
         if (mTabSwitcherLayout != null) {
-            mTabSwitcherLayout.setTabModelSelector(selector, content);
+            mTabSwitcherLayout.setTabModelSelector(selector);
+            mTabSwitcherLayout.setTabContentManager(content);
             mTabSwitcherLayout.onFinishNativeInitialization();
         }
         if (mStartSurfaceHomeLayout != null) {
-            mStartSurfaceHomeLayout.setTabModelSelector(selector, content);
+            mStartSurfaceHomeLayout.setTabModelSelector(selector);
+            mStartSurfaceHomeLayout.setTabContentManager(content);
             mStartSurfaceHomeLayout.onFinishNativeInitialization();
         }
         mFinishNativeInitialization = true;
@@ -440,13 +441,13 @@ public class LayoutManagerChrome
     public void setTabModelSelector(TabModelSelector selector) {
         super.setTabModelSelector(selector);
         if (mOverviewLayout != null) {
-            mOverviewLayout.setTabModelSelector(selector, null);
+            mOverviewLayout.setTabModelSelector(selector);
         }
         if (mTabSwitcherLayout != null) {
-            mTabSwitcherLayout.setTabModelSelector(selector, null);
+            mTabSwitcherLayout.setTabModelSelector(selector);
         }
         if (mStartSurfaceHomeLayout != null) {
-            mStartSurfaceHomeLayout.setTabModelSelector(selector, null);
+            mStartSurfaceHomeLayout.setTabModelSelector(selector);
         }
     }
 
