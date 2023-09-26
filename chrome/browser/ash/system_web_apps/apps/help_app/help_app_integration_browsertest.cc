@@ -207,7 +207,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2InAppMetrics) {
 IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
                        HasCorrectThemeAndBackgroundColor) {
   WaitForTestSystemAppInstall();
-  web_app::AppId app_id =
+  webapps::AppId app_id =
       *GetManager().GetAppIdForSystemApp(SystemWebAppType::HELP);
   web_app::WebAppRegistrar& registrar =
       web_app::WebAppProvider::GetForTest(profile())->registrar_unsafe();
