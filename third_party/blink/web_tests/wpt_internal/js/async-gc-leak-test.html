@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+
+// Regression test for crbug.com/1474629.
+promise_test(async t => {
+  await gc({type: 'major', execution: 'async'});
+}, 'Async gc() should not cause a leak');
+</script>
