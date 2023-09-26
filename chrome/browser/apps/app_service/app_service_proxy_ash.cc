@@ -825,7 +825,6 @@ void AppServiceProxyAsh::OnLaunched(LaunchCallback callback,
 
 void AppServiceProxyAsh::LoadIconForDialog(const apps::AppUpdate& update,
                                            apps::LoadIconCallback callback) {
-  auto icon_key = update.IconKey();
   constexpr bool kAllowPlaceholderIcon = false;
   auto icon_type = IconType::kStandard;
 
@@ -835,13 +834,8 @@ void AppServiceProxyAsh::LoadIconForDialog(const apps::AppUpdate& update,
   // For non_child profile, load the app icon, because the app is blocked by
   // admin.
   if (!dialog_created_callback_.is_null() || !profile_->IsChild()) {
-    if (!icon_key.has_value()) {
-      std::move(callback).Run(std::make_unique<IconValue>());
-      return;
-    }
-    LoadIconFromIconKey(update.AppType(), update.AppId(), icon_key.value(),
-                        icon_type, kAppDialogIconSize, kAllowPlaceholderIcon,
-                        std::move(callback));
+    LoadIcon(update.AppType(), update.AppId(), icon_type, kAppDialogIconSize,
+             kAllowPlaceholderIcon, std::move(callback));
     return;
   }
 

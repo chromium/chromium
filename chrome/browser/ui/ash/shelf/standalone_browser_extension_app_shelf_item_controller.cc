@@ -44,9 +44,10 @@ StandaloneBrowserExtensionAppShelfItemController::
   apps::AppServiceProxy* proxy = apps::AppServiceProxyFactory::GetForProfile(
       ProfileManager::GetPrimaryUserProfile());
 
-  icon_loader_releaser_ = proxy->LoadIconFromIconKey(
+  icon_loader_releaser_ = proxy->LoadIconWithIconEffects(
       apps::AppType::kStandaloneBrowserChromeApp, shelf_id.app_id,
-      apps::IconKey(), apps::IconType::kStandard, /*size_hint_in_dip=*/48,
+      apps::IconEffects::kNone, apps::IconType::kStandard,
+      /*size_hint_in_dip=*/48,
       /*allow_placeholder_icon=*/false,
       base::BindOnce(
           &StandaloneBrowserExtensionAppShelfItemController::OnLoadIcon,

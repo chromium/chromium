@@ -426,8 +426,8 @@ class AppServiceAppIconTest : public AppIconFactoryTest {
                                          const IconKey& icon_key,
                                          IconType icon_type) {
     base::test::TestFuture<apps::IconValuePtr> result;
-    app_service_proxy().LoadIconFromIconKey(
-        AppType::kCrostini, app_id, icon_key, icon_type, kSizeInDip,
+    app_service_proxy().app_icon_loader()->LoadIconFromIconKey(
+        app_id, icon_key, icon_type, kSizeInDip,
         /*allow_placeholder_icon=*/false, result.GetCallback());
     return result.Take();
   }

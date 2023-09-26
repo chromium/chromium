@@ -298,25 +298,17 @@ void SharesheetService::LoadAppIcons(
 
   // Making a copy because we move |intent_launch_info| out below.
   auto app_id = intent_launch_info[index].app_id;
-  // TODO(crbug.com/1412708): Update when we have the icon effect interface.
-  absl::optional<apps::IconKey> icon_key =
-      app_service_proxy_->app_icon_loader()->GetIconKey(app_id);
-  if (icon_key.has_value()) {
-    if (intent_launch_info[index].is_dlp_blocked) {
-      icon_key->icon_effects |= apps::IconEffects::kBlocked;
-    }
-    app_service_proxy_->LoadIconFromIconKey(
-        app_service_proxy_->AppRegistryCache().GetAppType(app_id), app_id,
-        icon_key.value(), apps::IconType::kStandard, kIconSize,
-        /*allow_placeholder_icon=*/false,
-        base::BindOnce(&SharesheetService::OnIconLoaded,
-                       weak_factory_.GetWeakPtr(),
-                       std::move(intent_launch_info), std::move(targets), index,
-                       std::move(callback)));
-  } else {
-    OnIconLoaded(std::move(intent_launch_info), std::move(targets), index,
-                 std::move(callback), std::make_unique<apps::IconValue>());
+  uint32_t icon_effects = app_service_proxy_->GetIconEffects(app_id);
+  if (intent_launch_info[index].is_dlp_blocked) {
+    icon_effects |= apps::IconEffects::kBlocked;
   }
+  app_service_proxy_->LoadIconWithIconEffects(
+      app_service_proxy_->AppRegistryCache().GetAppType(app_id), app_id,
+      icon_effects, apps::IconType::kStandard, kIconSize,
+      /*allow_placeholder_icon=*/false,
+      base::BindOnce(&SharesheetService::OnIconLoaded,
+                     weak_factory_.GetWeakPtr(), std::move(intent_launch_info),
+                     std::move(targets), index, std::move(callback)));
 }
 
 void SharesheetService::OnIconLoaded(

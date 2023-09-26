@@ -75,11 +75,9 @@ void WebKioskAppUpdateObserver::UpdateWebAppFromAppService(
         GURL start_url = GURL(app_info.PublisherId());
 
         if (icon_updated && app_info.IconKey()) {
-          auto icon_key = app_info.IconKey().value();
-          // Remove web app icon effects for Kiosk apps menu.
-          icon_key.icon_effects = apps::IconEffects::kNone;
-          app_service_->LoadIconFromIconKey(
-              apps::AppType::kWeb, app_info.AppId(), icon_key,
+          app_service_->LoadIconWithIconEffects(
+              // Remove web app icon effects for Kiosk apps menu.
+              apps::AppType::kWeb, app_info.AppId(), apps::IconEffects::kNone,
               apps::IconType::kUncompressed, kWebKioskIconSize,
               /*allow_placeholder_icon=*/true,
               base::BindOnce(&WebKioskAppUpdateObserver::OnAppServiceIconLoaded,

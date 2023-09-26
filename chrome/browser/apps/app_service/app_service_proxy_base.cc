@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_source.h"
+#include "chrome/browser/apps/app_service/app_icon/icon_effects.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
@@ -221,17 +222,35 @@ std::unique_ptr<IconLoader::Releaser> AppServiceProxyBase::LoadIcon(
                                      std::move(callback));
 }
 
+uint32_t AppServiceProxyBase::GetIconEffects(const std::string& app_id) {
+  absl::optional<apps::IconKey> icon_key =
+      app_icon_loader()->GetIconKey(app_id);
+  if (!icon_key.has_value()) {
+    return IconEffects::kNone;
+  }
+  return icon_key->icon_effects;
+}
+
 std::unique_ptr<apps::IconLoader::Releaser>
-AppServiceProxyBase::LoadIconFromIconKey(AppType app_type,
-                                         const std::string& app_id,
-                                         const IconKey& icon_key,
-                                         IconType icon_type,
-                                         int32_t size_hint_in_dip,
-                                         bool allow_placeholder_icon,
-                                         LoadIconCallback callback) {
+AppServiceProxyBase::LoadIconWithIconEffects(AppType app_type,
+                                             const std::string& app_id,
+                                             uint32_t icon_effects,
+                                             IconType icon_type,
+                                             int32_t size_hint_in_dip,
+                                             bool allow_placeholder_icon,
+                                             LoadIconCallback callback) {
+  absl::optional<apps::IconKey> icon_key =
+      app_icon_loader()->GetIconKey(app_id);
+  if (!icon_key.has_value()) {
+    std::move(callback).Run(std::make_unique<IconValue>());
+    return nullptr;
+  }
+
+  icon_key->icon_effects = icon_effects;
+
   return app_icon_loader()->LoadIconFromIconKey(
-      app_id, icon_key, icon_type, size_hint_in_dip, allow_placeholder_icon,
-      std::move(callback));
+      app_id, icon_key.value(), icon_type, size_hint_in_dip,
+      allow_placeholder_icon, std::move(callback));
 }
 
 void AppServiceProxyBase::Launch(const std::string& app_id,

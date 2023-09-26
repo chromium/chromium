@@ -123,18 +123,20 @@ class AppServiceProxyBase : public KeyedService,
       bool allow_placeholder_icon,
       apps::LoadIconCallback callback);
 
-  // Load the icon for app represented by `app_id`. `icon_key` can be used to
+  // Get the default icon effects for the app represented by `app_id`,
+  // which will be used when calling `LoadIcon()` for that app.
+  uint32_t GetIconEffects(const std::string& app_id);
+
+  // Load the icon for app represented by `app_id`. `icon_effect` can be used to
   // specify custom icon effect the caller wants to apply on the icon.
   // `allow_placeholder_icon` indicate whether we allow loading placeholder icon
   // from the in memory cache and do not attempt to retry to load the actual
   // icon.
   // TODO(crbug.com/1412708): Remove app_type from interface.
-  // TODO(crbug.com/1412708): Update the interface to load icon with icon
-  // effects instead of icon key.
-  std::unique_ptr<IconLoader::Releaser> LoadIconFromIconKey(
+  std::unique_ptr<IconLoader::Releaser> LoadIconWithIconEffects(
       AppType app_type,
       const std::string& app_id,
-      const IconKey& icon_key,
+      uint32_t icon_effects,
       IconType icon_type,
       int32_t size_hint_in_dip,
       bool allow_placeholder_icon,

@@ -149,15 +149,12 @@ void SubscriberCrosapi::LoadIcon(const std::string& app_id,
                                  IconType icon_type,
                                  int32_t size_hint_in_dip,
                                  apps::LoadIconCallback callback) {
-  if (!icon_key) {
-    std::move(callback).Run(std::make_unique<IconValue>());
-    return;
-  }
-
-  proxy_->LoadIconFromIconKey(proxy_->AppRegistryCache().GetAppType(app_id),
-                              app_id, *icon_key, icon_type, size_hint_in_dip,
-                              /*allow_placeholder_icon=*/false,
-                              std::move(callback));
+  // Currently there is no usage of custom icon_key icon loading from
+  // Lacros. Drop the icon key from the interface here.
+  // TODO(crbug.com/1412708): Update the crosapi interface to match this.
+  proxy_->LoadIcon(proxy_->AppRegistryCache().GetAppType(app_id), app_id,
+                   icon_type, size_hint_in_dip,
+                   /*allow_placeholder_icon=*/false, std::move(callback));
 }
 
 void SubscriberCrosapi::AddPreferredAppDeprecated(

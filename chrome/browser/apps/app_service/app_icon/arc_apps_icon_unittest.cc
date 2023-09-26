@@ -162,12 +162,12 @@ class AppServiceArcAppIconTest : public ArcAppsIconFactoryTest,
     return result.Take();
   }
 
-  apps::IconValuePtr LoadIconFromIconKey(const std::string& app_id,
-                                         const IconKey& icon_key,
-                                         IconType icon_type) {
+  apps::IconValuePtr LoadIconWithIconEffects(const std::string& app_id,
+                                             uint32_t icon_effects,
+                                             IconType icon_type) {
     base::test::TestFuture<apps::IconValuePtr> result;
-    app_service_proxy().LoadIconFromIconKey(
-        AppType::kArc, app_id, icon_key, icon_type, kSizeInDip,
+    app_service_proxy().LoadIconWithIconEffects(
+        AppType::kArc, app_id, icon_effects, icon_type, kSizeInDip,
         /*allow_placeholder_icon=*/false, result.GetCallback());
     return result.Take();
   }
@@ -251,9 +251,9 @@ TEST_F(AppServiceArcAppIconTest, GetCompressedIconDataForStandardIcon) {
 
   // Verify the icon reading and writing function in AppService for the
   // kStandard icon.
-  IconKey icon_key;
-  icon_key.icon_effects = IconEffects::kCrOsStandardIcon | IconEffects::kPaused;
-  auto ret = LoadIconFromIconKey(app_id, icon_key, IconType::kStandard);
+  auto ret = LoadIconWithIconEffects(
+      app_id, IconEffects::kCrOsStandardIcon | IconEffects::kPaused,
+      IconType::kStandard);
 
   ASSERT_EQ(apps::IconType::kStandard, ret->icon_type);
   VerifyIcon(src_image_skia, ret->uncompressed);

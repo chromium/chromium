@@ -213,32 +213,32 @@ class AppServiceChromeAppIconTest : public ChromeAppsIconFactoryTest {
     return result.Take();
   }
 
-  apps::IconValuePtr LoadIconFromIconKey(const std::string& app_id,
-                                         const IconKey& icon_key,
-                                         IconType icon_type) {
+  apps::IconValuePtr LoadIconWithIconEffects(const std::string& app_id,
+                                             uint32_t icon_effects,
+                                             IconType icon_type) {
     base::test::TestFuture<apps::IconValuePtr> result;
-    app_service_proxy().LoadIconFromIconKey(
-        AppType::kChromeApp, app_id, icon_key, icon_type, kSizeInDip,
+    app_service_proxy().LoadIconWithIconEffects(
+        AppType::kChromeApp, app_id, icon_effects, icon_type, kSizeInDip,
         /*allow_placeholder_icon=*/false, result.GetCallback());
     return result.Take();
   }
 
-  // Call LoadIconFromIconKey twice with the same parameters, to verify the icon
-  // loading process can handle the icon loading request multiple times with the
-  // same params.
-  std::vector<apps::IconValuePtr> MultipleLoadIconFromIconKey(
+  // Call LoadIconWithIconEffects twice with the same parameters, to verify the
+  // icon loading process can handle the icon loading request multiple times
+  // with the same params.
+  std::vector<apps::IconValuePtr> MultipleLoadIconWithIconEffects(
       const std::string& app_id,
-      const IconKey& icon_key,
+      uint32_t icon_effects,
       IconType icon_type) {
     base::test::TestFuture<std::vector<apps::IconValuePtr>> result;
     auto barrier_callback =
         base::BarrierCallback<apps::IconValuePtr>(2, result.GetCallback());
 
-    app_service_proxy().LoadIconFromIconKey(
-        AppType::kChromeApp, app_id, icon_key, icon_type, kSizeInDip,
+    app_service_proxy().LoadIconWithIconEffects(
+        AppType::kChromeApp, app_id, icon_effects, icon_type, kSizeInDip,
         /*allow_placeholder_icon=*/false, barrier_callback);
-    app_service_proxy().LoadIconFromIconKey(
-        AppType::kChromeApp, app_id, icon_key, icon_type, kSizeInDip,
+    app_service_proxy().LoadIconWithIconEffects(
+        AppType::kChromeApp, app_id, icon_effects, icon_type, kSizeInDip,
         /*allow_placeholder_icon=*/false, barrier_callback);
 
     return result.Take();
@@ -271,10 +271,8 @@ TEST_F(AppServiceChromeAppIconTest, GetCompressedIconDataForStandardIcon) {
 
   // Verify the icon reading and writing function in AppService for the
   // kStandard icon.
-  IconKey icon_key;
-  icon_key.icon_effects = IconEffects::kCrOsStandardIcon;
-  auto ret = MultipleLoadIconFromIconKey(kPackagedApp1Id, icon_key,
-                                         IconType::kStandard);
+  auto ret = MultipleLoadIconWithIconEffects(
+      kPackagedApp1Id, IconEffects::kCrOsStandardIcon, IconType::kStandard);
 
   ASSERT_EQ(2U, ret.size());
   ASSERT_EQ(apps::IconType::kStandard, ret[0]->icon_type);
@@ -291,8 +289,8 @@ TEST_F(AppServiceChromeAppIconTest, GetCompressedIconDataForUncompressedIcon) {
 
   // Verify the icon reading and writing function in AppService for the
   // kUncompressed icon.
-  auto ret =
-      LoadIconFromIconKey(kPackagedApp1Id, IconKey(), IconType::kUncompressed);
+  auto ret = LoadIconWithIconEffects(kPackagedApp1Id, IconEffects::kNone,
+                                     IconType::kUncompressed);
 
   ASSERT_EQ(apps::IconType::kUncompressed, ret->icon_type);
   VerifyIcon(src_image_skia, ret->uncompressed);
