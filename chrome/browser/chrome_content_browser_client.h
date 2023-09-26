@@ -941,6 +941,14 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   void SetIsMinimalMode(bool minimal) override;
 
+#if !BUILDFLAG(IS_ANDROID)
+  void BindVideoEffectsManager(
+      const std::string& device_id,
+      content::BrowserContext* browser_context,
+      mojo::PendingReceiver<video_capture::mojom::VideoEffectsManager>
+          video_effects_manager) override;
+#endif  // !BUILDFLAG(IS_ANDROID)
+
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);
   static bool HandleWebUIReverse(GURL* url,
