@@ -294,8 +294,9 @@ absl::optional<LayoutUnit> ContentMinimumInlineSize(
   if (block_node.IsTextControl() && apply_form_sizing) {
     return inline_size;
   }
-  if (IsA<HTMLSelectElement>(node))
+  if (IsA<HTMLSelectElement>(node) && apply_form_sizing) {
     return inline_size;
+  }
   if (const auto* input_element = DynamicTo<HTMLInputElement>(node)) {
     const AtomicString& type = input_element->type();
     if (type == input_type_names::kFile)

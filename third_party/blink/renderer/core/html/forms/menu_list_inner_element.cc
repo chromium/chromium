@@ -28,7 +28,9 @@ const ComputedStyle* MenuListInnerElement::CustomStyleForLayoutObject(
   style_builder.SetFlexShrink(1);
   // min-width: 0; is needed for correct shrinking.
   style_builder.SetMinWidth(Length::Fixed(0));
-  style_builder.SetHasLineIfEmpty(true);
+  if (parent_style.ApplyControlFixedSize()) {
+    style_builder.SetHasLineIfEmpty(true);
+  }
   style_builder.SetOverflowX(EOverflow::kHidden);
   style_builder.SetOverflowY(EOverflow::kHidden);
   style_builder.SetShouldIgnoreOverflowPropertyForInlineBlockBaseline();

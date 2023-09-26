@@ -1370,7 +1370,8 @@ LayoutUnit LayoutBox::DefaultIntrinsicContentInlineSize() const {
   const bool apply_fixed_size = StyleRef().ApplyControlFixedSize();
   const auto* select = DynamicTo<HTMLSelectElement>(element);
   if (UNLIKELY(select && select->UsesMenuList())) {
-    return MenuListIntrinsicInlineSize(*select, *this);
+    return apply_fixed_size ? MenuListIntrinsicInlineSize(*select, *this)
+                            : kIndefiniteSize;
   }
   const auto* input = DynamicTo<HTMLInputElement>(element);
   if (UNLIKELY(input)) {
@@ -1409,21 +1410,6 @@ LayoutUnit LayoutBox::DefaultIntrinsicContentBlockSize() const {
   // get here.
   DCHECK(!HasOverrideIntrinsicContentLogicalHeight());
 
-  const bool apply_fixed_size = StyleRef().ApplyControlFixedSize();
-  if (const auto* select = DynamicTo<HTMLSelectElement>(GetNode())) {
-    if (select->UsesMenuList())
-      return MenuListIntrinsicBlockSize(*select, *this);
-    return ListBoxItemBlockSize(*select, *this) * select->ListBoxSize() -
-           ComputeLogicalScrollbars().BlockSum();
-  }
-  if (IsTextField() && apply_fixed_size) {
-    return TextFieldIntrinsicBlockSize(*To<HTMLInputElement>(GetNode()), *this);
-  }
-  if (IsTextArea() && apply_fixed_size) {
-    return TextAreaIntrinsicBlockSize(*To<HTMLTextAreaElement>(GetNode()),
-                                      *this);
-  }
-
   auto effective_appearance = StyleRef().EffectiveAppearance();
   if (effective_appearance == kCheckboxPart) {
     return ThemePartIntrinsicSize(*this, WebThemeEngine::kPartCheckbox)
@@ -1431,6 +1417,23 @@ LayoutUnit LayoutBox::DefaultIntrinsicContentBlockSize() const {
   }
   if (effective_appearance == kRadioPart) {
     return ThemePartIntrinsicSize(*this, WebThemeEngine::kPartRadio).block_size;
+  }
+
+  if (!StyleRef().ApplyControlFixedSize()) {
+    return kIndefiniteSize;
+  }
+  if (const auto* select = DynamicTo<HTMLSelectElement>(GetNode())) {
+    if (select->UsesMenuList())
+      return MenuListIntrinsicBlockSize(*select, *this);
+    return ListBoxItemBlockSize(*select, *this) * select->ListBoxSize() -
+           ComputeLogicalScrollbars().BlockSum();
+  }
+  if (IsTextField()) {
+    return TextFieldIntrinsicBlockSize(*To<HTMLInputElement>(GetNode()), *this);
+  }
+  if (IsTextArea()) {
+    return TextAreaIntrinsicBlockSize(*To<HTMLTextAreaElement>(GetNode()),
+                                      *this);
   }
 
   return kIndefiniteSize;
