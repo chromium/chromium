@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview.test;
 
+import static org.junit.Assert.assertEquals;
+
 import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.MULTI_PROCESS;
 
 import android.util.Pair;
@@ -25,6 +27,7 @@ import org.chromium.android_webview.AwCookieManager;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.content_public.browser.test.util.RenderProcessHostUtils;
 import org.chromium.net.test.util.TestWebServer;
 
 import java.util.ArrayList;
@@ -143,8 +146,8 @@ public class MultiProfileTest {
     public void testGetName() throws Throwable {
         final AwBrowserContext defaultProfile = AwBrowserContext.getDefault();
         final AwBrowserContext profile1 = getContextSync("AwesomeProfile", true);
-        Assert.assertEquals("Default", defaultProfile.getName());
-        Assert.assertEquals("AwesomeProfile", profile1.getName());
+        assertEquals("Default", defaultProfile.getName());
+        assertEquals("AwesomeProfile", profile1.getName());
     }
 
     @Test
@@ -154,9 +157,9 @@ public class MultiProfileTest {
         final AwBrowserContext defaultProfile = AwBrowserContext.getDefault();
         final AwBrowserContext myCoolProfile = getContextSync("MyCoolProfile", true);
         final AwBrowserContext myOtherCoolProfile = getContextSync("MyOtherCoolProfile", true);
-        Assert.assertEquals("Default", defaultProfile.getRelativePathForTesting());
-        Assert.assertEquals("Profile 1", myCoolProfile.getRelativePathForTesting());
-        Assert.assertEquals("Profile 2", myOtherCoolProfile.getRelativePathForTesting());
+        assertEquals("Default", defaultProfile.getRelativePathForTesting());
+        assertEquals("Profile 1", myCoolProfile.getRelativePathForTesting());
+        assertEquals("Profile 2", myOtherCoolProfile.getRelativePathForTesting());
     }
 
     @Test
@@ -170,23 +173,21 @@ public class MultiProfileTest {
         final AwBrowserContext myCoolProfile = getContextSync("MyCoolProfile", true);
         final AwBrowserContext myOtherCoolProfile = getContextSync("MyOtherCoolProfile", true);
         final AwBrowserContext myCoolProfileCopy = getContextSync("MyCoolProfile", true);
-        Assert.assertEquals("WebViewProfilePrefsDefault_MyDataDirSuffix",
+        assertEquals("WebViewProfilePrefsDefault_MyDataDirSuffix",
                 defaultProfile.getSharedPrefsNameForTesting());
-        Assert.assertEquals("WebViewProfilePrefsProfile 1_MyDataDirSuffix",
+        assertEquals("WebViewProfilePrefsProfile 1_MyDataDirSuffix",
                 myCoolProfile.getSharedPrefsNameForTesting());
-        Assert.assertEquals("WebViewProfilePrefsProfile 2_MyDataDirSuffix",
+        assertEquals("WebViewProfilePrefsProfile 2_MyDataDirSuffix",
                 myOtherCoolProfile.getSharedPrefsNameForTesting());
-        Assert.assertEquals(myCoolProfile.getSharedPrefsNameForTesting(),
+        assertEquals(myCoolProfile.getSharedPrefsNameForTesting(),
                 myCoolProfileCopy.getSharedPrefsNameForTesting());
 
         AwBrowserProcess.setProcessDataDirSuffixForTesting(null);
-        Assert.assertEquals(
-                "WebViewProfilePrefsDefault", defaultProfile.getSharedPrefsNameForTesting());
-        Assert.assertEquals(
-                "WebViewProfilePrefsProfile 1", myCoolProfile.getSharedPrefsNameForTesting());
-        Assert.assertEquals(
+        assertEquals("WebViewProfilePrefsDefault", defaultProfile.getSharedPrefsNameForTesting());
+        assertEquals("WebViewProfilePrefsProfile 1", myCoolProfile.getSharedPrefsNameForTesting());
+        assertEquals(
                 "WebViewProfilePrefsProfile 2", myOtherCoolProfile.getSharedPrefsNameForTesting());
-        Assert.assertEquals(myCoolProfile.getSharedPrefsNameForTesting(),
+        assertEquals(myCoolProfile.getSharedPrefsNameForTesting(),
                 myCoolProfileCopy.getSharedPrefsNameForTesting());
     }
 
@@ -378,6 +379,67 @@ public class MultiProfileTest {
         webServer.shutdown();
     }
 
+    @Test
+    @MediumTest
+    @OnlyRunIn(MULTI_PROCESS)
+    @Feature({"AndroidWebView"})
+    public void testSeparateProfilesHaveSeparateRenderProcesses() throws Throwable {
+        mActivityTestRule.startBrowserProcess();
+        final AwBrowserContext profile = getContextSync("my-profile", true);
+        final AwContents firstAwContents =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient)
+                        .getAwContents();
+        final AwContents secondAwContents =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient)
+                        .getAwContents();
+        setBrowserContextSync(secondAwContents, profile);
+
+        TestWebServer webServer = TestWebServer.start();
+        String path = "/cookie_test.html";
+        String responseStr = "<html><head><title>TEST!</title></head><body>HELLO!</body></html>";
+        String url = webServer.setResponse(path, responseStr, new ArrayList<>());
+
+        mActivityTestRule.loadUrlSync(
+                firstAwContents, mContentsClient.getOnPageFinishedHelper(), url);
+        assertEquals(1, RenderProcessHostUtils.getCurrentRenderProcessCount());
+
+        mActivityTestRule.loadUrlSync(
+                secondAwContents, mContentsClient.getOnPageFinishedHelper(), url);
+        assertEquals(2, RenderProcessHostUtils.getCurrentRenderProcessCount());
+        webServer.shutdown();
+    }
+
+    @Test
+    @MediumTest
+    @OnlyRunIn(MULTI_PROCESS)
+    @Feature({"AndroidWebView"})
+    public void testAwContentsWithSameProfileShareRenderProcess() throws Throwable {
+        mActivityTestRule.startBrowserProcess();
+        final AwBrowserContext profile = getContextSync("my-profile", true);
+        final AwContents firstAwContents =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient)
+                        .getAwContents();
+        final AwContents secondAwContents =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient)
+                        .getAwContents();
+        setBrowserContextSync(firstAwContents, profile);
+        setBrowserContextSync(secondAwContents, profile);
+
+        TestWebServer webServer = TestWebServer.start();
+        String path = "/cookie_test.html";
+        String responseStr = "<html><head><title>TEST!</title></head><body>HELLO!</body></html>";
+        String url = webServer.setResponse(path, responseStr, new ArrayList<>());
+
+        mActivityTestRule.loadUrlSync(
+                firstAwContents, mContentsClient.getOnPageFinishedHelper(), url);
+        assertEquals(1, RenderProcessHostUtils.getCurrentRenderProcessCount());
+
+        mActivityTestRule.loadUrlSync(
+                secondAwContents, mContentsClient.getOnPageFinishedHelper(), url);
+        assertEquals(1, RenderProcessHostUtils.getCurrentRenderProcessCount());
+        webServer.shutdown();
+    }
+
     private void validateCookies(
             AwCookieManager cookieManager, String url, String... expectedCookieNames) {
         final String responseCookie = cookieManager.getCookie(url);
@@ -389,7 +451,7 @@ public class MultiProfileTest {
         }
         Set<String> expectedCookieNamesSet =
                 new HashSet<String>(Arrays.asList(expectedCookieNames));
-        Assert.assertEquals("Found cookies list differs from expected list", expectedCookieNamesSet,
+        assertEquals("Found cookies list differs from expected list", expectedCookieNamesSet,
                 foundCookieNamesSet);
     }
 }
