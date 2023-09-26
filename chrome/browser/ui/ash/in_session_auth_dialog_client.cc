@@ -247,8 +247,8 @@ void InSessionAuthDialogClient::AuthenticateWithPassword(
   // in this `user_context`.
   CHECK(user_context_);
 
-  const cryptohome::AuthFactor* password_factor =
-      user_context_->GetAuthFactorsData().FindOnlinePasswordFactor();
+  const auto* password_factor =
+      user_context_->GetAuthFactorsData().FindAnyPasswordFactor();
   if (!password_factor) {
     LOG(ERROR) << "Could not find password key";
     std::move(pending_auth_state_->callback).Run(false);
