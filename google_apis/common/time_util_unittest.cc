@@ -5,7 +5,6 @@
 #include "google_apis/common/time_util.h"
 
 #include "base/i18n/time_formatting.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -13,7 +12,7 @@ namespace google_apis::util {
 namespace {
 
 std::string FormatTime(const base::Time& time) {
-  return base::UTF16ToUTF8(base::TimeFormatShortDateAndTime(time));
+  return base::UnlocalizedTimeFormatWithPattern(time, "yyMMddHHmmssSSS");
 }
 
 }  // namespace

@@ -145,15 +145,9 @@ std::string FormatTimeAsString(const base::Time& time) {
 }
 
 std::string FormatTimeAsStringLocaltime(const base::Time& time) {
-  if (time.is_null())
-    return kNullTimeString;
-
-  base::Time::Exploded exploded;
-  time.LocalExplode(&exploded);
-  return base::StringPrintf("%04d-%02d-%02dT%02d:%02d:%02d.%03d", exploded.year,
-                            exploded.month, exploded.day_of_month,
-                            exploded.hour, exploded.minute, exploded.second,
-                            exploded.millisecond);
+  return time.is_null() ? std::string(kNullTimeString)
+                        : base::UnlocalizedTimeFormatWithPattern(
+                              time, "yyyy-MM-dd'T'HH:mm:ss.SSS");
 }
 
 }  // namespace util
