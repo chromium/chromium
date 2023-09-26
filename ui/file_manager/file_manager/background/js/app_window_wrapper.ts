@@ -8,36 +8,23 @@ import {FilesAppState} from '../../common/js/files_app_state.js';
 
 /** Coordinates the creation of new windows for Files app.  */
 export class AppWindowWrapper {
-  /**
-   * @param {string} url App window content url.
-   */
-  constructor(url) {
-    this.url_ = url;
-    /** @private {?FilesAppState} */
-    this.appState_ = null;
-    this.openingOrOpened_ = false;
-
-    /** @protected {!AsyncQueue} */
-    this.queue_ = new AsyncQueue();
-  }
+  private appState_: FilesAppState|null = null;
+  private openingOrOpened_: boolean = false;
+  protected queue_ = new AsyncQueue();
 
   /**
    * Gets the launch lock, used to synchronize the asynchronous initialization
    * steps.
-   *
-   * @return {Promise<function()>} A function to be called to release the lock.
    */
-  async getLaunchLock() {
+  async getLaunchLock(): Promise<() => void> {
     return this.queue_.lock();
   }
 
   /**
    * Opens the window.
-   *
-   * @param {!FilesAppState} appState App state.
-   * @return {Promise} Resolved when the window is launched.
+   * @return Resolves when the window is launched.
    */
-  async launch(appState) {
+  async launch(appState: FilesAppState): Promise<void> {
     // Check if the window is opened or not.
     if (this.openingOrOpened_) {
       console.warn('The window is already opened.');
@@ -52,12 +39,10 @@ export class AppWindowWrapper {
   }
 
   /**
-   * Opens a new window for the SWA.
-   *
-   * @return {Promise} Resolved when the window is launched.
-   * @private
+   * Opens a new window for the SWA. Returns a Promise which resolves when the
+   * window is launched.
    */
-  async launch_() {
+  private async launch_(): Promise<void> {
     const unlock = await this.getLaunchLock();
     try {
       await this.createWindow_();
@@ -69,14 +54,13 @@ export class AppWindowWrapper {
   }
 
   /**
-   * @return {Promise} Resolved when the new window is opened.
-   * @private
+   * Return a Promise which resolves when the new window is opened.
    */
-  async createWindow_() {
-    const url = this.appState_.currentDirectoryURL || '';
+  private async createWindow_(): Promise<void> {
+    const url = this.appState_!.currentDirectoryURL?.toString() || '';
     const result = await openWindow({
       currentDirectoryURL: url,
-      selectionURL: this.appState_.selectionURL,
+      selectionURL: this.appState_!.selectionURL,
     });
 
     if (!result) {

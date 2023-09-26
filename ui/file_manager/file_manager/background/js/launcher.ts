@@ -43,7 +43,8 @@ export async function launchFileManager(appState?: FilesAppState):
 
   await initializationPromise;
 
-  const appWindow = new AppWindowWrapper('main.html');
+  const appWindow = new AppWindowWrapper();
 
-  await appWindow.launch(appState || {});
+  // TODO: Remove `as FileAppsState` this type is an TS interface.
+  await appWindow.launch(appState || {} as FilesAppState);
 }

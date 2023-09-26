@@ -35,7 +35,6 @@ visibility = [ ":*" ]
 
 js_type_check("closure_compile_jsmodules") {
   deps = [
-    ":app_window_wrapper",
     ":file_manager_base",
     ":file_operation_handler",
     ":file_operation_manager",
@@ -48,15 +47,18 @@ js_type_check("closure_compile_jsmodules") {
     ":volume_manager_factory",
     ":volume_manager_impl",
     ":volume_manager_util",
+    "//ui/file_manager:js_from_ts",
   ]
 
   closure_flags = strict_error_checking_closure_args + [
                     "language_in=ECMASCRIPT_2020",
+                    "js_module_root=./gen/ui/file_manager/tsc",
                     "js_module_root=./gen/ui/file_manager",
                     "js_module_root=" +
                         rebase_path("//ui/file_manager", root_build_dir),
                     "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
                     "hide_warnings_for=third_party/",
+                    "hide_warnings_for=gen/ui/file_manager/tsc/",
                     "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
                     "browser_resolver_prefix_replacements=\"chrome://file-manager/=./file_manager/\"",
                   ]
@@ -70,24 +72,18 @@ js_type_check("test_support_modules_type_check") {
     ":mock_progress_center",
     ":mock_volume_manager",
     ":runtime_loaded_test_util",
+    "//ui/file_manager:js_from_ts",
   ]
   closure_flags =
       strict_error_checking_closure_args + [
         "language_in=ECMASCRIPT_2020",
+        "js_module_root=./gen/ui/file_manager/tsc",
         "js_module_root=./gen/ui",
         "js_module_root=" + rebase_path("//ui", root_build_dir),
         "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
         "hide_warnings_for=third_party/",
+        "hide_warnings_for=gen/ui/file_manager/tsc/",
       ]
-}
-
-js_library("app_window_wrapper") {
-  visibility += related_apps
-  deps = [
-    "//ui/file_manager/file_manager/common/js:api",
-    "//ui/file_manager/file_manager/common/js:async_util",
-    "//ui/file_manager/file_manager/common/js:files_app_state",
-  ]
 }
 
 js_library("file_manager_base") {
@@ -312,14 +308,17 @@ js_test_type_check("js_test_type_check") {
 
   closure_flags = strict_error_checking_closure_args + [
                     "language_in=ECMASCRIPT_2020",
-                    "js_module_root=./gen/ui/file_manager",
+                    "js_module_root=gen/ui/file_manager/tsc/",
+                    "js_module_root=gen/ui/file_manager/",
                     "js_module_root=" +
-                        rebase_path("//ui/file_manager", root_build_dir),
+                        rebase_path("//ui/file_manager/", root_build_dir),
                     "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
                     "hide_warnings_for=third_party/",
+                    "hide_warnings_for=gen/ui/file_manager/tsc/",
                     "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
                     "browser_resolver_prefix_replacements=\"chrome://file-manager/=./file_manager/\"",
                   ]
+  extra_deps = [ "//ui/file_manager:js_from_ts" ]
 }
 
 tsc_folder =

@@ -26,14 +26,14 @@ export class FilesAppState {
      * The desired target directory when opening a new window.
      * @public {string|null|undefined}
      */
-    this.currentDirectoryURL;
+    this.currentDirectoryURL = undefined;
 
     /**
      * The URL for a file or directory to be selected once a new window is
      * spawned.
      * @public {string|undefined}
      */
-    this.selectionURL;
+    this.selectionURL = undefined;
 
     /**
      * For SaveAs dialog it prefills the <input> for the file name with this
