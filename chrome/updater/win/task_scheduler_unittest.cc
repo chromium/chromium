@@ -82,17 +82,10 @@ class TaskSchedulerTests : public ::testing::Test {
   }
 
   std::wstring GetRegKeyTaskCacheTasksContents() {
-    base::FilePath system_path;
-    EXPECT_TRUE(base::PathService::Get(base::DIR_SYSTEM, &system_path));
-    std::string output;
-    EXPECT_TRUE(base::GetAppOutput(
-        base::StrCat({system_path.Append(L"reg.exe").value(), L" query ",
-                      base::CommandLine::QuoteForCommandLineToArgvW(
-                          L"HKLM\\SOFTWARE\\Microsoft\\Windows "
-                          L"NT\\CurrentVersion\\Schedule\\TaskCache\\Tasks"),
-                      L" /s"}),
-        &output));
-    return base::ASCIIToWide(output);
+    absl::optional<std::wstring> contents = GetRegKeyContents(
+        L"HKLM\\SOFTWARE\\Microsoft\\Windows "
+        L"NT\\CurrentVersion\\Schedule\\TaskCache\\Tasks");
+    return contents ? *contents : L"";
   }
 
   void ExpectRegisterTaskSucceeds(const std::wstring& task_name,
