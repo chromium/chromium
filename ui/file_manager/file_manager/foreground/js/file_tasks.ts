@@ -28,7 +28,7 @@ import {USER_CANCELLED, XfPasswordDialog} from '../../widgets/xf_password_dialog
 
 import {constants} from './constants.js';
 import {DirectoryChangeTracker, DirectoryModel} from './directory_model.js';
-import {FileTransferController} from './file_transfer_controller.js';
+import {FileTransferController, PastePlan} from './file_transfer_controller.js';
 import {MetadataItem} from './metadata/metadata_item.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 import {TaskController} from './task_controller.js';
@@ -350,7 +350,7 @@ export class FileTasks {
 
       assert(volumeManager.getLocationInfo(pvmDir));
 
-      fileTransferController.executePaste(new FileTransferController.PastePlan(
+      fileTransferController.executePaste(new PastePlan(
           entries.map(e => e.toURL()), [], pvmDir, metadataModel,
           /*isMove=*/ isMyFiles));
       directoryModel.changeDirectoryEntry(pvmDir);

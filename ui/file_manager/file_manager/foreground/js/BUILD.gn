@@ -36,7 +36,6 @@ group("js_modules") {
     ":directory_contents",
     ":directory_model",
     ":directory_tree_naming_controller",
-    ":drop_effect_and_label",
     ":elements_importer",
     ":empty_folder_controller",
     ":fake_android_app_list_model",
@@ -45,7 +44,6 @@ group("js_modules") {
     ":file_manager",
     ":file_manager_commands",
     ":file_selection",
-    ":file_transfer_controller",
     ":file_type_filters_controller",
     ":file_watcher",
     ":folder_shortcuts_data_model",
@@ -106,7 +104,6 @@ js_type_check("closure_compile_jsmodules") {
     ":directory_contents",
     ":directory_model",
     ":directory_tree_naming_controller",
-    ":drop_effect_and_label",
     ":elements_importer",
     ":empty_folder_controller",
     ":fake_android_app_list_model",
@@ -116,7 +113,6 @@ js_type_check("closure_compile_jsmodules") {
     ":file_manager_commands",
     ":file_rename",
     ":file_selection",
-    ":file_transfer_controller",
     ":file_type_filters_controller",
     ":file_watcher",
     ":folder_shortcuts_data_model",
@@ -409,9 +405,6 @@ js_library("directory_tree_naming_controller") {
   ]
 }
 
-js_library("drop_effect_and_label") {
-}
-
 js_library("elements_importer") {
   deps = [ ":deferred_elements" ]
 }
@@ -496,7 +489,6 @@ js_library("file_manager") {
     ":empty_folder_controller",
     ":file_manager_commands",
     ":file_selection",
-    ":file_transfer_controller",
     ":file_type_filters_controller",
     ":folder_shortcuts_data_model",
     ":gear_menu_controller",
@@ -621,70 +613,6 @@ js_library("file_selection") {
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/file_manager/file_manager/externs/background:file_operation_manager",
   ]
-}
-
-js_library("file_transfer_controller") {
-  deps = [
-    ":directory_model",
-    ":drop_effect_and_label",
-    ":file_selection",
-    ":thumbnail_loader",
-    "metadata:metadata_model",
-    "metadata:thumbnail_model",
-    "ui:command",
-    "ui:directory_tree",
-    "ui:drag_selector",
-    "ui:list",
-    "ui:list_container",
-    "ui:tree",
-    "//ash/webui/common/resources:assert",
-    "//ui/file_manager/file_manager/common/js:api",
-    "//ui/file_manager/file_manager/common/js:file_type",
-    "//ui/file_manager/file_manager/common/js:progress_center_common",
-    "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/externs:entry_location",
-    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
-    "//ui/file_manager/file_manager/externs:volume_info",
-    "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/file_manager/file_manager/externs/background:file_operation_manager",
-    "//ui/file_manager/file_manager/externs/background:progress_center",
-  ]
-  externs_list = [
-    "//ui/file_manager/file_manager/externs/polymer_elements/files_toast.js",
-  ]
-}
-
-js_unittest("file_transfer_controller_unittest") {
-  deps = [
-    ":fake_file_selection_handler",
-    ":file_list_model",
-    ":file_selection",
-    ":file_transfer_controller",
-    ":mock_directory_model",
-    "metadata:mock_metadata",
-    "metadata:thumbnail_model",
-    "ui:a11y_announce",
-    "ui:command",
-    "ui:directory_tree",
-    "ui:file_grid",
-    "ui:file_table",
-    "ui:list_container",
-    "ui:list_selection_model",
-    "//chrome/test/data/webui/chromeos:chai_assert",
-    "//ui/file_manager/file_manager/background/js:mock_volume_manager",
-    "//ui/file_manager/file_manager/common/js:dialog_type",
-    "//ui/file_manager/file_manager/common/js:mock_chrome",
-    "//ui/file_manager/file_manager/common/js:mock_entry",
-    "//ui/file_manager/file_manager/common/js:ui",
-    "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/file_manager/file_manager/externs/background:file_operation_manager",
-    "//ui/file_manager/file_manager/externs/background:progress_center",
-  ]
-  externs_list =
-      [ "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js" ]
 }
 
 js_library("file_type_filters_controller") {
@@ -1104,7 +1032,6 @@ js_test_type_check("js_test_type_check") {
     ":empty_folder_controller_unittest",
     ":file_list_model_unittest",
     ":file_manager_commands_unittest",
-    ":file_transfer_controller_unittest",
     ":file_type_filters_controller_unittest",
     ":list_thumbnail_loader_unittest",
     ":navigation_list_model_unittest",

@@ -61,11 +61,17 @@ export class FilesAppEntry {
 
     /** @public {VolumeManagerCommon.RootType|null} */
     this.rootType = null;
+
+    /**
+     * @public {?FileSystem}
+     */
+    this.filesystem = null;
   }
 
   /**
-   * @param {function(Entry)|function(FilesAppEntry)} success callback.
-   * @param {function(Entry)|function(FilesAppEntry)} error callback.
+   * @param {(function(DirectoryEntry)|function(FilesAppDirEntry))=} success
+   *     callback.
+   * @param {function(Error)=} error callback.
    * This method is defined on Entry.
    */
   getParent(success, error) {}
@@ -81,9 +87,10 @@ export class FilesAppEntry {
   /**
    * Return metadata via |success| callback. Relevant metadata are
    * "modificationTime" and "contentMimeType".
-   * @param {function(Object)} success callback to be called with the result
-   * metadata.
-   * @param {function(Object)} error callback to be called in case of error or
+   * @param {function({modificationTime: Date, size: number})} success callback
+   *     to be called with the result metadata.
+   * @param {function(FileError)=} error callback to be called in case of error
+   *     or
    * ignored if no error happened.
    */
   getMetadata(success, error) {}
@@ -102,6 +109,28 @@ export class FilesAppEntry {
    * @return {?Entry}
    */
   getNativeEntry() {}
+
+  /**
+   * @param {!DirectoryEntry|!FilesAppDirEntry} newParent
+   * @param {string=} newName
+   * @param {(function(Entry)|function(FilesAppEntry))=} success
+   * @param {function(FileError)=} error
+   */
+  copyTo(newParent, newName, success, error) {}
+
+  /**
+   * @param {!DirectoryEntry|!FilesAppDirEntry} newParent
+   * @param {string} newName
+   * @param {(function(Entry)|function(FilesAppEntry))=} success
+   * @param {function(FileError)=} error
+   */
+  moveTo(newParent, newName, success, error) {}
+
+  /**
+   * @param {function(Entry)|function(FilesAppEntry)} success
+   * @param {function(FileError)=} error
+   */
+  remove(success, error) {}
 }
 
 /**
@@ -137,6 +166,28 @@ export class FilesAppDirEntry extends FilesAppEntry {
    * This method is defined on DirectoryEntry.
    */
   createReader() {}
+
+  /**
+   * @param {string} path
+   * @param {!FileSystemFlags=} options
+   * @param {(function(!FileEntry)|function(!FilesAppEntry))=} success
+   * @param {function(!FileError)=} error
+   */
+  getFile(path, options, success, error) {}
+
+  /**
+   * @param {string} path
+   * @param {!FileSystemFlags=} options
+   * @param {(function(!DirectoryEntry)|function(!FilesAppDirEntry))=} success
+   * @param {function(!FileError)=} error
+   */
+  getDirectory(path, options, success, error) {}
+
+  /**
+   * @param {function()} success
+   * @param {function(!Error)=} error
+   */
+  removeRecursively(success, error) {}
 }
 
 /**

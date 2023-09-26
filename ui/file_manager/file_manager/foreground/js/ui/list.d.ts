@@ -5,9 +5,16 @@
 import {ArrayDataModel} from '../../../common/js/array_data_model.js';
 
 import {ListItem} from './list_item.d.js';
+import {ListSelectionModel} from './list_selection_model.js';
 
 export class List extends HTMLUListElement {
   itemConstructor: new(...args: any) => ListItem;
   dataModel: ArrayDataModel;
+  selectionModel: ListSelectionModel;
   handleSelectedSuggestion(selectedObject: any): void;
+  getListItemByIndex: (index: number) => ListItem | null;
+  getListItemAncestor: (element: Element) => ListItem;
+  shouldStartDragSelection: (event: MouseEvent) => boolean;
+  hasDragHitElement: (event: MouseEvent) => boolean;
+  isItem: (item: Node) => boolean;
 }

@@ -94,7 +94,6 @@ static_js_files = [
   "file_manager/foreground/js/directory_contents.js",
   "file_manager/foreground/js/directory_model.js",
   "file_manager/foreground/js/directory_tree_naming_controller.js",
-  "file_manager/foreground/js/drop_effect_and_label.js",
   "file_manager/foreground/js/elements_importer.js",
   "file_manager/foreground/js/empty_folder_controller.js",
   "file_manager/foreground/js/fake_android_app_list_model.js",
@@ -103,7 +102,6 @@ static_js_files = [
   "file_manager/foreground/js/file_manager.js",
   "file_manager/foreground/js/file_manager_commands.js",
   "file_manager/foreground/js/file_selection.js",
-  "file_manager/foreground/js/file_transfer_controller.js",
   "file_manager/foreground/js/file_type_filters_controller.js",
   "file_manager/foreground/js/file_watcher.js",
   "file_manager/foreground/js/folder_shortcuts_data_model.js",
@@ -311,6 +309,7 @@ ts_files = [
   "file_manager/background/js/volume_info_impl.ts",
 
   # Foreground.
+  "file_manager/foreground/js/file_transfer_controller.ts",
   "file_manager/foreground/js/banner_controller.ts",
   "file_manager/foreground/js/file_tasks.ts",
   "file_manager/foreground/js/last_modified_controller.ts",
@@ -420,6 +419,7 @@ ts_test_files = [
   "file_manager/foreground/js/banner_controller_unittest.ts",
   "file_manager/foreground/js/banner_util_unittest.ts",
   "file_manager/foreground/js/file_tasks_unittest.ts",
+  "file_manager/foreground/js/file_transfer_controller_unittest.ts",
   "file_manager/foreground/js/task_controller_unittest.ts",
   "file_manager/foreground/js/metadata/dlp_metadata_provider_unittest.ts",
   "file_manager/foreground/js/ui/banners/drive_bulk_pinning_banner_unittest.ts",
@@ -457,8 +457,10 @@ checked_in_dts_files = [
   "file_manager/foreground/js/ui/command.d.ts",
   "file_manager/foreground/js/ui/list.d.ts",
   "file_manager/foreground/js/ui/list_item.d.ts",
+  "file_manager/foreground/js/ui/grid.d.ts",
   "file_manager/foreground/js/ui/menu_item.d.ts",
   "file_manager/foreground/js/ui/multi_menu_button.d.ts",
+  "file_manager/foreground/js/ui/tree.d.ts",
 ]
 
 generated_js_files = [
@@ -546,7 +548,6 @@ unittest_files = [
   "file_manager/foreground/js/ui/directory_tree_unittest.js",
   "file_manager/foreground/js/navigation_list_model_unittest.js",
   "file_manager/foreground/js/directory_model_unittest.js",
-  "file_manager/foreground/js/file_transfer_controller_unittest.js",
 
   # Image Loader:
   "image_loader/scheduler_unittest.js",

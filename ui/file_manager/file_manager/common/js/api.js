@@ -365,3 +365,11 @@ export async function calculateBulkPinRequiredSpace() {
 export async function getDriveConnectionState() {
   return promisify(chrome.fileManagerPrivate.getDriveConnectionState);
 }
+
+/**
+ * @param {!Array<string>} entries
+ * @return {!Promise<void>}
+ */
+export async function grantAccess(entries) {
+  return promisify(chrome.fileManagerPrivate.grantAccess, entries);
+}
