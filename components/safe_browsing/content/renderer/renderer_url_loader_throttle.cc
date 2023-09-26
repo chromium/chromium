@@ -115,11 +115,23 @@ void RendererURLLoaderThrottle::WillStartRequest(
       request_destinations_to_skip{{network::mojom::RequestDestination::kStyle,
                                     network::mojom::RequestDestination::kImage,
                                     network::mojom::RequestDestination::kFont}};
-  if (base::Contains(*request_destinations_to_skip, request->destination) &&
-      base::FeatureList::IsEnabled(kSafeBrowsingSkipImageCssFont)) {
+  if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources) ||
+      (base::Contains(*request_destinations_to_skip, request->destination) &&
+       base::FeatureList::IsEnabled(kSafeBrowsingSkipImageCssFont))) {
+    VLOG(2) << __func__ << " : Skipping: " << request->url << " : "
+            << request->destination;
+    DCHECK_NE(request->destination,
+              network::mojom::RequestDestination::kDocument);
     LogTotalDelay3Metrics(base::TimeDelta());
+    base::UmaHistogramEnumeration(
+        "SafeBrowsing.RendererThrottle.RequestDestination.Skipped",
+        request->destination);
     return;
   }
+
+  base::UmaHistogramEnumeration(
+      "SafeBrowsing.RendererThrottle.RequestDestination.Checked",
+      request->destination);
 
   if (safe_browsing_pending_remote_.is_valid()) {
     // Bind the pipe created in DetachFromCurrentSequence to the current
