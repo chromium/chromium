@@ -12663,13 +12663,29 @@
         "policies": {
           "BruschettaInstallerConfiguration": {
             "display_name": "Name",
-            "learn_more_url": "http://example.com/learn_more"
+            "learn_more_url": "https://example.com/learn_more"
           }
         },
         "prefs": {
           "bruschetta.installer_configuration": {
+            "value": {
+              "display_name": "Name",
+              "learn_more_url": "https://example.com/learn_more"
+            }
+          }
+        }
+      },
+      {
+        "note": "Check that non-https URLs are rejected",
+        "policies": {
+          "BruschettaInstallerConfiguration": {
             "display_name": "Name",
-            "learn_more_url": "http://example.com/learn_more"
+            "learn_more_url": "http://bad-example.com/should_be_https"
+          }
+        },
+        "prefs": {
+          "bruschetta.installer_configuration": {
+            "default_value": {}
           }
         }
       }

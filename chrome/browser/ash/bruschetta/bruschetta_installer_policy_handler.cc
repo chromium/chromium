@@ -55,6 +55,12 @@ bool BruschettaInstallerPolicyHandler::CheckPolicySettings(
                      policy::PolicyMap::MessageType::kError);
     return false;
   }
+  if (!g.SchemeIs("https")) {
+    errors->AddError(policy_name(), IDS_POLICY_URL_NOT_HTTPS_ERROR,
+                     policy::PolicyErrorPath{prefs::kPolicyLearnMoreUrlKey},
+                     policy::PolicyMap::MessageType::kError);
+    return false;
+  }
   return true;
 }
 

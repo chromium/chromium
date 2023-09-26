@@ -36,7 +36,8 @@ schema:
       type: string
       description: |-
         A URL for users to visit to learn more. If unset there will
-        be no "learn more" URL in the installer.
+        be no "learn more" URL in the installer. If present, it must use
+        the https scheme.
 
 example_value:
   display_name: AwesomeNix

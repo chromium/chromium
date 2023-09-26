@@ -249,6 +249,9 @@
   <message name="IDS_POLICY_INVALID_URL_ERROR" desc="The text displayed in the status column when the URL given is invalid.">
     Invalid URL.
   </message>
+  <message name="IDS_POLICY_URL_NOT_HTTPS_ERROR" desc="The text displayed in the status column when the URL given isn't using the https scheme, but needs to be.">
+    URL must be https.
+  </message>
   <message name="IDS_POLICY_INVALID_SEARCH_URL_ERROR" desc="The text displayed in the status column when a the URL given for DefaultSearchProviderSearchURL is invalid.">
     Invalid search URL.
   </message>
