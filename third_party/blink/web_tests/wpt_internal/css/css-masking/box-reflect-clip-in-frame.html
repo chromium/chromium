@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<link rel="help" href="https://bugs.chromium.org/p/chromium/issues/detail?id=1478908">
+<link rel="match" href="box-reflect-clip-in-frame-ref.html">
+<meta name="assert" content="-webkit-box-reflect under clip with an absolute descendant in an iframe should not draw contents outside of the iframe">
+<iframe style="width: 300px; height: 300px" srcdoc='
+  <div style="overflow: hidden">
+    <div style="-webkit-box-reflect: right; height: 50px">
+      <div style="position: absolute; width: 100px; height: 200px; background: blue"></div>
+    </div>
+  </div>'>
+</iframe>

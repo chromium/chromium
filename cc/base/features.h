@@ -57,6 +57,11 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kScrollSnapPreferCloserCovering);
 // display.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kHudDisplayForPerformanceMetrics);
 
+// Whether RenderSurface::common_ancestor_clip_id() is used to clip to the
+// common ancestor clip when any contributing layer escapes the clip of the
+// render surface's owning effect.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kRenderSurfaceCommonAncestorClip);
+
 // When enabled, CompositorTimingHistory will directly record the timing history
 // that is used to calculate main thread timing estimates, and use the
 // percentile of sum of different stages instead of the sum of percentiles.
