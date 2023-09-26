@@ -214,6 +214,7 @@ static_library("shopping_service") {
     ":proto",
     "//base",
     "//components/bookmarks/browser",
+    "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/leveldb_proto",
     "//components/optimization_guide/core",
@@ -316,6 +317,7 @@ source_set("shopping_service_unit_tests") {
     ":shopping_service_test_support",
     "subscriptions:test_support",
     "webui:unit_tests",
+    "//components/history/core/browser",
     "//components/search",
   ]
 }

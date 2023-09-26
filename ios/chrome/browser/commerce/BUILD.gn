@@ -44,6 +44,7 @@ static_library("shopping_service") {
     "//components/leveldb_proto",
     "//components/prefs",
     "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/history",
     "//ios/chrome/browser/optimization_guide",
     "//ios/chrome/browser/power_bookmarks",
     "//ios/chrome/browser/shared/model/application_context",

@@ -6,7 +6,8 @@
 
 namespace commerce {
 
-MockDiscountsStorage::MockDiscountsStorage() : DiscountsStorage(nullptr) {
+MockDiscountsStorage::MockDiscountsStorage()
+    : DiscountsStorage(nullptr, nullptr) {
   ON_CALL(*this, HandleServerDiscounts)
       .WillByDefault([](const std::vector<std::string>& urls_to_check,
                         DiscountsMap server_results,

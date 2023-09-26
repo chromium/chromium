@@ -395,7 +395,7 @@ void ShoppingServiceTestBase::SetUp() {
       sync_service_.get(),
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           test_url_loader_factory_.get()),
-      nullptr, nullptr, nullptr);
+      nullptr, nullptr, nullptr, nullptr);
 }
 
 void ShoppingServiceTestBase::TestBody() {}

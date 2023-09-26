@@ -26,6 +26,7 @@
 #include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #include "components/commerce/core/proto/discounts_db_content.pb.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/unified_consent/consent_throttle.h"
@@ -227,7 +228,8 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
           subscription_proto_db,
       power_bookmarks::PowerBookmarkService* power_bookmark_service,
       SessionProtoStorage<discounts_db::DiscountsContentProto>*
-          discounts_proto_db);
+          discounts_proto_db,
+      history::HistoryService* history_service);
   ~ShoppingService() override;
 
   ShoppingService(const ShoppingService&) = delete;

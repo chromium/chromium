@@ -4,6 +4,7 @@ include_rules = [
   "+components/endpoint_fetcher",
   "+components/flags_ui",
   "+components/grit/components_resources.h",
+  "+components/history/core",
   "+components/keyed_service",
   "+components/optimization_guide",
   "+components/payments/core",
