@@ -42,7 +42,8 @@ enum class IpProtectionTryGetAuthTokensResult {
   // Chrome determined the primary account is not eligible.
   kFailedNotEligible = 2,
   // There was a failure fetching an OAuth token for the primary account.
-  kFailedOAuthToken = 3,
+  // Deprecated in favor of `kFailedOAuthToken{Transient,Persistent}`.
+  kFailedOAuthTokenDeprecated = 3,
   // There was a failure in BSA with the given status code.
   kFailedBSA400 = 4,
   kFailedBSA401 = 5,
@@ -51,7 +52,14 @@ enum class IpProtectionTryGetAuthTokensResult {
   // Any other issue calling BSA.
   kFailedBSAOther = 7,
 
-  kMaxValue = kFailedBSAOther,
+  // There was a transient failure fetching an OAuth token for the primary
+  // account.
+  kFailedOAuthTokenTransient = 8,
+  // There was a persistent failure fetching an OAuth token for the primary
+  // account.
+  kFailedOAuthTokenPersistent = 9,
+
+  kMaxValue = kFailedOAuthTokenPersistent,
 };
 
 // Fetches IP protection tokens on demand for the network service.
@@ -140,6 +148,8 @@ class IpProtectionConfigProvider
       TryGetAuthTokensCallback callback,
       absl::StatusOr<absl::Span<quiche::BlindSignToken>>);
 
+  void ClearOAuthTokenProblemBackoff();
+
   // The object used to get an OAuth token. `identity_manager_` will be set to
   // nullptr after `Shutdown()` is called, but will otherwise be non-null.
   raw_ptr<signin::IdentityManager> identity_manager_;
@@ -170,6 +180,9 @@ class IpProtectionConfigProvider
   // IdentityManager::Observer:
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override;
+  void OnErrorStateOfRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info,
+      const GoogleServiceAuthError& error) override;
 
   // The BlindSignAuth implementation used to fetch blind-signed auth tokens. A
   // raw pointer to `url_loader_factory_` gets passed to

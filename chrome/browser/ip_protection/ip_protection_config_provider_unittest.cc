@@ -112,8 +112,12 @@ enum class PrimaryAccountBehavior {
   // Primary account not set.
   kNone,
 
-  // Primary account exists but returns an error fetching access token.
-  kTokenFetchError,
+  // Primary account exists but returns a transient error fetching access token.
+  kTokenFetchTransientError,
+
+  // Primary account exists but returns a persistent error fetching access
+  // token.
+  kTokenFetchPersistentError,
 
   // Primary account exists but is not eligible for IP protection.
   kIneligible,
@@ -163,13 +167,10 @@ class IpProtectionConfigProviderTest : public testing::Test {
       identity_test_env_.MakePrimaryAccountAvailable(
           kTestEmail, signin::ConsentLevel::kSignin);
 
-      if (primary_account_behavior_ ==
-              PrimaryAccountBehavior::kUnknownEligibility ||
-          primary_account_behavior_ == PrimaryAccountBehavior::kReturnsToken) {
-        SetCanUseChromeIpProtectionCapability(true);
-      } else if (primary_account_behavior_ ==
-                 PrimaryAccountBehavior::kIneligible) {
+      if (primary_account_behavior_ == PrimaryAccountBehavior::kIneligible) {
         SetCanUseChromeIpProtectionCapability(false);
+      } else {
+        SetCanUseChromeIpProtectionCapability(true);
       }
     }
 
@@ -179,11 +180,17 @@ class IpProtectionConfigProviderTest : public testing::Test {
       case PrimaryAccountBehavior::kNone:
       case PrimaryAccountBehavior::kIneligible:
         break;
-      case PrimaryAccountBehavior::kTokenFetchError:
+      case PrimaryAccountBehavior::kTokenFetchTransientError:
         identity_test_env_
             .WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
                 GoogleServiceAuthError(
                     GoogleServiceAuthError::CONNECTION_FAILED));
+        break;
+      case PrimaryAccountBehavior::kTokenFetchPersistentError:
+        identity_test_env_
+            .WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+                GoogleServiceAuthError(
+                    GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
         break;
       case PrimaryAccountBehavior::kUnknownEligibility:
       case PrimaryAccountBehavior::kReturnsToken:
@@ -397,9 +404,24 @@ TEST_F(IpProtectionConfigProviderTest, AccountCapabilityUnknown) {
   histogram_tester_.ExpectTotalCount(kTokenBatchHistogram, 1);
 }
 
-// Fetching OAuth token returns an error.
-TEST_F(IpProtectionConfigProviderTest, AuthTokenError) {
-  primary_account_behavior_ = PrimaryAccountBehavior::kTokenFetchError;
+// Fetching OAuth token returns a transient error.
+TEST_F(IpProtectionConfigProviderTest, AuthTokenTransientError) {
+  primary_account_behavior_ = PrimaryAccountBehavior::kTokenFetchTransientError;
+
+  TryGetAuthTokens(1);
+
+  EXPECT_FALSE(bsa_->get_tokens_called_);
+  ExpectTryGetAuthTokensResultFailed(
+      IpProtectionConfigProvider::kTransientBackoff);
+  histogram_tester_.ExpectUniqueSample(
+      kTryGetAuthTokensResultHistogram,
+      IpProtectionTryGetAuthTokensResult::kFailedOAuthTokenTransient, 1);
+}
+
+// Fetching OAuth token returns a persistent error.
+TEST_F(IpProtectionConfigProviderTest, AuthTokenPersistentError) {
+  primary_account_behavior_ =
+      PrimaryAccountBehavior::kTokenFetchPersistentError;
 
   TryGetAuthTokens(1);
 
@@ -407,7 +429,7 @@ TEST_F(IpProtectionConfigProviderTest, AuthTokenError) {
   ExpectTryGetAuthTokensResultFailed(base::TimeDelta::Max());
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
-      IpProtectionTryGetAuthTokensResult::kFailedOAuthToken, 1);
+      IpProtectionTryGetAuthTokensResult::kFailedOAuthTokenPersistent, 1);
 }
 
 // No primary account.
@@ -428,7 +450,7 @@ TEST_F(IpProtectionConfigProviderTest, NoPrimary) {
 // No primary account initially but this changes when the account status
 // changes.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-TEST_F(IpProtectionConfigProviderTest, AccountLoginTriggersCooldownReset) {
+TEST_F(IpProtectionConfigProviderTest, AccountLoginTriggersBackoffReset) {
   primary_account_behavior_ = PrimaryAccountBehavior::kNone;
 
   TryGetAuthTokens(1);
@@ -447,12 +469,51 @@ TEST_F(IpProtectionConfigProviderTest, AccountLoginTriggersCooldownReset) {
 }
 #endif
 
+// If the account session token expires and is renewed, the persistent backoff
+// should be cleared.
+TEST_F(IpProtectionConfigProviderTest, SessionRefreshTriggersBackoffReset) {
+  AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
+      kTestEmail, signin::ConsentLevel::kSignin);
+  SetCanUseChromeIpProtectionCapability(true);
+
+  identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
+      account_info.account_id,
+      GoogleServiceAuthError(
+          GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
+
+  base::test::TestFuture<
+      absl::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>,
+      absl::optional<base::Time>>
+      tokens_future;
+  getter_->TryGetAuthTokens(1, tokens_future.GetCallback());
+  const absl::optional<base::Time>& try_again_after =
+      tokens_future.Get<absl::optional<base::Time>>();
+  ASSERT_TRUE(try_again_after);
+  EXPECT_EQ(*try_again_after, base::Time::Max());
+
+  identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
+      account_info.account_id,
+      GoogleServiceAuthError(GoogleServiceAuthError::State::NONE));
+
+  bsa_->tokens_ = {{"single-use-1", absl_expiration_time_}};
+  tokens_future.Clear();
+  getter_->TryGetAuthTokens(1, tokens_future.GetCallback());
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "access_token", base::Time::Now());
+  const absl::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>&
+      tokens = tokens_future.Get<absl::optional<
+          std::vector<network::mojom::BlindSignedAuthTokenPtr>>>();
+  ASSERT_TRUE(tokens);
+}
+
 // Backoff calculations.
 TEST_F(IpProtectionConfigProviderTest, CalculateBackoff) {
   using enum IpProtectionTryGetAuthTokensResult;
 
   auto check = [&](IpProtectionTryGetAuthTokensResult result,
                    absl::optional<base::TimeDelta> backoff, bool exponential) {
+    SCOPED_TRACE(::testing::Message()
+                 << "result: " << static_cast<int>(result));
     EXPECT_EQ(getter_->CalculateBackoff(result), backoff);
     if (backoff && exponential) {
       EXPECT_EQ(getter_->CalculateBackoff(result), (*backoff) * 2);
@@ -468,14 +529,28 @@ TEST_F(IpProtectionConfigProviderTest, CalculateBackoff) {
   check(kFailedBSA401, getter_->kBugBackoff, true);
   check(kFailedBSA403, getter_->kNotEligibleBackoff, false);
   check(kFailedBSAOther, getter_->kTransientBackoff, true);
+  check(kFailedOAuthTokenTransient, getter_->kTransientBackoff, true);
+
   check(kFailedNoAccount, base::TimeDelta::Max(), false);
-  check(kFailedOAuthToken, base::TimeDelta::Max(), false);
   // The account-related backoffs should not be changed except by account change
   // events.
   check(kFailedBSA400, base::TimeDelta::Max(), false);
-  identity_test_env_.MakePrimaryAccountAvailable(kTestEmail,
-                                                 signin::ConsentLevel::kSignin);
+  AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
+      kTestEmail, signin::ConsentLevel::kSignin);
   // The backoff time should have been reset.
+  check(kFailedBSA400, getter_->kBugBackoff, true);
+
+  check(kFailedOAuthTokenPersistent, base::TimeDelta::Max(), false);
+  check(kFailedBSA400, base::TimeDelta::Max(), false);
+  // Change the refresh token error state to an error state and then back to a
+  // no-error state so that the latter clears the backoff time.
+  identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
+      account_info.account_id,
+      GoogleServiceAuthError(
+          GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
+  identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
+      account_info.account_id,
+      GoogleServiceAuthError(GoogleServiceAuthError::State::NONE));
   check(kFailedBSA400, getter_->kBugBackoff, true);
 }
 

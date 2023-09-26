@@ -56564,11 +56564,13 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="0" label="Success"/>
   <int value="1" label="Failed - No Account"/>
   <int value="2" label="Failed - Not Eligible"/>
-  <int value="3" label="Failed - OAuth Token"/>
+  <int value="3" label="Deprecated"/>
   <int value="4" label="Failed - BSA Error 400"/>
   <int value="5" label="Failed - BSA Error 401"/>
   <int value="6" label="Failed - BSA Error 403"/>
   <int value="7" label="Failed - BSA Error Other"/>
+  <int value="8" label="Transient OAuth Token Failure"/>
+  <int value="9" label="Persistent OAuth Token Failure"/>
 </enum>
 
 <enum name="IppVersion">

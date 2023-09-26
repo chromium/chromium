@@ -139,7 +139,9 @@ void IpProtectionConfigProvider::OnRequestOAuthTokenCompleted(
             << static_cast<int>(error.state());
     TryGetAuthTokensComplete(
         absl::nullopt, std::move(callback),
-        IpProtectionTryGetAuthTokensResult::kFailedOAuthToken);
+        error.IsTransientError()
+            ? IpProtectionTryGetAuthTokensResult::kFailedOAuthTokenTransient
+            : IpProtectionTryGetAuthTokensResult::kFailedOAuthTokenPersistent);
     return;
   }
 
@@ -251,14 +253,14 @@ void IpProtectionConfigProvider::InvalidateNetworkContextTryAgainAfterTime() {
     // called in unit tests.
     return;
   }
-  // Notify the main profile network context to invalidate its stored cooldown
+  // Notify the main profile network context to invalidate its stored backoff
   // time.
   profile_->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->InvalidateIpProtectionConfigCacheTryAgainAfterTime();
 
   // If an associated incognito profile exists, tell it to invalidate its
-  // cooldown time as well.
+  // backoff time as well.
   if (profile_->HasPrimaryOTRProfile()) {
     profile_->GetPrimaryOTRProfile(/*create_if_needed=*/false)
         ->GetDefaultStoragePartition()
@@ -275,7 +277,7 @@ absl::optional<base::TimeDelta> IpProtectionConfigProvider::CalculateBackoff(
     case IpProtectionTryGetAuthTokensResult::kSuccess:
       break;
     case IpProtectionTryGetAuthTokensResult::kFailedNoAccount:
-    case IpProtectionTryGetAuthTokensResult::kFailedOAuthToken:
+    case IpProtectionTryGetAuthTokensResult::kFailedOAuthTokenPersistent:
       backoff = base::TimeDelta::Max();
       break;
     case IpProtectionTryGetAuthTokensResult::kFailedNotEligible:
@@ -290,9 +292,10 @@ absl::optional<base::TimeDelta> IpProtectionConfigProvider::CalculateBackoff(
       // to change quickly.
       backoff = kNotEligibleBackoff;
       break;
+    case IpProtectionTryGetAuthTokensResult::kFailedOAuthTokenTransient:
     case IpProtectionTryGetAuthTokensResult::kFailedBSAOther:
-      // Failure to fetch an OAuth token, or some other error from BSA, is
-      // probably transient.
+      // Transient failure to fetch an OAuth token, or some other error from
+      // BSA that is probably transient.
       backoff = kTransientBackoff;
       exponential = true;
       break;
@@ -302,6 +305,8 @@ absl::optional<base::TimeDelta> IpProtectionConfigProvider::CalculateBackoff(
       backoff = kBugBackoff;
       exponential = true;
       break;
+    case IpProtectionTryGetAuthTokensResult::kFailedOAuthTokenDeprecated:
+      NOTREACHED_NORETURN();
   }
 
   // Note that we calculate the backoff assuming that we've waited for
@@ -317,10 +322,10 @@ absl::optional<base::TimeDelta> IpProtectionConfigProvider::CalculateBackoff(
   //  backoff until after the first request(s))
   //
   // We can't do much about the first case, but for the others we could track
-  // the cooldown time here and not request tokens again until afterward.
+  // the backoff time here and not request tokens again until afterward.
   //
   // TODO(https://crbug.com/1476891): Track the backoff time in the browser
-  // process and don't make new requests if we are in a cooldown period.
+  // process and don't make new requests if we are in a backoff period.
   if (exponential) {
     if (last_try_get_auth_tokens_backoff_ &&
         last_try_get_auth_tokens_result_ == result) {
@@ -328,8 +333,8 @@ absl::optional<base::TimeDelta> IpProtectionConfigProvider::CalculateBackoff(
     }
   }
 
-  // If the cooldown is due to a user account issue, then only update the
-  // cooldown time based on account status changes (via the login observer) and
+  // If the backoff is due to a user account issue, then only update the
+  // backoff time based on account status changes (via the login observer) and
   // not based on the result of any `TryGetAuthTokens()` calls.
   if (last_try_get_auth_tokens_backoff_ &&
       *last_try_get_auth_tokens_backoff_ == base::TimeDelta::Max()) {
@@ -379,6 +384,16 @@ void IpProtectionConfigProvider::AddReceiver(
   // they are eventually cleaned up.
 }
 
+void IpProtectionConfigProvider::ClearOAuthTokenProblemBackoff() {
+  // End the backoff period if it was caused by account-related issues. Also,
+  // tell the `IpProtectionConfigCache()` in the Network Service so that it
+  // will begin making token requests.
+  if (last_try_get_auth_tokens_backoff_ == base::TimeDelta::Max()) {
+    last_try_get_auth_tokens_backoff_.reset();
+    InvalidateNetworkContextTryAgainAfterTime();
+  }
+}
+
 void IpProtectionConfigProvider::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
   auto signin_event_type = event.GetEventTypeFor(signin::ConsentLevel::kSignin);
@@ -386,14 +401,9 @@ void IpProtectionConfigProvider::OnPrimaryAccountChanged(
           << static_cast<int>(signin_event_type);
   switch (signin_event_type) {
     case signin::PrimaryAccountChangeEvent::Type::kSet: {
-      // If a cooldown is active because no account information was available,
-      // reset it and then tell the `IpProtectionConfigCache()` in the
-      // Network Service also (or else it won't request tokens again until after
-      // the backoff time has been reached).
-      if (last_try_get_auth_tokens_backoff_ == base::TimeDelta::Max()) {
-        last_try_get_auth_tokens_backoff_.reset();
-        InvalidateNetworkContextTryAgainAfterTime();
-      }
+      // Account information is now available, so resume making requests for the
+      // OAuth token.
+      ClearOAuthTokenProblemBackoff();
       break;
     }
     case signin::PrimaryAccountChangeEvent::Type::kCleared:
@@ -403,6 +413,25 @@ void IpProtectionConfigProvider::OnPrimaryAccountChanged(
       break;
     case signin::PrimaryAccountChangeEvent::Type::kNone:
       break;
+  }
+}
+
+void IpProtectionConfigProvider::OnErrorStateOfRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& account_info,
+    const GoogleServiceAuthError& error) {
+  VLOG(2) << "IPATP::OnErrorStateOfRefreshTokenUpdatedForAccount: "
+          << error.ToString();
+  // Workspace user accounts can have account credential expirations that cause
+  // persistent OAuth token errors until the user logs in to Chrome again. To
+  // handle this, watch for these error events and treat them the same way we do
+  // login/logout events.
+  if (error.state() == GoogleServiceAuthError::State::NONE) {
+    ClearOAuthTokenProblemBackoff();
+    return;
+  }
+  if (error.IsPersistentError()) {
+    last_try_get_auth_tokens_backoff_ = base::TimeDelta::Max();
+    return;
   }
 }
 
