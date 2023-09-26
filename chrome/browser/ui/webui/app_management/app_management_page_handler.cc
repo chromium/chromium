@@ -437,7 +437,7 @@ void AppManagementPageHandler::GetOverlappingPreferredApps(
       "AppManagementPageHandler::GetOverlappingPreferredApps",
       std::make_unique<web_app::AllAppsLockDescription>(),
       base::BindOnce(
-          [](const web_app::AppId& app_id,
+          [](const webapps::AppId& app_id,
              GetOverlappingPreferredAppsCallback callback,
              web_app::AllAppsLock& all_apps_lock) {
             std::move(callback).Run(
@@ -500,7 +500,7 @@ void AppManagementPageHandler::ShowDefaultAppAssociationsUi() {
 }
 
 void AppManagementPageHandler::OnWebAppFileHandlerApprovalStateChanged(
-    const web_app::AppId& app_id) {
+    const webapps::AppId& app_id) {
 #if BUILDFLAG(IS_CHROMEOS)
   NOTREACHED();
 #endif
@@ -527,7 +527,7 @@ void AppManagementPageHandler::OnAppRegistrarDestroyed() {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 void AppManagementPageHandler::OnWebAppUserLinkCapturingPreferencesChanged(
-    const web_app::AppId& app_id,
+    const webapps::AppId& app_id,
     bool is_preferred) {
   OnPreferredAppChanged(app_id, is_preferred);
 }
@@ -768,7 +768,7 @@ void AppManagementPageHandler::OnPreferredAppsListWillBeDestroyed(
 
 #if !BUILDFLAG(IS_CHROMEOS)
 void AppManagementPageHandler::MakeAppPreferredAndResetOthers(
-    const web_app::AppId& app_id,
+    const webapps::AppId& app_id,
     bool set_to_preferred,
     web_app::AllAppsLock& lock) {
   bool is_already_preferred = lock.registrar().CapturesLinksInScope(app_id);
@@ -784,7 +784,7 @@ void AppManagementPageHandler::MakeAppPreferredAndResetOthers(
 
   // TODO(b/273830801): Automatically call observers when changes are committed
   //  to the web_app DB.
-  for (const web_app::AppId& id : lock.registrar().GetAppIds()) {
+  for (const webapps::AppId& id : lock.registrar().GetAppIds()) {
     if (id == app_id) {
       {
         web_app::ScopedRegistryUpdate update = lock.sync_bridge().BeginUpdate();

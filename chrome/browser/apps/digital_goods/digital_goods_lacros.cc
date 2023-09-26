@@ -20,7 +20,7 @@ namespace apps {
 
 namespace {
 
-absl::optional<std::pair<web_app::AppId, GURL>> GetWebAppIdAndScopeForDocument(
+absl::optional<std::pair<webapps::AppId, GURL>> GetWebAppIdAndScopeForDocument(
     content::RenderFrameHost& render_frame_host) {
   web_app::WebAppProvider* provider = web_app::WebAppProvider::GetForWebApps(
       Profile::FromBrowserContext(render_frame_host.GetBrowserContext()));
@@ -29,7 +29,7 @@ absl::optional<std::pair<web_app::AppId, GURL>> GetWebAppIdAndScopeForDocument(
   }
 
   const web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
-  absl::optional<web_app::AppId> app_id = registrar.FindAppWithUrlInScope(
+  absl::optional<webapps::AppId> app_id = registrar.FindAppWithUrlInScope(
       render_frame_host.GetMainFrame()->GetLastCommittedURL());
   if (!app_id) {
     return absl::nullopt;

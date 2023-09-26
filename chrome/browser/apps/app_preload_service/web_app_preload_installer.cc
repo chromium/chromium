@@ -244,7 +244,7 @@ void WebAppPreloadInstaller::OnManifestRetrieved(
 
 void WebAppPreloadInstaller::OnAppInstalled(
     WebAppPreloadInstalledCallback callback,
-    const web_app::AppId& app_id,
+    const webapps::AppId& app_id,
     webapps::InstallResultCode code) {
   bool success = webapps::IsSuccess(code);
   RecordInstallResultMetric(success ? WebAppPreloadResult::kSuccess

@@ -53,7 +53,7 @@ std::string GetScope(content::RenderFrameHost* render_frame_host) {
   }
 
   const web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
-  absl::optional<web_app::AppId> app_id = registrar.FindAppWithUrlInScope(
+  absl::optional<webapps::AppId> app_id = registrar.FindAppWithUrlInScope(
       render_frame_host->GetMainFrame()->GetLastCommittedURL());
   if (!app_id) {
     return std::string();

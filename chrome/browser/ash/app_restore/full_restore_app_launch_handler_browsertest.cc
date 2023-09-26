@@ -53,7 +53,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -75,6 +74,7 @@
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
@@ -290,7 +290,7 @@ class FullRestoreAppLaunchHandlerBrowserTest
   void CreateWebApp() {
     auto web_app_install_info = std::make_unique<web_app::WebAppInstallInfo>();
     web_app_install_info->start_url = GURL("https://example.org");
-    web_app::AppId app_id = web_app::test::InstallWebApp(
+    webapps::AppId app_id = web_app::test::InstallWebApp(
         profile(), std::move(web_app_install_info));
   }
 

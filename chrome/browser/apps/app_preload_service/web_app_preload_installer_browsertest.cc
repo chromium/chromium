@@ -95,7 +95,7 @@ class WebAppPreloadInstallerBrowserTest : public InProcessBrowserTest {
     return app;
   }
 
-  void VerifyAppInstalled(web_app::AppId app_id, const std::string& app_name) {
+  void VerifyAppInstalled(webapps::AppId app_id, const std::string& app_name) {
     bool found = app_registry_cache().ForOneApp(
         app_id, [app_name](const AppUpdate& update) {
           EXPECT_EQ(update.Name(), app_name);

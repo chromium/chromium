@@ -13,8 +13,8 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
 #include "chrome/browser/ash/crosapi/web_app_service_ash.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
@@ -85,7 +85,7 @@ class WebAppPreloadInstaller : public crosapi::WebAppServiceAsh::Observer {
                            std::unique_ptr<network::SimpleURLLoader> url_loader,
                            std::unique_ptr<std::string> response);
   void OnAppInstalled(WebAppPreloadInstalledCallback callback,
-                      const web_app::AppId& app_id,
+                      const webapps::AppId& app_id,
                       webapps::InstallResultCode code);
   void OnAllAppInstallationFinished(const std::vector<bool>& results);
 

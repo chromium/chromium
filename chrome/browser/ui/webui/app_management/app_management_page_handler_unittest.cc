@@ -84,14 +84,14 @@ class AppManagementPageHandlerTestBase : public testing::Test {
     provider->command_manager().AwaitAllCommandsCompleteForTesting();
   }
 
-  bool IsAppPreferred(const web_app::AppId& app_id) {
+  bool IsAppPreferred(const webapps::AppId& app_id) {
     base::test::TestFuture<app_management::mojom::AppPtr> result;
     handler()->GetApp(app_id, result.GetCallback());
     return result.Get()->is_preferred_app;
   }
 
   std::vector<std::string> GetOverlappingPreferredApps(
-      const web_app::AppId& app_id) {
+      const webapps::AppId& app_id) {
     base::test::TestFuture<const std::vector<std::string>&> result;
     handler()->GetOverlappingPreferredApps(app_id, result.GetCallback());
     EXPECT_TRUE(result.Wait());
@@ -721,13 +721,13 @@ TEST_F(AppManagementPageHandlerArcTest, OpenStorePageWebAppPlayStore) {
   arc_test()->app_instance()->SendRefreshAppList(apps);
   ash::ApkWebAppService* service = ash::ApkWebAppService::Get(profile());
 
-  base::test::TestFuture<const std::string&, const web_app::AppId&>
+  base::test::TestFuture<const std::string&, const webapps::AppId&>
       installed_result;
 
   service->SetWebAppInstalledCallbackForTesting(installed_result.GetCallback());
   arc_test()->app_instance()->SendRefreshPackageList(std::move(packages));
 
-  web_app::AppId app_id = installed_result.Get<1>();
+  webapps::AppId app_id = installed_result.Get<1>();
   handler()->OpenStorePage(app_id);
 
   auto* intent_helper = arc_test()->intent_helper_instance();

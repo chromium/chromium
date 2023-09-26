@@ -92,7 +92,7 @@ class AppManagementPageHandler : public app_management::mojom::PageHandler,
 
   // web_app::WebAppRegistrarObserver:
   void OnWebAppFileHandlerApprovalStateChanged(
-      const web_app::AppId& app_id) override;
+      const webapps::AppId& app_id) override;
   void OnAppRegistrarDestroyed() override;
 
   // The following observers are used for user link capturing on W/M/L platforms
@@ -100,7 +100,7 @@ class AppManagementPageHandler : public app_management::mojom::PageHandler,
   // in the registrar, so as to propagate the changes to the app-settings/ page
   // to change the UI dynamically.
 #if !BUILDFLAG(IS_CHROMEOS)
-  void OnWebAppUserLinkCapturingPreferencesChanged(const web_app::AppId& app_id,
+  void OnWebAppUserLinkCapturingPreferencesChanged(const webapps::AppId& app_id,
                                                    bool is_preferred) override;
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -119,7 +119,7 @@ class AppManagementPageHandler : public app_management::mojom::PageHandler,
       apps::PreferredAppsListHandle* handle) override;
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  void MakeAppPreferredAndResetOthers(const web_app::AppId& app_id,
+  void MakeAppPreferredAndResetOthers(const webapps::AppId& app_id,
                                       bool set_to_preferred,
                                       web_app::AllAppsLock& lock);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
