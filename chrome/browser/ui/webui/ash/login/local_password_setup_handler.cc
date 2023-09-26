@@ -29,6 +29,14 @@ void LocalPasswordSetupHandler::DeclareLocalizedValues(
   builder->Add("confirmPasswordInputPlaceholderText",
                IDS_LOGIN_CONFIRM_PASSWORD_LABEL);
   builder->Add("passwordMismatchError", IDS_LOGIN_MANUAL_PASSWORD_MISMATCH);
+  builder->Add("setLocalPasswordPlaceholder",
+               IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_PLACEHOLDER);
+  builder->Add("setLocalPasswordConfirmPlaceholder",
+               IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_CONFIRM_PLACEHOLDER);
+  builder->Add("setLocalPasswordMinCharsHint",
+               IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_MIN_CHARS_HINT);
+  builder->Add("setLocalPasswordNoMatchError",
+               IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_NO_MATCH_ERROR);
 }
 
 }  // namespace ash
