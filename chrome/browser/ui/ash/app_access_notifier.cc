@@ -55,8 +55,9 @@ absl::optional<std::u16string> MapAppIdToShortName(
     absl::optional<std::u16string> name;
     registry_cache->ForOneApp(app,
                               [&app_id, &name](const apps::AppUpdate& update) {
-                                if (update.AppId() == app_id)
+                                if (update.AppId() == app_id) {
                                   name = base::UTF8ToUTF16(update.ShortName());
+                                }
                               });
     if (name.has_value())
       return name;
@@ -255,8 +256,9 @@ absl::optional<std::u16string> AppAccessNotifier::GetAppShortNameFromAppId(
     return name;
 
   registry_cache->ForEachApp([&app_id, &name](const apps::AppUpdate& update) {
-    if (update.AppId() == app_id)
+    if (update.AppId() == app_id) {
       name = base::UTF8ToUTF16(update.ShortName());
+    }
   });
   return name;
 }

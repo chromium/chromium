@@ -49,7 +49,7 @@ void TuckWindow(aura::Window* window) {
 }
 
 void CreateSystemWebApp(Profile* profile, ash::SystemWebAppType app_type) {
-  web_app::AppId app_id = *ash::GetAppIdForSystemWebApp(profile, app_type);
+  webapps::AppId app_id = *ash::GetAppIdForSystemWebApp(profile, app_type);
   apps::AppLaunchParams params(
       app_id, apps::LaunchContainer::kLaunchContainerWindow,
       WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest);

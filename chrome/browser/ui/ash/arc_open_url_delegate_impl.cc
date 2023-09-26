@@ -41,7 +41,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/webshare/prepare_directory_task.h"
 #include "chrome/common/webui_url_constants.h"
@@ -54,6 +53,7 @@
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/user_manager/user_manager.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/filename_util.h"
@@ -341,7 +341,7 @@ void ArcOpenUrlDelegateImpl::OpenWebAppFromArc(const GURL& url) {
   if (!profile)
     return;
 
-  absl::optional<web_app::AppId> app_id =
+  absl::optional<webapps::AppId> app_id =
       web_app::IsWebAppsCrosapiEnabled()
           ? FindWebAppForURL(profile, url)
           : web_app::FindInstalledAppWithUrlInScope(profile, url,
@@ -476,7 +476,7 @@ void ArcOpenUrlDelegateImpl::OpenAppWithIntent(
   if (!profile)
     return;
 
-  web_app::AppId app_id =
+  webapps::AppId app_id =
       web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
 
   bool app_installed = false;
