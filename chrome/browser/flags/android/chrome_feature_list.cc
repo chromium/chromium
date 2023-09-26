@@ -845,7 +845,7 @@ BASE_FEATURE(kBackGestureActivityTabProvider,
 
 BASE_FEATURE(kBackGestureRefactorActivityAndroid,
              "BackGestureRefactorActivityAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBackGestureRefactorAndroid,
              "BackGestureRefactorAndroid",
