@@ -63,7 +63,6 @@ class ImageFetcher;
 class MetricsReporter;
 class RefreshTaskScheduler;
 class PersistentKeyValueStoreImpl;
-class ResourceFetcher;
 class StreamModel;
 class SurfaceUpdater;
 
@@ -99,7 +98,6 @@ class FeedStream : public FeedApi,
              PrefService* profile_prefs,
              FeedNetwork* feed_network,
              ImageFetcher* image_fetcher,
-             ResourceFetcher* resource_fetcher,
              FeedStore* feed_store,
              PersistentKeyValueStoreImpl* persistent_key_value_store,
              TemplateURLService* template_url_service,
@@ -466,7 +464,6 @@ class FeedStream : public FeedApi,
   raw_ptr<PrefService> profile_prefs_;  // May be null.
   raw_ptr<FeedNetwork> feed_network_;
   raw_ptr<ImageFetcher> image_fetcher_;
-  raw_ptr<ResourceFetcher> resource_fetcher_;
   raw_ptr<FeedStore, DanglingUntriaged> store_;
   raw_ptr<PersistentKeyValueStoreImpl, DanglingUntriaged>
       persistent_key_value_store_;

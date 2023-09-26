@@ -51,7 +51,6 @@
 #include "components/feed/core/v2/public/stream_type.h"
 #include "components/feed/core/v2/public/types.h"
 #include "components/feed/core/v2/public/unread_content_observer.h"
-#include "components/feed/core/v2/resource_fetcher.h"
 #include "components/feed/core/v2/scheduling.h"
 #include "components/feed/core/v2/stream/unread_content_notifier.h"
 #include "components/feed/core/v2/stream_model.h"
@@ -141,7 +140,6 @@ FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
                        PrefService* profile_prefs,
                        FeedNetwork* feed_network,
                        ImageFetcher* image_fetcher,
-                       ResourceFetcher* resource_fetcher,
                        FeedStore* feed_store,
                        PersistentKeyValueStoreImpl* persistent_key_value_store,
                        TemplateURLService* template_url_service,
@@ -152,7 +150,6 @@ FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
       profile_prefs_(profile_prefs),
       feed_network_(feed_network),
       image_fetcher_(image_fetcher),
-      resource_fetcher_(resource_fetcher),
       store_(feed_store),
       persistent_key_value_store_(persistent_key_value_store),
       template_url_service_(template_url_service),
