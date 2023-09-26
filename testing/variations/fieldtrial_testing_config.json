@@ -10221,6 +10221,29 @@
             ]
         }
     ],
+    "NetAdapterMaxBufSize": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "max_buf_size_064k_20230922",
+                    "params": {
+                        "NetAdapterMaxBufSize": "65536"
+                    },
+                    "enable_features": [
+                        "NetAdapterMaxBufSizeFeature"
+                    ]
+                }
+            ]
+        }
+    ],
     "NetworkServiceSandboxLinuxAndChromeOS": [
         {
             "platforms": [
