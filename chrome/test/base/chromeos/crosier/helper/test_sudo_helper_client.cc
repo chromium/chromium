@@ -106,6 +106,9 @@ base::ScopedFD TestSudoHelperClient::ConnectToServer(
   socklen_t addr_len =
       offsetof(struct sockaddr_un, sun_path) + server_path_.size();
   PCHECK(connect(client_sock.get(), reinterpret_cast<sockaddr*>(&addr),
-                 addr_len) == 0);
+                 addr_len) == 0)
+      << "Unable to connect to test_sudo_helper.py's socket. This probably "
+      << "means that the script didn't get started before the test or it "
+      << "exited or crashed in the meantime.";
   return client_sock;
 }
