@@ -73,7 +73,8 @@ void GraphInfoBuilder::BuildOperator(
   operation->input_operands = inputs;
   operation->output_operands = outputs;
   operation->attributes = std::move(operator_attributes);
-  graph_info_->operators.push_back(std::move(operation));
+  graph_info_->operations.push_back(
+      mojom::Operation::NewGenericOperator(std::move(operation)));
 }
 
 mojom::GraphInfoPtr GraphInfoBuilder::CloneGraphInfo() const {
@@ -84,9 +85,9 @@ mojom::GraphInfoPtr GraphInfoBuilder::CloneGraphInfo() const {
   }
   cloned_graph_info->input_operands = graph_info_->input_operands;
   cloned_graph_info->output_operands = graph_info_->output_operands;
-  cloned_graph_info->operators.reserve(graph_info_->operators.size());
-  for (auto& operation : graph_info_->operators) {
-    cloned_graph_info->operators.push_back(operation.Clone());
+  cloned_graph_info->operations.reserve(graph_info_->operations.size());
+  for (auto& operation : graph_info_->operations) {
+    cloned_graph_info->operations.push_back(operation.Clone());
   }
   for (auto& [constant_id, constant_buffer] :
        graph_info_->constant_id_to_buffer_map) {

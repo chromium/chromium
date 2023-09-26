@@ -605,18 +605,19 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorElementWiseBinary) {
   }
 }
 
+struct Pool2dAttributes {
+  std::vector<uint32_t> window_dimensions;
+  std::vector<uint32_t> padding;
+  std::vector<uint32_t> strides;
+  std::vector<uint32_t> dilations;
+  mojom::InputOperandLayout layout;
+};
+
 template <typename T>
 struct Pool2dTester {
   OperandInfo<T> input;
-  struct Pool2dAttributes {
-    std::vector<uint32_t> window_dimensions;
-    std::vector<uint32_t> padding;
-    std::vector<uint32_t> strides;
-    std::vector<uint32_t> dilations;
-    mojom::InputOperandLayout layout;
-  };
   Pool2dAttributes attributes;
-  mojom::Operator::Kind kind;
+  mojom::Pool2d::Kind kind;
   OperandInfo<T> output;
 
   void Test() {
@@ -626,24 +627,8 @@ struct Pool2dTester {
         builder.BuildInput("input", input.dimensions, input.type);
     uint64_t output_operand_id =
         builder.BuildOutput("output", output.dimensions, output.type);
-    mojom::Pool2dAttributesPtr mojo_attributes = mojom::Pool2dAttributes::New();
-    mojo_attributes->window_dimensions = mojom::Size2d::New(
-        attributes.window_dimensions[0], attributes.window_dimensions[1]);
-    mojo_attributes->padding = mojom::Padding2d::New(
-        mojom::Size2d::New(attributes.padding[0],
-                           attributes.padding[2]) /*beginning padding*/,
-        mojom::Size2d::New(attributes.padding[1],
-                           attributes.padding[3]) /*ending padding*/);
-    mojo_attributes->strides =
-        mojom::Size2d::New(attributes.strides[0], attributes.strides[1]);
-    mojo_attributes->dilations =
-        mojom::Size2d::New(attributes.dilations[0], attributes.dilations[1]);
-    mojo_attributes->layout = attributes.layout;
-    mojom::OperatorAttributesPtr pool2d_attributes =
-        mojom::OperatorAttributes::NewPool2d(std::move(mojo_attributes));
-
-    builder.BuildOperator(kind, {input_operand_id}, {output_operand_id},
-                          std::move(pool2d_attributes));
+    builder.BuildPool2d(kind, input_operand_id, output_operand_id,
+                        std::move(attributes));
 
     base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
     named_inputs.insert({"input", VectorToBigBuffer(input.values)});
@@ -674,7 +659,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorAveragePool2d) {
                        .strides = {1, 1},
                        .dilations = {1, 1},
                        .layout = mojom::InputOperandLayout::kChannelsFirst},
-        .kind = mojom::Operator::Kind::kAveragePool2d,
+        .kind = mojom::Pool2d::Kind::kAveragePool2d,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 2, 2},
                    .values = {3, 4, 6, 7, 12, 13, 15, 16}}}
@@ -692,7 +677,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorAveragePool2d) {
                        .strides = {1, 1},
                        .dilations = {1, 1},
                        .layout = mojom::InputOperandLayout::kChannelsLast},
-        .kind = mojom::Operator::Kind::kAveragePool2d,
+        .kind = mojom::Pool2d::Kind::kAveragePool2d,
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 2, 2},
                    .values = {3, 12, 4, 13, 6, 15, 7, 16}}}
@@ -715,7 +700,7 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorMaxPool2d) {
                      .strides = {1, 1},
                      .dilations = {1, 1},
                      .layout = mojom::InputOperandLayout::kChannelsFirst},
-      .kind = mojom::Operator::Kind::kMaxPool2d,
+      .kind = mojom::Pool2d::Kind::kMaxPool2d,
       .output = {.type = mojom::Operand::DataType::kFloat32,
                  .dimensions = {1, 2, 2, 2},
                  .values = {5, 6, 8, 9, 14, 15, 17, 18}}}
@@ -1364,6 +1349,167 @@ TEST_F(WebNNGraphDMLImplTest, BuildMultipleConstantsAppendingInputs) {
 
   EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
             std::vector<float>({30, 30, 70, 70}));
+}
+
+// Test building a DML graph in the following topology.
+//    [input_a] [input_b]
+//           \    /
+//            add
+//             |
+//            relu
+//             |
+//          max pooling
+TEST_F(WebNNGraphDMLImplTest, BuildMaxPooingAsThirdOperator) {
+  // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
+  // DML_FEATURE_LEVEL_4_0.
+  SKIP_TEST_IF(!adapter_->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_4_0));
+  // Build the mojom graph info.
+  GraphInfoBuilder builder;
+  uint64_t input_a_operand_id = builder.BuildInput(
+      "input_a", {1, 1, 2, 2}, mojom::Operand::DataType::kFloat32);
+  uint64_t input_b_operand_id = builder.BuildInput(
+      "input_b", {1, 1, 2, 2}, mojom::Operand::DataType::kFloat32);
+  uint64_t intermediate_1_operand_id = builder.BuildIntermediateOperand(
+      {1, 1, 2, 2}, mojom::Operand::DataType::kFloat32);
+  builder.BuildOperator(mojom::Operator::Kind::kAdd,
+                        {input_a_operand_id, input_b_operand_id},
+                        {intermediate_1_operand_id});
+
+  // Relu.
+  uint64_t intermediate_2_operand_id = builder.BuildIntermediateOperand(
+      {1, 1, 2, 2}, mojom::Operand::DataType::kFloat32);
+  builder.BuildOperator(mojom::Operator::Kind::kRelu,
+                        {intermediate_1_operand_id},
+                        {intermediate_2_operand_id});
+
+  // Max pooling.
+  uint64_t output_operand_id = builder.BuildOutput(
+      "output", {1, 1, 2, 2}, mojom::Operand::DataType::kFloat32);
+  builder.BuildPool2d(
+      mojom::Pool2d::Kind::kMaxPool2d, intermediate_2_operand_id,
+      output_operand_id,
+      Pool2dAttributes{.window_dimensions = {1, 1},
+                       .padding = {0, 0, 0, 0},
+                       .strides = {1, 1},
+                       .dilations = {1, 1},
+                       .layout = mojom::InputOperandLayout::kChannelsFirst});
+
+  base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+  std::vector<float> input_data = {1, 1, 1, 1};
+  named_inputs.insert({"input_a", VectorToBigBuffer(input_data)});
+  named_inputs.insert({"input_b", VectorToBigBuffer(input_data)});
+  base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                  named_outputs);
+  EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
+            std::vector<float>({2, 2, 2, 2}));
+}
+
+// Test building a DML graph in the following topology.
+//    [input_a] [input_b]
+//           \    /
+//            add
+//             |
+//          max pooling
+//             |
+//            relu
+TEST_F(WebNNGraphDMLImplTest, BuildMaxPooingAsSecondOperator) {
+  // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
+  // DML_FEATURE_LEVEL_4_0.
+  SKIP_TEST_IF(!adapter_->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_4_0));
+  // Build the mojom graph info.
+  GraphInfoBuilder builder;
+  uint64_t input_a_operand_id = builder.BuildInput(
+      "input_a", {1, 1, 2, 2}, mojom::Operand::DataType::kFloat32);
+  uint64_t input_b_operand_id = builder.BuildInput(
+      "input_b", {1, 1, 2, 2}, mojom::Operand::DataType::kFloat32);
+  uint64_t intermediate_1_operand_id = builder.BuildIntermediateOperand(
+      {1, 1, 2, 2}, mojom::Operand::DataType::kFloat32);
+  builder.BuildOperator(mojom::Operator::Kind::kAdd,
+                        {input_a_operand_id, input_b_operand_id},
+                        {intermediate_1_operand_id});
+
+  // Max pooling.
+  uint64_t intermediate_2_operand_id = builder.BuildIntermediateOperand(
+      {1, 1, 2, 2}, mojom::Operand::DataType::kFloat32);
+  builder.BuildPool2d(
+      mojom::Pool2d::Kind::kMaxPool2d, intermediate_1_operand_id,
+      intermediate_2_operand_id,
+      Pool2dAttributes{.window_dimensions = {1, 1},
+                       .padding = {0, 0, 0, 0},
+                       .strides = {1, 1},
+                       .dilations = {1, 1},
+                       .layout = mojom::InputOperandLayout::kChannelsFirst});
+
+  // Relu.
+  uint64_t output_operand_id = builder.BuildOutput(
+      "output", {1, 1, 2, 2}, mojom::Operand::DataType::kFloat32);
+  builder.BuildOperator(mojom::Operator::Kind::kRelu,
+                        {intermediate_2_operand_id}, {output_operand_id});
+
+  base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+  std::vector<float> input_data = {1, 1, 1, 1};
+  named_inputs.insert({"input_a", VectorToBigBuffer(input_data)});
+  named_inputs.insert({"input_b", VectorToBigBuffer(input_data)});
+  base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                  named_outputs);
+  EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
+            std::vector<float>({2, 2, 2, 2}));
+}
+
+// Test building a DML graph in the following topology.
+//      [input_a]
+//          |
+//      max pooling
+//                  [input_b]
+//           \        /
+//               add
+//                |
+//               relu
+TEST_F(WebNNGraphDMLImplTest, BuildMaxPooingAsFirstOperator) {
+  // DML_GEMM_OPERATOR_DESC support for 2 dimensions was introduced in
+  // DML_FEATURE_LEVEL_4_0.
+  SKIP_TEST_IF(!adapter_->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_4_0));
+  // Build the mojom graph info.
+  GraphInfoBuilder builder;
+  uint64_t input_a_operand_id = builder.BuildInput(
+      "input_a", {1, 1, 2, 2}, mojom::Operand::DataType::kFloat32);
+  uint64_t intermediate_1_operand_id = builder.BuildIntermediateOperand(
+      {1, 1, 2, 2}, mojom::Operand::DataType::kFloat32);
+  builder.BuildPool2d(
+      mojom::Pool2d::Kind::kMaxPool2d, input_a_operand_id,
+      intermediate_1_operand_id,
+      Pool2dAttributes{.window_dimensions = {1, 1},
+                       .padding = {0, 0, 0, 0},
+                       .strides = {1, 1},
+                       .dilations = {1, 1},
+                       .layout = mojom::InputOperandLayout::kChannelsFirst});
+
+  // Add operation.
+  uint64_t input_b_operand_id = builder.BuildInput(
+      "input_b", {1, 1, 2, 2}, mojom::Operand::DataType::kFloat32);
+  uint64_t intermediate_2_operand_id = builder.BuildIntermediateOperand(
+      {1, 1, 2, 2}, mojom::Operand::DataType::kFloat32);
+  builder.BuildOperator(mojom::Operator::Kind::kAdd,
+                        {intermediate_1_operand_id, input_b_operand_id},
+                        {intermediate_2_operand_id});
+
+  // Relu.
+  uint64_t output_operand_id = builder.BuildOutput(
+      "output", {1, 1, 2, 2}, mojom::Operand::DataType::kFloat32);
+  builder.BuildOperator(mojom::Operator::Kind::kRelu,
+                        {intermediate_2_operand_id}, {output_operand_id});
+
+  base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+  std::vector<float> input_data = {1, 1, 1, 1};
+  named_inputs.insert({"input_a", VectorToBigBuffer(input_data)});
+  named_inputs.insert({"input_b", VectorToBigBuffer(input_data)});
+  base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                  named_outputs);
+  EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
+            std::vector<float>({2, 2, 2, 2}));
 }
 
 }  // namespace webnn::dml

@@ -102,14 +102,14 @@ base::expected<blink_mojom::GraphInfoPtr, String> BuildWebNNGraphInfo(
       operand_to_id_map.insert(operand, operand_id);
     }
 
-    // Create `mojo::Operator` with the id of the input and output operands.
-    auto operation =
-        ConvertToMojoOperator(operand_to_id_map, current_operator.Get());
-    if (!operation.has_value()) {
+    // Create `mojo::Operation` with the id of the input and output operands.
+    auto mojo_operation =
+        ConvertToMojoOperation(operand_to_id_map, current_operator.Get());
+    if (!mojo_operation.has_value()) {
       // Return here if the operator is not implemented.
-      return base::unexpected(operation.error());
+      return base::unexpected(mojo_operation.error());
     }
-    graph_info->operators.emplace_back(std::move(operation.value()));
+    graph_info->operations.emplace_back(std::move(mojo_operation.value()));
   }
 
   return graph_info;

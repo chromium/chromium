@@ -281,10 +281,12 @@ struct ClampTester {
 
     auto graph_info = helper.GetGraphInfo();
     // Verify the graph information of mojo are as expected.
-    ASSERT_EQ(graph_info->operators.size(), 1u);
-    auto& operation = graph_info->operators[0];
-    EXPECT_EQ(operation->kind, blink_mojom::Operator::Kind::kClamp);
-    auto& clamp_attributes = operation->attributes->get_clamp();
+    ASSERT_EQ(graph_info->operations.size(), 1u);
+    auto& operation = graph_info->operations[0];
+    EXPECT_EQ(operation->is_generic_operator(), true);
+    auto& generic_operator = operation->get_generic_operator();
+    EXPECT_EQ(generic_operator->kind, blink_mojom::Operator::Kind::kClamp);
+    auto& clamp_attributes = generic_operator->attributes->get_clamp();
     EXPECT_EQ(clamp_attributes->min_value, expected_attributes.min_value);
     EXPECT_EQ(clamp_attributes->max_value, expected_attributes.max_value);
     EXPECT_EQ(graph_info->output_operands.size(), 1u);
@@ -457,10 +459,12 @@ struct Conv2dTester {
 
     auto graph_info = helper.GetGraphInfo();
     // Verify the graph information of mojo are as expected.
-    ASSERT_EQ(graph_info->operators.size(), 1u);
-    auto& operation = graph_info->operators[0];
-    EXPECT_EQ(operation->kind, blink_mojom::Operator::Kind::kConv2d);
-    auto& conv2d_attributes = operation->attributes->get_conv2d();
+    ASSERT_EQ(graph_info->operations.size(), 1u);
+    auto& operation = graph_info->operations[0];
+    EXPECT_EQ(operation->is_generic_operator(), true);
+    auto& generic_operator = operation->get_generic_operator();
+    EXPECT_EQ(generic_operator->kind, blink_mojom::Operator::Kind::kConv2d);
+    auto& conv2d_attributes = generic_operator->attributes->get_conv2d();
     // Validate explicit padding.
     auto& expected_padding = expected_attributes.padding;
     EXPECT_EQ(conv2d_attributes->padding->beginning->height,
@@ -708,13 +712,15 @@ struct ElementWiseBinaryTester {
     EXPECT_EQ(output_operand_iter->value->dimensions, expected.dimensions);
     EXPECT_EQ(output_operand_iter->value->name, "output");
     // Verify the `mojo::Operator`.
-    ASSERT_EQ(graph_info->operators.size(), 1u);
-    auto& operation = graph_info->operators[0];
-    ASSERT_EQ(operation->input_operands.size(), 2u);
-    EXPECT_EQ(operation->input_operands[0], lhs_operand_id);
-    EXPECT_EQ(operation->input_operands[1], rhs_operand_id);
-    ASSERT_EQ(operation->output_operands.size(), 1u);
-    EXPECT_EQ(operation->output_operands[0], output_operand_id);
+    ASSERT_EQ(graph_info->operations.size(), 1u);
+    auto& operation = graph_info->operations[0];
+    EXPECT_EQ(operation->is_generic_operator(), true);
+    auto& generic_operator = operation->get_generic_operator();
+    ASSERT_EQ(generic_operator->input_operands.size(), 2u);
+    EXPECT_EQ(generic_operator->input_operands[0], lhs_operand_id);
+    EXPECT_EQ(generic_operator->input_operands[1], rhs_operand_id);
+    ASSERT_EQ(generic_operator->output_operands.size(), 1u);
+    EXPECT_EQ(generic_operator->output_operands[0], output_operand_id);
   }
 };
 
@@ -837,10 +843,12 @@ struct GemmTester {
 
     auto graph_info = helper.GetGraphInfo();
     // Verify the graph information of mojo are as expected.
-    ASSERT_EQ(graph_info->operators.size(), 1u);
-    auto& operation = graph_info->operators[0];
-    EXPECT_EQ(operation->kind, blink_mojom::Operator::Kind::kGemm);
-    auto& gemm_attributes = operation->attributes->get_gemm();
+    ASSERT_EQ(graph_info->operations.size(), 1u);
+    auto& operation = graph_info->operations[0];
+    EXPECT_EQ(operation->is_generic_operator(), true);
+    auto& generic_operator = operation->get_generic_operator();
+    EXPECT_EQ(generic_operator->kind, blink_mojom::Operator::Kind::kGemm);
+    auto& gemm_attributes = generic_operator->attributes->get_gemm();
     ASSERT_EQ(gemm_attributes.is_null(), false);
     if (options.c) {
       auto c_operand_iter = graph_info->id_to_operand_map.find(
@@ -1025,43 +1033,38 @@ struct Pool2dTester {
 
     auto graph_info = helper.GetGraphInfo();
     // Verify the graph information of mojo are as expected.
-    ASSERT_EQ(graph_info->operators.size(), 1u);
-    auto& operation = graph_info->operators[0];
+    ASSERT_EQ(graph_info->operations.size(), 1u);
+    auto& operation = graph_info->operations[0];
+    EXPECT_EQ(operation->is_pool2d(), true);
+    auto& poo2d_mojo = operation->get_pool2d();
     switch (kind) {
       case Pool2dKind::kAverage:
-        EXPECT_EQ(operation->kind, blink_mojom::Operator::Kind::kAveragePool2d);
+        EXPECT_EQ(poo2d_mojo->kind, blink_mojom::Pool2d::Kind::kAveragePool2d);
         break;
       case Pool2dKind::kMax:
-        EXPECT_EQ(operation->kind, blink_mojom::Operator::Kind::kMaxPool2d);
+        EXPECT_EQ(poo2d_mojo->kind, blink_mojom::Pool2d::Kind::kMaxPool2d);
         break;
       default:
         NOTREACHED();
     }
-    auto& pool2d_attributes = operation->attributes->get_pool2d();
     // Validate window dimensions.
-    EXPECT_EQ(pool2d_attributes->window_dimensions->height,
+    EXPECT_EQ(poo2d_mojo->window_dimensions->height,
               expected_attributes.window_dimensions[0]);
-    EXPECT_EQ(pool2d_attributes->window_dimensions->width,
+    EXPECT_EQ(poo2d_mojo->window_dimensions->width,
               expected_attributes.window_dimensions[1]);
     // Validate explicit padding.
     auto& expected_padding = expected_attributes.padding;
-    EXPECT_EQ(pool2d_attributes->padding->beginning->height,
-              expected_padding[0]);
-    EXPECT_EQ(pool2d_attributes->padding->ending->height, expected_padding[1]);
-    EXPECT_EQ(pool2d_attributes->padding->beginning->width,
-              expected_padding[2]);
-    EXPECT_EQ(pool2d_attributes->padding->ending->width, expected_padding[3]);
+    EXPECT_EQ(poo2d_mojo->padding->beginning->height, expected_padding[0]);
+    EXPECT_EQ(poo2d_mojo->padding->ending->height, expected_padding[1]);
+    EXPECT_EQ(poo2d_mojo->padding->beginning->width, expected_padding[2]);
+    EXPECT_EQ(poo2d_mojo->padding->ending->width, expected_padding[3]);
     // Validate strides
-    EXPECT_EQ(pool2d_attributes->strides->height,
-              expected_attributes.strides[0]);
-    EXPECT_EQ(pool2d_attributes->strides->width,
-              expected_attributes.strides[1]);
+    EXPECT_EQ(poo2d_mojo->strides->height, expected_attributes.strides[0]);
+    EXPECT_EQ(poo2d_mojo->strides->width, expected_attributes.strides[1]);
     // Validate dilations.
-    EXPECT_EQ(pool2d_attributes->dilations->height,
-              expected_attributes.dilations[0]);
-    EXPECT_EQ(pool2d_attributes->dilations->width,
-              expected_attributes.dilations[1]);
-    EXPECT_EQ(pool2d_attributes->layout, expected_attributes.layout);
+    EXPECT_EQ(poo2d_mojo->dilations->height, expected_attributes.dilations[0]);
+    EXPECT_EQ(poo2d_mojo->dilations->width, expected_attributes.dilations[1]);
+    EXPECT_EQ(poo2d_mojo->layout, expected_attributes.layout);
     EXPECT_EQ(graph_info->output_operands.size(), 1u);
     auto output_operand_id = graph_info->output_operands[0];
     auto output_operand_iter =
@@ -1258,13 +1261,15 @@ struct ReluTester {
     EXPECT_EQ(output_operand_iter->value->dimensions, expected.dimensions);
     EXPECT_EQ(output_operand_iter->value->name, "output");
     // Verify the `mojo::Operator`.
-    ASSERT_EQ(graph_info->operators.size(), 1u);
-    auto& operation = graph_info->operators[0];
-    EXPECT_EQ(operation->kind, blink_mojom::Operator::Kind::kRelu);
-    ASSERT_EQ(operation->input_operands.size(), 1u);
-    EXPECT_EQ(operation->input_operands[0], input_operand_id);
-    ASSERT_EQ(operation->output_operands.size(), 1u);
-    EXPECT_EQ(operation->output_operands[0], output_operand_id);
+    ASSERT_EQ(graph_info->operations.size(), 1u);
+    auto& operation = graph_info->operations[0];
+    EXPECT_EQ(operation->is_generic_operator(), true);
+    auto& generic_operator = operation->get_generic_operator();
+    EXPECT_EQ(generic_operator->kind, blink_mojom::Operator::Kind::kRelu);
+    ASSERT_EQ(generic_operator->input_operands.size(), 1u);
+    EXPECT_EQ(generic_operator->input_operands[0], input_operand_id);
+    ASSERT_EQ(generic_operator->output_operands.size(), 1u);
+    EXPECT_EQ(generic_operator->output_operands[0], output_operand_id);
   }
 };
 
@@ -1332,9 +1337,11 @@ struct ReshapeTester {
 
     auto graph_info = helper.GetGraphInfo();
     // Verify the graph information of mojo are as expected.
-    ASSERT_EQ(graph_info->operators.size(), 1u);
-    auto& operation = graph_info->operators[0];
-    EXPECT_EQ(operation->kind, blink_mojom::Operator::Kind::kReshape);
+    ASSERT_EQ(graph_info->operations.size(), 1u);
+    auto& operation = graph_info->operations[0];
+    EXPECT_EQ(operation->is_generic_operator(), true);
+    auto& generic_operator = operation->get_generic_operator();
+    EXPECT_EQ(generic_operator->kind, blink_mojom::Operator::Kind::kReshape);
     EXPECT_EQ(graph_info->output_operands.size(), 1u);
     auto output_operand_id = graph_info->output_operands[0];
     auto output_operand_iter =
@@ -1412,9 +1419,11 @@ struct SoftmaxTester {
 
     auto graph_info = helper.GetGraphInfo();
     // Verify the graph information of mojo are as expected.
-    ASSERT_EQ(graph_info->operators.size(), 1u);
-    auto& operation = graph_info->operators[0];
-    EXPECT_EQ(operation->kind, blink_mojom::Operator::Kind::kSoftmax);
+    ASSERT_EQ(graph_info->operations.size(), 1u);
+    auto& operation = graph_info->operations[0];
+    EXPECT_EQ(operation->is_generic_operator(), true);
+    auto& generic_operator = operation->get_generic_operator();
+    EXPECT_EQ(generic_operator->kind, blink_mojom::Operator::Kind::kSoftmax);
     EXPECT_EQ(graph_info->output_operands.size(), 1u);
     auto output_operand_id = graph_info->output_operands[0];
     auto output_operand_iter =
