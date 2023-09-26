@@ -186,18 +186,6 @@ GpuPreferences ParseGpuPreferences(const base::CommandLine* command_line) {
         command_line->GetSwitchValueASCII(switches::kDisableDawnFeatures), ",",
         base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   }
-#ifdef DAWN_USE_BUILT_DXC
-  // Drive "use_dxc" with Finch feature flag, unless user forces option via
-  // command line.
-  if (!base::Contains(gpu_preferences.enabled_dawn_features_list, "use_dxc") &&
-      !base::Contains(gpu_preferences.disabled_dawn_features_list, "use_dxc")) {
-    if (base::FeatureList::IsEnabled(features::kWebGPUUseDXC)) {
-      gpu_preferences.enabled_dawn_features_list.push_back("use_dxc");
-    } else {
-      gpu_preferences.disabled_dawn_features_list.push_back("use_dxc");
-    }
-  }
-#endif
   gpu_preferences.gr_context_type = ParseGrContextType(command_line);
   gpu_preferences.use_vulkan = ParseVulkanImplementationName(command_line);
 

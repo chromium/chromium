@@ -12,6 +12,7 @@
 #include "base/trace_event/trace_arguments.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/command_buffer/service/dawn_caching_interface.h"
+#include "gpu/config/gpu_finch_features.h"
 
 namespace gpu::webgpu {
 
@@ -174,6 +175,14 @@ dawn::platform::CachingInterface* DawnPlatform::GetCachingInterface() {
 std::unique_ptr<dawn::platform::WorkerTaskPool>
 DawnPlatform::CreateWorkerTaskPool() {
   return std::make_unique<AsyncWorkerTaskPool>();
+}
+
+bool DawnPlatform::IsFeatureEnabled(dawn::platform::Features feature) {
+  switch (feature) {
+    case dawn::platform::Features::kWebGPUUseDXC:
+      return base::FeatureList::IsEnabled(features::kWebGPUUseDXC);
+  }
+  return false;
 }
 
 }  // namespace gpu::webgpu

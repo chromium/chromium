@@ -338,9 +338,6 @@ target(link_target_type, "gles2_sources") {
 
   if (use_dawn) {
     deps += [ "//gpu/webgpu:common" ]
-    if (dawn_use_built_dxc) {
-      defines += [ "DAWN_USE_BUILT_DXC" ]
-    }
     sources += [
       "dawn_caching_interface.cc",
       "dawn_caching_interface.h",

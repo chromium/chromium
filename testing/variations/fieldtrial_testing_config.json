@@ -18590,7 +18590,7 @@
             ]
         }
     ],
-    "WebGPUUseDXC": [
+    "WebGPUUseDXC2": [
         {
             "platforms": [
                 "windows"
@@ -18599,7 +18599,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "WebGPUUseDXC"
+                        "WebGPUUseDXC2"
                     ]
                 }
             ]
