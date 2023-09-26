@@ -45,7 +45,7 @@ if (!is_android) {
 
     proto_source = "kombucha_in_process_fuzzer.proto"
 
-    deps = []
+    deps = [ "//chrome:packed_resources" ]
 
     # Used for UI controls
     if (use_aura) {
