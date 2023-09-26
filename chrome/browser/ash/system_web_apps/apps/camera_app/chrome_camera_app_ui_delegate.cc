@@ -301,7 +301,7 @@ void ChromeCameraAppUIDelegate::SetLaunchDirectory() {
     return;
   }
 
-  absl::optional<web_app::AppId> app_id =
+  absl::optional<webapps::AppId> app_id =
       swa_manager->GetAppIdForSystemApp(ash::SystemWebAppType::CAMERA);
   if (!app_id.has_value()) {
     return;
