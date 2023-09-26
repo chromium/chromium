@@ -629,8 +629,8 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
     }
   }
 
-  private shouldShowSpinner_(_item:
-                                 chrome.languageSettingsPrivate.InputMethod) {
+  private shouldShowSpinner_(_item: chrome.languageSettingsPrivate.InputMethod):
+      boolean {
     return this.languagePacksInSettingsEnabled_;
   }
 }
