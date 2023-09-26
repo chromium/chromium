@@ -100,7 +100,7 @@ void AddGrayscaleSysColorOverrides(ColorMixer& mixer,
   // Chrome surfaces.
   mixer[kColorSysOnBaseDivider] = {dark_mode ? kColorRefNeutral40
                                              : kColorRefNeutral90};
-  mixer[kColorSysHeader] = {dark_mode ? kColorRefNeutral15
+  mixer[kColorSysHeader] = {dark_mode ? kColorRefNeutral12
                                       : kColorRefNeutral90};
   mixer[kColorSysHeaderInactive] = {
       dark_mode ? GetResultingPaintColor(SetAlpha({kColorSysHeader}, 0x99),
