@@ -39,8 +39,7 @@ class FeatureStateManager {
 
   // Attempts to enable or disable the feature; returns whether this operation
   // succeeded. A feature can only be changed via this function if the current
-  // state is mojom::FeatureState::kEnabledByUser,
-  // mojom::FeatureState::kFurtherSetupRequired or
+  // state is mojom::FeatureState::kEnabledByUser or
   // mojom::FeatureState::kDisabledByUser.
   bool SetFeatureEnabledState(mojom::Feature feature, bool enabled);
 

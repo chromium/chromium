@@ -209,9 +209,6 @@ TEST_F(ChromeOSSystemProfileProviderTest,
   fake_multidevice_setup_client_->SetFeatureState(
       ash::multidevice_setup::mojom::Feature::kSmartLock,
       ash::multidevice_setup::mojom::FeatureState::kEnabledByUser);
-  fake_multidevice_setup_client_->SetFeatureState(
-      ash::multidevice_setup::mojom::Feature::kMessages,
-      ash::multidevice_setup::mojom::FeatureState::kFurtherSetupRequired);
 
   // |scoped_enabler| takes over the lifetime of |user_manager|.
   auto* user_manager = new ash::FakeChromeUserManager();

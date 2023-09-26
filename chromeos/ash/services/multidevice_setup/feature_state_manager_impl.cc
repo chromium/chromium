@@ -40,7 +40,6 @@ GenerateFeatureToEnabledPrefNameMap() {
       {mojom::Feature::kBetterTogetherSuite,
        kBetterTogetherSuiteEnabledPrefName},
       {mojom::Feature::kInstantTethering, kInstantTetheringEnabledPrefName},
-      {mojom::Feature::kMessages, kMessagesEnabledPrefName},
       {mojom::Feature::kSmartLock, kSmartLockEnabledPrefName},
       {mojom::Feature::kPhoneHub, kPhoneHubEnabledPrefName},
       {mojom::Feature::kPhoneHubCameraRoll, kPhoneHubCameraRollEnabledPrefName},
@@ -55,7 +54,6 @@ base::flat_map<mojom::Feature, std::string>
 GenerateFeatureToAllowedPrefNameMap() {
   return base::flat_map<mojom::Feature, std::string>{
       {mojom::Feature::kInstantTethering, kInstantTetheringAllowedPrefName},
-      {mojom::Feature::kMessages, kMessagesAllowedPrefName},
       {mojom::Feature::kSmartLock, kSmartLockAllowedPrefName},
       {mojom::Feature::kPhoneHub, kPhoneHubAllowedPrefName},
       {mojom::Feature::kPhoneHubCameraRoll, kPhoneHubCameraRollAllowedPrefName},
@@ -75,8 +73,6 @@ GenerateInitialDefaultCachedStateMap() {
       {mojom::Feature::kBetterTogetherSuite,
        mojom::FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts},
       {mojom::Feature::kInstantTethering,
-       mojom::FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts},
-      {mojom::Feature::kMessages,
        mojom::FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts},
       {mojom::Feature::kSmartLock,
        mojom::FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts},
@@ -157,8 +153,7 @@ void ProcessSuiteEdgeCases(
       mojom::FeatureState::kDisabledByUser) {
     for (auto& map_entry : feature_states_map) {
       mojom::FeatureState& feature_state = map_entry.second;
-      if (feature_state == mojom::FeatureState::kEnabledByUser ||
-          feature_state == mojom::FeatureState::kFurtherSetupRequired) {
+      if (feature_state == mojom::FeatureState::kEnabledByUser) {
         feature_state = mojom::FeatureState::kUnavailableSuiteDisabled;
       }
     }
@@ -389,10 +384,6 @@ mojom::FeatureState FeatureStateManagerImpl::ComputeFeatureState(
     return mojom::FeatureState::kNotSupportedByPhone;
   }
 
-  if (RequiresFurtherSetup(feature)) {
-    return mojom::FeatureState::kFurtherSetupRequired;
-  }
-
   return GetEnabledOrDisabledState(feature);
 }
 
@@ -417,8 +408,6 @@ bool FeatureStateManagerImpl::IsSupportedByChromebook(mojom::Feature feature) {
            multidevice::SoftwareFeature::kBetterTogetherClient},
           {mojom::Feature::kInstantTethering,
            multidevice::SoftwareFeature::kInstantTetheringClient},
-          {mojom::Feature::kMessages,
-           multidevice::SoftwareFeature::kMessagesForWebClient},
           {mojom::Feature::kSmartLock,
            multidevice::SoftwareFeature::kSmartLockClient},
           // Note: Most Phone Hub-related features use the same SoftwareFeature.
@@ -486,8 +475,6 @@ bool FeatureStateManagerImpl::HasBeenActivatedByPhone(
            multidevice::SoftwareFeature::kBetterTogetherHost},
           {mojom::Feature::kInstantTethering,
            multidevice::SoftwareFeature::kInstantTetheringHost},
-          {mojom::Feature::kMessages,
-           multidevice::SoftwareFeature::kMessagesForWebHost},
           {mojom::Feature::kSmartLock,
            multidevice::SoftwareFeature::kSmartLockHost},
           // Note: Most Phone Hub-related features use the same SoftwareFeature.
@@ -564,22 +551,6 @@ bool FeatureStateManagerImpl::HasBeenActivatedByPhone(
   return false;
 }
 
-// TODO(khorimoto): Add a way to determine whether Phone Hub notification
-// access has been granted by the user on the phone.
-bool FeatureStateManagerImpl::RequiresFurtherSetup(mojom::Feature feature) {
-  if (feature != mojom::Feature::kMessages) {
-    return false;
-  }
-
-  if (GetEnabledOrDisabledState(feature) ==
-      mojom::FeatureState::kDisabledByUser) {
-    return false;
-  }
-
-  return android_sms_pairing_state_tracker_ &&
-         !android_sms_pairing_state_tracker_->IsAndroidSmsPairingComplete();
-}
-
 mojom::FeatureState FeatureStateManagerImpl::GetEnabledOrDisabledState(
     mojom::Feature feature) {
   if (global_state_feature_managers_.contains(feature)) {
@@ -608,9 +579,6 @@ void FeatureStateManagerImpl::LogFeatureStates() const {
       "InstantTethering.MultiDeviceFeatureState",
       cached_feature_state_map_.find(mojom::Feature::kInstantTethering)
           ->second);
-  base::UmaHistogramEnumeration(
-      "AndroidSms.MultiDeviceFeatureState",
-      cached_feature_state_map_.find(mojom::Feature::kMessages)->second);
   base::UmaHistogramEnumeration(
       "SmartLock.MultiDeviceFeatureState",
       cached_feature_state_map_.find(mojom::Feature::kSmartLock)->second);

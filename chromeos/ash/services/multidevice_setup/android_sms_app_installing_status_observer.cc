@@ -86,8 +86,7 @@ bool AndroidSmsAppInstallingStatusObserver::
     DoesFeatureStateAllowInstallation() {
   mojom::FeatureState feature_state =
       feature_state_manager_->GetFeatureStates()[mojom::Feature::kMessages];
-  if (feature_state != mojom::FeatureState::kEnabledByUser &&
-      feature_state != mojom::FeatureState::kFurtherSetupRequired) {
+  if (feature_state != mojom::FeatureState::kEnabledByUser) {
     return false;
   }
 

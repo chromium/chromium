@@ -52,8 +52,6 @@ bool SmartLockFeatureUsageMetrics::IsEligible() const {
       [[fallthrough]];
     case FeatureState::kUnavailableSuiteDisabled:
       [[fallthrough]];
-    case FeatureState::kFurtherSetupRequired:
-      [[fallthrough]];
     case FeatureState::kUnavailableTopLevelFeatureDisabled:
       return true;
   }

@@ -67,9 +67,6 @@ TEST_F(SmartLockFeatureUsageMetricsTest, EnabledAndEligibleFeatureStates) {
   TestFeatureState(FeatureState::kUnavailableSuiteDisabled,
                    /*expected_eligible_value=*/true,
                    /*expected_enabled_value=*/false);
-  TestFeatureState(FeatureState::kFurtherSetupRequired,
-                   /*expected_eligible_value=*/true,
-                   /*expected_enabled_value=*/false);
   TestFeatureState(FeatureState::kUnavailableTopLevelFeatureDisabled,
                    /*expected_eligible_value=*/true,
                    /*expected_enabled_value=*/false);
