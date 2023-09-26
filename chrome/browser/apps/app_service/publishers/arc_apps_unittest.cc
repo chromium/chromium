@@ -7,6 +7,7 @@
 #include <functional>
 #include <memory>
 
+#include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
@@ -781,6 +782,56 @@ TEST_F(ArcAppsPublisherTest, SuccessfulInstallationRemovesPromiseApp) {
   // registered.
   promise_app_result = cache->GetPromiseApp(package_id);
   EXPECT_FALSE(promise_app_result);
+}
+
+TEST_F(ArcAppsPublisherTest, PromiseAppsAreSuppressedForPiArc) {
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndEnableFeature(ash::features::kPromiseIcons);
+  app_service_proxy()->ReinitializeForTesting(profile());
+  apps::PromiseAppRegistryCache* cache =
+      app_service_proxy()->PromiseAppRegistryCache();
+
+  // Set ARC version to P, which we should not create promise apps for.
+  apps::ArcApps::SetArcVersionForTesting(arc::kArcVersionP);
+
+  std::string package_name = "com.example.this";
+  apps::PackageId package_id =
+      apps::PackageId(apps::AppType::kArc, package_name);
+
+  // Verify that the promise app is not registered to begin with.
+  EXPECT_FALSE(cache->HasPromiseApp(package_id));
+
+  // Trigger an installation event notification.
+  arc_test()->app_instance()->SendInstallationStarted(package_name);
+
+  // Verify that the promise app still isn't registered.
+  EXPECT_FALSE(cache->HasPromiseApp(package_id));
+}
+
+TEST_F(ArcAppsPublisherTest, PromiseAppsAreCreatedForRvcArc) {
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndEnableFeature(ash::features::kPromiseIcons);
+  app_service_proxy()->ReinitializeForTesting(profile());
+  apps::PromiseAppRegistryCache* cache =
+      app_service_proxy()->PromiseAppRegistryCache();
+  apps::PromiseAppService* service = app_service_proxy()->PromiseAppService();
+  service->SetSkipAlmanacForTesting(true);
+
+  // Set ARC version to R, which should allow promise apps to be created.
+  apps::ArcApps::SetArcVersionForTesting(arc::kArcVersionR);
+
+  std::string package_name = "com.example.this";
+  apps::PackageId package_id =
+      apps::PackageId(apps::AppType::kArc, package_name);
+
+  // Verify that the promise app is not registered to begin with.
+  EXPECT_FALSE(cache->HasPromiseApp(package_id));
+
+  // Trigger an installation event notification.
+  arc_test()->app_instance()->SendInstallationStarted(package_name);
+
+  // Verify that the promise app is registered.
+  EXPECT_TRUE(cache->HasPromiseApp(package_id));
 }
 
 // Verifies that only valid intent filters will be published from ARC.

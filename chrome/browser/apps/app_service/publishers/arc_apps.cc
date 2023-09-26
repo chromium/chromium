@@ -78,6 +78,8 @@
 
 namespace {
 
+absl::optional<int> g_test_arc_version_;
+
 apps::PermissionType GetPermissionType(
     arc::mojom::AppPermission arc_permission_type) {
   switch (arc_permission_type) {
@@ -477,9 +479,18 @@ apps::InstallReason GetInstallReason(const ArcAppListPrefs* prefs,
   return apps::InstallReason::kUser;
 }
 
+bool ArcVersionEligibleForPromiseIcons() {
+  return g_test_arc_version_.value_or(arc::GetArcAndroidSdkVersionAsInt()) >=
+         arc::kArcVersionR;
+}
+
 }  // namespace
 
 namespace apps {
+
+void ArcApps::SetArcVersionForTesting(int version) {
+  g_test_arc_version_ = version;
+}
 
 // static
 ArcApps* ArcApps::Get(Profile* profile) {
@@ -1466,7 +1477,8 @@ void ArcApps::OnGetAppShortcutItems(
 }
 
 void ArcApps::OnInstallationStarted(const std::string& package_name) {
-  if (ash::features::ArePromiseIconsEnabled()) {
+  if (ash::features::ArePromiseIconsEnabled() &&
+      ArcVersionEligibleForPromiseIcons()) {
     PromiseAppPtr promise_app =
         AppPublisher::MakePromiseApp(PackageId(AppType::kArc, package_name));
 
@@ -1520,7 +1532,8 @@ void ArcApps::OnInstallationActiveChanged(const std::string& package_name,
 
 void ArcApps::OnInstallationFinished(const std::string& package_name,
                                      bool success) {
-  if (ash::features::ArePromiseIconsEnabled()) {
+  if (ash::features::ArePromiseIconsEnabled() &&
+      ArcVersionEligibleForPromiseIcons()) {
     // Remove the promise app of any failed installation.
     if (success) {
       return;

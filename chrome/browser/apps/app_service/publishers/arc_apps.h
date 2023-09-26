@@ -75,6 +75,8 @@ class ArcApps : public KeyedService,
 
   WebApkManager* GetWebApkManagerForTesting() { return web_apk_manager_.get(); }
 
+  static void SetArcVersionForTesting(int version);
+
  private:
   friend class ArcAppsFactory;
   friend class PublisherTest;
