@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/app_store_rating/app_store_rating_scene_agent.h"
 
+#import "base/json/values_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/values.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
@@ -16,6 +17,7 @@
 #import "ios/chrome/browser/promos_manager/mock_promos_manager.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -76,39 +78,33 @@ class AppStoreRatingSceneAgentTest : public PlatformTest {
     test_scene_agent_.sceneState = fake_scene_state_;
   }
 
-  // Set kAppStoreRatingTotalDaysOnChromeKey in NSUserDefaults.
+  // Set kAppStoreRatingTotalDaysOnChromeKey in ApplicationContext.
   void SetTotalDaysOnChrome(int days) {
-    [[NSUserDefaults standardUserDefaults]
-        setInteger:days
-            forKey:kAppStoreRatingTotalDaysOnChromeKey];
+    GetApplicationContext()->GetLocalState()->SetInteger(
+        kAppStoreRatingTotalDaysOnChromeKey, days);
   }
 
-  // Set kAppStoreRatingActiveDaysInPastWeekKey in NSUserDefaults to an array of
-  // NSDate objects.
+  // Set kAppStoreRatingActiveDaysInPastWeekKey in ApplicationContext to an
+  // array of NSDate objects.
   void SetActiveDaysInPastWeek(int activeDays) {
-    NSMutableArray* array = [[NSMutableArray alloc] init];
+    base::Value::List datesToStore;
     for (int a = activeDays - 1; a >= 0; a--) {
-      [array addObject:CreateDateFromToday(-a)];
+      NSDate* date = CreateDateFromToday(-a);
+      datesToStore.Append(TimeToValue(base::Time::FromNSDate(date)));
     }
-    [[NSUserDefaults standardUserDefaults]
-        setObject:array
-           forKey:kAppStoreRatingActiveDaysInPastWeekKey];
+    GetApplicationContext()->GetLocalState()->SetList(
+        kAppStoreRatingActiveDaysInPastWeekKey, std::move(datesToStore));
   }
 
-  // Set kAppStoreRatingLastShownPromoDayKey in NSUserDefaults.
+  // Set kAppStoreRatingLastShownPromoDayKey in ApplicationContext.
   void SetPromoLastShownDaysAgo(int daysAgo) {
     NSDate* date = CreateDateFromToday(-daysAgo);
-    [[NSUserDefaults standardUserDefaults]
-        setObject:date
-           forKey:kAppStoreRatingLastShownPromoDayKey];
+    GetApplicationContext()->GetLocalState()->SetTime(
+        kAppStoreRatingLastShownPromoDayKey, base::Time::FromNSDate(date));
   }
 
   // Remove the keys added to NSUserDefaults.
   void ClearUserDefaults() {
-    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-    [defaults removeObjectForKey:kAppStoreRatingActiveDaysInPastWeekKey];
-    [defaults removeObjectForKey:kAppStoreRatingTotalDaysOnChromeKey];
-    [defaults removeObjectForKey:kAppStoreRatingLastShownPromoDayKey];
     ClearDefaultBrowserPromoData();
   }
 

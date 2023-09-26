@@ -4,9 +4,12 @@
 
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/containers/contains.h"
+#import "base/json/values_util.h"
 #import "base/time/time.h"
 #import "base/types/cxx23_to_underlying.h"
+#import "base/values.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/breadcrumbs/core/breadcrumbs_status.h"
 #import "components/browsing_data/core/pref_names.h"
@@ -79,6 +82,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/app_store_rating/constants.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
@@ -335,6 +339,10 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // refactored to use the new Safety Check Manager.
   registry->RegisterTimePref(prefs::kIosSettingsSafetyCheckLastRunTime,
                              base::Time());
+  // Preferences related to app store rating.
+  registry->RegisterIntegerPref(kAppStoreRatingTotalDaysOnChromeKey, 0);
+  registry->RegisterListPref(kAppStoreRatingActiveDaysInPastWeekKey);
+  registry->RegisterTimePref(kAppStoreRatingLastShownPromoDayKey, base::Time());
 }
 
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -563,6 +571,50 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
   // Added 04/2023
   if (prefs->FindPreference(kTrialPrefName)) {
     prefs->ClearPref(kTrialPrefName);
+  }
+
+  // Added 09/2023
+  // TODO(crbug.com/1485045) To be removed after a few milestones.
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  {
+    NSString* key = @(kAppStoreRatingActiveDaysInPastWeekKey);
+    NSArray* value =
+        base::apple::ObjCCastStrict<NSArray>([defaults objectForKey:key]);
+    if (value != nil) {
+      [defaults removeObjectForKey:key];
+
+      base::Value::List list_value;
+      for (NSDate* date : value) {
+        base::Time time = base::Time::FromNSDate(date);
+        list_value.Append(TimeToValue(time));
+      }
+      prefs->SetList(kAppStoreRatingActiveDaysInPastWeekKey,
+                     std::move(list_value));
+    }
+  }
+
+  // Added 09/2023
+  // TODO(crbug.com/1485045) To be removed after a few milestones.
+  {
+    NSString* key = @(kAppStoreRatingTotalDaysOnChromeKey);
+    NSInteger value = [defaults integerForKey:key];
+    if (value) {
+      [defaults removeObjectForKey:key];
+      prefs->SetInteger(kAppStoreRatingTotalDaysOnChromeKey, value);
+    }
+  }
+
+  // Added 09/2023
+  // TODO(crbug.com/1485045) To be removed after a few milestones.
+  {
+    NSString* key = @(kAppStoreRatingLastShownPromoDayKey);
+    NSDate* value =
+        base::apple::ObjCCastStrict<NSDate>([defaults objectForKey:key]);
+    if (value) {
+      [defaults removeObjectForKey:key];
+      prefs->SetTime(kAppStoreRatingTotalDaysOnChromeKey,
+                     base::Time::FromNSDate(value));
+    }
   }
 }
 

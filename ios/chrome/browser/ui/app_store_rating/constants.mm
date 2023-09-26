@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/ui/app_store_rating/constants.h"
 
-NSString* const kAppStoreRatingTotalDaysOnChromeKey =
-    @"AppStoreRatingTotalDaysOnChrome";
-NSString* const kAppStoreRatingActiveDaysInPastWeekKey =
-    @"AppStoreRatingActiveDaysInPastWeek";
-NSString* const kAppStoreRatingLastShownPromoDayKey =
-    @"AppStoreRatingLastShownPromoDay";
+const char kAppStoreRatingTotalDaysOnChromeKey[] =
+    "AppStoreRatingTotalDaysOnChrome";
+const char kAppStoreRatingActiveDaysInPastWeekKey[] =
+    "AppStoreRatingActiveDaysInPastWeek";
+const char kAppStoreRatingLastShownPromoDayKey[] =
+    "AppStoreRatingLastShownPromoDay";

@@ -5,18 +5,16 @@
 #ifndef IOS_CHROME_BROWSER_UI_APP_STORE_RATING_CONSTANTS_H_
 #define IOS_CHROME_BROWSER_UI_APP_STORE_RATING_CONSTANTS_H_
 
-#import <Foundation/Foundation.h>
-
 // Key used to store the total number of unique days that the user has
-// started a session in NSUserDefaults.
-extern NSString* const kAppStoreRatingTotalDaysOnChromeKey;
+// started a session.
+extern const char kAppStoreRatingTotalDaysOnChromeKey[];
 
 // Key used to store an array of unique days that the user has started
-// a session in the past 7 days in NSUserDefaults.
-extern NSString* const kAppStoreRatingActiveDaysInPastWeekKey;
+// a session in the past 7 days.
+extern const char kAppStoreRatingActiveDaysInPastWeekKey[];
 
 // Key used to store the latest date the App Store Rating promo was
 // requested for display for the user.
-extern NSString* const kAppStoreRatingLastShownPromoDayKey;
+extern const char kAppStoreRatingLastShownPromoDayKey[];
 
 #endif  // IOS_CHROME_BROWSER_UI_APP_STORE_RATING_CONSTANTS_H_

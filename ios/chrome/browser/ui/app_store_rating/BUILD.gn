@@ -63,6 +63,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/promos_manager:constants",
     "//ios/chrome/browser/promos_manager:test_support",
     "//ios/chrome/browser/shared/coordinator/scene/test",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
