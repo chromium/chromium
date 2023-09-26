@@ -579,6 +579,18 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kLCPScriptObserverMaxUrlLength;
 
+// If enabled, fetched font URLs are observed to predict font usage in the
+// future navigation.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPPFontURLPredictor);
+
+// The maximum URL length for LCPP font URL predictor.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kLCPPFontURLPredictorMaxUrlLength;
+
+// The maximum URL count allowed for LCPP font URL predictor.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kLCPPFontURLPredictorMaxUrlCountPerOrigin;
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPVideoFirstFrame);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLightweightNoStatePrefetch);
