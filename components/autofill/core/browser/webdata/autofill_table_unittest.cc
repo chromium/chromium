@@ -1286,8 +1286,7 @@ TEST_F(AutofillTableTest, CreditCard) {
 TEST_F(AutofillTableTest, AddCreditCardCvcWithFlagOff) {
   base::test::ScopedFeatureList features;
   features.InitAndDisableFeature(features::kAutofillEnableCvcStorageAndFilling);
-  CreditCard card = test::GetCreditCard();
-  card.set_cvc(u"123");
+  CreditCard card = test::WithCvc(test::GetCreditCard());
   EXPECT_TRUE(table_->AddCreditCard(card));
   std::unique_ptr<CreditCard> db_card = table_->GetCreditCard(card.guid());
   EXPECT_EQ(u"", db_card->cvc());
@@ -1302,8 +1301,7 @@ TEST_F(AutofillTableTest, AddCreditCardCvcWithFlagOff) {
 TEST_F(AutofillTableTest, ClearCreditCards) {
   base::test::ScopedFeatureList features(
       features::kAutofillEnableCvcStorageAndFilling);
-  CreditCard card = test::GetCreditCard();
-  card.set_cvc(u"123");
+  CreditCard card = test::WithCvc(test::GetCreditCard());
   EXPECT_TRUE(table_->AddCreditCard(card));
   std::unique_ptr<CreditCard> db_card = table_->GetCreditCard(card.guid());
   EXPECT_EQ(card.cvc(), db_card->cvc());
@@ -1329,8 +1327,7 @@ TEST_F(AutofillTableTest, CreditCardCvc) {
   // Create the test clock and set the time to a specific value.
   TestAutofillClock test_clock;
   test_clock.SetNow(arbitrary_time);
-  CreditCard card = test::GetCreditCard();
-  card.set_cvc(u"123");
+  CreditCard card = test::WithCvc(test::GetCreditCard());
   EXPECT_TRUE(table_->AddCreditCard(card));
 
   // Get the credit card, cvc should match.
@@ -1497,10 +1494,8 @@ TEST_F(AutofillTableTest, ServerCvc) {
 TEST_F(AutofillTableTest, ReconcileServerCvcs) {
   const base::Time kArbitraryTime = base::Time::FromDoubleT(25);
   // Add 2 server credit cards.
-  CreditCard card1 = test::GetMaskedServerCard();
-  card1.set_cvc(u"123");
-  CreditCard card2 = test::GetMaskedServerCard2();
-  card2.set_cvc(u"234");
+  CreditCard card1 = test::WithCvc(test::GetMaskedServerCard());
+  CreditCard card2 = test::WithCvc(test::GetMaskedServerCard2());
   test::SetServerCreditCards(table_.get(), {card1, card2});
 
   // Add 1 server cvc that doesn't have a credit card associate with. We

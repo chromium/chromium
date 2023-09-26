@@ -59,7 +59,7 @@ class CardMetadataFormEventMetricsTest
                            .action = ""});
 
     // Add a masked server card.
-    card_ = test::GetMaskedServerCardWithCvc();
+    card_ = test::WithCvc(test::GetMaskedServerCard());
     card_.set_guid(kCardGuid);
     if (registered_card_issuer_available()) {
       card_.set_issuer_id(kCapitalOneCardIssuerId);

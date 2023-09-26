@@ -411,12 +411,6 @@ CreditCard GetMaskedServerCard2() {
   return credit_card;
 }
 
-CreditCard GetMaskedServerCardWithCvc() {
-  CreditCard credit_card = GetMaskedServerCard();
-  credit_card.set_cvc(u"123");
-  return credit_card;
-}
-
 CreditCard GetMaskedServerCardWithLegacyId() {
   CreditCard credit_card(CreditCard::RecordType::kMaskedServerCard, "a123");
   test::SetCreditCardInfo(&credit_card, "Bonnie Parker",
@@ -520,6 +514,11 @@ CreditCard GetRandomCreditCard(CreditCard::RecordType record_type) {
         kNetworks[base::RandInt(0, kNumNetworks - 1)]);
   }
 
+  return credit_card;
+}
+
+CreditCard WithCvc(CreditCard credit_card, std::u16string cvc) {
+  credit_card.set_cvc(cvc);
   return credit_card;
 }
 

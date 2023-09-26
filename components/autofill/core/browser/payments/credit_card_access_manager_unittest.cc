@@ -2862,8 +2862,7 @@ TEST_F(CreditCardAccessManagerTest,
   // Mock FIDO authentication completed.
   CreditCardFidoAuthenticator::FidoAuthenticationResponse fido_response;
   fido_response.did_succeed = true;
-  CreditCard card = test::GetCreditCard();
-  card.set_cvc(u"234");
+  CreditCard card = test::WithCvc(test::GetCreditCard(), u"234");
   fido_response.card = &card;
   credit_card_access_manager().OnFIDOAuthenticationComplete(fido_response);
 

@@ -928,7 +928,7 @@ TEST_F(CreditCardSaveManagerTest,
 // dialog will be triggered with `kCvcSaveOnly` option.
 TEST_F(CreditCardSaveManagerTest,
        AttemptToOfferCvcUploadSave_ShouldShowSaveCardWithCvcSaveOnly) {
-  CreditCard credit_card = test::GetMaskedServerCardWithCvc();
+  CreditCard credit_card = test::WithCvc(test::GetMaskedServerCard());
   credit_card_save_manager_->AttemptToOfferCvcUploadSave(
       /*from_dynamic_change_form=*/true, /*has_non_focusable_field=*/true,
       credit_card);
@@ -947,7 +947,7 @@ TEST_F(CreditCardSaveManagerTest,
 // passed in AttemptToOfferCvcUploadSave function.
 TEST_F(CreditCardSaveManagerTest,
        AttemptToOfferCvcUploadSave_NonFocusableAndDynamicChangeIsFalse) {
-  CreditCard credit_card = test::GetMaskedServerCardWithCvc();
+  CreditCard credit_card = test::WithCvc(test::GetMaskedServerCard());
   credit_card_save_manager_->AttemptToOfferCvcUploadSave(
       /*from_dynamic_change_form=*/false, /*has_non_focusable_field=*/false,
       credit_card);
@@ -1068,17 +1068,17 @@ TEST_F(
 TEST_F(
     CreditCardSaveManagerTest,
     AttemptToOfferCvcUploadSave_UserAccept_ShouldUpdateServerCvcWithDifferentCvc) {
-  CreditCard credit_card = test::GetMaskedServerCardWithCvc();
+  CreditCard credit_card = test::WithCvc(test::GetMaskedServerCard(), u"123");
   personal_data().AddServerCreditCard(credit_card);
-  const std::u16string kCvc = u"555";
-  credit_card.set_cvc(kCvc);
+  const std::u16string kNewCvc = u"555";
+  credit_card.set_cvc(kNewCvc);
   credit_card_save_manager_->AttemptToOfferCvcUploadSave(
       /*from_dynamic_change_form=*/true, /*has_non_focusable_field=*/true,
       credit_card);
 
   EXPECT_TRUE(autofill_client_.ConfirmSaveCardToCloudWasCalled());
   EXPECT_CALL(personal_data(),
-              UpdateServerCvc(credit_card.instrument_id(), kCvc));
+              UpdateServerCvc(credit_card.instrument_id(), kNewCvc));
   UserHasAcceptedCvcUpload({});
 }
 #endif
@@ -5392,8 +5392,7 @@ TEST_F(CreditCardSaveManagerTest,
   prefs::SetPaymentCvcStorage(autofill_client_.GetPrefs(), true);
 
   // Set up upload_request card.
-  CreditCard card = test::GetCreditCard();
-  card.set_cvc(u"111");
+  CreditCard card = test::WithCvc(test::GetCreditCard());
   credit_card_save_manager_->set_upload_request_card(card);
 
   // Set up upload card response without instrument_id and upload.

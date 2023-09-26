@@ -231,7 +231,7 @@ class AutofillMetricsBaseTest {
   void CreateTestAutofillProfiles();
 
   base::test::ScopedFeatureList scoped_feature_list_async_parse_form_;
-  CreditCard credit_card_ = test::GetMaskedServerCardWithCvc();
+  CreditCard credit_card_ = test::WithCvc(test::GetMaskedServerCard());
 };
 
 }  // namespace autofill::autofill_metrics

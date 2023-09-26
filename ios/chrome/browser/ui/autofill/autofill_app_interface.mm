@@ -427,7 +427,8 @@ class SaveCardInfobarEGTestHelper
 + (NSString*)saveMaskedCreditCard {
   autofill::PersonalDataManager* personalDataManager =
       [self personalDataManager];
-  autofill::CreditCard card = autofill::test::GetMaskedServerCardWithCvc();
+  autofill::CreditCard card =
+      autofill::test::WithCvc(autofill::test::GetMaskedServerCard());
   DCHECK(card.record_type() != autofill::CreditCard::RecordType::kLocalCard);
 
   personalDataManager->AddServerCreditCardForTest(

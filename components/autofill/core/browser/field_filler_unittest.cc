@@ -565,7 +565,7 @@ TEST_P(CreditCardVerificationCodeTest, FillFormField_StandaloneCVCField) {
   field.SetTypeTo(AutofillType(CREDIT_CARD_STANDALONE_VERIFICATION_CODE));
 
   // Credit card related field.
-  CreditCard credit_card = test::GetMaskedServerCardWithCvc();
+  CreditCard credit_card = test::WithCvc(test::GetMaskedServerCard());
   const mojom::AutofillActionPersistence persistence = GetParam();
   FieldFiller filler("en-US", /*address_normalizer=*/nullptr);
   filler.FillFormField(field, &credit_card, /*forced_fill_values=*/{}, &field,

@@ -2674,7 +2674,7 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_NumberMissing) {
 TEST_F(BrowserAutofillManagerTest, OnCreditCardFetched_StoreInstrumentId) {
   FormData form = CreateTestCreditCardFormData(true, false);
   FormsSeen({form});
-  CreditCard credit_card = test::GetMaskedServerCardWithCvc();
+  CreditCard credit_card = test::WithCvc(test::GetMaskedServerCard());
   browser_autofill_manager_->FillOrPreviewCreditCardForm(
       mojom::AutofillActionPersistence::kFill, form, form.fields[0],
       &credit_card, {.trigger_source = AutofillTriggerSource::kPopup});
