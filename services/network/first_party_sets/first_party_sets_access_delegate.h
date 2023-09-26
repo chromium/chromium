@@ -53,16 +53,22 @@ class FirstPartySetsAccessDelegate
   void NotifyReady(mojom::FirstPartySetsReadyEventPtr ready_event) override;
   void SetEnabled(bool enabled) override;
 
-  // Computes the First-Party Set metadata related to the given context.
+  // Computes the First-Party Set metadata and cache filter match info related
+  // to the given context.
   //
   // This may return a result synchronously, or asynchronously invoke `callback`
   // with the result. The callback will be invoked iff the return value is
   // nullopt; i.e. a result will be provided via return value or callback, but
   // not both, and not neither.
-  [[nodiscard]] absl::optional<net::FirstPartySetMetadata> ComputeMetadata(
+  [[nodiscard]] absl::optional<
+      std::pair<net::FirstPartySetMetadata,
+                net::FirstPartySetsCacheFilter::MatchInfo>>
+  ComputeMetadata(
       const net::SchemefulSite& site,
       const net::SchemefulSite* top_frame_site,
-      base::OnceCallback<void(net::FirstPartySetMetadata)> callback);
+      base::OnceCallback<void(net::FirstPartySetMetadata,
+                              net::FirstPartySetsCacheFilter::MatchInfo)>
+          callback);
 
   // Calls FirstPartySetsManager::FindEntries either asynchronously or
   // synchronously, once initialization is complete.
@@ -75,36 +81,21 @@ class FirstPartySetsAccessDelegate
       const base::flat_set<net::SchemefulSite>& sites,
       base::OnceCallback<void(EntriesResult)> callback);
 
-  // This may return a result synchronously, or asynchronously invoke `callback`
-  // with the result. The callback will be invoked iff the return value is
-  // nullopt; i.e. a result will be provided via return value or callback, but
-  // not both, and not neither.
-  [[nodiscard]] absl::optional<net::FirstPartySetsCacheFilter::MatchInfo>
-  GetCacheFilterMatchInfo(
-      const net::SchemefulSite& site,
-      base::OnceCallback<void(net::FirstPartySetsCacheFilter::MatchInfo)>
-          callback);
-
  private:
   // Same as `ComputeMetadata`, but plumbs the result into the callback. Must
   // only be called once the instance is fully initialized.
   void ComputeMetadataAndInvoke(
       const net::SchemefulSite& site,
       const absl::optional<net::SchemefulSite> top_frame_site,
-      base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const;
+      base::OnceCallback<void(net::FirstPartySetMetadata,
+                              net::FirstPartySetsCacheFilter::MatchInfo)>
+          callback) const;
 
   // Same as `FindEntries`, but plumbs the result into the callback. Must only
   // be called once the instance is fully initialized.
   void FindEntriesAndInvoke(
       const base::flat_set<net::SchemefulSite>& sites,
       base::OnceCallback<void(EntriesResult)> callback) const;
-
-  // Same as `GetCacheFilterMatchInfo`, but plumbs the result into the
-  // callback. Must only be called once the instance is fully initialized.
-  void GetCacheFilterMatchInfoAndInvoke(
-      const net::SchemefulSite& site,
-      base::OnceCallback<void(net::FirstPartySetsCacheFilter::MatchInfo)>
-          callback) const;
 
   // Runs all pending queries. Must not be called until the instance is fully
   // initialized.

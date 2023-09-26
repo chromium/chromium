@@ -28,7 +28,6 @@ class Origin;
 
 namespace net {
 
-class SchemefulSite;
 class CookieOptions;
 class CookieInclusionStatus;
 class HttpRequestHeaders;
@@ -100,12 +99,6 @@ class NET_EXPORT NetworkDelegateImpl : public NetworkDelegate {
 
   bool OnCanUseReportingClient(const url::Origin& origin,
                                const GURL& endpoint) const override;
-
-  absl::optional<FirstPartySetsCacheFilter::MatchInfo>
-  OnGetFirstPartySetsCacheFilterMatchInfoMaybeAsync(
-      const SchemefulSite& request_site,
-      base::OnceCallback<void(FirstPartySetsCacheFilter::MatchInfo)> callback)
-      const override;
 };
 
 }  // namespace net

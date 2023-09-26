@@ -48,7 +48,6 @@ class CookieInclusionStatus;
 class HttpRequestHeaders;
 class HttpResponseHeaders;
 class IPEndPoint;
-class SchemefulSite;
 class URLRequest;
 
 class NET_EXPORT NetworkDelegate {
@@ -120,20 +119,6 @@ class NET_EXPORT NetworkDelegate {
                              const GURL& endpoint) const;
   bool CanUseReportingClient(const url::Origin& origin,
                              const GURL& endpoint) const;
-
-  // Gets the First-Party Sets cache filter info, which is used to mark the
-  // cache and determine if the previously stored cache of `request_site` can be
-  // accessed.
-  //
-  // The result may be returned synchronously, or `callback` may be invoked
-  // asynchronously with the result. The callback will be invoked iff the return
-  // value is nullopt; i.e. a result will be provided via return value or
-  // callback, but not both, and not neither.
-  absl::optional<FirstPartySetsCacheFilter::MatchInfo>
-  GetFirstPartySetsCacheFilterMatchInfoMaybeAsync(
-      const SchemefulSite& request_site,
-      base::OnceCallback<void(FirstPartySetsCacheFilter::MatchInfo)> callback)
-      const;
 
  protected:
   // Adds the given ExclusionReason to all cookies in
@@ -303,12 +288,6 @@ class NET_EXPORT NetworkDelegate {
 
   virtual bool OnCanUseReportingClient(const url::Origin& origin,
                                        const GURL& endpoint) const = 0;
-
-  virtual absl::optional<FirstPartySetsCacheFilter::MatchInfo>
-  OnGetFirstPartySetsCacheFilterMatchInfoMaybeAsync(
-      const SchemefulSite& request_site,
-      base::OnceCallback<void(FirstPartySetsCacheFilter::MatchInfo)> callback)
-      const = 0;
 };
 
 }  // namespace net

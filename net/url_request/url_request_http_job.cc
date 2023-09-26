@@ -62,6 +62,7 @@
 #include "net/filter/zstd_source_stream.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
+#include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/http/http_content_disposition.h"
 #include "net/http/http_log_util.h"
 #include "net/http/http_network_session.h"
@@ -306,52 +307,33 @@ void URLRequestHttpJob::Start() {
           request_initiator_site().value() ==
               net::SchemefulSite(request()->url()));
 
-  bool should_add_cookie_header = ShouldAddCookieHeader();
   UMA_HISTOGRAM_BOOLEAN("Net.HttpJob.CanIncludeCookies",
-                        should_add_cookie_header);
+                        ShouldAddCookieHeader());
+
+  CookieStore* cookie_store = request()->context()->cookie_store();
+  const CookieAccessDelegate* delegate =
+      cookie_store ? cookie_store->cookie_access_delegate() : nullptr;
 
   request_->net_log().BeginEvent(NetLogEventType::FIRST_PARTY_SETS_METADATA);
 
-  if (!should_add_cookie_header) {
-    OnGotFirstPartySetMetadata(FirstPartySetMetadata());
-    return;
-  }
-
-  absl::optional<FirstPartySetMetadata> metadata =
-      cookie_util::ComputeFirstPartySetMetadataMaybeAsync(
+  absl::optional<
+      std::pair<FirstPartySetMetadata, FirstPartySetsCacheFilter::MatchInfo>>
+      maybe_metadata = cookie_util::ComputeFirstPartySetMetadataMaybeAsync(
           SchemefulSite(request()->url()), request()->isolation_info(),
-          request()->context()->cookie_store()->cookie_access_delegate(),
+          delegate,
           base::BindOnce(&URLRequestHttpJob::OnGotFirstPartySetMetadata,
                          weak_factory_.GetWeakPtr()));
 
-  if (metadata.has_value())
-    OnGotFirstPartySetMetadata(std::move(metadata.value()));
+  if (maybe_metadata.has_value()) {
+    auto [metadata, match_info] = std::move(maybe_metadata).value();
+    OnGotFirstPartySetMetadata(std::move(metadata), std::move(match_info));
+  }
 }
 
 void URLRequestHttpJob::OnGotFirstPartySetMetadata(
-    FirstPartySetMetadata first_party_set_metadata) {
-  first_party_set_metadata_ = std::move(first_party_set_metadata);
-
-  if (!request()->network_delegate()) {
-    OnGotFirstPartySetCacheFilterMatchInfo(
-        net::FirstPartySetsCacheFilter::MatchInfo());
-    return;
-  }
-  absl::optional<FirstPartySetsCacheFilter::MatchInfo> match_info =
-      request()
-          ->network_delegate()
-          ->GetFirstPartySetsCacheFilterMatchInfoMaybeAsync(
-              SchemefulSite(request()->url()),
-              base::BindOnce(
-                  &URLRequestHttpJob::OnGotFirstPartySetCacheFilterMatchInfo,
-                  weak_factory_.GetWeakPtr()));
-
-  if (match_info.has_value())
-    OnGotFirstPartySetCacheFilterMatchInfo(std::move(match_info.value()));
-}
-
-void URLRequestHttpJob::OnGotFirstPartySetCacheFilterMatchInfo(
+    FirstPartySetMetadata first_party_set_metadata,
     FirstPartySetsCacheFilter::MatchInfo match_info) {
+  first_party_set_metadata_ = std::move(first_party_set_metadata);
   request_info_.fps_cache_filter = match_info.clear_at_run_id;
   request_info_.browser_run_id = match_info.browser_run_id;
 

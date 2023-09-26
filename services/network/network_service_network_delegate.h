@@ -19,7 +19,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
-class SchemefulSite;
 class CookieInclusionStatus;
 }  // namespace net
 
@@ -93,11 +92,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceNetworkDelegate
                                const GURL& endpoint) const override;
   bool OnCanUseReportingClient(const url::Origin& origin,
                                const GURL& endpoint) const override;
-  absl::optional<net::FirstPartySetsCacheFilter::MatchInfo>
-  OnGetFirstPartySetsCacheFilterMatchInfoMaybeAsync(
-      const net::SchemefulSite& request_site,
-      base::OnceCallback<void(net::FirstPartySetsCacheFilter::MatchInfo)>
-          callback) const override;
 
   int HandleClearSiteDataHeader(
       net::URLRequest* request,

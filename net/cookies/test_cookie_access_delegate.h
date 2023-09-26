@@ -17,6 +17,7 @@
 #include "net/cookies/cookie_constants.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
+#include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
@@ -40,10 +41,14 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
       const GURL& url,
       const SiteForCookies& site_for_cookies) const override;
   bool ShouldTreatUrlAsTrustworthy(const GURL& url) const override;
-  absl::optional<FirstPartySetMetadata> ComputeFirstPartySetMetadataMaybeAsync(
+  absl::optional<
+      std::pair<FirstPartySetMetadata, FirstPartySetsCacheFilter::MatchInfo>>
+  ComputeFirstPartySetMetadataMaybeAsync(
       const SchemefulSite& site,
       const SchemefulSite* top_frame_site,
-      base::OnceCallback<void(FirstPartySetMetadata)> callback) const override;
+      base::OnceCallback<void(FirstPartySetMetadata,
+                              FirstPartySetsCacheFilter::MatchInfo)> callback)
+      const override;
   absl::optional<base::flat_map<SchemefulSite, FirstPartySetEntry>>
   FindFirstPartySetEntries(
       const base::flat_set<SchemefulSite>& sites,
@@ -73,6 +78,10 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
     invoke_callbacks_asynchronously_ = async;
   }
 
+  void set_first_party_sets_cache_filter(FirstPartySetsCacheFilter filter) {
+    first_party_sets_cache_filter_ = std::move(filter);
+  }
+
  private:
   // Finds a FirstPartySetEntry for the given site, if one exists.
   absl::optional<FirstPartySetEntry> FindFirstPartySetEntry(
@@ -90,6 +99,7 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
   std::map<std::string, CookieAccessSemantics> expectations_;
   std::map<std::string, bool> ignore_samesite_restrictions_schemes_;
   base::flat_map<SchemefulSite, FirstPartySetEntry> first_party_sets_;
+  FirstPartySetsCacheFilter first_party_sets_cache_filter_;
   bool invoke_callbacks_asynchronously_ = false;
   SchemefulSite trustworthy_site_ =
       SchemefulSite(GURL("http://trustworthysitefortestdelegate.example"));

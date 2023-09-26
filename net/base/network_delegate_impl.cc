@@ -97,12 +97,4 @@ bool NetworkDelegateImpl::OnCanUseReportingClient(const url::Origin& origin,
   return true;
 }
 
-absl::optional<FirstPartySetsCacheFilter::MatchInfo>
-NetworkDelegateImpl::OnGetFirstPartySetsCacheFilterMatchInfoMaybeAsync(
-    const SchemefulSite& request_site,
-    base::OnceCallback<void(FirstPartySetsCacheFilter::MatchInfo)> callback)
-    const {
-  return {FirstPartySetsCacheFilter::MatchInfo()};
-}
-
 }  // namespace net

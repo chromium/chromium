@@ -21,6 +21,7 @@
 #include "net/cookies/cookie_util.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
+#include "net/first_party_sets/first_party_sets_cache_filter.h"
 
 namespace net {
 
@@ -58,17 +59,29 @@ bool TestCookieAccessDelegate::ShouldTreatUrlAsTrustworthy(
   return false;
 }
 
-absl::optional<FirstPartySetMetadata>
+absl::optional<
+    std::pair<FirstPartySetMetadata, FirstPartySetsCacheFilter::MatchInfo>>
 TestCookieAccessDelegate::ComputeFirstPartySetMetadataMaybeAsync(
     const SchemefulSite& site,
     const SchemefulSite* top_frame_site,
-    base::OnceCallback<void(FirstPartySetMetadata)> callback) const {
+    base::OnceCallback<void(FirstPartySetMetadata,
+                            FirstPartySetsCacheFilter::MatchInfo)> callback)
+    const {
   absl::optional<FirstPartySetEntry> top_frame_owner =
       top_frame_site ? FindFirstPartySetEntry(*top_frame_site) : absl::nullopt;
-  return RunMaybeAsync(
-      FirstPartySetMetadata(base::OptionalToPtr(FindFirstPartySetEntry(site)),
-                            base::OptionalToPtr(top_frame_owner)),
-      std::move(callback));
+  FirstPartySetMetadata metadata(
+      base::OptionalToPtr(FindFirstPartySetEntry(site)),
+      base::OptionalToPtr(top_frame_owner));
+  FirstPartySetsCacheFilter::MatchInfo match_info(
+      first_party_sets_cache_filter_.GetMatchInfo(site));
+
+  if (invoke_callbacks_asynchronously_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), std::move(metadata), match_info));
+    return absl::nullopt;
+  }
+  return std::make_pair(std::move(metadata), match_info);
 }
 
 absl::optional<FirstPartySetEntry>

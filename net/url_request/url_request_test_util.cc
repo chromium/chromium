@@ -547,14 +547,6 @@ bool TestNetworkDelegate::OnCancelURLRequestWithPolicyViolatingReferrerHeader(
   return cancel_request_with_policy_violating_referrer_;
 }
 
-absl::optional<FirstPartySetsCacheFilter::MatchInfo>
-TestNetworkDelegate::OnGetFirstPartySetsCacheFilterMatchInfoMaybeAsync(
-    const SchemefulSite& request_site,
-    base::OnceCallback<void(FirstPartySetsCacheFilter::MatchInfo)> callback)
-    const {
-  return fps_cache_filter_.GetMatchInfo(request_site);
-}
-
 int TestNetworkDelegate::GetRequestId(URLRequest* request) {
   TestRequestId* test_request_id = reinterpret_cast<TestRequestId*>(
       request->GetUserData(kTestNetworkDelegateRequestIdKey));

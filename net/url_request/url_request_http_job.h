@@ -216,11 +216,7 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
 
   // Called after getting the FirstPartySetMetadata during Start for this job.
   void OnGotFirstPartySetMetadata(
-      FirstPartySetMetadata first_party_set_metadata);
-
-  // Called after getting the FirstPartySetsCacheFilter match info during Start
-  // for this job.
-  void OnGotFirstPartySetCacheFilterMatchInfo(
+      FirstPartySetMetadata first_party_set_metadata,
       FirstPartySetsCacheFilter::MatchInfo match_info);
 
   // Returns true iff this request leg should include the Cookie header. Note

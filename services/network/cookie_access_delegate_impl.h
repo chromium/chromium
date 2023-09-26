@@ -13,6 +13,7 @@
 #include "net/cookies/cookie_access_delegate.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
+#include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "services/network/cookie_settings.h"
 #include "services/network/first_party_sets/first_party_sets_access_delegate.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -52,12 +53,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieAccessDelegateImpl
   bool ShouldIgnoreSameSiteRestrictions(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies) const override;
-  [[nodiscard]] absl::optional<net::FirstPartySetMetadata>
+  [[nodiscard]] absl::optional<
+      std::pair<net::FirstPartySetMetadata,
+                net::FirstPartySetsCacheFilter::MatchInfo>>
   ComputeFirstPartySetMetadataMaybeAsync(
       const net::SchemefulSite& site,
       const net::SchemefulSite* top_frame_site,
-      base::OnceCallback<void(net::FirstPartySetMetadata)> callback)
-      const override;
+      base::OnceCallback<void(net::FirstPartySetMetadata,
+                              net::FirstPartySetsCacheFilter::MatchInfo)>
+          callback) const override;
   [[nodiscard]] absl::optional<FirstPartySetsAccessDelegate::EntriesResult>
   FindFirstPartySetEntries(
       const base::flat_set<net::SchemefulSite>& sites,

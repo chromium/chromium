@@ -328,16 +328,6 @@ bool NetworkServiceNetworkDelegate::OnCanUseReportingClient(
                                  origin, net::CookieSettingOverrides());
 }
 
-absl::optional<net::FirstPartySetsCacheFilter::MatchInfo>
-NetworkServiceNetworkDelegate::
-    OnGetFirstPartySetsCacheFilterMatchInfoMaybeAsync(
-        const net::SchemefulSite& request_site,
-        base::OnceCallback<void(net::FirstPartySetsCacheFilter::MatchInfo)>
-            callback) const {
-  return network_context_->first_party_sets_access_delegate()
-      .GetCacheFilterMatchInfo(request_site, std::move(callback));
-}
-
 int NetworkServiceNetworkDelegate::HandleClearSiteDataHeader(
     net::URLRequest* request,
     net::CompletionOnceCallback callback,

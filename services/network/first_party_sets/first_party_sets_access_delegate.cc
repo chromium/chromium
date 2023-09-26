@@ -65,19 +65,24 @@ void FirstPartySetsAccessDelegate::SetEnabled(bool enabled) {
   enabled_ = enabled;
 }
 
-absl::optional<net::FirstPartySetMetadata>
+absl::optional<std::pair<net::FirstPartySetMetadata,
+                         net::FirstPartySetsCacheFilter::MatchInfo>>
 FirstPartySetsAccessDelegate::ComputeMetadata(
     const net::SchemefulSite& site,
     const net::SchemefulSite* top_frame_site,
-    base::OnceCallback<void(net::FirstPartySetMetadata)> callback) {
+    base::OnceCallback<void(net::FirstPartySetMetadata,
+                            net::FirstPartySetsCacheFilter::MatchInfo)>
+        callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!enabled_) {
-    return {net::FirstPartySetMetadata()};
+    return std::make_pair(net::FirstPartySetMetadata(),
+                          net::FirstPartySetsCacheFilter::MatchInfo());
   }
   if (!ready_event_.has_value()) {
     if (!wait_for_init_) {
-      return {net::FirstPartySetMetadata()};
+      return std::make_pair(net::FirstPartySetMetadata(),
+                            net::FirstPartySetsCacheFilter::MatchInfo());
     }
     // base::Unretained() is safe because `this` owns `pending_queries_` and
     // `pending_queries_` will not run the enqueued callbacks after `this` is
@@ -89,8 +94,25 @@ FirstPartySetsAccessDelegate::ComputeMetadata(
     return absl::nullopt;
   }
 
-  return manager_->ComputeMetadata(site, top_frame_site, *context_config(),
-                                   std::move(callback));
+  net::FirstPartySetsCacheFilter::MatchInfo match_info(
+      cache_filter()->GetMatchInfo(site));
+
+  absl::optional<net::FirstPartySetMetadata> metadata =
+      manager_->ComputeMetadata(
+          site, top_frame_site, *context_config(),
+          base::BindOnce(
+              [](base::OnceCallback<void(
+                     net::FirstPartySetMetadata,
+                     net::FirstPartySetsCacheFilter::MatchInfo)> callback,
+                 net::FirstPartySetsCacheFilter::MatchInfo info,
+                 net::FirstPartySetMetadata metadata) {
+                std::move(callback).Run(std::move(metadata), std::move(info));
+              },
+              std::move(callback), match_info));
+
+  return metadata.has_value() ? absl::make_optional(std::make_pair(
+                                    std::move(metadata).value(), match_info))
+                              : absl::nullopt;
 }
 
 absl::optional<FirstPartySetsAccessDelegate::EntriesResult>
@@ -119,36 +141,13 @@ FirstPartySetsAccessDelegate::FindEntries(
   return manager_->FindEntries(sites, *context_config(), std::move(callback));
 }
 
-absl::optional<net::FirstPartySetsCacheFilter::MatchInfo>
-FirstPartySetsAccessDelegate::GetCacheFilterMatchInfo(
-    const net::SchemefulSite& site,
-    base::OnceCallback<void(net::FirstPartySetsCacheFilter::MatchInfo)>
-        callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!enabled_)
-    return {net::FirstPartySetsCacheFilter::MatchInfo()};
-
-  if (!ready_event_.has_value()) {
-    if (!wait_for_init_) {
-      return {net::FirstPartySetsCacheFilter::MatchInfo()};
-    }
-    // base::Unretained() is safe because `this` owns `pending_queries_` and
-    // `pending_queries_` will not run the enqueued callbacks after `this` is
-    // destroyed.
-    EnqueuePendingQuery(base::BindOnce(
-        &FirstPartySetsAccessDelegate::GetCacheFilterMatchInfoAndInvoke,
-        base::Unretained(this), site, std::move(callback)));
-    return absl::nullopt;
-  }
-
-  return cache_filter()->GetMatchInfo(site);
-}
-
 void FirstPartySetsAccessDelegate::ComputeMetadataAndInvoke(
     const net::SchemefulSite& site,
     const absl::optional<net::SchemefulSite> top_frame_site,
-    base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const {
+    base::OnceCallback<void(net::FirstPartySetMetadata,
+                            net::FirstPartySetsCacheFilter::MatchInfo)>
+        callback) const {
+  using CallbackType = decltype(callback);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(context_config());
   // NB: since `ComputeMetadata` returns early if the delegate is disabled,
@@ -156,16 +155,26 @@ void FirstPartySetsAccessDelegate::ComputeMetadataAndInvoke(
   // enabled when the query was received. However, the delegate may have been
   // disabled between then and now, so we have no guarantees re: `enabled_` now.
 
-  std::pair<base::OnceCallback<void(net::FirstPartySetMetadata)>,
-            base::OnceCallback<void(net::FirstPartySetMetadata)>>
-      callbacks = base::SplitOnceCallback(std::move(callback));
+  std::pair<CallbackType, CallbackType> callbacks =
+      base::SplitOnceCallback(std::move(callback));
+
+  net::FirstPartySetsCacheFilter::MatchInfo match_info(
+      cache_filter()->GetMatchInfo(site));
 
   absl::optional<net::FirstPartySetMetadata> sync_result =
-      manager_->ComputeMetadata(site, base::OptionalToPtr(top_frame_site),
-                                *context_config(), std::move(callbacks.first));
+      manager_->ComputeMetadata(
+          site, base::OptionalToPtr(top_frame_site), *context_config(),
+          base::BindOnce(
+              [](CallbackType callback,
+                 net::FirstPartySetsCacheFilter::MatchInfo match_info,
+                 net::FirstPartySetMetadata metadata) {
+                std::move(callback).Run(std::move(metadata), match_info);
+              },
+              std::move(callbacks.first), match_info));
 
-  if (sync_result.has_value())
-    std::move(callbacks.second).Run(std::move(sync_result.value()));
+  if (sync_result.has_value()) {
+    std::move(callbacks.second).Run(std::move(sync_result.value()), match_info);
+  }
 }
 
 void FirstPartySetsAccessDelegate::FindEntriesAndInvoke(
@@ -190,20 +199,6 @@ void FirstPartySetsAccessDelegate::FindEntriesAndInvoke(
 
   if (sync_result.has_value())
     std::move(callbacks.second).Run(sync_result.value());
-}
-
-void FirstPartySetsAccessDelegate::GetCacheFilterMatchInfoAndInvoke(
-    const net::SchemefulSite& site,
-    base::OnceCallback<void(net::FirstPartySetsCacheFilter::MatchInfo)>
-        callback) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(cache_filter());
-  // NB: since `GetCacheFilterMatchInfo` returns early if the delegate is
-  // disabled, we're guaranteed that for any queued query, the delegate must
-  // have been enabled when the query was received. However, the delegate may
-  // have been disabled between then and now, so we have no guarantees re:
-  // `enabled_` now.
-  std::move(callback).Run(cache_filter()->GetMatchInfo(site));
 }
 
 void FirstPartySetsAccessDelegate::InvokePendingQueries() {

@@ -165,16 +165,6 @@ bool NetworkDelegate::CanUseReportingClient(const url::Origin& origin,
   return OnCanUseReportingClient(origin, endpoint);
 }
 
-absl::optional<FirstPartySetsCacheFilter::MatchInfo>
-NetworkDelegate::GetFirstPartySetsCacheFilterMatchInfoMaybeAsync(
-    const SchemefulSite& request_site,
-    base::OnceCallback<void(FirstPartySetsCacheFilter::MatchInfo)> callback)
-    const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return OnGetFirstPartySetsCacheFilterMatchInfoMaybeAsync(request_site,
-                                                           std::move(callback));
-}
-
 // static
 void NetworkDelegate::ExcludeAllCookies(
     net::CookieInclusionStatus::ExclusionReason reason,

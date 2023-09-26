@@ -37,6 +37,7 @@
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
+#include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "services/network/cookie_settings.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -120,12 +121,21 @@ void RestrictedCookieManager::ComputeFirstPartySetMetadata(
   std::pair<base::OnceCallback<void(net::FirstPartySetMetadata)>,
             base::OnceCallback<void(net::FirstPartySetMetadata)>>
       callbacks = base::SplitOnceCallback(std::move(callback));
-  absl::optional<net::FirstPartySetMetadata> metadata =
-      net::cookie_util::ComputeFirstPartySetMetadataMaybeAsync(
-          /*request_site=*/net::SchemefulSite(origin), isolation_info,
-          cookie_store->cookie_access_delegate(), std::move(callbacks.first));
-  if (metadata.has_value())
-    std::move(callbacks.second).Run(std::move(metadata.value()));
+  absl::optional<std::pair<net::FirstPartySetMetadata,
+                           net::FirstPartySetsCacheFilter::MatchInfo>>
+      metadata_and_match_info =
+          net::cookie_util::ComputeFirstPartySetMetadataMaybeAsync(
+              /*request_site=*/net::SchemefulSite(origin), isolation_info,
+              cookie_store->cookie_access_delegate(),
+              base::BindOnce([](net::FirstPartySetMetadata metadata,
+                                net::FirstPartySetsCacheFilter::MatchInfo
+                                    match_info) {
+                return metadata;
+              }).Then(std::move(callbacks.first)));
+  if (metadata_and_match_info.has_value()) {
+    std::move(callbacks.second)
+        .Run(std::move(metadata_and_match_info.value().first));
+  }
 }
 
 bool CookieWithAccessResultComparer::operator()(
