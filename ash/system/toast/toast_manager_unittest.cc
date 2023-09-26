@@ -587,6 +587,15 @@ TEST_P(ToastManagerImplTest, PositionWithAutoHiddenBottomShelf) {
                 ShelfConfig::Get()->hidden_shelf_in_screen_portion() -
                 ToastOverlay::kOffset,
             toast_bounds.bottom());
+
+  // Hide the window so the shelf is shown, the toast baseline should update.
+  window->Hide();
+  toast_bounds = GetToastBounds();
+
+  EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+  EXPECT_EQ(root_bounds.bottom() - ShelfConfig::Get()->shelf_size() -
+                ToastOverlay::kOffset,
+            toast_bounds.bottom());
 }
 
 TEST_P(ToastManagerImplTest, PositionWithHiddenBottomShelf) {

@@ -192,12 +192,12 @@ ToastOverlay::ToastOverlay(Delegate* delegate,
   // with infinite duration persist regardless of hover).
   if (persist_on_hover && (duration != ToastData::kInfiniteDuration)) {
     hover_observer_ = std::make_unique<ToastHoverObserver>(
-        overlay_widget_->GetNativeWindow(),
-        base::BindRepeating(&ToastOverlay::OnHoverStateChanged,
-                            base::Unretained(this)));
+        overlay_window, base::BindRepeating(&ToastOverlay::OnHoverStateChanged,
+                                            base::Unretained(this)));
   }
 
   keyboard::KeyboardUIController::Get()->AddObserver(this);
+  shelf_observation_.Observe(Shelf::ForWindow(overlay_window));
 
   if (features::AreSideAlignedToastsEnabled()) {
     auto* window_controller = RootWindowController::ForWindow(root_window_);
@@ -365,6 +365,15 @@ void ToastOverlay::OnKeyboardOccludedBoundsChanged(
     const gfx::Rect& new_bounds_in_screen) {
   // TODO(https://crbug.com/943446): Observe changes in user work area bounds
   // directly instead of listening for keyboard bounds changes.
+  UpdateOverlayBounds();
+}
+
+void ToastOverlay::OnShelfWorkAreaInsetsChanged() {
+  UpdateOverlayBounds();
+}
+
+void ToastOverlay::OnHotseatStateChanged(HotseatState old_state,
+                                         HotseatState new_state) {
   UpdateOverlayBounds();
 }
 

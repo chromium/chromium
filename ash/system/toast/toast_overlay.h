@@ -10,9 +10,11 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
+#include "ash/shelf/shelf_observer.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -39,6 +41,7 @@ class SystemToastStyle;
 
 class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
                                 public KeyboardControllerObserver,
+                                public ShelfObserver,
                                 public UnifiedSystemTray::Observer {
  public:
   class ASH_EXPORT Delegate {
@@ -126,6 +129,11 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   // KeyboardControllerObserver:
   void OnKeyboardOccludedBoundsChanged(const gfx::Rect& new_bounds) override;
 
+  // ShelfObserver:
+  void OnShelfWorkAreaInsetsChanged() override;
+  void OnHotseatStateChanged(HotseatState old_state,
+                             HotseatState new_state) override;
+
   views::Widget* widget_for_testing();
   views::LabelButton* dismiss_button_for_testing();
 
@@ -147,6 +155,9 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
 
   base::ScopedObservation<UnifiedSystemTray, UnifiedSystemTray::Observer>
       scoped_unified_system_tray_observer_{this};
+
+  // Used to observe shelf and hotseat state to update toast baseline.
+  base::ScopedObservation<Shelf, ShelfObserver> shelf_observation_{this};
 };
 
 }  // namespace ash
