@@ -207,6 +207,9 @@ const char kIsolatedWebAppsLearnMoreUrl[] =
 const char kLearnMoreReportingURL[] =
     "https://support.google.com/chrome/?p=ui_usagestat";
 
+const char kManage3pcHelpCenterURL[] =
+    "https://support.google.com/chrome/?p=manage_tp_cookies";
+
 const char kManagedUiLearnMoreUrl[] =
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     "https://support.google.com/chromebook/?p=is_chrome_managed";
@@ -343,6 +346,12 @@ const char kSyncTrustedVaultOptInURL[] =
 
 const char kSyncTrustedVaultLearnMoreURL[] =
     "https://support.google.com/accounts?p=settings_password_ode";
+
+const char kTrackingProtectionHelpCenterURL[] =
+    "https://support.google.com/chrome/?p=tracking_protection";
+
+const char kUserBypassHelpCenterURL[] =
+    "https://support.google.com/chrome/?p=user_bypass";
 
 const char kUpgradeHelpCenterBaseURL[] =
     "https://support.google.com/installer/?product="

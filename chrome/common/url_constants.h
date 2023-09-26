@@ -219,6 +219,9 @@ extern const char kIsolatedWebAppsLearnMoreUrl[];
 // first run dialog.
 extern const char kLearnMoreReportingURL[];
 
+// The URL for the Help Center page about managing third-party cookies.
+extern const char kManage3pcHelpCenterURL[];
+
 // The URL for the Learn More page about policies and enterprise enrollment.
 extern const char kManagedUiLearnMoreUrl[];
 
@@ -317,6 +320,12 @@ extern const char kSyncTrustedVaultOptInURL[];
 
 // The URL for the "Learn more" link for the trusted vault sync passphrase.
 extern const char kSyncTrustedVaultLearnMoreURL[];
+
+// The URL for the Help Center page about Tracking Protection settings.
+extern const char kTrackingProtectionHelpCenterURL[];
+
+// The URL for the Help Center page about User Bypass.
+extern const char kUserBypassHelpCenterURL[];
 
 extern const char kUpgradeHelpCenterBaseURL[];
 
