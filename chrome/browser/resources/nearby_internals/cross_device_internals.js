@@ -19,6 +19,7 @@ import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import {getTemplate} from './cross_device_internals.html.js';
 import {NearbyLogsBrowserProxy} from './cross_device_logs_browser_proxy.js';
+import {NearbyPrefsBrowserProxy} from './nearby_prefs_browser_proxy.js';
 import {NearbyPresenceBrowserProxy} from './nearby_presence_browser_proxy.js';
 import {ActionValues, FeatureValues, LogMessage, LogProvider, PresenceDevice, SelectOption, Severity} from './types.js';
 
@@ -62,7 +63,10 @@ Polymer({
   ],
 
   /** @private {?NearbyPresenceBrowserProxy} */
-  browserProxy_: null,
+  nearbyPresenceBrowserProxy_: null,
+
+  /** @private {?NearbyPrefsBrowserProxy}*/
+  prefsBrowserProxy_: null,
 
   properties: {
     /** @private {!Array<!PresenceDevice>} */
@@ -107,7 +111,9 @@ Polymer({
     /** @private {!Array<!SelectOption>} */
     nearbyShareActionList: {
       type: Array,
-      value: [],
+      value: [
+        {name: 'Reset Nearby Share', value: ActionValues.RESETNEARBYSHARE},
+      ],
     },
 
     /** @private {!Array<!SelectOption>} */
@@ -177,7 +183,8 @@ Polymer({
   logProvider_: null,
 
   created() {
-    this.browserProxy_ = NearbyPresenceBrowserProxy.getInstance();
+    this.nearbyPresenceBrowserProxy_ = NearbyPresenceBrowserProxy.getInstance();
+    this.prefsBrowserProxy_ = NearbyPrefsBrowserProxy.getInstance();
   },
 
   /**
@@ -186,7 +193,7 @@ Polymer({
    * @override
    */
   attached() {
-    this.browserProxy_.initialize();
+    this.nearbyPresenceBrowserProxy_.initialize();
     this.addWebUIListener(
         'presence-device-found', device => this.onPresenceDeviceFound_(device));
     this.addWebUIListener(
@@ -213,10 +220,6 @@ Polymer({
         logs => this.onGetLogMessages_(logs));
   },
 
-  onStartScanClicked() {
-    this.browserProxy_.SendStartScan();
-  },
-
   updateActionsSelect() {
     switch (Number(this.$.actionGroup.value)) {
       case FeatureValues.NearbyPresence:
@@ -237,33 +240,23 @@ Polymer({
   perform_action() {
     switch (Number(this.$.actionSelect.value)) {
       case ActionValues.STARTSCAN:
-        this.browserProxy_.SendStartScan();
+        this.nearbyPresenceBrowserProxy_.SendStartScan();
         break;
       case ActionValues.STOPSCAN:
-        this.browserProxy_.SendStopScan();
+        this.nearbyPresenceBrowserProxy_.SendStopScan();
         break;
       case ActionValues.SYNCCREDENTIALS:
-        this.browserProxy_.SendSyncCredentials();
+        this.nearbyPresenceBrowserProxy_.SendSyncCredentials();
         break;
       case ActionValues.FIRSTTIMEFLOW:
-        this.browserProxy_.SendFirstTimeFlow();
+        this.nearbyPresenceBrowserProxy_.SendFirstTimeFlow();
+        break;
+      case ActionValues.RESETNEARBYSHARE:
+        this.prefsBrowserProxy_.clearNearbyPrefs();
         break;
       default:
         break;
     }
-  },
-
-
-  onStopScanClicked() {
-    this.browserProxy_.SendStopScan();
-  },
-
-  onSyncCredentialsClicked() {
-    this.browserProxy_.SendSyncCredentials();
-  },
-
-  onFirstTimeFlowClicked() {
-    this.browserProxy_.SendFirstTimeFlow();
   },
 
   onPresenceDeviceFound_(device) {

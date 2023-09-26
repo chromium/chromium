@@ -24,6 +24,7 @@ export const ActionValues = {
   STOPSCAN: 1,
   SYNCCREDENTIALS: 2,
   FIRSTTIMEFLOW: 3,
+  RESETNEARBYSHARE: 4,
 };
 
 /**
