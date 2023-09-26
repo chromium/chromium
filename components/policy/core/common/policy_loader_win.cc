@@ -129,6 +129,9 @@ BOOL GetUserNameExBool(EXTENDED_NAME_FORMAT format, LPWSTR name, PULONG size) {
 // Make sure to use the real NetGetJoinInformation, otherwise fallback to the
 // linked one.
 bool IsDomainJoined() {
+  // Mitigate the issues caused by loading DLLs on a background thread
+  // (http://crbug/973868).
+  SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY_REPEATEDLY();
   base::ScopedClosureRunner free_library;
   decltype(&::NetGetJoinInformation) net_get_join_information_function =
       &::NetGetJoinInformation;
@@ -137,10 +140,6 @@ bool IsDomainJoined() {
   // Use an absolute path to load the DLL to avoid DLL preloading attacks.
   base::FilePath path;
   if (base::PathService::Get(base::DIR_SYSTEM, &path)) {
-    // Mitigate the issues caused by loading DLLs on a background thread
-    // (http://crbug/973868).
-    SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY_REPEATEDLY();
-
     HINSTANCE net_api_library = ::LoadLibraryEx(
         path.Append(FILE_PATH_LITERAL("netapi32.dll")).value().c_str(), nullptr,
         LOAD_WITH_ALTERED_SEARCH_PATH);
