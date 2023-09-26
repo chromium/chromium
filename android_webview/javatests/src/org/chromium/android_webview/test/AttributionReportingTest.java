@@ -21,6 +21,7 @@ import androidx.privacysandbox.ads.adservices.measurement.WebSourceRegistrationR
 import androidx.privacysandbox.ads.adservices.measurement.WebTriggerParams;
 import androidx.privacysandbox.ads.adservices.measurement.WebTriggerRegistrationRequest;
 import androidx.test.filters.LargeTest;
+import androidx.test.filters.SmallTest;
 
 import com.google.common.util.concurrent.Futures;
 
@@ -124,6 +125,46 @@ public class AttributionReportingTest {
     public void tearDown() {
         mWebServer.shutdown();
         mAttributionServer.shutdown();
+    }
+
+    @SmallTest
+    @Test
+    @MinAndroidSdkLevel(Build.VERSION_CODES.TIRAMISU)
+    @CommandLineFlags.Add("enable-features=" + ContentFeatures.PRIVACY_SANDBOX_ADS_AP_IS_OVERRIDE
+            + "," + NetworkServiceFeatures.ATTRIBUTION_REPORTING_CROSS_APP_WEB)
+    public void
+    testDefaultBehavior() throws Exception {
+        assertEquals(
+                AttributionBehavior.APP_SOURCE_AND_WEB_TRIGGER, mSettings.getAttributionBehavior());
+    }
+
+    @LargeTest
+    @Test
+    @MinAndroidSdkLevel(Build.VERSION_CODES.TIRAMISU)
+    @CommandLineFlags.Add("enable-features=" + ContentFeatures.PRIVACY_SANDBOX_ADS_AP_IS_OVERRIDE
+            + "," + NetworkServiceFeatures.ATTRIBUTION_REPORTING_CROSS_APP_WEB)
+    public void
+    testDisabledBehavior() throws Exception {
+        mSettings.setAttributionBehavior(AttributionBehavior.DISABLED);
+        assertEquals(AttributionBehavior.DISABLED, mSettings.getAttributionBehavior());
+
+        loadUrlSync(mTestPage);
+
+        // When disabled, we don't expect any calls to any of the actual registration methods.
+        verify(mMockAttributionManager, never())
+                .registerWebSourceAsync(new WebSourceRegistrationRequest(
+                        Arrays.asList(
+                                new WebSourceParams(Uri.parse(SOURCE_REGISTRATION_URL), false)),
+                        Uri.parse(mWebServer.getBaseUrl()), null, null, null, null));
+        verify(mMockAttributionManager, never())
+                .registerSourceAsync(eq(Uri.parse(SOURCE_REGISTRATION_URL)), eq(null));
+        verify(mMockAttributionManager, never())
+                .registerWebTriggerAsync(eq(new WebTriggerRegistrationRequest(
+                        Arrays.asList(
+                                new WebTriggerParams(Uri.parse(TRIGGER_REGISTRATION_URL), false)),
+                        (Uri.parse(mWebServer.getBaseUrl())))));
+        verify(mMockAttributionManager, never())
+                .registerTriggerAsync(Uri.parse(TRIGGER_REGISTRATION_URL));
     }
 
     @LargeTest

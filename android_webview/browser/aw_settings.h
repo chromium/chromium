@@ -52,9 +52,10 @@ class AwSettings : public content::WebContentsObserver {
 
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.android_webview.settings
   enum AttributionBehavior {
-    APP_SOURCE_AND_WEB_TRIGGER = 0,
-    WEB_SOURCE_AND_WEB_TRIGGER = 1,
-    APP_SOURCE_AND_APP_TRIGGER = 2,
+    DISABLED = 0,
+    APP_SOURCE_AND_WEB_TRIGGER = 1,
+    WEB_SOURCE_AND_WEB_TRIGGER = 2,
+    APP_SOURCE_AND_APP_TRIGGER = 3,
   };
 
   static AwSettings* FromWebContents(content::WebContents* web_contents);

@@ -1211,6 +1211,20 @@ bool AwContentBrowserClient::IsAttributionReportingOperationAllowed(
     const url::Origin* source_origin,
     const url::Origin* destination_origin,
     const url::Origin* reporting_origin) {
+  // Check if attribution reporting has been disabled.
+  // TODO(crbug.com/1473966) This method should not be called at all if
+  //     the configured behavior is DISABLED.
+  WebContents* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+  if (web_contents) {
+    AwSettings* aw_settings = AwSettings::FromWebContents(web_contents);
+    AwSettings::AttributionBehavior attribution_behavior =
+        aw_settings->GetAttributionBehavior();
+
+    if (attribution_behavior == AwSettings::AttributionBehavior::DISABLED) {
+      return false;
+    }
+  }
+
   // WebView only supports OS-level attribution and not web-attribution.
   switch (operation) {
     case AttributionReportingOperation::kAny:
@@ -1252,6 +1266,8 @@ bool AwContentBrowserClient::ShouldUseOsWebSourceAttributionReporting(
       aw_settings->GetAttributionBehavior();
 
   switch (attribution_behavior) {
+    case AwSettings::AttributionBehavior::DISABLED:
+      return false;
     case AwSettings::AttributionBehavior::WEB_SOURCE_AND_WEB_TRIGGER:
       return true;
     case AwSettings::AttributionBehavior::APP_SOURCE_AND_WEB_TRIGGER:
@@ -1279,6 +1295,8 @@ bool AwContentBrowserClient::ShouldUseOsWebTriggerAttributionReporting(
       aw_settings->GetAttributionBehavior();
 
   switch (attribution_behavior) {
+    case AwSettings::AttributionBehavior::DISABLED:
+      return false;
     case AwSettings::AttributionBehavior::WEB_SOURCE_AND_WEB_TRIGGER:
     case AwSettings::AttributionBehavior::APP_SOURCE_AND_WEB_TRIGGER:
       return true;
