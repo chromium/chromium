@@ -195,7 +195,7 @@ std::u16string GetInstallPWALabel(const Browser* browser) {
 // Returns the appropriate menu label for the IDC_OPEN_IN_PWA_WINDOW command if
 // available.
 std::u16string GetOpenPWALabel(const Browser* browser) {
-  absl::optional<web_app::AppId> app_id =
+  absl::optional<webapps::AppId> app_id =
       web_app::GetWebAppForActiveTab(browser);
   if (!app_id.has_value()) {
     return std::u16string();

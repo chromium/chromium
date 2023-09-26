@@ -471,10 +471,10 @@ void IntentPickerTabHelper::DidFinishNavigation(
 }
 
 void IntentPickerTabHelper::OnWebAppWillBeUninstalled(
-    const web_app::AppId& app_id) {
+    const webapps::AppId& app_id) {
   // WebAppTabHelper has an app_id but it is reset during
   // OnWebAppWillBeUninstalled so using FindAppWithUrlInScope.
-  absl::optional<web_app::AppId> local_app_id =
+  absl::optional<webapps::AppId> local_app_id =
       registrar_->FindAppWithUrlInScope(web_contents()->GetLastCommittedURL());
   if (app_id == local_app_id)
     ShowOrHideIcon(web_contents(), /*should_show_icon=*/false);

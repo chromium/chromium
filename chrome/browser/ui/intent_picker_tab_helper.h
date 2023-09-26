@@ -119,7 +119,7 @@ class IntentPickerTabHelper
       content::NavigationHandle* navigation_handle) override;
 
   // web_app::WebAppInstallManagerObserver:
-  void OnWebAppWillBeUninstalled(const web_app::AppId& app_id) override;
+  void OnWebAppWillBeUninstalled(const webapps::AppId& app_id) override;
   void OnWebAppInstallManagerDestroyed() override;
 
   const raw_ptr<web_app::WebAppRegistrar, DanglingUntriaged> registrar_;

@@ -9,8 +9,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/policy/policy_test_utils.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/webapps/common/web_app_id.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/base_paths_win.h"
@@ -34,8 +34,8 @@ class PreventCloseTestBase : public policy::PolicyTest {
 
   void SetWebAppSettings(base::StringPiece config);
   void ClearWebAppSettings();
-  void InstallPWA(const GURL& app_url, const web_app::AppId& app_id);
-  Browser* LaunchPWA(const web_app::AppId& app_id, bool launch_in_window);
+  void InstallPWA(const GURL& app_url, const webapps::AppId& app_id);
+  Browser* LaunchPWA(const webapps::AppId& app_id, bool launch_in_window);
   base::Value ReturnPolicyValueFromJson(base::StringPiece policy);
 
   Profile* profile();

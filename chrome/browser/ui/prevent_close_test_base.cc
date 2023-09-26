@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_features.h"
@@ -21,6 +20,7 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/window_open_disposition.h"
@@ -59,16 +59,16 @@ void PreventCloseTestBase::ClearWebAppSettings() {
 }
 
 void PreventCloseTestBase::InstallPWA(const GURL& app_url,
-                                      const web_app::AppId& app_id) {
+                                      const webapps::AppId& app_id) {
   auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
   web_app_info->start_url = app_url;
   web_app_info->scope = app_url.GetWithoutFilename();
-  web_app::AppId installed_app_id = web_app::test::InstallWebApp(
+  webapps::AppId installed_app_id = web_app::test::InstallWebApp(
       browser()->profile(), std::move(web_app_info));
   EXPECT_EQ(app_id, installed_app_id);
 }
 
-Browser* PreventCloseTestBase::LaunchPWA(const web_app::AppId& app_id,
+Browser* PreventCloseTestBase::LaunchPWA(const webapps::AppId& app_id,
                                          bool launch_in_window) {
   return launch_in_window
              ? web_app::LaunchWebAppBrowserAndWait(

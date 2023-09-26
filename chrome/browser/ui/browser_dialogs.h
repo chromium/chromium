@@ -16,10 +16,10 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_uninstall_dialog_user_options.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/bluetooth_delegate.h"
 #include "content/public/browser/login_delegate.h"
 #include "extensions/buildflags/buildflags.h"
@@ -208,7 +208,7 @@ void ShowWebAppIdentityUpdateDialog(
 // to uninstall an installed dPWA from a variety of OS surfaces and chrome.
 void ShowWebAppUninstallDialog(
     Profile* profile,
-    const web_app::AppId& app_id,
+    const webapps::AppId& app_id,
     webapps::WebappUninstallSource uninstall_source,
     gfx::NativeWindow parent,
     std::map<SquareSizePx, SkBitmap> icon_bitmaps,
@@ -226,14 +226,14 @@ using WebAppLaunchAcceptanceCallback =
 void ShowWebAppProtocolLaunchDialog(
     const GURL& url,
     Profile* profile,
-    const web_app::AppId& app_id,
+    const webapps::AppId& app_id,
     WebAppLaunchAcceptanceCallback close_callback);
 
 // Shows the pre-launch dialog for a file handling PWA launch. The user can
 // allow or block the launch.
 void ShowWebAppFileLaunchDialog(const std::vector<base::FilePath>& file_paths,
                                 Profile* profile,
-                                const web_app::AppId& app_id,
+                                const webapps::AppId& app_id,
                                 WebAppLaunchAcceptanceCallback close_callback);
 #endif  // !BUILDFLAG(IS_ANDROID)
 

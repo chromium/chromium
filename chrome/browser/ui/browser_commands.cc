@@ -103,7 +103,6 @@
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
@@ -145,6 +144,7 @@
 #include "components/translate/core/common/translate_constants.h"
 #include "components/user_education/common/feature_promo_controller.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "components/webapps/common/web_app_id.h"
 #include "components/zoom/page_zoom.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/browsing_data_remover.h"
@@ -866,7 +866,7 @@ void NewWindow(Browser* browser) {
 #if BUILDFLAG(IS_MAC)
   // Web apps should open a window to their launch page.
   if (browser->app_controller()) {
-    const web_app::AppId app_id = browser->app_controller()->app_id();
+    const webapps::AppId app_id = browser->app_controller()->app_id();
 
     auto launch_container = apps::LaunchContainer::kLaunchContainerWindow;
 

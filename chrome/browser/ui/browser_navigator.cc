@@ -182,7 +182,7 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
   Profile* profile = params.initiating_profile;
 
   if (params.open_pwa_window_if_possible) {
-    absl::optional<web_app::AppId> app_id =
+    absl::optional<webapps::AppId> app_id =
         web_app::FindInstalledAppWithUrlInScope(profile, params.url,
                                                 /*window_only=*/true);
     if (!app_id && params.force_open_pwa_window) {
