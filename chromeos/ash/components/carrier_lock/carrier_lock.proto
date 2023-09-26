@@ -1,0 +1,234 @@
+// Copyright 2023 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package carrier_lock;
+
+message Timestamp {
+  // Represents seconds of UTC time since Unix epoch
+  // 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to
+  // 9999-12-31T23:59:59Z inclusive.
+  optional int64 seconds = 1;
+
+  // Non-negative fractions of a second at nanosecond resolution. Negative
+  // second values with fractions must still have non-negative nanos values
+  // that count forward in time. Must be from 0 to 999,999,999
+  // inclusive.
+  optional int32 nanos = 2;
+}
+
+// The SIM identifier.
+message SimIdentifier {
+  // IMSI of the SIM card
+  optional string imsi = 1;
+
+  // SPN (Service Provider Name) on the SIM card
+  optional string spn = 2;
+
+  // Group Identifier Level 1. EF_GID1 file on the SIM card
+  optional string gid1 = 3;
+}
+
+// The device identifier.
+// Next ID: 12
+message DeviceIdentifier {
+  // The hardware identifier.
+  oneof hardware_id {
+    // The IMEI of the device.
+    string imei = 1;
+
+    // The MEID of the device.
+    string meid = 2;
+  }
+
+  // The 2nd hardware identifier, for dual-SIM devices.
+  oneof hardware_id2 {
+    // The IMEI of the device.
+    string imei2 = 10;
+
+    // The MEID of the device.
+    string meid2 = 11;
+  }
+
+  // The serial number of the device, i.e. android.os.Build.SERIAL.
+  optional string serial_number = 3;
+
+  // The brand identifier of the device, i.e. android.os.Build.BRAND.
+  optional string brand = 4;
+
+  // The product identifier of the device, i.e. android.os.Build.PRODUCT.
+  optional string product = 5;
+
+  // The device identifier of the device, i.e. android.os.Build.DEVICE.
+  optional string device = 6;
+
+  // The manufacturer identifier of the device,
+  // i.e. android.os.Build.MANUFACTURER.
+  optional string manufacturer = 7;
+
+  // The model identifier of the device, i.e. android.os.Build.MODEL.
+  optional string model = 8;
+
+  // The SIM card(s) currently present in the device. Only SIM cards that are
+  // in READY state are reported, so the number does not reflect the number of
+  // SIM slots in the device.
+  repeated SimIdentifier sim_cards = 9;
+}
+
+// The configuration for the client-side config fetcher app.
+message FetcherConfig {
+  // Indicates whether the client device should fetch the device provisioning
+  // record on every boot.
+  optional bool fetch_on_boot = 1;
+
+  // If this DeviceProvisioningConfig causes a Sim-Unlock, OobConfig
+  // (the SimLock client app) usually shows a notification. Setting this to true
+  // suppress the notification (Q or later only)
+  optional bool should_suppress_sim_unlock_notification = 2;
+}
+
+// Identifies a GSM network.
+message MobileNetwork {
+  // The 3 digit network country code. The character '?' is used as wildcard
+  // character to match any single digit, eg. 31? matches all mcc values from
+  // 310 to 319.
+  optional string mobile_country_code = 1;
+
+  // The 2 or 3 digit mobile network code. The character '?' is used as wildcard
+  // character to match any single digit, eg. mcc/mnc=310??? matches any network
+  // with mcc equal to 310 and 3-digit mnc.
+  optional string mobile_network_code = 2;
+
+  // Additional match data to identify a carrier.
+  // If not set, all carriers with above mcc/mnc are included.
+  // If set, mcc/mnc combined with the specified value can identify virtual
+  // carrier, eg. mcc/mnc=310120 and spn="Project Fi" will match only Project
+  // Fi, but not other Sprint(310120) carriers.
+  oneof carrier_match_data {
+    // SPN (Service Provider Name) on the sim card
+    string spn = 3;
+    // IMSI prefix for the IMSI range of the carrier
+    string imsi_prefix = 4;
+    // Group Identifier Level 1. EF_GID1 file on the sim card
+    string gid1 = 5;
+    // Group Identifier Level 2. EF_GID2 file on the sim card
+    string gid2 = 6;
+  }
+}
+
+// Contact information which is shown to the user.
+message ContactInformation {
+  // Name of the contact.
+  optional string name = 1;
+
+  // URL of a website showing additional information from the contact.
+  optional string url = 2;
+}
+
+// SimLock v3 carrier restrictions type
+// This determines the behaviour of SimLock in these 2 cases:
+// - if the carrier is in both the allowed list and the disallowed list
+// - if the carrier is in neither of these lists.
+// This will be translated to CARRIER_RESTRICTION_DEFAULT_ALLOWED
+// and CARRIER_RESTRICTION_DEFAULT_DISALLOWED in CarrierRestrictionRules in
+// Android.
+enum CarrierRestrictionsMode {
+  // Not listed carriers are disallowed. We use this as the default value
+  // because this is the behaviour before SimLock v3.
+  DEFAULT_DISALLOW = 0;
+
+  // Not listed carriers are allowed.
+  DEFAULT_ALLOW = 1;
+}
+
+// SimLock v3 multisim restriction policy type
+// This determines the behaviour of SimLock for multisim devices:
+// This will be translated to MULTISIM_POLICY_NONE and
+// MULTISIM_POLICY_ONE_VALID_SIM_MUST_BE_PRESENT in CarrierRestrictionRules in
+// Android.
+enum MultiSimRestrictionPolicy {
+  // The same configuration is applied to all SIM slots independently.
+  NONE = 0;
+
+  // Any SIM card can be used as far as one SIM card matching the configuration
+  // is present.
+  ONE_VALID_SIM_MUST_BE_PRESENT = 1;
+}
+
+// The SIM lock configuration sent to the device.
+message SimLockConfig {
+  //  Whitelist of allowed networks. If non-empty, the blacklist must be an
+  //  empty list. If both the whitelist and the blacklist are empty, then all
+  //  networks are allowed.
+  repeated MobileNetwork allowed_networks = 1;
+
+  // Blacklist of networks. If non-empty, the whitelist must be an empty list.
+  repeated MobileNetwork disallowed_networks = 4;
+
+  // GCM/FCM topic to subscribe to learn about updates for this SimLockConfig.
+  optional string gcm_topic = 2;
+
+  // Contact information to the owner of the profile.
+  optional ContactInformation contact_info = 3;
+
+  // The carrier restriction mode (used since SimLock v3).
+  optional CarrierRestrictionsMode carrier_restrictions_mode = 5;
+
+  // Restriction of multi SIM functionality
+  optional bool is_multisim_restricted = 6;
+
+  // MultiSim carrier restriction policy
+  optional MultiSimRestrictionPolicy multisim_restriction_policy = 7;
+
+  // Signed SIM lock configuration (see go/simlock-signature)
+  optional bytes signed_configuration = 8;
+}
+
+// This configuration section contains restrictions that constrain the use of
+// the device.
+message DeviceRestrictionsConfig {
+  // If set to true the device will not allow unlocking of its bootloader. If
+  // set to false the unlocking is not prohibited by this setting but may be
+  // unavailable due to other configuration settings, e.g. the presence of a
+  // SIM lock configuration.
+  optional bool disallow_oem_unlock = 1;
+
+  // GCM/FCM topic to subscribe to learn about updates for this
+  // DeviceRestrictionsConfig.
+  optional string gcm_topic = 2;
+
+  // Contact information to the owner of the profile.
+  optional ContactInformation contact_info = 3;
+}
+
+// The device provisioning record.
+message DeviceProvisioningRecord {
+  // Serialized device provisioning config.
+  optional bytes device_provisioning_config = 1;
+}
+
+message DeviceProvisioningConfig {
+  // Next ID: 8
+
+  // The device identifier.
+  optional DeviceIdentifier device_identifier = 1;
+
+  // Server timestamp indicating when this config was fetched from the server.
+  optional Timestamp fetch_timestamp = 2;
+
+  // The configuration for the client-side config fetcher app.
+  optional FetcherConfig fetcher_config = 5;
+
+  // The SIM lock configuration for the device.
+  optional SimLockConfig sim_lock_config = 3;
+
+  // A configuration section setting device restrictions.
+  optional DeviceRestrictionsConfig device_restrictions_config = 6;
+
+  // Enable OEM unlock blob.
+  optional bytes enable_oem_unlock_blob = 7;
+}
