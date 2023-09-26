@@ -22,6 +22,8 @@ source_set("data_controls") {
     "condition.h",
     "data_controls_policy_handler.cc",
     "data_controls_policy_handler.h",
+    "prefs.cc",
+    "prefs.h",
   ]
 
   deps = [

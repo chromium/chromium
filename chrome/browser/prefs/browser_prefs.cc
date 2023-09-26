@@ -113,6 +113,7 @@
 #include "components/domain_reliability/domain_reliability_prefs.h"
 #include "components/embedder_support/origin_trials/origin_trial_prefs.h"
 #include "components/enterprise/browser/identifiers/identifiers_prefs.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/image_fetcher/core/cache/image_cache.h"
@@ -529,6 +530,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_prefs.h"
+#endif
+
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+#include "components/enterprise/data_controls/prefs.h"
 #endif
 
 namespace {
@@ -1988,6 +1993,10 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 #endif
 
   registry->RegisterBooleanPref(prefs::kBlockTruncatedCookies, true);
+
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+  data_controls::RegisterProfilePrefs(registry);
+#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 }
 
 void RegisterUserProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {

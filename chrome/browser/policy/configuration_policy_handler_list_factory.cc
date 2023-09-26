@@ -72,8 +72,11 @@
 #include "components/enterprise/browser/reporting/cloud_reporting_frequency_policy_handler.h"
 #include "components/enterprise/browser/reporting/cloud_reporting_policy_handler.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/content/copy_prevention_settings_policy_handler.h"
 #include "components/enterprise/content/pref_names.h"
+#include "components/enterprise/data_controls/data_controls_policy_handler.h"
+#include "components/enterprise/data_controls/prefs.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
@@ -2800,6 +2803,13 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA) ||
         // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+  handlers->AddHandler(
+      std::make_unique<data_controls::DataControlsPolicyHandler>(
+          key::kDataControlsRules, data_controls::kDataControlsRulesPref,
+          chrome_schema));
+#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 
   return handlers;
 }

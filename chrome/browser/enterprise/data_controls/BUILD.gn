@@ -13,10 +13,13 @@ source_set("data_controls") {
     "dlp_rules_manager_base.h",
   ]
 
-  deps = [
-    "//base",
+  public_deps = [
     "//components/enterprise/data_controls",
     "//components/enterprise/data_controls:features",
+  ]
+
+  deps = [
+    "//base",
     "//components/keyed_service/core",
     "//components/policy/core/browser",
     "//components/url_matcher",
