@@ -35,6 +35,8 @@ void ChromeUntrustedProjectorUIDelegate::PopulateLoadTimeData(
       ash::features::IsProjectorAccountSwitchNotificationEnabled());
   source->AddBoolean("isMutingEnabled",
                      ash::features::IsProjectorMutingEnabled());
+  source->AddBoolean("isTranscriptChapterTitleEnabled",
+                     ash::features::IsProjectorTranscriptChapterTitleEnabled());
 
   source->AddBoolean(
       "isInternalServerSideSpeechRecognitionEnabled",
