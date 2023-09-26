@@ -423,8 +423,8 @@ bool EditContext::SetCompositionFromExistingText(
   }
 
   DispatchTextUpdateEvent(update_text, composition_range_start_,
-                          composition_range_end_, composition_start,
-                          composition_start);
+                          composition_range_end_, selection_start_,
+                          selection_end_);
   DispatchTextFormatEvent(ime_text_spans);
   DispatchCharacterBoundsUpdateEvent(composition_range_start_,
                                      composition_range_end_);
