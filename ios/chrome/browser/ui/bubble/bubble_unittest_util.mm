@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/bubble/bubble_unittest_util.h"
 
 #import "base/apple/foundation_util.h"
+#import "ios/chrome/browser/ui/bubble/bubble_constants.h"
 
 UIView* GetViewOfClassWithIdentifier(Class uiClass,
                                      NSString* accessibilityIdentifier,

@@ -10,6 +10,7 @@
 #import "base/i18n/rtl.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
+#import "ios/chrome/browser/ui/bubble/bubble_constants.h"
 
 namespace {
 

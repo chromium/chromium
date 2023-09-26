@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
+#import "ios/chrome/browser/ui/bubble/bubble_constants.h"
 #import "ios/chrome/browser/ui/bubble/bubble_unittest_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"

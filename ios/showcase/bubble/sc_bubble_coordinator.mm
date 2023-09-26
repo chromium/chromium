@@ -4,6 +4,7 @@
 
 #import "ios/showcase/bubble/sc_bubble_coordinator.h"
 
+#import "ios/chrome/browser/ui/bubble/bubble_constants.h"
 #import "ios/chrome/browser/ui/bubble/bubble_util.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller.h"
 

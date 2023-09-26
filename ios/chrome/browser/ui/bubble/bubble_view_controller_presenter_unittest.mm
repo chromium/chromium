@@ -5,6 +5,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/apple/foundation_util.h"
+#import "ios/chrome/browser/ui/bubble/bubble_constants.h"
 #import "ios/chrome/browser/ui/bubble/bubble_unittest_util.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller.h"

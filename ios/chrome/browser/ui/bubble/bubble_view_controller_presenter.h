@@ -9,7 +9,10 @@
 
 #import "base/ios/block_types.h"
 #include "components/feature_engagement/public/tracker.h"
-#import "ios/chrome/browser/ui/bubble/bubble_view.h"
+
+typedef NS_ENUM(NSInteger, BubbleAlignment);
+typedef NS_ENUM(NSInteger, BubbleArrowDirection);
+typedef NS_ENUM(NSInteger, BubbleViewType);
 
 // Possible types of dismissal reasons.
 // These enums are persisted as histogram entries, so this enum should be

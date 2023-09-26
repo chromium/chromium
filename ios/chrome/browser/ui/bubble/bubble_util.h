@@ -5,7 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_UI_BUBBLE_BUBBLE_UTIL_H_
 #define IOS_CHROME_BROWSER_UI_BUBBLE_BUBBLE_UTIL_H_
 
-#import "ios/chrome/browser/ui/bubble/bubble_view.h"
+#import <Foundation/Foundation.h>
+
+typedef NS_ENUM(NSInteger, BubbleAlignment);
+typedef NS_ENUM(NSInteger, BubbleArrowDirection);
 
 // TODO(crbug.com/1469122): Rename parameters.
 namespace bubble_util {

@@ -6,6 +6,7 @@
 
 #import <CoreGraphics/CoreGraphics.h>
 
+#import "ios/chrome/browser/ui/bubble/bubble_constants.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 

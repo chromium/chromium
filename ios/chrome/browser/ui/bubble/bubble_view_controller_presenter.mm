@@ -7,7 +7,9 @@
 #import "base/check.h"
 #import "base/ios/block_types.h"
 #import "base/metrics/histogram_macros.h"
+#import "ios/chrome/browser/ui/bubble/bubble_constants.h"
 #import "ios/chrome/browser/ui/bubble/bubble_util.h"
+#import "ios/chrome/browser/ui/bubble/bubble_view.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter+private.h"
 

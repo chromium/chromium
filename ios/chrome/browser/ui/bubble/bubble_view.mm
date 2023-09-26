@@ -13,29 +13,12 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/bubble/bubble_constants.h"
 #import "ios/chrome/browser/ui/bubble/bubble_util.h"
 #import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
-
-// Accessibility identifier for the close button.
-NSString* const kBubbleViewCloseButtonIdentifier =
-    @"BubbleViewCloseButtonIdentifier";
-// Accessibility identifier for the title label.
-NSString* const kBubbleViewTitleLabelIdentifier =
-    @"BubbleViewTitleLabelIdentifier";
-// Accessibility identifier for the label.
-NSString* const kBubbleViewLabelIdentifier = @"BubbleViewLabelIdentifier";
-// Accessibility identifier for the image view.
-NSString* const kBubbleViewImageViewIdentifier =
-    @"BubbleViewImageViewIdentifier";
-// Accessibility identifier for the snooze button.
-NSString* const kBubbleViewSnoozeButtonIdentifier =
-    @"kBubbleViewSnoozeButtonIdentifier";
-// Accessibility identifier for the arrow view.
-NSString* const kBubbleViewArrowViewIdentifier =
-    @"kBubbleViewArrowViewIdentifier";
 
 namespace {
 
@@ -313,7 +296,7 @@ UIImageView* BubbleImageViewWithImage(UIImage* image) {
 @property(nonatomic, weak) CAShapeLayer* arrowLayer;
 @property(nonatomic, assign, readonly) BubbleArrowDirection direction;
 @property(nonatomic, assign, readonly) BubbleAlignment alignment;
-// Constraint for the arrow horizontal alignment.
+// Constraint for the arrow alignment offset.
 @property(nonatomic, strong) NSLayoutConstraint* arrowAlignmentConstraint;
 // Indicate whether views' constraints need to be added to the bubble.
 @property(nonatomic, assign) BOOL needsAddConstraints;

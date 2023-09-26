@@ -6,6 +6,8 @@
 
 #import "base/notreached.h"
 #import "ios/chrome/browser/shared/ui/util/animation_util.h"
+#import "ios/chrome/browser/ui/bubble/bubble_constants.h"
+#import "ios/chrome/browser/ui/bubble/bubble_view.h"
 #import "ios/chrome/common/material_timing.h"
 
 namespace {
