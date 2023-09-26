@@ -556,7 +556,7 @@ int32_t RTCVideoDecoderStreamAdapter::Decode(
         spatial_layer_frame_size;
   }
   pending_buffer->buffer->set_timestamp(
-      base::Microseconds(input_image.Timestamp()));
+      base::Microseconds(input_image.RtpTimestamp()));
   pending_buffer->buffer->set_is_key_frame(
       input_image._frameType == webrtc::VideoFrameType::kVideoFrameKey);
 

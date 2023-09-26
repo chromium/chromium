@@ -133,7 +133,7 @@ scoped_refptr<media::DecoderBuffer> ConvertToDecoderBuffer(
       std::make_unique<EncodedImageExternalMemory>(
           input_image.GetEncodedData()));
   DCHECK(buffer);
-  buffer->set_timestamp(base::Microseconds(input_image.Timestamp()));
+  buffer->set_timestamp(base::Microseconds(input_image.RtpTimestamp()));
   buffer->set_is_key_frame(input_image._frameType ==
                            webrtc::VideoFrameType::kVideoFrameKey);
 
@@ -687,7 +687,7 @@ int32_t RTCVideoDecoderAdapter::Decode(const webrtc::EncodedImage& input_image,
                                        bool missing_frames,
                                        int64_t render_time_ms) {
   TRACE_EVENT1("webrtc", "RTCVideoDecoderAdapter::Decode", "timestamp",
-               base::Microseconds(input_image.Timestamp()));
+               base::Microseconds(input_image.RtpTimestamp()));
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
   if (!impl_)
     return WEBRTC_VIDEO_CODEC_UNINITIALIZED;

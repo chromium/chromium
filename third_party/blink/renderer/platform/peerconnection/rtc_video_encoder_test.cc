@@ -535,7 +535,7 @@ class RTCVideoEncoderTest {
                        const webrtc::EncodedImage& encoded_image,
                        const webrtc::CodecSpecificInfo* codec_specific_info) {
     DVLOG(3) << __func__;
-    EXPECT_EQ(rtp_timestamp, encoded_image.Timestamp());
+    EXPECT_EQ(rtp_timestamp, encoded_image.RtpTimestamp());
     EXPECT_EQ(capture_time_ms, encoded_image.capture_time_ms_);
   }
 
@@ -1159,7 +1159,7 @@ TEST_P(RTCVideoEncoderEncodeTest, EncodeSpatialLayer) {
         }
       }
 
-      if (encoded_image.Timestamp() == kNumEncodeFrames - 1 &&
+      if (encoded_image.RtpTimestamp() == kNumEncodeFrames - 1 &&
           codec_specific_info->end_of_picture) {
         waiter_.Signal();
       }
@@ -2012,7 +2012,7 @@ TEST_P(RTCVideoEncoderEncodeTest, EncodedBufferLifetimeExceedsEncoderLifetime) {
         const webrtc::EncodedImage& encoded_image,
         const webrtc::CodecSpecificInfo* codec_specific_info) override {
       last_encoded_image_ = encoded_image.GetEncodedData();
-      if (encoded_image.Timestamp() == kNumEncodeFrames - 1 &&
+      if (encoded_image.RtpTimestamp() == kNumEncodeFrames - 1 &&
           codec_specific_info->end_of_picture) {
         waiter_.Signal();
       }

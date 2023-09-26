@@ -81,7 +81,7 @@ class MockEncoder : public webrtc::VideoEncoder {
       const webrtc::VideoFrame& frame,
       const std::vector<webrtc::VideoFrameType>* frame_types) override {
     webrtc::EncodedImage encoded_frame;
-    encoded_frame.SetTimestamp(frame.timestamp());
+    encoded_frame.SetRtpTimestamp(frame.timestamp());
     encoded_frame._frameType = frame_types && !frame_types->empty()
                                    ? frame_types->at(0)
                                    : webrtc::VideoFrameType::kVideoFrameDelta;
@@ -133,7 +133,7 @@ class FakeEncodedImageCallback : public webrtc::EncodedImageCallback {
       const webrtc::EncodedImage& encoded_image,
       const webrtc::CodecSpecificInfo* codec_specific_info) override {
     ++frame_counter_;
-    return {Result::OK, encoded_image.Timestamp()};
+    return {Result::OK, encoded_image.RtpTimestamp()};
   }
   void OnDroppedFrame(DropReason reason) override { ; }
   int get_frame_counter() const { return frame_counter_; }

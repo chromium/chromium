@@ -307,7 +307,7 @@ class RTCVideoDecoderStreamAdapterTest
     input_image._frameType = is_keyframe
                                  ? webrtc::VideoFrameType::kVideoFrameKey
                                  : webrtc::VideoFrameType::kVideoFrameDelta;
-    input_image.SetTimestamp(timestamp);
+    input_image.SetRtpTimestamp(timestamp);
     return adapter_->Decode(input_image, missing_frames, 0);
   }
 
@@ -364,7 +364,7 @@ class RTCVideoDecoderStreamAdapterTest
     input_image.SetEncodedData(
         webrtc::EncodedImageBuffer::Create(data, sizeof(data)));
     input_image._frameType = webrtc::VideoFrameType::kVideoFrameKey;
-    input_image.SetTimestamp(timestamp);
+    input_image.SetRtpTimestamp(timestamp);
     webrtc::ColorSpace webrtc_color_space;
     webrtc_color_space.set_primaries_from_uint8(1);
     webrtc_color_space.set_transfer_from_uint8(1);

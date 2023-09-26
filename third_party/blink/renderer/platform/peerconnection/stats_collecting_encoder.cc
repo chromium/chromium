@@ -198,7 +198,7 @@ webrtc::EncodedImageCallback::Result StatsCollectingEncoder::OnEncodedImage(
       base::AutoLock auto_lock(lock_);
       while (encode_start_info_.size() > 0 &&
              encode_start_info_.front().rtp_timestamp !=
-                 encoded_image.Timestamp()) {
+                 encoded_image.RtpTimestamp()) {
         encode_start_info_.pop_front();
       }
       if (!encode_start_info_.empty())
