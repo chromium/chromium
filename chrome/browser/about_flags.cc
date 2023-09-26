@@ -6927,6 +6927,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDownloadsMigrateToJobsAPIDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(download::features::kDownloadsMigrateToJobsAPI)},
 
+    {"download-notification-service-unified-api",
+     flag_descriptions::kDownloadNotificationServiceUnifiedAPIName,
+     flag_descriptions::kDownloadNotificationServiceUnifiedAPIDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         download::features::kDownloadNotificationServiceUnifiedAPI)},
+
     {"download-range", flag_descriptions::kDownloadRangeName,
      flag_descriptions::kDownloadRangeDescription, kOsAll,
      FEATURE_VALUE_TYPE(download::features::kDownloadRange)},

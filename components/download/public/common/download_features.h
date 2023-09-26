@@ -31,6 +31,11 @@ COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(
 // Whether downloads uses Android Jobs API instead of FGS.
 COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kDownloadsMigrateToJobsAPI);
 
+// Whether download notification service uses new unified API based on offline
+// item and native persistence of notification IDs.
+COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(
+    kDownloadNotificationServiceUnifiedAPI);
+
 // Whether in-progress download manager will be used to initialize download
 // service.
 COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(

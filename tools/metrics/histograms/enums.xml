@@ -61271,6 +61271,8 @@ from previous Chrome versions.
   <int value="-1790251283" label="GainmapHdrImages:disabled"/>
   <int value="-1790227231" label="show-autofill-signatures"/>
   <int value="-1789139269" label="SmbFs:disabled"/>
+  <int value="-1789077219"
+      label="DownloadNotificationServiceUnifiedAPI:enabled"/>
   <int value="-1788763369" label="PrintingPpdChannel:disabled"/>
   <int value="-1787333474" label="FedCmError:disabled"/>
   <int value="-1784831690" label="Bento:disabled"/>
@@ -61605,6 +61607,8 @@ from previous Chrome versions.
   <int value="-1615704396"
       label="AutofillLocalCardMigrationUsesStrikeSystemV2:disabled"/>
   <int value="-1615589080" label="EmitHistogramsEarlier:disabled"/>
+  <int value="-1615565600"
+      label="DownloadNotificationServiceUnifiedAPI:disabled"/>
   <int value="-1614912400" label="enable-link-disambiguation-popup"/>
   <int value="-1613833640" label="ClipboardHistoryWebContentsPaste:disabled"/>
   <int value="-1613583483" label="UseNewAcceptLanguageHeader:enabled"/>

@@ -1879,6 +1879,11 @@
     "expiry_milestone": 102
   },
   {
+    "name": "download-notification-service-unified-api",
+    "owners": ["shaktisahu", "qinmin"],
+    "expiry_milestone": 125
+  },
+  {
     "name": "download-range",
     "owners": [ "xingliu" ],
     "expiry_milestone": 105
