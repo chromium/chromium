@@ -5,11 +5,16 @@
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
 
 #include <map>
+#include <memory>
 #include <set>
 #include <string>
+#include <utility>
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/values.h"
+#include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -23,7 +28,6 @@ namespace {
 
 constexpr char kExcludedKey[] = "exempted";
 constexpr char kDisplayedKey[] = "display_count";
-constexpr char kOrigin[] = "origin";
 // The daily average is calculated over the past this many days.
 constexpr int kDays = 7;
 
@@ -126,6 +130,109 @@ NotificationPermissions::NotificationPermissions(
       notification_count(notification_count) {}
 NotificationPermissions::~NotificationPermissions() = default;
 
+NotificationPermissionsReviewService::NotificationPermissionsResult::
+    NotificationPermissionsResult() = default;
+NotificationPermissionsReviewService::NotificationPermissionsResult::
+    ~NotificationPermissionsResult() = default;
+
+NotificationPermissionsReviewService::NotificationPermissionsResult::
+    NotificationPermissionsResult(const NotificationPermissionsResult&) =
+        default;
+
+NotificationPermissionsReviewService::NotificationPermissionsResult::
+    NotificationPermissionsResult(const base::Value::Dict& dict) {
+  for (const base::Value& permission :
+       *dict.FindList(kSafetyHubNotificationPermissionsResultKey)) {
+    const base::Value::Dict& notification_permission = permission.GetDict();
+    AddNotificationPermission(
+        ContentSettingsPattern::FromString(
+            *notification_permission.FindString(kSafetyHubOriginKey)),
+        notification_permission.FindInt(kSafetyHubNotificationCount).value());
+  }
+}
+
+void NotificationPermissionsReviewService::NotificationPermissionsResult::
+    AddNotificationPermission(ContentSettingsPattern origin,
+                              int notification_count) {
+  notification_permissions_.emplace_back(origin, notification_count);
+}
+
+std::vector<std::pair<ContentSettingsPattern, int>>
+NotificationPermissionsReviewService::NotificationPermissionsResult::
+    GetNotificationPermissions() const {
+  std::vector<std::pair<ContentSettingsPattern, int>> result(
+      notification_permissions_);
+  return result;
+}
+
+std::set<ContentSettingsPattern> NotificationPermissionsReviewService::
+    NotificationPermissionsResult::GetOrigins() const {
+  std::set<ContentSettingsPattern> origins;
+  for (std::pair<ContentSettingsPattern, int> permission :
+       notification_permissions_) {
+    origins.insert(permission.first);
+  }
+  return origins;
+}
+
+std::unique_ptr<SafetyHubService::Result>
+NotificationPermissionsReviewService::NotificationPermissionsResult::Clone()
+    const {
+  return std::make_unique<NotificationPermissionsResult>(*this);
+}
+
+base::Value::Dict NotificationPermissionsReviewService::
+    NotificationPermissionsResult::ToDictValue() const {
+  base::Value::Dict result = BaseToDictValue();
+  base::Value::List notification_permissions;
+  for (std::pair<ContentSettingsPattern, int> permission :
+       notification_permissions_) {
+    base::Value::Dict permission_dict;
+    permission_dict.Set(kSafetyHubOriginKey, permission.first.ToString());
+    permission_dict.Set(kSafetyHubNotificationCount, permission.second);
+    notification_permissions.Append(std::move(permission_dict));
+  }
+  result.Set(kSafetyHubNotificationPermissionsResultKey,
+             std::move(notification_permissions));
+  return result;
+}
+
+bool NotificationPermissionsReviewService::NotificationPermissionsResult::
+    IsTriggerForMenuNotification() const {
+  return !notification_permissions_.empty();
+}
+
+bool NotificationPermissionsReviewService::NotificationPermissionsResult::
+    WarrantsNewMenuNotification(const Result& previousResult) const {
+  const auto& previous =
+      static_cast<const NotificationPermissionsResult&>(previousResult);
+  std::set<ContentSettingsPattern> old_origins = previous.GetOrigins();
+  std::set<ContentSettingsPattern> new_origins = GetOrigins();
+  for (auto new_origin : new_origins) {
+    // A new notification should be shown whenever there is a new origin that
+    // should be reviewed.
+    if (!old_origins.contains(new_origin)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+std::u16string NotificationPermissionsReviewService::
+    NotificationPermissionsResult::GetNotificationString() const {
+  if (notification_permissions_.empty()) {
+    return std::u16string();
+  }
+  return l10n_util::GetPluralStringFUTF16(
+      IDS_SETTINGS_SAFETY_HUB_REVIEW_NOTIFICATION_PERMISSIONS_MENU_NOTIFICATION,
+      GetOrigins().size());
+}
+
+int NotificationPermissionsReviewService::NotificationPermissionsResult::
+    GetNotificationCommandId() const {
+  return IDC_OPEN_SAFETY_HUB;
+}
+
 NotificationPermissionsReviewService::NotificationPermissionsReviewService(
     HostContentSettingsMap* hcsm)
     : hcsm_(hcsm) {
@@ -155,6 +262,12 @@ void NotificationPermissionsReviewService::OnContentSettingChanged(
 }
 
 void NotificationPermissionsReviewService::Shutdown() {}
+
+std::unique_ptr<SafetyHubService::Result>
+NotificationPermissionsReviewService::GetResultFromDictValue(
+    const base::Value::Dict& dict) {
+  return std::make_unique<NotificationPermissionsResult>(dict);
+}
 
 std::vector<NotificationPermissions>
 NotificationPermissionsReviewService::GetNotificationSiteListForReview() {
@@ -257,7 +370,8 @@ NotificationPermissionsReviewService::PopulateNotificationPermissionReviewData(
     }
 
     base::Value::Dict permission;
-    permission.Set(kOrigin, notification_permission.primary_pattern.ToString());
+    permission.Set(kSafetyHubOriginKey,
+                   notification_permission.primary_pattern.ToString());
     std::string notification_info_string = l10n_util::GetPluralStringFUTF8(
         IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_COUNT_LABEL,
         notification_permission.notification_count);

@@ -104,8 +104,7 @@ TEST_F(SafetyHubMenuNotificationTest, ToFromDictValue) {
   EXPECT_EQ(1U, result_dict->FindList(kUnusedSitePermissionsResultKey)->size());
   base::Value::Dict& revoked_perm =
       result_dict->FindList(kUnusedSitePermissionsResultKey)->front().GetDict();
-  EXPECT_EQ(kUrl1,
-            *revoked_perm.FindString(kUnusedSitePermissionsResultOriginKey));
+  EXPECT_EQ(kUrl1, *revoked_perm.FindString(kSafetyHubOriginKey));
 
   // Using the dict from before, we can create another menu notification object
   // that should have the same properties as when it was initially created.

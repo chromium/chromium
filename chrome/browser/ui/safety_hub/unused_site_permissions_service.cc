@@ -130,7 +130,7 @@ UnusedSitePermissionsService::UnusedSitePermissionsResult::
        *dict.FindList(kUnusedSitePermissionsResultKey)) {
     const base::Value::Dict& revoked_permission = permission.GetDict();
     ContentSettingsPattern origin = ContentSettingsPattern::FromString(
-        *revoked_permission.FindString(kUnusedSitePermissionsResultOriginKey));
+        *revoked_permission.FindString(kSafetyHubOriginKey));
     std::set<ContentSettingsType> permission_types;
     for (const base::Value& cst : *revoked_permission.FindList(
              kUnusedSitePermissionsResultPermissionTypesKey)) {
@@ -186,8 +186,7 @@ UnusedSitePermissionsService::UnusedSitePermissionsResult::ToDictValue() const {
       content_settings::WebsiteSettingsRegistry::GetInstance();
   for (auto permission : revoked_permissions_) {
     base::Value::Dict permission_dict;
-    permission_dict.Set(kUnusedSitePermissionsResultOriginKey,
-                        permission.origin.ToString());
+    permission_dict.Set(kSafetyHubOriginKey, permission.origin.ToString());
     base::Value::List permission_types;
     for (ContentSettingsType cst : permission.permission_types) {
       permission_types.Append(registry->Get(cst)->name());

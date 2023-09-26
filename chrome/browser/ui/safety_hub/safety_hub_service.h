@@ -20,6 +20,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 constexpr char kSafetyHubTimestampResultKey[] = "timestamp";
+constexpr char kSafetyHubOriginKey[] = "origin";
 
 // Base class for Safety Hub services. The background and UI tasks of the
 // derived classes will be executed periodically, according to the time delta

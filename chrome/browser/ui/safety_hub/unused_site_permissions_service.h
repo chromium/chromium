@@ -31,7 +31,6 @@
 constexpr char kUnusedSitePermissionsResultKey[] = "permissions";
 constexpr char kUnusedSitePermissionsResultPermissionTypesKey[] =
     "permissionTypes";
-constexpr char kUnusedSitePermissionsResultOriginKey[] = "origin";
 constexpr char kUnusedSitePermissionsResultExpirationKey[] = "expiration";
 
 namespace url {

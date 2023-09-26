@@ -5,16 +5,21 @@
 #ifndef CHROME_BROWSER_UI_SAFETY_HUB_NOTIFICATION_PERMISSION_REVIEW_SERVICE_H_
 #define CHROME_BROWSER_UI_SAFETY_HUB_NOTIFICATION_PERMISSION_REVIEW_SERVICE_H_
 
+#include <utility>
 #include <vector>
 
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 constexpr char kSafetyHubNotificationInfoString[] = "notificationInfoString";
+constexpr char kSafetyHubNotificationCount[] = "notificationCount";
+constexpr char kSafetyHubNotificationPermissionsResultKey[] =
+    "notificationPermissions";
 
 struct NotificationPermissions {
   ContentSettingsPattern primary_pattern;
@@ -28,11 +33,58 @@ struct NotificationPermissions {
 };
 
 // This class provides data for the "Review Notification Permissions" dialog.
-/// This module shows the domains that send a lot of notification, but have low
+// This module shows the domains that send a lot of notification, but have low
 // engagement.
 class NotificationPermissionsReviewService : public KeyedService,
                                              public content_settings::Observer {
  public:
+  // The result of the periodic update contains the sites that sent a large
+  // number of notifications, along with the number of notifications that they
+  // sent. The sites that are added to the review blocklist should not be added
+  // here.
+  class NotificationPermissionsResult : public SafetyHubService::Result {
+   public:
+    NotificationPermissionsResult();
+
+    explicit NotificationPermissionsResult(const base::Value::Dict& dict);
+
+    NotificationPermissionsResult(const NotificationPermissionsResult&);
+    NotificationPermissionsResult& operator=(
+        const NotificationPermissionsResult&) = default;
+
+    ~NotificationPermissionsResult() override;
+
+    // TODO(crbug.com/1443466): Make methods private if they are not required to
+    // be public.
+
+    void AddNotificationPermission(ContentSettingsPattern origin,
+                                   int notification_count);
+
+    std::vector<std::pair<ContentSettingsPattern, int>>
+    GetNotificationPermissions() const;
+
+    std::set<ContentSettingsPattern> GetOrigins() const;
+
+    // SafetyHubService::Result implementation
+
+    std::unique_ptr<SafetyHubService::Result> Clone() const override;
+
+    base::Value::Dict ToDictValue() const override;
+
+    bool IsTriggerForMenuNotification() const override;
+
+    bool WarrantsNewMenuNotification(
+        const Result& previousResult) const override;
+
+    std::u16string GetNotificationString() const override;
+
+    int GetNotificationCommandId() const override;
+
+   private:
+    std::vector<std::pair<ContentSettingsPattern, int>>
+        notification_permissions_;
+  };
+
   explicit NotificationPermissionsReviewService(HostContentSettingsMap* hcsm);
 
   NotificationPermissionsReviewService(
@@ -50,6 +102,10 @@ class NotificationPermissionsReviewService : public KeyedService,
 
   // KeyedService implementation.
   void Shutdown() override;
+
+  // TODO(crbug.com/1443466): This will be a SafetyHubService implementation.
+  std::unique_ptr<SafetyHubService::Result> GetResultFromDictValue(
+      const base::Value::Dict& dict);
 
   // Returns a list containing the sites that send a lot of notifications.
   std::vector<NotificationPermissions> GetNotificationSiteListForReview();

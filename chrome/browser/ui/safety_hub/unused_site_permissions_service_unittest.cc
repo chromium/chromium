@@ -681,13 +681,12 @@ TEST_F(UnusedSitePermissionsServiceTest, ResultToFromDict) {
   EXPECT_EQ(origin, result->GetRevokedPermissions().front().origin);
 
   // When converting to dict, the values of the revoked permissions should be
-  // correctly converted to base::Value
+  // correctly converted to base::Value.
   base::Value::Dict dict = result->ToDictValue();
   auto* revoked_perms_list = dict.FindList(kUnusedSitePermissionsResultKey);
   EXPECT_EQ(1U, revoked_perms_list->size());
   base::Value::Dict& revoked_perm = revoked_perms_list->front().GetDict();
-  EXPECT_EQ(url1,
-            *revoked_perm.FindString(kUnusedSitePermissionsResultOriginKey));
+  EXPECT_EQ(url1, *revoked_perm.FindString(kSafetyHubOriginKey));
   EXPECT_EQ(
       1U, revoked_perm.FindList(kUnusedSitePermissionsResultPermissionTypesKey)
               ->size());
