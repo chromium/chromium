@@ -13,6 +13,7 @@
 #include "chrome/browser/tpcd/experiment/tpcd_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/common/content_features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace tpcd::experiment {
 
@@ -47,6 +48,11 @@ void ExperimentManager::SetClientEligibility(bool is_eligible,
                                              bool is_onboarded) {
   // TODO(trishalfonso@google.com): set the local state pref with appropriate
   // experiment state enum value.
+}
+
+absl::optional<bool> ExperimentManager::IsClientEligible() const {
+  // TODO: Implement.
+  return absl::nullopt;
 }
 
 void ExperimentManager::RegisterSyntheticTrial() {

@@ -8,21 +8,33 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_onboarding_factory.h"
 #include "chrome/browser/tpcd/experiment/eligibility_service_factory.h"
+#include "chrome/browser/tpcd/experiment/experiment_manager.h"
+#include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
 #include "content/public/browser/cookie_deprecation_label_manager.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace tpcd::experiment {
 
-EligibilityService::EligibilityService(Profile* profile)
+EligibilityService::EligibilityService(Profile* profile,
+                                       ExperimentManager* experiment_manager)
     : profile_(profile),
       pref_service_(profile->GetPrefs()),
       onboarding_service_(
-          TrackingProtectionOnboardingFactory::GetForProfile(profile_)) {
+          TrackingProtectionOnboardingFactory::GetForProfile(profile_)),
+      experiment_manager_(experiment_manager) {
   CHECK(base::FeatureList::IsEnabled(
       features::kCookieDeprecationFacilitatedTesting));
   CHECK(pref_service_);
+  CHECK(experiment_manager_);
+
+  absl::optional<bool> is_client_eligible =
+      experiment_manager_->IsClientEligible();
+  if (is_client_eligible.has_value()) {
+    MarkProfileEligibility(is_client_eligible.value());
+  }
 }
 
 EligibilityService::~EligibilityService() = default;
@@ -48,8 +60,13 @@ void EligibilityService::OnClientEligibilityChanged(bool is_eligible) {
         }
       }));
 
-  // Update the eligibility for the onboarding UX flow.
-  if (onboarding_service_) {
+  MarkProfileEligibility(is_eligible);
+}
+
+void EligibilityService::MarkProfileEligibility(bool is_eligible) {
+  // Update the eligibility for the onboarding UX flow. Check that the user is
+  // in Mode B (kDisable3PCookies is true).
+  if (onboarding_service_ && kDisable3PCookies.Get()) {
     if (is_eligible) {
       onboarding_service_->MaybeMarkEligible();
     } else {

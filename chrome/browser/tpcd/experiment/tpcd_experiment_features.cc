@@ -16,17 +16,14 @@ const base::FeatureParam<int> kVersion{
     &features::kCookieDeprecationFacilitatedTesting, /*name=*/"version",
     /*default_value=*/0};
 
-// Set which experiment cohort a user is assigned to ("modea", "modeb",
-// "modebprime", "control", etc.).
-const base::FeatureParam<std::string> kCohort{
-    &features::kCookieDeprecationFacilitatedTesting, /*name=*/"cohort",
-    /*default_value=*/""};
-
+// True IFF third-party cookies are disabled.
+// Distinguishes between "Mode A" and "Mode B" cohorts.
 const base::FeatureParam<bool> kDisable3PCookies{
     &features::kCookieDeprecationFacilitatedTesting,
     /*name=*/"disable_3p_cookies",
     /*default_value=*/false};
 
+// Whether Ads APIs should be disabled.
 const base::FeatureParam<bool> kDisableAdsAPIs{
     &features::kCookieDeprecationFacilitatedTesting,
     /*name=*/"disable_ads_apis",

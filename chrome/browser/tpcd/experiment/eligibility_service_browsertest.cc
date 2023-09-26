@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -34,15 +35,19 @@
 
 namespace tpcd::experiment {
 
-class EligiblityServiceBrowserTest : public InProcessBrowserTest {
+// The param indicates whether the user is in in a cohort with 3PCD enabled.
+// (True indicates that third-party cookies are blocked.)
+class EligibilityServiceBrowserTest : public InProcessBrowserTest,
+                                      public testing::WithParamInterface<bool> {
  public:
-  EligiblityServiceBrowserTest() {
+  EligibilityServiceBrowserTest() {
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kCookieDeprecationFacilitatedTesting,
-        {{"label", "label_test"}});
+        {{"label", "label_test"},
+         {"disable_3p_cookies", GetDisable3PCookies()}});
   }
 
-  ~EligiblityServiceBrowserTest() override = default;
+  ~EligibilityServiceBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -51,6 +56,8 @@ class EligiblityServiceBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
+  std::string GetDisable3PCookies() { return GetParam() ? "true" : "false"; }
+
   void AddImageToDocument(const GURL& src_url) {
     ASSERT_EQ(true,
               EvalJs(GetActiveWebContents(),
@@ -84,7 +91,7 @@ class EligiblityServiceBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(EligiblityServiceBrowserTest,
+IN_PROC_BROWSER_TEST_P(EligibilityServiceBrowserTest,
                        EligibilityChanged_NetworkContextUpdated) {
   auto response_b_a =
       std::make_unique<net::test_server::ControllableHttpResponse>(
@@ -162,16 +169,20 @@ IN_PROC_BROWSER_TEST_F(EligiblityServiceBrowserTest,
             "label_test");
 }
 
-IN_PROC_BROWSER_TEST_F(EligiblityServiceBrowserTest,
+IN_PROC_BROWSER_TEST_P(EligibilityServiceBrowserTest,
                        EligibilityChanged_OnboardingServiceNotified) {
   privacy_sandbox::TrackingProtectionOnboarding* onboarding_service =
       TrackingProtectionOnboardingFactory::GetForProfile(browser()->profile());
 
   FireOnClientEligibilityChanged(/*is_eligible=*/true);
 
+  // Onboarding should be marked eligible for the cohort where 3PCD is enabled,
+  // but not when 3PCD is disabled.
   EXPECT_EQ(onboarding_service->GetOnboardingStatus(),
-            privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
-                kEligible);
+            GetParam() ? privacy_sandbox::TrackingProtectionOnboarding::
+                             OnboardingStatus::kEligible
+                       : privacy_sandbox::TrackingProtectionOnboarding::
+                             OnboardingStatus::kIneligible);
 
   FireOnClientEligibilityChanged(/*is_eligible=*/false);
 
@@ -179,5 +190,7 @@ IN_PROC_BROWSER_TEST_F(EligiblityServiceBrowserTest,
             privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
                 kIneligible);
 }
+
+INSTANTIATE_TEST_SUITE_P(All, EligibilityServiceBrowserTest, testing::Bool());
 
 }  // namespace tpcd::experiment

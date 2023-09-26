@@ -5,14 +5,11 @@
 #ifndef CHROME_BROWSER_TPCD_EXPERIMENT_TPCD_EXPERIMENT_FEATURES_H_
 #define CHROME_BROWSER_TPCD_EXPERIMENT_TPCD_EXPERIMENT_FEATURES_H_
 
-#include <string>
-
 #include "base/metrics/field_trial_params.h"
 
 namespace tpcd::experiment {
 
 extern const base::FeatureParam<int> kVersion;
-extern const base::FeatureParam<std::string> kCohort;
 extern const base::FeatureParam<bool> kDisable3PCookies;
 extern const base::FeatureParam<bool> kDisableAdsAPIs;
 

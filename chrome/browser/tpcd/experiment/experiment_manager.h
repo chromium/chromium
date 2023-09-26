@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_TPCD_EXPERIMENT_EXPERIMENT_MANAGER_H_
 
 #include "base/no_destructor.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace tpcd::experiment {
 
@@ -17,6 +18,10 @@ class ExperimentManager {
   // eligible. Mode B also needs to know whether the profile has been onboarded
   // to the 3PCD UX, but Mode A does not.
   void SetClientEligibility(bool is_eligible, bool is_onboarded = false);
+
+  // Returns the final decision for client eligiblity, if completed.
+  // absl::nullopt will be returned if the final decision has not been made yet.
+  absl::optional<bool> IsClientEligible() const;
 
  protected:
   ExperimentManager();
