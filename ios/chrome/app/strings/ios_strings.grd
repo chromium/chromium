@@ -2173,7 +2173,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Tab Suggestions
       </message>
       <message name="IDS_IOS_OPTIONS_TAB_PICKUP_SCREEN_FOOTER" desc="Footer for the screen setting displaying tab suggestion settings.">
-        Gives you tab suggestions based on your browsing activity on your other devices using your Google account. Your devices must be signed in and synced using the same Google account.
+        Gives you tab suggestions based on your browsing activity on your other devices using your Google Account. Your devices must be signed in and synced using the same Google Account.
       </message>
       <message name="IDS_IOS_PARCEL_TRACKING_INFOBAR_ASK_TO_TRACK_TITLE" desc="Text for the title string of the infobar that is displayed to prompt user to track a package.">
         {COUNT, plural,
