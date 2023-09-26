@@ -14,6 +14,7 @@
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/metrics/arc_daily_metrics.h"
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
+#include "ash/components/arc/metrics/arc_wm_metrics.h"
 #include "ash/components/arc/mojom/anr.mojom.h"
 #include "ash/components/arc/mojom/metrics.mojom.h"
 #include "ash/components/arc/mojom/process.mojom.h"
@@ -388,6 +389,9 @@ class ArcMetricsService : public KeyedService,
 
   raw_ptr<PrefService, ExperimentalAsh> prefs_ = nullptr;
   std::unique_ptr<ArcMetricsAnr> metrics_anr_;
+
+  // Tracks window management related metrics.
+  std::unique_ptr<ArcWmMetrics> arc_wm_metrics_;
 
   // For reporting Arc.Provisioning.PreSignInTimeDelta.
   absl::optional<base::TimeTicks> arc_provisioning_start_time_;

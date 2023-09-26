@@ -143,6 +143,15 @@ chromium-metrics-reviews@google.com.
   <variant name="ResumeMigration" summary="resume migration"/>
 </variants>
 
+<variants name="ChromeOSAppType">
+  <variant name="ArcApp"/>
+  <variant name="Browser"/>
+  <variant name="ChromeApp"/>
+  <variant name="CrostiniApp"/>
+  <variant name="Others"/>
+  <variant name="SystemApp"/>
+</variants>
+
 <variants name="FileTypeByDirectoryOrNot">
   <variant name="Directories" summary="directories"/>
   <variant name="Files"
@@ -2793,6 +2802,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the number of each use case of window predictor. Recorded when the
     window perdictor called to launch ARC ghost window intentionally.
+  </summary>
+</histogram>
+
+<histogram name="Arc.WM.WindowMaximizedDelayTime.{ChromeOSAppType}" units="ms"
+    expires_after="2024-09-30">
+  <owner>lingyufeng@google.com</owner>
+  <owner>arc-framework@google.com</owner>
+  <summary>
+    Records the time elapsed from a window maximizing operation until the window
+    state is changed to be maximized. The data is collected once when a
+    maximizing operation happens.
   </summary>
 </histogram>
 
