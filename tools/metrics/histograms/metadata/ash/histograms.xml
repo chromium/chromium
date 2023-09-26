@@ -6230,6 +6230,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Shelf.ShowStackedHotseat" enum="Boolean"
+    expires_after="2024-09-24">
+  <owner>jiamingc@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Show stacked hotseat app bar above the shelf button panels/system tray when
+    there is no enough space for the app bar.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Shelf.ShutdownConfirmationBubble.Action"
     enum="ShutdownConfirmationBubbleAction" expires_after="2024-01-21">
   <owner>sherrilin@google.com</owner>

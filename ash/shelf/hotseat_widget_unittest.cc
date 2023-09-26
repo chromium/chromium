@@ -361,6 +361,10 @@ INSTANTIATE_TEST_SUITE_P(
 // TODO(b:270757104) Set status are widget sizes.
 TEST_P(StackedHotseatWidgetTest, StackedHotseatShownOnSmallScreens) {
   UpdateDisplay("475x350");
+  base::HistogramTester histogram_tester;
+  // Nothing logged before entering the tablet mode.
+  histogram_tester.ExpectTotalCount("Ash.Shelf.ShowStackedHotseat", 0);
+
   TabletModeControllerTestApi().EnterTabletMode();
   GetAppListTestHelper()->CheckVisibility(true);
   const gfx::Rect hotseat_bounds = GetPrimaryShelf()
@@ -370,11 +374,20 @@ TEST_P(StackedHotseatWidgetTest, StackedHotseatShownOnSmallScreens) {
   ASSERT_EQ(hotseat_bounds.bottom(),
             350 - ShelfConfig::Get()->hotseat_bottom_padding() * 2 -
                 ShelfConfig::Get()->shelf_size());
+
+  // Showed stacked hostseat.
+  histogram_tester.ExpectBucketCount("Ash.Shelf.ShowStackedHotseat", true, 1);
+  histogram_tester.ExpectBucketCount("Ash.Shelf.ShowStackedHotseat", false, 0);
 }
 
 // TODO(b:270757104) Set status are widget sizes.
 TEST_P(StackedHotseatWidgetTest, StackedHotseatNotShownOnLargeScreens) {
   UpdateDisplay("800x600");
+
+  base::HistogramTester histogram_tester;
+  // Nothing logged before entering the tablet mode.
+  histogram_tester.ExpectTotalCount("Ash.Shelf.ShowStackedHotseat", 0);
+
   TabletModeControllerTestApi().EnterTabletMode();
   GetAppListTestHelper()->CheckVisibility(true);
   const gfx::Rect hotseat_bounds = GetPrimaryShelf()
@@ -383,6 +396,10 @@ TEST_P(StackedHotseatWidgetTest, StackedHotseatNotShownOnLargeScreens) {
                                        ->GetWindowBoundsInScreen();
   ASSERT_EQ(hotseat_bounds.bottom(),
             600 - ShelfConfig::Get()->hotseat_bottom_padding());
+
+  // Showed regular hotseat.
+  histogram_tester.ExpectBucketCount("Ash.Shelf.ShowStackedHotseat", true, 0);
+  histogram_tester.ExpectBucketCount("Ash.Shelf.ShowStackedHotseat", false, 1);
 }
 
 TEST_P(HotseatWidgetTest, LongPressHomeWithoutAppWindow) {

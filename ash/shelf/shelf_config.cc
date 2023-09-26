@@ -19,6 +19,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 
 namespace ash {
@@ -230,6 +231,8 @@ void ShelfConfig::OnTabletModeEnding() {
   in_tablet_mode_ = false;
 
   UpdateConfig(is_app_list_visible_, /*tablet_mode_changed=*/true);
+
+  has_shown_elevated_app_bar_ = absl::nullopt;
 }
 
 void ShelfConfig::OnDisplayMetricsChanged(const display::Display& display,
@@ -516,12 +519,18 @@ int ShelfConfig::GetSystemShelfSizeInTabletMode() const {
                                    : kSystemShelfSizeTabletModeNormal;
 }
 
-int ShelfConfig::GetSystemShelfInsetsInTabletMode() const {
-  if (elevate_tablet_mode_app_bar_) {
-    return kElevatedSystemShelfSizeTabletMode;
-  } else {
-    return GetSystemShelfSizeInTabletMode();
+int ShelfConfig::GetTabletModeShelfInsetsAndRecordUMA() {
+  if (!has_shown_elevated_app_bar_.has_value() ||
+      has_shown_elevated_app_bar_.value() != elevate_tablet_mode_app_bar_) {
+    has_shown_elevated_app_bar_ = elevate_tablet_mode_app_bar_;
+    // This method can be called more than once during the app bar rendering.
+    // Records only once when `elevate_tablet_mode_app_bar_` changes.
+    base::UmaHistogramBoolean("Ash.Shelf.ShowStackedHotseat",
+                              elevate_tablet_mode_app_bar_);
   }
+
+  return elevate_tablet_mode_app_bar_ ? kElevatedSystemShelfSizeTabletMode
+                                      : GetSystemShelfSizeInTabletMode();
 }
 
 int ShelfConfig::GetMinimumInlineAppBarSize() const {
