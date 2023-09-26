@@ -4656,6 +4656,30 @@
             ]
         }
     ],
+    "DecodedImageWorkingSetBudget": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "budget_default_128M_256M_20230921",
+                    "params": {
+                        "DecodedImageWorkingSetBudgetBytesForAboveThreshold": "268435456",
+                        "DefaultDecodedImageWorkingSetBudgetBytes": "134217728"
+                    },
+                    "enable_features": [
+                        "ImageDecodeConfigurableFeature"
+                    ]
+                }
+            ]
+        }
+    ],
     "DecreaseProcessingAudioFifoSize": [
         {
             "platforms": [
