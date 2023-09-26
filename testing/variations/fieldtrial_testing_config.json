@@ -6666,35 +6666,6 @@
             ]
         }
     ],
-    "FirstPartySets": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithoutWait_20230705",
-                    "params": {
-                        "FirstPartySetsNavigationThrottleTimeout": "0s"
-                    },
-                    "enable_features": [
-                        "FirstPartySets",
-                        "PrivacySandboxFirstPartySetsUI",
-                        "StorageAccessAPI",
-                        "StorageAccessAPIForOriginExtension"
-                    ],
-                    "disable_features": [
-                        "WaitForFirstPartySetsInit"
-                    ]
-                }
-            ]
-        }
-    ],
     "FixInputQueueingBug": [
         {
             "platforms": [
