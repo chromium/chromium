@@ -1,10 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html class="reftest-wait">
 <title>View transitions: basic cross-document navigation (new page)</title>
 <link rel="help" href="https://github.com/WICG/view-transitions">
 <link rel="author" href="mailto:khushalsagar@chromium.org">
 <link rel="match" href="root-element-transition-ref.html">
 <meta name="view-transition" content="same-origin">
+<script src="/common/reftest-wait.js"></script>
+<script>
+  onload = takeScreenshot;
+</script>
 <style>
   html {
     background: grey;
@@ -44,4 +48,3 @@
   }
 </style>
 <div class="hidden"></div>
-
