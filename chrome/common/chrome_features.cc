@@ -1051,14 +1051,14 @@ BASE_FEATURE(kPrintPreviewSetupAssistance,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kPrivacyGuideAndroid,
              "PrivacyGuideAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kPrivacyGuideAndroidPostMVP,
              "PrivacyGuideAndroidPostMVP",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Enables or disables push subscriptions keeping Chrome running in the
