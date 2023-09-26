@@ -859,8 +859,9 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestPreinstallApps,
       ash::AppListLaunchedFrom::kLaunchedFromGrid);
 }
 
+// TODO(b/302092772): Re-enable once the crash is fixed.
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestPreinstallApps,
-                       ShelfItemActivationWebApp) {
+                       DISABLED_ShelfItemActivationWebApp) {
   if (!IsGoogleChrome()) {
     GTEST_SKIP()
         << "Google Chrome is required for preinstall apps used by this test";
