@@ -463,6 +463,7 @@ test("components_unittests") {
       "//components/reporting/resources:unit_tests",
       "//components/services/heap_profiling:unit_tests",
       "//components/services/storage:tests",
+      "//components/session_proto_db:unit_tests",
       "//components/subresource_filter/content/common:unit_tests",
       "//components/subresource_filter/content/renderer:unit_tests",
       "//components/tracing:unit_tests",
@@ -533,7 +534,6 @@ test("components_unittests") {
       "//components/permissions/prediction_service:unit_tests",
       "//components/privacy_sandbox:unit_tests",
       "//components/privacy_sandbox/privacy_sandbox_attestations:unit_tests",
-      "//components/session_proto_db:unit_tests",
 
       # TODO(chromium: 1169835) components / reporting / storage / resources: unit_tests
       # can't be run on iOS until they are updated.

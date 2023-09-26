@@ -26,8 +26,9 @@ source_set("session_proto_db") {
   ]
 }
 
-# TODO(crbug.com/1399914) Make tests more general and run on iOS trybot.
-if (!is_ios) {
+# TODO(crbug.com/1399914) Make tests more general and run on iOS non-blink
+# trybot.
+if (use_blink) {
   source_set("unit_tests") {
     testonly = true
     sources = [ "session_proto_db_unittest.cc" ]
