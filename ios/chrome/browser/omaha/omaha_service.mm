@@ -378,6 +378,10 @@ void OmahaService::CheckNow(OneOffCallback callback) {
 
   if (OmahaService::IsEnabled()) {
     OmahaService* service = GetInstance();
+    // TODO(crbug.com/1476112): Remove when early callers are removed.
+    if (!service->started_) {
+      return;
+    }
     web::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&OmahaService::CheckNowOnIOThread,
