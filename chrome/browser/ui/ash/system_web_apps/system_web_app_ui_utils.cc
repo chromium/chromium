@@ -77,13 +77,13 @@ Profile* GetProfileForSystemWebAppLaunch(Profile* profile) {
 
 absl::optional<SystemWebAppType> GetSystemWebAppTypeForAppId(
     Profile* profile,
-    const web_app::AppId& app_id) {
+    const webapps::AppId& app_id) {
   auto* swa_manager = SystemWebAppManager::Get(profile);
   return swa_manager ? swa_manager->GetSystemAppTypeForAppId(app_id)
                      : absl::nullopt;
 }
 
-absl::optional<web_app::AppId> GetAppIdForSystemWebApp(
+absl::optional<webapps::AppId> GetAppIdForSystemWebApp(
     Profile* profile,
     SystemWebAppType app_type) {
   auto* swa_manager = SystemWebAppManager::Get(profile);
@@ -95,7 +95,7 @@ absl::optional<apps::AppLaunchParams> CreateSystemWebAppLaunchParams(
     Profile* profile,
     SystemWebAppType app_type,
     int64_t display_id) {
-  absl::optional<web_app::AppId> app_id =
+  absl::optional<webapps::AppId> app_id =
       GetAppIdForSystemWebApp(profile, app_type);
   // TODO(calamity): Decide whether to report app launch failure or CHECK fail.
   if (!app_id)
@@ -131,7 +131,7 @@ void LaunchSystemWebAppAsyncContinue(Profile* profile_for_launch,
     return;
   }
 
-  const absl::optional<web_app::AppId> app_id =
+  const absl::optional<webapps::AppId> app_id =
       GetAppIdForSystemWebApp(profile_for_launch, type);
   if (!app_id)
     return;
@@ -286,7 +286,7 @@ Browser* FindSystemWebAppBrowser(Profile* profile,
                                  const GURL& url) {
   // TODO(calamity): Determine whether, during startup, we need to wait for
   // app install and then provide a valid answer here.
-  absl::optional<web_app::AppId> app_id =
+  absl::optional<webapps::AppId> app_id =
       GetAppIdForSystemWebApp(profile, app_type);
   if (!app_id)
     return nullptr;

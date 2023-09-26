@@ -25,7 +25,7 @@ SystemWebAppIconCheckerImpl::SystemWebAppIconCheckerImpl(Profile* profile)
 SystemWebAppIconCheckerImpl::~SystemWebAppIconCheckerImpl() = default;
 
 void SystemWebAppIconCheckerImpl::StartCheck(
-    const std::vector<web_app::AppId>& app_ids,
+    const std::vector<webapps::AppId>& app_ids,
     base::OnceCallback<void(SystemWebAppIconChecker::IconState)> callback) {
   DCHECK(checkers_.empty()) << "StartCheck() shouldn't be called again before "
                                "the current check completes.";

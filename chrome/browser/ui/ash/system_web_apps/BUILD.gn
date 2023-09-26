@@ -29,6 +29,7 @@ source_set("system_web_apps") {
     "//chrome/browser/web_applications",
     "//chrome/common",
     "//chromeos/ash/components/scalable_iph:scalable_iph",
+    "//components/webapps/common",
     "//content/public/browser",
     "//ui/base",
     "//ui/display",
