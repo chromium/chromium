@@ -9,9 +9,11 @@
 
 namespace media {
 
+#if BUILDFLAG(IS_MAC)
 BASE_FEATURE(kUseAVCaptureDeviceTypeExternal,
              "UseAVCaptureDeviceTypeExternal",
              base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_MAC)
 
 NSArray<AVCaptureDevice*>* GetVideoCaptureDevices() {
   // Camera device types available on all apple platforms.
@@ -35,7 +37,7 @@ NSArray<AVCaptureDevice*>* GetVideoCaptureDevices() {
     captureDeviceTypes = [captureDeviceTypes
         arrayByAddingObject:AVCaptureDeviceTypeExternalUnknown];
   }
-#endif
+#endif  // BUILDFLAG(IS_MAC)
 
   AVCaptureDeviceDiscoverySession* deviceDiscoverySession =
       [AVCaptureDeviceDiscoverySession
