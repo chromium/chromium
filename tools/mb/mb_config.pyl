@@ -1592,8 +1592,9 @@
       'android', 'cast_android', 'cast_receiver', 'clang', 'debug_static_bot_reclient',
     ],
 
+    # TODO(1486663): Change back to debug_bot_reclient when unit_tests binary size issue is resolved.
     'android_clang_asan_debug_bot_reclient': [
-      'android', 'clang', 'asan', 'debug_bot_reclient', 'strip_debug_info',
+      'android', 'clang', 'asan', 'debug_bot_reclient_nosymbols', 'strip_debug_info',
     ],
 
     'android_clang_asan_release_bot_reclient': [
@@ -4252,6 +4253,11 @@
 
     'debug_bot_reclient': {
       'mixins': ['debug', 'shared', 'reclient', 'minimal_symbols'],
+    },
+
+    # TODO(1486663): Remove this when unit_tests binary size problem is resolved.
+    'debug_bot_reclient_nosymbols': {
+      'mixins': ['debug', 'shared', 'reclient', 'no_symbols'],
     },
 
     'debug_static_bot': {
