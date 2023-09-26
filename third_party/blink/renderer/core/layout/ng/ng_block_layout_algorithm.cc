@@ -715,8 +715,8 @@ inline const NGLayoutResult* NGBlockLayoutAlgorithm::Layout(
 
   NGBlockNode ruby_text_child(nullptr);
   NGBlockNode placeholder_child(nullptr);
-  for (auto entry = child_iterator.NextChild();
-       NGLayoutInputNode child = entry.node;
+  NGBlockChildIterator::Entry entry;
+  for (entry = child_iterator.NextChild(); NGLayoutInputNode child = entry.node;
        entry = child_iterator.NextChild(previous_inline_break_token)) {
     const NGBreakToken* child_break_token = entry.token;
 
@@ -846,6 +846,24 @@ inline const NGLayoutResult* NGBlockLayoutAlgorithm::Layout(
       }
     }
   }
+
+#if DCHECK_IS_ON()
+  // Assert that we have made actual progress. Breaking before we're done with
+  // all parallel flows from incoming break tokens means that we'll never get
+  // the opportunity to handle them again. We don't repropagate unhandled
+  // incoming break tokens, and there should be no need to.
+  if (auto* inline_token = DynamicTo<NGInlineBreakToken>(entry.token)) {
+    DCHECK(!inline_token->IsInParallelBlockFlow());
+  } else if (auto* block_token = DynamicTo<NGBlockBreakToken>(entry.token)) {
+    // A column spanner forces all content preceding it to stay in the same
+    // flow, so we can (and must) skip the check. Even if IsAtBlockEnd() is true
+    // in such cases, it doesn't mean that a parallel flow is established.
+    if (!container_builder_.FoundColumnSpanner() &&
+        !container_builder_.ShouldForceSameFragmentationFlow()) {
+      DCHECK(!block_token->IsAtBlockEnd());
+    }
+  }
+#endif
 
   if (ruby_text_child)
     HandleRubyText(ruby_text_child);

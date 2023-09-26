@@ -324,6 +324,13 @@ void NGFragmentBuilder::PropagateFromFragment(
           child_break_tokens_.push_back(child_break_token);
         break;
       case NGPhysicalFragment::kFragmentLineBox:
+        if (child.IsLineForParallelFlow()) {
+          // This is a line that only contains a resumed float / block after a
+          // fragmentation break. It should not affect orphans / widows
+          // calculation.
+          break;
+        }
+
         const auto* inline_break_token =
             To<NGInlineBreakToken>(child_break_token);
         // TODO(mstensho): Orphans / widows calculation is wrong when regular

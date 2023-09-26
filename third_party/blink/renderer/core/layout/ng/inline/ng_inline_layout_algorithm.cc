@@ -1430,6 +1430,10 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
 
   const NGInlineBreakToken* break_token = BreakToken();
 
+  if (break_token && break_token->IsInParallelBlockFlow()) {
+    container_builder_.SetIsLineForParallelFlow();
+  }
+
   NGFragmentItemsBuilder* const items_builder = context_->ItemsBuilder();
   DCHECK(items_builder);
   NGLogicalLineItems* const line_box = items_builder->AcquireLogicalLineItems();

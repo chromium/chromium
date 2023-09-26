@@ -384,6 +384,7 @@ class CORE_EXPORT NGFragmentBuilder {
   }
 
   void SetIsBlockInInline() { is_block_in_inline_ = true; }
+  void SetIsLineForParallelFlow() { is_line_for_parallel_flow_ = true; }
 
   void SetHasBlockFragmentation() { has_block_fragmentation_ = true; }
 
@@ -421,6 +422,9 @@ class CORE_EXPORT NGFragmentBuilder {
 
   void SetShouldForceSameFragmentationFlow() {
     should_force_same_fragmentation_flow_ = true;
+  }
+  bool ShouldForceSameFragmentationFlow() const {
+    return should_force_same_fragmentation_flow_;
   }
 
   // Downgrade the break appeal if the specified break appeal is lower than any
@@ -606,6 +610,7 @@ class CORE_EXPORT NGFragmentBuilder {
   bool subtree_modified_margin_strut_ = false;
   bool is_new_fc_ = false;
   bool is_block_in_inline_ = false;
+  bool is_line_for_parallel_flow_ = false;
   bool has_floating_descendants_for_paint_ = false;
   bool has_descendant_that_depends_on_percentage_block_size_ = false;
   bool has_orthogonal_fallback_size_descendant_ = false;

@@ -335,6 +335,7 @@ NGPhysicalFragment::NGPhysicalFragment(NGFragmentBuilder* builder,
       is_hidden_for_paint_(builder->is_hidden_for_paint_),
       is_opaque_(builder->is_opaque_),
       is_block_in_inline_(builder->is_block_in_inline_),
+      is_line_for_parallel_flow_(builder->is_line_for_parallel_flow_),
       may_have_descendant_above_block_start_(
           builder->may_have_descendant_above_block_start_),
       is_fieldset_container_(false),
@@ -364,6 +365,12 @@ NGPhysicalFragment::NGPhysicalFragment(NGFragmentBuilder* builder,
                     ? nullptr
                     : OutOfFlowDataFromBuilder(builder)) {
   CHECK(builder->layout_object_);
+
+  // A line with a float / block in a parallel flow should not have an outgoing
+  // break token associated. An outgoing inline break token from a line means
+  // that it is to be resumed in the main flow of the container.
+  DCHECK(!is_line_for_parallel_flow_ || !break_token_);
+
   has_floating_descendants_for_paint_ =
       builder->has_floating_descendants_for_paint_;
   has_adjoining_object_descendants_ =
@@ -428,6 +435,7 @@ NGPhysicalFragment::NGPhysicalFragment(const NGPhysicalFragment& other)
       is_hidden_for_paint_(other.is_hidden_for_paint_),
       is_opaque_(other.is_opaque_),
       is_block_in_inline_(other.is_block_in_inline_),
+      is_line_for_parallel_flow_(other.is_line_for_parallel_flow_),
       is_math_fraction_(other.is_math_fraction_),
       is_math_operator_(other.is_math_operator_),
       may_have_descendant_above_block_start_(

@@ -155,6 +155,9 @@ class CORE_EXPORT NGPhysicalFragment
   // True if this box is a block-in-inline, or if this line contains a
   // block-in-inline.
   bool IsBlockInInline() const { return is_block_in_inline_; }
+  // True if this is a line fragment that has a block/float child in a parallel
+  // fragmentation flow.
+  bool IsLineForParallelFlow() const { return is_line_for_parallel_flow_; }
   // True if this fragment is in-flow in an inline formatting context.
   bool IsInline() const { return IsInlineBox() || IsAtomicInline(); }
   bool IsFloating() const {
@@ -789,6 +792,7 @@ class CORE_EXPORT NGPhysicalFragment
   const unsigned is_hidden_for_paint_ : 1;
   unsigned is_opaque_ : 1;
   unsigned is_block_in_inline_ : 1;
+  unsigned is_line_for_parallel_flow_ : 1;
   unsigned is_math_fraction_ : 1;
   unsigned is_math_operator_ : 1;
   unsigned may_have_descendant_above_block_start_ : 1;

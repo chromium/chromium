@@ -65,6 +65,7 @@ struct NGBlockChildIterator::Entry {
   STACK_ALLOCATED();
 
  public:
+  Entry() : node(nullptr), token(nullptr) {}
   Entry(NGLayoutInputNode node,
         const NGBreakToken* token,
         absl::optional<wtf_size_t> index = absl::nullopt)
