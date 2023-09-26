@@ -17,13 +17,13 @@
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
 #include "url/gurl.h"
 
@@ -54,10 +54,10 @@ class WebAppCleanupHandlerBrowserTest : public WebAppControllerBrowserTest {
             PreinstalledWebAppManager::SkipStartupForTesting()) {}
   ~WebAppCleanupHandlerBrowserTest() override = default;
 
-  AppId InstallWebApp(std::u16string title,
-                      GURL start_url,
-                      GURL install_url,
-                      webapps::WebappInstallSource install_source) {
+  webapps::AppId InstallWebApp(std::u16string title,
+                               GURL start_url,
+                               GURL install_url,
+                               webapps::WebappInstallSource install_source) {
     auto app_info = std::make_unique<WebAppInstallInfo>(
         GenerateManifestIdFromStartUrlOnly(start_url));
     app_info->title = title;
@@ -68,7 +68,7 @@ class WebAppCleanupHandlerBrowserTest : public WebAppControllerBrowserTest {
                                install_source);
   }
 
-  AppId InstallWebAppFromPolicy(const std::string& install_url) {
+  webapps::AppId InstallWebAppFromPolicy(const std::string& install_url) {
     WebAppTestInstallWithOsHooksObserver observer(profile());
     observer.BeginListening();
     {
@@ -76,7 +76,7 @@ class WebAppCleanupHandlerBrowserTest : public WebAppControllerBrowserTest {
                                   prefs::kWebAppInstallForceList);
       update->Append(base::Value::Dict().Set(web_app::kUrlKey, install_url));
     }
-    AppId app_id = observer.Wait();
+    webapps::AppId app_id = observer.Wait();
     return app_id;
   }
 
@@ -88,10 +88,10 @@ class WebAppCleanupHandlerBrowserTest : public WebAppControllerBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(WebAppCleanupHandlerBrowserTest,
                        NoUserInstalledWebApps) {
-  AppId app_id1 =
+  webapps::AppId app_id1 =
       InstallWebApp(kApp1Title, GURL(kApp1StartURL), GURL(kApp1InstallURL),
                     webapps::WebappInstallSource::EXTERNAL_DEFAULT);
-  AppId app_id2 = InstallWebAppFromPolicy(kApp2InstallURL);
+  webapps::AppId app_id2 = InstallWebAppFromPolicy(kApp2InstallURL);
 
   EXPECT_TRUE(registrar_unsafe().IsInstalled(app_id1));
   EXPECT_TRUE(registrar_unsafe().IsInstalled(app_id2));
@@ -106,16 +106,16 @@ IN_PROC_BROWSER_TEST_F(WebAppCleanupHandlerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(WebAppCleanupHandlerBrowserTest,
                        UninstallsUserInstalledWebApps) {
-  AppId app_id1 =
+  webapps::AppId app_id1 =
       InstallWebApp(kApp1Title, GURL(kApp1StartURL), GURL(kApp1InstallURL),
                     webapps::WebappInstallSource::EXTERNAL_DEFAULT);
-  AppId app_id2 = InstallWebAppFromPolicy(kApp2InstallURL);
+  webapps::AppId app_id2 = InstallWebAppFromPolicy(kApp2InstallURL);
 
   // User-installed apps.
-  AppId app_id3 =
+  webapps::AppId app_id3 =
       InstallWebApp(kApp3Title, GURL(kApp3StartURL), GURL(kApp3InstallURL),
                     webapps::WebappInstallSource::AUTOMATIC_PROMPT_BROWSER_TAB);
-  AppId app_id4 =
+  webapps::AppId app_id4 =
       InstallWebApp(kApp4Title, GURL(kApp4StartURL), GURL(kApp4InstallURL),
                     webapps::WebappInstallSource::SYNC);
 
@@ -136,20 +136,20 @@ IN_PROC_BROWSER_TEST_F(WebAppCleanupHandlerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(WebAppCleanupHandlerBrowserTest,
                        DoesNotUninstallUserAndPolicyInstalledApp) {
-  AppId app_id1 =
+  webapps::AppId app_id1 =
       InstallWebApp(kApp1Title, GURL(kApp1StartURL), GURL(kApp1InstallURL),
                     webapps::WebappInstallSource::EXTERNAL_DEFAULT);
-  AppId app_id2 = InstallWebAppFromPolicy(kApp2InstallURL);
+  webapps::AppId app_id2 = InstallWebAppFromPolicy(kApp2InstallURL);
 
   // App that is both installed by the user and by policy.
-  AppId app_id3 =
+  webapps::AppId app_id3 =
       InstallWebApp(kApp3Title, GURL(kApp3InstallURL), GURL(kApp3InstallURL),
                     webapps::WebappInstallSource::SYNC);
-  AppId policy_app_id = InstallWebAppFromPolicy(kApp3InstallURL);
+  webapps::AppId policy_app_id = InstallWebAppFromPolicy(kApp3InstallURL);
   EXPECT_EQ(policy_app_id, app_id3);
 
   // User-installed app.
-  AppId app_id4 =
+  webapps::AppId app_id4 =
       InstallWebApp(kApp4Title, GURL(kApp4StartURL), GURL(kApp4InstallURL),
                     webapps::WebappInstallSource::AUTOMATIC_PROMPT_BROWSER_TAB);
 
