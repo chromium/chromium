@@ -582,48 +582,6 @@ TEST_F(ArcTracingModelTest, GraphicsModelLoadSerialize) {
   EXPECT_FALSE(LoadGraphicsModel("gm_bad_wrong_timestamp.json"));
 }
 
-TEST_F(ArcTracingModelTest, EventsContainerTrim) {
-  ArcTracingGraphicsModel::EventsContainer events;
-  constexpr int64_t trim_timestamp = 25;
-  events.global_events().emplace_back(
-      ArcTracingGraphicsModel::BufferEventType::kChromeOSJank,
-      15 /* timestamp */);
-  events.global_events().emplace_back(
-      ArcTracingGraphicsModel::BufferEventType::kChromeOSJank,
-      25 /* timestamp */);
-  events.global_events().emplace_back(
-      ArcTracingGraphicsModel::BufferEventType::kChromeOSJank,
-      30 /* timestamp */);
-  events.global_events().emplace_back(
-      ArcTracingGraphicsModel::BufferEventType::kChromeOSJank,
-      35 /* timestamp */);
-  events.buffer_events().resize(1);
-  // Two sequences, first sequence starts before trim and ends after. After
-  // trimming  next sequence should be preserved only.
-  events.buffer_events()[0].emplace_back(
-      ArcTracingGraphicsModel::BufferEventType::kChromeOSDraw,
-      20 /* timestamp */);
-  events.buffer_events()[0].emplace_back(
-      ArcTracingGraphicsModel::BufferEventType::kChromeOSSwapDone,
-      30 /* timestamp */);
-  events.buffer_events()[0].emplace_back(
-      ArcTracingGraphicsModel::BufferEventType::kChromeOSDraw,
-      40 /* timestamp */);
-  events.buffer_events()[0].emplace_back(
-      ArcTracingGraphicsModel::BufferEventType::kChromeOSSwapDone,
-      50 /* timestamp */);
-  ArcTracingGraphicsModel::TrimEventsContainer(
-      &events, trim_timestamp,
-      {ArcTracingGraphicsModel::BufferEventType::kChromeOSDraw});
-  ASSERT_EQ(3U, events.global_events().size());
-  EXPECT_EQ(25U, events.global_events()[0].timestamp);
-  ASSERT_EQ(1U, events.buffer_events().size());
-  ASSERT_EQ(2U, events.buffer_events()[0].size());
-  EXPECT_EQ(40U, events.buffer_events()[0][0].timestamp);
-  EXPECT_EQ(ArcTracingGraphicsModel::BufferEventType::kChromeOSDraw,
-            events.buffer_events()[0][0].type);
-}
-
 TEST_F(ArcTracingModelTest, AsynchronousSystemEvents) {
   base::FilePath base_path;
   base::PathService::Get(chrome::DIR_TEST_DATA, &base_path);

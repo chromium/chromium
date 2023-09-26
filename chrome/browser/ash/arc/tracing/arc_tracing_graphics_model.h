@@ -174,15 +174,6 @@ class ArcTracingGraphicsModel {
 
   ~ArcTracingGraphicsModel();
 
-  // Trims container events by |trim_timestamp|. All global events are discarded
-  // prior to |trim_timestamp|. Buffer events are discarded prior to
-  // |trim_timestamp| and on and after until event from |start_types| is
-  // detected.
-  static void TrimEventsContainer(
-      ArcTracingGraphicsModel::EventsContainer* container,
-      int64_t trim_timestamp,
-      const std::set<ArcTracingGraphicsModel::BufferEventType>& start_types);
-
   // Builds the model from the common tracing model |common_model|.
   bool Build(const ArcTracingModel& common_model,
              const TraceTimestamps& commits);
@@ -228,11 +219,6 @@ class ArcTracingGraphicsModel {
 
   // Resets whole model.
   void Reset();
-
-  // Trims events before first VSYNC event. ARC tracing starts delayed in
-  // comparison with Chrome, memory and CPU events. That makes empty area for
-  // graphics buffer confusing.
-  void VsyncTrim();
 
   ViewMap view_buffers_;
   // To avoid overlapping events are stored interlaced.

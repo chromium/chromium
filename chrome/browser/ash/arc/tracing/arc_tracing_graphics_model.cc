@@ -625,36 +625,6 @@ ArcTracingGraphicsModel::ArcTracingGraphicsModel() = default;
 
 ArcTracingGraphicsModel::~ArcTracingGraphicsModel() = default;
 
-// static
-void ArcTracingGraphicsModel::TrimEventsContainer(
-    ArcTracingGraphicsModel::EventsContainer* container,
-    int64_t trim_timestamp,
-    const std::set<ArcTracingGraphicsModel::BufferEventType>& start_types) {
-  // For trim point use |ArcTracingGraphicsModel::BufferEventType::kNone| that
-  // is less than any other event type.
-  const ArcTracingGraphicsModel::BufferEvent trim_point(
-      ArcTracingGraphicsModel::BufferEventType::kNone, trim_timestamp);
-
-  // Global events are trimmed by timestamp only.
-  auto global_cut_pos = std::lower_bound(container->global_events().begin(),
-                                         container->global_events().end(),
-                                         trim_point, SortByTimestampPred);
-  container->global_events() = ArcTracingGraphicsModel::BufferEvents(
-      global_cut_pos, container->global_events().end());
-
-  for (auto& buffer : container->buffer_events()) {
-    auto cut_pos = std::lower_bound(buffer.begin(), buffer.end(), trim_point,
-                                    SortByTimestampPred);
-    while (cut_pos != buffer.end()) {
-      if (start_types.count(cut_pos->type))
-        break;
-      ++cut_pos;
-    }
-
-    buffer = ArcTracingGraphicsModel::BufferEvents(cut_pos, buffer.end());
-  }
-}
-
 bool ArcTracingGraphicsModel::Build(const ArcTracingModel& common_model,
                                     const TraceTimestamps& commits) {
   Reset();
@@ -696,8 +666,6 @@ bool ArcTracingGraphicsModel::Build(const ArcTracingModel& common_model,
   }
 
   system_model_.CopyFrom(common_model.system_model());
-
-  VsyncTrim();
 
   NormalizeTimestamps();
 
@@ -765,24 +733,6 @@ void ArcTracingGraphicsModel::Reset() {
   app_icon_png_.clear();
   platform_ = std::string();
   timestamp_ = base::Time();
-}
-
-void ArcTracingGraphicsModel::VsyncTrim() {
-  int64_t trim_timestamp = -1;
-
-  if (trim_timestamp < 0) {
-    LOG(ERROR) << "VSYNC event was not found, could not trim.";
-    return;
-  }
-
-  TrimEventsContainer(&chrome_top_level_, trim_timestamp,
-                      {BufferEventType::kChromeOSDraw});
-  for (auto& view_buffer : view_buffers_) {
-    TrimEventsContainer(&view_buffer.second, trim_timestamp,
-                        {BufferEventType::kBufferQueueDequeueStart,
-                         BufferEventType::kExoSurfaceAttach});
-  }
-  system_model_.Trim(trim_timestamp);
 }
 
 base::Value::Dict ArcTracingGraphicsModel::Serialize() const {
