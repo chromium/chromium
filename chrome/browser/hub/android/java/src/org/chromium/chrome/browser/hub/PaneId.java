@@ -14,11 +14,12 @@ import java.lang.annotation.RetentionPolicy;
  * not affect Pane order in the Hub. Add new entries to the end of the list before
  * {@link PaneId.COUNT}.
  */
-@IntDef({PaneId.TAB_SWITCHER, PaneId.BOOKMARKS, PaneId.COUNT})
+@IntDef({PaneId.TAB_SWITCHER, PaneId.INCOGNITO_TAB_SWITCHER, PaneId.BOOKMARKS, PaneId.COUNT})
 @Retention(RetentionPolicy.SOURCE)
 public @interface PaneId {
     int TAB_SWITCHER = 0;
-    int BOOKMARKS = 1;
+    int INCOGNITO_TAB_SWITCHER = 1;
+    int BOOKMARKS = 2;
     /** Must be last. */
-    int COUNT = 2;
+    int COUNT = 3;
 }

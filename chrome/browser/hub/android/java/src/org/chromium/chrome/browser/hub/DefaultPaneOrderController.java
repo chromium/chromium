@@ -10,6 +10,7 @@ import com.google.common.collect.ImmutableSet;
 public class DefaultPaneOrderController implements PaneOrderController {
     @Override
     public ImmutableSet<Integer> getPaneOrder() {
-        return ImmutableSet.of(PaneId.TAB_SWITCHER, PaneId.BOOKMARKS);
+        return ImmutableSet.of(
+                PaneId.TAB_SWITCHER, PaneId.INCOGNITO_TAB_SWITCHER, PaneId.BOOKMARKS);
     }
 }

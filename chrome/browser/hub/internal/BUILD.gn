@@ -3,40 +3,34 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
-import("//chrome/android/features/android_library_factory_tmpl.gni")
 
 android_library("java") {
+  visibility = [ "//chrome/android:*" ]
+
   sources = [
-    "android/java/src/org/chromium/chrome/browser/hub/DefaultPaneOrderController.java",
-    "android/java/src/org/chromium/chrome/browser/hub/Pane.java",
-    "android/java/src/org/chromium/chrome/browser/hub/PaneId.java",
-    "android/java/src/org/chromium/chrome/browser/hub/PaneListBuilder.java",
-    "android/java/src/org/chromium/chrome/browser/hub/PaneManager.java",
-    "android/java/src/org/chromium/chrome/browser/hub/PaneOrderController.java",
+    "android/java/src/org/chromium/chrome/browser/hub/PaneManagerFactory.java",
+    "android/java/src/org/chromium/chrome/browser/hub/PaneManagerImpl.java",
   ]
 
   deps = [
     "//base:base_java",
+    "//chrome/browser/hub:java",
     "//components/browser_ui/widget/android:java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }
 
-android_library_factory("factory_java") {
-  deps = [ ":java" ]
-
-  sources = [ "internal/android/java/src/org/chromium/chrome/browser/hub/PaneManagerFactory.java" ]
-}
-
 robolectric_library("junit") {
-  sources = [ "android/java/src/org/chromium/chrome/browser/hub/PaneListBuilderUnitTest.java" ]
+  sources = [ "android/java/src/org/chromium/chrome/browser/hub/PaneManagerImplUnitTest.java" ]
 
   deps = [
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//chrome/browser/hub:factory_java",
+    "//chrome/browser/hub:java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/browser_ui/widget/android:java",
     "//third_party/android_deps:guava_android_java",

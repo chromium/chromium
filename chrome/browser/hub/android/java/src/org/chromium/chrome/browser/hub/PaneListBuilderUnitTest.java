@@ -47,10 +47,11 @@ public class PaneListBuilderUnitTest {
 
         var panes = new PaneListBuilder(orderController)
                             .registerPane(PaneId.BOOKMARKS, mMockSupplier)
+                            .registerPane(PaneId.INCOGNITO_TAB_SWITCHER, mMockSupplier)
                             .registerPane(PaneId.TAB_SWITCHER, mMockSupplier)
                             .build();
 
-        assertEquals(2, panes.size());
+        assertEquals(3, panes.size());
         assertEquals(orderController.getPaneOrder(), panes.keySet());
     }
 
@@ -61,10 +62,11 @@ public class PaneListBuilderUnitTest {
 
         var panes = new PaneListBuilder(orderController)
                             .registerPane(PaneId.TAB_SWITCHER, mMockSupplier)
+                            .registerPane(PaneId.INCOGNITO_TAB_SWITCHER, mMockSupplier)
                             .registerPane(PaneId.BOOKMARKS, mMockSupplier)
                             .build();
 
-        assertEquals(2, panes.size());
+        assertEquals(3, panes.size());
         assertEquals(orderController.getPaneOrder().asList(), panes.keySet().asList());
     }
 
