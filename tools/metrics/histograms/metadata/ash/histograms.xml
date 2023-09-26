@@ -2448,7 +2448,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.NumberOfWindowsClosed2" units="units"
-    expires_after="2024-03-10">
+    expires_after="2024-05-07">
   <owner>aprilzhou@google.com</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>
@@ -2459,7 +2459,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.NumberOfWindowsClosed2.{RemovalSource}"
-    units="windows" expires_after="2023-10-03">
+    units="windows" expires_after="2024-05-07">
   <owner>aprilzhou@google.com</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>
