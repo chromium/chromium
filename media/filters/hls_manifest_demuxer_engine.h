@@ -161,7 +161,6 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
                        scoped_refptr<hls::MediaPlaylist> playlist);
   void DetermineStreamContainerAndCodecs(
       hls::MediaPlaylist* playlist,
-      PlaylistParseInfo parse_info,
       HlsDemuxerStatusCb<HlsCodecDetector::ContainerAndCodecs> container_cb);
   void OnPlaylistContainerDetermined(
       PipelineStatusCallback parse_complete_cb,
@@ -169,9 +168,8 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
       scoped_refptr<hls::MediaPlaylist> playlist,
       HlsDemuxerStatus::Or<HlsCodecDetector::ContainerAndCodecs> maybe_info);
   void PeekFirstSegment(
-      PlaylistParseInfo parse_info,
       HlsDemuxerStatusCb<HlsCodecDetector::ContainerAndCodecs> cb,
-      std::unique_ptr<HlsDataSource> data_source);
+      HlsDataSourceStreamManager::ReadResult maybe_stream);
 
   void OnChunkDemuxerParseWarning(std::string role,
                                   SourceBufferParseWarning warning);

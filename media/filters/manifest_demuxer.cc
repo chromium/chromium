@@ -65,6 +65,7 @@ bool ManifestDemuxer::ManifestDemuxerStream::SupportsConfigChanges() {
 
 ManifestDemuxer::~ManifestDemuxer() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  impl_->Stop();
   impl_.reset();
   chunk_demuxer_.reset();
 }

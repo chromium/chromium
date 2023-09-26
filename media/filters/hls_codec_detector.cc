@@ -22,11 +22,10 @@ void HlsCodecDetector::DetermineContainerOnly(
   CHECK(!callback_);
   callback_ = std::move(cb);
   parser_ = nullptr;
-  rendition_host_->ReadStream(
-      std::move(stream),
-      base::BindPostTaskToCurrentDefault(base::BindOnce(
-          &HlsCodecDetector::OnStreamFetched, weak_factory_.GetWeakPtr(),
-          /*container_only=*/true)));
+  rendition_host_->ReadStream(std::move(stream),
+                              base::BindOnce(&HlsCodecDetector::OnStreamFetched,
+                                             weak_factory_.GetWeakPtr(),
+                                             /*container_only=*/true));
 }
 
 void HlsCodecDetector::DetermineContainerAndCodec(
@@ -36,11 +35,10 @@ void HlsCodecDetector::DetermineContainerAndCodec(
   CHECK(!callback_);
   callback_ = std::move(cb);
   parser_ = nullptr;
-  rendition_host_->ReadStream(
-      std::move(stream),
-      base::BindPostTaskToCurrentDefault(base::BindOnce(
-          &HlsCodecDetector::OnStreamFetched, weak_factory_.GetWeakPtr(),
-          /*container_only=*/false)));
+  rendition_host_->ReadStream(std::move(stream),
+                              base::BindOnce(&HlsCodecDetector::OnStreamFetched,
+                                             weak_factory_.GetWeakPtr(),
+                                             /*container_only=*/false));
 }
 
 void HlsCodecDetector::OnStreamFetched(
@@ -126,10 +124,10 @@ void HlsCodecDetector::OnStreamFetched(
   // chunk initially anyway, so fetching the whole thing isn't going to be an
   // issue.
   stream->Flush();
-  rendition_host_->ReadStream(std::move(stream),
-                              base::BindPostTaskToCurrentDefault(base::BindOnce(
-                                  &HlsCodecDetector::OnStreamFetched,
-                                  weak_factory_.GetWeakPtr(), container_only)));
+  rendition_host_->ReadStream(
+      std::move(stream),
+      base::BindOnce(&HlsCodecDetector::OnStreamFetched,
+                     weak_factory_.GetWeakPtr(), container_only));
 }
 
 void HlsCodecDetector::DetermineContainer(bool container_only,
