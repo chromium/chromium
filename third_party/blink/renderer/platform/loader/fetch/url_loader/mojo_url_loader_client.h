@@ -16,7 +16,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
-#include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom-forward.h"
+#include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -73,7 +73,7 @@ class BLINK_PLATFORM_EXPORT MojoURLLoaderClient final
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
-  void EvictFromBackForwardCache(blink::mojom::RendererEvictionReason reason);
+  void EvictFromBackForwardCache(mojom::blink::RendererEvictionReason reason);
   void DidBufferLoadWhileInBackForwardCache(size_t num_bytes);
   bool CanContinueBufferingWhileInBackForwardCache();
   LoaderFreezeMode freeze_mode() const { return freeze_mode_; }

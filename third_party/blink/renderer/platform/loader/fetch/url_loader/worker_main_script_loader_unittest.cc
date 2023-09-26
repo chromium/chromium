@@ -183,7 +183,7 @@ class WorkerMainScriptLoaderTest : public testing::Test {
     MOCK_METHOD2(DidChangeRenderBlockingBehavior,
                  void(Resource* resource, const FetchParameters& params));
     MOCK_METHOD1(EvictFromBackForwardCache,
-                 void(blink::mojom::RendererEvictionReason));
+                 void(mojom::blink::RendererEvictionReason));
   };
 
   MojoCreateDataPipeOptions CreateDataPipeOptions() {

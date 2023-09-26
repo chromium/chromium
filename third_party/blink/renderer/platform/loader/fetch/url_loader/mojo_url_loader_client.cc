@@ -188,7 +188,7 @@ class MojoURLLoaderClient::BodyBuffer final
       owner_->DidBufferLoadWhileInBackForwardCache(num_bytes);
       if (!owner_->CanContinueBufferingWhileInBackForwardCache()) {
         owner_->EvictFromBackForwardCache(
-            blink::mojom::RendererEvictionReason::kNetworkExceedsBufferLimit);
+            mojom::blink::RendererEvictionReason::kNetworkExceedsBufferLimit);
         return;
       }
     }
@@ -396,7 +396,7 @@ void MojoURLLoaderClient::OnReceiveResponse(
 }
 
 void MojoURLLoaderClient::EvictFromBackForwardCache(
-    blink::mojom::RendererEvictionReason reason) {
+    mojom::blink::RendererEvictionReason reason) {
   DCHECK_EQ(freeze_mode_, LoaderFreezeMode::kBufferIncoming);
   StopBackForwardCacheEvictionTimer();
   if (!back_forward_cache_loader_helper_) {
@@ -421,7 +421,7 @@ bool MojoURLLoaderClient::CanContinueBufferingWhileInBackForwardCache() {
 
 void MojoURLLoaderClient::EvictFromBackForwardCacheDueToTimeout() {
   EvictFromBackForwardCache(
-      blink::mojom::RendererEvictionReason::kNetworkRequestTimeout);
+      mojom::blink::RendererEvictionReason::kNetworkRequestTimeout);
 }
 
 void MojoURLLoaderClient::StopBackForwardCacheEvictionTimer() {
@@ -440,7 +440,7 @@ void MojoURLLoaderClient::OnReceiveRedirect(
     // keepalive request infrastructure to the browser process.
 
     EvictFromBackForwardCache(
-        blink::mojom::RendererEvictionReason::kNetworkRequestRedirected);
+        mojom::blink::RendererEvictionReason::kNetworkRequestRedirected);
 
     OnComplete(network::URLLoaderCompletionStatus(net::ERR_ABORTED));
     return;
