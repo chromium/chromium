@@ -152,7 +152,11 @@ void MediaDocument::DefaultEventHandler(Event& event) {
       // space or media key (play/pause)
       video->TogglePlayState();
       event.SetDefaultHandled();
+      return;
     }
+    // Route the keyboard events directly to the media element
+    video->DispatchEvent(event);
+    return;
   }
 }
 
