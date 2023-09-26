@@ -22,6 +22,8 @@ class WindowAndroid;
 
 namespace hats {
 
+class SurveyClientAndroid;
+
 // Interface used to display Survey to the Android UI. C++ clients can extend
 // this class, so the C++ instance will receive the corresponding method calls
 // from Java.
@@ -59,7 +61,7 @@ class SurveyUiDelegateAndroid {
   virtual void Dismiss(JNIEnv* env);
 
  private:
-  // friend class SurveyClientAndroid;
+  friend class SurveyClientAndroid;
   const JavaRef<jobject>& GetJavaObject(JNIEnv* env) const;
 
   base::android::ScopedJavaGlobalRef<jobject> jobj_;

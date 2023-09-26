@@ -14,6 +14,7 @@ android_library("java") {
     "//chrome/browser/ui/android/hats/test:test_support_java",
   ]
   sources = [
+    "java/src/org/chromium/chrome/browser/ui/hats/SurveyClientBridge.java",
     "java/src/org/chromium/chrome/browser/ui/hats/SurveyClientFactory.java",
     "java/src/org/chromium/chrome/browser/ui/hats/SurveyClientImpl.java",
     "java/src/org/chromium/chrome/browser/ui/hats/SurveyUiDelegateBridge.java",
@@ -35,6 +36,7 @@ android_library("java") {
 robolectric_library("junit") {
   testonly = true
   sources = [
+    "java/src/org/chromium/chrome/browser/ui/hats/SurveyClientBridgeUnitTest.java",
     "java/src/org/chromium/chrome/browser/ui/hats/SurveyClientUnitTest.java",
     "java/src/org/chromium/chrome/browser/ui/hats/SurveyUiDelegateBridgeUnitTest.java",
   ]
@@ -87,6 +89,7 @@ android_library("provider_public_impl_java") {
 
 generate_jni("jni_headers") {
   sources = [
+    "java/src/org/chromium/chrome/browser/ui/hats/SurveyClientBridge.java",
     "java/src/org/chromium/chrome/browser/ui/hats/SurveyUiDelegateBridge.java",
   ]
 }
