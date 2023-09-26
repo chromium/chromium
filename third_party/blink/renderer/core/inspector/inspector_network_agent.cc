@@ -424,6 +424,8 @@ String BuildBlockedReason(ResourceRequestBlockedReason reason) {
       // is marked as successful and no blocking reason is reported.
       NOTREACHED();
       return protocol::Network::BlockedReasonEnum::Other;
+    case blink::ResourceRequestBlockedReason::kSupervisedUserUrlBlocked:
+      return protocol::Network::BlockedReasonEnum::Other;
   }
   NOTREACHED();
   return protocol::Network::BlockedReasonEnum::Other;
