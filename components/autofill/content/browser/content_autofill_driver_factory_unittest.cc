@@ -173,9 +173,10 @@ class ContentAutofillDriverFactoryTest
 
   void NavigateMainFrame(base::StringPiece url) {
     // One call of HideAutofillPopup() comes from ContentAutofillDriverFactory.
-    // A second one may come from BrowserAutofillManager::Reset().
+    // A second and third one may come from BrowserAutofillManager::Reset() if
+    // the navigation is cross-document.
     EXPECT_CALL(*client_, HideAutofillPopup(PopupHidingReason::kNavigation))
-        .Times(Between(1, 2));
+        .Times(Between(1, 3));
     content::NavigationSimulator::CreateBrowserInitiated(GURL(url),
                                                          web_contents())
         ->Commit();

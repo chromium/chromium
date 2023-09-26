@@ -191,8 +191,15 @@ void AndroidAutofillManager::OnServerRequestError(
 
 void AndroidAutofillManager::Reset() {
   // Inform the provider before resetting state in case it needs to access it.
-  if (auto* provider = GetAutofillProvider()) {
-    provider->OnManagerResetOrDestroyed(this);
+  if (auto* rfh =
+          static_cast<ContentAutofillDriver&>(driver()).render_frame_host()) {
+    if (auto* web_contents = content::WebContents::FromRenderFrameHost(rfh)) {
+      if (auto* provider = AutofillProvider::FromWebContents(web_contents)) {
+        // Note that this doesn't use `GetAutofillProvider()` because we might
+        // need to reset even when `rfh` is pending deletion.
+        provider->OnManagerResetOrDestroyed(this);
+      }
+    }
   }
   AutofillManager::Reset();
   forms_with_server_predictions_.clear();
