@@ -64,7 +64,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="PrivacyBudget.ClockSkew.FetchLatencyJitter" units="ms"
-    expires_after="2024-01-14">
+    expires_after="2024-03-24">
   <owner>antoniosartori@chromium.org</owner>
   <owner>areimers@chromium.org</owner>
   <summary>

@@ -2470,7 +2470,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WifiSync.MultiDeviceFeatureState"
-    enum="MultiDevice_FeatureState" expires_after="2023-12-31">
+    enum="MultiDevice_FeatureState" expires_after="2024-03-24">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>

@@ -62,7 +62,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Discover.SearchHandler.SearchAvailableTime" units="ms"
-    expires_after="2023-12-10">
+    expires_after="2024-03-24">
   <owner>chenjih@google.com</owner>
   <owner>tby@chromium.org</owner>
   <owner>showoff-eng@google.com</owner>
