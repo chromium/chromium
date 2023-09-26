@@ -25,6 +25,7 @@ const char kPrimaryProfileEmail[] = "user@test";
 class PrimaryProfileCreationWaiterTest : public testing::Test {
  protected:
   void SetUp() override {
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     testing_profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(testing_profile_manager_->SetUp());
@@ -37,24 +38,19 @@ class PrimaryProfileCreationWaiterTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<PrimaryProfileCreationWaiter>
       primary_profile_creation_waiter_;
 };
 
 TEST_F(PrimaryProfileCreationWaiterTest,
        RunCallbackImmediatelyIfPrimaryProfileIsCreated) {
-  // Set up fake UserManager.
-  auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
-  auto* fake_user_manager = user_manager.get();
-  scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-      std::move(user_manager));
-
   // Add an user, log in, and set profile creation as complete.
   const AccountId account_id(AccountId::FromUserEmail(kPrimaryProfileEmail));
-  fake_user_manager->AddUser(account_id);
-  fake_user_manager->LoginUser(account_id, /*set_profile_created_flag=*/true);
+  fake_user_manager_->AddUser(account_id);
+  fake_user_manager_->LoginUser(account_id, /*set_profile_created_flag=*/true);
 
   // Initialize the waiter.
   base::test::TestFuture<void> future;
@@ -69,15 +65,10 @@ TEST_F(PrimaryProfileCreationWaiterTest,
 
 TEST_F(PrimaryProfileCreationWaiterTest,
        RunCallbackWhenPrimaryProfileIsCreated) {
-  auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
-  auto* fake_user_manager = user_manager.get();
-  scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-      std::move(user_manager));
-
   // Add an user and log in, but set profile creation as not complete yet.
   const AccountId account_id(AccountId::FromUserEmail(kPrimaryProfileEmail));
-  fake_user_manager->AddUser(account_id);
-  fake_user_manager->LoginUser(account_id, /*set_profile_created_flag=*/false);
+  fake_user_manager_->AddUser(account_id);
+  fake_user_manager_->LoginUser(account_id, /*set_profile_created_flag=*/false);
 
   base::test::TestFuture<void> future;
   primary_profile_creation_waiter_ = PrimaryProfileCreationWaiter::WaitOrRun(

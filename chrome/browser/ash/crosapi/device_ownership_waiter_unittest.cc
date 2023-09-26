@@ -26,9 +26,7 @@ class DeviceOwnershipWaiterTest : public testing::Test {
   ~DeviceOwnershipWaiterTest() override = default;
 
   void SetUp() override {
-    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(user_manager));
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
   }
 
   ash::FakeChromeUserManager& GetFakeUserManager() {
@@ -38,7 +36,8 @@ class DeviceOwnershipWaiterTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
 };
 
 TEST_F(DeviceOwnershipWaiterTest, DelaysCorrectly) {

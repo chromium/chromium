@@ -49,21 +49,17 @@ class PersistentForcedExtensionKeepAliveTest : public testing::Test {
   ~PersistentForcedExtensionKeepAliveTest() override = default;
 
   void SetUp() override {
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
-
-    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    auto* fake_user_manager = user_manager.get();
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(user_manager));
 
     ASSERT_TRUE(profile_manager_->SetUp());
 
     // Login a user. The "email" must match the TestingProfile's
     // GetProfileUserName() so that profile() will be the primary profile.
     const AccountId account_id = AccountId::FromUserEmail(kUserEmail);
-    fake_user_manager->AddUser(account_id);
-    fake_user_manager->LoginUser(account_id);
+    fake_user_manager_->AddUser(account_id);
+    fake_user_manager_->LoginUser(account_id);
 
     CreateTestingProfile();
 
@@ -79,7 +75,7 @@ class PersistentForcedExtensionKeepAliveTest : public testing::Test {
   void TearDown() override {
     profile_manager_->DeleteAllTestingProfiles();
     profile_manager_.reset();
-    scoped_user_manager_.reset();
+    fake_user_manager_.Reset();
   }
 
   void CreateTestingProfile() {
@@ -99,7 +95,8 @@ class PersistentForcedExtensionKeepAliveTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
 
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
   std::unique_ptr<FakeBrowserManager> browser_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
 

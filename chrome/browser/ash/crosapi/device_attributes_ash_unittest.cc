@@ -60,9 +60,7 @@ class DeviceAttributesAshTest
   ~DeviceAttributesAshTest() override = default;
 
   void SetUp() override {
-    auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_user_manager));
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
 
     // Set up fake device attributes.
     device_attributes_ = std::make_unique<policy::FakeDeviceAttributes>();
@@ -107,14 +105,12 @@ class DeviceAttributesAshTest
   void AddUser(bool is_affiliated = true) {
     AccountId account_id =
         AccountId::FromUserEmail(TestingProfile::kDefaultProfileUserName);
-    ash::FakeChromeUserManager* user_manager =
-        static_cast<ash::FakeChromeUserManager*>(
-            user_manager::UserManager::Get());
     const user_manager::User* user =
-        user_manager->AddUserWithAffiliation(account_id, is_affiliated);
-    user_manager->UserLoggedIn(account_id, user->username_hash(),
-                               /*browser_restart=*/false, /*is_child=*/false);
-    user_manager->SimulateUserProfileLoad(account_id);
+        fake_user_manager_->AddUserWithAffiliation(account_id, is_affiliated);
+    fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
+                                     /*browser_restart=*/false,
+                                     /*is_child=*/false);
+    fake_user_manager_->SimulateUserProfileLoad(account_id);
   }
 
   bool IsSigninProfileOrBelongsToAffiliatedUser() {
@@ -130,10 +126,10 @@ class DeviceAttributesAshTest
  protected:
   content::BrowserTaskEnvironment task_environment_;
 
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<TestingProfile> profile_;
-
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 
   std::unique_ptr<policy::FakeDeviceAttributes> device_attributes_;
   mojo::Remote<mojom::DeviceAttributes> device_attributes_remote_;

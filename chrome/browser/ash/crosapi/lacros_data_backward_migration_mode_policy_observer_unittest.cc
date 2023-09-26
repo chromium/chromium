@@ -43,12 +43,11 @@ class LacrosDataBackwardMigrationModePolicyObserverTest : public testing::Test {
 
   void SetUp() override {
     ash::SessionManagerClient::InitializeFake();
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     // Add primary user.
-    auto* user_manager = static_cast<ash::FakeChromeUserManager*>(
-        user_manager::UserManager::Get());
-    test_user_ = user_manager->AddPublicAccountUser(
+    test_user_ = fake_user_manager_->AddPublicAccountUser(
         AccountId::FromUserEmailGaiaId("test@test.com", "test_user"));
 
     ASSERT_TRUE(profile_manager_->SetUp());
@@ -66,11 +65,9 @@ class LacrosDataBackwardMigrationModePolicyObserverTest : public testing::Test {
 
   void CreatePrimaryProfile() {
     if (!primary_profile_) {
-      auto* user_manager = static_cast<ash::FakeChromeUserManager*>(
-          user_manager::UserManager::Get());
-      user_manager->LoginUser(test_user_->GetAccountId(),
-                              /*set_profile_created_flag=*/true);
-      user_manager->SwitchActiveUser(test_user_->GetAccountId());
+      fake_user_manager_->LoginUser(test_user_->GetAccountId(),
+                                    /*set_profile_created_flag=*/true);
+      fake_user_manager_->SwitchActiveUser(test_user_->GetAccountId());
       primary_profile_ = profile_manager_->CreateTestingProfile("test-profile");
     }
   }
@@ -109,8 +106,8 @@ class LacrosDataBackwardMigrationModePolicyObserverTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  user_manager::ScopedUserManager scoped_user_manager_{
-      std::make_unique<user_manager::FakeUserManager>()};
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<user_manager::User, ExperimentalAsh> test_user_ = nullptr;
   raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh>

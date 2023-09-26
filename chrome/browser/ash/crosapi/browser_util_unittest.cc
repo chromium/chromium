@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/crosapi/browser_util.h"
 
+#include <memory>
+
 #include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -105,15 +107,14 @@ class BrowserUtilTest : public testing::Test {
   ~BrowserUtilTest() override = default;
 
   void SetUp() override {
-    fake_user_manager_ = new ash::FakeChromeUserManager;
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(fake_user_manager_.get()));
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     browser_util::RegisterLocalStatePrefs(pref_service_.registry());
     ash::system::StatisticsProvider::SetTestProvider(&statistics_provider_);
   }
 
   void TearDown() override {
     ash::system::StatisticsProvider::SetTestProvider(nullptr);
+    fake_user_manager_.Reset();
   }
 
   void AddRegularUser(const std::string& email) {
@@ -129,10 +130,9 @@ class BrowserUtilTest : public testing::Test {
   // The order of these members is relevant for both construction and
   // destruction timing.
   content::BrowserTaskEnvironment task_environment_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
   TestingProfile testing_profile_;
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      fake_user_manager_ = nullptr;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   TestingPrefServiceSimple pref_service_;
   ash::system::FakeStatisticsProvider statistics_provider_;
 };

@@ -221,9 +221,7 @@ class BrowserDataMigratorRestartTest : public ::testing::Test {
   ~BrowserDataMigratorRestartTest() override = default;
 
   void SetUp() override {
-    fake_user_manager_ = new ash::FakeChromeUserManager;
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(fake_user_manager_.get()));
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
   }
 
   void AddRegularUser(const std::string& email) {
@@ -235,16 +233,17 @@ class BrowserDataMigratorRestartTest : public ::testing::Test {
   }
 
  protected:
-  ash::FakeChromeUserManager* user_manager() { return fake_user_manager_; }
+  ash::FakeChromeUserManager* user_manager() {
+    return fake_user_manager_.Get();
+  }
   PrefService* local_state() { return fake_user_manager_->GetLocalState(); }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   ScopedTestingLocalState scoped_local_state_{
       TestingBrowserProcess::GetGlobal()};
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      fake_user_manager_ = nullptr;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
   FakeSessionManagerClient session_manager_;
 };
 
