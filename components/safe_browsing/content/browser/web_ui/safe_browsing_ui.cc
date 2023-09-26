@@ -13,6 +13,7 @@
 
 #include "base/base64.h"
 #include "base/base64url.h"
+#include "base/command_line.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -75,6 +76,11 @@ WebUIInfoSingleton::~WebUIInfoSingleton() = default;
 
 // static
 WebUIInfoSingleton* WebUIInfoSingleton::GetInstance() {
+  CHECK(base::CommandLine::ForCurrentProcess()
+            ->GetSwitchValueASCII("type")
+            .empty())
+      << "chrome://safe-browsing WebUI is only available in the browser "
+         "process";
   return base::Singleton<WebUIInfoSingleton>::get();
 }
 
