@@ -206,6 +206,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   WebString OriginCalculationDebugInfo() const override {
     return origin_calculation_debug_info_;
   }
+  bool HasLoadedNonInitialEmptyDocument() const override;
 
   MHTMLArchive* Archive() const { return archive_.Get(); }
 

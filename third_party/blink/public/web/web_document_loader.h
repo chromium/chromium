@@ -141,6 +141,10 @@ class BLINK_EXPORT WebDocumentLoader {
 
   virtual WebString OriginCalculationDebugInfo() const = 0;
 
+  // Whether the frame holding this document has loaded a document that is not
+  // an initial empty document.
+  virtual bool HasLoadedNonInitialEmptyDocument() const = 0;
+
  protected:
   ~WebDocumentLoader() = default;
 };

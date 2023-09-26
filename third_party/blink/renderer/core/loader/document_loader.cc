@@ -3406,6 +3406,10 @@ void DocumentLoader::StartViewTransitionIfNeeded(Document& document) {
   }
 }
 
+bool DocumentLoader::HasLoadedNonInitialEmptyDocument() const {
+  return GetFrameLoader().HasLoadedNonInitialEmptyDocument();
+}
+
 // static
 void DocumentLoader::DisableCodeCacheForTesting() {
   GetDisableCodeCacheForTesting() = true;

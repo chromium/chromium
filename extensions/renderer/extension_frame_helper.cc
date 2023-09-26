@@ -134,6 +134,15 @@ ExtensionFrameHelper::ExtensionFrameHelper(content::RenderFrame* render_frame,
       content::RenderFrameObserverTracker<ExtensionFrameHelper>(render_frame),
       extension_dispatcher_(extension_dispatcher) {
   g_frame_helpers.Get().insert(this);
+  if (render_frame->GetWebFrame()
+          ->GetDocumentLoader()
+          ->HasLoadedNonInitialEmptyDocument()) {
+    // With RenderDocument, cross-document navigations create a new RenderFrame
+    // (and thus, a new ExtensionFrameHelper). However, the frame tree node
+    // itself may have already navigated and loaded documents, so set
+    // `has_started_first_navigation_` to true in that case.
+    has_started_first_navigation_ = true;
+  }
 
   render_frame->GetAssociatedInterfaceRegistry()
       ->AddInterface<mojom::LocalFrame>(
