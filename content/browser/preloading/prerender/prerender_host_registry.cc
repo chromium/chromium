@@ -898,7 +898,7 @@ std::set<int> PrerenderHostRegistry::CancelHosts(
       reason.ReportMetrics(prerender_host->trigger_type(),
                            prerender_host->embedder_histogram_suffix());
 
-      NotifyCancel(prerender_host->prerendering_url(), reason);
+      NotifyCancel(prerender_host->frame_tree_node_id(), reason);
 
       // Asynchronously delete the prerender host.
       ScheduleToDeleteAbandonedHost(std::move(prerender_host), reason);
@@ -1628,10 +1628,10 @@ void PrerenderHostRegistry::NotifyTrigger(const GURL& url) {
 }
 
 void PrerenderHostRegistry::NotifyCancel(
-    const GURL& url,
+    int host_frame_tree_node_id,
     const PrerenderCancellationReason& reason) {
   for (Observer& obs : observers_) {
-    obs.OnCancel(url, reason);
+    obs.OnCancel(host_frame_tree_node_id, reason);
   }
 }
 

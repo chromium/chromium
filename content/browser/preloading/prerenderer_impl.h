@@ -41,7 +41,7 @@ class CONTENT_EXPORT PrerendererImpl : public Prerenderer,
       PrerenderCancellationCallback callback) override;
 
   // PrerenderHostRegistry::Observer implementations:
-  void OnCancel(const GURL& url,
+  void OnCancel(int host_frame_tree_node_id,
                 const PrerenderCancellationReason& reason) override;
   void OnRegistryDestroyed() override;
 
