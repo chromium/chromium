@@ -87,9 +87,9 @@ export class SettingsPairedBluetoothListElement extends
    */
   private onManagedTooltipStateChange_(
       e: CustomEvent<
-          {address: string, show: boolean, element: HTMLElement|null}>) {
+          {address: string, show: boolean, element: HTMLElement|null}>): void {
     const target = e.detail.element;
-    const hide = () => {
+    const hide = (): void => {
       this.$.tooltip.hide();
       this.$.tooltip.removeEventListener('mouseenter', hide);
       this.currentTooltipDeviceAddress_ = undefined;

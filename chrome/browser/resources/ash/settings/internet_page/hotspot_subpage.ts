@@ -84,7 +84,7 @@ export class SettingsHotspotSubpageElement extends
   private isHotspotToggleOn_: boolean;
   private autoDisableVirtualPref_: chrome.settingsPrivate.PrefObject<boolean>;
 
-  override currentRouteChanged(route: Route, _oldRoute?: Route) {
+  override currentRouteChanged(route: Route, _oldRoute?: Route): void {
     // Does not apply to this page.
     if (route !== routes.HOTSPOT_DETAIL) {
       return;
@@ -169,7 +169,7 @@ export class SettingsHotspotSubpageElement extends
     return !!hotspotInfo?.config;
   }
 
-  private onHotspotConfigureClick_() {
+  private onHotspotConfigureClick_(): void {
     const event = new CustomEvent('show-hotspot-config-dialog', {
       bubbles: true,
       composed: true,

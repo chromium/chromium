@@ -88,7 +88,7 @@ export class InternetPageBrowserProxyImpl implements InternetPageBrowserProxy {
   }
 
   setGmsCoreNotificationsDisabledDeviceNamesCallback(
-      callback: (deviceNames: string[]) => void) {
+      callback: (deviceNames: string[]) => void): void {
     addWebUiListener('sendGmsCoreNotificationsDisabledDeviceNames', callback);
   }
 }

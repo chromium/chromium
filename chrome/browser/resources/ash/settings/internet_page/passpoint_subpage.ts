@@ -253,7 +253,8 @@ export class SettingsPasspointSubpageElement extends PasspointListenerMixin
     this.showForgetDialog_ = false;
   }
 
-  override onPasspointSubscriptionRemoved(subscription: PasspointSubscription) {
+  override onPasspointSubscriptionRemoved(subscription: PasspointSubscription):
+      void {
     if (this.id_ === subscription.id) {
       // The subscription was removed, leave the page.
       this.close();

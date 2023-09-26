@@ -47,7 +47,7 @@ export const PasspointListenerMixin = dedupingMixin(
           this.listener_ = null;
         }
 
-        override connectedCallback() {
+        override connectedCallback(): void {
           super.connectedCallback();
 
           if (this.isPasspointSettingsEnabled) {
@@ -59,7 +59,7 @@ export const PasspointListenerMixin = dedupingMixin(
           }
         }
 
-        override disconnectedCallback() {
+        override disconnectedCallback(): void {
           super.disconnectedCallback();
 
           if (this.listener_) {

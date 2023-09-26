@@ -291,11 +291,11 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
     return this.i18n('bluetoothDeviceDetailHIDMessageDisconnected');
   }
 
-  private onChangeNameClick_() {
+  private onChangeNameClick_(): void {
     this.shouldShowChangeDeviceNameDialog_ = true;
   }
 
-  private onCloseChangeDeviceNameDialog_() {
+  private onCloseChangeDeviceNameDialog_(): void {
     this.shouldShowChangeDeviceNameDialog_ = false;
   }
 

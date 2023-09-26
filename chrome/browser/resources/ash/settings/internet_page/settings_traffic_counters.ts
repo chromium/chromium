@@ -126,7 +126,7 @@ export class SettingsTrafficCountersElement extends
   /**
    * Loads all the values needed to populate the HTML.
    */
-  load() {
+  load(): void {
     this.populateTrafficCountersAvailable_();
     this.populateDate_();
     this.populateDataUsageValue_();

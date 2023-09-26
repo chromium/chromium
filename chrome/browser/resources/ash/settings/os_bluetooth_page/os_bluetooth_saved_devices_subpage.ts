@@ -88,7 +88,7 @@ export class SettingsBluetoothSavedDevicesSubpageElement extends
         OsBluetoothDevicesSubpageBrowserProxyImpl.getInstance();
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
     this.addWebUiListener(
         'fast-pair-saved-devices-list', this.getSavedDevices_.bind(this));

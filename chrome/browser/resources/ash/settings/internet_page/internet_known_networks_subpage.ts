@@ -420,12 +420,13 @@ class SettingsInternetKnownNetworksPageElement extends
     }
   }
 
-  override async onPasspointSubscriptionAdded(subscription:
-                                                  PasspointSubscription) {
+  override async onPasspointSubscriptionAdded(
+      subscription: PasspointSubscription): Promise<void> {
     this.push('passpointSubscriptionsList_', subscription);
   }
 
-  override onPasspointSubscriptionRemoved(subscription: PasspointSubscription) {
+  override onPasspointSubscriptionRemoved(subscription: PasspointSubscription):
+      void {
     const list = this.passpointSubscriptionsList_.filter((sub) => {
       return sub.id !== subscription.id;
     });

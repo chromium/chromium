@@ -698,7 +698,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
     this.showESimRemoveProfileDialog_ = false;
   }
 
-  private onShowHotspotConfigDialog_() {
+  private onShowHotspotConfigDialog_(): void {
     this.showHotspotConfigDialog_ = true;
   }
 

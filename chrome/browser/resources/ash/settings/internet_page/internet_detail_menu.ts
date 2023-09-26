@@ -134,7 +134,7 @@ export class SettingsInternetDetailMenuElement extends
   /**
    * RouteObserverMixin override
    */
-  override currentRouteChanged(route: Route) {
+  override currentRouteChanged(route: Route): void {
     this.eSimNetworkState_ = null;
     this.guid_ = '';
     if (route !== routes.NETWORK_DETAIL) {
@@ -161,7 +161,7 @@ export class SettingsInternetDetailMenuElement extends
   /**
    * ESimManagerListenerBehavior override
    */
-  override onProfileChanged() {
+  override onProfileChanged(): void {
     this.setEsimNetworkState_();
   }
 

@@ -143,7 +143,7 @@ export class ApnSubpageElement extends ApnSubpageElementBase {
    * Helper method that can be used by parent elements to open the APN
    * creation dialog.
    */
-  openApnDetailDialogInCreateMode() {
+  openApnDetailDialogInCreateMode(): void {
     assert(this.guid_);
     this.$.apnList.openApnDetailDialogInCreateMode();
   }
