@@ -268,6 +268,7 @@ source_set("unittests") {
     "//components/media_router/common:test_support",
     "//components/media_router/common/providers/cast/channel",
     "//components/media_router/common/providers/cast/channel:test_support",
+    "//components/webapps/common",
     "//content/test:test_support",
     "//media:test_support",
     "//services/data_decoder/public/cpp:test_support",
