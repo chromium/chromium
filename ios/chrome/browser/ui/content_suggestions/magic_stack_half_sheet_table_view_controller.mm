@@ -100,10 +100,14 @@ enum ItemType : NSInteger {
   [self.tableViewModel addSectionWithIdentifier:SectionIdentifierOptions];
 
   if (IsIOSSetUpListEnabled()) {
+    NSString* listSymbolName = kListBulletRectangle;
+    if (@available(iOS 16.0, *)) {
+      listSymbolName = kListBulletClipboard;
+    }
     _setUpListToggle = [self
         switchItemWithType:ItemTypeToggleSetUpList
                      title:l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_TITLE)
-                    symbol:DefaultSymbolWithPointSize(kListBulletClipboard,
+                    symbol:DefaultSymbolWithPointSize(listSymbolName,
                                                       kIconPointSize)];
     _setUpListToggle.on = !_setUpListDisabled.value;
     [self.tableViewModel addItem:_setUpListToggle

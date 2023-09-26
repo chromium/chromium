@@ -183,6 +183,7 @@ extern NSString* const kSliderHorizontal;
 extern NSString* const kMacbookAndIPhone;
 extern NSString* const kCheckmarkShield;
 extern NSString* const kListBulletClipboard;
+extern NSString* const kListBulletRectangle;
 extern NSString* const kBoxTruckFill;
 
 // Names of the default symbol being non-monochrome by default. When using them,

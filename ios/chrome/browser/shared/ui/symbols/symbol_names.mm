@@ -176,6 +176,7 @@ NSString* const kSliderHorizontal = @"slider.horizontal.3";
 NSString* const kMacbookAndIPhone = @"macbook.and.iphone";
 NSString* const kCheckmarkShield = @"checkmark.shield";
 NSString* const kListBulletClipboard = @"list.bullet.clipboard";
+NSString* const kListBulletRectangle = @"list.bullet.rectangle.portrait";
 NSString* const kBoxTruckFill = @"box.truck.fill";
 
 // Names of the default symbol being non-monochrome by default. When using them,

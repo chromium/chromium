@@ -177,7 +177,7 @@ void TapMoreButtonIfVisible() {
     config.features_enabled.push_back(kConsistencyNewAccountInterface);
   }
   if ([self isRunningTest:@selector(testMagicStackSetUpListCompleteAllItems)] ||
-      [self isRunningTest:@selector(DISABLED_testMagicStackEditButton)]) {
+      [self isRunningTest:@selector(testMagicStackEditButton)]) {
     config.features_enabled.push_back(kMagicStack);
   } else {
     config.features_disabled.push_back(kMagicStack);
@@ -679,8 +679,7 @@ void TapMoreButtonIfVisible() {
 // Tests the edit button in the Magic Stack. Opens the edit half sheet, disables
 // Set Up List, returns to the Magic Stack and ensures Set Up List is not in the
 // Magic Stack anymore.
-// TODO(crbug.com/1486153): Test failing on Mac.
-- (void)DISABLED_testMagicStackEditButton {
+- (void)testMagicStackEditButton {
   [self prepareToTestSetUpListInMagicStack];
 
   // Swipe all the way over to the end of the Magic Stack.
