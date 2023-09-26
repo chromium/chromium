@@ -125,6 +125,10 @@ using base::UserMetricsAction;
   OverflowMenuModel* _overflowMenuModel;
 
   OverflowMenuOrderer* _overflowMenuOrderer;
+
+  // Stores whether certain events occured during an overflow menu session for
+  // logs.
+  OverflowMenuVisitedEvent _event;
 }
 
 @synthesize mediator = _mediator;
@@ -367,6 +371,9 @@ using base::UserMetricsAction;
 
       [self setupSheetForMenu:menu isCustomizationScreen:NO animated:NO];
 
+      // Reset event before presenting.
+      _event = OverflowMenuVisitedEvent();
+
       __weak __typeof(self) weakSelf = self;
       [self.baseViewController
           presentViewController:menu
@@ -455,6 +462,7 @@ using base::UserMetricsAction;
 
 - (void)dismissPopupMenuAnimated:(BOOL)animated {
   if (self.toolsMenuOpenTime != 0) {
+    OverflowMenuVisitedEvent event;
     base::TimeDelta elapsed = base::Seconds(
         [NSDate timeIntervalSinceReferenceDate] - self.toolsMenuOpenTime);
     UMA_HISTOGRAM_MEDIUM_TIMES("IOS.OverflowMenu.TimeOpen", elapsed);
@@ -466,6 +474,11 @@ using base::UserMetricsAction;
       UMA_HISTOGRAM_MEDIUM_TIMES("IOS.OverflowMenu.TimeOpen.DestinationChosen",
                                  elapsed);
     }
+
+    event.PutOrRemove(OverflowMenuVisitedEventFields::kUserSelectedDestination,
+                      self.overflowMenuUserSelectedDestination);
+    event.PutOrRemove(OverflowMenuVisitedEventFields::kUserSelectedAction,
+                      self.overflowMenuUserSelectedAction);
 
     // Reset the start time to ensure that whatever happens, we only record
     // this once.
@@ -491,6 +504,11 @@ using base::UserMetricsAction;
         !self.toolsMenuUserTookAction) {
       [self trackToolsMenuNoHorizontalScrollOrAction];
     }
+
+    RecordOverflowMenuVisitedEvent(_event);
+
+    _event = OverflowMenuVisitedEvent();
+
     self.toolsMenuWasScrolledVertically = NO;
     self.toolsMenuWasScrolledHorizontally = NO;
     self.toolsMenuUserTookAction = NO;
@@ -518,6 +536,7 @@ using base::UserMetricsAction;
 #pragma mark - OverflowMenuCustomizationCommands
 
 - (void)showMenuCustomization {
+  _event.Put(OverflowMenuVisitedEventFields::kUserStartedCustomization);
   [_overflowMenuModel
       startCustomizationWithActions:_overflowMenuOrderer
                                         .actionCustomizationModel
@@ -537,15 +556,8 @@ using base::UserMetricsAction;
       action.highlighted = YES;
     }
   }
-  [_overflowMenuModel
-      startCustomizationWithActions:_overflowMenuOrderer
-                                        .actionCustomizationModel
-                       destinations:_overflowMenuOrderer
-                                        .destinationCustomizationModel];
 
-  [self setupSheetForMenu:self.baseViewController.presentedViewController
-      isCustomizationScreen:YES
-                   animated:YES];
+  [self showMenuCustomization];
 }
 
 - (void)hideMenuCustomization {
@@ -559,6 +571,13 @@ using base::UserMetricsAction;
 #pragma mark - MenuCustomizationEventHandler
 
 - (void)doneWasTapped {
+  if (_overflowMenuOrderer.destinationCustomizationModel.hasChanged) {
+    _event.Put(OverflowMenuVisitedEventFields::kUserCustomizedDestinations);
+  }
+  if (_overflowMenuOrderer.actionCustomizationModel.hasChanged) {
+    _event.Put(OverflowMenuVisitedEventFields::kUserCustomizedActions);
+  }
+
   [_overflowMenuOrderer commitActionsUpdate];
   [_overflowMenuOrderer commitDestinationsUpdate];
 
@@ -568,6 +587,8 @@ using base::UserMetricsAction;
 - (void)cancelWasTapped {
   [_overflowMenuOrderer cancelActionsUpdate];
   [_overflowMenuOrderer cancelDestinationsUpdate];
+
+  _event.Put(OverflowMenuVisitedEventFields::kUserCancelledCustomization);
 
   [self hideMenuCustomization];
 }
@@ -618,10 +639,12 @@ using base::UserMetricsAction;
 
 - (void)popupMenuScrolledVertically {
   self.toolsMenuWasScrolledVertically = YES;
+  _event.Put(OverflowMenuVisitedEventFields::kUserScrolledVertically);
 }
 
 - (void)popupMenuScrolledHorizontally {
   self.toolsMenuWasScrolledHorizontally = YES;
+  _event.Put(OverflowMenuVisitedEventFields::kUserScrolledHorizontally);
 }
 
 - (void)popupMenuTookAction {
@@ -630,10 +653,12 @@ using base::UserMetricsAction;
 
 - (void)popupMenuUserSelectedAction {
   self.overflowMenuUserSelectedAction = YES;
+  _event.Put(OverflowMenuVisitedEventFields::kUserSelectedAction);
 }
 
 - (void)popupMenuUserSelectedDestination {
   self.overflowMenuUserSelectedDestination = YES;
+  _event.Put(OverflowMenuVisitedEventFields::kUserSelectedDestination);
 }
 
 #pragma mark - Notification callback

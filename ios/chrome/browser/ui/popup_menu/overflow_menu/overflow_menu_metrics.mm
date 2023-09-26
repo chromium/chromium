@@ -84,3 +84,8 @@ void RecordActionsCustomizationEvent(ActionsCustomizationEvent event) {
   base::UmaHistogramSparse("IOS.OverflowMenu.Customization.ActionsCustomized",
                            event.ToEnumBitmask());
 }
+
+void RecordOverflowMenuVisitedEvent(OverflowMenuVisitedEvent event) {
+  base::UmaHistogramSparse("IOS.OverflowMenu.OverflowMenuVisited",
+                           event.ToEnumBitmask());
+}

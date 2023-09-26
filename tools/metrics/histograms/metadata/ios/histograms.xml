@@ -1834,6 +1834,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.OverflowMenu.OverflowMenuVisited" units="bitfield value"
+    expires_after="2024-02-11">
+  <owner>rkgibson@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    A bitfield value representing various sub events that can take place when
+    visiting the overflow menu. Fired once per visit, when the menu closes.
+  </summary>
+</histogram>
+
 <histogram name="IOS.OverflowMenu.SmartSortingStateChange"
     enum="IOSOverflowMenuSmartSortingChange" expires_after="2024-02-11">
   <owner>rkgibson@google.com</owner>

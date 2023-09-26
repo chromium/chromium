@@ -138,4 +138,29 @@ using ActionsCustomizationEvent =
 // Records the logging event for a given action customization event.
 void RecordActionsCustomizationEvent(ActionsCustomizationEvent event);
 
+// Field indexes for bitmask storing these values in a histogram.
+// These values are saved to logs, so entries should not be renumbered and
+// numeric values should never be reused. Also, the total number of items should
+// not go above 64.
+enum class OverflowMenuVisitedEventFields {
+  kUserSelectedDestination = 0,
+  kMinValue = kUserSelectedDestination,
+  kUserSelectedAction = 1,
+  kUserScrolledVertically = 2,
+  kUserScrolledHorizontally = 3,
+  kUserStartedCustomization = 4,
+  kUserCancelledCustomization = 5,
+  kUserCustomizedDestinations = 6,
+  kUserCustomizedActions = 7,
+  kMaxValue = kUserCustomizedActions,
+};
+
+// Stats to log for a single overflow menu visit
+using OverflowMenuVisitedEvent =
+    base::EnumSet<OverflowMenuVisitedEventFields,
+                  OverflowMenuVisitedEventFields::kMinValue,
+                  OverflowMenuVisitedEventFields::kMaxValue>;
+
+void RecordOverflowMenuVisitedEvent(OverflowMenuVisitedEvent event);
+
 #endif  // IOS_CHROME_BROWSER_UI_POPUP_MENU_OVERFLOW_MENU_OVERFLOW_MENU_METRICS_H_
