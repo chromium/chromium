@@ -1,11 +1,24 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>Enterprise Reporting</title>
-    <script type="module" src="enterprise_reporting.js"></script>
-  </head>
-  <body>
-    <h1>Enterprise Reporting</h1>
-  </body>
+<head>
+  <meta charset="utf-8">
+  <title>Enterprise Reporting</title>
+  <script type="module"
+          src="chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js">
+  </script>
+  <script type="module" src="reporting_history.js"></script>
+  <style>
+    cr-tab-box {
+      --tabs-background-color: white;
+    }
+  </style>
+</head>
+<body>
+  <cr-tab-box>
+    <div slot="tab">Events History</div>
+    <div slot="panel">
+      <reporting-history-element></reporting-history-element>
+    </div>
+  </cr-tab-box>
+</body>
 </html>
