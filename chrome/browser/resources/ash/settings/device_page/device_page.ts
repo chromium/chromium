@@ -42,6 +42,7 @@ import {PrefsState} from '../common/types.js';
 import {KeyboardPolicies, MousePolicies} from '../mojom-webui/input_device_settings.mojom-webui.js';
 import {GraphicsTabletSettingsObserverReceiver, KeyboardSettingsObserverReceiver, MouseSettingsObserverReceiver, PointingStickSettingsObserverReceiver, TouchpadSettingsObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
+import {ACCESSIBILITY_COMMON_IME_ID} from '../os_languages_page/languages.js';
 import {LanguageHelper, LanguagesModel} from '../os_languages_page/languages_types.js';
 import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router, routes} from '../router.js';
@@ -192,6 +193,12 @@ export class SettingsDevicePageElement extends SettingsDevicePageElementBase {
        * Language helper API from <settings-languages>
        */
       languageHelper: Object,
+
+      inputMethodDisplayName_: {
+        type: String,
+        computed: 'computeInputMethodDisplayName_(' +
+            'languages.inputMethods.currentId, languageHelper)',
+      },
     };
   }
 
@@ -587,6 +594,26 @@ export class SettingsDevicePageElement extends SettingsDevicePageElementBase {
         Router.getInstance().currentRoute === routes.POINTERS) {
       Router.getInstance().navigateTo(routes.DEVICE);
     }
+  }
+
+  /**
+   * Computes the display name for the currently configured input method. This
+   * should be displayed as a sublabel under the Keyboard and inputs row, only
+   * when OsSettingsRevampWayfinding is enabled.
+   */
+  private computeInputMethodDisplayName_(): string {
+    if (!this.isRevampWayfindingEnabled_) {
+      return '';
+    }
+
+    const id = this.languages?.inputMethods?.currentId;
+    if (!id || !this.languageHelper) {
+      return '';
+    }
+    if (id === ACCESSIBILITY_COMMON_IME_ID) {
+      return '';
+    }
+    return this.languageHelper.getInputMethodDisplayName(id);
   }
 }
 

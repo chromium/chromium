@@ -16,11 +16,8 @@ import {recordSettingChange} from '../metrics_recorder.js';
 
 import {getTemplate} from './add_input_methods_dialog.html.js';
 import {Item} from './add_items_dialog.js';
+import {ACCESSIBILITY_COMMON_IME_ID} from './languages.js';
 import {LanguageHelper, LanguagesModel} from './languages_types.js';
-
-// The IME ID for the Accessibility Common extension used by Dictation.
-const ACCESSIBILITY_COMMON_IME_ID: string =
-    '_ext_ime_egfdjlfmgnehecnclamagfafdccgfndpdictation';
 
 class OsSettingsAddInputMethodsDialogElement extends PolymerElement {
   static get is() {

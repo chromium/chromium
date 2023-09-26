@@ -10,8 +10,10 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {CrSettingsPrefs, DevicePageBrowserProxyImpl, ensureLazyLoaded, OsSettingsRoutes, OsSettingsSubpageElement, resetGlobalScrollTargetForTesting, Route, Router, routes, setGlobalScrollTargetForTesting, SettingsDevicePageElement, SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
-import {assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {LanguagesModel} from 'chrome://os-settings/lazy_load.js';
+import {CrLinkRowElement, CrSettingsPrefs, DevicePageBrowserProxyImpl, ensureLazyLoaded, OsSettingsRoutes, OsSettingsSubpageElement, resetGlobalScrollTargetForTesting, Route, Router, routes, setGlobalScrollTargetForTesting, SettingsDevicePageElement, SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -28,8 +30,21 @@ suite('<settings-device-page> Revamp', () => {
   let settingsPrefs: SettingsPrefsElement;
   let devicePage: SettingsDevicePageElement;
 
+  const fakeLanguagesModel: LanguagesModel = {
+    supported: [],
+    enabled: [],
+    translateTarget: 'test',
+    prospectiveUILanguage: undefined,
+    inputMethods: {supported: [], enabled: [], currentId: 'fakeID'},
+    alwaysTranslate: [],
+    neverTranslate: [],
+    spellCheckOnLanguages: [],
+    spellCheckOffLanguages: [],
+  };
+
   async function createPage(): Promise<void> {
     devicePage = document.createElement('settings-device-page');
+    devicePage.languages = fakeLanguagesModel;
     devicePage.languageHelper = new FakeLanguageHelper();
     devicePage.prefs = settingsPrefs.prefs;
     document.body.appendChild(devicePage);
@@ -72,6 +87,8 @@ suite('<settings-device-page> Revamp', () => {
   });
 
   setup(() => {
+    loadTimeData.overrideValues({enableInputDeviceSettingsSplit: true});
+
     Router.getInstance().navigateTo(routes.DEVICE);
 
     DevicePageBrowserProxyImpl.setInstanceForTesting(
@@ -117,5 +134,16 @@ suite('<settings-device-page> Revamp', () => {
             assertSubpageIsVisible(elementTagName);
           });
     });
+  });
+
+  test('Current input method is visible in Keyboard row sublabel', async () => {
+    await createPage();
+
+    const perDeviceKeyboardRow =
+        devicePage.shadowRoot!.querySelector<CrLinkRowElement>(
+            '#perDeviceKeyboardRow');
+    assertTrue(!!perDeviceKeyboardRow);
+    assertTrue(isVisible(perDeviceKeyboardRow));
+    assertEquals('fake display name', perDeviceKeyboardRow.subLabel);
   });
 });

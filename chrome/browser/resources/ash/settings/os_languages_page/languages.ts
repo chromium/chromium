@@ -51,7 +51,7 @@ const kTranslateLanguageSynonyms = {
 const kArcImeLanguage = '_arc_ime_language_';
 
 // The IME ID for the Accessibility Common extension used by Dictation.
-const ACCESSIBILITY_COMMON_IME_ID =
+export const ACCESSIBILITY_COMMON_IME_ID =
     '_ext_ime_egfdjlfmgnehecnclamagfafdccgfndpdictation';
 
 interface ModelArgs {

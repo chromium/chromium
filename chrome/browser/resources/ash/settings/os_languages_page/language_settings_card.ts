@@ -20,11 +20,8 @@ import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Router, routes} from '../router.js';
 
 import {getTemplate} from './language_settings_card.html.js';
+import {ACCESSIBILITY_COMMON_IME_ID} from './languages.js';
 import {LanguageHelper, LanguagesModel} from './languages_types.js';
-
-// The IME ID for the Accessibility Common extension used by Dictation.
-const ACCESSIBILITY_COMMON_IME_ID =
-    '_ext_ime_egfdjlfmgnehecnclamagfafdccgfndpdictation';
 
 const LanguageSettingsCardElementBase =
     RouteOriginMixin(I18nMixin(PolymerElement));

@@ -51,14 +51,20 @@
         </cr-link-row>
       </template>
       <template is="dom-if" if="[[isDeviceSettingsSplitEnabled_]]">
-        <cr-link-row class="hr" id="perDeviceKeyboardRow"
-            label="$i18n{keyboardTitle}" aria-label="$i18n{keyboardTitle}"
+        <cr-link-row id="perDeviceKeyboardRow"
+            class="hr"
+            label="$i18n{keyboardTitle}"
+            aria-label="$i18n{keyboardTitle}"
+            sub-label="[[inputMethodDisplayName_]]"
             on-click="onPerDeviceKeyboardClick_"
             role-description="$i18n{subpageArrowRoleDescription}">
         </cr-link-row>
       </template>
       <template is="dom-if" if="[[!isDeviceSettingsSplitEnabled_]]">
-        <cr-link-row class="hr" id="keyboardRow" label="$i18n{keyboardTitle}"
+        <cr-link-row id="keyboardRow"
+            class="hr"
+            label="$i18n{keyboardTitle}"
+            sub-label="[[inputMethodDisplayName_]]"
             on-click="onKeyboardClick_"
             role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
       </template>
