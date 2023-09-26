@@ -59,7 +59,7 @@ constexpr int kRadiusDip = 4;
 
 constexpr gfx::Insets kTitleContainerInsets = gfx::Insets::TLBR(10, 16, 10, 10);
 
-constexpr char16_t kBadgeText[] = u"New";
+constexpr char16_t kBadgeText[] = u"Experiment";
 constexpr gfx::Insets kBadgeInsets = gfx::Insets::VH(0, 8);
 constexpr int kBadgeHorizontalPaddingDip = 8;
 constexpr int kBadgeVerticalPaddingDip = 8;
