@@ -22,6 +22,7 @@
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/common/color_parser.h"
+#include "skia/ext/image_operations.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -74,20 +75,29 @@ int GetIconAndImageCornerRadius() {
   return 4;
 }
 
-// The size of entities and weather icons relative to their background. 0.5
-// means entities/weather icons take up half of the space.
-double GetEntityAndWeatherBackgroundScale() {
+// The size of entities relative to their background. 0.5 means entities take up
+// half of the space.
+double GetEntityBackgroundScale() {
   // When `kSquareSuggestIconEntities` is disabled, entities shouldn't be
-  // scaled. Weather icons should also not be scaled if
-  // `kSquareSuggestIconWeather` is disabled.
-  DCHECK(OmniboxFieldTrial::kSquareSuggestIconEntities.Get() ||
-         OmniboxFieldTrial::kSquareSuggestIconWeather.Get());
+  // scaled.
+  DCHECK(OmniboxFieldTrial::kSquareSuggestIconEntities.Get());
   double scale = OmniboxFieldTrial::kSquareSuggestIconEntitiesScale.Get();
   DCHECK_GT(scale, 0);
   DCHECK_LE(scale, 1);
   return scale;
 }
 
+// Size of weather icon with a round square background.
+int GetWeatherImageSize() {
+  DCHECK(OmniboxFieldTrial::kSquareSuggestIconWeather.Get());
+  return 24;
+}
+
+// Size of the weather's round square background.
+int GetWeatherBackgroundSize() {
+  DCHECK(OmniboxFieldTrial::kSquareSuggestIconWeather.Get());
+  return 28;
+}
 ////////////////////////////////////////////////////////////////////////////////
 // PlaceholderImageSource:
 
@@ -386,18 +396,22 @@ void OmniboxMatchCellView::SetImage(const gfx::ImageSkia& image,
   int height = image.height();
   const int max = std::max(width, height);
 
-  const float scaled_size = max / GetEntityAndWeatherBackgroundScale();
+  // Weather icon square background should be the same color as the pop-up
+  // background.
   if (OmniboxFieldTrial::kSquareSuggestIconWeather.Get() && is_weather_answer) {
-    // Weather icon square background should be the same color as the pop-up
-    // background.
+    // Explicitly resize the weather icon to avoid pixelation.
+    gfx::ImageSkia resized_image = gfx::ImageSkiaOperations::CreateResizedImage(
+        image, skia::ImageOperations::RESIZE_GOOD,
+        gfx::Size(GetWeatherImageSize(), GetWeatherImageSize()));
     answer_image_view_->SetImage(
         gfx::ImageSkiaOperations::CreateImageWithRoundRectBackground(
-            gfx::SizeF(scaled_size, scaled_size), GetIconAndImageCornerRadius(),
+            gfx::SizeF(GetWeatherBackgroundSize(), GetWeatherBackgroundSize()),
+            GetIconAndImageCornerRadius(),
             GetColorProvider()->GetColor(kColorOmniboxResultsBackground),
-            gfx::ImageSkiaOperations::CreateImageWithRoundRectClip(
-                GetIconAndImageCornerRadius(), image)));
+            resized_image));
   } else if (OmniboxFieldTrial::kSquareSuggestIconEntities.Get() &&
              !is_weather_answer) {
+    const float scaled_size = max / GetEntityBackgroundScale();
     answer_image_view_->SetImage(
         gfx::ImageSkiaOperations::CreateImageWithRoundRectBackground(
             gfx::SizeF(scaled_size, scaled_size), GetIconAndImageCornerRadius(),
