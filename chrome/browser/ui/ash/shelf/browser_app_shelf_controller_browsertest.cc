@@ -35,12 +35,12 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/base_event_utils.h"
@@ -180,12 +180,12 @@ class BrowserAppShelfControllerBrowserTest
   static constexpr char kURL_D[] = "https://d.example.org";
   // Constants are defined here rather than globally because GURL objects cannot
   // be created in a static initialiser.
-  const web_app::AppId kAppId_A = UrlToAppId(kURL_A);
-  const web_app::AppId kAppId_B = UrlToAppId(kURL_B);
-  const web_app::AppId kAppId_C = UrlToAppId(kURL_C);
-  const web_app::AppId kAppId_D = UrlToAppId(kURL_D);
+  const webapps::AppId kAppId_A = UrlToAppId(kURL_A);
+  const webapps::AppId kAppId_B = UrlToAppId(kURL_B);
+  const webapps::AppId kAppId_C = UrlToAppId(kURL_C);
+  const webapps::AppId kAppId_D = UrlToAppId(kURL_D);
 
-  web_app::AppId UrlToAppId(const std::string& start_url) {
+  webapps::AppId UrlToAppId(const std::string& start_url) {
     return web_app::GenerateAppId(/*manifest_id=*/absl::nullopt,
                                   GURL(start_url));
   }

@@ -96,7 +96,6 @@
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -114,6 +113,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/webapps/browser/test/service_worker_registration_waiter.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -464,7 +464,7 @@ class ShelfWebAppBrowserTest : public ShelfAppBrowserTest {
     return https_server()->GetURL("app.com", "/ssl/google.html");
   }
 
-  web_app::AppId InstallWebApp(const GURL& start_url) {
+  webapps::AppId InstallWebApp(const GURL& start_url) {
     auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url.GetWithoutFilename();
@@ -1239,7 +1239,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, AppIDForPinnedHostedApp) {
 IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, AppIDForUnpinnedWebApp) {
   // Load and navigate to a web app.
   const GURL app_url = GetSecureAppURL();
-  const web_app::AppId web_app_id = InstallWebApp(app_url);
+  const webapps::AppId web_app_id = InstallWebApp(app_url);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), app_url));
 
@@ -1264,7 +1264,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, AppIDForUnpinnedWebApp) {
 IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, AppIDForPinnedWebApp) {
   // Load and navigate to a web app.
   const GURL app_url = GetSecureAppURL();
-  const web_app::AppId web_app_id = InstallWebApp(app_url);
+  const webapps::AppId web_app_id = InstallWebApp(app_url);
 
   PinAppWithIDToShelf(web_app_id);
 
@@ -1298,7 +1298,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, AppIDForPWA) {
   web_app::WebAppTestInstallWithOsHooksObserver install_observer(profile());
   install_observer.BeginListening();
   chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA);
-  const web_app::AppId app_id = install_observer.Wait();
+  const webapps::AppId app_id = install_observer.Wait();
   chrome::SetAutoAcceptPWAInstallConfirmationForTesting(false);
 
   // Find the native window for the app.
@@ -2378,7 +2378,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, TabbedHostedAndWebApps) {
 
   // Load and pin a web app.
   const GURL web_app_url = GetSecureAppURL();
-  const web_app::AppId web_app_id = InstallWebApp(web_app_url);
+  const webapps::AppId web_app_id = InstallWebApp(web_app_url);
   PinAppWithIDToShelf(web_app_id);
   const ash::ShelfID web_app_shelf_id(web_app_id);
 
@@ -2420,7 +2420,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WindowedHostedAndWebApps) {
 
   // Load and pin a web app.
   const GURL web_app_url = GetSecureAppURL();
-  const web_app::AppId web_app_id = InstallWebApp(web_app_url);
+  const webapps::AppId web_app_id = InstallWebApp(web_app_url);
   PinAppWithIDToShelf(web_app_id);
   const ash::ShelfID web_app_shelf_id(web_app_id);
 
@@ -2488,7 +2488,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest,
   web_app::WebAppTestInstallWithOsHooksObserver install_observer(profile());
   install_observer.BeginListening();
   chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA);
-  const web_app::AppId app_id = install_observer.Wait();
+  const webapps::AppId app_id = install_observer.Wait();
   chrome::SetAutoAcceptPWAInstallConfirmationForTesting(false);
 
   ash::ShelfID shelf_id(app_id);
@@ -2513,7 +2513,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest,
   web_app::WebAppTestInstallWithOsHooksObserver install_observer(profile());
   install_observer.BeginListening();
   chrome::ExecuteCommand(browser(), IDC_CREATE_SHORTCUT);
-  const web_app::AppId app_id = install_observer.Wait();
+  const webapps::AppId app_id = install_observer.Wait();
   chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
 
   ash::ShelfID shelf_id(app_id);
@@ -2559,7 +2559,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WebAppPolicyUpdate) {
   web_app_info->start_url = app_url;
   web_app_info->scope = app_url;
   web_app_info->title = u"Example";
-  web_app::AppId app_id =
+  webapps::AppId app_id =
       web_app::test::InstallWebApp(profile(), std::move(web_app_info));
 
   // Set policy to pin the web app.
@@ -2596,7 +2596,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WebAppPolicyUpdate) {
 IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WebAppPolicyNonExistentApp) {
   // Don't install the web app.
   GURL app_url = GURL("https://example.org/");
-  web_app::AppId app_id =
+  webapps::AppId app_id =
       web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, app_url);
 
   // Set policy to pin the non existent web app.
@@ -2640,7 +2640,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WebAppInstallForceList) {
                                    std::move(list));
   }
 
-  const web_app::AppId app_id = install_observer.Wait();
+  const webapps::AppId app_id = install_observer.Wait();
   run_loop.Run();
 
   // Check web app is pinned and fixed.

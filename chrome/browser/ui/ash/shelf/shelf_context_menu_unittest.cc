@@ -697,7 +697,7 @@ TEST_F(ShelfContextMenuTest, WebApp) {
   constexpr char kWebAppUrl[] = "https://webappone.com/";
   constexpr char kWebAppName[] = "WebApp1";
 
-  const web_app::AppId app_id = web_app::test::InstallDummyWebApp(
+  const webapps::AppId app_id = web_app::test::InstallDummyWebApp(
       profile(), kWebAppName, GURL(kWebAppUrl));
 
   PinAppWithIDToShelf(app_id);

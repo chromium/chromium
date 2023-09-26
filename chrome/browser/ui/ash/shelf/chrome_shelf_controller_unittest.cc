@@ -137,7 +137,6 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_constants.h"
@@ -179,6 +178,7 @@
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/viz/test/test_gpu_service_holder.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/test_utils.h"
@@ -1264,22 +1264,22 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
 
     web_app_info->start_url = GetWebAppUrl(web_app_id);
 
-    web_app::AppId installed_app_id =
+    webapps::AppId installed_app_id =
         web_app::test::InstallWebApp(profile(), std::move(web_app_info));
 
     ASSERT_EQ(installed_app_id, web_app_id);
     apps::AppReadinessWaiter(profile(), web_app_id).Await();
   }
 
-  web_app::AppId InstallExternalWebApp(
+  webapps::AppId InstallExternalWebApp(
       const GURL& start_url,
       const absl::optional<GURL>& install_url = {}) {
     auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
     web_app_info->start_url = GURL(start_url);
     web_app_info->install_url = GURL(install_url ? *install_url : start_url);
-    const web_app::AppId expected_web_app_id = web_app::GenerateAppId(
+    const webapps::AppId expected_web_app_id = web_app::GenerateAppId(
         /*manifest_id=*/absl::nullopt, web_app_info->start_url);
-    web_app::AppId web_app_id = web_app::test::InstallWebApp(
+    webapps::AppId web_app_id = web_app::test::InstallWebApp(
         profile(), std::move(web_app_info),
         /*overwrite_existing_manifest_fields =*/false,
         webapps::WebappInstallSource::EXTERNAL_POLICY);
@@ -1287,7 +1287,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     return web_app_id;
   }
 
-  web_app::AppId InstallExternalWebApp(
+  webapps::AppId InstallExternalWebApp(
       const std::string& start_url,
       const absl::optional<std::string>& install_url = {}) {
     return InstallExternalWebApp(GURL(start_url), install_url
@@ -3575,7 +3575,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   //      does not have the app installed).
   auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
   web_app_info->start_url = GURL(kWebAppUrl);
-  web_app::AppId installed_app_id =
+  webapps::AppId installed_app_id =
       web_app::test::InstallWebApp(profile(), std::move(web_app_info));
   PinAppWithIDToShelf(installed_app_id);
 
@@ -5034,7 +5034,7 @@ TEST_F(ChromeShelfControllerWithArcTest, ApkWebAppPinPolicy) {
   auto* service = ash::ApkWebAppService::Get(browser()->profile());
   ASSERT_TRUE(service);
 
-  base::test::TestFuture<const std::string&, const web_app::AppId&> future;
+  base::test::TestFuture<const std::string&, const webapps::AppId&> future;
   service->SetWebAppInstalledCallbackForTesting(future.GetCallback());
 
   auto package = arc::mojom::ArcPackageInfo::New(kMapsWebPackageName, 1, 1, 1,
@@ -5651,7 +5651,7 @@ TEST_F(ChromeShelfControllerDemoModeTest, MAYBE_PinnedAppsOnline) {
       AddArcAppAndShortcut(*online_only_appinfo);
 
   constexpr char kWebAppUrl[] = "https://test-pwa.com/";
-  web_app::AppId web_app_id = InstallExternalWebApp(kWebAppUrl);
+  webapps::AppId web_app_id = InstallExternalWebApp(kWebAppUrl);
 
   // If the device is offline, extension2, onlineonly, and TestPWA should be
   // unpinned. Since the device is online here, these apps should still be
@@ -5704,7 +5704,7 @@ TEST_F(ChromeShelfControllerDemoModeTest, PinnedAppsOffline) {
       AddArcAppAndShortcut(*online_only_appinfo);
 
   constexpr char kWebAppUrl[] = "https://test-pwa.com/";
-  web_app::AppId web_app_id = InstallExternalWebApp(kWebAppUrl);
+  webapps::AppId web_app_id = InstallExternalWebApp(kWebAppUrl);
 
   // If the device is offline, extension2 and onlineonly, and TestPWA should be
   // unpinned.
@@ -5806,7 +5806,7 @@ TEST_F(ChromeShelfControllerTest, OsFlagsNotShowInShelfNotPinnable) {
   InstallSystemWebApp(std::move(delegate));
   InitShelfController();
 
-  absl::optional<web_app::AppId> app_id =
+  absl::optional<webapps::AppId> app_id =
       ash::SystemWebAppManager::GetForTest(profile())->GetAppIdForSystemApp(
           app_type);
   ASSERT_TRUE(app_id);
@@ -5917,7 +5917,7 @@ TEST_F(ChromeShelfControllerWebAppTest, WebAppPinRunUnpinClose) {
 
   InitShelfController();
 
-  const web_app::AppId app_id = web_app::test::InstallDummyWebApp(
+  const webapps::AppId app_id = web_app::test::InstallDummyWebApp(
       profile(), kWebAppName, GURL(kWebAppUrl));
   base::RunLoop().RunUntilIdle();
 
