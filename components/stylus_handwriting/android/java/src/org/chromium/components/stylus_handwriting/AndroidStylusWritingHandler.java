@@ -56,9 +56,17 @@ public class AndroidStylusWritingHandler implements StylusWritingHandler, Stylus
 
         InputMethodManager inputMethodManager = context.getSystemService(InputMethodManager.class);
         List<InputMethodInfo> inputMethods = inputMethodManager.getInputMethodList();
-        ComponentName defaultImePackage =
-                ComponentName.unflattenFromString(Settings.Secure.getString(
-                        context.getContentResolver(), Settings.Secure.DEFAULT_INPUT_METHOD));
+        String defaultIme = Settings.Secure.getString(
+                context.getContentResolver(), Settings.Secure.DEFAULT_INPUT_METHOD);
+
+        if (defaultIme == null) {
+            Log.d(TAG,
+                    "Stylus handwriting feature is not supported as "
+                            + "default IME could not be fetched.");
+            return false;
+        }
+
+        ComponentName defaultImePackage = ComponentName.unflattenFromString(defaultIme);
 
         for (InputMethodInfo inputMethod : inputMethods) {
             if (!inputMethod.getComponent().equals(defaultImePackage)) continue;
