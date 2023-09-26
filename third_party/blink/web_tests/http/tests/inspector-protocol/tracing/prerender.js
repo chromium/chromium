@@ -30,7 +30,7 @@
   primarySession.evaluate(`document.getElementById('link').click()`);
 
   await Promise.all([
-    pp.Preload.oncePrerenderAttemptCompleted(),
+    pp.Preload.oncePrerenderStatusUpdated(e => e.params.status === 'Success'),
     pp.Page.setLifecycleEventsEnabled({ enabled: true }),
     pp.Page.onceLifecycleEvent(event => event.params.name === 'load'),
   ]);
