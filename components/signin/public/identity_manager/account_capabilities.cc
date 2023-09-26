@@ -41,6 +41,16 @@ AccountCapabilities::GetSupportedAccountCapabilityNames() {
   return *kCapabilityNames;
 }
 
+bool AccountCapabilities::AreAnyCapabilitiesKnown() const {
+  for (const std::string& capability_name :
+       GetSupportedAccountCapabilityNames()) {
+    if (GetCapabilityByName(capability_name) != signin::Tribool::kUnknown) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool AccountCapabilities::AreAllCapabilitiesKnown() const {
   for (const std::string& capability_name :
        GetSupportedAccountCapabilityNames()) {

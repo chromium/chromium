@@ -48,9 +48,12 @@ AccountCapabilitiesFetcherIOS::~AccountCapabilitiesFetcherIOS() = default;
 
 AccountCapabilitiesFetcherIOS::AccountCapabilitiesFetcherIOS(
     const CoreAccountInfo& account_info,
+    AccountCapabilitiesFetcher::FetchPriority fetch_priority,
     ChromeAccountManagerService* account_manager_service,
     AccountCapabilitiesFetcher::OnCompleteCallback on_complete_callback)
-    : AccountCapabilitiesFetcher(account_info, std::move(on_complete_callback)),
+    : AccountCapabilitiesFetcher(account_info,
+                                 fetch_priority,
+                                 std::move(on_complete_callback)),
       account_manager_service_(account_manager_service) {}
 
 void AccountCapabilitiesFetcherIOS::StartImpl() {

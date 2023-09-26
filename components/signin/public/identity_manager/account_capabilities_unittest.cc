@@ -171,6 +171,19 @@ TEST_F(AccountCapabilitiesTest,
       signin::Tribool::kFalse);
 }
 
+TEST_F(AccountCapabilitiesTest, AreAnyCapabilitiesKnown_Empty) {
+  AccountCapabilities capabilities;
+  EXPECT_FALSE(capabilities.AreAnyCapabilitiesKnown());
+}
+
+TEST_F(AccountCapabilitiesTest, AreAnyCapabilitiesKnown_PartiallyFilled) {
+  AccountCapabilities capabilities;
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_can_offer_extended_chrome_sync_promos(true);
+  EXPECT_TRUE(capabilities.AreAnyCapabilitiesKnown());
+}
+
 TEST_F(AccountCapabilitiesTest, AreAllCapabilitiesKnown_Empty) {
   AccountCapabilities capabilities;
   EXPECT_FALSE(capabilities.AreAllCapabilitiesKnown());

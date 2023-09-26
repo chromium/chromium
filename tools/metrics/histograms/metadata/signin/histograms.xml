@@ -31,34 +31,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Signin.AccountCapabilities.FetchDuration.{Result}" units="ms"
-    expires_after="2024-04-10">
-  <owner>alexilin@chromium.org</owner>
-  <owner>msarda@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    This histogram records the fetch duration every time Chrome {Result} account
-    capabilities from network. This is recorded only on Desktop platforms where
-    Chrome implements its own account capabilities fetcher.
-  </summary>
-  <token key="Result">
-    <variant name="Failure" summary="fails to fetch"/>
-    <variant name="Success" summary="successfully fetches"/>
-  </token>
-</histogram>
-
-<histogram name="Signin.AccountCapabilities.FetchResult"
-    enum="AccountCapabilitiesFetchResult" expires_after="2024-04-10">
-  <owner>alexilin@chromium.org</owner>
-  <owner>msarda@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    This histogram records the outcome of the account capabilities fetch
-    operation. This is recorded only on Desktop platforms where Chrome
-    implements its own account capabilities fetcher.
-  </summary>
-</histogram>
-
 <histogram
     name="Signin.AccountCapabilities.GetFromSystemLibraryDuration{Caller}"
     units="ms" expires_after="2024-04-10">
@@ -90,6 +62,51 @@ chromium-metrics-reviews@google.com.
     operation. This is recorded only on Android and iOS where Chrome fetches the
     account capabilities from the system library.
   </summary>
+</histogram>
+
+<histogram name="Signin.AccountCapabilities.{Priority}.FetchDuration.{Result}"
+    units="ms" expires_after="2024-04-10">
+  <owner>alexilin@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    This histogram records the fetch duration every time Chrome {Result} account
+    capabilities from network. This is recorded for {Priority}. This is recorded
+    only on Desktop platforms where Chrome implements its own account
+    capabilities fetcher.
+  </summary>
+  <token key="Priority">
+    <variant name="Background"
+        summary="background fetches that are treated as best-effort, and do
+                 not have user-visible impact"/>
+    <variant name="Foreground"
+        summary="foreground fetches that are treated with high priority, and
+                 may have user-visible impact"/>
+  </token>
+  <token key="Result">
+    <variant name="Failure" summary="fails to fetch"/>
+    <variant name="Success" summary="successfully fetches"/>
+  </token>
+</histogram>
+
+<histogram name="Signin.AccountCapabilities.{Priority}.FetchResult"
+    enum="AccountCapabilitiesFetchResult" expires_after="2024-04-10">
+  <owner>alexilin@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    This histogram records the outcome of the account capabilities fetch
+    operation, for {Priority}. This is recorded only on Desktop platforms where
+    Chrome implements its own account capabilities fetcher.
+  </summary>
+  <token key="Priority">
+    <variant name="Background"
+        summary="background fetches that are treated as best-effort and do
+                 not have user-visible impact"/>
+    <variant name="Foreground"
+        summary="foreground fetches that are treated with high priority and
+                 may have user-visible impact"/>
+  </token>
 </histogram>
 
 <histogram name="Signin.AccountConsistencyPromoAction"

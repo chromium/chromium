@@ -143,7 +143,8 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
 #endif
 
   bool IsAccountCapabilitiesFetchingEnabled();
-  void StartFetchingAccountCapabilities(const CoreAccountInfo& account_info);
+  void StartFetchingAccountCapabilities(
+      const CoreAccountInfo& core_account_info);
 
   // Refreshes the AccountInfo associated with |account_id|.
   void RefreshAccountInfo(const CoreAccountId& account_id,

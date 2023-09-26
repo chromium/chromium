@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial.h"
@@ -256,16 +257,22 @@ bool AccountFetcherService::IsAccountCapabilitiesFetchingEnabled() {
 }
 
 void AccountFetcherService::StartFetchingAccountCapabilities(
-    const CoreAccountInfo& account_info) {
+    const CoreAccountInfo& core_account_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(network_fetches_enabled_);
 
   std::unique_ptr<AccountCapabilitiesFetcher>& request =
-      account_capabilities_requests_[account_info.account_id];
+      account_capabilities_requests_[core_account_info.account_id];
   if (!request) {
+    AccountInfo account_info =
+        account_tracker_service_->GetAccountInfo(core_account_info.account_id);
+
     request =
         account_capabilities_fetcher_factory_->CreateAccountCapabilitiesFetcher(
-            account_info,
+            core_account_info,
+            account_info.capabilities.AreAnyCapabilitiesKnown()
+                ? AccountCapabilitiesFetcher::FetchPriority::kBackground
+                : AccountCapabilitiesFetcher::FetchPriority::kForeground,
             base::BindOnce(
                 &AccountFetcherService::OnAccountCapabilitiesFetchComplete,
                 base::Unretained(this)));

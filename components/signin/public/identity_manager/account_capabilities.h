@@ -83,6 +83,10 @@ class AccountCapabilities {
   // Chrome applies parental controls to accounts with this capability.
   signin::Tribool is_subject_to_parental_controls() const;
 
+  // Whether at least one of the capabilities is not
+  // `signin::Tribool::kUnknown`.
+  bool AreAnyCapabilitiesKnown() const;
+
   // Whether none of the capabilities has `signin::Tribool::kUnknown`.
   bool AreAllCapabilitiesKnown() const;
 

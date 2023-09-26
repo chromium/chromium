@@ -16,6 +16,7 @@ class FakeAccountCapabilitiesFetcher : public AccountCapabilitiesFetcher {
  public:
   explicit FakeAccountCapabilitiesFetcher(
       const CoreAccountInfo& account_info,
+      AccountCapabilitiesFetcher::FetchPriority fetch_priority,
       OnCompleteCallback on_complete_callback,
       base::OnceClosure on_destroy_callback);
   ~FakeAccountCapabilitiesFetcher() override;

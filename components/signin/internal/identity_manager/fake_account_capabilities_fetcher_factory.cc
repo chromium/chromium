@@ -16,9 +16,10 @@ FakeAccountCapabilitiesFetcherFactory::
 std::unique_ptr<AccountCapabilitiesFetcher>
 FakeAccountCapabilitiesFetcherFactory::CreateAccountCapabilitiesFetcher(
     const CoreAccountInfo& account_info,
+    AccountCapabilitiesFetcher::FetchPriority fetch_priority,
     AccountCapabilitiesFetcher::OnCompleteCallback on_complete_callback) {
   auto fetcher = std::make_unique<FakeAccountCapabilitiesFetcher>(
-      account_info, std::move(on_complete_callback),
+      account_info, fetch_priority, std::move(on_complete_callback),
       base::BindOnce(&FakeAccountCapabilitiesFetcherFactory::OnFetcherDestroyed,
                      base::Unretained(this), account_info.account_id));
   DCHECK(!fetchers_.count(account_info.account_id));

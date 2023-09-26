@@ -19,8 +19,10 @@ AccountCapabilitiesFetcherFactoryIOS::~AccountCapabilitiesFetcherFactoryIOS() =
 std::unique_ptr<AccountCapabilitiesFetcher>
 AccountCapabilitiesFetcherFactoryIOS::CreateAccountCapabilitiesFetcher(
     const CoreAccountInfo& account_info,
+    AccountCapabilitiesFetcher::FetchPriority fetch_priority,
     AccountCapabilitiesFetcher::OnCompleteCallback on_complete_callback) {
   return std::make_unique<AccountCapabilitiesFetcherIOS>(
-      account_info, account_manager_service_, std::move(on_complete_callback));
+      account_info, fetch_priority, account_manager_service_,
+      std::move(on_complete_callback));
 }
 }  // namespace ios

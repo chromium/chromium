@@ -10,9 +10,12 @@
 
 FakeAccountCapabilitiesFetcher::FakeAccountCapabilitiesFetcher(
     const CoreAccountInfo& account_info,
+    AccountCapabilitiesFetcher::FetchPriority fetch_priority,
     OnCompleteCallback on_complete_callback,
     base::OnceClosure on_destroy_callback)
-    : AccountCapabilitiesFetcher(account_info, std::move(on_complete_callback)),
+    : AccountCapabilitiesFetcher(account_info,
+                                 fetch_priority,
+                                 std::move(on_complete_callback)),
       on_destroy_callback_(std::move(on_destroy_callback)) {}
 
 FakeAccountCapabilitiesFetcher::~FakeAccountCapabilitiesFetcher() {

@@ -13,11 +13,25 @@
 
 class AccountCapabilitiesFetcher {
  public:
+  // This provides a hint regarding the priority this fetch should be performed
+  // with.
+  // Platform-specific implementations may or may not change the actual priority
+  // of the fetch based on this.
+  enum class FetchPriority {
+    // This corresponds to a user-visible foreground operation, and should be
+    // completed as quickly as possible.
+    kForeground,
+    // This corresponds to a non-user-visible background operation, and does not
+    // need to be completed in a timely fashion.
+    kBackground,
+  };
+
   using OnCompleteCallback =
       base::OnceCallback<void(const CoreAccountId&,
                               const absl::optional<AccountCapabilities>&)>;
 
   explicit AccountCapabilitiesFetcher(const CoreAccountInfo& account_info,
+                                      FetchPriority fetch_priority,
                                       OnCompleteCallback on_complete_callback);
   virtual ~AccountCapabilitiesFetcher();
 
@@ -42,11 +56,14 @@ class AccountCapabilitiesFetcher {
   void CompleteFetchAndMaybeDestroySelf(
       const absl::optional<AccountCapabilities>& capabilities);
 
+  FetchPriority fetch_priority() { return fetch_priority_; }
+
  private:
   // Ensures that `Start()` isn't called multiple times.
   bool started_ = false;
 
   const CoreAccountInfo account_info_;
+  const FetchPriority fetch_priority_;
   OnCompleteCallback on_complete_callback_;
 };
 

@@ -17,8 +17,10 @@ using OnAccountCapabilitiesFetchedCallback =
 
 AccountCapabilitiesFetcherAndroid::AccountCapabilitiesFetcherAndroid(
     const CoreAccountInfo& account_info,
+    AccountCapabilitiesFetcher::FetchPriority fetch_priority,
     AccountCapabilitiesFetcher::OnCompleteCallback on_complete_callback)
     : AccountCapabilitiesFetcher(account_info,
+                                 fetch_priority,
                                  std::move(on_complete_callback)) {
   JNIEnv* env = base::android::AttachCurrentThread();
 

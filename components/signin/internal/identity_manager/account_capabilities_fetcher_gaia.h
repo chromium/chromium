@@ -41,6 +41,7 @@ class AccountCapabilitiesFetcherGaia
       ProfileOAuth2TokenService* token_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const CoreAccountInfo& account_info,
+      AccountCapabilitiesFetcher::FetchPriority fetch_priority,
       AccountCapabilitiesFetcher::OnCompleteCallback on_complete_callback);
   ~AccountCapabilitiesFetcherGaia() override;
 

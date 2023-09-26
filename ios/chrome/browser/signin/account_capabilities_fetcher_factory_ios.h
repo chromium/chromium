@@ -33,6 +33,7 @@ class AccountCapabilitiesFetcherFactoryIOS
   // AccountCapabilitiesFetcherFactory:
   std::unique_ptr<AccountCapabilitiesFetcher> CreateAccountCapabilitiesFetcher(
       const CoreAccountInfo& account_info,
+      AccountCapabilitiesFetcher::FetchPriority fetch_priority,
       OnCompleteCallback on_complete_callback) override;
 
  private:

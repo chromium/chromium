@@ -22,8 +22,9 @@ AccountCapabilitiesFetcherFactoryGaia::
 std::unique_ptr<AccountCapabilitiesFetcher>
 AccountCapabilitiesFetcherFactoryGaia::CreateAccountCapabilitiesFetcher(
     const CoreAccountInfo& account_info,
+    AccountCapabilitiesFetcher::FetchPriority fetch_priority,
     AccountCapabilitiesFetcher::OnCompleteCallback on_complete_callback) {
   return std::make_unique<AccountCapabilitiesFetcherGaia>(
       token_service_, signin_client_->GetURLLoaderFactory(), account_info,
-      std::move(on_complete_callback));
+      fetch_priority, std::move(on_complete_callback));
 }

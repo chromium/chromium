@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 
+#include "components/signin/internal/identity_manager/account_capabilities_fetcher.h"
 #include "components/signin/internal/identity_manager/account_capabilities_fetcher_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -31,6 +32,7 @@ class FakeAccountCapabilitiesFetcherFactory
   // AccountCapabilitiesFetcherFactory:
   std::unique_ptr<AccountCapabilitiesFetcher> CreateAccountCapabilitiesFetcher(
       const CoreAccountInfo& account_info,
+      AccountCapabilitiesFetcher::FetchPriority fetch_priority,
       AccountCapabilitiesFetcher::OnCompleteCallback on_complete_callback)
       override;
 

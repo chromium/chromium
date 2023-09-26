@@ -17,12 +17,42 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace {
+
+constexpr std::string_view kAccountCapabilitiesFetcherHistogramBaseName =
+    "Signin.AccountCapabilities";
+
+std::string_view ToUmaToken(
+    AccountCapabilitiesFetcher::FetchPriority priority) {
+  switch (priority) {
+    case AccountCapabilitiesFetcher::FetchPriority::kForeground:
+      return "Foreground";
+    case AccountCapabilitiesFetcher::FetchPriority::kBackground:
+      return "Background";
+  }
+  NOTREACHED_NORETURN() << "Unknown priority: " << static_cast<int>(priority);
+}
+
+std::string_view ToUmaToken(
+    AccountCapabilitiesFetcherGaia::FetchResult result) {
+  if (result == AccountCapabilitiesFetcherGaia::FetchResult::kSuccess) {
+    return "Success";
+  } else {
+    return "Failure";
+  }
+}
+
+}  // namespace
+
 AccountCapabilitiesFetcherGaia::AccountCapabilitiesFetcherGaia(
     ProfileOAuth2TokenService* token_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const CoreAccountInfo& account_info,
+    AccountCapabilitiesFetcher::FetchPriority fetch_priority,
     AccountCapabilitiesFetcher::OnCompleteCallback on_complete_callback)
-    : AccountCapabilitiesFetcher(account_info, std::move(on_complete_callback)),
+    : AccountCapabilitiesFetcher(account_info,
+                                 fetch_priority,
+                                 std::move(on_complete_callback)),
       OAuth2AccessTokenManager::Consumer("account_capabilities_fetcher"),
       token_service_(token_service),
       url_loader_factory_(std::move(url_loader_factory)) {
@@ -121,8 +151,11 @@ void AccountCapabilitiesFetcherGaia::RecordFetchResultAndDuration(
   }
   fetch_histograms_recorded_ = true;
 
-  base::UmaHistogramEnumeration("Signin.AccountCapabilities.FetchResult",
-                                result);
+  base::UmaHistogramEnumeration(
+      base::JoinString({kAccountCapabilitiesFetcherHistogramBaseName,
+                        ToUmaToken(fetch_priority()), "FetchResult"},
+                       "."),
+      result);
 
   if (fetch_start_time_.is_null()) {
     // Cannot record duration for a fetch that hasn't started.
@@ -130,11 +163,11 @@ void AccountCapabilitiesFetcherGaia::RecordFetchResultAndDuration(
     return;
   }
   base::TimeDelta duration = base::TimeTicks::Now() - fetch_start_time_;
-  if (result == FetchResult::kSuccess) {
-    base::UmaHistogramMediumTimes(
-        "Signin.AccountCapabilities.FetchDuration.Success", duration);
-  } else {
-    base::UmaHistogramMediumTimes(
-        "Signin.AccountCapabilities.FetchDuration.Failure", duration);
-  }
+
+  base::UmaHistogramMediumTimes(
+      base::JoinString(
+          {kAccountCapabilitiesFetcherHistogramBaseName,
+           ToUmaToken(fetch_priority()), "FetchDuration", ToUmaToken(result)},
+          "."),
+      duration);
 }
