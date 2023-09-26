@@ -118,7 +118,10 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
   };
 
   // Setup format for input queue.
-  bool SetupInputFormat(uint32_t input_format_fourcc);
+  bool SetupInputFormat();
+
+  // Allocates the buffers for the input queue.
+  bool AllocateInputBuffers();
 
   // Setup format for output queue. This function sets output format on output
   // queue that is supported by a v4l2 driver, can be allocatable by
@@ -205,6 +208,14 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
   VideoCodecProfile profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;
   VideoColorSpace color_space_;
 
+  // Hold onto the current resolution so we can use that to determine the size
+  // of the input(OUTPUT) buffers.
+  gfx::Size current_resolution_;
+
+  // Hold onto the input fourcc format so we can use it if we need to rebuild
+  // the input queue.
+  uint32_t input_format_fourcc_;
+
   // V4L2 input and output queue.
   scoped_refptr<V4L2Queue> input_queue_;
   scoped_refptr<V4L2Queue> output_queue_;
@@ -214,6 +225,7 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
   std::unique_ptr<CdmContextRef> cdm_context_ref_;
   uint32_t pending_secure_allocate_callbacks_ = 0;
   InitCB pending_init_cb_;
+  CroStatus pending_change_resolution_done_status_;
 
   SEQUENCE_CHECKER(decoder_sequence_checker_);
 

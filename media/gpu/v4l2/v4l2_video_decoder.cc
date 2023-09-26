@@ -51,9 +51,12 @@ namespace {
 using PixelLayoutCandidate = ImageProcessor::PixelLayoutCandidate;
 
 // See http://crbug.com/255116.
+constexpr int k480pArea = 720 * 480;
 constexpr int k1080pArea = 1920 * 1088;
+// Input bitstream buffer size fo rup to 480p streams.
+constexpr size_t kInputBuferMaxSizeFor480p = 512 * 1024;
 // Input bitstream buffer size for up to 1080p streams.
-constexpr size_t kInputBufferMaxSizeFor1080p = 1024 * 1024;
+constexpr size_t kInputBufferMaxSizeFor1080p = 2 * kInputBuferMaxSizeFor480p;
 // Input bitstream buffer size for up to 4k streams.
 constexpr size_t kInputBufferMaxSizeFor4k = 4 * kInputBufferMaxSizeFor1080p;
 
@@ -113,6 +116,17 @@ void LogAndRecordUMA(const base::Location& location,
              << location.ToString() << (message.empty() ? " " : " : ")
              << message;
   base::UmaHistogramEnumeration("Media.V4l2VideoDecoder.Error", function);
+}
+
+size_t GetInputBufferSizeForResolution(const gfx::Size& resolution) {
+  auto area = resolution.GetArea();
+  if (area < k480pArea) {
+    return kInputBuferMaxSizeFor480p;
+  } else if (area < k1080pArea) {
+    return kInputBufferMaxSizeFor1080p;
+  } else {
+    return kInputBufferMaxSizeFor4k;
+  }
 }
 
 }  // namespace
@@ -302,6 +316,7 @@ void V4L2VideoDecoder::Initialize(const VideoDecoderConfig& config,
   profile_ = config.profile();
   aspect_ratio_ = config.aspect_ratio();
   color_space_ = config.color_space_info();
+  current_resolution_ = config.visible_rect().size();
 
   if (profile_ == VIDEO_CODEC_PROFILE_UNKNOWN) {
     VLOGF(1) << "Unknown profile.";
@@ -420,17 +435,17 @@ V4L2Status V4L2VideoDecoder::InitializeBackend() {
   }
 
   const auto preferred_api_and_format = api_and_format.value();
-  const uint32_t input_format_fourcc = preferred_api_and_format.second;
+  input_format_fourcc_ = preferred_api_and_format.second;
   if (preferred_api_and_format.first == kStateful) {
     VLOGF(1) << "Using a stateful API for profile: " << GetProfileName(profile_)
-             << " and fourcc: " << FourccToString(input_format_fourcc);
+             << " and fourcc: " << FourccToString(input_format_fourcc_);
     backend_ = std::make_unique<V4L2StatefulVideoDecoderBackend>(
         this, device_, profile_, color_space_, decoder_task_runner_);
   } else {
     DCHECK_EQ(preferred_api_and_format.first, kStateless);
     VLOGF(1) << "Using a stateless API for profile: "
              << GetProfileName(profile_)
-             << " and fourcc: " << FourccToString(input_format_fourcc);
+             << " and fourcc: " << FourccToString(input_format_fourcc_);
     backend_ = std::make_unique<V4L2StatelessVideoDecoderBackend>(
         this, device_, profile_, color_space_, decoder_task_runner_);
   }
@@ -440,22 +455,12 @@ V4L2Status V4L2VideoDecoder::InitializeBackend() {
     return V4L2Status::Codes::kFailedResourceAllocation;
   }
 
-  if (!SetupInputFormat(input_format_fourcc)) {
+  if (!SetupInputFormat()) {
     LogAndRecordUMA(FROM_HERE, V4l2VideoDecoderFunctions::kSetupInputFormat);
     return V4L2Status::Codes::kBadFormat;
   }
 
-  const size_t num_OUTPUT_buffers =
-      backend_->GetNumOUTPUTQueueBuffers(!!cdm_context_ref_);
-  // Secure playback uses dmabufs for the OUTPUT queue, otherwise we use mmap
-  // buffers.
-  v4l2_memory input_queue_memory =
-      !!cdm_context_ref_ ? V4L2_MEMORY_DMABUF : V4L2_MEMORY_MMAP;
-  VLOGF(1) << "Requesting: " << num_OUTPUT_buffers << " OUTPUT buffers of type "
-           << (input_queue_memory == V4L2_MEMORY_MMAP ? "V4L2_MEMORY_MMAP"
-                                                      : "V4L2_MEMORY_DMABUF");
-  if (input_queue_->AllocateBuffers(num_OUTPUT_buffers, input_queue_memory,
-                                    incoherent_) == 0) {
+  if (!AllocateInputBuffers()) {
     VLOGF(1) << "Failed to allocate input buffer.";
     return V4L2Status::Codes::kFailedResourceAllocation;
   }
@@ -490,7 +495,6 @@ void V4L2VideoDecoder::AllocateSecureBufferCB(SecureBufferAllocatedCB callback,
     // failed callback so we have nothing to do.
     return;
   }
-  CHECK(!!pending_init_cb_);
   if (!mojo_fd.is_valid()) {
     LOG(ERROR) << "Invalid Mojo FD returned for secure buffer allocation";
     SetState(State::kError);
@@ -536,44 +540,72 @@ void V4L2VideoDecoder::AllocateSecureBufferCB(SecureBufferAllocatedCB callback,
   CHECK_GT(pending_secure_allocate_callbacks_, 0u);
   pending_secure_allocate_callbacks_--;
   if (!pending_secure_allocate_callbacks_) {
-    SetState(State::kInitialized);
-    std::move(pending_init_cb_).Run(DecoderStatus::Codes::kOk);
+    if (pending_init_cb_) {
+      // This is from the initial secure buffer allocations during Initialize().
+      SetState(State::kInitialized);
+      std::move(pending_init_cb_).Run(DecoderStatus::Codes::kOk);
+    } else {
+      // This is from the secure buffer allocations due to a resolution change.
+      OnChangeResolutionDone(pending_change_resolution_done_status_);
+    }
   }
 }
 
-bool V4L2VideoDecoder::SetupInputFormat(uint32_t fourcc) {
+bool V4L2VideoDecoder::SetupInputFormat() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
 
   // Check if the format is supported.
   const auto v4l2_codecs_as_pix_fmts = EnumerateSupportedPixFmts(
       base::BindRepeating(&V4L2Device::Ioctl, device_),
       V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
-  if (!base::Contains(v4l2_codecs_as_pix_fmts, fourcc)) {
-    DVLOGF(1) << FourccToString(fourcc) << " not recognised, skipping...";
+  if (!base::Contains(v4l2_codecs_as_pix_fmts, input_format_fourcc_)) {
+    DVLOGF(1) << FourccToString(input_format_fourcc_)
+              << " not recognised, skipping...";
     return false;
   }
-  VLOGF(1) << "Input (OUTPUT queue) Fourcc: " << FourccToString(fourcc);
+  VLOGF(1) << "Input (OUTPUT queue) Fourcc: "
+           << FourccToString(input_format_fourcc_);
 
-  // Determine the input buffer size.
-  gfx::Size max_size, min_size;
-  GetSupportedResolution(base::BindRepeating(&V4L2Device::Ioctl, device_),
-                         fourcc, &min_size, &max_size);
-  size_t input_size = max_size.GetArea() > k1080pArea
-                          ? kInputBufferMaxSizeFor4k
-                          : kInputBufferMaxSizeFor1080p;
+  // Determine the input buffer size, for backends that support stopping the
+  // input queue on resolution changes this can be dynamic; otherwise we need to
+  // calculate it based on the maximum frame size the decoder can handle.
+  size_t input_size;
+  if (backend_->StopInputQueueOnResChange()) {
+    input_size = GetInputBufferSizeForResolution(current_resolution_);
+  } else {
+    gfx::Size max_size, min_size;
+    GetSupportedResolution(base::BindRepeating(&V4L2Device::Ioctl, device_),
+                           input_format_fourcc_, &min_size, &max_size);
+    input_size = GetInputBufferSizeForResolution(max_size);
+  }
 
   // Setup the input format.
-  auto format = input_queue_->SetFormat(fourcc, gfx::Size(), input_size);
+  auto format =
+      input_queue_->SetFormat(input_format_fourcc_, gfx::Size(), input_size);
   if (!format) {
     VPLOGF(1) << "Failed to call IOCTL to set input format.";
     return false;
   }
-  DCHECK_EQ(format->fmt.pix_mp.pixelformat, fourcc)
+  DCHECK_EQ(format->fmt.pix_mp.pixelformat, input_format_fourcc_)
       << "The input (OUTPUT) queue must accept the requested pixel format "
-      << FourccToString(fourcc) << ", but it returned instead: "
+      << FourccToString(input_format_fourcc_) << ", but it returned instead: "
       << FourccToString(format->fmt.pix_mp.pixelformat);
 
   return true;
+}
+
+bool V4L2VideoDecoder::AllocateInputBuffers() {
+  const size_t num_OUTPUT_buffers =
+      backend_->GetNumOUTPUTQueueBuffers(!!cdm_context_ref_);
+  // Secure playback uses dmabufs for the OUTPUT queue, otherwise we use mmap
+  // buffers.
+  v4l2_memory input_queue_memory =
+      !!cdm_context_ref_ ? V4L2_MEMORY_DMABUF : V4L2_MEMORY_MMAP;
+  VLOGF(1) << "Requesting: " << num_OUTPUT_buffers << " OUTPUT buffers of type "
+           << (input_queue_memory == V4L2_MEMORY_MMAP ? "V4L2_MEMORY_MMAP"
+                                                      : "V4L2_MEMORY_DMABUF");
+  return input_queue_->AllocateBuffers(num_OUTPUT_buffers, input_queue_memory,
+                                       incoherent_) != 0;
 }
 
 CroStatus V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
@@ -973,6 +1005,34 @@ CroStatus V4L2VideoDecoder::ContinueChangeResolution(
     return CroStatus::Codes::kFailedToChangeResolution;
   }
 
+  // See if we should also reallocate the input buffers. We only do this if the
+  // backend supports stopping the input queue on resolution changes and the
+  // buffer size would now be different.
+  current_resolution_ = visible_rect.size();
+  if (backend_->StopInputQueueOnResChange()) {
+    size_t curr_buffer_size =
+        input_queue_->GetMemoryUsage() / input_queue_->AllocatedBuffersCount();
+    if (curr_buffer_size !=
+        GetInputBufferSizeForResolution(current_resolution_)) {
+      if (!input_queue_->DeallocateBuffers()) {
+        SetState(State::kError);
+        return CroStatus::Codes::kFailedToChangeResolution;
+      }
+      // Set the input format again, which will use the new buffer size.
+      if (!SetupInputFormat()) {
+        LogAndRecordUMA(FROM_HERE,
+                        V4l2VideoDecoderFunctions::kSetupInputFormat);
+        SetState(State::kError);
+        return CroStatus::Codes::kFailedToChangeResolution;
+      }
+      if (!AllocateInputBuffers()) {
+        VLOGF(1) << "Failed to allocate input buffers on resolution change";
+        SetState(State::kError);
+        return CroStatus::Codes::kFailedToChangeResolution;
+      }
+    }
+  }
+
   if (!output_queue_->DeallocateBuffers()) {
     SetState(State::kError);
     return CroStatus::Codes::kFailedToChangeResolution;
@@ -1047,6 +1107,13 @@ void V4L2VideoDecoder::OnChangeResolutionDone(CroStatus status) {
     // We don't need to set error state here because ContinueChangeResolution()
     // should have already done it if |backend_| is null.
     VLOGF(1) << "Backend was destroyed before resolution change finished.";
+    return;
+  }
+  // If we still have secure buffer allocations pending, then wait until they
+  // have completed before invoking the callback to complete the resolution
+  // change.
+  if (pending_secure_allocate_callbacks_) {
+    pending_change_resolution_done_status_ = status;
     return;
   }
   backend_->OnChangeResolutionDone(status);
