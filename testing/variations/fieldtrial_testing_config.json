@@ -10242,6 +10242,29 @@
             ]
         }
     ],
+    "MojoLargerDataPipeAllocationSize": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "data_pipe_2048k_20230922",
+                    "params": {
+                        "LargerDataPipeAllocationSize": "2097152"
+                    },
+                    "enable_features": [
+                        "LargerDataPipeAllocationSizeFeature"
+                    ]
+                }
+            ]
+        }
+    ],
     "MsaaSettingsMac": [
         {
             "platforms": [
