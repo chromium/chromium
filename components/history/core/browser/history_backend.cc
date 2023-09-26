@@ -1659,28 +1659,6 @@ bool HistoryBackend::GetMostRecentVisitsForURL(URLID id,
   return false;
 }
 
-bool HistoryBackend::AddVisits(const GURL& url,
-                               const std::vector<VisitInfo>& visits,
-                               VisitSource visit_source) {
-  if (db_) {
-    for (const auto& visit : visits) {
-      if (!AddPageVisit(url, visit.first, /*referring_visit=*/0,
-                        /*external_referrer_url=*/GURL(), visit.second,
-                        /*hidden=*/!ui::PageTransitionIsMainFrame(visit.second),
-                        visit_source, IsTypedIncrement(visit.second),
-                        /*opener_visit=*/0,
-                        /*consider_for_ntp_most_visited=*/true,
-                        /*local_navigation_id=*/absl::nullopt)
-               .first) {
-        return false;
-      }
-    }
-    ScheduleCommit();
-    return true;
-  }
-  return false;
-}
-
 bool HistoryBackend::GetForeignVisit(const std::string& originator_cache_guid,
                                      VisitID originator_visit_id,
                                      VisitRow* visit_row) {

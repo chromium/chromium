@@ -312,6 +312,21 @@ class HistoryBackendTestBase : public testing::Test {
     mem_backend_->OnKeywordSearchTermDeleted(nullptr, url_id);
   }
 
+  void AddVisits(const GURL& url,
+                 const std::vector<VisitInfo>& visits,
+                 VisitSource visit_source) {
+    for (const auto& visit : visits) {
+      backend_->AddPageVisit(
+          url, visit.first, /*referring_visit=*/0,
+          /*external_referrer_url=*/GURL(), visit.second,
+          /*hidden=*/!ui::PageTransitionIsMainFrame(visit.second), visit_source,
+          HistoryBackend::IsTypedIncrement(visit.second),
+          /*opener_visit=*/0,
+          /*consider_for_ntp_most_visited=*/true,
+          /*local_navigation_id=*/absl::nullopt);
+    }
+  }
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   HistoryClientFakeBookmarks history_client_;
@@ -2279,49 +2294,6 @@ TEST_F(HistoryBackendTest, MixedContentAnnotationsRequestTypes) {
                               /*id=*/"entity2", /*weight=*/1)));
 }
 
-TEST_F(HistoryBackendTest, AddVisitsSource) {
-  ASSERT_TRUE(backend_.get());
-
-  GURL url1("http://www.cnn.com");
-  std::vector<VisitInfo> visits1, visits2;
-  visits1.emplace_back(base::Time::Now() - base::Days(5),
-                       ui::PAGE_TRANSITION_LINK);
-  visits1.emplace_back(base::Time::Now() - base::Days(1),
-                       ui::PAGE_TRANSITION_LINK);
-  visits1.emplace_back(base::Time::Now(), ui::PAGE_TRANSITION_LINK);
-
-  GURL url2("http://www.example.com");
-  visits2.emplace_back(base::Time::Now() - base::Days(10),
-                       ui::PAGE_TRANSITION_LINK);
-  visits2.emplace_back(base::Time::Now(), ui::PAGE_TRANSITION_LINK);
-
-  // Clear all history.
-  backend_->DeleteAllHistory();
-
-  // Add the visits.
-  backend_->AddVisits(url1, visits1, SOURCE_IE_IMPORTED);
-  backend_->AddVisits(url2, visits2, SOURCE_SYNCED);
-
-  // Verify the visits were added with their sources.
-  VisitVector visits;
-  URLRow row;
-  URLID id = backend_->db()->GetRowForURL(url1, &row);
-  ASSERT_TRUE(backend_->db()->GetVisitsForURL(id, &visits));
-  ASSERT_EQ(3U, visits.size());
-  VisitSourceMap visit_sources;
-  ASSERT_TRUE(backend_->GetVisitsSource(visits, &visit_sources));
-  ASSERT_EQ(3U, visit_sources.size());
-  for (int i = 0; i < 3; i++)
-    EXPECT_EQ(SOURCE_IE_IMPORTED, visit_sources[visits[i].visit_id]);
-  id = backend_->db()->GetRowForURL(url2, &row);
-  ASSERT_TRUE(backend_->db()->GetVisitsForURL(id, &visits));
-  ASSERT_EQ(2U, visits.size());
-  ASSERT_TRUE(backend_->GetVisitsSource(visits, &visit_sources));
-  ASSERT_EQ(2U, visit_sources.size());
-  for (int i = 0; i < 2; i++)
-    EXPECT_EQ(SOURCE_SYNCED, visit_sources[visits[i].visit_id]);
-}
-
 TEST_F(HistoryBackendTest, GetMostRecentVisits) {
   ASSERT_TRUE(backend_.get());
 
@@ -2337,7 +2309,7 @@ TEST_F(HistoryBackendTest, GetMostRecentVisits) {
   backend_->DeleteAllHistory();
 
   // Add the visits.
-  backend_->AddVisits(url1, visits1, SOURCE_IE_IMPORTED);
+  AddVisits(url1, visits1, SOURCE_IE_IMPORTED);
 
   // Verify the visits were added with their sources.
   VisitVector visits;
@@ -2367,7 +2339,7 @@ TEST_F(HistoryBackendTest, RemoveVisitsTransitions) {
   visits_to_add.push_back(link_visit);
 
   // Add the visits.
-  backend_->AddVisits(url1, visits_to_add, SOURCE_SYNCED);
+  AddVisits(url1, visits_to_add, SOURCE_SYNCED);
 
   // Verify that the various counts are what we expect.
   VisitVector visits;
@@ -2427,8 +2399,8 @@ TEST_F(HistoryBackendTest, RemoveVisitsSource) {
   backend_->DeleteAllHistory();
 
   // Add the visits.
-  backend_->AddVisits(url1, visits1, SOURCE_IE_IMPORTED);
-  backend_->AddVisits(url2, visits2, SOURCE_SYNCED);
+  AddVisits(url1, visits1, SOURCE_IE_IMPORTED);
+  AddVisits(url2, visits2, SOURCE_SYNCED);
 
   // Verify the visits of url1 were added.
   VisitVector visits;
@@ -2976,8 +2948,8 @@ TEST_F(HistoryBackendTest, UpdateVisitDuration) {
   backend_->DeleteAllHistory();
 
   // Add the visits.
-  backend_->AddVisits(url1, visit_info1, SOURCE_BROWSED);
-  backend_->AddVisits(url2, visit_info2, SOURCE_BROWSED);
+  AddVisits(url1, visit_info1, SOURCE_BROWSED);
+  AddVisits(url2, visit_info2, SOURCE_BROWSED);
 
   // Verify the entries for both visits were added in visit_details.
   VisitVector visits1, visits2;
@@ -3016,7 +2988,7 @@ TEST_F(HistoryBackendTest, MarkVisitAsKnownToSync) {
   visit_info1.emplace_back(start_ts, ui::PAGE_TRANSITION_LINK);
 
   // Add the visit and verify it doesn't start as being known to sync.
-  backend_->AddVisits(url1, visit_info1, SOURCE_BROWSED);
+  AddVisits(url1, visit_info1, SOURCE_BROWSED);
   VisitVector visits1;
   URLRow row;
   URLID url_id1 = backend_->db()->GetRowForURL(url1, &row);

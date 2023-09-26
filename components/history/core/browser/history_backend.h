@@ -622,14 +622,6 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // Fetches up to `max_visits` most recent visits for the passed URL.
   bool GetMostRecentVisitsForURL(URLID id, int max_visits, VisitVector* visits);
 
-  // While adding visits in batch, the source needs to be provided.
-  // TODO(crbug.com/1365291): This method is only used in tests. Ideally migrate
-  // those tests to other APIs and delete this, or failing that, at least
-  // rename it to *ForTest.
-  bool AddVisits(const GURL& url,
-                 const std::vector<VisitInfo>& visits,
-                 VisitSource visit_source);
-
   // Searches for a visit with the given `originator_visit_id` coming from
   // another device (identified by `originator_cache_guid`). If found, returns
   // true and writes the visit into `visit_row`; otherwise returns false.
@@ -778,9 +770,6 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // added for each given URL at the last visit time in the URLRow if the
   // passed visit type != SOURCE_SYNCED (the sync code manages visits itself).
   // Each visit will have the visit_source type set.
-  // TODO(crbug.com/1365291): This method is only used in tests. Ideally migrate
-  // those tests to other APIs and delete this, or failing that, at least
-  // rename it to *ForTest.
   void AddPagesWithDetails(const URLRows& info, VisitSource visit_source);
 
 #if defined(UNIT_TEST)
