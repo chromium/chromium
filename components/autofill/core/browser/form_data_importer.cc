@@ -432,6 +432,11 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
     std::vector<FormDataImporter::AddressProfileImportCandidate>*
         address_profile_import_candidates,
     LogBuffer* import_log_buffer) {
+  // TODO(crbug.com/1464568): Design a proper import mechanism for i18n address
+  // model.
+  if (base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel)) {
+    return false;
+  }
   // The candidate for profile import. There are many ways for the candidate to
   // be rejected (see everywhere this function returns false).
   AutofillProfile candidate_profile;

@@ -50,9 +50,12 @@ Address& Address::operator=(const Address& address) {
   // Only build an i18n address hierarchy for `this` in case the copied
   // `address` uses an i18n hierarchy. Otherwise the legacy address should be
   // used.
-  structured_address_ = i18n_model_definition::CreateAddressComponentModel(
-      address.GetAddressCountryCode());
-  is_legacy_address_ = address.IsLegacyAddress();
+  if (base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel) &&
+      !address.IsLegacyAddress()) {
+    structured_address_ = i18n_model_definition::CreateAddressComponentModel(
+        address.GetAddressCountryCode());
+    is_legacy_address_ = address.IsLegacyAddress();
+  }
 
   structured_address_->CopyFrom(address.GetStructuredAddress());
   return *this;
