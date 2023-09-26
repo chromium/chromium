@@ -160,7 +160,7 @@ class SystemFeaturesPolicyTest : public PolicyTest {
     auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
     web_app_info->start_url = app_url;
     web_app_info->scope = app_url.GetWithoutFilename();
-    web_app::AppId installed_app_id = web_app::test::InstallWebApp(
+    webapps::AppId installed_app_id = web_app::test::InstallWebApp(
         browser()->profile(), std::move(web_app_info));
     EXPECT_EQ(app_id, installed_app_id);
   }
