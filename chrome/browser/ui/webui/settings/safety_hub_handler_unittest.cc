@@ -501,7 +501,8 @@ TEST_F(SafetyHubHandlerTest, RevokeAllContentSettingTypes) {
       ContentSettingsType::NFC,
       ContentSettingsType::FILE_SYSTEM_READ_GUARD,
       ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
-      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS};
+      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
+      ContentSettingsType::FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION};
 
   // Add all content settings in the content setting registry to revoked
   // permissions list.

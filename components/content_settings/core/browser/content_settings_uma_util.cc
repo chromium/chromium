@@ -119,6 +119,7 @@ constexpr auto kHistogramValue = base::MakeFixedFlatMap<ContentSettingsType,
     {ContentSettingsType::TPCD_SUPPORT, 105},
     {ContentSettingsType::AUTO_PICTURE_IN_PICTURE, 106},
     {ContentSettingsType::TPCD_METADATA_GRANTS, 107},
+    {ContentSettingsType::FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION, 108},
 
     // As mentioned at the top, please don't forget to update ContentType in
     // enums.xml when you add entries here!

@@ -243,7 +243,10 @@ enum class ContentSettingsType : int32_t {
 
   // Website setting to store permissions metadata granted to paths on the local
   // file system via the File System Access API. |FILE_SYSTEM_WRITE_GUARD| is
-  // the corresponding "guard" setting.
+  // the corresponding "guard" setting. The stored data represents valid
+  // permission only if |FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION| is enabled
+  // via user opt-in. Otherwise, they represent "recently granted but revoked
+  // permission", which are used to restore the permission.
   FILE_SYSTEM_ACCESS_CHOOSER_DATA,
 
   // Stores a grant that allows a relying party to send a request for identity
@@ -355,6 +358,12 @@ enum class ContentSettingsType : int32_t {
   // component updater service. This type will only be used when
   // `net::features::kTpcdMetadataGrants` is enabled.
   TPCD_METADATA_GRANTS,
+
+  // Whether user has opted into keeping file/directory permissions persistent
+  // between visits for a given origin. When enabled, permission metadata stored
+  // under |FILE_SYSTEM_ACCESS_CHOOSER_DATA| can auto-grant incoming permission
+  // request.
+  FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION,
 
   NUM_TYPES,
 };

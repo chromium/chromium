@@ -199,6 +199,9 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::COOKIE_CONTROLS_METADATA, nullptr},
     {ContentSettingsType::TPCD_SUPPORT, nullptr},
     {ContentSettingsType::TPCD_METADATA_GRANTS, nullptr},
+    // TODO(crbug.com/1011533): Update the name once the design is finalized
+    // for the integration with Safety Hub.
+    {ContentSettingsType::FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION, nullptr},
 };
 
 static_assert(std::size(kContentSettingsTypeGroupNames) ==
