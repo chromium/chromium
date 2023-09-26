@@ -13,6 +13,7 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -24,7 +25,10 @@
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service_factory.h"
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
+#include "chrome/browser/ui/webui/version/version_ui.h"
+#include "chrome/browser/upgrade_detector/build_state.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -446,6 +450,35 @@ void SafetyHubHandler::HandleGetPasswordCardData(
   ResolveJavascriptCallback(callback_id, base::Value(std::move(result)));
 }
 
+void SafetyHubHandler::HandleGetVersionCardData(const base::Value::List& args) {
+  AllowJavascript();
+
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
+
+  base::Value::Dict result;
+  if (g_browser_process->GetBuildState()->update_type() ==
+      BuildState::UpdateType::kNone) {
+    result.Set(safety_hub::kCardHeaderKey,
+               l10n_util::GetStringUTF16(IDS_SETTINGS_UPGRADE_UP_TO_DATE));
+    result.Set(safety_hub::kCardSubheaderKey,
+               VersionUI::GetAnnotatedVersionStringForUi());
+    result.Set(safety_hub::kCardStateKey,
+               static_cast<int>(safety_hub::SafetyHubCardState::kSafe));
+  } else {
+    // TODO(1443466): Handle rare states such as version rollbacks.
+    result.Set(safety_hub::kCardHeaderKey,
+               l10n_util::GetStringUTF16(IDS_RECOVERY_BUBBLE_TITLE));
+    result.Set(safety_hub::kCardSubheaderKey,
+               l10n_util ::GetStringUTF16(
+                   IDS_SETTINGS_SAFETY_HUB_VERSION_CARD_SUBHEADER_RESTART));
+    result.Set(safety_hub::kCardStateKey,
+               static_cast<int>(safety_hub::SafetyHubCardState::kWarning));
+  }
+
+  ResolveJavascriptCallback(callback_id, base::Value(std::move(result)));
+}
+
 void SafetyHubHandler::RegisterMessages() {
   // Usage of base::Unretained(this) is safe, because web_ui() owns `this` and
   // won't release ownership until destruction.
@@ -513,6 +546,10 @@ void SafetyHubHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "getPasswordCardData",
       base::BindRepeating(&SafetyHubHandler::HandleGetPasswordCardData,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getVersionCardData",
+      base::BindRepeating(&SafetyHubHandler::HandleGetVersionCardData,
                           base::Unretained(this)));
 }
 

@@ -6,10 +6,12 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
@@ -17,7 +19,11 @@
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
 #include "chrome/browser/ui/webui/settings/safety_hub_handler.h"
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
+#include "chrome/browser/ui/webui/version/version_ui.h"
+#include "chrome/browser/upgrade_detector/build_state.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_version.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
@@ -537,4 +543,44 @@ TEST_F(SafetyHubHandlerTest, RevokeAllContentSettingTypes) {
       EXPECT_EQ(revoked_permissions.size(), 1U);
     }
   }
+}
+
+TEST_F(SafetyHubHandlerTest, VersionCardUpToDate) {
+  base::Value::List args;
+  args.Append("getVersionCardData");
+  handler()->HandleGetVersionCardData(args);
+
+  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+  ASSERT_TRUE(data.arg3()->is_dict());
+
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_SETTINGS_UPGRADE_UP_TO_DATE),
+            base::UTF8ToUTF16(*data.arg3()->GetDict().FindString("header")));
+  EXPECT_EQ(VersionUI::GetAnnotatedVersionStringForUi(),
+            base::UTF8ToUTF16(*data.arg3()->GetDict().FindString("subheader")));
+  EXPECT_EQ(static_cast<int>(SafetyHubCardState::kSafe),
+            *data.arg3()->GetDict().FindInt("state"));
+}
+
+TEST_F(SafetyHubHandlerTest, VersionCardOutOfDate) {
+  // An update is available, the version card should let the user know.
+  g_browser_process->GetBuildState()->SetUpdate(
+      BuildState::UpdateType::kNormalUpdate,
+      base::Version({CHROME_VERSION_MAJOR, CHROME_VERSION_MINOR,
+                     CHROME_VERSION_BUILD, CHROME_VERSION_PATCH + 1}),
+      absl::nullopt);
+
+  base::Value::List args;
+  args.Append("getVersionCardData");
+  handler()->HandleGetVersionCardData(args);
+
+  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+  ASSERT_TRUE(data.arg3()->is_dict());
+
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_RECOVERY_BUBBLE_TITLE),
+            base::UTF8ToUTF16(*data.arg3()->GetDict().FindString("header")));
+  EXPECT_EQ(l10n_util ::GetStringUTF16(
+                IDS_SETTINGS_SAFETY_HUB_VERSION_CARD_SUBHEADER_RESTART),
+            base::UTF8ToUTF16(*data.arg3()->GetDict().FindString("subheader")));
+  EXPECT_EQ(static_cast<int>(SafetyHubCardState::kWarning),
+            *data.arg3()->GetDict().FindInt("state"));
 }

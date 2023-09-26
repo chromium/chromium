@@ -187,12 +187,7 @@ export class SafetyHubBrowserProxyImpl implements SafetyHubBrowserProxy {
   }
 
   getVersionCardData() {
-    // TODO(crbug.com/1443466): Replace dummy response with handler response.
-    return Promise.resolve({
-      header: 'dummy header',
-      subheader: 'dummy subheader',
-      state: CardState.SAFE,
-    });
+    return sendWithPromise('getVersionCardData');
   }
 
   getNumberOfExtensionsThatNeedReview() {
