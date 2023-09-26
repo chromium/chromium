@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 #include "content/public/common/content_features.h"
 
 namespace tpcd::experiment {
@@ -28,5 +29,10 @@ const base::FeatureParam<bool> kDisableAdsAPIs{
     &features::kCookieDeprecationFacilitatedTesting,
     /*name=*/"disable_ads_apis",
     /*default_value=*/false};
+
+extern const base::FeatureParam<base::TimeDelta> kDecisionDelayTime{
+    &features::kCookieDeprecationFacilitatedTesting,
+    /*name=*/"decision_delay_time",
+    /*default_value=*/base::Seconds(1)};
 
 }  // namespace tpcd::experiment

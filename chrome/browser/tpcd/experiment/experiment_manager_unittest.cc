@@ -4,34 +4,57 @@
 
 #include "chrome/browser/tpcd/experiment/experiment_manager.h"
 
+#include "base/test/bind.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
+#include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
 #include "chrome/browser/tpcd/experiment/tpcd_pref_names.h"
 #include "chrome/browser/tpcd/experiment/tpcd_utils.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/common/content_features.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace tpcd::experiment {
-
 namespace {
 
 class TestingExperimentManager : public ExperimentManager {};
 
+using ::testing::InSequence;
+using ::testing::Optional;
+
+using Checkpoint = ::testing::MockFunction<void(int step)>;
+
 }  // namespace
 
-class ExperimentManagerTest : public testing::Test {
+class ExperimentManagerTestBase : public testing::Test {
  public:
-  ExperimentManagerTest() : local_state_(TestingBrowserProcess::GetGlobal()) {}
+  ExperimentManagerTestBase()
+      : local_state_(TestingBrowserProcess::GetGlobal()) {}
 
   PrefService& prefs() { return *local_state_.Get(); }
 
+  void SetUp() override {
+    prefs().SetInteger(
+        prefs::kTPCDExperimentClientState,
+        static_cast<int>(utils::ExperimentState::kUnknownEligibility));
+    delay_time_ = kDecisionDelayTime.Get();
+  }
+
  protected:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   ScopedTestingLocalState local_state_;
+  base::MockCallback<ExperimentManager::EligibilityDecisionCallback>
+      mock_callback_;
+  base::TimeDelta delay_time_;
 };
 
-TEST_F(ExperimentManagerTest, Version) {
+TEST_F(ExperimentManagerTestBase, Version) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kCookieDeprecationFacilitatedTesting, {{"version", "2"}});
@@ -46,14 +69,14 @@ TEST_F(ExperimentManagerTest, Version) {
       {
           .desc = "first-run",
           .expected_version = 2,
-          .expected_state = utils::ExperimentState::kUnknownEligiblity,
+          .expected_state = utils::ExperimentState::kUnknownEligibility,
       },
       {
           .desc = "new-version",
           .initial_version = 1,
           .initial_state = utils::ExperimentState::kEligible,
           .expected_version = 2,
-          .expected_state = utils::ExperimentState::kUnknownEligiblity,
+          .expected_state = utils::ExperimentState::kUnknownEligibility,
       },
       {
           .desc = "same-version",
@@ -61,6 +84,13 @@ TEST_F(ExperimentManagerTest, Version) {
           .initial_state = utils::ExperimentState::kEligible,
           .expected_version = 2,
           .expected_state = utils::ExperimentState::kEligible,
+      },
+      {
+          .desc = "old-version",
+          .initial_version = 3,
+          .initial_state = utils::ExperimentState::kIneligible,
+          .expected_version = 2,
+          .expected_state = utils::ExperimentState::kUnknownEligibility,
       },
   };
 
@@ -87,6 +117,174 @@ TEST_F(ExperimentManagerTest, Version) {
     EXPECT_EQ(prefs().GetInteger(prefs::kTPCDExperimentClientState),
               static_cast<int>(test_case.expected_state));
   }
+}
+
+class ExperimentManagerTest : public ExperimentManagerTestBase {
+ public:
+  ExperimentManagerTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kCookieDeprecationFacilitatedTesting);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(ExperimentManagerTest,
+       ExperimentManager_OneEligibleProfileCallSetsPrefEligible) {
+  TestingExperimentManager test_manager;
+  test_manager.SetClientEligibility(/*is_eligible=*/true, mock_callback_.Get());
+  EXPECT_CALL(mock_callback_, Run(true)).Times(1);
+  task_environment_.FastForwardBy(delay_time_);
+
+  EXPECT_EQ(prefs().GetInteger(prefs::kTPCDExperimentClientState),
+            static_cast<int>(utils::ExperimentState::kEligible));
+}
+
+TEST_F(
+    ExperimentManagerTest,
+    ExperimentManager_OneIneligibleProfileCallSetsPrefIneligibleAndReturnsEarly) {
+  TestingExperimentManager test_manager;
+  test_manager.SetClientEligibility(/*is_eligible=*/false,
+                                    mock_callback_.Get());
+  EXPECT_CALL(mock_callback_, Run(false)).Times(1);
+  task_environment_.FastForwardBy(delay_time_);
+
+  EXPECT_EQ(prefs().GetInteger(prefs::kTPCDExperimentClientState),
+            static_cast<int>(utils::ExperimentState::kIneligible));
+}
+
+TEST_F(
+    ExperimentManagerTest,
+    ExperimentManager_OneEligibleOneIneligibleProfileCallSetsPrefIneligible) {
+  TestingExperimentManager test_manager;
+  test_manager.SetClientEligibility(/*is_eligible=*/true, mock_callback_.Get());
+  test_manager.SetClientEligibility(/*is_eligible=*/false,
+                                    mock_callback_.Get());
+  EXPECT_CALL(mock_callback_, Run(false)).Times(2);
+  task_environment_.FastForwardBy(delay_time_);
+
+  EXPECT_EQ(prefs().GetInteger(prefs::kTPCDExperimentClientState),
+            static_cast<int>(utils::ExperimentState::kIneligible));
+}
+
+TEST_F(
+    ExperimentManagerTest,
+    ExperimentManager_OneIneligibleOneEligibleProfileCallSetsPrefIneligible) {
+  TestingExperimentManager test_manager;
+  test_manager.SetClientEligibility(/*is_eligible=*/false,
+                                    mock_callback_.Get());
+  test_manager.SetClientEligibility(/*is_eligible=*/true, mock_callback_.Get());
+  EXPECT_CALL(mock_callback_, Run(false)).Times(2);
+  task_environment_.FastForwardBy(delay_time_);
+
+  EXPECT_EQ(prefs().GetInteger(prefs::kTPCDExperimentClientState),
+            static_cast<int>(utils::ExperimentState::kIneligible));
+}
+
+TEST_F(ExperimentManagerTest,
+       ExperimentManager_SetIneligibleAfterDecisionCallDoesNothing) {
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+    EXPECT_CALL(mock_callback_, Run).Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(mock_callback_, Run(true)).Times(1);
+    EXPECT_CALL(checkpoint, Call(2));
+    EXPECT_CALL(mock_callback_, Run(true)).Times(1);
+  }
+
+  TestingExperimentManager test_manager;
+  test_manager.SetClientEligibility(/*is_eligible=*/true, mock_callback_.Get());
+
+  checkpoint.Call(1);
+
+  task_environment_.FastForwardBy(delay_time_);
+
+  checkpoint.Call(2);
+
+  test_manager.SetClientEligibility(/*is_eligible=*/false,
+                                    mock_callback_.Get());
+
+  EXPECT_EQ(prefs().GetInteger(prefs::kTPCDExperimentClientState),
+            static_cast<int>(utils::ExperimentState::kEligible));
+}
+
+TEST_F(ExperimentManagerTest,
+       ExperimentManager_SetEligibleAfterDecisionCallDoesNothing) {
+  Checkpoint checkpoint;
+  {
+    InSequence seq;
+    EXPECT_CALL(mock_callback_, Run).Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(mock_callback_, Run(false)).Times(1);
+    EXPECT_CALL(checkpoint, Call(2));
+    EXPECT_CALL(mock_callback_, Run(false)).Times(1);
+  }
+
+  TestingExperimentManager test_manager;
+  test_manager.SetClientEligibility(/*is_eligible=*/false,
+                                    mock_callback_.Get());
+
+  checkpoint.Call(1);
+
+  task_environment_.FastForwardBy(delay_time_);
+
+  checkpoint.Call(2);
+
+  test_manager.SetClientEligibility(/*is_eligible=*/true, mock_callback_.Get());
+
+  EXPECT_EQ(prefs().GetInteger(prefs::kTPCDExperimentClientState),
+            static_cast<int>(utils::ExperimentState::kIneligible));
+}
+
+TEST_F(ExperimentManagerTest,
+       ExperimentManager_PrefUnsetBeforeFinalDecisionIsMade) {
+  TestingExperimentManager test_manager;
+  test_manager.SetClientEligibility(/*is_eligible=*/false,
+                                    mock_callback_.Get());
+  // No callbacks run before the delay_time_ time completes.
+  EXPECT_CALL(mock_callback_, Run).Times(0);
+  // fastforward less than the full delay_time_.
+  task_environment_.FastForwardBy(delay_time_ - base::Milliseconds(1));
+
+  // pref value should still be "kUnknownEligibility" before delay_time
+  // completes
+  EXPECT_EQ(prefs().GetInteger(prefs::kTPCDExperimentClientState),
+            static_cast<int>(utils::ExperimentState::kUnknownEligibility));
+}
+
+TEST_F(ExperimentManagerTest, PrefIneligibleReturnsEarly) {
+  prefs().SetInteger(prefs::kTPCDExperimentClientState,
+                     static_cast<int>(utils::ExperimentState::kIneligible));
+  EXPECT_CALL(mock_callback_, Run(false)).Times(1);
+  TestingExperimentManager().SetClientEligibility(/*is_eligible=*/true,
+                                                  mock_callback_.Get());
+
+  EXPECT_EQ(prefs().GetInteger(prefs::kTPCDExperimentClientState),
+            static_cast<int>(utils::ExperimentState::kIneligible));
+}
+
+TEST_F(ExperimentManagerTest, IsClientEligible_PrefIsEligibleReturnsTrue) {
+  prefs().SetInteger(prefs::kTPCDExperimentClientState,
+                     static_cast<int>(utils::ExperimentState::kEligible));
+
+  EXPECT_THAT(TestingExperimentManager().IsClientEligible(), Optional(true));
+}
+
+TEST_F(ExperimentManagerTest, IsClientEligible_PrefIsIneligibleReturnsFalse) {
+  prefs().SetInteger(prefs::kTPCDExperimentClientState,
+                     static_cast<int>(utils::ExperimentState::kIneligible));
+
+  EXPECT_THAT(TestingExperimentManager().IsClientEligible(), Optional(false));
+}
+
+TEST_F(ExperimentManagerTest, IsClientEligible_PrefIsUnknownReturnsEmpty) {
+  prefs().SetInteger(
+      prefs::kTPCDExperimentClientState,
+      static_cast<int>(utils::ExperimentState::kUnknownEligibility));
+
+  EXPECT_EQ(TestingExperimentManager().IsClientEligible(), absl::nullopt);
 }
 
 }  // namespace tpcd::experiment

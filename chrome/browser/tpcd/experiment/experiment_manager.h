@@ -5,44 +5,49 @@
 #ifndef CHROME_BROWSER_TPCD_EXPERIMENT_EXPERIMENT_MANAGER_H_
 #define CHROME_BROWSER_TPCD_EXPERIMENT_EXPERIMENT_MANAGER_H_
 
+#include <vector>
+
+#include "base/functional/callback_forward.h"
 #include "base/no_destructor.h"
+#include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace tpcd::experiment {
 
+// Can only be used on the main thread.
 class ExperimentManager {
  public:
+  using EligibilityDecisionCallback = base::OnceCallback<void(bool)>;
+
   static ExperimentManager* GetInstance();
 
-  // Called by EligibilityService to tell the manager whether a profile is
-  // eligible. Mode B also needs to know whether the profile has been onboarded
-  // to the 3PCD UX, but Mode A does not.
-  void SetClientEligibility(bool is_eligible, bool is_onboarded = false);
+  // Called by `EligibilityService` to tell the manager whether a profile is
+  // eligible, with a callback to complete the profile-level work required once
+  // the final decision is made. The final decision is recorded in a local state
+  // pref. If this is called after the final decision is made, the local state
+  // pref value takes precedence and the callbacks are still performed.
+  void SetClientEligibility(
+      bool is_eligible,
+      EligibilityDecisionCallback on_eligibility_decision_callback);
 
-  // Returns the final decision for client eligiblity, if completed.
-  // absl::nullopt will be returned if the final decision has not been made yet.
+  // Returns the final decision for client eligibility, if completed.
+  // `absl::nullopt` will be returned if the final decision has not been made
+  // yet.
   absl::optional<bool> IsClientEligible() const;
 
  protected:
   ExperimentManager();
-  ~ExperimentManager() = default;
+  ~ExperimentManager();
 
  private:
   friend base::NoDestructor<ExperimentManager>;
+  bool client_is_eligible_ GUARDED_BY_CONTEXT(sequence_checker_) = true;
+  std::vector<EligibilityDecisionCallback> callbacks_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
 
-  // Mode B experiment will need to register the client for the synthetic trial
-  // IFF the client is eligible and onboarded (TCPDExperimentState ==
-  // kOnboardedEligible). Register the client for the correct arm of the
-  // synthetic trial based on Finch feature params.
-  void RegisterSyntheticTrial();
-
-  // If a previously registered client becomes ineligible, unregister it from
-  // the synthetic trial by registering it to a "invalidated" experiment arm.
-  void UnregisterSyntheticTrial();
-
-  // Check the client is eligible for 3PCD Experiments. Returns false when: the
-  // client is <30 days old or Android users with a PWA installed.
-  bool isClientEligible();
+  void CaptureEligibilityInLocalStatePref();
 };
 
 }  // namespace tpcd::experiment

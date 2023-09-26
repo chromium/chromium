@@ -23,14 +23,14 @@ const char kTPCDExperimentProfileState[] = "tpcd_experiment.profile_state";
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kTPCDExperimentClientState,
-      static_cast<int>(utils::ExperimentState::kUnknownEligiblity));
+      static_cast<int>(utils::ExperimentState::kUnknownEligibility));
   registry->RegisterIntegerPref(prefs::kTPCDExperimentClientStateVersion, 0);
 }
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kTPCDExperimentProfileState,
-      static_cast<int>(utils::ExperimentState::kUnknownEligiblity));
+      static_cast<int>(utils::ExperimentState::kUnknownEligibility));
 }
 
 }  // namespace tpcd::experiment
