@@ -4738,6 +4738,29 @@
             ]
         }
     ],
+    "DefaultGpuDiskCacheSize": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "max_cache_6M_20230913",
+                    "params": {
+                        "GpuDefaultMaxProgramCacheMemoryBytes": "6291456"
+                    },
+                    "enable_features": [
+                        "DefaultGpuDiskCacheSize"
+                    ]
+                }
+            ]
+        }
+    ],
     "DefaultOfflineExperience": [
         {
             "platforms": [
