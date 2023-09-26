@@ -11794,8 +11794,11 @@
             ],
             "experiments": [
                 {
-                    "name": "Control_20230925",
-                    "disable_features": [
+                    "name": "size_android_512_20230925",
+                    "params": {
+                        "PartitionAllocLargeThreadCacheSizeValueForLowRAMAndroid": "512"
+                    },
+                    "enable_features": [
                         "PartitionAllocLargeThreadCacheSize"
                     ]
                 }
@@ -11813,8 +11816,11 @@
             ],
             "experiments": [
                 {
-                    "name": "Control_20230925",
-                    "disable_features": [
+                    "name": "size_32768_20230925",
+                    "params": {
+                        "PartitionAllocLargeThreadCacheSizeValue": "32768"
+                    },
+                    "enable_features": [
                         "PartitionAllocLargeThreadCacheSize"
                     ]
                 }
