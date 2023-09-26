@@ -5176,12 +5176,23 @@ IN_PROC_BROWSER_TEST_F(PrerenderLowMemoryBrowserTest, NoPrerender) {
 class PrerenderSequentialPrerenderingBrowserTest : public PrerenderBrowserTest {
  public:
   PrerenderSequentialPrerenderingBrowserTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kPrerender2,
-          {{"max_num_of_running_speculation_rules",
-            base::NumberToString(MaxNumOfRunningPrerenders())},
-           {"embedder_blocked_hosts", "a.test,b.test,c.test"}}}},
-        {});
+    if (base::FeatureList::IsEnabled(
+            features::kPrerender2NewLimitAndScheduler)) {
+      feature_list_.InitWithFeaturesAndParameters(
+          {{features::kPrerender2NewLimitAndScheduler,
+            {{"max_num_of_running_speculation_rules_eager_prerenders",
+              base::NumberToString(MaxNumOfRunningPrerenders())}}},
+           {blink::features::kPrerender2,
+            {{"embedder_blocked_hosts", "a.test,b.test,c.test"}}}},
+          {});
+    } else {
+      feature_list_.InitWithFeaturesAndParameters(
+          {{blink::features::kPrerender2,
+            {{"max_num_of_running_speculation_rules",
+              base::NumberToString(MaxNumOfRunningPrerenders())},
+             {"embedder_blocked_hosts", "a.test,b.test,c.test"}}}},
+          {});
+    }
   }
 
   int MaxNumOfRunningPrerenders() const { return 4; }
@@ -8891,18 +8902,31 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 class MultiplePrerendersBrowserTest : public PrerenderBrowserTest {
  public:
   MultiplePrerendersBrowserTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kPrerender2,
-          {{"max_num_of_running_speculation_rules",
-            base::NumberToString(MaxNumOfRunningPrerenders())}}},
-         {blink::features::kPrerender2MemoryControls,
-          // A value 100 allows prerenderings regardless of the current memory
-          // usage.
-          {{"acceptable_percent_of_system_memory", "100"},
-           // Allow prerendering on low-end trybot devices so that prerendering
-           // can run on any bots.
-           {"memory_threshold_in_mb", "0"}}}},
-        {});
+    base::test::FeatureRefAndParams memory_controls{
+        blink::features::kPrerender2MemoryControls,
+        // A value 100 allows prerenderings regardless of the current memory
+        // usage.
+        {{"acceptable_percent_of_system_memory", "100"},
+         // Allow prerendering on low-end trybot devices so that prerendering
+         // can run on any bots.
+         {"memory_threshold_in_mb", "0"}}};
+
+    if (base::FeatureList::IsEnabled(
+            features::kPrerender2NewLimitAndScheduler)) {
+      feature_list_.InitWithFeaturesAndParameters(
+          {{features::kPrerender2NewLimitAndScheduler,
+            {{"max_num_of_running_speculation_rules_eager_prerenders",
+              base::NumberToString(MaxNumOfRunningPrerenders())}}},
+           memory_controls},
+          {});
+    } else {
+      feature_list_.InitWithFeaturesAndParameters(
+          {{blink::features::kPrerender2,
+            {{"max_num_of_running_speculation_rules",
+              base::NumberToString(MaxNumOfRunningPrerenders())}}},
+           memory_controls},
+          {});
+    }
   }
 
   int MaxNumOfRunningPrerenders() const { return 4; }
@@ -8915,17 +8939,30 @@ class MultiplePrerendersWithLimitedMemoryBrowserTest
     : public MultiplePrerendersBrowserTest {
  public:
   MultiplePrerendersWithLimitedMemoryBrowserTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kPrerender2,
-          {{"max_num_of_running_speculation_rules",
-            base::NumberToString(MaxNumOfRunningPrerenders())}}},
-         {blink::features::kPrerender2MemoryControls,
-          // A value 0 doesn't allow any prerendering.
-          {{"acceptable_percent_of_system_memory", "0"},
-           // Allow prerendering on low-end trybot devices so that prerendering
-           // can run on any bots.
-           {"memory_threshold_in_mb", "0"}}}},
-        {features::kPrerender2BypassMemoryLimitCheck});
+    base::test::FeatureRefAndParams memory_controls{
+        blink::features::kPrerender2MemoryControls,
+        // A value 0 doesn't allow any prerendering.
+        {{"acceptable_percent_of_system_memory", "0"},
+         // Allow prerendering on low-end trybot devices so that prerendering
+         // can run on any bots.
+         {"memory_threshold_in_mb", "0"}}};
+
+    if (base::FeatureList::IsEnabled(
+            features::kPrerender2NewLimitAndScheduler)) {
+      feature_list_.InitWithFeaturesAndParameters(
+          {{features::kPrerender2NewLimitAndScheduler,
+            {{"max_num_of_running_speculation_rules_eager_prerenders",
+              base::NumberToString(MaxNumOfRunningPrerenders())}}},
+           memory_controls},
+          {features::kPrerender2BypassMemoryLimitCheck});
+    } else {
+      feature_list_.InitWithFeaturesAndParameters(
+          {{blink::features::kPrerender2,
+            {{"max_num_of_running_speculation_rules",
+              base::NumberToString(MaxNumOfRunningPrerenders())}}},
+           memory_controls},
+          {features::kPrerender2BypassMemoryLimitCheck});
+    }
   }
 
  private:
