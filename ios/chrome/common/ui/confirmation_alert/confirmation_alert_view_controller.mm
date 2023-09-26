@@ -17,7 +17,7 @@
 
 namespace {
 
-const CGFloat kActionsBottomMargin = 10;
+const CGFloat kDefaultActionsBottomMargin = 10;
 // Gradient height.
 const CGFloat kGradientHeight = 40.;
 const CGFloat kScrollViewBottomInsets = 20;
@@ -85,6 +85,8 @@ const CGFloat kFaviconBadgeSideLength = 24;
     _scrollEnabled = YES;
     _showDismissBarButton = YES;
     _dismissBarButtonSystemItem = UIBarButtonSystemItemDone;
+    _shouldFillInformationStack = NO;
+    _actionStackBottomMargin = kDefaultActionsBottomMargin;
   }
   return self;
 }
@@ -206,7 +208,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
     // Add a low priority width constraints to make sure that the buttons are
     // taking as much width as they can.
     CGFloat extraBottomMargin =
-        self.secondaryActionString ? 0 : kActionsBottomMargin;
+        self.secondaryActionString ? 0 : self.actionStackBottomMargin;
     NSLayoutConstraint* lowPriorityWidthConstraint =
         [actionStackView.widthAnchor
             constraintEqualToConstant:kContentOptimalWidth];
@@ -230,7 +232,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
           constraintEqualToAnchor:stackView.widthAnchor],
       [actionStackView.bottomAnchor
           constraintLessThanOrEqualToAnchor:self.view.bottomAnchor
-                                   constant:-kActionsBottomMargin -
+                                   constant:-self.actionStackBottomMargin -
                                             extraBottomMargin],
       [actionStackView.bottomAnchor
           constraintLessThanOrEqualToAnchor:self.view.safeAreaLayoutGuide
@@ -433,8 +435,9 @@ const CGFloat kFaviconBadgeSideLength = 24;
   // margin calculated based on the safe area of the container view it will
   // eventually live in. This is needed in case the detent value is requested
   // before the view has been added to its superview.
-  height -= MAX(kActionsBottomMargin, self.view.safeAreaInsets.bottom);
-  height += MAX(kActionsBottomMargin, containerView.safeAreaInsets.bottom);
+  height -= MAX(self.actionStackBottomMargin, self.view.safeAreaInsets.bottom);
+  height +=
+      MAX(self.actionStackBottomMargin, containerView.safeAreaInsets.bottom);
 
   return height;
 }
@@ -753,7 +756,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
   [stackView setCustomSpacing:self.customSpacingAfterImage
                     afterView:self.imageContainerView];
 
-  if (self.imageHasFixedSize) {
+  if (self.imageHasFixedSize && !self.shouldFillInformationStack) {
     stackView.alignment = UIStackViewAlignmentCenter;
   } else {
     stackView.alignment = UIStackViewAlignmentFill;

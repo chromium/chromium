@@ -131,6 +131,13 @@
 // Sets the custom scroll view bottom insets.
 @property(nonatomic, assign) CGFloat customScrollViewBottomInsets;
 
+// Indicates whether information stack view items should horizontally fill the
+// space.
+@property(nonatomic) BOOL shouldFillInformationStack;
+
+// Bottom margin for the action stack view.
+@property(nonatomic, assign) CGFloat actionStackBottomMargin;
+
 // Designated initializer.
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
