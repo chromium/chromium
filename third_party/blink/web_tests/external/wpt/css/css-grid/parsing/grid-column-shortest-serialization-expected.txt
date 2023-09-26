@@ -1,19 +1,19 @@
 This is a testharness.js-based test.
-FAIL Property grid-column value 'auto / auto' assert_equals: expected "auto" but got "auto / auto"
-FAIL Property grid-column value 'auto' assert_equals: expected "auto" but got "auto / auto"
-FAIL Property grid-column value '10 / auto' assert_equals: expected "10" but got "10 / auto"
-FAIL Property grid-column value '10' assert_equals: expected "10" but got "10 / auto"
-FAIL Property grid-column value '-10 / auto' assert_equals: expected "-10" but got "-10 / auto"
-FAIL Property grid-column value '-10' assert_equals: expected "-10" but got "-10 / auto"
+PASS Property grid-column value 'auto / auto'
+PASS Property grid-column value 'auto'
+PASS Property grid-column value '10 / auto'
+PASS Property grid-column value '10'
+PASS Property grid-column value '-10 / auto'
+PASS Property grid-column value '-10'
 FAIL Property grid-column value 'first / first' assert_equals: expected "first" but got "first / first"
 FAIL Property grid-column value 'first' assert_equals: expected "first" but got "first / first"
-FAIL Property grid-column value 'span 2 / auto' assert_equals: expected "span 2" but got "span 2 / auto"
-FAIL Property grid-column value 'span 2' assert_equals: expected "span 2" but got "span 2 / auto"
-FAIL Property grid-column value '2 first / auto' assert_equals: expected "2 first" but got "2 first / auto"
-FAIL Property grid-column value '2 first' assert_equals: expected "2 first" but got "2 first / auto"
-FAIL Property grid-column value 'span first / auto' assert_equals: expected "span first" but got "span first / auto"
-FAIL Property grid-column value 'span first' assert_equals: expected "span first" but got "span first / auto"
-FAIL Property grid-column value 'span 2 first / auto' assert_equals: expected "span 2 first" but got "span 2 first / auto"
-FAIL Property grid-column value 'span 2 first' assert_equals: expected "span 2 first" but got "span 2 first / auto"
+PASS Property grid-column value 'span 2 / auto'
+PASS Property grid-column value 'span 2'
+PASS Property grid-column value '2 first / auto'
+PASS Property grid-column value '2 first'
+PASS Property grid-column value 'span first / auto'
+PASS Property grid-column value 'span first'
+PASS Property grid-column value 'span 2 first / auto'
+PASS Property grid-column value 'span 2 first'
 Harness: the test ran to completion.
 

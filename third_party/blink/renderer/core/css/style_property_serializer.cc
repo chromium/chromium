@@ -578,7 +578,7 @@ String StylePropertySerializer::SerializeShorthand(
     case CSSPropertyID::kGridRow:
       return GetShorthandValue(gridRowShorthand(), " / ");
     case CSSPropertyID::kGridArea:
-      return GetShorthandValue(gridAreaShorthand(), " / ");
+      return GetShorthandValueForGridArea(gridAreaShorthand());
     case CSSPropertyID::kGap:
       return Get2Values(gapShorthand());
     case CSSPropertyID::kInset:
@@ -2020,6 +2020,36 @@ String StylePropertySerializer::GetShorthandValueForGrid(
 
     result.Append(" / ");
     result.Append(template_column_values->CssText());
+  }
+  return result.ReleaseString();
+}
+
+String StylePropertySerializer::GetShorthandValueForGridArea(
+    const StylePropertyShorthand& shorthand) const {
+  const String separator = " / ";
+  StringBuilder result;
+
+  unsigned last_index = shorthand.length();
+  // Work backwards to determine the final non-initial index. For `grid-area`
+  // the initial value is `auto`.
+  for (; last_index > 1; --last_index) {
+    const CSSValue* value = property_set_.GetPropertyCSSValue(
+        *shorthand.properties()[last_index - 1]);
+    if ((!IsA<CSSIdentifierValue>(value) ||
+         (To<CSSIdentifierValue>(value)->GetValueID() != CSSValueID::kAuto))) {
+      break;
+    }
+  }
+
+  for (size_t i = 0; i < last_index; ++i) {
+    const CSSValue* value =
+        property_set_.GetPropertyCSSValue(*shorthand.properties()[i]);
+    String value_text = value->CssText();
+
+    if (!result.empty()) {
+      result.Append(separator);
+    }
+    result.Append(value_text);
   }
   return result.ReleaseString();
 }

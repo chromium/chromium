@@ -3610,8 +3610,25 @@ CSSValueList* ComputedStyleUtils::ValuesForGridShorthand(
     const ComputedStyle& style,
     const LayoutObject* layout_object,
     bool allow_visited_style) {
+  // Trailing non-initial values should be dropped.
+  // TODO(kschmi): Also handle `<custom-ident>` behavior, where if only
+  // one is specified for columns, rows also apply that value.
+  unsigned last_index = shorthand.length();
+  // Work backwards to determine the final non-initial index. For grid
+  // shorthands, we can drop all trailing `none` and `auto` values.
+  for (; last_index > 1; --last_index) {
+    const CSSValue* value =
+        shorthand.properties()[last_index - 1]->CSSValueFromComputedStyle(
+            style, layout_object, allow_visited_style);
+    if ((!IsA<CSSIdentifierValue>(value) ||
+         (To<CSSIdentifierValue>(value)->GetValueID() != CSSValueID::kNone &&
+          To<CSSIdentifierValue>(value)->GetValueID() != CSSValueID::kAuto))) {
+      break;
+    }
+  }
+
   CSSValueList* list = CSSValueList::CreateSlashSeparated();
-  for (unsigned i = 0; i < shorthand.length(); ++i) {
+  for (unsigned i = 0; i < last_index; ++i) {
     const CSSValue* value =
         shorthand.properties()[i]->CSSValueFromComputedStyle(
             style, layout_object, allow_visited_style);

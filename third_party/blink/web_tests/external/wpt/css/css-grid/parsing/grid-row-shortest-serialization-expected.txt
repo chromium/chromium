@@ -1,18 +1,18 @@
 This is a testharness.js-based test.
-FAIL Property grid-row value 'auto / auto' assert_equals: expected "auto" but got "auto / auto"
-FAIL Property grid-row value 'auto' assert_equals: expected "auto" but got "auto / auto"
-FAIL Property grid-row value '10 / auto' assert_equals: expected "10" but got "10 / auto"
-FAIL Property grid-row value '10' assert_equals: expected "10" but got "10 / auto"
-FAIL Property grid-row value '-10 / auto' assert_equals: expected "-10" but got "-10 / auto"
-FAIL Property grid-row value '-10' assert_equals: expected "-10" but got "-10 / auto"
-FAIL Property grid-row value 'span 2 / auto' assert_equals: expected "span 2" but got "span 2 / auto"
-FAIL Property grid-row value 'span 2' assert_equals: expected "span 2" but got "span 2 / auto"
-FAIL Property grid-row value '3 last / auto' assert_equals: expected "3 last" but got "3 last / auto"
-FAIL Property grid-row value '3 last' assert_equals: expected "3 last" but got "3 last / auto"
-FAIL Property grid-row value 'span first / auto' assert_equals: expected "span first" but got "span first / auto"
-FAIL Property grid-row value 'span first' assert_equals: expected "span first" but got "span first / auto"
-FAIL Property grid-row value 'span 2 first / auto' assert_equals: expected "span 2 first" but got "span 2 first / auto"
-FAIL Property grid-row value 'span 2 first' assert_equals: expected "span 2 first" but got "span 2 first / auto"
+PASS Property grid-row value 'auto / auto'
+PASS Property grid-row value 'auto'
+PASS Property grid-row value '10 / auto'
+PASS Property grid-row value '10'
+PASS Property grid-row value '-10 / auto'
+PASS Property grid-row value '-10'
+PASS Property grid-row value 'span 2 / auto'
+PASS Property grid-row value 'span 2'
+PASS Property grid-row value '3 last / auto'
+PASS Property grid-row value '3 last'
+PASS Property grid-row value 'span first / auto'
+PASS Property grid-row value 'span first'
+PASS Property grid-row value 'span 2 first / auto'
+PASS Property grid-row value 'span 2 first'
 FAIL Property grid-row value 'last / last' assert_equals: expected "last" but got "last / last"
 Harness: the test ran to completion.
 

@@ -101,32 +101,32 @@
     description('Test that setting and getting grid-column-end and grid-row-end works as expected');
 
     debug("Test getting grid-column-end and grid-row-end set through CSS");
-    testColumnRowCSSParsing("gridElement", "auto / auto", "auto / auto");
+    testColumnRowCSSParsing("gridElement", "auto", "auto");
     testColumnRowCSSParsing("gridItemWithPositiveInteger", "auto / 10", "auto / 15");
     testColumnRowCSSParsing("gridItemWithNegativeInteger", "auto / -10", "auto / -15");
     testColumnRowCSSParsing("gridItemWithBeforeSpan", "auto / span 2", "auto / span 9");
     testColumnRowCSSParsing("gridItemWithAfterSpan", "auto / span 2", "auto / span 9");
-    testColumnRowCSSParsing("gridItemWithOnlySpan", "auto / auto", "auto / auto");
-    testColumnRowCSSParsing("gridItemWithAutoElement", "auto / auto", "auto / auto");
+    testColumnRowCSSParsing("gridItemWithOnlySpan", "auto", "auto");
+    testColumnRowCSSParsing("gridItemWithAutoElement", "auto", "auto");
     testColumnRowCSSParsing("gridItemWithCustomIdent", "auto / first", "auto / last");
     testColumnRowCSSParsing("gridItemWithNumberCustomIdent", "auto / 2 first", "auto / 3 last");
     testColumnRowCSSParsing("gridItemWithSpanCustomIdentElement", "auto / span first", "auto / span last");
     testColumnRowCSSParsing("gridItemWithSpanNumberCustomIdentElement", "auto / span 2 first", "auto / span 3 last");
     testColumnRowCSSParsing("gridItemWithArea", "auto / firstArea", "auto / thirdArea");
-    testColumnRowCSSParsing("gridItemWithCSSWideKeyword", "auto / auto", "auto / auto");
-    testColumnRowCSSParsing("gridItemWithCSSWideKeyword2", "auto / auto", "auto / auto");
-    testColumnRowCSSParsing("gridItemWithSpanAuto", "auto / auto", "auto / auto");
-    testColumnRowCSSParsing("gridItemWithOneAuto", "auto / auto", "auto / auto");
-    testColumnRowCSSParsing("gridItemWithSpanAutoOne", "auto / auto", "auto / auto");
+    testColumnRowCSSParsing("gridItemWithCSSWideKeyword", "auto", "auto");
+    testColumnRowCSSParsing("gridItemWithCSSWideKeyword2", "auto", "auto");
+    testColumnRowCSSParsing("gridItemWithSpanAuto", "auto", "auto");
+    testColumnRowCSSParsing("gridItemWithOneAuto", "auto", "auto");
+    testColumnRowCSSParsing("gridItemWithSpanAutoOne", "auto", "auto");
 
     debug("");
     debug("Test the initial value");
     var element = document.createElement("div");
     document.body.appendChild(element);
     shouldBe("getComputedStyle(element, '').getPropertyValue('grid-column-end')", "'auto'");
-    shouldBe("getComputedStyle(element, '').getPropertyValue('grid-column')", "'auto / auto'");
+    shouldBe("getComputedStyle(element, '').getPropertyValue('grid-column')", "'auto'");
     shouldBe("getComputedStyle(element, '').getPropertyValue('grid-row-end')", "'auto'");
-    shouldBe("getComputedStyle(element, '').getPropertyValue('grid-row')", "'auto / auto'");
+    shouldBe("getComputedStyle(element, '').getPropertyValue('grid-row')", "'auto'");
 
     debug("");
     debug("Test getting and setting grid-column-end and grid-row-end through JS");
@@ -161,9 +161,9 @@
     element.style.gridColumnEnd = "auto";
     element.style.gridRowEnd = "auto";
     shouldBe("getComputedStyle(element, '').getPropertyValue('grid-column-end')", "'auto'");
-    shouldBe("getComputedStyle(element, '').getPropertyValue('grid-column')", "'auto / auto'");
+    shouldBe("getComputedStyle(element, '').getPropertyValue('grid-column')", "'auto'");
     shouldBe("getComputedStyle(element, '').getPropertyValue('grid-row-end')", "'auto'");
-    shouldBe("getComputedStyle(element, '').getPropertyValue('grid-row')", "'auto / auto'");
+    shouldBe("getComputedStyle(element, '').getPropertyValue('grid-row')", "'auto'");
 </script>
 </body>
 </html>
