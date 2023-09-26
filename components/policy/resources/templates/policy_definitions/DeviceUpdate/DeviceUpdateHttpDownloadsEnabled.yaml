@@ -15,6 +15,7 @@ items:
   value: false
 owners:
 - mpolzer@google.com
+- vsavu@google.com
 - chromeos-commercial-remote-management@google.com
 schema:
   type: boolean
