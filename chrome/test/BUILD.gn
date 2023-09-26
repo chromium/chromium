@@ -2665,8 +2665,6 @@ if (!is_android) {
       "base/ui_test_utils_browsertest.cc",
       "base/web_ui_browser_test_browsertest.cc",
       "base/web_ui_mocha_browser_test_browsertest.cc",
-      "data/webui/async_gen.cc",
-      "data/webui/async_gen.h",
       "data/webui/chrome_send_browsertest.cc",
       "data/webui/chrome_send_browsertest.h",
       "data/webui/mojo/mojo_file_system_access_browsertest.cc",
@@ -2805,6 +2803,8 @@ if (!is_android) {
         "../browser/sessions/tab_restore_service_browsertest.cc",
         "../browser/support_tool/signin_data_collector_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_integration_browsertest_cros.cc",
+        "data/webui/async_gen.cc",
+        "data/webui/async_gen.h",
         "data/webui/chromeos/webui_resource_browsertest.cc",
       ]
       deps += [
@@ -3131,24 +3131,26 @@ if (!is_android) {
     if (include_js_tests) {
       deps += [ "//chrome/test/data/webui:browser_tests" ]
     }
-    if (include_js2gtest_tests && is_chromeos_ash) {
-      deps += [
-        "//ash/webui/color_internals:browser_tests_js",
-        "//ash/webui/eche_app_ui:browser_tests_js",
-        "//ash/webui/help_app_ui:browser_tests_js",
-        "//ash/webui/media_app_ui:browser_tests_js",
-        "//ash/webui/system_apps:browser_tests",
-        "//ash/webui/system_extensions_internals_ui:browser_tests_js",
-        "//chrome/test/data/webui:browser_tests_js_mojo_lite_webui",
-        "//chrome/test/data/webui:browser_tests_js_mojo_webui",
-        "//chrome/test/data/webui:browser_tests_js_webui",
-        "//chromeos/ash/components/human_presence:browser_tests_js",
-      ]
+    if (include_js2gtest_tests) {
+      deps += [ "//chrome/test/data/webui:browser_tests_js_webui" ]
+      if (is_chromeos_ash) {
+        deps += [
+          "//ash/webui/color_internals:browser_tests_js",
+          "//ash/webui/eche_app_ui:browser_tests_js",
+          "//ash/webui/help_app_ui:browser_tests_js",
+          "//ash/webui/media_app_ui:browser_tests_js",
+          "//ash/webui/system_apps:browser_tests",
+          "//ash/webui/system_extensions_internals_ui:browser_tests_js",
+          "//chrome/test/data/webui:browser_tests_js_mojo_lite_webui",
+          "//chrome/test/data/webui:browser_tests_js_mojo_webui",
+          "//chromeos/ash/components/human_presence:browser_tests_js",
+        ]
 
-      data_deps += [ "//chrome/test/data/webui:browser_tests_js_webui" ]
+        data_deps += [ "//chrome/test/data/webui:browser_tests_js_webui" ]
 
-      if (!is_official_build) {
-        deps += [ "//ash/webui/sample_system_web_app_ui:browser_tests_js" ]
+        if (!is_official_build) {
+          deps += [ "//ash/webui/sample_system_web_app_ui:browser_tests_js" ]
+        }
       }
     }
 
