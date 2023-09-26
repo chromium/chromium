@@ -687,6 +687,10 @@ bool IsNonModalDefaultBrowserPromoCooldownRefactorEnabled() {
       kNonModalDefaultBrowserPromoCooldownRefactor);
 }
 
+bool IsDBVideoInSettingsEnabled() {
+  return base::FeatureList::IsEnabled(kDBVideoInSettings);
+}
+
 bool HasUserInteractedWithFullscreenPromoBefore() {
   NSNumber* number = GetObjectFromStorageForKey<NSNumber>(
       kUserHasInteractedWithFullscreenPromo);

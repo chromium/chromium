@@ -235,6 +235,10 @@ extern const char kEnableUIButtonConfigurationDescription[];
 extern const char kCredentialProviderExtensionPromoName[];
 extern const char kCredentialProviderExtensionPromoDescription[];
 
+// Title and description for default browser video in settings experiment.
+extern const char kDBVideoInSettingsName[];
+extern const char kDBVideoInSettingsDescription[];
+
 // Title and description for the flag to enable the default browser blue dot
 // promo.
 extern const char kDefaultBrowserBlueDotPromoName[];

@@ -214,6 +214,9 @@ bool IsBottomOmniboxSteadyStateEnabled();
 // synchronous clipboard access will always return nil/false.
 BASE_DECLARE_FEATURE(kOnlyAccessClipboardAsync);
 
+// Feature flag that enables default browser video in settings experiment.
+BASE_DECLARE_FEATURE(kDBVideoInSettings);
+
 // Feature flag that enables default browser promo to be displayed without
 // matching all the criteria and in depth metrics collection for the displayed
 // promo.

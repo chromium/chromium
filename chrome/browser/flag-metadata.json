@@ -1619,7 +1619,11 @@
     "owners": [ "cheickcisse@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 120
   },
-  {
+  {  "name": "default-browser-video-in-settings",
+     "owners": [ "gayane@google.com", "bling-flags@google.com" ],
+     "expiry_milestone": 130
+   },
+   {
     "name": "default-browser-video-promo",
     "owners": [ "cheickcisse@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 121

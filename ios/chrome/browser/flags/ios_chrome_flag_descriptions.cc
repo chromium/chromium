@@ -286,6 +286,12 @@ const char kCredentialProviderExtensionPromoDescription[] =
     "When enabled, Credential Provider Extension promo will be "
     "presented to eligible users.";
 
+const char kDBVideoInSettingsName[] =
+    "Show default browser video in settings experiment";
+const char kDBVideoInSettingsDescription[] =
+    "When enabled, default browser video will be displayed to user in "
+    "settings.";
+
 const char kDefaultBrowserBlueDotPromoName[] = "Default Browser Blue Dot Promo";
 const char kDefaultBrowserBlueDotPromoDescription[] =
     "When enabled, a blue dot default browser promo will be shown to eligible "
