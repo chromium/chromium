@@ -344,6 +344,7 @@ class SoftwareVideoEncoderTest
 };
 
 class H264VideoEncoderTest : public SoftwareVideoEncoderTest {};
+class VpxVideoEncoderTest : public SoftwareVideoEncoderTest {};
 class SVCVideoEncoderTest : public SoftwareVideoEncoderTest {};
 
 TEST_P(SoftwareVideoEncoderTest, StopCallbackWrapping) {
@@ -752,6 +753,44 @@ TEST_P(SVCVideoEncoderTest, ChangeLayers) {
   EXPECT_EQ(chunks.size(), total_frames_count);
 }
 
+TEST_P(VpxVideoEncoderTest, ReconfigureWithResize) {
+  int outputs_count = 0;
+  VideoEncoder::Options options;
+  options.frame_size = gfx::Size(1024, 1024);
+
+  VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
+      [&](VideoEncoderOutput output,
+          absl::optional<VideoEncoder::CodecDescription> desc) {
+        outputs_count++;
+      });
+
+  encoder_->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
+                       std::move(output_cb), ValidatingStatusCB());
+
+  auto frame0 = CreateFrame(options.frame_size, pixel_format_, {});
+  encoder_->Encode(frame0, VideoEncoder::EncodeOptions(false),
+                   ValidatingStatusCB());
+
+  options.frame_size = gfx::Size(1000, 608);
+  encoder_->ChangeOptions(options, VideoEncoder::OutputCB(),
+                          ValidatingStatusCB());
+
+  auto frame1 = CreateFrame(options.frame_size, pixel_format_, {});
+  encoder_->Encode(frame1, VideoEncoder::EncodeOptions(false),
+                   ValidatingStatusCB());
+
+  options.frame_size = gfx::Size(16, 720);
+  encoder_->ChangeOptions(options, VideoEncoder::OutputCB(),
+                          ValidatingStatusCB());
+
+  auto frame2 = CreateFrame(options.frame_size, pixel_format_, {});
+  encoder_->Encode(frame2, VideoEncoder::EncodeOptions(false),
+                   ValidatingStatusCB(/* quit_run_loop_on_call */ true));
+
+  RunUntilQuit();
+  EXPECT_EQ(outputs_count, 3);
+}
+
 TEST_P(H264VideoEncoderTest, ReconfigureWithResize) {
   VideoEncoder::Options options;
   gfx::Size size1(320, 200), size2(400, 240);
@@ -1116,6 +1155,11 @@ SwVideoTestParams kVpxParams[] = {
     {VideoCodec::kVP8, VP8PROFILE_ANY, PIXEL_FORMAT_I420},
     {VideoCodec::kVP8, VP8PROFILE_ANY, PIXEL_FORMAT_XRGB}};
 
+INSTANTIATE_TEST_SUITE_P(VpxSpecific,
+                         VpxVideoEncoderTest,
+                         ::testing::ValuesIn(kVpxParams),
+                         PrintTestParams);
+
 INSTANTIATE_TEST_SUITE_P(VpxGeneric,
                          SoftwareVideoEncoderTest,
                          ::testing::ValuesIn(kVpxParams),
@@ -1175,6 +1219,7 @@ INSTANTIATE_TEST_SUITE_P(Av1TemporalSvc,
 #endif  // ENABLE_LIBAOM
 
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(H264VideoEncoderTest);
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(VpxVideoEncoderTest);
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(SVCVideoEncoderTest);
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(SoftwareVideoEncoderTest);
 
