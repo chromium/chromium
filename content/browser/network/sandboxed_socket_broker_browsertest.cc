@@ -68,7 +68,7 @@ class SandboxedSocketBrokerBrowserTest : public ContentBrowserTest {
   }
 
   void SetUp() override {
-#if BUILDFLAG(USE_SOCKET_BROKER)
+#if BUILDFLAG(IS_WIN)
     if (check_sandbox_) {
       ASSERT_TRUE(IsOutOfProcessNetworkService());
       ASSERT_TRUE(sandbox::policy::features::IsNetworkSandboxEnabled());
@@ -85,7 +85,7 @@ class SandboxedSocketBrokerBrowserTest : public ContentBrowserTest {
 #endif
   }
 
-#if BUILDFLAG(USE_SOCKET_BROKER)
+#if BUILDFLAG(IS_WIN)
   void SetUpOnMainThread() override {
     embedded_test_server_.StartAcceptingConnections();
   }
