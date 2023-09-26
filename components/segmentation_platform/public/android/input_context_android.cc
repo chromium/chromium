@@ -76,6 +76,9 @@ static void JavaLongArrayToBaseTimeVector(
 scoped_refptr<InputContext> InputContextAndroid::ToNativeInputContext(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_input_context) {
+  if (!j_input_context) {
+    return nullptr;
+  }
   scoped_refptr<InputContext> input_context =
       base::MakeRefCounted<InputContext>();
   Java_InputContext_fillNativeInputContext(

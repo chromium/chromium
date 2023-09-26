@@ -4,7 +4,11 @@
 
 #include "components/segmentation_platform/public/android/segmentation_platform_conversion_bridge.h"
 
+#include "base/android/jni_array.h"
+#include "base/android/scoped_java_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/segmentation_platform/public/jni_headers/SegmentationPlatformConversionBridge_jni.h"
+#include "components/segmentation_platform/public/prediction_options.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
 
 namespace segmentation_platform {
@@ -20,6 +24,16 @@ SegmentationPlatformConversionBridge::CreateJavaSegmentSelectionResult(
   return Java_SegmentationPlatformConversionBridge_createSegmentSelectionResult(
       env, result.is_ready, selected_segment, result.rank.has_value(),
       result.rank.has_value() ? *result.rank : 0);
+}
+
+// static
+ScopedJavaLocalRef<jobject>
+SegmentationPlatformConversionBridge::CreateJavaClassificationResult(
+    JNIEnv* env,
+    const ClassificationResult& result) {
+  return Java_SegmentationPlatformConversionBridge_createClassificationResult(
+      env, static_cast<int>(result.status),
+      base::android::ToJavaArrayOfStrings(env, result.ordered_labels));
 }
 
 }  // namespace segmentation_platform

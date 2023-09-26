@@ -385,7 +385,10 @@ bundle_data("unit_tests_bundle_data") {
 
 if (is_android) {
   android_library("internal_java") {
-    visibility = [ "//chrome/android:chrome_all_java" ]
+    visibility = [
+      ":javatests",
+      "//chrome/android:chrome_all_java",
+    ]
     srcjar_deps = [ ":jni_headers" ]
     sources = [
       "android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformServiceImpl.java",

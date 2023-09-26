@@ -21,4 +21,10 @@ public class SegmentationPlatformConversionBridge {
         Float optionalRank = hasRank ? rank : null;
         return new SegmentSelectionResult(isReady, segment, optionalRank);
     }
+
+    @CalledByNative
+    private static ClassificationResult createClassificationResult(
+            int status, String[] orderedLabels) {
+        return new ClassificationResult(status, orderedLabels);
+    }
 }

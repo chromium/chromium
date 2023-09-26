@@ -8,13 +8,21 @@
 
 #include "base/android/callback_android.h"
 #include "base/android/jni_string.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/segmentation_platform/internal/jni_headers/SegmentationPlatformServiceImpl_jni.h"
+#include "components/segmentation_platform/public/android/input_context_android.h"
+#include "components/segmentation_platform/public/android/prediction_options_android.h"
 #include "components/segmentation_platform/public/android/segmentation_platform_conversion_bridge.h"
+#include "components/segmentation_platform/public/input_context.h"
+#include "components/segmentation_platform/public/prediction_options.h"
+#include "components/segmentation_platform/public/result.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 
 using base::android::AttachCurrentThread;
+using base::android::JavaParamRef;
 
 namespace segmentation_platform {
 namespace {
@@ -28,6 +36,15 @@ void RunGetSelectedSegmentCallback(const JavaRef<jobject>& j_callback,
   RunObjectCallbackAndroid(
       j_callback,
       SegmentationPlatformConversionBridge::CreateJavaSegmentSelectionResult(
+          env, result));
+}
+
+void RunGetClassificationResultCallback(const JavaRef<jobject>& j_callback,
+                                        const ClassificationResult& result) {
+  JNIEnv* env = AttachCurrentThread();
+  RunObjectCallbackAndroid(
+      j_callback,
+      SegmentationPlatformConversionBridge::CreateJavaClassificationResult(
           env, result));
 }
 
@@ -75,6 +92,26 @@ void SegmentationPlatformServiceAndroid::GetSelectedSegment(
       ConvertJavaStringToUTF8(env, j_segmentation_key),
       base::BindOnce(&RunGetSelectedSegmentCallback,
                      ScopedJavaGlobalRef<jobject>(jcallback)));
+}
+
+void SegmentationPlatformServiceAndroid::GetClassificationResult(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_caller,
+    const JavaParamRef<jstring>& j_segmentation_key,
+    const JavaParamRef<jobject>& j_prediction_options,
+    const JavaParamRef<jobject>& j_input_context,
+    const JavaParamRef<jobject>& j_callback) {
+  scoped_refptr<InputContext> native_input_context =
+      InputContextAndroid::ToNativeInputContext(env, j_input_context);
+  PredictionOptions native_prediction_options =
+      PredictionOptionsAndroid::ToNativePredictionOptions(env,
+                                                          j_prediction_options);
+
+  segmentation_platform_service_->GetClassificationResult(
+      ConvertJavaStringToUTF8(env, j_segmentation_key),
+      native_prediction_options, native_input_context,
+      base::BindOnce(&RunGetClassificationResultCallback,
+                     ScopedJavaGlobalRef<jobject>(j_callback)));
 }
 
 ScopedJavaLocalRef<jobject>

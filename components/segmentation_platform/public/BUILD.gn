@@ -51,6 +51,8 @@ source_set("public") {
     sources += [
       "android/input_context_android.cc",
       "android/input_context_android.h",
+      "android/prediction_options_android.cc",
+      "android/prediction_options_android.h",
       "android/segmentation_platform_conversion_bridge.cc",
       "android/segmentation_platform_conversion_bridge.h",
     ]
@@ -100,8 +102,10 @@ source_set("test_support") {
 if (is_android) {
   android_library("public_java") {
     sources = [
+      "android/java/src/org/chromium/components/segmentation_platform/ClassificationResult.java",
       "android/java/src/org/chromium/components/segmentation_platform/Constants.java",
       "android/java/src/org/chromium/components/segmentation_platform/InputContext.java",
+      "android/java/src/org/chromium/components/segmentation_platform/PredictionOptions.java",
       "android/java/src/org/chromium/components/segmentation_platform/ProcessedValue.java",
       "android/java/src/org/chromium/components/segmentation_platform/SegmentSelectionResult.java",
       "android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformConversionBridge.java",
@@ -118,6 +122,7 @@ if (is_android) {
     ]
 
     srcjar_deps = [
+      ":execution_status_enums_java",
       ":jni_headers",
       ":processed_value_enums_java",
     ]
@@ -149,6 +154,7 @@ if (is_android) {
 
     sources = [
       "android/java/src/org/chromium/components/segmentation_platform/InputContext.java",
+      "android/java/src/org/chromium/components/segmentation_platform/PredictionOptions.java",
       "android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformConversionBridge.java",
     ]
   }
