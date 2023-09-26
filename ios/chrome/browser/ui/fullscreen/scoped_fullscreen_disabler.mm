@@ -19,5 +19,7 @@ ScopedFullscreenDisabler::~ScopedFullscreenDisabler() {
 
 void ScopedFullscreenDisabler::FullscreenControllerWillShutDown(
     FullscreenController* controller) {
+  DCHECK(scoped_observer_.IsObservingSource(controller));
+  scoped_observer_.Reset();
   controller_ = nullptr;
 }
