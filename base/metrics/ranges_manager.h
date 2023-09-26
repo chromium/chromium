@@ -26,13 +26,12 @@ class BASE_EXPORT RangesManager {
 
   ~RangesManager();
 
-  // Registers a BucketRanges. If an equivalent BucketRanges is already
-  // registered, then the argument |ranges| will be deleted. The returned value
-  // is always the registered BucketRanges (either the argument, or the
-  // pre-existing one). Registering a BucketRanges passes the ownership, and
-  // will be released when the RangesManager is released.
-  const BucketRanges* RegisterOrDeleteDuplicateRanges(
-      const BucketRanges* ranges);
+  // Gets the canonical BucketRanges object corresponding to `ranges`. If one
+  // does not exist, then `ranges` will be registered with this object, which
+  // will take ownership of it. Returns a pointer to the canonical ranges
+  // object. If it's different than `ranges`, the caller is responsible for
+  // deleting `ranges`.
+  const BucketRanges* GetOrRegisterCanonicalRanges(const BucketRanges* ranges);
 
   // Gets all registered BucketRanges. The order of returned BucketRanges is not
   // guaranteed.

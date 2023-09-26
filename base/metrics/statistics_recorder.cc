@@ -151,14 +151,20 @@ HistogramBase* StatisticsRecorder::RegisterOrDeleteDuplicate(
 // static
 const BucketRanges* StatisticsRecorder::RegisterOrDeleteDuplicateRanges(
     const BucketRanges* ranges) {
-  const SrAutoWriterLock auto_lock(GetLock());
-  EnsureGlobalRecorderWhileLocked();
+  const BucketRanges* registered;
+  {
+    const SrAutoWriterLock auto_lock(GetLock());
+    EnsureGlobalRecorderWhileLocked();
 
-  const BucketRanges* const registered =
-      top_->ranges_manager_.RegisterOrDeleteDuplicateRanges(ranges);
+    registered = top_->ranges_manager_.GetOrRegisterCanonicalRanges(ranges);
+  }
 
-  if (registered == ranges)
+  // Delete the duplicate ranges outside the lock to reduce contention.
+  if (registered != ranges) {
+    delete ranges;
+  } else {
     ANNOTATE_LEAKING_OBJECT_PTR(ranges);
+  }
 
   return registered;
 }

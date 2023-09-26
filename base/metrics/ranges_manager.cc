@@ -24,21 +24,16 @@ bool RangesManager::BucketRangesEqual::operator()(
   return a->Equals(b);
 }
 
-const BucketRanges* RangesManager::RegisterOrDeleteDuplicateRanges(
+const BucketRanges* RangesManager::GetOrRegisterCanonicalRanges(
     const BucketRanges* ranges) {
+  // Note: This code is run in a critical lock path from StatisticsRecorder
+  // so we intentionally don't use a CHECK() here.
   DCHECK(ranges->HasValidChecksum());
 
   // Attempt to insert |ranges| into the set of registered BucketRanges. If an
   // equivalent one already exists (one with the exact same ranges), this
   // fetches the pre-existing one and does not insert the passed |ranges|.
-  const BucketRanges* const registered = *ranges_.insert(ranges).first;
-
-  // If there is already a registered equivalent BucketRanges, delete the passed
-  // |ranges|.
-  if (registered != ranges)
-    delete ranges;
-
-  return registered;
+  return *ranges_.insert(ranges).first;
 }
 
 std::vector<const BucketRanges*> RangesManager::GetBucketRanges() const {

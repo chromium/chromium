@@ -13,7 +13,7 @@ namespace base {
 
 using testing::UnorderedElementsAre;
 
-TEST(RangesManagerTest, RegisterBucketRanges) {
+TEST(RangesManagerTest, GetOrRegisterCanonicalRanges) {
   RangesManager ranges_manager;
 
   // Create some BucketRanges. We call |ResetChecksum| to calculate and set
@@ -27,14 +27,14 @@ TEST(RangesManagerTest, RegisterBucketRanges) {
   ranges2->ResetChecksum();
 
   // Register new ranges.
-  EXPECT_EQ(ranges1, ranges_manager.RegisterOrDeleteDuplicateRanges(ranges1));
-  EXPECT_EQ(ranges2, ranges_manager.RegisterOrDeleteDuplicateRanges(ranges2));
+  EXPECT_EQ(ranges1, ranges_manager.GetOrRegisterCanonicalRanges(ranges1));
+  EXPECT_EQ(ranges2, ranges_manager.GetOrRegisterCanonicalRanges(ranges2));
   EXPECT_THAT(ranges_manager.GetBucketRanges(),
               UnorderedElementsAre(ranges1, ranges2));
 
   // Register |ranges1| again. The registered BucketRanges set should not change
   // as |ranges1| is already registered.
-  EXPECT_EQ(ranges1, ranges_manager.RegisterOrDeleteDuplicateRanges(ranges1));
+  EXPECT_EQ(ranges1, ranges_manager.GetOrRegisterCanonicalRanges(ranges1));
   EXPECT_THAT(ranges_manager.GetBucketRanges(),
               UnorderedElementsAre(ranges1, ranges2));
 
@@ -45,12 +45,13 @@ TEST(RangesManagerTest, RegisterBucketRanges) {
   EXPECT_EQ(0, ranges1->range(1));
   EXPECT_EQ(0, ranges1->range(2));
 
-  // Register a new |ranges3| that is equivalent to |ranges1| (same ranges). We
-  // expect that |ranges3| is deleted (verified by LeakSanitizer bots) and that
-  // |ranges1| is returned by |RegisterOrDeleteDuplicateRanges|.
+  // Register a new |ranges3| that is equivalent to |ranges1| (same ranges). If
+  // GetOrRegisterCanonicalRanges() returns a different object than the param
+  // (as asserted here), we are responsible for deleting the object (below).
   BucketRanges* ranges3 = new BucketRanges(3);
   ranges3->ResetChecksum();
-  EXPECT_EQ(ranges1, ranges_manager.RegisterOrDeleteDuplicateRanges(ranges3));
+  ASSERT_EQ(ranges1, ranges_manager.GetOrRegisterCanonicalRanges(ranges3));
+  delete ranges3;
   EXPECT_THAT(ranges_manager.GetBucketRanges(),
               UnorderedElementsAre(ranges1, ranges2));
 }
@@ -68,7 +69,7 @@ TEST(RangesManagerTest, ReleaseBucketRangesOnDestroy) {
   ranges->ResetChecksum();
 
   // Register new range.
-  EXPECT_EQ(ranges, ranges_manager->RegisterOrDeleteDuplicateRanges(ranges));
+  EXPECT_EQ(ranges, ranges_manager->GetOrRegisterCanonicalRanges(ranges));
   EXPECT_THAT(ranges_manager->GetBucketRanges(), UnorderedElementsAre(ranges));
 
   // Explicitly destroy |ranges_manager|.

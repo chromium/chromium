@@ -582,8 +582,12 @@ std::unique_ptr<HistogramBase> PersistentHistogramAllocator::CreateHistogram(
             histogram_maximum);
   const BucketRanges* ranges;
   if (ranges_manager_) {
-    ranges = ranges_manager_->RegisterOrDeleteDuplicateRanges(
-        created_ranges.release());
+    ranges =
+        ranges_manager_->GetOrRegisterCanonicalRanges(created_ranges.get());
+    if (ranges == created_ranges.get()) {
+      // `ranges_manager_` took ownership of `created_ranges`.
+      created_ranges.release();
+    }
   } else {
     ranges = StatisticsRecorder::RegisterOrDeleteDuplicateRanges(
         created_ranges.release());
