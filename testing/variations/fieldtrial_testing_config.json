@@ -14511,6 +14511,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "background-password-check-interval": "10d"
+                    },
                     "enable_features": [
                         "SafetyHub"
                     ]
