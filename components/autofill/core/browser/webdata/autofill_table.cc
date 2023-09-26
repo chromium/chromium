@@ -1690,13 +1690,14 @@ std::unique_ptr<AutofillProfile> AutofillTable::GetAutofillProfile(
   }
 
   int index = 0;
-  int64_t use_count = s.ColumnInt64(index++);
-  base::Time use_date = base::Time::FromTimeT(s.ColumnInt64(index++));
-  base::Time modification_date = base::Time::FromTimeT(s.ColumnInt64(index++));
-  std::string language_code = s.ColumnString(index++);
-  std::string profile_label = s.ColumnString(index++);
-  int creator_id = s.ColumnInt(index++);
-  int modifier_id = s.ColumnInt(index++);
+  const int64_t use_count = s.ColumnInt64(index++);
+  const base::Time use_date = base::Time::FromTimeT(s.ColumnInt64(index++));
+  const base::Time modification_date =
+      base::Time::FromTimeT(s.ColumnInt64(index++));
+  const std::string language_code = s.ColumnString(index++);
+  const std::string profile_label = s.ColumnString(index++);
+  const int creator_id = s.ColumnInt(index++);
+  const int modifier_id = s.ColumnInt(index++);
 
   if (!SelectByGuid(db_, s, GetProfileTypeTokensTable(profile_source),
                     {kType, kValue, kVerificationStatus, kObservations},
@@ -1705,9 +1706,13 @@ std::unique_ptr<AutofillProfile> AutofillTable::GetAutofillProfile(
   }
 
   struct FieldTypeData {
+    // Type corresponding to the data entry.
     ServerFieldType type;
+    // Value corresponding to the entry type.
     std::u16string value;
+    // VerificationStatus of the data entry's `value`.
     int status;
+    // Serialized observations for the stored type.
     std::vector<const uint8_t> serialized_data;
   };
 
@@ -1729,9 +1734,9 @@ std::unique_ptr<AutofillProfile> AutofillTable::GetAutofillProfile(
 
     base::span<const uint8_t> observations_data = s.ColumnBlob(3);
     field_type_values.emplace_back(
-        FieldTypeData{type, s.ColumnString16(1), s.ColumnInt(2),
-                      std::vector<const uint8_t>(observations_data.begin(),
-                                                 observations_data.end())});
+        type, s.ColumnString16(1), s.ColumnInt(2),
+        std::vector<const uint8_t>(observations_data.begin(),
+                                   observations_data.end()));
 
     if (type == ADDRESS_HOME_COUNTRY) {
       country_code = base::UTF16ToUTF8(s.ColumnString16(1));
