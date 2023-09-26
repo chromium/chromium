@@ -181,13 +181,6 @@ BASE_FEATURE(kAutofillEnableVirtualCardFidoEnrollment,
              "AutofillEnableVirtualCardFidoEnrollment",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, in the payments settings page on desktop, virtual card
-// enrollment management will be provided so that the user can enroll/unenroll a
-// card in virtual card.
-BASE_FEATURE(kAutofillEnableVirtualCardManagementInDesktopSettingsPage,
-             "AutofillEnableVirtualCardManagementInDesktopSettingsPage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, Chrome will show metadata along with other card information
 // when the virtual card is presented to users.
 BASE_FEATURE(kAutofillEnableVirtualCardMetadata,

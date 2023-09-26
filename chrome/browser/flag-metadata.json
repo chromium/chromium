@@ -656,11 +656,6 @@
     "owners": [ "vinnypersky@google.com", "siyua", "jsaul@google.com"],
     "expiry_milestone": 120
   },
-    {
-    "name": "autofill-enable-virtual-card-management-in-desktop-settings-page",
-    "owners": [ "siyua", "jsaul@google.com"],
-    "expiry_milestone": 116
-  },
   {
     "name": "autofill-enable-virtual-card-metadata",
     "owners": [ "siyua", "siashah"],

@@ -1200,13 +1200,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableSupportForHonorificPrefixes));
 
-  html_source->AddBoolean(
-      "virtualCardEnrollmentEnabled",
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableUpdateVirtualCardEnrollment) &&
-          base::FeatureList::IsEnabled(
-              autofill::features::
-                  kAutofillEnableVirtualCardManagementInDesktopSettingsPage));
   html_source->AddString(
       "unenrollVirtualCardDialogLabel",
       l10n_util::GetStringFUTF16(

@@ -321,11 +321,6 @@ extern const char kAutofillEnableVirtualCardFidoEnrollmentDescription[];
 extern const char kAutofillEnableNewSaveCardBubbleUiName[];
 extern const char kAutofillEnableNewSaveCardBubbleUiDescription[];
 
-extern const char
-    kAutofillEnableVirtualCardManagementInDesktopSettingsPageName[];
-extern const char
-    kAutofillEnableVirtualCardManagementInDesktopSettingsPageDescription[];
-
 extern const char kAutofillEnableVirtualCardMetadataName[];
 extern const char kAutofillEnableVirtualCardMetadataDescription[];
 

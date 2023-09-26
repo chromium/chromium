@@ -569,15 +569,6 @@ const char kAutofillEnableNewSaveCardBubbleUiDescription[] =
     "When enabled, the user will see a new banner logo and text in the bubble "
     "offering to upload their cards to Google Pay.";
 
-const char kAutofillEnableVirtualCardManagementInDesktopSettingsPageName[] =
-    "Enable virtual card enrollment management in desktop payments settings "
-    "page";
-const char
-    kAutofillEnableVirtualCardManagementInDesktopSettingsPageDescription[] =
-        "When enabled, chrome://settings/payments will offer the option to "
-        "enroll in virtual card if the card is eligible and to unenroll if the "
-        "card has been enrolled.";
-
 const char kAutofillEnableVirtualCardMetadataName[] =
     "Enable showing metadata for virtual cards";
 const char kAutofillEnableVirtualCardMetadataDescription[] =

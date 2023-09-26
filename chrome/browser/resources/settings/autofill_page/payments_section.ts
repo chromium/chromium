@@ -153,17 +153,6 @@ export class SettingsPaymentsSectionElement extends
       },
 
       /**
-       * Whether virtual card enroll management on settings page is enabled.
-       */
-      virtualCardEnrollmentEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('virtualCardEnrollmentEnabled');
-        },
-        readOnly: true,
-      },
-
-      /**
        * Checks if we can use device authentication to authenticate the user.
        */
       // <if expr="is_win or is_macosx">
@@ -212,7 +201,6 @@ export class SettingsPaymentsSectionElement extends
   private showVirtualCardUnenrollDialog_: boolean;
   private migratableCreditCardsInfo_: string;
   private migrationEnabled_: boolean;
-  private virtualCardEnrollmentEnabled_: boolean;
   // <if expr="is_win or is_macosx">
   private deviceAuthAvailable_: boolean;
   // </if>
@@ -571,8 +559,7 @@ export class SettingsPaymentsSectionElement extends
   }
 
   private shouldShowAddVirtualCardButton_(): boolean {
-    if (!this.virtualCardEnrollmentEnabled_ ||
-        this.activeCreditCard_ === null || !this.activeCreditCard_!.metadata) {
+    if (this.activeCreditCard_ === null || !this.activeCreditCard_!.metadata) {
       return false;
     }
     return !!this.activeCreditCard_!.metadata!
@@ -581,8 +568,7 @@ export class SettingsPaymentsSectionElement extends
   }
 
   private shouldShowRemoveVirtualCardButton_(): boolean {
-    if (!this.virtualCardEnrollmentEnabled_ ||
-        this.activeCreditCard_ === null || !this.activeCreditCard_!.metadata) {
+    if (this.activeCreditCard_ === null || !this.activeCreditCard_!.metadata) {
       return false;
     }
     return !!this.activeCreditCard_!.metadata!

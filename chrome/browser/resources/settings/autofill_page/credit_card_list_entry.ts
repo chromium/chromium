@@ -17,8 +17,6 @@ import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {loadTimeData} from '../i18n_setup.js';
-
 import {getTemplate} from './credit_card_list_entry.html.js';
 
 const enum CardSummarySublabelType {
@@ -42,22 +40,10 @@ export class SettingsCreditCardListEntryElement extends
     return {
       /** A saved credit card. */
       creditCard: Object,
-
-      /**
-       * Whether virtual card enrollment management on settings page is enabled.
-       */
-      virtualCardEnrollmentEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('virtualCardEnrollmentEnabled');
-        },
-        readOnly: true,
-      },
     };
   }
 
   creditCard: chrome.autofillPrivate.CreditCardEntry;
-  private readonly virtualCardEnrollmentEnabled_: boolean;
 
   get dotsMenu(): HTMLElement|null {
     return this.shadowRoot!.getElementById('creditCardMenu');
@@ -122,13 +108,11 @@ export class SettingsCreditCardListEntryElement extends
   }
 
   private isVirtualCardEnrollmentEligible_(): boolean {
-    return this.virtualCardEnrollmentEnabled_ &&
-        this.creditCard.metadata!.isVirtualCardEnrollmentEligible!;
+    return this.creditCard.metadata!.isVirtualCardEnrollmentEligible!;
   }
 
   private isVirtualCardEnrolled_(): boolean {
-    return this.virtualCardEnrollmentEnabled_ &&
-        this.creditCard.metadata!.isVirtualCardEnrolled!;
+    return this.creditCard.metadata!.isVirtualCardEnrolled!;
   }
 
   private getSummaryAriaLabel_(): string {

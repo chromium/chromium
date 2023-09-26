@@ -44,7 +44,6 @@ suite('PaymentsSection', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
       migrationEnabled: true,
-      virtualCardEnrollmentEnabled: true,
       showIbansSettings: true,
       deviceAuthAvailable: true,
       autofillEnablePaymentsMandatoryReauth: true,
