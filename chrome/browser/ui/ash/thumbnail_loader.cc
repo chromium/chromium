@@ -55,7 +55,7 @@ constexpr char kNativeMessageHostName[] = "com.google.ash_thumbnail_loader";
 
 // Returns whether the given `file_path` is supported by the `ThumbnailLoader`.
 bool IsSupported(const base::FilePath& file_path) {
-  constexpr std::array<std::pair<const char*, const char*>, 24>
+  constexpr std::array<std::pair<const char*, const char*>, 25>
       kFileMatchPatterns = {{
           // Document types ----------------------------------------------------
           {
@@ -94,6 +94,10 @@ bool IsSupported(const base::FilePath& file_path) {
           {
               /*extension=*/"(?i)\\.svg$",
               /*mime_type=*/"(?i)image\\/svg\\+xml",
+          },
+          {
+              /*extension=*/"(?i)\\.avif$",
+              /*mime_type=*/"(?i)image\\/avif",
           },
           // Raw types ---------------------------------------------------------
           {
