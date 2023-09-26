@@ -144,9 +144,12 @@ design can be found at [policy_design.md](./policy_design.md).**
     -   Most policies that are used by the browser can be shared between desktop
         and ChromeOS. However, you need a few additional steps for a device
         policy on ChromeOS.
-        -   Add a message for your policy in
+        -   Add a field for your policy in
             `components/policy/proto/chrome_device_policy.proto`. Please note
             that all proto fields are optional.
+        -   Update `components/policy/resources/templates/device_policy_proto_map.yaml`
+            with a mapping from the policy name to the `chrome_device_policy` proto
+            field you added.
         -   Update
             `chrome/browser/ash/policy/core/device_policy_decoder.{h,cc}`
             for the new policy.
