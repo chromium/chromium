@@ -31,6 +31,7 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
     private HashSet<String> mAlwaysLanguages;
     private TreeMap<String, LanguageItem> mChromeLanguages;
     private boolean mAppLanguagePromptShown;
+    private String mCurrentLanguage;
 
     public FakeTranslateBridgeJni(Collection<LanguageItem> chromeLanguages,
             Collection<String> userAcceptLanguages, Collection<String> neverLanguages,
@@ -158,6 +159,19 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
         mAppLanguagePromptShown = shown;
     }
 
+    @Override
+    public String getCurrentLanguage(WebContents webContents) {
+        return mCurrentLanguage;
+    }
+
+    /**
+     * Set the web content's current language for testing.
+     * @param language String value of what getCurrentLanguage should return.
+     */
+    public void setCurrentLanguage(String language) {
+        mCurrentLanguage = language;
+    }
+
     /**
      * Following methods are not implemented yet since they are not needed by current tests.
      */
@@ -190,11 +204,6 @@ public class FakeTranslateBridgeJni implements TranslateBridge.Natives {
 
     @Override
     public void setIgnoreMissingKeyForTesting(boolean ignore) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public String getCurrentLanguage(WebContents webContents) {
         throw new UnsupportedOperationException();
     }
 

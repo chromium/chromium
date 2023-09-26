@@ -22,7 +22,11 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelTabObserver;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.modules.readaloud.ExpandedPlayer;
+import org.chromium.chrome.modules.readaloud.Playback;
+import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs;
+import org.chromium.chrome.modules.readaloud.ReadAloudPlaybackHooks;
+import org.chromium.chrome.modules.readaloud.ReadAloudPlaybackHooksProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.GURL;
@@ -45,11 +49,23 @@ public class ReadAloudController {
     private final TabModel mTabModel;
     private final ExpandedPlayer mExpandedPlayer;
     private final PlayerCoordinator mPlayerCoordinator;
+    @Nullable
+    private static PlayerCoordinator sPlayerCoordinatorForTesting;
+
     private TabModelTabObserver mTabObserver;
 
     private final ReadAloudReadabilityHooks mReadabilityHooks;
     @Nullable
     private static ReadAloudReadabilityHooks sReadabilityHooksForTesting;
+    @Nullable
+    private ReadAloudPlaybackHooks mPlaybackHooks;
+    @Nullable
+    private static ReadAloudPlaybackHooks sPlaybackHooksForTesting;
+    // When playback is reset, it should be set to null together with the mCurrentlyPlayingTab
+    @Nullable
+    private Playback mPlayback;
+    @Nullable
+    private Tab mCurrentlyPlayingTab;
 
     /**
      * Kicks of readability check on a page load iff: the url is valid, no previous
@@ -76,6 +92,22 @@ public class ReadAloudController {
                 }
             };
 
+    private ReadAloudPlaybackHooks.CreatePlaybackCallback mPlaybackCallback =
+            new ReadAloudPlaybackHooks.CreatePlaybackCallback() {
+                @Override
+                public void onSuccess(Playback playback) {
+                    Log.i(TAG, "Playback created");
+                    mPlayback = playback;
+                    mPlayerCoordinator.playbackReady(mPlayback, PlaybackListener.State.PLAYING);
+                    mPlayback.play();
+                }
+                @Override
+                public void onFailure(Throwable t) {
+                    Log.i(TAG, t.getMessage());
+                    mPlayerCoordinator.playbackFailed();
+                }
+            };
+
     public ReadAloudController(Context context, ObservableSupplier<Profile> profileSupplier,
             TabModel tabModel, ViewStub miniPlayerStub,
             BottomSheetController bottomSheetController) {
@@ -85,7 +117,10 @@ public class ReadAloudController {
                 ? sReadabilityHooksForTesting
                 : new ReadAloudReadabilityHooksImpl(context, ReadAloudFeatures.getApiKeyOverride());
         mExpandedPlayer = new ExpandedPlayerCoordinator(context, bottomSheetController);
-        mPlayerCoordinator = new PlayerCoordinator(context);
+        mPlayerCoordinator = sPlayerCoordinatorForTesting != null
+                ? sPlayerCoordinatorForTesting
+                : new PlayerCoordinator(context);
+
         if (mReadabilityHooks.isEnabled()) {
             mTabObserver = new TabModelTabObserver(mTabModel) {
                 @Override
@@ -167,14 +202,29 @@ public class ReadAloudController {
     }
 
     public void playTab(Tab tab) {
-        Log.e(TAG, "playTab() not implemented.");
-        PlaybackArgs args =
-                new PlaybackArgs(tab.getUrl().getSpec(), TranslateBridge.getCurrentLanguage(tab),
-                        /* voice=*/null, /* dateModifiedMsSinceEpock=*/0);
-        // TODO request playback here and call mPlayerCoordinator.playbackReady()
+        assert tab.getUrl().isValid();
+        if (mPlaybackHooks == null) {
+            mPlaybackHooks = sPlaybackHooksForTesting != null
+                    ? sPlaybackHooksForTesting
+                    : ReadAloudPlaybackHooksProvider.getInstance();
+        }
+        // only start a new playback if different URL or no active playback for that url
+        if (mCurrentlyPlayingTab == null || !tab.getUrl().equals(mCurrentlyPlayingTab.getUrl())) {
+            mCurrentlyPlayingTab = tab;
 
-        // Notify player UI that playback is happening soon.
-        mPlayerCoordinator.playTabRequested();
+            if (mPlayback != null) {
+                mPlayback.release();
+                mPlayback = null;
+            }
+
+            PlaybackArgs args = new PlaybackArgs(tab.getUrl().getSpec(),
+                    TranslateBridge.getCurrentLanguage(tab),
+                    /* voice=*/null, /* dateModifiedMsSinceEpock=*/0);
+            mPlaybackHooks.createPlayback(args, mPlaybackCallback);
+
+            // Notify player UI that playback is happening soon.
+            mPlayerCoordinator.playTabRequested();
+        }
     }
 
     /**
@@ -191,16 +241,37 @@ public class ReadAloudController {
 
     /** Cleanup: unregister listeners. */
     public void destroy() {
+        // Stop playback and hide players.
+        mPlayerCoordinator.destroy();
+
         if (mTabObserver != null) {
             mTabObserver.destroy();
         }
-        // Stop playback and hide players.
-        mPlayerCoordinator.destroy();
+
+        if (mPlayback != null) {
+            mPlayback.release();
+            mPlayback = null;
+        }
+        if (mCurrentlyPlayingTab != null) {
+            mCurrentlyPlayingTab = null;
+        }
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static void setReadabilityHooks(ReadAloudReadabilityHooks hooks) {
         sReadabilityHooksForTesting = hooks;
         ResettersForTesting.register(() -> sReadabilityHooksForTesting = null);
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public static void setPlaybackHooks(ReadAloudPlaybackHooks hooks) {
+        sPlaybackHooksForTesting = hooks;
+        ResettersForTesting.register(() -> sPlaybackHooksForTesting = null);
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public static void setPlayerCoordinator(PlayerCoordinator coordinator) {
+        sPlayerCoordinatorForTesting = coordinator;
+        ResettersForTesting.register(() -> sPlayerCoordinatorForTesting = null);
     }
 }
