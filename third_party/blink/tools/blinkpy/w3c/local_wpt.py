@@ -29,7 +29,8 @@ class LocalRepo(object):
                  mirror_url,
                  default_committer_email,
                  default_committer_name,
-                 relative_tests,
+                 source_relative_tests,
+                 destination_relative_tests,
                  host,
                  gh_token=None,
                  path=None,
@@ -49,7 +50,8 @@ class LocalRepo(object):
         self.mirror_url = mirror_url
         self.default_committer_email = default_committer_email
         self.default_committer_name = default_committer_name
-        self.relative_tests = relative_tests
+        self.source_relative_tests = source_relative_tests
+        self.destination_relative_tests = destination_relative_tests
         self.host = host
         # TODO(crbug.com/1473716): Support non-Unix temporary paths.
         self.path = path or f'/tmp/{self.name.lower()}'
@@ -124,9 +126,8 @@ class LocalRepo(object):
 
         _log.info('Creating local branch %s', branch_name)
         self.run(['git', 'checkout', '-b', branch_name])
-        # Remove directory prefix.
         # TODO(liviurau): Maybe provide a clean patch at the call site.
-        patch = patch.replace(self.relative_tests, '')
+        patch = self.rename_patch_paths(patch)
 
         _log.info('Author: %s', author)
         if '<' in author:
@@ -146,6 +147,15 @@ class LocalRepo(object):
             self.run(['git', 'push', '-f', 'origin', branch_name])
         else:
             self.run(['git', 'push', 'origin', branch_name])
+
+    def rename_patch_paths(self, patch):
+        """Maps all paths in the patch from the source repo
+        to the destination repo.
+        """
+        return patch.replace(
+            self.source_relative_tests,
+            self.destination_relative_tests
+        )
 
     def test_patch(self, patch):
         """Tests whether a patch can be cleanly applied against origin/master.
@@ -177,9 +187,8 @@ class LocalRepo(object):
         Returns:
             A string containing error messages from git, empty if the patch applies cleanly.
         """
-        # Remove directory prefix.
         # TODO(liviurau): Maybe provide a clean patch at the call site.
-        patch = patch.replace(self.relative_tests, '')
+        patch =  self.rename_patch_paths(patch)
         try:
             self.run(['git', 'apply', '-'], input=patch)
             self.run(['git', 'add', '.'])
@@ -265,5 +274,5 @@ class LocalWPT(LocalRepo):
         super().__init__('WPT', WPT_GH_ORG, WPT_GH_REPO_NAME,
                          WPT_GH_SSH_URL_TEMPLATE, WPT_MIRROR_URL,
                          DEFAULT_WPT_COMMITTER_EMAIL,
-                         DEFAULT_WPT_COMMITTER_NAME, RELATIVE_WPT_TESTS, host,
-                         gh_token, path)
+                         DEFAULT_WPT_COMMITTER_NAME, RELATIVE_WPT_TESTS, '',
+                         host, gh_token, path)
