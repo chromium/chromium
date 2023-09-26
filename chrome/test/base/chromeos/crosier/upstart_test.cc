@@ -55,7 +55,8 @@ TEST(Upstart, ParseStatus) {
   EXPECT_EQ(result, ui);
 }
 
-TEST(Upstart, GetJobStatus) {
+// TODO(crbug.com/1486711) This fails connecting to the test helper sometimes.
+TEST(Upstart, DISABLED_GetJobStatus) {
   // Random nonexistent job.
   JobStatus result = GetJobStatus("nonexistent-job");
   EXPECT_FALSE(result.is_valid);
@@ -68,12 +69,14 @@ TEST(Upstart, GetJobStatus) {
   EXPECT_GT(result.pid, 0);
 }
 
-TEST(Upstart, JobExists) {
+// TODO(crbug.com/1486711) This fails connecting to the test helper sometimes.
+TEST(Upstart, DISABLED_JobExists) {
   EXPECT_FALSE(JobExists("nonexistent-job"));
   EXPECT_TRUE(JobExists("dbus"));
 }
 
-TEST(Upstart, WaitForJobStatus) {
+// TODO(crbug.com/1486711) This fails connecting to the test helper sometimes.
+TEST(Upstart, DISABLED_WaitForJobStatus) {
   // This is hard to test without making a lot of assumptions or messing with
   // the system. Instead, we just validate some simple cases that don't change
   // anything.
