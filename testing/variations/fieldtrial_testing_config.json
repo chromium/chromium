@@ -10365,6 +10365,29 @@
             ]
         }
     ],
+    "NormalMaxItemsInCacheForSoftware": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "ImageCache_1000_20230914",
+                    "params": {
+                        "NormalMaxItemsInCacheForSoftware": "1000"
+                    },
+                    "enable_features": [
+                        "NormalMaxItemsInCacheForSoftwareFeature"
+                    ]
+                }
+            ]
+        }
+    ],
     "NormalPriorityImageDecoding": [
         {
             "platforms": [
