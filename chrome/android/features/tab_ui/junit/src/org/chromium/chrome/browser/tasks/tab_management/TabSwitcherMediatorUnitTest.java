@@ -1064,11 +1064,16 @@ public class TabSwitcherMediatorUnitTest {
 
         doReturn(false).when(mTabGridDialogController).isVisible();
         doReturn(mTab1).when(mTabModelSelector).getCurrentTab();
+        doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         mMediator.showTabSwitcherView(false);
 
         //  Verifies that TabSwitcherMediator no longer handles the return to Start surface case.
         mMediator.setLastActiveLayoutTypeForTesting(LayoutType.START_SURFACE);
         Assert.assertFalse(mMediator.shouldInterceptBackPress());
+
+        // Verifies that TabSwitcherMediator still handles the back operation in incognito mode.
+        doReturn(true).when(mTabModelSelector).isIncognitoSelected();
+        Assert.assertTrue(mMediator.shouldInterceptBackPress());
 
         mMediator.setLastActiveLayoutTypeForTesting(LayoutType.BROWSING);
         Assert.assertTrue(mMediator.shouldInterceptBackPress());
