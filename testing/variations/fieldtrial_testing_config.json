@@ -2552,6 +2552,29 @@
             ]
         }
     ],
+    "BufferSizeForFilterSourceStream": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "buffer_size_0032k_20230919",
+                    "params": {
+                        "BufferSizeForFilterSourceStream": "32768"
+                    },
+                    "enable_features": [
+                        "BufferSizeForFilterSourceStreamFeature"
+                    ]
+                }
+            ]
+        }
+    ],
     "CCTRealTimeEngagementSignalsAlternativeImpl": [
         {
             "platforms": [
