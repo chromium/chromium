@@ -68,8 +68,8 @@ class ClipboardMacTest : public PlatformTest,
         CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
     base::apple::ScopedCFTypeRef<CGImageRef> image_ref(
         CGImageCreate(pixel_width, pixel_height, 8, 32, 4 * pixel_width,
-                      color_space.get(), kCGBitmapByteOrderDefault,
-                      provider.get(), nullptr, NO, kCGRenderingIntentDefault));
+                      color_space.get(), kCGImageAlphaLast, provider.get(),
+                      nullptr, NO, kCGRenderingIntentDefault));
     return [[NSImage alloc] initWithCGImage:image_ref.get()
                                        size:NSMakeSize(width, height)];
   }
