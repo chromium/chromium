@@ -17,11 +17,10 @@ TEST(Base64Test, Basic) {
   const std::string kText = "hello world";
   const std::string kBase64Text = "aGVsbG8gd29ybGQ=";
 
-  std::string encoded;
   std::string decoded;
   bool ok;
 
-  Base64Encode(kText, &encoded);
+  std::string encoded = Base64Encode(kText);
   EXPECT_EQ(kBase64Text, encoded);
 
   ok = Base64Decode(encoded, &decoded);
@@ -120,9 +119,8 @@ TEST(Base64Test, Binary) {
 TEST(Base64Test, InPlace) {
   const std::string kText = "hello world";
   const std::string kBase64Text = "aGVsbG8gd29ybGQ=";
-  std::string text(kText);
 
-  Base64Encode(text, &text);
+  std::string text = Base64Encode(kText);
   EXPECT_EQ(kBase64Text, text);
 
   bool ok = Base64Decode(text, &text);

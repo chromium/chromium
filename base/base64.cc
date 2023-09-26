@@ -50,6 +50,10 @@ void Base64Encode(StringPiece input, std::string* output) {
   *output = Base64Encode(base::as_bytes(base::make_span(input)));
 }
 
+std::string Base64Encode(StringPiece input) {
+  return Base64Encode(base::as_bytes(base::make_span(input)));;
+}
+
 bool Base64Decode(StringPiece input,
                   std::string* output,
                   Base64DecodePolicy policy) {
