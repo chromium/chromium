@@ -71,6 +71,7 @@ public class GroupTab implements ITabGroup {
     private GroupTab(ITabGroup parent, TabInfo tabInfo, List<ITab> tabs, ObserverList<TabInfoObserver> observers) {
         mParentTab = parent;
         mObservers = observers;
+        mObservers.disableThreadAsserts();
         mTabInfo = tabInfo;
         mTabList = tabs;
     }

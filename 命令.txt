@@ -39,3 +39,26 @@ treat_warnings_as_errors=false
 update_android_aar_prebuilts=true
 # 去除代码混淆
 enable_proguard_obfuscation = false
+
+
+
+target_os = "android"
+target_cpu = "arm64"
+is_debug = false
+is_official_build = true
+enable_remoting = true
+is_component_build = false
+is_chrome_branded = false
+use_official_google_api_keys = false
+enable_resource_whitelist_generation = true
+enable_nacl = false
+remove_webcore_debug_symbols = true
+proprietary_codecs = true
+ffmpeg_branding = "Chrome"
+android_channel = "stable"
+enable_vr = false
+treat_warnings_as_errors=false
+update_android_aar_prebuilts=true
+enable_proguard_obfuscation = false
+target_all_locales = false
+target_locale_names = ["zh-CN","zh-HK","zh-TW","en-GB","en-US"]

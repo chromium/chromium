@@ -1196,6 +1196,9 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
     }
 
     void notifyThemeColorChanged() {
+        if (mThemeColor == TabState.UNSPECIFIED_THEME_COLOR) {
+            return;
+        }
         RewindableIterator<TabObserver> observers = getTabObservers();
         while (observers.hasNext()) observers.next().onDidChangeThemeColor(this, mThemeColor);
     }

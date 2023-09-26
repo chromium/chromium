@@ -225,6 +225,14 @@ public class ArkTabWebContentsObserver implements UserData {
                 // {@link WebContentsObserver#renderProcessGone} first.
                 SadTab sadTab = SadTab.from(mTab);
                 ThreadPool.postOnUIThread(() -> {
+                    WebContents current = mWebContents.get();
+                    if (current == null) {
+                        return;
+                    }
+                    if (mTab.getWebContents() != current) {
+                        current.getNavigationController().setNeedsReload();
+                        return;
+                    }
                     sadTab.show(ContextUtils.getApplicationContext(),
                             /* suggestionAction= */ () -> {
                                 Toast.makeText(mTab.getContext(), "TODO suggestionAction", Toast.LENGTH_SHORT).show();
@@ -234,6 +242,7 @@ public class ArkTabWebContentsObserver implements UserData {
                                 if (sadTab.showSendFeedbackView()) {
                                     Toast.makeText(mTab.getContext(), "TODO startHelpAndFeedback", Toast.LENGTH_SHORT).show();
                                 } else {
+                                    sadTab.removeIfPresent();
                                     mTab.reload();
                                 }
                             });
@@ -245,8 +254,16 @@ public class ArkTabWebContentsObserver implements UserData {
             mTab.handleTabCrash();
         }
 
+        private void removeSadTab() {
+            SadTab sadTab = SadTab.get(mTab);
+            if (sadTab != null && sadTab.isShowing()) {
+                sadTab.removeIfPresent();
+            }
+        }
+
         @Override
         public void didStartLoading(GURL url) {
+            removeSadTab();
             super.didStartLoading(url);
             mTab.onLoadStarted();
         }
@@ -302,6 +319,7 @@ public class ArkTabWebContentsObserver implements UserData {
 
         @Override
         public void didStartNavigation(NavigationHandle navigation) {
+            removeSadTab();
             if (navigation.isInPrimaryMainFrame() && !navigation.isSameDocument()) {
                 mTab.didStartPageLoad(navigation.getUrl());
             }
