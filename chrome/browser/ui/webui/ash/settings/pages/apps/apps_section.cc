@@ -202,8 +202,6 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
 
   webui::LocalizedString kLocalizedStrings[] = {
       {"appManagementAppDetailsTitle", IDS_APP_MANAGEMENT_APP_DETAILS_TITLE},
-      {"appManagementAppDetailsTooltipCrosSystem",
-       IDS_APP_MANAGEMENT_APP_DETAILS_TOOLTIP_CROS_SYSTEM},
       {"appManagementAppDetailsTypeAndroid",
        IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_ANDROID},
       {"appManagementAppDetailsTypeChrome",
@@ -218,6 +216,8 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
        IDS_APP_MANAGEMENT_APP_DETAILS_INSTALL_SOURCE_PLAY_STORE},
       {"appManagementAppDetailsInstallSourceBrowser",
        IDS_APP_MANAGEMENT_APP_DETAILS_INSTALL_SOURCE_BROWSER},
+      {"appManagementAppDetailsTypeAndSourcePreinstalledApp",
+       IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_AND_SOURCE_PREINSTALLED_APP},
       {"appManagementAppDetailsTypeAndSourceCombined",
        IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_AND_SOURCE_COMBINED},
       {"appManagementAppDetailsVersion",
@@ -473,6 +473,9 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean("appManagementArcReadOnlyPermissions",
                           arc::IsReadOnlyPermissionsEnabled());
+
+  html_source->AddString("appManagementDeviceName",
+                         ui::GetChromeOSDeviceName());
 
   html_source->AddString("appNotificationsBrowserSettingsURL",
                          chrome::kAppNotificationsBrowserSettingsURL);

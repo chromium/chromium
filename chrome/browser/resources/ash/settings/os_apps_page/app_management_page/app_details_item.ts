@@ -97,12 +97,10 @@ export class AppManagementAppDetailsItem extends
     return Boolean(app.dataSize);
   }
   /**
-   * The info icon is only shown for System apps and apps installed from the
-   * Chrome browser.
+   * The info icon is only shown for apps installed from the Chrome browser.
    */
   private shouldShowInfoIcon_(app: App): boolean {
-    return app.installSource === InstallSource.kBrowser ||
-        app.installReason === InstallReason.kSystem;
+    return app.installSource === InstallSource.kBrowser;
   }
 
   /**
@@ -115,6 +113,12 @@ export class AppManagementAppDetailsItem extends
   }
 
   private getTypeString_(app: App): string {
+    // When installReason = kSystem, the system has determined that the app
+    // needs to be installed. This includes apps such as Chrome and the Play
+    // Store.
+    if (app.installReason === InstallReason.kSystem) {
+      return this.i18n('appManagementAppDetailsTypeCrosSystem');
+    }
     switch (app.type) {
       case AppType.kArc:
         return this.i18n('appManagementAppDetailsTypeAndroid');
@@ -144,29 +148,32 @@ export class AppManagementAppDetailsItem extends
   }
 
   private getTypeAndSourceString_(app: App): string {
-    // When installReason = kSystem, the system has determined that the app
-    // needs to be installed. This includes apps such as Chrome and the Play
-    // Store.
-    if (app.installReason === InstallReason.kSystem) {
-      return this.i18n('appManagementAppDetailsTypeCrosSystem');
-    }
     switch (app.installSource) {
       case InstallSource.kPlayStore:
       case InstallSource.kChromeWebStore:
         return this
             .i18nAdvanced('appManagementAppDetailsTypeAndSourceCombined', {
               substitutions: [
-                String(this.getTypeString_(app)),
-                String(this.getInstallSourceString_(app)),
+                this.getTypeString_(app),
+                this.getInstallSourceString_(app),
               ],
             })
             .toString();
       case InstallSource.kBrowser:
         return this.i18n('appManagementAppDetailsInstallSourceBrowser');
+      case InstallSource.kSystem:
+        return this
+            .i18nAdvanced(
+                'appManagementAppDetailsTypeAndSourcePreinstalledApp', {
+                  substitutions: [
+                    this.getTypeString_(app),
+                    loadTimeData.getString('appManagementDeviceName'),
+                  ],
+                })
+            .toString();
       case InstallSource.kUnknown:
         return this.getTypeString_(app);
       default:
-        console.error('Install source not recognised.');
         return this.getTypeString_(app);
     }
   }
@@ -186,13 +193,10 @@ export class AppManagementAppDetailsItem extends
   }
 
   /**
-   * Returns the sanitized URL for apps downloaded from the Chrome browser, or a
-   * message for system apps, to be shown in the tooltip.
+   * Returns the sanitized URL for apps downloaded from the Chrome browser, to
+   * be shown in the tooltip.
    */
   private getTooltipText_(app: App): string {
-    if (app.installReason === InstallReason.kSystem) {
-      return this.i18n('appManagementAppDetailsTooltipCrosSystem');
-    }
     switch (app.installSource) {
       case InstallSource.kBrowser:
         return app.publisherId.replace(/\?.*$/g, '');

@@ -109,9 +109,6 @@
   <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TITLE" desc="Title for App Details Section">
     App details
   </message>
-  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TOOLTIP_CROS_SYSTEM" desc="Text for ChromeOS System app tooltip">
-    This app is preinstalled on your device
-  </message>
   <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_ANDROID" desc="Text for Android app type">
     Android App
   </message>
@@ -135,6 +132,9 @@
   </message>
   <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_AND_SOURCE_COMBINED" desc="Full text for installation source and app type line">
     <ph name="APP_TYPE">$1<ex>Web App</ex></ph> installed from <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph><ph name="INSTALL_SOURCE">$2<ex>Google Play Store</ex></ph><ph name="END_LINK">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_APP_MANAGEMENT_APP_DETAILS_TYPE_AND_SOURCE_PREINSTALLED_APP" desc="Explanation text for the installation source of an app, describing the type of the app, and that it came automatically installed with the device (preinstalled).">
+    <ph name="APP_TYPE">$1<ex>ChromeOS System App</ex></ph> preinstalled on your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph>
   </message>
   <message name="IDS_APP_MANAGEMENT_APP_DETAILS_VERSION" desc="Text for application version">
     Version: <ph name="APP_VERSION">$1<ex>17.2</ex></ph>
