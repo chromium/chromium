@@ -20,9 +20,9 @@
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate_map.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -109,21 +109,21 @@ class SystemWebAppManager : public KeyedService,
   void InstallSystemAppsForTesting();
 
   // Returns the app id for the given System App |type|.
-  absl::optional<web_app::AppId> GetAppIdForSystemApp(
+  absl::optional<webapps::AppId> GetAppIdForSystemApp(
       SystemWebAppType type) const;
 
   // Returns the System App Type for the given |app_id|.
   absl::optional<SystemWebAppType> GetSystemAppTypeForAppId(
-      const web_app::AppId& app_id) const;
+      const webapps::AppId& app_id) const;
 
   // Returns the System App Delegate for the given App |type|.
   const SystemWebAppDelegate* GetSystemApp(SystemWebAppType type) const;
 
   // Returns the App Ids for all installed System Web Apps.
-  std::vector<web_app::AppId> GetAppIds() const;
+  std::vector<webapps::AppId> GetAppIds() const;
 
   // Returns whether |app_id| points to an installed System App.
-  bool IsSystemWebApp(const web_app::AppId& app_id) const;
+  bool IsSystemWebApp(const webapps::AppId& app_id) const;
 
   // Returns the SystemWebAppType that should handle |url|.
   //
@@ -213,7 +213,7 @@ class SystemWebAppManager : public KeyedService,
 
   // web_app::WebAppUiManagerObserver:
   void OnReadyToCommitNavigation(
-      const web_app::AppId& app_id,
+      const webapps::AppId& app_id,
       content::NavigationHandle* navigation_handle) override;
   void OnWebAppUiManagerDestroyed() override;
 

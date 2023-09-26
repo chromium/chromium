@@ -72,7 +72,6 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_system_web_app_delegate_map_utils.h"
@@ -81,6 +80,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/common/content_switches.h"
@@ -433,7 +433,7 @@ void SystemWebAppManager::InstallSystemAppsForTesting() {
   run_loop.Run();
 }
 
-absl::optional<web_app::AppId> SystemWebAppManager::GetAppIdForSystemApp(
+absl::optional<webapps::AppId> SystemWebAppManager::GetAppIdForSystemApp(
     SystemWebAppType type) const {
   if (!provider_->is_registry_ready())
     return absl::nullopt;
@@ -442,7 +442,7 @@ absl::optional<web_app::AppId> SystemWebAppManager::GetAppIdForSystemApp(
 }
 
 absl::optional<SystemWebAppType> SystemWebAppManager::GetSystemAppTypeForAppId(
-    const web_app::AppId& app_id) const {
+    const webapps::AppId& app_id) const {
   if (!provider_->is_registry_ready())
     return absl::nullopt;
   return web_app::GetSystemAppTypeForAppId(provider_->registrar_unsafe(),
@@ -454,10 +454,10 @@ const SystemWebAppDelegate* SystemWebAppManager::GetSystemApp(
   return GetSystemWebApp(system_app_delegates_, type);
 }
 
-std::vector<web_app::AppId> SystemWebAppManager::GetAppIds() const {
-  std::vector<web_app::AppId> app_ids;
+std::vector<webapps::AppId> SystemWebAppManager::GetAppIds() const {
+  std::vector<webapps::AppId> app_ids;
   for (const auto& app_type_to_app_info : system_app_delegates_) {
-    absl::optional<web_app::AppId> app_id =
+    absl::optional<webapps::AppId> app_id =
         GetAppIdForSystemApp(app_type_to_app_info.first);
     if (app_id.has_value()) {
       app_ids.push_back(app_id.value());
@@ -466,7 +466,7 @@ std::vector<web_app::AppId> SystemWebAppManager::GetAppIds() const {
   return app_ids;
 }
 
-bool SystemWebAppManager::IsSystemWebApp(const web_app::AppId& app_id) const {
+bool SystemWebAppManager::IsSystemWebApp(const webapps::AppId& app_id) const {
   DCHECK(provider_->is_registry_ready());
   return web_app::IsSystemWebApp(provider_->registrar_unsafe(),
                                  system_app_delegates_, app_id);
@@ -486,7 +486,7 @@ const std::vector<std::string>* SystemWebAppManager::GetEnabledOriginTrials(
 }
 
 void SystemWebAppManager::OnReadyToCommitNavigation(
-    const web_app::AppId& app_id,
+    const webapps::AppId& app_id,
     content::NavigationHandle* navigation_handle) {
   // Perform tab-specific setup when a navigation in a System Web App is about
   // to be committed.
@@ -521,7 +521,7 @@ absl::optional<SystemWebAppType> SystemWebAppManager::GetSystemAppForURL(
   if (!provider_->is_registry_ready())
     return absl::nullopt;
 
-  absl::optional<web_app::AppId> app_id =
+  absl::optional<webapps::AppId> app_id =
       provider_->registrar_unsafe().FindAppWithUrlInScope(url);
   if (!app_id.has_value())
     return absl::nullopt;

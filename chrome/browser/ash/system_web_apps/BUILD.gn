@@ -48,6 +48,7 @@ source_set("system_web_apps") {
     "//components/keyed_service/content",
     "//components/pref_registry:pref_registry",
     "//components/webapps/browser",
+    "//components/webapps/common",
     "//content/public/browser",
     "//ui/base/idle",
     "//ui/chromeos/styles:cros_tokens_color_mappings_generator",

@@ -110,7 +110,7 @@ class TestUiManagerObserver : public web_app::WebAppUiManagerObserver {
   }
 
   using ReadyToCommitNavigationCallback = base::RepeatingCallback<void(
-      const web_app::AppId& app_id,
+      const webapps::AppId& app_id,
       content::NavigationHandle* navigation_handle)>;
 
   void SetReadyToCommitNavigationCallback(
@@ -119,7 +119,7 @@ class TestUiManagerObserver : public web_app::WebAppUiManagerObserver {
   }
 
   void OnReadyToCommitNavigation(
-      const web_app::AppId& app_id,
+      const webapps::AppId& app_id,
       content::NavigationHandle* navigation_handle) override {
     if (ready_to_commit_navigation_callback_)
       ready_to_commit_navigation_callback_.Run(app_id, navigation_handle);
@@ -193,7 +193,7 @@ class SystemWebAppManagerTest : public ChromeRenderViewHostTestHarness {
     for (const SystemAppData& data : system_app_data_list) {
       std::unique_ptr<web_app::WebApp> web_app = web_app::test::CreateWebApp(
           data.url, web_app::WebAppManagement::Type::kSystem);
-      const web_app::AppId app_id = web_app->app_id();
+      const webapps::AppId app_id = web_app->app_id();
       {
         web_app::ScopedRegistryUpdate update =
             provider().sync_bridge_unsafe().BeginUpdate();

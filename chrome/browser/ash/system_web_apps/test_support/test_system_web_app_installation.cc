@@ -212,7 +212,7 @@ bool UnittestingSystemAppDelegate::ShouldAnimateThemeChanges() const {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 void UnittestingSystemAppDelegate::SetAppIdsToUninstallAndReplace(
-    const std::vector<web_app::AppId>& ids) {
+    const std::vector<webapps::AppId>& ids) {
   uninstall_and_replace_ = ids;
 }
 void UnittestingSystemAppDelegate::SetMinimumWindowSize(const gfx::Size& size) {
@@ -912,7 +912,7 @@ void TestSystemWebAppInstallation::WaitForAppInstall() {
   run_loop.Run();
 }
 
-web_app::AppId TestSystemWebAppInstallation::GetAppId() {
+webapps::AppId TestSystemWebAppInstallation::GetAppId() {
   return SystemWebAppManager::GetForTest(profile_)
       ->GetAppIdForSystemApp(type_.value())
       .value();

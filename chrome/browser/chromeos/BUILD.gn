@@ -295,6 +295,7 @@ source_set("chromeos") {
     "//components/sync_device_info",
     "//components/ukm",
     "//components/vector_icons",
+    "//components/webapps/common",
     "//content/public/common",
     "//crypto",
     "//extensions/browser/updater",

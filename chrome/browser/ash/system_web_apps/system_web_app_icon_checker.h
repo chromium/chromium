@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_SYSTEM_WEB_APP_ICON_CHECKER_H_
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/web_app_id.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace ash {
 
@@ -46,7 +46,7 @@ class SystemWebAppIconChecker {
 
   // Start a check on SWAs identified by `app_ids`. This method shouldn't be
   // called again before `callback` runs.
-  virtual void StartCheck(const std::vector<web_app::AppId>& apps_ids,
+  virtual void StartCheck(const std::vector<webapps::AppId>& apps_ids,
                           base::OnceCallback<void(IconState)> callback) = 0;
 
   // Stop all running checks, `callback` passed into StartCheck() won't be
