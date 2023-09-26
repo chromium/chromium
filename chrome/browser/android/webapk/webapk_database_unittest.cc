@@ -12,11 +12,11 @@
 #include "chrome/browser/android/webapk/fake_webapk_database_factory.h"
 #include "chrome/browser/android/webapk/webapk_helpers.h"
 #include "chrome/browser/android/webapk/webapk_registrar.h"
-#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/protocol/web_apk_specifics.pb.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -107,7 +107,7 @@ class WebApkDatabaseTest : public ::testing::Test {
 
     for (uint32_t i = 0; i < num_apps; ++i) {
       std::unique_ptr<WebApkProto> proto = CreateWebApkProto(i, false);
-      const std::string app_id =
+      const webapps::AppId app_id =
           GenerateAppIdFromManifestId(GURL(proto->sync_data().manifest_id()));
 
       write_batch->WriteData(app_id, proto->SerializeAsString());

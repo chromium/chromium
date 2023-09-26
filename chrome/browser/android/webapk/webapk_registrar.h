@@ -8,10 +8,11 @@
 #include <map>
 
 #include "chrome/browser/android/webapk/proto/webapk_database.pb.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace webapk {
 
-using Registry = std::map<std::string, std::unique_ptr<WebApkProto>>;
+using Registry = std::map<webapps::AppId, std::unique_ptr<WebApkProto>>;
 
 }  // namespace webapk
 
