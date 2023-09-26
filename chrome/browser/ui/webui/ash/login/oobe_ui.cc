@@ -664,6 +664,12 @@ void OobeUI::BindInterface(
                               *pin_backend);
 }
 
+void OobeUI::BindInterface(
+    mojo::PendingReceiver<auth::mojom::PasswordFactorEditor> receiver) {
+  auth::BindToPasswordFactorEditor(
+      std::move(receiver), quick_unlock::QuickUnlockFactory::GetDelegate());
+}
+
 OobeUI::OobeUI(content::WebUI* web_ui, const GURL& url)
     : ui::MojoWebUIController(web_ui, true /* enable_chrome_send */) {
   LOG(WARNING) << "OobeUI created";

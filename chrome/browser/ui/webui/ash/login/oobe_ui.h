@@ -182,6 +182,8 @@ class OobeUI : public ui::MojoWebUIController {
       mojo::PendingReceiver<auth::mojom::AuthFactorConfig> receiver);
   void BindInterface(
       mojo::PendingReceiver<auth::mojom::PinFactorEditor> receiver);
+  void BindInterface(
+      mojo::PendingReceiver<auth::mojom::PasswordFactorEditor> receiver);
 
   static void AddOobeComponents(content::WebUIDataSource* source);
 
