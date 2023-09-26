@@ -147,26 +147,6 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   // Request underlying source to capture a new frame.
   virtual void RequestRefreshFrame() {}
 
-  // This method can optionally be overridden by a subclass for further handling
-  // of the frame drop events.
-  //
-  // Called when a frame is dropped by VideoTrackAdapter indicating a frame
-  // was not delivered to the sink, or by the MediaStreamVideoSink indicating
-  // that the <video> tag was not in a started state. Note that the
-  // MediaStreamTrack Statistics API does not consider the latter a dropped
-  // frame, since it was delivered to the sink. Also note that if multiple
-  // VideoTrackAdapters are used, the same frame could be reported as dropped
-  // multiple times. Due to these issues, this method should not be used for
-  // per-track frame counters, but it is currently wired up for browser process
-  // UMAs (an inaccurate measure of per-source drops).
-  //
-  // TODO(https://crbug.com/1481448): When the track stats API covers all types
-  // of frame drops, including out-of-process, consider deleting this in favor
-  // of moving the UMAs to the MediaStreamTrackImpl. The only difference is that
-  // the track stats API does not count <video> tag drops as frame drops.
-  virtual void OnFrameDroppedInRenderer(
-      media::VideoCaptureFrameDropReason reason) {}
-
   // Optionally overridden by subclasses to implement handling log messages.
   virtual void OnLog(const std::string& message) {}
 

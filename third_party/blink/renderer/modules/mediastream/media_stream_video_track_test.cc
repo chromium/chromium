@@ -8,13 +8,17 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/video_frame.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
@@ -36,12 +40,15 @@ namespace blink {
 namespace media_stream_video_track_test {
 
 using base::test::RunOnceClosure;
+using ::testing::_;
 using ::testing::Eq;
 using ::testing::InSequence;
 using ::testing::Invoke;
 using ::testing::Mock;
+using ::testing::NiceMock;
 using ::testing::Optional;
 using ::testing::Return;
+using ::testing::StrEq;
 using ::testing::Values;
 
 using ContentHintType = WebMediaStreamTrack::ContentHintType;
@@ -51,6 +58,16 @@ const uint8_t kColorValue = 0xAB;
 const int kMockSourceWidth = 640;
 const int kMockSourceHeight = 480;
 const double kMinFrameRate = 30.0;
+
+class MockEmitLogMessageCb {
+ public:
+  MOCK_METHOD1(EmitLogMessage, void(const std::string&));
+
+  base::RepeatingCallback<void(const std::string&)> Callback() {
+    return base::BindRepeating(base::BindLambdaForTesting(
+        [this](const std::string& message) { EmitLogMessage(message); }));
+  }
+};
 
 class MediaStreamVideoTrackTest
     : public testing::TestWithParam<ContentHintType> {
@@ -105,6 +122,9 @@ class MediaStreamVideoTrackTest
             media::PIXEL_FORMAT_I420),
         false);
     mock_source_ = mock_source.get();
+    MediaStreamDevice device = mock_source_->device();
+    device.type = mojom::blink::MediaStreamType::DEVICE_VIDEO_CAPTURE;
+    mock_source_->SetDevice(device);
     source_ = MakeGarbageCollected<MediaStreamSource>(
         "dummy_source_id", MediaStreamSource::kTypeVideo, "dummy_source_name",
         false /* remote */, std::move(mock_source));
@@ -502,6 +522,274 @@ TEST_F(MediaStreamVideoTrackTest, FrameStatsIncrementsForEnabledTracks) {
   sink.DisconnectFromTrack();
 }
 
+TEST_F(MediaStreamVideoTrackTest, DroppedFramesGetLoggedInUMA) {
+  base::HistogramTester histogram_tester;
+
+  InitializeSource();
+  CreateTrack();
+  mock_source()->DropFrame(
+      media::VideoCaptureFrameDropReason::kDeviceClientFrameHasInvalidFormat);
+  mock_source()->DropFrame(
+      media::VideoCaptureFrameDropReason::kBufferPoolMaxBufferCountExceeded);
+  mock_source()->DropFrame(
+      media::VideoCaptureFrameDropReason::kDeviceClientFrameHasInvalidFormat);
+  DepleteIOCallbacks();
+
+  histogram_tester.ExpectBucketCount(
+      "Media.VideoCapture.Track.FrameDrop.DeviceCapture",
+      media::VideoCaptureFrameDropReason::kDeviceClientFrameHasInvalidFormat,
+      2);
+  histogram_tester.ExpectBucketCount(
+      "Media.VideoCapture.Track.FrameDrop.DeviceCapture",
+      media::VideoCaptureFrameDropReason::kBufferPoolMaxBufferCountExceeded, 1);
+}
+
+// Tests that too many frames dropped for the same reason emits a special UMA
+// log and disables further logging
+TEST_F(MediaStreamVideoTrackTest,
+       DroppedFrameLoggingGetsDisabledIfTooManyConsecutiveDropsForSameReason) {
+  base::HistogramTester histogram_tester;
+
+  InitializeSource();
+  CreateTrack();
+  for (int i = 0;
+       i < MediaStreamVideoTrack::kMaxConsecutiveFrameDropForSameReasonCount;
+       i++) {
+    mock_source()->DropFrame(
+        media::VideoCaptureFrameDropReason::kDeviceClientFrameHasInvalidFormat);
+  }
+  DepleteIOCallbacks();
+  histogram_tester.ExpectBucketCount(
+      "Media.VideoCapture.Track.FrameDrop.DeviceCapture",
+      media::VideoCaptureFrameDropReason::kDeviceClientFrameHasInvalidFormat,
+      MediaStreamVideoTrack::kMaxConsecutiveFrameDropForSameReasonCount);
+
+  // Add one more count after already having reached the max allowed.
+  // This should not get counted.
+  mock_source()->DropFrame(
+      media::VideoCaptureFrameDropReason::kDeviceClientFrameHasInvalidFormat);
+  DepleteIOCallbacks();
+  histogram_tester.ExpectBucketCount(
+      "Media.VideoCapture.Track.FrameDrop.DeviceCapture",
+      media::VideoCaptureFrameDropReason::kDeviceClientFrameHasInvalidFormat,
+      MediaStreamVideoTrack::kMaxConsecutiveFrameDropForSameReasonCount);
+
+  histogram_tester.ExpectBucketCount(
+      "Media.VideoCapture.Track.MaxFrameDropExceeded.DeviceCapture",
+      media::VideoCaptureFrameDropReason::kDeviceClientFrameHasInvalidFormat,
+      1);
+}
+
+TEST_F(MediaStreamVideoTrackTest,
+       DeliveredFrameInBetweenDroppedFramesResetsCounter) {
+  base::HistogramTester histogram_tester;
+
+  InitializeSource();
+  MockMediaStreamVideoSink sink;
+  WebMediaStreamTrack track = CreateTrack();
+  sink.ConnectToTrack(track);
+  for (int i = 0;
+       i <
+       MediaStreamVideoTrack::kMaxConsecutiveFrameDropForSameReasonCount - 1;
+       i++) {
+    mock_source()->DropFrame(
+        media::VideoCaptureFrameDropReason::kDeviceClientFrameHasInvalidFormat);
+  }
+  DeliverVideoFrameAndWaitForRenderer(
+      media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400)), &sink);
+
+  for (int i = 0;
+       i < MediaStreamVideoTrack::kMaxConsecutiveFrameDropForSameReasonCount;
+       i++) {
+    mock_source()->DropFrame(
+        media::VideoCaptureFrameDropReason::kDeviceClientFrameHasInvalidFormat);
+  }
+  DepleteIOCallbacks();
+  histogram_tester.ExpectBucketCount(
+      "Media.VideoCapture.Track.FrameDrop.DeviceCapture",
+      media::VideoCaptureFrameDropReason::kDeviceClientFrameHasInvalidFormat,
+      2 * MediaStreamVideoTrack::kMaxConsecutiveFrameDropForSameReasonCount -
+          1);
+}
+
+TEST_F(MediaStreamVideoTrackTest, DeliveredFrameReenablesDroppedFrameLogging) {
+  base::HistogramTester histogram_tester;
+
+  InitializeSource();
+  MockMediaStreamVideoSink sink;
+  WebMediaStreamTrack track = CreateTrack();
+  sink.ConnectToTrack(track);
+  // Drop enough frames to disable logging
+  for (int i = 0;
+       i <
+       MediaStreamVideoTrack::kMaxConsecutiveFrameDropForSameReasonCount + 1;
+       i++) {
+    mock_source()->DropFrame(
+        media::VideoCaptureFrameDropReason::kDeviceClientFrameHasInvalidFormat);
+  }
+  DeliverVideoFrameAndWaitForRenderer(
+      media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400)), &sink);
+
+  mock_source()->DropFrame(
+      media::VideoCaptureFrameDropReason::kDeviceClientFrameHasInvalidFormat);
+  DepleteIOCallbacks();
+  histogram_tester.ExpectBucketCount(
+      "Media.VideoCapture.Track.FrameDrop.DeviceCapture",
+      media::VideoCaptureFrameDropReason::kDeviceClientFrameHasInvalidFormat,
+      MediaStreamVideoTrack::kMaxConsecutiveFrameDropForSameReasonCount + 1);
+}
+
+TEST_F(MediaStreamVideoTrackTest,
+       ChangeInDropReasonReenablesDroppedFrameLogging) {
+  base::HistogramTester histogram_tester;
+
+  InitializeSource();
+  CreateTrack();
+  // Drop enough frames to disable logging
+  for (int i = 0;
+       i <
+       MediaStreamVideoTrack::kMaxConsecutiveFrameDropForSameReasonCount + 1;
+       i++) {
+    mock_source()->DropFrame(
+        media::VideoCaptureFrameDropReason::kDeviceClientFrameHasInvalidFormat);
+  }
+
+  // Drop for a different reason
+  mock_source()->DropFrame(
+      media::VideoCaptureFrameDropReason::kBufferPoolMaxBufferCountExceeded);
+
+  mock_source()->DropFrame(
+      media::VideoCaptureFrameDropReason::kDeviceClientFrameHasInvalidFormat);
+  DepleteIOCallbacks();
+  histogram_tester.ExpectBucketCount(
+      "Media.VideoCapture.Track.FrameDrop.DeviceCapture",
+      media::VideoCaptureFrameDropReason::kDeviceClientFrameHasInvalidFormat,
+      MediaStreamVideoTrack::kMaxConsecutiveFrameDropForSameReasonCount + 1);
+  histogram_tester.ExpectBucketCount(
+      "Media.VideoCapture.Track.FrameDrop.DeviceCapture",
+      media::VideoCaptureFrameDropReason::kBufferPoolMaxBufferCountExceeded, 1);
+}
+
+TEST_F(MediaStreamVideoTrackTest, DroppedFrameCausesLogToBeEmitted) {
+  constexpr media::VideoCaptureFrameDropReason kReason1 =
+      static_cast<media::VideoCaptureFrameDropReason>(1);
+
+  NiceMock<MockEmitLogMessageCb> emit_log_message_mock_;
+  InitializeSource();
+  auto* video_track = MediaStreamVideoTrack::From(CreateTrack());
+  video_track->SetEmitLogMessageForTesting(emit_log_message_mock_.Callback());
+
+  EXPECT_CALL(emit_log_message_mock_,
+              EmitLogMessage(StrEq("Frame dropped with reason code 1.")))
+      .Times(1);
+  mock_source()->DropFrame(kReason1);
+  DepleteIOCallbacks();
+}
+
+TEST_F(MediaStreamVideoTrackTest, DroppedFrameEmittedLogEventuallySuppressed) {
+  constexpr media::VideoCaptureFrameDropReason kReason1 =
+      static_cast<media::VideoCaptureFrameDropReason>(1);
+  constexpr int kBeforeSuppressing =
+      MediaStreamVideoTrack::kMaxEmittedLogsForDroppedFramesBeforeSuppressing;
+
+  NiceMock<MockEmitLogMessageCb> emit_log_message_mock_;
+  InitializeSource();
+  auto* video_track = MediaStreamVideoTrack::From(CreateTrack());
+  video_track->SetEmitLogMessageForTesting(emit_log_message_mock_.Callback());
+
+  InSequence s;
+  EXPECT_CALL(emit_log_message_mock_,
+              EmitLogMessage(StrEq("Frame dropped with reason code 1.")))
+      .Times(kBeforeSuppressing - 1);
+  EXPECT_CALL(
+      emit_log_message_mock_,
+      EmitLogMessage(StrEq("Frame dropped with reason code 1. Additional logs "
+                           "will be partially suppressed.")))
+      .Times(1);
+  EXPECT_CALL(emit_log_message_mock_, EmitLogMessage(_)).Times(0);
+
+  // (Note that we drop N+1 times, and the last time is suppressed.)
+  for (int i = 0; i < kBeforeSuppressing + 1; ++i) {
+    mock_source()->DropFrame(kReason1);
+  }
+  DepleteIOCallbacks();
+}
+
+TEST_F(MediaStreamVideoTrackTest,
+       DroppedFrameEmittedLogSuppressionOverOneReasonDoesNotAffectAnother) {
+  constexpr media::VideoCaptureFrameDropReason kReason1 =
+      static_cast<media::VideoCaptureFrameDropReason>(1);
+  constexpr media::VideoCaptureFrameDropReason kReason2 =
+      static_cast<media::VideoCaptureFrameDropReason>(2);
+  constexpr int kBeforeSuppressing =
+      MediaStreamVideoTrack::kMaxEmittedLogsForDroppedFramesBeforeSuppressing;
+
+  NiceMock<MockEmitLogMessageCb> emit_log_message_mock_;
+  InitializeSource();
+  auto* video_track = MediaStreamVideoTrack::From(CreateTrack());
+  video_track->SetEmitLogMessageForTesting(emit_log_message_mock_.Callback());
+
+  // Emit reason-1 until it becomes suppressed.
+  for (int i = 0; i < kBeforeSuppressing; ++i) {
+    mock_source()->DropFrame(kReason1);
+  }
+  DepleteIOCallbacks();
+
+  // As per a previous test, log emission for reason-1 will now be suppressed.
+  // However, this does not affect reason-2, which is counted separately.
+  InSequence s;
+  EXPECT_CALL(emit_log_message_mock_,
+              EmitLogMessage(StrEq("Frame dropped with reason code 2.")))
+      .Times(kBeforeSuppressing - 1);
+  EXPECT_CALL(
+      emit_log_message_mock_,
+      EmitLogMessage(StrEq("Frame dropped with reason code 2. Additional logs "
+                           "will be partially suppressed.")))
+      .Times(1);
+  EXPECT_CALL(emit_log_message_mock_, EmitLogMessage(_)).Times(0);
+
+  // (Note that we drop N+1 times, and the last time is suppressed.)
+  for (int i = 0; i < kBeforeSuppressing; ++i) {
+    mock_source()->DropFrame(kReason2);
+  }
+  DepleteIOCallbacks();
+}
+
+TEST_F(MediaStreamVideoTrackTest,
+       DroppedFrameEmittedLogEmittedAtReducedFrequencyIfSuppressed) {
+  constexpr media::VideoCaptureFrameDropReason kReason1 =
+      static_cast<media::VideoCaptureFrameDropReason>(1);
+  constexpr int kBeforeSuppressing =
+      MediaStreamVideoTrack::kMaxEmittedLogsForDroppedFramesBeforeSuppressing;
+  constexpr int kSuppressedFrequency =
+      MediaStreamVideoTrack::kFrequencyForSuppressedLogs;
+
+  NiceMock<MockEmitLogMessageCb> emit_log_message_mock_;
+  InitializeSource();
+  auto* video_track = MediaStreamVideoTrack::From(CreateTrack());
+  video_track->SetEmitLogMessageForTesting(emit_log_message_mock_.Callback());
+
+  // Emit reason-1 until it becomes suppressed.
+  int drops = 0;
+  for (; drops < kBeforeSuppressing; ++drops) {
+    mock_source()->DropFrame(kReason1);
+  }
+  DepleteIOCallbacks();
+
+  // Logs stay suppressed until we reach kSuppressedFrequency.
+  EXPECT_CALL(emit_log_message_mock_, EmitLogMessage(_)).Times(0);
+  for (; drops < kSuppressedFrequency - 1; ++drops) {
+    mock_source()->DropFrame(kReason1);
+  }
+
+  // Suppressed logs still emitted, but at reduced frequency.
+  EXPECT_CALL(emit_log_message_mock_,
+              EmitLogMessage(StrEq("Frame dropped with reason code 1.")))
+      .Times(1);
+  mock_source()->DropFrame(kReason1);
+  DepleteIOCallbacks();
+}
+
 TEST_P(MediaStreamVideoTrackTest, PropagatesContentHintType) {
   InitializeSource();
   MockMediaStreamVideoSink sink;
@@ -520,12 +808,14 @@ TEST_F(MediaStreamVideoTrackTest, DeliversFramesWithCurrentCropVersion) {
   EXPECT_CALL(*mock_source(), GetCropVersion).WillOnce(Return(5));
   WebMediaStreamTrack track = CreateTrack();
   sink.ConnectToTrack(track);
+  MediaStreamVideoTrack::From(track)->SetSinkNotifyFrameDroppedCallback(
+      &sink, sink.GetNotifyFrameDroppedCB());
 
   scoped_refptr<media::VideoFrame> frame =
       media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400));
   // Frame with current crop version should be delivered.
   frame->metadata().crop_version = 5;
-  EXPECT_CALL(*mock_source(), OnFrameDroppedInRenderer).Times(0);
+  EXPECT_CALL(sink, OnNotifyFrameDropped).Times(0);
   DeliverVideoFrameAndWaitForRenderer(std::move(frame), &sink);
 
   sink.DisconnectFromTrack();
@@ -540,14 +830,16 @@ TEST_F(MediaStreamVideoTrackTest,
   EXPECT_CALL(*mock_source(), GetCropVersion).WillOnce(Return(5));
   WebMediaStreamTrack track = CreateTrack();
   sink.ConnectToTrack(track);
+  MediaStreamVideoTrack::From(track)->SetSinkNotifyFrameDroppedCallback(
+      &sink, sink.GetNotifyFrameDroppedCB());
 
   scoped_refptr<media::VideoFrame> frame =
       media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400));
   // Old crop version delivered after construction.
   frame->metadata().crop_version = 4;
   base::RunLoop run_loop;
-  EXPECT_CALL(*mock_source(),
-              OnFrameDroppedInRenderer(
+  EXPECT_CALL(sink,
+              OnNotifyFrameDropped(
                   media::VideoCaptureFrameDropReason::kCropVersionNotCurrent))
       .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
   mock_source()->DeliverVideoFrame(std::move(frame));
@@ -564,6 +856,8 @@ TEST_F(MediaStreamVideoTrackTest, DropsOldFramesAfterCropVersionChanges) {
   EXPECT_CALL(*mock_source(), GetCropVersion).WillOnce(Return(5));
   WebMediaStreamTrack track = CreateTrack();
   sink.ConnectToTrack(track);
+  MediaStreamVideoTrack::From(track)->SetSinkNotifyFrameDroppedCallback(
+      &sink, sink.GetNotifyFrameDroppedCB());
 
   // Crop version updated to 6.
   mock_source()->DeliverNewCropVersion(6);
@@ -572,8 +866,8 @@ TEST_F(MediaStreamVideoTrackTest, DropsOldFramesAfterCropVersionChanges) {
       media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400));
   frame->metadata().crop_version = 5;  // No longer current version.
   base::RunLoop run_loop;
-  EXPECT_CALL(*mock_source(),
-              OnFrameDroppedInRenderer(
+  EXPECT_CALL(sink,
+              OnNotifyFrameDropped(
                   media::VideoCaptureFrameDropReason::kCropVersionNotCurrent))
       .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
   mock_source()->DeliverVideoFrame(std::move(frame));
@@ -590,6 +884,8 @@ TEST_F(MediaStreamVideoTrackTest, DeliversNewFramesAfterCropVersionChanges) {
   EXPECT_CALL(*mock_source(), GetCropVersion).WillOnce(Return(5));
   WebMediaStreamTrack track = CreateTrack();
   sink.ConnectToTrack(track);
+  MediaStreamVideoTrack::From(track)->SetSinkNotifyFrameDroppedCallback(
+      &sink, sink.GetNotifyFrameDroppedCB());
 
   // Crop version updated to 6.
   mock_source()->DeliverNewCropVersion(6);
@@ -598,7 +894,7 @@ TEST_F(MediaStreamVideoTrackTest, DeliversNewFramesAfterCropVersionChanges) {
       media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400));
   // Frame with current crop version should be delivered.
   frame->metadata().crop_version = 6;
-  EXPECT_CALL(*mock_source(), OnFrameDroppedInRenderer).Times(0);
+  EXPECT_CALL(sink, OnNotifyFrameDropped).Times(0);
   DeliverVideoFrameAndWaitForRenderer(std::move(frame), &sink);
 
   sink.DisconnectFromTrack();

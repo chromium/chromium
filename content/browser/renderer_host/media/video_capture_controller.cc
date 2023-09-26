@@ -53,95 +53,6 @@ static const int kInfiniteRatio = 99999;
   base::UmaHistogramSparse(                             \
       name, (height) ? ((width)*100) / (height) : kInfiniteRatio);
 
-void LogVideoFrameDrop(media::VideoCaptureFrameDropReason reason,
-                       blink::mojom::MediaStreamType stream_type) {
-  const int kEnumCount =
-      static_cast<int>(media::VideoCaptureFrameDropReason::kMaxValue) + 1;
-  UMA_HISTOGRAM_ENUMERATION("Media.VideoCapture.FrameDrop", reason, kEnumCount);
-  switch (stream_type) {
-    case blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE:
-      UMA_HISTOGRAM_ENUMERATION("Media.VideoCapture.FrameDrop.DeviceCapture",
-                                reason, kEnumCount);
-      break;
-    case blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE:
-      UMA_HISTOGRAM_ENUMERATION("Media.VideoCapture.FrameDrop.GumTabCapture",
-                                reason, kEnumCount);
-      break;
-    case blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE:
-      UMA_HISTOGRAM_ENUMERATION(
-          "Media.VideoCapture.FrameDrop.GumDesktopCapture", reason, kEnumCount);
-      break;
-    case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE:
-      UMA_HISTOGRAM_ENUMERATION("Media.VideoCapture.FrameDrop.DisplayCapture",
-                                reason, kEnumCount);
-      break;
-    case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB:
-      UMA_HISTOGRAM_ENUMERATION(
-          "Media.VideoCapture.FrameDrop.DisplayCaptureCurrentTab", reason,
-          kEnumCount);
-      break;
-    case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET:
-      UMA_HISTOGRAM_ENUMERATION(
-          "Media.VideoCapture.FrameDrop.DisplayCaptureSet", reason, kEnumCount);
-      break;
-    case blink::mojom::MediaStreamType::NO_SERVICE:
-    case blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE:
-    case blink::mojom::MediaStreamType::GUM_TAB_AUDIO_CAPTURE:
-    case blink::mojom::MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE:
-    case blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE:
-    case blink::mojom::MediaStreamType::NUM_MEDIA_TYPES:
-      break;
-  }
-}
-
-void LogMaxConsecutiveVideoFrameDropCountExceeded(
-    media::VideoCaptureFrameDropReason reason,
-    blink::mojom::MediaStreamType stream_type) {
-  const int kEnumCount =
-      static_cast<int>(media::VideoCaptureFrameDropReason::kMaxValue) + 1;
-  UMA_HISTOGRAM_ENUMERATION("Media.VideoCapture.MaxFrameDropExceeded", reason,
-                            kEnumCount);
-  switch (stream_type) {
-    case blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE:
-      UMA_HISTOGRAM_ENUMERATION(
-          "Media.VideoCapture.MaxFrameDropExceeded.DeviceCapture", reason,
-          kEnumCount);
-      break;
-    case blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE:
-      UMA_HISTOGRAM_ENUMERATION(
-          "Media.VideoCapture.MaxFrameDropExceeded.GumTabCapture", reason,
-          kEnumCount);
-      break;
-    case blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE:
-      UMA_HISTOGRAM_ENUMERATION(
-          "Media.VideoCapture.MaxFrameDropExceeded.GumDesktopCapture", reason,
-          kEnumCount);
-      break;
-    case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE:
-      UMA_HISTOGRAM_ENUMERATION(
-          "Media.VideoCapture.MaxFrameDropExceeded.DisplayCapture", reason,
-          kEnumCount);
-      break;
-    case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB:
-      UMA_HISTOGRAM_ENUMERATION(
-          "Media.VideoCapture.MaxFrameDropExceeded.DisplayCaptureCurrentTab",
-          reason, kEnumCount);
-      break;
-    case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET:
-      UMA_HISTOGRAM_ENUMERATION(
-          "Media.VideoCapture.MaxFrameDropExceeded.DisplayCaptureSet", reason,
-          kEnumCount);
-      break;
-    case blink::mojom::MediaStreamType::NO_SERVICE:
-    case blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE:
-    case blink::mojom::MediaStreamType::GUM_TAB_AUDIO_CAPTURE:
-    case blink::mojom::MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE:
-    case blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE:
-    case blink::mojom::MediaStreamType::NUM_MEDIA_TYPES:
-      break;
-  }
-}
-
 void CallOnError(media::VideoCaptureError error,
                  VideoCaptureControllerEventHandler* client,
                  const VideoCaptureControllerID& id) {
@@ -273,12 +184,6 @@ VideoCaptureController::BufferContext::CloneBufferHandle() {
     return media::mojom::VideoBufferHandlePtr();
   }
 }
-
-VideoCaptureController::FrameDropLogState::FrameDropLogState(
-    media::VideoCaptureFrameDropReason reason)
-    : drop_count((reason == media::VideoCaptureFrameDropReason::kNone) ? 0 : 1),
-      drop_reason(reason),
-      max_log_count_exceeded(false) {}
 
 VideoCaptureController::VideoCaptureController(
     const std::string& device_id,
@@ -524,8 +429,6 @@ void VideoCaptureController::OnFrameReadyInBuffer(
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "VideoCaptureController::OnFrameReadyInBuffer");
 
-  frame_drop_log_state_ = FrameDropLogState();
-
   // Make ready buffers, get frame contexts and set their feedback IDs.
   // Transfer ownership of all the frame infos.
   BufferContext* frame_context;
@@ -683,38 +586,9 @@ void VideoCaptureController::OnFrameDroppedByRenderer(
   OnFrameDroppedLogging(reason);
 }
 
+// TODO(https://crbug.com/1481448): Delete this, it's no longer used.
 void VideoCaptureController::OnFrameDroppedLogging(
-    media::VideoCaptureFrameDropReason reason) {
-  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
-               "VideoCaptureController::OnFrameDropped");
-
-  // Logging and UMA reporting. This includes both frame drops that happened in
-  // the capture process (early) and frame drops that happened in the renderer
-  // process (late).
-  // TODO(https://crbug.com/1481448): When the MediaStreamTrackImpl in the
-  // renderer process is aware of all frame drops, including capture process
-  // frame drops, consider moving this logic there. This would allow deleting
-  // all frame drop callbacks that go in the direction renderer -> browser.
-  // Having frame drop signals only go in one direction would make the code less
-  // confusing.
-  MaybeEmitFrameDropLogMessage(reason);
-
-  if (reason == frame_drop_log_state_.drop_reason) {
-    if (frame_drop_log_state_.max_log_count_exceeded)
-      return;
-
-    if (++frame_drop_log_state_.drop_count >
-        kMaxConsecutiveFrameDropForSameReasonCount) {
-      frame_drop_log_state_.max_log_count_exceeded = true;
-      LogMaxConsecutiveVideoFrameDropCountExceeded(reason, stream_type_);
-      return;
-    }
-  } else {
-    frame_drop_log_state_ = FrameDropLogState(reason);
-  }
-
-  LogVideoFrameDrop(reason, stream_type_);
-}
+    media::VideoCaptureFrameDropReason reason) {}
 
 void VideoCaptureController::OnNewCropVersion(uint32_t crop_version) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -1009,36 +883,6 @@ void VideoCaptureController::EmitLogMessage(const std::string& message,
                                             int verbose_log_level) {
   DVLOG(verbose_log_level) << message;
   emit_log_message_cb_.Run(message);
-}
-
-void VideoCaptureController::MaybeEmitFrameDropLogMessage(
-    media::VideoCaptureFrameDropReason reason) {
-  using Type = std::underlying_type<media::VideoCaptureFrameDropReason>::type;
-  static_assert(
-      static_cast<Type>(media::VideoCaptureFrameDropReason::kMaxValue) <= 100,
-      "Risk of memory overuse.");
-
-  static_assert(kMaxEmittedLogsForDroppedFramesBeforeSuppressing <
-                    kFrequencyForSuppressedLogs,
-                "");
-
-  DCHECK_GE(static_cast<Type>(reason), 0);
-  DCHECK_LE(reason, media::VideoCaptureFrameDropReason::kMaxValue);
-
-  int& occurrences = frame_drop_log_counters_[reason];
-  if (++occurrences > kMaxEmittedLogsForDroppedFramesBeforeSuppressing &&
-      occurrences % kFrequencyForSuppressedLogs != 0) {
-    return;
-  }
-
-  std::ostringstream string_stream;
-  string_stream << "Frame dropped with reason code "
-                << static_cast<Type>(reason) << ".";
-  if (occurrences == kMaxEmittedLogsForDroppedFramesBeforeSuppressing) {
-    string_stream << " Additional logs will be partially suppressed.";
-  }
-
-  EmitLogMessage(string_stream.str(), 1);
 }
 
 }  // namespace content

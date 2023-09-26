@@ -54,7 +54,7 @@ class MockMediaStreamVideoSink : public MediaStreamVideoSink {
   MOCK_METHOD(void, OnEncodedVideoFrame, (base::TimeTicks));
 
   // Triggered when a frame is dropped.
-  MOCK_METHOD(void, OnNotifyFrameDropped, ());
+  MOCK_METHOD(void, OnNotifyFrameDropped, (media::VideoCaptureFrameDropReason));
 
   VideoCaptureDeliverFrameCB GetDeliverFrameCB();
   EncodedVideoFrameCB GetDeliverEncodedVideoFrameCB();

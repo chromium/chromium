@@ -11,7 +11,6 @@
 #include <string>
 #include <utility>
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 
 #include "base/functional/bind.h"
@@ -21,7 +20,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/media/media_stream_provider.h"
@@ -68,16 +66,6 @@ struct ControllerIDAndSize {
 bool operator==(const ControllerIDAndSize& x, const ControllerIDAndSize& y) {
   return x.id == y.id && x.size == y.size;
 }
-
-class MockEmitLogMessageCb {
- public:
-  MOCK_METHOD1(EmitLogMessage, void(const std::string&));
-
-  base::RepeatingCallback<void(const std::string&)> Callback() {
-    return base::BindRepeating(base::BindLambdaForTesting(
-        [this](const std::string& message) { EmitLogMessage(message); }));
-  }
-};
 
 class MockVideoCaptureControllerEventHandler
     : public VideoCaptureControllerEventHandler {
@@ -199,9 +187,7 @@ class VideoCaptureControllerTest
     auto device_launcher = std::make_unique<MockVideoCaptureDeviceLauncher>();
     controller_ = new VideoCaptureController(
         arbitrary_device_id, arbitrary_stream_type, arbitrary_params,
-        std::move(device_launcher), emit_log_message_mock_.Callback());
-    // TODO(crbug.com/1062705): Fix the lifetime issue between `controller_`
-    // and `emit_log_message_mock_`.
+        std::move(device_launcher), base::DoNothing());
     InitializeNewDeviceClientAndBufferPoolInstances();
     auto mock_launched_device =
         std::make_unique<MockLaunchedVideoCaptureDevice>();
@@ -253,7 +239,6 @@ class VideoCaptureControllerTest
   scoped_refptr<media::VideoCaptureBufferPool> buffer_pool_;
   std::unique_ptr<MockVideoCaptureControllerEventHandler> client_a_;
   std::unique_ptr<MockVideoCaptureControllerEventHandler> client_b_;
-  NiceMock<MockEmitLogMessageCb> emit_log_message_mock_;
   scoped_refptr<VideoCaptureController> controller_;
   std::unique_ptr<media::VideoCaptureDevice::Client> device_client_;
   raw_ptr<MockLaunchedVideoCaptureDevice> mock_launched_device_;
@@ -1101,232 +1086,6 @@ TEST_F(VideoCaptureControllerTest, EarlyDroppedFramesAreSignalled) {
   controller_->OnFrameDroppedByRenderer(
       media::VideoCaptureFrameDropReason::kBufferPoolMaxBufferCountExceeded);
   Mock::VerifyAndClearExpectations(client_a_.get());
-}
-
-TEST_F(VideoCaptureControllerTest, DroppedFramesGetLoggedInUMA) {
-  base::HistogramTester histogram_tester;
-
-  controller_->OnFrameDropped(
-      media::VideoCaptureFrameDropReason::kDeviceClientFrameHasInvalidFormat);
-  controller_->OnFrameDropped(
-      media::VideoCaptureFrameDropReason::kBufferPoolMaxBufferCountExceeded);
-  controller_->OnFrameDropped(
-      media::VideoCaptureFrameDropReason::kDeviceClientFrameHasInvalidFormat);
-
-  histogram_tester.ExpectBucketCount(
-      "Media.VideoCapture.FrameDrop.DeviceCapture",
-      media::VideoCaptureFrameDropReason::kDeviceClientFrameHasInvalidFormat,
-      2);
-  histogram_tester.ExpectBucketCount(
-      "Media.VideoCapture.FrameDrop.DeviceCapture",
-      media::VideoCaptureFrameDropReason::kBufferPoolMaxBufferCountExceeded, 1);
-}
-
-// Tests that too many frames dropped for the same reason emits a special UMA
-// log and disables further logging
-TEST_F(VideoCaptureControllerTest,
-       DroppedFrameLoggingGetsDisabledIfTooManyConsecutiveDropsForSameReason) {
-  base::HistogramTester histogram_tester;
-
-  for (int i = 0;
-       i < VideoCaptureController::kMaxConsecutiveFrameDropForSameReasonCount;
-       i++) {
-    controller_->OnFrameDropped(
-        media::VideoCaptureFrameDropReason::kDeviceClientFrameHasInvalidFormat);
-  }
-  histogram_tester.ExpectBucketCount(
-      "Media.VideoCapture.FrameDrop.DeviceCapture",
-      media::VideoCaptureFrameDropReason::kDeviceClientFrameHasInvalidFormat,
-      VideoCaptureController::kMaxConsecutiveFrameDropForSameReasonCount);
-
-  // Add one more count after already having reached the max allowed.
-  // This should not get counted.
-  controller_->OnFrameDropped(
-      media::VideoCaptureFrameDropReason::kDeviceClientFrameHasInvalidFormat);
-  histogram_tester.ExpectBucketCount(
-      "Media.VideoCapture.FrameDrop.DeviceCapture",
-      media::VideoCaptureFrameDropReason::kDeviceClientFrameHasInvalidFormat,
-      VideoCaptureController::kMaxConsecutiveFrameDropForSameReasonCount);
-
-  histogram_tester.ExpectBucketCount(
-      "Media.VideoCapture.MaxFrameDropExceeded.DeviceCapture",
-      media::VideoCaptureFrameDropReason::kDeviceClientFrameHasInvalidFormat,
-      1);
-}
-
-TEST_F(VideoCaptureControllerTest,
-       DeliveredFrameInBetweenDroppedFramesResetsCounter) {
-  base::HistogramTester histogram_tester;
-  for (int i = 0;
-       i <
-       VideoCaptureController::kMaxConsecutiveFrameDropForSameReasonCount - 1;
-       i++) {
-    controller_->OnFrameDropped(
-        media::VideoCaptureFrameDropReason::kDeviceClientFrameHasInvalidFormat);
-  }
-
-  SendStubFrameToDeviceClient(arbitrary_format_, arbitrary_color_space_);
-  base::RunLoop().RunUntilIdle();
-
-  for (int i = 0;
-       i < VideoCaptureController::kMaxConsecutiveFrameDropForSameReasonCount;
-       i++) {
-    controller_->OnFrameDropped(
-        media::VideoCaptureFrameDropReason::kDeviceClientFrameHasInvalidFormat);
-  }
-  histogram_tester.ExpectBucketCount(
-      "Media.VideoCapture.FrameDrop.DeviceCapture",
-      media::VideoCaptureFrameDropReason::kDeviceClientFrameHasInvalidFormat,
-      2 * VideoCaptureController::kMaxConsecutiveFrameDropForSameReasonCount -
-          1);
-}
-
-TEST_F(VideoCaptureControllerTest, DeliveredFrameReenablesDroppedFrameLogging) {
-  base::HistogramTester histogram_tester;
-
-  // Drop enough frames to disable logging
-  for (int i = 0;
-       i <
-       VideoCaptureController::kMaxConsecutiveFrameDropForSameReasonCount + 1;
-       i++) {
-    controller_->OnFrameDropped(
-        media::VideoCaptureFrameDropReason::kDeviceClientFrameHasInvalidFormat);
-  }
-
-  SendStubFrameToDeviceClient(arbitrary_format_, arbitrary_color_space_);
-  base::RunLoop().RunUntilIdle();
-
-  controller_->OnFrameDropped(
-      media::VideoCaptureFrameDropReason::kDeviceClientFrameHasInvalidFormat);
-  histogram_tester.ExpectBucketCount(
-      "Media.VideoCapture.FrameDrop.DeviceCapture",
-      media::VideoCaptureFrameDropReason::kDeviceClientFrameHasInvalidFormat,
-      VideoCaptureController::kMaxConsecutiveFrameDropForSameReasonCount + 1);
-}
-
-TEST_F(VideoCaptureControllerTest,
-       ChangeInDropReasonReenablesDroppedFrameLogging) {
-  base::HistogramTester histogram_tester;
-
-  // Drop enough frames to disable logging
-  for (int i = 0;
-       i <
-       VideoCaptureController::kMaxConsecutiveFrameDropForSameReasonCount + 1;
-       i++) {
-    controller_->OnFrameDropped(
-        media::VideoCaptureFrameDropReason::kDeviceClientFrameHasInvalidFormat);
-  }
-
-  // Drop for a different reason
-  controller_->OnFrameDropped(
-      media::VideoCaptureFrameDropReason::kBufferPoolMaxBufferCountExceeded);
-
-  controller_->OnFrameDropped(
-      media::VideoCaptureFrameDropReason::kDeviceClientFrameHasInvalidFormat);
-  histogram_tester.ExpectBucketCount(
-      "Media.VideoCapture.FrameDrop.DeviceCapture",
-      media::VideoCaptureFrameDropReason::kDeviceClientFrameHasInvalidFormat,
-      VideoCaptureController::kMaxConsecutiveFrameDropForSameReasonCount + 1);
-  histogram_tester.ExpectBucketCount(
-      "Media.VideoCapture.FrameDrop.DeviceCapture",
-      media::VideoCaptureFrameDropReason::kBufferPoolMaxBufferCountExceeded, 1);
-}
-
-TEST_F(VideoCaptureControllerTest, DroppedFrameCausesLogToBeEmitted) {
-  constexpr media::VideoCaptureFrameDropReason kReason1 =
-      static_cast<media::VideoCaptureFrameDropReason>(1);
-  EXPECT_CALL(emit_log_message_mock_,
-              EmitLogMessage(StrEq("Frame dropped with reason code 1.")))
-      .Times(1);
-  controller_->OnFrameDropped(kReason1);
-}
-
-TEST_F(VideoCaptureControllerTest, DroppedFrameEmittedLogEventuallySuppressed) {
-  constexpr media::VideoCaptureFrameDropReason kReason1 =
-      static_cast<media::VideoCaptureFrameDropReason>(1);
-
-  constexpr int kBeforeSuppressing =
-      VideoCaptureController::kMaxEmittedLogsForDroppedFramesBeforeSuppressing;
-
-  InSequence s;
-
-  EXPECT_CALL(emit_log_message_mock_,
-              EmitLogMessage(StrEq("Frame dropped with reason code 1.")))
-      .Times(kBeforeSuppressing - 1);
-  EXPECT_CALL(
-      emit_log_message_mock_,
-      EmitLogMessage(StrEq("Frame dropped with reason code 1. Additional logs "
-                           "will be partially suppressed.")))
-      .Times(1);
-  EXPECT_CALL(emit_log_message_mock_, EmitLogMessage(_)).Times(0);
-
-  // (Note that we drop N+1 times, and the last time is suppressed.)
-  for (int i = 0; i < kBeforeSuppressing + 1; ++i) {
-    controller_->OnFrameDropped(kReason1);
-  }
-}
-
-TEST_F(VideoCaptureControllerTest,
-       DroppedFrameEmittedLogSuppressionOverOneReasonDoesNotAffectAnother) {
-  constexpr media::VideoCaptureFrameDropReason kReason1 =
-      static_cast<media::VideoCaptureFrameDropReason>(1);
-  constexpr media::VideoCaptureFrameDropReason kReason2 =
-      static_cast<media::VideoCaptureFrameDropReason>(2);
-
-  constexpr int kBeforeSuppressing =
-      VideoCaptureController::kMaxEmittedLogsForDroppedFramesBeforeSuppressing;
-
-  // Emit reason-1 until it becomes suppressed.
-  for (int i = 0; i < kBeforeSuppressing; ++i) {
-    controller_->OnFrameDropped(kReason1);
-  }
-
-  // As per a previous test, log emission for reason-1 will now be suppressed.
-  // However, this does not affect reason-2, which is counted separately.
-  InSequence s;
-  EXPECT_CALL(emit_log_message_mock_,
-              EmitLogMessage(StrEq("Frame dropped with reason code 2.")))
-      .Times(kBeforeSuppressing - 1);
-  EXPECT_CALL(
-      emit_log_message_mock_,
-      EmitLogMessage(StrEq("Frame dropped with reason code 2. Additional logs "
-                           "will be partially suppressed.")))
-      .Times(1);
-  EXPECT_CALL(emit_log_message_mock_, EmitLogMessage(_)).Times(0);
-
-  // (Note that we drop N+1 times, and the last time is suppressed.)
-  for (int i = 0; i < kBeforeSuppressing; ++i) {
-    controller_->OnFrameDropped(kReason2);
-  }
-}
-
-TEST_F(VideoCaptureControllerTest,
-       DroppedFrameEmittedLogEmittedAtReducedFrequencyIfSuppressed) {
-  constexpr media::VideoCaptureFrameDropReason kReason1 =
-      static_cast<media::VideoCaptureFrameDropReason>(1);
-
-  constexpr int kBeforeSuppressing =
-      VideoCaptureController::kMaxEmittedLogsForDroppedFramesBeforeSuppressing;
-  constexpr int kSuppressedFrequency =
-      VideoCaptureController::kFrequencyForSuppressedLogs;
-
-  // Emit reason-1 until it becomes suppressed.
-  int drops = 0;
-  for (; drops < kBeforeSuppressing; ++drops) {
-    controller_->OnFrameDropped(kReason1);
-  }
-
-  // Logs stay suppressed until we reach kSuppressedFrequency.
-  EXPECT_CALL(emit_log_message_mock_, EmitLogMessage(_)).Times(0);
-  for (; drops < kSuppressedFrequency - 1; ++drops) {
-    controller_->OnFrameDropped(kReason1);
-  }
-
-  // Suppressed logs still emitted, but at reduced frequency.
-  EXPECT_CALL(emit_log_message_mock_,
-              EmitLogMessage(StrEq("Frame dropped with reason code 1.")))
-      .Times(1);
-  controller_->OnFrameDropped(kReason1);
 }
 
 TEST_F(VideoCaptureControllerTest, DeviceClientWithColorSpace) {

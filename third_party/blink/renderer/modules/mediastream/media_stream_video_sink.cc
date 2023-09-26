@@ -81,11 +81,11 @@ void MediaStreamVideoSink::OnFrameDropped(
   if (connected_track_.IsNull())
     return;
 
-  // For UMA reasons we want to report this to the source, but note that the
-  // frame is not considered dropped for the purpose of the MediaStreamTrack
-  // Statistics API.
+  // For UMA reasons we want to log this frame as dropped, even though it was
+  // delivered to the sink before being dropped. This is not considered a frame
+  // drop by the MediaStreamTrack Statistics API.
   if (auto* const video_track = MediaStreamVideoTrack::From(connected_track_)) {
-    video_track->NotifySourceFrameDropped(reason);
+    video_track->OnSinkDroppedFrame(reason);
   }
 }
 

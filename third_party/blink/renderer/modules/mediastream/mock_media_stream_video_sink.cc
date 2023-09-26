@@ -56,7 +56,7 @@ void MockMediaStreamVideoSink::DeliverEncodedVideoFrame(
 
 void MockMediaStreamVideoSink::NotifyFrameDropped(
     media::VideoCaptureFrameDropReason reason) {
-  OnNotifyFrameDropped();
+  OnNotifyFrameDropped(reason);
 }
 
 void MockMediaStreamVideoSink::OnReadyStateChanged(
