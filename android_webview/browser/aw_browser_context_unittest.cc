@@ -58,7 +58,8 @@ class AwBrowserContextTest : public testing::Test {
 
 // Tests that constraints on trust for Symantec-issued certificates are not
 // enforced for the NetworkContext, as it should behave like the Android system.
-TEST_F(AwBrowserContextTest, SymantecPoliciesExempted) {
+// TODO(crbug.com/1473326): Fix the flakiness and re-enable.
+TEST_F(AwBrowserContextTest, DISABLED_SymantecPoliciesExempted) {
   AwBrowserContext context(
       AwBrowserContextStore::kDefaultContextName,
       base::FilePath(AwBrowserContextStore::kDefaultContextPath),
