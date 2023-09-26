@@ -16,6 +16,7 @@ include_rules = [
   "+gpu/command_buffer/service/shared_image_interface_in_process.h",
   "+mojo/public",
   "+media/video",
+  "+media/filters",
   "+ui/gl/gl_features.h",
 ]
 

@@ -194,6 +194,16 @@ TEST(VideoCadenceEstimatorTest, CadenceCalculationWithLargeDrift) {
   VerifyCadenceVectorWithCustomDrift(&estimator, 90, 60, drift, "[1]");
 }
 
+TEST(VideoCadenceEstimatorTest, SimpleCadenceTest) {
+  bool simple_cadence = VideoCadenceEstimator::HasSimpleCadence(
+      Interval(60), Interval(30), kMinimumAcceptableTimeBetweenGlitches);
+  // 60 Hz screen with 30 FPS video should be considered a simple cadence.
+  EXPECT_TRUE(simple_cadence);
+  simple_cadence = VideoCadenceEstimator::HasSimpleCadence(
+      Interval(60), Interval(24), kMinimumAcceptableTimeBetweenGlitches);
+  EXPECT_FALSE(simple_cadence);
+}
+
 // Check the case that the estimator excludes variable FPS case from Cadence.
 TEST(VideoCadenceEstimatorTest, CadenceCalculationWithLargeDeviation) {
   VideoCadenceEstimator estimator(kMinimumAcceptableTimeBetweenGlitches);

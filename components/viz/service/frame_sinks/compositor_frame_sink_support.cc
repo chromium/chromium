@@ -34,7 +34,28 @@
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_reference.h"
 #include "components/viz/service/transitions/surface_animation_manager.h"
+#include "media/filters/video_cadence_estimator.h"
 #include "mojo/public/cpp/system/platform_handle.h"
+
+// When throttling is enabled we estimate if vsync and sink frame rate are at
+// a simple cadence. If they are, then this value represents the maximum time
+// until the next glitch (jank) would occur caused by the drift/error
+// introduced per throttle due to the estimation not being exact. If any
+// cadence combo where to make glitches happen more frequently than this value
+// then it won't be considered a simple cadence and thus won't be throttled.
+constexpr base::TimeDelta kMaxTimeUntilNextGlitch = base::Seconds(3);
+
+// This determines whether the provided time since last interval corresponds
+// to a cadence frame that needs to be rendered.
+bool HasElapsedCadenceInterval(
+    base::TimeDelta render_interval,
+    base::TimeDelta frame_duration,
+    base::TimeDelta time_since_last_render_interval) {
+  base::TimeDelta time_at_next_interval =
+      time_since_last_render_interval + render_interval;
+  base::TimeDelta tolerance = render_interval * 0.5;
+  return time_at_next_interval > (frame_duration + tolerance);
+}
 
 namespace viz {
 namespace {
@@ -215,8 +236,37 @@ void CompositorFrameSinkSupport::SetBundle(const FrameSinkBundleId& bundle_id) {
   UpdateNeedsBeginFramesInternal();
 }
 
-void CompositorFrameSinkSupport::ThrottleBeginFrame(base::TimeDelta interval) {
-  begin_frame_interval_ = interval;
+void CompositorFrameSinkSupport::SetLastKnownVsync(
+    base::TimeDelta vsync_interval) {
+  if (last_known_vsync_interval_ == vsync_interval) {
+    return;
+  }
+  last_known_vsync_interval_ = vsync_interval;
+  ThrottleBeginFrame(begin_frame_interval_, /*simple_cadence_only=*/true);
+}
+
+bool CompositorFrameSinkSupport::ThrottleBeginFrame(base::TimeDelta interval,
+                                                    bool simple_cadence_only) {
+  if (!interval.is_positive()) {
+    // Remove any existing throttling
+    begin_frame_interval_ = base::TimeDelta();
+    return true;
+  }
+
+  if (!last_known_vsync_interval_.is_positive() || !simple_cadence_only) {
+    // No known vsync interval or forcing throttle interval.
+    begin_frame_interval_ = interval;
+    return true;
+  }
+
+  if (media::VideoCadenceEstimator::HasSimpleCadence(
+          last_known_vsync_interval_, interval, kMaxTimeUntilNextGlitch)) {
+    begin_frame_interval_ = interval;
+    return true;
+  } else {
+    begin_frame_interval_ = base::TimeDelta();
+    return false;
+  }
 }
 
 void CompositorFrameSinkSupport::OnSurfaceCommitted(Surface* surface) {
@@ -712,7 +762,9 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
                            preferred_frame_interval_, "sourceid",
                            frame.metadata.begin_frame_ack.frame_id.source_id);
       last_known_frame_interval_ = preferred_frame_interval_;
-      ThrottleBeginFrame(preferred_frame_interval_);
+      // Only throttle simple cadences.
+      ThrottleBeginFrame(preferred_frame_interval_,
+                         /*simple_cadence_only=*/true);
     }
   }
 
@@ -985,7 +1037,7 @@ void CompositorFrameSinkSupport::OnBeginFrame(const BeginFrameArgs& args) {
     adjusted_args.deadline = args.frame_time + begin_frame_interval_ +
                              offset_from_next_scheduled_frame;
   }
-
+  SetLastKnownVsync(args.interval);
   bool send_begin_frame_to_client =
       client_ && ShouldSendBeginFrame(adjusted_args.frame_time, args.interval);
   if (send_begin_frame_to_client) {
@@ -1381,36 +1433,12 @@ bool CompositorFrameSinkSupport::ShouldThrottleBeginFrameAsRequested(
     return false;
   }
 
-  // Check the remainder in nanoseconds to ensure we don't accidentally
-  // truncate either begin_frame_interval_ or vsync_interval.
-  uint64_t remainder =
-      begin_frame_interval_.InNanoseconds() % vsync_interval.InNanoseconds();
-  if (remainder > 1000000) {
-    // We test against a remainder more than 100000ns (or 1 ms) because when we
-    // have 16.X ms + 16.X ms we can easily end up with 33.X which means added
-    // an extra unit in a perfect cadence so avoid that from being misflagged.
-
-    // This is a perfect cadence so we can throttle.
-    // Example: a 120 hz vsync / 60 fps is a perfect cadence of [2,2,2,2]
-    // We avoid non perfect cadences which means framerate is not a multiple
-    // of vsync rate. Because, throttling those cadences will cause
-    // framerate to be lowered more than the expected throttling, instead
-    // let clients receive their own begin frames at regular vsync periods
-    // and allow them impose their own custom cadence throttling
-    // For instance a 24 FPS content on a 60 HZ screen would yield a 2.5
-    // value. Which usually means [2,3,2,3] cadence, we do not throttle
-    // since throttling here would cause a [3,3,3,3] cadence effectively
-    // lowering the framerate of the content to 20 FPS.
-    return false;
-  }
+  // At this point, throttling is in place and following a simple cadence, we
+  // need to know if the current frame has elapsed a full cadence interval to
+  // know its time to render.
   base::TimeDelta time_since_last_frame = frame_time - last_frame_time_;
-  if (time_since_last_frame.RoundToMultiple(vsync_interval) <
-      begin_frame_interval_.RoundToMultiple(vsync_interval)) {
-    // We will be past the deadline significantly next throttle check, so avoid
-    // throttling here.
-    return true;
-  }
-  return false;
+  return !HasElapsedCadenceInterval(vsync_interval, begin_frame_interval_,
+                                    time_since_last_frame);
 }
 
 void CompositorFrameSinkSupport::ProcessCompositorFrameTransitionDirective(

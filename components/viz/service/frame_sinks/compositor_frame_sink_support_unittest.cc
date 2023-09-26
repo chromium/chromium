@@ -1830,12 +1830,31 @@ TEST_P(ThrottledBeginFrameCompositorFrameSinkSupportTest, BeginFrameInterval) {
   SurfaceId id(kAnotherArbitraryFrameSinkId, local_surface_id_);
   support->SetBeginFrameSource(&begin_frame_source);
   support->SetNeedsBeginFrame(true);
+  support->SetLastKnownVsync(BeginFrameArgs::DefaultInterval());
+
+  // Check that non perfect cadence throttle does not apply
+  int non_perfect_cadence_fps = BeginFrameArgs::DefaultInterval().ToHz() / 2.5;
+  base::TimeDelta non_perfect_throttled_interval =
+      base::Seconds(1) / non_perfect_cadence_fps;
+  bool did_throttle = support->ThrottleBeginFrame(
+      non_perfect_throttled_interval, /*perfect_cadence*/ true);
+  EXPECT_FALSE(did_throttle);
 
   // We only throttle multiples of the refresh rate.
   constexpr int fps = BeginFrameArgs::DefaultInterval().ToHz() / 2;
-
   constexpr base::TimeDelta throttled_interval = base::Seconds(1) / fps;
-  support->ThrottleBeginFrame(throttled_interval);
+
+  // When no last known vsync exists, perfect cadence cannot be computed, just
+  // apply the throttle.
+  support->SetLastKnownVsync(base::TimeDelta());
+  did_throttle =
+      support->ThrottleBeginFrame(throttled_interval, /*perfect_cadence*/ true);
+  EXPECT_TRUE(did_throttle);
+
+  support->SetLastKnownVsync(BeginFrameArgs::DefaultInterval());
+  did_throttle =
+      support->ThrottleBeginFrame(throttled_interval, /*perfect_cadence*/ true);
+  EXPECT_TRUE(did_throttle);
 
   constexpr base::TimeDelta interval = BeginFrameArgs::DefaultInterval();
   const int num_expected_skipped_frames =

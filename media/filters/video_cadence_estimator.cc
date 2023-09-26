@@ -74,6 +74,27 @@ VideoCadenceEstimator::Cadence ConstructCadence(int k, int n) {
   return output;
 }
 
+VideoCadenceEstimator::Cadence ConstructSimpleCadence(
+    double perfect_cadence,
+    base::TimeDelta max_acceptable_drift,
+    base::TimeDelta* time_until_max_drift) {
+  int cadence_value = round(perfect_cadence);
+  if (cadence_value < 0) {
+    return VideoCadenceEstimator::Cadence();
+  }
+  if (cadence_value == 0) {
+    cadence_value = 1;
+  }
+  VideoCadenceEstimator::Cadence result = ConstructCadence(cadence_value, 1);
+
+  // The computation for time_until_max_drift below is equivalent to
+  // time_until_max_drift = render_interval * (max_acceptable_drift /
+  // abs(frame_duration - render_interval))
+  const double error = std::fabs(1.0 - perfect_cadence / cadence_value);
+  *time_until_max_drift = max_acceptable_drift / error;
+  return result;
+}
+
 VideoCadenceEstimator::VideoCadenceEstimator(
     base::TimeDelta minimum_time_until_max_drift)
     : cadence_hysteresis_threshold_(
@@ -177,6 +198,18 @@ int VideoCadenceEstimator::GetCadenceForFrame(uint64_t frame_number) const {
   return cadence_[frame_number % cadence_.size()];
 }
 
+bool VideoCadenceEstimator::HasSimpleCadence(
+    base::TimeDelta render_interval,
+    base::TimeDelta frame_duration,
+    base::TimeDelta minimum_time_until_max_drift) {
+  const double perfect_cadence = frame_duration / render_interval;
+  base::TimeDelta time_until_max_drift;
+  auto cadence = ConstructSimpleCadence(perfect_cadence, render_interval,
+                                        &time_until_max_drift);
+  return !cadence.empty() &&
+         time_until_max_drift >= minimum_time_until_max_drift;
+}
+
 VideoCadenceEstimator::Cadence VideoCadenceEstimator::CalculateCadence(
     base::TimeDelta render_interval,
     base::TimeDelta frame_duration,
@@ -189,15 +222,8 @@ VideoCadenceEstimator::Cadence VideoCadenceEstimator::CalculateCadence(
   // is impossible for us to accumulate drift as large as max_acceptable_drift
   // within minimum_time_until_max_drift.
   if (max_acceptable_drift >= minimum_time_until_max_drift_) {
-    int cadence_value = round(perfect_cadence);
-    if (cadence_value < 0)
-      return Cadence();
-    if (cadence_value == 0)
-      cadence_value = 1;
-    Cadence result = ConstructCadence(cadence_value, 1);
-    const double error = std::fabs(1.0 - perfect_cadence / cadence_value);
-    *time_until_max_drift = max_acceptable_drift / error;
-    return result;
+    return ConstructSimpleCadence(perfect_cadence, max_acceptable_drift,
+                                  time_until_max_drift);
   }
 
   // We want to construct a cadence pattern to approximate the perfect cadence
@@ -239,7 +265,15 @@ VideoCadenceEstimator::Cadence VideoCadenceEstimator::CalculateCadence(
     }
   }
 
-  if (!best_n) return Cadence();
+  if (!best_n) {
+    Cadence cadence = ConstructSimpleCadence(
+        perfect_cadence, max_acceptable_drift, time_until_max_drift);
+    if (!cadence.empty() &&
+        *time_until_max_drift >= minimum_time_until_max_drift_) {
+      return cadence;
+    }
+    return Cadence();
+  }
 
   // If we've found a solution.
   Cadence best_result = ConstructCadence(best_k, best_n);

@@ -122,6 +122,14 @@ class MEDIA_EXPORT VideoCadenceEstimator {
   size_t cadence_size_for_testing() const { return cadence_.size(); }
   std::string GetCadenceForTesting() const { return CadenceToString(cadence_); }
 
+  // Determines whether a simple (single-valued) integer cadence exists for
+  // |render_interval| and |frame_duration| that won't drift more than
+  // |render_interval| within |minimum_time_until_max_drift|.
+  static bool HasSimpleCadence(
+      base::TimeDelta render_interval,
+      base::TimeDelta frame_duration,
+      base::TimeDelta minimum_time_until_max_drift = base::Seconds(8));
+
  private:
   // Attempts to find an N-frame cadence.  Returns the cadence vector if cadence
   // is found and sets |time_until_max_drift| for the computed cadence. If
