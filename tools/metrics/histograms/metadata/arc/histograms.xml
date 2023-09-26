@@ -548,6 +548,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.AppRequestedInSession" units="count"
+    expires_after="2024-09-15">
+  <owner>khmel@google.com</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <owner>arc-performance@google.com</owner>
+  <summary>
+    Number of requests of ARC app launching in a user session.
+
+    Note: this is emitted at the beginning of the next user session. This is
+    because ash-chrome may be shutdown unexepctedly (incl. crashes), so emit the
+    value at the end of the user session is not reliable enough. Instead, the
+    number of requests are tracked and stored in the PrefService to survive
+    chrome restart, and the value is emitted in the next user session.
+  </summary>
+</histogram>
+
 <histogram name="Arc.AppShortcuts.BuildMenuTime" units="ms"
     expires_after="2022-03-13">
   <owner>mmourgos@chromium.org</owner>

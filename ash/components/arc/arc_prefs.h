@@ -16,6 +16,7 @@ namespace prefs {
 ARC_EXPORT extern const char kAlwaysOnVpnLockdown[];
 ARC_EXPORT extern const char kAlwaysOnVpnPackage[];
 ARC_EXPORT extern const char kArcActiveDirectoryPlayUserId[];
+ARC_EXPORT extern const char kArcAppRequestedInSession[];
 ARC_EXPORT extern const char kArcApps[];
 ARC_EXPORT extern const char kArcBackupRestoreEnabled[];
 ARC_EXPORT extern const char kArcCompatibleFilesystemChosen[];
