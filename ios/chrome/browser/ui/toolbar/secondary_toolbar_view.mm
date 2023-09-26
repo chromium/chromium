@@ -124,7 +124,8 @@ UIView* SecondaryToolbarLocationBarContainerView(
 #pragma mark - UIView
 
 - (CGSize)intrinsicContentSize {
-  return CGSizeMake(UIViewNoIntrinsicMetric, kSecondaryToolbarHeight);
+  return CGSizeMake(UIViewNoIntrinsicMetric,
+                    kSecondaryToolbarWithoutOmniboxHeight);
 }
 
 - (void)willMoveToSuperview:(UIView*)newSuperview {

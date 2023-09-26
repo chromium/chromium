@@ -359,7 +359,7 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
 // Updates the height of the margins for the top and bottom toolbars.
 - (void)updateToolbarMargins {
   if (IsSplitToolbarMode(self)) {
-    _bottomToolbarMarginHeight.constant = kSecondaryToolbarHeight;
+    _bottomToolbarMarginHeight.constant = kSecondaryToolbarWithoutOmniboxHeight;
   } else {
     _bottomToolbarMarginHeight.constant = 0;
   }
