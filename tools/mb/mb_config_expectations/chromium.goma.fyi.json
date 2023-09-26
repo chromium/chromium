@@ -141,7 +141,6 @@
   "mac-archive-rel-goma-rbe-canary": {
     "gn_args": {
       "dcheck_always_on": false,
-      "enable_stripping": true,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,

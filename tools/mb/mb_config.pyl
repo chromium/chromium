@@ -578,7 +578,7 @@
       'linux-archive-rel-goma-rbe-ats-canary': 'release_bot',
       'linux-archive-rel-goma-rbe-canary': 'release_bot',
 
-      'mac-archive-rel-goma-rbe-canary': 'release_bot_mac_strip_minimal_symbols',
+      'mac-archive-rel-goma-rbe-canary': 'release_bot_minimal_symbols',
     },
 
     'chromium.gpu': {
@@ -3646,16 +3646,16 @@
       'release_bot_reclient', 'fuchsia', 'blink_symbol', 'minimal_symbols',
     ],
 
-    'release_bot_mac_strip_minimal_symbols': [
-      'release_bot', 'mac_strip', 'minimal_symbols',
-    ],
-
     'release_bot_mac_strip_minimal_symbols_arm64_reclient': [
       'release_bot_reclient', 'mac_strip', 'minimal_symbols', 'arm64',
     ],
 
     'release_bot_mac_strip_minimal_symbols_reclient': [
       'release_bot_reclient', 'mac_strip', 'minimal_symbols',
+    ],
+
+    'release_bot_minimal_symbols': [
+      'release_bot', 'minimal_symbols',
     ],
 
     'release_bot_minimal_symbols_no_clang': [
