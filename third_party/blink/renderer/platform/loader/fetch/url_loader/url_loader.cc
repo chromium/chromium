@@ -333,7 +333,11 @@ void URLLoader::Context::Start(
       std::move(request), GetMaybeUnfreezableTaskRunner(), tag, loader_options,
       cors_exempt_header_list_, base::WrapRefCounted(this), url_loader_factory_,
       std::move(throttles), std::move(resource_load_info_notifier_wrapper),
-      back_forward_cache_loader_helper_);
+      base::BindOnce(&BackForwardCacheLoaderHelper::EvictFromBackForwardCache,
+                     back_forward_cache_loader_helper_),
+      base::BindRepeating(
+          &BackForwardCacheLoaderHelper::DidBufferLoadWhileInBackForwardCache,
+          back_forward_cache_loader_helper_));
 
   if (freeze_mode_ != LoaderFreezeMode::kNone) {
     resource_request_sender_->Freeze(LoaderFreezeMode::kStrict);

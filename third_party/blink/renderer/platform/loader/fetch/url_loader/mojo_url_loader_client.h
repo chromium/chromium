@@ -20,7 +20,6 @@
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/loader/fetch/back_forward_cache_loader_helper.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
@@ -37,7 +36,6 @@ struct URLLoaderCompletionStatus;
 }  // namespace network
 
 namespace blink {
-class BackForwardCacheLoaderHelper;
 class ResourceRequestSender;
 
 // MojoURLLoaderClient is an implementation of
@@ -50,7 +48,10 @@ class BLINK_PLATFORM_EXPORT MojoURLLoaderClient final
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       bool bypass_redirect_checks,
       const GURL& request_url,
-      BackForwardCacheLoaderHelper* back_forward_cache_loader_helper);
+      base::OnceCallback<void(mojom::blink::RendererEvictionReason)>
+          evict_from_bfcache_callback,
+      base::RepeatingCallback<void(size_t)>
+          did_buffer_load_while_in_bfcache_callback);
   ~MojoURLLoaderClient() override;
 
   // Freezes the loader. See blink/renderer/platform/loader/README.md for the
@@ -112,8 +113,10 @@ class BLINK_PLATFORM_EXPORT MojoURLLoaderClient final
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   bool bypass_redirect_checks_ = false;
   KURL last_loaded_url_;
-  WeakPersistent<BackForwardCacheLoaderHelper>
-      back_forward_cache_loader_helper_;
+  base::OnceCallback<void(mojom::blink::RendererEvictionReason)>
+      evict_from_bfcache_callback_;
+  base::RepeatingCallback<void(size_t)>
+      did_buffer_load_while_in_bfcache_callback_;
 
   base::WeakPtrFactory<MojoURLLoaderClient> weak_factory_{this};
 };

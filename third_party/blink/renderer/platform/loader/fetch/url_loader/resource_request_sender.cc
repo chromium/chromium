@@ -45,8 +45,6 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_request_util.h"
-#include "third_party/blink/renderer/platform/back_forward_cache_utils.h"
-#include "third_party/blink/renderer/platform/loader/fetch/back_forward_cache_loader_helper.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/mojo_url_loader_client.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/resource_request_client.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/sync_load_context.h"
@@ -238,7 +236,10 @@ int ResourceRequestSender::SendAsync(
     WebVector<std::unique_ptr<URLLoaderThrottle>> throttles,
     std::unique_ptr<ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper,
-    BackForwardCacheLoaderHelper* back_forward_cache_loader_helper) {
+    base::OnceCallback<void(mojom::blink::RendererEvictionReason)>
+        evict_from_bfcache_callback,
+    base::RepeatingCallback<void(size_t)>
+        did_buffer_load_while_in_bfcache_callback) {
   CheckSchemeForReferrerPolicy(*request);
 
 #if BUILDFLAG(IS_ANDROID)
@@ -268,7 +269,8 @@ int ResourceRequestSender::SendAsync(
 
   auto url_loader_client = std::make_unique<MojoURLLoaderClient>(
       this, loading_task_runner, url_loader_factory->BypassRedirectChecks(),
-      request->url, back_forward_cache_loader_helper);
+      request->url, std::move(evict_from_bfcache_callback),
+      std::move(did_buffer_load_while_in_bfcache_callback));
 
   std::vector<std::string> std_cors_exempt_header_list(
       cors_exempt_header_list.size());

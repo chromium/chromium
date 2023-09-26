@@ -205,8 +205,10 @@ class WebMojoURLLoaderClientTest : public ::testing::Test,
     client_ = std::make_unique<MojoURLLoaderClient>(
         resource_request_sender_.get(), loading_task_runner,
         url_loader_factory->BypassRedirectChecks(), request->url,
-        /*back*/
-        MakeGarbageCollected<TestBackForwardCacheLoaderHelper>());
+        /*evict_from_bfcache_callback=*/
+        base::OnceCallback<void(mojom::blink::RendererEvictionReason)>(),
+        /*did_buffer_load_while_in_bfcache_callback=*/
+        base::RepeatingCallback<void(size_t)>());
     context_ = resource_request_sender_->context();
     context_->url_laoder_client = client_.get();
     url_loader_ = ThrottlingURLLoader::CreateLoaderAndStart(

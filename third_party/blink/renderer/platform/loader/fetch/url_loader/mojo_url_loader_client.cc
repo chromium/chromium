@@ -19,11 +19,10 @@
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom.h"
+#include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/back_forward_cache_buffer_limit_tracker.h"
 #include "third_party/blink/renderer/platform/back_forward_cache_utils.h"
-#include "third_party/blink/renderer/platform/loader/fetch/back_forward_cache_loader_helper.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/resource_request_sender.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -274,7 +273,10 @@ MojoURLLoaderClient::MojoURLLoaderClient(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     bool bypass_redirect_checks,
     const GURL& request_url,
-    BackForwardCacheLoaderHelper* back_forward_cache_loader_helper)
+    base::OnceCallback<void(mojom::blink::RendererEvictionReason)>
+        evict_from_bfcache_callback,
+    base::RepeatingCallback<void(size_t)>
+        did_buffer_load_while_in_bfcache_callback)
     : back_forward_cache_timeout_(
           base::Seconds(GetLoadingTasksUnfreezableParamAsInt(
               "grace_period_to_finish_loading_in_seconds",
@@ -285,7 +287,9 @@ MojoURLLoaderClient::MojoURLLoaderClient(
       task_runner_(std::move(task_runner)),
       bypass_redirect_checks_(bypass_redirect_checks),
       last_loaded_url_(request_url),
-      back_forward_cache_loader_helper_(back_forward_cache_loader_helper) {}
+      evict_from_bfcache_callback_(std::move(evict_from_bfcache_callback)),
+      did_buffer_load_while_in_bfcache_callback_(
+          std::move(did_buffer_load_while_in_bfcache_callback)) {}
 
 MojoURLLoaderClient::~MojoURLLoaderClient() = default;
 
@@ -399,19 +403,18 @@ void MojoURLLoaderClient::EvictFromBackForwardCache(
     mojom::blink::RendererEvictionReason reason) {
   DCHECK_EQ(freeze_mode_, LoaderFreezeMode::kBufferIncoming);
   StopBackForwardCacheEvictionTimer();
-  if (!back_forward_cache_loader_helper_) {
+  if (!evict_from_bfcache_callback_) {
     return;
   }
-  back_forward_cache_loader_helper_->EvictFromBackForwardCache(reason);
+  std::move(evict_from_bfcache_callback_).Run(reason);
 }
 
 void MojoURLLoaderClient::DidBufferLoadWhileInBackForwardCache(
     size_t num_bytes) {
-  if (!back_forward_cache_loader_helper_) {
+  if (!did_buffer_load_while_in_bfcache_callback_) {
     return;
   }
-  back_forward_cache_loader_helper_->DidBufferLoadWhileInBackForwardCache(
-      num_bytes);
+  did_buffer_load_while_in_bfcache_callback_.Run(num_bytes);
 }
 
 bool MojoURLLoaderClient::CanContinueBufferingWhileInBackForwardCache() {

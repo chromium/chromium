@@ -259,7 +259,10 @@ class ResourceRequestSenderTest : public testing::Test,
         std::vector<std::unique_ptr<URLLoaderThrottle>>(),
         std::make_unique<ResourceLoadInfoNotifierWrapper>(
             /*resource_load_info_notifier=*/nullptr),
-        /*back_forward_cache_loader_helper=*/nullptr);
+        /*evict_from_bfcache_callback=*/
+        base::OnceCallback<void(mojom::blink::RendererEvictionReason)>(),
+        /*did_buffer_load_while_in_bfcache_callback=*/
+        base::RepeatingCallback<void(size_t)>());
   }
 
  protected:

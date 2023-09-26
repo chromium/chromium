@@ -28,6 +28,7 @@
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
+#include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/platform/web_vector.h"
@@ -48,7 +49,6 @@ struct URLLoaderCompletionStatus;
 }  // namespace network
 
 namespace blink {
-class BackForwardCacheLoaderHelper;
 class ResourceLoadInfoNotifierWrapper;
 class ThrottlingURLLoader;
 class MojoURLLoaderClient;
@@ -109,7 +109,10 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
       WebVector<std::unique_ptr<URLLoaderThrottle>> throttles,
       std::unique_ptr<ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper,
-      BackForwardCacheLoaderHelper* back_forward_cache_loader_helper);
+      base::OnceCallback<void(mojom::blink::RendererEvictionReason)>
+          evict_from_bfcache_callback,
+      base::RepeatingCallback<void(size_t)>
+          did_buffer_load_while_in_bfcache_callback);
 
   // Cancels the current request and `request_info_` will be released.
   virtual void Cancel(scoped_refptr<base::SequencedTaskRunner> task_runner);
