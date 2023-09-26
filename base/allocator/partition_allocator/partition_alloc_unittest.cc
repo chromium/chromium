@@ -351,6 +351,10 @@ class PartitionAllocTest
   }
 
   void InitializeMainTestAllocators() {
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+    PartitionOptions::EnableToggle enable_backup_ref_ptr =
+        PartitionOptions::kEnabled;
+#endif
 #if BUILDFLAG(ENABLE_PKEYS)
     int pkey = PkeyAlloc(UseThreadIsolatedPool() ? 0 : PKEY_DISABLE_WRITE);
     if (pkey != -1) {
@@ -371,6 +375,11 @@ class PartitionAllocTest
     ThreadIsolationOption thread_isolation_opt;
     if (UseThreadIsolatedPool() && pkey_ != kInvalidPkey) {
       thread_isolation_opt = ThreadIsolationOption(pkey_);
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+      // BRP and thread isolated mode use different pools, so they can't be
+      // enabled at the same time.
+      enable_backup_ref_ptr = PartitionOptions::kDisabled;
+#endif
     }
 #endif  // BUILDFLAG(ENABLE_PKEYS)
     InitializeTestRoot(
@@ -384,7 +393,7 @@ class PartitionAllocTest
           .aligned_alloc = PartitionOptions::kAllowed,
 #endif
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-          .backup_ref_ptr = PartitionOptions::kEnabled,
+          .backup_ref_ptr = enable_backup_ref_ptr,
 #endif
           .ref_count_size = GetParam().ref_count_size,
 #if BUILDFLAG(ENABLE_PKEYS)
