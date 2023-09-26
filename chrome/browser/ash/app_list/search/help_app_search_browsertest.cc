@@ -25,12 +25,12 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/with_crosapi_param.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "components/webapps/common/web_app_id.h"
 
 using web_app::test::CrosapiParam;
 using web_app::test::WithCrosapiParam;
@@ -376,7 +376,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppSwaSearchBrowserTest, AppListSearchHasApp) {
 IN_PROC_BROWSER_TEST_P(HelpAppSwaSearchBrowserTest, Launch) {
   Profile* profile = browser()->profile();
   ash::SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
-  const web_app::AppId app_id = web_app::kHelpAppId;
+  const webapps::AppId app_id = web_app::kHelpAppId;
 
   ShowAppListAndWaitForZeroStateResults(
       {ash::AppListSearchResultType::kZeroStateHelpApp,

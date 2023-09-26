@@ -338,7 +338,7 @@ TEST_F(AppSearchProviderTest, FetchInternalApp) {
 }
 
 TEST_F(AppSearchProviderTest, WebApp) {
-  const web_app::AppId app_id = web_app::test::InstallDummyWebApp(
+  const webapps::AppId app_id = web_app::test::InstallDummyWebApp(
       testing_profile(), kWebAppName, GURL(kWebAppUrl));
 
   // Allow async callbacks to run.
