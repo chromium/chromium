@@ -33866,7 +33866,6 @@ Called by update_document_policy_enum.py.-->
   <int value="1157" label="SafeBrowsingDeepScanningEnabled"/>
   <int value="1158" label="DriveFileSyncAvailable"/>
   <int value="1159" label="DeviceSwitchFunctionKeysBehaviorEnabled"/>
-  <int value="1160" label="DeviceDlcPredownloadList"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

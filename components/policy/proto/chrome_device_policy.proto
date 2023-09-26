@@ -2029,5 +2029,4 @@ message ChromeDeviceSettingsProto {
   optional StringListPolicyProto device_authentication_url_allowlist = 152;
   optional DeviceSwitchFunctionKeysBehaviorEnabledProto
       device_switch_function_keys_behavior_enabled = 153;
-  optional StringListPolicyProto device_dlc_predownload_list = 154;
 }
