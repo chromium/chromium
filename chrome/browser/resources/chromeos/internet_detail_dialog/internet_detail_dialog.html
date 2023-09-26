@@ -230,3 +230,9 @@
     </div>
   </template>
 </template>
+
+<template is="dom-if" if="[[isApnRevampEnabled_]]" restamp>
+  <cr-toast id="errorToast" duration="5000">
+    <span id="errorToastMessage">[[errorToastMessage_]]</span>
+  </cr-toast>
+</template>

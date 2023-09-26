@@ -456,4 +456,42 @@ suite('internet-detail-dialog', () => {
       }
     });
   });
+
+  test('Show toast on show-error-toast event', async function() {
+    loadTimeData.overrideValues({
+      apnRevamp: true,
+    });
+    await init();
+    const getErrorToast = () =>
+        internetDetailDialog.shadowRoot.querySelector('#errorToast');
+    assertFalse(getErrorToast().open);
+
+    const message = 'Toast message';
+    const event = new CustomEvent('show-error-toast', {detail: message});
+    internetDetailDialog.dispatchEvent(event);
+    await flushAsync();
+    assertTrue(getErrorToast().open);
+    assertEquals(
+        internetDetailDialog.shadowRoot.querySelector('#errorToastMessage')
+            .innerHTML,
+        message);
+  });
+
+  test(
+      'Dont show toast on show-error-toast event when ApnRevamp false',
+      async function() {
+        loadTimeData.overrideValues({
+          apnRevamp: false,
+        });
+        await init();
+        const getErrorToast = () =>
+            internetDetailDialog.shadowRoot.querySelector('#errorToast');
+        assertFalse(!!getErrorToast());
+
+        const message = 'Toast message';
+        const event = new CustomEvent('show-error-toast', {detail: message});
+        internetDetailDialog.dispatchEvent(event);
+        await flushAsync();
+        assertFalse(!!getErrorToast());
+      });
 });

@@ -15,6 +15,7 @@ import 'chrome://resources/ash/common/network/network_siminfo.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_page_host_style.css.js';
+import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/chromeos/cros_color_overrides.css.js';
@@ -145,6 +146,15 @@ Polymer({
       value: false,
       computed: 'computeIsNumCustomApnsLimitReached_(managedProperties_)',
     },
+
+    /**
+     * The message to be displayed in the error toast when shown.
+     * @private
+     */
+    errorToastMessage_: {
+      type: String,
+      value: '',
+    },
   },
 
   /**
@@ -174,6 +184,13 @@ Polymer({
       controlledSettingPolicy:
           loadTimeData.getString('controlledSettingPolicy'),
     };
+  },
+
+  /** @override */
+  ready() {
+    this.addEventListener('show-error-toast', (event) => {
+      this.onShowErrorToast_(event);
+    });
   },
 
   /** @override */
@@ -879,5 +896,17 @@ Polymer({
     const customApnList =
         this.managedProperties_.typeProperties.cellular.customApnList;
     return !!customApnList && customApnList.length >= MAX_NUM_CUSTOM_APNS;
+  },
+
+  /**
+   * @param {!Event} event
+   * @private
+   */
+  onShowErrorToast_(event) {
+    if (!this.isApnRevampEnabled_) {
+      return;
+    }
+    this.errorToastMessage_ = event.detail;
+    this.shadowRoot.querySelector('#errorToast').show();
   },
 });
