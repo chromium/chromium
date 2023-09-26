@@ -6,16 +6,15 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SHARING_PASSWORD_RECEIVER_SERVICE_IMPL_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/sharing/password_receiver_service.h"
 #include "components/password_manager/core/browser/sharing/sharing_invitations.h"
-
-namespace syncer {
-class SyncService;
-}  // namespace syncer
+#include "components/sync/service/sync_service_observer.h"
 
 class PrefService;
 
@@ -61,15 +60,15 @@ class ProcessIncomingSharingInvitationTask : public PasswordStoreConsumer {
       this};
 };
 
-class PasswordReceiverServiceImpl : public PasswordReceiverService {
+class PasswordReceiverServiceImpl : public PasswordReceiverService,
+                                    public syncer::SyncServiceObserver {
  public:
   // Due to the dependency of keyed servivces, the SyncService is only
   // constructed *after* the construction of the PasswordReceiverService, and
-  // hence `sync_service_getter` callback is provided to fetch the SyncService
-  // on demand during runtime. `sync_bridge` may be null in tests.
+  // hence SyncService is provided later in OnSyncServiceInitialized().
+  // `sync_bridge` may be null in tests.
   explicit PasswordReceiverServiceImpl(
       const PrefService* pref_service,
-      base::RepeatingCallback<syncer::SyncService*(void)> sync_service_getter,
       std::unique_ptr<IncomingPasswordSharingInvitationSyncBridge> sync_bridge,
       PasswordStoreInterface* profile_password_store,
       PasswordStoreInterface* account_password_store);
@@ -83,13 +82,17 @@ class PasswordReceiverServiceImpl : public PasswordReceiverService {
       IncomingSharingInvitation invitation) override;
   base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
       override;
+  void OnSyncServiceInitialized(syncer::SyncService* service) override;
+
+  // syncer::SyncServiceObserver overrides.
+  void OnSyncShutdown(syncer::SyncService* service) override;
 
  private:
   void RemoveTaskFromTasksList(ProcessIncomingSharingInvitationTask* task);
 
   const raw_ptr<const PrefService> pref_service_;
 
-  base::RepeatingCallback<syncer::SyncService*(void)> sync_service_getter_;
+  raw_ptr<syncer::SyncService> sync_service_ = nullptr;
 
   std::unique_ptr<IncomingPasswordSharingInvitationSyncBridge> sync_bridge_;
 

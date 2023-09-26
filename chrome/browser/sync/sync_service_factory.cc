@@ -48,6 +48,7 @@
 #include "chrome/browser/web_data_service_factory.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
+#include "components/password_manager/core/browser/sharing/password_receiver_service.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync/base/command_line_switches.h"
@@ -171,6 +172,14 @@ std::unique_ptr<KeyedService> BuildSyncService(
   // PasswordStoreInterface may be null in tests.
   if (password_store) {
     password_store->OnSyncServiceInitialized(sync_service.get());
+  }
+
+  // Notify PasswordReceiverService of complete initialization to resolve a
+  // circular dependency.
+  password_manager::PasswordReceiverService* password_receiver_service =
+      PasswordReceiverServiceFactory::GetForProfile(profile);
+  if (password_receiver_service) {
+    password_receiver_service->OnSyncServiceInitialized(sync_service.get());
   }
 
   SendTabToSelfSyncServiceFactory::GetForProfile(profile)

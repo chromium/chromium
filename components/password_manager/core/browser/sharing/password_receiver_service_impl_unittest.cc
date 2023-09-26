@@ -80,11 +80,9 @@ class PasswordReceiverServiceImplTest : public testing::Test {
 
     password_receiver_service_ = std::make_unique<PasswordReceiverServiceImpl>(
         &pref_service_,
-        base::BindRepeating(
-            [](syncer::SyncService* sync_service) { return sync_service; },
-            &sync_service_),
         /*sync_bridge=*/nullptr, profile_password_store_.get(),
         account_password_store_.get());
+    password_receiver_service_->OnSyncServiceInitialized(&sync_service_);
   }
 
   void SetUp() override {

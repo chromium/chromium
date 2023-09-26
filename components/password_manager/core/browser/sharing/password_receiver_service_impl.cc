@@ -4,13 +4,9 @@
 
 #include "components/password_manager/core/browser/sharing/password_receiver_service_impl.h"
 
-#include <algorithm>
-#include <memory>
-
+#include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
-#include "base/ranges/algorithm.h"
-#include "base/time/time.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/browser/password_manager_features_util.h"
@@ -61,12 +57,10 @@ void ProcessIncomingSharingInvitationTask::OnGetPasswordStoreResults(
 
 PasswordReceiverServiceImpl::PasswordReceiverServiceImpl(
     const PrefService* pref_service,
-    base::RepeatingCallback<syncer::SyncService*(void)> sync_service_getter,
     std::unique_ptr<IncomingPasswordSharingInvitationSyncBridge> sync_bridge,
     PasswordStoreInterface* profile_password_store,
     PasswordStoreInterface* account_password_store)
     : pref_service_(pref_service),
-      sync_service_getter_(std::move(sync_service_getter)),
       sync_bridge_(std::move(sync_bridge)),
       profile_password_store_(profile_password_store),
       account_password_store_(account_password_store) {
@@ -86,13 +80,13 @@ void PasswordReceiverServiceImpl::ProcessIncomingSharingInvitation(
   PasswordStoreInterface* password_store = nullptr;
   // Although at this time, the sync service must exist already since it is
   // responsible for fetching the incoming sharing invitations for the sync
-  // server. In case, `sync_service_getter_` return nullptr (e.g. due to a weird
-  // corner case of destruction of sync service after delivering the
-  // invitation), the user will be considered signed out (i.e.
-  // kNotUsingAccountStorage) and hence the invitation will be ignored.
+  // server. In case, `sync_service_` is null (e.g. due to a weird corner case
+  // of destruction of sync service after delivering the invitation), the user
+  // will be considered signed out (i.e. kNotUsingAccountStorage) and hence the
+  // invitation will be ignored.
   metrics_util::PasswordAccountStorageUsageLevel usage_level =
-      features_util::ComputePasswordAccountStorageUsageLevel(
-          pref_service_, sync_service_getter_.Run());
+      features_util::ComputePasswordAccountStorageUsageLevel(pref_service_,
+                                                             sync_service_);
   switch (usage_level) {
     case metrics_util::PasswordAccountStorageUsageLevel::kSyncing:
       password_store = profile_password_store_;
@@ -133,6 +127,20 @@ base::WeakPtr<syncer::ModelTypeControllerDelegate>
 PasswordReceiverServiceImpl::GetControllerDelegate() {
   CHECK(sync_bridge_);
   return sync_bridge_->change_processor()->GetControllerDelegate();
+}
+
+void PasswordReceiverServiceImpl::OnSyncServiceInitialized(
+    syncer::SyncService* service) {
+  CHECK(!sync_service_);
+  CHECK(service);
+  sync_service_ = service;
+  sync_service_->AddObserver(this);
+}
+
+void PasswordReceiverServiceImpl::OnSyncShutdown(syncer::SyncService* service) {
+  CHECK_EQ(service, sync_service_);
+  sync_service_->RemoveObserver(this);
+  sync_service_ = nullptr;
 }
 
 }  // namespace password_manager

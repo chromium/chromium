@@ -13,6 +13,10 @@ namespace syncer {
 class ModelTypeControllerDelegate;
 }  // namespace syncer
 
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
 namespace password_manager {
 
 // The per-profile service responsible for processing incoming password sharing
@@ -30,6 +34,8 @@ class PasswordReceiverService : public KeyedService {
   // Used to wire sync data type.
   virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetControllerDelegate() = 0;
+
+  virtual void OnSyncServiceInitialized(syncer::SyncService* service) = 0;
 };
 
 }  // namespace password_manager
