@@ -48,9 +48,18 @@ class TabOrganizationTest : public testing::Test {
                                                              nullptr);
   }
 
+  GURL GetUniqueTestURL() {
+    static int offset = 1;
+    GURL url("chrome://page_" + base::NumberToString(offset));
+    offset++;
+    return url;
+  }
+
   content::WebContents* AddTab(TabStripModel* tab_strip_model = nullptr) {
     std::unique_ptr<content::WebContents> contents_unique_ptr =
         CreateWebContents();
+    content::WebContentsTester::For(contents_unique_ptr.get())
+        ->NavigateAndCommit(GURL(GetUniqueTestURL()));
     content::WebContents* content_ptr = contents_unique_ptr.get();
     if (!tab_strip_model) {
       tab_strip_model = tab_strip_model_.get();
@@ -58,6 +67,14 @@ class TabOrganizationTest : public testing::Test {
     tab_strip_model->AppendWebContents(std::move(contents_unique_ptr), true);
 
     return content_ptr;
+  }
+
+  void InvalidateTabData(TabData* tab_data) {
+    // TabData is invalidated from new URL which are different from their
+    // original URL. as long as the original URL was created via
+    // GetUniqueTestURL this will invalidate.
+    content::WebContentsTester::For(tab_data->web_contents())
+        ->NavigateAndCommit(GetUniqueTestURL());
   }
 
  private:
@@ -86,7 +103,7 @@ TEST_F(TabOrganizationTest, TabDataTabStripModelConstructor) {
 // Check that TabData isn't updated when the tabstrip updates.
 TEST_F(TabOrganizationTest, TabDataTabStripTabUpdatingURL) {
   content::WebContents* web_contents = AddTab();
-  GURL old_gurl = GURL("chrome://page_1");
+  GURL old_gurl = GURL(GetUniqueTestURL());
   content::WebContentsTester::For(web_contents)->NavigateAndCommit(old_gurl);
 
   std::unique_ptr<TabData> tab_data =
@@ -94,7 +111,7 @@ TEST_F(TabOrganizationTest, TabDataTabStripTabUpdatingURL) {
 
   // When updating tab URL, the TabData shouldn't update.
   content::WebContentsTester::For(web_contents)
-      ->NavigateAndCommit(GURL("chrome://page_2"));
+      ->NavigateAndCommit(GURL(GetUniqueTestURL()));
   EXPECT_NE(tab_data->original_url(), web_contents->GetLastCommittedURL());
 }
 
@@ -116,8 +133,6 @@ TEST_F(TabOrganizationTest, TabDataOnTabStripModelDestroyed) {
 
 TEST_F(TabOrganizationTest, TabDataOnDestroyWebContentsSetToNull) {
   content::WebContents* web_contents = AddTab();
-  GURL old_gurl = GURL("chrome://page_1");
-  content::WebContentsTester::For(web_contents)->NavigateAndCommit(old_gurl);
 
   std::unique_ptr<TabData> tab_data =
       std::make_unique<TabData>(tab_strip_model(), web_contents);
@@ -130,8 +145,6 @@ TEST_F(TabOrganizationTest, TabDataOnDestroyWebContentsSetToNull) {
 
 TEST_F(TabOrganizationTest, TabDataOnDestroyWebContentsReplaceUpdatesContents) {
   content::WebContents* old_contents = AddTab();
-  GURL old_gurl = GURL("chrome://page_1");
-  content::WebContentsTester::For(old_contents)->NavigateAndCommit(old_gurl);
 
   std::unique_ptr<TabData> tab_data =
       std::make_unique<TabData>(tab_strip_model(), old_contents);
@@ -147,7 +160,7 @@ TEST_F(TabOrganizationTest, TabDataOnDestroyWebContentsReplaceUpdatesContents) {
 
 TEST_F(TabOrganizationTest, TabDataURLChangeIsNotValidForOrganizing) {
   content::WebContents* web_contents = AddTab();
-  GURL old_gurl = GURL("chrome://page_1");
+  GURL old_gurl = GURL(GetUniqueTestURL());
   content::WebContentsTester::For(web_contents)->NavigateAndCommit(old_gurl);
 
   std::unique_ptr<TabData> tab_data =
@@ -157,19 +170,18 @@ TEST_F(TabOrganizationTest, TabDataURLChangeIsNotValidForOrganizing) {
 
   // update the URL for the webcontents, expect the tab data to not be valid.
   // When updating tab URL, the TabData shouldn't update.
-  content::WebContentsTester::For(web_contents)
-      ->NavigateAndCommit(GURL("chrome://page_2"));
+  content::WebContentsTester::For(tab_data->web_contents())
+      ->NavigateAndCommit(GetUniqueTestURL());
   EXPECT_FALSE(tab_data->IsValidForOrganizing());
 }
 
 TEST_F(TabOrganizationTest, TabDataWebContentsDeletionIsNotValidForOrganizing) {
   content::WebContents* web_contents = AddTab();
-  GURL old_gurl = GURL("chrome://page_1");
+  GURL old_gurl = GURL(GetUniqueTestURL());
   content::WebContentsTester::For(web_contents)->NavigateAndCommit(old_gurl);
 
   std::unique_ptr<TabData> tab_data =
       std::make_unique<TabData>(tab_strip_model(), web_contents);
-
   EXPECT_TRUE(tab_data->IsValidForOrganizing());
 
   // Add a new tab so that the tabstripmodel doesnt close.
@@ -251,6 +263,33 @@ TEST_F(TabOrganizationTest, TabOrganizationCHECKOnChangingUserChoiceTwice) {
                                TabOrganization::UserChoice::ACCEPTED);
 
   EXPECT_DEATH(organization.Reject(), "");
+}
+
+TEST_F(TabOrganizationTest, TabOrganizationIsValidForOrganizing) {
+  TabOrganization organization({}, {u"default_name"}, 0, absl::nullopt);
+
+  content::WebContents* tab_1 = AddTab();
+  std::unique_ptr<TabData> tab_data_1 =
+      std::make_unique<TabData>(tab_strip_model(), tab_1);
+  organization.AddTabData(std::move(tab_data_1));
+
+  EXPECT_FALSE(organization.IsValidForOrganizing());
+
+  content::WebContents* tab_2 = AddTab();
+  std::unique_ptr<TabData> tab_data_2 =
+      std::make_unique<TabData>(tab_strip_model(), tab_2);
+  TabData* tab_data_2_ptr = tab_data_2.get();
+  organization.AddTabData(std::move(tab_data_2));
+  EXPECT_TRUE(organization.IsValidForOrganizing());
+
+  InvalidateTabData(tab_data_2_ptr);
+  EXPECT_FALSE(organization.IsValidForOrganizing());
+
+  content::WebContents* tab_3 = AddTab();
+  std::unique_ptr<TabData> tab_data_3 =
+      std::make_unique<TabData>(tab_strip_model(), tab_3);
+  organization.AddTabData(std::move(tab_data_3));
+  EXPECT_TRUE(organization.IsValidForOrganizing());
 }
 
 TEST_F(TabOrganizationTest, TabOrganizationRequestOnStartRequest) {

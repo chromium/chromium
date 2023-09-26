@@ -37,6 +37,8 @@ class TabOrganization {
   const absl::optional<UserChoice> choice() const { return choice_; }
   const std::u16string GetDisplayName() const;
 
+  bool IsValidForOrganizing() const;
+
   void AddTabData(std::unique_ptr<TabData> tab_data);
   void RemoveTabData(TabData::TabID id);
   void SetCurrentName(absl::variant<size_t, std::u16string> new_current_name);

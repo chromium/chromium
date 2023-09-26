@@ -10,6 +10,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
+namespace {
+constexpr int kMinValidTabsForOrganizing = 2;
+}
+
 TabOrganization::TabOrganization(
     TabDatas tab_datas,
     std::vector<std::u16string> names,
@@ -31,6 +35,20 @@ const std::u16string TabOrganization::GetDisplayName() const {
     return absl::get<std::u16string>(current_name());
   }
   return u"";
+}
+
+bool TabOrganization::IsValidForOrganizing() const {
+  // there must be at least 2 tabs that are valid for organization.
+  int valid_tab_count = 0;
+  for (const std::unique_ptr<TabData>& tab_data : tab_datas_) {
+    if (tab_data->IsValidForOrganizing()) {
+      valid_tab_count++;
+      if (valid_tab_count >= kMinValidTabsForOrganizing) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 // TODO(1469128) Add UKM/UMA Logging on user add.
