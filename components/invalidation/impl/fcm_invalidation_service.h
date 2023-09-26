@@ -33,9 +33,6 @@ class FCMInvalidationService : public FCMInvalidationServiceBase,
 
   void Init() override;
 
-  void RequestDetailedStatus(
-      base::RepeatingCallback<void(base::Value::Dict)> caller) const override;
-
   // IdentityProvider::Observer implementation.
   void OnActiveAccountRefreshTokenUpdated() override;
   void OnActiveAccountLogin() override;
@@ -43,8 +40,6 @@ class FCMInvalidationService : public FCMInvalidationServiceBase,
 
  protected:
   friend class FCMInvalidationServiceTestDelegate;
-
-  base::Value::Dict CollectDebugData() const override;
 
  private:
   struct Diagnostics {

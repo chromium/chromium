@@ -606,15 +606,6 @@ void PerUserTopicSubscriptionManager::NotifySubscriptionRequestFinished(
   }
 }
 
-base::Value::Dict PerUserTopicSubscriptionManager::CollectDebugData() const {
-  base::Value::Dict status;
-  for (const auto& topic_to_private_topic : topic_to_private_topic_) {
-    status.Set(topic_to_private_topic.first, topic_to_private_topic.second);
-  }
-  status.Set("Instance id token", instance_id_token_);
-  return status;
-}
-
 absl::optional<Topic>
 PerUserTopicSubscriptionManager::LookupSubscribedPublicTopicByPrivateTopic(
     const std::string& private_topic) const {

@@ -241,22 +241,6 @@ void InvalidatorRegistrarWithMemory::UpdateInvalidatorInstanceId(
     observer.OnInvalidatorClientIdChange(instance_id);
 }
 
-std::map<std::string, Topics>
-InvalidatorRegistrarWithMemory::GetHandlerNameToTopicsMap() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::map<std::string, Topics> names_to_topics;
-  for (const auto& handler_and_topics : registered_handler_to_topics_map_) {
-    names_to_topics[handler_and_topics.first->GetOwnerName()] =
-        ConvertTopicSetToLegacyTopicMap(handler_and_topics.second);
-  }
-  return names_to_topics;
-}
-
-void InvalidatorRegistrarWithMemory::RequestDetailedStatus(
-    base::RepeatingCallback<void(base::Value::Dict)> callback) const {
-  callback.Run(CollectDebugData());
-}
-
 bool InvalidatorRegistrarWithMemory::HasDuplicateTopicRegistration(
     InvalidationHandler* handler,
     const std::set<TopicData>& topics) const {
@@ -275,21 +259,6 @@ bool InvalidatorRegistrarWithMemory::HasDuplicateTopicRegistration(
     }
   }
   return false;
-}
-
-base::Value::Dict InvalidatorRegistrarWithMemory::CollectDebugData() const {
-  base::Value::Dict return_value;
-  return_value.SetByDottedPath(
-      "InvalidatorRegistrarWithMemory.Handlers",
-      static_cast<int>(handler_name_to_subscribed_topics_map_.size()));
-  for (const auto& handler_to_topics : handler_name_to_subscribed_topics_map_) {
-    const std::string& handler = handler_to_topics.first;
-    for (const auto& topic : handler_to_topics.second) {
-      return_value.SetByDottedPath(
-          "InvalidatorRegistrarWithMemory." + topic.name, handler);
-    }
-  }
-  return return_value;
 }
 
 void InvalidatorRegistrarWithMemory::RemoveSubscribedTopics(

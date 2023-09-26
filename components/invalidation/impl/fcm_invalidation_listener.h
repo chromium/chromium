@@ -78,9 +78,6 @@ class FCMInvalidationListener
   void OnSubscriptionRequestStarted(Topic topic) override;
   void OnSubscriptionRequestFinished(Topic topic, Status code) override;
 
-  virtual void RequestDetailedStatus(
-      const base::RepeatingCallback<void(base::Value::Dict)>& callback) const;
-
   void StartForTest(Delegate* delegate);
   void EmitStateChangeForTest(InvalidatorState state);
   void EmitSavedInvalidationsForTest(const TopicInvalidationMap& to_emit);
@@ -122,9 +119,6 @@ class FCMInvalidationListener
   void SaveInvalidations(const TopicInvalidationMap& to_save);
   // Emits previously saved invalidations to their registered observers.
   void EmitSavedInvalidations(const TopicInvalidationMap& to_emit);
-
-  // Generate a Dictionary with all the debugging information.
-  base::Value::Dict CollectDebugData() const;
 
   std::unique_ptr<FCMSyncNetworkChannel> network_channel_;
   UnackedInvalidationsMap unacked_invalidations_map_;

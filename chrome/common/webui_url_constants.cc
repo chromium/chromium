@@ -123,8 +123,6 @@ const char kChromeUIInspectURL[] = "chrome://inspect/";
 const char kChromeUIInternalsHost[] = "internals";
 const char kChromeUIInterstitialHost[] = "interstitials";
 const char kChromeUIInterstitialURL[] = "chrome://interstitials/";
-const char kChromeUIInvalidationsHost[] = "invalidations";
-const char kChromeUIInvalidationsUrl[] = "chrome://invalidations";
 const char kChromeUIKillHost[] = "kill";
 const char kChromeUILauncherInternalsHost[] = "launcher-internals";
 const char kChromeUILauncherInternalsURL[] = "chrome://launcher-internals";
@@ -696,7 +694,6 @@ const char* const kChromeHostURLs[] = {
     kChromeUIHumanPresenceInternalsHost,
 #endif
     kChromeUIInterstitialHost,
-    kChromeUIInvalidationsHost,
     kChromeUILocalStateHost,
 #if !BUILDFLAG(IS_ANDROID)
     kChromeUIManagementHost,

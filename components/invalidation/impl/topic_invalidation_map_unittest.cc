@@ -13,7 +13,7 @@ namespace invalidation {
 namespace {
 
 // TODO(crbug.com/1056651): some methods aren't covered by tests, it's likely
-// worth adding them (especially for ToValue(), which is passed to js code).
+// worth adding them.
 class TopicInvalidationMapTest : public testing::Test {
  public:
   TopicInvalidationMapTest()

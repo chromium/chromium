@@ -57,10 +57,6 @@ class INVALIDATION_EXPORT TopicInvalidationMap {
   // Call Acknowledge() on all contained Invalidations.
   void AcknowledgeAll() const;
 
-  // Serialize this map to a value. Used to expose value on
-  // chrome://invalidations page.
-  base::Value::List ToValue() const;
-
  private:
   explicit TopicInvalidationMap(
       const std::map<Topic, SingleTopicInvalidationSet>& map);

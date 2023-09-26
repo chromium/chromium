@@ -75,19 +75,9 @@ class FCMNetworkHandler : public gcm::GCMAppHandler,
   void SetTokenValidationTimerForTesting(
       std::unique_ptr<base::OneShotTimer> token_validation_timer);
 
-  void RequestDetailedStatus(
-      const base::RepeatingCallback<void(base::Value::Dict)>& callback)
-      override;
-
  private:
   struct FCMNetworkHandlerDiagnostic {
     FCMNetworkHandlerDiagnostic();
-
-    // Collect all the internal variables in a single readable dictionary.
-    base::Value::Dict CollectDebugData() const;
-
-    std::string RegistrationResultToString(
-        const instance_id::InstanceID::Result result) const;
 
     std::string token;
     instance_id::InstanceID::Result registration_result =

@@ -63,8 +63,6 @@ TEST_F(BrowserAboutHandlerTest, HandleChromeAboutAndChromeSyncRewrite) {
         GURL(chrome_prefix + chrome::kChromeUISignInInternalsHost)},
        {GURL(chrome_prefix + chrome::kChromeUISyncHost),
         GURL(chrome_prefix + chrome::kChromeUISyncInternalsHost)},
-       {GURL(chrome_prefix + chrome::kChromeUIInvalidationsHost),
-        GURL(chrome_prefix + chrome::kChromeUIInvalidationsHost)},
        {
            GURL(chrome_prefix + "host/path?query#ref"),
            GURL(chrome_prefix + "host/path?query#ref"),

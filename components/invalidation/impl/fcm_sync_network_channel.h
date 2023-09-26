@@ -62,11 +62,6 @@ class FCMSyncNetworkChannel {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // Subclass should implement RequestDetailedStatus to provide debugging
-  // information.
-  virtual void RequestDetailedStatus(
-      const base::RepeatingCallback<void(base::Value::Dict)>& callback) = 0;
-
  protected:
   // Subclass should notify about connection state through
   // NotifyChannelStateChange. If communication doesn't work and it is possible

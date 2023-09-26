@@ -56,15 +56,6 @@ std::string FakeInvalidationService::GetInvalidatorClientId() const {
   return client_id_;
 }
 
-InvalidationLogger* FakeInvalidationService::GetInvalidationLogger() {
-  return nullptr;
-}
-
-void FakeInvalidationService::RequestDetailedStatus(
-    base::RepeatingCallback<void(base::Value::Dict)> caller) const {
-  caller.Run(base::Value::Dict());
-}
-
 void FakeInvalidationService::SetInvalidatorState(InvalidatorState state) {
   invalidator_registrar_->UpdateInvalidatorState(state);
 }

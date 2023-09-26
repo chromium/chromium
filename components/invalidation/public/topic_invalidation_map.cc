@@ -87,16 +87,6 @@ bool TopicInvalidationMap::operator==(const TopicInvalidationMap& other) const {
   return map_ == other.map_;
 }
 
-base::Value::List TopicInvalidationMap::ToValue() const {
-  base::Value::List value;
-  for (const auto& topic_to_invalidations : map_) {
-    for (const Invalidation& invalidation : topic_to_invalidations.second) {
-      value.Append(invalidation.ToValue());
-    }
-  }
-  return value;
-}
-
 TopicInvalidationMap::TopicInvalidationMap(
     const std::map<Topic, SingleTopicInvalidationSet>& map)
     : map_(map) {}

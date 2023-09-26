@@ -14,7 +14,6 @@
 namespace invalidation {
 
 class InvalidationHandler;
-class InvalidationLogger;
 
 // Interface for classes that handle invalidation subscriptions and send out
 // invalidations to registered handlers.
@@ -115,13 +114,6 @@ class InvalidationService {
   // Returns the ID belonging to this invalidation client.  Can be used to
   // prevent the receipt of notifications of our own changes.
   virtual std::string GetInvalidatorClientId() const = 0;
-
-  // Return the logger used to debug invalidations
-  virtual InvalidationLogger* GetInvalidationLogger() = 0;
-
-  // Triggers requests of internal status.
-  virtual void RequestDetailedStatus(
-      base::RepeatingCallback<void(base::Value::Dict)> post_caller) const = 0;
 };
 
 }  // namespace invalidation

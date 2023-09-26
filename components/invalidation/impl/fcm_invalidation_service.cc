@@ -42,15 +42,6 @@ void FCMInvalidationService::Init() {
   identity_provider_->AddObserver(this);
 }
 
-void FCMInvalidationService::RequestDetailedStatus(
-    base::RepeatingCallback<void(base::Value::Dict)> return_callback) const {
-  FCMInvalidationServiceBase::RequestDetailedStatus(return_callback);
-
-  if (identity_provider_) {
-    identity_provider_->RequestDetailedStatus(return_callback);
-  }
-}
-
 void FCMInvalidationService::OnActiveAccountLogin() {
   diagnostic_info_.active_account_login = base::Time::Now();
   diagnostic_info_.was_already_started_on_login = IsStarted();
@@ -78,29 +69,6 @@ void FCMInvalidationService::OnActiveAccountLogout() {
   if (IsStarted()) {
     StopInvalidatorPermanently();
   }
-}
-
-base::Value::Dict FCMInvalidationService::CollectDebugData() const {
-  base::Value::Dict status = FCMInvalidationServiceBase::CollectDebugData();
-
-  status.SetByDottedPath(
-      "InvalidationService.Active-account-login",
-      base::TimeFormatShortDateAndTime(diagnostic_info_.active_account_login));
-  status.SetByDottedPath("InvalidationService.Active-account-token-updated",
-                         base::TimeFormatShortDateAndTime(
-                             diagnostic_info_.active_account_token_updated));
-  status.SetByDottedPath("InvalidationService.Active-account-logged-out",
-                         base::TimeFormatShortDateAndTime(
-                             diagnostic_info_.active_account_logged_out));
-  status.SetByDottedPath("InvalidationService.Started-on-active-account-login",
-                         diagnostic_info_.was_already_started_on_login);
-  status.SetByDottedPath(
-      "InvalidationService.Ready-to-start-on-active-account-login",
-      diagnostic_info_.was_ready_to_start_on_login);
-  status.SetByDottedPath("InvalidationService.Active-account-id",
-                         diagnostic_info_.active_account_id.ToString());
-
-  return status;
 }
 
 bool FCMInvalidationService::IsReadyToStart() {

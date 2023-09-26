@@ -318,60 +318,7 @@ void FCMNetworkHandler::SetTokenValidationTimerForTesting(
   token_validation_timer_ = std::move(token_validation_timer);
 }
 
-void FCMNetworkHandler::RequestDetailedStatus(
-    const base::RepeatingCallback<void(base::Value::Dict)>& callback) {
-  callback.Run(diagnostic_info_.CollectDebugData());
-}
-
 FCMNetworkHandler::FCMNetworkHandlerDiagnostic::FCMNetworkHandlerDiagnostic() =
     default;
-
-base::Value::Dict
-FCMNetworkHandler::FCMNetworkHandlerDiagnostic::CollectDebugData() const {
-  base::Value::Dict status;
-  status.SetByDottedPath("NetworkHandler.Registration-result-code",
-                         RegistrationResultToString(registration_result));
-  status.SetByDottedPath("NetworkHandler.Token", token);
-  status.SetByDottedPath(
-      "NetworkHandler.Token-was-requested",
-      base::TimeFormatShortDateAndTime(instance_id_token_requested));
-  status.SetByDottedPath(
-      "NetworkHandler.Token-was-received",
-      base::TimeFormatShortDateAndTime(instance_id_token_was_received));
-  status.SetByDottedPath("NetworkHandler.Token-verification-started",
-                         base::TimeFormatShortDateAndTime(
-                             instance_id_token_verification_requested));
-  status.SetByDottedPath(
-      "NetworkHandler.Token-was-verified",
-      base::TimeFormatShortDateAndTime(instance_id_token_verified));
-  status.SetByDottedPath("NetworkHandler.Verification-result-code",
-                         RegistrationResultToString(token_verification_result));
-  status.SetByDottedPath("NetworkHandler.Token-changed-when-verified",
-                         token_changed);
-  status.SetByDottedPath("NetworkHandler.Token-validation-requests",
-                         token_validation_requested_num);
-  return status;
-}
-
-std::string
-FCMNetworkHandler::FCMNetworkHandlerDiagnostic::RegistrationResultToString(
-    const instance_id::InstanceID::Result result) const {
-  switch (registration_result) {
-    case instance_id::InstanceID::SUCCESS:
-      return "InstanceID::SUCCESS";
-    case instance_id::InstanceID::INVALID_PARAMETER:
-      return "InstanceID::INVALID_PARAMETER";
-    case instance_id::InstanceID::DISABLED:
-      return "InstanceID::DISABLED";
-    case instance_id::InstanceID::ASYNC_OPERATION_PENDING:
-      return "InstanceID::ASYNC_OPERATION_PENDING";
-    case instance_id::InstanceID::SERVER_ERROR:
-      return "InstanceID::SERVER_ERROR";
-    case instance_id::InstanceID::UNKNOWN_ERROR:
-      return "InstanceID::UNKNOWN_ERROR";
-    case instance_id::InstanceID::NETWORK_ERROR:
-      return "InstanceID::NETWORK_ERROR";
-  }
-}
 
 }  // namespace invalidation

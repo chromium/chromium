@@ -108,22 +108,11 @@ class INVALIDATION_EXPORT InvalidatorRegistrarWithMemory {
   // Notifies all handlers about the new instance ID.
   void UpdateInvalidatorInstanceId(const std::string& instance_id);
 
-  // Gets a new map from the name of invalidation handlers to their topics. This
-  // is used by the InvalidatorLogger to be able to display every registered
-  // handler and its topics.
-  std::map<std::string, Topics> GetHandlerNameToTopicsMap();
-
-  void RequestDetailedStatus(
-      base::RepeatingCallback<void(base::Value::Dict)> callback) const;
-
  private:
   // Checks if any of the |topics| is already registered for a *different*
   // handler than the given one.
   bool HasDuplicateTopicRegistration(InvalidationHandler* handler,
                                      const std::set<TopicData>& topics) const;
-
-  // Generate a Dictionary with all the debugging information.
-  base::Value::Dict CollectDebugData() const;
 
   void RemoveSubscribedTopics(const InvalidationHandler* handler,
                               const std::set<TopicData>& topics_to_unsubscribe);

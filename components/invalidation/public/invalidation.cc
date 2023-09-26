@@ -4,13 +4,9 @@
 
 #include "components/invalidation/public/invalidation.h"
 
-#include <cstddef>
-
 #include "base/functional/bind.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/location.h"
-#include "base/memory/ptr_util.h"
-#include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
@@ -21,21 +17,11 @@ namespace invalidation {
 
 namespace {
 
-const char kObjectIdKey[] = "objectId";
+const char kTopic[] = "topic";
 const char kIsUnknownVersionKey[] = "isUnknownVersion";
 const char kVersionKey[] = "version";
 const char kPayloadKey[] = "payload";
 const int64_t kInvalidVersion = -1;
-
-// Fills base::Value::Dict as if legacy ObjectID still would be in use.
-// Used to provide values for chrome://invalidations page.
-base::Value::Dict TopicToObjectIDValue(const Topic& topic) {
-  base::Value::Dict value;
-  // Source has been deprecated, pass 0 instead.
-  value.Set("source", 0);
-  value.Set("name", topic);
-  return value;
-}
 
 }  // namespace
 
@@ -108,10 +94,7 @@ bool Invalidation::operator==(const Invalidation& other) const {
 
 base::Value::Dict Invalidation::ToValue() const {
   base::Value::Dict value;
-  // TODO(crbug.com/1056181): ObjectID has been deprecated, but the value here
-  // used in the js counterpart (chrome://invalidations). Replace ObjectID with
-  // Topic here together with js counterpart update.
-  value.Set(kObjectIdKey, TopicToObjectIDValue(topic_));
+  value.Set(kTopic, topic_);
   if (is_unknown_version_) {
     value.Set(kIsUnknownVersionKey, true);
   } else {

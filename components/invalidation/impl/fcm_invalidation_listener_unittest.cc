@@ -35,10 +35,6 @@ class TestFCMSyncNetworkChannel : public FCMSyncNetworkChannel {
   void StartListening() override {}
   void StopListening() override {}
 
-  void RequestDetailedStatus(
-      const base::RepeatingCallback<void(base::Value::Dict)>& callback)
-      override {}
-
   using FCMSyncNetworkChannel::DeliverIncomingMessage;
   using FCMSyncNetworkChannel::DeliverToken;
   using FCMSyncNetworkChannel::NotifyChannelStateChange;

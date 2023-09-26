@@ -147,7 +147,6 @@ def CheckNoNewJs(input_api, output_api):
     'chrome/browser/resources/internals/notifications/',
     'chrome/browser/resources/internals/query_tiles/',
     'chrome/browser/resources/inspect/',
-    'chrome/browser/resources/invalidations/',
     'chrome/browser/resources/nearby_internals/',
     'chrome/browser/resources/nearby_share/',
     'chrome/browser/resources/net_internals/',

@@ -50,10 +50,6 @@ class TestFCMSyncNetworkChannel : public FCMSyncNetworkChannel {
  public:
   void StartListening() override {}
   void StopListening() override {}
-
-  void RequestDetailedStatus(
-      const base::RepeatingCallback<void(base::Value::Dict)>& callback)
-      override {}
 };
 
 // TODO: Make FCMInvalidationListener class abstract and explicitly make all the
@@ -67,12 +63,6 @@ class FakeFCMInvalidationListener : public FCMInvalidationListener {
       std::unique_ptr<FCMSyncNetworkChannel> network_channel)
       : FCMInvalidationListener(std::move(network_channel)) {}
   ~FakeFCMInvalidationListener() override = default;
-
-  void RequestDetailedStatus(
-      const base::RepeatingCallback<void(base::Value::Dict)>& callback)
-      const override {
-    callback.Run(base::Value::Dict());
-  }
 };
 
 }  // namespace
@@ -279,41 +269,6 @@ TEST(FCMInvalidationServiceTest, ClearsInstanceIDOnSignout) {
   // asynchronous DeleteID operation to complete, in which case this test will
   // have to be updated.)
   EXPECT_TRUE(invalidation_service->GetInvalidatorClientId().empty());
-}
-
-namespace internal {
-
-class FakeCallbackContainer {
- public:
-  void FakeCallback(base::Value::Dict value) { called_ = true; }
-
-  bool called_ = false;
-  base::WeakPtrFactory<FakeCallbackContainer> weak_ptr_factory_{this};
-};
-
-}  // namespace internal
-
-// Test that requesting for detailed status doesn't crash even if the
-// underlying invalidator is not initialized.
-TEST(FCMInvalidationServiceLoggingTest, DetailedStatusCallbacksWork) {
-  std::unique_ptr<FCMInvalidationServiceTestDelegate> delegate(
-      new FCMInvalidationServiceTestDelegate());
-
-  delegate->CreateUninitializedInvalidationService();
-  InvalidationService* const invalidator = delegate->GetInvalidationService();
-
-  internal::FakeCallbackContainer fake_container;
-  invalidator->RequestDetailedStatus(
-      base::BindRepeating(&internal::FakeCallbackContainer::FakeCallback,
-                          fake_container.weak_ptr_factory_.GetWeakPtr()));
-  EXPECT_TRUE(fake_container.called_);
-
-  delegate->InitializeInvalidationService();
-
-  invalidator->RequestDetailedStatus(
-      base::BindRepeating(&internal::FakeCallbackContainer::FakeCallback,
-                          fake_container.weak_ptr_factory_.GetWeakPtr()));
-  EXPECT_TRUE(fake_container.called_);
 }
 
 }  // namespace invalidation
