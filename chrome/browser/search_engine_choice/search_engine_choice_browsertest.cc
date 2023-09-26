@@ -25,7 +25,6 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -42,6 +41,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -110,7 +110,7 @@ void SetUserSelectedDefaultSearchProvider(
   template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
 }
 
-web_app::AppId InstallPWA(Profile* profile, const GURL& start_url) {
+webapps::AppId InstallPWA(Profile* profile, const GURL& start_url) {
   auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
   web_app_info->start_url = start_url;
   web_app_info->scope = start_url.GetWithoutFilename();
@@ -505,7 +505,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
       SearchEngineChoiceServiceFactory::GetForProfile(profile));
 
   const GURL start_url("https://app.site.test/example/index");
-  const web_app::AppId app_id = InstallPWA(profile, start_url);
+  const webapps::AppId app_id = InstallPWA(profile, start_url);
 
   // PWA browsers should not show the dialog.
   Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
