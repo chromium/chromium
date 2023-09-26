@@ -131,7 +131,7 @@ class WelcomeTourInteractiveUiTest : public InteractiveBrowserTest {
   // Returns a builder for an interaction step that checks the browser is
   // for a web app associated with the specified `app_id`.
   [[nodiscard]] static auto CheckBrowserIsForWebApp(
-      const web_app::AppId& app_id) {
+      const webapps::AppId& app_id) {
     return CheckView(kBrowserViewElementId,
                      [app_id](BrowserView* browser_view) {
                        return web_app::AppBrowserController::IsForWebApp(
