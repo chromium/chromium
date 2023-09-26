@@ -31,7 +31,6 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/dbus/missive/missive_client_test_observer.h"
@@ -45,6 +44,7 @@
 #include "components/services/app_service/public/protos/app_types.pb.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
@@ -158,7 +158,7 @@ class AppUsageTelemetrySamplerBrowserTest
   }
 
   // Helper that installs a standalone webapp with the specified start url.
-  ::web_app::AppId InstallStandaloneWebApp(const GURL& start_url) {
+  ::webapps::AppId InstallStandaloneWebApp(const GURL& start_url) {
     auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url.GetWithoutFilename();
@@ -169,7 +169,7 @@ class AppUsageTelemetrySamplerBrowserTest
   }
 
   // Helper that simulates app usage for the specified app and usage duration.
-  void SimulateAppUsage(const ::web_app::AppId& app_id,
+  void SimulateAppUsage(const ::webapps::AppId& app_id,
                         const base::TimeDelta& running_time) {
     // Launch web app and simulate web app usage before closing the browser
     // window to prevent further usage tracking.

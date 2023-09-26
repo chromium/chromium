@@ -25,7 +25,6 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/dbus/missive/missive_client_test_observer.h"
@@ -35,6 +34,7 @@
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/protos/app_types.pb.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "content/public/test/test_utils.h"
@@ -105,7 +105,7 @@ class AppEventsObserverBrowserTest
   }
 
   // Helper that installs a standalone webapp with the specified start url.
-  ::web_app::AppId InstallStandaloneWebApp(const GURL& start_url) {
+  ::webapps::AppId InstallStandaloneWebApp(const GURL& start_url) {
     auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url.GetWithoutFilename();
@@ -116,7 +116,7 @@ class AppEventsObserverBrowserTest
   }
 
   // Helper that uninstalls the standalone webapp with the specified app id.
-  void UninstallStandaloneWebApp(const ::web_app::AppId& app_id) {
+  void UninstallStandaloneWebApp(const ::webapps::AppId& app_id) {
     ::apps::AppServiceProxyFactory::GetForProfile(profile())->UninstallSilently(
         app_id, ::apps::UninstallSource::kAppList);
   }
