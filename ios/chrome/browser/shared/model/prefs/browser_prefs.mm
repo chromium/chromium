@@ -11,7 +11,6 @@
 #import "base/types/cxx23_to_underlying.h"
 #import "base/values.h"
 #import "components/autofill/core/common/autofill_prefs.h"
-#import "components/breadcrumbs/core/breadcrumbs_status.h"
 #import "components/browsing_data/core/pref_names.h"
 #import "components/commerce/core/pref_names.h"
 #import "components/component_updater/component_updater_service.h"
@@ -161,7 +160,6 @@ inline constexpr char kPrivacySandboxManuallyControlled[] =
 }  // namespace
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
-  breadcrumbs::RegisterPrefs(registry);
   BrowserStateInfoCache::RegisterPrefs(registry);
   flags_ui::PrefServiceFlagsStorage::RegisterPrefs(registry);
   signin::IdentityManager::RegisterLocalStatePrefs(registry);
