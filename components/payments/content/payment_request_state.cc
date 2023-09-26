@@ -194,10 +194,9 @@ void PaymentRequestState::OnDoneCreatingPaymentApps() {
     bool has_preferred_app = base::ranges::any_of(
         available_apps_, [](const auto& app) { return app->IsPreferred(); });
     if (has_preferred_app) {
-      available_apps_.erase(
-          std::remove_if(available_apps_.begin(), available_apps_.end(),
-                         [](const auto& app) { return !app->IsPreferred(); }),
-          available_apps_.end());
+      base::EraseIf(available_apps_, [](const auto& app) {
+        return !app->IsPreferred();
+      });
 
       // By design, only one payment app can be preferred.
       DCHECK_EQ(available_apps_.size(), 1u);
