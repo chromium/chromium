@@ -27,7 +27,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/policy_constants.h"
@@ -171,8 +170,8 @@ class FakeDlpController : public DataTransferDlpController,
 
 class MockDlpRulesManager : public DlpRulesManagerImpl {
  public:
-  explicit MockDlpRulesManager(PrefService* local_state, Profile* profile)
-      : DlpRulesManagerImpl(local_state, profile) {}
+  explicit MockDlpRulesManager(PrefService* local_state)
+      : DlpRulesManagerImpl(local_state) {}
   ~MockDlpRulesManager() override = default;
 
   MOCK_CONST_METHOD0(GetReportingManager, DlpReportingManager*());
@@ -229,8 +228,7 @@ class DataTransferDlpBrowserTest : public InProcessBrowserTest {
       content::BrowserContext* context) {
     auto mock_rules_manager =
         std::make_unique<testing::NiceMock<MockDlpRulesManager>>(
-            g_browser_process->local_state(),
-            Profile::FromBrowserContext(context));
+            g_browser_process->local_state());
     rules_manager_ = mock_rules_manager.get();
     return mock_rules_manager;
   }
@@ -491,14 +489,8 @@ class MAYBE_DataTransferDlpBlinkBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 
-    TestingProfile::Builder builder;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    builder.SetIsMainProfile(true);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-    profile_ = builder.Build();
-
     rules_manager_ = std::make_unique<::testing::NiceMock<MockDlpRulesManager>>(
-        g_browser_process->local_state(), profile_.get());
+        g_browser_process->local_state());
 
     reporting_manager_ = std::make_unique<DlpReportingManager>();
     auto reporting_queue = std::unique_ptr<::reporting::MockReportQueue,
@@ -520,7 +512,6 @@ class MAYBE_DataTransferDlpBlinkBrowserTest : public InProcessBrowserTest {
     dlp_controller_.reset();
     reporting_manager_.reset();
     rules_manager_.reset();
-    profile_.reset();
   }
 
   content::WebContents* GetActiveWebContents() {
@@ -555,7 +546,6 @@ class MAYBE_DataTransferDlpBlinkBrowserTest : public InProcessBrowserTest {
             });
   }
 
-  std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<::testing::NiceMock<MockDlpRulesManager>> rules_manager_;
   std::unique_ptr<DlpReportingManager> reporting_manager_;
   raw_ptr<reporting::MockReportQueue> reporting_queue_;

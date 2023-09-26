@@ -771,9 +771,6 @@ class FileManagerPrivateApiDlpTest : public FileManagerPrivateApiTest {
   }
 
   void TearDownOnMainThread() override {
-    // The files controller must be destroyed before the profile since it's
-    // holding a pointer to it.
-    files_controller_.reset();
     mock_rules_manager_ = nullptr;
     fpnm_ = nullptr;
     FileManagerPrivateApiTest::TearDownOnMainThread();
@@ -786,8 +783,8 @@ class FileManagerPrivateApiDlpTest : public FileManagerPrivateApiTest {
     ON_CALL(*mock_rules_manager_, IsFilesPolicyEnabled)
         .WillByDefault(testing::Return(true));
 
-    files_controller_ = std::make_unique<policy::DlpFilesControllerAsh>(
-        *mock_rules_manager_, Profile::FromBrowserContext(context));
+    files_controller_ =
+        std::make_unique<policy::DlpFilesControllerAsh>(*mock_rules_manager_);
     ON_CALL(*mock_rules_manager_, GetDlpFilesController)
         .WillByDefault(testing::Return(files_controller_.get()));
 

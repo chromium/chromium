@@ -88,8 +88,8 @@ class DlpFilesAppBrowserTestBase {
     ON_CALL(*mock_rules_manager_, IsFilesPolicyEnabled)
         .WillByDefault(testing::Return(true));
 
-    files_controller_ = std::make_unique<policy::DlpFilesControllerAsh>(
-        *mock_rules_manager_, Profile::FromBrowserContext(context));
+    files_controller_ =
+        std::make_unique<policy::DlpFilesControllerAsh>(*mock_rules_manager_);
     ON_CALL(*mock_rules_manager_, GetDlpFilesController)
         .WillByDefault(testing::Return(files_controller_.get()));
 
@@ -303,8 +303,6 @@ class DlpFilesAppBrowserTestBase {
   raw_ptr<policy::MockDlpRulesManager, DanglingUntriaged | ExperimentalAsh>
       mock_rules_manager_ = nullptr;
 
-  std::unique_ptr<policy::DlpFilesControllerAsh> files_controller_;
-
   std::unique_ptr<file_access::MockScopedFileAccessDelegate>
       scoped_file_access_delegate_;
 
@@ -346,6 +344,7 @@ class DlpFilesAppBrowserTestBase {
     std::move(callback).Run(response);
   }
 
+  std::unique_ptr<policy::DlpFilesControllerAsh> files_controller_;
 };
 
 constexpr char kFileTransferConnectorSettingsForDlp[] = R"(
@@ -796,13 +795,6 @@ class DlpFilesAppBrowserTest
         profile(),
         base::BindRepeating(&DlpFilesAppBrowserTestBase::SetDlpRulesManager,
                             base::Unretained(this)));
-  }
-
-  void TearDownOnMainThread() override {
-    // The files controller must be destroyed before the profile since it's
-    // holding a pointer to it.
-    files_controller_.reset();
-    FileManagerBrowserTestBase::TearDownOnMainThread();
   }
 
   bool HandleDlpCommands(const std::string& name,

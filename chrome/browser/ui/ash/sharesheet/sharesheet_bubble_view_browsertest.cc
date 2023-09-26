@@ -120,9 +120,8 @@ class SharesheetBubbleViewPolicyBrowserTest
  public:
   class MockFilesController : public policy::DlpFilesControllerAsh {
    public:
-    explicit MockFilesController(const policy::DlpRulesManager& rules_manager,
-                                 Profile* profile)
-        : DlpFilesControllerAsh(rules_manager, profile) {}
+    explicit MockFilesController(const policy::DlpRulesManager& rules_manager)
+        : DlpFilesControllerAsh(rules_manager) {}
     ~MockFilesController() override = default;
 
     MOCK_METHOD(bool,
@@ -130,14 +129,6 @@ class SharesheetBubbleViewPolicyBrowserTest
                 (const apps::AppUpdate&, const apps::IntentPtr&),
                 (override));
   };
-
-  void TearDownOnMainThread() override {
-    // The files controller must be destroyed before the profile since it's
-    // holding a pointer to it.
-    mock_files_controller_.reset();
-
-    SharesheetBubbleViewBrowserTest::TearDownOnMainThread();
-  }
 
   void SetupRulesManager(bool is_dlp_blocked) {
     policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
@@ -149,6 +140,10 @@ class SharesheetBubbleViewPolicyBrowserTest
 
     ON_CALL(*rules_manager_, IsFilesPolicyEnabled)
         .WillByDefault(testing::Return(true));
+    mock_files_controller_ =
+        std::make_unique<MockFilesController>(*rules_manager_);
+    ON_CALL(*rules_manager_, GetDlpFilesController)
+        .WillByDefault(testing::Return(mock_files_controller_.get()));
 
     EXPECT_CALL(*mock_files_controller_.get(), IsLaunchBlocked)
         .WillOnce(testing::Return(is_dlp_blocked));
@@ -216,12 +211,6 @@ class SharesheetBubbleViewPolicyBrowserTest
     auto dlp_rules_manager =
         std::make_unique<testing::NiceMock<policy::MockDlpRulesManager>>();
     rules_manager_ = dlp_rules_manager.get();
-
-    mock_files_controller_ = std::make_unique<MockFilesController>(
-        *rules_manager_, Profile::FromBrowserContext(context));
-    ON_CALL(*rules_manager_, GetDlpFilesController)
-        .WillByDefault(testing::Return(mock_files_controller_.get()));
-
     return dlp_rules_manager;
   }
 

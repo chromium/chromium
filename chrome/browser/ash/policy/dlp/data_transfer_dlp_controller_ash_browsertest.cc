@@ -150,8 +150,8 @@ class FakeDlpController : public DataTransferDlpController,
 
 class MockDlpRulesManager : public DlpRulesManagerImpl {
  public:
-  explicit MockDlpRulesManager(PrefService* local_state, Profile* profile)
-      : DlpRulesManagerImpl(local_state, profile) {}
+  explicit MockDlpRulesManager(PrefService* local_state)
+      : DlpRulesManagerImpl(local_state) {}
   ~MockDlpRulesManager() override = default;
 
   MOCK_CONST_METHOD0(GetReportingManager, DlpReportingManager*());
@@ -180,6 +180,11 @@ class DataTransferDlpAshBrowserTest : public InProcessBrowserTest {
     ON_CALL(*rules_manager_, GetReportingManager)
         .WillByDefault(::testing::Return(reporting_manager_.get()));
 
+    files_controller_ =
+        std::make_unique<DlpFilesControllerAsh>(*rules_manager_);
+    ON_CALL(*rules_manager_, GetDlpFilesController)
+        .WillByDefault(::testing::Return(files_controller_.get()));
+
     dlp_controller_ =
         std::make_unique<FakeDlpController>(*rules_manager_, &helper_);
   }
@@ -188,15 +193,8 @@ class DataTransferDlpAshBrowserTest : public InProcessBrowserTest {
       content::BrowserContext* context) {
     auto mock_rules_manager =
         std::make_unique<testing::NiceMock<MockDlpRulesManager>>(
-            g_browser_process->local_state(),
-            Profile::FromBrowserContext(context));
+            g_browser_process->local_state());
     rules_manager_ = mock_rules_manager.get();
-
-    files_controller_ = std::make_unique<DlpFilesControllerAsh>(
-        *rules_manager_, Profile::FromBrowserContext(context));
-    ON_CALL(*rules_manager_, GetDlpFilesController)
-        .WillByDefault(::testing::Return(files_controller_.get()));
-
     return mock_rules_manager;
   }
 

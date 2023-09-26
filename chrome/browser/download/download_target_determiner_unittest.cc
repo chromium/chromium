@@ -2846,9 +2846,8 @@ class DownloadTargetDeterminerDlpTest : public DownloadTargetDeterminerTest {
 
   class MockFilesController : public policy::DlpFilesControllerAsh {
    public:
-    explicit MockFilesController(const policy::DlpRulesManager& rules_manager,
-                                 Profile* profile)
-        : DlpFilesControllerAsh(rules_manager, profile) {}
+    explicit MockFilesController(const policy::DlpRulesManager& rules_manager)
+        : DlpFilesControllerAsh(rules_manager) {}
     ~MockFilesController() override = default;
 
     MOCK_METHOD(bool,
@@ -2874,7 +2873,6 @@ class DownloadTargetDeterminerDlpTest : public DownloadTargetDeterminerTest {
   }
 
   void TearDown() override {
-    mock_files_controller_.reset();
     scoped_user_manager_.reset();
     profile_.reset();
 
@@ -2900,7 +2898,7 @@ class DownloadTargetDeterminerDlpTest : public DownloadTargetDeterminerTest {
     ON_CALL(*rules_manager_, IsFilesPolicyEnabled)
         .WillByDefault(testing::Return(true));
     mock_files_controller_ =
-        std::make_unique<MockFilesController>(*rules_manager_, profile_.get());
+        std::make_unique<MockFilesController>(*rules_manager_);
     ON_CALL(*rules_manager_, GetDlpFilesController)
         .WillByDefault(testing::Return(mock_files_controller_.get()));
   }

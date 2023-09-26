@@ -783,14 +783,6 @@ class IOTaskBrowserTest
               nullptr);
   }
 
-  void TearDownOnMainThread() override {
-    // The files controller must be destroyed before the profile since it's
-    // holding a pointer to it.
-    files_controller_.reset();
-    mock_rules_manager_ = nullptr;
-    FilesPolicyNotificationManagerBrowserTest::TearDownOnMainThread();
-  }
-
   std::unique_ptr<KeyedService> SetDlpRulesManager(
       content::BrowserContext* context) {
     auto dlp_rules_manager =
@@ -801,7 +793,7 @@ class IOTaskBrowserTest
 
     files_controller_ =
         std::make_unique<testing::NiceMock<policy::MockDlpFilesControllerAsh>>(
-            *mock_rules_manager_, Profile::FromBrowserContext(context));
+            *mock_rules_manager_);
 
     ON_CALL(*mock_rules_manager_, GetDlpFilesController())
         .WillByDefault(::testing::Return(files_controller_.get()));
@@ -1055,16 +1047,9 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest, FilesPolicyWarnSettings) {
   auto notification = bridge_->GetDisplayedNotification(kNotificationId1);
   ASSERT_TRUE(notification.has_value());
 
+  // Show the dialog.
+  ASSERT_TRUE(bridge_->GetDisplayedNotification(kNotificationId1).has_value());
   bridge_->Click(kNotificationId1, NotificationButton::OK);
-
-  // By waiting for the Files app, we make sure that
-  // FilesPolicyNotificationManager::LaunchFilesApp called when the dialog is
-  // show successfully completes before the test ends, since it will at some
-  // point asynchronously call AppServiceProxyAsh::LaunchAppWithIntent and we
-  // need to make sure the files controller is still alive at that point.
-  Browser* first_app = ui_test_utils::WaitForBrowserToOpen();
-  ASSERT_TRUE(first_app);
-  ASSERT_EQ(first_app, FindFilesApp());
 }
 
 // Tests that clicking the OK button on a warning notification shown for copy or

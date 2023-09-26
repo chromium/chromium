@@ -9,9 +9,8 @@
 namespace policy {
 
 MockDlpFilesControllerAsh::MockDlpFilesControllerAsh(
-    const DlpRulesManager& rules_manager,
-    Profile* profile)
-    : DlpFilesControllerAsh(rules_manager, profile) {
+    const DlpRulesManager& rules_manager)
+    : DlpFilesControllerAsh(rules_manager) {
   ON_CALL(*this, CheckIfLaunchAllowed)
       .WillByDefault([](const apps::AppUpdate& app_update,
                         apps::IntentPtr intent,

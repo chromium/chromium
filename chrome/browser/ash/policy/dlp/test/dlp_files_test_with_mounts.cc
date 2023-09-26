@@ -82,8 +82,7 @@ void DlpFilesTestWithMounts::MountExternalComponents() {
 void DlpFilesTestWithMounts::SetUp() {
   DlpFilesTestBase::SetUp();
   ASSERT_TRUE(rules_manager_);
-  files_controller_ =
-      std::make_unique<DlpFilesControllerAsh>(*rules_manager_, profile_.get());
+  files_controller_ = std::make_unique<DlpFilesControllerAsh>(*rules_manager_);
 
   event_storage_ = files_controller_->GetEventStorageForTesting();
   DCHECK(event_storage_);
@@ -131,8 +130,6 @@ void DlpFilesTestWithMounts::SetUp() {
 }
 
 void DlpFilesTestWithMounts::TearDown() {
-  event_storage_ = nullptr;
-  files_controller_.reset();
   DlpFilesTestBase::TearDown();
   reporting_manager_.reset();
 

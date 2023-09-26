@@ -16,8 +16,7 @@ namespace policy {
 class MockDlpFilesControllerAsh : public DlpFilesControllerAsh {
  public:
   MockDlpFilesControllerAsh() = delete;
-  explicit MockDlpFilesControllerAsh(const DlpRulesManager& rules_manager,
-                                     Profile* profile);
+  explicit MockDlpFilesControllerAsh(const DlpRulesManager& rules_manager);
   MockDlpFilesControllerAsh(const MockDlpFilesControllerAsh& other) = delete;
   MockDlpFilesControllerAsh& operator=(const MockDlpFilesControllerAsh& other) =
       delete;

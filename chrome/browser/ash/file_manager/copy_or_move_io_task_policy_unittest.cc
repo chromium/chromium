@@ -1476,7 +1476,7 @@ class CopyOrMoveIOTaskWithDLPTest : public testing::Test {
 
     files_controller_ = std::make_unique<
         testing::StrictMock<policy::MockDlpFilesControllerAsh>>(
-        *mock_rules_manager_, profile_.get());
+        *mock_rules_manager_);
 
     ON_CALL(*mock_rules_manager_, GetDlpFilesController())
         .WillByDefault(::testing::Return(files_controller_.get()));
@@ -1530,10 +1530,10 @@ class CopyOrMoveIOTaskWithDLPTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   ash::disks::FakeDiskMountManager disk_mount_manager_;
-  const std::unique_ptr<TestingProfile> profile_;
   raw_ptr<policy::MockDlpRulesManager, DanglingUntriaged | ExperimentalAsh>
       mock_rules_manager_ = nullptr;
   std::unique_ptr<policy::MockDlpFilesControllerAsh> files_controller_;
+  const std::unique_ptr<TestingProfile> profile_;
   base::ScopedTempDir temp_dir_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
