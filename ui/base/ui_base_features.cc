@@ -62,18 +62,6 @@ BASE_FEATURE(kSettingsShowsPerKeyboardSettings,
              "InputMethodIntegratedSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Experimental shortcut handling and mapping to address i18n issues.
-// https://crbug.com/1067269
-BASE_FEATURE(kNewShortcutMapping,
-             "NewShortcutMapping",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsNewShortcutMappingEnabled() {
-  // kImprovedKeyboardShortcuts supercedes kNewShortcutMapping.
-  return !IsImprovedKeyboardShortcutsEnabled() &&
-         base::FeatureList::IsEnabled(kNewShortcutMapping);
-}
-
 BASE_FEATURE(kDeprecateAltClick,
              "DeprecateAltClick",
              base::FEATURE_DISABLED_BY_DEFAULT);
