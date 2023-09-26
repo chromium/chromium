@@ -15,8 +15,6 @@
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/login/test/device_state_mixin.h"
-#include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -35,6 +33,7 @@
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/supervised_user/supervision_mixin.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/common/features.h"
@@ -65,16 +64,23 @@ class ExtensionEnableFlowTestSupervised
 
   ExtensionEnableFlowTestSupervised()
       : TestParentPermissionDialogViewObserver(this) {
-    // This UI is only used in V1 extensions approvals flow, so to test it V2
-    // flow needs to be disabled.
-    feature_list_.InitAndDisableFeature(
-        supervised_user::kLocalExtensionApprovalsV2);
+    feature_list_.InitWithFeatureStates(
+        {// Enable extensions for supervised users in Desktop platforms.
+         {supervised_user::kFilterWebsitesForSupervisedUsersOnDesktopAndIOS,
+          true},
+         {supervised_user::
+              kEnableExtensionsPermissionsForSupervisedUsersOnDesktop,
+          true},
+         // This UI is only used in V1 extensions approvals flow, so to test it
+         // V2 flow needs to be disabled.
+         {supervised_user::kLocalExtensionApprovalsV2, false}});
   }
 
   ExtensionEnableFlowTestSupervised(const ExtensionEnableFlowTestSupervised&) =
       delete;
   ExtensionEnableFlowTestSupervised& operator=(
       const ExtensionEnableFlowTestSupervised&) = delete;
+  ~ExtensionEnableFlowTestSupervised() override { feature_list_.Reset(); }
 
   void OnParentPermissionDialogDone(ParentPermissionDialog::Result result) {
     result_ = result;
@@ -89,9 +95,13 @@ class ExtensionEnableFlowTestSupervised
     }
 
     view_ = view;
-    view_->SetIdentityManagerForTesting(identity_test_env_->identity_manager());
+    view_->SetIdentityManagerForTesting(
+        supervision_mixin_.GetIdentityTestEnvironment()->identity_manager());
     view_->SetRepromptAfterIncorrectCredential(false);
 
+    if (!next_dialog_action_.has_value()) {
+      return;
+    }
     if (next_dialog_action_) {
       switch (next_dialog_action_.value()) {
         case NextDialogAction::kCancel:
@@ -100,28 +110,14 @@ class ExtensionEnableFlowTestSupervised
         case NextDialogAction::kAccept:
           view_->AcceptDialog();
           break;
+        default:
+          NOTREACHED_NORETURN();
       }
     }
   }
 
-  void InitializeFamilyData() {
-    // Set up the child user's custodians.
-    ASSERT_TRUE(browser());
-    supervised_user_test_util::AddCustodians(browser()->profile());
-
-    // Set up the identity test environment, which provides fake
-    // OAuth refresh tokens.
-    identity_test_env_ = std::make_unique<signin::IdentityTestEnvironment>();
-    identity_test_env_->MakeAccountAvailable(FakeGaiaMixin::kFakeUserEmail);
-    identity_test_env_->SetPrimaryAccount(FakeGaiaMixin::kFakeUserEmail,
-                                          signin::ConsentLevel::kSync);
-    identity_test_env_->SetRefreshTokenForPrimaryAccount();
-    identity_test_env_->SetAutomaticIssueOfAccessTokens(true);
-  }
-
   void SetUpOnMainThread() override {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
-    logged_in_user_mixin_.LogInUser(/*issue_any_scope_token=*/true);
 
     supervised_user_test_util::
         SetSupervisedUserExtensionsMayRequestPermissionsPref(
@@ -129,10 +125,6 @@ class ExtensionEnableFlowTestSupervised
     supervised_user_extensions_delegate_ =
         std::make_unique<extensions::SupervisedUserExtensionsDelegateImpl>(
             browser()->profile());
-
-    if (browser()->profile()->IsChild()) {
-      InitializeFamilyData();
-    }
 
     test_extension_ = extensions::ExtensionBuilder("test extension").Build();
     extension_service()->AddExtension(test_extension_.get());
@@ -148,8 +140,7 @@ class ExtensionEnableFlowTestSupervised
 
   void set_next_reauth_status(
       const GaiaAuthConsumer::ReAuthProofTokenStatus next_status) {
-    logged_in_user_mixin_.GetFakeGaiaMixin()->fake_gaia()->SetNextReAuthStatus(
-        next_status);
+    supervision_mixin_.SetNextReAuthStatus(next_status);
   }
 
   void set_next_dialog_action(NextDialogAction action) {
@@ -175,25 +166,20 @@ class ExtensionEnableFlowTestSupervised
 
  private:
   base::test::ScopedFeatureList feature_list_;
-
   raw_ptr<ParentPermissionDialogView, DanglingUntriaged | ExperimentalAsh>
       view_ = nullptr;
   std::unique_ptr<ParentPermissionDialog> parent_permission_dialog_;
   ParentPermissionDialog::Result result_;
 
-  // Emulate consumer ownership (create public owner key file, install
-  // attributes file, etc) so Chrome doesn't need to do it. The current setup is
-  // not sufficient to go through the ownership flow successfully and it's not
-  // essential to the logic under test.
-  ash::DeviceStateMixin device_state_{
-      &mixin_host_,
-      ash::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED};
-  ash::LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_,
-      // Simulate Gellerization / Adding Supervision to load extensions.
-      content::IsPreTest() ? ash::LoggedInUserMixin::LogInType::kRegular
-                           : ash::LoggedInUserMixin::LogInType::kChild,
-      embedded_test_server(), this};
+  supervised_user::SupervisionMixin supervision_mixin_{
+      mixin_host_,
+      this,
+      embedded_test_server(),
+      {.consent_level = signin::ConsentLevel::kSync,
+       .sign_in_mode =
+           content::IsPreTest()
+               ? supervised_user::SupervisionMixin::SignInMode::kRegular
+               : supervised_user::SupervisionMixin::SignInMode::kSupervised}};
 
   // Closure that is triggered once the dialog is shown.
   base::OnceClosure dialog_shown_closure_;
@@ -203,7 +189,6 @@ class ExtensionEnableFlowTestSupervised
 
   scoped_refptr<const extensions::Extension> test_extension_;
 
-  std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
   absl::optional<NextDialogAction> next_dialog_action_;
 };
 
@@ -222,7 +207,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionEnableFlowTestSupervised,
   ExtensionEnableFlowTestDelegate delegate;
   ExtensionEnableFlow enable_flow(browser()->profile(), test_extension()->id(),
                                   &delegate);
-  enable_flow.Start();
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  enable_flow.StartForWebContents(web_contents);
   delegate.Wait();
 
   ASSERT_TRUE(delegate.result());
@@ -265,7 +253,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionEnableFlowTestSupervised,
   ExtensionEnableFlowTestDelegate delegate;
   ExtensionEnableFlow enable_flow(browser()->profile(), test_extension()->id(),
                                   &delegate);
-  enable_flow.Start();
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  enable_flow.StartForWebContents(web_contents);
   delegate.Wait();
 
   ASSERT_TRUE(delegate.result());
@@ -318,7 +308,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionEnableFlowTestSupervised,
   ExtensionEnableFlowTestDelegate delegate;
   ExtensionEnableFlow enable_flow(browser()->profile(), test_extension()->id(),
                                   &delegate);
-  enable_flow.Start();
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  enable_flow.StartForWebContents(web_contents);
   delegate.Wait();
 
   ASSERT_TRUE(delegate.result());
