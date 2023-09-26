@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import Combine
 import SwiftUI
 
 /// A view displaying a list of destinations.
@@ -74,14 +75,14 @@ struct OverflowMenuDestinationList: View {
   /// The destinations for this view.
   @Binding var destinations: [OverflowMenuDestination]
 
-  var extraTopMargin: CGFloat = 0
+  var extraTopMargin: CGFloat
 
   weak var metricsHandler: PopupMenuMetricsHandler?
 
   @ObservedObject var uiConfiguration: OverflowMenuUIConfiguration
 
   // The drag handler to use for drag interactions on this list
-  var dragHandler: DestinationDragHandler?
+  @ObservedObject var dragHandlerContainer: DestinationDragHandlerContainer
 
   /// The namespace for the animation of this view appearing or disappearing.
   let namespace: Namespace.ID
@@ -91,6 +92,21 @@ struct OverflowMenuDestinationList: View {
   /// in RTL languages, the scroll view has to manually scroll to the right edge
   /// of the list first.
   @State var listOffset: CGFloat? = nil
+
+  init(
+    destinations: Binding<[OverflowMenuDestination]>, extraTopMargin: CGFloat = 0,
+    metricsHandler: PopupMenuMetricsHandler? = nil,
+    uiConfiguration: OverflowMenuUIConfiguration,
+    dragHandler: DestinationDragHandler? = nil,
+    namespace: Namespace.ID
+  ) {
+    self._destinations = destinations
+    self.extraTopMargin = extraTopMargin
+    self.metricsHandler = metricsHandler
+    self.uiConfiguration = uiConfiguration
+    dragHandlerContainer = DestinationDragHandlerContainer(dragHandler: dragHandler)
+    self.namespace = namespace
+  }
 
   var body: some View {
     GeometryReader { geometry in
@@ -150,11 +166,11 @@ struct OverflowMenuDestinationList: View {
                 metricsHandler: metricsHandler
               )
               let destinationBeingDragged =
-                dragHandler?.dragOnDestinations ?? false
-                && dragHandler?.currentDrag?.item == destination
+                dragHandlerContainer.dragHandler?.dragOnDestinations ?? false
+                && dragHandlerContainer.dragHandler?.currentDrag?.item == destination
               destinationView
                 .id(destination.destination)
-                .ifLet(dragHandler) { view, dragHandler in
+                .ifLet(dragHandlerContainer.dragHandler) { view, dragHandler in
                   view
                     .opacity(destinationBeingDragged ? 0.01 : 1)
                     .onDrag {
@@ -344,4 +360,29 @@ extension Alignment {
   /// A new custom alignment to allow aligning the edit buttons at specific
   /// locations.
   static let editButton = Alignment(horizontal: .editButton, vertical: .editButton)
+}
+
+/// Before iOS 17, it was not possible to directly observe optional objects
+/// e.g.
+/// ```
+/// @ObservedObject var myOptional: Foo?
+/// ```
+/// `DestinationDragHandler` is often optional, so this simple class wraps it
+/// in a container that just re-publishes any changes to the underlying drag
+/// handler.
+/// The `Observable` macro in iOS 17 looks to also solve this issue, and
+/// this should be migrateable once iOS 17 is the minimum version supported.
+class DestinationDragHandlerContainer: ObservableObject {
+  // The underlying drag handler.
+  let dragHandler: DestinationDragHandler?
+
+  var cancellable: AnyCancellable?
+
+  init(dragHandler: DestinationDragHandler?) {
+    self.dragHandler = dragHandler
+
+    cancellable = dragHandler?.objectWillChange.sink { [weak self] in
+      self?.objectWillChange.send()
+    }
+  }
 }
