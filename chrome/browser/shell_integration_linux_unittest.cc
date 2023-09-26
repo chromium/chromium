@@ -25,9 +25,9 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/common/chrome_constants.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -599,7 +599,7 @@ TEST(ShellIntegrationTest, GetMimeTypesRegistrationFilename) {
   for (const auto& test_case : test_cases) {
     const base::FilePath filename =
         GetMimeTypesRegistrationFilename(base::FilePath(test_case.profile_path),
-                                         web_app::AppId(test_case.app_id));
+                                         webapps::AppId(test_case.app_id));
     EXPECT_EQ(browser_name + test_case.expected_filename, filename.value());
   }
 }

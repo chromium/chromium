@@ -98,6 +98,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
@@ -339,7 +340,7 @@ void UpdatePwaLaunchersForProfile(const base::FilePath& profile_dir) {
 
   // Create a vector of all PWA-launcher paths in |profile_dir|.
   std::vector<base::FilePath> pwa_launcher_paths;
-  for (const web_app::AppId& app_id : registrar.GetAppIds()) {
+  for (const webapps::AppId& app_id : registrar.GetAppIds()) {
     base::FilePath web_app_path =
         web_app::GetOsIntegrationResourcesDirectoryForApp(profile_dir, app_id,
                                                           GURL());

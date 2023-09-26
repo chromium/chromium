@@ -9,9 +9,9 @@
 
 #include "base/files/file_path.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/common/buildflags.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
+#include "components/webapps/common/web_app_id.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -106,7 +106,7 @@ std::string GetDirectoryFileContents(const std::u16string& title,
 // Linux.
 base::FilePath GetMimeTypesRegistrationFilename(
     const base::FilePath& profile_path,
-    const web_app::AppId& app_id);
+    const webapps::AppId& app_id);
 
 // Returns the contents of a .xml file as specified by |file_handlers|, which is
 // passed to `xdg-mime` to register one or more custom MIME types in Linux.

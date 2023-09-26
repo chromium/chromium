@@ -747,7 +747,7 @@ std::string GetDirectoryFileContents(const std::u16string& title,
 
 base::FilePath GetMimeTypesRegistrationFilename(
     const base::FilePath& profile_path,
-    const web_app::AppId& app_id) {
+    const webapps::AppId& app_id) {
   DCHECK(!profile_path.empty() && !app_id.empty());
 
   // Use a prefix to clearly group files created by Chrome.
