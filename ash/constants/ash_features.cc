@@ -879,6 +879,11 @@ BASE_FEATURE(kEnterpriseReportingUI,
              "EnterpriseReportingUI",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether ephemeral network configuration policies are respected.
+BASE_FEATURE(kEphemeralNetworkPolicies,
+             "kEphemeralNetworkPolicies",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables Device End Of Lifetime warning notifications.
 BASE_FEATURE(kEolWarningNotifications,
              "EolWarningNotifications",
@@ -3642,6 +3647,10 @@ bool IsEcheNetworkConnectionStateEnabled() {
 
 bool IsEcheShorterScanningDutyCycleEnabled() {
   return base::FeatureList::IsEnabled(kEcheShorterScanningDutyCycle);
+}
+
+bool AreEphemeralNetworkPoliciesEnabled() {
+  return base::FeatureList::IsEnabled(kEphemeralNetworkPolicies);
 }
 
 bool IsNearbyKeepAliveFixEnabled() {

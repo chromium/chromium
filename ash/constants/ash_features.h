@@ -302,6 +302,8 @@ extern const base::FeatureParam<double>
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFastPairLowPower);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kEnterpriseReportingUI);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kEphemeralNetworkPolicies);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<double> kFastPairLowPowerActiveSeconds;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<double> kFastPairLowPowerInactiveSeconds;
@@ -957,6 +959,8 @@ bool IsEcheLauncherIconsInMoreAppsButtonEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsEcheNetworkConnectionStateEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsEcheShorterScanningDutyCycleEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool AreEphemeralNetworkPoliciesEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFullscreenAfterUnlockAllowed();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFullscreenAlertBubbleEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBlockFwupdClientEnabled();
