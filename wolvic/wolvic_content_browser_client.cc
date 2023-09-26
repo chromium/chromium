@@ -4,12 +4,14 @@
 
 #include "wolvic/wolvic_content_browser_client.h"
 
+#include "base/path_service.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/user_level_memory_pressure_signal_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_devtools_manager_delegate.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "wolvic/browser/session_settings.h"
 #include "wolvic/browser/youtube/youtube_url_loader_request_interceptor.h"
 #include "wolvic/wolvic_browser_context.h"
@@ -95,6 +97,19 @@ blink::UserAgentMetadata WolvicContentBrowserClient::GetUserAgentMetadata() {
       break;
   }
   return metadata;
+}
+
+void WolvicContentBrowserClient::ConfigureNetworkContextParams(
+    BrowserContext* context,
+    bool in_memory,
+    const base::FilePath& relative_partition_path,
+    network::mojom::NetworkContextParams* network_context_params,
+    cert_verifier::mojom::CertVerifierCreationParams*
+        cert_verifier_creation_params) {
+  base::FilePath user_data_path;
+  base::PathService::Get(SHELL_DIR_USER_DATA, &user_data_path);
+  network_context_params->http_cache_directory =
+      user_data_path.Append(FILE_PATH_LITERAL("Cache"));
 }
 
 void WolvicContentBrowserClient::AppendExtraCommandLineSwitches(
