@@ -250,8 +250,8 @@ class BrowserNonClientFrameViewChromeOSThemeChangeTest
   }
 
   // Installs the web app under test, blocking until installation is complete,
-  // and returning the `web_app::AppId` for the installed web app.
-  web_app::AppId WaitForAppInstall() {
+  // and returning the `webapps::AppId` for the installed web app.
+  webapps::AppId WaitForAppInstall() {
     switch (GetThemeChangeTestMode()) {
       case ThemeChangeTestMode::kSWA:
         system_web_app_installation_->WaitForAppInstall();
@@ -327,7 +327,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSThemeChangeTest,
     GTEST_SKIP();
   }
 
-  const web_app::AppId app_id = WaitForAppInstall();
+  const webapps::AppId app_id = WaitForAppInstall();
   auto* browser = web_app::LaunchWebAppBrowser(profile(), app_id);
   auto* contents_web_view =
       BrowserView::GetBrowserViewForBrowser(browser)->contents_web_view();
@@ -771,7 +771,7 @@ class WebAppNonClientFrameViewAshTest
     web_app_info->display_mode = blink::mojom::DisplayMode::kStandalone;
     web_app_info->theme_color = GetThemeColor();
 
-    web_app::AppId app_id = web_app::test::InstallWebApp(
+    webapps::AppId app_id = web_app::test::InstallWebApp(
         browser()->profile(), std::move(web_app_info));
     content::TestNavigationObserver navigation_observer(GetAppURL());
     navigation_observer.StartWatchingNewWebContents();

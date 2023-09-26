@@ -132,7 +132,7 @@ class ImmersiveModeControllerChromeosWebAppBrowserTest
   }
 
  private:
-  web_app::AppId app_id;
+  webapps::AppId app_id;
   raw_ptr<Browser, DanglingUntriaged | ExperimentalAsh> browser_ = nullptr;
   raw_ptr<ImmersiveModeController, DanglingUntriaged | ExperimentalAsh>
       controller_ = nullptr;

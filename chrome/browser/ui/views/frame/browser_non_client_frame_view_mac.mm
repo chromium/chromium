@@ -317,7 +317,7 @@ void BrowserNonClientFrameViewMac::UpdateFullscreenTopUI() {
 }
 
 void BrowserNonClientFrameViewMac::OnAlwaysShowToolbarInFullscreenChanged(
-    const web_app::AppId& app_id,
+    const webapps::AppId& app_id,
     bool show) {
   if (web_app::AppBrowserController::IsForWebApp(browser_view()->browser(),
                                                  app_id)) {

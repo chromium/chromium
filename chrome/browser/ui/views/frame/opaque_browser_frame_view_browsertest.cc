@@ -89,7 +89,7 @@ class WebAppOpaqueBrowserFrameViewTest : public InProcessBrowserTest {
     web_app_info->scope = GetAppURL().GetWithoutFilename();
     web_app_info->theme_color = theme_color;
 
-    web_app::AppId app_id = web_app::test::InstallWebApp(
+    webapps::AppId app_id = web_app::test::InstallWebApp(
         browser()->profile(), std::move(web_app_info));
     Browser* app_browser =
         web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
@@ -365,7 +365,7 @@ class WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest
     web_app_info->display_override = {
         blink::mojom::DisplayMode::kWindowControlsOverlay};
 
-    web_app::AppId app_id = web_app::test::InstallWebApp(
+    webapps::AppId app_id = web_app::test::InstallWebApp(
         browser()->profile(), std::move(web_app_info));
 
     Browser* app_browser =

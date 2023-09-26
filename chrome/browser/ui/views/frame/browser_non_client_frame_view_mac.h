@@ -69,7 +69,7 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView,
   void PaintChildren(const views::PaintInfo& info) override;
 
   // web_app::WebAppRegistrarObserver
-  void OnAlwaysShowToolbarInFullscreenChanged(const web_app::AppId& app_id,
+  void OnAlwaysShowToolbarInFullscreenChanged(const webapps::AppId& app_id,
                                               bool show) override;
   void OnAppRegistrarDestroyed() override;
 
