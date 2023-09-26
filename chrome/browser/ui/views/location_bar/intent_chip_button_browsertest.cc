@@ -29,9 +29,9 @@
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -146,7 +146,7 @@ class IntentChipButtonBrowserTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  web_app::AppId overlapping_app_id_;
+  webapps::AppId overlapping_app_id_;
 };
 
 IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
