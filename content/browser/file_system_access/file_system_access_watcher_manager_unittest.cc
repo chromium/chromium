@@ -41,7 +41,7 @@ using Observation = FileSystemAccessWatcherManager::Observation;
 
 namespace {
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_IOS)
 void SpinEventLoopForABit() {
   base::RunLoop loop;
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -57,7 +57,8 @@ bool ReportsModifiedPathForLocalObservations() {
   return false;
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA) &&
+        // !BUILDFLAG(IS_IOS)
 
 // Accumulates changes it receives from the given `observation`.
 class ChangeAccumulator {
@@ -196,7 +197,7 @@ class FileSystemAccessWatcherManagerTest : public testing::Test {
 };
 
 // Watching the local file system is not supported on Android or Fuchsia.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_IOS)
 TEST_F(FileSystemAccessWatcherManagerTest, BasicRegistration) {
   base::FilePath dir_path = dir_.GetPath().AppendASCII("dir");
   auto dir_url = manager_->CreateFileSystemURLFromPath(
@@ -228,7 +229,8 @@ TEST_F(FileSystemAccessWatcherManagerTest, BasicRegistration) {
   EXPECT_FALSE(watcher_manager().HasObservationsForTesting());
   EXPECT_FALSE(watcher_manager().HasSourcesForTesting());
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA) &&
+        // !BUILDFLAG(IS_IOS)
 
 TEST_F(FileSystemAccessWatcherManagerTest, BasicRegistrationUnownedSource) {
   base::FilePath file_path = dir_.GetPath().AppendASCII("foo");
