@@ -167,10 +167,6 @@ class ASH_EXPORT GeolocationController
   virtual void RequestGeoposition();
 
  private:
-  // Gets now time from the `clock_` or `base::Time::Now()` if `clock_` does
-  // not exist.
-  base::Time GetNow() const;
-
   // Calls `RequestGeoposition()` after `delay`.
   void ScheduleNextRequest(base::TimeDelta delay);
 

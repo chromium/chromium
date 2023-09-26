@@ -262,10 +262,6 @@ void GeolocationController::OnGeoposition(const Geoposition& position,
   ScheduleNextRequest(kNextRequestDelayAfterSuccess);
 }
 
-base::Time GeolocationController::GetNow() const {
-  return clock_ ? clock_->Now() : base::Time::Now();
-}
-
 void GeolocationController::ScheduleNextRequest(base::TimeDelta delay) {
   // Drop all pending geolocation requests while system permission is
   // denied. Toggling system geolocation ON will trigger a fresh geolocation
