@@ -140,7 +140,7 @@
     <div>
       <iframe on-load="resolveIframeLoaded_"
           src="chrome-untrusted://os-feedback/untrusted_index.html"
-          scrolling="no">
+          scrolling="no" hidden$="[[isOobeOrLoginScreen_(feedbackContext)]]">
       </iframe>
     </div>
     <div id="shadowShield"></div>

@@ -439,6 +439,32 @@ export function searchPageTestSuite() {
     assertEquals(FeedbackFlowState.SEARCH, actualCurrentState);
   });
 
+  /**
+   * Test that when the app is opened on oobe or login screen, the help content
+   * section is hidden.
+   */
+  test('HideHelpContentSection_oobe_or_login_screen', async () => {
+    await initializePage();
+    fakeFeedbackContext.categoryTag = 'Login';
+    page.feedbackContext = fakeFeedbackContext;
+    assertEquals('Login', page.feedbackContext.categoryTag);
+
+    assertFalse(isVisible(getElement('iframe')));
+  });
+
+  /**
+   * Test that when the app is not opened on oobe or login screen, the help
+   * content section is visible.
+   */
+  test('ShowHelpContentSection_if_not_oobe_or_login_screen', async () => {
+    await initializePage();
+    fakeFeedbackContext.categoryTag = 'MediaAPp';
+    page.feedbackContext = fakeFeedbackContext;
+    assertNotEquals('Login', page.feedbackContext.categoryTag);
+
+    assertTrue(isVisible(getElement('iframe')));
+  });
+
   test('typingBluetoothWithInternalAccountShowsQuestionnaire', async () => {
     let textAreaElement = null;
     await initializePage();
