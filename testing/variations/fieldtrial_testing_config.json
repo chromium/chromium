@@ -4730,6 +4730,29 @@
             ]
         }
     ],
+    "DefaultOpenSSLBufferSizeFeature": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "ssl_buffer_size_17K_20230920",
+                    "params": {
+                        "DefaultOpenSSLBufferSize": "17408"
+                    },
+                    "enable_features": [
+                        "DefaultOpenSSLBufferSizeFeature"
+                    ]
+                }
+            ]
+        }
+    ],
     "DefaultPassthroughCommandDecoder": [
         {
             "platforms": [
