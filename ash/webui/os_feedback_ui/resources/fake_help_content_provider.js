@@ -26,6 +26,12 @@ export class FakeHelpContentProvider {
      * @private {string}
      */
     this.lastQuery_ = '';
+
+    /**
+     * Keep track of how many times the getHelpContents has been called.
+     * @private {!number}
+     */
+    this.getHelpContentsCallCount_ = 0;
   }
 
   /** @return {string} */
@@ -38,8 +44,16 @@ export class FakeHelpContentProvider {
    * @return {!Promise<{response: !SearchResponse}>}
    */
   getHelpContents(request) {
+    ++this.getHelpContentsCallCount_;
     this.lastQuery_ = mojoString16ToString(request.query);
     return this.methods_.resolveMethod('getHelpContents');
+  }
+
+  /**
+   * @return {number}
+   */
+  getHelpContentsCallCount() {
+    return this.getHelpContentsCallCount_;
   }
 
   /**

@@ -293,6 +293,12 @@ export class SearchPageElement extends SearchPageElementBase {
       this.hideError_();
     }
 
+    // On oobe and login screen, the feedback app does not allow access to
+    // external websites. Therefore, search is not needed.
+    if (this.isOobeOrLoginScreen_()) {
+      return;
+    }
+
     const querySeqNo = this.getNextQuerySeqNo_();
     this.searchTimerID_ = setTimeout(() => {
       this.fetchHelpContent_(query, querySeqNo);
@@ -327,6 +333,12 @@ export class SearchPageElement extends SearchPageElementBase {
   async fetchHelpContent_(query, querySeqNo) {
     if (!this.iframe_) {
       console.warn('untrusted iframe is not found');
+      return;
+    }
+
+    // On oobe and login screen, the feedback app does not allow access to
+    // external websites. Therefore, search is not needed.
+    if (this.isOobeOrLoginScreen_()) {
       return;
     }
 

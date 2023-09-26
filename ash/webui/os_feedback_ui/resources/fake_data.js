@@ -88,6 +88,7 @@ export const fakeFeedbackContext = {
   fromAutofill: false,
   autofillMetadata: '',
   traceId: 1,
+  categoryTag: 'MediaApp',
   hasLinkedCrossDevicePhone: false,
 };
 
@@ -102,6 +103,21 @@ export const fakeEmptyFeedbackContext = {
   fromAutofill: false,
   autofillMetadata: '',
   traceId: 0,
+  hasLinkedCrossDevicePhone: false,
+};
+
+/** @type {!FeedbackContext} */
+export const fakeLoginFeedbackContext = {
+  email: '',
+  pageUrl: {url: ''},
+  isInternalAccount: false,
+  fromAssistant: false,
+  assistantDebugInfoAllowed: false,
+  fromSettingsSearch: false,
+  fromAutofill: false,
+  autofillMetadata: '',
+  traceId: 0,
+  categoryTag: 'Login',
   hasLinkedCrossDevicePhone: false,
 };
 
