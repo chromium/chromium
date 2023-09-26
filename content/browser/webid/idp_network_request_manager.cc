@@ -584,7 +584,7 @@ void OnTokenRequestParsed(
   if (fetch_status.parse_status != ParseStatus::kSuccess) {
     if (IsFedCmErrorEnabled() &&
         fetch_status.parse_status == ParseStatus::kNoResponseError) {
-      token_result.error = TokenError("server_error", /*url=*/GURL());
+      token_result.error = TokenError{"server_error", GURL()};
     }
 
     std::move(callback).Run(fetch_status, token_result);
@@ -617,7 +617,7 @@ void OnTokenRequestParsed(
     if (response_error) {
       std::string error_code = ExtractString(*response_error, kErrorCodeKey);
       GURL error_url = ExtractUrl(*response_error, kErrorUrlKey);
-      token_result.error = TokenError(error_code, error_url);
+      token_result.error = TokenError{error_code, error_url};
     }
   }
 
