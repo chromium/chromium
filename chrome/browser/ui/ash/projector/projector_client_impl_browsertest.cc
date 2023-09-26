@@ -36,7 +36,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -46,6 +45,7 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/page_type.h"
@@ -352,7 +352,7 @@ class ProjectorClientManagedTest
     return prefs::kProjectorAllowByPolicy;
   }
 
-  apps::Readiness GetAppReadiness(const web_app::AppId& app_id) {
+  apps::Readiness GetAppReadiness(const webapps::AppId& app_id) {
     apps::Readiness readiness;
     bool app_found =
         GetAppServiceProxy(browser()->profile())
@@ -364,7 +364,7 @@ class ProjectorClientManagedTest
     return readiness;
   }
 
-  absl::optional<apps::IconKey> GetAppIconKey(const web_app::AppId& app_id) {
+  absl::optional<apps::IconKey> GetAppIconKey(const webapps::AppId& app_id) {
     absl::optional<apps::IconKey> icon_key;
     bool app_found =
         GetAppServiceProxy(browser()->profile())
