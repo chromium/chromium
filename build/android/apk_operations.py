@@ -364,8 +364,17 @@ def _RunGdb(device, package_name, debug_process_name, pid, output_directory,
   os.execv(gdb_script_path, cmd)
 
 
-def _RunLldb(device, package_name, debug_process_name, pid, output_directory,
-             target_cpu, port, verbose):
+def _RunLldb(device,
+             package_name,
+             debug_process_name,
+             pid,
+             output_directory,
+             port,
+             target_cpu=None,
+             ndk_dir=None,
+             lldb_server=None,
+             lldb=None,
+             verbose=None):
   if not pid:
     debug_process_name = _NormalizeProcessName(debug_process_name, package_name)
     pid = device.GetApplicationPids(debug_process_name, at_most_one=True)
@@ -389,6 +398,12 @@ def _RunLldb(device, package_name, debug_process_name, pid, output_directory,
     cmd.append('--verbose')
   if target_cpu:
     cmd.append('--target-arch=%s' % _TargetCpuToTargetArch(target_cpu))
+  if ndk_dir:
+    cmd.append('--ndk-dir=%s' % ndk_dir)
+  if lldb_server:
+    cmd.append('--lldb-server=%s' % lldb_server)
+  if lldb:
+    cmd.append('--lldb=%s' % lldb)
   logging.warning('Running: %s', ' '.join(shlex.quote(x) for x in cmd))
   print(
       _Colorize('All subsequent output is from connect_lldb.sh script.',
@@ -1652,10 +1667,17 @@ If no apk process is currently running, sends a launch intent.
   supports_multiple_devices = False
 
   def Run(self):
-    _RunLldb(self.devices[0], self.args.package_name,
-             self.args.debug_process_name, self.args.pid,
-             self.args.output_directory, self.args.target_cpu, self.args.port,
-             bool(self.args.verbose_count))
+    _RunLldb(device=self.devices[0],
+             package_name=self.args.package_name,
+             debug_process_name=self.args.debug_process_name,
+             pid=self.args.pid,
+             output_directory=self.args.output_directory,
+             port=self.args.port,
+             target_cpu=self.args.target_cpu,
+             ndk_dir=self.args.ndk_dir,
+             lldb_server=self.args.lldb_server,
+             lldb=self.args.lldb,
+             verbose=bool(self.args.verbose_count))
 
   def _RegisterExtraArgs(self, group):
     pid_group = group.add_mutually_exclusive_group()
@@ -1665,6 +1687,11 @@ If no apk process is currently running, sends a launch intent.
     pid_group.add_argument('--pid',
                            help='The process ID to attach to. Defaults to '
                            'the main process for the package.')
+    group.add_argument('--ndk-dir',
+                       help='Select alternative NDK root directory.')
+    group.add_argument('--lldb-server',
+                       help='Select alternative on-device lldb-server.')
+    group.add_argument('--lldb', help='Select alternative client lldb.sh.')
     # Same default port that ndk-gdb.py uses.
     group.add_argument('--port',
                        type=int,

@@ -22,18 +22,23 @@ LC_ALL=C
 CHROMIUM_SRC=$(cd "$PROGDIR"/../.. >/dev/null && pwd 2>/dev/null)
 
 TMPDIR=
-LLDB_SERVER_PIDFILE=
+LLDB_SERVER_JOB_PIDFILE=
+LLDB_SERVER_PID=
 TARGET_LLDB_SERVER=
 COMMAND_PREFIX=
 COMMAND_SUFFIX=
 
 clean_exit () {
   if [ "$TMPDIR" ]; then
-    LLDB_SERVER_PID=$(cat $LLDB_SERVER_PIDFILE 2>/dev/null)
+    LLDB_SERVER_JOB_PID=$(cat $LLDB_SERVER_JOB_PIDFILE 2>/dev/null)
     if [ "$LLDB_SERVER_PID" ]; then
-      log "Killing background lldb-server process: $LLDB_SERVER_PID"
-      kill -9 $LLDB_SERVER_PID >/dev/null 2>&1
-      rm -f "$LLDB_SERVER_PIDFILE"
+      log "Killing lldb-server process on-device: $LLDB_SERVER_PID"
+      adb_shell kill $LLDB_SERVER_PID
+    fi
+    if [ "$LLDB_SERVER_JOB_PID" ]; then
+      log "Killing background lldb-server process: $LLDB_SERVER_JOB_PID"
+      kill -9 $LLDB_SERVER_JOB_PID >/dev/null 2>&1
+      rm -f "$LLDB_SERVER_JOB_PIDFILE"
     fi
     if [ "$TARGET_LLDB_SERVER" ]; then
       log "Removing target lldb-server binary: $TARGET_LLDB_SERVER."
@@ -296,7 +301,7 @@ else
   if [ ! -d "$NDK_DIR" ]; then
     panic "Invalid directory: $NDK_DIR"
   fi
-  if [ ! -f "$NDK_DIR/toolchains" ]; then
+  if [ ! -d "$NDK_DIR/toolchains" ]; then
     panic "Not a valid NDK directory: $NDK_DIR"
   fi
   ANDROID_NDK_ROOT=$NDK_DIR
@@ -449,10 +454,17 @@ get_ndk_lldb_server () {
   local ARCH=$2
   local HOST_OS=$(get_ndk_host_system)
   local HOST_ARCH=$(get_ndk_host_arch)
-  local CLANG_VERSION_SOURCE="$NDK_DIR/../3pp/install.sh"
-  local CLANG_VERSION=$(grep CLANG_VERSION= $CLANG_VERSION_SOURCE | cut -f2 -d'"')
   local NDK_ARCH_DIR=$(get_ndk_arch_dir "$ARCH")
-  echo "$NDK_DIR/toolchains/llvm/prebuilt/$HOST_OS-$HOST_ARCH/lib64/clang/$CLANG_VERSION/lib/linux/$NDK_ARCH_DIR/lldb-server"
+  local i
+  # For lldb-server is under lib64/ for r25, and lib/ for r26+.
+  for i in "lib64" "lib"; do
+    local RET=$(realpath -m $NDK_DIR/toolchains/llvm/prebuilt/$HOST_OS-$HOST_ARCH/$i/clang/*/lib/linux/$NDK_ARCH_DIR/lldb-server)
+    if [ -e "$RET" ]; then
+      echo $RET
+      return 0
+    fi
+  done
+  return 1
 }
 
 # Find host LLDB client binary
@@ -486,7 +498,7 @@ TMP_ID=$$
 TMPDIR=/tmp/$USER-adb-lldb-tmp-$TMP_ID
 mkdir -p "$TMPDIR" && rm -rf "$TMPDIR"/*
 
-LLDB_SERVER_PIDFILE="$TMPDIR"/lldb-server-$TMP_ID.pid
+LLDB_SERVER_JOB_PIDFILE="$TMPDIR"/lldb-server-$TMP_ID.pid
 
 # Returns the timestamp of a given file, as number of seconds since epoch.
 # $1: file path
@@ -677,16 +689,17 @@ for i in 1 2; do
   "$ADB" shell $COMMAND_PREFIX $TARGET_LLDB_SERVER g \
     $TARGET_DOMAIN_SOCKET \
     --attach $PID $COMMAND_SUFFIX > $LLDB_SERVER_LOG 2>&1 &
-  LLDB_SERVER_PID=$!
-  echo "$LLDB_SERVER_PID" > $LLDB_SERVER_PIDFILE
-  log "background job pid: $LLDB_SERVER_PID"
+  LLDB_SERVER_JOB_PID=$!
+  LLDB_SERVER_PID=$(adb_shell $COMMAND_PREFIX pidof $(basename $TARGET_LLDB_SERVER))
+  echo "$LLDB_SERVER_JOB_PID" > $LLDB_SERVER_JOB_PIDFILE
+  log "background job pid: $LLDB_SERVER_JOB_PID"
 
   # Sleep to allow lldb-server to attach to the remote process and be
   # ready to connect to.
   log "Sleeping ${ATTACH_DELAY}s to ensure lldb-server is alive"
   sleep "$ATTACH_DELAY"
   log "Job control: $(jobs -l)"
-  STATE=$(jobs -l | awk '$2 == "'$LLDB_SERVER_PID'" { print $3; }')
+  STATE=$(jobs -l | awk '$2 == "'$LLDB_SERVER_JOB_PID'" { print $3; }')
   if [ "$STATE" != "Running" ]; then
     pid_msg=$(grep "is already traced by process" $LLDB_SERVER_LOG 2>/dev/null)
     if [[ -n "$pid_msg" ]]; then
