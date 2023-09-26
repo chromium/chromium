@@ -473,7 +473,7 @@ bool NetworkState::IndicateRoaming() const {
 }
 
 bool NetworkState::IsDynamicWep() const {
-  return security_class_ == shill::kSecurityWep &&
+  return security_class_ == shill::kSecurityClassWep &&
          eap_key_mgmt_ == shill::kKeyManagementIEEE8021X;
 }
 
@@ -523,7 +523,8 @@ NetworkState::PortalState NetworkState::GetPortalState() const {
 }
 
 bool NetworkState::IsSecure() const {
-  return !security_class_.empty() && security_class_ != shill::kSecurityNone;
+  return !security_class_.empty() &&
+         security_class_ != shill::kSecurityClassNone;
 }
 
 std::string NetworkState::GetHexSsid() const {

@@ -149,8 +149,8 @@ bool VerifyOpenConfiguration(const base::Value::Dict& shill_properties,
   bool ok = VerifyBaseConfiguration(shill_properties, expected_ssid, out_guid);
 
   std::string actual_security_class = GetSecurityClass(shill_properties);
-  if (actual_security_class != shill::kSecurityNone) {
-    ADD_FAILURE() << "Expected security class '" << shill::kSecurityNone
+  if (actual_security_class != shill::kSecurityClassNone) {
+    ADD_FAILURE() << "Expected security class '" << shill::kSecurityClassNone
                   << "' but had '" << actual_security_class;
     ok = false;
   }
