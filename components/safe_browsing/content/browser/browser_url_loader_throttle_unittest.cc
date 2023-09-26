@@ -434,7 +434,7 @@ TEST_F(SBBrowserUrlLoaderThrottleTest,
   EXPECT_FALSE(defer);
 }
 
-TEST_F(SBBrowserUrlLoaderThrottleTest, VerifyDefer_DeferOnUnSafeDocumentUrl) {
+TEST_F(SBBrowserUrlLoaderThrottleTest, VerifyDefer_DeferOnUnsafeDocumentUrl) {
   SetUpTest();
   url_checker_->AddCallbackInfo(/*should_proceed=*/false,
                                 /*should_show_interstitial=*/true,
@@ -760,26 +760,22 @@ class SBBrowserUrlLoaderThrottleDisableSkipSubresourcesTest
 };
 
 TEST_F(SBBrowserUrlLoaderThrottleDisableSkipSubresourcesTest,
-       VerifyDefer_DoesNotDeferOnUnSafeDocumentUrl) {
+       VerifyDefer_DoesNotDeferOnSafeDocumentUrl) {
   SetUpTest();
-  url_checker_->AddCallbackInfo(/*should_proceed=*/false,
-                                /*should_show_interstitial=*/true,
+  url_checker_->AddCallbackInfo(/*should_proceed=*/true,
+                                /*should_show_interstitial=*/false,
                                 /*should_delay_callback=*/false);
 
-  bool defer = CallWillStartRequestWithDestination(
-      network::mojom::RequestDestination::kIframe);
-  // Safe Browsing and URL loader are performed in parallel. Safe Browsing
-  // doesn't defer the start of the request.
+  bool defer = CallWillStartRequest();
   EXPECT_FALSE(defer);
-  EXPECT_EQ(throttle_delegate_->GetErrorCode(), net::ERR_BLOCKED_BY_CLIENT);
-  EXPECT_EQ(throttle_delegate_->GetCustomReason(), "SafeBrowsing");
+  EXPECT_EQ(throttle_delegate_->GetErrorCode(), 0);
 
   defer = CallWillProcessResponse();
-  EXPECT_TRUE(defer);
+  EXPECT_FALSE(defer);
 }
 
 TEST_F(SBBrowserUrlLoaderThrottleDisableSkipSubresourcesTest,
-       VerifyDefer_DefersOnUnSafeDocumentUrl) {
+       VerifyDefer_DefersOnUnsafeDocumentUrl) {
   SetUpTest();
   url_checker_->AddCallbackInfo(/*should_proceed=*/false,
                                 /*should_show_interstitial=*/true,
@@ -797,7 +793,7 @@ TEST_F(SBBrowserUrlLoaderThrottleDisableSkipSubresourcesTest,
 }
 
 TEST_F(SBBrowserUrlLoaderThrottleDisableSkipSubresourcesTest,
-       VerifyDefer_DefersOnUnSafeIframeUrl) {
+       VerifyDefer_DefersOnUnsafeIframeUrl) {
   SetUpTest();
   url_checker_->AddCallbackInfo(/*should_proceed=*/false,
                                 /*should_show_interstitial=*/true,

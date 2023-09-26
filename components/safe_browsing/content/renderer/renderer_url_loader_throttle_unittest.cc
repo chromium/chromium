@@ -267,7 +267,10 @@ class SBRendererUrlLoaderThrottleDisableSkipSubresourcesTest
     : public SBRendererUrlLoaderThrottleTest {
  public:
   SBRendererUrlLoaderThrottleDisableSkipSubresourcesTest() {
-    feature_list_.InitAndDisableFeature(kSafeBrowsingSkipSubresources);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{kSafeBrowsingSkipImageCssFont,
+                               kSafeBrowsingSkipSubresources});
   }
 
  protected:

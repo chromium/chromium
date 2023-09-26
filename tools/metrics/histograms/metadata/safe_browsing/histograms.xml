@@ -3086,7 +3086,8 @@ failing to fetch the updates which puts users' security at risk. -->
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Logs the request destination of the URL that is checked by the {Process} URL
-    loader throttle. Logged each time WillStartRequest is called.
+    loader throttle, and whether the URL check was {RequestedSkippedOrChecked}.
+    Logged each time WillStartRequest is called.
   </summary>
   <token key="Process" variants="ThrottleProcess"/>
   <token key="RequestedSkippedOrChecked" variants="RequestedSkippedOrChecked"/>
