@@ -448,6 +448,11 @@ export class PinKeyboardElement extends PinKeyboardElementBase {
       return true;
     }
 
+    // Valid if the key is a numpad number, and shift is not pressed.
+    if ((event.keyCode >= 96 && event.keyCode <= 105) && !event.shiftKey) {
+      return true;
+    }
+
     // Valid if the key is one of the selected special keys defined in
     // |PIN_INPUT_ALLOWED_NON_NUMBER_KEY_CODES|.
     if (PIN_INPUT_ALLOWED_NON_NUMBER_KEY_CODES.has(event.keyCode)) {
