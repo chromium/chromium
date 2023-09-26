@@ -23,12 +23,12 @@
     // When adding new engines, increment this number and use it as the new
     // max ID. This is used by UMA stats and must be updated to include the full
     // range or else not all engines will be counted in stats.
-    "kMaxPrepopulatedEngineID": 102,
+    "kMaxPrepopulatedEngineID": 110,
 
     // Increment this if you change the data in ways that mean users with
     // existing data should get a new version. Otherwise, existing data may
     // continue to be used and updates made here will not always appear.
-    "kCurrentDataVersion": 140
+    "kCurrentDataVersion": 141
   },
 
   // The following engines are included in country lists and are added to the
@@ -70,6 +70,16 @@
       "image_url_post_params": "imageBin={google:imageThumbnailBase64}",
       "type": "SEARCH_ENGINE_BING",
       "id": 3
+    },
+
+    "brave": {
+      "name": "Brave Search",
+      "keyword": "search.brave.com",
+      "favicon_url": "https://cdn.search.brave.com/serp/v1/static/brand/eebf5f2ce06b0b0ee6bbd72d7e18621d4618b9663471d42463c692d019068072-brave-lion-favicon.png",
+      "search_url": "https://search.brave.com/search?q={searchTerms}",
+      "suggest_url": "https://search.brave.com/api/suggest?q={searchTerms}",
+      "type": "SEARCH_ENGINE_BRAVE",
+      "id": 109
     },
 
     "coccoc": {
@@ -141,6 +151,25 @@
       "id": 1
     },
 
+    "karma": {
+      "name": "Karma Search",
+      "keyword": "karmasearch.org",
+      "favicon_url": "https://karmasearch.org/favicon.ico",
+      "search_url": "https://karmasearch.org/search?q={searchTerms}",
+      "suggest_url": "https://api.karmasearch.org/search/autosuggest?q={searchTerms}",
+      "type": "SEARCH_ENGINE_KARMA",
+      "id": 110
+    },
+
+    "lilo": {
+      "name": "Lilo",
+      "keyword": "lilo.org",
+      "favicon_url": "https://www.lilo.org/wp-content/themes/jarvis_wp/ajans/assets/favicon.ico",
+      "search_url": "https://search.lilo.org/?q={searchTerms}",
+      "suggest_url": "https://search.lilo.org/api/?service=suggestions&action=suggest&q={searchTerms}&f=chr",
+      "id": 106
+    },
+
     "mail_ru": {
       "name": "@MAIL.RU",
       "keyword": "mail.ru",
@@ -155,6 +184,15 @@
       "id": 83
     },
 
+    "mojeek": {
+      "name": "Mojeek",
+      "keyword": "mojeek.com",
+      "favicon_url": "https://www.mojeek.com/favicon.ico",
+      "search_url": "https://www.mojeek.com/search?q={searchTerms}",
+      "type": "SEARCH_ENGINE_MOJEEK",
+      "id": 103
+    },
+
     "naver": {
       "name": "\ub124\uc774\ubc84",
       "keyword": "naver.com",
@@ -165,6 +203,26 @@
       "id": 67
     },
 
+    "nona": {
+      "name": "Nona",
+      "keyword": "nona.de",
+      "favicon_url": "https://www.nona.de/favicon.ico",
+      "search_url": "https://www.nona.de/?q={searchTerms}",
+      "suggest_url": "https://www.nona.de/autocomplete/?q={searchTerms}",
+      "type": "SEARCH_ENGINE_NONA",
+      "id": 107
+    },
+
+    "panda": {
+      "name": "Panda Search",
+      "keyword": "panda-search.org",
+      "favicon_url": "https://panda-search.org/favicon.ico",
+      "search_url": "https://panda-search.org/search/?q={searchTerms}",
+      "suggest_url": "https://suggest.panda-search.org/suggest?rtag=pandaomn&rsrc=po&q={searchTerms}&fmt=cr",
+      "type": "SEARCH_ENGINE_PANDASEARCH",
+      "id": 104
+    },
+
     "petal_search": {
       "name": "Petal Search",
       "keyword": "petalsearch.com",
@@ -172,6 +230,26 @@
       "search_url": "https://petalsearch.com/search?query={searchTerms}",
       "type": "SEARCH_ENGINE_PETALSEARCH",
       "id": 102
+    },
+
+    "presearch": {
+      "name": "Presearch",
+      "keyword": "presearch.com",
+      "favicon_url": "https://presearch.com/favicon.ico",
+      "search_url": "https://presearch.com/search?q={searchTerms}&src=c",
+      "suggest_url": "https://presearch.com/api/suggest?q={searchTerms}&src=c",
+      "type": "SEARCH_ENGINE_PRESEARCH",
+      "id": 105
+    },
+
+    "quendu": {
+      "name": "Quendu.com",
+      "keyword": "quendu.com",
+      "favicon_url": "https://quendu.com/assets/favicon-48x48.png",
+      "search_url": "https://www.quendu.com/search?q={searchTerms}",
+      "suggest_url": "https://www.quendu.com/suggest?query={searchTerms}",
+      "type": "SEARCH_ENGINE_QUENDU",
+      "id": 108
     },
 
     "qwant": {
@@ -632,6 +710,15 @@
       "id": 15
     },
 
+    "yep": {
+      "name": "Yep",
+      "keyword": "yep.com",
+      "favicon_url": "https://yep.com/assets/opensearch-64x64.png",
+      "search_url": "https://yep.com/web?q={searchTerms}",
+      "suggest_url": "https://api.yep.com/ac/?query={searchTerms}&os=true",
+      "type": "SEARCH_ENGINE_YEP",
+      "id": 106
+    },
 
     // UMA-only engines ////////////////////////////////////////////////////////
 
