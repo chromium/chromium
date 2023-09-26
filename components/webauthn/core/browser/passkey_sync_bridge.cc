@@ -231,16 +231,16 @@ PasskeySyncBridge::GetModelTypeControllerDelegate() {
 
 base::flat_set<std::string> PasskeySyncBridge::GetAllSyncIds() const {
   std::vector<std::string> sync_ids;
-  std::transform(data_.begin(), data_.end(), std::back_inserter(sync_ids),
-                 [](const auto& pair) { return pair.first; });
+  base::ranges::transform(data_, std::back_inserter(sync_ids),
+                          [](const auto& pair) { return pair.first; });
   return base::flat_set<std::string>(base::sorted_unique, std::move(sync_ids));
 }
 
 std::vector<sync_pb::WebauthnCredentialSpecifics>
 PasskeySyncBridge::GetAllPasskeys() const {
   std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys;
-  std::transform(data_.begin(), data_.end(), std::back_inserter(passkeys),
-                 [](const auto& pair) { return pair.second; });
+  base::ranges::transform(data_, std::back_inserter(passkeys),
+                          [](const auto& pair) { return pair.second; });
   return passkeys;
 }
 
