@@ -1,20 +1,40 @@
 <style include="cr-hidden-style">
-  :host-context([chrome-refresh-2023]) #container-parent,
+  :host-context([chrome-refresh-2023]) #container,
+  :host-context([chrome-refresh-2023]) #conainer-parent,
+  :host-context([chrome-refresh-2023]) #container-border,
+  :host-context([chrome-refresh-2023]) #empty-state-container {
+    border-radius: 16px;
+    display: block;
+  }
   :host-context([chrome-refresh-2023]) #empty-state-container {
     margin: 0 8px;
-    border-radius: 16px;
-    display: block;
-  }
-  :host-context([chrome-refresh-2023]) #empty-state-container {
     padding: 20px 0;
   }
-  :host-context([chrome-refresh-2023]) #container {
-    border-radius: 16px;
-    display: block;
+
+  #toolbar-container {
+    width: 100%;
   }
+
+  #flex-parent {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #container-border{
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+    flex-grow: 1;
+  }
+
   #container-parent {
     background: var(--background-color);
-    height: 100%;
+    height:100%;
+    overflow: auto;
+    overflow-wrap: break-word;
+    overflow-x: hidden;
   }
   #container {
     background: var(--background-color);
@@ -62,17 +82,21 @@
     background-color: transparent;
   }
 </style>
-<div id="toolbar-container" hidden="[[!isWebUIToolbarVisible_]]">
-  <read-anything-toolbar id="toolbar"></read-anything-toolbar>
-</div>
-<div id="container-parent" hidden="[[!hasContent_]]">
-  <div id="container"></div>
-</div>
-<div id="empty-state-container" hidden="[[hasContent_]]">
-  <sp-empty-state
-      image-path="[[emptyStateImagePath_]]"
-      dark-image-path="[[emptyStateDarkImagePath_]]"
-      heading="[[emptyStateHeading_]]"
-      body="[[emptyStateSubheading_]]">
-  </sp-empty-state>
+<div id="flex-parent">
+  <div id="toolbar-container" hidden="[[!isWebUIToolbarVisible_]]">
+    <read-anything-toolbar id="toolbar"></read-anything-toolbar>
+  </div>
+  <div id="container-border" hidden="[[!hasContent_]]">
+    <div id="container-parent">
+      <div id="container"></div>
+    </div>
+  </div>
+  <div id="empty-state-container" hidden="[[hasContent_]]">
+    <sp-empty-state
+        image-path="[[emptyStateImagePath_]]"
+        dark-image-path="[[emptyStateDarkImagePath_]]"
+        heading="[[emptyStateHeading_]]"
+        body="[[emptyStateSubheading_]]">
+    </sp-empty-state>
+  </div>
 </div>
