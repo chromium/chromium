@@ -102,35 +102,9 @@ void LayoutMultiColumnSpannerPlaceholder::WillBeRemovedFromTree() {
   LayoutBox::WillBeRemovedFromTree();
 }
 
-void LayoutMultiColumnSpannerPlaceholder::RecalcVisualOverflow() {
-  NOT_DESTROYED();
-  LayoutBox::RecalcVisualOverflow();
-  ClearVisualOverflow();
-  AddContentsVisualOverflow(
-      layout_object_in_flow_thread_->VisualOverflowRect());
-}
-
 void LayoutMultiColumnSpannerPlaceholder::UpdateLayout() {
   NOT_DESTROYED();
   NOTREACHED_NORETURN();
-}
-
-void LayoutMultiColumnSpannerPlaceholder::Paint(
-    const PaintInfo& paint_info) const {
-  NOT_DESTROYED();
-  if (!layout_object_in_flow_thread_->HasSelfPaintingLayer())
-    layout_object_in_flow_thread_->Paint(paint_info);
-}
-
-bool LayoutMultiColumnSpannerPlaceholder::NodeAtPoint(
-    HitTestResult& result,
-    const HitTestLocation& hit_test_location,
-    const PhysicalOffset& accumulated_offset,
-    HitTestPhase phase) {
-  NOT_DESTROYED();
-  return !layout_object_in_flow_thread_->HasSelfPaintingLayer() &&
-         layout_object_in_flow_thread_->NodeAtPoint(result, hit_test_location,
-                                                    accumulated_offset, phase);
 }
 
 LayoutPoint LayoutMultiColumnSpannerPlaceholder::LocationInternal() const {

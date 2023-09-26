@@ -72,13 +72,7 @@ class LayoutMultiColumnSpannerPlaceholder final : public LayoutBox {
  protected:
   void InsertedIntoTree() override;
   void WillBeRemovedFromTree() override;
-  void RecalcVisualOverflow() override;
   void UpdateLayout() override;
-  void Paint(const PaintInfo&) const override;
-  bool NodeAtPoint(HitTestResult&,
-                   const HitTestLocation&,
-                   const PhysicalOffset& accumulated_offset,
-                   HitTestPhase) override;
 
  private:
   LayoutPoint LocationInternal() const override;
