@@ -25,6 +25,9 @@ import * as fillConstants from '//components/autofill/ios/form_util/resources/fi
  *   is_focusable: boolean,
  *   should_autocomplete: boolean,
  *   role: number,
+ *   placeholder_attribute: string,
+ *   aria_label: string,
+ *   aria_description: string,
  *   option_contents: Array<string>,
  *   option_values: Array<string>
  * }}
@@ -438,6 +441,15 @@ __gCrWeb.fill.webFormControlElementToFormField = function(
   const roleAttribute = element.getAttribute('role');
   if (roleAttribute && roleAttribute.toLowerCase() === 'presentation') {
     field['role'] = __gCrWeb.fill.ROLE_ATTRIBUTE_PRESENTATION;
+  }
+
+  field['placeholder_attribute'] = element.getAttribute('placeholder') || '';
+  if (field['placeholder_attribute'] != null &&
+      field['placeholder_attribute'].length > fillConstants.MAX_DATA_LENGTH) {
+    // Discard overly long attribute values to avoid DOS-ing the browser
+    // process. However, send over a default string to indicate that the
+    // attribute was present.
+    field['placeholder_attribute'] = 'x-max-data-length-exceeded';
   }
 
   field['aria_label'] = __gCrWeb.fill.getAriaLabel(element);

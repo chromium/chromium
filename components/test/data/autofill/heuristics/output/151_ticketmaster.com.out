@@ -1,7 +1,7 @@
 HTML_TYPE_CREDIT_CARD_NUMBER | new_credit_card_number | Card Number * |  | new_credit_card_number_1
 HTML_TYPE_CREDIT_CARD_TYPE | new_credit_card_type_id | Card Type * |  | new_credit_card_number_1
 HTML_TYPE_CREDIT_CARD_EXP_MONTH | new_credit_card_expire_month | Exp Month * |  | new_credit_card_number_1
-HTML_TYPE_CREDIT_CARD_EXP_YEAR | new_credit_card_expire_year | Exp Year * |  | new_credit_card_number_1
+HTML_TYPE_CREDIT_CARD_EXP_4_DIGIT_YEAR | new_credit_card_expire_year | Exp Year * |  | new_credit_card_number_1
 CREDIT_CARD_VERIFICATION_CODE | new_credit_card_cin | Security Code * |  | new_credit_card_number_1
 HTML_TYPE_GIVEN_NAME | first_name | First Name * |  | -billing
 HTML_TYPE_FAMILY_NAME | last_name | Last Name * |  | -billing

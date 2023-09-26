@@ -358,6 +358,17 @@ bool CreditCardField::LikelyCardYearSelectField(
 
   auto OptionsContain = [&](const std::vector<std::u16string>& year_needles,
                             const auto& option_projection) {
+    // If the <option>s contain single-digits elements, this may lead to false
+    // positives. Consider:
+    // <option value="1">Afghanistan</option>
+    // ...
+    // <option value="23">Botswana</option>
+    // While 23 is a valid expiration year, the selector is not a expiration
+    // year selector. In case we find a single-digit entry, we reject this as
+    // an expiration year selector.
+    if (base::Contains(field->options, u"2", option_projection)) {
+      return false;
+    }
     auto is_substring = [](base::StringPiece16 option,
                            base::StringPiece16 year_needle) {
       return option.find(year_needle) != base::StringPiece16::npos;
@@ -640,12 +651,114 @@ bool CreditCardField::ParseExpirationDate(AutofillScanner* scanner,
   return false;
 }
 
+// static
+ServerFieldType CreditCardField::DetermineExpirationYearType(
+    const AutofillField& field,
+    ServerFieldType fallback_type,
+    ServerFieldType server_hint,
+    ServerFieldType forced_field_type) {
+  // Forced server classifications always take priority if the field type
+  // matches. Otherwise, the server override happens at a different spot.
+  if (forced_field_type == CREDIT_CARD_EXP_2_DIGIT_YEAR ||
+      forced_field_type == CREDIT_CARD_EXP_4_DIGIT_YEAR) {
+    return forced_field_type;
+  }
+
+  // For text fields, look for placeholder patterns.
+  if (field.IsTextInputElement()) {
+    if (field.max_length == 2) {
+      return CREDIT_CARD_EXP_2_DIGIT_YEAR;
+    }
+    static constexpr char16_t kYYYYRegex[] = u"yyyy|aaaa|jjjj";
+    if (MatchesRegex<kYYYYRegex>(field.placeholder, nullptr) ||
+        MatchesRegex<kYYYYRegex>(field.label, nullptr)) {
+      return CREDIT_CARD_EXP_4_DIGIT_YEAR;
+    }
+    static constexpr char16_t kYYRegex[] = u"yy|aa|jj";
+    if (MatchesRegex<kYYRegex>(field.placeholder, nullptr) ||
+        MatchesRegex<kYYRegex>(field.label, nullptr)) {
+      return CREDIT_CARD_EXP_2_DIGIT_YEAR;
+    }
+    if (field.max_length == 4) {
+      return CREDIT_CARD_EXP_4_DIGIT_YEAR;
+    }
+  }
+
+  // For select elements, look for today's year in the list of possible
+  // expiration years and search for 4-digit and 2-digit representations.
+  auto OptionsContain = [](const AutofillField& field,
+                           const std::u16string& year_needle,
+                           const auto& option_projection) {
+    // If the <option>s contain single-digits elements, this may lead to false
+    // positives. Consider:
+    // <option value="1">Afghanistan</option>
+    // ...
+    // <option value="23">Botswana</option>
+    // While 23 is a valid expiration year, the selector is not a expiration
+    // year selector. In case we find a single-digit entry, we reject this as
+    // an expiration year selector.
+    if (base::Contains(field.options, u"2", option_projection)) {
+      return false;
+    }
+    auto is_substring = [&year_needle](std::u16string_view option) {
+      return option.find(year_needle) != std::u16string_view::npos;
+    };
+    return base::ranges::any_of(field.options, is_substring, option_projection);
+  };
+  if (field.IsSelectOrSelectListElement()) {
+    base::Time::Exploded time_exploded;
+    AutofillClock::Now().UTCExplode(&time_exploded);
+    std::u16string year_4_digits = base::NumberToString16(time_exploded.year);
+    std::u16string year_2_digits = year_4_digits.substr(2);
+
+    // Options are structured as <option value="$value">$content</option>.
+    // Search in the $value first, because that's what's used for voting in
+    // crowdsourcing and is more relevant.
+    if (OptionsContain(field, year_4_digits, &SelectOption::value)) {
+      return CREDIT_CARD_EXP_4_DIGIT_YEAR;
+    }
+    if (OptionsContain(field, year_2_digits, &SelectOption::value)) {
+      return CREDIT_CARD_EXP_2_DIGIT_YEAR;
+    }
+    // Fallback to content.
+    if (OptionsContain(field, year_4_digits, &SelectOption::content)) {
+      return CREDIT_CARD_EXP_4_DIGIT_YEAR;
+    }
+    if (OptionsContain(field, year_2_digits, &SelectOption::content)) {
+      return CREDIT_CARD_EXP_2_DIGIT_YEAR;
+    }
+  }
+
+  if (server_hint == CREDIT_CARD_EXP_2_DIGIT_YEAR ||
+      server_hint == CREDIT_CARD_EXP_4_DIGIT_YEAR) {
+    return server_hint;
+  }
+  return fallback_type;
+}
+
 ServerFieldType CreditCardField::GetExpirationYearType() const {
-  return (expiration_date_
-              ? exp_year_type_
-              : ((expiration_year_ && expiration_year_->max_length == 2)
-                     ? CREDIT_CARD_EXP_2_DIGIT_YEAR
-                     : CREDIT_CARD_EXP_4_DIGIT_YEAR));
+  if (expiration_date_) {
+    return exp_year_type_;
+  }
+  if (!expiration_year_) {
+    return UNKNOWN_TYPE;
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableExpirationDateImprovements)) {
+    // The default for select or list elements does not really matter because
+    // it's practically always chosen from the select options. The default for
+    // text elements was chosen base on statistics from server side
+    // classifications (go/iqwtu).
+    // Keep this in sync with
+    // FormStructureRationalizer::RationalizeAutocompleteAttributes.
+    return DetermineExpirationYearType(
+        *expiration_year_,
+        /*fallback_type=*/CREDIT_CARD_EXP_4_DIGIT_YEAR,
+        /*server_hint=*/NO_SERVER_DATA,
+        /*forced_field_type=*/NO_SERVER_DATA);
+  }
+  return expiration_year_->max_length == 2 ? CREDIT_CARD_EXP_2_DIGIT_YEAR
+                                           : CREDIT_CARD_EXP_4_DIGIT_YEAR;
 }
 
 bool CreditCardField::HasExpiration() const {

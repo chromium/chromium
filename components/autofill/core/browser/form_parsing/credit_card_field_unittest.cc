@@ -161,6 +161,31 @@ TEST_P(CreditCardFieldTest, ParseMiniumCreditCard) {
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
+// Ensure that a placeholder hint for a 2-digit year is respected
+TEST_P(CreditCardFieldTest, ParseMiniumCreditCardWith2DigitYearHint) {
+  base::test::ScopedFeatureList scoped_features{
+      features::kAutofillEnableExpirationDateImprovements};
+  AddTextFormFieldData("card_number", "Card Number", CREDIT_CARD_NUMBER);
+  AddTextFormFieldData("ccmonth", "Exp Month", CREDIT_CARD_EXP_MONTH);
+  AddTextFormFieldData("ccyear", "Exp Year", CREDIT_CARD_EXP_2_DIGIT_YEAR);
+  list_.back()->placeholder = u"YY";
+  ClassifyAndVerify(ParseResult::PARSED);
+}
+
+// Ensure that a max-length can trump an incorrect 4-digit placeholder hint.
+TEST_P(CreditCardFieldTest, ParseMiniumCreditCardWithMaxLength) {
+  base::test::ScopedFeatureList scoped_features{
+      features::kAutofillEnableExpirationDateImprovements};
+  AddTextFormFieldData("card_number", "Card Number", CREDIT_CARD_NUMBER);
+  AddTextFormFieldData("ccmonth", "Exp Month", CREDIT_CARD_EXP_MONTH);
+  AddTextFormFieldData("ccyear", "Exp Year", CREDIT_CARD_EXP_2_DIGIT_YEAR);
+  // Even though the placehodler indicates YYYY, the max-length only enables
+  // a YY expiration format.
+  list_.back()->max_length = 2u;
+  list_.back()->placeholder = u"YYYY";
+  ClassifyAndVerify(ParseResult::PARSED);
+}
+
 struct CreditCardFieldYearTestCase {
   bool with_noise;
   ServerFieldType expected_type;
@@ -198,13 +223,13 @@ class CreditCardFieldYearTest
 };
 
 TEST_P(CreditCardFieldYearTest, ParseMinimumCreditCardWithExpiryDateOptions) {
+  base::test::ScopedFeatureList scoped_features{
+      features::kAutofillEnableExpirationDateImprovements};
   AddTextFormFieldData("card_number", "Card Number", CREDIT_CARD_NUMBER);
   AddSelectOneFormFieldData("Random Label", "Random Label", GetMonths(),
                             CREDIT_CARD_EXP_MONTH);
-  AddSelectOneFormFieldDataWithLength(
-      "Random Label", "Random Label",
-      expected_type() == CREDIT_CARD_EXP_2_DIGIT_YEAR ? 2 : 4,
-      MakeOptionVector(), expected_type());
+  AddSelectOneFormFieldData("Random Label", "Random Label", MakeOptionVector(),
+                            expected_type());
 
   if (ShouldSwapMonthAndYear())
     std::swap(list_[1], list_[2]);

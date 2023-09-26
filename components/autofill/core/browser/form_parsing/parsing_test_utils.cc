@@ -68,18 +68,8 @@ void FormFieldTestBase::AddSelectOneFormFieldData(
     std::string label,
     const std::vector<SelectOption>& options,
     ServerFieldType expected_type) {
-  AddSelectOneFormFieldDataWithLength(name, label, 0, options, expected_type);
-}
-
-void FormFieldTestBase::AddSelectOneFormFieldDataWithLength(
-    std::string name,
-    std::string label,
-    int max_length,
-    const std::vector<SelectOption>& options,
-    ServerFieldType expected_type) {
   AddFormFieldData("select-one", name, label, expected_type);
   FormFieldData* field_data = list_.back().get();
-  field_data->max_length = max_length;
   field_data->options = options;
 }
 

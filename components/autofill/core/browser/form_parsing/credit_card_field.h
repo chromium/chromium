@@ -71,6 +71,16 @@ class CreditCardField : public FormField {
       ServerFieldType server_hint,
       ServerFieldType forced_field_type);
 
+  // Returns the field type for an expiration year field in the following order
+  // of priority: `forced_field_type` > type derived from heuristically
+  // determined signals > `server_hint` > `fallback_type`. The server field
+  // types can be UNKOWN_TYPE in which case they are ignored.
+  static ServerFieldType DetermineExpirationYearType(
+      const AutofillField& field,
+      ServerFieldType fallback_type,
+      ServerFieldType server_hint,
+      ServerFieldType forced_field_type);
+
  protected:
   void AddClassifications(FieldCandidatesMap& field_candidates) const override;
 

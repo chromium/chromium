@@ -258,6 +258,19 @@ bool ExtractFormFieldData(const base::Value::Dict& field,
       field.FindBool("should_autocomplete")
           .value_or(field_data->should_autocomplete);
 
+  if (const std::string* placeholder_attribute =
+          field.FindString("placeholder_attribute")) {
+    field_data->placeholder = base::UTF8ToUTF16(*placeholder_attribute);
+  }
+
+  if (const std::string* aria_label = field.FindString("aria_label")) {
+    field_data->aria_label = base::UTF8ToUTF16(*aria_label);
+  }
+  if (const std::string* aria_description =
+          field.FindString("aria_description")) {
+    field_data->aria_description = base::UTF8ToUTF16(*aria_description);
+  }
+
   // RoleAttribute::kOther is the default value. The only other value as of this
   // writing is RoleAttribute::kPresentation.
   absl::optional<int> role = field.FindInt("role");

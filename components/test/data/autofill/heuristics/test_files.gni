@@ -186,6 +186,8 @@ autofill_test_files = [
   "//components/test/data/autofill/heuristics/input/178_zip_file_extension.html",
   "//components/test/data/autofill/heuristics/input/179_twtcgirls.html",
   "//components/test/data/autofill/heuristics/input/180_namesurname.html",
+  "//components/test/data/autofill/heuristics/input/181_cc_forms.html",
+  "//components/test/data/autofill/heuristics/input/182_cc_forms_with_autocomplete.html",
   "//components/test/data/autofill/heuristics/output/000_i18n_de.out",
   "//components/test/data/autofill/heuristics/output/001_i18n_de2.out",
   "//components/test/data/autofill/heuristics/output/002_i18n_en.out",
@@ -367,4 +369,6 @@ autofill_test_files = [
   "//components/test/data/autofill/heuristics/output/178_zip_file_extension.out",
   "//components/test/data/autofill/heuristics/output/179_twtcgirls.out",
   "//components/test/data/autofill/heuristics/output/180_namesurname.out",
+  "//components/test/data/autofill/heuristics/output/181_cc_forms.out",
+  "//components/test/data/autofill/heuristics/output/182_cc_forms_with_autocomplete.out",
 ]

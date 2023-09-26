@@ -69,14 +69,6 @@ class FormFieldTestBase {
                             std::string label,
                             ServerFieldType expected_classification);
 
-  // Convenience wrapper for 'select-one' elements with a max length.
-  void AddSelectOneFormFieldDataWithLength(
-      std::string name,
-      std::string label,
-      int max_length,
-      const std::vector<SelectOption>& options,
-      ServerFieldType expected_type);
-
   // Convenience wrapper for 'select-one' elements.
   void AddSelectOneFormFieldData(std::string name,
                                  std::string label,

@@ -19,7 +19,7 @@ EMAIL_ADDRESS | addrsForm[0].email | *Email Address: |  | addrsForm[0].firstName
 CREDIT_CARD_TYPE | paymentFormInfo.creditCardType | Credit Card Type: |   | paymentFormInfo.creditCardType_2
 CREDIT_CARD_NUMBER | paymentFormInfo.creditCardNumber | Credit Card Number: |  | paymentFormInfo.creditCardType_2
 CREDIT_CARD_EXP_MONTH | paymentFormInfo.creditCardExpMonth | Expiration Date: |   | paymentFormInfo.creditCardType_2
-CREDIT_CARD_EXP_4_DIGIT_YEAR | paymentFormInfo.creditCardExpYear | / | -1 | paymentFormInfo.creditCardType_2
+CREDIT_CARD_EXP_2_DIGIT_YEAR | paymentFormInfo.creditCardExpYear | / | -1 | paymentFormInfo.creditCardType_2
 CREDIT_CARD_VERIFICATION_CODE | paymentFormInfo.creditCardCvv | CID |  | paymentFormInfo.creditCardType_2
 UNKNOWN_TYPE | sameAsBilling | Same as Billing | on | addrsForm[0].firstName_1
 NAME_FIRST | addrsForm[2].firstName | *First Name: |  | addrsForm[2].firstName_3
