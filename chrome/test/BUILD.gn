@@ -2599,8 +2599,6 @@ if (!is_android) {
       "../browser/ui/webui/interstitials/interstitial_ui_browsertest.cc",
       "../browser/ui/webui/location_internals/location_internals_ui_browsertest.cc",
       "../browser/ui/webui/log_web_ui_url_browsertest.cc",
-      "../browser/ui/webui/management/management_a11y_browsertest.cc",
-      "../browser/ui/webui/management/management_a11y_browsertest.h",
       "../browser/ui/webui/management/management_ui_browsertest.cc",
       "../browser/ui/webui/management/management_ui_pwa_browsertest.cc",
       "../browser/ui/webui/new_tab_page/webui_ntp_browsertest.cc",
@@ -10911,13 +10909,6 @@ if (!is_android && !is_chromeos_device) {
         "../browser/extensions/api/extension_action/extension_action_api_interactive_uitest.cc",
         "../browser/guest_view/mime_handler_view/chrome_mime_handler_view_interactive_uitest.cc",
       ]
-
-      if (include_js2gtest_tests) {
-        sources += [
-          "../browser/ui/webui/management/management_a11y_browsertest.cc",
-          "../browser/ui/webui/management/management_a11y_browsertest.h",
-        ]
-      }
     }
 
     # These tests currently require `enable_system_notifications`, which is not
