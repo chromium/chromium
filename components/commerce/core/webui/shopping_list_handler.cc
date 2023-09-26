@@ -408,6 +408,13 @@ void ShoppingListHandler::IsShoppingListEligible(
   std::move(callback).Run(shopping_service_->IsShoppingListEligible());
 }
 
+void ShoppingListHandler::GetShoppingCollectionBookmarkFolderId(
+    GetShoppingCollectionBookmarkFolderIdCallback callback) {
+  const bookmarks::BookmarkNode* collection =
+      commerce::GetShoppingCollectionBookmarkFolder(bookmark_model_);
+  std::move(callback).Run(collection ? collection->id() : -1);
+}
+
 void ShoppingListHandler::GetPriceTrackingStatusForCurrentUrl(
     GetPriceTrackingStatusForCurrentUrlCallback callback) {
   const GURL current_url = delegate_->GetCurrentTabUrl().value();

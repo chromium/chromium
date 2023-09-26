@@ -73,6 +73,10 @@ export class PowerBookmarkRowElement extends PolymerElement {
         type: Array,
         value: () => [],
       },
+      isShoppingCollection: {
+        type: Boolean,
+        value: false,
+      },
       rowAriaDescription: {
         type: String,
         value: '',
@@ -105,6 +109,7 @@ export class PowerBookmarkRowElement extends PolymerElement {
   forceHover: boolean;
   hasCheckbox: boolean;
   hasInput: boolean;
+  isShoppingCollection: boolean;
   rowAriaDescription: string;
   rowAriaLabel: string;
   trailingIcon: string;

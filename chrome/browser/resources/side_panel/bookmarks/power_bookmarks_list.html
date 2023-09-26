@@ -407,7 +407,10 @@
                   row-aria-description="[[getBookmarkA11yDescription_(item)]]"
                   tabindex$="[[tabIndex]]"
                   image-urls="[[getBookmarkImageUrls_(
-                                item, item.*, imageUrls_.*)]]"
+                                item, item.*, imageUrls_.*,
+                                shoppingCollectionFolderId_)]]"
+                  is-shopping-collection="[[isShoppingCollection_(item,
+                                shoppingCollectionFolderId_)]]"
                   force-hover="[[getBookmarkForceHover_(
                                 item, contextMenuBookmark_)]]"
                   draggable="[[canDrag_]]">

@@ -23,6 +23,7 @@ export interface ShoppingListApiProxy {
       Promise<{priceInsightsInfo: PriceInsightsInfo}>;
   showInsightsSidePanelUi(): void;
   isShoppingListEligible(): Promise<{eligible: boolean}>;
+  getShoppingCollectionBookmarkFolderId(): Promise<{collectionId: bigint}>;
   getPriceTrackingStatusForCurrentUrl(): Promise<{tracked: boolean}>;
   setPriceTrackingStatusForCurrentUrl(track: boolean): void;
   openUrlInNewTab(url: Url): void;
@@ -77,6 +78,10 @@ export class ShoppingListApiProxyImpl implements ShoppingListApiProxy {
 
   isShoppingListEligible() {
     return this.handler.isShoppingListEligible();
+  }
+
+  getShoppingCollectionBookmarkFolderId() {
+    return this.handler.getShoppingCollectionBookmarkFolderId();
   }
 
   getPriceTrackingStatusForCurrentUrl() {

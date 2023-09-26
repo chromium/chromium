@@ -33,6 +33,7 @@ export class TestShoppingListApiProxy extends TestBrowserProxy implements
     locale: '',
     currencyCode: '',
   };
+  private shoppingCollectionId_: bigint = BigInt(-1);
 
   constructor() {
     super([
@@ -46,6 +47,7 @@ export class TestShoppingListApiProxy extends TestBrowserProxy implements
       'openUrlInNewTab',
       'showFeedback',
       'isShoppingListEligible',
+      'getShoppingCollectionBookmarkFolderId',
       'getPriceTrackingStatusForCurrentUrl',
       'setPriceTrackingStatusForCurrentUrl',
       'getParentBookmarkFolderNameForCurrentUrl',
@@ -60,6 +62,10 @@ export class TestShoppingListApiProxy extends TestBrowserProxy implements
 
   setProducts(products: BookmarkProductInfo[]) {
     this.products_ = products;
+  }
+
+  setShoppingCollectionBookmarkFolderId(id: bigint) {
+    this.shoppingCollectionId_ = id;
   }
 
   getAllPriceTrackedBookmarkProductInfo() {
@@ -104,6 +110,11 @@ export class TestShoppingListApiProxy extends TestBrowserProxy implements
 
   isShoppingListEligible() {
     return this.methodCalled('isShoppingListEligible');
+  }
+
+  getShoppingCollectionBookmarkFolderId() {
+    this.methodCalled('getShoppingCollectionBookmarkFolderId');
+    return Promise.resolve({collectionId: this.shoppingCollectionId_});
   }
 
   getPriceTrackingStatusForCurrentUrl() {
