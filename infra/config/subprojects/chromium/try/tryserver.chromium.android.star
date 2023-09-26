@@ -389,20 +389,22 @@ try_.builder(
 )
 
 try_.builder(
-    name = "android-cronet-x86-dbg-lolipop",
+    name = "android-cronet-x86-dbg-lollipop-tests",
     mirrors = [
         "ci/android-cronet-x86-dbg",
         "ci/android-cronet-x86-dbg-lollipop-tests",
     ],
+    contact_team_email = "cronet-team@google.com",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
-    name = "android-cronet-x86-dbg-marshmallow",
+    name = "android-cronet-x86-dbg-marshmallow-tests",
     mirrors = [
         "ci/android-cronet-x86-dbg",
         "ci/android-cronet-x86-dbg-marshmallow-tests",
     ],
+    contact_team_email = "cronet-team@google.com",
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 

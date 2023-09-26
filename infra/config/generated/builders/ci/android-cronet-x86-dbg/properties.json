@@ -346,11 +346,11 @@
           "group": "tryserver.chromium.android"
         },
         {
-          "builder": "android-cronet-x86-dbg-lolipop",
+          "builder": "android-cronet-x86-dbg-lollipop-tests",
           "group": "tryserver.chromium.android"
         },
         {
-          "builder": "android-cronet-x86-dbg-marshmallow",
+          "builder": "android-cronet-x86-dbg-marshmallow-tests",
           "group": "tryserver.chromium.android"
         },
         {
