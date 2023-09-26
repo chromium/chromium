@@ -26,6 +26,7 @@ def main():
   parser.add_argument('--test-dir', type=str, required=True)
   parser.add_argument(
       '--trace-processor-shell', type=str, required=True)
+  parser.add_argument("--name-filter", type=str, required=False)
   parser.add_argument("--script", type=str, required=True)
   args, _ = parser.parse_known_args()
 
@@ -41,7 +42,9 @@ def main():
     # TODO(b/301093584): This test fails with Chrome's trace_processor_shell
     # most likely due to Chromium using a different version of sqlite.
     # This name filter will be removed when fixed.
-    "--name-filter", "^((?!ChromeScrollJank:frame_times_metric).)*$",
+    "--name-filter",
+    "(?=^((?!ChromeScrollJank:frame_times_metric).)*$)(?={})"
+      .format(args.name_filter),
     args.trace_processor_shell,
   ]
 
