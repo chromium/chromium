@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.desktop_site;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
@@ -131,6 +133,14 @@ public class DesktopSiteSettingsIPHController {
         GURL url = tab.getUrl();
         // Do not trigger the IPH on a chrome:// or a chrome-native:// page.
         return UrlUtilities.isInternalScheme(url) || tab.getWebContents() == null;
+    }
+
+    // Placeholder method to utilize the strings; so that we could start the translation early.
+    // TODO(crbug.com/1486668): Implement the message for window setting IPH.
+    void showWindowSettingIPH(Context context) {
+        Resources resources = context.getResources();
+        String title = resources.getString(R.string.rds_window_setting_message_title);
+        String button = resources.getString(R.string.rds_window_setting_message_button);
     }
 
     private void requestShowPerSiteIPH(String featureName, int textId, Object[] textArgs) {
