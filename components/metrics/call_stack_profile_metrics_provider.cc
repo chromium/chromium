@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/synchronization/lock.h"
@@ -143,6 +144,74 @@ class PendingProfiles {
   // The set of completed serialized profiles that should be reported.
   std::vector<std::string> serialized_profiles_ GUARDED_BY(lock_);
 };
+
+absl::optional<int32_t> FindHashNameIndexInProfile(
+    const SampledProfile& profile,
+    const uint64_t name_hash) {
+  const auto& name_hashes = profile.call_stack_profile().metadata_name_hash();
+  const auto loc = base::ranges::find(name_hashes, name_hash);
+  if (loc == name_hashes.end()) {
+    return absl::nullopt;
+  }
+  return loc - name_hashes.begin();
+}
+
+// Remove temp profile metadata for LCP tagging.
+void RemoveTempLCPMetadata(SampledProfile& profile) {
+  const uint64_t nav_start_name_hash =
+      base::HashMetricName("Internal.LargestContentfulPaint.NavigationStart");
+  const uint64_t document_token_name_hash =
+      base::HashMetricName("Internal.LargestContentfulPaint.DocumentToken");
+
+  absl::optional<int32_t> navigation_start_name_hash_index =
+      FindHashNameIndexInProfile(profile, nav_start_name_hash);
+  absl::optional<int32_t> document_token_name_hash_index =
+      FindHashNameIndexInProfile(profile, document_token_name_hash);
+
+  // Remove profile_metadata items.
+  auto* profile_metadata =
+      profile.mutable_call_stack_profile()->mutable_profile_metadata();
+  profile_metadata->erase(
+      base::ranges::remove_if(
+          *profile_metadata,
+          [&](const CallStackProfile_MetadataItem& item) {
+            return item.name_hash_index() == navigation_start_name_hash_index ||
+                   item.name_hash_index() == document_token_name_hash_index;
+          }),
+      profile_metadata->end());
+
+  // Remove name hashes
+  auto* name_hashes =
+      profile.mutable_call_stack_profile()->mutable_metadata_name_hash();
+  name_hashes->erase(
+      base::ranges::remove_if(*name_hashes,
+                              [&](uint64_t name_hash) {
+                                return name_hash == nav_start_name_hash ||
+                                       name_hash == document_token_name_hash;
+                              }),
+      name_hashes->end());
+
+  // Update name_hash_index of all MetadataItem.
+  const auto shift_index = [&](CallStackProfile_MetadataItem& item) {
+    int64_t offset = 0;
+    if (navigation_start_name_hash_index.has_value() &&
+        item.name_hash_index() > *navigation_start_name_hash_index) {
+      offset++;
+    }
+    if (document_token_name_hash_index.has_value() &&
+        item.name_hash_index() > *document_token_name_hash_index) {
+      offset++;
+    }
+
+    item.set_name_hash_index(item.name_hash_index() - offset);
+  };
+
+  base::ranges::for_each(*profile_metadata, shift_index);
+  for (auto& stack_sample :
+       *profile.mutable_call_stack_profile()->mutable_stack_sample()) {
+    base::ranges::for_each(*stack_sample.mutable_metadata(), shift_index);
+  }
+}
 
 // static
 PendingProfiles* PendingProfiles::GetInstance() {
@@ -460,6 +529,7 @@ void CallStackProfileMetricsProvider::ProvideCurrentSessionData(
     // disabled.
     DCHECK(SamplingProfilerReportingEnabled() ||
            profile.trigger_event() == SampledProfile::PERIODIC_HEAP_COLLECTION);
+    RemoveTempLCPMetadata(profile);
     *uma_proto->add_sampled_profile() = std::move(profile);
   }
 }

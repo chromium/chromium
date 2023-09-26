@@ -9,6 +9,7 @@
 #include "base/profiler/sample_metadata.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace page_load_metrics {
 
@@ -34,6 +35,11 @@ class PageTimingMetadataRecorder {
 
     absl::optional<base::TimeTicks> first_input_timestamp;
     absl::optional<base::TimeDelta> first_input_delay;
+
+    // Stores the `DocumentToken` so that we can use it to find the value of
+    // some browser side calculated metrics. Currently it is used to retrieve
+    // Largest Contentful Paint value on the browser side.
+    absl::optional<blink::DocumentToken> document_token;
   };
 
   PageTimingMetadataRecorder(const MonotonicTiming& initial_timing);
@@ -66,6 +72,11 @@ class PageTimingMetadataRecorder {
                                           int64_t key,
                                           int64_t value,
                                           base::SampleMetadataScope scope);
+  // To be overridden by test class.
+  virtual void AddProfileMetadata(base::StringPiece name,
+                                  int64_t key,
+                                  int64_t value,
+                                  base::SampleMetadataScope scope);
 
  private:
   void UpdateFirstInputDelayMetadata(
@@ -74,6 +85,9 @@ class PageTimingMetadataRecorder {
   void UpdateFirstContentfulPaintMetadata(
       const absl::optional<base::TimeTicks>& navigation_start,
       const absl::optional<base::TimeTicks>& first_contentful_paint);
+  void UpdateLargestContentfulPaintMetadata(
+      const absl::optional<base::TimeTicks>& navigation_start,
+      const absl::optional<blink::DocumentToken>& document_token);
 
   // Uniquely identifies an instance of the PageTimingMetadataRecorder. Used to
   // distinguish page loads for different documents when applying sample

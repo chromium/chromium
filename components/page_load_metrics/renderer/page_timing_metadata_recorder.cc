@@ -40,6 +40,8 @@ void PageTimingMetadataRecorder::UpdateMetadata(const MonotonicTiming& timing) {
                                      timing.first_contentful_paint);
   UpdateFirstInputDelayMetadata(timing.first_input_timestamp,
                                 timing.first_input_delay);
+  UpdateLargestContentfulPaintMetadata(timing.navigation_start,
+                                       timing.document_token);
   timing_ = timing;
 }
 
@@ -52,6 +54,14 @@ void PageTimingMetadataRecorder::ApplyMetadataToPastSamples(
     base::SampleMetadataScope scope) {
   base::ApplyMetadataToPastSamples(period_start, period_end, name, key, value,
                                    scope);
+}
+
+void PageTimingMetadataRecorder::AddProfileMetadata(
+    base::StringPiece name,
+    int64_t key,
+    int64_t value,
+    base::SampleMetadataScope scope) {
+  base::AddProfileMetadata(name, key, value, scope);
 }
 
 void PageTimingMetadataRecorder::UpdateFirstInputDelayMetadata(
@@ -115,6 +125,29 @@ void PageTimingMetadataRecorder::AddInteractionDurationMetadata(
       CreateInteractionDurationMetadataKey(instance_id_, interaction_count_),
       /* value=*/(interaction_end - interaction_start).InMilliseconds(),
       base::SampleMetadataScope::kProcess);
+}
+
+void PageTimingMetadataRecorder::UpdateLargestContentfulPaintMetadata(
+    const absl::optional<base::TimeTicks>& navigation_start,
+    const absl::optional<blink::DocumentToken>& document_token) {
+  const bool should_apply_metadata =
+      navigation_start.has_value() && document_token.has_value() &&
+      (timing_.navigation_start != navigation_start ||
+       timing_.document_token != document_token);
+
+  if (should_apply_metadata) {
+    AddProfileMetadata(
+        "Internal.LargestContentfulPaint.NavigationStart",
+        /* key= */ instance_id_,
+        /* value= */ navigation_start->since_origin().InMilliseconds(),
+        base::SampleMetadataScope::kProcess);
+
+    AddProfileMetadata(
+        "Internal.LargestContentfulPaint.DocumentToken",
+        /* key= */ instance_id_,
+        /* value= */ blink::DocumentToken::Hasher()(*document_token),
+        base::SampleMetadataScope::kProcess);
+  }
 }
 
 }  // namespace page_load_metrics
