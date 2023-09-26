@@ -62,14 +62,6 @@ found in the LICENSE file. -->
     </li>
     <li>
       <div class="row">
-        <cr-toggle aria-label="tote"></cr-toggle>
-        <span aria-hidden="true" class="padded-text">
-          Tote
-        </span>
-      </div>
-    </li>
-    <li>
-      <div class="row">
         <cr-toggle aria-label="palette-tray" on-change="onPaletteToggled">
         </cr-toggle>
         <span aria-hidden="true" class="padded-text">
@@ -79,9 +71,46 @@ found in the LICENSE file. -->
     </li>
     <li>
       <div class="row">
-        <cr-toggle aria-label="logout-button"></cr-toggle>
+        <cr-toggle aria-label="logout-button" on-change="onLogoutToggled">
+        </cr-toggle>
         <span aria-hidden="true" class="padded-text">
           Logout Button
+        </span>
+      </div>
+    </li>
+    <li>
+      <div class="row">
+        <cr-toggle aria-label="logout-button" on-change="onVirtualKeyboardToggled">
+        </cr-toggle>
+        <span aria-hidden="true" class="padded-text">
+          Virtual Keyboard Tray
+        </span>
+      </div>
+    </li>
+    <li>
+      <div class="row">
+        <cr-toggle aria-label="logout-button" on-change="onDictationToggled">
+        </cr-toggle>
+        <span aria-hidden="true" class="padded-text">
+          Dictation Tray
+        </span>
+      </div>
+    </li>
+    <li>
+      <div class="row">
+        <cr-toggle aria-label="logout-button" on-change="onVideoConferenceToggled">
+        </cr-toggle>
+        <span aria-hidden="true" class="padded-text">
+          Video Conference Tray
+        </span>
+      </div>
+    </li>
+    <li>
+      <div class="row">
+        <cr-toggle aria-label="projector-annotation-tray" on-change="onProjectorToggled">
+        </cr-toggle>
+        <span aria-hidden="true" class="padded-text">
+          Projector Annotation Tray
         </span>
       </div>
     </li>

@@ -42,6 +42,41 @@ export class StatusAreaInternalsElement extends PolymerElement {
     const toggled = e.detail;
     pageHandler.togglePaletteTray(toggled);
   }
+
+  public onLogoutToggled(e: CustomEvent<boolean>) {
+    e.stopPropagation();
+
+    const toggled = e.detail;
+    pageHandler.toggleLogoutTray(toggled);
+  }
+
+  public onVirtualKeyboardToggled(e: CustomEvent<boolean>) {
+    e.stopPropagation();
+
+    const toggled = e.detail;
+    pageHandler.toggleVirtualKeyboardTray(toggled);
+  }
+
+  public onDictationToggled(e: CustomEvent<boolean>) {
+    e.stopPropagation();
+
+    const toggled = e.detail;
+    pageHandler.toggleDictationTray(toggled);
+  }
+
+  public onVideoConferenceToggled(e: CustomEvent<boolean>) {
+    e.stopPropagation();
+
+    const toggled = e.detail;
+    pageHandler.toggleVideoConferenceTray(toggled);
+  }
+
+  public onProjectorToggled(e: CustomEvent<boolean>) {
+    e.stopPropagation();
+
+    const toggled = e.detail;
+    pageHandler.toggleProjectorTray(toggled);
+  }
 }
 
 customElements.define(

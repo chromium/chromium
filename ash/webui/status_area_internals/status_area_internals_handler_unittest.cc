@@ -5,18 +5,31 @@
 #include "ash/webui/status_area_internals/status_area_internals_handler.h"
 
 #include <memory>
+#include <string_view>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/projector/projector_annotation_tray.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/system/accessibility/dictation_button_tray.h"
 #include "ash/system/ime_menu/ime_menu_tray.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/palette/palette_tray.h"
 #include "ash/system/privacy/privacy_indicators_tray_item_view.h"
+#include "ash/system/session/logout_button_tray.h"
 #include "ash/system/status_area_widget.h"
+#include "ash/system/tray/tray_background_view.h"
+#include "ash/system/video_conference/fake_video_conference_tray_controller.h"
+#include "ash/system/video_conference/video_conference_tray.h"
+#include "ash/system/virtual_keyboard/virtual_keyboard_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/webui/status_area_internals/mojom/status_area_internals.mojom.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "chromeos/ash/components/test/ash_test_suite.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -39,6 +52,16 @@ class StatusAreaInternalsHandlerTest : public AshTestBase {
     handler_ = std::make_unique<StatusAreaInternalsHandler>(
         handler_remote_.BindNewPipeAndPassReceiver());
 
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kVideoConference,
+                              features::kCameraEffectsSupportedByHardware},
+        /*disabled_features=*/{});
+
+    // Instantiates a fake controller (the real one is created in
+    // ChromeBrowserMainExtraPartsAsh::PreProfileInit() which is not called in
+    // ash unit tests).
+    controller_ = std::make_unique<FakeVideoConferenceTrayController>();
+
     // Need to use test resources instead to have `AshTestBase` work on
     // //ash/webui.
     ui::ResourceBundle::CleanupSharedInstance();
@@ -59,69 +82,96 @@ class StatusAreaInternalsHandlerTest : public AshTestBase {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<FakeVideoConferenceTrayController> controller_;
+
   mojo::Remote<mojom::status_area_internals::PageHandler> handler_remote_;
 
   std::unique_ptr<StatusAreaInternalsHandler> handler_;
 };
 
-// Trigger `ToggleImeTray` from the test web UI remote should update the
-// visibility of IME tray accordingly.
-TEST_F(StatusAreaInternalsHandlerTest, ToggleImeTray) {
-  auto* ime_tray = GetStatusAreaWidget()->ime_menu_tray();
-  EXPECT_FALSE(ime_tray->GetVisible());
-
-  handler_remote()->ToggleImeTray(/*visible=*/true);
-  task_environment()->RunUntilIdle();
-
-  EXPECT_TRUE(ime_tray->GetVisible());
-
-  handler_remote()->ToggleImeTray(/*visible=*/false);
-  task_environment()->RunUntilIdle();
-
-  EXPECT_FALSE(ime_tray->GetVisible());
-}
-
-// Trigger `TogglePaletteTray` from the test web UI remote should update the
-// visibility of palette tray accordingly.
-TEST_F(StatusAreaInternalsHandlerTest, TogglePaletteTray) {
+// Tests toggle the visibility of tray buttons.
+TEST_F(StatusAreaInternalsHandlerTest, ToggleTrayButtons) {
   Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
       prefs::kEnableStylusTools, true);
 
-  auto* palette_tray = GetStatusAreaWidget()->palette_tray();
-  EXPECT_FALSE(palette_tray->GetVisible());
+  struct ToggleTrayTestParam {
+    std::string_view tray_name;
 
-  handler_remote()->TogglePaletteTray(/*visible=*/true);
-  task_environment()->RunUntilIdle();
+    // The current tray that is being tested.
+    raw_ptr<TrayBackgroundView> tray;
 
-  EXPECT_TRUE(palette_tray->GetVisible());
+    // The function that should toggle the visibility of the tested tray.
+    base::RepeatingCallback<void(bool)> toggle_function;
+  };
 
-  handler_remote()->TogglePaletteTray(/*visible=*/false);
-  task_environment()->RunUntilIdle();
+  const ToggleTrayTestParam test_cases[] = {
+      // IME Tray
+      ToggleTrayTestParam{
+          "IME Tray", GetStatusAreaWidget()->ime_menu_tray(),
+          base::BindRepeating(
+              &mojom::status_area_internals::PageHandler::ToggleImeTray,
+              base::Unretained(handler_remote().get()))},
+      // Palette Tray
+      ToggleTrayTestParam{
+          "Palette Tray", GetStatusAreaWidget()->palette_tray(),
+          base::BindRepeating(
+              &mojom::status_area_internals::PageHandler::TogglePaletteTray,
+              base::Unretained(handler_remote().get()))},
+      // Logout Tray
+      ToggleTrayTestParam{
+          "Logout Tray",
+          GetStatusAreaWidget()->logout_button_tray_for_testing(),
+          base::BindRepeating(
+              &mojom::status_area_internals::PageHandler::ToggleLogoutTray,
+              base::Unretained(handler_remote().get()))},
+      // Virtual Keyboard Tray
+      ToggleTrayTestParam{
+          "Virtual Keyboard Tray",
+          GetStatusAreaWidget()->virtual_keyboard_tray_for_testing(),
+          base::BindRepeating(&mojom::status_area_internals::PageHandler::
+                                  ToggleVirtualKeyboardTray,
+                              base::Unretained(handler_remote().get()))},
+      // Dictation Tray
+      ToggleTrayTestParam{
+          "Dictation Tray", GetStatusAreaWidget()->dictation_button_tray(),
+          base::BindRepeating(
+              &mojom::status_area_internals::PageHandler::ToggleDictationTray,
+              base::Unretained(handler_remote().get()))},
+      // Video Conference Tray
+      ToggleTrayTestParam{
+          "Video Conference Tray",
+          GetStatusAreaWidget()->video_conference_tray(),
+          base::BindRepeating(&mojom::status_area_internals::PageHandler::
+                                  ToggleVideoConferenceTray,
+                              base::Unretained(handler_remote().get()))},
+      // Projector Annotation Tray
+      ToggleTrayTestParam{
+          "Projector Annotation Tray",
+          GetStatusAreaWidget()->projector_annotation_tray(),
+          base::BindRepeating(
+              &mojom::status_area_internals::PageHandler::ToggleProjectorTray,
+              base::Unretained(handler_remote().get()))}};
 
-  EXPECT_FALSE(palette_tray->GetVisible());
-}
+  // Test that when triggering the correct `toggle_function` from the test web
+  // UI remote, the tray should update the
+  // visibility accordingly.
+  for (auto& test_param : test_cases) {
+    SCOPED_TRACE(test_param.tray_name);
 
-// Trigger `TriggerPrivacyIndicators` from the test web UI remote should update
-// the visibility of the privacy indicators accordingly.
-TEST_F(StatusAreaInternalsHandlerTest, TriggerPrivacyIndicators) {
-  auto* privacy_indicators_view = GetStatusAreaWidget()
-                                      ->notification_center_tray()
-                                      ->privacy_indicators_view();
-  ASSERT_FALSE(privacy_indicators_view->GetVisible());
+    auto tray = test_param.tray;
+    EXPECT_FALSE(tray->GetVisible());
 
-  handler_remote()->TriggerPrivacyIndicators("app_id", "app_name",
-                                             /*is_camera_used=*/true,
-                                             /*is_microphone_used=*/true);
-  task_environment()->RunUntilIdle();
+    test_param.toggle_function.Run(/*visible=*/true);
+    task_environment()->RunUntilIdle();
 
-  EXPECT_TRUE(privacy_indicators_view->GetVisible());
+    EXPECT_TRUE(tray->GetVisible()) << test_param.tray_name;
 
-  handler_remote()->TriggerPrivacyIndicators("app_id", "app_name",
-                                             /*is_camera_used=*/false,
-                                             /*is_microphone_used=*/false);
-  task_environment()->RunUntilIdle();
+    test_param.toggle_function.Run(/*visible=*/false);
+    task_environment()->RunUntilIdle();
 
-  EXPECT_FALSE(privacy_indicators_view->GetVisible());
+    EXPECT_FALSE(tray->GetVisible()) << test_param.tray_name;
+  }
 }
 
 }  // namespace ash

@@ -21,6 +21,7 @@ static_library("status_area_internals") {
     "//ash/webui/common:trusted_types_util",
     "//ash/webui/status_area_internals/mojom:mojom",
     "//ash/webui/status_area_internals/resources:resources",
+    "//components/prefs:prefs",
     "//content/public/browser",
     "//ui/webui",
   ]
