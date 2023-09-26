@@ -508,22 +508,30 @@ void ClientControlledShellSurface::AttemptToStartDrag(
       ash::Shell::Get()->toplevel_window_event_handler();
   aura::Window* mouse_pressed_handler =
       target->GetHost()->dispatcher()->mouse_pressed_handler();
-  // Start dragging only if ...
-  // 1) touch guesture is in progres.
+  // Start dragging only if:
+  // 1) touch guesture is in progress or
   // 2) mouse was pressed on the target or its subsurfaces.
-  if (toplevel_handler->gesture_target() ||
-      (mouse_pressed_handler && target->Contains(mouse_pressed_handler))) {
-    gfx::PointF point_in_root(location);
+  // If neither condition is met, we do not start the drag.
+  gfx::PointF point_in_root;
+  if (toplevel_handler->gesture_target()) {
+    point_in_root = toplevel_handler->event_location_in_gesture_target();
+    aura::Window::ConvertPointToTarget(
+        toplevel_handler->gesture_target(),
+        widget_->GetNativeWindow()->GetRootWindow(), &point_in_root);
+  } else if (mouse_pressed_handler && target->Contains(mouse_pressed_handler)) {
+    point_in_root = location;
     if (use_default_scale_cancellation_) {
       // When default scale cancellation is enabled, the client sends the
       // location in screen coordinates. Otherwise, the location should already
       // be in the display's coordinates.
       wm::ConvertPointFromScreen(target->GetRootWindow(), &point_in_root);
     }
-    toplevel_handler->AttemptToStartDrag(
-        target, point_in_root, component,
-        ash::ToplevelWindowEventHandler::EndClosure());
+  } else {
+    return;
   }
+  toplevel_handler->AttemptToStartDrag(
+      target, point_in_root, component,
+      ash::ToplevelWindowEventHandler::EndClosure());
 }
 
 bool ClientControlledShellSurface::IsDragging() {
