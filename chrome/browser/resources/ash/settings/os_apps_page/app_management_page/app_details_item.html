@@ -42,7 +42,13 @@
     [[getTypeAndSourceString_(app)]] <!-- Do not delete for testing purposes -->
   </localized-link>
   <template is="dom-if" if="[[shouldShowLaunchIcon_(app)]]">
-    <cr-icon-button id="launchIcon" on-click="onStoreLinkClicked_">
+    <!-- The following button is solely for visual representation and does not
+      need to be shown to a11y. -->
+    <cr-icon-button
+      id="launchIcon"
+      on-click="onStoreLinkClicked_"
+      aria-hidden="true"
+      tabindex="-1">
     </cr-icon-button>
   </template>
   <template is="dom-if" if="[[shouldShowInfoIcon_(app)]]" restamp>
