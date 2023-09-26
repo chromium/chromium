@@ -292,7 +292,12 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
   }
 
  private:
+  friend class HermesEuiccClientTest;
+  friend class HermesEuiccClientImpl;
+
   base::ObserverList<Observer>::Unchecked observers_;
+  static constexpr base::TimeDelta kInstallRetryDelay = base::Seconds(3);
+  static const int kMaxInstallAttempts = 4;
 };
 
 }  // namespace ash
