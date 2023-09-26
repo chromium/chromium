@@ -93,7 +93,6 @@ class ScalableIph : public KeyedService,
     kShelfItemActivationGooglePhotosWeb,
     kShelfItemActivationGooglePhotosAndroid,
     kShelfItemActivationGooglePlay,
-    kPrintJobCreated,
   };
 
   ScalableIph(feature_engagement::Tracker* tracker,
