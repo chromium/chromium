@@ -71,6 +71,25 @@ class CONTENT_EXPORT PreloadingAttemptImpl : public PreloadingAttempt {
 
   void SetSpeculationEagerness(blink::mojom::SpeculationEagerness eagerness);
 
+  // Describes what type of checks we had to do to identify if the attempt's
+  // URL is or is not under a Service Worker.
+  enum class ServiceWorkerRegisteredCheck {
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+
+    // The origin doesn't have any Service Workers registered.
+    kOriginOnly = 0,
+    // The origin has at least one Service Worker registered and we had to
+    // perform a path test to identify if the attempt's URL is under a
+    // registered Service Worker.
+    kPath = 1,
+    kMaxValue = kPath
+  };
+  static constexpr double kServiceWorkerRegisteredCheckDurationBucketSpacing =
+      1.15;
+  void SetServiceWorkerRegisteredCheck(ServiceWorkerRegisteredCheck check);
+  void SetServiceWorkerRegisteredCheckDuration(base::TimeDelta duration);
+
  private:
   friend class test::PreloadingAttemptAccessor;
 
@@ -135,6 +154,18 @@ class CONTENT_EXPORT PreloadingAttemptImpl : public PreloadingAttempt {
   // Eagerness of this preloading attempt (specified by a speculation rule).
   // This is only set for attempts that are triggered by speculation rules.
   absl::optional<blink::mojom::SpeculationEagerness> eagerness_ = absl::nullopt;
+
+  // Describes the type of check we did for to find out if the attempt's URL
+  // is under a Service Worker's path. The simplest check is: does the URL's
+  // origin have any registered service workers or not, the more complicated
+  // check is: given the URL's origin has service workers registered, is the
+  // URL under one of these Service Workers.
+  // This is only set for prefetch attempts that are triggered by speculation
+  // rules.
+  absl::optional<ServiceWorkerRegisteredCheck>
+      service_worker_registered_check_ = absl::nullopt;
+  absl::optional<base::TimeDelta> service_worker_registered_check_duration_ =
+      absl::nullopt;
 
   base::WeakPtrFactory<PreloadingAttemptImpl> weak_factory_{this};
 };

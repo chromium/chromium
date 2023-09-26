@@ -97761,6 +97761,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="Read data error"/>
 </enum>
 
+<enum name="ServiceWorkerRegisteredCheck">
+  <int value="0" label="kOriginOnly"/>
+  <int value="1" label="kPath"/>
+</enum>
+
 <enum name="ServiceWorkerRendererStartWorker">
   <int value="0" label="Received on installed service worker."/>
   <int value="1" label="Received on uninstalled service worker."/>

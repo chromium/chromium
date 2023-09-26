@@ -24,6 +24,7 @@
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/preloading.h"
+#include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/preloading_config.h"
 #include "content/browser/preloading/preloading_data_impl.h"
 #include "content/common/features.h"
@@ -43,6 +44,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/proxy_server.h"
 #include "net/base/request_priority.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/features.h"
@@ -235,7 +237,9 @@ net::RequestPriority ExpectedPriorityForEagerness(
 
 class PrefetchFakeServiceWorkerContext : public FakeServiceWorkerContext {
  public:
-  PrefetchFakeServiceWorkerContext() = default;
+  explicit PrefetchFakeServiceWorkerContext(
+      BrowserTaskEnvironment& task_environment)
+      : task_environment_(task_environment) {}
 
   PrefetchFakeServiceWorkerContext(const PrefetchFakeServiceWorkerContext&) =
       delete;
@@ -247,6 +251,9 @@ class PrefetchFakeServiceWorkerContext : public FakeServiceWorkerContext {
   void CheckHasServiceWorker(const GURL& url,
                              const blink::StorageKey& key,
                              CheckHasServiceWorkerCallback callback) override {
+    if (long_service_worker_check_duration_.is_positive()) {
+      task_environment()->FastForwardBy(long_service_worker_check_duration_);
+    }
     if (!MaybeHasRegistrationForStorageKey(key)) {
       std::move(callback).Run(ServiceWorkerCapability::NO_SERVICE_WORKER);
       return;
@@ -270,19 +277,33 @@ class PrefetchFakeServiceWorkerContext : public FakeServiceWorkerContext {
     service_worker_scopes_[scope] = capability;
   }
 
+  void SetServiceWorkerCheckDuration(base::TimeDelta duration) {
+    long_service_worker_check_duration_ = duration;
+  }
+
  private:
+  BrowserTaskEnvironment* task_environment() {
+    return &task_environment_.get();
+  }
+
+  base::TimeDelta long_service_worker_check_duration_;
   std::map<GURL, ServiceWorkerCapability> service_worker_scopes_;
+  const base::raw_ref<BrowserTaskEnvironment> task_environment_;
 };
 
 class PrefetchServiceTest : public RenderViewHostTestHarness {
  public:
+  const int kServiceWorkerCheckDuration = 1000;
   PrefetchServiceTest()
       : RenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         test_url_loader_factory_(/*observe_loader_requests=*/true),
         test_shared_url_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_)) {}
+                &test_url_loader_factory_)) {
+    service_worker_context_ =
+        std::make_unique<PrefetchFakeServiceWorkerContext>(*task_environment());
+  }
 
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
@@ -300,7 +321,7 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
     PrefetchService::SetHostNonUniqueFilterForTesting(
         [](base::StringPiece) { return false; });
     PrefetchService::SetServiceWorkerContextForTesting(
-        &service_worker_context_);
+        service_worker_context_.get());
 
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
     attempt_entry_builder_ =
@@ -324,6 +345,7 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
     test_content_browser_client_.reset();
     scoped_feature_list_.Reset();
     request_handler_keep_alive_.clear();
+    service_worker_context_.reset();
     RenderViewHostTestHarness::TearDown();
   }
 
@@ -870,7 +892,7 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
     test_url_loader_factory_.ClearResponses();
   }
 
-  PrefetchFakeServiceWorkerContext service_worker_context_;
+  std::unique_ptr<PrefetchFakeServiceWorkerContext> service_worker_context_;
   mojo::Remote<network::mojom::CookieManager> cookie_manager_;
 
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -1835,9 +1857,9 @@ TEST_F(PrefetchServiceTest, NotEligibleServiceWorkerRegistered) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
-  service_worker_context_.AddRegistrationToRegisteredStorageKeys(
+  service_worker_context_->AddRegistrationToRegisteredStorageKeys(
       blink::StorageKey::CreateFromStringForTesting("https://example.com"));
-  service_worker_context_.AddServiceWorkerScope(
+  service_worker_context_->AddServiceWorkerScope(
       GURL("https://example.com"),
       ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER);
 
@@ -1890,15 +1912,70 @@ TEST_F(PrefetchServiceTest, NotEligibleServiceWorkerRegistered) {
        .outcome = PreloadingTriggeringOutcome::kUnspecified});
 }
 
+TEST_F(PrefetchServiceTest,
+       NotEligibleServiceWorkerRegisteredServiceWorkerCheckUKM) {
+  // ukm::TestAutoSetUkmRecorder ukm_recorder;
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+
+  service_worker_context_->AddRegistrationToRegisteredStorageKeys(
+      blink::StorageKey::CreateFromStringForTesting("https://example.com"));
+  service_worker_context_->AddServiceWorkerScope(
+      GURL("https://example.com"),
+      ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER);
+  service_worker_context_->SetServiceWorkerCheckDuration(
+      base::Microseconds(kServiceWorkerCheckDuration));
+
+  MakePrefetchOnMainFrame(
+      GURL("https://example.com"),
+      PrefetchType(/*use_prefetch_proxy=*/false,
+                   blink::mojom::SpeculationEagerness::kEager));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(RequestCount(), 0);
+
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
+
+  PrefetchContainer::Reader serveable_reader =
+      GetPrefetchToServe(GURL("https://example.com"));
+  EXPECT_FALSE(serveable_reader);
+
+  ForceLogsUploadAndGetUkmId();
+  // Now check the UKM records.
+  using UkmEntry = ukm::builders::Preloading_Attempt;
+  auto actual_attempts = test_ukm_recorder()->GetEntries(
+      UkmEntry::kEntryName,
+      {
+          UkmEntry::kPrefetchServiceWorkerRegisteredCheckName,
+          UkmEntry::kPrefetchServiceWorkerRegisteredForURLCheckDurationName,
+      });
+  EXPECT_EQ(actual_attempts.size(), 1u);
+  ASSERT_TRUE(actual_attempts[0].metrics.count(
+      UkmEntry::kPrefetchServiceWorkerRegisteredCheckName));
+  EXPECT_EQ(actual_attempts[0]
+                .metrics[UkmEntry::kPrefetchServiceWorkerRegisteredCheckName],
+            static_cast<int64_t>(
+                PreloadingAttemptImpl::ServiceWorkerRegisteredCheck::kPath));
+  ASSERT_TRUE(actual_attempts[0].metrics.count(
+      UkmEntry::kPrefetchServiceWorkerRegisteredForURLCheckDurationName));
+  EXPECT_EQ(
+      actual_attempts[0].metrics
+          [UkmEntry::kPrefetchServiceWorkerRegisteredForURLCheckDurationName],
+      ukm::GetExponentialBucketMin(
+          kServiceWorkerCheckDuration,
+          PreloadingAttemptImpl::
+              kServiceWorkerRegisteredCheckDurationBucketSpacing));
+}
+
 TEST_F(PrefetchServiceTest, EligibleServiceWorkerNotRegistered) {
   base::HistogramTester histogram_tester;
 
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
-  service_worker_context_.AddRegistrationToRegisteredStorageKeys(
+  service_worker_context_->AddRegistrationToRegisteredStorageKeys(
       blink::StorageKey::CreateFromStringForTesting("https://other.com"));
-  service_worker_context_.AddServiceWorkerScope(
+  service_worker_context_->AddServiceWorkerScope(
       GURL("https://other.com"),
       ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER);
 
@@ -1957,15 +2034,75 @@ TEST_F(PrefetchServiceTest, EligibleServiceWorkerNotRegistered) {
   ExpectCorrectUkmLogs({});
 }
 
+TEST_F(PrefetchServiceTest,
+       EligibleServiceWorkerNotRegisteredServiceWorkerCheckUKM) {
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+
+  service_worker_context_->AddRegistrationToRegisteredStorageKeys(
+      blink::StorageKey::CreateFromStringForTesting("https://other.com"));
+  service_worker_context_->AddServiceWorkerScope(
+      GURL("https://other.com"),
+      ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER);
+
+  MakePrefetchOnMainFrame(
+      GURL("https://example.com"),
+      PrefetchType(/*use_prefetch_proxy=*/true,
+                   blink::mojom::SpeculationEagerness::kEager));
+  base::RunLoop().RunUntilIdle();
+
+  VerifyCommonRequestState(GURL("https://example.com"),
+                           {.use_prefetch_proxy = true});
+  MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
+                      /*use_prefetch_proxy=*/true,
+                      {{"X-Testing", "Hello World"}}, kHTMLBody);
+
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
+
+  PrefetchContainer::Reader serveable_reader =
+      GetPrefetchToServe(GURL("https://example.com"));
+  ASSERT_TRUE(serveable_reader);
+  EXPECT_TRUE(serveable_reader.HasPrefetchStatus());
+  EXPECT_EQ(serveable_reader.GetPrefetchStatus(),
+            PrefetchStatus::kPrefetchSuccessful);
+
+  ForceLogsUploadAndGetUkmId();
+  // Now check the UKM records.
+  using UkmEntry = ukm::builders::Preloading_Attempt;
+  auto actual_attempts = test_ukm_recorder()->GetEntries(
+      UkmEntry::kEntryName,
+      {
+          UkmEntry::kPrefetchServiceWorkerRegisteredCheckName,
+          UkmEntry::kPrefetchServiceWorkerRegisteredForURLCheckDurationName,
+      });
+  EXPECT_EQ(actual_attempts.size(), 1u);
+
+  ASSERT_TRUE(actual_attempts[0].metrics.count(
+      UkmEntry::kPrefetchServiceWorkerRegisteredCheckName));
+  EXPECT_EQ(
+      actual_attempts[0]
+          .metrics[UkmEntry::kPrefetchServiceWorkerRegisteredCheckName],
+      static_cast<int64_t>(
+          PreloadingAttemptImpl::ServiceWorkerRegisteredCheck::kOriginOnly));
+  ASSERT_TRUE(actual_attempts[0].metrics.count(
+      UkmEntry::kPrefetchServiceWorkerRegisteredForURLCheckDurationName));
+  EXPECT_EQ(
+      actual_attempts[0].metrics
+          [UkmEntry::kPrefetchServiceWorkerRegisteredForURLCheckDurationName],
+      ukm::GetExponentialBucketMin(
+          0, PreloadingAttemptImpl::
+                 kServiceWorkerRegisteredCheckDurationBucketSpacing));
+}
+
 TEST_F(PrefetchServiceTest, EligibleServiceWorkerRegistered) {
   base::HistogramTester histogram_tester;
 
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
-  service_worker_context_.AddRegistrationToRegisteredStorageKeys(
+  service_worker_context_->AddRegistrationToRegisteredStorageKeys(
       blink::StorageKey::CreateFromStringForTesting("https://example.com"));
-  service_worker_context_.AddServiceWorkerScope(
+  service_worker_context_->AddServiceWorkerScope(
       GURL("https://example.com"),
       ServiceWorkerCapability::SERVICE_WORKER_NO_FETCH_HANDLER);
 
@@ -2024,15 +2161,71 @@ TEST_F(PrefetchServiceTest, EligibleServiceWorkerRegistered) {
   ExpectCorrectUkmLogs({});
 }
 
+TEST_F(PrefetchServiceTest,
+       EligibleServiceWorkerRegisteredServiceWorkerCheckUKM) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+
+  service_worker_context_->AddRegistrationToRegisteredStorageKeys(
+      blink::StorageKey::CreateFromStringForTesting("https://example.com"));
+  service_worker_context_->AddServiceWorkerScope(
+      GURL("https://example.com"),
+      ServiceWorkerCapability::SERVICE_WORKER_NO_FETCH_HANDLER);
+  service_worker_context_->SetServiceWorkerCheckDuration(
+      base::Microseconds(kServiceWorkerCheckDuration));
+
+  MakePrefetchOnMainFrame(
+      GURL("https://example.com"),
+      PrefetchType(/*use_prefetch_proxy=*/false,
+                   blink::mojom::SpeculationEagerness::kEager));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(RequestCount(), 1);
+
+  Navigate(GURL("https://example.com"), main_rfh()->GetFrameToken());
+
+  PrefetchContainer::Reader serveable_reader =
+      GetPrefetchToServe(GURL("https://example.com"));
+  EXPECT_FALSE(serveable_reader);
+
+  ForceLogsUploadAndGetUkmId();
+  // Now check the UKM records.
+  using UkmEntry = ukm::builders::Preloading_Attempt;
+  auto actual_attempts = test_ukm_recorder()->GetEntries(
+      UkmEntry::kEntryName,
+      {
+          UkmEntry::kPrefetchServiceWorkerRegisteredCheckName,
+          UkmEntry::kPrefetchServiceWorkerRegisteredForURLCheckDurationName,
+      });
+  EXPECT_EQ(actual_attempts.size(), 1u);
+
+  ASSERT_TRUE(actual_attempts[0].metrics.count(
+      UkmEntry::kPrefetchServiceWorkerRegisteredCheckName));
+  EXPECT_EQ(actual_attempts[0]
+                .metrics[UkmEntry::kPrefetchServiceWorkerRegisteredCheckName],
+            static_cast<int64_t>(
+                PreloadingAttemptImpl::ServiceWorkerRegisteredCheck::kPath));
+  ASSERT_TRUE(actual_attempts[0].metrics.count(
+      UkmEntry::kPrefetchServiceWorkerRegisteredForURLCheckDurationName));
+  EXPECT_EQ(
+      actual_attempts[0].metrics
+          [UkmEntry::kPrefetchServiceWorkerRegisteredForURLCheckDurationName],
+      ukm::GetExponentialBucketMin(
+          kServiceWorkerCheckDuration,
+          PreloadingAttemptImpl::
+              kServiceWorkerRegisteredCheckDurationBucketSpacing));
+}
+
 TEST_F(PrefetchServiceTest, EligibleServiceWorkerNotRegisteredAtThisPath) {
   base::HistogramTester histogram_tester;
 
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
-  service_worker_context_.AddRegistrationToRegisteredStorageKeys(
+  service_worker_context_->AddRegistrationToRegisteredStorageKeys(
       blink::StorageKey::CreateFromStringForTesting("https://example.com"));
-  service_worker_context_.AddServiceWorkerScope(
+  service_worker_context_->AddServiceWorkerScope(
       GURL("https://example.com/sw"),
       ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER);
 
@@ -3331,9 +3524,9 @@ TEST_F(PrefetchServiceAlwaysMakeDecoyRequestTest, MAYBE_RedirectDecoyRequest) {
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
-  service_worker_context_.AddRegistrationToRegisteredStorageKeys(
+  service_worker_context_->AddRegistrationToRegisteredStorageKeys(
       blink::StorageKey::CreateFromStringForTesting("https://redirect.com"));
-  service_worker_context_.AddServiceWorkerScope(
+  service_worker_context_->AddServiceWorkerScope(
       GURL("https://redirect.com"),
       ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER);
 
@@ -4023,9 +4216,9 @@ TEST_F(PrefetchServiceAllowRedirectTest,
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
 
-  service_worker_context_.AddRegistrationToRegisteredStorageKeys(
+  service_worker_context_->AddRegistrationToRegisteredStorageKeys(
       blink::StorageKey::CreateFromStringForTesting("https://redirect.com"));
-  service_worker_context_.AddServiceWorkerScope(
+  service_worker_context_->AddServiceWorkerScope(
       GURL("https://redirect.com"),
       ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER);
 

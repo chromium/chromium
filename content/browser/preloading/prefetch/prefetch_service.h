@@ -170,6 +170,7 @@ class CONTENT_EXPORT PrefetchService {
   void OnGotServiceWorkerResult(
       const GURL& url,
       base::WeakPtr<PrefetchContainer> prefetch_container,
+      base::Time check_has_service_worker_start_time,
       OnEligibilityResultCallback result_callback,
       ServiceWorkerCapability service_worker_capability) const;
 

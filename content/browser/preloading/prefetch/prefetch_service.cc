@@ -564,27 +564,51 @@ void PrefetchService::CheckHasServiceWorker(
           ? g_service_worker_context_for_testing
           : browser_context_->GetDefaultStoragePartition()
                 ->GetServiceWorkerContext();
+  CHECK(service_worker_context);
   auto key = blink::StorageKey::CreateFirstParty(url::Origin::Create(url));
   // Check `MaybeHasRegistrationForStorageKey` first as it is much faster than
   // calling `CheckHasServiceWorker`.
-  if (!service_worker_context->MaybeHasRegistrationForStorageKey(key)) {
-    OnGotServiceWorkerResult(url, prefetch_container,
-                             std::move(result_callback),
+  auto has_registration_for_storage_key =
+      service_worker_context->MaybeHasRegistrationForStorageKey(key);
+  if (prefetch_container->HasPreloadingAttempt()) {
+    auto* preloading_attempt = static_cast<PreloadingAttemptImpl*>(
+        prefetch_container->preloading_attempt().get());
+    CHECK(preloading_attempt);
+    preloading_attempt->SetServiceWorkerRegisteredCheck(
+        has_registration_for_storage_key
+            ? PreloadingAttemptImpl::ServiceWorkerRegisteredCheck::kPath
+            : PreloadingAttemptImpl::ServiceWorkerRegisteredCheck::kOriginOnly);
+  }
+  if (!has_registration_for_storage_key) {
+    OnGotServiceWorkerResult(url, std::move(prefetch_container),
+                             base::Time::Now(), std::move(result_callback),
                              ServiceWorkerCapability::NO_SERVICE_WORKER);
     return;
   }
+  // Start recording here the start of the check for Service Worker registration
+  // for url.
   service_worker_context->CheckHasServiceWorker(
       url, key,
       base::BindOnce(&PrefetchService::OnGotServiceWorkerResult,
-                     weak_method_factory_.GetWeakPtr(), url, prefetch_container,
+                     weak_method_factory_.GetWeakPtr(), url,
+                     std::move(prefetch_container), base::Time::Now(),
                      std::move(result_callback)));
 }
 
 void PrefetchService::OnGotServiceWorkerResult(
     const GURL& url,
     base::WeakPtr<PrefetchContainer> prefetch_container,
+    base::Time check_has_service_worker_start_time,
     OnEligibilityResultCallback result_callback,
     ServiceWorkerCapability service_worker_capability) const {
+  if (prefetch_container && prefetch_container->HasPreloadingAttempt()) {
+    const auto duration =
+        base::Time::Now() - check_has_service_worker_start_time;
+    auto* preloading_attempt = static_cast<PreloadingAttemptImpl*>(
+        prefetch_container->preloading_attempt().get());
+    CHECK(preloading_attempt);
+    preloading_attempt->SetServiceWorkerRegisteredCheckDuration(duration);
+  }
   switch (service_worker_capability) {
     case ServiceWorkerCapability::NO_SERVICE_WORKER:
     case ServiceWorkerCapability::SERVICE_WORKER_NO_FETCH_HANDLER:

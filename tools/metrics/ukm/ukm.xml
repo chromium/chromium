@@ -20686,6 +20686,29 @@ be describing additional metrics about the same event.
       verifying that the preloading attempt was eligible.
     </summary>
   </metric>
+  <metric name="PrefetchServiceWorkerRegisteredCheck"
+      enum="ServiceWorkerRegisteredCheck">
+    <summary>
+      Records how many times are we checking if a Service Worker is registered
+      for an origin (fast check) or for a certain path of the origin (slow
+      check) to decide if we are proceeding with a prefetch or not. Enum values
+      would be: OriginOnly and Path. OriginOnly value describes the case when
+      there are no Service Workers registered for the origin and we only need to
+      run the fast check. Path value describes the case when there are Service
+      Workers registered for the origin and we need to do a more expensive path
+      check to find out if the prefetch URL falls under a registered Service
+      Worker.
+    </summary>
+  </metric>
+  <metric name="PrefetchServiceWorkerRegisteredForURLCheckDuration">
+    <summary>
+      Records how long (in microseconds) does the slow check for a Service
+      Worker being registered for a certain path take when deciding if we are
+      proceeding with a prefetch or not. We expect this check to take up to 2
+      ms. Exponentially bucketed using GetExponentialBucketMin with a value of
+      1.15.
+    </summary>
+  </metric>
   <metric name="PreloadingPredictor">
     <summary>
       The type of preloading predictor which made the prediction. Values are
@@ -20785,6 +20808,29 @@ be describing additional metrics about the same event.
       verifying the eligibility of a preloading attempt. In general, eligibility
       checks can be reordered, but the holdback check always needs to come after
       verifying that the preloading attempt was eligible.
+    </summary>
+  </metric>
+  <metric name="PrefetchServiceWorkerRegisteredCheck"
+      enum="ServiceWorkerRegisteredCheck">
+    <summary>
+      Records how many times are we checking if a Service Worker is registered
+      for an origin (fast check) or for a certain path of the origin (slow
+      check) to decide if we are proceeding with a prefetch or not. Enum values
+      would be: OriginOnly and Path. OriginOnly value describes the case when
+      there are no Service Workers registered for the origin and we only need to
+      run the fast check. Path value describes the case when there are Service
+      Workers registered for the origin and we need to do a more expensive path
+      check to find out if the prefetch URL falls under a registered Service
+      Worker.
+    </summary>
+  </metric>
+  <metric name="PrefetchServiceWorkerRegisteredForURLCheckDuration">
+    <summary>
+      Records how long (in microseconds) does the slow check for a Service
+      Worker being registered for a certain path take when deciding if we are
+      proceeding with a prefetch or not. We expect this check to take up to 2
+      ms. Exponentially bucketed using GetExponentialBucketMin with a value of
+      1.15.
     </summary>
   </metric>
   <metric name="PreloadingPredictor">
