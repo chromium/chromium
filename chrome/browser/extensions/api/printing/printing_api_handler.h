@@ -12,15 +12,12 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/sequenced_task_runner.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/extensions/api/printing.h"
-#include "chrome/services/printing/public/mojom/pdf_flattener.mojom.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router_factory.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -41,6 +38,7 @@ class BrowserContext;
 
 namespace printing {
 struct PrinterStatus;
+class PdfBlobDataFlattener;
 class PrintJob;
 class PrintedDocument;
 }  // namespace printing
@@ -168,8 +166,8 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
   std::unique_ptr<PrintJobController> print_job_controller_;
   std::unique_ptr<chromeos::CupsWrapper> cups_wrapper_;
 
-  // Remote interface used to flatten a PDF.
-  mojo::Remote<printing::mojom::PdfFlattener> pdf_flattener_;
+  const std::unique_ptr<printing::PdfBlobDataFlattener>
+      pdf_blob_data_flattener_;
 
   // Stores mapping from job id to PrintJobInfo object.
   // This is needed to cancel print jobs.

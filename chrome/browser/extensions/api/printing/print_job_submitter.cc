@@ -11,28 +11,23 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/printing/print_job_controller.h"
 #include "chrome/browser/extensions/api/printing/printing_api_utils.h"
-#include "chrome/browser/pdf/pdf_pref_names.h"
-#include "chrome/browser/printing/printing_service.h"
+#include "chrome/browser/printing/pdf_blob_data_flattener.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/services/printing/public/mojom/pdf_flattener.mojom.h"
-#include "chrome/services/printing/public/mojom/printing_service.mojom.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
-#include "chromeos/printing/printer_configuration.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
-#include "extensions/browser/blob_reader.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/image_loader.h"
 #include "extensions/common/extension.h"
-#include "printing/backend/print_backend.h"
 #include "printing/metafile_skia.h"
 #include "printing/print_settings.h"
 #include "printing/printing_utils.h"
@@ -57,11 +52,6 @@ constexpr char kPrintingFailed[] = "Printing failed";
 
 constexpr int kIconSize = 64;
 
-// We want to have an ability to disable PDF flattening for unit tests as
-// printing::mojom::PdfFlattener requires real browser instance to be able to
-// handle requests.
-bool g_disable_pdf_flattening_for_testing = false;
-
 // There is no easy way to interact with UI dialogs, so we want to have an
 // ability to skip this stage for browser tests.
 bool g_skip_confirmation_dialog_for_testing = false;
@@ -84,23 +74,17 @@ PrintJobSubmitter::PrintJobSubmitter(
     gfx::NativeWindow native_window,
     content::BrowserContext* browser_context,
     PrintJobController* print_job_controller,
-    mojo::Remote<printing::mojom::PdfFlattener>* pdf_flattener,
+    printing::PdfBlobDataFlattener* pdf_blob_data_flattener,
     scoped_refptr<const extensions::Extension> extension,
     api::printing::SubmitJobRequest request,
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    int local_printer_version,
-#endif
     crosapi::mojom::LocalPrinter* local_printer,
     SubmitJobCallback callback)
     : native_window_(native_window),
       browser_context_(browser_context),
       print_job_controller_(print_job_controller),
-      pdf_flattener_(pdf_flattener),
+      pdf_blob_data_flattener_(*pdf_blob_data_flattener),
       extension_(extension),
       request_(std::move(request)),
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      local_printer_version_(local_printer_version),
-#endif
       local_printer_(local_printer),
       callback_(std::move(callback)) {
   DCHECK(extension);
@@ -119,10 +103,9 @@ void PrintJobSubmitter::Run(std::unique_ptr<PrintJobSubmitter> submitter) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(submitter->callback_);
   PrintJobSubmitter* ptr = submitter.get();
-  ptr->callback_ =
-      std::move(ptr->callback_)
-          .Then(base::BindOnce([](std::unique_ptr<PrintJobSubmitter>) {},
-                               std::move(submitter)));
+  ptr->callback_ = std::move(ptr->callback_)
+                       .Then(base::OnceClosure(
+                           base::DoNothingWithBoundArgs(std::move(submitter))));
   ptr->Start();
 }
 
@@ -184,67 +167,21 @@ void PrintJobSubmitter::CheckCapabilitiesCompatibility(
 }
 
 void PrintJobSubmitter::ReadDocumentData() {
-  DCHECK(request_.document_blob_uuid);
-  BlobReader::Read(
+  CHECK(request_.document_blob_uuid);
+  pdf_blob_data_flattener_->ReadAndFlattenPdf(
       browser_context_->GetBlobRemote(*request_.document_blob_uuid),
-      base::BindOnce(&PrintJobSubmitter::OnDocumentDataRead,
+      base::BindOnce(&PrintJobSubmitter::OnPdfReadAndFlattened,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void PrintJobSubmitter::OnDocumentDataRead(std::unique_ptr<std::string> data,
-                                           int64_t total_blob_length) {
-  if (!data || !printing::LooksLikePdf(*data)) {
+void PrintJobSubmitter::OnPdfReadAndFlattened(
+    std::unique_ptr<printing::MetafileSkia> flattened_pdf) {
+  if (!flattened_pdf) {
     FireErrorCallback(kInvalidData);
     return;
   }
 
-  base::MappedReadOnlyRegion memory =
-      base::ReadOnlySharedMemoryRegion::Create(data->length());
-  if (!memory.IsValid()) {
-    FireErrorCallback(kInvalidData);
-    return;
-  }
-  memcpy(memory.mapping.memory(), data->data(), data->length());
-
-  if (g_disable_pdf_flattening_for_testing) {
-    OnPdfFlattened(std::move(memory.region));
-    return;
-  }
-
-  if (!pdf_flattener_->is_bound()) {
-    GetPrintingService()->BindPdfFlattener(
-        pdf_flattener_->BindNewPipeAndPassReceiver());
-    pdf_flattener_->set_disconnect_handler(
-        base::BindOnce(&PrintJobSubmitter::OnPdfFlattenerDisconnected,
-                       weak_ptr_factory_.GetWeakPtr()));
-    const PrefService* prefs =
-        Profile::FromBrowserContext(browser_context_)->GetPrefs();
-    if (prefs &&
-        prefs->IsManagedPreference(prefs::kPdfUseSkiaRendererEnabled)) {
-      (*pdf_flattener_)
-          ->SetUseSkiaRendererPolicy(
-              prefs->GetBoolean(prefs::kPdfUseSkiaRendererEnabled));
-    }
-  }
-  (*pdf_flattener_)
-      ->FlattenPdf(std::move(memory.region),
-                   base::BindOnce(&PrintJobSubmitter::OnPdfFlattened,
-                                  weak_ptr_factory_.GetWeakPtr()));
-}
-
-void PrintJobSubmitter::OnPdfFlattenerDisconnected() {
-  FireErrorCallback(kInvalidData);
-}
-
-void PrintJobSubmitter::OnPdfFlattened(
-    base::ReadOnlySharedMemoryRegion flattened_pdf) {
-  auto mapping = flattened_pdf.Map();
-  if (!mapping.IsValid()) {
-    FireErrorCallback(kInvalidData);
-    return;
-  }
-
-  flattened_pdf_mapping_ = std::move(mapping);
+  flattened_pdf_ = std::move(flattened_pdf);
 
   // Directly submit the job if the extension is allowed.
   if (!IsUserConfirmationRequired(browser_context_, extension_->id())) {
@@ -290,14 +227,12 @@ void PrintJobSubmitter::OnPrintJobConfirmationDialogClosed(bool accepted) {
 }
 
 void PrintJobSubmitter::StartPrintJob() {
-  DCHECK(extension_);
-  DCHECK(settings_);
-  auto metafile = std::make_unique<printing::MetafileSkia>();
-  CHECK(metafile->InitFromData(
-      flattened_pdf_mapping_.GetMemoryAsSpan<const uint8_t>()));
+  CHECK(extension_);
+  CHECK(settings_);
   CHECK(!print_job_);
+  CHECK(flattened_pdf_);
   print_job_ = print_job_controller_->StartPrintJob(
-      extension_->id(), std::move(metafile), std::move(settings_));
+      extension_->id(), std::move(flattened_pdf_), std::move(settings_));
   print_job_->AddObserver(*this);
 }
 
@@ -322,7 +257,7 @@ void PrintJobSubmitter::FireErrorCallback(const std::string& error) {
 
 // static
 base::AutoReset<bool> PrintJobSubmitter::DisablePdfFlatteningForTesting() {
-  return base::AutoReset<bool>(&g_disable_pdf_flattening_for_testing, true);
+  return printing::PdfBlobDataFlattener::DisablePdfFlatteningForTesting();
 }
 
 // static

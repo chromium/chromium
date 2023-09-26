@@ -11,20 +11,14 @@
 #include "base/auto_reset.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/printing/print_job.h"
 #include "chrome/common/extensions/api/printing.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom-forward.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
-
-namespace base {
-class ReadOnlySharedMemoryRegion;
-}  // namespace base
 
 namespace content {
 class BrowserContext;
@@ -32,16 +26,15 @@ class BrowserContext;
 
 namespace gfx {
 class Image;
-}
+}  // namespace gfx
 
 namespace views {
 class NativeWindowTracker;
-}
+}  // namespace views
 
 namespace printing {
-namespace mojom {
-class PdfFlattener;
-}  // namespace mojom
+class MetafileSkia;
+class PdfBlobDataFlattener;
 class PrintedDocument;
 class PrintSettings;
 }  // namespace printing
@@ -67,12 +60,9 @@ class PrintJobSubmitter : public printing::PrintJob::Observer {
   PrintJobSubmitter(gfx::NativeWindow native_window,
                     content::BrowserContext* browser_context,
                     PrintJobController* print_job_controller,
-                    mojo::Remote<printing::mojom::PdfFlattener>* pdf_flattener,
+                    printing::PdfBlobDataFlattener* pdf_blob_data_flattener,
                     scoped_refptr<const extensions::Extension> extension,
                     api::printing::SubmitJobRequest request,
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-                    int local_printer_version,
-#endif
                     crosapi::mojom::LocalPrinter* local_printer,
                     SubmitJobCallback callback);
 
@@ -107,9 +97,8 @@ class PrintJobSubmitter : public printing::PrintJob::Observer {
   void OnDocumentDataRead(std::unique_ptr<std::string> data,
                           int64_t total_blob_length);
 
-  void OnPdfFlattenerDisconnected();
-
-  void OnPdfFlattened(base::ReadOnlySharedMemoryRegion flattened_pdf);
+  void OnPdfReadAndFlattened(
+      std::unique_ptr<printing::MetafileSkia> flattened_pdf);
 
   void ShowPrintJobConfirmationDialog(const gfx::Image& extension_icon);
 
@@ -127,7 +116,7 @@ class PrintJobSubmitter : public printing::PrintJob::Observer {
 
   // These objects are owned by PrintingAPIHandler.
   const raw_ptr<PrintJobController> print_job_controller_;
-  const raw_ptr<mojo::Remote<printing::mojom::PdfFlattener>> pdf_flattener_;
+  const raw_ref<printing::PdfBlobDataFlattener> pdf_blob_data_flattener_;
 
   // TODO(crbug.com/996785): Consider tracking extension being unloaded instead
   // of storing scoped_refptr.
@@ -137,11 +126,9 @@ class PrintJobSubmitter : public printing::PrintJob::Observer {
   api::printing::SubmitJobRequest request_;
   std::unique_ptr<printing::PrintSettings> settings_;
   std::u16string printer_name_;
-  base::ReadOnlySharedMemoryMapping flattened_pdf_mapping_;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  const int local_printer_version_;
-#endif
+  std::unique_ptr<printing::MetafileSkia> flattened_pdf_;
+
   const raw_ptr<crosapi::mojom::LocalPrinter> local_printer_;
   SubmitJobCallback callback_;
   base::WeakPtrFactory<PrintJobSubmitter> weak_ptr_factory_{this};

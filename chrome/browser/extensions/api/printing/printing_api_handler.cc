@@ -25,6 +25,7 @@
 #include "chrome/browser/extensions/api/printing/print_job_controller.h"
 #include "chrome/browser/extensions/api/printing/print_job_submitter.h"
 #include "chrome/browser/extensions/api/printing/printing_api_utils.h"
+#include "chrome/browser/printing/pdf_blob_data_flattener.h"
 #include "chrome/browser/printing/print_job.h"
 #include "chrome/browser/printing/print_preview_sticky_settings.h"
 #include "chrome/browser/profiles/profile.h"
@@ -37,7 +38,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
-#include "printing/backend/print_backend.h"
 #include "printing/print_settings.h"
 #include "printing/printed_document.h"
 
@@ -121,6 +121,8 @@ PrintingAPIHandler::PrintingAPIHandler(
       extension_registry_(extension_registry),
       print_job_controller_(std::move(print_job_controller)),
       cups_wrapper_(std::move(cups_wrapper)),
+      pdf_blob_data_flattener_(std::make_unique<printing::PdfBlobDataFlattener>(
+          Profile::FromBrowserContext(browser_context))),
       local_printer_(local_printer) {}
 
 PrintingAPIHandler::~PrintingAPIHandler() = default;
@@ -162,11 +164,8 @@ void PrintingAPIHandler::SubmitJob(
   // member variables.
   PrintJobSubmitter::Run(std::make_unique<PrintJobSubmitter>(
       native_window, browser_context_, print_job_controller_.get(),
-      &pdf_flattener_, std::move(extension), std::move(params->request),
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      local_printer_version_,
-#endif
-      local_printer_,
+      pdf_blob_data_flattener_.get(), std::move(extension),
+      std::move(params->request), local_printer_,
       base::BindOnce(&PrintingAPIHandler::OnPrintJobSubmitted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
 }

@@ -6891,6 +6891,10 @@ static_library("browser") {
       ]
     }
     if (is_chromeos) {
+      sources += [
+        "printing/pdf_blob_data_flattener.cc",
+        "printing/pdf_blob_data_flattener.h",
+      ]
       deps += [
         "//chrome/browser/chromeos/extensions/telemetry/api:keyed_service_factory",
         "//chromeos/crosapi/mojom",
