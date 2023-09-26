@@ -582,6 +582,9 @@ void AutocompleteResult::TrimOmniboxActions(bool is_zero_suggest) {
 
 void AutocompleteResult::SplitActionsToSuggestions() {
   const size_t size_before = size();
+  if (size_before == 0) {
+    return;
+  }
   for (size_t i = 0; i < matches_.size(); i++) {
     for (size_t j = 0; j < matches_[i].actions.size(); j++) {
       if (matches_[i].actions[j]->ActionId() == OmniboxActionId::PEDAL) {
@@ -594,13 +597,14 @@ void AutocompleteResult::SplitActionsToSuggestions() {
       }
     }
   }
-  if (size() > size_before &&
-      OmniboxFieldTrial::kActionsUISimplificationTrimExtra.Get()) {
-    // Note: `GetDynamicMaxMatches` is used here instead of
-    // `GetMaxMatches` so as to not break that feature. Even
-    // with the potentially boosted max, do not expand result set
-    // beyond current `size()`.
-    matches_.resize(std::min(size(), GetDynamicMaxMatches()));
+  if (OmniboxFieldTrial::kActionsUISimplificationTrimExtra.Get()) {
+    // By design, do not change result size. But allow triggering
+    // for the edge case where the pedal extends a list that still
+    // does not exceed maximum.
+    if (matches_[size() - 1].type != AutocompleteMatchType::PEDAL ||
+        size() > GetDynamicMaxMatches()) {
+      matches_.resize(size_before);
+    }
   }
 }
 

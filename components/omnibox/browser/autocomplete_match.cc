@@ -1907,6 +1907,7 @@ AutocompleteMatch AutocompleteMatch::CreateActionMatch(
 
   // Use the pedal text as primary match `contents`.
   action_match.contents = action_match.takeover_action->GetLabelStrings().hint;
+  action_match.fill_into_edit = action_match.contents;
   if (action_match.contents.empty()) {
     action_match.contents_class.clear();
   } else {
