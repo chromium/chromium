@@ -1567,9 +1567,6 @@
                     },
                     "enable_features": [
                         "AutofillParsingPatternProvider"
-                    ],
-                    "disable_features": [
-                        "AutofillPageLanguageDetection"
                     ]
                 }
             ]
