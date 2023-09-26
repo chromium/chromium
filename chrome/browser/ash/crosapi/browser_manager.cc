@@ -1083,11 +1083,11 @@ void BrowserManager::StartWithLogFile(bool launching_at_login_screen,
     return;
   }
 
-  // If the user is already logged in and we are inside the session,
-  // call |RecordDataverForPrimaryUser| now.
+  // If we are not launching at the login screen, we must be inside a
+  // user session, so call `RecordDataVerForPrimaryUser` now.
   // Otherwise, if we're pre-launching at login screen, this will be
   // done later, once the user logs in and the session is started.
-  if (user_manager::UserManager::Get()->IsUserLoggedIn()) {
+  if (!launching_at_login_screen) {
     RecordDataVerForPrimaryUser();
   }
 
