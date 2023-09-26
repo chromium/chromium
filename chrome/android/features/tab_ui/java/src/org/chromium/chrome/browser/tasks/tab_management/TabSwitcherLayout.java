@@ -310,7 +310,7 @@ public class TabSwitcherLayout extends Layout {
                 if (!ChromeFeatureList.sGridTabSwitcherAndroidAnimations.isEnabled()) {
                     expandTab(getThumbnailLocationOfCurrentTab());
                 }
-                runFinshedHidingRunnable();
+                runFinishedHidingRunnable();
             }
 
             private void resetLayoutTabs() {
@@ -372,7 +372,7 @@ public class TabSwitcherLayout extends Layout {
             // quickly.
             clearFinishedShowingRunnable();
             forceAnimationToFinish();
-            runFinshedHidingRunnable();
+            runFinishedHidingRunnable();
 
             // Keep the current tab in mLayoutTabs even if we are not going to show the shrinking
             // animation so that thumbnail taking is not blocked.
@@ -519,7 +519,7 @@ public class TabSwitcherLayout extends Layout {
             }
 
             clearFinishedShowingRunnable();
-            runFinshedHidingRunnable();
+            runFinishedHidingRunnable();
 
             if (!ChromeFeatureList.sGridTabSwitcherAndroidAnimations.isEnabled()) {
                 LayoutTab sourceLayoutTab =
@@ -557,13 +557,13 @@ public class TabSwitcherLayout extends Layout {
                 final boolean tabGtsAnimationEnabled =
                         TabUiFeatureUtilities.isTabToGtsAnimationEnabled(getContext());
                 if (ChromeFeatureList.sGridTabSwitcherAndroidAnimations.isEnabled()) {
-                    if (tabGtsAnimationEnabled) {
+                    mShowEmptyLayer = true;
+                    if (tabGtsAnimationEnabled && !mBackToStartSurface) {
                         mController.prepareHideTabSwitcherView();
                         expandTabJava(sourceTabId, getThumbnailLocationOfCurrentTab(),
                                 mGridTabListDelegate.getThumbnailSize());
                     } else {
                         mController.hideTabSwitcherView(false);
-                        postHiding();
                     }
                 } else {
                     mController.hideTabSwitcherView(!tabGtsAnimationEnabled);
@@ -640,7 +640,7 @@ public class TabSwitcherLayout extends Layout {
 
         clearFinishedShowingRunnable();
         forceAnimationToFinish();
-        runFinshedHidingRunnable();
+        runFinishedHidingRunnable();
 
         // If the dialog is visible or this isn't the active layout we shouldn't show the tab
         // creation animation.
@@ -959,7 +959,7 @@ public class TabSwitcherLayout extends Layout {
                     if (bitmap == null) {
                         postHiding();
                         mTabToSwitcherAnimation = null;
-                        runFinshedHidingRunnable();
+                        runFinishedHidingRunnable();
                         return;
                     }
 
@@ -1136,6 +1136,7 @@ public class TabSwitcherLayout extends Layout {
 
     private void postHiding() {
         mGridTabListDelegate.postHiding();
+        mShowEmptyLayer = true;
         mIsAnimatingHide = false;
         mRunningNewTabAnimation = false;
         doneHiding();
@@ -1282,7 +1283,7 @@ public class TabSwitcherLayout extends Layout {
         }
     }
 
-    private void runFinshedHidingRunnable() {
+    private void runFinishedHidingRunnable() {
         if (mFinishedHidingRunnable != null) {
             mFinishedHidingRunnable.run();
             mFinishedHidingRunnable = null;
