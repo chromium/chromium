@@ -6,9 +6,16 @@
 #ifndef CHROME_BROWSER_PRIVACY_SANDBOX_TRACKING_PROTECTION_NOTICE_SERVICE_H_
 #define CHROME_BROWSER_PRIVACY_SANDBOX_TRACKING_PROTECTION_NOTICE_SERVICE_H_
 
+#include <memory>
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/ui/browser_tab_strip_tracker.h"
+#include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/privacy_sandbox/tracking_protection_onboarding.h"
+#include "components/user_education/common/feature_promo_controller.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -27,7 +34,20 @@ namespace privacy_sandbox {
 // If the profile is not to be shown the notice at all due to ineligibility,
 // then this service doesn't observe anything (Except the
 // TrackingProtectionOnboarding Service).
-class TrackingProtectionNoticeService : public KeyedService {
+// We are observing two different types of interactions:
+//    1. Using the TabStripModelObserver: All updates to the tabs: This allows
+//    us to show/hide the notice on all tabs (including tabs that we started
+//    observing newly created webcontents) after the user selects a new one.
+//
+//    2. Using the WebContentsObserver: Navigation updates to the active
+//    webcontent: This allows us to show/hide the notice based on the
+//    navigation, in case the user doesn't update the tab, but only its
+//    webcontent through navigation.
+class TrackingProtectionNoticeService
+    : public KeyedService,
+      public TabStripModelObserver,
+      public BrowserTabStripTrackerDelegate,
+      public TrackingProtectionOnboarding::Observer {
  public:
   TrackingProtectionNoticeService(
       Profile* profile,
@@ -50,6 +70,10 @@ class TrackingProtectionNoticeService : public KeyedService {
     friend class content::WebContentsUserData<TabHelper>;
     explicit TabHelper(content::WebContents* web_contents);
 
+    // contents::WebContentsObserver:
+    void DidFinishNavigation(
+        content::NavigationHandle* navigation_handle) override;
+
     WEB_CONTENTS_USER_DATA_KEY_DECL();
   };
 
@@ -57,8 +81,41 @@ class TrackingProtectionNoticeService : public KeyedService {
   // Indicates if the notice is needed to be displayed.
   bool IsNoticeNeeded();
 
+  // Assumes this is a time to show the user the onboarding Notice. This
+  // method will attempt do so.
+  void MaybeUpdateNoticeVisibility(content::WebContents* web_content);
+
+  // Fires when the Notice is closed (for any reason).
+  void OnNoticeClosed(base::Time showed_when,
+                      user_education::FeaturePromoController* promo_controller);
+
+  // This is called internally when the service should start observing the tab
+  // strip model across all eligible browsers. Browser eligibility is determined
+  // by the  "ShouldTrackBrowser" below.
+  void InitializeTabStripTracker();
+
+  // This is called internally when the service should no longer observe changes
+  // to the tab strip model.
+  void ResetTabStripTracker();
+
+  // TabStripModelObserver
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override;
+
+  // BrowserTabStripTrackerDelegate
+  bool ShouldTrackBrowser(Browser* browser) override;
+
+  // TrackingProtectionOnboarding::Observer
+  void OnShouldShowNoticeUpdated() override;
+
   raw_ptr<Profile> profile_;
+  std::unique_ptr<BrowserTabStripTracker> tab_strip_tracker_;
   raw_ptr<TrackingProtectionOnboarding> onboarding_service_;
+  base::ScopedObservation<TrackingProtectionOnboarding,
+                          TrackingProtectionOnboarding::Observer>
+      onboarding_observation_{this};
 };
 
 }  // namespace privacy_sandbox

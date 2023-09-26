@@ -276,6 +276,10 @@
 #include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/privacy_sandbox/tracking_protection_notice_service.h"
+#endif
+
 using content::WebContents;
 
 namespace {
@@ -552,6 +556,13 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   SadTabHelper::CreateForWebContents(web_contents);
   SearchTabHelper::CreateForWebContents(web_contents);
   TabDialogs::CreateForWebContents(web_contents);
+#if !BUILDFLAG(IS_ANDROID)
+  if (privacy_sandbox::TrackingProtectionNoticeService::TabHelper::
+          IsHelperNeeded(profile)) {
+    privacy_sandbox::TrackingProtectionNoticeService::TabHelper::
+        CreateForWebContents(web_contents);
+  }
+#endif
   HighEfficiencyChipTabHelper::CreateForWebContents(web_contents);
   if (base::FeatureList::IsEnabled(
           performance_manager::features::kMemoryUsageInHovercards)) {
