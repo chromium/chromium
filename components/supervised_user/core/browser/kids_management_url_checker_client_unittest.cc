@@ -45,6 +45,14 @@ class KidsManagementURLCheckerClientTest
     }
   }
 
+  ~KidsManagementURLCheckerClientTest() override {
+    if (UseProtoFetcher()) {
+      // Since scoped_feature_list_::Init* / scoped_feature_list_.Reset are
+      // stack-based clean-up in the same life-cycle moment.
+      scoped_feature_list_.Reset();
+    }
+  }
+
   void SetUp() override {
     test_kids_chrome_management_client_ =
         std::make_unique<kids_management::KidsChromeManagementClientForTesting>(
@@ -67,17 +75,7 @@ class KidsManagementURLCheckerClientTest
   void MakePrimaryAccountAvailable() {
     this->identity_test_env_.MakePrimaryAccountAvailable(
         "homer@gmail.com", signin::ConsentLevel::kSignin);
-  }
-  void IssueAccessToken() {
-    this->identity_test_env_
-        .WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-            "access_token", base::Time::Max());
-  }
-  void DenyAccessToken() {
-    this->identity_test_env_
-        .WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-            GoogleServiceAuthError(
-                GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
+    this->identity_test_env_.SetAutomaticIssueOfAccessTokens(/*grant=*/true);
   }
   void AddTestResponse(
       kids_chrome_management::ClassifyUrlResponse::DisplayClassification
@@ -156,14 +154,14 @@ TEST_P(KidsManagementURLCheckerClientTest, UrlAllowed) {
                               KidsChromeManagementClient::ErrorCode::kSuccess);
   }
 
+  MakePrimaryAccountAvailable();
+
   EXPECT_CALL(*this,
               OnCheckDone(GURL("http://example.com"),
                           safe_search_api::ClientClassification::kAllowed));
   CheckUrl("http://example.com");
 
   if (UseProtoFetcher()) {
-    MakePrimaryAccountAvailable();
-    IssueAccessToken();
     AddTestResponse(kids_chrome_management::ClassifyUrlResponse::ALLOWED);
   }
 }
@@ -176,14 +174,14 @@ TEST_P(KidsManagementURLCheckerClientTest, UrlRestricted) {
         KidsChromeManagementClient::ErrorCode::kSuccess);
   }
 
+  MakePrimaryAccountAvailable();
+
   EXPECT_CALL(*this,
               OnCheckDone(GURL("http://example.com"),
                           safe_search_api::ClientClassification::kRestricted));
   CheckUrl("http://example.com");
 
   if (UseProtoFetcher()) {
-    MakePrimaryAccountAvailable();
-    IssueAccessToken();
     AddTestResponse(kids_chrome_management::ClassifyUrlResponse::RESTRICTED);
   }
 }
@@ -195,15 +193,14 @@ TEST_P(KidsManagementURLCheckerClientTest, AccessTokenError) {
         KidsChromeManagementClient::ErrorCode::kTokenError);
   }
 
+  // UseProtoFetcher() == true requires no access token at all to prove this
+  // test, since the token's fetch mode is kImmediate, so url check will fail
+  // for that reason when the token is not available.
+
   EXPECT_CALL(*this,
               OnCheckDone(GURL("http://example.com"),
                           safe_search_api::ClientClassification::kUnknown));
   CheckUrl("http://example.com");
-
-  if (UseProtoFetcher()) {
-    MakePrimaryAccountAvailable();
-    DenyAccessToken();
-  }
 }
 
 TEST_P(KidsManagementURLCheckerClientTest, NetworkError) {
@@ -213,13 +210,14 @@ TEST_P(KidsManagementURLCheckerClientTest, NetworkError) {
         KidsChromeManagementClient::ErrorCode::kNetworkError);
   }
 
+  MakePrimaryAccountAvailable();
+
   EXPECT_CALL(*this,
               OnCheckDone(GURL("http://example.com"),
                           safe_search_api::ClientClassification::kUnknown));
   CheckUrl("http://example.com");
+
   if (UseProtoFetcher()) {
-    MakePrimaryAccountAvailable();
-    IssueAccessToken();
     NetworkError(net::ERR_UNEXPECTED);
   }
 }
@@ -231,13 +229,14 @@ TEST_P(KidsManagementURLCheckerClientTest, HttpError) {
         KidsChromeManagementClient::ErrorCode::kNetworkError);
   }
 
+  MakePrimaryAccountAvailable();
+
   EXPECT_CALL(*this,
               OnCheckDone(GURL("http://example.com"),
                           safe_search_api::ClientClassification::kUnknown));
   CheckUrl("http://example.com");
+
   if (UseProtoFetcher()) {
-    MakePrimaryAccountAvailable();
-    IssueAccessToken();
     HttpError(net::HTTP_BAD_GATEWAY);
   }
 }
@@ -249,13 +248,14 @@ TEST_P(KidsManagementURLCheckerClientTest, ServiceError) {
         KidsChromeManagementClient::ErrorCode::kNetworkError);
   }
 
+  MakePrimaryAccountAvailable();
+
   EXPECT_CALL(*this,
               OnCheckDone(GURL("http://example.com"),
                           safe_search_api::ClientClassification::kUnknown));
   CheckUrl("http://example.com");
+
   if (UseProtoFetcher()) {
-    MakePrimaryAccountAvailable();
-    IssueAccessToken();
     AddMalformedResponse();
   }
 }

@@ -326,7 +326,7 @@ class FetcherImpl final : public ProtoFetcher<Response> {
       Callback callback) {
     CHECK(callback) << "Use base::DoNothing() instead of empty callback.";
     return std::make_unique<ApiAccessTokenFetcher>(
-        identity_manager, fetcher_config,
+        identity_manager, fetcher_config.access_token_config,
         BindOnce(&FetcherImpl::OnAccessTokenFetchComplete, Unretained(this),
                  url_loader_factory,
                  std::move(callback)));  // Unretained(.) is safe because `this`

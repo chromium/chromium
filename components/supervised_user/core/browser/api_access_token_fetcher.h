@@ -31,7 +31,7 @@ class ApiAccessTokenFetcher {
   // Non copyable.
   ApiAccessTokenFetcher() = delete;
   explicit ApiAccessTokenFetcher(signin::IdentityManager& identity_manager,
-                                 const FetcherConfig& fetcher_config,
+                                 const AccessTokenConfig& access_token_config,
                                  Consumer consumer);
   ApiAccessTokenFetcher(const ApiAccessTokenFetcher&) = delete;
   ApiAccessTokenFetcher& operator=(const ApiAccessTokenFetcher&) = delete;

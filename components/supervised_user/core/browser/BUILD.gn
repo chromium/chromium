@@ -45,6 +45,7 @@ static_library("fetcher_config") {
     "fetcher_config.h",
   ]
   deps = [
+    "//components/signin/public/identity_manager:identity_manager",
     "//google_apis",
     "//net/traffic_annotation",
   ]

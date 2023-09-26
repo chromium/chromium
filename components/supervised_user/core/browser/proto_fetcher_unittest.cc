@@ -4,6 +4,7 @@
 
 #include "components/supervised_user/core/browser/proto_fetcher.h"
 
+#include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "stddef.h"
 
 #include <memory>
@@ -54,38 +55,42 @@ using ::signin::IdentityTestEnvironment;
 
 constexpr FetcherConfig kTestGetConfig{
     .service_path = "/superviser/user:get",
-    // TODO(b/284523446): Refer to GaiaConstants rather than literal.
-    .oauth2_scope =
-        "https://www.googleapis.com/auth/kid.permission",  // Real scope
-                                                           // required.
     .method = FetcherConfig::Method::kGet,
     .histogram_basename = "SupervisedUser.Request",
     .traffic_annotation =
         annotations::ClassifyUrlTag,  // traffic annotation is meaningless for
                                       // this tests since there's no real
                                       // traffic.
+    .access_token_config{
+        .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
+        // TODO(b/284523446): Refer to GaiaConstants rather than literal.
+        .oauth2_scope =
+            "https://www.googleapis.com/auth/kid.permission",  // Real scope
+                                                               // required.
+
+    },
 };
 
 constexpr FetcherConfig kTestPostConfig{
     .service_path = "/superviser/user:post",
-    // TODO(b/284523446): Refer to GaiaConstants rather than literal.
-    .oauth2_scope =
-        "https://www.googleapis.com/auth/kid.permission",  // Real scope
-                                                           // required.
     .method = FetcherConfig::Method::kPost,
     .histogram_basename = "SupervisedUser.Request",
     .traffic_annotation =
         annotations::ClassifyUrlTag,  // traffic annotation is meaningless for
                                       // this tests since there's no real
                                       // traffic.
+    .access_token_config{
+        .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
+        // TODO(b/284523446): Refer to GaiaConstants rather than literal.
+        .oauth2_scope =
+            "https://www.googleapis.com/auth/kid.permission",  // Real scope
+                                                               // required.
+
+    },
 };
 
 constexpr FetcherConfig kTestRetryConfig{
     .service_path = "/superviser/user:retry",
-    // TODO(b/284523446): Refer to GaiaConstants rather than literal.
-    .oauth2_scope =
-        "https://www.googleapis.com/auth/kid.permission",  // Real scope
-                                                           // required.
     .method = FetcherConfig::Method::kGet,
     .histogram_basename = "SupervisedUser.Request",
     .traffic_annotation =
@@ -99,6 +104,14 @@ constexpr FetcherConfig kTestRetryConfig{
             .maximum_backoff_ms = 1,
             .always_use_initial_delay = false,
         },
+    .access_token_config{
+        .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
+        // TODO(b/284523446): Refer to GaiaConstants rather than literal.
+        .oauth2_scope =
+            "https://www.googleapis.com/auth/kid.permission",  // Real scope
+                                                               // required.
+
+    },
 };
 
 // Receiver is an artificial consumer of the fetch process. Typically, calling
