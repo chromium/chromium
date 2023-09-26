@@ -1034,8 +1034,7 @@ bool NativeWidgetNSWindowBridge::ShouldUseCustomTitlebarHeightForFullscreen()
   return immersive_mode_controller_ &&
          immersive_mode_controller_->is_initialized() &&
          immersive_mode_controller_->IsTabbed() &&
-         immersive_mode_controller_->last_used_style() !=
-             remote_cocoa::mojom::ToolbarVisibilityStyle::kNone;
+         !immersive_mode_controller_->IsContentFullscreen();
 }
 
 void NativeWidgetNSWindowBridge::OnImmersiveFullscreenToolbarRevealChanged(

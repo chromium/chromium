@@ -57,7 +57,6 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeControllerCocoa {
   virtual void FullscreenTransitionCompleted();
   virtual void OnTopViewBoundsChanged(const gfx::Rect& bounds);
   virtual void UpdateToolbarVisibility(mojom::ToolbarVisibilityStyle style);
-  mojom::ToolbarVisibilityStyle last_used_style() { return last_used_style_; }
 
   // Reveal top chrome leaving it visible until all outstanding calls to
   // RevealLock() are balanced with RevealUnlock(). Reveal locks will persist
@@ -113,6 +112,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeControllerCocoa {
 
   // Returns true if kImmersiveFullscreenTabs is being used.
   virtual bool IsTabbed();
+  bool IsContentFullscreen();
 
   ImmersiveModeTitlebarViewController*
   immersive_mode_titlebar_view_controller_for_testing() {
@@ -126,6 +126,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeControllerCocoa {
   void set_last_used_style(mojom::ToolbarVisibilityStyle style) {
     last_used_style_ = style;
   }
+  mojom::ToolbarVisibilityStyle last_used_style() { return last_used_style_; }
 
   // Layout the `window` on top of the `anchor_view`. The `window` will occupy
   // the same place on screen as the `anchor_view`, completely occluding the

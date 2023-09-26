@@ -544,6 +544,10 @@ bool ImmersiveModeControllerCocoa::IsTabbed() {
   return false;
 }
 
+bool ImmersiveModeControllerCocoa::IsContentFullscreen() {
+  return last_used_style_ == remote_cocoa::mojom::ToolbarVisibilityStyle::kNone;
+}
+
 double ImmersiveModeControllerCocoa::GetOffscreenYOrigin() {
   // Get the height of the screen. Using this as the y origin will move a window
   // offscreen.
