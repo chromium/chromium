@@ -435,7 +435,7 @@ bool SSLManager::UpdateEntry(NavigationEntryImpl* entry,
 void SSLManager::UpdateLastCommittedEntry(int add_content_status_flags,
                                           int remove_content_status_flags) {
   NavigationEntryImpl* entry;
-  if (controller_->frame_tree().type() == FrameTree::Type::kFencedFrame) {
+  if (controller_->frame_tree().is_fenced_frame()) {
     // Only the primary frame tree's NavigationEntries are exposed outside of
     // content, so the primary frame tree's NavigationController needs to
     // represent an aggregate view of the security state of its inner frame

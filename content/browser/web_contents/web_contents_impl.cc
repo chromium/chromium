@@ -4082,8 +4082,7 @@ void WebContentsImpl::RequestToLockMouse(
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::RequestToLockMouse",
                         "render_widget_host", render_widget_host, "privileged",
                         privileged);
-  if (render_widget_host->frame_tree()->type() ==
-      FrameTree::Type::kFencedFrame) {
+  if (render_widget_host->frame_tree()->is_fenced_frame()) {
     // The renderer should have checked and disallowed the request for fenced
     // frames in PointerLockController and dispatched pointerlockerror. Ignore
     // the request and mark it as bad if it didn't happen for some reason.
@@ -5126,7 +5125,7 @@ WebContents* WebContentsImpl::OpenURL(const OpenURLParams& params) {
       // frame tree Navigation controller should be used for navigating.
       // Instead, we just navigate directly on the relevant frame
       // tree.
-      if (frame_tree.type() == FrameTree::Type::kPrerender ||
+      if (frame_tree.is_prerendering() ||
           frame_tree_node->IsInFencedFrameTree()) {
         DCHECK_EQ(params.disposition, WindowOpenDisposition::CURRENT_TAB);
         frame_tree.controller().LoadURLWithParams(
@@ -8617,7 +8616,7 @@ void WebContentsImpl::CreateRenderWidgetHostViewForRenderManager(
   // TODO(crbug.com/1254770): Fix this for portals.
   bool is_inner_frame_tree = static_cast<RenderViewHostImpl*>(render_view_host)
                                  ->frame_tree()
-                                 ->type() == FrameTree::Type::kFencedFrame;
+                                 ->is_fenced_frame();
   if (is_inner_frame_tree) {
     WebContentsViewChildFrame::CreateRenderWidgetHostViewForInnerFrameTree(
         this, render_view_host->GetWidget());

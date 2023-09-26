@@ -1069,7 +1069,7 @@ bool IsSharedStorageWritableForNavigationRequest(FrameTreeNode* frame_tree_node,
   if (frame_tree_node->fenced_frame_status() !=
           RenderFrameHostImpl::FencedFrameStatus::
               kIframeNestedWithinFencedFrame &&
-      (frame_tree_node->frame_tree().type() != FrameTree::Type::kPrimary ||
+      (!frame_tree_node->frame_tree().is_primary() ||
        !frame_tree_node->frame_tree().root()->IsOutermostMainFrame())) {
     return false;
   }

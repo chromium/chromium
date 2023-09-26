@@ -108,8 +108,7 @@ bool CanTraverseToPreviousEntryAfterNavigation(
 
   // Navigations in the non-primary `FrameTree` will always replace/reload, as
   // they're guaranteed to only have a single entry for the session history.
-  CHECK_EQ(navigation_request.frame_tree_node()->frame_tree().type(),
-           FrameTree::Type::kPrimary);
+  CHECK(navigation_request.frame_tree_node()->frame_tree().is_primary());
 
   return true;
 }
@@ -192,7 +191,7 @@ void RemoveScreenshotFromDestination(
   NavigationControllerImpl& nav_controller =
       navigation_request.frame_tree_node()->navigator().controller();
 
-  if (nav_controller.frame_tree().type() != FrameTree::Type::kPrimary) {
+  if (!nav_controller.frame_tree().is_primary()) {
     // Navigations in the non-primary FrameTree can still have a destination
     // entry (e.g., Prerender's initial document-fetch request will create a
     // pending entry), but they won't have a screenshot because the non-primary

@@ -188,10 +188,9 @@ void WebContentsObserverConsistencyChecker::FrameDeleted(
   // Will be nullptr if this is main frame of a non primary FrameTree whose page
   // was moved out (e.g. due Prerender activation).
   if (!render_frame_host) {
-    DCHECK_NE(FrameTreeNode::GloballyFindByID(frame_tree_node_id)
-                  ->frame_tree()
-                  .type(),
-              FrameTree::Type::kPrimary);
+    DCHECK(!FrameTreeNode::GloballyFindByID(frame_tree_node_id)
+                ->frame_tree()
+                .is_primary());
     return;
   }
 

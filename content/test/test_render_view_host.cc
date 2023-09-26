@@ -379,7 +379,7 @@ TestRenderViewHost::TestRenderViewHost(
                          std::move(main_browsing_context_state),
                          create_case),
       delete_counter_(nullptr) {
-  if (frame_tree->type() == FrameTree::Type::kFencedFrame) {
+  if (frame_tree->is_fenced_frame()) {
     // TestRenderWidgetHostViewChildFrame deletes itself in
     // RenderWidgetHostViewChildFrame::Destroy.
     new TestRenderWidgetHostViewChildFrame(GetWidget());

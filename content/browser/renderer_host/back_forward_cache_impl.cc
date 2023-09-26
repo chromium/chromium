@@ -976,7 +976,7 @@ void BackForwardCacheImpl::NotRestoredReasonBuilder::
   // it is `kPrimary`.
   if (rfh->frame_tree()->delegate()->GetOuterDelegateFrameTreeNodeId() !=
           FrameTreeNode::kFrameTreeNodeInvalidId &&
-      rfh->frame_tree()->type() == FrameTree::Type::kPrimary) {
+      rfh->frame_tree()->is_primary()) {
     result.No(BackForwardCacheMetrics::NotRestoredReason::kHaveInnerContents);
   }
 

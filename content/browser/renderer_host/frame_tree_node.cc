@@ -151,9 +151,10 @@ FrameTreeNode::FencedFrameStatus ComputeFencedFrameStatus(
     const blink::FramePolicy& frame_policy) {
   using FencedFrameStatus = FrameTreeNode::FencedFrameStatus;
   if (blink::features::IsFencedFramesEnabled() &&
-      frame_tree.type() == FrameTree::Type::kFencedFrame) {
-    if (!parent)
+      frame_tree.is_fenced_frame()) {
+    if (!parent) {
       return FencedFrameStatus::kFencedFrameRoot;
+    }
     return FencedFrameStatus::kIframeNestedWithinFencedFrame;
   }
 

@@ -261,7 +261,9 @@ class CONTENT_EXPORT FrameTree {
   FrameTreeNode* root() { return &root_; }
   const FrameTreeNode* root() const { return &root_; }
 
-  bool is_prerendering() const { return type_ == FrameTree::Type::kPrerender; }
+  bool is_primary() const { return type_ == Type::kPrimary; }
+  bool is_prerendering() const { return type_ == Type::kPrerender; }
+  bool is_fenced_frame() const { return type_ == Type::kFencedFrame; }
 
   // Returns true if this frame tree is a portal.
   //

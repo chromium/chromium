@@ -1413,8 +1413,7 @@ bool NavigationControllerImpl::RendererDidNavigate(
   // NavigationEntry, by either creating a new object or reusing the previous
   // entry's one.
   scoped_refptr<BackForwardCacheMetrics> back_forward_cache_metrics;
-  if (navigation_request->frame_tree_node()->frame_tree().type() ==
-      FrameTree::Type::kPrimary) {
+  if (navigation_request->frame_tree_node()->frame_tree().is_primary()) {
     back_forward_cache_metrics = BackForwardCacheMetrics::
         CreateOrReuseBackForwardCacheMetricsForNavigation(
             GetLastCommittedEntry(), is_main_frame_navigation,
@@ -2569,7 +2568,7 @@ BackForwardCacheImpl& NavigationControllerImpl::GetBackForwardCache() {
 
 NavigationEntryScreenshotCache*
 NavigationControllerImpl::GetNavigationEntryScreenshotCache() {
-  CHECK_EQ(frame_tree_->type(), FrameTree::Type::kPrimary);
+  CHECK(frame_tree_->is_primary());
   if (!nav_entry_screenshot_cache_ && AreBackForwardTransitionsEnabled()) {
     nav_entry_screenshot_cache_ =
         std::make_unique<NavigationEntryScreenshotCache>(

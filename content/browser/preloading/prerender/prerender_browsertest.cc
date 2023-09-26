@@ -545,8 +545,7 @@ class PrerenderBrowserTest : public ContentBrowserTest,
 
     // The initial page should not be in prerendered state.
     RenderFrameHostImpl* initiator_render_frame_host = current_frame_host();
-    EXPECT_EQ(initiator_render_frame_host->frame_tree()->type(),
-              FrameTree::Type::kPrimary);
+    EXPECT_TRUE(initiator_render_frame_host->frame_tree()->is_primary());
     EXPECT_EQ(initiator_render_frame_host->lifecycle_state(),
               LifecycleStateImpl::kActive);
 
