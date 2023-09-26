@@ -33869,6 +33869,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1159" label="DeviceSwitchFunctionKeysBehaviorEnabled"/>
   <int value="1160" label="DeviceDlcPredownloadList"/>
   <int value="1161" label="DataControlsRules"/>
+  <int value="1162" label="DeviceEphemeralNetworkPoliciesEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

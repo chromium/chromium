@@ -694,4 +694,18 @@ TEST_F(DevicePolicyDecoderTest, DeviceSwitchFunctionKeysBehaviorEnabled) {
       std::move(device_switch_function_keys_behavior_enabled));
 }
 
+TEST_F(DevicePolicyDecoderTest, DeviceEphemeralNetworkPoliciesEnabled) {
+  em::ChromeDeviceSettingsProto device_policy;
+
+  DecodeUnsetDevicePolicyTestHelper(
+      device_policy, key::kDeviceEphemeralNetworkPoliciesEnabled);
+
+  device_policy.mutable_device_ephemeral_network_policies_enabled()->set_value(
+      true);
+
+  DecodeDevicePolicyTestHelper(device_policy,
+                               key::kDeviceEphemeralNetworkPoliciesEnabled,
+                               /*expected_value=*/base::Value(true));
+}
+
 }  // namespace policy

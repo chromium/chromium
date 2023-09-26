@@ -1018,6 +1018,11 @@ inline constexpr char kPowerQuickDimEnabled[] = "power.quick_dim_enabled";
 // lock to happen if the user is detected to be absent.
 inline constexpr char kPowerQuickLockDelay[] = "power.quick_lock_delay.ms";
 
+// A boolean pref that reflects the value of the policy
+// DeviceEphemeralNetworkPoliciesEnabled.
+inline constexpr char kDeviceEphemeralNetworkPoliciesEnabled[] =
+    "ash.network.device_ephemeral_network_policies_enabled";
+
 // Copy of the `proxy_config::prefs::kProxy` definition; available at compile
 // time.
 inline constexpr char kProxy[] = "proxy";

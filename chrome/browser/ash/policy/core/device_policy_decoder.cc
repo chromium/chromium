@@ -850,6 +850,17 @@ void DecodeNetworkPolicies(const em::ChromeDeviceSettingsProto& policy,
         base::Value(policy.device_debug_packet_capture_allowed().allowed()),
         nullptr);
   }
+
+  if (policy.has_device_ephemeral_network_policies_enabled()) {
+    const em::BooleanPolicyProto& container(
+        policy.device_ephemeral_network_policies_enabled());
+    if (container.has_value()) {
+      policies->Set(key::kDeviceEphemeralNetworkPoliciesEnabled,
+                    POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                    POLICY_SOURCE_CLOUD, base::Value(container.value()),
+                    /*external_data_fetcher=*/nullptr);
+    }
+  }
 }
 
 void DecodeIntegerReportingPolicy(PolicyMap* policies,

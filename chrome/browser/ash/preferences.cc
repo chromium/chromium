@@ -165,6 +165,8 @@ void Preferences::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kChromadToCloudMigrationEnabled, false);
   registry->RegisterBooleanPref(prefs::kLoginScreenWebUILazyLoading, false);
   registry->RegisterBooleanPref(::prefs::kConsumerAutoUpdateToggle, true);
+  registry->RegisterBooleanPref(prefs::kDeviceEphemeralNetworkPoliciesEnabled,
+                                false);
   registry->RegisterBooleanPref(prefs::kDeviceSwitchFunctionKeysBehaviorEnabled,
                                 false);
   registry->RegisterBooleanPref(prefs::kIsolatedWebAppsEnabled, false);

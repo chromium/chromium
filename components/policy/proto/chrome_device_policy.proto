@@ -2030,4 +2030,5 @@ message ChromeDeviceSettingsProto {
   optional DeviceSwitchFunctionKeysBehaviorEnabledProto
       device_switch_function_keys_behavior_enabled = 153;
   optional StringListPolicyProto device_dlc_predownload_list = 154;
+  optional BooleanPolicyProto device_ephemeral_network_policies_enabled = 155;
 }
