@@ -17,10 +17,11 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PasswordManagerImpl, PasswordManagerPage} from '../autofill_page/password_manager_proxy.js';
+import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 
-import {CardInfo, NotificationPermission, SafetyHubBrowserProxy, SafetyHubBrowserProxyImpl, SafetyHubEvent, UnusedSitePermissions} from './safety_hub_browser_proxy.js';
+import {CardInfo, CardState, NotificationPermission, SafetyHubBrowserProxy, SafetyHubBrowserProxyImpl, SafetyHubEvent, UnusedSitePermissions} from './safety_hub_browser_proxy.js';
 import {SiteInfo} from './safety_hub_module.js';
 import {getTemplate} from './safety_hub_page.html.js';
 
@@ -33,7 +34,7 @@ export interface SettingsSafetyHubPageElement {
 }
 
 const SettingsSafetyHubPageElementBase =
-    WebUiListenerMixin(I18nMixin(PolymerElement));
+    RelaunchMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
 
 export class SettingsSafetyHubPageElement extends
     SettingsSafetyHubPageElementBase {
@@ -104,6 +105,7 @@ export class SettingsSafetyHubPageElement extends
   }
 
   private initializeCards_() {
+    // TODO(1443466): Add listeners for cards.
     this.browserProxy_.getPasswordCardData().then((data: CardInfo) => {
       this.passwordCardData_ = data;
     });
@@ -170,9 +172,13 @@ export class SettingsSafetyHubPageElement extends
   }
 
   private onVersionClick_() {
-    Router.getInstance().navigateTo(
-        routes.ABOUT, /* dynamicParams= */ undefined,
-        /* removeSearch= */ true);
+    if (this.versionCardData_.state === CardState.WARNING) {
+      this.performRestart(RestartType.RELAUNCH);
+    } else {
+      Router.getInstance().navigateTo(
+          routes.ABOUT, /* dynamicParams= */ undefined,
+          /* removeSearch= */ true);
+    }
   }
 
   private onSafeBrowsingClick_() {

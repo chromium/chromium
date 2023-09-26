@@ -7,17 +7,19 @@ import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {CardInfo, CardState, ContentSettingsTypes, SafetyHubBrowserProxyImpl, SafetyHubEvent,SettingsSafetyHubPageElement} from 'chrome://settings/lazy_load.js';
-import {PasswordManagerImpl, PasswordManagerPage, Router, routes} from 'chrome://settings/settings.js';
+import {LifetimeBrowserProxyImpl, PasswordManagerImpl, PasswordManagerPage, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
+import {TestLifetimeBrowserProxy} from './test_lifetime_browser_proxy.js';
 import {TestSafetyHubBrowserProxy} from './test_safety_hub_browser_proxy.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 // clang-format on
 
 suite('SafetyHubPage', function() {
   let testElement: SettingsSafetyHubPageElement;
+  let lifetimeBrowserProxy: TestLifetimeBrowserProxy;
   let safetyHubBrowserProxy: TestSafetyHubBrowserProxy;
   let passwordManagerProxy: TestPasswordManagerProxy;
 
@@ -59,6 +61,9 @@ suite('SafetyHubPage', function() {
 
     passwordManagerProxy = new TestPasswordManagerProxy();
     PasswordManagerImpl.setInstance(passwordManagerProxy);
+
+    lifetimeBrowserProxy = new TestLifetimeBrowserProxy();
+    LifetimeBrowserProxyImpl.setInstance(lifetimeBrowserProxy);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('settings-safety-hub-page');
@@ -237,11 +242,28 @@ suite('SafetyHubPage', function() {
         versionCardMockData.subheader);
   });
 
-  test('Version Card Clicked', function() {
+  test('Version Card Clicked When No Update Waiting', function() {
     testElement.$.version.click();
 
     // Ensure the About page is shown.
     assertEquals(routes.ABOUT, Router.getInstance().getCurrentRoute());
+  });
+
+  test('Version Card Clicked When Update Waiting', async function() {
+    const versionCardMockData: CardInfo = {
+      header: 'Chrome is not up to date',
+      subheader: 'Relaunch to update',
+      state: CardState.WARNING,
+    };
+    safetyHubBrowserProxy.setVersionCardData(versionCardMockData);
+    testElement = document.createElement('settings-safety-hub-page');
+    document.body.appendChild(testElement);
+    await flushTasks();
+
+    testElement.$.version.click();
+
+    // Ensure the browser is restarted.
+    return lifetimeBrowserProxy.whenCalled('relaunch');
   });
 
   test('Safe Browsing Card', async function() {
