@@ -126,10 +126,13 @@ absl::optional<SnapSearchResult> SearchResultForDodgingRange(
       NOTREACHED();
   }
 
-  // Make sure the snap area is still covering the snapport.
-  result.set_snap_offset(
-      std::clamp(offset, area_range.start() - scroll_padding,
-                 area_range.end() - scroll_padding - snapport_size));
+  min_offset = area_range.start() - scroll_padding;
+  max_offset = area_range.end() - scroll_padding - snapport_size;
+  if (max_offset < min_offset) {
+    return absl::nullopt;
+  }
+
+  result.set_snap_offset(std::clamp(offset, min_offset, max_offset));
   return result;
 }
 
