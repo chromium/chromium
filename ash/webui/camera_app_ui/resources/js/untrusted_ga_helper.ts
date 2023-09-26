@@ -126,6 +126,7 @@ export enum Ga4MetricDimension {
   RESOLUTION_LEVEL = 'resolution_level',
   SCHEMA_VERSION = 'schema_version',
   SCREEN_RESOLUTION = 'screen_resolution',
+  SESSION_LENGTH = 'session_length',
   SHOULD_DOWN_SCALE = 'should_down_scale',
   SHOULD_HANDLE_RESULT = 'should_handle_result',
   SHUTTER_TYPE = 'shutter_type',
@@ -286,7 +287,7 @@ function registerGa4EndSessionEvent(): void {
     sendGa4Event({
       name: 'end_session',
       eventParams: {
-        duration: window.performance.now().toFixed(),
+        [Ga4MetricDimension.SESSION_LENGTH]: window.performance.now().toFixed(),
       },
       beacon: true,
     });
@@ -323,7 +324,7 @@ function sendGaEvent({baseEvent, dimensions}: SendGaEventParams): void {
 
 interface SendGa4EventParams {
   name: string;
-  eventParams: Record<string, number|string>;
+  eventParams: Ga4EventParams;
   beacon?: boolean;
 }
 
