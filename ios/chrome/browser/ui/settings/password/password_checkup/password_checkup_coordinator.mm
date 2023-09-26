@@ -154,7 +154,13 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
     return;
   }
 
-  CHECK_GT(viewControllerIndex, 0);
+  // If the view controller is at the top of the navigation stack, go to the
+  // previous view controller.
+  if (viewControllerIndex == 0) {
+    [self.baseNavigationController popViewControllerAnimated:YES];
+
+    return;
+  }
 
   // Go to the previous view controller in the navigation stack.
   [self.baseNavigationController
