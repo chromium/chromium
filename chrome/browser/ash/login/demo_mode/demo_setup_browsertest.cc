@@ -1050,8 +1050,16 @@ class DemoSetupRegionCodeNotExistTest : public DemoSetupArcSupportedTest {
   }
 };
 
+// TODO(crbug.com/1486991): Flaky under dbg and asan.
+#if !defined(NDEBUG) || defined(ADDRESS_SANITIZER)
+#define MAYBE_RegionCodeNotExistPlaceholderIsSet \
+  DISABLED_RegionCodeNotExistPlaceholderIsSet
+#else
+#define MAYBE_RegionCodeNotExistPlaceholderIsSet \
+  RegionCodeNotExistPlaceholderIsSet
+#endif
 IN_PROC_BROWSER_TEST_F(DemoSetupRegionCodeNotExistTest,
-                       RegionCodeNotExistPlaceholderIsSet) {
+                       MAYBE_RegionCodeNotExistPlaceholderIsSet) {
   // Simulate successful online setup.
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION);
