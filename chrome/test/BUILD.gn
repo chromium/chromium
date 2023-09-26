@@ -1003,6 +1003,7 @@ if (is_chromeos && is_chromeos_device) {
         "../browser/ash/bluetooth/bluetooth_integration_test.cc",
         "../browser/ash/external_metrics_integration_test.cc",
         "../browser/ash/featured_integration_test.cc",
+        "../browser/ash/ml_integration_test.cc",
         "../browser/ui/ash/app_list/app_list_integration_test.cc",
         "../browser/ui/ash/quick_settings_integration_test.cc",
         "../browser/ui/ash/shelf/shelf_integration_test.cc",
@@ -1015,7 +1016,10 @@ if (is_chromeos && is_chromeos_device) {
         "base/chromeos/crosier/interactive_ash_test_uitest.cc",
       ]
 
-      deps += [ "//chrome/test/base/chromeos/crosier:proto" ]
+      deps += [
+        "//chrome/test/base/chromeos/crosier:proto",
+        "//chromeos/services/machine_learning/public/cpp",
+      ]
 
       data_deps = [
         "//chrome/test/base/chromeos/crosier/helper",
