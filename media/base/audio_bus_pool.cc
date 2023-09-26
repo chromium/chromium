@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/audio/audio_bus_pool.h"
+#include "media/base/audio_bus_pool.h"
+
 #include <memory>
 #include "base/check_op.h"
 #include "base/functional/bind.h"

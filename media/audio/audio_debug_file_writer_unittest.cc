@@ -9,16 +9,12 @@
 #include <utility>
 
 #include "base/files/file_util.h"
-#include "base/functional/bind.h"
-#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/synchronization/waitable_event.h"
 #include "base/sys_byteorder.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread.h"
-#include "media/audio/audio_bus_pool.h"
 #include "media/audio/audio_debug_file_writer.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_bus_pool.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/test_helpers.h"

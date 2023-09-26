@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/audio/audio_bus_pool.h"
+#include "media/base/audio_bus_pool.h"
+
 #include <memory>
 #include <utility>
 
-#include "base/check_op.h"
-#include "base/functional/bind.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
-#include "media/audio/audio_io.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "testing/gmock/include/gmock/gmock.h"

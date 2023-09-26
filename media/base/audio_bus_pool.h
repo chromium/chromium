@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_AUDIO_AUDIO_BUS_POOL_H_
-#define MEDIA_AUDIO_AUDIO_BUS_POOL_H_
+#ifndef MEDIA_BASE_AUDIO_BUS_POOL_H_
+#define MEDIA_BASE_AUDIO_BUS_POOL_H_
 
 #include <memory>
 #include <stack>
 
-#include "base/files/file.h"
-#include "base/functional/callback_forward.h"
-#include "base/gtest_prod_util.h"
 #include "base/synchronization/lock.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
@@ -74,4 +71,4 @@ class MEDIA_EXPORT AudioBusPoolImpl final : public AudioBusPool {
 
 }  // namespace media
 
-#endif  // MEDIA_AUDIO_AUDIO_BUS_POOL_H_
+#endif  // MEDIA_BASE_AUDIO_BUS_POOL_H_
