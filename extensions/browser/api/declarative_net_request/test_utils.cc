@@ -17,7 +17,7 @@
 #include "extensions/browser/api/declarative_net_request/composite_matcher.h"
 #include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/indexed_rule.h"
-#include "extensions/browser/api/declarative_net_request/rules_count_pair.h"
+#include "extensions/browser/api/declarative_net_request/rule_counts.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_source.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
@@ -349,8 +349,8 @@ std::ostream& operator<<(std::ostream& output, LoadRulesetResult result) {
   return output;
 }
 
-std::ostream& operator<<(std::ostream& output, const RulesCountPair& count) {
-  output << "\nRulesCountPair\n";
+std::ostream& operator<<(std::ostream& output, const RuleCounts& count) {
+  output << "\nRuleCounts\n";
   output << "|rule_count| " << count.rule_count << "\n";
   output << "|regex_rule_count| " << count.regex_rule_count << "\n";
   return output;

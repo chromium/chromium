@@ -25,7 +25,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/parse_info.h"
-#include "extensions/browser/api/declarative_net_request/rules_count_pair.h"
+#include "extensions/browser/api/declarative_net_request/rule_counts.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/common/api/declarative_net_request.h"
@@ -169,7 +169,7 @@ UpdateDynamicRulesStatus GetUpdateDynamicRuleStatus(LoadRulesetResult result) {
 bool GetNewDynamicRules(const FileBackedRulesetSource& source,
                         std::vector<int> rule_ids_to_remove,
                         std::vector<dnr_api::Rule> rules_to_add,
-                        const RulesCountPair& rule_limit,
+                        const RuleCounts& rule_limit,
                         std::vector<dnr_api::Rule>* new_rules,
                         std::string* error,
                         UpdateDynamicRulesStatus* status) {
@@ -233,7 +233,7 @@ bool GetNewDynamicRules(const FileBackedRulesetSource& source,
 bool UpdateAndIndexDynamicRules(const FileBackedRulesetSource& source,
                                 std::vector<int> rule_ids_to_remove,
                                 std::vector<dnr_api::Rule> rules_to_add,
-                                const RulesCountPair& rule_limit,
+                                const RuleCounts& rule_limit,
                                 int* ruleset_checksum,
                                 std::string* error,
                                 UpdateDynamicRulesStatus* status) {
@@ -425,7 +425,7 @@ void FileSequenceHelper::UpdateDynamicRules(
     LoadRequestData load_data,
     std::vector<int> rule_ids_to_remove,
     std::vector<api::declarative_net_request::Rule> rules_to_add,
-    const RulesCountPair& rule_limit,
+    const RuleCounts& rule_limit,
     UpdateDynamicRulesUICallback ui_callback) const {
   DCHECK(GetExtensionFileTaskRunner()->RunsTasksInCurrentSequence());
   DCHECK_EQ(1u, load_data.rulesets.size());

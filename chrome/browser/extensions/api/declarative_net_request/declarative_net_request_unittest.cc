@@ -37,7 +37,7 @@
 #include "extensions/browser/api/declarative_net_request/declarative_net_request_prefs_helper.h"
 #include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/parse_info.h"
-#include "extensions/browser/api/declarative_net_request/rules_count_pair.h"
+#include "extensions/browser/api/declarative_net_request/rule_counts.h"
 #include "extensions/browser/api/declarative_net_request/rules_monitor_service.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_manager.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher.h"
@@ -1518,11 +1518,11 @@ TEST_P(SingleRulesetTest, SharedDynamicAndSessionRuleLimits) {
 
   const RulesMonitorService* service =
       RulesMonitorService::Get(browser_context());
-  RulesCountPair expected_count(100 /* rule_count */, 0 /* regex_rule_count */);
+  RuleCounts expected_count(100 /* rule_count */, 0 /* regex_rule_count */);
   EXPECT_EQ(expected_count,
-            service->GetRulesCountPair(extension()->id(), kDynamicRulesetID));
+            service->GetRuleCounts(extension()->id(), kDynamicRulesetID));
   EXPECT_EQ(expected_count,
-            service->GetRulesCountPair(extension()->id(), kSessionRulesetID));
+            service->GetRuleCounts(extension()->id(), kSessionRulesetID));
 
   // Adding any more dynamic rules will fail.
   expected_error = kDynamicRuleCountExceeded;
@@ -1560,11 +1560,11 @@ TEST_P(SingleRulesetTest, SharedDynamicAndSessionRegexRuleLimits) {
 
   const RulesMonitorService* service =
       RulesMonitorService::Get(browser_context());
-  RulesCountPair expected_count(60 /* rule_count */, 50 /* regex_rule_count */);
+  RuleCounts expected_count(60 /* rule_count */, 50 /* regex_rule_count */);
   EXPECT_EQ(expected_count,
-            service->GetRulesCountPair(extension()->id(), kDynamicRulesetID));
+            service->GetRuleCounts(extension()->id(), kDynamicRulesetID));
   EXPECT_EQ(expected_count,
-            service->GetRulesCountPair(extension()->id(), kSessionRulesetID));
+            service->GetRuleCounts(extension()->id(), kSessionRulesetID));
 
   // Adding more regex based dynamic or session rules should fail.
   std::string expected_error = kDynamicRegexRuleCountExceeded;
@@ -1586,9 +1586,9 @@ TEST_P(SingleRulesetTest, SharedDynamicAndSessionRegexRuleLimits) {
 
   expected_count.rule_count++;
   EXPECT_EQ(expected_count,
-            service->GetRulesCountPair(extension()->id(), kDynamicRulesetID));
+            service->GetRuleCounts(extension()->id(), kDynamicRulesetID));
   EXPECT_EQ(expected_count,
-            service->GetRulesCountPair(extension()->id(), kSessionRulesetID));
+            service->GetRuleCounts(extension()->id(), kSessionRulesetID));
 }
 
 // Test that getMatchedRules will return an error if an invalid tab id is

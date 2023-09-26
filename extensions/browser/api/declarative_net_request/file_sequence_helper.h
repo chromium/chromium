@@ -27,7 +27,7 @@ struct Rule;
 
 namespace declarative_net_request {
 enum class DynamicRuleUpdateAction;
-struct RulesCountPair;
+struct RuleCounts;
 
 // Holds the data relating to the loading of a single ruleset.
 class RulesetInfo {
@@ -137,7 +137,7 @@ class FileSequenceHelper {
       LoadRequestData load_data,
       std::vector<int> rule_ids_to_remove,
       std::vector<api::declarative_net_request::Rule> rules_to_add,
-      const RulesCountPair& rule_limit,
+      const RuleCounts& rule_limit,
       UpdateDynamicRulesUICallback ui_callback) const;
 
  private:
