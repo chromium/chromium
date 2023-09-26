@@ -405,7 +405,7 @@ WebrtcVideoEncoderWrapper::ReturnEncodedFrame(
   encoded_image._frameType = frame.key_frame
                                  ? webrtc::VideoFrameType::kVideoFrameKey
                                  : webrtc::VideoFrameType::kVideoFrameDelta;
-  encoded_image.SetTimestamp(frame.rtp_timestamp);
+  encoded_image.SetRtpTimestamp(frame.rtp_timestamp);
   encoded_image.SetPlayoutDelay(webrtc::VideoPlayoutDelay::Minimal());
   encoded_image.content_type_ = webrtc::VideoContentType::SCREENSHARE;
 
