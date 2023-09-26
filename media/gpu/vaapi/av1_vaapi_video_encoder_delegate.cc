@@ -258,6 +258,74 @@ scoped_refptr<AV1Picture> GetAV1Picture(
   return base::WrapRefCounted(
       reinterpret_cast<AV1Picture*>(job.picture().get()));
 }
+
+void DownscaleSegmentMap(const uint8_t* src_seg_map,
+                         uint32_t src_seg_size,
+                         size_t num_segments,
+                         uint8_t* dst_seg_map,
+                         uint32_t dst_seg_size,
+                         const gfx::Size& coded_size) {
+  CHECK(base::bits::IsPowerOfTwo(src_seg_size));
+  CHECK(base::bits::IsPowerOfTwo(dst_seg_size));
+  CHECK_LT(src_seg_size, dst_seg_size);
+
+  // We want to avoid doing a division operation for each src segment, so we
+  // find the log of the segment size ratio and right shift by that instead to
+  // calculate coordinates. This count leading zeros trick is just a fast way to
+  // compute the log, since we know the segment size ratios of going to be
+  // powers of two.
+  const uint32_t log_seg_size_ratio =
+      base::bits::CountLeadingZeroBits(src_seg_size) -
+      base::bits::CountLeadingZeroBits(dst_seg_size);
+  const uint32_t src_width =
+      base::bits::AlignUp(static_cast<uint32_t>(coded_size.width()),
+                          src_seg_size) /
+      src_seg_size;
+  const uint32_t src_height =
+      base::bits::AlignUp(static_cast<uint32_t>(coded_size.height()),
+                          src_seg_size) /
+      src_seg_size;
+  const uint32_t dst_width =
+      base::bits::AlignUp(static_cast<uint32_t>(coded_size.width()),
+                          dst_seg_size) /
+      dst_seg_size;
+  const uint32_t dst_height =
+      base::bits::AlignUp(static_cast<uint32_t>(coded_size.height()),
+                          dst_seg_size) /
+      dst_seg_size;
+
+  std::vector<uint8_t> freq_distribution(num_segments * dst_width * dst_height);
+
+  // Two pass procedure:
+  // First pass generates a frequency histogram of segment IDs.
+  // Second pass writes most frequent src segment ID for each dst segment.
+  for (uint32_t src_y = 0; src_y < src_height; src_y++) {
+    size_t row_offset = (src_y >> log_seg_size_ratio) * dst_width;
+    for (uint32_t src_x = 0; src_x < src_width; src_x++) {
+      DCHECK_LT(*src_seg_map, num_segments);
+      freq_distribution[(row_offset + (src_x >> log_seg_size_ratio)) *
+                            num_segments +
+                        *src_seg_map]++;
+      src_seg_map++;
+    }
+  }
+  for (uint32_t dst_y = 0; dst_y < dst_height; dst_y++) {
+    size_t row_offset = dst_y * dst_width;
+    for (uint32_t dst_x = 0; dst_x < dst_width; dst_x++) {
+      int most_freq = -1;
+      int freq = -1;
+      const size_t segment_offset = (row_offset + dst_x) * num_segments;
+      for (size_t i = 0; i < num_segments; i++) {
+        if (freq_distribution[segment_offset + i] > freq) {
+          freq = freq_distribution[segment_offset + i];
+          most_freq = i;
+        }
+      }
+      *dst_seg_map = most_freq;
+      dst_seg_map++;
+    }
+  }
+}
 }  // namespace
 
 AV1VaapiVideoEncoderDelegate::EncodeParams::EncodeParams()
@@ -299,6 +367,22 @@ bool AV1VaapiVideoEncoderDelegate::Initialize(
 
   frame_num_ = current_params_.intra_period;
 
+  if (!vaapi_wrapper_->GetMinAV1SegmentSize(AV1PROFILE_PROFILE_MAIN,
+                                            seg_size_)) {
+    LOG(ERROR) << "Could not get minimum segment size";
+    return false;
+  }
+
+  uint32_t seg_map_width =
+      base::bits::AlignUp(static_cast<uint32_t>(coded_size_.width()),
+                          seg_size_) /
+      seg_size_;
+  uint32_t seg_map_height =
+      base::bits::AlignUp(static_cast<uint32_t>(coded_size_.height()),
+                          seg_size_) /
+      seg_size_;
+  segmentation_map_.resize(seg_map_width * seg_map_height);
+
   return UpdateRates(current_params_.bitrate_allocation,
                      current_params_.framerate);
 }
@@ -332,7 +416,7 @@ bool AV1VaapiVideoEncoderDelegate::UpdateRates(
   rc_config.layer_target_bitrate[0] =
       current_params_.bitrate_allocation.GetSumBps() / 1000;
   rc_config.ts_rate_decimator[0] = 1;
-  rc_config.aq_mode = 0;
+  rc_config.aq_mode = 3;
   rc_config.ss_number_layers = 1;
   rc_config.ts_number_layers = 1;
   rc_config.max_quantizers[0] = kMaxQP;
@@ -582,9 +666,10 @@ std::vector<uint8_t> AV1VaapiVideoEncoderDelegate::PackSequenceHeader() const {
 bool AV1VaapiVideoEncoderDelegate::SubmitFrame(EncodeJob& job,
                                                PicParamOffsets& offsets) {
   VAEncPictureParameterBufferAV1 pic_param{};
+  VAEncSegMapBufferAV1 segment_map_param{};
   scoped_refptr<AV1Picture> pic = GetAV1Picture(job);
 
-  if (!FillPictureParam(pic_param, job, *pic)) {
+  if (!FillPictureParam(pic_param, segment_map_param, job, *pic)) {
     LOG(ERROR) << "Failed to fill PPS";
     return false;
   }
@@ -594,6 +679,10 @@ bool AV1VaapiVideoEncoderDelegate::SubmitFrame(EncodeJob& job,
   }
   if (!SubmitPictureParam(pic_param, offsets)) {
     LOG(ERROR) << "Failed to submit picture header";
+    return false;
+  }
+  if (!SubmitSegmentMap(segment_map_param)) {
+    LOG(ERROR) << "Failed to submit segment map";
     return false;
   }
 
@@ -608,8 +697,9 @@ bool AV1VaapiVideoEncoderDelegate::SubmitFrame(EncodeJob& job,
 // TODO(b:274756117): Tune these parameters
 bool AV1VaapiVideoEncoderDelegate::FillPictureParam(
     VAEncPictureParameterBufferAV1& pic_param,
+    VAEncSegMapBufferAV1& segment_map_param,
     const EncodeJob& job,
-    const AV1Picture& pic) const {
+    const AV1Picture& pic) {
   const bool is_keyframe = job.IsKeyframeRequested();
 
   pic_param.frame_height_minus_1 = visible_size_.height() - 1;
@@ -672,7 +762,23 @@ bool AV1VaapiVideoEncoderDelegate::FillPictureParam(
   pic_param.picture_flags.bits.allow_intrabc = 0;
   pic_param.picture_flags.bits.palette_mode_enable = 0;
 
-  pic_param.seg_id_block_size = 0;
+  switch (seg_size_) {
+    case 16:
+      pic_param.seg_id_block_size = 0;
+      break;
+    case 32:
+      pic_param.seg_id_block_size = 1;
+      break;
+    case 64:
+      pic_param.seg_id_block_size = 2;
+      break;
+    case 8:
+      pic_param.seg_id_block_size = 3;
+      break;
+    default:
+      LOG(ERROR) << "Invalid segment block size: " << seg_size_;
+      return false;
+  }
 
   pic_param.num_tile_groups_minus1 = 0;
 
@@ -690,6 +796,32 @@ bool AV1VaapiVideoEncoderDelegate::FillPictureParam(
   pic_param.filter_level[1] = loop_filter_level.filter_level[1];
   pic_param.filter_level_u = loop_filter_level.filter_level_u;
   pic_param.filter_level_v = loop_filter_level.filter_level_v;
+
+  aom::AV1SegmentationData seg_data;
+  constexpr uint32_t kSegmentGranularity = 4;
+  rate_ctrl_->GetSegmentationData(&seg_data);
+  CHECK_EQ(seg_data.segmentation_map_size,
+           base::bits::AlignUp(static_cast<uint32_t>(coded_size_.width()),
+                               kSegmentGranularity) /
+               kSegmentGranularity *
+               base::bits::AlignUp(static_cast<uint32_t>(coded_size_.height()),
+                                   kSegmentGranularity) /
+               kSegmentGranularity);
+  pic_param.segments.seg_flags.bits.segmentation_enabled = 1;
+  pic_param.segments.seg_flags.bits.segmentation_update_map = 1;
+  pic_param.segments.seg_flags.bits.segmentation_temporal_update = 0;
+  pic_param.segments.segment_number = seg_data.delta_q_size;
+  for (uint32_t i = 0; i < seg_data.delta_q_size; i++) {
+    pic_param.segments.feature_data[i][0] = seg_data.delta_q[i];
+    pic_param.segments.feature_mask[i] =
+        (1u << libgav1::kSegmentFeatureQuantizer);
+  }
+  segment_map_param.segmentMapDataSize = segmentation_map_.size();
+  DownscaleSegmentMap(seg_data.segmentation_map, kSegmentGranularity,
+                      seg_data.delta_q_size, segmentation_map_.data(),
+                      seg_size_, coded_size_);
+  segment_map_param.pSegmentMap = segmentation_map_.data();
+
   DVLOGF(4) << "qp=" << pic_param.base_qindex
             << " filter_level[0]=" << loop_filter_level.filter_level[0]
             << " filter_level[1]=" << loop_filter_level.filter_level[1]
@@ -894,7 +1026,31 @@ std::vector<uint8_t> AV1VaapiVideoEncoderDelegate::PackFrameHeader(
 
   // Pack segmentation parameters
   offsets.segmentation_bit_offset = ret.OutstandingBits();
-  ret.WriteBool(false);  // Disable segmentation
+  ret.WriteBool(true);  // Enable segmentation
+  if (pic_param.primary_ref_frame != kPrimaryReferenceNone) {
+    ret.WriteBool(true);   // Update segment map
+    ret.WriteBool(false);  // Temporal update false
+    ret.WriteBool(true);   // Update segment data
+  }
+  for (int i = 0; i < libgav1::kMaxSegments; i++) {
+    for (int j = 0; j < libgav1::kSegmentFeatureMax; j++) {
+      if (i < pic_param.segments.segment_number &&
+          (pic_param.segments.feature_mask[i] & (1u << j))) {
+        CHECK_EQ(j, libgav1::kSegmentFeatureQuantizer);
+
+        // This is the delta Q feature
+        ret.WriteBool(true);  // Feature enabled
+        int delta_q = pic_param.segments.feature_data[i][j];
+        ret.WriteBool(delta_q < 0);  // Sign bit
+        if (delta_q < 0) {
+          delta_q += 2 * (1 << 8);
+        }
+        ret.Write(delta_q, 8);  // Write the unsigned value
+      } else {
+        ret.WriteBool(false);  // Feature disabled
+      }
+    }
+  }
   offsets.segmentation_bit_size =
       ret.OutstandingBits() - offsets.segmentation_bit_offset;
 
@@ -962,6 +1118,13 @@ bool AV1VaapiVideoEncoderDelegate::SubmitPictureParam(
   return vaapi_wrapper_->SubmitBuffer(VAEncPictureParameterBufferType,
                                       sizeof(VAEncPictureParameterBufferAV1),
                                       &pic_param);
+}
+
+bool AV1VaapiVideoEncoderDelegate::SubmitSegmentMap(
+    const VAEncSegMapBufferAV1& segment_map_param) {
+  return vaapi_wrapper_->SubmitBuffer(VAEncMacroblockMapBufferType,
+                                      sizeof(VAEncSegMapBufferAV1),
+                                      &segment_map_param);
 }
 
 bool AV1VaapiVideoEncoderDelegate::SubmitTileGroup() {

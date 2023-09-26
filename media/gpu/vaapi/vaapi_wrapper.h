@@ -553,6 +553,10 @@ class MEDIA_GPU_EXPORT VaapiWrapper
       bool& packed_pps,
       bool& packed_slice);
 
+  // Gets the minimum segment block size supported for AV1 encoding.
+  [[nodiscard]] bool GetMinAV1SegmentSize(VideoCodecProfile profile,
+                                          uint32_t& min_seg_size);
+
   // Blits a VASurface |va_surface_src| into another VASurface
   // |va_surface_dest| applying pixel format conversion, cropping
   // and scaling if needed. |src_rect| and |dest_rect| are optional. They can

@@ -3124,6 +3124,24 @@ bool VaapiWrapper::GetSupportedPackedHeaders(VideoCodecProfile profile,
   return true;
 }
 
+bool VaapiWrapper::GetMinAV1SegmentSize(VideoCodecProfile profile,
+                                        uint32_t& min_seg_size) {
+  CHECK(!enforce_sequence_affinity_ ||
+        sequence_checker_.CalledOnValidSequence());
+  const VAProfile va_profile = ProfileToVAProfile(profile);
+  VAConfigAttrib attrib{};
+  attrib.type = VAConfigAttribEncAV1Ext1;
+  base::AutoLockMaybe auto_lock(va_lock_.get());
+  const VAStatus va_res = vaGetConfigAttributes(va_display_, va_profile,
+                                                va_entrypoint_, &attrib, 1);
+  VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVAGetConfigAttributes, false);
+
+  min_seg_size = reinterpret_cast<VAConfigAttribValEncAV1Ext1*>(&attrib.value)
+                     ->bits.min_segid_block_size_accepted;
+
+  return true;
+}
+
 bool VaapiWrapper::BlitSurface(const VASurface& va_surface_src,
                                const VASurface& va_surface_dest,
                                absl::optional<gfx::Rect> src_rect,

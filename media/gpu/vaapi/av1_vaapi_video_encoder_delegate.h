@@ -5,6 +5,7 @@
 #ifndef MEDIA_GPU_VAAPI_AV1_VAAPI_VIDEO_ENCODER_DELEGATE_H_
 #define MEDIA_GPU_VAAPI_AV1_VAAPI_VIDEO_ENCODER_DELEGATE_H_
 
+#include <stdint.h>
 #include <vector>
 
 #include "media/base/video_bitrate_allocation.h"
@@ -80,8 +81,9 @@ class AV1VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   std::vector<uint8_t> PackSequenceHeader() const;
   bool SubmitFrame(EncodeJob& job, PicParamOffsets& offsets);
   bool FillPictureParam(VAEncPictureParameterBufferAV1& pic_param,
+                        VAEncSegMapBufferAV1& segment_map_param,
                         const EncodeJob& job,
-                        const AV1Picture& pic) const;
+                        const AV1Picture& pic);
   bool SubmitFrameOBU(const VAEncPictureParameterBufferAV1& pic_param,
                       PicParamOffsets& offsets);
   std::vector<uint8_t> PackFrameHeader(
@@ -89,6 +91,7 @@ class AV1VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
       PicParamOffsets& offsets) const;
   bool SubmitPictureParam(VAEncPictureParameterBufferAV1& pic_param,
                           const PicParamOffsets& offsets);
+  bool SubmitSegmentMap(const VAEncSegMapBufferAV1& segment_map_param);
   bool SubmitTileGroup();
   bool SubmitPackedData(const std::vector<uint8_t>& data);
 
@@ -102,6 +105,8 @@ class AV1VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   scoped_refptr<AV1Picture> last_frame_ = nullptr;
   VAEncSequenceParameterBufferAV1 seq_param_;
   std::unique_ptr<aom::AV1RateControlRTC> rate_ctrl_;
+  std::vector<uint8_t> segmentation_map_{};
+  uint32_t seg_size_;
 };
 
 }  // namespace media
