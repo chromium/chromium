@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_HATS_HATS_CONFIG_H_
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/time/time.h"
 
 namespace ash {
@@ -27,7 +28,9 @@ struct HatsConfig {
 
   // Chrome OS-level feature (switch) we use to retrieve whether this HaTS
   // survey is enabled or not, and its parameters.
-  const base::Feature& feature;
+  // This field is not a raw_ref<> because it was filtered by the rewriter for:
+  // #global-scope
+  RAW_PTR_EXCLUSION const base::Feature& feature;
 
   // Minimum amount of time after initial login or oobe after which we can show
   // the HaTS notification.
