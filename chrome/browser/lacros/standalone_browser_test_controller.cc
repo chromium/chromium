@@ -174,7 +174,7 @@ void StandaloneBrowserTestController::TtsSpeak(
 }
 
 void StandaloneBrowserTestController::InstallSubApp(
-    const web_app::AppId& parent_app_id,
+    const webapps::AppId& parent_app_id,
     const std::string& sub_app_start_url,
     InstallSubAppCallback callback) {
   auto info = std::make_unique<web_app::WebAppInstallInfo>();
@@ -224,7 +224,7 @@ void StandaloneBrowserTestController::GetExtensionKeeplist(
 
 void StandaloneBrowserTestController::WebAppInstallationDone(
     InstallWebAppCallback callback,
-    const web_app::AppId& installed_app_id,
+    const webapps::AppId& installed_app_id,
     webapps::InstallResultCode code) {
   std::move(callback).Run(code == webapps::InstallResultCode::kSuccessNewInstall
                               ? installed_app_id

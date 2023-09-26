@@ -18,7 +18,6 @@
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -28,6 +27,7 @@
 #include "chromeos/lacros/lacros_service.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/common/web_app_id.h"
 #include "url/gurl.h"
 
 namespace crosapi {
@@ -88,7 +88,7 @@ void WebAppProviderBridgeLacros::ScheduleNavigateAndTriggerInstallDialog(
       /*can_trigger_fre=*/true);
 }
 
-void WebAppProviderBridgeLacros::GetSubAppIds(const web_app::AppId& app_id,
+void WebAppProviderBridgeLacros::GetSubAppIds(const webapps::AppId& app_id,
                                               GetSubAppIdsCallback callback) {
   LoadMainProfile(base::BindOnce(&WebAppProviderBridgeLacros::GetSubAppIdsImpl,
                                  app_id, std::move(callback)),
@@ -180,7 +180,7 @@ void WebAppProviderBridgeLacros::ScheduleNavigateAndTriggerInstallDialogImpl(
 }
 
 // static
-void WebAppProviderBridgeLacros::GetSubAppIdsImpl(const web_app::AppId& app_id,
+void WebAppProviderBridgeLacros::GetSubAppIdsImpl(const webapps::AppId& app_id,
                                                   GetSubAppIdsCallback callback,
                                                   Profile* profile) {
   DCHECK(profile);
@@ -190,7 +190,7 @@ void WebAppProviderBridgeLacros::GetSubAppIdsImpl(const web_app::AppId& app_id,
       "WebAppServiceAsh::GetSubApps",
       std::make_unique<web_app::AppLockDescription>(app_id),
       base::BindOnce(
-          [](web_app::AppId app_id, web_app::AppLock& lock) {
+          [](webapps::AppId app_id, web_app::AppLock& lock) {
             return lock.registrar().GetAllSubAppIds(app_id);
           },
           app_id)

@@ -82,7 +82,7 @@ bool LacrosAppsPublisher::ShouldModifyCapabilityAccess(
     content::WebContents* web_contents) {
   // The web app publisher is responsible to handle `web_contents` for web
   // apps.
-  const web_app::AppId* web_app_id =
+  const webapps::AppId* web_app_id =
       web_app::WebAppTabHelper::GetAppId(web_contents);
   if (web_app_id) {
     return false;

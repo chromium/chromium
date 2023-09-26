@@ -9,11 +9,11 @@
 #include <string>
 
 #include "base/values.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/crosapi/mojom/tts.mojom-forward.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/common/web_app_id.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -42,7 +42,7 @@ class StandaloneBrowserTestController
                 mojo::PendingRemote<crosapi::mojom::TtsUtteranceClient>
                     utterance_client) override;
 
-  void InstallSubApp(const web_app::AppId& parent_app_id,
+  void InstallSubApp(const webapps::AppId& parent_app_id,
                      const std::string& sub_app_start_url,
                      InstallSubAppCallback callback) override;
 
@@ -51,7 +51,7 @@ class StandaloneBrowserTestController
 
   void OnUtteranceFinished(int utterance_id);
   void WebAppInstallationDone(InstallWebAppCallback callback,
-                              const web_app::AppId& installed_app_id,
+                              const webapps::AppId& installed_app_id,
                               webapps::InstallResultCode code);
 
   base::Value::Dict CreateVpnExtensionManifest(

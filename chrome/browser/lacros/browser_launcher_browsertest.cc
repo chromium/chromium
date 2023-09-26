@@ -43,7 +43,7 @@
 
 namespace {
 
-web_app::AppId InstallPWA(Profile* profile, const GURL& start_url) {
+webapps::AppId InstallPWA(Profile* profile, const GURL& start_url) {
   auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
   web_app_info->start_url = start_url;
   web_app_info->scope = start_url.GetWithoutFilename();
@@ -308,7 +308,7 @@ IN_PROC_BROWSER_TEST_F(BrowserLauncherTest,
   profile.GetPrefs()->CommitPendingWrite();
 
   // Install and launch a PWA.
-  web_app::AppId app_id = InstallPWA(&profile, GetWebAppStartUrl());
+  webapps::AppId app_id = InstallPWA(&profile, GetWebAppStartUrl());
   Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(&profile, app_id);
   ASSERT_NE(app_browser, nullptr);
   ASSERT_EQ(app_browser->type(), Browser::Type::TYPE_APP);
@@ -406,7 +406,7 @@ IN_PROC_BROWSER_TEST_F(
       &profile, ProfileKeepAliveOrigin::kBrowserWindow);
 
   // Install and launch a PWA.
-  web_app::AppId app_id = InstallPWA(&profile, GetWebAppStartUrl());
+  webapps::AppId app_id = InstallPWA(&profile, GetWebAppStartUrl());
   Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(&profile, app_id);
   ASSERT_NE(app_browser, nullptr);
   ASSERT_EQ(app_browser->type(), Browser::Type::TYPE_APP);
@@ -759,7 +759,7 @@ IN_PROC_BROWSER_TEST_F(BrowserLauncherTest,
       ->SetLastSessionExitTypeForTest(ExitType::kCrashed);
 
   // First launch the app. Only the app browser should exist.
-  web_app::AppId app_id = InstallPWA(&profile1, GetWebAppStartUrl());
+  webapps::AppId app_id = InstallPWA(&profile1, GetWebAppStartUrl());
   Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(&profile1, app_id);
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   ASSERT_NE(app_browser, nullptr);
