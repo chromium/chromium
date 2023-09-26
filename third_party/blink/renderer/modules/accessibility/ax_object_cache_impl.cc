@@ -1409,10 +1409,6 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
     }
   }
 
-  CHECK(IsProcessingDeferredEvents())
-      << "Only create AXObjects while processing AX events and tree: " << node
-      << " " << layout_object;
-
   AXID axid = GenerateAXID();
   DCHECK(!base::Contains(objects_, axid));
 
