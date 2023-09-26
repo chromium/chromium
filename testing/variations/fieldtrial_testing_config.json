@@ -10525,9 +10525,7 @@
                         "NtpHistoryClustersModuleUseModelRanking",
                         "NtpModulesRedesigned",
                         "NtpRealboxIsTall",
-                        "NtpRealboxWidthBehavior",
-                        "PageContentAnnotationsPersistSalientImageMetadata",
-                        "RemotePageMetadata"
+                        "NtpRealboxWidthBehavior"
                     ]
                 },
                 {
@@ -10542,8 +10540,6 @@
                         "NtpHistoryClustersModuleUseModelRanking",
                         "NtpModulesHeaderIcon",
                         "NtpWideModules",
-                        "PageContentAnnotationsPersistSalientImageMetadata",
-                        "RemotePageMetadata",
                         "SyncPollImmediatelyOnEveryStartup"
                     ]
                 }
