@@ -80,15 +80,26 @@ class UserScript {
   // `can_execute_script_everywhere` is true, this will return ALL_SCHEMES.
   static int ValidUserScriptSchemes(bool can_execute_script_everywhere = false);
 
-  // Holds the script content, which can come from a file or inline js.
+  // Holds the script content.
   class Content {
    public:
-    Content(const base::FilePath& extension_root,
-            const base::FilePath& relative_path,
-            const GURL& url);
+    // Source of the script content.
+    enum class Source { kFile, kInlineCode };
+
     Content();
     Content(const Content& other);
     ~Content();
+
+    // Creates a content object with kFile source. It store the URL where the
+    // file will be fetched from.
+    static std::unique_ptr<Content> CreateFile(
+        const base::FilePath& extension_root,
+        const base::FilePath& relative_path,
+        const GURL& url);
+    // Creates a content object with kInlineCode source.
+    static std::unique_ptr<Content> CreateInlineCode(const GURL& url);
+
+    Source source() { return source_; }
 
     const base::FilePath& extension_root() const { return extension_root_; }
     const base::FilePath& relative_path() const { return relative_path_; }
@@ -115,6 +126,14 @@ class UserScript {
     void Unpickle(const base::Pickle& pickle, base::PickleIterator* iter);
 
    private:
+    Content(Source source,
+            const base::FilePath& extension_root,
+            const base::FilePath& relative_path,
+            const GURL& url);
+
+    // The source of the script.
+    Source source_;
+
     // Where the script file lives on the disk. We keep the path split so that
     // it can be localized at will.
     base::FilePath extension_root_;

@@ -304,7 +304,7 @@ bool ParseFileSources(const Extension* extension,
     for (const std::string& relative : *js) {
       GURL url = extension->GetResourceURL(relative);
       ExtensionResource resource = extension->GetResource(relative);
-      result->js_scripts().push_back(std::make_unique<UserScript::Content>(
+      result->js_scripts().push_back(UserScript::Content::CreateFile(
           resource.extension_root(), resource.relative_path(), url));
     }
   }
@@ -314,7 +314,7 @@ bool ParseFileSources(const Extension* extension,
     for (const std::string& relative : *css) {
       GURL url = extension->GetResourceURL(relative);
       ExtensionResource resource = extension->GetResource(relative);
-      result->css_scripts().push_back(std::make_unique<UserScript::Content>(
+      result->css_scripts().push_back(UserScript::Content::CreateFile(
           resource.extension_root(), resource.relative_path(), url));
     }
   }

@@ -12,6 +12,8 @@
 
 #include "base/atomic_sequence_num.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
+#include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/pickle.h"
 #include "base/strings/pattern.h"
@@ -123,18 +125,37 @@ int UserScript::ValidUserScriptSchemes(bool can_execute_script_everywhere) {
   return valid_schemes;
 }
 
-UserScript::Content::Content(const base::FilePath& extension_root,
+UserScript::Content::Content(Source source,
+                             const base::FilePath& extension_root,
                              const base::FilePath& relative_path,
                              const GURL& url)
-    : extension_root_(extension_root),
+    : source_(source),
+      extension_root_(extension_root),
       relative_path_(relative_path),
       url_(url) {}
+
+// static
+std::unique_ptr<UserScript::Content> UserScript::Content::CreateFile(
+    const base::FilePath& extension_root,
+    const base::FilePath& relative_path,
+    const GURL& url) {
+  return base::WrapUnique(new UserScript::Content(Source::kFile, extension_root,
+                                                  relative_path, url));
+}
+
+// static
+std::unique_ptr<UserScript::Content> UserScript::Content::CreateInlineCode(
+    const GURL& url) {
+  return base::WrapUnique(new UserScript::Content(
+      Source::kInlineCode, base::FilePath(), base::FilePath(), url));
+}
 
 UserScript::Content::Content() = default;
 
 // File content is not copied.
 UserScript::Content::Content(const Content& other)
-    : extension_root_(other.extension_root_),
+    : source_(other.source_),
+      extension_root_(other.extension_root_),
       relative_path_(other.relative_path_),
       url_(other.url_) {}
 

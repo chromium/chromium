@@ -119,10 +119,10 @@ void ParseScriptFiles(const GURL& owner_base_url,
       GURL url = owner_base_url.Resolve(relative);
       if (extension) {
         ExtensionResource resource = extension->GetResource(relative);
-        contents->push_back(std::make_unique<extensions::UserScript::Content>(
+        contents->push_back(UserScript::Content::CreateFile(
             resource.extension_root(), resource.relative_path(), url));
       } else {
-        contents->push_back(std::make_unique<extensions::UserScript::Content>(
+        contents->push_back(UserScript::Content::CreateFile(
             base::FilePath(), base::FilePath(), url));
       }
     }
@@ -133,8 +133,7 @@ void ParseScriptFiles(const GURL& owner_base_url,
     GURL url = owner_base_url.Resolve(base::StringPrintf(
         "%s%s", kGeneratedScriptFilePrefix,
         base::Uuid::GenerateRandomV4().AsLowercaseString().c_str()));
-    auto content = std::make_unique<extensions::UserScript::Content>(
-        base::FilePath(), base::FilePath(), url);
+    auto content = UserScript::Content::CreateInlineCode(url);
     content->set_content(*items.code);
     contents->push_back(std::move(content));
   }
