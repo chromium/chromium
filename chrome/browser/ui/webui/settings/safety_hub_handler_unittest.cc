@@ -490,7 +490,6 @@ TEST_F(SafetyHubHandlerTest, RevokeAllContentSettingTypes) {
   // TODO(crbug.com/1459305): Remove this after adding names for those
   // types.
   std::list<ContentSettingsType> no_name_types = {
-      ContentSettingsType::MIDI,
       ContentSettingsType::DURABLE_STORAGE,
       ContentSettingsType::ACCESSIBILITY_EVENTS,
       ContentSettingsType::NFC,

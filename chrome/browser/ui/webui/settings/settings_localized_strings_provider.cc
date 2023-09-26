@@ -3324,6 +3324,10 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
       base::FeatureList::IsEnabled(
           permissions::features::kPermissionDedicatedCpssSetting));
 
+  html_source->AddBoolean(
+      "blockMidiByDefault",
+      base::FeatureList::IsEnabled(permissions::features::kBlockMidiByDefault));
+
   // The exception placeholder should not be translated. See
   // crbug.com/1095878.
   html_source->AddString("addSiteExceptionPlaceholder", "[*.]example.com");

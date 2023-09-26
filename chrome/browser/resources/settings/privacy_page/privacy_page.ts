@@ -209,6 +209,11 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         },
       },
 
+      blockMidiByDefault_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('blockMidiByDefault'),
+      },
+
       focusConfig_: {
         type: Object,
         value() {
@@ -332,6 +337,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private cookieSettingDescription_: string;
   private enableBlockAutoplayContentSetting_: boolean;
   private blockAutoplayStatus_: BlockAutoplayStatus;
+  private blockMidiByDefault_: boolean;
   private enableFederatedIdentityApiContentSetting_: boolean;
   private enablePaymentHandlerContentSetting_: boolean;
   private enableExperimentalWebPlatformFeatures_: boolean;
