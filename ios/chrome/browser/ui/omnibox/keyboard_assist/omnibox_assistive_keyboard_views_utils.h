@@ -14,6 +14,10 @@ extern CGFloat const kPasteButtonSize;
 
 @protocol OmniboxAssistiveKeyboardDelegate;
 
+// Updates the appearance of the Lens button after the ui interface environment
+// changes.
+void UpdateLensButtonAppearance(UIButton* button);
+
 // Returns the leading buttons of the assistive view.
 NSArray<UIControl*>* OmniboxAssistiveKeyboardLeadingControls(
     id<OmniboxAssistiveKeyboardDelegate> delegate,
