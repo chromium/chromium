@@ -353,6 +353,13 @@ void InstallFakeShutdownCalls() {
 }
 #endif  // !defined(USE_REAL_DBUS_CLIENTS)
 
+void ShillSetPropertyErrorCallback(std::string_view property_name,
+                                   const std::string& error_name,
+                                   const std::string& error_message) {
+  NET_LOG(ERROR) << "Failed to set shill property " << property_name
+                 << ", error:" << error_name << ", message: " << error_message;
+}
+
 }  // namespace
 
 namespace internal {
@@ -1296,16 +1303,19 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
         shill::kEnableRFC8925Property,
         base::Value(base::FeatureList::IsEnabled(features::kEnableRFC8925)),
         base::DoNothing(),
-        base::BindOnce([](const std::string& error_name,
-                          const std::string& error_message) {
-          NET_LOG(ERROR) << "Fail to set EnableRFC8925 shill property, error:"
-                         << error_name << ", message: " << error_message;
-        }));
+        base::BindOnce(ShillSetPropertyErrorCallback,
+                       shill::kEnableRFC8925Property));
 
-    // Notify patchpanel about QoS feature enabled flag.
+    // Notify patchpanel and shill about QoS feature enabled flag.
+    const bool wifi_qos_enabled =
+        base::FeatureList::IsEnabled(features::kEnableWifiQos);
     ash::PatchPanelClient::Get()->SetFeatureFlag(
-        patchpanel::SetFeatureFlagRequest::WIFI_QOS,
-        base::FeatureList::IsEnabled(features::kEnableWifiQos));
+        patchpanel::SetFeatureFlagRequest::WIFI_QOS, wifi_qos_enabled);
+    ash::ShillManagerClient::Get()->SetProperty(
+        shill::kEnableDHCPQoSProperty, base::Value(wifi_qos_enabled),
+        base::DoNothing(),
+        base::BindOnce(ShillSetPropertyErrorCallback,
+                       shill::kEnableDHCPQoSProperty));
   }
 
   ChromeBrowserMainPartsLinux::PostProfileInit(profile, is_initial_profile);
