@@ -7,6 +7,7 @@
 #include <sstream>
 
 #include "ash/constants/ash_features.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/scalable_iph/scalable_iph_factory.h"
@@ -20,9 +21,14 @@ namespace ash {
 namespace {
 
 constexpr char kLoggingPath[] = "log.txt";
+constexpr char kRecordFiveMinTickEventPath[] = "record-five-min-tick-event";
+constexpr char kRecordedFiveMinTickEvent[] = "Recorded ScalableIphFiveMinTick.";
+
+constexpr auto kSupportedPaths = base::MakeFixedFlatSet<base::StringPiece>(
+    {kLoggingPath, kRecordFiveMinTickEventPath});
 
 bool ShouldHandleRequest(const std::string& path) {
-  return path == kLoggingPath;
+  return kSupportedPaths.contains(path);
 }
 
 std::string CollectServiceStartUpDebugLog(
@@ -75,12 +81,13 @@ ScalableIphDebugUI::~ScalableIphDebugUI() = default;
 void ScalableIphDebugUI::HandleRequest(
     const std::string& path,
     content::WebUIDataSource::GotDataCallback callback) {
-  CHECK_EQ(path, kLoggingPath);
+  CHECK(kSupportedPaths.contains(path));
 
   content::BrowserContext* browser_context =
       web_ui()->GetWebContents()->GetBrowserContext();
   scalable_iph::ScalableIph* scalable_iph =
       ScalableIphFactory::GetForBrowserContext(browser_context);
+
   if (!scalable_iph) {
     // `ScalableIph` might not be available even if the feature flag is on, e.g.
     // pre-conditions don't get satisfied, querying a service before its
@@ -90,8 +97,16 @@ void ScalableIphDebugUI::HandleRequest(
     return;
   }
 
-  std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>(
-      scalable_iph->GetLogger()->GenerateLog()));
+  if (path == kRecordFiveMinTickEventPath) {
+    scalable_iph->RecordEvent(scalable_iph::ScalableIph::Event::kFiveMinTick);
+    std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>(
+        kRecordedFiveMinTickEvent));
+    return;
+  } else if (path == kLoggingPath) {
+    std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>(
+        scalable_iph->GetLogger()->GenerateLog()));
+    return;
+  }
 }
 
 }  // namespace ash
