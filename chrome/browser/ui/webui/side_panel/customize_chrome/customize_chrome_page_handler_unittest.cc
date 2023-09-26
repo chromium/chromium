@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_features.h"
@@ -352,6 +353,7 @@ class CustomizeChromePageHandlerTest : public testing::Test {
   MockThemeService& mock_theme_service() { return *mock_theme_service_; }
   Browser& browser() { return *browser_; }
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
+  base::UserActionTester& user_action_tester() { return user_action_tester_; }
 
  protected:
   // NOTE: The initialization order of these members matters.
@@ -378,6 +380,7 @@ class CustomizeChromePageHandlerTest : public testing::Test {
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestBrowserWindow> browser_window_;
   base::HistogramTester histogram_tester_;
+  base::UserActionTester user_action_tester_;
   std::unique_ptr<CustomizeChromePageHandler> handler_;
 };
 
@@ -651,8 +654,12 @@ TEST_F(CustomizeChromePageHandlerTest, ChooseLocalCustomBackgroundSuccess) {
               SelectLocalBackgroundImage(An<const base::FilePath&>()))
       .Times(1);
   EXPECT_CALL(mock_theme_service(), UseDefaultTheme).Times(1);
+  ASSERT_EQ(0, user_action_tester().GetActionCount(
+                   "NTPRicherPicker.Backgrounds.UploadConfirmed"));
   handler().ChooseLocalCustomBackground(callback.Get());
   EXPECT_TRUE(success);
+  EXPECT_EQ(1, user_action_tester().GetActionCount(
+                   "NTPRicherPicker.Backgrounds.UploadConfirmed"));
 }
 
 TEST_F(CustomizeChromePageHandlerTest, ChooseLocalCustomBackgroundCancel) {
@@ -663,8 +670,12 @@ TEST_F(CustomizeChromePageHandlerTest, ChooseLocalCustomBackgroundCancel) {
   ui::SelectFileDialog::SetFactory(
       std::make_unique<TestSelectFileDialogFactory>(true));
   EXPECT_CALL(callback, Run(_)).Times(1).WillOnce(SaveArg<0>(&success));
+  ASSERT_EQ(0, user_action_tester().GetActionCount(
+                   "NTPRicherPicker.Backgrounds.UploadCanceled"));
   handler().ChooseLocalCustomBackground(callback.Get());
   EXPECT_TRUE(!success);
+  EXPECT_EQ(1, user_action_tester().GetActionCount(
+                   "NTPRicherPicker.Backgrounds.UploadCanceled"));
 }
 
 TEST_F(CustomizeChromePageHandlerTest, SetBackgroundImage) {

@@ -101,6 +101,7 @@ class CustomizeChromePageHandler
 
  private:
   void LogEvent(NTPLoggingEventType event);
+
   void WallpaperSearchCallback(
       SearchWallpaperCallback callback,
       std::unique_ptr<manta::proto::Response> response);

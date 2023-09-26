@@ -138,6 +138,7 @@ suite('CategoriesTest', () => {
     const event = await eventPromise;
     assertTrue(!!event);
     assertEquals(1, handler.getCallCount('chooseLocalCustomBackground'));
+    assertEquals(1, metrics.count('NTPRicherPicker.Backgrounds.UploadClicked'));
   });
 
   test('clicking Chrome Web Store tile opens Chrome Web Store', async () => {

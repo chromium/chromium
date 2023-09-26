@@ -217,6 +217,8 @@ export class CategoriesElement extends CategoriesElementBase {
   }
 
   private async onUploadImageClick_() {
+    chrome.metricsPrivate.recordUserAction(
+        'NTPRicherPicker.Backgrounds.UploadClicked');
     const {success} = await this.pageHandler_.chooseLocalCustomBackground();
     if (success) {
       this.dispatchEvent(new Event('local-image-upload'));

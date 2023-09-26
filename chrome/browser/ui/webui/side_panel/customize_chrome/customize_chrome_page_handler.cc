@@ -8,6 +8,8 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/manta/proto/manta.pb.h"
@@ -423,6 +425,14 @@ void CustomizeChromePageHandler::UpdateScrollToSection() {
 
 void CustomizeChromePageHandler::LogEvent(NTPLoggingEventType event) {
   switch (event) {
+    case NTP_BACKGROUND_UPLOAD_CANCEL:
+      base::RecordAction(base::UserMetricsAction(
+          "NTPRicherPicker.Backgrounds.UploadCanceled"));
+      break;
+    case NTP_BACKGROUND_UPLOAD_DONE:
+      base::RecordAction(base::UserMetricsAction(
+          "NTPRicherPicker.Backgrounds.UploadConfirmed"));
+      break;
     case NTP_CUSTOMIZE_SHORTCUT_TOGGLE_TYPE:
       UMA_HISTOGRAM_ENUMERATION(
           "NewTabPage.CustomizeShortcutAction",
@@ -553,12 +563,13 @@ void CustomizeChromePageHandler::FileSelected(const base::FilePath& path,
     ntp_custom_background_service_->SelectLocalBackgroundImage(path);
   }
   select_file_dialog_ = nullptr;
+  LogEvent(NTP_BACKGROUND_UPLOAD_DONE);
   std::move(choose_local_custom_background_callback_).Run(true);
 }
 
 void CustomizeChromePageHandler::FileSelectionCanceled(void* params) {
   DCHECK(choose_local_custom_background_callback_);
   select_file_dialog_ = nullptr;
-
+  LogEvent(NTP_BACKGROUND_UPLOAD_CANCEL);
   std::move(choose_local_custom_background_callback_).Run(false);
 }
