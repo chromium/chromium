@@ -18,6 +18,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ref.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
@@ -232,8 +233,8 @@ bool IsChromeShortcut(const base::FilePath& path,
 // that have the specified |command_line|. If |include_empty_command_lines| is
 // true Chrome desktop shortcuts with empty command lines will also be included.
 struct ChromeCommandLineFilter {
-  const base::FilePath& chrome_exe;
-  const std::wstring& command_line;
+  const raw_ref<const base::FilePath> chrome_exe;
+  const raw_ref<const std::wstring> command_line;
   bool include_empty_command_lines;
 
   ChromeCommandLineFilter(const base::FilePath& chrome_exe,
@@ -245,14 +246,15 @@ struct ChromeCommandLineFilter {
 
   bool operator()(const base::FilePath& path) const {
     std::wstring shortcut_command_line;
-    if (!IsChromeShortcut(path, chrome_exe, &shortcut_command_line))
+    if (!IsChromeShortcut(path, *chrome_exe, &shortcut_command_line)) {
       return false;
+    }
 
     // TODO(asvitkine): Change this to build a CommandLine object and ensure all
     // args from |command_line| are present in the shortcut's CommandLine. This
     // will be more robust when |command_line| contains multiple args.
     if ((shortcut_command_line.empty() && include_empty_command_lines) ||
-        (shortcut_command_line.find(command_line) != std::wstring::npos)) {
+        (shortcut_command_line.find(*command_line) != std::wstring::npos)) {
       return true;
     }
     return false;
