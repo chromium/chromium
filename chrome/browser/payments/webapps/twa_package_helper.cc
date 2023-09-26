@@ -34,7 +34,7 @@ namespace {
 #if BUILDFLAG(IS_CHROMEOS)
 // Returns `nullopt` if `rfh` is null, or is not a web app window, or if the
 // current url is not within the scope of the web app.
-absl::optional<web_app::AppId> GetWebAppId(content::RenderFrameHost* rfh) {
+absl::optional<webapps::AppId> GetWebAppId(content::RenderFrameHost* rfh) {
   auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
   if (!web_contents) {
     return absl::nullopt;
@@ -46,7 +46,7 @@ absl::optional<web_app::AppId> GetWebAppId(content::RenderFrameHost* rfh) {
     return absl::nullopt;
   }
 
-  web_app::AppId app_id = browser->app_controller()->app_id();
+  webapps::AppId app_id = browser->app_controller()->app_id();
   auto* web_app_provider =
       web_app::WebAppProvider::GetForWebApps(browser->profile());
   if (!web_app_provider ||
@@ -63,7 +63,7 @@ absl::optional<web_app::AppId> GetWebAppId(content::RenderFrameHost* rfh) {
 // Obtains the Android package name of the Trusted Web Activity that invoked
 // this browser, if any.
 std::string FetchTwaPackageName(content::RenderFrameHost* rfh) {
-  absl::optional<web_app::AppId> app_id = GetWebAppId(rfh);
+  absl::optional<webapps::AppId> app_id = GetWebAppId(rfh);
   if (!app_id.has_value()) {
     return "";
   }
@@ -93,7 +93,7 @@ TwaPackageHelper::TwaPackageHelper(
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   auto* lacros_service = chromeos::LacrosService::Get();
-  absl::optional<web_app::AppId> app_id = GetWebAppId(render_frame_host);
+  absl::optional<webapps::AppId> app_id = GetWebAppId(render_frame_host);
   if (!lacros_service || !app_id.has_value()) {
     on_twa_package_name_ready_.Signal();
     return;
