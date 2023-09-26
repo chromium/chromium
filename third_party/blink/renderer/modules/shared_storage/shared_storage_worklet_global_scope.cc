@@ -333,13 +333,8 @@ bool SharedStorageWorkletGlobalScope::FeatureEnabled(
     return true;
   }
 
-  if (feature == OriginTrialFeature::kJavaScriptCompileHintsMagicRuntime ||
-      feature == OriginTrialFeature::kWebAssemblyJSStringBuiltins) {
-    return false;
-  }
-
-  NOTREACHED_NORETURN() << "Attempted to check OriginTrialFeature: "
-                        << static_cast<int32_t>(feature);
+  // For unknown features, return false to be on the safe side.
+  return false;
 }
 
 void SharedStorageWorkletGlobalScope::Trace(Visitor* visitor) const {
