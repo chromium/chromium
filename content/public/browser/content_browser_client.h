@@ -949,10 +949,17 @@ class CONTENT_EXPORT ContentBrowserClient {
   // This method must be idempotent.
   virtual bool IsWebAttributionReportingAllowed();
 
-  // Allows the embedder to control if an Os source event should register as
-  // a Web Os or Os (App) source.
+  // Allows the embedder to control if an OS source event should register as
+  // a Web OS or OS (App) source.
   // This method must be idempotent.
-  virtual bool ShouldUseOsWebSourceAttributionReporting();
+  virtual bool ShouldUseOsWebSourceAttributionReporting(
+      content::RenderFrameHost* rfh);
+
+  // Allows the embedder to control if an OS trigger event should register as
+  // a Web OS or OS (App) trigger.
+  // This method must be idempotent.
+  virtual bool ShouldUseOsWebTriggerAttributionReporting(
+      content::RenderFrameHost* rfh);
 
   // Allows the embedder to control if Shared Storage API operations can happen
   // in a given context.

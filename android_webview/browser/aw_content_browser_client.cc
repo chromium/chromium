@@ -1234,13 +1234,61 @@ bool AwContentBrowserClient::IsWebAttributionReportingAllowed() {
   return false;  // WebView does not support web-only attribution.
 }
 
-bool AwContentBrowserClient::ShouldUseOsWebSourceAttributionReporting() {
-  // WebView should register sources as from the app instead of the web.
-  // Web registration APIs currently require a special registration
-  // from the app in Android for registering sources. The more common case
-  // for a webview is that the app does not have this registration,
-  // so we instead register attribution events against the embedding app.
-  return false;
+bool AwContentBrowserClient::ShouldUseOsWebSourceAttributionReporting(
+    content::RenderFrameHost* rfh) {
+  // Attribution reporting can register a source to either the top level origin
+  // or the app. For WebView the default is to register sources against the app
+  // as:
+  // 1. WebViews are often used in cases where for sources the top level origin
+  // is not as relevant as the app context.
+  // 2. Web registration APIs currently require a special registration from the
+  // app in Android for registering sources and the more common case is that the
+  // app does not have this registration. Note: This behaviour can be switched
+  // to registering against the top level origin via an AndroidX API
+
+  WebContents* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+  AwSettings* aw_settings = AwSettings::FromWebContents(web_contents);
+  AwSettings::AttributionBehavior attribution_behavior =
+      aw_settings->GetAttributionBehavior();
+
+  switch (attribution_behavior) {
+    case AwSettings::AttributionBehavior::WEB_SOURCE_AND_WEB_TRIGGER:
+      return true;
+    case AwSettings::AttributionBehavior::APP_SOURCE_AND_WEB_TRIGGER:
+    case AwSettings::AttributionBehavior::APP_SOURCE_AND_APP_TRIGGER:
+      return false;
+    default:
+      break;
+  }
+
+  NOTREACHED_NORETURN();
+}
+
+bool AwContentBrowserClient::ShouldUseOsWebTriggerAttributionReporting(
+    content::RenderFrameHost* rfh) {
+  // Attribution reporting can register a trigger to either the top level origin
+  // or the app. For WebView the default is to register triggers against the top
+  // level origin as:
+  // 1. WebViews are mostly used in cases where for triggers the app context is
+  // not as relevant as the top level origin. Note: This behaviour can be
+  // switched to registering against the app via an AndroidX API
+
+  WebContents* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+  AwSettings* aw_settings = AwSettings::FromWebContents(web_contents);
+  AwSettings::AttributionBehavior attribution_behavior =
+      aw_settings->GetAttributionBehavior();
+
+  switch (attribution_behavior) {
+    case AwSettings::AttributionBehavior::WEB_SOURCE_AND_WEB_TRIGGER:
+    case AwSettings::AttributionBehavior::APP_SOURCE_AND_WEB_TRIGGER:
+      return true;
+    case AwSettings::AttributionBehavior::APP_SOURCE_AND_APP_TRIGGER:
+      return false;
+    default:
+      break;
+  }
+
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace android_webview

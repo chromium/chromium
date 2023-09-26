@@ -563,7 +563,13 @@ bool ContentBrowserClient::IsWebAttributionReportingAllowed() {
   return true;
 }
 
-bool ContentBrowserClient::ShouldUseOsWebSourceAttributionReporting() {
+bool ContentBrowserClient::ShouldUseOsWebSourceAttributionReporting(
+    content::RenderFrameHost* rfh) {
+  return true;
+}
+
+bool ContentBrowserClient::ShouldUseOsWebTriggerAttributionReporting(
+    content::RenderFrameHost* rfh) {
   return true;
 }
 

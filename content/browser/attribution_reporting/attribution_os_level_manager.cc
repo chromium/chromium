@@ -14,6 +14,8 @@
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/os_registration.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
 #include "services/network/public/mojom/attribution.mojom.h"
@@ -62,10 +64,21 @@ network::mojom::AttributionSupport AttributionOsLevelManager::GetSupport() {
 }
 
 // static
-bool AttributionOsLevelManager::ShouldUseOsWebSource() {
+bool AttributionOsLevelManager::ShouldUseOsWebSource(
+    GlobalRenderFrameHostId render_frame_id) {
   return GetContentClient()
       ->browser()
-      ->ShouldUseOsWebSourceAttributionReporting();
+      ->ShouldUseOsWebSourceAttributionReporting(
+          RenderFrameHost::FromID(render_frame_id));
+}
+
+// static
+bool AttributionOsLevelManager::ShouldUseOsWebTrigger(
+    GlobalRenderFrameHostId render_frame_id) {
+  return GetContentClient()
+      ->browser()
+      ->ShouldUseOsWebTriggerAttributionReporting(
+          RenderFrameHost::FromID(render_frame_id));
 }
 
 // static

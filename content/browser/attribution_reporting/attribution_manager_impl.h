@@ -138,8 +138,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   void RemoveAttributionDataByDataKey(const DataKey& data_key,
                                       base::OnceClosure callback) override;
 
-  void HandleOsRegistration(OsRegistration,
-                            GlobalRenderFrameHostId render_frame_id) override;
+  void HandleOsRegistration(OsRegistration) override;
 
   void NotifyOsRegistration(const OsRegistration&,
                             bool is_debug_key_allowed,

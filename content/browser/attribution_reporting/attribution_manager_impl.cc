@@ -1376,9 +1376,7 @@ void AttributionManagerImpl::MaybeSendVerboseDebugReport(
   }
 }
 
-void AttributionManagerImpl::HandleOsRegistration(
-    OsRegistration registration,
-    GlobalRenderFrameHostId render_frame_id) {
+void AttributionManagerImpl::HandleOsRegistration(OsRegistration registration) {
   if (!network::HasAttributionOsSupport(GetSupport())) {
     NotifyOsRegistration(registration,
                          /*is_debug_key_allowed=*/false,
@@ -1414,7 +1412,7 @@ void AttributionManagerImpl::HandleOsRegistration(
   }
 
   if (!IsOperationAllowed(*storage_partition_, operation,
-                          RenderFrameHost::FromID(render_frame_id),
+                          RenderFrameHost::FromID(registration.render_frame_id),
                           source_origin, destination_origin,
                           /*reporting_origin=*/&registration_origin)) {
     NotifyOsRegistration(registration,

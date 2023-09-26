@@ -14,6 +14,7 @@ include_rules = [
 
   "-content/public/android/java",
   "+content/public/android/java/src/org/chromium/content_public",
+  "+content/public/android/java/src/org/chromium/content/browser/AttributionOsLevelManager.java",
 
   "-content/public/android/javatests",
   "+content/public/test/android/javatests",

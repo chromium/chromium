@@ -138,6 +138,7 @@ void AttributionOsLevelManagerAndroid::Register(OsRegistration registration,
   JNIEnv* env = base::android::AttachCurrentThread();
 
   attribution_reporting::mojom::RegistrationType type = registration.GetType();
+  GlobalRenderFrameHostId render_frame_id = registration.render_frame_id;
   auto registration_url =
       url::GURLAndroid::FromNativeGURL(env, registration.registration_url);
   auto top_level_origin = url::GURLAndroid::FromNativeGURL(
@@ -151,7 +152,7 @@ void AttributionOsLevelManagerAndroid::Register(OsRegistration registration,
   switch (type) {
     case attribution_reporting::mojom::RegistrationType::kSource:
       DCHECK(input_event.has_value());
-      if (AttributionOsLevelManager::ShouldUseOsWebSource()) {
+      if (AttributionOsLevelManager::ShouldUseOsWebSource(render_frame_id)) {
         Java_AttributionOsLevelManager_registerWebAttributionSource(
             env, jobj_, request_id, registration_url, top_level_origin,
             is_debug_key_allowed, input_event->input_event);
@@ -161,9 +162,14 @@ void AttributionOsLevelManagerAndroid::Register(OsRegistration registration,
       }
       break;
     case attribution_reporting::mojom::RegistrationType::kTrigger:
-      Java_AttributionOsLevelManager_registerWebAttributionTrigger(
-          env, jobj_, request_id, registration_url, top_level_origin,
-          is_debug_key_allowed);
+      if (AttributionOsLevelManager::ShouldUseOsWebTrigger(render_frame_id)) {
+        Java_AttributionOsLevelManager_registerWebAttributionTrigger(
+            env, jobj_, request_id, registration_url, top_level_origin,
+            is_debug_key_allowed);
+      } else {
+        Java_AttributionOsLevelManager_registerAttributionTrigger(
+            env, jobj_, request_id, registration_url);
+      }
       break;
   }
 }

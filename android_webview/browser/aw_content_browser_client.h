@@ -274,7 +274,10 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
       const url::Origin* destination_origin,
       const url::Origin* reporting_origin) override;
   bool IsWebAttributionReportingAllowed() override;
-  bool ShouldUseOsWebSourceAttributionReporting() override;
+  bool ShouldUseOsWebSourceAttributionReporting(
+      content::RenderFrameHost* rfh) override;
+  bool ShouldUseOsWebTriggerAttributionReporting(
+      content::RenderFrameHost* rfh) override;
   blink::mojom::OriginTrialsSettingsPtr GetOriginTrialsSettings() override;
 
   AwFeatureListCreator* aw_feature_list_creator() {

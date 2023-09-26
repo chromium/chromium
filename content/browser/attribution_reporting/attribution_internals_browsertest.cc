@@ -453,7 +453,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   manager()->NotifyOsRegistration(
       OsRegistration(GURL("https://a.test"), /*debug_reporting=*/false,
                      url::Origin::Create(GURL("https://b.test")),
-                     AttributionInputEvent(), /*is_within_fenced_frame=*/false),
+                     AttributionInputEvent(), /*is_within_fenced_frame=*/false,
+                     /*render_frame_id=*/GlobalRenderFrameHostId()),
       /*is_debug_key_allowed=*/false,
       attribution_reporting::mojom::OsRegistrationResult::kPassedToOs);
   EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());

@@ -135,6 +135,10 @@ AwSettings::MixedContentMode AwSettings::GetMixedContentMode() {
   return mixed_content_mode_;
 }
 
+AwSettings::AttributionBehavior AwSettings::GetAttributionBehavior() {
+  return attribution_behavior_;
+}
+
 void AwSettings::Destroy(JNIEnv* env, const JavaParamRef<jobject>& obj) {
   delete this;
 }
@@ -210,6 +214,7 @@ void AwSettings::UpdateEverythingLocked(JNIEnv* env,
   UpdateJavaScriptPolicyLocked(env, obj);
   UpdateAllowFileAccessLocked(env, obj);
   UpdateMixedContentModeLocked(env, obj);
+  UpdateAttributionBehaviorLocked(env, obj);
 }
 
 void AwSettings::UpdateUserAgentLocked(JNIEnv* env,
@@ -413,6 +418,17 @@ void AwSettings::UpdateMixedContentModeLocked(
 
   mixed_content_mode_ = static_cast<MixedContentMode>(
       Java_AwSettings_getMixedContentMode(env, obj));
+}
+
+void AwSettings::UpdateAttributionBehaviorLocked(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
+  if (!web_contents()) {
+    return;
+  }
+
+  attribution_behavior_ = static_cast<AttributionBehavior>(
+      Java_AwSettings_getAttributionBehavior(env, obj));
 }
 
 void AwSettings::RenderViewHostChanged(content::RenderViewHost* old_host,

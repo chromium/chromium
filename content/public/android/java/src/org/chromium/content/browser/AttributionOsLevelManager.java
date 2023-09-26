@@ -26,11 +26,14 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.url.GURL;
 
 import java.io.IOException;
@@ -41,7 +44,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.concurrent.TimeoutException;
-
 /**
  * Handles passing registrations with Web Attribution Reporting API to the underlying native
  * library.
@@ -52,6 +54,10 @@ public class AttributionOsLevelManager {
     // TODO: replace with constant in android.Manifest.permission once it becomes available in U.
     private static final String PERMISSION_ACCESS_ADSERVICES_ATTRIBUTION =
             "android.permission.ACCESS_ADSERVICES_ATTRIBUTION";
+
+    // Used for testing
+    private static MeasurementManagerFutures sManagerForTesting;
+
     private long mNativePtr;
     private MeasurementManagerFutures mManager;
 
@@ -91,7 +97,12 @@ public class AttributionOsLevelManager {
     }
 
     private MeasurementManagerFutures getManager() {
-        if (mManager != null) return mManager;
+        if (sManagerForTesting != null) {
+            return sManagerForTesting;
+        }
+        if (mManager != null) {
+            return mManager;
+        }
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             return null;
         }
@@ -236,6 +247,28 @@ public class AttributionOsLevelManager {
         addRegistrationFutureCallback(requestId, RegistrationType.TRIGGER, future);
     }
 
+    /**
+     * Registers an attribution trigger with native, see `registerTriggerAsync()`:
+     * https://developer.android.com/reference/androidx/privacysandbox/ads/adservices/java/measurement/MeasurementManagerFutures.
+     */
+    @CalledByNative
+    private void registerAttributionTrigger(int requestId, GURL registrationUrl) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            onRegistrationCompleted(
+                    requestId, RegistrationType.TRIGGER, RegistrationResult.ERROR_INTERNAL);
+            return;
+        }
+
+        MeasurementManagerFutures mm = getManager();
+        if (mm == null) {
+            onRegistrationCompleted(
+                    requestId, RegistrationType.TRIGGER, RegistrationResult.ERROR_INTERNAL);
+            return;
+        }
+        ListenableFuture<?> future = mm.registerTriggerAsync(Uri.parse(registrationUrl.getSpec()));
+        addRegistrationFutureCallback(requestId, RegistrationType.TRIGGER, future);
+    }
+
     private void onDataDeletionCompleted(int requestId) {
         if (mNativePtr != 0) {
             AttributionOsLevelManagerJni.get().onDataDeletionCompleted(mNativePtr, requestId);
@@ -339,6 +372,11 @@ public class AttributionOsLevelManager {
     private static void getMeasurementApiStatus() {
         ThreadUtils.assertOnBackgroundThread();
 
+        if (sManagerForTesting != null) {
+            AttributionOsLevelManagerJni.get().onMeasurementStateReturned(1);
+            return;
+        }
+
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             AttributionOsLevelManagerJni.get().onMeasurementStateReturned(0);
             return;
@@ -387,6 +425,17 @@ public class AttributionOsLevelManager {
     @CalledByNative
     private void nativeDestroyed() {
         mNativePtr = 0;
+    }
+
+    public static void setManagerForTesting(MeasurementManagerFutures manager) {
+        sManagerForTesting = manager;
+        PostTask.postTask(
+                TaskTraits.BEST_EFFORT, () -> AttributionOsLevelManager.getMeasurementApiStatus());
+        ResettersForTesting.register(() -> {
+            sManagerForTesting = null;
+            PostTask.postTask(TaskTraits.BEST_EFFORT,
+                    () -> AttributionOsLevelManager.getMeasurementApiStatus());
+        });
     }
 
     @NativeMethods

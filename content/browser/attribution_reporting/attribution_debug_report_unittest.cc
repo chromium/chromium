@@ -954,7 +954,9 @@ TEST(AttributionDebugReportTest, OsRegistrationDebugging) {
               /*registration_url=*/GURL("https://a.test/x"),
               /*debug_reporting=*/true,
               /*top_level_origin=*/url::Origin::Create(GURL("https://b.test")),
-              AttributionInputEvent(), /*is_within_fenced_frame=*/false),
+              AttributionInputEvent(),
+              /*is_within_fenced_frame=*/false,
+              /*render_frame_id=*/GlobalRenderFrameHostId()),
           R"json([{
             "body": {
               "context_site": "https://b.test",
@@ -969,7 +971,8 @@ TEST(AttributionDebugReportTest, OsRegistrationDebugging) {
               /*registration_url=*/GURL("https://a.test/x"),
               /*debug_reporting=*/true,
               /*top_level_origin=*/url::Origin::Create(GURL("https://b.test")),
-              /*input_event=*/absl::nullopt, /*is_within_fenced_frame=*/false),
+              /*input_event=*/absl::nullopt, /*is_within_fenced_frame=*/false,
+              /*render_frame_id=*/GlobalRenderFrameHostId()),
           R"json([{
             "body": {
               "context_site": "https://b.test",
@@ -984,7 +987,8 @@ TEST(AttributionDebugReportTest, OsRegistrationDebugging) {
               /*registration_url=*/GURL("https://a.test/x"),
               /*debug_reporting=*/false,
               /*top_level_origin=*/url::Origin::Create(GURL("https://b.test")),
-              /*input_event=*/absl::nullopt, /*is_within_fenced_frame=*/false),
+              /*input_event=*/absl::nullopt, /*is_within_fenced_frame=*/false,
+              /*render_frame_id=*/GlobalRenderFrameHostId()),
           nullptr,
       },
       {
@@ -993,7 +997,8 @@ TEST(AttributionDebugReportTest, OsRegistrationDebugging) {
               /*registration_url=*/GURL("https://a.test/x"),
               /*debug_reporting=*/true,
               /*top_level_origin=*/url::Origin::Create(GURL("https://b.test")),
-              /*input_event=*/absl::nullopt, /*is_within_fenced_frame=*/true),
+              /*input_event=*/absl::nullopt, /*is_within_fenced_frame=*/true,
+              /*render_frame_id=*/GlobalRenderFrameHostId()),
           nullptr,
       },
       {
@@ -1002,7 +1007,8 @@ TEST(AttributionDebugReportTest, OsRegistrationDebugging) {
               /*registration_url=*/GURL("http://a.test/x"),
               /*debug_reporting=*/true,
               /*top_level_origin=*/url::Origin::Create(GURL("https://b.test")),
-              /*input_event=*/absl::nullopt, /*is_within_fenced_frame=*/false),
+              /*input_event=*/absl::nullopt, /*is_within_fenced_frame=*/false,
+              /*render_frame_id=*/GlobalRenderFrameHostId()),
           nullptr,
       },
   };

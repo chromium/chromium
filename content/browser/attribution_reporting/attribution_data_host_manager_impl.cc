@@ -762,11 +762,10 @@ void AttributionDataHostManagerImpl::OsSourceDataAvailable(
     input_event = context->navigation()->input_event();
   }
   for (auto& item : registration_items) {
-    attribution_manager_->HandleOsRegistration(
-        OsRegistration(std::move(item.url), item.debug_reporting,
-                       context->context_origin(), input_event,
-                       context->is_within_fenced_frame()),
-        context->render_frame_id());
+    attribution_manager_->HandleOsRegistration(OsRegistration(
+        std::move(item.url), item.debug_reporting, context->context_origin(),
+        input_event, context->is_within_fenced_frame(),
+        context->render_frame_id()));
   }
 }
 
@@ -779,12 +778,10 @@ void AttributionDataHostManagerImpl::OsTriggerDataAvailable(
   }
 
   for (auto& item : registration_items) {
-    attribution_manager_->HandleOsRegistration(
-        OsRegistration(std::move(item.url), item.debug_reporting,
-                       context->context_origin(),
-                       /*input_event=*/absl::nullopt,
-                       context->is_within_fenced_frame()),
-        context->render_frame_id());
+    attribution_manager_->HandleOsRegistration(OsRegistration(
+        std::move(item.url), item.debug_reporting, context->context_origin(),
+        /*input_event=*/absl::nullopt, context->is_within_fenced_frame(),
+        context->render_frame_id()));
   }
 }
 
@@ -958,8 +955,8 @@ void AttributionDataHostManagerImpl::OnOsSourceParsed(SourceRegistrationsId id,
         attribution_manager_->HandleOsRegistration(
             OsRegistration(std::move(item.url), item.debug_reporting,
                            registrations->source_origin(), input_event,
-                           registrations->is_within_fenced_frame()),
-            registrations->render_frame_id());
+                           registrations->is_within_fenced_frame(),
+                           registrations->render_frame_id()));
       }
     } else {
       const auto& pending_decode = registrations->pending_os_decodes().front();

@@ -1109,13 +1109,11 @@ TEST_F(AttributionDataHostManagerImplTest, NavigationRedirectOsSource) {
   const GURL reporter_url("https://report.test");
   const auto source_site = *SuitableOrigin::Deserialize("https://source.test");
 
-  EXPECT_CALL(
-      mock_manager_,
-      HandleOsRegistration(
-          OsRegistration(GURL("https://r.test/x"), /*debug_reporting=*/false,
-                         *source_site, AttributionInputEvent(),
-                         /*is_within_fenced_frame=*/false),
-          kFrameId));
+  EXPECT_CALL(mock_manager_,
+              HandleOsRegistration(OsRegistration(
+                  GURL("https://r.test/x"), /*debug_reporting=*/false,
+                  *source_site, AttributionInputEvent(),
+                  /*is_within_fenced_frame=*/false, kFrameId)));
 
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
   headers->SetHeader(kAttributionReportingRegisterOsSourceHeader,
@@ -1176,20 +1174,16 @@ TEST_F(AttributionDataHostManagerImplTest, NavigationRedirectOsSource_InOrder) {
   {
     InSequence seq;
 
-    EXPECT_CALL(
-        mock_manager_,
-        HandleOsRegistration(
-            OsRegistration(GURL("https://b.test/"), /*debug_reporting=*/true,
-                           *source_site, AttributionInputEvent(),
-                           /*is_within_fenced_frame=*/false),
-            kFrameId));
-    EXPECT_CALL(
-        mock_manager_,
-        HandleOsRegistration(
-            OsRegistration(GURL("https://a.test/"), /*debug_reporting=*/false,
-                           *source_site, AttributionInputEvent(),
-                           /*is_within_fenced_frame=*/true),
-            kFrameId));
+    EXPECT_CALL(mock_manager_,
+                HandleOsRegistration(OsRegistration(
+                    GURL("https://b.test/"), /*debug_reporting=*/true,
+                    *source_site, AttributionInputEvent(),
+                    /*is_within_fenced_frame=*/false, kFrameId)));
+    EXPECT_CALL(mock_manager_,
+                HandleOsRegistration(OsRegistration(
+                    GURL("https://a.test/"), /*debug_reporting=*/false,
+                    *source_site, AttributionInputEvent(),
+                    /*is_within_fenced_frame=*/true, kFrameId)));
   }
 
   const blink::AttributionSrcToken attribution_src_token;
@@ -1923,13 +1917,11 @@ TEST_F(AttributionDataHostManagerImplTest,
   auto reporting_url = GURL("https://report.test");
   auto source_origin = *SuitableOrigin::Deserialize("https://source.test");
 
-  EXPECT_CALL(
-      mock_manager_,
-      HandleOsRegistration(
-          OsRegistration(GURL("https://r.test/x"), /*debug_reporting=*/false,
-                         *source_origin, AttributionInputEvent(),
-                         /*is_within_fenced_frame=*/false),
-          kFrameId));
+  EXPECT_CALL(mock_manager_,
+              HandleOsRegistration(OsRegistration(
+                  GURL("https://r.test/x"), /*debug_reporting=*/false,
+                  *source_origin, AttributionInputEvent(),
+                  /*is_within_fenced_frame=*/false, kFrameId)));
 
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
   headers->SetHeader(kAttributionReportingRegisterOsSourceHeader,
@@ -2398,12 +2390,10 @@ TEST_F(AttributionDataHostManagerImplTest, OsSourceAvailable) {
   const auto kTopLevelOrigin = *SuitableOrigin::Deserialize("https://a.test");
   const GURL kRegistrationUrl("https://b.test/x");
 
-  EXPECT_CALL(mock_manager_,
-              HandleOsRegistration(
-                  OsRegistration(kRegistrationUrl, /*debug_reporting=*/true,
+  EXPECT_CALL(mock_manager_, HandleOsRegistration(OsRegistration(
+                                 kRegistrationUrl, /*debug_reporting=*/true,
                                  *kTopLevelOrigin, AttributionInputEvent(),
-                                 /*is_within_fenced_frame=*/true),
-                  kFrameId));
+                                 /*is_within_fenced_frame=*/true, kFrameId)));
 
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
   data_host_manager_.RegisterDataHost(
@@ -2422,13 +2412,11 @@ TEST_F(AttributionDataHostManagerImplTest, OsTriggerAvailable) {
   const auto kTopLevelOrigin = *SuitableOrigin::Deserialize("https://a.test");
   const GURL kRegistrationUrl("https://b.test/x");
 
-  EXPECT_CALL(
-      mock_manager_,
-      HandleOsRegistration(
-          OsRegistration(
-              kRegistrationUrl, /*debug_reporting=*/true, *kTopLevelOrigin,
-              /*input_event=*/absl::nullopt, /*is_within_fenced_frame=*/true),
-          kFrameId));
+  EXPECT_CALL(mock_manager_,
+              HandleOsRegistration(OsRegistration(
+                  kRegistrationUrl, /*debug_reporting=*/true, *kTopLevelOrigin,
+                  /*input_event=*/absl::nullopt,
+                  /*is_within_fenced_frame=*/true, kFrameId)));
 
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
   data_host_manager_.RegisterDataHost(

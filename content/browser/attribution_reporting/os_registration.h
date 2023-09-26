@@ -8,6 +8,7 @@
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/global_routing_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -22,12 +23,14 @@ struct CONTENT_EXPORT OsRegistration {
   // source.
   absl::optional<AttributionInputEvent> input_event;
   bool is_within_fenced_frame;
+  GlobalRenderFrameHostId render_frame_id;
 
   OsRegistration(GURL registration_url,
                  bool debug_reporting,
                  url::Origin top_level_origin,
                  absl::optional<AttributionInputEvent> input_event,
-                 bool is_within_fenced_frame);
+                 bool is_within_fenced_frame,
+                 GlobalRenderFrameHostId render_frame_id);
 
   ~OsRegistration();
 

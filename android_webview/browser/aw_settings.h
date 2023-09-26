@@ -50,6 +50,13 @@ class AwSettings : public content::WebContentsObserver {
     COUNT,
   };
 
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.android_webview.settings
+  enum AttributionBehavior {
+    APP_SOURCE_AND_WEB_TRIGGER = 0,
+    WEB_SOURCE_AND_WEB_TRIGGER = 1,
+    APP_SOURCE_AND_APP_TRIGGER = 2,
+  };
+
   static AwSettings* FromWebContents(content::WebContents* web_contents);
   static bool GetAllowSniffingFileUrls();
 
@@ -64,6 +71,7 @@ class AwSettings : public content::WebContentsObserver {
   bool GetJavaScriptCanOpenWindowsAutomatically();
   bool GetAllowThirdPartyCookies();
   MixedContentMode GetMixedContentMode();
+  AttributionBehavior GetAttributionBehavior();
 
   // Called from Java. Methods with "Locked" suffix require that the settings
   // access lock is held during their execution.
@@ -109,6 +117,9 @@ class AwSettings : public content::WebContentsObserver {
   void UpdateMixedContentModeLocked(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
+  void UpdateAttributionBehaviorLocked(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj);
 
   void PopulateWebPreferences(blink::web_pref::WebPreferences* web_prefs);
   bool GetAllowFileAccess();
@@ -152,6 +163,7 @@ class AwSettings : public content::WebContentsObserver {
   // default false from next Android version(Maybe Android U).
   bool enterprise_authentication_app_link_policy_enabled_{true};
   MixedContentMode mixed_content_mode_;
+  AttributionBehavior attribution_behavior_;
 
   scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher_;
 

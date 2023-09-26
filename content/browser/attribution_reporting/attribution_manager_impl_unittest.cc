@@ -1087,14 +1087,14 @@ TEST_F(AttributionManagerImplTest, HandleOsSource) {
 
     const OsRegistration registration1(
         kRegistrationUrl1, /*debug_reporting=*/false, kTopLevelOrigin1,
-        AttributionInputEvent(), /*is_within_fenced_frame=*/false);
+        AttributionInputEvent(), /*is_within_fenced_frame=*/false, kFrameId);
     EXPECT_CALL(*os_level_manager_, Register(registration1,
                                              /*is_debug_key_allowed=*/true, _))
         .WillOnce(base::test::RunOnceCallback<2>(registration1, true));
 
     const OsRegistration registration2(
         kRegistrationUrl2, /*debug_reporting=*/false, kTopLevelOrigin2,
-        AttributionInputEvent(), /*is_within_fenced_frame=*/false);
+        AttributionInputEvent(), /*is_within_fenced_frame=*/false, kFrameId);
     EXPECT_CALL(*os_level_manager_, Register(registration2,
                                              /*is_debug_key_allowed=*/false, _))
         .WillOnce(base::test::RunOnceCallback<2>(registration2, false));
@@ -1105,7 +1105,7 @@ TEST_F(AttributionManagerImplTest, HandleOsSource) {
       *os_level_manager_,
       Register(OsRegistration(kRegistrationUrl3, /*debug_reporting=*/false,
                               kTopLevelOrigin3, AttributionInputEvent(),
-                              /*is_within_fenced_frame=*/false),
+                              /*is_within_fenced_frame=*/false, kFrameId),
                _, _))
       .Times(0);
 
@@ -1114,25 +1114,22 @@ TEST_F(AttributionManagerImplTest, HandleOsSource) {
       *os_level_manager_,
       Register(OsRegistration(kRegistrationUrl4, /*debug_reporting=*/false,
                               kTopLevelOrigin4, AttributionInputEvent(),
-                              /*is_within_fenced_frame=*/false),
+                              /*is_within_fenced_frame=*/false, kFrameId),
                _, _))
       .Times(0);
 
   attribution_manager_->HandleOsRegistration(
       OsRegistration(kRegistrationUrl1, /*debug_reporting=*/false,
                      kTopLevelOrigin1, AttributionInputEvent(),
-                     /*is_within_fenced_frame=*/false),
-      kFrameId);
+                     /*is_within_fenced_frame=*/false, kFrameId));
   attribution_manager_->HandleOsRegistration(
       OsRegistration(kRegistrationUrl2, /*debug_reporting=*/false,
                      kTopLevelOrigin2, AttributionInputEvent(),
-                     /*is_within_fenced_frame=*/false),
-      kFrameId);
+                     /*is_within_fenced_frame=*/false, kFrameId));
   attribution_manager_->HandleOsRegistration(
       OsRegistration(kRegistrationUrl3, /*debug_reporting=*/false,
                      kTopLevelOrigin3, AttributionInputEvent(),
-                     /*is_within_fenced_frame=*/false),
-      kFrameId);
+                     /*is_within_fenced_frame=*/false, kFrameId));
 
   MockAttributionReportingContentBrowserClient browser_client;
   EXPECT_CALL(
@@ -1147,8 +1144,7 @@ TEST_F(AttributionManagerImplTest, HandleOsSource) {
   attribution_manager_->HandleOsRegistration(
       OsRegistration(kRegistrationUrl4, /*debug_reporting=*/false,
                      kTopLevelOrigin4, AttributionInputEvent(),
-                     /*is_within_fenced_frame=*/false),
-      kFrameId);
+                     /*is_within_fenced_frame=*/false, kFrameId));
 
   EXPECT_THAT(
       histograms.GetAllSamples("Conversions.OsRegistrationResult.Source"),
@@ -1183,14 +1179,16 @@ TEST_F(AttributionManagerImplTest, HandleOsTrigger) {
 
     const OsRegistration registration1(
         kRegistrationUrl1, /*debug_reporting=*/false, kTopLevelOrigin1,
-        /*input_event=*/absl::nullopt, /*is_within_fenced_frame=*/false);
+        /*input_event=*/absl::nullopt, /*is_within_fenced_frame=*/false,
+        kFrameId);
     EXPECT_CALL(*os_level_manager_, Register(registration1,
                                              /*is_debug_key_allowed=*/true, _))
         .WillOnce(base::test::RunOnceCallback<2>(registration1, true));
 
     const OsRegistration registration2(
         kRegistrationUrl2, /*debug_reporting=*/false, kTopLevelOrigin2,
-        /*input_event=*/absl::nullopt, /*is_within_fenced_frame=*/false);
+        /*input_event=*/absl::nullopt, /*is_within_fenced_frame=*/false,
+        kFrameId);
     EXPECT_CALL(*os_level_manager_, Register(registration2,
                                              /*is_debug_key_allowed=*/false, _))
         .WillOnce(base::test::RunOnceCallback<2>(registration2, false));
@@ -1202,7 +1200,7 @@ TEST_F(AttributionManagerImplTest, HandleOsTrigger) {
       Register(OsRegistration(kRegistrationUrl3, /*debug_reporting=*/false,
                               kTopLevelOrigin3,
                               /*input_event=*/absl::nullopt,
-                              /*is_within_fenced_frame=*/false),
+                              /*is_within_fenced_frame=*/false, kFrameId),
                _, _))
       .Times(0);
 
@@ -1212,28 +1210,22 @@ TEST_F(AttributionManagerImplTest, HandleOsTrigger) {
       Register(OsRegistration(kRegistrationUrl4, /*debug_reporting=*/false,
                               kTopLevelOrigin4,
                               /*input_event=*/absl::nullopt,
-                              /*is_within_fenced_frame=*/false),
+                              /*is_within_fenced_frame=*/false, kFrameId),
                _, _))
       .Times(0);
 
-  attribution_manager_->HandleOsRegistration(
-      OsRegistration(kRegistrationUrl1, /*debug_reporting=*/false,
-                     kTopLevelOrigin1,
-                     /*input_event=*/absl::nullopt,
-                     /*is_within_fenced_frame=*/false),
-      kFrameId);
-  attribution_manager_->HandleOsRegistration(
-      OsRegistration(kRegistrationUrl2, /*debug_reporting=*/false,
-                     kTopLevelOrigin2,
-                     /*input_event=*/absl::nullopt,
-                     /*is_within_fenced_frame=*/false),
-      kFrameId);
-  attribution_manager_->HandleOsRegistration(
-      OsRegistration(kRegistrationUrl3, /*debug_reporting=*/false,
-                     kTopLevelOrigin3,
-                     /*input_event=*/absl::nullopt,
-                     /*is_within_fenced_frame=*/false),
-      kFrameId);
+  attribution_manager_->HandleOsRegistration(OsRegistration(
+      kRegistrationUrl1, /*debug_reporting=*/false, kTopLevelOrigin1,
+      /*input_event=*/absl::nullopt,
+      /*is_within_fenced_frame=*/false, kFrameId));
+  attribution_manager_->HandleOsRegistration(OsRegistration(
+      kRegistrationUrl2, /*debug_reporting=*/false, kTopLevelOrigin2,
+      /*input_event=*/absl::nullopt,
+      /*is_within_fenced_frame=*/false, kFrameId));
+  attribution_manager_->HandleOsRegistration(OsRegistration(
+      kRegistrationUrl3, /*debug_reporting=*/false, kTopLevelOrigin3,
+      /*input_event=*/absl::nullopt,
+      /*is_within_fenced_frame=*/false, kFrameId));
 
   MockAttributionReportingContentBrowserClient browser_client;
   EXPECT_CALL(
@@ -1245,12 +1237,10 @@ TEST_F(AttributionManagerImplTest, HandleOsTrigger) {
       .WillOnce(Return(false));
   ScopedContentBrowserClientSetting setting(&browser_client);
 
-  attribution_manager_->HandleOsRegistration(
-      OsRegistration(kRegistrationUrl4, /*debug_reporting=*/false,
-                     kTopLevelOrigin4,
-                     /*input_event=*/absl::nullopt,
-                     /*is_within_fenced_frame=*/false),
-      kFrameId);
+  attribution_manager_->HandleOsRegistration(OsRegistration(
+      kRegistrationUrl4, /*debug_reporting=*/false, kTopLevelOrigin4,
+      /*input_event=*/absl::nullopt,
+      /*is_within_fenced_frame=*/false, kFrameId));
 
   EXPECT_THAT(
       histograms.GetAllSamples("Conversions.OsRegistrationResult.Trigger"),
@@ -3299,14 +3289,14 @@ TEST_F(AttributionManagerImplTest,
         is_os_source ? absl::make_optional<AttributionInputEvent>(
                            AttributionInputEvent())
                      : absl::nullopt,
-        /*is_within_fenced_frame=*/false);
+        /*is_within_fenced_frame=*/false, kFrameId);
 
     EXPECT_CALL(*os_level_manager_, Register)
         .WillOnce(base::test::RunOnceCallback<2>(registration, true));
 
     EXPECT_CALL(*report_sender_, SendReport(_, _));
 
-    attribution_manager_->HandleOsRegistration(registration, kFrameId);
+    attribution_manager_->HandleOsRegistration(registration);
 
     histograms.ExpectUniqueSample(
         kSentVerboseDebugReportTypeMetric,
@@ -3334,7 +3324,7 @@ TEST_F(AttributionManagerImplTest,
         is_os_source ? absl::make_optional<AttributionInputEvent>(
                            AttributionInputEvent())
                      : absl::nullopt,
-        /*is_within_fenced_frame=*/false);
+        /*is_within_fenced_frame=*/false, kFrameId);
 
     EXPECT_CALL(*report_sender_, SendReport(_, _)).Times(0);
 
@@ -3364,7 +3354,7 @@ TEST_F(AttributionManagerImplTest,
     EXPECT_CALL(*os_level_manager_, Register)
         .WillOnce(base::test::RunOnceCallback<2>(registration, false));
 
-    attribution_manager_->HandleOsRegistration(registration, kFrameId);
+    attribution_manager_->HandleOsRegistration(registration);
 
     histograms.ExpectTotalCount(kSentVerboseDebugReportTypeMetric, 0);
   }

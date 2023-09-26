@@ -90,10 +90,7 @@ class MockAttributionManager : public AttributionManager {
               (const DataKey&, base::OnceClosure done),
               (override));
 
-  MOCK_METHOD(void,
-              HandleOsRegistration,
-              (OsRegistration, GlobalRenderFrameHostId),
-              (override));
+  MOCK_METHOD(void, HandleOsRegistration, (OsRegistration), (override));
 
   MOCK_METHOD(void,
               SetDebugMode,
