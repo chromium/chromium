@@ -46,7 +46,7 @@ const SettingsMultidevicePageElementBase =
     NearbyShareSettingsMixin(MultiDeviceFeatureMixin(RouteOriginMixin(
         DeepLinkingMixin(PrefsMixin(WebUiListenerMixin(PolymerElement))))));
 
-class SettingsMultidevicePageElement extends
+export class SettingsMultidevicePageElement extends
     SettingsMultidevicePageElementBase {
   static get is() {
     return 'settings-multidevice-page' as const;

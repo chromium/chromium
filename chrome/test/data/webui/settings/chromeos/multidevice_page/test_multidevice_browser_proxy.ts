@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {MultiDeviceBrowserProxy, MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData, MultiDeviceSettingsMode, PhoneHubPermissionsSetupAction, PhoneHubPermissionsSetupFeatureCombination, PhoneHubPermissionsSetupFlowScreens} from 'chrome://os-settings/os_settings.js';
+import {MultiDeviceBrowserProxy, MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData, MultiDeviceSettingsMode, PhoneHubFeatureAccessStatus, PhoneHubPermissionsSetupAction, PhoneHubPermissionsSetupFeatureCombination, PhoneHubPermissionsSetupFlowScreens} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -61,6 +61,16 @@ export class TestMultideviceBrowserProxy extends TestBrowserProxy implements
       'logPhoneHubPermissionOnboardingSetupResult',
       'getSmartLockSignInAllowed',
     ]);
+  }
+
+  setNotificationAccessStatusForTesting(status: PhoneHubFeatureAccessStatus):
+      void {
+    this.data_.notificationAccessStatus = status;
+  }
+
+  setIsPhoneHubPermissionsDialogSupportedForTesting(isSupported: boolean):
+      void {
+    this.data_.isPhoneHubPermissionsDialogSupported = isSupported;
   }
 
   getPageContentData(): Promise<MultiDevicePageContentData> {

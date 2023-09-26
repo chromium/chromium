@@ -171,6 +171,7 @@ export * as userActionRecorderMojom from './mojom-webui/user_action_recorder.moj
 export {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_page/multidevice_browser_proxy.js';
 export {MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData, MultiDeviceSettingsMode, PhoneHubFeatureAccessProhibitedReason, PhoneHubFeatureAccessStatus, PhoneHubPermissionsSetupAction, PhoneHubPermissionsSetupFeatureCombination, PhoneHubPermissionsSetupFlowScreens, PhoneHubPermissionsSetupMode} from './multidevice_page/multidevice_constants.js';
 export {NotificationAccessSetupOperationStatus, SettingsMultideviceNotificationAccessSetupDialogElement} from './multidevice_page/multidevice_notification_access_setup_dialog.js';
+export {SettingsMultidevicePageElement} from './multidevice_page/multidevice_page.js';
 export {PermissionsSetupStatus, SettingsMultidevicePermissionsSetupDialogElement, SetupFlowStatus} from './multidevice_page/multidevice_permissions_setup_dialog.js';
 export {Account, NearbyAccountManagerBrowserProxy, NearbyAccountManagerBrowserProxyImpl} from './nearby_share_page/nearby_account_manager_browser_proxy.js';
 export {NearbyShareConfirmPageElement} from './nearby_share_page/nearby_share_confirm_page.js';
