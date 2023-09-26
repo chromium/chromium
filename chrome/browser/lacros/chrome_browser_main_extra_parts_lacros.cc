@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/unguessable_token.h"
 #include "build/chromeos_buildflags.h"
@@ -70,6 +71,7 @@
 #include "base/base_paths.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "chrome/common/chrome_paths.h"
 #include "chromeos/lacros/lacros_paths.h"
 #endif  // BUILDFLAG(ENABLE_NACL)
 
@@ -92,37 +94,6 @@ CreateClipboardHistoryLacros() {
 
   return nullptr;
 }
-
-#if BUILDFLAG(ENABLE_NACL)
-// Ash ships PNaCl as part of rootfs, but Lacros doesn't ship it at all.
-// Since the required binaries are guaranteed to be the same, even on different
-// Chrome versions (since 2016), just create a symlink to PNaCl binaries shipped
-// with Ash.
-// Returns true if a link was created or existed already, false otherwise.
-bool CreateSymlinkToAshPnacl() {
-  base::FilePath ash_resources_dir;
-  base::FilePath lacros_resources_dir;
-  if (!base::PathService::Get(chromeos::lacros_paths::ASH_RESOURCES_DIR,
-                              &ash_resources_dir) ||
-      !base::PathService::Get(base::DIR_ASSETS, &lacros_resources_dir)) {
-    return false;
-  }
-  base::FilePath ash_pnacl =
-      ash_resources_dir.Append(FILE_PATH_LITERAL("pnacl"));
-  base::FilePath lacros_pnacl =
-      lacros_resources_dir.Append(FILE_PATH_LITERAL("pnacl"));
-
-  // If the link already exists, don't do anything.
-  if (base::MakeAbsoluteFilePath(lacros_pnacl) == ash_pnacl) {
-    return true;
-  }
-
-  if (!base::CreateSymbolicLink(ash_pnacl, lacros_pnacl)) {
-    return false;
-  }
-  return true;
-}
-#endif  // BUILDFLAG(ENABLE_NACL)
 
 extensions::mojom::FeatureSessionType GetExtSessionType() {
   using extensions::mojom::FeatureSessionType;
@@ -173,9 +144,19 @@ void ChromeBrowserMainExtraPartsLacros::PreProfileInit() {
       SystemGeolocationSourceLacros::CreateGeolocationManagerOnLacros());
 
 #if BUILDFLAG(ENABLE_NACL)
-  if (!CreateSymlinkToAshPnacl()) {
-    LOG(WARNING)
-        << "Could not create a symlink to Ash PNaCl - PNaCl may be unavailable";
+  // Ash ships PNaCl as part of rootfs, but Lacros doesn't ship it at all.
+  // Since the required binaries are guaranteed to be the same, even on
+  // different Chrome versions (since 2016), just use the PNaCl binaries shipped
+  // with Ash.
+  base::FilePath ash_resources_dir;
+  if (!base::PathService::Get(chromeos::lacros_paths::ASH_RESOURCES_DIR,
+                              &ash_resources_dir)) {
+    LOG(WARNING) << "Could not find Ash PNaCl - PNaCl may be unavailable";
+    base::debug::DumpWithoutCrashing();
+  } else {
+    base::FilePath ash_pnacl =
+        ash_resources_dir.Append(FILE_PATH_LITERAL("pnacl"));
+    base::PathService::Override(chrome::DIR_PNACL_COMPONENT, ash_pnacl);
   }
 #endif  // BUILDFLAG(ENABLE_NACL)
 }
