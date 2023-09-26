@@ -20,11 +20,11 @@
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
 #include "chrome/browser/platform_util.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/common/extensions/api/autotest_private.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom-forward.h"
 #include "chromeos/services/machine_learning/public/mojom/model.mojom.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "components/webapps/common/web_app_id.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
@@ -1246,8 +1246,8 @@ class AutotestPrivateInstallPWAForCurrentURLFunction
   // Called when a PWA is loaded from a URL.
   void PWALoaded();
   // Called when a PWA is installed.
-  void PWAInstalled(const web_app::AppId& app_id);
-  // Called when intalling a PWA times out.
+  void PWAInstalled(const webapps::AppId& app_id);
+  // Called when installing a PWA times out.
   void PWATimeout();
 
   std::unique_ptr<PWABannerObserver> banner_observer_;

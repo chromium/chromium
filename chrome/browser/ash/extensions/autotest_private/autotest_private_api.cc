@@ -2353,7 +2353,7 @@ void AutotestPrivateGetRegisteredSystemWebAppsFunction::
         delegate->GetInstallUrl().DeprecatedGetOriginAsURL().spec();
     system_web_app.name = base::UTF16ToUTF8(delegate->GetWebAppInfo()->title);
 
-    absl::optional<web_app::AppId> app_id =
+    absl::optional<webapps::AppId> app_id =
         swa_manager->GetAppIdForSystemApp(type_and_info.first);
     if (app_id) {
       system_web_app.start_url =
@@ -4915,7 +4915,7 @@ class AutotestPrivateInstallPWAForCurrentURLFunction::PWAInstallManagerObserver
  public:
   PWAInstallManagerObserver(
       Profile* profile,
-      base::OnceCallback<void(const web_app::AppId&)> callback)
+      base::OnceCallback<void(const webapps::AppId&)> callback)
       : provider_(web_app::WebAppProvider::GetForWebApps(profile)),
         callback_(std::move(callback)) {
     if (!provider_) {
@@ -4938,7 +4938,7 @@ class AutotestPrivateInstallPWAForCurrentURLFunction::PWAInstallManagerObserver
     observation_.Observe(&provider_->install_manager());
   }
 
-  void OnWebAppInstalled(const web_app::AppId& app_id) override {
+  void OnWebAppInstalled(const webapps::AppId& app_id) override {
     observation_.Reset();
     std::move(callback_).Run(app_id);
   }
@@ -4950,7 +4950,7 @@ class AutotestPrivateInstallPWAForCurrentURLFunction::PWAInstallManagerObserver
                           web_app::WebAppInstallManagerObserver>
       observation_{this};
   raw_ptr<web_app::WebAppProvider, ExperimentalAsh> provider_;
-  base::OnceCallback<void(const web_app::AppId&)> callback_;
+  base::OnceCallback<void(const webapps::AppId&)> callback_;
   base::WeakPtrFactory<
       AutotestPrivateInstallPWAForCurrentURLFunction::PWAInstallManagerObserver>
       weak_factory_{this};
@@ -5014,7 +5014,7 @@ void AutotestPrivateInstallPWAForCurrentURLFunction::PWALoaded() {
 }
 
 void AutotestPrivateInstallPWAForCurrentURLFunction::PWAInstalled(
-    const web_app::AppId& app_id) {
+    const webapps::AppId& app_id) {
   chrome::SetAutoAcceptPWAInstallConfirmationForTesting(false);
   Respond(WithArguments(app_id));
   timeout_timer_.AbandonAndStop();
