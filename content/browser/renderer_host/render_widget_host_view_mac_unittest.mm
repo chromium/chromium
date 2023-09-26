@@ -475,6 +475,8 @@ class MockRenderWidgetHostOwnerDelegate
     : public StubRenderWidgetHostOwnerDelegate {
  public:
   MOCK_METHOD1(SetBackgroundOpaque, void(bool opaque));
+  MOCK_METHOD(void, RenderWidgetGotFocus, (), (override));
+  MOCK_METHOD(void, RenderWidgetLostFocus, (), (override));
 };
 
 }  // namespace
@@ -919,28 +921,33 @@ TEST_F(RenderWidgetHostViewMacTest, CompositionEventAfterDestroy) {
   EXPECT_EQ(gfx::Range(), gfx::Range(actual_range));
 }
 
-// Verify that |SetActive()| calls |RenderWidgetHostImpl::Blur()| and
-// |RenderWidgetHostImp::Focus()|.
-TEST_F(RenderWidgetHostViewMacTest, BlurAndFocusOnSetActive) {
+// Verify that |SetActive()| calls |RenderWidgetHostImpl::LostFocus()| and
+// |RenderWidgetHostImp::GotFocus()|.
+TEST_F(RenderWidgetHostViewMacTest, LostFocusAndGotFocusOnSetActive) {
   EXPECT_CALL(*host_, Focus());
+  EXPECT_CALL(mock_owner_delegate_, RenderWidgetGotFocus());
   [window_ makeFirstResponder:rwhv_mac_->GetInProcessNSView()];
   testing::Mock::VerifyAndClearExpectations(host_.get());
 
   EXPECT_CALL(*host_, Blur());
+  EXPECT_CALL(mock_owner_delegate_, RenderWidgetLostFocus());
   rwhv_mac_->SetActive(false);
   testing::Mock::VerifyAndClearExpectations(host_.get());
 
   EXPECT_CALL(*host_, Focus());
+  EXPECT_CALL(mock_owner_delegate_, RenderWidgetGotFocus());
   rwhv_mac_->SetActive(true);
   testing::Mock::VerifyAndClearExpectations(host_.get());
 
   // Unsetting first responder should blur.
   EXPECT_CALL(*host_, Blur());
+  EXPECT_CALL(mock_owner_delegate_, RenderWidgetLostFocus());
   [window_ makeFirstResponder:nil];
   testing::Mock::VerifyAndClearExpectations(host_.get());
 
   // |SetActive()| should not focus if view is not first responder.
   EXPECT_CALL(*host_, Focus()).Times(0);
+  EXPECT_CALL(mock_owner_delegate_, RenderWidgetGotFocus()).Times(0);
   rwhv_mac_->SetActive(true);
   testing::Mock::VerifyAndClearExpectations(host_.get());
 }
@@ -1959,8 +1966,8 @@ TEST_F(InputMethodMacTest, SecurePasswordInput) {
   ASSERT_FALSE(ui::ScopedPasswordInputEnabler::IsPasswordInputEnabled());
   ASSERT_EQ(text_input_manager(), tab_view()->GetTextInputManager());
 
-  // RenderWidgetHostViewMacTest.BlurAndFocusOnSetActive checks the
-  // Focus()/Blur() rules, just silence the warnings here.
+  // RenderWidgetHostViewMacTest.LostFocusAndGotFocusOnSetActive checks the
+  // GotFocus()/LostFocus() rules, just silence the warnings here.
   EXPECT_CALL(*host_, Focus()).Times(::testing::AnyNumber());
   EXPECT_CALL(*host_, Blur()).Times(::testing::AnyNumber());
 

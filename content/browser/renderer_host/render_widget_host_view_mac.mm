@@ -1573,9 +1573,9 @@ void RenderWidgetHostViewMac::SetActive(bool active) {
     UpdateActiveState(active);
     if (active) {
       if (HasFocus())
-        host()->Focus();
+        host()->GotFocus();
     } else {
-      host()->Blur();
+      host()->LostFocus();
     }
   }
   if (HasFocus())
