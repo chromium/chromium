@@ -6,13 +6,14 @@
 #include <cstdint>
 
 #include "third_party/openscreen/src/cast/common/channel/message_framer.h"
+#include "third_party/openscreen/src/platform/base/span.h"
 #include "third_party/protobuf/src/google/protobuf/stubs/logging.h"
 
 // Silence logging from the protobuf library.
 google::protobuf::LogSilencer log_silencer;
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  auto buffer = absl::Span<const uint8_t>(data, size);
+  openscreen::ByteView buffer(data, size);
 
   size_t bytes_ingested = 0u;
   while (bytes_ingested < size) {
@@ -24,7 +25,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       break;
     }
     bytes_ingested += result.value().length;
-    buffer = buffer.subspan(result.value().length);
+    buffer = buffer.subspan(result.value().length,
+                            buffer.size() - result.value().length);
   }
   return 0;
 }
