@@ -20,10 +20,13 @@ namespace ash::settings {
 
 namespace {
 
+using ActionTypeVariant =
+    absl::variant<AcceleratorAction, ::ash::mojom::HardCodedAction>;
+
 // Used to represent a constant version of the mojom::ActionChoice struct.
 struct ActionChoice {
   const char* name;
-  AcceleratorAction action_id;
+  ActionTypeVariant action_variant;
 };
 
 // TODO(dpad): Update list to official list of actions.
@@ -38,6 +41,8 @@ constexpr ActionChoice kMouseButtonOptions[] = {
     {"Turn on high contrast", AcceleratorAction::kToggleHighContrast},
     {"Turn on magnifier", AcceleratorAction::kToggleFullscreenMagnifier},
     {"Turn on dictation", AcceleratorAction::kEnableOrToggleDictation},
+    {"Copy", ::ash::mojom::HardCodedAction::kCopy},
+    {"Paste", ::ash::mojom::HardCodedAction::kPaste},
 };
 
 // TODO(dpad): Update list to official list of actions.
@@ -52,7 +57,23 @@ constexpr ActionChoice kGraphicsTabletOptions[] = {
     {"Turn on high contrast", AcceleratorAction::kToggleHighContrast},
     {"Turn on magnifier", AcceleratorAction::kToggleFullscreenMagnifier},
     {"Turn on dictation", AcceleratorAction::kEnableOrToggleDictation},
+    {"Copy", ::ash::mojom::HardCodedAction::kCopy},
+    {"Paste", ::ash::mojom::HardCodedAction::kPaste},
 };
+
+mojom::ActionTypePtr GetActionType(AcceleratorAction action) {
+  return mojom::ActionType::NewAcceleratorAction(action);
+}
+
+mojom::ActionTypePtr GetActionType(
+    ::ash::mojom::HardCodedAction hardcoded_action) {
+  return mojom::ActionType::NewHardcodedAction(hardcoded_action);
+}
+
+mojom::ActionTypePtr GetActionTypeFromVariant(ActionTypeVariant variant) {
+  return absl::visit([](auto&& value) { return GetActionType(value); },
+                     variant);
+}
 
 template <typename T>
 struct CustomDeviceKeyComparator {
@@ -501,7 +522,8 @@ void InputDeviceSettingsProvider::
         GetActionsForGraphicsTabletButtonCustomizationCallback callback) {
   std::vector<mojom::ActionChoicePtr> choices;
   for (const auto& choice : kGraphicsTabletOptions) {
-    choices.push_back(mojom::ActionChoice::New(choice.action_id, choice.name));
+    choices.push_back(mojom::ActionChoice::New(
+        GetActionTypeFromVariant(choice.action_variant), choice.name));
   }
   std::move(callback).Run(std::move(choices));
 }
@@ -510,7 +532,8 @@ void InputDeviceSettingsProvider::GetActionsForMouseButtonCustomization(
     GetActionsForMouseButtonCustomizationCallback callback) {
   std::vector<mojom::ActionChoicePtr> choices;
   for (const auto& choice : kMouseButtonOptions) {
-    choices.push_back(mojom::ActionChoice::New(choice.action_id, choice.name));
+    choices.push_back(mojom::ActionChoice::New(
+        GetActionTypeFromVariant(choice.action_variant), choice.name));
   }
   std::move(callback).Run(std::move(choices));
 }

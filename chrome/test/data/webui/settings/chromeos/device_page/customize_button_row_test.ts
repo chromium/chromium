@@ -6,7 +6,7 @@ import 'chrome://os-settings/lazy_load.js';
 import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
 import {CustomizeButtonRowElement} from 'chrome://os-settings/lazy_load.js';
-import {fakeGraphicsTabletButtonActions, fakeGraphicsTablets, FakeInputDeviceSettingsProvider, getInputDeviceSettingsProvider, setupFakeInputDeviceSettingsProvider} from 'chrome://os-settings/os_settings.js';
+import {fakeGraphicsTabletButtonActions, fakeGraphicsTablets, FakeInputDeviceSettingsProvider, fakeMice, fakeMouseButtonActions, getInputDeviceSettingsProvider, setupFakeInputDeviceSettingsProvider} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
 import {assertDeepEquals, assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -57,6 +57,21 @@ suite('<customize-button-row>', () => {
     return flushTasks();
   }
 
+  async function initializeMouseCustomizeButtonRow() {
+    customizeButtonRow = document.createElement(CustomizeButtonRowElement.is);
+    customizeButtonRow.set('actionList', fakeMouseButtonActions);
+    customizeButtonRow.set(
+        'buttonRemappingList', fakeMice[0]!.settings.buttonRemappings);
+    customizeButtonRow.set('remappingIndex', 0);
+    await flushTasks();
+
+    customizeButtonRow.addEventListener('button-remapping-changed', function() {
+      buttonRemappingChangedEventCount++;
+    });
+    document.body.appendChild(customizeButtonRow);
+    return flushTasks();
+  }
+
   function getSelectedValue(): string {
     const dropdown: HTMLSelectElement|null =
         customizeButtonRow.shadowRoot!.querySelector(
@@ -64,6 +79,80 @@ suite('<customize-button-row>', () => {
     assertTrue(!!dropdown);
     return dropdown!.value;
   }
+
+  test('Initialize mouse customize button row', async () => {
+    await initializeMouseCustomizeButtonRow();
+    let expectedRemapping = fakeMice[0]!.settings.buttonRemappings[0];
+    assertDeepEquals(
+        customizeButtonRow.get('buttonRemapping_'), expectedRemapping);
+    assertEquals(
+        customizeButtonRow.shadowRoot!.querySelector(
+                                          '#buttonLabel')!.textContent,
+        expectedRemapping!.name);
+    assertEquals(
+        getSelectedValue(),
+        'hardcodedAction' +
+            expectedRemapping!.remappingAction?.hardcodedAction!.toString());
+
+    // Change buttonRemapping data to display.
+    customizeButtonRow.set('remappingIndex', 1);
+    customizeButtonRow.set(
+        'buttonRemappingList', fakeMice[0]!.settings.buttonRemappings);
+    await flushTasks();
+    expectedRemapping = fakeMice[0]!.settings.buttonRemappings[1];
+    assertEquals(
+        customizeButtonRow.shadowRoot!.querySelector(
+                                          '#buttonLabel')!.textContent,
+        expectedRemapping!.name);
+    assertEquals(
+        getSelectedValue(),
+        'action' + expectedRemapping!.remappingAction?.action!.toString());
+  });
+
+  test('update dropdown in mouse will sent events', async () => {
+    await initializeMouseCustomizeButtonRow();
+    assertEquals(getSelectedValue(), 'hardcodedAction0');
+    assertEquals(buttonRemappingChangedEventCount, 0);
+    // Update select to another remapping action.
+    const select: HTMLSelectElement|null =
+        customizeButtonRow.shadowRoot!.querySelector(
+            '#remappingActionDropdown');
+    assertTrue(!!select);
+    select.value = 'action0';
+    select.dispatchEvent(new Event('change'));
+    await flushTasks();
+
+    // Verify that event is fired and button remapping is updated.
+    assertEquals(buttonRemappingChangedEventCount, 1);
+    assertDeepEquals(
+        customizeButtonRow.get('buttonRemapping_')?.remappingAction, {
+          action: 0,
+        });
+
+    // Update select to no remapping action choice.
+    select.value = 'none';
+    select.dispatchEvent(new Event('change'));
+    await flushTasks();
+    assertEquals(buttonRemappingChangedEventCount, 2);
+    assertEquals(
+        customizeButtonRow.get('buttonRemapping_')?.remappingAction, undefined);
+
+    // Update select from no remapping back to normal remapping action.
+    select.value = 'hardcodedAction1';
+    select.dispatchEvent(new Event('change'));
+    await flushTasks();
+    assertEquals(buttonRemappingChangedEventCount, 3);
+    assertDeepEquals(
+        customizeButtonRow.get('buttonRemapping_')?.remappingAction, {
+          hardcodedAction: 1,
+        });
+
+    // Update select to the same action, no events will be fired.
+    select.value = 'hardcodedAction1';
+    select.dispatchEvent(new Event('change'));
+    await flushTasks();
+    assertEquals(buttonRemappingChangedEventCount, 3);
+  });
 
   test('Initialize customize button row', async () => {
     await initializeCustomizeButtonRow();
@@ -77,7 +166,7 @@ suite('<customize-button-row>', () => {
         expectedRemapping!.name);
     assertEquals(
         getSelectedValue(),
-        expectedRemapping!.remappingAction?.action!.toString());
+        'action' + expectedRemapping!.remappingAction?.action!.toString());
 
     // Change buttonRemapping data to display.
     customizeButtonRow.set('remappingIndex', 1);
@@ -93,7 +182,7 @@ suite('<customize-button-row>', () => {
         expectedRemapping!.name);
     assertEquals(
         getSelectedValue(),
-        expectedRemapping!.remappingAction?.action!.toString());
+        'action' + expectedRemapping!.remappingAction?.action!.toString());
   });
 
   test('Initialize key combination string', async () => {
@@ -120,15 +209,14 @@ suite('<customize-button-row>', () => {
 
   test('update dropdown will sent events', async () => {
     await initializeCustomizeButtonRow();
-
-    assertEquals(getSelectedValue(), '2');
+    assertEquals(getSelectedValue(), 'action2');
     assertEquals(buttonRemappingChangedEventCount, 0);
     // Update select to another remapping action.
     const select: HTMLSelectElement|null =
         customizeButtonRow.shadowRoot!.querySelector(
             '#remappingActionDropdown');
     assertTrue(!!select);
-    select.value = '1';
+    select.value = 'action1';
     select.dispatchEvent(new Event('change'));
     await flushTasks();
 
@@ -148,7 +236,7 @@ suite('<customize-button-row>', () => {
         customizeButtonRow.get('buttonRemapping_')?.remappingAction, undefined);
 
     // Update select from no remapping back to normal remapping action.
-    select.value = '2';
+    select.value = 'action2';
     select.dispatchEvent(new Event('change'));
     await flushTasks();
     assertEquals(buttonRemappingChangedEventCount, 3);
@@ -158,7 +246,7 @@ suite('<customize-button-row>', () => {
         });
 
     // Update select to the same action, no events will be fired.
-    select.value = '2';
+    select.value = 'action2';
     select.dispatchEvent(new Event('change'));
     await flushTasks();
     assertEquals(buttonRemappingChangedEventCount, 3);
@@ -223,7 +311,7 @@ suite('<customize-button-row>', () => {
     assertEquals(showKeyCombinationDialogEventCount, 1);
     // Verify that the selected value will change back to
     // the previous selection.
-    assertEquals(select.value, '2');
+    assertEquals(select.value, 'action2');
 
     // Verify that when clicking the open key combination value again,
     // the open dialog event will fire again.
@@ -232,6 +320,6 @@ suite('<customize-button-row>', () => {
 
     await flushTasks();
     assertEquals(showKeyCombinationDialogEventCount, 2);
-    assertEquals(select.value, '2');
+    assertEquals(select.value, 'action2');
   });
 });

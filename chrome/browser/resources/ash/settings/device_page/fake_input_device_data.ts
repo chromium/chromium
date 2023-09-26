@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AcceleratorAction, ActionChoice, CustomizableButton, ExtendedFkeysModifier, GraphicsTablet, Keyboard, MetaKey, ModifierKey, Mouse, PointingStick, SimulateRightClickModifier, SixPackKeyInfo, SixPackShortcutModifier, Stylus, TopRowActionKey, Touchpad, Vkey} from './input_device_settings_types.js';
+import {AcceleratorAction, ActionChoice, CustomizableButton, ExtendedFkeysModifier, GraphicsTablet, HardCodedAction, Keyboard, MetaKey, ModifierKey, Mouse, PointingStick, SimulateRightClickModifier, SixPackKeyInfo, SixPackShortcutModifier, Stylus, TopRowActionKey, Touchpad, Vkey} from './input_device_settings_types.js';
 
 const defaultSixPackKeyRemappings: SixPackKeyInfo = {
   pageDown: SixPackShortcutModifier.kSearch,
@@ -322,7 +322,7 @@ export const fakeMice: Mouse[] = [
             customizableButton: CustomizableButton.kBack,
           },
           remappingAction: {
-            action: AcceleratorAction.kCycleBackwardMru,
+            hardcodedAction: HardCodedAction.kCopy,
           },
         },
         {
@@ -601,20 +601,97 @@ export const fakeGraphicsTablets: GraphicsTablet[] = [
 ];
 
 export const fakeMouseButtonActions: ActionChoice[] = [
-  {actionId: AcceleratorAction.kCycleBackwardMru, name: 'Back'},
-  {actionId: AcceleratorAction.kCycleForwardMru, name: 'Forward'},
-  {actionId: AcceleratorAction.kLockScreen, name: 'Lock screen'},
-  {actionId: AcceleratorAction.kToggleClipboardHistory, name: 'Open clipboard'},
-  {actionId: AcceleratorAction.kToggleFullscreen, name: 'Fullscreen'},
-  {actionId: AcceleratorAction.kVolumeMute, name: 'Mute'},
-  {actionId: AcceleratorAction.kWindowMinimize, name: 'Minimize window'},
+  {
+    actionType: {
+      hardcodedAction: HardCodedAction.kCopy,
+    },
+    name: 'Copy',
+  },
+  {
+    actionType: {
+      hardcodedAction: HardCodedAction.kPaste,
+    },
+    name: 'Paste',
+  },
+  {
+    actionType: {
+      acceleratorAction: AcceleratorAction.kCycleForwardMru,
+    },
+    name: 'Forward',
+  },
+  {
+    actionType: {
+      acceleratorAction: AcceleratorAction.kLockScreen,
+    },
+    name: 'Lock screen',
+  },
+  {
+    actionType: {
+      acceleratorAction: AcceleratorAction.kToggleClipboardHistory,
+    },
+    name: 'Open clipboard',
+  },
+  {
+    actionType: {
+      acceleratorAction: AcceleratorAction.kToggleFullscreen,
+    },
+    name: 'Fullscreen',
+  },
+  {
+    actionType: {
+      acceleratorAction: AcceleratorAction.kVolumeMute,
+    },
+    name: 'Mute',
+  },
+  {
+    actionType: {
+      acceleratorAction: AcceleratorAction.kWindowMinimize,
+    },
+    name: 'Minimize window',
+  },
+  {
+    actionType: {
+      acceleratorAction: AcceleratorAction.kBrightnessDown,
+    },
+    name: 'Brightness down',
+  },
 ];
 
 export const fakeGraphicsTabletButtonActions: ActionChoice[] = [
-  {actionId: AcceleratorAction.kBrightnessDown, name: 'Brightness down'},
-  {actionId: AcceleratorAction.kBrightnessUp, name: 'Brightness up'},
-  {actionId: AcceleratorAction.kCycleBackwardMru, name: 'Back'},
-  {actionId: AcceleratorAction.kCycleForwardMru, name: 'Forward'},
-  {actionId: AcceleratorAction.kMagnifierZoomIn, name: 'Zoom in'},
-  {actionId: AcceleratorAction.kMagnifierZoomOut, name: 'Zoom out'},
+  {
+    actionType: {
+      acceleratorAction: AcceleratorAction.kBrightnessDown,
+    },
+    name: 'Brightness down',
+  },
+  {
+    actionType: {
+      acceleratorAction: AcceleratorAction.kBrightnessUp,
+    },
+    name: 'Brightness up',
+  },
+  {
+    actionType: {
+      acceleratorAction: AcceleratorAction.kCycleBackwardMru,
+    },
+    name: 'Back',
+  },
+  {
+    actionType: {
+      acceleratorAction: AcceleratorAction.kCycleForwardMru,
+    },
+    name: 'Forward',
+  },
+  {
+    actionType: {
+      acceleratorAction: AcceleratorAction.kMagnifierZoomIn,
+    },
+    name: 'Zoom in',
+  },
+  {
+    actionType: {
+      acceleratorAction: AcceleratorAction.kMagnifierZoomOut,
+    },
+    name: 'Zoom out',
+  },
 ];

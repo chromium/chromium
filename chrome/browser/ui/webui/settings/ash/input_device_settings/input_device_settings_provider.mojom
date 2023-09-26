@@ -9,8 +9,15 @@ import "ash/public/mojom/accelerator_actions.mojom";
 
 // Represents the options for user in the dropdown of button customization.
 struct ActionChoice {
-  ash.mojom.AcceleratorAction action_id;
+  ActionType action_type;
   string name;
+};
+
+// Represents the different types of actions that are remappable to buttons
+// within settings.
+union ActionType {
+  ash.mojom.AcceleratorAction accelerator_action;
+  ash.mojom.HardCodedAction hardcoded_action;
 };
 
 // Interface for observing keyboard settings changes in OSSettings SWA.

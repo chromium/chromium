@@ -21,12 +21,14 @@ import {getTemplate} from './customize_button_row.html.js';
 import {setDataTransferOriginIndex} from './drag_and_drop_manager.js';
 import {FakeInputDeviceSettingsProvider} from './fake_input_device_settings_provider.js';
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
-import {ActionChoice, Button, ButtonRemapping, InputDeviceSettingsProviderInterface, KeyEvent} from './input_device_settings_types.js';
+import {ActionChoice, Button, ButtonRemapping, InputDeviceSettingsProviderInterface, KeyEvent, RemappingAction} from './input_device_settings_types.js';
 import {buttonsAreEqual} from './input_device_settings_utils.js';
 
 const NO_REMAPPING_OPTION_LABEL = 'none';
 const KEY_COMBINATION_OPTION_LABEL = 'key combination';
 const OPEN_DIALOG_OPTION_LABEL = 'open key combination dialog';
+const ACTION_PREFIX = 'action';
+const HARDCODED_ACTION_PREFIX = 'hardcodedAction';
 
 /**
  * Bit mask of modifiers.
@@ -243,6 +245,27 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
   }
 
   /**
+   * Initialize dropdown menu.
+   */
+  private initializeDropdown_(
+      originalAction: string, dropdown: HTMLSelectElement): void {
+    // Initialize fakePref with originalAction.
+    this.set('fakePref_.value', originalAction);
+
+    // Initialize dropdown menu selection to match the
+    // originalAction.
+    const option = this.buttonMapTargets_.find((dropdownItem) => {
+      return dropdownItem.value === originalAction;
+    });
+
+    microTask.run(() => {
+      dropdown.value =
+          option === undefined ? NO_REMAPPING_OPTION_LABEL : originalAction;
+      this.prevChoice_ = dropdown.value;
+    });
+  }
+
+  /**
    * Populate dropdown menu choices.
    */
   private setUpButtonMapTargets_(): void {
@@ -253,10 +276,23 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
     // TODO(yyhyyh@): Get buttonMapTargets_ from provider in customization
     // pages, and pass it as a value instead of creating fake data here.
     for (const actionChoice of this.actionList) {
-      this.buttonMapTargets_.push({
-        value: actionChoice.actionId.toString(),
-        name: actionChoice.name,
-      });
+      const acceleratorAction = actionChoice.actionType.acceleratorAction;
+      const hardcodedAction = actionChoice.actionType.hardcodedAction;
+      if (acceleratorAction !== undefined) {
+        // Prepend an action prefix to distinguish it from the hardcodedAction
+        // enum.
+        this.buttonMapTargets_.push({
+          value: ACTION_PREFIX + acceleratorAction.toString(),
+          name: actionChoice.name,
+        });
+      } else if (hardcodedAction !== undefined) {
+        // Prepend a hardcodedAction prefix to distinguish it from the action
+        // enum.
+        this.buttonMapTargets_.push({
+          value: HARDCODED_ACTION_PREFIX + hardcodedAction.toString(),
+          name: actionChoice.name,
+        });
+      }
     }
   }
 
@@ -272,24 +308,15 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
     // For accelerator actions, the remappingAction.action value is number.
     const action = this.buttonRemapping_.remappingAction?.action;
     const keyEvent = this.buttonRemapping_.remappingAction?.keyEvent;
+    // For hardcoded actions, the remappingAction.hardcodedAction value is
+    // number.
+    const hardcodedAction =
+        this.buttonRemapping_.remappingAction?.hardcodedAction;
     if (action !== undefined && !isNaN(action)) {
-      const originalAction =
-          this.buttonRemapping_.remappingAction!.action!.toString();
-
-
-      // Initialize fakePref with the tablet settings mapping.
-      this.set('fakePref_.value', originalAction);
-
-      // Initialize dropdown menu selection to match the tablet settings.
-      const option = this.buttonMapTargets_.find((dropdownItem) => {
-        return dropdownItem.value === originalAction;
-      });
-
-      microTask.run(() => {
-        dropdown.value =
-            option === undefined ? NO_REMAPPING_OPTION_LABEL : originalAction;
-        this.prevChoice_ = dropdown.value;
-      });
+      // Prepend an action prefix to distinguish it from the hardcodedAction
+      // enum.
+      const originalAction = ACTION_PREFIX + action.toString();
+      this.initializeDropdown_(originalAction, dropdown);
     } else if (keyEvent) {
       this.set('fakePref_.value', KEY_COMBINATION_OPTION_LABEL);
       this.keyCombinationLabel_ = getKeyCombinationLabel(keyEvent) ??
@@ -299,6 +326,12 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
         dropdown.value = KEY_COMBINATION_OPTION_LABEL;
         this.prevChoice_ = dropdown.value;
       });
+    } else if (hardcodedAction !== undefined && !isNaN(hardcodedAction)) {
+      // Prepend a hardcodedAction prefix to distinguish it from the action
+      // enum.
+      const originalHardcodedAction =
+          HARDCODED_ACTION_PREFIX + hardcodedAction.toString();
+      this.initializeDropdown_(originalHardcodedAction, dropdown);
     } else {
       this.set('fakePref_.value', NO_REMAPPING_OPTION_LABEL);
       microTask.run(() => {
@@ -340,11 +373,25 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
       return updatedRemapping;
     }
     // Otherwise the button is remapped to a remappingAction.
+    let remappingAction: RemappingAction|undefined = undefined;
+    if (this.fakePref_.value.startsWith(ACTION_PREFIX)) {
+      // Remove the action prefix to get the real enum value.
+      this.fakePref_.value = this.fakePref_.value.slice(ACTION_PREFIX.length);
+      remappingAction = {
+        action: Number(this.fakePref_.value),
+      };
+    }
+    if (this.fakePref_.value.startsWith(HARDCODED_ACTION_PREFIX)) {
+      // Remove the hardcodedAction prefix to get the real enum value.
+      this.fakePref_.value =
+          this.fakePref_.value.slice(HARDCODED_ACTION_PREFIX.length);
+      remappingAction = {
+        hardcodedAction: Number(this.fakePref_.value),
+      };
+    }
     const updatedRemapping: ButtonRemapping = {
       ...this.buttonRemapping_,
-      remappingAction: {
-        action: Number(this.fakePref_.value),
-      },
+      remappingAction,
     };
     return updatedRemapping;
   }
