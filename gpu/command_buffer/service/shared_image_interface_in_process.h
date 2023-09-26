@@ -62,11 +62,8 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
   SharedImageInterfaceInProcess& operator=(
       const SharedImageInterfaceInProcess&) = delete;
 
+  // SharedImageInterface:
   ~SharedImageInterfaceInProcess() override;
-
-  // The |SharedImageInterface| keeps ownership of the image until
-  // |DestroySharedImage| is called or the interface itself is destroyed (e.g.
-  // the GPU channel is lost).
   Mailbox CreateSharedImage(viz::SharedImageFormat format,
                             const gfx::Size& size,
                             const gfx::ColorSpace& color_space,
@@ -75,11 +72,6 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
                             uint32_t usage,
                             base::StringPiece debug_label,
                             gpu::SurfaceHandle surface_handle) override;
-
-  // Same behavior as the above, except that this version takes |pixel_data|
-  // which is used to populate the SharedImage.  |pixel_data| should have the
-  // same format which would be passed to glTexImage2D to populate a similarly
-  // specified texture.
   Mailbox CreateSharedImage(viz::SharedImageFormat format,
                             const gfx::Size& size,
                             const gfx::ColorSpace& color_space,
@@ -88,12 +80,6 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
                             uint32_t usage,
                             base::StringPiece debug_label,
                             base::span<const uint8_t> pixel_data) override;
-
-  // Same behavior as above methods, except that this version is specifically
-  // used by clients which intend to create a shared image back by either a
-  // native buffer (if supported) or shared memory which are CPU mappable.
-  // We are currently passing BufferUsage to this method for simplicity since
-  // as of now we dont have a clear way to map BufferUsage to SharedImageUsage.
   Mailbox CreateSharedImage(viz::SharedImageFormat format,
                             const gfx::Size& size,
                             const gfx::ColorSpace& color_space,
@@ -103,26 +89,8 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
                             base::StringPiece debug_label,
                             SurfaceHandle surface_handle,
                             gfx::BufferUsage buffer_usage) override;
-
-  // Maps |mailbox| into CPU visible memory(if SharedImageUsage/BufferUsage are
-  // set to do CPU READ/WRITE) and returns a ScopedMapping object which can be
-  // used to read/write to the CPU mapped memory. Mailbox must have been created
-  // with CPU_READ/CPU_WRITE usage. Note that this call blocks on the client's
-  // thread.
-  // NOTE: If making this blocking call ever becomes a performance bottleneck,
-  // it would be possible to cache the info on the client's thread following the
-  // model of SharedImageInterfaceProxy::GetGpuMemoryBufferHandleInfo().
   std::unique_ptr<SharedImageInterface::ScopedMapping> MapSharedImage(
       const Mailbox& mailbox) override;
-
-  // |usage| is a combination of |SharedImageUsage| bits that describes which
-  // API(s) the image will be used with. |buffer_handle| is the
-  // GpuMemoryBufferHandle derived from the GpuMemoryBuffer created on the
-  // client side. If valid, |color_space| will be applied to the shared image
-  // (possibly overwriting the one set on the GpuMemoryBuffer). The
-  // |SharedImageInterface| keeps ownership of the image until
-  // |DestroySharedImage| is called or the interface itself is destroyed (e.g.
-  // the GPU channel is lost).
   Mailbox CreateSharedImage(viz::SharedImageFormat format,
                             const gfx::Size& size,
                             const gfx::ColorSpace& color_space,
@@ -131,22 +99,6 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
                             uint32_t usage,
                             base::StringPiece debug_label,
                             gfx::GpuMemoryBufferHandle buffer_handle) override;
-
-  // NOTE: The below method is DEPRECATED for `gpu_memory_buffer` only with
-  // single planar eg. RGB BufferFormats. Please use the equivalent method above
-  // taking in single planar SharedImageFormat with GpuMemoryBufferHandle.
-  //
-  // |usage| is a combination of |SharedImageUsage| bits that describes which
-  // API(s) the image will be used with. Format and size are derived from the
-  // GpuMemoryBuffer. |gpu_memory_buffer_manager| is the manager that created
-  // |gpu_memory_buffer|. If the |gpu_memory_buffer| was created on the client
-  // side (for NATIVE_PIXMAP or ANDROID_HARDWARE_BUFFER types only), without a
-  // GpuMemoryBufferManager, |gpu_memory_buffer_manager| can be nullptr.
-  // If valid, |color_space| will be applied to the shared
-  // image (possibly overwriting the one set on the GpuMemoryBuffer).
-  // The |SharedImageInterface| keeps ownership of the image until
-  // |DestroySharedImage| is called or the interface itself is destroyed (e.g.
-  // the GPU channel is lost).
   Mailbox CreateSharedImage(gfx::GpuMemoryBuffer* gpu_memory_buffer,
                             GpuMemoryBufferManager* gpu_memory_buffer_manager,
                             gfx::BufferPlane plane,
@@ -155,67 +107,35 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
                             SkAlphaType alpha_type,
                             uint32_t usage,
                             base::StringPiece debug_label) override;
-
-  // Updates a shared image after its GpuMemoryBuffer (if any) was modified on
-  // the CPU or through external devices, after |sync_token| has been released.
   void UpdateSharedImage(const SyncToken& sync_token,
                          const Mailbox& mailbox) override;
-
-  // Updates a shared image after its GpuMemoryBuffer (if any) was modified on
-  // the CPU or through external devices, after |sync_token| has been released.
-  // If |acquire_fence| is not null, the fence is inserted in the GPU command
-  // stream and a server side wait is issued before any GPU command referring
-  // to this shared imaged is executed on the GPU.
   void UpdateSharedImage(const SyncToken& sync_token,
                          std::unique_ptr<gfx::GpuFence> acquire_fence,
                          const Mailbox& mailbox) override;
-
-  // Destroys the shared image, unregistering its mailbox, after |sync_token|
-  // has been released. After this call, the mailbox can't be used to reference
-  // the image any more, however if the image was imported into other APIs,
-  // those may keep a reference to the underlying data.
   void DestroySharedImage(const SyncToken& sync_token,
                           const Mailbox& mailbox) override;
-
   void AddReferenceToSharedImage(const SyncToken& sync_token,
                                  const Mailbox& mailbox,
                                  uint32_t usage) override;
-
-  // Creates a swap chain. Not reached in this implementation.
   SwapChainMailboxes CreateSwapChain(viz::SharedImageFormat format,
                                      const gfx::Size& size,
                                      const gfx::ColorSpace& color_space,
                                      GrSurfaceOrigin surface_origin,
                                      SkAlphaType alpha_type,
                                      uint32_t usage) override;
-
-  // Swaps front and back buffer of a swap chain. Not reached in this
-  // implementation.
   void PresentSwapChain(const SyncToken& sync_token,
                         const Mailbox& mailbox) override;
-
 #if BUILDFLAG(IS_FUCHSIA)
-  // Registers a sysmem buffer collection. Not reached in this implementation.
   void RegisterSysmemBufferCollection(zx::eventpair service_handle,
                                       zx::channel sysmem_token,
                                       gfx::BufferFormat format,
                                       gfx::BufferUsage usage,
                                       bool register_with_image_pipe) override;
 #endif  // BUILDFLAG(IS_FUCHSIA)
-
-  // Generates an unverified SyncToken that is released after all previous
-  // commands on this interface have executed on the service side.
   SyncToken GenUnverifiedSyncToken() override;
-
-  // Generates a verified SyncToken that is released after all previous
-  // commands on this interface have executed on the service side.
   SyncToken GenVerifiedSyncToken() override;
-
   void WaitSyncToken(const SyncToken& sync_token) override;
-
-  // Flush the SharedImageInterface, issuing any deferred IPCs.
   void Flush() override;
-
   scoped_refptr<gfx::NativePixmap> GetNativePixmap(
       const gpu::Mailbox& mailbox) override;
 
