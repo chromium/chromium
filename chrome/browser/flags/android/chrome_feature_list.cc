@@ -240,6 +240,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kContextualSearchThinWebViewImplementation,
     &kDeferKeepScreenOnDuringGesture,
     &kDeferNotifyInMotion,
+    &kDeferTabSwitcherLayoutCreation,
     &kDelayTempStripRemoval,
     &kDelayTransitionsForAnimation,
     &kDragDropIntoOmnibox,
@@ -745,6 +746,10 @@ BASE_FEATURE(kDeferKeepScreenOnDuringGesture,
 BASE_FEATURE(kDeferNotifyInMotion,
              "DeferNotifyInMotion",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDeferTabSwitcherLayoutCreation,
+             "DeferTabSwitcherLayoutCreation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDelayTempStripRemoval,
              "DelayTempStripRemoval",

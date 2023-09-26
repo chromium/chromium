@@ -82,6 +82,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel.MockTabModelDelegate;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
@@ -96,6 +97,7 @@ import java.util.concurrent.TimeoutException;
  * Unit tests for {@link org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome}
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@EnableFeatures(ChromeFeatureList.DEFER_TAB_SWITCHER_LAYOUT_CREATION)
 public class LayoutManagerTest implements MockTabModelDelegate {
     private static final String TAG = "LayoutManagerTest";
 
@@ -128,7 +130,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
     private TabModelSelector mTabModelSelector;
     private Supplier<StartSurface> mStartSurfaceSupplier;
-    private Supplier<TabSwitcher> mTabSwitcherSupplier;
+    private OneshotSupplierImpl<TabSwitcher> mTabSwitcherSupplier;
     private boolean mIsStartSurfaceRefactorEnabled;
     private LayoutManagerChrome mManager;
     private LayoutManagerChromePhone mManagerPhone;
@@ -232,11 +234,13 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         ObservableSupplierImpl<TabContentManager> tabContentManagerSupplier =
                 new ObservableSupplierImpl<>();
 
+        mTabSwitcherSupplier = new OneshotSupplierImpl();
         mManagerPhone = new LayoutManagerChromePhone(layoutManagerHost, container,
-                mStartSurfaceSupplier,
-                mIsStartSurfaceRefactorEnabled ? mTabSwitcherSupplier : new OneshotSupplierImpl<>(),
-                mBrowserControlsStateProvider, tabContentManagerSupplier,
-                () -> mTopUiThemeColorProvider);
+                mStartSurfaceSupplier, mTabSwitcherSupplier, mBrowserControlsStateProvider,
+                tabContentManagerSupplier, () -> mTopUiThemeColorProvider, () -> {
+                    mTabSwitcherSupplier.set(mTabSwitcher);
+                    return container;
+                });
 
         setUpLayouts();
 
@@ -684,7 +688,6 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         });
 
         mStartSurfaceSupplier = () -> mStartSurface;
-        mTabSwitcherSupplier = () -> mTabSwitcher;
     }
 
     @After

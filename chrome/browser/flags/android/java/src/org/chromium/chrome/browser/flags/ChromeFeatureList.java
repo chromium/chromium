@@ -246,6 +246,8 @@ public abstract class ChromeFeatureList {
     public static final String DEFER_KEEP_SCREEN_ON_DURING_GESTURE =
             "DeferKeepScreenOnDuringGesture";
     public static final String DEFER_NOTIFY_IN_MOTION = "DeferNotifyInMotion";
+    public static final String DEFER_TAB_SWITCHER_LAYOUT_CREATION =
+            "DeferTabSwitcherLayoutCreation";
     public static final String DELAY_TEMP_STRIP_REMOVAL = "DelayTempStripRemoval";
     public static final String DELAY_TRANSITIONS_FOR_ANIMATION = "DelayTransitionsForAnimation";
     public static final String DETAILED_LANGUAGE_SETTINGS = "DetailedLanguageSettings";
@@ -540,6 +542,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sCommandLineOnNonRooted =
             new CachedFlag(COMMAND_LINE_ON_NON_ROOTED,
                     ChromePreferenceKeys.FLAGS_CACHED_COMMAND_LINE_ON_NON_ROOTED_ENABLED, false);
+    public static final CachedFlag sDeferTabSwitcherLayoutCreation =
+            new CachedFlag(DEFER_TAB_SWITCHER_LAYOUT_CREATION, false);
     public static final CachedFlag sDelayTempStripRemoval =
             new CachedFlag(DELAY_TEMP_STRIP_REMOVAL, true);
     public static final CachedFlag sDragDropIntoOmnibox =
@@ -655,6 +659,7 @@ public abstract class ChromeFeatureList {
         sCloseTabSaveTabList,
         sCollectAndroidFrameTimelineMetrics,
         sCommandLineOnNonRooted,
+        sDeferTabSwitcherLayoutCreation,
         sDelayTempStripRemoval,
         sDragDropIntoOmnibox,
         sDownloadsMigrateToJobsAPI,

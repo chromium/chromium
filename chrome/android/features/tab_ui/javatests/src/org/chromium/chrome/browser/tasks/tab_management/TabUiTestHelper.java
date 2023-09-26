@@ -786,17 +786,23 @@ public class TabUiTestHelper {
      */
     public static void verifyTabSwitcherLayoutType(ChromeTabbedActivity cta) {
         boolean isStartSurfaceRefactorEnabled = ChromeFeatureList.sStartSurfaceRefactor.isEnabled();
-        getTabSwitcherLayoutAndVerify(isStartSurfaceRefactorEnabled, cta.getLayoutManager());
+        getTabSwitcherLayoutAndVerify(cta, isStartSurfaceRefactorEnabled);
     }
 
     /**
      * Gets the tab switcher layout depends on whether the refactoring is enabled and verifies its
-     * type.
+     * type. If refactoring is enabled this will trigger lazy init of the tab switcher layout.
      */
     public static Layout getTabSwitcherLayoutAndVerify(
-            boolean isStartSurfaceRefactorEnabled, LayoutManagerChrome layoutManager) {
+            ChromeTabbedActivity cta, boolean isStartSurfaceRefactorEnabled) {
+        final LayoutManagerChrome layoutManager = cta.getLayoutManager();
         Layout layout;
         if (isStartSurfaceRefactorEnabled) {
+            layout = layoutManager.getTabSwitcherLayoutForTesting();
+            if (layout == null) {
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () -> { layoutManager.initTabSwitcherLayoutForTesting(); });
+            }
             layout = layoutManager.getTabSwitcherLayoutForTesting();
             assertTrue(layout instanceof TabSwitcherLayout);
         } else {

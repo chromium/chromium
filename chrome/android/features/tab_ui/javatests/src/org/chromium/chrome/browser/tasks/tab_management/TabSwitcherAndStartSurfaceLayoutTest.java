@@ -154,7 +154,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         "force-fieldtrials=Study/Group"})
-@EnableFeatures(ChromeFeatureList.EMPTY_STATES)
+@EnableFeatures({ChromeFeatureList.DEFER_TAB_SWITCHER_LAYOUT_CREATION, ChromeFeatureList.EMPTY_STATES})
 @Restriction(
         {UiRestriction.RESTRICTION_TYPE_PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 public class TabSwitcherAndStartSurfaceLayoutTest {
@@ -212,8 +212,8 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         mActivityTestRule.startMainActivityWithURL(NTP_URL);
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        Layout layout = TabUiTestHelper.getTabSwitcherLayoutAndVerify(
-                mIsStartSurfaceRefactorEnabled, cta.getLayoutManager());
+        Layout layout =
+                TabUiTestHelper.getTabSwitcherLayoutAndVerify(cta, mIsStartSurfaceRefactorEnabled);
         if (mIsStartSurfaceRefactorEnabled) {
             mTabSwitcherLayout = (TabSwitcherLayout) layout;
         } else {
@@ -767,7 +767,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         assertEquals(3, mActivityTestRule.tabsCount(false));
 
         TabUiTestHelper.getTabSwitcherLayoutAndVerify(
-                mIsStartSurfaceRefactorEnabled, mActivityTestRule.getActivity().getLayoutManager());
+                mActivityTestRule.getActivity(), mIsStartSurfaceRefactorEnabled);
         assertEquals(0, mTabListDelegate.getBitmapFetchCountForTesting() - oldCount);
     }
 

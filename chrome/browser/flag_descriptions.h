@@ -2300,6 +2300,9 @@ extern const char kCormorantDescription[];
 extern const char kDefaultViewportIsDeviceWidthName[];
 extern const char kDefaultViewportIsDeviceWidthDescription[];
 
+extern const char kDeferTabSwitcherLayoutCreationName[];
+extern const char kDeferTabSwitcherLayoutCreationDescription[];
+
 extern const char kDeprecatedExternalPickerFunctionName[];
 extern const char kDeprecatedExternalPickerFunctionDescription[];
 

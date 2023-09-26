@@ -37,6 +37,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.DEFER_TAB_SWITCHER_LAYOUT_CREATION;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.START_SURFACE_REFACTOR;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.addBlankTabs;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickFirstCardFromTabSwitcher;
@@ -149,7 +150,7 @@ import java.util.concurrent.ExecutionException;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
-@EnableFeatures({START_SURFACE_REFACTOR})
+@EnableFeatures({DEFER_TAB_SWITCHER_LAYOUT_CREATION, START_SURFACE_REFACTOR})
 @Batch(Batch.PER_CLASS)
 public class TabGridDialogTest {
     // clang-format on
@@ -1168,6 +1169,7 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_LANDSCAPE_ASPECT_RATIO_PHONES)
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testRenderDialog_3Tabs_Landscape(boolean nightModeEnabled) throws Exception {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();

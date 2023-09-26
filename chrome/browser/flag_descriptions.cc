@@ -3945,6 +3945,11 @@ const char kDefaultViewportIsDeviceWidthDescription[] =
     "Sets the default viewport layout width to be equivalent to "
     "width=device-width";
 
+const char kDeferTabSwitcherLayoutCreationName[] =
+    "Defer TabSwitcherLayout creation";
+const char kDeferTabSwitcherLayoutCreationDescription[] =
+    "Lazily construct the TabSwitcherLayout when first shown.";
+
 const char kDeprecatedExternalPickerFunctionName[] =
     "Use deprecated External Picker method";
 const char kDeprecatedExternalPickerFunctionDescription[] =

@@ -11112,6 +11112,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kCdmStorageDatabase)},
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"defer-tab-switcher-layout-creation",
+     flag_descriptions::kDeferTabSwitcherLayoutCreationName,
+     flag_descriptions::kDeferTabSwitcherLayoutCreationDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kDeferTabSwitcherLayoutCreation)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

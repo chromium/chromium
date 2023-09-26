@@ -658,12 +658,18 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                      "ChromeTabbedActivity.setupCompositorContentPreNativeForPhone")) {
             CompositorViewHolder compositorViewHolder = getCompositorViewHolderSupplier().get();
 
+            // TODO(crbug/1484592): Post Start Surface Refactor this now only creates Start Surface.
+            // We should inline createStartSurface() (if enabled) once the refactor is launched.
             createTabSwitcherOrStartSurface(compositorViewHolder, compositorViewHolder);
 
             // clang-format off
             mLayoutManager = new LayoutManagerChromePhone(compositorViewHolder, mContentContainer,
                 mStartSurfaceSupplier, mTabSwitcherSupplier, getBrowserControlsManager(),
-                getTabContentManagerSupplier(), mRootUiCoordinator::getTopUiThemeColorProvider);
+                getTabContentManagerSupplier(), mRootUiCoordinator::getTopUiThemeColorProvider,
+                () -> {
+                    createGridTabSwitcher(compositorViewHolder, compositorViewHolder);
+                    return compositorViewHolder;
+                });
             mLayoutStateProviderSupplier.set(mLayoutManager);
             // clang-format on
         }
@@ -697,7 +703,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         // If the refactor is enabled, we create grid tab switcher directly instead of via start
         // surface.
         if (isStartSurfaceRefactorEnabled()) {
-            createGridTabSwitcher(compositorViewHolder, tabSwitcherContainer);
+            if (!ChromeFeatureList.sDeferTabSwitcherLayoutCreation.isEnabled()) {
+                createGridTabSwitcher(compositorViewHolder, tabSwitcherContainer);
+            }
             if (ReturnToChromeUtil.isStartSurfaceEnabled(this)) {
                 createStartSurface(compositorViewHolder, tabSwitcherContainer);
             }

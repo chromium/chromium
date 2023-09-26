@@ -88,6 +88,7 @@ import java.util.concurrent.TimeoutException;
         "force-fieldtrials=Study/Group"})
 @Restriction(
         {UiRestriction.RESTRICTION_TYPE_PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
+@EnableFeatures({ChromeFeatureList.DEFER_TAB_SWITCHER_LAYOUT_CREATION})
 public class TabSwitcherAndStartSurfaceLayoutPerfTest {
     // clang-format on
     private static final String TAG = "SSLayoutPerfTest";
@@ -136,8 +137,8 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
         mActivityTestRule.startMainActivityWithURL(NTP_URL);
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        Layout layout = TabUiTestHelper.getTabSwitcherLayoutAndVerify(
-                mIsStartSurfaceRefactorEnabled, cta.getLayoutManager());
+        Layout layout =
+                TabUiTestHelper.getTabSwitcherLayoutAndVerify(cta, mIsStartSurfaceRefactorEnabled);
         if (mIsStartSurfaceRefactorEnabled) {
             mTabSwitcherLayout = (TabSwitcherLayout) layout;
         } else {

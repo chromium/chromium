@@ -22,6 +22,8 @@ import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
+import java.util.concurrent.Callable;
+
 /**
  * {@link LayoutManagerChromePhone} is the specialization of {@link LayoutManagerChrome} for the
  * phone.
@@ -44,15 +46,18 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
      *         controls.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
      * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
+     * @param delayedTabSwitcherCallable Callable to create GTS view if Start Surface refactor and
+     *         DeferCreateTabSwitcherLayout are enabled.
      */
     public LayoutManagerChromePhone(LayoutManagerHost host, ViewGroup contentContainer,
             Supplier<StartSurface> startSurfaceSupplier, Supplier<TabSwitcher> tabSwitcherSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
-            Supplier<TopUiThemeColorProvider> topUiThemeColorProvider) {
+            Supplier<TopUiThemeColorProvider> topUiThemeColorProvider,
+            Callable<ViewGroup> delayedTabSwitcherCallable) {
         super(host, contentContainer, startSurfaceSupplier, tabSwitcherSupplier,
                 browserControlsStateProvider, tabContentManagerSupplier, topUiThemeColorProvider,
-                null, null);
+                null, null, delayedTabSwitcherCallable);
     }
 
     @Override

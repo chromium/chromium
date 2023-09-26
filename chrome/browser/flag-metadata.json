@@ -1634,6 +1634,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "defer-tab-switcher-layout-creation",
+    "owners": [ "ckitagawa@google.com", "clank-isochron-team@google.com" ],
+    "expiry_milestone": 123
+  },
+  {
     "name": "deprecate-alt-based-six-pack",
     "owners": [ "zentaro@google.com", "jimmyxgong@google.com",
                 "cros-peripherals@google.com"],

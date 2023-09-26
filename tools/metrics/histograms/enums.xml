@@ -64362,6 +64362,7 @@ from previous Chrome versions.
   <int value="-268549184"
       label="AutofillSaveCreditCardUsesStrikeSystemV2:enabled"/>
   <int value="-268357961" label="enable-feature-policy"/>
+  <int value="-268224644" label="DeferTabSwitcherLayoutCreation:disabled"/>
   <int value="-265697837" label="PhoneHub:disabled"/>
   <int value="-265277473" label="FastPairHandshakeLongTermRefactor:enabled"/>
   <int value="-263645996" label="InteractiveWindowCycleList:enabled"/>
@@ -67802,6 +67803,7 @@ from previous Chrome versions.
   <int value="1446904662" label="CCTResizableWindowAboveNavbar:disabled"/>
   <int value="1446946673" label="DesktopRestructuredLanguageSettings:disabled"/>
   <int value="1447295459" label="SyncPseudoUSSApps:enabled"/>
+  <int value="1448622238" label="DeferTabSwitcherLayoutCreation:enabled"/>
   <int value="1448684258" label="TabHoverCardImages:enabled"/>
   <int value="1449177114"
       label="EnablePasswordsAccountStorageSavingUi:enabled"/>
