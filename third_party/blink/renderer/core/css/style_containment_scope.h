@@ -33,8 +33,10 @@ class StyleContainmentScope final
   CORE_EXPORT CountersScope* FindCountersScopeForElement(
       const Element&,
       const AtomicString&) const;
-  CORE_EXPORT void CreateCounterNodesForLayoutObject(LayoutObject&);
-  CORE_EXPORT void CreateCounterNodeForLayoutCounter(LayoutCounter&);
+  void CreateCounterNodesForLayoutObject(LayoutObject&);
+  void CreateCounterNodeForLayoutObject(LayoutObject& object,
+                                        const AtomicString& identifier);
+  void CreateCounterNodeForLayoutCounter(LayoutCounter&);
   void CreateListItemCounterNodeForLayoutObject(LayoutObject&);
   void RemoveCounterNodeForLayoutCounter(LayoutCounter&);
   void ReparentCountersToStyleScope(StyleContainmentScope&);

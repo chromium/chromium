@@ -17,7 +17,8 @@ class CORE_EXPORT StyleContainmentScopeTree final
     : public GarbageCollected<StyleContainmentScopeTree> {
  public:
   StyleContainmentScopeTree()
-      : root_scope_(MakeGarbageCollected<StyleContainmentScope>(nullptr, this)),
+      : list_item_("list-item"),
+        root_scope_(MakeGarbageCollected<StyleContainmentScope>(nullptr, this)),
         outermost_quotes_dirty_scope_(nullptr),
         outermost_counters_dirty_scope_(nullptr) {}
   StyleContainmentScopeTree(const StyleContainmentScopeTree&) = delete;
@@ -44,6 +45,8 @@ class CORE_EXPORT StyleContainmentScopeTree final
                                        const AtomicString& identifier);
   void RemoveCountersForLayoutObject(LayoutObject& object,
                                      const ComputedStyle& style);
+  void RemoveCounterForLayoutObject(LayoutObject& object,
+                                    const AtomicString& identifier);
   void RemoveListItemCounterForLayoutObject(LayoutObject& object);
 
   void Trace(Visitor*) const;
@@ -54,9 +57,7 @@ class CORE_EXPORT StyleContainmentScopeTree final
 #endif  // DCHECK_IS_ON()
 
  private:
-  void RemoveCounterForLayoutObject(LayoutObject& object,
-                                    const AtomicString& identifier);
-
+  const AtomicString list_item_;
   // The implicit top level scope for elements with no contain:style ancestors.
   Member<StyleContainmentScope> root_scope_;
   // The outermost dirty scope for the quotes update.
@@ -67,8 +68,8 @@ class CORE_EXPORT StyleContainmentScopeTree final
   HeapHashMap<Member<const Element>, Member<StyleContainmentScope>> scopes_;
   // The cache of layout object <-> [identifier, counter] for correct removal of
   // counters when the FlatTreeTraversal is forbidden.
-  HeapHashMap<Member<LayoutObject>,
-              Member<HeapHashMap<AtomicString, Member<CounterNode>>>>
+  HeapHashMap<AtomicString,
+              Member<HeapHashMap<Member<LayoutObject>, Member<CounterNode>>>>
       object_counters_map_;
 };
 

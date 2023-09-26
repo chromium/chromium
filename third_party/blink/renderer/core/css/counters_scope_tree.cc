@@ -35,11 +35,38 @@ bool IsAncestorScopeElement(const Element& ancestor, const Element& child) {
          IsAncestorOf(*ancestor.ParentOrShadowHostElement(), child);
 }
 
+bool IsAncestorScopeElement(const Element& ancestor,
+                            const Element& child,
+                            const Element& old_parent) {
+  // If the previous parent is direct ancestor and the new ancestor is not,
+  // leave the old ancestor.
+  if (IsAncestorOf(old_parent, child) && !IsAncestorOf(ancestor, child)) {
+    return false;
+  }
+  // If they are both not direct ancestors, but the old parent goes before
+  // the ancestor, leave old_parent, only if they are not siblings.
+  if (!IsAncestorOf(old_parent, child) && !IsAncestorOf(ancestor, child) &&
+      old_parent.ParentOrShadowHostElement() !=
+          ancestor.ParentOrShadowHostElement() &&
+      LayoutTreeBuilderTraversal::ComparePreorderTreePosition(old_parent,
+                                                              ancestor) <= 0) {
+    return false;
+  }
+  // Counter scope covers element, its descendants and following siblings
+  // descendants.
+  return IsAncestorOf(*ancestor.ParentOrShadowHostElement(), child) &&
+         LayoutTreeBuilderTraversal::ComparePreorderTreePosition(ancestor,
+                                                                 child) <= 0;
+}
+
 bool IsAncestorScope(CountersScope& ancestor, CountersScope& child) {
   return IsAncestorScopeElement(ancestor.RootElement(), child.RootElement());
 }
 
 void ReparentEmptyScope(CountersScope& scope) {
+  CHECK(scope.Counters().empty());
+  // As scope has no counters, move its children to its parent,
+  // or leave them foster.
   CountersScope* parent = scope.Parent();
   for (CountersScope* child : scope.Children()) {
     child->SetParent(nullptr);
@@ -80,12 +107,19 @@ void MoveScopeDuringRemove(CountersScope& from,
 }
 
 void MoveScope(CountersScope& from, CountersScope& to) {
-  // Move counters and child scopes from `from` to `to`.
-  for (CounterNode* counter : from.Counters()) {
-    counter->SetScope(nullptr);
-    to.AttachCounter(*counter);
+  if (!from.Counters().empty()) {
+    for (CounterNode* counter : from.Counters()) {
+      counter->SetScope(&to);
+    }
+    wtf_size_t pos = 1u;
+    if (to.RootElement().PseudoAwareNextSibling() != from.RootElement()) {
+      pos = CountersScope::FindCounterIndexPrecedingCounter(from.FirstCounter(),
+                                                            to.Counters());
+      pos = pos == kNotFound ? 0 : pos + 1;
+    }
+    to.Counters().InsertVector(pos, from.Counters());
+    from.ClearCounters();
   }
-  from.ClearCounters();
   for (CountersScope* child : from.Children()) {
     child->SetParent(nullptr);
     to.AppendChild(*child);
@@ -97,9 +131,12 @@ void MoveScope(CountersScope& from, CountersScope& to) {
 void ReparentCounters(CountersScope& from, CountersScope& to) {
   CountersVector& counters = from.Counters();
   Vector<wtf_size_t> remove_positions;
-  // Reparent only counters to which `to` is new parent.
-  for (wtf_size_t i = 0u; i < counters.size(); ++i) {
-    if (IsAncestorScopeElement(to.RootElement(), counters[i]->OwnerElement())) {
+  wtf_size_t start_pos =
+      !counters.empty() && counters.front()->HasResetType() ? 1u : 0u;
+  // Reparent only counters to which `to` is the new parent.
+  for (wtf_size_t i = start_pos; i < counters.size(); ++i) {
+    if (IsAncestorScopeElement(to.RootElement(), counters[i]->OwnerElement(),
+                               from.RootElement())) {
       from.SetIsDirty(true);
       counters[i]->SetScope(nullptr);
       remove_positions.emplace_back(i);
@@ -111,17 +148,37 @@ void ReparentCounters(CountersScope& from, CountersScope& to) {
   }
 }
 
+void ReparentParentScopes(CountersScope& new_scope, CountersScope& parent) {
+  // Reparent parent's scopes to which `new_scope` might've become parent.
+  Vector<wtf_size_t> remove_positions;
+  ScopesVector& children = parent.Children();
+  for (wtf_size_t pos = 0u; pos < children.size(); ++pos) {
+    CountersScope* child = children[pos];
+    if (IsAncestorScopeElement(new_scope.RootElement(), child->RootElement(),
+                               parent.RootElement())) {
+      child->SetParent(nullptr);
+      remove_positions.emplace_back(pos);
+      new_scope.AppendChild(*child);
+    }
+  }
+  for (wtf_size_t pos : base::Reversed(remove_positions)) {
+    children.EraseAt(pos);
+  }
+  // Reparent parent's counters for which we might've become parent.
+  ReparentCounters(parent, new_scope);
+  // Parent will never be left empty.
+  CHECK(!parent.Counters().empty());
+}
+
 void MoveOrReparentScope(CountersScope& from, CountersScope& to) {
   // If the counter that created the from scope is reset,
   // append from as a child to to.
   if (from.FirstCounter().HasResetType()) {
     to.AppendChild(from);
+    ReparentParentScopes(to, from);
   } else {
     // Move counters from `from` to `to`.
     MoveScope(from, to);
-  }
-  if (CountersScope* parent = from.Parent()) {
-    parent->RemoveChild(from);
   }
 }
 
@@ -142,27 +199,6 @@ void ReparentFosterScopes(CountersScope& new_scope, ScopesVector& scopes) {
   for (wtf_size_t pos : base::Reversed(empty_positions)) {
     scopes.EraseAt(pos);
   }
-}
-
-void ReparentParentScopes(CountersScope& new_scope, CountersScope& parent) {
-  // Reparent parent's scopes to which `new_scope` might've become parent.
-  Vector<wtf_size_t> remove_positions;
-  ScopesVector& children = parent.Children();
-  for (wtf_size_t pos = 0u; pos < children.size(); ++pos) {
-    CountersScope* child = children[pos];
-    if (IsAncestorScope(new_scope, *child)) {
-      child->SetParent(nullptr);
-      remove_positions.emplace_back(pos);
-      new_scope.AppendChild(*child);
-    }
-  }
-  for (wtf_size_t pos : base::Reversed(remove_positions)) {
-    children.EraseAt(pos);
-  }
-  // Reparent parent's counters for which we might've become parent.
-  ReparentCounters(parent, new_scope);
-  // Parent will never be left empty.
-  CHECK(!parent.Counters().empty());
 }
 
 CounterNode* CreateCounter(LayoutObject& object,
@@ -202,8 +238,7 @@ CounterNode* CreateCounter(LayoutObject& object,
     type_mask |= directives.IsIncrement() ? CounterNode::kIncrementType : 0;
     type_mask |= directives.IsReset() ? CounterNode::kResetType : 0;
     type_mask |= directives.IsSet() ? CounterNode::kSetType : 0;
-    return MakeGarbageCollected<CounterNode>(object, identifier, type_mask,
-                                             value);
+    return MakeGarbageCollected<CounterNode>(object, type_mask, value);
   }
   return nullptr;
 }
@@ -213,32 +248,30 @@ CounterNode* CreateListItemCounter(LayoutObject& object) {
   if (!node) {
     return nullptr;
   }
-  const AtomicString identifier("list-item");
   if (ListItemOrdinal* ordinal = ListItemOrdinal::Get(*node)) {
     if (const auto& explicit_value = ordinal->ExplicitValue()) {
-      return MakeGarbageCollected<CounterNode>(
-          object, identifier, CounterNode::kResetType, explicit_value.value());
+      return MakeGarbageCollected<CounterNode>(object, CounterNode::kResetType,
+                                               explicit_value.value());
     }
     int value = ListItemOrdinal::IsInReversedOrderedList(*node) ? -1 : 1;
     return MakeGarbageCollected<CounterNode>(
-        object, identifier, CounterNode::kIncrementType, value);
+        object, CounterNode::kIncrementType, value);
   }
   if (auto* olist = DynamicTo<HTMLOListElement>(node)) {
     int value = base::ClampAdd(olist->StartConsideringItemCount(),
                                olist->IsReversed() ? 1 : -1);
-    return MakeGarbageCollected<CounterNode>(object, identifier,
-                                             CounterNode::kResetType, value,
-                                             olist->IsReversed());
+    return MakeGarbageCollected<CounterNode>(object, CounterNode::kResetType,
+                                             value, olist->IsReversed());
   }
   if (IsA<HTMLUListElement>(node)) {
-    return MakeGarbageCollected<CounterNode>(object, identifier,
-                                             CounterNode::kResetType, 0);
+    return MakeGarbageCollected<CounterNode>(object, CounterNode::kResetType,
+                                             0);
   }
   return nullptr;
 }
 
 bool PreorderTreePositionComparator(const Element& element,
-                                    const CountersScope* scope) {
+                                    CountersScope* scope) {
   return LayoutTreeBuilderTraversal::ComparePreorderTreePosition(
              element, scope->RootElement()) < 0;
 }
@@ -277,24 +310,47 @@ CountersScope* CountersScopeTree::FindScopeForElement(
   if (it == scopes.begin()) {
     return nullptr;
   }
-  // Now we need to find the scope to which `element` belongs. That's the first
-  // scope whose parent is also our parent, as the scope affects its descendants
-  // and its siblings descendants.
+  // Now we need to find the scope to which `element` belong.
+  // As per https://drafts.csswg.org/css-lists/#inheriting-counters
+  // we should always inherit the counter from the parent element,
+  // if that's not the case, inherit from the previous sibling.
+  CountersScope* sibling_scope = nullptr;
+  // Ancestor's sibling can be inherited via the ancestor.
+  CountersScope* ancestor_sibling_scope = nullptr;
   ScopesVector::reverse_iterator rev_it(it);
   for (; rev_it != scopes.rend(); ++rev_it) {
     const Element* parent =
         (*rev_it)->RootElement().ParentOrShadowHostElement();
-    if (!parent || IsAncestorOf(*parent, element)) {
+    bool is_ancestor_by_parent = IsAncestorOf(*parent, element);
+    // Remember the first previous sibling.
+    if (!sibling_scope && (!parent || is_ancestor_by_parent)) {
+      sibling_scope = *rev_it;
+    }
+    // We need to find the upper-most scope which is the previous sibling of
+    // one of the ancestors of element, but not sibling of the element.
+    if (parent && is_ancestor_by_parent &&
+        parent != element.ParentOrShadowHostElement() &&
+        (!ancestor_sibling_scope ||
+         ancestor_sibling_scope->RootElement().ParentOrShadowHostElement() !=
+             parent)) {
+      ancestor_sibling_scope = *rev_it;
+    }
+    // If we found direct ancestor.
+    if (IsAncestorOf((*rev_it)->RootElement(), element) ||
+        &(*rev_it)->RootElement() == &element) {
       return *rev_it;
     }
   }
-  return nullptr;
+  if (ancestor_sibling_scope) {
+    return ancestor_sibling_scope;
+  }
+  return sibling_scope;
 }
 
 void CountersScopeTree::CreateScope(CounterNode& counter,
-                                    CountersScope* parent) {
+                                    CountersScope* parent,
+                                    const AtomicString& identifier) {
   const Element& element = counter.OwnerElement();
-  const AtomicString& identifier = counter.Identifier();
   CountersScope* new_scope = MakeGarbageCollected<CountersScope>();
   new_scope->SetStyleScope(style_scope_);
   new_scope->AttachCounter(counter);
@@ -310,6 +366,13 @@ void CountersScopeTree::CreateScope(CounterNode& counter,
                    MakeGarbageCollected<ScopesVector>(1u, new_scope));
     return;
   }
+  // As per https://drafts.csswg.org/css-lists/#inheriting-counters
+  // we don't take counter from previous sibling, if we create a new counter.
+  if (parent && parent->RootElement().ParentOrShadowHostElement() ==
+                    counter.OwnerElement().ParentOrShadowHostElement()) {
+    ReparentParentScopes(*new_scope, *parent);
+    parent = parent->Parent();
+  }
   // We might've become parent to our parent's children scopes or counters. If
   // so, correctly reparent things.
   if (!parent) {
@@ -321,13 +384,15 @@ void CountersScopeTree::CreateScope(CounterNode& counter,
   }
 }
 
-void CountersScopeTree::AttachCounter(CounterNode& counter) {
+void CountersScopeTree::AttachCounter(CounterNode& counter,
+                                      const AtomicString& identifier) {
   CHECK(!counter.Scope());
   CountersScope* scope =
-      FindScopeForElement(counter.OwnerElement(), counter.Identifier());
+      FindScopeForElement(counter.OwnerElement(), identifier);
   // counter-reset() or first in scope counter creates a new scope.
-  if (counter.HasResetType() || !scope || scope->FirstCounter().HasUseType()) {
-    CreateScope(counter, scope);
+  if (counter.HasResetType() || !scope ||
+      (scope->FirstCounter().HasUseType() && !counter.HasUseType())) {
+    CreateScope(counter, scope, identifier);
   } else {
     scope->AttachCounter(counter);
   }
@@ -338,10 +403,25 @@ void CountersScopeTree::CreateCountersForLayoutObject(LayoutObject& object) {
        *object.StyleRef().GetCounterDirectives()) {
     CounterNode* counter = CreateCounter(object, identifier);
     if (counter) {
-      AttachCounter(*counter);
+      AttachCounter(*counter, identifier);
+      // Add the counter info in the counters cache to remove
+      // during when the flat tree traversal is not available.
       StyleScope()->GetStyleContainmentScopeTree()->AddCounterToObjectMap(
           object, identifier, *counter);
     }
+  }
+}
+
+void CountersScopeTree::CreateCounterForLayoutObject(
+    LayoutObject& object,
+    const AtomicString& identifier) {
+  CounterNode* counter = CreateCounter(object, identifier);
+  if (counter) {
+    AttachCounter(*counter, identifier);
+    // Add the counter info in the counters cache to remove
+    // during when the flat tree traversal is not available.
+    StyleScope()->GetStyleContainmentScopeTree()->AddCounterToObjectMap(
+        object, identifier, *counter);
   }
 }
 
@@ -349,19 +429,21 @@ void CountersScopeTree::CreateListItemCounterForLayoutObject(
     LayoutObject& object) {
   CounterNode* counter = CreateListItemCounter(object);
   if (counter) {
-    AttachCounter(*counter);
+    AttachCounter(*counter, list_item_);
+    // Add the counter info in the counters cache to remove
+    // during when the flat tree traversal is not available.
     StyleScope()->GetStyleContainmentScopeTree()->AddCounterToObjectMap(
-        object, AtomicString("list-item"), *counter);
+        object, list_item_, *counter);
   }
 }
 
 void CountersScopeTree::RemoveEmptyScope(CountersScope& scope,
                                          const AtomicString& identifier) {
   auto it = scopes_.find(identifier);
-  DCHECK_NE(it, scopes_.end());
+  CHECK_NE(it, scopes_.end());
   ScopesVector& scopes = *it->value;
   wtf_size_t pos = scopes.Find(&scope);
-  DCHECK_NE(pos, kNotFound);
+  CHECK_NE(pos, kNotFound);
   scopes.EraseAt(pos);
   if (scopes.empty()) {
     scopes_.erase(it);
@@ -369,21 +451,18 @@ void CountersScopeTree::RemoveEmptyScope(CountersScope& scope,
 }
 
 void CountersScopeTree::RemoveCounterFromScope(CounterNode& counter,
-                                               CountersScope& scope) {
+                                               CountersScope& scope,
+                                               const AtomicString& identifier) {
   // If the counter has been a root of the scope with parent,
   // we should reparent other counters in the scope, as they
   // will now be in scope of parent's root counter, as only one
   // counter-reset can be in the scope. Else, just remove the counter,
   // and if it has been the first one, but with no parent, the next counter
   // will become a new root.
-  // We use the object <-> [identifier, counter] cache here as we may have to
-  // move our counters to the correct pre-order position in the parent,
-  // but since we can't traverse the FlatTree, we have to use the cache.
   if (&counter == &scope.FirstCounter() && scope.Parent()) {
-    CounterNode* previous_in_parent = counter.PreviousInParent();
     scope.Counters().EraseAt(0u);
     if (scope.Counters().size()) {
-      MoveScopeDuringRemove(scope, *scope.Parent(), previous_in_parent);
+      MoveScopeDuringRemove(scope, *scope.Parent(), counter.PreviousInParent());
     }
   } else {
     scope.DetachCounter(counter);
@@ -391,20 +470,20 @@ void CountersScopeTree::RemoveCounterFromScope(CounterNode& counter,
   // Also delete the scope if it's empty.
   if (scope.Counters().empty()) {
     ReparentEmptyScope(scope);
-    RemoveEmptyScope(scope, counter.Identifier());
+    RemoveEmptyScope(scope, identifier);
   }
 }
 
 void CountersScopeTree::CreateCounterForLayoutCounter(LayoutCounter& counter) {
-  // CHECK(!counter.GetCounterNode());
-  CounterNode* counter_node =
-      MakeGarbageCollected<CounterNode>(counter, counter.Identifier(), 0u, 0);
-  AttachCounter(*counter_node);
-  // counter.SetCounterNode(counter_node);
+  CHECK(!counter.GetCounterNode());
+  CounterNode* counter_node = MakeGarbageCollected<CounterNode>(counter, 0u, 0);
+  AttachCounter(*counter_node, counter.Identifier());
+  counter.SetCounterNode(counter_node);
 }
 
 void CountersScopeTree::RemoveCounterForLayoutCounter(LayoutCounter& counter) {
   CounterNode* counter_node = counter.GetCounterNode();
+  counter.SetCounterNode(nullptr);
   CHECK(counter_node);
   CHECK(counter_node->HasUseType());
   CountersScope* scope = counter_node->Scope();
@@ -412,12 +491,15 @@ void CountersScopeTree::RemoveCounterForLayoutCounter(LayoutCounter& counter) {
   // We don't need to reparent the scope, as if the use counter is the root of
   // the scope, it means that all the children are non-reset counters, so we can
   // just delete the counter.
-  scope->DetachCounter(*counter_node);
+  if (counter_node == &scope->FirstCounter()) {
+    scope->Counters().EraseAt(0u);
+  } else {
+    scope->DetachCounter(*counter_node);
+  }
   if (scope->Counters().empty()) {
     ReparentEmptyScope(*scope);
     RemoveEmptyScope(*scope, counter.Identifier());
   }
-  counter.SetCounterNode(nullptr);
 }
 
 void CountersScopeTree::UpdateCounters() {
@@ -425,7 +507,7 @@ void CountersScopeTree::UpdateCounters() {
     for (CountersScope* scope : *scopes) {
       // Run update only from the top level scopes, as the update is recursive.
       if (!scope->Parent()) {
-        scope->UpdateCounters();
+        scope->UpdateCounters(identifier);
       }
     }
   }
@@ -459,7 +541,7 @@ void CountersScopeTree::ReparentCountersToStyleScope(
         if (!new_parent_element ||
             IsAncestorOf(*new_parent_element, counter->OwnerElement())) {
           counter->SetScope(nullptr);
-          new_parent_tree->AttachCounter(*counter);
+          new_parent_tree->AttachCounter(*counter, identifier);
           remove_counters_positions.emplace_back(counter_pos);
         }
       }

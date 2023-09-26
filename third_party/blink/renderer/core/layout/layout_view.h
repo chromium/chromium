@@ -228,25 +228,6 @@ class CORE_EXPORT LayoutView : public LayoutNGBlockFlow {
 
   PhysicalRect DocumentRect() const;
 
-  // FIXME: This is a work around because the current implementation of counters
-  // requires walking the entire tree repeatedly and most pages don't actually
-  // use either feature so we shouldn't take the performance hit when not
-  // needed. Long term we should rewrite the counter code.
-  // TODO(xiaochengh): Or do we keep it as is?
-  void AddLayoutCounter() {
-    NOT_DESTROYED();
-    layout_counter_count_++;
-    SetNeedsMarkerOrCounterUpdate();
-  }
-  void RemoveLayoutCounter() {
-    NOT_DESTROYED();
-    DCHECK_GT(layout_counter_count_, 0u);
-    layout_counter_count_--;
-  }
-  bool HasLayoutCounters() {
-    NOT_DESTROYED();
-    return layout_counter_count_;
-  }
   void AddLayoutListItem() {
     NOT_DESTROYED();
     layout_list_item_count_++;
@@ -401,7 +382,6 @@ class CORE_EXPORT LayoutView : public LayoutNGBlockFlow {
 
  private:
   Member<LocalFrameView> frame_view_;
-  unsigned layout_counter_count_ = 0;
   unsigned layout_list_item_count_ = 0;
   bool needs_marker_counter_update_ = false;
 

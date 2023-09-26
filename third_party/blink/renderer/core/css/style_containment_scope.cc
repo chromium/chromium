@@ -159,6 +159,12 @@ void StyleContainmentScope::CreateCounterNodesForLayoutObject(
   counters_tree_->CreateCountersForLayoutObject(object);
 }
 
+void StyleContainmentScope::CreateCounterNodeForLayoutObject(
+    LayoutObject& object,
+    const AtomicString& identifier) {
+  counters_tree_->CreateCounterForLayoutObject(object, identifier);
+}
+
 void StyleContainmentScope::CreateListItemCounterNodeForLayoutObject(
     LayoutObject& object) {
   counters_tree_->CreateListItemCounterForLayoutObject(object);

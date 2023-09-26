@@ -25,12 +25,15 @@ class CORE_EXPORT CountersScope final : public GarbageCollected<CountersScope> {
   void ClearCounters();
   CounterNode& FirstCounter() const;
   CountersVector& Counters() { return counters_; }
+  static wtf_size_t FindCounterIndexPrecedingCounter(
+      const CounterNode& search_counter,
+      const CountersVector& counters);
 
   // is_dirty indicates that the values of counters should be updated.
   // It is cleared after the UpdateCounters.
   bool IsDirty() const { return is_dirty_; }
   void SetIsDirty(bool is_dirty) { is_dirty_ = is_dirty; }
-  void UpdateCounters(bool force_update = true);
+  void UpdateCounters(const AtomicString& identifier, bool force_update = true);
 
   enum class SearchScope { SelfSearch, SelfAndAncestorSearch, AncestorSearch };
   // Finds the counter that precedes `counter`.
@@ -39,6 +42,7 @@ class CORE_EXPORT CountersScope final : public GarbageCollected<CountersScope> {
   // Also the search can proceed to ancestor style scopes.
   CounterNode* FindPreviousCounterFrom(CounterNode& counter,
                                        SearchScope search_scope,
+                                       const AtomicString& identifier,
                                        bool leave_style_scope = true);
 
   void AppendChild(CountersScope&);
@@ -58,15 +62,18 @@ class CORE_EXPORT CountersScope final : public GarbageCollected<CountersScope> {
   }
 
   Element& RootElement() const;
+  Element& RootNonPseudoElement() const;
 
   void Trace(Visitor*) const;
 
  private:
-  bool UpdateOwnCounters(bool force_update);
-  void UpdateChildCounters(bool force_update);
+  bool UpdateOwnCounters(bool force_update, const AtomicString& identifier);
+  void UpdateChildCounters(const AtomicString& identifier, bool force_update);
   CounterNode* FindPreviousCounterWithinStyleScope(CounterNode& counter,
                                                    SearchScope search_scope);
-  CounterNode* FindPreviousCounterInAncestorStyleScopes(CounterNode& counter);
+  CounterNode* FindPreviousCounterInAncestorStyleScopes(
+      CounterNode& counter,
+      const AtomicString& identifier);
 
   bool is_dirty_;
   // Style containment scope.
