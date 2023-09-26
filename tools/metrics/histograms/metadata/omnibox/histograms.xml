@@ -456,6 +456,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.CalculateVisibleHint.Duration" units="ms"
+    expires_after="2024-02-25">
+  <owner>peilinwang@google.com</owner>
+  <owner>woa-performance-bugs+jank@google.com</owner>
+  <summary>
+    Measures the amount of time it takes to call UrlBar.calculateVisibleHint().
+    Recorded once per call.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.CharTypedToRepaintLatency" units="ms"
     expires_after="2024-02-01">
   <owner>jdonnelly@chromium.org</owner>
@@ -1309,6 +1319,16 @@ chromium-metrics-reviews@google.com.
       variants="OmniboxAutocompleteUpdateSlice"/>
 </histogram>
 
+<histogram name="Omnibox.NumberOfVisibleCharacters" units="characters"
+    expires_after="2023-12-24">
+  <owner>peilinwang@google.com</owner>
+  <owner>woa-performance-bugs+jank@google.com</owner>
+  <summary>
+    Records the number of characters visible in the omnibox. Recorded once per
+    call to UrlBar.calculateVisibleHint().
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.NumTypedTerms" units="terms"
     expires_after="2024-02-25">
   <owner>jdonnelly@chromium.org</owner>
@@ -1727,6 +1747,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Measures the amount of time it takes to call UrlBar.setText(). Logged once
     per call.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.SetText.TextLength" units="characters"
+    expires_after="2023-12-24">
+  <owner>peilinwang@google.com</owner>
+  <owner>woa-performance-bugs+jank@google.com</owner>
+  <summary>
+    Records the length of the text to set when calling UrlBar.setText().
+    Recorded once per call to setText().
   </summary>
 </histogram>
 

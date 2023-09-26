@@ -410,6 +410,21 @@
             ]
         }
     ],
+    "AndroidNoVisibleHintForTablets": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidNoVisibleHintForTablets"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidOmniboxPerf": [
         {
             "platforms": [

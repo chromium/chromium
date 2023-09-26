@@ -6,13 +6,17 @@ package org.chromium.chrome.browser.omnibox;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
+import android.graphics.Paint;
 import android.text.InputType;
+import android.text.Layout;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.MeasureSpec;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewStructure;
 import android.view.inputmethod.EditorInfo;
@@ -29,11 +33,16 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
+import org.robolectric.shadows.ShadowPaint;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.Features.JUnitProcessor;
 
@@ -63,9 +72,33 @@ public class UrlBarUnitTest {
     // char, so there will be 20 visible characters.
     private final int mNumberOfVisibleCharacters = 20;
 
+    @Implements(Layout.class)
+    public static class ShadowLayout {
+        @Implementation
+        public float getPrimaryHorizontal(int offset) {
+            return (float) offset * 5;
+        }
+
+        // TODO(peilinwang) remove once ScrollToTLDOptimization experiment is finished. This is
+        // only needed for bots that run testss with disable_fieldtrial_testing_config=true.
+        @Implementation
+        public int getOffsetForHorizontal(int line, float horiz) {
+            return (int) horiz / 5;
+        }
+    }
+
+    @Implements(Paint.class)
+    public static class MyShadowPaint extends ShadowPaint {
+        @Implementation
+        public int getOffsetForAdvance(CharSequence text, int start, int end, int contextStart,
+                int contextEnd, boolean isRtl, float advance) {
+            return (int) advance / 5;
+        }
+    }
+
     @Before
     public void setUp() {
-        mUrlBar = new UrlBarApi26(ContextUtils.getApplicationContext(), null);
+        mUrlBar = spy(new UrlBarApi26(ContextUtils.getApplicationContext(), null));
         mUrlBar.setDelegate(mUrlBarDelegate);
 
         LayoutParams params =
@@ -208,5 +241,75 @@ public class UrlBarUnitTest {
         mUrlBar.onFocusChanged(true, View.FOCUS_DOWN, null);
         mUrlBar.onTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0, 0, 0));
         verify(mUrlBarDelegate).onTouchAfterFocus();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_NO_VISIBLE_HINT_FOR_TABLETS)
+    @Config(qualifiers = "w600dp-h820dp", shadows = {ShadowLayout.class, MyShadowPaint.class})
+    public void testNoVisibleHintCalculationForTablets_noHistogramRecords() {
+        // Ensure that Views and Layouts aren't null.
+        mUrlBar.measure(MeasureSpec.makeMeasureSpec(820, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(20, MeasureSpec.EXACTLY));
+        mUrlBar.layout(0, 0, mUrlBar.getMeasuredWidth(), mUrlBar.getMeasuredHeight());
+
+        // Avoid short circuiting in scrollDisplayText().
+        doReturn(false).when(mUrlBar).isLayoutRequested();
+
+        String url = mShortDomain + mLongPath;
+        mUrlBar.setText(url);
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Omnibox.CalculateVisibleHint.Duration")
+                        .expectNoRecords("Omnibox.NumberOfVisibleCharacters")
+                        .build();
+        mUrlBar.setScrollState(UrlBar.ScrollType.SCROLL_TO_TLD, mShortDomain.length());
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @Config(shadows = {ShadowLayout.class, MyShadowPaint.class})
+    public void testVisibleHintCalculationHistograms() {
+        // Ensure that Views and Layouts aren't null.
+        mUrlBar.measure(MeasureSpec.makeMeasureSpec(100, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(10, MeasureSpec.EXACTLY));
+        mUrlBar.layout(0, 0, mUrlBar.getMeasuredWidth(), mUrlBar.getMeasuredHeight());
+
+        // Avoid short circuiting in scrollDisplayText().
+        doReturn(false).when(mUrlBar).isLayoutRequested();
+
+        String url = mShortDomain + mLongPath;
+        mUrlBar.setText(url);
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("Omnibox.CalculateVisibleHint.Duration")
+                        .expectIntRecord(
+                                "Omnibox.NumberOfVisibleCharacters", mNumberOfVisibleCharacters)
+                        .build();
+        mUrlBar.setScrollState(UrlBar.ScrollType.SCROLL_TO_TLD, mShortDomain.length());
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_VISIBLE_URL_TRUNCATION)
+    public void testSetLengtHistogram_noTruncation() {
+        String url = mShortDomain + mLongPath;
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher("Omnibox.SetText.TextLength", url.length());
+        mUrlBar.setText(url);
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_VISIBLE_URL_TRUNCATION)
+    public void testSetLengtHistogram_withTruncation() {
+        String url = mShortDomain + mLongPath;
+
+        HistogramWatcher histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
+                "Omnibox.SetText.TextLength", mNumberOfVisibleCharacters);
+        mUrlBar.setTextWithTruncation(url, UrlBar.ScrollType.SCROLL_TO_TLD, mShortDomain.length());
+        histogramWatcher.assertExpected();
     }
 }
