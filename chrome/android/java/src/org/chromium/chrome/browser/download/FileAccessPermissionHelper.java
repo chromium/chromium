@@ -7,11 +7,11 @@ package org.chromium.chrome.browser.download;
 import android.Manifest.permission;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.util.Pair;
 
 import androidx.annotation.NonNull;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.components.permissions.AndroidPermissionRequester;
 import org.chromium.ui.base.WindowAndroid;
@@ -53,7 +53,7 @@ public class FileAccessPermissionHelper {
 
     static void requestFileAccessPermissionHelper(
             @NonNull WindowAndroid windowAndroid, final Callback<Pair<Boolean, String>> callback) {
-        if (BuildInfo.isAtLeastT()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
                 || windowAndroid.hasPermission(permission.WRITE_EXTERNAL_STORAGE)) {
             callback.onResult(Pair.create(true, null));
             return;

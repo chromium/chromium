@@ -2349,7 +2349,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         // This only intercepts back press 1. on T+ 2. back press refactor is disabled
         // 3. predictive back gesture is opted in.
-        if (BuildInfo.isAtLeastT() && getToolbarManager() != null
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && getToolbarManager() != null
                 && getToolbarManager().unfocusUrlBarOnBackPress()) {
             BackPressManager.record(BackPressHandler.Type.LOCATION_BAR);
             return true;
