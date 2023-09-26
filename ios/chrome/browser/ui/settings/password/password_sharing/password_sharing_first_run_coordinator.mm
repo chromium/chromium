@@ -5,13 +5,18 @@
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_first_run_coordinator.h"
 
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_constants.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_first_run_action_handler.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_first_run_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_first_run_view_controller.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
+#import "url/gurl.h"
 
 @interface PasswordSharingFirstRunCoordinator () <
-    ConfirmationAlertActionHandler>
+    PasswordSharingFirstRunActionHandler>
 
 // Main view controller for this coordinator.
 @property(nonatomic, strong)
@@ -73,6 +78,16 @@
 }
 
 - (void)confirmationAlertSecondaryAction {
+  [self.delegate passwordSharingFirstRunCoordinatorWasDismissed:self];
+}
+
+- (void)learnMoreLinkWasTapped {
+  id<ApplicationCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  OpenNewTabCommand* command = [OpenNewTabCommand
+      commandWithURLFromChrome:GURL(kPasswordSharingLearnMoreURL)];
+  [handler closeSettingsUIAndOpenURL:command];
+
   [self.delegate passwordSharingFirstRunCoordinatorWasDismissed:self];
 }
 

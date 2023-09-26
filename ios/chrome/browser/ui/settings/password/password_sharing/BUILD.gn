@@ -69,6 +69,7 @@ source_set("password_sharing_ui") {
     "password_picker_view_controller.h",
     "password_picker_view_controller.mm",
     "password_picker_view_controller_presentation_delegate.h",
+    "password_sharing_first_run_action_handler.h",
     "password_sharing_first_run_view_controller.h",
     "password_sharing_first_run_view_controller.mm",
     "password_sharing_view_controller.h",

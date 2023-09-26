@@ -10,7 +10,12 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
+@interface PasswordSharingFirstRunViewController () <UITextViewDelegate>
+@end
+
 @implementation PasswordSharingFirstRunViewController
+
+@dynamic actionHandler;
 
 - (void)viewDidLoad {
   self.image = [UIImage imageNamed:@"password_sharing_family_promo"];
@@ -33,6 +38,7 @@
 
 // Sets up styling of the "Learn more" link in the `subtitle`.
 - (void)customizeSubtitle:(UITextView*)subtitle {
+  subtitle.delegate = self;
   subtitle.selectable = YES;
 
   // Inherits the default styling already applied to `subtitle`.
@@ -42,6 +48,16 @@
                       value:@""
                       range:[self subtitleStringWithTag].range];
   subtitle.attributedText = newSubtitle;
+}
+
+#pragma mark - UITextViewDelegate
+
+- (BOOL)textView:(UITextView*)textView
+    shouldInteractWithURL:(NSURL*)URL
+                  inRange:(NSRange)characterRange
+              interaction:(UITextItemInteraction)interaction {
+  [self.actionHandler learnMoreLinkWasTapped];
+  return NO;
 }
 
 #pragma mark - Private

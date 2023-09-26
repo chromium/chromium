@@ -447,4 +447,28 @@ void SignInAndEnableSync() {
       assertWithMatcher:grey_notNil()];
 }
 
+- (void)testTappingLearnMoreInFirstRunExperienceView {
+  [ChromeEarlGrey setBoolValue:NO
+                   forUserPref:prefs::kPasswordSharingFlowHasBeenEntered];
+
+  SignInAndEnableSync();
+  [self saveExamplePasswordAndOpenDetails];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      performAction:grey_tap()];
+
+  // Tap the "Learn more" link in the popup.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"Learn more")]
+      performAction:grey_tap()];
+
+  // Check that the help center article was opened.
+  GREYAssertEqual(std::string(kGoogleHelpCenterURL),
+                  [ChromeEarlGrey webStateVisibleURL].host(),
+                  @"Did not navigate to the help center article.");
+}
+
 @end
