@@ -1763,7 +1763,6 @@ chromium-metrics-reviews@google.com.
     expires_after="never">
 <!-- expires-never: Core metric for monitoring OOBE accessibility status. -->
 
-  <owner>lpalmaro@chromium.org</owner>
   <owner>jessejames@chromium.org</owner>
   <owner>rsorokin@chromium.org</owner>
   <owner>alemate@chromium.org</owner>
