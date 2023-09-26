@@ -43,26 +43,6 @@ export class ChromeVoxBackground {
     });
   }
 
-  /**
-   * Called when a TTS message is received from a page content script.
-   * @param {Object} msg The TTS message.
-   */
-  onTtsMessage(msg) {
-    if (msg['action'] !== 'speak') {
-      return;
-    }
-    // The only caller sending this message is a ChromeVox Classic api client.
-    // Deny empty strings.
-    if (msg['text'] === '') {
-      return;
-    }
-
-    ChromeVox.tts.speak(
-        msg['text'],
-        /** @type {QueueMode} */ (msg['queueMode']),
-        new TtsSpeechProperties(msg['properties']));
-  }
-
   /** Initializes classic background object. */
   static init() {
     const background = new ChromeVoxBackground();
