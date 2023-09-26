@@ -15,11 +15,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
-#include "chrome/browser/web_applications/web_app_callback_app_identity.h"
-#include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/browser/web_applications/web_app_uninstall_dialog_user_options.h"
-#include "components/webapps/browser/installable/installable_metrics.h"
-#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/bluetooth_delegate.h"
 #include "content/public/browser/login_delegate.h"
 #include "extensions/buildflags/buildflags.h"
@@ -29,6 +24,16 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/gfx/native_widget_types.h"
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+#include "chrome/browser/web_applications/web_app_callback_app_identity.h"
+#include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_uninstall_dialog_user_options.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 
 class Browser;
 class GURL;
@@ -78,14 +83,14 @@ namespace views {
 class Widget;
 }  // namespace views
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 namespace webapps {
 class MlInstallOperationTracker;
 struct Screenshot;
 }  // namespace webapps
-
-namespace web_app {
-struct WebAppInstallInfo;
-}  // namespace web_app
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 
 namespace chrome {
 
@@ -156,6 +161,8 @@ void ShowBluetoothDevicePairConfirmDialog(
     content::BluetoothDelegate::PairPromptCallback close_callback);
 #endif  // PAIR_BLUETOOTH_ON_DEMAND()
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 // Callback used to indicate whether a user has accepted the installation of a
 // web app. The boolean parameter is true when the user accepts the dialog. The
 // WebAppInstallInfo parameter contains the information about the app,
@@ -214,7 +221,6 @@ void ShowWebAppUninstallDialog(
     std::map<SquareSizePx, SkBitmap> icon_bitmaps,
     web_app::UninstallDialogCallback uninstall_dialog_result_callback);
 
-#if !BUILDFLAG(IS_ANDROID)
 // Callback used to indicate whether a user has accepted the launch of a
 // web app. The |allowed| is true when the user allows the app to launch.
 // |remember_user_choice| is true if the user wants to persist the decision.
@@ -235,8 +241,6 @@ void ShowWebAppFileLaunchDialog(const std::vector<base::FilePath>& file_paths,
                                 Profile* profile,
                                 const webapps::AppId& app_id,
                                 WebAppLaunchAcceptanceCallback close_callback);
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 // Sets whether |ShowWebAppDialog| should accept immediately without any
 // user interaction. |auto_open_in_window| sets whether the open in window
 // checkbox is checked.
@@ -282,6 +286,9 @@ void ShowWebAppDetailedInstallDialog(
 // Sets whether |ShowPWAInstallBubble| should accept immediately without any
 // user interaction.
 void SetAutoAcceptPWAInstallConfirmationForTesting(bool auto_accept);
+
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_MAC)
 
