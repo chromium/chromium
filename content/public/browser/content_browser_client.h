@@ -82,10 +82,6 @@
 #include "content/public/browser/posix_file_descriptor_info.h"
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "services/video_capture/public/mojom/video_effects_manager.mojom.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 namespace net {
 class SiteForCookies;
 class IsolationInfo;
@@ -2634,16 +2630,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Set whether the browser is running in minimal mode (where most subsystems
   // are left uninitialized).
   virtual void SetIsMinimalMode(bool minimal) {}
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Allows the embedder to correlate backend media services with profile-keyed
-  // effect settings.
-  virtual void BindVideoEffectsManager(
-      const std::string& device_id,
-      content::BrowserContext* browser_context,
-      mojo::PendingReceiver<video_capture::mojom::VideoEffectsManager>
-          video_effects_manager);
-#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace content

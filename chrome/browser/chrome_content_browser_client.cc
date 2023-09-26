@@ -534,7 +534,6 @@
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 #include "chrome/grit/chrome_unscaled_resources.h"  // nogncheck crbug.com/1125897
 #include "components/commerce/core/commerce_feature_list.h"
-#include "components/media_effects/media_effects_manager_binder.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
@@ -8122,14 +8121,3 @@ bool ChromeContentBrowserClient::
 void ChromeContentBrowserClient::SetIsMinimalMode(bool minimal) {
   is_minimal_mode_ = minimal;
 }
-
-#if !BUILDFLAG(IS_ANDROID)
-void ChromeContentBrowserClient::BindVideoEffectsManager(
-    const std::string& device_id,
-    content::BrowserContext* browser_context,
-    mojo::PendingReceiver<video_capture::mojom::VideoEffectsManager>
-        video_effects_manager) {
-  media_effects::BindVideoEffectsManager(device_id, browser_context,
-                                         std::move(video_effects_manager));
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
