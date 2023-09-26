@@ -354,16 +354,6 @@ int GetIndicatorsTimeout() {
 #endif
 }
 
-NOINLINE void CrashIntentionally() {
-  LOG(ERROR) << "Crashing VR browser";
-
-  static int static_variable_to_make_this_function_unique = 0;
-  base::debug::Alias(&static_variable_to_make_this_function_unique);
-
-  volatile int* zero = nullptr;
-  *zero = 0;
-}
-
 }  // namespace
 
 UiSceneCreator::UiSceneCreator(UiBrowserInterface* browser,
