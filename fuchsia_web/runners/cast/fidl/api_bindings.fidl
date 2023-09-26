@@ -10,16 +10,16 @@ using fuchsia.web;
 /// Provides Cast platform API binding scripts and methods for connecting those
 /// scripts with Agent backends.
 @discoverable
-protocol ApiBindings {
+closed protocol ApiBindings {
     /// Gets the list of bindings to early-inject into the page at load time.
     /// The returned ApiBindings must be evaluated in order.
-    GetAll() -> (resource struct {
+    strict GetAll() -> (resource struct {
         bindings vector<ApiBinding>;
     });
 
     /// Should be invoked when a connecting a named MessagePort to a native
     /// bindings backend.
-    Connect(resource struct {
+    strict Connect(resource struct {
         port_name string;
         message_port client_end:fuchsia.web.MessagePort;
     });

@@ -5,17 +5,17 @@
 library chromium.cast;
 
 @discoverable
-protocol ApplicationContext {
+closed protocol ApplicationContext {
     /// Returns `session_id` to use in the AudioConsumer API. May return 0
     /// if there is no media session associated with the app. In this case
     /// audio will be rendered through AudioRenderer.
-    GetMediaSessionId() -> (struct {
+    strict GetMediaSessionId() -> (struct {
         media_session_id uint64;
     });
 
     /// Used by the Agent to receive a controller from the Cast Runner.
     /// Can only be called at most one time for the lifetime of the Component.
-    SetApplicationController(resource struct {
+    strict SetApplicationController(resource struct {
         controller client_end:ApplicationController;
     });
 
@@ -24,7 +24,7 @@ protocol ApplicationContext {
     /// Values less than or equal to zero are `zx.Status` codes.
     /// May be called at most once, immediately prior to termination.
     @transitional
-    OnApplicationExit(struct {
+    strict OnApplicationExit(struct {
         exit_code int64;
     });
 };

@@ -5,8 +5,8 @@
 library base.testfidl;
 
 @discoverable
-protocol TestInterface {
-    Add(struct {
+closed protocol TestInterface {
+    strict Add(struct {
         a int32;
         b int32;
     }) -> (struct {

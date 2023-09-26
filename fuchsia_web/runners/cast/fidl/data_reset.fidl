@@ -7,7 +7,7 @@ library chromium.cast;
 // Used to request that persistent data for components hosted by the Runner is
 // deleted.
 @discoverable
-protocol DataReset {
+closed protocol DataReset {
     // Deletes all persistent data stored by the Runner.
     //
     // Active components hosted by the Runner will be terminated
@@ -18,7 +18,7 @@ protocol DataReset {
     // on behalf of components apps was successfully deleted, and false if
     // the request could not be completed (for example, due to an I/O error).
     @transitional
-    DeletePersistentData() -> (struct {
+    strict DeletePersistentData() -> (struct {
         succeeded bool;
     });
 };
