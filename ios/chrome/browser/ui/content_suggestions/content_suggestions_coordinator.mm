@@ -312,7 +312,7 @@
     case ContentSuggestionsModuleType::kSafetyCheck:
     case ContentSuggestionsModuleType::kSafetyCheckMultiRow:
     case ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow:
-      [self.contentSuggestionsMediator disableSafetyCheck];
+      [self.contentSuggestionsMediator disableSafetyCheck:type];
       break;
     case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
