@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/token.h"
 #include "base/trace_event/trace_config.h"
 #include "content/browser/tracing/background_tracing_rule.h"
 #include "content/common/content_export.h"
@@ -79,6 +80,8 @@ class CONTENT_EXPORT TracingScenario {
   const std::string& scenario_name() const { return scenario_name_; }
   State current_state() const { return current_state_; }
 
+  base::Token GetSessionID() const { return session_id_; }
+
  protected:
   TracingScenario(const perfetto::protos::gen::ScenarioConfig& config,
                   Delegate* scenario_delegate);
@@ -127,6 +130,7 @@ class CONTENT_EXPORT TracingScenario {
   perfetto::TraceConfig trace_config_;
   raw_ptr<Delegate> scenario_delegate_;
   TracingSession tracing_session_;
+  base::Token session_id_;
   raw_ptr<const BackgroundTracingRule> triggered_rule_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

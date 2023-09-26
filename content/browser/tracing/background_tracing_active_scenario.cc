@@ -343,7 +343,8 @@ void BackgroundTracingActiveScenario::OnProtoDataComplete(
     std::string&& serialized_trace) {
   BackgroundTracingManagerImpl::GetInstance().OnProtoDataComplete(
       std::move(serialized_trace), config_->scenario_name(),
-      last_triggered_rule_->rule_id(), last_triggered_rule_->is_crash());
+      last_triggered_rule_->rule_id(), last_triggered_rule_->is_crash(),
+      base::Token::CreateRandom());
   tracing_session_.reset();
   SetState(State::kIdle);
 

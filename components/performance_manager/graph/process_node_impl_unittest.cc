@@ -347,7 +347,8 @@ class LenientFakeBackgroundTracingManager
   void AbortScenarioForTesting() override {}
   void SaveTraceForTesting(std::string&& trace_data,
                            const std::string& scenario_name,
-                           const std::string& rule_name) override {}
+                           const std::string& rule_name,
+                           const base::Token& uuid) override {}
 
   void DeleteTracesInDateRange(base::Time start, base::Time end) override {}
 };

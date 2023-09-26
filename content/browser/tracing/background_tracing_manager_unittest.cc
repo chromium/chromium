@@ -8,6 +8,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_proto_loader.h"
+#include "base/token.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/browser/tracing/background_tracing_config_impl.h"
@@ -128,7 +129,8 @@ TEST_F(BackgroundTracingManagerTest, HasTraceToUpload) {
 
     TestBackgroundTracingHelper background_tracing_helper;
     background_tracing_manager_->SaveTraceForTesting(
-        std::move(trace_content), "test_scenario", "test_rule");
+        std::move(trace_content), "test_scenario", "test_rule",
+        base::Token::CreateRandom());
     background_tracing_helper.WaitForTraceSaved();
   }
 
@@ -146,7 +148,7 @@ TEST_F(BackgroundTracingManagerTest, GetTraceToUpload) {
   {
     TestBackgroundTracingHelper background_tracing_helper;
     background_tracing_manager_->SaveTraceForTesting(
-        kDummyTrace, "test_scenario", "test_rule");
+        kDummyTrace, "test_scenario", "test_rule", base::Token::CreateRandom());
     background_tracing_helper.WaitForTraceSaved();
   }
 
@@ -188,7 +190,7 @@ TEST_F(BackgroundTracingManagerTest, SavedCountPreventsStart) {
   for (size_t i = 0; i < kNumSavedTraces; ++i) {
     TestBackgroundTracingHelper background_tracing_helper;
     background_tracing_manager_->SaveTraceForTesting(
-        kDummyTrace, "test_scenario", "test_rule");
+        kDummyTrace, "test_scenario", "test_rule", base::Token::CreateRandom());
     background_tracing_helper.WaitForTraceSaved();
   }
   EXPECT_EQ(kNumSavedTraces,
@@ -208,7 +210,7 @@ TEST_F(BackgroundTracingManagerTest, SavedCountAfterClean) {
   {
     TestBackgroundTracingHelper background_tracing_helper;
     background_tracing_manager_->SaveTraceForTesting(
-        kDummyTrace, "test_scenario", "test_rule");
+        kDummyTrace, "test_scenario", "test_rule", base::Token::CreateRandom());
     background_tracing_helper.WaitForTraceSaved();
   }
   EXPECT_EQ(1U,
@@ -228,7 +230,7 @@ TEST_F(BackgroundTracingManagerTest, SavedCountAfterDelete) {
   {
     TestBackgroundTracingHelper background_tracing_helper;
     background_tracing_manager_->SaveTraceForTesting(
-        kDummyTrace, "test_scenario", "test_rule");
+        kDummyTrace, "test_scenario", "test_rule", base::Token::CreateRandom());
     background_tracing_helper.WaitForTraceSaved();
   }
   EXPECT_EQ(1U,
@@ -247,7 +249,7 @@ TEST_F(BackgroundTracingManagerTest, UploadScenarioQuotaExceeded) {
   {
     TestBackgroundTracingHelper background_tracing_helper;
     background_tracing_manager_->SaveTraceForTesting(
-        kDummyTrace, "test_scenario", "test_rule");
+        kDummyTrace, "test_scenario", "test_rule", base::Token::CreateRandom());
     background_tracing_helper.WaitForTraceSaved();
   }
   EXPECT_TRUE(background_tracing_manager_->HasTraceToUpload());
@@ -261,7 +263,7 @@ TEST_F(BackgroundTracingManagerTest, UploadScenarioQuotaExceeded) {
   {
     TestBackgroundTracingHelper background_tracing_helper;
     background_tracing_manager_->SaveTraceForTesting(
-        kDummyTrace, "test_scenario", "test_rule");
+        kDummyTrace, "test_scenario", "test_rule", base::Token::CreateRandom());
     background_tracing_helper.WaitForTraceSaved();
   }
   EXPECT_FALSE(background_tracing_manager_->HasTraceToUpload());
@@ -271,7 +273,7 @@ TEST_F(BackgroundTracingManagerTest, UploadScenarioQuotaReset) {
   {
     TestBackgroundTracingHelper background_tracing_helper;
     background_tracing_manager_->SaveTraceForTesting(
-        kDummyTrace, "test_scenario", "test_rule");
+        kDummyTrace, "test_scenario", "test_rule", base::Token::CreateRandom());
     background_tracing_helper.WaitForTraceSaved();
   }
   EXPECT_TRUE(background_tracing_manager_->HasTraceToUpload());
@@ -287,7 +289,7 @@ TEST_F(BackgroundTracingManagerTest, UploadScenarioQuotaReset) {
   {
     TestBackgroundTracingHelper background_tracing_helper;
     background_tracing_manager_->SaveTraceForTesting(
-        kDummyTrace, "test_scenario", "test_rule");
+        kDummyTrace, "test_scenario", "test_rule", base::Token::CreateRandom());
     background_tracing_helper.WaitForTraceSaved();
   }
   EXPECT_TRUE(background_tracing_manager_->HasTraceToUpload());
@@ -316,7 +318,7 @@ TEST(BackgroundTracingManagerPersistentTest, DeleteTracesInDateRange) {
 
     TestBackgroundTracingHelper background_tracing_helper;
     background_tracing_manager->SaveTraceForTesting(
-        kDummyTrace, "test_scenario", "test_rule");
+        kDummyTrace, "test_scenario", "test_rule", base::Token::CreateRandom());
     background_tracing_helper.WaitForTraceSaved();
     EXPECT_EQ(1U,
               BackgroundTracingManagerImpl::GetInstance().GetScenarioSavedCount(

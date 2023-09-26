@@ -80,7 +80,7 @@ TEST_F(AwBackgroundTracingMetricsProviderTest, UploadsTraceLog) {
   EXPECT_FALSE(provider.HasIndependentMetrics());
 
   content::BackgroundTracingManager::GetInstance().SaveTraceForTesting(
-      kDummyTrace, "test_scenario", "test_rule");
+      kDummyTrace, "test_scenario", "test_rule", base::Token::CreateRandom());
   background_tracing_helper.WaitForTraceSaved();
 
   EXPECT_TRUE(provider.HasIndependentMetrics());
@@ -124,7 +124,8 @@ TEST_F(AwBackgroundTracingMetricsProviderTest, HandlesOversizeTraceLog) {
   }
 
   content::BackgroundTracingManager::GetInstance().SaveTraceForTesting(
-      std::move(trace), "test_scenario", "test_rule");
+      std::move(trace), "test_scenario", "test_rule",
+      base::Token::CreateRandom());
   background_tracing_helper.WaitForTraceSaved();
 
   EXPECT_TRUE(provider.HasIndependentMetrics());
@@ -154,7 +155,7 @@ TEST_F(AwBackgroundTracingMetricsProviderTest, ClearsAppPackageName) {
   EXPECT_FALSE(provider.HasIndependentMetrics());
 
   content::BackgroundTracingManager::GetInstance().SaveTraceForTesting(
-      kDummyTrace, "test_scenario", "test_rule");
+      kDummyTrace, "test_scenario", "test_rule", base::Token::CreateRandom());
   background_tracing_helper.WaitForTraceSaved();
 
   EXPECT_TRUE(provider.HasIndependentMetrics());

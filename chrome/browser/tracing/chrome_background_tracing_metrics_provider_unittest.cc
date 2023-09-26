@@ -83,7 +83,7 @@ TEST_F(ChromeBackgroundTracingMetricsProviderTest, UploadsTraceLog) {
   EXPECT_FALSE(provider.HasIndependentMetrics());
 
   content::BackgroundTracingManager::GetInstance().SaveTraceForTesting(
-      kDummyTrace, "test_scenario", "test_rule");
+      kDummyTrace, "test_scenario", "test_rule", base::Token::CreateRandom());
   background_tracing_helper.WaitForTraceSaved();
 
   EXPECT_TRUE(provider.HasIndependentMetrics());
@@ -185,7 +185,7 @@ TEST_F(ChromeBackgroundTracingMetricsProviderChromeOSTest, HardwareClass) {
   TestBackgroundTracingHelper background_tracing_helper;
   // Fake a UMA collection for background tracing.
   content::BackgroundTracingManager::GetInstance().SaveTraceForTesting(
-      kDummyTrace, "test_scenario", "test_rule");
+      kDummyTrace, "test_scenario", "test_rule", base::Token::CreateRandom());
   background_tracing_helper.WaitForTraceSaved();
   ASSERT_TRUE(provider.HasIndependentMetrics());
 

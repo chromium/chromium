@@ -10,6 +10,7 @@
 
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
+#include "base/token.h"
 #include "base/trace_event/trace_event_impl.h"
 #include "content/common/content_export.h"
 #include "third_party/perfetto/protos/perfetto/config/chrome/scenario_config.gen.h"
@@ -148,7 +149,8 @@ class BackgroundTracingManager {
   virtual void AbortScenarioForTesting() = 0;
   virtual void SaveTraceForTesting(std::string&& trace_data,
                                    const std::string& scenario_name,
-                                   const std::string& rule_name) = 0;
+                                   const std::string& rule_name,
+                                   const base::Token& uuid) = 0;
 
   using ConfigTextFilterForTesting =
       base::RepeatingCallback<std::string(const std::string&)>;

@@ -15,6 +15,7 @@
 #include "base/no_destructor.h"
 #include "base/threading/sequence_bound.h"
 #include "base/timer/timer.h"
+#include "base/token.h"
 #include "content/browser/tracing/background_tracing_config_impl.h"
 #include "content/browser/tracing/trace_report/trace_report_database.h"
 #include "content/browser/tracing/trace_report/trace_upload_list.h"
@@ -161,17 +162,18 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager,
   void OnProtoDataComplete(std::string&& serialized_trace,
                            const std::string& scenario_name,
                            const std::string& rule_name,
-                           bool is_crash_scenario);
+                           bool is_crash_scenario,
+                           const base::Token& uuid);
 
   // For tests
   CONTENT_EXPORT BackgroundTracingActiveScenario* GetActiveScenarioForTesting();
   CONTENT_EXPORT void InvalidateTriggersCallbackForTesting();
   CONTENT_EXPORT bool IsTracingForTesting();
   CONTENT_EXPORT void AbortScenarioForTesting() override;
-  CONTENT_EXPORT void SaveTraceForTesting(
-      std::string&& serialized_trace,
-      const std::string& scenario_name,
-      const std::string& rule_name) override;
+  CONTENT_EXPORT void SaveTraceForTesting(std::string&& serialized_trace,
+                                          const std::string& scenario_name,
+                                          const std::string& rule_name,
+                                          const base::Token& uuid) override;
 
  private:
 #if BUILDFLAG(IS_ANDROID)

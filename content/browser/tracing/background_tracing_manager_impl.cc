@@ -606,7 +606,8 @@ void BackgroundTracingManagerImpl::SaveTrace(
     const BackgroundTracingRule* triggered_rule,
     std::string&& trace_data) {
   OnProtoDataComplete(std::move(trace_data), scenario->scenario_name(),
-                      triggered_rule->rule_id(), /*is_crash_scenario=*/false);
+                      triggered_rule->rule_id(), /*is_crash_scenario=*/false,
+                      scenario->GetSessionID());
 }
 
 bool BackgroundTracingManagerImpl::HasActiveScenario() {
@@ -749,10 +750,11 @@ bool BackgroundTracingManagerImpl::IsTracingForTesting() {
 void BackgroundTracingManagerImpl::SaveTraceForTesting(
     std::string&& serialized_trace,
     const std::string& scenario_name,
-    const std::string& rule_name) {
+    const std::string& rule_name,
+    const base::Token& uuid) {
   InitializeTraceReportDatabase(true);
   OnProtoDataComplete(std::move(serialized_trace), scenario_name, rule_name,
-                      /*is_crash_scenario=*/false);
+                      /*is_crash_scenario=*/false, uuid);
 }
 
 size_t BackgroundTracingManagerImpl::GetScenarioSavedCount(
@@ -768,7 +770,8 @@ void BackgroundTracingManagerImpl::OnProtoDataComplete(
     std::string&& serialized_trace,
     const std::string& scenario_name,
     const std::string& rule_name,
-    bool is_crash_scenario) {
+    bool is_crash_scenario,
+    const base::Token& uuid) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   for (auto* observer : background_tracing_observers_) {
@@ -794,7 +797,7 @@ void BackgroundTracingManagerImpl::OnProtoDataComplete(
                                 serialized_trace.size() / 1024);
 
     BaseTraceReport base_report;
-    base_report.uuid = base::Token::CreateRandom();
+    base_report.uuid = uuid;
     base_report.creation_time = base::Time::Now();
     base_report.scenario_name = scenario_name;
     base_report.upload_rule_name = rule_name;

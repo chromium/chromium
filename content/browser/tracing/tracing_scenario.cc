@@ -7,6 +7,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/stringprintf.h"
+#include "base/token.h"
 #include "base/tracing/trace_time.h"
 #include "content/browser/tracing/background_tracing_manager_impl.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -137,6 +138,9 @@ TracingScenario::CreateTracingSession() {
 void TracingScenario::SetupTracingSession() {
   DCHECK(!tracing_session_);
   tracing_session_ = CreateTracingSession();
+  session_id_ = base::Token::CreateRandom();
+  trace_config_.set_trace_uuid_msb(session_id_.high());
+  trace_config_.set_trace_uuid_lsb(session_id_.low());
   tracing_session_->Setup(trace_config_);
   tracing_session_->SetOnStartCallback([task_runner = task_runner_,
                                         weak_ptr = GetWeakPtr()]() {
