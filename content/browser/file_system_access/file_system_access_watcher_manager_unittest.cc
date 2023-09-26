@@ -544,8 +544,8 @@ TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalDirectory) {
   watcher_manager().GetDirectoryObservation(
       dir_url,
       /*is_recursive=*/false, get_observation_future.GetCallback());
-// Watching the local file system is not supported on Android or Fuchsia.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+// Watching the local file system is not supported on Android, iOS, or Fuchsia.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
   ASSERT_FALSE(get_observation_future.Get().has_value());
   EXPECT_EQ(get_observation_future.Get().error()->status,
             blink::mojom::FileSystemAccessStatus::kNotSupportedError);
@@ -569,7 +569,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalDirectory) {
     return testing::Matches(testing::ContainerEq(expected_changes))(
         accumulator.changes());
   }));
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
 }
 
 TEST_F(FileSystemAccessWatcherManagerTest,
@@ -590,8 +590,9 @@ TEST_F(FileSystemAccessWatcherManagerTest,
   watcher_manager().GetDirectoryObservation(
       dir_url,
       /*is_recursive=*/false, get_observation_future.GetCallback());
-  // Watching the local file system is not supported on Android or Fuchsia.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+  // Watching the local file system is not supported on Android, iOS, or
+  // Fuchsia.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
   ASSERT_FALSE(get_observation_future.Get().has_value());
   EXPECT_EQ(get_observation_future.Get().error()->status,
             blink::mojom::FileSystemAccessStatus::kNotSupportedError);
@@ -611,7 +612,7 @@ TEST_F(FileSystemAccessWatcherManagerTest,
   // of this observation.
   SpinEventLoopForABit();
   EXPECT_THAT(accumulator.changes(), testing::IsEmpty());
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+#endif  // BUILDFLAG(IS_ANDROID)|| BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
 }
 
 TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalDirectoryRecursively) {
@@ -633,7 +634,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalDirectoryRecursively) {
       /*is_recursive=*/true, get_observation_future.GetCallback());
   // Watching the local file system is not supported on Android or Fuchsia.
   // Recursive watching of the local file system is not supported on iOS.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
   ASSERT_FALSE(get_observation_future.Get().has_value());
   EXPECT_EQ(get_observation_future.Get().error()->status,
             blink::mojom::FileSystemAccessStatus::kNotSupportedError);
@@ -662,7 +663,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalDirectoryRecursively) {
     return testing::Matches(testing::Not(testing::IsEmpty()))(
         accumulator.changes());
   }));
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
 }
 
 TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalFile) {
@@ -678,8 +679,9 @@ TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalFile) {
       get_observation_future;
   watcher_manager().GetFileObservation(file_url,
                                        get_observation_future.GetCallback());
-  // Watching the local file system is not supported on Android or Fuchsia.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+  // Watching the local file system is not supported on Android, Fuchsia, or
+  // iOS.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
   ASSERT_FALSE(get_observation_future.Get().has_value());
   EXPECT_EQ(get_observation_future.Get().error()->status,
             blink::mojom::FileSystemAccessStatus::kNotSupportedError);
@@ -698,7 +700,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalFile) {
     return testing::Matches(testing::ContainerEq(expected_changes))(
         accumulator.changes());
   }));
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
 }
 
 TEST_F(FileSystemAccessWatcherManagerTest,
@@ -719,8 +721,9 @@ TEST_F(FileSystemAccessWatcherManagerTest,
                                        get_observation_future2.GetCallback());
   watcher_manager().GetFileObservation(file_url,
                                        get_observation_future3.GetCallback());
-  // Watching the local file system is not supported on Android or Fuchsia.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+  // Watching the local file system is not supported on Android, iOS, or
+  // Fuchsia.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
   ASSERT_FALSE(get_observation_future1.Get().has_value());
   ASSERT_FALSE(get_observation_future2.Get().has_value());
   ASSERT_FALSE(get_observation_future3.Get().has_value());
@@ -755,7 +758,7 @@ TEST_F(FileSystemAccessWatcherManagerTest,
            testing::Matches(expected_changes_matcher)(accumulator2.changes()) &&
            testing::Matches(expected_changes_matcher)(accumulator3.changes());
   }));
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
 }
 
 TEST_F(FileSystemAccessWatcherManagerTest, OutOfScope) {
@@ -768,8 +771,9 @@ TEST_F(FileSystemAccessWatcherManagerTest, OutOfScope) {
       get_observation_future;
   watcher_manager().GetFileObservation(file_url,
                                        get_observation_future.GetCallback());
-  // Watching the local file system is not supported on Android or Fuchsia.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+  // Watching the local file system is not supported on Android, Fuchsia, or
+  // iOS.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
   ASSERT_FALSE(get_observation_future.Get().has_value());
   EXPECT_EQ(get_observation_future.Get().error()->status,
             blink::mojom::FileSystemAccessStatus::kNotSupportedError);
@@ -789,7 +793,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, OutOfScope) {
   SpinEventLoopForABit();
 
   EXPECT_THAT(accumulator.changes(), testing::IsEmpty());
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
 }
 
 }  // namespace content

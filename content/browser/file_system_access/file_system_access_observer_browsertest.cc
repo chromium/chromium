@@ -194,8 +194,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest, CreateObserver) {
 }
 
 // Local file system access - including the open*Picker() methods used here - is
-// not supported on Android. See https://crbug.com/1011535.
-#if !BUILDFLAG(IS_ANDROID)
+// not supported on Android or iOS. See https://crbug.com/1011535.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest, ObserveFile) {
   base::FilePath file_path = CreateFileToBePicked();
 
@@ -534,7 +534,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest,
 
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverBrowserTest, ObserveBucketFS) {
   // TODO(https://crbug.com/1019297): The BucketFS is not yet supported.

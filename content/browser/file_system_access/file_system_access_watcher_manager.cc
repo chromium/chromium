@@ -299,18 +299,18 @@ FileSystemAccessWatcherManager::CreateOwnedSourceForScope(
     return nullptr;
   }
 
-  // Access to the local file system is not supported on Android. See
+  // Access to the local file system is not supported on Android or iOS. See
   // https://crbug.com/1011535.
   // Meanwhile, `base::FilePatchWatcher` is not implemented on Fuchsia. See
   // https://crbug.com/851641.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
   return nullptr;
 #else
   auto new_source = std::make_unique<FileSystemAccessLocalPathWatcher>(
       std::move(scope), base::PassKey<FileSystemAccessWatcherManager>());
   RegisterSource(new_source.get());
   return new_source;
-#endif  //  BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+#endif  //  BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
 }
 
 }  // namespace content
