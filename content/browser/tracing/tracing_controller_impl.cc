@@ -15,11 +15,11 @@
 #include "base/files/file_tracing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
@@ -53,6 +53,7 @@
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "services/tracing/public/mojom/constants.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "third_party/perfetto/include/perfetto/protozero/message.h"
 #include "third_party/perfetto/protos/perfetto/trace/extension_descriptor.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/trace_packet.pbzero.h"
@@ -361,12 +362,10 @@ TracingControllerImpl::GenerateMetadataDict() {
   metadata_dict.Set("command_line", command_line);
 #endif
 
-  base::Time::Exploded ctime;
-  TRACE_TIME_NOW().UTCExplode(&ctime);
-  std::string time_string = base::StringPrintf(
-      "%u-%u-%u %d:%d:%d", ctime.year, ctime.month, ctime.day_of_month,
-      ctime.hour, ctime.minute, ctime.second);
-  metadata_dict.Set("trace-capture-datetime", time_string);
+  metadata_dict.Set(
+      "trace-capture-datetime",
+      base::UnlocalizedTimeFormatWithPattern(TRACE_TIME_NOW(), "y-M-d H:m:s",
+                                             icu::TimeZone::getGMT()));
 
   // TODO(crbug.com/737049): The central controller doesn't know about
   // metadata filters, so we temporarily filter here as the controller is
