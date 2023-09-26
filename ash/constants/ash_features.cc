@@ -1438,6 +1438,12 @@ BASE_FEATURE(kHoldingSpaceTour,
              "HoldingSpaceTour",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<bool> kHoldingSpaceTourDropToPinEnabled{
+    &kHoldingSpaceTour, "drop-to-pin", false};
+
+const base::FeatureParam<bool> kHoldingSpaceTourEnabledCounterfactually{
+    &kHoldingSpaceTour, "is-counterfactual", false};
+
 BASE_FEATURE(kHomeButtonQuickAppAccess,
              "HomeButtonQuickAppAccess",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -3432,8 +3438,17 @@ bool IsHoldingSpaceSuggestionsEnabled() {
   return base::FeatureList::IsEnabled(kHoldingSpaceSuggestions);
 }
 
+bool IsHoldingSpaceTourDropToPinEnabled() {
+  return IsHoldingSpaceTourEnabled() && kHoldingSpaceTourDropToPinEnabled.Get();
+}
+
 bool IsHoldingSpaceTourEnabled() {
   return base::FeatureList::IsEnabled(kHoldingSpaceTour);
+}
+
+bool IsHoldingSpaceTourEnabledCounterfactually() {
+  return IsHoldingSpaceTourEnabled() &&
+         kHoldingSpaceTourEnabledCounterfactually.Get();
 }
 
 bool IsHomeButtonQuickAppAccessEnabled() {

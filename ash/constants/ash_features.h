@@ -986,7 +986,10 @@ bool IsHoldingSpaceCameraAppIntegrationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHoldingSpacePredictabilityEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHoldingSpaceRefreshEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHoldingSpaceSuggestionsEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHoldingSpaceTourDropToPinEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHoldingSpaceTourEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsHoldingSpaceTourEnabledCounterfactually();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHomeButtonQuickAppAccessEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHomeButtonWithTextEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHostnameSettingEnabled();
