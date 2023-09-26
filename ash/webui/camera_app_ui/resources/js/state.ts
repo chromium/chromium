@@ -114,6 +114,24 @@ export function addObserver(state: StateUnion, observer: StateObserver): void {
 }
 
 /**
+ * Adds observer function to be called when the state value is changed to true.
+ * Returns the wrapped observer in case it needs to be removed later.
+ *
+ * @param state State to be observed.
+ * @param observer Observer function called with newly changed value.
+ */
+export function addEnabledStateObserver(
+    state: StateUnion, observer: StateObserver): StateObserver {
+  const wrappedObserver: StateObserver = (val, perfInfo) => {
+    if (val) {
+      observer(val, perfInfo);
+    }
+  };
+  addObserver(state, wrappedObserver);
+  return wrappedObserver;
+}
+
+/**
  * Adds one-time observer function to be called on any state change.
  *
  * @param state State to be observed.
