@@ -73,6 +73,7 @@ export class ProgressCenterPanel {
     info = info || {};
     const {source, destination, count} = info;
     switch (item.state) {
+      case ProgressItemState.SCANNING:
       case ProgressItemState.PROGRESSING:
         // Single items:
         if (item.itemCount === 1) {
