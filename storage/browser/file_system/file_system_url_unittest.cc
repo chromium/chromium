@@ -312,15 +312,31 @@ TEST(FileSystemURLTest, IsParent) {
 
   const std::string parent("dir");
   const std::string child("dir/child");
+  const std::string grandchild("dir/child/grandchild");
   const std::string other("other");
 
   // True cases.
+  EXPECT_TRUE(
+      CreateFileSystemURL(root1).IsParent(CreateFileSystemURL(root1 + parent)));
+  EXPECT_TRUE(
+      CreateFileSystemURL(root1).IsParent(CreateFileSystemURL(root1 + child)));
+  EXPECT_TRUE(CreateFileSystemURL(root1).IsParent(
+      CreateFileSystemURL(root1 + grandchild)));
   EXPECT_TRUE(CreateFileSystemURL(root1 + parent)
                   .IsParent(CreateFileSystemURL(root1 + child)));
+  EXPECT_TRUE(CreateFileSystemURL(root1 + parent)
+                  .IsParent(CreateFileSystemURL(root1 + grandchild)));
+  EXPECT_TRUE(CreateFileSystemURL(root1 + child)
+                  .IsParent(CreateFileSystemURL(root1 + grandchild)));
+  EXPECT_TRUE(
+      CreateFileSystemURL(root2).IsParent(CreateFileSystemURL(root2 + parent)));
   EXPECT_TRUE(CreateFileSystemURL(root2 + parent)
                   .IsParent(CreateFileSystemURL(root2 + child)));
+  EXPECT_TRUE(CreateFileSystemURL(root2 + parent)
+                  .IsParent(CreateFileSystemURL(root2 + grandchild)));
 
   // False cases: the path is not a child.
+  EXPECT_FALSE(CreateFileSystemURL(root1).IsParent(CreateFileSystemURL(root1)));
   EXPECT_FALSE(CreateFileSystemURL(root1 + parent)
                    .IsParent(CreateFileSystemURL(root1 + other)));
   EXPECT_FALSE(CreateFileSystemURL(root1 + parent)
@@ -331,10 +347,14 @@ TEST(FileSystemURLTest, IsParent) {
   // False case: different types.
   EXPECT_FALSE(CreateFileSystemURL(root1 + parent)
                    .IsParent(CreateFileSystemURL(root2 + child)));
+  EXPECT_FALSE(
+      CreateFileSystemURL(root1).IsParent(CreateFileSystemURL(root2 + parent)));
 
   // False case: different origins.
   EXPECT_FALSE(CreateFileSystemURL(root1 + parent)
                    .IsParent(CreateFileSystemURL(root3 + child)));
+  EXPECT_FALSE(
+      CreateFileSystemURL(root1).IsParent(CreateFileSystemURL(root3 + parent)));
 }
 
 TEST(FileSystemURLTest, ToGURL) {
