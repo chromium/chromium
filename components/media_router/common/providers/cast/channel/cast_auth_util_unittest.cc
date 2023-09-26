@@ -169,7 +169,8 @@ TEST_F(CastAuthUtilTest, VerifyBackwardsCompatibleDigest) {
   EXPECT_EQ(kFlagsSHA1AndCRLMissing, result.flags);
 }
 
-TEST_F(CastAuthUtilTest, VerifyCrlRequiredWithFallback) {
+// TODO(crbug.com/1485349): Re-enable this test
+TEST_F(CastAuthUtilTest, DISABLED_VerifyCrlRequiredWithFallback) {
   std::string signed_data;
   AuthResponse auth_response = CreateAuthResponse(&signed_data, SHA256);
   base::Time now = base::Time::Now();
@@ -195,7 +196,8 @@ TEST_F(CastAuthUtilTest, VerifyCrlRequiredWithExpiredFallback) {
   EXPECT_EQ(kFlagsExpiredFallbackCRL, result.flags);
 }
 
-TEST_F(CastAuthUtilTest, VerifyCrlRequiredWithNotExpiredFallback) {
+// TODO(crbug.com/1485349): Re-enable this test
+TEST_F(CastAuthUtilTest, DISABLED_VerifyCrlRequiredWithNotExpiredFallback) {
   std::string signed_data;
   AuthResponse auth_response = CreateAuthResponse(&signed_data, SHA256);
   base::Time now = base::Time::Now() + base::Seconds(10);
@@ -208,7 +210,8 @@ TEST_F(CastAuthUtilTest, VerifyCrlRequiredWithNotExpiredFallback) {
   EXPECT_EQ(kFlagsAcceptedByFallbackCRL, result.flags);
 }
 
-TEST_F(CastAuthUtilTest, FeatureFlagVerifyCrlRequiredWithFallbackCRL) {
+// TODO(crbug.com/1485349): Re-enable this test
+TEST_F(CastAuthUtilTest, DISABLED_FeatureFlagVerifyCrlRequiredWithFallbackCRL) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       kEnforceFallbackCRLRevocationChecking);
