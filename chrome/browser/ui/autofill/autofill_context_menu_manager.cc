@@ -244,10 +244,9 @@ void AutofillContextMenuManager::
 
   menu_model_->AddTitle(l10n_util::GetStringUTF16(
       IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED_TITLE));
-  menu_model_->AddItemWithStringIdAndIcon(
+  menu_model_->AddItemWithStringId(
       kAutofillFallbackForAutocompleteUnrecognized,
-      IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED,
-      ui::ImageModel::FromVectorIcon(vector_icons::kLocationOnIcon));
+      IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED);
   menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
   static_cast<BrowserAutofillManager&>(manager)
       .GetAutocompleteUnrecognizedFallbackEventLogger()
