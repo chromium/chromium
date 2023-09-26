@@ -634,6 +634,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.Hibernate.Abort.Errno" units="Linux errno"
+    expires_after="2024-06-08">
+  <owner>mka@chromium.org</owner>
+  <owner>bgeffon@chromium.org</owner>
+  <owner>chromeos-hibernate@google.com</owner>
+  <summary>
+    The errno reported by Linux when the hibernate image can not be created or
+    saved to storage. Recorded when the hibernate image can not be created or
+    saved.
+  </summary>
+</histogram>
+
 <histogram name="Platform.Hibernate.AdditionalMemoryNeeded" units="MiB"
     expires_after="2024-06-08">
   <owner>mka@chromium.org</owner>
