@@ -154,7 +154,7 @@ TEST_P(KeyboardShortcutProviderTest, Search) {
   EXPECT_EQ(results()[0]->title(), u"Lock screen");
   EXPECT_GT(results()[0]->relevance(), kResultRelevanceThreshold);
   EXPECT_EQ(results()[0]->accessible_name(),
-            u"Lock screen, Shortcuts, Search+ l");
+            u"Lock screen, Shortcuts, Launcher+ l");
 
   // Result format: Modifier1 + Modifier2 + Key
   StartSearch(u"previous tab");
@@ -219,7 +219,7 @@ TEST_P(KeyboardShortcutProviderTest, Search) {
   EXPECT_EQ(results()[0]->title(), u"Open Emoji Picker");
   EXPECT_GT(results()[0]->relevance(), kResultRelevanceThreshold);
   EXPECT_EQ(results()[0]->accessible_name(),
-            u"Open Emoji Picker, Shortcuts, Shift+ Search+ Space");
+            u"Open Emoji Picker, Shortcuts, Shift+ Launcher+ Space");
 }
 
 class FakeSearchHandler : public ash::shortcut_ui::SearchHandler {

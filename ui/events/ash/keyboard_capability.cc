@@ -618,7 +618,8 @@ bool KeyboardCapability::HasLauncherButton(
   auto top_row_layout = GetTopRowLayout(keyboard);
   switch (top_row_layout) {
     case KeyboardTopRowLayout::kKbdTopRowLayout1:
-      return false;
+      // Some external keyboards report the wrong layout type.
+      return !IsInternalKeyboard(keyboard);
     case KeyboardTopRowLayout::kKbdTopRowLayout2:
     case KeyboardTopRowLayout::kKbdTopRowLayoutWilco:
     case KeyboardTopRowLayout::kKbdTopRowLayoutDrallion:

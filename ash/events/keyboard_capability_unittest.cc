@@ -351,6 +351,15 @@ TEST_F(KeyboardCapabilityTest, TestHasLauncherButton) {
   EXPECT_FALSE(keyboard_capability_->HasLauncherButton(fake_keyboard1));
   EXPECT_TRUE(keyboard_capability_->HasLauncherButton(fake_keyboard2));
   EXPECT_TRUE(keyboard_capability_->HasLauncherButtonOnAnyKeyboard());
+
+  fake_keyboard_manager_->RemoveAllDevices();
+  // Add an external layout1 keyboard.
+  ui::KeyboardDevice fake_keyboard3(
+      /*id=*/kDeviceId1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_USB,
+      /*name=*/"Keyboard1");
+  fake_keyboard3.sys_path = base::FilePath("path3");
+  fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard3, kKbdTopRowLayout1Tag);
+  EXPECT_TRUE(keyboard_capability_->HasLauncherButtonOnAnyKeyboard());
 }
 
 TEST_F(KeyboardCapabilityTest, TestHasSixPackKey) {
