@@ -171,6 +171,10 @@ bool IsFooterPopupItemId(PopupItemId popup_item_id);
 // suggestion. Those have a different style from regular suggestions.
 bool IsGroupFillingPopupItemId(PopupItemId popup_item_id);
 
+// Return whether the suggestion with this `popup_item_id` can have child
+// suggestions.
+bool IsExpandablePopupItemId(PopupItemId popup_item_id);
+
 }  // namespace autofill
 
 #endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_VIEW_UTILS_H_

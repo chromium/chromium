@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -244,7 +245,7 @@ std::u16string GetVoiceOverStringFromSuggestion(const Suggestion& suggestion) {
   std::vector<std::u16string> text({GetSuggestionA11yCoreMessage(suggestion)});
 
   if (!suggestion.children.empty()) {
-    CHECK_EQ(suggestion.popup_item_id, PopupItemId::kAddressEntry);
+    CHECK(IsExpandablePopupItemId(suggestion.popup_item_id));
 
     if (suggestion.popup_item_id == PopupItemId::kAddressEntry) {
       text.push_back(l10n_util::GetStringUTF16(

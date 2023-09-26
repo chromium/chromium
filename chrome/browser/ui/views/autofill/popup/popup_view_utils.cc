@@ -556,7 +556,20 @@ bool IsFooterPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kClearForm:
     case PopupItemId::kAutofillOptions:
     case PopupItemId::kSeePromoCodeDetails:
+    case PopupItemId::kEditAddressProfile:
     case PopupItemId::kDeleteAddressProfile:
+      return true;
+    default:
+      return false;
+  }
+}
+
+bool IsExpandablePopupItemId(PopupItemId popup_item_id) {
+  switch (popup_item_id) {
+    case PopupItemId::kAddressEntry:
+    case PopupItemId::kFillFullAddress:
+    case PopupItemId::kFillFullName:
+    case PopupItemId::kFieldByFieldFilling:
       return true;
     default:
       return false;
