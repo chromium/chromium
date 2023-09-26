@@ -18,6 +18,7 @@ namespace content {
 //   effect on debug mode if
 //   `blink::features::kPrivateAggregationApiDebugModeEnabledAtAll` is disabled.
 // - Whether to send a null report if a context ID is specified.
+// - Whether to reduce the delay for reports if a context ID is specified.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrivateAggregationApiBundledEnhancements);
 
 }  // namespace content

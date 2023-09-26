@@ -74,6 +74,8 @@ class PrivateAggregationHostTest : public testing::Test {
   PrivateAggregationHostTest() = default;
 
   void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        kPrivateAggregationApiBundledEnhancements);
     host_ = std::make_unique<PrivateAggregationHost>(
         /*on_report_request_received=*/mock_callback_.Get(),
         /*browser_context=*/&test_browser_context_);
@@ -94,6 +96,7 @@ class PrivateAggregationHostTest : public testing::Test {
 
  private:
   TestBrowserContext test_browser_context_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(PrivateAggregationHostTest,
@@ -450,7 +453,7 @@ TEST_F(PrivateAggregationHostTest, BindUntrustworthyOriginReceiver_Fails) {
   histogram.ExpectTotalCount(kPipeResultHistogram, 0);
 }
 
-TEST_F(PrivateAggregationHostTest, BindReceiverWithTooLongContextid_Fails) {
+TEST_F(PrivateAggregationHostTest, BindReceiverWithTooLongContextId_Fails) {
   base::HistogramTester histogram;
 
   const url::Origin kExampleOrigin =
@@ -483,6 +486,20 @@ TEST_F(PrivateAggregationHostTest, BindReceiverWithTooLongContextid_Fails) {
   host_->FlushReceiverSetForTesting();
 
   histogram.ExpectTotalCount(kPipeResultHistogram, 0);
+}
+
+TEST_F(PrivateAggregationHostTest, TimeoutSetWithoutContextId_Fails) {
+  const url::Origin kExampleOrigin =
+      url::Origin::Create(GURL("https://example.com"));
+  const url::Origin kMainFrameOrigin =
+      url::Origin::Create(GURL("https://main_frame.com"));
+
+  mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
+  EXPECT_FALSE(host_->BindNewReceiver(
+      kExampleOrigin, kMainFrameOrigin,
+      PrivateAggregationBudgetKey::Api::kProtectedAudience,
+      /*context_id=*/absl::nullopt,
+      /*timeout=*/base::Minutes(1), remote.BindNewPipeAndPassReceiver()));
 }
 
 TEST_F(PrivateAggregationHostTest, InvalidRequest_Rejected) {
@@ -963,65 +980,13 @@ TEST_F(PrivateAggregationHostTest, PipeStillOpenAtShutdown_Histogram) {
       base::Minutes(10), 1);
 }
 
-class PrivateAggregationHostDeveloperModeTest
-    : public PrivateAggregationHostTest {
- public:
-  PrivateAggregationHostDeveloperModeTest() {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kPrivateAggregationDeveloperMode);
+TEST_F(PrivateAggregationHostTest, TimeoutBeforeDisconnect) {
+  // Set the start time to be "on the minute".
+  base::Time on_the_minute_start_time =
+      base::Time() +
+      base::Time::Now().since_origin().CeilToMultiple(base::Minutes(1));
+  task_environment_.FastForwardBy(on_the_minute_start_time - base::Time::Now());
 
-    // Set the start time to be "on the minute".
-    on_the_minute_start_time_ =
-        base::Time() +
-        base::Time::Now().since_origin().CeilToMultiple(base::Minutes(1));
-    task_environment_.FastForwardBy(on_the_minute_start_time_ -
-                                    base::Time::Now());
-  }
-
- protected:
-  base::Time on_the_minute_start_time_;
-};
-
-TEST_F(PrivateAggregationHostDeveloperModeTest,
-       ContributeToHistogram_ScheduledReportTimeIsNotDelayed) {
-  const url::Origin kExampleOrigin =
-      url::Origin::Create(GURL("https://example.com"));
-  const url::Origin kMainFrameOrigin =
-      url::Origin::Create(GURL("https://main_frame.com"));
-
-  mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
-  EXPECT_TRUE(host_->BindNewReceiver(
-      kExampleOrigin, kMainFrameOrigin,
-      PrivateAggregationBudgetKey::Api::kProtectedAudience,
-      /*context_id=*/absl::nullopt, /*timeout=*/absl::nullopt,
-      remote.BindNewPipeAndPassReceiver()));
-
-  absl::optional<AggregatableReportRequest> validated_request;
-  EXPECT_CALL(
-      mock_callback_,
-      Run(_, _,
-          Property(&PrivateAggregationBudgetKey::api,
-                   PrivateAggregationBudgetKey::Api::kProtectedAudience),
-          BudgetDeniedBehavior::kDontSendReport))
-      .WillOnce(GenerateAndSaveReportRequest(&validated_request));
-
-  std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
-      contributions;
-  contributions.push_back(
-      blink::mojom::AggregatableReportHistogramContribution::New(
-          /*bucket=*/123, /*value=*/456));
-  remote->ContributeToHistogram(std::move(contributions));
-  remote.reset();
-  host_->FlushReceiverSetForTesting();
-
-  ASSERT_TRUE(validated_request);
-
-  // We're using `MOCK_TIME` so we can be sure no time has advanced.
-  EXPECT_EQ(validated_request->shared_info().scheduled_report_time,
-            base::Time::Now());
-}
-
-TEST_F(PrivateAggregationHostDeveloperModeTest, TimeoutBeforeDisconnect) {
   base::HistogramTester histogram;
 
   const url::Origin kExampleOrigin =
@@ -1050,9 +1015,9 @@ TEST_F(PrivateAggregationHostDeveloperModeTest, TimeoutBeforeDisconnect) {
             EXPECT_EQ(request.shared_info().debug_mode,
                       AggregatableReportSharedInfo::DebugMode::kDisabled);
             EXPECT_EQ(request.shared_info().scheduled_report_time,
-                      on_the_minute_start_time_ + base::Minutes(1));
+                      on_the_minute_start_time + base::Minutes(1));
             EXPECT_EQ(budget_key.time_window().start_time(),
-                      on_the_minute_start_time_ + base::Minutes(1));
+                      on_the_minute_start_time + base::Minutes(1));
           }));
 
   mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
@@ -1081,7 +1046,13 @@ TEST_F(PrivateAggregationHostDeveloperModeTest, TimeoutBeforeDisconnect) {
       1);
 }
 
-TEST_F(PrivateAggregationHostDeveloperModeTest, TimeoutAfterDisconnect) {
+TEST_F(PrivateAggregationHostTest, TimeoutAfterDisconnect) {
+  // Set the start time to be "on the minute".
+  base::Time on_the_minute_start_time =
+      base::Time() +
+      base::Time::Now().since_origin().CeilToMultiple(base::Minutes(1));
+  task_environment_.FastForwardBy(on_the_minute_start_time - base::Time::Now());
+
   base::HistogramTester histogram;
 
   const url::Origin kExampleOrigin =
@@ -1112,14 +1083,14 @@ TEST_F(PrivateAggregationHostDeveloperModeTest, TimeoutAfterDisconnect) {
 
             // `request` should have report scheduled 1s from now.
             CHECK_EQ(base::Time::Now() + base::Seconds(1),
-                     on_the_minute_start_time_ + base::Minutes(1));
+                     on_the_minute_start_time + base::Minutes(1));
             EXPECT_EQ(request.shared_info().scheduled_report_time,
-                      on_the_minute_start_time_ + base::Minutes(1));
+                      on_the_minute_start_time + base::Minutes(1));
 
             // The start time for budgeting should be based off the current
             // time, instead of the desired timeout time.
             EXPECT_EQ(budget_key.time_window().start_time(),
-                      on_the_minute_start_time_);
+                      on_the_minute_start_time);
           }));
 
   mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
@@ -1145,8 +1116,7 @@ TEST_F(PrivateAggregationHostDeveloperModeTest, TimeoutAfterDisconnect) {
       1);
 }
 
-TEST_F(PrivateAggregationHostDeveloperModeTest,
-       TimeoutBeforeDisconnectForTwoHosts) {
+TEST_F(PrivateAggregationHostTest, TimeoutBeforeDisconnectForTwoHosts) {
   base::HistogramTester histogram;
 
   const url::Origin kExampleOrigin =
@@ -1223,8 +1193,7 @@ TEST_F(PrivateAggregationHostDeveloperModeTest,
       2);
 }
 
-TEST_F(PrivateAggregationHostDeveloperModeTest,
-       TimeoutAfterDisconnectForTwoHosts) {
+TEST_F(PrivateAggregationHostTest, TimeoutAfterDisconnectForTwoHosts) {
   base::HistogramTester histogram;
 
   const url::Origin kExampleOrigin =
@@ -1293,7 +1262,7 @@ TEST_F(PrivateAggregationHostDeveloperModeTest,
       2);
 }
 
-TEST_F(PrivateAggregationHostDeveloperModeTest, TimeoutCanceledDueToError) {
+TEST_F(PrivateAggregationHostTest, TimeoutCanceledDueToError) {
   base::HistogramTester histogram;
 
   const url::Origin kExampleOrigin =
@@ -1322,7 +1291,7 @@ TEST_F(PrivateAggregationHostDeveloperModeTest, TimeoutCanceledDueToError) {
       PrivateAggregationHost::TimeoutResult::kCanceledDueToError, 1);
 }
 
-TEST_F(PrivateAggregationHostDeveloperModeTest,
+TEST_F(PrivateAggregationHostTest,
        TimeoutStillScheduledOnShutdownWithPipeOpen) {
   base::HistogramTester histogram;
 
@@ -1349,7 +1318,7 @@ TEST_F(PrivateAggregationHostDeveloperModeTest,
       PrivateAggregationHost::TimeoutResult::kStillScheduledOnShutdown, 1);
 }
 
-TEST_F(PrivateAggregationHostDeveloperModeTest,
+TEST_F(PrivateAggregationHostTest,
        TimeoutStillScheduledOnShutdownWithPipeOpenForTwoHosts) {
   base::HistogramTester histogram;
 
@@ -1384,6 +1353,93 @@ TEST_F(PrivateAggregationHostDeveloperModeTest,
   histogram.ExpectUniqueSample(
       kTimeoutResultHistogram,
       PrivateAggregationHost::TimeoutResult::kStillScheduledOnShutdown, 2);
+}
+
+class PrivateAggregationHostDeveloperModeTest
+    : public PrivateAggregationHostTest {
+ public:
+  PrivateAggregationHostDeveloperModeTest() {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kPrivateAggregationDeveloperMode);
+  }
+};
+
+TEST_F(PrivateAggregationHostDeveloperModeTest,
+       ContributeToHistogram_ScheduledReportTimeIsNotDelayed) {
+  const url::Origin kExampleOrigin =
+      url::Origin::Create(GURL("https://example.com"));
+  const url::Origin kMainFrameOrigin =
+      url::Origin::Create(GURL("https://main_frame.com"));
+
+  mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
+  EXPECT_TRUE(host_->BindNewReceiver(
+      kExampleOrigin, kMainFrameOrigin,
+      PrivateAggregationBudgetKey::Api::kProtectedAudience,
+      /*context_id=*/absl::nullopt, /*timeout=*/absl::nullopt,
+      remote.BindNewPipeAndPassReceiver()));
+
+  absl::optional<AggregatableReportRequest> validated_request;
+  EXPECT_CALL(
+      mock_callback_,
+      Run(_, _,
+          Property(&PrivateAggregationBudgetKey::api,
+                   PrivateAggregationBudgetKey::Api::kProtectedAudience),
+          BudgetDeniedBehavior::kDontSendReport))
+      .WillOnce(GenerateAndSaveReportRequest(&validated_request));
+
+  std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
+      contributions;
+  contributions.push_back(
+      blink::mojom::AggregatableReportHistogramContribution::New(
+          /*bucket=*/123, /*value=*/456));
+  remote->ContributeToHistogram(std::move(contributions));
+  remote.reset();
+  host_->FlushReceiverSetForTesting();
+
+  ASSERT_TRUE(validated_request);
+
+  // We're using `MOCK_TIME` so we can be sure no time has advanced.
+  EXPECT_EQ(validated_request->shared_info().scheduled_report_time,
+            base::Time::Now());
+}
+
+TEST_F(PrivateAggregationHostDeveloperModeTest,
+       TimeoutSet_ScheduledReportTimeIsAtTimeout) {
+  const url::Origin kExampleOrigin =
+      url::Origin::Create(GURL("https://example.com"));
+  const url::Origin kMainFrameOrigin =
+      url::Origin::Create(GURL("https://main_frame.com"));
+
+  mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
+  EXPECT_TRUE(host_->BindNewReceiver(
+      kExampleOrigin, kMainFrameOrigin,
+      PrivateAggregationBudgetKey::Api::kProtectedAudience,
+      /*context_id=*/"example_context_id", /*timeout=*/base::Seconds(30),
+      remote.BindNewPipeAndPassReceiver()));
+
+  absl::optional<AggregatableReportRequest> validated_request;
+  EXPECT_CALL(
+      mock_callback_,
+      Run(_, _,
+          Property(&PrivateAggregationBudgetKey::api,
+                   PrivateAggregationBudgetKey::Api::kProtectedAudience),
+          BudgetDeniedBehavior::kSendNullReport))
+      .WillOnce(GenerateAndSaveReportRequest(&validated_request));
+
+  std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
+      contributions;
+  contributions.push_back(
+      blink::mojom::AggregatableReportHistogramContribution::New(
+          /*bucket=*/123, /*value=*/456));
+  remote->ContributeToHistogram(std::move(contributions));
+  remote.reset();
+  host_->FlushReceiverSetForTesting();
+
+  ASSERT_TRUE(validated_request);
+
+  // We're using `MOCK_TIME` so we can be sure no time has advanced.
+  EXPECT_EQ(validated_request->shared_info().scheduled_report_time,
+            base::Time::Now() + base::Seconds(30));
 }
 
 }  // namespace

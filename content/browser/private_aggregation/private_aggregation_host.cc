@@ -139,9 +139,6 @@ bool PrivateAggregationHost::BindNewReceiver(
     absl::optional<base::TimeDelta> timeout,
     mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
         pending_receiver) {
-  // Timeout can only possibly be set when `context_id` is provided.
-  CHECK(!timeout || context_id);
-
   // If rejected, let the pending receiver be destroyed as it goes out of scope
   // so none of its requests are processed.
   if (!network::IsOriginPotentiallyTrustworthy(worklet_origin)) {
@@ -149,6 +146,10 @@ bool PrivateAggregationHost::BindNewReceiver(
   }
   if (context_id.has_value() &&
       context_id.value().size() > kMaxContextIdLength) {
+    return false;
+  }
+
+  if (timeout.has_value() && !context_id.has_value()) {
     return false;
   }
 
@@ -421,11 +422,17 @@ void PrivateAggregationHost::SendReportOnTimeoutOrDisconnect(
   // If the timeout hasn't been reached, use a modified report issued time.
   base::Time report_issued_time = now + remaining_timeout;
 
+  bool should_not_delay_this_report =
+      should_not_delay_reports_ ||
+      (base::FeatureList::IsEnabled(
+           kPrivateAggregationApiBundledEnhancements) &&
+       receiver_context.timeout_enabled);
+
   ReportRequestGenerator report_request_generator = base::BindOnce(
       GenerateReportRequest, std::move(receiver_context.report_debug_details),
       /*scheduled_report_time=*/
-      should_not_delay_reports_ ? report_issued_time
-                                : GetScheduledReportTime(report_issued_time),
+      should_not_delay_this_report ? report_issued_time
+                                   : GetScheduledReportTime(report_issued_time),
       /*report_id=*/base::Uuid::GenerateRandomV4(), reporting_origin,
       receiver_context.api_for_budgeting,
       std::move(receiver_context.context_id));

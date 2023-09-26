@@ -100,8 +100,9 @@ class CONTENT_EXPORT PrivateAggregationHost
   // is not potentially trustworthy or if `context_id` is too long.  If
   // `timeout` is set, the report will be sent as if the pipe closed after the
   // timeout, regardless of when the disconnection actually happens. `timeout`
-  // must be positive if set. The return value indicates whether the receiver
-  // was accepted. Virtual for testing.
+  // must be positive if set. If `timeout` is set, `context_id` must be set too.
+  // The return value indicates whether the receiver was accepted. Virtual for
+  // testing.
   [[nodiscard]] virtual bool BindNewReceiver(
       url::Origin worklet_origin,
       url::Origin top_frame_origin,
