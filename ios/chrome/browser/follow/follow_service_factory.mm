@@ -51,4 +51,5 @@ std::unique_ptr<KeyedService> FollowServiceFactory::BuildServiceInstanceFor(
 void FollowServiceFactory::RegisterBrowserStatePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(prefs::kFirstFollowUIShownCount, 0);
+  registry->RegisterIntegerPref(prefs::kFirstFollowUpdateUIShownCount, 0);
 }

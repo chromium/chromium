@@ -27,6 +27,7 @@ extern const char kDetectAddressesEnabled[];
 extern const char kEnableDoNotTrack[];
 extern const char kFeaturePushNotificationPermissions[];
 extern const char kFirstFollowUIShownCount[];
+extern const char kFirstFollowUpdateUIShownCount[];
 extern const char kHttpServerProperties[];
 extern const char kInactiveTabsTimeThreshold[];
 extern const char kIncognitoInterstitialEnabled[];

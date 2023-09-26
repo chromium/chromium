@@ -130,6 +130,7 @@ source_set("browser_agent") {
     "//ios/chrome/browser/follow:service",
     "//ios/chrome/browser/follow:service_factory",
     "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/ntp:features",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",

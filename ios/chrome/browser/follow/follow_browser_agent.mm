@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/follow/follow_service.h"
 #import "ios/chrome/browser/follow/follow_service_factory.h"
 #import "ios/chrome/browser/follow/web_page_urls.h"
+#import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -58,19 +59,22 @@ bool ShouldShowFirstFollowUI(PrefService* pref_service) {
     [user_defaults removeObjectForKey:kDisplayedFirstFollowModalCountKey];
   }
 
-  if (experimental_flags::ShouldAlwaysShowFirstFollow())
+  if (experimental_flags::ShouldAlwaysShowFirstFollow()) {
     return true;
+  }
 
   if (experimental_flags::ShouldResetFirstFollowCount()) {
     pref_service->ClearPref(prefs::kFirstFollowUIShownCount);
+    pref_service->ClearPref(prefs::kFirstFollowUpdateUIShownCount);
     experimental_flags::DidResetFirstFollowCount();
   }
 
-  const int count = pref_service->GetInteger(prefs::kFirstFollowUIShownCount);
-  if (count >= kFirstFollowModalShownMaxCount)
-    return false;
+  const int count =
+      IsFollowUIUpdateEnabled()
+          ? pref_service->GetInteger(prefs::kFirstFollowUpdateUIShownCount)
+          : pref_service->GetInteger(prefs::kFirstFollowUIShownCount);
 
-  return true;
+  return count < kFirstFollowModalShownMaxCount;
 }
 
 // Returns whether the source is from a menu action.
@@ -262,9 +266,15 @@ void FollowBrowserAgent::OnFollowSuccess(WebPageURLs* web_page_urls,
   // Display the First Follow modal UI if needed.
   const bool is_overflow_menu_source = source == FollowSource::OverflowMenu;
   if (is_overflow_menu_source && ShouldShowFirstFollowUI(pref_service)) {
-    pref_service->SetInteger(
-        prefs::kFirstFollowUIShownCount,
-        pref_service->GetInteger(prefs::kFirstFollowUIShownCount) + 1);
+    if (IsFollowUIUpdateEnabled()) {
+      pref_service->SetInteger(
+          prefs::kFirstFollowUIShownCount,
+          pref_service->GetInteger(prefs::kFirstFollowUpdateUIShownCount) + 1);
+    } else {
+      pref_service->SetInteger(
+          prefs::kFirstFollowUIShownCount,
+          pref_service->GetInteger(prefs::kFirstFollowUIShownCount) + 1);
+    }
 
     [feed_commands_ showFirstFollowUIForWebSite:web_site];
     return;
