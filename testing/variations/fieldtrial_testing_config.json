@@ -82,6 +82,25 @@
             ]
         }
     ],
+    "ActionsInSuggestAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Tr1_Promote_Reorder",
+                    "params": {
+                        "PromoteEntitySuggestion": "true",
+                        "PromoteReviewsAction": "true"
+                    },
+                    "enable_features": [
+                        "OmniboxActionsInSuggest"
+                    ]
+                }
+            ]
+        }
+    ],
     "AdaptiveCharging": [
         {
             "platforms": [
@@ -10618,7 +10637,6 @@
                         "AdaptiveSuggestionsVisibleGroupEligibilityUpdate",
                         "AndroidAuxiliarySearch",
                         "NewTabPageTilesTitleWrapAround",
-                        "OmniboxActionsInSuggest",
                         "OmniboxDynamicMaxAutocomplete",
                         "OmniboxFocusTriggersSRPZeroSuggest",
                         "OmniboxHeaderPaddingUpdate",
