@@ -12,6 +12,7 @@ namespace blink {
 
 class NGConstraintSpace;
 class NGLayoutResult;
+struct NGMarginStrut;
 
 // NGLayoutCacheStatus indicates what type of cache hit/miss occurred. For
 // various types of misses we may be able to perform less work than a full

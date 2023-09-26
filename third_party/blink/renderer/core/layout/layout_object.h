@@ -2776,8 +2776,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   // There 2 different types of list markers:
   // * LayoutNGInsideListMarker (LayoutInline): for inside markers
-  // * LayoutNGOutsideListMarker (LayoutNGBlockFlowMixin<LayoutBlockFlow>):
-  //   for outside markers.
+  // * LayoutNGOutsideListMarker (LayoutNGBlockFlow): for outside markers.
 
   // Any kind of LayoutBox list marker.
   // TODO(1229581): Remove this function. Just use

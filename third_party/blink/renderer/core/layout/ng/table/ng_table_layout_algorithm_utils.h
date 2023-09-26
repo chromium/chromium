@@ -17,6 +17,7 @@ class NGBoxFragmentBuilder;
 class NGConstraintSpaceBuilder;
 class NGTableBorders;
 enum class NGCacheSlot;
+struct NGTableColumnLocation;
 
 // Table size distribution algorithms.
 class NGTableAlgorithmUtils {

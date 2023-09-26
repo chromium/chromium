@@ -13,6 +13,7 @@
 
 namespace blink {
 
+class NGConstraintSpaceBuilder;
 struct NGBfcOffset;
 
 // Adjusts {@code offset} to the clearance line.
