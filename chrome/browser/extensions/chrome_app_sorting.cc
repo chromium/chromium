@@ -17,12 +17,12 @@
 #include "chrome/browser/extensions/install_tracker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/app_constants/constants.h"
+#include "components/webapps/common/web_app_id.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/constants.h"
@@ -507,7 +507,7 @@ void ChromeAppSorting::SetExtensionVisible(const std::string& extension_id,
     ntp_hidden_extensions_.insert(extension_id);
 }
 
-void ChromeAppSorting::OnWebAppInstalled(const web_app::AppId& app_id) {
+void ChromeAppSorting::OnWebAppInstalled(const webapps::AppId& app_id) {
   const web_app::WebApp* web_app = web_app_registrar_->GetAppById(app_id);
   // There seems to be a racy bug where |web_app| can be a nullptr. Until that
   // bug is solved, check for that here. https://crbug.com/1101668
