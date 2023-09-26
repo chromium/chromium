@@ -41,6 +41,12 @@ if [[ "$TARGET" =~ run_web_tests.py$ ]]; then
     WEB_TESTS_FLAGS=(${WEB_TESTS_FLAGS[@]} --additional-driver-flag="$DEFAULT_FLAG")
   done
   TARGET_FLAGS=(${WEB_TESTS_FLAGS[@]} "$@")
+elif [[ "$TARGET" =~ run_wpt_tests.py$ ]]; then
+  WPT_TESTS_FLAGS=(--jobs=1 --timeout-multiplier=10000 --verbose)
+  for DEFAULT_FLAG in "${DEFAULT_TARGET_FLAGS[@]}"; do
+    WPT_TESTS_FLAGS=(${WPT_TESTS_FLAGS[@]} --additional-driver-flag="$DEFAULT_FLAG")
+  done
+  TARGET_FLAGS=(${WPT_TESTS_FLAGS[@]} "$@")
 else
   TARGET_FLAGS=(${DEFAULT_TARGET_FLAGS[@]} "$@")
 fi

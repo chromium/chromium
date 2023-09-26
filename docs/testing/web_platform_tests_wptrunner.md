@@ -411,6 +411,8 @@ failures.
 
 ## Debugging Support
 
+### Headful Mode
+
 Passing the `--no-headless` flag to `run_wpt_tests.py` will pause execution
 after running each test headfully.
 You can interact with the paused test page afterwards, including with DevTools:
@@ -419,10 +421,19 @@ You can interact with the paused test page afterwards, including with DevTools:
 
 Closing the tab or window will unpause `wptrunner` and run the next test.
 
-In the future, we intend to support hooking up [text-based debuggers] like `rr`
-to test runs.
+### Text-Based Debuggers
 
-[text-based debuggers]: https://crbug.com/1440021
+You can pass a wrapper command like `rr record` to `run_wpt_tests.py
+--wrapper="cmd arg1 ..."`.
+Note that the wrapper command must forward stdio from `content_shell` running in
+[protocol mode], so `--wrapper` won't work with interactive debuggers.
+
+To interactively debug WPTs, prefix the `run_wpt_tests.py` command with
+[`debug_renderer`][13] to attach a debugger to a desired renderer.
+
+For other use cases, see [these debugging tips].
+
+[these debugging tips]: /docs/linux/debugging.md
 
 ## Known Issues
 
@@ -443,3 +454,4 @@ label](https://bugs.chromium.org/p/chromium/issues/list?q=component%3ABlink%3EIn
 [10]: /third_party/blink/web_tests/FlagExpectations
 [11]: https://web-platform-tests.org/writing-tests/testharness.html#tests-for-other-or-multiple-globals-any-js
 [12]: https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/tools/blinkpy/web_tests/port/base.py;l=152-163;drc=b35e75299a6fda0eb51e9ba3139cce216f7f8db0;bpv=0;bpt=0
+[13]: /third_party/blink/tools/debug_renderer

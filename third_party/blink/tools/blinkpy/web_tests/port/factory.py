@@ -669,6 +669,10 @@ def add_testing_options_group(parser: argparse.ArgumentParser,
             'manual',
         ]
         testing_group.add_argument(
+            '--timeout-multiplier',
+            type=float,
+            help='Multiplier relative to standard test timeouts to use')
+        testing_group.add_argument(
             '--test-types',
             nargs='*',
             choices=test_types,

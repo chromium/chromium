@@ -179,8 +179,8 @@ class WPTAdapterTest(unittest.TestCase):
             '--repeat-each=9',
             '--num-retries=11',
             '--zero-tests-executed-ok',
+            '--timeout-multiplier=2.5',
             '--no-manifest-update',
-            '--wrapper=rr record --disable-avx-512',
             'external/wpt/dir/',
         ]
         adapter = WPTAdapter.from_args(self.host, args, 'test-linux-trusty')
@@ -194,6 +194,7 @@ class WPTAdapterTest(unittest.TestCase):
             self.assertEqual(set(options.exclude), set())
             # `*webdriver/` tests are implicitly excluded by default.
             self.assertNotIn('wdspec', options.test_types)
+            self.assertAlmostEqual(options.timeout_multiplier, 2.5)
             self.assertEqual(options.include, ['dir/reftest.html'])
 
             run_info = self._read_run_info(options)
