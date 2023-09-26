@@ -86,10 +86,6 @@ declare_args() {
   # Not for client use.
   disable_libfuzzer = false
 
-  # Optimize for coverage guided fuzzing (balance between speed and number of
-  # branches). Can be also used to remove non-determinism and other issues.
-  optimize_for_fuzzing = false
-
   # Value for -fsanitize-coverage flag. Setting this causes
   # use_sanitizer_coverage to be enabled.
   # This flag is not used for libFuzzer (use_libfuzzer=true). Instead, we use:

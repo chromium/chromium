@@ -15,7 +15,6 @@ import("//build/config/dcheck_always_on.gni")
 import("//build/config/gclient_args.gni")
 import("//build/config/host_byteorder.gni")
 import("//build/config/rust.gni")
-import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
 import("//build/config/unwind.gni")
 import("//build/toolchain/cc_wrapper.gni")
@@ -85,6 +84,10 @@ declare_args() {
   # builds. To use it, set auto_profile_path to the path to a file containing
   # the needed gcov profiling data.
   auto_profile_path = ""
+
+  # Optimize for coverage guided fuzzing (balance between speed and number of
+  # branches)
+  optimize_for_fuzzing = false
 
   # Path to an AFDO profile to use while building with clang, if any. Empty
   # implies none.

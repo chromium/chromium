@@ -286,7 +286,7 @@ config("asan_flags") {
       # odr-violation errors in rust code, and link failures for cros/asan.
       # Clang recently turned it on by default for all ELF targets (it was
       # already on for Fuchsia). Pass the flag to turn it back off.
-      cflags += ["-fno-sanitize-address-globals-dead-stripping"]
+      cflags += [ "-fno-sanitize-address-globals-dead-stripping" ]
     }
     if (is_win) {
       if (!defined(asan_win_blocklist_path)) {
@@ -550,7 +550,7 @@ config("ubsan_vptr_flags") {
 }
 
 config("fuzzing_build_mode") {
-  if (use_fuzzing_engine && optimize_for_fuzzing) {
+  if (use_fuzzing_engine) {
     defines = [ "FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION" ]
   }
 }
