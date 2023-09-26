@@ -1228,8 +1228,8 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_FIRST_FOLLOW_BODY_UPDATE" desc="The body of the first follow surface for the follow UI update.">
         The sites and searches you follow are saved in your Google Account. You can manage your follows in settings at any time.
       </message>
-      <message name="IDS_IOS_FIRST_FOLLOW_GO_TO_FEED" desc="The action button to see the feed in the first follow surface.">
-        Go To Feed
+      <message name="IDS_IOS_FIRST_FOLLOW_GO_TO_FOLLOWING" desc="The action button to see the Following feed in the first follow surface.">
+        Go to Following
       </message>
       <message name="IDS_IOS_FIRST_FOLLOW_GOT_IT" desc="The action button to dismiss the first follow surface.">
         Got It
