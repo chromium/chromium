@@ -369,9 +369,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kAsyncMultiPortPath);
 // Enables custom proxy configuration for the IP Protection experimental proxy.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableIpProtectionProxy);
 
-// Sets the name of the IP protection proxy.
-NET_EXPORT extern const base::FeatureParam<std::string> kIpPrivacyProxyServer;
-
 // Sets the name of the IP protection auth token server.
 NET_EXPORT extern const base::FeatureParam<std::string> kIpPrivacyTokenServer;
 
