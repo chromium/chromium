@@ -13,6 +13,8 @@ source_set("toolbar") {
     "primary_toolbar_coordinator.mm",
     "secondary_toolbar_coordinator.h",
     "secondary_toolbar_coordinator.mm",
+    "secondary_toolbar_mediator.h",
+    "secondary_toolbar_mediator.mm",
     "toolbar_coordinatee.h",
     "toolbar_coordinator.h",
     "toolbar_coordinator.mm",
