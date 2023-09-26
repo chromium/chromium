@@ -302,6 +302,19 @@ an obscure crash may occur. Those crashes often manifest themselves as SEGV or
 `RawPtrBackupRefImpl::ReleaseInternal()`, but you may also experience memory
 corruption or a silent drop of UaF protection.
 
+## Pointer Annotations
+
+### The AllowPtrArithmetic trait
+
+In an ideal world, a raw_ptr would point to a single object, rather than to
+a C-style array of objects accessed via pointer arithmetic, since the latter
+is best handled via a C++ construct such as base::span<> or std::vector<>.
+raw_ptrs upon which such operations are performed and for which conversion is
+desirable have been tagged with the AllowPtrArithmetic trait. That all such
+pointer are tagged can be enforced by setting the GN build arg
+enable_pointer_arithmetic_trait_check=true.
+
+
 ## Recoverable compile-time problems {#Recoverable-compile-time-problems}
 
 ### Explicit |raw_ptr.get()| might be needed
