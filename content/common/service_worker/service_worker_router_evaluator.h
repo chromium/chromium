@@ -6,7 +6,6 @@
 #define CONTENT_COMMON_SERVICE_WORKER_SERVICE_WORKER_ROUTER_EVALUATOR_H_
 
 #include <memory>
-#include <utility>
 
 #include "base/values.h"
 #include "content/common/content_export.h"

@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "services/network/public/cpp/request_destination.h"
 #include "services/network/public/cpp/request_mode.h"
+#include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
 #include "third_party/liburlpattern/options.h"
 #include "third_party/liburlpattern/pattern.h"
 #include "third_party/liburlpattern/utils.h"
@@ -167,15 +168,18 @@ std::string RunningStatusToString(
 
 bool IsValidCondition(const blink::ServiceWorkerRouterCondition& condition) {
   switch (condition.type) {
-    case blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern:
+    case blink::ServiceWorkerRouterCondition::Type::kUrlPattern:
       return condition.url_pattern.has_value();
-    case blink::ServiceWorkerRouterCondition::ConditionType::kRequest:
+    case blink::ServiceWorkerRouterCondition::Type::kRequest:
       return condition.request.has_value() &&
              (condition.request->method.has_value() ||
               condition.request->mode.has_value() ||
               condition.request->destination.has_value());
-    case blink::ServiceWorkerRouterCondition::ConditionType::kRunningStatus:
+    case blink::ServiceWorkerRouterCondition::Type::kRunningStatus:
       return condition.running_status.has_value();
+    case blink::ServiceWorkerRouterCondition::Type::kOr:
+      NOTIMPLEMENTED();
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -328,10 +332,10 @@ bool ServiceWorkerRouterEvaluator::RouterRule::SetConditions(
       return false;
     }
     if (condition.type !=
-        blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern) {
+        blink::ServiceWorkerRouterCondition::Type::kUrlPattern) {
       non_url_pattern_conditions_.push_back(condition);
       if (condition.type ==
-          blink::ServiceWorkerRouterCondition::ConditionType::kRunningStatus) {
+          blink::ServiceWorkerRouterCondition::Type::kRunningStatus) {
         need_running_status_ = true;
       }
       continue;
@@ -418,19 +422,22 @@ bool ServiceWorkerRouterEvaluator::RouterRule::IsNonUrlPatternConditionMatched(
     absl::optional<blink::EmbeddedWorkerStatus> running_status) const {
   for (const auto& c : non_url_pattern_conditions_) {
     switch (c.type) {
-      case blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern:
+      case blink::ServiceWorkerRouterCondition::Type::kUrlPattern:
         NOTREACHED_NORETURN()
             << "UrlPattern should be separated in the compile time.";
-      case blink::ServiceWorkerRouterCondition::ConditionType::kRequest:
+      case blink::ServiceWorkerRouterCondition::Type::kRequest:
         if (!IsMatchedRequest(*c.request, request)) {
           return false;
         }
         break;
-      case blink::ServiceWorkerRouterCondition::ConditionType::kRunningStatus:
+      case blink::ServiceWorkerRouterCondition::Type::kRunningStatus:
         if (running_status &&
             !IsMatchedRunningCondition(*c.running_status, *running_status)) {
           return false;
         }
+        break;
+      case blink::ServiceWorkerRouterCondition::Type::kOr:
+        NOTIMPLEMENTED();
         break;
     }
   }
@@ -495,7 +502,7 @@ base::Value ServiceWorkerRouterEvaluator::ToValue() const {
     base::Value::List source;
     for (const auto& c : r.conditions) {
       switch (c.type) {
-        case blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern: {
+        case blink::ServiceWorkerRouterCondition::Type::kUrlPattern: {
           base::Value::Dict out_c;
           base::Value out_value;
           const blink::SafeUrlPattern& url_pattern = *c.url_pattern;
@@ -518,17 +525,20 @@ base::Value ServiceWorkerRouterEvaluator::ToValue() const {
           condition.Append(std::move(out_c));
           break;
         }
-        case blink::ServiceWorkerRouterCondition::ConditionType::kRequest: {
+        case blink::ServiceWorkerRouterCondition::Type::kRequest: {
           base::Value::Dict out_c;
           out_c.Set("request", RequestToValue(*c.request));
           condition.Append(std::move(out_c));
           break;
         }
-        case blink::ServiceWorkerRouterCondition::ConditionType::
-            kRunningStatus: {
+        case blink::ServiceWorkerRouterCondition::Type::kRunningStatus: {
           base::Value::Dict out_c;
           out_c.Set("running_status", RunningStatusToString(*c.running_status));
           condition.Append(std::move(out_c));
+          break;
+        }
+        case blink::ServiceWorkerRouterCondition::Type::kOr: {
+          NOTIMPLEMENTED();
           break;
         }
       }

@@ -9,9 +9,9 @@
 
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/blink/public/common/common_export.h"
+#include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
-#include "third_party/blink/public/mojom/safe_url_pattern.mojom.h"
-#include "third_party/blink/public/mojom/service_worker/service_worker_router_rule.mojom.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_router_rule.mojom-shared.h"
 
 namespace mojo {
 
@@ -106,6 +106,19 @@ struct BLINK_COMMON_EXPORT
 
 template <>
 struct BLINK_COMMON_EXPORT
+    StructTraits<blink::mojom::ServiceWorkerRouterOrConditionDataView,
+                 blink::ServiceWorkerRouterOrCondition> {
+  static const std::vector<blink::ServiceWorkerRouterCondition>& conditions(
+      const blink::ServiceWorkerRouterOrCondition& data) {
+    return data.conditions;
+  }
+
+  static bool Read(blink::mojom::ServiceWorkerRouterOrConditionDataView data,
+                   blink::ServiceWorkerRouterOrCondition* out);
+};
+
+template <>
+struct BLINK_COMMON_EXPORT
     UnionTraits<blink::mojom::ServiceWorkerRouterConditionDataView,
                 blink::ServiceWorkerRouterCondition> {
   static blink::mojom::ServiceWorkerRouterConditionDataView::Tag GetTag(
@@ -124,6 +137,11 @@ struct BLINK_COMMON_EXPORT
   static const blink::ServiceWorkerRouterRunningStatusCondition& running_status(
       const blink::ServiceWorkerRouterCondition& data) {
     return *data.running_status;
+  }
+
+  static const blink::ServiceWorkerRouterOrCondition& or_condition(
+      const blink::ServiceWorkerRouterCondition& data) {
+    return *data.or_condition;
   }
 
   static bool Read(blink::mojom::ServiceWorkerRouterConditionDataView data,

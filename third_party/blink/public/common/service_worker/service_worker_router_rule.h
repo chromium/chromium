@@ -20,6 +20,8 @@ enum class RequestDestination : int32_t;
 
 namespace blink {
 
+struct ServiceWorkerRouterCondition;
+
 struct ServiceWorkerRouterRequestCondition {
   // https://fetch.spec.whatwg.org/#concept-request-method
   // Technically, it can be an arbitrary string, but Chromium would set
@@ -50,19 +52,27 @@ struct ServiceWorkerRouterRunningStatusCondition {
   }
 };
 
+struct ServiceWorkerRouterOrCondition {
+  std::vector<ServiceWorkerRouterCondition> conditions;
+
+  bool operator==(const ServiceWorkerRouterOrCondition& other) const;
+};
+
 // TODO(crbug.com/1371756): implement other conditions in the proposal.
 // TODO(crbug.com/1456599): migrate to absl::variant if possible.
 struct BLINK_COMMON_EXPORT ServiceWorkerRouterCondition {
   // Type of conditions.
-  enum class ConditionType {
+  enum class Type {
     // URLPattern is used as a condition.
     kUrlPattern,
     // Request condition.
     kRequest,
     // Running status condition.
     kRunningStatus,
+    // Or condition
+    kOr,
   };
-  ConditionType type;
+  Type type;
 
   // URLPattern to be used for matching.
   // This field is valid if `type` is `kUrlPattern`.
@@ -75,6 +85,11 @@ struct BLINK_COMMON_EXPORT ServiceWorkerRouterCondition {
   // Running status to be used for matching.
   // This field is valid if `type` is `kRunningStatus`.
   absl::optional<ServiceWorkerRouterRunningStatusCondition> running_status;
+
+  // `Or` condition to be used for matching
+  // This field is valid if `type` is `kOr`
+  // We need `_condition` suffix to avoid conflict with reserved keywords in C++
+  absl::optional<ServiceWorkerRouterOrCondition> or_condition;
 
   bool operator==(const ServiceWorkerRouterCondition& other) const;
 };

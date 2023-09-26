@@ -54,6 +54,10 @@ struct ServiceWorkerRouterRequestCondition {
   network.mojom.RequestDestination destination;
 };
 
+struct ServiceWorkerRouterOrCondition {
+  array<ServiceWorkerRouterCondition> conditions;
+};
+
 // This represents a condition of the router rule.
 // https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
 // TODO(crbug.com/1371756): implement other conditions in the full picture.
@@ -62,6 +66,7 @@ union ServiceWorkerRouterCondition {
   SafeUrlPattern url_pattern;
   ServiceWorkerRouterRequestCondition request;
   ServiceWorkerRouterRunningStatusCondition running_status;
+  ServiceWorkerRouterOrCondition or_condition;
 };
 
 // This is used for specifying the source is network.

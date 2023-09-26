@@ -119,8 +119,7 @@ absl::optional<ServiceWorkerRouterCondition> RouterUrlPatternConditionToBlink(
     return absl::nullopt;
   }
   blink::ServiceWorkerRouterCondition condition;
-  condition.type =
-      blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
+  condition.type = blink::ServiceWorkerRouterCondition::Type::kUrlPattern;
   condition.url_pattern = std::move(*url_pattern);
   return condition;
 }
@@ -152,7 +151,7 @@ absl::optional<ServiceWorkerRouterCondition> RouterRequestConditionToBlink(
     return absl::nullopt;
   }
   ServiceWorkerRouterCondition condition;
-  condition.type = ServiceWorkerRouterCondition::ConditionType::kRequest;
+  condition.type = ServiceWorkerRouterCondition::Type::kRequest;
   condition.request = std::move(request);
   return condition;
 }
@@ -179,7 +178,7 @@ RouterRunningStatusConditionToBlink(RouterCondition* v8_condition,
       break;
   }
   ServiceWorkerRouterCondition condition;
-  condition.type = ServiceWorkerRouterCondition::ConditionType::kRunningStatus;
+  condition.type = ServiceWorkerRouterCondition::Type::kRunningStatus;
   condition.running_status = std::move(running_status);
   return condition;
 }

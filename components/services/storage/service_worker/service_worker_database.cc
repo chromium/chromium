@@ -17,16 +17,16 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/services/storage/filesystem_proxy_factory.h"
+#include "components/services/storage/public/mojom/service_worker_database.mojom-forward.h"
 #include "components/services/storage/service_worker/service_worker_database.pb.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
-#include "services/network/public/mojom/cross_origin_embedder_policy.mojom-shared.h"
-#include "services/network/public/mojom/cross_origin_opener_policy.mojom-shared.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
+#include "services/network/public/mojom/referrer_policy.mojom.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_ancestor_frame_type.mojom.h"
-#include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
@@ -412,8 +412,7 @@ absl::optional<blink::ServiceWorkerRouterCondition> ConvertToBlinkCondition(
       return absl::nullopt;
     case ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
         kUrlPattern: {
-      ret.type =
-          blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
+      ret.type = blink::ServiceWorkerRouterCondition::Type::kUrlPattern;
       blink::SafeUrlPattern url_pattern;
       if (condition.url_pattern().legacy_pathname_size() == 0) {
         if (condition.url_pattern().protocol_size() > 0) {
@@ -514,7 +513,7 @@ absl::optional<blink::ServiceWorkerRouterCondition> ConvertToBlinkCondition(
     }
     case ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
         kRequest: {
-      ret.type = blink::ServiceWorkerRouterCondition::ConditionType::kRequest;
+      ret.type = blink::ServiceWorkerRouterCondition::Type::kRequest;
       blink::ServiceWorkerRouterRequestCondition request;
       if (condition.request().has_method()) {
         request.method = condition.request().method();
@@ -661,8 +660,7 @@ absl::optional<blink::ServiceWorkerRouterCondition> ConvertToBlinkCondition(
     }
     case ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
         kRunningStatus: {
-      ret.type =
-          blink::ServiceWorkerRouterCondition::ConditionType::kRunningStatus;
+      ret.type = blink::ServiceWorkerRouterCondition::Type::kRunningStatus;
       blink::ServiceWorkerRouterRunningStatusCondition running_status;
       if (!condition.has_running_status() ||
           !condition.running_status().has_status()) {
@@ -685,6 +683,28 @@ absl::optional<blink::ServiceWorkerRouterCondition> ConvertToBlinkCondition(
       ret.running_status = running_status;
       break;
     }
+    case ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::kOr: {
+      ret.type = blink::ServiceWorkerRouterCondition::Type::kOr;
+      if (!condition.has_or_()) {
+        return absl::nullopt;
+      }
+      blink::ServiceWorkerRouterOrCondition or_condition;
+
+      const auto& pb_conditions = condition.or_().conditions();
+      or_condition.conditions.reserve(pb_conditions.size());
+      for (const auto& pb_c : pb_conditions) {
+        absl::optional<blink::ServiceWorkerRouterCondition> c =
+            ConvertToBlinkCondition(pb_c);
+        if (c) {
+          or_condition.conditions.emplace_back(std::move(*c));
+        } else {
+          return absl::nullopt;
+        }
+      }
+
+      ret.or_condition = std::move(or_condition);
+      break;
+    }
   }
 
   return ret;
@@ -694,7 +714,7 @@ void WriteConditionToProto(
     const blink::ServiceWorkerRouterCondition& condition,
     ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition* out) {
   switch (condition.type) {
-    case blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern: {
+    case blink::ServiceWorkerRouterCondition::Type::kUrlPattern: {
       ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::URLPattern*
           mutable_url_pattern = out->mutable_url_pattern();
       CHECK(!condition.url_pattern->protocol.empty() ||
@@ -741,7 +761,7 @@ void WriteConditionToProto(
           condition.url_pattern->options.ignore_case);
       break;
     }
-    case blink::ServiceWorkerRouterCondition::ConditionType::kRequest: {
+    case blink::ServiceWorkerRouterCondition::Type::kRequest: {
       ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::Request*
           request = out->mutable_request();
       if (condition.request->method) {
@@ -903,7 +923,7 @@ void WriteConditionToProto(
       }
       break;
     }
-    case blink::ServiceWorkerRouterCondition::ConditionType::kRunningStatus: {
+    case blink::ServiceWorkerRouterCondition::Type::kRunningStatus: {
       ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
           RunningStatus* running_status = out->mutable_running_status();
       switch (condition.running_status->status) {
@@ -919,6 +939,16 @@ void WriteConditionToProto(
               ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
                   RunningStatus::kNotRunning);
           break;
+      }
+      break;
+    }
+    case blink::ServiceWorkerRouterCondition::Type::kOr: {
+      const auto& conditions = condition.or_condition->conditions;
+      auto* pb_conditions = out->mutable_or_()->mutable_conditions();
+      pb_conditions->Reserve(conditions.size());
+      for (auto&& c : conditions) {
+        auto* e_out = pb_conditions->Add();
+        WriteConditionToProto(c, e_out);
       }
       break;
     }
