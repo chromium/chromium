@@ -12,9 +12,9 @@
 #include "chrome/browser/notifications/notifier_settings_test_observer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
 
 namespace {
@@ -50,7 +50,7 @@ class ChromeAshMessageCenterClientBrowserTest : public InProcessBrowserTest {
     ash::NotifierSettingsController::Get()->GetNotifiers();
   }
 
-  void SetNotifierEnabled(web_app::AppId app_id, bool enabled) {
+  void SetNotifierEnabled(webapps::AppId app_id, bool enabled) {
     ash::NotifierSettingsController::Get()->SetNotifierEnabled(
         message_center::NotifierId(message_center::NotifierType::APPLICATION,
                                    app_id),
@@ -70,7 +70,7 @@ class ChromeAshMessageCenterClientBrowserTest : public InProcessBrowserTest {
     Profile* profile = browser()->profile();
 
     // Install a PWA and wait for app service to see it.
-    web_app::AppId app_id =
+    webapps::AppId app_id =
         web_app::test::InstallWebApp(profile, std::move(web_app_install_info));
     // Inform notifier controller it should begin observing |profile|'s'
     // AppRegistryCache.

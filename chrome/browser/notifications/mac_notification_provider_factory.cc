@@ -57,7 +57,7 @@ LaunchInProcessProvider() {
 
 MacNotificationProviderFactory::MacNotificationProviderFactory(
     mac_notifications::NotificationStyle notification_style,
-    const web_app::AppId& web_app_id)
+    const webapps::AppId& web_app_id)
     : notification_style_(notification_style), web_app_id_(web_app_id) {
   CHECK_NE(
       notification_style_ == mac_notifications::NotificationStyle::kAppShim,

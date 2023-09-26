@@ -135,7 +135,7 @@ class NotificationPlatformBridgeMacTest : public testing::Test {
   NotificationPlatformBridgeMac::WebAppDispatcherFactory
   CreateWebAppDispatcherFactory() {
     return base::BindLambdaForTesting(
-        [&](const web_app::AppId& web_app_id)
+        [&](const webapps::AppId& web_app_id)
             -> std::unique_ptr<NotificationDispatcherMac> {
           auto dispatcher = std::make_unique<StubNotificationDispatcherMac>();
           web_app_dispatchers_[web_app_id] = dispatcher->AsWeakPtr();
@@ -152,7 +152,7 @@ class NotificationPlatformBridgeMacTest : public testing::Test {
   }
 
   StubNotificationDispatcherMac* dispatcher_for_web_app(
-      const web_app::AppId& web_app_id) {
+      const webapps::AppId& web_app_id) {
     auto it = web_app_dispatchers_.find(web_app_id);
     if (it == web_app_dispatchers_.end()) {
       return nullptr;
@@ -168,7 +168,7 @@ class NotificationPlatformBridgeMacTest : public testing::Test {
   raw_ptr<TestingProfile> profile_ = nullptr;
   base::WeakPtr<StubNotificationDispatcherMac> banner_dispatcher_;
   base::WeakPtr<StubNotificationDispatcherMac> alert_dispatcher_;
-  std::map<web_app::AppId, base::WeakPtr<StubNotificationDispatcherMac>>
+  std::map<webapps::AppId, base::WeakPtr<StubNotificationDispatcherMac>>
       web_app_dispatchers_;
 };
 

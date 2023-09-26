@@ -47,7 +47,7 @@ NotificationPlatformBridge::Create() {
       std::make_unique<MacNotificationProviderFactory>(
           mac_notifications::NotificationStyle::kAlert));
   auto create_dispatcher_for_web_app =
-      base::BindRepeating([](const web_app::AppId& web_app_id)
+      base::BindRepeating([](const webapps::AppId& web_app_id)
                               -> std::unique_ptr<NotificationDispatcherMac> {
         return std::make_unique<NotificationDispatcherMojo>(
             std::make_unique<MacNotificationProviderFactory>(

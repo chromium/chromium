@@ -1117,7 +1117,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceIncomingCallTest,
 
   // Install the web app.
   const GURL web_app_url = TestPageUrl();
-  const web_app::AppId app_id = web_app::test::InstallDummyWebApp(
+  const webapps::AppId app_id = web_app::test::InstallDummyWebApp(
       browser()->profile(), "Web App Title", web_app_url);
 
   EXPECT_EQ("ok",
@@ -1195,7 +1195,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceIncomingCallTest,
 
   // Install the web app.
   const GURL web_app_url = TestPageUrl();
-  const web_app::AppId app_id = web_app::test::InstallDummyWebApp(
+  const webapps::AppId app_id = web_app::test::InstallDummyWebApp(
       browser()->profile(), "Web App Title", web_app_url);
 
   EXPECT_EQ("ok", RunScript("DisplayIncomingCallNotification()"));
