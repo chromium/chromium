@@ -2808,6 +2808,18 @@ void LayoutObject::StyleWillChange(StyleDifference diff,
         cache->LocationChanged(this);
     }
 
+    if (style_->ContentVisibility() != new_style.ContentVisibility()) {
+      if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
+        if (GetNode()) {
+          cache->RemoveSubtreeWhenSafe(GetNode());
+        } else {
+          // Removing the AXObject for a nodeless layout object will also
+          // remove its subtree.
+          cache->Remove(this);
+        }
+      }
+    }
+
     if (visibility_changed || style_->IsInert() != new_style.IsInert()) {
       if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
         cache->StyleChanged(this, /*visibility_or_inertness_changed*/ true);
