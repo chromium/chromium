@@ -17,6 +17,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#endif
+
 namespace autofill::payments {
 
 using autofill_metrics::MandatoryReauthOfferOptInDecision;
@@ -143,6 +147,12 @@ TEST_F(MandatoryReauthManagerTest, GetAuthenticationMethod_UnsupportedMethod) {
 // Test that the MandatoryReauthManager returns that we should offer re-auth
 // opt-in if the conditions for offering it are all met for local cards.
 TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_LocalCard) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       features::kAutofillEnablePaymentsMandatoryReauth);
@@ -188,6 +198,12 @@ TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_Incognito) {
 // Test that the MandatoryReauthManager returns that we should offer re-auth
 // opt-in if the conditions for offering it are all met for virtual cards.
 TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_VirtualCard) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   base::test::ScopedFeatureList feature_list(
       features::kAutofillEnablePaymentsMandatoryReauth);
 
@@ -200,6 +216,12 @@ TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_VirtualCard) {
 // opt-in if the user has already made a decision on opting in or out of
 // re-auth.
 TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_UserAlreadyMadeDecision) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   base::test::ScopedFeatureList feature_list(
       features::kAutofillEnablePaymentsMandatoryReauth);
 
@@ -217,6 +239,12 @@ TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_UserAlreadyMadeDecision) {
 // opt-in if authentication is not available on the device.
 TEST_F(MandatoryReauthManagerTest,
        ShouldOfferOptin_AuthenticationNotAvailable) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   base::test::ScopedFeatureList feature_list(
       features::kAutofillEnablePaymentsMandatoryReauth);
 
@@ -239,6 +267,12 @@ TEST_F(MandatoryReauthManagerTest,
 TEST_F(
     MandatoryReauthManagerTest,
     ShouldOfferOptin_FilledCardWentThroughInteractiveAuthenticationOrNoAutofill) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   base::test::ScopedFeatureList feature_list(
       features::kAutofillEnablePaymentsMandatoryReauth);
 
@@ -258,6 +292,12 @@ TEST_F(
 TEST_F(
     MandatoryReauthManagerTest,
     ShouldOfferOptin_ServerCardWithMatchingLocalCard_LastFilledCardWasLocalCard) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   base::test::ScopedFeatureList feature_list(
       features::kAutofillEnablePaymentsMandatoryReauth);
 
@@ -280,6 +320,12 @@ TEST_F(MandatoryReauthManagerTest, StartOptInFlow) {
 // Test that the MandatoryReauthManager correctly handles the case where the
 // user accepts the re-auth prompt.
 TEST_F(MandatoryReauthManagerTest, OnUserAcceptedOptInPrompt) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   ON_CALL(*autofill_client_->GetDeviceAuthenticatorPtr(),
           AuthenticateWithMessage)
@@ -340,6 +386,12 @@ TEST_F(MandatoryReauthManagerTest, OnUserAcceptedOptInPrompt) {
 // Test that the MandatoryReauthManager correctly handles the case where the
 // user cancels the re-auth prompt.
 TEST_F(MandatoryReauthManagerTest, OnUserCancelledOptInPrompt) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   EXPECT_FALSE(autofill_client_->GetPrefs()->GetUserPrefValue(
       prefs::kAutofillPaymentMethodsMandatoryReauth));
 
@@ -354,6 +406,12 @@ TEST_F(MandatoryReauthManagerTest, OnUserCancelledOptInPrompt) {
 // Test that the MandatoryReauthManager correctly handles the case where the
 // user closed the re-auth prompt.
 TEST_F(MandatoryReauthManagerTest, OnUserClosedOptInPrompt) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   EXPECT_EQ(autofill_client_->GetPrefs()->GetInteger(
                 prefs::kAutofillPaymentMethodsMandatoryReauthPromoShownCounter),
             0);
@@ -405,6 +463,12 @@ class MandatoryReauthManagerOptInFlowTest
 };
 
 TEST_P(MandatoryReauthManagerOptInFlowTest, OptInSuccess) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   base::test::ScopedFeatureList feature_list(
       features::kAutofillEnablePaymentsMandatoryReauth);
   base::HistogramTester histogram_tester;
@@ -451,6 +515,12 @@ TEST_P(MandatoryReauthManagerOptInFlowTest, OptInSuccess) {
 }
 
 TEST_P(MandatoryReauthManagerOptInFlowTest, OptInShownButAuthFailure) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   base::test::ScopedFeatureList feature_list(
       features::kAutofillEnablePaymentsMandatoryReauth);
   base::HistogramTester histogram_tester;

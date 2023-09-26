@@ -85,6 +85,10 @@
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/storage.h"
 #include "ui/base/l10n/l10n_util.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#endif
+
 namespace {
 // Checks the order of preference of the `original_card` with the
 // `duplicate_card` and returns whether to dedupe/erase the `duplicate_card`
@@ -1997,13 +2001,28 @@ bool PersonalDataManager::ShouldShowPaymentMethodsMandatoryReauthPromo() {
     return false;
   }
 
-  // If the user has made a decision on this feature previously, then we should
-  // not show the opt-in promo.
+  // There is no need to show the promo if the feature is already enabled.
+  if (prefs::IsPaymentMethodsMandatoryReauthEnabled(pref_service_)) {
+#if BUILDFLAG(IS_ANDROID)
+    // The mandatory reauth feature is always enabled on automotive, there
+    // is/was no opt-in. As such, there is no need to log anything here on
+    // automotive.
+    if (!base::android::BuildInfo::GetInstance()->is_automotive()) {
+      LogMandatoryReauthOfferOptInDecision(
+          MandatoryReauthOfferOptInDecision::kAlreadyOptedIn);
+    }
+#else
+    LogMandatoryReauthOfferOptInDecision(
+        MandatoryReauthOfferOptInDecision::kAlreadyOptedIn);
+#endif  // BUILDFLAG(IS_ANDROID)
+    return false;
+  }
+
+  // If the user has explicitly opted out of this feature previously, then we
+  // should not show the opt-in promo.
   if (prefs::IsPaymentMethodsMandatoryReauthSetExplicitly(pref_service_)) {
     LogMandatoryReauthOfferOptInDecision(
-        prefs::IsPaymentMethodsMandatoryReauthEnabled(pref_service_)
-            ? MandatoryReauthOfferOptInDecision::kAlreadyOptedIn
-            : MandatoryReauthOfferOptInDecision::kAlreadyOptedOut);
+        MandatoryReauthOfferOptInDecision::kAlreadyOptedOut);
     return false;
   }
 

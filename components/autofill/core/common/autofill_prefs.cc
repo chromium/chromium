@@ -14,6 +14,10 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "crypto/sha2.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#endif
+
 namespace autofill {
 namespace prefs {
 namespace {
@@ -174,7 +178,19 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterTimePref(prefs::kAutofillUploadEventsLastResetTimestamp,
                              base::Time());
   registry->RegisterDictionaryPref(prefs::kAutofillSyncTransportOptIn);
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  // Automotive devices require stricter data protection for user privacy, so
+  // mandatory reauth for autofill payment methods should always be enabled.
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    registry->RegisterBooleanPref(prefs::kAutofillPaymentMethodsMandatoryReauth,
+                                  true);
+  } else {
+    registry->RegisterBooleanPref(prefs::kAutofillPaymentMethodsMandatoryReauth,
+                                  false);
+  }
+  registry->RegisterIntegerPref(
+      prefs::kAutofillPaymentMethodsMandatoryReauthPromoShownCounter, 0);
+#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   registry->RegisterBooleanPref(prefs::kAutofillPaymentMethodsMandatoryReauth,
                                 false);
   registry->RegisterIntegerPref(
@@ -257,8 +273,14 @@ void SetAutofillProfileEnabled(PrefService* prefs, bool enabled) {
 bool IsPaymentMethodsMandatoryReauthEnabled(const PrefService* prefs) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_IOS)
-  return base::FeatureList::IsEnabled(
-             features::kAutofillEnablePaymentsMandatoryReauth) &&
+  bool featureEnabled = base::FeatureList::IsEnabled(
+      features::kAutofillEnablePaymentsMandatoryReauth);
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    featureEnabled = true;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+  return featureEnabled &&
          prefs->GetBoolean(kAutofillPaymentMethodsMandatoryReauth);
 #else
   return false;
@@ -267,6 +289,11 @@ bool IsPaymentMethodsMandatoryReauthEnabled(const PrefService* prefs) {
 }
 
 void SetPaymentMethodsMandatoryReauthEnabled(PrefService* prefs, bool enabled) {
+#if BUILDFLAG(IS_ANDROID)
+  // The user should not be able to update the pref value on automotive devices.
+  CHECK(!base::android::BuildInfo::GetInstance()->is_automotive());
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_IOS)
   prefs->SetBoolean(kAutofillPaymentMethodsMandatoryReauth, enabled);

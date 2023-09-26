@@ -21,6 +21,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -58,6 +59,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image_unittest_util.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#endif
 
 namespace autofill {
 
@@ -894,10 +899,38 @@ TEST_F(PersonalDataManagerTest, MigrateProfileToAccount) {
   EXPECT_EQ(kLocalProfile.Compare(kAccountProfile), 0);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(PersonalDataManagerTest,
+       AutofillPaymentMethodsMandatoryReauthAlwaysEnabledOnAutomotive) {
+  if (!base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test should only run on automotive.";
+  }
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillEnablePaymentsMandatoryReauth);
+
+  EXPECT_TRUE(personal_data_->IsPaymentMethodsMandatoryReauthEnabled());
+
+  EXPECT_CHECK_DEATH_WITH(
+      { personal_data_->SetPaymentMethodsMandatoryReauthEnabled(false); },
+      "This feature should not be able to be turned off on automotive "
+      "devices.");
+
+  EXPECT_TRUE(personal_data_->IsPaymentMethodsMandatoryReauthEnabled());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 // Test that setting the `kAutofillEnablePaymentsMandatoryReauth` pref works
 // correctly.
 TEST_F(PersonalDataManagerTest, AutofillPaymentMethodsMandatoryReauthEnabled) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       features::kAutofillEnablePaymentsMandatoryReauth);
@@ -916,6 +949,11 @@ TEST_F(PersonalDataManagerTest, AutofillPaymentMethodsMandatoryReauthEnabled) {
 // enable the feature when the flag is off.
 TEST_F(PersonalDataManagerTest,
        AutofillPaymentMethodsMandatoryReauthEnabled_FlagOff) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       features::kAutofillEnablePaymentsMandatoryReauth);
@@ -933,6 +971,12 @@ TEST_F(PersonalDataManagerTest,
 TEST_F(
     PersonalDataManagerTest,
     ShouldShowPaymentMethodsMandatoryReauthPromo_MaxValueForPromoShownCounterReached) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       features::kAutofillEnablePaymentsMandatoryReauth);
@@ -978,6 +1022,12 @@ TEST_F(PersonalDataManagerTest,
 // returns that we should not show the promo if the user has already opted out.
 TEST_F(PersonalDataManagerTest,
        ShouldShowPaymentMethodsMandatoryReauthPromo_UserOptedOut) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       features::kAutofillEnablePaymentsMandatoryReauth);
