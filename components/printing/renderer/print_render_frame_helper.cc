@@ -241,17 +241,21 @@ ParamWithFitToPageScale<mojom::PrintParamsPtr> FitPrintParamsToPage(
   ParamWithFitToPageScale<mojom::PrintParamsPtr> result;
   result.param = css_params.Clone();
 
-  double content_width =
-      static_cast<double>(result.param->content_size.width());
-  double content_height =
-      static_cast<double>(result.param->content_size.height());
-  int default_page_size_height = page_params.page_size.height();
-  int default_page_size_width = page_params.page_size.width();
-  int css_page_size_height = result.param->page_size.height();
-  int css_page_size_width = result.param->page_size.width();
-
   if (page_params.page_size == result.param->page_size) {
     return result;
+  }
+
+  float content_width = result.param->content_size.width();
+  float content_height = result.param->content_size.height();
+  float default_page_size_height = page_params.page_size.height();
+  float default_page_size_width = page_params.page_size.width();
+  float css_page_size_height = result.param->page_size.height();
+  float css_page_size_width = result.param->page_size.width();
+
+  if ((default_page_size_width > default_page_size_height) !=
+      (css_page_size_width > css_page_size_height)) {
+    // Match orientation.
+    std::swap(default_page_size_width, default_page_size_height);
   }
 
   double scale_factor = 1.0f;
@@ -272,8 +276,8 @@ ParamWithFitToPageScale<mojom::PrintParamsPtr> FitPrintParamsToPage(
       (default_page_size_width - css_page_size_width * scale_factor) / 2 +
       (result.param->margin_left * scale_factor));
   result.param->content_size = gfx::SizeF(content_width, content_height);
-  result.param->page_size = page_params.page_size;
-
+  result.param->page_size.SetSize(default_page_size_width,
+                                  default_page_size_height);
   result.fit_to_page_scale_factor = scale_factor;
 
   return result;
