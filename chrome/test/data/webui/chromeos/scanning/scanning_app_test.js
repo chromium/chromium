@@ -12,7 +12,7 @@ import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path
 import {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {setScanServiceForTesting} from 'chrome://scanning/mojo_interface_provider.js';
 import {ColorMode, FileType, PageSize, ScanResult, SourceType} from 'chrome://scanning/scanning.mojom-webui.js';
-import {MAX_NUM_SAVED_SCANNERS, ScannerArr, ScannerSetting, ScanSettings, StartMultiPageScanResponse} from 'chrome://scanning/scanning_app_types.js';
+import {MAX_NUM_SAVED_SCANNERS} from 'chrome://scanning/scanning_app_types.js';
 import {getColorModeString, getPageSizeString, tokenToString} from 'chrome://scanning/scanning_app_util.js';
 import {ScanningBrowserProxyImpl} from 'chrome://scanning/scanning_browser_proxy.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
@@ -83,7 +83,7 @@ class FakeScanService {
     /** @private {?MultiPageScanControllerInterface} */
     this.multiPageScanController_ = null;
 
-    /** @private {!ScannerArr} */
+    /** @private {!Scanner[]} */
     this.scanners_ = [];
 
     /**
@@ -150,7 +150,7 @@ class FakeScanService {
     this.multiPageScanController_ = controller;
   }
 
-  /** @param {!ScannerArr} scanners */
+  /** @param {!Scanner[]} scanners */
   setScanners(scanners) {
     this.scanners_ = scanners;
   }
@@ -227,7 +227,7 @@ class FakeScanService {
 
   // scanService methods:
 
-  /** @return {!Promise<{scanners: !ScannerArr}>} */
+  /** @return {!Promise<{scanners: !Scanner[]}>} */
   getScanners() {
     return new Promise(resolve => {
       this.methodCalled('getScanners');
@@ -452,7 +452,7 @@ suite('scanningAppTest', function() {
   capabilities.set(firstScannerId, firstCapabilities);
   capabilities.set(secondScannerId, secondCapabilities);
 
-  /** @type {!ScannerArr} */
+  /** @type {!Scanner[]} */
   const expectedScanners = [
     createScanner(firstScannerId, firstScannerName),
     createScanner(secondScannerId, secondScannerName),
@@ -502,7 +502,7 @@ suite('scanningAppTest', function() {
   });
 
   /**
-   * @param {!ScannerArr} scanners
+   * @param {!Scanner[]} scanners
    * @param {!Map<!UnguessableToken,
    *     !ScannerCapabilities>} capabilities
    * @return {!Promise}
