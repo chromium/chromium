@@ -22,7 +22,7 @@
 #include "chrome/browser/ash/input_method/mojom/editor.mojom.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
-#include "chrome/browser/ui/webui/ash/mako/mako_ui.h"
+#include "chrome/browser/ui/webui/ash/mako/mako_bubble_coordinator.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -74,7 +74,11 @@ class EditorMediator
 
   // EditorPanelManager::Delegate
   void OnPromoCardDeclined() override;
-  void HandleTrigger() override;
+  // TODO(b/301869966): Consider removing default parameters once the context
+  // menu Orca entry is removed.
+  void HandleTrigger(
+      absl::optional<std::string_view> preset_query_id = absl::nullopt,
+      absl::optional<std::string_view> freeform_text = absl::nullopt) override;
   EditorMode GetEditorMode() const override;
 
   // TabletModeObserver:
@@ -113,7 +117,7 @@ class EditorMediator
 
   EditorInstanceImpl editor_instance_impl_;
   EditorPanelManager panel_manager_;
-  MakoPageHandler mako_page_handler_;
+  MakoBubbleCoordinator mako_bubble_coordinator_;
 
   std::unique_ptr<EditorSwitch> editor_switch_;
   std::unique_ptr<EditorConsentStore> consent_store_;

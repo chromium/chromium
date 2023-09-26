@@ -16,6 +16,7 @@
 #include "chromeos/crosapi/mojom/editor_panel.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::input_method {
 
@@ -33,7 +34,9 @@ class EditorPanelManager : public crosapi::mojom::EditorPanelManager {
         mojo::PendingReceiver<orca::mojom::EditorClient> pending_receiver) = 0;
 
     virtual void OnPromoCardDeclined() = 0;
-    virtual void HandleTrigger() = 0;
+    virtual void HandleTrigger(
+        absl::optional<std::string_view> preset_query_id,
+        absl::optional<std::string_view> freeform_text) = 0;
     virtual EditorMode GetEditorMode() const = 0;
   };
 

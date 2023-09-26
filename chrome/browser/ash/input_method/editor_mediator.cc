@@ -4,13 +4,16 @@
 
 #include "chrome/browser/ash/input_method/editor_mediator.h"
 
+#include <string_view>
+
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/check_op.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ui/webui/ash/mako/mako_ui.h"
+#include "chrome/browser/ui/webui/ash/mako/mako_bubble_coordinator.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 
 namespace ash::input_method {
@@ -103,7 +106,7 @@ void EditorMediator::BindEditorPanelManager(
 }
 
 void EditorMediator::OnFocus(int context_id) {
-  if (mako_page_handler_.IsVisible()) {
+  if (mako_bubble_coordinator_.IsShowingUI()) {
     return;
   }
 
@@ -120,7 +123,7 @@ void EditorMediator::OnFocus(int context_id) {
 }
 
 void EditorMediator::OnBlur() {
-  if (mako_page_handler_.IsVisible()) {
+  if (mako_bubble_coordinator_.IsShowingUI()) {
     return;
   }
 
@@ -147,7 +150,7 @@ void EditorMediator::OnTabletControllerDestroyed() {
 
 void EditorMediator::OnSurroundingTextChanged(const std::u16string& text,
                                               gfx::Range selection_range) {
-  if (mako_page_handler_.IsVisible()) {
+  if (mako_bubble_coordinator_.IsShowingUI()) {
     return;
   }
 
@@ -159,33 +162,38 @@ void EditorMediator::OnSurroundingTextChanged(const std::u16string& text,
 
 void EditorMediator::ProcessConsentAction(ConsentAction consent_action) {
   consent_store_->ProcessConsentAction(consent_action);
-  HandleTrigger();
+  HandleTrigger(/*preset_query_id=*/absl::nullopt,
+                /*freeform_text=*/absl::nullopt);
 }
 
 void EditorMediator::OnPromoCardDeclined() {
   consent_store_->ProcessPromoCardAction(PromoCardAction::kDeclined);
 }
 
-void EditorMediator::HandleTrigger() {
+void EditorMediator::HandleTrigger(
+    absl::optional<std::string_view> preset_query_id,
+    absl::optional<std::string_view> freeform_text) {
   switch (GetEditorMode()) {
     case EditorMode::kRewrite:
-      mako_page_handler_.ShowRewriteUI(profile_);
+      mako_bubble_coordinator_.ShowEditorUI(profile_, MakoEditorMode::kRewrite,
+                                            preset_query_id, freeform_text);
       break;
     case EditorMode::kWrite:
-      mako_page_handler_.ShowWriteUI(profile_);
+      mako_bubble_coordinator_.ShowEditorUI(profile_, MakoEditorMode::kWrite,
+                                            preset_query_id, freeform_text);
       break;
     case EditorMode::kConsentNeeded:
-      mako_page_handler_.ShowConsentUI(profile_);
+      mako_bubble_coordinator_.ShowConsentUI(profile_);
       break;
     case EditorMode::kBlocked:
-      mako_page_handler_.CloseUI();
+      mako_bubble_coordinator_.CloseUI();
   }
 }
 
 void EditorMediator::OnTextInserted() {
   // After queuing the text to be inserted, closing the mako web ui should
   // return the focus back to the original input.
-  mako_page_handler_.CloseUI();
+  mako_bubble_coordinator_.CloseUI();
 }
 
 void EditorMediator::OnTextFieldContextualInfoChanged(
@@ -224,6 +232,7 @@ void EditorMediator::SetProfileByUser(user_manager::User* user) {
 void EditorMediator::OnProfileWillBeDestroyed(Profile* profile) {
   profile_observation_.Reset();
 
+  mako_bubble_coordinator_.CloseUI();
   profile_ = nullptr;
   consent_store_ = nullptr;
   editor_switch_ = nullptr;

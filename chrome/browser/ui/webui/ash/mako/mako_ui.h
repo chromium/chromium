@@ -7,12 +7,7 @@
 
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 #include "content/public/browser/webui_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/webui/untrusted_bubble_web_ui_controller.h"
-
-class BubbleContentsWrapper;
-class Profile;
 
 namespace ash {
 
@@ -39,39 +34,6 @@ class MakoUntrustedUI : public ui::UntrustedBubbleWebUIController {
       mojo::PendingReceiver<orca::mojom::EditorClient> pending_receiver);
 
   WEB_UI_CONTROLLER_TYPE_DECL();
-};
-
-// Handles showing and hiding the mako WebUI.
-class MakoPageHandler {
- public:
-  MakoPageHandler();
-  MakoPageHandler(const MakoPageHandler&) = delete;
-  MakoPageHandler& operator=(const MakoPageHandler&) = delete;
-  ~MakoPageHandler();
-
-  void ShowConsentUI(Profile* profile);
-  void ShowWriteUI(Profile* profile);
-  void ShowRewriteUI(Profile* profile);
-  void ShowRewriteUIFromPreset(Profile* profile,
-                               std::string_view text_query_id);
-  void ShowRewriteUIFromFreeform(Profile* profile, std::string_view text);
-  void CloseUI();
-
-  bool IsVisible() const;
-
- private:
-  void ShowEditorUI(const GURL& url, content::BrowserContext* browser_context);
-
-  // Cached caret bounds to use as the mako UI anchor when there is no text
-  // input client (e.g. if focus is not regained after switching from the
-  // consent UI to the rewrite UI).
-  absl::optional<gfx::Rect> caret_bounds_;
-
-  // TODO(b/300554470): This doesn't seem like the right class to own the
-  // contents wrapper and probably won't handle the bubble widget lifetimes
-  // correctly. Figure out how WebUI bubbles work, then implement this properly
-  // (maybe using a WebUIBubbleManager).
-  std::unique_ptr<BubbleContentsWrapper> contents_wrapper_;
 };
 
 }  // namespace ash
