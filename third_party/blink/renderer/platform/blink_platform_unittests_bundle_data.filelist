@@ -208,7 +208,8 @@
 ../../web_tests/images/resources/avif/silver-400-matrix-6.avif
 ../../web_tests/images/resources/avif/silver-full-range-srgb-420-8bpc.avif
 ../../web_tests/images/resources/avif/silver.png
-../../web_tests/images/resources/avif/small-with-gainmap.avif
+../../web_tests/images/resources/avif/small-with-gainmap-adobe.avif
+../../web_tests/images/resources/avif/small-with-gainmap-iso.avif
 ../../web_tests/images/resources/avif/star-animated-10bpc-with-alpha.avif
 ../../web_tests/images/resources/avif/star-animated-10bpc.avif
 ../../web_tests/images/resources/avif/star-animated-12bpc-with-alpha.avif

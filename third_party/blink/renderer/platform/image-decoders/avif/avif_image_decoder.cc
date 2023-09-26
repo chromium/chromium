@@ -787,6 +787,11 @@ bool AVIFImageDecoder::UpdateDemuxer() {
     // crbug.com/1198455.
     decoder_->strictFlags &= ~AVIF_STRICT_PIXI_REQUIRED;
 
+    if (base::FeatureList::IsEnabled(features::kGainmapHdrImages) &&
+        base::FeatureList::IsEnabled(features::kAvifGainmapHdrImages)) {
+      decoder_->enableParsingGainMapMetadata = AVIF_TRUE;
+    }
+
     avif_io_.destroy = nullptr;
     avif_io_.read = ReadFromSegmentReader;
     avif_io_.write = nullptr;
@@ -1245,7 +1250,49 @@ bool AVIFImageDecoder::GetGainmapInfoAndData(
   }
   out_gainmap_data = CreateGainmapSegmentReader(features, data_.get());
 
-  // Parse gainmap image to get gainmap XMP.
+  // If libavif detected a gain map, it already parsed the metadata from the
+  // 'tmap' box.
+  if (decoder_->gainMapPresent) {
+    const avifGainMapMetadata& m = decoder_->image->gainMap.metadata;
+    for (int i = 0; i < 3; ++i) {
+      if (m.gainMapMinD[i] == 0 || m.gainMapMaxD[i] == 0 ||
+          m.gainMapGammaD[i] == 0 || m.offsetSdrD[i] == 0 ||
+          m.offsetHdrD[i] == 0) {
+        DVLOG(1) << "Invalid gainmap metadata: a denominator value is zero";
+        return false;
+      }
+      // Using double and not float because uint32_t->float conversion can cause
+      // precision loss.
+      out_gainmap_info.fGainmapRatioMin[i] =
+          static_cast<double>(m.gainMapMinN[i]) / m.gainMapMinD[i];
+      out_gainmap_info.fGainmapRatioMax[i] =
+          static_cast<double>(m.gainMapMaxN[i]) / m.gainMapMaxD[i];
+      out_gainmap_info.fGainmapGamma[i] =
+          static_cast<double>(m.gainMapGammaN[i]) / m.gainMapGammaD[i];
+      out_gainmap_info.fEpsilonSdr[i] =
+          static_cast<double>(m.offsetSdrN[i]) / m.offsetSdrD[i];
+      out_gainmap_info.fEpsilonHdr[i] =
+          static_cast<double>(m.offsetHdrN[i]) / m.offsetHdrD[i];
+    }
+    out_gainmap_info.fBaseImageType = m.baseRenditionIsHDR
+                                          ? SkGainmapInfo::BaseImageType::kHDR
+                                          : SkGainmapInfo::BaseImageType::kSDR;
+
+    if (m.hdrCapacityMinD == 0 || m.hdrCapacityMaxD == 0) {
+      DVLOG(1) << "Invalid gainmap metadata: a denominator value is zero";
+      return false;
+    }
+    // Using double and not float because uint32_t->float conversion can cause
+    // precision loss.
+    out_gainmap_info.fDisplayRatioSdr =
+        static_cast<double>(m.hdrCapacityMinN) / m.hdrCapacityMinD;
+    out_gainmap_info.fDisplayRatioHdr =
+        static_cast<double>(m.hdrCapacityMaxN) / m.hdrCapacityMaxD;
+    return true;
+  }
+  // Otherwise, the metadata should be in the gain map image's XMP.
+
+  // Parse the gainmap image to get the gainmap XMP.
   AvifIOData gainmap_avif_io_data(out_gainmap_data.get(), IsAllDataReceived());
 
   avifIO gainmap_avif_io = {.destroy = nullptr,

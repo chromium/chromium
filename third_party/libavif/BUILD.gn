@@ -5,8 +5,9 @@
 import("//media/media_options.gni")
 
 config("avif_config") {
+  defines = [ "AVIF_ENABLE_EXPERIMENTAL_GAIN_MAP" ]
   if (is_component_build) {
-    defines = [ "AVIF_DLL" ]
+    defines += [ "AVIF_DLL" ]
   }
 }
 
