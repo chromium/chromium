@@ -358,11 +358,6 @@ void LayoutMultiColumnSet::StyleDidChange(StyleDifference diff,
   SetHasBoxDecorationBackground(true);
 }
 
-void LayoutMultiColumnSet::UpdateLayout() {
-  NOT_DESTROYED();
-  NOTREACHED_NORETURN();
-}
-
 LayoutUnit LayoutMultiColumnSet::ColumnGap() const {
   NOT_DESTROYED();
   LayoutBlockFlow* parent_block = MultiColumnBlockFlow();
