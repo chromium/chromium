@@ -1027,6 +1027,12 @@
       * 允许使用 PIN 码和指纹解锁，请使用 ["PIN", "FINGERPRINT"]。
 
       如果此政策未设置或设为一个空列表，则将无法在受管理的设备上使用任何 WebAuthn 因素。</translation>
+<translation id="1870669000882901616">通过此政策，管理员可为已安装的 Web 应用指定设置。此政策将 Web 应用 ID 与其具体设置对应起来。可以使用特殊 ID“<ph name="DEFAULT_SCOPE" />”设定一项默认配置，这样，未在此政策中自定义配置的所有 Web 应用都将采用该默认配置。
+
+<ph name="MANIFEST_ID_FIELD" /> 字段用于指明相应 Web 应用的清单 ID。如需了解怎样确定某个已安装 Web 应用的清单 ID，请参阅 <ph name="WEB_APP_ID_REFERENCE_URL" />。
+<ph name="RUN_ON_OS_LOGIN_FIELD" /> 字段用于指明 Web 应用能否在用户登录操作系统期间运行。如果此字段设为“<ph name="BLOCKED" />”，相应 Web 应用将不会在用户登录操作系统期间运行，用户后续也无法启用此字段。如果此字段设为“<ph name="RUN_WINDOWED" />”，相应 Web 应用将会在用户登录操作系统期间运行，且用户后续无法停用此字段。如果此字段设为“<ph name="ALLOWED" />”，则用户可以将相应 Web 应用配置为在登录操作系统期间运行。默认配置仅接受“<ph name="ALLOWED" />”值和“<ph name="BLOCKED" />”值。
+（自 117 版起）<ph name="PREVENT_CLOSE_FIELD" /> 字段用于指明是否应阻止以任何方式（例如由用户、任务管理器、Web API）关闭 Web 应用。只有在 <ph name="RUN_ON_OS_LOGIN_FIELD" /> 设为“<ph name="RUN_WINDOWED" />”时，才能允许这种行为。如果应用已经在运行，只有在重启应用后，此属性才会生效。如果未指定此字段，用户将可以关闭应用。
+（自 118 版起）<ph name="FORCE_UNREGISTER_OS_INTEGRATION" /> 字段用于指明是否要移除 Web 应用的所有操作系统集成，即快捷方式、文件处理程序、协议处理程序等。如果应用已经在运行，只有在重启应用后，此属性才会生效。请谨慎使用此字段，因为这可能会覆盖在 Web 应用系统启动期间自动设置的所有操作系统集成。目前仅适用于 Windows、Mac 和 Linux 平台。</translation>
 <translation id="1881471688033371681"><ph name="UNLOAD_EVENT_NAME" /> 事件处理脚本即将被弃用。这类脚本是否会触发取决于 <ph name="UNLOAD_EVENT_NAME" /> <ph name="PERMISSIONS_POLICY_NAME" />。目前，政策默认允许触发，但后续会逐步更改为默认禁止触发，而且网站必须使用 <ph name="PERMISSIONS_POLICY_NAME" /> 标头明确启用此类脚本。这项企业政策可用于将默认设置强制保留为启用状态，这样就可以避免脚本被逐步弃用。
 
 网页可能需要依赖 <ph name="UNLOAD_EVENT_NAME" /> 事件处理脚本来保存数据，或向服务器发出用户会话结束的信号。我们不建议采用这种做法，因为这样做不可靠，并且会因禁止使用 <ph name="PRODUCT_NAME" /> 而影响性能。尽管有推荐使用的替代方案，但 <ph name="UNLOAD_EVENT_NAME" /> 事件已经使用了很久，有些应用可能仍会依赖这类事件。
