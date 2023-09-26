@@ -554,7 +554,7 @@ TEST_F(SyncServiceImplTest,
   ASSERT_TRUE(
       service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
   ASSERT_EQ(SyncService::DisableReasonSet(), service()->GetDisableReasons());
-  ASSERT_EQ(0, component_factory()->clear_transport_data_call_count());
+  ASSERT_TRUE(component_factory()->HasTransportDataIncludingFirstSync());
 
   // Sign-out.
   signin::PrimaryAccountMutator* account_mutator =
@@ -571,7 +571,7 @@ TEST_F(SyncServiceImplTest,
   EXPECT_EQ(SyncService::DisableReasonSet(
                 {SyncService::DISABLE_REASON_NOT_SIGNED_IN}),
             service()->GetDisableReasons());
-  EXPECT_EQ(1, component_factory()->clear_transport_data_call_count());
+  EXPECT_FALSE(component_factory()->HasTransportDataIncludingFirstSync());
 #if BUILDFLAG(IS_IOS)
   SyncPrefs sync_prefs(prefs());
   EXPECT_FALSE(
@@ -610,7 +610,7 @@ TEST_F(SyncServiceImplTest,
   // Wait for SyncServiceImpl to be notified.
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(1, component_factory()->clear_transport_data_call_count());
+  EXPECT_FALSE(component_factory()->HasTransportDataIncludingFirstSync());
 #if BUILDFLAG(IS_IOS)
   EXPECT_FALSE(
       sync_prefs.IsOptedInForBookmarksAndReadingListAccountStorageForTesting());
@@ -943,7 +943,7 @@ TEST_F(SyncServiceImplTest, StopAndClearWillClearDataAndSwitchToTransportMode) {
 
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
-  ASSERT_EQ(0, component_factory()->clear_transport_data_call_count());
+  ASSERT_TRUE(component_factory()->HasTransportDataIncludingFirstSync());
 
   service()->StopAndClear();
 
@@ -953,7 +953,7 @@ TEST_F(SyncServiceImplTest, StopAndClearWillClearDataAndSwitchToTransportMode) {
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
   EXPECT_FALSE(service()->IsSyncFeatureEnabled());
-  EXPECT_EQ(1, component_factory()->clear_transport_data_call_count());
+  EXPECT_FALSE(component_factory()->HasTransportDataIncludingFirstSync());
 }
 
 // Verify that sync transport data is cleared when the service is initializing
@@ -961,16 +961,18 @@ TEST_F(SyncServiceImplTest, StopAndClearWillClearDataAndSwitchToTransportMode) {
 // This code path doesn't exist on ChromeOS-Ash, since signout is not possible.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(SyncServiceImplTest, ClearTransportDataOnInitializeWhenSignedOut) {
+  PopulatePrefsForInitialSyncFeatureSetupComplete();
+
   // Clearing prefs can be triggered only after `IdentityManager` finishes
   // loading the list of accounts, so wait for it to complete.
   identity_test_env()->WaitForRefreshTokensLoaded();
 
-  ASSERT_EQ(0, component_factory()->clear_transport_data_call_count());
+  ASSERT_TRUE(component_factory()->HasTransportDataIncludingFirstSync());
 
   // Don't sign-in before creating the service.
   InitializeService();
 
-  EXPECT_EQ(1, component_factory()->clear_transport_data_call_count());
+  EXPECT_FALSE(component_factory()->HasTransportDataIncludingFirstSync());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
