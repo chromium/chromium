@@ -224,6 +224,9 @@ extern const char kUpcomingFollowFeaturesDescription[];
 extern const char kUseAndroidStagingSmdsName[];
 extern const char kUseAndroidStagingSmdsDescription[];
 
+extern const char kUseSharedImagesForPepperVideoName[];
+extern const char kUseSharedImagesForPepperVideoDescription[];
+
 extern const char kUseStorkSmdsServerAddressName[];
 extern const char kUseStorkSmdsServerAddressDescription[];
 

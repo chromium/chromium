@@ -61239,6 +61239,7 @@ from previous Chrome versions.
   <int value="-1807092388" label="ReduceUserAgentPlatformOsCpu:enabled"/>
   <int value="-1806739839"
       label="UseLookalikesForNavigationSuggestions:disabled"/>
+  <int value="-1806173068" label="UseSharedImagesForPepperVideo:enabled"/>
   <int value="-1804485171" label="disable-fullscreen-tab-detaching"/>
   <int value="-1804411756" label="ClipboardSuggestionContentHidden:enabled"/>
   <int value="-1802905985" label="OmniboxExpandedStateSuggestIcons:enabled"/>
@@ -66780,6 +66781,7 @@ from previous Chrome versions.
   <int value="948682684" label="BorealisDGPU:disabled"/>
   <int value="951048852" label="IOSPromoPasswordBubble:enabled"/>
   <int value="951111587" label="MediaAppPhotosIntegrationVideo:disabled"/>
+  <int value="951133343" label="UseSharedImagesForPepperVideo:disabled"/>
   <int value="951338017" label="SidePanelJourneysQueryless:enabled"/>
   <int value="952558794" label="enable-remote-assistance"/>
   <int value="952625847"

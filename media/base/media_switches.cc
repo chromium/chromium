@@ -1627,6 +1627,12 @@ BASE_FEATURE(kUseWindowBoundsForPip,
              "UseWindowBoundsForPip",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Use SharedImages instead of legacy mailboxes to copy VideoFrames to for
+// pepper video decode.
+BASE_FEATURE(kUseSharedImagesForPepperVideo,
+             "UseSharedImagesForPepperVideo",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool IsChromeWideEchoCancellationEnabled() {
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   return base::FeatureList::IsEnabled(kChromeWideEchoCancellation);

@@ -337,6 +337,12 @@ const char kUseAndroidStagingSmdsName[] = "Use Android staging SM-DS";
 const char kUseAndroidStagingSmdsDescription[] =
     "Use the Android staging address when fetching pending eSIM profiles.";
 
+const char kUseSharedImagesForPepperVideoName[] =
+    "Use SharedImages for PPAPI Video";
+const char kUseSharedImagesForPepperVideoDescription[] =
+    "Enables use of SharedImages for textures that are used by PPAPI "
+    "VideoDecoder";
+
 const char kUseStorkSmdsServerAddressName[] = "Use Stork SM-DS address";
 const char kUseStorkSmdsServerAddressDescription[] =
     "Use the Stork SM-DS address to fetch pending eSIM profiles managed by the "
