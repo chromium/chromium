@@ -394,6 +394,12 @@ void LogUserInteractionsInSharedPasswordsNotificationBubble(
       interaction);
 }
 
+void LogProcessIncomingPasswordSharingInvitationResult(
+    ProcessIncomingPasswordSharingInvitationResult result) {
+  base::UmaHistogramEnumeration(
+      "PasswordManager.ProcessIncomingPasswordSharingInvitationResult", result);
+}
+
 void LogGroupedPasswordsResults(
     const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
         logins) {

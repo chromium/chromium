@@ -83186,6 +83186,24 @@ Called by update_net_trust_anchors.py.-->
   <int value="14" label="Dialog header: 'Help icon button' clicked"/>
 </enum>
 
+<enum name="PasswordManager.ProcessIncomingPasswordSharingInvitationResult">
+  <int value="0" label="Auto-approved"/>
+  <int value="1" label="No password store"/>
+  <int value="2" label="Credentials exist with same password"/>
+  <int value="3" label="Credentials exist with different password"/>
+  <int value="4"
+      label="Credentials exist shared from same sender with same password"/>
+  <int value="5"
+      label="Credentials exist shared from same sender with different
+             password"/>
+  <int value="6"
+      label="Credentials exist shared from different sender with same
+             password"/>
+  <int value="7"
+      label="Credentials exist shared from different sender with different
+             password"/>
+</enum>
+
 <enum name="PasswordManager.ReauthResult">
   <int value="0" label="Success"/>
   <int value="1" label="Failure"/>

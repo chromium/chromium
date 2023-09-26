@@ -19,6 +19,46 @@
 
 namespace password_manager {
 
+using metrics_util::ProcessIncomingPasswordSharingInvitationResult;
+
+namespace {
+// Computes the status of processing sharing invitations when the invitation is
+// ignored due to having credentials with the same username and origin in the
+// password store.
+ProcessIncomingPasswordSharingInvitationResult
+GetProcessSharingInvitationResultForIgnoredInvitations(
+    const PasswordForm& exsiting_credentials,
+    const IncomingSharingInvitation& incoming_invitation) {
+  CHECK_EQ(exsiting_credentials.username_value,
+           incoming_invitation.username_value);
+  if (exsiting_credentials.type != PasswordForm::Type::kReceivedViaSharing) {
+    return exsiting_credentials.password_value ==
+                   incoming_invitation.password_value
+               ? ProcessIncomingPasswordSharingInvitationResult::
+                     kCredentialsExistWithSamePassword
+               : ProcessIncomingPasswordSharingInvitationResult::
+                     kCredentialsExistWithDifferentPassword;
+  }
+
+  if (exsiting_credentials.sender_email == incoming_invitation.sender_email) {
+    return exsiting_credentials.password_value ==
+                   incoming_invitation.password_value
+               ? ProcessIncomingPasswordSharingInvitationResult::
+                     kSharedCredentialsExistWithSameSenderAndSamePassword
+               : ProcessIncomingPasswordSharingInvitationResult::
+                     kSharedCredentialsExistWithSameSenderAndDifferentPassword;
+  }
+
+  return exsiting_credentials.password_value ==
+                 incoming_invitation.password_value
+             ? ProcessIncomingPasswordSharingInvitationResult::
+                   kSharedCredentialsExistWithDifferentSenderAndSamePassword
+             : ProcessIncomingPasswordSharingInvitationResult::
+                   kSharedCredentialsExistWithDifferentSenderAndDifferentPassword;
+}
+
+}  // namespace
+
 ProcessIncomingSharingInvitationTask::ProcessIncomingSharingInvitationTask(
     IncomingSharingInvitation invitation,
     PasswordStoreInterface* password_store,
@@ -41,18 +81,31 @@ ProcessIncomingSharingInvitationTask::~ProcessIncomingSharingInvitationTask() =
 
 void ProcessIncomingSharingInvitationTask::OnGetPasswordStoreResults(
     std::vector<std::unique_ptr<PasswordForm>> results) {
-  for (const std::unique_ptr<PasswordForm>& result : results) {
-    // TODO(crbug.com/1448235): process PSL and affilated credentials if needed.
-    // TODO(crbug.com/1448235): process conflicting passwords differently if
-    // necessary.
-    if (result->username_value == invitation_.username_value) {
-      std::move(done_processing_invitation_callback_).Run(this);
-      return;
-    }
+  // TODO(crbug.com/1448235): process PSL and affilated credentials if needed.
+  // TODO(crbug.com/1448235): process conflicting passwords differently if
+  // necessary.
+  auto credential_with_same_username_it = base::ranges::find_if(
+      results, [this](const std::unique_ptr<PasswordForm>& result) {
+        return result->username_value == invitation_.username_value;
+      });
+  if (credential_with_same_username_it == results.end()) {
+    metrics_util::LogProcessIncomingPasswordSharingInvitationResult(
+        ProcessIncomingPasswordSharingInvitationResult::
+            kInvitationAutoApproved);
+    password_store_->AddLogin(
+        IncomingSharingInvitationToPasswordForm(invitation_),
+        base::BindOnce(std::move(done_processing_invitation_callback_), this));
+    return;
   }
-  password_store_->AddLogin(
-      IncomingSharingInvitationToPasswordForm(invitation_),
-      base::BindOnce(std::move(done_processing_invitation_callback_), this));
+
+  // Credentials exist already, and hence the invitation cannot be
+  // auto-approved. For now, emit metrics to assess how frequent this use
+  // case is.
+  metrics_util::LogProcessIncomingPasswordSharingInvitationResult(
+      GetProcessSharingInvitationResultForIgnoredInvitations(
+          **credential_with_same_username_it, invitation_));
+  // Run the callback anyway to cleanup the processing task.
+  std::move(done_processing_invitation_callback_).Run(this);
 }
 
 PasswordReceiverServiceImpl::PasswordReceiverServiceImpl(
@@ -104,6 +157,8 @@ void PasswordReceiverServiceImpl::ProcessIncomingSharingInvitation(
   // net to make sure in such scenarios not passwords are written to any of the
   // stores.
   if (!password_store) {
+    LogProcessIncomingPasswordSharingInvitationResult(
+        ProcessIncomingPasswordSharingInvitationResult::kNoPasswordStore);
     return;
   }
 

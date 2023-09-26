@@ -7,10 +7,12 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_features_util.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/sharing/incoming_password_sharing_invitation_sync_bridge.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -59,9 +61,11 @@ IncomingSharingInvitation PasswordFormToIncomingSharingInvitation(
     const PasswordForm& form) {
   IncomingSharingInvitation invitation;
   invitation.url = form.url;
+  invitation.signon_realm = form.signon_realm;
   invitation.username_element = form.username_element;
   invitation.username_value = form.username_value;
   invitation.password_element = form.password_element;
+  invitation.password_value = form.password_value;
   return invitation;
 }
 
@@ -143,6 +147,7 @@ class PasswordReceiverServiceImplTest : public testing::Test {
 
 TEST_F(PasswordReceiverServiceImplTest,
        ShouldAcceptIncomingInvitationWhenStoreIsEmpty) {
+  base::HistogramTester histogram_tester;
   IncomingSharingInvitation invitation = CreateIncomingSharingInvitation();
 
   password_receiver_service()->ProcessIncomingSharingInvitation(invitation);
@@ -161,10 +166,17 @@ TEST_F(PasswordReceiverServiceImplTest,
           Field(&PasswordForm::sharing_notification_displayed, false))));
 
   EXPECT_TRUE(account_password_store().stored_passwords().empty());
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ProcessIncomingPasswordSharingInvitationResult",
+      metrics_util::ProcessIncomingPasswordSharingInvitationResult::
+          kInvitationAutoApproved,
+      1);
 }
 
 TEST_F(PasswordReceiverServiceImplTest,
        ShouldIgnoreIncomingInvitationWhenPasswordAlreadyExists) {
+  base::HistogramTester histogram_tester;
   PasswordForm existing_password = CreatePasswordForm();
   // Mark the password as generated to guarantee that this remains as is and
   // isn't overwritten by a password of type ReceivedViaSharing.
@@ -184,10 +196,17 @@ TEST_F(PasswordReceiverServiceImplTest,
   EXPECT_THAT(
       profile_password_store().stored_passwords().at(invitation.url.spec()),
       ElementsAre(existing_password));
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ProcessIncomingPasswordSharingInvitationResult",
+      metrics_util::ProcessIncomingPasswordSharingInvitationResult::
+          kCredentialsExistWithSamePassword,
+      1);
 }
 
 TEST_F(PasswordReceiverServiceImplTest,
        ShouldIgnoreIncomingInvitationWhenConflictingPasswordExists) {
+  base::HistogramTester histogram_tester;
   IncomingSharingInvitation invitation = CreateIncomingSharingInvitation();
   PasswordForm conflicting_password =
       IncomingSharingInvitationToPasswordForm(invitation);
@@ -202,6 +221,12 @@ TEST_F(PasswordReceiverServiceImplTest,
   EXPECT_THAT(
       profile_password_store().stored_passwords().at(invitation.url.spec()),
       ElementsAre(conflicting_password));
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ProcessIncomingPasswordSharingInvitationResult",
+      metrics_util::ProcessIncomingPasswordSharingInvitationResult::
+          kSharedCredentialsExistWithSameSenderAndDifferentPassword,
+      1);
 }
 
 TEST_F(
@@ -237,6 +262,7 @@ TEST_F(
 
 TEST_F(PasswordReceiverServiceImplTest,
        ShouldNotAcceptIncomingInvitationForNonOptedInAccountStoreUsers) {
+  base::HistogramTester histogram_tester;
   if (!base::FeatureList::IsEnabled(
           password_manager::features::kEnablePasswordsAccountStorage)) {
     return;
@@ -264,6 +290,141 @@ TEST_F(PasswordReceiverServiceImplTest,
 
   EXPECT_TRUE(profile_password_store().stored_passwords().empty());
   EXPECT_TRUE(account_password_store().stored_passwords().empty());
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ProcessIncomingPasswordSharingInvitationResult",
+      metrics_util::ProcessIncomingPasswordSharingInvitationResult::
+          kNoPasswordStore,
+      1);
+}
+
+TEST_F(PasswordReceiverServiceImplTest,
+       ShouldRecordWhenSharedPasswordAlreadyExistsWithDifferentPassword) {
+  base::HistogramTester histogram_tester;
+  PasswordForm existing_password = CreatePasswordForm();
+  AddLoginAndWait(existing_password, profile_password_store());
+
+  // Simulate an incoming invitation for the same stored credentials with a
+  // different password.
+  IncomingSharingInvitation invitation =
+      PasswordFormToIncomingSharingInvitation(existing_password);
+  invitation.password_value = u"another_password";
+
+  password_receiver_service()->ProcessIncomingSharingInvitation(invitation);
+
+  RunUntilIdle();
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ProcessIncomingPasswordSharingInvitationResult",
+      metrics_util::ProcessIncomingPasswordSharingInvitationResult::
+          kCredentialsExistWithDifferentPassword,
+      1);
+}
+
+TEST_F(
+    PasswordReceiverServiceImplTest,
+    ShouldRecordWhenSharedPasswordAlreadyExistsAsSharedFromSameSenderWithSamePassword) {
+  base::HistogramTester histogram_tester;
+  PasswordForm existing_password = CreatePasswordForm();
+  existing_password.type = PasswordForm::Type::kReceivedViaSharing;
+  existing_password.sender_email = u"user@example.com";
+  AddLoginAndWait(existing_password, profile_password_store());
+
+  // Simulate an incoming invitation for the same stored credentials with a
+  // different password.
+  IncomingSharingInvitation invitation =
+      PasswordFormToIncomingSharingInvitation(existing_password);
+  invitation.sender_email = existing_password.sender_email;
+
+  password_receiver_service()->ProcessIncomingSharingInvitation(invitation);
+
+  RunUntilIdle();
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ProcessIncomingPasswordSharingInvitationResult",
+      metrics_util::ProcessIncomingPasswordSharingInvitationResult::
+          kSharedCredentialsExistWithSameSenderAndSamePassword,
+      1);
+}
+
+TEST_F(
+    PasswordReceiverServiceImplTest,
+    ShouldRecordWhenSharedPasswordAlreadyExistsAsSharedFromDifferentSenderWithSamePassword) {
+  base::HistogramTester histogram_tester;
+  PasswordForm existing_password = CreatePasswordForm();
+  existing_password.type = PasswordForm::Type::kReceivedViaSharing;
+  existing_password.sender_email = u"user@example.com";
+  AddLoginAndWait(existing_password, profile_password_store());
+
+  // Simulate an incoming invitation for the same stored credentials with a
+  // different password.
+  IncomingSharingInvitation invitation =
+      PasswordFormToIncomingSharingInvitation(existing_password);
+  invitation.sender_email = u"another_user@example.com";
+
+  password_receiver_service()->ProcessIncomingSharingInvitation(invitation);
+
+  RunUntilIdle();
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ProcessIncomingPasswordSharingInvitationResult",
+      metrics_util::ProcessIncomingPasswordSharingInvitationResult::
+          kSharedCredentialsExistWithDifferentSenderAndSamePassword,
+      1);
+}
+
+TEST_F(
+    PasswordReceiverServiceImplTest,
+    ShouldRecordWhenSharedPasswordAlreadyExistsAsSharedFromSameSenderWithDifferentPassword) {
+  base::HistogramTester histogram_tester;
+  PasswordForm existing_password = CreatePasswordForm();
+  existing_password.type = PasswordForm::Type::kReceivedViaSharing;
+  existing_password.sender_email = u"user@example.com";
+  AddLoginAndWait(existing_password, profile_password_store());
+
+  // Simulate an incoming invitation for the same stored credentials with a
+  // different password.
+  IncomingSharingInvitation invitation =
+      PasswordFormToIncomingSharingInvitation(existing_password);
+  invitation.sender_email = existing_password.sender_email;
+  invitation.password_value = u"another_password";
+
+  password_receiver_service()->ProcessIncomingSharingInvitation(invitation);
+
+  RunUntilIdle();
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ProcessIncomingPasswordSharingInvitationResult",
+      metrics_util::ProcessIncomingPasswordSharingInvitationResult::
+          kSharedCredentialsExistWithSameSenderAndDifferentPassword,
+      1);
+}
+
+TEST_F(
+    PasswordReceiverServiceImplTest,
+    ShouldRecordWhenSharedPasswordAlreadyExistsAsSharedFromDifferentSenderWithDifferentPassword) {
+  base::HistogramTester histogram_tester;
+  PasswordForm existing_password = CreatePasswordForm();
+  existing_password.type = PasswordForm::Type::kReceivedViaSharing;
+  existing_password.sender_email = u"user@example.com";
+  AddLoginAndWait(existing_password, profile_password_store());
+
+  // Simulate an incoming invitation for the same stored credentials with a
+  // different password.
+  IncomingSharingInvitation invitation =
+      PasswordFormToIncomingSharingInvitation(existing_password);
+  invitation.sender_email = u"another_user@example.com";
+  invitation.password_value = u"another_password";
+
+  password_receiver_service()->ProcessIncomingSharingInvitation(invitation);
+
+  RunUntilIdle();
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ProcessIncomingPasswordSharingInvitationResult",
+      metrics_util::ProcessIncomingPasswordSharingInvitationResult::
+          kSharedCredentialsExistWithDifferentSenderAndDifferentPassword,
+      1);
 }
 
 }  // namespace password_manager

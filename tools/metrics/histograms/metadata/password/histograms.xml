@@ -2982,6 +2982,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PasswordManager.ProcessIncomingPasswordSharingInvitationResult"
+    enum="PasswordManager.ProcessIncomingPasswordSharingInvitationResult"
+    expires_after="2024-05-04">
+  <owner>mamir@chromium.org</owner>
+  <owner>rushans@google.com</owner>
+  <component>UI&gt;Browser&gt;Passwords</component>
+  <summary>
+    Records the result of processing incoming password sharing invitation.
+    Invitation are either auto-approved and stored in the password store or
+    ignored for different reasons. This is recorded upon processing an incoming
+    password sharing invitation.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.ProfileStore.TotalAccountsBeforeInitialSync"
     units="accounts" expires_after="M123">
   <owner>vasilii@chromium.org</owner>

@@ -696,6 +696,23 @@ enum class GroupedPasswordFetchResult {
   kMaxValue = kOnlyGroupedMatches,
 };
 
+// Represents the result of processing an incoming password sharing invitation.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Always keep this enum in sync with the
+// corresponding PasswordManager.ProcessIncomingPasswordSharingInvitationResult
+// in enums.xml.
+enum class ProcessIncomingPasswordSharingInvitationResult {
+  kInvitationAutoApproved = 0,
+  kNoPasswordStore = 1,
+  kCredentialsExistWithSamePassword = 2,
+  kCredentialsExistWithDifferentPassword = 3,
+  kSharedCredentialsExistWithSameSenderAndSamePassword = 4,
+  kSharedCredentialsExistWithSameSenderAndDifferentPassword = 5,
+  kSharedCredentialsExistWithDifferentSenderAndSamePassword = 6,
+  kSharedCredentialsExistWithDifferentSenderAndDifferentPassword = 7,
+  kMaxValue = kSharedCredentialsExistWithDifferentSenderAndDifferentPassword,
+};
+
 std::string GetPasswordAccountStorageUsageLevelHistogramSuffix(
     PasswordAccountStorageUsageLevel usage_level);
 
@@ -879,6 +896,10 @@ void LogUserInteractionsInPasswordManagementBubble(
 // Log the user interaction events in the shared passwords notification bubble.
 void LogUserInteractionsInSharedPasswordsNotificationBubble(
     SharedPasswordsNotificationBubbleInteractions interaction);
+
+// Log the result of processing an incoming password sharing invitation.
+void LogProcessIncomingPasswordSharingInvitationResult(
+    ProcessIncomingPasswordSharingInvitationResult result);
 
 // Logs GroupedPasswordFetchResult.
 void LogGroupedPasswordsResults(
