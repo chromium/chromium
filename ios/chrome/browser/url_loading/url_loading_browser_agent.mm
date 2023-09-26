@@ -401,6 +401,12 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTabImpl(const UrlLoadParams& params,
 
   web::WebState* web_state =
       insertion_agent->InsertWebState(params.web_params, insertion_params);
-  web_state->GetNavigationManager()->LoadIfNecessary();
-  notifier_->NewTabDidLoadUrl(params.web_params.url, params.user_initiated);
+
+  // If the tab was created as "unrealized" (e.g. `instant_load`
+  // being false) then do not force a load. The tab will load
+  // when it transition to "realized".
+  if (web_state->IsRealized()) {
+    web_state->GetNavigationManager()->LoadIfNecessary();
+    notifier_->NewTabDidLoadUrl(params.web_params.url, params.user_initiated);
+  }
 }
