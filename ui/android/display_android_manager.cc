@@ -92,8 +92,9 @@ void DisplayAndroidManager::DoUpdateDisplay(display::Display* display,
                                             int rotationDegrees,
                                             int bitsPerPixel,
                                             int bitsPerComponent,
-                                            jfloat hdrMaxLuminanceRatio,
-                                            bool isWideColorGamut) {
+                                            bool isWideColorGamut,
+                                            bool isHdr,
+                                            jfloat hdrMaxLuminanceRatio) {
   if (!Display::HasForceDeviceScaleFactor())
     display->set_device_scale_factor(dipScale);
 
@@ -114,15 +115,22 @@ void DisplayAndroidManager::DoUpdateDisplay(display::Display* display,
     }
     // The color space for HDR is scaled to reach the maximum luminance ratio.
     gfx::ColorSpace cs_for_hdr = cs_for_wcg;
-    if (base::FeatureList::IsEnabled(kAndroidHDR) &&
-        hdrMaxLuminanceRatio > 1.f) {
-      skcms_TransferFunction trfn;
-      cs_for_hdr.GetTransferFunction(&trfn);
-      trfn = skia::ScaleTransferFunction(trfn, hdrMaxLuminanceRatio);
-      cs_for_hdr = gfx::ColorSpace(
-          cs_for_hdr.GetPrimaryID(), gfx::ColorSpace::TransferID::CUSTOM_HDR,
-          gfx::ColorSpace::MatrixID::RGB, gfx::ColorSpace::RangeID::FULL,
-          nullptr, &trfn);
+    if (base::FeatureList::IsEnabled(kAndroidHDR)) {
+      if (hdrMaxLuminanceRatio > 1.f) {
+        skcms_TransferFunction trfn;
+        cs_for_hdr.GetTransferFunction(&trfn);
+        trfn = skia::ScaleTransferFunction(trfn, hdrMaxLuminanceRatio);
+        cs_for_hdr = gfx::ColorSpace(
+            cs_for_hdr.GetPrimaryID(), gfx::ColorSpace::TransferID::CUSTOM_HDR,
+            gfx::ColorSpace::MatrixID::RGB, gfx::ColorSpace::RangeID::FULL,
+            nullptr, &trfn);
+      }
+      if (isHdr) {
+        hdrMaxLuminanceRatio = std::max(
+            hdrMaxLuminanceRatio, display::kMinHDRCapableMaxLuminanceRelative);
+      }
+    } else {
+      hdrMaxLuminanceRatio = 1.f;
     }
     // Propagate this into the DisplayColorSpaces.
     gfx::DisplayColorSpaces display_color_spaces(gfx::ColorSpace::CreateSRGB(),
@@ -167,6 +175,7 @@ void DisplayAndroidManager::UpdateDisplay(
     jint bitsPerPixel,
     jint bitsPerComponent,
     jboolean isWideColorGamut,
+    jboolean isHdr,
     jfloat hdrMaxLuminanceRatio) {
   gfx::Rect bounds_in_pixels = gfx::Rect(width, height);
   const gfx::Rect bounds_in_dip = gfx::Rect(
@@ -174,8 +183,9 @@ void DisplayAndroidManager::UpdateDisplay(
 
   display::Display display(sdkDisplayId, bounds_in_dip);
   DoUpdateDisplay(&display, bounds_in_pixels.size(), dipScale, rotationDegrees,
-                  bitsPerPixel, bitsPerComponent, hdrMaxLuminanceRatio,
-                  isWideColorGamut && use_display_wide_color_gamut_);
+                  bitsPerPixel, bitsPerComponent,
+                  isWideColorGamut && use_display_wide_color_gamut_, isHdr,
+                  hdrMaxLuminanceRatio);
   ProcessDisplayChanged(display, sdkDisplayId == primary_display_id_);
 }
 

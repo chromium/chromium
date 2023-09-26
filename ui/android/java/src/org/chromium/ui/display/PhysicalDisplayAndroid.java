@@ -48,6 +48,11 @@ import java.util.function.Consumer;
         return display.getHdrSdrRatio();
     }
 
+    private static boolean isHdr(Display display) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return false;
+        return display.isHdr() && display.isHdrSdrRatioAvailable();
+    }
+
     private static boolean hasForcedDIPScale() {
         if (sForcedDIPScale == null) {
             String forcedScaleAsString = CommandLine.getInstance().getSwitchValue(
@@ -248,7 +253,7 @@ import java.util.function.Consumer;
     private void hdrSdrRatioChanged(Display display) {
         assert display.getDisplayId() == mDisplay.getDisplayId();
         super.update(null, null, null, null, null, null, null, null, null, null, null, null,
-                getHdrSdrRatio(mDisplay));
+                isHdr(mDisplay), getHdrSdrRatio(mDisplay));
     }
 
     private void updateCommon(Point size, float density, float xdpi, float ydpi, Display display) {
@@ -273,6 +278,7 @@ import java.util.function.Consumer;
 
         super.update(size, density, xdpi, ydpi, bitsPerPixel(pixelFormatId),
                 bitsPerComponent(pixelFormatId), display.getRotation(), isWideColorGamut, null,
-                display.getRefreshRate(), currentMode, supportedModes, getHdrSdrRatio(display));
+                display.getRefreshRate(), currentMode, supportedModes, isHdr(display),
+                getHdrSdrRatio(display));
     }
 }

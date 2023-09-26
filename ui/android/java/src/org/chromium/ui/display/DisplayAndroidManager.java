@@ -193,14 +193,14 @@ public class DisplayAndroidManager {
                 displayAndroid.getDisplayHeight(), displayAndroid.getDipScale(),
                 displayAndroid.getRotationDegrees(), displayAndroid.getBitsPerPixel(),
                 displayAndroid.getBitsPerComponent(), displayAndroid.getIsWideColorGamut(),
-                displayAndroid.getHdrMaxLuminanceRatio());
+                displayAndroid.getIsHdr(), displayAndroid.getHdrMaxLuminanceRatio());
     }
 
     @NativeMethods
     interface Natives {
         void updateDisplay(long nativeDisplayAndroidManager, DisplayAndroidManager caller,
                 int sdkDisplayId, int width, int height, float dipScale, int rotationDegrees,
-                int bitsPerPixel, int bitsPerComponent, boolean isWideColorGamut,
+                int bitsPerPixel, int bitsPerComponent, boolean isWideColorGamut, boolean isHdr,
                 float hdrMaxLuminanceRatio);
         void removeDisplay(
                 long nativeDisplayAndroidManager, DisplayAndroidManager caller, int sdkDisplayId);
