@@ -171,6 +171,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Unpin"/>
   <variant name="VolumeDown"/>
   <variant name="VolumeMute"/>
+  <variant name="VolumeMuteToggle"/>
   <variant name="VolumeUp"/>
   <variant name="WindowCycleSnapLeft"/>
   <variant name="WindowCycleSnapRight"/>

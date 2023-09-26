@@ -272,6 +272,7 @@ constexpr auto kAshAcceleratorsWithoutLayout =
         AcceleratorAction::kToggleWifi,
         AcceleratorAction::kTouchHudClear,
         AcceleratorAction::kTouchHudModeChange,
+        AcceleratorAction::kVolumeMuteToggle,
     });
 
 // A fixed array of accelerator layouts used for categorization and styling of

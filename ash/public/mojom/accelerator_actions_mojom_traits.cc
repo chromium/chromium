@@ -263,6 +263,8 @@ EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::ToMojom(
       return mojom_accelerator_action::kVolumeDown;
     case ash::AcceleratorAction::kVolumeMute:
       return mojom_accelerator_action::kVolumeMute;
+    case ash::AcceleratorAction::kVolumeMuteToggle:
+      return mojom_accelerator_action::kVolumeMuteToggle;
     case ash::AcceleratorAction::kVolumeUp:
       return mojom_accelerator_action::kVolumeUp;
     case ash::AcceleratorAction::kWindowCycleSnapLeft:
@@ -703,6 +705,9 @@ bool EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::FromMojom(
       return true;
     case mojom_accelerator_action::kVolumeMute:
       *out = ash::AcceleratorAction::kVolumeMute;
+      return true;
+    case mojom_accelerator_action::kVolumeMuteToggle:
+      *out = ash::AcceleratorAction::kVolumeMuteToggle;
       return true;
     case mojom_accelerator_action::kVolumeUp:
       *out = ash::AcceleratorAction::kVolumeUp;

@@ -156,6 +156,7 @@ namespace ash {
   ACCELERATOR_ACTION_ENTRY(WindowCycleSnapRight)                        \
   ACCELERATOR_ACTION_ENTRY(WindowMinimize)                              \
   ACCELERATOR_ACTION_ENTRY(MinimizeTopWindowOnBack)                     \
+  ACCELERATOR_ACTION_ENTRY(VolumeMuteToggle)                            \
   /* Debug accelerators are intentionally at the end, so that if you */ \
   /* remove one, you don't need to update tests which check*/           \
   /* hashes of the ids.*/                                               \

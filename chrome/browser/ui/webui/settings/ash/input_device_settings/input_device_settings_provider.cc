@@ -32,7 +32,7 @@ struct ActionChoice {
 // TODO(dpad): Update list to official list of actions.
 // TODO(b/286930911): Translate action string names.
 constexpr ActionChoice kMouseButtonOptions[] = {
-    {"Volume mute", AcceleratorAction::kVolumeMute},
+    {"Volume mute", AcceleratorAction::kVolumeMuteToggle},
     {"Microphone mute", AcceleratorAction::kMicrophoneMuteToggle},
     {"Play/Pause media", AcceleratorAction::kMediaPlayPause},
     {"Overview", AcceleratorAction::kToggleOverview},
@@ -48,7 +48,7 @@ constexpr ActionChoice kMouseButtonOptions[] = {
 // TODO(dpad): Update list to official list of actions.
 // TODO(b/286930911): Translate action string names.
 constexpr ActionChoice kGraphicsTabletOptions[] = {
-    {"Volume mute", AcceleratorAction::kVolumeMute},
+    {"Volume mute", AcceleratorAction::kVolumeMuteToggle},
     {"Microphone mute", AcceleratorAction::kMicrophoneMuteToggle},
     {"Play/Pause media", AcceleratorAction::kMediaPlayPause},
     {"Overview", AcceleratorAction::kToggleOverview},

@@ -410,6 +410,9 @@ ASH_EXPORT void VolumeDown();
 // Volume mute.
 ASH_EXPORT void VolumeMute();
 
+// Volume mute toggle.
+ASH_EXPORT void VolumeMuteToggle();
+
 // Volume up.
 ASH_EXPORT void VolumeUp();
 

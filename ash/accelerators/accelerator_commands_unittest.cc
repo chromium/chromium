@@ -188,5 +188,14 @@ TEST_F(AcceleratorCommandsAudioTest, VolumeSetToZeroAndThenMute) {
   EXPECT_TRUE(audio_handler->IsOutputMuted());
 }
 
+TEST_F(AcceleratorCommandsAudioTest, VolumeMuteToggle) {
+  auto* audio_handler = CrasAudioHandler::Get();
+  EXPECT_FALSE(audio_handler->IsOutputMuted());
+  VolumeMuteToggle();
+  EXPECT_TRUE(audio_handler->IsOutputMuted());
+  VolumeMuteToggle();
+  EXPECT_FALSE(audio_handler->IsOutputMuted());
+}
+
 }  // namespace accelerators
 }  // namespace ash

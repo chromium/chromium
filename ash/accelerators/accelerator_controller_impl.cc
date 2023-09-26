@@ -935,6 +935,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case AcceleratorAction::kToggleWifi:
     case AcceleratorAction::kVolumeDown:
     case AcceleratorAction::kVolumeMute:
+    case AcceleratorAction::kVolumeMuteToggle:
     case AcceleratorAction::kVolumeUp:
     case AcceleratorAction::kWindowMinimize:
       return true;
@@ -1466,6 +1467,9 @@ void AcceleratorControllerImpl::PerformAction(
       if (accelerator.key_code() == ui::VKEY_VOLUME_MUTE)
         base::RecordAction(UserMetricsAction("Accel_VolumeMute_F8"));
       accelerators::VolumeMute();
+      break;
+    case AcceleratorAction::kVolumeMuteToggle:
+      accelerators::VolumeMuteToggle();
       break;
     case AcceleratorAction::kVolumeUp:
       base::RecordAction(UserMetricsAction("Accel_VolumeUp_F10"));

@@ -1718,6 +1718,14 @@ void VolumeMute() {
       true, CrasAudioHandler::AudioSettingsChangeSource::kAccelerator);
 }
 
+void VolumeMuteToggle() {
+  auto* audio_handler = CrasAudioHandler::Get();
+  CHECK(audio_handler);
+  audio_handler->SetOutputMute(
+      !audio_handler->IsOutputMuted(),
+      CrasAudioHandler::AudioSettingsChangeSource::kAccelerator);
+}
+
 void VolumeUp() {
   auto* audio_handler = CrasAudioHandler::Get();
   bool play_sound = false;
