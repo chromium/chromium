@@ -1817,7 +1817,7 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIWithFirstPartySetsBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(StorageAccessAPIWithFirstPartySetsBrowserTest,
-                       Permission_AutodeniedForServiceDomain) {
+                       Permission_AutodeniedUnderServiceDomain) {
   SetBlockThirdPartyCookies(true);
   base::HistogramTester histogram_tester;
 
@@ -1827,7 +1827,7 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIWithFirstPartySetsBrowserTest,
   EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostA), NoCookiesWithContent());
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
-  // The promise should be rejected; `khostD` is a service domain.
+  // The promise should be rejected; `kHostD` is a service domain.
   EXPECT_FALSE(content::ExecJs(GetFrame(), "document.requestStorageAccess()"));
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
@@ -1976,6 +1976,63 @@ IN_PROC_BROWSER_TEST_P(
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     StorageAccessAPIWithFirstPartySetsBrowserTest,
+    testing::Bool());
+
+class StorageAccessAPIWithFirstPartySetsAndPromptsBrowserTest
+    : public StorageAccessAPIWithFirstPartySetsBrowserTest {
+ protected:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    std::vector<base::test::FeatureRefAndParams> enabled = {
+        {blink::features::kStorageAccessAPI,
+         {
+             {
+                 blink::features::kStorageAccessAPIAutoGrantInFPS.name,
+                 "true",
+             },
+             {
+                 blink::features::kStorageAccessAPIAutoDenyOutsideFPS.name,
+                 "false",
+             },
+             {
+                 blink::features::kStorageAccessAPIImplicitGrantLimit.name,
+                 "0",
+             },
+         }}};
+
+    if (PermissionStorageAccessAPIFeatureEnabled()) {
+      enabled.push_back(
+          {permissions::features::kPermissionStorageAccessAPI, {}});
+    }
+    return enabled;
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(StorageAccessAPIWithFirstPartySetsAndPromptsBrowserTest,
+                       Permission_GrantedForServiceDomain) {
+  SetBlockThirdPartyCookies(true);
+  base::HistogramTester histogram_tester;
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(EchoCookiesURL(kHostD));
+
+  EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostD), NoCookiesWithContent());
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+
+  // `kHostD` is a service domain, but is not the top-level site, so the request
+  // should be auto-granted.
+  EXPECT_TRUE(content::ExecJs(GetFrame(), "document.requestStorageAccess()"));
+  EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
+
+  content::FetchHistogramsFromChildProcesses();
+  EXPECT_THAT(
+      histogram_tester.GetBucketCount(kRequestOutcomeHistogram,
+                                      RequestOutcome::kGrantedByFirstPartySet),
+      Gt(0));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    StorageAccessAPIWithFirstPartySetsAndPromptsBrowserTest,
     testing::Bool());
 
 class StorageAccessAPIWithFirstPartySetsAndImplicitGrantsBrowserTest
