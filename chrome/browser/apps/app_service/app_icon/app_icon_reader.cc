@@ -24,7 +24,7 @@ int GetResourceIdForIcon(const std::string& id,
 
   if (id == arc::kPlayStoreAppId) {
     int size_in_px = apps_util::ConvertDipToPx(
-        size_in_dip, /*quantize_to_supported_scale_factor=*/true);
+        size_in_dip, /*quantize_to_supported_scale_factor=*/false);
     resource_id = (size_in_px <= 32) ? IDR_ARC_SUPPORT_ICON_32_PNG
                                      : IDR_ARC_SUPPORT_ICON_192_PNG;
   }
