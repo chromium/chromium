@@ -120,6 +120,7 @@
 #include "chrome/browser/ui/ash/browser_data_migration_error_dialog.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_context_menu.h"
 #include "chrome/browser/ui/browser_commands_chromeos.h"
+#include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 #endif
@@ -908,7 +909,7 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       // run it always.
       ash::BrowserDataMigratorImpl::ClearMigrationStep(
           user_manager->GetLocalState());
-      ash::BrowserDataMigratorImpl::ClearMigrationAttemptCountForUser(
+      ash::standalone_browser::migrator_util::ClearMigrationAttemptCountForUser(
           user_manager->GetLocalState(), user->username_hash());
       ash::BrowserDataMigratorImpl::MaybeRestartToMigrateWithDiskCheck(
           user->GetAccountId(), user->username_hash(),

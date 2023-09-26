@@ -33,16 +33,6 @@ namespace ash {
 // 4. Restart ash again to show the home screen.
 constexpr char kMigrationStep[] = "ash.browser_data_migrator.migration_step";
 
-// Local state pref name to keep track of the number of migration attempts a
-// user has gone through before. It is a dictionary of the form
-// `{<user_id_hash>: <count>}`.
-constexpr char kMigrationAttemptCountPref[] =
-    "ash.browser_data_migrator.migration_attempt_count";
-
-// Maximum number of migration attempts. Migration will be skipped for the user
-// after
-constexpr int kMaxMigrationAttemptCount = 3;
-
 // Injects the restart function called from
 // `BrowserDataMigratorImpl::AttemptRestart()` in RAII manner.
 class ScopedRestartAttemptForTesting {
@@ -187,15 +177,7 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
   // Clears the value of `kMigrationStep` in Local State.
   static void ClearMigrationStep(PrefService* local_state);
 
-  // Resets the number of migration attempts for the user stored in
-  // `kMigrationAttemptCountPref.
-  static void ClearMigrationAttemptCountForUser(
-      PrefService* local_state,
-      const std::string& user_id_hash);
-
  private:
-  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest,
-                           ManipulateMigrationAttemptCount);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest, Migrate);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest, MigrateCancelled);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest, MigrateOutOfDisk);
@@ -205,6 +187,8 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
                            MaybeRestartToMigrateMoveAfterCopy);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorRestartTest,
                            MaybeRestartToMigrateSecondaryUser);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorRestartTest,
+                           MaybeRestartToMigrateWithMaximumRetryAttempts);
 
   // The common implementation of `MaybeRestartToMigrate` and
   // `MaybeRestartToMigrateWithDiskCheck`.
@@ -225,18 +209,6 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
 
   // Gets the value of `kMigrationStep` in Local State.
   static MigrationStep GetMigrationStep(PrefService* local_state);
-
-  // Increments the migration attempt count stored in
-  // `kMigrationAttemptCountPref` by 1 for the user identified by
-  // `user_id_hash`.
-  static void UpdateMigrationAttemptCountForUser(
-      PrefService* local_state,
-      const std::string& user_id_hash);
-
-  // Gets the number of migration attempts for the user stored in
-  // `kMigrationAttemptCountPref.
-  static int GetMigrationAttemptCountForUser(PrefService* local_state,
-                                             const std::string& user_id_hash);
 
   // Called from `MaybeRestartToMigrate()` to proceed with restarting to start
   // the migration. It returns true if D-Bus call was successful.

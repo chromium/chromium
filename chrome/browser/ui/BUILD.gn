@@ -3595,6 +3595,7 @@ static_library("ui") {
       "//chromeos/ash/components/scalable_iph:logger",
       "//chromeos/ash/components/scalable_iph:scalable_iph",
       "//chromeos/ash/components/settings",
+      "//chromeos/ash/components/standalone_browser",
       "//chromeos/ash/components/string_matching",
       "//chromeos/ash/components/system",
       "//chromeos/ash/components/tether",

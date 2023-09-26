@@ -28,6 +28,7 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -59,6 +60,8 @@ class BrowserDataMigratorImplTest : public ::testing::Test {
 
     BrowserDataMigratorImpl::RegisterLocalStatePrefs(pref_service_.registry());
     crosapi::browser_util::RegisterLocalStatePrefs(pref_service_.registry());
+    ash::standalone_browser::migrator_util::RegisterLocalStatePrefs(
+        pref_service_.registry());
   }
 
   void TearDown() override { EXPECT_TRUE(user_data_dir_.Delete()); }
@@ -68,31 +71,6 @@ class BrowserDataMigratorImplTest : public ::testing::Test {
   TestingPrefServiceSimple pref_service_;
 };
 
-TEST_F(BrowserDataMigratorImplTest, ManipulateMigrationAttemptCount) {
-  const std::string user_id_hash = "user";
-
-  EXPECT_EQ(BrowserDataMigratorImpl::GetMigrationAttemptCountForUser(
-                &pref_service_, user_id_hash),
-            0);
-  BrowserDataMigratorImpl::UpdateMigrationAttemptCountForUser(&pref_service_,
-                                                              user_id_hash);
-  EXPECT_EQ(BrowserDataMigratorImpl::GetMigrationAttemptCountForUser(
-                &pref_service_, user_id_hash),
-            1);
-
-  BrowserDataMigratorImpl::UpdateMigrationAttemptCountForUser(&pref_service_,
-                                                              user_id_hash);
-  EXPECT_EQ(BrowserDataMigratorImpl::GetMigrationAttemptCountForUser(
-                &pref_service_, user_id_hash),
-            2);
-
-  BrowserDataMigratorImpl::ClearMigrationAttemptCountForUser(&pref_service_,
-                                                             user_id_hash);
-  EXPECT_EQ(BrowserDataMigratorImpl::GetMigrationAttemptCountForUser(
-                &pref_service_, user_id_hash),
-            0);
-}
-
 TEST_F(BrowserDataMigratorImplTest, Migrate) {
   base::test::TaskEnvironment task_environment;
   std::unique_ptr<MigrationProgressTracker> progress_tracker =
@@ -101,8 +79,8 @@ TEST_F(BrowserDataMigratorImplTest, Migrate) {
   BrowserDataMigratorImpl::SetMigrationStep(
       &pref_service_, BrowserDataMigratorImpl::MigrationStep::kRestartCalled);
   // Set migration attempt count to 1.
-  BrowserDataMigratorImpl::UpdateMigrationAttemptCountForUser(&pref_service_,
-                                                              user_id_hash);
+  ash::standalone_browser::migrator_util::UpdateMigrationAttemptCountForUser(
+      &pref_service_, user_id_hash);
 
   base::RunLoop run_loop;
   std::unique_ptr<BrowserDataMigratorImpl> migrator =
@@ -130,9 +108,10 @@ TEST_F(BrowserDataMigratorImplTest, Migrate) {
   EXPECT_EQ(BrowserDataMigratorImpl::GetMigrationStep(&pref_service_),
             BrowserDataMigratorImpl::MigrationStep::kEnded);
   // Successful migration should clear the migration attempt count.
-  EXPECT_EQ(BrowserDataMigratorImpl::GetMigrationAttemptCountForUser(
-                &pref_service_, user_id_hash),
-            0);
+  EXPECT_EQ(
+      ash::standalone_browser::migrator_util::GetMigrationAttemptCountForUser(
+          &pref_service_, user_id_hash),
+      0);
   // Data version should be updated to the current version after a migration.
   EXPECT_EQ(crosapi::browser_util::GetDataVer(&pref_service_, user_id_hash),
             version_info::GetVersion());
@@ -146,8 +125,8 @@ TEST_F(BrowserDataMigratorImplTest, MigrateCancelled) {
   BrowserDataMigratorImpl::SetMigrationStep(
       &pref_service_, BrowserDataMigratorImpl::MigrationStep::kRestartCalled);
   // Set migration attempt count to 1.
-  BrowserDataMigratorImpl::UpdateMigrationAttemptCountForUser(&pref_service_,
-                                                              user_id_hash);
+  ash::standalone_browser::migrator_util::UpdateMigrationAttemptCountForUser(
+      &pref_service_, user_id_hash);
 
   base::RunLoop run_loop;
   std::unique_ptr<BrowserDataMigratorImpl> migrator =
@@ -175,9 +154,10 @@ TEST_F(BrowserDataMigratorImplTest, MigrateCancelled) {
             BrowserDataMigratorImpl::MigrationStep::kEnded);
   // If migration fails, migration attempt count should not be cleared thus
   // should remain as 1.
-  EXPECT_EQ(BrowserDataMigratorImpl::GetMigrationAttemptCountForUser(
-                &pref_service_, user_id_hash),
-            1);
+  EXPECT_EQ(
+      ash::standalone_browser::migrator_util::GetMigrationAttemptCountForUser(
+          &pref_service_, user_id_hash),
+      1);
   // Even if migration is cancelled, lacros data dir is cleared and thus data
   // version should be updated.
   EXPECT_EQ(crosapi::browser_util::GetDataVer(&pref_service_, user_id_hash),
@@ -193,9 +173,6 @@ TEST_F(BrowserDataMigratorImplTest, MigrateOutOfDisk) {
   const std::string user_id_hash = "abcd";
   BrowserDataMigratorImpl::SetMigrationStep(
       &pref_service_, BrowserDataMigratorImpl::MigrationStep::kRestartCalled);
-  // Set migration attempt count to 1.
-  BrowserDataMigratorImpl::UpdateMigrationAttemptCountForUser(&pref_service_,
-                                                              user_id_hash);
 
   base::RunLoop run_loop;
   std::unique_ptr<BrowserDataMigratorImpl> migrator =
@@ -458,6 +435,39 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateSecondaryUser) {
         secondary_user->GetAccountId(), secondary_user->username_hash(),
         crosapi::browser_util::PolicyInitState::kAfterInit));
   }
+}
+
+TEST_F(BrowserDataMigratorRestartTest,
+       MaybeRestartToMigrateWithMaximumRetryAttempts) {
+  // Check that `MaybeRestartToMigrateInternal()` returns false if maximum retry
+  // attempts have been reached.
+  AddRegularUser("user@gmail.com");
+  const user_manager::User* const user = user_manager()->GetPrimaryUser();
+
+  // If Lacros is enabled, migration should run.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({ash::features::kLacrosOnly}, {});
+  EXPECT_TRUE(BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
+      user->GetAccountId(), user->username_hash(),
+      crosapi::browser_util::PolicyInitState::kAfterInit));
+
+  for (int i = 0;
+       i < ash::standalone_browser::migrator_util::kMaxMigrationAttemptCount;
+       i++) {
+    ash::standalone_browser::migrator_util::UpdateMigrationAttemptCountForUser(
+        local_state(), user->username_hash());
+  }
+  // If maximum attempts have been reached then profile migration should be
+  // skipped.
+  EXPECT_FALSE(BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
+      user->GetAccountId(), user->username_hash(),
+      crosapi::browser_util::PolicyInitState::kAfterInit));
+
+  ash::standalone_browser::migrator_util::ClearMigrationAttemptCountForUser(
+      local_state(), user->username_hash());
+  EXPECT_TRUE(BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
+      user->GetAccountId(), user->username_hash(),
+      crosapi::browser_util::PolicyInitState::kAfterInit));
 }
 
 }  // namespace ash

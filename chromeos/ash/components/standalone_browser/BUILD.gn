@@ -15,6 +15,8 @@ component("standalone_browser") {
     "browser_support.h",
     "lacros_availability.cc",
     "lacros_availability.h",
+    "migrator_util.cc",
+    "migrator_util.h",
   ]
 
   deps = [
@@ -22,6 +24,7 @@ component("standalone_browser") {
     "//base",
     "//components/account_id",
     "//components/policy/core/common",
+    "//components/prefs",
     "//components/user_manager:user_manager",
     "//google_apis:google_apis",
   ]
@@ -30,12 +33,16 @@ component("standalone_browser") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "lacros_availability_unittest.cc" ]
+  sources = [
+    "lacros_availability_unittest.cc",
+    "migrator_util_unittest.cc",
+  ]
 
   deps = [
     ":standalone_browser",
     "//ash/constants:constants",
     "//base/test:test_support",
+    "//components/prefs:test_support",
     "//components/user_manager:test_support",
     "//testing/gtest:gtest",
   ]

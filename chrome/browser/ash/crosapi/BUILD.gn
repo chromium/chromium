@@ -328,6 +328,7 @@ source_set("crosapi") {
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/osauth/public",
     "//chromeos/ash/components/settings",
+    "//chromeos/ash/components/standalone_browser",
     "//chromeos/ash/components/system",
     "//chromeos/ash/components/tpm",
     "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_browser",
