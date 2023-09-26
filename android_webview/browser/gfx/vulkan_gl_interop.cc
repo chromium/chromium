@@ -317,7 +317,8 @@ void VulkanGLInterop::DrawVk(sk_sp<GrVkSecondaryCBDrawContext> draw_context,
       return;
     }
 
-    pending_draw->image_info = gpu::CreateGrVkImageInfo(vulkan_image.get());
+    pending_draw->image_info = gpu::CreateGrVkImageInfo(
+        vulkan_image.get(), gfx::ColorSpace(*color_space));
     pending_draw->vulkan_image = std::move(vulkan_image);
   }
 

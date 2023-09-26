@@ -11,10 +11,12 @@
 
 namespace gpu {
 
-TextureHolderVk::TextureHolderVk(std::unique_ptr<VulkanImage> image)
+TextureHolderVk::TextureHolderVk(std::unique_ptr<VulkanImage> image,
+                                 const gfx::ColorSpace& color_space)
     : vulkan_image(std::move(image)) {
   gfx::Size size = vulkan_image->size();
-  GrVkImageInfo vk_image_info = CreateGrVkImageInfo(vulkan_image.get());
+  GrVkImageInfo vk_image_info =
+      CreateGrVkImageInfo(vulkan_image.get(), color_space);
   backend_texture =
       GrBackendTextures::MakeVk(size.width(), size.height(), vk_image_info);
   promise_texture = GrPromiseImageTexture::Make(backend_texture);

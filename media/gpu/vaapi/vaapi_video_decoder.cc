@@ -929,22 +929,6 @@ CroStatus::Or<scoped_refptr<VideoFrame>> VaapiVideoDecoder::AllocateCustomFrame(
   if (!frame)
     return CroStatus::Codes::kFailedToCreateVideoFrame;
 
-  if (format == PIXEL_FORMAT_NV12) {
-    frame->set_ycbcr_info(gpu::VulkanYCbCrInfo(
-        /*image_format=*/VK_FORMAT_G8_B8R8_2PLANE_420_UNORM,
-        /*external_format=*/0,
-        /*suggested_ycbcr_model=*/VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_709,
-        /*suggested_ycbcr_range=*/VK_SAMPLER_YCBCR_RANGE_ITU_NARROW,
-        /*suggested_xchroma_offset=*/VK_CHROMA_LOCATION_COSITED_EVEN,
-        /*suggested_ychroma_offset=*/VK_CHROMA_LOCATION_COSITED_EVEN,
-        /*format_features=*/VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT |
-            VK_FORMAT_FEATURE_TRANSFER_SRC_BIT |
-            VK_FORMAT_FEATURE_TRANSFER_DST_BIT |
-            VK_FORMAT_FEATURE_COSITED_CHROMA_SAMPLES_BIT |
-            VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT |
-            VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT));
-  }
-
   allocated_va_surfaces_[handle_id] = surface;
 
   return frame;

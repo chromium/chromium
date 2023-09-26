@@ -267,9 +267,9 @@ class SkiaVkAHBImageRepresentation : public SkiaVkAndroidImageRepresentation {
     vulkan_image_ = std::move(vulkan_image);
     // TODO(bsalomon): Determine whether it makes sense to attempt to reuse this
     // if the vk_info stays the same on subsequent calls.
-    promise_texture_ = GrPromiseImageTexture::Make(
-        GrBackendTextures::MakeVk(size().width(), size().height(),
-                                  CreateGrVkImageInfo(vulkan_image_.get())));
+    promise_texture_ = GrPromiseImageTexture::Make(GrBackendTextures::MakeVk(
+        size().width(), size().height(),
+        CreateGrVkImageInfo(vulkan_image_.get(), color_space())));
     DCHECK(promise_texture_);
   }
 };

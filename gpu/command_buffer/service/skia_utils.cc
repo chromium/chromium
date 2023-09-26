@@ -24,6 +24,7 @@
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "third_party/skia/include/gpu/graphite/GraphiteTypes.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_gl_api_implementation.h"
@@ -78,6 +79,14 @@ void DeleteSkObject(SharedContextState* context_state, sk_sp<T> sk_object) {
       sk_ref_sp(context_state->gr_context()), std::move(sk_object)));
 #endif
 }
+
+#if BUILDFLAG(ENABLE_VULKAN)
+constexpr bool VkFormatNeedsYcbcrSampler(VkFormat format) {
+  return format == VK_FORMAT_G8_B8R8_2PLANE_420_UNORM ||
+         format == VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM ||
+         format == VK_FORMAT_G10X6_B10X6R10X6_2PLANE_420_UNORM_3PACK16;
+}
+#endif
 
 }  // namespace
 
@@ -298,12 +307,14 @@ void DeleteSkSurface(SharedContextState* context_state,
 }
 
 #if BUILDFLAG(ENABLE_VULKAN)
-GrVkImageInfo CreateGrVkImageInfo(VulkanImage* image) {
+GrVkImageInfo CreateGrVkImageInfo(VulkanImage* image,
+                                  const gfx::ColorSpace& color_space) {
   DCHECK(image);
   VkPhysicalDevice physical_device =
       image->device_queue()->GetVulkanPhysicalDevice();
   GrVkYcbcrConversionInfo gr_ycbcr_info = CreateGrVkYcbcrConversionInfo(
-      physical_device, image->image_tiling(), image->ycbcr_info());
+      physical_device, image->image_tiling(), image->format(), color_space,
+      image->ycbcr_info());
   GrVkAlloc alloc;
   alloc.fMemory = image->device_memory();
   alloc.fOffset = 0;
@@ -343,16 +354,36 @@ GrVkImageInfo CreateGrVkImageInfo(VulkanImage* image) {
   return image_info;
 }
 
-GrVkYcbcrConversionInfo CreateGrVkYcbcrConversionInfo(
+GPU_GLES2_EXPORT GrVkYcbcrConversionInfo CreateGrVkYcbcrConversionInfo(
     VkPhysicalDevice physical_device,
     VkImageTiling tiling,
+    VkFormat format,
+    const gfx::ColorSpace& color_space,
     const absl::optional<VulkanYCbCrInfo>& ycbcr_info) {
-  if (!ycbcr_info)
-    return GrVkYcbcrConversionInfo();
+  auto valid_ycbcr_info = ycbcr_info;
+  if (!valid_ycbcr_info) {
+    if (!VkFormatNeedsYcbcrSampler(format)) {
+      return GrVkYcbcrConversionInfo();
+    }
 
-  VkFormat vk_format = static_cast<VkFormat>(ycbcr_info->image_format);
+    // YCbCr sampler is required
+    VkSamplerYcbcrModelConversion ycbcr_model =
+        (color_space.GetMatrixID() == gfx::ColorSpace::MatrixID::BT709)
+            ? VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_709
+            : VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_601;
+    VkSamplerYcbcrRange ycbcr_range =
+        (color_space.GetRangeID() == gfx::ColorSpace::RangeID::FULL)
+            ? VK_SAMPLER_YCBCR_RANGE_ITU_FULL
+            : VK_SAMPLER_YCBCR_RANGE_ITU_NARROW;
+
+    valid_ycbcr_info.emplace(format, 0, ycbcr_model, ycbcr_range,
+                             VK_CHROMA_LOCATION_COSITED_EVEN,
+                             VK_CHROMA_LOCATION_COSITED_EVEN, 0);
+  }
+
+  VkFormat vk_format = static_cast<VkFormat>(valid_ycbcr_info->image_format);
   VkFormatFeatureFlags format_features =
-      static_cast<VkFormatFeatureFlags>(ycbcr_info->format_features);
+      static_cast<VkFormatFeatureFlags>(valid_ycbcr_info->format_features);
 
   // |format_features| is expected to be set for external images. For regular
   // (non-external) images it may be set to 0. In that case we need to get the
@@ -382,15 +413,15 @@ GrVkYcbcrConversionInfo CreateGrVkYcbcrConversionInfo(
 
   GrVkYcbcrConversionInfo gr_ycbcr_info;
   gr_ycbcr_info.fFormat = vk_format;
-  gr_ycbcr_info.fExternalFormat = ycbcr_info->external_format;
+  gr_ycbcr_info.fExternalFormat = valid_ycbcr_info->external_format;
   gr_ycbcr_info.fYcbcrModel = static_cast<VkSamplerYcbcrModelConversion>(
-      ycbcr_info->suggested_ycbcr_model);
+      valid_ycbcr_info->suggested_ycbcr_model);
   gr_ycbcr_info.fYcbcrRange =
-      static_cast<VkSamplerYcbcrRange>(ycbcr_info->suggested_ycbcr_range);
+      static_cast<VkSamplerYcbcrRange>(valid_ycbcr_info->suggested_ycbcr_range);
   gr_ycbcr_info.fXChromaOffset =
-      static_cast<VkChromaLocation>(ycbcr_info->suggested_xchroma_offset),
+      static_cast<VkChromaLocation>(valid_ycbcr_info->suggested_xchroma_offset),
   gr_ycbcr_info.fYChromaOffset =
-      static_cast<VkChromaLocation>(ycbcr_info->suggested_ychroma_offset),
+      static_cast<VkChromaLocation>(valid_ycbcr_info->suggested_ychroma_offset),
   gr_ycbcr_info.fChromaFilter = chroma_filter;
   gr_ycbcr_info.fForceExplicitReconstruction = false;
   gr_ycbcr_info.fFormatFeatures = format_features;

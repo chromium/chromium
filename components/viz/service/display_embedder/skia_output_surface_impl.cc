@@ -1495,41 +1495,26 @@ GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
     const gfx::ColorSpace& yuv_color_space) {
 #if BUILDFLAG(ENABLE_VULKAN)
   if (gr_context_type_ == gpu::GrContextType::kVulkan) {
-    auto valid_ycbcr_info = ycbcr_info;
     bool external_sampling =
         si_format.IsLegacyMultiplanar() || si_format.PrefersExternalSampler();
-    if (external_sampling && !valid_ycbcr_info) {
-      // VulkanYCbCrInfo is required to compute the VkFormat when using external
-      // sampling, so construct it here.
-      VkSamplerYcbcrModelConversion ycbcr_conversion =
-          (yuv_color_space.GetMatrixID() == gfx::ColorSpace::MatrixID::BT709)
-              ? VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_709
-              : VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_601;
-
-      // Note: The utility function for computing the VkFormat differs based on
-      // whether the SIF is multiplanar with external sampling or legacy
-      // multiplanar.
-      auto vk_format = si_format.PrefersExternalSampler()
-                           ? gpu::ToVkFormatExternalSampler(si_format)
-                           : gpu::ToVkFormatSinglePlanar(si_format);
-      valid_ycbcr_info.emplace(static_cast<uint32_t>(vk_format),
-                               /*external_format=*/0, ycbcr_conversion,
-                               VK_SAMPLER_YCBCR_RANGE_ITU_NARROW,
-                               VK_CHROMA_LOCATION_COSITED_EVEN,
-                               VK_CHROMA_LOCATION_COSITED_EVEN,
-                               /*format_features=*/0);
-    } else if (!valid_ycbcr_info) {
+    if (!external_sampling && !ycbcr_info) {
       // For per-plane sampling, can just return the VkFormat for the plane if
       // VulkanYcbCrInfo isn't present.
       return GrBackendFormats::MakeVk(gpu::ToVkFormat(si_format, plane_index));
     }
 
+    // Note: The utility function for computing the VkFormat differs based on
+    // whether the SIF is multiplanar with external sampling or legacy
+    // multiplanar.
+    auto vk_format = si_format.PrefersExternalSampler()
+                         ? gpu::ToVkFormatExternalSampler(si_format)
+                         : gpu::ToVkFormatSinglePlanar(si_format);
     // Assume optimal tiling.
     GrVkYcbcrConversionInfo gr_ycbcr_info = CreateGrVkYcbcrConversionInfo(
         dependency_->GetVulkanContextProvider()
             ->GetDeviceQueue()
             ->GetVulkanPhysicalDevice(),
-        VK_IMAGE_TILING_OPTIMAL, valid_ycbcr_info);
+        VK_IMAGE_TILING_OPTIMAL, vk_format, yuv_color_space, ycbcr_info);
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     // Textures that were allocated _on linux_ with ycbcr info came from
     // VaapiVideoDecoder, which exports using DRM format modifiers.

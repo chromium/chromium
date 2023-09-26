@@ -33,6 +33,7 @@ class SkImage;
 
 namespace gfx {
 class Size;
+class ColorSpace;
 }  // namespace gfx
 
 namespace viz {
@@ -104,11 +105,14 @@ GPU_GLES2_EXPORT void DeleteSkSurface(SharedContextState* context_state,
                                       sk_sp<SkSurface> sk_surface);
 
 #if BUILDFLAG(ENABLE_VULKAN)
-GPU_GLES2_EXPORT GrVkImageInfo CreateGrVkImageInfo(VulkanImage* image);
+GPU_GLES2_EXPORT GrVkImageInfo
+CreateGrVkImageInfo(VulkanImage* image, const gfx::ColorSpace& color_space);
 
 GPU_GLES2_EXPORT GrVkYcbcrConversionInfo CreateGrVkYcbcrConversionInfo(
     VkPhysicalDevice physical_device,
     VkImageTiling tiling,
+    VkFormat format,
+    const gfx::ColorSpace& color_space,
     const absl::optional<VulkanYCbCrInfo>& ycbcr_info);
 #endif  // BUILDFLAG(ENABLE_VULKAN)
 
