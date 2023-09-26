@@ -204,10 +204,6 @@ CSSVariableReferenceValue* CSSVariableParser::ParseVariableReferenceValue(
     CSSTokenizedValue value,
     const CSSParserContext& context,
     bool is_animation_tainted) {
-  if (value.range.AtEnd()) {
-    return nullptr;
-  }
-
   bool has_references;
   if (!IsValidVariable(value.range, has_references)) {
     return nullptr;

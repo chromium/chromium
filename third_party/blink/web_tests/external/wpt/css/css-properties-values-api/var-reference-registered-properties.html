@@ -221,4 +221,21 @@ test_using_invalid_fallback('<length>', 'red');
 test_using_invalid_fallback('<length> | none', 'nolength');
 test_using_invalid_fallback('<color>', 'var(--length-1)');
 
+test(function(t){
+    CSS.registerProperty({
+        name: '--registered-universal-no-initial',
+        syntax: '*',
+        inherits: false
+    });
+    t.add_cleanup(() => {
+        element.style = '';
+    });
+    element.style = [
+        '--registered-universal-no-initial:;',
+        'background-color: var(--registered-universal-no-initial) green',
+    ].join(';');
+    let computedStyle = getComputedStyle(element);
+    assert_equals(computedStyle.getPropertyValue('background-color'), 'rgb(0, 128, 0)');
+}, 'Empty universal custom property can be substituted with var()');
+
 </script>

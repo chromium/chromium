@@ -20,5 +20,6 @@ FAIL Fallback must adhere to registered syntax [<length>, var(--length-1)] asser
 PASS Invalid fallback is not used [<length>, red]
 PASS Invalid fallback is not used [<length> | none, nolength]
 PASS Invalid fallback is not used [<color>, var(--length-1)]
+PASS Empty universal custom property can be substituted with var()
 Harness: the test ran to completion.
 
