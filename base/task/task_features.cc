@@ -59,12 +59,12 @@ BASE_FEATURE(kExplicitHighResolutionTimerWin,
 BASE_FEATURE(kRunTasksByBatches,
              "RunTasksByBatches",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kThreadPoolCap,
-             "ThreadPoolCap",
+BASE_FEATURE(kThreadPoolCap2,
+             "ThreadPoolCap2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kThreadPoolCapRestrictedCount{
-    &kThreadPoolCap, "restricted_count", 3};
+    &kThreadPoolCap2, "restricted_count", 3};
 
 // Leeway value applied to delayed tasks. An atomic is used here because the
 // value is queried from multiple threads.
