@@ -1,9 +1,11 @@
 <!DOCTYPE html>
-<html class=reftest-wait>
+<html class="reftest-wait">
 <title>View transitions: BFCache navigation manual</title>
 <link rel="help" href="https://github.com/WICG/view-transitions">
 <link rel="author" href="mailto:vmpstr@chromium.org">
+<!-- TODO(crbug.com/1416670 ): Automated test crashes - manual for now
 <xxlink rel="match" href="transition-out-of-bfcache-ref.html">
+-->
 <meta name="view-transition" content="same-origin">
 <script src="/common/reftest-wait.js"></script>
 <style>
@@ -38,11 +40,8 @@ html { background: red; }
   animation: unset;
   opacity: 0;
 }
-
 </style>
-<!-- TODO: Figure out how to do a ref test automatically, currently there's a crash -->
 <div id=target><div id=log></div>You should see lightblue background with a black square that says "BFCache" followed by this text.</div>
-
 <script>
 function startTest() {
   const old_url = "/transition-out-of-bfcache-manual.html";
@@ -60,4 +59,4 @@ window.addEventListener("pageshow", (e) => {
   }
 });
 </script>
-
+</html>

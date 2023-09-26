@@ -16,16 +16,13 @@ div {
   right: 8px;
   view-transition-name: target;
 }
-
 ::view-transition {
   background: lightblue;
 }
-
 ::view-transition-group(root) {
   visibility: hidden;
   animation-duration: 500s;
 }
-
 ::view-transition-group(target) {
   animation-play-state: paused;
 }
@@ -42,7 +39,6 @@ div {
   There should be a green square on the left side of the screen,
   on a field of lightblue. There should be no red in the final state.
 </div>
-
 <script>
 if (document.prerendering) {
   target.style.background = "green";
@@ -50,5 +46,3 @@ if (document.prerendering) {
 const channel = new PrerenderChannel('prerender-channel');
 channel.postMessage('loaded!');
 </script>
-
-
