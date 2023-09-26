@@ -472,6 +472,9 @@ NSString* const kDomain2 = @"domain2.com";
 
   // Open the menu and click on the item.
   [ChromeEarlGreyUI openToolsMenu];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kPopupMenuToolsMenuActionListId)]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
   [ChromeEarlGreyUI
       tapToolsMenuAction:grey_accessibilityID(kTextMenuEnterpriseInfo)];
   [ChromeEarlGrey
@@ -498,6 +501,9 @@ NSString* const kDomain2 = @"domain2.com";
 
   // Open the menu and click on the item.
   [ChromeEarlGreyUI openToolsMenu];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kPopupMenuToolsMenuActionListId)]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
   [ChromeEarlGreyUI
       tapToolsMenuAction:grey_accessibilityID(kTextMenuEnterpriseInfo)];
   [ChromeEarlGrey

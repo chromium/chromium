@@ -234,6 +234,9 @@ void ResolvePassphraseErrorFromOverflowMenu() {
 
   // Open tools menu to click on "Learn more" family link footer.
   [ChromeEarlGreyUI openToolsMenu];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kPopupMenuToolsMenuActionListId)]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
   [ChromeEarlGreyUI
       tapToolsMenuAction:grey_accessibilityID(kTextMenuFamilyLinkInfo)];
 
