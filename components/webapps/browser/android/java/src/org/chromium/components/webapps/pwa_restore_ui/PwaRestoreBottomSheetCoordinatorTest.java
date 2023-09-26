@@ -143,5 +143,12 @@ public class PwaRestoreBottomSheetCoordinatorTest {
         Assert.assertEquals(ViewState.VIEW_PWA_LIST,
                 coordinator.getModelForTesting().get(PwaRestoreProperties.VIEW_STATE));
         verify(mBottomSheetControllerMock, times(1)).expandSheet();
+
+        coordinator.onBackButtonClicked();
+
+        // Clicking the Back button results in the sheet going back to peeking state.
+        Assert.assertEquals(ViewState.PREVIEW,
+                coordinator.getModelForTesting().get(PwaRestoreProperties.VIEW_STATE));
+        verify(mBottomSheetControllerMock, times(1)).collapseSheet(eq(true));
     }
 }
