@@ -77,7 +77,7 @@ OpenscreenFrameSender::OpenscreenFrameSender(
       is_audio_(config.rtp_payload_type <= RtpPayloadType::AUDIO_LAST),
       min_playout_delay_(config.min_playout_delay),
       max_playout_delay_(config.max_playout_delay) {
-  DCHECK_GT(sender_->config().rtp_timebase, 0);
+  CHECK_GT(sender_->config().rtp_timebase, 0);
   if (!is_audio_) {
     bitrate_suggester_ = std::make_unique<VideoBitrateSuggester>(
         config, std::move(get_bitrate_cb));
@@ -214,12 +214,12 @@ base::TimeDelta OpenscreenFrameSender::GetAllowedInFlightMediaDuration() const {
 CastStreamingFrameDropReason OpenscreenFrameSender::EnqueueFrame(
     std::unique_ptr<SenderEncodedFrame> encoded_frame) {
   DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
-  DCHECK(encoded_frame);
+  CHECK(encoded_frame);
   VLOG_WITH_SSRC(2) << "About to send another frame ("
                     << encoded_frame->frame_id
                     << "). last enqueued=" << last_enqueued_frame_id_;
 
-  DCHECK_GE(encoded_frame->frame_id, last_enqueued_frame_id_)
+  CHECK_GE(encoded_frame->frame_id, last_enqueued_frame_id_)
       << "enqueued frames out of order.";
   last_enqueued_frame_id_ = encoded_frame->frame_id;
   last_send_time_ = cast_environment_->Clock()->NowTicks();
@@ -259,7 +259,7 @@ CastStreamingFrameDropReason OpenscreenFrameSender::EnqueueFrame(
   // the Open Screen Sender choose to not send a frame, it does not advance the
   // frame identifier.
   const FrameId openscreen_frame_id = sender_->GetNextFrameId();
-  DCHECK_GE(encoded_frame->frame_id, openscreen_frame_id);
+  CHECK_GE(encoded_frame->frame_id, openscreen_frame_id);
   frame_id_map_.insert_or_assign(encoded_frame->frame_id, openscreen_frame_id);
 
   // Finally, convert to an Open Screen encoded frame using the equivalent frame
@@ -267,7 +267,7 @@ CastStreamingFrameDropReason OpenscreenFrameSender::EnqueueFrame(
   auto openscreen_frame = ToOpenscreenEncodedFrame(*encoded_frame);
   openscreen_frame.frame_id = openscreen_frame_id;
   auto it = frame_id_map_.find(encoded_frame->referenced_frame_id);
-  DCHECK(it != frame_id_map_.end());
+  CHECK(it != frame_id_map_.end());
   openscreen_frame.referenced_frame_id = it->second;
   const auto result = sender_->EnqueueFrame(std::move(openscreen_frame));
   return ToFrameDropReason(result);
