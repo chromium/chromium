@@ -74,6 +74,7 @@ source_set("app_service") {
     "//components/favicon/core",
     "//components/keyed_service/content",
     "//components/services/app_service",
+    "//components/webapps/common",
     "//extensions/browser",
     "//extensions/common",
   ]

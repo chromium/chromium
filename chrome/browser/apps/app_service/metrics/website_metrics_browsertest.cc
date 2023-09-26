@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_switches.h"
@@ -30,6 +29,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -160,7 +160,7 @@ class WebsiteMetricsBrowserTest : public MixinBasedInProcessBrowserTest {
     return website_metrics_browser_test_mixin_.NavigateActiveTab(browser, url);
   }
 
-  web_app::AppId InstallWebApp(
+  webapps::AppId InstallWebApp(
       const std::string& start_url,
       web_app::mojom::UserDisplayMode user_display_mode) {
     auto info = std::make_unique<web_app::WebAppInstallInfo>();
@@ -170,11 +170,11 @@ class WebsiteMetricsBrowserTest : public MixinBasedInProcessBrowserTest {
     return app_id;
   }
 
-  web_app::AppId InstallWebAppOpeningAsTab(const std::string& start_url) {
+  webapps::AppId InstallWebAppOpeningAsTab(const std::string& start_url) {
     return InstallWebApp(start_url, web_app::mojom::UserDisplayMode::kBrowser);
   }
 
-  web_app::AppId InstallWebAppOpeningAsWindow(const std::string& start_url) {
+  webapps::AppId InstallWebAppOpeningAsWindow(const std::string& start_url) {
     return InstallWebApp(start_url,
                          web_app::mojom::UserDisplayMode::kStandalone);
   }

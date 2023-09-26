@@ -19,13 +19,13 @@
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -91,7 +91,7 @@ absl::optional<std::string> GetInstanceAppIdForWebContents(
       }
     }
 
-    absl::optional<web_app::AppId> app_id =
+    absl::optional<webapps::AppId> app_id =
         provider->registrar_unsafe().FindAppWithUrlInScope(
             tab->GetVisibleURL());
     if (app_id) {
@@ -121,7 +121,7 @@ absl::optional<std::string> GetInstanceAppIdForWebContents(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 std::string GetAppIdForWebContents(content::WebContents* web_contents) {
-  const web_app::AppId* app_id =
+  const webapps::AppId* app_id =
       web_app::WebAppTabHelper::GetAppId(web_contents);
   if (app_id)
     return *app_id;
@@ -153,7 +153,7 @@ void SetAppIdForWebContents(Profile* profile,
   } else {
     bool app_installed = IsAppReady(profile, app_id);
     web_app::WebAppTabHelper::FromWebContents(web_contents)
-        ->SetAppId(app_installed ? absl::optional<web_app::AppId>(app_id)
+        ->SetAppId(app_installed ? absl::optional<webapps::AppId>(app_id)
                                  : absl::nullopt);
     extensions::TabHelper::FromWebContents(web_contents)
         ->SetExtensionAppById(std::string());

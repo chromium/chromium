@@ -17,10 +17,10 @@
 #include "chrome/browser/ash/crosapi/ash_requires_lacros_browsertestbase.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/apps/app_dialog/app_uninstall_dialog_view.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -132,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsCrosapiBrowserTest, PinUsingContextMenu) {
   const size_t kUnpinIndex = 1;
   const size_t kCloseIndex = 2;
 
-  const web_app::AppId app_id =
+  const webapps::AppId app_id =
       InstallWebApp("https://example.org/", apps::WindowMode::kWindow);
 
   EXPECT_EQ(ash::ShelfModel::Get()->ItemIndexByAppID(app_id), -1);
@@ -213,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsCrosapiBrowserTest, Uninstall) {
   const size_t kPinIndex = 1;
   const size_t kUninstallIndex = 3;
 
-  const web_app::AppId app_id =
+  const webapps::AppId app_id =
       InstallWebApp("https://example.org/", apps::WindowMode::kWindow);
 
   {

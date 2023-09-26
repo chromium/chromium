@@ -632,7 +632,7 @@ void ExtensionAppsChromeOs::OnArcAppListPrefsDestroyed() {
 void ExtensionAppsChromeOs::OnIsCapturingVideoChanged(
     content::WebContents* web_contents,
     bool is_capturing_video) {
-  const web_app::AppId* web_app_id =
+  const webapps::AppId* web_app_id =
       web_app::WebAppTabHelper::GetAppId(web_contents);
   if (web_app_id) {
     // This media access is coming from a web app.
@@ -659,7 +659,7 @@ void ExtensionAppsChromeOs::OnIsCapturingVideoChanged(
 void ExtensionAppsChromeOs::OnIsCapturingAudioChanged(
     content::WebContents* web_contents,
     bool is_capturing_audio) {
-  const web_app::AppId* web_app_id =
+  const webapps::AppId* web_app_id =
       web_app::WebAppTabHelper::GetAppId(web_contents);
   if (web_app_id) {
     // This media access is coming from a web app.
