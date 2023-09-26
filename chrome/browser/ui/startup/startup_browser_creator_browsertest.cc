@@ -1944,7 +1944,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-web_app::AppId InstallPWAWithName(Profile* profile,
+webapps::AppId InstallPWAWithName(Profile* profile,
                                   const GURL& start_url,
                                   const std::string& app_name) {
   auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
@@ -1980,19 +1980,19 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithListAppsFeature,
   // Install web apps for the two profiles.
   auto example_url1 = GURL("http://www.example_one.com");
   std::string app_name1 = "A Test Web App1";
-  web_app::AppId app_id1 =
+  webapps::AppId app_id1 =
       InstallPWAWithName(profile1, example_url1, app_name1);
   auto example_url2 = GURL("http://www.example_two.com");
   std::string app_name2 = "A Test Web App2";
-  web_app::AppId app_id2 =
+  webapps::AppId app_id2 =
       InstallPWAWithName(profile1, example_url2, app_name2);
   auto example_url3 = GURL("http://www.example_three.com");
   std::string app_name3 = "A Test Web App3";
-  web_app::AppId app_id3 =
+  webapps::AppId app_id3 =
       InstallPWAWithName(&profile2, example_url3, app_name3);
   auto example_url4 = GURL("http://www.example_four.com");
   std::string app_name4 = "A Test Web App4";
-  web_app::AppId app_id4 =
+  webapps::AppId app_id4 =
       InstallPWAWithName(&profile2, example_url4, app_name4);
 
   // Launch web apps for the two profiles.
@@ -2005,11 +2005,11 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithListAppsFeature,
 
   // List web apps for all profiles.
   std::vector<Profile*> expected_profiles = {&profile2, profile1};
-  std::vector<web_app::AppId*> expected_installed_apps_id = {
+  std::vector<webapps::AppId*> expected_installed_apps_id = {
       &app_id4, &app_id3, &app_id2, &app_id1};
   std::vector<std::string*> expected_installed_apps_name = {
       &app_name4, &app_name3, &app_name2, &app_name1};
-  std::vector<web_app::AppId*> expected_open_apps_id = {&app_id1, &app_id3};
+  std::vector<webapps::AppId*> expected_open_apps_id = {&app_id1, &app_id3};
   std::vector<std::string*> expected_open_apps_name = {&app_name1, &app_name3};
   base::Value::Dict apps_for_all_profiles;
   base::Value::List installed_apps_for_all_profile;
@@ -2085,19 +2085,19 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithListAppsFeature,
   // Install web apps for the two profiles.
   auto example_url1 = GURL("http://www.example_one.com");
   std::string app_name1 = "A Test Web App1";
-  web_app::AppId app_id1 =
+  webapps::AppId app_id1 =
       InstallPWAWithName(profile1, example_url1, app_name1);
   auto example_url2 = GURL("http://www.example_two.com");
   std::string app_name2 = "A Test Web App2";
-  web_app::AppId app_id2 =
+  webapps::AppId app_id2 =
       InstallPWAWithName(profile1, example_url2, app_name2);
   auto example_url3 = GURL("http://www.example_three.com");
   std::string app_name3 = "A Test Web App3";
-  web_app::AppId app_id3 =
+  webapps::AppId app_id3 =
       InstallPWAWithName(&profile2, example_url3, app_name3);
   auto example_url4 = GURL("http://www.example_four.com");
   std::string app_name4 = "A Test Web App4";
-  web_app::AppId app_id4 =
+  webapps::AppId app_id4 =
       InstallPWAWithName(&profile2, example_url4, app_name4);
 
   // Launch web apps for the two profiles.
@@ -2172,7 +2172,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithListAppsFeature,
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if !BUILDFLAG(IS_CHROMEOS)
-web_app::AppId InstallPWA(Profile* profile, const GURL& start_url) {
+webapps::AppId InstallPWA(Profile* profile, const GURL& start_url) {
   auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
   web_app_info->start_url = start_url;
   web_app_info->scope = start_url.GetWithoutFilename();
@@ -2242,7 +2242,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorRestartTest,
 
   // Install web app
   auto example_url = GURL("http://www.example.com");
-  web_app::AppId app_id = InstallPWA(test_profile, example_url);
+  webapps::AppId app_id = InstallPWA(test_profile, example_url);
   Browser* app_browser =
       web_app::LaunchWebAppBrowserAndWait(test_profile, app_id);
 
@@ -2391,14 +2391,14 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
     info->start_url = GURL(kStartUrl);
     info->title = kAppName;
     info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
-    base::test::TestFuture<const web_app::AppId&, webapps::InstallResultCode>
+    base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
         result;
     provider->scheduler().InstallFromInfoWithParams(
         std::move(info), /*overwrite_existing_manifest_fields=*/true,
         webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
         result.GetCallback(), web_app::WebAppInstallParams());
 
-    EXPECT_EQ(result.Get<web_app::AppId>(), kAppId);
+    EXPECT_EQ(result.Get<webapps::AppId>(), kAppId);
     EXPECT_EQ(result.Get<webapps::InstallResultCode>(),
               webapps::InstallResultCode::kSuccessNewInstall);
     EXPECT_EQ(provider->registrar_unsafe().GetAppUserDisplayMode(kAppId),
@@ -2629,7 +2629,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
       profile_manager, dest_path.Append(FILE_PATH_LITERAL("New Profile 1")));
 
   auto example_url = GURL("http://www.example.com");
-  web_app::AppId new_app_id = InstallPWA(&profile1, example_url);
+  webapps::AppId new_app_id = InstallPWA(&profile1, example_url);
   Browser* app = web_app::LaunchWebAppBrowserAndWait(&profile1, new_app_id);
   ASSERT_TRUE(app);
 
@@ -2750,7 +2750,7 @@ class StartupBrowserWebAppProtocolHandlingTest : public InProcessBrowserTest {
   // Install a web app with `protocol_handlers` (and optionally `file_handlers`)
   // then register it with the ProtocolHandlerRegistry. This is sufficient for
   // testing URL translation and launch at startup.
-  web_app::AppId InstallWebAppWithProtocolHandlers(
+  webapps::AppId InstallWebAppWithProtocolHandlers(
       const std::vector<apps::ProtocolHandlerInfo>& protocol_handlers,
       const std::vector<apps::FileHandler>& file_handlers = {}) {
     std::unique_ptr<web_app::WebAppInstallInfo> info =
@@ -2760,7 +2760,7 @@ class StartupBrowserWebAppProtocolHandlingTest : public InProcessBrowserTest {
     info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
     info->protocol_handlers = protocol_handlers;
     info->file_handlers = file_handlers;
-    web_app::AppId app_id =
+    webapps::AppId app_id =
         web_app::test::InstallWebApp(browser()->profile(), std::move(info));
 
     auto& protocol_handler_manager =
@@ -2780,7 +2780,7 @@ class StartupBrowserWebAppProtocolHandlingTest : public InProcessBrowserTest {
   }
 
   void SetUpCommandlineAndStart(const std::string& url,
-                                const web_app::AppId& app_id) {
+                                const webapps::AppId& app_id) {
     base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
     command_line.AppendArg(url);
     command_line.AppendSwitchASCII(switches::kAppId, app_id);
@@ -2807,7 +2807,7 @@ IN_PROC_BROWSER_TEST_F(
   const std::string handler_url = std::string(kStartUrl) + "/testing=%s";
   protocol_handler.url = GURL(handler_url);
   protocol_handler.protocol = "web+test";
-  web_app::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
+  webapps::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
 
   // Launch the browser via a command line with a handled protocol URL param.
   SetUpCommandlineAndStart("web+test://parameterString", app_id);
@@ -2831,7 +2831,7 @@ IN_PROC_BROWSER_TEST_F(
   const std::string handler_url = std::string(kStartUrl) + "/testing=%s";
   protocol_handler.url = GURL(handler_url);
   protocol_handler.protocol = "web+test";
-  web_app::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
+  webapps::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
   bool allowed_protocols_notified = false;
   web_app::WebAppTestRegistryObserverAdapter observer(browser()->profile());
   observer.SetWebAppProtocolSettingsChangedDelegate(
@@ -2881,7 +2881,7 @@ IN_PROC_BROWSER_TEST_F(
   const std::string handler_url = std::string(kStartUrl) + "/testing=%s";
   protocol_handler.url = GURL(handler_url);
   protocol_handler.protocol = "web+test";
-  web_app::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
+  webapps::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
 
   // Launch the browser via a command line with an unhandled protocol URL param.
   SetUpCommandlineAndStart("web+unhandled://parameterString", app_id);
@@ -2914,7 +2914,7 @@ IN_PROC_BROWSER_TEST_F(
   const std::string handler_url = std::string(kStartUrl) + "/testing=%s";
   protocol_handler.url = GURL(handler_url);
   protocol_handler.protocol = "web+test";
-  web_app::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
+  webapps::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
 
   web_app::ProtocolHandlerLaunchDialogView::
       SetDefaultRememberSelectionForTesting(true);
@@ -2977,7 +2977,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppProtocolHandlingTest,
   const std::string handler_url = std::string(kStartUrl) + "/testing=%s";
   protocol_handler.url = GURL(handler_url);
   protocol_handler.protocol = "web+test";
-  web_app::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
+  webapps::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
 
   {
     views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
@@ -3049,7 +3049,7 @@ IN_PROC_BROWSER_TEST_F(
   const std::string handler_url = std::string(kStartUrl) + "/testing=%s";
   protocol_handler.url = GURL(handler_url);
   protocol_handler.protocol = "web+test";
-  web_app::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
+  webapps::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
 
   web_app::ProtocolHandlerLaunchDialogView::
       SetDefaultRememberSelectionForTesting(true);
@@ -3081,7 +3081,7 @@ IN_PROC_BROWSER_TEST_F(
   const std::string handler_url = std::string(kStartUrl) + "/testing=%s";
   protocol_handler.url = GURL(handler_url);
   protocol_handler.protocol = "web+test";
-  web_app::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
+  webapps::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
 
   {
     views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
@@ -3138,7 +3138,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppProtocolAndFileHandlingTest,
   file_handler.accept.push_back({});
   file_handler.accept.back().mime_type = "text/plain";
   file_handler.accept.back().file_extensions = {".txt"};
-  web_app::AppId app_id =
+  webapps::AppId app_id =
       InstallWebAppWithProtocolHandlers({protocol_handler}, {file_handler});
 
   // Skip the file handler dialog by simulating prior user approval of the API.
@@ -3685,7 +3685,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorInfobarsTest,
   Profile* test_profile = browser()->profile();
   // Install web app
   GURL example_url("http://www.example.com");
-  web_app::AppId app_id = InstallPWA(test_profile, example_url);
+  webapps::AppId app_id = InstallPWA(test_profile, example_url);
 
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kAppId, app_id);
