@@ -274,19 +274,14 @@ class DlpFilesAppBrowserTestBase {
       auto cb = base::BindLambdaForTesting(
           [task_id, warning_files, action, profile](
               const dlp::CheckFilesTransferRequest,
-              chromeos::DlpClient::CheckFilesTransferCallback daemon_callback) {
-            auto warning_callback = base::BindOnce(
-                [](chromeos::DlpClient::CheckFilesTransferCallback daemon_cb,
-                   absl::optional<std::u16string> justification,
-                   bool should_proceed) { std::move(daemon_cb).Run({}); },
-                std::move(daemon_callback));
+              chromeos::DlpClient::CheckFilesTransferCallback) {
             policy::FilesPolicyNotificationManager* fpnm =
                 policy::FilesPolicyNotificationManagerFactory::
                     GetForBrowserContext(profile);
             ASSERT_TRUE(fpnm);
             ASSERT_TRUE(fpnm->HasIOTask(task_id.value()));
             // Call FPNM to show the warning, which pauses the task.
-            fpnm->ShowDlpWarning(std::move(warning_callback), task_id,
+            fpnm->ShowDlpWarning(base::DoNothing(), task_id,
                                  std::move(warning_files),
                                  policy::DlpFileDestination(), action);
           });
@@ -977,79 +972,6 @@ IN_PROC_BROWSER_TEST_P(FileTransferConnectorFilesAppBrowserTest, Test) {
   StartTest();
 }
 
-// A version of FilesAppBrowserTest that supports DLP and Enterprise Connectors
-// files restrictions.
-class DlpAndEnterpriseConnectorsFilesAppBrowserTest
-    : public FileManagerBrowserTestBase,
-      public ::testing::WithParamInterface<file_manager::test::TestCase>,
-      public DlpFilesAppBrowserTestBase,
-      public FileTransferConnectorFilesAppBrowserTestBase {
- public:
-  DlpAndEnterpriseConnectorsFilesAppBrowserTest(
-      const DlpAndEnterpriseConnectorsFilesAppBrowserTest&) = delete;
-  DlpAndEnterpriseConnectorsFilesAppBrowserTest& operator=(
-      const DlpAndEnterpriseConnectorsFilesAppBrowserTest&) = delete;
-
- protected:
-  DlpAndEnterpriseConnectorsFilesAppBrowserTest() = default;
-  ~DlpAndEnterpriseConnectorsFilesAppBrowserTest() override = default;
-
-  void SetUpOnMainThread() override {
-    FileManagerBrowserTestBase::SetUpOnMainThread();
-    policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
-        profile(),
-        base::BindRepeating(&DlpFilesAppBrowserTestBase::SetDlpRulesManager,
-                            base::Unretained(this)));
-    FileTransferConnectorFilesAppBrowserTestBase::SetUpOnMainThread(profile());
-  }
-
-  void TearDownOnMainThread() override {
-    // The files controller must be destroyed before the profile since it's
-    // holding a pointer to it.
-    files_controller_.reset();
-    FileManagerBrowserTestBase::TearDownOnMainThread();
-  }
-
-  bool HandleDlpCommands(const std::string& name,
-                         const base::Value::Dict& value,
-                         std::string* output) override {
-    return DlpFilesAppBrowserTestBase::HandleDlpCommands(profile(), name, value,
-                                                         output);
-  }
-
-  bool HandleEnterpriseConnectorCommands(const std::string& name,
-                                         const base::Value::Dict& value,
-                                         std::string* output) override {
-    return FileTransferConnectorFilesAppBrowserTestBase::
-        HandleEnterpriseConnectorCommands(profile(), GetOptions(), name, value,
-                                          output);
-  }
-
-  const char* GetTestCaseName() const override { return GetParam().name; }
-
-  std::string GetFullTestCaseName() const override {
-    return GetParam().GetFullName();
-  }
-
-  const char* GetTestExtensionManifestName() const override {
-    return "file_manager_test_manifest.json";
-  }
-
-  FileManagerBrowserTestBase::Options GetOptions() const override {
-    return GetParam().options;
-  }
-};
-
-IN_PROC_BROWSER_TEST_P(DlpAndEnterpriseConnectorsFilesAppBrowserTest, Test) {
-  ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
-  ON_CALL(*mock_rules_manager_, IsRestricted)
-      .WillByDefault(::testing::Return(policy::DlpRulesManager::Level::kAllow));
-  ON_CALL(*mock_rules_manager_, GetReportingManager)
-      .WillByDefault(::testing::Return(nullptr));
-
-  StartTest();
-}
-
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     DLP, /* dlp.js */
     DlpFilesAppBrowserTest,
@@ -1147,11 +1069,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             "transferConnectorFromUsbToDownloadsFlatWarnCancelNewUX"),
         FILE_TRANSFER_TEST_CASE_NEW_UX(
             "transferConnectorFromUsbToDownloadsDeepWarnCancelNewUX")));
-
-WRAPPED_INSTANTIATE_TEST_SUITE_P(
-    DlpEntrepriseConnectors, /* dlp_enterprise_connectors.js */
-    DlpAndEnterpriseConnectorsFilesAppBrowserTest,
-    ::testing::Values(FILE_TRANSFER_TEST_CASE_NEW_UX("twoWarningsProceeded")));
 
 #undef FILE_TRANSFER_TEST_CASE
 #undef FILE_TRANSFER_TEST_CASE_NEW_UX

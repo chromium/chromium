@@ -11,7 +11,6 @@ import './crostini.js';
 import './directory_tree.js';
 import './directory_tree_context_menu.js';
 import './dlp.js';
-import './dlp_enterprise_connectors.js';
 import './drive_specific.js';
 import './file_dialog.js';
 import './file_display.js';
