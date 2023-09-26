@@ -893,7 +893,6 @@
       "external/wpt/css/css-text/parsing/text-autospace-computed.html",
       "external/wpt/css/css-text/parsing/text-autospace-valid.html",
       "external/wpt/css/css-text/text-autospace/",
-      "external/wpt/css/css-text/text-spacing-trim/",
       "external/wpt/web-animations/animation-model/animation-types/accumulation-per-property-002.html",
       "external/wpt/web-animations/animation-model/animation-types/addition-per-property-002.html",
       "external/wpt/web-animations/animation-model/animation-types/interpolation-per-property-002.html",
@@ -903,7 +902,7 @@
       "virtual/text-antialias/justify-ideograph-leading-expansion.html"
     ],
     "args": [
-      "--enable-blink-features=CSSTextAutoSpace,CSSTextSpacingTrim",
+      "--enable-blink-features=CSSTextAutoSpace",
       "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Dec 1, 2023"
   },
@@ -935,6 +934,23 @@
     "args": ["--enable-blink-features=CSSNestingIdent",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Dec 1, 2023"
+  },
+  {
+    "prefix": "css-text-spacing-trim",
+    "owners": [
+      "kojii@chromium.org",
+      "lingqi@chromium.org"
+    ],
+    "platforms": [
+      "Linux"
+    ],
+    "bases": [
+      "external/wpt/css/css-text/text-spacing-trim/"
+    ],
+    "args": [
+      "--enable-blink-features=CSSTextAutoSpace,CSSTextSpacingTrim",
+      "--disable-threaded-compositing", "--disable-threaded-animation"],
+    "expires": "Apr 1, 2024"
   },
   {
     "prefix": "import-maps-disabled",

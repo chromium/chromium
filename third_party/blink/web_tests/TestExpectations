@@ -3529,10 +3529,10 @@ crbug.com/1463891 external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-
 crbug.com/1463891 external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-colon-001.html [ Failure ]
 crbug.com/1463891 external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-dot-001.html [ Failure ]
 crbug.com/1463891 external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-chws-001.html [ Failure ]
-crbug.com/1463891 virtual/css-text-autospace/external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-001.html [ Pass ]
-crbug.com/1463891 virtual/css-text-autospace/external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-colon-001.html [ Pass ]
-crbug.com/1463891 virtual/css-text-autospace/external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-dot-001.html [ Pass ]
-crbug.com/1463891 virtual/css-text-autospace/external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-chws-001.html [ Pass ]
+crbug.com/1463891 virtual/css-text-spacing-trim/external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-001.html [ Pass ]
+crbug.com/1463891 virtual/css-text-spacing-trim/external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-colon-001.html [ Pass ]
+crbug.com/1463891 virtual/css-text-spacing-trim/external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-dot-001.html [ Pass ]
+crbug.com/1463891 virtual/css-text-spacing-trim/external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-chws-001.html [ Pass ]
 
 # Implement text-decoration correctly for vertical text
 crbug.com/1133806 external/wpt/css/css-text-decor/text-decoration-thickness-vertical-002.html [ Failure ]
