@@ -380,6 +380,10 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, Slider) {
   RunTest("settings/settings_slider_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, SpeedPage) {
+  RunTest("settings/speed_page_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsTest, StartupUrlsPage) {
   RunTest("settings/startup_urls_page_test.js", "mocha.run()");
 }
@@ -449,8 +453,19 @@ IN_PROC_BROWSER_TEST_F(SettingsAllSitesTest, DisableFirstPartySets) {
 }
 
 class SettingsBasicPageTest : public SettingsBrowserTest {
+ protected:
+  SettingsBasicPageTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {
+            {features::kSafetyHub, {}},
+            {features::kPerformanceSettingsPreloadingSubpage,
+             {{"use_v2_preloading_subpage", "true"}}},
+        },
+        {});
+  }
+
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{features::kSafetyHub};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // TODO(crbug.com/1298753): Flaky on all platforms.

@@ -324,6 +324,9 @@
   <message name="IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_SETTING_DESCRIPTION" desc="Description for the energy saver mode setting">
     When on, Chromium conserves battery power by limiting background activity and visual effects, such as smooth scrolling and video frame rates.
   </message>
+  <message name="IDS_SETTINGS_PERFORMANCE_PRELOAD_TOGGLE_SUMMARY" desc="Summary for the preload pages setting">
+    When on, Chromium preloads pages which makes browsing and searching faster.
+  </message>
 
   <!-- Languages Page -->
   <if expr="is_win">

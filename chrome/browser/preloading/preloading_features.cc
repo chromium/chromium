@@ -10,4 +10,7 @@ BASE_FEATURE(kPerformanceSettingsPreloadingSubpage,
              "PerformanceSettingsPreloadingSubpage",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+const base::FeatureParam<bool> kPerformanceSettingsPreloadingSubpageV2{
+    &kPerformanceSettingsPreloadingSubpage, "use_v2_preloading_subpage", true};
+
 }  // namespace features

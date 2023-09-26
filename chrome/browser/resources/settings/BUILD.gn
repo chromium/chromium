@@ -100,6 +100,7 @@ build_webui("build") {
     "on_startup_page/startup_urls_page.ts",
     "performance_page/battery_page.ts",
     "performance_page/performance_page.ts",
+    "performance_page/speed_page.ts",
     "performance_page/tab_discard_exception_add_dialog.ts",
     "performance_page/tab_discard_exception_add_input.ts",
     "performance_page/tab_discard_exception_current_sites_entry.ts",
@@ -358,6 +359,7 @@ build_webui("build") {
     "settings_page_styles.css",
     "settings_shared.css",
     "settings_vars.css",
+    "two_column_description.css",
 
     # subfolder files
     "autofill_page/passwords_shared.css",

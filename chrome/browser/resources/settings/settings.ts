@@ -74,6 +74,7 @@ export {BATTERY_SAVER_MODE_PREF, SettingsBatteryPageElement} from './performance
 export {PerformanceBrowserProxy, PerformanceBrowserProxyImpl} from './performance_page/performance_browser_proxy.js';
 export {BatterySaverModeState, HighEfficiencyModeExceptionListAction, HighEfficiencyModeState, PerformanceMetricsProxy, PerformanceMetricsProxyImpl} from './performance_page/performance_metrics_proxy.js';
 export {HIGH_EFFICIENCY_MODE_PREF, SettingsPerformancePageElement} from './performance_page/performance_page.js';
+export {SpeedPageElement} from './performance_page/speed_page.js';
 export {TabDiscardExceptionAddDialogElement} from './performance_page/tab_discard_exception_add_dialog.js';
 export {TabDiscardExceptionCurrentSitesEntryElement} from './performance_page/tab_discard_exception_current_sites_entry.js';
 export {TabDiscardExceptionEditDialogElement} from './performance_page/tab_discard_exception_edit_dialog.js';

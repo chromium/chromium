@@ -22,6 +22,7 @@ import '../on_startup_page/on_startup_page.js';
 import '../people_page/people_page.js';
 import '../performance_page/battery_page.js';
 import '../performance_page/performance_page.js';
+import '../performance_page/speed_page.js';
 import '../reset_page/reset_profile_banner.js';
 import '../search_page/search_page.js';
 import '../settings_page/settings_section.js';
@@ -163,6 +164,18 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
       showBatterySettings_: {
         type: Boolean,
         value: false,
+      },
+
+      /**
+       * If the preloading section is under performance settings, this
+       * determines if the V2 UI with a toggle button is displayed.
+       */
+      showSpeedPageV2_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'isPerformanceSettingsPreloadingSubpageV2Enabled');
+        },
       },
     };
   }

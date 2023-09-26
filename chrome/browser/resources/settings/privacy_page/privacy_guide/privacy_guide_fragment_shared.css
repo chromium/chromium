@@ -7,7 +7,8 @@
  * #import=chrome://resources/cr_elements/cr_shared_style.css.js
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
  * #import=../../settings_shared.css.js
- * #include=cr-shared-style settings-shared
+ * #import=../../two_column_description.css.js
+ * #include=cr-shared-style settings-shared two-column-description
  * #css_wrapper_metadata_end */
 
 :host {
@@ -29,33 +30,6 @@
   color: var(--google-grey-800);
   font-size: 22px;
   line-height: 1.15;
-}
-
-.description-column {
-  width: 50%;
-}
-
-.description-column-first {
-  padding-inline-end: 12px;
-}
-
-.description-header {
-  color: var(--google-blue-600);
-  font-weight: 400;
-}
-
-@media (prefers-color-scheme: dark) {
-  .description-header {
-    color: var(--google-blue-300);
-  }
-}
-
-.description-wrapper {
-  padding: 16px;
-}
-
-.description-wrapper-radio {
-  padding: 4px 0 16px 0;
 }
 
 settings-collapse-radio-button:not(:first-of-type) {
@@ -142,10 +116,6 @@ settings-collapse-radio-button:not(:first-of-type) {
   .embedded-setting-wrapper {
     border-color: var(--google-grey-700);
   }
-}
-
-.two-column {
-  display: flex;
 }
 
 settings-toggle-button {

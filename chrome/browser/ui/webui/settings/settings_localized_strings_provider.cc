@@ -742,6 +742,8 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADD_DIALOG_MANUAL},
       {"tabDiscardingExceptionsActiveSiteAriaDescription",
        IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ACTIVE_SITE_ARIA_DESCRIPTION},
+      {"preloadingToggleSummary",
+       IDS_SETTINGS_PERFORMANCE_PRELOAD_TOGGLE_SUMMARY},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 

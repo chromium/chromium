@@ -507,6 +507,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                           base::FeatureList::IsEnabled(
                               features::kPerformanceSettingsPreloadingSubpage));
   html_source->AddBoolean(
+      "isPerformanceSettingsPreloadingSubpageV2Enabled",
+      features::kPerformanceSettingsPreloadingSubpageV2.Get());
+  html_source->AddBoolean(
       "isBatterySaverModeManagedByOS",
       performance_manager::user_tuning::IsBatterySaverModeManagedByOS());
 
