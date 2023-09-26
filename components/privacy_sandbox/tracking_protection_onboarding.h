@@ -29,8 +29,8 @@ class TrackingProtectionOnboarding : public KeyedService {
   };
 
   enum class NoticeAction {
-    // No Action taken - notice destroyed due to other reasons.
-    kNone = 0,
+    // Other action taken - notice dismissed due to other actions.
+    kOther = 0,
     // Using the GotIt button.
     kGotIt = 1,
     // Using the Settings button.

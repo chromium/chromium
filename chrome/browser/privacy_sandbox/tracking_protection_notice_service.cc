@@ -112,6 +112,8 @@ void TrackingProtectionNoticeService::OnNoticeClosed(
           TrackingProtectionOnboarding::NoticeAction::kClosed);
       return;
     default:
+      onboarding_service_->NoticeActionTaken(
+          TrackingProtectionOnboarding::NoticeAction::kOther);
       return;
   }
 }

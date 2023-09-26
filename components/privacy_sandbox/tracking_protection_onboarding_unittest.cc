@@ -5,6 +5,7 @@
 #include "components/privacy_sandbox/tracking_protection_onboarding.h"
 #include <memory>
 #include <utility>
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_service.h"
@@ -257,7 +258,7 @@ TEST_F(TrackingProtectionOnboardingTest,
        NoUserNoticeActionTakenDoesntAcknowledge) {
   // Action
   tracking_protection_onboarding()->NoticeActionTaken(
-      TrackingProtectionOnboarding::NoticeAction::kNone);
+      TrackingProtectionOnboarding::NoticeAction::kOther);
 
   // Verification
   EXPECT_EQ(prefs()->GetBoolean(prefs::kTrackingProtectionOnboardingAcked),
@@ -312,6 +313,39 @@ TEST_F(TrackingProtectionOnboardingTest,
   // Verification
   EXPECT_EQ(tracking_protection_onboarding()->ShouldShowOnboardingNotice(),
             false);
+}
+
+TEST_F(TrackingProtectionOnboardingTest, UserActionMetrics) {
+  base::UserActionTester user_action_tester;
+
+  tracking_protection_onboarding()->NoticeShown();
+  EXPECT_EQ(
+      1, user_action_tester.GetActionCount("TrackingProtection.Notice.Shown"));
+
+  tracking_protection_onboarding()->NoticeActionTaken(
+      TrackingProtectionOnboarding::NoticeAction::kOther);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "TrackingProtection.Notice.DismissedOther"));
+
+  tracking_protection_onboarding()->NoticeActionTaken(
+      TrackingProtectionOnboarding::NoticeAction::kGotIt);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "TrackingProtection.Notice.GotItClicked"));
+
+  tracking_protection_onboarding()->NoticeActionTaken(
+      TrackingProtectionOnboarding::NoticeAction::kSettings);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "TrackingProtection.Notice.SettingsClicked"));
+
+  tracking_protection_onboarding()->NoticeActionTaken(
+      TrackingProtectionOnboarding::NoticeAction::kLearnMore);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "TrackingProtection.Notice.LearnMoreClicked"));
+
+  tracking_protection_onboarding()->NoticeActionTaken(
+      TrackingProtectionOnboarding::NoticeAction::kClosed);
+  EXPECT_EQ(
+      1, user_action_tester.GetActionCount("TrackingProtection.Notice.Closed"));
 }
 
 class TrackingProtectionOnboardingAccessorTest

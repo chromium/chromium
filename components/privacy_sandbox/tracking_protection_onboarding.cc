@@ -6,6 +6,8 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -22,6 +24,31 @@ TrackingProtectionOnboardingStatus GetInternalOnboardingStatus(
     PrefService* pref_service) {
   return static_cast<TrackingProtectionOnboardingStatus>(
       pref_service->GetInteger(prefs::kTrackingProtectionOnboardingStatus));
+}
+
+void RecordActionMetrics(TrackingProtectionOnboarding::NoticeAction action) {
+  switch (action) {
+    case TrackingProtectionOnboarding::NoticeAction::kOther:
+      base::RecordAction(
+          base::UserMetricsAction("TrackingProtection.Notice.DismissedOther"));
+      break;
+    case TrackingProtectionOnboarding::NoticeAction::kGotIt:
+      base::RecordAction(
+          base::UserMetricsAction("TrackingProtection.Notice.GotItClicked"));
+      break;
+    case TrackingProtectionOnboarding::NoticeAction::kSettings:
+      base::RecordAction(
+          base::UserMetricsAction("TrackingProtection.Notice.SettingsClicked"));
+      break;
+    case TrackingProtectionOnboarding::NoticeAction::kLearnMore:
+      base::RecordAction(base::UserMetricsAction(
+          "TrackingProtection.Notice.LearnMoreClicked"));
+      break;
+    case TrackingProtectionOnboarding::NoticeAction::kClosed:
+      base::RecordAction(
+          base::UserMetricsAction("TrackingProtection.Notice.Closed"));
+      break;
+  }
 }
 
 }  // namespace
@@ -102,6 +129,9 @@ void TrackingProtectionOnboarding::MaybeMarkIneligible() {
 }
 
 void TrackingProtectionOnboarding::NoticeShown() {
+  base::RecordAction(
+      base::UserMetricsAction("TrackingProtection.Notice.Shown"));
+
   auto status = GetInternalOnboardingStatus(pref_service_);
   if (status != TrackingProtectionOnboardingStatus::kEligible) {
     return;
@@ -116,8 +146,10 @@ void TrackingProtectionOnboarding::NoticeShown() {
 
 void TrackingProtectionOnboarding::NoticeActionTaken(
     TrackingProtectionOnboarding::NoticeAction action) {
+  RecordActionMetrics(action);
+
   switch (action) {
-    case NoticeAction::kNone:
+    case NoticeAction::kOther:
       return;
     case NoticeAction::kGotIt:
     case NoticeAction::kSettings:
