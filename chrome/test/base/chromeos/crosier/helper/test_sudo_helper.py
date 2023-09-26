@@ -39,7 +39,7 @@ def _read_release_file(path: Path) -> Dict[str, str]:
 
 def _is_chromeos() -> bool:
     os_release = _read_release_file(Path("/etc/os-release"))
-    return os_release.get("ID") == "chromeos"
+    return os_release.get("ID") in ["chromeos", "chromiumos"]
 
 
 def _read_string(sock: socket.socket) -> str:
