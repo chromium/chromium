@@ -193,7 +193,11 @@ TEST_F(ArcGraphicsTracingHandlerTest, FilterSystemTraceByTimestamp) {
   handler_->set_now(base::Time::FromJavaTime(1'500'088'880'000));
   handler_->set_trace_time_base(base::Time::FromJavaTime(1'500'000'000'000));
 
-  auto arc_widget = arc::ArcTaskWindowBuilder().BuildOwnsNativeWidget();
+  exo::Surface s;
+  auto arc_widget = arc::ArcTaskWindowBuilder()
+                        .SetShellRootSurface(&s)
+                        .BuildOwnsNativeWidget();
+
   arc_widget->Show();
   SendStartStopKey();
   handler_->StartTracingOnControllerRespond();

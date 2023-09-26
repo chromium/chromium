@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ARC_TRACING_ARC_TRACING_GRAPHICS_MODEL_H_
 #define CHROME_BROWSER_ASH_ARC_TRACING_ARC_TRACING_GRAPHICS_MODEL_H_
 
+#include <deque>
 #include <map>
 #include <memory>
 #include <set>
@@ -18,6 +19,21 @@
 namespace arc {
 
 class ArcTracingModel;
+
+// Timestamps in tick counts accumulated over the course of a trace. Backed by a
+// deque to give O(1) non-amortized insertion time.
+struct TraceTimestamps {
+  TraceTimestamps();
+  ~TraceTimestamps();
+
+  // Prevent accidental copying.
+  TraceTimestamps(const TraceTimestamps&) = delete;
+  TraceTimestamps& operator=(const TraceTimestamps&) = delete;
+
+  void Add(base::TimeTicks timestamp);
+
+  std::deque<int64_t> ticks_ms;
+};
 
 // Graphic buffers events model. It is build from the generic |ArcTracingModel|
 // and contains only events that describe life-cycle of graphics buffers across
@@ -57,13 +73,13 @@ class ArcTracingGraphicsModel {
     kBufferFillJank,                 // 106,
 
     // Wayland exo events
-    kExoSurfaceAttach   = 200,
+    kExoSurfaceAttach   = 200,  // Obsolete
     kExoProduceResource = 201,  // Obsolete
     kExoBound           = 202,  // Obsolete
     kExoPendingQuery    = 203,  // Obsolete
     kExoReleased        = 204,  // Obsolete
     kExoJank            = 205,
-    kExoSurfaceCommit   = 206,  // Obsolete
+    kExoSurfaceCommit   = 206,
 
     // Chrome events
     kChromeBarrierOrder = 300,  // Obsolete
@@ -168,7 +184,8 @@ class ArcTracingGraphicsModel {
       const std::set<ArcTracingGraphicsModel::BufferEventType>& start_types);
 
   // Builds the model from the common tracing model |common_model|.
-  bool Build(const ArcTracingModel& common_model);
+  bool Build(const ArcTracingModel& common_model,
+             const TraceTimestamps& commits);
 
   // Serializes the model to |base::Value::Dict|, this can be passed to
   // javascript for rendering.

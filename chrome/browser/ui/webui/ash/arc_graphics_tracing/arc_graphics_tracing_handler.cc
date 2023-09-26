@@ -65,6 +65,8 @@ struct ArcGraphicsTracingHandler::ActiveTrace {
   // This must be destructed on the UI thread, so make it manually-destructable
   // with absl::optional.
   absl::optional<base::OneShotTimer> stop_timer;
+
+  arc::TraceTimestamps commits;
 };
 
 namespace {
@@ -175,7 +177,7 @@ std::pair<base::Value, std::string> BuildGraphicsModel(
                                      &common_model.system_model());
 
   trace->model.set_skip_structure_validation();
-  if (!trace->model.Build(common_model)) {
+  if (!trace->model.Build(common_model, trace->commits)) {
     return std::make_pair(base::Value(), "Failed to build tracing model");
   }
 
@@ -215,7 +217,7 @@ std::pair<base::Value, std::string> LoadGraphicsModel(
 constexpr char kJavascriptDomain[] = "cr.ArcOverviewTracing.";
 
 base::trace_event::TraceConfig GetTracingConfig() {
-  base::trace_event::TraceConfig config("-*,exo,viz,toplevel",
+  base::trace_event::TraceConfig config("-*,viz",
                                         base::trace_event::RECORD_CONTINUOUSLY);
   config.EnableSystrace();
   config.EnableSystraceEvent("i915:intel_gpu_freq_change");
@@ -301,6 +303,25 @@ void ArcGraphicsTracingHandler::OnWindowActivated(ActivationReason reason,
   if (active_trace_) {
     active_trace_->time_min = SystemTicksNow();
   }
+
+  exo::Surface* const surface = exo::GetShellRootSurface(arc_active_window_);
+  CHECK(surface);
+
+  // We observe the _root_ window surface rather than the layer that receives
+  // the buffer attachment. This is because it makes locating the surface
+  // much easier. We will not have a noticeable delay in monitoring this
+  // higher-level window since the wl_surface_commit calls by the client
+  // percolate up a single thread's call stack. The root surface's commit is
+  // at [0], and the ApplyPending...Changes calls there are committing
+  // subsurfaces.
+  // [0]
+  // https://source.corp.google.com/h/googleplex-android/platform/superproject/base/+/rvc-arc:vendor/google_arc/libs/wayland_service/wayland_layer_container_window.cpp;l=73-79;drc=7bf4887dc1838167c63ae6c0fc514aaab9551e2a
+  //
+  // We do not need to observe the Attach event since that immediately precedes
+  // the commit, and we don't care about the buffer ID.
+
+  // TODO(matvore): can the root surface change after the window is created?
+  surface->AddSurfaceObserver(this);
 }
 
 void ArcGraphicsTracingHandler::OnWindowPropertyChanged(aura::Window* window,
@@ -348,6 +369,9 @@ void ArcGraphicsTracingHandler::OnSurfaceDestroying(exo::Surface* surface) {
 void ArcGraphicsTracingHandler::OnCommit(exo::Surface* surface) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // TODO(b/296595454): Listen for subsequent presentation of the frame by exo.
+  if (active_trace_) {
+    active_trace_->commits.Add(SystemTicksNow());
+  }
 }
 
 void ArcGraphicsTracingHandler::UpdateActiveArcWindowInfo() {

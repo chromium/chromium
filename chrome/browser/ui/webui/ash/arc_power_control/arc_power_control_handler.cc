@@ -101,7 +101,7 @@ base::Value BuildTracingModel(
   graphics_model.set_skip_structure_validation();
   graphics_model.set_platform(base::GetLinuxDistro());
   graphics_model.set_timestamp(timestamp);
-  graphics_model.Build(common_model);
+  graphics_model.Build(common_model, arc::TraceTimestamps() /* commits */);
 
   return base::Value(graphics_model.Serialize());
 }

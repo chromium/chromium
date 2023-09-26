@@ -5189,6 +5189,7 @@ source_set("unit_tests") {
     "arc/tracing/arc_system_stat_collector_unittest.cc",
     "arc/tracing/arc_tracing_bridge_unittest.cc",
     "arc/tracing/arc_tracing_event_matcher_unittest.cc",
+    "arc/tracing/arc_tracing_graphics_model_unittest.cc",
     "arc/tracing/arc_tracing_model_unittest.cc",
     "arc/tracing/arc_value_event_unittest.cc",
     "arc/tts/arc_tts_service_unittest.cc",

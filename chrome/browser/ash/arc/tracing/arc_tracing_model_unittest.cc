@@ -191,7 +191,9 @@ TEST_F(ArcTracingModelTest, TopLevel) {
   // Continue in this test to avoid heavy calculations for building base model.
   // Make sure we can create graphics model.
   ArcTracingGraphicsModel graphics_model;
-  ASSERT_TRUE(graphics_model.Build(model));
+  TraceTimestamps commits;
+  commits.Add(base::TimeTicks::FromUptimeMillis(42));
+  ASSERT_TRUE(graphics_model.Build(model, commits));
 
   EXPECT_EQ(2U, graphics_model.chrome_top_level().buffer_events().size());
   for (const auto& chrome_top_level_band :
@@ -213,7 +215,7 @@ TEST_F(ArcTracingModelTest, TopLevel) {
     EXPECT_FALSE(view.second.buffer_events().empty());
     for (const auto& buffer : view.second.buffer_events()) {
       EXPECT_TRUE(ValidateGrahpicsEvents(
-          buffer, {GraphicsEventType::kExoSurfaceAttach}));
+          buffer, {GraphicsEventType::kExoSurfaceCommit}));
     }
   }
 

@@ -64,8 +64,6 @@ constexpr char kQueueBufferQuery[] = "android:queueBuffer";
 constexpr char kChromeTopEventsQuery[] =
     "viz,benchmark:Graphics.Pipeline.DrawAndSwap";
 
-constexpr char kExoSurfaceAttachMatcher[] = "exo:Surface::Attach";
-
 constexpr ssize_t kInvalidBufferIndex = -1;
 
 // Helper factory class that produces graphic buffer events from the giving
@@ -120,11 +118,6 @@ class BufferGraphicsEventMapper {
   using MappingRules = std::vector<MappingRule>;
 
   BufferGraphicsEventMapper() {
-    // exo rules
-    rules_.emplace_back(MappingRule(
-        std::make_unique<ArcTracingEventMatcher>(kExoSurfaceAttachMatcher),
-        BufferEventType::kExoSurfaceAttach, BufferEventType::kNone));
-
     // android rules
     rules_.emplace_back(MappingRule(
         std::make_unique<ArcTracingEventMatcher>(kDequeueBufferQuery),
@@ -316,38 +309,6 @@ void ProcessChromeEvents(const ArcTracingModel& common_model,
         (*buffer_to_events)[buffer_id];
     GetEventMapper().Produce(*event, &graphics_events);
   }
-}
-
-BufferToEvents GetChromeEvents(const ArcTracingModel& common_model) {
-  // The tracing hierarchy may be easy changed any time in Chrome. This makes
-  // using static queries fragile and dependent of many external components. To
-  // provide the reliable way of requesting the needed information, let scan
-  // |common_model| for top level events and determine the hierarchy of
-  // interesting events dynamically.
-  ArcTracingModel::TracingEventPtrs top_level_events =
-      common_model.Select("toplevel:");
-  // Add root events. In simplified overview tracing they may appear as root
-  // events.
-  ArcTracingModel::TracingEventPtrs root_events = common_model.GetRoots();
-  top_level_events.insert(top_level_events.end(), root_events.begin(),
-                          root_events.end());
-  std::vector<const ArcTracingEvent*> route;
-  std::string attach_surface_query;
-  const ArcTracingEventMatcher attach_surface_matcher(kExoSurfaceAttachMatcher);
-  for (const ArcTracingEvent* top_level_event : top_level_events) {
-    DetermineHierarchy(&route, top_level_event, attach_surface_matcher,
-                       &attach_surface_query);
-  }
-
-  BufferToEvents per_buffer_chrome_events;
-  // Only exo:Surface::Attach has app id argument.
-  ProcessChromeEvents(common_model, attach_surface_query,
-                      &per_buffer_chrome_events);
-
-  for (auto& buffer : per_buffer_chrome_events)
-    SortBufferEventsByTimestamp(&buffer.second);
-
-  return per_buffer_chrome_events;
 }
 
 void ScanForCustomEvents(
@@ -652,6 +613,14 @@ bool ArcTracingGraphicsModel::ViewId::operator==(const ViewId& other) const {
   return task_id == other.task_id && activity == other.activity;
 }
 
+TraceTimestamps::TraceTimestamps() = default;
+
+TraceTimestamps::~TraceTimestamps() = default;
+
+void TraceTimestamps::Add(base::TimeTicks timestamp) {
+  ticks_ms.emplace_back((timestamp - base::TimeTicks()).InMicroseconds());
+}
+
 ArcTracingGraphicsModel::ArcTracingGraphicsModel() = default;
 
 ArcTracingGraphicsModel::~ArcTracingGraphicsModel() = default;
@@ -686,28 +655,22 @@ void ArcTracingGraphicsModel::TrimEventsContainer(
   }
 }
 
-bool ArcTracingGraphicsModel::Build(const ArcTracingModel& common_model) {
+bool ArcTracingGraphicsModel::Build(const ArcTracingModel& common_model,
+                                    const TraceTimestamps& commits) {
   Reset();
 
-  BufferToEvents per_buffer_chrome_events = GetChromeEvents(common_model);
-
-  for (auto& buffer : per_buffer_chrome_events) {
-    // TODO(b/296595454): Remove the mapping mechanism as it was only needed for
-    // arc-graphics-tracing, and use callbacks to only get buffer updates for
-    // a single task.
-    // Note that JS code for arc-overview-tracing conflates the buffers for all
-    // view IDs when calculating app commit time and FPS (see
-    // getAppCommitEvents), so we don't gain anything by generating unique view
-    // IDs here.
-    view_buffers_[ViewId(1 /* task_id */, kUnknownActivity)]
-        .buffer_events()
-        .emplace_back(std::move(buffer.second));
-  }
-
-  if (view_buffers_.empty()) {
-    LOG(ERROR) << "No buffer events";
-    if (!skip_structure_validation_)
-      return false;
+  // TODO(b/296595454): Remove the mapping mechanism as it was only needed
+  // for arc-graphics-tracing, and use callbacks to only get buffer updates
+  // for a single task.
+  // Note that JS code for arc-overview-tracing conflates the buffers for all
+  // view IDs when calculating app commit time and FPS (see
+  // getAppCommitEvents), so we don't gain anything by generating unique view
+  // IDs here.
+  auto& buffer_events =
+      view_buffers_[ViewId(1 /* task_id */, kUnknownActivity)].buffer_events();
+  buffer_events.emplace_back();
+  for (int64_t ticks : commits.ticks_ms) {
+    buffer_events[0].emplace_back(BufferEventType::kExoSurfaceCommit, ticks);
   }
 
   // TODO(khmel): Add more information to resolve owner of custom events. At
@@ -717,7 +680,7 @@ bool ArcTracingGraphicsModel::Build(const ArcTracingModel& common_model) {
   for (auto& it : view_buffers_) {
     AddJanks(&it.second, BufferEventType::kBufferQueueDequeueStart,
              BufferEventType::kBufferFillJank);
-    AddJanks(&it.second, BufferEventType::kExoSurfaceAttach,
+    AddJanks(&it.second, BufferEventType::kExoSurfaceCommit,
              BufferEventType::kExoJank);
     it.second.global_events().insert(it.second.global_events().end(),
                                      custom_events.begin(),

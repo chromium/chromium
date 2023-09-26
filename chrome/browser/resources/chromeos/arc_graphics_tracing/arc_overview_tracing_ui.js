@@ -214,7 +214,7 @@ function getAppCommitEvents(model) {
     const view = model.views[i];
     for (let j = 0; j < view.buffers.length; j++) {
       const commitEvents =
-          new Events(view.buffers[j], 200 /* kExoSurfaceAttach */);
+          new Events(view.buffers[j], 206 /* kExoSurfaceCommit */);
       let index = commitEvents.getFirstEvent();
       while (index >= 0) {
         events.push(commitEvents.events[index]);
@@ -228,7 +228,7 @@ function getAppCommitEvents(model) {
     return a[1] - b[1];
   });
 
-  return new Events(events, 200 /* kExoSurfaceAttach */);
+  return new Events(events, 206 /* kExoSurfaceCommit */);
 }
 
 /**
