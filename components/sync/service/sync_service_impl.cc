@@ -972,16 +972,7 @@ void SyncServiceImpl::OnEngineInitialized(bool success,
 
   crypto_.SetSyncEngine(GetAccountInfo(), engine_.get());
 
-  // TODO(crbug.com/1445931): Reconsider if local-sync actually needs
-  // IsInitialSyncFeatureSetupComplete() returning true.
-  if (IsLocalSyncEnabled() &&
-      !user_settings_->IsInitialSyncFeatureSetupComplete()) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-    // This will trigger a configure if it completes setup.
-    user_settings_->SetInitialSyncFeatureSetupComplete(
-        SyncFirstSetupCompleteSource::ENGINE_INITIALIZED_WITH_AUTO_START);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-  } else if (CanConfigureDataTypes(/*bypass_setup_in_progress_check=*/false)) {
+  if (CanConfigureDataTypes(/*bypass_setup_in_progress_check=*/false)) {
     // Datatype downloads on restart are generally due to newly supported
     // datatypes (although it's also possible we're picking up where a failed
     // previous configuration left off).
