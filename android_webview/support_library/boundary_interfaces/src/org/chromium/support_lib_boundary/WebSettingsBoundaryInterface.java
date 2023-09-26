@@ -66,4 +66,17 @@ public interface WebSettingsBoundaryInterface {
 
     void setUserAgentMetadataFromMap(Map<String, Object> uaMetadata);
     Map<String, Object> getUserAgentMetadataMap();
+
+    @Retention(RetentionPolicy.SOURCE)
+    @interface AttributionBehavior {
+        int DISABLED = 0;
+        int APP_SOURCE_AND_WEB_TRIGGER = 1;
+        int WEB_SOURCE_AND_WEB_TRIGGER = 2;
+        int APP_SOURCE_AND_APP_TRIGGER = 3;
+    }
+
+    void setAttributionBehavior(@AttributionBehavior int behavior);
+
+    @AttributionBehavior
+    int getAttributionBehavior();
 }

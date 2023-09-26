@@ -93,6 +93,7 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
                     Features.IMAGE_DRAG_DROP,
                     Features.USER_AGENT_METADATA + Features.DEV_SUFFIX,
                     Features.MULTI_PROFILE + Features.DEV_SUFFIX,
+                    Features.ATTRIBUTION_BEHAVIOR + Features.DEV_SUFFIX,
                     // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                     // when they're initially added (this can be removed in a future CL). The final
                     // feature should have a trailing comma for cleaner diffs.
@@ -194,6 +195,8 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
             ApiCall.GET_PROFILE_SERVICE_WORKER_CONTROLLER,
             ApiCall.SET_WEBVIEW_PROFILE,
             ApiCall.GET_WEBVIEW_PROFILE,
+            ApiCall.SET_ATTRIBUTION_BEHAVIOR,
+            ApiCall.GET_ATTRIBUTION_BEHAVIOR,
             // Add new constants above. The final constant should have a trailing comma for cleaner
             // diffs.
             ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
@@ -300,8 +303,10 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
 
         int SET_WEBVIEW_PROFILE = 93;
         int GET_WEBVIEW_PROFILE = 94;
+        int SET_ATTRIBUTION_BEHAVIOR = 95;
+        int GET_ATTRIBUTION_BEHAVIOR = 96;
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 95;
+        int COUNT = 97;
     }
     // clang-format on
 

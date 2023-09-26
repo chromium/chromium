@@ -265,4 +265,48 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
             return mAwSettings.getUserAgentMetadataMap();
         }
     }
+
+    @Override
+    public void setAttributionBehavior(@AttributionBehavior int behavior) {
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICall.AndroidX.SET_ATTRIBUTION_BEHAVIOR")) {
+            recordApiCall(ApiCall.SET_ATTRIBUTION_BEHAVIOR);
+            switch (behavior) {
+                case AttributionBehavior.DISABLED:
+                    mAwSettings.setAttributionBehavior(AwSettings.ATTRIBUTION_DISABLED);
+                    break;
+                case AttributionBehavior.APP_SOURCE_AND_WEB_TRIGGER:
+                    mAwSettings.setAttributionBehavior(
+                            AwSettings.ATTRIBUTION_APP_SOURCE_AND_WEB_TRIGGER);
+                    break;
+                case AttributionBehavior.WEB_SOURCE_AND_WEB_TRIGGER:
+                    mAwSettings.setAttributionBehavior(
+                            AwSettings.ATTRIBUTION_WEB_SOURCE_AND_WEB_TRIGGER);
+                    break;
+                case AttributionBehavior.APP_SOURCE_AND_APP_TRIGGER:
+                    mAwSettings.setAttributionBehavior(
+                            AwSettings.ATTRIBUTION_APP_SOURCE_AND_APP_TRIGGER);
+                    break;
+            }
+        }
+    }
+
+    @Override
+    public int getAttributionBehavior() {
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICall.AndroidX.GET_ATTRIBUTION_BEHAVIOR")) {
+            recordApiCall(ApiCall.GET_ATTRIBUTION_BEHAVIOR);
+            switch (mAwSettings.getAttributionBehavior()) {
+                case AwSettings.ATTRIBUTION_DISABLED:
+                    return AttributionBehavior.DISABLED;
+                case AwSettings.ATTRIBUTION_APP_SOURCE_AND_WEB_TRIGGER:
+                    return AttributionBehavior.APP_SOURCE_AND_WEB_TRIGGER;
+                case AwSettings.ATTRIBUTION_WEB_SOURCE_AND_WEB_TRIGGER:
+                    return AttributionBehavior.WEB_SOURCE_AND_WEB_TRIGGER;
+                case AwSettings.ATTRIBUTION_APP_SOURCE_AND_APP_TRIGGER:
+                    return AttributionBehavior.APP_SOURCE_AND_APP_TRIGGER;
+            }
+            return AttributionBehavior.APP_SOURCE_AND_WEB_TRIGGER;
+        }
+    }
 }

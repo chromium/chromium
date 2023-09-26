@@ -3231,6 +3231,12 @@ Unknown properties are collapsed to zero. -->
   <int value="85" label="GET_WEBVIEW_PROFILE">
     WebViewCompat#getProfile(WebView)
   </int>
+  <int value="95" label="SET_ATTRIBUTION_BEHAVIOR">
+    WebSettingsCompat.setAttributionBehavior(int)
+  </int>
+  <int value="96" label="GET_ATTRIBUTION_BEHAVIOR">
+    WebSettingsCompat.getAttributionBehavior(int)
+  </int>
 </enum>
 
 <enum name="AnnouncementNotificationEvent">

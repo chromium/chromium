@@ -88,6 +88,18 @@ public class AwSettings {
     @ForceDarkBehavior
     private int mForceDarkBehavior = ForceDarkBehavior.PREFER_MEDIA_QUERY_OVER_FORCE_DARK;
 
+    @AttributionBehavior
+    public static final int ATTRIBUTION_DISABLED = AttributionBehavior.DISABLED;
+    @AttributionBehavior
+    public static final int ATTRIBUTION_APP_SOURCE_AND_WEB_TRIGGER =
+            AttributionBehavior.APP_SOURCE_AND_WEB_TRIGGER;
+    @AttributionBehavior
+    public static final int ATTRIBUTION_WEB_SOURCE_AND_WEB_TRIGGER =
+            AttributionBehavior.WEB_SOURCE_AND_WEB_TRIGGER;
+    @AttributionBehavior
+    public static final int ATTRIBUTION_APP_SOURCE_AND_APP_TRIGGER =
+            AttributionBehavior.APP_SOURCE_AND_APP_TRIGGER;
+
     private Set<String> mRequestedWithHeaderAllowedOriginRules;
 
     private Context mContext;

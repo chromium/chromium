@@ -260,4 +260,8 @@ public class Features {
     // WebSettingsCompat.setUserAgentMetadataFromMap
     // WebSettingsCompat.getUserAgentMetadataMap
     public static final String USER_AGENT_METADATA = "USER_AGENT_METADATA";
+
+    // WebSettingsCompat.setAttributionBehavior
+    // WebSettingsCompat.getAttributionBehavior
+    public static final String ATTRIBUTION_BEHAVIOR = "ATTRIBUTION_BEHAVIOR";
 }
