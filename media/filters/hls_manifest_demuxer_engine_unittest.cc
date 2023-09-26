@@ -35,6 +35,18 @@ const std::string kSimpleMediaPlaylist =
     "http://media.example.com/third.ts\n"
     "#EXT-X-ENDLIST\n";
 
+const std::string kSimpleLiveMediaPlaylist =
+    "#EXTM3U\n"
+    "#EXT-X-TARGETDURATION:10\n"
+    "#EXT-X-VERSION:3\n"
+    "#EXT-X-MEDIA-SEQUENCE:18698597\n"
+    "#EXTINF:9.009,\n"
+    "http://media.example.com/first.ts\n"
+    "#EXTINF:9.009,\n"
+    "http://media.example.com/second.ts\n"
+    "#EXTINF:3.003,\n"
+    "http://media.example.com/third.ts\n";
+
 const std::string kSingleInfoMediaPlaylist =
     "#EXTM3U\n"
     "#EXT-X-TARGETDURATION:10\n"
@@ -192,6 +204,7 @@ TEST_F(HlsManifestDemuxerEngineTest, TestSimpleConfigAddsOnePrimaryRole) {
   EXPECT_CALL(*mock_mdeh_, SetDuration(21.021));
   EXPECT_CALL(*mock_mdeh_, AddRole(base::StringPiece("primary"), "video/mp2t",
                                    "avc1.420000, mp4a.40.05"));
+  EXPECT_CALL(*mock_mdeh_, RemoveRole(base::StringPiece("primary")));
   BindUrlToDataSource<StringHlsDataSource>(
       "http://media.example.com/manifest.m3u8", kSimpleMediaPlaylist);
   BindUrlToDataSource<FileHlsDataSource>("http://media.example.com/first.ts",
@@ -199,6 +212,22 @@ TEST_F(HlsManifestDemuxerEngineTest, TestSimpleConfigAddsOnePrimaryRole) {
   EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
   InitializeEngine();
   task_environment_.RunUntilIdle();
+  ASSERT_TRUE(engine_->IsSeekable());
+}
+
+TEST_F(HlsManifestDemuxerEngineTest, TestSimpleLiveConfigAddsOnePrimaryRole) {
+  EXPECT_CALL(*mock_mdeh_, SetSequenceMode(base::StringPiece("primary"), true));
+  EXPECT_CALL(*mock_mdeh_, AddRole(base::StringPiece("primary"), "video/mp2t",
+                                   "avc1.420000, mp4a.40.05"));
+  EXPECT_CALL(*mock_mdeh_, RemoveRole(base::StringPiece("primary")));
+  BindUrlToDataSource<StringHlsDataSource>(
+      "http://media.example.com/manifest.m3u8", kSimpleLiveMediaPlaylist);
+  BindUrlToDataSource<FileHlsDataSource>("http://media.example.com/first.ts",
+                                         "bear-1280x720-hls.ts");
+  EXPECT_CALL(*this, MockInitComplete(HasStatusCode(PIPELINE_OK)));
+  InitializeEngine();
+  task_environment_.RunUntilIdle();
+  ASSERT_FALSE(engine_->IsSeekable());
 }
 
 TEST_F(HlsManifestDemuxerEngineTest, TestMultivariantPlaylistNoAlternates) {
@@ -262,6 +291,9 @@ TEST_F(HlsManifestDemuxerEngineTest, TestMultivariantWithNoSupportedCodecs) {
 TEST_F(HlsManifestDemuxerEngineTest, TestMultiRenditionCheckState) {
   auto rendition1 = std::make_unique<MockHlsRendition>();
   auto rendition2 = std::make_unique<MockHlsRendition>();
+  EXPECT_CALL(*rendition1, GetDuration()).WillOnce(Return(absl::nullopt));
+  EXPECT_CALL(*rendition2, GetDuration()).WillOnce(Return(absl::nullopt));
+
   auto* rend1 = rendition1.get();
   auto* rend2 = rendition2.get();
   engine_->AddRenditionForTesting(std::move(rendition1));
@@ -367,6 +399,7 @@ TEST_F(HlsManifestDemuxerEngineTest, TestStop) {
   CHECK(read_cb);
 
   auto rendition = std::make_unique<MockHlsRendition>();
+  EXPECT_CALL(*rendition, GetDuration()).WillOnce(Return(absl::nullopt));
   auto* rend = rendition.get();
   engine_->AddRenditionForTesting(std::move(rendition));
 

@@ -49,7 +49,7 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
   bool Seek(base::TimeDelta time) override;
   void StartWaitingForSeek() override;
   void AbortPendingReads() override;
-  bool IsSeekable() override;
+  bool IsSeekable() const override;
   int64_t GetMemoryUsage() const override;
   void Stop() override;
   void ReadFromUrl(GURL uri,
@@ -185,31 +185,46 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
   GURL root_playlist_uri_;
 
   std::unique_ptr<MediaLog> media_log_;
-  raw_ptr<ManifestDemuxerEngineHost> host_ = nullptr;
+  raw_ptr<ManifestDemuxerEngineHost> host_
+      GUARDED_BY_CONTEXT(media_sequence_checker_) = nullptr;
 
   // The codec detector is a reusable way for determining codecs in a media
   // stream.
-  std::unique_ptr<HlsCodecDetector> codec_detector_;
+  std::unique_ptr<HlsCodecDetector> codec_detector_
+      GUARDED_BY_CONTEXT(media_sequence_checker_);
 
   // If the root playlist is multivariant, we need to store it for parsing the
   // dependant media playlists.
-  scoped_refptr<hls::MultivariantPlaylist> multivariant_root_;
-  std::unique_ptr<hls::RenditionSelector> rendition_selector_;
+  scoped_refptr<hls::MultivariantPlaylist> multivariant_root_
+      GUARDED_BY_CONTEXT(media_sequence_checker_);
+  std::unique_ptr<hls::RenditionSelector> rendition_selector_
+      GUARDED_BY_CONTEXT(media_sequence_checker_);
 
   // Multiple renditions are allowed, and have to be synchronized.
-  std::vector<std::unique_ptr<HlsRendition>> renditions_;
+  std::vector<std::unique_ptr<HlsRendition>> renditions_
+      GUARDED_BY_CONTEXT(media_sequence_checker_);
+
+  // When renditions are added, this ensures that they are all of the same
+  // liveness, and allows access to the liveness check later.
+  absl::optional<bool> is_seekable_ = absl::nullopt;
 
   // Preferences for selecting optimal renditions. Storing them allows them
   // to be changed later due to network constraints or user changes.
-  hls::RenditionSelector::VideoPlaybackPreferences video_preferences_ = {
-      absl::nullopt, absl::nullopt};
-  hls::RenditionSelector::AudioPlaybackPreferences audio_preferences_ = {
-      absl::nullopt, absl::nullopt};
+  hls::RenditionSelector::VideoPlaybackPreferences video_preferences_
+      GUARDED_BY_CONTEXT(media_sequence_checker_) = {absl::nullopt,
+                                                     absl::nullopt};
+  hls::RenditionSelector::AudioPlaybackPreferences audio_preferences_
+      GUARDED_BY_CONTEXT(media_sequence_checker_) = {absl::nullopt,
+                                                     absl::nullopt};
 
-  HlsDataSourceStream::StreamId::Generator stream_ticket_generator_;
+  HlsDataSourceStream::StreamId::Generator stream_ticket_generator_
+      GUARDED_BY_CONTEXT(media_sequence_checker_);
   base::flat_map<HlsDataSourceStream::StreamId,
                  std::unique_ptr<HlsDataSourceStream>>
-      stream_map_;
+      stream_map_ GUARDED_BY_CONTEXT(media_sequence_checker_);
+
+  // Ensure that safe member fields are only accessed on the media sequence.
+  SEQUENCE_CHECKER(media_sequence_checker_);
 
   base::WeakPtrFactory<HlsManifestDemuxerEngine> weak_factory_{this};
 };

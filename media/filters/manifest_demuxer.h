@@ -139,7 +139,7 @@ class MEDIA_EXPORT ManifestDemuxer : public Demuxer, ManifestDemuxerEngineHost {
 
     // Returns whether this engine supports seeking. Some live stream content
     // can't be seeked.
-    virtual bool IsSeekable() = 0;
+    virtual bool IsSeekable() const = 0;
 
     // Gets the memory usage of the engine.
     virtual int64_t GetMemoryUsage() const = 0;

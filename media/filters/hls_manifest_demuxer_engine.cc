@@ -118,7 +118,10 @@ HlsManifestDemuxerEngine::HlsManifestDemuxerEngine(
     : data_source_provider_(std::move(dsp)),
       media_task_runner_(std::move(media_task_runner)),
       root_playlist_uri_(std::move(root_playlist_uri)),
-      media_log_(media_log->Clone()) {}
+      media_log_(media_log->Clone()) {
+  // This is always created on the main sequence, but used on the media sequence
+  DETACH_FROM_SEQUENCE(media_sequence_checker_);
+}
 
 HlsManifestDemuxerEngine::PlaylistParseInfo::PlaylistParseInfo(
     GURL uri,
@@ -141,7 +144,7 @@ std::string HlsManifestDemuxerEngine::GetName() const {
 
 void HlsManifestDemuxerEngine::Initialize(ManifestDemuxerEngineHost* host,
                                           PipelineStatusCallback status_cb) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
 
   // Initialize the codec detector on the media thread.
   codec_detector_ = std::make_unique<HlsCodecDetector>(media_log_.get(), this);
@@ -157,7 +160,7 @@ void HlsManifestDemuxerEngine::Initialize(ManifestDemuxerEngineHost* host,
 void HlsManifestDemuxerEngine::OnTimeUpdate(base::TimeDelta time,
                                             double playback_rate,
                                             ManifestDemuxer::DelayCallback cb) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   if (renditions_.empty()) {
     std::move(cb).Run(kNoTimestamp);
     return;
@@ -172,7 +175,7 @@ void HlsManifestDemuxerEngine::CheckStateAtIndex(
     ManifestDemuxer::DelayCallback cb,
     size_t rendition_index,
     absl::optional<base::TimeDelta> response_time) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   if (rendition_index >= renditions_.size()) {
     // The response time collected at this point _must_ be valid.
     std::move(cb).Run(response_time.value());
@@ -196,7 +199,7 @@ void HlsManifestDemuxerEngine::OnStateChecked(
     absl::optional<base::TimeDelta> prior_delay,
     base::OnceCallback<void(absl::optional<base::TimeDelta>)> cb,
     base::TimeDelta delay_time) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   if (prior_delay.value_or(kNoTimestamp) == kNoTimestamp) {
     std::move(cb).Run(delay_time);
     return;
@@ -222,7 +225,7 @@ void HlsManifestDemuxerEngine::OnStateChecked(
 }
 
 bool HlsManifestDemuxerEngine::Seek(base::TimeDelta time) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   bool needs_more_data = false;
   for (auto& rendition : renditions_) {
     needs_more_data |= rendition->Seek(time);
@@ -231,28 +234,24 @@ bool HlsManifestDemuxerEngine::Seek(base::TimeDelta time) {
 }
 
 void HlsManifestDemuxerEngine::StartWaitingForSeek() {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   for (auto& rendition : renditions_) {
     rendition->CancelPendingNetworkRequests();
   }
 }
 
 void HlsManifestDemuxerEngine::AbortPendingReads() {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   // Deleting a stream aborts any pending reads on the underlying data source.
   stream_map_.clear();
 }
 
-bool HlsManifestDemuxerEngine::IsSeekable() {
-  // TODO(crbug/1266991): Check that all renditions are either live or non, and
-  // determine how to surface an error in the case where they report liveness
-  // differently.
-  for (auto& rendition : renditions_) {
-    if (!rendition->GetDuration().has_value()) {
-      return false;
-    }
-  }
-  return true;
+bool HlsManifestDemuxerEngine::IsSeekable() const {
+  // `IsSeekable()` is only ever called from the pipeline after the
+  // initialization step has completed successfully. The initialization step
+  // must set is_seekable_ in order to complete successfully.
+  CHECK(is_seekable_.has_value());
+  return *is_seekable_;
 }
 
 int64_t HlsManifestDemuxerEngine::GetMemoryUsage() const {
@@ -262,7 +261,7 @@ int64_t HlsManifestDemuxerEngine::GetMemoryUsage() const {
 }
 
 void HlsManifestDemuxerEngine::Stop() {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   AbortPendingReads();
   for (auto& rendition : renditions_) {
     rendition->Stop();
@@ -307,7 +306,7 @@ void HlsManifestDemuxerEngine::Stop() {
 }
 
 void HlsManifestDemuxerEngine::Abort(HlsDemuxerStatus status) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   if (!host_) {
     return;
   }
@@ -316,7 +315,7 @@ void HlsManifestDemuxerEngine::Abort(HlsDemuxerStatus status) {
 }
 
 void HlsManifestDemuxerEngine::Abort(hls::ParseStatus status) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   if (!host_) {
     return;
   }
@@ -325,7 +324,7 @@ void HlsManifestDemuxerEngine::Abort(hls::ParseStatus status) {
 }
 
 void HlsManifestDemuxerEngine::Abort(HlsDataSource::ReadStatus status) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   if (!host_) {
     return;
   }
@@ -336,7 +335,7 @@ void HlsManifestDemuxerEngine::Abort(HlsDataSource::ReadStatus status) {
 void HlsManifestDemuxerEngine::ReadStream(
     std::unique_ptr<HlsDataSourceStream> stream,
     HlsDataSourceStreamManager::ReadCb cb) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   if (!data_source_provider_) {
     std::move(cb).Run(HlsDataSource::ReadStatus::Codes::kAborted);
     return;
@@ -354,7 +353,7 @@ void HlsManifestDemuxerEngine::ExchangeStreamId(
     HlsDataSourceStream::StreamId ticket,
     HlsDataSourceStreamManager::ReadCb cb,
     HlsDataSource::ReadStatus::Or<size_t> result) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   auto it = stream_map_.find(ticket);
   if (it == stream_map_.end()) {
     std::move(cb).Run(HlsDataSource::ReadStatus::Codes::kAborted);
@@ -372,7 +371,7 @@ void HlsManifestDemuxerEngine::ExchangeStreamId(
 void HlsManifestDemuxerEngine::ReadDataSource(
     HlsDataSourceStreamManager::ReadCb cb,
     std::unique_ptr<HlsDataSource> source) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   if (!source) {
     Abort(HlsDemuxerStatus::Codes::kPlaylistUrlInvalid);
     return;
@@ -384,7 +383,7 @@ void HlsManifestDemuxerEngine::ReadDataSource(
 void HlsManifestDemuxerEngine::ReadUntilExhausted(
     HlsDataSourceStreamManager::ReadCb cb,
     HlsDataSourceStreamManager::ReadResult result) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   if (!result.has_value()) {
     std::move(cb).Run(std::move(result));
     return;
@@ -406,7 +405,7 @@ void HlsManifestDemuxerEngine::ReadFromUrl(
     bool read_chunked,
     absl::optional<hls::types::ByteRange> range,
     HlsDataSourceStreamManager::ReadCb cb) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   if (!data_source_provider_) {
     std::move(cb).Run(HlsDataSource::ReadStatus::Codes::kAborted);
     return;
@@ -428,7 +427,7 @@ void HlsManifestDemuxerEngine::ParsePlaylist(
     PipelineStatusCallback parse_complete_cb,
     PlaylistParseInfo parse_info,
     HlsDataSourceStreamManager::ReadResult m_stream) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   if (!m_stream.has_value()) {
     return Abort(std::move(m_stream).error().AddHere());
   }
@@ -476,19 +475,24 @@ HlsManifestDemuxerEngine::ParseMediaPlaylistFromStringSource(
     base::StringPiece source,
     GURL uri,
     hls::types::DecimalInteger version) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   return hls::MediaPlaylist::Parse(source, uri, version,
                                    multivariant_root_.get());
 }
 
 void HlsManifestDemuxerEngine::AddRenditionForTesting(
     std::unique_ptr<HlsRendition> test_rendition) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
+  bool is_seekable = test_rendition->GetDuration().has_value();
+  CHECK_EQ(is_seekable_.value_or(is_seekable), is_seekable);
+  is_seekable_ = is_seekable;
   renditions_.push_back(std::move(test_rendition));
 }
 
 void HlsManifestDemuxerEngine::OnMultivariantPlaylist(
     PipelineStatusCallback parse_complete_cb,
     scoped_refptr<hls::MultivariantPlaylist> playlist) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   CHECK(!rendition_selector_);
   multivariant_root_ = std::move(playlist);
   rendition_selector_ = std::make_unique<hls::RenditionSelector>(
@@ -554,6 +558,7 @@ void HlsManifestDemuxerEngine::SetStreams(
     std::vector<PlaylistParseInfo> playlists,
     PipelineStatusCallback cb,
     PipelineStatus exit_on_error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   if (!exit_on_error.is_ok() || playlists.empty()) {
     // We've either hit the end of the list with a success, or have errored out
     // early. Either way, the status should be forwarded to the cb.
@@ -578,7 +583,7 @@ void HlsManifestDemuxerEngine::OnMediaPlaylist(
     PipelineStatusCallback parse_complete_cb,
     PlaylistParseInfo parse_info,
     scoped_refptr<hls::MediaPlaylist> playlist) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   hls::MediaPlaylist* playlist_ptr = playlist.get();
   DetermineStreamContainerAndCodecs(
       playlist_ptr, parse_info,
@@ -592,7 +597,7 @@ void HlsManifestDemuxerEngine::OnPlaylistContainerDetermined(
     PlaylistParseInfo parse_info,
     scoped_refptr<hls::MediaPlaylist> playlist,
     HlsDemuxerStatus::Or<HlsCodecDetector::ContainerAndCodecs> maybe_info) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   if (!maybe_info.has_value()) {
     std::move(parse_complete_cb)
         .Run({DEMUXER_ERROR_COULD_NOT_OPEN, std::move(maybe_info).error()});
@@ -641,6 +646,12 @@ void HlsManifestDemuxerEngine::OnPlaylistContainerDetermined(
     }
   }
 
+  bool seekable = rendition->GetDuration().has_value();
+  if (is_seekable_.value_or(seekable) != seekable) {
+    std::move(parse_complete_cb).Run(DEMUXER_ERROR_COULD_NOT_PARSE);
+    return;
+  }
+  is_seekable_ = seekable;
   renditions_.push_back(std::move(rendition));
   std::move(parse_complete_cb).Run(OkStatus());
 }
@@ -649,7 +660,7 @@ void HlsManifestDemuxerEngine::DetermineStreamContainerAndCodecs(
     hls::MediaPlaylist* playlist,
     PlaylistParseInfo parse_info,
     HlsDemuxerStatusCb<HlsCodecDetector::ContainerAndCodecs> container_cb) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   const auto& segments = playlist->GetSegments();
   if (segments.empty()) {
     std::move(container_cb).Run(HlsDemuxerStatus::Codes::kUnsupportedContainer);
@@ -670,6 +681,7 @@ void HlsManifestDemuxerEngine::PeekFirstSegment(
     PlaylistParseInfo parse_info,
     HlsDemuxerStatusCb<HlsCodecDetector::ContainerAndCodecs> cb,
     std::unique_ptr<HlsDataSource> data_source) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   if (!data_source) {
     std::move(cb).Run(HlsDemuxerStatus::Codes::kInvalidSegmentUri);
     return;
@@ -682,7 +694,7 @@ void HlsManifestDemuxerEngine::PeekFirstSegment(
 void HlsManifestDemuxerEngine::OnChunkDemuxerParseWarning(
     std::string role,
     SourceBufferParseWarning warning) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   MEDIA_LOG(WARNING, media_log_)
       << "ParseWarning (" << role << "): " << static_cast<int>(warning);
 }
@@ -690,7 +702,7 @@ void HlsManifestDemuxerEngine::OnChunkDemuxerParseWarning(
 void HlsManifestDemuxerEngine::OnChunkDemuxerTracksChanged(
     std::string role,
     std::unique_ptr<MediaTracks> tracks) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   MEDIA_LOG(WARNING, media_log_) << "TracksChanged for role: " << role;
 }
 

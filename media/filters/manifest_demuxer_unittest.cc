@@ -41,7 +41,7 @@ class MockEngine : public ManifestDemuxer::Engine {
   MOCK_METHOD(bool, Seek, (base::TimeDelta time), (override));
   MOCK_METHOD(void, StartWaitingForSeek, (), (override));
   MOCK_METHOD(void, AbortPendingReads, (), (override));
-  MOCK_METHOD(bool, IsSeekable, (), (override));
+  MOCK_METHOD(bool, IsSeekable, (), (const override));
   MOCK_METHOD(int64_t, GetMemoryUsage, (), (const, override));
   MOCK_METHOD(void, Stop, (), (override));
 };
