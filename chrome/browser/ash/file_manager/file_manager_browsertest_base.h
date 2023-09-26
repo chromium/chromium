@@ -20,8 +20,8 @@
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/extensions/mixin_based_extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/test/base/devtools_listener.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/devtools_agent_host_observer.h"
 
 class NotificationDisplayServiceTester;

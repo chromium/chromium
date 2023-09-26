@@ -527,7 +527,7 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ExecuteWebApp) {
   TaskDescriptor task_descriptor;
   if (GetParam().crosapi_state == TestProfileParam::CrosapiParam::kDisabled) {
     // Install a PWA in ash.
-    web_app::AppId app_id =
+    webapps::AppId app_id =
         web_app::test::InstallWebApp(profile, std::move(web_app_info));
     task_descriptor = TaskDescriptor(app_id, TaskType::TASK_TYPE_WEB_APP,
                                      "https://www.example.com/handle_file");
