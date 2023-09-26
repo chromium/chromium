@@ -278,7 +278,6 @@ crbug.com/1050826 external/wpt/mixed-content/gen/top.http-rp/opt-in/object-tag.h
 crbug.com/1093709 [ Mac11-arm64 Release ] external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.resize.html [ Failure Pass ]
 crbug.com/1093709 [ Mac12-arm64 Release ] external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.resize.html [ Failure Pass ]
 crbug.com/1093709 [ Mac13-arm64 ] external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.resize.html [ Failure Pass ]
-crbug.com/1243128 [ Win ] external/wpt/html/canvas/element/wide-gamut-canvas/2d.color.space.p3.fillText.shadow.html [ Failure ]
 crbug.com/1315282 [ Mac ] external/wpt/html/canvas/element/text/direction-inherit-rtl.html [ Failure ]
 crbug.com/1315282 [ Mac ] external/wpt/html/canvas/element/text/direction-rtl.html [ Failure ]
 # Canvas 2d layers with shadow and globalcompositeoperation.

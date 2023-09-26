@@ -68,8 +68,6 @@ void DrawLooperBuilder::AddShadow(const gfx::Vector2dF& offset,
     return;
   }
 
-  SkColor sk_color = color.Rgb();
-
   SkLayerDrawLooper::LayerInfo info;
 
   switch (shadow_alpha_mode) {
@@ -98,7 +96,8 @@ void DrawLooperBuilder::AddShadow(const gfx::Vector2dF& offset,
         SkMaskFilter::MakeBlur(kNormal_SkBlurStyle, sigma, respectCTM));
   }
 
-  paint->setColorFilter(SkColorFilters::Blend(sk_color, SkBlendMode::kSrcIn));
+  paint->setColorFilter(SkColorFilters::Blend(
+      color.toSkColor4f(), SkColorSpace::MakeSRGB(), SkBlendMode::kSrcIn));
 }
 
 }  // namespace blink
