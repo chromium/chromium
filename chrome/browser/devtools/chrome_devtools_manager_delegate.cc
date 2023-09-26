@@ -204,7 +204,7 @@ bool ChromeDevToolsManagerDelegate::AllowInspectingRenderFrameHost(
 
   if (auto* web_app_provider =
           web_app::WebAppProvider::GetForWebApps(profile)) {
-    absl::optional<web_app::AppId> app_id =
+    absl::optional<webapps::AppId> app_id =
         web_app_provider->registrar_unsafe().FindAppWithUrlInScope(
             rfh->GetMainFrame()->GetLastCommittedURL());
     if (app_id) {
@@ -231,7 +231,7 @@ bool ChromeDevToolsManagerDelegate::AllowInspection(
       return AllowInspection(profile, extension);
     }
 
-    const web_app::AppId* app_id =
+    const webapps::AppId* app_id =
         web_app::WebAppTabHelper::GetAppId(web_contents);
     auto* web_app_provider =
         web_app::WebAppProvider::GetForWebContents(web_contents);
