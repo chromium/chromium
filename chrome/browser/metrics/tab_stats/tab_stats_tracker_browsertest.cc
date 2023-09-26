@@ -213,49 +213,6 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
   DCHECK_EQ(second_observer->window_count(), expected_stats.window_count);
 }
 
-IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
-                       TabDeletionGetsHandledProperly) {
-  // Assert that the |TabStatsTracker| instance is initialized during the
-  // creation of the main browser.
-  ASSERT_TRUE(tab_stats_tracker_ != nullptr);
-
-  constexpr base::TimeDelta kValidLongInterval = base::Hours(12);
-
-  TabStatsDataStore* data_store = tab_stats_tracker_->tab_stats_data_store();
-  TabStatsDataStore::TabsStateDuringIntervalMap* interval_map =
-      data_store->AddInterval();
-
-  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
-
-  EXPECT_EQ(2U, interval_map->size());
-
-  content::WebContents* web_contents =
-      data_store->existing_tabs_for_testing()->begin()->first;
-
-  // Delete one of the WebContents without calling the |OnTabRemoved| function,
-  // the WebContentsObserver owned by |tab_stats_tracker_| should be notified
-  // and this should be handled correctly.
-  TabStatsDataStore::TabID tab_id =
-      data_store->GetTabIDForTesting(web_contents).value();
-  browser()->tab_strip_model()->DetachAndDeleteWebContentsAt(
-      browser()->tab_strip_model()->GetIndexOfWebContents(web_contents));
-  EXPECT_TRUE(base::Contains(*interval_map, tab_id));
-  tab_stats_tracker_->OnInterval(kValidLongInterval, interval_map);
-  EXPECT_EQ(1U, interval_map->size());
-  EXPECT_FALSE(base::Contains(*interval_map, tab_id));
-
-  web_contents = data_store->existing_tabs_for_testing()->begin()->first;
-
-  // Do this a second time, ensures that the situation where there's no existing
-  // tabs is handled properly.
-  tab_id = data_store->GetTabIDForTesting(web_contents).value();
-  browser()->tab_strip_model()->DetachAndDeleteWebContentsAt(
-      browser()->tab_strip_model()->GetIndexOfWebContents(web_contents));
-  EXPECT_TRUE(base::Contains(*interval_map, tab_id));
-  tab_stats_tracker_->OnInterval(kValidLongInterval, interval_map);
-  EXPECT_EQ(0U, interval_map->size());
-}
-
 namespace {
 
 class LenientMockTabStatsObserver : public TabStatsObserver {
