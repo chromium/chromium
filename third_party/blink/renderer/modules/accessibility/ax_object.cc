@@ -6543,6 +6543,9 @@ bool AXObject::PerformAction(const ui::AXActionData& action_data) {
   Node* node = GetNode();
   if (!node) {
     node = GetClosestElement();
+    if (!node) {
+      return false;
+    }
   }
 
   // In most cases, UpdateAllLifecyclePhasesExceptPaint() is enough, but if
@@ -6728,6 +6731,9 @@ bool AXObject::RequestScrollToMakeVisibleWithSubFocusAction(
   Node* node = GetNode();
   if (!node) {
     node = GetClosestElement();
+    if (!node) {
+      return false;
+    }
   }
 
   // In most cases, UpdateAllLifecyclePhasesExceptPaint() is enough, but if
