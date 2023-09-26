@@ -37,8 +37,8 @@ class DeleteButtonDelegate {
 
 namespace {
 
-// Used to know when both the placeholder and the button are eventually painted
-// and have dimensions. This is iportant to solve the issue where deleting an
+// Used to determine when both the placeholder and the button are painted
+// and have dimensions. This is important to solve the issue where deleting an
 // entry leads to another entry being rendered right under the cursor.
 class ButtonPlaceholder : public views::View, public views::ViewObserver {
  public:
@@ -76,8 +76,8 @@ class PopupAutocompleteCellView : public autofill::PopupCellView,
 
   // autofill::PopupCellView;
   void SetSelected(bool selected) override;
-  // Handles key press event coming from the parent class. Returns false if
-  // parent should handle it.
+  // Handles key press events coming from the parent class. Returns false if
+  // the parent should handle it.
   bool HandleKeyPressEvent(
       const content::NativeWebKeyboardEvent& event) override;
 
@@ -89,7 +89,6 @@ class PopupAutocompleteCellView : public autofill::PopupCellView,
   void OnMouseExitedDeleteButton() override;
 
   void CreateDeleteButton();
-  void OnButtonPropertyChanged();
   void DeleteAutocompleteEntry();
   void UpdateSelectedAndRunCallback(bool selected);
   void HandleKeyPressEventFocusOnButton();
