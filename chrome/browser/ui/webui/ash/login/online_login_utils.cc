@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
 
+#include "base/types/expected.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/ui/login_display_host_webui.h"
 #include "chrome/browser/ash/login/ui/signin_ui.h"
@@ -62,6 +63,7 @@ OnlineSigninArtifacts::OnlineSigninArtifacts(OnlineSigninArtifacts&& original)
       services_list(std::move(original.services_list)),
       saml_password_attributes(std::move(original.saml_password_attributes)),
       sync_trusted_vault_keys(std::move(original.sync_trusted_vault_keys)),
+      challenge_response_key(std::move(original.challenge_response_key)),
       cookies(original.cookies) {}
 
 bool ExtractSamlPasswordAttributesEnabled() {
@@ -135,7 +137,30 @@ user_manager::UserType GetUsertypeFromServicesString(
                   : user_manager::USER_TYPE_REGULAR;
 }
 
-bool BuildUserContextForGaiaSignIn(
+ChallengeResponseKeyOrError ExtractClientCertificates(
+    const LoginClientCertUsageObserver&
+        extension_provided_client_cert_usage_observer) {
+  CHECK(extension_provided_client_cert_usage_observer.ClientCertsWereUsed());
+
+  scoped_refptr<net::X509Certificate> saml_client_cert;
+  std::vector<ChallengeResponseKey::SignatureAlgorithm> signature_algorithms;
+  std::string extension_id;
+  if (!extension_provided_client_cert_usage_observer.GetOnlyUsedClientCert(
+          &saml_client_cert, &signature_algorithms, &extension_id)) {
+    return base::unexpected(
+        SigninError::kChallengeResponseAuthMultipleClientCerts);
+  }
+  ChallengeResponseKey challenge_response_key;
+  if (!ExtractChallengeResponseKeyFromCert(
+          *saml_client_cert, signature_algorithms, &challenge_response_key)) {
+    return base::unexpected(
+        SigninError::kChallengeResponseAuthInvalidClientCert);
+  }
+  challenge_response_key.set_extension_id(extension_id);
+  return challenge_response_key;
+}
+
+void BuildUserContextForGaiaSignIn(
     user_manager::UserType user_type,
     const AccountId& account_id,
     bool using_saml,
@@ -143,32 +168,12 @@ bool BuildUserContextForGaiaSignIn(
     const std::string& password,
     const SamlPasswordAttributes& password_attributes,
     const absl::optional<SyncTrustedVaultKeys>& sync_trusted_vault_keys,
-    const LoginClientCertUsageObserver&
-        extension_provided_client_cert_usage_observer,
-    UserContext* user_context,
-    SigninError* error) {
+    const absl::optional<ChallengeResponseKey> challenge_response_key,
+    UserContext* user_context) {
   *user_context = UserContext(user_type, account_id);
-  if (using_saml &&
-      extension_provided_client_cert_usage_observer.ClientCertsWereUsed()) {
-    scoped_refptr<net::X509Certificate> saml_client_cert;
-    std::vector<ChallengeResponseKey::SignatureAlgorithm> signature_algorithms;
-    std::string extension_id;
-    if (!extension_provided_client_cert_usage_observer.GetOnlyUsedClientCert(
-            &saml_client_cert, &signature_algorithms, &extension_id)) {
-      if (error)
-        *error = SigninError::kChallengeResponseAuthMultipleClientCerts;
-      return false;
-    }
-    ChallengeResponseKey challenge_response_key;
-    if (!ExtractChallengeResponseKeyFromCert(
-            *saml_client_cert, signature_algorithms, &challenge_response_key)) {
-      if (error)
-        *error = SigninError::kChallengeResponseAuthInvalidClientCert;
-      return false;
-    }
-    challenge_response_key.set_extension_id(extension_id);
+  if (using_saml && challenge_response_key.has_value()) {
     user_context->GetMutableChallengeResponseKeys()->push_back(
-        challenge_response_key);
+        challenge_response_key.value());
   } else {
     Key key(password);
     key.SetLabel(kCryptohomeGaiaKeyLabel);
@@ -188,8 +193,6 @@ bool BuildUserContextForGaiaSignIn(
   if (sync_trusted_vault_keys.has_value()) {
     user_context->SetSyncTrustedVaultKeys(*sync_trusted_vault_keys);
   }
-
-  return true;
 }
 
 AccountId GetAccountId(const std::string& authenticated_email,

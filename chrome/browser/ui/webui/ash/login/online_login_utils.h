@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/signin_ui.h"
 #include "chrome/browser/extensions/api/cookies/cookies_api.h"
+#include "chromeos/ash/components/login/auth/public/challenge_response_key.h"
 #include "chromeos/ash/components/login/auth/public/saml_password_attributes.h"
 #include "components/account_id/account_id.h"
 #include "components/login/base_screen_handler_utils.h"
@@ -83,6 +84,7 @@ struct OnlineSigninArtifacts {
   absl::optional<::login::StringList> services_list;
   absl::optional<SamlPasswordAttributes> saml_password_attributes;
   absl::optional<SyncTrustedVaultKeys> sync_trusted_vault_keys;
+  absl::optional<ChallengeResponseKey> challenge_response_key;
   absl::optional<GaiaCookiesData> cookies;
 };
 
@@ -90,6 +92,9 @@ using LoadGaiaWithPartition = base::OnceCallback<void(const std::string&)>;
 
 using OnSetCookieForLoadGaiaWithPartition =
     base::OnceCallback<void(::net::CookieAccessResult)>;
+
+using ChallengeResponseKeyOrError =
+    base::expected<ChallengeResponseKey, SigninError>;
 
 // Return whether the InSession Password Change feature is enabled.
 bool ExtractSamlPasswordAttributesEnabled();
@@ -108,9 +113,14 @@ void SetCookieForPartition(
 user_manager::UserType GetUsertypeFromServicesString(
     const ::login::StringList& services);
 
+// Extracts a client certificate that was used during authentication.
+ChallengeResponseKeyOrError ExtractClientCertificates(
+    const LoginClientCertUsageObserver&
+        extension_provided_client_cert_usage_observer);
+
 // Builds the UserContext with the information from the given Gaia user
-// sign-in. On failure, returns false and sets |error_message|.
-bool BuildUserContextForGaiaSignIn(
+// sign-in.
+void BuildUserContextForGaiaSignIn(
     user_manager::UserType user_type,
     const AccountId& account_id,
     bool using_saml,
@@ -118,10 +128,8 @@ bool BuildUserContextForGaiaSignIn(
     const std::string& password,
     const SamlPasswordAttributes& password_attributes,
     const absl::optional<SyncTrustedVaultKeys>& sync_trusted_vault_keys,
-    const LoginClientCertUsageObserver&
-        extension_provided_client_cert_usage_observer,
-    UserContext* user_context,
-    SigninError* error);
+    const absl::optional<ChallengeResponseKey> challenge_response_key,
+    UserContext* user_context);
 
 // Returns user canonical e-mail. Finds already used account alias, if
 // user has already signed in.

@@ -26,6 +26,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/installer/util/google_update_settings.h"
 #include "chromeos/ash/components/login/auth/challenge_response/cert_utils.h"
+#include "chromeos/ash/components/login/auth/public/challenge_response_key.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/version/version_loader.h"
 #include "components/account_id/account_id.h"
@@ -275,21 +276,28 @@ void LockScreenReauthHandler::HandleCompleteAuthentication(
   DCHECK(!email.empty());
   DCHECK(!gaia_id.empty());
 
+  // Retrieve ChallengeResponseKey from client certificates.
+  absl::optional<ChallengeResponseKey> challenge_response_key;
+  if (using_saml && extension_provided_client_cert_usage_observer_ &&
+      extension_provided_client_cert_usage_observer_->ClientCertsWereUsed()) {
+    auto challenge_response_key_or_error = login::ExtractClientCertificates(
+        *extension_provided_client_cert_usage_observer_);
+    if (!challenge_response_key_or_error.has_value()) {
+      NOTREACHED();
+      return;
+    }
+    challenge_response_key = challenge_response_key_or_error.value();
+  }
+
   // Build UserContext
   user_context_ = std::make_unique<UserContext>();
-  if (!login::BuildUserContextForGaiaSignIn(
-          login::GetUsertypeFromServicesString(services),
-          AccountId::FromUserEmailGaiaId(gaia::CanonicalizeEmail(email),
-                                         gaia_id),
-          using_saml, false /* using_saml_api */, password,
-          SamlPasswordAttributes::FromJs(password_attributes),
-          /*sync_trusted_vault_keys=*/absl::nullopt,
-          *extension_provided_client_cert_usage_observer_, user_context_.get(),
-          nullptr)) {
-    user_context_.reset();
-    NOTREACHED();
-    return;
-  }
+  login::BuildUserContextForGaiaSignIn(
+      login::GetUsertypeFromServicesString(services),
+      AccountId::FromUserEmailGaiaId(gaia::CanonicalizeEmail(email), gaia_id),
+      using_saml, false /* using_saml_api */, password,
+      SamlPasswordAttributes::FromJs(password_attributes),
+      /*sync_trusted_vault_keys=*/absl::nullopt, challenge_response_key,
+      user_context_.get());
 
   // Create GaiaCookiesRetriever
   login::SigninPartitionManager* signin_partition_manager =

@@ -85,6 +85,7 @@
 #include "chrome/installer/util/google_update_settings.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/ash/components/login/auth/challenge_response/cert_utils.h"
+#include "chromeos/ash/components/login/auth/public/challenge_response_key.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/ash/components/login/auth/public/saml_password_attributes.h"
 #include "chromeos/ash/components/login/auth/public/sync_trusted_vault_keys.h"
@@ -756,6 +757,21 @@ void GaiaScreenHandler::HandleCompleteAuthenticationEvent(
     signin_artifacts.password.reset();
   }
 
+  // Retrieve ChallengeResponseKey from client certificates. Show signin fatal
+  // error if there is an issue retrieving.
+  if (using_saml && IsSamlUserPasswordless()) {
+    auto challenge_response_key_or_error = login::ExtractClientCertificates(
+        *extension_provided_client_cert_usage_observer_);
+    // Signin Fatal Error
+    if (!challenge_response_key_or_error.has_value()) {
+      LoginDisplayHost::default_host()->GetSigninUI()->ShowSigninError(
+          challenge_response_key_or_error.error(), /*details=*/std::string());
+      return;
+    }
+    signin_artifacts.challenge_response_key =
+        challenge_response_key_or_error.value();
+  }
+
   // Retrieve cookies and continue with authentication
   login::SigninPartitionManager* signin_partition_manager =
       login::SigninPartitionManager::Factory::GetForBrowserContext(
@@ -838,19 +854,14 @@ void GaiaScreenHandler::CompleteAuthentication(
   LoginDisplayHost::default_host()->SetDisplayEmail(sanitized_email);
 
   auto user_context = std::make_unique<UserContext>();
-  SigninError error;
-  if (!login::BuildUserContextForGaiaSignIn(
-          user_type, account_id, signin_artifacts.using_saml, using_saml_api_,
-          signin_artifacts.password.value_or(std::string()),
-          signin_artifacts.saml_password_attributes.value_or(
-              SamlPasswordAttributes()),
-          signin_artifacts.sync_trusted_vault_keys,
-          *extension_provided_client_cert_usage_observer_, user_context.get(),
-          &error)) {
-    LoginDisplayHost::default_host()->GetSigninUI()->ShowSigninError(
-        error, /*details=*/std::string());
-    return;
-  }
+
+  login::BuildUserContextForGaiaSignIn(
+      user_type, account_id, signin_artifacts.using_saml, using_saml_api_,
+      signin_artifacts.password.value_or(std::string()),
+      signin_artifacts.saml_password_attributes.value_or(
+          SamlPasswordAttributes()),
+      signin_artifacts.sync_trusted_vault_keys,
+      signin_artifacts.challenge_response_key, user_context.get());
 
   // Transfer the received cookies into the UserContext
   signin_artifacts.cookies->TransferCookiesToUserContext(*user_context);
@@ -1050,19 +1061,28 @@ void GaiaScreenHandler::DoCompleteLogin(const std::string& gaia_id,
   const user_manager::User* const user =
       user_manager::UserManager::Get()->FindUser(account_id);
 
-  UserContext user_context;
-  SigninError error;
-  if (!login::BuildUserContextForGaiaSignIn(
-          user ? user->GetType() : CalculateUserType(account_id),
-          login::GetAccountId(typed_email, gaia_id, AccountType::GOOGLE),
-          using_saml, using_saml_api_, password, SamlPasswordAttributes(),
-          /*sync_trusted_vault_keys=*/absl::nullopt,
-          *extension_provided_client_cert_usage_observer_, &user_context,
-          &error)) {
-    LoginDisplayHost::default_host()->GetSigninUI()->ShowSigninError(
-        error, /*details=*/std::string());
-    return;
+  // Retrieve ChallengeResponseKey from client certificates. Show signin fatal
+  // error if there is an issue retrieving.
+  absl::optional<ChallengeResponseKey> challenge_response_key;
+  if (using_saml && IsSamlUserPasswordless()) {
+    auto challenge_response_key_or_error = login::ExtractClientCertificates(
+        *extension_provided_client_cert_usage_observer_);
+    // Signin Fatal Error
+    if (!challenge_response_key_or_error.has_value()) {
+      LoginDisplayHost::default_host()->GetSigninUI()->ShowSigninError(
+          challenge_response_key_or_error.error(), /*details=*/std::string());
+      return;
+    }
+    challenge_response_key = challenge_response_key_or_error.value();
   }
+
+  UserContext user_context;
+  login::BuildUserContextForGaiaSignIn(
+      user ? user->GetType() : CalculateUserType(account_id),
+      login::GetAccountId(typed_email, gaia_id, AccountType::GOOGLE),
+      using_saml, using_saml_api_, password, SamlPasswordAttributes(),
+      /*sync_trusted_vault_keys=*/absl::nullopt, challenge_response_key,
+      &user_context);
 
   LoginDisplayHost::default_host()->CompleteLogin(user_context);
 }
