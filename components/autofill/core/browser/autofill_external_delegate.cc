@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/autofill_granular_filling_utils.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/metrics/address_rewriter_in_profile_subset_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
@@ -456,6 +457,12 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
               PopupItemId::kFillEverythingFromAddressProfile) {
         autofill_metrics::LogAutofillSuggestionAcceptedIndex(
             position, popup_type_, manager_->client().IsOffTheRecord());
+      }
+      if (suggestion.popup_item_id == PopupItemId::kAddressEntry &&
+          manager_->WasSuggestionPreviouslyHidden(
+              query_form_, query_field_,
+              suggestion.GetPayload<Suggestion::BackendId>(), trigger_source)) {
+        autofill_metrics::LogUserAcceptedPreviouslyHiddenProfileSuggestion();
       }
       FillAutofillFormData(
           suggestion.popup_item_id,

@@ -88,6 +88,7 @@
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/validation.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -1035,6 +1036,39 @@ void BrowserAutofillManager::ProcessPendingFormForUpload() {
 
   MaybeStartVoteUploadProcess(std::move(upload_form),
                               /*observed_submission=*/false);
+}
+
+bool BrowserAutofillManager::WasSuggestionPreviouslyHidden(
+    const FormData& form,
+    const FormFieldData& field,
+    Suggestion::BackendId backend_id,
+    AutofillSuggestionTriggerSource trigger_source) {
+  FormStructure* form_structure = nullptr;
+  AutofillField* autofill_field = nullptr;
+  if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field)) {
+    return false;
+  }
+  // Getting the filling-relevant fields so that suggestions are based only on
+  // those fields. Function BrowserAutofillManager::GetSkipStatuses assumes that
+  // the passed FormData and FormStructure have the same size. If it's not the
+  // case we just assume as a fallback that all fields are relevant.
+  std::vector<FieldFillingSkipReason> skip_reasons =
+      form.fields.size() == form_structure->field_count()
+          ? GetFieldFillingSkipReasons(
+                form, *form_structure, field, autofill_field->section,
+                /*optional_credit_card=*/nullptr, kAllServerFieldTypes,
+                /*optional_type_groups_originally_filled=*/nullptr,
+                /*skip_unrecognized_autocomplete_fields=*/
+                trigger_source !=
+                    AutofillSuggestionTriggerSource::
+                        kManualFallbackForAutocompleteUnrecognized,
+                /*is_refill=*/false)
+          : std::vector<FieldFillingSkipReason>(
+                form_structure->field_count(),
+                FieldFillingSkipReason::kNotSkipped);
+  return suggestion_generator_->WasProfileSuggestionPreviouslyHidden(
+      CHECK_DEREF(form_structure), CHECK_DEREF(autofill_field), backend_id,
+      skip_reasons);
 }
 
 void BrowserAutofillManager::OnTextFieldDidChangeImpl(

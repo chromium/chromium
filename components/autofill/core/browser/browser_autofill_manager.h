@@ -48,6 +48,7 @@
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/browser/ui/touch_to_fill_delegate.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
@@ -233,6 +234,18 @@ class BrowserAutofillManager : public AutofillManager,
 
   // Upload the current pending form.
   void ProcessPendingFormForUpload();
+
+  // Checks whether a suggestion accepted by the user was hidden prior to
+  // landing the feature `kAutofillUseAddressRewriterInProfileSubsetComparison`.
+  // `field` is the one that triggered the suggestions. `backend_id` is the
+  // guid of the underlying profile, used to retrieve the suggestion itself.
+  // TODO(crbug/1439742): Remove when
+  // `kAutofillUseAddressRewriterInProfileSubsetComparison` launches.
+  bool WasSuggestionPreviouslyHidden(
+      const FormData& form,
+      const FormFieldData& field,
+      Suggestion::BackendId backend_id,
+      AutofillSuggestionTriggerSource trigger_source);
 
   // AutofillManager:
   base::WeakPtr<AutofillManager> GetWeakPtr() override;

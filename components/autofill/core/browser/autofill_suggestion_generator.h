@@ -154,6 +154,19 @@ class AutofillSuggestionGenerator {
   // `candidate_card`.
   bool ShouldShowVirtualCardOption(const CreditCard* candidate_card) const;
 
+  // Checks whether the suggestion accepted by the user, generated from the
+  // profile with `backend_id`, would've been hidden prior to landing the
+  // feature `kAutofillUseAddressRewriterInProfileSubsetComparison`.
+  // `skip_statuses` denotes for each field if it is relevant for the current
+  // suggestion or not.
+  // TODO(crbug/1439742): Remove when
+  // `kAutofillUseAddressRewriterInProfileSubsetComparison` launches.
+  bool WasProfileSuggestionPreviouslyHidden(
+      const FormStructure& form,
+      const AutofillField& field,
+      Suggestion::BackendId backend_id,
+      const std::vector<FieldFillingSkipReason>& skip_reasons);
+
  protected:
   // Creates a suggestion for the given `credit_card`. `type` denotes the
   // AutofillType of the field that is focused when the query is triggered.

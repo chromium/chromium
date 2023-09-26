@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
@@ -463,6 +464,45 @@ AutofillSuggestionGenerator::GetSuggestionsForVirtualCardStandaloneCvc(
     suggestions.push_back(suggestion);
   }
   return suggestions;
+}
+
+bool AutofillSuggestionGenerator::WasProfileSuggestionPreviouslyHidden(
+    const FormStructure& form,
+    const AutofillField& field,
+    Suggestion::BackendId backend_id,
+    const std::vector<FieldFillingSkipReason>& skip_reasons) {
+  constexpr ServerFieldTypeSet street_address_field_types = {
+      ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2,
+      ADDRESS_HOME_LINE3};
+  if (street_address_field_types.contains(field.Type().GetStorableType())) {
+    // Autofill already considers suggestions as different if the suggestion's
+    // main text, to be filled in the triggering field, differs regardless of
+    // the other fields.
+    return false;
+  }
+  ServerFieldTypeSet suggestion_field_types_without_address_types;
+  for (size_t i = 0; i < form.field_count(); ++i) {
+    // Include only non-street-address types, since those types were originally
+    // ignored.
+    ServerFieldType type = form.field(i)->Type().GetStorableType();
+    if (skip_reasons[i] == FieldFillingSkipReason::kNotSkipped &&
+        !street_address_field_types.count(type)) {
+      suggestion_field_types_without_address_types.insert(type);
+    }
+  }
+
+  // Get the profiles to be suggested when we remove address field types. This
+  // way if the profile represented by `backend_id` is not included we can
+  // conclude that it was hidden previously and is only showing now because
+  // Autofill is considering address field types.
+  std::vector<AutofillProfile*> profiles_to_suggest =
+      GetProfilesToSuggest(field.Type(), field.value, field.is_autofilled,
+                           suggestion_field_types_without_address_types);
+
+  return base::ranges::find_if(
+             profiles_to_suggest, [backend_id](const AutofillProfile* profile) {
+               return Suggestion::BackendId(profile->guid()) == backend_id;
+             }) == profiles_to_suggest.end();
 }
 
 // static

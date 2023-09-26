@@ -3884,6 +3884,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.ProfilesDifferOnAddressLineOnly" enum="Boolean"
+    expires_after="2024-03-13">
+  <owner>jihadghanna@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Given a field set S containing an address field type, logs whether two
+    profiles A and B, where A is a subset of B with respect to the field type
+    set S minus the address field types, have different values for those address
+    field types.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.ProfileSuggestionsMadeWithFormatter"
     enum="BooleanCreated" expires_after="2023-12-12">
   <owner>battre@chromium.org</owner>

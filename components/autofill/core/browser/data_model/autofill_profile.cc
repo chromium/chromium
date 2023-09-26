@@ -39,6 +39,7 @@
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/browser/geo/state_names.h"
+#include "components/autofill/core/browser/metrics/address_rewriter_in_profile_subset_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/profile_token_quality.h"
 #include "components/autofill/core/browser/validation.h"
@@ -608,6 +609,11 @@ bool AutofillProfile::IsSubsetOfForFieldSet(
   // TODO(crbug.com/1417975): Remove when
   // `kAutofillUseAddressRewriterInProfileSubsetComparison` launches.
   bool has_different_address = false;
+  bool has_street_address_type = false;
+  const AddressComponent& address = GetAddress().GetStructuredAddress();
+  const AddressComponent& other_address =
+      profile.GetAddress().GetStructuredAddress();
+
   for (ServerFieldType type : types) {
     // Prefer GetInfo over GetRawInfo so that a reasonable value is retrieved
     // when the raw data is empty or unnormalized. For example, suppose a
@@ -623,9 +629,7 @@ bool AutofillProfile::IsSubsetOfForFieldSet(
     if (type == ADDRESS_HOME_ADDRESS || type == ADDRESS_HOME_STREET_ADDRESS ||
         type == ADDRESS_HOME_LINE1 || type == ADDRESS_HOME_LINE2 ||
         type == ADDRESS_HOME_LINE3) {
-      const AddressComponent& address = GetAddress().GetStructuredAddress();
-      const AddressComponent& other_address =
-          profile.GetAddress().GetStructuredAddress();
+      has_street_address_type = true;
       // This will compare street addresses after applying appropriate address
       // rewriter rules to both values, so that for example US streets like
       // `Main Street` and `main st` evaluate to equal.
@@ -661,6 +665,9 @@ bool AutofillProfile::IsSubsetOfForFieldSet(
     } else if (!comparator.Compare(value, profile.GetInfo(type, app_locale))) {
       return false;
     }
+  }
+  if (has_street_address_type) {
+    autofill_metrics::LogProfilesDifferOnAddressLineOnly(has_different_address);
   }
   // When `kAutofillUseAddressRewriterInProfileSubsetComparison` is disabled,
   // Ignore street addresses because comparing addresses such as 200 Elm St and
