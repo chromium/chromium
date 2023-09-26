@@ -692,6 +692,9 @@ extern const char kPipDoubleTapToResizeDescription[];
 extern const char kPipPinchToResizeName[];
 extern const char kPipPinchToResizeDescription[];
 
+extern const char kPipTiltName[];
+extern const char kPipTiltDescription[];
+
 extern const char kPrivateNetworkAccessSendPreflightsName[];
 extern const char kPrivateNetworkAccessSendPreflightsDescription[];
 

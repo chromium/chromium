@@ -7812,6 +7812,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPipPinchToResizeDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kPipPinchToResize)},
 
+    {"enable-pip-tilt", flag_descriptions::kPipTiltName,
+     flag_descriptions::kPipTiltDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kPipTilt)},
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"enable-fenced-frames", flag_descriptions::kEnableFencedFramesName,

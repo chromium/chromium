@@ -2114,6 +2114,9 @@ BASE_FEATURE(kPipPinchToResize,
              "PipPinchToResize",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables the tilt feature for Picture in Picture.
+BASE_FEATURE(kPipTilt, "PipTilt", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether policy provided trust anchors are allowed at the lock
 // screen.
 BASE_FEATURE(kPolicyProvidedTrustAnchorsAllowedAtLockScreen,
@@ -3874,6 +3877,10 @@ bool IsPipDoubleTapToResizeEnabled() {
 
 bool IsPipPinchToResizeEnabled() {
   return base::FeatureList::IsEnabled(kPipPinchToResize);
+}
+
+bool IsPipTiltEnabled() {
+  return base::FeatureList::IsEnabled(kPipTilt);
 }
 
 bool IsLocalPrinterObservingEnabled() {
