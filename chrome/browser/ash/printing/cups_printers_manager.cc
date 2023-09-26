@@ -239,6 +239,27 @@ class CupsPrintersManagerImpl
   }
 
   // Public API function.
+  void AddLocalPrintersObserver(
+      CupsPrintersManager::LocalPrintersObserver* observer) override {
+    CHECK(ash::features::IsLocalPrinterObservingEnabled());
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
+
+    if (!local_printers_observer_list_.HasObserver(observer)) {
+      local_printers_observer_list_.AddObserver(observer);
+      observer->OnLocalPrintersUpdated();
+    }
+  }
+
+  // Public API function.
+  void RemoveLocalPrintersObserver(
+      CupsPrintersManager::LocalPrintersObserver* observer) override {
+    CHECK(ash::features::IsLocalPrinterObservingEnabled());
+
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
+    local_printers_observer_list_.RemoveObserver(observer);
+  }
+
+  // Public API function.
   bool IsPrinterInstalled(const Printer& printer) const override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
     const auto found = installed_printer_fingerprints_.find(printer.id());
@@ -945,6 +966,10 @@ class CupsPrintersManagerImpl
   std::map<std::string, PrinterSetupTracker> printers_being_setup_;
 
   base::ObserverList<CupsPrintersManager::Observer>::Unchecked observer_list_;
+
+  // Maintains list of observers for updates to local printers.
+  base::ObserverList<CupsPrintersManager::LocalPrintersObserver>::Unchecked
+      local_printers_observer_list_;
 
   // Holds the current value of the pref |UserPrintersAllowed|.
   BooleanPrefMember user_printers_allowed_;

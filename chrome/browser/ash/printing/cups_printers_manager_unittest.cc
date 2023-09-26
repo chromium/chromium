@@ -11,6 +11,7 @@
 #include <unordered_set>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -21,6 +22,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chrome/browser/ash/printing/enterprise_printers_provider.h"
@@ -298,6 +300,20 @@ class FakePpdProvider : public PpdProvider {
   std::string usb_manufacturer_;
 };
 
+class FakeLocalPrintersObserver
+    : public CupsPrintersManager::LocalPrintersObserver {
+ public:
+  FakeLocalPrintersObserver() {}
+  ~FakeLocalPrintersObserver() override = default;
+
+  void OnLocalPrintersUpdated() override { ++num_observer_calls_; }
+
+  size_t num_observer_calls() const { return num_observer_calls_; }
+
+ private:
+  size_t num_observer_calls_ = 0;
+};
+
 // Expect that the printers in printers have the given ids, without
 // considering order.
 void ExpectPrinterIdsAre(const std::vector<Printer>& printers,
@@ -484,6 +500,8 @@ class CupsPrintersManagerTest : public testing::Test,
 
   // Manages active networks.
   network_config::CrosNetworkConfigTestHelper cros_network_config_helper_;
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Pseudo-constructor for inline creation of a DetectedPrinter that should (in
@@ -1170,6 +1188,25 @@ TEST_F(CupsPrintersManagerTest, ActiveNetworkStrengthChanged) {
 
   ExpectPrintersInClassAre(PrinterClass::kDiscovered, {"DiscoveredPrinter"});
   ExpectPrintersInClassAre(PrinterClass::kAutomatic, {"AutomaticPrinter"});
+}
+
+// Tests that local printers observers are triggered when added.
+TEST_F(CupsPrintersManagerTest, AddLocalPrintersObserver) {
+  feature_list_.InitAndEnableFeature(features::kLocalPrinterObserving);
+
+  // Add the same observer twice to verify it's only added once and triggered
+  // once.
+  FakeLocalPrintersObserver observer1;
+  manager_->AddLocalPrintersObserver(&observer1);
+  manager_->AddLocalPrintersObserver(&observer1);
+  EXPECT_EQ(1u, observer1.num_observer_calls());
+
+  // Add another observer and verify it's the only one that's triggered this
+  // time.
+  FakeLocalPrintersObserver observer2;
+  manager_->AddLocalPrintersObserver(&observer2);
+  EXPECT_EQ(1u, observer2.num_observer_calls());
+  EXPECT_EQ(1u, observer1.num_observer_calls());
 }
 
 }  // namespace

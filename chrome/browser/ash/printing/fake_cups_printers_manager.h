@@ -30,6 +30,8 @@ class FakeCupsPrintersManager : public CupsPrintersManager {
 
   void AddObserver(Observer* observer) override {}
   void RemoveObserver(Observer* observer) override {}
+  void AddLocalPrintersObserver(LocalPrintersObserver* observer) override {}
+  void RemoveLocalPrintersObserver(LocalPrintersObserver* observer) override {}
 
   bool IsPrinterInstalled(const chromeos::Printer& printer) const override;
   void SetUpPrinter(const chromeos::Printer& printer,
