@@ -143,11 +143,6 @@ void DecoderTemplate<Traits>::configure(const ConfigType* config,
 
   absl::optional<MediaConfigType> media_config =
       MakeMediaConfig(*config, &js_error_message);
-  if (!media_config) {
-    Shutdown(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotSupportedError, js_error_message));
-    return;
-  }
 
   MarkCodecActive();
 
@@ -156,7 +151,11 @@ void DecoderTemplate<Traits>::configure(const ConfigType* config,
 
   Request* request = MakeGarbageCollected<Request>();
   request->type = Request::Type::kConfigure;
-  request->media_config = std::make_unique<MediaConfigType>(*media_config);
+  if (media_config.has_value()) {
+    request->media_config = std::make_unique<MediaConfigType>(*media_config);
+  } else {
+    request->js_error_message = js_error_message;
+  }
   request->reset_generation = reset_generation_;
   request->hw_pref = GetHardwarePreference(*config);
   request->low_delay = GetLowDelayPreference(*config);
@@ -293,7 +292,6 @@ bool DecoderTemplate<Traits>::ProcessConfigureRequest(Request* request) {
   DCHECK(!IsClosed());
   DCHECK(!pending_request_);
   DCHECK_EQ(request->type, Request::Type::kConfigure);
-  DCHECK(request->media_config);
 
   if (decoder() &&
       pending_decodes_.size() + 1 >
@@ -306,6 +304,17 @@ bool DecoderTemplate<Traits>::ProcessConfigureRequest(Request* request) {
   // until there is a decode request.
   pending_request_ = request;
   pending_request_->StartTracing();
+
+  if (!request->media_config) {
+    main_thread_task_runner_->PostTask(
+        FROM_HERE,
+        WTF::BindOnce(&DecoderTemplate<Traits>::Shutdown,
+                      WrapWeakPersistent(this),
+                      WrapPersistent(MakeGarbageCollected<DOMException>(
+                          DOMExceptionCode::kNotSupportedError,
+                          request->js_error_message))));
+    return false;
+  }
 
   if (gpu_factories_.has_value()) {
     ContinueConfigureWithGpuFactories(request, gpu_factories_.value());
@@ -505,7 +514,7 @@ void DecoderTemplate<Traits>::Shutdown(DOMException* exception) {
                     DOMExceptionCode::kAbortError, "Aborted due to close()"));
     }
 
-    pending_request_.Release()->EndTracing(/*shutting_down*/ true);
+    pending_request_.Release()->EndTracing(/*shutting_down=*/true);
   }
 
   // Abort all upcoming work.
@@ -544,7 +553,7 @@ void DecoderTemplate<Traits>::Shutdown(DOMException* exception) {
     // OnResetDone() will never execute, since we are now in a kClosed state,
     // and |decoder_| has been reset.
     DCHECK_EQ(pending_request_->type, Request::Type::kReset);
-    pending_request_.Release()->EndTracing(/*shutting_down*/ true);
+    pending_request_.Release()->EndTracing(/*shutting_down=*/true);
   }
 
   bool trace_enabled = false;

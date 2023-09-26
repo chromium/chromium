@@ -109,13 +109,6 @@ void EncoderBase<Traits>::configure(const ConfigType* config,
     return;
   }
 
-  String js_error_message;
-  if (!VerifyCodecSupport(parsed_config, &js_error_message)) {
-    HandleError(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotSupportedError, js_error_message));
-    return;
-  }
-
   MarkCodecActive();
 
   Request* request = MakeGarbageCollected<Request>();
@@ -260,6 +253,13 @@ void EncoderBase<Traits>::ResetInternal(DOMException* ex) {
   // This codec isn't holding on to any resources, and doesn't need to be
   // reclaimed.
   ReleaseCodecPressure();
+}
+
+template <typename Traits>
+void EncoderBase<Traits>::QueueHandleError(DOMException* ex) {
+  callback_runner_->PostTask(
+      FROM_HERE, WTF::BindOnce(&EncoderBase<Traits>::HandleError,
+                               WrapWeakPersistent(this), WrapPersistent(ex)));
 }
 
 template <typename Traits>

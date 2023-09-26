@@ -121,6 +121,7 @@ class MODULES_EXPORT EncoderBase
 #endif
   };
 
+  void QueueHandleError(DOMException* ex);
   virtual void HandleError(DOMException* ex);
   virtual void EnqueueRequest(Request* request);
   virtual void ProcessRequests();

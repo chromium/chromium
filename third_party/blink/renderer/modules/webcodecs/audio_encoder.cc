@@ -418,9 +418,19 @@ void AudioEncoder::ProcessConfigure(Request* request) {
 
   request->StartTracing();
 
+  String js_error_message;
+  if (!VerifyCodecSupport(active_config_, &js_error_message)) {
+    blocking_request_in_progress_ = request;
+    QueueHandleError(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError, js_error_message));
+    request->EndTracing();
+    return;
+  }
+
   media_encoder_ = CreateMediaAudioEncoder(*active_config_);
   if (!media_encoder_) {
-    HandleError(logger_->MakeOperationError(
+    blocking_request_in_progress_ = request;
+    QueueHandleError(logger_->MakeOperationError(
         "Encoder creation error.",
         media::EncoderStatus(
             media::EncoderStatus::Codes::kEncoderInitializationError,
@@ -502,16 +512,11 @@ void AudioEncoder::ProcessEncode(Request* request) {
   if (data->channel_count() != active_config_->options.channels ||
       data->sample_rate() != active_config_->options.sample_rate) {
     // Per spec we must queue a task for error handling.
-    callback_runner_->PostTask(
-        FROM_HERE,
-        WTF::BindOnce(
-            &AudioEncoder::HandleError, WrapWeakPersistent(this),
-            WrapPersistent(logger_->MakeEncodingError(
-                "Input audio buffer is incompatible with codec parameters",
-                media::EncoderStatus(
-                    media::EncoderStatus::Codes::kEncoderFailedEncode)
-                    .WithData("channels", data->channel_count())
-                    .WithData("sampleRate", data->sample_rate())))));
+    QueueHandleError(logger_->MakeEncodingError(
+        "Input audio buffer is incompatible with codec parameters",
+        media::EncoderStatus(media::EncoderStatus::Codes::kEncoderFailedEncode)
+            .WithData("channels", data->channel_count())
+            .WithData("sampleRate", data->sample_rate())));
 
     request->EndTracing();
 

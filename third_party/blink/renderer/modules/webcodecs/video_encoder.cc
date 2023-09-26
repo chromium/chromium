@@ -1120,6 +1120,14 @@ void VideoEncoder::ProcessConfigure(Request* request) {
 
   blocking_request_in_progress_ = request;
 
+  String js_error_message;
+  if (!VerifyCodecSupport(active_config_, &js_error_message)) {
+    QueueHandleError(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError, js_error_message));
+    request->EndTracing();
+    return;
+  }
+
   if (active_config_->hw_pref == HardwarePreference::kPreferSoftware &&
       !MayHaveOSSoftwareEncoder(active_config_->profile)) {
     ContinueConfigureWithGpuFactories(request, nullptr);
