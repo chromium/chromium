@@ -109,12 +109,14 @@ source_set("eg2_tests") {
   ]
   deps = [
     "//base",
+    "//components/policy:policy_code_generate",
     "//components/signin/internal/identity_manager",
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/policy:eg_test_support+eg2",
     "//ios/chrome/browser/policy:policy_earl_grey_matchers",
+    "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/signin:capabilities_types",
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/signin:system_identity_manager",
