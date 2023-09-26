@@ -16,6 +16,10 @@ found in the LICENSE file.
         android:key="page_zoom_default_zoom"
         android:selectable="false" />
 
+    <Preference
+        android:key="zoom_info"
+        android:title="@string/zoom_info_preference_title"/>
+
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="page_zoom_always_show"
         android:summary="@string/page_zoom_always_show_preference_summary"
@@ -34,9 +38,5 @@ found in the LICENSE file.
     <Preference
         android:key="captions"
         android:title="@string/accessibility_captions_title"/>
-
-    <Preference
-        android:key="zoom_info"
-        android:title="@string/zoom_info_preference_title"/>
 
 </PreferenceScreen>
