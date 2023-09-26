@@ -7,11 +7,18 @@
 
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace web_app {
+class WebAppProvider;
+
 // Converts |uninstall_source| to a |WebappUninstallSource|.
 webapps::WebappUninstallSource ConvertUninstallSourceToWebAppUninstallSource(
     apps::UninstallSource uninstall_source);
+
+bool IsAppServiceShortcut(const webapps::AppId& web_app_id,
+                          const WebAppProvider& provider);
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_PUBLISHER_HELPER_H_

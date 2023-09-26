@@ -11,7 +11,6 @@
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/apps/app_service/publishers/shortcut_publisher.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -46,8 +45,6 @@ class BrowserShortcuts : public apps::ShortcutPublisher,
   void Initialize();
 
   void InitBrowserShortcuts();
-
-  bool IsShortcut(const webapps::AppId& app_id);
 
   // Publish web app identified by `app_id` as browser shortcut to the
   // AppService if the web app is considered as shortcut in ChromeOS.

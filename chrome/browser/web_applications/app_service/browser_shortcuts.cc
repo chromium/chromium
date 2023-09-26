@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/icon_effects.h"
@@ -20,7 +19,6 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
@@ -82,17 +80,9 @@ void BrowserShortcuts::InitBrowserShortcuts() {
   }
 }
 
-bool BrowserShortcuts::IsShortcut(const webapps::AppId& app_id) {
-  if (base::FeatureList::IsEnabled(features::kCrosWebAppShortcutUiUpdate)) {
-    return provider_->registrar_unsafe().IsShortcutApp(app_id);
-  } else {
-    return false;
-  }
-}
-
 void BrowserShortcuts::MaybePublishBrowserShortcut(const webapps::AppId& app_id,
                                                    bool raw_icon_updated) {
-  if (!IsShortcut(app_id)) {
+  if (!IsAppServiceShortcut(app_id, *provider_)) {
     return;
   }
   const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
@@ -125,7 +115,7 @@ void BrowserShortcuts::LaunchShortcut(const std::string& host_app_id,
 void BrowserShortcuts::RemoveShortcut(const std::string& host_app_id,
                                       const std::string& local_shortcut_id,
                                       apps::UninstallSource uninstall_source) {
-  if (!IsShortcut(local_shortcut_id)) {
+  if (!IsAppServiceShortcut(local_shortcut_id, *provider_)) {
     return;
   }
 
@@ -172,7 +162,7 @@ void BrowserShortcuts::OnWebAppInstallManagerDestroyed() {
 void BrowserShortcuts::OnWebAppUninstalled(
     const webapps::AppId& app_id,
     webapps::WebappUninstallSource uninstall_source) {
-  if (!IsShortcut(app_id)) {
+  if (!IsAppServiceShortcut(app_id, *provider_)) {
     return;
   }
   apps::ShortcutPublisher::ShortcutRemoved(
