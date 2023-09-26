@@ -80,6 +80,14 @@
             "_bug_id": "crbug.com/1230911"
           },
           {
+            "match": "android.webkit.cts.WebViewTest#testFindNext",
+            "_bug_id": "crbug.com/1486129"
+          },
+          {
+            "match": "android.webkit.cts.WebViewTest#testPageScroll",
+            "_bug_id": "crbug.com/1482550"
+          },
+          {
             "match": "android.webkit.cts.WebSettingsTest#testAppCacheEnabled",
             "_bug_id": "crbug.com/1246334"
           },
@@ -153,6 +161,14 @@
             "_bug_id": "crbug.com/1230911"
           },
           {
+            "match": "android.webkit.cts.WebViewTest#testFindNext",
+            "_bug_id": "crbug.com/1486129"
+          },
+          {
+            "match": "android.webkit.cts.WebViewTest#testPageScroll",
+            "_bug_id": "crbug.com/1482550"
+          },
+          {
             "match": "android.webkit.cts.WebSettingsTest#testAppCacheEnabled",
             "_bug_id": "crbug.com/1246334"
           },
@@ -219,6 +235,14 @@
         "apk": "android-cts/testcases/CtsWebkitTestCases.apk",
         "excludes": [
           {
+            "match": "android.webkit.cts.WebViewTest#testFindNext",
+            "_bug_id": "crbug.com/1486129"
+          },
+          {
+            "match": "android.webkit.cts.WebViewTest#testPageScroll",
+            "_bug_id": "crbug.com/1482550"
+          },
+          {
             "match": "android.webkit.cts.WebViewTest#testLoadUrl",
             "_bug_id": "crbug.com/1450170"
           }
@@ -284,6 +308,14 @@
         "apk": "android-cts/testcases/CtsWebkitTestCases.apk",
         "excludes": [
           {
+            "match": "android.webkit.cts.WebViewTest#testFindNext",
+            "_bug_id": "crbug.com/1486129"
+          },
+          {
+            "match": "android.webkit.cts.WebViewTest#testPageScroll",
+            "_bug_id": "crbug.com/1482550"
+          },
+          {
             "match": "android.webkit.cts.WebViewClientTest#testShouldOverrideUrlLoadingOnCreateWindow",
             "_bug_id": "crbug.com/1100950"
           },
@@ -348,6 +380,14 @@
       {
         "apk": "android-cts/testcases/CtsWebkitTestCases.apk",
         "excludes": [
+          {
+            "match": "android.webkit.cts.WebViewTest#testFindNext",
+            "_bug_id": "crbug.com/1486129"
+          },
+          {
+            "match": "android.webkit.cts.WebViewTest#testPageScroll",
+            "_bug_id": "crbug.com/1482550"
+          },
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingMalwareCode",
             "_bug_id": "crbug.com/1245351"
@@ -440,6 +480,14 @@
       {
         "apk": "android-cts/testcases/CtsWebkitTestCases.apk",
         "excludes": [
+          {
+            "match": "android.webkit.cts.WebViewTest#testFindNext",
+            "_bug_id": "crbug.com/1486129"
+          },
+          {
+            "match": "android.webkit.cts.WebViewTest#testPageScroll",
+            "_bug_id": "crbug.com/1482550"
+          },
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingMalwareCode",
             "_bug_id": "crbug.com/1245351"
@@ -580,6 +628,14 @@
       {
         "apk": "android-cts/testcases/CtsWebkitTestCases.apk",
         "excludes": [
+          {
+            "match": "android.webkit.cts.WebViewTest#testFindNext",
+            "_bug_id": "crbug.com/1486129"
+          },
+          {
+            "match": "android.webkit.cts.WebViewTest#testPageScroll",
+            "_bug_id": "crbug.com/1482550"
+          },
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingMalwareCode",
             "_bug_id": "crbug.com/1245351"
@@ -747,6 +803,14 @@
       {
         "apk": "android-cts/testcases/CtsWebkitTestCases.apk",
         "excludes": [
+          {
+            "match": "android.webkit.cts.WebViewTest#testFindNext",
+            "_bug_id": "crbug.com/1486129"
+          },
+          {
+            "match": "android.webkit.cts.WebViewTest#testPageScroll",
+            "_bug_id": "crbug.com/1482550"
+          },
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingMalwareCode",
             "_bug_id": "crbug.com/1245351"
