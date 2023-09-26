@@ -172,6 +172,9 @@ class TailoredSecurityService : public KeyedService {
  private:
   FRIEND_TEST_ALL_PREFIXES(
       TailoredSecurityServiceTest,
+      HistorySyncEnabledForUserReturnsFalseWhenSyncServiceIsNull);
+  FRIEND_TEST_ALL_PREFIXES(
+      TailoredSecurityServiceTest,
       RetryEnabledTimestampUpdateCallbackSetsStateToRetryNeeded);
   FRIEND_TEST_ALL_PREFIXES(TailoredSecurityServiceTest,
                            RetryEnabledTimestampUpdateCallbackRecordsStartTime);

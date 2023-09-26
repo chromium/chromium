@@ -40,15 +40,16 @@ const char kQueryTailoredSecurityServiceUrl[] =
 // TestRequest instead of a normal request.
 class TestingTailoredSecurityService : public TailoredSecurityService {
  public:
-  explicit TestingTailoredSecurityService(
+  TestingTailoredSecurityService(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      PrefService* prefs)
+      PrefService* prefs,
+      syncer::SyncService* sync_service)
       // NOTE: Simply pass null object for IdentityManager and SyncService.
       // TailoredSecurityService's only usage of this object is to fetch access
       // tokens via RequestImpl, and TestingTailoredSecurityService deliberately
       // replaces this flow with TestRequest.
       : TailoredSecurityService(/*identity_manager=*/nullptr,
-                                /*sync_service=*/nullptr,
+                                /*sync_service=*/sync_service,
                                 prefs),
         url_loader_factory_(url_loader_factory) {}
   ~TestingTailoredSecurityService() override = default;
@@ -290,7 +291,7 @@ class TailoredSecurityServiceTest : public testing::Test {
 
     tailored_security_service_ =
         std::make_unique<TestingTailoredSecurityService>(
-            test_shared_loader_factory_, &prefs_);
+            test_shared_loader_factory_, &prefs_, /*sync_service=*/nullptr);
   }
 
   void TearDown() override {
@@ -307,6 +308,10 @@ class TailoredSecurityServiceTest : public testing::Test {
   void Shutdown() { tailored_security_service_->Shutdown(); }
 
   PrefService* prefs() { return &prefs_; }
+
+  scoped_refptr<network::SharedURLLoaderFactory> URLLoaderFactory() {
+    return test_shared_loader_factory_;
+  }
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -598,6 +603,17 @@ TEST_F(TailoredSecurityServiceTest,
     EXPECT_EQ(prefs()->GetTime(prefs::kTailoredSecuritySyncFlowLastRunTime),
               base::Time());
   }
+}
+
+TEST_F(TailoredSecurityServiceTest,
+       HistorySyncEnabledForUserReturnsFalseWhenSyncServiceIsNull) {
+  // One production case where the sync service is not provided to the
+  // TailoredSecurityService is on creation for a Guest profile.
+  auto tailored_security_service =
+      std::make_unique<TestingTailoredSecurityService>(
+          URLLoaderFactory(), prefs(),
+          /*sync_service=*/nullptr);
+  EXPECT_FALSE(tailored_security_service->HistorySyncEnabledForUser());
 }
 
 }  // namespace safe_browsing

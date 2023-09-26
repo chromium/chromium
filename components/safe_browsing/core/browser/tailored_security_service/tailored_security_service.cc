@@ -442,8 +442,9 @@ void TailoredSecurityService::MaybeNotifySyncUser(bool is_enabled,
 }
 
 bool TailoredSecurityService::HistorySyncEnabledForUser() {
-  return sync_service_->GetUserSettings()->GetSelectedTypes().Has(
-      syncer::UserSelectableType::kHistory);
+  return sync_service_ &&
+         sync_service_->GetUserSettings()->GetSelectedTypes().Has(
+             syncer::UserSelectableType::kHistory);
 }
 
 void TailoredSecurityService::
