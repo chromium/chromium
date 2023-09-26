@@ -9,6 +9,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
+#include "third_party/blink/public/common/interest_group/interest_group.h"
 
 namespace content {
 
@@ -33,7 +34,15 @@ InterestGroupKAnonymityManager::InterestGroupKAnonymityManager(
 InterestGroupKAnonymityManager::~InterestGroupKAnonymityManager() = default;
 
 void InterestGroupKAnonymityManager::QueryKAnonymityForInterestGroup(
-    const StorageInterestGroup& storage_group) {
+    const blink::InterestGroupKey& interest_group_key) {
+  interest_group_manager_->GetKAnonymityDataForUpdate(
+      interest_group_key,
+      base::BindOnce(&InterestGroupKAnonymityManager::QueryKAnonymityData,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void InterestGroupKAnonymityManager::QueryKAnonymityData(
+    const std::vector<StorageInterestGroup::KAnonymityData>& k_anon_data) {
   if (!k_anonymity_service_)
     return;
 
@@ -41,14 +50,10 @@ void InterestGroupKAnonymityManager::QueryKAnonymityForInterestGroup(
   base::Time check_time = base::Time::Now();
   base::TimeDelta min_wait = k_anonymity_service_->GetQueryInterval();
 
-  for (const auto& ad : storage_group.bidding_ads_kanon) {
-    if (ad.last_updated < check_time - min_wait) {
-      ids_to_query.push_back(ad.key);
-    }
-  }
-  for (const auto& ad : storage_group.reporting_ads_kanon) {
-    if (ad.last_updated < check_time - min_wait) {
-      ids_to_query.push_back(ad.key);
+  for (const StorageInterestGroup::KAnonymityData& k_anon_data_item :
+       k_anon_data) {
+    if (k_anon_data_item.last_updated < check_time - min_wait) {
+      ids_to_query.push_back(k_anon_data_item.key);
     }
   }
 

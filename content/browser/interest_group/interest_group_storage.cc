@@ -2665,14 +2665,13 @@ bool GetBidCount(sql::Database& db,
 absl::optional<std::vector<std::string>> DoGetInterestGroupNamesForOwner(
     sql::Database& db,
     const url::Origin& owner,
-    base::Time now,
-    base::Time next_update_after) {
+    base::Time now) {
   // clang-format off
   sql::Statement get_names(
     db.GetCachedStatement(SQL_FROM_HERE,
     "SELECT name "
     "FROM interest_groups "
-    "WHERE owner=? AND expiration>? AND ?>=next_update_after "
+    "WHERE owner=? AND expiration>? "
     "ORDER BY expiration DESC"));
   // clang-format on
 
@@ -2683,7 +2682,6 @@ absl::optional<std::vector<std::string>> DoGetInterestGroupNamesForOwner(
   get_names.Reset(true);
   get_names.BindString(0, Serialize(owner));
   get_names.BindTime(1, now);
-  get_names.BindTime(2, next_update_after);
 
   std::vector<std::string> result;
   while (get_names.Step()) {
@@ -2694,6 +2692,35 @@ absl::optional<std::vector<std::string>> DoGetInterestGroupNamesForOwner(
   }
 
   return result;
+}
+
+absl::optional<std::vector<StorageInterestGroup::KAnonymityData>>
+DoGetKAnonymityData(sql::Database& db,
+                    const blink::InterestGroupKey& group_key) {
+  sql::Statement interest_group_kanon_query(
+      db.GetCachedStatement(SQL_FROM_HERE,
+                            "SELECT key, is_k_anon, last_k_anon_updated_time "
+                            "FROM k_anon "
+                            "WHERE owner = ? AND name = ?"));
+
+  if (!interest_group_kanon_query.is_valid()) {
+    return absl::nullopt;
+  }
+
+  interest_group_kanon_query.BindString(0, Serialize(group_key.owner));
+  interest_group_kanon_query.BindString(1, group_key.name);
+
+  std::vector<StorageInterestGroup::KAnonymityData> k_anon_data;
+  while (interest_group_kanon_query.Step()) {
+    k_anon_data.emplace_back(
+        /*key=*/interest_group_kanon_query.ColumnString(0),
+        /*is_k_anonymous=*/interest_group_kanon_query.ColumnBool(1),
+        /*last_updated=*/interest_group_kanon_query.ColumnTime(2));
+  }
+  if (!interest_group_kanon_query.Succeeded()) {
+    return absl::nullopt;
+  }
+  return k_anon_data;
 }
 
 absl::optional<StorageInterestGroup> DoGetStoredInterestGroup(
@@ -2710,9 +2737,9 @@ absl::optional<StorageInterestGroup> DoGetStoredInterestGroup(
 
   sql::Statement interest_group_kanon_query(
       db.GetCachedStatement(SQL_FROM_HERE,
-                            "SELECT key, is_k_anon, last_k_anon_updated_time "
+                            "SELECT key, last_k_anon_updated_time "
                             "FROM k_anon "
-                            "WHERE owner = ? AND name = ?"));
+                            "WHERE owner = ? AND name = ? AND is_k_anon > 0"));
 
   interest_group_kanon_query.BindString(0, Serialize(group_key.owner));
   interest_group_kanon_query.BindString(1, group_key.name);
@@ -2720,8 +2747,8 @@ absl::optional<StorageInterestGroup> DoGetStoredInterestGroup(
   while (interest_group_kanon_query.Step()) {
     StorageInterestGroup::KAnonymityData kanon_data = {
         interest_group_kanon_query.ColumnString(0),
-        /*is_k_anonymous=*/interest_group_kanon_query.ColumnBool(1),
-        /*last_updated=*/interest_group_kanon_query.ColumnTime(2)};
+        /*is_k_anonymous=*/true,
+        /*last_updated=*/interest_group_kanon_query.ColumnTime(1)};
     if (kanon_data.key.starts_with(blink::kKAnonKeyForAdBidPrefix)) {
       db_interest_group.bidding_ads_kanon.push_back(kanon_data);
     } else if (kanon_data.key.starts_with(
@@ -2750,21 +2777,59 @@ absl::optional<StorageInterestGroup> DoGetStoredInterestGroup(
   return db_interest_group;
 }
 
+absl::optional<std::vector<std::pair<blink::InterestGroupKey, GURL>>>
+DoGetInterestGroupsForUpdate(sql::Database& db,
+                             const url::Origin& owner,
+                             base::Time now,
+                             size_t groups_limit) {
+  std::vector<std::pair<blink::InterestGroupKey, GURL>> result;
+
+  sql::Statement get_name_and_update_url(db.GetCachedStatement(
+      SQL_FROM_HERE,
+      "SELECT name, update_url "
+      "FROM interest_groups "
+      "WHERE owner=? AND expiration>? AND ?>=next_update_after "
+      "ORDER BY RANDOM() "
+      "LIMIT ?"));
+
+  if (!get_name_and_update_url.is_valid()) {
+    return absl::nullopt;
+  }
+
+  get_name_and_update_url.Reset(true);
+  get_name_and_update_url.BindString(0, Serialize(owner));
+  get_name_and_update_url.BindTime(1, now);
+  get_name_and_update_url.BindTime(2, now);
+  get_name_and_update_url.BindInt64(3, groups_limit);
+
+  while (get_name_and_update_url.Step()) {
+    absl::optional<GURL> update_url =
+        DeserializeURL(get_name_and_update_url.ColumnString(1));
+    if (!update_url.has_value()) {
+      continue;
+    }
+    result.emplace_back(
+        blink::InterestGroupKey(owner, get_name_and_update_url.ColumnString(0)),
+        update_url.value());
+  }
+  if (!get_name_and_update_url.Succeeded()) {
+    return absl::nullopt;
+  }
+  return result;
+}
+
 absl::optional<std::vector<StorageInterestGroup>> DoGetInterestGroupsForOwner(
     sql::Database& db,
     const url::Origin& owner,
-    base::Time now,
-    bool get_groups_for_update = false) {
+    base::Time now) {
   sql::Transaction transaction(&db);
 
   if (!transaction.Begin()) {
     return absl::nullopt;
   }
 
-  base::Time next_update_after =
-      (get_groups_for_update ? now : base::Time::Max());
   absl::optional<std::vector<std::string>> group_names =
-      DoGetInterestGroupNamesForOwner(db, owner, now, next_update_after);
+      DoGetInterestGroupNamesForOwner(db, owner, now);
 
   if (!group_names) {
     return absl::nullopt;
@@ -2826,7 +2891,6 @@ bool DoDeleteInterestGroupData(
     sql::Database& db,
     StoragePartition::StorageKeyMatcherFunction storage_key_matcher) {
   const base::Time distant_past = base::Time::Min();
-  const base::Time distant_future = base::Time::Max();
   sql::Transaction transaction(&db);
 
   if (!transaction.Begin()) {
@@ -2849,8 +2913,7 @@ bool DoDeleteInterestGroupData(
 
   for (const auto& affected_origin : affected_origins) {
     absl::optional<std::vector<std::string>> maybe_group_names =
-        DoGetInterestGroupNamesForOwner(db, affected_origin, distant_past,
-                                        distant_future);
+        DoGetInterestGroupNamesForOwner(db, affected_origin, distant_past);
     if (!maybe_group_names) {
       return false;
     }
@@ -2988,7 +3051,6 @@ bool ClearExcessInterestGroups(sql::Database& db,
                                size_t max_owners,
                                size_t max_owner_interest_groups) {
   const base::Time distant_past = base::Time::Min();
-  const base::Time distant_future = base::Time::Max();
   const absl::optional<std::vector<url::Origin>> maybe_all_origins =
       DoGetAllInterestGroupOwners(db, distant_past);
   if (!maybe_all_origins) {
@@ -2998,8 +3060,7 @@ bool ClearExcessInterestGroups(sql::Database& db,
        owner_idx++) {
     const url::Origin& affected_origin = maybe_all_origins.value()[owner_idx];
     const absl::optional<std::vector<std::string>> maybe_interest_groups =
-        DoGetInterestGroupNamesForOwner(db, affected_origin, distant_past,
-                                        distant_future);
+        DoGetInterestGroupNamesForOwner(db, affected_origin, distant_past);
     if (!maybe_interest_groups) {
       return false;
     }
@@ -3591,7 +3652,7 @@ InterestGroupStorage::GetInterestGroupsForOwner(const url::Origin& owner) {
   return std::move(maybe_result.value());
 }
 
-std::vector<StorageInterestGroup>
+std::vector<std::pair<blink::InterestGroupKey, GURL>>
 InterestGroupStorage::GetInterestGroupsForUpdate(const url::Origin& owner,
                                                  size_t groups_limit) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -3599,14 +3660,28 @@ InterestGroupStorage::GetInterestGroupsForUpdate(const url::Origin& owner,
     return {};
   }
 
-  absl::optional<std::vector<StorageInterestGroup>> maybe_result =
-      DoGetInterestGroupsForOwner(*db_, owner, base::Time::Now(),
-                                  /*get_groups_for_update=*/true);
+  absl::optional<std::vector<std::pair<blink::InterestGroupKey, GURL>>>
+      maybe_result = DoGetInterestGroupsForUpdate(
+          *db_, owner, base::Time::Now(), groups_limit);
   if (!maybe_result) {
     return {};
   }
-  base::RandomShuffle(maybe_result->begin(), maybe_result->end());
-  maybe_result->resize(std::min(maybe_result->size(), groups_limit));
+  return std::move(maybe_result.value());
+}
+
+std::vector<StorageInterestGroup::KAnonymityData>
+InterestGroupStorage::GetKAnonymityDataForUpdate(
+    blink::InterestGroupKey interest_group_key) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!EnsureDBInitialized()) {
+    return {};
+  }
+
+  absl::optional<std::vector<StorageInterestGroup::KAnonymityData>>
+      maybe_result = DoGetKAnonymityData(*db_, interest_group_key);
+  if (!maybe_result) {
+    return {};
+  }
   return std::move(maybe_result.value());
 }
 

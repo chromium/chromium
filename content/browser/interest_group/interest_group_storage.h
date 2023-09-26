@@ -106,17 +106,17 @@ class CONTENT_EXPORT InterestGroupStorage {
   // associated with the provided owner.
   std::vector<StorageInterestGroup> GetInterestGroupsForOwner(
       const url::Origin& owner);
-  // Like GetInterestGroupsForOwner(), but doesn't return any interest groups
-  // that are currently rate-limited for updates. Additionally, this will update
-  // the `next_update_after` field such that a subsequent
-  // GetInterestGroupsForUpdate() call with the same `owner` won't return
-  // anything until after the success rate limit period passes.
-  //
-  // `groups_limit` sets a limit on the maximum number of interest groups that
-  // may be returned.
-  std::vector<StorageInterestGroup> GetInterestGroupsForUpdate(
-      const url::Origin& owner,
-      size_t groups_limit);
+  // For a given owner, gets interest group keys along with their update urls.
+  // `groups_limit` sets a limit on the maximum number of interest group keys
+  // that may be returned.
+  std::vector<std::pair<blink::InterestGroupKey, GURL>>
+  GetInterestGroupsForUpdate(const url::Origin& owner, size_t groups_limit);
+
+  // Gets all KAnonymityData for ads part of the interest group specified by
+  // `interest_group_key`.
+  std::vector<StorageInterestGroup::KAnonymityData> GetKAnonymityDataForUpdate(
+      blink::InterestGroupKey interest_group_key);
+
   // Gets a list of all interest group joining origins. Each joining origin
   // will only appear once.
   std::vector<url::Origin> GetAllInterestGroupJoiningOrigins();

@@ -322,9 +322,18 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // update request for the k-anonymity of all parts of the interest group
   // (including ads). Also reports membership in the interest group to the
   // k-anonymity of interest-group service.
-  void QueueKAnonymityUpdateForInterestGroup(const StorageInterestGroup& group);
+  void QueueKAnonymityUpdateForInterestGroup(
+      const blink::InterestGroupKey& group_key);
   // Records K-anonymity to the database.
   void UpdateKAnonymity(const StorageInterestGroup::KAnonymityData& data);
+
+  // Gets all KAnonymityData for ads part of the interest group specified by
+  // `interest_group_key`.
+  void GetKAnonymityDataForUpdate(
+      const blink::InterestGroupKey& group_key,
+      base::OnceCallback<void(
+          const std::vector<StorageInterestGroup::KAnonymityData>&)> callback);
+
   // Gets the last time that the key was reported to the k-anonymity server.
   void GetLastKAnonymityReported(
       const std::string& key,
@@ -401,20 +410,14 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       blink::mojom::AdAuctionService::LeaveInterestGroupCallback callback,
       bool can_leave);
 
-  // Like GetInterestGroupsForOwner(), but doesn't return any interest groups
-  // that are currently rate-limited for updates. Additionally, this will update
-  // the `next_update_after` field such that a subsequent
-  // GetInterestGroupsForUpdate() call with the same `owner` won't return
-  // anything until after the success rate limit period passes.
-  //
-  // `groups_limit` sets a limit on the maximum number of interest groups that
-  // may be returned.
-  //
-  // To be called only by `update_manager_`.
+  // For a given owner, gets interest group keys along with their update urls.
+  // `groups_limit` sets a limit on the maximum number of interest group keys
+  // that may be returned.
   void GetInterestGroupsForUpdate(
       const url::Origin& owner,
       int groups_limit,
-      base::OnceCallback<void(std::vector<StorageInterestGroup>)> callback);
+      base::OnceCallback<void(
+          std::vector<std::pair<blink::InterestGroupKey, GURL>>)> callback);
 
   // Updates the interest group of the same name based on the information in
   // the provided group. This does not update the interest group expiration
@@ -450,12 +453,6 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
 
   // Clears `report_requests_`.  Does not abort currently pending requests.
   void TimeoutReports();
-
-  // A version of QueueKAnonymityUpdateForInterestGroup() called from
-  // JoinInterestGroup which passes the group in an optional (the group must
-  // always exist). Called from JoinInterestGroup.
-  void QueueKAnonymityUpdateForInterestGroupFromJoinInterestGroup(
-      absl::optional<StorageInterestGroup> maybe_group);
 
   // Loads the next owner's interest group data. If there are no more owners
   // whose interest groups need to be loaded, calls OnAdAuctionDataLoadComplete.

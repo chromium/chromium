@@ -135,12 +135,19 @@ TEST_F(InterestGroupKAnonymityManagerTest,
   const GURL top_frame = GURL("https://www.example.com/foo");
   const url::Origin owner = url::Origin::Create(top_frame);
   const std::string name = "foo";
+  const blink::InterestGroupKey ig_key{owner, name};
 
   EXPECT_FALSE(GetGroup(manager.get(), owner, name));
   base::Time before_join = base::Time::Now();
 
   // Join queues the update, but returns first.
-  manager->JoinInterestGroup(MakeInterestGroup(owner, "foo"), top_frame);
+  blink::InterestGroup g = MakeInterestGroup(owner, name);
+  manager->JoinInterestGroup(g, top_frame);
+  // Set k_anon value to true so that it gets returned with the interest group.
+  manager->UpdateKAnonymity(
+      {blink::KAnonKeyForAdBid(g, g.ads->at(0).render_url), true,
+       base::Time::Min()});
+
   auto maybe_group = GetGroup(manager.get(), owner, name);
   ASSERT_TRUE(maybe_group);
   EXPECT_EQ(base::Time::Min(), maybe_group->bidding_ads_kanon[0].last_updated);
@@ -155,7 +162,7 @@ TEST_F(InterestGroupKAnonymityManagerTest,
   EXPECT_GT(base::Time::Now(), last_updated);
 
   // Updated recently so we shouldn't update again.
-  manager->QueueKAnonymityUpdateForInterestGroup(*maybe_group);
+  manager->QueueKAnonymityUpdateForInterestGroup(ig_key);
   task_environment().FastForwardBy(base::Minutes(1));
 
   maybe_group = GetGroup(manager.get(), owner, name);
@@ -165,7 +172,7 @@ TEST_F(InterestGroupKAnonymityManagerTest,
   task_environment().FastForwardBy(kQueryInterval);
 
   // Updated more than 24 hours ago, so update.
-  manager->QueueKAnonymityUpdateForInterestGroup(*maybe_group);
+  manager->QueueKAnonymityUpdateForInterestGroup(ig_key);
   task_environment().RunUntilIdle();
   maybe_group = GetGroup(manager.get(), owner, name);
   ASSERT_TRUE(maybe_group);
@@ -246,6 +253,11 @@ TEST_F(InterestGroupKAnonymityManagerTest, HandlesServerErrors) {
   const std::string kAd1KAnonBidKey = KAnonKeyForAdBid(g, GURL(kAdURL));
 
   manager->JoinInterestGroup(g, top_frame);
+
+  // Set kAd1KAnonBidKey's is_k_anonymous to true so that it'll be returned with
+  // the interest group.
+  manager->UpdateKAnonymity({kAd1KAnonBidKey, true, base::Time::Min()});
+
   // The group *must* exist when JoinInterestGroup returns.
   ASSERT_TRUE(GetGroup(manager.get(), owner, name));
   manager->RegisterAdKeysAsJoined({kAd1KAnonBidKey});

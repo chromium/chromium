@@ -212,12 +212,7 @@ void InterestGroupManagerImpl::JoinInterestGroup(blink::InterestGroup group,
   impl_.AsyncCall(&InterestGroupStorage::JoinInterestGroup)
       .WithArgs(std::move(group), std::move(joining_url));
   // This needs to happen second so that the DB row is created.
-  GetInterestGroup(
-      group_key,
-      base::BindOnce(
-          &InterestGroupManagerImpl::
-              QueueKAnonymityUpdateForInterestGroupFromJoinInterestGroup,
-          weak_factory_.GetWeakPtr()));
+  QueueKAnonymityUpdateForInterestGroup(group_key);
 }
 
 void InterestGroupManagerImpl::LeaveInterestGroup(
@@ -385,8 +380,8 @@ void InterestGroupManagerImpl::ClearPermissionsCache() {
 }
 
 void InterestGroupManagerImpl::QueueKAnonymityUpdateForInterestGroup(
-    const StorageInterestGroup& group) {
-  k_anonymity_manager_->QueryKAnonymityForInterestGroup(group);
+    const blink::InterestGroupKey& group_key) {
+  k_anonymity_manager_->QueryKAnonymityForInterestGroup(group_key);
 }
 
 void InterestGroupManagerImpl::UpdateKAnonymity(
@@ -519,9 +514,19 @@ void InterestGroupManagerImpl::OnLeaveInterestGroupPermissionsChecked(
 void InterestGroupManagerImpl::GetInterestGroupsForUpdate(
     const url::Origin& owner,
     int groups_limit,
-    base::OnceCallback<void(std::vector<StorageInterestGroup>)> callback) {
+    base::OnceCallback<
+        void(std::vector<std::pair<blink::InterestGroupKey, GURL>>)> callback) {
   impl_.AsyncCall(&InterestGroupStorage::GetInterestGroupsForUpdate)
       .WithArgs(owner, groups_limit)
+      .Then(std::move(callback));
+}
+
+void InterestGroupManagerImpl::GetKAnonymityDataForUpdate(
+    const blink::InterestGroupKey& group_key,
+    base::OnceCallback<void(
+        const std::vector<StorageInterestGroup::KAnonymityData>&)> callback) {
+  impl_.AsyncCall(&InterestGroupStorage::GetKAnonymityDataForUpdate)
+      .WithArgs(group_key)
       .Then(std::move(callback));
 }
 
@@ -623,17 +628,6 @@ void InterestGroupManagerImpl::OnOneReportSent(
 void InterestGroupManagerImpl::TimeoutReports() {
   // TODO(qingxinwu): maybe add UMA metrics to learn how often this happens.
   report_requests_.clear();
-}
-
-void InterestGroupManagerImpl::
-    QueueKAnonymityUpdateForInterestGroupFromJoinInterestGroup(
-        absl::optional<StorageInterestGroup> maybe_group) {
-  // We just joined the group, so it must exist.
-  // We don't need to worry about the DB size limit, since older groups
-  // are removed first.
-  DCHECK(maybe_group);
-  if (maybe_group)
-    QueueKAnonymityUpdateForInterestGroup(*maybe_group);
 }
 
 }  // namespace content
