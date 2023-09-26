@@ -31,6 +31,7 @@ class TpmErrorScreenTest : public OobeBaseTest {
     TpmErrorScreen* tpm_error_screen =
         WizardController::default_controller()->GetScreen<TpmErrorScreen>();
 
+    original_callback_ = tpm_error_screen->get_exit_callback_for_testing();
     tpm_error_screen->set_exit_callback_for_testing(
         screen_result_waiter_.GetRepeatingCallback());
     OobeBaseTest::SetUpOnMainThread();
@@ -51,11 +52,14 @@ class TpmErrorScreenTest : public OobeBaseTest {
   }
 
   TpmErrorScreen::Result WaitForScreenExitResult() {
-    return screen_result_waiter_.Take();
+    TpmErrorScreen::Result result = screen_result_waiter_.Take();
+    original_callback_.Run(result);
+    return result;
   }
 
  private:
   base::test::TestFuture<TpmErrorScreen::Result> screen_result_waiter_;
+  TpmErrorScreen::ScreenExitCallback original_callback_;
 };
 
 IN_PROC_BROWSER_TEST_F(TpmErrorScreenTest, NoSkipOptionOnTpmDbusError) {
@@ -80,6 +84,8 @@ IN_PROC_BROWSER_TEST_F(TpmErrorScreenTest, SkipButtonOnTpmOwnedError) {
 
   TpmErrorScreen::Result result = WaitForScreenExitResult();
   EXPECT_EQ(result, TpmErrorScreen::Result::kSkip);
+
+  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
 }
 
 }  // namespace ash

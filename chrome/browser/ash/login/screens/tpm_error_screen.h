@@ -32,6 +32,10 @@ class TpmErrorScreen : public BaseScreen {
     exit_callback_ = callback;
   }
 
+  const ScreenExitCallback& get_exit_callback_for_testing() {
+    return exit_callback_;
+  }
+
   static std::string GetResultString(Result result);
 
  private:

@@ -1328,7 +1328,7 @@ void WizardController::OnTpmErrorScreenExit(TpmErrorScreen::Result result) {
   // but the TPM is owned by a previous OS. Users can either try restarting the
   // device to reconfigure TPM in BIOS or continue using the device without
   // enrollment. This is a non-blocking error.
-  AdvanceToScreen(UserCreationView::kScreenId);
+  SetCurrentScreen(GetScreen(UserCreationView::kScreenId));
 }
 
 void WizardController::OnLocalPasswordSetupScreenExit(
