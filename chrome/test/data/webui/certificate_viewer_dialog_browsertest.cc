@@ -49,6 +49,13 @@ class CertificateViewerUITest : public WebUIMochaBrowserTest {
     return certs;
   }
 
+  void RunTestCase(const std::string& testCase) {
+    RunTestWithoutTestLoader(
+        "certificate_viewer_dialog_test.js",
+        base::StringPrintf("runMochaTest('CertificateViewer', '%s');",
+                           testCase.c_str()));
+  }
+
  private:
   content::WebContents* ShowCertificateViewer(
       std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> certs) {
@@ -70,18 +77,15 @@ class CertificateViewerUITest : public WebUIMochaBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(CertificateViewerUITest, DialogURL) {
-  RunTestWithoutTestLoader("certificate_viewer_dialog_test.js",
-                           "mocha.grep('DialogURL').run()");
+  RunTestCase("DialogURL");
 }
 
 IN_PROC_BROWSER_TEST_F(CertificateViewerUITest, CommonName) {
-  RunTestWithoutTestLoader("certificate_viewer_dialog_test.js",
-                           "mocha.grep('CommonName').run()");
+  RunTestCase("CommonName");
 }
 
 IN_PROC_BROWSER_TEST_F(CertificateViewerUITest, Details) {
-  RunTestWithoutTestLoader("certificate_viewer_dialog_test.js",
-                           "mocha.grep('Details').run()");
+  RunTestCase("Details");
 }
 
 class CertificateViewerUIInvalidCertTest : public CertificateViewerUITest {
@@ -96,6 +100,5 @@ class CertificateViewerUIInvalidCertTest : public CertificateViewerUITest {
 };
 
 IN_PROC_BROWSER_TEST_F(CertificateViewerUIInvalidCertTest, InvalidCert) {
-  RunTestWithoutTestLoader("certificate_viewer_dialog_test.js",
-                           "mocha.grep('InvalidCert').run()");
+  RunTestCase("InvalidCert");
 }
