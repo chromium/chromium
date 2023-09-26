@@ -9,11 +9,13 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/version.h"
 #include "components/component_updater/component_updater_service.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/tpcd/metadata/parser.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/features.h"
@@ -108,24 +110,49 @@ void TpcdMetadataComponentInstaller::ComponentReady(
   }
 }
 
+void WriteMetrics(TpcdMetadataInstallationResult result) {
+  base::UmaHistogramEnumeration(
+      "Navigation.TpcdMitigations.MetadataInstallationResult", result);
+}
+
 // Called during startup and installation before ComponentReady().
 bool TpcdMetadataComponentInstaller::VerifyInstallation(
     const base::Value::Dict& manifest,
     const base::FilePath& install_dir) const {
   if (!base::PathExists(GetComponentPath(install_dir))) {
+    WriteMetrics(TpcdMetadataInstallationResult::kMissingMetadataFile);
     return false;
   }
 
   std::string contents;
   if (!base::ReadFileToString(GetComponentPath(install_dir), &contents)) {
+    WriteMetrics(TpcdMetadataInstallationResult::kReadingMetadataFileFailed);
     return false;
   }
 
   tpcd::metadata::Metadata metadata;
   if (!metadata.ParseFromString(contents)) {
+    WriteMetrics(TpcdMetadataInstallationResult::kParsingToProtoFailed);
     return false;
   }
 
+  for (const auto& me : metadata.metadata_entries()) {
+    if (!me.has_primary_pattern_spec() ||
+        !ContentSettingsPattern::FromString(me.primary_pattern_spec())
+             .IsValid()) {
+      WriteMetrics(TpcdMetadataInstallationResult::kErroneousSpec);
+      return false;
+    }
+
+    if (!me.has_secondary_pattern_spec() ||
+        !ContentSettingsPattern::FromString(me.secondary_pattern_spec())
+             .IsValid()) {
+      WriteMetrics(TpcdMetadataInstallationResult::kErroneousSpec);
+      return false;
+    }
+  }
+
+  WriteMetrics(TpcdMetadataInstallationResult::kSuccessful);
   return true;
 }
 

@@ -105930,6 +105930,14 @@ would be helpful to identify which type is being sent.
   <int value="2" label="Palm"/>
 </enum>
 
+<enum name="TpcdMetadataInstallationResult">
+  <int value="0" label="kSuccessful"/>
+  <int value="1" label="kMissingMetadataFile"/>
+  <int value="2" label="kReadingMetadataFileFailed"/>
+  <int value="3" label="kParsingToProtoFailed"/>
+  <int value="4" label="kErroneousSpec"/>
+</enum>
+
 <enum name="TPM12CommandOrdinal">
   <summary>The TPM 1.2 command ordinals.</summary>
   <int value="10" label="TPM_ORD_OIAP"/>

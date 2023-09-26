@@ -17,6 +17,22 @@ class FilePath;
 }  // namespace base
 
 namespace component_updater {
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class TpcdMetadataInstallationResult {
+  // The metadata component was successfully .
+  kSuccessful = 0,
+  // The component file wasn't present.
+  kMissingMetadataFile = 1,
+  // Reading from the component file failed.
+  kReadingMetadataFileFailed = 2,
+  // The raw metadata string was unable to be parsed into the proto.
+  kParsingToProtoFailed = 3,
+  // One or more of the specs are erroneous or missing.
+  kErroneousSpec = 4,
+  kMaxValue = kErroneousSpec,
+};
+
 class TpcdMetadataComponentInstaller : public ComponentInstallerPolicy {
  public:
   using OnTpcdMetadataComponentReadyCallback =
