@@ -20,6 +20,7 @@ absl_cc_library(
     "status.h"
   SRCS
     "internal/status_internal.h"
+    "internal/status_internal.cc"
     "status.cc"
     "status_payload_printer.h"
     "status_payload_printer.cc"

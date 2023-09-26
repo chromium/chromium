@@ -10,6 +10,7 @@ absl_source_set("status") {
     "status_payload_printer.h",
   ]
   sources = [
+    "internal/status_internal.cc",
     "internal/status_internal.h",
     "status.cc",
     "status_payload_printer.cc",

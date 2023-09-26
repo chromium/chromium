@@ -384,6 +384,7 @@ absl_test("stripping_test") {
     "//third_party/abseil-cpp/absl/base:strerror",
     "//third_party/abseil-cpp/absl/flags:program_name",
     "//third_party/abseil-cpp/absl/log/internal:test_helpers",
+    "//third_party/abseil-cpp/absl/status",
     "//third_party/abseil-cpp/absl/strings",
     "//third_party/abseil-cpp/absl/strings:str_format",
     "//third_party/abseil-cpp/absl/strings:string_view",

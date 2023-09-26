@@ -2423,7 +2423,7 @@ auto btree<P>::operator=(btree &&other) noexcept -> btree & {
 
     using std::swap;
     if (absl::allocator_traits<
-            allocator_type>::propagate_on_container_copy_assignment::value) {
+            allocator_type>::propagate_on_container_move_assignment::value) {
       swap(root_, other.root_);
       // Note: `rightmost_` also contains the allocator and the key comparator.
       swap(rightmost_, other.rightmost_);

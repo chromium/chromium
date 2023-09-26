@@ -44,6 +44,7 @@ absl_source_set("strings") {
     "ascii.h",
     "charconv.h",
     "escaping.h",
+    "has_absl_stringify.h",
     "internal/damerau_levenshtein_distance.h",
     "internal/has_absl_stringify.h",
     "internal/string_constant.h",
@@ -567,6 +568,13 @@ absl_source_set("pow10_helper") {
   public = [ "internal/pow10_helper.h" ]
   visibility = [ ":*" ]
   deps = [ "//third_party/abseil-cpp/absl/base:config" ]
+}
+
+absl_test("has_absl_stringify_test") {
+  sources = [ "has_absl_stringify_test.cc" ]
+  deps = [
+    ":strings",
+  ]
 }
 
 absl_test("ascii_test") {

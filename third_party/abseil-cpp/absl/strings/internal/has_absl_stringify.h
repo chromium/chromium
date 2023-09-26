@@ -18,31 +18,20 @@
 #include <type_traits>
 #include <utility>
 
-#include "absl/strings/string_view.h"
+#include "absl/base/attributes.h"
+#include "absl/strings/has_absl_stringify.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 
 namespace strings_internal {
 
-// This is an empty class not intended to be used. It exists so that
-// `HasAbslStringify` can reference a universal class rather than needing to be
-// copied for each new sink.
-class UnimplementedSink {
- public:
-  void Append(size_t count, char ch);
-
-  void Append(string_view v);
-
-  // Support `absl::Format(&sink, format, args...)`.
-  friend void AbslFormatFlush(UnimplementedSink* sink, absl::string_view v);
-};
-
 template <typename T, typename = void>
-struct HasAbslStringify : std::false_type {};
+struct ABSL_DEPRECATED("Use absl::HasAbslStringify") HasAbslStringify
+    : std::false_type {};
 
 template <typename T>
-struct HasAbslStringify<
+struct ABSL_DEPRECATED("Use absl::HasAbslStringify") HasAbslStringify<
     T, std::enable_if_t<std::is_void<decltype(AbslStringify(
            std::declval<strings_internal::UnimplementedSink&>(),
            std::declval<const T&>()))>::value>> : std::true_type {};

@@ -48,6 +48,7 @@
 #include "absl/container/internal/hash_function_defaults.h"
 #include "absl/container/internal/hash_policy_testing.h"
 #include "absl/container/internal/hashtable_debug.h"
+#include "absl/container/internal/test_allocator.h"
 #include "absl/log/log.h"
 #include "absl/strings/string_view.h"
 
@@ -439,34 +440,6 @@ struct CustomAllocIntTable
                    std::equal_to<int64_t>, CustomAlloc<int64_t>> {
   using Base = typename CustomAllocIntTable::raw_hash_set;
   using Base::Base;
-};
-
-// Tries to allocate memory at the minimum alignment even when the default
-// allocator uses a higher alignment.
-template <typename T>
-struct MinimumAlignmentAlloc : std::allocator<T> {
-  MinimumAlignmentAlloc() = default;
-
-  template <typename U>
-  explicit MinimumAlignmentAlloc(const MinimumAlignmentAlloc<U>& /*other*/) {}
-
-  template <class U>
-  struct rebind {
-    using other = MinimumAlignmentAlloc<U>;
-  };
-
-  T* allocate(size_t n) {
-    T* ptr = std::allocator<T>::allocate(n + 1);
-    char* cptr = reinterpret_cast<char*>(ptr);
-    cptr += alignof(T);
-    return reinterpret_cast<T*>(cptr);
-  }
-
-  void deallocate(T* ptr, size_t n) {
-    char* cptr = reinterpret_cast<char*>(ptr);
-    cptr -= alignof(T);
-    std::allocator<T>::deallocate(reinterpret_cast<T*>(cptr), n + 1);
-  }
 };
 
 struct MinimumAlignmentUint8Table

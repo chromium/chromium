@@ -176,7 +176,7 @@ class Arg {
       : piece_(value ? "true" : "false") {}
 
   template <typename T, typename = typename std::enable_if<
-                            strings_internal::HasAbslStringify<T>::value>::type>
+                            HasAbslStringify<T>::value>::type>
   Arg(  // NOLINT(google-explicit-constructor)
       const T& v, strings_internal::StringifySink&& sink = {})
       : piece_(strings_internal::ExtractStringification(sink, v)) {}
@@ -204,7 +204,7 @@ class Arg {
   template <typename T,
             typename = typename std::enable_if<
                 std::is_enum<T>{} && !std::is_convertible<T, int>{} &&
-                !strings_internal::HasAbslStringify<T>::value>::type>
+                !HasAbslStringify<T>::value>::type>
   Arg(T value)  // NOLINT(google-explicit-constructor)
       : Arg(static_cast<typename std::underlying_type<T>::type>(value)) {}
 

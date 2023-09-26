@@ -137,6 +137,14 @@ class FunctionRef<R(Args...)> {
   absl::functional_internal::Invoker<R, Args...> invoker_;
 };
 
+// Allow const qualified function signatures. Since FunctionRef requires
+// constness anyway we can just make this a no-op.
+template <typename R, typename... Args>
+class FunctionRef<R(Args...) const> : public FunctionRef<R(Args...)> {
+ public:
+  using FunctionRef<R(Args...)>::FunctionRef;
+};
+
 ABSL_NAMESPACE_END
 }  // namespace absl
 

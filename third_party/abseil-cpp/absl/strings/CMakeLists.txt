@@ -38,6 +38,7 @@ absl_cc_library(
     "ascii.h"
     "charconv.h"
     "escaping.h"
+    "has_absl_stringify.h"
     "internal/damerau_levenshtein_distance.h"
     "internal/string_constant.h"
     "internal/has_absl_stringify.h"
@@ -152,6 +153,18 @@ absl_cc_test(
     absl::fixed_array
     GTest::gmock_main
     absl::check
+)
+
+absl_cc_test(
+  NAME
+    has_absl_stringify_test
+  SRCS
+    "has_absl_stringify_test.cc"
+  COPTS
+    ${ABSL_TEST_COPTS}
+  DEPS
+    absl::strings
+    GTest::gmock_main
 )
 
 absl_cc_test(

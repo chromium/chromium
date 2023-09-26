@@ -853,7 +853,6 @@ class Cord {
     explicit constexpr InlineRep(absl::string_view sv, CordRep* rep);
 
     void Swap(InlineRep* rhs);
-    bool empty() const;
     size_t size() const;
     const char* data() const;  // Returns nullptr if holding pointer
     void set_data(const char* data, size_t n);  // Discards pointer, if any
@@ -1169,8 +1168,6 @@ inline absl::cord_internal::CordRep* Cord::InlineRep::tree() const {
     return nullptr;
   }
 }
-
-inline bool Cord::InlineRep::empty() const { return data_.is_empty(); }
 
 inline size_t Cord::InlineRep::size() const {
   return is_tree() ? as_tree()->length : inline_size();

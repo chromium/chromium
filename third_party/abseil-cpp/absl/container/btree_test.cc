@@ -37,7 +37,7 @@
 #include "absl/base/macros.h"
 #include "absl/container/btree_map.h"
 #include "absl/container/btree_set.h"
-#include "absl/container/internal/counting_allocator.h"
+#include "absl/container/internal/test_allocator.h"
 #include "absl/container/internal/test_instance_tracker.h"
 #include "absl/flags/flag.h"
 #include "absl/hash/hash_testing.h"
@@ -667,25 +667,10 @@ void BtreeMultiTest() {
   DoTest("identical: ", &container, identical_values);
 }
 
-template <typename T>
-struct PropagatingCountingAlloc : public CountingAllocator<T> {
-  using propagate_on_container_copy_assignment = std::true_type;
-  using propagate_on_container_move_assignment = std::true_type;
-  using propagate_on_container_swap = std::true_type;
-
-  using Base = CountingAllocator<T>;
-  using Base::Base;
-
-  template <typename U>
-  explicit PropagatingCountingAlloc(const PropagatingCountingAlloc<U> &other)
-      : Base(other.bytes_used_) {}
-
-  template <typename U>
-  struct rebind {
-    using other = PropagatingCountingAlloc<U>;
-  };
-};
-
+// TODO(ezb): get rid of BtreeAllocatorTest and replace with test cases using
+// specific propagating allocs (e.g. CopyAssignPropagatingCountingAlloc) and
+// also a test for MinimumAlignmentAlloc. Motivation is better test coverage and
+// faster compilation time.
 template <typename T>
 void BtreeAllocatorTest() {
   using value_type = typename T::value_type;
@@ -2530,14 +2515,14 @@ TEST(Btree, MoveAssignmentAllocatorPropagation) {
   InstanceTracker tracker;
 
   int64_t bytes1 = 0, bytes2 = 0;
-  PropagatingCountingAlloc<MovableOnlyInstance> allocator1(&bytes1);
-  PropagatingCountingAlloc<MovableOnlyInstance> allocator2(&bytes2);
+  MoveAssignPropagatingCountingAlloc<MovableOnlyInstance> allocator1(&bytes1);
+  MoveAssignPropagatingCountingAlloc<MovableOnlyInstance> allocator2(&bytes2);
   std::less<MovableOnlyInstance> cmp;
 
   // Test propagating allocator_type.
   {
     absl::btree_set<MovableOnlyInstance, std::less<MovableOnlyInstance>,
-                    PropagatingCountingAlloc<MovableOnlyInstance>>
+                    MoveAssignPropagatingCountingAlloc<MovableOnlyInstance>>
         set1(cmp, allocator1), set2(cmp, allocator2);
 
     for (int i = 0; i < 100; ++i) set1.insert(MovableOnlyInstance(i));

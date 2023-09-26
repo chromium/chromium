@@ -22,6 +22,19 @@ absl_source_set("fixed_array") {
   ]
 }
 
+absl_test("fixed_array_test") {
+  sources = [ "fixed_array_test.cc" ]
+  deps = [
+    ":fixed_array",
+    ":test_allocator",
+    ":test_instance_tracker",
+    "//third_party/abseil-cpp/absl/base:config",
+    "//third_party/abseil-cpp/absl/base:exception_testing",
+    "//third_party/abseil-cpp/absl/hash:hash_testing",
+    "//third_party/abseil-cpp/absl/memory",
+  ]
+}
+
 absl_source_set("inlined_vector_internal") {
   public = [ "internal/inlined_vector.h" ]
   deps = [
@@ -45,9 +58,9 @@ absl_source_set("inlined_vector") {
   ]
 }
 
-absl_source_set("counting_allocator") {
+absl_source_set("test_allocator") {
   testonly = true
-  public = [ "internal/counting_allocator.h" ]
+  public = [ "internal/test_allocator.h" ]
   deps = [ "//third_party/abseil-cpp/absl/base:config" ]
   visibility = [ ":*" ]
 }
@@ -55,7 +68,7 @@ absl_source_set("counting_allocator") {
 absl_test("inlined_vector_test") {
   sources = [ "inlined_vector_test.cc" ]
   deps = [
-    ":counting_allocator",
+    ":test_allocator",
     ":inlined_vector",
     ":test_instance_tracker",
     "//third_party/abseil-cpp/absl/base:config",
@@ -465,7 +478,7 @@ absl_source_set("btree_test_common") {
 #   deps = [
 #     ":btree",
 #     ":btree_test_common",
-#     ":counting_allocator",
+#     ":test_allocator",
 #     ":test_instance_tracker",
 #     "//third_party/abseil-cpp/absl/algorithm:container",
 #     "//third_party/abseil-cpp/absl/base:core_headers",

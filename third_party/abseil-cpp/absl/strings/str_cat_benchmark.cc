@@ -188,6 +188,35 @@ void StrAppendConfig(B* benchmark) {
 
 BENCHMARK(BM_StrAppend)->Apply(StrAppendConfig);
 
+template <typename... Chunks>
+void BM_StrCatImpl(benchmark::State& state,
+                      Chunks... chunks) {
+  for (auto s : state) {
+    std::string result = absl::StrCat(chunks...);
+    benchmark::DoNotOptimize(result);
+  }
+}
+
+void BM_StrCat(benchmark::State& state) {
+  const int chunks_at_a_time = state.range(0);
+  const absl::string_view kChunk = "0123456789";
+
+  switch (chunks_at_a_time) {
+    case 1:
+      return BM_StrCatImpl(state, kChunk);
+    case 2:
+      return BM_StrCatImpl(state, kChunk, kChunk);
+    case 3:
+      return BM_StrCatImpl(state, kChunk, kChunk, kChunk);
+    case 4:
+      return BM_StrCatImpl(state, kChunk, kChunk, kChunk, kChunk);
+    default:
+      std::abort();
+  }
+}
+
+BENCHMARK(BM_StrCat)->Arg(1)->Arg(2)->Arg(3)->Arg(4);
+
 void BM_StrCat_int(benchmark::State& state) {
   int i = 0;
   for (auto s : state) {

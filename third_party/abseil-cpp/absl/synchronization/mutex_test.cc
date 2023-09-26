@@ -1025,6 +1025,19 @@ TEST(Mutex, FunctorCondition) {
   }
 }
 
+TEST(Mutex, ConditionSwap) {
+  // Ensure that Conditions can be swap'ed.
+  bool b1 = true;
+  absl::Condition c1(&b1);
+  bool b2 = false;
+  absl::Condition c2(&b2);
+  EXPECT_TRUE(c1.Eval());
+  EXPECT_FALSE(c2.Eval());
+  std::swap(c1, c2);
+  EXPECT_FALSE(c1.Eval());
+  EXPECT_TRUE(c2.Eval());
+}
+
 // --------------------------------------------------------
 // Test for bug with pattern of readers using a condvar.  The bug was that if a
 // reader went to sleep on a condition variable while one or more other readers

@@ -102,7 +102,7 @@
 #include "absl/base/attributes.h"
 #include "absl/base/port.h"
 #include "absl/meta/type_traits.h"
-#include "absl/strings/internal/has_absl_stringify.h"
+#include "absl/strings/has_absl_stringify.h"
 #include "absl/strings/internal/resize_uninitialized.h"
 #include "absl/strings/internal/stringify_sink.h"
 #include "absl/strings/numbers.h"
@@ -357,7 +357,7 @@ class AlphaNum {
       : piece_(pc) {}
 
   template <typename T, typename = typename std::enable_if<
-                            strings_internal::HasAbslStringify<T>::value>::type>
+                            HasAbslStringify<T>::value>::type>
   AlphaNum(  // NOLINT(runtime/explicit)
       const T& v ABSL_ATTRIBUTE_LIFETIME_BOUND,
       strings_internal::StringifySink&& sink ABSL_ATTRIBUTE_LIFETIME_BOUND = {})
@@ -384,17 +384,17 @@ class AlphaNum {
   template <typename T,
             typename = typename std::enable_if<
                 std::is_enum<T>{} && std::is_convertible<T, int>{} &&
-                !strings_internal::HasAbslStringify<T>::value>::type>
+                !HasAbslStringify<T>::value>::type>
   AlphaNum(T e)  // NOLINT(runtime/explicit)
       : AlphaNum(+e) {}
 
   // This overload matches scoped enums.  We must explicitly cast to the
   // underlying type, but use integral promotion for the same reason as above.
   template <typename T,
-            typename std::enable_if<
-                std::is_enum<T>{} && !std::is_convertible<T, int>{} &&
-                    !strings_internal::HasAbslStringify<T>::value,
-                char*>::type = nullptr>
+            typename std::enable_if<std::is_enum<T>{} &&
+                                        !std::is_convertible<T, int>{} &&
+                                        !HasAbslStringify<T>::value,
+                                    char*>::type = nullptr>
   AlphaNum(T e)  // NOLINT(runtime/explicit)
       : AlphaNum(+static_cast<typename std::underlying_type<T>::type>(e)) {}
 

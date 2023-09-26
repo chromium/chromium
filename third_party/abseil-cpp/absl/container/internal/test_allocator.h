@@ -12,11 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef ABSL_CONTAINER_INTERNAL_COUNTING_ALLOCATOR_H_
-#define ABSL_CONTAINER_INTERNAL_COUNTING_ALLOCATOR_H_
+#ifndef ABSL_CONTAINER_INTERNAL_TEST_ALLOCATOR_H_
+#define ABSL_CONTAINER_INTERNAL_TEST_ALLOCATOR_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <type_traits>
 
 #include "absl/base/config.h"
 
@@ -115,8 +117,109 @@ class CountingAllocator {
   int64_t* instance_count_ = nullptr;
 };
 
+template <typename T>
+struct CopyAssignPropagatingCountingAlloc : public CountingAllocator<T> {
+  using propagate_on_container_copy_assignment = std::true_type;
+
+  using Base = CountingAllocator<T>;
+  using Base::Base;
+
+  template <typename U>
+  explicit CopyAssignPropagatingCountingAlloc(
+      const CopyAssignPropagatingCountingAlloc<U>& other)
+      : Base(other.bytes_used_, other.instance_count_) {}
+
+  template <typename U>
+  struct rebind {
+    using other = CopyAssignPropagatingCountingAlloc<U>;
+  };
+};
+
+template <typename T>
+struct MoveAssignPropagatingCountingAlloc : public CountingAllocator<T> {
+  using propagate_on_container_move_assignment = std::true_type;
+
+  using Base = CountingAllocator<T>;
+  using Base::Base;
+
+  template <typename U>
+  explicit MoveAssignPropagatingCountingAlloc(
+      const MoveAssignPropagatingCountingAlloc<U>& other)
+      : Base(other.bytes_used_, other.instance_count_) {}
+
+  template <typename U>
+  struct rebind {
+    using other = MoveAssignPropagatingCountingAlloc<U>;
+  };
+};
+
+template <typename T>
+struct SwapPropagatingCountingAlloc : public CountingAllocator<T> {
+  using propagate_on_container_swap = std::true_type;
+
+  using Base = CountingAllocator<T>;
+  using Base::Base;
+
+  template <typename U>
+  explicit SwapPropagatingCountingAlloc(
+      const SwapPropagatingCountingAlloc<U>& other)
+      : Base(other.bytes_used_, other.instance_count_) {}
+
+  template <typename U>
+  struct rebind {
+    using other = SwapPropagatingCountingAlloc<U>;
+  };
+};
+
+template <typename T>
+struct PropagatingCountingAlloc : public CountingAllocator<T> {
+  using propagate_on_container_copy_assignment = std::true_type;
+  using propagate_on_container_move_assignment = std::true_type;
+  using propagate_on_container_swap = std::true_type;
+
+  using Base = CountingAllocator<T>;
+  using Base::Base;
+
+  template <typename U>
+  explicit PropagatingCountingAlloc(const PropagatingCountingAlloc<U> &other)
+      : Base(other.bytes_used_, other.instance_count_) {}
+
+  template <typename U>
+  struct rebind {
+    using other = PropagatingCountingAlloc<U>;
+  };
+};
+
+// Tries to allocate memory at the minimum alignment even when the default
+// allocator uses a higher alignment.
+template <typename T>
+struct MinimumAlignmentAlloc : std::allocator<T> {
+  MinimumAlignmentAlloc() = default;
+
+  template <typename U>
+  explicit MinimumAlignmentAlloc(const MinimumAlignmentAlloc<U>& /*other*/) {}
+
+  template <class U>
+  struct rebind {
+    using other = MinimumAlignmentAlloc<U>;
+  };
+
+  T* allocate(size_t n) {
+    T* ptr = std::allocator<T>::allocate(n + 1);
+    char* cptr = reinterpret_cast<char*>(ptr);
+    cptr += alignof(T);
+    return reinterpret_cast<T*>(cptr);
+  }
+
+  void deallocate(T* ptr, size_t n) {
+    char* cptr = reinterpret_cast<char*>(ptr);
+    cptr -= alignof(T);
+    std::allocator<T>::deallocate(reinterpret_cast<T*>(cptr), n + 1);
+  }
+};
+
 }  // namespace container_internal
 ABSL_NAMESPACE_END
 }  // namespace absl
 
-#endif  // ABSL_CONTAINER_INTERNAL_COUNTING_ALLOCATOR_H_
+#endif  // ABSL_CONTAINER_INTERNAL_TEST_ALLOCATOR_H_

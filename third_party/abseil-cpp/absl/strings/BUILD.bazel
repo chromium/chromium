@@ -70,6 +70,7 @@ cc_library(
         "ascii.h",
         "charconv.h",
         "escaping.h",
+        "has_absl_stringify.h",
         "internal/damerau_levenshtein_distance.h",
         "internal/has_absl_stringify.h",
         "internal/string_constant.h",
@@ -176,6 +177,18 @@ cc_test(
         ":strings",
         "//absl/base:raw_logging_internal",
         "@com_github_google_benchmark//:benchmark_main",
+    ],
+)
+
+cc_test(
+    name = "has_absl_stringify_test",
+    size = "small",
+    srcs = ["has_absl_stringify_test.cc"],
+    copts = ABSL_TEST_COPTS,
+    visibility = ["//visibility:private"],
+    deps = [
+        ":strings",
+        "@com_google_googletest//:gtest_main",
     ],
 )
 

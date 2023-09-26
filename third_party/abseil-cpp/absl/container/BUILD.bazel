@@ -73,8 +73,8 @@ cc_test(
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
-        ":counting_allocator",
         ":fixed_array",
+        ":test_allocator",
         "//absl/base:config",
         "//absl/base:exception_testing",
         "//absl/hash:hash_testing",
@@ -139,9 +139,9 @@ cc_library(
 )
 
 cc_library(
-    name = "counting_allocator",
+    name = "test_allocator",
     testonly = 1,
-    hdrs = ["internal/counting_allocator.h"],
+    hdrs = ["internal/test_allocator.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     visibility = ["//visibility:private"],
@@ -154,8 +154,8 @@ cc_test(
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
-        ":counting_allocator",
         ":inlined_vector",
+        ":test_allocator",
         ":test_instance_tracker",
         "//absl/base:config",
         "//absl/base:core_headers",
@@ -656,6 +656,7 @@ cc_test(
         ":hash_policy_testing",
         ":hashtable_debug",
         ":raw_hash_set",
+        ":test_allocator",
         "//absl/base",
         "//absl/base:config",
         "//absl/base:core_headers",
@@ -993,7 +994,7 @@ cc_test(
     deps = [
         ":btree",
         ":btree_test_common",
-        ":counting_allocator",
+        ":test_allocator",
         ":test_instance_tracker",
         "//absl/algorithm:container",
         "//absl/base:core_headers",
