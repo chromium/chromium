@@ -13,12 +13,15 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 
+import {SafetyHubBrowserProxy, SafetyHubBrowserProxyImpl} from './safety_hub_browser_proxy.js';
 import {getTemplate} from './safety_hub_entry_point.html.js';
+import { SettingsSafetyHubModuleElement } from './safety_hub_module.js';
 // clang-format on
 
 export interface SettingsSafetyHubEntryPointElement {
   $: {
     button: HTMLElement,
+    module: SettingsSafetyHubModuleElement,
   };
 }
 
@@ -32,6 +35,58 @@ export class SettingsSafetyHubEntryPointElement extends
 
   static get template() {
     return getTemplate();
+  }
+
+
+  static get properties() {
+    return {
+      buttonClass_: {
+        type: Boolean,
+        computed: 'computeButtonClass_(hasRecommendations_)',
+      },
+
+      hasRecommendations_: {
+        type: Boolean,
+        value: false,
+      },
+
+      headerString_: {
+        type: String,
+        computed: 'computeHeaderString_(hasRecommendations_)',
+      },
+
+      subheaderString_: String,
+    };
+  }
+
+  private safetyHubBrowserProxy_: SafetyHubBrowserProxy =
+      SafetyHubBrowserProxyImpl.getInstance();
+
+  private buttonClass_: string;
+  private hasRecommendations_: boolean;
+  private headerString_: string;
+  private subheaderString_: string;
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.safetyHubBrowserProxy_.getSafetyHubHasRecommendations().then(
+        (hasRecommendations: boolean) => {
+          this.hasRecommendations_ = hasRecommendations;
+        });
+
+    this.safetyHubBrowserProxy_.getSafetyHubEntryPointSubheader().then(
+        (subheader: string) => {
+          this.subheaderString_ = subheader;
+        });
+  }
+
+  private computeButtonClass_() {
+    return this.hasRecommendations_ ? 'action-button' : '';
+  }
+
+  private computeHeaderString_() {
+    return this.hasRecommendations_ ? this.i18n('safetyHubEntryPointHeader') :
+                                      '';
   }
 
   private onClick_() {

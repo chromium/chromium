@@ -479,6 +479,39 @@ void SafetyHubHandler::HandleGetVersionCardData(const base::Value::List& args) {
   ResolveJavascriptCallback(callback_id, base::Value(std::move(result)));
 }
 
+void SafetyHubHandler::HandleGetSafetyHubHasRecommendations(
+    const base::Value::List& args) {
+  AllowJavascript();
+
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
+
+  // TODO(1443466): Integrate all modules.
+  bool has_recommendations = false;
+
+  ResolveJavascriptCallback(callback_id, has_recommendations);
+}
+
+void SafetyHubHandler::HandleGetSafetyHubEntryPointSubheader(
+    const base::Value::List& args) {
+  AllowJavascript();
+
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
+
+  // TODO(1443466): Add a condition on module state, if there are
+  // recommendations the string should change.
+  bool has_recommendations = false;
+
+  ResolveJavascriptCallback(
+      callback_id,
+      base::Value(
+          has_recommendations
+              ? std::u16string(u"Dummy subheader")
+              : l10n_util::GetStringUTF16(
+                    IDS_SETTINGS_SAFETY_HUB_ENTRY_POINT_NOTHING_TO_DO)));
+}
+
 void SafetyHubHandler::RegisterMessages() {
   // Usage of base::Unretained(this) is safe, because web_ui() owns `this` and
   // won't release ownership until destruction.
@@ -551,6 +584,16 @@ void SafetyHubHandler::RegisterMessages() {
       "getVersionCardData",
       base::BindRepeating(&SafetyHubHandler::HandleGetVersionCardData,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getSafetyHubHasRecommendations",
+      base::BindRepeating(
+          &SafetyHubHandler::HandleGetSafetyHubHasRecommendations,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getSafetyHubEntryPointSubheader",
+      base::BindRepeating(
+          &SafetyHubHandler::HandleGetSafetyHubEntryPointSubheader,
+          base::Unretained(this)));
 }
 
 void SafetyHubHandler::SendUnusedSitePermissionsReviewList() {

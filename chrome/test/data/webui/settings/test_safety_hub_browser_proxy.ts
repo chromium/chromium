@@ -27,6 +27,8 @@ export class TestSafetyHubBrowserProxy extends TestBrowserProxy implements
   private passwordCardData_: CardInfo = this.dummyCardInfo;
   private safeBrowsingCardData_: CardInfo = this.dummyCardInfo;
   private versionCardData_: CardInfo = this.dummyCardInfo;
+  private safetyHubHasRecommendations_: boolean = false;
+  private entryPointSubheader_: string = '';
 
   constructor() {
     super([
@@ -45,6 +47,8 @@ export class TestSafetyHubBrowserProxy extends TestBrowserProxy implements
       'getPasswordCardData',
       'getSafeBrowsingCardData',
       'getVersionCardData',
+      'getSafetyHubHasRecommendations',
+      'getSafetyHubEntryPointSubheader',
     ]);
   }
 
@@ -142,5 +146,21 @@ export class TestSafetyHubBrowserProxy extends TestBrowserProxy implements
 
   setVersionCardData(data: CardInfo): void {
     this.versionCardData_ = data;
+  }
+
+  getSafetyHubHasRecommendations() {
+    return Promise.resolve(this.safetyHubHasRecommendations_);
+  }
+
+  setSafetyHubHasRecommendations(value: boolean) {
+    this.safetyHubHasRecommendations_ = value;
+  }
+
+  getSafetyHubEntryPointSubheader() {
+    return Promise.resolve(this.entryPointSubheader_);
+  }
+
+  setSafetyHubEntryPointSubheader(value: string) {
+    this.entryPointSubheader_ = value;
   }
 }

@@ -126,6 +126,12 @@ export interface SafetyHubBrowserProxy {
 
   /** Get the number of extensions that should be reviewed by the user. */
   getNumberOfExtensionsThatNeedReview(): Promise<number>;
+
+  /** Returns true if Safety Hub has recommendations for the user. */
+  getSafetyHubHasRecommendations(): Promise<boolean>;
+
+  /** Get the subheader for Safety Hub entry point in settings. */
+  getSafetyHubEntryPointSubheader(): Promise<string>;
 }
 
 export class SafetyHubBrowserProxyImpl implements SafetyHubBrowserProxy {
@@ -192,6 +198,14 @@ export class SafetyHubBrowserProxyImpl implements SafetyHubBrowserProxy {
 
   getNumberOfExtensionsThatNeedReview() {
     return sendWithPromise('getNumberOfExtensionsThatNeedReview');
+  }
+
+  getSafetyHubHasRecommendations() {
+    return sendWithPromise('getSafetyHubHasRecommendations');
+  }
+
+  getSafetyHubEntryPointSubheader() {
+    return sendWithPromise('getSafetyHubEntryPointSubheader');
   }
 
   static getInstance(): SafetyHubBrowserProxy {

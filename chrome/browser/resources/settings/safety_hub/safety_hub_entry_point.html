@@ -1,11 +1,12 @@
 <style include="cr-shared-style">
 </style>
 
-<!-- TODO(crbug/1443466): Add header and subtitle for the case where there are
-                          actions for the user to take. -->
+<!-- TODO(1443466): Change icon and its color based on state. -->
+<!-- TODO(1443466): Right-align button. -->
 <settings-safety-hub-module class="cr-row first" id="module"
-    subheader="$i18n{safetyHubEntryPointNothingToDo}">
-  <cr-button id="button" on-click="onClick_" slot="button-container">
+    header$="[[headerString_]]" subheader$="[[subheaderString_]]">
+  <cr-button id="button" on-click="onClick_" slot="button-container"
+      class$="[[buttonClass_]]">
     $i18n{safetyHubEntryPointButton}
   </cr-button>
 </settings-safety-hub-module>

@@ -5,35 +5,69 @@
 // clang-format off
 import 'chrome://settings/lazy_load.js';
 
-import {SettingsSafetyHubEntryPointElement} from 'chrome://settings/lazy_load.js';
+import {SettingsSafetyHubEntryPointElement, SafetyHubBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {Router, routes} from 'chrome://settings/settings.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+
+import {TestSafetyHubBrowserProxy} from './test_safety_hub_browser_proxy.js';
+
 // clang-format on
 
 suite('SafetyHubEntryPointUI', function() {
+  let browserProxy: TestSafetyHubBrowserProxy;
   let page: SettingsSafetyHubEntryPointElement;
 
-  setup(function() {
+  const subheader = 'Passwords, extensions';
+
+  async function createPage() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-safety-hub-entry-point');
     document.body.appendChild(page);
+    await flushTasks();
+  }
+
+  setup(async function() {
+    browserProxy = new TestSafetyHubBrowserProxy();
+    SafetyHubBrowserProxyImpl.setInstance(browserProxy);
   });
 
   teardown(function() {
     page.remove();
   });
 
-  test('Nothing to do state', function() {
-    const element =
-        page.shadowRoot!.querySelector('settings-safety-hub-module');
+  test('Safety Hub has recommendations', async function() {
+    browserProxy.setSafetyHubHasRecommendations(true);
+    browserProxy.setSafetyHubEntryPointSubheader(subheader);
+    await createPage();
 
-    assertFalse(element!.hasAttribute('header'));
-    assertTrue(element!.hasAttribute('subheader'));
+    assertTrue(page.$.module.hasAttribute('header'));
     assertEquals(
-        element!.getAttribute('subheader')!.trim(),
+        page.$.module.getAttribute('header')!.trim(),
+        page.i18n('safetyHubEntryPointHeader'));
+    assertTrue(page.$.module.hasAttribute('subheader'));
+    assertEquals(page.$.module.getAttribute('subheader')!.trim(), subheader);
+
+    // Entry point has primary button leading to Safety Hub.
+    assertEquals(page.$.button!.getAttribute('class'), 'action-button');
+    page.$.button.click();
+    assertEquals(Router.getInstance().getCurrentRoute(), routes.SAFETY_HUB);
+  });
+
+  test('Safety Hub has no recommendations', async function() {
+    browserProxy.setSafetyHubHasRecommendations(false);
+    browserProxy.setSafetyHubEntryPointSubheader(
+        page.i18n('safetyHubEntryPointNothingToDo'));
+    await createPage();
+
+    assertEquals(page.$.module.getAttribute('header')!.trim(), '');
+    assertTrue(page.$.module.hasAttribute('subheader'));
+    assertEquals(
+        page.$.module.getAttribute('subheader')!.trim(),
         page.i18n('safetyHubEntryPointNothingToDo'));
 
-    // Entry point has button leading to Safety Hub.
+    // Entry point has secondary button leading to Safety Hub.
+    assertEquals(page.$.button!.getAttribute('class'), '');
     page.$.button.click();
     assertEquals(Router.getInstance().getCurrentRoute(), routes.SAFETY_HUB);
   });
