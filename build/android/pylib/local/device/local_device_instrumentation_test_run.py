@@ -478,6 +478,9 @@ class LocalDeviceInstrumentationTestRun(
         flags = self._test_instance.flags
         webview_flags = self._test_instance.webview_flags
 
+        if '--webview-verbose-logging' not in webview_flags:
+          webview_flags.append('--webview-verbose-logging')
+
         def _get_variations_seed_path_arg(seed_path):
           seed_path_components = DevicePathComponentsFor(seed_path)
           test_seed_path = local_device_test_run.SubstituteDeviceRoot(
