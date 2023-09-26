@@ -92,6 +92,9 @@ class OverlayPresentationContext {
   // Disable the UI temporarily. This can be used if the UI enters a state where
   // it is still visible, but overlays should not be displayed.
   virtual void SetUIDisabled(bool disabled) = 0;
+
+  // Whether the UI is temporarily disabled.
+  virtual bool IsUIDisabled() = 0;
 };
 
 #endif  // IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_OVERLAY_PRESENTATION_CONTEXT_H_

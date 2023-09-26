@@ -68,6 +68,7 @@ class FakeOverlayPresentationContext : public OverlayPresentationContext {
   void HideOverlayUI(OverlayRequest* request) override;
   void CancelOverlayUI(OverlayRequest* request) override;
   void SetUIDisabled(bool disabled) override;
+  bool IsUIDisabled() override;
 
  private:
   // Struct used to store state for the fake presentation context.

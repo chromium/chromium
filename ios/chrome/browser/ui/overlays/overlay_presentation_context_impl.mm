@@ -144,6 +144,10 @@ void OverlayPresentationContextImpl::SetUIDisabled(bool disabled) {
   }
 }
 
+bool OverlayPresentationContextImpl::IsUIDisabled() {
+  return ui_disabled_;
+}
+
 #pragma mark OverlayPresentationContext
 
 void OverlayPresentationContextImpl::AddObserver(

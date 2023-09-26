@@ -93,6 +93,7 @@ class OverlayPresentationContextImpl : public OverlayPresentationContext {
   void HideOverlayUI(OverlayRequest* request) override;
   void CancelOverlayUI(OverlayRequest* request) override;
   void SetUIDisabled(bool disabled) override;
+  bool IsUIDisabled() override;
 
  protected:
   // Constructor called by the Container to instantiate a presentation context

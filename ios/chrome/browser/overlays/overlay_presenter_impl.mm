@@ -209,6 +209,13 @@ void OverlayPresenterImpl::PresentOverlayForActiveRequest() {
   if (!request)
     return;
 
+  // If the UI is disabled, no presentation nor preparation should occur.
+  // `PrepareToShowOverlayUI()` is dismissing the keyboard, so do an early
+  // return.
+  if (presentation_context_->IsUIDisabled()) {
+    return;
+  }
+
   // Presentation cannot occur if the context is currently unable to show the UI
   // for `request`.  Attempt to prepare the presentation context for `request`.
   if (!presentation_context_->CanShowUIForRequest(request)) {
