@@ -197,6 +197,20 @@ void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowRequest(
     NSURLRequest* request,
     web::WebStatePolicyDecider::RequestInfo request_info,
     web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
+  bool is_main_frame = request_info.target_frame_is_main;
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kSafeBrowsingSkipSubresources) &&
+      !is_main_frame) {
+    base::UmaHistogramBoolean("SafeBrowsing.IOS.SubframeCheck.Skipped", true);
+    std::move(callback).Run(
+        web::WebStatePolicyDecider::PolicyDecision::Allow());
+    return;
+  }
+
+  if (!is_main_frame) {
+    base::UmaHistogramBoolean("SafeBrowsing.IOS.SubframeCheck.Skipped", false);
+  }
+
   // Allow navigations for URLs that cannot be checked by the service.
   GURL request_url = GetCanonicalizedUrl(net::GURLWithNSURL(request.URL));
   SafeBrowsingService* safe_browsing_service =
@@ -207,7 +221,6 @@ void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowRequest(
   }
 
   // Track all pending URL queries.
-  bool is_main_frame = request_info.target_frame_is_main;
   if (is_main_frame) {
     if (pending_main_frame_query_) {
       previous_main_frame_query_ = std::move(pending_main_frame_query_);
@@ -284,6 +297,14 @@ void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowResponse(
     NSURLResponse* response,
     web::WebStatePolicyDecider::ResponseInfo response_info,
     web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kSafeBrowsingSkipSubresources) &&
+      !response_info.for_main_frame) {
+    std::move(callback).Run(
+        web::WebStatePolicyDecider::PolicyDecision::Allow());
+    return;
+  }
+
   // Allow navigations for URLs that cannot be checked by the service.
   SafeBrowsingService* safe_browsing_service =
       client_->GetSafeBrowsingService();

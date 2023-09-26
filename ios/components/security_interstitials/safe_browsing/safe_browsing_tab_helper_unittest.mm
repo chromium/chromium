@@ -7,6 +7,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/test/scoped_feature_list.h"
+#import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #import "components/security_interstitials/core/unsafe_resource.h"
 #import "ios/components/security_interstitials/safe_browsing/fake_safe_browsing_client.h"
@@ -468,6 +469,9 @@ TEST_P(SafeBrowsingTabHelperTest, SubframeResultAfterRestoreSessionNavigation) {
 // Tests the case of a single sub frame navigation request and response, for a
 // URL that is unsafe.
 TEST_P(SafeBrowsingTabHelperTest, UnsafeSubFrameRequestAndResponse) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      safe_browsing::kSafeBrowsingSkipSubresources);
   GURL url("http://" + FakeSafeBrowsingService::kUnsafeHost);
   ASSERT_FALSE(navigation_manager_->ReloadWasCalled());
   web::NavigationItem* main_frame_item = SimulateSafeMainFrameLoad();
@@ -513,11 +517,39 @@ TEST_P(SafeBrowsingTabHelperTest, UnsafeSubFrameRequestAndResponse) {
   EXPECT_EQ(kUnsafeResourceErrorCode, error.code);
 }
 
+// Tests the case of a single sub frame navigation request and response, for a
+// URL that is unsafe, when sub frame checks are disabled.
+TEST_P(SafeBrowsingTabHelperTest,
+       UnsafeSubFrameRequestAndResponseSkipSubresources) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      safe_browsing::kSafeBrowsingSkipSubresources);
+  GURL url("http://" + FakeSafeBrowsingService::kUnsafeHost);
+  SimulateSafeMainFrameLoad();
+
+  // Execute ShouldAllowRequest() for an unsafe subframe navigation.
+  auto sub_frame_request_decision =
+      ShouldAllowRequestUrl(url, /*for_main_frame=*/false);
+  EXPECT_TRUE(sub_frame_request_decision.ShouldAllowNavigation());
+
+  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
+    base::RunLoop().RunUntilIdle();
+  }
+
+  // Verify that the sub frame navigation is allowed.
+  web::WebStatePolicyDecider::PolicyDecision sub_frame_response_decision =
+      ShouldAllowResponseUrl(url, /*for_main_frame=*/false);
+  EXPECT_TRUE(sub_frame_response_decision.ShouldAllowNavigation());
+}
+
 // Tests the case of a single unsafesafe sub frame navigation request and
 // response, where the response URL has a different hash fragment than the
 // request.
 TEST_P(SafeBrowsingTabHelperTest,
        UnsafeSubFrameRequestAndResponseWithDifferingRef) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      safe_browsing::kSafeBrowsingSkipSubresources);
   GURL request_url("http://" + FakeSafeBrowsingService::kUnsafeHost);
   GURL response_url("http://" + FakeSafeBrowsingService::kUnsafeHost + "#ref");
   ASSERT_FALSE(navigation_manager_->ReloadWasCalled());
@@ -562,6 +594,33 @@ TEST_P(SafeBrowsingTabHelperTest,
   NSError* error = main_frame_reload_response_decision.GetDisplayError();
   EXPECT_NSEQ(kSafeBrowsingErrorDomain, error.domain);
   EXPECT_EQ(kUnsafeResourceErrorCode, error.code);
+}
+
+// Tests the case of a single unsafesafe sub frame navigation request and
+// response, where the response URL has a different hash fragment than the
+// request, when sub frame checks are disabled.
+TEST_P(SafeBrowsingTabHelperTest,
+       UnsafeSubFrameRequestAndResponseWithDifferingRefSkipSubresources) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      safe_browsing::kSafeBrowsingSkipSubresources);
+  GURL request_url("http://" + FakeSafeBrowsingService::kUnsafeHost);
+  GURL response_url("http://" + FakeSafeBrowsingService::kUnsafeHost + "#ref");
+  SimulateSafeMainFrameLoad();
+
+  // Execute ShouldAllowRequest() for an unsafe subframe navigation.
+  auto sub_frame_request_decision =
+      ShouldAllowRequestUrl(request_url, /*for_main_frame=*/false);
+  EXPECT_TRUE(sub_frame_request_decision.ShouldAllowNavigation());
+
+  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
+    base::RunLoop().RunUntilIdle();
+  }
+
+  // Verify that the sub frame navigation is  allowed.
+  web::WebStatePolicyDecider::PolicyDecision sub_frame_response_decision =
+      ShouldAllowResponseUrl(response_url, /*for_main_frame=*/false);
+  EXPECT_TRUE(sub_frame_response_decision.ShouldAllowNavigation());
 }
 
 // Tests the case of a subframe reload request that arrives when both the last
@@ -943,6 +1002,9 @@ TEST_P(SafeBrowsingTabHelperTest, UnsafeMainFrameRequestNotifiesClient) {
 
 // Tests that client is notified when URL loaded in a subframe is unsafe.
 TEST_P(SafeBrowsingTabHelperTest, UnsafeSubframeRequestNotifiesClient) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      safe_browsing::kSafeBrowsingSkipSubresources);
   GURL unsafe_url("http://" + FakeSafeBrowsingService::kUnsafeHost);
   SimulateSafeMainFrameLoad();
 
@@ -963,6 +1025,30 @@ TEST_P(SafeBrowsingTabHelperTest, UnsafeSubframeRequestNotifiesClient) {
     EXPECT_TRUE(response_decision.ShouldCancelNavigation());
     EXPECT_TRUE(client_.sub_frame_cancellation_decided_called());
   }
+}
+
+// Tests that client is not notified when URL loaded in a subframe is unsafe,
+// when subframe checks are disabled.
+TEST_P(SafeBrowsingTabHelperTest,
+       UnsafeSubframeRequestDoesNotNotifyClientSkipSubresources) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      safe_browsing::kSafeBrowsingSkipSubresources);
+  GURL unsafe_url("http://" + FakeSafeBrowsingService::kUnsafeHost);
+  SimulateSafeMainFrameLoad();
+
+  EXPECT_TRUE(ShouldAllowRequestUrl(unsafe_url, /*for_main_frame=*/false)
+                  .ShouldAllowNavigation());
+
+  EXPECT_FALSE(client_.sub_frame_cancellation_decided_called());
+  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
+    base::RunLoop().RunUntilIdle();
+  }
+
+  web::WebStatePolicyDecider::PolicyDecision response_decision =
+      ShouldAllowResponseUrl(unsafe_url, /*for_main_frame=*/false);
+  EXPECT_TRUE(response_decision.ShouldAllowNavigation());
+  EXPECT_FALSE(client_.sub_frame_cancellation_decided_called());
 }
 
 // Tests that client is not notified when the main frame URL is safe.
