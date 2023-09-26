@@ -84,25 +84,18 @@ class ResponseInjector {
   }
 
   std::string GetUploadData() {
-    const std::vector<network::TestURLLoaderFactory::PendingRequest>& pending =
-        *url_loader_factory_->pending_requests();
-    if (pending.size() == 1) {
-      return network::GetUploadData(pending[0].request);
-    } else {
-      ADD_FAILURE() << "Unexpected state in GetUploadData";
-      return "";
-    }
+    const network::ResourceRequest* request = GetRequest();
+    return request ? network::GetUploadData(*request) : "";
   }
 
   const net::HttpRequestHeaders GetRequestHeaders() {
-    const std::vector<network::TestURLLoaderFactory::PendingRequest>& pending =
-        *url_loader_factory_->pending_requests();
-    if (pending.size() == 1) {
-      return pending[0].request.headers;
-    } else {
-      ADD_FAILURE() << "Unexpected state in GetRequestHeaders";
-      return {};
-    }
+    const network::ResourceRequest* request = GetRequest();
+    return request ? request->headers : net::HttpRequestHeaders();
+  }
+
+  net::RequestPriority GetRequestPriority() const {
+    const network::ResourceRequest* request = GetRequest();
+    return request ? request->priority : net::RequestPriority();
   }
 
   void set_response_code(int response_code) {
@@ -121,6 +114,17 @@ class ResponseInjector {
     complete_immediately_ = complete_immediately;
   }
  private:
+  const network::ResourceRequest* GetRequest() const {
+    const std::vector<network::TestURLLoaderFactory::PendingRequest>& pending =
+        *url_loader_factory_->pending_requests();
+    if (pending.size() == 1) {
+      return &pending[0].request;
+    } else {
+      ADD_FAILURE() << "Unexpected state in GetRequest";
+      return nullptr;
+    }
+  }
+
   raw_ptr<network::TestURLLoaderFactory> url_loader_factory_;
   GURL pending_url_;
 
@@ -244,9 +248,22 @@ class GaiaOAuthClientTest : public testing::Test {
 
     MockGaiaOAuthClientDelegate delegate;
     GaiaOAuthClient auth(GetSharedURLLoaderFactory());
-    auth.GetAccountCapabilities("some_token", capabilities_names, 1, &delegate);
+    auth.GetAccountCapabilities("some_token", capabilities_names,
+                                net::RequestPriority::IDLE, 1, &delegate);
 
     EXPECT_EQ(injector.GetUploadData(), expected_body);
+  }
+
+  void TestAccountCapabilitiesRequestPriority(net::RequestPriority priority) {
+    ResponseInjector injector(&url_loader_factory_);
+    injector.set_complete_immediately(false);
+
+    MockGaiaOAuthClientDelegate delegate;
+    GaiaOAuthClient auth(GetSharedURLLoaderFactory());
+    auth.GetAccountCapabilities("some_token", {"capability_name"}, priority, 1,
+                                &delegate);
+
+    EXPECT_EQ(injector.GetRequestPriority(), priority);
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -510,8 +527,8 @@ TEST_F(GaiaOAuthClientTest, GetAccountCapabilities) {
 
   GaiaOAuthClient auth(GetSharedURLLoaderFactory());
   auth.GetAccountCapabilities("some_token",
-                              {"capability1", "capability2", "capability3"}, 1,
-                              &delegate);
+                              {"capability1", "capability2", "capability3"},
+                              net::RequestPriority::IDLE, 1, &delegate);
 
   std::string actual_authorization_header;
   EXPECT_TRUE(injector.GetRequestHeaders().GetHeader(
@@ -550,6 +567,14 @@ TEST_F(GaiaOAuthClientTest,
       {"capability1", "capability2", "capability3"},
       /*expected_body=*/
       "names=capability1&names=capability2&names=capability3");
+}
+
+TEST_F(GaiaOAuthClientTest, GetAccountCapabilities_RequestPriority_Idle) {
+  TestAccountCapabilitiesRequestPriority(net::RequestPriority::IDLE);
+}
+
+TEST_F(GaiaOAuthClientTest, GetAccountCapabilities_RequestPriority_Highest) {
+  TestAccountCapabilitiesRequestPriority(net::RequestPriority::HIGHEST);
 }
 
 }  // namespace gaia

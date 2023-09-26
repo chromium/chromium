@@ -24,6 +24,7 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/backoff_entry.h"
 #include "net/base/load_flags.h"
+#include "net/base/request_priority.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request_throttler_entry.h"
@@ -87,6 +88,7 @@ class GaiaOAuthClient::Core
   void GetAccountCapabilities(
       const std::string& oauth_access_token,
       const std::vector<std::string>& capabilities_names,
+      net::RequestPriority priority,
       int max_retries,
       Delegate* delegate);
   void GetTokenInfo(const std::string& qualifier,
@@ -125,6 +127,7 @@ class GaiaOAuthClient::Core
       std::string post_body /* may be empty if not needed*/,
       std::string authorization_header /* empty if not needed */,
       std::string http_method_override_header /* empty if not needed */,
+      absl::optional<net::RequestPriority> priority,
       int max_retries,
       GaiaOAuthClient::Delegate* delegate,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation);
@@ -144,6 +147,7 @@ class GaiaOAuthClient::Core
   net::BackoffEntry backoff_entry_;
 
   int num_retries_;
+  absl::optional<net::RequestPriority> priority_;
   int max_retries_;
   GURL url_;
   net::MutableNetworkTrafficAnnotationTag traffic_annotation_;
@@ -205,8 +209,9 @@ void GaiaOAuthClient::Core::GetTokensFromAuthCode(
   MakeRequest(TOKENS_FROM_AUTH_CODE,
               GURL(GaiaUrls::GetInstance()->oauth2_token_url()), post_body,
               /* authorization_header = */ std::string(),
-              /* http_method_override_header = */ std::string(), max_retries,
-              delegate, traffic_annotation);
+              /* http_method_override_header = */ std::string(),
+              /* priority = */ absl::nullopt, max_retries, delegate,
+              traffic_annotation);
 }
 
 void GaiaOAuthClient::Core::RefreshToken(
@@ -259,8 +264,9 @@ void GaiaOAuthClient::Core::RefreshToken(
   MakeRequest(REFRESH_TOKEN, GURL(GaiaUrls::GetInstance()->oauth2_token_url()),
               post_body,
               /* authorization_header = */ std::string(),
-              /* http_method_override_header = */ std::string(), max_retries,
-              delegate, traffic_annotation);
+              /* http_method_override_header = */ std::string(),
+              /* priority = */ absl::nullopt, max_retries, delegate,
+              traffic_annotation);
 }
 
 void GaiaOAuthClient::Core::GetUserEmail(const std::string& oauth_access_token,
@@ -316,8 +322,9 @@ void GaiaOAuthClient::Core::GetUserInfoImpl(
   std::string auth = "OAuth " + oauth_access_token;
   MakeRequest(type, GaiaUrls::GetInstance()->oauth_user_info_url(),
               /* post_body = */ std::string(), auth,
-              /* http_method_override_header = */ std::string(), max_retries,
-              delegate, traffic_annotation);
+              /* http_method_override_header = */ std::string(),
+              /* priority = */ absl::nullopt, max_retries, delegate,
+              traffic_annotation);
 }
 
 void GaiaOAuthClient::Core::GetTokenInfo(const std::string& qualifier,
@@ -362,13 +369,15 @@ void GaiaOAuthClient::Core::GetTokenInfo(const std::string& qualifier,
   MakeRequest(TOKEN_INFO,
               GURL(GaiaUrls::GetInstance()->oauth2_token_info_url()), post_body,
               /* authorization_header = */ std::string(),
-              /* http_method_override_header = */ std::string(), max_retries,
-              delegate, traffic_annotation);
+              /* http_method_override_header = */ std::string(),
+              /* priority = */ absl::nullopt, max_retries, delegate,
+              traffic_annotation);
 }
 
 void GaiaOAuthClient::Core::GetAccountCapabilities(
     const std::string& oauth_access_token,
     const std::vector<std::string>& capabilities_names,
+    net::RequestPriority priority,
     int max_retries,
     Delegate* delegate) {
   DCHECK(!capabilities_names.empty());
@@ -417,7 +426,7 @@ void GaiaOAuthClient::Core::GetAccountCapabilities(
 
   MakeRequest(ACCOUNT_CAPABILITIES,
               GURL(GaiaUrls::GetInstance()->account_capabilities_url()),
-              post_body, auth, /*http_method_override_header=*/"GET",
+              post_body, auth, /*http_method_override_header=*/"GET", priority,
               max_retries, delegate, traffic_annotation);
 }
 
@@ -427,6 +436,7 @@ void GaiaOAuthClient::Core::MakeRequest(
     std::string post_body,
     std::string authorization_header,
     std::string http_method_override_header,
+    absl::optional<net::RequestPriority> priority,
     int max_retries,
     GaiaOAuthClient::Delegate* delegate,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
@@ -434,6 +444,7 @@ void GaiaOAuthClient::Core::MakeRequest(
   request_type_ = type;
   delegate_ = delegate;
   num_retries_ = 0;
+  priority_ = priority;
   max_retries_ = max_retries;
   url_ = url;
   traffic_annotation_ = traffic_annotation;
@@ -468,6 +479,9 @@ void GaiaOAuthClient::Core::SendRequestImpl() {
   if (!http_method_override_header_.empty()) {
     resource_request->headers.SetHeader("X-HTTP-Method-Override",
                                         http_method_override_header_);
+  }
+  if (priority_.has_value()) {
+    resource_request->priority = priority_.value();
   }
 
   request_ = network::SimpleURLLoader::Create(
@@ -687,10 +701,11 @@ void GaiaOAuthClient::GetTokenHandleInfo(const std::string& token_handle,
 void GaiaOAuthClient::GetAccountCapabilities(
     const std::string& oauth_access_token,
     const std::vector<std::string>& capabilities_names,
+    net::RequestPriority priority,
     int max_retries,
     Delegate* delegate) {
   return core_->GetAccountCapabilities(oauth_access_token, capabilities_names,
-                                       max_retries, delegate);
+                                       priority, max_retries, delegate);
 }
 
 }  // namespace gaia
