@@ -120,9 +120,20 @@ void SupervisionMixin::ConfigureParentalControls(bool is_supervised_profile) {
 }
 
 void SupervisionMixin::ConfigureIdentityTestEnvironment() {
-  if (sign_in_mode_ == SignInMode::kSignedOut) {
-    GetIdentityTestEnvironment()->ClearPrimaryAccount();
-    return;
+  switch (sign_in_mode_) {
+    case SignInMode::kSignedOut:
+      GetIdentityTestEnvironment()->ClearPrimaryAccount();
+      return;
+    case SignInMode::kRegular:
+      fake_gaia_mixin_.SetupFakeGaiaForLogin(
+          email_, signin::GetTestGaiaIdForEmail(email_),
+          FakeGaiaMixin::kFakeRefreshToken);
+      break;
+    case SignInMode::kSupervised:
+      fake_gaia_mixin_.SetupFakeGaiaForChildUser(
+          email_, signin::GetTestGaiaIdForEmail(email_),
+          FakeGaiaMixin::kFakeRefreshToken, true);
+      break;
   }
 
   if (!IdentityManagerAlreadyHasPrimaryAccount(

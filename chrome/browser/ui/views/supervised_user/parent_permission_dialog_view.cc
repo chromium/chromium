@@ -628,7 +628,7 @@ void ParentPermissionDialogView::StartReauthAccessTokenFetch(
   scopes.insert(GaiaConstants::kAccountsReauthOAuth2Scope);
   oauth2_access_token_fetcher_ =
       identity_manager_->CreateAccessTokenFetcherForAccount(
-          identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync),
+          identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
           "chrome_webstore_private_api", scopes,
           base::BindOnce(
               &ParentPermissionDialogView::OnAccessTokenFetchComplete,

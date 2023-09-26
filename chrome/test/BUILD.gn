@@ -9958,6 +9958,8 @@ if (!is_android) {
       sources += [
         "supervised_user/api_mock_setup_mixin.cc",
         "supervised_user/api_mock_setup_mixin.h",
+        "supervised_user/child_account_test_utils.cc",
+        "supervised_user/child_account_test_utils.h",
         "supervised_user/embedded_test_server_setup_mixin.cc",
         "supervised_user/embedded_test_server_setup_mixin.h",
         "supervised_user/supervision_mixin.cc",

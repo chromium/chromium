@@ -4515,8 +4515,6 @@ static_library("test_support") {
     "cert_provisioning/mock_cert_provisioning_scheduler.h",
     "cert_provisioning/mock_cert_provisioning_worker.cc",
     "cert_provisioning/mock_cert_provisioning_worker.h",
-    "child_accounts/child_account_test_utils.cc",
-    "child_accounts/child_account_test_utils.h",
     "child_accounts/parent_access_code/parent_access_test_utils.cc",
     "child_accounts/parent_access_code/parent_access_test_utils.h",
     "child_accounts/time_limit_test_utils.cc",

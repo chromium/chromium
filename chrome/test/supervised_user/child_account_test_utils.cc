@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/child_accounts/child_account_test_utils.h"
+#include "chrome/test/supervised_user/child_account_test_utils.h"
 
 #include "base/base64.h"
 #include "base/strings/stringprintf.h"
 
-namespace ash {
-namespace test {
+namespace supervised_user {
 
 std::string GetChildAccountOAuthIdToken() {
   std::string encoded;
@@ -16,5 +15,4 @@ std::string GetChildAccountOAuthIdToken() {
   return base::StringPrintf("dummy-header.%s.dummy-signature", encoded.c_str());
 }
 
-}  // namespace test
-}  // namespace ash
+}  // namespace supervised_user
