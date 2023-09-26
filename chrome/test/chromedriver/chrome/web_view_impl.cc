@@ -748,9 +748,14 @@ Status WebViewImpl::CallFunctionWithTimeoutInternal(
     params.Set("uniqueContextId", context_id);
   }
   params.Set("arguments", std::move(nodes));
-  params.Set("generateWebDriverValue", true);
   params.Set("awaitPromise", true);
   params.Set("objectGroup", object_group.name());
+
+  base::Value::Dict serialization_options;
+  serialization_options.Set("serialization", "deep");
+
+  params.Set("serializationOptions", std::move(serialization_options));
+
   base::Value::Dict cmd_result;
 
   status = client_->SendCommandAndGetResultWithTimeout(
@@ -770,24 +775,24 @@ Status WebViewImpl::CallFunctionWithTimeoutInternal(
   }
 
   base::Value::List* maybe_received_list =
-      cmd_result.FindListByDottedPath("result.webDriverValue.value");
+      cmd_result.FindListByDottedPath("result.deepSerializedValue.value");
   if (!maybe_received_list || maybe_received_list->empty()) {
     return Status(kUnknownError,
-                  "result.webdriverValue.value list is missing or empty in "
-                  "Runtime.callFunctionOn response");
+                  "result.deepSerializedValue.value list is missing or empty "
+                  "in Runtime.callFunctionOn response");
   }
   base::Value::List& received_list = *maybe_received_list;
 
   if (!received_list[0].is_dict()) {
     return Status(kUnknownError,
-                  "first element in result.webDriverValue.value list must be "
-                  "a dictionary");
+                  "first element in result.deepSerializedValue.value list must "
+                  "be a dictionary");
   }
   std::string* serialized_value =
       received_list[0].GetDict().FindString("value");
   if (!serialized_value) {
     return Status(kUnknownError,
-                  "first element in result.webDriverValue.value list must "
+                  "first element in result.deepSerializedValue.value list must "
                   "contain a string");
   }
   absl::optional<base::Value> maybe_call_result =

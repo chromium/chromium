@@ -95,7 +95,7 @@ base::Value::Dict GenerateResponse(int backend_node_id) {
   serialized_list.Append(std::move(dict));
   serialized_list.Append(std::move(node));
   base::Value::Dict response;
-  response.SetByDottedPath("result.webDriverValue.value",
+  response.SetByDottedPath("result.deepSerializedValue.value",
                            std::move(serialized_list));
   return response;
 }
@@ -131,7 +131,7 @@ base::Value::Dict GenerateResponseWithScriptArguments(
   }
 
   base::Value::Dict response;
-  response.SetByDottedPath("result.webDriverValue.value",
+  response.SetByDottedPath("result.deepSerializedValue.value",
                            std::move(serialized_list));
   return response;
 }
@@ -999,7 +999,7 @@ TEST(CallUserSyncScript, WeakReference) {
   serialized_list.Append(std::move(node));
   serialized_list.Append(std::move(weak_ref));
   base::Value::Dict response;
-  response.SetByDottedPath("result.webDriverValue.value",
+  response.SetByDottedPath("result.deepSerializedValue.value",
                            std::move(serialized_list));
 
   std::unique_ptr<FakeDevToolsClient> client_uptr =
@@ -1040,7 +1040,7 @@ TEST(CallUserSyncScript, WeakReferenceOrderInsensitive) {
   serialized_list.Append(std::move(weak_ref));
   serialized_list.Append(std::move(node));
   base::Value::Dict response;
-  response.SetByDottedPath("result.webDriverValue.value",
+  response.SetByDottedPath("result.deepSerializedValue.value",
                            std::move(serialized_list));
 
   std::unique_ptr<FakeDevToolsClient> client_uptr =
@@ -1078,7 +1078,7 @@ TEST(CallUserSyncScript, WeakReferenceNotResolved) {
   serialized_list.Append(std::move(dict));
   serialized_list.Append(std::move(weak_ref));
   base::Value::Dict response;
-  response.SetByDottedPath("result.webDriverValue.value",
+  response.SetByDottedPath("result.deepSerializedValue.value",
                            std::move(serialized_list));
 
   std::unique_ptr<FakeDevToolsClient> client_uptr =
