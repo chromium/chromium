@@ -1710,6 +1710,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.Net.QoS.NewQosSocketCount" units="count"
+    expires_after="2024-08-31">
+  <owner>chuweih@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Records the count of newly opened QoS socket connections in a single poll
+    every time socket connections information is polled regularly in ARC.
+  </summary>
+</histogram>
+
+<histogram name="Arc.Net.Qos.QosSocketPercentage" units="%"
+    expires_after="2024-08-31">
+  <owner>chuweih@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Records the percentage of QoS socket connections in a single poll every time
+    socket connections information is polled regularly in ARC.
+  </summary>
+</histogram>
+
 <histogram name="Arc.Notifications.ActionEnabled" enum="BooleanEnabled"
     expires_after="2024-02-25">
   <owner>yaoqq@google.com</owner>

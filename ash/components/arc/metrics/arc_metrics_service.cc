@@ -921,6 +921,16 @@ void ArcMetricsService::ReportWebViewProcessStarted() {
   prefs_->SetBoolean(prefs::kWebViewProcessStarted, true);
 }
 
+void ArcMetricsService::ReportNewQosSocketCount(int count) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  base::UmaHistogramCounts100000("Arc.Qos.NewQosSocketCount", count);
+}
+
+void ArcMetricsService::ReportQosSocketPercentage(int perc) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  base::UmaHistogramCounts100("Arc.Qos.QosSocketPercentage", perc);
+}
+
 void ArcMetricsService::OnWindowActivated(
     wm::ActivationChangeObserver::ActivationReason reason,
     aura::Window* gained_active,

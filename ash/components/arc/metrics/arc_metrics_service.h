@@ -142,6 +142,8 @@ class ArcMetricsService : public KeyedService,
       mojom::LowLatencyStylusLibPredictionTargetPtr prediction_target) override;
   void ReportVpnServiceBuilderCompatApiUsage(
       mojom::VpnServiceBuilderCompatApiId api_id) override;
+  void ReportNewQosSocketCount(int count) override;
+  void ReportQosSocketPercentage(int perc) override;
   void ReportEntireFixupMetrics(base::TimeDelta duration,
                                 uint32_t number_of_directories,
                                 uint32_t number_of_failures) override;

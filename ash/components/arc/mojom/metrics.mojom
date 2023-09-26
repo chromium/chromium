@@ -1,7 +1,7 @@
 // Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// Next MinVersion: 30
+// Next MinVersion: 31
 module arc.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
@@ -389,7 +389,7 @@ enum WaylandTimingEvent {
 };
 
 // Deprecated method IDs: 25
-// Next method ID: 33
+// Next method ID: 35
 interface MetricsHost {
   // Reports boot progress events from ARC instance.
   ReportBootProgress@0(array<BootProgressEvent> events,
@@ -531,6 +531,20 @@ interface MetricsHost {
   // Reports api usage of vpn exclude route.
   [MinVersion=29] ReportVpnServiceBuilderCompatApiUsage@32
       (VpnServiceBuilderCompatApiId api_id);
+
+  // Reports count of newly opened QoS socket connections during a poll for all
+  // socket connections in ARC. Use int for uint value for the same reason as
+  // ReportQosSocketPercentage.
+  [MinVersion=30] ReportNewQosSocketCount@33(int32 count);
+
+  // Reports percentage of QoS socket connections during a poll for all socket
+  // connections in ARC. The reason for using int for uint percentage field is:
+  // Mojo uint values are byte cast when deserialized in Java, the practical
+  // and safe solution is to pick the next signed type that includes the whole
+  // unsigned range of possible values. Otherwise it forces writing error-prone
+  // conversion code at the entry or exit of mojo data.
+  // Range of perc arg will be [0, 100].
+  [MinVersion=30] ReportQosSocketPercentage@34(int32 perc);
 };
 
 // Deprecated method IDs: 0
