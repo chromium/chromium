@@ -956,6 +956,12 @@
       * 允许使用 PIN 码和指纹解锁，请使用 ["PIN", "FINGERPRINT"]。
 
       如果此政策未设置或设为一个空列表，则将无法在受管理的设备上使用任何 WebAuthn 因素。</translation>
+<translation id="1870669000882901616">通过此政策，管理员可为已安装的 Web 应用指定设置。此政策将 Web 应用 ID 与其具体设置对应起来。可以使用特殊 ID“<ph name="DEFAULT_SCOPE" />”设定一项默认配置，这样，未在此政策中自定义配置的所有 Web 应用都将采用该默认配置。
+
+<ph name="MANIFEST_ID_FIELD" /> 字段用于指明相应 Web 应用的清单 ID。如需了解怎样确定某个已安装 Web 应用的清单 ID，请参阅 <ph name="WEB_APP_ID_REFERENCE_URL" />。
+<ph name="RUN_ON_OS_LOGIN_FIELD" /> 字段用于指明 Web 应用能否在用户登录操作系统期间运行。如果此字段设为“<ph name="BLOCKED" />”，相应 Web 应用将不会在用户登录操作系统期间运行，用户后续也无法启用此字段。如果此字段设为“<ph name="RUN_WINDOWED" />”，相应 Web 应用将会在用户登录操作系统期间运行，且用户后续无法停用此字段。如果此字段设为“<ph name="ALLOWED" />”，则用户可以将相应 Web 应用配置为在登录操作系统期间运行。默认配置仅接受“<ph name="ALLOWED" />”值和“<ph name="BLOCKED" />”值。
+（自 117 版起）<ph name="PREVENT_CLOSE_FIELD" /> 字段用于指明是否应阻止以任何方式（例如由用户、任务管理器、Web API）关闭 Web 应用。只有在 <ph name="RUN_ON_OS_LOGIN_FIELD" /> 设为“<ph name="RUN_WINDOWED" />”时，才能允许这种行为。如果应用已经在运行，只有在重启应用后，此属性才会生效。如果未指定此字段，用户将可以关闭应用。
+（自 118 版起）<ph name="FORCE_UNREGISTER_OS_INTEGRATION" /> 字段用于指明是否要移除 Web 应用的所有操作系统集成，即快捷方式、文件处理程序、协议处理程序等。如果应用已经在运行，只有在重启应用后，此属性才会生效。请谨慎使用此字段，因为这可能会覆盖在 Web 应用系统启动期间自动设置的所有操作系统集成。目前仅适用于 Windows、Mac 和 Linux 平台。</translation>
 <translation id="1883274744253492031">允许混合内容自动升级</translation>
 <translation id="1885782360784839335">允许使用整个标签页显示宣传内容</translation>
 <translation id="1888871729456797026">云政策在桌面设备上的注册令牌</translation>
@@ -2332,6 +2338,13 @@
 
 <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />
 这与 <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" /> 的行为相同，但新创建的个人资料不得设有辅助账号。</translation>
+<translation id="3079575168312257780">如果此政策设为 0（默认值），您可以访问开发者工具和 JavaScript 控制台，但无法在由企业政策安装的扩展程序中访问它们；自 114 版起，若是受管理的用户，也无法在浏览器内置的扩展程序中访问它们。如果此政策设为 1，无论在什么情境下（包括在由企业政策安装的扩展程序中），您都可以访问开发者工具和 JavaScript 控制台。如果此政策设为 2，您既无法访问开发者工具，也无法检查网站元素。
+
+      此设置还会关闭用于打开开发者工具或 JavaScript 控制台的键盘快捷键及菜单（或上下文菜单）条目。
+
+      自 <ph name="PRODUCT_NAME" /> 99 版起，此设置还可控制“查看网页源代码”功能的入口点。如果此政策设为“DeveloperToolsDisallowed”（值为 2），用户将无法通过键盘快捷键或上下文菜单查看源代码。若要完全阻止查看源代码，您还必须将“view-source:*”添加到 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 政策中。
+
+      自 <ph name="PRODUCT_NAME" /> 119 版起，此设置还可控制是否可以对独立式 Web 应用 (IWA) 启用和使用开发者模式。</translation>
 <translation id="3083259245974004342">密码保护</translation>
 <translation id="308356121098374167">不安全情境中的 WebSQL 将可用。</translation>
 <translation id="3086995894968271156">在 <ph name="PRODUCT_NAME" />中配置 Cast 接收器。</translation>
@@ -2561,6 +2574,7 @@
 <translation id="3240609035816615922">打印机配置访问政策。</translation>
 <translation id="324062325008698789">配置打印机列表</translation>
 <translation id="3240655340884151271">基座的内置 NIC MAC 地址</translation>
+<translation id="3242480111684005642">用户可以使用 <ph name="GOOGLE_DRIVE_NAME" />的文件同步功能。</translation>
 <translation id="3242756958360374888">包含一系列用于控制在 <ph name="PRODUCT_NAME" /> 中显示哪些账号的格式。
 
       系统会将设备上的每个 Google 账号与此政策中存储的格式进行比对，以确定是否在 <ph name="PRODUCT_NAME" /> 中显示各个账号。只要账号名称与该列表内的任一格式匹配，系统即会显示相应账号。如果账号名称与该列表内的任一格式均不匹配，系统便会隐藏相应账号。
@@ -2620,6 +2634,7 @@
 在 <ph name="MS_WIN_NAME" /> 上，此政策仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、已加入 <ph name="MS_AAD_NAME" /> 的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。</translation>
 <translation id="3300784749135986828">启用或停用“<ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />”功能。</translation>
 <translation id="3301698868852716692">启用数据洞见扩展程序</translation>
+<translation id="3302723130703323097">在支持的设备上，将 <ph name="GOOGLE_DRIVE_NAME" />的文件同步功能设为在 <ph name="PRODUCT_OS_NAME" /> 的“文件”应用中可见并可由用户开启/关闭</translation>
 <translation id="3302829897293005699">如果此政策已启用或未设置，已注册的设备将会报告当前自助服务终端会话的相关信息（例如应用 ID 和版本）。
 
       如果此政策已停用，已注册的设备将不会报告自助服务终端会话信息。</translation>
@@ -2703,6 +2718,13 @@
       如果此政策设为“已隐藏”，已停用的功能会不可用，并且对用户不可见。
 
       如果此政策未设置或包含无效值，系统功能的停用模式将会是“已禁用”。</translation>
+<translation id="3410963889229735344">在支持的设备上，<ph name="GOOGLE_DRIVE_NAME" />的文件同步功能会自动将用户的“我的云端硬盘”中的文件设为可离线使用（在空间允许的情况下）。在最初将所有文件设为可离线使用后，所有新文件也会自动设为可离线使用。如果开启了该功能，但以后因空间不足而无法使该功能保持开启状态，系统会停止将所有新文件自动设为可离线使用，但用户仍可手动将文件设为可离线使用。
+
+如果此政策设为“<ph name="POLICY_VALUE_VISIBLE" />”，“文件”应用和“设置”页面中会显示文件同步功能。用户仍需要自行开启文件同步功能。
+
+如果此政策设为“<ph name="POLICY_VALUE_DISABLED" />”，系统将关闭文件同步功能（如果用户之前已开启该功能），并且还会在“文件”应用和“设置”中隐藏该功能，这样用户就无法重新启用它。如果有任何现有文件已被用户设为可离线使用，这些文件仍可离线使用，而且用户可以手动将各个文件设为可离线使用（这些文件不会自动设为可离线使用）。
+
+如果未设置此政策，它将使用“<ph name="POLICY_VALUE_VISIBLE" />”作为默认值。</translation>
 <translation id="341285788698114069">此政策用于控制音频进程在 Windows 上的优先级。
       如果已启用，音频进程将以高于普通优先级的优先级运行。
       如果已停用，音频进程将以普通优先级运行。
@@ -2787,6 +2809,7 @@
       请注意，如果已停用 <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> 政策，但已启用或未设置 <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" />，chrome://history/grouped 中仍然会以网页分组的方式显示“Chrome 历史记录”页面，但与用户的相关程度可能会变低。
 </translation>
 <translation id="3478024346823118645">退出时清除用户数据</translation>
+<translation id="3478406829037689272">启用安全浏览功能的下载内容深度扫描服务</translation>
 <translation id="3480961938508521469">以标准速率将电池充满。</translation>
 <translation id="348110646151632565">在登录屏幕上启用“随选朗读”无障碍功能。
 
@@ -3758,6 +3781,9 @@
 <translation id="4380159792986204036">允许 Web 自助服务终端在任意屏幕上打开多个浏览器窗口</translation>
 <translation id="4381227367939912539">禁止玩恐龙复活节彩蛋游戏</translation>
 <translation id="4382413175336720282">已停用实时网址检查功能。</translation>
+<translation id="4384911996235542086">如果已启用或未设置此政策，当已启用安全浏览功能的用户下载可疑内容时，<ph name="PRODUCT_NAME" /> 可以将相应内容发送给 Google，以便扫描是否有恶意软件。
+如果已停用此政策，系统将不会执行此项扫描。
+此政策不会影响 Chrome 企业版接口配置的下载内容分析。</translation>
 <translation id="4387741272680827493">通过设置此政策，您可以指定一系列可绕过预加载的 HSTS 升级（从 HTTP 升级到 HTTPS）的主机名。
 
       此政策只能使用单标签主机名，并且仅适用于预加载了 HSTS 的“静态”条目（例如，<ph name="EXAMPLE_HSTS_PRELOAD_TLDS" />）。对于已使用 <ph name="HSTS_HEADER_NAME" /> 响应标头“动态地”请求 HSTS 升级的服务器，此政策不会阻止它们进行 HSTS 升级。
@@ -4107,6 +4133,11 @@
 <translation id="468822697351680932">使用 Internet Explorer SiteList 政策作为规则来源</translation>
 <translation id="4693190628432874457">启用设备位置信息报告功能</translation>
 <translation id="4693779768620889402">基于扩展程序的目的地</translation>
+<translation id="4693861751987983072">如果此政策已启用，<ph name="PRODUCT_OS_NAME" /> 便会将使用情况指标和诊断数据（包括崩溃报告）反馈给 Google。如果此政策已停用，系统会关闭指标和诊断数据报告功能。
+
+对于受管设备，此政策默认处于启用状态，并且会向 Google 发送指标。
+
+对于非受管设备，用户可以决定是否发送指标。</translation>
 <translation id="4694138212536142867">启用设备硬件状态报告功能</translation>
 <translation id="4697581738794063407">控制网址参数过滤功能</translation>
 <translation id="4698895924806859508">不报告网络事件</translation>
@@ -4436,6 +4467,7 @@
 <translation id="5036013147560568855">证书配置协议的版本。默认是 1。1 表示“静态”协议。2 表示“动态”协议。</translation>
 <translation id="5039110755072335605">对 CORS 非通配符式请求标头的支持情况</translation>
 <translation id="504116558738617678">仅在相应设备不受管理或只有 1 个用户时显示磁盘空间不足警告</translation>
+<translation id="5046376406561077773">用户看不到与 <ph name="GOOGLE_DRIVE_NAME" />的文件同步功能相关的任何界面。</translation>
 <translation id="5055474681190962362">应在每月的哪一天 [1-31]（以设备的本地时区表示）重新启动设备。仅在“频率”设为“MONTHLY”时使用。如果此值超出给定月份的天数上限，系统将选择该月的最后一天。</translation>
 <translation id="5056708224511062314">放大镜已停用</translation>
 <translation id="5058573563327660283">选择在自动清理期间释放磁盘空间时采用的策略（已弃用）</translation>
@@ -5690,6 +5722,7 @@
           通常，当设备从锁屏状态恢复后，系统会关闭全屏模式以降低遭遇钓鱼式攻击的风险。此政策允许指定哪些网址会被视为可信来源且能在屏幕解锁后继续处于全屏模式。设置此政策时，必须按照这种格式 ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ) 指定网址格式列表。例如，可通过指定与所有网址都匹配的通配符 <ph name="WILDCARD_VALUE" /> 来允许始终在屏幕解锁后保持全屏模式并彻底停用通知功能。
 
           如果此政策设为空列表或未设置，任何网址都无法在不显示通知的情况下继续处于全屏模式。</translation>
+<translation id="6240222568708113780">允许对已启用安全浏览功能的用户所下载的内容进行深度扫描</translation>
 <translation id="624080397610861618">停用印地语 Inscript 布局</translation>
 <translation id="6242147107333796512">报告与崩溃报告相关的信息，例如远程 ID、捕获时间戳和原因。
 
@@ -7236,6 +7269,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="7485481791539008776">默认打印机选择规则</translation>
 <translation id="7486205887492534734">当登录屏幕上有多份证书匹配时，提示用户做出选择</translation>
 <translation id="748873163367340515">在搜索中仅使用必需 Cookie 和数据。</translation>
+<translation id="7489169777107143496">停用安全浏览功能的下载内容深度扫描服务</translation>
 <translation id="7489661071474025727">指定是否为使用 <ph name="PRODUCT_OS_NAME" /> 设备的用户启用账号恢复服务。
 
       如果此政策已启用，系统会启用用户数据恢复功能。如果此政策已停用或未设置，系统将不会启用用户数据恢复功能。
@@ -7501,6 +7535,11 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="7732907212083471072">已移除的政策</translation>
 <translation id="7734212505800048991">
           若是源自未被列入许可名单的上下文，对 getDisplayMedia 的调用会遭到拒绝。</translation>
+<translation id="7736218466096907954">如果此政策已启用或未设置，<ph name="PRODUCT_NAME" /> 中会显示新的下载气泡界面。
+
+      如果此政策已停用，<ph name="PRODUCT_NAME" /> 中会继续显示旧的下载任务栏界面。
+
+      此政策只是暂时性措施，已在新的下载气泡界面全面推出后移除。</translation>
 <translation id="7736521021425189418">终端（自 117 版起受支持）</translation>
 <translation id="77379430721695807">通过设置此政策，您可以指定一个网址列表，在其中列出与请求网址的安全来源匹配的网址格式。如果找到了匹配项，系统会在不提示用户的情况下直接允许相应网址使用录像设备
 

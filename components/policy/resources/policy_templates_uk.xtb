@@ -1918,6 +1918,15 @@ Keychain.
 <translation id="2697717608663878828">Увімкнути експеримент Encrypted ClientHello для TLS</translation>
 <translation id="2699836109975228367">Увімкнути функцію "Монофонічне аудіо" на екрані входу</translation>
 <translation id="2702023190395322609">Увімкнути рекомендації мультимедійного контенту</translation>
+<translation id="2703733412051211941">Запускає дію, коли комп’ютер неактивний.
+
+      Якщо це правило налаштувати, воно визначає час (у хвилинах), коли не відбувається ввід користувача й після якого веб-переглядач почне виконувати дії, задані в правилі <ph name="IDLE_TIMEOUT_ACTIONS_POLICY_NAME" />.
+
+      Якщо це правило не налаштувати, дії не виконуватимуться.
+
+      Мінімальне порогове значення – 1 хвилина.
+
+      Що саме вважається вводом користувача, визначають API операційної системи (це може бути рух мишею або введення тексту на клавіатурі).</translation>
 <translation id="270582584528242502">Не показувати вікно з попередженням, коли користувач намагається закрити веб-переглядач</translation>
 <translation id="2706708761587205154">Дозволити друк лише з PIN-кодом</translation>
 <translation id="2707733461906745082">Розділення профілів</translation>
@@ -6100,6 +6109,25 @@ HTTP-заголовок Origin-Agent-Cluster визначає, як ізолюв
       Якщо це правило вимкнено або не налаштовано, паролі SAML не можна буде змінювати на сторінці chrome://password-change, а сповіщення про завершення терміну їх дії не з’являтимуться.</translation>
 <translation id="6457477291648119596">Type42</translation>
 <translation id="6458361632497500815">Якщо це правило ввімкнено або не налаштовано, а правила <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" />, <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> і <ph name="DEVICE_UNAFFILIATED_CROSTINI_ALLOWED_POLICY_NAME" /> увімкнено, усі користувачі можуть застосовувати <ph name="PRODUCT_CROSTINI_NAME" />. Якщо це правило вимкнено, сторонні користувачі не можуть застосовувати <ph name="PRODUCT_CROSTINI_NAME" />. Якщо ви його вимкнете, змінені налаштування стосуватимуться запуску нових контейнерів <ph name="PRODUCT_CROSTINI_NAME" />, а не вже активних.</translation>
+<translation id="6458848208090676955">Список дій, які виконуються, коли спливає час очікування, заданий у правилі <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
+
+      Якщо не налаштувати правило <ph name="IDLE_TIMEOUT_POLICY_NAME" />, це правило не діє.
+
+      Коли спливає час очікування, заданий у правилі <ph name="IDLE_TIMEOUT_POLICY_NAME" />, веб-переглядач виконує дії, указані в цьому правилі.
+
+      Якщо це правило не налаштувати або не вказати для нього значення, правило <ph name="IDLE_TIMEOUT_POLICY_NAME" /> не діятиме.
+
+      Підтримуються наведені нижче дії.
+
+      <ph name="CLOSE_BROWSERS_ACTION" />: закрити всі вікна веб-переглядача й прогресивні веб-додатки для цього профілю. Не підтримується на пристроях Android.
+
+      <ph name="SHOW_PROFILE_PICKER_ACTION" />: показати вікно засобу вибору профілю. Не підтримується на пристроях Android.
+
+      <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />, <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />, <ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" />, <ph name="CLEAR_SITE_SETTINGS_ACTION" />, <ph name="CLEAR_HOSTED_APP_DATA_ACTION" />: очистити всі відповідні дані веб-перегляду. Щоб дізнатися більше, перегляньте правило <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" />.
+
+      <ph name="RELOAD_PAGES_ACTION" />: оновити всі веб-сторінки. На деяких сторінках може знадобитися підтвердити дію.
+
+      У разі налаштування дій <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" /> і <ph name="CLEAR_SITE_SETTINGS_ACTION" /> синхронізацію буде деактивовано для відповідних типів даних за умови, що функцію <ph name="CHROME_SYNC_NAME" /> не вимкнути за допомогою правила <ph name="SYNC_DISABLED_POLICY_NAME" /> і правило <ph name="BROWSER_SIGNIN_POLICY_NAME" /> також не вимкнути.</translation>
 <translation id="6462604655173570082">Якщо це правило не налаштувати або ввімкнути, користувачі зможуть бачити й використовувати кнопку сервісу <ph name="GOOGLE_LENS_PRODUCT_NAME" /> у полі пошуку на сторінці нової вкладки. Якщо правило вимкнути, користувачі не бачитимуть кнопку сервісу <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="6464074037294098618">Увімкнути функцію автозаповнення адрес</translation>
 <translation id="6467613372414922590">Дозволити хости на рівні користувача для обміну повідомленнями з оригінальними додатками (установлені без дозволів адміністратора)</translation>
