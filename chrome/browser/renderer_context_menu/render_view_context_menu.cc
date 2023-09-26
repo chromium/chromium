@@ -708,7 +708,7 @@ bool DoesInputFieldTypeSupportEmoji(
 // Otherwise nullopt.
 absl::optional<ash::SystemWebAppType> GetLinkSystemAppType(Profile* profile,
                                                            const GURL& url) {
-  absl::optional<web_app::AppId> link_app_id =
+  absl::optional<webapps::AppId> link_app_id =
       web_app::FindInstalledAppWithUrlInScope(profile, url);
 
   if (!link_app_id)
@@ -1796,7 +1796,7 @@ void RenderViewContextMenu::AppendOpenInWebAppLinkItems() {
   if (!provider)
     return;
 
-  absl::optional<web_app::AppId> link_app_id =
+  absl::optional<webapps::AppId> link_app_id =
       web_app::FindInstalledAppWithUrlInScope(profile, params_.link_url);
   if (!link_app_id)
     return;
@@ -3804,7 +3804,7 @@ bool RenderViewContextMenu::IsOpenLinkOTREnabled() const {
 }
 
 void RenderViewContextMenu::ExecOpenWebApp() {
-  absl::optional<web_app::AppId> app_id =
+  absl::optional<webapps::AppId> app_id =
       web_app::FindInstalledAppWithUrlInScope(
           Profile::FromBrowserContext(browser_context_), params_.link_url);
   // |app_id| could be nullopt if it has been uninstalled since the user

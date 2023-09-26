@@ -167,8 +167,8 @@
 using content::WebContents;
 using extensions::MimeHandlerViewGuest;
 using extensions::TestMimeHandlerViewGuest;
-using web_app::AppId;
 using web_app::WebAppProvider;
+using webapps::AppId;
 
 namespace {
 
