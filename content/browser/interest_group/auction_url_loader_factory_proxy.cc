@@ -265,9 +265,13 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
 
   bool network_instrumentation_enabled = false;
   if (owner_frame_tree_node_id_ != FrameTreeNode::kFrameTreeNodeInvalidId) {
+    FrameTreeNode* owner_frame_tree_node =
+        FrameTreeNode::GloballyFindByID(owner_frame_tree_node_id_);
+    new_request.throttling_profile_id =
+        owner_frame_tree_node->current_frame_host()->devtools_frame_token();
+
     devtools_instrumentation::ApplyAuctionNetworkRequestOverrides(
-        FrameTreeNode::GloballyFindByID(owner_frame_tree_node_id_),
-        &new_request, &network_instrumentation_enabled);
+        owner_frame_tree_node, &new_request, &network_instrumentation_enabled);
   }
 
   if (network_instrumentation_enabled) {
