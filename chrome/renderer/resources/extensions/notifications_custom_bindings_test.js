@@ -1,35 +1,34 @@
-// Copyright 2014 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * Test fixture for the notifications custom bindings adapter.
- * @constructor
- * @extends {testing.Test}
- */
-function NotificationsCustomBindingsTest() {
-  testing.Test.call(this);
+function assertTrue(condition) {
+  if (!condition) {
+    throw new Error('Assertion failed: expected ' + condition + ' to be true');
+  }
 }
 
-NotificationsCustomBindingsTest.prototype = {
-  __proto__: testing.Test.prototype,
+function assertEquals(a, b) {
+  if (a !== b) {
+    throw new Error('Assertion failed: expected ' + a + ' to equal ' + b);
+  }
+}
 
-  /** @Override */
-  extraLibraries: [
-    'notifications_test_util.js',
-    'notifications_custom_bindings.js'
-  ],
-};
+function assertFalse(condition) {
+  if (!!condition) {
+    throw new Error('Assertion failed: expected ' + condition + ' to be false');
+  }
+}
 
-TEST_F('NotificationsCustomBindingsTest', 'TestImageDataSetter', function () {
+function testImageDataSetter() {
   var c = {};
   var k = "key";
   var callback = imageDataSetter(c, k);
   callback('val');
   assertTrue(c[k] === 'val');
-});
+}
 
-TEST_F('NotificationsCustomBindingsTest', 'TestGetUrlSpecs', function () {
+function testGetUrlSpecs() {
   var imageSizes = {
     scaleFactor: 1.0,
     icon: { width: 10, height: 10 },
@@ -71,9 +70,9 @@ TEST_F('NotificationsCustomBindingsTest', 'TestGetUrlSpecs', function () {
       notificationDetails.buttons[0].iconBitmap === "buttonOneIconUrl|2|2");
   assertTrue(
       notificationDetails.buttons[1].iconBitmap === "buttonTwoIconUrl|2|2");
-});
+}
 
-TEST_F('NotificationsCustomBindingsTest', 'TestGetUrlSpecsScaled', function () {
+function testGetUrlSpecsScaled() {
   var imageSizes = {
     scaleFactor: 2.0,
     icon: { width: 10, height: 10 },
@@ -101,4 +100,4 @@ TEST_F('NotificationsCustomBindingsTest', 'TestGetUrlSpecsScaled', function () {
                "buttonOneIconUrl|4|4");
   assertEquals(notificationDetails.buttons[1].iconBitmap,
                "buttonTwoIconUrl|4|4");
-});
+}

@@ -1909,6 +1909,7 @@ if (!is_android) {
       "data/",
       "//ash/components/arc/test/data/icons",
       "//chrome/browser/page_load_metrics/integration_tests/data/",
+      "//chrome/renderer/resources/extensions/",
       "//chrome/test/data/cart/",
       "//components/test/data/ad_tagging/",
       "//components/test/data/ads_observer/",
@@ -2485,6 +2486,7 @@ if (!is_android) {
       "../browser/ui/extensions/extension_image_util_browsertest.cc",
       "../browser/ui/extensions/extension_side_panel_test_utils.h",
       "../browser/ui/extensions/hosted_app_browsertest.cc",
+      "../browser/ui/extensions/notifications_custom_bindings_browsertest.cc",
       "../browser/ui/extensions/settings_overridden_params_providers_browsertest.cc",
       "../browser/ui/find_bar/find_bar_controller_browsertest.cc",
       "../browser/ui/find_bar/find_bar_host_browsertest.cc",
@@ -7972,13 +7974,9 @@ test("unit_tests") {
 
     data += [ "//ash/components/arc/test/data/icons/" ]
 
-    if (include_js2gtest_tests) {
-      deps += [ "//chrome/test/data/webui:unit_tests_js" ]
-      if (is_chromeos_ash) {
-        deps += [
-          "//chrome/browser/resources/chromeos/accessibility:unit_tests_js",
-        ]
-      }
+    if (include_js2gtest_tests && is_chromeos_ash) {
+      deps +=
+          [ "//chrome/browser/resources/chromeos/accessibility:unit_tests_js" ]
     }
   }
 

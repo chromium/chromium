@@ -306,18 +306,6 @@ if (include_js2gtest_tests) {
       defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     }
   }
-
-  js2gtest("unit_tests_js") {
-    test_type = "unit"
-    sources = [
-      "../../../renderer/resources/extensions/notifications_custom_bindings.gtestjs",
-      "../unit/framework_unittest.gtestjs",
-    ]
-    extra_js_files = [
-      "../../../renderer/resources/extensions/notifications_custom_bindings.js",
-      "../../../renderer/resources/extensions/notifications_test_util.js",
-    ]
-  }
 }
 
 if (is_chromeos_ash) {
