@@ -604,8 +604,9 @@ void BubbleDialogDelegate::OnBubbleWidgetClosing() {
   // focus traversal path. Don't reset kAnchoredDialogKey or we risk detaching
   // a widget from the traversal path.
   if (GetAnchorView() &&
-      GetAnchorView()->GetProperty(kAnchoredDialogKey) == this)
+      GetAnchorView()->GetProperty(kAnchoredDialogKey) == this) {
     GetAnchorView()->ClearProperty(kAnchoredDialogKey);
+  }
 
   if (base::FeatureList::IsEnabled(::features::kBubbleMetricsApi)) {
     if (bubble_shown_time_.has_value()) {
@@ -614,6 +615,9 @@ void BubbleDialogDelegate::OnBubbleWidgetClosing() {
     }
     UmaHistogramLongTimes("Bubble.All.TimeVisible", bubble_shown_duration_);
   }
+
+  base::UmaHistogramEnumeration("Bubble.All.CloseReason",
+                                GetWidget()->closed_reason());
 }
 
 void BubbleDialogDelegate::OnAnchorWidgetDestroying() {

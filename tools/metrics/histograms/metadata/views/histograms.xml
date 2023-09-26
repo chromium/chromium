@@ -22,6 +22,64 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="BubbleName">
+  <variant name="All" summary="Aggregated metrics for all bubbles"/>
+</variants>
+
+<histogram name="Bubble.{BubbleName}.CloseReason" enum="WidgetClosedReason"
+    expires_after="2024-09-01">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>dayeung@chromium.org</owner>
+  <owner>temao@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>Records the reason a bubble was closed.</summary>
+  <token key="BubbleName" variants="BubbleName"/>
+</histogram>
+
+<histogram name="Bubble.{BubbleName}.CreateToPresentationTime" units="ms"
+    expires_after="2024-09-01">
+  <owner>temao@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>dayeung@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    Records the time it takes from a bubble construction to when the compositor
+    finishes the first presentation.
+  </summary>
+  <token key="BubbleName" variants="BubbleName"/>
+</histogram>
+
+<histogram name="Bubble.{BubbleName}.CreateToVisibleTime" units="ms"
+    expires_after="2024-09-01">
+  <owner>temao@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>dayeung@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    Records the time it takes from a bubble construction to when the bubble
+    becomes visible.
+  </summary>
+  <token key="BubbleName" variants="BubbleName"/>
+</histogram>
+
+<histogram name="Bubble.{BubbleName}.TimeVisible" units="ms"
+    expires_after="2024-09-01">
+  <owner>yuhengh@chromium.org</owner>
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>dayeung@chromium.org</owner>
+  <owner>temao@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>Records the time a bubble is visible.</summary>
+  <token key="BubbleName" variants="BubbleName"/>
+</histogram>
+
 <histogram name="Views.ColorProviderCacheSize" units="entries"
     expires_after="2024-02-25">
   <owner>pkasting@chromium.org</owner>
