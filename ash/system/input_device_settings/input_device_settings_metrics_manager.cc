@@ -639,6 +639,28 @@ void InputDeviceSettingsMetricsManager::RecordTouchpadChangedMetrics(
   }
 }
 
+void InputDeviceSettingsMetricsManager::RecordGraphicsTabletInitialMetrics(
+    const mojom::GraphicsTablet& graphics_tablet) {
+  // Only record the metrics once for each graphics tablet.
+  const auto account_id =
+      Shell::Get()->session_controller()->GetActiveAccountId();
+  auto iter = recorded_graphics_tablets_.find(account_id);
+
+  if (iter != recorded_graphics_tablets_.end() &&
+      base::Contains(iter->second, graphics_tablet.device_key)) {
+    return;
+  }
+  recorded_graphics_tablets_[account_id].insert(graphics_tablet.device_key);
+
+  // TODO(cambickel): Add graphics tablet initial metrics logging.
+}
+
+void InputDeviceSettingsMetricsManager::RecordGraphicsTabletChangedMetrics(
+    const mojom::GraphicsTablet& graphics_tablet,
+    const mojom::GraphicsTabletSettings& old_settings) {
+  // TODO(cambickel): Add graphics tablet changed metrics logging.
+}
+
 void InputDeviceSettingsMetricsManager::RecordModifierRemappingHash(
     const mojom::Keyboard& keyboard) {
   // Compute hash by left-shifting by `kModifierHashWidth` and then inserting

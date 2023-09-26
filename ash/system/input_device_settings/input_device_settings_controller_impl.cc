@@ -1115,9 +1115,12 @@ void InputDeviceSettingsControllerImpl::SetGraphicsTabletSettings(
     return;
   }
 
+  const auto old_settings = std::move(found_graphics_tablet.settings);
   found_graphics_tablet.settings = settings.Clone();
   graphics_tablet_pref_handler_->UpdateGraphicsTabletSettings(
       active_pref_service_, found_graphics_tablet);
+  metrics_manager_->RecordGraphicsTabletChangedMetrics(found_graphics_tablet,
+                                                       *old_settings);
   DispatchGraphicsTabletSettingsChanged(id);
 
   UpdateDuplicateDeviceSettings(
@@ -1494,6 +1497,7 @@ void InputDeviceSettingsControllerImpl::InitializeGraphicsTabletSettings(
   if (active_pref_service_) {
     graphics_tablet_pref_handler_->InitializeGraphicsTabletSettings(
         active_pref_service_, graphics_tablet);
+    metrics_manager_->RecordGraphicsTabletInitialMetrics(*graphics_tablet);
     return;
   }
 
