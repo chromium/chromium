@@ -271,9 +271,9 @@ std::vector<base::test::FeatureRef> DictationTestUtils::GetDisabledFeatures() {
   return test_helper_->GetDisabledFeatures();
 }
 
-std::string DictationTestUtils::ExecuteAccessibilityCommonScript(
+void DictationTestUtils::ExecuteAccessibilityCommonScript(
     const std::string& script) {
-  return extensions::browsertest_util::ExecuteScriptInBackgroundPageDeprecated(
+  extensions::browsertest_util::ExecuteScriptInBackgroundPage(
       /*context=*/profile_,
       /*extension_id=*/extension_misc::kAccessibilityCommonExtensionId,
       /*script=*/script);

@@ -13,11 +13,11 @@ class DictationTestSupport {
 
   /**
    * Notifies C++ tests, which wait for the JS side to call
-   * `domAutomationController.send`, that they can continue.
+   * `chrome.test.sendScriptResult`, that they can continue.
    * @private
    */
   notifyCcTests_() {
-    domAutomationController.send('ready');
+    chrome.test.sendScriptResult('ready');
   }
 
   /** Sets Dictation timeouts for test stability. */

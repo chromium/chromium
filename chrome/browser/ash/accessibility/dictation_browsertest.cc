@@ -289,8 +289,8 @@ class DictationTestBase : public InProcessBrowserTest,
 
   void DisablePumpkin() { utils_->DisablePumpkin(); }
 
-  std::string ExecuteAccessibilityCommonScript(const std::string& script) {
-    return utils_->ExecuteAccessibilityCommonScript(script);
+  void ExecuteAccessibilityCommonScript(const std::string& script) {
+    utils_->ExecuteAccessibilityCommonScript(script);
   }
 
   std::string GetClipboardText() {
