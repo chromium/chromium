@@ -1788,7 +1788,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // the visual properties of the `RenderWidgetHost`.
   void SetWindowShowState(ui::WindowShowState state);
 #endif
-  bool CanUseAdditionalWindowingControls(base::StringPiece js_api_name);
 
   // Helper method that's called whenever |preferred_size_| or
   // |preferred_size_for_capture_| changes, to propagate the new value to the

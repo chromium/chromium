@@ -3839,39 +3839,16 @@ void WebContentsImpl::FullscreenStateChanged(
     FullscreenFrameSetUpdated();
 }
 
-bool WebContentsImpl::CanUseAdditionalWindowingControls(
-    base::StringPiece js_api_name) {
-  auto* rfh = GetPrimaryMainFrame();
-  if (IsWindowManagementGranted(rfh)) {
-    return true;
-  }
-  rfh->AddMessageToConsole(
-      blink::mojom::ConsoleMessageLevel::kWarning,
-      base::StrCat({js_api_name,
-                    " blocked due to `window-management` permission not "
-                    "being granted."}));
-  return false;
-}
-
 #if defined(USE_AURA)
 void WebContentsImpl::Maximize() {
-  if (!CanUseAdditionalWindowingControls("window.maximize")) {
-    return;
-  }
   SetWindowShowState(ui::SHOW_STATE_MAXIMIZED);
 }
 
 void WebContentsImpl::Minimize() {
-  if (!CanUseAdditionalWindowingControls("window.minimize")) {
-    return;
-  }
   SetWindowShowState(ui::SHOW_STATE_MINIMIZED);
 }
 
 void WebContentsImpl::Restore() {
-  if (!CanUseAdditionalWindowingControls("window.restore")) {
-    return;
-  }
   SetWindowShowState(ui::SHOW_STATE_NORMAL);
 }
 

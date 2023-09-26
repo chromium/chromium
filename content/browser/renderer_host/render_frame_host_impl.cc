@@ -6607,7 +6607,10 @@ void RenderFrameHostImpl::FullscreenStateChanged(
 }
 
 #if defined(USE_AURA)
-bool RenderFrameHostImpl::CanUseWindowingControls() {
+bool RenderFrameHostImpl::CanUseWindowingControls(
+    base::StringPiece js_api_name) {
+  // TODO(laurila, crbug.com/1466855): Create bad_message::ENTRIES for the
+  // strings.
   if (!base::FeatureList::IsEnabled(
           blink::features::kDesktopPWAsAdditionalWindowingControls)) {
     mojo::ReportBadMessage("API called without the feature enabled.");
@@ -6620,11 +6623,18 @@ bool RenderFrameHostImpl::CanUseWindowingControls() {
   if (!IsActive()) {
     return false;
   }
+  if (!IsWindowManagementGranted(this)) {
+    mojo::ReportBadMessage(
+        base::StrCat({js_api_name,
+                      " blocked due to `window-management` permission not "
+                      "being granted."}));
+    return false;
+  }
   return true;
 }
 
 void RenderFrameHostImpl::Maximize() {
-  if (!CanUseWindowingControls()) {
+  if (!CanUseWindowingControls("window.maximize")) {
     return;
   }
 
@@ -6632,7 +6642,7 @@ void RenderFrameHostImpl::Maximize() {
 }
 
 void RenderFrameHostImpl::Minimize() {
-  if (!CanUseWindowingControls()) {
+  if (!CanUseWindowingControls("window.minimize")) {
     return;
   }
 
@@ -6640,7 +6650,7 @@ void RenderFrameHostImpl::Minimize() {
 }
 
 void RenderFrameHostImpl::Restore() {
-  if (!CanUseWindowingControls()) {
+  if (!CanUseWindowingControls("window.restore")) {
     return;
   }
 
