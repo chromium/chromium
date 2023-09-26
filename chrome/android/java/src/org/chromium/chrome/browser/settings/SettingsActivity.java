@@ -22,7 +22,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.Toolbar;
@@ -97,10 +96,7 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.privacy_sandbox.TrackingProtectionSettings;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.UiUtils;
-import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.base.IntentRequestTracker;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 
@@ -137,9 +133,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
     private OneshotSupplierImpl<BottomSheetController> mBottomSheetControllerSupplier =
             new OneshotSupplierImpl<>();
-
-    private IntentRequestTracker mIntentRequestTracker;
-    private WindowAndroid mWindowAndroid;
 
     @Nullable
     private UiConfig mUiConfig;
@@ -200,12 +193,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
         setStatusBarColor();
         initBottomSheet();
-
-        if (BuildInfo.getInstance().isAutomotive) {
-            mIntentRequestTracker = IntentRequestTracker.createFromActivity(this);
-            mWindowAndroid = new ActivityWindowAndroid(
-                    this, /* listenToActivityState= */ true, mIntentRequestTracker);
-        }
     }
 
     @Override
@@ -368,17 +355,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         checkForMissingDeviceLockOnAutomotive();
     }
 
-    @CallSuper
-    @Override
-    protected void onDestroy() {
-        if (mWindowAndroid != null) {
-            mWindowAndroid.destroy();
-            mWindowAndroid = null;
-        }
-
-        super.onDestroy();
-    }
-
     private void checkForMissingDeviceLockOnAutomotive() {
         if (BuildInfo.getInstance().isAutomotive) {
             if (mMissingDeviceLockLauncher == null) {
@@ -507,9 +483,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
         // Settings screen specific attachments.
         if (fragment instanceof MainSettings) {
-            MainSettings mainSettings = ((MainSettings) fragment);
-            mainSettings.setModalDialogManagerSupplier(getModalDialogManagerSupplier());
-            mainSettings.setWindowAndroid(mWindowAndroid);
+            ((MainSettings) fragment)
+                    .setModalDialogManagerSupplier(getModalDialogManagerSupplier());
         }
         if (fragment instanceof SiteSettingsPreferenceFragment) {
             ((SiteSettingsPreferenceFragment) fragment)
@@ -610,26 +585,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             ((TrackingProtectionSettings) fragment)
                     .setTrackingProtectionDelegate(new ChromeTrackingProtectionDelegate(mProfile));
         }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (mIntentRequestTracker != null) {
-            mIntentRequestTracker.onActivityResult(requestCode, resultCode, data);
-        }
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    /** Get the tracker of this activity's intents. May be null if one was not created. */
-    public @Nullable IntentRequestTracker getIntentRequestTracker() {
-        return mIntentRequestTracker;
-    }
-
-    /**
-     * @return A {@link ActivityWindowAndroid} instance. May be null if one was not created.
-     */
-    public @Nullable WindowAndroid getWindowAndroid() {
-        return mWindowAndroid;
     }
 
     @Override

@@ -59,7 +59,6 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.HashMap;
@@ -97,7 +96,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
     private ChromeBasePreference mManageSync;
     private @Nullable PasswordCheck mPasswordCheck;
     private ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
-    private WindowAndroid mWindowAndroid;
 
     public MainSettings() {
         setHasOptionsMenu(true);
@@ -369,8 +367,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
         }
         findPreference(PREF_AUTOFILL_PAYMENTS)
                 .setOnPreferenceClickListener(preference
-                        -> SettingsLauncherHelper.showAutofillCreditCardSettings(
-                                getActivity(), mWindowAndroid));
+                        -> SettingsLauncherHelper.showAutofillCreditCardSettings(getActivity()));
         findPreference(PREF_AUTOFILL_ADDRESSES)
                 .setOnPreferenceClickListener(preference
                         -> SettingsLauncherHelper.showAutofillProfileSettings(getActivity()));
@@ -449,9 +446,5 @@ public class MainSettings extends ChromeBaseSettingsFragment
     public void setModalDialogManagerSupplier(
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
-    }
-
-    public void setWindowAndroid(WindowAndroid windowAndroid) {
-        mWindowAndroid = windowAndroid;
     }
 }

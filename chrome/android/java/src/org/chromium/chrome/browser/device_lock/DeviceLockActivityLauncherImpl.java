@@ -4,16 +4,12 @@
 
 package org.chromium.chrome.browser.device_lock;
 
-import android.app.Activity;
-import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.ui.device_lock.DeviceLockCoordinator;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
-import org.chromium.components.browser_ui.device_lock.DeviceLockBridge;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -33,24 +29,6 @@ public class DeviceLockActivityLauncherImpl implements DeviceLockActivityLaunche
         return sLauncher;
     }
 
-    /**
-     * Set the shared instance for testing.
-     *
-     * @param deviceLockActivityLauncherImpl The {@link DeviceLockActivityLauncherImpl} instance to
-     *        use for testing.
-     */
-    public static void setInstanceForTesting(
-            DeviceLockActivityLauncherImpl deviceLockActivityLauncherImpl) {
-        sLauncher = deviceLockActivityLauncherImpl;
-    }
-
-    /**
-     * Resets the shared instance used for testing.
-     */
-    public static void resetInstanceForTesting() {
-        sLauncher = null;
-    }
-
     private DeviceLockActivityLauncherImpl() {}
 
     @Override
@@ -60,35 +38,5 @@ public class DeviceLockActivityLauncherImpl implements DeviceLockActivityLaunche
         Intent intent = DeviceLockActivity.createIntent(
                 context, selectedAccount, requireDeviceLockReauthentication);
         windowAndroid.showIntent(intent, callback, null);
-    }
-
-    // TODO(crbug.com/1482534)
-    // Refactor to use DeviceLockDialogController rather than #launchDeviceLockActivity.
-    @Override
-    public void presentDeviceLockChallenge(Context context,
-            boolean requireDeviceLockReauthentication, WindowAndroid windowAndroid,
-            Runnable callback) {
-        if (shouldShowDeviceLockPage(context)) {
-            launchDeviceLockActivity(context, null, requireDeviceLockReauthentication,
-                    windowAndroid, (int resultCode, Intent data) -> {
-                        if (resultCode == Activity.RESULT_OK) {
-                            callback.run();
-                        }
-                    });
-        } else {
-            DeviceLockCoordinator.createDeviceLockAuthenticatorBridge().reauthenticate(
-                    (authSucceeded) -> {
-                        if (authSucceeded) {
-                            callback.run();
-                        }
-                    });
-        }
-    }
-
-    private static boolean shouldShowDeviceLockPage(Context context) {
-        boolean deviceLockIsPresent =
-                ((KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE))
-                        .isDeviceSecure();
-        return !DeviceLockBridge.deviceLockPageHasBeenPassed() || !deviceLockIsPresent;
     }
 }
