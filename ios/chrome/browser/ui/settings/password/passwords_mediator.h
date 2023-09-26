@@ -43,6 +43,10 @@ class Tracker;
 // Disconnect the observers.
 - (void)disconnect;
 
+// Ask the Feature Engagement Tracker whether or not the Password Manager widget
+// promo can be shown.
+- (void)askFETToShowPasswordManagerWidgetPromo;
+
 @property(nonatomic, weak) id<PasswordsConsumer> consumer;
 
 // Feature Engagement Tracker used to handle promo events.

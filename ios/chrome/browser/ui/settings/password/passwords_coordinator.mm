@@ -489,6 +489,8 @@ using password_manager::WarningType;
 
   [self recordPasswordManagerVisitIfNeeded];
 
+  [self.mediator askFETToShowPasswordManagerWidgetPromo];
+
   // Cleanup reauthCoordinator if scene state monitoring is not enabled.
   if (!password_manager::features::IsAuthOnEntryV2Enabled()) {
     [_reauthCoordinator stop];

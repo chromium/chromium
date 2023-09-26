@@ -124,8 +124,6 @@ using password_manager::features::IsPasswordCheckupEnabled;
       setSavingPasswordsToAccount:password_manager_util::GetPasswordSyncState(
                                       _syncService) !=
                                   password_manager::SyncState::kNotSyncing];
-  [self.consumer setShouldShowPasswordManagerWidgetPromo:
-                     [self shouldShowPasswordManagerWidgetPromo]];
 }
 
 - (void)disconnect {
@@ -142,6 +140,13 @@ using password_manager::features::IsPasswordCheckupEnabled;
   _faviconLoader = nullptr;
   _prefService = nullptr;
   _syncService = nullptr;
+}
+
+- (void)askFETToShowPasswordManagerWidgetPromo {
+  if (self.tracker && !_shouldNotifyFETToDismissPasswordManagerWidgetPromo) {
+    [self.consumer setShouldShowPasswordManagerWidgetPromo:
+                       [self shouldShowPasswordManagerWidgetPromo]];
+  }
 }
 
 #pragma mark - PasswordManagerViewControllerDelegate

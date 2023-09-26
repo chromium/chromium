@@ -214,12 +214,9 @@ TEST_F(PasswordsMediatorTest, NotifiesConsumerOnPasswordChange) {
 // is being notified of whether the Password Manager widget promo should be
 // shown when the mediator's consumer is set.
 TEST_F(PasswordsMediatorTest, NotifiesConsumerToShowPromoOrNot) {
-  FakePasswordsConsumer* different_consumer =
-      [[FakePasswordsConsumer alloc] init];
-
   // Make sure that `shouldShowPasswordManagerWidgetPromoCalled` isn't already
   // true.
-  EXPECT_FALSE(different_consumer.shouldShowPasswordManagerWidgetPromoCalled);
+  EXPECT_FALSE(consumer().shouldShowPasswordManagerWidgetPromoCalled);
 
   EXPECT_CALL(
       *mockTracker(),
@@ -227,9 +224,9 @@ TEST_F(PasswordsMediatorTest, NotifiesConsumerToShowPromoOrNot) {
           feature_engagement::kIPHiOSPromoPasswordManagerWidgetFeature)))
       .Times(testing::Exactly(1));
 
-  mediator().consumer = different_consumer;
+  [mediator() askFETToShowPasswordManagerWidgetPromo];
 
-  EXPECT_TRUE(different_consumer.shouldShowPasswordManagerWidgetPromoCalled);
+  EXPECT_TRUE(consumer().shouldShowPasswordManagerWidgetPromoCalled);
 }
 
 // Tests that `Dismissed` is called on the FET on disconnect when the Password
