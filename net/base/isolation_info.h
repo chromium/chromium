@@ -68,7 +68,7 @@ class NET_EXPORT IsolationInfo {
   };
 
   // Default constructor returns an IsolationInfo with empty origins, a null
-  // SiteForCookies(), true |is_internal|, and a RequestType of kOther.
+  // SiteForCookies(), and a RequestType of kOther.
   IsolationInfo();
   IsolationInfo(const IsolationInfo&);
   IsolationInfo(IsolationInfo&&);
@@ -80,7 +80,7 @@ class NET_EXPORT IsolationInfo {
   // Simple constructor for internal requests. Sets |frame_origin| and
   // |site_for_cookies| match |top_frame_origin|. Sets |request_type| to
   // kOther. Will only send SameSite cookies to the site associated with
-  // the passed in origin. |is_internal| is set to be false.
+  // the passed in origin.
   static IsolationInfo CreateForInternalRequest(
       const url::Origin& top_frame_origin);
 
@@ -114,7 +114,6 @@ class NET_EXPORT IsolationInfo {
       const url::Origin& top_frame_origin,
       const url::Origin& frame_origin,
       const SiteForCookies& site_for_cookies,
-      bool is_internal = true,
       const absl::optional<base::UnguessableToken>& nonce = absl::nullopt);
 
   // TODO(crbug/1372769): Remove this and create a safer way to ensure NIKs
@@ -133,7 +132,6 @@ class NET_EXPORT IsolationInfo {
       const absl::optional<url::Origin>& top_frame_origin,
       const absl::optional<url::Origin>& frame_origin,
       const SiteForCookies& site_for_cookies,
-      bool is_internal = true,
       const absl::optional<base::UnguessableToken>& nonce = absl::nullopt);
 
   // Create a new IsolationInfo for a redirect to the supplied origin. |this| is
@@ -176,10 +174,6 @@ class NET_EXPORT IsolationInfo {
   // Do not use outside of testing. Returns the `frame_origin_`.
   const absl::optional<url::Origin>& frame_origin_for_testing() const;
 
-  // Return whether this IsolationInfo is for an internal request context or
-  // not.
-  bool is_internal() const { return is_internal_; }
-
   bool IsEqualForTesting(const IsolationInfo& other) const;
 
   NetworkAnonymizationKey CreateNetworkAnonymizationKeyForIsolationInfo(
@@ -198,8 +192,7 @@ class NET_EXPORT IsolationInfo {
                 const absl::optional<url::Origin>& top_frame_origin,
                 const absl::optional<url::Origin>& frame_origin,
                 const SiteForCookies& site_for_cookies,
-                const absl::optional<base::UnguessableToken>& nonce,
-                bool is_internal);
+                const absl::optional<base::UnguessableToken>& nonce);
 
   RequestType request_type_;
 
@@ -217,9 +210,6 @@ class NET_EXPORT IsolationInfo {
   // Having a nonce is a way to force a transient opaque `IsolationInfo`
   // for non-opaque origins.
   absl::optional<base::UnguessableToken> nonce_;
-
-  // Whether the isolation info is for a browser-internal context or not.
-  bool is_internal_;
 
   // Mojo serialization code needs to access internal fields.
   friend struct mojo::StructTraits<network::mojom::IsolationInfoDataView,

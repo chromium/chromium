@@ -3865,8 +3865,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest,
   // if there were a top-level navigation to the final URL.
   net::IsolationInfo expected_isolation_info = net::IsolationInfo::Create(
       net::IsolationInfo::RequestType::kMainFrame, final_url_origin,
-      final_url_origin, net::SiteForCookies::FromOrigin(final_url_origin),
-      /*is_internal=*/false);
+      final_url_origin, net::SiteForCookies::FromOrigin(final_url_origin));
 
   // <origin_one>/download-attribute.html initiates a download of
   // <origin_one>/ping, which redirects to <origin_two>/download.
@@ -4470,8 +4469,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest,
   // navigation to the download.
   net::IsolationInfo expected_isolation_info = net::IsolationInfo::Create(
       net::IsolationInfo::RequestType::kSubFrame, download_origin,
-      download_origin, net::SiteForCookies::FromOrigin(download_origin),
-      /*is_internal=*/false);
+      download_origin, net::SiteForCookies::FromOrigin(download_origin));
 
   GURL frame_url = origin_one.GetURL("/download-attribute.html?target=" +
                                      download_url.spec());

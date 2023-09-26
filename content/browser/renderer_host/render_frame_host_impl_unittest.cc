@@ -207,7 +207,7 @@ TEST_F(RenderFrameHostImplTest, CrossSiteAncestorInFrameTree) {
       blink::mojom::AncestorChainBit::kCrossSite);
   net::IsolationInfo expected_final_isolation_info = net::IsolationInfo::Create(
       net::IsolationInfo::RequestType::kOther, expected_final_origin,
-      expected_final_origin, net::SiteForCookies(), /*is_internal=*/false);
+      expected_final_origin, net::SiteForCookies());
 
   EXPECT_EQ(expected_final_origin, child_rfh_2->GetLastCommittedOrigin());
   EXPECT_EQ(expected_final_storage_key, child_rfh_2->GetStorageKey());
@@ -233,8 +233,7 @@ TEST_F(RenderFrameHostImplTest, IsolationInfoDuringCommit) {
       net::IsolationInfo::Create(
           net::IsolationInfo::RequestType::kOther, expected_initial_origin,
           expected_initial_origin,
-          net::SiteForCookies::FromOrigin(expected_initial_origin),
-          /*is_internal=*/false);
+          net::SiteForCookies::FromOrigin(expected_initial_origin));
 
   GURL final_url = GURL("https://final.example.test/");
   url::Origin expected_final_origin = url::Origin::Create(final_url);
@@ -243,8 +242,7 @@ TEST_F(RenderFrameHostImplTest, IsolationInfoDuringCommit) {
   net::IsolationInfo expected_final_isolation_info = net::IsolationInfo::Create(
       net::IsolationInfo::RequestType::kOther, expected_final_origin,
       expected_final_origin,
-      net::SiteForCookies::FromOrigin(expected_final_origin),
-      /*is_internal=*/false);
+      net::SiteForCookies::FromOrigin(expected_final_origin));
 
   // Start the test with a simple navigation.
   {

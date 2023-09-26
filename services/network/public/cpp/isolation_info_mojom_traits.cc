@@ -70,7 +70,7 @@ bool StructTraits<network::mojom::IsolationInfoDataView, net::IsolationInfo>::
   absl::optional<net::IsolationInfo> isolation_info =
       net::IsolationInfo::CreateIfConsistent(request_type, top_frame_origin,
                                              frame_origin, site_for_cookies,
-                                             data.is_internal(), nonce);
+                                             nonce);
   if (!isolation_info) {
     network::debug::SetDeserializationCrashKeyString("isolation_inconsistent");
     return false;

@@ -57,10 +57,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     return input.site_for_cookies();
   }
 
-  static bool is_internal(const net::IsolationInfo& input) {
-    return input.is_internal_;
-  }
-
   static bool Read(network::mojom::IsolationInfoDataView data,
                    net::IsolationInfo* out);
 };

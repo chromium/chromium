@@ -4106,7 +4106,7 @@ net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoInternal(
       ComputeNonce(is_credentialless, fenced_frame_nonce_for_navigation);
   return net::IsolationInfo::Create(request_type, top_frame_origin,
                                     frame_origin, candidate_site_for_cookies,
-                                    /*is_internal=*/false, nonce);
+                                    nonce);
 }
 
 absl::optional<base::UnguessableToken> RenderFrameHostImpl::ComputeNonce(

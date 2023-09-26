@@ -14,6 +14,6 @@ message IsolationInfo {
   optional string frame_origin = 3;
   optional string site_for_cookies = 4;
 
-  message PartyContext { repeated string site = 1; }
-  optional PartyContext party_context = 5;
+  reserved 5;
+  reserved "party_context";
 }

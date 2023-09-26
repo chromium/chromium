@@ -485,8 +485,7 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest,
   EXPECT_TRUE(request->trusted_params->isolation_info.IsEqualForTesting(
       net::IsolationInfo::Create(net::IsolationInfo::RequestType::kMainFrame,
                                  origin, origin,
-                                 net::SiteForCookies::FromOrigin(origin),
-                                 /*is_internal=*/false)));
+                                 net::SiteForCookies::FromOrigin(origin))));
 }
 
 class ViewSourceWithSplitCacheTest

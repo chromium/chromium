@@ -1009,8 +1009,7 @@ TEST_P(RestrictedCookieManagerTest, GetAllForUrlSameParty) {
 
   service_->OverrideIsolationInfoForTesting(net::IsolationInfo::Create(
       net::IsolationInfo::RequestType::kOther, kDefaultOrigin, kDefaultOrigin,
-      net::SiteForCookies(),
-      /*is_internal=*/false));
+      net::SiteForCookies()));
   {
     auto options = mojom::CookieManagerGetOptions::New();
     options->name = "cookie-name";
@@ -1032,8 +1031,7 @@ TEST_P(RestrictedCookieManagerTest, GetAllForUrlSameParty) {
 
   service_->OverrideIsolationInfoForTesting(net::IsolationInfo::Create(
       net::IsolationInfo::RequestType::kOther, kDefaultOrigin, kDefaultOrigin,
-      net::SiteForCookies(),
-      /*is_internal=*/false));
+      net::SiteForCookies()));
 
   EXPECT_THAT(sync_service_->GetAllForUrl(
                   kDefaultUrlWithPath, net::SiteForCookies(), kDefaultOrigin,
@@ -1819,7 +1817,7 @@ TEST_P(RestrictedCookieManagerTest, PartitionKeyWithNonce) {
   const base::UnguessableToken kNonce = base::UnguessableToken::Create();
   const net::IsolationInfo kNoncedIsolationInfo = net::IsolationInfo::Create(
       net::IsolationInfo::RequestType::kMainFrame, kTopFrameOrigin,
-      kTopFrameOrigin, kSiteForCookies, /*is_internal=*/false, kNonce);
+      kTopFrameOrigin, kSiteForCookies, kNonce);
 
   const absl::optional<net::CookiePartitionKey> kNoncedPartitionKey =
       net::CookiePartitionKey::FromNetworkIsolationKey(
