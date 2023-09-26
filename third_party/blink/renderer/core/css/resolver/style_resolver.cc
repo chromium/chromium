@@ -1193,9 +1193,13 @@ void StyleResolver::InitStyle(Element& element,
     // be propagated from shadow host to distributed node.
     if (!style_request.IsPseudoStyleRequest() && element.AssignedSlot()) {
       if (Element* parent = element.parentElement()) {
-        if (const ComputedStyle* shadow_host_style =
-                parent->GetComputedStyle()) {
-          state.StyleBuilder().SetUserModify(shadow_host_style->UserModify());
+        if (!RuntimeEnabledFeatures::
+                InheritUserModifyWithoutContenteditableEnabled() ||
+            !element.FastHasAttribute(html_names::kContenteditableAttr)) {
+          if (const ComputedStyle* shadow_host_style =
+                  parent->GetComputedStyle()) {
+            state.StyleBuilder().SetUserModify(shadow_host_style->UserModify());
+          }
         }
       }
     }

@@ -2074,6 +2074,10 @@
       base_feature: "none",
     },
     {
+      name: "InheritUserModifyWithoutContenteditable",
+      status: "stable",
+    },
+    {
       // If enabled, setting innerHTML will use a special fast-path parser.
       name: "InnerHTMLParserFastpath",
       status: "stable",
