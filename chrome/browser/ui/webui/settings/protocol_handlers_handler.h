@@ -11,13 +11,13 @@
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registrar_observer.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
+#include "components/webapps/common/web_app_id.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // ProtocolHandlersHandler
@@ -52,7 +52,7 @@ class ProtocolHandlersHandler
 
   // web_app::WebAppInstallManagerObserver:
   void OnWebAppUninstalled(
-      const web_app::AppId& app_id,
+      const webapps::AppId& app_id,
       webapps::WebappUninstallSource uninstall_source) override;
   void OnWebAppInstallManagerDestroyed() override;
 

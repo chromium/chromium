@@ -62,7 +62,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -103,6 +102,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/storage_partition.h"
@@ -2602,9 +2602,9 @@ class SiteSettingsHandlerIsolatedWebAppTest : public SiteSettingsHandlerTest {
         "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
   }
 
-  web_app::AppId InstallIsolatedWebApp(const GURL& iwa_url,
+  webapps::AppId InstallIsolatedWebApp(const GURL& iwa_url,
                                        const std::string& name) {
-    web_app::AppId app_id =
+    webapps::AppId app_id =
         web_app::AddDummyIsolatedAppToRegistry(profile(), iwa_url, name);
     RegisterWebApp(profile(), MakeApp(app_id, apps::AppType::kWeb,
                                       iwa_url.spec(), apps::Readiness::kReady,
