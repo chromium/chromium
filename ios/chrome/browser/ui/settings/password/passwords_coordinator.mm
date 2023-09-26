@@ -43,6 +43,7 @@
 #import "ios/chrome/browser/ui/settings/password/passwords_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_settings_commands.h"
 #import "ios/chrome/browser/ui/settings/password/reauthentication/reauthentication_coordinator.h"
+#import "ios/chrome/browser/ui/settings/password/widget_promo_instructions/widget_promo_instructions_coordinator.h"
 #import "ios/chrome/browser/ui/settings/utils/password_utils.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -58,7 +59,8 @@ using password_manager::WarningType;
     PasswordSettingsCoordinatorDelegate,
     PasswordsSettingsCommands,
     PasswordManagerViewControllerPresentationDelegate,
-    ReauthenticationCoordinatorDelegate>
+    ReauthenticationCoordinatorDelegate,
+    WidgetPromoInstructionsCoordinatorDelegate>
 
 // Main view controller for this coordinator.
 @property(nonatomic, strong)
@@ -104,6 +106,11 @@ using password_manager::WarningType;
 
 // Modal alert for interactions with passwords list.
 @property(nonatomic, strong) AlertCoordinator* alertCoordinator;
+
+// Coordinator that presents the instructions on how to install the Password
+// Manager widget.
+@property(nonatomic, strong)
+    WidgetPromoInstructionsCoordinator* widgetPromoInstructionsCoordinator;
 
 // Indicates that a password manager visit metric has been recorded.
 // Used to only record the metric the first time authentication is passed.
@@ -402,7 +409,20 @@ using password_manager::WarningType;
 }
 
 - (void)showPasswordManagerWidgetPromoInstructions {
-  // TODO(crbug.com/1463033): Present the instruction view.
+  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
+  // low.
+  DUMP_WILL_BE_CHECK(!self.widgetPromoInstructionsCoordinator);
+
+  // TODO(crbug.com/1486873): Validate that reauth coordinator should be stopped
+  // here.
+  [self stopReauthCoordinatorBeforeStartingChildCoordinator];
+
+  self.widgetPromoInstructionsCoordinator =
+      [[WidgetPromoInstructionsCoordinator alloc]
+          initWithBaseNavigationController:self.baseNavigationController
+                                   browser:self.browser];
+  self.widgetPromoInstructionsCoordinator.delegate = self;
+  [self.widgetPromoInstructionsCoordinator start];
 }
 
 // TODO(crbug.com/1406871): Remove when kIOSPasswordCheckup is enabled by
@@ -502,6 +522,17 @@ using password_manager::WarningType;
 - (void)willPushReauthenticationViewController {
   [self dismissAlertCoordinator];
   [self dismissActionSheetCoordinator];
+}
+
+#pragma mark - WidgetPromoInstructionsCoordinatorDelegate
+
+- (void)widgetPromoInstructionsCoordinatorDidRemove:
+    (WidgetPromoInstructionsCoordinator*)coordinator {
+  DCHECK_EQ(self.widgetPromoInstructionsCoordinator, coordinator);
+  [self.widgetPromoInstructionsCoordinator stop];
+  self.widgetPromoInstructionsCoordinator.delegate = nil;
+  self.widgetPromoInstructionsCoordinator = nil;
+  [self restartReauthCoordinator];
 }
 
 #pragma mark - Private

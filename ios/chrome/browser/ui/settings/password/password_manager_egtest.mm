@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/passwords_in_other_apps_app_interface.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/password/reauthentication/reauthentication_constants.h"
+#import "ios/chrome/browser/ui/settings/password/widget_promo_instructions/widget_promo_instructions_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_constants.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_event.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
@@ -327,6 +328,11 @@ id<GREYMatcher> PasswordManagerWidgetPromoMoreInfoButton(bool enabled = YES) {
                         IDS_IOS_PASSWORD_MANAGER_WIDGET_PROMO_BUTTON_TITLE),
                     grey_accessibilityTrait(UIAccessibilityTraitNotEnabled),
                     nullptr);
+}
+
+// Returns matcher for the Password Manager widget promo instructions screen.
+id<GREYMatcher> PasswordManagerWidgetPromoInstructions() {
+  return grey_accessibilityID(password_manager::kWidgetPromoInstructionsViewID);
 }
 
 // Saves two example forms in the store.
@@ -3527,7 +3533,9 @@ void CheckPasswordManagerVisitMetricCount(int count) {
       selectElementWithMatcher:PasswordManagerWidgetPromoMoreInfoButton()]
       performAction:grey_tap()];
 
-  // TODO(crbug.com/1463033): Validate that the instruction view is shown.
+  // The Password Manager widget promo's instructions should be visible.
+  [[EarlGrey selectElementWithMatcher:PasswordManagerWidgetPromoInstructions()]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Tests that the more info and close buttons of the Password Manager widget
