@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller_desktop.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_dialog_view.h"
+#include "components/plus_addresses/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_types.h"
 
@@ -43,6 +44,8 @@ void PlusAddressCreationControllerDesktop::OfferCreation(
     }
     relevant_origin_ = main_frame_origin;
     callback_ = std::move(callback);
+    PlusAddressMetrics::RecordModalEvent(
+        PlusAddressMetrics::PlusAddressModalEvent::kModalShown);
     if (!suppress_ui_for_testing_) {
       ShowPlusAddressCreationDialogView(&GetWebContents(), GetWeakPtr(),
                                         maybe_email.value());
@@ -55,13 +58,16 @@ void PlusAddressCreationControllerDesktop::OnConfirmed() {
   PlusAddressService* plus_address_service =
       PlusAddressServiceFactory::GetForBrowserContext(
           GetWebContents().GetBrowserContext());
+  PlusAddressMetrics::RecordModalEvent(
+      PlusAddressMetrics::PlusAddressModalEvent::kModalConfirmed);
   if (plus_address_service) {
     plus_address_service->OfferPlusAddressCreation(relevant_origin_,
                                                    std::move(callback_));
   }
 }
 void PlusAddressCreationControllerDesktop::OnCanceled() {
-  // TODO(crbug.com/1467623): Add metrics, etc.
+  PlusAddressMetrics::RecordModalEvent(
+      PlusAddressMetrics::PlusAddressModalEvent::kModalCanceled);
 }
 void PlusAddressCreationControllerDesktop::OnDialogDestroyed() {
   ui_modal_showing_ = false;

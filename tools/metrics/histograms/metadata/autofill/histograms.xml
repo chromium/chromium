@@ -3574,6 +3574,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Autofill.PlusAddresses.Modal.Events"
+    enum="PlusAddressModalEvent" expires_after="2024-09-24">
+  <owner>mreichhoff@chromium.org</owner>
+  <owner>kaklilu@chromium.org</owner>
+  <summary>
+    Records user interactions with the experimental plus addresses modal, which
+    provides context for new plus addresses and gives the user a chance to opt
+    out if desired. Written when the user clicks either of the cancel or ok
+    buttons, and when the modal is presented to the user.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Popup.AcceptanceDelayThresholdNotMet" units="ms"
     expires_after="2024-04-01">
   <owner>jkeitel@google.com</owner>

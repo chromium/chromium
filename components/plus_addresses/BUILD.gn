@@ -6,6 +6,8 @@ source_set("plus_addresses") {
   sources = [
     "plus_address_client.cc",
     "plus_address_client.h",
+    "plus_address_metrics.cc",
+    "plus_address_metrics.h",
     "plus_address_parser.cc",
     "plus_address_parser.h",
     "plus_address_prefs.cc",

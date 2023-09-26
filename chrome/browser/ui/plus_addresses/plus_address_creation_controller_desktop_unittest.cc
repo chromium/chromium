@@ -7,6 +7,7 @@
 
 #include "base/functional/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/plus_addresses/features.h"
+#include "components/plus_addresses/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "content/public/browser/browser_context.h"
@@ -25,6 +27,10 @@
 namespace plus_addresses {
 
 namespace {
+
+constexpr char kPlusAddressModalEventHistogram[] =
+    "Autofill.PlusAddresses.Modal.Events";
+
 // Used to control the behavior of the controller's `plus_address_service_`
 // (though mocking would also be fine). Most importantly, this avoids the
 // requirement to mock the identity portions of the `PlusAddressService`.
@@ -42,6 +48,7 @@ class MockPlusAddressService : public PlusAddressService {
     return "plus+plus@plus.plus";
   }
 };
+
 }  // namespace
 
 // Testing very basic functionality for now. As UI complexity increases, this
@@ -74,6 +81,7 @@ class PlusAddressCreationControllerDesktopEnabledTest
   // `PlusAddressServiceFactory` doesn't bail early with a null return.
   profiles::testing::ScopedProfileSelectionsForFactoryTesting
       override_profile_selections_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(PlusAddressCreationControllerDesktopEnabledTest, DirectCallback) {
@@ -91,6 +99,37 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest, DirectCallback) {
   controller->OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.example")), callback.Get());
   controller->OnConfirmed();
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kPlusAddressModalEventHistogram),
+      BucketsAre(
+          base::Bucket(PlusAddressMetrics::PlusAddressModalEvent::kModalShown,
+                       1),
+          base::Bucket(
+              PlusAddressMetrics::PlusAddressModalEvent::kModalConfirmed, 1)));
+}
+
+TEST_F(PlusAddressCreationControllerDesktopEnabledTest, ModalCanceled) {
+  std::unique_ptr<content::WebContents> web_contents =
+      ChromeRenderViewHostTestHarness::CreateTestWebContents();
+
+  PlusAddressCreationControllerDesktop::CreateForWebContents(
+      web_contents.get());
+  PlusAddressCreationControllerDesktop* controller =
+      PlusAddressCreationControllerDesktop::FromWebContents(web_contents.get());
+  controller->set_suppress_ui_for_testing(true);
+
+  base::MockOnceCallback<void(const std::string&)> callback;
+  EXPECT_CALL(callback, Run).Times(0);
+  controller->OfferCreation(
+      url::Origin::Create(GURL("https://mattwashere.example")), callback.Get());
+  controller->OnCanceled();
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kPlusAddressModalEventHistogram),
+      BucketsAre(
+          base::Bucket(PlusAddressMetrics::PlusAddressModalEvent::kModalShown,
+                       1),
+          base::Bucket(
+              PlusAddressMetrics::PlusAddressModalEvent::kModalCanceled, 1)));
 }
 
 // With the feature disabled, the `KeyedService` is not present; ensure this is

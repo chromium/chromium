@@ -86236,6 +86236,12 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="16" label="User cancelled while starting the dispatcher"/>
 </enum>
 
+<enum name="PlusAddressModalEvent">
+  <int value="0" label="Modal shown"/>
+  <int value="1" label="Modal canceled"/>
+  <int value="2" label="Modal confirmed"/>
+</enum>
+
 <enum name="PNaClOptionsOptLevelEnum">
   <int value="0" label="0"/>
   <int value="1" label="1"/>

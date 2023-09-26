@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/android/plus_addresses/plus_address_creation_controller_android.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/ui/android/plus_addresses/plus_address_creation_view_android.h"
+#include "components/plus_addresses/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -43,6 +44,8 @@ void PlusAddressCreationControllerAndroid::OfferCreation(
 
     callback_ = std::move(callback);
     relevant_origin_ = main_frame_origin;
+    PlusAddressMetrics::RecordModalEvent(
+        PlusAddressMetrics::PlusAddressModalEvent::kModalShown);
     if (!suppress_ui_for_testing_) {
       view_ = std::make_unique<PlusAddressCreationViewAndroid>(
           GetWeakPtr(), &GetWebContents());
@@ -55,13 +58,18 @@ void PlusAddressCreationControllerAndroid::OnConfirmed() {
   PlusAddressService* plus_address_service =
       PlusAddressServiceFactory::GetForBrowserContext(
           GetWebContents().GetBrowserContext());
+  PlusAddressMetrics::RecordModalEvent(
+      PlusAddressMetrics::PlusAddressModalEvent::kModalConfirmed);
   if (plus_address_service) {
     plus_address_service->OfferPlusAddressCreation(relevant_origin_,
                                                    std::move(callback_));
   }
 }
-// TODO(crbug.com/1467623): metrics, etc.
-void PlusAddressCreationControllerAndroid::OnCanceled() {}
+
+void PlusAddressCreationControllerAndroid::OnCanceled() {
+  PlusAddressMetrics::RecordModalEvent(
+      PlusAddressMetrics::PlusAddressModalEvent::kModalCanceled);
+}
 
 void PlusAddressCreationControllerAndroid::OnDialogDestroyed() {
   view_.reset();
