@@ -65,8 +65,7 @@ ci.builder(
     ),
     builderless = False,
     cores = None,
-    # TODO(crbug.com/1486663): Restore tree-closing when bot is fixed.
-    # tree_closing = True,
+    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "builder|arm",
         short_name = "san",
