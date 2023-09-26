@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
+<script src="support/variant-class.js"></script>
 <style>
 @font-face {
   font-family: halt-font;
@@ -13,16 +14,24 @@
 }
 #container > div {
   position: absolute;
-  top: 0;
 }
-.col1 {
+:root:not(.vrl) .col1 {
   left: 6em;
 }
-.col2 {
+:root:not(.vrl) .col2 {
   left: 12em;
 }
+:root.vrl {
+  writing-mode: vertical-rl;
+}
+:root.vrl .col1 {
+  top: 6em;
+}
+:root.vrl div.col2 {
+  top: 12em;
+}
 halt {
-  font-feature-settings: 'halt' 1;
+  font-feature-settings: 'halt' 1, 'vhal' 1;
 }
 </style>
 <div id="container">

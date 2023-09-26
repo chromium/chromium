@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
+<script src="support/variant-class.js"></script>
 <style>
 @font-face {
   font-family: halt-font;
@@ -13,57 +14,113 @@
 }
 #container > div {
   position: absolute;
-  top: 0;
 }
-.col1 {
+:root:not(.vrl) .col1 {
   left: 6em;
 }
-.col2 {
+:root:not(.vrl) .col2 {
   left: 12em;
 }
+:root.vrl {
+  writing-mode: vertical-rl;
+}
+:root.vrl .col1 {
+  top: 6em;
+}
+:root.vrl div.col2 {
+  top: 12em;
+}
 halt {
+  font-feature-settings: 'halt' 1, 'vhal' 1;
+}
+novhal halt {
+  font-feature-settings: 'halt' 1;
+}
+:root.halt novhal-if-halt halt {
   font-feature-settings: 'halt' 1;
 }
 </style>
 <div id="container">
   <div lang="ja">
-    <!-- Colon + Open/Close/Middle -->
-    <div>国：<halt>（</halt>国</div>
-    <div>国：）国</div>
-    <div>国：・国</div>
-    <div>国：　国</div>
-    <!-- Open/Close/Middle + Colon -->
-    <div>国（：国</div>
-    <div>国<halt>）</halt>：国</div>
-    <div>国・：国</div>
-    <div>国　：国</div>
+    <!-- In Adobe's convention, colon rotates, while semicolon is upright. -->
+    <!-- In this case, colon can be either middle or other. -->
+    <novhal-if-halt>
+      <!-- Colon + Open/Close/Middle -->
+      <div>国：<halt>（</halt>国</div>
+      <div>国：）国</div>
+      <div>国：・国</div>
+      <div>国：　国</div>
+      <!-- Open/Close/Middle + Colon -->
+      <div>国（：国</div>
+      <div>国<halt>）</halt>：国</div>
+      <div>国・：国</div>
+      <div>国　：国</div>
+    </novhal-if-halt>
+    <novhal>
+      <!-- Semicolon + Open/Close/Middle -->
+      <div>国；<halt>（</halt>国</div>
+      <div>国；）国</div>
+      <div>国；・国</div>
+      <div>国；　国</div>
+      <!-- Open/Close/Middle + Semicolon -->
+      <div>国（；国</div>
+      <div>国<halt>）</halt>；国</div>
+      <div>国・；国</div>
+      <div>国　；国</div>
+    </novhal>
   </div>
 
   <!-- The same content with "zh-hans". -->
   <div lang="zh-hans" class="col1">
-    <!-- Colon + Open/Close/Middle -->
-    <div>国：<halt>（</halt>国</div>
-    <div>国<halt>：</halt>）国</div>
-    <div>国<halt>：</halt>・国</div>
-    <div>国<halt>：</halt>　国</div>
-    <!-- Open/Close/Middle + Colon -->
-    <div>国（：国</div>
-    <div>国<halt>）</halt>：国</div>
-    <div>国・：国</div>
-    <div>国　：国</div>
+    <!-- In Adobe's convention, both colon and semicolon are upright. -->
+    <novhal>
+      <!-- Colon + Open/Close/Middle -->
+      <div>国：<halt>（</halt>国</div>
+      <div>国<halt>：</halt>）国</div>
+      <div>国<halt>：</halt>・国</div>
+      <div>国<halt>：</halt>　国</div>
+      <!-- Open/Close/Middle + Colon -->
+      <div>国（：国</div>
+      <div>国<halt>）</halt>：国</div>
+      <div>国・：国</div>
+      <div>国　：国</div>
+      <!-- Semicolon + Open/Close/Middle -->
+      <div>国；<halt>（</halt>国</div>
+      <div>国<halt>；</halt>）国</div>
+      <div>国<halt>；</halt>・国</div>
+      <div>国<halt>；</halt>　国</div>
+      <!-- Open/Close/Middle + Semicolon -->
+      <div>国（；国</div>
+      <div>国<halt>）</halt>；国</div>
+      <div>国・；国</div>
+      <div>国　；国</div>
+    </novhal>
   </div>
 
   <!-- The same content with "zh-hant". -->
   <div lang="zh-hant" class="col2">
-    <!-- Colon + Open/Close/Middle -->
-    <div>国：<halt>（</halt>国</div>
-    <div>国：）国</div>
-    <div>国：・国</div>
-    <div>国：　国</div>
-    <!-- Open/Close/Middle + Colon -->
-    <div>国（：国</div>
-    <div>国<halt>）</halt>：国</div>
-    <div>国・：国</div>
-    <div>国　：国</div>
+    <!-- In Adobe's convention, both colon and semicolon are upright. -->
+    <novhal>
+      <!-- Colon + Open/Close/Middle -->
+      <div>国：<halt>（</halt>国</div>
+      <div>国：）国</div>
+      <div>国：・国</div>
+      <div>国：　国</div>
+      <!-- Open/Close/Middle + Colon -->
+      <div>国（：国</div>
+      <div>国<halt>）</halt>：国</div>
+      <div>国・：国</div>
+      <div>国　：国</div>
+      <!-- Semicolon + Open/Close/Middle -->
+      <div>国；<halt>（</halt>国</div>
+      <div>国；）国</div>
+      <div>国；・国</div>
+      <div>国；　国</div>
+      <!-- Open/Close/Middle + Semicolon -->
+      <div>国（；国</div>
+      <div>国<halt>）</halt>；国</div>
+      <div>国・；国</div>
+      <div>国　；国</div>
+    </novhal>
   </div>
 </div>
