@@ -11706,9 +11706,8 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20230801",
+                    "name": "Enabled_20230926",
                     "enable_features": [
-                        "EnableExtensionsPermissionsForSupervisedUsersOnDesktop",
                         "EnableManagedByParentUi",
                         "EnableSupervisionOnDesktopAndIOS",
                         "FilterWebsitesForSupervisedUsersOnDesktopAndIOS",
