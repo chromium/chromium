@@ -303,6 +303,8 @@ bool DawnContextProvider::Initialize(wgpu::BackendType backend_type,
   device_ = std::move(device);
 
   backend_type_ = backend_type;
+  is_vulkan_swiftshader_adapter_ =
+      backend_type == wgpu::BackendType::Vulkan && force_fallback_adapter;
 
 #if BUILDFLAG(IS_WIN)
   // DirectComposition is initialized in ui/gl/init/gl_initializer_win.cc while

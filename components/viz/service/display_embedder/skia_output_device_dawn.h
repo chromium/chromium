@@ -29,6 +29,7 @@ class SkiaOutputDeviceDawn : public SkiaOutputDevice {
   SkiaOutputDeviceDawn(
       scoped_refptr<gpu::SharedContextState> context_state,
       gfx::SurfaceOrigin origin,
+      gpu::SurfaceHandle surface_handle,
       gpu::MemoryTracker* memory_tracker,
       DidSwapBufferCompleteCallback did_swap_buffer_complete_callback);
 

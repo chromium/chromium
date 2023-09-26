@@ -42,6 +42,7 @@ constexpr wgpu::TextureUsage kUsage =
 SkiaOutputDeviceDawn::SkiaOutputDeviceDawn(
     scoped_refptr<gpu::SharedContextState> context_state,
     gfx::SurfaceOrigin origin,
+    gpu::SurfaceHandle surface_handle,
     gpu::MemoryTracker* memory_tracker,
     DidSwapBufferCompleteCallback did_swap_buffer_complete_callback)
     : SkiaOutputDevice(
@@ -63,13 +64,25 @@ SkiaOutputDeviceDawn::SkiaOutputDeviceDawn(
       kSurfaceColorType;
   capabilities_.sk_color_types[static_cast<int>(gfx::BufferFormat::BGRX_8888)] =
       kSurfaceColorType;
-  child_window_.Initialize();
+
+  gpu::SurfaceHandle window_handle_to_draw_to;
+
+  // TODO(crbug.com/swiftshader/186): If we are using SwiftShader, don't create
+  // child window. Child window is created with WS_EX_LAYERED |
+  // WS_EX_NOREDIRECTIONBITMAP flag which doesn't work with SwiftShader.
+  if (!context_state_->IsGraphiteDawnVulkanSwiftShader()) {
+    child_window_.Initialize();
+    window_handle_to_draw_to = child_window_.window();
+  } else {
+    window_handle_to_draw_to = surface_handle;
+  }
+
   vsync_provider_ =
-      std::make_unique<gl::VSyncProviderWin>(child_window_.window());
+      std::make_unique<gl::VSyncProviderWin>(window_handle_to_draw_to);
 
   // Create the wgpu::Surface from our HWND.
   wgpu::SurfaceDescriptorFromWindowsHWND hwnd_desc;
-  hwnd_desc.hwnd = child_window_.window();
+  hwnd_desc.hwnd = window_handle_to_draw_to;
   hwnd_desc.hinstance = GetModuleHandle(nullptr);
 
   CHECK(context_state_->dawn_context_provider() &&
@@ -103,7 +116,7 @@ bool SkiaOutputDeviceDawn::Reshape(const SkImageInfo& image_info,
   sk_color_space_ = image_info.refColorSpace();
   sample_count_ = sample_count;
 
-  if (!child_window_.Resize(size_)) {
+  if (child_window_.window() && !child_window_.Resize(size_)) {
     return false;
   }
 

@@ -56,6 +56,9 @@ class GPU_GLES2_EXPORT DawnContextProvider {
 
   wgpu::Device GetDevice() const { return device_; }
   wgpu::BackendType backend_type() const { return backend_type_; }
+  bool is_vulkan_swiftshader_adapter() const {
+    return is_vulkan_swiftshader_adapter_;
+  }
   wgpu::Instance GetInstance() const;
 
   bool InitializeGraphiteContext(
@@ -86,6 +89,7 @@ class GPU_GLES2_EXPORT DawnContextProvider {
   std::unique_ptr<webgpu::DawnInstance> instance_;
   wgpu::Device device_;
   wgpu::BackendType backend_type_;
+  bool is_vulkan_swiftshader_adapter_ = false;
   std::unique_ptr<skgpu::graphite::Context> graphite_context_;
 };
 
