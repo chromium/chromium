@@ -237,14 +237,10 @@ void RecentAppsInteractionHandlerImpl::SetStreamableApps(
 
 void RecentAppsInteractionHandlerImpl::RemoveStreamableApp(
     const proto::App app_to_remove) {
-  recent_app_metadata_list_.erase(
-      std::remove_if(
-          recent_app_metadata_list_.begin(), recent_app_metadata_list_.end(),
-          [&app_to_remove](
+  base::EraseIf(recent_app_metadata_list_, [&app_to_remove](
               const std::pair<Notification::AppMetadata, base::Time>& app) {
-            return app.first.package_name == app_to_remove.package_name();
-          }),
-      recent_app_metadata_list_.end());
+    return app.first.package_name == app_to_remove.package_name();
+  });
 
   SaveRecentAppMetadataListToPref();
   ComputeAndUpdateUiState();
