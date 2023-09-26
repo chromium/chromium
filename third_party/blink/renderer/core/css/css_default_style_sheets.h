@@ -157,6 +157,7 @@ class CSSDefaultStyleSheets final
   Member<StyleSheetContents> svg_style_sheet_;
   Member<StyleSheetContents> mathml_style_sheet_;
   Member<StyleSheetContents> media_controls_style_sheet_;
+  Member<StyleSheetContents> permission_element_style_sheet_;
   Member<StyleSheetContents> text_track_style_sheet_;
   Member<StyleSheetContents> fullscreen_style_sheet_;
   Member<StyleSheetContents> selectlist_style_sheet_;

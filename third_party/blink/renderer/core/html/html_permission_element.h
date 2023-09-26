@@ -51,6 +51,7 @@ class CORE_EXPORT HTMLPermissionElement final : public HTMLElement {
 
   // blink::Element implements
   void AttributeChanged(const AttributeModificationParams& params) override;
+  void DidAddUserAgentShadowRoot(ShadowRoot&) override;
 
   // blink::Node override.
   void DefaultEventHandler(Event&) override;
@@ -97,6 +98,9 @@ class CORE_EXPORT HTMLPermissionElement final : public HTMLElement {
   // entry will have an expiration time associated with it, which can be
   // |base::TimeTicks::Max()| if it's indefinite.
   HashMap<DisableReason, base::TimeTicks> clicking_disabled_reasons_;
+
+  Member<HTMLDivElement> inner_element_;
+  Member<HTMLSpanElement> permission_text_;
 };
 
 }  // namespace blink

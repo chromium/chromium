@@ -8,11 +8,15 @@
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/html/html_div_element.h"
+#include "third_party/blink/renderer/core/html/html_span_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -68,6 +72,7 @@ HTMLPermissionElement::HTMLPermissionElement(Document& document)
     : HTMLElement(html_names::kPermissionTag, document),
       permission_service_(document.GetExecutionContext()) {
   DCHECK(RuntimeEnabledFeatures::PermissionElementEnabled());
+  EnsureUserAgentShadowRoot();
 }
 
 HTMLPermissionElement::~HTMLPermissionElement() = default;
@@ -78,6 +83,8 @@ const AtomicString& HTMLPermissionElement::GetType() const {
 
 void HTMLPermissionElement::Trace(Visitor* visitor) const {
   visitor->Trace(permission_service_);
+  visitor->Trace(inner_element_);
+  visitor->Trace(permission_text_);
   HTMLElement::Trace(visitor);
 }
 
@@ -123,6 +130,20 @@ void HTMLPermissionElement::AttributeChanged(
   }
 
   HTMLElement::AttributeChanged(params);
+}
+
+void HTMLPermissionElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
+  CHECK(!inner_element_ && !permission_text_);
+  inner_element_ = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  inner_element_->SetShadowPseudoId(
+      AtomicString("-internal-permission-element-inner"));
+  root.AppendChild(inner_element_);
+
+  permission_text_ = MakeGarbageCollected<HTMLSpanElement>(GetDocument());
+  // TODO(crbug.com/1462930): Set string based on permission type
+  permission_text_->SetShadowPseudoId(
+      AtomicString("-internal-permission-text"));
+  inner_element_->AppendChild(permission_text_);
 }
 
 void HTMLPermissionElement::DefaultEventHandler(Event& event) {

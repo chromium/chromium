@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/html_meter_element.h"
+#include "third_party/blink/renderer/core/html/html_permission_element.h"
 #include "third_party/blink/renderer/core/html/html_progress_element.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
@@ -278,6 +279,15 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
     changed_default_style = true;
   }
 
+  if (!permission_element_style_sheet_ && IsA<HTMLPermissionElement>(element)) {
+    CHECK(RuntimeEnabledFeatures::PermissionElementEnabled());
+    permission_element_style_sheet_ = ParseUASheet(
+        UncompressResourceAsASCIIString(IDR_UASTYLE_PERMISSION_ELEMENT_CSS));
+    AddRulesToDefaultStyleSheets(permission_element_style_sheet_,
+                                 NamespaceType::kHTML);
+    changed_default_style = true;
+  }
+
   if (!text_track_style_sheet_ && IsA<HTMLVideoElement>(element)) {
     Settings* settings = element.GetDocument().GetSettings();
     if (settings) {
@@ -458,6 +468,7 @@ void CSSDefaultStyleSheets::Trace(Visitor* visitor) const {
   visitor->Trace(svg_style_sheet_);
   visitor->Trace(mathml_style_sheet_);
   visitor->Trace(media_controls_style_sheet_);
+  visitor->Trace(permission_element_style_sheet_);
   visitor->Trace(text_track_style_sheet_);
   visitor->Trace(forced_colors_style_sheet_);
   visitor->Trace(fullscreen_style_sheet_);
