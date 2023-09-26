@@ -232,6 +232,21 @@ local variable or type information. With `symbol_level = 0` there is no
 source-level debugging but call stacks still have function names. Changing
 `symbol_level` requires recompiling everything.
 
+#### Use Reclient
+
+In addition, Google employees should use reclient, a distributed compilation system.
+Detailed information is available internally but the relevant gn arg is:
+* `use_remoteexec = true`
+
+Google employees can visit go/building-chrome-win#setup-reclient for more information.
+
+When invoking ninja, specify 'chrome' as the target to avoid building all test
+binaries as well.
+
+Still, builds will take many hours on many machines.
+
+#### Use Goma (deprecated)
+
 In addition, Google employees should use goma, a distributed compilation system.
 Detailed information is available internally but the relevant gn arg is:
 * `use_goma = true`
@@ -244,7 +259,7 @@ will automatically pass an appropriate -j value to ninja for goma or not.
 $ autoninja -C out\Default chrome
 ```
 
-When invoking ninja specify 'chrome' as the target to avoid building all test
+When invoking ninja, specify 'chrome' as the target to avoid building all test
 binaries as well.
 
 Still, builds will take many hours on many machines.
