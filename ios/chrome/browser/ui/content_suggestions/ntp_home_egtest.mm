@@ -1168,6 +1168,13 @@ id<GREYMatcher> notPracticallyVisible() {
 
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
+                                  error:nil];
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
+        performAction:grey_scrollInDirection(kGREYDirectionDown, 100)];
+  }
+
   // Verify Most Visited Tiles module title is visible.
   [[EarlGrey selectElementWithMatcher:
                  grey_accessibilityID(l10n_util::GetNSString(
