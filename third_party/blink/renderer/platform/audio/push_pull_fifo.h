@@ -91,6 +91,11 @@ class PLATFORM_EXPORT PushPullFIFO {
     return fifo_bus_->NumberOfChannels();
   }
 
+  uint32_t GetFramesAvailable() {
+    base::AutoLock locker(lock_);
+    return frames_available_;
+  }
+
   AudioBus* GetFIFOBusForTest() {
     base::AutoLock locker(lock_);
     return fifo_bus_.get();

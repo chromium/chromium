@@ -1982,7 +1982,14 @@ BASE_FEATURE(kWebAudioSinkSelection,
              "kWebAudioSinkSelection",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables cache-aware WebFonts loading. See https://crbug.com/570205.
+// Enabling this flag bypasses additional buffering when using the Web Audio
+// API, which may reduce audio output latency but may also increase the
+// probability of an audio glitch.
+BASE_FEATURE(kWebAudioBypassOutputBuffering,
+             "WebAudioBypassOutputBuffering",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+/// Enables cache-aware WebFonts loading. See https://crbug.com/570205.
 // The feature is disabled on Android for WebView API issue discussed at
 // https://crbug.com/942440.
 BASE_FEATURE(kWebFontsCacheAwareTimeoutAdaption,
