@@ -175,13 +175,20 @@ class PLATFORM_EXPORT ScriptState : public GarbageCollected<ScriptState> {
   // associated with a ScriptState. This is necessary in unit tests when a
   // v8::Context is created directly on the v8 API without going through the
   // usual blink codepaths.
+  // This is also called in some situations where DissociateContext() has
+  // already been called and therefore the ScriptState pointer on the
+  // v8::Context has already been nulled.
   static ScriptState* MaybeFrom(v8::Local<v8::Context> context) {
     DCHECK(!context.IsEmpty());
     if (context->GetNumberOfEmbedderDataFields() <=
         kV8ContextPerContextDataIndex) {
       return nullptr;
     }
-    return From(context);
+    ScriptState* script_state =
+        static_cast<ScriptState*>(context->GetAlignedPointerFromEmbedderData(
+            kV8ContextPerContextDataIndex));
+    SECURITY_CHECK(!script_state || script_state->context_ == context);
+    return script_state;
   }
 
   v8::Isolate* GetIsolate() const { return isolate_; }
