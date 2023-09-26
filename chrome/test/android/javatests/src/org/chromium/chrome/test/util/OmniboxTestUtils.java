@@ -209,11 +209,9 @@ public class OmniboxTestUtils {
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat("Omnibox not shown.", mUrlBar.isShown(), Matchers.is(true));
             Criteria.checkThat("Omnibox not focusable.", mUrlBar.isFocusable(), Matchers.is(true));
+            if (!mUrlBar.hasFocus()) mUrlBar.requestFocus();
+            Criteria.checkThat("Omnibox is focused.", mUrlBar.hasFocus(), Matchers.is(true));
         });
-
-        TestThreadUtils.runOnUiThreadBlockingNoException(() -> mUrlBar.requestFocus());
-        waitAnimationsComplete();
-        checkFocus(true);
     }
 
     /**
