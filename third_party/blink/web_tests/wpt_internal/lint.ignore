@@ -65,3 +65,5 @@ TESTHARNESS-IN-OTHER-TYPE: html/semantics/embedded-content/the-iframe-element/if
 TESTHARNESS-IN-OTHER-TYPE: geolocation-api/window-close-crash.https.html
 TESTHARNESS-IN-OTHER-TYPE: geolocation-api/clear-watch-invalid-id-crash.https.html
 TESTHARNESS-IN-OTHER-TYPE: geolocation-api/remove-remote-context-in-error-callback-crash.https.html
+HTML INVALID SYNTAX: webxr/events_deviceconnect.https.html
+HTML INVALID SYNTAX: webxr/xr_view_projection_detached.https.html

@@ -63,6 +63,6 @@ def lint_wpt_root(input_api, output_api, repo_root: Optional[str] = None):
     if proc.returncode != 0:
         return [
             output_api.PresubmitError('`blink_tool.py lint-wpt` failed:',
-                                      long_text=stdout + stderr)
+                                      long_text=(stdout + stderr).decode())
         ]
     return []

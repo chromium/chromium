@@ -387,7 +387,7 @@ class MarionetteStorageProtocolPart(StorageProtocolPart):
             let principal = ssm.createContentPrincipal(uri, {});
             let qms = Components.classes["@mozilla.org/dom/quota-manager-service;1"]
                                 .getService(Components.interfaces.nsIQuotaManagerService);
-            qms.clearStoragesForPrincipal(principal, "default", null, true);
+            qms.clearStoragesForOriginPrefix(principal, "default");
             """ % url
         with self.marionette.using_context(self.marionette.CONTEXT_CHROME):
             self.marionette.execute_script(script)
@@ -626,8 +626,8 @@ class MarionetteSetPermissionProtocolPart(SetPermissionProtocolPart):
         }
         try:
             self.marionette._send_message("WebDriver:SetPermission", body)
-        except errors.UnsupportedOperationException:
-            raise NotImplementedError("set_permission not yet implemented")
+        except errors.UnsupportedOperationException as e:
+            raise NotImplementedError("set_permission not yet implemented") from e
 
 
 class MarionettePrintProtocolPart(PrintProtocolPart):

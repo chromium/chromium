@@ -120,7 +120,9 @@ class TestRunner:
         try:
             return self.executor.run_test(test)
         except Exception:
-            self.logger.error(traceback.format_exc())
+            message = "TestRunner.run_test caught an exception:\n"
+            message += traceback.format_exc()
+            self.logger.error(message)
             raise
 
     def wait(self):
@@ -211,10 +213,9 @@ class BrowserManager:
             self.browser.start(group_metadata=group_metadata, **self.browser_settings)
             self.browser_pid = self.browser.pid
         except Exception:
-            self.logger.warning("Failure during init %s" % traceback.format_exc())
+            self.logger.error(f"Failure during init:\n{traceback.format_exc()}")
             if self.init_timer is not None:
                 self.init_timer.cancel()
-            self.logger.error(traceback.format_exc())
             succeeded = False
         else:
             succeeded = True
@@ -399,7 +400,9 @@ class TestRunnerManager(threading.Thread):
                 self.state = new_state
                 self.logger.debug(f"new state: {self.state.__class__.__name__}")
         except Exception:
-            self.logger.error(traceback.format_exc())
+            message = "Uncaught exception in TestRunnerManager.run:\n"
+            message += traceback.format_exc()
+            self.logger.error(message)
             raise
         finally:
             self.logger.debug("TestRunnerManager main loop terminating, starting cleanup")

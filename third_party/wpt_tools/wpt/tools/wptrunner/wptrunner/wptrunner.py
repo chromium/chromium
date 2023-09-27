@@ -66,7 +66,8 @@ def get_loader(test_paths, product, **kwargs):
 
     if kwargs["test_groups_file"] is not None:
         test_groups = testloader.TestGroups(logger,
-                                            kwargs["test_groups_file"])
+                                            kwargs["test_groups_file"],
+                                            subsuites)
     else:
         test_groups = None
 
@@ -194,7 +195,7 @@ def run_test_iteration(test_status, test_loader, test_source,
                 tests_by_type[(subsuite_name, test_type)].extend(type_tests_active)
                 tests_by_type[(subsuite_name, test_type)].extend(type_tests_disabled)
 
-    tests_by_group = test_source.cls.tests_by_group(tests_by_type, **kwargs)
+    tests_by_group = test_source.cls.tests_by_group(tests_by_type, **test_source.kwargs)
 
     log_suite_start(tests_by_group,
                     test_loader.base_run_info,
