@@ -55,8 +55,6 @@
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
-#include "components/password_manager/core/common/password_manager_feature_variations_android.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/sessions/content/content_record_password_state.h"
@@ -1080,17 +1078,6 @@ TEST_F(ChromePasswordManagerClientTest, MissingUIDelegate) {
   client->HideManualFallbackForSaving();
 }
 
-TEST_F(ChromePasswordManagerClientTest,
-       RefreshPasswordManagerSettingsIfNeededUPMDisabled) {
-#if BUILDFLAG(IS_ANDROID)
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      password_manager::features::kUnifiedPasswordManagerAndroid);
-#endif
-  EXPECT_CALL(settings_service(), RequestSettingsFromBackend).Times(0);
-  GetClient()->RefreshPasswordManagerSettingsIfNeeded();
-}
-
 #if BUILDFLAG(IS_ANDROID)
 class ChromePasswordManagerClientAndroidTest
     : public ChromePasswordManagerClientTest {
@@ -1468,13 +1455,10 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
 
 TEST_F(ChromePasswordManagerClientAndroidTest,
        RefreshPasswordManagerSettingsIfNeededUPMFeatureEnabled) {
-  base::test::ScopedFeatureList feature_list;
   const std::map<std::string, std::string> params = {
       {"stage", base::NumberToString(static_cast<int>(
                     password_manager::features::UpmExperimentVariation::
                         kEnableForSyncingUsers))}};
-  feature_list.InitAndEnableFeatureWithParameters(
-      password_manager::features::kUnifiedPasswordManagerAndroid, params);
 
   EXPECT_CALL(settings_service(), RequestSettingsFromBackend);
   GetClient()->RefreshPasswordManagerSettingsIfNeeded();

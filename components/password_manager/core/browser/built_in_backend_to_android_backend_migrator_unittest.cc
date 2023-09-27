@@ -657,11 +657,6 @@ class BuiltInBackendToAndroidBackendMigratorTestMetrics
     prefs()->registry()->RegisterIntegerPref(
         prefs::kTimesAttemptedToReenrollToGoogleMobileServices, 0);
 
-    // // Enable UPM on the stage 'kEnableForSyncingUsers'.
-    // feature_list().InitAndEnableFeatureWithParameters(
-    //     /*feature=*/features::kUnifiedPasswordManagerAndroid, {{"stage",
-    //     "2"}});
-
     if (GetParam().migration_ran_before) {
       // Setup the pref to indicate that the initial migration has happened
       // already.
@@ -806,8 +801,6 @@ class BuiltInBackendToAndroidBackendMigratorWithMockAndroidBackendTest
                                             0.0);
     prefs()->registry()->RegisterBooleanPref(
         prefs::kRequiresMigrationAfterSyncStatusChange, false);
-    feature_list().InitAndEnableFeatureWithParameters(
-        /*feature=*/features::kUnifiedPasswordManagerAndroid, {{"stage", "0"}});
 
     CreateMigrator(&built_in_backend_, &android_backend_, prefs());
   }
