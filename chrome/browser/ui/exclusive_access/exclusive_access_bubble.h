@@ -147,6 +147,12 @@ class ExclusiveAccessBubble : public gfx::AnimationDelegate {
   // if the mouse has moved since our last check. Only used in non-simplified
   // fullscreen mode.
   gfx::Point last_mouse_pos_;
+
+  // Indicates if the exit bubble should re-show once input is first detected.
+  bool reshow_on_first_input_ = false;
+
+  // Tracks if any user input has been detected on the exclusive access context.
+  bool has_seen_user_input_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_EXCLUSIVE_ACCESS_BUBBLE_H_
