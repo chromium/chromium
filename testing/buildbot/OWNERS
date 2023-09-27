@@ -32,6 +32,7 @@ per-file chromium.coverage.json=chrome-weblayer-builder@chops-service-accounts.i
 
 # For Lacros skylab tests cros image roller related reviews
 per-file chrome.json=skylab-test-cros-roller@chops-service-accounts.iam.gserviceaccount.com
+per-file chrome.gpu.fyi.json=skylab-test-cros-roller@chops-service-accounts.iam.gserviceaccount.com
 per-file chromium.chromiumos.json=skylab-test-cros-roller@chops-service-accounts.iam.gserviceaccount.com
 per-file chromium.fyi.json=skylab-test-cros-roller@chops-service-accounts.iam.gserviceaccount.com
 per-file internal.chromeos.fyi.json=skylab-test-cros-roller@chops-service-accounts.iam.gserviceaccount.com
