@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/zip.gni")
 import("//chrome/updater/branding.gni")
 import("//components/crx_file/crx3.gni")
 
@@ -175,15 +176,22 @@ if (is_win) {
     script_target = "test_script_" + app_name
     copy(script_target) {
       sources = [ invoker.script ]
-      outputs = [ "$root_build_dir/test_installer/{{source_file_part}}" ]
+      outputs = [ "$target_gen_dir/" + app_name + "/zip_contents/.install" ]
+    }
+    zip("test_installer_zip_" + app_name) {
+      inputs = get_target_outputs(":" + script_target)
+      base_dir = "$target_gen_dir/" + app_name + "/zip_contents/"
+      output = "$target_gen_dir/" + app_name + "/crx_contents/test_installer_" +
+               app_name + ".zip"
+      deps = [ ":" + script_target ]
     }
     crx3("test_installer_" + app_name) {
-      base_dir = "$root_build_dir/test_installer"
+      base_dir = "$target_gen_dir/" + app_name + "/crx_contents/"
       key = "//chrome/updater/test/data/selfupdate_test_key.der"
-      inputs = get_target_outputs(":" + script_target)
+      inputs = get_target_outputs(":test_installer_zip_" + app_name)
       output =
           "$root_build_dir/test_installer/test_installer_" + app_name + ".crx3"
-      deps = [ ":" + script_target ]
+      deps = [ ":test_installer_zip_" + app_name ]
     }
   }
 

@@ -821,6 +821,8 @@ if (is_win || is_mac || is_linux) {
       "test/data/tagged_msi/GUH-untagged.msi",
     ]
 
+    data_deps = [ ":updater_selfupdate_test_crx" ]
+
     if (is_win) {
       sources += [
         "activity_impl_win_unittest.cc",
@@ -856,8 +858,7 @@ if (is_win || is_mac || is_linux) {
         "win/ui/resources:strings",
       ]
 
-      data_deps = [
-        ":updater_selfupdate_test_crx",
+      data_deps += [
         "//chrome/updater/test/test_installer:test_app2_installer",
         "//chrome/updater/test/test_installer:test_app2_installer_crx",
         "//chrome/updater/test/test_installer:test_msi_installer1.0.0.0",
@@ -963,8 +964,7 @@ if (is_win || is_mac || is_linux) {
         "//third_party/updater/chrome_mac_universal_prod/GoogleUpdater.app/Contents/_CodeSignature",
       ]
 
-      data_deps = [
-        ":updater_selfupdate_test_crx",
+      data_deps += [
         "//chrome/updater/mac:ksadmin_test",
         "//chrome/updater/mac:updater_bundle_test",
         "//chrome/updater/test/test_installer:test_installer_app",
@@ -1001,10 +1001,7 @@ if (is_win || is_mac || is_linux) {
       sources += [ "test/integration_tests_linux.cc" ]
 
       data += [ "//chrome/test/data/updater/updater_qualification_app.crx" ]
-      data_deps = [
-        ":updater_selfupdate_test_crx",
-        "//chrome/updater/linux:updater_test",
-      ]
+      data_deps += [ "//chrome/updater/linux:updater_test" ]
       public_configs = [ "linux:libsystemd" ]
     }
 

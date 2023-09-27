@@ -365,6 +365,7 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   void RunHandoff(const std::string& app_id) const override {
     RunCommand("run_handoff", {Param("app_id", app_id)});
   }
+#endif  // BUILDFLAG(IS_WIN)
 
   void InstallAppViaService(
       const std::string& app_id,
@@ -375,7 +376,6 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
          Param("expected_final_values",
                StringFromValue(base::Value(expected_final_values.Clone())))});
   }
-#endif  // BUILDFLAG(IS_WIN)
 
   base::FilePath GetDifferentUserPath() const override {
     // On POSIX, the path may be chowned; so do not use a file not owned by the

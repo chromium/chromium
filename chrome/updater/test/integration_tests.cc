@@ -276,13 +276,13 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->RunHandoff(app_id);
   }
 
+#endif  // BUILDFLAG(IS_WIN)
+
   void InstallAppViaService(
       const std::string& app_id,
       const base::Value::Dict& expected_final_values = {}) {
     test_commands_->InstallAppViaService(app_id, expected_final_values);
   }
-
-#endif  // BUILDFLAG(IS_WIN)
 
   void SetupFakeUpdaterHigherVersion() {
     test_commands_->SetupFakeUpdaterHigherVersion();
@@ -471,11 +471,13 @@ class IntegrationTest : public ::testing::Test {
 
 #if BUILDFLAG(IS_WIN)
   void RunFakeLegacyUpdater() { test_commands_->RunFakeLegacyUpdater(); }
+#endif  // BUILDFLAG(IS_WIN)
 
   void ExpectAppInstalled(const std::string& appid,
                           const base::Version& expected_version) {
     ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(appid, expected_version));
 
+#if BUILDFLAG(IS_WIN)
     std::wstring pv;
     EXPECT_EQ(
         ERROR_SUCCESS,
@@ -483,12 +485,12 @@ class IntegrationTest : public ::testing::Test {
                           GetAppClientsKey(appid).c_str(), Wow6432(KEY_READ))
             .ReadValue(kRegValuePV, &pv));
     EXPECT_EQ(pv, base::ASCIIToWide(expected_version.GetString()));
+#endif  // BUILDFLAG(IS_WIN)
   }
 
   base::FilePath GetInstallerPath(const std::string& installer) const {
     return base::FilePath::FromASCII("test_installer").AppendASCII(installer);
   }
-#endif  // BUILDFLAG(IS_WIN)
 
   void ExpectLegacyUpdaterMigrated() {
     test_commands_->ExpectLegacyUpdaterMigrated();
@@ -1703,10 +1705,10 @@ class IntegrationTestDeviceManagement : public IntegrationTest {
                               to_version.GetString().c_str());
   }
 
-#if BUILDFLAG(IS_WIN)
   void InstallAppWithVersion(const std::string& app_id,
                              const base::Version& version) {
     InstallApp(app_id, version, [&]() {
+#if BUILDFLAG(IS_WIN)
       // Run test app installer to set app `pv` value to its initial
       // version.
       base::FilePath exe_path;
@@ -1729,18 +1731,21 @@ class IntegrationTestDeviceManagement : public IntegrationTest {
       EXPECT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_timeout(),
                                                  &exit_code));
       EXPECT_EQ(0, exit_code);
+#endif  // BUILDFLAG(IS_WIN)
     });
 
     ExpectAppInstalled(app_id, version);
   }
 
   void SetCloudPolicyOverridesPlatformPolicy() {
+// Cloud policy overrides platform policy default, except on Windows.
+#if BUILDFLAG(IS_WIN)
     EXPECT_EQ(ERROR_SUCCESS,
               base::win::RegKey(HKEY_LOCAL_MACHINE, UPDATER_POLICIES_KEY,
                                 Wow6432(KEY_WRITE))
                   .WriteValue(L"CloudPolicyOverridesPlatformPolicy", 1));
-  }
 #endif  // BUILDFLAG(IS_WIN)
+  }
 
   std::unique_ptr<ScopedServer> test_server_;
   static constexpr char kEnrollmentToken[] = "integration-enrollment-token";
@@ -1748,7 +1753,11 @@ class IntegrationTestDeviceManagement : public IntegrationTest {
   static constexpr char kAppId1[] = "test1";
   static constexpr char kAppId2[] = "test2";
   static constexpr char kAppId3[] = "test3";
+#if BUILDFLAG(IS_WIN)
   static constexpr char kAppCRX[] = "Testapp2Setup.crx3";
+#else
+  static constexpr char kAppCRX[] = "test_installer_app.crx3";
+#endif  // BUILDFLAG(IS_WIN)
 };
 
 // Tests the setup and teardown of the fixture.
@@ -1798,7 +1807,6 @@ TEST_F(IntegrationTestDeviceManagement, PolicyFetchBeforeInstall) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
-#if BUILDFLAG(IS_WIN)
 #if !defined(COMPONENT_BUILD)
 
 TEST_F(IntegrationTestDeviceManagement, AppInstall) {
@@ -1820,7 +1828,7 @@ TEST_F(IntegrationTestDeviceManagement, AppInstall) {
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
 
   const base::FilePath crx_path = GetInstallerPath(kAppCRX);
-  ExpectAppsUpdateSequence(
+  ASSERT_NO_FATAL_FAILURE(ExpectAppsUpdateSequence(
       UpdaterScope::kSystem, test_server_.get(),
       /*request_attributes=*/{},
       {
@@ -1829,7 +1837,7 @@ TEST_F(IntegrationTestDeviceManagement, AppInstall) {
               kAppId1, base::Version({0, 0, 0, 0}), kApp1Version,
               /*is_install=*/true,
               /*should_update=*/true, false, "", "", crx_path),
-      });
+      }));
 
   ASSERT_NO_FATAL_FAILURE(InstallAppViaService(kAppId1));
   ASSERT_NO_FATAL_FAILURE(InstallAppViaService(kAppId2));
@@ -1886,6 +1894,9 @@ TEST_F(IntegrationTestDeviceManagement, ForceInstall) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
+// This test depends on platform policy overriding cloud policy, which is not
+// the default on POSIX. Therefore, this test is Windows only.
+#if BUILDFLAG(IS_WIN)
 TEST_F(IntegrationTestDeviceManagement, AppUpdateConflictPolicies) {
   const base::Version kApp1InitialVersion = base::Version("1.2.3.4");
   const base::Version kApp1UpdatedVersion = base::Version("2.3.4.5");
@@ -1954,7 +1965,11 @@ TEST_F(IntegrationTestDeviceManagement, AppUpdateConflictPolicies) {
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
+#endif  // BUILDFLAG(IS_WIN)
 
+// This test depends on setting platform policy from the test, which does not
+// work on POSIX. Therefore, this test is Windows only.
+#if BUILDFLAG(IS_WIN)
 TEST_F(IntegrationTestDeviceManagement, CloudPolicyOverridesPlatformPolicy) {
   ASSERT_NO_FATAL_FAILURE(SetCloudPolicyOverridesPlatformPolicy());
 
@@ -2033,6 +2048,7 @@ TEST_F(IntegrationTestDeviceManagement, CloudPolicyOverridesPlatformPolicy) {
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
+#endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(IntegrationTestDeviceManagement, RollbackToTargetVersion) {
   constexpr char kTargetVersionPrefix[] = "1.0.";
@@ -2076,6 +2092,7 @@ TEST_F(IntegrationTestDeviceManagement, RollbackToTargetVersion) {
 }
 #endif  // !defined(COMPONENT_BUILD)
 
+#if BUILDFLAG(IS_WIN)
 class IntegrationTestMsi : public IntegrationTest {
  public:
   IntegrationTestMsi() = default;

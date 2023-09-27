@@ -531,7 +531,7 @@ void ExpectAppsUpdateSequence(UpdaterScope scope,
 #if BUILDFLAG(IS_WIN)
   const base::FilePath::StringType kExeExtension = FILE_PATH_LITERAL(".exe");
 #else
-  const base::FilePath::StringType kExeExtension = FILE_PATH_LITERAL("");
+  const base::FilePath::StringType kExeExtension = FILE_PATH_LITERAL(".zip");
 #endif  // BUILDFLAG(IS_WIN)
 
   base::FilePath exe_path;
