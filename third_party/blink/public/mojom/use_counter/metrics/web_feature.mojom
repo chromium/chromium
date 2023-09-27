@@ -4009,6 +4009,7 @@ enum WebFeature {
   kOutOfFlowAlignSelfSingleInset = 4669,
   kOutOfFlowAlignSelfBothInsets = 4670,
   kV8WebAssemblyJSStringBuiltins = 4671,
+  kObservableConstructor = 4672,
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
   // Also, run update_use_counter_feature_enum.py in

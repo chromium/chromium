@@ -11119,6 +11119,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kDeferTabSwitcherLayoutCreation)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+    {"observable-api", flag_descriptions::kObservableAPIName,
+     flag_descriptions::kObservableAPIDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kObservableAPI)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

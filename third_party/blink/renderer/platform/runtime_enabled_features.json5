@@ -2555,6 +2555,11 @@
       origin_trial_feature_name: "NoVarySearchPrefetch",
     },
     {
+      name: "ObservableAPI",
+      status: "experimental",
+      public: true,
+    },
+    {
       name: "OffMainThreadCSSPaint",
       status: "stable",
       base_feature: "none",

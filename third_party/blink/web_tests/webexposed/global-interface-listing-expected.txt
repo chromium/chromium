@@ -6642,6 +6642,9 @@ interface OTPCredential : Credential
     attribute @@toStringTag
     getter code
     method constructor
+interface Observable
+    attribute @@toStringTag
+    method constructor
 interface OfflineAudioCompletionEvent : Event
     attribute @@toStringTag
     getter renderedBuffer

@@ -1789,6 +1789,11 @@ const char kGoogleOneOfferFilesBannerName[] = "Google One offer Files banner";
 const char kGoogleOneOfferFilesBannerDescription[] =
     "Shows a Files banner about Google One offer.";
 
+const char kObservableAPIName[] = "Observable API";
+const char kObservableAPIDescription[] =
+    "A reactive programming primitive for ergonomically handling streams of "
+    "async data. See https://github.com/WICG/observable.";
+
 const char kOpenscreenCastStreamingSessionName[] =
     "Enable Open Screen Library (libcast) as the Mirroring Service's Cast "
     "Streaming implementation";

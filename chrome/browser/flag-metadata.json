@@ -5968,6 +5968,11 @@
     "expiry_milestone": 122
   },
   {
+    "name": "observable-api",
+    "owners": [ "dom" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "offline-pages-live-page-sharing",
     "owners": [ "sclittle", "srsudar", "offline-dev" ],
     "expiry_milestone": 86

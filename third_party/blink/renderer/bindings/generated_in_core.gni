@@ -1189,6 +1189,8 @@ generated_interface_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_node_part.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_not_restored_reasons.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_not_restored_reasons.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_observable.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_observable.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_offscreen_canvas.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_offscreen_canvas.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_overscroll_event.cc",

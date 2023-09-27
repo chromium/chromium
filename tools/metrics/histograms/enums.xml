@@ -44075,6 +44075,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4669" label="OutOfFlowAlignSelfSingleInset"/>
   <int value="4670" label="OutOfFlowAlignSelfBothInsets"/>
   <int value="4671" label="V8WebAssemblyJSStringBuiltins"/>
+  <int value="4672" label="ObservableConstructor"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
@@ -60854,6 +60855,7 @@ from previous Chrome versions.
   <int value="-1989134646" label="PhoneHubUseBle:disabled"/>
   <int value="-1989024058" label="SystemEmojiPickerSearchExtension:disabled"/>
   <int value="-1988840552" label="WebViewExtraHeadersSameOriginOnly:disabled"/>
+  <int value="-1988567154" label="ObservableAPI:enabled"/>
   <int value="-1988127107" label="UseNotificationCompatBuilder:enabled"/>
   <int value="-1987939098"
       label="AutofillEnablePasswordInfoBarAccountIndicationFooter:enabled"/>
@@ -61344,6 +61346,7 @@ from previous Chrome versions.
   <int value="-1751928267" label="disable-icon-ntp"/>
   <int value="-1751562448" label="OmniboxExpandedStateColors:disabled"/>
   <int value="-1751492305" label="SupportTool:enabled"/>
+  <int value="-1750933674" label="ObservableAPI:disabled"/>
   <int value="-1750309491" label="DragWindowToNewDesk:enabled"/>
   <int value="-1750008152" label="UsernameFirstFlow:enabled"/>
   <int value="-1749689559" label="SelectToSpeakNavigationControl:disabled"/>

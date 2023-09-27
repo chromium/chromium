@@ -225,6 +225,8 @@ blink_core_sources_dom = [
   "node_with_index.h",
   "nth_index_cache.cc",
   "nth_index_cache.h",
+  "observable.cc",
+  "observable.h",
   "parser_content_policy.h",
   "part.cc",
   "part.h",
