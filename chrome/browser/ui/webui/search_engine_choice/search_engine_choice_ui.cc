@@ -42,16 +42,28 @@ void AddGeneratedIconResources(content::WebUIDataSource* source) {
   source->AddResourcePath("images/ask_com.png", IDR_ASK_COM_PNG);
   source->AddResourcePath("images/baidu_com.png", IDR_BAIDU_COM_PNG);
   source->AddResourcePath("images/bing_com.png", IDR_BING_COM_PNG);
+  source->AddResourcePath("images/search_brave_com.png",
+                          IDR_SEARCH_BRAVE_COM_PNG);
   source->AddResourcePath("images/coccoc_com.png", IDR_COCCOC_COM_PNG);
   source->AddResourcePath("images/daum_net.png", IDR_DAUM_NET_PNG);
   source->AddResourcePath("images/duckduckgo_com.png", IDR_DUCKDUCKGO_COM_PNG);
   source->AddResourcePath("images/ecosia_org.png", IDR_ECOSIA_ORG_PNG);
+  source->AddResourcePath("images/karmasearch_org.png",
+                          IDR_KARMASEARCH_ORG_PNG);
+  source->AddResourcePath("images/lilo_org.png", IDR_LILO_ORG_PNG);
   source->AddResourcePath("images/mail_ru.png", IDR_MAIL_RU_PNG);
+  source->AddResourcePath("images/mojeek_com.png", IDR_MOJEEK_COM_PNG);
   source->AddResourcePath("images/naver_com.png", IDR_NAVER_COM_PNG);
+  source->AddResourcePath("images/nona_de.png", IDR_NONA_DE_PNG);
+  source->AddResourcePath("images/panda_search_org.png",
+                          IDR_PANDA_SEARCH_ORG_PNG);
   source->AddResourcePath("images/petalsearch_com.png",
                           IDR_PETALSEARCH_COM_PNG);
+  source->AddResourcePath("images/presearch_com.png", IDR_PRESEARCH_COM_PNG);
+  source->AddResourcePath("images/quendu_com.png", IDR_QUENDU_COM_PNG);
   source->AddResourcePath("images/qwant_com.png", IDR_QWANT_COM_PNG);
   source->AddResourcePath("images/seznam_cz.png", IDR_SEZNAM_CZ_PNG);
+  source->AddResourcePath("images/seznam_sk.png", IDR_SEZNAM_SK_PNG);
   source->AddResourcePath("images/so_com.png", IDR_SO_COM_PNG);
   source->AddResourcePath("images/sogou_com.png", IDR_SOGOU_COM_PNG);
   source->AddResourcePath("images/yahoo_com.png", IDR_YAHOO_COM_PNG);
@@ -90,7 +102,13 @@ void AddGeneratedIconResources(content::WebUIDataSource* source) {
   source->AddResourcePath("images/yandex_kz.png", IDR_YANDEX_KZ_PNG);
   source->AddResourcePath("images/yandex_ru.png", IDR_YANDEX_RU_PNG);
   source->AddResourcePath("images/yandex_com_tr.png", IDR_YANDEX_COM_TR_PNG);
+  source->AddResourcePath("images/yep_com.png", IDR_YEP_COM_PNG);
   source->AddResourcePath("images/info_com.png", IDR_INFO_COM_PNG);
+  source->AddResourcePath("images/metager_de.png", IDR_METAGER_DE_PNG);
+  source->AddResourcePath("images/oceanhero_today.png",
+                          IDR_OCEANHERO_TODAY_PNG);
+  source->AddResourcePath("images/privacywall_org.png",
+                          IDR_PRIVACYWALL_ORG_PNG);
 }
 // End of generated code.
 
@@ -107,6 +125,7 @@ std::string GetChoiceListJSON(Profile& profile) {
     // format 'keyword'.png while replacing all the '.' in 'keyword' by '_'.
     std::u16string engine_keyword = choice->keyword();
     std::replace(engine_keyword.begin(), engine_keyword.end(), '.', '_');
+    std::replace(engine_keyword.begin(), engine_keyword.end(), '-', '_');
     const std::u16string icon_path = u"images/" + engine_keyword + u".png";
 
     choice_value.Set("prepopulate_id", choice->prepopulate_id);
