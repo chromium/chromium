@@ -24,19 +24,23 @@ ParcelTrackingInfobarDelegate::~ParcelTrackingInfobarDelegate() = default;
 
 #pragma mark - Public
 
-void ParcelTrackingInfobarDelegate::TrackPackages() {
-  [parcel_tracking_commands_handler_
-      showParcelTrackingInfobarWithParcels:parcel_list_
-                                   forStep:ParcelTrackingStep::
-                                               kNewPackageTracked];
+void ParcelTrackingInfobarDelegate::TrackPackages(bool display_infobar) {
+  if (display_infobar) {
+    [parcel_tracking_commands_handler_
+        showParcelTrackingInfobarWithParcels:parcel_list_
+                                     forStep:ParcelTrackingStep::
+                                                 kNewPackageTracked];
+  }
   // TODO(crbug.com/1473449): track once Shopping Service API is ready.
 }
 
-void ParcelTrackingInfobarDelegate::UntrackPackages() {
-  [parcel_tracking_commands_handler_
-      showParcelTrackingInfobarWithParcels:parcel_list_
-                                   forStep:ParcelTrackingStep::
-                                               kPackageUntracked];
+void ParcelTrackingInfobarDelegate::UntrackPackages(bool display_infobar) {
+  if (display_infobar) {
+    [parcel_tracking_commands_handler_
+        showParcelTrackingInfobarWithParcels:parcel_list_
+                                     forStep:ParcelTrackingStep::
+                                                 kPackageUntracked];
+  }
   // TODO(crbug.com/1473449): untrack once Shopping Service API is ready.
 }
 

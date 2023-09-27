@@ -56,7 +56,7 @@
   ParcelTrackingStep step = delegate->GetStep();
   switch (step) {
     case ParcelTrackingStep::kAskedToTrackPackage:
-      delegate->TrackPackages();
+      delegate->TrackPackages(/*display_infobar=*/true);
       break;
     case ParcelTrackingStep::kPackageUntracked:
     case ParcelTrackingStep::kNewPackageTracked:

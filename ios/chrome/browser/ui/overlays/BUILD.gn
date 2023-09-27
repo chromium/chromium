@@ -42,6 +42,7 @@ source_set("overlays") {
     "//ios/chrome/browser/ui/overlays/infobar_banner:coordinators",
     "//ios/chrome/browser/ui/overlays/infobar_banner/translate:coordinators",
     "//ios/chrome/browser/ui/overlays/infobar_modal/autofill_address_profile",
+    "//ios/chrome/browser/ui/overlays/infobar_modal/parcel_tracking",
     "//ios/chrome/browser/ui/overlays/infobar_modal/passwords",
     "//ios/chrome/browser/ui/overlays/infobar_modal/permissions",
     "//ios/chrome/browser/ui/overlays/infobar_modal/save_card",

@@ -26,10 +26,12 @@ class ParcelTrackingInfobarDelegate : public ConfirmInfoBarDelegate {
 
   ~ParcelTrackingInfobarDelegate() override;
 
-  // Tracks the list of packages `parcel_list`.
-  void TrackPackages();
-  // Untracks the list of packages `parcel_list`.
-  void UntrackPackages();
+  // Tracks the list of packages `parcel_list`. If `display_infobar` is true, an
+  // infobar will be displayed to confirm the packages were tracked.
+  void TrackPackages(bool display_infobar);
+  // Untracks the list of packages `parcel_list`. If `display_infobar` is true,
+  // an infobar will be displayed to confirm the packages were untracked.
+  void UntrackPackages(bool display_infobar);
   // Opens a new NTP.
   void OpenNTP();
 
