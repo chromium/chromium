@@ -828,8 +828,9 @@ void LocalFrameView::PerformLayout() {
 
   gfx::Size new_size(Size());
   if (old_size != new_size) {
-    MarkFixedPositionObjectsForLayout(old_size.width() != new_size.width(),
-                                      old_size.height() != new_size.height());
+    InvalidateLayoutForViewportConstrainedObjects(
+        old_size.width() != new_size.width(),
+        old_size.height() != new_size.height());
   }
 
   if (frame_->IsMainFrame()) {
@@ -1252,33 +1253,41 @@ void LocalFrameView::ViewportSizeChanged(bool width_changed,
       frame_->GetPage()->GetBrowserControls().TotalHeight())
     layout_view->SetShouldCheckForPaintInvalidation();
 
-  if (GetFrame().GetDocument() && !IsInPerformLayout())
-    MarkFixedPositionObjectsForLayout(width_changed, height_changed);
+  if (GetFrame().GetDocument() && !IsInPerformLayout()) {
+    InvalidateLayoutForViewportConstrainedObjects(width_changed,
+                                                  height_changed);
+  }
 
   if (GetPaintTimingDetector().Visualizer())
     GetPaintTimingDetector().Visualizer()->OnViewportChanged();
 }
 
-void LocalFrameView::MarkFixedPositionObjectsForLayout(bool width_changed,
-                                                       bool height_changed) {
-  if (RuntimeEnabledFeatures::LayoutNewFixedPositionInvalidationEnabled()) {
-    auto* layout_view = GetLayoutView();
-    if (!layout_view || layout_view->NeedsLayout()) {
-      return;
-    }
-
+void LocalFrameView::InvalidateLayoutForViewportConstrainedObjects(
+    bool width_changed,
+    bool height_changed) {
+  auto* layout_view = GetLayoutView();
+  if (layout_view && !layout_view->NeedsLayout()) {
     for (const auto& fragment : layout_view->PhysicalFragments()) {
-      if (!fragment.HasOutOfFlowFragmentChild()) {
-        continue;
+      if (RuntimeEnabledFeatures::LayoutNewStickyLogicEnabled() &&
+          fragment.StickyDescendants()) {
+        layout_view->SetNeedsSimplifiedLayout();
+        break;
       }
-      for (const auto& fragment_child : fragment.Children()) {
-        if (fragment_child->IsFixedPositioned()) {
-          layout_view->SetNeedsSimplifiedLayout();
-          return;
+      if (RuntimeEnabledFeatures::LayoutNewFixedPositionInvalidationEnabled()) {
+        if (!fragment.HasOutOfFlowFragmentChild()) {
+          continue;
+        }
+        for (const auto& fragment_child : fragment.Children()) {
+          if (fragment_child->IsFixedPositioned()) {
+            layout_view->SetNeedsSimplifiedLayout();
+            return;
+          }
         }
       }
     }
+  }
 
+  if (RuntimeEnabledFeatures::LayoutNewFixedPositionInvalidationEnabled()) {
     return;
   }
 

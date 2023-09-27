@@ -296,8 +296,8 @@ class CORE_EXPORT LocalFrameView final
   void DidChangeScrollOffset();
 
   void ViewportSizeChanged(bool width_changed, bool height_changed);
-  void MarkFixedPositionObjectsForLayout(bool width_changed,
-                                         bool height_changed);
+  void InvalidateLayoutForViewportConstrainedObjects(bool width_changed,
+                                                     bool height_changed);
   void DynamicViewportUnitsChanged();
 
   AtomicString MediaType() const;
