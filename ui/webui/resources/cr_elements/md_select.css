@@ -50,6 +50,27 @@
   }
 }
 
+:host-context([chrome-refresh-2023]) .md-select {
+  --md-select-bg-color: transparent;
+  --md-arrow-width: 7px;
+  --md-select-side-padding: 10px;
+  --md-select-text-color: inherit;
+  border: solid 1px var(--color-combobox-container-outline,
+      var(--cr-fallback-color-neutral-outline));
+  border-radius: 8px;
+  box-sizing: border-box;
+  font-size: 12px;
+  height: 36px;
+  line-height: 36px;
+  padding-bottom: 0;
+  padding-top: 0;
+}
+
+:host-context([chrome-refresh-2023]) .md-select:hover {
+  background-color: var(--color-comboxbox-ink-drop-hovered,
+      var(--cr-hover-on-subtle-background-color));
+}
+
 /* Makes sure anything within the dropdown menu has a background. */
 .md-select :-webkit-any(option, optgroup) {
   background-color: var(--md-select-option-bg-color);
@@ -60,8 +81,23 @@
   pointer-events: none;
 }
 
+:host-context([chrome-refresh-2023]) .md-select[disabled] {
+  background-color: var(--color-combobox-background-disabled,
+      var(--cr-fallback-color-disabled-background));
+  border-color: transparent;
+  color: var(--color-textfield-foreground-disabled,
+      var(--cr-fallback-color-disabled-foreground));
+  opacity: 1;
+}
+
 .md-select:focus {
   box-shadow: 0 0 0 2px var(--md-select-focus-shadow-color);
+}
+
+:host-context([chrome-refresh-2023]) .md-select:focus {
+  box-shadow: none;
+  outline: solid 2px var(--cr-focus-outline-color);
+  outline-offset: -1px;
 }
 
 @media (forced-colors: active) {
