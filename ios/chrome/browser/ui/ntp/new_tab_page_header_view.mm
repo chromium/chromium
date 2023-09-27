@@ -40,9 +40,6 @@
 
 namespace {
 
-// Landscape inset for fake omnibox background container
-const CGFloat kBackgroundLandscapeInset = 169;
-
 // Fakebox highlight animation duration.
 const CGFloat kFakeboxHighlightDuration = 0.4;
 
@@ -146,6 +143,17 @@ UIColor* BlendColors(UIColor* color_1, UIColor* color_2, CGFloat fraction) {
   return [UIColor colorWithRed:out[0] green:out[1] blue:out[2] alpha:out[3]];
 }
 
+// Returns a value in the range of `from` up to `to`, depending on the given
+// `percent`.
+CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
+  if (percent <= 0.0) {
+    return from;
+  } else if (percent >= 1.0) {
+    return to;
+  }
+  return from + (to - from) * percent;
+}
+
 }  // namespace
 
 @interface NewTabPageHeaderView ()
@@ -162,7 +170,6 @@ UIColor* BlendColors(UIColor* color_1, UIColor* color_2, CGFloat fraction) {
 @property(nonatomic, strong) NSLayoutConstraint* fakeLocationBarTopConstraint;
 @property(nonatomic, strong)
     NSLayoutConstraint* fakeLocationBarHeightConstraint;
-@property(nonatomic, strong) NSLayoutConstraint* fakeToolbarTopConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* hintLabelLeadingConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* hintLabelTrailingConstraint;
 // In the new layout, the hint label should always be at least inside the fake
@@ -345,17 +352,7 @@ UIColor* BlendColors(UIColor* color_1, UIColor* color_2, CGFloat fraction) {
   }
 
   // Constraints.
-  self.fakeToolbarTopConstraint = [self.fakeToolbar.topAnchor
-      constraintEqualToAnchor:searchField.topAnchor];
-  [NSLayoutConstraint activateConstraints:@[
-    [self.fakeToolbar.leadingAnchor
-        constraintEqualToAnchor:searchField.leadingAnchor],
-    [self.fakeToolbar.trailingAnchor
-        constraintEqualToAnchor:searchField.trailingAnchor],
-    self.fakeToolbarTopConstraint,
-    [self.fakeToolbar.bottomAnchor
-        constraintEqualToAnchor:searchField.bottomAnchor]
-  ]];
+  AddSameConstraints(self.fakeToolbar, searchField);
 
   self.fakeLocationBarTopConstraint = [self.fakeLocationBar.topAnchor
       constraintEqualToAnchor:searchField.topAnchor];
@@ -515,41 +512,39 @@ UIColor* BlendColors(UIColor* color_1, UIColor* color_2, CGFloat fraction) {
     self.separator.alpha = 0;
 
     return;
-  } else {
-    self.alpha = 1;
-    self.separator.alpha = percent;
   }
 
-  self.fakeToolbarTopConstraint.constant = 0;
+  self.alpha = 1;
+  self.separator.alpha = percent;
 
   // Calculate the amount to grow the width and height of searchField so that
   // its frame covers the entire toolbar area.
   CGFloat maxXInset =
       ui::AlignValueToUpperPixel((searchFieldNormalWidth - screenWidth) / 2);
-  widthConstraint.constant = searchFieldNormalWidth - 2 * maxXInset * percent;
+  widthConstraint.constant =
+      Interpolate(searchFieldNormalWidth, screenWidth, percent);
   CGFloat maxTopMarginDiff = fakeOmniboxHeight - locationBarHeight -
                              kAdaptiveLocationBarVerticalMargin;
   topMarginConstraint.constant =
       -content_suggestions::SearchFieldTopMargin() - maxTopMarginDiff * percent;
-  heightConstraint.constant = fakeOmniboxHeight +
-                              ntp_header::kMaxTopMarginDiff -
-                              maxTopMarginDiff * percent;
+  heightConstraint.constant =
+      ntp_header::kFakeLocationBarTopConstraint -
+      content_suggestions::HeaderSeparatorHeight() +
+      Interpolate(fakeOmniboxHeight,
+                  locationBarHeight + kAdaptiveLocationBarVerticalMargin,
+                  percent);
 
   // Calculate the amount to shrink the width and height of background so that
   // it's where the focused adapative toolbar focuses.
-  CGFloat inset = !IsSplitToolbarMode(self) ? kBackgroundLandscapeInset : 0;
-  self.fakeLocationBarLeadingConstraint.constant =
-      (safeAreaInsets.left + kExpandedLocationBarHorizontalMargin + inset) *
-      percent;
-  self.fakeLocationBarTrailingConstraint.constant =
-      -(safeAreaInsets.right + kExpandedLocationBarHorizontalMargin + inset) *
-      percent;
+  self.fakeLocationBarLeadingConstraint.constant = Interpolate(
+      0, safeAreaInsets.left + kExpandedLocationBarHorizontalMargin, percent);
+  self.fakeLocationBarTrailingConstraint.constant = -Interpolate(
+      0, safeAreaInsets.right + kExpandedLocationBarHorizontalMargin, percent);
 
   self.fakeLocationBarTopConstraint.constant =
       ntp_header::kFakeLocationBarTopConstraint * percent;
-  CGFloat minHeightDiff = locationBarHeight - fakeOmniboxHeight;
   self.fakeLocationBarHeightConstraint.constant =
-      fakeOmniboxHeight + minHeightDiff * percent;
+      Interpolate(fakeOmniboxHeight, locationBarHeight, percent);
   self.fakeLocationBar.layer.cornerRadius =
       self.fakeLocationBarHeightConstraint.constant / 2;
 
@@ -563,21 +558,17 @@ UIColor* BlendColors(UIColor* color_1, UIColor* color_2, CGFloat fraction) {
   // The trailing space wanted is a linear scale between the two states of the
   // fakebox: 1) when centered in the NTP and 2) when pinned to the top,
   // emulating the the omnibox.
-  self.endButtonTrailingConstraint.constant =
-      -kEndButtonFakeboxTrailingSpace +
-      (kEndButtonFakeboxTrailingSpace - kEndButtonOmniboxTrailingSpace) *
-          percent;
+  self.endButtonTrailingConstraint.constant = -Interpolate(
+      kEndButtonFakeboxTrailingSpace, kEndButtonOmniboxTrailingSpace, percent);
 
   if (base::FeatureList::IsEnabled(kNewNTPOmniboxLayout)) {
     // A similar positioning scheme is applied to the leading-edge-aligned
     // hint label as the trailing-edge-aligned buttons.
     self.hintLabelLeadingMarginConstraint.constant = subviewsDiff;
-    CGFloat desiredLeadingSpace =
-        HintLabelFakeboxLeadingSpace() -
-        (HintLabelFakeboxLeadingSpace() - HintLabelOmniboxLeadingSpace()) *
-            percent;
     self.hintLabelLeadingConstraint.constant =
-        desiredLeadingSpace + hintLabelScalingExtraOffset;
+        hintLabelScalingExtraOffset +
+        Interpolate(HintLabelFakeboxLeadingSpace(),
+                    HintLabelOmniboxLeadingSpace(), percent);
   } else {
     self.hintLabelLeadingConstraint.constant =
         subviewsDiff + ntp_header::kCenteredHintLabelSidePadding;
