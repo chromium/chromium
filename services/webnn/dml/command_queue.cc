@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/trace_event/trace_event.h"
 
 namespace webnn::dml {
 
@@ -141,6 +142,8 @@ HRESULT CommandQueue::WaitSyncForTesting() {
 }
 
 void CommandQueue::OnObjectSignaled(HANDLE object) {
+  TRACE_EVENT_NESTABLE_ASYNC_END0("gpu", "dml::CommandQueue::WaitAsync",
+                                  TRACE_ID_LOCAL(this));
   CHECK_EQ(object, fence_event_.get());
   while (!queued_callbacks_.empty() &&
          queued_callbacks_.front().fence_value <= fence_->GetCompletedValue()) {
@@ -162,6 +165,8 @@ void CommandQueue::WaitAsync(OnWaitAyncCallback callback) {
     std::move(callback).Run(hr);
     return;
   }
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("gpu", "dml::CommandQueue::WaitAsync",
+                                    TRACE_ID_LOCAL(this));
   queued_callbacks_.push_back(
       {last_fence_value_, base::BindOnce(std::move(callback), S_OK)});
 }

@@ -8,6 +8,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "services/webnn/dml/command_queue.h"
 #include "services/webnn/dml/error.h"
 #include "services/webnn/dml/utils.h"
@@ -158,6 +159,7 @@ HRESULT CommandRecorder::InitializeOperator(
     IDMLCompiledOperator* compiled_operator,
     const absl::optional<DML_BINDING_DESC>& input_array_binding,
     const absl::optional<DML_BINDING_DESC>& persistent_resource_binding) {
+  TRACE_EVENT0("gpu", "dml::CommandRecorder::InitializeOperator");
   CHECK(is_open_);
   CHECK(compiled_operator);
 
@@ -179,8 +181,12 @@ HRESULT CommandRecorder::InitializeOperator(
       .Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
       .NumDescriptors = num_descriptors_in_heap,
       .Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE};
-  RETURN_IF_FAILED(d3d12_device_->CreateDescriptorHeap(
-      &descriptor_heap_desc, IID_PPV_ARGS(&descriptor_heap)));
+  {
+    TRACE_EVENT1("gpu", "ID3D12Device::CreateDescriptorHeap", "NumDescriptors",
+                 descriptor_heap_desc.NumDescriptors);
+    RETURN_IF_FAILED(d3d12_device_->CreateDescriptorHeap(
+        &descriptor_heap_desc, IID_PPV_ARGS(&descriptor_heap)));
+  }
 
   ID3D12DescriptorHeap* descriptor_heaps[] = {descriptor_heap.Get()};
   command_list_->SetDescriptorHeaps(/* NumDescriptorHeaps */ 1,
@@ -286,6 +292,7 @@ HRESULT CommandRecorder::ExecuteOperator(
     base::span<const DML_BINDING_DESC> input_bindings,
     base::span<const DML_BINDING_DESC> output_bindings,
     const absl::optional<DML_BINDING_DESC>& persistent_resource_binding) {
+  TRACE_EVENT0("gpu", "dml::CommandRecorder::ExecuteOperator");
   CHECK(is_open_);
   CHECK(compiled_operator);
 
@@ -300,8 +307,12 @@ HRESULT CommandRecorder::ExecuteOperator(
       .Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
       .NumDescriptors = execution_binding_properties.RequiredDescriptorCount,
       .Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE};
-  RETURN_IF_FAILED(d3d12_device_->CreateDescriptorHeap(
-      &descriptor_heap_desc, IID_PPV_ARGS(&descriptor_heap)));
+  {
+    TRACE_EVENT1("gpu", "ID3D12Device::CreateDescriptorHeap", "NumDescriptors",
+                 descriptor_heap_desc.NumDescriptors);
+    RETURN_IF_FAILED(d3d12_device_->CreateDescriptorHeap(
+        &descriptor_heap_desc, IID_PPV_ARGS(&descriptor_heap)));
+  }
 
   ID3D12DescriptorHeap* descriptor_heaps[] = {descriptor_heap.Get()};
   command_list_->SetDescriptorHeaps(/* NumDescriptorHeaps */ 1,
@@ -410,6 +421,8 @@ HRESULT CommandRecorder::ExecuteOperator(
 HRESULT CommandRecorder::CreateDefaultBuffer(uint64_t size,
                                              const wchar_t* name_for_debugging,
                                              ComPtr<ID3D12Resource>& resource) {
+  TRACE_EVENT2("gpu", "dml::CommandRecorder::CreateDefaultBuffer", "size", size,
+               "name", name_for_debugging);
   auto heap_properties = CreateHeapProperties(D3D12_HEAP_TYPE_DEFAULT);
   auto resource_desc =
       CreateResourceDesc(size, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS);
@@ -426,6 +439,8 @@ HRESULT CommandRecorder::CreateDefaultBuffer(uint64_t size,
 HRESULT CommandRecorder::CreateUploadBuffer(uint64_t size,
                                             const wchar_t* name_for_debugging,
                                             ComPtr<ID3D12Resource>& resource) {
+  TRACE_EVENT2("gpu", "dml::CommandRecorder::CreateUploadBuffer", "size", size,
+               "name", name_for_debugging);
   auto heap_properties = CreateHeapProperties(D3D12_HEAP_TYPE_UPLOAD);
   auto resource_desc = CreateResourceDesc(size, D3D12_RESOURCE_FLAG_NONE);
   RETURN_IF_FAILED(d3d12_device_->CreateCommittedResource(
@@ -442,6 +457,8 @@ HRESULT CommandRecorder::CreateReadbackBuffer(
     uint64_t size,
     const wchar_t* name_for_debugging,
     ComPtr<ID3D12Resource>& resource) {
+  TRACE_EVENT2("gpu", "dml::CommandRecorder::CreateReadbackBuffer", "size",
+               size, "name", name_for_debugging);
   auto heap_properties = CreateHeapProperties(D3D12_HEAP_TYPE_READBACK);
   auto resource_desc = CreateResourceDesc(size, D3D12_RESOURCE_FLAG_NONE);
   RETURN_IF_FAILED(d3d12_device_->CreateCommittedResource(

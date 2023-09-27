@@ -13,6 +13,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
+#include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/webnn/dml/command_queue.h"
@@ -980,6 +981,7 @@ GraphImpl::~GraphImpl() = default;
 
 ComPtr<IDMLCompiledOperator> GraphImpl::CompileOnBackgroundThread(
     GraphBuilder graph_builder) {
+  TRACE_EVENT0("gpu", "dml::GraphImpl::CompileOnBackgroundThread");
   return graph_builder.Compile(DML_EXECUTION_FLAG_NONE);
 }
 
@@ -992,6 +994,7 @@ void GraphImpl::OnCompilationComplete(
     GraphBufferBindingInfo graph_buffer_binding_info,
     ComputeResourceInfo compute_resource_info,
     ComPtr<IDMLCompiledOperator> compiled_operator) {
+  TRACE_EVENT0("gpu", "dml::GraphImpl::OnCompilationComplete");
   if (!compiled_operator) {
     DLOG(ERROR) << "Failed to compile the graph.";
     std::move(callback).Run(ToError<mojom::CreateGraphResult>(
@@ -1125,6 +1128,7 @@ void GraphImpl::OnInitializationComplete(
     GraphBufferBindingInfo graph_buffer_binding_info,
     mojom::WebNNContext::CreateGraphCallback callback,
     HRESULT hr) {
+  TRACE_EVENT0("gpu", "dml::GraphImpl::OnInitializationComplete");
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to wait for the initialization to complete: "
                 << logging::SystemErrorCodeToString(hr);
@@ -1156,6 +1160,7 @@ void GraphImpl::CreateAndBuild(
     ComPtr<IDMLDevice> dml_device,
     const mojom::GraphInfoPtr& graph_info,
     mojom::WebNNContext::CreateGraphCallback callback) {
+  TRACE_EVENT0("gpu", "dml::GraphImpl::CreateAndBuild");
   // `CommandRecorder` would keep reference of command queue and DML device.
   std::unique_ptr<CommandRecorder> command_recorder =
       CommandRecorder::Create(command_queue, dml_device);
@@ -1301,6 +1306,7 @@ void GraphImpl::HandleComputationFailure(
 void GraphImpl::ComputeImpl(
     base::flat_map<std::string, mojo_base::BigBuffer> named_inputs,
     mojom::WebNNGraph::ComputeCallback callback) {
+  TRACE_EVENT0("gpu", "dml::GraphImpl::ComputeImpl");
   // Recreate the command recorder if it has been released by last failed
   // computation.
   if (!command_recorder_) {
@@ -1449,6 +1455,7 @@ void GraphImpl::OnComputationComplete(
     ComPtr<ID3D12Resource> readback_output_buffer,
     std::map<std::string, D3D12_RANGE> graph_output_name_to_d3d12_range_map,
     HRESULT hr) {
+  TRACE_EVENT0("gpu", "dml::GraphImpl::OnComputationComplete");
   if (FAILED(hr)) {
     HandleComputationFailure("Failed to wait for the computation to complete.",
                              hr, std::move(callback));

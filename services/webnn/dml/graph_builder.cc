@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "services/webnn/dml/error.h"
 
 namespace webnn::dml {
@@ -111,6 +112,7 @@ uint32_t GraphBuilder::CreateOutputEdge(
 
 ComPtr<IDMLCompiledOperator> GraphBuilder::Compile(
     DML_EXECUTION_FLAGS flags) const {
+  TRACE_EVENT0("gpu", "dml::GraphBuilder::Compile");
   std::vector<DML_GRAPH_NODE_DESC> dml_nodes(dml_nodes_.size());
   for (size_t i = 0; i < dml_nodes.size(); ++i) {
     dml_nodes[i] = {DML_GRAPH_NODE_TYPE_OPERATOR, &dml_nodes_[i]};
