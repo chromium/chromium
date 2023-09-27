@@ -169,7 +169,10 @@ cc_library(
         "//tensorflow_lite_support/cc/port:statusor",
         "//tensorflow_lite_support/metadata:metadata_schema_cc",
         "//tensorflow_lite_support/metadata/cc:metadata_extractor",
+        "@com_google_absl//absl/memory",
         "@com_google_absl//absl/status",
+        "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/strings:string_view",
     ],
 )
 

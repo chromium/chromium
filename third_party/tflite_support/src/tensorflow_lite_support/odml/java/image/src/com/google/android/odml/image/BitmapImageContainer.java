@@ -23,6 +23,8 @@ class BitmapImageContainer implements ImageContainer {
   private final Bitmap bitmap;
   private final ImageProperties properties;
 
+  // incompatible argument for parameter config of convertFormatCode.
+  @SuppressWarnings("nullness:argument.type.incompatible")
   public BitmapImageContainer(Bitmap bitmap) {
     this.bitmap = bitmap;
     this.properties = ImageProperties.builder()

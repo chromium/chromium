@@ -1,4 +1,4 @@
-From bac393910c8f6ea0a1f77ff122664d3fa684c668 Mon Sep 17 00:00:00 2001
+From a531e55610df260911dfa8038014d19dcff570d7 Mon Sep 17 00:00:00 2001
 From: Daniel Cheng <dcheng@chromium.org>
 Date: Wed, 20 Sep 2023 09:07:05 -0700
 Subject: [PATCH 10/10] Prefix ASSIGN_OR_RETURN and RETURN_IF_ERROR macros with
@@ -2630,10 +2630,10 @@ index 9298c60395286..653ff01f331ef 100644
    return absl::OkStatus();
  }
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/image_tensor_specs.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/image_tensor_specs.cc
-index ab064d1cd6a05..664bf895dc47e 100644
+index 392df5e40c662..b0355a2b69e26 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/image_tensor_specs.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/image_tensor_specs.cc
-@@ -87,7 +87,7 @@ StatusOr<const ImageProperties*> GetImagePropertiesIfAny(
+@@ -90,7 +90,7 @@ StatusOr<const ImageProperties*> GetImagePropertiesIfAny(
  
  StatusOr<absl::optional<NormalizationOptions>> GetNormalizationOptionsIfAny(
      const TensorMetadata& tensor_metadata) {
@@ -2642,7 +2642,7 @@ index ab064d1cd6a05..664bf895dc47e 100644
        const tflite::ProcessUnit* normalization_process_unit,
        ModelMetadataExtractor::FindFirstProcessUnit(
            tensor_metadata, tflite::ProcessUnitOptions_NormalizationOptions));
-@@ -137,14 +137,14 @@ StatusOr<absl::optional<NormalizationOptions>> GetNormalizationOptionsIfAny(
+@@ -140,14 +140,14 @@ StatusOr<absl::optional<NormalizationOptions>> GetNormalizationOptionsIfAny(
  StatusOr<ImageTensorSpecs> BuildInputImageTensorSpecs(
      const TfLiteEngine::Interpreter& interpreter,
      const tflite::metadata::ModelMetadataExtractor& metadata_extractor) {
@@ -3190,10 +3190,10 @@ index 623326d5cba49..f697ab800cb12 100644
    switch (buffer.format()) {
      case FrameBuffer::Format::kNV12:
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/score_calibration.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/score_calibration.cc
-index bc57c0b904534..677cdf6ce3288 100644
+index f3cfc495ceb10..9e8bd33934867 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/score_calibration.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/score_calibration.cc
-@@ -230,7 +230,7 @@ StatusOr<SigmoidCalibrationParameters> BuildSigmoidCalibrationParams(
+@@ -231,7 +231,7 @@ StatusOr<SigmoidCalibrationParameters> BuildSigmoidCalibrationParams(
      if (lines[i].empty()) {
        continue;
      }
@@ -3345,10 +3345,10 @@ index 5bae0eefb4341..511b4ba338774 100644
  
      return result;
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/text/tokenizers/tokenizer_utils.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/text/tokenizers/tokenizer_utils.cc
-index 28f0137f54278..0a38acc2f7d38 100644
+index bd4f18fca7f08..135de8e18f525 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/text/tokenizers/tokenizer_utils.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/text/tokenizers/tokenizer_utils.cc
-@@ -45,7 +45,7 @@ StatusOr<absl::string_view> CheckAndLoadFirstAssociatedFile(
+@@ -48,7 +48,7 @@ StatusOr<absl::string_view> CheckAndLoadFirstAssociatedFile(
          "Invalid vocab_file from input process unit.",
          TfLiteSupportStatus::kMetadataInvalidTokenizerError);
    }
@@ -3357,7 +3357,7 @@ index 28f0137f54278..0a38acc2f7d38 100644
                     metadata_extractor->GetAssociatedFile(
                         associated_files->Get(0)->name()->str()));
    return vocab_buffer;
-@@ -65,7 +65,7 @@ StatusOr<std::unique_ptr<Tokenizer>> CreateTokenizerFromProcessUnit(
+@@ -68,7 +68,7 @@ StatusOr<std::unique_ptr<Tokenizer>> CreateTokenizerFromProcessUnit(
      case ProcessUnitOptions_BertTokenizerOptions: {
        const tflite::BertTokenizerOptions* options =
            tokenizer_process_unit->options_as<tflite::BertTokenizerOptions>();
@@ -3366,7 +3366,7 @@ index 28f0137f54278..0a38acc2f7d38 100644
                         CheckAndLoadFirstAssociatedFile(options->vocab_file(),
                                                         metadata_extractor));
        return absl::make_unique<BertTokenizer>(vocab_buffer.data(),
-@@ -80,7 +80,7 @@ StatusOr<std::unique_ptr<Tokenizer>> CreateTokenizerFromProcessUnit(
+@@ -83,7 +83,7 @@ StatusOr<std::unique_ptr<Tokenizer>> CreateTokenizerFromProcessUnit(
      case ProcessUnitOptions_RegexTokenizerOptions: {
        const tflite::RegexTokenizerOptions* options =
            tokenizer_process_unit->options_as<RegexTokenizerOptions>();
@@ -3774,10 +3774,10 @@ index 1b08e56ed509b..44254c23a83d4 100644
  
    return CreateFromYuvRawBuffer(
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/metadata_extractor.cc b/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/metadata_extractor.cc
-index 3d965700e6cf3..350ba5636998a 100644
+index d208da4e03780..4b3f816183c8f 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/metadata_extractor.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/metadata_extractor.cc
-@@ -78,7 +78,7 @@ tflite::support::StatusOr<ZipFileInfo> GetCurrentZipFileInfo(
+@@ -79,7 +79,7 @@ tflite::support::StatusOr<ZipFileInfo> GetCurrentZipFileInfo(
      const unzFile& zf) {
    // Open file in raw mode, as data is expected to be uncompressed.
    int method;
@@ -3786,7 +3786,7 @@ index 3d965700e6cf3..350ba5636998a 100644
        unzOpenCurrentFile2(zf, &method, /*level=*/nullptr, /*raw=*/1)));
    if (method != Z_NO_COMPRESSION) {
      return CreateStatusWithPayload(
-@@ -88,7 +88,7 @@ tflite::support::StatusOr<ZipFileInfo> GetCurrentZipFileInfo(
+@@ -89,7 +89,7 @@ tflite::support::StatusOr<ZipFileInfo> GetCurrentZipFileInfo(
  
    // Get file info a first time to get filename size.
    unz_file_info64 file_info;
@@ -3795,7 +3795,7 @@ index 3d965700e6cf3..350ba5636998a 100644
        zf, &file_info, /*szFileName=*/nullptr, /*szFileNameBufferSize=*/0,
        /*extraField=*/nullptr, /*extraFieldBufferSize=*/0,
        /*szComment=*/nullptr, /*szCommentBufferSize=*/0)));
-@@ -96,7 +96,7 @@ tflite::support::StatusOr<ZipFileInfo> GetCurrentZipFileInfo(
+@@ -97,7 +97,7 @@ tflite::support::StatusOr<ZipFileInfo> GetCurrentZipFileInfo(
    // Second call to get file name.
    auto file_name_size = file_info.size_filename;
    char* c_file_name = (char*)malloc(file_name_size);
@@ -3804,7 +3804,7 @@ index 3d965700e6cf3..350ba5636998a 100644
        zf, &file_info, c_file_name, file_name_size,
        /*extraField=*/nullptr, /*extraFieldBufferSize=*/0,
        /*szComment=*/nullptr, /*szCommentBufferSize=*/0)));
-@@ -112,7 +112,7 @@ tflite::support::StatusOr<ZipFileInfo> GetCurrentZipFileInfo(
+@@ -113,7 +113,7 @@ tflite::support::StatusOr<ZipFileInfo> GetCurrentZipFileInfo(
    }
  
    // Close file and return.
@@ -3813,7 +3813,7 @@ index 3d965700e6cf3..350ba5636998a 100644
  
    ZipFileInfo result{};
    result.name = file_name;
-@@ -130,7 +130,7 @@ ModelMetadataExtractor::CreateFromModelBuffer(const char* buffer_data,
+@@ -131,7 +131,7 @@ ModelMetadataExtractor::CreateFromModelBuffer(const char* buffer_data,
    // https://abseil.io/tips/126.
    std::unique_ptr<ModelMetadataExtractor> extractor =
        absl::WrapUnique(new ModelMetadataExtractor());
@@ -3822,7 +3822,7 @@ index 3d965700e6cf3..350ba5636998a 100644
    return extractor;
  }
  
-@@ -260,7 +260,7 @@ absl::Status ModelMetadataExtractor::ExtractAssociatedFiles(
+@@ -261,7 +261,7 @@ absl::Status ModelMetadataExtractor::ExtractAssociatedFiles(
    if (global_info.number_entry > 0) {
      int error = unzGoToFirstFile(zf);
      while (error == UNZ_OK) {
@@ -3865,5 +3865,5 @@ index fe5d1ef1175e4..94c85334f0574 100644
    leveldb::Options options;
    options.compression =
 -- 
-2.42.0.459.ge4e396fd5e-goog
+2.42.0.515.g380fc7ccd1-goog
 

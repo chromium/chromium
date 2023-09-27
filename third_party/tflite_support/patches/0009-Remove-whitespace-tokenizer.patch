@@ -1,4 +1,4 @@
-From c1736b5905a8e04d7ab83c8f690c57038b37ad3c Mon Sep 17 00:00:00 2001
+From e17b326bbf9026308c87ac7d9444aa3b4db73288 Mon Sep 17 00:00:00 2001
 From: Daniel Cheng <dcheng@chromium.org>
 Date: Mon, 11 Sep 2023 00:22:25 -0700
 Subject: [PATCH 09/10] Remove whitespace tokenizer.
@@ -774,5 +774,5 @@ index 364698bdeb953..0000000000000
 -if __name__ == '__main__':
 -  tf.test.main()
 -- 
-2.42.0.459.ge4e396fd5e-goog
+2.42.0.515.g380fc7ccd1-goog
 

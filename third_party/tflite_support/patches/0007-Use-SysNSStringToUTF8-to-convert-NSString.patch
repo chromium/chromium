@@ -1,4 +1,4 @@
-From 27c5fcdc324e92ede53befa5bcc9642917d1dbdf Mon Sep 17 00:00:00 2001
+From 95fbbe296dc22a585b1453d85aab6b561aa639d1 Mon Sep 17 00:00:00 2001
 From: Robert Ogden <robertogden@chromium.org>
 Date: Wed, 30 Nov 2022 10:24:35 -0800
 Subject: [PATCH 07/10] Use SysNSStringToUTF8 to convert NSString
@@ -21,5 +21,5 @@ index 39c7b655ff3f2..830eab4359067 100644
  NSString* MakeNSString(const std::string& str) {
    return [[NSString alloc] initWithBytes:const_cast<void*>(static_cast<const void*>(str.data()))
 -- 
-2.42.0.459.ge4e396fd5e-goog
+2.42.0.515.g380fc7ccd1-goog
 

@@ -92,4 +92,5 @@ class ExternalFileHandler {
 }  // namespace core
 }  // namespace task
 }  // namespace tflite
+
 #endif  // TENSORFLOW_LITE_SUPPORT_CC_TASK_CORE_EXTERNAL_FILE_HANDLER_H_
