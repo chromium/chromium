@@ -687,6 +687,42 @@ targets.mixin(
         },
     ),
 )
+targets.mixin(
+    name = "linux-jammy-3",
+    swarming = targets.swarming(
+        dimensions = {
+            "os": "Ubuntu-22.04",
+            "locale": "en_US.UTF-8",
+        },
+    ),
+)
+targets.mixin(
+    name = "linux-jammy-4",
+    swarming = targets.swarming(
+        dimensions = {
+            "os": "Ubuntu-22.04",
+            "kvm": "1",
+        },
+    ),
+)
+targets.mixin(
+    name = "linux-jammy-5",
+    swarming = targets.swarming(
+        dimensions = {
+            "os": "Ubuntu-22.04",
+            "python": "3",
+        },
+    ),
+)
+targets.mixin(
+    name = "linux-jammy-6",
+    swarming = targets.swarming(
+        dimensions = {
+            "os": "Ubuntu-22.04",
+            "inside_docker": "0",
+        },
+    ),
+)
 
 targets.mixin(
     name = "linux-jammy-or-bionic",

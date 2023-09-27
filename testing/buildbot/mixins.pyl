@@ -541,6 +541,38 @@
       },
     },
   },
+  'linux-jammy-3': {
+    'swarming': {
+      'dimensions': {
+        'os': 'Ubuntu-22.04',
+        'locale': 'en_US.UTF-8',
+      },
+    },
+  },
+  'linux-jammy-4': {
+    'swarming': {
+      'dimensions': {
+        'os': 'Ubuntu-22.04',
+        'kvm': '1',
+      },
+    },
+  },
+  'linux-jammy-5': {
+    'swarming': {
+      'dimensions': {
+        'os': 'Ubuntu-22.04',
+        'python': '3',
+      },
+    },
+  },
+  'linux-jammy-6': {
+    'swarming': {
+      'dimensions': {
+        'os': 'Ubuntu-22.04',
+        'inside_docker': '0',
+      },
+    },
+  },
   'linux-jammy-or-bionic': {
     'swarming': {
       'dimensions': {

@@ -1705,7 +1705,7 @@
       'linux-lacros-tester-rel': {
         'mixins': [
           'isolate_profile_data',
-          'linux-jammy',
+          'linux-jammy-4',
         ],
         'additional_compile_targets': [
           'chrome',
@@ -4879,7 +4879,7 @@
       },
       'Cast Linux': {
         'mixins': [
-          'linux-jammy',
+          'linux-jammy-5',
         ],
         'additional_compile_targets': [
           'cast_shell',
@@ -4936,7 +4936,7 @@
       'Linux Tests': {
         'mixins': [
           'isolate_profile_data',
-          'linux-jammy',
+          'linux-jammy-3',
         ],
         'test_suites': {
           # TODO(crbug.com/1444855): Switch this back to
@@ -4948,7 +4948,7 @@
       },
       'Linux Tests (Wayland)': {
         'mixins': [
-          'linux-jammy',
+          'linux-jammy-6',
           'isolate_profile_data',
          ],
         'args': [
