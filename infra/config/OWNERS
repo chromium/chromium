@@ -24,4 +24,4 @@ per-file subprojects/chromium/ci/chromium.fuchsia.star=file://build/fuchsia/OWNE
 per-file subprojects/chromium/try/tryserver.chromium.fuchsia.star=file://build/fuchsia/OWNERS
 
 # Chrome Browser Build owners
-per-file subprojects/chromium/ci/chromium.fyi.star=file://infra/config/groups/chrome-build/OWNERS
+per-file subprojects/chromium/ci/chromium.build.star=file://infra/config/groups/chrome-build/OWNERS
