@@ -10,16 +10,6 @@
 -keepattributes RuntimeVisible*Annotations
 -keepattributes AnnotationDefault
 
-# Keep the annotations, because if we don't, the ProGuard rules that use them
-# will not be respected. These classes then show up in our final dex, which we
-# do not want - see crbug.com/628226.
--keep @interface org.chromium.base.annotations.AccessedByNative
--keep @interface org.chromium.base.annotations.CalledByNative
--keep @interface org.chromium.base.annotations.CalledByNativeUnchecked
--keep @interface org.chromium.build.annotations.DoNotInline
--keep @interface org.chromium.build.annotations.UsedByReflection
--keep @interface org.chromium.build.annotations.IdentifierNameString
-
 # Keeps for class level annotations.
 -keep,allowaccessmodification @org.chromium.build.annotations.UsedByReflection class ** {}
 
