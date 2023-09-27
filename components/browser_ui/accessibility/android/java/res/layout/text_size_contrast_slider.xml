@@ -17,6 +17,7 @@
       android:layout_width="@dimen/min_touch_target_size"
       android:layout_height="@dimen/min_touch_target_size"
       android:src="@drawable/ic_remove"
+      android:visibility="gone"
       android:background="@drawable/page_zoom_ripple"
       android:tint="@color/default_icon_color_tint_list" />
 
@@ -25,6 +26,7 @@
       android:layout_weight="1"
       android:layout_width="0dp"
       android:layout_height="@dimen/min_touch_target_size"
+      android:visibility="gone"
       android:contentDescription="@string/page_zoom_label" />
 
   <org.chromium.ui.widget.ChromeImageButton
@@ -32,6 +34,7 @@
       android:layout_width="@dimen/min_touch_target_size"
       android:layout_height="@dimen/min_touch_target_size"
       android:src="@drawable/ic_add"
+      android:visibility="gone"
       android:background="@drawable/page_zoom_ripple"
       android:tint="@color/default_icon_color_tint_list" />
 
