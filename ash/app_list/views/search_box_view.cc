@@ -437,7 +437,7 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
                                          cros_tokens::kCrosSysOnSurfaceVariant);
   }
 
-  if (features::IsProductivityLauncherImageSearchEnabled()) {
+  if (features::IsLauncherSearchControlEnabled()) {
     views::ImageButton* filter_button = CreateFilterButton(base::BindRepeating(
         &SearchBoxView::ShowFilterMenu, weak_ptr_factory_.GetWeakPtr()));
     filter_button->SetFlipCanvasOnPaintForRTLUI(false);

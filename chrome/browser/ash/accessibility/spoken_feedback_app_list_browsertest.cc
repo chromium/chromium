@@ -186,8 +186,10 @@ class SpokenFeedbackAppListBaseTest : public LoggedInSpokenFeedbackTest {
     // Disable the app list nudge in the spoken feedback app list test.
     AppListTestApi().DisableAppListNudge(true);
 
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kProductivityLauncherImageSearch);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kProductivityLauncherImageSearch,
+         features::kLauncherSearchControl},
+        {});
 
     LoggedInSpokenFeedbackTest::SetUp();
   }
