@@ -159,6 +159,7 @@ id<GREYMatcher> notPracticallyVisible() {
   config.features_disabled.push_back(kEnableFeedAblation);
   // TODO(crbug.com/1403077): Scrolling issues when promo is enabled.
   config.features_disabled.push_back(kEnableDiscoverFeedTopSyncPromo);
+  config.features_disabled.push_back(kIOSSetUpList);
   return config;
 }
 
@@ -193,7 +194,6 @@ id<GREYMatcher> notPracticallyVisible() {
 - (void)testCollectionShortcuts {
   AppLaunchConfiguration config = self.appConfigurationForTestCase;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.features_disabled.push_back(kIOSSetUpList);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   // Check the Bookmarks.

@@ -85,7 +85,7 @@ class ContentSuggestionsViewControllerTest : public PlatformTest {
 TEST_F(ContentSuggestionsViewControllerTest,
        TestMagicStackTopImpressionMetric) {
   scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures({kMagicStack, kIOSSetUpList}, {});
+  scoped_feature_list_.InitWithFeatures({kMagicStack}, {});
   histogram_tester_->ExpectBucketCount(
       kMagicStackTopModuleImpressionHistogram,
       ContentSuggestionsModuleType::kMostVisited, 0);

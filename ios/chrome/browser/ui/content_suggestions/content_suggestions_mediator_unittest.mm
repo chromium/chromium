@@ -361,7 +361,7 @@ TEST_F(ContentSuggestionsMediatorTest, TestOpenWhatsNew) {
 TEST_F(ContentSuggestionsMediatorTest, TestMagicStackConsumerCall) {
   consumer_ = OCMStrictProtocolMock(@protocol(ContentSuggestionsConsumer));
   scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures({kMagicStack, kIOSSetUpList}, {});
+  scoped_feature_list_.InitWithFeatures({kMagicStack}, {});
   OCMExpect([consumer_ setMagicStackOrder:[OCMArg any]]);
   OCMExpect([consumer_ showSetUpListWithItems:[OCMArg any]]);
   OCMExpect([consumer_ setShortcutTilesWithConfigs:[OCMArg any]]);
@@ -392,7 +392,7 @@ TEST_F(ContentSuggestionsMediatorTest,
            {{segmentation_platform::kDefaultModelEnabledParam, "true"}}},
           {kMagicStack, {{kMagicStackMostVisitedModuleParam, "true"}}},
       },
-      {});
+      {kIOSSetUpList});
   OCMExpect(
       [consumer_ setMagicStackOrder:[OCMArg checkWithBlock:^BOOL(id value) {
                    NSArray<NSNumber*>* magicStackOrder = (NSArray*)value;
@@ -428,7 +428,7 @@ TEST_F(ContentSuggestionsMediatorTest,
         {{segmentation_platform::kDefaultModelEnabledParam, "true"}}},
        {kMagicStack, {{kMagicStackMostVisitedModuleParam, "true"}}},
        {kSafetyCheckMagicStack, {}}},
-      {});
+      {kIOSSetUpList});
   OCMExpect(
       [consumer_ setMagicStackOrder:[OCMArg checkWithBlock:^BOOL(id value) {
                    NSArray<NSNumber*>* magicStackOrder = (NSArray*)value;

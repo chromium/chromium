@@ -158,7 +158,6 @@ void TapMoreButtonIfVisible() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(kEnableFeedAblation);
-  config.features_enabled.push_back(kIOSSetUpList);
   if ([self isRunningTest:@selector
             (testSetUpListDismissItemsWithSyncToSigninDisabled)] ||
       [self isRunningTest:@selector

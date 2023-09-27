@@ -72,7 +72,7 @@ BASE_FEATURE(kEnableFeedExperimentTagging,
              "EnableFeedExperimentTagging",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIOSSetUpList, "IOSSetUpList", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIOSSetUpList, "IOSSetUpList", base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFeedDisableHotStartRefresh,
              "FeedDisableHotStartRefresh",
