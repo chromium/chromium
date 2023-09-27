@@ -271,9 +271,9 @@ void DeleteDeskTemplate(const base::Uuid& uuid) {
   run_loop.Run();
 }
 
-web_app::AppId CreateSystemWebApp(Profile* profile,
+webapps::AppId CreateSystemWebApp(Profile* profile,
                                   apps::AppLaunchParams params) {
-  const web_app::AppId app_id = params.app_id;
+  const webapps::AppId app_id = params.app_id;
   base::RunLoop launch_wait;
   apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithParams(
       std::move(params),
@@ -286,33 +286,33 @@ web_app::AppId CreateSystemWebApp(Profile* profile,
 // Creates the app launch params for `app_type` for testing.
 apps::AppLaunchParams GetAppLaunchParams(Profile* profile,
                                          ash::SystemWebAppType app_type) {
-  web_app::AppId app_id = *ash::GetAppIdForSystemWebApp(profile, app_type);
+  webapps::AppId app_id = *ash::GetAppIdForSystemWebApp(profile, app_type);
   return apps::AppLaunchParams(
       app_id, apps::LaunchContainer::kLaunchContainerWindow,
       WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest);
 }
 
-web_app::AppId CreateFilesSystemWebApp(Profile* profile) {
+webapps::AppId CreateFilesSystemWebApp(Profile* profile) {
   apps::AppLaunchParams params =
       GetAppLaunchParams(profile, ash::SystemWebAppType::FILE_MANAGER);
   return CreateSystemWebApp(profile, std::move(params));
 }
 
-web_app::AppId CreateSettingsSystemWebApp(Profile* profile) {
+webapps::AppId CreateSettingsSystemWebApp(Profile* profile) {
   apps::AppLaunchParams params =
       GetAppLaunchParams(profile, ash::SystemWebAppType::SETTINGS);
   params.restore_id = kSettingsWindowId;
   return CreateSystemWebApp(profile, std::move(params));
 }
 
-web_app::AppId CreateHelpSystemWebApp(Profile* profile) {
+webapps::AppId CreateHelpSystemWebApp(Profile* profile) {
   apps::AppLaunchParams params =
       GetAppLaunchParams(profile, ash::SystemWebAppType::HELP);
   params.restore_id = kHelpWindowId;
   return CreateSystemWebApp(profile, std::move(params));
 }
 
-web_app::AppId CreateOsUrlHandlerSystemWebApp(Profile* profile,
+webapps::AppId CreateOsUrlHandlerSystemWebApp(Profile* profile,
                                               const GURL& override_url) {
   apps::AppLaunchParams params =
       GetAppLaunchParams(profile, ash::SystemWebAppType::OS_URL_HANDLER);
@@ -601,7 +601,7 @@ class DesksClientTest : public extensions::PlatformAppBrowserTest,
           web_app::mojom::UserDisplayMode::kStandalone;
     }
     web_app_info->title = u"A Web App";
-    const web_app::AppId app_id =
+    const webapps::AppId app_id =
         web_app::test::InstallWebApp(profile(), std::move(web_app_info));
 
     return launch_in_browser
@@ -801,7 +801,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, CaptureActiveDeskAsTemplateTest) {
       window->GetProperty(app_restore::kWindowIdKey);
 
   // Create the settings app, which is a system web app.
-  web_app::AppId settings_app_id =
+  webapps::AppId settings_app_id =
       CreateSettingsSystemWebApp(browser()->profile());
 
   // Change the Settings app's bounds too.
@@ -1503,7 +1503,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest, GetDeskTemplateJson) {
                       aura::client::kWindowWorkspaceVisibleOnAllWorkspaces);
 
   // Create the settings app, which is a system web app.
-  web_app::AppId settings_app_id =
+  webapps::AppId settings_app_id =
       CreateSettingsSystemWebApp(browser()->profile());
 
   // Change the Settings app's bounds too.
@@ -2198,7 +2198,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest,
       window->GetProperty(app_restore::kWindowIdKey);
 
   // Create the settings app, which is a system web app.
-  web_app::AppId settings_app_id =
+  webapps::AppId settings_app_id =
       CreateSettingsSystemWebApp(browser()->profile());
 
   // Change the Settings app's bounds too.
