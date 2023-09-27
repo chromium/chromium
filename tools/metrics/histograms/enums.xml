@@ -64272,6 +64272,7 @@ from previous Chrome versions.
   <int value="-304777110" label="PreconnectToSearch:disabled"/>
   <int value="-304594674" label="FedCmSelectiveDisclosure:enabled"/>
   <int value="-303992327" label="SwipeToMoveCursor:disabled"/>
+  <int value="-303540818" label="FeedFollowUiUpdate:enabled"/>
   <int value="-303467388" label="ShimlessRMAEnableStandalone:enabled"/>
   <int value="-303006847"
       label="FriendlierSafeBrowsingSettingsStandardProtection:enabled"/>
@@ -64368,6 +64369,7 @@ from previous Chrome versions.
       label="AutofillSaveCreditCardUsesStrikeSystemV2:enabled"/>
   <int value="-268357961" label="enable-feature-policy"/>
   <int value="-268224644" label="DeferTabSwitcherLayoutCreation:disabled"/>
+  <int value="-265765164" label="FeedFollowUiUpdate:disabled"/>
   <int value="-265697837" label="PhoneHub:disabled"/>
   <int value="-265277473" label="FastPairHandshakeLongTermRefactor:enabled"/>
   <int value="-263645996" label="InteractiveWindowCycleList:enabled"/>

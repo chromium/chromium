@@ -4401,6 +4401,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "feed-follow-ui-update",
+    "owners": ["//chrome/android/feed/OWNERS", "jianli@chromium.org"],
+    "expiry_milestone": 130
+  },
+  {
     "name": "feed-header-settings",
     "owners": ["//ios/chrome/browser/discover_feed/OWNERS", "adamta@google.com"],
     "expiry_milestone": 120
