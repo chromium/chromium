@@ -118,7 +118,6 @@
   "chromeos-brya-chrome-dchecks-skylab": {
     "args_file": "//build/args/chromeos/brya.gni",
     "gn_args": {
-      "also_build_lacros_chrome_for_architecture": "amd64",
       "dcheck_always_on": true,
       "exclude_unwind_tables": false,
       "is_chrome_branded": true,
@@ -132,7 +131,6 @@
   "chromeos-brya-chrome-skylab": {
     "args_file": "//build/args/chromeos/brya.gni",
     "gn_args": {
-      "also_build_lacros_chrome_for_architecture": "amd64",
       "dcheck_always_on": false,
       "exclude_unwind_tables": false,
       "is_chrome_branded": true,
@@ -197,7 +195,6 @@
   "chromeos-jacuzzi-chrome-dchecks-skylab": {
     "args_file": "//build/args/chromeos/jacuzzi.gni",
     "gn_args": {
-      "also_build_lacros_chrome_for_architecture": "arm",
       "dcheck_always_on": true,
       "exclude_unwind_tables": false,
       "is_chrome_branded": true,
@@ -210,7 +207,6 @@
   "chromeos-jacuzzi-chrome-skylab": {
     "args_file": "//build/args/chromeos/jacuzzi.gni",
     "gn_args": {
-      "also_build_lacros_chrome_for_architecture": "arm",
       "dcheck_always_on": false,
       "exclude_unwind_tables": false,
       "is_chrome_branded": true,
@@ -249,7 +245,6 @@
   "chromeos-octopus-chrome-skylab": {
     "args_file": "//build/args/chromeos/octopus.gni",
     "gn_args": {
-      "also_build_lacros_chrome_for_architecture": "amd64",
       "dcheck_always_on": false,
       "exclude_unwind_tables": false,
       "is_chrome_branded": true,
@@ -289,7 +284,6 @@
   "chromeos-trogdor-chrome-skylab": {
     "args_file": "//build/args/chromeos/trogdor.gni",
     "gn_args": {
-      "also_build_lacros_chrome_for_architecture": "arm",
       "dcheck_always_on": false,
       "exclude_unwind_tables": false,
       "is_chrome_branded": true,
@@ -303,7 +297,6 @@
   "chromeos-volteer-chrome-skylab": {
     "args_file": "//build/args/chromeos/volteer.gni",
     "gn_args": {
-      "also_build_lacros_chrome_for_architecture": "amd64",
       "dcheck_always_on": false,
       "exclude_unwind_tables": false,
       "is_chrome_branded": true,
