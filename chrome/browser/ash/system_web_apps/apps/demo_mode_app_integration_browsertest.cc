@@ -172,7 +172,7 @@ class MockWebAppPublisher : public apps::AppPublisher {
 IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTestBase, AppIsMissing) {
   WaitForTestSystemAppInstall();
 
-  absl::optional<web_app::AppId> missing_app_id =
+  absl::optional<webapps::AppId> missing_app_id =
       GetManager().GetAppIdForSystemApp(ash::SystemWebAppType::DEMO_MODE);
   ASSERT_FALSE(missing_app_id.has_value());
 }
