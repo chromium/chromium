@@ -256,6 +256,8 @@ CGFloat GetPixelLength() {
     askEveryTimeLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     askEveryTimeLabel.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+    askEveryTimeLabel.numberOfLines = 0;
+    askEveryTimeLabel.lineBreakMode = NSLineBreakByWordWrapping;
     _askEveryTimeSwitch = [[UISwitch alloc] init];
     [_askEveryTimeSwitch addTarget:self
                             action:@selector(askEveryTimeSwitchAction:)
