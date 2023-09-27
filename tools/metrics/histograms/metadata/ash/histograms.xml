@@ -6396,6 +6396,33 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ash.Snap.MinimizeTwoWindowsDuration" units="seconds"
+    expires_after="2024-01-14">
+  <owner>sophiewen@chromium.org</owner>
+  <owner>michelefan@chromium.org</owner>
+  <summary>
+    The elapsed time between a first snapped window getting minimized and a
+    second snapped window getting minimized. Starts recording when a window
+    changes state from snapped to minimized. Ends recording when a second window
+    changes state from snapped to minimized, or if the first window is no longer
+    snapped on the same side, records the maximum value of 50 hours (18000
+    seconds).
+  </summary>
+</histogram>
+
+<histogram name="Ash.Snap.SnapTwoWindowsDuration" units="seconds"
+    expires_after="2024-01-14">
+  <owner>sophiewen@chromium.org</owner>
+  <owner>michelefan@chromium.org</owner>
+  <summary>
+    The elapsed time between a first window getting snapped and a second window
+    getting snapped on the other side. Starts recording when one window gets
+    snapped. Ends recording when another window is snapped on the other side of
+    the screen, or if the first window is no longer snapped on the same side,
+    records the maximum value of 50 hours (18000 seconds).
+  </summary>
+</histogram>
+
 <histogram name="Ash.SpeechRecognitionSessionLength.{Location}" units="ms"
     expires_after="2024-02-20">
   <owner>dorianbrandon@google.com</owner>
@@ -7586,20 +7613,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Emitted when the user snaps the window to record whether window snap is used
     while the display orientation is portrait or landscape mode.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Window.SnapTwoWindowsDuration" units="seconds"
-    expires_after="2024-01-14">
-  <owner>sophiewen@chromium.org</owner>
-  <owner>michelefan@chromium.org</owner>
-  <summary>
-    The time it takes to snap two windows, i.e. between a first window getting
-    snapped and a second window getting snapped on the other side. Starts
-    recording when one window gets snapped. Ends recording when another window
-    is snapped on the other side of the screen, or if the first window is no
-    longer snapped on the same side, records the maximum value of 50 hours
-    (18000 seconds).
   </summary>
 </histogram>
 

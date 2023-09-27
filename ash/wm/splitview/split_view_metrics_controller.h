@@ -31,10 +31,10 @@ class SplitViewController;
 // Public so it can be used by unit tests.
 constexpr char kSnapTwoWindowsDurationHistogramName[] =
     "Ash.Window.SnapTwoWindowsDuration";
-constexpr base::TimeDelta kSnapTwoWindowsDurationHistogramMinCount =
-    base::Seconds(1);
-constexpr base::TimeDelta kSnapTwoWindowsDurationHistogramMaxCount =
-    base::Hours(50);
+constexpr char kMinimizeTwoWindowsDurationHistogramName[] =
+    "Ash.Window.MinimizeTwoWindowsDuration";
+constexpr base::TimeDelta kSequentialSnapActionMinTime = base::Seconds(1);
+constexpr base::TimeDelta kSequentialSnapActionMaxTime = base::Hours(50);
 
 // SplitViewMetricsController:
 // Manages split view related metrics. Tablet mode split view and clamshell
@@ -166,6 +166,7 @@ class SplitViewMetricsController : public TabletModeObserver,
   // If there are top windows snapped on both sides, start to record split
   // view metrics. Otherwise, stop recording split view metrics.
   void MaybeStartOrEndRecordBothSnappedClamshellSplitView();
+
   // Pauses recording of engagement time when a window hides the windows
   // snapped on both sides. Return true, if the recording is paused. Otherwise,
   // return false.
@@ -174,9 +175,24 @@ class SplitViewMetricsController : public TabletModeObserver,
   // Records and resets the duration between two windows getting snapped.
   void RecordSnapTwoWindowsDuration(const base::TimeDelta& elapsed_time);
 
-  // Starts recording the time if `window_state` was the first snapped window,
-  // otherwise ends recording if either: 1. the second snapped window is found,
-  // or 2. the first snapped window was unsnapped.
+  // Records and resets the duration between two snapped windows getting
+  // minimized.
+  void RecordMinimizeTwoWindowsDuration(const base::TimeDelta& elapsed_time);
+
+  // Starts recording the time if `window_state` changed from snapped to
+  // minimized. Ends recording if either:
+  // 1. A second window state changes from snapped to minimized;
+  // 2. The first window is no longer snapped or minimized;
+  // 3. The first window is destroyed.
+  void MaybeStartOrEndRecordMinimizeTwoWindowsDuration(
+      WindowState* window_state,
+      chromeos::WindowStateType old_type);
+
+  // Starts recording the time if `window_state` was the first snapped window.
+  // Ends recording if either:
+  // 1. A second window is snapped;
+  // 2. The first window is unsnapped;
+  // 3. The first window is destroyed.
   void MaybeStartOrEndRecordSnapTwoWindowsDuration(WindowState* window_state);
 
   // Resets the variables related to time and counter metrics.
@@ -264,6 +280,12 @@ class SplitViewMetricsController : public TabletModeObserver,
   // tools/metrics/histograms/metadata/ash/histograms.xml.
   raw_ptr<aura::Window> first_snapped_window_ = nullptr;
   base::TimeTicks first_snapped_time_;
+
+  // The first snapped window that gets minimized and the time it's minimized.
+  // Used by `Ash.Window.MinimizeTwoWindowsDuration` in
+  // tools/metrics/histograms/metadata/ash/histograms.xml.
+  raw_ptr<WindowState> first_minimized_window_state_ = nullptr;
+  base::TimeTicks first_minimized_time_;
 };
 
 }  // namespace ash
