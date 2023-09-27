@@ -23,6 +23,9 @@ namespace {
 // Histogram of the delay for window maximizing operation.
 constexpr char kWindowMaximizedTimeHistogramPrefix[] =
     "Arc.WM.WindowMaximizedDelayTime.";
+// Histogram of the delay for window minimizing operation.
+constexpr char kWindowMinimizedTimeHistogramPrefix[] =
+    "Arc.WM.WindowMinimizedDelayTime.";
 
 constexpr char kArcHistogramName[] = "ArcApp";
 constexpr char kBrowserHistogramName[] = "Browser";
@@ -49,8 +52,8 @@ std::string GetAppTypeName(ash::AppType app_type) {
 
 }  // namespace
 
-// A window state observer that records the delay of window maximizing
-// operation.
+// A window state observer that records the delay of window operation (e.g.,
+// maximizing and minimizing).
 class ArcWmMetrics::WindowStateChangeObserver
     : public ash::WindowStateObserver {
  public:
@@ -92,14 +95,20 @@ class ArcWmMetrics::WindowStateChangeObserver
           window_operation_elapsed_timer_.Elapsed(),
           /*minimum=*/base::Milliseconds(1),
           /*maximum=*/base::Seconds(2), 100);
+    } else if (state->IsMinimized()) {
+      base::UmaHistogramCustomTimes(
+          ArcWmMetrics::GetWindowMinimizedTimeHistogramName(app_type),
+          window_operation_elapsed_timer_.Elapsed(),
+          /*minimum=*/base::Milliseconds(1),
+          /*maximum=*/base::Seconds(2), 100);
     }
   }
 
   const raw_ptr<aura::Window, ExperimentalAsh> window_;
   const ui::WindowShowState old_window_show_state_;
 
-  // Tracks the elapsed time from the window maximizing operation happens until
-  // the window state is changed.
+  // Tracks the elapsed time from the window operation happens until the window
+  // state is changed.
   base::ElapsedTimer window_operation_elapsed_timer_;
 
   base::ScopedObservation<ash::WindowState, ash::WindowStateObserver>
@@ -121,6 +130,13 @@ std::string ArcWmMetrics::GetWindowMaximizedTimeHistogramName(
     ash::AppType app_type) {
   const std::string app_type_str = GetAppTypeName(app_type);
   return base::StrCat({kWindowMaximizedTimeHistogramPrefix, app_type_str});
+}
+
+// static
+std::string ArcWmMetrics::GetWindowMinimizedTimeHistogramName(
+    ash::AppType app_type) {
+  const std::string app_type_str = GetAppTypeName(app_type);
+  return base::StrCat({kWindowMinimizedTimeHistogramPrefix, app_type_str});
 }
 
 void ArcWmMetrics::OnWindowInitialized(aura::Window* new_window) {
@@ -158,7 +174,8 @@ void ArcWmMetrics::OnWindowPropertyChanged(aura::Window* window,
     return;
   }
 
-  if (new_window_show_state == ui::WindowShowState::SHOW_STATE_MAXIMIZED) {
+  if (new_window_show_state == ui::WindowShowState::SHOW_STATE_MAXIMIZED ||
+      new_window_show_state == ui::WindowShowState::SHOW_STATE_MINIMIZED) {
     state_change_observing_windows_.emplace(
         window, std::make_unique<WindowStateChangeObserver>(
                     window, old_window_show_state,

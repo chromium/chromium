@@ -50,4 +50,22 @@ TEST_F(ArcWmMetricsTest, TestWindowMaximizeDelayMetrics) {
   histogram_tester.ExpectTotalCount(histogram_name, 1);
 }
 
+TEST_F(ArcWmMetricsTest, TestWindowMinimizeDelayMetrics) {
+  ash::AppType app_type = ash::AppType::ARC_APP;
+  auto window = CreateAppWindow(gfx::Rect(0, 0, 100, 100), app_type);
+  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
+  window->SetProperty(aura::client::kResizeBehaviorKey,
+                      aura::client::kResizeBehaviorCanMinimize);
+  window->Show();
+
+  base::HistogramTester histogram_tester;
+  const auto histogram_name =
+      ArcWmMetrics::GetWindowMinimizedTimeHistogramName(app_type);
+  histogram_tester.ExpectTotalCount(histogram_name, 0);
+
+  auto minimize_event = std::make_unique<ash::WMEvent>(ash::WM_EVENT_MINIMIZE);
+  ash::WindowState::Get(window.get())->OnWMEvent(minimize_event.get());
+  histogram_tester.ExpectTotalCount(histogram_name, 1);
+}
+
 }  // namespace arc

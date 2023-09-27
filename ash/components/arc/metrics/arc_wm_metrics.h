@@ -27,6 +27,8 @@ class ArcWmMetrics : public aura::EnvObserver, public aura::WindowObserver {
 
   static std::string GetWindowMaximizedTimeHistogramName(ash::AppType app_type);
 
+  static std::string GetWindowMinimizedTimeHistogramName(ash::AppType app_type);
+
   // aura::EnvObserver
   void OnWindowInitialized(aura::Window* new_window) override;
 
