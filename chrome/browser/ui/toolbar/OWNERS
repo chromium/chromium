@@ -4,5 +4,10 @@ per-file *toolbar_action*=rdevlin.cronin@chromium.org
 per-file *toolbar_action*=emiliapaz@chromium.org
 per-file chrome_labs*=elainechien@chromium.org
 
+# Pinned Toolbar Actions Files
+per-file *pinned_toolbar_actions*=dljames@chromium.org
+per-file *pinned_toolbar_actions*=shibalik@chromium.org
+per-file *pinned_toolbar_actions*=corising@chromium.org
+
 # Media Router Action Files
 per-file *media_router*=file://chrome/browser/media/router/OWNERS
