@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.searchwidget;
 
+import android.os.Build;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.ComponentName;
@@ -22,7 +23,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ActivityOptionsCompat;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
@@ -233,7 +233,8 @@ public class SearchActivity extends AsyncInitializationActivity
         };
 
         BackPressManager backPressManager = null;
-        if (BackPressManager.isEnabled() || BuildInfo.isAtLeastT()) {
+        boolean isAtLeastT = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU;
+        if (BackPressManager.isEnabled() || isAtLeastT) {
             backPressManager = new BackPressManager();
             getOnBackPressedDispatcher().addCallback(this, backPressManager.getCallback());
         }
