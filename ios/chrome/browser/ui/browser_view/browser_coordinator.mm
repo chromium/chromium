@@ -1542,13 +1542,20 @@ enum class ToolbarKind {
 }
 
 - (void)showPaymentsBottomSheet:(const autofill::FormActivityParams&)params {
+  if (self.paymentsSuggestionBottomSheetCoordinator) {
+    return;
+  }
   self.paymentsSuggestionBottomSheetCoordinator =
       [[PaymentsSuggestionBottomSheetCoordinator alloc]
           initWithBaseViewController:self.viewController
                              browser:self.browser
                               params:params];
-  self.paymentsSuggestionBottomSheetCoordinator.applicationCommandsHandler =
-      HandlerForProtocol(self.dispatcher, ApplicationCommands);
+  self.paymentsSuggestionBottomSheetCoordinator
+      .applicationSettingsCommandsHandler =
+      HandlerForProtocol(self.dispatcher, ApplicationSettingsCommands);
+  self.paymentsSuggestionBottomSheetCoordinator
+      .browserCoordinatorCommandsHandler =
+      HandlerForProtocol(self.dispatcher, BrowserCoordinatorCommands);
   [self.paymentsSuggestionBottomSheetCoordinator start];
 }
 
@@ -1767,6 +1774,11 @@ enum class ToolbarKind {
   // Preload VoiceSearchController and views and view controllers needed
   // for voice search.
   [_voiceSearchController prepareToAppear];
+}
+
+- (void)dismissPaymentSuggestions {
+  [self.paymentsSuggestionBottomSheetCoordinator stop];
+  self.paymentsSuggestionBottomSheetCoordinator = nil;
 }
 
 #pragma mark - DefaultPromoCommands

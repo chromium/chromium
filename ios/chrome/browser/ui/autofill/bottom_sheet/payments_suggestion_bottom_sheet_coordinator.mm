@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_mediator.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_view_controller.h"
 #import "ios/web/public/web_state.h"
@@ -99,18 +100,21 @@
 #pragma mark - PaymentsSuggestionBottomSheetHandler
 
 - (void)displayPaymentMethods {
+  _dismissing = YES;
   __weak __typeof(self) weakSelf = self;
   [self.baseViewController.presentedViewController
       dismissViewControllerAnimated:NO
                          completion:^{
-                           [weakSelf stop];
-                           [weakSelf.applicationCommandsHandler
+                           [weakSelf.applicationSettingsCommandsHandler
                                    showCreditCardSettings];
+                           [weakSelf.browserCoordinatorCommandsHandler
+                                   dismissPaymentSuggestions];
                          }];
 }
 
 - (void)displayPaymentDetailsForCreditCardIdentifier:
     (NSString*)creditCardIdentifier {
+  _dismissing = YES;
   autofill::CreditCard* creditCard =
       [self.mediator creditCardForIdentifier:creditCardIdentifier];
   if (creditCard) {
@@ -118,9 +122,10 @@
     [self.baseViewController.presentedViewController
         dismissViewControllerAnimated:NO
                            completion:^{
-                             [weakSelf stop];
-                             [weakSelf.applicationCommandsHandler
+                             [weakSelf.applicationSettingsCommandsHandler
                                  showCreditCardDetails:creditCard];
+                             [weakSelf.browserCoordinatorCommandsHandler
+                                     dismissPaymentSuggestions];
                            }];
   }
 }
@@ -132,6 +137,8 @@
       dismissViewControllerAnimated:NO
                          completion:^{
                            [weakSelf didSelectCreditCard:backendIdentifier];
+                           [weakSelf.browserCoordinatorCommandsHandler
+                                   dismissPaymentSuggestions];
                          }];
 }
 
@@ -146,6 +153,7 @@
   }
 
   [self.mediator disconnect];
+  [_browserCoordinatorCommandsHandler dismissPaymentSuggestions];
 }
 
 #pragma mark - Private
