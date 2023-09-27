@@ -37,7 +37,6 @@
 #include "base/trace_event/trace_event.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/browser_main_loop.h"
-#include "content/browser/buildflags.h"
 #include "content/browser/first_party_sets/first_party_sets_handler_impl.h"
 #include "content/browser/network/http_cache_backend_file_operations_factory.h"
 #include "content/browser/network/socket_broker_impl.h"
@@ -330,7 +329,7 @@ void CreateNetworkContextInternal(
   // This might recreate g_client if the network service needed to be restarted.
   auto* network_service = GetNetworkService();
 
-#if BUILDFLAG(USE_SOCKET_BROKER)
+#if BUILDFLAG(IS_WIN)
   // If the browser has started shutting down, it is possible that either a)
   // `g_client` was never created if shutdown started before the network service
   // was created, or b) the network service might have crashed meaning
@@ -343,7 +342,7 @@ void CreateNetworkContextInternal(
       !params->socket_broker) {
     params->socket_broker = g_client->BindSocketBroker();
   }
-#endif  // BUILDFLAG(USE_SOCKET_BROKER)
+#endif  // BUILDFLAG(IS_WIN)
 
   network_service->CreateNetworkContext(std::move(context), std::move(params));
 }
