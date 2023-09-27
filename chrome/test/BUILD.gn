@@ -2668,8 +2668,6 @@ if (!is_android) {
       "base/ui_test_utils_browsertest.cc",
       "base/web_ui_browser_test_browsertest.cc",
       "base/web_ui_mocha_browser_test_browsertest.cc",
-      "data/webui/chrome_send_browsertest.cc",
-      "data/webui/chrome_send_browsertest.h",
       "data/webui/mojo/mojo_file_system_access_browsertest.cc",
       "data/webui/mojo/mojo_js_interface_broker_browsertest.cc",
       "data/webui/mojo/mojo_web_ui_controller_browsertest.cc",
