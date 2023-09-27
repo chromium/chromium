@@ -123,7 +123,7 @@ export class SettingsGuestOsSharedUsbDevicesElement extends
     this.browserProxy_ = GuestOsBrowserProxyImpl.getInstance();
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     this.addWebUiListener(

@@ -52,7 +52,7 @@ class BruschettaSubpageElement extends BruschettaSubpageElementBase {
     this.browserProxy_ = CrostiniBrowserProxyImpl.getInstance();
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     this.addFocusConfig(

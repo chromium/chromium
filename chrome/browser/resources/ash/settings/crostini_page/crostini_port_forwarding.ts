@@ -135,7 +135,7 @@ class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
     this.browserProxy_ = CrostiniBrowserProxyImpl.getInstance();
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
     this.addWebUiListener(
         'crostini-port-forwarder-active-ports-changed',
@@ -156,16 +156,16 @@ class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
     this.browserProxy_.requestContainerInfo();
   }
 
-  private onCrostiniActiveNetworkInfo_(networkInfo: string[]) {
+  private onCrostiniActiveNetworkInfo_(networkInfo: string[]): void {
     this.set('activeInterface_', networkInfo[0]);
     this.set('activeIpAddress_', networkInfo[1]);
   }
 
-  private onContainerInfo_(containerInfos: ContainerInfo[]) {
+  private onContainerInfo_(containerInfos: ContainerInfo[]): void {
     this.set('allContainers_', containerInfos);
   }
 
-  private onCrostiniPortsChanged_(ports: CrostiniPortSetting[]) {
+  private onCrostiniPortsChanged_(ports: CrostiniPortSetting[]): void {
     this.splice('allPorts_', 0, this.allPorts_.length);
     for (const port of ports) {
       port.is_active = this.activePorts_.some(
@@ -180,8 +180,8 @@ class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
     this.notifyPath('allContainers_');
   }
 
-  private onCrostiniPortsActiveStateChanged_(ports:
-                                                 CrostiniPortActiveSetting[]) {
+  private onCrostiniPortsActiveStateChanged_(
+      ports: CrostiniPortActiveSetting[]): void {
     this.activePorts_ = ports;
     for (let i = 0; i < this.allPorts_.length; i++) {
       this.set(
@@ -194,20 +194,20 @@ class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
     }
   }
 
-  private onAddPortClick_() {
+  private onAddPortClick_(): void {
     this.showAddPortDialog_ = true;
   }
 
-  private onAddPortDialogClose_() {
+  private onAddPortDialogClose_(): void {
     this.showAddPortDialog_ = false;
   }
 
-  private onShowRemoveAllPortsMenuClick_(event: Event) {
+  private onShowRemoveAllPortsMenuClick_(event: Event): void {
     const menu = this.$.removeAllPortsMenu.get();
     menu.showAt(event.target as HTMLElement);
   }
 
-  private onRemoveSinglePortClick_(event: Event) {
+  private onRemoveSinglePortClick_(event: Event): void {
     const target = event.currentTarget as HtmlElementWithData;
     const containerId = target['dataContainerId'];
     const portNumber = Number(target.dataset['portNumber']);
@@ -220,7 +220,7 @@ class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
         });
   }
 
-  private onRemoveAllPortsClick_() {
+  private onRemoveAllPortsClick_(): void {
     const menu = this.$.removeAllPortsMenu.get();
     assert(menu.open);
     for (const container of this.allContainers_) {
@@ -230,7 +230,7 @@ class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
     menu.close();
   }
 
-  private onPortActivationChange_(event: Event) {
+  private onPortActivationChange_(event: Event): void {
     const target = event.currentTarget as HtmlElementWithData<CrToggleElement>;
     const containerId = target['dataContainerId'];
     const portNumber = Number(target.dataset['portNumber']);

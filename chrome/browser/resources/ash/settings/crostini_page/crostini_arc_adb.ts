@@ -112,7 +112,7 @@ class SettingsCrostiniArcAdbElement extends SettingsCrostiniArcAdbElementBase {
     this.browserProxy_ = CrostiniBrowserProxyImpl.getInstance();
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.addWebUiListener(
@@ -133,7 +133,7 @@ class SettingsCrostiniArcAdbElement extends SettingsCrostiniArcAdbElementBase {
     this.browserProxy_.getCanChangeArcAdbSideloading();
   }
 
-  override currentRouteChanged(route: Route) {
+  override currentRouteChanged(route: Route): void {
     // Does not apply to this page.
     if (route !== routes.CROSTINI_ANDROID_ADB) {
       return;
@@ -177,11 +177,11 @@ class SettingsCrostiniArcAdbElement extends SettingsCrostiniArcAdbElementBase {
     return this.arcAdbEnabled_ ? 'disable' : 'enable';
   }
 
-  private onArcAdbToggleChanged_() {
+  private onArcAdbToggleChanged_(): void {
     this.showConfirmationDialog_ = true;
   }
 
-  private onConfirmationDialogClose_() {
+  private onConfirmationDialogClose_(): void {
     this.showConfirmationDialog_ = false;
     this.$.arcAdbEnabledButton.checked = this.arcAdbEnabled_;
   }

@@ -312,59 +312,59 @@ export class CrostiniBrowserProxyImpl implements CrostiniBrowserProxy {
     return instance || (instance = new CrostiniBrowserProxyImpl());
   }
 
-  static setInstanceForTesting(obj: CrostiniBrowserProxy) {
+  static setInstanceForTesting(obj: CrostiniBrowserProxy): void {
     instance = obj;
   }
 
-  requestCrostiniInstallerView() {
+  requestCrostiniInstallerView(): void {
     chrome.send('requestCrostiniInstallerView');
   }
 
-  requestRemoveCrostini() {
+  requestRemoveCrostini(): void {
     chrome.send('requestRemoveCrostini');
   }
 
-  requestCrostiniInstallerStatus() {
+  requestCrostiniInstallerStatus(): void {
     chrome.send('requestCrostiniInstallerStatus');
   }
 
-  requestCrostiniExportImportOperationStatus() {
+  requestCrostiniExportImportOperationStatus(): void {
     chrome.send('requestCrostiniExportImportOperationStatus');
   }
 
-  exportCrostiniContainer(containerId: GuestId) {
+  exportCrostiniContainer(containerId: GuestId): void {
     chrome.send('exportCrostiniContainer', [containerId]);
   }
 
-  importCrostiniContainer(containerId: GuestId) {
+  importCrostiniContainer(containerId: GuestId): void {
     chrome.send('importCrostiniContainer', [containerId]);
   }
 
-  requestArcAdbSideloadStatus() {
+  requestArcAdbSideloadStatus(): void {
     chrome.send('requestArcAdbSideloadStatus');
   }
 
-  getCanChangeArcAdbSideloading() {
+  getCanChangeArcAdbSideloading(): void {
     chrome.send('getCanChangeArcAdbSideloading');
   }
 
-  enableArcAdbSideload() {
+  enableArcAdbSideload(): void {
     chrome.send('enableArcAdbSideload');
   }
 
-  disableArcAdbSideload() {
+  disableArcAdbSideload(): void {
     chrome.send('disableArcAdbSideload');
   }
 
-  requestCrostiniContainerUpgradeView() {
+  requestCrostiniContainerUpgradeView(): void {
     chrome.send('requestCrostiniContainerUpgradeView');
   }
 
-  requestCrostiniUpgraderDialogStatus() {
+  requestCrostiniUpgraderDialogStatus(): void {
     chrome.send('requestCrostiniUpgraderDialogStatus');
   }
 
-  requestCrostiniContainerUpgradeAvailable() {
+  requestCrostiniContainerUpgradeAvailable(): void {
     chrome.send('requestCrostiniContainerUpgradeAvailable');
   }
 
@@ -395,7 +395,7 @@ export class CrostiniBrowserProxyImpl implements CrostiniBrowserProxy {
         'removeCrostiniPortForward', containerId, portNumber, protocol);
   }
 
-  removeAllCrostiniPortForwards(containerId: GuestId) {
+  removeAllCrostiniPortForwards(containerId: GuestId): void {
     chrome.send('removeAllCrostiniPortForwards', [containerId]);
   }
 
@@ -425,11 +425,11 @@ export class CrostiniBrowserProxyImpl implements CrostiniBrowserProxy {
     return sendWithPromise('checkCrostiniIsRunning');
   }
 
-  shutdownCrostini() {
+  shutdownCrostini(): void {
     chrome.send('shutdownCrostini');
   }
 
-  setCrostiniMicSharingEnabled(enabled: boolean) {
+  setCrostiniMicSharingEnabled(enabled: boolean): void {
     chrome.send('setCrostiniMicSharingEnabled', [enabled]);
   }
 
@@ -439,25 +439,25 @@ export class CrostiniBrowserProxyImpl implements CrostiniBrowserProxy {
 
   createContainer(
       containerId: GuestId, imageServer: string|null, imageAlias: string|null,
-      containerFile: string|null) {
+      containerFile: string|null): void {
     chrome.send(
         'createContainer',
         [containerId, imageServer, imageAlias, containerFile]);
   }
 
-  deleteContainer(containerId: GuestId) {
+  deleteContainer(containerId: GuestId): void {
     chrome.send('deleteContainer', [containerId]);
   }
 
-  requestContainerInfo() {
+  requestContainerInfo(): void {
     chrome.send('requestContainerInfo');
   }
 
-  setContainerBadgeColor(containerId: GuestId, badgeColor: SkColor) {
+  setContainerBadgeColor(containerId: GuestId, badgeColor: SkColor): void {
     chrome.send('setContainerBadgeColor', [containerId, badgeColor]);
   }
 
-  stopContainer(containerId: GuestId) {
+  stopContainer(containerId: GuestId): void {
     chrome.send('stopContainer', [containerId]);
   }
 
@@ -465,7 +465,7 @@ export class CrostiniBrowserProxyImpl implements CrostiniBrowserProxy {
     return sendWithPromise('openContainerFileSelector');
   }
 
-  requestSharedVmDevices() {
+  requestSharedVmDevices(): void {
     chrome.send('requestSharedVmDevices');
   }
 

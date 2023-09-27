@@ -48,7 +48,7 @@ class CrostiniSharedUsbDevicesElement extends
     };
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     this.addWebUiListener(

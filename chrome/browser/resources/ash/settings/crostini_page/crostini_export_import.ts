@@ -140,7 +140,7 @@ class SettingsCrostiniExportImportElement extends
     this.browserProxy_ = CrostiniBrowserProxyImpl.getInstance();
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
     this.addWebUiListener(
         'crostini-export-import-operation-status-changed',
@@ -160,7 +160,7 @@ class SettingsCrostiniExportImportElement extends
     this.browserProxy_.requestContainerInfo();
   }
 
-  override currentRouteChanged(route: Route) {
+  override currentRouteChanged(route: Route): void {
     // Does not apply to this page.
     if (route !== routes.CROSTINI_EXPORT_IMPORT) {
       return;
@@ -169,7 +169,7 @@ class SettingsCrostiniExportImportElement extends
     this.attemptDeepLink();
   }
 
-  private onContainerInfo_(containerInfos: ContainerInfo[]) {
+  private onContainerInfo_(containerInfos: ContainerInfo[]): void {
     this.allContainers_ = containerInfos;
     if (!this.isMultiContainer_(containerInfos)) {
       this.exportContainerId_ = DEFAULT_CROSTINI_GUEST_ID;
@@ -177,15 +177,15 @@ class SettingsCrostiniExportImportElement extends
     }
   }
 
-  private onExportClick_() {
+  private onExportClick_(): void {
     this.browserProxy_.exportCrostiniContainer(this.exportContainerId_);
   }
 
-  private onImportClick_() {
+  private onImportClick_(): void {
     this.showImportConfirmationDialog_ = true;
   }
 
-  private onImportConfirmationDialogClose_() {
+  private onImportConfirmationDialogClose_(): void {
     this.showImportConfirmationDialog_ = false;
   }
 

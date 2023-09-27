@@ -130,7 +130,7 @@ class SettingsCrostiniDiskResizeDialogElement extends PolymerElement {
     this.browserProxy_ = CrostiniBrowserProxyImpl.getInstance();
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.displayState_ = DisplayState.LOADING;
@@ -142,7 +142,7 @@ class SettingsCrostiniDiskResizeDialogElement extends PolymerElement {
    * Requests info for the current VM disk, then populates the disk info and
    * current state once the call completes.
    */
-  private loadDiskInfo_() {
+  private loadDiskInfo_(): void {
     this.browserProxy_
         .getCrostiniDiskInfo(TERMINA_VM_TYPE, /*requestFullInfo=*/ true)
         .then(
@@ -169,16 +169,16 @@ class SettingsCrostiniDiskResizeDialogElement extends PolymerElement {
             });
   }
 
-  private onCancelClick_() {
+  private onCancelClick_(): void {
     this.$.diskResizeDialog.close();
   }
 
-  private onRetryClick_() {
+  private onRetryClick_(): void {
     this.displayState_ = DisplayState.LOADING;
     this.loadDiskInfo_();
   }
 
-  private onResizeClick_() {
+  private onResizeClick_(): void {
     const slider = castExists(
         this.shadowRoot!.querySelector<CrSliderElement>('#diskSlider'));
     const selectedIndex = slider.value;

@@ -94,7 +94,7 @@ class GuestOsSharedUsbDevicesAddDialog extends
     this.browserProxy_ = GuestOsBrowserProxyImpl.getInstance();
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
     this.$.dialog.showModal();
     microTask.run(() => {

@@ -51,17 +51,17 @@ class SettingsCrostiniImportConfirmationDialogElement extends PolymerElement {
     this.browserProxy_ = CrostiniBrowserProxyImpl.getInstance();
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.$.dialog.showModal();
   }
 
-  private onCancelClick_() {
+  private onCancelClick_(): void {
     this.$.dialog.close();
   }
 
-  private onContinueClick_() {
+  private onContinueClick_(): void {
     this.browserProxy_.importCrostiniContainer(this.importContainerId);
     this.$.dialog.close();
   }

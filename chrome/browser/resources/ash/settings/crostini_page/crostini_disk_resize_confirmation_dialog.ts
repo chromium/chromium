@@ -32,17 +32,17 @@ class SettingsCrostiniDiskResizeConfirmationDialogElement extends
     return getTemplate();
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.getDialog_().showModal();
   }
 
-  private onCancelClick_() {
+  private onCancelClick_(): void {
     this.getDialog_().cancel();
   }
 
-  private onReserveSizeClick_() {
+  private onReserveSizeClick_(): void {
     this.getDialog_().close();
   }
 

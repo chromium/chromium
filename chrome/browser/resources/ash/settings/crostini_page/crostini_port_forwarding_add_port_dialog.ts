@@ -120,7 +120,7 @@ class CrostiniPortForwardingAddPortDialog extends PolymerElement {
     this.browserProxy_ = CrostiniBrowserProxyImpl.getInstance();
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
     this.$.dialog.showModal();
     microTask.run(() => {
@@ -128,7 +128,7 @@ class CrostiniPortForwardingAddPortDialog extends PolymerElement {
     });
   }
 
-  private resetInputs_() {
+  private resetInputs_(): void {
     this.inputPortLabel_ = '';
     this.inputPortNumber_ = null;
     this.inputProtocolIndex_ = 0;
@@ -167,17 +167,17 @@ class CrostiniPortForwardingAddPortDialog extends PolymerElement {
     return PortState.VALID;
   }
 
-  private onSelectProtocol_(e: Event) {
+  private onSelectProtocol_(e: Event): void {
     this.inputProtocolIndex_ = cast(e.target, HTMLSelectElement).selectedIndex;
     this.portState_ = this.computePortState_();
   }
 
-  private onCancelClick_() {
+  private onCancelClick_(): void {
     this.$.dialog.close();
     this.resetInputs_();
   }
 
-  private onAddClick_() {
+  private onAddClick_(): void {
     this.portState_ = this.computePortState_();
     if (this.portState_ !== PortState.VALID) {
       return;
@@ -195,11 +195,11 @@ class CrostiniPortForwardingAddPortDialog extends PolymerElement {
     this.resetInputs_();
   }
 
-  private onBlur_() {
+  private onBlur_(): void {
     this.portState_ = this.computePortState_();
   }
 
-  private onPortStateChanged_() {
+  private onPortStateChanged_(): void {
     if (this.portState_ === PortState.VALID) {
       this.$.portNumberInput.invalid = false;
       this.$.continue.disabled = false;
