@@ -11,6 +11,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isEmptyString;
 
 import android.graphics.Bitmap;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -189,18 +190,21 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest
 
         bind(mModel.with(property, null));
         assertThat(String.valueOf(view.getText()), isEmptyString());
+        assertThat(view.getVisibility(), equalTo(View.GONE));
 
         bind(mModel.with(property,
                 new LegalMessages(null,
                         VirtualCardEnrollmentLinkType.VIRTUAL_CARD_ENROLLMENT_ISSUER_TOS_LINK,
                         /*linkOpener=*/null)));
         assertThat(String.valueOf(view.getText()), isEmptyString());
+        assertThat(view.getVisibility(), equalTo(View.GONE));
 
         bind(mModel.with(property,
                 new LegalMessages(new LinkedList<LegalMessageLine>(),
                         VirtualCardEnrollmentLinkType.VIRTUAL_CARD_ENROLLMENT_ISSUER_TOS_LINK,
                         /*linkOpener=*/this)));
         assertThat(String.valueOf(view.getText()), isEmptyString());
+        assertThat(view.getVisibility(), equalTo(View.GONE));
 
         LinkedList<LegalMessageLine> lines = new LinkedList<>();
         lines.add(new LegalMessageLine("Legal message line"));
@@ -209,6 +213,7 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest
                         VirtualCardEnrollmentLinkType.VIRTUAL_CARD_ENROLLMENT_ISSUER_TOS_LINK,
                         /*linkOpener=*/this)));
         assertThat(String.valueOf(view.getText()), equalTo("Legal message line"));
+        assertThat(view.getVisibility(), equalTo(View.VISIBLE));
 
         LegalMessageLine line = new LegalMessageLine("Legal message line");
         line.links.add(new Link(0, 5, "https://example.test"));
@@ -219,6 +224,7 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest
                         VirtualCardEnrollmentLinkType.VIRTUAL_CARD_ENROLLMENT_ISSUER_TOS_LINK,
                         /*linkOpener=*/this)));
         assertThat(String.valueOf(view.getText()), equalTo("Legal message line"));
+        assertThat(view.getVisibility(), equalTo(View.VISIBLE));
     }
 
     @Test

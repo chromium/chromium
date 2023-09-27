@@ -12,6 +12,7 @@ import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.view.View;
+import android.widget.TextView;
 
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.Description;
@@ -58,14 +59,12 @@ import org.chromium.ui.modelutil.PropertyModel;
                     model.get(AutofillVcnEnrollBottomSheetProperties.CARD_DESCRIPTION));
 
         } else if (AutofillVcnEnrollBottomSheetProperties.GOOGLE_LEGAL_MESSAGES == propertyKey) {
-            view.mGoogleLegalMessage.setText(getLegalMessageSpan(view.mContentView.getContext(),
-                    model.get(AutofillVcnEnrollBottomSheetProperties.GOOGLE_LEGAL_MESSAGES)));
-            view.mGoogleLegalMessage.setMovementMethod(LinkMovementMethod.getInstance());
+            setLegalMessageOrHideIfEmpty(view.mContentView.getContext(), view.mGoogleLegalMessage,
+                    model.get(AutofillVcnEnrollBottomSheetProperties.GOOGLE_LEGAL_MESSAGES));
 
         } else if (AutofillVcnEnrollBottomSheetProperties.ISSUER_LEGAL_MESSAGES == propertyKey) {
-            view.mIssuerLegalMessage.setText(getLegalMessageSpan(view.mContentView.getContext(),
-                    model.get(AutofillVcnEnrollBottomSheetProperties.ISSUER_LEGAL_MESSAGES)));
-            view.mIssuerLegalMessage.setMovementMethod(LinkMovementMethod.getInstance());
+            setLegalMessageOrHideIfEmpty(view.mContentView.getContext(), view.mIssuerLegalMessage,
+                    model.get(AutofillVcnEnrollBottomSheetProperties.ISSUER_LEGAL_MESSAGES));
 
         } else if (AutofillVcnEnrollBottomSheetProperties.ACCEPT_BUTTON_LABEL == propertyKey) {
             view.mAcceptButton.setText(
@@ -122,5 +121,19 @@ import org.chromium.ui.modelutil.PropertyModel;
                             legalMessages.mLinkOpener.openLink(url, legalMessages.mLinkType);
                         })
                 : new SpannableStringBuilder();
+    }
+
+    // Sets the legal message text formatted with links, or hides the text view for empty legal
+    // message.
+    private static void setLegalMessageOrHideIfEmpty(
+            Context context, TextView textView, LegalMessages legalMessages) {
+        SpannableStringBuilder stringBuilder = getLegalMessageSpan(context, legalMessages);
+        if (stringBuilder.length() > 0) {
+            textView.setText(stringBuilder);
+            textView.setMovementMethod(LinkMovementMethod.getInstance());
+            textView.setVisibility(View.VISIBLE);
+        } else {
+            textView.setVisibility(View.GONE);
+        }
     }
 }
