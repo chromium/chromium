@@ -1346,6 +1346,7 @@ export class FakeShimlessRmaService {
     this.setSaveLogResult({'path': ''});
 
     this.lastCompleteLast3pDiagnosticsInstallationApproval_ = null;
+    this.setGet3pDiagnosticsProviderResult(null);
   }
 
   /**
