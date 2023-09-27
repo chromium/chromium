@@ -214,6 +214,7 @@ ci.builder(
         category = "centipede",
         short_name = "centipede",
     ),
+    contact_team_email = "chrome-deet-core@google.com",
 )
 
 ci.builder(
@@ -586,6 +587,7 @@ ci.builder(
         category = "libfuzz",
         short_name = "chromeos-asan",
     ),
+    contact_team_email = "chrome-deet-core@google.com",
     execution_timeout = 4 * time.hour,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )
@@ -599,6 +601,7 @@ ci.builder(
         category = "libfuzz",
         short_name = "ios",
     ),
+    contact_team_email = "chrome-deet-core@google.com",
     execution_timeout = 4 * time.hour,
     xcode = xcode.x14main,
 )
@@ -613,6 +616,7 @@ ci.builder(
         category = "libfuzz",
         short_name = "linux",
     ),
+    contact_team_email = "chrome-deet-core@google.com",
     execution_timeout = 4 * time.hour,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
@@ -628,6 +632,7 @@ ci.builder(
         category = "libfuzz",
         short_name = "linux-dbg",
     ),
+    contact_team_email = "chrome-deet-core@google.com",
     execution_timeout = 4 * time.hour,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
@@ -643,6 +648,7 @@ ci.builder(
         category = "libfuzz",
         short_name = "linux-msan",
     ),
+    contact_team_email = "chrome-deet-core@google.com",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -658,6 +664,7 @@ ci.builder(
         category = "libfuzz",
         short_name = "linux-ubsan",
     ),
+    contact_team_email = "chrome-deet-core@google.com",
     execution_timeout = 5 * time.hour,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
@@ -672,6 +679,7 @@ ci.builder(
         category = "libfuzz",
         short_name = "arm64",
     ),
+    contact_team_email = "v8-infra@google.com",
 )
 
 ci.builder(
@@ -684,6 +692,7 @@ ci.builder(
         category = "libfuzz",
         short_name = "arm64-dbg",
     ),
+    contact_team_email = "v8-infra@google.com",
 )
 
 ci.builder(
@@ -696,6 +705,7 @@ ci.builder(
         category = "libfuzz",
         short_name = "linux32",
     ),
+    contact_team_email = "chrome-deet-core@google.com",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -709,6 +719,7 @@ ci.builder(
         category = "libfuzz",
         short_name = "arm",
     ),
+    contact_team_email = "v8-infra@google.com",
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 
@@ -722,6 +733,7 @@ ci.builder(
         category = "libfuzz",
         short_name = "arm-dbg",
     ),
+    contact_team_email = "v8-infra@google.com",
 )
 
 ci.builder(
@@ -733,6 +745,7 @@ ci.builder(
         category = "libfuzz",
         short_name = "mac-asan",
     ),
+    contact_team_email = "chrome-deet-core@google.com",
     execution_timeout = 4 * time.hour,
 )
 
@@ -747,6 +760,7 @@ ci.builder(
         category = "libfuzz",
         short_name = "win-asan",
     ),
+    contact_team_email = "chrome-deet-core@google.com",
     # crbug.com/1175182: Temporarily increase timeout
     # crbug.com/1372531: Increase timeout again
     execution_timeout = 6 * time.hour,
