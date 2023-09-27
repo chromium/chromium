@@ -22,8 +22,7 @@ namespace {
 
 // Default size set to match signin reauth dialog size (see
 // signin_view_controller_delegate_views.cc).
-constexpr int kDefaultDialogHeight = 520;
-constexpr int kDefaultDialogWidth = 540;
+constexpr gfx::Size kDefaultSize{520, 540};
 
 std::unique_ptr<content::WebContents> CreateWebContents(
     content::BrowserContext* context) {
@@ -42,11 +41,12 @@ std::unique_ptr<content::WebContents> CreateWebContents(
 // static
 void TrustedVaultDialogDelegate::ShowDialogForProfile(Profile* profile,
                                                       const GURL& url) {
-  TrustedVaultDialogDelegate* dialog_delegate =
-      new TrustedVaultDialogDelegate(url, profile);
+  auto dialog_delegate = std::make_unique<TrustedVaultDialogDelegate>(
+      CreateWebContents(profile), url);
+  content::WebContents* contents = dialog_delegate->web_contents();
   views::WebDialogView* view = new views::WebDialogView(
-      profile, dialog_delegate, std::make_unique<ChromeWebContentsHandler>(),
-      dialog_delegate->web_contents());
+      profile, dialog_delegate.release(),
+      std::make_unique<ChromeWebContentsHandler>(), contents);
 
   views::Widget::InitParams params;
   params.delegate = view;
@@ -57,61 +57,18 @@ void TrustedVaultDialogDelegate::ShowDialogForProfile(Profile* profile,
   widget->Show();
 }
 
-TrustedVaultDialogDelegate::TrustedVaultDialogDelegate(const GURL& url,
-                                                       Profile* profile)
-    : url_(url), web_contents_(CreateWebContents(profile)) {
+TrustedVaultDialogDelegate::TrustedVaultDialogDelegate(
+    std::unique_ptr<content::WebContents> contents,
+    const GURL& url)
+    : web_contents_(std::move(contents)) {
+  set_allow_default_context_menu(false);
+  set_can_close(true);
+  set_dialog_content_url(url);
+  set_dialog_modal_type(ui::ModalType::MODAL_TYPE_NONE);
+  set_dialog_size(kDefaultSize);
+  set_show_dialog_title(false);
   TrustedVaultEncryptionKeysTabHelper::CreateForWebContents(
       web_contents_.get());
 }
 
 TrustedVaultDialogDelegate::~TrustedVaultDialogDelegate() = default;
-
-ui::ModalType TrustedVaultDialogDelegate::GetDialogModalType() const {
-  return ui::ModalType::MODAL_TYPE_NONE;
-}
-
-std::u16string TrustedVaultDialogDelegate::GetDialogTitle() const {
-  return std::u16string();
-}
-
-GURL TrustedVaultDialogDelegate::GetDialogContentURL() const {
-  return url_;
-}
-
-void TrustedVaultDialogDelegate::GetWebUIMessageHandlers(
-    std::vector<content::WebUIMessageHandler*>* handlers) const {}
-
-void TrustedVaultDialogDelegate::GetDialogSize(gfx::Size* size) const {
-  size->SetSize(kDefaultDialogWidth, kDefaultDialogHeight);
-}
-
-std::string TrustedVaultDialogDelegate::GetDialogArgs() const {
-  return std::string();
-}
-
-void TrustedVaultDialogDelegate::OnDialogShown(content::WebUI* webui) {}
-
-void TrustedVaultDialogDelegate::OnDialogClosed(
-    const std::string& json_retval) {
-  delete this;
-}
-
-void TrustedVaultDialogDelegate::OnCloseContents(content::WebContents* source,
-                                                 bool* out_close_dialog) {
-  *out_close_dialog = true;
-}
-
-bool TrustedVaultDialogDelegate::ShouldShowDialogTitle() const {
-  return false;
-}
-
-bool TrustedVaultDialogDelegate::HandleContextMenu(
-    content::RenderFrameHost& render_frame_host,
-    const content::ContextMenuParams& params) {
-  // Disable context menu.
-  return true;
-}
-
-content::WebContents* TrustedVaultDialogDelegate::web_contents() {
-  return web_contents_.get();
-}
