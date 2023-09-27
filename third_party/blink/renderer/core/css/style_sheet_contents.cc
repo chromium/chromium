@@ -255,6 +255,11 @@ void StyleSheetContents::ClearRules() {
     DCHECK_EQ(import_rules_.at(i)->ParentStyleSheet(), this);
     import_rules_[i]->ClearParentStyleSheet();
   }
+
+  if (rule_set_diff_) {
+    rule_set_diff_->MarkUnrepresentable();
+  }
+
   import_rules_.clear();
   namespace_rules_.clear();
   child_rules_.clear();
