@@ -863,6 +863,44 @@ TEST_F(SnapGroupEntryPointArm1Test, WindowDestructionInOverview) {
   EXPECT_EQ(overview_grid->window_list().size(), 1u);
 }
 
+// Tests that the rounded corners of the remaining item in the snap group on
+// window destruction will be refreshed so that the exposed corners will be
+// rounded corners.
+TEST_F(SnapGroupEntryPointArm1Test,
+       RefreshVisualsOnWindowDestructionInOverview) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  std::unique_ptr<aura::Window> w3(CreateAppWindow());
+  SnapTwoTestWindowsInArm1(w1.get(), w2.get());
+
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview(OverviewStartAction::kTests);
+  ASSERT_TRUE(overview_controller->overview_session());
+
+  const auto* overview_grid =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(overview_grid);
+  const auto& overview_items = overview_grid->window_list();
+  ASSERT_EQ(overview_items.size(), 2u);
+
+  w2.reset();
+  ASSERT_TRUE(overview_grid);
+  EXPECT_EQ(overview_grid->window_list().size(), 2u);
+
+  for (const auto& overview_item : overview_items) {
+    const gfx::RoundedCornersF rounded_corners =
+        overview_item->GetRoundedCorners();
+    EXPECT_NEAR(rounded_corners.upper_left(), kWindowMiniViewCornerRadius,
+                /*abs_error=*/0.01);
+    EXPECT_NEAR(rounded_corners.upper_right(), kWindowMiniViewCornerRadius,
+                /*abs_error=*/0.01);
+    EXPECT_NEAR(rounded_corners.lower_right(), kWindowMiniViewCornerRadius,
+                /*abs_error=*/0.01);
+    EXPECT_NEAR(rounded_corners.lower_left(), kWindowMiniViewCornerRadius,
+                /*abs_error=*/0.01);
+  }
+}
+
 // Tests that the individual items within the same group will be hosted by the
 // same overview group item.
 TEST_F(SnapGroupEntryPointArm1Test, OverviewItemTest) {

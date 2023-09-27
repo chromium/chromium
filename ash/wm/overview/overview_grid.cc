@@ -797,8 +797,8 @@ void OverviewGrid::RemoveItem(OverviewItemBase* overview_item,
   // be cleaning up and its associated view may be nullptr. |overview_item|
   // needs to still be in |window_list_| so we can compute what the deleted
   // index is.
-  OverviewFocusableView* focusable_view = (*iter)->GetFocusableView();
-  if (overview_session_ && focusable_view) {
+  if (OverviewFocusableView* focusable_view = (*iter)->GetFocusableView();
+      overview_session_ && focusable_view) {
     overview_session_->focus_cycler()->OnViewDestroyingOrDisabling(
         focusable_view);
   }

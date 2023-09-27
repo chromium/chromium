@@ -278,6 +278,16 @@ void OverviewGroupItem::OnOverviewItemWindowDestroying(
 
   if (overview_items_.empty()) {
     overview_grid_->RemoveItem(this, /*item_destroying=*/true, reposition);
+    return;
+  }
+
+  overview_grid_->PositionWindows(/*animate=*/false);
+  for (const auto& item : overview_items_) {
+    if (item && item.get() != overview_item) {
+      OverviewItemView* item_view = item->overview_item_view();
+      item_view->ResetRoundedCorners();
+      item_view->RefreshItemVisuals();
+    }
   }
 }
 
