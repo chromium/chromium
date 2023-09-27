@@ -622,6 +622,51 @@ id<GREYMatcher> MoveAddressBarToBottomContextMenuButton() {
   }
 }
 
+// Verifies that the location bar is hidden on NTP.
+- (void)testLocationBarHiddenOnNTP {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"The NTP is sometimes scrolled on iPad, making the "
+                           @"location bar visible.");
+  }
+  // Location bar should be hidden when loading NTP.
+  CheckVisibilityInToolbar(chrome_test_util::DefocusedLocationView(),
+                           ButtonVisibilityNone);
+
+  // Location bar should be hidden when returning to NTP with the back button.
+  [ChromeEarlGrey loadURL:GURL("chrome://version")];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  CheckVisibilityInToolbar(chrome_test_util::DefocusedLocationView(),
+                           ButtonVisibilityNone);
+
+  // Change the orientation or the trait collection.
+  UIViewController* topViewController = TopPresentedViewController();
+  UITraitCollection* originalTraitCollection =
+      topViewController.traitCollection;
+  RotateOrChangeTraitCollection(originalTraitCollection, topViewController);
+
+  CheckVisibilityInToolbar(chrome_test_util::DefocusedLocationView(),
+                           ButtonVisibilityNone);
+
+  // Revert the orientation/trait collection to the original.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    // Remove the override.
+    for (UIViewController* child in topViewController.childViewControllers) {
+      [topViewController setOverrideTraitCollection:originalTraitCollection
+                             forChildViewController:child];
+    }
+  } else {
+    // Cancel the rotation.
+    [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
+  }
+
+  // Check the visiblity after a rotation.
+  CheckVisibilityInToolbar(chrome_test_util::DefocusedLocationView(),
+                           ButtonVisibilityNone);
+}
+
 @end
 
 #pragma mark - Bottom omnibox enabled tests
