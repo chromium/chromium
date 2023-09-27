@@ -83,7 +83,7 @@ public class BackgroundTaskJobService extends JobService {
                     return;
                 }
                 mJobService.setNotification(mParams, notificationId, notification,
-                        JobService.JOB_END_NOTIFICATION_POLICY_REMOVE);
+                        JobService.JOB_END_NOTIFICATION_POLICY_DETACH);
                 BackgroundTaskSchedulerUma.getInstance().reportNotificationWasSet(
                         mParams.getJobId(), SystemClock.uptimeMillis() - mTaskStartTimeMs);
             });
