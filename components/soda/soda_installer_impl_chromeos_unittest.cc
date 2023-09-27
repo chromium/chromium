@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -14,6 +15,7 @@
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/soda/pref_names.h"
+#include "components/soda/soda_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -121,10 +123,11 @@ class SodaInstallerImplChromeOSTest : public testing::Test {
     soda_installer_impl_->soda_installer_initialized_ = initialized;
   }
 
+  std::unique_ptr<SodaInstallerImplChromeOS> soda_installer_impl_;
+
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::unique_ptr<SodaInstallerImplChromeOS> soda_installer_impl_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   raw_ptr<ash::FakeDlcserviceClient, DanglingUntriaged | ExperimentalAsh>
       fake_dlcservice_client_;
@@ -157,6 +160,29 @@ TEST_F(SodaInstallerImplChromeOSTest, IsDownloading) {
   ASSERT_TRUE(IsSodaDownloading());
   RunUntilIdle();
   ASSERT_FALSE(IsSodaDownloading());
+}
+
+TEST_F(SodaInstallerImplChromeOSTest, OnlyEnglishAvailable) {
+  std::vector<std::string> actual_langs =
+      GetInstance()->GetAvailableLanguages();
+  EXPECT_THAT(actual_langs, ::testing::UnorderedElementsAre("en-US"));
+}
+
+TEST_F(SodaInstallerImplChromeOSTest, MultipleLangsAvailableInExperiment) {
+  base::test::ScopedFeatureList scoped_feature_list_internal;
+  std::map<std::string, std::string> params;
+  params.insert({"available_languages",
+                 "it-IT:libsoda-chickenface,ja-JP:libsoda-moo,de-IT:"
+                 "incorrectprefix,wr-on:libsoda-wrong-language"});
+  scoped_feature_list_internal.InitAndEnableFeatureWithParameters(
+      ::speech::kCrosExpandSodaLanguages, params);
+  // explicit delete first to make the single instance enforcement happy.
+  soda_installer_impl_.reset();
+  soda_installer_impl_ = std::make_unique<SodaInstallerImplChromeOS>();
+  std::vector<std::string> actual_langs =
+      GetInstance()->GetAvailableLanguages();
+  EXPECT_THAT(actual_langs,
+              ::testing::UnorderedElementsAre("ja-JP", "it-IT", "en-US"));
 }
 
 TEST_F(SodaInstallerImplChromeOSTest, IsAnyLanguagePackInstalled) {

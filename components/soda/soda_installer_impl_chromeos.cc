@@ -7,15 +7,18 @@
 #include <string>
 
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_split.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/soda/pref_names.h"
+#include "components/soda/soda_features.h"
 #include "components/soda/soda_installer.h"
 #include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -35,10 +38,71 @@ SodaInstaller::ErrorCode DlcCodeToSodaErrorCode(const std::string& code) {
 }  // namespace
 
 SodaInstallerImplChromeOS::SodaInstallerImplChromeOS() {
-  // TODO(crbug.com/1161569): SODA is only available for English right now.
-  // Update this to check available languages.
-  available_languages_.insert(
+  available_languages_ = ConstructAvailableLanguages();
+}
+
+base::flat_map<std::string, SodaInstallerImplChromeOS::LanguageInfo>
+SodaInstallerImplChromeOS::ConstructAvailableLanguages() const {
+  base::flat_map<std::string, LanguageInfo> available_languages;
+  // Defaults checked in.
+  available_languages.insert(
       {kUsEnglishLocale, {kSodaEnglishUsDlcName, LanguageCode::kEnUs}});
+  if (!base::FeatureList::IsEnabled(kCrosExpandSodaLanguages)) {
+    return available_languages;
+  }
+  available_languages.insert({"ja-JP", {"", LanguageCode::kJaJp}});
+  available_languages.insert({"de-DE", {"", LanguageCode::kDeDe}});
+  available_languages.insert({"es-ES", {"", LanguageCode::kEsEs}});
+  available_languages.insert({"fr-FR", {"", LanguageCode::kFrFr}});
+  available_languages.insert({"it-IT", {"", LanguageCode::kItIt}});
+  available_languages.insert({"en-CA", {"", LanguageCode::kEnCa}});
+  available_languages.insert({"en-AU", {"", LanguageCode::kEnAu}});
+  available_languages.insert({"en-GB", {"", LanguageCode::kEnGb}});
+  available_languages.insert({"en-IE", {"", LanguageCode::kEnIe}});
+  available_languages.insert({"en-SG", {"", LanguageCode::kEnSg}});
+  available_languages.insert({"fr-BE", {"", LanguageCode::kFrBe}});
+  available_languages.insert({"fr-FR", {"", LanguageCode::kFrFr}});
+  available_languages.insert({"fr-CH", {"", LanguageCode::kFrCh}});
+  available_languages.insert({"en-IN", {"", LanguageCode::kEnIn}});
+  available_languages.insert({"it-CH", {"", LanguageCode::kItCh}});
+  available_languages.insert({"de-AT", {"", LanguageCode::kDeAt}});
+  available_languages.insert({"de-BE", {"", LanguageCode::kDeBe}});
+  available_languages.insert({"de-CH", {"", LanguageCode::kDeCh}});
+  available_languages.insert({"es-US", {"", LanguageCode::kEsUs}});
+  // Add in from feature flags. the value is of the format:
+  // "en-AU:libsoda-modelname,de-CH:libsoda-pizzaface"
+  std::vector<std::string> langs =
+      base::SplitString(base::GetFieldTrialParamValueByFeature(
+                            kCrosExpandSodaLanguages, "available_languages"),
+                        ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  for (const auto& unparsed_pair : langs) {
+    std::vector<std::string> lang_model_pair = base::SplitString(
+        unparsed_pair, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+    if (lang_model_pair.size() != 2) {
+      // skip, but log.
+      LOG(DFATAL) << "Unable to parse a language pair, in wrong format. "
+                     "value received and ignored is "
+                  << unparsed_pair;
+      continue;
+    }
+    if (lang_model_pair[1].rfind("libsoda", 0) == std::string::npos) {
+      LOG(ERROR) << "Incorrect prefix for " << lang_model_pair[0]
+                 << " given, is: " << lang_model_pair[1] << " and ignoring.";
+      continue;
+    }
+    const auto& lang_it = available_languages.find(lang_model_pair[0]);
+    if (lang_it == available_languages.end()) {
+      LOG(ERROR) << "Unable to find language " << lang_model_pair[0]
+                 << ", ignoring.";
+      continue;
+    }
+    lang_it->second.dlc_name = lang_model_pair[1];
+  }
+
+  // Remove empty.
+  base::EraseIf(available_languages,
+                [](const auto& it) { return it.second.dlc_name.empty(); });
+  return available_languages;
 }
 
 SodaInstallerImplChromeOS::~SodaInstallerImplChromeOS() = default;

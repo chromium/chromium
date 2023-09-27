@@ -83,6 +83,7 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstallerImplChromeOS
     std::string dlc_name;
     LanguageCode language_code;
   };
+  base::flat_map<std::string, LanguageInfo> ConstructAvailableLanguages() const;
 
   base::flat_map<std::string, LanguageInfo> available_languages_;
 };
