@@ -31,8 +31,7 @@
 #pragma mark - SecondaryToolbarKeyboardStateProvider
 
 - (BOOL)keyboardIsActiveForWebContent {
-  if (_webStateList && _webStateList->GetActiveWebState() &&
-      _webStateList->GetActiveWebState()->GetWebViewProxy()) {
+  if (_webStateList && _webStateList->GetActiveWebState()) {
     return _webStateList->GetActiveWebState()
         ->GetWebViewProxy()
         .keyboardVisible;
