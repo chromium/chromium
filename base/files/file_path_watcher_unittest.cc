@@ -215,6 +215,14 @@ class TestDelegate : public TestDelegateBase {
         event_expecter.GetAndResetExpectedEventsSinceLastWait(), location);
   }
 
+  // Convenience method for when no events are expected.
+  void SpinAndExpectNoEvents(const Location& location = FROM_HERE) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    return RunUntilEventsMatch(testing::IsEmpty(),
+                               ExpectedEventsSinceLastWait::kNone, location);
+  }
+
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -321,6 +329,36 @@ TEST_F(FilePathWatcherTest, NewFile) {
   delegate.RunUntilEventsMatch(event_expecter);
 }
 
+// Basic test: Create the directory and verify that we notice.
+TEST_F(FilePathWatcherTest, NewDirectory) {
+  FilePathWatcher watcher;
+  TestDelegate delegate;
+  AccumulatingEventExpecter event_expecter;
+  ASSERT_TRUE(SetupWatch(test_file(), &watcher, &delegate,
+                         FilePathWatcher::Type::kNonRecursive));
+
+  ASSERT_TRUE(CreateDirectory(test_file()));
+  event_expecter.AddExpectedEventForPath(test_file());
+  delegate.RunUntilEventsMatch(event_expecter);
+}
+
+// Basic test: Create the directory and verify that we notice.
+TEST_F(FilePathWatcherTest, NewDirectoryRecursiveWatch) {
+  if (!FilePathWatcher::RecursiveWatchAvailable()) {
+    return;
+  }
+
+  FilePathWatcher watcher;
+  TestDelegate delegate;
+  AccumulatingEventExpecter event_expecter;
+  ASSERT_TRUE(SetupWatch(test_file(), &watcher, &delegate,
+                         FilePathWatcher::Type::kRecursive));
+
+  ASSERT_TRUE(CreateDirectory(test_file()));
+  event_expecter.AddExpectedEventForPath(test_file());
+  delegate.RunUntilEventsMatch(event_expecter);
+}
+
 // Verify that modifying the file is caught.
 TEST_F(FilePathWatcherTest, ModifiedFile) {
   ASSERT_TRUE(WriteFile(test_file(), "content"));
@@ -337,8 +375,73 @@ TEST_F(FilePathWatcherTest, ModifiedFile) {
   delegate.RunUntilEventsMatch(event_expecter);
 }
 
-// Verify that moving the file into place is caught.
-TEST_F(FilePathWatcherTest, MovedFile) {
+// Verify that creating the parent directory of the watched file is not caught.
+TEST_F(FilePathWatcherTest, CreateParentDirectory) {
+  FilePathWatcher watcher;
+  TestDelegate delegate;
+  FilePath parent(temp_dir_.GetPath().AppendASCII("parent"));
+  FilePath child(parent.AppendASCII("child"));
+
+  ASSERT_TRUE(SetupWatch(child, &watcher, &delegate,
+                         FilePathWatcher::Type::kNonRecursive));
+
+  // Now make sure we do not get notified when the parent is created.
+  ASSERT_TRUE(CreateDirectory(parent));
+  delegate.SpinAndExpectNoEvents();
+}
+
+// Verify that changes to the sibling of the watched file are not caught.
+TEST_F(FilePathWatcherTest, CreateSiblingFile) {
+  FilePathWatcher watcher;
+  TestDelegate delegate;
+  ASSERT_TRUE(SetupWatch(test_file(), &watcher, &delegate,
+                         FilePathWatcher::Type::kNonRecursive));
+
+  // Now make sure we do not get notified if a sibling of the watched file is
+  // created or modified.
+  ASSERT_TRUE(WriteFile(test_file().AddExtensionASCII(".swap"), "content"));
+  ASSERT_TRUE(WriteFile(test_file().AddExtensionASCII(".swap"), "new content"));
+  delegate.SpinAndExpectNoEvents();
+}
+
+// Verify that changes to the sibling of the parent of the watched file are not
+// caught.
+TEST_F(FilePathWatcherTest, CreateParentSiblingFile) {
+  FilePathWatcher watcher;
+  TestDelegate delegate;
+  FilePath parent(temp_dir_.GetPath().AppendASCII("parent"));
+  FilePath parent_sibling(temp_dir_.GetPath().AppendASCII("parent_sibling"));
+  FilePath child(parent.AppendASCII("child"));
+  ASSERT_TRUE(SetupWatch(child, &watcher, &delegate,
+                         FilePathWatcher::Type::kNonRecursive));
+
+  // Don't notice changes to a sibling directory of `parent` while `parent` does
+  // not exist.
+  ASSERT_TRUE(CreateDirectory(parent_sibling));
+  ASSERT_TRUE(DeletePathRecursively(parent_sibling));
+
+  // Don't notice changes to a sibling file of `parent` while `parent` does
+  // not exist.
+  ASSERT_TRUE(WriteFile(parent_sibling, "do not notice this"));
+  ASSERT_TRUE(DeleteFile(parent_sibling));
+
+  // Don't notice the creation of `parent`.
+  ASSERT_TRUE(CreateDirectory(parent));
+
+  // Don't notice changes to a sibling directory of `parent` while `parent`
+  // exists.
+  ASSERT_TRUE(CreateDirectory(parent_sibling));
+  ASSERT_TRUE(DeletePathRecursively(parent_sibling));
+
+  // Don't notice changes to a sibling file of `parent` while `parent` exists.
+  ASSERT_TRUE(WriteFile(parent_sibling, "do not notice this"));
+  ASSERT_TRUE(DeleteFile(parent_sibling));
+
+  delegate.SpinAndExpectNoEvents();
+}
+
+// Verify that moving an unwatched file to a watched path is caught.
+TEST_F(FilePathWatcherTest, MovedToFile) {
   FilePath source_file(temp_dir_.GetPath().AppendASCII("source"));
   ASSERT_TRUE(WriteFile(source_file, "content"));
 
@@ -350,6 +453,22 @@ TEST_F(FilePathWatcherTest, MovedFile) {
 
   // Now make sure we get notified if the file is moved.
   ASSERT_TRUE(Move(source_file, test_file()));
+  event_expecter.AddExpectedEventForPath(test_file());
+  delegate.RunUntilEventsMatch(event_expecter);
+}
+
+// Verify that moving the watched file to an unwatched path is caught.
+TEST_F(FilePathWatcherTest, MovedFromFile) {
+  ASSERT_TRUE(WriteFile(test_file(), "content"));
+
+  FilePathWatcher watcher;
+  TestDelegate delegate;
+  AccumulatingEventExpecter event_expecter;
+  ASSERT_TRUE(SetupWatch(test_file(), &watcher, &delegate,
+                         FilePathWatcher::Type::kNonRecursive));
+
+  // Now make sure we get notified if the file is modified.
+  ASSERT_TRUE(Move(test_file(), temp_dir_.GetPath().AppendASCII("dest")));
   event_expecter.AddExpectedEventForPath(test_file());
   delegate.RunUntilEventsMatch(event_expecter);
 }
@@ -623,9 +742,6 @@ TEST_F(FilePathWatcherTest, MoveParent) {
                          FilePathWatcher::Type::kNonRecursive));
   ASSERT_TRUE(SetupWatch(subdir, &subdir_watcher, &subdir_delegate,
                          FilePathWatcher::Type::kNonRecursive));
-
-  // TODO(https://crbug.com/1432064): Add a test asserting that creation of the
-  // parent directory does not trigger an event.
 
   // Setup a directory hierarchy.
   // We should only get notified on `subdir_delegate` of its creation.
