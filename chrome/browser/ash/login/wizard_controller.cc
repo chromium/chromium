@@ -2502,7 +2502,7 @@ void WizardController::PerformOOBECompletedActions(
     OobeMetricsHelper::CompletedPreLoginOobeFlowType flow_type) {
   // Avoid marking OOBE as completed multiple times if going from login screen
   // to enrollment screen (and back).
-  if (oobe_marked_completed_) {
+  if (StartupUtils::IsOobeCompleted()) {
     return;
   }
 

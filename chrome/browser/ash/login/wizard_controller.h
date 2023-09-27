@@ -565,9 +565,6 @@ class WizardController : public OobeUI::Observer {
   // The prescribed enrollment configuration for the device.
   policy::EnrollmentConfig prescribed_enrollment_config_;
 
-  // Whether OOBE has yet been marked as completed.
-  bool oobe_marked_completed_ = false;
-
   // Non-owning pointer to local state used for testing.
   static PrefService* local_state_for_testing_;
 
