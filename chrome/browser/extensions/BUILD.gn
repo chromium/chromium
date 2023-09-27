@@ -1195,6 +1195,7 @@ static_library("extensions") {
       "//chrome/browser/devtools",
       "//chrome/browser/nearby_sharing/common",
       "//chromeos/ash/components/attestation",
+      "//chromeos/ash/components/browser_context_helper",
       "//chromeos/ash/components/cryptohome",
       "//chromeos/ash/components/dbus",
       "//chromeos/ash/components/dbus/attestation:attestation_proto",
