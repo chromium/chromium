@@ -281,6 +281,10 @@ BASE_DECLARE_FEATURE(kSafeBrowsingRemoveCookiesInAuthRequests);
 // renderer URL loader throttle.
 BASE_DECLARE_FEATURE(kSafeBrowsingSkipImageCssFont);
 
+// Controls whether to skip Safe Browsing checks on all subresource URLs in
+// renderer and browser URL loader throttles.
+BASE_DECLARE_FEATURE(kSafeBrowsingSkipSubresources);
+
 // Controls whether the new 7z evaluation is performed on downloads.
 BASE_DECLARE_FEATURE(kSevenZipEvaluationEnabled);
 

@@ -93,6 +93,12 @@ chromium-metrics-reviews@google.com.
   <variant name=".None" summary="neither consumer nor enterprise"/>
 </variants>
 
+<variants name="RequestedSkippedOrChecked">
+  <variant name="" summary="requested"/>
+  <variant name="Checked" summary="checked"/>
+  <variant name="Skipped" summary="skipped"/>
+</variants>
+
 <variants name="ThrottleProcess">
   <variant name="Browser" summary="Browser"/>
   <variant name="Renderer" summary="Renderer"/>
@@ -3042,7 +3048,8 @@ failing to fetch the updates which puts users' security at risk. -->
   </token>
 </histogram>
 
-<histogram name="SafeBrowsing.{Process}Throttle.RequestDestination"
+<histogram
+    name="SafeBrowsing.{Process}Throttle.RequestDestination{RequestedSkippedOrChecked}"
     enum="RequestDestination" expires_after="2024-08-16">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -3051,6 +3058,7 @@ failing to fetch the updates which puts users' security at risk. -->
     loader throttle. Logged each time WillStartRequest is called.
   </summary>
   <token key="Process" variants="ThrottleProcess"/>
+  <token key="RequestedSkippedOrChecked" variants="RequestedSkippedOrChecked"/>
 </histogram>
 
 <histogram name="SafeBrowsing.{Process}Throttle.TotalDelay2{ResponseType}"

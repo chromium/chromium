@@ -49,21 +49,26 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle,
   FRIEND_TEST_ALL_PREFIXES(SBRendererUrlLoaderThrottleTest,
                            DoesNotDeferHttpsImageUrl);
   FRIEND_TEST_ALL_PREFIXES(SBRendererUrlLoaderThrottleTest,
+                           DoesNotDeferHttpsScriptUrl);
+  FRIEND_TEST_ALL_PREFIXES(SBRendererUrlLoaderThrottleTest,
                            DoesNotDeferChromeUrl);
   FRIEND_TEST_ALL_PREFIXES(SBRendererUrlLoaderThrottleTest,
                            VerifyTotalDelayHistograms_DoesNotDefer);
   FRIEND_TEST_ALL_PREFIXES(SBRendererUrlLoaderThrottleTest,
                            VerifyTotalDelayHistograms_DoesNotDeferFromCache);
   FRIEND_TEST_ALL_PREFIXES(SBRendererUrlLoaderThrottleTest,
-                           VerifyTotalDelayHistograms_Defer);
-  FRIEND_TEST_ALL_PREFIXES(SBRendererUrlLoaderThrottleTest,
-                           VerifyTotalDelayHistograms_DeferFromCache);
-  FRIEND_TEST_ALL_PREFIXES(SBRendererUrlLoaderThrottleTest,
                            VerifyTotalDelayHistograms_SkipChromeUrl);
   FRIEND_TEST_ALL_PREFIXES(SBRendererUrlLoaderThrottleTest,
                            VerifyTotalDelayHistograms_SkipImageUrl);
+  FRIEND_TEST_ALL_PREFIXES(SBRendererUrlLoaderThrottleTest,
+                           VerifyTotalDelayHistograms_SkipScriptUrl);
+  FRIEND_TEST_ALL_PREFIXES(SBRendererUrlLoaderThrottleTest,
+                           VerifyTotalDelayHistograms_SkipIframeUrl);
   FRIEND_TEST_ALL_PREFIXES(
-      SBRendererUrlLoaderThrottleDisableSkipImageCssFontTest,
+      SBRendererUrlLoaderThrottleDisableSkipSubresourcesTest,
+      DefersHttpsScriptUrl);
+  FRIEND_TEST_ALL_PREFIXES(
+      SBRendererUrlLoaderThrottleDisableSkipSubresourcesTest,
       DefersHttpsImageUrl);
 
   // blink::URLLoaderThrottle implementation.

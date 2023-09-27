@@ -357,6 +357,22 @@ void BrowserURLLoaderThrottle::WillStartRequest(
     return;
   }
 
+  if (request->destination != network::mojom::RequestDestination::kDocument &&
+      base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources)) {
+    VLOG(2) << __func__ << " : Skipping: " << request->url << " : "
+            << request->destination;
+    base::UmaHistogramEnumeration(
+        "SafeBrowsing.BrowserThrottle.RequestDestination.Skipped",
+        request->destination);
+    skip_checks_ = true;
+
+    return;
+  }
+
+  base::UmaHistogramEnumeration(
+      "SafeBrowsing.BrowserThrottle.RequestDestination.Checked",
+      request->destination);
+
   pending_checks_++;
   start_request_time_ = base::TimeTicks::Now();
   is_start_request_called_ = true;
