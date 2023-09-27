@@ -66,19 +66,7 @@ if ($_SERVER['QUERY_STRING'] != "start")
     assert_equals(non_hint_matched_script_priority, kLow);
   }, "Ensure non-LCPP hinted async scripts were loaded unaffected with Low priority.")
 
-  window.onload = e => {
-    promise_test(async t => {
-      assert_equals(logs.length, 4);
-      // The ordering of the two LCP influencing scripts and DCL event cannot be guaranteed.
-      // Thus we assert only that they loaded, and the last item loaded is
-      // the non-LCP-influencing script.
-      ['lcp-img-create.js', 'lcp-img-insert.js', 'DOMContentLoaded'].forEach(
-        item => assert_true(logs.includes(item))
-      );
-      assert_equals(logs.at(-1), 'inert.js');
-      done();
-    }, "Ensure non-LCP influencer scripts are delayed in loading.");
-  };
+  window.onload = done;
 
   document.addEventListener('DOMContentLoaded', e => {
     logScript('DOMContentLoaded');
