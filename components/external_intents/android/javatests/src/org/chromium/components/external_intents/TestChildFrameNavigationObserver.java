@@ -18,29 +18,42 @@ import org.chromium.content_public.browser.WebContents;
 @JNINamespace("external_intents")
 public class TestChildFrameNavigationObserver {
     private final CallbackHelper mFailCallback;
+    private final CallbackHelper mFinishCallback;
+    private final CallbackHelper mLoadCallback;
     private final WebContents mWebContents;
 
-    public TestChildFrameNavigationObserver(
-            WebContents webContents, final CallbackHelper failCallback) {
+    public TestChildFrameNavigationObserver(WebContents webContents, CallbackHelper failCallback,
+            CallbackHelper finishCallback, CallbackHelper loadCallback) {
         mWebContents = webContents;
         mFailCallback = failCallback;
+        mFinishCallback = finishCallback;
+        mLoadCallback = loadCallback;
     }
 
     public static TestChildFrameNavigationObserver createAndAttachToNativeWebContents(
-            WebContents webContents, CallbackHelper failCallback) {
+            WebContents webContents, CallbackHelper failCallback, CallbackHelper finishCallback,
+            CallbackHelper loadCallback) {
         ThreadUtils.assertOnUiThread();
 
-        TestChildFrameNavigationObserver newObserver =
-                new TestChildFrameNavigationObserver(webContents, failCallback);
+        TestChildFrameNavigationObserver newObserver = new TestChildFrameNavigationObserver(
+                webContents, failCallback, finishCallback, loadCallback);
         TestChildFrameNavigationObserverJni.get().createAndAttachToNativeWebContents(
                 newObserver, webContents);
         return newObserver;
     }
 
     @CalledByNative
+    public void didStartNavigation(NavigationHandle navigation) {
+        mLoadCallback.notifyCalled();
+    }
+
+    @CalledByNative
     public void didFinishNavigation(NavigationHandle navigation) {
-        if (navigation.errorCode() == 0) return;
-        mFailCallback.notifyCalled();
+        if (navigation.errorCode() == 0) {
+            mFinishCallback.notifyCalled();
+        } else {
+            mFailCallback.notifyCalled();
+        }
     }
 
     @NativeMethods

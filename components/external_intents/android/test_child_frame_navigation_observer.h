@@ -39,6 +39,7 @@ class TestChildFrameNavigationObserver
                                             JNIEnv* env,
                                             jobject java_test_observer);
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
+  void DidStartNavigation(NavigationHandle* navigation_handle) override;
 
   ScopedJavaGlobalRef<jobject> java_test_observer_;
 };
