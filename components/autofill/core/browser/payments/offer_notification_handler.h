@@ -41,6 +41,10 @@ class OfferNotificationHandler {
       const GURL& url,
       const AutofillOfferData& offer);
 
+  bool ShowShoppingServiceOfferNotificationAutomatically(
+      const GURL& url,
+      const AutofillOfferData& offer);
+
   // The reference to the offer manager that owns |this|.
   raw_ptr<AutofillOfferManager> offer_manager_;
 
