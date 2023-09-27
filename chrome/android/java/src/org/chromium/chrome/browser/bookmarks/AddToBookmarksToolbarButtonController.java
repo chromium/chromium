@@ -90,7 +90,7 @@ public class AddToBookmarksToolbarButtonController
                 /* actionChipLabelResId = */ Resources.ID_NULL, /* supportsTinting = */ true,
                 /* iphCommandBuilder = */ null, AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS,
                 /* tooltipTextResId = */ Resources.ID_NULL,
-                /* showHoverHighlight = */ false);
+                /* showHoverHighlight = */ true);
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mTabBookmarkerSupplier = tabBookmarkerSupplier;
         mTrackerSupplier = trackerSupplier;
@@ -114,7 +114,7 @@ public class AddToBookmarksToolbarButtonController
                 /* iphCommandBuilder= */ null, AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS,
                 /* actionChipLabelResId = */ Resources.ID_NULL,
                 /* tooltipTextResId = */ Resources.ID_NULL,
-                /* showHoverHighlight = */ false);
+                /* showHoverHighlight = */ true);
 
         mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
     }
