@@ -8,6 +8,7 @@ import("//build/config/mac/mac_sdk.gni")
 import("//build/config/sysroot.gni")
 import("//build/toolchain/goma.gni")
 import("//build/toolchain/rbe.gni")
+import("//build/toolchain/siso.gni")
 
 # This is included by reference in the //build/config/compiler config that
 # is applied to all targets. It is here to separate out the logic.
@@ -110,8 +111,8 @@ config("mac_dynamic_flags") {
 #
 # The symbolic link for $mac_sdk_path is set up by
 # //build/config/apple/sdk_info.py in //build/config/mac/mac_sdk.gni.
-if (use_system_xcode && (use_goma || use_remoteexec) && target_os == "mac" &&
-    current_toolchain == default_toolchain) {
+if (use_system_xcode && (use_goma || use_remoteexec || use_siso) &&
+    target_os == "mac" && current_toolchain == default_toolchain) {
   action("sdk_inputs") {
     script = "//build/noop.py"
     outputs = [
