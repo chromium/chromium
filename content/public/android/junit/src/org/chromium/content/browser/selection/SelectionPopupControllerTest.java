@@ -102,7 +102,7 @@ public class SelectionPopupControllerTest {
         private SmartSelectionEventProcessor mLogger;
 
         @Override
-        public void onSelectionChanged(String selection) {}
+        public void onSelectionChanged(String selection, boolean hasSelection) {}
 
         @Override
         public void onSelectionEvent(int eventType, float posXPix, float poxYPix) {}

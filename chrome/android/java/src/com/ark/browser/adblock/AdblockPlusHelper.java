@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.ark.browser.core.ArkWebContents;
 import com.ark.browser.utils.FileUtil;
 import com.ark.browser.utils.ThreadPool;
 
@@ -177,6 +178,22 @@ public class AdblockPlusHelper {
                 String js = getAdblockJs(markAsAd.tagName, markAsAd.idAttribute, markAsAd.srcUrl);
                 Log.d(TAG, "js=\n" + js);
                 tab.getWebContents().evaluateJavaScript(js, null);
+            }
+        }
+    }
+
+    public static void markAds(ArkWebContents webContents) {
+        String host = getHostFrom(webContents.getUrl().getSpec());
+        Log.d(TAG, "host=" + host);
+        List<MarkAsAd> markAsAdList = sHidingElements.get(host);
+        Log.d(TAG, "markAsAdList=null?" + (markAsAdList == null));
+        Log.d(TAG, "markAds");
+        if (markAsAdList != null) {
+            Log.d(TAG, "markAsAdList != null");
+            for (MarkAsAd markAsAd : markAsAdList) {
+                String js = getAdblockJs(markAsAd.tagName, markAsAd.idAttribute, markAsAd.srcUrl);
+                Log.d(TAG, "js=\n" + js);
+                webContents.evaluateJavaScript(js, null);
             }
         }
     }

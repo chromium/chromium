@@ -102,7 +102,7 @@ public interface SelectionClient {
      * Notification that the web content selection has changed, regardless of the causal action.
      * @param selection The newly established selection.
      */
-    void onSelectionChanged(String selection);
+    void onSelectionChanged(String selection, boolean hasSelection);
 
     /**
      * Notification that a user-triggered selection or insertion-related event has occurred.

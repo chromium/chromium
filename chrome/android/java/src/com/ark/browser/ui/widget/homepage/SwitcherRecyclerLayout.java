@@ -700,16 +700,19 @@ public class SwitcherRecyclerLayout extends ViewGroup {
                     @Override
                     public void onTransitionEnd() {
                         int index = indexOfChild(mCurrentTouchView);
-                        int pos = mFirstPosition + index;
-                        setPosition(pos);
-                        if (index == 0 && pos > 0) {
-                            View child = obtainView(pos - 1, 0);
-                            viewList.add(0, child);
-                            mFirstPosition--;
-                        } else if (index == getChildCount() - 1 && pos < getCount() - 1) {
-                            int size = viewList.size();
-                            View child = obtainView(pos + 1, size);
-                            viewList.add(size, child);
+                        if (index >= 0) {
+                            mFirstPosition = (int) getChildAt(0).getTag(R.id.key_tab_position);
+                            int pos = mFirstPosition + index;
+                            setPosition(pos);
+                            if (index == 0 && pos > 0) {
+                                View child = obtainView(pos - 1, 0);
+                                viewList.add(0, child);
+                                mFirstPosition--;
+                            } else if (index == getChildCount() - 1 && pos < getCount() - 1) {
+                                int size = viewList.size();
+                                View child = obtainView(pos + 1, size);
+                                viewList.add(size, child);
+                            }
                         }
                     }
                 })
@@ -953,16 +956,19 @@ public class SwitcherRecyclerLayout extends ViewGroup {
                     @Override
                     public void onTransitionEnd() {
                         int index = indexOfChild(mCurrentTouchView);
-                        int pos = mFirstPosition + index;
-                        setPosition(pos);
-                        if (index == 0 && pos > 0) {
-                            View child = obtainView(pos - 1, 0);
-                            viewList.add(0, child);
-                            mFirstPosition--;
-                        } else if (index == getChildCount() - 1 && pos < getCount() - 1) {
-                            int size = viewList.size();
-                            View child = obtainView(pos + 1, size);
-                            viewList.add(size, child);
+                        if (index >= 0) {
+                            mFirstPosition = (int) getChildAt(0).getTag(R.id.key_tab_position);
+                            int pos = mFirstPosition + index;
+                            setPosition(pos);
+                            if (index == 0 && pos > 0) {
+                                View child = obtainView(pos - 1, 0);
+                                viewList.add(0, child);
+                                mFirstPosition--;
+                            } else if (index == getChildCount() - 1 && pos < getCount() - 1) {
+                                int size = viewList.size();
+                                View child = obtainView(pos + 1, size);
+                                viewList.add(size, child);
+                            }
                         }
                     }
                 })
@@ -1266,7 +1272,7 @@ public class SwitcherRecyclerLayout extends ViewGroup {
         });
         view.setOnClickListener(v -> {
             if (mState == STATE_IDLE) {
-                int pos = mFirstPosition + indexOfChild(v);
+                int pos = (int) v.getTag(R.id.key_tab_position);
                 ITab tab = mTabGroup.getTabAt(pos);
                 setPosition(pos);
                 ArkLogger.e(TAG, "onClick tab=" + tab);
@@ -1327,6 +1333,7 @@ public class SwitcherRecyclerLayout extends ViewGroup {
             }
         }
         mFirstPosition = centerPosition - index;
+        Log.e(TAG, "selectCenterChildView centerPos=" + centerPosition + " index=" + index + " firstPos=" + mFirstPosition);
         setPosition(centerPosition);
     }
 
@@ -1341,6 +1348,7 @@ public class SwitcherRecyclerLayout extends ViewGroup {
         if (mPosition == pos) {
             return;
         }
+        Log.e(TAG, "setPosition pos=" + pos);
         mPosition = pos;
         if (mTabGroup != null) {
             mTabGroup.onIndexChanged(pos);
@@ -1348,10 +1356,15 @@ public class SwitcherRecyclerLayout extends ViewGroup {
     }
 
     private void initCurrentChildViews() {
+        if (getChildCount() == 0) {
+            mCurrentTouchView = null;
+            return;
+        }
+        int firstPosition = (int) getChildAt(0).getTag(R.id.key_tab_position);
         mPosition = getPosition();
         View targetChild = null;
-        if (mPosition >= mFirstPosition) {
-            View child = getChildAt(mPosition - mFirstPosition);
+        if (mPosition >= firstPosition) {
+            View child = getChildAt(mPosition - firstPosition);
             if (child != null) {
                 if (mPosition == (int) child.getTag(R.id.key_tab_position)) {
                     targetChild = child;
@@ -1394,14 +1407,13 @@ public class SwitcherRecyclerLayout extends ViewGroup {
             mCurrentTouchView = getChildAt(childCount - 1);
         } else {
             int center = childCount / 2;
-            if (position + getChildCount() - center >= getCount()) {
+            if (position + getChildCount() - center > getCount()) {
                 center = getChildCount() - (getCount() - 1 - position) - 1;
             }
             if (center > position) {
                 center = position;
             }
             mCurrentTouchView = getChildAt(center);
-
         }
         mFirstPosition = position - indexOfChild(mCurrentTouchView);
         Log.e(TAG, "selectChildView position=" + position + " childCount=" + childCount + " currentView=" + mCurrentTouchView + " firstPos=" + mFirstPosition);
@@ -1710,7 +1722,7 @@ public class SwitcherRecyclerLayout extends ViewGroup {
                             for (Callback callback : mCallbackList) {
                                 callback.onHide(position);
                             }
-                            ThreadPool.postOnUIThread(() -> selectCenterPosition());
+                            selectCenterPosition();
                             break;
                         case STATE_IDLE:
                             for (Callback callback : mCallbackList) {
@@ -1730,7 +1742,7 @@ public class SwitcherRecyclerLayout extends ViewGroup {
                             for (Callback callback : mCallbackList) {
                                 callback.onExpand(position);
                             }
-                            ThreadPool.postOnUIThread(() -> selectCenterPosition());
+                            selectCenterPosition();
                             break;
                     }
                     if (mTransitionCallback != null) {

@@ -348,7 +348,6 @@ public class ArkTabWebContentsObserver implements UserData {
 
         @Override
         public void didFinishNavigation(NavigationHandle navigation) {
-            mTab.cacheThumbnail();
             RewindableIterator<TabObserver> observers = mTab.getTabObservers();
             while (observers.hasNext()) {
                 observers.next().onDidFinishNavigation(mTab, navigation);
@@ -393,23 +392,14 @@ public class ArkTabWebContentsObserver implements UserData {
 
         @Override
         public void didFirstVisuallyNonEmptyPaint() {
-            mTab.cacheThumbnail();
             RewindableIterator<TabObserver> observers = mTab.getTabObservers();
             while (observers.hasNext()) {
                 observers.next().didFirstVisuallyNonEmptyPaint(mTab);
             }
-            AdblockPlusHelper.markAds(mTab, mTab.getUrl().getSpec());
-        }
-
-        @Override
-        public void primaryMainDocumentElementAvailable() {
-            mTab.cacheThumbnail();
-            AdblockPlusHelper.markAds(mTab, mTab.getUrl().getSpec());
         }
 
         @Override
         public void didChangeThemeColor() {
-            mTab.cacheThumbnail();
             mTab.updateThemeColor(mTab.getThemeColor());
         }
 

@@ -731,7 +731,6 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
             }
         }
         if (getWebContents() != null) getWebContents().stop();
-        cacheThumbnail();
     }
 
     @Override
@@ -1040,7 +1039,6 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
     }
 
     void onLoadFinished() {
-        cacheThumbnail();
         // mIsLoading should only be false if this is a same-document navigation.
         boolean toDifferentDocument = isLoading();
         for (TabObserver observer : mObservers) {
@@ -1052,7 +1050,6 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
      * Called when a navigation completes and no other navigation is in progress.
      */
     void onLoadStopped() {
-        cacheThumbnail();
         // mIsLoading should only be false if this is a same-document navigation.
         boolean toDifferentDocument = isLoading();
         for (TabObserver observer : mObservers) observer.onLoadStopped(this, toDifferentDocument);
@@ -1086,7 +1083,6 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
      * @param url URL that was loaded.
      */
     void didFinishPageLoad(GURL url) {
-        AdblockPlusHelper.markAds(this, getUrl().getSpec());
         updateTitle();
 
         for (TabObserver observer : mObservers) {
@@ -1570,21 +1566,6 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
             ArkTabDao.savePageState(ArkTabImpl.this, pageInfo);
             ArkLogger.d(TAG, "saveState id=" + getId() + " deltaTime=" + (System.currentTimeMillis() - start));
         });
-    }
-
-    @Override
-    public void cacheThumbnail() {
-        if (mArkWeb == null) {
-            return;
-        }
-        PageSnapshotManager.getInstance().cachePage(getPageInfo());
-
-        if (mWindowAndroid != null) {
-            mWindowAndroid.getCompositorViewHolder()
-                    .getTabContentManager()
-                    .cacheThumbnail(mArkWeb.getWebContents(), mArkWeb.getId());
-        }
-
     }
 
 }

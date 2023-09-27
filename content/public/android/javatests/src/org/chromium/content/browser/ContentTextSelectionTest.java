@@ -72,7 +72,7 @@ public class ContentTextSelectionTest {
         private SelectionClient.ResultCallback mResultCallback;
 
         @Override
-        public void onSelectionChanged(String selection) {}
+        public void onSelectionChanged(String selection, boolean hasSelection) {}
 
         @Override
         public void onSelectionEvent(int eventType, float posXPix, float poxYPix) {}

@@ -4,6 +4,8 @@ import android.graphics.Color;
 import android.text.TextUtils;
 import android.widget.Toast;
 
+import com.ark.browser.core.ArkWebContents;
+import com.ark.browser.core.ArkWebManager;
 import com.ark.browser.settings.AppConfig;
 import com.ark.browser.tab.ArkTabImpl;
 import com.ark.browser.tab.PageInfo;
@@ -162,22 +164,17 @@ public interface ITabGroup extends ITab {
         if (page == null) {
             return false;
         }
-        int lastId = Tab.INVALID_PAGE_ID;
+        int lastPageId = Tab.INVALID_PAGE_ID;
 
         ITab currentTab = getCurrentTab();
         if (currentTab != null) {
-            lastId = currentTab.getTabInfo().getCurrentPageId();
-            ArkLogger.e(this, "selectTabInfo lastId=" + lastId + " currId=" + page.getId());
-            if (lastId != page.getId()) {
-                Tab lastTab = TabCacheManager.getInstance().findTab(lastId);
-                if (lastTab != null && !lastTab.needsReload()) {
-                    if (lastTab.isInitialized() && !lastTab.isDestroyed()) {
-                        if (!lastTab.isClosing()) {
-//                            lastTab.saveState();
-                            lastTab.cacheThumbnail();
-                        }
-                    }
-//                    lastTab.setImportance(ChildProcessImportance.NORMAL);
+            lastPageId = currentTab.getTabInfo().getCurrentPageId();
+            ArkLogger.e(this, "selectTabInfo lastPageId=" + lastPageId
+                    + " currPageId=" + page.getId());
+            if (lastPageId != page.getId()) {
+                ArkWebContents arkWeb = ArkWebManager.get(lastPageId);
+                if (arkWeb != null && !arkWeb.needsReload() && !arkWeb.isDestroyed()) {
+                    arkWeb.cacheThumbnail();
                 }
             }
         }
@@ -204,7 +201,7 @@ public interface ITabGroup extends ITab {
         TabGroupManager.global().notifyTabSelected(iTab);
         for (TabInfoObserver obs : getObservers()) {
             ArkLogger.d(ITabGroup.this, "selectTabInfo obs=" + obs);
-            obs.didSelectTab(iTab, TabSelectionType.FROM_USER, lastId);
+            obs.didSelectTab(iTab, TabSelectionType.FROM_USER, lastPageId);
         }
         return true;
     }

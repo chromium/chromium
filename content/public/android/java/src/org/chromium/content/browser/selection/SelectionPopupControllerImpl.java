@@ -1490,7 +1490,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         }
         mLastSelectedText = text;
         if (mSelectionClient != null) {
-            mSelectionClient.onSelectionChanged(text);
+            mSelectionClient.onSelectionChanged(text, hasSelection());
         }
     }
 

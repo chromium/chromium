@@ -64,4 +64,14 @@ public class SelectAroundCaretResult {
         mWordStartAdjust = wordStartAdjust;
         mWordEndAdjust = wordEndAdjust;
     }
+
+    @Override
+    public String toString() {
+        return "SelectAroundCaretResult{" +
+                "mExtendedStartAdjust=" + mExtendedStartAdjust +
+                ", mExtendedEndAdjust=" + mExtendedEndAdjust +
+                ", mWordStartAdjust=" + mWordStartAdjust +
+                ", mWordEndAdjust=" + mWordEndAdjust +
+                '}';
+    }
 }

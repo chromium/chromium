@@ -7,6 +7,7 @@ import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.ark.browser.adblock.AdblockPlusHelper;
 import com.ark.browser.core.utils.ContentUtils;
 import com.ark.browser.settings.AppConfig;
 import com.ark.browser.tab.ArkTabImpl;
@@ -88,6 +89,9 @@ public class ArkWebContents {
 
     private long mLastVisitTime;
 
+    @Nullable
+    private ArkTabImpl mTab;
+
     public ArkWebContents(PageInfo pageInfo, @NonNull WebContents webContents) {
         mPageInfo = pageInfo;
         mWebContents = webContents;
@@ -143,7 +147,9 @@ public class ArkWebContents {
                             mStartLoad = true;
                             mFinishLoad = true;
                             mIsLoading = false;
+                            AdblockPlusHelper.markAds(ArkWebContents.this);
                             super.didFinishLoad(rfhId, url, isKnownValid, isInPrimaryMainFrame, rfhLifecycleState);
+                            cacheThumbnail();
                             updateThemeColor();
                         }
 
@@ -153,6 +159,7 @@ public class ArkWebContents {
                                     + " url=" + url);
                             mIsLoading = false;
                             super.didStopLoading(url, isKnownValid);
+                            cacheThumbnail();
                         }
 
                         @Override
@@ -170,7 +177,6 @@ public class ArkWebContents {
                         @Override
                         public void didFinishNavigation(NavigationHandle navigation) {
                             ArkLogger.e(this, "didFinishNavigation navigation=" + navigation);
-
                             super.didFinishNavigation(navigation);
                             updateThemeColor();
                         }
@@ -178,9 +184,11 @@ public class ArkWebContents {
                         @Override
                         public void didFirstVisuallyNonEmptyPaint() {
                             ArkLogger.e(this, "didFirstVisuallyNonEmptyPaint");
+                            cacheThumbnail();
                             mStartLoad = true;
                             mFinishLoad = true;
                             mIsLoading = false;
+                            AdblockPlusHelper.markAds(ArkWebContents.this);
                             super.didFirstVisuallyNonEmptyPaint();
                             updateThemeColor();
                         }
@@ -188,6 +196,8 @@ public class ArkWebContents {
                         @Override
                         public void primaryMainDocumentElementAvailable() {
                             ArkLogger.e(this, "primaryMainDocumentElementAvailable");
+                            cacheThumbnail();
+                            AdblockPlusHelper.markAds(ArkWebContents.this);
                             super.primaryMainDocumentElementAvailable();
                         }
 
@@ -437,6 +447,7 @@ public class ArkWebContents {
 
     public void attach(ArkTabImpl tab) {
         mLastVisitTime = System.nanoTime();
+        mTab = tab;
         ArkLogger.e(this, "attach pageInfo=" + mPageInfo);
         setImportance(ChildProcessImportance.IMPORTANT);
         ContentView cv = tab.getContentView();
@@ -460,6 +471,7 @@ public class ArkWebContents {
 
     public void detach(ArkTabImpl tab) {
         ArkLogger.e(this, "detach pageInfo=" + mPageInfo);
+        mTab = null;
         setImportance(ChildProcessImportance.NORMAL);
         WebContentsAccessibility accessibility = WebContentsAccessibility.get(mWebContents);
         if (accessibility != null) {
@@ -536,6 +548,21 @@ public class ArkWebContents {
             mPageInfo.setThemeColor(themeColor);
             mWebContents.notifyChangeThemeColor();
         });
+    }
+
+    public void cacheThumbnail() {
+        if (isDestroyed()) {
+            return;
+        }
+        PageSnapshotManager.getInstance().cachePage(mPageInfo);
+        if (mTab != null) {
+            ArkWindowAndroid windowAndroid = mTab.getWindowAndroid();
+            if (windowAndroid != null) {
+                windowAndroid.getCompositorViewHolder()
+                        .getTabContentManager()
+                        .cacheThumbnail(mWebContents, getId());
+            }
+        }
     }
 
 //    public void addOnAttachStateChangeListener(View.OnAttachStateChangeListener listener) {

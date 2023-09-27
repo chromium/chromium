@@ -1496,7 +1496,7 @@ public class ContextualSearchManager
      */
     private class ContextualSearchSelectionClient implements SelectionClient {
         @Override
-        public void onSelectionChanged(String selection) {
+        public void onSelectionChanged(String selection, boolean hasSelection) {
             if (mSearchPanel != null) {
                 mSelectionController.handleSelectionChanged(selection);
                 mSearchPanel.updateBrowserControlsState(BrowserControlsState.BOTH, true);

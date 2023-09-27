@@ -1497,9 +1497,9 @@ public class ArkCompositorViewHolder extends FrameLayout
             }
 
             @Override
-            public void onSelectionChanged(String selection) {
-                ArkLogger.e(TAG, "onSelectionChanged selection=" + selection);
-                if (TextUtils.isEmpty(selection)) {
+            public void onSelectionChanged(String selection, boolean hasSelection) {
+                ArkLogger.e(TAG, "onSelectionChanged selection=" + selection + " hasSelection=" + hasSelection);
+                if (TextUtils.isEmpty(selection) || !hasSelection) {
                     hide();
                 } else {
                     show();
@@ -1521,6 +1521,7 @@ public class ArkCompositorViewHolder extends FrameLayout
 
             @Override
             public void selectAroundCaretAck(@Nullable SelectAroundCaretResult result) {
+                ArkLogger.e(TAG, "selectAroundCaretAck result=" + result);
             }
 
             @Override

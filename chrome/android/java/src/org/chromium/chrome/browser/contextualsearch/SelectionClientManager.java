@@ -146,9 +146,9 @@ public class SelectionClientManager {
         }
 
         @Override
-        public void onSelectionChanged(String selection) {
-            mSmartSelectionClient.onSelectionChanged(selection);
-            mContextualSearchSelectionClient.onSelectionChanged(selection);
+        public void onSelectionChanged(String selection, boolean hasSelection) {
+            mSmartSelectionClient.onSelectionChanged(selection, hasSelection);
+            mContextualSearchSelectionClient.onSelectionChanged(selection, hasSelection);
         }
 
         @Override

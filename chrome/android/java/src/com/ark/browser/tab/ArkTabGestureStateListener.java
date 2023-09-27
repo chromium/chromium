@@ -61,7 +61,7 @@ public final class ArkTabGestureStateListener extends ArkTabWebContentsUserData 
 
             @Override
             public void onFlingEndGesture(int scrollOffsetY, int scrollExtentY) {
-                mTab.cacheThumbnail();
+                arkWeb.cacheThumbnail();
                 onScrollingStateChanged();
             }
 
@@ -74,7 +74,7 @@ public final class ArkTabGestureStateListener extends ArkTabWebContentsUserData 
             @Override
             public void onScrollEnded(int scrollOffsetY, int scrollExtentY) {
 
-                mTab.cacheThumbnail();
+                arkWeb.cacheThumbnail();
 
                 onScrollingStateChanged();
                 RewindableIterator<TabObserver> observers = mTab.getTabObservers();

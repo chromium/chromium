@@ -92,7 +92,7 @@ public class SmartSelectionClient implements SelectionClient {
 
     // SelectionClient implementation
     @Override
-    public void onSelectionChanged(String selection) {}
+    public void onSelectionChanged(String selection, boolean hasSelection) {}
 
     @Override
     public void onSelectionEvent(@SelectionEventType int eventType, float posXPix, float posYPix) {}

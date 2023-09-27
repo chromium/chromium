@@ -326,10 +326,6 @@ public interface Tab extends TabLifecycle {
 
     }
 
-    default void cacheThumbnail() {
-
-    }
-
     default void evaluateJavaScript(String script, @Nullable JavaScriptCallback callback) {
         WebContents webContents = getWebContents();
         if (webContents != null) {
