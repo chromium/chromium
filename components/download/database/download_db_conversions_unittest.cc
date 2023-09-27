@@ -52,6 +52,7 @@ InProgressInfo CreateInProgressInfo() {
   info.request_headers.emplace_back(
       std::make_pair<std::string, std::string>("ABC", "def"));
   info.credentials_mode = ::network::mojom::CredentialsMode::kOmit;
+  info.notification_id = 10;
   return info;
 }
 

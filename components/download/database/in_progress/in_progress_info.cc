@@ -31,7 +31,8 @@ bool InProgressInfo::operator==(const InProgressInfo& other) const {
          transient == other.transient && state == other.state &&
          danger_type == other.danger_type &&
          interrupt_reason == other.interrupt_reason && paused == other.paused &&
-         metered == other.metered && bytes_wasted == other.bytes_wasted &&
+         metered == other.metered && notification_id == other.notification_id &&
+         bytes_wasted == other.bytes_wasted &&
          auto_resume_count == other.auto_resume_count &&
          credentials_mode == other.credentials_mode &&
          range_request_from == other.range_request_from &&

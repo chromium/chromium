@@ -181,6 +181,10 @@ OfflineItem OfflineItemUtils::CreateOfflineItem(const std::string& name_space,
 
   item.progress.unit = OfflineItemProgressUnit::BYTES;
 
+  // TODO(crbug/1486786): Populate notification ID in OfflineItem.
+  // item.notification_id =
+  // download::GetNotificationIdForDownload(download_item);
+
   return item;
 }
 

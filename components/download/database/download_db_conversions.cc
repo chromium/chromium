@@ -213,6 +213,7 @@ download_pb::InProgressInfo DownloadDBConversions::InProgressInfoToProto(
   proto.set_interrupt_reason(in_progress_info.interrupt_reason);
   proto.set_paused(in_progress_info.paused);
   proto.set_metered(in_progress_info.metered);
+  proto.set_notification_id(in_progress_info.notification_id);
   proto.set_bytes_wasted(in_progress_info.bytes_wasted);
   proto.set_auto_resume_count(in_progress_info.auto_resume_count);
   proto.set_credentials_mode(
@@ -268,6 +269,7 @@ InProgressInfo DownloadDBConversions::InProgressInfoFromProto(
       static_cast<DownloadInterruptReason>(proto.interrupt_reason());
   info.paused = proto.paused();
   info.metered = proto.metered();
+  info.notification_id = proto.notification_id();
   info.bytes_wasted = proto.bytes_wasted();
   info.auto_resume_count = proto.auto_resume_count();
   if (proto.has_credentials_mode()) {

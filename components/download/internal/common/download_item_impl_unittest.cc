@@ -35,6 +35,7 @@
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item_impl_delegate.h"
 #include "components/download/public/common/download_url_parameters.h"
+#include "components/download/public/common/download_utils.h"
 #include "components/download/public/common/mock_download_file.h"
 #include "crypto/secure_hash.h"
 #include "net/http/http_response_headers.h"
@@ -426,6 +427,14 @@ TEST_F(DownloadItemTest, NotificationAfterUpdate) {
   ASSERT_TRUE(observer.CheckAndResetDownloadUpdated());
   EXPECT_EQ(kDownloadSpeed, item->CurrentSpeed());
   CleanupItem(item, file, DownloadItem::IN_PROGRESS);
+}
+
+TEST_F(DownloadItemTest, NotificationID) {
+  DownloadItemImpl* item = CreateDownloadItem();
+  int notification_id = 100;
+  SetNotificationIdForDownload(item, notification_id);
+  int notification_id_from_download = GetNotificationIdForDownload(item);
+  EXPECT_EQ(notification_id, notification_id_from_download);
 }
 
 TEST_F(DownloadItemTest, NotificationAfterCancel) {

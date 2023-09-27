@@ -55,7 +55,7 @@ std::unique_ptr<DownloadItemImpl> CreateDownloadItemImpl(
   if (!in_progress_info)
     return nullptr;
 
-  return std::make_unique<DownloadItemImpl>(
+  auto download_item = std::make_unique<DownloadItemImpl>(
       delegate, entry.download_info->guid, entry.download_info->id,
       in_progress_info->current_path, in_progress_info->target_path,
       in_progress_info->url_chain, in_progress_info->referrer_url,
@@ -72,6 +72,9 @@ std::unique_ptr<DownloadItemImpl> CreateDownloadItemImpl(
       in_progress_info->transient, in_progress_info->received_slices,
       in_progress_info->range_request_from, in_progress_info->range_request_to,
       std::move(download_entry));
+  SetNotificationIdForDownload(download_item.get(),
+                               in_progress_info->notification_id);
+  return download_item;
 }
 
 void OnUrlDownloadHandlerCreated(
