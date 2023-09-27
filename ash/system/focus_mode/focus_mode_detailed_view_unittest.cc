@@ -40,13 +40,10 @@ class FocusModeDetailedViewTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    auto focus_mode_detailed_view =
-        std::make_unique<FocusModeDetailedView>(&detailed_view_delegate_);
-    focus_mode_detailed_view_ = focus_mode_detailed_view.get();
-
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);
-    widget_->SetContentsView(std::move(focus_mode_detailed_view));
+
+    CreateFakeFocusModeDetailedView();
   }
 
   void TearDown() override {
@@ -54,6 +51,14 @@ class FocusModeDetailedViewTest : public AshTestBase {
     widget_.reset();
 
     AshTestBase::TearDown();
+  }
+
+  void CreateFakeFocusModeDetailedView() {
+    auto focus_mode_detailed_view =
+        std::make_unique<FocusModeDetailedView>(&detailed_view_delegate_);
+    focus_mode_detailed_view_ = focus_mode_detailed_view.get();
+
+    widget_->SetContentsView(std::move(focus_mode_detailed_view));
   }
 
   views::Label* GetToggleRowLabel() {
@@ -141,13 +146,10 @@ TEST_F(FocusModeDetailedViewTest, DoNotDisturbToggleButtonAndQuietMode) {
 // Tests label texts and start/stop functionalities for the toggle row.
 TEST_F(FocusModeDetailedViewTest, ToggleRow) {
   auto* focus_mode_controller = FocusModeController::Get();
-  views::Label* label = GetToggleRowLabel();
-  views::Label* sub_label = GetToggleRowSubLabel();
-  PillButton* toggle_button = GetToggleRowButton();
 
   auto validate_labels = [&](bool active) {
     EXPECT_EQ(active, focus_mode_controller->in_focus_session());
-    EXPECT_EQ(active ? u"Focusing" : u"Focus", label->GetText());
+    EXPECT_EQ(active ? u"Focusing" : u"Focus", GetToggleRowLabel()->GetText());
 
     const base::Time now = base::Time::Now();
     const base::TimeDelta session_duration =
@@ -161,31 +163,39 @@ TEST_F(FocusModeDetailedViewTest, ToggleRow) {
                   base::UTF16ToUTF8(focus_mode_util::GetFormattedClockString(
                                         now + session_duration))
                       .c_str())),
-              sub_label->GetText());
-    EXPECT_EQ(active ? u"End" : u"Start", toggle_button->GetText());
+              GetToggleRowSubLabel()->GetText());
+    EXPECT_EQ(active ? u"End" : u"Start", GetToggleRowButton()->GetText());
   };
 
   validate_labels(/*active=*/false);
 
-  LeftClickOn(toggle_button);
+  // Starting the focus session closes the bubble, so we need to recreate the
+  // detailed view.
+  LeftClickOn(GetToggleRowButton());
+  CreateFakeFocusModeDetailedView();
+
   // Wait a second to avoid the time remaining being either 1500 seconds or
   // 1499.99 seconds.
   task_environment()->FastForwardBy(base::Seconds(1));
   validate_labels(/*active=*/true);
 
-  LeftClickOn(toggle_button);
+  LeftClickOn(GetToggleRowButton());
   validate_labels(/*active=*/false);
 
   // Verify that the time displays correctly in the 24-hour clock format.
   Shell::Get()->system_tray_model()->SetUse24HourClock(true);
 
-  LeftClickOn(toggle_button);
+  // Starting the focus session closes the bubble, so we need to recreate the
+  // detailed view.
+  LeftClickOn(GetToggleRowButton());
+  CreateFakeFocusModeDetailedView();
+
   // Wait a second to avoid the time remaining being either 1500 seconds or
   // 1499.99 seconds.
   task_environment()->FastForwardBy(base::Seconds(1));
   validate_labels(/*active=*/true);
 
-  LeftClickOn(toggle_button);
+  LeftClickOn(GetToggleRowButton());
   validate_labels(/*active=*/false);
 }
 

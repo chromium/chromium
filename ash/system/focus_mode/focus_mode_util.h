@@ -28,8 +28,8 @@ enum class TimeFormatType {
 };
 
 // Adaptation of `base::TimeDurationFormat`. This helper function
-// takes a `TimeDelta` and a pointer to a `u16string` and writes the time
-// formatted according to `format_type`, see `TimeFormatType` for more details.
+// takes a `TimeDelta` and returns the time formatted according to
+// `format_type`. See `TimeFormatType` for more details.
 // `TimeFormatType::kDigital` removes the hour if it is a leading zero. For
 // example "0:30", "4:30", "1:04:30".
 // `TimeFormatType::kFull` removes the hour if it is a leading zero and the
@@ -43,10 +43,10 @@ enum class TimeFormatType {
 //   example "0 min", "4 min", "64 min".
 // All examples were for times of 30 seconds, 4 minutes and 30 seconds, and 1
 // hour 4 minutes and 30 seconds.
-ASH_EXPORT bool TimeDurationFormatShortWidthWithNonzeroUnits(
-    base::TimeDelta duration_to_format,
-    TimeFormatType format_type,
-    std::u16string& out_duration_string);
+// Returns a default formatted string in cases where formatting the time
+// duration returns an error.
+ASH_EXPORT std::u16string GetDurationString(base::TimeDelta duration_to_format,
+                                            TimeFormatType format_type);
 
 // Returns a string of `end_time` formatted with the correct clock type. For
 // example: "5:10 PM" for 12-hour clock, "17:10" for 24-hour clock.

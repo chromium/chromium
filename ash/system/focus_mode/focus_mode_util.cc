@@ -14,6 +14,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/i18n/unicodestring.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_number_conversions.h"
 #include "third_party/icu/source/i18n/unicode/measfmt.h"
 #include "third_party/icu/source/i18n/unicode/measunit.h"
 #include "third_party/icu/source/i18n/unicode/measure.h"
@@ -44,10 +45,8 @@ bool ShouldShowMinutes(TimeFormatType format_type,
 
 }  // namespace
 
-bool TimeDurationFormatShortWidthWithNonzeroUnits(
-    base::TimeDelta duration_to_format,
-    TimeFormatType format_type,
-    std::u16string& out_duration_string) {
+std::u16string GetDurationString(base::TimeDelta duration_to_format,
+                                 TimeFormatType format_type) {
   UErrorCode status = U_ZERO_ERROR;
   bool numeric = format_type == TimeFormatType::kDigital;
 
@@ -88,8 +87,11 @@ bool TimeDurationFormatShortWidthWithNonzeroUnits(
   measure_format.formatMeasures(&measures[0], measures.size(), formatted,
                                 ignore, status);
 
-  out_duration_string = base::i18n::UnicodeStringToString16(formatted);
-  return U_SUCCESS(status);
+  if (U_SUCCESS(status)) {
+    return base::i18n::UnicodeStringToString16(formatted);
+  }
+
+  return base::NumberToString16(std::ceil(duration_to_format.InSecondsF()));
 }
 
 std::u16string GetFormattedClockString(const base::Time end_time) {

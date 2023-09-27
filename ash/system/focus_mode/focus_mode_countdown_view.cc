@@ -42,16 +42,6 @@ std::unique_ptr<views::Label> CreateTimerLabel(
   return label;
 }
 
-std::u16string GetDurationString(base::TimeDelta duration,
-                                 focus_mode_util::TimeFormatType type) {
-  std::u16string result;
-  if (!focus_mode_util::TimeDurationFormatShortWidthWithNonzeroUnits(
-          duration, type, result)) {
-    result = base::NumberToString16(std::ceil(duration.InSecondsF()));
-  }
-  return result;
-}
-
 }  // namespace
 
 FocusModeCountdownView::FocusModeCountdownView() {
@@ -150,15 +140,15 @@ void FocusModeCountdownView::UpdateUI() {
 
   const base::TimeDelta time_remaining =
       controller->end_time() - base::Time::Now();
-  time_remaining_label_->SetText(GetDurationString(
+  time_remaining_label_->SetText(focus_mode_util::GetDurationString(
       time_remaining, focus_mode_util::TimeFormatType::kFull));
 
   const base::TimeDelta session_duration = controller->session_duration();
-  time_total_label_->SetText(GetDurationString(
+  time_total_label_->SetText(focus_mode_util::GetDurationString(
       session_duration, focus_mode_util::TimeFormatType::kDigital));
 
   const base::TimeDelta time_elapsed = session_duration - time_remaining;
-  time_elapsed_label_->SetText(GetDurationString(
+  time_elapsed_label_->SetText(focus_mode_util::GetDurationString(
       time_elapsed, focus_mode_util::TimeFormatType::kDigital));
 
   progress_bar_->SetValue(time_elapsed / session_duration);

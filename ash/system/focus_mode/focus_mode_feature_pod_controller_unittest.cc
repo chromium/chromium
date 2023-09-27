@@ -89,13 +89,21 @@ TEST_F(FocusModeFeaturePodControllerTest, PressIconTogglesFocusModeSession) {
   EXPECT_TRUE(tile_->GetVisible());
   EXPECT_TRUE(tile_->GetEnabled());
 
+  // Verify that clicking the icon and starting the Focus Mode Session closes
+  // the bubble.
   controller_->OnIconPressed();
-  EXPECT_TRUE(tile_->IsToggled());
   EXPECT_TRUE(controller->in_focus_session());
+  EXPECT_FALSE(GetPrimaryUnifiedSystemTray()->IsBubbleShown());
 
+  // Recreate the tile since the bubble was closed.
+  CreateFakeFocusModeTile();
+  EXPECT_TRUE(tile_->IsToggled());
+
+  // End the focus session. This should not close the bubble.
   controller_->OnIconPressed();
-  EXPECT_FALSE(tile_->IsToggled());
   EXPECT_FALSE(controller->in_focus_session());
+  EXPECT_TRUE(GetPrimaryUnifiedSystemTray()->IsBubbleShown());
+  EXPECT_FALSE(tile_->IsToggled());
 }
 
 // Tests that pressing the label works and shows the `FocusModeDetailedView`.

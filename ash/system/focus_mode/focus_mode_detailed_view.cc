@@ -64,22 +64,17 @@ std::u16string CreateTimeRemainingString() {
   const base::TimeDelta session_duration_remaining =
       controller->in_focus_session() ? controller->end_time() - now
                                      : controller->session_duration();
-  std::u16string time_string;
-  if (focus_mode_util::TimeDurationFormatShortWidthWithNonzeroUnits(
-          session_duration_remaining,
-          focus_mode_util::TimeFormatType::kMinutesOnly, time_string)) {
-    // `FocusModeController::end_time_` is only calculated when the focus
-    // session is started. Thus, if focus mode is not active, we can find this
-    // end time by adding the focus mode controller's session duration to the
-    // current time.
-    const base::Time end_time = now + session_duration_remaining;
-    return l10n_util::GetStringFUTF16(
-        IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_TIME_SUBLABEL, time_string,
-        focus_mode_util::GetFormattedClockString(end_time));
-  }
-
-  return base::NumberToString16(
-      std::ceil(session_duration_remaining.InSecondsF()));
+  // `FocusModeController::end_time_` is only calculated when the focus
+  // session is started. Thus, if focus mode is not active, we can find this
+  // end time by adding the focus mode controller's session duration to the
+  // current time.
+  const base::Time end_time = now + session_duration_remaining;
+  const std::u16string time_string = focus_mode_util::GetDurationString(
+      session_duration_remaining,
+      focus_mode_util::TimeFormatType::kMinutesOnly);
+  return l10n_util::GetStringFUTF16(
+      IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_TIME_SUBLABEL, time_string,
+      focus_mode_util::GetFormattedClockString(end_time));
 }
 
 }  // namespace
@@ -135,7 +130,13 @@ void FocusModeDetailedView::OnQuietModeChanged(bool in_quiet_mode) {
 }
 
 void FocusModeDetailedView::OnFocusModeChanged(bool in_focus_session) {
-  // TODO(b/286932057): Panel should close when focus mode is started.
+  // TODO(b/302194469): centralize bubble-closing logic.
+  if (in_focus_session) {
+    // Close the system tray bubble. Deletes `this`.
+    CloseBubble();
+    return;
+  }
+
   toggle_view_->text_label()->SetText(l10n_util::GetStringUTF16(
       in_focus_session ? IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_ACTIVE_LABEL
                        : IDS_ASH_STATUS_TRAY_FOCUS_MODE));
