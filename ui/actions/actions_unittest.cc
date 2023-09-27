@@ -18,14 +18,23 @@ const std::u16string kActionText = u"Test Action";
 const std::u16string kChild1Text = u"Child Action 1";
 const std::u16string kChild2Text = u"Child Action 2";
 
+#define TEST_ACTION_IDS                              \
+  E(kActionTest1, , kActionTestStart, TestActionIds) \
+  E(kActionTest2)                                    \
+  E(kActionTest3)                                    \
+  E(kActionTest4)
+
+#include "ui/actions/action_id_macros.inc"
+
 enum TestActionIds : ActionId {
-  kActionTestStart = kActionsStart,
-  kActionTest1 = kActionTestStart,
-  kActionTest2,
-  kActionTest3,
-  kActionTest4,
-  kActionTestEnd,
+  kActionTestStart = kActionsEnd,
+
+  TEST_ACTION_IDS
+
+      kActionTestEnd,
 };
+
+#include "ui/actions/action_id_macros.inc"
 
 class ActionManagerTest : public testing::Test {
  public:
@@ -153,6 +162,65 @@ TEST_F(ActionItemTest, ScopedFindActionTest) {
   auto* action_test3 = manager.FindAction(kActionTest3, action_test2);
   EXPECT_FALSE(action_test3);
 }
+
+TEST_F(ActionManagerTest, MapBetweenEnumAndString) {
+  const std::string expected_action_string = "kActionPaste";
+  auto actual_action_string = ActionManager::ActionIdToString(kActionPaste);
+  ASSERT_TRUE(actual_action_string.has_value());
+  EXPECT_EQ(expected_action_string, actual_action_string.value());
+
+  // Map back from enum to string
+  const ActionId expected_action_id = kActionPaste;
+  auto actual_action_id =
+      ActionManager::StringToActionId(actual_action_string.value());
+  ASSERT_TRUE(actual_action_id.has_value());
+  EXPECT_EQ(expected_action_id, actual_action_id.value());
+
+  const std::vector<std::string> strings{"kActionPaste", "kActionCut"};
+  const std::vector<ActionId> action_ids{kActionPaste, kActionCut};
+
+  auto actual_strings = ActionManager::ActionIdsToStrings(action_ids);
+  EXPECT_EQ(strings.size(), actual_strings.size());
+  EXPECT_EQ(strings[0], actual_strings[0].value());
+  EXPECT_EQ(strings[1], actual_strings[1].value());
+
+  auto actual_action_ids = ActionManager::StringsToActionIds(strings);
+  EXPECT_EQ(action_ids.size(), actual_action_ids.size());
+  EXPECT_EQ(action_ids[0], actual_action_ids[0].value());
+  EXPECT_EQ(action_ids[1], actual_action_ids[1].value());
+}
+
+#define MAP_ACTION_IDS_TO_STRINGS
+#include "ui/actions/action_id_macros.inc"
+
+TEST_F(ActionManagerTest, MergeMaps) {
+  auto kTestActionMap = base::MakeFlatMap<ActionId, std::string_view>(
+      std::vector<std::pair<ActionId, std::string_view>>{TEST_ACTION_IDS});
+  ActionManager::AddActionIdToStringMappings(kTestActionMap);
+
+  const std::string expected_action_string = "kActionPaste";
+  auto actual_action_string = ActionManager::ActionIdToString(kActionPaste);
+  ASSERT_TRUE(actual_action_string.has_value());
+  EXPECT_EQ(expected_action_string, actual_action_string.value());
+
+  const std::string expected_string = "kActionTest2";
+  auto actual_string = ActionManager::ActionIdToString(kActionTest2);
+  ASSERT_TRUE(actual_string.has_value());
+  EXPECT_EQ(expected_string, actual_string.value());
+}
+
+TEST_F(ActionManagerTest, TestEnumNotFound) {
+  const std::string unknown_action = "kActionUnknown";
+  auto unknown_id = ActionManager::StringToActionId(unknown_action);
+  EXPECT_FALSE(unknown_id.has_value());
+
+  const ActionId invalid_action_id = static_cast<ActionId>(-1);
+  auto unknown_id_string = ActionManager::ActionIdToString(invalid_action_id);
+  EXPECT_FALSE(unknown_id_string.has_value());
+}
+
+#include "ui/actions/action_id_macros.inc"
+#undef MAP_ACTION_IDS_TO_STRINGS
 
 TEST_F(ActionItemTest, ActionBuilderTest) {
   const std::u16string text = u"Test Action";

@@ -509,6 +509,104 @@ void ActionManager::ResetForTesting() {
   GetGlobalManager().reset();
 }
 
+#define MAP_ACTION_IDS_TO_STRINGS
+#include "ui/actions/action_id_macros.inc"
+
+// static
+base::flat_map<ActionId, std::string_view>&
+ActionManager::GetActionIdToStringMap() {
+  static base::flat_map<ActionId, std::string_view> action_id_to_string_map_ =
+      base::MakeFlatMap<ActionId, std::string_view>(
+          std::vector<std::pair<ActionId, std::string_view>>{ACTION_IDS});
+  return action_id_to_string_map_;
+}
+
+#include "ui/actions/action_id_macros.inc"
+#undef MAP_ACTION_IDS_TO_STRINGS
+
+#define MAP_STRING_TO_ACTION_IDS
+#include "ui/actions/action_id_macros.inc"
+
+// static
+base::flat_map<std::string_view, ActionId>&
+ActionManager::GetStringToActionIdMap() {
+  static base::flat_map<std::string_view, ActionId> string_to_action_id_map_ =
+      base::MakeFlatMap<std::string_view, ActionId>(
+          std::vector<std::pair<std::string_view, ActionId>>{ACTION_IDS});
+  return string_to_action_id_map_;
+}
+
+#include "ui/actions/action_id_macros.inc"
+#undef MAP_STRING_TO_ACTION_IDS
+
+// static
+absl::optional<std::string> ActionManager::ActionIdToString(
+    const ActionId action_id) {
+  auto iter = GetActionIdToStringMap().find(action_id);
+  if (iter != GetActionIdToStringMap().end()) {
+    return std::string(iter->second);
+  }
+  return absl::nullopt;
+}
+
+// static
+absl::optional<ActionId> ActionManager::StringToActionId(
+    const std::string action_id_string) {
+  auto iter = GetStringToActionIdMap().find(action_id_string);
+  if (iter != GetStringToActionIdMap().end()) {
+    return iter->second;
+  }
+  return absl::nullopt;
+}
+
+// static
+std::vector<absl::optional<std::string>> ActionManager::ActionIdsToStrings(
+    std::vector<ActionId> action_ids) {
+  std::vector<absl::optional<std::string>> action_id_strings;
+  action_id_strings.reserve(action_ids.size());
+
+  for (ActionId action_id : action_ids) {
+    absl::optional<std::string> str = ActionIdToString(action_id);
+    action_id_strings.push_back(str);
+  }
+  return action_id_strings;
+}
+
+// static
+std::vector<absl::optional<ActionId>> ActionManager::StringsToActionIds(
+    std::vector<std::string> action_id_strings) {
+  std::vector<absl::optional<ActionId>> action_ids;
+  action_ids.reserve(action_id_strings.size());
+
+  for (std::string action_id_string : action_id_strings) {
+    absl::optional<ActionId> action_id = StringToActionId(action_id_string);
+    action_ids.push_back(action_id);
+  }
+  return action_ids;
+}
+
+template <typename T, typename U>
+void ActionManager::MergeMaps(base::flat_map<T, U>& map1,
+                              base::flat_map<T, U>& map2) {
+  auto vec1 = std::move(map1).extract();
+  auto vec2 = std::move(map2).extract();
+  std::vector<std::pair<T, U>> vec3((int)vec1.size() + (int)vec2.size());
+  std::merge(vec1.begin(), vec1.end(), vec2.begin(), vec2.end(), vec3.begin());
+  map1.replace(std::move(vec3));
+}
+
+// static
+void ActionManager::AddActionIdToStringMappings(
+    base::flat_map<ActionId, std::string_view> map) {
+  MergeMaps<ActionId, std::string_view>(GetActionIdToStringMap(), map);
+}
+
+// static
+void ActionManager::AddStringToActionIdMappings(
+    base::flat_map<std::string_view, ActionId> map) {
+  MergeMaps(GetStringToActionIdMap(), map);
+}
+
 void ActionManager::IndexActions() {
   if (root_action_parent_.GetChildren().children().empty() &&
       !initializer_list_->empty()) {
