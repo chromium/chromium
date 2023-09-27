@@ -13825,6 +13825,18 @@ TEST_F(FluentOverlayScrollbarLayerTreeHostImplTest,
   EXPECT_FLOAT_EQ(CreateAndRegisterPaintedScrollbarLayer()->Opacity(), 0.f);
 }
 
+// Fluent Overlay Scrollbar should not be hit tested when it's opacity is zero.
+TEST_F(FluentOverlayScrollbarLayerTreeHostImplTest,
+       DoesntGetHitTestedWhenInvisible) {
+  EXPECT_FLOAT_EQ(CreateAndRegisterPaintedScrollbarLayer()->Opacity(), 0.f);
+  // Per CreateAndRegisterPaintedScrollbarLayer the Scrollbar's rect is located
+  // at (345,0)x(15,600). A point of 352 clicks it in the middle of the the
+  // track and would cause a scroll.
+  InputHandlerPointerResult result =
+      GetInputHandler().MouseMoveAt(gfx::Point(352, 300));
+  EXPECT_FLOAT_EQ(result.scroll_delta.y(), 0u);
+}
+
 // This tests that faded-out Aura scrollbars can't be interacted with.
 TEST_F(LayerTreeHostImplTest, FadedOutPaintedOverlayScrollbarHitTest) {
   LayerTreeSettings settings = DefaultSettings();
