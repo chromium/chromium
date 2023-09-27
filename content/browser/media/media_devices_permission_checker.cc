@@ -56,21 +56,21 @@ MediaDevicesManager::BoolDeviceTypes DoCheckPermissionsOnUIThread(
   // Speakers.
   // TODO(guidou): use specific permission for audio output when it becomes
   // available. See http://crbug.com/556542.
-  result[static_cast<size_t>(MediaDeviceType::MEDIA_AUDIO_OUTPUT)] =
+  result[static_cast<size_t>(MediaDeviceType::kMediaAudioOuput)] =
       requested_device_types[static_cast<size_t>(
-          MediaDeviceType::MEDIA_AUDIO_OUTPUT)] &&
+          MediaDeviceType::kMediaAudioOuput)] &&
       audio_permission;
 
   // Mic.
-  result[static_cast<size_t>(MediaDeviceType::MEDIA_AUDIO_INPUT)] =
+  result[static_cast<size_t>(MediaDeviceType::kMediaAudioInput)] =
       requested_device_types[static_cast<size_t>(
-          MediaDeviceType::MEDIA_AUDIO_INPUT)] &&
+          MediaDeviceType::kMediaAudioInput)] &&
       audio_permission && mic_permissions_policy;
 
   // Camera.
-  result[static_cast<size_t>(MediaDeviceType::MEDIA_VIDEO_INPUT)] =
+  result[static_cast<size_t>(MediaDeviceType::kMediaVideoInput)] =
       requested_device_types[static_cast<size_t>(
-          MediaDeviceType::MEDIA_VIDEO_INPUT)] &&
+          MediaDeviceType::kMediaVideoInput)] &&
       delegate->CheckMediaAccessPermission(
           frame_host, origin,
           blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) &&

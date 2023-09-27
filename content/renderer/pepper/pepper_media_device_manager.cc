@@ -33,11 +33,11 @@ const char kPepperInsecureOriginMessage[] =
 
 PP_DeviceType_Dev FromMediaDeviceType(MediaDeviceType type) {
   switch (type) {
-    case MediaDeviceType::MEDIA_AUDIO_INPUT:
+    case MediaDeviceType::kMediaAudioInput:
       return PP_DEVICETYPE_DEV_AUDIOCAPTURE;
-    case MediaDeviceType::MEDIA_VIDEO_INPUT:
+    case MediaDeviceType::kMediaVideoInput:
       return PP_DEVICETYPE_DEV_VIDEOCAPTURE;
-    case MediaDeviceType::MEDIA_AUDIO_OUTPUT:
+    case MediaDeviceType::kMediaAudioOuput:
       return PP_DEVICETYPE_DEV_AUDIOOUTPUT;
     default:
       NOTREACHED();
@@ -48,14 +48,14 @@ PP_DeviceType_Dev FromMediaDeviceType(MediaDeviceType type) {
 MediaDeviceType ToMediaDeviceType(PP_DeviceType_Dev type) {
   switch (type) {
     case PP_DEVICETYPE_DEV_AUDIOCAPTURE:
-      return MediaDeviceType::MEDIA_AUDIO_INPUT;
+      return MediaDeviceType::kMediaAudioInput;
     case PP_DEVICETYPE_DEV_VIDEOCAPTURE:
-      return MediaDeviceType::MEDIA_VIDEO_INPUT;
+      return MediaDeviceType::kMediaVideoInput;
     case PP_DEVICETYPE_DEV_AUDIOOUTPUT:
-      return MediaDeviceType::MEDIA_AUDIO_OUTPUT;
+      return MediaDeviceType::kMediaAudioOuput;
     default:
       NOTREACHED();
-      return MediaDeviceType::MEDIA_AUDIO_OUTPUT;
+      return MediaDeviceType::kMediaAudioOuput;
   }
 }
 

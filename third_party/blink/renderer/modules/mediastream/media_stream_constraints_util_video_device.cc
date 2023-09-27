@@ -45,9 +45,9 @@ const int kNumDefaultDistanceEntries = 4;
 
 WebString ToWebString(mojom::blink::FacingMode facing_mode) {
   switch (facing_mode) {
-    case mojom::blink::FacingMode::USER:
+    case mojom::blink::FacingMode::kUser:
       return WebString::FromASCII("user");
-    case mojom::blink::FacingMode::ENVIRONMENT:
+    case mojom::blink::FacingMode::kEnvironment:
       return WebString::FromASCII("environment");
     default:
       return WebString();
@@ -697,11 +697,11 @@ VideoInputDeviceCapabilities::~VideoInputDeviceCapabilities() = default;
 MediaStreamTrackPlatform::FacingMode ToPlatformFacingMode(
     mojom::blink::FacingMode video_facing) {
   switch (video_facing) {
-    case mojom::blink::FacingMode::NONE:
+    case mojom::blink::FacingMode::kNone:
       return MediaStreamTrackPlatform::FacingMode::kNone;
-    case mojom::blink::FacingMode::USER:
+    case mojom::blink::FacingMode::kUser:
       return MediaStreamTrackPlatform::FacingMode::kUser;
-    case mojom::blink::FacingMode::ENVIRONMENT:
+    case mojom::blink::FacingMode::kEnvironment:
       return MediaStreamTrackPlatform::FacingMode::kEnvironment;
     default:
       return MediaStreamTrackPlatform::FacingMode::kNone;

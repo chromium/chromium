@@ -57,7 +57,7 @@ void VideoInputDevicesEnumerated(
     blink::WebMediaDeviceInfoArray* out,
     const MediaDeviceEnumeration& enumeration) {
   for (const auto& info : enumeration[static_cast<size_t>(
-           blink::mojom::MediaDeviceType::MEDIA_VIDEO_INPUT)]) {
+           blink::mojom::MediaDeviceType::kMediaVideoInput)]) {
     std::string device_id =
         GetHMACForRawMediaDeviceID(salt_and_origin, info.device_id);
     out->emplace_back(device_id, info.label, std::string());
@@ -147,7 +147,7 @@ class VideoCaptureTest : public testing::Test,
       base::RunLoop run_loop;
       MediaDevicesManager::BoolDeviceTypes devices_to_enumerate;
       devices_to_enumerate[static_cast<size_t>(
-          blink::mojom::MediaDeviceType::MEDIA_VIDEO_INPUT)] = true;
+          blink::mojom::MediaDeviceType::kMediaVideoInput)] = true;
       base::test::TestFuture<const MediaDeviceSaltAndOrigin&> future;
       GetMediaDeviceSaltAndOrigin(
           GlobalRenderFrameHostId(render_process_id, render_frame_id),

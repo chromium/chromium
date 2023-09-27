@@ -429,7 +429,7 @@ void VideoCaptureHostTestcase::OpenSessionOnIOThread(
     base::RunLoop run_loop{base::RunLoop::Type::kNestableTasksAllowed};
     content::MediaDevicesManager::BoolDeviceTypes devices_to_enumerate;
     devices_to_enumerate[static_cast<size_t>(
-        MediaDeviceType::MEDIA_VIDEO_INPUT)] = true;
+        MediaDeviceType::kMediaVideoInput)] = true;
     media_stream_manager_->media_devices_manager()->EnumerateDevices(
         devices_to_enumerate,
         base::BindOnce(&VideoCaptureHostTestcase::VideoInputDevicesEnumerated,
@@ -501,7 +501,7 @@ void VideoCaptureHostTestcase::VideoInputDevicesEnumerated(
     blink::WebMediaDeviceInfoArray* out,
     const content::MediaDeviceEnumeration& enumeration) {
   for (const auto& info :
-       enumeration[static_cast<size_t>(MediaDeviceType::MEDIA_VIDEO_INPUT)]) {
+       enumeration[static_cast<size_t>(MediaDeviceType::kMediaVideoInput)]) {
     std::string device_id =
         content::GetHMACForMediaDeviceID(salt, security_origin, info.device_id);
     out->push_back(

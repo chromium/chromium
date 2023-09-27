@@ -52,10 +52,10 @@ std::string GetDefaultMediaDeviceIDOnUIThread(MediaDeviceType device_type,
 
   MediaStreamType media_stream_type;
   switch (device_type) {
-    case MediaDeviceType::MEDIA_AUDIO_INPUT:
+    case MediaDeviceType::kMediaAudioInput:
       media_stream_type = MediaStreamType::DEVICE_AUDIO_CAPTURE;
       break;
-    case MediaDeviceType::MEDIA_VIDEO_INPUT:
+    case MediaDeviceType::kMediaVideoInput:
       media_stream_type = MediaStreamType::DEVICE_VIDEO_CAPTURE;
       break;
     default:
@@ -90,10 +90,10 @@ std::string GetDefaultMediaDeviceIDFromCommandLine(
       return std::string();
     }
 
-    if (device_type == MediaDeviceType::MEDIA_AUDIO_INPUT &&
+    if (device_type == MediaDeviceType::kMediaAudioInput &&
         param.front() == "audio-input-default-id") {
       return std::string(param.back());
-    } else if (device_type == MediaDeviceType::MEDIA_VIDEO_INPUT &&
+    } else if (device_type == MediaDeviceType::kMediaVideoInput &&
                param.front() == "video-input-default-id") {
       return std::string(param.back());
     }
@@ -149,14 +149,14 @@ void FinalizeGetRawMediaDeviceIDForHMAC(
 MediaDeviceType ConvertToMediaDeviceType(MediaStreamType stream_type) {
   switch (stream_type) {
     case MediaStreamType::DEVICE_AUDIO_CAPTURE:
-      return MediaDeviceType::MEDIA_AUDIO_INPUT;
+      return MediaDeviceType::kMediaAudioInput;
     case MediaStreamType::DEVICE_VIDEO_CAPTURE:
-      return MediaDeviceType::MEDIA_VIDEO_INPUT;
+      return MediaDeviceType::kMediaVideoInput;
     default:
       NOTREACHED();
   }
 
-  return MediaDeviceType::NUM_MEDIA_DEVICE_TYPES;
+  return MediaDeviceType::kNumMediaDeviceTypes;
 }
 
 }  // namespace
@@ -266,7 +266,7 @@ blink::WebMediaDeviceInfo TranslateMediaDeviceInfo(
       has_permission ? device_info.video_control_support
                      : media::VideoCaptureControlSupport(),
       has_permission ? device_info.video_facing
-                     : blink::mojom::FacingMode::NONE);
+                     : blink::mojom::FacingMode::kNone);
 }
 
 blink::WebMediaDeviceInfoArray TranslateMediaDeviceInfoArray(

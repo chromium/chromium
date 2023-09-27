@@ -25,7 +25,7 @@ struct BLINK_COMMON_EXPORT WebMediaDeviceInfo {
       const std::string& group_id,
       const media::VideoCaptureControlSupport& video_control_support =
           media::VideoCaptureControlSupport(),
-      blink::mojom::FacingMode video_facing = blink::mojom::FacingMode::NONE);
+      blink::mojom::FacingMode video_facing = blink::mojom::FacingMode::kNone);
   explicit WebMediaDeviceInfo(
       const media::VideoCaptureDeviceDescriptor& descriptor);
   ~WebMediaDeviceInfo();
@@ -36,7 +36,7 @@ struct BLINK_COMMON_EXPORT WebMediaDeviceInfo {
   std::string label;
   std::string group_id;
   media::VideoCaptureControlSupport video_control_support;
-  blink::mojom::FacingMode video_facing = blink::mojom::FacingMode::NONE;
+  blink::mojom::FacingMode video_facing = blink::mojom::FacingMode::kNone;
 };
 
 using WebMediaDeviceInfoArray = std::vector<WebMediaDeviceInfo>;
@@ -47,8 +47,7 @@ BLINK_COMMON_EXPORT bool operator==(const WebMediaDeviceInfo& first,
 inline bool IsValidMediaDeviceType(mojom::MediaDeviceType type) {
   return static_cast<size_t>(type) >= 0 &&
          static_cast<size_t>(type) <
-             static_cast<size_t>(
-                 mojom::MediaDeviceType::NUM_MEDIA_DEVICE_TYPES);
+             static_cast<size_t>(mojom::MediaDeviceType::kNumMediaDeviceTypes);
 }
 
 }  // namespace blink

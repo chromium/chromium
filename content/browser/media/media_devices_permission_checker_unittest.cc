@@ -105,19 +105,19 @@ TEST_F(MediaDevicesPermissionCheckerTest,
        CheckPermissionWithPermissionsPolicy) {
   // Mic and Camera should be enabled by default for a frame (if permission is
   // granted).
-  EXPECT_TRUE(CheckPermission(MediaDeviceType::MEDIA_AUDIO_INPUT));
-  EXPECT_TRUE(CheckPermission(MediaDeviceType::MEDIA_VIDEO_INPUT));
+  EXPECT_TRUE(CheckPermission(MediaDeviceType::kMediaAudioInput));
+  EXPECT_TRUE(CheckPermission(MediaDeviceType::kMediaVideoInput));
 
   RefreshPageAndSetHeaderPolicy(
       blink::mojom::PermissionsPolicyFeature::kMicrophone,
       /*enabled=*/false);
-  EXPECT_FALSE(CheckPermission(MediaDeviceType::MEDIA_AUDIO_INPUT));
-  EXPECT_TRUE(CheckPermission(MediaDeviceType::MEDIA_VIDEO_INPUT));
+  EXPECT_FALSE(CheckPermission(MediaDeviceType::kMediaAudioInput));
+  EXPECT_TRUE(CheckPermission(MediaDeviceType::kMediaVideoInput));
 
   RefreshPageAndSetHeaderPolicy(blink::mojom::PermissionsPolicyFeature::kCamera,
                                 /*enabled=*/false);
-  EXPECT_TRUE(CheckPermission(MediaDeviceType::MEDIA_AUDIO_INPUT));
-  EXPECT_FALSE(CheckPermission(MediaDeviceType::MEDIA_VIDEO_INPUT));
+  EXPECT_TRUE(CheckPermission(MediaDeviceType::kMediaAudioInput));
+  EXPECT_FALSE(CheckPermission(MediaDeviceType::kMediaVideoInput));
 }
 
 }  // namespace

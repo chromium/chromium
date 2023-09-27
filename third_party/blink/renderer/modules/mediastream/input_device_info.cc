@@ -86,7 +86,7 @@ MediaTrackCapabilities* InputDeviceInfo::getCapabilities() const {
   capabilities->setDeviceId(deviceId());
   capabilities->setGroupId(groupId());
 
-  if (DeviceType() == mojom::blink::MediaDeviceType::MEDIA_AUDIO_INPUT) {
+  if (DeviceType() == mojom::blink::MediaDeviceType::kMediaAudioInput) {
     capabilities->setEchoCancellation({true, false});
     capabilities->setAutoGainControl({true, false});
     capabilities->setNoiseSuppression({true, false});
@@ -120,7 +120,7 @@ MediaTrackCapabilities* InputDeviceInfo::getCapabilities() const {
     }
   }
 
-  if (DeviceType() == mojom::blink::MediaDeviceType::MEDIA_VIDEO_INPUT) {
+  if (DeviceType() == mojom::blink::MediaDeviceType::kMediaVideoInput) {
     if (!platform_capabilities_.width.empty()) {
       LongRange* width = LongRange::Create();
       width->setMin(platform_capabilities_.width[0]);

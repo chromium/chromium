@@ -260,7 +260,7 @@ class MockMediaDevicesDispatcherHost
         blink::mojom::blink::VideoInputDeviceCapabilities::New();
     device->device_id = kFakeVideoInputDeviceId1;
     device->group_id = String("dummy");
-    device->facing_mode = mojom::blink::FacingMode::USER;
+    device->facing_mode = mojom::blink::FacingMode::kUser;
     if (!video_source_ || !video_source_->IsRunning() ||
         !video_source_->GetCurrentFormat()) {
       device->formats.push_back(media::VideoCaptureFormat(
@@ -278,7 +278,7 @@ class MockMediaDevicesDispatcherHost
     device = blink::mojom::blink::VideoInputDeviceCapabilities::New();
     device->device_id = kFakeVideoInputDeviceId2;
     device->group_id = String("dummy");
-    device->facing_mode = mojom::blink::FacingMode::ENVIRONMENT;
+    device->facing_mode = mojom::blink::FacingMode::kEnvironment;
     device->formats.push_back(media::VideoCaptureFormat(
         gfx::Size(640, 480), 30.0f, media::PIXEL_FORMAT_I420));
     result.push_back(std::move(device));
@@ -1296,7 +1296,7 @@ TEST_P(UserMediaClientTest, CreateWithFacingModeEnvironment) {
       CreateDeviceConstraints(kFakeAudioInputDeviceId1);
   MediaConstraints video_constraints =
       CreateFacingModeConstraints("environment");
-  // kFakeVideoInputDeviceId2 has environment facing mode.
+  // kFakeVideoInputDeviceId2 has kEnvironment facing mode.
   TestValidRequestWithConstraints(audio_constraints, video_constraints,
                                   kFakeAudioInputDeviceId1,
                                   kFakeVideoInputDeviceId2);

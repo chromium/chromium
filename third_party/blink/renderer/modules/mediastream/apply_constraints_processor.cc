@@ -375,7 +375,7 @@ ApplyConstraintsProcessor::SelectVideoDeviceSettings(
       GetCurrentVideoSource()
           ? static_cast<mojom::blink::FacingMode>(
                 GetCurrentVideoSource()->device().video_facing)
-          : mojom::blink::FacingMode::NONE;
+          : mojom::blink::FacingMode::kNone;
   device_capabilities.formats = std::move(formats);
 
   blink::VideoDeviceCaptureCapabilities video_capabilities;

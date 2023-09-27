@@ -10,17 +10,17 @@ import "mojo/public/mojom/base/time.mojom";
 import "third_party/blink/public/mojom/media/capture_handle_config.mojom";
 
 enum MediaDeviceType {
-  MEDIA_AUDIO_INPUT,
-  MEDIA_VIDEO_INPUT,
-  MEDIA_AUDIO_OUTPUT,
-  NUM_MEDIA_DEVICE_TYPES
+  kMediaAudioInput,
+  kMediaVideoInput,
+  kMediaAudioOuput,
+  kNumMediaDeviceTypes
 };
 
 // The values for this enum match the ones defined in
 // https://w3c.github.io/mediacapture-main/#def-constraint-facingMode
-// with the addition of NONE, which would map to the empty string in
+// with the addition of kNone, which would map to the empty string in
 // JavaScript.
-enum FacingMode { NONE, USER, ENVIRONMENT, LEFT, RIGHT };
+enum FacingMode { kNone, kUser, kEnvironment, kLeft, kRight };
 
 struct MediaDeviceInfo {
   string device_id;
@@ -56,7 +56,7 @@ interface MediaDevicesDispatcherHost {
   // Enumerates media devices and capabilities. The reply contains the
   // |enumeration|, |video_input_device_capabilities|, and
   // |audio_input_device_capabilities| arrays. The |enumeration| array always
-  // has NUM_MEDIA_DEVICE_TYPES elements indexed by device type as defined in
+  // has kNumMediaDeviceTypes elements indexed by device type as defined in
   // MediaDeviceType. Each element of |enumeration| is an array with as many
   // elements as devices of the corresponding type exist in the system, or zero
   // if the device types was not requested. Similarly, the number of elements in

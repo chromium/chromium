@@ -45,7 +45,7 @@ class VideoCaptureManager;
 // Use MediaDeviceType values to index on this type.
 using MediaDeviceEnumeration =
     std::array<blink::WebMediaDeviceInfoArray,
-               static_cast<size_t>(MediaDeviceType::NUM_MEDIA_DEVICE_TYPES)>;
+               static_cast<size_t>(MediaDeviceType::kNumMediaDeviceTypes)>;
 
 // MediaDevicesManager is responsible for doing media-device enumerations.
 // In addition it implements caching for enumeration results and device
@@ -59,7 +59,7 @@ class CONTENT_EXPORT MediaDevicesManager
   class BoolDeviceTypes final
       : public std::array<bool,
                           static_cast<size_t>(
-                              MediaDeviceType::NUM_MEDIA_DEVICE_TYPES)> {
+                              MediaDeviceType::kNumMediaDeviceTypes)> {
    public:
     BoolDeviceTypes() { fill(false); }
   };
@@ -333,7 +333,7 @@ class CONTENT_EXPORT MediaDevicesManager
 
   using CachePolicies =
       std::array<CachePolicy,
-                 static_cast<size_t>(MediaDeviceType::NUM_MEDIA_DEVICE_TYPES)>;
+                 static_cast<size_t>(MediaDeviceType::kNumMediaDeviceTypes)>;
   CachePolicies cache_policies_;
 
   class CacheInfo;

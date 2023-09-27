@@ -39,17 +39,17 @@ namespace {
 // communications device, false otherwise.
 bool IsSpecialAudioDeviceId(MediaDeviceType device_type,
                             const std::string& device_id) {
-  return (device_type == MediaDeviceType::MEDIA_AUDIO_INPUT ||
-          device_type == MediaDeviceType::MEDIA_AUDIO_OUTPUT) &&
+  return (device_type == MediaDeviceType::kMediaAudioInput ||
+          device_type == MediaDeviceType::kMediaAudioOuput) &&
          (media::AudioDeviceDescription::IsDefaultDevice(device_id) ||
           media::AudioDeviceDescription::IsCommunicationsDevice(device_id));
 }
 
 absl::optional<MediaStreamType> ToMediaStreamType(MediaDeviceType device_type) {
   switch (device_type) {
-    case MediaDeviceType::MEDIA_AUDIO_INPUT:
+    case MediaDeviceType::kMediaAudioInput:
       return MediaStreamType::DEVICE_AUDIO_CAPTURE;
-    case MediaDeviceType::MEDIA_VIDEO_INPUT:
+    case MediaDeviceType::kMediaVideoInput:
       return MediaStreamType::DEVICE_VIDEO_CAPTURE;
     default:
       return absl::nullopt;
@@ -81,7 +81,7 @@ class MediaDevicesUtilBrowserTest : public ContentBrowserTest {
     frame_id_ = shell()->web_contents()->GetPrimaryMainFrame()->GetGlobalId();
     device_enumeration_ = EnumerateDevices();
     ASSERT_EQ(device_enumeration_.size(),
-              static_cast<size_t>(MediaDeviceType::NUM_MEDIA_DEVICE_TYPES));
+              static_cast<size_t>(MediaDeviceType::kNumMediaDeviceTypes));
     for (const auto& typed_enumeration : device_enumeration_) {
       ASSERT_FALSE(typed_enumeration.empty());
     }
@@ -99,10 +99,9 @@ class MediaDevicesUtilBrowserTest : public ContentBrowserTest {
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindLambdaForTesting([&]() {
           MediaDevicesManager::BoolDeviceTypes types;
-          types[static_cast<size_t>(MediaDeviceType::MEDIA_AUDIO_INPUT)] = true;
-          types[static_cast<size_t>(MediaDeviceType::MEDIA_AUDIO_OUTPUT)] =
-              true;
-          types[static_cast<size_t>(MediaDeviceType::MEDIA_VIDEO_INPUT)] = true;
+          types[static_cast<size_t>(MediaDeviceType::kMediaAudioInput)] = true;
+          types[static_cast<size_t>(MediaDeviceType::kMediaAudioOuput)] = true;
+          types[static_cast<size_t>(MediaDeviceType::kMediaVideoInput)] = true;
           base::test::TestFuture<const MediaDeviceEnumeration&> future;
           media_stream_manager->media_devices_manager()->EnumerateDevices(
               types, base::BindLambdaForTesting(
@@ -136,7 +135,7 @@ class MediaDevicesUtilBrowserTest : public ContentBrowserTest {
 IN_PROC_BROWSER_TEST_F(MediaDevicesUtilBrowserTest, TranslateDeviceIdAndBack) {
   const std::string salt = CreateRandomMediaDeviceIDSalt();
   EXPECT_FALSE(salt.empty());
-  for (int i = 0; i < static_cast<int>(MediaDeviceType::NUM_MEDIA_DEVICE_TYPES);
+  for (int i = 0; i < static_cast<int>(MediaDeviceType::kNumMediaDeviceTypes);
        ++i) {
     MediaDeviceType device_type = static_cast<MediaDeviceType>(i);
     for (const auto& device_info : device_enumeration_[i]) {
@@ -151,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(MediaDevicesUtilBrowserTest, TranslateDeviceIdAndBack) {
       absl::optional<MediaStreamType> stream_type =
           ToMediaStreamType(device_type);
       EXPECT_EQ(stream_type.has_value(),
-                device_type != MediaDeviceType::MEDIA_AUDIO_OUTPUT);
+                device_type != MediaDeviceType::kMediaAudioOuput);
       if (!stream_type.has_value()) {
         continue;
       }
@@ -215,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(MediaDevicesUtilBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(MediaDevicesUtilBrowserTest, TranslationWithoutSalt) {
-  for (int i = 0; i < static_cast<int>(MediaDeviceType::NUM_MEDIA_DEVICE_TYPES);
+  for (int i = 0; i < static_cast<int>(MediaDeviceType::kNumMediaDeviceTypes);
        ++i) {
     SCOPED_TRACE(base::StringPrintf("device_type %d", i));
     MediaDeviceType device_type = static_cast<MediaDeviceType>(i);
@@ -259,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(MediaDevicesUtilBrowserTest, GetRawAudioOutputDeviceID) {
   const MediaDeviceSaltAndOrigin salt_and_origin = GetSaltAndOrigin();
   const std::string existing_raw_device_id =
       device_enumeration_[static_cast<size_t>(
-          MediaDeviceType::MEDIA_AUDIO_OUTPUT)][0]
+          MediaDeviceType::kMediaAudioOuput)][0]
           .device_id;
   const std::string existing_hmac_device_id =
       GetHMACForRawMediaDeviceID(salt_and_origin, existing_raw_device_id);
@@ -267,7 +266,7 @@ IN_PROC_BROWSER_TEST_F(MediaDevicesUtilBrowserTest, GetRawAudioOutputDeviceID) {
   base::test::TestFuture<const absl::optional<std::string>&> future;
   GetIOThreadTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&GetRawDeviceIDForMediaDeviceHMAC,
-                                MediaDeviceType::MEDIA_AUDIO_OUTPUT,
+                                MediaDeviceType::kMediaAudioOuput,
                                 salt_and_origin, existing_hmac_device_id,
                                 base::SequencedTaskRunner::GetCurrentDefault(),
                                 future.GetCallback()));
@@ -282,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(MediaDevicesUtilBrowserTest,
   GetIOThreadTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&GetRawDeviceIDForMediaDeviceHMAC,
-                     MediaDeviceType::MEDIA_AUDIO_OUTPUT, GetSaltAndOrigin(),
+                     MediaDeviceType::kMediaAudioOuput, GetSaltAndOrigin(),
                      "nonexisting_hmac_device_id",
                      base::SequencedTaskRunner::GetCurrentDefault(),
                      future.GetCallback()));

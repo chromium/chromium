@@ -177,9 +177,9 @@ bool GetDeviceIDAndGroupIDFromHMAC(
 
 MediaStreamType ConvertToMediaStreamType(MediaDeviceType type) {
   switch (type) {
-    case MediaDeviceType::MEDIA_AUDIO_INPUT:
+    case MediaDeviceType::kMediaAudioInput:
       return MediaStreamType::DEVICE_AUDIO_CAPTURE;
-    case MediaDeviceType::MEDIA_VIDEO_INPUT:
+    case MediaDeviceType::kMediaVideoInput:
       return MediaStreamType::DEVICE_VIDEO_CAPTURE;
     default:
       NOTREACHED();
@@ -190,11 +190,11 @@ MediaStreamType ConvertToMediaStreamType(MediaDeviceType type) {
 
 const char* DeviceTypeToString(MediaDeviceType type) {
   switch (type) {
-    case MediaDeviceType::MEDIA_AUDIO_INPUT:
+    case MediaDeviceType::kMediaAudioInput:
       return "DEVICE_AUDIO_INPUT";
-    case MediaDeviceType::MEDIA_AUDIO_OUTPUT:
+    case MediaDeviceType::kMediaAudioOuput:
       return "DEVICE_AUDIO_OUTPUT";
-    case MediaDeviceType::MEDIA_VIDEO_INPUT:
+    case MediaDeviceType::kMediaVideoInput:
       return "DEVICE_VIDEO_INPUT";
     default:
       NOTREACHED();
@@ -2070,8 +2070,8 @@ void MediaStreamManager::StopRemovedDevice(
     MediaDeviceType type,
     const blink::WebMediaDeviceInfo& media_device_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(type == MediaDeviceType::MEDIA_AUDIO_INPUT ||
-         type == MediaDeviceType::MEDIA_VIDEO_INPUT);
+  DCHECK(type == MediaDeviceType::kMediaAudioInput ||
+         type == MediaDeviceType::kMediaVideoInput);
   SendLogMessage(base::StringPrintf(
                      "StopRemovedDevice({type=%s}, {device=[id: %s, name: %s]}",
                      DeviceTypeToString(type),
@@ -2185,10 +2185,10 @@ void MediaStreamManager::StartEnumeration(DeviceRequest* request,
   // UI thread, after the IO thread has been stopped.
   DCHECK(request_audio_input || request_video_input);
   MediaDevicesManager::BoolDeviceTypes devices_to_enumerate;
-  devices_to_enumerate[static_cast<size_t>(
-      MediaDeviceType::MEDIA_AUDIO_INPUT)] = request_audio_input;
-  devices_to_enumerate[static_cast<size_t>(
-      MediaDeviceType::MEDIA_VIDEO_INPUT)] = request_video_input;
+  devices_to_enumerate[static_cast<size_t>(MediaDeviceType::kMediaAudioInput)] =
+      request_audio_input;
+  devices_to_enumerate[static_cast<size_t>(MediaDeviceType::kMediaVideoInput)] =
+      request_video_input;
   media_devices_manager_->EnumerateDevices(
       devices_to_enumerate,
       base::BindOnce(&MediaStreamManager::DevicesEnumerated,
@@ -2570,7 +2570,7 @@ bool MediaStreamManager::SetUpDeviceCaptureRequest(
   if (request->stream_controls().audio.requested() &&
       !GetRequestedDeviceCaptureId(
           request, request->audio_type(),
-          enumeration[static_cast<size_t>(MediaDeviceType::MEDIA_AUDIO_INPUT)],
+          enumeration[static_cast<size_t>(MediaDeviceType::kMediaAudioInput)],
           &audio_device_id)) {
     return false;
   }
@@ -2579,7 +2579,7 @@ bool MediaStreamManager::SetUpDeviceCaptureRequest(
   if (request->stream_controls().video.requested() &&
       !GetRequestedDeviceCaptureId(
           request, request->video_type(),
-          enumeration[static_cast<size_t>(MediaDeviceType::MEDIA_VIDEO_INPUT)],
+          enumeration[static_cast<size_t>(MediaDeviceType::kMediaVideoInput)],
           &video_device_id)) {
     return false;
   }
@@ -4281,10 +4281,10 @@ std::unique_ptr<MediaStreamUIProxy> MediaStreamManager::MakeFakeUIProxy(
   } else {
     MediaStreamDevices audio_devices = ConvertToMediaStreamDevices(
         request->audio_type(),
-        enumeration[static_cast<size_t>(MediaDeviceType::MEDIA_AUDIO_INPUT)]);
+        enumeration[static_cast<size_t>(MediaDeviceType::kMediaAudioInput)]);
     MediaStreamDevices video_devices = ConvertToMediaStreamDevices(
         request->video_type(),
-        enumeration[static_cast<size_t>(MediaDeviceType::MEDIA_VIDEO_INPUT)]);
+        enumeration[static_cast<size_t>(MediaDeviceType::kMediaVideoInput)]);
     devices.reserve(audio_devices.size() + video_devices.size());
     devices.insert(devices.end(), audio_devices.begin(), audio_devices.end());
     devices.insert(devices.end(), video_devices.begin(), video_devices.end());

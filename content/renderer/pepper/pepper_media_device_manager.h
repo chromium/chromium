@@ -118,7 +118,7 @@ class PepperMediaDeviceManager
   using Subscription = std::pair<size_t, DevicesCallback>;
   using SubscriptionList = std::vector<Subscription>;
   SubscriptionList device_change_subscriptions_[static_cast<size_t>(
-      MediaDeviceType::NUM_MEDIA_DEVICE_TYPES)];
+      MediaDeviceType::kNumMediaDeviceTypes)];
 
   mojo::Remote<blink::mojom::MediaStreamDispatcherHost> dispatcher_host_;
   mojo::Remote<blink::mojom::MediaDevicesDispatcherHost>

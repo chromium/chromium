@@ -957,18 +957,18 @@ void MediaDevices::DevicesEnumerated(
   }
 
   DCHECK_EQ(static_cast<wtf_size_t>(
-                mojom::blink::MediaDeviceType::NUM_MEDIA_DEVICE_TYPES),
+                mojom::blink::MediaDeviceType::kNumMediaDeviceTypes),
             enumeration.size());
 
   if (!video_input_capabilities.empty()) {
     DCHECK_EQ(enumeration[static_cast<wtf_size_t>(
-                              mojom::blink::MediaDeviceType::MEDIA_VIDEO_INPUT)]
+                              mojom::blink::MediaDeviceType::kMediaVideoInput)]
                   .size(),
               video_input_capabilities.size());
   }
   if (!audio_input_capabilities.empty()) {
     DCHECK_EQ(enumeration[static_cast<wtf_size_t>(
-                              mojom::blink::MediaDeviceType::MEDIA_AUDIO_INPUT)]
+                              mojom::blink::MediaDeviceType::kMediaAudioInput)]
                   .size(),
               audio_input_capabilities.size());
   }
@@ -976,25 +976,25 @@ void MediaDevices::DevicesEnumerated(
   MediaDeviceInfoVector media_devices;
   for (wtf_size_t i = 0;
        i < static_cast<wtf_size_t>(
-               mojom::blink::MediaDeviceType::NUM_MEDIA_DEVICE_TYPES);
+               mojom::blink::MediaDeviceType::kNumMediaDeviceTypes);
        ++i) {
     for (wtf_size_t j = 0; j < enumeration[i].size(); ++j) {
       mojom::blink::MediaDeviceType device_type =
           static_cast<mojom::blink::MediaDeviceType>(i);
       WebMediaDeviceInfo device_info = enumeration[i][j];
       String device_label = String::FromUTF8(device_info.label);
-      if (device_type == mojom::blink::MediaDeviceType::MEDIA_AUDIO_INPUT ||
-          device_type == mojom::blink::MediaDeviceType::MEDIA_VIDEO_INPUT) {
+      if (device_type == mojom::blink::MediaDeviceType::kMediaAudioInput ||
+          device_type == mojom::blink::MediaDeviceType::kMediaVideoInput) {
         InputDeviceInfo* input_device_info =
             MakeGarbageCollected<InputDeviceInfo>(
                 String::FromUTF8(device_info.device_id), device_label,
                 String::FromUTF8(device_info.group_id), device_type);
-        if (device_type == mojom::blink::MediaDeviceType::MEDIA_VIDEO_INPUT &&
+        if (device_type == mojom::blink::MediaDeviceType::kMediaVideoInput &&
             !video_input_capabilities.empty()) {
           input_device_info->SetVideoInputCapabilities(
               std::move(video_input_capabilities[j]));
         }
-        if (device_type == mojom::blink::MediaDeviceType::MEDIA_AUDIO_INPUT &&
+        if (device_type == mojom::blink::MediaDeviceType::kMediaAudioInput &&
             !audio_input_capabilities.empty()) {
           input_device_info->SetAudioInputCapabilities(
               std::move(audio_input_capabilities[j]));

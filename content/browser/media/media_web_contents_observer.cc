@@ -406,7 +406,7 @@ void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
 
   content::GetRawDeviceIdFromHMAC(
       render_frame_host->GetGlobalId(), hashed_device_id,
-      blink::mojom::MediaDeviceType::MEDIA_AUDIO_OUTPUT,
+      blink::mojom::MediaDeviceType::kMediaAudioOuput,
       base::BindOnce(&MediaPlayerObserverHostImpl::OnReceivedTranslatedDeviceId,
                      weak_factory_.GetWeakPtr()));
 }
