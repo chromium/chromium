@@ -163,6 +163,24 @@ inline bool AreKeysPresent(
   return IsKeyPresent(public_key) && IsKeyPresent(private_key);
 }
 
+bool UserCanBecomeOwner(const user_manager::User* user) {
+  if (!user) {
+    return false;
+  }
+  switch (user->GetType()) {
+    case user_manager::USER_TYPE_REGULAR:
+    case user_manager::USER_TYPE_CHILD:
+      return true;
+    case user_manager::USER_TYPE_GUEST:
+    case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
+    case user_manager::USER_TYPE_KIOSK_APP:
+    case user_manager::USER_TYPE_ARC_KIOSK_APP:
+    case user_manager::USER_TYPE_WEB_KIOSK_APP:
+    case user_manager::NUM_USER_TYPES:
+      return false;
+  }
+}
+
 }  // namespace
 
 OwnerKeyLoader::OwnerKeyLoader(
@@ -263,7 +281,7 @@ void OwnerKeyLoader::OnPrivateKeyLoaded(
 void OwnerKeyLoader::MaybeGenerateNewKey() {
   const user_manager::User* user =
       ProfileHelper::Get()->GetUserByProfile(profile_);
-  if (!user || (user->GetType() != user_manager::USER_TYPE_REGULAR)) {
+  if (!UserCanBecomeOwner(user)) {
     RecordOwnerKeyEvent(OwnerKeyEvent::kUserNotAnOwnerBasedOnUserType,
                         /*success=*/IsKeyPresent(public_key_));
     return std::move(callback_).Run(public_key_, nullptr);

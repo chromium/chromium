@@ -41,8 +41,11 @@ std::vector<uint8_t> ExtractBytes(
   return bytes;
 }
 
-class OwnerKeyLoaderTest : public testing::Test {
+class OwnerKeyLoaderTestBase : public testing::Test {
  public:
+  explicit OwnerKeyLoaderTestBase(user_manager::UserType user_type)
+      : user_type_(user_type) {}
+
   // testing::Test:
   void SetUp() override {
     auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
@@ -59,7 +62,7 @@ class OwnerKeyLoaderTest : public testing::Test {
 
     user_manager_->AddUserWithAffiliationAndTypeAndProfile(
         AccountId::FromUserEmail(kUserEmail), /*is_affiliated=*/false,
-        user_manager::USER_TYPE_REGULAR, profile_.get());
+        user_type_, profile_.get());
 
     FakeNssService::InitializeForBrowserContext(profile_.get(),
                                                 /*enable_system_slot=*/false);
@@ -89,6 +92,7 @@ class OwnerKeyLoaderTest : public testing::Test {
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_ = nullptr;
 
+  const user_manager::UserType user_type_;
   scoped_refptr<ownership::MockOwnerKeyUtil> owner_key_util_;
   FakeSessionManagerClient session_manager_client_;
   std::unique_ptr<TestingProfile> profile_;
@@ -98,8 +102,15 @@ class OwnerKeyLoaderTest : public testing::Test {
   base::HistogramTester histogram_tester_;
 };
 
-// Test that the first user generates a new owner key.
-TEST_F(OwnerKeyLoaderTest, FirstUserGeneratesOwnerKey) {
+class RegularOwnerKeyLoaderTest : public OwnerKeyLoaderTestBase {
+ public:
+  RegularOwnerKeyLoaderTest()
+      : OwnerKeyLoaderTestBase(user_manager::USER_TYPE_REGULAR) {}
+};
+
+// Test that the first user generates a new owner key (when the user is a
+// regular user).
+TEST_F(RegularOwnerKeyLoaderTest, FirstUserGeneratesOwnerKey) {
   // In real code DeviceSettingsService must call this for the first user.
   device_settings_service_.MarkWillEstablishConsumerOwnership();
   // Do not prepare any keys, so key_loader_ has to generate a new one.
@@ -123,7 +134,7 @@ TEST_F(OwnerKeyLoaderTest, FirstUserGeneratesOwnerKey) {
 // indicate again that the consumer owners needs to be established.
 // In such a case OwnerKeyLoader should read the identity of the owner from
 // local state.
-TEST_F(OwnerKeyLoaderTest, FirstUserGeneratesOwnerKeyAfterCrash) {
+TEST_F(RegularOwnerKeyLoaderTest, FirstUserGeneratesOwnerKeyAfterCrash) {
   // Populate local state data that OwnerKeyLoader should read.
   user_manager_->RecordOwner(
       AccountId::FromUserEmail(profile_->GetProfileUserName()));
@@ -145,7 +156,7 @@ TEST_F(OwnerKeyLoaderTest, FirstUserGeneratesOwnerKeyAfterCrash) {
 }
 
 // Test that the second user doesn't try to generate a new owner key.
-TEST_F(OwnerKeyLoaderTest, SecondUserDoesNotTakeOwnership) {
+TEST_F(RegularOwnerKeyLoaderTest, SecondUserDoesNotTakeOwnership) {
   // In real code the first user would have created some device policies and
   // saved the public owner key on disk. Emulate that.
   auto signing_key = ConfigureExistingPolicies("owner@example.com");
@@ -167,7 +178,7 @@ TEST_F(OwnerKeyLoaderTest, SecondUserDoesNotTakeOwnership) {
 
 // Test that an owner user gets recognized as the owner when it's mentioned in
 // the existing device policies and owns the key.
-TEST_F(OwnerKeyLoaderTest, OwnerUserLoadsExistingKey) {
+TEST_F(RegularOwnerKeyLoaderTest, OwnerUserLoadsExistingKey) {
   // Configure existing device policies and the owner key.
   auto signing_key = ConfigureExistingPolicies(profile_->GetProfileUserName());
   owner_key_util_->ImportPrivateKeyAndSetPublicKey(signing_key->Copy());
@@ -188,7 +199,7 @@ TEST_F(OwnerKeyLoaderTest, OwnerUserLoadsExistingKey) {
 
 // Test that even without existing device policies the owner key gets loaded
 // (that will help Chrome to recognize the current user as the owner).
-TEST_F(OwnerKeyLoaderTest, OwnerUserLoadsExistingKeyWithoutPolicies) {
+TEST_F(RegularOwnerKeyLoaderTest, OwnerUserLoadsExistingKeyWithoutPolicies) {
   policy::DevicePolicyBuilder policy_builder;
   auto signing_key = policy_builder.GetSigningKey();
 
@@ -209,7 +220,7 @@ TEST_F(OwnerKeyLoaderTest, OwnerUserLoadsExistingKeyWithoutPolicies) {
 
 // Test that the second user is not falsely recognized as the owner even if
 // policies fail to load and does not have the owner key.
-TEST_F(OwnerKeyLoaderTest, SecondaryUserWithoutPolicies) {
+TEST_F(RegularOwnerKeyLoaderTest, SecondaryUserWithoutPolicies) {
   policy::DevicePolicyBuilder policy_builder;
   auto signing_key = policy_builder.GetSigningKey();
 
@@ -231,7 +242,8 @@ TEST_F(OwnerKeyLoaderTest, SecondaryUserWithoutPolicies) {
 // Test that an owner user still gets recognized as the owner when it's
 // mentioned in the existing device policies, but the owner key was lost.
 // The key must be re-generated in such a case.
-TEST_F(OwnerKeyLoaderTest, OwnerUserRegeneratesMissingKeyBasedOnPolicies) {
+TEST_F(RegularOwnerKeyLoaderTest,
+       OwnerUserRegeneratesMissingKeyBasedOnPolicies) {
   auto signing_key = ConfigureExistingPolicies(profile_->GetProfileUserName());
   // Configure that the public key is on disk, but the private key doesn't
   // exist.
@@ -258,7 +270,8 @@ TEST_F(OwnerKeyLoaderTest, OwnerUserRegeneratesMissingKeyBasedOnPolicies) {
 // Test that an owner user still gets recognized as the owner when it's
 // mentioned in the local state, but the device policies and the owner key were
 // lost. The key must be re-generated in such a case.
-TEST_F(OwnerKeyLoaderTest, OwnerUserRegeneratesMissingKeyBasedOnLocalState) {
+TEST_F(RegularOwnerKeyLoaderTest,
+       OwnerUserRegeneratesMissingKeyBasedOnLocalState) {
   // Populate local state.
   user_manager_->RecordOwner(
       AccountId::FromUserEmail(profile_->GetProfileUserName()));
@@ -288,7 +301,7 @@ TEST_F(OwnerKeyLoaderTest, OwnerUserRegeneratesMissingKeyBasedOnLocalState) {
 
 // Test that OwnerKeyLoader makes several attempts to generate the owner key
 // pair.
-TEST_F(OwnerKeyLoaderTest, KeyGenerationRetriedSuccessfully) {
+TEST_F(RegularOwnerKeyLoaderTest, KeyGenerationRetriedSuccessfully) {
   // Make key_loader_ generate the key for the first user.
   device_settings_service_.MarkWillEstablishConsumerOwnership();
   owner_key_util_->SimulateGenerateKeyFailure(/*fail_times=*/5);
@@ -310,7 +323,7 @@ TEST_F(OwnerKeyLoaderTest, KeyGenerationRetriedSuccessfully) {
 
 // Test that OwnerKeyLoader gives up to generate the owner key pair after a
 // certain amount of attempts.
-TEST_F(OwnerKeyLoaderTest, KeyGenerationRetriedUnsuccessfully) {
+TEST_F(RegularOwnerKeyLoaderTest, KeyGenerationRetriedUnsuccessfully) {
   // Make key_loader_ generate the key for the first user.
   device_settings_service_.MarkWillEstablishConsumerOwnership();
   owner_key_util_->SimulateGenerateKeyFailure(/*fail_times=*/10);
@@ -330,7 +343,7 @@ TEST_F(OwnerKeyLoaderTest, KeyGenerationRetriedUnsuccessfully) {
 // Test that enterprise devices don't attempt to load private key. The signing
 // key of the device policy is owned by the backend server in the
 // enterprise-enrolled case.
-TEST_F(OwnerKeyLoaderTest, EnterpriseDevicesDontNeedPrivateKey) {
+TEST_F(RegularOwnerKeyLoaderTest, EnterpriseDevicesDontNeedPrivateKey) {
   // Create favorable conditions for the code to load private key. Claim in the
   // device policies that the user is the owner (shouldn't happen on a real
   // device) and prepare a private key in case OwnerKeyLoader tries to load it.
@@ -351,6 +364,33 @@ TEST_F(OwnerKeyLoaderTest, EnterpriseDevicesDontNeedPrivateKey) {
 
   EXPECT_THAT(histogram_tester_.GetAllSamples(kOwnerKeyHistogramName),
               ElementsAre(Bucket(OwnerKeyUmaEvent::kManagedDeviceSuccess, 1)));
+}
+
+class ChildOwnerKeyLoaderTest : public OwnerKeyLoaderTestBase {
+ public:
+  ChildOwnerKeyLoaderTest()
+      : OwnerKeyLoaderTestBase(user_manager::USER_TYPE_CHILD) {}
+};
+
+// Test that the first user generates a new owner key (when the user is a
+// child user).
+TEST_F(ChildOwnerKeyLoaderTest, FirstUserGeneratesOwnerKey) {
+  // In real code DeviceSettingsService must call this for the first user.
+  device_settings_service_.MarkWillEstablishConsumerOwnership();
+  // Do not prepare any keys, so key_loader_ has to generate a new one.
+
+  key_loader_->Run();
+
+  ASSERT_TRUE(result_observer_.Get<PublicKeyRefPtr>());
+  EXPECT_TRUE(!result_observer_.Get<PublicKeyRefPtr>()->is_empty());
+  ASSERT_TRUE(result_observer_.Get<PrivateKeyRefPtr>());
+  EXPECT_TRUE(result_observer_.Get<PrivateKeyRefPtr>()->key());
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kOwnerKeyHistogramName),
+      ElementsAre(
+          Bucket(OwnerKeyUmaEvent::kEstablishingConsumerOwnershipSuccess, 1),
+          Bucket(OwnerKeyUmaEvent::kOwnerKeyGeneratedSuccess, 1)));
 }
 
 }  // namespace ash
