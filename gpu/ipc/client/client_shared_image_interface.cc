@@ -88,7 +88,7 @@ Mailbox ClientSharedImageInterface::CreateSharedImage(
     base::StringPiece debug_label,
     gpu::SurfaceHandle surface_handle) {
   DCHECK_EQ(surface_handle, kNullSurfaceHandle);
-  DCHECK(gpu::IsValidClientUsage(usage));
+  DCHECK(gpu::IsValidClientUsage(usage)) << usage;
   return AddMailbox(proxy_->CreateSharedImage(format, size, color_space,
                                               surface_origin, alpha_type, usage,
                                               debug_label));
@@ -104,8 +104,8 @@ Mailbox ClientSharedImageInterface::CreateSharedImage(
     base::StringPiece debug_label,
     base::span<const uint8_t> pixel_data) {
   // Pixel upload path only supports single-planar formats.
-  DCHECK(format.is_single_plane());
-  DCHECK(gpu::IsValidClientUsage(usage));
+  DCHECK(format.is_single_plane()) << format.ToString();
+  DCHECK(gpu::IsValidClientUsage(usage)) << usage;
 
   // EstimatedSizeInBytes() returns the minimum size in bytes needed to store
   // `format` at `size` so if span is smaller there is a problem.
@@ -127,7 +127,7 @@ Mailbox ClientSharedImageInterface::CreateSharedImage(
     gpu::SurfaceHandle surface_handle,
     gfx::BufferUsage buffer_usage) {
   DCHECK_EQ(surface_handle, kNullSurfaceHandle);
-  DCHECK(gpu::IsValidClientUsage(usage));
+  DCHECK(gpu::IsValidClientUsage(usage)) << usage;
   return AddMailbox(proxy_->CreateSharedImage(format, size, color_space,
                                               surface_origin, alpha_type, usage,
                                               debug_label, buffer_usage));
@@ -142,11 +142,11 @@ Mailbox ClientSharedImageInterface::CreateSharedImage(
     uint32_t usage,
     base::StringPiece debug_label,
     gfx::GpuMemoryBufferHandle buffer_handle) {
-  DCHECK(gpu::IsValidClientUsage(usage));
-  DCHECK(viz::HasEquivalentBufferFormat(format));
-  CHECK(!format.IsLegacyMultiplanar());
+  DCHECK(gpu::IsValidClientUsage(usage)) << usage;
+  DCHECK(viz::HasEquivalentBufferFormat(format)) << format.ToString();
+  CHECK(!format.IsLegacyMultiplanar()) << format.ToString();
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  CHECK(!format.PrefersExternalSampler());
+  CHECK(!format.PrefersExternalSampler()) << format.ToString();
 #endif
   return AddMailbox(proxy_->CreateSharedImage(
       format, size, color_space, surface_origin, alpha_type, usage, debug_label,
@@ -162,7 +162,7 @@ Mailbox ClientSharedImageInterface::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage,
     base::StringPiece debug_label) {
-  DCHECK(gpu::IsValidClientUsage(usage));
+  DCHECK(gpu::IsValidClientUsage(usage)) << usage;
   auto buffer_format = gpu_memory_buffer->GetFormat();
   CHECK(gpu::IsPlaneValidForGpuMemoryBufferFormat(plane, buffer_format));
   return AddMailbox(proxy_->CreateSharedImage(
