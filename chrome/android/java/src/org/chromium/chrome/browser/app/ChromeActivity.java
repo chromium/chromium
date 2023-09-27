@@ -723,7 +723,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             setLowEndTheme();
 
             WarmupManager warmupManager = WarmupManager.getInstance();
-            if (warmupManager.hasViewHierarchyWithToolbar(getControlContainerLayoutId())) {
+            if (warmupManager.hasViewHierarchyWithToolbar(getControlContainerLayoutId(), this)) {
                 View placeHolderView = new View(this);
                 setContentView(placeHolderView);
                 ViewGroup contentParent = (ViewGroup) placeHolderView.getParent();
@@ -1371,8 +1371,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
      */
     private void onDeferredStartupForMultiWindowMode() {
         // If the Activity was launched in multi-window mode, record a user action.
-        recordMultiWindowModeChanged(
-                /* isInMultiWindowMode= */ true, /* isDeferredStartup= */ true);
+        recordMultiWindowModeChanged(/*isInMultiWindowMode=*/true, /*isDeferredStartup=*/true);
     }
 
     /**
