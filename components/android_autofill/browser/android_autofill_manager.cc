@@ -39,7 +39,9 @@ AndroidAutofillManager::AndroidAutofillManager(AutofillDriver* driver,
   autofill_manager_observation.Observe(this);
 }
 
-AndroidAutofillManager::~AndroidAutofillManager() = default;
+AndroidAutofillManager::~AndroidAutofillManager() {
+  Reset();
+}
 
 base::WeakPtr<AutofillManager> AndroidAutofillManager::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

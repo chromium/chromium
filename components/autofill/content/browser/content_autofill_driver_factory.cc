@@ -165,20 +165,6 @@ void ContentAutofillDriverFactory::RenderFrameDeleted(
     observer.OnContentAutofillDriverWillBeDeleted(*this, *driver);
   }
 
-  // Reset the driver for the RenderFrameHost if we're deleting the RenderFrame
-  // due to navigation (causing the RFH to get in the pending deletion state).
-  // Note that the driver won't be reused in that case, but we should still
-  // reset the driver, to handle potential submissions from the previous
-  // document.
-  // TODO(crbug.com/1486000): Calling Reset() explicitly before the destructor
-  // is only relevant for WebView, where AndroidAutofillManager::Reset()
-  // calls AndroidAutofillProvider::Reset(), while ~AndroidAutofillManager()
-  // does not. Consider adding the call in ~AndroidAutofillManager() instead.
-  if (render_frame_host->IsInLifecycleState(
-          content::RenderFrameHost::LifecycleState::kPendingDeletion)) {
-    driver->Reset();
-  }
-
   driver_map_.erase(it);
 }
 

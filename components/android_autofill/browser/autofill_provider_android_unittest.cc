@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -180,8 +181,10 @@ class AutofillProviderAndroidTest : public content::RenderViewHostTestHarness {
     content::RenderViewHostTestHarness::TearDown();
   }
 
-  TestAndroidAutofillManager& android_autofill_manager() {
-    return *autofill_manager_injector_[web_contents()];
+  TestAndroidAutofillManager& android_autofill_manager(
+      content::RenderFrameHost* rfh = nullptr) {
+    return *autofill_manager_injector_
+        [rfh ? rfh : web_contents()->GetPrimaryMainFrame()];
   }
 
   AutofillProviderAndroid& autofill_provider() {
@@ -422,6 +425,42 @@ TEST_F(AutofillProviderAndroidTest, FormSubmissionHappensOnReset) {
   EXPECT_CALL(provider_bridge(),
               OnFormSubmitted(mojom::SubmissionSource::DOM_MUTATION_AFTER_XHR));
   android_autofill_manager().Reset();
+}
+
+// Tests that a form submission of an ongoing Autofill session is propagated to
+// Java when the `AutofillManager` of the tab is destroyed. Put differently,
+// it tests that the `AutofillManager` is reset on destruction.
+TEST_F(AutofillProviderAndroidTest, FormSubmissionHappensOnFrameDestruction) {
+  content::RenderFrameHost* child_rfh =
+      content::RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
+          ->AppendChild(std::string("child"));
+  child_rfh = content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://foo.bar"), child_rfh);
+
+  // Force creation of driver.
+  ASSERT_TRUE(ContentAutofillDriverFactory::FromWebContents(web_contents())
+                  ->DriverForFrame(child_rfh));
+
+  FormData form = CreateFormDataForFrame(
+      CreateTestPersonalInformationFormData(),
+      LocalFrameToken(child_rfh->GetFrameToken().value()));
+  android_autofill_manager(child_rfh).OnFormsSeen({form},
+                                                  /*removed_forms=*/{});
+
+  // Start an Autofill session.
+  android_autofill_manager(child_rfh).SimulateOnAskForValuesToFill(
+      form, form.fields[0]);
+
+  EXPECT_CALL(provider_bridge(), OnFormSubmitted).Times(0);
+  android_autofill_manager(child_rfh).SimulateOnFormSubmitted(
+      form, /*known_success=*/false,
+      mojom::SubmissionSource::DOM_MUTATION_AFTER_XHR);
+  Mock::VerifyAndClearExpectations(&provider_bridge());
+
+  EXPECT_CALL(provider_bridge(),
+              OnFormSubmitted(mojom::SubmissionSource::DOM_MUTATION_AFTER_XHR));
+  content::RenderFrameHostTester::For(std::exchange(child_rfh, nullptr))
+      ->Detach();
 }
 
 }  // namespace autofill
