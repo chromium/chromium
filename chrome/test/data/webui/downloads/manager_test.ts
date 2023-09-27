@@ -18,6 +18,7 @@ suite('manager tests', function() {
   let toastManager: CrToastManagerElement;
 
   setup(function() {
+    loadTimeData.overrideValues({'improvedDownloadWarningsUX': true});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     testBrowserProxy = new TestDownloadsProxy();
@@ -117,7 +118,10 @@ suite('manager tests', function() {
     flush();
     const item = manager.shadowRoot!.querySelector('downloads-item')!;
 
-    item.$.remove.click();
+    item.getMoreActionsButton().click();
+    const removeButton = item.shadowRoot!.querySelector<HTMLElement>('#remove');
+    assertTrue(!!removeButton);
+    removeButton.click();
     await testBrowserProxy.handler.whenCalled('remove');
     flush();
     const list = manager.shadowRoot!.querySelector('iron-list')!;

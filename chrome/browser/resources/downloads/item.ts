@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './icons.html.js';
+import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
@@ -16,11 +17,12 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 
+import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
 import {FocusRowMixin} from 'chrome://resources/cr_elements/focus_row_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
@@ -39,7 +41,6 @@ export interface DownloadsItemElement {
     'controlled-by': HTMLElement,
     'file-icon': HTMLImageElement,
     'file-link': HTMLAnchorElement,
-    'remove': HTMLElement,
     'url': HTMLAnchorElement,
   };
 }
@@ -138,7 +139,6 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       pauseOrResumeText_: {
         computed: 'computePauseOrResumeText_(isInProgress_, data.resume)',
         type: String,
-        observer: 'updatePauseOrResumeClass_',
       },
 
       showCancel_: {
@@ -201,6 +201,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       'observeControlledBy_(controlledBy_)',
       'observeDisplayType_(displayType_, isDangerous_, data.*)',
       'restoreFocusAfterCancelIfNeeded_(data)',
+      'updatePauseOrResumeClass_(pauseOrResumeText_, improvedDownloadWarningsUx_)',
     ];
   }
 
@@ -209,6 +210,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   private controlledBy_: string;
   private isActive_: boolean;
   private isDangerous_: boolean;
+  private isReviewable_: boolean;
   private isInProgress_: boolean;
   private pauseOrResumeText_: string;
   private showCancel_: boolean;
@@ -236,10 +238,6 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     this.mojoHandler_ = BrowserProxy.getInstance().handler;
   }
 
-  focusOnRemoveButton() {
-    focusWithoutInk(this.$.remove);
-  }
-
   /** Overrides FocusRowMixin. */
   override getCustomEquivalent(sampleElement: HTMLElement): HTMLElement|null {
     if (sampleElement.getAttribute('focus-type') === 'cancel') {
@@ -253,6 +251,22 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
 
   getFileIcon(): HTMLImageElement {
     return this.$['file-icon'];
+  }
+
+  getMoreActionsButton(): CrIconButtonElement {
+    assert(this.improvedDownloadWarningsUx_);
+    const button =
+        this.shadowRoot!.querySelector<CrIconButtonElement>('#more-actions');
+    assert(!!button);
+    return button;
+  }
+
+  getMoreActionsMenu(): CrActionMenuElement {
+    assert(this.improvedDownloadWarningsUx_);
+    const menu = this.shadowRoot!.querySelector<CrActionMenuElement>(
+        '#more-actions-menu');
+    assert(!!menu);
+    return menu;
   }
 
   /**
@@ -612,7 +626,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   }
 
   private updatePauseOrResumeClass_() {
-    if (!this.pauseOrResumeText_) {
+    if (!this.pauseOrResumeText_ || this.improvedDownloadWarningsUx_) {
       return;
     }
 
@@ -635,10 +649,22 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     return '';
   }
 
-  private computeRemoveStyle_(): string {
+  private computeShowRemove_(): boolean {
     const canDelete = loadTimeData.getBoolean('allowDeletingHistory');
     const hideRemove = this.isDangerous_ || this.showCancel_ || !canDelete;
-    return hideRemove ? 'visibility: hidden' : '';
+    return !hideRemove;
+  }
+
+  private computeRemoveStyle_(): string {
+    return this.computeShowRemove_() ? '' : 'visibility: hidden';
+  }
+
+  private computeShowControlsForDangerous_(): boolean {
+    return !this.isReviewable_ && this.isDangerous_;
+  }
+
+  private computeShowButtonsForDangerous_(): boolean {
+    return !this.improvedDownloadWarningsUx_ && this.isDangerous_;
   }
 
   private computeShowCancel_(): boolean {
@@ -770,33 +796,59 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
         });
   }
 
+  private onMoreActionsClick_() {
+    assert(this.improvedDownloadWarningsUx_);
+    this.getMoreActionsMenu().showAt(this.getMoreActionsButton());
+  }
+
   private onCancelClick_() {
     this.restoreFocusAfterCancel_ = true;
     this.mojoHandler_!.cancel(this.data.id);
+    if (this.improvedDownloadWarningsUx_) {
+      this.getMoreActionsMenu().close();
+    }
   }
 
   private onDiscardDangerousClick_() {
     this.mojoHandler_!.discardDangerous(this.data.id);
+    if (this.improvedDownloadWarningsUx_) {
+      this.getMoreActionsMenu().close();
+    }
   }
 
   private onOpenNowClick_() {
     this.mojoHandler_!.openDuringScanningRequiringGesture(this.data.id);
+    if (this.improvedDownloadWarningsUx_) {
+      this.getMoreActionsMenu().close();
+    }
   }
 
   private onDeepScanClick_() {
     this.mojoHandler_!.deepScan(this.data.id);
+    if (this.improvedDownloadWarningsUx_) {
+      this.getMoreActionsMenu().close();
+    }
   }
 
   private onBypassDeepScanClick_() {
     this.mojoHandler_!.bypassDeepScanRequiringGesture(this.data.id);
+    if (this.improvedDownloadWarningsUx_) {
+      this.getMoreActionsMenu().close();
+    }
   }
 
   private onReviewDangerousClick_() {
     this.mojoHandler_!.reviewDangerousRequiringGesture(this.data.id);
+    if (this.improvedDownloadWarningsUx_) {
+      this.getMoreActionsMenu().close();
+    }
   }
 
   private onOpenAnywayClick_() {
     this.mojoHandler_!.openFileRequiringGesture(this.data.id);
+    if (this.improvedDownloadWarningsUx_) {
+      this.getMoreActionsMenu().close();
+    }
   }
 
   private onDragStart_(e: Event) {
@@ -823,6 +875,9 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     } else {
       this.mojoHandler_!.resume(this.data.id);
     }
+    if (this.improvedDownloadWarningsUx_) {
+      this.getMoreActionsMenu().close();
+    }
   }
 
   private onRemoveClick_(e: Event) {
@@ -842,18 +897,31 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     // Stop propagating a click to the document to remove toast.
     e.stopPropagation();
     e.preventDefault();
+
+    if (this.improvedDownloadWarningsUx_) {
+      this.getMoreActionsMenu().close();
+    }
   }
 
   private onRetryClick_() {
     this.mojoHandler_!.retryDownload(this.data.id);
+    if (this.improvedDownloadWarningsUx_) {
+      this.getMoreActionsMenu().close();
+    }
   }
 
   private onSaveDangerousClick_() {
     this.mojoHandler_!.saveDangerousRequiringGesture(this.data.id);
+    if (this.improvedDownloadWarningsUx_) {
+      this.getMoreActionsMenu().close();
+    }
   }
 
   private onShowClick_() {
     this.mojoHandler_!.show(this.data.id);
+    if (this.improvedDownloadWarningsUx_) {
+      this.getMoreActionsMenu().close();
+    }
   }
 
   private restoreFocusAfterCancelIfNeeded_() {

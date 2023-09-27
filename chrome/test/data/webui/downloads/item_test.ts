@@ -5,7 +5,7 @@
 import {BrowserProxy, CrToastManagerElement, DangerType, DownloadsItemElement, IconLoaderImpl, loadTimeData, SafeBrowsingState, State} from 'chrome://downloads/downloads.js';
 import {stringToMojoString16, stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {createDownload, TestDownloadsProxy, TestIconLoader} from './test_support.js';
@@ -355,9 +355,12 @@ suite('item tests', function() {
                 'description-color'));
       });
 
-  test('open now button allowed by load time data', async () => {
-    loadTimeData.overrideValues(
-        {'allowOpenNow': true, 'updateDeepScanningUX': false});
+  test('open now dropdown button allowed by load time data', async () => {
+    loadTimeData.overrideValues({
+      'allowOpenNow': true,
+      'updateDeepScanningUX': false,
+      'improvedDownloadWarningsUX': true,
+    });
     const item = document.createElement('downloads-item');
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(item);
@@ -367,12 +370,17 @@ suite('item tests', function() {
                state: State.kAsyncScanning,
              }));
     flush();
-    assertNotEquals(item.shadowRoot!.querySelector('#openNow'), null);
+    item.getMoreActionsButton().click();
+    assertTrue(
+        isVisible(item.shadowRoot!.querySelector<HTMLElement>('#open-now')));
   });
 
-  test('open now button forbidden by load time data', async () => {
-    loadTimeData.overrideValues(
-        {'allowOpenNow': false, 'updateDeepScanningUX': false});
+  test('open now dropdown button forbidden by load time data', async () => {
+    loadTimeData.overrideValues({
+      'allowOpenNow': false,
+      'updateDeepScanningUX': false,
+      'improvedDownloadWarningsUX': true,
+    });
     const item = document.createElement('downloads-item');
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(item);
@@ -382,10 +390,13 @@ suite('item tests', function() {
                state: State.kAsyncScanning,
              }));
     flush();
-    assertEquals(item.shadowRoot!.querySelector('#openNow'), null);
+    item.getMoreActionsButton().click();
+    assertFalse(
+        isVisible(item.shadowRoot!.querySelector<HTMLElement>('#open-now')));
   });
 
-  test('deep scan buttons shown on correct state', () => {
+  test('deep scan dropdown buttons shown on correct state', () => {
+    loadTimeData.overrideValues({'improvedDownloadWarningsUX': true});
     const item = document.createElement('downloads-item');
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(item);
@@ -395,11 +406,15 @@ suite('item tests', function() {
                state: State.kPromptForScanning,
              }));
     flush();
-    assertTrue(!!item.shadowRoot!.querySelector('#deepScan'));
-    assertTrue(!!item.shadowRoot!.querySelector('#bypassDeepScan'));
+    item.getMoreActionsButton().click();
+    assertTrue(
+        isVisible(item.shadowRoot!.querySelector<HTMLElement>('#deep-scan')));
+    assertTrue(isVisible(
+        item.shadowRoot!.querySelector<HTMLElement>('#bypass-deep-scan')));
   });
 
-  test('open anyway button shown on failed deep scan', () => {
+  test('open anyway dropdown button shown on failed deep scan', () => {
+    loadTimeData.overrideValues({'improvedDownloadWarningsUX': true});
     const item = document.createElement('downloads-item');
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(item);
@@ -410,30 +425,65 @@ suite('item tests', function() {
                dangerType: DangerType.kDeepScannedFailed,
              }));
     flush();
-    assertTrue(!!item.shadowRoot!.querySelector('#openAnyway'));
+    item.getMoreActionsButton().click();
+    assertTrue(
+        isVisible(item.shadowRoot!.querySelector<HTMLElement>('#open-anyway')));
   });
 
   test('undo is shown in toast', () => {
-    item.data = createDownload({hideDate: false});
+    loadTimeData.overrideValues({'improvedDownloadWarningsUX': true});
+    const item = document.createElement('downloads-item');
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.appendChild(item);
+    item.set('data', createDownload({hideDate: false}));
+    flush();
+    toastManager = document.createElement('cr-toast-manager');
+    document.body.appendChild(toastManager);
     toastManager.show('', /* hideSlotted= */ true);
     assertTrue(toastManager.slottedHidden);
-    item.$.remove.click();
+    item.getMoreActionsButton().click();
+    const removeButton = item.shadowRoot!.querySelector<HTMLElement>('#remove');
+    assertTrue(!!removeButton);
+    removeButton!.click();
     assertFalse(toastManager.slottedHidden);
+    assertFalse(item.getMoreActionsMenu().open);
   });
 
   test('undo is not shown in toast when item is dangerous', () => {
-    item.data = createDownload({hideDate: false, isDangerous: true});
+    loadTimeData.overrideValues({'improvedDownloadWarningsUX': true});
+    const item = document.createElement('downloads-item');
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.appendChild(item);
+    item.set('data', createDownload({hideDate: false, isDangerous: true}));
+    flush();
+    toastManager = document.createElement('cr-toast-manager');
+    document.body.appendChild(toastManager);
     toastManager.show('', /* hideSlotted= */ false);
     assertFalse(toastManager.slottedHidden);
-    item.$.remove.click();
+    item.getMoreActionsButton().click();
+    const removeButton = item.shadowRoot!.querySelector<HTMLElement>('#remove');
+    assertTrue(!!removeButton);
+    removeButton.click();
     assertTrue(toastManager.slottedHidden);
+    assertFalse(item.getMoreActionsMenu().open);
   });
 
   test('undo is not shown in toast when item is insecure', () => {
-    item.data = createDownload({hideDate: false, isInsecure: true});
+    loadTimeData.overrideValues({'improvedDownloadWarningsUX': true});
+    const item = document.createElement('downloads-item');
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.appendChild(item);
+    item.set('data', createDownload({hideDate: false, isInsecure: true}));
+    flush();
+    toastManager = document.createElement('cr-toast-manager');
+    document.body.appendChild(toastManager);
     toastManager.show('', /* hideSlotted= */ false);
     assertFalse(toastManager.slottedHidden);
-    item.$.remove.click();
+    item.getMoreActionsButton().click();
+    const removeButton = item.shadowRoot!.querySelector<HTMLElement>('#remove');
+    assertTrue(!!removeButton);
+    removeButton.click();
     assertTrue(toastManager.slottedHidden);
+    assertFalse(item.getMoreActionsMenu().open);
   });
 });
