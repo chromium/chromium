@@ -23,6 +23,10 @@
 
 namespace media {
 
+const std::string kInvalidMediaPlaylist =
+    "#This Wont Parse!\n"
+    "#EXT-X-ENDLIST\n";
+
 const std::string kSimpleMediaPlaylist =
     "#EXTM3U\n"
     "#EXT-X-TARGETDURATION:10\n"
@@ -198,6 +202,17 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 };
+
+TEST_F(HlsManifestDemuxerEngineTest, TestInitFailure) {
+  BindUrlToDataSource<StringHlsDataSource>(
+      "http://media.example.com/manifest.m3u8", kInvalidMediaPlaylist);
+  EXPECT_CALL(*mock_mdeh_,
+              OnError(HasStatusCode(DEMUXER_ERROR_COULD_NOT_PARSE)));
+  EXPECT_CALL(*this, MockInitComplete(_)).Times(0);
+  InitializeEngine();
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(engine_->IsSeekable());
+}
 
 TEST_F(HlsManifestDemuxerEngineTest, TestSimpleConfigAddsOnePrimaryRole) {
   EXPECT_CALL(*mock_mdeh_, SetSequenceMode(base::StringPiece("primary"), true));

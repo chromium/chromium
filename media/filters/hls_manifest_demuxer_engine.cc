@@ -248,11 +248,10 @@ void HlsManifestDemuxerEngine::AbortPendingReads() {
 }
 
 bool HlsManifestDemuxerEngine::IsSeekable() const {
-  // `IsSeekable()` is only ever called from the pipeline after the
-  // initialization step has completed successfully. The initialization step
-  // must set is_seekable_ in order to complete successfully.
-  CHECK(is_seekable_.has_value());
-  return *is_seekable_;
+  // `IsSeekable()` is only called after the pipeline has completed successfully
+  // or the initialization step fails. If init fails, we should report that the
+  // player is seekable to keep consistent behavior with other players.
+  return is_seekable_.value_or(true);
 }
 
 int64_t HlsManifestDemuxerEngine::GetMemoryUsage() const {
