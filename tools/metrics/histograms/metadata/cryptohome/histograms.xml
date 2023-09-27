@@ -369,7 +369,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.MigrationUI.ConsumedBatteryPercent" units="%"
-    expires_after="2023-10-01">
+    expires_after="2024-10-01">
   <owner>dlunev@chromium.org</owner>
   <summary>
     The amount of consumed battery level during cryptohome encryption migration.
@@ -380,7 +380,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.MigrationUI.FirstScreen"
-    enum="MigrationUIFirstScreen" expires_after="2023-10-01">
+    enum="MigrationUIFirstScreen" expires_after="2024-10-01">
   <owner>dlunev@chromium.org</owner>
   <summary>
     The first screen in the encryption migration UI, which is shown when a user
@@ -389,7 +389,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.MigrationUI.MigrationResult"
-    enum="MigrationUIMigrationResult" expires_after="2023-10-01">
+    enum="MigrationUIMigrationResult" expires_after="2024-10-01">
   <owner>dlunev@chromium.org</owner>
   <summary>
     The result of encryption migration from eCryptfs to Ext4 dircrypto. The
@@ -399,7 +399,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.MigrationUI.RemoveCryptohomeResult"
-    enum="MigrationUIRemoveCryptohomeResult" expires_after="2023-10-01">
+    enum="MigrationUIRemoveCryptohomeResult" expires_after="2024-10-01">
   <owner>dlunev@chromium.org</owner>
   <summary>
     The result of the removal of user's cryptohome. When the migration UI is
@@ -410,7 +410,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.MigrationUI.UserChoice"
-    enum="MigrationUIUserChoice" expires_after="2023-10-01">
+    enum="MigrationUIUserChoice" expires_after="2024-10-01">
   <owner>dlunev@chromium.org</owner>
   <summary>
     User's choice when the system is ready to migrate encryption. The user can
@@ -420,7 +420,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.MigrationUI.VisibleScreen" enum="MigrationUIScreen"
-    expires_after="2023-10-01">
+    expires_after="2024-10-01">
   <owner>dlunev@chromium.org</owner>
   <summary>
     How many times each screen in migration UI is shown to the user. A screen is
