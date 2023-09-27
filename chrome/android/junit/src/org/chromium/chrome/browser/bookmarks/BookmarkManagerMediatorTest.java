@@ -1287,7 +1287,7 @@ public class BookmarkManagerMediatorTest {
         searchTextChangeCallback.onResult(searchText);
         assertEquals(BookmarkUiMode.SEARCHING, mMediator.getCurrentUiMode());
         assertEquals(searchText, searchBoxModel.get(BookmarkSearchBoxRowProperties.SEARCH_TEXT));
-        verify(mBookmarkModel).searchBookmarks(eq(searchText), anyInt());
+        verify(mBookmarkModel, never()).searchBookmarks(eq(searchText), anyInt());
         assertFalse(searchBoxModel.get(
                 BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_BUTTON_VISIBILITY));
         verifyNoInteractions(mHideKeyboardRunnable);
@@ -1571,6 +1571,34 @@ public class BookmarkManagerMediatorTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    public void testSearchBox_searchBoxFocused() {
+        finishLoading();
+
+        mMediator.openFolder(mMobileFolderId);
+
+        assertEquals(2, mModelList.size());
+        assertEquals(ViewType.SEARCH_BOX, mModelList.get(0).type);
+
+        PropertyModel searchBoxModel = mModelList.get(0).model;
+        assertTrue(searchBoxModel.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY));
+
+        // Focusing the searchbox will start a search which will clear out existing bookmarks.
+        when(mBookmarkModel.searchBookmarks(anyString(), anyInt()))
+                .thenReturn(Collections.singletonList(mFolderId1));
+        searchBoxModel.get(BookmarkSearchBoxRowProperties.FOCUS_CHANGE_CALLBACK).onResult(true);
+
+        assertEquals(BookmarkUiMode.SEARCHING, mMediator.getCurrentUiMode());
+        assertEquals(1, mModelList.size());
+
+        verify(mBookmarkModel, never()).searchBookmarks(anyString(), anyInt());
+
+        // Ending the search will put us back to the state prior to searching.
+        mMediator.onEndSearch();
+        assertEquals(2, mModelList.size());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
     public void testSearchBox_priceTrackingFilterClicked_noResults() {
         finishLoading();
 
@@ -1670,6 +1698,8 @@ public class BookmarkManagerMediatorTest {
 
         when(mBookmarkModel.searchBookmarks(anyString(), anyInt()))
                 .thenReturn(Collections.singletonList(mFolderId1));
+        searchBoxModel.get(BookmarkSearchBoxRowProperties.SEARCH_TEXT_CHANGE_CALLBACK)
+                .onResult("test");
         searchBoxModel.get(BookmarkSearchBoxRowProperties.FOCUS_CHANGE_CALLBACK).onResult(true);
 
         assertEquals(BookmarkUiMode.SEARCHING, mMediator.getCurrentUiMode());
@@ -1683,5 +1713,29 @@ public class BookmarkManagerMediatorTest {
         // Should still be in search mode, and should have refreshed and picked up new results.
         assertEquals(BookmarkUiMode.SEARCHING, mMediator.getCurrentUiMode());
         verifyCurrentBookmarkIds(null, mFolderId2);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    public void testModelChangeDuringSearch_emptySearchQuery() {
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+        PropertyModel searchBoxModel = mModelList.get(0).model;
+
+        when(mBookmarkModel.searchBookmarks(anyString(), anyInt()))
+                .thenReturn(Collections.singletonList(mFolderId1));
+        searchBoxModel.get(BookmarkSearchBoxRowProperties.SEARCH_TEXT_CHANGE_CALLBACK).onResult("");
+        searchBoxModel.get(BookmarkSearchBoxRowProperties.FOCUS_CHANGE_CALLBACK).onResult(true);
+
+        assertEquals(BookmarkUiMode.SEARCHING, mMediator.getCurrentUiMode());
+        assertEquals(1, mModelList.size());
+
+        verify(mBookmarkModel, never()).searchBookmarks(anyString(), anyInt());
+        verify(mBookmarkModel).addObserver(mBookmarkModelObserverArgumentCaptor.capture());
+        mBookmarkModelObserverArgumentCaptor.getValue().bookmarkModelChanged();
+
+        // Should still be in search mode, and should have refreshed and picked up new results.
+        assertEquals(BookmarkUiMode.SEARCHING, mMediator.getCurrentUiMode());
+        assertEquals(1, mModelList.size());
     }
 }
