@@ -343,11 +343,6 @@ grit("resources") {
   output_dir = "$root_gen_dir/chrome"
 }
 
-mojom("web_ui_test_bindings") {
-  sources = [ "web_ui_test.mojom" ]
-  webui_module_path = "/"
-}
-
 generate_grd("build_chai_grdp") {
   testonly = true
   grd_prefix = "webui_test"
@@ -364,18 +359,23 @@ generate_grd("build_mocha_grdp") {
   input_files = [ "mocha.js" ]
 }
 
-generate_grd("build_web_ui_test_mojo_grdp") {
-  testonly = true
-  grd_prefix = "webui_test"
-  out_grd = "$target_gen_dir/web_ui_test_mojo_resources.grdp"
-  input_files_base_dir =
-      rebase_path("$root_gen_dir/mojom-webui/chrome/test/data/webui/",
-                  root_build_dir)
-  input_files = [ "web_ui_test.mojom-webui.js" ]
-  deps = [ ":web_ui_test_bindings_js__generator" ]
-}
-
 if (is_chromeos_ash) {
+  mojom("web_ui_test_bindings") {
+    sources = [ "web_ui_test.mojom" ]
+    webui_module_path = "/"
+  }
+
+  generate_grd("build_web_ui_test_mojo_grdp") {
+    testonly = true
+    grd_prefix = "webui_test"
+    out_grd = "$target_gen_dir/web_ui_test_mojo_resources.grdp"
+    input_files_base_dir =
+        rebase_path("$root_gen_dir/mojom-webui/chrome/test/data/webui/",
+                    root_build_dir)
+    input_files = [ "web_ui_test.mojom-webui.js" ]
+    deps = [ ":web_ui_test_bindings_js__generator" ]
+  }
+
   generate_grd("build_web_ui_test_mojo_lite_grdp") {
     testonly = true
     grd_prefix = "webui_test"
@@ -414,13 +414,15 @@ ts_library("build_ts") {
     # TODO(dpapad): Migrate the files below to TypeScript and remove allowJs
     # from tsconfig_base.json.
     "mocha_adapter.js",
-    "mojo_webui_test_support.js",
     "sandbox/gpu_test.js",
     "sandbox/sandbox_test.js",
   ]
 
   if (is_chromeos_ash) {
-    in_files += [ "cr_focus_row_behavior_test.ts" ]
+    in_files += [
+      "cr_focus_row_behavior_test.ts",
+      "mojo_webui_test_support.js",
+    ]
   }
 
   if (enable_webui_certificate_viewer) {
@@ -460,7 +462,6 @@ generate_grd("build_grd") {
     ":build_chai_grdp",
     ":build_mocha_grdp",
     ":build_ts",
-    ":build_web_ui_test_mojo_grdp",
     "access_code_cast:build_grdp",
     "bookmarks:build_grdp",
     "commander:build_grdp",
@@ -530,7 +531,6 @@ generate_grd("build_grd") {
     "$target_gen_dir/support_tool/resources.grdp",
     "$target_gen_dir/sync_internals/resources.grdp",
     "$target_gen_dir/tab_search/resources.grdp",
-    "$target_gen_dir/web_ui_test_mojo_resources.grdp",
     "$target_gen_dir/usb_internals/resources.grdp",
     "$target_gen_dir/whats_new/resources.grdp",
   ]
@@ -585,6 +585,7 @@ generate_grd("build_grd") {
 
   if (is_chromeos_ash) {
     deps += [
+      ":build_web_ui_test_mojo_grdp",
       ":build_web_ui_test_mojo_lite_grdp",
       "chromeos:build_grdp",
       "chromeos/ash_common:build_grdp",
@@ -621,6 +622,7 @@ generate_grd("build_grd") {
       "$target_gen_dir/nearby_share/resources.grdp",
       "$target_gen_dir/settings/chromeos/resources.grdp",
       "$target_gen_dir/web_ui_test_mojo_lite_resources.grdp",
+      "$target_gen_dir/web_ui_test_mojo_resources.grdp",
       "$root_gen_dir/ui/file_manager/tests_resources.grdp",
       "$root_gen_dir/ui/file_manager/tests_gen_resources.grdp",
     ]

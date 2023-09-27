@@ -1574,7 +1574,6 @@ if (!is_android) {
       "//chrome/services/qrcode_generator/public/mojom",
       "//chrome/services/removable_storage_writer:lib",
       "//chrome/test/data/webui:resources_grit",
-      "//chrome/test/data/webui:web_ui_test_bindings",
       "//chrome/test/data/webui/mojo:mojo_bindings",
       "//chrome/test/media_router/access_code_cast:access_code_cast_integration_base",
       "//chrome/test/payments:test_support",
@@ -2819,6 +2818,7 @@ if (!is_android) {
         "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
         "//chrome/browser/ash/system_web_apps/types",
         "//chrome/browser/ui/ash/system_web_apps",
+        "//chrome/test/data/webui:web_ui_test_bindings",
         "//chromeos/ash/components/standalone_browser",
         "//chromeos/components/kiosk:test_support",
       ]
@@ -9931,8 +9931,6 @@ if (!is_android) {
       "base/javascript_browser_test.h",
       "base/mixin_based_in_process_browser_test.cc",
       "base/mixin_based_in_process_browser_test.h",
-      "base/mojo_web_ui_browser_test.cc",
-      "base/mojo_web_ui_browser_test.h",
       "base/save_desktop_snapshot.cc",
       "base/save_desktop_snapshot.h",
       "base/test_chrome_web_ui_controller_factory.cc",
@@ -10006,7 +10004,6 @@ if (!is_android) {
       "//chrome/common/profiler",
       "//chrome/renderer",
       "//chrome/test/data/webui:resources",
-      "//chrome/test/data/webui:web_ui_test_bindings",
       "//chrome/test/data/webui/mojo:mojo_bindings",
       "//components/account_id",
       "//components/autofill/content/browser",
@@ -10138,6 +10135,10 @@ if (!is_android) {
     }
 
     if (is_chromeos_ash) {
+      sources += [
+        "base/mojo_web_ui_browser_test.cc",
+        "base/mojo_web_ui_browser_test.h",
+      ]
       deps += [
         "//ash",
         "//ash:test_support",
@@ -10147,6 +10148,7 @@ if (!is_android) {
         "//chrome/browser/ash",
         "//chrome/browser/ash/system_web_apps",
         "//chrome/browser/ash/system_web_apps/test_support",
+        "//chrome/test/data/webui:web_ui_test_bindings",
         "//chromeos/ash/components/browser_context_helper",
         "//chromeos/ash/components/cryptohome",
         "//chromeos/ash/services/device_sync",

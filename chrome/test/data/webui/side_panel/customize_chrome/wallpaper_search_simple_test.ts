@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search_simple.js';
 
 import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';

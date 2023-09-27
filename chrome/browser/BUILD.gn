@@ -8469,9 +8469,11 @@ if (!is_android) {
       ":browser",
       ":browser_process",
       "//chrome/browser/profiles:profile",
-      "//chrome/test/data/webui:web_ui_test_bindings",
       "//content/test:test_support",
     ]
+    if (is_chromeos_ash) {
+      deps += [ "//chrome/test/data/webui:web_ui_test_bindings" ]
+    }
 
     public_deps = [
       "//chrome/browser/web_applications/app_service",
