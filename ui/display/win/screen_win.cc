@@ -26,6 +26,7 @@
 #include "ui/display/display_layout.h"
 #include "ui/display/display_layout_builder.h"
 #include "ui/display/util/display_util.h"
+#include "ui/display/win/display_config_helper.h"
 #include "ui/display/win/display_info.h"
 #include "ui/display/win/dpi.h"
 #include "ui/display/win/local_process_window_finder_win.h"
@@ -78,49 +79,6 @@ float GetMonitorScaleFactor(HMONITOR monitor,
   const auto dpi = GetPerMonitorDPI(monitor);
   return dpi ? GetScaleFactorForDPI(dpi.value(), include_accessibility)
              : GetDPIScale();
-}
-
-std::vector<DISPLAYCONFIG_PATH_INFO> GetPathInfos() {
-  for (LONG result = ERROR_INSUFFICIENT_BUFFER;
-       result == ERROR_INSUFFICIENT_BUFFER;) {
-    uint32_t path_elements, mode_elements;
-    if (GetDisplayConfigBufferSizes(QDC_ONLY_ACTIVE_PATHS, &path_elements,
-                                    &mode_elements) != ERROR_SUCCESS) {
-      return {};
-    }
-    std::vector<DISPLAYCONFIG_PATH_INFO> path_infos(path_elements);
-    std::vector<DISPLAYCONFIG_MODE_INFO> mode_infos(mode_elements);
-    result = QueryDisplayConfig(QDC_ONLY_ACTIVE_PATHS, &path_elements,
-                                path_infos.data(), &mode_elements,
-                                mode_infos.data(), nullptr);
-    if (result == ERROR_SUCCESS) {
-      path_infos.resize(path_elements);
-      return path_infos;
-    }
-  }
-  return {};
-}
-
-absl::optional<DISPLAYCONFIG_PATH_INFO> GetPathInfo(HMONITOR monitor) {
-  // Get the monitor name.
-  MONITORINFOEX monitor_info = {};
-  monitor_info.cbSize = sizeof(monitor_info);
-  if (!GetMonitorInfo(monitor, &monitor_info))
-    return absl::nullopt;
-
-  // Look for a path info with a matching name.
-  std::vector<DISPLAYCONFIG_PATH_INFO> path_infos = GetPathInfos();
-  for (const auto& info : path_infos) {
-    DISPLAYCONFIG_SOURCE_DEVICE_NAME device_name = {};
-    device_name.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_SOURCE_NAME;
-    device_name.header.size = sizeof(device_name);
-    device_name.header.adapterId = info.sourceInfo.adapterId;
-    device_name.header.id = info.sourceInfo.id;
-    if ((DisplayConfigGetDeviceInfo(&device_name.header) == ERROR_SUCCESS) &&
-        (wcscmp(monitor_info.szDevice, device_name.viewGdiDeviceName) == 0))
-      return info;
-  }
-  return absl::nullopt;
 }
 
 // Gets a user-friendly name for a given display using EDID data. Returns an
@@ -487,7 +445,7 @@ BOOL CALLBACK EnumMonitorForDisplayInfoCallback(HMONITOR monitor,
   const gfx::Vector2dF pixels_per_inch =
       GetMonitorPixelsPerInch(monitor).value_or(
           GetDefaultMonitorPhysicalPixelsPerInch());
-  const auto path_info = GetPathInfo(monitor);
+  const auto path_info = GetDisplayConfigPathInfo(monitor);
 
   auto* display_infos =
       reinterpret_cast<std::vector<internal::DisplayInfo>*>(data);

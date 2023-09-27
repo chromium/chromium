@@ -4,6 +4,7 @@ include_rules = [
   "+third_party/khronos",
   "+third_party/libsync",
   "+third_party/skia",
+  "+ui/display/win",
   "+ui/events",
   "+ui/base/x",
   "+ui/base/moving_max.h",

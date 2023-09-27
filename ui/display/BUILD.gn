@@ -77,6 +77,8 @@ component("display") {
       "win/base_window_finder_win.h",
       "win/color_profile_reader.cc",
       "win/color_profile_reader.h",
+      "win/display_config_helper.cc",
+      "win/display_config_helper.h",
       "win/display_info.cc",
       "win/display_info.h",
       "win/dpi.cc",

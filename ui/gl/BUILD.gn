@@ -325,6 +325,7 @@ component("gl") {
     ]
     deps += [
       "//ui/base",
+      "//ui/display:display",
       "//ui/gfx/mojom:dxgi_info",
     ]
 

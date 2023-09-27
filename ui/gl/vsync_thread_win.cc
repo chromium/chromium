@@ -10,7 +10,9 @@
 #include "base/power_monitor/power_monitor.h"
 #include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
+#include "base/win/windows_version.h"
 #include "ui/gl/gl_angle_util_win.h"
+#include "ui/gl/gl_features.h"
 #include "ui/gl/vsync_observer.h"
 
 namespace gl {
@@ -115,11 +117,32 @@ void VSyncThreadWin::OnResume() {
 }
 
 void VSyncThreadWin::WaitForVSync() {
-  base::TimeTicks vsync_phase;
+  base::TimeTicks vsync_timebase;
   base::TimeDelta vsync_interval;
+
+  // This is a simplified initial approach to fix crbug.com/1456399
+  // In Windows SV3 builds DWM will operate with per monitor refresh
+  // rates. As a result of this, DwmGetCompositionTimingInfo is no longer
+  // guaranteed to align with the primary monitor but will instead align
+  // with the current highest refresh rate monitor. This can cause issues
+  // in clients which may be waiting on the primary monitor's vblank as
+  // the reported interval may no longer match with the vblank wait.
+  // To work around this discrepancy get the VSync interval directly from
+  // monitor associated with window_ or the primary monitor.
+  //
+  // TODO(wicarr@microsoft.com): Replace build number comparison with
+  // base::win::GetVersion() variant when a post-WIN11_22H2 build has
+  // been added to base::win::Version.
+  static bool use_sv3_workaround =
+      base::win::OSInfo::GetInstance()->version_number().build > 22621 &&
+      base::FeatureList::IsEnabled(
+          features::kUsePrimaryMonitorVSyncIntervalOnSV3);
+
   const bool get_vsync_params_succeeded =
-      vsync_provider_.GetVSyncParametersIfAvailable(&vsync_phase,
-                                                    &vsync_interval);
+      use_sv3_workaround
+          ? vsync_provider_.GetVSyncIntervalIfAvailable(&vsync_interval)
+          : vsync_provider_.GetVSyncParametersIfAvailable(&vsync_timebase,
+                                                          &vsync_interval);
   DCHECK(get_vsync_params_succeeded);
 
   // From Raymond Chen's blog "How do I get a handle to the primary monitor?"
