@@ -9,6 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/token.h"
 #include "base/tracing/trace_time.h"
+#include "components/variations/hashing.h"
 #include "content/browser/tracing/background_tracing_manager_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -128,6 +129,20 @@ void TracingScenario::Abort() {
   }
   SetState(State::kStopping);
   tracing_session_->Stop();
+}
+
+void TracingScenario::GenerateMetadataProto(
+    perfetto::protos::pbzero::ChromeMetadataPacket* metadata) {
+  auto* background_tracing_metadata =
+      metadata->set_background_tracing_metadata();
+
+  uint32_t scenario_name_hash = variations::HashName(scenario_name());
+  background_tracing_metadata->set_scenario_name_hash(scenario_name_hash);
+
+  if (triggered_rule_) {
+    auto* triggered_rule = background_tracing_metadata->set_triggered_rule();
+    triggered_rule_->GenerateMetadataProto(triggered_rule);
+  }
 }
 
 std::unique_ptr<perfetto::TracingSession>

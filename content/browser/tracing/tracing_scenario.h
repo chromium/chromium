@@ -77,6 +77,9 @@ class CONTENT_EXPORT TracingScenario {
   // Aborts an active scenario.
   void Abort();
 
+  void GenerateMetadataProto(
+      perfetto::protos::pbzero::ChromeMetadataPacket* metadata);
+
   const std::string& scenario_name() const { return scenario_name_; }
   State current_state() const { return current_state_; }
 

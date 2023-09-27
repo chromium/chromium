@@ -889,9 +889,9 @@ void BackgroundTracingManagerImpl::GenerateMetadataProto(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (legacy_active_scenario_) {
     legacy_active_scenario_->GenerateMetadataProto(metadata);
+  } else if (active_scenario_) {
+    active_scenario_->GenerateMetadataProto(metadata);
   }
-  // TODO(crbug.com/1418116): Implement GenerateMetadataProto for
-  // TracingScenario.
 }
 
 void BackgroundTracingManagerImpl::AbortScenarioForTesting() {
