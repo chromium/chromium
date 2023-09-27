@@ -15,6 +15,7 @@
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/delay_policy.h"
+#include "base/task/task_features.h"
 #include "base/task/thread_pool/task.h"
 #include "base/thread_annotations.h"
 #include "base/time/default_tick_clock.h"
@@ -135,6 +136,8 @@ class BASE_EXPORT DelayedTaskManager {
       GUARDED_BY(queue_lock_);
 
   bool align_wake_ups_ GUARDED_BY(queue_lock_) = false;
+  base::TimeDelta max_precise_delay GUARDED_BY(queue_lock_) =
+      kDefaultMaxPreciseDelay;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

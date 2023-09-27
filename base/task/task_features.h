@@ -46,6 +46,11 @@ constexpr TimeDelta kDefaultLeeway = Milliseconds(8);
 #endif  // #if !BUILDFLAG(IS_WIN)
 extern const BASE_EXPORT base::FeatureParam<TimeDelta> kTaskLeewayParam;
 
+// We consider that delayed tasks above |kMaxPreciseDelay| never need
+// DelayPolicy::kPrecise. The default value is slightly above 30Hz timer.
+constexpr TimeDelta kDefaultMaxPreciseDelay = Milliseconds(36);
+extern const BASE_EXPORT base::FeatureParam<TimeDelta> kMaxPreciseDelay;
+
 // Under this feature, wake ups are aligned at a 8ms boundary when allowed per
 // DelayPolicy.
 BASE_EXPORT BASE_DECLARE_FEATURE(kAlignWakeUps);

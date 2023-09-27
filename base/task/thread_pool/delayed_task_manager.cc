@@ -73,6 +73,7 @@ void DelayedTaskManager::Start(
     DCHECK(!service_thread_task_runner_);
     service_thread_task_runner_ = std::move(service_thread_task_runner);
     align_wake_ups_ = FeatureList::IsEnabled(kAlignWakeUps);
+    max_precise_delay = kMaxPreciseDelay.Get();
     std::tie(process_ripe_tasks_time, delay_policy) =
         GetTimeAndDelayPolicyToScheduleProcessRipeTasksLockRequired();
   }
@@ -97,6 +98,10 @@ void DelayedTaskManager::AddDelayedTask(
   subtle::DelayPolicy delay_policy;
   {
     CheckedAutoLock auto_lock(queue_lock_);
+    task.delay_policy = subtle::MaybeOverrideDelayPolicy(
+        task.delay_policy, task.delayed_run_time - task.queue_time,
+        max_precise_delay);
+
     auto [old_process_ripe_tasks_time, old_delay_policy] =
         GetTimeAndDelayPolicyToScheduleProcessRipeTasksLockRequired();
     delayed_task_queue_.insert(DelayedTask(std::move(task),

@@ -49,6 +49,8 @@ BASE_FEATURE(kAddTaskLeewayFeature,
 
 const base::FeatureParam<TimeDelta> kTaskLeewayParam{&kAddTaskLeewayFeature,
                                                      "leeway", kDefaultLeeway};
+const base::FeatureParam<TimeDelta> kMaxPreciseDelay{
+    &kAddTaskLeewayFeature, "max_precise_delay", kDefaultMaxPreciseDelay};
 
 BASE_FEATURE(kAlignWakeUps, "AlignWakeUps", base::FEATURE_DISABLED_BY_DEFAULT);
 
