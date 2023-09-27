@@ -65,10 +65,6 @@ class FormDataImporter : public PersonalDataManagerObserver {
 
   ~FormDataImporter() override;
 
-  using CardGuid = base::StrongAlias<class CardGuidTag, std::string>;
-  using CardLastFourDigits =
-      base::StrongAlias<class CardLastFourDigitsTag, std::string>;
-
   // Imports the form data, submitted by the user, into
   // `personal_data_manager_`. If a new credit card was detected and
   // `payment_methods_autofill_enabled` is set to `true`, also begins the
