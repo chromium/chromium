@@ -3968,6 +3968,19 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, NoDragForDownwardEvent) {
   EndScroll(/*is_fling=*/false, 0.f);
 }
 
+// Verifies that there is no crash on shutdown while swipe from home to overview
+// is in progress.
+TEST_F(ShelfLayoutManagerWindowDraggingTest,
+       ShutdownWhileSwipingHomeToOverview) {
+  const gfx::Rect shelf_widget_bounds =
+      GetShelfWidget()->GetWindowBoundsInScreen();
+  StartScroll(shelf_widget_bounds.bottom_center());
+  UpdateScroll(gfx::Vector2d(0, -20));
+  UpdateScroll(gfx::Vector2d(0, -20));
+  ASSERT_TRUE(
+      GetShelfLayoutManager()->swipe_home_to_overview_controller_for_testing());
+}
+
 class ShelfLayoutManagerKeyboardTest : public AshTestBase {
  public:
   ShelfLayoutManagerKeyboardTest() = default;

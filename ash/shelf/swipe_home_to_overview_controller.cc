@@ -203,8 +203,14 @@ void SwipeHomeToOverviewController::FinalizeDragAndStayOnHomeScreen(
   overview_transition_threshold_y_ = 0;
   state_ = State::kFinished;
 
+  // App list controller may get destroyed before shelf during shutdown.
+  auto* const app_list_controller = Shell::Get()->app_list_controller();
+  if (!app_list_controller) {
+    return;
+  }
+
   if (go_back) {
-    Shell::Get()->app_list_controller()->Back();
+    app_list_controller->Back();
     UMA_HISTOGRAM_ENUMERATION(kEnterOverviewHistogramName,
                               EnterOverviewFromHomeLauncher::kBack);
   } else {
@@ -215,7 +221,7 @@ void SwipeHomeToOverviewController::FinalizeDragAndStayOnHomeScreen(
   // Make sure the home launcher scale and opacity return to the initial state.
   // Note that this is needed even if the gesture ended up in a fling, as early
   // gesture handling might have updated the launcher scale.
-  Shell::Get()->app_list_controller()->UpdateScaleAndOpacityForHomeLauncher(
+  app_list_controller->UpdateScaleAndOpacityForHomeLauncher(
       1.0f /*scale*/, 1.0f /*opacity*/, absl::nullopt /*animation_info*/,
       base::BindRepeating(&UpdateHomeAnimationForGestureCancel, go_back));
 }
