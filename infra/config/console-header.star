@@ -155,7 +155,7 @@ HEADER = headers.header(
                 ),
                 headers.link(
                     text = "checks",
-                    url = "/p/{}/checks/builders".format(settings.project),
+                    url = "/p/{}/g/checks".format(settings.project),
                     alt = "Checks console",
                 ),
                 headers.link(
