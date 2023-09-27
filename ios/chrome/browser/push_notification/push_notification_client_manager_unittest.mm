@@ -33,88 +33,88 @@ TestPushNotificationClient* GetClient(
 class PushNotificationClientManagerTest : public PlatformTest {
  protected:
   PushNotificationClientManagerTest() {
-    size_t number_of_clients = manager->GetPushNotificationClients().size();
+    size_t number_of_clients = manager_->GetPushNotificationClients().size();
 
     for (size_t i = 0; i < number_of_clients; i++) {
-      manager->RemovePushNotificationClient(
-          GetClient(manager, i)->GetClientId());
+      manager_->RemovePushNotificationClient(
+          GetClient(manager_, i)->GetClientId());
     }
   }
-  std::unique_ptr<PushNotificationClientManager> manager =
+  std::unique_ptr<PushNotificationClientManager> manager_ =
       std::make_unique<PushNotificationClientManager>();
 };
 
 TEST_F(PushNotificationClientManagerTest, AddClient) {
   const unsigned long number_of_clients = 1;
-  GenerateClients(manager, number_of_clients);
+  GenerateClients(manager_, number_of_clients);
 
-  ASSERT_EQ(number_of_clients, manager->GetPushNotificationClients().size());
+  ASSERT_EQ(number_of_clients, manager_->GetPushNotificationClients().size());
 }
 
 TEST_F(PushNotificationClientManagerTest, AddMultipleClients) {
   const unsigned long number_of_clients = 5;
-  GenerateClients(manager, number_of_clients);
+  GenerateClients(manager_, number_of_clients);
 
-  ASSERT_EQ(number_of_clients, manager->GetPushNotificationClients().size());
+  ASSERT_EQ(number_of_clients, manager_->GetPushNotificationClients().size());
 }
 
 TEST_F(PushNotificationClientManagerTest, HandleNotificationReception) {
-  GenerateClients(manager, 1);
+  GenerateClients(manager_, 1);
   ASSERT_EQ(UIBackgroundFetchResultNoData,
-            manager->HandleNotificationReception(nil));
+            manager_->HandleNotificationReception(nil));
 }
 
 TEST_F(PushNotificationClientManagerTest,
        HandleNotificationReceptionWithNewData) {
   const unsigned long number_of_clients = 5;
-  GenerateClients(manager, number_of_clients);
+  GenerateClients(manager_, number_of_clients);
 
-  TestPushNotificationClient* client = GetClient(manager, 0);
+  TestPushNotificationClient* client = GetClient(manager_, 0);
   client->SetBackgroundFetchResult(UIBackgroundFetchResultNewData);
   ASSERT_EQ(UIBackgroundFetchResultNewData,
-            manager->HandleNotificationReception(nil));
+            manager_->HandleNotificationReception(nil));
 }
 
 TEST_F(PushNotificationClientManagerTest,
        HandleNotificationReceptionWithFailure) {
   const unsigned long number_of_clients = 5;
-  GenerateClients(manager, number_of_clients);
+  GenerateClients(manager_, number_of_clients);
 
-  TestPushNotificationClient* client = GetClient(manager, 0);
+  TestPushNotificationClient* client = GetClient(manager_, 0);
   client->SetBackgroundFetchResult(UIBackgroundFetchResultFailed);
   ASSERT_EQ(UIBackgroundFetchResultFailed,
-            manager->HandleNotificationReception(nil));
+            manager_->HandleNotificationReception(nil));
 }
 
 TEST_F(PushNotificationClientManagerTest,
        HandleNotificationReceptionWithNewDataAndFailure) {
   const unsigned long number_of_clients = 5;
-  GenerateClients(manager, number_of_clients);
+  GenerateClients(manager_, number_of_clients);
 
-  GetClient(manager, 0)
+  GetClient(manager_, 0)
       ->SetBackgroundFetchResult(UIBackgroundFetchResultNewData);
-  GetClient(manager, 1)
+  GetClient(manager_, 1)
       ->SetBackgroundFetchResult(UIBackgroundFetchResultFailed);
   ASSERT_EQ(UIBackgroundFetchResultNewData,
-            manager->HandleNotificationReception(nil));
+            manager_->HandleNotificationReception(nil));
 }
 
 TEST_F(PushNotificationClientManagerTest, HandleNotificationInteraction) {
   const unsigned long number_of_clients = 1;
-  GenerateClients(manager, number_of_clients);
+  GenerateClients(manager_, number_of_clients);
 
-  manager->HandleNotificationInteraction(nil);
-  ASSERT_TRUE(GetClient(manager, 0)->HasNotificationReceivedInteraction());
+  manager_->HandleNotificationInteraction(nil);
+  ASSERT_TRUE(GetClient(manager_, 0)->HasNotificationReceivedInteraction());
 }
 
 TEST_F(PushNotificationClientManagerTest,
        HandleNotificationInteractionWithMultipleClients) {
   const unsigned long number_of_clients = 5;
-  GenerateClients(manager, number_of_clients);
+  GenerateClients(manager_, number_of_clients);
 
-  manager->HandleNotificationInteraction(nil);
-  for (size_t i = 0; i < manager->GetPushNotificationClients().size(); i++) {
-    ASSERT_TRUE(GetClient(manager, i)->HasNotificationReceivedInteraction());
+  manager_->HandleNotificationInteraction(nil);
+  for (size_t i = 0; i < manager_->GetPushNotificationClients().size(); i++) {
+    ASSERT_TRUE(GetClient(manager_, i)->HasNotificationReceivedInteraction());
   }
 }
 
@@ -125,8 +125,8 @@ TEST_F(PushNotificationClientManagerTest,
 #define MAYBE_BrowserReady BrowserReady
 #endif
 TEST_F(PushNotificationClientManagerTest, MAYBE_BrowserReady) {
-  GenerateClients(manager, 1);
-  EXPECT_FALSE(GetClient(manager, 0)->IsBrowserReady());
-  manager->OnSceneActiveForegroundBrowserReady();
-  EXPECT_TRUE(GetClient(manager, 0)->IsBrowserReady());
+  GenerateClients(manager_, 1);
+  EXPECT_FALSE(GetClient(manager_, 0)->IsBrowserReady());
+  manager_->OnSceneActiveForegroundBrowserReady();
+  EXPECT_TRUE(GetClient(manager_, 0)->IsBrowserReady());
 }
