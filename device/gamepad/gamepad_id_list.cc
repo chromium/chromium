@@ -605,11 +605,13 @@ constexpr struct GamepadInfo {
     {0x2c22, 0x2302, kXInputTypeNone},
     // DJI
     {0x2ca3, 0x1020, kXInputTypeNone},
+    // 8BitDo
     {0x2dc8, 0x1003, kXInputTypeNone},
     {0x2dc8, 0x1080, kXInputTypeNone},
     {0x2dc8, 0x2830, kXInputTypeNone},
     {0x2dc8, 0x3000, kXInputTypeNone},
     {0x2dc8, 0x3001, kXInputTypeNone},
+    {0x2dc8, 0x3106, kXInputTypeXbox360},
     {0x2dc8, 0x3820, kXInputTypeNone},
     {0x2dc8, 0x9001, kXInputTypeNone},
     {0x2dfa, 0x0001, kXInputTypeNone},
