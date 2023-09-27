@@ -6,6 +6,7 @@ import 'chrome://os-settings/lazy_load.js';
 
 import {NearbyShareReceiveDialogElement} from 'chrome://os-settings/lazy_load.js';
 import {CrCardRadioButtonElement, CrDialogElement, NearbyProgressElement, setContactManagerForTesting, setNearbyShareSettingsForTesting, setReceiveManagerForTesting} from 'chrome://os-settings/os_settings.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {DataUsage, FastInitiationNotificationState, Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNull, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -265,9 +266,15 @@ suite('<nearby-share-receive-dialog>', () => {
       const contactVisibilityElement =
           contactElement.shadowRoot!.querySelector('nearby-contact-visibility');
       assertTrue(!!contactVisibilityElement);
-      const allContacts =
-          contactVisibilityElement.shadowRoot!
-              .querySelector<CrCardRadioButtonElement>('#allContacts');
+      let allContacts;
+      if (loadTimeData.getValue('isSelfShareEnabled')) {
+        allContacts = contactVisibilityElement.shadowRoot!
+                          .querySelector<CrCardRadioButtonElement>('#contacts');
+      } else {
+        allContacts =
+            contactVisibilityElement.shadowRoot!
+                .querySelector<CrCardRadioButtonElement>('#allContacts');
+      }
       assertTrue(!!allContacts);
       assertTrue(allContacts.checked);
       getButton('nearby-visibility-page', '#actionButton').click();
