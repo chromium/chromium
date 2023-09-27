@@ -78,6 +78,7 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_keyboard_layout_map.h"
 #include "ui/gfx/geometry/dip_util.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
 
 using blink::WebInputEvent;
@@ -2074,8 +2075,13 @@ bool RenderWidgetHostViewMac::SyncGetFirstRectForRange(
     // https://crbug.com/121917
     base::ScopedAllowBlocking allow_wait;
     // TODO(thakis): Pipe |actualRange| through TextInputClientMac machinery.
-    *rect = TextInputClientMac::GetInstance()->GetFirstRectForRange(
-        GetFocusedWidget(), requested_range);
+    gfx::Rect blink_rect =
+        TextInputClientMac::GetInstance()->GetFirstRectForRange(
+            GetFocusedWidget(), requested_range);
+
+    // With zoom-for-dsf, RenderWidgetHost coordinate system is physical points,
+    // which means we have to scale the rect by the device scale factor.
+    *rect = gfx::ScaleToEnclosingRect(blink_rect, 1.f / GetDeviceScaleFactor());
   }
   return true;
 }
