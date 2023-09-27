@@ -22,9 +22,10 @@ class GURL;
 - (instancetype)initWithParams:(UIImage*)image
                          title:(NSString*)title
                       subtitle:(NSString*)subtitle
-            primaryActionTitle:(NSString*)primaryAction
+            primaryActionTitle:(NSString*)primaryActionTitle
               instructionSteps:(NSArray<NSString*>*)instructionSteps
                           type:(WhatsNewType)type
+                 primaryAction:(WhatsNewPrimaryAction)primaryAction
                   learnMoreURL:(const GURL&)learnMoreURL
     NS_DESIGNATED_INITIALIZER;
 

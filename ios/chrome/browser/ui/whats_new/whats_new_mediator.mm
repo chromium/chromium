@@ -49,7 +49,8 @@
 
 #pragma mark - WhatsNewDetailViewActionHandler
 
-- (void)didTapActionButton:(WhatsNewType)type {
+- (void)didTapActionButton:(WhatsNewType)type
+             primaryAction:(WhatsNewPrimaryAction)primaryAction {
   const char* type_str = WhatsNewTypeToString(type);
   if (!type_str) {
     return;
@@ -59,32 +60,26 @@
       base::StrCat({"WhatsNew.", type_str, ".PrimaryActionTapped"});
   base::RecordAction(base::UserMetricsAction(metric.c_str()));
 
-  switch (type) {
-    case WhatsNewType::kUseChromeByDefault:
+  switch (primaryAction) {
+    case WhatsNewPrimaryAction::kIOSSettings:
       // Handles actions that open iOS Settings.
       [self openSettingsURLString];
       break;
-    case WhatsNewType::kIncognitoTabsFromOtherApps:
-    case WhatsNewType::kIncognitoLock:
+    case WhatsNewPrimaryAction::kPrivacySettings:
+      // Handles actions that open privacy in Chrome settings.
       [self.handler
           showPrivacySettingsFromViewController:self.baseViewController];
       break;
-    case WhatsNewType::kAddPasswordManually:
+    case WhatsNewPrimaryAction::kChromeSettings:
       // Handles actions that open Chrome Settings.
       [self.handler showSettingsFromViewController:self.baseViewController];
       break;
-    case WhatsNewType::kPasswordsInOtherApps:
+    case WhatsNewPrimaryAction::kIOSSettingsPasswords:
       // Handles actions that open Passwords in iOS Settings.
       ios::provider::PasswordsInOtherAppsOpensSettings();
       break;
-    case WhatsNewType::kSearchTabs:
-    case WhatsNewType::kNewOverflowMenu:
-    case WhatsNewType::kSharedHighlighting:
-    case WhatsNewType::kAutofill:
-    case WhatsNewType::kCalendarEvent:
-    case WhatsNewType::kMiniMaps:
-    case WhatsNewType::kChromeActions:
-    case WhatsNewType::kError:
+    case WhatsNewPrimaryAction::kNoAction:
+    case WhatsNewPrimaryAction::kError:
       NOTREACHED();
       break;
   };

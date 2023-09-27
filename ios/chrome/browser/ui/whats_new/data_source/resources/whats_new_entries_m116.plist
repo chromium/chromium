@@ -36,6 +36,8 @@
             </array>
             <key>PrimaryActionTitle</key>
             <string>IDS_IOS_WHATS_NEW_GOT_TO_SETTINGS_BUTTON_TITLE</string>
+            <key>PrimaryAction</key>
+            <integer>2</integer>
             <key>LearnMoreUrlString</key>
             <string>https://support.google.com/chrome?p=ios_private_browsing_apps</string>
         </dict>
@@ -69,6 +71,8 @@
             </array>
             <key>PrimaryActionTitle</key>
             <string>IDS_IOS_WHATS_NEW_INCOGNITO_LOCK_BUTTON_TITLE</string>
+            <key>PrimaryAction</key>
+            <integer>2</integer>
             <key>LearnMoreUrlString</key>
             <string>https://support.google.com/chrome/?p=ios_incognito_lock</string>
         </dict>

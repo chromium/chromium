@@ -66,7 +66,8 @@
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
-  [self.actionHandler didTapActionButton:self.item.type];
+  [self.actionHandler didTapActionButton:self.item.type
+                           primaryAction:self.item.primaryAction];
 }
 
 - (void)confirmationAlertSecondaryAction {

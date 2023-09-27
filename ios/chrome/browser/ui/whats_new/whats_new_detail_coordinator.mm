@@ -76,6 +76,7 @@
           primaryActionTitle:item.primaryActionTitle
             instructionSteps:item.instructionSteps
                         type:item.type
+               primaryAction:item.primaryAction
                 learnMoreURL:item.learnMoreURL];
       self.whatsNewDetailViewController.actionHandler = self.actionHandler;
       self.whatsNewDetailViewController.delegate = self;
@@ -157,7 +158,8 @@
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
-  [self.actionHandler didTapActionButton:self.item.type];
+  [self.actionHandler didTapActionButton:self.item.type
+                           primaryAction:self.item.primaryAction];
 }
 
 - (void)confirmationAlertSecondaryAction {

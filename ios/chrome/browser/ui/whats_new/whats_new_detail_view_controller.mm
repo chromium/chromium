@@ -64,6 +64,7 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
 @property(nonatomic, copy) NSString* primaryActionString;
 @property(nonatomic, copy) NSArray<NSString*>* instructionSteps;
 @property(nonatomic, assign) WhatsNewType type;
+@property(nonatomic, assign) WhatsNewPrimaryAction primaryAction;
 @property(nonatomic, assign) GURL learnMoreURL;
 
 // The navigation bar at the top of the view.
@@ -76,18 +77,20 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
 - (instancetype)initWithParams:(UIImage*)image
                          title:(NSString*)title
                       subtitle:(NSString*)subtitle
-            primaryActionTitle:(NSString*)primaryAction
+            primaryActionTitle:(NSString*)primaryActionTitle
               instructionSteps:(NSArray<NSString*>*)instructionSteps
                           type:(WhatsNewType)type
+                 primaryAction:(WhatsNewPrimaryAction)primaryAction
                   learnMoreURL:(const GURL&)learnMoreURL {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _bannerImage = image;
     _titleText = title;
     _subtitleText = subtitle;
-    _primaryActionString = primaryAction;
+    _primaryActionString = primaryActionTitle;
     _instructionSteps = instructionSteps;
     _type = type;
+    _primaryAction = primaryAction;
     _learnMoreURL = learnMoreURL;
   }
   return self;
@@ -452,7 +455,8 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
 #pragma mark - Private
 
 - (void)didTapPrimaryActionButton {
-  [self.actionHandler didTapActionButton:self.type];
+  [self.actionHandler didTapActionButton:self.type
+                           primaryAction:self.primaryAction];
 }
 
 - (void)didTaplearnMoreActionButton {

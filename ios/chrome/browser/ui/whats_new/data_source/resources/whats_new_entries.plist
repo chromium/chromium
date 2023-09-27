@@ -106,6 +106,8 @@
             </array>
             <key>PrimaryActionTitle</key>
             <string>IDS_IOS_WHATS_NEW_FEATURE_ADD_PASSWORDS_MANUALLY_BUTTON_TITLE</string>
+            <key>PrimaryAction</key>
+            <integer>3</integer>
             <key>LearnMoreUrlString</key>
             <string>https://support.google.com/chrome/?p=bling_add_password</string>
         </dict>
@@ -139,6 +141,8 @@
             </array>
             <key>PrimaryActionTitle</key>
             <string>IDS_IOS_WHATS_NEW_CHROME_TIP_CHROME_DEFAULT_BUTTON_TITLE</string>
+            <key>PrimaryAction</key>
+            <integer>1</integer>
             <key>LearnMoreUrlString</key>
             <string>https://support.google.com/chrome/?p=bling_default_browser</string>
         </dict>
@@ -168,6 +172,8 @@
             </array>
             <key>PrimaryActionTitle</key>
             <string>IDS_IOS_WHATS_NEW_CHROME_TIP_PASSWORDS_IN_OTHER_APPS_BUTTON_TITLE</string>
+            <key>PrimaryAction</key>
+            <integer>4</integer>
             <key>LearnMoreUrlString</key>
             <string>https://support.google.com/chrome/?p=bling_saved_passwords</string>
         </dict>

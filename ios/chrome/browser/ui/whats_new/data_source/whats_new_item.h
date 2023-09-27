@@ -27,6 +27,19 @@ enum class WhatsNewType {
   kMaxValue = kMiniMaps,
 };
 
+// An enum representing the different primary button actions for features in
+// What's New.
+enum class WhatsNewPrimaryAction {
+  kError = -1,
+  kMinValue = 0,
+  kNoAction = kMinValue,
+  kIOSSettings = 1,
+  kPrivacySettings = 2,
+  kChromeSettings = 3,
+  kIOSSettingsPasswords = 4,
+  kMaxValue = kIOSSettingsPasswords,
+};
+
 class GURL;
 
 // Represents a `WhatsNewEntry`.
@@ -34,6 +47,8 @@ class GURL;
 
 // What's New entry type.
 @property(nonatomic, assign) WhatsNewType type;
+// What's New entry type.
+@property(nonatomic, assign) WhatsNewPrimaryAction primaryAction;
 // What's New entry title.
 @property(nonatomic, copy) NSString* title;
 // What's New entry subtitle.
