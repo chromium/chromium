@@ -631,7 +631,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sUseChimeAndroidSdk =
             new CachedFlag(USE_CHIME_ANDROID_SDK, false);
     public static final CachedFlag sUseLibunwindstackNativeUnwinderAndroid =
-            new CachedFlag(USE_LIBUNWINDSTACK_NATIVE_UNWINDER_ANDROID, false);
+            new CachedFlag(USE_LIBUNWINDSTACK_NATIVE_UNWINDER_ANDROID, true);
 
     public static final List<CachedFlag> sFlagsCachedFullBrowser = List.of(
             // clang-format off
