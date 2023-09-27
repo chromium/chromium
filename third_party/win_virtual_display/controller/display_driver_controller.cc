@@ -7,6 +7,7 @@
 #include <conio.h>
 #include <swdevice.h>
 #include <wrl.h>
+#include <cstdio>
 #include <iostream>
 #include <vector>
 
@@ -47,8 +48,40 @@ int __cdecl main(int argc, char** argv) {
                                SWDeviceCapabilitiesSilentInstall |
                                SWDeviceCapabilitiesDriverRequired;
 
+  int input = -1;
+  printf("Enter the number of virtual displays to create (0 - %zu): ",
+         DriverProperties::kMaxMonitors);
+  int success = scanf("%d", &input);
+  if (success != 1 || input <= 0 ||
+      input > static_cast<int>(DriverProperties::kMaxMonitors)) {
+    printf("\n An error occurred while taking input for # of displays");
+    return 0;
+  }
+  size_t display_count = static_cast<size_t>(input);
+
   // Set configuration properties to send to the driver.
-  DriverProperties p(/*num_displays=*/2);
+  DriverProperties p;
+
+  printf("The supported monitor modes (Width x Height, VSync) are: \n");
+  for (size_t i = 0; i < DriverProperties::kSupportedModesCount; i++) {
+    printf("%zu (%hu, %hu, %hu)\n", i, p.kSupportedModes[i].width,
+           p.kSupportedModes[i].height, p.kSupportedModes[i].vSync);
+  }
+
+  for (size_t i = 0; i < display_count; i++) {
+    printf("Choose the mode for display #%zu: ", i);
+    int index_mode;
+    success = scanf("%d", &index_mode);
+    if (success != 1 || index_mode < 0 ||
+        index_mode >=
+            static_cast<int>(DriverProperties::kSupportedModesCount)) {
+      printf("\n An error occurred while taking input for display mode");
+      return 0;
+    }
+    p.requested_modes[p.monitor_count++] =
+        DriverProperties::kSupportedModes[index_mode];
+  }
+
   DEVPROPERTY properties[1];
   DEVPROPERTY& property = properties[0];
   property.Type = DEVPROP_TYPE_BINARY;

@@ -47,6 +47,10 @@ class Edid {
     std::copy_n(edidData, kBlockSize, edidBlock.begin());
   }
 
+  const std::array<unsigned char, kBlockSize>& getEdidBlock() const {
+    return edidBlock;
+  }
+
   // Return a specified timing entry (Standard timing information; EDID 1.4).
   // There are 8 entries. `entry` should be in in the range [0,8).
   EdidTimingEntry* GetTimingEntry(int entry);

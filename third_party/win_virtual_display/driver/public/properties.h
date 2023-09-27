@@ -8,6 +8,8 @@
 
 #include <Devpropdef.h>
 
+#include <array>
+
 // Defines a GUID to uniquely identify the unified property for display
 // configuration. See:
 // https://learn.microsoft.com/en-us/windows-hardware/drivers/wdf/accessing-the-unified-device-property-model
@@ -28,8 +30,20 @@ DEFINE_DEVPROPKEY(DisplayConfigurationProperty,
 // Define the corresponding structure associated with the
 // `DisplayConfigurationProperty` property key.
 struct DriverProperties {
-  explicit DriverProperties(int n) { num_displays = n; }
-  int num_displays;
+  // Maximum number of virtual displays that may be created.
+  static constexpr size_t kMaxMonitors = 10;
+  struct MonitorMode {
+    unsigned short width;
+    unsigned short height;
+    unsigned char vSync;
+  };
+  // TODO: Add more supported modes
+  static constexpr size_t kSupportedModesCount = 2;
+  static constexpr MonitorMode kSupportedModes[kSupportedModesCount] = {
+      {1024, 768, 120},
+      {1920, 1080, 60}};
+  std::array<MonitorMode, kMaxMonitors> requested_modes = {};
+  int monitor_count = 0;
 };
 
 #endif  // THIRD_PARTY_WIN_VIRTUAL_DISPLAY_DRIVER_PUBLIC_PROPERTIES_H_

@@ -11,6 +11,7 @@
 #include <windows.h>
 
 #include "Direct3DDevice.h"
+#include "IndirectMonitor.h"
 #include "SwapChainProcessor.h"
 #include "Trace.h"
 
@@ -26,6 +27,8 @@ class IndirectDeviceContext {
   void InitAdapter();
   void FinishInit(UINT ConnectorIndex);
 
+  std::vector<IndirectSampleMonitor> sample_monitors;
+
  protected:
   WDFDEVICE m_WdfDevice;
   IDDCX_ADAPTER m_Adapter;
@@ -40,6 +43,10 @@ class IndirectMonitorContext {
                        LUID RenderAdapter,
                        HANDLE NewFrameEvent);
   void UnassignSwapChain();
+
+  // Default modes reported for edid-less monitors. The first mode is set as
+  // preferred
+  std::vector<DriverProperties::MonitorMode> default_mode_list;
 
  private:
   IDDCX_MONITOR m_Monitor;
