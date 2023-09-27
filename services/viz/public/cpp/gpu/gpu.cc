@@ -89,10 +89,12 @@ class Gpu::GpuPtrIO {
 
  private:
   void ConnectionError();
-  void OnEstablishedGpuChannel(int client_id,
-                               mojo::ScopedMessagePipeHandle channel_handle,
-                               const gpu::GPUInfo& gpu_info,
-                               const gpu::GpuFeatureInfo& gpu_feature_info);
+  void OnEstablishedGpuChannel(
+      int client_id,
+      mojo::ScopedMessagePipeHandle channel_handle,
+      const gpu::GPUInfo& gpu_info,
+      const gpu::GpuFeatureInfo& gpu_feature_info,
+      const gpu::SharedImageCapabilities& shared_image_capabilities);
 
   mojo::Remote<mojom::Gpu> gpu_remote_;
 
@@ -177,10 +179,12 @@ class Gpu::EstablishRequest
     parent_->OnEstablishedGpuChannel();
   }
 
-  void OnEstablishedGpuChannel(int client_id,
-                               mojo::ScopedMessagePipeHandle channel_handle,
-                               const gpu::GPUInfo& gpu_info,
-                               const gpu::GpuFeatureInfo& gpu_feature_info) {
+  void OnEstablishedGpuChannel(
+      int client_id,
+      mojo::ScopedMessagePipeHandle channel_handle,
+      const gpu::GPUInfo& gpu_info,
+      const gpu::GpuFeatureInfo& gpu_feature_info,
+      const gpu::SharedImageCapabilities& shared_image_capabilities) {
     DCHECK(!main_task_runner_->BelongsToCurrentThread());
     base::AutoLock lock(lock_);
 
@@ -192,7 +196,8 @@ class Gpu::EstablishRequest
     received_ = true;
     if (channel_handle.is_valid()) {
       gpu_channel_ = base::MakeRefCounted<gpu::GpuChannelHost>(
-          client_id, gpu_info, gpu_feature_info, std::move(channel_handle));
+          client_id, gpu_info, gpu_feature_info, shared_image_capabilities,
+          std::move(channel_handle));
     }
 
     if (establish_event_) {
@@ -234,8 +239,8 @@ void Gpu::GpuPtrIO::ConnectionError() {
   // Make sure |establish_request_| fails so the main thread doesn't block
   // forever after calling Gpu::EstablishGpuChannelSync().
   establish_request_->OnEstablishedGpuChannel(
-      0, mojo::ScopedMessagePipeHandle(), gpu::GPUInfo(),
-      gpu::GpuFeatureInfo());
+      0, mojo::ScopedMessagePipeHandle(), gpu::GPUInfo(), gpu::GpuFeatureInfo(),
+      gpu::SharedImageCapabilities());
   establish_request_.reset();
 }
 
@@ -243,13 +248,14 @@ void Gpu::GpuPtrIO::OnEstablishedGpuChannel(
     int client_id,
     mojo::ScopedMessagePipeHandle channel_handle,
     const gpu::GPUInfo& gpu_info,
-    const gpu::GpuFeatureInfo& gpu_feature_info) {
+    const gpu::GpuFeatureInfo& gpu_feature_info,
+    const gpu::SharedImageCapabilities& shared_image_capabilities) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(establish_request_);
 
   establish_request_->OnEstablishedGpuChannel(
       client_id, std::move(channel_handle), std::move(gpu_info),
-      std::move(gpu_feature_info));
+      std::move(gpu_feature_info), std::move(shared_image_capabilities));
   establish_request_.reset();
 }
 

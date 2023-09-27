@@ -338,6 +338,7 @@ mojom("interfaces") {
     "mailbox.mojom",
     "mailbox_holder.mojom",
     "memory_stats.mojom",
+    "shared_image_capabilities.mojom",
     "sync_token.mojom",
     "vulkan_ycbcr_info.mojom",
   ]
@@ -504,6 +505,17 @@ mojom("interfaces") {
         },
       ]
       traits_headers = [ "mailbox_holder_mojom_traits.h" ]
+      traits_public_deps = [ ":mojom_traits" ]
+    },
+    {
+      types = [
+        {
+          mojom = "gpu.mojom.SharedImageCapabilities"
+          cpp = "::gpu::SharedImageCapabilities"
+        },
+      ]
+      traits_sources = [ "shared_image_capabilities_mojom_traits.cc" ]
+      traits_headers = [ "shared_image_capabilities_mojom_traits.h" ]
       traits_public_deps = [ ":mojom_traits" ]
     },
     {

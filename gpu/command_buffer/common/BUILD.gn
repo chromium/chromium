@@ -93,6 +93,7 @@ source_set("common_sources") {
     "presentation_feedback_utils.h",
     "scheduling_priority.cc",
     "scheduling_priority.h",
+    "shared_image_capabilities.h",
     "shared_image_trace_utils.cc",
     "shared_image_trace_utils.h",
     "shared_image_usage.cc",

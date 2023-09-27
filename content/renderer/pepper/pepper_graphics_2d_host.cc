@@ -657,9 +657,10 @@ bool PepperGraphics2DHost::PrepareTransferableResource(
         upload_bgra ? viz::SinglePlaneFormat::kBGRA_8888
                     : viz::SinglePlaneFormat::kRGBA_8888;
 
-    bool overlays_supported =
-        enable_gpu_memory_buffer_ && main_thread_context_->ContextCapabilities()
-                                         .supports_scanout_shared_images;
+    bool overlays_supported = enable_gpu_memory_buffer_ &&
+                              main_thread_context_->SharedImageInterface()
+                                  ->GetCapabilities()
+                                  .supports_scanout_shared_images;
     uint32_t texture_target = GL_TEXTURE_2D;
     if (overlays_supported) {
       texture_target = gpu::GetBufferTextureTarget(

@@ -50,7 +50,6 @@ class CanvasResourceProviderTest : public Test {
     test_context_provider_ = viz::TestContextProvider::Create();
     auto* test_gl = test_context_provider_->UnboundTestContextGL();
     test_gl->set_max_texture_size(kMaxTextureSize);
-    test_gl->set_supports_scanout_shared_images(true);
     test_gl->set_supports_shared_image_swap_chain(true);
     test_gl->set_supports_gpu_memory_buffer_format(gfx::BufferFormat::RGBA_8888,
                                                    true);
@@ -58,6 +57,12 @@ class CanvasResourceProviderTest : public Test {
                                                    true);
     test_gl->set_supports_gpu_memory_buffer_format(gfx::BufferFormat::RGBA_F16,
                                                    true);
+
+    gpu::SharedImageCapabilities shared_image_caps;
+    shared_image_caps.supports_scanout_shared_images = true;
+    test_context_provider_->SharedImageInterface()->SetCapabilities(
+        shared_image_caps);
+
     InitializeSharedGpuContextGLES2(test_context_provider_.get(),
                                     &image_decode_cache_);
     context_provider_wrapper_ = SharedGpuContext::ContextProviderWrapper();

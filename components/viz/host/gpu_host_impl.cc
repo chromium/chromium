@@ -243,6 +243,7 @@ void GpuHostImpl::EstablishGpuChannel(int client_id,
     DVLOG(1) << "GPU access blocked, refusing to open a GPU channel.";
     std::move(callback).Run(mojo::ScopedMessagePipeHandle(), gpu::GPUInfo(),
                             gpu::GpuFeatureInfo(),
+                            gpu::SharedImageCapabilities(),
                             EstablishChannelStatus::kGpuAccessDenied);
     return;
   }
@@ -252,6 +253,7 @@ void GpuHostImpl::EstablishGpuChannel(int client_id,
     // special client ids.
     std::move(callback).Run(mojo::ScopedMessagePipeHandle(), gpu::GPUInfo(),
                             gpu::GpuFeatureInfo(),
+                            gpu::SharedImageCapabilities(),
                             EstablishChannelStatus::kGpuAccessDenied);
     return;
   }
@@ -261,14 +263,15 @@ void GpuHostImpl::EstablishGpuChannel(int client_id,
     mojo::ScopedMessagePipeHandle channel_handle;
     gpu::GPUInfo gpu_info;
     gpu::GpuFeatureInfo gpu_feature_info;
+    gpu::SharedImageCapabilities shared_image_capabilities;
     {
       mojo::SyncCallRestrictions::ScopedAllowSyncCall scoped_allow;
-      gpu_service_remote_->EstablishGpuChannel(client_id, client_tracing_id,
-                                               is_gpu_host, &channel_handle,
-                                               &gpu_info, &gpu_feature_info);
+      gpu_service_remote_->EstablishGpuChannel(
+          client_id, client_tracing_id, is_gpu_host, &channel_handle, &gpu_info,
+          &gpu_feature_info, &shared_image_capabilities);
     }
     OnChannelEstablished(client_id, true, std::move(channel_handle), gpu_info,
-                         gpu_feature_info);
+                         gpu_feature_info, shared_image_capabilities);
   } else {
     gpu_service_remote_->EstablishGpuChannel(
         client_id, client_tracing_id, is_gpu_host,
@@ -357,7 +360,8 @@ void GpuHostImpl::SendOutstandingReplies() {
   for (auto& entry : channel_requests_) {
     std::move(entry.second)
         .Run(mojo::ScopedMessagePipeHandle(), gpu::GPUInfo(),
-             gpu::GpuFeatureInfo(), EstablishChannelStatus::kGpuHostInvalid);
+             gpu::GpuFeatureInfo(), gpu::SharedImageCapabilities(),
+             EstablishChannelStatus::kGpuHostInvalid);
   }
   channel_requests_.clear();
 }
@@ -471,7 +475,8 @@ void GpuHostImpl::OnChannelEstablished(
     bool sync,
     mojo::ScopedMessagePipeHandle channel_handle,
     const gpu::GPUInfo& gpu_info,
-    const gpu::GpuFeatureInfo& gpu_feature_info) {
+    const gpu::GpuFeatureInfo& gpu_feature_info,
+    const gpu::SharedImageCapabilities& shared_image_capabilities) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("gpu", "GpuHostImpl::OnChannelEstablished");
 
@@ -491,6 +496,7 @@ void GpuHostImpl::OnChannelEstablished(
     gpu_service_remote_->CloseChannel(client_id);
     std::move(callback).Run(mojo::ScopedMessagePipeHandle(), gpu::GPUInfo(),
                             gpu::GpuFeatureInfo(),
+                            gpu::SharedImageCapabilities(),
                             EstablishChannelStatus::kGpuAccessDenied);
     RecordLogMessage(logging::LOG_WARNING, "WARNING",
                      "Hardware acceleration is unavailable.");
@@ -504,10 +510,12 @@ void GpuHostImpl::OnChannelEstablished(
   // this point, so the delegate_ methods won't have the GPU info structs yet.
   if (sync) {
     std::move(callback).Run(std::move(channel_handle), gpu_info,
-                            gpu_feature_info, EstablishChannelStatus::kSuccess);
+                            gpu_feature_info, shared_image_capabilities,
+                            EstablishChannelStatus::kSuccess);
   } else {
     std::move(callback).Run(std::move(channel_handle), delegate_->GetGPUInfo(),
                             delegate_->GetGpuFeatureInfo(),
+                            shared_image_capabilities,
                             EstablishChannelStatus::kSuccess);
   }
 }

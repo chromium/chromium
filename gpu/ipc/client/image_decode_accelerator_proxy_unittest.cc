@@ -43,6 +43,7 @@ class TestGpuChannelHost : public GpuChannelHost {
       : GpuChannelHost(kChannelId,
                        info,
                        GpuFeatureInfo(),
+                       SharedImageCapabilities(),
                        mojo::ScopedMessagePipeHandle(
                            mojo::MessagePipeHandle(mojo::kInvalidHandleValue))),
         gpu_channel_(gpu_channel) {}

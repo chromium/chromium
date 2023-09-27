@@ -28,6 +28,7 @@ GpuChannelHost::GpuChannelHost(
     int channel_id,
     const gpu::GPUInfo& gpu_info,
     const gpu::GpuFeatureInfo& gpu_feature_info,
+    const gpu::SharedImageCapabilities& shared_image_capabilities,
     mojo::ScopedMessagePipeHandle handle,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
     : io_thread_(io_task_runner
@@ -40,8 +41,8 @@ GpuChannelHost::GpuChannelHost(
       connection_tracker_(base::MakeRefCounted<ConnectionTracker>()),
       shared_image_interface_(
           this,
-          static_cast<int32_t>(
-              GpuChannelReservedRoutes::kSharedImageInterface)),
+          static_cast<int32_t>(GpuChannelReservedRoutes::kSharedImageInterface),
+          shared_image_capabilities),
       image_decode_accelerator_proxy_(
           this,
           static_cast<int32_t>(

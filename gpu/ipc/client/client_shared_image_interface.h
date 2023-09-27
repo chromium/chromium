@@ -113,6 +113,8 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
 
   void WaitForMailboxToBeMappable(const Mailbox& mailbox) override;
 
+  const SharedImageCapabilities& GetCapabilities() override;
+
  private:
   Mailbox AddMailbox(const Mailbox& mailbox);
 

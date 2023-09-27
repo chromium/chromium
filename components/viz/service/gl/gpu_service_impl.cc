@@ -33,6 +33,7 @@
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
@@ -1129,7 +1130,8 @@ void GpuServiceImpl::EstablishGpuChannel(int32_t client_id,
       // This returns a null handle, which is treated by the client as a failure
       // case.
       std::move(callback).Run(mojo::ScopedMessagePipeHandle(), gpu::GPUInfo(),
-                              gpu::GpuFeatureInfo());
+                              gpu::GpuFeatureInfo(),
+                              gpu::SharedImageCapabilities());
       return;
     }
 
@@ -1150,7 +1152,8 @@ void GpuServiceImpl::EstablishGpuChannel(int32_t client_id,
     // This returns a null handle, which is treated by the client as a failure
     // case.
     std::move(callback).Run(mojo::ScopedMessagePipeHandle(), gpu::GPUInfo(),
-                            gpu::GpuFeatureInfo());
+                            gpu::GpuFeatureInfo(),
+                            gpu::SharedImageCapabilities());
     return;
   }
   mojo::MessagePipe pipe;
@@ -1159,8 +1162,9 @@ void GpuServiceImpl::EstablishGpuChannel(int32_t client_id,
   media_gpu_channel_manager_->AddChannel(client_id, channel_token);
 
   gpu_channel->SetGpuExtraInfo(gpu_extra_info_);
-  std::move(callback).Run(std::move(pipe.handle1), gpu_info_,
-                          gpu_feature_info_);
+  std::move(callback).Run(
+      std::move(pipe.handle1), gpu_info_, gpu_feature_info_,
+      gpu_channel->shared_image_stub()->factory()->MakeCapabilities());
 }
 
 void GpuServiceImpl::SetChannelClientPid(int32_t client_id,

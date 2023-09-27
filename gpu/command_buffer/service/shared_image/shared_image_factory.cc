@@ -851,6 +851,13 @@ void SharedImageFactory::RegisterSharedImageBackingFactoryForTesting(
   backing_factory_for_testing_ = factory;
 }
 
+gpu::SharedImageCapabilities SharedImageFactory::MakeCapabilities() {
+  gpu::SharedImageCapabilities shared_image_caps;
+  shared_image_caps.supports_scanout_shared_images =
+      SharedImageManager::SupportsScanoutImages();
+  return shared_image_caps;
+}
+
 void SharedImageFactory::SetGpuExtraInfo(
     const gfx::GpuExtraInfo& gpu_extra_info) {
   gpu_extra_info_ = gpu_extra_info;

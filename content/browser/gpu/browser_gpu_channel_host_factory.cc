@@ -104,10 +104,12 @@ class BrowserGpuChannelHostFactory::EstablishRequest
   // that case we make the sync mojo call since we're on the UI thread and
   // therefore can't wait for an async mojo reply on the same thread.
   void Establish(bool sync);
-  void OnEstablished(mojo::ScopedMessagePipeHandle channel_handle,
-                     const gpu::GPUInfo& gpu_info,
-                     const gpu::GpuFeatureInfo& gpu_feature_info,
-                     viz::GpuHostImpl::EstablishChannelStatus status);
+  void OnEstablished(
+      mojo::ScopedMessagePipeHandle channel_handle,
+      const gpu::GPUInfo& gpu_info,
+      const gpu::GpuFeatureInfo& gpu_feature_info,
+      const gpu::SharedImageCapabilities& shared_image_capabilities,
+      viz::GpuHostImpl::EstablishChannelStatus status);
   void Finish();
   void FinishAndRunCallbacksOnMain();
   void FinishOnMain();
@@ -181,6 +183,7 @@ void BrowserGpuChannelHostFactory::EstablishRequest::OnEstablished(
     mojo::ScopedMessagePipeHandle channel_handle,
     const gpu::GPUInfo& gpu_info,
     const gpu::GpuFeatureInfo& gpu_feature_info,
+    const gpu::SharedImageCapabilities& shared_image_capabilities,
     viz::GpuHostImpl::EstablishChannelStatus status) {
   if (!channel_handle.is_valid() &&
       status == viz::GpuHostImpl::EstablishChannelStatus::kGpuHostInvalid &&
@@ -205,8 +208,8 @@ void BrowserGpuChannelHostFactory::EstablishRequest::OnEstablished(
 
   if (channel_handle.is_valid()) {
     gpu_channel_ = base::MakeRefCounted<gpu::GpuChannelHost>(
-        gpu_client_id_, gpu_info, gpu_feature_info, std::move(channel_handle),
-        GetIOThreadTaskRunner({}));
+        gpu_client_id_, gpu_info, gpu_feature_info, shared_image_capabilities,
+        std::move(channel_handle), GetIOThreadTaskRunner({}));
   }
   Finish();
 }

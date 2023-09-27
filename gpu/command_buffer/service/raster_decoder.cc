@@ -1229,8 +1229,6 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
   caps.texture_format_bgra8888 =
       feature_info()->feature_flags().ext_texture_format_bgra8888;
   caps.texture_rg = feature_info()->feature_flags().ext_texture_rg;
-  caps.supports_scanout_shared_images =
-      SharedImageManager::SupportsScanoutImages();
   caps.supports_luminance_shared_images =
       !feature_info()->gl_version_info().is_angle_metal;
   caps.disable_r8_shared_images =

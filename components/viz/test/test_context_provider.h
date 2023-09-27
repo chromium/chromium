@@ -24,6 +24,7 @@
 #include "components/viz/test/test_context_support.h"
 #include "gpu/command_buffer/client/gles2_interface_stub.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/ipc/client/shared_image_interface_proxy.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -141,6 +142,9 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
   }
   bool CheckSharedImageExists(const gpu::Mailbox& mailbox) const;
 
+  const gpu::SharedImageCapabilities& GetCapabilities() override;
+  void SetCapabilities(const gpu::SharedImageCapabilities& caps);
+
  private:
   mutable base::Lock lock_;
 
@@ -153,6 +157,7 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
   base::flat_map<gpu::Mailbox,
                  gpu::SharedImageInterfaceProxy::GpuMemoryBufferHandleInfo>
       mailbox_to_gmb_handle_info_map_;
+  gpu::SharedImageCapabilities shared_image_capabilities_;
 };
 
 class TestContextProvider

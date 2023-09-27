@@ -1433,8 +1433,6 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
   // so that clients can use this to detect support.
   caps.supports_yuv_readback = true;
   caps.texture_npot = feature_info_->feature_flags().npot_ok;
-  caps.supports_scanout_shared_images =
-      SharedImageManager::SupportsScanoutImages();
   caps.supports_luminance_shared_images =
       !feature_info_->gl_version_info().is_angle_metal;
   caps.disable_r8_shared_images =

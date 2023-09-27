@@ -43,6 +43,7 @@ class TestSharedImageInterface;
 
 namespace gpu {
 class GpuMemoryBufferManager;
+struct SharedImageCapabilities;
 
 // An interface to create shared images and swap chains that can be imported
 // into other APIs. This interface is thread-safe and (essentially) stateless.
@@ -361,6 +362,8 @@ class GPU_EXPORT SharedImageInterface {
   // This api is required to provide flexibility to clients by allowing them to
   // choose where it wants the blocking to happen.
   virtual void WaitForMailboxToBeMappable(const Mailbox& mailbox);
+
+  virtual const SharedImageCapabilities& GetCapabilities() = 0;
 };
 
 }  // namespace gpu

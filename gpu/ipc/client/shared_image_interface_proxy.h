@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/buffer.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
 
 namespace viz {
 class SharedImageFormat;
@@ -26,7 +27,10 @@ class GpuChannelHost;
 // Proxy that sends commands over GPU channel IPCs for managing shared images.
 class SharedImageInterfaceProxy {
  public:
-  explicit SharedImageInterfaceProxy(GpuChannelHost* host, int32_t route_id);
+  explicit SharedImageInterfaceProxy(
+      GpuChannelHost* host,
+      int32_t route_id,
+      const gpu::SharedImageCapabilities& capabilities);
   ~SharedImageInterfaceProxy();
 
   struct GpuMemoryBufferHandleInfo {
@@ -165,6 +169,10 @@ class SharedImageInterfaceProxy {
   GpuMemoryBufferHandleInfo GetGpuMemoryBufferHandleInfo(
       const Mailbox& mailbox);
 
+  const gpu::SharedImageCapabilities& GetCapabilities() {
+    return capabilities_;
+  }
+
  private:
   bool GetSHMForPixelData(base::span<const uint8_t> pixel_data,
                           size_t* shm_offset,
@@ -190,6 +198,8 @@ class SharedImageInterfaceProxy {
   size_t upload_buffer_offset_ GUARDED_BY(lock_) = 0;
 
   base::flat_map<Mailbox, SharedImageInfo> mailbox_infos_ GUARDED_BY(lock_);
+
+  const gpu::SharedImageCapabilities capabilities_;
 };
 
 }  // namespace gpu

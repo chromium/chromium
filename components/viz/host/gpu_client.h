@@ -108,10 +108,12 @@ class VIZ_HOST_EXPORT GpuClient : public mojom::GpuMemoryBufferFactory,
     kConnectionLost
   };
   void OnError(ErrorReason reason);
-  void OnEstablishGpuChannel(mojo::ScopedMessagePipeHandle channel_handle,
-                             const gpu::GPUInfo& gpu_info,
-                             const gpu::GpuFeatureInfo& gpu_feature_info,
-                             GpuHostImpl::EstablishChannelStatus status);
+  void OnEstablishGpuChannel(
+      mojo::ScopedMessagePipeHandle channel_handle,
+      const gpu::GPUInfo& gpu_info,
+      const gpu::GpuFeatureInfo& gpu_feature_info,
+      const gpu::SharedImageCapabilities& shared_image_capabilities,
+      GpuHostImpl::EstablishChannelStatus status);
   void OnCreateGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
                                gfx::GpuMemoryBufferHandle handle);
   void ClearCallback();
@@ -134,6 +136,7 @@ class VIZ_HOST_EXPORT GpuClient : public mojom::GpuMemoryBufferFactory,
   mojo::ScopedMessagePipeHandle channel_handle_;
   gpu::GPUInfo gpu_info_;
   gpu::GpuFeatureInfo gpu_feature_info_;
+  gpu::SharedImageCapabilities shared_image_capabilities_;
   ConnectionErrorHandlerClosure connection_error_handler_;
   // |task_runner_| is associated with the thread |gpu_bindings_| is bound
   // on. GpuClient instance is bound to this thread, and must be destroyed on

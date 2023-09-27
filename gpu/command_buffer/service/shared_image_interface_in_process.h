@@ -139,6 +139,8 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
   scoped_refptr<gfx::NativePixmap> GetNativePixmap(
       const gpu::Mailbox& mailbox) override;
 
+  const SharedImageCapabilities& GetCapabilities() override;
+
  private:
   // Parameters needed to be passed in to set up the class on the GPU.
   // Needed since we cannot pass refcounted instances (e.g.
@@ -228,6 +230,8 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
   void DestroySharedImageOnGpuThread(const Mailbox& mailbox);
   void WaitSyncTokenOnGpuThread(const SyncToken& sync_token);
   void WrapTaskWithGpuUrl(base::OnceClosure task);
+  void GetCapabilitiesOnGpu(base::WaitableEvent* completion,
+                            SharedImageCapabilities* out_capabilities);
 
   // Used to schedule work on the gpu thread. This is a raw pointer for now
   // since the ownership of SingleTaskSequence would be the same as the
@@ -256,6 +260,7 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
   raw_ptr<SyncPointManager> sync_point_manager_;
   scoped_refptr<SyncPointClientState> sync_point_client_state_;
   std::unique_ptr<SharedImageFactory> shared_image_factory_;
+  std::unique_ptr<SharedImageCapabilities> shared_image_capabilities_;
 };
 
 }  // namespace gpu

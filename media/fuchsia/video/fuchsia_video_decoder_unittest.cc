@@ -24,6 +24,7 @@
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/test/test_context_support.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "media/base/test_data_util.h"
 #include "media/base/test_helpers.h"
@@ -228,6 +229,10 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
     return nullptr;
   }
 
+  const gpu::SharedImageCapabilities& GetCapabilities() override {
+    return shared_image_capabilities_;
+  }
+
  private:
   gpu::Mailbox GenerateMailboxForGMBHandle(
       gfx::GpuMemoryBufferHandle buffer_handle) {
@@ -249,6 +254,8 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
       sysmem_buffer_collections_;
 
   base::flat_set<gpu::Mailbox> mailboxes_;
+
+  gpu::SharedImageCapabilities shared_image_capabilities_;
 };
 
 class TestRasterContextProvider

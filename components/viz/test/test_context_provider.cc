@@ -23,6 +23,7 @@
 #include "components/viz/test/test_gles2_interface.h"
 #include "components/viz/test/test_raster_interface.h"
 #include "gpu/command_buffer/client/raster_implementation_gles.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/config/skia_limits.h"
 #include "gpu/skia_bindings/grcontext_for_gles2_interface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
@@ -348,6 +349,16 @@ bool TestSharedImageInterface::CheckSharedImageExists(
     const gpu::Mailbox& mailbox) const {
   base::AutoLock locked(lock_);
   return shared_images_.contains(mailbox);
+}
+
+const gpu::SharedImageCapabilities&
+TestSharedImageInterface::GetCapabilities() {
+  return shared_image_capabilities_;
+}
+
+void TestSharedImageInterface::SetCapabilities(
+    const gpu::SharedImageCapabilities& caps) {
+  shared_image_capabilities_ = caps;
 }
 
 // static

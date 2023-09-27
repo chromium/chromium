@@ -472,10 +472,6 @@ void TestGLES2Interface::set_avoid_stencil_buffers(bool avoid_stencil_buffers) {
   test_capabilities_.avoid_stencil_buffers = avoid_stencil_buffers;
 }
 
-void TestGLES2Interface::set_supports_scanout_shared_images(bool support) {
-  test_capabilities_.supports_scanout_shared_images = support;
-}
-
 void TestGLES2Interface::set_support_texture_npot(bool support) {
   test_capabilities_.texture_npot = support;
 }

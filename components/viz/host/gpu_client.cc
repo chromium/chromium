@@ -139,6 +139,7 @@ void GpuClient::OnEstablishGpuChannel(
     mojo::ScopedMessagePipeHandle channel_handle,
     const gpu::GPUInfo& gpu_info,
     const gpu::GpuFeatureInfo& gpu_feature_info,
+    const gpu::SharedImageCapabilities& shared_image_capabilities,
     GpuHostImpl::EstablishChannelStatus status) {
   DCHECK_EQ(channel_handle.is_valid(),
             status == GpuHostImpl::EstablishChannelStatus::kSuccess);
@@ -153,7 +154,7 @@ void GpuClient::OnEstablishGpuChannel(
   if (callback) {
     // A request is waiting.
     std::move(callback).Run(client_id_, std::move(channel_handle), gpu_info,
-                            gpu_feature_info);
+                            gpu_feature_info, shared_image_capabilities);
     return;
   }
   if (status == GpuHostImpl::EstablishChannelStatus::kSuccess) {
@@ -162,6 +163,7 @@ void GpuClient::OnEstablishGpuChannel(
     channel_handle_ = std::move(channel_handle);
     gpu_info_ = gpu_info;
     gpu_feature_info_ = gpu_feature_info;
+    shared_image_capabilities_ = shared_image_capabilities;
   }
 }
 
@@ -179,7 +181,8 @@ void GpuClient::ClearCallback() {
     return;
   EstablishGpuChannelCallback callback = std::move(callback_);
   std::move(callback).Run(client_id_, mojo::ScopedMessagePipeHandle(),
-                          gpu::GPUInfo(), gpu::GpuFeatureInfo());
+                          gpu::GPUInfo(), gpu::GpuFeatureInfo(),
+                          gpu::SharedImageCapabilities());
 }
 
 void GpuClient::EstablishGpuChannel(EstablishGpuChannelCallback callback) {
@@ -194,7 +197,7 @@ void GpuClient::EstablishGpuChannel(EstablishGpuChannelCallback callback) {
     //      more than once, no need to do anything.
     if (callback) {
       std::move(callback).Run(client_id_, std::move(channel_handle_), gpu_info_,
-                              gpu_feature_info_);
+                              gpu_feature_info_, shared_image_capabilities_);
       DCHECK(!channel_handle_.is_valid());
     }
     return;
@@ -204,7 +207,8 @@ void GpuClient::EstablishGpuChannel(EstablishGpuChannelCallback callback) {
   if (!gpu_host) {
     if (callback) {
       std::move(callback).Run(client_id_, mojo::ScopedMessagePipeHandle(),
-                              gpu::GPUInfo(), gpu::GpuFeatureInfo());
+                              gpu::GPUInfo(), gpu::GpuFeatureInfo(),
+                              gpu::SharedImageCapabilities());
     }
     return;
   }

@@ -34,6 +34,8 @@ void InitializeSharedGpuContextGLES2(
     auto context_provider = std::make_unique<FakeWebGraphicsContext3DProvider>(
         gl, cache, context, raster_context_provider);
     context_provider->SetCapabilities(gl->test_capabilities());
+    context_provider->SharedImageInterface()->SetCapabilities(
+        raster_context_provider->SharedImageInterface()->GetCapabilities());
     return context_provider;
   };
   test_context_provider->BindToCurrentSequence();
@@ -51,6 +53,7 @@ void InitializeSharedGpuContextRaster(
     SetIsContextLost set_context_lost) {
   auto factory =
       [](viz::TestRasterInterface* raster, cc::ImageDecodeCache* cache,
+         viz::RasterContextProvider* raster_context_provider,
          SetIsContextLost set_context_lost, bool* gpu_compositing_disabled)
       -> std::unique_ptr<WebGraphicsContext3DProvider> {
     *gpu_compositing_disabled = false;
@@ -65,14 +68,16 @@ void InitializeSharedGpuContextRaster(
     auto context_provider =
         std::make_unique<FakeWebGraphicsContext3DProvider>(raster, cache);
     context_provider->SetCapabilities(raster->capabilities());
+    context_provider->SharedImageInterface()->SetCapabilities(
+        raster_context_provider->SharedImageInterface()->GetCapabilities());
     return context_provider;
   };
   test_context_provider->BindToCurrentSequence();
   viz::TestRasterInterface* raster =
       test_context_provider->GetTestRasterInterface();
-  SharedGpuContext::SetContextProviderFactoryForTesting(
-      WTF::BindRepeating(factory, WTF::Unretained(raster),
-                         WTF::Unretained(cache), set_context_lost));
+  SharedGpuContext::SetContextProviderFactoryForTesting(WTF::BindRepeating(
+      factory, WTF::Unretained(raster), WTF::Unretained(cache),
+      WTF::Unretained(test_context_provider), set_context_lost));
 }
 
 }  // namespace blink
