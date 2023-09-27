@@ -284,8 +284,7 @@ uint32_t PrefServiceSyncable::GetWriteFlags(
 
 void PrefServiceSyncable::OnSyncServiceInitialized(
     syncer::SyncService* sync_service) {
-  if (base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage)) {
-    CHECK(dual_layer_user_prefs_);
+  if (dual_layer_user_prefs_) {
     dual_layer_user_prefs_->OnSyncServiceInitialized(sync_service);
   }
 }

@@ -221,7 +221,7 @@ PrefModelAssociator::MergeDataAndStartSyncing(
   DCHECK(sync_processor.get());
   sync_processor_ = std::move(sync_processor);
 
-  if (base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage)) {
+  if (dual_layer_user_prefs_) {
     // Inform the pref store to enable account storage for `type_`.
     dual_layer_user_prefs_->EnableType(type_);
   }
@@ -276,8 +276,7 @@ void PrefModelAssociator::OnBrowserShutdown(syncer::ModelType type) {
 void PrefModelAssociator::Stop(bool is_browser_shutdown) {
   models_associated_ = false;
   sync_processor_.reset();
-  if (!is_browser_shutdown &&
-      base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage)) {
+  if (!is_browser_shutdown && dual_layer_user_prefs_) {
     // Avoid clearing account store in case of browser shutdown, since it
     // tries to notify the observers which may or may not exist by this time
     // during browser shutdown (crbug.com/1434902).
@@ -512,8 +511,7 @@ bool PrefModelAssociator::SetPrefWithTypeCheck(const std::string& pref_name,
                   << "pref type: " << registered_type;
     return false;
   }
-  if (base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage)) {
-    CHECK(dual_layer_user_prefs_);
+  if (dual_layer_user_prefs_) {
     // `dual_layer_user_prefs_->SetValueInAccountStoreOnly()` is almost
     // equivalent to `user_prefs_->SetValue()` except that if the effective
     // value of the pref for the `dual_layer_user_prefs_` is unchanged, no
