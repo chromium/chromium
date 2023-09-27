@@ -4224,7 +4224,7 @@
       "os": {
         "type": "win"
       },
-      "vendor_id": "0x5143",
+      "vendor_id": "0x4d4f4351",
       "features": [
         "limit_d3d11_video_decoder_to_11_0"
       ]
