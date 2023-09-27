@@ -1104,7 +1104,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   SyncServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kTabOrganization)) {
+  if (features::IsTabOrganization()) {
     TabOrganizationServiceFactory::GetInstance();
   }
 #endif

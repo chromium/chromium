@@ -38,11 +38,8 @@ class TabOrganizationButton : public TabStripControlButton {
  private:
   // Preferred width multiplier, between 0-1. Used to animate button size.
   float width_factor_ = 0;
-  raw_ptr<TabOrganizationSession, DanglingUntriaged> session_;
+  raw_ptr<TabOrganizationSession, DanglingUntriaged> session_ = nullptr;
   PressedCallback pressed_callback_;
-
-  // TODO(emshack): Remove when session_ is populated via triggering.
-  const std::unique_ptr<TabOrganizationSession> placeholder_session_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_ORGANIZATION_BUTTON_H_

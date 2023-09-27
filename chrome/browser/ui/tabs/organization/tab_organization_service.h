@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-class TabOrganizationSession;
 class Browser;
 class TabOrganizationSession;
 

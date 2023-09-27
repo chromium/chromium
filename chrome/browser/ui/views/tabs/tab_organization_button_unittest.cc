@@ -6,6 +6,7 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "fake_base_tab_strip_controller.h"
@@ -23,12 +24,15 @@ class TabOrganizationButtonTest : public ChromeViewsTestBase {
         base::BindRepeating(&TabOrganizationButtonTest::MockButtonCallback,
                             base::Unretained(this)),
         Edge::kRight);
+    placeholder_session_ = std::make_unique<TabOrganizationSession>();
+    button_->SetSession(placeholder_session_.get());
   }
 
   void MockButtonCallback() { button_callback_count_++; }
 
  protected:
   std::unique_ptr<TabOrganizationButton> button_;
+  std::unique_ptr<TabOrganizationSession> placeholder_session_;
   int button_callback_count_ = 0;
 };
 

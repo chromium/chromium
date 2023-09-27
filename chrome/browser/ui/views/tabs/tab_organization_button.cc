@@ -26,8 +26,7 @@ TabOrganizationButton::TabOrganizationButton(TabStrip* tab_strip,
                               base::Unretained(this)),
           l10n_util::GetStringUTF16(IDS_TAB_ORGANIZE),
           flat_edge),
-      pressed_callback_(std::move(pressed_callback)),
-      placeholder_session_(std::make_unique<TabOrganizationSession>()) {
+      pressed_callback_(std::move(pressed_callback)) {
   SetProperty(views::kElementIdentifierKey, kTabOrganizationButtonElementId);
 
   SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_ORGANIZE));
@@ -43,9 +42,6 @@ TabOrganizationButton::TabOrganizationButton(TabStrip* tab_strip,
   SetPaintTransparentForCustomImageTheme(false);
 
   UpdateColors();
-
-  // TODO(emshack): Populate session_ via triggering instead.
-  SetSession(placeholder_session_.get());
 }
 
 TabOrganizationButton::~TabOrganizationButton() = default;

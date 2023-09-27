@@ -4,8 +4,12 @@
 
 #include "chrome/browser/ui/views/tabs/tab_search_container.h"
 
+#include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/views/tabs/tab_organization_button.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
+#include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_class_properties.h"
@@ -39,6 +43,9 @@ TabSearchContainer::TabSearchContainer(TabStrip* tab_strip,
   }
 
   if (features::IsTabOrganization()) {
+    tab_organization_service_ = TabOrganizationServiceFactory::GetForProfile(
+        tab_strip->controller()->GetProfile());
+    tab_organization_service_->AddObserver(this);
     // TODO(1469126): Consider hiding the button when the request has started,
     // vs. when the button as clicked.
     tab_organization_button_ =
@@ -67,7 +74,11 @@ TabSearchContainer::TabSearchContainer(TabStrip* tab_strip,
   SetLayoutManager(std::make_unique<views::FlexLayout>());
 }
 
-TabSearchContainer::~TabSearchContainer() = default;
+TabSearchContainer::~TabSearchContainer() {
+  if (features::IsTabOrganization()) {
+    tab_organization_service_->RemoveObserver(this);
+  }
+}
 
 void TabSearchContainer::ShowTabOrganization() {
   expansion_animation_.Show();
@@ -93,6 +104,19 @@ void TabSearchContainer::ApplyAnimationValue(float value) {
   tab_search_button_->SetFlatEdgeFactor(1 - value);
   tab_organization_button_->SetFlatEdgeFactor(1 - value);
   tab_organization_button_->SetWidthFactor(value);
+}
+
+void TabSearchContainer::OnToggleActionUIState(Browser* browser,
+                                               bool should_show) {
+  CHECK(tab_organization_service_);
+  if (should_show) {
+    TabOrganizationSession* session = const_cast<TabOrganizationSession*>(
+        tab_organization_service_->GetSessionForBrowser(browser));
+    tab_organization_button_->SetSession(session);
+    ShowTabOrganization();
+  } else {
+    HideTabOrganization();
+  }
 }
 
 BEGIN_METADATA(TabSearchContainer, views::View)
