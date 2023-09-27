@@ -45,7 +45,7 @@ found in the LICENSE file.
         android:key="price_notifications_section"
         android:title="@string/price_notifications_settings_title"
         android:summary="@string/price_notifications_settings_description"
-        android:fragment="org.chromium.chrome.browser.commerce.PriceNotificationPreferenceFragment"
+        android:fragment="org.chromium.chrome.browser.commerce.PriceNotificationSettingsFragment"
         app:isPreferenceVisible="false"/>
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="usage_stats_reporting"

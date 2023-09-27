@@ -34,7 +34,7 @@ import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 /** Preferences for features related to price tracking. */
-public class PriceNotificationPreferenceFragment extends ChromeBaseSettingsFragment {
+public class PriceNotificationSettingsFragment extends ChromeBaseSettingsFragment {
     @VisibleForTesting
     static final String PREF_MOBILE_NOTIFICATIONS = "mobile_notifications_text";
 

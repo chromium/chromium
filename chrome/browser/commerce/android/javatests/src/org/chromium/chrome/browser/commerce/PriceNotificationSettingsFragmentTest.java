@@ -40,9 +40,9 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DoNotBatch(reason = "Layout and behavior are dependent on setup params for the activity.")
-public class PriceNotificationPreferenceFragmentTest {
-    public final SettingsActivityTestRule<PriceNotificationPreferenceFragment> mTestRule =
-            new SettingsActivityTestRule<>(PriceNotificationPreferenceFragment.class);
+public class PriceNotificationSettingsFragmentTest {
+    public final SettingsActivityTestRule<PriceNotificationSettingsFragment> mTestRule =
+            new SettingsActivityTestRule<>(PriceNotificationSettingsFragment.class);
 
     public final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
@@ -110,6 +110,6 @@ public class PriceNotificationPreferenceFragmentTest {
 
     private ChromeSwitchPreference getEmailNotificationsSwitch() {
         return (ChromeSwitchPreference) mTestRule.getFragment().findPreference(
-                PriceNotificationPreferenceFragment.PREF_EMAIL_NOTIFICATIONS);
+                PriceNotificationSettingsFragment.PREF_EMAIL_NOTIFICATIONS);
     }
 }
