@@ -92,3 +92,18 @@ AlertCoordinator* ErrorCoordinatorNoItem(NSError* error,
                                                    message:errorMessage];
   return alertCoordinator;
 }
+
+NSString* ViewControllerPresentationStatusDescription(
+    UIViewController* view_controller) {
+  if (!view_controller) {
+    return @"No view controller";
+  } else if (view_controller.isBeingPresented) {
+    return @"Being presented";
+  } else if (view_controller.isBeingDismissed) {
+    return @"Being dismissed";
+  } else if (view_controller.presentingViewController) {
+    return [NSString stringWithFormat:@"Presented by: %@",
+                                      view_controller.presentingViewController];
+  }
+  return @"Not presented";
+}

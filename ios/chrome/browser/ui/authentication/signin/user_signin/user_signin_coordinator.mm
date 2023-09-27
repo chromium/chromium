@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
+#import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
@@ -640,14 +641,15 @@ using signin_metrics::PromoAction;
           @"%p, advancedSettingsSigninCoordinator: "
           @"%p, signinIntent: %lu, signinStateOnStart: %lu, interruptCallback "
           @"%p, accessPoint: %d, signin in progress %d, mediator %p, "
-          @"viewController: %p, beingPresented: %d, baseViewController: %@, "
+          @"viewController: %p, presented: %@, baseViewController: %@, "
           @"window: %p>",
           self.class.description, self, self.addAccountSigninCoordinator,
           self.advancedSettingsSigninCoordinator, self.signinIntent,
           self.signinStateOnStart, self.interruptCallback,
           static_cast<int>(self.logger.accessPoint),
           self.mediator.isAuthenticationInProgress, self.mediator,
-          self.viewController, self.viewController.isBeingPresented,
+          self.viewController,
+          ViewControllerPresentationStatusDescription(self.viewController),
           NSStringFromClass([self.baseViewController class]),
           self.baseViewController.view.window];
 }

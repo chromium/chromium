@@ -54,4 +54,10 @@ AlertCoordinator* ErrorCoordinatorNoItem(NSError* error,
                                          UIViewController* viewController,
                                          Browser* browser);
 
+// Returns a string for the view controller presentation status. This string
+// can only be used for class description for debug purposes.
+// `view_controller` can be nil.
+NSString* ViewControllerPresentationStatusDescription(
+    UIViewController* view_controller);
+
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_AUTHENTICATION_UI_UTIL_H_

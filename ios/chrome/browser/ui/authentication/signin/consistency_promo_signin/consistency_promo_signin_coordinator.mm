@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/system_identity.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
+#import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_default_account/consistency_default_account_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_layout_delegate.h"
@@ -524,10 +525,13 @@
   return [NSString
       stringWithFormat:
           @"<%@: %p, defaultAccountCoordinator: %p, alertCoordinator: %p, "
-          @"accountChooserCoordinator %p, addAccountCoordinator %p>",
+          @"accountChooserCoordinator %p, addAccountCoordinator %p, presented: "
+          @"%@>",
           self.class.description, self, self.defaultAccountCoordinator,
           self.alertCoordinator, self.accountChooserCoordinator,
-          self.addAccountCoordinator];
+          self.addAccountCoordinator,
+          ViewControllerPresentationStatusDescription(
+              self.navigationController)];
 }
 
 @end
