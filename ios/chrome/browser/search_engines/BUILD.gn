@@ -102,6 +102,7 @@ source_set("unit_tests") {
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//net:test_support",
+    "//services/data_decoder/public/cpp:test_support",
     "//testing/gtest",
   ]
 }
