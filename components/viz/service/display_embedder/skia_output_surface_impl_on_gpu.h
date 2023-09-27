@@ -274,6 +274,7 @@ class SkiaOutputSurfaceImplOnGpu
                          SharedImageFormat format,
                          const gfx::Size& size,
                          const gfx::ColorSpace& color_space,
+                         SkAlphaType alpha_type,
                          uint32_t usage,
                          std::string debug_label,
                          gpu::SurfaceHandle surface_handle);

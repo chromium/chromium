@@ -142,10 +142,11 @@ const gfx::Rect overlapping_damage = gfx::Rect(gfx::Size(5, 20));
 class MockedSkiaOutputSurface : public FakeSkiaOutputSurface {
  public:
   MockedSkiaOutputSurface() : FakeSkiaOutputSurface(nullptr) {}
-  MOCK_METHOD6(CreateSharedImage,
+  MOCK_METHOD7(CreateSharedImage,
                gpu::Mailbox(SharedImageFormat format,
                             const gfx::Size& size,
                             const gfx::ColorSpace& color_space,
+                            RenderPassAlphaType alpha_type,
                             uint32_t usage,
                             base::StringPiece debug_label,
                             gpu::SurfaceHandle surface_handle));
@@ -161,7 +162,7 @@ TEST(BufferQueueStandaloneTest, BufferCreationAndDestruction) {
   {
     testing::InSequence dummy;
     EXPECT_CALL(*mock_skia_output_surface,
-                CreateSharedImage(_, _, _,
+                CreateSharedImage(_, _, _, _,
                                   gpu::SHARED_IMAGE_USAGE_SCANOUT |
                                       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                                       gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE,

@@ -22,6 +22,7 @@
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/service/display/display_compositor_memory_and_task_controller.h"
+#include "components/viz/service/display/render_pass_alpha_type.h"
 #include "components/viz/service/display/skia_output_surface.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/sync_token.h"
@@ -126,6 +127,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   SkCanvas* BeginPaintRenderPass(const AggregatedRenderPassId& id,
                                  const gfx::Size& surface_size,
                                  SharedImageFormat format,
+                                 RenderPassAlphaType alpha_type,
                                  bool mipmap,
                                  bool scanout_dcomp_surface,
                                  sk_sp<SkColorSpace> color_space,
@@ -164,6 +166,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   gpu::Mailbox CreateSharedImage(SharedImageFormat format,
                                  const gfx::Size& size,
                                  const gfx::ColorSpace& color_space,
+                                 RenderPassAlphaType alpha_type,
                                  uint32_t usage,
                                  base::StringPiece debug_label,
                                  gpu::SurfaceHandle surface_handle) override;

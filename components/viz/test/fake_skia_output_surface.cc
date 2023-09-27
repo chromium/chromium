@@ -172,6 +172,7 @@ SkCanvas* FakeSkiaOutputSurface::BeginPaintRenderPass(
     const AggregatedRenderPassId& id,
     const gfx::Size& surface_size,
     SharedImageFormat format,
+    RenderPassAlphaType alpha_type,
     bool mipmap,
     bool scanout_dcomp_surface,
     sk_sp<SkColorSpace> color_space,
@@ -409,6 +410,7 @@ gpu::Mailbox FakeSkiaOutputSurface::CreateSharedImage(
     SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
+    RenderPassAlphaType alpha_type,
     uint32_t usage,
     base::StringPiece debug_label,
     gpu::SurfaceHandle surface_handle) {

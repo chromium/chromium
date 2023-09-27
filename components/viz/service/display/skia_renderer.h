@@ -282,6 +282,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
     gfx::Size size;
     bool generate_mipmap = false;
     gfx::ColorSpace color_space;
+    RenderPassAlphaType alpha_type = RenderPassAlphaType::kPremul;
     SharedImageFormat format;
     gpu::Mailbox mailbox;
     bool is_root = false;

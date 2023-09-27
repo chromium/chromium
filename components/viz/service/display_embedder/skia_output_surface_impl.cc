@@ -30,6 +30,7 @@
 #include "components/viz/service/display/output_surface_client.h"
 #include "components/viz/service/display/output_surface_frame.h"
 #include "components/viz/service/display/overlay_candidate.h"
+#include "components/viz/service/display/render_pass_alpha_type.h"
 #include "components/viz/service/display_embedder/image_context_impl.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency.h"
 #include "components/viz/service/display_embedder/skia_output_surface_impl_on_gpu.h"
@@ -391,12 +392,10 @@ void SkiaOutputSurfaceImpl::RecreateRootDDLRecorder() {
 void SkiaOutputSurfaceImpl::Reshape(const ReshapeParams& params) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!params.size.IsEmpty());
-  DCHECK(params.alpha_type == kPremul_SkAlphaType ||
-         params.alpha_type == kOpaque_SkAlphaType);
 
   size_ = params.size;
   format_ = GetSinglePlaneSharedImageFormat(params.format);
-  alpha_type_ = params.alpha_type;
+  alpha_type_ = static_cast<SkAlphaType>(params.alpha_type);
 
   const auto format_index = static_cast<int>(params.format);
   color_type_ = capabilities_.sk_color_types[format_index];
@@ -481,11 +480,8 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintCurrentFrame() {
   CHECK(!current_paint_);
   CHECK(root_ddl_recorder_ || graphite_recorder_);
   if (graphite_recorder_) {
-    // TODO(crbug.com/1434131): Use correct alpha type once Graphite supports
-    // non-premultiplied alpha surfaces.
-    SkImageInfo image_info =
-        SkImageInfo::Make(gfx::SizeToSkISize(size_), color_type_,
-                          kPremul_SkAlphaType, sk_color_space_);
+    SkImageInfo image_info = SkImageInfo::Make(
+        gfx::SizeToSkISize(size_), color_type_, alpha_type_, sk_color_space_);
     // Surfaceless output devices allocate shared image behind the scenes. On
     // the GPU thread this is treated same as regular IOSurfaces for the
     // purpose of creating Graphite TextureInfo i.e. it will have CopySrc and
@@ -841,6 +837,7 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
     const AggregatedRenderPassId& id,
     const gfx::Size& surface_size,
     SharedImageFormat format,
+    RenderPassAlphaType alpha_type,
     bool mipmap,
     bool scanout_dcomp_surface,
     sk_sp<SkColorSpace> color_space,
@@ -856,7 +853,7 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
   if (graphite_recorder_) {
     SkImageInfo image_info =
         SkImageInfo::Make(gfx::SizeToSkISize(surface_size), color_type,
-                          kPremul_SkAlphaType, color_space);
+                          static_cast<SkAlphaType>(alpha_type), color_space);
     skgpu::graphite::TextureInfo texture_info = gpu::GetGraphiteTextureInfo(
         gr_context_type_, format, /*plane_index=*/0,
         /*is_yuv_plane=*/false, mipmap, scanout_dcomp_surface);
@@ -869,8 +866,8 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
   } else {
     GrSurfaceCharacterization characterization =
         CreateGrSurfaceCharacterizationRenderPass(
-            surface_size, color_type, kPremul_SkAlphaType, mipmap,
-            std::move(color_space), is_overlay, scanout_dcomp_surface);
+            surface_size, color_type, static_cast<SkAlphaType>(alpha_type),
+            mipmap, std::move(color_space), is_overlay, scanout_dcomp_surface);
     if (!characterization.isValid()) {
       DLOG(ERROR) << "BeginPaintRenderPass: invalid GrSurfaceCharacterization";
       return nullptr;
@@ -1668,15 +1665,17 @@ gpu::Mailbox SkiaOutputSurfaceImpl::CreateSharedImage(
     SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
+    RenderPassAlphaType alpha_type,
     uint32_t usage,
     base::StringPiece debug_label,
     gpu::SurfaceHandle surface_handle) {
   gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
 
-  auto task = base::BindOnce(&SkiaOutputSurfaceImplOnGpu::CreateSharedImage,
-                             base::Unretained(impl_on_gpu_.get()), mailbox,
-                             format, size, color_space, usage,
-                             std::string(debug_label), surface_handle);
+  auto task =
+      base::BindOnce(&SkiaOutputSurfaceImplOnGpu::CreateSharedImage,
+                     base::Unretained(impl_on_gpu_.get()), mailbox, format,
+                     size, color_space, static_cast<SkAlphaType>(alpha_type),
+                     usage, std::string(debug_label), surface_handle);
   EnqueueGpuTask(std::move(task), {}, /*make_current=*/true,
                  /*need_framebuffer=*/false);
 

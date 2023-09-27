@@ -2631,12 +2631,12 @@ void SkiaOutputSurfaceImplOnGpu::CreateSharedImage(
     SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
+    SkAlphaType alpha_type,
     uint32_t usage,
     std::string debug_label,
     gpu::SurfaceHandle surface_handle) {
   shared_image_factory_->CreateSharedImage(
-      mailbox, format, size, color_space, kTopLeft_GrSurfaceOrigin,
-      format.HasAlpha() ? kPremul_SkAlphaType : kOpaque_SkAlphaType,
+      mailbox, format, size, color_space, kTopLeft_GrSurfaceOrigin, alpha_type,
       surface_handle, usage, std::move(debug_label));
   skia_representations_.emplace(mailbox, nullptr);
 }

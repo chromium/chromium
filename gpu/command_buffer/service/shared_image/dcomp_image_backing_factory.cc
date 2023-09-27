@@ -57,6 +57,7 @@ std::unique_ptr<SharedImageBacking> DCompImageBackingFactory::CreateSharedImage(
     std::string debug_label,
     bool is_thread_safe) {
   DCHECK(!is_thread_safe);
+  CHECK(alpha_type == kOpaque_SkAlphaType || alpha_type == kPremul_SkAlphaType);
 
   // DXGI only supports a handful of formats for scan-out, so we map the
   // requested format to a supported compatible DXGI format.

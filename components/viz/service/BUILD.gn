@@ -87,6 +87,7 @@ viz_component("service") {
     "display/overlay_processor_stub.h",
     "display/pending_swap_params.cc",
     "display/pending_swap_params.h",
+    "display/render_pass_alpha_type.h",
     "display/renderer_utils.cc",
     "display/renderer_utils.h",
     "display/resolved_frame_data.cc",

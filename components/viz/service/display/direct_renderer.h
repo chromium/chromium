@@ -23,6 +23,7 @@
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/display/overlay_candidate.h"
 #include "components/viz/service/display/overlay_processor_interface.h"
+#include "components/viz/service/display/render_pass_alpha_type.h"
 #include "components/viz/service/viz_service_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/ca_layer_result.h"
@@ -208,6 +209,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
     bool generate_mipmap = false;
     SharedImageFormat format;
     gfx::ColorSpace color_space;
+    RenderPassAlphaType alpha_type = RenderPassAlphaType::kPremul;
     // Render pass wants scanout
     bool is_scanout = false;
     // Render pass wants to synchronize updates with other overlays, on Windows
@@ -405,6 +407,10 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   gfx::ColorSpace reshape_color_space() const {
     DCHECK(reshape_params_);
     return reshape_params_->color_space;
+  }
+  RenderPassAlphaType reshape_alpha_type() const {
+    DCHECK(reshape_params_);
+    return reshape_params_->alpha_type;
   }
 
   // Sets a DelegatedInkPointRendererSkiaForTest to be used for testing only, in

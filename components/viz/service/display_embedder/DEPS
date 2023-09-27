@@ -13,6 +13,7 @@ include_rules = [
   "+components/viz/service/display/output_surface_frame.h",
   "+components/viz/service/display/output_surface.h",
   "+components/viz/service/display/overlay_candidate.h",
+  "+components/viz/service/display/render_pass_alpha_type.h",
   "+components/viz/service/display/renderer_utils.h",
   "+components/viz/service/display/resource_metadata.h",
   "+components/viz/service/display/shared_bitmap_manager.h",

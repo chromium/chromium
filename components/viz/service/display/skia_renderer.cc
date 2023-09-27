@@ -1186,8 +1186,9 @@ void SkiaRenderer::BindFramebufferToTexture(
   // should be backing ready.
   RenderPassBacking& backing = iter->second;
   current_canvas_ = skia_output_surface_->BeginPaintRenderPass(
-      render_pass_id, backing.size, backing.format, backing.generate_mipmap,
-      backing.scanout_dcomp_surface, RenderPassBackingSkColorSpace(backing),
+      render_pass_id, backing.size, backing.format, backing.alpha_type,
+      backing.generate_mipmap, backing.scanout_dcomp_surface,
+      RenderPassBackingSkColorSpace(backing),
       /*is_overlay=*/is_root, backing.mailbox);
 
   if (is_root && debug_settings_->show_overdraw_feedback) {
@@ -3264,6 +3265,8 @@ void SkiaRenderer::UpdateRenderPassTextures(
     bool mipmap_appropriate =
         !requirements.generate_mipmap || backing.generate_mipmap;
     bool no_change_in_format = requirements.format == backing.format;
+    bool no_change_in_alpha_type =
+        requirements.alpha_type == backing.alpha_type;
     bool no_change_in_color_space =
         requirements.color_space == backing.color_space;
     bool scanout_appropriate =
@@ -3271,7 +3274,8 @@ void SkiaRenderer::UpdateRenderPassTextures(
         requirements.scanout_dcomp_surface == backing.scanout_dcomp_surface;
 
     if (!size_appropriate || !mipmap_appropriate || !no_change_in_format ||
-        !no_change_in_color_space || !scanout_appropriate) {
+        !no_change_in_alpha_type || !no_change_in_color_space ||
+        !scanout_appropriate) {
       passes_to_delete.push_back(backing_id);
     }
   }
@@ -3309,6 +3313,7 @@ void SkiaRenderer::AllocateRenderPassResourceIfNeeded(
     root_pass_backing.generate_mipmap = requirements.generate_mipmap;
     root_pass_backing.size = requirements.size;
     root_pass_backing.format = requirements.format;
+    root_pass_backing.alpha_type = requirements.alpha_type;
     root_pass_backing.color_space = requirements.color_space;
     root_pass_backing.is_scanout = true;
     root_pass_backing.scanout_dcomp_surface = false;
@@ -3359,13 +3364,15 @@ void SkiaRenderer::AllocateRenderPassResourceIfNeeded(
   }
 
   auto mailbox = skia_output_surface_->CreateSharedImage(
-      requirements.format, requirements.size, requirements.color_space, usage,
-      "RenderPassBacking", gpu::kNullSurfaceHandle);
+      requirements.format, requirements.size, requirements.color_space,
+      requirements.alpha_type, usage, "RenderPassBacking",
+      gpu::kNullSurfaceHandle);
   render_pass_backings_.emplace(
       render_pass_id,
       RenderPassBacking({requirements.size, requirements.generate_mipmap,
-                         requirements.color_space, requirements.format, mailbox,
-                         is_root, requirements.is_scanout,
+                         requirements.color_space, requirements.alpha_type,
+                         requirements.format, mailbox, is_root,
+                         requirements.is_scanout,
                          requirements.scanout_dcomp_surface}));
 }
 
@@ -3482,11 +3489,12 @@ SkiaRenderer::GetOrCreateRenderPassOverlayBacking(
         gpu::SHARED_IMAGE_USAGE_SCANOUT | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
         gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE | gpu::SHARED_IMAGE_USAGE_RASTER;
     auto mailbox = skia_output_surface_->CreateSharedImage(
-        buffer_format, buffer_size, color_space, kOverlayUsage,
-        "RenderPassOverlay", gpu::kNullSurfaceHandle);
+        buffer_format, buffer_size, color_space, RenderPassAlphaType::kPremul,
+        kOverlayUsage, "RenderPassOverlay", gpu::kNullSurfaceHandle);
     overlay_params.render_pass_backing = {buffer_size,
                                           /*generate_mipmap=*/false,
                                           color_space,
+                                          RenderPassAlphaType::kPremul,
                                           buffer_format,
                                           mailbox,
                                           /*is_root=*/false,
@@ -3676,9 +3684,8 @@ void SkiaRenderer::PrepareRenderPassOverlay(
   } else {
     current_canvas_ = skia_output_surface_->BeginPaintRenderPass(
         quad->render_pass_id, dst_overlay_backing.size,
-        dst_overlay_backing.format,
-        /*mipmap=*/false,
-        /*scanout_dcomp_surface=*/false,
+        dst_overlay_backing.format, dst_overlay_backing.alpha_type,
+        /*mipmap=*/false, /*scanout_dcomp_surface=*/false,
         RenderPassBackingSkColorSpace(dst_overlay_backing),
         /*is_overlay=*/true, overlay->mailbox);
     if (!current_canvas_) {

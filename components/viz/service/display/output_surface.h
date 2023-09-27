@@ -14,6 +14,7 @@
 #include "components/viz/common/gpu/gpu_vsync_callback.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/service/display/pending_swap_params.h"
+#include "components/viz/service/display/render_pass_alpha_type.h"
 #include "components/viz/service/display/software_output_device.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -211,7 +212,7 @@ class VIZ_SERVICE_EXPORT OutputSurface {
     gfx::ColorSpace color_space;
     // TODO(sunnyps): Change to SkColorType.
     gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888;
-    SkAlphaType alpha_type = kPremul_SkAlphaType;
+    RenderPassAlphaType alpha_type = RenderPassAlphaType::kPremul;
 
     bool operator==(const ReshapeParams& other) const {
       return size == other.size &&

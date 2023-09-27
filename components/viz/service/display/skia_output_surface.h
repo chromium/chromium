@@ -15,6 +15,7 @@
 #include "components/viz/service/display/external_use_client.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/overlay_processor_interface.h"
+#include "components/viz/service/display/render_pass_alpha_type.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
 #include "ui/gfx/gpu_fence_handle.h"
@@ -107,6 +108,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
   virtual SkCanvas* BeginPaintRenderPass(const AggregatedRenderPassId& id,
                                          const gfx::Size& size,
                                          SharedImageFormat format,
+                                         RenderPassAlphaType alpha_type,
                                          bool mipmap,
                                          bool scanout_dcomp_surface,
                                          sk_sp<SkColorSpace> color_space,
@@ -204,11 +206,11 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
 
   // Enqueue a GPU task to create a shared image with the specified params and
   // returns the mailbox.
-  // Note: |kTopLeft_GrSurfaceOrigin| and |kPremul_SkAlphaType| params are used
-  // for all images.
+  // Note: |kTopLeft_GrSurfaceOrigin| is used for all images.
   virtual gpu::Mailbox CreateSharedImage(SharedImageFormat format,
                                          const gfx::Size& size,
                                          const gfx::ColorSpace& color_space,
+                                         RenderPassAlphaType alpha_type,
                                          uint32_t usage,
                                          base::StringPiece debug_label,
                                          gpu::SurfaceHandle surface_handle) = 0;

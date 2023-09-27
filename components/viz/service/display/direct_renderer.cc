@@ -34,6 +34,7 @@
 #include "components/viz/service/display/bsp_tree.h"
 #include "components/viz/service/display/bsp_walk_action.h"
 #include "components/viz/service/display/output_surface.h"
+#include "components/viz/service/display/render_pass_alpha_type.h"
 #include "components/viz/service/display/skia_output_surface.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "media/base/video_util.h"
@@ -327,8 +328,8 @@ void DirectRenderer::DrawFrame(
   reshape_params.device_scale_factor = device_scale_factor;
   reshape_params.color_space = frame_color_space;
   reshape_params.format = frame_buffer_format;
-  reshape_params.alpha_type =
-      frame_has_alpha ? kPremul_SkAlphaType : kOpaque_SkAlphaType;
+  reshape_params.alpha_type = frame_has_alpha ? RenderPassAlphaType::kPremul
+                                              : RenderPassAlphaType::kOpaque;
   if (next_frame_needs_full_frame_redraw_ ||
       reshape_params != reshape_params_ ||
       display_transform != reshape_display_transform_) {
@@ -768,6 +769,7 @@ DirectRenderer::CalculateRenderPassRequirements(
     requirements.color_space = reshape_color_space();
     requirements.format =
         GetSinglePlaneSharedImageFormat(reshape_buffer_format());
+    requirements.alpha_type = reshape_alpha_type();
 
     // All root render pass backings allocated by the renderer needs to
     // eventually go into some composition tree. Other things that own/allocate
@@ -781,22 +783,26 @@ DirectRenderer::CalculateRenderPassRequirements(
     // On Windows, the root render pass can be made transparent due to overlay
     // processing promoting a quad as an underlay. If the format we picked does
     // not have alpha bits, we ned to change to one that does.
-    if (render_pass->has_transparent_background &&
-        requirements.format.HasAlpha() == 0) {
+    if (requirements.alpha_type != RenderPassAlphaType::kOpaque &&
+        !requirements.format.HasAlpha()) {
       requirements.format =
           GetColorSpaceSharedImageFormat(requirements.color_space);
     }
 #endif
+    CHECK_EQ(requirements.alpha_type == RenderPassAlphaType::kOpaque,
+             !render_pass->has_transparent_background);
   } else {
     requirements.size = CalculateTextureSizeForRenderPass(render_pass);
     requirements.generate_mipmap = render_pass->generate_mipmap;
     requirements.color_space = RenderPassColorSpace(render_pass);
     requirements.format =
         GetColorSpaceSharedImageFormat(requirements.color_space);
+    requirements.alpha_type = RenderPassAlphaType::kPremul;
   }
 
   if (render_pass->has_transparent_background) {
-    DCHECK(requirements.format.HasAlpha());
+    CHECK(requirements.format.HasAlpha());
+    CHECK_EQ(requirements.alpha_type, RenderPassAlphaType::kPremul);
   }
 
   return requirements;

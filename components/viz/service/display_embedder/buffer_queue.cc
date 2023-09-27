@@ -156,7 +156,8 @@ void BufferQueue::AllocateBuffers(size_t n) {
   available_buffers_.reserve(available_buffers_.size() + n);
   for (size_t i = 0; i < n; ++i) {
     const gpu::Mailbox mailbox = skia_output_surface_->CreateSharedImage(
-        format, size_, color_space_, usage, "VizBufferQueue", surface_handle_);
+        format, size_, color_space_, RenderPassAlphaType::kPremul, usage,
+        "VizBufferQueue", surface_handle_);
     DCHECK(!mailbox.IsZero());
 
     available_buffers_.push_back(
