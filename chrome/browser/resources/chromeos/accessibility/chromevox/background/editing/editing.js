@@ -45,9 +45,7 @@ const StateType = chrome.automation.StateType;
  * for automation tree text fields using anchor and focus selection.
  */
 export class AutomationRichEditableText extends AutomationEditableText {
-  /**
-   * @param {!AutomationNode} node
-   */
+  /** @param {!AutomationNode} node */
   constructor(node) {
     super(node);
 
@@ -522,10 +520,9 @@ export class AutomationRichEditableText extends AutomationEditableText {
     }
 
     if (msgs.length) {
-      msgs.forEach(msg => {
-        ChromeVox.tts.speak(
-            Msgs.getMsg(msg), QueueMode.QUEUE, Personality.ANNOTATION);
-      });
+      msgs.forEach(
+          msg => ChromeVox.tts.speak(
+              Msgs.getMsg(msg), QueueMode.QUEUE, Personality.ANNOTATION));
     }
   }
 
@@ -591,11 +588,10 @@ export class AutomationRichEditableText extends AutomationEditableText {
     }
 
     if (msgs.length) {
-      msgs.forEach(msgObject => {
-        ChromeVox.tts.speak(
-            Msgs.getMsg(msgObject.msg, msgObject.opt_subs), QueueMode.QUEUE,
-            Personality.ANNOTATION);
-      });
+      msgs.forEach(
+          msgObject => ChromeVox.tts.speak(
+              Msgs.getMsg(msgObject.msg, msgObject.opt_subs), QueueMode.QUEUE,
+              Personality.ANNOTATION));
     }
   }
 
@@ -683,7 +679,6 @@ export class AutomationRichEditableText extends AutomationEditableText {
     }
   }
 }
-
 
 /**
  * An observer that reacts to ChromeVox range changes that modifies braille
