@@ -15,6 +15,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/disabled_test_macros.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -29,6 +30,7 @@ namespace {
 
 using chrome_test_util::BackButton;
 using chrome_test_util::ForwardButton;
+using chrome_test_util::TapWebElementWithId;
 using chrome_test_util::WebStateScrollViewMatcher;
 using chrome_test_util::WebViewMatcher;
 
@@ -679,6 +681,39 @@ id<GREYMatcher> MoveAddressBarToBottomContextMenuButton() {
                                  VisibleInSecondaryToolbar(), nil)];
   CheckVisibilityInToolbar(chrome_test_util::DefocusedLocationView(),
                            ButtonVisibilitySecondary);
+}
+
+// Verifies that the location bar is above the keyboard when tapping a text
+// field on web. Tapping it should dismiss the keyboard.
+- (void)testTapLocationBarAboveTheKeyboard {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Bottom address bar is only available on iPhone.");
+  }
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  GURL URL = self.testServer->GetURL("/multi_field_form.html");
+  [ChromeEarlGrey loadURL:URL];
+
+  [ChromeEarlGrey waitForWebStateContainingText:"hello!"];
+
+  // Opening the keyboard from a webview blocks EarlGrey's synchronization.
+  {
+    ScopedSynchronizationDisabler disabler;
+
+    // Brings up the keyboard by tapping on one of the form's field.
+    [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
+        performAction:TapWebElementWithId("username")];
+    [ChromeEarlGrey
+        waitForNotSufficientlyVisibleElementWithMatcher:NewTabButton()];
+
+    // Taping the location bar above the keyboard should dismiss the keyboard.
+    [[EarlGrey
+        selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
+        performAction:grey_tap()];
+    [ChromeEarlGrey waitForUIElementToAppearWithMatcher:NewTabButton()];
+
+    // Taping the location bar again should focus the omnibox.
+    FocusOmnibox();
+  }
 }
 
 @end
