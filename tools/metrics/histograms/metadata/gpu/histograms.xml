@@ -1353,6 +1353,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.SharedImage.IsRG88HardwareGMBSupported" units="Boolean"
+    expires_after="2024-06-04">
+  <owner>hitawala@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks if shared images are created with hardware GpuMemoryBuffers of RG88
+    format on Ozone based platforms. Result is a bool that reports if RG88
+    format is supported for creating shared images with hardware GMBs. This is
+    logged once per gpu process launch.
+  </summary>
+</histogram>
+
 <histogram name="GPU.SoftwareRendering" enum="BooleanSoftwareRendering"
     expires_after="2024-03-17">
   <owner>zmo@chromium.org</owner>

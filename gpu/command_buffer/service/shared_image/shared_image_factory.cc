@@ -112,7 +112,7 @@ const char* GmbTypeToString(gfx::GpuMemoryBufferType type) {
 // numeric values should never be reused.
 enum FormatPixmapSupport { kNone = 0, kNV12 = 1, kYV12 = 2, kMaxValue = kYV12 };
 
-// Return the supported format in order of fallback support.
+// Return the supported multiplanar format in order of fallback support.
 FormatPixmapSupport GetFormatPixmapSupport(
     std::vector<gfx::BufferFormat> supported_formats) {
   FormatPixmapSupport val = FormatPixmapSupport::kNone;
@@ -212,9 +212,15 @@ SharedImageFactory::SharedImageFactory(
       if (factory) {
         // Get all formats that are supported by platform.
         auto supported_formats = factory->GetSupportedFormatsForTexturing();
-        auto format = GetFormatPixmapSupport(supported_formats);
+        auto supported_format = GetFormatPixmapSupport(supported_formats);
         base::UmaHistogramEnumeration("GPU.SharedImage.FormatPixmapSupport",
-                                      format);
+                                      supported_format);
+
+        // Check if hardware GMBs with RG88 format are ever created.
+        bool is_rg88_supported =
+            base::Contains(supported_formats, gfx::BufferFormat::RG_88);
+        base::UmaHistogramBoolean("GPU.SharedImage.IsRG88HardwareGMBSupported",
+                                  is_rg88_supported);
       }
     }
     set_format_supported_metric = true;
