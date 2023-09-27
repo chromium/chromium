@@ -330,7 +330,7 @@ void AutoResumptionHandler::ResumePendingDownloads() {
 }
 
 int AutoResumptionHandler::MaybeResumeDownloads(
-    const std::map<std::string, DownloadItem*>& downloads) {
+    std::map<std::string, DownloadItem*> downloads) {
   int resumed = 0;
   for (const auto& pair : downloads) {
     DownloadItem* download = pair.second;
