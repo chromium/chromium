@@ -344,10 +344,8 @@ void ToolbarView::Init() {
   // Do not create the extensions or browser actions container if it is a guest
   // profile (only regular and incognito profiles host extensions).
   if (!browser_->profile()->IsGuestSession()) {
-    extensions_container = std::make_unique<ExtensionsToolbarContainer>(
-        browser_, base::FeatureList::IsEnabled(features::kResponsiveToolbar)
-                      ? ExtensionsToolbarContainer::DisplayMode::kCompact
-                      : ExtensionsToolbarContainer::DisplayMode::kNormal);
+    extensions_container =
+        std::make_unique<ExtensionsToolbarContainer>(browser_);
 
     if (features::IsChromeRefresh2023()) {
       toolbar_divider = std::make_unique<views::View>();
