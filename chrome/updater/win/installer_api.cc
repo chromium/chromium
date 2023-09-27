@@ -383,20 +383,6 @@ bool SetInstallerOutcomeForTesting(UpdaterScope updater_scope,
   return true;
 }
 
-std::string GetTextForSystemError(int error) {
-  wchar_t* system_allocated_buffer = nullptr;
-  constexpr DWORD kFormatOptions =
-      FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
-      FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_MAX_WIDTH_MASK;
-  const DWORD chars_written = ::FormatMessage(
-      kFormatOptions, nullptr, error, 0,
-      reinterpret_cast<wchar_t*>(&system_allocated_buffer), 0, nullptr);
-  auto free_buffer = base::ScopedClosureRunner(
-      base::BindOnce(base::IgnoreResult(&LocalFree), system_allocated_buffer));
-  return chars_written > 0 ? base::WideToUTF8(system_allocated_buffer)
-                           : std::string();
-}
-
 // As much as possible, the implementation of this function is intended to be
 // backward compatible with the implementation of the Installer API in
 // Omaha/Google Update. Some edge cases could be missing.

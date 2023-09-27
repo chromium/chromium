@@ -557,4 +557,20 @@ TEST_P(WinUtilGetRegKeyContentsTest, TestCases) {
   ASSERT_NE(contents->find(GetParam().expected_substring), std::wstring::npos);
 }
 
+TEST(WinUtil, GetTextForSystemError) {
+  EXPECT_EQ(GetTextForSystemError(2),
+            "The system cannot find the file specified. ");
+  EXPECT_EQ(GetTextForSystemError(0x80070002),
+            "The system cannot find the file specified. ");
+  EXPECT_EQ(GetTextForSystemError(12007),
+            "The server name or address could not be resolved ");
+  EXPECT_EQ(GetTextForSystemError(0x80072ee7),
+            "The server name or address could not be resolved ");
+  EXPECT_EQ(GetTextForSystemError(-2147012889),
+            "The server name or address could not be resolved ");
+  EXPECT_EQ(
+      GetTextForSystemError(MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0x200)),
+      "Unknown error 0x80040200");
+}
+
 }  // namespace updater

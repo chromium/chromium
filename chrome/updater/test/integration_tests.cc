@@ -2262,7 +2262,11 @@ INSTANTIATE_TEST_SUITE_P(
          {}},
 
         // InstallerResult::kSystemError, explicit error code.
-        {false, "INSTALLER_RESULT=3 INSTALLER_ERROR=99", 99, {}, {}},
+        {false,
+         "INSTALLER_RESULT=3 INSTALLER_ERROR=99",
+         99,
+         "Unknown error 0x63",
+         {}},
 
         // InstallerResult::kSuccess.
         {false, "INSTALLER_RESULT=0", 0, {}, {}},

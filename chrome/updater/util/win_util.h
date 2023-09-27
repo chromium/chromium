@@ -436,6 +436,12 @@ template <typename T, typename I, typename... TArgs>
 // Gets the contents under a given registry key.
 absl::optional<std::wstring> GetRegKeyContents(const std::wstring& reg_key);
 
+// Returns the textual description of a system `error` as provided by the
+// operating system. The function assumes that the locale value for the calling
+// thread is set, otherwise, the function uses the user/system default LANGID,
+// or it defaults to US English.
+std::string GetTextForSystemError(int error);
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_UTIL_WIN_UTIL_H_

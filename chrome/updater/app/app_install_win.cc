@@ -666,7 +666,6 @@ void AppInstallControllerImpl::HandleOsNotSupported() {
   update_state.app_id = app_id_;
   update_state.state = UpdateService::UpdateState::State::kUpdateError;
   update_state.error_category = UpdateService::ErrorCategory::kInstall;
-  update_state.error_code = UNSUPPORTED_WINDOWS_VERSION;
   observer_completion_info_ = HandleInstallResult(update_state);
   observer_completion_info_->completion_text =
       GetLocalizedString(IDS_INSTALL_OS_NOT_SUPPORTED_BASE);
@@ -789,9 +788,11 @@ ObserverCompletionInfo AppInstallControllerImpl::HandleInstallResult(
   AppCompletionInfo app_info;
   if (update_state.state != UpdateService::UpdateState::State::kNoUpdate) {
     app_info.app_id = base::ASCIIToUTF16(update_state.app_id);
-    app_info.completion_message =
-        base::ASCIIToUTF16(update_state.installer_text);
     app_info.error_code = update_state.error_code;
+    app_info.completion_message = base::ASCIIToUTF16(
+        !update_state.installer_text.empty() ? update_state.installer_text
+        : app_info.error_code ? GetTextForSystemError(app_info.error_code)
+                              : "");
     app_info.extra_code1 = update_state.extra_code1;
     app_info.post_install_launch_command_line =
         base::SysUTF8ToWide(update_state.installer_cmd_line);

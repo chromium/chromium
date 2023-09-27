@@ -144,12 +144,6 @@ Installer::Result MakeInstallerResult(
     absl::optional<InstallerOutcome> installer_outcome,
     int exit_code);
 
-// Returns the textual description of a system `error` as provided
-// by the operating system. The function assumes that the locale value for
-// the calling thread is set, otherwise, the function uses the user/system
-// default LANGID, or it defaults to US English.
-std::string GetTextForSystemError(int error);
-
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_WIN_INSTALLER_API_H_

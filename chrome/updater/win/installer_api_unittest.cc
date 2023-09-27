@@ -51,10 +51,6 @@ TEST_P(InstallerAPITest, InstallerProgress) {
   EXPECT_TRUE(ClientStateAppKeyDelete(updater_scope_, kAppId));
 }
 
-TEST_P(InstallerAPITest, GetTextForSystemError) {
-  EXPECT_FALSE(GetTextForSystemError(2).empty());
-}
-
 TEST_P(InstallerAPITest, GetInstallerOutcome) {
   ASSERT_NO_FATAL_FAILURE(registry_override_.OverrideRegistry(
       UpdaterScopeToHKeyRoot(updater_scope_)));
