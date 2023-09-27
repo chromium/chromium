@@ -6292,21 +6292,6 @@
             ]
         }
     ],
-    "EvaluateProtectedPasswordLengthMinimum": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EvaluateProtectedPasswordLengthMinimum"
-                    ]
-                }
-            ]
-        }
-    ],
     "EventTimingMatchPresentationIndex": [
         {
             "platforms": [
