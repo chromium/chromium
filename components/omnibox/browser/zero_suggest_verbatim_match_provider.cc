@@ -15,9 +15,12 @@
 
 namespace {
 // Verbatim Match is placed in a dedicated SECTION_MOBILE_VERBATIM.
-// There are no other occupants of this section, making the Relevance score
-// unimportant.
-const int kVerbatimMatchRelevanceScore = 2;
+// While there are no other occupants of this section, the Relevance score
+// remains important, because the Verbatim Match may get de-duplicated to other,
+// higher ranking suggestions listed later on the list.
+// Keep the relevance high to ensure matching suggestions listed later are
+// merged to the Verbatim Match, not the other way around.
+const int kVerbatimMatchRelevanceScore = 1602;
 
 // Returns whether specific context is eligible for a verbatim match.
 // Only offer verbatim match on a site visit and SRP (no NTP etc).
