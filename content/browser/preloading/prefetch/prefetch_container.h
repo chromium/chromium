@@ -464,8 +464,6 @@ class CONTENT_EXPORT PrefetchContainer {
   // has redirect(s).
   const SinglePrefetch& GetPreviousSinglePrefetchToPrefetch() const;
 
-  PrefetchRequestHandler CreateRequestHandlerInternal(Reader& reader);
-
   // The ID of the RenderFrameHost that triggered the prefetch.
   GlobalRenderFrameHostId referring_render_frame_host_id_;
 
