@@ -677,6 +677,17 @@ targets.mixin(
     ),
 )
 
+# TODO: Remove this mixin after task scheduling issue is resolved.
+# This uses a different task dimensions set to reduce Datastore index size.
+targets.mixin(
+    name = "linux-jammy-2",
+    swarming = targets.swarming(
+        dimensions = {
+            "os": "Ubuntu-22.04.1",
+        },
+    ),
+)
+
 targets.mixin(
     name = "linux-jammy-or-bionic",
     swarming = targets.swarming(

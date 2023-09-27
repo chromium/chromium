@@ -1687,7 +1687,7 @@
       'linux-chromeos-rel': {
         'mixins': [
           'isolate_profile_data',
-          'linux-jammy',
+          'linux-jammy-2',
         ],
         'additional_compile_targets': [
           'all',

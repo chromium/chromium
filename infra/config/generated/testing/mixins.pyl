@@ -534,6 +534,13 @@
       },
     },
   },
+  'linux-jammy-2': {
+    'swarming': {
+      'dimensions': {
+        'os': 'Ubuntu-22.04.1',
+      },
+    },
+  },
   'linux-jammy-or-bionic': {
     'swarming': {
       'dimensions': {
