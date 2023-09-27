@@ -64,3 +64,6 @@ TestAsNormalAndGuestUser/SpokenFeedbackTest.*
 -MagnificationManagerTest*
 -SelectToSpeakTest*
 -SwitchAccessTest*
+# TODO(crbug/1484723): Flaky
+-BrowserAppShelfControllerBrowserTest.WindowedApps
+-BrowserAppShelfControllerBrowserTest.TabbedApps

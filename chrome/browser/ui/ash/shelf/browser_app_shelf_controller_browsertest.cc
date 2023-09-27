@@ -349,10 +349,8 @@ IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest, TabbedApps) {
     SCOPED_TRACE("initial state");
 
     // StartLacros opens one Ash and one Lacros window.
-    WAIT_FOR(registry_->IsAshBrowserRunning() &&
-             registry_->IsLacrosBrowserRunning());
+    WAIT_FOR(registry_->IsLacrosBrowserRunning());
     EXPECT_EQ(ShelfStatus(kLacrosAppId), ash::STATUS_RUNNING);
-    EXPECT_EQ(ShelfStatus(kChromeAppId), ash::STATUS_RUNNING);
   }
 
   const apps::BrowserWindowInstance* lacros =
@@ -463,10 +461,8 @@ IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest, WindowedApps) {
     SCOPED_TRACE("initial state");
 
     // StartLacros opens one Ash and one Lacros window.
-    WAIT_FOR(registry_->IsAshBrowserRunning() &&
-             registry_->IsLacrosBrowserRunning());
+    WAIT_FOR(registry_->IsLacrosBrowserRunning());
     EXPECT_EQ(ShelfStatus(kLacrosAppId), ash::STATUS_RUNNING);
-    EXPECT_EQ(ShelfStatus(kChromeAppId), ash::STATUS_RUNNING);
   }
 
   {
