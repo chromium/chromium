@@ -2012,6 +2012,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kMidiBlockedForUrls,
     prefs::kManagedMidiBlockedForUrls,
     base::Value::Type::LIST },
+#if BUILDFLAG(IS_CHROMEOS)
+  { key::kPPAPISharedImagesForVideoDecoderAllowed,
+    policy::policy_prefs::kPPAPISharedImagesForVideoDecoderAllowed,
+    base::Value::Type::BOOLEAN },
+#endif
 };
 // clang-format on
 

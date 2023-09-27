@@ -300,6 +300,9 @@ const char kCastMirroringTargetPlayoutDelay[] =
     "cast-mirroring-target-playout-delay";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+const char kDisableUseSharedImagesForPepperVideo[] =
+    "disable-use-shared-images-for-pepper-video";
+
 }  // namespace switches
 
 namespace media {

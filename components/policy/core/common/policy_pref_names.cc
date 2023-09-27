@@ -163,5 +163,8 @@ const char kLocalTestPoliciesForNextStartup[] =
 const char kForcePermissionPolicyUnloadDefaultEnabled[] =
     "policy.force_permission_policy_unload_default_enabled";
 
+const char kPPAPISharedImagesForVideoDecoderAllowed[] =
+    "policy.ppapi_shared_images_for_video_decoder_allowed";
+
 }  // namespace policy_prefs
 }  // namespace policy
