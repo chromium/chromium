@@ -241,9 +241,12 @@ int LaunchUnitTestsInternal(RunTestSuiteCallback run_test_suite,
 #else
   ScopedBlockTestsWritingToSpecialDirs scoped_blocker(
       {
-        base::DIR_SRC_TEST_DATA_ROOT,
+        // Please keep these in alphabetic order within each platform type.
+        base::DIR_SRC_TEST_DATA_ROOT, base::DIR_USER_DESKTOP,
 #if BUILDFLAG(IS_WIN)
+            base::DIR_COMMON_DESKTOP, base::DIR_START_MENU,
             base::DIR_USER_STARTUP,
+
 #endif  // BUILDFLAG(IS_WIN)
       },
       ([](const base::FilePath& path) {
