@@ -94,11 +94,10 @@ class TouchToFillViewBinder {
                 return new TouchToFillViewHolder(parent, R.layout.touch_to_fill_header_item,
                         TouchToFillViewBinder::bindHeaderView);
             case ItemType.CREDENTIAL:
-                return new TouchToFillViewHolder(parent, R.layout.touch_to_fill_credential_item,
+                return new TouchToFillViewHolder(parent, R.layout.touch_to_fill_list_item,
                         TouchToFillViewBinder::bindCredentialView);
             case ItemType.WEBAUTHN_CREDENTIAL:
-                return new TouchToFillViewHolder(parent,
-                        R.layout.touch_to_fill_webauthn_credential_item,
+                return new TouchToFillViewHolder(parent, R.layout.touch_to_fill_list_item,
                         TouchToFillViewBinder::bindWebAuthnCredentialView);
             case ItemType.FILL_BUTTON:
                 return new TouchToFillViewHolder(parent, R.layout.touch_to_fill_fill_button,
@@ -141,7 +140,7 @@ class TouchToFillViewBinder {
                     view.getResources(), data.mIconSize));
         } else if (propertyKey == ON_CLICK_LISTENER) {
             view.setOnClickListener(
-                    clickedView -> { model.get(ON_CLICK_LISTENER).onResult(credential); });
+                    clickedView -> model.get(ON_CLICK_LISTENER).onResult(credential));
         } else if (propertyKey == FORMATTED_ORIGIN) {
             TextView pslOriginText = view.findViewById(R.id.credential_origin);
             pslOriginText.setText(model.get(FORMATTED_ORIGIN));
@@ -154,7 +153,7 @@ class TouchToFillViewBinder {
             TextView usernameText = view.findViewById(R.id.username);
             usernameText.setText(credential.getFormattedUsername());
 
-            TextView passwordText = view.findViewById(R.id.password);
+            TextView passwordText = view.findViewById(R.id.password_or_context);
             passwordText.setText(credential.getPassword());
             passwordText.setTransformationMethod(new PasswordTransformationMethod());
 
@@ -183,6 +182,7 @@ class TouchToFillViewBinder {
     private static void bindWebAuthnCredentialView(
             PropertyModel model, View view, PropertyKey propertyKey) {
         WebAuthnCredential credential = model.get(WEBAUTHN_CREDENTIAL);
+        view.findViewById(R.id.credential_origin).setVisibility(View.GONE);
         if (propertyKey == ON_WEBAUTHN_CLICK_LISTENER) {
             view.setOnClickListener(
                     clickedView -> model.get(ON_WEBAUTHN_CLICK_LISTENER).onResult(credential));
@@ -197,7 +197,7 @@ class TouchToFillViewBinder {
                 || propertyKey == WEBAUTHN_ITEM_COLLECTION_INFO) {
             TextView usernameText = view.findViewById(R.id.username);
             usernameText.setText(credential.getUsername());
-            TextView descriptionText = view.findViewById(R.id.webauthn_credential_context);
+            TextView descriptionText = view.findViewById(R.id.password_or_context);
             descriptionText.setText(R.string.touch_to_fill_sheet_webauthn_credential_context);
 
             String label = view.getContext().getString(

@@ -73,10 +73,9 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable-night/touch_to_fill_header_image.xml",
     "java/res/drawable/touch_to_fill_header_image.xml",
-    "java/res/layout/touch_to_fill_credential_item.xml",
     "java/res/layout/touch_to_fill_footer_item.xml",
     "java/res/layout/touch_to_fill_header_item.xml",
-    "java/res/layout/touch_to_fill_webauthn_credential_item.xml",
+    "java/res/layout/touch_to_fill_list_item.xml",
     "java/res/values/dimens.xml",
   ]
 }

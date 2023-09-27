@@ -649,7 +649,7 @@ public class TouchToFillViewTest {
     }
 
     private TextView getCredentialPasswordAt(int index) {
-        return getCredentials().getChildAt(index).findViewById(R.id.password);
+        return getCredentials().getChildAt(index).findViewById(R.id.password_or_context);
     }
 
     private TextView getCredentialOriginAt(int index) {

@@ -32,7 +32,7 @@ public class TouchToFillCoordinator implements TouchToFillComponent {
     @Override
     public void initialize(Context context, BottomSheetController sheetController,
             TouchToFillComponent.Delegate delegate, BottomSheetFocusHelper bottomSheetFocusHelper) {
-        // TODO(crbug.com/1472327): The touch_to_fill_credential_item layout only supports
+        // TODO(crbug.com/1472327): The touch_to_fill_list_item layout only supports
         // favicons of size touch_to_fill_favicon_size, which is smaller than
         // touch_to_fill_favicon_size_modern. Figure out which size the layout should use.
         mMediator.initialize(context, delegate, mModel,
