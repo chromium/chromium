@@ -205,56 +205,6 @@ OverviewAnimationType OverviewItem::GetExitTransformAnimationType() const {
                                       : OVERVIEW_ANIMATION_RESTORE_WINDOW_ZERO;
 }
 
-void OverviewItem::HandleGestureEventForTabletModeLayout(
-    ui::GestureEvent* event) {
-  const gfx::PointF location = event->details().bounding_box_f().CenterPoint();
-  switch (event->type()) {
-    case ui::ET_SCROLL_FLING_START:
-      if (IsDragItem()) {
-        HandleFlingStartEvent(location, event->details().velocity_x(),
-                              event->details().velocity_y());
-      } else {
-        overview_grid()->grid_event_handler()->OnGestureEvent(event);
-      }
-      break;
-    case ui::ET_GESTURE_SCROLL_BEGIN:
-      if (std::abs(event->details().scroll_y_hint()) >
-          std::abs(event->details().scroll_x_hint())) {
-        HandlePressEvent(location, /*from_touch_gesture=*/true);
-      } else {
-        overview_grid()->grid_event_handler()->OnGestureEvent(event);
-      }
-      break;
-    case ui::ET_GESTURE_SCROLL_UPDATE:
-      if (IsDragItem()) {
-        HandleDragEvent(location);
-      } else {
-        overview_grid()->grid_event_handler()->OnGestureEvent(event);
-      }
-      break;
-    case ui::ET_GESTURE_SCROLL_END:
-      if (IsDragItem()) {
-        HandleReleaseEvent(location);
-      } else {
-        overview_grid()->grid_event_handler()->OnGestureEvent(event);
-      }
-      break;
-    case ui::ET_GESTURE_LONG_PRESS:
-      HandlePressEvent(location, /*from_touch_gesture=*/true);
-      HandleLongPressEvent(location);
-      break;
-    case ui::ET_GESTURE_TAP:
-      overview_session_->SelectWindow(this);
-      break;
-    case ui::ET_GESTURE_END:
-      HandleGestureEndEvent();
-      break;
-    default:
-      overview_grid()->grid_event_handler()->OnGestureEvent(event);
-      break;
-  }
-}
-
 aura::Window* OverviewItem::GetWindow() {
   return transform_window_.window();
 }
@@ -850,76 +800,6 @@ void OverviewItem::CloseWindow() {
   transform_window_.Close();
 }
 
-void OverviewItem::HandleMouseEvent(const ui::MouseEvent& event) {
-  if (!overview_session_->CanProcessEvent(this, /*from_touch_gesture=*/false)) {
-    return;
-  }
-
-  // `event.target()` will be null if we use search+space on this item with
-  // chromevox on. Accessibility API will synthesize a mouse event in that case
-  // without a target. We just use the centerpoint of the item so that
-  // search+space will select the item, leaving overview.
-  const gfx::PointF screen_location =
-      event.target()
-          ? event.target()->GetScreenLocationF(event)
-          : gfx::PointF(overview_item_view_->GetBoundsInScreen().CenterPoint());
-  switch (event.type()) {
-    case ui::ET_MOUSE_PRESSED:
-      HandlePressEvent(screen_location, /*from_touch_gesture=*/false);
-      break;
-    case ui::ET_MOUSE_RELEASED:
-      HandleReleaseEvent(screen_location);
-      break;
-    case ui::ET_MOUSE_DRAGGED:
-      HandleDragEvent(screen_location);
-      break;
-    default:
-      NOTREACHED();
-      break;
-  }
-}
-
-void OverviewItem::HandleGestureEvent(ui::GestureEvent* event) {
-  if (!overview_session_->CanProcessEvent(this, /*from_touch_gesture=*/true)) {
-    event->StopPropagation();
-    event->SetHandled();
-    return;
-  }
-
-  if (ShouldUseTabletModeGridLayout()) {
-    HandleGestureEventForTabletModeLayout(event);
-    return;
-  }
-
-  const gfx::PointF location = event->details().bounding_box_f().CenterPoint();
-  switch (event->type()) {
-    case ui::ET_GESTURE_TAP_DOWN:
-      HandlePressEvent(location, /*from_touch_gesture=*/true);
-      break;
-    case ui::ET_GESTURE_SCROLL_UPDATE:
-      HandleDragEvent(location);
-      break;
-    case ui::ET_SCROLL_FLING_START:
-      HandleFlingStartEvent(location, event->details().velocity_x(),
-                            event->details().velocity_y());
-      break;
-    case ui::ET_GESTURE_SCROLL_END:
-      HandleReleaseEvent(location);
-      break;
-    case ui::ET_GESTURE_LONG_PRESS:
-      HandleLongPressEvent(location);
-      break;
-    case ui::ET_GESTURE_TAP:
-      HandleTapEvent();
-      break;
-    case ui::ET_GESTURE_END:
-      HandleGestureEndEvent();
-      break;
-    default:
-      break;
-  }
-}
-
 void OverviewItem::OnOverviewItemDragStarted(OverviewItemBase* item) {
   is_being_dragged_ = (item == this);
 
@@ -1159,34 +1039,6 @@ void OverviewItem::UpdateWindowDimensionsType() {
   overview_item_view_->SetBackdropVisibility(show_backdrop);
 }
 
-void OverviewItem::CreateItemWidget() {
-  TRACE_EVENT0("ui", "OverviewItem::CreateItemWidget");
-
-  item_widget_ = std::make_unique<views::Widget>();
-  item_widget_->set_focus_on_creation(false);
-  item_widget_->Init(CreateOverviewItemWidgetParams(
-      transform_window_.window()->parent(), "OverviewItemWidget"));
-  aura::Window* widget_window = item_widget_->GetNativeWindow();
-  widget_window->parent()->StackChildBelow(widget_window, GetWindow());
-  // Overview uses custom animations so remove the default ones.
-  wm::SetWindowVisibilityAnimationTransition(widget_window, wm::ANIMATE_NONE);
-
-  ConfigureTheShadow();
-
-  overview_item_view_ =
-      item_widget_->SetContentsView(std::make_unique<OverviewItemView>(
-          this,
-          base::BindRepeating(&OverviewItem::CloseButtonPressed,
-                              base::Unretained(this)),
-          GetWindow(), transform_window_.IsMinimizedOrTucked()));
-  item_widget_->Show();
-  item_widget_->SetOpacity(
-      overview_session_ && overview_session_->ShouldEnterWithoutAnimations()
-          ? 1.f
-          : 0.f);
-  item_widget_->GetLayer()->SetMasksToBounds(/*masks_to_bounds=*/false);
-}
-
 gfx::Point OverviewItem::GetMagnifierFocusPointInScreen() const {
   return overview_item_view_->GetMagnifierFocusPointInScreen();
 }
@@ -1326,6 +1178,47 @@ void OverviewItem::OnPostWindowStateTypeChange(WindowState* window_state,
   item_widget_->GetLayer()->SetOpacity(1.f);
 
   overview_grid_->PositionWindows(/*animate=*/false);
+}
+
+void OverviewItem::CreateItemWidget() {
+  TRACE_EVENT0("ui", "OverviewItem::CreateItemWidget");
+
+  item_widget_ = std::make_unique<views::Widget>();
+  item_widget_->set_focus_on_creation(false);
+  item_widget_->Init(CreateOverviewItemWidgetParams(
+      transform_window_.window()->parent(), "OverviewItemWidget"));
+  aura::Window* widget_window = item_widget_->GetNativeWindow();
+  widget_window->parent()->StackChildBelow(widget_window, GetWindow());
+  // Overview uses custom animations so remove the default ones.
+  wm::SetWindowVisibilityAnimationTransition(widget_window, wm::ANIMATE_NONE);
+
+  ConfigureTheShadow();
+
+  overview_item_view_ =
+      item_widget_->SetContentsView(std::make_unique<OverviewItemView>(
+          this,
+          base::BindRepeating(&OverviewItem::CloseButtonPressed,
+                              base::Unretained(this)),
+          GetWindow(), transform_window_.IsMinimizedOrTucked()));
+  item_widget_->Show();
+  item_widget_->SetOpacity(
+      overview_session_ && overview_session_->ShouldEnterWithoutAnimations()
+          ? 1.f
+          : 0.f);
+  item_widget_->GetLayer()->SetMasksToBounds(/*masks_to_bounds=*/false);
+}
+
+void OverviewItem::StartDrag() {
+  // Stack the window and the widget window at the top. This is to ensure that
+  // they appear above other app windows, as well as above the desks bar. Note
+  // that the stacking operations are done in this order to make sure that the
+  // window appears above the widget window.
+  if (aura::Window* widget_window = item_widget_->GetNativeWindow()) {
+    widget_window->parent()->StackChildAtTop(widget_window);
+  }
+
+  aura::Window* window = GetWindow();
+  window->parent()->StackChildAtTop(window);
 }
 
 void OverviewItem::OnWindowCloseAnimationCompleted() {
@@ -1596,18 +1489,6 @@ void OverviewItem::AnimateOpacity(float opacity,
   }
 }
 
-void OverviewItem::StartDrag() {
-  // Stack the window and the widget window at the top. This is to ensure that
-  // they appear above other app windows, as well as above the desks bar. Note
-  // that the stacking operations are done in this order to make sure that the
-  // window appears above the widget window.
-  if (aura::Window* widget_window = item_widget_->GetNativeWindow())
-    widget_window->parent()->StackChildAtTop(widget_window);
-
-  aura::Window* window = GetWindow();
-  window->parent()->StackChildAtTop(window);
-}
-
 void OverviewItem::CloseButtonPressed() {
   base::RecordAction(
       base::UserMetricsAction("WindowSelector_OverviewCloseButton"));
@@ -1616,66 +1497,6 @@ void OverviewItem::CloseButtonPressed() {
         base::UserMetricsAction("Tablet_WindowCloseFromOverviewButton"));
   }
   CloseWindow();
-}
-
-void OverviewItem::HandlePressEvent(const gfx::PointF& location_in_screen,
-                                    bool from_touch_gesture) {
-  // No need to start the drag again if already in a drag. This can happen if we
-  // switch fingers midway through a drag.
-  if (IsDragItem())
-    return;
-
-  StartDrag();
-  overview_session_->InitiateDrag(this, location_in_screen,
-                                  /*is_touch_dragging=*/from_touch_gesture);
-}
-
-void OverviewItem::HandleReleaseEvent(const gfx::PointF& location_in_screen) {
-  if (!IsDragItem())
-    return;
-
-  overview_session_->CompleteDrag(this, location_in_screen);
-}
-
-void OverviewItem::HandleDragEvent(const gfx::PointF& location_in_screen) {
-  if (!IsDragItem())
-    return;
-
-  overview_session_->Drag(this, location_in_screen);
-}
-
-void OverviewItem::HandleLongPressEvent(const gfx::PointF& location_in_screen) {
-  if (!IsDragItem())
-    return;
-
-  if (ShouldAllowSplitView() || (desks_util::ShouldDesksBarBeCreated() &&
-                                 overview_grid_->IsDesksBarViewActive())) {
-    overview_session_->StartNormalDragMode(location_in_screen);
-  }
-}
-
-void OverviewItem::HandleFlingStartEvent(const gfx::PointF& location_in_screen,
-                                         float velocity_x,
-                                         float velocity_y) {
-  overview_session_->Fling(this, location_in_screen, velocity_x, velocity_y);
-}
-
-void OverviewItem::HandleTapEvent() {
-  if (!IsDragItem())
-    return;
-
-  overview_session_->ActivateDraggedWindow();
-}
-
-void OverviewItem::HandleGestureEndEvent() {
-  if (!IsDragItem())
-    return;
-
-  // Gesture end events come from a long press getting canceled. Long press
-  // alters the stacking order, so on gesture end, make sure we restore the
-  // stacking order on the next reposition.
-  set_should_restack_on_animation_end(true);
-  overview_session_->ResetDraggedWindowGesture();
 }
 
 aura::Window::Windows OverviewItem::GetWindowsForHomeGesture() {

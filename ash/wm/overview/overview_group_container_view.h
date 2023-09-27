@@ -37,6 +37,13 @@ class OverviewGroupContainerView : public views::View,
   void OnFocusableViewFocused() override;
   void OnFocusableViewBlurred() override;
 
+ protected:
+  // views::View:
+  bool OnMousePressed(const ui::MouseEvent& event) override;
+  bool OnMouseDragged(const ui::MouseEvent& event) override;
+  void OnMouseReleased(const ui::MouseEvent& event) override;
+  void OnGestureEvent(ui::GestureEvent* event) override;
+
  private:
   // Shows or hides the focus ring on `this`.
   void UpdateFocusState(bool focus);

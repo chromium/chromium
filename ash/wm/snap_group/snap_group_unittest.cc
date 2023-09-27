@@ -25,6 +25,7 @@
 #include "ash/wm/overview/overview_test_base.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/overview/overview_utils.h"
+#include "ash/wm/overview/overview_window_drag_controller.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/snap_group/snap_group_expanded_menu_view.h"
 #include "ash/wm/splitview/split_view_constants.h"
@@ -56,7 +57,6 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
-#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -1024,6 +1024,97 @@ TEST_F(SnapGroupEntryPointArm1Test, OverviewGroupItemFocusCycling) {
       window_util::GetTopMostWindow(
           mru_window_tracker->BuildMruWindowList(DesksMruType::kActiveDesk)),
       window1.get());
+}
+
+// Tests the basic functionality of activating a group item in overview with
+// mouse or touch. Overview will exit upon mouse/touch release and the mru
+// window between the two windows in snap group will be the active window.
+TEST_F(SnapGroupEntryPointArm1Test, GroupItemActivation) {
+  std::unique_ptr<aura::Window> window0 = CreateAppWindow();
+  std::unique_ptr<aura::Window> window1 = CreateAppWindow();
+  SnapTwoTestWindowsInArm1(window0.get(), window1.get());
+  // Pre-check that `window1` is the active window between the windows in the
+  // snap group.
+  ASSERT_TRUE(wm::IsActiveWindow(window1.get()));
+  std::unique_ptr<aura::Window> window2 = CreateAppWindow(gfx::Rect(100, 100));
+  ASSERT_TRUE(wm::IsActiveWindow(window2.get()));
+
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  auto* event_generator = GetEventGenerator();
+  for (const bool use_touch : {false, true}) {
+    overview_controller->StartOverview(OverviewStartAction::kTests,
+                                       OverviewEnterExitType::kImmediateEnter);
+    ASSERT_TRUE(overview_controller->InOverviewSession());
+
+    const auto* overview_grid =
+        GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+    ASSERT_TRUE(overview_grid);
+    const auto& window_list = overview_grid->window_list();
+    ASSERT_EQ(window_list.size(), 2u);
+
+    OverviewSession* overview_session = overview_controller->overview_session();
+    auto* overview_item =
+        overview_session->GetOverviewItemForWindow(window0.get());
+    const auto hover_point =
+        gfx::ToRoundedPoint(overview_item->target_bounds().CenterPoint());
+    event_generator->set_current_screen_location(hover_point);
+    if (use_touch) {
+      event_generator->PressTouch();
+      event_generator->ReleaseTouch();
+    } else {
+      event_generator->ClickLeftButton();
+    }
+
+    EXPECT_FALSE(overview_controller->InOverviewSession());
+
+    // Verify that upon mouse/touch release, the snap group will be brought to
+    // the front with mru window before entering overview as the active window.
+    EXPECT_TRUE(wm::IsActiveWindow(window1.get()));
+  }
+}
+
+// Tests the basic drag and drop functionality for overview group item with both
+// mouse and touch events. The group item will be dropped to its original
+// position before drag started.
+TEST_F(SnapGroupEntryPointArm1Test, DragAndDropBasic) {
+  // Explicitly create another desk so that the virtual desk bar won't expand
+  // from zero-state to expanded-state when dragging starts.
+  auto* desk_controller = DesksController::Get();
+  desk_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desk_controller->desks().size());
+
+  std::unique_ptr<aura::Window> window0 = CreateAppWindow();
+  std::unique_ptr<aura::Window> window1 = CreateAppWindow();
+  SnapTwoTestWindowsInArm1(window0.get(), window1.get());
+
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview(OverviewStartAction::kTests,
+                                     OverviewEnterExitType::kImmediateEnter);
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+
+  const auto* overview_grid =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(overview_grid);
+  const auto& window_list = overview_grid->window_list();
+  ASSERT_EQ(window_list.size(), 1u);
+
+  OverviewSession* overview_session = overview_controller->overview_session();
+  auto* overview_item =
+      overview_session->GetOverviewItemForWindow(window0.get());
+  auto* event_generator = GetEventGenerator();
+  const auto target_bounds_before_dragging = overview_item->target_bounds();
+
+  for (const bool by_touch : {false, true}) {
+    DragItemToPoint(
+        overview_item,
+        Shell::GetPrimaryRootWindow()->GetBoundsInScreen().CenterPoint(),
+        event_generator, by_touch, /*drop=*/true);
+    EXPECT_TRUE(overview_controller->InOverviewSession());
+
+    // Verify that `overview_item` is dropped to its old position before
+    // dragging.
+    EXPECT_EQ(overview_item->target_bounds(), target_bounds_before_dragging);
+  }
 }
 
 // Tests that the hit area of the split view divider can be outside of its

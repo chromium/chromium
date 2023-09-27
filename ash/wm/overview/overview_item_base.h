@@ -48,7 +48,7 @@ class SystemShadow;
 // Defines the interface for the overview item which will be implemented by
 // `OverviewItem` and `OverviewGroupItem`. The `OverviewGrid` creates and owns
 // the instance of this interface.
-class OverviewItemBase {
+class ASH_EXPORT OverviewItemBase {
  public:
   OverviewItemBase(OverviewSession* overview_session,
                    OverviewGrid* overview_grid,
@@ -65,11 +65,17 @@ class OverviewItemBase {
       OverviewGrid* overview_grid);
 
   // Checks if this item is currently being dragged.
-  ASH_EXPORT bool IsDragItem() const;
+  bool IsDragItem() const;
 
-  // Handles focus related events forwarded from the contents view.
+  // Handles events forwarded from the contents view.
   void OnFocusedViewActivated();
   void OnFocusedViewClosed();
+  void HandleMouseEvent(const ui::MouseEvent& event);
+  void HandleGestureEvent(ui::GestureEvent* event);
+
+  // If in tablet mode, maybe forward events to `OverviewGridEventHandler` as we
+  // might want to process scroll events on the item.
+  void HandleGestureEventForTabletModeLayout(ui::GestureEvent* event);
 
   void set_should_animate_when_entering(bool should_animate) {
     should_animate_when_entering_ = should_animate;
@@ -230,10 +236,6 @@ class OverviewItemBase {
   // overview items is the same as when entering overview.
   virtual void Restack() = 0;
 
-  // Handles events forwarded from the contents view.
-  virtual void HandleMouseEvent(const ui::MouseEvent& event) = 0;
-  virtual void HandleGestureEvent(ui::GestureEvent* event) = 0;
-
   virtual void OnOverviewItemDragStarted(OverviewItemBase* item) = 0;
   virtual void OnOverviewItemDragEnded(bool snap) = 0;
 
@@ -300,6 +302,11 @@ class OverviewItemBase {
   // Creates `item_widget_` with `OverviewItemView` or
   // `OverviewGroupContainerView` as its contents view.
   virtual void CreateItemWidget() = 0;
+
+  // Called before dragging. Scales up the windows(s) hosted by `this` a little
+  // bit to indicate its selection and stacks the window(s) at the top of the Z
+  // order in order to keep them visible while being dragged around.
+  virtual void StartDrag() = 0;
 
   // Returns the widget init params needed to create the `item_widget_`.
   views::Widget::InitParams CreateOverviewItemWidgetParams(
@@ -386,6 +393,20 @@ class OverviewItemBase {
 
  private:
   friend class OverviewTestBase;
+
+  // TODO(sammiequon): Current events go from OverviewItemView to
+  // OverviewItem to OverviewSession to OverviewWindowDragController. We may be
+  // able to shorten this pipeline.
+  void HandlePressEvent(const gfx::PointF& location_in_screen,
+                        bool from_touch_gesture);
+  void HandleReleaseEvent(const gfx::PointF& location_in_screen);
+  void HandleDragEvent(const gfx::PointF& location_in_screen);
+  void HandleLongPressEvent(const gfx::PointF& location_in_screen);
+  void HandleFlingStartEvent(const gfx::PointF& location_in_screen,
+                             float velocity_x,
+                             float velocity_y);
+  void HandleTapEvent();
+  void HandleGestureEndEvent();
 };
 
 }  // namespace ash

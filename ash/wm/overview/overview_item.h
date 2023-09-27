@@ -75,10 +75,6 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   OverviewAnimationType GetExitOverviewAnimationType() const;
   OverviewAnimationType GetExitTransformAnimationType() const;
 
-  // If in tablet mode, maybe forward events to `OverviewGridEventHandler` as we
-  // might want to process scroll events on the item.
-  void HandleGestureEventForTabletModeLayout(ui::GestureEvent* event);
-
   // OverviewItemBase:
   aura::Window* GetWindow() override;
   std::vector<aura::Window*> GetWindows() override;
@@ -107,8 +103,6 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   void RevertHideForSavedDeskLibrary(bool animate) override;
   void Restack() override;
   void CloseWindow() override;
-  void HandleMouseEvent(const ui::MouseEvent& event) override;
-  void HandleGestureEvent(ui::GestureEvent* event) override;
   void OnOverviewItemDragStarted(OverviewItemBase* item) override;
   void OnOverviewItemDragEnded(bool snap) override;
   void OnOverviewItemContinuousScroll(const gfx::Transform& target_transform,
@@ -125,7 +119,6 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   void StopWidgetAnimation() override;
   OverviewGridWindowFillMode GetWindowDimensionsType() const override;
   void UpdateWindowDimensionsType() override;
-  void CreateItemWidget() override;
   gfx::Point GetMagnifierFocusPointInScreen() const override;
   const gfx::RoundedCornersF GetRoundedCorners() const override;
 
@@ -144,6 +137,11 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
                                   chromeos::WindowStateType old_type) override;
   void OnPostWindowStateTypeChange(WindowState* window_state,
                                    chromeos::WindowStateType old_type) override;
+
+ protected:
+  // OverviewItemBase:
+  void CreateItemWidget() override;
+  void StartDrag() override;
 
  private:
   friend class OverviewTestBase;
@@ -190,26 +188,7 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   OverviewAnimationType GetExitOverviewAnimationTypeForMinimizedWindow(
       OverviewEnterExitType type);
 
-  // Called before dragging. Scales up the window a little bit to indicate its
-  // selection and stacks the window at the top of the Z order in order to keep
-  // it visible while dragging around.
-  void StartDrag();
-
   void CloseButtonPressed();
-
-  // TODO(sammiequon): Current events go from OverviewItemView to
-  // OverviewItem to OverviewSession to OverviewWindowDragController. We may be
-  // able to shorten this pipeline.
-  void HandlePressEvent(const gfx::PointF& location_in_screen,
-                        bool from_touch_gesture);
-  void HandleReleaseEvent(const gfx::PointF& location_in_screen);
-  void HandleDragEvent(const gfx::PointF& location_in_screen);
-  void HandleLongPressEvent(const gfx::PointF& location_in_screen);
-  void HandleFlingStartEvent(const gfx::PointF& location_in_screen,
-                             float velocity_x,
-                             float velocity_y);
-  void HandleTapEvent();
-  void HandleGestureEndEvent();
 
   void HideWindowInOverview();
   void ShowWindowInOverview();

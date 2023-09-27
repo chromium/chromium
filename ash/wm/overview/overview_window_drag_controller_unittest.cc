@@ -4,7 +4,6 @@
 
 #include "ash/wm/overview/overview_window_drag_controller.h"
 #include "base/memory/raw_ptr.h"
-
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/shell.h"
@@ -17,7 +16,6 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/legacy_desk_bar_view.h"
 #include "ash/wm/desks/zero_state_button.h"
-#include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"

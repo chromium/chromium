@@ -99,6 +99,8 @@ void OverviewGroupItem::RestoreWindow(bool reset_transform, bool animate) {}
 
 void OverviewGroupItem::SetBounds(const gfx::RectF& target_bounds,
                                   OverviewAnimationType animation_type) {
+  target_bounds_ = target_bounds;
+
   const int size = overview_items_.size();
   if (size == 1) {
     return overview_items_[0]->SetBounds(target_bounds, animation_type);
@@ -129,7 +131,7 @@ gfx::Transform OverviewGroupItem::ComputeTargetTransform(
 
 gfx::RectF OverviewGroupItem::GetTargetBoundsInScreen() const {
   gfx::RectF target_bounds;
-  for (auto& item : overview_items_) {
+  for (const auto& item : overview_items_) {
     target_bounds.Union(item->GetTargetBoundsInScreen());
   }
 
@@ -193,7 +195,7 @@ float OverviewGroupItem::GetOpacity() const {
 void OverviewGroupItem::PrepareForOverview() {}
 
 void OverviewGroupItem::OnStartingAnimationComplete() {
-  for (auto& item : overview_items_) {
+  for (const auto& item : overview_items_) {
     item->OnStartingAnimationComplete();
   }
 }
@@ -205,10 +207,6 @@ void OverviewGroupItem::RevertHideForSavedDeskLibrary(bool animate) {}
 void OverviewGroupItem::CloseWindow() {}
 
 void OverviewGroupItem::Restack() {}
-
-void OverviewGroupItem::HandleMouseEvent(const ui::MouseEvent& event) {}
-
-void OverviewGroupItem::HandleGestureEvent(ui::GestureEvent* event) {}
 
 void OverviewGroupItem::OnOverviewItemDragStarted(OverviewItemBase* item) {}
 
@@ -299,5 +297,7 @@ void OverviewGroupItem::CreateItemWidget() {
   item_widget_->Show();
   item_widget_->GetLayer()->SetMasksToBounds(/*masks_to_bounds=*/false);
 }
+
+void OverviewGroupItem::StartDrag() {}
 
 }  // namespace ash

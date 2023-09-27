@@ -425,7 +425,7 @@ bool OverviewSession::AcceptSelection() {
 void OverviewSession::SelectWindow(OverviewItemBase* item) {
   // `BuildWindowListIgnoreModal()` is used here to make sure the main window is
   // included in the `window_list` with the existence of modal transient
-  // window(s) which makes the main window is not activatable.
+  // window(s) which makes the main window not activatable.
   const aura::Window::Windows window_list =
       Shell::Get()->mru_window_tracker()->BuildWindowListIgnoreModal(
           kActiveDesk);
@@ -1049,16 +1049,14 @@ void OverviewSession::OnRootWindowClosing(aura::Window* root) {
 }
 
 OverviewItemBase* OverviewSession::GetCurrentDraggedOverviewItem() const {
-  if (!window_drag_controller_)
-    return nullptr;
-  return window_drag_controller_->item();
+  return window_drag_controller_ ? window_drag_controller_->item() : nullptr;
 }
 
 bool OverviewSession::CanProcessEvent() const {
   return CanProcessEvent(/*sender=*/nullptr, /*from_touch_gesture=*/false);
 }
 
-bool OverviewSession::CanProcessEvent(OverviewItem* sender,
+bool OverviewSession::CanProcessEvent(OverviewItemBase* sender,
                                       bool from_touch_gesture) const {
   // Allow processing the event if no current window is being dragged.
   const bool drag_in_progress = window_util::IsAnyWindowDragged();
