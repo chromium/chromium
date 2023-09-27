@@ -477,7 +477,6 @@ scoped_refptr<DecoderBuffer> CreateFakeVideoBufferForTest(
 
 scoped_refptr<DecoderBuffer> CreateMismatchedBufferForTest() {
   std::vector<uint8_t> data = {42, 22, 26, 13, 7, 16, 8, 2};
-  std::vector<uint8_t> kFakeData = {36, 23, 36};
   scoped_refptr<media::DecoderBuffer> mismatched_encrypted_buffer =
       media::DecoderBuffer::CopyFrom(data.data(), data.size());
   mismatched_encrypted_buffer->set_timestamp(base::Seconds(42));
