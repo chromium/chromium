@@ -25,6 +25,10 @@ def _Main():
                             type=str,
                             required=True,
                             help='updater version to print the GUIDs for.')
+    cmd_parser.add_argument(
+        '--updater_product_full_name',
+        default='GoogleUpdater',
+        help='can be `--updater_product_full_name ChromiumUpdater`')
     flags = cmd_parser.parse_args()
 
     # These GUIDs must depend on branding only.
@@ -71,12 +75,11 @@ def _Main():
         "IUpdaterInternalCallbackSystem",
     }
 
-    updater_product_full_name = "GoogleUpdater"
-    name = updater_product_full_name
+    name = flags.updater_product_full_name
     for key, interface_name in branding_only_placeholder_guids.items():
         print(interface_name, ":",
               str(uuid.uuid5(uuid.UUID(key), name)).upper())
-    name = updater_product_full_name + flags.version
+    name = flags.updater_product_full_name + flags.version
     for key, interface_name in branding_version_placeholder_guids.items():
         print(interface_name, ":",
               str(uuid.uuid5(uuid.UUID(key), name)).upper())
