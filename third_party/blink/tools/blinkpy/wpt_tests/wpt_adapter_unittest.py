@@ -180,6 +180,7 @@ class WPTAdapterTest(unittest.TestCase):
             '--num-retries=11',
             '--zero-tests-executed-ok',
             '--timeout-multiplier=2.5',
+            '--fully-parallel',
             '--no-manifest-update',
             'external/wpt/dir/',
         ]
@@ -195,6 +196,8 @@ class WPTAdapterTest(unittest.TestCase):
             # `*webdriver/` tests are implicitly excluded by default.
             self.assertNotIn('wdspec', options.test_types)
             self.assertAlmostEqual(options.timeout_multiplier, 2.5)
+            self.assertTrue(options.fully_parallel)
+            self.assertIsNot(options.run_by_dir, 0)
             self.assertEqual(options.include, ['dir/reftest.html'])
 
             run_info = self._read_run_info(options)

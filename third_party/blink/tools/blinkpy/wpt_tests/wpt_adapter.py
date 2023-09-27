@@ -294,6 +294,7 @@ class WPTAdapter:
         # at command line individually. We need such capability for repeat to
         # work correctly.
         runner_options.repeat = self.options.iterations
+        runner_options.fully_parallel = self.options.fully_parallel
 
         if self.options.run_wpt_internal:
             runner_options.config = self.finder.path_from_web_tests(
@@ -321,13 +322,14 @@ class WPTAdapter:
             runner_options.restart_on_unexpected = False
         else:
             # By default, wpt will treat unexpected passes as errors, so we
-            # disable that to be consistent with Chromium CI. Add
-            # '--run-by-dir=0' so that tests can be more evenly distributed
-            # among workers.
+            # disable that to be consistent with Chromium CI.
             runner_options.fail_on_unexpected_pass = False
             runner_options.restart_on_unexpected = False
             runner_options.restart_on_new_group = False
-            runner_options.run_by_dir = 0
+            # Add `--run-by-dir=0` so that tests can be more evenly distributed
+            # among workers.
+            if not runner_options.fully_parallel:
+                runner_options.run_by_dir = 0
             runner_options.reuse_window = True
 
         # TODO: repeat_each will restart browsers between tests. Wptrunner's

@@ -487,6 +487,10 @@ def add_testing_options_group(parser: argparse.ArgumentParser,
         help=('Wrapper command to insert before invocations of the driver; '
               'option is split on whitespace before running. (Example: '
               '--wrapper="valgrind --smc-check=all")'))
+    testing_group.add_argument('-f',
+                               '--fully-parallel',
+                               action='store_true',
+                               help='run all tests in parallel')
     if rwt:
         testing_group.add_argument(
             '--build',
@@ -621,11 +625,6 @@ def add_testing_options_group(parser: argparse.ArgumentParser,
             '--initialize-webgpu-adapter-at-startup-timeout-ms',
             type=float,
             help='Initialize WebGPU adapter before running any tests.')
-        # FIXME: Display the default number of child processes that will run.
-        testing_group.add_argument('-f',
-                                   '--fully-parallel',
-                                   action='store_true',
-                                   help='run all tests in parallel')
         testing_group.add_argument(
             '--virtual-parallel',
             action='store_true',
