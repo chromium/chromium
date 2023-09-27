@@ -140,6 +140,9 @@ SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
                              IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE);
   source->AddLocalizedString("subtitleInfoLink",
                              IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE_INFO_LINK);
+  source->AddLocalizedString(
+      "subtitleInfoLinkA11yLabel",
+      IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE_INFO_LINK_A11Y_LABEL);
   source->AddLocalizedString("buttonText",
                              IDS_SEARCH_ENGINE_CHOICE_BUTTON_TITLE);
   source->AddLocalizedString("infoDialogTitle",

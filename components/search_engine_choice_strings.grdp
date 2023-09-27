@@ -31,6 +31,10 @@
     Learn more
   </message>
 
+  <message name="IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE_INFO_LINK_A11Y_LABEL" desc="Accessibility label for the “Learn more” link in the search engine choice screen. Clicking the link will open a card that explains why users are being prompted to choose a search engine, and what a search engine does in Chrome.">
+    Learn more about your search engine in Chrome
+  </message>
+
   <if expr="use_titlecase">
     <message name="IDS_SEARCH_ENGINE_CHOICE_BUTTON_TITLE" desc="Button label to confirm the user’s search engine choice. It is on a screen that appears when the user opens Chrome after updating or installing it. This text is a verb phrase, and is short for the longer phrase “Set my selected search engine as my default search engine for search queries“.">
       Set as Default
