@@ -22,12 +22,12 @@ public class ContentSettingException implements Serializable {
     private final @ContentSettingsType int mContentSettingType;
     private final String mPrimaryPattern;
     private final String mSecondaryPattern;
-    private final @ContentSettingValues @Nullable Integer mContentSetting;
     // TODO(crbug.com/1344877): Convert {@link #mSource} to enum to enable merging {@link #mSource}
     // and {@link #mIsEmbargoed}.
     private final String mSource;
     private final Integer mExpirationInDays;
     private final boolean mIsEmbargoed;
+    private @ContentSettingValues @Nullable Integer mContentSetting;
 
     /**
      * Construct a ContentSettingException.
@@ -101,6 +101,7 @@ public class ContentSettingException implements Serializable {
      */
     public void setContentSetting(
             BrowserContextHandle browserContextHandle, @ContentSettingValues int value) {
+        mContentSetting = value;
         WebsitePreferenceBridge.setContentSettingCustomScope(browserContextHandle,
                 mContentSettingType, mPrimaryPattern, getSecondaryPatternSafe(), value);
     }

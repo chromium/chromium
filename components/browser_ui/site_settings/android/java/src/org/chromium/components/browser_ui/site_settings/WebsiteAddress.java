@@ -64,7 +64,7 @@ public class WebsiteAddress implements Comparable<WebsiteAddress>, Serializable 
         }
 
         // Origin
-        if (originOrHostOrPattern.indexOf(SCHEME_SUFFIX) != -1) {
+        if (originOrHostOrPattern.contains(SCHEME_SUFFIX)) {
             Uri uri = Uri.parse(originOrHostOrPattern);
             String origin = trimTrailingBackslash(originOrHostOrPattern);
             boolean omitProtocolAndPort = UrlConstants.HTTP_SCHEME.equals(uri.getScheme())

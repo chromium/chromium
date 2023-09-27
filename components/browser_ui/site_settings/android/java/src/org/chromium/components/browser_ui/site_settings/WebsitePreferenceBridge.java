@@ -379,13 +379,17 @@ public class WebsitePreferenceBridge {
     public static void setContentSettingCustomScope(BrowserContextHandle browserContextHandle,
             @ContentSettingsType int contentSettingType, String primaryPattern,
             String secondaryPattern, @ContentSettingValues int setting) {
-        // Currently only Cookie Settings support a non-empty, non-wildcard secondaryPattern.
-        // In addition, if a Cookie Setting uses secondaryPattern, the primaryPattern must be
-        // the wildcard.
-        if (contentSettingType != ContentSettingsType.COOKIES) {
-            assert secondaryPattern.equals(SITE_WILDCARD) || secondaryPattern.isEmpty();
-        } else if (!secondaryPattern.equals(SITE_WILDCARD) && !secondaryPattern.isEmpty()) {
+        if (contentSettingType == ContentSettingsType.STORAGE_ACCESS) {
+            // StorageAccess exceptions should always specify a primary and a secondary pattern.
+            assert !primaryPattern.equals(SITE_WILDCARD) && !secondaryPattern.equals(SITE_WILDCARD);
+        } else if (contentSettingType == ContentSettingsType.COOKIES
+                && !secondaryPattern.equals(SITE_WILDCARD)) {
+            // Currently only Cookie Settings support a non-empty, non-wildcard secondaryPattern.
+            // In addition, if a Cookie Setting uses secondaryPattern, the primaryPattern must be
+            // the wildcard.
             assert primaryPattern.equals(SITE_WILDCARD);
+        } else {
+            assert secondaryPattern.equals(SITE_WILDCARD) || secondaryPattern.isEmpty();
         }
 
         WebsitePreferenceBridgeJni.get().setContentSettingCustomScope(browserContextHandle,
