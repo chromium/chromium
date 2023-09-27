@@ -43,7 +43,7 @@ if sys.platform == 'win32':
   # This regex is identical inside the () characters except for the ? after .*,
   # which is needed to prevent greedily grabbing the undecorated version of the
   # symbols.
-  ABSL_SYM_RE = r'.*External     \| (?P<symbol>[?]+[^?].*?absl.*?|_?Absl.*?) \(.*'
+  ABSL_SYM_RE = r'.*External     \| (?P<symbol>[?]+[^?].*?absl.*?|_?Absl.*?)($| \(.*)'
   # Typical exported symbols in dumpbin /directives look like:
   #    /EXPORT:?kHexChar@numbers_internal@absl@@3QBDB,DATA
   ABSL_EXPORTED_RE = r'.*/EXPORT:(.*),.*'
