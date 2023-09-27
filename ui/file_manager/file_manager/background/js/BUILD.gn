@@ -115,7 +115,6 @@ js_library("mock_crostini") {
 
 js_library("file_operation_handler") {
   deps = [
-    "//ui/file_manager/file_manager/common/js:api",
     "//ui/file_manager/file_manager/common/js:progress_center_common",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/externs/background:file_operation_manager",

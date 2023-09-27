@@ -114,7 +114,6 @@ js_library("dlp_metadata_provider") {
   deps = [
     ":metadata_item",
     ":metadata_provider",
-    "//ui/file_manager/file_manager/common/js:api",
   ]
 }
 

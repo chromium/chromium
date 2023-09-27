@@ -22,7 +22,6 @@ group("closure_compile") {
 
 group("js_modules") {
   deps = [
-    ":api",
     ":app_util",
     ":array_data_model",
     ":async_util",
@@ -47,7 +46,6 @@ group("js_modules") {
 
 js_type_check("closure_compile_jsmodules") {
   deps = [
-    ":api",
     ":app_util",
     ":array_data_model",
     ":async_util",
@@ -92,13 +90,6 @@ js_type_check("test_support_modules_type_check") {
         "js_module_root=" + rebase_path("//ui", root_build_dir),
         "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
       ]
-}
-
-js_library("api") {
-  deps = [
-    ":util",
-    "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
-  ]
 }
 
 js_library("app_util") {

@@ -34,7 +34,6 @@ static_js_files = [
   "file_manager/background/js/volume_manager_util.js",
 
   # Files Common:
-  "file_manager/common/js/api.js",
   "file_manager/common/js/app_util.js",
   "file_manager/common/js/array_data_model.js",
   "file_manager/common/js/async_util.js",
@@ -218,6 +217,7 @@ static_js_files = [
 
 ts_files = [
   # Common.
+  "file_manager/common/js/api.ts",
   "file_manager/common/js/dom_utils.ts",
   "file_manager/common/js/entry_utils.ts",
   "file_manager/common/js/file_tasks.ts",

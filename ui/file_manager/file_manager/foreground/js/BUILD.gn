@@ -398,7 +398,6 @@ js_library("directory_tree_naming_controller") {
     "ui:dialogs",
     "ui:directory_tree",
     "//ash/webui/common/resources:assert",
-    "//ui/file_manager/file_manager/common/js:api",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/file_manager/file_manager/foreground/js:file_rename",
@@ -527,7 +526,6 @@ js_library("file_manager") {
     "//ash/webui/common/resources:event_target",
     "//ash/webui/common/resources:load_time_data.m",
     "//ui/file_manager/file_manager/background/js:file_manager_base",
-    "//ui/file_manager/file_manager/common/js:api",
     "//ui/file_manager/file_manager/common/js:array_data_model",
     "//ui/file_manager/file_manager/common/js:dialog_type",
     "//ui/file_manager/file_manager/common/js:files_app_entry_types",
@@ -550,7 +548,6 @@ js_library("file_manager") {
 
 js_library("file_rename") {
   deps = [
-    "//ui/file_manager/file_manager/common/js:api",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
   ]
@@ -570,7 +567,6 @@ js_library("file_manager_commands") {
     "ui:files_confirm_dialog",
     "ui:list",
     "//ash/webui/common/resources:assert",
-    "//ui/file_manager/file_manager/common/js:api",
     "//ui/file_manager/file_manager/common/js:dialog_type",
     "//ui/file_manager/file_manager/common/js:file_type",
     "//ui/file_manager/file_manager/common/js:files_app_entry_types",
@@ -654,7 +650,6 @@ js_library("file_watcher") {
 js_library("folder_shortcuts_data_model") {
   deps = [
     "//ash/webui/common/resources:event_target",
-    "//ui/file_manager/file_manager/common/js:api",
     "//ui/file_manager/file_manager/common/js:async_util",
     "//ui/file_manager/file_manager/common/js:filtered_volume_manager",
     "//ui/file_manager/file_manager/common/js:util",
@@ -671,7 +666,6 @@ js_library("gear_menu_controller") {
     "ui:gear_menu",
     "ui:multi_menu_button",
     "ui:providers_menu",
-    "//ui/file_manager/file_manager/common/js:api",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:directory_change_event",
@@ -683,7 +677,6 @@ js_library("guest_os_controller") {
     ":directory_model",
     ":navigation_list_model",
     "ui:directory_tree",
-    "//ui/file_manager/file_manager/common/js:api",
     "//ui/file_manager/file_manager/common/js:files_app_entry_types",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
@@ -803,7 +796,6 @@ js_library("naming_controller") {
     "ui:dialogs",
     "ui:list_container",
     "//ash/webui/common/resources:assert",
-    "//ui/file_manager/file_manager/common/js:api",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/foreground/js:file_rename",
   ]
