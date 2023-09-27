@@ -4645,7 +4645,7 @@
     Relaunch to update
   </message>
   <message name="IDS_LACROS_DATA_MIGRATION_OUT_OF_DISK_ERROR_TEXT" desc="Message shown when a user clicks 'Relaunch to update' button, but failed to restart due to out of disk space.">
-    There isn't enough space on this device to complete this update. Clear up <ph name="NECESSARY_SPACE">$1<ex>10 MB</ex></ph> on your device and try again.
+    There isn't enough space on this device to complete this update. Free up <ph name="NECESSARY_SPACE">$1<ex>10 MB</ex></ph> on your device and try again.
   </message>
 
   <!-- Lacros data backward migration screen. -->
