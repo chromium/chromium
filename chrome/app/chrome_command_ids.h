@@ -495,9 +495,6 @@
 #define IDC_CONTENT_CONTEXT_QUICK_ANSWERS_INLINE_QUERY 52414
 #endif
 
-// Orca feature context menu items.
-#define IDC_CONTENT_CONTEXT_ORCA 52415
-
 // Screen AI layout extraction.
 #define IDC_CONTENT_CONTEXT_RUN_LAYOUT_EXTRACTION 52420
 

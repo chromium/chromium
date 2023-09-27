@@ -338,11 +338,6 @@ namespace {
 constexpr char kOpenLinkAsProfileHistogram[] =
     "RenderViewContextMenu.OpenLinkAsProfile";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(b/289859230): Replace with finalized display string and translate.
-constexpr char16_t kContentContextOrca[] = u"Orca";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 base::OnceCallback<void(RenderViewContextMenu*)>* GetMenuShownCallback() {
   static base::NoDestructor<base::OnceCallback<void(RenderViewContextMenu*)>>
       callback;
@@ -501,7 +496,7 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_SAVEPLUGINAS, 133},
        {IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED, 134},
        {IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB, 135},
-       {IDC_CONTENT_CONTEXT_ORCA, 136},
+       // Removed: {IDC_CONTENT_CONTEXT_ORCA, 136},
        {IDC_CONTENT_CONTEXT_RUN_LAYOUT_EXTRACTION, 137},
        {IDC_CONTENT_PASTE_FROM_CLIPBOARD, 138},
        // To add new items:
@@ -2259,13 +2254,6 @@ void RenderViewContextMenu::AppendSpellingAndSearchSuggestionItems() {
                                       IDS_CONTENT_CONTEXT_EMOJI);
     }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    if (chromeos::features::IsOrcaEnabled()) {
-      render_separator = true;
-      menu_model_.AddItem(IDC_CONTENT_CONTEXT_ORCA, kContentContextOrca);
-    }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
     if (render_separator) {
       menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
     }
@@ -2828,11 +2816,6 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
       return false;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    case IDC_CONTENT_CONTEXT_ORCA:
-      return chromeos::features::IsOrcaEnabled() && params_.is_editable;
-#endif
-
     case IDC_FOLLOW:
     case IDC_UNFOLLOW:
       return !GetProfile()->IsOffTheRecord();
@@ -3293,14 +3276,6 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
       break;
     }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    case IDC_CONTENT_CONTEXT_ORCA: {
-      CHECK(chromeos::features::IsOrcaEnabled());
-      ash::input_method::EditorMediator::Get()->HandleTrigger();
-      break;
-    }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     case IDC_FOLLOW:
       feed::FollowSite(source_web_contents_);

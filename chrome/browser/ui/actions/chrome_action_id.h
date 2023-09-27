@@ -498,8 +498,6 @@
     IDC_CONTENT_CONTEXT_ACCESSIBILITY_LABELS) \
   E(kActionContentContextAccessibilityLabelsToggleOnce, \
     IDC_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_TOGGLE_ONCE) \
-  /* Orca feature context menu items. */ \
-  E(kActionContentContextOrca, IDC_CONTENT_CONTEXT_ORCA) \
   /* Screen AI layout extraction. */ \
   E(kActionContentContextRunLayoutExtraction, \
     IDC_CONTENT_CONTEXT_RUN_LAYOUT_EXTRACTION) \
