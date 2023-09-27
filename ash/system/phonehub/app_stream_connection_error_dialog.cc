@@ -158,8 +158,6 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
         AshColorProvider::ContentLayerType::kTextColorPrimary);
     body_->AddStyleRange(gfx::Range(0, offset), style);
 
-    // TODO(b/273822975): Change Learn More link to a different page than the
-    // default Phone Hub help page.
     views::StyledLabel::RangeStyleInfo link_style =
         views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
             &ConnectionErrorDialogDelegateView::LearnMoreLinkPressed,
