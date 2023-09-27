@@ -26,6 +26,14 @@ class TpmErrorScreen : public BaseScreen {
   TpmErrorScreen& operator=(const TpmErrorScreen&) = delete;
   ~TpmErrorScreen() override;
 
+  void set_exit_callback_for_testing(const ScreenExitCallback& callback) {
+    exit_callback_ = callback;
+  }
+
+  const ScreenExitCallback& get_exit_callback_for_testing() {
+    return exit_callback_;
+  }
+
   static std::string GetResultString(Result result);
 
  private:
