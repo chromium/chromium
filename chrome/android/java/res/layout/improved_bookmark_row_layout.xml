@@ -23,13 +23,19 @@ found in the LICENSE file.
              android:id="@+id/folder_view"
              android:importantForAccessibility="no" />
 
-    <ImageView
-        android:id="@+id/start_image"
+    <FrameLayout
+        android:id="@+id/start_image_container"
         android:layout_width="@dimen/improved_bookmark_start_image_size_compact"
         android:layout_height="@dimen/improved_bookmark_start_image_size_compact"
-        android:scaleType="center"
         android:importantForAccessibility="no"
-        android:background="@drawable/oval_surface_1" />
+        android:background="@drawable/oval_surface_1">
+        <ImageView
+            android:id="@+id/start_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="center"
+            android:importantForAccessibility="no" />
+    </FrameLayout>
 
     <include layout="@layout/improved_bookmark_row_content" />
 
