@@ -241,35 +241,100 @@ const fillGeneratedPassword = function(
 };
 
 /**
+ * Gets the username input element for fill.
+ * @param {Array<HTMLInputElement>} inputs Available inputs in the form.
+ * @param {Number} rendererId Renderer ID of the username input to fill.
+ * @returns {HTMLInputElement|null} Input element to fill with the username or
+ *     null if the input element wasn't found.
+ */
+function getUsernameInputElementForFill_(inputs, rendererId) {
+  if (rendererId === Number(__gCrWeb.fill.RENDERER_ID_NOT_SET)) {
+    return null;
+  }
+
+  const usernameInput = findInputByUniqueFieldId(inputs, rendererId);
+
+  if (!usernameInput) {
+    return null;
+  }
+
+  if (!__gCrWeb.common.isTextField(usernameInput)) {
+    return null;
+  }
+
+  return usernameInput;
+}
+
+/**
+ * Gets the password input element for fill.
+ * @param {Array<HTMLInputElement>} inputs Available inputs in the form.
+ * @param {Number} rendererId Renderer ID of the password input to fill.
+ * @returns {HTMLInputElement|null} Input element to fill with the password or
+ *     null if the input element wasn't found.
+ */
+function getPasswordInputElementForFill_(inputs, rendererId) {
+  if (rendererId === Number(__gCrWeb.fill.RENDERER_ID_NOT_SET)) {
+    return null;
+  }
+
+  const passwordInput = findInputByUniqueFieldId(inputs, rendererId);
+
+  if (!passwordInput) {
+    return null;
+  }
+
+  if (passwordInput.type !== 'password' || passwordInput.readOnly ||
+      passwordInput.disabled) {
+    return null;
+  }
+
+  return passwordInput;
+}
+
+/**
  * Finds target input fields in all form/formless inputs and
  * fill them with fill data.
  * @param {Array<FormControlElement>} inputs Form inputs.
  * @param {AutofillFormData} formData Form data.
  * @param {string} username The username to fill.
  * @param {string} password The password to fill.
- * @return {boolean} Whether the form has been filled.
+ * @return {boolean} Whether the form has been correctly filled in respect of
+ *   form data.
  */
 function fillUsernameAndPassword_(inputs, formData, username, password) {
-  const usernameIdentifier = formData.fields[0].unique_renderer_id;
-  let usernameInput = null;
-  if (usernameIdentifier !== Number(__gCrWeb.fill.RENDERER_ID_NOT_SET)) {
-    usernameInput = findInputByUniqueFieldId(inputs, usernameIdentifier);
+  const usernameRendererId = formData.fields[0].unique_renderer_id;
+  let usernameInput;
+  if (usernameRendererId !== Number(__gCrWeb.fill.RENDERER_ID_NOT_SET)) {
+    usernameInput = getUsernameInputElementForFill_(inputs, usernameRendererId);
     if (!usernameInput || !__gCrWeb.common.isTextField(usernameInput)) {
+      // Don't fill anything if the username can't be filled when it should be
+      // filled.
       return false;
     }
   }
-  const passwordInput =
-      findInputByUniqueFieldId(inputs, formData.fields[1].unique_renderer_id);
-  if (!passwordInput || passwordInput.type !== 'password' ||
-      passwordInput.readOnly || passwordInput.disabled) {
-    return false;
+
+  const passwordRendererId = formData.fields[1].unique_renderer_id;
+  let passwordInput;
+  if (passwordRendererId !== Number(__gCrWeb.fill.RENDERER_ID_NOT_SET)) {
+    passwordInput = getPasswordInputElementForFill_(inputs, passwordRendererId);
+    if (!passwordInput) {
+      // Don't fill anything if the password can't be filled when it should be
+      // filled.
+      return false;
+    }
   }
-  // If username was provided on a read-only or disabled field, fill the form.
-  if (!(usernameInput && (usernameInput.readOnly || usernameInput.disabled))) {
+
+  // Fill the username if needed and if it doesn't look like it was already
+  // pre-filled by the website.
+  if (usernameInput && !usernameInput.readOnly && !usernameInput.disabled) {
     __gCrWeb.fill.setInputElementValue(username, usernameInput);
   }
 
-  __gCrWeb.fill.setInputElementValue(password, passwordInput);
+  // Fill the password if needed.
+  if (passwordInput) {
+    __gCrWeb.fill.setInputElementValue(password, passwordInput);
+  }
+
   return true;
 }
 
