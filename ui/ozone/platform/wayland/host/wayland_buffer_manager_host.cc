@@ -114,6 +114,7 @@ void WaylandBufferManagerHost::OnChannelDestroyed() {
   for (auto* window : connection_->window_manager()->GetAllWindows())
     window->OnChannelDestroyed();
 
+  all_bug_fixes_sent_callback_.Reset();
   buffer_manager_gpu_associated_.reset();
   receiver_.reset();
 }
