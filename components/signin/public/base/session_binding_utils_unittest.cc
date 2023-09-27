@@ -93,7 +93,7 @@ TEST(SessionBindingUtilsTest,
       base::Value::Dict().Set("alg", "RS256").Set("typ", "jwt");
   base::Value::Dict expected_payload =
       base::Value::Dict()
-          .Set("aud", "https://accounts.google.com/RegisterKey")
+          .Set("aud", "https://accounts.google.com/RegisterSession")
           .Set("jti", "test_challenge")
           .Set("iat", 17280000)
           .Set("key", base::Value::Dict()
@@ -137,6 +137,27 @@ TEST(SessionBindingUtilsTest, CreateKeyAssertionHeaderAndPayload) {
 
   EXPECT_EQ(actual_header, expected_header);
   EXPECT_EQ(actual_payload, expected_payload);
+}
+
+// Tests the "aud" workaround for the "CookieBinding" namespace.
+// TODO(b/302137371): remove when no longer needed.
+TEST(SessionBindingUtilsTest,
+     CreateKeyAssertionHeaderAndPayloadForSessionBinding) {
+  absl::optional<std::string> result = CreateKeyAssertionHeaderAndPayload(
+      crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
+      std::vector<uint8_t>({1, 2, 3}), "test_client_id", "test_challenge",
+      GURL("https://accounts.google.com/VerifyKey"), "CookieBinding");
+  ASSERT_TRUE(result.has_value());
+
+  std::vector<base::StringPiece> header_and_payload = base::SplitStringPiece(
+      *result, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  ASSERT_EQ(header_and_payload.size(), 2U);
+  base::Value actual_payload =
+      Base64UrlEncodedJsonToValue(header_and_payload[1]);
+
+  std::string* aud = actual_payload.GetDict().FindString("aud");
+  ASSERT_TRUE(aud);
+  EXPECT_EQ(*aud, "https://accounts.google.com/RotateBoundCookies");
 }
 
 TEST(SessionBindingUtilsTest, AppendSignatureToHeaderAndPayload) {

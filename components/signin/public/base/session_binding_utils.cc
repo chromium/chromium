@@ -21,6 +21,12 @@ namespace signin {
 
 namespace {
 
+constexpr base::StringPiece kSessionBindingRegistrationAud =
+    "https://accounts.google.com/RegisterSession";
+constexpr base::StringPiece kSessionBindingNamespace = "CookieBinding";
+constexpr base::StringPiece kSessionBindingAssertionAud =
+    "https://accounts.google.com/RotateBoundCookies";
+
 // Source: JSON Web Signature and Encryption Algorithms
 // https://www.iana.org/assignments/jose/jose.xhtml
 std::string SignatureAlgorithmToString(
@@ -118,9 +124,11 @@ CreateKeyRegistrationHeaderAndPayloadForSessionBinding(
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
     base::span<const uint8_t> pubkey,
     base::Time timestamp) {
+  // TODO(b/302137371): use `registration_url.spec()` instead of a hardcoded
+  // value in "aud" field.
   auto payload =
       base::Value::Dict()
-          .Set("aud", registration_url.spec())
+          .Set("aud", kSessionBindingRegistrationAud)
           .Set("jti", challenge)
           // Write out int64_t variable as a double.
           // Note: this may discard some precision, but for `base::Value`
@@ -139,9 +147,14 @@ absl::optional<std::string> CreateKeyAssertionHeaderAndPayload(
     base::StringPiece challenge,
     const GURL& destination_url,
     base::StringPiece name_space) {
+  // TODO(b/302137371): remove a special "aud" value for
+  // `kSessionBindingNamespace`
+  base::StringPiece aud = name_space == kSessionBindingNamespace
+                              ? kSessionBindingAssertionAud
+                              : destination_url.spec();
   auto payload = base::Value::Dict()
                      .Set("sub", client_id)
-                     .Set("aud", destination_url.spec())
+                     .Set("aud", aud)
                      .Set("jti", challenge)
                      .Set("iss", Base64UrlEncode(crypto::SHA256Hash(pubkey)))
                      .Set("namespace", name_space);
