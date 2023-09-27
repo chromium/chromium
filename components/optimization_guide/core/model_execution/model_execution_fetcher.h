@@ -5,10 +5,12 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_MODEL_EXECUTION_FETCHER_H_
 
 #include <memory>
+#include <set>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
@@ -21,6 +23,10 @@ namespace network {
 class SharedURLLoaderFactory;
 class SimpleURLLoader;
 }  // namespace network
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
 
 namespace optimization_guide {
 
@@ -40,10 +46,17 @@ class ModelExecutionFetcher {
   ~ModelExecutionFetcher();
 
   void ExecuteModel(proto::ModelExecutionFeature feature,
+                    signin::IdentityManager* identity_manager,
+                    const std::set<std::string>& oauth_scopes,
                     const google::protobuf::MessageLite& request_metadata,
                     ModelExecuteResponseCallback callback);
 
  private:
+  // Invoked when the access token is received, to continue with the model
+  // execution request.
+  void OnAccessTokenReceived(const std::string& serialized_request,
+                             const std::string& access_token);
+
   // URL loader completion callback.
   void OnURLLoadComplete(std::unique_ptr<std::string> response_body);
 
@@ -72,6 +85,9 @@ class ModelExecutionFetcher {
   raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // Used to get `weak_ptr_` to self.
+  base::WeakPtrFactory<ModelExecutionFetcher> weak_ptr_factory_{this};
 };
 
 }  // namespace optimization_guide

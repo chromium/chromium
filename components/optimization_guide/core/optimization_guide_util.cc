@@ -6,6 +6,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
@@ -13,9 +14,14 @@
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/prefs/pref_service.h"
 #include "net/base/url_util.h"
+#include "net/http/http_request_headers.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "url/url_canon.h"
 
 namespace {
+
+constexpr char kAuthHeaderBearer[] = "Bearer ";
+
 optimization_guide::proto::Platform GetPlatform() {
 #if BUILDFLAG(IS_WIN)
   return optimization_guide::proto::PLATFORM_WINDOWS;
@@ -104,6 +110,15 @@ void LogFeatureFlagsInfo(OptimizationGuideLogger* optimization_guide_logger,
         optimization_guide_logger,
         "FEATURE_FLAG model downloading feature disabled");
   }
+}
+
+void PopulateAuthorizationRequestHeader(
+    network::ResourceRequest* resource_request,
+    std::string_view access_token) {
+  DCHECK(!access_token.empty());
+  resource_request->headers.SetHeader(
+      net::HttpRequestHeaders::kAuthorization,
+      base::StrCat({kAuthHeaderBearer, access_token}));
 }
 
 }  // namespace optimization_guide

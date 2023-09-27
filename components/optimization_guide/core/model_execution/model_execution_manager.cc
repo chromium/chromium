@@ -30,10 +30,13 @@ GURL GetModelExecutionServiceURL() {
 
 ModelExecutionManager::ModelExecutionManager(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    signin::IdentityManager* identity_manager,
     OptimizationGuideLogger* optimization_guide_logger)
     : optimization_guide_logger_(optimization_guide_logger),
       model_execution_service_url_(GetModelExecutionServiceURL()),
-      url_loader_factory_(url_loader_factory) {}
+      url_loader_factory_(url_loader_factory),
+      identity_manager_(identity_manager),
+      oauth_scopes_(features::GetOAuthScopesForModelExecution()) {}
 
 ModelExecutionManager::~ModelExecutionManager() = default;
 
@@ -53,7 +56,7 @@ void ModelExecutionManager::ExecuteModel(
       std::forward_as_tuple(url_loader_factory_, model_execution_service_url_,
                             optimization_guide_logger_));
   fetcher_it.first->second.ExecuteModel(
-      feature, request_metadata,
+      feature, identity_manager_, oauth_scopes_, request_metadata,
       base::BindOnce(&ModelExecutionManager::OnModelExecuteResponse,
                      weak_ptr_factory_.GetWeakPtr(), feature,
                      std::move(callback)));

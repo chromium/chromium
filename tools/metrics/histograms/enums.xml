@@ -80118,6 +80118,9 @@ Called by update_net_trust_anchors.py.-->
   <int value="7" label="Fetch was canceled">
     Fetch request was canceled before completion.
   </int>
+  <int value="8" label="User not signed-in">
+    Request was not started because user was not signed-in.
+  </int>
 </enum>
 
 <enum name="OptimizationGuideHintCacheLevelDBStoreLoadMetadataResult">

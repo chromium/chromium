@@ -267,7 +267,8 @@ void OptimizationGuideKeyedService::Initialize() {
           optimization_guide::features::kOptimizationGuideModelExecution)) {
     model_execution_manager_ =
         std::make_unique<optimization_guide::ModelExecutionManager>(
-            url_loader_factory, optimization_guide_logger_.get());
+            url_loader_factory, IdentityManagerFactory::GetForProfile(profile),
+            optimization_guide_logger_.get());
   }
 
   // Register for profile initialization event to initialize the model

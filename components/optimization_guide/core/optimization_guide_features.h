@@ -365,6 +365,9 @@ bool ShouldQueryEmbeddings();
 std::map<proto::OptimizationTarget, std::set<int64_t>>
 GetPredictionModelVersionsInKillSwitch();
 
+// Returns the OAuth scopes to use for model execution.
+std::set<std::string> GetOAuthScopesForModelExecution();
+
 }  // namespace features
 }  // namespace optimization_guide
 

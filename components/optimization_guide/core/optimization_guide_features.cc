@@ -26,6 +26,7 @@
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/url_util.h"
+#include "optimization_guide_features.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace optimization_guide {
@@ -124,6 +125,23 @@ bool IsSupportedCountryForFeature(const std::string& country_code,
         return base::EqualsCaseInsensitiveASCII(supported_country_code,
                                                 country_code);
       });
+}
+
+std::set<std::string> GetOauthScopesForFeature(const base::Feature& feature) {
+  std::set<std::string> scopes;
+  if (base::FeatureList::IsEnabled(feature)) {
+    std::string param =
+        base::GetFieldTrialParamValueByFeature(feature, "oauth_scopes");
+    for (const auto& scope : base::SplitString(
+             param, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+      scopes.insert(scope);
+    }
+  }
+  if (scopes.empty()) {
+    scopes.insert(GaiaConstants::kGoogleUserInfoProfile);
+  }
+
+  return scopes;
 }
 
 }  // namespace
@@ -579,20 +597,7 @@ bool ShouldEnablePersonalizedMetadata(proto::RequestContext request_context) {
 }
 
 std::set<std::string> GetOAuthScopesForPersonalizedMetadata() {
-  std::set<std::string> scopes;
-  if (base::FeatureList::IsEnabled(kOptimizationGuidePersonalizedFetching)) {
-    std::string param = base::GetFieldTrialParamValueByFeature(
-        kOptimizationGuidePersonalizedFetching, "oauth_scopes");
-    for (const auto& scope : base::SplitString(
-             param, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
-      scopes.insert(scope);
-    }
-  }
-  if (scopes.empty()) {
-    scopes.insert(GaiaConstants::kGoogleUserInfoProfile);
-  }
-
-  return scopes;
+  return GetOauthScopesForFeature(kOptimizationGuidePersonalizedFetching);
 }
 
 bool ShouldOverrideOptimizationTargetDecisionForMetricsPurposes(
@@ -902,6 +907,10 @@ GetPredictionModelVersionsInKillSwitch() {
     }
   }
   return killswitch_model_versions;
+}
+
+std::set<std::string> GetOAuthScopesForModelExecution() {
+  return GetOauthScopesForFeature(kOptimizationGuideModelExecution);
 }
 
 }  // namespace features

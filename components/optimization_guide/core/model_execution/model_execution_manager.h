@@ -21,6 +21,10 @@ namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 namespace optimization_guide {
 
 class ModelExecutionFetcher;
@@ -29,6 +33,7 @@ class ModelExecutionManager {
  public:
   ModelExecutionManager(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      signin::IdentityManager* identity_manager,
       OptimizationGuideLogger* optimization_guide_logger);
 
   ~ModelExecutionManager();
@@ -59,6 +64,13 @@ class ModelExecutionManager {
 
   // The URL Loader Factory that will be used by the fetchers.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  // Unowned IdentityManager for fetching access tokens. Could be null for
+  // incognito profiles.
+  const raw_ptr<signin::IdentityManager> identity_manager_;
+
+  // The set of OAuth scopes to use for requesting access token.
+  std::set<std::string> oauth_scopes_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

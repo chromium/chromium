@@ -6,9 +6,10 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "components/optimization_guide/core/access_token_helper.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/variations/net/variations_http_headers.h"
-#include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -71,6 +72,8 @@ ModelExecutionFetcher::~ModelExecutionFetcher() {
 
 void ModelExecutionFetcher::ExecuteModel(
     proto::ModelExecutionFeature feature,
+    signin::IdentityManager* identity_manager,
+    const std::set<std::string>& oauth_scopes,
     const google::protobuf::MessageLite& request_metadata,
     ModelExecuteResponseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -85,6 +88,7 @@ void ModelExecutionFetcher::ExecuteModel(
 
   fetch_start_time_ = base::TimeTicks::Now();
   model_execution_feature_ = feature;
+  model_execution_callback_ = std::move(callback);
 
   proto::ExecuteRequest execute_request;
   execute_request.set_feature(feature);
@@ -95,7 +99,27 @@ void ModelExecutionFetcher::ExecuteModel(
   std::string serialized_request;
   execute_request.SerializeToString(&serialized_request);
 
+  RequestAccessToken(
+      identity_manager, oauth_scopes,
+      base::BindOnce(&ModelExecutionFetcher::OnAccessTokenReceived,
+                     weak_ptr_factory_.GetWeakPtr(), serialized_request));
+}
+
+void ModelExecutionFetcher::OnAccessTokenReceived(
+    const std::string& serialized_request,
+    const std::string& access_token) {
+  if (access_token.empty()) {
+    RecordRequestStatusHistogram(model_execution_feature_,
+                                 FetcherRequestStatus::kUserNotSignedIn);
+    std::move(model_execution_callback_).Run(absl::nullopt);
+    return;
+  }
+
   auto resource_request = std::make_unique<network::ResourceRequest>();
+  if (!access_token.empty()) {
+    PopulateAuthorizationRequestHeader(resource_request.get(), access_token);
+  }
+
   resource_request->url = optimization_guide_service_url_;
   resource_request->method = "POST";
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
@@ -111,16 +135,10 @@ void ModelExecutionFetcher::ExecuteModel(
 
   active_url_loader_->AttachStringForUpload(serialized_request,
                                             "application/x-protobuf");
-
-  // It's safe to use `base::Unretained(this)` here because `this` owns
-  // `active_url_loader_` and the callback will be canceled if
-  // `active_url_loader_` is destroyed.
   active_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
       base::BindOnce(&ModelExecutionFetcher::OnURLLoadComplete,
-                     base::Unretained(this)));
-
-  model_execution_callback_ = std::move(callback);
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ModelExecutionFetcher::OnURLLoadComplete(
@@ -151,9 +169,9 @@ void ModelExecutionFetcher::OnURLLoadComplete(
 
   if (net_error != net::OK || response_code != net::HTTP_OK || !response_body ||
       !execute_response.ParseFromString(*response_body)) {
-    std::move(model_execution_callback_).Run(absl::nullopt);
     RecordRequestStatusHistogram(model_execution_feature_,
                                  FetcherRequestStatus::kResponseError);
+    std::move(model_execution_callback_).Run(absl::nullopt);
     return;
   }
   base::UmaHistogramMediumTimes(
@@ -163,6 +181,7 @@ void ModelExecutionFetcher::OnURLLoadComplete(
       base::TimeTicks::Now() - fetch_start_time_);
   RecordRequestStatusHistogram(model_execution_feature_,
                                FetcherRequestStatus::kSuccess);
+  // This should be the last call, since the callback could be deleting `this`.
   std::move(model_execution_callback_).Run(execute_response);
 }
 

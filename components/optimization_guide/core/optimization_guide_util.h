@@ -6,6 +6,7 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_UTIL_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
@@ -29,6 +30,10 @@
 
 class OptimizationGuideLogger;
 class PrefService;
+
+namespace network {
+struct ResourceRequest;
+}  // namespace network
 
 namespace optimization_guide {
 
@@ -79,6 +84,13 @@ proto::OriginInfo GetClientOriginInfo();
 void LogFeatureFlagsInfo(OptimizationGuideLogger* optimization_guide_logger,
                          bool is_off_the_record,
                          PrefService* pref_service);
+
+// Populates the authorization header for the `resource_request` in the right
+// format with the `access_token`.
+void PopulateAuthorizationRequestHeader(
+    network::ResourceRequest* resource_request,
+    std::string_view access_token);
+
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_UTIL_H_

@@ -26,7 +26,6 @@
 #include "components/variations/net/variations_http_headers.h"
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
-#include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -38,8 +37,6 @@
 namespace optimization_guide {
 
 namespace {
-
-constexpr char kAuthHeaderBearer[] = "Bearer ";
 
 // Returns the string that can be used to record histograms for the request
 // context.
@@ -283,10 +280,7 @@ bool HintsFetcher::FetchOptimizationGuideServiceHints(
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
   if (!access_token.empty()) {
-    // Add to request header
-    resource_request->headers.SetHeader(
-        net::HttpRequestHeaders::kAuthorization,
-        base::StrCat({kAuthHeaderBearer, access_token}));
+    PopulateAuthorizationRequestHeader(resource_request.get(), access_token);
   }
 
   resource_request->url = optimization_guide_service_url_;

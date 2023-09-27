@@ -230,9 +230,11 @@ enum class FetcherRequestStatus {
   kNoSupportedOptimizationTypesToFetchHints,
   // Fetch request was canceled before completion.
   kRequestCanceled,
+  // Fetch request was not started because user was not signed-in.
+  kUserNotSignedIn,
 
   // Insert new values before this line.
-  kMaxValue = kRequestCanceled
+  kMaxValue = kUserNotSignedIn
 };
 
 }  // namespace optimization_guide
