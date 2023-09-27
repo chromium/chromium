@@ -106,8 +106,9 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
   if (is_scalable_iph_available) {
     source->AddBoolean("HelpAppWelcomeTips",
                        ash::features::AreHelpAppWelcomeTipsEnabled());
+    // Day count starts from 0 with `InDaysFloored`.
     bool first_week_of_profile =
-        ((base::Time::Now() - profile->GetCreationTime()).InDaysFloored() <= 7);
+        ((base::Time::Now() - profile->GetCreationTime()).InDaysFloored() < 7);
     source->AddBoolean("shouldShowWelcomeTipsAtLaunch", first_week_of_profile);
   }
   source->AddBoolean("isUpdateNotificationEnabled",
