@@ -52,7 +52,6 @@
 ./tools/manifest/jsonlib.py
 ./tools/manifest/log.py
 ./tools/manifest/manifest.py
-./tools/manifest/mputil.py
 ./tools/manifest/requirements.txt
 ./tools/manifest/sourcefile.py
 ./tools/manifest/testpaths.py

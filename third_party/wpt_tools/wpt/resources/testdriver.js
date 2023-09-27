@@ -262,9 +262,7 @@
          * occurs.
          *
          * If ``element`` is from a different browsing context, the
-         * command will be run in that context. The test must not depend
-         * on the ``window.name`` property being unset on the target
-         * window.
+         * command will be run in that context.
          *
          * To send special keys, send the respective key's codepoint,
          * as defined by `WebDriver
@@ -419,9 +417,8 @@
         /**
          * Sets the state of a permission
          *
-         * This function causes permission requests and queries for the status
-         * of a certain permission type (e.g. "push", or "background-fetch") to
-         * always return ``state``.
+         * This function simulates a user setting a permission into a
+         * particular state.
          *
          * Matches the `Set Permission
          * <https://w3c.github.io/permissions/#set-permission-command>`_
@@ -433,10 +430,8 @@
          *
          * @param {PermissionDescriptor} descriptor - a `PermissionDescriptor
          *                              <https://w3c.github.io/permissions/#dom-permissiondescriptor>`_
-         *                              or derived object.
-         * @param {PermissionState} state - a `PermissionState
-         *                          <https://w3c.github.io/permissions/#dom-permissionstate>`_
-         *                          value.
+         *                              dictionary.
+         * @param {String} state - the state of the permission
          * @param {WindowProxy} context - Browsing context in which
          *                                to run the call, or null for the current
          *                                browsing context.

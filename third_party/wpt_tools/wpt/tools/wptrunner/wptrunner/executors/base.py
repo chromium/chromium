@@ -304,8 +304,7 @@ class TestExecutor:
             result = self.do_test(test)
         except Exception as e:
             exception_string = traceback.format_exc()
-            message = f"Exception in TextExecutor.run:\n{exception_string}"
-            self.logger.warning(message)
+            self.logger.warning(exception_string)
             result = self.result_from_exception(test, e, exception_string)
 
         # log result of parent test
@@ -732,8 +731,8 @@ class CallbackHandler:
         self.logger.debug("Got async callback: %s" % result[1])
         try:
             callback = self.callbacks[command]
-        except KeyError as e:
-            raise ValueError("Unknown callback type %r" % result[1]) from e
+        except KeyError:
+            raise ValueError("Unknown callback type %r" % result[1])
         return callback(url, payload)
 
     def process_complete(self, url, payload):
@@ -746,8 +745,8 @@ class CallbackHandler:
         self.logger.debug(f"Got action: {action}")
         try:
             action_handler = self.actions[action]
-        except KeyError as e:
-            raise ValueError(f"Unknown action {action}") from e
+        except KeyError:
+            raise ValueError(f"Unknown action {action}")
         try:
             with ActionContext(self.logger, self.protocol, payload.get("context")):
                 result = action_handler(payload)

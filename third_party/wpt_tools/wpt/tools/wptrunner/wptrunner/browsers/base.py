@@ -342,7 +342,7 @@ class WebDriverBrowser(Browser):
         except OSError as e:
             if e.errno == errno.ENOENT:
                 raise OSError(
-                    "WebDriver executable not found: %s" % self.webdriver_binary) from e
+                    "WebDriver executable not found: %s" % self.webdriver_binary)
             raise
         self._output_handler.after_process_start(self._proc.pid)
 
