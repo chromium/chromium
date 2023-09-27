@@ -13,7 +13,6 @@ import("//gpu/vulkan/features.gni")
 import("//testing/test.gni")
 import("//third_party/skia/gn/shared_sources.gni")
 import("//third_party/skia/modules/skcms/skcms.gni")
-import("//tools/grit/grit_rule.gni")
 import("features.gni")
 
 if (current_cpu == "arm") {
@@ -1012,17 +1011,4 @@ if (!is_ios) {
 
 group("fuzzers") {
   deps = [ "//skia/tools/fuzzers" ]
-}
-
-grit("skia_resources") {
-  source = "skia_resources.grd"
-
-  outputs = [
-    "grit/skia_resources.h",
-    "grit/skia_resources_map.cc",
-    "grit/skia_resources_map.h",
-    "skia_resources.pak",
-  ]
-
-  deps = [ "//skia/public/mojom:mojom_js__generator" ]
 }

@@ -232,7 +232,6 @@ source_set("browser") {
     "//services/viz/public/mojom",
     "//services/webnn/public/mojom",
     "//skia",
-    "//skia:skia_resources",
     "//skia/public/mojom",
     "//storage/browser",
     "//storage/browser/quota:mojo_bindings",
