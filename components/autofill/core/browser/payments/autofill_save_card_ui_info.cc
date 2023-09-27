@@ -7,6 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
@@ -118,6 +119,9 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
     const LegalMessageLines& legal_message_lines,
     const AccountInfo& displayed_target_account,
     bool is_google_pay_branding_enabled) {
+  // TODO (crbug.com/1485194): Verify if this check is required when
+  // implementing the Message UI for saving CVC to an existing server card.
+  CHECK_NE(options.card_save_type, AutofillClient::CardSaveType::kCvcSaveOnly);
   int save_card_icon_id = is_google_pay_branding_enabled
                               ? IDR_AUTOFILL_GOOGLE_PAY
                               : IDR_INFOBAR_AUTOFILL_CC;
@@ -125,11 +129,24 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
       is_google_pay_branding_enabled
           ? IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V3
           : IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD;
-  std::u16string description_text =
-      is_google_pay_branding_enabled
-          ? l10n_util::GetStringUTF16(
-                IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V3)
-          : base::EmptyString16();
+  std::u16string description_text;
+  if (is_google_pay_branding_enabled) {
+#if BUILDFLAG(IS_ANDROID)
+    if (options.card_save_type ==
+            AutofillClient::CardSaveType::kCardSaveWithCvc &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillEnablePaymentsAndroidBottomSheet)) {
+      description_text = l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARD_WITH_CVC_PROMPT_EXPLANATION_UPLOAD);
+    } else {
+      description_text = l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V3);
+    }
+#else   // BUILDFLAG(IS_ANDROID)
+    description_text = l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V3);
+#endif  // BUILDFLAG(IS_ANDROID)
+  }
   return CreateAutofillSaveCardUiInfo(
       /*is_for_upload=*/true, card, save_card_icon_id, legal_message_lines,
       displayed_target_account,
