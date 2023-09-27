@@ -587,7 +587,7 @@ TEST_P(AshMessagePopupCollectionTest, PopupDestroyedDuringClick) {
 
 // Tests that notification popup baseline is correct when entering and exiting
 // tablet mode in a full screen window.
-TEST_P(AshMessagePopupCollectionTest, BaselineInTabletMode) {
+TEST_P(AshMessagePopupCollectionTest, BaselineUpdates_InTabletMode) {
   UpdateDisplay("800x600");
   ASSERT_TRUE(GetPrimaryShelf()->IsHorizontalAlignment());
 
@@ -610,6 +610,39 @@ TEST_P(AshMessagePopupCollectionTest, BaselineInTabletMode) {
   EXPECT_FALSE(tablet_mode_controller->InTabletMode());
   EXPECT_GT(GetPrimaryShelf()->GetShelfBoundsInScreen().y(),
             popup_collection->GetBaseline());
+}
+
+TEST_P(AshMessagePopupCollectionTest, BaselineUpdates_InAppMode) {
+  UpdateDisplay("800x600");
+  ASSERT_TRUE(GetPrimaryShelf()->IsHorizontalAlignment());
+
+  auto* popup_collection = GetPrimaryPopupCollection();
+
+  // Enable tablet mode without an open window.
+  auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
+  tablet_mode_controller->SetEnabledForTest(true);
+  EXPECT_TRUE(tablet_mode_controller->InTabletMode());
+  auto previous_popup_collection_bottom =
+      popup_collection->popup_collection_bounds().bottom();
+  EXPECT_EQ(ShelfBackgroundType::kHomeLauncher,
+            GetPrimaryShelf()->shelf_layout_manager()->shelf_background_type());
+
+  // Enter app mode by showing a window, pop-up collection bottom should update
+  // its bounds to be lower down the screen than before.
+  std::unique_ptr<aura::Window> window(
+      AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400)));
+  EXPECT_GT(popup_collection->popup_collection_bounds().bottom(),
+            previous_popup_collection_bottom);
+  EXPECT_EQ(ShelfBackgroundType::kInApp,
+            GetPrimaryShelf()->shelf_layout_manager()->shelf_background_type());
+
+  // Exit app mode by hiding the window, popup collection bottom should return
+  // to its previous value.
+  window->Hide();
+  EXPECT_EQ(popup_collection->popup_collection_bounds().bottom(),
+            previous_popup_collection_bottom);
+  EXPECT_EQ(ShelfBackgroundType::kHomeLauncher,
+            GetPrimaryShelf()->shelf_layout_manager()->shelf_background_type());
 }
 
 TEST_P(AshMessagePopupCollectionTest, BaselineUpdates_OnSliderShown) {

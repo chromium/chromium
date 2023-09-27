@@ -167,6 +167,8 @@ class ASH_EXPORT AshMessagePopupCollection
   void UpdateWorkArea();
 
   // ShelfObserver:
+  void OnBackgroundTypeChanged(ShelfBackgroundType background_type,
+                               AnimationChangeType change_type) override;
   void OnShelfWorkAreaInsetsChanged() override;
   void OnHotseatStateChanged(HotseatState old_state,
                              HotseatState new_state) override;

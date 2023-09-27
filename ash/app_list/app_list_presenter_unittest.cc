@@ -3396,13 +3396,13 @@ TEST_F(AppListPresenterTest, ShelfBackgroundWithHomeLauncher) {
       Shelf::ForWindow(Shell::GetRootWindowForDisplayId(GetPrimaryDisplayId()))
           ->shelf_layout_manager();
   EXPECT_EQ(ShelfBackgroundType::kHomeLauncher,
-            shelf_layout_manager->GetShelfBackgroundType());
+            shelf_layout_manager->shelf_background_type());
 
   // Add a window. It should be in-app because it is in tablet mode.
   auto window = CreateTestWindow();
   wm::ActivateWindow(window.get());
   EXPECT_EQ(ShelfBackgroundType::kInApp,
-            shelf_layout_manager->GetShelfBackgroundType());
+            shelf_layout_manager->shelf_background_type());
 }
 
 // Tests that the bottom shelf is auto hidden when a window is fullscreened in

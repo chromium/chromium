@@ -93,7 +93,7 @@ TEST_F(AppListPresenterImplTest,
       Shelf::ForWindow(Shell::GetRootWindowForDisplayId(GetPrimaryDisplayId()))
           ->shelf_layout_manager();
   EXPECT_EQ(ShelfBackgroundType::kHomeLauncher,
-            shelf_layout_manager->GetShelfBackgroundType());
+            shelf_layout_manager->shelf_background_type());
   HotseatWidget* hotseat = GetPrimaryShelf()->hotseat_widget();
 
   for (int id : AppListPresenterImpl::kIdsOfContainersThatWontHideAppList) {
@@ -102,7 +102,7 @@ TEST_F(AppListPresenterImplTest,
     std::unique_ptr<views::Widget> widget = CreateTestWidget(nullptr, id);
 
     EXPECT_EQ(ShelfBackgroundType::kHomeLauncher,
-              shelf_layout_manager->GetShelfBackgroundType())
+              shelf_layout_manager->shelf_background_type())
         << " container " << id;
     EXPECT_EQ(hotseat->state(), HotseatState::kShownHomeLauncher);
   }

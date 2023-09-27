@@ -433,6 +433,12 @@ void AshMessagePopupCollection::UpdateWorkArea() {
 ///////////////////////////////////////////////////////////////////////////////
 // ShelfObserver:
 
+void AshMessagePopupCollection::OnBackgroundTypeChanged(
+    ShelfBackgroundType background_type,
+    AnimationChangeType change_type) {
+  ResetBounds();
+}
+
 void AshMessagePopupCollection::OnShelfWorkAreaInsetsChanged() {
   UpdateWorkArea();
 }

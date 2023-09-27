@@ -584,8 +584,8 @@ void Shelf::UpdateAutoHideState() {
 }
 
 ShelfBackgroundType Shelf::GetBackgroundType() const {
-  return shelf_widget_ ? shelf_widget_->GetBackgroundType()
-                       : ShelfBackgroundType::kDefaultBg;
+  return shelf_layout_manager_ ? shelf_layout_manager_->shelf_background_type()
+                               : ShelfBackgroundType::kDefaultBg;
 }
 
 void Shelf::UpdateVisibilityState() {
@@ -789,9 +789,6 @@ void Shelf::OnAutoHideStateChanged(ShelfAutoHideState new_state) {
 
 void Shelf::OnBackgroundUpdated(ShelfBackgroundType background_type,
                                 AnimationChangeType change_type) {
-  if (background_type == GetBackgroundType())
-    return;
-
   // Shelf should undim when transitioning to show app list.
   if (auto_dim_event_handler_ && IsAppListBackground(background_type))
     UndimShelf();

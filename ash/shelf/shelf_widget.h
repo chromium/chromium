@@ -62,8 +62,6 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
   // Clean up prior to deletion.
   void Shutdown();
 
-  ShelfBackgroundType GetBackgroundType() const;
-
   const Shelf* shelf() const { return shelf_; }
   void RegisterHotseatWidget(HotseatWidget* hotseat_widget);
   ShelfLayoutManager* shelf_layout_manager() { return shelf_layout_manager_; }

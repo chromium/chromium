@@ -236,8 +236,9 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
   // Contains logic that is the same between mouse wheel and gesture scrolling.
   void ProcessScrollOffset(int offset, const ui::LocatedEvent& event);
 
-  // Returns how the shelf background should be painted.
-  ShelfBackgroundType GetShelfBackgroundType() const;
+  // Computes how the shelf background should be painted based on the current
+  // state.
+  ShelfBackgroundType ComputeShelfBackgroundType() const;
 
   // Updates the background of the shelf if it has changed.
   void MaybeUpdateShelfBackground(AnimationChangeType change_type);
@@ -318,6 +319,10 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
 
   ShelfVisibilityState visibility_state() const {
     return state_.visibility_state.value_or(SHELF_VISIBLE);
+  }
+
+  ShelfBackgroundType shelf_background_type() const {
+    return shelf_background_type_;
   }
 
   bool is_active_session_state() const { return state_.IsActiveSessionState(); }

@@ -460,7 +460,7 @@ void ShelfWidget::DelegateView::ShowOpaqueBackground() {
 void ShelfWidget::DelegateView::OnThemeChanged() {
   views::AccessiblePaneView::OnThemeChanged();
   shelf_widget_->background_animator_.PaintBackground(
-      shelf_widget_->shelf_layout_manager()->GetShelfBackgroundType(),
+      shelf_widget_->shelf_layout_manager()->ComputeShelfBackgroundType(),
       AnimationChangeType::IMMEDIATE);
   if (chromeos::features::IsJellyEnabled()) {
     animating_background_.SetColor(
@@ -524,7 +524,7 @@ void ShelfWidget::DelegateView::UpdateOpaqueBackground() {
 
   const Shelf* shelf = shelf_widget_->shelf();
   const ShelfBackgroundType background_type =
-      shelf_widget_->GetBackgroundType();
+      shelf_widget_->shelf_layout_manager()->shelf_background_type();
   const bool tablet_mode = Shell::Get()->IsInTabletMode();
   const bool in_app = ShelfConfig::Get()->is_in_app();
 
@@ -786,7 +786,7 @@ void ShelfWidget::Initialize(aura::Window* shelf_container) {
   shelf_layout_manager_->InitObservers();
   background_animator_.Init(ShelfBackgroundType::kDefaultBg);
   background_animator_.PaintBackground(
-      shelf_layout_manager_->GetShelfBackgroundType(),
+      shelf_layout_manager_->ComputeShelfBackgroundType(),
       AnimationChangeType::IMMEDIATE);
 
   background_animator_.AddObserver(delegate_view_);
@@ -819,10 +819,6 @@ void ShelfWidget::Shutdown() {
   // Don't need to observe focus/activation during shutdown.
   Shell::Get()->focus_cycler()->RemoveWidget(this);
   SetFocusCycler(nullptr);
-}
-
-ShelfBackgroundType ShelfWidget::GetBackgroundType() const {
-  return background_animator_.target_background_type();
 }
 
 void ShelfWidget::RegisterHotseatWidget(HotseatWidget* hotseat_widget) {

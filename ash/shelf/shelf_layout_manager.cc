@@ -529,7 +529,7 @@ void ShelfLayoutManager::InitObservers() {
   shell->activation_client()->AddObserver(this);
   shell->locale_update_controller()->AddObserver(this);
   state_.session_state = shell->session_controller()->GetSessionState();
-  shelf_background_type_ = GetShelfBackgroundType();
+  shelf_background_type_ = ComputeShelfBackgroundType();
   wallpaper_controller_observation_.Observe(shell->wallpaper_controller());
 
   // DesksController could be null when virtual desks feature is not enabled.
@@ -1132,7 +1132,7 @@ void ShelfLayoutManager::ProcessMouseWheelEventFromShelf(
   ProcessScrollOffset(y_offset, *event);
 }
 
-ShelfBackgroundType ShelfLayoutManager::GetShelfBackgroundType() const {
+ShelfBackgroundType ShelfLayoutManager::ComputeShelfBackgroundType() const {
   if (state_.pre_lock_screen_animation_active)
     return ShelfBackgroundType::kDefaultBg;
 
@@ -1196,10 +1196,10 @@ ShelfBackgroundType ShelfLayoutManager::GetShelfBackgroundType() const {
 }
 
 void ShelfLayoutManager::MaybeUpdateShelfBackground(AnimationChangeType type) {
-  const ShelfBackgroundType new_background_type(GetShelfBackgroundType());
-
-  if (new_background_type == shelf_background_type_)
+  const ShelfBackgroundType new_background_type = ComputeShelfBackgroundType();
+  if (new_background_type == shelf_background_type_) {
     return;
+  }
 
   shelf_background_type_ = new_background_type;
   for (auto& observer : observers_)
@@ -2470,7 +2470,7 @@ float ShelfLayoutManager::ComputeTargetOpacity(const State& state) const {
   float opacity_when_visible = kDefaultShelfOpacity;
   if (dimmed_for_inactivity_) {
     opacity_when_visible =
-        (GetShelfBackgroundType() == ShelfBackgroundType::kMaximized)
+        (ComputeShelfBackgroundType() == ShelfBackgroundType::kMaximized)
             ? kMaximizedShelfDimOpacity
             : kFloatingShelfDimOpacity;
   }
