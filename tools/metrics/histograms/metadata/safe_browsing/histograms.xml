@@ -95,8 +95,8 @@ chromium-metrics-reviews@google.com.
 
 <variants name="RequestedSkippedOrChecked">
   <variant name="" summary="requested"/>
-  <variant name="Checked" summary="checked"/>
-  <variant name="Skipped" summary="skipped"/>
+  <variant name=".Checked" summary="checked"/>
+  <variant name=".Skipped" summary="skipped"/>
 </variants>
 
 <variants name="ThrottleProcess">
