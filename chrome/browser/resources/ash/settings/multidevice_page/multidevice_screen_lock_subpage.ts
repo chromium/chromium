@@ -108,7 +108,7 @@ export class SettingsMultideviceScreenLockSubpageElement extends
     }
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     // Register this object as listener to factor change events (via

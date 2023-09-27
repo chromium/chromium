@@ -88,7 +88,8 @@ class NearbyShareDataUsageDialogElement extends
     this.close();
   }
 
-  private selectedDataUsage_(dataUsageValue: NearbySettings['dataUsage']) {
+  private selectedDataUsage_(dataUsageValue: NearbySettings['dataUsage']):
+      NearbyShareDataUsage {
     if (dataUsageValue === NearbyShareDataUsage.UNKNOWN) {
       return NearbyShareDataUsage.WIFI_ONLY;
     }

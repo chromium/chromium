@@ -58,7 +58,7 @@ export class SettingsKerberosPageElement extends
     this.route = routes.KERBEROS;
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     this.addFocusConfig(

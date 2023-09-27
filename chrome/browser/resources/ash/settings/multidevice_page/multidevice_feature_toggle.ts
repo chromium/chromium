@@ -119,7 +119,7 @@ export class SettingsMultideviceFeatureToggleElement extends
    * instead of propagating through the cr-toggle. This handler prevents such a
    * click from unintentionally bubbling up the tree.
    */
-  private onDisabledInnerToggleClick_(event: Event) {
+  private onDisabledInnerToggleClick_(event: Event): void {
     event.stopPropagation();
   }
 

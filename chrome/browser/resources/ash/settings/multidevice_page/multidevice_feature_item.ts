@@ -178,7 +178,8 @@ export class SettingsMultideviceFeatureItemElement extends
    * for the purpose of logging metrics.
    */
   private onFeatureToggleClicked_(
-      event: CustomEvent<{feature: MultiDeviceFeature, enabled: boolean}>) {
+      event: CustomEvent<{feature: MultiDeviceFeature, enabled: boolean}>):
+      void {
     const feature = event.detail.feature;
     const enabled = event.detail.enabled;
 
