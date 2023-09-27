@@ -35,6 +35,14 @@ inline constexpr char kWebAppGooglePhotosAppId[] =
 inline constexpr char kAndroidGooglePhotosAppId[] =
     "fdbkkojdbojonckghlanfaopfakedeca";
 
+// Android app ids can be found in
+// //chrome/browser/ash/app_list/arc/arc_app_utils.cc. We cannot include the
+// file from this directory same with the above web_app_id_constants.h.
+constexpr char kAndroidAppGooglePhotosAppId[] =
+    "fdbkkojdbojonckghlanfaopfakedeca";
+constexpr char kAndroidAppGooglePlayStoreAppId[] =
+    "cnbgggchhmkkdmeppjobngjoejnihlei";
+
 enum class ActionType {
   // `kInvalid` is reserved to be used as an initial value or when the server
   // side config cannot be parsed.
@@ -102,6 +110,12 @@ inline constexpr char kEventNameAppListItemActivationGoogleDocs[] =
     "ScalableIphAppListItemActivationGoogleDocs";
 inline constexpr char kEventNameAppListItemActivationGooglePhotosWeb[] =
     "ScalableIphAppListItemActivationGooglePhotosWeb";
+constexpr char kEventNameAppListItemActivationGooglePlayStore[] =
+    "ScalableIphAppListItemActivationOpenGooglePlayStore";
+constexpr char kEventNameAppListItemActivationGooglePhotosAndroid[] =
+    "ScalableIphAppListItemActivationOpenGooglePhotosAndroid";
+
+// Constants for shelf item activation.
 inline constexpr char kEventNameShelfItemActivationYouTube[] =
     "ScalableIphShelfItemActivationYouTube";
 inline constexpr char kEventNameShelfItemActivationGoogleDocs[] =

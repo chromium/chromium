@@ -93,6 +93,8 @@ class ScalableIph : public KeyedService,
     kShelfItemActivationGooglePhotosWeb,
     kShelfItemActivationGooglePhotosAndroid,
     kShelfItemActivationGooglePlay,
+    kAppListItemActivationGooglePlayStore,
+    kAppListItemActivationGooglePhotosAndroid,
     kPrintJobCreated,
   };
 

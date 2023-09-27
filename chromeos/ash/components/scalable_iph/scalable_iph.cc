@@ -72,6 +72,10 @@ const base::flat_map<ScalableIph::Event, std::string>& GetEventNamesMap() {
            kEventNameShelfItemActivationGooglePhotosAndroid},
           {ScalableIph::Event::kShelfItemActivationGooglePlay,
            kEventNameShelfItemActivationGooglePlay},
+          {ScalableIph::Event::kAppListItemActivationGooglePlayStore,
+           kEventNameAppListItemActivationGooglePlayStore},
+          {ScalableIph::Event::kAppListItemActivationGooglePhotosAndroid,
+           kEventNameAppListItemActivationGooglePhotosAndroid},
           {ScalableIph::Event::kPrintJobCreated, kEventNamePrintJobCreated},
       });
   return *event_names_map;
@@ -191,6 +195,10 @@ constexpr auto kAppListItemActivationEventsMap =
          ScalableIph::Event::kAppListItemActivationYouTube},
         {kWebAppGooglePhotosAppId,
          ScalableIph::Event::kAppListItemActivationGooglePhotosWeb},
+        {kAndroidAppGooglePlayStoreAppId,
+         ScalableIph::Event::kAppListItemActivationGooglePlayStore},
+        {kAndroidAppGooglePhotosAppId,
+         ScalableIph::Event::kAppListItemActivationGooglePhotosAndroid},
     });
 
 constexpr auto kShelfItemActivationEventsMap =
@@ -1008,6 +1016,10 @@ std::ostream& operator<<(std::ostream& out, ScalableIph::Event event) {
       return out << "ShelfItemActivationGooglePhotosAndroid";
     case ScalableIph::Event::kShelfItemActivationGooglePlay:
       return out << "ShelfItemActivationGooglePlay";
+    case ScalableIph::Event::kAppListItemActivationGooglePlayStore:
+      return out << "AppListItemActivationGooglePlayStore";
+    case ScalableIph::Event::kAppListItemActivationGooglePhotosAndroid:
+      return out << "AppListItemActivationGooglePhotosAndroid";
     case ScalableIph::Event::kPrintJobCreated:
       return out << "PrintJobCreated";
   }
