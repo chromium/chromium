@@ -199,7 +199,7 @@ export class SettingsTtsVoiceSubpageElement extends
     this.ttsBrowserProxy_.refreshTtsVoices();
   }
 
-  override currentRouteChanged(route: Route) {
+  override currentRouteChanged(route: Route): void {
     // Does not apply to this page.
     if (route !== routes.MANAGE_TTS_SETTINGS) {
       return;

@@ -150,7 +150,7 @@ export class SettingsDisplayAndMagnificationSubpageElement extends
     this.route = routes.A11Y_DISPLAY_AND_MAGNIFICATION;
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     this.addFocusConfig(routes.DISPLAY, '#displaySubpageButton');
@@ -159,7 +159,7 @@ export class SettingsDisplayAndMagnificationSubpageElement extends
   /**
    * Note: Overrides RouteOriginMixin implementation
    */
-  override currentRouteChanged(newRoute: Route, prevRoute?: Route) {
+  override currentRouteChanged(newRoute: Route, prevRoute?: Route): void {
     super.currentRouteChanged(newRoute, prevRoute);
 
     // Does not apply to this page.

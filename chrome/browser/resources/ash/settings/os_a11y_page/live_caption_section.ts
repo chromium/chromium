@@ -63,7 +63,7 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
   private enableLiveCaptionSubtitle_: string;
   private enableLiveCaptionMultiLanguage_: boolean;
 
-  override ready() {
+  override ready(): void {
     super.ready();
     this.addWebUiListener(
         'soda-download-progress-changed',
@@ -80,7 +80,7 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
         '#liveCaptionToggleButton')!;
   }
 
-  private onLiveCaptionEnabledChanged_(event: Event) {
+  private onLiveCaptionEnabledChanged_(event: Event): void {
     const liveCaptionEnabled =
         (event.target as SettingsToggleButtonElement).checked;
     chrome.metricsPrivate.recordBoolean(
@@ -92,7 +92,7 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
    * @param sodaDownloadProgress The message sent from the webui to be displayed
    *     as download progress for Live Caption.
    */
-  private onSodaDownloadProgressChanged_(sodaDownloadProgress: string) {
+  private onSodaDownloadProgressChanged_(sodaDownloadProgress: string): void {
     this.enableLiveCaptionSubtitle_ = sodaDownloadProgress;
   }
 }

@@ -363,7 +363,7 @@ export class SettingsChromeVoxSubpageElement extends
     this.route = routes.A11Y_CHROMEVOX;
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     this.addWebUiListener(
@@ -428,7 +428,7 @@ export class SettingsChromeVoxSubpageElement extends
     // We should generate a name in that case.
     voices.forEach(voice => voice.name = voice.name || '');
     voices.sort(function(a, b) {
-      function score(voice: TtsHandlerVoice) {
+      function score(voice: TtsHandlerVoice): number {
         // Prefer Google tts voices over all others.
         if (voice.extensionId === GOOGLE_TTS_EXTENSION_ID) {
           return 4;
@@ -463,7 +463,7 @@ export class SettingsChromeVoxSubpageElement extends
    */
   private fetchBrailleTables_(): void {
     const needsDisambiguation = new Map<string, BrailleTable[]>();
-    function preprocess(tables: BrailleTable[]) {
+    function preprocess(tables: BrailleTable[]): BrailleTable[] {
       tables.forEach(table => {
         // Save all tables which have a mirroring duplicate for locale + grade.
         const key = table.locale + table.grade!;

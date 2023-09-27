@@ -217,7 +217,7 @@ export class SettingsSwitchAccessSubpageElement extends
     this.focusAfterDialogClose_ = null;
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     this.addWebUiListener(
@@ -227,7 +227,7 @@ export class SettingsSwitchAccessSubpageElement extends
     this.switchAccessBrowserProxy_.refreshAssignmentsFromPrefs();
   }
 
-  override currentRouteChanged(route: Route) {
+  override currentRouteChanged(route: Route): void {
     // Does not apply to this page.
     if (route !== routes.MANAGE_SWITCH_ACCESS_SETTINGS) {
       return;

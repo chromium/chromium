@@ -209,7 +209,7 @@ export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
   private readonly textSizeOptions_: DropdownMenuOptionList;
   private enableLiveCaption_: boolean;
 
-  override ready() {
+  override ready(): void {
     super.ready();
     FontsBrowserProxyImpl.getInstance().fetchFontsData().then(
         (response: FontsData) => this.setFontsData_(response));
@@ -228,7 +228,7 @@ export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
   /**
    * @param response A list of fonts.
    */
-  private setFontsData_(response: FontsData) {
+  private setFontsData_(response: FontsData): void {
     const fontMenuOptions =
         [{value: '', name: loadTimeData.getString('captionsDefaultSetting')}];
     for (const fontData of response.fontList) {

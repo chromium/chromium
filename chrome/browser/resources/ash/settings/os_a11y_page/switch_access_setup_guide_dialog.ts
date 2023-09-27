@@ -250,14 +250,14 @@ export class SettingsSwitchAccessSetupGuideDialogElement extends
         this.ticksWithLabelsInSec_(AUTO_SCAN_SPEED_RANGE_MS);
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     SwitchAccessSubpageBrowserProxyImpl.getInstance()
         .notifySwitchAccessSetupGuideAttached();
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     this.addEventListener('exit-pane', this.onSwitchAssignmentMaybeChanged_);

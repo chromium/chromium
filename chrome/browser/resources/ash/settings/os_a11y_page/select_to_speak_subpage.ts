@@ -255,7 +255,7 @@ export class SettingsSelectToSpeakSubpageElement extends
     this.route = routes.A11Y_SELECT_TO_SPEAK;
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     // Populate the voice and enhanced network voice preview text inputs with a
@@ -280,7 +280,7 @@ export class SettingsSelectToSpeakSubpageElement extends
   /**
    * Note: Overrides RouteOriginMixin implementation.
    */
-  override currentRouteChanged(newRoute: Route, prevRoute?: Route) {
+  override currentRouteChanged(newRoute: Route, prevRoute?: Route): void {
     super.currentRouteChanged(newRoute, prevRoute);
 
     // Does not apply to this page.
@@ -310,7 +310,7 @@ export class SettingsSelectToSpeakSubpageElement extends
         this.$.enhancedNetworkVoicesToggle.checked);
   }
 
-  private onHighlightColorChanged_(color: string) {
+  private onHighlightColorChanged_(color: string): void {
     this.shadowRoot!.getElementById('lightHighlight')!.style.background = color;
     this.shadowRoot!.getElementById('darkHighlight')!.style.background = color;
   }
@@ -382,7 +382,7 @@ export class SettingsSelectToSpeakSubpageElement extends
         JSON.stringify(this.getEnhancedNetworkVoiceNameAndExtension_()));
   }
 
-  private languageChanged_() {
+  private languageChanged_(): void {
     this.populateVoicesAndLanguages_();
   }
 
@@ -408,7 +408,7 @@ export class SettingsSelectToSpeakSubpageElement extends
    * language with a list of languages covered by the available voices.
    * @private
    */
-  private populateVoicesAndLanguages_() {
+  private populateVoicesAndLanguages_(): void {
     let lang = this.languageFilterVirtualPref_.value || USE_DEVICE_LANGUAGE;
     if (lang === USE_DEVICE_LANGUAGE) {
       lang = this.getLanguageShortCode_(this.appLocale_);
@@ -448,7 +448,7 @@ export class SettingsSelectToSpeakSubpageElement extends
       voices: HandlerVoice[], preferredLang: string,
       languageOptions: DropdownMenuOptionList,
       localOptions: DropdownMenuOptionList,
-      networkOptions: DropdownMenuOptionList) {
+      networkOptions: DropdownMenuOptionList): void {
     // Group voices by language.
     const languageDisplayNames = new Map();
     const localVoices = new Map();
@@ -502,7 +502,7 @@ export class SettingsSelectToSpeakSubpageElement extends
    */
   private populateLanguages_(
       languageDisplayNames: Map<string, string>,
-      languageOptions: DropdownMenuOptionList) {
+      languageOptions: DropdownMenuOptionList): void {
     const supportedLanguagesList = Array.from(languageDisplayNames.keys());
     supportedLanguagesList.sort(
         (lang1, lang2) => languageDisplayNames.get(lang1)!.localeCompare(
@@ -543,7 +543,7 @@ export class SettingsSelectToSpeakSubpageElement extends
    * more than one voice per display name, adds a numerical index to them (e.g.
    * English (Australia) 1) for disambiguation.
    */
-  private addIndexToVoiceDisplayNames_(voiceList: HandlerVoice[]) {
+  private addIndexToVoiceDisplayNames_(voiceList: HandlerVoice[]): void {
     const displayNameCounts = new Map<string, HandlerVoice[]>();
     voiceList.forEach(voice => {
       if (!displayNameCounts.has(voice.displayName!)) {
@@ -576,7 +576,7 @@ export class SettingsSelectToSpeakSubpageElement extends
    */
   private appendVoicesToOptions_(
       options: DropdownMenuOptionList, voiceList: HandlerVoice[],
-      numberVoices: boolean) {
+      numberVoices: boolean): void {
     if (!voiceList) {
       return;
     }
@@ -596,7 +596,8 @@ export class SettingsSelectToSpeakSubpageElement extends
    * Adds a voice to the map entry corresponding to the given language.
    */
   private addVoiceToMapForLanguage_(
-      voice: HandlerVoice, map: Map<string, HandlerVoice[]>, lang: string) {
+      voice: HandlerVoice, map: Map<string, HandlerVoice[]>,
+      lang: string): void {
     voice.languageCode = lang;
     if (map.has(lang)) {
       map.get(lang)!.push(voice);

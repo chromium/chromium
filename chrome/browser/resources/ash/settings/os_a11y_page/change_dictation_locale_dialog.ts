@@ -144,12 +144,12 @@ export class ChangeDictationLocaleDialog extends
   private selectedLocale_: DictationLocaleOption|null;
   private selectedRecommendedLocale_: DictationLocaleOption|null;
 
-  override ready() {
+  override ready(): void {
     super.ready();
     this.addEventListener('exit-pane', () => this.onPaneExit_());
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     // Sets offset in iron-list that uses the body as a scrollTarget.

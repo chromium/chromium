@@ -142,7 +142,7 @@ export class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
     this.browserProxy_ = OsA11yPageBrowserProxyImpl.getInstance();
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     if (routes.A11Y_TEXT_TO_SPEECH) {
@@ -177,7 +177,7 @@ export class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
     this.browserProxy_.a11yPageReady();
   }
 
-  override currentRouteChanged(newRoute: Route, prevRoute?: Route) {
+  override currentRouteChanged(newRoute: Route, prevRoute?: Route): void {
     super.currentRouteChanged(newRoute, prevRoute);
 
     if (newRoute === this.route) {

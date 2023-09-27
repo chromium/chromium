@@ -72,7 +72,7 @@ export class SettingsSwitchAccessActionAssignmentDialogElement extends
         SwitchAccessSubpageBrowserProxyImpl.getInstance();
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     this.addEventListener('exit-pane', this.onPaneExit_);

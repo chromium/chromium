@@ -276,7 +276,7 @@ export class SettingsCursorAndTouchpadPageElement extends
     this.deviceBrowserProxy_ = DevicePageBrowserProxyImpl.getInstance();
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.addWebUiListener(
@@ -291,7 +291,7 @@ export class SettingsCursorAndTouchpadPageElement extends
     this.deviceBrowserProxy_.initializePointers();
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     this.addFocusConfig(routes.POINTERS, '#pointerSubpageButton');
@@ -300,7 +300,7 @@ export class SettingsCursorAndTouchpadPageElement extends
   /**
    * Note: Overrides RouteOriginMixin implementation
    */
-  override currentRouteChanged(newRoute: Route, prevRoute?: Route) {
+  override currentRouteChanged(newRoute: Route, prevRoute?: Route): void {
     super.currentRouteChanged(newRoute, prevRoute);
 
     // Does not apply to this page.
@@ -313,7 +313,7 @@ export class SettingsCursorAndTouchpadPageElement extends
 
   pointersChanged(
       hasMouse: boolean, hasTouchpad: boolean, hasPointingStick: boolean,
-      isKioskModeActive: boolean) {
+      isKioskModeActive: boolean): void {
     this.$.pointerSubpageButton.hidden =
         (!hasMouse && !hasPointingStick && !hasTouchpad) || isKioskModeActive;
   }

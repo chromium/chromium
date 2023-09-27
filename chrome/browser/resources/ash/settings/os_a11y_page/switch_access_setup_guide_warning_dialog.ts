@@ -32,7 +32,7 @@ class SettingsSwitchAccessSetupGuideWarningDialogElement extends
     return getTemplate();
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.$.dialog.showModal();

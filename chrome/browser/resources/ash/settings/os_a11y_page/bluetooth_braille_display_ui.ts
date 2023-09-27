@@ -105,17 +105,17 @@ export class BluetoothBrailleDisplayUiElement extends
     this.manager_.addListener(this);
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
     this.manager_.start();
   }
 
-  override disconnectedCallback() {
+  override disconnectedCallback(): void {
     super.disconnectedCallback();
     this.manager_.stop();
   }
 
-  onDisplayListChanged(displays: chrome.bluetooth.Device[]) {
+  onDisplayListChanged(displays: chrome.bluetooth.Device[]): void {
     // If there are no displays, just include a blank menu item.
     if (displays.length === 0) {
       this.brailleDisplayMenuOptions_ = [BLANK_BRAILLE_DISPLAY_MENU_ITEM];
@@ -134,7 +134,7 @@ export class BluetoothBrailleDisplayUiElement extends
     this.updateControls_();
   }
 
-  private onPincodeChanged_(event: Event) {
+  private onPincodeChanged_(event: Event): void {
     if (this.pincodeTimeoutId_) {
       clearTimeout(this.pincodeTimeoutId_);
     }
@@ -147,7 +147,7 @@ export class BluetoothBrailleDisplayUiElement extends
     this.inPinMode_ = false;
   }
 
-  onPincodeRequested(display: chrome.bluetooth.Device) {
+  onPincodeRequested(display: chrome.bluetooth.Device): void {
     this.inPinMode_ = true;
     this.pincodeRequestedDisplay_ = display;
 
@@ -162,7 +162,7 @@ export class BluetoothBrailleDisplayUiElement extends
     });
   }
 
-  private async updateControls_() {
+  private async updateControls_(): Promise<void> {
     // Only update controls if there is a selected display.
     const selectedDisplayAddress = this.brailleDisplayAddressPref_.value;
     if (!selectedDisplayAddress) {

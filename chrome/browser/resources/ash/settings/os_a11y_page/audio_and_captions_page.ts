@@ -100,7 +100,7 @@ export class SettingsAudioAndCaptionsPageElement extends
         AudioAndCaptionsPageBrowserProxyImpl.getInstance();
   }
 
-  override ready() {
+  override ready(): void {
     super.ready();
 
     this.addWebUiListener(
@@ -141,7 +141,7 @@ export class SettingsAudioAndCaptionsPageElement extends
   /**
    * Note: Overrides RouteOriginMixin implementation
    */
-  override currentRouteChanged(newRoute: Route, prevRoute?: Route) {
+  override currentRouteChanged(newRoute: Route, prevRoute?: Route): void {
     super.currentRouteChanged(newRoute, prevRoute);
 
     // Does not apply to this page.

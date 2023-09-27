@@ -176,7 +176,7 @@ export class SettingsSwitchAccessActionAssignmentPaneElement extends
         SwitchAccessSubpageBrowserProxyImpl.getInstance();
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     // Save all existing prefs.
@@ -205,7 +205,7 @@ export class SettingsSwitchAccessActionAssignmentPaneElement extends
     }
   }
 
-  override disconnectedCallback() {
+  override disconnectedCallback(): void {
     super.disconnectedCallback();
 
     this.switchAccessBrowserProxy_
