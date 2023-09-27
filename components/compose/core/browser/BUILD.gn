@@ -1,0 +1,28 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("features") {
+  sources = [
+    "compose_features.cc",
+    "compose_features.h",
+  ]
+
+  public_deps = [ "//base" ]
+}
+
+static_library("browser") {
+  sources = [
+    "compose_client.h",
+    "compose_manager.h",
+    "compose_manager_impl.cc",
+    "compose_manager_impl.h",
+  ]
+
+  deps = [ ":features" ]
+
+  public_deps = [
+    "//base",
+    "//components/keyed_service/core",
+  ]
+}

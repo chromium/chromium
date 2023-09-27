@@ -1946,6 +1946,13 @@ static_library("browser") {
     ]
   }
 
+  if (!is_android && !is_chromeos) {
+    sources += [
+      "compose/chrome_compose_client.cc",
+      "compose/chrome_compose_client.h",
+    ]
+  }
+
   configs += [
     "//build/config/compiler:wexit_time_destructors",
     "//build/config:precompiled_headers",
@@ -2578,6 +2585,7 @@ static_library("browser") {
     deps += [
       "//chrome/browser/companion/visual_search:flags",
       "//chrome/browser/manta/proto:manta_proto",
+      "//components/compose/core/browser",
       "//components/user_education/common",
     ]
   }
