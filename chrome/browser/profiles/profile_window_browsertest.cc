@@ -37,7 +37,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chrome/test/base/web_ui_browser_test.h"
 #include "components/account_id/account_id.h"
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_service.h"
@@ -363,21 +362,3 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest,
   EXPECT_EQ(num_browsers, BrowserList::GetInstance()->size());
   EXPECT_TRUE(ProfilePicker::IsOpen());
 }
-
-class ProfileWindowWebUIBrowserTest : public WebUIBrowserTest {
- public:
-  void OnSystemProfileCreated(std::string* url_to_test,
-                              base::OnceClosure quit_loop,
-                              Profile* profile,
-                              const std::string& url) {
-    *url_to_test = url;
-    std::move(quit_loop).Run();
-  }
-
- private:
-  void SetUpOnMainThread() override {
-    WebUIBrowserTest::SetUpOnMainThread();
-    AddLibrary(
-        base::FilePath(FILE_PATH_LITERAL("profile_window_browsertest.js")));
-  }
-};
