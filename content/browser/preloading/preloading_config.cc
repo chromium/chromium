@@ -29,6 +29,10 @@ namespace {
 constexpr base::FeatureParam<std::string> kPreloadingConfigParam{
     &features::kPreloadingConfig, "preloading_config", R"(
 [{
+  "preloading_type": "Prerender",
+  "preloading_predictor": "SpeculationRulesFromIsolatedWorld",
+  "sampling_likelihood": 1.000000
+}, {
   "preloading_type": "Prefetch",
   "preloading_predictor": "OmniboxSearchPredictor",
   "sampling_likelihood": 1.000000
@@ -38,19 +42,11 @@ constexpr base::FeatureParam<std::string> kPreloadingConfigParam{
   "sampling_likelihood": 1.000000
 }, {
   "preloading_type": "Prerender",
-  "preloading_predictor": "SpeculationRulesFromIsolatedWorld",
-  "sampling_likelihood": 1.000000
-}, {
-  "preloading_type": "Prerender",
-  "preloading_predictor": "DefaultSearchEngine",
+  "preloading_predictor": "PointerDownOnBookmarkBar",
   "sampling_likelihood": 1.000000
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "SpeculationRules",
-  "sampling_likelihood": 1.000000
-}, {
-  "preloading_type": "Prerender",
-  "preloading_predictor": "PointerDownOnBookmarkBar",
   "sampling_likelihood": 1.000000
 }, {
   "preloading_type": "NoStatePrefetch",
@@ -59,39 +55,43 @@ constexpr base::FeatureParam<std::string> kPreloadingConfigParam{
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "MouseHoverOnBookmarkBar",
-  "sampling_likelihood": 1.000000
+  "sampling_likelihood": 0.928087
+}, {
+  "preloading_type": "Prerender",
+  "preloading_predictor": "DefaultSearchEngine",
+  "sampling_likelihood": 0.762589
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "BackGestureNavigation",
-  "sampling_likelihood": 0.611862
+  "sampling_likelihood": 0.334136
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "MouseBackButton",
-  "sampling_likelihood": 0.127634
+  "sampling_likelihood": 0.111881
 }, {
   "preloading_type": "Prefetch",
   "preloading_predictor": "DefaultSearchEngine",
-  "sampling_likelihood": 0.035817
+  "sampling_likelihood": 0.023220
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "OmniboxDirectURLInput",
-  "sampling_likelihood": 0.016164
+  "sampling_likelihood": 0.013281
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "BackButtonHover",
-  "sampling_likelihood": 0.013062
+  "sampling_likelihood": 0.010158
 }, {
   "preloading_type": "NoStatePrefetch",
   "preloading_predictor": "LinkRel",
-  "sampling_likelihood": 0.013000
+  "sampling_likelihood": 0.008495
 }, {
   "preloading_type": "Prefetch",
   "preloading_predictor": "SpeculationRules",
-  "sampling_likelihood": 0.005527
+  "sampling_likelihood": 0.004013
 }, {
   "preloading_type": "Preconnect",
   "preloading_predictor": "PointerDownOnAnchor",
-  "sampling_likelihood": 0.000157
+  "sampling_likelihood": 0.000190
 }]
 )"};
 
