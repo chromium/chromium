@@ -1848,11 +1848,15 @@
                   '|chrome/browser/resources/search_engine_choice/'\
                   '|chrome/browser/search_engine_choice/'\
                   '|chrome/test/data/webui/search_engine_choice/'\
+                  '|components/resources/default_100_percent/search_engine_choice/'\
+                  '|components/resources/default_200_percent/search_engine_choice/'\
                   '|components/search_engines/search_engine_choice_utils.cc'\
                   '|components/search_engine_choice_strings.grdp'\
                   '|ios/chrome/browser/providers/signin/chromium_choice.mm'\
                   '|ios/chrome/test/providers/signin/test_choice.mm'\
-                  '|ios/public/provider/chrome/browser/signin/choice_api.h',
+                  '|ios/public/provider/chrome/browser/signin/choice_api.h'\
+		  '|tools/search_engine_choice/',
+
     },
     'search_prefetch': {
       'filepath': 'chrome/browser/preloading/prefetch/search_prefetch',
