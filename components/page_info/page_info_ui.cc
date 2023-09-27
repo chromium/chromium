@@ -294,6 +294,16 @@ void SetTargetContentSetting(PageInfo::PermissionInfo& permission,
 void CreateOppositeToDefaultSiteException(
     PageInfo::PermissionInfo& permission,
     ContentSetting opposite_to_block_setting) {
+  // For Automatic Picture-in-Picture, we show the toggle in the "on" position
+  // while the setting is ASK, so the opposite to the default when the default
+  // is ASK should be BLOCK instead of ALLOW.
+  if (permission.type == ContentSettingsType::AUTO_PICTURE_IN_PICTURE) {
+    permission.setting = permission.default_setting == CONTENT_SETTING_BLOCK
+                             ? CONTENT_SETTING_ALLOW
+                             : CONTENT_SETTING_BLOCK;
+    return;
+  }
+
   // For guard content settings opposite to block setting is ask, for the
   // rest opposite is allow.
   permission.setting = permission.default_setting == opposite_to_block_setting
@@ -940,6 +950,14 @@ void PageInfoUI::ToggleBetweenRememberAndForget(
 bool PageInfoUI::IsToggleOn(const PageInfo::PermissionInfo& permission) {
   ContentSetting effective_setting = GetEffectiveSetting(
       permission.type, permission.setting, permission.default_setting);
+
+  // Since Automatic Picture-in-Picture is essentially allowed while in the ASK
+  // state, we display the toggle as on for either ASK or ALLOW.
+  if (permission.type == ContentSettingsType::AUTO_PICTURE_IN_PICTURE) {
+    return (effective_setting == CONTENT_SETTING_ASK ||
+            effective_setting == CONTENT_SETTING_ALLOW);
+  }
+
   return permissions::PermissionUtil::IsGuardContentSetting(permission.type)
              ? effective_setting == CONTENT_SETTING_ASK
              : effective_setting == CONTENT_SETTING_ALLOW;

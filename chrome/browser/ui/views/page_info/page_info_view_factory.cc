@@ -253,8 +253,12 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
   ContentSetting setting = info.setting == CONTENT_SETTING_DEFAULT
                                ? info.default_setting
                                : info.setting;
+
+  // For guard content settings and Automatic Picture-in-Picture, ASK is treated
+  // as an "on" state.
   const bool show_blocked_badge =
-      !permissions::PermissionUtil::IsGuardContentSetting(info.type)
+      (!permissions::PermissionUtil::IsGuardContentSetting(info.type) &&
+       info.type != ContentSettingsType::AUTO_PICTURE_IN_PICTURE)
           ? setting == CONTENT_SETTING_BLOCK || setting == CONTENT_SETTING_ASK
           : setting == CONTENT_SETTING_BLOCK;
 
