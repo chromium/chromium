@@ -90,6 +90,18 @@ class DlpFilesControllerAshBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(DlpRulesManagerFactory::GetForPrimaryProfile());
   }
 
+  void TearDownOnMainThread() override {
+    // Make sure the rules manager does not return a freed files controller.
+    ON_CALL(*mock_rules_manager_, GetDlpFilesController)
+        .WillByDefault(testing::Return(nullptr));
+
+    // The files controller must be destroyed before the profile since it's
+    // holding a pointer to it.
+    files_controller_.reset();
+
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
   std::unique_ptr<KeyedService> SetDlpRulesManager(
       content::BrowserContext* context) {
     auto dlp_rules_manager =
@@ -100,8 +112,8 @@ class DlpFilesControllerAshBrowserTest : public InProcessBrowserTest {
     ON_CALL(*mock_rules_manager_, GetReportingManager)
         .WillByDefault(testing::Return(nullptr));
 
-    files_controller_ =
-        std::make_unique<DlpFilesControllerAsh>(*mock_rules_manager_);
+    files_controller_ = std::make_unique<DlpFilesControllerAsh>(
+        *mock_rules_manager_, Profile::FromBrowserContext(context));
     ON_CALL(*mock_rules_manager_, GetDlpFilesController)
         .WillByDefault(testing::Return(files_controller_.get()));
 

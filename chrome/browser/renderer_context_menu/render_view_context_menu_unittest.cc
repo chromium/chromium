@@ -191,8 +191,8 @@ class TestNavigationDelegate : public content::WebContentsDelegate {
 #if BUILDFLAG(IS_CHROMEOS)
 class MockDlpRulesManager : public policy::DlpRulesManagerImpl {
  public:
-  explicit MockDlpRulesManager(PrefService* local_state)
-      : DlpRulesManagerImpl(local_state) {}
+  explicit MockDlpRulesManager(PrefService* local_state, Profile* profile)
+      : DlpRulesManagerImpl(local_state, profile) {}
 };
 #endif
 
@@ -749,7 +749,8 @@ TEST_F(RenderViewContextMenuDlpPrefsTest,
 
   EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB));
 
-  MockDlpRulesManager mock_dlp_rules_manager(local_state());
+  TestingProfile profile;
+  MockDlpRulesManager mock_dlp_rules_manager(local_state(), &profile);
   menu->set_dlp_rules_manager(&mock_dlp_rules_manager);
   EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB));
 
@@ -776,7 +777,8 @@ TEST_F(RenderViewContextMenuDlpPrefsTest,
 
   EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW));
 
-  MockDlpRulesManager mock_dlp_rules_manager(local_state());
+  TestingProfile profile;
+  MockDlpRulesManager mock_dlp_rules_manager(local_state(), &profile);
   menu->set_dlp_rules_manager(&mock_dlp_rules_manager);
   EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW));
 
@@ -803,7 +805,8 @@ TEST_F(RenderViewContextMenuDlpPrefsTest,
 
   EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_OPENLINKINPROFILE));
 
-  MockDlpRulesManager mock_dlp_rules_manager(local_state());
+  TestingProfile profile;
+  MockDlpRulesManager mock_dlp_rules_manager(local_state(), &profile);
   menu->set_dlp_rules_manager(&mock_dlp_rules_manager);
   EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_OPENLINKINPROFILE));
 
@@ -830,7 +833,8 @@ TEST_F(RenderViewContextMenuDlpPrefsTest,
   EXPECT_TRUE(
       menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP));
 
-  MockDlpRulesManager mock_dlp_rules_manager(local_state());
+  TestingProfile profile;
+  MockDlpRulesManager mock_dlp_rules_manager(local_state(), &profile);
   menu->set_dlp_rules_manager(&mock_dlp_rules_manager);
   EXPECT_TRUE(
       menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP));
@@ -859,7 +863,8 @@ TEST_F(RenderViewContextMenuDlpPrefsTest,
 
   EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_GOTOURL));
 
-  MockDlpRulesManager mock_dlp_rules_manager(local_state());
+  TestingProfile profile;
+  MockDlpRulesManager mock_dlp_rules_manager(local_state(), &profile);
   menu->set_dlp_rules_manager(&mock_dlp_rules_manager);
   EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_GOTOURL));
 
@@ -882,7 +887,8 @@ TEST_F(RenderViewContextMenuDlpPrefsTest,
 
   EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SEARCHWEBFOR));
 
-  MockDlpRulesManager mock_dlp_rules_manager(local_state());
+  TestingProfile profile;
+  MockDlpRulesManager mock_dlp_rules_manager(local_state(), &profile);
   menu->set_dlp_rules_manager(&mock_dlp_rules_manager);
   EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SEARCHWEBFOR));
 
@@ -906,7 +912,8 @@ TEST_F(RenderViewContextMenuDlpPrefsTest,
 
   EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB));
 
-  MockDlpRulesManager mock_dlp_rules_manager(local_state());
+  TestingProfile profile;
+  MockDlpRulesManager mock_dlp_rules_manager(local_state(), &profile);
   menu->set_dlp_rules_manager(&mock_dlp_rules_manager);
   EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB));
 

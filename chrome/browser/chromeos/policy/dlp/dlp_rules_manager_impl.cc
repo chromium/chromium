@@ -307,7 +307,9 @@ DlpRulesManagerImpl::GetAggregatedComponents(const GURL& source,
   return result;
 }
 
-DlpRulesManagerImpl::DlpRulesManagerImpl(PrefService* local_state) {
+DlpRulesManagerImpl::DlpRulesManagerImpl(PrefService* local_state,
+                                         Profile* profile)
+    : profile_(profile) {
   pref_change_registrar_.Init(local_state);
   pref_change_registrar_.Add(
       policy_prefs::kDlpRulesList,
@@ -529,7 +531,8 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
           request_to_daemon, base::BindOnce(&OnSetDlpFilesPolicy));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       if (!files_controller_) {
-        files_controller_ = std::make_unique<DlpFilesControllerAsh>(*this);
+        files_controller_ =
+            std::make_unique<DlpFilesControllerAsh>(*this, profile_);
       }
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
       if (!files_controller_) {

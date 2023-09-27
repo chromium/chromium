@@ -83,8 +83,7 @@ constexpr size_t kEntriesLimit = 100;
 storage::FileSystemContext* g_file_system_context_for_testing = nullptr;
 
 // Returns true if `file_path` is in My Files directory.
-bool IsInLocalFileSystem(const base::FilePath& file_path) {
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+bool IsInLocalFileSystem(Profile* profile, const base::FilePath& file_path) {
   auto my_files_folder =
       file_manager::util::GetMyFilesFolderForProfile(profile);
   if (my_files_folder == file_path || my_files_folder.IsParent(file_path)) {
@@ -129,14 +128,12 @@ absl::optional<DlpFileDestination> GetFileDestinationForApp(
 
 // Returns |g_file_system_context_for_testing| if set, otherwise
 // it returns FileSystemContext* for the primary profile.
-storage::FileSystemContext* GetFileSystemContext() {
+storage::FileSystemContext* GetFileSystemContext(Profile* profile) {
   if (g_file_system_context_for_testing) {
     return g_file_system_context_for_testing;
   }
 
-  auto* primary_profile = ProfileManager::GetPrimaryUserProfile();
-  DCHECK(primary_profile);
-  return file_manager::util::GetFileManagerFileSystemContext(primary_profile);
+  return file_manager::util::GetFileManagerFileSystemContext(profile);
 }
 
 // Gets all files inside |root| recursively and runs |callback_| with the
@@ -270,16 +267,14 @@ class RootsRecursionDelegate {
 
 // Converts files paths to file system URLs.
 std::vector<storage::FileSystemURL> ConvertFilePathsToFileSystemUrls(
+    Profile* profile,
     const std::vector<base::FilePath>& files_paths) {
   std::vector<storage::FileSystemURL> file_system_urls;
 
-  auto* file_system_context = GetFileSystemContext();
+  auto* file_system_context = GetFileSystemContext(profile);
   if (!file_system_context) {
     return file_system_urls;
   }
-
-  auto* profile = ProfileManager::GetPrimaryUserProfile();
-  DCHECK(profile);
 
   for (const auto& file_path : files_paths) {
     GURL gurl;
@@ -324,12 +319,10 @@ DlpFileDestination DTEndpointToFileDestination(
 
 // Shows DLP block desktop notification.
 void ShowDlpBlockedFiles(
+    Profile* profile,
     absl::optional<file_manager::io_task::IOTaskId> task_id,
     std::vector<base::FilePath> blocked_files,
     dlp::FileAction action) {
-  auto* profile = ProfileManager::GetPrimaryUserProfile();
-  CHECK(profile);
-
   auto* fpnm =
       FilesPolicyNotificationManagerFactory::GetForBrowserContext(profile);
   if (!fpnm) {
@@ -342,22 +335,17 @@ void ShowDlpBlockedFiles(
                             action);
 }
 
-file_manager::VolumeManager* GetVolumeManager() {
-  auto* profile = ProfileManager::GetPrimaryUserProfile();
-  if (!profile) {
-    // May not be available in some tests.
-    CHECK_IS_TEST();
-    return nullptr;
-  }
+file_manager::VolumeManager* GetVolumeManager(
+    content::BrowserContext* context) {
+  CHECK(context);
 
   file_manager::VolumeManager* const volume_manager =
-      file_manager::VolumeManager::Get(profile);
+      file_manager::VolumeManager::Get(context);
   if (!volume_manager) {
     return nullptr;
   }
   return volume_manager;
 }
-
 }  // namespace
 
 // static
@@ -391,11 +379,15 @@ DlpFilesControllerAsh::DlpFileRestrictionDetails::~DlpFileRestrictionDetails() =
     default;
 
 DlpFilesControllerAsh::DlpFilesControllerAsh(
-    const DlpRulesManager& rules_manager)
+    const DlpRulesManager& rules_manager,
+    Profile* profile)
     : DlpFilesController(rules_manager),
+      profile_(profile),
       event_storage_(std::make_unique<DlpFilesEventStorage>(kCooldownTimeout,
                                                             kEntriesLimit)) {
-  auto* volume_manager = GetVolumeManager();
+  CHECK(profile_);
+
+  auto* volume_manager = GetVolumeManager(profile_);
   if (!volume_manager) {
     LOG(ERROR)
         << "DlpFilesControllerAsh failed to find file_manager::VolumeManager";
@@ -419,7 +411,7 @@ DlpFilesControllerAsh::~DlpFilesControllerAsh() {
     // If `extract_io_task_observer_` is still alive, it means we are deleting
     // FilesController before VolumeManager, otherwise we would have been
     // notified in `OnShutdownStart`.
-    auto* volume_manager = GetVolumeManager();
+    auto* volume_manager = GetVolumeManager(profile_);
     if (volume_manager) {
       volume_manager->RemoveObserver(this);
     }
@@ -432,7 +424,7 @@ void DlpFilesControllerAsh::CheckIfTransferAllowed(
     storage::FileSystemURL destination,
     bool is_move,
     CheckIfTransferAllowedCallback result_callback) {
-  auto* file_system_context = GetFileSystemContext();
+  auto* file_system_context = GetFileSystemContext(profile_);
   if (!file_system_context) {
     std::move(result_callback).Run(std::vector<storage::FileSystemURL>());
     return;
@@ -440,7 +432,7 @@ void DlpFilesControllerAsh::CheckIfTransferAllowed(
 
   // If the destination file path is in My Files, all files transfers should be
   // allowed.
-  if (IsInLocalFileSystem(destination.path())) {
+  if (IsInLocalFileSystem(profile_, destination.path())) {
     std::move(result_callback).Run(std::vector<storage::FileSystemURL>());
     return;
   }
@@ -449,7 +441,7 @@ void DlpFilesControllerAsh::CheckIfTransferAllowed(
   // If the copied file isn't in the local file system, or the file is in the
   // same file system as the destination, no restrictions should be applied.
   for (const auto& file : transferred_files) {
-    if (!IsInLocalFileSystem(file.path()) ||
+    if (!IsInLocalFileSystem(profile_, file.path()) ||
         file.IsInSameFileSystem(destination)) {
       continue;
     }
@@ -485,7 +477,7 @@ void DlpFilesControllerAsh::GetDlpMetadata(
 
   ::dlp::GetFilesSourcesRequest request;
   for (const auto& file : files) {
-    if (IsInLocalFileSystem(file.path())) {
+    if (IsInLocalFileSystem(profile_, file.path())) {
       request.add_files_paths(file.path().value());
     }
   }
@@ -511,14 +503,14 @@ void DlpFilesControllerAsh::FilterDisallowedUploads(
   }
 
   std::vector<storage::FileSystemURL> file_system_urls =
-      ConvertFilePathsToFileSystemUrls(files_paths);
+      ConvertFilePathsToFileSystemUrls(profile_, files_paths);
 
   if (file_system_urls.empty()) {
     std::move(result_callback).Run(std::move(selected_files));
     return;
   }
 
-  auto* file_system_context = GetFileSystemContext();
+  auto* file_system_context = GetFileSystemContext(profile_);
   if (!file_system_context) {
     std::move(result_callback).Run(std::move(selected_files));
     return;
@@ -541,11 +533,8 @@ void DlpFilesControllerAsh::CheckIfDownloadAllowed(
     const DlpFileDestination& download_src,
     const base::FilePath& file_path,
     CheckIfDlpAllowedCallback result_callback) {
-  auto* profile = ProfileManager::GetPrimaryUserProfile();
-  DCHECK(profile);
-
   auto dst_component =
-      MapFilePathToPolicyComponent(profile, base::FilePath(file_path));
+      MapFilePathToPolicyComponent(profile_, base::FilePath(file_path));
   if (!dst_component.has_value()) {
     // We may block downloads only if saved to external component, otherwise
     // downloads should be allowed.
@@ -564,14 +553,14 @@ void DlpFilesControllerAsh::CheckIfDownloadAllowed(
                            /*referrer_url=*/"");
 
   absl::optional<data_controls::Component> component =
-      MapFilePathToPolicyComponent(profile, file_path);
+      MapFilePathToPolicyComponent(profile_, file_path);
   DlpFileDestination dlp_destination =
       component ? DlpFileDestination(*component) : DlpFileDestination();
   IsFilesTransferRestricted(
       absl::nullopt, {std::move(file_info)}, dlp_destination,
       dlp::FileAction::kDownload,
       base::BindOnce(
-          [](CheckIfDlpAllowedCallback result_callback,
+          [](CheckIfDlpAllowedCallback result_callback, Profile* profile,
              const std::vector<std::pair<
                  FileDaemonInfo, ::dlp::RestrictionLevel>>& files_levels) {
             bool is_allowed = true;
@@ -585,12 +574,12 @@ void DlpFilesControllerAsh::CheckIfDownloadAllowed(
               }
             }
             if (!is_allowed) {
-              ShowDlpBlockedFiles(/*task_id=*/absl::nullopt, {file_path},
-                                  dlp::FileAction::kDownload);
+              ShowDlpBlockedFiles(profile, /*task_id=*/absl::nullopt,
+                                  {file_path}, dlp::FileAction::kDownload);
             }
             std::move(result_callback).Run(is_allowed);
           },
-          std::move(result_callback)));
+          std::move(result_callback), profile_));
 }
 
 bool DlpFilesControllerAsh::ShouldPromptBeforeDownload(
@@ -599,10 +588,8 @@ bool DlpFilesControllerAsh::ShouldPromptBeforeDownload(
   if (download_src.IsFileSystem()) {
     return false;
   }
-  auto* profile = ProfileManager::GetPrimaryUserProfile();
-  DCHECK(profile);
   auto dst_component =
-      MapFilePathToPolicyComponent(profile, base::FilePath(file_path));
+      MapFilePathToPolicyComponent(profile_, base::FilePath(file_path));
   if (!dst_component.has_value()) {
     // We may block downloads only if saved to external component, otherwise
     // downloads should be allowed.
@@ -625,11 +612,9 @@ void DlpFilesControllerAsh::CheckIfLaunchAllowed(
     std::move(result_callback).Run(/*is_allowed=*/true);
     return;
   }
-  auto* profile = ProfileManager::GetPrimaryUserProfile();
-  DCHECK(profile);
   ::dlp::CheckFilesTransferRequest request;
   for (const auto& file : intent->files) {
-    auto file_url = apps::GetFileSystemURL(profile, file->url);
+    auto file_url = apps::GetFileSystemURL(profile_, file->url);
     request.add_files_paths(file_url.path().value());
   }
 
@@ -699,9 +684,6 @@ void DlpFilesControllerAsh::IsFilesTransferRestricted(
     const DlpFileDestination& destination,
     dlp::FileAction files_action,
     IsFilesTransferRestrictedCallback result_callback) {
-  auto* profile = ProfileManager::GetPrimaryUserProfile();
-  DCHECK(profile);
-
   DlpFileDestination actual_dst = destination;
 
   std::vector<std::pair<FileDaemonInfo, ::dlp::RestrictionLevel>> files_levels;
@@ -764,7 +746,7 @@ void DlpFilesControllerAsh::IsFilesTransferRestricted(
   }
 
   auto* fpnm =
-      FilesPolicyNotificationManagerFactory::GetForBrowserContext(profile);
+      FilesPolicyNotificationManagerFactory::GetForBrowserContext(profile_);
   if (!fpnm) {
     LOG(ERROR) << "No FilesPolicyNotificationManager instantiated,"
                   "can't show policy warning UI";
@@ -879,14 +861,14 @@ void DlpFilesControllerAsh::CheckIfDropAllowed(
     CheckIfDlpAllowedCallback result_callback) {
   std::vector<base::FilePath> files_paths;
   for (const auto& file : dropped_files) {
-    if (!IsInLocalFileSystem(file.path)) {
+    if (!IsInLocalFileSystem(profile_, file.path)) {
       continue;
     }
     files_paths.push_back(file.path);
   }
 
   std::vector<storage::FileSystemURL> files_urls =
-      ConvertFilePathsToFileSystemUrls(files_paths);
+      ConvertFilePathsToFileSystemUrls(profile_, files_paths);
   if (files_urls.empty()) {
     std::move(result_callback).Run(/*is_allowed=*/true);
     return;
@@ -894,7 +876,7 @@ void DlpFilesControllerAsh::CheckIfDropAllowed(
 
   DlpFileDestination destination = DTEndpointToFileDestination(data_dst);
 
-  auto* file_system_context = GetFileSystemContext();
+  auto* file_system_context = GetFileSystemContext(profile_);
   if (!file_system_context) {
     std::move(result_callback).Run(/*is_allowed=*/true);
     return;
@@ -1029,8 +1011,8 @@ void DlpFilesControllerAsh::ReturnDisallowedFiles(
   if (!restricted_files_paths.empty() &&
       base::FeatureList::IsEnabled(features::kNewFilesPolicyUX) &&
       task_id.has_value()) {
-    ShowDlpBlockedFiles(std::move(task_id), std::move(restricted_files_paths),
-                        file_action);
+    ShowDlpBlockedFiles(profile_, std::move(task_id),
+                        std::move(restricted_files_paths), file_action);
   }
   std::move(result_callback).Run(std::move(restricted_files_urls));
 }
@@ -1061,8 +1043,8 @@ void DlpFilesControllerAsh::ReturnAllowedUploads(
               });
         });
 
-    ShowDlpBlockedFiles(/*task_id=*/absl::nullopt, std::move(restricted_files),
-                        dlp::FileAction::kUpload);
+    ShowDlpBlockedFiles(profile_, /*task_id=*/absl::nullopt,
+                        std::move(restricted_files), dlp::FileAction::kUpload);
   }
 
   std::move(result_callback).Run(std::move(selected_files));
@@ -1089,8 +1071,6 @@ void DlpFilesControllerAsh::ReturnDlpMetadata(
     // Only if it's restricted by any rule and the destination is passed, check
     // if this combination is also blocked or not.
     if (level == DlpRulesManager::Level::kBlock && destination.has_value()) {
-      auto* profile = ProfileManager::GetPrimaryUserProfile();
-      DCHECK(profile);
       absl::optional<data_controls::Component> dst_component =
           destination->component();
       if (dst_component.has_value()) {
@@ -1149,8 +1129,8 @@ void DlpFilesControllerAsh::ReturnIfActionAllowed(
 
   std::vector<base::FilePath> blocked_files(response.files_paths().begin(),
                                             response.files_paths().end());
-  ShowDlpBlockedFiles(/*task_id=*/absl::nullopt, std::move(blocked_files),
-                      action);
+  ShowDlpBlockedFiles(profile_, /*task_id=*/absl::nullopt,
+                      std::move(blocked_files), action);
   std::move(result_callback).Run(/*is_allowed=*/false);
 }
 
@@ -1229,9 +1209,8 @@ void DlpFilesControllerAsh::ContinueCheckIfTransferAllowed(
     return;
   }
 
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
   absl::optional<data_controls::Component> component =
-      MapFilePathToPolicyComponent(profile, destination.path());
+      MapFilePathToPolicyComponent(profile_, destination.path());
   ::dlp::DlpComponent proto;
   if (component) {
     proto = dlp::MapPolicyComponentToProto(*component);

@@ -52,13 +52,15 @@ class DlpFilesPolicyServiceProviderTest
   void SetUp() override {
     DlpFilesTestBase::SetUp();
 
+    profile_ = TestingProfile::Builder().Build();
+
     EXPECT_CALL(*rules_manager_, IsFilesPolicyEnabled)
         .WillRepeatedly(testing::Return(true));
     EXPECT_CALL(*rules_manager_, GetReportingManager())
         .WillRepeatedly(::testing::Return(nullptr));
     files_controller_ = std::make_unique<
-        testing::StrictMock<policy::MockDlpFilesControllerAsh>>(
-        *rules_manager_);
+        testing::StrictMock<policy::MockDlpFilesControllerAsh>>(*rules_manager_,
+                                                                profile_.get());
     EXPECT_CALL(*rules_manager_, GetDlpFilesController())
         .WillRepeatedly(::testing::Return(files_controller_.get()));
   }
@@ -90,7 +92,7 @@ class DlpFilesPolicyServiceProviderTest
     return response;
   }
 
-
+  std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<DlpFilesPolicyServiceProvider> dlp_policy_service_;
   ServiceProviderTestHelper dbus_service_test_helper_;
 

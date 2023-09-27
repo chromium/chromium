@@ -12,6 +12,7 @@
 #include <set>
 
 #include "base/scoped_observation.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/url_matcher/url_matcher.h"
@@ -60,7 +61,7 @@ class DlpRulesManagerImpl : public DlpRulesManager,
  protected:
   friend class DlpRulesManagerFactory;
 
-  explicit DlpRulesManagerImpl(PrefService* local_state);
+  DlpRulesManagerImpl(PrefService* local_state, Profile* profile);
 
  private:
   void OnPolicyUpdate() override;
@@ -82,6 +83,10 @@ class DlpRulesManagerImpl : public DlpRulesManager,
 
   // System-wide singleton instantiated when there are rules involving files.
   std::unique_ptr<DlpFilesController> files_controller_;
+
+  // The profile with which we are associated. Not owned. It's currently always
+  // the main/primary profile.
+  const raw_ptr<Profile> profile_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Observe to re-notify DLP daemon in case of restart.
