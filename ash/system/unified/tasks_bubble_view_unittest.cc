@@ -8,7 +8,7 @@
 #include "ash/glanceables/common/glanceables_list_footer_view.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/glanceables/common/test/glanceables_test_new_window_delegate.h"
-#include "ash/glanceables/glanceables_v2_controller.h"
+#include "ash/glanceables/glanceables_controller.h"
 #include "ash/glanceables/tasks/fake_glanceables_tasks_client.h"
 #include "ash/glanceables/tasks/glanceables_task_view.h"
 #include "ash/shell.h"
@@ -55,10 +55,10 @@ class TasksBubbleViewTest : public AshTestBase {
     SimulateUserLogin(account_id_);
     fake_glanceables_tasks_client_ =
         std::make_unique<FakeGlanceablesTasksClient>(base::Time::Now());
-    Shell::Get()->glanceables_v2_controller()->UpdateClientsRegistration(
-        account_id_, GlanceablesV2Controller::ClientsRegistration{
+    Shell::Get()->glanceables_controller()->UpdateClientsRegistration(
+        account_id_, GlanceablesController::ClientsRegistration{
                          .tasks_client = fake_glanceables_tasks_client_.get()});
-    ASSERT_TRUE(Shell::Get()->glanceables_v2_controller()->GetTasksClient());
+    ASSERT_TRUE(Shell::Get()->glanceables_controller()->GetTasksClient());
 
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);

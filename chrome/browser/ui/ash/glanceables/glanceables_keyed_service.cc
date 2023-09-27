@@ -12,7 +12,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/glanceables/glanceables_v2_controller.h"
+#include "ash/glanceables/glanceables_controller.h"
 #include "ash/shell.h"
 #include "base/check.h"
 #include "base/command_line.h"
@@ -109,8 +109,8 @@ void GlanceablesKeyedService::RegisterClients() {
   tasks_client_ = std::make_unique<GlanceablesTasksClientImpl>(
       create_request_sender_callback);
 
-  Shell::Get()->glanceables_v2_controller()->UpdateClientsRegistration(
-      account_id_, GlanceablesV2Controller::ClientsRegistration{
+  Shell::Get()->glanceables_controller()->UpdateClientsRegistration(
+      account_id_, GlanceablesController::ClientsRegistration{
                        .classroom_client = classroom_client_.get(),
                        .tasks_client = tasks_client_.get()});
 }
@@ -119,8 +119,8 @@ void GlanceablesKeyedService::ClearClients() {
   classroom_client_.reset();
   tasks_client_.reset();
   if (Shell::HasInstance()) {
-    Shell::Get()->glanceables_v2_controller()->UpdateClientsRegistration(
-        account_id_, GlanceablesV2Controller::ClientsRegistration{
+    Shell::Get()->glanceables_controller()->UpdateClientsRegistration(
+        account_id_, GlanceablesController::ClientsRegistration{
                          .classroom_client = nullptr, .tasks_client = nullptr});
   }
 }
@@ -130,14 +130,14 @@ void GlanceablesKeyedService::UpdateRegistration() {
     return;
   }
 
-  DCHECK(Shell::Get()->glanceables_v2_controller());
+  DCHECK(Shell::Get()->glanceables_controller());
 
   PrefService* prefs = profile_->GetPrefs();
 
   CHECK(prefs);
 
   if (!AreGlanceablesEnabled()) {
-    Shell::Get()->glanceables_v2_controller()->ClearUserStatePrefs(prefs);
+    Shell::Get()->glanceables_controller()->ClearUserStatePrefs(prefs);
     ClearClients();
     return;
   }

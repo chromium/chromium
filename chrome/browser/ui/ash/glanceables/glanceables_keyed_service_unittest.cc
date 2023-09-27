@@ -9,7 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/glanceables/glanceables_v2_controller.h"
+#include "ash/glanceables/glanceables_controller.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "base/test/scoped_feature_list.h"
@@ -74,7 +74,7 @@ class GlanceablesKeyedServiceTest : public BrowserWithTestWindowTest {
 };
 
 TEST_F(GlanceablesKeyedServiceTest, RegistersClientsInAsh) {
-  auto* const controller = Shell::Get()->glanceables_v2_controller();
+  auto* const controller = Shell::Get()->glanceables_controller();
   EXPECT_FALSE(controller->GetClassroomClient());
   EXPECT_FALSE(controller->GetTasksClient());
 
@@ -88,7 +88,7 @@ TEST_F(GlanceablesKeyedServiceTest, RegistersClientsInAsh) {
 }
 
 TEST_F(GlanceablesKeyedServiceTest, RegisterClientsInAshForNonPrimaryUser) {
-  auto* const controller = Shell::Get()->glanceables_v2_controller();
+  auto* const controller = Shell::Get()->glanceables_controller();
   auto service = std::make_unique<GlanceablesKeyedService>(profile());
   auto* const classroom_client_primary = controller->GetClassroomClient();
   auto* const tasks_client_primary = controller->GetTasksClient();
@@ -122,7 +122,7 @@ TEST_F(GlanceablesKeyedServiceTest, RegisterClientsInAshForNonPrimaryUser) {
 
 TEST_F(GlanceablesKeyedServiceTest,
        DoesNotRegisterClientsInAshForDisabledPref) {
-  auto* const controller = Shell::Get()->glanceables_v2_controller();
+  auto* const controller = Shell::Get()->glanceables_controller();
   EXPECT_FALSE(controller->GetClassroomClient());
   EXPECT_FALSE(controller->GetTasksClient());
 

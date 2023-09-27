@@ -14,8 +14,8 @@
 #include "ash/glanceables/common/glanceables_list_footer_view.h"
 #include "ash/glanceables/common/glanceables_progress_bar_view.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
+#include "ash/glanceables/glanceables_controller.h"
 #include "ash/glanceables/glanceables_metrics.h"
-#include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -192,7 +192,7 @@ void ClassroomBubbleBaseView::OnGetAssignments(
     }
   }
 
-  auto* controller = Shell::Get()->glanceables_v2_controller();
+  auto* controller = Shell::Get()->glanceables_controller();
 
   if (initial_update) {
     RecordClassromInitialLoadTime(

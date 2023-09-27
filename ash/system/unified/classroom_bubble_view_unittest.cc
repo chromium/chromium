@@ -12,7 +12,7 @@
 #include "ash/glanceables/common/glanceables_list_footer_view.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/glanceables/common/test/glanceables_test_new_window_delegate.h"
-#include "ash/glanceables/glanceables_v2_controller.h"
+#include "ash/glanceables/glanceables_controller.h"
 #include "ash/shell.h"
 #include "ash/style/combobox.h"
 #include "ash/system/tray/detailed_view_delegate.h"
@@ -119,11 +119,10 @@ class ClassroomBubbleViewTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
     SimulateUserLogin(account_id_);
-    Shell::Get()->glanceables_v2_controller()->UpdateClientsRegistration(
-        account_id_, GlanceablesV2Controller::ClientsRegistration{
+    Shell::Get()->glanceables_controller()->UpdateClientsRegistration(
+        account_id_, GlanceablesController::ClientsRegistration{
                          .classroom_client = &classroom_client_});
-    ASSERT_TRUE(
-        Shell::Get()->glanceables_v2_controller()->GetClassroomClient());
+    ASSERT_TRUE(Shell::Get()->glanceables_controller()->GetClassroomClient());
 
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);

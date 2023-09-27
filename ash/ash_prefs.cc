@@ -23,7 +23,7 @@
 #include "ash/detachable_base/detachable_base_handler.h"
 #include "ash/display/display_prefs.h"
 #include "ash/display/privacy_screen_controller.h"
-#include "ash/glanceables/glanceables_v2_controller.h"
+#include "ash/glanceables/glanceables_controller.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/ui/login_expanded_public_account_view.h"
@@ -121,7 +121,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
   FocusModeController::RegisterProfilePrefs(registry);
   FullscreenController::RegisterProfilePrefs(registry);
   GeolocationController::RegisterProfilePrefs(registry);
-  GlanceablesV2Controller::RegisterUserProfilePrefs(registry);
+  GlanceablesController::RegisterUserProfilePrefs(registry);
   holding_space_prefs::RegisterProfilePrefs(registry);
   HotspotInfoCache::RegisterProfilePrefs(registry);
   InputDeviceSettingsControllerImpl::RegisterProfilePrefs(registry);

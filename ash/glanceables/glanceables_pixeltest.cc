@@ -6,7 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
-#include "ash/glanceables/glanceables_v2_controller.h"
+#include "ash/glanceables/glanceables_controller.h"
 #include "ash/glanceables/tasks/fake_glanceables_tasks_client.h"
 #include "ash/glanceables/tasks/glanceables_task_view.h"
 #include "ash/shelf/shelf.h"
@@ -53,15 +53,15 @@ class GlanceablesPixelTest : public AshTestBase {
     ASSERT_TRUE(base::Time::FromString(due_date, &date));
     fake_glanceables_tasks_client_ =
         std::make_unique<FakeGlanceablesTasksClient>(date);
-    Shell::Get()->glanceables_v2_controller()->UpdateClientsRegistration(
-        account_id_, GlanceablesV2Controller::ClientsRegistration{
+    Shell::Get()->glanceables_controller()->UpdateClientsRegistration(
+        account_id_, GlanceablesController::ClientsRegistration{
                          .tasks_client = fake_glanceables_tasks_client_.get()});
   }
 
   // AshTestBase:
   void TearDown() override {
-    Shell::Get()->glanceables_v2_controller()->UpdateClientsRegistration(
-        account_id_, GlanceablesV2Controller::ClientsRegistration{});
+    Shell::Get()->glanceables_controller()->UpdateClientsRegistration(
+        account_id_, GlanceablesController::ClientsRegistration{});
     widget_.reset();
     AshTestBase::TearDown();
   }

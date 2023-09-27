@@ -12,7 +12,7 @@
 #include "ash/glanceables/classroom/glanceables_classroom_client.h"
 #include "ash/glanceables/classroom/glanceables_classroom_types.h"
 #include "ash/glanceables/common/glanceables_progress_bar_view.h"
-#include "ash/glanceables/glanceables_v2_controller.h"
+#include "ash/glanceables/glanceables_controller.h"
 #include "ash/shell.h"
 #include "ash/style/combobox.h"
 #include "ash/system/tray/detailed_view_delegate.h"
@@ -129,7 +129,7 @@ void ClassroomBubbleTeacherView::SelectedAssignmentListChanged(
         base::UserMetricsAction("Glanceables_Classroom_SelectedListChanged"));
   }
   auto* const client =
-      Shell::Get()->glanceables_v2_controller()->GetClassroomClient();
+      Shell::Get()->glanceables_controller()->GetClassroomClient();
   if (!client) {
     // Hide this bubble when no classroom client exists.
     SetVisible(false);

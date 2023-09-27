@@ -12,7 +12,7 @@
 #include "ash/glanceables/classroom/glanceables_classroom_types.h"
 #include "ash/glanceables/common/glanceables_list_footer_view.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
-#include "ash/glanceables/glanceables_v2_controller.h"
+#include "ash/glanceables/glanceables_controller.h"
 #include "ash/glanceables/tasks/fake_glanceables_tasks_client.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
@@ -241,9 +241,9 @@ class DateTrayTest
           std::make_unique<TestGlanceablesClassroomClient>();
       fake_glanceables_tasks_client_ =
           std::make_unique<FakeGlanceablesTasksClient>(base::Time::Now());
-      Shell::Get()->glanceables_v2_controller()->UpdateClientsRegistration(
+      Shell::Get()->glanceables_controller()->UpdateClientsRegistration(
           account_id_,
-          GlanceablesV2Controller::ClientsRegistration{
+          GlanceablesController::ClientsRegistration{
               .classroom_client = glanceables_classroom_client_.get(),
               .tasks_client = fake_glanceables_tasks_client_.get()});
     }
@@ -327,8 +327,8 @@ class DateTrayTest
   }
 
   void RemoveGlanceablesClients() {
-    Shell::Get()->glanceables_v2_controller()->UpdateClientsRegistration(
-        account_id_, GlanceablesV2Controller::ClientsRegistration{
+    Shell::Get()->glanceables_controller()->UpdateClientsRegistration(
+        account_id_, GlanceablesController::ClientsRegistration{
                          .classroom_client = nullptr, .tasks_client = nullptr});
   }
 

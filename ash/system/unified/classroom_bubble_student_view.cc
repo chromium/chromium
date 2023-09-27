@@ -11,8 +11,8 @@
 
 #include "ash/glanceables/classroom/glanceables_classroom_client.h"
 #include "ash/glanceables/classroom/glanceables_classroom_types.h"
+#include "ash/glanceables/glanceables_controller.h"
 #include "ash/glanceables/glanceables_metrics.h"
-#include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/combobox.h"
@@ -162,7 +162,7 @@ void ClassroomBubbleStudentView::OnSeeAllPressed() {
 void ClassroomBubbleStudentView::SelectedAssignmentListChanged(
     bool initial_update) {
   auto* const client =
-      Shell::Get()->glanceables_v2_controller()->GetClassroomClient();
+      Shell::Get()->glanceables_controller()->GetClassroomClient();
   if (!client) {
     // Hide this bubble when no classroom client exists.
     SetVisible(false);

@@ -9,7 +9,7 @@
 #include "ash/glanceables/classroom/fake_glanceables_classroom_client.h"
 #include "ash/glanceables/classroom/glanceables_classroom_item_view.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
-#include "ash/glanceables/glanceables_v2_controller.h"
+#include "ash/glanceables/glanceables_controller.h"
 #include "ash/glanceables/tasks/fake_glanceables_tasks_client.h"
 #include "ash/glanceables/tasks/glanceables_task_view.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -91,8 +91,8 @@ views::Label* FindMenuItemLabelWithString(const std::u16string& label) {
 
 class GlanceablesV2BrowserTest : public InProcessBrowserTest {
  public:
-  GlanceablesV2Controller* glanceables_controller() {
-    return Shell::Get()->glanceables_v2_controller();
+  GlanceablesController* glanceables_controller() {
+    return Shell::Get()->glanceables_controller();
   }
 
   void SetUpOnMainThread() override {
@@ -108,12 +108,12 @@ class GlanceablesV2BrowserTest : public InProcessBrowserTest {
     fake_glanceables_classroom_client_ =
         std::make_unique<FakeGlanceablesClassroomClient>();
 
-    Shell::Get()->glanceables_v2_controller()->UpdateClientsRegistration(
+    Shell::Get()->glanceables_controller()->UpdateClientsRegistration(
         account_id_,
-        GlanceablesV2Controller::ClientsRegistration{
+        GlanceablesController::ClientsRegistration{
             .classroom_client = fake_glanceables_classroom_client_.get(),
             .tasks_client = fake_glanceables_tasks_client_.get()});
-    Shell::Get()->glanceables_v2_controller()->OnActiveUserSessionChanged(
+    Shell::Get()->glanceables_controller()->OnActiveUserSessionChanged(
         account_id_);
 
     date_tray_ = StatusAreaWidgetTestHelper::GetStatusAreaWidget()->date_tray();

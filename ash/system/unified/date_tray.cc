@@ -6,7 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/tray_background_view_catalog.h"
-#include "ash/glanceables/glanceables_v2_controller.h"
+#include "ash/glanceables/glanceables_controller.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -82,8 +82,8 @@ void DateTray::ShowBubble() {
     return;
   }
 
-  GlanceablesV2Controller* const glanceables_controller =
-      ash::Shell::Get()->glanceables_v2_controller();
+  GlanceablesController* const glanceables_controller =
+      ash::Shell::Get()->glanceables_controller();
   if (glanceables_controller &&
       glanceables_controller->AreGlanceablesAvailable()) {
     ShowGlanceableBubble(/*from_keyboard=*/false);
@@ -140,8 +140,8 @@ void DateTray::OnButtonPressed(const ui::Event& event) {
     return;
   }
 
-  GlanceablesV2Controller* const glanceables_controller =
-      ash::Shell::Get()->glanceables_v2_controller();
+  GlanceablesController* const glanceables_controller =
+      ash::Shell::Get()->glanceables_controller();
   if (glanceables_controller &&
       glanceables_controller->AreGlanceablesAvailable()) {
     // Hide the unified_system_tray_ bubble.

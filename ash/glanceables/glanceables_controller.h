@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_GLANCEABLES_GLANCEABLES_V2_CONTROLLER_H_
-#define ASH_GLANCEABLES_GLANCEABLES_V2_CONTROLLER_H_
+#ifndef ASH_GLANCEABLES_GLANCEABLES_CONTROLLER_H_
+#define ASH_GLANCEABLES_GLANCEABLES_CONTROLLER_H_
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
@@ -20,9 +20,7 @@ class GlanceablesClassroomClient;
 class GlanceablesTasksClient;
 
 // Root glanceables controller.
-// TODO(b/270948434): Remove "V2" from the name once `GlanceablesController`
-// is removed.
-class ASH_EXPORT GlanceablesV2Controller : public SessionObserver {
+class ASH_EXPORT GlanceablesController : public SessionObserver {
  public:
   // Convenience wrapper to pass all clients from browser to ash at once.
   struct ClientsRegistration {
@@ -32,10 +30,10 @@ class ASH_EXPORT GlanceablesV2Controller : public SessionObserver {
         tasks_client = nullptr;
   };
 
-  GlanceablesV2Controller();
-  GlanceablesV2Controller(const GlanceablesV2Controller&) = delete;
-  GlanceablesV2Controller& operator=(const GlanceablesV2Controller&) = delete;
-  ~GlanceablesV2Controller() override;
+  GlanceablesController();
+  GlanceablesController(const GlanceablesController&) = delete;
+  GlanceablesController& operator=(const GlanceablesController&) = delete;
+  ~GlanceablesController() override;
 
   // Registers syncable user profile prefs with the specified `registry`.
   static void RegisterUserProfilePrefs(PrefRegistrySimple* registry);
@@ -96,4 +94,4 @@ class ASH_EXPORT GlanceablesV2Controller : public SessionObserver {
 
 }  // namespace ash
 
-#endif  // ASH_GLANCEABLES_GLANCEABLES_V2_CONTROLLER_H_
+#endif  // ASH_GLANCEABLES_GLANCEABLES_CONTROLLER_H_

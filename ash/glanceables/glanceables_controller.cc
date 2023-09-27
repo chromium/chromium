@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/glanceables/glanceables_v2_controller.h"
+#include "ash/glanceables/glanceables_controller.h"
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/glanceables/classroom/glanceables_classroom_client.h"
@@ -18,18 +18,18 @@
 
 namespace ash {
 
-GlanceablesV2Controller::GlanceablesV2Controller() {
+GlanceablesController::GlanceablesController() {
   DCHECK(SessionController::Get());
   SessionController::Get()->AddObserver(this);
 }
 
-GlanceablesV2Controller::~GlanceablesV2Controller() {
+GlanceablesController::~GlanceablesController() {
   DCHECK(SessionController::Get());
   SessionController::Get()->RemoveObserver(this);
 }
 
 // static
-void GlanceablesV2Controller::RegisterUserProfilePrefs(
+void GlanceablesController::RegisterUserProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kGlanceablesEnabled, true);
   ClassroomBubbleStudentView::RegisterUserProfilePrefs(registry);
@@ -37,42 +37,41 @@ void GlanceablesV2Controller::RegisterUserProfilePrefs(
 }
 
 // static
-void GlanceablesV2Controller::ClearUserStatePrefs(PrefService* prefs) {
+void GlanceablesController::ClearUserStatePrefs(PrefService* prefs) {
   ClassroomBubbleStudentView::ClearUserStatePrefs(prefs);
   TasksComboboxModel::ClearUserStatePrefs(prefs);
 }
 
-void GlanceablesV2Controller::OnActiveUserSessionChanged(
+void GlanceablesController::OnActiveUserSessionChanged(
     const AccountId& account_id) {
   active_account_id_ = account_id;
   bubble_shown_count_ = 0;
   login_time_ = base::Time::Now();
 }
 
-bool GlanceablesV2Controller::AreGlanceablesAvailable() const {
+bool GlanceablesController::AreGlanceablesAvailable() const {
   return GetClassroomClient() != nullptr || GetTasksClient() != nullptr;
 }
 
-void GlanceablesV2Controller::UpdateClientsRegistration(
+void GlanceablesController::UpdateClientsRegistration(
     const AccountId& account_id,
     const ClientsRegistration& registration) {
   clients_registry_.insert_or_assign(account_id, registration);
 }
 
-GlanceablesClassroomClient* GlanceablesV2Controller::GetClassroomClient()
-    const {
+GlanceablesClassroomClient* GlanceablesController::GetClassroomClient() const {
   const auto iter = clients_registry_.find(active_account_id_);
   return iter != clients_registry_.end() ? iter->second.classroom_client.get()
                                          : nullptr;
 }
 
-GlanceablesTasksClient* GlanceablesV2Controller::GetTasksClient() const {
+GlanceablesTasksClient* GlanceablesController::GetTasksClient() const {
   const auto iter = clients_registry_.find(active_account_id_);
   return iter != clients_registry_.end() ? iter->second.tasks_client.get()
                                          : nullptr;
 }
 
-void GlanceablesV2Controller::NotifyGlanceablesBubbleClosed() {
+void GlanceablesController::NotifyGlanceablesBubbleClosed() {
   for (auto& clients : clients_registry_) {
     if (clients.second.classroom_client) {
       clients.second.classroom_client->OnGlanceablesBubbleClosed();
@@ -85,7 +84,7 @@ void GlanceablesV2Controller::NotifyGlanceablesBubbleClosed() {
   RecordTotalShowTime(base::TimeTicks::Now() - last_bubble_show_time_);
 }
 
-void GlanceablesV2Controller::RecordGlanceablesBubbleShowTime(
+void GlanceablesController::RecordGlanceablesBubbleShowTime(
     base::TimeTicks bubble_show_timestamp) {
   last_bubble_show_time_ = base::TimeTicks::Now();
 

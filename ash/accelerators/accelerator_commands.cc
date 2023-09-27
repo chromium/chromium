@@ -22,7 +22,7 @@
 #include "ash/focus_cycler.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
-#include "ash/glanceables/glanceables_v2_controller.h"
+#include "ash/glanceables/glanceables_controller.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/media/media_controller_impl.h"
@@ -1270,8 +1270,8 @@ void ToggleCalendar() {
       RootWindowController::ForWindow(target_root)->GetStatusAreaWidget();
 
   DateTray* date_tray = status_area_widget->date_tray();
-  GlanceablesV2Controller* const glanceables_controller =
-      Shell::Get()->glanceables_v2_controller();
+  GlanceablesController* const glanceables_controller =
+      Shell::Get()->glanceables_controller();
   if (glanceables_controller &&
       glanceables_controller->AreGlanceablesAvailable()) {
     if (date_tray->is_active()) {
