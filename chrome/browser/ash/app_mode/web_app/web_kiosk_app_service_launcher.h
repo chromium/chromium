@@ -15,11 +15,11 @@
 #include "chrome/browser/chromeos/app_mode/kiosk_app_service_launcher.h"
 #include "chrome/browser/chromeos/app_mode/web_kiosk_app_installer.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom-forward.h"
 #include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom-shared.h"
 #include "components/account_id/account_id.h"
+#include "components/webapps/common/web_app_id.h"
 
 class Profile;
 
@@ -58,7 +58,7 @@ class WebKioskAppServiceLauncher : public KioskAppLauncher {
  private:
   // `KioskAppServiceLauncher` callbacks.
   void OnWebAppInitialized();
-  void NotifyAppPrepared(const absl::optional<web_app::AppId>& app_id);
+  void NotifyAppPrepared(const absl::optional<webapps::AppId>& app_id);
   void OnAppLaunched(bool success);
   void OnAppBecomesVisible();
 
@@ -66,10 +66,10 @@ class WebKioskAppServiceLauncher : public KioskAppLauncher {
       const GURL& url,
       chromeos::WebKioskAppInstaller::InstallStateCallback callback);
   void CheckWhetherNetworkIsRequired(crosapi::mojom::WebKioskInstallState state,
-                                     const absl::optional<web_app::AppId>& id);
+                                     const absl::optional<webapps::AppId>& id);
   void InstallAppInAsh();
   void InstallAppInLacros();
-  void OnInstallComplete(const absl::optional<web_app::AppId>& app_id);
+  void OnInstallComplete(const absl::optional<webapps::AppId>& app_id);
 
   // Get the current web application to be launched in the session.
   const WebKioskAppData* GetCurrentApp() const;

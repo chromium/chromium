@@ -11,9 +11,9 @@
 #include "base/functional/callback.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/image_model.h"
 
@@ -33,7 +33,7 @@ class WebKioskBrowserControllerBase : public web_app::AppBrowserController {
  public:
   WebKioskBrowserControllerBase(web_app::WebAppProvider& provider,
                                 Browser* browser,
-                                web_app::AppId app_id);
+                                webapps::AppId app_id);
   WebKioskBrowserControllerBase(const WebKioskBrowserControllerBase&) = delete;
   WebKioskBrowserControllerBase& operator=(
       const WebKioskBrowserControllerBase&) = delete;

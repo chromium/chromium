@@ -9,7 +9,7 @@ namespace ash {
 WebKioskBrowserControllerAsh::WebKioskBrowserControllerAsh(
     web_app::WebAppProvider& provider,
     Browser* browser,
-    web_app::AppId app_id,
+    webapps::AppId app_id,
     const ash::SystemWebAppDelegate* system_app)
     : WebKioskBrowserControllerBase(provider, browser, app_id),
       system_app_(system_app) {}

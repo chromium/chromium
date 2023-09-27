@@ -12,13 +12,13 @@
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/crosapi/mojom/web_kiosk_service.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "components/webapps/common/web_app_id.h"
 #include "components/webapps/common/web_page_metadata.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -35,7 +35,7 @@ const char kAppLaunchUrl[] = "https://example.com/launch";
 const char kManifestUrl[] = "https://example.com/manifest.json";
 const char16_t kAppTitle[] = u"app-title";
 
-absl::optional<web_app::AppId> app_id() {
+absl::optional<webapps::AppId> app_id() {
   return web_app::GenerateAppId(/*manifest_id=*/absl::nullopt,
                                 GURL(kAppLaunchUrl));
 }
@@ -64,9 +64,9 @@ class FakeWebKioskService : public crosapi::mojom::WebKioskService {
 
   void WaitUntilBound() { ASSERT_TRUE(bound_future_.Wait()); }
 
-  std::tuple<WebKioskInstallState, absl::optional<web_app::AppId>>
+  std::tuple<WebKioskInstallState, absl::optional<webapps::AppId>>
   GetWebKioskInstallState(const GURL& url) {
-    TestFuture<WebKioskInstallState, const absl::optional<web_app::AppId>&>
+    TestFuture<WebKioskInstallState, const absl::optional<webapps::AppId>&>
         future;
 
     installer_->GetWebKioskInstallState(url, future.GetCallback());
@@ -74,8 +74,8 @@ class FakeWebKioskService : public crosapi::mojom::WebKioskService {
     return future.Get();
   }
 
-  absl::optional<web_app::AppId> InstallWebKiosk(const GURL& url) {
-    TestFuture<const absl::optional<web_app::AppId>&> future;
+  absl::optional<webapps::AppId> InstallWebKiosk(const GURL& url) {
+    TestFuture<const absl::optional<webapps::AppId>&> future;
     installer_->InstallWebKiosk(url, future.GetCallback());
     return future.Get();
   }
@@ -121,7 +121,7 @@ class WebKioskInstallerLacrosTest : public testing::Test {
     info.title = kAppTitle;
   }
 
-  web_app::AppId CreateWebAppWithManifest() {
+  webapps::AppId CreateWebAppWithManifest() {
     const GURL install_url = GURL(kAppInstallUrl);
     const GURL manifest_url = GURL(kManifestUrl);
     const GURL start_url = GURL(kAppLaunchUrl);

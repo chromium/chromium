@@ -7,6 +7,8 @@
 
 #include "chrome/browser/chromeos/app_mode/web_kiosk_browser_controller_base.h"
 
+#include "components/webapps/common/web_app_id.h"
+
 namespace ash {
 
 class SystemWebAppDelegate;
@@ -17,7 +19,7 @@ class WebKioskBrowserControllerAsh
  public:
   WebKioskBrowserControllerAsh(web_app::WebAppProvider& provider,
                                Browser* browser,
-                               web_app::AppId app_id,
+                               webapps::AppId app_id,
                                const ash::SystemWebAppDelegate* system_app);
   WebKioskBrowserControllerAsh(const WebKioskBrowserControllerAsh&) = delete;
   WebKioskBrowserControllerAsh& operator=(const WebKioskBrowserControllerAsh&) =
