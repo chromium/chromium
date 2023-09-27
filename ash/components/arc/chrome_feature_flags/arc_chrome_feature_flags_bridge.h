@@ -22,7 +22,8 @@ class ArcBridgeService;
 // This class notifies the Chrome feature flag states to the ARC.
 class ArcChromeFeatureFlagsBridge
     : public KeyedService,
-      public ConnectionObserver<mojom::ChromeFeatureFlagsInstance> {
+      public ConnectionObserver<mojom::ChromeFeatureFlagsInstance>,
+      public mojom::ChromeFeatureFlagsHost {
  public:
   // Returns singleton instance for the given BrowserContext,
   // or nullptr if the browser |context| is not allowed to use ARC.
@@ -44,6 +45,33 @@ class ArcChromeFeatureFlagsBridge
   void OnConnectionReady() override;
 
   static void EnsureFactoryBuilt();
+
+  // mojom::ChromeFeatureFlagHost overrides:
+  // Get feature flag enabled / disabled state by feature name. If the feature
+  // is not ARC related feature, it will return `null_opt`.
+  void IsFeatureEnabled(const std::string& feature_name,
+                        IsFeatureEnabledCallback callback) override;
+
+  // Get int feature parameters by feature name and parameter name. If the
+  // feature parameter doesn't exist, it will return `null_opt`.
+  void GetIntParamByFeatureAndParamName(
+      const std::string& feature_name,
+      const std::string& param_name,
+      GetIntParamByFeatureAndParamNameCallback callback) override;
+
+  // Get dobule feature parameters by feature name and parameter name. If the
+  // feature parameter doesn't exist, it will return `null_opt`.
+  void GetDoubleParamByFeatureAndParamName(
+      const std::string& feature_name,
+      const std::string& param_name,
+      GetDoubleParamByFeatureAndParamNameCallback callback) override;
+
+  // Get bool feature parameters by feature name and parameter name. If the
+  // feature parameter doesn't exist, it will return `null_opt`.
+  void GetBoolParamByFeatureAndParamName(
+      const std::string& feature_name,
+      const std::string& param_name,
+      GetBoolParamByFeatureAndParamNameCallback callback) override;
 
  private:
   THREAD_CHECKER(thread_checker_);

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 6
+// Next MinVersion: 7
 
 module arc.mojom;
 
@@ -40,6 +40,33 @@ struct FeatureFlags {
 //
 // Next method ID: 2
 interface ChromeFeatureFlagsInstance {
+  // Notifies ARC which Chrome feature flag's status.
+  Init@0(pending_remote<ChromeFeatureFlagsHost> host_remote) => ();
   // Notifies ARC which Chrome feature flag is enabled/disabled.
   NotifyFeatureFlags@1(FeatureFlags flags);
+};
+
+// This host provides methods for ARC to query the ARC related feature flag
+// state and feature parameter value.
+//
+// Next method ID: 5
+interface ChromeFeatureFlagsHost {
+  // Get feature flag enabled / disabled state by feature name. If the feature
+  // is not ARC related feature, it will return `null_opt`.
+  IsFeatureEnabled@1(string feature_name) => (bool? enable);
+
+  // Get int feature parameters by feature name and parameter name. If the feature
+  // parameter doesn't exist, it will return `null_opt`.
+  GetIntParamByFeatureAndParamName@2(string feature_name,
+                                     string param_name) => (int32? int_parameter);
+
+  // Get dobule feature parameters by feature name and parameter name. If the feature
+  // parameter doesn't exist, it will return `null_opt`.
+  GetDoubleParamByFeatureAndParamName@3(string feature_name,
+                                        string param_name) => (double? double_parameter);
+
+  // Get bool feature parameters by feature name and parameter name. If the feature
+  // parameter doesn't exist, it will return `null_opt`.
+  GetBoolParamByFeatureAndParamName@4(string feature_name,
+                                      string param_name) => (bool? bool_parameter);
 };
