@@ -339,7 +339,7 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
     // function returns.
     auto* offset_ptr = ReservationOffsetPointer(reservation_start);
     [[maybe_unused]] const auto* offset_ptr_end =
-        GetReservationOffsetTableEnd(reservation_start + reservation_size);
+        GetReservationOffsetTableEnd(reservation_start);
 
     // |raw_size| > MaxBucketed(). So |reservation_size| > 0.
     PA_DCHECK(reservation_size > 0);
