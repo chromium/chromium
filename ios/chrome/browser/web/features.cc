@@ -10,7 +10,7 @@ namespace web {
 
 BASE_FEATURE(kBrowserLockdownModeAvailable,
              "BrowserLockdownModeAvailable",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsBrowserLockdownModeEnabled() {
   return base::FeatureList::IsEnabled(kBrowserLockdownModeAvailable);
