@@ -889,11 +889,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                    originator_client_item_id:originator_client_item_id];
 }
 
-- (void)addFakeSyncServerTypedURL:(const GURL&)URL {
-  NSString* spec = base::SysUTF8ToNSString(URL.spec());
-  [ChromeEarlGreyAppInterface addFakeSyncServerTypedURL:spec];
-}
-
 - (void)addFakeSyncServerHistoryVisit:(const GURL&)URL {
   [ChromeEarlGreyAppInterface
       addFakeSyncServerHistoryVisit:net::NSURLWithGURL(URL)];

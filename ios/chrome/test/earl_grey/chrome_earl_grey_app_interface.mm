@@ -811,10 +811,6 @@ NSString* SerializedValue(const base::Value* value) {
       base::SysNSStringToUTF8(originator_client_item_id));
 }
 
-+ (void)addFakeSyncServerTypedURL:(NSString*)URL {
-  chrome_test_util::AddTypedURLToFakeSyncServer(base::SysNSStringToUTF8(URL));
-}
-
 + (void)addFakeSyncServerHistoryVisit:(NSURL*)URL {
   chrome_test_util::AddHistoryVisitToFakeSyncServer(net::GURLWithNSURL(URL));
 }

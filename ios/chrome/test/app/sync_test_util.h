@@ -115,9 +115,6 @@ BOOL VerifyHistoryOnSyncServer(const std::multiset<GURL>& expected_urls,
 // Adds typed URL to HistoryService.
 void AddTypedURLToClient(const GURL& url);
 
-// Injects a typed URL into the fake sync server.
-void AddTypedURLToFakeSyncServer(const std::string& url);
-
 // Injects a HISTORY visit into the fake sync server.
 void AddHistoryVisitToFakeSyncServer(const GURL& url);
 
@@ -133,9 +130,6 @@ BOOL IsUrlPresentOnClient(const GURL& url,
 
 // Deletes typed URL from HistoryService.
 void DeleteTypedUrlFromClient(const GURL& url);
-
-// Deletes typed URL on FakeServer by injecting a tombstone.
-void DeleteTypedUrlFromFakeSyncServer(std::string url);
 
 // Adds a bookmark with a sync passphrase. The sync server will need the sync
 // passphrase to start.

@@ -394,9 +394,6 @@
                      originator_client_item_id:
                          (NSString*)originator_client_item_id;
 
-// Injects a typed URL to the sync FakeServer.
-+ (void)addFakeSyncServerTypedURL:(NSString*)URL;
-
 // Injects a HISTORY visit to the sync FakeServer.
 + (void)addFakeSyncServerHistoryVisit:(NSURL*)URL;
 
