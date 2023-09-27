@@ -37,11 +37,13 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom-shared.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_type.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
+#include "third_party/blink/public/platform/web_string.h"
 
 #include <memory>
 
 namespace blink {
 
+class AssociatedInterfaceRegistry;
 struct WebServiceWorkerError;
 class WebURLResponse;
 
@@ -76,6 +78,22 @@ class WebServiceWorkerContextProxy {
   virtual mojom::ServiceWorkerFetchHandlerType FetchHandlerType() = 0;
   virtual bool HasHidEventHandlers() = 0;
   virtual bool HasUsbEventHandlers() = 0;
+
+  // Passes an associated endpoint handle to the remote end to be bound to a
+  // Channel-associated interface named |name|.
+  virtual void GetRemoteAssociatedInterface(
+      const WebString& name,
+      mojo::ScopedInterfaceEndpointHandle handle) = 0;
+
+  template <typename Interface>
+  void GetRemoteAssociatedInterface(
+      mojo::PendingAssociatedReceiver<Interface> receiver) {
+    GetRemoteAssociatedInterface(WebString::FromASCII(Interface::Name_),
+                                 receiver.PassHandle());
+  }
+
+  virtual blink::AssociatedInterfaceRegistry&
+  GetAssociatedInterfaceRegistry() = 0;
 };
 
 }  // namespace blink

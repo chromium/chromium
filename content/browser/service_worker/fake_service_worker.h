@@ -58,6 +58,10 @@ class FakeServiceWorker : public blink::mojom::ServiceWorker {
   void InitializeGlobalScope(
       mojo::PendingAssociatedRemote<blink::mojom::ServiceWorkerHost>
           service_worker_host,
+      mojo::PendingAssociatedRemote<blink::mojom::AssociatedInterfaceProvider>
+          associated_interfaces_from_browser,
+      mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterfaceProvider>
+          associated_interfaces_to_browser,
       blink::mojom::ServiceWorkerRegistrationObjectInfoPtr registration_info,
       blink::mojom::ServiceWorkerObjectInfoPtr service_worker_info,
       FetchHandlerExistence fetch_handler_existence,

@@ -391,6 +391,14 @@ ServiceWorkerGlobalScope::GetInstalledScriptsManager() {
   return installed_scripts_manager_.get();
 }
 
+void ServiceWorkerGlobalScope::GetAssociatedInterface(
+    const String& name,
+    mojo::PendingAssociatedReceiver<mojom::blink::AssociatedInterface>
+        receiver) {
+  mojo::ScopedInterfaceEndpointHandle handle = receiver.PassHandle();
+  associated_inteface_registy_.TryBindInterface(name.Utf8(), &handle);
+}
+
 void ServiceWorkerGlobalScope::DidEvaluateScript() {
   DCHECK(!did_evaluate_script_);
   did_evaluate_script_ = true;
@@ -403,6 +411,11 @@ void ServiceWorkerGlobalScope::DidEvaluateScript() {
   base::UmaHistogramCounts1000("ServiceWorker.NumberOfRegisteredFetchHandlers",
                                number_of_fetch_handlers);
   event_queue_->Start();
+}
+
+AssociatedInterfaceRegistry&
+ServiceWorkerGlobalScope::GetAssociatedInterfaceRegistry() {
+  return associated_inteface_registy_;
 }
 
 void ServiceWorkerGlobalScope::DidReceiveResponseForClassicScript(
@@ -788,6 +801,8 @@ void ServiceWorkerGlobalScope::Trace(Visitor* visitor) const {
   visitor->Trace(fetch_response_callbacks_);
   visitor->Trace(pending_preload_fetch_events_);
   visitor->Trace(controller_receivers_);
+  visitor->Trace(remote_associated_interfaces_);
+  visitor->Trace(associated_interfaces_receiver_);
   WorkerGlobalScope::Trace(visitor);
 }
 
@@ -1645,6 +1660,10 @@ void ServiceWorkerGlobalScope::Clone(
 void ServiceWorkerGlobalScope::InitializeGlobalScope(
     mojo::PendingAssociatedRemote<mojom::blink::ServiceWorkerHost>
         service_worker_host,
+    mojo::PendingAssociatedRemote<mojom::blink::AssociatedInterfaceProvider>
+        associated_interfaces_from_browser,
+    mojo::PendingAssociatedReceiver<mojom::blink::AssociatedInterfaceProvider>
+        associated_interfaces_to_browser,
     mojom::blink::ServiceWorkerRegistrationObjectInfoPtr registration_info,
     mojom::blink::ServiceWorkerObjectInfoPtr service_worker_info,
     mojom::blink::FetchHandlerExistence fetch_hander_existence,
@@ -1659,6 +1678,13 @@ void ServiceWorkerGlobalScope::InitializeGlobalScope(
   DCHECK(!service_worker_host_.is_bound());
   service_worker_host_.Bind(std::move(service_worker_host),
                             GetTaskRunner(TaskType::kInternalDefault));
+
+  remote_associated_interfaces_.Bind(
+      std::move(associated_interfaces_from_browser),
+      GetTaskRunner(TaskType::kInternalDefault));
+  associated_interfaces_receiver_.Bind(
+      std::move(associated_interfaces_to_browser),
+      GetTaskRunner(TaskType::kInternalDefault));
 
   // Set ServiceWorkerGlobalScope#registration.
   DCHECK_NE(registration_info->registration_id,
@@ -2709,6 +2735,14 @@ bool ServiceWorkerGlobalScope::HasHidEventHandlers() {
 bool ServiceWorkerGlobalScope::HasUsbEventHandlers() {
   USB* usb = Supplement<NavigatorBase>::From<USB>(*navigator());
   return usb ? usb->HasEventListeners() : false;
+}
+
+void ServiceWorkerGlobalScope::GetRemoteAssociatedInterface(
+    const String& name,
+    mojo::ScopedInterfaceEndpointHandle handle) {
+  remote_associated_interfaces_->GetAssociatedInterface(
+      name, mojo::PendingAssociatedReceiver<mojom::blink::AssociatedInterface>(
+                std::move(handle)));
 }
 
 bool ServiceWorkerGlobalScope::SetAttributeEventListener(

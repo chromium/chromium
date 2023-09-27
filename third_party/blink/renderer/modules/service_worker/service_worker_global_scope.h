@@ -39,7 +39,9 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/data_element.h"
 #include "services/network/public/mojom/network_context.mojom-blink-forward.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/associated_interfaces/associated_interfaces.mojom-blink.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom-blink.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom-blink.h"
@@ -54,6 +56,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver_set.h"
@@ -86,7 +89,8 @@ struct WebServiceWorkerObjectInfo;
 class MODULES_EXPORT ServiceWorkerGlobalScope final
     : public WorkerGlobalScope,
       public mojom::blink::ControllerServiceWorker,
-      public mojom::blink::ServiceWorker {
+      public mojom::blink::ServiceWorker,
+      public mojom::blink::AssociatedInterfaceProvider {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -148,8 +152,16 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   void Dispose() override;
   InstalledScriptsManager* GetInstalledScriptsManager() override;
 
+  // Implements blink::mojom::AssociatedInterfaceProvider.
+  void GetAssociatedInterface(
+      const String& name,
+      mojo::PendingAssociatedReceiver<mojom::blink::AssociatedInterface>
+          receiver) override;
+
   // Called when the main worker script is evaluated.
   void DidEvaluateScript();
+
+  AssociatedInterfaceRegistry& GetAssociatedInterfaceRegistry();
 
   // ServiceWorkerGlobalScope.idl
   ServiceWorkerClients* clients();
@@ -336,6 +348,9 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
 
   bool HasUsbEventHandlers();
 
+  void GetRemoteAssociatedInterface(const String& name,
+                                    mojo::ScopedInterfaceEndpointHandle handle);
+
   // EventTarget
   bool SetAttributeEventListener(const AtomicString& event_type,
                                  EventListener* listener) override;
@@ -438,6 +453,10 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   void InitializeGlobalScope(
       mojo::PendingAssociatedRemote<mojom::blink::ServiceWorkerHost>
           service_worker_host,
+      mojo::PendingAssociatedRemote<mojom::blink::AssociatedInterfaceProvider>
+          associated_interfaces_from_browser,
+      mojo::PendingAssociatedReceiver<mojom::blink::AssociatedInterfaceProvider>
+          associated_interfaces_to_browser,
       mojom::blink::ServiceWorkerRegistrationObjectInfoPtr registration_info,
       mojom::blink::ServiceWorkerObjectInfoPtr service_worker_info,
       mojom::blink::FetchHandlerExistence fetch_handler_existence,
@@ -752,6 +771,14 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   // key. As a workaround uses WTF::String as a key instead.
   HashMap<String, mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>>
       race_network_request_loader_factories_;
+
+  HeapMojoAssociatedRemote<mojom::blink::AssociatedInterfaceProvider>
+      remote_associated_interfaces_{this};
+
+  HeapMojoAssociatedReceiver<mojom::blink::AssociatedInterfaceProvider,
+                             ServiceWorkerGlobalScope>
+      associated_interfaces_receiver_{this, this};
+  AssociatedInterfaceRegistry associated_inteface_registy_;
 };
 
 template <>

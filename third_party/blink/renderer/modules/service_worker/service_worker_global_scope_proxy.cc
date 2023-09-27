@@ -310,6 +310,17 @@ bool ServiceWorkerGlobalScopeProxy::HasUsbEventHandlers() {
   return WorkerGlobalScope()->HasUsbEventHandlers();
 }
 
+void ServiceWorkerGlobalScopeProxy::GetRemoteAssociatedInterface(
+    const WebString& name,
+    mojo::ScopedInterfaceEndpointHandle handle) {
+  WorkerGlobalScope()->GetRemoteAssociatedInterface(name, std::move(handle));
+}
+
+blink::AssociatedInterfaceRegistry&
+ServiceWorkerGlobalScopeProxy::GetAssociatedInterfaceRegistry() {
+  return WorkerGlobalScope()->GetAssociatedInterfaceRegistry();
+}
+
 WebServiceWorkerContextClient& ServiceWorkerGlobalScopeProxy::Client() const {
   DCHECK(client_);
   return *client_;

@@ -1164,7 +1164,21 @@ void ServiceWorkerVersion::Doom() {
 void ServiceWorkerVersion::InitializeGlobalScope() {
   TRACE_EVENT0("ServiceWorker", "ServiceWorkerVersion::InitializeGlobalScope");
   receiver_.reset();
-  receiver_.Bind(service_worker_host_.InitWithNewEndpointAndPassReceiver());
+  associated_interface_receiver_.reset();
+  mojo::PendingAssociatedRemote<blink::mojom::ServiceWorkerHost>
+      service_worker_host;
+  receiver_.Bind(service_worker_host.InitWithNewEndpointAndPassReceiver());
+
+  mojo::PendingAssociatedRemote<blink::mojom::AssociatedInterfaceProvider>
+      associated_remote_from_browser;
+  associated_interface_receiver_.Bind(
+      associated_remote_from_browser.InitWithNewEndpointAndPassReceiver());
+
+  mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterfaceProvider>
+      associated_receiver_to_renderer;
+  associated_interface_provider_ =
+      std::make_unique<blink::AssociatedInterfaceProvider>(
+          associated_receiver_to_renderer.InitWithNewEndpointAndPassRemote());
 
   scoped_refptr<ServiceWorkerRegistration> registration =
       context_->GetLiveRegistration(registration_id_);
@@ -1174,7 +1188,8 @@ void ServiceWorkerVersion::InitializeGlobalScope() {
   DCHECK(worker_host_);
   DCHECK(service_worker_remote_);
   service_worker_remote_->InitializeGlobalScope(
-      std::move(service_worker_host_),
+      std::move(service_worker_host), std::move(associated_remote_from_browser),
+      std::move(associated_receiver_to_renderer),
       worker_host_->container_host()->CreateServiceWorkerRegistrationObjectInfo(
           std::move(registration)),
       worker_host_->container_host()->CreateServiceWorkerObjectInfoToSend(this),
@@ -1182,6 +1197,7 @@ void ServiceWorkerVersion::InitializeGlobalScope() {
       ancestor_frame_type_, key_);
 
   is_endpoint_ready_ = true;
+  associated_registry_ = std::make_unique<blink::AssociatedInterfaceRegistry>();
 }
 
 bool ServiceWorkerVersion::IsControlleeProcessID(int process_id) const {
@@ -2710,6 +2726,8 @@ void ServiceWorkerVersion::OnStoppedInternal(
   DCHECK(!controller_receiver_.is_valid());
   installed_scripts_sender_.reset();
   receiver_.reset();
+  associated_interface_receiver_.reset();
+  associated_interface_provider_.reset();
   pending_external_requests_.clear();
   worker_is_idle_on_renderer_ = true;
   worker_host_.reset();
@@ -2970,6 +2988,19 @@ bool ServiceWorkerVersion::IsStaticRouterEnabled() {
     return true;
   }
   return false;
+}
+
+void ServiceWorkerVersion::GetAssociatedInterface(
+    const std::string& name,
+    mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterface>
+        receiver) {
+  // `associated_interface_provider_receiver_` and `associated_registry_` are
+  // both reset at the same time, so we should never get a request for an
+  // associated interface when `associated_registry_` is not valid.
+  DCHECK(associated_registry_);
+
+  mojo::ScopedInterfaceEndpointHandle handle = receiver.PassHandle();
+  associated_registry_->TryBindInterface(name, &handle);
 }
 
 base::WeakPtr<ServiceWorkerVersion> ServiceWorkerVersion::GetWeakPtr() {

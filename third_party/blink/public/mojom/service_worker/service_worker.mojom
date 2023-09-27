@@ -10,6 +10,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "services/network/public/mojom/cookie_manager.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
+import "third_party/blink/public/mojom/associated_interfaces/associated_interfaces.mojom";
 import "third_party/blink/public/mojom/background_fetch/background_fetch.mojom";
 import "third_party/blink/public/mojom/devtools/console_message.mojom";
 import "third_party/blink/public/mojom/fetch/fetch_api_response.mojom";
@@ -195,6 +196,8 @@ interface ServiceWorker {
   // be notified to ReportingObservers registered with the global scope.
   InitializeGlobalScope(
       pending_associated_remote<ServiceWorkerHost> service_worker_host,
+      pending_associated_remote<blink.mojom.AssociatedInterfaceProvider> associated_interfaces_to_browser,
+      pending_associated_receiver<blink.mojom.AssociatedInterfaceProvider> associated_interfaces_from_browser,
       ServiceWorkerRegistrationObjectInfo registration_info,
       ServiceWorkerObjectInfo service_worker_info,
       FetchHandlerExistence fetch_handler_existence,

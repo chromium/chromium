@@ -1573,6 +1573,10 @@ class UpdateJobTestHelper : public EmbeddedWorkerTestHelper,
 
     void InitializeGlobalScope(
         mojo::PendingAssociatedRemote<blink::mojom::ServiceWorkerHost>,
+        mojo::PendingAssociatedRemote<
+            blink::mojom::AssociatedInterfaceProvider>,
+        mojo::PendingAssociatedReceiver<
+            blink::mojom::AssociatedInterfaceProvider>,
         blink::mojom::ServiceWorkerRegistrationObjectInfoPtr,
         blink::mojom::ServiceWorkerObjectInfoPtr,
         blink::mojom::FetchHandlerExistence,

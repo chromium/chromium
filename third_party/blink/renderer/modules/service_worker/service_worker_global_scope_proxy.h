@@ -108,6 +108,10 @@ class ServiceWorkerGlobalScopeProxy final : public WebServiceWorkerContextProxy,
   mojom::blink::ServiceWorkerFetchHandlerType FetchHandlerType() override;
   bool HasHidEventHandlers() override;
   bool HasUsbEventHandlers() override;
+  void GetRemoteAssociatedInterface(
+      const WebString& name,
+      mojo::ScopedInterfaceEndpointHandle handle) override;
+  blink::AssociatedInterfaceRegistry& GetAssociatedInterfaceRegistry() override;
 
   // WorkerReportingProxy overrides:
   void CountFeature(WebFeature) override;
