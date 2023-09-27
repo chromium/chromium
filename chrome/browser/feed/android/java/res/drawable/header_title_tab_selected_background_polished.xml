@@ -17,7 +17,7 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
 <item android:state_selected="true">
   <shape android:shape="rectangle">
     <corners android:radius="@dimen/feed_header_background_corner_radius_polished" />
-    <solid android:color="?attr/colorPrimaryContainer"/>
+    <solid android:color="@color/color_primary_with_alpha_15"/>
   </shape>
 </item>
 </selector>
