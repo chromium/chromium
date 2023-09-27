@@ -4604,6 +4604,25 @@
             ]
         }
     ],
+    "CrosBatterySaver": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "BatterySaverActivationChargePercent": "20",
+                        "BatterySaverNotificationBehavior": "kBSMAutoEnable"
+                    },
+                    "enable_features": [
+                        "CrosBatterySaver"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrosLazyLoginWebUI": [
         {
             "platforms": [
