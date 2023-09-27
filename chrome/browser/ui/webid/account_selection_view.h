@@ -30,6 +30,7 @@ class AccountSelectionView {
         content::IdentityRequestDialogController::DismissReason
             dismiss_reason) = 0;
     virtual void OnSigninToIdP() = 0;
+    virtual void OnMoreDetails() = 0;
     // The web page view containing the focused field.
     virtual gfx::NativeView GetNativeView() = 0;
     // The WebContents for the page.

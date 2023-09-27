@@ -671,14 +671,16 @@ class TestDialogController
     }
   }
 
-  void ShowErrorDialog(const std::string& top_frame_for_display,
-                       const absl::optional<std::string>& iframe_for_display,
-                       const std::string& idp_for_display,
-                       const blink::mojom::RpContext& rp_context,
-                       const IdentityProviderMetadata& idp_metadata,
-                       const absl::optional<TokenError>& error,
-                       IdentityRequestDialogController::DismissCallback
-                           dismiss_callback) override {
+  void ShowErrorDialog(
+      const std::string& top_frame_for_display,
+      const absl::optional<std::string>& iframe_for_display,
+      const std::string& idp_for_display,
+      const blink::mojom::RpContext& rp_context,
+      const IdentityProviderMetadata& idp_metadata,
+      const absl::optional<TokenError>& error,
+      IdentityRequestDialogController::DismissCallback dismiss_callback,
+      IdentityRequestDialogController::MoreDetailsCallback
+          more_details_callback) override {
     if (!state_) {
       return;
     }

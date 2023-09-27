@@ -187,6 +187,13 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
     }
 
     @Override
+    public void onMoreDetails() {
+        if (mNativeView != 0) {
+            AccountSelectionBridgeJni.get().onMoreDetails(mNativeView);
+        }
+    }
+
+    @Override
     public void onModalDialogClosed() {
         mAccountSelectionComponent.onModalDialogClosed();
     }
@@ -198,5 +205,6 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
         void onDismiss(long nativeAccountSelectionViewAndroid,
                 @IdentityRequestDialogDismissReason int dismissReason);
         void onSignInToIdp(long nativeAccountSelectionViewAndroid);
+        void onMoreDetails(long nativeAccountSelectionViewAndroid);
     }
 }

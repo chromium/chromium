@@ -753,16 +753,15 @@ void AccountSelectionBubbleView::ShowErrorDialog(
   // Add more details button.
   if (error && !error->url.is_empty()) {
     auto more_details_button = std::make_unique<views::MdTextButton>(
-        base::BindRepeating(&Observer::OnMoreDetailsButtonClicked,
-                            base::Unretained(observer_), error->url),
+        base::BindRepeating(&Observer::OnMoreDetails,
+                            base::Unretained(observer_)),
         l10n_util::GetStringUTF16(IDS_SIGNIN_ERROR_DIALOG_MORE_DETAILS_BUTTON));
     button_row->AddChildView(std::move(more_details_button));
   }
 
   // Add got it button.
   auto got_it_button = std::make_unique<views::MdTextButton>(
-      base::BindRepeating(&Observer::OnGotItButtonClicked,
-                          base::Unretained(observer_)),
+      base::BindRepeating(&Observer::OnGotIt, base::Unretained(observer_)),
       l10n_util::GetStringUTF16(IDS_SIGNIN_ERROR_DIALOG_GOT_IT_BUTTON));
   button_row->AddChildView(std::move(got_it_button));
 

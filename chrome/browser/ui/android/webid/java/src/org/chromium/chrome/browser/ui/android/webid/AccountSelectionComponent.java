@@ -42,6 +42,11 @@ public interface AccountSelectionComponent {
         void onSignInToIdp();
 
         /**
+         * Called when the user clicks on the more details button in an error dialog.
+         */
+        void onMoreDetails();
+
+        /**
          * Called on the opener when a modal dialog that it opened has been closed.
          */
         void onModalDialogClosed();

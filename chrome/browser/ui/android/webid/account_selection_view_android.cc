@@ -297,6 +297,10 @@ void AccountSelectionViewAndroid::OnSignInToIdp(JNIEnv* env) {
   delegate_->OnSigninToIdP();
 }
 
+void AccountSelectionViewAndroid::OnMoreDetails(JNIEnv* env) {
+  delegate_->OnMoreDetails();
+}
+
 bool AccountSelectionViewAndroid::MaybeCreateJavaObject() {
   if (delegate_->GetNativeView() == nullptr ||
       delegate_->GetNativeView()->GetWindowAndroid() == nullptr) {

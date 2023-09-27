@@ -53,8 +53,8 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.A
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties.Avatar;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ErrorButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ErrorProperties;
-import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.GotItButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.IdpSignInProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
@@ -97,6 +97,7 @@ public class AccountSelectionControllerTest {
     private static final GURL TEST_IDP_BRAND_ICON_URL = JUnitTestGURLs.RED_3;
     private static final GURL TEST_CONFIG_URL = JUnitTestGURLs.URL_2;
     private static final GURL TEST_ERROR_URL = JUnitTestGURLs.URL_2;
+    private static final GURL TEST_EMPTY_ERROR_URL = new GURL("");
 
     private static final Account ANA = new Account(
             "Ana", "ana@one.test", "Ana Doe", "Ana", TEST_PROFILE_PIC, /*isSignIn=*/true);
@@ -113,6 +114,8 @@ public class AccountSelectionControllerTest {
             new ClientIdMetadata(TEST_URL_TERMS_OF_SERVICE, TEST_URL_PRIVACY_POLICY);
     private static final IdentityCredentialTokenError TOKEN_ERROR =
             new IdentityCredentialTokenError(TEST_ERROR_CODE, TEST_ERROR_URL);
+    private static final IdentityCredentialTokenError TOKEN_ERROR_EMPTY_URL =
+            new IdentityCredentialTokenError(TEST_ERROR_CODE, TEST_EMPTY_ERROR_URL);
 
     private static final @Px int DESIRED_AVATAR_SIZE = 100;
 
@@ -539,18 +542,18 @@ public class AccountSelectionControllerTest {
     }
 
     @Test
-    public void testShowErrorDialog() {
+    public void testShowErrorDialogClickGotIt() {
         int count = 0;
         for (String rpContext : RP_CONTEXTS) {
             when(mMockBottomSheetController.requestShowContent(any(), anyBoolean()))
                     .thenReturn(true);
             mMediator.showErrorDialog(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1,
-                    TEST_ETLD_PLUS_ONE_2, IDP_METADATA, rpContext, TOKEN_ERROR);
+                    TEST_ETLD_PLUS_ONE_2, IDP_METADATA, rpContext, TOKEN_ERROR_EMPTY_URL);
             assertEquals(0, mSheetAccountItems.size());
             assertEquals(HeaderType.SIGN_IN_ERROR, mModel.get(ItemProperties.HEADER).get(TYPE));
 
-            // For error dialog, we expect header + error summary + error description + got it
-            // button
+            // For error dialog without an error URL, we expect header + error summary + error
+            // description + got it button
             assertEquals(4, countAllItems());
             assertTrue(containsItemOfType(mModel, ItemProperties.ERROR_SUMMARY));
             assertTrue(containsItemOfType(mModel, ItemProperties.ERROR_DESCRIPTION));
@@ -565,15 +568,60 @@ public class AccountSelectionControllerTest {
                     errorDescriptionIdpEtldPlusOne);
 
             assertNotNull(mModel.get(ItemProperties.GOT_IT_BUTTON)
-                                  .get(GotItButtonProperties.ON_CLICK_LISTENER));
+                                  .get(ErrorButtonProperties.ON_CLICK_LISTENER));
+            assertNull(mModel.get(ItemProperties.MORE_DETAILS_BUTTON));
 
             // Do not let test inputs be ignored.
             mMediator.setComponentShowTime(-1000);
             mModel.get(ItemProperties.GOT_IT_BUTTON)
-                    .get(GotItButtonProperties.ON_CLICK_LISTENER)
+                    .get(ErrorButtonProperties.ON_CLICK_LISTENER)
                     .run();
             verify(mMockDelegate, times(++count))
                     .onDismissed(IdentityRequestDialogDismissReason.GOT_IT_BUTTON);
+            assertTrue(mMediator.wasDismissed());
+        }
+    }
+
+    @Test
+    public void testShowErrorDialogClickMoreDetails() {
+        int count = 0;
+        for (String rpContext : RP_CONTEXTS) {
+            when(mMockBottomSheetController.requestShowContent(any(), anyBoolean()))
+                    .thenReturn(true);
+            mMediator.showErrorDialog(TEST_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1,
+                    TEST_ETLD_PLUS_ONE_2, IDP_METADATA, rpContext, TOKEN_ERROR);
+            assertEquals(0, mSheetAccountItems.size());
+            assertEquals(HeaderType.SIGN_IN_ERROR, mModel.get(ItemProperties.HEADER).get(TYPE));
+
+            // For error dialog with an error URL, we expect header + error summary + error
+            // description + got it button + more details button
+            assertEquals(5, countAllItems());
+            assertTrue(containsItemOfType(mModel, ItemProperties.ERROR_SUMMARY));
+            assertTrue(containsItemOfType(mModel, ItemProperties.ERROR_DESCRIPTION));
+
+            String errorSummaryIdpEtldPlusOne =
+                    mModel.get(ItemProperties.ERROR_SUMMARY).get(ErrorProperties.IDP_FOR_DISPLAY);
+            assertEquals(
+                    "Incorrect provider ETLD+1", TEST_ETLD_PLUS_ONE_2, errorSummaryIdpEtldPlusOne);
+            String errorDescriptionIdpEtldPlusOne = mModel.get(ItemProperties.ERROR_DESCRIPTION)
+                                                            .get(ErrorProperties.IDP_FOR_DISPLAY);
+            assertEquals("Incorrect provider ETLD+1", TEST_ETLD_PLUS_ONE_2,
+                    errorDescriptionIdpEtldPlusOne);
+
+            assertNotNull(mModel.get(ItemProperties.GOT_IT_BUTTON)
+                                  .get(ErrorButtonProperties.ON_CLICK_LISTENER));
+            assertNotNull(mModel.get(ItemProperties.MORE_DETAILS_BUTTON)
+                                  .get(ErrorButtonProperties.ON_CLICK_LISTENER));
+
+            // Do not let test inputs be ignored.
+            mMediator.setComponentShowTime(-1000);
+            mModel.get(ItemProperties.MORE_DETAILS_BUTTON)
+                    .get(ErrorButtonProperties.ON_CLICK_LISTENER)
+                    .run();
+            verify(mMockDelegate, times(++count)).onMoreDetails();
+            verify(mMockDelegate, times(count))
+                    .onDismissed(IdentityRequestDialogDismissReason.MORE_DETAILS_BUTTON);
+            assertTrue(mMediator.wasDismissed());
         }
     }
 

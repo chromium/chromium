@@ -60,7 +60,8 @@ class IdentityDialogController
                        const blink::mojom::RpContext& rp_context,
                        const content::IdentityProviderMetadata& idp_metadata,
                        const absl::optional<TokenError>& error,
-                       DismissCallback dismiss_callback) override;
+                       DismissCallback dismiss_callback,
+                       MoreDetailsCallback more_details_callback) override;
   void ShowIdpSigninFailureDialog(base::OnceClosure dismiss_callback) override;
 
   std::string GetTitle() const override;
@@ -77,6 +78,7 @@ class IdentityDialogController
                          const Account& account) override;
   void OnDismiss(DismissReason dismiss_reason) override;
   void OnSigninToIdP() override;
+  void OnMoreDetails() override;
   gfx::NativeView GetNativeView() override;
   content::WebContents* GetWebContents() override;
 
@@ -85,6 +87,7 @@ class IdentityDialogController
   AccountSelectionCallback on_account_selection_;
   DismissCallback on_dismiss_;
   SigninToIdPCallback on_signin_;
+  MoreDetailsCallback on_more_details_;
   raw_ptr<content::WebContents> rp_web_contents_;
 };
 

@@ -23,8 +23,8 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ErrorButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ErrorProperties;
-import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.GotItButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.IdpSignInProperties;
@@ -107,6 +107,7 @@ class AccountSelectionMediator {
     private Bitmap mBrandIcon;
     private ClientIdMetadata mClientMetadata;
     private String mRpContext;
+    private IdentityCredentialTokenError mError;
 
     // All of the user's accounts.
     private List<Account> mAccounts;
@@ -394,6 +395,7 @@ class AccountSelectionMediator {
         mIdpForDisplay = idpForDisplay;
         mIdpMetadata = idpMetadata;
         mRpContext = rpContext;
+        mError = error;
         mHeaderType = HeaderProperties.HeaderType.SIGN_IN_ERROR;
         updateSheet(/*accounts=*/null, /*areAccountsClickable=*/false);
         setComponentShowTime(SystemClock.elapsedRealtime());
@@ -441,6 +443,7 @@ class AccountSelectionMediator {
 
         boolean isContinueButtonVisible = false;
         boolean isGotItButtonVisible = false;
+        boolean isMoreDetailsButtonVisible = false;
         boolean isDataSharingConsentVisible = false;
         if (mHeaderType == HeaderType.SIGN_IN && mSelectedAccount != null) {
             isContinueButtonVisible = true;
@@ -465,13 +468,18 @@ class AccountSelectionMediator {
             assert !isDataSharingConsentVisible;
             isContinueButtonVisible = false;
             isGotItButtonVisible = true;
+            isMoreDetailsButtonVisible = !mError.getUrl().isEmpty();
         }
 
         mModel.set(ItemProperties.CONTINUE_BUTTON,
                 isContinueButtonVisible ? createContinueBtnItem(mSelectedAccount, mIdpMetadata)
                                         : null);
         mModel.set(ItemProperties.GOT_IT_BUTTON,
-                isGotItButtonVisible ? createGotItBtnItem(mIdpMetadata) : null);
+                isGotItButtonVisible ? createErrorBtnItem(mIdpMetadata, this::onClickGotItButton)
+                                     : null);
+        mModel.set(ItemProperties.MORE_DETAILS_BUTTON,
+                isMoreDetailsButtonVisible ? createErrorBtnItem(mIdpMetadata, this::onMoreDetails)
+                                           : null);
         mModel.set(ItemProperties.DATA_SHARING_CONSENT,
                 isDataSharingConsentVisible
                         ? createDataSharingConsentItem(mIdpForDisplay, mClientMetadata)
@@ -481,9 +489,11 @@ class AccountSelectionMediator {
                         ? createIdpSignInItem(mIdpForDisplay)
                         : null);
         mModel.set(ItemProperties.ERROR_SUMMARY,
-                mHeaderType == HeaderType.SIGN_IN_ERROR ? createErrorItem(mIdpForDisplay) : null);
+                mHeaderType == HeaderType.SIGN_IN_ERROR ? createErrorTextItem(mIdpForDisplay)
+                                                        : null);
         mModel.set(ItemProperties.ERROR_DESCRIPTION,
-                mHeaderType == HeaderType.SIGN_IN_ERROR ? createErrorItem(mIdpForDisplay) : null);
+                mHeaderType == HeaderType.SIGN_IN_ERROR ? createErrorTextItem(mIdpForDisplay)
+                                                        : null);
 
         mBottomSheetContent.computeAndUpdateAccountListHeight();
         showContent();
@@ -565,6 +575,15 @@ class AccountSelectionMediator {
     }
 
     /**
+     * Event listener for when the user taps on the more details button of the bottomsheet.
+     */
+    void onMoreDetails() {
+        if (!shouldInputBeProcessed()) return;
+        mDelegate.onMoreDetails();
+        onDismissed(IdentityRequestDialogDismissReason.MORE_DETAILS_BUTTON);
+    }
+
+    /**
      * Event listener for when the user taps on an account or the continue button of the
      * bottomsheet.
      *
@@ -625,11 +644,12 @@ class AccountSelectionMediator {
                 .build();
     }
 
-    private PropertyModel createGotItBtnItem(IdentityProviderMetadata idpMetadata) {
+    private PropertyModel createErrorBtnItem(
+            IdentityProviderMetadata idpMetadata, Runnable onClickListener) {
         assert mHeaderType == HeaderProperties.HeaderType.SIGN_IN_ERROR;
-        return new PropertyModel.Builder(GotItButtonProperties.ALL_KEYS)
-                .with(GotItButtonProperties.IDP_METADATA, idpMetadata)
-                .with(GotItButtonProperties.ON_CLICK_LISTENER, this::onClickGotItButton)
+        return new PropertyModel.Builder(ErrorButtonProperties.ALL_KEYS)
+                .with(ErrorButtonProperties.IDP_METADATA, idpMetadata)
+                .with(ErrorButtonProperties.ON_CLICK_LISTENER, onClickListener)
                 .build();
     }
 
@@ -659,7 +679,7 @@ class AccountSelectionMediator {
                 .build();
     }
 
-    private PropertyModel createErrorItem(String idpForDisplay) {
+    private PropertyModel createErrorTextItem(String idpForDisplay) {
         return new PropertyModel.Builder(ErrorProperties.ALL_KEYS)
                 .with(ErrorProperties.IDP_FOR_DISPLAY, idpForDisplay)
                 .build();

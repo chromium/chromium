@@ -1724,6 +1724,7 @@ void FederatedAuthRequestImpl::OnDismissErrorDialog(
     blink::mojom::FederatedAuthRequestResult result,
     absl::optional<TokenStatus> token_status,
     IdentityRequestDialogController::DismissReason dismiss_reason) {
+  // TODO(crbug.com/1478837): Record metrics for error UI
   CompleteRequestWithError(result, token_status,
                            /*should_delay_callback=*/false);
 }
@@ -1829,6 +1830,7 @@ void FederatedAuthRequestImpl::ShowErrorDialog(
       base::BindOnce(&FederatedAuthRequestImpl::CompleteRequestWithError,
                      weak_ptr_factory_.GetWeakPtr()));
 
+  // TODO(crbug.com/1485710): Refactor IdentityCredentialTokenError
   request_dialog_controller_->ShowErrorDialog(
       GetTopFrameOriginForDisplay(GetEmbeddingOrigin()), iframe_for_display,
       FormatOriginForDisplay(url::Origin::Create(idp_config_url)),
@@ -1841,7 +1843,11 @@ void FederatedAuthRequestImpl::ShowErrorDialog(
           &FederatedAuthRequestImpl::OnDismissErrorDialog,
           weak_ptr_factory_.GetWeakPtr(),
           FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
-          TokenStatus::kIdTokenInvalidResponse));
+          TokenStatus::kIdTokenInvalidResponse),
+      error && !error->url.is_empty()
+          ? base::BindOnce(&FederatedAuthRequestImpl::ShowModalDialog,
+                           weak_ptr_factory_.GetWeakPtr(), error->url)
+          : base::NullCallback());
 }
 
 void FederatedAuthRequestImpl::OnTokenResponseReceived(

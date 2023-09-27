@@ -41,9 +41,19 @@ found in the LICENSE file.
     <include layout="@layout/account_selection_continue_button"
         android:id="@+id/account_selection_continue_btn"
         android:visibility="gone"/>
-    <include layout="@layout/error_button"
-        android:id="@+id/got_it_btn"
-        android:visibility="gone"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/account_selection_sheet_horizontal_margin"
+        android:orientation="horizontal"
+        android:gravity="end">
+        <include layout="@layout/error_button"
+            android:id="@+id/more_details_btn"
+            android:visibility="gone"/>
+        <include layout="@layout/error_button"
+            android:id="@+id/got_it_btn"
+            android:visibility="gone"/>
+    </LinearLayout>
     <include layout="@layout/account_selection_data_sharing_consent_item"
         android:id="@+id/user_data_sharing_consent"
         android:visibility="gone"/>

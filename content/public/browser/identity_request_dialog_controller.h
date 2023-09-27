@@ -83,8 +83,9 @@ class CONTENT_EXPORT IdentityRequestDialogController {
     kSwipe = 2,
     kVirtualKeyboardShown = 3,
     kGotItButton = 4,
+    kMoreDetailsButton = 5,
 
-    kMaxValue = kGotItButton,
+    kMaxValue = kMoreDetailsButton,
   };
 
   using AccountSelectionCallback =
@@ -96,6 +97,7 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   using DismissCallback =
       base::OnceCallback<void(DismissReason dismiss_reason)>;
   using SigninToIdPCallback = base::OnceCallback<void()>;
+  using MoreDetailsCallback = base::OnceCallback<void()>;
 
   IdentityRequestDialogController() = default;
 
@@ -149,7 +151,8 @@ class CONTENT_EXPORT IdentityRequestDialogController {
       const blink::mojom::RpContext& rp_context,
       const IdentityProviderMetadata& idp_metadata,
       const absl::optional<IdentityCredentialTokenError>& error,
-      DismissCallback dismiss_callback);
+      DismissCallback dismiss_callback,
+      MoreDetailsCallback more_details_callback);
 
   // Only to be called after a dialog is shown.
   virtual std::string GetTitle() const;

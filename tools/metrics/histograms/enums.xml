@@ -44242,6 +44242,8 @@ Called by update_permissions_policy_enum.py.-->
   <int value="1" label="Close button"/>
   <int value="2" label="Swipe"/>
   <int value="3" label="Virtual keyboard shown"/>
+  <int value="4" label="Got it button"/>
+  <int value="5" label="More details button"/>
 </enum>
 
 <enum name="FedCmClosePopupWindowReason">

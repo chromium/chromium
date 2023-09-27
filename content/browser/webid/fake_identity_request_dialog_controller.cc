@@ -87,7 +87,8 @@ void FakeIdentityRequestDialogController::ShowErrorDialog(
     const blink::mojom::RpContext& rp_context,
     const IdentityProviderMetadata& idp_metadata,
     const absl::optional<TokenError>& error,
-    DismissCallback dismiss_callback) {}
+    DismissCallback dismiss_callback,
+    MoreDetailsCallback more_details_callback) {}
 
 std::string FakeIdentityRequestDialogController::GetTitle() const {
   return title_;

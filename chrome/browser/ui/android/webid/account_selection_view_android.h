@@ -53,6 +53,7 @@ class AccountSelectionViewAndroid : public AccountSelectionView {
       bool is_sign_in);
   void OnDismiss(JNIEnv* env, jint dismiss_reason);
   void OnSignInToIdp(JNIEnv* env);
+  void OnMoreDetails(JNIEnv* env);
 
  private:
   // Returns either true if the java counterpart of this bridge is initialized

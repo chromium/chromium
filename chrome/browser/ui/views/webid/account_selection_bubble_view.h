@@ -63,16 +63,16 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
     // Called when the user clicks "close" button.
     virtual void OnCloseButtonClicked(const ui::Event& event) = 0;
 
-    // Called when the user clicks "more details" button.
-    virtual void OnMoreDetailsButtonClicked(const GURL& url,
-                                            const ui::Event& event) = 0;
-
-    // Called when the user clicks "got it" button.
-    virtual void OnGotItButtonClicked(const ui::Event& event) = 0;
-
     // Called when the user clicks the "continue" button on the sign-in
     // failure dialog.
     virtual void OnSigninToIdP() = 0;
+
+    // Called when the user clicks "got it" button.
+    virtual void OnGotIt() = 0;
+
+    // Called when the user clicks the "more details" button on the error
+    // dialog.
+    virtual void OnMoreDetails() = 0;
 
     // Called when IdentityProvider.close() is called from the renderer.
     virtual void CloseModalDialog() = 0;
