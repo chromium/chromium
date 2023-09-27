@@ -9,6 +9,12 @@
 #include "ash/bubble/bubble_event_filter.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/events/event_handler.h"
+#include "ui/wm/public/activation_change_observer.h"
+
+namespace aura {
+class Window;
+}  // namespace aura
 
 namespace ui {
 class LocatedEvent;
@@ -24,8 +30,9 @@ class TrayBackgroundView;
 class TrayBubbleView;
 
 // Handles events for tray bubbles, closing the system tray bubble when the user
-// clicks outside of it.
-class ASH_EXPORT TrayEventFilter : public BubbleEventFilter {
+// clicks outside of it or when other windows are activated.
+class ASH_EXPORT TrayEventFilter : public BubbleEventFilter,
+                                   public ::wm::ActivationChangeObserver {
  public:
   TrayEventFilter(views::Widget* bubble_widget,
                   TrayBubbleView* bubble_view,
@@ -41,6 +48,11 @@ class ASH_EXPORT TrayEventFilter : public BubbleEventFilter {
   bool ShouldRunOnClickOutsideCallback(const ui::LocatedEvent& event) override;
 
  private:
+  // ::wm::ActivationChangeObserver overrides:
+  void OnWindowActivated(ActivationReason reason,
+                         aura::Window* gained_active,
+                         aura::Window* lost_active) override;
+
   const raw_ptr<views::Widget> bubble_widget_;
   const raw_ptr<TrayBubbleView> bubble_view_;
   const raw_ptr<TrayBackgroundView> tray_button_;

@@ -21,6 +21,7 @@
 #include "ash/system/tray/tray_utils.h"
 #include "ash/system/unified/date_tray.h"
 #include "ash/system/unified/unified_system_tray.h"
+#include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/test/scoped_feature_list.h"
@@ -28,6 +29,7 @@
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/message_center/message_center.h"
+#include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
 
 using message_center::MessageCenter;
@@ -362,6 +364,41 @@ TEST_P(TrayEventFilterTest, TransitionFromQsToCalendar) {
 
   LeftClickOn(GetPrimaryShelf()->GetStatusAreaWidget()->date_tray());
   EXPECT_TRUE(IsQuickSettingsBubbleShown());
+}
+
+TEST_P(TrayEventFilterTest, CloseTrayBubbleWhenWindowActivated) {
+  StatusAreaWidget* status_area = GetPrimaryShelf()->GetStatusAreaWidget();
+  UnifiedSystemTray* system_tray = status_area->unified_system_tray();
+
+  LeftClickOn(system_tray);
+  ASSERT_EQ(status_area->open_shelf_pod_bubble(),
+            system_tray->bubble()->GetBubbleView());
+
+  // Showing a new window and activating it will close the system bubble.
+  std::unique_ptr<views::Widget> widget(CreateTestWidget());
+  EXPECT_TRUE(widget->IsActive());
+  EXPECT_FALSE(system_tray->bubble());
+
+  // Show a second widget.
+  std::unique_ptr<views::Widget> second_widget(CreateTestWidget());
+  EXPECT_TRUE(second_widget->IsActive());
+
+  // Re-show the system bubble.
+  LeftClickOn(system_tray);
+
+  // Re-activate the first widget. The system bubble should hide again.
+  widget->Activate();
+  EXPECT_FALSE(system_tray->bubble());
+
+  Shell::Get()->ime_controller()->ShowImeMenuOnShelf(true);
+  TrayBackgroundView* ime_menu = status_area->ime_menu_tray();
+
+  // Test the same thing with the ime tray.
+  LeftClickOn(ime_menu);
+  ASSERT_EQ(status_area->open_shelf_pod_bubble(), ime_menu->GetBubbleView());
+
+  second_widget->Activate();
+  EXPECT_FALSE(ime_menu->GetBubbleView());
 }
 
 using TrayEventFilterQsRevampDisabledTest = TrayEventFilterTest;

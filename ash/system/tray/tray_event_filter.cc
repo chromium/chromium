@@ -25,6 +25,8 @@
 #include "ui/aura/window.h"
 #include "ui/display/screen.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/core/window_util.h"
+#include "ui/wm/public/activation_client.h"
 
 namespace ash {
 
@@ -40,9 +42,13 @@ TrayEventFilter::TrayEventFilter(views::Widget* bubble_widget,
                             tray_button)),
       bubble_widget_(bubble_widget),
       bubble_view_(bubble_view),
-      tray_button_(tray_button) {}
+      tray_button_(tray_button) {
+  Shell::Get()->activation_client()->AddObserver(this);
+}
 
-TrayEventFilter::~TrayEventFilter() = default;
+TrayEventFilter::~TrayEventFilter() {
+  Shell::Get()->activation_client()->RemoveObserver(this);
+}
 
 void TrayEventFilter::OnGestureEvent(ui::GestureEvent* event) {
   if (event->type() != ui::ET_GESTURE_SCROLL_BEGIN) {
@@ -91,6 +97,65 @@ bool TrayEventFilter::ShouldRunOnClickOutsideCallback(
   }
 
   return true;
+}
+
+void TrayEventFilter::OnWindowActivated(ActivationReason reason,
+                                        aura::Window* gained_active,
+                                        aura::Window* lost_active) {
+  if (!gained_active) {
+    return;
+  }
+
+  // Check for the CloseBubble() lock.
+  if (!TrayBackgroundView::ShouldCloseBubbleOnWindowActivated()) {
+    return;
+  }
+
+  auto* active_status_area_widget =
+      RootWindowController::ForWindow(gained_active)
+          ->shelf()
+          ->GetStatusAreaWidget();
+  auto* open_shelf_pod_bubble =
+      active_status_area_widget->open_shelf_pod_bubble();
+
+  if (!open_shelf_pod_bubble) {
+    return;
+  }
+
+  auto* unified_system_tray_bubble =
+      active_status_area_widget->unified_system_tray()->bubble();
+
+  // If `QsRevamp` is disabled, the event handling will happen in
+  // `UnifiedSystemTrayBubble`.
+  if (!features::IsQsRevampEnabled() && unified_system_tray_bubble &&
+      open_shelf_pod_bubble == unified_system_tray_bubble->GetBubbleView()) {
+    return;
+  }
+
+  views::Widget* bubble_widget = open_shelf_pod_bubble->GetWidget();
+  auto* gained_active_widget =
+      views::Widget::GetWidgetForNativeView(gained_active);
+
+  // Don't close the bubble if a transient child is gaining or losing
+  // activation.
+  if (bubble_widget == gained_active_widget ||
+      ::wm::HasTransientAncestor(gained_active,
+                                 bubble_widget->GetNativeWindow()) ||
+      (lost_active && ::wm::HasTransientAncestor(
+                          lost_active, bubble_widget->GetNativeWindow()))) {
+    return;
+  }
+
+  // If the activated window is a popup notification, interacting with it
+  // should not close the bubble.
+  if (features::IsNotifierCollisionEnabled() &&
+      active_status_area_widget->unified_system_tray()
+          ->GetMessagePopupCollection()
+          ->IsWidgetAPopupNotification(gained_active_widget)) {
+    return;
+  }
+
+  open_shelf_pod_bubble->CloseBubbleView();
 }
 
 }  // namespace ash

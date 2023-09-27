@@ -328,6 +328,15 @@ void UnifiedSystemTrayBubble::OnWidgetDestroying(views::Widget* widget) {
 void UnifiedSystemTrayBubble::OnWindowActivated(ActivationReason reason,
                                                 aura::Window* gained_active,
                                                 aura::Window* lost_active) {
+  // This function is needed when QsRevamp is disabled since the message center
+  // bubble is on top of this bubble, which we need to customize the window
+  // activation handling like below. When QsRevamp is enabled, we don't need
+  // this anymore since everything is handled in
+  // `TrayEventFilter::OnWindowActivated()`
+  if (features::IsQsRevampEnabled()) {
+    return;
+  }
+
   if (!gained_active || !bubble_widget_) {
     return;
   }
