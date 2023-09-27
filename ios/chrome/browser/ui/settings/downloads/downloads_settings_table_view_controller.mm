@@ -87,7 +87,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   identityButtonItem.identityName = name;
   identityButtonItem.identityEmail = email;
   identityButtonItem.identityGaiaID = gaiaID;
-  identityButtonItem.enabled = !askEveryTimeSwitchOn;
   [self reconfigureCellsForItems:@[ identityButtonItem ]];
 
   // Update the "Ask which account to use every time" switch.
@@ -165,9 +164,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)saveToPhotosIdentityButtonAction:(IdentityButtonControl*)sender {
-  [self.saveToPhotosSettingsMutator
-      setSelectedIdentityGaiaID:self.saveToPhotosDefaultIdentityItem
-                                    .identityGaiaID];
   [self.actionDelegate
       downloadsSettingsTableViewControllerOpenSaveToPhotosAccountSelection:
           self];

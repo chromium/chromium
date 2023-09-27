@@ -125,7 +125,7 @@ TEST_F(DownloadsSettingsTableViewControllerTest,
   EXPECT_NSEQ(@"firstname.lastname@example.org",
               identity_button_item.identityEmail);
   EXPECT_NSEQ(@"mygaiaid", identity_button_item.identityGaiaID);
-  EXPECT_FALSE(identity_button_item.enabled);
+  EXPECT_TRUE(identity_button_item.enabled);
   EXPECT_EQ(IdentityButtonControlArrowRight,
             identity_button_item.arrowDirection);
   EXPECT_EQ(IdentityViewStyleConsistency,
