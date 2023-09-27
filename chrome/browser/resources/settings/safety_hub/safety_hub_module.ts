@@ -18,6 +18,14 @@ import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 
 import {getTemplate} from './safety_hub_module.html.js';
 
+/**
+ * Corresponds to the animation-duration CSS parameter defined
+ * in review_notification_permissions.html. Set to be slightly higher, as we
+ * want to ensure that the animation is finished before updating the model for
+ * the right visual effect.
+ */
+const MODEL_UPDATE_DELAY_MS = 310;
+
 export interface SiteInfo {
   origin: string;
   detail: string|TrustedHTML;
@@ -43,6 +51,7 @@ export class SettingsSafetyHubModuleElement extends PolymerElement {
       sites: {
         type: Array,
         value: () => [],
+        observer: 'onSitesChanged_',
       },
 
       // The string for the header label.
@@ -74,6 +83,144 @@ export class SettingsSafetyHubModuleElement extends PolymerElement {
   headerIcon: string;
   buttonIcon: string;
   moreActionVisible: boolean;
+
+  private modelUpdateDelayMsForTesting_: number|null = null;
+
+  setModelUpdateDelayMsForTesting(delayMs: number) {
+    this.modelUpdateDelayMsForTesting_ = delayMs;
+  }
+
+  private setVisibility_(item: HTMLElement, visible: boolean) {
+    // Removing the explicit visibility makes elements fall back on their
+    // default CSS which is "display: hidden;".
+    item.style.display = visible ? 'flex' : '';
+  }
+
+  private onSitesChanged_() {
+    const items = this.shadowRoot!.querySelectorAll('#siteList .list-item') as
+        NodeListOf<HTMLElement>;
+
+    // Polymer reuses the already rendered rows once |this.sites| changes,
+    // some of which may have previously been made invisible at the end of the
+    // hiding animation. Ensure that everything rendered is actually visible.
+    for (const item of items) {
+      this.setVisibility_(item as HTMLElement, true);
+    }
+
+    // There's a delay between when |this.sites| is set and when the items
+    // are actually rendered. If they're not in sync, wait until additional
+    // items may be rendered.
+    if (this.sites && this.sites.length !== items.length) {
+      setTimeout(this.onSitesChanged_.bind(this), 0);
+    }
+  }
+
+  /**
+   * Hides |origin| and when the animation finishes, calls |callback|. If
+   * |origin| is null, all origins are hidden.
+   *
+   * The |callback| method MUST be provided and MUST remove the |origin| from
+   * the underlying model.
+   */
+  animateHide(origin: string|null, callback: Function) {
+    const items = this.shadowRoot!.querySelectorAll('#siteList .list-item');
+
+    // There's a delay between when |this.sites| is set and when the items
+    // are actually rendered. If they're not in sync, wait.
+    if (items.length !== this.sites.length) {
+      setTimeout(this.animateHide.bind(this, origin, callback), 0);
+      return;
+    }
+
+    // Remove the item that corresponds to |origin|. If no origin is specified,
+    // remove all items.
+    let removedAll = (origin === null);
+    for (let i = 0; i < this.sites!.length; ++i) {
+      if (origin === null || origin === this.sites![i]!.origin) {
+        items[i]!.classList.add('hiding');
+        if (origin) {
+          // If this is the last site being removed, the visuals should be
+          // the same as if all sites were removed.
+          removedAll ||= (this.sites!.length === 1);
+          break;
+        }
+      }
+    }
+
+    // If all items are beign removed, also remove the line separator.
+    if (removedAll) {
+      this.shadowRoot!.querySelector('#line')!.classList.add('hiding');
+    }
+
+    // Call the callbacks once the animation is finished.
+    const delayMs = this.modelUpdateDelayMsForTesting_ !== null ?
+        this.modelUpdateDelayMsForTesting_ :
+        MODEL_UPDATE_DELAY_MS;
+    if (callback) {
+      setTimeout(callback, delayMs);
+    }
+    setTimeout(this.finalizeAnimation_.bind(this), delayMs);
+  }
+
+  /**
+   * Shows the given |origins| and calls |callback|.
+   *
+   * MUST be called once for each origin added, right after it is added.
+   */
+  animateShow(origins: string[], callback?: Function) {
+    const items = this.shadowRoot!.querySelectorAll('#siteList .list-item');
+
+    // Ensure the DOM was updated to reflect |this.sites|. If not, wait.
+    if (items.length !== this.sites.length) {
+      setTimeout(this.animateShow.bind(this, origins, callback), 0);
+      return;
+    }
+
+    let wasEmpty = true;
+    for (let i = 0; i < items.length; ++i) {
+      if (origins.includes(this.sites![i]!.origin)) {
+        items[i]!.classList.add('showing');
+      } else {
+        // If at least one item doesn't need showing, there was at least
+        // one already rendered item.
+        wasEmpty = false;
+      }
+    }
+
+    // Ensure the line separator is animated to show when the first item
+    // is being added.
+    if (wasEmpty) {
+      this.shadowRoot!.querySelector('#line')!.classList.add('showing');
+    }
+
+    // Call the callbacks once the animation is finished.
+    const delayMs = this.modelUpdateDelayMsForTesting_ !== null ?
+        this.modelUpdateDelayMsForTesting_ :
+        MODEL_UPDATE_DELAY_MS;
+    if (callback) {
+      setTimeout(callback, delayMs);
+    }
+    setTimeout(this.finalizeAnimation_.bind(this), delayMs);
+  }
+
+  private finalizeAnimation_() {
+    const items = this.shadowRoot!.querySelectorAll(
+                      '#siteList .list-item, #line') as NodeListOf<HTMLElement>;
+
+    for (const item of items) {
+      // Finish the ".showing" animation by making the element visible.
+      if (item.classList.contains('showing')) {
+        item.classList.remove('showing');
+        this.setVisibility_(item as HTMLElement, true);
+      }
+      // Finish the ".hiding" animation by making the element invisible.
+      // This falls back to the default CSS of ".item" which is "display: none".
+      if (item.classList.contains('hiding')) {
+        item.classList.remove('hiding');
+        this.setVisibility_(item as HTMLElement, false);
+      }
+    }
+  }
 
   private onItemButtonClick_(e: DomRepeatEvent<SiteInfo>) {
     const item = e.model.item;

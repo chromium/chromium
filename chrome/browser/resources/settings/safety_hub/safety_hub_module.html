@@ -2,6 +2,12 @@
   :host {
     display: block;
     padding: 8px 16px;
+
+    /**
+     * The |animation-duration| parameter corresponds to MODEL_UPDATE_DELAY_MS
+     * in the .ts file.
+     */
+    --animation-duration: 300ms;
   }
 
   #header-wrapper {
@@ -46,6 +52,69 @@
 
   .link a[href] {
     text-decoration: none;
+  }
+
+  /**
+   * Settings use a line height of 154%. Our items contain two lines (2em)
+   * plus a vertical padding on both sides. We slightly increase the coefficient
+   * to 160% to avoid that the height immediately contracts at the beginning
+   * of the animation in case of rounding error. Note that erring on the side
+   * of a slightly larger height is not a problem since this animation uses
+   * |max-height| and not |height| directly.
+   */
+  @keyframes hiding-animation {
+    0% {
+      max-height: calc(1.6 * 2em + 2 * var(--cr-section-vertical-padding));
+      opacity: 1;
+    }
+    20% {
+      max-height: calc(1.6 * 2em + 2 * var(--cr-section-vertical-padding));
+      opacity: 0;
+    }
+    100% {
+      max-height: 0;
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+
+  /**
+   * When new items are added to the list, they must immediately be set
+   * invisible. Otherwise, there flash on the screen for a moment before we
+   * have a chance to apply the ".showing" animation that is supposed to start
+   * with the item not being visible.
+   *
+   * At any other phase of the animation, while the item is shown or hidden,
+   * or when the item is in a steady state, this is overriden to make the item
+   * visible.
+   *
+   * TODO(crbug.com/1443466): This means that that embedders of SafetyHUbModule
+   * MUST call animateShow() on all items to display them. There is currently
+   * no way of using SafetyHubModule without animations.
+   */
+  #siteList .list-item, #line {
+    display: none;
+  }
+
+  #siteList .list-item.hiding, #siteList .list-item.showing,
+  #line.hiding, #line.showing {
+    display: flex;
+  }
+
+  /**
+   * Showing and hiding animations are symmetrical. They only differ
+   * in the direction.
+   */
+  .hiding, .showing {
+    animation-duration: var(--animation-duration);
+    animation-fill-mode: forwards;
+    animation-iteration-count: 1;
+    animation-name: hiding-animation;
+    min-height: 0;
+  }
+
+  .showing {
+    animation-direction: reverse;
   }
 </style>
 

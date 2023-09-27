@@ -24,6 +24,25 @@ suite('SafetyHubModule', function() {
     return testElement.shadowRoot!.querySelectorAll('.site-entry');
   }
 
+  function assignAndShowTestData() {
+    testElement.sites = mockData;
+    testElement.setModelUpdateDelayMsForTesting(0);
+
+    let callback: Function;
+    const promise = new Promise((resolve) => {
+      callback = resolve;
+    });
+
+    testElement.animateShow(mockData.map(data => data.origin), function() {
+      // The animation delay is set to zero, so the animation will take place
+      // instantaneously; but also asynchronously. Postpone the callback
+      // to the end of the thread.
+      setTimeout(callback, 0);
+    });
+
+    return promise;
+  }
+
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('settings-safety-hub-module');
@@ -52,7 +71,7 @@ suite('SafetyHubModule', function() {
   });
 
   test('testItemButton', async function() {
-    testElement.sites = mockData;
+    await assignAndShowTestData();
     testElement.buttonIcon = 'cr20:block';
     flush();
 
@@ -71,9 +90,9 @@ suite('SafetyHubModule', function() {
     assertEquals(clickedItem.detail, mockData[1]!.detail);
   });
 
-  test('testItemList', function() {
+  test('testItemList', async function() {
     // Check the item list is filled with the data.
-    testElement.sites = mockData;
+    await assignAndShowTestData();
     flush();
 
     assertTrue(isVisible(testElement.shadowRoot!.querySelector('#line')));

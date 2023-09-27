@@ -87,6 +87,13 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
         value: null,
       },
 
+      // Sites that have already been rendered. Any new ones not listed here
+      // will need to be explicitly animated to show.
+      renderedOrigins_: {
+        type: Array,
+        value: [],
+      },
+
       // Last action the user has taken, determines the function of the undo
       // button in the toast.
       lastUserAction_: {
@@ -121,6 +128,7 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
   private lastUnusedSitePermissionsAllowedAgain_: UnusedSitePermissions|null;
   private lastUnusedSitePermissionsListAcknowledged_: UnusedSitePermissions[]|
       null;
+  private renderedOrigins_: string[];
   private lastUserAction_: Action|null;
   private eventTracker_: EventTracker = new EventTracker();
   private browserProxy_: SafetyHubBrowserProxy =
@@ -203,7 +211,10 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
 
     this.showUndoToast_(
         this.i18n('safetyCheckUnusedSitePermissionsToastLabel', item.origin));
-    this.browserProxy_.allowPermissionsAgainForUnusedSite(item.origin);
+    this.$.module.animateHide(
+        item.origin,
+        this.browserProxy_.allowPermissionsAgainForUnusedSite.bind(
+            this.browserProxy_, item.origin));
   }
 
   private async onGotItClick_(e: Event) {
@@ -211,8 +222,10 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
     assert(this.sites_ !== null);
     this.lastUserAction_ = Action.GOT_IT;
     this.lastUnusedSitePermissionsListAcknowledged_ = this.sites_;
-
-    this.browserProxy_.acknowledgeRevokedUnusedSitePermissionsList();
+    this.$.module.animateHide(
+        /* all origins */ null,
+        this.browserProxy_.acknowledgeRevokedUnusedSitePermissionsList.bind(
+            this.browserProxy_));
     const toastText = await PluralStringProxyImpl.getInstance().getPluralString(
         'safetyCheckUnusedSitePermissionsToastBulkLabel', this.sites_.length);
     this.showUndoToast_(toastText);
@@ -242,6 +255,13 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
     if (this.sites_ === null) {
       return;
     }
+
+    // Run the show animation on all new items, i.e. those items
+    // in |this.sites_| which aren't already rendered.
+    this.$.module.animateShow(
+        this.sites_.map(site => site.origin)
+            .filter(origin => !this.renderedOrigins_.includes(origin)));
+    this.renderedOrigins_ = this.sites_.map(site => site.origin);
 
     if (this.shouldShowCompletionInfo_) {
       // In the completion state, the header string should be replaced with

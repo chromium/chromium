@@ -122,6 +122,7 @@ export class SettingsSafetyHubNotificationPermissionsModuleElement extends
   private sites_: NotificationPermissionsDisplay[]|null;
   private shouldShowCompletionInfo_: boolean;
   private lastOrigins_: string[] = [];
+  private renderedOrigins_: string[] = [];
   private lastUserAction_: Actions|null;
   private eventTracker_: EventTracker = new EventTracker();
   private browserProxy_: SafetyHubBrowserProxy =
@@ -171,6 +172,13 @@ export class SettingsSafetyHubNotificationPermissionsModuleElement extends
       return;
     }
 
+    // Run the show animation on all new items, i.e. those items
+    // in |this.sites_| which aren't already rendered.
+    this.$.module.animateShow(
+        this.sites_.map(site => site.origin)
+            .filter(origin => !this.renderedOrigins_.includes(origin)));
+    this.renderedOrigins_ = this.sites_.map(site => site.origin);
+
     if (this.shouldShowCompletionInfo_) {
       // In the completion state, the header string should be replaced with
       // completion string.
@@ -195,7 +203,10 @@ export class SettingsSafetyHubNotificationPermissionsModuleElement extends
     this.lastOrigins_ = [e.detail.origin];
     this.lastUserAction_ = Actions.BLOCK;
     this.$.undoToast.show();
-    this.browserProxy_.blockNotificationPermissionForOrigins(this.lastOrigins_);
+    this.$.module.animateHide(
+        e.detail.origin,
+        this.browserProxy_.blockNotificationPermissionForOrigins.bind(
+            this.browserProxy_, this.lastOrigins_));
   }
 
   private onMoreActionClick_(e: CustomEvent<SiteInfoWithTarget>) {
@@ -209,8 +220,13 @@ export class SettingsSafetyHubNotificationPermissionsModuleElement extends
     this.lastUserAction_ = Actions.IGNORE;
     this.$.undoToast.show();
     this.$.actionMenu.close();
-    this.browserProxy_.ignoreNotificationPermissionForOrigins(
-        this.lastOrigins_);
+    // |lastOrigins| is set to a 1-item array containing the item on which
+    // the context menu with the |reset| option was open,
+    // in |onMoreActionClick_|.
+    this.$.module.animateHide(
+        this.lastOrigins_[0],
+        this.browserProxy_.ignoreNotificationPermissionForOrigins.bind(
+            this.browserProxy_, this.lastOrigins_));
   }
 
   private onResetClick_(e: CustomEvent<NotificationPermission>) {
@@ -218,7 +234,13 @@ export class SettingsSafetyHubNotificationPermissionsModuleElement extends
     this.lastUserAction_ = Actions.RESET;
     this.$.undoToast.show();
     this.$.actionMenu.close();
-    this.browserProxy_.resetNotificationPermissionForOrigins(this.lastOrigins_);
+    // |lastOrigins| is set to a 1-item array containing the item on which
+    // the context menu with the |reset| option was open,
+    // in |onMoreActionClick_|.
+    this.$.module.animateHide(
+        this.lastOrigins_[0],
+        this.browserProxy_.resetNotificationPermissionForOrigins.bind(
+            this.browserProxy_, this.lastOrigins_));
   }
 
   private onBlockAllClick_(e: Event) {
@@ -227,7 +249,10 @@ export class SettingsSafetyHubNotificationPermissionsModuleElement extends
     // origins that were blocked.
     assert(this.sites_);
     this.lastOrigins_ = this.sites_.map(site => site.origin);
-    this.browserProxy_.blockNotificationPermissionForOrigins(this.lastOrigins_);
+    this.$.module.animateHide(
+        /* all origins */ null,
+        this.browserProxy_.blockNotificationPermissionForOrigins.bind(
+            this.browserProxy_, this.lastOrigins_));
     this.lastUserAction_ = Actions.BLOCK;
     this.$.undoToast.show();
   }
@@ -289,22 +314,20 @@ export class SettingsSafetyHubNotificationPermissionsModuleElement extends
       case Actions.BLOCK:
         this.browserProxy_.allowNotificationPermissionForOrigins(
             this.lastOrigins_);
-        this.lastOrigins_ = [];
         break;
       case Actions.RESET:
         this.browserProxy_.allowNotificationPermissionForOrigins(
             this.lastOrigins_);
-        this.lastOrigins_ = [];
         break;
       case Actions.IGNORE:
         this.browserProxy_.undoIgnoreNotificationPermissionForOrigins(
             this.lastOrigins_);
-        this.lastOrigins_ = [];
         break;
       default:
         assertNotReached();
     }
 
+    this.lastOrigins_ = [];
     this.$.undoToast.hide();
   }
 
