@@ -78,7 +78,10 @@ public abstract class AsyncInitializationActivity
     private long mOnCreateTimestampMs;
     /** Time at which onPause is called. */
     private long mOnPauseTimestampMs;
-    /** Time at which onPause is called before the activity is recreated due to unfolding. */
+    /**
+     * Time at which onPause is called before the activity is recreated due to unfolding. The
+     * timestamp is captured only if recreation starts when the activity is not in stopped state.
+     */
     private long mOnPauseBeforeFoldRecreateTimestampMs;
 
     private ActivityWindowAndroid mWindowAndroid;

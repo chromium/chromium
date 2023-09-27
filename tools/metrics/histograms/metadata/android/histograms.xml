@@ -4346,18 +4346,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.UnfoldToTablet.Latency" units="ms"
+<histogram name="Android.UnfoldToTablet.Latency2" units="ms"
     expires_after="2024-07-31">
   <owner>amanvr@google.com</owner>
   <owner>woa-performance@google.com</owner>
   <summary>
     Records the time taken by chrome to display the first frame presented after
-    unfolding a foldable device. This histogram aims to capture the unfold
-    latency in devices which switch to tablet mode when unfolded, and is
-    recorded every time the device is unfolded. The begin timestamp of the
-    metric is the timestamp from the start of the first OnPause activity
-    lifecycle callback before the activity recreates. The end timestamp is the
-    timestamp when Chrome displays the first frame on the new screen.
+    unfolding a foldable device when Chrome is on top. This histogram aims to
+    capture the unfold latency in devices which switch to tablet mode when
+    unfolded, and is recorded every time the device is unfolded. The begin
+    timestamp of the metric is the timestamp from the start of the first OnPause
+    activity lifecycle callback before the activity recreates. The end timestamp
+    is the timestamp when Chrome displays the first frame on the new screen.
   </summary>
 </histogram>
 
