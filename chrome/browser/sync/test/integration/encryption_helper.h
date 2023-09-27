@@ -31,6 +31,16 @@ class ServerPassphraseTypeChecker
   const syncer::PassphraseType expected_passphrase_type_;
 };
 
+// Checker used to block until a Nigori populated with cross-user sharing keys
+// is available on the server.
+class CrossUserSharingKeysChecker
+    : public fake_server::FakeServerMatchStatusChecker {
+ public:
+  CrossUserSharingKeysChecker();
+
+  bool IsExitConditionSatisfied(std::ostream* os) override;
+};
+
 // Checker used to block until a Nigori with a given keybag encryption key name
 // is available on the server.
 class ServerNigoriKeyNameChecker
