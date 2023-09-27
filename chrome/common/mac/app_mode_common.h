@@ -22,7 +22,8 @@
 
 // The version of the ChromeAppModeInfo struct below. If the format of the
 // struct ever changes, be sure to update the APP_SHIM_VERSION_NUMBER here and
-// the corresponding line in //chrome/app/framework.order .
+// the corresponding lines in //chrome/app/framework.order and
+// //chrome/app/framework.exports .
 #define APP_SHIM_VERSION_NUMBER 7
 
 // All the other macro magic to make APP_SHIM_VERSION_NUMBER usable.
