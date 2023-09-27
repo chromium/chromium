@@ -116,6 +116,11 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
         }
     }
 
+    @Override
+    public void onShowMorePasskeysSelected() {
+        // TODO(crbug.com/1474805): wire the button to the native side.
+    }
+
     @NativeMethods
     interface Natives {
         void onCredentialSelected(long nativeTouchToFillViewImpl, Credential credential);

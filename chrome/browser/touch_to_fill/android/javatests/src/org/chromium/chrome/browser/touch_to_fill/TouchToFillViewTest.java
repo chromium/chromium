@@ -100,6 +100,7 @@ public class TouchToFillViewTest {
             "Nik", "***", "Nik", "group.xyz", "group.xyz", GetLoginMatchType.AFFILIATED, 0);
     private final AtomicBoolean mManageButtonClicked = new AtomicBoolean(false);
     private final AtomicBoolean mHybridButtonClicked = new AtomicBoolean(false);
+    private final AtomicBoolean mMorePasskeysClicked = new AtomicBoolean(false);
 
     @Mock
     private Callback<Integer> mDismissHandler;
@@ -632,6 +633,26 @@ public class TouchToFillViewTest {
         pollUiThread(mHybridButtonClicked::get);
     }
 
+    @Test
+    @MediumTest
+    public void testMorePasskeysButtonIsClickable() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel.get(SHEET_ITEMS)
+                    .addAll(asList(buildMorePasskeysItem(), buildFooterItem(/*showHybrid=*/false)));
+            mModel.set(VISIBLE, true);
+        });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mSheetTestSupport.setSheetState(SheetState.FULL, false));
+
+        TextView morePasskeysItem =
+                mTouchToFillView.getContentView().findViewById(R.id.more_passkeys);
+        TouchCommon.singleClickView(morePasskeysItem);
+
+        pollUiThread(mMorePasskeysClicked::get);
+    }
+
     private ChromeActivity getActivity() {
         return mActivityTestRule.getActivity();
     }
@@ -691,6 +712,14 @@ public class TouchToFillViewTest {
                         .with(ON_CLICK_LISTENER, mCredentialCallback)
                         .with(FORMATTED_ORIGIN, credential.getDisplayName())
                         .with(SHOW_SUBMIT_BUTTON, showSubmitButton)
+                        .build());
+    }
+
+    private MVCListAdapter.ListItem buildMorePasskeysItem() {
+        return new MVCListAdapter.ListItem(TouchToFillProperties.ItemType.MORE_PASSKEYS,
+                new PropertyModel.Builder(TouchToFillProperties.MorePasskeysProperties.ALL_KEYS)
+                        .with(TouchToFillProperties.MorePasskeysProperties.ON_CLICK,
+                                () -> mMorePasskeysClicked.set(true))
                         .build());
     }
 

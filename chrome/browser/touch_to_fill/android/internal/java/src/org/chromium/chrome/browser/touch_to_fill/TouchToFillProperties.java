@@ -110,6 +110,15 @@ class TouchToFillProperties {
         private WebAuthnCredentialProperties() {}
     }
 
+    static class MorePasskeysProperties {
+        static final PropertyModel.ReadableObjectPropertyKey<Runnable> ON_CLICK =
+                new PropertyModel.ReadableObjectPropertyKey<>("more_passkeys_on_click");
+
+        static final PropertyKey[] ALL_KEYS = {ON_CLICK};
+
+        private MorePasskeysProperties() {}
+    }
+
     /**
      * Properties defined here reflect the visible state of the header in the TouchToFill sheet.
      */
@@ -153,7 +162,7 @@ class TouchToFillProperties {
     }
 
     @IntDef({ItemType.HEADER, ItemType.CREDENTIAL, ItemType.WEBAUTHN_CREDENTIAL,
-            ItemType.FILL_BUTTON, ItemType.FOOTER})
+            ItemType.MORE_PASSKEYS, ItemType.FILL_BUTTON, ItemType.FOOTER})
     @Retention(RetentionPolicy.SOURCE)
     @interface ItemType {
         /**
@@ -172,14 +181,19 @@ class TouchToFillProperties {
         int WEBAUTHN_CREDENTIAL = 3;
 
         /**
+         * A section that opens Android Credential Manager API.
+         */
+        int MORE_PASSKEYS = 4;
+
+        /**
          * The fill button at the end of the sheet that filling more obvious for one suggestion.
          */
-        int FILL_BUTTON = 4;
+        int FILL_BUTTON = 5;
 
         /**
          * A footer section containing additional actions.
          */
-        int FOOTER = 5;
+        int FOOTER = 6;
     }
 
     /**

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportHeight="24"
+    android:viewportWidth="24">
+  <path android:fillColor="@macro/default_icon_color" android:fillType="evenOdd" android:pathData="M22.18,14.09C22.18,15.364 21.408,16.459 20.306,16.931L21.247,17.872L20.219,18.9L21.247,19.928L19.068,22.107L18.099,21.138L18.099,17.017C16.878,16.604 16,15.45 16,14.09C16,12.383 17.383,11 19.09,11C20.796,11 22.18,12.383 22.18,14.09ZM20.692,14.091C20.692,14.976 19.975,15.693 19.09,15.693C18.205,15.693 17.488,14.976 17.488,14.091C17.488,13.206 18.205,12.488 19.09,12.488C19.975,12.488 20.692,13.206 20.692,14.091Z"/>
+  <path android:fillColor="@macro/default_icon_color" android:pathData="M14.978,8.476C14.978,10.865 13.041,12.802 10.652,12.802C8.263,12.802 6.326,10.865 6.326,8.476C6.326,6.087 8.263,4.15 10.652,4.15C13.041,4.15 14.978,6.087 14.978,8.476Z"/>
+  <path android:fillColor="@macro/default_icon_color" android:pathData="M2,19.263C2,16.39 7.762,14.937 10.652,14.937C11.782,14.937 13.353,15.16 14.845,15.602C15.177,16.491 15.804,17.236 16.607,17.717V21.454H2V19.263Z"/>
+</vector>

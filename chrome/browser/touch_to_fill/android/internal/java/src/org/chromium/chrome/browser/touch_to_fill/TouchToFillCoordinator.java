@@ -48,8 +48,10 @@ public class TouchToFillCoordinator implements TouchToFillComponent {
             List<WebAuthnCredential> webAuthnCredentials, List<Credential> credentials,
             boolean triggerSubmission, boolean managePasskeysHidesPasswords,
             boolean showHybridPasskeyOption) {
+        // TODO(crbug.com/1474805): wire the button to the native side.
         mMediator.showCredentials(url, isOriginSecure, webAuthnCredentials, credentials,
-                triggerSubmission, managePasskeysHidesPasswords, showHybridPasskeyOption);
+                /*showMorePasskeys=*/false, triggerSubmission, managePasskeysHidesPasswords,
+                showHybridPasskeyOption);
     }
 
     /**

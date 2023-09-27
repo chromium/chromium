@@ -43,6 +43,7 @@ class TouchToFillView extends TouchToFillViewBase {
                     return true;
                 case ItemType.CREDENTIAL: // Fallthrough.
                 case ItemType.WEBAUTHN_CREDENTIAL:
+                case ItemType.MORE_PASSKEYS:
                     return false;
             }
             assert false : "Undefined whether to skip setting background for item of type: " + type;

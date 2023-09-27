@@ -39,6 +39,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FaviconOrFallback;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.ItemType;
+import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.MorePasskeysProperties;
 import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
 import org.chromium.chrome.browser.touch_to_fill.data.WebAuthnCredential;
@@ -99,6 +100,9 @@ class TouchToFillViewBinder {
             case ItemType.WEBAUTHN_CREDENTIAL:
                 return new TouchToFillViewHolder(parent, R.layout.touch_to_fill_list_item,
                         TouchToFillViewBinder::bindWebAuthnCredentialView);
+            case ItemType.MORE_PASSKEYS:
+                return new TouchToFillViewHolder(parent, R.layout.touch_to_fill_more_passkeys_item,
+                        TouchToFillViewBinder::bindMorePasskeysView);
             case ItemType.FILL_BUTTON:
                 return new TouchToFillViewHolder(parent, R.layout.touch_to_fill_fill_button,
                         TouchToFillViewBinder::bindFillButtonView);
@@ -213,6 +217,22 @@ class TouchToFillViewBinder {
             // Ignore.
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
+        }
+    }
+
+    /**
+     * Called whenever an action button to use more passkeys is bound to this view holder.
+     * @param model The model containing the data for the view
+     * @param view The view to be bound
+     * @param propertyKey The key of the property to be bound
+     */
+    private static void bindMorePasskeysView(
+            PropertyModel model, View view, PropertyKey propertyKey) {
+        if (propertyKey == MorePasskeysProperties.ON_CLICK) {
+            view.setOnClickListener(
+                    clickedView -> model.get(MorePasskeysProperties.ON_CLICK).run());
+        } else {
+            assert false : "Unhandled update to property: " + propertyKey;
         }
     }
 

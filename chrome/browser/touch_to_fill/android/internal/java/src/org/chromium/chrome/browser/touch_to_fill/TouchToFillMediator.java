@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.Credentia
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FaviconOrFallback;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FooterProperties;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties;
+import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.MorePasskeysProperties;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
@@ -91,8 +92,8 @@ class TouchToFillMediator {
 
     void showCredentials(GURL url, boolean isOriginSecure,
             List<WebAuthnCredential> webAuthnCredentials, List<Credential> credentials,
-            boolean triggerSubmission, boolean managePasskeysHidesPasswords,
-            boolean showHybridPasskeyOption) {
+            boolean showMorePasskeys, boolean triggerSubmission,
+            boolean managePasskeysHidesPasswords, boolean showHybridPasskeyOption) {
         assert credentials != null;
 
         mManagePasskeysHidesPasswords = managePasskeysHidesPasswords;
@@ -123,7 +124,8 @@ class TouchToFillMediator {
             final PropertyModel model = createWebAuthnModel(credential,
                     new FillableItemCollectionInfo(++fillableItemPosition, fillableItemsTotal));
             sheetItems.add(new ListItem(TouchToFillProperties.ItemType.WEBAUTHN_CREDENTIAL, model));
-            if (shouldCreateConfirmationButton(credentials, webAuthnCredentials)) {
+            if (shouldCreateConfirmationButton(
+                        credentials, webAuthnCredentials, showMorePasskeys)) {
                 sheetItems.add(new ListItem(TouchToFillProperties.ItemType.FILL_BUTTON, model));
             }
             requestWebAuthnIconOrFallbackImage(model, url);
@@ -134,10 +136,18 @@ class TouchToFillMediator {
             final PropertyModel model = createModel(credential, triggerSubmission,
                     new FillableItemCollectionInfo(++fillableItemPosition, fillableItemsTotal));
             sheetItems.add(new ListItem(TouchToFillProperties.ItemType.CREDENTIAL, model));
-            if (shouldCreateConfirmationButton(credentials, webAuthnCredentials)) {
+            if (shouldCreateConfirmationButton(
+                        credentials, webAuthnCredentials, showMorePasskeys)) {
                 sheetItems.add(new ListItem(TouchToFillProperties.ItemType.FILL_BUTTON, model));
             }
             requestIconOrFallbackImage(model, url);
+        }
+
+        if (showMorePasskeys) {
+            sheetItems.add(new ListItem(TouchToFillProperties.ItemType.MORE_PASSKEYS,
+                    new PropertyModel.Builder(MorePasskeysProperties.ALL_KEYS)
+                            .with(MorePasskeysProperties.ON_CLICK, this::onSelectedMorePasskeys)
+                            .build()));
         }
 
         sheetItems.add(new ListItem(TouchToFillProperties.ItemType.FOOTER,
@@ -244,6 +254,12 @@ class TouchToFillMediator {
         mDelegate.onWebAuthnCredentialSelected(credential);
     }
 
+    private void onSelectedMorePasskeys() {
+        mModel.set(VISIBLE, false);
+        // TODO(crbug/1474805): add metrics
+        mDelegate.onShowMorePasskeysSelected();
+    }
+
     public void onDismissed(@StateChangeReason int reason) {
         if (!mModel.get(VISIBLE)) return; // Dismiss only if not dismissed yet.
         mModel.set(VISIBLE, false);
@@ -267,8 +283,9 @@ class TouchToFillMediator {
      * @param credentials The available credentials. Show the confirmation for a lone credential.
      * @return True if a confirmation button should be shown at the end of the bottom sheet.
      */
-    private boolean shouldCreateConfirmationButton(
-            List<Credential> credentials, List<WebAuthnCredential> webauthnCredentials) {
+    private boolean shouldCreateConfirmationButton(List<Credential> credentials,
+            List<WebAuthnCredential> webauthnCredentials, boolean shouldShowMorePasskeys) {
+        if (shouldShowMorePasskeys) return false;
         return credentials.size() + webauthnCredentials.size() == 1;
     }
 

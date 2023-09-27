@@ -77,6 +77,11 @@ public interface TouchToFillComponent {
          * Called when the user selects 'Use a Passkey on a Different Device'.
          */
         void onHybridSignInSelected();
+
+        /**
+         * Called when the users selects 'More passkeys'.
+         */
+        void onShowMorePasskeysSelected();
     }
 
     /**
