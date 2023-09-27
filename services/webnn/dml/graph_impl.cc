@@ -67,6 +67,8 @@ std::string OpKindToString(Operator::Kind kind) {
   switch (kind) {
     case Operator::Kind::kClamp:
       return "clamp";
+    case Operator::Kind::kConv2d:
+      return "conv2d";
     case Operator::Kind::kAdd:
       return "add";
     case Operator::Kind::kSub:
@@ -81,14 +83,14 @@ std::string OpKindToString(Operator::Kind kind) {
       return "min";
     case Operator::Kind::kPow:
       return "pow";
+    case Operator::Kind::kGemm:
+      return "gemm";
     case Operator::Kind::kRelu:
       return "relu";
     case Operator::Kind::kReshape:
       return "reshape";
     case Operator::Kind::kSoftmax:
       return "softmax";
-    default:
-      return base::NumberToString(base::checked_cast<uint32_t>(kind));
   }
 }
 
