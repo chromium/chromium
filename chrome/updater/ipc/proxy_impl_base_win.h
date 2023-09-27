@@ -145,8 +145,8 @@ class ProxyImplBase {
                                       contents ? *contents : L"", L"\n"});
                   }
                   LOG(ERROR) << "log_string: " << log_string;
-                  std::wstring local_log_string = log_string;
-                  base::debug::Alias(&local_log_string);
+                  DEBUG_ALIAS_FOR_WCHARCSTR(local_log_string,
+                                            log_string.c_str(), 1024 * 4);
                   DUMP_WILL_BE_CHECK(false);
                 },
                 IsSystemInstall(scope_) ? L"HKLM" : L"HKCU",
