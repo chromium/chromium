@@ -992,6 +992,56 @@ TEST_F(RenderTextTest, ApplyColorArabicLigature) {
   EXPECT_EQ(SK_ColorBLACK, text_log()[1].color());
 }
 
+TEST_F(RenderTextTest, ApplyEliding) {
+  RenderText* render_text = GetRenderText();
+  render_text->SetText(u"abcd");
+
+  render_text->SetEliding(false);
+  EXPECT_EQ(u"abcd", test_api()->GetLayoutText());
+  render_text->ApplyEliding(true, Range(0, 1));
+  EXPECT_EQ(u"\u2026bcd", test_api()->GetLayoutText());
+  render_text->ApplyEliding(true, Range(1, 2));
+  EXPECT_EQ(u"\u2026cd", test_api()->GetLayoutText());
+  render_text->ApplyEliding(true, Range(3, 4));
+  EXPECT_EQ(u"\u2026c\u2026", test_api()->GetLayoutText());
+
+  render_text->SetEliding(false);
+  render_text->ApplyEliding(true, Range(1, 3));
+  EXPECT_EQ(u"a\u2026d", test_api()->GetLayoutText());
+}
+
+TEST_F(RenderTextTest, ApplyElidingGrapheme) {
+  RenderText* render_text = GetRenderText();
+  render_text->SetText(u"a\U0001F628\u0065\u0301b");
+
+  render_text->ApplyEliding(true, Range(1, 2));
+  EXPECT_EQ(u"a\u2026\u0065\u0301b", test_api()->GetLayoutText());
+  render_text->ApplyEliding(true, Range(3, 5));
+  EXPECT_EQ(u"a\u2026b", test_api()->GetLayoutText());
+
+  // Obscure the text.
+  render_text->SetObscured(true);
+
+  render_text->SetEliding(false);
+  render_text->ApplyEliding(true, Range(1, 2));
+  EXPECT_EQ(u"\u2022\u2026\u2022\u2022", test_api()->GetLayoutText());
+
+  render_text->SetEliding(false);
+  render_text->ApplyEliding(true, Range(3, 6));
+  EXPECT_EQ(u"\u2022\u2022\u2026", test_api()->GetLayoutText());
+}
+
+TEST_F(RenderTextTest, ApplyElidingAndTruncate) {
+  RenderText* render_text = GetRenderText();
+  render_text->set_truncate_length(3);
+  render_text->SetText(u"abcde");
+  render_text->ApplyEliding(true, Range(1, 4));
+
+  // The truncate text has an ellipsis at the end that should be merge with the
+  // eliding ellipsis to avoid double elispsis.
+  EXPECT_EQ(u"a\u2026", test_api()->GetLayoutText());
+}
+
 TEST_F(RenderTextTest, AppendTextKeepsStyles) {
   RenderText* render_text = GetRenderText();
   // Setup basic functionality.
@@ -2681,16 +2731,27 @@ TEST_F(RenderTextTest, TruncatedObscuredText) {
 
 TEST_F(RenderTextTest, TruncatedObscuredTextWithGraphemes) {
   RenderText* render_text = GetRenderText();
-  render_text->set_truncate_length(3);
-  render_text->SetText(u"e\u0301\U0001F468\u200D\u2708\uFE0F\U0001D11E");
+  render_text->set_truncate_length(5);
+  // Set text to the following 4 glyphs: e-acute, x, pilot emoji, musical sign
+  // [é][x][👨‍✈️][𝄞]
+  render_text->SetText(u"e\u0301x\U0001F468\u200D\u2708\uFE0F\U0001D11E");
   render_text->SetObscured(true);
-  EXPECT_EQ(GetObscuredString(3), render_text->GetDisplayText());
+  EXPECT_EQ(u"\u2022\u2022\u2026", render_text->GetDisplayText());
 
   render_text->SetObscuredRevealIndex(0);
-  EXPECT_EQ(u"e\u0301…", render_text->GetDisplayText());
+  EXPECT_EQ(u"e\u0301\u2022\u2026", render_text->GetDisplayText());
+
+  // TODO: Check if this is a bug.
+  // Setting reveal index of 1 maps to the acute unicode codepoint and not the
+  // letter e. Display text however will show both: é.
+  render_text->SetObscuredRevealIndex(1);
+  EXPECT_EQ(u"e\u0301\u2022\u2026", render_text->GetDisplayText());
 
   render_text->SetObscuredRevealIndex(2);
-  EXPECT_EQ(u"\u2022…", render_text->GetDisplayText());
+  EXPECT_EQ(u"\u2022x\u2026", render_text->GetDisplayText());
+
+  render_text->SetObscuredRevealIndex(3);
+  EXPECT_EQ(u"\u2022\u2022\u2026", render_text->GetDisplayText());
 
   render_text->SetObscuredRevealIndex(7);
   EXPECT_EQ(u"\u2022\u2022…", render_text->GetDisplayText());

@@ -521,6 +521,7 @@ void RenderText::SetText(const std::u16string& text) {
   weights_.SetValue(weights_.breaks().front().second);
   for (auto& style : styles_)
     style.SetValue(style.breaks().front().second);
+  elidings_.SetValue(false);
   cached_bounds_and_offset_valid_ = false;
 
   // Reset selection model. SetText should always followed by SetSelectionModel
@@ -919,6 +920,16 @@ void RenderText::ApplyWeight(Font::Weight weight, const Range& range) {
     cached_bounds_and_offset_valid_ = false;
     OnLayoutTextAttributeChanged(false);
   }
+}
+
+void RenderText::SetEliding(bool value) {
+  elidings_.SetValue(value);
+  OnLayoutTextAttributeChanged(false);
+}
+
+void RenderText::ApplyEliding(bool value, const Range& range) {
+  elidings_.ApplyValue(value, range);
+  OnLayoutTextAttributeChanged(false);
 }
 
 bool RenderText::GetStyle(TextStyle style) const {
@@ -1594,6 +1605,9 @@ void RenderText::EnsureLayoutTextUpdated() const {
       U16_SET_CP_START(text_.data(), 0, reveal_index);
   }
 
+  BreakList<bool>::const_iterator eliding_iterator = elidings_.breaks().begin();
+  bool previous_grapheme_elided = false;
+
   // Iterates through graphemes from |text_| and rewrite its codepoints to
   // |layout_text_|.
   base::i18n::UTF16CharIterator text_iter(text_);
@@ -1633,32 +1647,37 @@ void RenderText::EnsureLayoutTextUpdated() const {
       grapheme_codepoints.push_back(RenderText::kPasswordReplacementChar);
     }
 
-    // Rewrite each codepoint of the grapheme.
-    for (uint32_t codepoint : grapheme_codepoints) {
-      // Handle unicode control characters ISO 6429 (block C0). Range from 0 to
-      // 0x1F and 0x7F. The newline character should be kept as-is when
-      // rendertext is multiline.
-      if (!multiline_ || !is_newline_grapheme)
+    // Handle unicode control characters ISO 6429 (block C0). Range from 0 to
+    // 0x1F and 0x7F. The newline character should be kept as-is when
+    // rendertext is multiline.
+    if (!multiline_ || !is_newline_grapheme) {
+      for (uint32_t& codepoint : grapheme_codepoints)
         codepoint = ReplaceControlCharacter(codepoint);
+    }
 
-      // Truncate the remaining codepoints if appending the codepoint to
-      // |layout_text_| is making the text larger than |truncate_length_|.
-      size_t codepoint_length = U16_LENGTH(codepoint);
-      text_truncated =
-          (truncate_length_ != 0 &&
-           ((layout_text_.size() + codepoint_length > truncate_length_) ||
-            (!text_iter.end() &&
-             (layout_text_.size() + codepoint_length == truncate_length_))));
+    // Truncate text when the input text it above |truncate_length_|.
+    text_truncated = (truncate_length_ != 0 &&
+                      ((text_grapheme_end_position > truncate_length_) ||
+                       (!text_iter.end() &&
+                        (text_grapheme_end_position == truncate_length_))));
 
-      if (text_truncated) {
-        codepoint = kEllipsisCodepoint;
-        codepoint_length = U16_LENGTH(codepoint);
-        // On truncate, remove the whole current grapheme.
-        layout_text_.resize(layout_grapheme_start_position);
-      }
+    // If the text is elided, replace it by an ellipsis. Do not append an
+    // ellipsis if it was already inserted.
+    eliding_iterator = IncrementBreakListIteratorToPosition(
+        elidings_, eliding_iterator, text_grapheme_start_position);
+    const bool elided_grapheme = eliding_iterator->second;
+    if (elided_grapheme || text_truncated) {
+      grapheme_codepoints.clear();
+      // Append an ellipsis if not already done.
+      if (!previous_grapheme_elided)
+        grapheme_codepoints.push_back(kEllipsisCodepoint);
+    }
+    previous_grapheme_elided = elided_grapheme;
 
+    for (uint32_t codepoint : grapheme_codepoints) {
       // Append the codepoint to the layout text.
       const size_t current_layout_text_position = layout_text_.size();
+      const size_t codepoint_length = U16_LENGTH(codepoint);
       if (codepoint_length == 1) {
         layout_text_ += codepoint;
       } else {
@@ -1685,10 +1704,6 @@ void RenderText::EnsureLayoutTextUpdated() const {
                                        text_grapheme_start_position + 1);
       if (composition_range_.Contains(grapheme_start_range))
         layout_styles_[TEXT_STYLE_HEAVY_UNDERLINE].ApplyValue(true, range);
-
-      // Stop appending characters if the text is truncated.
-      if (text_truncated)
-        break;
     }
   }
 
@@ -1938,6 +1953,7 @@ void RenderText::UpdateStyleLengths() {
   weights_.SetMax(text_length);
   for (auto& style : styles_)
     style.SetMax(text_length);
+  elidings_.SetMax(text_length);
 }
 
 void RenderText::UpdateLayoutStyleLengths(size_t max_length) const {

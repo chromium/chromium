@@ -448,6 +448,11 @@ class GFX_EXPORT RenderText {
   void SetWeight(Font::Weight weight);
   void ApplyWeight(Font::Weight weight, const Range& range);
 
+  // Replace the elided text by an ellipsis. This property is getting rewritten
+  // by the use of SetElideBehavior(...).
+  void SetEliding(bool value);
+  void ApplyEliding(bool value, const Range& range);
+
   // Returns whether this style is enabled consistently across the entire
   // RenderText.
   bool GetStyle(TextStyle style) const;
@@ -953,6 +958,7 @@ class GFX_EXPORT RenderText {
   BreakList<int> font_size_overrides_{0};
   BreakList<Font::Weight> weights_{Font::Weight::NORMAL};
   internal::StyleArray styles_;
+  BreakList<bool> elidings_;
 
   mutable BreakList<SkColor> layout_colors_;
   mutable BreakList<BaselineStyle> layout_baselines_;
