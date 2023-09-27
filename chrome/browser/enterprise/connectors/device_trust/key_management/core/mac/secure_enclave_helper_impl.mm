@@ -24,8 +24,12 @@ SecureEnclaveHelperImpl::CreateSecureKey(CFDictionaryRef attributes,
   base::apple::ScopedCFTypeRef<SecKeyRef> key(
       SecKeyCreateRandomKey(attributes, error_ref.InitializeInto()));
 
-  if (error && error_ref) {
-    *error = CFErrorGetCode(error_ref);
+  // In the odd chance that the API did not populate `error_ref`, fallback to
+  // errSecCoreFoundationUnknown.
+  OSStatus status =
+      error_ref ? CFErrorGetCode(error_ref) : errSecCoreFoundationUnknown;
+  if (error) {
+    *error = status;
   }
 
   return key;

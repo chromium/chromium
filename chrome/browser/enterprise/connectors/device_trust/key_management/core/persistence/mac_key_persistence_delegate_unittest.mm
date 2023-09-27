@@ -33,12 +33,12 @@ using test::MockSecureEnclaveClient;
 class MacKeyPersistenceDelegateTest : public testing::Test {
  public:
   MacKeyPersistenceDelegateTest() {
-    SetMockClient();
+    SetNextMockClient();
     persistence_delegate_ = std::make_unique<MacKeyPersistenceDelegate>();
   }
 
  protected:
-  void SetMockClient() {
+  void SetNextMockClient() {
     auto mock_secure_enclave_client =
         std::make_unique<MockSecureEnclaveClient>();
     mock_secure_enclave_client_ = mock_secure_enclave_client.get();
@@ -173,50 +173,33 @@ TEST_F(MacKeyPersistenceDelegateTest, StoreKeyPair_HardwareKey_Failure) {
 
 // Tests loading a key pair when no key previously existed.
 TEST_F(MacKeyPersistenceDelegateTest, LoadKeyPair_NoKey) {
-  InSequence s;
-
-  EXPECT_CALL(*mock_secure_enclave_client_, GetStoredKeyLabel(_, _))
-      .WillOnce(
-          [](SecureEnclaveClient::KeyType type, std::vector<uint8_t>& output) {
-            EXPECT_EQ(SecureEnclaveClient::KeyType::kPermanent, type);
-            return false;
-          });
-  EXPECT_FALSE(persistence_delegate_->LoadKeyPair());
-
-  EXPECT_CALL(*mock_secure_enclave_client_, GetStoredKeyLabel(_, _))
-      .WillOnce(
-          [](SecureEnclaveClient::KeyType type, std::vector<uint8_t>& output) {
-            EXPECT_EQ(SecureEnclaveClient::KeyType::kPermanent, type);
-            return true;
-          });
+  SetNextMockClient();
+  EXPECT_CALL(*mock_secure_enclave_client_,
+              CopyStoredKey(SecureEnclaveClient::KeyType::kPermanent, _))
+      .WillOnce([](SecureEnclaveClient::KeyType key_type, OSStatus* error) {
+        *error = errSecItemNotFound;
+        return base::apple::ScopedCFTypeRef<SecKeyRef>(nullptr);
+      });
   EXPECT_FALSE(persistence_delegate_->LoadKeyPair());
 }
 
 // Tests loading a key pair when a key previously existed.
 TEST_F(MacKeyPersistenceDelegateTest, LoadKeyPair_Key) {
-  EXPECT_CALL(*mock_secure_enclave_client_, GetStoredKeyLabel(_, _))
-      .WillOnce(
-          [](SecureEnclaveClient::KeyType type, std::vector<uint8_t>& output) {
-            EXPECT_EQ(SecureEnclaveClient::KeyType::kPermanent, type);
-            std::string label = constants::kDeviceTrustSigningKeyLabel;
-            output.assign(label.begin(), label.end());
-            return true;
-          });
-
-  SetMockClient();
-  EXPECT_CALL(*mock_secure_enclave_client_, CopyStoredKey(_))
-      .WillOnce([this](SecureEnclaveClient::KeyType type) {
-        EXPECT_EQ(SecureEnclaveClient::KeyType::kPermanent, type);
+  SetNextMockClient();
+  EXPECT_CALL(*mock_secure_enclave_client_,
+              CopyStoredKey(SecureEnclaveClient::KeyType::kPermanent, _))
+      .WillOnce([this](SecureEnclaveClient::KeyType type, OSStatus* error) {
         return CreateTestKey();
       });
 
   auto key_pair = persistence_delegate_->LoadKeyPair();
+  ASSERT_TRUE(key_pair);
   EXPECT_EQ(BPKUR::CHROME_BROWSER_HW_KEY, key_pair->trust_level());
   EXPECT_TRUE(key_pair->key());
 }
 
 // Tests a failure to create a new key pair.
-TEST_F(MacKeyPersistenceDelegateTest, CreateKeyPair__EmptySigningKey) {
+TEST_F(MacKeyPersistenceDelegateTest, CreateKeyPair_EmptySigningKey) {
   EXPECT_CALL(*mock_secure_enclave_client_, UpdateStoredKeyLabel(_, _))
       .WillOnce([](SecureEnclaveClient::KeyType current_key_type,
                    SecureEnclaveClient::KeyType new_key_type) {
@@ -225,7 +208,7 @@ TEST_F(MacKeyPersistenceDelegateTest, CreateKeyPair__EmptySigningKey) {
         return true;
       });
 
-  SetMockClient();
+  SetNextMockClient();
   EXPECT_CALL(*mock_secure_enclave_client_, CreatePermanentKey())
       .WillOnce([]() { return base::apple::ScopedCFTypeRef<SecKeyRef>(); });
   EXPECT_FALSE(persistence_delegate_->CreateKeyPair());
@@ -241,7 +224,7 @@ TEST_F(MacKeyPersistenceDelegateTest, CreateKeyPair_Success) {
         return true;
       });
 
-  SetMockClient();
+  SetNextMockClient();
   EXPECT_CALL(*mock_secure_enclave_client_, CreatePermanentKey())
       .WillOnce([this]() { return CreateTestKey(); });
   auto key_pair = persistence_delegate_->CreateKeyPair();

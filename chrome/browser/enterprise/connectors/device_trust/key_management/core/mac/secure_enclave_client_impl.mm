@@ -15,7 +15,6 @@
 #include "base/apple/scoped_cftyperef.h"
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/metrics_util.h"
@@ -33,24 +32,6 @@ namespace {
 
 bool IsSuccess(OSStatus status) {
   return status == errSecSuccess;
-}
-
-// Logs UMA metrics on the type of `operation` being performed, the key storage
-// `type` and the `error_code` returned by Keychain APIs.
-void LogKeyOperationFailure(KeychainOperation operation,
-                            SecureEnclaveClient::KeyType type,
-                            OSStatus error_code) {
-  RecordKeyOperationStatus(operation, type, error_code);
-}
-
-// Returns the key label based on the key `type` if the key type is not
-// supported an empty string is returned.
-base::StringPiece GetLabelFromKeyType(SecureEnclaveClient::KeyType type) {
-  if (type == SecureEnclaveClient::KeyType::kTemporary)
-    return constants::kTemporaryDeviceTrustSigningKeyLabel;
-  if (type == SecureEnclaveClient::KeyType::kPermanent)
-    return constants::kDeviceTrustSigningKeyLabel;
-  return base::StringPiece();
 }
 
 // Creates and returns the secure enclave private key attributes used
@@ -79,7 +60,6 @@ base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> CreateAttributesForKey() {
       CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
                                 &kCFTypeDictionaryKeyCallBacks,
                                 &kCFTypeDictionaryValueCallBacks));
-  CFDictionarySetValue(attributes, kSecPrivateKeyAttrs, private_key_params);
   CFDictionarySetValue(private_key_params, kSecAttrIsPermanent, kCFBooleanTrue);
   base::apple::ScopedCFTypeRef<SecAccessControlRef> access_control(
       SecAccessControlCreateWithFlags(
@@ -90,6 +70,8 @@ base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> CreateAttributesForKey() {
           kSecAccessControlPrivateKeyUsage, /*error=*/nullptr));
   CFDictionarySetValue(private_key_params, kSecAttrAccessControl,
                        access_control);
+
+  CFDictionarySetValue(attributes, kSecPrivateKeyAttrs, private_key_params);
   return attributes;
 }
 
@@ -104,114 +86,20 @@ base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> CreateQueryForKey(
   CFDictionarySetValue(query, kSecClass, kSecClassKey);
   CFDictionarySetValue(query, kSecAttrKeyType, kSecAttrKeyTypeECSECPrimeRandom);
   CFDictionarySetValue(query, kSecAttrLabel,
-                       base::SysUTF8ToCFStringRef(GetLabelFromKeyType(type)));
+                       base::SysUTF8ToCFStringRef(
+                           SecureEnclaveClient::GetLabelFromKeyType(type)));
   CFDictionarySetValue(query, kSecReturnRef, kCFBooleanTrue);
   CFDictionarySetValue(query, kSecUseDataProtectionKeychain, kCFBooleanTrue);
   return query;
 }
 
-}  // namespace
-
-SecureEnclaveClientImpl::SecureEnclaveClientImpl()
-    : helper_(SecureEnclaveHelper::Create()) {
-  DCHECK(helper_);
-}
-
-SecureEnclaveClientImpl::~SecureEnclaveClientImpl() = default;
-
-base::apple::ScopedCFTypeRef<SecKeyRef>
-SecureEnclaveClientImpl::CreatePermanentKey() {
-  auto attributes = CreateAttributesForKey();
-  if (!attributes)
-    return base::apple::ScopedCFTypeRef<SecKeyRef>();
-
-  // Deletes a permanent Secure Enclave key if it exists from a previous
-  // key rotation.
-  DeleteKey(KeyType::kPermanent);
-
-  OSStatus status;
-  auto key = helper_->CreateSecureKey(attributes, &status);
-  if (!key) {
-    LogKeyOperationFailure(KeychainOperation::kCreate, KeyType::kPermanent,
-                           status);
-  }
-
-  return key;
-}
-
-base::apple::ScopedCFTypeRef<SecKeyRef> SecureEnclaveClientImpl::CopyStoredKey(
-    KeyType type) {
-  OSStatus status;
-  auto key_ref = helper_->CopyKey(CreateQueryForKey(type), &status);
-  if (!key_ref) {
-    LogKeyOperationFailure(KeychainOperation::kCopy, type, status);
-  }
-
-  return key_ref;
-}
-
-bool SecureEnclaveClientImpl::UpdateStoredKeyLabel(KeyType current_key_type,
-                                                   KeyType new_key_type) {
-  // Deletes the `new_key_type` label if it exists in the keychain.
-  DeleteKey(new_key_type);
-
-  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> attributes_to_update(
-      CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
-                                &kCFTypeDictionaryKeyCallBacks,
-                                &kCFTypeDictionaryValueCallBacks));
-  auto label = GetLabelFromKeyType(new_key_type);
-  if (label.empty())
-    return false;
-
-  CFDictionarySetValue(attributes_to_update, kSecAttrLabel,
-                       base::SysUTF8ToCFStringRef(label));
-
-  OSStatus status = helper_->Update(CreateQueryForKey(current_key_type),
-                                    attributes_to_update);
-
-  bool success = IsSuccess(status);
-  if (!success) {
-    LogKeyOperationFailure(KeychainOperation::kUpdate, current_key_type,
-                           status);
-  }
-
-  return success;
-}
-
-bool SecureEnclaveClientImpl::DeleteKey(KeyType type) {
-  OSStatus status = helper_->Delete(CreateQueryForKey(type));
-
-  bool success = IsSuccess(status);
-  if (!success) {
-    LogKeyOperationFailure(KeychainOperation::kDelete, type, status);
-  }
-
-  return success;
-}
-
-bool SecureEnclaveClientImpl::GetStoredKeyLabel(KeyType type,
-                                                std::vector<uint8_t>& output) {
-  OSStatus status;
-  if (!helper_->CopyKey(CreateQueryForKey(type), &status)) {
-    LogKeyOperationFailure(KeychainOperation::kCopy, type, status);
+// Converts an external representation of an EC public key from ANSI X9.63
+// standard (using a byte string of 04 || X || Y) to a DER-encoded SPKI
+// structure.
+bool ConvertPublicKey(CFDataRef data_ref, std::vector<uint8_t>& output) {
+  if (!data_ref) {
     return false;
   }
-
-  auto label = GetLabelFromKeyType(type);
-  output.assign(label.begin(), label.end());
-  return true;
-}
-
-bool SecureEnclaveClientImpl::ExportPublicKey(SecKeyRef key,
-                                              std::vector<uint8_t>& output) {
-  base::apple::ScopedCFTypeRef<SecKeyRef> public_key =
-      base::apple::ScopedCFTypeRef<SecKeyRef>(SecKeyCopyPublicKey(key));
-  base::apple::ScopedCFTypeRef<CFErrorRef> error;
-  base::apple::ScopedCFTypeRef<CFDataRef> data_ref(
-      SecKeyCopyExternalRepresentation(public_key, error.InitializeInto()));
-
-  if (!data_ref)
-    return false;
 
   auto data =
       base::make_span(CFDataGetBytePtr(data_ref),
@@ -243,20 +131,149 @@ bool SecureEnclaveClientImpl::ExportPublicKey(SecKeyRef key,
   return true;
 }
 
+}  // namespace
+
+SecureEnclaveClientImpl::SecureEnclaveClientImpl()
+    : helper_(SecureEnclaveHelper::Create()) {
+  DCHECK(helper_);
+}
+
+SecureEnclaveClientImpl::~SecureEnclaveClientImpl() = default;
+
+base::apple::ScopedCFTypeRef<SecKeyRef>
+SecureEnclaveClientImpl::CreatePermanentKey() {
+  auto attributes = CreateAttributesForKey();
+  if (!attributes)
+    return base::apple::ScopedCFTypeRef<SecKeyRef>();
+
+  // Deletes a permanent Secure Enclave key if it exists from a previous
+  // key rotation.
+  DeleteKey(KeyType::kPermanent);
+
+  OSStatus status;
+  auto key = helper_->CreateSecureKey(attributes, &status);
+  if (!key) {
+    RecordKeyOperationStatus(KeychainOperation::kCreate, KeyType::kPermanent,
+                             status);
+  }
+
+  return key;
+}
+
+base::apple::ScopedCFTypeRef<SecKeyRef> SecureEnclaveClientImpl::CopyStoredKey(
+    KeyType type,
+    OSStatus* error) {
+  OSStatus status;
+  auto key_ref = helper_->CopyKey(CreateQueryForKey(type), &status);
+  if (!key_ref) {
+    RecordKeyOperationStatus(KeychainOperation::kCopy, type, status);
+    if (error) {
+      *error = status;
+    }
+  }
+
+  return key_ref;
+}
+
+bool SecureEnclaveClientImpl::UpdateStoredKeyLabel(KeyType current_key_type,
+                                                   KeyType new_key_type) {
+  // Deletes the `new_key_type` label if it exists in the keychain.
+  DeleteKey(new_key_type);
+
+  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> attributes_to_update(
+      CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
+                                &kCFTypeDictionaryKeyCallBacks,
+                                &kCFTypeDictionaryValueCallBacks));
+  auto label = SecureEnclaveClient::GetLabelFromKeyType(new_key_type);
+  if (label.empty())
+    return false;
+
+  CFDictionarySetValue(attributes_to_update, kSecAttrLabel,
+                       base::SysUTF8ToCFStringRef(label));
+
+  OSStatus status = helper_->Update(CreateQueryForKey(current_key_type),
+                                    attributes_to_update);
+
+  bool success = IsSuccess(status);
+  if (!success) {
+    RecordKeyOperationStatus(KeychainOperation::kUpdate, current_key_type,
+                             status);
+  }
+
+  return success;
+}
+
+bool SecureEnclaveClientImpl::DeleteKey(KeyType type) {
+  OSStatus status = helper_->Delete(CreateQueryForKey(type));
+
+  bool success = IsSuccess(status);
+  if (!success) {
+    RecordKeyOperationStatus(KeychainOperation::kDelete, type, status);
+  }
+
+  return success;
+}
+
+bool SecureEnclaveClientImpl::ExportPublicKey(SecKeyRef key,
+                                              std::vector<uint8_t>& output,
+                                              OSStatus* error) {
+  base::apple::ScopedCFTypeRef<SecKeyRef> public_key(SecKeyCopyPublicKey(key));
+  if (!public_key) {
+    if (error) {
+      // The API doesn't return any OSStatus, but we'll use errSecInvalidItemRef
+      // for tracking purposes.
+      *error = errSecInvalidItemRef;
+    }
+    return false;
+  }
+
+  base::apple::ScopedCFTypeRef<CFErrorRef> error_ref;
+  base::apple::ScopedCFTypeRef<CFDataRef> data_ref(
+      SecKeyCopyExternalRepresentation(public_key, error_ref.InitializeInto()));
+
+  if (!data_ref) {
+    if (error) {
+      // In the odd chance that the API did not populate `error_ref`, fallback
+      // to errSecCoreFoundationUnknown.
+      *error =
+          error_ref ? CFErrorGetCode(error_ref) : errSecCoreFoundationUnknown;
+    }
+    return false;
+  }
+
+  if (!ConvertPublicKey(data_ref, output)) {
+    if (error) {
+      // This arithmetic function doesn't really interact with any OS API, but
+      // we'll use errSecConversionError for tracking purposes.
+      *error = errSecConversionError;
+    }
+    return false;
+  }
+  return true;
+}
+
 bool SecureEnclaveClientImpl::SignDataWithKey(SecKeyRef key,
                                               base::span<const uint8_t> data,
-                                              std::vector<uint8_t>& output) {
+                                              std::vector<uint8_t>& output,
+                                              OSStatus* error) {
   base::apple::ScopedCFTypeRef<CFDataRef> data_ref(
       CFDataCreate(kCFAllocatorDefault, data.data(),
                    base::checked_cast<CFIndex>(data.size())));
 
-  base::apple::ScopedCFTypeRef<CFErrorRef> error;
+  base::apple::ScopedCFTypeRef<CFErrorRef> error_ref;
   base::apple::ScopedCFTypeRef<CFDataRef> signature(SecKeyCreateSignature(
       key, kSecKeyAlgorithmECDSASignatureMessageX962SHA256, data_ref,
-      error.InitializeInto()));
+      error_ref.InitializeInto()));
 
-  if (!signature)
+  if (!signature) {
+    if (error) {
+      // In the odd chance that the API did not populate `error_ref`, fallback
+      // to errSecCoreFoundationUnknown.
+      *error =
+          error_ref ? CFErrorGetCode(error_ref) : errSecCoreFoundationUnknown;
+    }
     return false;
+  }
 
   output.assign(CFDataGetBytePtr(signature),
                 CFDataGetBytePtr(signature) + CFDataGetLength(signature));

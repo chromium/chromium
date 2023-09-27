@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/secure_enclave_signing_key.h"
 
+#include <Security/Security.h>
 #include <memory>
 #include <string>
 #include <vector>
@@ -12,6 +13,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/metrics_util.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/secure_enclave_client.h"
 #include "crypto/signature_verifier.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -25,7 +27,7 @@ class SecureEnclaveSigningKey : public crypto::UnexportableSigningKey {
  public:
   SecureEnclaveSigningKey(base::apple::ScopedCFTypeRef<SecKeyRef> key,
                           std::unique_ptr<SecureEnclaveClient> client,
-                          SecureEnclaveClient::KeyType type);
+                          SecureEnclaveClient::KeyType key_type);
   ~SecureEnclaveSigningKey() override;
 
   // crypto::UnexportableSigningKey:
@@ -44,10 +46,10 @@ class SecureEnclaveSigningKey : public crypto::UnexportableSigningKey {
 SecureEnclaveSigningKey::SecureEnclaveSigningKey(
     base::apple::ScopedCFTypeRef<SecKeyRef> key,
     std::unique_ptr<SecureEnclaveClient> client,
-    SecureEnclaveClient::KeyType type)
-    : key_(std::move(key)), client_(std::move(client)), key_type_(type) {
-  DCHECK(key_);
-  DCHECK(client_);
+    SecureEnclaveClient::KeyType key_type)
+    : key_(std::move(key)), client_(std::move(client)), key_type_(key_type) {
+  CHECK(key_);
+  CHECK(client_);
 }
 
 SecureEnclaveSigningKey::~SecureEnclaveSigningKey() = default;
@@ -59,20 +61,31 @@ SecureEnclaveSigningKey::Algorithm() const {
 
 std::vector<uint8_t> SecureEnclaveSigningKey::GetSubjectPublicKeyInfo() const {
   std::vector<uint8_t> pubkey;
-  client_->ExportPublicKey(key_, pubkey);
+
+  OSStatus error;
+  if (!client_->ExportPublicKey(key_, pubkey, &error)) {
+    RecordKeyOperationStatus(KeychainOperation::kExportPublicKey, key_type_,
+                             error);
+  }
+
   return pubkey;
 }
 
 std::vector<uint8_t> SecureEnclaveSigningKey::GetWrappedKey() const {
   std::vector<uint8_t> wrapped;
-  client_->GetStoredKeyLabel(key_type_, wrapped);
+  if (key_) {
+    auto label = SecureEnclaveClient::GetLabelFromKeyType(key_type_);
+    wrapped.assign(label.begin(), label.end());
+  }
   return wrapped;
 }
 
 absl::optional<std::vector<uint8_t>> SecureEnclaveSigningKey::SignSlowly(
     base::span<const uint8_t> data) {
   std::vector<uint8_t> signature;
-  if (!client_->SignDataWithKey(key_, data, signature)) {
+  OSStatus error;
+  if (!client_->SignDataWithKey(key_, data, signature, &error)) {
+    RecordKeyOperationStatus(KeychainOperation::kSignPayload, key_type_, error);
     return absl::nullopt;
   }
 
@@ -81,60 +94,36 @@ absl::optional<std::vector<uint8_t>> SecureEnclaveSigningKey::SignSlowly(
 
 }  // namespace
 
-SecureEnclaveSigningKeyProvider::SecureEnclaveSigningKeyProvider(
-    SecureEnclaveClient::KeyType type)
-    : provider_key_type_(type) {}
+SecureEnclaveSigningKeyProvider::SecureEnclaveSigningKeyProvider() = default;
+
 SecureEnclaveSigningKeyProvider::~SecureEnclaveSigningKeyProvider() = default;
 
-absl::optional<crypto::SignatureVerifier::SignatureAlgorithm>
-SecureEnclaveSigningKeyProvider::SelectAlgorithm(
-    base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-        acceptable_algorithms) {
-  const auto kAlgorithm = crypto::SignatureVerifier::ECDSA_SHA256;
-  if (base::Contains(acceptable_algorithms, kAlgorithm))
-    return kAlgorithm;
-
-  return absl::nullopt;
-}
-
 std::unique_ptr<crypto::UnexportableSigningKey>
-SecureEnclaveSigningKeyProvider::GenerateSigningKeySlowly(
-    base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-        acceptable_algorithms) {
-  if (provider_key_type_ != SecureEnclaveClient::KeyType::kPermanent)
-    return nullptr;
-
-  auto algo = SelectAlgorithm(acceptable_algorithms);
-  if (!algo)
-    return nullptr;
-
-  DCHECK_EQ(crypto::SignatureVerifier::ECDSA_SHA256, *algo);
-
+SecureEnclaveSigningKeyProvider::GenerateSigningKeySlowly() {
   auto client = SecureEnclaveClient::Create();
   auto key = client->CreatePermanentKey();
-  if (!key)
+  if (!key) {
     return nullptr;
+  }
 
   return std::make_unique<SecureEnclaveSigningKey>(
-      std::move(key), std::move(client), provider_key_type_);
+      std::move(key), std::move(client),
+      SecureEnclaveClient::KeyType::kPermanent);
 }
 
 std::unique_ptr<crypto::UnexportableSigningKey>
-SecureEnclaveSigningKeyProvider::FromWrappedSigningKeySlowly(
-    base::span<const uint8_t> wrapped_key_label) {
-  // Verifying wrapped key label matches the provider key type.
-  if (wrapped_key_label.empty() ||
-      provider_key_type_ !=
-          SecureEnclaveClient::GetTypeFromWrappedKey(wrapped_key_label))
-    return nullptr;
-
+SecureEnclaveSigningKeyProvider::LoadStoredSigningKeySlowly(
+    SecureEnclaveClient::KeyType key_type,
+    OSStatus* error) {
   auto client = SecureEnclaveClient::Create();
-  auto key = client->CopyStoredKey(provider_key_type_);
-  if (!key)
-    return nullptr;
 
-  return std::make_unique<SecureEnclaveSigningKey>(
-      std::move(key), std::move(client), provider_key_type_);
+  auto key = client->CopyStoredKey(key_type, error);
+  if (!key) {
+    return nullptr;
+  }
+
+  return std::make_unique<SecureEnclaveSigningKey>(std::move(key),
+                                                   std::move(client), key_type);
 }
 
 }  // namespace enterprise_connectors

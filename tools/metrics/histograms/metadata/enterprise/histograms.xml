@@ -1043,6 +1043,8 @@ chromium-metrics-reviews@google.com.
     <variant name="Copy" summary="Copy"/>
     <variant name="Create" summary="Create"/>
     <variant name="Delete" summary="Delete"/>
+    <variant name="ExportPublicKey" summary="ExportPublicKey"/>
+    <variant name="SignPayload" summary="SignPayload"/>
     <variant name="Update" summary="Update"/>
   </token>
 </histogram>

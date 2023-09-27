@@ -65,4 +65,15 @@ SecureEnclaveClient::GetTypeFromWrappedKey(
   return absl::nullopt;
 }
 
+// static
+std::string_view SecureEnclaveClient::GetLabelFromKeyType(
+    SecureEnclaveClient::KeyType type) {
+  switch (type) {
+    case SecureEnclaveClient::KeyType::kTemporary:
+      return constants::kTemporaryDeviceTrustSigningKeyLabel;
+    case SecureEnclaveClient::KeyType::kPermanent:
+      return constants::kDeviceTrustSigningKeyLabel;
+  }
+}
+
 }  // namespace enterprise_connectors

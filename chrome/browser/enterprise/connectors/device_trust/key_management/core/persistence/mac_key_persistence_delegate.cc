@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/mac_key_persistence_delegate.h"
 
+#include <Security/Security.h>
 #include <utility>
 
 #include "base/check.h"
@@ -59,15 +60,10 @@ bool MacKeyPersistenceDelegate::StoreKeyPair(KeyTrustLevel trust_level,
 
 scoped_refptr<SigningKeyPair> MacKeyPersistenceDelegate::LoadKeyPair(
     KeyStorageType type) {
-  SecureEnclaveClient::KeyType key_type =
-      SecureEnclaveClient::KeyType::kPermanent;
-  std::vector<uint8_t> key_label;
-  if (!client_->GetStoredKeyLabel(key_type, key_label) || key_label.empty()) {
-    return nullptr;
-  }
-
-  SecureEnclaveSigningKeyProvider provider(key_type);
-  auto signing_key = provider.FromWrappedSigningKeySlowly(key_label);
+  SecureEnclaveSigningKeyProvider provider;
+  OSStatus error;
+  auto signing_key = provider.LoadStoredSigningKeySlowly(
+      SecureEnclaveClient::KeyType::kPermanent, &error);
   if (!signing_key) {
     return nullptr;
   }
@@ -83,11 +79,8 @@ scoped_refptr<SigningKeyPair> MacKeyPersistenceDelegate::CreateKeyPair() {
 
   // The permanent key provider creates a new signing key pair in the permanent
   // key storage.
-  SecureEnclaveClient::KeyType key_type =
-      SecureEnclaveClient::KeyType::kPermanent;
-  SecureEnclaveSigningKeyProvider provider(key_type);
-  auto acceptable_algorithms = {crypto::SignatureVerifier::ECDSA_SHA256};
-  auto signing_key = provider.GenerateSigningKeySlowly(acceptable_algorithms);
+  SecureEnclaveSigningKeyProvider provider;
+  auto signing_key = provider.GenerateSigningKeySlowly();
   if (!signing_key) {
     return nullptr;
   }

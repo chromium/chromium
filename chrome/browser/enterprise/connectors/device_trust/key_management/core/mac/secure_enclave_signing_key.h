@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_KEY_MANAGEMENT_CORE_MAC_SECURE_ENCLAVE_SIGNING_KEY_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_KEY_MANAGEMENT_CORE_MAC_SECURE_ENCLAVE_SIGNING_KEY_H_
 
+#include <Security/Security.h>
 #include <memory>
 
 #include "base/containers/span.h"
@@ -14,28 +15,24 @@
 
 namespace enterprise_connectors {
 
-// An implementation of crypto::UnexportableKeyProvider for mac using the
-// Secure Enclave key.
-class SecureEnclaveSigningKeyProvider : public crypto::UnexportableKeyProvider {
+// A key provider, inspired by crypto::UnexportableKeyProvider, for providing
+// keys protected by the Secure Enclave.
+class SecureEnclaveSigningKeyProvider {
  public:
-  // Takes a parameter of key `type` (Permanent or Temporary) that the key
-  // provider will represent.
-  explicit SecureEnclaveSigningKeyProvider(SecureEnclaveClient::KeyType type);
-  ~SecureEnclaveSigningKeyProvider() override;
+  // Represents a loaded version of the "permanent" key.
+  SecureEnclaveSigningKeyProvider();
 
-  // crypto::UnexportableKeyProvider:
-  absl::optional<crypto::SignatureVerifier::SignatureAlgorithm> SelectAlgorithm(
-      base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms) override;
-  std::unique_ptr<crypto::UnexportableSigningKey> GenerateSigningKeySlowly(
-      base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms) override;
-  std::unique_ptr<crypto::UnexportableSigningKey> FromWrappedSigningKeySlowly(
-      base::span<const uint8_t> wrapped_key_label) override;
+  ~SecureEnclaveSigningKeyProvider();
 
- private:
-  // The key type (Permanent or Temporary) the provider represents.
-  SecureEnclaveClient::KeyType provider_key_type_;
+  // Creates a new key pair backed by the Secure Enclave. In case of failure,
+  // will return nullptr.
+  std::unique_ptr<crypto::UnexportableSigningKey> GenerateSigningKeySlowly();
+
+  // Tries to load an existing key pair of `key_type`. In case of failure, will
+  // populate `error` with the error code and return nullptr.
+  std::unique_ptr<crypto::UnexportableSigningKey> LoadStoredSigningKeySlowly(
+      SecureEnclaveClient::KeyType key_type,
+      OSStatus* error);
 };
 
 }  // namespace enterprise_connectors

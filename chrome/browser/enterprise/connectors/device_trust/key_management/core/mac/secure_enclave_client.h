@@ -8,7 +8,7 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <Security/Security.h>
 
-#include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/apple/scoped_cftyperef.h"
@@ -42,13 +42,19 @@ class SecureEnclaveClient {
   static absl::optional<SecureEnclaveClient::KeyType> GetTypeFromWrappedKey(
       base::span<const uint8_t> wrapped_key_label);
 
+  // Returns the label corresponding to the given key `type`.
+  static std::string_view GetLabelFromKeyType(
+      SecureEnclaveClient::KeyType type);
+
   // Creates a new Secure Enclave private key with a permanent key label.
   virtual base::apple::ScopedCFTypeRef<SecKeyRef> CreatePermanentKey() = 0;
 
   // Queries for the secure key using its label determined by the key `type`.
-  // Returns the secure key reference or a nullptr if no key was found.
+  // Returns the secure key reference or a nullptr if no key was found. Will
+  // populate `error` with the returned OSStatus value in case of any error.
   virtual base::apple::ScopedCFTypeRef<SecKeyRef> CopyStoredKey(
-      KeyType type) = 0;
+      KeyType type,
+      OSStatus* error) = 0;
 
   // Deletes any key stored in `new_key_type` and updates the private key
   // storage in `current_key_type` to `new_key_type` and modifies the key label
@@ -60,20 +66,18 @@ class SecureEnclaveClient {
   // and deletes it from the secure enclave.
   virtual bool DeleteKey(KeyType type) = 0;
 
-  // Queries for the secure key using its label determined by the key `type`
-  // and stores the key label in `output`.
-  virtual bool GetStoredKeyLabel(KeyType type,
-                                 std::vector<uint8_t>& output) = 0;
-
   // Creates the public key using the secure private `key` and SPKI encodes
   // this public key for key upload. The encoded key is stored in `output`.
-  virtual bool ExportPublicKey(SecKeyRef key, std::vector<uint8_t>& output) = 0;
+  virtual bool ExportPublicKey(SecKeyRef key,
+                               std::vector<uint8_t>& output,
+                               OSStatus* error) = 0;
 
   // Creates the signature of `data` using the secure `key`. This signature is
   // stored in `output`.
   virtual bool SignDataWithKey(SecKeyRef key,
                                base::span<const uint8_t> data,
-                               std::vector<uint8_t>& output) = 0;
+                               std::vector<uint8_t>& output,
+                               OSStatus* error) = 0;
 
   // Verifies whether the Secure Enclave is supported for the device.
   // Returns true if the Secure Enclave is supported and false otherwise.

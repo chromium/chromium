@@ -16,7 +16,7 @@ constexpr char kSecureEnclaveOperationHistogramFormat[] =
 constexpr char kKeychainOSStatusHistogramFormat[] =
     "Enterprise.DeviceTrust.Mac.KeychainOSStatus.%s.%s";
 
-SecureEnclaveOperationStatus ConvertOperationToStatus(
+absl::optional<SecureEnclaveOperationStatus> ConvertOperationToStatus(
     KeychainOperation operation) {
   switch (operation) {
     case KeychainOperation::kCreate:
@@ -30,6 +30,8 @@ SecureEnclaveOperationStatus ConvertOperationToStatus(
     case KeychainOperation::kUpdate:
       return SecureEnclaveOperationStatus::
           kUpdateSecureKeyLabelDataProtectionKeychainFailed;
+    default:
+      return absl::nullopt;
   }
 }
 
@@ -52,6 +54,10 @@ std::string OperationToString(KeychainOperation operation) {
       return "Delete";
     case KeychainOperation::kUpdate:
       return "Update";
+    case KeychainOperation::kExportPublicKey:
+      return "ExportPublicKey";
+    case KeychainOperation::kSignPayload:
+      return "SignPayload";
   }
 }
 
@@ -61,10 +67,14 @@ void RecordKeyOperationStatus(KeychainOperation operation,
                               SecureEnclaveClient::KeyType type,
                               OSStatus error_code) {
   auto type_string = KeyTypeToString(type);
-  base::UmaHistogramEnumeration(
-      base::StringPrintf(kSecureEnclaveOperationHistogramFormat,
-                         type_string.c_str()),
-      ConvertOperationToStatus(operation));
+  auto operation_status = ConvertOperationToStatus(operation);
+  if (operation_status) {
+    base::UmaHistogramEnumeration(
+        base::StringPrintf(kSecureEnclaveOperationHistogramFormat,
+                           type_string.c_str()),
+        operation_status.value());
+  }
+
   base::UmaHistogramSparse(
       base::StringPrintf(kKeychainOSStatusHistogramFormat, type_string.c_str(),
                          OperationToString(operation).c_str()),

@@ -96,10 +96,9 @@ class SecureEnclaveClientTest : public testing::Test {
   }
 
   base::HistogramTester histogram_tester_;
-  raw_ptr<MockSecureEnclaveHelper, DanglingUntriaged>
-      mock_secure_enclave_helper_ = nullptr;
   std::unique_ptr<SecureEnclaveClient> secure_enclave_client_;
   base::apple::ScopedCFTypeRef<SecKeyRef> test_key_;
+  raw_ptr<MockSecureEnclaveHelper> mock_secure_enclave_helper_ = nullptr;
 };
 
 // Tests that the CreatePermanentKey method invokes both the SE helper's
@@ -193,10 +192,10 @@ TEST_F(SecureEnclaveClientTest, CopyStoredKey_KeyFound) {
         return test_key_;
       });
   EXPECT_EQ(secure_enclave_client_->CopyStoredKey(
-                SecureEnclaveClient::KeyType::kPermanent),
+                SecureEnclaveClient::KeyType::kPermanent, nullptr),
             test_key_);
   EXPECT_EQ(secure_enclave_client_->CopyStoredKey(
-                SecureEnclaveClient::KeyType::kTemporary),
+                SecureEnclaveClient::KeyType::kTemporary, nullptr),
             test_key_);
 
   // Should expect no copy key failure metrics.
@@ -216,10 +215,18 @@ TEST_F(SecureEnclaveClientTest, CopyStoredKey_KeyNotFound) {
         *status = errSecItemNotFound;
         return base::apple::ScopedCFTypeRef<SecKeyRef>();
       });
+
+  OSStatus error;
   EXPECT_FALSE(secure_enclave_client_->CopyStoredKey(
-      SecureEnclaveClient::KeyType::kPermanent));
+      SecureEnclaveClient::KeyType::kPermanent, &error));
+  EXPECT_EQ(error, errSecItemNotFound);
+
+  // Reset the error.
+  error = errSecSuccess;
+
   EXPECT_FALSE(secure_enclave_client_->CopyStoredKey(
-      SecureEnclaveClient::KeyType::kTemporary));
+      SecureEnclaveClient::KeyType::kTemporary, &error));
+  EXPECT_EQ(error, errSecItemNotFound);
 
   auto status = SecureEnclaveOperationStatus::
       kCopySecureKeyRefDataProtectionKeychainFailed;
@@ -470,129 +477,13 @@ TEST_F(SecureEnclaveClientTest, DeleteKey_PermanentKeyLabel_Failure) {
   histogram_tester_.ExpectTotalCount(kTemporaryStatusHistogramName, 0);
 }
 
-// Tests that the GetStoredKeyLabel method invokes the SE helper's CopyKey
-// method, and that the query and output is correct for a temporary key.
-TEST_F(SecureEnclaveClientTest, GetStoredKeyLabel_TempKeyLabelFound) {
-  std::vector<uint8_t> output;
-  std::string temp_label = constants::kTemporaryDeviceTrustSigningKeyLabel;
-  EXPECT_CALL(*mock_secure_enclave_helper_, CopyKey(_, _))
-      .Times(1)
-      .WillOnce([this, &temp_label](CFDictionaryRef query, OSStatus* status) {
-        VerifyQuery(query, base::SysUTF8ToCFStringRef(temp_label));
-        *status = errSecSuccess;
-        return test_key_;
-      });
-
-  EXPECT_TRUE(secure_enclave_client_->GetStoredKeyLabel(
-      SecureEnclaveClient::KeyType::kTemporary, output));
-  std::vector<uint8_t> expected_output;
-  expected_output.assign(temp_label.begin(), temp_label.end());
-  EXPECT_EQ(expected_output, output);
-
-  // Should expect no copy key failure metrics.
-  histogram_tester_.ExpectTotalCount(kPermanentStatusHistogramName, 0);
-  histogram_tester_.ExpectTotalCount(kTemporaryStatusHistogramName, 0);
-  EXPECT_TRUE(
-      histogram_tester_.GetTotalCountsForPrefix(kOSStatusHistogramPrefix)
-          .empty());
-}
-
-// Tests that the GetStoredKeyLabel method invokes the SE helper's CopyKey
-// method and that the query search returns false. Also tests that a copy key
-// failure metric is logged.
-TEST_F(SecureEnclaveClientTest, GetStoredKeyLabel_TemporaryKeyNotFound) {
-  std::vector<uint8_t> output;
-  EXPECT_CALL(*mock_secure_enclave_helper_, CopyKey(_, _))
-      .Times(1)
-      .WillOnce([](CFDictionaryRef query, OSStatus* status) {
-        *status = errSecItemNotFound;
-        return base::apple::ScopedCFTypeRef<SecKeyRef>();
-      });
-  EXPECT_FALSE(secure_enclave_client_->GetStoredKeyLabel(
-      SecureEnclaveClient::KeyType::kTemporary, output));
-  std::vector<uint8_t> expected_output;
-  EXPECT_EQ(expected_output, output);
-
-  auto status = SecureEnclaveOperationStatus::
-      kCopySecureKeyRefDataProtectionKeychainFailed;
-
-  // Should expect one copy key failure metric for the temporary key.
-  histogram_tester_.ExpectUniqueSample(kTemporaryStatusHistogramName, status,
-                                       1);
-  histogram_tester_.ExpectUniqueSample(GetOSStatusHistogramName(false, "Copy"),
-                                       errSecItemNotFound, 1);
-  EXPECT_EQ(histogram_tester_.GetTotalCountsForPrefix(kOSStatusHistogramPrefix)
-                .size(),
-            1U);
-
-  // Should expect no copy key failure metric for the permanent key.
-  histogram_tester_.ExpectTotalCount(kPermanentStatusHistogramName, 0);
-}
-
-// Tests that the GetStoredKeyLabel method invokes the SE helper's CopyKey
-// method and that the query and output is correct for a permanent key.
-TEST_F(SecureEnclaveClientTest, GetStoredKeyLabel_PermanentKeyLabelFound) {
-  std::vector<uint8_t> output;
-  std::string permanent_label = constants::kDeviceTrustSigningKeyLabel;
-  EXPECT_CALL(*mock_secure_enclave_helper_, CopyKey(_, _))
-      .Times(1)
-      .WillOnce(
-          [this, &permanent_label](CFDictionaryRef query, OSStatus* status) {
-            VerifyQuery(query, base::SysUTF8ToCFStringRef(permanent_label));
-            *status = errSecSuccess;
-            return test_key_;
-          });
-  EXPECT_TRUE(secure_enclave_client_->GetStoredKeyLabel(
-      SecureEnclaveClient::KeyType::kPermanent, output));
-  std::vector<uint8_t> expected_output;
-  expected_output.assign(permanent_label.begin(), permanent_label.end());
-  EXPECT_EQ(expected_output, output);
-
-  // Should expect no copy key failure metrics.
-  histogram_tester_.ExpectTotalCount(kPermanentStatusHistogramName, 0);
-  histogram_tester_.ExpectTotalCount(kTemporaryStatusHistogramName, 0);
-  EXPECT_TRUE(
-      histogram_tester_.GetTotalCountsForPrefix(kOSStatusHistogramPrefix)
-          .empty());
-}
-
-// Tests that the GetStoredKeyLabel method invokes the SE helper's CopyKey
-// method and that the query search returns false. Also tests that a copy key
-// failure metric is logged.
-TEST_F(SecureEnclaveClientTest, GetStoredKeyLabel_PermanentKeyNotFound) {
-  std::vector<uint8_t> output;
-  EXPECT_CALL(*mock_secure_enclave_helper_, CopyKey(_, _))
-      .Times(1)
-      .WillOnce([](CFDictionaryRef query, OSStatus* status) {
-        *status = errSecItemNotFound;
-        return base::apple::ScopedCFTypeRef<SecKeyRef>();
-      });
-  EXPECT_FALSE(secure_enclave_client_->GetStoredKeyLabel(
-      SecureEnclaveClient::KeyType::kPermanent, output));
-  std::vector<uint8_t> expected_output;
-  EXPECT_EQ(expected_output, output);
-
-  auto status = SecureEnclaveOperationStatus::
-      kCopySecureKeyRefDataProtectionKeychainFailed;
-
-  // Should expect one copy key failure metric for the permanent key.
-  histogram_tester_.ExpectUniqueSample(kPermanentStatusHistogramName, status,
-                                       1);
-  histogram_tester_.ExpectUniqueSample(GetOSStatusHistogramName(true, "Copy"),
-                                       errSecItemNotFound, 1);
-  EXPECT_EQ(histogram_tester_.GetTotalCountsForPrefix(kOSStatusHistogramPrefix)
-                .size(),
-            1U);
-
-  // Should expect no copy key failure metric for the temporary key.
-  histogram_tester_.ExpectTotalCount(kTemporaryStatusHistogramName, 0);
-}
-
 // Tests that the ExportPublicKey method successfully creates the public key
 // data and stores it in output.
 TEST_F(SecureEnclaveClientTest, ExportPublicKey) {
   std::vector<uint8_t> output;
-  EXPECT_TRUE(secure_enclave_client_->ExportPublicKey(test_key_, output));
+  OSStatus error;
+  EXPECT_TRUE(
+      secure_enclave_client_->ExportPublicKey(test_key_, output, &error));
   EXPECT_TRUE(output.size() > 0);
 }
 
@@ -601,8 +492,9 @@ TEST_F(SecureEnclaveClientTest, ExportPublicKey) {
 TEST_F(SecureEnclaveClientTest, SignDataWithKey) {
   std::vector<uint8_t> output;
   std::string data = "test_string";
+  OSStatus error;
   EXPECT_TRUE(secure_enclave_client_->SignDataWithKey(
-      test_key_, base::as_bytes(base::make_span(data)), output));
+      test_key_, base::as_bytes(base::make_span(data)), output, &error));
   EXPECT_TRUE(output.size() > 0);
 }
 
