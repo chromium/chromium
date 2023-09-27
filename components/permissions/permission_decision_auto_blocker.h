@@ -36,6 +36,44 @@ FORWARD_DECLARE_TEST(RecentSiteSettingsHelperTest, CheckRecentSitePermissions);
 
 namespace permissions {
 
+// Mockable interface for PermissionDecisionAutoBlocker (see below), for those
+// few instances where this is used outside of permissions and needs separate
+// unit tests.
+class PermissionDecisionAutoBlockerBase {
+ public:
+  PermissionDecisionAutoBlockerBase() = default;
+  virtual ~PermissionDecisionAutoBlockerBase() = default;
+
+  PermissionDecisionAutoBlockerBase(const PermissionDecisionAutoBlockerBase&) =
+      delete;
+  PermissionDecisionAutoBlockerBase& operator=(
+      const PermissionDecisionAutoBlockerBase&) = delete;
+
+  // Returns whether |request_origin| is under embargo for |permission|.
+  virtual bool IsEmbargoed(const GURL& request_origin,
+                           ContentSettingsType permission) = 0;
+
+  // Records that a dismissal of a prompt for |permission| was made. If the
+  // total number of dismissals exceeds a threshhold and
+  // features::kBlockPromptsIfDismissedOften is enabled, it will place |url|
+  // under embargo for |permission|. |dismissed_prompt_was_quiet| will inform
+  // the decision of which threshold to pick, depending on whether the prompt
+  // that was presented to the user was quiet or not.
+  virtual bool RecordDismissAndEmbargo(const GURL& url,
+                                       ContentSettingsType permission,
+                                       bool dismissed_prompt_was_quiet) = 0;
+
+  // Records that an ignore of a prompt for |permission| was made. If the
+  // total number of ignores exceeds a threshold and
+  // features::kBlockPromptsIfIgnoredOften is enabled, it will place |url|
+  // under embargo for |permission|. |ignored_prompt_was_quiet| will inform
+  // the decision of which threshold to pick, depending on whether the prompt
+  // that was presented to the user was quiet or not.
+  virtual bool RecordIgnoreAndEmbargo(const GURL& url,
+                                      ContentSettingsType permission,
+                                      bool ignored_prompt_was_quiet) = 0;
+};
+
 // The PermissionDecisionAutoBlocker decides whether or not a given origin
 // should be automatically blocked from requesting a permission. When an origin
 // is blocked, it is placed under an "embargo". Until the embargo expires, any
@@ -44,7 +82,8 @@ namespace permissions {
 // result in it being placed under embargo again. Currently, an origin can be
 // placed under embargo if it has a number of prior dismissals greater than a
 // threshold.
-class PermissionDecisionAutoBlocker : public KeyedService {
+class PermissionDecisionAutoBlocker : public PermissionDecisionAutoBlockerBase,
+                                      public KeyedService {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -56,11 +95,17 @@ class PermissionDecisionAutoBlocker : public KeyedService {
 
   explicit PermissionDecisionAutoBlocker(HostContentSettingsMap* settings_map);
 
-  PermissionDecisionAutoBlocker(const PermissionDecisionAutoBlocker&) = delete;
-  PermissionDecisionAutoBlocker& operator=(
-      const PermissionDecisionAutoBlocker&) = delete;
-
   ~PermissionDecisionAutoBlocker() override;
+
+  // PermissionDecisionAutoBlockerBase
+  bool IsEmbargoed(const GURL& request_origin,
+                   ContentSettingsType permission) override;
+  bool RecordDismissAndEmbargo(const GURL& url,
+                               ContentSettingsType permission,
+                               bool dismissed_prompt_was_quiet) override;
+  bool RecordIgnoreAndEmbargo(const GURL& url,
+                              ContentSettingsType permission,
+                              bool ignored_prompt_was_quiet) override;
 
   // Returns whether the permission auto blocker is enabled for the passed-in
   // content setting.
@@ -79,9 +124,6 @@ class PermissionDecisionAutoBlocker : public KeyedService {
 
   // Updates the threshold to start blocking prompts from the field trial.
   static void UpdateFromVariations();
-
-  // Returns whether |request_origin| is under embargo for |permission|.
-  bool IsEmbargoed(const GURL& request_origin, ContentSettingsType permission);
 
   // Checks the status of the content setting to determine if |request_origin|
   // is under embargo for |permission|. This checks all types of embargo.
@@ -112,26 +154,6 @@ class PermissionDecisionAutoBlocker : public KeyedService {
   // |content_type| types.
   std::set<GURL> GetEmbargoedOrigins(
       std::vector<ContentSettingsType> content_types);
-
-  // Records that a dismissal of a prompt for |permission| was made. If the
-  // total number of dismissals exceeds a threshhold and
-  // features::kBlockPromptsIfDismissedOften is enabled, it will place |url|
-  // under embargo for |permission|. |dismissed_prompt_was_quiet| will inform
-  // the decision of which threshold to pick, depending on whether the prompt
-  // that was presented to the user was quiet or not.
-  bool RecordDismissAndEmbargo(const GURL& url,
-                               ContentSettingsType permission,
-                               bool dismissed_prompt_was_quiet);
-
-  // Records that an ignore of a prompt for |permission| was made. If the
-  // total number of ignores exceeds a threshold and
-  // features::kBlockPromptsIfIgnoredOften is enabled, it will place |url|
-  // under embargo for |permission|. |ignored_prompt_was_quiet| will inform
-  // the decision of which threshold to pick, depending on whether the prompt
-  // that was presented to the user was quiet or not.
-  bool RecordIgnoreAndEmbargo(const GURL& url,
-                              ContentSettingsType permission,
-                              bool ignored_prompt_was_quiet);
 
   // Records that a prompt was displayed for |permission|. If
   // features::kBlockRepeatedAutoReauthnPrompts is enabled, it will place |url|
