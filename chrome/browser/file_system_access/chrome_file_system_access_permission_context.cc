@@ -2250,9 +2250,20 @@ bool ChromeFileSystemAccessPermissionContext::OriginHasExtendedPermission(
   }
 
   const auto origin_it = extended_permissions_settings_map_.find(origin);
-  if (origin_it != extended_permissions_settings_map_.end() &&
-      origin_it->second == ContentSetting::CONTENT_SETTING_ALLOW) {
-    return true;
+  if (origin_it != extended_permissions_settings_map_.end()) {
+    switch (origin_it->second) {
+      case ContentSetting::CONTENT_SETTING_ALLOW:
+        return true;
+      case ContentSetting::CONTENT_SETTING_BLOCK:
+        return false;
+      case ContentSetting::CONTENT_SETTING_DEFAULT:
+        // If user has not set the extended permission preference,
+        // the extended permission state depends on whether the origin has
+        // webapp installed, as checked below.
+        break;
+      default:
+        NOTREACHED();
+    }
   }
 
   DCHECK(profile());

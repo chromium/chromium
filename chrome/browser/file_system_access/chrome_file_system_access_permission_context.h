@@ -393,6 +393,8 @@ class ChromeFileSystemAccessPermissionContext
                              const base::FilePath& path,
                              HandleType handle_type,
                              GrantType grant_type);
+  // Returns whether the origin has extended permission enabled via user
+  // opt-in or by having an actively installed PWA.
   bool OriginHasExtendedPermission(const url::Origin& origin) const;
 
   bool HasGrantedActiveGrant(const url::Origin& origin) const;
