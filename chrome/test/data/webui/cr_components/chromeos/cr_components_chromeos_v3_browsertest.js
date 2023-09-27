@@ -38,7 +38,7 @@ GEN('#include "content/public/test/browser_test.h"');
   ],
   ['PairingUi', 'bluetooth/bluetooth_pairing_ui_test.js'],
   ['SpinnerPage', 'bluetooth/bluetooth_spinner_page_test.js'],
- ].forEach(test => registerTest('Bluetooth', 'bluetooth-pairing', ...test));
+ ].forEach(test => registerWebUiTest('Bluetooth', 'bluetooth-pairing', ...test));
 
 [['ApnList', 'network/apn_list_test.js'],
  ['ApnListItem', 'network/apn_list_item_test.js'],
@@ -68,10 +68,10 @@ GEN('#include "content/public/test/browser_test.h"');
 
 [['NetworkDiagnostics', 'network_health/network_diagnostics_test.js'],
  ['RoutineGroup', 'network_health/routine_group_test.js'],
-].forEach(test => registerTest('NetworkHealth', 'connectivity-diagnostics', ...test));
+].forEach(test => registerWebUiTest('NetworkHealth', 'connectivity-diagnostics', ...test));
 
 [['TrafficCounters', 'traffic_counters/traffic_counters_test.js'],
-].forEach(test => registerTest('TrafficCounters', 'network', ...test));
+].forEach(test => registerWebUiTest('TrafficCounters', 'network', ...test));
 
 [
  ['Integration', 'multidevice_setup/integration_test.js'],
@@ -92,7 +92,7 @@ GEN('#include "content/public/test/browser_test.h"');
  ['ProvisioningPage', 'cellular_setup/provisioning_page_test.js'],
  ['PsimFlowUi', 'cellular_setup/psim_flow_ui_test.js'],
  ['SetupLoadingPage', 'cellular_setup/setup_loading_page_test.js'],
-].forEach(test => registerTest('CellularSetup', 'os-settings', ...test));
+].forEach(test => registerWebUiTest('CellularSetup', 'os-settings', ...test));
 // clang-format on
 
 // Prefer registerWebUiTest, which uses the non-deprecated chrome://webui-test
