@@ -6,6 +6,7 @@
 
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/process/process_handle.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
@@ -121,11 +122,17 @@ TEST_F(DlpFilesControllerTest, LocalFileCopyTest) {
 
   ::dlp::RequestFileAccessResponse access_response;
   access_response.set_allowed(true);
-  EXPECT_CALL(request_file_access_call,
-              Run(testing::Property(
-                      &::dlp::RequestFileAccessRequest::destination_component,
-                      ::dlp::DlpComponent::SYSTEM),
-                  base::test::IsNotNullCallback()))
+  EXPECT_CALL(
+      request_file_access_call,
+      Run(testing::AllOf(
+              testing::Property(
+                  &::dlp::RequestFileAccessRequest::destination_component,
+                  ::dlp::DlpComponent::SYSTEM),
+              testing::Property(&::dlp::RequestFileAccessRequest::process_id,
+                                base::GetCurrentProcId()),
+              testing::Property(&::dlp::RequestFileAccessRequest::files_paths,
+                                testing::ElementsAre(src_file.value()))),
+          base::test::IsNotNullCallback()))
       .WillOnce(
           base::test::RunOnceCallback<1>(access_response, base::ScopedFD()));
   chromeos::DlpClient::Get()->GetTestInterface()->SetRequestFileAccessMock(
@@ -271,11 +278,17 @@ TEST_F(DlpFilesControllerTest, FileCopyToExternalAllowTest) {
 
   ::dlp::RequestFileAccessResponse access_response;
   access_response.set_allowed(true);
-  EXPECT_CALL(request_file_access_call,
-              Run(testing::Property(
-                      &::dlp::RequestFileAccessRequest::destination_component,
-                      ::dlp::DlpComponent::GOOGLE_DRIVE),
-                  base::test::IsNotNullCallback()))
+  EXPECT_CALL(
+      request_file_access_call,
+      Run(testing::AllOf(
+              testing::Property(
+                  &::dlp::RequestFileAccessRequest::destination_component,
+                  ::dlp::DlpComponent::GOOGLE_DRIVE),
+              testing::Property(&::dlp::RequestFileAccessRequest::process_id,
+                                base::GetCurrentProcId()),
+              testing::Property(&::dlp::RequestFileAccessRequest::files_paths,
+                                testing::ElementsAre(src_file.value()))),
+          base::test::IsNotNullCallback()))
       .WillOnce(
           base::test::RunOnceCallback<1>(access_response, base::ScopedFD()));
 
@@ -313,11 +326,17 @@ TEST_F(DlpFilesControllerTest, FileCopyToExternalDenyTest) {
 
   ::dlp::RequestFileAccessResponse access_response;
   access_response.set_allowed(false);
-  EXPECT_CALL(request_file_access_call,
-              Run(testing::Property(
-                      &::dlp::RequestFileAccessRequest::destination_component,
-                      ::dlp::DlpComponent::GOOGLE_DRIVE),
-                  base::test::IsNotNullCallback()))
+  EXPECT_CALL(
+      request_file_access_call,
+      Run(testing::AllOf(
+              testing::Property(
+                  &::dlp::RequestFileAccessRequest::destination_component,
+                  ::dlp::DlpComponent::GOOGLE_DRIVE),
+              testing::Property(&::dlp::RequestFileAccessRequest::process_id,
+                                base::GetCurrentProcId()),
+              testing::Property(&::dlp::RequestFileAccessRequest::files_paths,
+                                testing::ElementsAre(src_file.value()))),
+          base::test::IsNotNullCallback()))
       .WillOnce(
           base::test::RunOnceCallback<1>(access_response, base::ScopedFD()));
 

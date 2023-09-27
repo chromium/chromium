@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "base/process/process_handle.h"
 #include "base/task/bind_post_task.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_scoped_file_access_delegate.h"
@@ -86,7 +87,7 @@ void GotFilesSourcesOfCopy(
              base::ScopedFD fd) {
             std::move(result_callback)
                 .Run(std::make_unique<file_access::ScopedFileAccessCopy>(
-                    response.allowed(), base::ScopedFD(),
+                    response.allowed(), std::move(fd),
                     std::move(delayed_add_file)));
           },
           std::move(result_callback), std::move(delayed_add_file));
@@ -168,6 +169,7 @@ void DlpFilesController::RequestCopyAccess(
                     : ::dlp::DlpComponent::SYSTEM;
 
   ::dlp::RequestFileAccessRequest file_access_request;
+  file_access_request.set_process_id(base::GetCurrentProcId());
   file_access_request.add_files_paths(source_file.path().value());
   file_access_request.set_destination_component(proto);
 
