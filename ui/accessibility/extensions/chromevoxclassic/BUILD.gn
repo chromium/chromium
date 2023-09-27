@@ -436,42 +436,6 @@ compress_js("chromevox_background_script") {
   output_file = "$chromevox_out_dir/chromeVox2ChromeBackgroundScript.js"
 }
 
-accessibility_strings("accessibility_strings") {
-  out_dir = chromevox_out_dir
-}
-
-action("chromevox_test_messages_js") {
-  script = "//chrome/browser/resources/chromeos/accessibility/chromevox/tools/generate_test_messages.py"
-  sources = [ "$chromevox_out_dir/_locales/en/messages.json.gz" ]
-  output_file = "$root_out_dir/test_data/ui/accessibility/extensions/chromevoxclassic/host/testing/test_messages.js"
-  outputs = [ output_file ]
-  deps = [ ":accessibility_strings" ]
-  args = [
-           "-o",
-           rebase_path(output_file, root_build_dir),
-         ] + rebase_path(sources, root_build_dir)
-}
-
-chromevox_test_modules = [
-                           "walkers/walker_unittest_base.js",
-                           "host/testing/earcons.js",
-                           "host/testing/host.js",
-                           "host/testing/tts.js",
-                           "testing/spoken_list_builder.js",
-                           "testing/test_msgs.js",
-                           "testing/tester.js",
-                         ] + get_target_outputs(":chromevox_test_messages_js")
-
-generate_deps_js("chromevox_test_deps_js") {
-  sources = closure_library_modules + chromevox_modules + chromevox_test_modules
-  output_file = "$target_gen_dir/test_deps.js"
-  rewrite_rules = [
-    rebase_path("//", root_build_dir) + ":",
-    rebase_path("$root_out_dir/test_data", root_build_dir) + ":",
-  ]
-  deps = [ ":chromevox_test_messages_js" ]
-}
-
 js_library("tree_walker") {
   sources = [ "cvox2/background/tree_walker.js" ]
   deps = [
@@ -497,103 +461,142 @@ js_library("constants") {
   sources = [ "cvox2/background/constants.js" ]
 }
 
-test("chromevox_tests") {
-  sources = [
-    "//chrome/browser/extensions/browsertest_util.cc",
-    "//chrome/browser/extensions/browsertest_util.h",
-    "//chrome/browser/ui/webui/web_ui_test_handler.cc",
-    "//chrome/browser/ui/webui/web_ui_test_handler.h",
-    "//chrome/test/base/devtools_listener.cc",
-    "//chrome/test/base/devtools_listener.h",
-    "//chrome/test/base/extension_js_browser_test.cc",
-    "//chrome/test/base/extension_js_browser_test.h",
-    "//chrome/test/base/javascript_browser_test.cc",
-    "//chrome/test/base/javascript_browser_test.h",
-    "//chrome/test/base/test_chrome_web_ui_controller_factory.cc",
-    "//chrome/test/base/test_chrome_web_ui_controller_factory.h",
-    "//chrome/test/base/web_ui_browser_test.cc",
-    "//chrome/test/base/web_ui_browser_test.h",
-  ]
+if (is_chromeos_ash) {
+  accessibility_strings("accessibility_strings") {
+    out_dir = chromevox_out_dir
+  }
 
-  deps = [
-    ":chromevox_unitjs_tests",
-    "//ash/constants",
-    "//base",
-    "//base:i18n",
-    "//base/test:test_support",
-    "//build:chromeos_buildflags",
-    "//chrome:browser_tests_pak",
-    "//chrome:packed_resources",
-    "//chrome:resources",
-    "//chrome:strings",
-    "//chrome/browser",
-    "//chrome/browser/apps/app_service",
-    "//chrome/browser/web_applications",
-    "//chrome/renderer",
-    "//chrome/test:browser_tests_runner",
-    "//chrome/test:test_support",
-    "//chrome/test:test_support_ui",
-    "//chrome/test/data/webui:web_ui_test_bindings",
-    "//components/webapps/browser",
-    "//content/test:test_support",
-    "//extensions/browser:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
+  action("chromevox_test_messages_js") {
+    script = "//chrome/browser/resources/chromeos/accessibility/chromevox/tools/generate_test_messages.py"
+    sources = [ "$chromevox_out_dir/_locales/en/messages.json.gz" ]
+    output_file = "$root_out_dir/test_data/ui/accessibility/extensions/chromevoxclassic/host/testing/test_messages.js"
+    outputs = [ output_file ]
+    deps = [ ":accessibility_strings" ]
+    args = [
+             "-o",
+             rebase_path(output_file, root_build_dir),
+           ] + rebase_path(sources, root_build_dir)
+  }
 
-  data = [
-    "$root_out_dir/chrome_100_percent.pak",
-    "$root_out_dir/chrome_200_percent.pak",
-    "$root_out_dir/locales/en-US.pak",
-    "$root_out_dir/locales/fr.pak",
-    "$root_out_dir/resources.pak",
-    "$root_out_dir/chromevoxclassic/",
-    "$root_out_dir/test_data/ui/accessibility/extensions/chromevoxclassic/",
+  chromevox_test_modules = [
+                             "walkers/walker_unittest_base.js",
+                             "host/testing/earcons.js",
+                             "host/testing/host.js",
+                             "host/testing/tts.js",
+                             "testing/spoken_list_builder.js",
+                             "testing/test_msgs.js",
+                             "testing/tester.js",
+                           ] + get_target_outputs(":chromevox_test_messages_js")
 
-    # Surprisingly, the test uses data from the original location, not the
-    # copied one.
-    "//ui/accessibility/extensions/chromevoxclassic",
-    "//third_party/chromevox/",
-  ]
-  data += js2gtest_js_libraries
-}
+  generate_deps_js("chromevox_test_deps_js") {
+    sources =
+        closure_library_modules + chromevox_modules + chromevox_test_modules
+    output_file = "$target_gen_dir/test_deps.js"
+    rewrite_rules = [
+      rebase_path("//", root_build_dir) + ":",
+      rebase_path("$root_out_dir/test_data", root_build_dir) + ":",
+    ]
+    deps = [ ":chromevox_test_messages_js" ]
+  }
 
-js2gtest("chromevox_unitjs_tests") {
-  test_type = "webui"
-  sources = [
-    "chromevox/injected/navigation_manager_test.unitjs",
-    "chromevox/injected/user_commands_test.unitjs",
-    "common/aria_util_test.unitjs",
-    "common/braille_text_handler_test.unitjs",
-    "common/braille_util_test.unitjs",
-    "common/content_editable_extractor_test.unitjs",
-    "common/cursor_selection_test.unitjs",
-    "common/dom_util_test.unitjs",
-    "common/editable_text_area_shadow_test.unitjs",
-    "common/editable_text_test.unitjs",
-    "common/find_util_test.unitjs",
-    "common/math_semantic_tree_test.unitjs",
-    "common/page_selection_test.unitjs",
-    "common/selection_util_test.unitjs",
-    "common/string_util_test.unitjs",
-    "walkers/character_walker_test.unitjs",
-    "walkers/group_walker_test.unitjs",
-    "walkers/layout_line_walker_test.unitjs",
-    "walkers/math_shifter_test.unitjs",
-    "walkers/object_walker_test.unitjs",
-    "walkers/sentence_walker_test.unitjs",
-    "walkers/structural_line_walker_test.unitjs",
-    "walkers/table_walker_test.unitjs",
-    "walkers/word_walker_test.unitjs",
-  ]
-  gen_include_files = [
-    "//chrome/browser/resources/chromeos/accessibility/common/testing/assert_additions.js",
-    "//chrome/browser/resources/chromeos/accessibility/common/testing/callback_helper.js",
-    "//ui/accessibility/extensions/chromevoxclassic/testing/chromevox_unittest_base.js",
-  ]
+  test("chromevox_tests") {
+    sources = [
+      "//chrome/browser/extensions/browsertest_util.cc",
+      "//chrome/browser/extensions/browsertest_util.h",
+      "//chrome/browser/ui/webui/web_ui_test_handler.cc",
+      "//chrome/browser/ui/webui/web_ui_test_handler.h",
+      "//chrome/test/base/devtools_listener.cc",
+      "//chrome/test/base/devtools_listener.h",
+      "//chrome/test/base/extension_js_browser_test.cc",
+      "//chrome/test/base/extension_js_browser_test.h",
+      "//chrome/test/base/javascript_browser_test.cc",
+      "//chrome/test/base/javascript_browser_test.h",
+      "//chrome/test/base/test_chrome_web_ui_controller_factory.cc",
+      "//chrome/test/base/test_chrome_web_ui_controller_factory.h",
+      "//chrome/test/base/web_ui_browser_test.cc",
+      "//chrome/test/base/web_ui_browser_test.h",
+    ]
 
-  test_deps_js_outputs = get_target_outputs(":chromevox_test_deps_js")
-  deps_js = test_deps_js_outputs[0]
-  deps = [ ":chromevox_test_deps_js" ]
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    deps = [
+      ":chromevox_unitjs_tests",
+      "//ash/constants",
+      "//base",
+      "//base:i18n",
+      "//base/test:test_support",
+      "//build:chromeos_buildflags",
+      "//chrome:browser_tests_pak",
+      "//chrome:packed_resources",
+      "//chrome:resources",
+      "//chrome:strings",
+      "//chrome/browser",
+      "//chrome/browser/apps/app_service",
+      "//chrome/browser/web_applications",
+      "//chrome/renderer",
+      "//chrome/test:browser_tests_runner",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//chrome/test/data/webui:web_ui_test_bindings",
+      "//components/webapps/browser",
+      "//content/test:test_support",
+      "//extensions/browser:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+
+    data = [
+      "$root_out_dir/chrome_100_percent.pak",
+      "$root_out_dir/chrome_200_percent.pak",
+      "$root_out_dir/locales/en-US.pak",
+      "$root_out_dir/locales/fr.pak",
+      "$root_out_dir/resources.pak",
+      "$root_out_dir/chromevoxclassic/",
+      "$root_out_dir/test_data/ui/accessibility/extensions/chromevoxclassic/",
+
+      # Surprisingly, the test uses data from the original location, not the
+      # copied one.
+      "//ui/accessibility/extensions/chromevoxclassic",
+      "//third_party/chromevox/",
+    ]
+    data += js2gtest_js_libraries
+  }
+
+  js2gtest("chromevox_unitjs_tests") {
+    test_type = "webui"
+    sources = [
+      "chromevox/injected/navigation_manager_test.unitjs",
+      "chromevox/injected/user_commands_test.unitjs",
+      "common/aria_util_test.unitjs",
+      "common/braille_text_handler_test.unitjs",
+      "common/braille_util_test.unitjs",
+      "common/content_editable_extractor_test.unitjs",
+      "common/cursor_selection_test.unitjs",
+      "common/dom_util_test.unitjs",
+      "common/editable_text_area_shadow_test.unitjs",
+      "common/editable_text_test.unitjs",
+      "common/find_util_test.unitjs",
+      "common/math_semantic_tree_test.unitjs",
+      "common/page_selection_test.unitjs",
+      "common/selection_util_test.unitjs",
+      "common/string_util_test.unitjs",
+      "walkers/character_walker_test.unitjs",
+      "walkers/group_walker_test.unitjs",
+      "walkers/layout_line_walker_test.unitjs",
+      "walkers/math_shifter_test.unitjs",
+      "walkers/object_walker_test.unitjs",
+      "walkers/sentence_walker_test.unitjs",
+      "walkers/structural_line_walker_test.unitjs",
+      "walkers/table_walker_test.unitjs",
+      "walkers/word_walker_test.unitjs",
+    ]
+    gen_include_files = [
+      "//chrome/browser/resources/chromeos/accessibility/common/testing/assert_additions.js",
+      "//chrome/browser/resources/chromeos/accessibility/common/testing/callback_helper.js",
+      "//ui/accessibility/extensions/chromevoxclassic/testing/chromevox_unittest_base.js",
+    ]
+
+    test_deps_js_outputs = get_target_outputs(":chromevox_test_deps_js")
+    deps_js = test_deps_js_outputs[0]
+    deps = [ ":chromevox_test_deps_js" ]
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  }
 }

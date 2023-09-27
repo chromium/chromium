@@ -11,10 +11,8 @@ group("extensions") {
   deps = [
     ":caretbrowsing",
     ":colorenhancer",
+    "chromevoxclassic:chromevox",
   ]
-  if (is_chromeos_ash) {
-    deps += [ "chromevoxclassic:chromevox" ]
-  }
 }
 
 group("extension_tests") {
