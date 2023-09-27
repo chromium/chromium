@@ -19,6 +19,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/geolocation/geolocation_controller.h"
 #include "ash/system/model/system_tray_model.h"
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
@@ -118,13 +119,11 @@ class NightLightControllerDelegateImpl
   base::Time GetNow() const override { return base::Time::Now(); }
   base::Time GetSunsetTime() const override { return GetSunRiseSet(false); }
   base::Time GetSunriseTime() const override { return GetSunRiseSet(true); }
-  bool SetGeoposition(
-      const NightLightController::SimpleGeoposition& position) override {
+  bool SetGeoposition(const SimpleGeoposition& position) override {
     if (geoposition_ && *geoposition_ == position)
       return false;
 
-    geoposition_ =
-        std::make_unique<NightLightController::SimpleGeoposition>(position);
+    geoposition_ = std::make_unique<SimpleGeoposition>(position);
     return true;
   }
   bool HasGeoposition() const override { return !!geoposition_; }
@@ -164,7 +163,7 @@ class NightLightControllerDelegateImpl
     return base::Time::FromDoubleT(sun_rise_set_ms / 1000.0);
   }
 
-  std::unique_ptr<NightLightController::SimpleGeoposition> geoposition_;
+  std::unique_ptr<SimpleGeoposition> geoposition_;
 };
 
 // Returns the color temperature range bucket in which |temperature| resides.

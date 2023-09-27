@@ -17,6 +17,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
+#include "ash/system/geolocation/geolocation_controller.h"
 #include "ash/system/night_light/night_light_controller_impl.h"
 #include "ash/system/time/time_of_day.h"
 #include "ash/test/ash_test_base.h"
@@ -174,17 +175,15 @@ class TestDelegate : public NightLightControllerImpl::Delegate {
   base::Time GetNow() const override { return fake_now_; }
   base::Time GetSunsetTime() const override { return fake_sunset_; }
   base::Time GetSunriseTime() const override { return fake_sunrise_; }
-  bool SetGeoposition(
-      const NightLightController::SimpleGeoposition& position) override {
+  bool SetGeoposition(const SimpleGeoposition& position) override {
     has_geoposition_ = true;
-    if (position == NightLightController::SimpleGeoposition{
-                        kFakePosition1_Latitude, kFakePosition1_Longitude}) {
+    if (position ==
+        SimpleGeoposition{kFakePosition1_Latitude, kFakePosition1_Longitude}) {
       // Set sunset and sunrise times associated with fake position 1.
       SetFakeSunset(TimeOfDay(kFakePosition1_SunsetOffset));
       SetFakeSunrise(TimeOfDay(kFakePosition1_SunriseOffset));
-    } else if (position ==
-               NightLightController::SimpleGeoposition{
-                   kFakePosition2_Latitude, kFakePosition2_Longitude}) {
+    } else if (position == SimpleGeoposition{kFakePosition2_Latitude,
+                                             kFakePosition2_Longitude}) {
       // Set sunset and sunrise times associated with fake position 2.
       SetFakeSunset(TimeOfDay(kFakePosition2_SunsetOffset));
       SetFakeSunrise(TimeOfDay(kFakePosition2_SunriseOffset));
@@ -662,8 +661,8 @@ TEST_F(NightLightTest, TestSunsetSunriseGeoposition) {
   //
   NightLightControllerImpl* controller = GetController();
   delegate()->SetFakeNow(TimeOfDay(16 * 60));  // 4:00PM.
-  controller->SetCurrentGeoposition(NightLightController::SimpleGeoposition{
-      kFakePosition1_Latitude, kFakePosition1_Longitude});
+  controller->SetCurrentGeoposition(
+      SimpleGeoposition{kFakePosition1_Latitude, kFakePosition1_Longitude});
 
   // Expect that timer is running and the start is scheduled after 4 hours.
   controller->SetScheduleType(ScheduleType::kSunsetToSunrise);
@@ -691,8 +690,8 @@ TEST_F(NightLightTest, TestSunsetSunriseGeoposition) {
   //        |           |                  |
   //      sunset       now               sunrise
   //
-  controller->SetCurrentGeoposition(NightLightController::SimpleGeoposition{
-      kFakePosition2_Latitude, kFakePosition2_Longitude});
+  controller->SetCurrentGeoposition(
+      SimpleGeoposition{kFakePosition2_Latitude, kFakePosition2_Longitude});
 
   // Expect that the scheduled end delay has been updated, and the status hasn't
   // changed.
@@ -743,8 +742,8 @@ TEST_F(NightLightTest, DISABLED_TestCustomScheduleGeopositionChanges) {
 
   int fake_now = 16 * 60;
   delegate()->SetFakeNow(TimeOfDay(fake_now));
-  controller->SetCurrentGeoposition(NightLightController::SimpleGeoposition{
-      kFakePosition1_Latitude, kFakePosition1_Longitude});
+  controller->SetCurrentGeoposition(
+      SimpleGeoposition{kFakePosition1_Latitude, kFakePosition1_Longitude});
 
   // Expect that timer is running and is scheduled at next custom start time.
   controller->SetScheduleType(ScheduleType::kCustom);
@@ -764,8 +763,8 @@ TEST_F(NightLightTest, DISABLED_TestCustomScheduleGeopositionChanges) {
   fake_now = 21 * 60;
   delegate()->SetFakeNow(TimeOfDay(fake_now));
   controller->timer()->FireNow();
-  controller->SetCurrentGeoposition(NightLightController::SimpleGeoposition{
-      kFakePosition2_Latitude, kFakePosition2_Longitude});
+  controller->SetCurrentGeoposition(
+      SimpleGeoposition{kFakePosition2_Latitude, kFakePosition2_Longitude});
 
   // Expect the controller to enter night light mode and  the scheduled end
   // delay has been updated.
@@ -783,8 +782,8 @@ TEST_F(NightLightTest, DISABLED_TestCustomScheduleGeopositionChanges) {
   delegate()->SetFakeNow(TimeOfDay(fake_now));
   controller->timer()->FireNow();
 
-  controller->SetCurrentGeoposition(NightLightController::SimpleGeoposition{
-      kFakePosition1_Latitude, kFakePosition1_Longitude});
+  controller->SetCurrentGeoposition(
+      SimpleGeoposition{kFakePosition1_Latitude, kFakePosition1_Longitude});
   EXPECT_FALSE(controller->GetEnabled());
   TestCompositorsTemperature(0.0f);
   EXPECT_EQ(NightLightControllerImpl::AnimationDuration::kShort,
@@ -845,8 +844,8 @@ TEST_F(NightLightTest, AbsentValidGeoposition) {
   EXPECT_EQ(delegate()->GetSunriseTime(), ToTimeToday(kSunrise1));
 
   // Now simulate receiving a geoposition update of fake geoposition 2.
-  controller->SetCurrentGeoposition(NightLightController::SimpleGeoposition{
-      kFakePosition2_Latitude, kFakePosition2_Longitude});
+  controller->SetCurrentGeoposition(
+      SimpleGeoposition{kFakePosition2_Latitude, kFakePosition2_Longitude});
   EXPECT_TRUE(delegate()->HasGeoposition());
   EXPECT_FALSE(controller->is_current_geoposition_from_cache());
   EXPECT_EQ(delegate()->GetSunsetTime(), ToTimeToday(kSunset2));
@@ -874,8 +873,8 @@ TEST_F(NightLightTest, AbsentValidGeoposition) {
   user2_pref_service()->ClearPref(prefs::kNightLightCachedLongitude);
 
   // Now simulate receiving a geoposition update of fake geoposition 1.
-  controller->SetCurrentGeoposition(NightLightController::SimpleGeoposition{
-      kFakePosition1_Latitude, kFakePosition1_Longitude});
+  controller->SetCurrentGeoposition(
+      SimpleGeoposition{kFakePosition1_Latitude, kFakePosition1_Longitude});
   EXPECT_TRUE(delegate()->HasGeoposition());
   EXPECT_FALSE(controller->is_current_geoposition_from_cache());
   EXPECT_EQ(delegate()->GetSunsetTime(), ToTimeToday(kSunset1));
@@ -1683,8 +1682,8 @@ TEST_F(AutoNightLightTest, DismissNotificationOnTurningOff) {
   EXPECT_EQ(ScheduleType::kSunsetToSunrise, controller->GetScheduleType());
 
   // Use a fake geoposition with sunset/sunrise times at 5pm/3am.
-  controller->SetCurrentGeoposition(NightLightController::SimpleGeoposition{
-      kFakePosition2_Latitude, kFakePosition2_Longitude});
+  controller->SetCurrentGeoposition(
+      SimpleGeoposition{kFakePosition2_Latitude, kFakePosition2_Longitude});
 
   // Simulate reaching sunset.
   delegate()->SetFakeNow(TimeOfDay(17 * 60));  // Now is 5:00 PM.
@@ -1698,8 +1697,8 @@ TEST_F(AutoNightLightTest, DismissNotificationOnTurningOff) {
   // 8pm/4am, so now is before sunset. Night Light should turn off, and the
   // stale notification from above should be removed. However, its removal
   // should not affect kAutoNightLightNotificationDismissed.
-  controller->SetCurrentGeoposition(NightLightController::SimpleGeoposition{
-      kFakePosition1_Latitude, kFakePosition1_Longitude});
+  controller->SetCurrentGeoposition(
+      SimpleGeoposition{kFakePosition1_Latitude, kFakePosition1_Longitude});
   EXPECT_FALSE(controller->GetEnabled());
   EXPECT_FALSE(controller->GetAutoNightLightNotificationForTesting());
 

@@ -11,24 +11,10 @@
 
 namespace ash {
 
+struct SimpleGeoposition;
+
 class ASH_PUBLIC_EXPORT NightLightController {
  public:
-  // Represents a geolocation position fix. It's "simple" because it doesn't
-  // expose all the parameters of the position interface as defined by the
-  // Geolocation API Specification:
-  //   https://dev.w3.org/geo/api/spec-source.html#position_interface
-  // The NightLightController is only interested in valid latitude and
-  // longitude. It also doesn't require any specific accuracy. The more accurate
-  // the positions, the more accurate sunset and sunrise times calculations.
-  // However, an IP-based geoposition is considered good enough.
-  struct SimpleGeoposition {
-    bool operator==(const SimpleGeoposition& other) const {
-      return latitude == other.latitude && longitude == other.longitude;
-    }
-    double latitude;
-    double longitude;
-  };
-
   class Observer {
    public:
     // Notifies observers with the new schedule type whenever it changes.

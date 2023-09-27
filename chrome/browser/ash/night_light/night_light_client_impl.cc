@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "ash/public/cpp/schedule_enums.h"
+#include "ash/system/geolocation/geolocation_controller.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/time/clock.h"
@@ -178,7 +179,7 @@ base::Time NightLightClientImpl::GetNow() const {
 
 void NightLightClientImpl::SendCurrentGeoposition() {
   night_light_controller_->SetCurrentGeoposition(
-      ash::NightLightController::SimpleGeoposition{latitude_, longitude_});
+      SimpleGeoposition{latitude_, longitude_});
 }
 
 void NightLightClientImpl::ScheduleNextRequest(base::TimeDelta delay) {
