@@ -7946,6 +7946,28 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="CookieHasNonAsciiCharacter">
+  <owner>bingler@chromium.org</owner>
+  <summary>
+    A collection of metrics which are recorded for cookies which include at
+    least one non-ascii unicode character in either their name or value fields.
+    This metric is only interested in an event being generated, the value it
+    records is meaningless.
+  </summary>
+  <metric name="Name" enum="Boolean">
+    <summary>
+      Records events when a cookie has a non-ascii unicode character in its name
+      field.
+    </summary>
+  </metric>
+  <metric name="Value" enum="Boolean">
+    <summary>
+      Records events when a cookie has a non-ascii unicode character in its
+      value field.
+    </summary>
+  </metric>
+</event>
+
 <event name="CPUUsageMeasurement">
   <owner>chrisha@chromium.org</owner>
   <owner>siggi@chromium.org</owner>

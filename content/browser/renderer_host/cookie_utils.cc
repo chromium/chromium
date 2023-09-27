@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/cookie_utils.h"
 
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_util.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -17,6 +18,47 @@
 namespace content {
 
 namespace {
+
+void PotentiallyRecordNonAsciiCookieNameValue(
+    RenderFrameHost* rfh,
+    CookieAccessDetails::Type access_type,
+    const std::string& name,
+    const std::string& value) {
+  CHECK(rfh);
+
+  if (access_type != CookieAccessDetails::Type::kChange) {
+    return;
+  }
+
+  // Our data collection policy disallows collecting UKMs while prerendering.
+  // See //content/browser/preloading/prerender/README.md and ask the team to
+  // explore options to record data for prerendering pages if we need to
+  // support the case.
+  if (rfh->IsInLifecycleState(RenderFrameHost::LifecycleState::kPrerendering)) {
+    return;
+  }
+
+  bool name_has_non_ascii = !base::IsStringASCII(name);
+  bool value_has_non_ascii = !base::IsStringASCII(value);
+
+  if (name_has_non_ascii || value_has_non_ascii) {
+    ukm::SourceId source_id = rfh->GetPageUkmSourceId();
+
+    auto event = ukm::builders::CookieHasNonAsciiCharacter(source_id);
+
+    // The event itself is what we're interested in, the value of "true" here
+    // can be ignored.
+    if (name_has_non_ascii) {
+      event.SetName(true);
+    }
+
+    if (value_has_non_ascii) {
+      event.SetValue(true);
+    }
+
+    event.Record(ukm::UkmRecorder::Get());
+  }
+}
 
 void RecordPartitionedCookieUseUKM(RenderFrameHost* rfh,
                                    bool partitioned_cookies_exist) {
@@ -262,6 +304,13 @@ void EmitCookieWarningsAndMetrics(
       RecordRedirectContextDowngradeUKM(rfh, cookie_details->type,
                                         cookie->cookie_or_line->get_cookie(),
                                         cookie_details->url);
+    }
+
+    if (cookie->cookie_or_line->is_cookie()) {
+      PotentiallyRecordNonAsciiCookieNameValue(
+          rfh, cookie_details->type,
+          cookie->cookie_or_line->get_cookie().Name(),
+          cookie->cookie_or_line->get_cookie().Value());
     }
 
     // In order to anticipate the potential effects of the expiry limit in
