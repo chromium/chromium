@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "profile_menu_view.h"
+#include "chrome/browser/ui/views/profiles/profile_menu_view.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer_type.h"
