@@ -78412,7 +78412,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="15" label="Video Conference Tray Camera Use While SW Disabled"/>
   <int value="16" label="Video Conference Tray Speak On Mute Opt In"/>
   <int value="17"
-      label="Video Conference Tray Speak On Mute Opt In Confirmation"/>
+      label="Video Conference Tray Speak On Mute Opt In Confirmation
+             (deprecated 09/2023)"/>
   <int value="18" label="Scalable IPH Bubble"/>
   <int value="19"
       label="Video Conference Tray Camera And Microphone Use While Disabled"/>
@@ -105516,6 +105517,7 @@ would be helpful to identify which type is being sent.
   <int value="45" label="Dictation No Focused Text Field"/>
   <int value="46" label="Battery Saver Enabled"/>
   <int value="47" label="Dictation Mic Muted"/>
+  <int value="48" label="Video Conference Speak On Mute Opt In Confirmation"/>
 </enum>
 
 <enum name="TokenBinding.KeyMatch">

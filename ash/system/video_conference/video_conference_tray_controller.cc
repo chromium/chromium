@@ -13,6 +13,8 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "ash/public/cpp/system/anchored_nudge_manager.h"
+#include "ash/public/cpp/system/toast_data.h"
+#include "ash/public/cpp/system/toast_manager.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
@@ -50,9 +52,9 @@ namespace {
 constexpr char kVideoConferenceTraySpeakOnMuteOptInNudgeId[] =
     "video_conference_tray_nudge_ids.speak_on_mute_opt_in";
 
-// The ID for the "Speak-on-mute opt-in/out confirmation" nudge.
-constexpr char kVideoConferenceTraySpeakOnMuteOptInConfirmationNudgeId[] =
-    "video_conference_tray_nudge_ids.speak_on_mute_opt_in_confirmation";
+// The ID for the "Speak-on-mute opt-in/out confirmation" toast.
+constexpr char kVideoConferenceTraySpeakOnMuteOptInConfirmationToastId[] =
+    "video_conference_tray_toast_ids.speak_on_mute_opt_in_confirmation";
 
 // The ID for the "Speak-on-mute detected" nudge.
 constexpr char kVideoConferenceTraySpeakOnMuteDetectedNudgeId[] =
@@ -74,7 +76,6 @@ constexpr char kVideoConferenceTrayBothUseWhileDisabledNudgeId[] =
 // called. Please keep in sync whenever adding/removing/updating a nudge id.
 const char* const kNudgeIds[] = {
     kVideoConferenceTraySpeakOnMuteOptInNudgeId,
-    kVideoConferenceTraySpeakOnMuteOptInConfirmationNudgeId,
     kVideoConferenceTraySpeakOnMuteDetectedNudgeId,
     kVideoConferenceTrayMicrophoneUseWhileHWDisabledNudgeId,
     kVideoConferenceTrayMicrophoneUseWhileSWDisabledNudgeId,
@@ -286,25 +287,29 @@ void VideoConferenceTrayController::OnSpeakOnMuteNudgeOptInAction(bool opt_in) {
   AnchoredNudgeManager::Get()->MaybeRecordNudgeAction(
       NudgeCatalogName::kVideoConferenceTraySpeakOnMuteOptIn);
 
-  AnchoredNudgeData nudge_data(
-      kVideoConferenceTraySpeakOnMuteOptInConfirmationNudgeId,
-      NudgeCatalogName::kVideoConferenceTraySpeakOnMuteOptInConfirmation,
+  // Show the opt-in/out confirmation toast.
+  ToastData toast_data(
+      kVideoConferenceTraySpeakOnMuteOptInConfirmationToastId,
+      ToastCatalogName::kVideoConferenceTraySpeakOnMuteOptInConfirmation,
       l10n_util::GetStringUTF16(
           opt_in
               ? IDS_ASH_VIDEO_CONFERENCE_NUDGE_SPEAK_ON_MUTE_OPT_IN_CONFIRMATION_BODY
               : IDS_ASH_VIDEO_CONFERENCE_NUDGE_SPEAK_ON_MUTE_OPT_OUT_CONFIRMATION_BODY),
-      GetVcTrayInActiveWindow()->audio_icon());
-  nudge_data.first_button_text = l10n_util::GetStringUTF16(
-      IDS_ASH_VIDEO_CONFERENCE_NUDGE_SPEAK_ON_MUTE_OPT_IN_CONFIRMATION_BUTTON);
-  nudge_data.first_button_callback = base::BindRepeating([]() {
+      ToastData::kDefaultToastDuration,
+      /*visible_on_lock_screen=*/false,
+      /*has_dismiss_button=*/true,
+      l10n_util::GetStringUTF16(
+          IDS_ASH_VIDEO_CONFERENCE_NUDGE_SPEAK_ON_MUTE_OPT_IN_CONFIRMATION_BUTTON));
+  toast_data.persist_on_hover = true;
+  toast_data.show_on_all_root_windows = true;
+  toast_data.dismiss_callback = base::BindRepeating([]() {
     Shell::Get()
         ->system_tray_model()
         ->client()
         ->ShowSpeakOnMuteDetectionSettings();
   });
-  nudge_data.anchored_to_shelf = true;
-  nudge_data.use_toast_style = true;
-  AnchoredNudgeManager::Get()->Show(nudge_data);
+
+  ToastManager::Get()->Show(std::move(toast_data));
 }
 
 void VideoConferenceTrayController::CloseAllVcNudges() {
