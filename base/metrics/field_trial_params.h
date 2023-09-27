@@ -109,6 +109,15 @@ BASE_EXPORT bool GetFieldTrialParamByFeatureAsBool(
     const std::string& param_name,
     bool default_value);
 
+// Same as GetFieldTrialParamValueByFeature(). On top of that, it converts the
+// string value into a base::TimeDelta and returns it, if successful. Otherwise,
+// it returns `default_value`. If the string value is not empty and the
+// conversion does not succeed, it produces a warning to LOG.
+BASE_EXPORT base::TimeDelta GetFieldTrialParamByFeatureAsTimeDelta(
+    const Feature& feature,
+    const std::string& param_name,
+    base::TimeDelta default_value);
+
 // Shared declaration for various FeatureParam<T> types.
 //
 // This template is defined for the following types T:
