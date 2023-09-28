@@ -37,12 +37,14 @@ document.querySelector('#incognitothemecss').href =
       <em>$i18n{cookieControlsTitle}</em>
       <span>$i18nRaw{cookieControlsDescription}</span>
     </div>
-    <cr-tooltip-icon id="cookie-controls-tooltip-icon"
-        icon-aria-label="$i18n{cookieControlsTitle}"
-        icon-class="$i18n{cookieControlsToolTipIcon}"
-        tooltip-text="$i18n{cookieControlsTooltipText}"
-        role="link" style="cursor: pointer;" $i18n{hideTooltipIcon}>
-    </cr-tooltip-icon>
+    <div $i18n{hideTooltipIcon}>
+      <cr-tooltip-icon id="cookie-controls-tooltip-icon"
+          icon-aria-label="$i18n{cookieControlsTitle}"
+          icon-class="$i18n{cookieControlsToolTipIcon}"
+          tooltip-text="$i18n{cookieControlsTooltipText}"
+          role="link" style="cursor: pointer;">
+      </cr-tooltip-icon>
+    </div>
     <cr-toggle id="cookie-controls-toggle"
                aria-label="$i18n{cookieControlsTitle}"
                $i18n{hideBlockCookiesToggle}
