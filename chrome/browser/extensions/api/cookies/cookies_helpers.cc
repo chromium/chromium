@@ -136,6 +136,7 @@ Cookie CreateCookie(const net::CanonicalCookie& canonical_cookie,
   cookie.store_id = store_id;
 
   if (canonical_cookie.PartitionKey()) {
+    CHECK(canonical_cookie.PartitionKey()->IsSerializeable());
     std::string top_level_site;
     CHECK_EQ(base::FeatureList::IsEnabled(net::features::kPartitionedCookies),
              net::CookiePartitionKey::Serialize(canonical_cookie.PartitionKey(),
@@ -253,6 +254,10 @@ bool CookieMatchesPartitionKeyInDetails(
     const net::CanonicalCookie& cookie) {
   if (!partition_key) {
     return !cookie.IsPartitioned();
+  }
+
+  if (cookie.IsPartitioned() && !cookie.PartitionKey()->IsSerializeable()) {
+    return false;
   }
 
   std::string serialized_partition_key;

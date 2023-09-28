@@ -118,7 +118,12 @@ CookiesEventRouter::~CookiesEventRouter() {
 void CookiesEventRouter::OnCookieChange(bool otr,
                                         const net::CookieChangeInfo& change) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
+  // There is no way to represent non-serializable
+  // partition keys in JS so return to prevent a crash.
+  if (change.cookie.IsPartitioned() &&
+      !change.cookie.PartitionKey()->IsSerializeable()) {
+    return;
+  }
   base::Value::List args;
   base::Value::Dict dict;
   dict.Set(cookies_api_constants::kRemovedKey,

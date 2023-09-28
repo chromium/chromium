@@ -11,6 +11,7 @@ var TEST_URL2 = 'http://chromium.' + TEST_DOMAIN + '/index.html';
 var TEST_URL3 = 'https://' + TEST_HOST + '/content.html';
 var TEST_URL4 = 'https://' + TEST_HOST + TEST_PATH + '/content.html';
 var TEST_URL5 = 'http://' + TEST_HOST + TEST_PATH + '/content.html';
+var TEST_OPAQUE_URL = 'file://' + TEST_DOMAIN;
 var TEST_EXPIRATION_DATE = 12345678900;
 var TEST_ODD_DOMAIN_HOST_ONLY = 'strange stuff!!.com';
 var TEST_ODD_DOMAIN = '.' + TEST_ODD_DOMAIN_HOST_ONLY;
@@ -99,6 +100,16 @@ var TEST_PARTITIONED_COOKIE_SECURE_FALSE = {
   secure: false,
   httpOnly: true,
   partitionKey: {topLevelSite: TEST_PARTITION_KEY}
+};
+
+var TEST_PARTITIONED_COOKIE_OPAQUE_TOP_LEVEL_SITE = {
+  url: TEST_PARTITION_KEY,
+  name: 'OPAQUE_TOP_LEVEL_SITE',
+  value: 'partitioned_cookie_val',
+  expirationDate: TEST_EXPIRATION_DATE,
+  secure: false,
+  httpOnly: true,
+  partitionKey: {topLevelSite: TEST_OPAQUE_URL}
 };
 
 function expectValidCookie(cookie) {
@@ -298,6 +309,16 @@ chrome.test.runTests([
                 partitionKey: {topLevelSite: TEST_URL4}
               },
               pass(expectNullCookie));
+          // Confirm no cookie retrieved with opaque site.
+          chrome.cookies.get(
+              {
+                url: TEST_PARTITIONED_COOKIE.url,
+                name: TEST_PARTITIONED_COOKIE.name,
+                partitionKey: {topLevelSite: TEST_OPAQUE_URL}
+              },
+              pass(expectNullCookie));
+          // Confirm that a cookie can be retrieved with
+          // correct parameters.
           chrome.cookies.get(
               {
                 url: TEST_PARTITIONED_COOKIE.url,
@@ -367,6 +388,13 @@ chrome.test.runTests([
                     cookie.partitionKey.topLevelSite);
               }));
         }));
+    // Confirm that setting a cookie with an opaque top_level_site,
+    // does not work but also does not crash.
+    chrome.cookies.set(
+        TEST_PARTITIONED_COOKIE_OPAQUE_TOP_LEVEL_SITE,
+        chrome.test.callbackFail(
+            'Failed to parse or set cookie named "OPAQUE_TOP_LEVEL_SITE".'));
+
     // Confirm that trying to set a partitioned cookie that does not have
     // secure property equal true will result in a fail.
     chrome.cookies.set(
