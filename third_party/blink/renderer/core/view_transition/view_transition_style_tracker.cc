@@ -586,7 +586,16 @@ bool ViewTransitionStyleTracker::FlattenAndVerifyElements(
       StringBuilder message;
       message.Append(kDuplicateTagBaseError);
       message.Append(name);
-      AddConsoleError(message.ReleaseString());
+
+      Vector<DOMNodeId> nodes;
+      // Find all the elements with this name.
+      for (auto& name_finder : flat_list) {
+        if (name_finder->name == name) {
+          nodes.push_back(name_finder->element->GetDomNodeId());
+        }
+      }
+
+      AddConsoleError(message.ReleaseString(), nodes);
       return false;
     }
 
