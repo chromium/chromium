@@ -181,8 +181,11 @@ void SyncReader::RequestMoreData(base::TimeDelta delay,
     had_socket_error_ = false;
     // We have successfully passed on the glitch info, now reset it.
     pending_glitch_info_ = {};
+    // The AudioDeviceThread will only increase its own index if the socket
+    // write succeeds, so only increase our own index on successful writes in
+    // order not to get out of sync.
+    ++buffer_index_;
   }
-  ++buffer_index_;
 }
 
 void SyncReader::Read(media::AudioBus* dest, bool is_mixing) {
