@@ -32,8 +32,8 @@ message AggregationServicePayloadContents {
   Operation operation = 1;
   repeated AggregatableReportHistogramContribution contributions = 2;
   AggregationServiceMode aggregation_mode = 3;
-
   // aggregation_coordinator_origin is assumed to be the default (for now).
+  int32 max_contributions_allowed = 5;
 
   reserved 4;
   reserved "aggregation_coordinator";

@@ -269,7 +269,8 @@ AggregatableReportRequest PrivateAggregationHost::GenerateReportRequest(
       std::move(contributions),
       // TODO(alexmt): Consider allowing this to be set.
       blink::mojom::AggregationServiceMode::kDefault,
-      /*aggregation_coordinator_origin=*/absl::nullopt);
+      /*aggregation_coordinator_origin=*/absl::nullopt,
+      kMaxNumberOfContributions);
 
   CHECK(debug_mode_details);
   AggregatableReportSharedInfo shared_info(

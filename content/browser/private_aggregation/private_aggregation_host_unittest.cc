@@ -157,7 +157,8 @@ TEST_F(PrivateAggregationHostTest,
               {blink::mojom::AggregatableReportHistogramContribution(
                   /*bucket=*/123, /*value=*/456)},
               blink::mojom::AggregationServiceMode::kDefault,
-              /*aggregation_coordinator_origin=*/absl::nullopt),
+              /*aggregation_coordinator_origin=*/absl::nullopt,
+              PrivateAggregationHost::kMaxNumberOfContributions),
           AggregatableReportSharedInfo(
               validated_request->shared_info().scheduled_report_time,
               validated_request->shared_info().report_id,

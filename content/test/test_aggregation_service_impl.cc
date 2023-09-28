@@ -128,7 +128,8 @@ void TestAggregationServiceImpl::AssembleReport(
       {blink::mojom::AggregatableReportHistogramContribution(
           /*bucket=*/request.bucket, /*value=*/request.value)},
       ConvertToAggregationMode(request.aggregation_mode),
-      /*aggregation_coordinator_origin=*/absl::nullopt);
+      /*aggregation_coordinator_origin=*/absl::nullopt,
+      /*max_contributions_allowed=*/20);
 
   AggregatableReportSharedInfo shared_info(
       /*scheduled_report_time=*/base::Time::Now() + base::Seconds(30),

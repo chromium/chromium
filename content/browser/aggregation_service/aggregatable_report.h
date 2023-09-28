@@ -42,12 +42,15 @@ struct CONTENT_EXPORT AggregationServicePayloadContents {
 
   // The default aggregation coordinator origin will be used if
   // `aggregation_coordinator_origin` is `absl::nullopt`.
+  // `max_contributions_allowed` specifies the maximum number of contributions
+  // per report for use in padding.
   AggregationServicePayloadContents(
       Operation operation,
       std::vector<blink::mojom::AggregatableReportHistogramContribution>
           contributions,
       blink::mojom::AggregationServiceMode aggregation_mode,
-      absl::optional<url::Origin> aggregation_coordinator_origin);
+      absl::optional<url::Origin> aggregation_coordinator_origin,
+      int max_contributions_allowed);
 
   AggregationServicePayloadContents(
       const AggregationServicePayloadContents& other);
@@ -63,6 +66,7 @@ struct CONTENT_EXPORT AggregationServicePayloadContents {
       contributions;
   blink::mojom::AggregationServiceMode aggregation_mode;
   absl::optional<url::Origin> aggregation_coordinator_origin;
+  int max_contributions_allowed;
 };
 
 // Represents the information that will be provided to both the reporting
@@ -287,7 +291,9 @@ class CONTENT_EXPORT AggregatableReportRequest {
   // `absl::nullopt` if any contribution has a negative value, if
   // `shared_info.report_id` is not valid, or if `debug_key.has_value()` but
   // `shared_info.debug_mode` is `kDisabled`. Also returns `absl::nullopt` if
-  // `failed_send_attempts` is negative.
+  // `failed_send_attempts` is negative or if
+  // `payload_contents.max_contributions_allowed` is less than the number of
+  // contributions.
   // TODO(alexmt): Add validation for scheduled_report_time being non-null/inf.
   static absl::optional<AggregatableReportRequest> Create(
       AggregationServicePayloadContents payload_contents,

@@ -186,7 +186,9 @@ absl::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
           common_aggregatable_data->aggregation_coordinator_origin
               ? absl::make_optional(
                     **common_aggregatable_data->aggregation_coordinator_origin)
-              : absl::nullopt),
+              : absl::nullopt,
+          /*max_contributions_allowed=*/
+          attribution_reporting::kMaxAggregationKeysPerSource),
       AggregatableReportSharedInfo(
           report.initial_report_time(), report.external_report_id(),
           report.GetReportingOrigin(), debug_mode, std::move(additional_fields),

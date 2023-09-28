@@ -254,7 +254,8 @@ AggregatableReportRequest CreateExampleRequestWithReportTime(
                  {blink::mojom::AggregatableReportHistogramContribution(
                      /*bucket=*/123,
                      /*value=*/456)},
-                 aggregation_mode, std::move(aggregation_coordinator_origin)),
+                 aggregation_mode, std::move(aggregation_coordinator_origin),
+                 /*max_contributions_allowed=*/20),
              AggregatableReportSharedInfo(
                  /*scheduled_report_time=*/report_time,
                  /*report_id=*/
