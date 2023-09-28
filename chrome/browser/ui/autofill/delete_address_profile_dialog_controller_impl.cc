@@ -8,7 +8,6 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
 #include "chrome/browser/ui/autofill/delete_address_profile_dialog_controller_impl.h"
-#include "chrome/browser/ui/autofill/delete_address_profile_dialog_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -36,12 +35,13 @@ DeleteAddressProfileDialogControllerImpl::
 void DeleteAddressProfileDialogControllerImpl::OfferDelete(
     bool is_account_address_profile,
     AutofillClient::AddressProfileDeleteDialogCallback delete_dialog_callback) {
+  if (is_dialog_opened_) {
+    return;
+  }
   is_account_address_profile_ = is_account_address_profile;
   delete_dialog_callback_ = std::move(delete_dialog_callback);
-  if (!widget_dialog_) {
-    // TODO(crbug.com/1459990): Open the delete dialog view.
-    widget_dialog_ = nullptr;
-  }
+  // TODO(crbug.com/1459990): Open the delete dialog view.
+  is_dialog_opened_ = true;
 }
 
 std::u16string DeleteAddressProfileDialogControllerImpl::GetTitle() const {
@@ -96,7 +96,7 @@ void DeleteAddressProfileDialogControllerImpl::OnDialogDestroying() {
     std::move(delete_dialog_callback_).Run(user_accepted_.value());
     user_accepted_.reset();
   }
-  widget_dialog_ = nullptr;
+  is_dialog_opened_ = false;
 }
 
 base::WeakPtr<DeleteAddressProfileDialogController>

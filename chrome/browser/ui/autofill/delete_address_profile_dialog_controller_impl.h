@@ -15,10 +15,6 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace views {
-class Widget;
-}  // namespace views
-
 namespace autofill {
 
 class DeleteAddressProfileDialogControllerImpl
@@ -55,7 +51,7 @@ class DeleteAddressProfileDialogControllerImpl
   base::WeakPtr<DeleteAddressProfileDialogController> GetWeakPtr();
 
   const raw_ptr<content::WebContents> web_contents_;
-  raw_ptr<const views::Widget> widget_dialog_ = nullptr;
+  bool is_dialog_opened_ = false;
   bool is_account_address_profile_;
   AutofillClient::AddressProfileDeleteDialogCallback delete_dialog_callback_;
   absl::optional<bool> user_accepted_;
