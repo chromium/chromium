@@ -1880,6 +1880,14 @@ bool AXNode::IsReadOnlyOrDisabled() const {
   }
 }
 
+bool AXNode::IsView() const {
+  const AXTreeManager* manager = GetManager();
+  if (!manager) {
+    return false;
+  }
+  return manager->IsView();
+}
+
 AXNode* AXNode::ComputeLastUnignoredChildRecursive() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   if (children().empty())

@@ -752,6 +752,9 @@ class AX_EXPORT AXNode final {
   // all nodes that can't be edited are read-only.
   bool IsReadOnlyOrDisabled() const;
 
+  // Returns true if node is from Views (and not web content).
+  bool IsView() const;
+
  private:
   AXTableInfo* GetAncestorTableInfo() const;
   void IdVectorToNodeVector(const std::vector<AXNodeID>& ids,

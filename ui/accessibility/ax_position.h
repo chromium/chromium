@@ -487,6 +487,14 @@ class AXPosition {
     if (!node.IsEmptyLeaf())
       return false;
 
+    // While atomic text fields from web content have a text node descendant,
+    // atomic text fields from Views don't. Their text value is set in the value
+    // attribute of the text field node directly.
+    if (node.IsView() && node.data().IsAtomicTextField() &&
+        !node.GetValueForControl().empty()) {
+      return false;
+    }
+
     // One exception to the above rule that all empty leaf nodes are empty
     // objects in AXPosition are <embed> and <object> elements that have
     // children. They should not be treated as empty objects even when their
